@@ -93,7 +93,6 @@ describe('components | Results', () => {
       },
       parse: parse,
       redirectToSearchMainPage: jest.fn(),
-      useAppSearch: false,
       userGeolocation: {
         latitude: 40.1,
         longitude: 41.1,
@@ -2310,7 +2309,6 @@ describe('components | Results', () => {
       expect(filters.prop('updateFilters')).toStrictEqual(expect.any(Function))
       expect(filters.prop('updateNumberOfActiveFilters')).toStrictEqual(expect.any(Function))
       expect(filters.prop('updatePlace')).toStrictEqual(expect.any(Function))
-      expect(filters.prop('useAppSearch')).toStrictEqual(props.useAppSearch)
       expect(filters.prop('userGeolocation')).toStrictEqual(props.userGeolocation)
     })
 
@@ -2366,10 +2364,7 @@ describe('components | Results', () => {
         // when
         const wrapper = await mount(
           <Router history={props.history}>
-            <Results
-              {...props}
-              redirectToSearchMainPage={redirectToSearchMainPage}
-            />
+            <Results {...props} redirectToSearchMainPage={redirectToSearchMainPage} />
           </Router>
         )
         const resultsWrapper = wrapper.find(Results)

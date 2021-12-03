@@ -33,7 +33,6 @@ describe('components | Search', () => {
         path: '/recherche',
       },
       redirectToSearchMainPage: jest.fn(),
-      useAppSearch: false,
     }
   })
 
