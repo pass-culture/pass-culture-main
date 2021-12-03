@@ -10,6 +10,8 @@ import { OfferType, ResultType, Role } from "utils/types"
 
 import { NoResultsPage } from "./NoResultsPage/NoResultsPage"
 import { Offer } from "./Offer"
+import { Offer as OfferNewDesign } from "./OfferV2"
+import { isNewOfferDesignEnabled } from "utils/isNewOfferDesignEnabled"
 
 const offerIsBookable = (offer: OfferType): boolean =>
   !offer.isSoldOut && !offer.isExpired
@@ -59,14 +61,23 @@ export const OffersComponent = ({
 
   return (
     <ul className="offers">
-      {offers.map((offer, index) => (
+      {offers.map((offer) => (
         <div key={offer.id}>
-          <Offer
-            canPrebookOffers={userRole == Role.redactor}
-            key={offer.id}
-            offer={offer}
-            thumbUrl={offersThumbById[offer.id]}
-          />
+          {
+            isNewOfferDesignEnabled() ?
+              <OfferNewDesign
+                offer={offer}
+                canPrebookOffers={userRole == Role.redactor}
+                key={offer.id}
+              />
+            :
+              <Offer
+                canPrebookOffers={userRole == Role.redactor}
+                key={offer.id}
+                offer={offer}
+                thumbUrl={offersThumbById[offer.id]}
+              />
+            }
         </div>
       ))}
     </ul>

@@ -14,5 +14,6 @@ declare namespace NodeJS {
     REACT_APP_SENTRY_SAMPLE_RATE: string;
     REACT_APP_SENTRY_SERVER_URL: string;
     REACT_APP_ASSETS_URL: string;
+    REACT_APP_ENABLE_NEW_OFFER_DESIGN: string;
   }
 }
