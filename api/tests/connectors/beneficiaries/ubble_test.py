@@ -18,7 +18,6 @@ class StartIdentificationTest:
             last_name="nom",
             webhook_url="http://webhook/url/",
             redirect_url="http://redirect/url",
-            face_required=True,
         )
 
         assert isinstance(response, fraud_models.UbbleContent)
@@ -33,7 +32,6 @@ class StartIdentificationTest:
         assert attributes["reference-data"]["last-name"] == "nom"
         assert attributes["webhook"] == "http://webhook/url/"
         assert attributes["redirect_url"] == "http://redirect/url"
-        assert attributes["face_required"] is True
 
     def test_start_identification_connection_error(self, ubble_mock_connection_error):
         with pytest.raises(exceptions.IdentificationServiceUnavailable):
@@ -45,7 +43,6 @@ class StartIdentificationTest:
                 last_name="nom",
                 webhook_url="http://webhook/url/",
                 redirect_url="http://redirect/url",
-                face_required=True,
             )
 
         assert ubble_mock_connection_error.call_count == 1
@@ -60,7 +57,6 @@ class StartIdentificationTest:
                 last_name="nom",
                 webhook_url="http://webhook/url/",
                 redirect_url="http://redirect/url",
-                face_required=True,
             )
 
         assert ubble_mock_http_error_status.call_count == 1
