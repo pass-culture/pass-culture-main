@@ -14,6 +14,7 @@ from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.categories import subcategories
 from pcapi.core.educational import exceptions as educational_exceptions
+import pcapi.core.mails.testing as mails_testing
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offers import api
 from pcapi.core.offers import exceptions as offer_exceptions
@@ -1086,11 +1087,12 @@ class DeleteStockTest:
         assert stock.isSoftDeleted
         mocked_async_index_offer_ids.assert_called_once_with([stock.offerId])
 
-    @mock.patch("pcapi.domain.user_emails.send_offerer_bookings_recap_email_after_offerer_cancellation")
-    @mock.patch("pcapi.core.offers.api.send_booking_cancellation_by_pro_to_beneficiary_email")
-    def test_delete_stock_cancel_bookings_and_send_emails(self, mocked_send_to_beneficiaries, mocked_send_to_offerer):
-        stock = offer_factories.EventStockFactory()
-        booking1 = bookings_factories.IndividualBookingFactory(stock=stock)
+    def test_delete_stock_cancel_bookings_and_send_emails(self):
+        stock = offer_factories.EventStockFactory(offer__bookingEmail="offerer@example.com")
+        booking1 = bookings_factories.IndividualBookingFactory(
+            stock=stock,
+            individualBooking__user__email="beneficiary@example.com",
+        )
         booking2 = bookings_factories.CancelledIndividualBookingFactory(stock=stock)
         booking3 = bookings_factories.UsedIndividualBookingFactory(stock=stock)
 
@@ -1111,8 +1113,9 @@ class DeleteStockTest:
         assert not booking3.isCancelled  # unchanged
         assert not booking3.cancellationReason
 
-        assert mocked_send_to_beneficiaries.mock_calls == [mock.call(booking1)]
-        assert mocked_send_to_offerer.mock_calls == [mock.call([booking1])]
+        assert len(mails_testing.outbox) == 2
+        assert mails_testing.outbox[0].sent_data["To"] == "beneficiary@example.com"
+        assert mails_testing.outbox[1].sent_data["To"] == "offerer@example.com"
 
         assert push_testing.requests[-1] == {
             "group_id": "Cancel_booking",

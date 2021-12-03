@@ -69,7 +69,6 @@ from pcapi.routes.serialization.offers_serialize import PostOfferBodyModel
 from pcapi.routes.serialization.stock_serialize import EducationalStockCreationBodyModel
 from pcapi.routes.serialization.stock_serialize import StockCreationBodyModel
 from pcapi.routes.serialization.stock_serialize import StockEditionBodyModel
-from pcapi.utils import mailing
 from pcapi.utils.human_ids import dehumanize
 from pcapi.utils.rest import check_user_has_access_to_offerer
 from pcapi.utils.rest import load_or_raise_error
@@ -410,18 +409,11 @@ def _notify_beneficiaries_upon_stock_edit(stock: Stock):
         check_event_is_in_more_than_48_hours = stock.beginningDatetime > date_in_two_days
         if check_event_is_in_more_than_48_hours:
             bookings = _invalidate_bookings(bookings)
-        try:
-            user_emails.send_batch_stock_postponement_emails_to_users(bookings)
-        except mailing.MailServiceException as exc:
-            # fmt: off
-            logger.exception(
+        if not user_emails.send_batch_stock_postponement_emails_to_users(bookings):
+            logger.warning(
                 "Could not notify beneficiaries about update of stock",
-                extra={
-                    "exc": str(exc),
-                    "stock": stock.id,
-                }
+                extra={"stock": stock.id},
             )
-            # fmt: on
 
 
 def upsert_stocks(
@@ -635,26 +627,15 @@ def delete_stock(stock: Stock) -> None:
     )
     if cancelled_bookings:
         for booking in cancelled_bookings:
-            try:
-                send_booking_cancellation_by_pro_to_beneficiary_email(booking)
-            except mailing.MailServiceException as exc:
-                logger.exception(
+            if not send_booking_cancellation_by_pro_to_beneficiary_email(booking):
+                logger.warning(
                     "Could not notify beneficiary about deletion of stock",
-                    extra={
-                        "exc": str(exc),
-                        "stock": stock.id,
-                        "booking": booking.id,
-                    },
+                    extra={"stock": stock.id, "booking": booking.id},
                 )
-        try:
-            user_emails.send_offerer_bookings_recap_email_after_offerer_cancellation(cancelled_bookings)
-        except mailing.MailServiceException as exc:
-            logger.exception(
+        if not user_emails.send_offerer_bookings_recap_email_after_offerer_cancellation(cancelled_bookings):
+            logger.warning(
                 "Could not notify offerer about deletion of stock",
-                extra={
-                    "exc": str(exc),
-                    "stock": stock.id,
-                },
+                extra={"stock": stock.id},
             )
 
         send_cancel_booking_notification.delay([booking.id for booking in cancelled_bookings])

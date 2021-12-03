@@ -12,10 +12,6 @@ from pcapi.utils.module_loading import import_string
 from . import models
 
 
-class MailServiceException(Exception):
-    pass
-
-
 # TODO: CorentinN - remove this when all transactional emails use Sendinblue
 def get_email_backend(send_with_sendinblue: bool) -> str:
     if send_with_sendinblue and FeatureToggle.ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS.is_active():

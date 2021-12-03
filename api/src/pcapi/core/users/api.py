@@ -64,11 +64,6 @@ from pcapi.tasks.account import VerifyIdentityDocumentRequest
 from pcapi.tasks.account import verify_identity_document
 from pcapi.utils import phone_number as phone_number_utils
 
-
-logger = logging.getLogger(__name__)
-
-from pcapi.utils.mailing import MailServiceException
-
 from . import constants
 from . import exceptions
 from . import models
@@ -596,10 +591,11 @@ def create_pro_user_and_offerer(pro_user: ProUserCreationBodyModel) -> User:
 
     repository.save(*objects_to_save)
 
-    try:
-        old_user_emails.send_pro_user_validation_email(new_pro_user)
-    except MailServiceException:
-        logger.exception("Could not send validation email when creating pro user=%s", new_pro_user.id)
+    if not old_user_emails.send_pro_user_validation_email(new_pro_user):
+        logger.warning(
+            "Could not send validation email when creating pro user",
+            extra={"user": new_pro_user.id},
+        )
 
     return new_pro_user
 

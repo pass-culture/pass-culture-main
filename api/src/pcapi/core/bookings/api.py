@@ -33,7 +33,6 @@ from pcapi.models.feature import FeatureToggle
 from pcapi.models.payment import Payment
 from pcapi.repository import repository
 from pcapi.repository import transaction
-from pcapi.utils.mailing import MailServiceException
 from pcapi.workers.push_notification_job import send_cancel_booking_notification
 from pcapi.workers.user_emails_job import send_booking_cancellation_emails_to_user_and_offerer_job
 
@@ -128,14 +127,16 @@ def book_offer(
         },
     )
 
-    try:
-        user_emails.send_individual_booking_confirmation_email_to_offerer(individual_booking)
-    except MailServiceException as error:
-        logger.exception("Could not send booking=%s confirmation email to offerer: %s", booking.id, error)
-    try:
-        user_emails.send_individual_booking_confirmation_email_to_beneficiary(individual_booking)
-    except MailServiceException as error:
-        logger.exception("Could not send booking=%s confirmation email to beneficiary: %s", booking.id, error)
+    if not user_emails.send_individual_booking_confirmation_email_to_offerer(individual_booking):
+        logger.warning(
+            "Could not send booking confirmation email to offerer",
+            extra={"booking": booking.id},
+        )
+    if not user_emails.send_individual_booking_confirmation_email_to_beneficiary(individual_booking):
+        logger.warning(
+            "Could not send booking confirmation email to beneficiary",
+            extra={"booking": booking.id},
+        )
 
     search.async_index_offer_ids([stock.offerId])
 
@@ -243,10 +244,11 @@ def cancel_booking_for_fraud(booking: Booking) -> None:
     _cancel_booking(booking, BookingCancellationReasons.FRAUD)
     logger.info("Cancelled booking for fraud reason", extra={"booking": booking.id})
 
-    try:
-        user_emails.send_booking_cancellation_emails_to_user_and_offerer(booking, booking.cancellationReason)
-    except MailServiceException as error:
-        logger.exception("Could not send booking=%s cancellation emails to offerer: %s", booking.id, error)
+    if not user_emails.send_booking_cancellation_emails_to_user_and_offerer(booking, booking.cancellationReason):
+        logger.warning(
+            "Could not send booking cancellation emails to offerer",
+            extra={"booking": booking.id},
+        )
 
 
 def cancel_booking_on_user_requested_account_suspension(booking: Booking) -> None:
@@ -254,11 +256,10 @@ def cancel_booking_on_user_requested_account_suspension(booking: Booking) -> Non
     _cancel_booking(booking, BookingCancellationReasons.BENEFICIARY)
     logger.info("Cancelled booking on user-requested account suspension", extra={"booking": booking.id})
 
-    try:
-        user_emails.send_booking_cancellation_emails_to_user_and_offerer(booking, booking.cancellationReason)
-    except MailServiceException as error:
-        logger.exception(
-            "Could not send booking=%s cancellation emails to offerer and beneficiary: %s", booking.id, error
+    if not user_emails.send_booking_cancellation_emails_to_user_and_offerer(booking, booking.cancellationReason):
+        logger.warning(
+            "Could not send booking= cancellation emails to offerer and beneficiary",
+            extra={"booking": booking.id},
         )
 
 

@@ -34,7 +34,6 @@ from pcapi.models.payment_status import TransactionStatus
 from pcapi.repository import payment_queries
 from pcapi.repository import repository
 from pcapi.repository.user_queries import get_all_users_wallet_balances
-from pcapi.utils.mailing import MailServiceException
 
 
 logger = logging.getLogger(__name__)
@@ -222,10 +221,8 @@ def send_wallet_balances(recipients: list[str]) -> None:
     csv = generate_wallet_balances_csv(balances)
     logger.info("[BATCH][PAYMENTS] Sending %s wallet balances", len(balances))
     logger.info("[BATCH][PAYMENTS] Recipients of email: %s", recipients)
-    try:
-        send_wallet_balances_email(csv, recipients)
-    except MailServiceException as exception:
-        logger.exception("[BATCH][PAYMENTS] Error while sending users wallet balances email to MailJet: %s", exception)
+    if not send_wallet_balances_email(csv, recipients):
+        logger.warning("[BATCH][PAYMENTS] Could not send users wallet balances email")
 
 
 def _save_file_on_disk(filename_prefix: str, content: str, extension: str) -> pathlib.Path:

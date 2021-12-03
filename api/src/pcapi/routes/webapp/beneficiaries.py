@@ -31,7 +31,6 @@ from pcapi.routes.serialization.beneficiaries import ChangeEmailTokenContent
 from pcapi.routes.serialization.beneficiaries import PatchBeneficiaryBodyModel
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils.login_manager import stamp_session
-from pcapi.utils.mailing import MailServiceException
 from pcapi.utils.rate_limiting import email_rate_limiter
 from pcapi.utils.rate_limiting import ip_rate_limiter
 from pcapi.validation.routes.users import check_valid_signin
@@ -80,13 +79,11 @@ def change_beneficiary_email_request(body: ChangeBeneficiaryEmailRequestBody) ->
         errors.add_error("identifier", "Ce compte n'est pas validé.")
         raise errors from exc
 
-    try:
-        expiration_date = email_api.generate_token_expiration_date()
-        email_api.send_user_emails_for_email_change(user, body.new_email, expiration_date)
-    except MailServiceException as mail_service_exception:
+    expiration_date = email_api.generate_token_expiration_date()
+    if not email_api.send_user_emails_for_email_change(user, body.new_email, expiration_date):
         errors.status_code = 503
         errors.add_error("email", "L'envoi d'email a échoué")
-        raise errors from mail_service_exception
+        raise errors
 
 
 @private_api.route("/beneficiaries/change_email", methods=["PUT"])

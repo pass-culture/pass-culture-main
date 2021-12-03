@@ -22,7 +22,6 @@ from pcapi.repository.user_queries import find_user_by_email
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization.password_serialize import ResetPasswordBodyModel
 from pcapi.serialization.decorator import spectree_serialize
-from pcapi.utils.mailing import MailServiceException
 from pcapi.utils.rest import expect_json_data
 
 
@@ -69,12 +68,8 @@ def post_for_password_token(body: ResetPasswordBodyModel) -> None:
     else:
         send_email = send_reset_password_email_to_pro
 
-    try:
-        send_email(user)
-    except MailServiceException as mail_service_exception:
-        logger.exception(
-            "Could not send reset password email", extra={"user": user.id, "exc": str(mail_service_exception)}
-        )
+    if not send_email(user):
+        logger.warning("Could not send reset password email", extra={"user": user.id})
 
 
 # @debt api-migration
