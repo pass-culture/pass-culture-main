@@ -16,7 +16,7 @@ from pcapi.utils.mailing import make_wallet_balances_email
 
 def maybe_send_offerer_validation_email(offerer: Offerer, user_offerer: UserOfferer) -> bool:
     if offerer.isValidated and user_offerer.isValidated:
-        return None
+        return True
     email = make_validation_email_object(offerer, user_offerer)
     recipients = [settings.ADMINISTRATION_EMAIL_ADDRESS]
     return mails.send(recipients=recipients, data=email)
@@ -66,7 +66,7 @@ def send_offer_validation_notification_to_administration(
         return send_offer_creation_notification_to_administration(offer)
     if validation_status is OfferValidationStatus.REJECTED:
         return send_offer_rejection_notification_to_administration(offer)
-    return False
+    return True
 
 
 def send_suspended_fraudulent_users_email(fraudulent_users: dict, nb_cancelled_bookings: int, recipient: str) -> bool:

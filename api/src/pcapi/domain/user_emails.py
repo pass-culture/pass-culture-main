@@ -63,111 +63,123 @@ from pcapi.utils.mailing import make_pro_user_validation_email
 logger = logging.getLogger(__name__)
 
 
-def send_individual_booking_confirmation_email_to_offerer(individual_booking: IndividualBooking) -> None:
+def send_individual_booking_confirmation_email_to_offerer(individual_booking: IndividualBooking) -> bool:
     offerer_booking_email = individual_booking.booking.stock.offer.bookingEmail
-    if offerer_booking_email:
-        data = retrieve_data_for_offerer_booking_recap_email(individual_booking)
-        mails.send(recipients=[offerer_booking_email], data=data)
+    if not offerer_booking_email:
+        return True
+    data = retrieve_data_for_offerer_booking_recap_email(individual_booking)
+    return mails.send(recipients=[offerer_booking_email], data=data)
 
 
-def send_individual_booking_confirmation_email_to_beneficiary(individual_booking: IndividualBooking) -> None:
+def send_individual_booking_confirmation_email_to_beneficiary(individual_booking: IndividualBooking) -> bool:
     data = retrieve_data_for_beneficiary_booking_confirmation_email(individual_booking)
-    mails.send(recipients=[individual_booking.user.email], data=data)
+    return mails.send(recipients=[individual_booking.user.email], data=data)
 
 
 def send_user_webapp_offer_link_email(user: User, offer: Offer) -> None:
     data = build_data_for_offer_webapp_link(user, offer)
-    mails.send(recipients=[user.email], data=data)
+    return mails.send(recipients=[user.email], data=data)
 
 
-def send_user_driven_cancellation_email_to_offerer(booking: Booking) -> None:
+def send_user_driven_cancellation_email_to_offerer(booking: Booking) -> bool:
     offerer_booking_email = booking.stock.offer.bookingEmail
-    if offerer_booking_email:
-        data = retrieve_offerer_booking_recap_email_data_after_user_cancellation(booking)
-        mails.send(recipients=[offerer_booking_email], data=data)
+    if not offerer_booking_email:
+        return True
+    data = retrieve_offerer_booking_recap_email_data_after_user_cancellation(booking)
+    return mails.send(recipients=[offerer_booking_email], data=data)
 
 
-def send_offerer_driven_cancellation_email_to_offerer(booking: Booking) -> None:
+def send_offerer_driven_cancellation_email_to_offerer(booking: Booking) -> bool:
     offerer_booking_email = booking.stock.offer.bookingEmail
-    if offerer_booking_email:
-        email = make_offerer_driven_cancellation_email_for_offerer(booking)
-        mails.send(recipients=[offerer_booking_email], data=email)
+    if not offerer_booking_email:
+        return True
+    email = make_offerer_driven_cancellation_email_for_offerer(booking)
+    return mails.send(recipients=[offerer_booking_email], data=email)
 
 
 def send_reset_password_email_to_pro(user: User) -> None:
     token = users_api.create_reset_password_token(user)
     data = retrieve_data_for_reset_password_pro_email(user, token)
-    mails.send(recipients=[user.email], data=data)
+    return mails.send(recipients=[user.email], data=data)
 
 
-def send_offerer_bookings_recap_email_after_offerer_cancellation(bookings: list[Booking]) -> None:
+def send_offerer_bookings_recap_email_after_offerer_cancellation(bookings: list[Booking]) -> bool:
     offerer_booking_email = bookings[0].stock.offer.bookingEmail
-    if offerer_booking_email:
-        data = retrieve_offerer_bookings_recap_email_data_after_offerer_cancellation(bookings)
-        mails.send(recipients=[offerer_booking_email], data=data)
+    if not offerer_booking_email:
+        return True
+    data = retrieve_offerer_bookings_recap_email_data_after_offerer_cancellation(bookings)
+    return mails.send(recipients=[offerer_booking_email], data=data)
 
 
 def send_booking_cancellation_emails_to_user_and_offerer(
     booking: Booking,
     reason: BookingCancellationReasons,
-) -> None:
+) -> bool:
     if reason == BookingCancellationReasons.BENEFICIARY and booking.individualBooking is not None:
         send_booking_cancellation_by_beneficiary_email(booking.individualBooking)
-        send_user_driven_cancellation_email_to_offerer(booking)
+        return send_user_driven_cancellation_email_to_offerer(booking)
     if reason == BookingCancellationReasons.OFFERER:
         send_booking_cancellation_by_pro_to_beneficiary_email(booking)
-        send_offerer_driven_cancellation_email_to_offerer(booking)
+        return send_offerer_driven_cancellation_email_to_offerer(booking)
     if reason == BookingCancellationReasons.FRAUD:
-        send_user_driven_cancellation_email_to_offerer(booking)
+        return send_user_driven_cancellation_email_to_offerer(booking)
+    return True
 
 
-def send_expired_bookings_recap_email_to_beneficiary(beneficiary: User, bookings: list[Booking]) -> None:
+def send_expired_bookings_recap_email_to_beneficiary(beneficiary: User, bookings: list[Booking]) -> bool:
+    success = True
     books_bookings, other_bookings = filter_books_bookings(bookings)
-
     if books_bookings:
         books_bookings_data = build_expired_bookings_recap_email_data_for_beneficiary(
             beneficiary, bookings, booking_constants.BOOKS_BOOKINGS_AUTO_EXPIRY_DELAY.days
         )
-        mails.send(recipients=[beneficiary.email], data=books_bookings_data)
+        success &= mails.send(recipients=[beneficiary.email], data=books_bookings_data)
 
     if other_bookings:
         other_bookings_data = build_expired_bookings_recap_email_data_for_beneficiary(
             beneficiary, bookings, booking_constants.BOOKINGS_AUTO_EXPIRY_DELAY.days
         )
-        mails.send(recipients=[beneficiary.email], data=other_bookings_data)
+        success &= mails.send(recipients=[beneficiary.email], data=other_bookings_data)
+
+    return success
 
 
-def send_expired_individual_bookings_recap_email_to_offerer(offerer: Offerer, bookings: list[Booking]) -> None:
+def send_expired_individual_bookings_recap_email_to_offerer(offerer: Offerer, bookings: list[Booking]) -> bool:
     offerer_booking_email = bookings[0].stock.offer.bookingEmail
-    if offerer_booking_email:
-        books_bookings, other_bookings = filter_books_bookings(bookings)
+    if not offerer_booking_email:
+        return True
 
-        if books_bookings:
-            books_bookings_data = build_expired_bookings_recap_email_data_for_offerer(
-                offerer, books_bookings, booking_constants.BOOKS_BOOKINGS_AUTO_EXPIRY_DELAY.days
-            )
-            mails.send(recipients=[offerer_booking_email], data=books_bookings_data)
+    success = True
+    books_bookings, other_bookings = filter_books_bookings(bookings)
+    if books_bookings:
+        books_bookings_data = build_expired_bookings_recap_email_data_for_offerer(
+            offerer, books_bookings, booking_constants.BOOKS_BOOKINGS_AUTO_EXPIRY_DELAY.days
+        )
+        success &= mails.send(recipients=[offerer_booking_email], data=books_bookings_data)
 
-        if other_bookings:
-            other_bookings_data = build_expired_bookings_recap_email_data_for_offerer(
-                offerer, other_bookings, booking_constants.BOOKINGS_AUTO_EXPIRY_DELAY.days
-            )
-            mails.send(recipients=[offerer_booking_email], data=other_bookings_data)
+    if other_bookings:
+        other_bookings_data = build_expired_bookings_recap_email_data_for_offerer(
+            offerer, other_bookings, booking_constants.BOOKINGS_AUTO_EXPIRY_DELAY.days
+        )
+        success &= mails.send(recipients=[offerer_booking_email], data=other_bookings_data)
+
+    return success
 
 
-def send_pro_user_validation_email(user: User) -> None:
+def send_pro_user_validation_email(user: User) -> bool:
     data = make_pro_user_validation_email(user)
-    mails.send(recipients=[user.email], data=data)
+    return mails.send(recipients=[user.email], data=data)
 
 
-def send_admin_user_validation_email(user: User, token: Token) -> None:
+def send_admin_user_validation_email(user: User, token: Token) -> bool:
     data = make_admin_user_validation_email(user, token.value)
-    mails.send(recipients=[user.email], data=data)
+    return mails.send(recipients=[user.email], data=data)
 
 
 def send_soon_to_be_expired_individual_bookings_recap_email_to_beneficiary(
     beneficiary: User, bookings: list[Booking]
-) -> None:
+) -> bool:
+    success = True
     books_bookings, other_bookings = filter_books_bookings(bookings)
     if books_bookings:
         books_bookings_data = build_soon_to_be_expired_bookings_recap_email_data_for_beneficiary(
@@ -177,7 +189,7 @@ def send_soon_to_be_expired_individual_bookings_recap_email_to_beneficiary(
             days_from_booking=booking_constants.BOOKS_BOOKINGS_AUTO_EXPIRY_DELAY.days
             - booking_constants.BOOKS_BOOKINGS_EXPIRY_NOTIFICATION_DELAY.days,
         )
-        mails.send(recipients=[beneficiary.email], data=books_bookings_data)
+        success &= mails.send(recipients=[beneficiary.email], data=books_bookings_data)
 
     if other_bookings:
         other_bookings_data = build_soon_to_be_expired_bookings_recap_email_data_for_beneficiary(
@@ -187,7 +199,9 @@ def send_soon_to_be_expired_individual_bookings_recap_email_to_beneficiary(
             days_from_booking=booking_constants.BOOKINGS_AUTO_EXPIRY_DELAY.days
             - booking_constants.BOOKINGS_EXPIRY_NOTIFICATION_DELAY.days,
         )
-        mails.send(recipients=[beneficiary.email], data=other_bookings_data)
+        success &= mails.send(recipients=[beneficiary.email], data=other_bookings_data)
+
+    return success
 
 
 def send_activation_email(user: User, reset_password_token_life_time: typing.Optional[timedelta] = None) -> bool:
@@ -197,24 +211,25 @@ def send_activation_email(user: User, reset_password_token_life_time: typing.Opt
     return mails.send(recipients=[user.email], data=data)
 
 
-def send_batch_stock_postponement_emails_to_users(bookings: list[Booking]) -> None:
+def send_batch_stock_postponement_emails_to_users(bookings: list[Booking]) -> bool:
+    success = True
     for booking in bookings:
-        send_booking_postponement_emails_to_users(booking)
+        success &= send_booking_postponement_emails_to_users(booking)
+    return success
 
 
-def send_booking_postponement_emails_to_users(booking: Booking) -> None:
+def send_booking_postponement_emails_to_users(booking: Booking) -> bool:
     data = retrieve_data_to_warn_user_after_stock_update_affecting_booking(booking)
-    mails.send(recipients=[booking.email], data=data)
+    return mails.send(recipients=[booking.email], data=data)
 
 
 def send_rejection_email_to_beneficiary_pre_subscription(
     beneficiary_pre_subscription: BeneficiaryPreSubscription,
     beneficiary_is_eligible: bool,
-) -> None:
+) -> bool:
     if not beneficiary_is_eligible:
-        send_not_eligible_beneficiary_pre_subscription_rejected_data(beneficiary_pre_subscription.email)
-    else:
-        send_duplicate_beneficiary_pre_subscription_rejected_data(beneficiary_pre_subscription.email)
+        return send_not_eligible_beneficiary_pre_subscription_rejected_data(beneficiary_pre_subscription.email)
+    return send_duplicate_beneficiary_pre_subscription_rejected_data(beneficiary_pre_subscription.email)
 
 
 def send_newly_eligible_user_email(user: User) -> bool:
@@ -237,7 +252,7 @@ def send_offer_validation_status_update_email(
     if validation_status is OfferValidationStatus.REJECTED:
         offer_data = retrieve_data_for_offer_rejection_email(offer)
         return mails.send(recipients=recipient_emails, data=offer_data)
-    return False
+    return True
 
 
 def send_document_verification_error_email(email: str, code: str) -> bool:
@@ -245,19 +260,19 @@ def send_document_verification_error_email(email: str, code: str) -> bool:
     return mails.send(recipients=[email], data=data)
 
 
-def send_withdrawal_terms_to_newly_validated_offerer(offerer: Offerer) -> None:
+def send_withdrawal_terms_to_newly_validated_offerer(offerer: Offerer) -> bool:
     offerer_email = find_new_offerer_user_email(offerer.id)
     data = retrieve_data_for_new_offerer_validated_withdrawal_terms_email()
-    mails.send(recipients=[offerer_email], data=data)
+    return mails.send(recipients=[offerer_email], data=data)
 
 
-def send_dms_application_emails(users: typing.Iterable[User]) -> None:
+def send_dms_application_emails(users: typing.Iterable[User]) -> bool:
     data = beneficiary_activation.get_dms_application_data()
-    mails.send(recipients=[user.email for user in users], data=data)
+    return mails.send(recipients=[user.email for user in users], data=data)
 
 
 def send_dms_wrong_values_emails(
     user_email: str, postal_code: typing.Optional[str], id_piece_number: typing.Optional[str]
-) -> None:
+) -> bool:
     data = make_dms_wrong_values_data(postal_code, id_piece_number)
-    mails.send(recipients=[user_email], data=data)
+    return mails.send(recipients=[user_email], data=data)
