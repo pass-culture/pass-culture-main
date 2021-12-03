@@ -125,7 +125,7 @@ class GetEducationalOffererVenueResponseModel(BaseModel):
     city: Optional[str]
     id: str
     isVirtual: bool
-    publicName: str
+    publicName: Optional[str]
     postalCode: Optional[str]
     audioDisabilityCompliant: Optional[bool]
     mentalDisabilityCompliant: Optional[bool]
