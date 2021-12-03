@@ -174,7 +174,6 @@ class AppSearchBackend:
     result_fields = {
         field: {"raw": {}}
         for field in [
-            "category",
             "dates",
             "id",
             "is_digital",
@@ -202,9 +201,7 @@ class AppSearchBackend:
         for field, value in criteria.items():
             if field == "text":  # directly set in `search()`
                 continue
-            if field == "categories":
-                filters["category"] = value  # string or list
-            elif field == "position":
+            if field == "position":
                 filters["venue_position"] = {"center": value, "distance": 100, "unit": "km"}
             elif field == "around":
                 filters["venue_position"] = {"center": value["position"], "distance": value["distance"], "unit": "km"}
