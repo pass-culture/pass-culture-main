@@ -106,10 +106,7 @@ class Search extends PureComponent {
     const { parametersFromHome } = location
     return (
       <Switch>
-        <Route
-          exact
-          path={match.path}
-        >
+        <Route exact path={match.path}>
           <Home
             categoryCriterion={categoryCriterion}
             geolocationCriterion={geolocationCriterion}
@@ -130,7 +127,6 @@ class Search extends PureComponent {
             place={place}
             redirectToSearchMainPage={redirectToSearchMainPage}
             search={history.location.search}
-            useAppSearch={this.props.useAppSearch}
             userGeolocation={geolocation}
           />
         </Route>
@@ -180,7 +176,6 @@ Search.propTypes = {
   location: PropTypes.shape().isRequired,
   match: PropTypes.shape().isRequired,
   redirectToSearchMainPage: PropTypes.func.isRequired,
-  useAppSearch: PropTypes.bool.isRequired,
 }
 
 export default Search

@@ -2,11 +2,10 @@ import { useEffect, useState } from 'react'
 import { RECOMMENDATION_ENDPOINT, RECOMMENDATION_TOKEN } from '../../../../utils/config'
 
 import { fetchAlgoliaHits } from '../../../../vendor/algolia/algolia'
-import { fetchHits as fetchAppSearchHits } from '../../../../vendor/search/search'
 
-export const useHomeRecommendedHits = (recommendationModule, geolocation, userId, useAppSearch) => {
+export const useHomeRecommendedHits = (recommendationModule, geolocation, userId) => {
   const recommendedIds = useRecommendedOfferIds(recommendationModule, geolocation, userId)
-  return useRecommendedHits(recommendedIds || [], useAppSearch)
+  return useRecommendedHits(recommendedIds || [])
 }
 
 const useRecommendedOfferIds = (recommendationModule, geolocation, userId) => {
@@ -28,18 +27,17 @@ const useRecommendedOfferIds = (recommendationModule, geolocation, userId) => {
   return offerIds
 }
 
-const useRecommendedHits = (ids, useAppSearch) => {
+const useRecommendedHits = ids => {
   const [recommendedHits, setRecommendedHits] = useState([])
 
   useEffect(() => {
     if (ids.length > 0) {
-      const fetchHits = useAppSearch ? fetchAppSearchHits : fetchAlgoliaHits
-      fetchHits(ids).then(({ results }) => {
+      fetchAlgoliaHits(ids).then(({ results }) => {
         const hitsWithCover = results.filter(hit => hit && hit.offer && !!hit.offer.thumbUrl)
         setRecommendedHits(hitsWithCover)
       })
     }
-  }, [ids, useAppSearch])
+  }, [ids])
 
   return recommendedHits
 }

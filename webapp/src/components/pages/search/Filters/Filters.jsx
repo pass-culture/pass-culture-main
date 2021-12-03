@@ -14,7 +14,6 @@ import Checkbox from './Checkbox/Checkbox'
 import { DATE_FILTER, PRICE_FILTER, TIME_FILTER } from './filtersEnums'
 import { RadioList } from './RadioList/RadioList'
 import Toggle from './Toggle/Toggle'
-import { fetchSearch as fetchAppSearch } from '../../../../vendor/search/search'
 
 export class Filters extends PureComponent {
   constructor(props) {
@@ -91,8 +90,7 @@ export class Filters extends PureComponent {
     const { showFailModal, updateFilteredOffers } = this.props
     const searchAroundUserOrPlace = !searchAround.everywhere
 
-    const fetchHits = this.props.useAppSearch ? fetchAppSearch : fetchAlgolia
-    fetchHits({
+    fetchAlgolia({
       aroundRadius,
       date,
       geolocation,
@@ -626,9 +624,7 @@ export class Filters extends PureComponent {
             </div>
             <ul className="sf-content-wrapper">
               <li>
-                <h4 className="sf-title">
-                  {'Localisation'}
-                </h4>
+                <h4 className="sf-title">{'Localisation'}</h4>
                 {geolocationFilterCounter > 0 && (
                   <span className="sf-selected-filter-counter">
                     {`(${geolocationFilterCounter})`}
@@ -650,12 +646,8 @@ export class Filters extends PureComponent {
               </li>
               {(searchAround.user || searchAround.place) && (
                 <li>
-                  <h4 className="sf-title">
-                    {'Rayon'}
-                  </h4>
-                  <h4 className="sf-slider-indicator">
-                    {`${aroundRadius} km`}
-                  </h4>
+                  <h4 className="sf-title">{'Rayon'}</h4>
+                  <h4 className="sf-slider-indicator">{`${aroundRadius} km`}</h4>
                   <div className="sf-slider-wrapper">
                     <Slider
                       max={100}
@@ -678,9 +670,7 @@ export class Filters extends PureComponent {
                   onClick={this.handleToggleCategories()}
                   type="button"
                 >
-                  <h4>
-                    {'Catégories'}
-                  </h4>
+                  <h4>{'Catégories'}</h4>
                   {numberOfOfferCategoriesSelected > 0 && (
                     <span className="sf-selected-filter-counter">
                       {`(${numberOfOfferCategoriesSelected})`}
@@ -688,10 +678,7 @@ export class Filters extends PureComponent {
                   )}
                 </button>
                 {areCategoriesVisible && (
-                  <ul
-                    className="sf-filter-wrapper"
-                    data-test="sf-categories-filter-wrapper"
-                  >
+                  <ul className="sf-filter-wrapper" data-test="sf-categories-filter-wrapper">
                     {Object.values(CATEGORY_CRITERIA).map(categoryCriterion => {
                       if (categoryCriterion.label !== CATEGORY_CRITERIA.ALL.label) {
                         return (
@@ -720,19 +707,14 @@ export class Filters extends PureComponent {
               </li>
               <li>
                 <div className="sf-title-wrapper">
-                  <h4 className="sf-title">
-                    {"Type d'offres"}
-                  </h4>
+                  <h4 className="sf-title">{"Type d'offres"}</h4>
                   {numberOfOfferTypesSelected > 0 && (
                     <span className="sf-selected-filter-counter">
                       {`(${numberOfOfferTypesSelected})`}
                     </span>
                   )}
                 </div>
-                <ul
-                  className="sf-filter-wrapper"
-                  data-test="sf-offer-types-filter-wrapper"
-                >
+                <ul className="sf-filter-wrapper" data-test="sf-offer-types-filter-wrapper">
                   <li>
                     <Checkbox
                       checked={offerTypes.isDigital}
@@ -768,13 +750,9 @@ export class Filters extends PureComponent {
               <li>
                 <div className="sf-toggle-wrapper">
                   <div>
-                    <h4>
-                      {'Uniquement les offres duo'}
-                    </h4>
+                    <h4>{'Uniquement les offres duo'}</h4>
                     {offerIsDuoCounter > 0 && (
-                      <span className="sf-selected-filter-counter">
-                        {`(${offerIsDuoCounter})`}
-                      </span>
+                      <span className="sf-selected-filter-counter">{`(${offerIsDuoCounter})`}</span>
                     )}
                   </div>
                   <Toggle
@@ -788,9 +766,7 @@ export class Filters extends PureComponent {
               <li>
                 <div className="sf-toggle-wrapper">
                   <div>
-                    <h4>
-                      {'Uniquement les offres gratuites'}
-                    </h4>
+                    <h4>{'Uniquement les offres gratuites'}</h4>
                     {offerIsFreeCounter > 0 && (
                       <span className="sf-selected-filter-counter">
                         {`(${offerIsFreeCounter})`}
@@ -807,13 +783,9 @@ export class Filters extends PureComponent {
               </li>
               {!offerIsFree && (
                 <li className="sf-price-slider-wrapper">
-                  <h4 className="sf-title">
-                    {'Prix'}
-                  </h4>
+                  <h4 className="sf-title">{'Prix'}</h4>
                   {priceRangeCounter > 0 && (
-                    <span className="sf-selected-filter-counter">
-                      {`(${priceRangeCounter})`}
-                    </span>
+                    <span className="sf-selected-filter-counter">{`(${priceRangeCounter})`}</span>
                   )}
                   <span className="sf-slider-indicator">
                     {`${priceRange[0]} € - ${priceRange[1]} €`}
@@ -831,13 +803,9 @@ export class Filters extends PureComponent {
               <li>
                 <div className="sf-toggle-wrapper">
                   <div>
-                    <h4>
-                      {'Uniquement les nouveautés'}
-                    </h4>
+                    <h4>{'Uniquement les nouveautés'}</h4>
                     {offerIsNewCounter > 0 && (
-                      <span className="sf-selected-filter-counter">
-                        {`(${offerIsNewCounter})`}
-                      </span>
+                      <span className="sf-selected-filter-counter">{`(${offerIsNewCounter})`}</span>
                     )}
                   </div>
                   <Toggle
@@ -851,13 +819,9 @@ export class Filters extends PureComponent {
               <li>
                 <div className="sf-toggle-wrapper">
                   <div>
-                    <h4>
-                      {'Date'}
-                    </h4>
+                    <h4>{'Date'}</h4>
                     {dateFilterCounter > 0 && (
-                      <span className="sf-selected-filter-counter">
-                        {`(${dateFilterCounter})`}
-                      </span>
+                      <span className="sf-selected-filter-counter">{`(${dateFilterCounter})`}</span>
                     )}
                     <p className="sf-toggle-information">
                       {'Seules les offres Sorties seront affichées'}
@@ -882,13 +846,9 @@ export class Filters extends PureComponent {
               <li>
                 <div className="sf-toggle-wrapper">
                   <div>
-                    <h4>
-                      {'Heure précise'}
-                    </h4>
+                    <h4>{'Heure précise'}</h4>
                     {timeFilterCounter > 0 && (
-                      <span className="sf-selected-filter-counter">
-                        {`(${timeFilterCounter})`}
-                      </span>
+                      <span className="sf-selected-filter-counter">{`(${timeFilterCounter})`}</span>
                     )}
                     <p className="sf-toggle-information">
                       {'Seules les offres Sorties seront affichées'}
@@ -903,13 +863,8 @@ export class Filters extends PureComponent {
                 </div>
               </li>
               {offerIsFilteredByTime && (
-                <li
-                  className="sf-price-slider-wrapper"
-                  ref={this.timeRangeRef}
-                >
-                  <h4 className="sf-title">
-                    {'Créneau horaire'}
-                  </h4>
+                <li className="sf-price-slider-wrapper" ref={this.timeRangeRef}>
+                  <h4 className="sf-title">{'Créneau horaire'}</h4>
                   <span className="sf-slider-indicator">
                     {this.getTimeRangeIndicator(timeRange)}
                   </span>
@@ -996,6 +951,5 @@ Filters.propTypes = {
   updateFilters: PropTypes.func.isRequired,
   updateNumberOfActiveFilters: PropTypes.func.isRequired,
   updatePlace: PropTypes.func.isRequired,
-  useAppSearch: PropTypes.bool.isRequired,
   userGeolocation: PropTypes.shape().isRequired,
 }

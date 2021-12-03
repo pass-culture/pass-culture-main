@@ -72,7 +72,6 @@ describe('src | components | home', () => {
         publicName: 'Iron Man',
         wallet_balance: 200.1,
       }),
-      useAppSearch: false,
     }
     algoliaMockResponse = {
       hits: [
