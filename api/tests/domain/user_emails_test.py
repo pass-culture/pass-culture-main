@@ -38,7 +38,6 @@ from pcapi.domain.user_emails import send_rejection_email_to_beneficiary_pre_sub
 from pcapi.domain.user_emails import send_reset_password_email_to_pro
 from pcapi.domain.user_emails import send_soon_to_be_expired_individual_bookings_recap_email_to_beneficiary
 from pcapi.domain.user_emails import send_user_driven_cancellation_email_to_offerer
-from pcapi.domain.user_emails import send_warning_to_user_after_pro_booking_cancellation
 from pcapi.domain.user_emails import send_withdrawal_terms_to_newly_validated_offerer
 from pcapi.model_creators.generic_creators import create_booking
 from pcapi.model_creators.generic_creators import create_offerer
@@ -121,41 +120,6 @@ class SendBeneficiaryUserDrivenCancellationEmailToOffererTest:
         assert len(mails_testing.outbox) == 1  # test number of emails sent
         assert mails_testing.outbox[0].sent_data["To"] == "booking@example.com"
         assert mails_testing.outbox[0].sent_data["MJ-TemplateID"] == 780015
-
-
-class SendWarningToBeneficiaryAfterProBookingCancellationTest:
-    def test_should_sends_email_to_beneficiary_when_pro_cancels_booking(self):
-        # Given
-        booking = booking_factories.IndividualBookingFactory(
-            individualBooking__user__email="user@example.com",
-            user__firstName="Jeanne",
-        )
-
-        # When
-        send_warning_to_user_after_pro_booking_cancellation(booking)
-
-        # Then
-        assert mails_testing.outbox[0].sent_data == {
-            "FromEmail": "support@example.com",
-            "MJ-TemplateID": 1116690,
-            "MJ-TemplateLanguage": True,
-            "To": "user@example.com",
-            "Vars": {
-                "event_date": "",
-                "event_hour": "",
-                "is_event": 0,
-                "is_free_offer": 0,
-                "is_thing": 1,
-                "is_online": 0,
-                "offer_name": booking.stock.offer.name,
-                "offer_price": "10.00",
-                "offerer_name": booking.offerer.name,
-                "user_first_name": "Jeanne",
-                "user_last_name": "Doux",
-                "venue_name": booking.venue.name,
-                "env": "-development",
-            },
-        }
 
 
 class SendBookingConfirmationEmailToBeneficiaryTest:
