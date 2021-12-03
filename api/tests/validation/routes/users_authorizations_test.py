@@ -8,7 +8,6 @@ from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_user_offerer
 from pcapi.models.api_errors import ApiErrors
 from pcapi.repository import repository
-from pcapi.utils.token import random_token
 from pcapi.validation.routes.users_authorizations import check_api_key_allows_to_validate_booking
 from pcapi.validation.routes.users_authorizations import check_user_can_validate_bookings
 from pcapi.validation.routes.users_authorizations import check_user_can_validate_bookings_v2
@@ -97,7 +96,7 @@ class CheckApiKeyAllowsToValidateBookingTest:
         repository.save(offerer, user_offerer)
 
         validApiKey = ApiKey()
-        validApiKey.prefix = random_token(64)
+        validApiKey.prefix = "secret"
         validApiKey.offererId = offerer.id
 
         repository.save(validApiKey)
@@ -108,7 +107,7 @@ class CheckApiKeyAllowsToValidateBookingTest:
     def test_raises_exception_when_api_key_is_provided_but_related_offerer_does_not_have_rights_on_booking(self, app):
         # Given
         validApiKey = ApiKey()
-        validApiKey.prefix = random_token(64)
+        validApiKey.prefix = "secret"
         validApiKey.offererId = 67
 
         # When

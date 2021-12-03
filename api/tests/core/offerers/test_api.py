@@ -15,7 +15,6 @@ from pcapi.core.users import factories as users_factories
 from pcapi.models import api_errors
 from pcapi.routes.serialization import venues_serialize
 from pcapi.routes.serialization.offerers_serialize import CreateOffererQueryModel
-from pcapi.utils.token import random_token
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -262,7 +261,7 @@ class ApiKeyTest:
 
     def test_legacy_api_key(self):
         offerer = offers_factories.OffererFactory()
-        value = random_token(64)
+        value = "a very secret key"
         ApiKey(value=value, offerer=offerer)
 
         found_api_key = offerers_api.find_api_key(value)
