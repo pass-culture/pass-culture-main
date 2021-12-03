@@ -6,12 +6,12 @@ from pcapi.emails.offerer_attachment_validation import retrieve_data_for_offerer
 from pcapi.models.user_offerer import UserOfferer
 
 
-def send_validation_confirmation_email_to_pro(offerer: Offerer) -> None:
+def send_validation_confirmation_email_to_pro(offerer: Offerer) -> bool:
     offerer_email = find_new_offerer_user_email(offerer.id)
     data = retrieve_data_for_new_offerer_validation_email(offerer)
-    mails.send(recipients=[offerer_email], data=data)
+    return mails.send(recipients=[offerer_email], data=data)
 
 
-def send_attachment_validation_email_to_pro_offerer(user_offerer: UserOfferer) -> None:
+def send_attachment_validation_email_to_pro_offerer(user_offerer: UserOfferer) -> bool:
     data = retrieve_data_for_offerer_attachment_validation_email(user_offerer.offerer)
-    mails.send(recipients=[user_offerer.user.email], data=data)
+    return mails.send(recipients=[user_offerer.user.email], data=data)

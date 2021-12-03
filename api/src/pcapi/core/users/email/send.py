@@ -27,6 +27,7 @@ def send_user_emails_for_email_change(user: User, new_email: str, expiration_dat
     if user_with_new_email:
         return
 
-    send_information_email_change_email(user)
+    success = send_information_email_change_email(user)
     link_for_email_change = _build_link_for_email_change(user.email, new_email, expiration_date)
-    send_confirmation_email_change_email(user, new_email, link_for_email_change)
+    success &= send_confirmation_email_change_email(user, new_email, link_for_email_change)
+    return success

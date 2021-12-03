@@ -20,6 +20,6 @@ def make_fraud_suspicion_data() -> Union[dict, SendinblueTransactionalEmailData]
 
 def send_fraud_suspicion_email(
     beneficiary_pre_subscription: BeneficiaryPreSubscription,
-) -> None:
+) -> bool:
     data = make_fraud_suspicion_data()
-    mails.send(recipients=[beneficiary_pre_subscription.email], data=data)
+    return mails.send(recipients=[beneficiary_pre_subscription.email], data=data)
