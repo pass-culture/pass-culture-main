@@ -88,7 +88,6 @@ def start_identification(
     last_name: str,
     webhook_url: str,
     redirect_url: str,
-    face_required: bool,
 ) -> fraud_models.UbbleContent:
     session = configure_session()
 
@@ -107,7 +106,6 @@ def start_identification(
                 },
                 "webhook": webhook_url,
                 "redirect_url": redirect_url,
-                "face_required": face_required,
             },
         }
     }
