@@ -1,27 +1,25 @@
-import { render, screen, waitFor } from "@testing-library/react"
-import React from "react"
-import { QueryCache, QueryClient, QueryClientProvider } from "react-query"
+import { render, screen, waitFor } from "@testing-library/react";
+import React from "react";
+import { QueryCache, QueryClient, QueryClientProvider } from "react-query";
 
-import * as pcapi from "repository/pcapi/pcapi"
-import { OfferType, ResultType, Role } from "utils/types"
+import * as pcapi from "repository/pcapi/pcapi";
+import { OfferType, ResultType, Role } from "utils/types";
 
-import { OffersComponent as Offers } from "../Offers"
+import { OffersComponent as Offers } from "../Offers";
 
 jest.mock("repository/pcapi/pcapi", () => ({
   getOffer: jest.fn(),
-}))
+}));
 
-const queryCache = new QueryCache()
-const queryClient = new QueryClient({ queryCache })
+const queryCache = new QueryCache();
+const queryClient = new QueryClient({ queryCache });
 const wrapper = ({ children }) => (
-  <QueryClientProvider client={queryClient}>
-    {children}
-  </QueryClientProvider>
-)
+  <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+);
 
-const mockedPcapi = pcapi as jest.Mocked<typeof pcapi>
+const mockedPcapi = pcapi as jest.Mocked<typeof pcapi>;
 
-const appSearchFakeResults: ResultType[] = [
+const searchFakeResults: ResultType[] = [
   {
     objectID: "479",
     offer: {
@@ -46,15 +44,15 @@ const appSearchFakeResults: ResultType[] = [
       publicName: "Le Petit Coco",
     },
   },
-]
+];
 
 describe("offers", () => {
-  let offerInParis: OfferType
-  let offerInCayenne: OfferType
-  let otherOffer: OfferType
+  let offerInParis: OfferType;
+  let offerInCayenne: OfferType;
+  let otherOffer: OfferType;
 
   beforeEach(() => {
-    queryCache.clear()
+    queryCache.clear();
     offerInParis = {
       id: 479,
       name: "Une chouette à la mer",
@@ -81,7 +79,7 @@ describe("offers", () => {
       },
       isSoldOut: false,
       isExpired: false,
-    }
+    };
 
     offerInCayenne = {
       id: 480,
@@ -109,7 +107,7 @@ describe("offers", () => {
       },
       isSoldOut: false,
       isExpired: false,
-    }
+    };
 
     otherOffer = {
       id: 481,
@@ -137,40 +135,36 @@ describe("offers", () => {
       },
       isSoldOut: false,
       isExpired: false,
-    }
-  })
+    };
+  });
 
   it("should display two offers with their respective stocks when two bookable offers", async () => {
     // Given
-    mockedPcapi.getOffer.mockResolvedValueOnce(offerInParis)
-    mockedPcapi.getOffer.mockResolvedValueOnce(offerInCayenne)
+    mockedPcapi.getOffer.mockResolvedValueOnce(offerInParis);
+    mockedPcapi.getOffer.mockResolvedValueOnce(offerInCayenne);
 
     // When
-    render(<Offers
-      hits={appSearchFakeResults}
-      userRole={Role.redactor}
-           />, { wrapper })
+    render(<Offers hits={searchFakeResults} userRole={Role.redactor} />, {
+      wrapper,
+    });
 
     // Then
-    const listItemsInOffer = await screen.findAllByRole("listitem")
-    expect(listItemsInOffer).toHaveLength(4)
-    expect(screen.getByText(offerInParis.name)).toBeInTheDocument()
-    expect(screen.getByText(offerInCayenne.name)).toBeInTheDocument()
-  })
+    const listItemsInOffer = await screen.findAllByRole("listitem");
+    expect(listItemsInOffer).toHaveLength(4);
+    expect(screen.getByText(offerInParis.name)).toBeInTheDocument();
+    expect(screen.getByText(offerInCayenne.name)).toBeInTheDocument();
+  });
 
   it("should remove previous rendered offers on results update", async () => {
     // Given
-    mockedPcapi.getOffer.mockResolvedValueOnce(offerInParis)
-    mockedPcapi.getOffer.mockResolvedValueOnce(offerInCayenne)
+    mockedPcapi.getOffer.mockResolvedValueOnce(offerInParis);
+    mockedPcapi.getOffer.mockResolvedValueOnce(offerInCayenne);
     const { rerender } = render(
-      <Offers
-        hits={appSearchFakeResults}
-        userRole={Role.redactor}
-      />,
+      <Offers hits={searchFakeResults} userRole={Role.redactor} />,
       { wrapper }
-    )
-    mockedPcapi.getOffer.mockResolvedValueOnce(otherOffer)
-    const otherAppSearchResult: ResultType = {
+    );
+    mockedPcapi.getOffer.mockResolvedValueOnce(otherOffer);
+    const otherSearchResult: ResultType = {
       objectID: "481",
       offer: {
         dates: [new Date("2021-09-29T13:54:30+00:00").valueOf()],
@@ -181,37 +175,31 @@ describe("offers", () => {
         name: "Un autre lieu",
         publicName: "Un autre lieu public",
       },
-    }
+    };
 
     // When
-    rerender(<Offers
-      hits={[otherAppSearchResult]}
-      userRole={Role.redactor}
-             />)
+    rerender(<Offers hits={[otherSearchResult]} userRole={Role.redactor} />);
 
     // Then
-    const otherOfferName = await screen.findByText(otherOffer.name)
-    expect(otherOfferName).toBeInTheDocument()
-    expect(screen.getAllByRole("listitem")).toHaveLength(2)
-    expect(screen.queryByText(offerInParis.name)).not.toBeInTheDocument()
-    expect(screen.queryByText(offerInCayenne.name)).not.toBeInTheDocument()
-  })
+    const otherOfferName = await screen.findByText(otherOffer.name);
+    expect(otherOfferName).toBeInTheDocument();
+    expect(screen.getAllByRole("listitem")).toHaveLength(2);
+    expect(screen.queryByText(offerInParis.name)).not.toBeInTheDocument();
+    expect(screen.queryByText(offerInCayenne.name)).not.toBeInTheDocument();
+  });
 
   it("should show most recent results and cancel previous request", async () => {
     // Given
     mockedPcapi.getOffer.mockReturnValueOnce(
       new Promise((resolve) => setTimeout(() => resolve(offerInParis), 500))
-    )
-    mockedPcapi.getOffer.mockResolvedValueOnce(offerInCayenne)
+    );
+    mockedPcapi.getOffer.mockResolvedValueOnce(offerInCayenne);
     const { rerender } = render(
-      <Offers
-        hits={appSearchFakeResults}
-        userRole={Role.redactor}
-      />,
+      <Offers hits={searchFakeResults} userRole={Role.redactor} />,
       { wrapper }
-    )
-    mockedPcapi.getOffer.mockResolvedValueOnce(otherOffer)
-    const otherAppSearchResult: ResultType = {
+    );
+    mockedPcapi.getOffer.mockResolvedValueOnce(otherOffer);
+    const otherSearchResult: ResultType = {
       objectID: "481",
       offer: {
         dates: [new Date("2021-09-29T13:54:30+00:00").valueOf()],
@@ -222,139 +210,128 @@ describe("offers", () => {
         name: "Un autre lieu",
         publicName: "Un autre lieu public",
       },
-    }
+    };
 
     // When
-    rerender(<Offers
-      hits={[otherAppSearchResult]}
-      userRole={Role.redactor}
-             />)
+    rerender(<Offers hits={[otherSearchResult]} userRole={Role.redactor} />);
 
     // Then
-    const otherOfferName = await screen.findByText(otherOffer.name)
-    expect(otherOfferName).toBeInTheDocument()
-    expect(screen.getAllByRole("listitem")).toHaveLength(2)
+    const otherOfferName = await screen.findByText(otherOffer.name);
+    expect(otherOfferName).toBeInTheDocument();
+    expect(screen.getAllByRole("listitem")).toHaveLength(2);
 
     await expect(async () => {
       await waitFor(() =>
         expect(screen.getByText(offerInParis.name)).toBeInTheDocument()
-      )
-    }).rejects.toStrictEqual(expect.anything())
-  })
+      );
+    }).rejects.toStrictEqual(expect.anything());
+  });
 
   it("should show a loader while waiting for response", async () => {
     // Given
     mockedPcapi.getOffer.mockReturnValueOnce(
       new Promise((resolve) => setTimeout(() => resolve(offerInParis), 500))
-    )
-    mockedPcapi.getOffer.mockResolvedValueOnce(offerInCayenne)
+    );
+    mockedPcapi.getOffer.mockResolvedValueOnce(offerInCayenne);
 
     // When
-    render(<Offers
-      hits={appSearchFakeResults}
-      userRole={Role.redactor}
-           />, { wrapper })
+    render(<Offers hits={searchFakeResults} userRole={Role.redactor} />, {
+      wrapper,
+    });
 
     // Then
-    const loader = await screen.findByText("Recherche en cours")
-    expect(loader).toBeInTheDocument()
-    const offerInParisName = await screen.findByText(offerInParis.name)
-    expect(offerInParisName).toBeInTheDocument()
-  })
+    const loader = await screen.findByText("Recherche en cours");
+    expect(loader).toBeInTheDocument();
+    const offerInParisName = await screen.findByText(offerInParis.name);
+    expect(offerInParisName).toBeInTheDocument();
+  });
 
   it("should display only non sold-out offers", async () => {
     // Given
-    offerInParis.isSoldOut = true
-    mockedPcapi.getOffer.mockResolvedValueOnce(offerInParis)
-    mockedPcapi.getOffer.mockResolvedValueOnce(offerInCayenne)
+    offerInParis.isSoldOut = true;
+    mockedPcapi.getOffer.mockResolvedValueOnce(offerInParis);
+    mockedPcapi.getOffer.mockResolvedValueOnce(offerInCayenne);
 
     // When
-    render(<Offers
-      hits={appSearchFakeResults}
-      userRole={Role.redactor}
-           />, { wrapper })
+    render(<Offers hits={searchFakeResults} userRole={Role.redactor} />, {
+      wrapper,
+    });
 
     // Then
-    const listItemsInOffer = await screen.findAllByRole("listitem")
-    expect(listItemsInOffer).toHaveLength(2)
-    expect(screen.getByText(offerInCayenne.name)).toBeInTheDocument()
-  })
+    const listItemsInOffer = await screen.findAllByRole("listitem");
+    expect(listItemsInOffer).toHaveLength(2);
+    expect(screen.getByText(offerInCayenne.name)).toBeInTheDocument();
+  });
 
   it("should not display expired offer", async () => {
     // Given
-    offerInParis.isExpired = true
-    mockedPcapi.getOffer.mockResolvedValueOnce(offerInParis)
-    mockedPcapi.getOffer.mockResolvedValueOnce(offerInCayenne)
+    offerInParis.isExpired = true;
+    mockedPcapi.getOffer.mockResolvedValueOnce(offerInParis);
+    mockedPcapi.getOffer.mockResolvedValueOnce(offerInCayenne);
 
     // When
-    render(<Offers
-      hits={appSearchFakeResults}
-      userRole={Role.redactor}
-           />, { wrapper })
+    render(<Offers hits={searchFakeResults} userRole={Role.redactor} />, {
+      wrapper,
+    });
 
     // Then
-    const listItemsInOffer = await screen.findAllByRole("listitem")
-    expect(listItemsInOffer).toHaveLength(2)
-    expect(screen.getByText(offerInCayenne.name)).toBeInTheDocument()
-  })
+    const listItemsInOffer = await screen.findAllByRole("listitem");
+    expect(listItemsInOffer).toHaveLength(2);
+    expect(screen.getByText(offerInCayenne.name)).toBeInTheDocument();
+  });
 
   describe("should display no results page", () => {
     it("when there are no results", async () => {
       // When
-      render(<Offers
-        hits={[]}
-        userRole={Role.redactor}
-             />, { wrapper })
+      render(<Offers hits={[]} userRole={Role.redactor} />, { wrapper });
 
       // Then
       const errorMessage = await screen.findByText(
         "Aucun résultat trouvé pour cette recherche."
-      )
-      expect(errorMessage).toBeInTheDocument()
-      const listItemsInOffer = screen.queryAllByRole("listitem")
-      expect(listItemsInOffer).toHaveLength(0)
-    })
+      );
+      expect(errorMessage).toBeInTheDocument();
+      const listItemsInOffer = screen.queryAllByRole("listitem");
+      expect(listItemsInOffer).toHaveLength(0);
+    });
 
     it("when all offers are not bookable", async () => {
       // Given
-      offerInParis.isExpired = true
-      offerInCayenne.isSoldOut = true
-      mockedPcapi.getOffer.mockResolvedValueOnce(offerInParis)
-      mockedPcapi.getOffer.mockResolvedValueOnce(offerInCayenne)
+      offerInParis.isExpired = true;
+      offerInCayenne.isSoldOut = true;
+      mockedPcapi.getOffer.mockResolvedValueOnce(offerInParis);
+      mockedPcapi.getOffer.mockResolvedValueOnce(offerInCayenne);
 
       // When
-      render(<Offers
-        hits={appSearchFakeResults}
-        userRole={Role.redactor}
-             />, { wrapper })
+      render(<Offers hits={searchFakeResults} userRole={Role.redactor} />, {
+        wrapper,
+      });
 
       // Then
       const errorMessage = await screen.findByText(
         "Aucun résultat trouvé pour cette recherche."
-      )
-      expect(errorMessage).toBeInTheDocument()
-      const listItemsInOffer = screen.queryAllByRole("listitem")
-      expect(listItemsInOffer).toHaveLength(0)
-    })
+      );
+      expect(errorMessage).toBeInTheDocument();
+      const listItemsInOffer = screen.queryAllByRole("listitem");
+      expect(listItemsInOffer).toHaveLength(0);
+    });
 
     it("when offers are not found", async () => {
       // Given
-      mockedPcapi.getOffer.mockRejectedValue("Offre inconnue")
-      mockedPcapi.getOffer.mockRejectedValue("Offre inconnue")
+      mockedPcapi.getOffer.mockRejectedValue("Offre inconnue");
+      mockedPcapi.getOffer.mockRejectedValue("Offre inconnue");
 
       // When
-      render(<Offers
-        hits={appSearchFakeResults}
-        userRole={Role.redactor}
-             />, { wrapper })
+      render(<Offers hits={searchFakeResults} userRole={Role.redactor} />, {
+        wrapper,
+      });
 
       // Then
       const errorMessage = await screen.findByText(
         "Aucun résultat trouvé pour cette recherche."
-      )
-      expect(errorMessage).toBeInTheDocument()
-      const listItemsInOffer = screen.queryAllByRole("listitem")
-      expect(listItemsInOffer).toHaveLength(0)
-    })
-  })
-})
+      );
+      expect(errorMessage).toBeInTheDocument();
+      const listItemsInOffer = screen.queryAllByRole("listitem");
+      expect(listItemsInOffer).toHaveLength(0);
+    });
+  });
+});
