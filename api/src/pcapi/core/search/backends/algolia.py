@@ -267,7 +267,6 @@ class AlgoliaBackend(base.SearchBackend):
             "objectID": offer.id,
             "offer": {
                 "artist": artist.strip() or None,
-                "category": offer.offer_category_name_for_app,
                 "rankingWeight": offer.rankingWeight,
                 "dateCreated": date_created,
                 "dates": sorted(dates),
