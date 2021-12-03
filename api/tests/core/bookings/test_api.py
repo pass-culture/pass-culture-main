@@ -29,7 +29,6 @@ import pcapi.core.users.factories as users_factories
 from pcapi.models import api_errors
 from pcapi.models import db
 import pcapi.notifications.push.testing as push_testing
-from pcapi.utils.token import random_token
 
 from tests.conftest import clean_database
 
@@ -696,7 +695,7 @@ class MarkAsUnusedTest:
 class GenerateQrCodeTest:
     @mock.patch("qrcode.QRCode")
     def test_correct_technical_parameters(self, build_qr_code):
-        api.generate_qr_code(random_token())
+        api.generate_qr_code("TOKEN")
         build_qr_code.assert_called_once_with(
             version=2,
             error_correction=3,

@@ -1,4 +1,5 @@
 import logging
+import random
 
 from pcapi.core.categories import subcategories
 from pcapi.domain.music_types import music_types
@@ -12,7 +13,6 @@ from pcapi.sandboxes.scripts.mocks.user_mocks import MOCK_LAST_NAMES
 
 
 logger = logging.getLogger(__name__)
-from pcapi.utils.token import random_token
 
 
 THINGS_PER_SUBCATEGORY = 7
@@ -73,7 +73,7 @@ def create_industrial_thing_products():
                     music_sub_type = music_type["children"][music_sub_type_index]
                     extraData["musicSubType"] = str(music_sub_type["code"])
                 elif conditionalField == "isbn":
-                    extraData[conditionalField] = random_token(13)
+                    extraData[conditionalField] = "".join(random.choices("123456789-", k=13))
                 extra_data_index += 1
             thing_product.extraData = extraData
             thing_products_by_name[name] = thing_product

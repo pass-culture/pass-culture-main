@@ -19,7 +19,6 @@ from pcapi.scripts.offerer.file_import import fill_offerer_from
 from pcapi.scripts.offerer.file_import import fill_user_from
 from pcapi.scripts.offerer.file_import import fill_user_offerer_from
 from pcapi.scripts.offerer.file_import import iterate_rows_for_user_offerers
-from pcapi.utils.token import random_token
 
 
 class IterateRowForUserOfferersTest:
@@ -29,9 +28,9 @@ class IterateRowForUserOfferersTest:
         create_activated_user_offerer.return_value = UserOfferer()
         csv_reader = [
             ["nom", "prénom", "email"],
-            ["Mortimer", "Philip", "%s@bletchley.co.uk" % random_token()],
-            ["Mortimer", "Philip", "%s@bletchley.co.uk" % random_token()],
-            ["Mortimer", "Philip", "%s@bletchley.co.uk" % random_token()],
+            ["Mortimer", "Philip", "1@example.com"],
+            ["Mortimer", "Philip", "2@example.com"],
+            ["Mortimer", "Philip", "3@example.com"],
         ]
 
         # when
@@ -47,9 +46,9 @@ class IterateRowForUserOfferersTest:
         csv_reader = [
             ["nom", "prénom", "email"],
             [],
-            ["Mortimer", "Philip", "%s@bletchley.co.uk" % random_token()],
+            ["Mortimer", "Philip", "1@example.com"],
             [""],
-            ["Mortimer", "Philip", "%s@bletchley.co.uk" % random_token()],
+            ["Mortimer", "Philip", "2@example.com"],
         ]
 
         # when
