@@ -65,6 +65,8 @@ class BusinessUnit(Model):
     cashflowFrequency = sqla.Column(db_utils.MagicEnum(Frequency), nullable=False, default=Frequency.EVERY_TWO_WEEKS)
     invoiceFrequency = sqla.Column(db_utils.MagicEnum(Frequency), nullable=False, default=Frequency.EVERY_TWO_WEEKS)
 
+    invoices = sqla_orm.relationship("Invoice", back_populates="businessUnit")
+
 
 class Pricing(Model):
     id = sqla.Column(sqla.BigInteger, primary_key=True, autoincrement=True)
@@ -230,3 +232,17 @@ class CashflowBatch(Model):
     id = sqla.Column(sqla.BigInteger, primary_key=True, autoincrement=True)
     creationDate = sqla.Column(sqla.DateTime, nullable=False, server_default=sqla.func.now())
     cutoff = sqla.Column(sqla.DateTime, nullable=False, unique=True)
+
+
+class Invoice(Model):
+    """An invoice is linked to one or more cashflows and shows a summary
+    of their related pricings.
+    """
+
+    id = sqla.Column(sqla.BigInteger, primary_key=True, autoincrement=True)
+    date = sqla.Column(sqla.DateTime, nullable=False, server_default=sqla.func.now())
+    reference = sqla.Column(sqla.Text, nullable=False, unique=True)
+    businessUnitId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("business_unit.id"), index=True, nullable=False)
+    businessUnit = sqla_orm.relationship("BusinessUnit", back_populates="invoices")
+    # See the note about `amount` at the beginning of this module.
+    amount = sqla.Column(sqla.Integer, nullable=False)
