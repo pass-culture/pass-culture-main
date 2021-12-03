@@ -23,6 +23,9 @@ import pcapi.core.bookings.repository as bookings_repository
 from pcapi.core.categories import subcategories
 from pcapi.core.categories.conf import can_create_from_isbn
 from pcapi.core.educational import exceptions as educational_exceptions
+from pcapi.core.mails.transactional.bookings.booking_cancellation_by_pro_to_beneficiary import (
+    send_booking_cancellation_by_pro_to_beneficiary_email,
+)
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers import validation
@@ -544,7 +547,7 @@ def delete_stock(stock: Stock) -> None:
     if cancelled_bookings:
         for booking in cancelled_bookings:
             try:
-                user_emails.send_warning_to_user_after_pro_booking_cancellation(booking)
+                send_booking_cancellation_by_pro_to_beneficiary_email(booking)
             except mailing.MailServiceException as exc:
                 logger.exception(
                     "Could not notify beneficiary about deletion of stock",

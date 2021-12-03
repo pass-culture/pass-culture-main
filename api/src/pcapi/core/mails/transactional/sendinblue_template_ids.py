@@ -27,6 +27,9 @@ class TransactionalEmail(Enum):
     NEW_PASSWORD_REQUEST = Template(id_prod=141, id_not_prod=26, tags=["jeunes_nouveau_mdp"])
     ACCEPTED_AS_BENEFICIARY = Template(id_prod=96, id_not_prod=25, tags=["jeunes_pass_credite_18"])
     ACCEPTED_AS_EAC_BENEFICIARY = Template(id_prod=257, id_not_prod=27, tags=["jeunes_pass_credite_eac"])
+    BOOKING_CANCELLATION_BY_PRO_TO_BENEFICIARY = Template(
+        id_prod=225, id_not_prod=37, tags=["jeunes_offre_annulee_pros"]
+    )
 
 
 @dataclasses.dataclass
