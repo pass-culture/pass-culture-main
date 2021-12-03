@@ -4,6 +4,7 @@ import logging
 from flask import request
 from flask_login import current_user
 from flask_login import login_required
+from sqlalchemy.orm import exc as orm_exc
 
 from pcapi.connectors.api_adage import AdageException
 from pcapi.connectors.api_adage import CulturalPartnerNotFoundException
@@ -23,6 +24,7 @@ from pcapi.routes.serialization.offers_recap_serialize import serialize_offers_r
 from pcapi.routes.serialization.thumbnails_serialize import CreateThumbnailBodyModel
 from pcapi.routes.serialization.thumbnails_serialize import CreateThumbnailResponseModel
 from pcapi.serialization.decorator import spectree_serialize
+from pcapi.utils.human_ids import dehumanize
 from pcapi.workers.update_all_offers_active_status_job import update_all_offers_active_status_job
 
 
@@ -196,6 +198,25 @@ def patch_offer(offer_id: str, body: offers_serialize.PatchOfferBodyModel) -> of
     offer = offers_api.update_offer(offer, **body.dict(exclude_unset=True))
 
     return offers_serialize.OfferResponseIdModel.from_orm(offer)
+
+
+@private_api.route("/offers/educational/<offer_id>", methods=["PATCH"])
+@login_required
+@spectree_serialize(response_model=offers_serialize.OfferResponseIdModel)  # type: ignore
+def edit_educational_offer(
+    offer_id: str, body: offers_serialize.PatchEducationalOfferBodyModel
+) -> offers_serialize.OfferResponseIdModel:
+    try:
+        offer = offers_repository.get_educational_offer_by_id(dehumanize(offer_id))
+
+        check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
+
+        offer = offers_api.update_educational_offer(offer, body.dict(exclude_unset=True))
+
+        return offers_serialize.OfferResponseIdModel.from_orm(offer)
+
+    except orm_exc.NoResultFound:
+        raise ApiErrors({"offerId": "no educational offer has been found with this id"}, 404)
 
 
 @private_api.route("/offers/thumbnail-url-validation", methods=["POST"])
