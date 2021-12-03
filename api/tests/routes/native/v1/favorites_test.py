@@ -112,11 +112,6 @@ class GetTest:
             )
             assert favorites[5]["offer"]["expenseDomains"] == ["all"]
             assert favorites[5]["offer"]["subcategoryId"] == "SEANCE_CINE"
-            assert favorites[5]["offer"]["category"] == {
-                "categoryType": "Event",
-                "label": "Séance de cinéma",
-                "name": "CINEMA",
-            }
 
             # Only stock2b is valid and product has a thumb
             assert favorites[4]["id"] == favorite2.id
@@ -130,11 +125,6 @@ class GetTest:
             )
             assert favorites[4]["offer"]["expenseDomains"] == ["all"]
             assert favorites[4]["offer"]["subcategoryId"] == "SEANCE_CINE"
-            assert favorites[4]["offer"]["category"] == {
-                "categoryType": "Event",
-                "label": "Séance de cinéma",
-                "name": "CINEMA",
-            }
 
             # No date
             assert favorites[3]["id"] == favorite3.id
@@ -145,11 +135,6 @@ class GetTest:
             assert favorites[3]["offer"]["image"] is None
             assert set(favorites[3]["offer"]["expenseDomains"]) == {"physical", "all"}
             assert favorites[3]["offer"]["subcategoryId"] == "SUPPORT_PHYSIQUE_FILM"
-            assert favorites[3]["offer"]["category"] == {
-                "categoryType": "Thing",
-                "label": "Support physique (DVD, Blu-ray...)",
-                "name": "FILM",
-            }
 
             # Offer in the future but past the booking limit
             assert favorites[2]["id"] == favorite4.id
@@ -160,11 +145,6 @@ class GetTest:
             assert favorites[2]["offer"]["image"] is None
             assert favorites[2]["offer"]["expenseDomains"] == ["all"]
             assert favorites[2]["offer"]["subcategoryId"] == "SEANCE_CINE"
-            assert favorites[2]["offer"]["category"] == {
-                "categoryType": "Event",
-                "label": "Séance de cinéma",
-                "name": "CINEMA",
-            }
 
             # Offer in the past, favorite should appear but no price/date are valid
             assert favorites[1]["id"] == favorite5.id
@@ -175,11 +155,6 @@ class GetTest:
             assert favorites[1]["offer"]["image"] is None
             assert favorites[1]["offer"]["expenseDomains"] == ["all"]
             assert favorites[1]["offer"]["subcategoryId"] == "SEANCE_CINE"
-            assert favorites[1]["offer"]["category"] == {
-                "categoryType": "Event",
-                "label": "Séance de cinéma",
-                "name": "CINEMA",
-            }
 
             # best price/same date twice should appear as single price/date
             assert favorites[0]["id"] == favorite6.id
@@ -190,11 +165,6 @@ class GetTest:
             assert favorites[0]["offer"]["image"] is None
             assert favorites[0]["offer"]["expenseDomains"] == ["all"]
             assert favorites[0]["offer"]["subcategoryId"] == "SEANCE_CINE"
-            assert favorites[0]["offer"]["category"] == {
-                "categoryType": "Event",
-                "label": "Séance de cinéma",
-                "name": "CINEMA",
-            }
 
         def test_expired_offer(self, app):
             # Given

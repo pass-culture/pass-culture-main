@@ -5,11 +5,6 @@ from enum import Enum
 from pcapi.core.categories import subcategories
 
 
-class CategoryType(Enum):
-    EVENT = "Event"
-    THING = "Thing"
-
-
 def _make_app_label_list_from_search_group(search_group_name: str):
     return [
         subcategory.app_label
@@ -32,7 +27,5 @@ class Category(Enum):
     SPECTACLE = _make_app_label_list_from_search_group(subcategories.SearchGroups.SPECTACLE.name)
     VISITE = _make_app_label_list_from_search_group(subcategories.SearchGroups.VISITE.name)
 
-
-CategoryNameEnum = Enum("CategoryNameEnum", {category.name: category.name for category in list(Category)})
 
 CATEGORIES_LABEL_DICT = {label: category.name for category in list(Category) for label in category.value}
