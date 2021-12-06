@@ -23,9 +23,9 @@ export const Offer = ({
   offer: OfferType;
 }): JSX.Element => {
   return (
-    <li className="offer-v2">
+    <li className="offer">
       <div
-        className="image-placeholder"
+        className="offer-image-placeholder"
         data-testid="thumb-placeholder"
       >
         <Logo />
@@ -36,16 +36,16 @@ export const Offer = ({
           className="offer-prebooking-button"
           stock={offer.stocks[0]}
         />
-        <div className="header">
-          <h2 className="header-title">
+        <div className="offer-header">
+          <h2 className="offer-header-title">
             {offer.name}
           </h2>
-          <p className="venue-name">
+          <p className="offer-venue-name">
             {offer.venue.publicName || formatToReadableString(offer.venue.name)}
           </p>
         </div>
         <OfferSummary offer={offer} />
-        <p className="description">
+        <p className="offer-description">
           {offer.description}
         </p>
       </div>
