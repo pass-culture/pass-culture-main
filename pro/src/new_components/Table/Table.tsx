@@ -1,177 +1,70 @@
-import React from 'react'
+import React, {
+  useCallback,
+  useEffect,
+  useState,
+} from 'react'
 
-import TableBody from './TableBody'
-import TableHead from './TableHeader'
+import styles from './Table.module.scss'
+import TableBody from './TableBody/TableBody'
+import TableHead from './TableHead/TableHead'
 
 
-interface ITable {
-  headerGroups: [],
-  page: [],
-  prepareRow: () => void,
+
+interface ITableProps {
+  rowsTitleOptions: [
+    {
+      title: string,
+      sortBy: string,
+      selfDirection: string
+    }
+  ],
+  rows: []
 }
 
+const IS_ASCENDENT = 'asc'
+const IS_DESCENDENT = 'desc'
+const DEFAULT_DIRECTION = IS_ASCENDENT
 
-const Table = ({
-  page,
-  prepareRow,
-}: ITable) => {
-  const headerGroups = [{
-    "headers": [
-      {
-        "id": 1,
-        "headerTitle": "Nom de l'offre",
-        "className": "column-offer-name",
-        "defaultCanSort": true,
-        "depth": 0,
-        "width": 150,
-        "minWidth": 0,
-        "maxWidth": 9007199254740991,
-        "sortDescFirst": false,
-        "canResize": true,
-        "originalWidth": 150,
-        "isVisible": true,
-        "totalVisibleHeaderCount": 1,
-        "totalLeft": 0,
-        "totalMinWidth": 0,
-        "totalWidth": 150,
-        "totalMaxWidth": 9007199254740991,
-        "totalFlexWidth": 150,
-        "canSort": true,
-        "isSorted": false,
-        "sortedIndex": -1
-      },
-      {
-        "id": 2,
-        "headerTitle": "",
-        "className": "column-booking-duo",
-        "disableSortBy": true,
-        "depth": 0,
-        "width": 150,
-        "minWidth": 0,
-        "maxWidth": 9007199254740991,
-        "sortType": "alphanumeric",
-        "sortDescFirst": false,
-        "canResize": true,
-        "originalWidth": 150,
-        "isVisible": true,
-        "totalVisibleHeaderCount": 1,
-        "totalLeft": 150,
-        "totalMinWidth": 0,
-        "totalWidth": 150,
-        "totalMaxWidth": 9007199254740991,
-        "totalFlexWidth": 150,
-        "canSort": false,
-        "isSorted": false,
-        "sortedIndex": -1
-      },
-      {
-        "id": 3,
-        "headerTitle": "Bénéficiaire",
-        "className": "column-beneficiary",
-        "defaultCanSort": true,
-        "depth": 0,
-        "width": 150,
-        "minWidth": 0,
-        "maxWidth": 9007199254740991,
-        "sortDescFirst": false,
-        "canResize": true,
-        "originalWidth": 150,
-        "isVisible": true,
-        "totalVisibleHeaderCount": 1,
-        "totalLeft": 300,
-        "totalMinWidth": 0,
-        "totalWidth": 150,
-        "totalMaxWidth": 9007199254740991,
-        "totalFlexWidth": 150,
-        "canSort": true,
-        "isSorted": false,
-        "sortedIndex": -1
-      },
-      {
-        "id": 4,
-        "headerTitle": "Réservation",
-        "className": "column-booking-date",
-        "defaultCanSort": true,
-        "depth": 0,
-        "width": 150,
-        "minWidth": 0,
-        "maxWidth": 9007199254740991,
-        "sortDescFirst": false,
-        "canResize": true,
-        "originalWidth": 150,
-        "isVisible": true,
-        "totalVisibleHeaderCount": 1,
-        "totalLeft": 450,
-        "totalMinWidth": 0,
-        "totalWidth": 150,
-        "totalMaxWidth": 9007199254740991,
-        "totalFlexWidth": 150,
-        "canSort": true,
-        "isSorted": false,
-        "sortedIndex": -1
-      },
-      {
-        "id": 5,
-        "headerTitle": "Contremarque",
-        "className": "column-booking-token",
-        "disableSortBy": true,
-        "depth": 0,
-        "width": 150,
-        "minWidth": 0,
-        "maxWidth": 9007199254740991,
-        "sortType": "alphanumeric",
-        "sortDescFirst": false,
-        "canResize": true,
-        "originalWidth": 150,
-        "isVisible": true,
-        "totalVisibleHeaderCount": 1,
-        "totalLeft": 600,
-        "totalMinWidth": 0,
-        "totalWidth": 150,
-        "totalMaxWidth": 9007199254740991,
-        "totalFlexWidth": 150,
-        "canSort": false,
-        "isSorted": false,
-        "sortedIndex": -1
-      },
-      {
-        "id": 6,
-        "className": "column-booking-status",
-        "disableSortBy": true,
-        "depth": 0,
-        "width": 150,
-        "minWidth": 0,
-        "maxWidth": 9007199254740991,
-        "sortType": "alphanumeric",
-        "sortDescFirst": false,
-        "canResize": true,
-        "originalWidth": 150,
-        "isVisible": true,
-        "totalVisibleHeaderCount": 1,
-        "totalLeft": 750,
-        "totalMinWidth": 0,
-        "totalWidth": 150,
-        "totalMaxWidth": 9007199254740991,
-        "totalFlexWidth": 150,
-        "canSort": false,
-        "isSorted": false,
-        "sortedIndex": -1
-      }
-    ]
-  }]
+const Table = ({ rows, rowsTitleOptions }: ITableProps): JSX.Element => {
+
+  const [direction, setDirection] = useState(DEFAULT_DIRECTION)
+  const [selectedTitle, setSelectedTitle] = useState('date')
+  const [sortedData, setSortedData] = useState([...rows])
+
+  const changeDirection = (directionToChange:string) => directionToChange === IS_ASCENDENT ? IS_DESCENDENT : IS_ASCENDENT
+  const sortBy = (fieldToSort:string, sortDirection:string) => {
+
+    const newSortedData = rows.sort((columnA, columnB) => {
+      if (columnA[fieldToSort] < columnB[fieldToSort]) return sortDirection === IS_ASCENDENT ? -1 : 1
+      if (columnA[fieldToSort] > columnB[fieldToSort]) return sortDirection === IS_ASCENDENT ? 1 : -1
+      return 0
+    })
+    setSortedData(newSortedData)
+  }
+
+  const targetedTitle = useCallback((newSelectedTitle) => {
+
+    const newDirection = newSelectedTitle === selectedTitle ? changeDirection(direction) : DEFAULT_DIRECTION
+
+    sortBy(newSelectedTitle,newDirection)
+    setSelectedTitle(newSelectedTitle)
+    setDirection(newDirection)
+  }, [selectedTitle, direction])
+
+  useEffect(() => {
+    sortBy(selectedTitle, direction)
+  }, [rows])
+
   return (
-    <div className="bookings-table-wrapper">
-      <table
-        className="bookings-table"
-      >
-        <TableHead headerGroups={headerGroups} />
-        <TableBody
-          page={page}
-          prepareRow={prepareRow}
-          tableBodyProps={()=>{}}
-        />
-      </table>
-    </div>
+    <table className={styles["table"]}>
+      <TableHead
+        rowTitlesOptions={rowsTitleOptions}
+        sortBy={targetedTitle}
+      />
+      <TableBody
+        rows={sortedData}
+      />
+    </table>
   )
 }
 
