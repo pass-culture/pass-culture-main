@@ -6,12 +6,12 @@ import { useQueries } from "react-query"
 
 import { Spinner } from "app/components/Layout/Spinner/Spinner"
 import * as pcapi from "repository/pcapi/pcapi"
+import { isNewOfferDesignEnabled } from "utils/isNewOfferDesignEnabled"
 import { OfferType, ResultType, Role } from "utils/types"
 
 import { NoResultsPage } from "./NoResultsPage/NoResultsPage"
 import { Offer } from "./Offer"
-import { Offer as OfferNewDesign } from "./OfferV2"
-import { isNewOfferDesignEnabled } from "utils/isNewOfferDesignEnabled"
+import { OfferLegacy } from "./OfferLegacy"
 
 const offerIsBookable = (offer: OfferType): boolean =>
   !offer.isSoldOut && !offer.isExpired
@@ -64,20 +64,22 @@ export const OffersComponent = ({
       {offers.map((offer) => (
         <div key={offer.id}>
           {
-            isNewOfferDesignEnabled() ?
-              <OfferNewDesign
-                offer={offer}
+            isNewOfferDesignEnabled() ? (
+              <Offer
                 canPrebookOffers={userRole == Role.redactor}
                 key={offer.id}
+                offer={offer}
               />
-            :
-              <Offer
+            )
+            : (
+              <OfferLegacy
                 canPrebookOffers={userRole == Role.redactor}
                 key={offer.id}
                 offer={offer}
                 thumbUrl={offersThumbById[offer.id]}
               />
-            }
+            )
+          }
         </div>
       ))}
     </ul>
