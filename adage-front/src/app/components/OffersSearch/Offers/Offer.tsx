@@ -1,4 +1,4 @@
-import "./OfferV2.scss"
+import "./Offer.scss"
 import React from "react"
 
 import { ReactComponent as Logo } from "assets/logo-without-text.svg"
