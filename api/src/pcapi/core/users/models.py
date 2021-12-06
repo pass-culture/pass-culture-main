@@ -154,15 +154,15 @@ class SubscriptionState(enum.Enum):
 
 
 class ActivityEnum(enum.Enum):
-    middle_school_student = "Collégien"
-    high_school_student = "Lycéen"
-    student = "Étudiant"
-    employee = "Employé"
-    apprentice = "Apprenti"
-    apprentice_student = "Alternant"
-    volunteer = "Volontaire"
-    inactive = "Inactif"
-    unemployed = "Chômeur"
+    MIDDLE_SCHOOL_STUDENT = "Collégien"
+    HIGH_SCHOOL_STUDENT = "Lycéen"
+    STUDENT = "Étudiant"
+    EMPLOYEE = "Employé"
+    APPRENTICE = "Apprenti"
+    APPRENTICE_STUDENT = "Alternant"
+    VOLUNTEER = "Volontaire"
+    INACTIVE = "Inactif"
+    UNEMPLOYED = "Chômeur"
 
 
 class SchoolType(enum.Enum):

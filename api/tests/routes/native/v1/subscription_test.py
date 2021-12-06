@@ -205,3 +205,57 @@ class UpdateProfileTest:
         assert user.deposit.amount == 20
 
         assert len(push_testing.requests) == 1
+
+
+class SchoolTypeTest:
+    def test_get_all_school_types(self, client):
+        response = client.get("/native/v1/subscription/school_types")
+
+        assert response.status_code == 200
+        assert response.json == {
+            "activities": [
+                {
+                    "id": "MIDDLE_SCHOOL_STUDENT",
+                    "label": "Collégien",
+                    "associatedSchoolTypesIds": [
+                        "PRIVATE_SECONDARY_SCHOOL",
+                        "PUBLIC_SECONDARY_SCHOOL",
+                        "HOME_OR_REMOTE_SCHOOLING",
+                    ],
+                },
+                {
+                    "id": "HIGH_SCHOOL_STUDENT",
+                    "label": "Lycéen",
+                    "associatedSchoolTypesIds": [
+                        "AGRICULTURAL_HIGH_SCHOOL",
+                        "MILITARY_HIGH_SCHOOL",
+                        "NAVAL_HIGH_SCHOOL",
+                        "PRIVATE_HIGH_SCHOOL",
+                        "PUBLIC_HIGH_SCHOOL",
+                        "HOME_OR_REMOTE_SCHOOLING",
+                        "APPRENTICE_FORMATION_CENTER",
+                    ],
+                },
+                {"id": "STUDENT", "label": "Étudiant", "associatedSchoolTypesIds": []},
+                {"id": "EMPLOYEE", "label": "Employé", "associatedSchoolTypesIds": []},
+                {"id": "APPRENTICE", "label": "Apprenti", "associatedSchoolTypesIds": []},
+                {"id": "APPRENTICE_STUDENT", "label": "Alternant", "associatedSchoolTypesIds": []},
+                {"id": "VOLUNTEER", "label": "Volontaire", "associatedSchoolTypesIds": []},
+                {"id": "INACTIVE", "label": "Inactif", "associatedSchoolTypesIds": []},
+                {"id": "UNEMPLOYED", "label": "Chômeur", "associatedSchoolTypesIds": []},
+            ],
+            "school_types": [
+                {"id": "AGRICULTURAL_HIGH_SCHOOL", "label": "Lycée agricole"},
+                {
+                    "id": "APPRENTICE_FORMATION_CENTER",
+                    "label": "Centre de formation d'apprentis",
+                },
+                {"id": "MILITARY_HIGH_SCHOOL", "label": "Lycée militaire"},
+                {"id": "HOME_OR_REMOTE_SCHOOLING", "label": "À domicile ou au CNED"},
+                {"id": "NAVAL_HIGH_SCHOOL", "label": "Lycée maritime"},
+                {"id": "PRIVATE_HIGH_SCHOOL", "label": "Lycée privé"},
+                {"id": "PRIVATE_SECONDARY_SCHOOL", "label": "Collège privé"},
+                {"id": "PUBLIC_HIGH_SCHOOL", "label": "Lycée public"},
+                {"id": "PUBLIC_SECONDARY_SCHOOL", "label": "Collège public"},
+            ],
+        }

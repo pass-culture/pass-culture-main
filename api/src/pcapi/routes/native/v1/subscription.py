@@ -2,6 +2,7 @@ import logging
 from typing import Optional
 
 from pcapi.core.subscription import api as subscription_api
+from pcapi.core.subscription import school_types
 from pcapi.core.users import models as users_models
 from pcapi.routes.native.security import authenticated_user_required
 from pcapi.serialization.decorator import spectree_serialize
@@ -43,4 +44,19 @@ def update_profile(user: users_models.User, body: serializers.ProfileUpdateReque
         postal_code=body.postal_code,
         activity=body.activity.value,
         school_type=body.school_type,
+    )
+
+
+@blueprint.native_v1.route("/subscription/school_types", methods=["GET"])
+@spectree_serialize(
+    response_model=serializers.SchoolTypesResponse,
+    on_success_status=200,
+    api=blueprint.api,
+)  # type: ignore
+def get_school_types() -> serializers.SchoolTypesResponse:
+    return serializers.SchoolTypesResponse(
+        school_types=[
+            serializers.SchoolTypeResponseModel.from_orm(school_type) for school_type in school_types.ALL_SCHOOL_TYPES
+        ],
+        activities=[serializers.ActivityResponseModel.from_orm(activity) for activity in school_types.ALL_ACTIVITIES],
     )
