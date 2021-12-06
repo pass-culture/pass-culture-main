@@ -12,7 +12,11 @@ export default {
 const Template = () => (
   <Formik
     initialValues={{
-      checkBoxes: [],
+      checkBoxes: {
+        foo: false,
+        bar: false,
+        baz: true,
+      },
     }}
     onSubmit={action('onSubmit')}
   >
@@ -22,9 +26,9 @@ const Template = () => (
           {...getFieldProps('group')}
           group={['foo', 'bar', 'baz'].map(item => ({
             label: item,
-            value: item,
+            name: `checkBoxes.${item}`,
           }))}
-          name="checkBoxes"
+          groupName="checkBoxes"
         />
       )
     }}
