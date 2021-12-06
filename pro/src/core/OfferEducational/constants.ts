@@ -1,6 +1,6 @@
 import { IOfferEducationalFormValues, ADRESS_TYPE } from './types'
 
-export const INITIAL_EDUCATIONAL_FORM_VALUES: IOfferEducationalFormValues = {
+export const DEFAULT_EAC_FORM_VALUES: IOfferEducationalFormValues = {
   category: '',
   subCategory: '',
   title: '',

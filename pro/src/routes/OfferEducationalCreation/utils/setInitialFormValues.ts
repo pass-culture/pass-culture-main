@@ -1,5 +1,5 @@
 import {
-  INITIAL_EDUCATIONAL_FORM_VALUES,
+  DEFAULT_EAC_FORM_VALUES,
   IOfferEducationalFormValues,
   IUserOfferer,
 } from 'core/OfferEducational'
@@ -19,7 +19,7 @@ const setInitialFormValues = (
       return offererId as IOfferEducationalFormValues['offererId']
     }
 
-    return INITIAL_EDUCATIONAL_FORM_VALUES.offererId
+    return DEFAULT_EAC_FORM_VALUES.offererId
   }
 
   const setVenueId = () => {
@@ -41,7 +41,7 @@ const setInitialFormValues = (
       return venueId as IOfferEducationalFormValues['venueId']
     }
 
-    return INITIAL_EDUCATIONAL_FORM_VALUES.venueId
+    return DEFAULT_EAC_FORM_VALUES.venueId
   }
 
   return {

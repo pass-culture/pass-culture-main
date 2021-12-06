@@ -6,7 +6,7 @@ import Spinner from 'components/layout/Spinner'
 // @debt deprecated "Mathilde: should not import utility from legacy page"
 import { queryParamsFromOfferer } from 'components/pages/Offers/utils/queryParamsFromOfferer'
 import {
-  INITIAL_EDUCATIONAL_FORM_VALUES,
+  DEFAULT_EAC_FORM_VALUES,
   IOfferEducationalFormValues,
 } from 'core/OfferEducational'
 import OfferEducationalScreen from 'screens/OfferEducational'
@@ -34,7 +34,7 @@ const OfferEducationalCreation = (): JSX.Element => {
   const [isReady, setIsReady] = useState<boolean>(false)
   const [screenProps, setScreenProps] = useState<AsyncScreenProps | null>(null)
   const [initialValues, setInitialValues] =
-    useState<IOfferEducationalFormValues>(INITIAL_EDUCATIONAL_FORM_VALUES)
+    useState<IOfferEducationalFormValues>(DEFAULT_EAC_FORM_VALUES)
 
   const { structure: offererId, lieu: venueId } =
     queryParamsFromOfferer(location)
