@@ -64,13 +64,16 @@ def on_educonnect_authentication_response() -> Response:  # pylint: disable=too-
         error_query_param = {"code": "UserTypeNotStudent"}
         return redirect(ERROR_PAGE_URL + urlencode(error_query_param), code=302)
 
-    except educonnect_exceptions.EduconnectAuthenticationException:
-        logger.warning("Educonnect authentication Error")
+    except Exception as exc:  # pylint: disable=broad-except
+        logger.exception("Error after educonnect authentication: %s", exc)
         return redirect(ERROR_PAGE_URL, code=302)
 
     user_id = _user_id_from_saml_request_id(educonnect_user.saml_request_id)
 
     if user_id is None:
+        logger.error(
+            "No user_id corresponding to educonnect request_id", extra={"request_id": educonnect_user.saml_request_id}
+        )
         return redirect(ERROR_PAGE_URL, code=302)
 
     user = user_models.User.query.get(user_id)
@@ -107,6 +110,10 @@ def on_educonnect_authentication_response() -> Response:  # pylint: disable=too-
     try:
         fraud_api.on_educonnect_result(user, educonnect_content)
     except fraud_exceptions.BeneficiaryFraudResultCannotBeDowngraded:
+        logger.exception("Trying to downgrade FraudResult after eduonnect response", extra={"user_id": user.id})
+        return redirect(ERROR_PAGE_URL, code=302)
+    except Exception as e:  # pylint: disable=broad-except
+        logger.exception("Error on educonnect result: %s", e, extra={"user_id": user.id})
         return redirect(ERROR_PAGE_URL, code=302)
 
     try:
@@ -143,7 +150,7 @@ def on_educonnect_authentication_response() -> Response:  # pylint: disable=too-
         )
 
     except Exception as e:  # pylint: disable=broad-except
-        logger.error("Error while creating BeneficiaryImport from Educonnect: %s", e, extra={"user_id": user.id})
+        logger.exception("Error while creating BeneficiaryImport from Educonnect: %s", e, extra={"user_id": user.id})
         return redirect(ERROR_PAGE_URL, code=302)
 
     user_information_validation_base_url = f"{settings.WEBAPP_V2_URL}/idcheck/validation?"
