@@ -33,7 +33,7 @@ class BankInformation(PcObject, Model):
 
     bic = Column(String(11), nullable=True)
 
-    applicationId = Column(Integer, nullable=False, index=True, unique=True)
+    applicationId = Column(Integer, nullable=True, index=True, unique=True)
 
     status = Column(Enum(BankInformationStatus), nullable=False)
 
