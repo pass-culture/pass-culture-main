@@ -25,7 +25,7 @@ export const OfferLegacy = ({
   thumbUrl: string;
 }): JSX.Element => {
   return (
-    <li className="offer">
+    <li className="offer-legacy">
       {thumbUrl ? (
         <img
           alt="Illustration de l'offre"
