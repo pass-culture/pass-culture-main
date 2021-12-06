@@ -16,15 +16,18 @@ export default {
 const Template = () => (
   <OfferEducationalStock
     initialValues={{
-      eventDate: new Date(),
+      eventDate: '',
       eventTime: '',
       numberOfPlaces: '',
       totalPrice: '',
-      bookingLimitDatetime: new Date(),
+      bookingLimitDatetime: '',
     }}
     offer={{
       id: '1234',
       status: OfferStatus.OFFER_STATUS_DRAFT,
+      venue: {
+        departementCode: '974',
+      },
     }}
     onSubmit={action('onSubmit')}
   />

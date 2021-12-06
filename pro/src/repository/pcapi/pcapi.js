@@ -233,6 +233,10 @@ export const deleteStock = stockId => {
   return client.delete(`/stocks/${stockId}`)
 }
 
+export const createEducationalStock = stock => {
+  return client.post(`/stocks/educational`, stock)
+}
+
 //
 // thumbnail
 //

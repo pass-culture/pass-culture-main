@@ -1,4 +1,8 @@
 .date-picker {
+  &-label {
+    white-space: nowrap;
+  }
+
   &-input {
     width: 100%;
     font-size: rem(16px);
@@ -31,5 +35,10 @@
       border-color: $grey-light;
       opacity: 1;
     }
+
+    &::-webkit-calendar-picker-indicator {
+      display: none;
+    }
+  
   }
 }
