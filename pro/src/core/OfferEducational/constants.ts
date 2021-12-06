@@ -13,10 +13,36 @@ export const INITIAL_EDUCATIONAL_FORM_VALUES: IOfferEducationalFormValues = {
     otherAddress: '',
     venueId: '',
   },
-  participants: [],
-  accessibility: [],
+  participants: {
+    quatrieme: false,
+    troisieme: false,
+    CAPAnnee1: false,
+    CAPAnnee2: false,
+    seconde: false,
+    premiere: false,
+    terminale: false,
+    all: false,
+  },
+  accessibility: {
+    visual: false,
+    audio: false,
+    motor: false,
+    mental: false,
+    none: false,
+  },
   phone: '',
   email: '',
   notifications: false,
   notificationEmail: '',
+}
+
+export const PARTICIPANTS: Record<string, string> = {
+  quatrieme: 'Collège - 4e',
+  troisieme: 'Collège - 3e',
+  CAPAnnee1: 'CAP - 1re année',
+  CAPAnnee2: 'CAP - 2e année',
+  seconde: 'Lycée - Seconde',
+  premiere: 'Lycée - Première',
+  terminale: 'Lycée - Terminale',
+  all: 'Tous les niveaux',
 }

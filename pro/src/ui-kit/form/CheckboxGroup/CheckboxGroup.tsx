@@ -8,31 +8,41 @@ import styles from './CheckboxGroup.module.scss'
 import CheckboxGroupItem from './CheckboxGroupItem'
 
 interface ICheckboxGroupProps {
-  name: string
+  groupName: string
   group: {
-    value: string
+    name: string
     label: string
+    icon?: React.FunctionComponent<React.SVGProps<SVGSVGElement>>
   }[]
   className?: string
 }
 
 const CheckboxGroup = ({
-  name,
   group,
+  groupName,
   className,
 }: ICheckboxGroupProps): JSX.Element => {
-  const [field, meta, helpers] = useField({ name })
+  const [, meta, helpers] = useField({ name: groupName })
 
   return (
-    <div className={cn(styles['checkbox-group'], className)}>
+    <div
+      className={cn(
+        styles['checkbox-group'],
+        {
+          [styles['has-error']]: meta.touched && !!meta.error,
+        },
+        className
+      )}
+    >
       {group.map(item => (
-        <div className={styles['checkbox-group-item']} key={item.value}>
+        <div className={styles['checkbox-group-item']} key={item.name}>
           <CheckboxGroupItem
-            formikFieldValue={field.value}
-            hasError={meta.touched && !!meta.error}
+            Icon={item.icon}
             label={item.label}
-            setValue={helpers.setValue}
-            value={item.value}
+            name={item.name}
+            setGroupTouched={() =>
+              !meta.touched ? helpers.setTouched(true) : null
+            }
           />
         </div>
       ))}

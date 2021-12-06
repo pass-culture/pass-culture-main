@@ -17,34 +17,44 @@ export const validationSchema = yup.object().shape({
     ),
   offererId: yup.string().required('Veuillez sélectionner une structure'),
   venueId: yup.string().required('Veuillez sélectionner un lieu'),
-  eventAddress: yup
-    .object()
-    .shape({
-      addressType: yup
-        .string()
-        .oneOf([
-          ADRESS_TYPE.OFFERER_VENUE,
-          ADRESS_TYPE.OTHER,
-          ADRESS_TYPE.SCHOOL,
-        ]),
-      otherAddress: yup.string().when('addressType', {
-        is: ADRESS_TYPE.OTHER,
-        then: yup.string().required('Veuillez renseigner une adresse'),
-      }),
-      venueId: yup.string().when('addressType', {
-        is: ADRESS_TYPE.OFFERER_VENUE,
-        then: yup.string().required('Veuillez sélectionner un lieu'),
-      }),
-    })
-    .required('Champ obligatoire'),
-  participants: yup
-    .array()
-    .of(yup.string())
-    .min(1, 'Veuillez sélectionner au moins un niveau scolaire'),
+  eventAddress: yup.object().shape({
+    addressType: yup
+      .string()
+      .oneOf([
+        ADRESS_TYPE.OFFERER_VENUE,
+        ADRESS_TYPE.OTHER,
+        ADRESS_TYPE.SCHOOL,
+      ]),
+    otherAddress: yup.string().when('addressType', {
+      is: ADRESS_TYPE.OTHER,
+      then: yup.string().required('Veuillez renseigner une adresse'),
+    }),
+    venueId: yup.string().when('addressType', {
+      is: ADRESS_TYPE.OFFERER_VENUE,
+      then: yup.string().required('Veuillez sélectionner un lieu'),
+    }),
+  }),
+  participants: yup.object().test({
+    name: 'one-true',
+    message: 'Veuillez sélectionner au moins un niveau scolaire',
+    test: (values: Record<string, boolean>): boolean =>
+      Object.values(values).includes(true),
+  }),
   accessibility: yup
-    .array()
-    .of(yup.string())
-    .min(1, 'Veuillez sélectionner au moins un critère d’accessibilité'),
+    .object()
+    .test({
+      name: 'one-true',
+      message: 'Veuillez sélectionner au moins un critère d’accessibilité',
+      test: (values: Record<string, boolean>): boolean =>
+        Object.values(values).includes(true),
+    })
+    .shape({
+      mental: yup.boolean(),
+      audio: yup.boolean(),
+      visual: yup.boolean(),
+      motor: yup.boolean(),
+      none: yup.boolean(),
+    }),
   phone: yup.string().required('Veuillez renseigner un numéro de téléphone'),
   email: yup
     .string()

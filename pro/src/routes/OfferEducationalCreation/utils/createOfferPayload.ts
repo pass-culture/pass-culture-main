@@ -1,6 +1,6 @@
 import {
   IOfferEducationalFormValues,
-  ACCESSIBILITY,
+  PARTICIPANTS,
 } from 'core/OfferEducational'
 
 type CreateEducationalOfferPayload = {
@@ -31,7 +31,7 @@ const parseDuration = (duration: string): number | undefined => {
 }
 
 const disabilityCompliances = (
-  accessibility: string[]
+  accessibility: IOfferEducationalFormValues['accessibility']
 ): Pick<
   CreateEducationalOfferPayload,
   | 'audioDisabilityCompliant'
@@ -39,11 +39,22 @@ const disabilityCompliances = (
   | 'motorDisabilityCompliant'
   | 'visualDisabilityCompliant'
 > => ({
-  audioDisabilityCompliant: accessibility.includes(ACCESSIBILITY.AUDIO),
-  mentalDisabilityCompliant: accessibility.includes(ACCESSIBILITY.MENTAL),
-  motorDisabilityCompliant: accessibility.includes(ACCESSIBILITY.MOTOR),
-  visualDisabilityCompliant: accessibility.includes(ACCESSIBILITY.VISUAL),
+  audioDisabilityCompliant: accessibility.audio,
+  mentalDisabilityCompliant: accessibility.mental,
+  motorDisabilityCompliant: accessibility.motor,
+  visualDisabilityCompliant: accessibility.visual,
 })
+
+const getStudents = (
+  participants: IOfferEducationalFormValues['participants']
+): string[] =>
+  Object.keys(participants)
+    .filter((key: string): boolean => {
+      return (
+        key !== 'all' && participants[key as keyof typeof participants] === true
+      )
+    })
+    .map(key => PARTICIPANTS[key])
 
 export const createOfferPayload = (
   offer: IOfferEducationalFormValues
@@ -57,7 +68,7 @@ export const createOfferPayload = (
   durationMinutes: parseDuration(offer.duration),
   ...disabilityCompliances(offer.accessibility),
   extraData: {
-    students: offer.participants,
+    students: getStudents(offer.participants),
     offerVenue: offer.eventAddress,
     contactEmail: offer.email,
     contactPhone: offer.phone,
