@@ -60,7 +60,6 @@ export type IOfferEducationalFormValues = {
     seconde: boolean
     premiere: boolean
     terminale: boolean
-    all: boolean
   }
   accessibility: {
     visual: boolean
