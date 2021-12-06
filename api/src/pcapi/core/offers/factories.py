@@ -2,6 +2,7 @@ import datetime
 import uuid
 
 import factory
+import schwifty
 
 from pcapi.core.categories import subcategories
 from pcapi.core.categories.subcategories import ALL_SUBCATEGORIES
@@ -248,8 +249,10 @@ class BankInformationFactory(BaseFactory):
     class Meta:
         model = BankInformation
 
-    bic = factory.Sequence(lambda n: f"TESTFR2{n:04}")
-    iban = factory.LazyAttributeSequence(lambda o, n: f"FR{n:016}")
+    bic = "BDFEFRPP"
+    iban = factory.LazyAttributeSequence(
+        lambda o, n: schwifty.IBAN.generate("FR", bank_code="10010", account_code=f"{n:010}").compact
+    )
     applicationId = factory.Sequence(int)
     status = "ACCEPTED"
 
