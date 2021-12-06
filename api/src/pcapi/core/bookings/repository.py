@@ -484,6 +484,7 @@ def _get_filtered_booking_report(
             venue_id,
             extra_joins=(Stock.offer, Booking.user),
         )
+        .outerjoin(Payment, Payment.bookingId == Booking.id)
         .with_entities(
             func.coalesce(Venue.publicName, Venue.name).label("venueName"),
             Venue.departementCode.label("venueDepartmentCode"),
@@ -509,6 +510,11 @@ def _get_filtered_booking_report(
             # the label prevents SA from using a bad (prefixed) label for this field
             Booking.id.label("id"),
             Booking.userId,
+            # TODO: the lines hereunder should be removed once we can use IMPROVE_BOOKINGS_PERF
+            Payment.currentStatus.label("paymentStatus"),
+            Booking.isUsed,
+            Booking.isCancelled,
+            Booking.cancellationLimitDate,
         )
         .distinct(Booking.id)
     )
@@ -792,6 +798,21 @@ def _serialize_booking_recap_legacy(booking: AbstractKeyedTuple) -> BookingRecap
     )
 
 
+# TODO: the lines hereunder should be removed once we can use IMPROVE_BOOKINGS_PERF and use booking.status instead
+def compute_booking_status(booking: Booking) -> BookingStatus:
+    if booking.paymentStatus == TransactionStatus.SENT:
+        return BookingStatus.REIMBURSED
+    if booking.isUsed:
+        return BookingStatus.USED
+    if booking.isCancelled:
+        return BookingStatus.CANCELLED
+    # booking.isConfirmed is a property and we have raw data here, not a SQLA ORM object
+    # We have to duplicate Booking's isConfirmed unless we have a better option
+    if booking.cancellationLimitDate is not None and booking.cancellationLimitDate <= datetime.utcnow():
+        return BookingStatus.CONFIRMED
+    return BookingStatus.PENDING
+
+
 def _serialize_csv_report(query: Query) -> str:
     output = StringIO()
     writer = csv.writer(output, dialect=csv.excel, delimiter=";", quoting=csv.QUOTE_NONNUMERIC)
@@ -826,7 +847,7 @@ def _serialize_csv_report(query: Query) -> str:
                 _serialize_date_with_timezone(booking.usedAt, booking),
                 booking.token,
                 booking.amount,
-                BOOKING_STATUS_LABELS[booking.status],
+                BOOKING_STATUS_LABELS[compute_booking_status(booking)],
                 _serialize_date_with_timezone(booking.reimbursedAt, booking),
             )
         )
