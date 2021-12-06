@@ -38,27 +38,27 @@ function createRedirectFile() {
     const JSpath = `/${readFileSync(indexHTMLFilePath, 'utf8').match(/static\/js\/main\.[a-z0-9]*\.js/g)[0]}`
 
     const assets = [
-      ['/static/js/*', JSpath, 301],
-      ['/:path1/static/js/*', JSpath, 301],
-      ['/:path1/:path2/static/js/*', JSpath, 301],
-      ['/:path1/:path2/:path3/static/js/*', JSpath, 301],
-      ['/:path1/:path2/:path3/:path4/static/js/*', JSpath, 301],
-      ['/:path1/:path2/:path3/:path4/:path5/static/js/*', JSpath, 301],
-      ['/:path1/:path2/:path3/:path4/:path5/:path6/static/js/*', JSpath, 301],
-      ['/static/css/*', JSpath, 301],
-      ['/:path1/static/css/*', JSpath, 301],
-      ['/:path1/:path2/static/css/*', JSpath, 301],
-      ['/:path1/:path2/:path3/static/css/*', JSpath, 301],
-      ['/:path1/:path2/:path3/:path4/static/css/*', JSpath, 301],
-      ['/:path1/:path2/:path3/:path4/:path5/static/css/*', JSpath, 301],
-      ['/:path1/:path2/:path3/:path4/:path5/:path6/static/css/*', JSpath, 301],
+      ['/static/js/*', JSpath, '301'],
+      ['/:path1/static/js/*', JSpath, '301'],
+      ['/:path1/:path2/static/js/*', JSpath, '301'],
+      ['/:path1/:path2/:path3/static/js/*', JSpath, '301'],
+      ['/:path1/:path2/:path3/:path4/static/js/*', JSpath, '301'],
+      ['/:path1/:path2/:path3/:path4/:path5/static/js/*', JSpath, '301'],
+      ['/:path1/:path2/:path3/:path4/:path5/:path6/static/js/*', JSpath, '301'],
+      ['/static/css/*', JSpath, '301'],
+      ['/:path1/static/css/*', JSpath, '301'],
+      ['/:path1/:path2/static/css/*', JSpath, '301'],
+      ['/:path1/:path2/:path3/static/css/*', JSpath, '301'],
+      ['/:path1/:path2/:path3/:path4/static/css/*', JSpath, '301'],
+      ['/:path1/:path2/:path3/:path4/:path5/static/css/*', JSpath, '301'],
+      ['/:path1/:path2/:path3/:path4/:path5/:path6/static/css/*', JSpath, '301'],
     ]
 
     const v1 = publicRedirectFileContent.match(/.*\n/g, '').map((line) => line.replace(/\n/, '').split(' ').filter((arr) => arr.length > 1))
 
     const v1tov2 = [
-      ['/accueil/details/:offerId', '/accueil/details/:offerId', 200],
-      ['/*', process.env.WEBAPP_V2_URL, 302],
+      ['/accueil/details/:offerId', '/accueil/details/:offerId', '200'],
+      ['/*', process.env.WEBAPP_V2_URL, '302!'],
     ]
 
     let content = ''
