@@ -1,6 +1,7 @@
 from typing import Optional
 
 from pcapi.core.subscription import models as subscription_models
+from pcapi.core.subscription import school_types
 from pcapi.core.users import models as users_models
 from pcapi.serialization.utils import to_camel
 
@@ -28,3 +29,29 @@ class ProfileUpdateRequest(BaseModel):
 
     class Config:
         alias_generator = to_camel
+
+
+class SchoolTypeResponseModel(BaseModel):
+    id: school_types.SCHOOL_TYPE_ID_ENUM
+    label: school_types.SCHOOL_TYPE_LABEL_ENUM
+
+    class Config:
+        alias_generator = to_camel
+        allow_population_by_field_name = True
+        orm_mode = True
+
+
+class ActivityResponseModel(BaseModel):
+    id: school_types.ACTIVITY_ID_ENUM
+    label: school_types.ACTIVITY_LABEL_ENUM
+    associated_school_types_ids: Optional[list[school_types.SCHOOL_TYPE_ID_ENUM]]
+
+    class Config:
+        alias_generator = to_camel
+        allow_population_by_field_name = True
+        orm_mode = True
+
+
+class SchoolTypesResponse(BaseModel):
+    activities: list[ActivityResponseModel]
+    school_types: list[SchoolTypeResponseModel]
