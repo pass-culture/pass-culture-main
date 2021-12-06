@@ -1,4 +1,4 @@
-import { INITIAL_EDUCATIONAL_FORM_VALUES } from 'core/OfferEducational'
+import { DEFAULT_EAC_FORM_VALUES } from 'core/OfferEducational'
 
 import { IOfferEducationalProps } from '../OfferEducational'
 
@@ -39,7 +39,7 @@ const mockUserOfferers = userOfferersFactory([{}])
 
 const defaultProps = (): IOfferEducationalProps => ({
   userOfferers: mockUserOfferers,
-  initialValues: INITIAL_EDUCATIONAL_FORM_VALUES,
+  initialValues: DEFAULT_EAC_FORM_VALUES,
   onSubmit: jest.fn(),
   educationalCategories: mockEducationalCategories,
   educationalSubCategories: mockEducationalSubcategories,

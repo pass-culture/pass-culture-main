@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react'
 import {
   IEducationalCategory,
   IEducationalSubCategory,
-  INITIAL_EDUCATIONAL_FORM_VALUES,
+  DEFAULT_EAC_FORM_VALUES,
   IOfferEducationalFormValues,
 } from 'core/OfferEducational'
 import FormLayout from 'new_components/FormLayout'
@@ -35,11 +35,7 @@ const FormCategory = ({
   >(null)
 
   useEffect(() => {
-    setFieldValue(
-      'subCategory',
-      INITIAL_EDUCATIONAL_FORM_VALUES.subCategory,
-      false
-    )
+    setFieldValue('subCategory', DEFAULT_EAC_FORM_VALUES.subCategory, false)
 
     setAvailableSubCategories(
       subCategories.filter(
