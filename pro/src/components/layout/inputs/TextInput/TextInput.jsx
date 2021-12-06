@@ -84,7 +84,7 @@ TextInput.propTypes = {
   required: PropTypes.bool,
   subLabel: PropTypes.string,
   type: PropTypes.string,
-  value: PropTypes.string,
+  value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 }
 
 export default TextInput

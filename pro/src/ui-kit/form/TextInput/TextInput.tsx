@@ -1,7 +1,10 @@
+import cn from 'classnames'
 import { useField } from 'formik'
 import React from 'react'
 
 import { default as LayoutTextInput } from 'components/layout/inputs/TextInput/TextInput'
+
+import styles from './TextInput.module.scss'
 
 interface ITextInputProps {
   name: string
@@ -29,7 +32,7 @@ const TextInput = ({
   const [field, meta] = useField({ name, disabled })
 
   return (
-    <div className={className}>
+    <div className={cn(styles['text-input'], className)}>
       <LayoutTextInput
         countCharacters={countCharacters}
         error={meta.touched && !!meta.error ? meta.error : null}

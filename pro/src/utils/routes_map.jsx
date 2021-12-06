@@ -17,6 +17,7 @@ import SigninContainer from 'components/pages/Signin/SigninContainer'
 import SignupContainer from 'components/pages/Signup/SignupContainer'
 import SignupValidationContainer from 'components/pages/Signup/SignupValidation/SignupValidationContainer'
 import StyleguideContainer from 'components/pages/Styleguide/StyleguideContainer'
+import OfferEducationalConfirmation from 'routes/OfferEducationalConfirmation'
 import OfferEducationalCreation from 'routes/OfferEducationalCreation'
 import OfferEducationalStockCreation from 'routes/OfferEducationalStockCreation'
 import OfferType from 'routes/OfferType'
@@ -187,6 +188,13 @@ const routes = [
     featureName: 'ENABLE_NEW_EDUCATIONAL_OFFER_CREATION_FORM',
     path: '/offre/:offerId([A-Z0-9]+)/scolaire/stocks',
     title: 'Stock lié à une offre Scolaire',
+  },
+  {
+    component: OfferEducationalConfirmation,
+    exact: true,
+    featureName: 'ENABLE_NEW_EDUCATIONAL_OFFER_CREATION_FORM',
+    path: '/offre/scolaire/confirmation',
+    title: 'Page de confirmation de création d’offre',
   },
 ]
 

@@ -1,4 +1,8 @@
 .time-picker {
+  &-label {
+    white-space: nowrap;
+  }
+  
   &-input {
     width: 100%;
     font-size: rem(16px);
