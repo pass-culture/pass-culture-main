@@ -185,6 +185,7 @@ class User(PcObject, Model, NeedsValidationMixin):
     city = sa.Column(sa.String(100), nullable=True)
     civility = sa.Column(sa.String(20), nullable=True)
     clearTextPassword = None
+    comment = sa.Column(sa.Text(), nullable=True)
     culturalSurveyFilledDate = sa.Column(sa.DateTime, nullable=True)
     culturalSurveyId = sa.Column(postgresql.UUID(as_uuid=True), nullable=True)
     dateCreated = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow)

@@ -137,6 +137,7 @@ class BeneficiaryUserView(ResendValidationEmailMixin, SuspensionMixin, BaseAdmin
         "total_remaining",
         "digital_remaining",
         "physical_remaining",
+        "comment",
         "validationToken",
         "activity",
         "address",
@@ -176,26 +177,27 @@ class BeneficiaryUserView(ResendValidationEmailMixin, SuspensionMixin, BaseAdmin
     ]
 
     column_labels = dict(
-        email="Email",
-        isActive="Est activé",
-        has_beneficiary_role="Bénéficiaire 18 ans ?",
-        has_underage_beneficiary_role="Bénéficiaire 15-17 ?",
-        firstName="Prénom",
-        lastName="Nom",
-        publicName="Nom d'utilisateur",
+        comment="Commentaire équipe anti-fraude",
         dateOfBirth="Date de naissance",
         departementCode="Département",
-        phoneNumber="Numéro de téléphone",
-        postalCode="Code postal",
-        isEmailValidated="Email validé ?",
-        has_active_deposit="Dépôt valable ?",
-        total_remaining="Crédit global restant",
-        total_initial="Crédit initial",
-        digital_remaining="Crédit digital restant",
-        physical_remaining="Crédit physique restant",
         deposit_type="Type du portefeuille",
         deposit_version="Version du portefeuille",
+        digital_remaining="Crédit digital restant",
+        email="Email",
+        firstName="Prénom",
+        has_active_deposit="Dépôt valable ?",
+        has_beneficiary_role="Bénéficiaire 18 ans ?",
+        has_underage_beneficiary_role="Bénéficiaire 15-17 ?",
+        isActive="Est activé",
+        isEmailValidated="Email validé ?",
+        lastName="Nom",
         needsToFillCulturalSurvey="Doit remplir le questionnaire de pratiques culturelles",
+        phoneNumber="Numéro de téléphone",
+        physical_remaining="Crédit physique restant",
+        postalCode="Code postal",
+        publicName="Nom d'utilisateur",
+        total_remaining="Crédit global restant",
+        total_initial="Crédit initial",
     )
 
     column_searchable_list = ["id", "publicName", "email", "firstName", "lastName"]
@@ -231,7 +233,7 @@ class BeneficiaryUserView(ResendValidationEmailMixin, SuspensionMixin, BaseAdmin
             "needsToFillCulturalSurvey",
         )
         if self.check_super_admins():
-            fields += ("firstName", "lastName")
+            fields += ("firstName", "lastName", "comment")
         return fields
 
     form_args = dict(

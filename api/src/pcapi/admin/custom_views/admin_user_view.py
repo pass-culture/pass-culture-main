@@ -26,6 +26,7 @@ def filter_email(value: Optional[str]) -> Optional[str]:
 class AdminUserView(SuspensionMixin, BaseAdminView):
     can_edit = False
     can_delete = False
+    can_view_details = True
 
     @property
     def can_create(self) -> bool:
@@ -45,6 +46,7 @@ class AdminUserView(SuspensionMixin, BaseAdminView):
         "actions",
     ]
     column_labels = dict(
+        comment="Commentaire équipe anti-fraude",
         isActive="Est activé",
         email="Email",
         firstName="Prénom",
@@ -56,8 +58,14 @@ class AdminUserView(SuspensionMixin, BaseAdminView):
     )
     column_searchable_list = ["id", "publicName", "email", "firstName", "lastName"]
     column_filters = ["email", "isEmailValidated"]
+    column_details_list = ["comment"]
 
-    form_columns = ["email", "firstName", "lastName", "departementCode", "postalCode"]
+    @property
+    def form_columns(self):
+        fields = ("email", "firstName", "lastName", "departementCode", "postalCode")
+        if self.check_super_admins():
+            fields += ("comment",)
+        return fields
 
     form_args = dict(
         departementCode=dict(

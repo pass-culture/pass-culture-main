@@ -61,6 +61,8 @@ def create_user_offerer(user: User, offerer: Offerer) -> UserOfferer:
 class ProUserView(SuspensionMixin, BaseAdminView):
     can_edit = True
     can_create = True
+    can_view_details = True
+
     column_list = [
         "id",
         "isActive",
@@ -77,6 +79,7 @@ class ProUserView(SuspensionMixin, BaseAdminView):
         "actions",
     ]
     column_labels = dict(
+        comment="Commentaire équipe anti-fraude",
         email="Email",
         isActive="Est activé",
         firstName="Prénom",
@@ -93,14 +96,7 @@ class ProUserView(SuspensionMixin, BaseAdminView):
     )
     column_searchable_list = ["id", "publicName", "email", "firstName", "lastName"]
     column_filters = ["postalCode", "has_beneficiary_role", "has_underage_beneficiary_role", "isEmailValidated"]
-    form_columns = [
-        "email",
-        "firstName",
-        "lastName",
-        "dateOfBirth",
-        "departementCode",
-        "postalCode",
-    ]
+    column_details_list = ["comment"]
 
     form_create_rules = (
         rules.Header("Utilisateur créé :"),
@@ -118,6 +114,20 @@ class ProUserView(SuspensionMixin, BaseAdminView):
         "offererCity",
         "csrf_token",
     )
+
+    @property
+    def form_columns(self):
+        fields = (
+            "email",
+            "firstName",
+            "lastName",
+            "dateOfBirth",
+            "departementCode",
+            "postalCode",
+        )
+        if self.check_super_admins():
+            fields += ("comment",)
+        return fields
 
     # This override is necessary to prevent SIREN and offererName to be in edit form as well
     def get_create_form(self) -> Form:
