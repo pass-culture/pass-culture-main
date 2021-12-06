@@ -21,7 +21,6 @@ export const DEFAULT_EAC_FORM_VALUES: IOfferEducationalFormValues = {
     seconde: false,
     premiere: false,
     terminale: false,
-    all: false,
   },
   accessibility: {
     visual: false,
@@ -44,5 +43,4 @@ export const PARTICIPANTS: Record<string, string> = {
   seconde: 'Lycée - Seconde',
   premiere: 'Lycée - Première',
   terminale: 'Lycée - Terminale',
-  all: 'Tous les niveaux',
 }

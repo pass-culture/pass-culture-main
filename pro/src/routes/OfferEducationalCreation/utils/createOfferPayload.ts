@@ -49,11 +49,10 @@ const getStudents = (
   participants: IOfferEducationalFormValues['participants']
 ): string[] =>
   Object.keys(participants)
-    .filter((key: string): boolean => {
-      return (
-        key !== 'all' && participants[key as keyof typeof participants] === true
-      )
-    })
+    .filter(
+      (key: string): boolean =>
+        participants[key as keyof typeof participants] === true
+    )
     .map(key => PARTICIPANTS[key])
 
 export const createOfferPayload = (
