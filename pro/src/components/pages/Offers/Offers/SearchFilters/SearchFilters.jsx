@@ -40,10 +40,12 @@ const SearchFilters = ({
   useEffect(() => {
     pcapi.loadCategories().then(categoriesAndSubcategories => {
       let { categories } = categoriesAndSubcategories
-      let categoriesOptions = categories.map(categories => ({
-        id: categories.id,
-        displayName: categories.proLabel,
-      }))
+      let categoriesOptions = categories
+        .filter(category => category.isSelectable)
+        .map(category => ({
+          id: category.id,
+          displayName: category.proLabel,
+        }))
       setCategoriesOptions(
         categoriesOptions.sort((a, b) =>
           a.displayName.localeCompare(b.displayName)

@@ -43,8 +43,9 @@ const renderOffers = (props, store) => {
 
 const categoriesAndSubcategories = {
   categories: [
-    { id: 'CINEMA', proLabel: 'Cinéma' },
-    { id: 'JEU', proLabel: 'Jeux' },
+    { id: 'CINEMA', proLabel: 'Cinéma', isSelectable: true },
+    { id: 'JEU', proLabel: 'Jeux', isSelectable: true },
+    { id: 'TECHNIQUE', proLabel: 'Technique', isSelectable: false },
   ],
   subcategories: [],
 }
@@ -236,6 +237,22 @@ describe('src | components | pages | Offers | Offers', () => {
     })
 
     describe('filters', () => {
+      it('should display only selectable categories on filters', async () => {
+        // When
+        renderOffers(props, store)
+
+        // Then
+        await expect(
+          screen.findByRole('option', { name: 'Cinéma' })
+        ).resolves.toBeInTheDocument()
+        await expect(
+          screen.findByRole('option', { name: 'Jeux' })
+        ).resolves.toBeInTheDocument()
+        await expect(
+          screen.findByRole('option', { name: 'Technique' })
+        ).rejects.toBeTruthy()
+      })
+
       it('should render venue filter with default option selected and given venues as options', async () => {
         // Given
         const expectedSelectOptions = [
@@ -1199,8 +1216,12 @@ describe('src | components | pages | Offers | Offers', () => {
       // Given
       pcapi.loadCategories.mockResolvedValue({
         categories: [
-          { id: 'test_id_1', proLabel: 'My test value' },
-          { id: 'test_id_2', proLabel: 'My second test value' },
+          { id: 'test_id_1', proLabel: 'My test value', isSelectable: true },
+          {
+            id: 'test_id_2',
+            proLabel: 'My second test value',
+            isSelectable: true,
+          },
         ],
       })
 
