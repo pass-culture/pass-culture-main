@@ -38,21 +38,18 @@ const TimePicker = ({
         {label}
       </label>
       <ReactDatePicker
-        customInput={
-          <input
-            className={styles['time-picker-input']}
-            id={`time-picker-${name}`}
-            type="text"
-            {...field}
-          />
-        }
+        {...field}
+        className={styles['time-picker-input']}
         dateFormat="HH:mm"
         disabled={disabled}
         dropdownMode="scroll"
         locale="fr"
-        onChange={time => helpers.setValue(time)}
+        onChange={time => {
+          helpers.setTouched(true)
+          helpers.setValue(time)
+        }}
         placeholderText="HH:MM"
-        selected={field.value ?? null}
+        selected={field.value}
         showTimeSelect
         showTimeSelectOnly
         timeCaption="Horaire"

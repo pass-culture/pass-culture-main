@@ -1,7 +1,9 @@
+import { useFormikContext } from 'formik'
 import React from 'react'
 
 import { DatePicker, TextInput, TimePicker } from 'ui-kit'
 
+import { OfferEducationalStockFormValues } from '../../../core/OfferEducationalStock/types'
 import {
   BOOKING_LIMIT_DATETIME_LABEL,
   EVENT_DATE_LABEL,
@@ -13,11 +15,13 @@ import {
 import styles from './FormStock.module.scss'
 
 const EACOfferStockCreationType = (): JSX.Element => {
+  const { values } = useFormikContext<OfferEducationalStockFormValues>()
   return (
     <>
       <DatePicker
         className={styles['form-field']}
         label={EVENT_DATE_LABEL}
+        minDateTime={new Date()}
         name="eventDate"
       />
       <TimePicker
@@ -42,6 +46,7 @@ const EACOfferStockCreationType = (): JSX.Element => {
       <DatePicker
         className={styles['form-field']}
         label={BOOKING_LIMIT_DATETIME_LABEL}
+        maxDateTime={new Date(values.eventDate)}
         name="bookingLimitDatetime"
       />
     </>

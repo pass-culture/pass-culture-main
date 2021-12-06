@@ -2,19 +2,23 @@ import { useFormik, FormikProvider } from 'formik'
 import React from 'react'
 
 import Banner from 'components/layout/Banner/Banner'
+import {
+  Offer,
+  OfferEducationalStockFormValues,
+} from 'core/OfferEducationalStock/types'
 import FormLayout from 'new_components/FormLayout'
 import { SubmitButton } from 'ui-kit'
 
 import { OfferStatus } from './constants/offerStatus'
 import FormStock from './FormStock'
 import styles from './OfferEducationalStock.module.scss'
-import { Offer, OfferEducationalStockFormValues } from './types'
 import { isOfferDisabled } from './utils'
+import { validationSchema } from './validationSchema'
 
 export interface IOfferEducationalStockProps {
   initialValues: OfferEducationalStockFormValues
   offer: Offer
-  onSubmit: (values: OfferEducationalStockFormValues) => void
+  onSubmit: (offer: Offer, values: OfferEducationalStockFormValues) => void
 }
 
 const OfferEducationalStock = ({
@@ -25,12 +29,10 @@ const OfferEducationalStock = ({
   const isOfferDraft = offer.status === OfferStatus.OFFER_STATUS_DRAFT
   const offerIsDisbaled = isOfferDisabled(offer.status)
 
-  // TODO (Gautier, 2021-11-22) : À modifier au branchement du backend
-  const hasNoStock = false
-
   const formik = useFormik({
     initialValues,
-    onSubmit: onSubmit,
+    onSubmit: values => onSubmit(offer, values),
+    validationSchema: validationSchema,
   })
 
   return (
@@ -61,7 +63,7 @@ const OfferEducationalStock = ({
           <FormLayout.Actions className={styles['action-section']}>
             <SubmitButton
               className=""
-              disabled={offerIsDisbaled || hasNoStock}
+              disabled={offerIsDisbaled}
               isLoading={false}
             >
               {isOfferDraft ? 'Valider et créer l’offre' : 'Enregistrer'}

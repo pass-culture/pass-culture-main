@@ -44,24 +44,21 @@ const DatePicker = ({
         {label}
       </label>
       <ReactDatePicker
-        customInput={
-          <input
-            className={styles['date-picker-input']}
-            id={`datepicker-${name}`}
-            type="date"
-            {...field}
-          />
-        }
+        {...field}
+        className={styles['date-picker-input']}
         dateFormat="dd/MM/yyyy"
         disabled={disabled}
         dropdownMode="scroll"
         locale="fr"
         maxDate={maxDateTime}
         minDate={minDateTime}
-        onChange={date => helpers.setValue(date)}
+        onChange={date => {
+          helpers.setTouched(true)
+          helpers.setValue(date, true)
+        }}
         openToDate={field.value ? field.value : openingDateTime}
         placeholderText="JJ/MM/AAAA"
-        selected={field.value ?? new Date()}
+        selected={field.value}
       />
 
       {meta.touched && !!meta.error && <FieldError>{meta.error}</FieldError>}

@@ -1,7 +1,6 @@
 import { GetIsOffererEligibleToEducationalOffer } from 'core/OfferEducational'
+import { hasStatusCode } from 'core/OfferEducational/utils'
 import * as pcapi from 'repository/pcapi/pcapi'
-
-import { hasStatusCode } from './utils'
 
 const FAILING_RESPONSE = {
   isOk: false,
