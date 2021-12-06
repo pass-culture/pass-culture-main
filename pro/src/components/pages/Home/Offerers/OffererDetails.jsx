@@ -129,7 +129,7 @@ const OffererDetails = ({
                       <li className="h-dl-row">
                         <span className="h-dl-title">{'Siège social : '}</span>
                         <address className="od-address">
-                          {selectedOfferer.address}
+                          {`${selectedOfferer.address} `}
                           {selectedOfferer.hasMissingBankInformation && <br />}
                           {`${selectedOfferer.postalCode} ${selectedOfferer.city}`}
                         </address>
