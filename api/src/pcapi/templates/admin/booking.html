@@ -12,7 +12,11 @@
 <hr>
 <p>
 <div><b>Code :</b> {{ booking.token }}</div>
+{% if booking.individualBookingId %}
 <div><b>Bénéficiaire :</b> {{ booking.email }} ({{ booking.individualBooking.user.id }})</div>
+{% else %}
+<div><b>Rédacteur:</b> {{ booking.email }} ({{ booking.educationalBooking.educationalRedactor.id }})</div>
+{% endif %}
 <div><b>Offre :</b> {{ booking.stock.offer.name }}</div>
 <div><b>Date d'annulation :</b>
     {% if booking.isCancelled %}

@@ -5,6 +5,7 @@ import pytest
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingStatus
+from pcapi.core.educational.models import EducationalBookingStatus
 import pcapi.core.payments.factories as payments_factories
 import pcapi.core.users.factories as users_factories
 
@@ -71,6 +72,26 @@ class BookingViewTest:
         assert "ne peut pas être validée via ce formulaire." in content
         booking = Booking.query.get(booking.id)
         assert not booking.isUsed
+
+    def test_uncancel_and_mark_as_used_educational_booking(self, app):
+        users_factories.AdminFactory(email="admin@example.com")
+        booking = bookings_factories.RefusedEducationalBookingFactory()
+
+        client = TestClient(app.test_client()).with_session_auth("admin@example.com")
+        route = f"/pc/back-office/bookings/mark-as-used/{booking.id}"
+        response = client.post(route, form={})
+
+        assert response.status_code == 302
+        assert response.location == f"http://localhost/pc/back-office/bookings/?id={booking.id}"
+        response = client.get(response.location)
+        content = response.data.decode(response.charset)
+        assert "La réservation a été dés-annulée et marquée comme utilisée." in content
+        booking = Booking.query.get(booking.id)
+        assert not booking.isCancelled
+        assert booking.status is not BookingStatus.CANCELLED
+        assert booking.isUsed
+        assert booking.status is BookingStatus.USED
+        assert booking.educationalBooking.status is EducationalBookingStatus.USED_BY_INSTITUTE
 
     def test_cancel_booking(self, app, client):
         admin = users_factories.AdminFactory()
