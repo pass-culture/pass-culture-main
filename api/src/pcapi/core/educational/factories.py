@@ -85,3 +85,7 @@ class UsedEducationalBookingFactory(EducationalBookingFactory):
 class PendingEducationalBookingFactory(EducationalBookingFactory):
     status = None
     confirmationLimitDate = datetime.datetime.utcnow() + datetime.timedelta(days=15)
+
+
+class RefusedEducationalBookingFactory(EducationalBookingFactory):
+    status = EducationalBookingStatus.REFUSED

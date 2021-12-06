@@ -13,6 +13,7 @@ from pcapi.admin.base_configuration import BaseCustomAdminView
 import pcapi.core.bookings.api as bookings_api
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import IndividualBooking
+from pcapi.core.educational.models import EducationalBooking
 from pcapi.core.offers.models import Stock
 from pcapi.domain.client_exceptions import ClientError
 from pcapi.models.api_errors import ApiErrors
@@ -51,6 +52,7 @@ class BookingView(BaseCustomAdminView):
                 booking = (
                     Booking.query.filter_by(token=token)
                     .options(joinedload(Booking.individualBooking).joinedload(IndividualBooking.user))
+                    .options(joinedload(Booking.educationalBooking).joinedload(EducationalBooking.educationalRedactor))
                     .options(joinedload(Booking.stock).joinedload(Stock.offer))
                     .one_or_none()
                 )
