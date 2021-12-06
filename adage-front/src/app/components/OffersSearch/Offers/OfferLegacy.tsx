@@ -1,4 +1,4 @@
-import "./Offer.scss"
+import "./OfferLegacy.scss"
 import React, { Fragment } from "react"
 
 import { ReactComponent as Logo } from "assets/logo-with-text.svg"
@@ -15,7 +15,7 @@ export const formatToReadableString = (input: string | null): string | null => {
   return lowerCasedInput.charAt(0).toUpperCase() + lowerCasedInput.slice(1)
 }
 
-export const Offer = ({
+export const OfferLegacy = ({
   canPrebookOffers,
   offer,
   thumbUrl,
