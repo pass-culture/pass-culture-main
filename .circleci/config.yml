@@ -767,7 +767,7 @@ jobs:
             - run:
                 name: Check deployed version
                 command: |
-                  COMPONENT_URL="https://pro.$(./scripts/compute_component_partial_url.sh <<parameters.app_environment>>)"
+                  COMPONENT_URL="https://$(./scripts/compute_pro_url.sh <<parameters.app_environment>>)"
                   ./scripts/check_current_tag_is_deployed.sh "$COMPONENT_URL"
             - run:
                 name: Send failure notification
@@ -810,7 +810,7 @@ jobs:
             - run:
                 name: Check deployed version
                 command: |
-                  COMPONENT_URL="https://app.$(./scripts/compute_component_partial_url.sh <<parameters.app_environment>>)"
+                  COMPONENT_URL="https://$(./scripts/compute_webapp_url.sh <<parameters.app_environment>>)"
                   ./scripts/check_current_tag_is_deployed.sh "$COMPONENT_URL"
             - run:
                 name: Send failure notification
