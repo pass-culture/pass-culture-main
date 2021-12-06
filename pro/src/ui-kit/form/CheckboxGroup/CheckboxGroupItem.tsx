@@ -1,50 +1,38 @@
 import cn from 'classnames'
+import { useField } from 'formik'
 import React from 'react'
 
 import styles from './CheckboxGroup.module.scss'
 
 interface ICheckboxProps {
-  value: string
+  setGroupTouched(): void
+  name: string
   label: string
-  formikFieldValue: string[]
-  setValue(value: string[]): void
-  hasError: boolean
+  Icon?: React.FunctionComponent<React.SVGProps<SVGSVGElement>>
 }
 
 const CheckboxGroupItem = ({
-  hasError,
-  value,
+  setGroupTouched,
   label,
-  formikFieldValue,
-  setValue,
+  name,
+  Icon,
 }: ICheckboxProps): JSX.Element => {
-  const handleChange = () => {
-    const values = formikFieldValue || []
-    const index = values.indexOf(value)
+  const [field] = useField({ name, type: 'checkbox' })
 
-    if (index === -1) {
-      values.push(value)
-    } else {
-      values.splice(index, 1)
-    }
-
-    setValue(values)
+  const onChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
+    setGroupTouched()
+    field.onChange(event)
   }
 
   return (
-    <label
-      className={cn(styles['checkbox-label'], {
-        [styles['has-error']]: hasError,
-      })}
-      key={value}
-    >
+    <label className={cn(styles['checkbox-label'])}>
       <input
-        checked={formikFieldValue.includes(value)}
         className={styles['checkbox-input']}
-        onChange={handleChange}
         type="checkbox"
-        value={value}
+        {...field}
+        onChange={onChange}
       />
+      {!!Icon && <Icon className={styles['checkbox-icon']} />}
 
       {label}
     </label>

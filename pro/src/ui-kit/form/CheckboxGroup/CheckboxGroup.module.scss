@@ -11,9 +11,14 @@
     align-items: center;
     line-height: 1em;
 
-    &.has-error {
+    .has-error & {
       color: $primary;
     }
+  }
+
+  &-icon {
+    margin-right: rem(8px);
+    width: rem(24px)
   }
 
   &-input {

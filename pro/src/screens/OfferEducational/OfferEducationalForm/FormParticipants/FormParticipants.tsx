@@ -12,7 +12,7 @@ const FormParticipants = (): JSX.Element => {
       title="Public visé"
     >
       <FormLayout.Row>
-        <CheckboxGroup group={participantsOptions} name="participants" />
+        <CheckboxGroup group={participantsOptions} groupName="participants" />
       </FormLayout.Row>
     </FormLayout.Section>
   )

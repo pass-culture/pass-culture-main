@@ -21,11 +21,11 @@ export enum ADRESS_TYPE {
 }
 
 export enum ACCESSIBILITY {
-  VISUAL = 'VISUAL',
-  MENTAL = 'MENTAL',
-  AUDIO = 'AUDIO',
-  MOTOR = 'MOTOR',
-  NONE = 'NONE',
+  VISUAL = 'visual',
+  MENTAL = 'mental',
+  AUDIO = 'audio',
+  MOTOR = 'motor',
+  NONE = 'none',
 }
 
 export type IEducationalCategory = {
@@ -52,8 +52,23 @@ export type IOfferEducationalFormValues = {
     otherAddress: string
     venueId: string
   }
-  participants: string[]
-  accessibility: string[]
+  participants: {
+    quatrieme: boolean
+    troisieme: boolean
+    CAPAnnee1: boolean
+    CAPAnnee2: boolean
+    seconde: boolean
+    premiere: boolean
+    terminale: boolean
+    all: boolean
+  }
+  accessibility: {
+    visual: boolean
+    audio: boolean
+    motor: boolean
+    mental: boolean
+    none: boolean
+  }
   phone: string
   email: string
   notifications: boolean
