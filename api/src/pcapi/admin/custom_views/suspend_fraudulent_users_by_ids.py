@@ -46,7 +46,8 @@ class SuspendFraudulentUsersByUserIdsView(BaseCustomAdminView):
                 user_ids_csv_file = TextIOWrapper(user_ids_csv_file, encoding="ascii")
                 csv_rows = csv.reader(user_ids_csv_file)
                 user_ids = [int(row[0]) for row in csv_rows if row and row[0].isdigit()]
-                suspend_fraudulent_beneficiary_users_by_ids_job.delay(user_ids, current_user)
+                admin_user = current_user._get_current_object()
+                suspend_fraudulent_beneficiary_users_by_ids_job.delay(user_ids, admin_user)
                 flash(
                     "La suspension des utilisateurs via ids a bien été lancée, l'opération peut prendre plusieurs "
                     "minutes. Vous recevrez un mail récapitulatif à la fin de l'opération",
