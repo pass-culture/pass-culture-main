@@ -37,7 +37,7 @@ const OfferSummary = ({offer}: {offer: OfferType}): JSX.Element => {
     ''
 
   return (
-    <>
+    <div>
       <ul className="offer-summary">
         <li className="offer-summary-item">
           <SubcategoryIcon className="offer-summary-item-icon" />
@@ -75,7 +75,7 @@ const OfferSummary = ({offer}: {offer: OfferType}): JSX.Element => {
           </li>
         )}
       </ul>
-    </>
+    </div>
   )
 }
 
