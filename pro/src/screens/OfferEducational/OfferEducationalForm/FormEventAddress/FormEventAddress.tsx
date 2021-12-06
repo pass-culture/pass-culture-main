@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'
 
 import Banner from 'components/layout/Banner/Banner'
 import {
-  INITIAL_EDUCATIONAL_FORM_VALUES,
+  DEFAULT_EAC_FORM_VALUES,
   ADRESS_TYPE,
   IOfferEducationalFormValues,
   IUserOfferer,
@@ -40,7 +40,7 @@ const FormEventAddress = ({
     ) {
       setFieldValue(
         'eventAddress.venueId',
-        INITIAL_EDUCATIONAL_FORM_VALUES.eventAddress.venueId
+        DEFAULT_EAC_FORM_VALUES.eventAddress.venueId
       )
       setCurrentVenue(null)
     }
@@ -51,7 +51,7 @@ const FormEventAddress = ({
     ) {
       setFieldValue(
         'eventAddress.otherAddress',
-        INITIAL_EDUCATIONAL_FORM_VALUES.eventAddress.otherAddress
+        DEFAULT_EAC_FORM_VALUES.eventAddress.otherAddress
       )
     }
   }, [values.eventAddress, setFieldValue])

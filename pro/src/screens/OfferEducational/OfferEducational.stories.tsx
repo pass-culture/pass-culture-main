@@ -1,7 +1,7 @@
 import { action } from '@storybook/addon-actions'
 import React from 'react'
 
-import { INITIAL_EDUCATIONAL_FORM_VALUES } from 'core/OfferEducational'
+import { DEFAULT_EAC_FORM_VALUES } from 'core/OfferEducational'
 
 import { withPageTemplate } from '../../stories/decorators/withPageTemplate'
 import { withRouterDecorator } from '../../stories/decorators/withRouter'
@@ -60,7 +60,7 @@ const Template = () => (
         payload: { isOffererEligibleToEducationalOffer: true },
       })
     }}
-    initialValues={INITIAL_EDUCATIONAL_FORM_VALUES}
+    initialValues={DEFAULT_EAC_FORM_VALUES}
     notify={{
       success: action('success'),
       error: action('error'),
