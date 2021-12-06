@@ -382,7 +382,11 @@ def profiling_fraud_score(user: User, body: serializers.UserProfilingFraudReques
     except user_profiling.BaseUserProfilingException:
         logger.exception("Error while retrieving user profiling infos", exc_info=True)
     else:
-        logger.info("Success when profiling user: returned userdata %r", profiling_infos.dict())
+        logger.info(
+            "Success when profiling user: returned userdata %r",
+            profiling_infos.dict(),
+            extra={"sessionId": body.sessionId},
+        )
         fraud_api.on_user_profiling_result(user, profiling_infos)
 
 
