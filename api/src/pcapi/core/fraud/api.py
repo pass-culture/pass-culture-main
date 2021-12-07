@@ -4,6 +4,7 @@ import re
 import typing
 
 import pydantic
+import pytz
 import sqlalchemy
 
 from pcapi.connectors.beneficiaries import jouve_backend
@@ -267,7 +268,7 @@ def get_eligibility_type(
         registration_datetime = data.registration_datetime
         birth_date = data.birth_date
     elif isinstance(data, models.DMSContent):
-        registration_datetime = data.registration_datetime
+        registration_datetime = data.registration_datetime.astimezone(pytz.utc).replace(tzinfo=None)
         birth_date = data.birth_date
     else:
         raise exceptions.InvalidContentTypeException()
