@@ -22,7 +22,7 @@ ALLOWED_EXTENSIONS = {".csv"}
 
 
 def allowed_file(filename):
-    return pathlib.Path(filename).suffix in ALLOWED_EXTENSIONS
+    return pathlib.Path(filename).suffix.lower() in ALLOWED_EXTENSIONS
 
 
 class SuspendFraudulentUsersByIdsForm(SecureForm):
