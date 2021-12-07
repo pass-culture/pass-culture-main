@@ -14,7 +14,7 @@ class FactoriesTest:
             (fraud_models.FraudCheckType.DMS, fraud_models.DMSContent),
             (fraud_models.FraudCheckType.JOUVE, fraud_models.JouveContent),
             (fraud_models.FraudCheckType.USER_PROFILING, fraud_models.UserProfilingFraudData),
-            (fraud_models.FraudCheckType.UBBLE, fraud_models.UbbleContent),
+            (fraud_models.FraudCheckType.UBBLE, fraud_models.ubble.UbbleContent),
         ],
     )
     def test_database_serialization(self, check_type, model_class):

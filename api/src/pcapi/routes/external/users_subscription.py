@@ -106,7 +106,7 @@ def dms_webhook_update_application_status(form: dms_validation.DMSWebhookRequest
 def ubble_webhook_update_application_status(
     body: ubble_validation.WebhookRequest,
 ) -> ubble_validation.WebhookDummyReponse:
-    fraud_check = fraud_api.get_ubble_fraud_check(body.identification_id)
+    fraud_check = fraud_api.ubble.get_ubble_fraud_check(body.identification_id)
     if not fraud_check:
         raise ValueError(f"no Ubble fraud check found with identification_id {body.identification_id}")
 

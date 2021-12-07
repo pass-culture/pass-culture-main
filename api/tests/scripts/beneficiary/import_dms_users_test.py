@@ -22,6 +22,7 @@ from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.core.users.constants import ELIGIBILITY_AGE_18
 from pcapi.models.beneficiary_import import BeneficiaryImport
+from pcapi.models.beneficiary_import import BeneficiaryImportSources
 from pcapi.models.beneficiary_import_status import ImportStatus
 import pcapi.notifications.push.testing as push_testing
 from pcapi.scripts.beneficiary import import_dms_users
@@ -323,6 +324,7 @@ class RunTest:
             ),
             application_id=123,
             source_id=6712558,
+            source=BeneficiaryImportSources.demarches_simplifiees,
         )
 
 

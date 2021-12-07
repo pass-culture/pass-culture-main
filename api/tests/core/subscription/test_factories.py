@@ -1,13 +1,15 @@
 from collections import defaultdict
 import datetime
 from enum import Enum
+import random
+import string
 import uuid
 
 from dateutil.relativedelta import relativedelta
 import factory
 
 from pcapi import settings
-from pcapi.core.fraud import models as fraud_models
+from pcapi.core.fraud.models import ubble as ubble_models
 
 
 class IdentificationState(Enum):
@@ -21,13 +23,13 @@ class IdentificationState(Enum):
 
 
 STATE_STATUS_MAPPING = {
-    IdentificationState.NEW: fraud_models.IdentificationStatus.UNINITIATED,
-    IdentificationState.INITIATED: fraud_models.IdentificationStatus.INITIATED,
-    IdentificationState.ABORTED: fraud_models.IdentificationStatus.ABORTED,
-    IdentificationState.PROCESSING: fraud_models.IdentificationStatus.PROCESSING,
-    IdentificationState.VALID: fraud_models.IdentificationStatus.PROCESSED,
-    IdentificationState.INVALID: fraud_models.IdentificationStatus.PROCESSED,
-    IdentificationState.UNPROCESSABLE: fraud_models.IdentificationStatus.PROCESSED,
+    IdentificationState.NEW: ubble_models.UbbleIdentificationStatus.UNINITIATED,
+    IdentificationState.INITIATED: ubble_models.UbbleIdentificationStatus.INITIATED,
+    IdentificationState.ABORTED: ubble_models.UbbleIdentificationStatus.ABORTED,
+    IdentificationState.PROCESSING: ubble_models.UbbleIdentificationStatus.PROCESSING,
+    IdentificationState.VALID: ubble_models.UbbleIdentificationStatus.PROCESSED,
+    IdentificationState.INVALID: ubble_models.UbbleIdentificationStatus.PROCESSED,
+    IdentificationState.UNPROCESSABLE: ubble_models.UbbleIdentificationStatus.PROCESSED,
 }
 
 
@@ -38,7 +40,7 @@ class IdentificationIncludedType(Enum):
 
 class UbbleIdentificationDataAttributesFactory(factory.Factory):
     class Meta:
-        model = fraud_models.UbbleIdentificationAttributes
+        model = ubble_models.UbbleIdentificationAttributes
         rename = {
             "anonymized_at": "anonymized-at",
             "created_at": "created-at",
@@ -83,9 +85,9 @@ class UbbleIdentificationDataAttributesFactory(factory.Factory):
     @factory.lazy_attribute
     def score(self):
         return {
-            IdentificationState.UNPROCESSABLE: fraud_models.UbbleScore.UNDECIDABLE.value,
-            IdentificationState.INVALID: fraud_models.UbbleScore.INVALID.value,
-            IdentificationState.VALID: fraud_models.UbbleScore.VALID.value,
+            IdentificationState.UNPROCESSABLE: ubble_models.UbbleScore.UNDECIDABLE.value,
+            IdentificationState.INVALID: ubble_models.UbbleScore.INVALID.value,
+            IdentificationState.VALID: ubble_models.UbbleScore.VALID.value,
         }.get(self.identification_state)
 
     @factory.lazy_attribute
@@ -160,7 +162,7 @@ class UbbleIdentificationDataAttributesFactory(factory.Factory):
 
 class UbbleIdentificationDataFactory(factory.Factory):
     class Meta:
-        model = fraud_models.UbbleIdentificationData
+        model = ubble_models.UbbleIdentificationData
 
     class Params:
         identification_state = IdentificationState.NEW
@@ -175,7 +177,7 @@ class UbbleIdentificationDataFactory(factory.Factory):
 
 class UbbleIdentificationIncludedDocumentsAttributesFactory(factory.Factory):
     class Meta:
-        model = fraud_models.UbbleIdentificationDocuments
+        model = ubble_models.UbbleIdentificationDocuments
         rename = {
             "birth_date": "birth-date",
             "birth_place": "birth-place",
@@ -194,7 +196,7 @@ class UbbleIdentificationIncludedDocumentsAttributesFactory(factory.Factory):
 
     birth_date = factory.LazyFunction(lambda: str(datetime.date.today() - relativedelta(years=18)))
     birth_place = None
-    document_number = factory.Faker("pyint")
+    document_number = factory.LazyFunction(lambda: "".join(random.choice(string.digits) for _ in range(12)))
     document_type = "ID"
     document_type_detailed = None
     expiry_date = None
@@ -215,7 +217,7 @@ class UbbleIdentificationIncludedDocumentsAttributesFactory(factory.Factory):
 
 class UbbleIdentificationIncludedDocumentChecksAttributesFactory(factory.Factory):
     class Meta:
-        model = fraud_models.UbbleIdentificationDocumentChecks
+        model = ubble_models.UbbleIdentificationDocumentChecks
         rename = {
             "data_extracted_score": "data-extracted-score",
             "expiry_date_score": "expiry-date-score",
@@ -235,7 +237,7 @@ class UbbleIdentificationIncludedDocumentChecksAttributesFactory(factory.Factory
         identification_state = IdentificationState.VALID
 
     data_extracted_score = None
-    expiry_date_score = fraud_models.UbbleScore.VALID.value
+    expiry_date_score = ubble_models.UbbleScore.VALID.value
     issue_date_score = None
     live_video_capture_score = None
     mrz_validity_score = None
@@ -244,22 +246,22 @@ class UbbleIdentificationIncludedDocumentChecksAttributesFactory(factory.Factory
     ove_front_score = None
     ove_score = None
     quality_score: None
-    supported = fraud_models.UbbleScore.VALID.value
+    supported = ubble_models.UbbleScore.VALID.value
     visual_back_score = None
     visual_front_score = None
 
     @factory.lazy_attribute
     def score(self):
         return {
-            IdentificationState.UNPROCESSABLE: fraud_models.UbbleScore.INVALID.value,
-            IdentificationState.INVALID: fraud_models.UbbleScore.INVALID.value,
-            IdentificationState.VALID: fraud_models.UbbleScore.VALID.value,
+            IdentificationState.UNPROCESSABLE: ubble_models.UbbleScore.INVALID.value,
+            IdentificationState.INVALID: ubble_models.UbbleScore.INVALID.value,
+            IdentificationState.VALID: ubble_models.UbbleScore.VALID.value,
         }.get(self.identification_state)
 
 
 class UbbleIdentificationIncludedFactory(factory.Factory):
     class Meta:
-        model = fraud_models.UbbleIdentificationIncluded
+        model = ubble_models.UbbleIdentificationIncluded
         abstract = True
 
     type = None
@@ -279,7 +281,7 @@ class UbbleUbbleIdentificationIncludedDocumentChecksFactory(UbbleIdentificationI
 
 class UbbleIdentificationResponseFactory(factory.Factory):
     class Meta:
-        model = fraud_models.UbbleIdentificationResponse
+        model = ubble_models.UbbleIdentificationResponse
 
     class Params:
         identification_state = IdentificationState.NEW
@@ -312,10 +314,3 @@ class UbbleIdentificationResponseFactory(factory.Factory):
         )[self.identification_state]
 
         return [sf(identification_state=self.identification_state) for sf in included_data]
-
-
-if __name__ == "__main__":
-    from pprint import pprint
-
-    response = UbbleIdentificationResponseFactory(identification_state=IdentificationState.PROCESSING)
-    pprint(response.dict())

@@ -10,6 +10,7 @@ import factory.fuzzy
 import pytz
 
 from pcapi.core import testing
+import pcapi.core.fraud.models as fraud_models
 import pcapi.core.users.factories as users_factories
 
 from . import models
@@ -113,7 +114,7 @@ class DMSContentFactory(factory.Factory):
 
 class UbbleContentFactory(factory.Factory):
     class Meta:
-        model = models.UbbleContent
+        model = fraud_models.ubble.UbbleContent
 
     status = None
     birth_date = None

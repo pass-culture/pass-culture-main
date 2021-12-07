@@ -1,4 +1,4 @@
-from pcapi.core.fraud import models as fraud_models
+from pcapi.core.fraud.models import ubble as ubble_models
 
 
 UBBLE_IDENTIFICATION_RESPONSE = {
@@ -6,7 +6,7 @@ UBBLE_IDENTIFICATION_RESPONSE = {
         "type": "identifications",
         "id": "3191295",
         "attributes": {
-            "score": fraud_models.UbbleScore.INVALID.value,
+            "score": ubble_models.UbbleScore.INVALID.value,
             "anonymized-at": None,
             "comment": None,
             "created-at": "2021-11-18T18:59:59.273402Z",
@@ -50,20 +50,20 @@ UBBLE_IDENTIFICATION_RESPONSE = {
             "type": "document-checks",
             "id": "4997875",
             "attributes": {
-                "data-extracted-score": fraud_models.UbbleScore.INVALID.value,
-                "expiry-date-score": fraud_models.UbbleScore.INVALID.value,
+                "data-extracted-score": ubble_models.UbbleScore.INVALID.value,
+                "expiry-date-score": ubble_models.UbbleScore.INVALID.value,
                 "issue-date-score": None,
                 "live-video-capture-score": None,
-                "mrz-validity-score": fraud_models.UbbleScore.INVALID.value,
-                "mrz-viz-score": fraud_models.UbbleScore.INVALID.value,
-                "ove-back-score": fraud_models.UbbleScore.INVALID.value,
-                "ove-front-score": fraud_models.UbbleScore.INVALID.value,
-                "ove-score": fraud_models.UbbleScore.INVALID.value,
-                "quality-score": fraud_models.UbbleScore.INVALID.value,
-                "score": fraud_models.UbbleScore.INVALID.value,
-                "supported": fraud_models.UbbleScore.INVALID.value,
-                "visual-back-score": fraud_models.UbbleScore.INVALID.value,
-                "visual-front-score": fraud_models.UbbleScore.INVALID.value,
+                "mrz-validity-score": ubble_models.UbbleScore.INVALID.value,
+                "mrz-viz-score": ubble_models.UbbleScore.INVALID.value,
+                "ove-back-score": ubble_models.UbbleScore.INVALID.value,
+                "ove-front-score": ubble_models.UbbleScore.INVALID.value,
+                "ove-score": ubble_models.UbbleScore.INVALID.value,
+                "quality-score": ubble_models.UbbleScore.INVALID.value,
+                "score": ubble_models.UbbleScore.INVALID.value,
+                "supported": ubble_models.UbbleScore.INVALID.value,
+                "visual-back-score": ubble_models.UbbleScore.INVALID.value,
+                "visual-front-score": ubble_models.UbbleScore.INVALID.value,
             },
             "relationships": {},
         },

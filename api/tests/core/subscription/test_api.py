@@ -212,6 +212,7 @@ class UbbleWorkflowTest:
         assert fraud_check.type == fraud_models.FraudCheckType.UBBLE
         assert fraud_check.thirdPartyId is not None
         assert fraud_check.resultContent is not None
+        assert fraud_check.status == fraud_models.FraudCheckStatus.PENDING
 
         ubble_request = ubble_mock.last_request.json()
         assert ubble_request["data"]["attributes"]["webhook"] == "http://localhost/webhooks/ubble/application_status"
@@ -221,28 +222,32 @@ class UbbleWorkflowTest:
         [
             (
                 IdentificationState.INITIATED,
-                fraud_models.IdentificationStatus.INITIATED,
+                fraud_models.ubble.UbbleIdentificationStatus.INITIATED,
                 fraud_models.FraudCheckStatus.PENDING,
             ),
             (
                 IdentificationState.PROCESSING,
-                fraud_models.IdentificationStatus.PROCESSING,
+                fraud_models.ubble.UbbleIdentificationStatus.PROCESSING,
                 fraud_models.FraudCheckStatus.PENDING,
             ),
-            (IdentificationState.VALID, fraud_models.IdentificationStatus.PROCESSED, fraud_models.FraudCheckStatus.OK),
+            (
+                IdentificationState.VALID,
+                fraud_models.ubble.UbbleIdentificationStatus.PROCESSED,
+                fraud_models.FraudCheckStatus.OK,
+            ),
             (
                 IdentificationState.INVALID,
-                fraud_models.IdentificationStatus.PROCESSED,
+                fraud_models.ubble.UbbleIdentificationStatus.PROCESSED,
                 fraud_models.FraudCheckStatus.KO,
             ),
             (
                 IdentificationState.UNPROCESSABLE,
-                fraud_models.IdentificationStatus.PROCESSED,
+                fraud_models.ubble.UbbleIdentificationStatus.PROCESSED,
                 fraud_models.FraudCheckStatus.KO,
             ),
             (
                 IdentificationState.ABORTED,
-                fraud_models.IdentificationStatus.ABORTED,
+                fraud_models.ubble.UbbleIdentificationStatus.ABORTED,
                 fraud_models.FraudCheckStatus.CANCELED,
             ),
         ],
@@ -256,13 +261,11 @@ class UbbleWorkflowTest:
             fraud_check.thirdPartyId,
             json.dumps(ubble_response.dict(by_alias=True), sort_keys=True, default=json_default),
         ):
-            updated_fraud_check = subscription_api.update_ubble_workflow(
-                fraud_check, ubble_response.data.attributes.status
-            )
+            subscription_api.update_ubble_workflow(fraud_check, ubble_response.data.attributes.status)
 
-        ubble_content = updated_fraud_check.resultContent
+        ubble_content = fraud_check.resultContent
         assert ubble_content["status"] == status.value
-        assert updated_fraud_check.status == fraud_check_status
+        assert fraud_check.status == fraud_check_status
 
 
 @pytest.mark.usefixtures("db_session")
@@ -562,7 +565,11 @@ class OnSucessfulDMSApplicationTest:
         # when
 
         subscription_api.on_successful_application(
-            user=applicant, source_data=information, application_id=123, source_id=123456
+            user=applicant,
+            source=BeneficiaryImportSources.demarches_simplifiees,
+            source_data=information,
+            application_id=123,
+            source_id=123456,
         )
 
         # then
@@ -595,7 +602,11 @@ class OnSucessfulDMSApplicationTest:
         applicant = users_factories.UserFactory(email=information.email)
         # when
         subscription_api.on_successful_application(
-            user=applicant, source_data=information, application_id=123, source_id=123456
+            user=applicant,
+            source=BeneficiaryImportSources.demarches_simplifiees,
+            source_data=information,
+            application_id=123,
+            source_id=123456,
         )
 
         # then
@@ -617,6 +628,7 @@ class OnSucessfulDMSApplicationTest:
         with pytest.raises(api_errors.ApiErrors):
             subscription_api.on_successful_application(
                 user=applicant,
+                source=BeneficiaryImportSources.demarches_simplifiees,
                 source_data=information,
                 application_id=123,
                 source_id=123456,
@@ -654,6 +666,7 @@ class OnSucessfulDMSApplicationTest:
             # the DMS application is confirmed after the user turns 18
             subscription_api.on_successful_application(
                 user=applicant,
+                source=BeneficiaryImportSources.demarches_simplifiees,
                 source_data=information,
                 application_id=123,
                 source_id=123456,

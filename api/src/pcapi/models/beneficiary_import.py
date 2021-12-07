@@ -22,6 +22,7 @@ class BeneficiaryImportSources(Enum):
     demarches_simplifiees = "demarches_simplifiees"
     jouve = "jouve"
     educonnect = "educonnect"
+    ubble = "ubble"
 
 
 class BeneficiaryImport(PcObject, Model):
