@@ -28,3 +28,13 @@ class PricingFactory(BaseFactory):
     amount = LazyAttribute(lambda pricing: int(100 * pricing.booking.total_amount))
     standardRule = "full reimbursement"
     revenue = LazyAttribute(lambda pricing: int(100 * pricing.booking.total_amount))
+
+
+class InvoiceFactory(BaseFactory):
+    class Meta:
+        model = models.Invoice
+
+    businessUnit = factory.SubFactory(BusinessUnitFactory)
+    amount = 1000
+    reference = factory.Sequence("{:09}".format)
+    url = LazyAttribute(lambda invoice: f"/finance/invoices/{invoice.reference}.pdf")
