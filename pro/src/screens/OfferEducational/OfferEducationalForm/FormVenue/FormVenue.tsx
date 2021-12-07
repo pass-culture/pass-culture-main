@@ -11,13 +11,13 @@ import buildSelectOptions from '../../utils/buildSelectOptions'
 interface IFormVenueProps {
   userOfferers: IUserOfferer[]
   venuesOptions: SelectOptions
-  canCreateEducationalOffer: boolean | undefined
+  isEligible: boolean | undefined
 }
 
 const FormVenue = ({
   userOfferers,
   venuesOptions,
-  canCreateEducationalOffer,
+  isEligible,
 }: IFormVenueProps): JSX.Element => {
   const offerersOptions = buildSelectOptions(
     userOfferers,
@@ -39,17 +39,17 @@ const FormVenue = ({
           options={offerersOptions}
         />
       </FormLayout.Row>
-      {canCreateEducationalOffer === false && (
+      {isEligible === false && (
         <Banner href="#" linkTitle="Faire une demande de référencement">
           Pour proposer des offres à destination d’un groupe scolaire, vous
           devez être référencé auprès du ministère de l’Éducation Nationale et
           du ministère de la Culture.
         </Banner>
       )}
-      {canCreateEducationalOffer === true && (
+      {isEligible === true && (
         <FormLayout.Row>
           <Select
-            disabled={venuesOptions.length === 1 || !canCreateEducationalOffer}
+            disabled={venuesOptions.length === 1 || !isEligible}
             label={VENUE_LABEL}
             name="venueId"
             options={venuesOptions}
