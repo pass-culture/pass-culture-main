@@ -186,7 +186,7 @@ Il est possible de se connecter aux bases de données lancées via docker compos
 Pour une meilleure expérience de développement sur le repo API, des hooks ([pre-commit](api/hooks/pre-commit)
 , [pre-push](api/hooks/pre-push) ) s'exécutent lorsqu'un commit est effectué sur le projet API,
 
-L'environnement python en local est nécessaire pour que les outils d'anlyse de code (`isort`, `batch`, `pylint`...) se
+L'environnement python en local est nécessaire pour que les outils d'analyse de code (`isort`, `batch`, `pylint`...) se
 lancent.
 
 Si les hooks ne se lancent pas, lancer `pc install-hooks` (commande incluse dans `pc install`)
