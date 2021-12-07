@@ -8,6 +8,7 @@ import { queryParamsFromOfferer } from 'components/pages/Offers/utils/queryParam
 import {
   DEFAULT_EAC_FORM_VALUES,
   IOfferEducationalFormValues,
+  Mode,
 } from 'core/OfferEducational'
 import OfferEducationalScreen from 'screens/OfferEducational'
 import { IOfferEducationalProps } from 'screens/OfferEducational/OfferEducational'
@@ -95,6 +96,7 @@ const OfferEducationalCreation = (): JSX.Element => {
           getIsOffererEligibleToEducationalOfferAdapter
         }
         initialValues={initialValues}
+        mode={Mode.CREATION}
         notify={notify}
         onSubmit={createOffer}
       />
