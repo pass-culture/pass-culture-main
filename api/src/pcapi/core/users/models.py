@@ -3,14 +3,12 @@ from dataclasses import asdict
 from dataclasses import dataclass
 from datetime import date
 from datetime import datetime
-from datetime import time
 from decimal import Decimal
 import enum
 from operator import attrgetter
 import typing
 from typing import Optional
 
-from dateutil.relativedelta import relativedelta
 import sqlalchemy as sa
 from sqlalchemy import orm
 from sqlalchemy.dialects import postgresql
@@ -20,7 +18,7 @@ from sqlalchemy.ext.mutable import MutableList
 from sqlalchemy.sql import expression
 
 from pcapi import settings
-from pcapi.core.users import constants
+from pcapi.core.users import utils as users_utils
 from pcapi.core.users.exceptions import InvalidUserRoleException
 from pcapi.models import Model
 from pcapi.models import db
@@ -34,9 +32,6 @@ if typing.TYPE_CHECKING:
     from pcapi.core.payments.models import Deposit
     from pcapi.core.payments.models import DepositType
 
-
-ALGORITHM_HS_256 = "HS256"
-ALGORITHM_RS_256 = "RS256"
 
 VOID_FIRST_NAME = ""
 VOID_PUBLIC_NAME = "   "
@@ -98,20 +93,6 @@ class EligibilityCheckMethods(enum.Enum):
 class NotificationSubscriptions:
     marketing_push: bool = True
     marketing_email: bool = True
-
-
-def get_age_from_birth_date(birth_date: date) -> int:
-    return relativedelta(date.today(), birth_date).years
-
-
-def get_eligibility(age: int) -> Optional[EligibilityType]:
-    if age == constants.ELIGIBILITY_AGE_18:
-        return EligibilityType.AGE18
-
-    if age in constants.ELIGIBILITY_UNDERAGE_RANGE and FeatureToggle.ENABLE_NATIVE_EAC_INDIVIDUAL.is_active():
-        return EligibilityType.UNDERAGE
-
-    return None
 
 
 # calculate date of latest birthday
@@ -351,7 +332,7 @@ class User(PcObject, Model, NeedsValidationMixin):
 
     @property
     def age(self) -> Optional[int]:
-        return get_age_from_birth_date(self.dateOfBirth.date()) if self.dateOfBirth is not None else None
+        return users_utils.get_age_from_birth_date(self.dateOfBirth.date()) if self.dateOfBirth is not None else None
 
     @property
     def allowed_eligibility_check_methods(self) -> Optional[list[EligibilityCheckMethods]]:
@@ -396,35 +377,13 @@ class User(PcObject, Model, NeedsValidationMixin):
 
     @property
     def eligibility(self) -> Optional[EligibilityType]:
-        # To avoid import loops
+        from pcapi.core.users import api as users_api
         from pcapi.domain.beneficiary_pre_subscription.validator import _is_postal_code_eligible
 
         if not _is_postal_code_eligible(self.departementCode):
             return None
 
-        return get_eligibility(self.age)
-
-    @property
-    def eligibility_end_datetime(self) -> Optional[datetime]:
-        if not self.dateOfBirth:
-            return None
-
-        if FeatureToggle.ENABLE_NATIVE_EAC_INDIVIDUAL.is_active() and self.age < constants.ELIGIBILITY_AGE_18:
-            return datetime.combine(self.dateOfBirth, time(0, 0)) + relativedelta(
-                years=constants.ELIGIBILITY_UNDERAGE_RANGE[-1] + 1
-            )
-        return datetime.combine(self.dateOfBirth, time(0, 0)) + relativedelta(years=constants.ELIGIBILITY_AGE_18 + 1)
-
-    @property
-    def eligibility_start_datetime(self) -> Optional[datetime]:
-        if not self.dateOfBirth:
-            return None
-
-        if FeatureToggle.ENABLE_NATIVE_EAC_INDIVIDUAL.is_active():
-            return datetime.combine(self.dateOfBirth, time(0, 0)) + relativedelta(
-                years=constants.ELIGIBILITY_UNDERAGE_RANGE[0]
-            )
-        return datetime.combine(self.dateOfBirth, time(0, 0)) + relativedelta(years=constants.ELIGIBILITY_AGE_18)
+        return users_api.get_eligibility_at_date(self.dateOfBirth, datetime.now())
 
     @property
     def has_active_deposit(self):

@@ -40,6 +40,8 @@ from pcapi.core.users.api import fulfill_account_password
 from pcapi.core.users.api import fulfill_beneficiary_data
 from pcapi.core.users.api import generate_and_save_token
 from pcapi.core.users.api import get_domains_credit
+from pcapi.core.users.api import get_eligibility_at_date
+from pcapi.core.users.api import get_eligibility_start_datetime
 from pcapi.core.users.api import set_pro_tuto_as_seen
 from pcapi.core.users.api import steps_to_become_beneficiary
 from pcapi.core.users.exceptions import CloudTaskCreationException
@@ -48,6 +50,7 @@ from pcapi.core.users.factories import BeneficiaryImportFactory
 from pcapi.core.users.factories import UserFactory
 from pcapi.core.users.models import Credit
 from pcapi.core.users.models import DomainsCredit
+from pcapi.core.users.models import EligibilityType
 from pcapi.core.users.models import PhoneValidationStatusType
 from pcapi.core.users.models import Token
 from pcapi.core.users.models import TokenType
@@ -800,7 +803,7 @@ class CreateProUserTest:
 class AsynchronousIdentityDocumentVerificationTest:
     IMAGES_DIR = Path(tests.__path__[0]) / "files"
 
-    @patch("pcapi.core.users.api.store_object")
+    @patch("pcapi.core.users.utils.store_object")
     @patch("secrets.token_urlsafe")
     @patch("pcapi.core.users.api.verify_identity_document")
     def test_upload_identity_document_successful(
@@ -829,7 +832,7 @@ class AsynchronousIdentityDocumentVerificationTest:
             VerifyIdentityDocumentRequest(image_storage_path="identity_documents/a_very_random_secret.jpg")
         )
 
-    @patch("pcapi.core.users.api.store_object")
+    @patch("pcapi.core.users.utils.store_object")
     def test_upload_identity_document_fails_on_upload(
         self,
         mocked_store_object,
@@ -843,8 +846,8 @@ class AsynchronousIdentityDocumentVerificationTest:
         with pytest.raises(IdentityDocumentUploadException):
             asynchronous_identity_document_verification(identity_document, "toto@example.com")
 
-    @patch("pcapi.core.users.api.delete_object")
-    @patch("pcapi.core.users.api.store_object")
+    @patch("pcapi.core.users.utils.delete_object")
+    @patch("pcapi.core.users.utils.store_object")
     @patch("secrets.token_urlsafe")
     @patch("pcapi.core.users.api.verify_identity_document")
     def test_cloud_task_creation_fails(
@@ -869,7 +872,7 @@ class AsynchronousIdentityDocumentVerificationTest:
 
 
 class VerifyIdentityDocumentInformationsTest:
-    @patch("pcapi.core.users.api.delete_object")
+    @patch("pcapi.core.users.utils.delete_object")
     @patch("pcapi.core.users.api.ask_for_identity_document_verification")
     @patch("pcapi.core.users.api._get_identity_document_informations")
     def test_email_sent_when_document_is_invalid(
@@ -888,7 +891,7 @@ class VerifyIdentityDocumentInformationsTest:
         assert sent_data["MJ-TemplateID"] == 2958563
         assert caplog.records[0].message == "fraud internal validation : Cannot find user with email py@test.com"
 
-    @patch("pcapi.core.users.api.delete_object")
+    @patch("pcapi.core.users.utils.delete_object")
     @patch("pcapi.core.users.api.ask_for_identity_document_verification")
     @patch("pcapi.core.users.api._get_identity_document_informations")
     @freeze_time("2021-10-30 09:00:00")
@@ -910,7 +913,7 @@ class VerifyIdentityDocumentInformationsTest:
             == "Ton dossier a été refusé : ton document indique que tu n’as pas 18 ans. Consulte l’e-mail envoyé le 30/10/2021 pour plus d’informations."
         )
 
-    @patch("pcapi.core.users.api.delete_object")
+    @patch("pcapi.core.users.utils.delete_object")
     @patch("pcapi.core.users.api.ask_for_identity_document_verification")
     @patch("pcapi.core.users.api._get_identity_document_informations")
     @freeze_time("2021-10-30 09:00:00")
@@ -944,7 +947,7 @@ class VerifyIdentityDocumentInformationsTest:
             == "Ton dossier a été refusé : le document que tu as transmis est expiré. Consulte l’e-mail envoyé le 30/10/2021 pour plus d’informations."
         )
 
-    @patch("pcapi.core.users.api.delete_object")
+    @patch("pcapi.core.users.utils.delete_object")
     @patch("pcapi.core.users.api.ask_for_identity_document_verification")
     @patch("pcapi.core.users.api._get_identity_document_informations")
     @freeze_time("2021-10-30 09:00:00")
@@ -975,7 +978,7 @@ class VerifyIdentityDocumentInformationsTest:
             == "Nous n'arrivons pas à traiter ton document. Consulte l'e-mail envoyé le 30/10/2021 pour plus d'informations."
         )
 
-    @patch("pcapi.core.users.api.delete_object")
+    @patch("pcapi.core.users.utils.delete_object")
     @patch("pcapi.core.users.api.ask_for_identity_document_verification")
     @patch("pcapi.core.users.api._get_identity_document_informations")
     @freeze_time("2021-10-30 09:00:00")
@@ -1008,7 +1011,7 @@ class VerifyIdentityDocumentInformationsTest:
             == "Nous n'arrivons pas à traiter ton document. Consulte l'e-mail envoyé le 30/10/2021 pour plus d'informations."
         )
 
-    @patch("pcapi.core.users.api.delete_object")
+    @patch("pcapi.core.users.utils.delete_object")
     @patch("pcapi.core.users.api.ask_for_identity_document_verification")
     @patch("pcapi.core.users.api._get_identity_document_informations")
     @freeze_time("2021-10-30 09:00:00")
@@ -1041,7 +1044,7 @@ class VerifyIdentityDocumentInformationsTest:
             == "Ton dossier a été refusé : le document transmis est invalide. Consulte l’e-mail envoyé le 30/10/2021 pour plus d’informations."
         )
 
-    @patch("pcapi.core.users.api.delete_object")
+    @patch("pcapi.core.users.utils.delete_object")
     @patch("pcapi.core.users.api.ask_for_identity_document_verification")
     @patch("pcapi.core.users.api._get_identity_document_informations")
     def test_email_sent_with_default_template(
@@ -1059,7 +1062,7 @@ class VerifyIdentityDocumentInformationsTest:
         assert sent_data["Vars"]["url"] == settings.DMS_USER_URL
         assert sent_data["MJ-TemplateID"] == 2958557  # default email template used
 
-    @patch("pcapi.core.users.api.delete_object")
+    @patch("pcapi.core.users.utils.delete_object")
     @patch("pcapi.core.users.api.ask_for_identity_document_verification")
     @patch("pcapi.core.users.api._get_identity_document_informations")
     def test_no_email_sent_when_document_is_valid(
@@ -1291,3 +1294,75 @@ class UpdateUserLastConnectionDateTest:
 
         assert user.lastConnectionDate == datetime(2021, 9, 20, 11, 00, 11)
         assert len(sendinblue_testing.sendinblue_requests) == 0
+
+
+class EligibilityStartDateTest:
+    @override_features(ENABLE_NATIVE_EAC_INDIVIDUAL=False)
+    @override_features(ENABLE_UNDERAGE_GENERALISATION=False)
+    def test_eligibility_start_datetime_eac_off(self):
+        assert get_eligibility_start_datetime(datetime(2006, 1, 10)) == datetime(2024, 1, 10)
+
+    @override_features(ENABLE_UNDERAGE_GENERALISATION=False)
+    def test_eligibility_start_datetime_generalisation_off(self):
+        assert get_eligibility_start_datetime(datetime(2006, 1, 10)) == datetime(2021, 1, 10)
+
+    @override_features(ENABLE_UNDERAGE_GENERALISATION=True)
+    @pytest.mark.parametrize(
+        "date_of_birth,expected_date",
+        [
+            (datetime(2007, 6, 6), datetime(2022, 6, 6)),  # 15 years old on 2O22/6/6
+            (datetime(2007, 1, 10), datetime(2022, 1, 31)),  # 15 years old on 2022/1/10
+            (datetime(2007, 1, 1), datetime(2022, 1, 31)),  # 15 years old on 2O22/1/1
+            (datetime(2006, 1, 25), datetime(2022, 1, 3)),  # 16 years old on 2O22/1/25
+            (datetime(2005, 10, 1), datetime(2022, 1, 20)),  # 16 years old on 2O21/10/1
+            (datetime(2005, 1, 8), datetime(2022, 1, 3)),  # 17 years old on 2O22/1/8
+            (datetime(2004, 8, 8), datetime(2022, 1, 10)),  # 17 years old on 2O21/8/8
+            (datetime(2003, 12, 1), datetime(2021, 12, 1)),  # 18 years old on 2021/12/1
+            (datetime(2003, 1, 10), datetime(2021, 1, 10)),  # 19 years old on 2022/1/10
+        ],
+    )
+    def test_eligibility_start_datetime_generalisation(self, date_of_birth, expected_date):
+        assert get_eligibility_start_datetime(date_of_birth) == expected_date
+
+
+class GetEligibilityTest:
+    @override_features(ENABLE_UNDERAGE_GENERALISATION=True)
+    @pytest.mark.parametrize(
+        "date_of_birth,specified_date,expected_eligibility",
+        [
+            (None, datetime(2022, 6, 6), None),
+            (datetime(2007, 6, 6), datetime(2022, 6, 6), EligibilityType.UNDERAGE),  # 15 years old on 2O22/6/6 at 15
+            (datetime(2007, 6, 6), datetime(2022, 6, 5), None),  # 15 years old on 2O22/6/6 before 15
+            (datetime(2007, 6, 6), datetime(2025, 6, 6), EligibilityType.AGE18),  # 15 years old on 2O22/6/6 at 18
+            (datetime(2007, 6, 6), datetime(2026, 6, 6), None),  # 15 years old on 2O22/6/6 at 19
+            (datetime(2007, 1, 10), datetime(2022, 1, 11), None),  # 15 years old on 2022/1/10 before opening
+            (
+                datetime(2007, 1, 10),
+                datetime(2022, 1, 31),
+                EligibilityType.UNDERAGE,
+            ),  # 15 years old on 2022/1/10 after opening
+            (datetime(2003, 12, 1), datetime(2021, 12, 1), EligibilityType.AGE18),  # 18 years old on 2021/12/1 at 18
+            (datetime(2003, 12, 1), datetime(2021, 11, 30), None),  # 18 years old on 2021/12/1 at 17
+        ],
+    )
+    def test_eligibility_at_date(self, date_of_birth, specified_date, expected_eligibility):
+        assert get_eligibility_at_date(date_of_birth, specified_date) == expected_eligibility
+
+    @override_features(ENABLE_UNDERAGE_GENERALISATION=False)
+    @pytest.mark.parametrize(
+        "date_of_birth,specified_date,expected_eligibility",
+        [
+            (None, datetime(2022, 6, 6), None),
+            (datetime(2007, 6, 6), datetime(2022, 6, 6), EligibilityType.UNDERAGE),  # 15 years old on 2O22/6/6 at 15
+            (datetime(2007, 6, 6), datetime(2022, 6, 5), None),  # 15 years old on 2O22/6/6 before 15
+            (datetime(2007, 6, 6), datetime(2025, 6, 6), EligibilityType.AGE18),  # 15 years old on 2O22/6/6 at 18
+            (datetime(2007, 6, 6), datetime(2026, 6, 6), None),  # 15 years old on 2O22/6/6 at 19
+            (
+                datetime(2003, 12, 1),
+                datetime(2021, 11, 30),
+                EligibilityType.UNDERAGE,
+            ),  # 18 years old on 2021/12/1 at 17
+        ],
+    )
+    def test_eligibility_at_date_generalisation_off(self, date_of_birth, specified_date, expected_eligibility):
+        assert get_eligibility_at_date(date_of_birth, specified_date) == expected_eligibility

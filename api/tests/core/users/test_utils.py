@@ -5,8 +5,8 @@ import pytest
 
 from pcapi import settings
 from pcapi.core.users.factories import UserFactory
-from pcapi.core.users.models import ALGORITHM_RS_256
 from pcapi.core.users.utils import ALGORITHM_HS_256
+from pcapi.core.users.utils import ALGORITHM_RS_256
 from pcapi.core.users.utils import decode_jwt_token_rs256
 from pcapi.core.users.utils import encode_jwt_payload
 from pcapi.core.users.utils import format_phone_number_with_country_code

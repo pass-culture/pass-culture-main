@@ -1,18 +1,26 @@
-from datetime import timedelta
+import datetime
 from enum import Enum
 
 from pcapi import settings
 
 
-RESET_PASSWORD_TOKEN_LIFE_TIME = timedelta(hours=24)
-RESET_PASSWORD_TOKEN_LIFE_TIME_EXTENDED = timedelta(days=30)
-EMAIL_VALIDATION_TOKEN_LIFE_TIME = timedelta(hours=24)
-EMAIL_CHANGE_TOKEN_LIFE_TIME = timedelta(hours=24)
-ID_CHECK_TOKEN_LIFE_TIME = timedelta(hours=settings.ID_CHECK_TOKEN_LIFE_TIME_HOURS)
-PHONE_VALIDATION_TOKEN_LIFE_TIME = timedelta(minutes=10)
+RESET_PASSWORD_TOKEN_LIFE_TIME = datetime.timedelta(hours=24)
+RESET_PASSWORD_TOKEN_LIFE_TIME_EXTENDED = datetime.timedelta(days=30)
+EMAIL_VALIDATION_TOKEN_LIFE_TIME = datetime.timedelta(hours=24)
+EMAIL_CHANGE_TOKEN_LIFE_TIME = datetime.timedelta(hours=24)
+ID_CHECK_TOKEN_LIFE_TIME = datetime.timedelta(hours=settings.ID_CHECK_TOKEN_LIFE_TIME_HOURS)
+PHONE_VALIDATION_TOKEN_LIFE_TIME = datetime.timedelta(minutes=10)
 
 ELIGIBILITY_AGE_18 = 18
 ELIGIBILITY_UNDERAGE_RANGE = [15, 16, 17]
+
+UNDERAGE_GENERALISATION_BROAD_OPENING_DATETIME = datetime.datetime(2022, 1, 31)
+UNDERAGE_GENERALISATION_EARLY_OPENING_DATETIME = datetime.datetime(2022, 1, 3)
+UNDERAGE_GENERALISATION_OPENING_DATETIMES_BY_AGE = {
+    15: UNDERAGE_GENERALISATION_BROAD_OPENING_DATETIME,
+    16: datetime.datetime(2022, 1, 20),
+    17: datetime.datetime(2022, 1, 10),
+}
 
 ACCOUNT_CREATION_MINIMUM_AGE = 15
 
