@@ -41,7 +41,7 @@ def dms_webhook_update_application_status(form: dms_validation.DMSWebhookRequest
         if raw_data["dossier"]["state"] == api_demarches_simplifiees.GraphQLApplicationStates.draft.value:
             client.send_user_message(
                 raw_data["dossier"]["id"],
-                settings.DMS_INSTRUCTOR_EMAIL,
+                settings.DMS_INSTRUCTOR_ID,
                 subscription_messages.DMS_ERROR_MESSAGE_USER_NOT_FOUND,
             )
         logger.info(
