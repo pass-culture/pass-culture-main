@@ -1,39 +1,16 @@
 import {
+  EducationalOfferModelPayload,
   IOfferEducationalFormValues,
-  PARTICIPANTS,
 } from 'core/OfferEducational'
-
-type CreateEducationalOfferPayload = {
-  offererId: string
-  venueId: string
-  subcategoryId: string
-  name: string
-  bookingEmail?: string
-  description?: string
-  durationMinutes?: number
-  audioDisabilityCompliant: boolean
-  mentalDisabilityCompliant: boolean
-  motorDisabilityCompliant: boolean
-  visualDisabilityCompliant: boolean
-  extraData: Record<string, unknown>
-}
-
-const parseDuration = (duration: string): number | undefined => {
-  if (!duration) {
-    return undefined
-  }
-
-  const [hours, minutes] = duration
-    .split(':')
-    .map(numberString => parseInt(numberString))
-
-  return hours * 60 + minutes
-}
+import {
+  parseDuration,
+  serializeParticipants,
+} from 'core/OfferEducational/utils'
 
 const disabilityCompliances = (
   accessibility: IOfferEducationalFormValues['accessibility']
 ): Pick<
-  CreateEducationalOfferPayload,
+  EducationalOfferModelPayload,
   | 'audioDisabilityCompliant'
   | 'mentalDisabilityCompliant'
   | 'motorDisabilityCompliant'
@@ -45,19 +22,9 @@ const disabilityCompliances = (
   visualDisabilityCompliant: accessibility.visual,
 })
 
-const getStudents = (
-  participants: IOfferEducationalFormValues['participants']
-): string[] =>
-  Object.keys(participants)
-    .filter(
-      (key: string): boolean =>
-        participants[key as keyof typeof participants] === true
-    )
-    .map(key => PARTICIPANTS[key])
-
 export const createOfferPayload = (
   offer: IOfferEducationalFormValues
-): CreateEducationalOfferPayload => ({
+): EducationalOfferModelPayload => ({
   offererId: offer.offererId,
   venueId: offer.venueId,
   subcategoryId: offer.subCategory,
@@ -67,7 +34,7 @@ export const createOfferPayload = (
   durationMinutes: parseDuration(offer.duration),
   ...disabilityCompliances(offer.accessibility),
   extraData: {
-    students: getStudents(offer.participants),
+    students: serializeParticipants(offer.participants),
     offerVenue: offer.eventAddress,
     contactEmail: offer.email,
     contactPhone: offer.phone,
