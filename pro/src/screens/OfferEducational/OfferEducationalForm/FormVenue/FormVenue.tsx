@@ -5,6 +5,7 @@ import Banner from 'components/layout/Banner/Banner'
 import {
   IOfferEducationalFormValues,
   IUserOfferer,
+  Mode,
 } from 'core/OfferEducational'
 import FormLayout from 'new_components/FormLayout'
 import { Select } from 'ui-kit'
@@ -16,12 +17,14 @@ interface IFormVenueProps {
   userOfferers: IUserOfferer[]
   venuesOptions: SelectOptions
   isEligible: boolean | undefined
+  mode: Mode
 }
 
 const FormVenue = ({
   userOfferers,
   venuesOptions,
   isEligible,
+  mode,
 }: IFormVenueProps): JSX.Element => {
   const offerersOptions = buildSelectOptions(
     userOfferers,
@@ -39,7 +42,7 @@ const FormVenue = ({
     >
       <FormLayout.Row>
         <Select
-          disabled={offerersOptions.length === 1}
+          disabled={offerersOptions.length === 1 || mode === Mode.EDITION}
           label={OFFERER_LABEL}
           name="offererId"
           options={offerersOptions}
@@ -64,7 +67,9 @@ const FormVenue = ({
       {isEligible === true && venuesOptions.length > 0 && (
         <FormLayout.Row>
           <Select
-            disabled={venuesOptions.length === 1 || !isEligible}
+            disabled={
+              venuesOptions.length === 1 || !isEligible || mode === Mode.EDITION
+            }
             label={VENUE_LABEL}
             name="venueId"
             options={venuesOptions}

@@ -7,6 +7,7 @@ import { computeOffersUrl } from 'components/pages/Offers/utils/computeOffersUrl
 import {
   IOfferEducationalFormValues,
   IUserOfferer,
+  Mode,
 } from 'core/OfferEducational'
 import FormLayout from 'new_components/FormLayout'
 import { SubmitButton } from 'ui-kit'
@@ -25,8 +26,10 @@ import styles from './OfferEducationalForm.module.scss'
 
 type IOfferEducationalFormProps = Omit<
   IOfferEducationalProps,
-  'onSubmit' | 'initialValues'
->
+  'onSubmit' | 'initialValues' | 'isEdition'
+> & {
+  mode: Mode
+}
 
 const OfferEducationalForm = ({
   educationalCategories,
@@ -34,6 +37,7 @@ const OfferEducationalForm = ({
   userOfferers,
   getIsOffererEligibleToEducationalOfferAdapter,
   notify,
+  mode,
 }: IOfferEducationalFormProps): JSX.Element => {
   const [venuesOptions, setVenuesOptions] = useState<SelectOptions>([])
   const [currentOfferer, setCurrentOfferer] = useState<IUserOfferer | null>(
@@ -51,6 +55,11 @@ const OfferEducationalForm = ({
 
     if (selectedOfferer) {
       const checkOffererEligibilityToEducationalOffer = async () => {
+        if (!getIsOffererEligibleToEducationalOfferAdapter) {
+          setIsEligible(true)
+          return
+        }
+
         setIsLoading(true)
 
         const { isOk, message, payload } =
@@ -105,6 +114,7 @@ const OfferEducationalForm = ({
 
       <FormVenue
         isEligible={isEligible}
+        mode={mode}
         userOfferers={userOfferers}
         venuesOptions={venuesOptions}
       />
@@ -112,6 +122,7 @@ const OfferEducationalForm = ({
         <>
           <FormCategory
             categories={educationalCategories}
+            mode={mode}
             subCategories={educationalSubCategories}
           />
           <FormEventAddress
@@ -133,7 +144,7 @@ const OfferEducationalForm = ({
           disabled={!isEligible}
           isLoading={isLoading}
         >
-          Étape suivante
+          {mode === Mode.CREATION ? 'Étape suivante' : 'Enregistrer'}
         </SubmitButton>
       </FormLayout.Actions>
     </FormLayout>
