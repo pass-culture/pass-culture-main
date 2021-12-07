@@ -25,7 +25,7 @@ class ProfileUpdateRequest(BaseModel):
     first_name: str
     last_name: str
     postal_code: str
-    school_type: Optional[users_models.SchoolType]
+    school_type: Optional[users_models.SchoolTypeEnum]
 
     class Config:
         alias_generator = to_camel

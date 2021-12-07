@@ -143,7 +143,7 @@ class UpdateProfileTest:
         assert user.city == "Uneville"
         assert user.postalCode == "77000"
         assert user.activity == "Lycéen"
-        assert user.schoolType == users_models.SchoolType.PUBLIC_HIGH_SCHOOL
+        assert user.schoolType == users_models.SchoolTypeEnum.PUBLIC_HIGH_SCHOOL
 
         assert user.has_beneficiary_role
         assert user.deposit
@@ -199,7 +199,7 @@ class UpdateProfileTest:
         assert user.postalCode == "77000"
         assert user.activity == "Lycéen"
         assert user.phoneNumber is None
-        assert user.schoolType == users_models.SchoolType.MILITARY_HIGH_SCHOOL
+        assert user.schoolType == users_models.SchoolTypeEnum.MILITARY_HIGH_SCHOOL
 
         assert user.roles == [users_models.UserRole.UNDERAGE_BENEFICIARY]
         assert user.deposit.amount == 20

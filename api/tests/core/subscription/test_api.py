@@ -364,7 +364,7 @@ class NextSubscriptionStepTest:
                     "ALLOW_IDCHECK_REGISTRATION_FOR_EDUCONNECT_ELIGIBLE": False,
                 },
                 15,
-                users_models.SchoolType.PUBLIC_HIGH_SCHOOL,
+                users_models.SchoolTypeEnum.PUBLIC_HIGH_SCHOOL,
                 [subscription_models.IdentityCheckMethod.EDUCONNECT],
             ),
             (
@@ -375,7 +375,7 @@ class NextSubscriptionStepTest:
                     "ALLOW_IDCHECK_REGISTRATION_FOR_EDUCONNECT_ELIGIBLE": False,
                 },
                 15,
-                users_models.SchoolType.PUBLIC_SECONDARY_SCHOOL,
+                users_models.SchoolTypeEnum.PUBLIC_SECONDARY_SCHOOL,
                 [subscription_models.IdentityCheckMethod.EDUCONNECT],
             ),
             (
@@ -387,7 +387,7 @@ class NextSubscriptionStepTest:
                     "ENABLE_UBBLE": True,
                 },
                 15,
-                users_models.SchoolType.PUBLIC_SECONDARY_SCHOOL,
+                users_models.SchoolTypeEnum.PUBLIC_SECONDARY_SCHOOL,
                 [subscription_models.IdentityCheckMethod.UBBLE],
             ),
             (
@@ -398,7 +398,7 @@ class NextSubscriptionStepTest:
                     "ALLOW_IDCHECK_REGISTRATION_FOR_EDUCONNECT_ELIGIBLE": False,
                 },
                 15,
-                users_models.SchoolType.PUBLIC_SECONDARY_SCHOOL,
+                users_models.SchoolTypeEnum.PUBLIC_SECONDARY_SCHOOL,
                 [],
             ),
             # Other schools
@@ -411,7 +411,7 @@ class NextSubscriptionStepTest:
                     "ENABLE_UBBLE": False,
                 },
                 15,
-                users_models.SchoolType.PRIVATE_HIGH_SCHOOL,
+                users_models.SchoolTypeEnum.PRIVATE_HIGH_SCHOOL,
                 [subscription_models.IdentityCheckMethod.JOUVE],
             ),
             (
@@ -422,7 +422,7 @@ class NextSubscriptionStepTest:
                     "ENABLE_UBBLE": False,
                 },
                 15,
-                users_models.SchoolType.PRIVATE_HIGH_SCHOOL,
+                users_models.SchoolTypeEnum.PRIVATE_HIGH_SCHOOL,
                 [subscription_models.IdentityCheckMethod.EDUCONNECT, subscription_models.IdentityCheckMethod.JOUVE],
             ),
             (

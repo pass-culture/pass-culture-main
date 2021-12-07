@@ -41,15 +41,15 @@ class Activity:
         super().__init__()
 
 
-AGRICULTURAL_HIGH_SCHOOL = SchoolType(users_models.SchoolType.AGRICULTURAL_HIGH_SCHOOL)
-APPRENTICE_FORMATION_CENTER = SchoolType(users_models.SchoolType.APPRENTICE_FORMATION_CENTER)
-MILITARY_HIGH_SCHOOL = SchoolType(users_models.SchoolType.MILITARY_HIGH_SCHOOL)
-HOME_OR_REMOTE_SCHOOLING = SchoolType(users_models.SchoolType.HOME_OR_REMOTE_SCHOOLING)
-NAVAL_HIGH_SCHOOL = SchoolType(users_models.SchoolType.NAVAL_HIGH_SCHOOL)
-PRIVATE_HIGH_SCHOOL = SchoolType(users_models.SchoolType.PRIVATE_HIGH_SCHOOL)
-PRIVATE_SECONDARY_SCHOOL = SchoolType(users_models.SchoolType.PRIVATE_SECONDARY_SCHOOL)
-PUBLIC_HIGH_SCHOOL = SchoolType(users_models.SchoolType.PUBLIC_HIGH_SCHOOL)
-PUBLIC_SECONDARY_SCHOOL = SchoolType(users_models.SchoolType.PUBLIC_SECONDARY_SCHOOL)
+AGRICULTURAL_HIGH_SCHOOL = SchoolType(users_models.SchoolTypeEnum.AGRICULTURAL_HIGH_SCHOOL)
+APPRENTICE_FORMATION_CENTER = SchoolType(users_models.SchoolTypeEnum.APPRENTICE_FORMATION_CENTER)
+MILITARY_HIGH_SCHOOL = SchoolType(users_models.SchoolTypeEnum.MILITARY_HIGH_SCHOOL)
+HOME_OR_REMOTE_SCHOOLING = SchoolType(users_models.SchoolTypeEnum.HOME_OR_REMOTE_SCHOOLING)
+NAVAL_HIGH_SCHOOL = SchoolType(users_models.SchoolTypeEnum.NAVAL_HIGH_SCHOOL)
+PRIVATE_HIGH_SCHOOL = SchoolType(users_models.SchoolTypeEnum.PRIVATE_HIGH_SCHOOL)
+PRIVATE_SECONDARY_SCHOOL = SchoolType(users_models.SchoolTypeEnum.PRIVATE_SECONDARY_SCHOOL)
+PUBLIC_HIGH_SCHOOL = SchoolType(users_models.SchoolTypeEnum.PUBLIC_HIGH_SCHOOL)
+PUBLIC_SECONDARY_SCHOOL = SchoolType(users_models.SchoolTypeEnum.PUBLIC_SECONDARY_SCHOOL)
 
 ALL_SCHOOL_TYPES = [
     AGRICULTURAL_HIGH_SCHOOL,
@@ -104,5 +104,11 @@ ALL_ACTIVITIES = [
     UNEMPLOYED,
 ]
 
+SCHOOL_TYPE_ID_ENUM = enum.Enum(
+    "SchoolTypesIdEnum", {school_type.name: school_type.name for school_type in users_models.SchoolTypeEnum}
+)
+SCHOOL_TYPE_LABEL_ENUM = enum.Enum(
+    "SchoolTypesLabelEnum", {school_type.value: school_type.value for school_type in users_models.SchoolTypeEnum}
+)
 ACTIVITY_ID_ENUM = enum.Enum("ActivityIdEnum", {activity.id: activity.id for activity in ALL_ACTIVITIES})
 ACTIVITY_LABEL_ENUM = enum.Enum("ActivityLabelEnum", {activity.label: activity.label for activity in ALL_ACTIVITIES})
