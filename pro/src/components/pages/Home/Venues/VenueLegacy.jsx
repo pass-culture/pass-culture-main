@@ -13,9 +13,6 @@ import { BOOKING_STATUS } from 'components/pages/Bookings/BookingsRecapTable/Cel
 import { ReactComponent as IcoPlus } from 'icons/ico-plus.svg'
 import * as pcapi from 'repository/pcapi/pcapi'
 
-import { ReactComponent as ClosedEyeSvg } from '../Offerers/assets/ico-eye-close.svg'
-import { ReactComponent as OpenedEyeSvg } from '../Offerers/assets/ico-eye-open.svg'
-
 import VenueStat from './VenueStat'
 
 const Venue = ({ id, isVirtual, name, offererId, publicName }) => {
@@ -119,38 +116,27 @@ const Venue = ({ id, isVirtual, name, offererId, publicName }) => {
             }`}
           >
             <h3 className="h-card-title">
-              <Icon
-                className="h-card-title-ico"
-                svg={isVirtual ? 'ico-screen-play' : 'ico-box'}
-              />
+              <button
+                className="tertiary-button"
+                onClick={() => setIsStatOpen(prev => !prev)}
+                title={isStatOpen ? 'Masquer' : 'Afficher'}
+                type="button"
+              >
+                <Icon
+                  className="h-card-title-ico"
+                  svg={isStatOpen ? 'ico-caret-down' : 'ico-caret-right'}
+                />
+              </button>
               <span className="title-text" title={publicName || name}>
                 {publicName || name}
               </span>
             </h3>
             <div className="button-group">
-              <button
-                className={`tertiary-button ${isStatOpen ? 'od-primary' : ''}`}
-                onClick={() => setIsStatOpen(prev => !prev)}
-                type="button"
-              >
-                {isStatOpen ? (
-                  <>
-                    <ClosedEyeSvg /> Masquer
-                  </>
-                ) : (
-                  <>
-                    <OpenedEyeSvg /> Afficher
-                  </>
-                )}
-              </button>
               {(!isVirtual || isBankInformationWithSiretActive) && (
-                <>
-                  <span className="button-group-separator" />
-                  <Link className="tertiary-link" to={editVenueLink}>
-                    <Icon svg="ico-outer-pen" />
-                    Modifier
-                  </Link>
-                </>
+                <Link className="tertiary-link" to={editVenueLink}>
+                  <Icon svg="ico-outer-pen" />
+                  Modifier
+                </Link>
               )}
             </div>
           </div>
