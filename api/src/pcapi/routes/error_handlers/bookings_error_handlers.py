@@ -6,6 +6,7 @@ from pcapi.core.bookings.exceptions import BookingIsAlreadyUsed
 from pcapi.core.bookings.exceptions import CannotBookFreeOffers
 from pcapi.core.bookings.exceptions import CannotCancelConfirmedBooking
 from pcapi.core.bookings.exceptions import DigitalExpenseLimitHasBeenReached
+from pcapi.core.bookings.exceptions import OfferCategoryNotBookableByUser
 from pcapi.core.bookings.exceptions import OfferIsAlreadyBooked
 from pcapi.core.bookings.exceptions import PhysicalExpenseLimitHasBeenReached
 from pcapi.core.bookings.exceptions import QuantityIsInvalid
@@ -21,6 +22,7 @@ from pcapi.domain.users import UnauthorizedForAdminUser
 @app.errorhandler(UserHasInsufficientFunds)
 @app.errorhandler(PhysicalExpenseLimitHasBeenReached)
 @app.errorhandler(DigitalExpenseLimitHasBeenReached)
+@app.errorhandler(OfferCategoryNotBookableByUser)
 def handle_book_an_offer(exception):
     return jsonify(exception.errors), 400
 
