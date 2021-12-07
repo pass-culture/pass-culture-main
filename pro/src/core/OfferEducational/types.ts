@@ -78,3 +78,8 @@ export type GetIsOffererEligibleToEducationalOffer = Adapter<
   string,
   { isOffererEligibleToEducationalOffer: boolean }
 >
+
+export enum Mode {
+  CREATION,
+  EDITION,
+}
