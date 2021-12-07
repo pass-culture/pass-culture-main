@@ -355,14 +355,14 @@ class AccountTest:
     @pytest.mark.parametrize(
         "fraud_check_status,ubble_status,next_step",
         [
-            (fraud_models.FraudCheckStatus.PENDING, fraud_models.IdentificationStatus.INITIATED, None),
-            (fraud_models.FraudCheckStatus.PENDING, fraud_models.IdentificationStatus.PROCESSING, None),
-            (fraud_models.FraudCheckStatus.OK, fraud_models.IdentificationStatus.PROCESSED, None),
-            (fraud_models.FraudCheckStatus.KO, fraud_models.IdentificationStatus.PROCESSED, None),
-            (fraud_models.FraudCheckStatus.CANCELED, fraud_models.IdentificationStatus.ABORTED, "id-check"),
-            (None, fraud_models.IdentificationStatus.INITIATED, None),
-            (None, fraud_models.IdentificationStatus.PROCESSING, None),
-            (None, fraud_models.IdentificationStatus.PROCESSED, None),
+            (fraud_models.FraudCheckStatus.PENDING, fraud_models.ubble.UbbleIdentificationStatus.INITIATED, None),
+            (fraud_models.FraudCheckStatus.PENDING, fraud_models.ubble.UbbleIdentificationStatus.PROCESSING, None),
+            (fraud_models.FraudCheckStatus.OK, fraud_models.ubble.UbbleIdentificationStatus.PROCESSED, None),
+            (fraud_models.FraudCheckStatus.KO, fraud_models.ubble.UbbleIdentificationStatus.PROCESSED, None),
+            (fraud_models.FraudCheckStatus.CANCELED, fraud_models.ubble.UbbleIdentificationStatus.ABORTED, "id-check"),
+            (None, fraud_models.ubble.UbbleIdentificationStatus.INITIATED, None),
+            (None, fraud_models.ubble.UbbleIdentificationStatus.PROCESSING, None),
+            (None, fraud_models.ubble.UbbleIdentificationStatus.PROCESSED, None),
         ],
     )
     @override_features(ENABLE_UBBLE=True)
@@ -2001,10 +2001,10 @@ class IdentificationSessionTest:
     @pytest.mark.parametrize(
         "fraud_check_status,ubble_status",
         [
-            (fraud_models.FraudCheckStatus.PENDING, fraud_models.IdentificationStatus.INITIATED),
-            (fraud_models.FraudCheckStatus.PENDING, fraud_models.IdentificationStatus.PROCESSING),
-            (fraud_models.FraudCheckStatus.OK, fraud_models.IdentificationStatus.PROCESSED),
-            (fraud_models.FraudCheckStatus.KO, fraud_models.IdentificationStatus.PROCESSED),
+            (fraud_models.FraudCheckStatus.PENDING, fraud_models.ubble.UbbleIdentificationStatus.INITIATED),
+            (fraud_models.FraudCheckStatus.PENDING, fraud_models.ubble.UbbleIdentificationStatus.PROCESSING),
+            (fraud_models.FraudCheckStatus.OK, fraud_models.ubble.UbbleIdentificationStatus.PROCESSED),
+            (fraud_models.FraudCheckStatus.KO, fraud_models.ubble.UbbleIdentificationStatus.PROCESSED),
         ],
     )
     def test_request_ubble_second_check_blocked(self, client, ubble_mock, fraud_check_status, ubble_status):
@@ -2056,7 +2056,9 @@ class IdentificationSessionTest:
             user=user,
             type=fraud_models.FraudCheckType.UBBLE,
             status=fraud_models.FraudCheckStatus.CANCELED,
-            resultContent=fraud_factories.UbbleContentFactory(status=fraud_models.IdentificationStatus.ABORTED),
+            resultContent=fraud_factories.UbbleContentFactory(
+                status=fraud_models.ubble.UbbleIdentificationStatus.ABORTED
+            ),
         )
 
         # Initiate second id check with Ubble

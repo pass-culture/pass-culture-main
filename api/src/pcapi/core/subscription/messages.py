@@ -193,6 +193,15 @@ def on_duplicate_user(user: users_models.User) -> None:
     repository.save(message)
 
 
+def on_already_beneficiary(user: users_models.User) -> None:
+    message = models.SubscriptionMessage(
+        user=user,
+        userMessage="Tu es déjà bénéficaire.",
+        popOverIcon=models.PopOverIcon.ERROR,
+    )
+    repository.save(message)
+
+
 def _generate_form_field_error(error_text_singular: str, error_text_plural: str, error_fields: list[str]) -> str:
     french_field_name = {
         "id_piece_number": "ta pièce d'identité",

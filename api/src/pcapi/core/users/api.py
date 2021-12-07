@@ -322,6 +322,11 @@ def update_user_information_from_external_source(
         user.dateOfBirth = datetime.combine(data.birth_date, time(0, 0))
         user.ineHash = data.ine_hash
 
+    elif isinstance(data, fraud_models.ubble.UbbleContent):
+        user.firstName = data.first_name
+        user.lastName = data.last_name
+        user.dateOfBirth = datetime.combine(data.birth_date, time(0, 0))
+
     # update user fields to be correctly initialized
     user.hasSeenTutorials = False
     user.remove_admin_role()
