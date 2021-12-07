@@ -1,4 +1,4 @@
-import { DEFAULT_EAC_FORM_VALUES } from 'core/OfferEducational'
+import { DEFAULT_EAC_FORM_VALUES, Mode } from 'core/OfferEducational'
 
 import { IOfferEducationalProps } from '../OfferEducational'
 
@@ -54,6 +54,7 @@ const defaultProps = (): IOfferEducationalProps => ({
     error: jest.fn(),
     information: jest.fn(),
   },
+  mode: Mode.CREATION,
 })
 
 export default defaultProps

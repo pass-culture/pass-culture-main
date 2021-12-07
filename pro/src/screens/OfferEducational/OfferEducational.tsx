@@ -7,6 +7,7 @@ import {
   IEducationalSubCategory,
   IOfferEducationalFormValues,
   IUserOfferer,
+  Mode,
 } from 'core/OfferEducational'
 
 import OfferEducationalForm from './OfferEducationalForm'
@@ -25,7 +26,7 @@ export interface IOfferEducationalProps {
     pending: (msg: string | null) => void
     information: (msg: string | null) => void
   }
-  isEdition?: boolean
+  mode: Mode
 }
 
 const OfferEducational = ({
@@ -36,7 +37,7 @@ const OfferEducational = ({
   onSubmit,
   getIsOffererEligibleToEducationalOfferAdapter,
   notify,
-  isEdition = false,
+  mode,
 }: IOfferEducationalProps): JSX.Element => {
   const formik = useFormik({
     initialValues,
@@ -53,7 +54,7 @@ const OfferEducational = ({
           getIsOffererEligibleToEducationalOfferAdapter={
             getIsOffererEligibleToEducationalOfferAdapter
           }
-          isEdition={isEdition}
+          mode={mode}
           notify={notify}
           userOfferers={userOfferers}
         />

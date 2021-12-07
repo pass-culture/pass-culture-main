@@ -1,7 +1,7 @@
 import { action } from '@storybook/addon-actions'
 import React from 'react'
 
-import { DEFAULT_EAC_FORM_VALUES } from 'core/OfferEducational'
+import { DEFAULT_EAC_FORM_VALUES, Mode } from 'core/OfferEducational'
 
 import { withPageTemplate } from '../../stories/decorators/withPageTemplate'
 import { withRouterDecorator } from '../../stories/decorators/withRouter'
@@ -61,6 +61,7 @@ const Template = () => (
       })
     }}
     initialValues={DEFAULT_EAC_FORM_VALUES}
+    mode={Mode.CREATION}
     notify={{
       success: action('success'),
       error: action('error'),
