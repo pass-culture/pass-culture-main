@@ -65,7 +65,7 @@ class BeneficiaryTransactionalEmailsTest:
 
     @override_settings(EMAIL_BACKEND="pcapi.core.mails.backends.sendinblue.ToDevSendinblueBackend")
     @override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=True)
-    @patch("pcapi.core.mails.backends.sendinblue.send_transactional_email_task.delay")
+    @patch("pcapi.core.mails.backends.sendinblue.send_transactional_email_primary_task.delay")
     def test_to_dev_send_email_confirmation_email(self, mock_send_transactional_email_task, db_session):
         user = users_factories.UserFactory(email="john.stiles@gmail.com")
         token = users_factories.EmailValidationToken.build(user=user)

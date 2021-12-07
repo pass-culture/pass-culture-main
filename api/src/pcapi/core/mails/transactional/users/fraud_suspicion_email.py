@@ -22,4 +22,4 @@ def send_fraud_suspicion_email(
     beneficiary_pre_subscription: BeneficiaryPreSubscription,
 ) -> None:
     data = make_fraud_suspicion_data()
-    mails.send(recipients=[beneficiary_pre_subscription.email], data=data)
+    mails.send(recipients=[beneficiary_pre_subscription.email], data=data, sending_to_priority_queue=True)

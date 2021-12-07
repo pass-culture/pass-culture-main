@@ -23,7 +23,7 @@ def get_user_credit_email_data(user: User) -> Union[dict, SendinblueTransactiona
         }
 
     return SendinblueTransactionalEmailData(
-        template=TransactionalEmail.GRANT_USER_CREDIT,
+        template=TransactionalEmail.GRANT_USER_CREDIT.value,
         params={
             "CREDIT": int(deposit_amount),
         },
@@ -32,4 +32,4 @@ def get_user_credit_email_data(user: User) -> Union[dict, SendinblueTransactiona
 
 def send_user_credit_email(user: User) -> bool:
     data = get_user_credit_email_data(user)
-    return mails.send(recipients=[user.email], data=data)
+    return mails.send(recipients=[user.email], data=data, sending_to_priority_queue=True)

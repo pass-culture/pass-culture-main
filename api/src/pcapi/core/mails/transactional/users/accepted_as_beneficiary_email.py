@@ -61,4 +61,4 @@ def send_accepted_as_beneficiary_email(user: User) -> bool:
     if not data:
         return False
 
-    return mails.send(recipients=[user.email], data=data)
+    return mails.send(recipients=[user.email], data=data, sending_to_priority_queue=True)

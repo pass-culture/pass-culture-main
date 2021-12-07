@@ -52,4 +52,4 @@ def send_reset_password_email_to_user(user: User) -> bool:
 def send_reset_password_email_to_native_app_user(user: User) -> bool:
     token = users_api.create_reset_password_token(user)
     data = retrieve_data_for_reset_password_native_app_email(user, token)
-    return mails.send(recipients=[user.email], data=data)
+    return mails.send(recipients=[user.email], data=data, sending_to_priority_queue=True)

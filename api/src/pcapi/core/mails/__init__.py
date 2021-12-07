@@ -27,6 +27,7 @@ def send(
     *,
     recipients: Iterable[str],
     data: Union[dict, SendinblueTransactionalEmailData],
+    sending_to_priority_queue: bool = False,
 ) -> bool:
     """Try to send an e-mail and return whether it was successful."""
     if isinstance(recipients, str):
@@ -35,7 +36,11 @@ def send(
         recipients = [recipients]
     send_with_sendinblue = isinstance(data, SendinblueTransactionalEmailData)
     backend = import_string(get_email_backend(send_with_sendinblue))
-    result = backend().send_mail(recipients=recipients, data=data)
+    result = (
+        backend().send_mail(recipients=recipients, data=data)
+        if backend() == settings.MAILJET_EMAIL_BACKEND
+        else backend().send_mail(recipients=recipients, data=data, sending_to_priority_queue=sending_to_priority_queue)
+    )
     _save_email(result)
     return result.successful
 
