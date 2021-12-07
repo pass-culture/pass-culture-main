@@ -7,6 +7,7 @@ import React, { useCallback } from 'react'
 import { Redirect } from 'react-router'
 import { Link } from 'react-router-dom'
 
+import useFeatureFlagedOfferEditionURL from 'components/hooks/useFeatureFlaggedOfferEditionURL'
 import { ReactComponent as PendingIcon } from 'components/pages/Offers/Offer/Confirmation/assets/pending.svg'
 import { ReactComponent as ValidateIcon } from 'components/pages/Offers/Offer/Confirmation/assets/validate.svg'
 import OfferPreviewLink from 'components/pages/Offers/Offer/OfferPreviewLink/OfferPreviewLink'
@@ -14,13 +15,18 @@ import { OFFER_STATUS_PENDING } from 'components/pages/Offers/Offers/_constants'
 import { queryParamsFromOfferer } from 'components/pages/Offers/utils/queryParamsFromOfferer'
 
 const Confirmation = ({ isCreatingOffer, location, offer, setOffer }) => {
+  const editionUrl = useFeatureFlagedOfferEditionURL(
+    offer.isEducational,
+    offer.id
+  )
+
   const resetOffer = useCallback(() => {
     setOffer(null)
   }, [setOffer])
 
   const isPendingOffer = offer.status === OFFER_STATUS_PENDING
   if (!isCreatingOffer && !isPendingOffer) {
-    return <Redirect to={`/offres/${offer.id}/edition`} />
+    return <Redirect to={editionUrl} />
   }
 
   let queryString = ''

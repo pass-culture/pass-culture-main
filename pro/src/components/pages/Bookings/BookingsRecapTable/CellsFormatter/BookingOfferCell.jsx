@@ -6,6 +6,7 @@ import { format } from 'date-fns-tz'
 import PropTypes from 'prop-types'
 import React from 'react'
 
+import useFeatureFlagedOfferEditionURL from 'components/hooks/useFeatureFlaggedOfferEditionURL'
 import { Tag } from 'ui-kit'
 
 import {
@@ -14,6 +15,10 @@ import {
 } from '../../../../../utils/date'
 
 const BookingOfferCell = ({ offer }) => {
+  const editionUrl = useFeatureFlagedOfferEditionURL(
+    offer.offer_is_educational,
+    offer.offer_identifier
+  )
   const eventBeginningDatetime = offer.event_beginning_datetime
   const isbn = offer.offer_isbn
 
@@ -26,7 +31,7 @@ const BookingOfferCell = ({ offer }) => {
 
   return (
     <a
-      href={`/offres/${offer.offer_identifier}/edition`}
+      href={editionUrl}
       rel="noopener noreferrer"
       target="_blank"
       title={`${offer.offer_name} (ouverture dans un nouvel onglet)`}

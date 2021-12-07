@@ -81,6 +81,7 @@ const OfferLayout = ({ location, match }) => {
       <Breadcrumb
         activeStep={activeStep}
         isCreatingOffer={isCreatingOffer}
+        isOfferEducational={offer?.isEducational}
         offerId={offer?.id}
       />
 

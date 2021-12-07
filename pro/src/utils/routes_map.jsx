@@ -19,6 +19,7 @@ import SignupValidationContainer from 'components/pages/Signup/SignupValidation/
 import StyleguideContainer from 'components/pages/Styleguide/StyleguideContainer'
 import OfferEducationalConfirmation from 'routes/OfferEducationalConfirmation'
 import OfferEducationalCreation from 'routes/OfferEducationalCreation'
+import OfferEducationalEdition from 'routes/OfferEducationalEdition'
 import OfferEducationalStockCreation from 'routes/OfferEducationalStockCreation'
 import OfferType from 'routes/OfferType'
 import { UNAVAILABLE_ERROR_PAGE } from 'utils/routes'
@@ -195,6 +196,13 @@ const routes = [
     featureName: 'ENABLE_NEW_EDUCATIONAL_OFFER_CREATION_FORM',
     path: '/offre/scolaire/confirmation',
     title: 'Page de confirmation de création d’offre',
+  },
+  {
+    component: OfferEducationalEdition,
+    exact: true,
+    featureName: 'ENABLE_NEW_EDUCATIONAL_OFFER_CREATION_FORM',
+    path: '/offre/:offerId([A-Z0-9]+)/scolaire/edition',
+    title: 'Edition d’une offre scolaire',
   },
 ]
 
