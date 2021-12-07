@@ -8,6 +8,7 @@ import React, { Fragment, useCallback, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { v4 as generateRandomUuid } from 'uuid'
 
+import useFeatureFlagedOfferEditionURL from 'components/hooks/useFeatureFlaggedOfferEditionURL'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import { isOfferDisabled } from 'components/pages/Offers/domain/isOfferDisabled'
 import OfferStatusBanner from 'components/pages/Offers/Offer/OfferDetails/OfferStatusBanner/OfferStatusBanner'
@@ -49,7 +50,10 @@ const ThingStocks = ({
     useState(false)
   const [formErrors, setFormErrors] = useState({})
   const isOfferDraft = offer.status === OFFER_STATUS_DRAFT
-  const editionOfferLink = `/offres/${offerId}/edition`
+  const editionOfferLink = useFeatureFlagedOfferEditionURL(
+    offer.isEducational,
+    offerId
+  )
   const [stock, setStock] = useState(null)
   const displayExpirationDatetime =
     stock && stock.activationCodesExpirationDatetime !== null

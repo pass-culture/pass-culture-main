@@ -6,6 +6,7 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import { Link } from 'react-router-dom'
 
+import useFeatureFlagedOfferEditionURL from 'components/hooks/useFeatureFlaggedOfferEditionURL'
 import Icon from 'components/layout/Icon'
 import Thumb from 'components/layout/Thumb'
 import { isOfferDisabled } from 'components/pages/Offers/domain/isOfferDisabled'
@@ -17,7 +18,9 @@ import { pluralize } from 'utils/pluralize'
 import { formatLocalTimeDateString } from 'utils/timezone'
 
 const OfferItem = ({ disabled, offer, isSelected, selectOffer }) => {
-  const { venue, stocks } = offer
+  const { venue, stocks, id, isEducational } = offer
+
+  const editionOfferLink = useFeatureFlagedOfferEditionURL(isEducational, id)
 
   function handleOnChangeSelected() {
     selectOffer(offer.id, !isSelected)
@@ -79,7 +82,7 @@ const OfferItem = ({ disabled, offer, isSelected, selectOffer }) => {
         <Link
           className="name"
           title="Afficher les détails de l'offre"
-          to={`/offres/${offer.id}/edition`}
+          to={editionOfferLink}
         >
           <Thumb alt="Miniature d'offre" url={offer.thumbUrl} />
         </Link>
@@ -91,7 +94,7 @@ const OfferItem = ({ disabled, offer, isSelected, selectOffer }) => {
         <Link
           className="name"
           title="Afficher les détails de l'offre"
-          to={`/offres/${offer.id}/edition`}
+          to={editionOfferLink}
         >
           {offer.name}
         </Link>
@@ -136,7 +139,7 @@ const OfferItem = ({ disabled, offer, isSelected, selectOffer }) => {
       </td>
       <td className="edit-column">
         {isOfferEditable && (
-          <Link className="secondary-link" to={`/offres/${offer.id}/edition`}>
+          <Link className="secondary-link" to={editionOfferLink}>
             <Icon svg="ico-pen" />
           </Link>
         )}
