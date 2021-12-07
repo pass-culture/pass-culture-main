@@ -135,10 +135,7 @@ class BatchBackend:
             try:
                 response = requests.delete(url, headers=self.headers)
             except Exception as exc:  # pylint: disable=broad-except
-                logger.exception(
-                    "Could not delete batch user: %s",
-                    exc,
-                    extra={"user_id": user_id, "api": str(api)},
+                logger.exception("Could not delete batch user: %s", exc, extra={"user_id": user_id, "api": str(api)})
             else:
                 if response.status_code != 200:
                     logger.error(
@@ -146,7 +143,6 @@ class BatchBackend:
                         response.status_code,
                         response.content,
                     )
-
 
     def send_transactional_notification_delayed(self, notification_data: TransactionalNotificationData) -> None:
         user_ids = [str(user_id) for user_id in notification_data.user_ids]
@@ -167,7 +163,6 @@ class BatchBackend:
             json=json_data,
             queue_name=BATCH_NOTIFICATION_QUEUE_NAME,
         )
-
 
     def _enqueue_api_call(
         self, api_version: str, url_suffix: str, http_method: int, json: dict[str, typing.Any], queue_name: str
@@ -191,10 +186,3 @@ class BatchBackend:
                     exc,
                     extra={"url": url, "json": json},
                 )
-            else:
-                if response.status_code != 200:
-                    logger.error(
-                        "Got %d status code from Batch Custom Data API: content=%s",
-                        response.status_code,
-                        response.content,
-                    )

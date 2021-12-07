@@ -250,6 +250,13 @@ def pc_users_one_year_with_pass_automation() -> None:
 @log_cron_with_transaction
 @cron_context
 def pc_notify_users_bookings_not_retrieved() -> None:
+    """
+    Find unretrieved bookings, group them by chunks and start an async
+    job for each chunk.
+
+    One job for all the bookings might end up with too many too
+    handle, one per booking might create way too many jobs.
+    """
     booking_ids = bookings_api.get_unretrieved_booking_ids()
     for chunk in generic_utils.get_chunks(booking_ids, settings.UNRETRIEVED_BOOKINGS_CHUNK_SIZE):
         send_unretrieved_bookings_from_offer_notification_job.delay(chunk)

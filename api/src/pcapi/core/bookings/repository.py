@@ -861,8 +861,14 @@ def _serialize_csv_report(query: Query) -> str:
 def get_unretrieved_booking_ids() -> typing.Generator[int, None, None]:
     """
     Filter unretrieved bookings: not used, not cancelled, created at
-    least three days ago and with an expiration date superior (>) to
-    today.
+    least three days ago.
+
+    Notes:
+        * ideally, this function should also filter booking which are
+          not expired, but the yield_per does not work well with joins
+          (join is ok only if needed by some filter methods);
+        * expirationDate is Python-computed and therefore a little bit
+          tricky too filter on using an SQL request.
     """
     three_days_ago = datetime.combine(date.today() - timedelta(days=3), time(0, 0))
 
@@ -873,13 +879,23 @@ def get_unretrieved_booking_ids() -> typing.Generator[int, None, None]:
         .filter(Booking.isCancelled.is_(False))
         .filter(Booking.dateCreated < three_days_ago)
         .options(load_only(Booking.id))
-        .yield_per(1_000)
+        .yield_per(5_000)
     )
 
     for booking in bookings:
-        if booking.expirationDate.date() > date.today():
-            yield booking.id
+        yield booking.id
 
 
-def get_bookings_with_offers(booking_ids: list[int]) -> typing.Iterator[Booking]:
-    return Booking.query.filter(Booking.id.in_(booking_ids)).options(joinedload(Booking.stock).joinedload(Stock.offer))
+def get_unexpired_bookings(booking_ids: list[int], expires_at_min: datetime) -> typing.Iterator[Booking]:
+    query = Booking.query.filter(Booking.id.in_(booking_ids)).options(joinedload(Booking.stock).joinedload(Stock.offer))
+
+    bookings = []
+    for booking in query:
+        expires_at = booking.expirationDate
+        if not expires_at:
+            continue
+
+        if expires_at > expires_at_min:
+            bookings.append(booking)
+
+    return bookings

@@ -11,6 +11,7 @@ from freezegun import freeze_time
 import pytest
 from pytest import fixture
 
+from pcapi.core.bookings import models as bookings_models
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.bookings.models import BookingStatus
 import pcapi.core.bookings.repository as booking_repository
@@ -2822,10 +2823,30 @@ class UnretrievedGoodsTest:
         can_expire_stock = offers_factories.ThingStockFactory()
         bookings_factories.UsedBookingFactory.create_batch(2, stock=can_expire_stock)
 
-        create_date = datetime.utcnow() - timedelta(days=1)
+        create_date = datetime.utcnow() - timedelta(days=5)
         can_retrieve_booking = bookings_factories.BookingFactory(
             stock=can_expire_stock, isUsed=False, dateCreated=create_date
         )
 
         booking_ids = set(booking_repository.get_unretrieved_booking_ids())
         assert booking_ids == {can_retrieve_booking.id}
+
+    def test_get_unexpired_bookings(self):
+        cannot_expire_stock = offers_factories.StockFactory(offer=offers_factories.DigitalOfferFactory())
+        bookings_factories.BookingFactory.create_batch(2, stock=cannot_expire_stock)
+
+        can_expire_stock = offers_factories.ThingStockFactory()
+        bookings_factories.UsedBookingFactory.create_batch(2, stock=can_expire_stock)
+
+        create_date = datetime.utcnow() - timedelta(days=1_000)
+        bookings_factories.BookingFactory(stock=can_expire_stock, isUsed=False, dateCreated=create_date)
+
+        create_date = datetime.utcnow() - timedelta(days=1)
+        can_retrieve_booking_unexpired = bookings_factories.BookingFactory(
+            stock=can_expire_stock, isUsed=False, dateCreated=create_date
+        )
+
+        ids = [booking.id for booking in bookings_models.Booking.query.all()]
+        expires_at_min = datetime.utcnow() - timedelta(hours=1)
+        bookings = booking_repository.get_unexpired_bookings(ids, expires_at_min)
+        assert bookings == [can_retrieve_booking_unexpired]

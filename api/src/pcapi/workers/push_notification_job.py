@@ -1,6 +1,8 @@
+from datetime import datetime
+from datetime import timedelta
 import logging
 
-from pcapi.core.bookings import api as bookings_api
+from pcapi.core.bookings import api as bookings_repository
 from pcapi.core.offers.models import Offer
 from pcapi.notifications.push import send_transactional_notification
 from pcapi.notifications.push import send_transactional_notification_delayed
@@ -38,10 +40,18 @@ def send_offer_link_by_push_job(user_id: int, offer_id: int) -> None:
 
 @job(worker.default_queue)
 def send_unretrieved_bookings_from_offer_notification_job(booking_ids: list[int]) -> None:
-    bookings = bookings_api.get_bookings_with_offers(booking_ids)
+    """
+    Send a notification to each of the unexpired bookings.
+    Filter bookings that will expire too soon to avoid a useless
+    notification.
+    """
+    expires_at_min = datetime.utcnow() - timedelta(hours=1)
+    bookings = bookings_repository.get_unexpired_bookings(booking_ids, expires_at_min)
+
     for booking in bookings:
+        notification_data = get_unretrieved_bookings_with_offers_notification_data(booking)
+
         try:
-            notification_data = get_unretrieved_bookings_with_offers_notification_data(booking)
             send_transactional_notification_delayed(notification_data)
         except TypeError:
             logger.error(
