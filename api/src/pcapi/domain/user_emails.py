@@ -28,7 +28,6 @@ from pcapi.core.users import api as users_api
 from pcapi.core.users.models import Token
 from pcapi.core.users.models import User
 from pcapi.emails import beneficiary_activation
-from pcapi.emails.beneficiary_expired_bookings import build_expired_bookings_recap_email_data_for_beneficiary
 from pcapi.emails.beneficiary_offer_cancellation import (
     retrieve_offerer_booking_recap_email_data_after_user_cancellation,
 )
@@ -114,24 +113,6 @@ def send_booking_cancellation_emails_to_user_and_offerer(
     if reason == BookingCancellationReasons.FRAUD:
         return send_user_driven_cancellation_email_to_offerer(booking)
     return True
-
-
-def send_expired_bookings_recap_email_to_beneficiary(beneficiary: User, bookings: list[Booking]) -> bool:
-    success = True
-    books_bookings, other_bookings = filter_books_bookings(bookings)
-    if books_bookings:
-        books_bookings_data = build_expired_bookings_recap_email_data_for_beneficiary(
-            beneficiary, bookings, booking_constants.BOOKS_BOOKINGS_AUTO_EXPIRY_DELAY.days
-        )
-        success &= mails.send(recipients=[beneficiary.email], data=books_bookings_data)
-
-    if other_bookings:
-        other_bookings_data = build_expired_bookings_recap_email_data_for_beneficiary(
-            beneficiary, bookings, booking_constants.BOOKINGS_AUTO_EXPIRY_DELAY.days
-        )
-        success &= mails.send(recipients=[beneficiary.email], data=other_bookings_data)
-
-    return success
 
 
 def send_expired_individual_bookings_recap_email_to_offerer(offerer: Offerer, bookings: list[Booking]) -> bool:
