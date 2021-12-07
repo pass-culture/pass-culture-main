@@ -12,6 +12,7 @@ import wtforms.fields.core as wtf_fields
 import wtforms.fields.html5 as wtf_html5_fields
 import wtforms.validators as wtf_validators
 
+from pcapi import settings
 from pcapi.admin import fields
 from pcapi.admin import permissions
 from pcapi.admin import widgets
@@ -24,6 +25,7 @@ import pcapi.core.offers.models as offers_models
 import pcapi.core.payments.api as payments_api
 import pcapi.core.payments.exceptions as payments_exceptions
 import pcapi.core.payments.utils as payments_utils
+from pcapi.utils import human_ids
 import pcapi.utils.date as date_utils
 
 
@@ -108,9 +110,25 @@ def format_amount(view, context, model, name):
     return f"{model.amount} €".replace(".", ",")
 
 
+def format_offer(view, context, model, name):
+    if not model.offer:
+        return ""
+    humanized_id = human_ids.humanize(model.offerId)
+    url = f"{settings.PRO_URL}/offres/{humanized_id}/edition"
+    return markupsafe.Markup('<a href="{url}">{offer.name} ({offer.id})</a>').format(
+        url=url,
+        offer=model.offer,
+    )
+
+
 def format_offerer(view, context, model, name):
     offerer = model.offerer or model.offer.venue.managingOfferer
-    return offerer.name
+    humanized_id = human_ids.humanize(offerer.id)
+    url = f"{settings.PRO_URL}/accueil?structure={humanized_id}"
+    return markupsafe.Markup('<a href="{url}">{offerer.name}</a>').format(
+        url=url,
+        offerer=offerer,
+    )
 
 
 def format_rate(view, context, model, name):
@@ -153,7 +171,16 @@ def format_venue(view, context, model, name):
     if model.offererId:
         return None
     venue = model.offer.venue
-    return venue.publicName or venue.name
+    humanized_offerer_id = human_ids.humanize(venue.managingOffererId)
+    if venue.isVirtual:
+        url = f"{settings.PRO_URL}/accueil?structure={humanized_offerer_id}"
+    else:
+        humanized_venue_id = human_ids.humanize(venue.id)
+        url = f"{settings.PRO_URL}/structures/{humanized_offerer_id}/lieux/{humanized_venue_id}"
+    return markupsafe.Markup('<a href="{url}">{name}</a>').format(
+        url=url,
+        name=venue.publicName or venue.name,
+    )
 
 
 def get_error_message(exception: payments_exceptions.ReimbursementRuleValidationError):
@@ -176,7 +203,7 @@ class CustomReimbursementRuleView(BaseAdminView):
         "offerer",
         "siren",
         "venue",
-        "offer.name",
+        "offer",
         "rate",
         "amount",
         "subcategories",
@@ -186,7 +213,7 @@ class CustomReimbursementRuleView(BaseAdminView):
         "offerer": "Offreur",
         "siren": "SIREN",
         "venue": "Lieu",
-        "offer.name": "Offre",
+        "offer": "Offre",
         "rate": "Taux de remboursement",
         "amount": "Montant remboursé",
         "subcategories": "Sous-catégories",
@@ -194,6 +221,7 @@ class CustomReimbursementRuleView(BaseAdminView):
     }
     column_formatters = {
         "amount": format_amount,
+        "offer": format_offer,
         "offerer": format_offerer,
         "rate": format_rate,
         "siren": format_siren,
