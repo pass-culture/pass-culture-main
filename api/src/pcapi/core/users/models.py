@@ -165,7 +165,7 @@ class ActivityEnum(enum.Enum):
     UNEMPLOYED = "Chômeur"
 
 
-class SchoolType(enum.Enum):
+class SchoolTypeEnum(enum.Enum):
     AGRICULTURAL_HIGH_SCHOOL = "Lycée agricole"
     APPRENTICE_FORMATION_CENTER = "Centre de formation d'apprentis"
     MILITARY_HIGH_SCHOOL = "Lycée militaire"
@@ -242,7 +242,7 @@ class User(PcObject, Model, NeedsValidationMixin):
         nullable=False,
         server_default="{}",
     )
-    schoolType = sa.Column(sa.Enum(SchoolType, create_constraint=False), nullable=True)
+    schoolType = sa.Column(sa.Enum(SchoolTypeEnum, create_constraint=False), nullable=True)
     subscriptionState = sa.Column(sa.Enum(SubscriptionState, create_constraint=False), nullable=True)
     # FIXME (dbaty, 2020-12-14): once v114 has been deployed, populate
     # existing rows with the empty string and add NOT NULL constraint.

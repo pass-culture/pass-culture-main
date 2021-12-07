@@ -289,7 +289,7 @@ def update_user_profile(
     activity: str,
     first_name: Optional[str] = None,
     last_name: Optional[str] = None,
-    school_type: Optional[users_models.SchoolType] = None,
+    school_type: Optional[users_models.SchoolTypeEnum] = None,
     phone_number: Optional[str] = None,
 ) -> None:
     user_initial_roles = user.roles
@@ -346,8 +346,8 @@ def is_identity_check_with_document_method_allowed_for_underage(user: users_mode
         return False
 
     if (
-        user.schoolType == users_models.SchoolType.PUBLIC_HIGH_SCHOOL
-        or user.schoolType == users_models.SchoolType.PUBLIC_SECONDARY_SCHOOL
+        user.schoolType == users_models.SchoolTypeEnum.PUBLIC_HIGH_SCHOOL
+        or user.schoolType == users_models.SchoolTypeEnum.PUBLIC_SECONDARY_SCHOOL
     ):
         return FeatureToggle.ALLOW_IDCHECK_REGISTRATION_FOR_EDUCONNECT_ELIGIBLE.is_active()
     return True
