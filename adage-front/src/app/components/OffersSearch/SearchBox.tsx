@@ -1,30 +1,27 @@
-import "./SearchBox.scss"
-import React, { useCallback } from "react"
-import { connectSearchBox } from "react-instantsearch-core"
+import './SearchBox.scss'
+import React, { useCallback } from 'react'
+import { connectSearchBox } from 'react-instantsearch-core'
 
 export const SearchBoxComponent = ({
   currentRefinement,
   refine,
 }: {
-  currentRefinement: string;
-  refine: (e: string) => void;
+  currentRefinement: string
+  refine: (e: string) => void
 }): React.ReactElement => {
-  const onSubmit = useCallback((event) => {
+  const onSubmit = useCallback(event => {
     event.preventDefault()
   }, [])
 
   const onChange = useCallback(
-    (event) => {
+    event => {
       refine(event.currentTarget.value)
     },
     [refine]
   )
 
   return (
-    <form
-      className="search-wrapper"
-      onSubmit={onSubmit}
-    >
+    <form className="search-wrapper" onSubmit={onSubmit}>
       <input
         className="search-box"
         onChange={onChange}
@@ -32,10 +29,7 @@ export const SearchBoxComponent = ({
         type="search"
         value={currentRefinement}
       />
-      <button
-        className="search-button"
-        type="submit"
-      >
+      <button className="search-button" type="submit">
         Rechercher
       </button>
     </form>

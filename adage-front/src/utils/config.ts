@@ -1,9 +1,9 @@
-const NODE_ENV = process.env.NODE_ENV || "development"
+const NODE_ENV = process.env.NODE_ENV || 'development'
 
-export const IS_DEV = NODE_ENV === "development"
+export const IS_DEV = NODE_ENV === 'development'
 export const IS_PROD = !IS_DEV
 
-export const API_URL = process.env.REACT_APP_API_URL || "http://localhost"
+export const API_URL = process.env.REACT_APP_API_URL || 'http://localhost'
 
 export const {
   REACT_APP_ALGOLIA_APP_ID: ALGOLIA_APP_ID,
@@ -14,5 +14,5 @@ export const {
   REACT_APP_SENTRY_SAMPLE_RATE: SENTRY_SAMPLE_RATE,
   REACT_APP_SENTRY_SERVER_URL: SENTRY_SERVER_URL,
   REACT_APP_ASSETS_URL: ASSETS_URL,
-  REACT_APP_ENABLE_NEW_OFFER_DESIGN: ENABLE_NEW_OFFER_DESIGN
+  REACT_APP_ENABLE_NEW_OFFER_DESIGN: ENABLE_NEW_OFFER_DESIGN,
 } = process.env

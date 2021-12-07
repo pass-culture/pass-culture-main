@@ -1,9 +1,9 @@
-import { client } from "repository/pcapi/pcapiClient"
-import { OfferType, Role, VenueFilterType } from "utils/types"
+import { client } from 'repository/pcapi/pcapiClient'
+import { OfferType, Role, VenueFilterType } from 'utils/types'
 
 export const authenticate = async (): Promise<Role> => {
   return client
-    .get("/adage-iframe/authenticate")
+    .get('/adage-iframe/authenticate')
     .then(({ role }: { role: string }) => Role[role])
 }
 
@@ -20,5 +20,5 @@ export const getVenueBySiret = async (
 }
 
 export const preBookStock = async (stockId: number): Promise<number> => {
-  return client.post("/adage-iframe/bookings", { stockId })
+  return client.post('/adage-iframe/bookings', { stockId })
 }
