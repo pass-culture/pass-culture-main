@@ -1,26 +1,26 @@
 import format from 'date-fns/format'
 import React from 'react'
 
-import { ReactComponent as BuildingIcon } from "assets/building.svg"
-import { ReactComponent as DateIcon } from "assets/date.svg"
-import { ReactComponent as EuroIcon } from "assets/euro.svg"
-import { ReactComponent as LocationIcon } from "assets/location.svg"
-import { ReactComponent as SubcategoryIcon } from "assets/subcategory.svg"
-import { ReactComponent as UserIcon } from "assets/user.svg"
+import { ReactComponent as BuildingIcon } from 'assets/building.svg'
+import { ReactComponent as DateIcon } from 'assets/date.svg'
+import { ReactComponent as EuroIcon } from 'assets/euro.svg'
+import { ReactComponent as LocationIcon } from 'assets/location.svg'
+import { ReactComponent as SubcategoryIcon } from 'assets/subcategory.svg'
+import { ReactComponent as UserIcon } from 'assets/user.svg'
 import { ADRESS_TYPE, OfferType } from 'utils/types'
 
 import './OfferSummary.scss'
 
-const OfferSummary = ({offer}: {offer: OfferType}): JSX.Element => {
+const OfferSummary = ({ offer }: { offer: OfferType }): JSX.Element => {
   const { subcategoryLabel, stocks, venue, extraData } = offer
-  const { beginningDatetime, numberOfTickets, price} = stocks[0]
+  const { beginningDatetime, numberOfTickets, price } = stocks[0]
 
   let offerVenue = ''
 
   if (extraData?.offerVenue) {
-    switch(extraData?.offerVenue.addressType) {
+    switch (extraData?.offerVenue.addressType) {
       case ADRESS_TYPE.OTHER:
-        offerVenue= extraData.offerVenue.otherAddress
+        offerVenue = extraData.offerVenue.otherAddress
         break
       case ADRESS_TYPE.SCHOOL:
         offerVenue = "Dans l'établissement scolaire"
@@ -31,10 +31,11 @@ const OfferSummary = ({offer}: {offer: OfferType}): JSX.Element => {
     }
   }
 
-  const students = extraData?.students ?
-    extraData.students?.length > 1 ? 'Multi niveaux' : extraData.students[0]
-    :
-    ''
+  const students = extraData?.students
+    ? extraData.students?.length > 1
+      ? 'Multi niveaux'
+      : extraData.students[0]
+    : ''
 
   return (
     <div>
@@ -56,17 +57,12 @@ const OfferSummary = ({offer}: {offer: OfferType}): JSX.Element => {
         {numberOfTickets && (
           <li className="offer-summary-item">
             <UserIcon className="offer-summary-item-icon" />
-            Jusqu'à 
-            {' '}
-            {numberOfTickets}
-            {' '}
-            places
+            Jusqu’à {numberOfTickets} places
           </li>
         )}
         <li className="offer-summary-item">
           <EuroIcon className="offer-summary-item-icon" />
-          {price}
-          €
+          {price}€
         </li>
         {students && (
           <li className="offer-summary-item">

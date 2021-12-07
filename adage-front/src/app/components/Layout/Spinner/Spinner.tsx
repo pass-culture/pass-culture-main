@@ -1,12 +1,12 @@
-import "./Spinner.scss"
-import React, { useEffect, useState } from "react"
+import './Spinner.scss'
+import React, { useEffect, useState } from 'react'
 
-import { ReactComponent as LogoImage } from "assets/logo-without-text.svg"
+import { ReactComponent as LogoImage } from 'assets/logo-without-text.svg'
 
 export const Spinner = ({
-  message = "Chargement en cours",
+  message = 'Chargement en cours',
 }: {
-  message: string;
+  message: string
 }): JSX.Element => {
   const [numberOfDots, setNumberOfDots] = useState(3)
 
@@ -15,9 +15,7 @@ export const Spinner = ({
     if (message) {
       timer = setTimeout(
         () =>
-          setNumberOfDots(
-            (currentNumberOfDots) => (currentNumberOfDots % 3) + 1
-          ),
+          setNumberOfDots(currentNumberOfDots => (currentNumberOfDots % 3) + 1),
         500
       )
     }
@@ -25,15 +23,12 @@ export const Spinner = ({
   }, [message, numberOfDots])
 
   return (
-    <span
-      className="loading-spinner"
-      data-testid="spinner"
-    >
+    <span className="loading-spinner" data-testid="spinner">
       <LogoImage />
       {message && (
         <span
           className="content"
-          data-dots={Array(numberOfDots).fill(".").join("")}
+          data-dots={Array(numberOfDots).fill('.').join('')}
         >
           {message}
         </span>

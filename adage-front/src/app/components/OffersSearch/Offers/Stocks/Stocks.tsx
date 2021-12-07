@@ -1,17 +1,17 @@
-import React from "react"
+import React from 'react'
 
-import { StockType } from "utils/types"
+import { StockType } from 'utils/types'
 
-import { Stock } from "./Stock"
+import { Stock } from './Stock'
 
 export const Stocks = ({
   canPrebookOffers,
   stocks,
   venuePostalCode,
 }: {
-  canPrebookOffers: boolean;
-  stocks: StockType[];
-  venuePostalCode: string;
+  canPrebookOffers: boolean
+  stocks: StockType[]
+  venuePostalCode: string
 }): JSX.Element => {
   return (
     <ul className="stocks">

@@ -1,19 +1,19 @@
-import "./AppLayout.scss"
-import * as React from "react"
+import './AppLayout.scss'
+import * as React from 'react'
 
-import { ReactComponent as Logo } from "assets/logo-with-text.svg"
-import { Role, VenueFilterType } from "utils/types"
+import { ReactComponent as Logo } from 'assets/logo-with-text.svg'
+import { Role, VenueFilterType } from 'utils/types'
 
-import { OffersSearch } from "./components/OffersSearch/OffersSearch"
+import { OffersSearch } from './components/OffersSearch/OffersSearch'
 
 export const AppLayout = ({
   userRole,
   removeVenueFilter,
   venueFilter,
 }: {
-  userRole: Role;
-  removeVenueFilter: () => void;
-  venueFilter: VenueFilterType | null;
+  userRole: Role
+  removeVenueFilter: () => void
+  venueFilter: VenueFilterType | null
 }): JSX.Element => (
   <>
     <header>
