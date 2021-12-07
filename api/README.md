@@ -100,7 +100,7 @@ Les différentes fixtures utilisées dans les tests sont définies dans `tests/c
 
 ## Dépendances
 
-- La combinaison `pylint` + `astroid` a parfois quelques soucis : elle est pour l'instant figée à `2.8.3` pour pylint et
+- La combinaison `pylint` + `astroid` a parfois quelques soucis : elle est pour l'instant figée à `2.8.3` pour `pylint` et
   `2.5.6` pour `astroid`. Ceci pourra être modifié quand ces problèmes seront réglés.
 
 ## Démarrage du serveur back api
