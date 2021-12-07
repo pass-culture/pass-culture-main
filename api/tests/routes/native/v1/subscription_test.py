@@ -57,14 +57,18 @@ class NextStepTest:
     @pytest.mark.parametrize(
         "fraud_check_status,ubble_status,next_step",
         [
-            (fraud_models.FraudCheckStatus.PENDING, fraud_models.IdentificationStatus.INITIATED, None),
-            (fraud_models.FraudCheckStatus.PENDING, fraud_models.IdentificationStatus.PROCESSING, None),
-            (fraud_models.FraudCheckStatus.OK, fraud_models.IdentificationStatus.PROCESSED, None),
-            (fraud_models.FraudCheckStatus.KO, fraud_models.IdentificationStatus.PROCESSED, None),
-            (fraud_models.FraudCheckStatus.CANCELED, fraud_models.IdentificationStatus.ABORTED, "identity-check"),
-            (None, fraud_models.IdentificationStatus.INITIATED, None),
-            (None, fraud_models.IdentificationStatus.PROCESSING, None),
-            (None, fraud_models.IdentificationStatus.PROCESSED, None),
+            (fraud_models.FraudCheckStatus.PENDING, fraud_models.ubble.UbbleIdentificationStatus.INITIATED, None),
+            (fraud_models.FraudCheckStatus.PENDING, fraud_models.ubble.UbbleIdentificationStatus.PROCESSING, None),
+            (fraud_models.FraudCheckStatus.OK, fraud_models.ubble.UbbleIdentificationStatus.PROCESSED, None),
+            (fraud_models.FraudCheckStatus.KO, fraud_models.ubble.UbbleIdentificationStatus.PROCESSED, None),
+            (
+                fraud_models.FraudCheckStatus.CANCELED,
+                fraud_models.ubble.UbbleIdentificationStatus.ABORTED,
+                "identity-check",
+            ),
+            (None, fraud_models.ubble.UbbleIdentificationStatus.INITIATED, None),
+            (None, fraud_models.ubble.UbbleIdentificationStatus.PROCESSING, None),
+            (None, fraud_models.ubble.UbbleIdentificationStatus.PROCESSED, None),
         ],
     )
     @override_features(ENABLE_UBBLE=True)

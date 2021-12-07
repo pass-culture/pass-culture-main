@@ -1,5 +1,5 @@
 import logging
-from typing import Optional
+import typing
 
 import flask
 
@@ -10,6 +10,7 @@ import pcapi.core.fraud.models as fraud_models
 import pcapi.core.fraud.repository as fraud_repository
 from pcapi.core.mails.transactional.users import accepted_as_beneficiary_email
 from pcapi.core.payments import api as payments_api
+from pcapi.core.subscription import messages as subscription_messages
 from pcapi.core.users import api as users_api
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import exceptions as users_exception
@@ -24,7 +25,6 @@ from pcapi.models.beneficiary_import import BeneficiaryImportSources
 from pcapi.models.beneficiary_import_status import ImportStatus
 from pcapi.models.feature import FeatureToggle
 import pcapi.repository as pcapi_repository
-from pcapi.repository import transaction
 from pcapi.workers import apps_flyer_job
 
 from . import exceptions
@@ -40,8 +40,8 @@ def attach_beneficiary_import_details(
     application_id: int,
     source_id: int,
     source: BeneficiaryImportSources,
-    eligibility_type: Optional[users_models.EligibilityType],
-    details: Optional[str] = None,
+    eligibility_type: typing.Optional[users_models.EligibilityType],
+    details: typing.Optional[str] = None,
     status: ImportStatus = ImportStatus.CREATED,
 ) -> None:
     beneficiary_import = BeneficiaryImport.query.filter_by(
@@ -66,18 +66,27 @@ def attach_beneficiary_import_details(
     pcapi_repository.repository.save(beneficiary_import)
 
 
-def get_latest_subscription_message(user: users_models.User) -> Optional[models.SubscriptionMessage]:
+def get_latest_subscription_message(user: users_models.User) -> typing.Optional[models.SubscriptionMessage]:
     return models.SubscriptionMessage.query.filter_by(user=user).order_by(models.SubscriptionMessage.id.desc()).first()
 
 
 def create_successfull_beneficiary_import(
     user: users_models.User,
     source: BeneficiaryImportSources,
-    source_id: str,
-    application_id: str,
-    eligibility_type: Optional[users_models.EligibilityType] = None,
+    source_id: typing.Optional[int] = None,
+    application_id: typing.Optional[int] = None,
+    eligibility_type: typing.Optional[users_models.EligibilityType] = None,
+    third_party_id: typing.Optional[str] = None,
 ) -> None:
-    existing_beneficiary_import = BeneficiaryImport.query.filter_by(applicationId=application_id).first()
+    if application_id:
+        beneficiary_import_filter = BeneficiaryImport.applicationId == application_id
+    elif third_party_id:
+        beneficiary_import_filter = BeneficiaryImport.thirdPartyId == third_party_id
+    else:
+        raise ValueError(
+            "create_successfull_beneficiary_import need need a non-None value for application_id or third_party_id"
+        )
+    existing_beneficiary_import = BeneficiaryImport.query.filter(beneficiary_import_filter).first()
 
     beneficiary_import = existing_beneficiary_import or BeneficiaryImport()
     if not beneficiary_import.beneficiary:
@@ -89,6 +98,7 @@ def create_successfull_beneficiary_import(
     beneficiary_import.sourceId = source_id
     beneficiary_import.source = source.value
     beneficiary_import.setStatus(status=ImportStatus.CREATED, author=None)
+    beneficiary_import.thirdPartyId = third_party_id
 
     pcapi_repository.repository.save(beneficiary_import)
 
@@ -96,7 +106,7 @@ def create_successfull_beneficiary_import(
 
 
 def activate_beneficiary(
-    user: users_models.User, deposit_source: str = None, has_activated_account: Optional[bool] = True
+    user: users_models.User, deposit_source: str = None, has_activated_account: typing.Optional[bool] = True
 ) -> users_models.User:
 
     beneficiary_import = subscription_repository.get_beneficiary_import_for_beneficiary(user)
@@ -137,7 +147,7 @@ def activate_beneficiary(
 
 
 def check_and_activate_beneficiary(
-    userId: int, deposit_source: str = None, has_activated_account: Optional[bool] = True
+    userId: int, deposit_source: str = None, has_activated_account: typing.Optional[bool] = True
 ) -> users_models.User:
     with pcapi_repository.transaction():
         user = users_repository.get_and_lock_user(userId)
@@ -221,31 +231,67 @@ def start_ubble_workflow(user: users_models.User, redirect_url: str) -> str:
         webhook_url=flask.url_for("Public API.ubble_webhook_update_application_status", _external=True),
         redirect_url=redirect_url,
     )
-    fraud_api.start_ubble_fraud_check(user, content)
+    fraud_api.ubble.start_ubble_fraud_check(user, content)
     return content.identification_url
 
 
 def update_ubble_workflow(
-    fraud_check: fraud_models.BeneficiaryFraudCheck, status: fraud_models.IdentificationStatus
-) -> fraud_models.BeneficiaryFraudCheck:
+    fraud_check: fraud_models.BeneficiaryFraudCheck, status: fraud_models.ubble.UbbleIdentificationStatus
+) -> None:
     content = ubble.get_content(fraud_check.thirdPartyId)
     fraud_check.resultContent = content
     pcapi_repository.repository.save(fraud_check)
 
     user = fraud_check.user
 
-    if status == fraud_models.IdentificationStatus.PROCESSING:
+    if status == fraud_models.ubble.UbbleIdentificationStatus.PROCESSING:
         user.hasCompletedIdCheck = True
         pcapi_repository.repository.save(user)
 
-    elif status == fraud_models.IdentificationStatus.PROCESSED:
-        fraud_api.on_ubble_result(fraud_check)
+    elif status == fraud_models.ubble.UbbleIdentificationStatus.PROCESSED:
+        try:
+            fraud_api.ubble.on_ubble_result(fraud_check)
 
-    elif status == fraud_models.IdentificationStatus.ABORTED:
+        except fraud_exceptions.BeneficiaryFraudResultCannotBeDowngraded:
+            logger.warning(
+                "Trying to downgrade a beneficiary that already has been considered OK", extra={"user_id": user.id}
+            )
+
+        except Exception:  # pylint: disable=broad-except
+            logger.exception("Error on Ubble fraud check result: %s", extra={"user_id": user.id})
+
+        else:
+            if fraud_check.status != fraud_models.FraudCheckStatus.OK:
+                handle_validation_errors(
+                    user=user,
+                    reason_codes=fraud_check.reasonCodes,
+                )
+                return
+
+            try:
+                on_successful_application(
+                    user=user,
+                    source=BeneficiaryImportSources.ubble,
+                    source_data=fraud_check.source_data(),
+                    third_party_id=fraud_check.thirdPartyId,
+                    source_id=None,
+                )
+
+            except Exception as err:  # pylint: disable=broad-except
+                logger.warning(
+                    "Could not save application %s, because of error: %s",
+                    fraud_check.thirdPartyId,
+                    err,
+                )
+            else:
+                logger.info(
+                    "Successfully created user for application %s",
+                    fraud_check.thirdPartyId,
+                )
+
+    elif status == fraud_models.ubble.UbbleIdentificationStatus.ABORTED:
         fraud_check.status = fraud_models.FraudCheckStatus.CANCELED
         pcapi_repository.repository.save(fraud_check)
-
-    return fraud_check
 
 
 def has_completed_profile(user: users_models.User) -> bool:
@@ -253,7 +299,7 @@ def has_completed_profile(user: users_models.User) -> bool:
 
 
 # pylint: disable=too-many-return-statements
-def get_next_subscription_step(user: users_models.User) -> Optional[models.SubscriptionStep]:
+def get_next_subscription_step(user: users_models.User) -> typing.Optional[models.SubscriptionStep]:
     # TODO(viconnex): base the next step on the user.subscriptionState that will be added later on
     allowed_identity_check_methods = get_allowed_identity_check_methods(user)
     if not allowed_identity_check_methods:
@@ -296,15 +342,15 @@ def get_next_subscription_step(user: users_models.User) -> Optional[models.Subsc
 
 def update_user_profile(
     user: users_models.User,
-    address: Optional[str],
+    address: typing.Optional[str],
     city: str,
     postal_code: str,
     activity: str,
-    first_name: Optional[str] = None,
-    last_name: Optional[str] = None,
-    school_type: Optional[users_models.SchoolTypeEnum] = None,
-    phone_number: Optional[str] = None,
-    has_completed_id_check: Optional[bool] = None,
+    first_name: typing.Optional[str] = None,
+    last_name: typing.Optional[str] = None,
+    school_type: typing.Optional[users_models.SchoolTypeEnum] = None,
+    phone_number: typing.Optional[str] = None,
+    has_completed_id_check: typing.Optional[bool] = None,
 ) -> None:
     user_initial_roles = user.roles
 
@@ -330,7 +376,7 @@ def update_user_profile(
     if has_completed_id_check:
         update_payload["hasCompletedIdCheck"] = True
 
-    with transaction():
+    with pcapi_repository.transaction():
         users_models.User.query.filter(users_models.User.id == user.id).update(update_payload)
     db.session.refresh(user)
 
@@ -397,7 +443,7 @@ def get_allowed_identity_check_methods(user: users_models.User) -> list[models.I
     return allowed_methods
 
 
-def get_maintenance_page_type(user: users_models.User) -> Optional[models.MaintenancePageType]:
+def get_maintenance_page_type(user: users_models.User) -> typing.Optional[models.MaintenancePageType]:
     allowed_identity_check_methods = get_allowed_identity_check_methods(user)
     if allowed_identity_check_methods:
         return None
@@ -417,22 +463,42 @@ def get_maintenance_page_type(user: users_models.User) -> Optional[models.Mainte
 
 
 def on_successful_application(
-    user: users_models.User, source_data: fraud_models.DMSContent, application_id: int, source_id: int
-):
+    user: users_models.User,
+    source_data: fraud_models.DMSContent,
+    source: BeneficiaryImportSources,
+    application_id: typing.Optional[int] = None,
+    source_id: typing.Optional[int] = None,
+    third_party_id: typing.Optional[str] = None,
+) -> None:
     users_api.update_user_information_from_external_source(user, source_data)
     # unsure ?
+    # not needed for Ubble since it has been set to True on `processing` notif
     user.hasCompletedIdCheck = True
     pcapi_repository.repository.save(user)
 
     create_successfull_beneficiary_import(
         user=user,
-        source=BeneficiaryImportSources.demarches_simplifiees,
+        source=source,
         source_id=source_id,
         application_id=application_id,
         eligibility_type=fraud_api.get_eligibility_type(source_data),
+        third_party_id=third_party_id,
     )
 
     if not users_api.steps_to_become_beneficiary(user):
         activate_beneficiary(user)
     else:
         users_external.update_external_user(user)
+
+
+def handle_validation_errors(
+    user: users_models.User,
+    reason_codes: list[fraud_models.FraudReasonCode],
+):
+    for error_code in reason_codes:
+        if error_code == fraud_models.FraudReasonCode.ALREADY_BENEFICIARY:
+            subscription_messages.on_already_beneficiary(user)
+        if error_code == fraud_models.FraudReasonCode.DUPLICATE_USER:
+            subscription_messages.on_duplicate_user(user)
+        if error_code == fraud_models.FraudReasonCode.DUPLICATE_ID_PIECE_NUMBER:
+            subscription_messages.on_duplicate_user(user)

@@ -19,8 +19,9 @@ from pcapi.models.feature import FeatureToggle
 from pcapi.repository import repository
 from pcapi.repository.user_queries import matching
 
-from . import models
-from . import repository as fraud_repository
+from . import ubble as ubble_api
+from .. import models
+from .. import repository as fraud_repository
 
 
 logger = logging.getLogger(__name__)
@@ -77,10 +78,6 @@ def on_jouve_result(user: users_models.User, jouve_content: models.JouveContent)
 
     # TODO: save user fields from jouve_content
     on_identity_fraud_check_result(user, fraud_check)
-
-
-def on_ubble_result(fraud_check: fraud_models.BeneficiaryFraudCheck) -> None:
-    on_identity_fraud_check_result(fraud_check.user, fraud_check)
 
 
 def on_dms_fraud_result(
@@ -175,44 +172,6 @@ def jouve_fraud_checks(
     return fraud_items
 
 
-def _ubble_result_fraud_item(content: fraud_models.UbbleContent) -> fraud_models.FraudItem:
-    if content.score == fraud_models.UbbleScore.VALID.value:
-        return fraud_models.FraudItem(status=fraud_models.FraudStatus.OK, detail=f"Ubble score {content.score}")
-
-    return fraud_models.FraudItem(
-        status=fraud_models.FraudStatus.KO,
-        detail=f"Ubble score {content.score}: {content.comment}",
-        reason_code=(
-            fraud_models.FraudReasonCode.ID_CHECK_INVALID
-            if content.score == fraud_models.UbbleScore.INVALID.value
-            else fraud_models.FraudReasonCode.ID_CHECK_UNPROCESSABLE
-        ),
-    )
-
-
-def ubble_fraud_checks(
-    user: users_models.User, beneficiary_fraud_check: models.BeneficiaryFraudCheck
-) -> list[models.FraudItem]:
-    content = fraud_models.UbbleContent(**beneficiary_fraud_check.resultContent)
-
-    fraud_items = [
-        _ubble_result_fraud_item(content),
-        # TODO: factorise in on_identity_fraud_check_result for the 4 *_fraud_checks
-        _duplicate_user_fraud_item(
-            first_name=content.first_name,
-            last_name=content.last_name,
-            birth_date=content.birth_date,
-            excluded_user_id=user.id,
-        ),
-        # TODO: décommenter cette ligne après avoir vérifié la regex qui vérifie
-        #  le format de numéro de pièce d'identité
-        # validate_id_piece_number_format_fraud_item(content.id_document_number),
-        _duplicate_id_piece_number_fraud_item(user, content.id_document_number),
-    ]
-
-    return fraud_items
-
-
 def dms_fraud_checks(
     user: users_models.User, beneficiary_fraud_check: models.BeneficiaryFraudCheck
 ) -> list[models.FraudItem]:
@@ -233,26 +192,6 @@ def dms_fraud_checks(
     return fraud_items
 
 
-def start_ubble_fraud_check(user: users_models.User, ubble_content: models.UbbleContent) -> None:
-    fraud_check = models.BeneficiaryFraudCheck(
-        user=user,
-        type=models.FraudCheckType.UBBLE,
-        thirdPartyId=str(ubble_content.identification_id),
-        resultContent=ubble_content,
-    )
-    db.session.add(fraud_check)
-    db.session.commit()
-
-
-def get_ubble_fraud_check(identification_id: str) -> typing.Optional[models.BeneficiaryFraudCheck]:
-    fraud_check = (
-        models.BeneficiaryFraudCheck.query.filter(models.BeneficiaryFraudCheck.type == models.FraudCheckType.UBBLE)
-        .filter(models.BeneficiaryFraudCheck.thirdPartyId == identification_id)
-        .one_or_none()
-    )
-    return fraud_check
-
-
 def get_eligibility_type(data: models.SubscriptionContentType) -> typing.Optional[users_models.EligibilityType]:
     from pcapi.core.users import api as users_api
 
@@ -262,7 +201,7 @@ def get_eligibility_type(data: models.SubscriptionContentType) -> typing.Optiona
     elif isinstance(data, models.JouveContent):
         registration_datetime = data.registrationDate
         birth_date = data.birthDateTxt.date() if data.birthDateTxt else None
-    elif isinstance(data, models.UbbleContent):
+    elif isinstance(data, fraud_models.ubble.UbbleContent):
         registration_datetime = data.registration_datetime
         birth_date = data.birth_date
     elif isinstance(data, models.DMSContent):
@@ -289,7 +228,7 @@ def on_identity_fraud_check_result(
         fraud_items += jouve_fraud_checks(user, beneficiary_fraud_check)
 
     elif beneficiary_fraud_check.type == models.FraudCheckType.UBBLE:
-        fraud_items += ubble_fraud_checks(user, beneficiary_fraud_check)
+        fraud_items += ubble_api.ubble_fraud_checks(user, beneficiary_fraud_check)
 
     elif beneficiary_fraud_check.type == models.FraudCheckType.DMS:
         fraud_items += dms_fraud_checks(user, beneficiary_fraud_check)

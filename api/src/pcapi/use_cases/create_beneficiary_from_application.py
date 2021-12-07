@@ -60,8 +60,8 @@ class CreateBeneficiaryFromApplication:
         preexisting_account = find_user_by_email(beneficiary_pre_subscription.email)
         if not preexisting_account:
             save_beneficiary_import_with_status(
-                ImportStatus.ERROR,
-                application_id,
+                status=ImportStatus.ERROR,
+                application_id=application_id,
                 source=BeneficiaryImportSources.demarches_simplifiees,
                 source_id=jouve_backend.DEFAULT_JOUVE_SOURCE_ID,
                 detail=f"Aucun utilisateur trouvé pour l'email {beneficiary_pre_subscription.email}",

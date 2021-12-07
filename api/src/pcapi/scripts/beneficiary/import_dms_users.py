@@ -201,6 +201,7 @@ def process_application(
                 source_data=information,
                 application_id=application_id,
                 source_id=procedure_id,
+                source=BeneficiaryImportSources.demarches_simplifiees,
             )
         except ApiErrors as api_errors:
             logger.warning(
