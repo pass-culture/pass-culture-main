@@ -15,19 +15,13 @@ const OfferSummary = ({ offer }: { offer: OfferType }): JSX.Element => {
   const { subcategoryLabel, stocks, venue, extraData } = offer
   const { beginningDatetime, numberOfTickets, price } = stocks[0]
 
-  let offerVenue = ''
+  let offerVenue = `${venue.postalCode}, ${venue.city}`
 
   if (extraData?.offerVenue) {
-    switch (extraData?.offerVenue.addressType) {
-      case ADRESS_TYPE.OTHER:
-        offerVenue = extraData.offerVenue.otherAddress
-        break
-      case ADRESS_TYPE.SCHOOL:
-        offerVenue = "Dans l'établissement scolaire"
-        break
-      case ADRESS_TYPE.OFFERER_VENUE:
-        offerVenue = `${venue.postalCode}, ${venue.city}`
-        break
+    if (extraData?.offerVenue.addressType === ADRESS_TYPE.OTHER) {
+      offerVenue = extraData.offerVenue.otherAddress
+    } else if (extraData?.offerVenue.addressType === ADRESS_TYPE.SCHOOL) {
+      offerVenue = "Dans l'établissement scolaire"
     }
   }
 
@@ -36,6 +30,11 @@ const OfferSummary = ({ offer }: { offer: OfferType }): JSX.Element => {
       ? 'Multi niveaux'
       : extraData.students[0]
     : ''
+
+  const priceInEuros = price / 100
+  const formattedPrice = Number.isInteger(priceInEuros)
+    ? priceInEuros
+    : priceInEuros.toFixed(2)
 
   return (
     <div>
@@ -62,7 +61,7 @@ const OfferSummary = ({ offer }: { offer: OfferType }): JSX.Element => {
         )}
         <li className="offer-summary-item">
           <EuroIcon className="offer-summary-item-icon" />
-          {price}€
+          {formattedPrice}€
         </li>
         {students && (
           <li className="offer-summary-item">
