@@ -7,6 +7,7 @@ import uuid
 from dateutil.relativedelta import relativedelta
 from factory.declarations import LazyAttribute
 import factory.fuzzy
+import pytz
 
 from pcapi.core import testing
 import pcapi.core.users.factories as users_factories
@@ -105,7 +106,9 @@ class DMSContentFactory(factory.Factory):
     activity = "Étudiant"
     address = factory.Faker("address")
     id_piece_number = factory.Sequence(lambda _: "".join(random.choices(string.digits, k=12)))
-    registration_datetime = datetime.utcnow()
+    registration_datetime = LazyAttribute(
+        lambda _: datetime.utcnow().replace(tzinfo=pytz.utc).strftime("%Y-%m-%dT%H:%M:%S%z")
+    )
 
 
 class UbbleContentFactory(factory.Factory):

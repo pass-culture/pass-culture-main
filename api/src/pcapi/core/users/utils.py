@@ -1,5 +1,6 @@
 from datetime import date
 from datetime import datetime
+from datetime import time
 import logging
 from typing import Optional
 from typing import Union
@@ -117,9 +118,11 @@ def get_object(storage_path: str) -> Blob:
         raise exception
 
 
-def get_age_at_date(birth_date: Union[date, datetime], specified_datetime: datetime) -> int:
+def get_age_at_date(birth_date: Union[date, datetime], specified_datetime: datetime) -> Optional[int]:
+    if datetime.combine(birth_date, time(0, 0)) > specified_datetime:
+        return None
     return relativedelta(specified_datetime, birth_date).years
 
 
-def get_age_from_birth_date(birth_date: Union[date, datetime]) -> int:
-    return get_age_at_date(birth_date, date.today())
+def get_age_from_birth_date(birth_date: Union[date, datetime]) -> Optional[int]:
+    return get_age_at_date(birth_date, datetime.now())
