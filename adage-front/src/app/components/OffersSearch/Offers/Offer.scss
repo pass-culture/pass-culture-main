@@ -1,4 +1,4 @@
-@import "sass-rem";
+@import 'sass-rem';
 
 .offer {
   display: flex;
@@ -32,6 +32,7 @@
       font-size: rem(20px);
       font-weight: 700;
       margin-bottom: rem(6px);
+      padding-right: rem(150px);
     }
 
     .offer-venue-name {
