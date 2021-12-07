@@ -926,14 +926,14 @@ def get_eligibility_start_datetime(date_of_birth: Optional[Union[date, datetime]
         return None
 
     date_of_birth = datetime.combine(date_of_birth, time(0, 0))
-    fifteen_birthday = date_of_birth + relativedelta(years=constants.ELIGIBILITY_UNDERAGE_RANGE[0])
-    eighteen_birthday = date_of_birth + relativedelta(years=constants.ELIGIBILITY_AGE_18)
+    fifteenth_birthday = date_of_birth + relativedelta(years=constants.ELIGIBILITY_UNDERAGE_RANGE[0])
+    eighteenth_birthday = date_of_birth + relativedelta(years=constants.ELIGIBILITY_AGE_18)
 
     if not FeatureToggle.ENABLE_NATIVE_EAC_INDIVIDUAL.is_active():
-        return eighteen_birthday
+        return eighteenth_birthday
 
     if not FeatureToggle.ENABLE_UNDERAGE_GENERALISATION.is_active():
-        return fifteen_birthday
+        return fifteenth_birthday
 
     age = users_utils.get_age_from_birth_date(date_of_birth.date())
 
@@ -946,14 +946,14 @@ def get_eligibility_start_datetime(date_of_birth: Optional[Union[date, datetime]
     if is_recredit_birthday_in_scaling_phase:
         # A scaling phase is planned where users will become eligible after UNDERAGE_GENERALISATION_OPENING_DATETIMES_BY_AGE
         # However, as the legal opening day is on january 3rd 2022, if user's birthday happens between these dates, we let it enjoy a credit as soon as possible because otherwise it would not be given
-        return max(fifteen_birthday, UNDERAGE_GENERALISATION_EARLY_OPENING_DATETIME)
+        return max(fifteenth_birthday, UNDERAGE_GENERALISATION_EARLY_OPENING_DATETIME)
 
     if age in UNDERAGE_GENERALISATION_OPENING_DATETIMES_BY_AGE:
         return UNDERAGE_GENERALISATION_OPENING_DATETIMES_BY_AGE[age]
 
-    first_date_with_fifteen_after_opening = max(fifteen_birthday, UNDERAGE_GENERALISATION_BROAD_OPENING_DATETIME)
+    first_date_with_fifteen_after_opening = max(fifteenth_birthday, UNDERAGE_GENERALISATION_BROAD_OPENING_DATETIME)
 
-    return min(first_date_with_fifteen_after_opening, eighteen_birthday)
+    return min(first_date_with_fifteen_after_opening, eighteenth_birthday)
 
 
 def get_eligibility_at_date(
@@ -965,8 +965,11 @@ def get_eligibility_at_date(
     if not date_of_birth or not (eligibility_start <= specified_datetime < eligibility_end):
         return None
 
-    return (
-        EligibilityType.UNDERAGE
-        if users_utils.get_age_at_date(date_of_birth, specified_datetime) in constants.ELIGIBILITY_UNDERAGE_RANGE
-        else EligibilityType.AGE18
-    )
+    age = users_utils.get_age_at_date(date_of_birth, specified_datetime)
+
+    if age in constants.ELIGIBILITY_UNDERAGE_RANGE:
+        return EligibilityType.UNDERAGE
+    if age == constants.ELIGIBILITY_AGE_18:
+        return EligibilityType.AGE18
+
+    return None
