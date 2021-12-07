@@ -234,20 +234,6 @@ class UserTest:
             with freeze_time(today):
                 assert user_models._get_latest_birthday(birth_date) == latest_birthday
 
-        @pytest.mark.parametrize(
-            "age,eligibility_type",
-            [
-                (19, None),
-                (18, user_models.EligibilityType.AGE18),
-                (17, user_models.EligibilityType.UNDERAGE),
-                (16, user_models.EligibilityType.UNDERAGE),
-                (15, user_models.EligibilityType.UNDERAGE),
-                (14, None),
-            ],
-        )
-        def test_get_eligibility(self, age, eligibility_type):
-            assert user_models.get_eligibility(age) == eligibility_type
-
 
 @pytest.mark.usefixtures("db_session")
 class SuperAdminTest:

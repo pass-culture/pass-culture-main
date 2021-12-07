@@ -25,6 +25,8 @@ from pcapi.core.subscription import models as subscription_models
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users.api import BeneficiaryValidationStep
 from pcapi.core.users.api import get_domains_credit
+from pcapi.core.users.api import get_eligibility_end_datetime
+from pcapi.core.users.api import get_eligibility_start_datetime
 from pcapi.core.users.api import get_next_beneficiary_validation_step
 from pcapi.core.users.models import ActivityEnum
 from pcapi.core.users.models import EligibilityCheckMethods
@@ -233,6 +235,8 @@ class UserProfileResponse(BaseModel):
         user.booked_offers = cls._get_booked_offers(user)
         user.next_beneficiary_validation_step = get_next_beneficiary_validation_step(user)
         user.isEligibleForBeneficiaryUpgrade = user.is_eligible_for_beneficiary_upgrade()
+        user.eligibility_end_datetime = get_eligibility_end_datetime(user.dateOfBirth)
+        user.eligibility_start_datetime = get_eligibility_start_datetime(user.dateOfBirth)
         result = super().from_orm(user)
         result.subscriptionMessage = SubscriptionMessage.from_model(
             subscription_api.get_latest_subscription_message(user)

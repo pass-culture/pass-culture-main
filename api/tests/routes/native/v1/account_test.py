@@ -989,7 +989,7 @@ class UploadIdentityDocumentTest:
     IMAGES_DIR = Path(tests.__path__[0]) / "files"
 
     @patch("pcapi.core.users.api.verify_identity_document")
-    @patch("pcapi.core.users.api.store_object")
+    @patch("pcapi.core.users.utils.store_object")
     @patch("secrets.token_urlsafe")
     def test_upload_identity_document_successful(
         self,
