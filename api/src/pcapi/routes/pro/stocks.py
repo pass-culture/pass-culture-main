@@ -136,5 +136,5 @@ def create_educational_stock(body: EducationalStockCreationBodyModel) -> StockId
     try:
         stock = offers_api.create_educational_stock(body, current_user)
     except offers_exceptions.BookingLimitDatetimeTooLate as error:
-        raise ApiErrors(error.errors, status_code=404)
+        raise ApiErrors(error.errors, status_code=400)
     return StockIdResponseModel.from_orm(stock)
