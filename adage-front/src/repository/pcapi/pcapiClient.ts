@@ -1,21 +1,21 @@
-import { API_URL, URL_FOR_MAINTENANCE } from "utils/config"
+import { API_URL, URL_FOR_MAINTENANCE } from 'utils/config'
 export const HTTP_STATUS = {
   NO_CONTENT: 204,
   FORBIDDEN: 403,
   SERVICE_UNAVAILABLE: 503,
 }
-const GET_HTTP_METHOD = "GET"
-const DELETE_HTTP_METHOD = "DELETE"
-const POST_HTTP_METHOD = "POST"
+const GET_HTTP_METHOD = 'GET'
+const DELETE_HTTP_METHOD = 'DELETE'
+const POST_HTTP_METHOD = 'POST'
 
-const buildOptions = (method) => {
+const buildOptions = method => {
   const params = new URLSearchParams(window.location.search)
-  const token = params.get("token")
+  const token = params.get('token')
   const headers: HeadersInit = new Headers()
-  headers.set("Authorization", `Bearer ${token}`)
+  headers.set('Authorization', `Bearer ${token}`)
 
   if (method !== GET_HTTP_METHOD && method !== DELETE_HTTP_METHOD) {
-    headers.set("Content-Type", "application/json")
+    headers.set('Content-Type', 'application/json')
   }
 
   return {
@@ -24,13 +24,13 @@ const buildOptions = (method) => {
   }
 }
 
-const buildUrl = (path) => `${API_URL}${path}`
+const buildUrl = path => `${API_URL}${path}`
 
 const fetchWithErrorHandler = async (path, options) => {
   const response = await fetch(buildUrl(path), options)
-  const contentType = response.headers.get("content-type")
+  const contentType = response.headers.get('content-type')
   const results =
-    contentType && contentType.includes("application/json")
+    contentType && contentType.includes('application/json')
       ? await response.json()
       : await response.text()
   if (!response.ok) {

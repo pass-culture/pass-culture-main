@@ -1,8 +1,8 @@
-import "./LoaderPage.scss"
-import * as React from "react"
+import './LoaderPage.scss'
+import * as React from 'react'
 
-import { ReactComponent as Logo } from "../../../assets/logo-with-text.svg"
-import { Spinner } from "../Layout/Spinner/Spinner"
+import { ReactComponent as Logo } from '../../../assets/logo-with-text.svg'
+import { Spinner } from '../Layout/Spinner/Spinner'
 
 export const LoaderPage = (): JSX.Element => (
   <>
@@ -10,7 +10,7 @@ export const LoaderPage = (): JSX.Element => (
       <Logo />
     </header>
     <main className="loader-page">
-      {" "}
+      {' '}
       <Spinner message="Chargement en cours" />
     </main>
   </>

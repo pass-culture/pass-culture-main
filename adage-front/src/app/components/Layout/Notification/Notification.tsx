@@ -1,22 +1,22 @@
-import "./Notification.scss"
+import './Notification.scss'
 
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useState } from 'react'
 
 import {
   NOTIFICATION_SHOW_DURATION,
   NOTIFICATION_TRANSITION_DURATION,
-} from "./_constants"
-import { ReactComponent as ErrorIcon } from "./assets/notification-error-white.svg"
-import { ReactComponent as SuccessIcon } from "./assets/notification-success-white.svg"
+} from './_constants'
+import { ReactComponent as ErrorIcon } from './assets/notification-error-white.svg'
+import { ReactComponent as SuccessIcon } from './assets/notification-success-white.svg'
 
 export enum NotificationType {
-  success = "success",
-  error = "error",
+  success = 'success',
+  error = 'error',
 }
 
 export class Notification {
-  text: string;
-  type: NotificationType;
+  text: string
+  type: NotificationType
 
   constructor(type: NotificationType, text: string) {
     this.text = text
@@ -27,7 +27,7 @@ export class Notification {
 export const NotificationComponent = ({
   notification,
 }: {
-  notification: Notification | null;
+  notification: Notification | null
 }): JSX.Element | null => {
   const [isVisible, setIsVisible] = useState(false)
   const [isInDom, setIsInDom] = useState(false)
@@ -60,8 +60,8 @@ export const NotificationComponent = ({
   if (notification && isInDom) {
     return (
       <div
-        className={`notification is-${notification.type || "info"} ${
-          isVisible ? "show" : "hide"
+        className={`notification is-${notification.type || 'info'} ${
+          isVisible ? 'show' : 'hide'
         }`}
       >
         {iconComponent}

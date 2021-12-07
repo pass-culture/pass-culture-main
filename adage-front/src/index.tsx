@@ -1,18 +1,18 @@
-import { init as SentryInit } from "@sentry/browser"
-import { Integrations as TracingIntegrations } from "@sentry/tracing"
-import * as React from "react"
-import * as ReactDOM from "react-dom"
-import "./index.scss"
+import { init as SentryInit } from '@sentry/browser'
+import { Integrations as TracingIntegrations } from '@sentry/tracing'
+import * as React from 'react'
+import * as ReactDOM from 'react-dom'
+import './index.scss'
 
 import {
   ENVIRONMENT_NAME,
   SENTRY_SERVER_URL,
   SENTRY_SAMPLE_RATE,
-} from "utils/config"
+} from 'utils/config'
 
-import { version } from "../package.json"
+import { version } from '../package.json'
 
-import { App } from "./app/App"
+import { App } from './app/App'
 
 // Initialize sentry
 if (SENTRY_SERVER_URL) {
@@ -29,5 +29,5 @@ ReactDOM.render(
   <React.StrictMode>
     <App />
   </React.StrictMode>,
-  document.getElementById("root")
+  document.getElementById('root')
 )

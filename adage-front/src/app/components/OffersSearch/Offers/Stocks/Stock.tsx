@@ -1,18 +1,18 @@
-import React, { useCallback, useState } from "react"
+import React, { useCallback, useState } from 'react'
 
-import { Button } from "app/components/Layout/Button/Button"
+import { Button } from 'app/components/Layout/Button/Button'
 import {
   Notification,
   NotificationComponent,
   NotificationType,
-} from "app/components/Layout/Notification/Notification"
-import { preBookStock } from "repository/pcapi/pcapi"
+} from 'app/components/Layout/Notification/Notification'
+import { preBookStock } from 'repository/pcapi/pcapi'
 import {
   FORMAT_DD_MM_YYYY_HH_mm,
   toISOStringWithoutMilliseconds,
-} from "utils/date"
-import { formatLocalTimeDateString } from "utils/timezone"
-import { StockType } from "utils/types"
+} from 'utils/date'
+import { formatLocalTimeDateString } from 'utils/timezone'
+import { StockType } from 'utils/types'
 
 const displayStockInformation = (
   stock: StockType,
@@ -28,9 +28,9 @@ const displayStockInformation = (
     FORMAT_DD_MM_YYYY_HH_mm
   )
 
-  const stockPrice: string = new Intl.NumberFormat("fr-FR", {
-    style: "currency",
-    currency: "EUR",
+  const stockPrice: string = new Intl.NumberFormat('fr-FR', {
+    style: 'currency',
+    currency: 'EUR',
   }).format(stock.price / 100)
 
   return `${stockLocalBeginningDate}, ${stockPrice}`
@@ -50,9 +50,9 @@ export const Stock = ({
   stock,
   venuePostalCode,
 }: {
-  canPrebookOffers: boolean;
-  stock: StockType;
-  venuePostalCode: string;
+  canPrebookOffers: boolean
+  stock: StockType
+  venuePostalCode: string
 }): JSX.Element => {
   const [disableButton, setDisableButton] = useState(false)
   const [notification, setNotification] = useState<Notification | null>(null)
@@ -63,7 +63,7 @@ export const Stock = ({
         setNotification(
           new Notification(
             NotificationType.success,
-            "Votre préréservation a été effectuée avec succès."
+            'Votre préréservation a été effectuée avec succès.'
           )
         )
       )
@@ -71,7 +71,7 @@ export const Stock = ({
         setNotification(
           new Notification(
             NotificationType.error,
-            "Impossible de préréserver cette offre.\nVeuillez contacter le support"
+            'Impossible de préréserver cette offre.\nVeuillez contacter le support'
           )
         )
       )

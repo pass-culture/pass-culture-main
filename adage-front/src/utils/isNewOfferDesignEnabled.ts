@@ -1,3 +1,4 @@
-import { ENABLE_NEW_OFFER_DESIGN  } from "./config"
+import { ENABLE_NEW_OFFER_DESIGN } from './config'
 
-export const isNewOfferDesignEnabled = () => ENABLE_NEW_OFFER_DESIGN === 'true'
+export const isNewOfferDesignEnabled = (): boolean =>
+  ENABLE_NEW_OFFER_DESIGN === 'true'

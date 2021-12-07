@@ -1,7 +1,7 @@
-import "./Button.scss"
-import React, { useCallback, useState } from "react"
+import './Button.scss'
+import React, { useCallback, useState } from 'react'
 
-import { Spinner } from "../Spinner/Spinner"
+import { Spinner } from '../Spinner/Spinner'
 
 export const Button = ({
   disabled,
@@ -10,11 +10,11 @@ export const Button = ({
   text,
   isSubmit,
 }: {
-  disabled: boolean;
-  onClick: () => Promise<any>;
-  loadingMessage: string;
-  text: string;
-  isSubmit: boolean;
+  disabled: boolean
+  onClick: () => Promise<any>
+  loadingMessage: string
+  text: string
+  isSubmit: boolean
 }): JSX.Element => {
   const [isLoading, setIsLoading] = useState(false)
 
@@ -25,10 +25,10 @@ export const Button = ({
 
   return (
     <button
-      className={`primary-button ${isLoading ? "loading" : ""}`}
+      className={`primary-button ${isLoading ? 'loading' : ''}`}
       disabled={disabled || isLoading}
       onClick={onClickWrapper}
-      type={isSubmit ? "submit" : "button"}
+      type={isSubmit ? 'submit' : 'button'}
     >
       {!isLoading ? text : <Spinner message={loadingMessage} />}
     </button>

@@ -1,19 +1,19 @@
-import * as React from "react"
-import { useCallback, useEffect, useState } from "react"
-import { QueryCache, QueryClient, QueryClientProvider } from "react-query"
+import * as React from 'react'
+import { useCallback, useEffect, useState } from 'react'
+import { QueryCache, QueryClient, QueryClientProvider } from 'react-query'
 
-import "@fontsource/barlow"
-import { UnauthenticatedError } from "app/components/UnauthenticatedError/UnauthenticatedError"
-import * as pcapi from "repository/pcapi/pcapi"
-import { Role, VenueFilterType } from "utils/types"
+import '@fontsource/barlow'
+import { UnauthenticatedError } from 'app/components/UnauthenticatedError/UnauthenticatedError'
+import * as pcapi from 'repository/pcapi/pcapi'
+import { Role, VenueFilterType } from 'utils/types'
 
-import { AppLayout } from "./AppLayout"
+import { AppLayout } from './AppLayout'
 import {
   Notification,
   NotificationComponent,
   NotificationType,
-} from "./components/Layout/Notification/Notification"
-import { LoaderPage } from "./components/LoaderPage/LoaderPage"
+} from './components/Layout/Notification/Notification'
+import { LoaderPage } from './components/LoaderPage/LoaderPage'
 
 export const queryCache = new QueryCache()
 export const queryClient = new QueryClient({
@@ -34,19 +34,19 @@ export const App = (): JSX.Element => {
   useEffect(() => {
     pcapi
       .authenticate()
-      .then((userRole) => setUserRole(userRole))
+      .then(userRole => setUserRole(userRole))
       .then(() => {
         const params = new URLSearchParams(window.location.search)
-        const siret = params.get("siret")
+        const siret = params.get('siret')
         if (siret) {
           return pcapi
             .getVenueBySiret(siret)
-            .then((venueFilter) => setVenueFilter(venueFilter))
+            .then(venueFilter => setVenueFilter(venueFilter))
             .catch(() =>
               setNotification(
                 new Notification(
                   NotificationType.error,
-                  "Lieu inconnu. Tous les résultats sont affichés."
+                  'Lieu inconnu. Tous les résultats sont affichés.'
                 )
               )
             )

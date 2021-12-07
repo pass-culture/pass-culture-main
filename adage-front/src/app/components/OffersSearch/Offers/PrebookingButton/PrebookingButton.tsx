@@ -1,15 +1,26 @@
 import React, { useCallback, useState } from 'react'
 
-import { NotificationType, Notification,
-  NotificationComponent, } from 'app/components/Layout/Notification/Notification'
+import {
+  NotificationType,
+  Notification,
+  NotificationComponent,
+} from 'app/components/Layout/Notification/Notification'
 import { preBookStock } from 'repository/pcapi/pcapi'
 import { StockType } from 'utils/types'
 import './PrebookingButton.scss'
 
-const PrebookingButton = ({className, stock, canPrebookOffers}: {className?: string, stock: StockType, canPrebookOffers: boolean}): JSX.Element => {
+const PrebookingButton = ({
+  className,
+  stock,
+  canPrebookOffers,
+}: {
+  className?: string
+  stock: StockType
+  canPrebookOffers: boolean
+}): JSX.Element => {
   const [isButtonDisabled, setIsButtonDisabled] = useState(false)
   const [notification, setNotification] = useState<Notification | null>(null)
-  
+
   const preBookCurrentStock = useCallback(() => {
     setIsButtonDisabled(true)
     return preBookStock(stock.id)
@@ -17,7 +28,7 @@ const PrebookingButton = ({className, stock, canPrebookOffers}: {className?: str
         setNotification(
           new Notification(
             NotificationType.success,
-            "Votre préréservation a été effectuée avec succès."
+            'Votre préréservation a été effectuée avec succès.'
           )
         )
       )
@@ -25,12 +36,12 @@ const PrebookingButton = ({className, stock, canPrebookOffers}: {className?: str
         setNotification(
           new Notification(
             NotificationType.error,
-            "Impossible de préréserver cette offre.\nVeuillez contacter le support"
+            'Impossible de préréserver cette offre.\nVeuillez contacter le support'
           )
         )
       )
   }, [stock.id])
-  
+
   return (
     <>
       {canPrebookOffers && (
@@ -38,7 +49,7 @@ const PrebookingButton = ({className, stock, canPrebookOffers}: {className?: str
           className={`prebooking-button ${className}`}
           disabled={isButtonDisabled}
           onClick={preBookCurrentStock}
-          type='button'
+          type="button"
         >
           pré-réserver
         </button>
