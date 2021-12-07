@@ -12,7 +12,8 @@ from pcapi.tasks.serialization.sendinblue_tasks import UpdateSendinblueContactRe
 logger = logging.getLogger(__name__)
 
 SENDINBLUE_CONTACTS_QUEUE_NAME = settings.GCP_SENDINBLUE_CONTACTS_QUEUE_NAME
-SENDINBLUE_TRANSACTIONAL_EMAILS_QUEUE_NAME = settings.GCP_SENDINBLUE_TRANSACTIONAL_EMAILS_QUEUE_NAME
+SENDINBLUE_TRANSACTIONAL_EMAILS_PRIMARY_QUEUE_NAME = settings.GCP_SENDINBLUE_TRANSACTIONAL_EMAILS_PRIMARY_QUEUE_NAME
+SENDINBLUE_TRANSACTIONAL_EMAILS_SECONDARY_QUEUE_NAME = settings.GCP_SENDINBLUE_TRANSACTIONAL_EMAILS_SECONDARY_QUEUE_NAME
 
 
 @task(SENDINBLUE_CONTACTS_QUEUE_NAME, "/sendinblue/update_contact_attributes")
@@ -21,7 +22,13 @@ def update_contact_attributes_task(payload: UpdateSendinblueContactRequest) -> N
         raise ApiErrors()
 
 
-@task(SENDINBLUE_TRANSACTIONAL_EMAILS_QUEUE_NAME, "/sendinblue/send-transactional-email")
-def send_transactional_email_task(payload: SendTransactionalEmailRequest) -> None:
+@task(SENDINBLUE_TRANSACTIONAL_EMAILS_PRIMARY_QUEUE_NAME, "/sendinblue/send-transactional-email-primary")
+def send_transactional_email_primary_task(payload: SendTransactionalEmailRequest) -> None:
+    if not send_transactional_email(payload):
+        raise ApiErrors()
+
+
+@task(SENDINBLUE_TRANSACTIONAL_EMAILS_SECONDARY_QUEUE_NAME, "/sendinblue/send-transactional-email-secondary")
+def send_transactional_email_secondary_task(payload: SendTransactionalEmailRequest) -> None:
     if not send_transactional_email(payload):
         raise ApiErrors()
