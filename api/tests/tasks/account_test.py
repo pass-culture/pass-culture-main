@@ -17,7 +17,7 @@ class VerifyIdentityDocumentTest:
     IMAGES_DIR = Path(tests.__path__[0]) / "files"
 
     @override_settings(ID_CHECK_MIDDLEWARE_TOKEN="fake_token")
-    @patch("pcapi.core.users.api.delete_object")
+    @patch("pcapi.core.users.utils.delete_object")
     @patch("pcapi.core.users.api._get_identity_document_informations")
     @patch("pcapi.connectors.beneficiaries.id_check_middleware.requests.post")
     def test_ask_for_document_verification(

@@ -13,6 +13,7 @@ from typing import Optional
 from typing import Tuple
 from typing import Union
 
+from dateutil.relativedelta import relativedelta
 from flask import current_app as app
 from flask_jwt_extended import create_access_token
 from google.cloud.storage.blob import Blob
@@ -31,6 +32,10 @@ from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import exceptions as subscription_exceptions
 from pcapi.core.subscription import messages as subscription_messages
 import pcapi.core.subscription.repository as subscription_repository
+from pcapi.core.users import utils as users_utils
+from pcapi.core.users.constants import UNDERAGE_GENERALISATION_BROAD_OPENING_DATETIME
+from pcapi.core.users.constants import UNDERAGE_GENERALISATION_EARLY_OPENING_DATETIME
+from pcapi.core.users.constants import UNDERAGE_GENERALISATION_OPENING_DATETIMES_BY_AGE
 from pcapi.core.users.external import update_external_user
 from pcapi.core.users.models import Credit
 from pcapi.core.users.models import DomainsCredit
@@ -42,10 +47,6 @@ from pcapi.core.users.models import TokenType
 from pcapi.core.users.models import User
 from pcapi.core.users.models import VOID_PUBLIC_NAME
 from pcapi.core.users.repository import does_validated_phone_exist
-from pcapi.core.users.utils import delete_object
-from pcapi.core.users.utils import get_object
-from pcapi.core.users.utils import sanitize_email
-from pcapi.core.users.utils import store_object
 from pcapi.domain import user_emails as old_user_emails
 from pcapi.domain.password import random_hashed_password
 from pcapi.domain.postal_code.postal_code import PostalCode
@@ -175,7 +176,7 @@ def create_account(
     apps_flyer_user_id: str = None,
     apps_flyer_platform: str = None,
 ) -> User:
-    email = sanitize_email(email)
+    email = users_utils.sanitize_email(email)
     if find_user_by_email(email):
         raise exceptions.UserAlreadyExistsException()
 
@@ -485,7 +486,7 @@ def update_user_info(
     if cultural_survey_id is not UNCHANGED:
         user.culturalSurveyId = cultural_survey_id
     if email is not UNCHANGED:
-        user.email = sanitize_email(email)
+        user.email = users_utils.sanitize_email(email)
     if first_name is not UNCHANGED:
         user.firstName = first_name
     if has_seen_tutorials is not UNCHANGED:
@@ -597,7 +598,7 @@ def create_pro_user_and_offerer(pro_user: ProUserCreationBodyModel) -> User:
 
 def create_pro_user(pro_user: ProUserCreationBodyModel) -> User:
     new_pro_user = User(from_dict=pro_user.dict(by_alias=True))
-    new_pro_user.email = sanitize_email(new_pro_user.email)
+    new_pro_user.email = users_utils.sanitize_email(new_pro_user.email)
     new_pro_user.notificationSubscriptions = asdict(NotificationSubscriptions(marketing_email=pro_user.contact_ok))
     new_pro_user.remove_admin_role()
     new_pro_user.remove_beneficiary_role()
@@ -793,7 +794,7 @@ def asynchronous_identity_document_verification(image: bytes, email: str) -> Non
     image_name = secrets.token_urlsafe(64) + ".jpg"
     image_storage_path = f"identity_documents/{image_name}"
     try:
-        store_object(
+        users_utils.store_object(
             "identity_documents",
             image_name,
             image,
@@ -808,13 +809,13 @@ def asynchronous_identity_document_verification(image: bytes, email: str) -> Non
         verify_identity_document.delay(VerifyIdentityDocumentRequest(image_storage_path=image_storage_path))
     except Exception as exception:
         logger.exception("An error has occured while trying to add cloudtask in queue: %s", exception)
-        delete_object(image_storage_path)
+        users_utils.delete_object(image_storage_path)
         raise exceptions.CloudTaskCreationException()
     return
 
 
 def _get_identity_document_informations(image_storage_path: str) -> Tuple[str, bytes]:
-    image_blob: Blob = get_object(image_storage_path)
+    image_blob: Blob = users_utils.get_object(image_storage_path)
     if not image_blob:
         # This means the image cannot be downloaded.
         # It either has been treated or there is a network problem
@@ -845,7 +846,7 @@ def verify_identity_document_informations(image_storage_path: str) -> None:
                 "unread-mrz-document": subscription_messages.on_idcheck_unread_mrz,
             }.get(code, lambda x: None)
             message_function(user)
-    delete_object(image_storage_path)
+    users_utils.delete_object(image_storage_path)
 
 
 @contextmanager
@@ -911,3 +912,61 @@ def update_notification_subscription(
 def reset_recredit_amount_to_show(user: User) -> None:
     user.recreditAmountToShow = None
     repository.save(user)
+
+
+def get_eligibility_end_datetime(date_of_birth: Optional[Union[date, datetime]]) -> Optional[datetime]:
+    if not date_of_birth:
+        return None
+
+    return datetime.combine(date_of_birth, time(0, 0)) + relativedelta(years=constants.ELIGIBILITY_AGE_18 + 1)
+
+
+def get_eligibility_start_datetime(date_of_birth: Optional[Union[date, datetime]]) -> Optional[datetime]:
+    if not date_of_birth:
+        return None
+
+    date_of_birth = datetime.combine(date_of_birth, time(0, 0))
+    fifteen_birthday = date_of_birth + relativedelta(years=constants.ELIGIBILITY_UNDERAGE_RANGE[0])
+    eighteen_birthday = date_of_birth + relativedelta(years=constants.ELIGIBILITY_AGE_18)
+
+    if not FeatureToggle.ENABLE_NATIVE_EAC_INDIVIDUAL.is_active():
+        return eighteen_birthday
+
+    if not FeatureToggle.ENABLE_UNDERAGE_GENERALISATION.is_active():
+        return fifteen_birthday
+
+    age = users_utils.get_age_from_birth_date(date_of_birth.date())
+
+    is_recredit_birthday_in_scaling_phase = age in constants.ELIGIBILITY_UNDERAGE_RANGE and (
+        UNDERAGE_GENERALISATION_EARLY_OPENING_DATETIME
+        <= date_of_birth.replace(year=UNDERAGE_GENERALISATION_EARLY_OPENING_DATETIME.year)
+        < UNDERAGE_GENERALISATION_BROAD_OPENING_DATETIME
+    )
+
+    if is_recredit_birthday_in_scaling_phase:
+        # A scaling phase is planned where users will become eligible after UNDERAGE_GENERALISATION_OPENING_DATETIMES_BY_AGE
+        # However, as the legal opening day is on january 3rd 2022, if user's birthday happens between these dates, we let it enjoy a credit as soon as possible because otherwise it would not be given
+        return max(fifteen_birthday, UNDERAGE_GENERALISATION_EARLY_OPENING_DATETIME)
+
+    if age in UNDERAGE_GENERALISATION_OPENING_DATETIMES_BY_AGE:
+        return UNDERAGE_GENERALISATION_OPENING_DATETIMES_BY_AGE[age]
+
+    first_date_with_fifteen_after_opening = max(fifteen_birthday, UNDERAGE_GENERALISATION_BROAD_OPENING_DATETIME)
+
+    return min(first_date_with_fifteen_after_opening, eighteen_birthday)
+
+
+def get_eligibility_at_date(
+    date_of_birth: Optional[Union[date, datetime]], specified_datetime: datetime
+) -> Optional[EligibilityType]:
+    eligibility_start = get_eligibility_start_datetime(date_of_birth)
+    eligibility_end = get_eligibility_end_datetime(date_of_birth)
+
+    if not date_of_birth or not (eligibility_start <= specified_datetime < eligibility_end):
+        return None
+
+    return (
+        EligibilityType.UNDERAGE
+        if users_utils.get_age_at_date(date_of_birth, specified_datetime) in constants.ELIGIBILITY_UNDERAGE_RANGE
+        else EligibilityType.AGE18
+    )

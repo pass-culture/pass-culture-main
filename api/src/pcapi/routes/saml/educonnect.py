@@ -13,7 +13,8 @@ from pcapi.core.fraud import api as fraud_api
 from pcapi.core.fraud import exceptions as fraud_exceptions
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.subscription import api as subscription_api
-from pcapi.core.users import models as user_models
+from pcapi.core.users import models as users_models
+from pcapi.core.users import utils as users_utils
 from pcapi.core.users.constants import ELIGIBILITY_AGE_18
 from pcapi.core.users.external.educonnect import api as educonnect_api
 from pcapi.core.users.external.educonnect import exceptions as educonnect_exceptions
@@ -29,7 +30,7 @@ ERROR_PAGE_URL = f"{settings.WEBAPP_V2_URL}/idcheck/educonnect/erreur?"
 
 @blueprint.saml_blueprint.route("educonnect/login", methods=["GET"])
 @authenticated_user_required
-def login_educonnect(user: user_models.User) -> Response:
+def login_educonnect(user: users_models.User) -> Response:
     should_redirect = request.args.get("redirect", default=True, type=lambda v: v.lower() == "true")
     redirect_url = educonnect_api.get_login_redirect_url(user)
     response = Response()
@@ -76,7 +77,7 @@ def on_educonnect_authentication_response() -> Response:  # pylint: disable=too-
         )
         return redirect(ERROR_PAGE_URL, code=302)
 
-    user = user_models.User.query.get(user_id)
+    user = users_models.User.query.get(user_id)
 
     logger.info(
         "Received educonnect authentication response",
@@ -125,7 +126,7 @@ def on_educonnect_authentication_response() -> Response:  # pylint: disable=too-
         )
         error_query_param = {
             "code": "UserAgeNotValid18YearsOld"
-            if user_models.get_age_from_birth_date(educonnect_content.birth_date) == ELIGIBILITY_AGE_18
+            if users_utils.get_age_from_birth_date(educonnect_content.birth_date) == ELIGIBILITY_AGE_18
             else "UserAgeNotValid"
         }
         return redirect(ERROR_PAGE_URL + urlencode(error_query_param), code=302)

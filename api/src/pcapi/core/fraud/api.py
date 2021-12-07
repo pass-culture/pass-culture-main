@@ -3,7 +3,6 @@ import logging
 import re
 import typing
 
-from dateutil.relativedelta import relativedelta
 import pydantic
 import sqlalchemy
 
@@ -13,6 +12,7 @@ from pcapi.core.fraud import models as fraud_models
 from pcapi.core.fraud.exceptions import BeneficiaryFraudResultCannotBeDowngraded
 from pcapi.core.users import constants
 from pcapi.core.users import models as users_models
+from pcapi.core.users import utils as users_utils
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository import repository
@@ -255,6 +255,8 @@ def get_ubble_fraud_check(identification_id: str) -> typing.Optional[models.Bene
 def get_eligibility_type(
     data: typing.Union[models.EduconnectContent, models.JouveContent, models.DMSContent]
 ) -> typing.Optional[users_models.EligibilityType]:
+    from pcapi.core.users import api as users_api
+
     if isinstance(data, models.EduconnectContent):
         registration_datetime = data.registration_datetime
         birth_date = data.birth_date
@@ -273,8 +275,7 @@ def get_eligibility_type(
     if registration_datetime is None or birth_date is None:
         return None
 
-    age_at_registration_date = relativedelta(registration_datetime.date(), birth_date).years
-    return users_models.get_eligibility(age_at_registration_date)
+    return users_api.get_eligibility_at_date(birth_date, registration_datetime)
 
 
 def on_identity_fraud_check_result(
@@ -530,7 +531,7 @@ def _get_threshold_id_fraud_item(
 
 
 def _underage_user_fraud_item(birth_date: datetime.date) -> models.FraudItem:
-    age = users_models.get_age_from_birth_date(birth_date)
+    age = users_utils.get_age_from_birth_date(birth_date)
     if age in constants.ELIGIBILITY_UNDERAGE_RANGE:
         return models.FraudItem(
             status=models.FraudStatus.OK,
