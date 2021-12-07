@@ -83,3 +83,27 @@ export enum Mode {
   CREATION,
   EDITION,
 }
+
+export type EducationalOfferModelPayload = {
+  offererId: string
+  venueId: string
+  subcategoryId: string
+  name: string
+  bookingEmail?: string
+  description?: string
+  durationMinutes?: number
+  audioDisabilityCompliant: boolean
+  mentalDisabilityCompliant: boolean
+  motorDisabilityCompliant: boolean
+  visualDisabilityCompliant: boolean
+  extraData: {
+    students: string[]
+    contactEmail: string
+    contactPhone: string
+    offerVenue: {
+      addressType: ADRESS_TYPE
+      otherAddress: string
+      venueId: string
+    }
+  }
+}
