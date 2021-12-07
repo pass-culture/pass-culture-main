@@ -5,8 +5,6 @@ from pcapi.domain.bank_information import CannotRegisterBankInformation
 from pcapi.domain.bank_information import check_new_bank_information_has_a_more_advanced_status
 from pcapi.domain.bank_information import check_new_bank_information_older_than_saved_one
 from pcapi.domain.bank_information import check_offerer_presence
-from pcapi.domain.bank_information import check_venue_presence
-from pcapi.domain.bank_information import check_venue_queried_by_name
 from pcapi.domain.bank_informations.bank_informations import BankInformations
 from pcapi.domain.bank_informations.bank_informations_repository import BankInformationsRepository
 from pcapi.domain.demarches_simplifiees import ApplicationDetail
@@ -104,11 +102,15 @@ class SaveVenueBankInformations:
 
         if siret:
             venue = self.venue_repository.find_by_siret(siret)
-            check_venue_presence(venue)
+            if not venue:
+                raise CannotRegisterBankInformation("Venue not found")
         else:
             name = application_details.venue_name
             venues = self.venue_repository.find_by_name(name, offerer.id)
-            check_venue_queried_by_name(venues)
+            if len(venues) == 0:
+                raise CannotRegisterBankInformation("Venue name not found")
+            if len(venues) > 1:
+                raise CannotRegisterBankInformation("Multiple venues found")
             venue = venues[0]
         return venue
 

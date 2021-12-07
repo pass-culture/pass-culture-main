@@ -2,7 +2,6 @@ from datetime import datetime
 
 from pcapi.domain.bank_informations.bank_informations import BankInformations
 from pcapi.domain.offerer.offerer import Offerer
-from pcapi.domain.venue.venue_with_basic_information.venue_with_basic_information import VenueWithBasicInformation
 from pcapi.models.bank_information import BankInformationStatus
 
 
@@ -16,18 +15,6 @@ class CannotRegisterBankInformation(Exception):
 def check_offerer_presence(offerer: Offerer) -> None:
     if not offerer:
         raise CannotRegisterBankInformation("Offerer not found")
-
-
-def check_venue_presence(venue: VenueWithBasicInformation) -> None:
-    if not venue:
-        raise CannotRegisterBankInformation("Venue not found")
-
-
-def check_venue_queried_by_name(venues: list[VenueWithBasicInformation]) -> None:
-    if len(venues) == 0:
-        raise CannotRegisterBankInformation("Venue name not found")
-    if len(venues) > 1:
-        raise CannotRegisterBankInformation("Multiple venues found")
 
 
 def check_new_bank_information_older_than_saved_one(
