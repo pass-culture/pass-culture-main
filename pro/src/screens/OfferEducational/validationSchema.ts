@@ -2,6 +2,9 @@ import * as yup from 'yup'
 
 import { ADRESS_TYPE } from 'core/OfferEducational'
 
+const isOneTrue = (values: Record<string, boolean>): boolean =>
+  Object.values(values).includes(true)
+
 export const validationSchema = yup.object().shape({
   category: yup.string().required('Veuillez sélectionner une catégorie'),
   subCategory: yup
@@ -35,18 +38,16 @@ export const validationSchema = yup.object().shape({
     }),
   }),
   participants: yup.object().test({
-    name: 'one-true',
+    name: 'is-one-true',
     message: 'Veuillez sélectionner au moins un niveau scolaire',
-    test: (values: Record<string, boolean>): boolean =>
-      Object.values(values).includes(true),
+    test: isOneTrue,
   }),
   accessibility: yup
     .object()
     .test({
-      name: 'one-true',
+      name: 'is-one-true',
       message: 'Veuillez sélectionner au moins un critère d’accessibilité',
-      test: (values: Record<string, boolean>): boolean =>
-        Object.values(values).includes(true),
+      test: isOneTrue,
     })
     .shape({
       mental: yup.boolean(),

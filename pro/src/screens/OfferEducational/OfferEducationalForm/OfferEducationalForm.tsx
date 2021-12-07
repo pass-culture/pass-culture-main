@@ -2,6 +2,7 @@ import { useFormikContext } from 'formik'
 import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 
+import Banner from 'components/layout/Banner/Banner'
 import { computeOffersUrl } from 'components/pages/Offers/utils/computeOffersUrl'
 import {
   IOfferEducationalFormValues,
@@ -39,8 +40,7 @@ const OfferEducationalForm = ({
     null
   )
   const [isLoading, setIsLoading] = useState(false)
-  const [canCreateEducationalOffer, setCanCreateEducationalOffer] =
-    useState<boolean>()
+  const [isEligible, setIsEligible] = useState<boolean>()
 
   const { values } = useFormikContext<IOfferEducationalFormValues>()
 
@@ -51,6 +51,7 @@ const OfferEducationalForm = ({
     if (selectedOfferer) {
       const checkOffererEligibilityToEducationalOffer = async () => {
         setIsLoading(true)
+
         const { isOk, message, payload } =
           await getIsOffererEligibleToEducationalOfferAdapter(
             selectedOfferer.id
@@ -60,9 +61,7 @@ const OfferEducationalForm = ({
           notify.error(message)
         }
 
-        setCanCreateEducationalOffer(
-          payload.isOffererEligibleToEducationalOffer
-        )
+        setIsEligible(payload.isOffererEligibleToEducationalOffer)
         setIsLoading(false)
       }
 
@@ -90,12 +89,25 @@ const OfferEducationalForm = ({
       <p className={styles['educational-form-information']}>
         Tous les champs sont obligatoires sauf mention contraire.
       </p>
+
+      <Banner
+        className={styles['educational-form-banner']}
+        type="notification-info"
+      >
+        Une offre à destination d’un groupe scolaire correspond à{' '}
+        <b>une date</b>, <b>une heure</b> et <b>un prix</b>
+        <br />
+        <br />
+        Pour proposer plusieurs dates, heures ou prix, il vous sera nécéssaire
+        de <b>créer plusieurs offres</b>
+      </Banner>
+
       <FormVenue
-        canCreateEducationalOffer={canCreateEducationalOffer}
+        isEligible={isEligible}
         userOfferers={userOfferers}
         venuesOptions={venuesOptions}
       />
-      {canCreateEducationalOffer && values.offererId && values.venueId ? (
+      {isEligible && values.offererId && values.venueId ? (
         <>
           <FormCategory
             categories={educationalCategories}
@@ -117,7 +129,7 @@ const OfferEducationalForm = ({
         </Link>
         <SubmitButton
           className="primary-button"
-          disabled={!canCreateEducationalOffer}
+          disabled={!isEligible}
           isLoading={isLoading}
         >
           Étape suivante
