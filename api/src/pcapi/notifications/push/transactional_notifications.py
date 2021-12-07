@@ -89,11 +89,15 @@ def get_unretrieved_bookings_with_offers_notification_data(booking: Booking) -> 
     remaining_time = datetime.utcnow() - booking.expirationDate
     remaining_days = remaining_time.days
 
+    if remaining_days > 1:
+        body = f'Vite, il ne te reste plus que {remaining_days} jours pour récupérer "{booking.stock.offer.name}"'
+    elif remaining_days == 1:
+        body = f'Vite, il ne te reste plus qu\'un jour pour récupérer "{booking.stock.offer.name}"'
+    else:
+        body = f'Vite, dernier jour pour récupérer "{booking.stock.offer.name}"'
+
     return TransactionalNotificationData(
         group_id=GroupId.UNRETRIEVED_BOOKING.value,
         user_ids=[booking.userId],
-        message=TransactionalNotificationMessage(
-            title="Tu n'as pas récupéré ta réservation",
-            body=f'Vite, il ne te reste plus que {remaining_days} jours pour récupérer "{booking.stock.offer.name}"',
-        ),
+        message=TransactionalNotificationMessage(title="Tu n'as pas récupéré ta réservation", body=body),
     )
