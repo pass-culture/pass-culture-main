@@ -25,15 +25,18 @@
     }
   }
 
-  .tertiary-button.od-primary {
-    color: $primary;
-
-    & .svg-color {
-      fill: $primary;
-    }
-  }
-
   .h-card-title {
+    .tertiary-button {
+      .h-card-title-ico {
+        margin-left: 0;
+        margin-right: rem(8px);
+      }
+
+      img {
+        height: rem(20px);
+        width: rem(20px);
+      }
+    }
 
     .title-text {
       display: block;

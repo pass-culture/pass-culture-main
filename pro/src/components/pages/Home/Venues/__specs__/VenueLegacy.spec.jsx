@@ -137,7 +137,7 @@ describe('venues', () => {
 
       // When
       await renderVenue(props, store)
-      userEvent.click(screen.getByRole('button', { name: 'Afficher' }))
+      userEvent.click(screen.getByTitle('Afficher'))
       const [activeOffersStat] = screen.getAllByTestId('venue-stat')
       await waitFor(() =>
         expect(within(activeOffersStat).getByText('2')).toBeInTheDocument()
@@ -157,7 +157,7 @@ describe('venues', () => {
 
       // When
       await renderVenue(props, store)
-      userEvent.click(screen.getByRole('button', { name: 'Afficher' }))
+      userEvent.click(screen.getByTitle('Afficher'))
       const [activeOffersStat] = screen.getAllByTestId('venue-stat')
       await waitFor(() =>
         expect(within(activeOffersStat).getByText('2')).toBeInTheDocument()
