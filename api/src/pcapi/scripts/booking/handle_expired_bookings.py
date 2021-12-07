@@ -11,7 +11,9 @@ from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.bookings.models import BookingStatus
 import pcapi.core.bookings.repository as bookings_repository
-from pcapi.domain.user_emails import send_expired_bookings_recap_email_to_beneficiary
+from pcapi.core.mails.transactional.bookings.expired_bookings_to_beneficiary import (
+    send_expired_bookings_to_beneficiary_email,
+)
 from pcapi.domain.user_emails import send_expired_individual_bookings_recap_email_to_offerer
 from pcapi.models import db
 
@@ -80,7 +82,7 @@ def cancel_expired_individual_bookings(batch_size: int = 500) -> None:
     logger.info("[cancel_expired_individual_bookings] End")
 
 
-def cancel_expired_bookings(query: Query, batch_size: int = 500):
+def cancel_expired_bookings(query: Query, batch_size: int = 500) -> None:
     expiring_bookings_count = query.count()
     logger.info("[cancel_expired_bookings] %d expiring bookings to cancel", expiring_bookings_count)
     if expiring_bookings_count == 0:
@@ -146,7 +148,7 @@ def notify_users_of_expired_individual_bookings(expired_on: datetime.date = None
     notified_users = []
 
     for user, individual_bookings in expired_bookings_grouped_by_user.items():
-        send_expired_bookings_recap_email_to_beneficiary(
+        send_expired_bookings_to_beneficiary_email(
             user, [individual_booking.booking for individual_booking in individual_bookings]
         )
         notified_users.append(user)
