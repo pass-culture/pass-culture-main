@@ -211,6 +211,38 @@ spécifiques.
 
 Autre [piste](https://stackoverflow.com/questions/9678408/cant-install-psycopg2-with-pip-in-virtualenv-on-mac-os-x-10-7/62931654#62931654)
 
+### Tests qui échouent
+
+#### Problème de cache
+
+Après avoir lancé les tests avec Docker (`pc test-backend`), les tests peuvent échouer en les lançant avec Python (`python -m pytest`)
+
+Il faut supprimer les fichiers de cache de pré-compilation de Python, par exemple avec la commande suivante
+
+```sh
+find . -type f -name "*.py[co]" -delete -or -type d -name "__pycache__" -delete
+```
+
+#### Problème lié à `xmlsec1`
+
+Lorsque les tests échouent avec l'erreur suivante
+
+`saml2.sigver.SigverError: Cannot find ['xmlsec1']`
+
+Il faut installer la dépendance `xmlsec1`
+
+Sous OS X :
+
+```sh
+brew install libxmlsec1
+```
+
+Sous une distribution basée sur Debian :
+
+```sh
+apt install xmlsec1
+```
+
 ## IDE
 
 ### PyCharm(IntelliJ)
