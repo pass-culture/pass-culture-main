@@ -3,7 +3,10 @@ from unittest.mock import patch
 
 import pytest
 
+from pcapi.core.offerers.factories import OffererFactory
+from pcapi.core.offers.factories import VenueFactory
 from pcapi.domain.bank_information import CannotRegisterBankInformation
+from pcapi.domain.demarches_simplifiees import ApplicationDetail
 from pcapi.infrastructure.repository.bank_informations.bank_informations_sql_repository import (
     BankInformationsSQLRepository,
 )
@@ -29,6 +32,68 @@ from tests.connector_creators.demarches_simplifiees_creators import (
 
 
 class SaveVenueBankInformationsTest:
+    class GetReferentVenueTest:
+        def setup_method(self):
+            self.save_venue_bank_informations = SaveVenueBankInformations(
+                offerer_repository=OffererSQLRepository(),
+                venue_repository=VenueWithBasicInformationSQLRepository(),
+                bank_informations_repository=BankInformationsSQLRepository(),
+            )
+
+        @pytest.mark.usefixtures("db_session")
+        def test_raises_an_error_if_no_venue_found_by_siret(self):
+            application_details = ApplicationDetail(
+                siren="999999999",
+                status=BankInformationStatus.ACCEPTED,
+                application_id=1,
+                iban="XXX",
+                bic="YYY",
+                modification_date=datetime.utcnow(),
+                siret="99999999900000",
+            )
+
+            with pytest.raises(CannotRegisterBankInformation) as error:
+                self.save_venue_bank_informations.get_referent_venue(application_details, None)
+
+            assert error.value.args == ("Venue not found",)
+
+        @pytest.mark.usefixtures("db_session")
+        def test_raises_an_error_if_no_venue_found_by_name(self):
+            offerer = OffererFactory()
+            application_details = ApplicationDetail(
+                siren="999999999",
+                status=BankInformationStatus.ACCEPTED,
+                application_id=1,
+                iban="XXX",
+                bic="YYY",
+                modification_date=datetime.utcnow(),
+                venue_name="venuedemo",
+            )
+
+            with pytest.raises(CannotRegisterBankInformation) as error:
+                self.save_venue_bank_informations.get_referent_venue(application_details, offerer)
+
+            assert error.value.args == ("Venue name not found",)
+
+        @pytest.mark.usefixtures("db_session")
+        def test_raises_an_error_if_more_than_one_venue_found(self):
+            offerer = OffererFactory()
+            VenueFactory.build_batch(2, managingOfferer=offerer, name="venuedemo")
+            application_details = ApplicationDetail(
+                siren="999999999",
+                status=BankInformationStatus.ACCEPTED,
+                application_id=1,
+                iban="XXX",
+                bic="YYY",
+                modification_date=datetime.utcnow(),
+                venue_name="venuedemo",
+            )
+
+            with pytest.raises(CannotRegisterBankInformation) as error:
+                self.save_venue_bank_informations.get_referent_venue(application_details, offerer)
+
+            assert error.value.args == ("Venue name not found",)
+
     class SaveBankInformationTest:
         @patch("pcapi.connectors.api_demarches_simplifiees.get_application_details")
         class VenueWithSiretTest:
