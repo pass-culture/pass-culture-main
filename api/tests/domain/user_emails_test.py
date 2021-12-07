@@ -24,7 +24,6 @@ from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
 from pcapi.domain.user_emails import send_activation_email
 from pcapi.domain.user_emails import send_admin_user_validation_email
-from pcapi.domain.user_emails import send_expired_bookings_recap_email_to_beneficiary
 from pcapi.domain.user_emails import send_expired_individual_bookings_recap_email_to_offerer
 from pcapi.domain.user_emails import send_individual_booking_confirmation_email_to_offerer
 from pcapi.domain.user_emails import send_newly_eligible_user_email
@@ -329,53 +328,6 @@ class SendRejectionEmailToBeneficiaryPreSubscriptionTest:
         mocked_make_data.assert_called_once()
         assert len(mails_testing.outbox) == 1  # test number of emails sent
         assert mails_testing.outbox[0].sent_data["MJ-TemplateID"] == 1619528
-
-
-class SendExpiredBookingsRecapEmailToBeneficiaryTest:
-    def test_should_send_email_to_beneficiary_when_expired_book_booking_cancelled(self, app):
-        amnesiac_user = users_factories.BeneficiaryGrant18Factory(email="dory@example.com")
-        expired_today_book_booking = booking_factories.IndividualBookingFactory(
-            user=amnesiac_user, stock__offer__subcategoryId=subcategories.LIVRE_PAPIER.id
-        )
-        send_expired_bookings_recap_email_to_beneficiary(amnesiac_user, [expired_today_book_booking])
-
-        assert len(mails_testing.outbox) == 1
-        assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 3095107
-        assert mails_testing.outbox[0].sent_data["Vars"]["withdrawal_period"] == 10
-
-    def test_should_send_email_to_beneficiary_when_expired_none_books_bookings_cancelled(self, app):
-        amnesiac_user = users_factories.BeneficiaryGrant18Factory(email="dory@example.com")
-        expired_today_dvd_booking = booking_factories.IndividualBookingFactory(
-            user=amnesiac_user, stock__offer__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id
-        )
-        expired_today_cd_booking = booking_factories.IndividualBookingFactory(
-            user=amnesiac_user, stock__offer__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id
-        )
-        send_expired_bookings_recap_email_to_beneficiary(
-            amnesiac_user, [expired_today_cd_booking, expired_today_dvd_booking]
-        )
-
-        assert len(mails_testing.outbox) == 1
-        assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 3095107
-        assert mails_testing.outbox[0].sent_data["Vars"]["withdrawal_period"] == 30
-
-    def test_should_send_two_emails_to_beneficiary_when_expired_books_and_other_bookings_cancelled(self, app):
-        amnesiac_user = users_factories.BeneficiaryGrant18Factory(email="dory@example.com")
-        expired_today_book_booking = booking_factories.IndividualBookingFactory(
-            user=amnesiac_user, stock__offer__subcategoryId=subcategories.LIVRE_PAPIER.id
-        )
-        expired_today_cd_booking = booking_factories.IndividualBookingFactory(
-            user=amnesiac_user, stock__offer__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id
-        )
-        send_expired_bookings_recap_email_to_beneficiary(
-            amnesiac_user, [expired_today_cd_booking, expired_today_book_booking]
-        )
-
-        assert len(mails_testing.outbox) == 2
-        assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 3095107
-        assert mails_testing.outbox[0].sent_data["Vars"]["withdrawal_period"] == 10
-        assert mails_testing.outbox[1].sent_data["Mj-TemplateID"] == 3095107
-        assert mails_testing.outbox[1].sent_data["Vars"]["withdrawal_period"] == 30
 
 
 class SendExpiredBookingsRecapEmailToOffererTest:
