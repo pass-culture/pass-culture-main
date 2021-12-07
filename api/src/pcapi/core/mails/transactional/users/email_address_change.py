@@ -51,4 +51,4 @@ def get_confirmation_email_change_data(
 
 def send_confirmation_email_change_email(user: User, new_email: str, confirmation_link: str) -> bool:
     data = get_confirmation_email_change_data(user.firstName, confirmation_link)
-    return mails.send(recipients=[new_email], data=data)
+    return mails.send(recipients=[new_email], data=data, sending_to_priority_queue=True)
