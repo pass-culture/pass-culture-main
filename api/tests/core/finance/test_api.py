@@ -106,6 +106,11 @@ class PriceBookingTest:
         pricing = api.price_booking(booking)
         assert pricing is None
 
+    def test_price_booking_checks_business_unit(self):
+        booking = bookings_factories.UsedBookingFactory(stock__offer__venue__businessUnit__siret=None)
+        pricing = api.price_booking(booking)
+        assert pricing is None
+
     def test_num_queries(self):
         booking = bookings_factories.UsedBookingFactory()
         booking = (
