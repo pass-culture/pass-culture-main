@@ -1,3 +1,4 @@
+from pcapi.core.offerers.models import Offerer
 from pcapi.domain.bank_information import CannotRegisterBankInformation
 from pcapi.domain.bank_information import check_new_bank_information_has_a_more_advanced_status
 from pcapi.domain.bank_information import check_new_bank_information_older_than_saved_one
@@ -6,20 +7,18 @@ from pcapi.domain.bank_informations.bank_informations import BankInformations
 from pcapi.domain.bank_informations.bank_informations_repository import BankInformationsRepository
 from pcapi.domain.demarches_simplifiees import ApplicationDetail
 from pcapi.domain.demarches_simplifiees import get_offerer_bank_information_application_details_by_application_id
-from pcapi.domain.offerer.offerer_repository import OffererRepository
 from pcapi.models.bank_information import BankInformationStatus
 
 
 class SaveOffererBankInformations:
-    def __init__(self, offerer_repository: OffererRepository, bank_informations_repository: BankInformationsRepository):
-        self.offerer_repository = offerer_repository
+    def __init__(self, bank_informations_repository: BankInformationsRepository):
         self.bank_informations_repository = bank_informations_repository
 
     def execute(self, application_id: str):
         application_details = get_offerer_bank_information_application_details_by_application_id(application_id)
 
         try:
-            offerer = self.offerer_repository.find_by_siren(application_details.siren)
+            offerer = Offerer.query.filter_by(siren=application_details.siren).one_or_none()
             check_offerer_presence(offerer)
         except CannotRegisterBankInformation as error:
             if application_details.status == BankInformationStatus.ACCEPTED:
