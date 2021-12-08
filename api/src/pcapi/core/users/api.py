@@ -27,6 +27,9 @@ import pcapi.core.fraud.api as fraud_api
 import pcapi.core.fraud.models as fraud_models
 from pcapi.core.mails.transactional import users as user_emails
 from pcapi.core.mails.transactional.users.email_confirmation_email import send_email_confirmation_email
+from pcapi.core.mails.transactional.users.subscription_document_error_email import (
+    send_subscription_document_error_email,
+)
 import pcapi.core.payments.api as payment_api
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import exceptions as subscription_exceptions
@@ -842,7 +845,7 @@ def verify_identity_document_informations(image_storage_path: str) -> None:
     email, image = _get_identity_document_informations(image_storage_path)
     valid, code = ask_for_identity_document_verification(email, image)
     if not valid:
-        old_user_emails.send_document_verification_error_email(email, code)
+        send_subscription_document_error_email(email, code)
         fraud_api.handle_document_validation_error(email, code)
         user = find_user_by_email(email)
         if user:

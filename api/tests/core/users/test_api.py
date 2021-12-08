@@ -11,7 +11,6 @@ from freezegun import freeze_time
 import pytest
 import requests_mock
 
-from pcapi import settings
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.categories import subcategories
@@ -906,7 +905,6 @@ class VerifyIdentityDocumentInformationsTest:
         assert len(mails_testing.outbox) == 1
         sent_data = mails_testing.outbox[0].sent_data
 
-        assert sent_data["Vars"]["url"] == settings.DMS_USER_URL
         assert sent_data["MJ-TemplateID"] == 2958563
         assert caplog.records[0].message == "fraud internal validation : Cannot find user with email py@test.com"
 
@@ -949,7 +947,6 @@ class VerifyIdentityDocumentInformationsTest:
         assert len(mails_testing.outbox) == 1
         sent_data = mails_testing.outbox[0].sent_data
 
-        assert sent_data["Vars"]["url"] == settings.DMS_USER_URL
         assert sent_data["MJ-TemplateID"] == 2958563
 
         assert len(existing_user.beneficiaryFraudChecks) == 1
@@ -1078,7 +1075,6 @@ class VerifyIdentityDocumentInformationsTest:
         assert len(mails_testing.outbox) == 1
         sent_data = mails_testing.outbox[0].sent_data
 
-        assert sent_data["Vars"]["url"] == settings.DMS_USER_URL
         assert sent_data["MJ-TemplateID"] == 2958557  # default email template used
 
     @patch("pcapi.core.users.utils.delete_object")
