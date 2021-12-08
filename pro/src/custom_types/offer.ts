@@ -1,0 +1,42 @@
+import { ADRESS_TYPE } from 'core/OfferEducational'
+
+export enum OfferStatus {
+  OFFER_STATUS_ACTIVE = 'ACTIVE',
+  OFFER_STATUS_INACTIVE = 'INACTIVE',
+  OFFER_STATUS_SOLD_OUT = 'SOLD_OUT',
+  OFFER_STATUS_EXPIRED = 'EXPIRED',
+  OFFER_STATUS_PENDING = 'PENDING',
+  OFFER_STATUS_REJECTED = 'REJECTED',
+  OFFER_STATUS_DRAFT = 'DRAFT',
+}
+
+type Venue = {
+  departementCode: string
+}
+
+export type Offer = {
+  id: string
+  bookingEmail?: string
+  description?: string
+  durationMinutes?: number
+  extraData?: {
+    students?: string[]
+    contactEmail?: string
+    contactPhone?: string
+    offerVenue?: {
+      venueId: string
+      otherAddress: string
+      addressType: ADRESS_TYPE
+    }
+  }
+  isActive: boolean
+  audioDisabilityCompliant: boolean
+  mentalDisabilityCompliant: boolean
+  motorDisabilityCompliant: boolean
+  visualDisabilityCompliant: boolean
+  name: string
+  subcategoryId: string
+  venueId: string
+  status: OfferStatus
+  venue: Venue
+}

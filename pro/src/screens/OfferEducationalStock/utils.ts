@@ -1,4 +1,4 @@
-import { OfferStatus } from './constants/offerStatus'
+import { OfferStatus } from 'custom_types/offer'
 
 export const isOfferDisabled = (status: OfferStatus): boolean => {
   return [

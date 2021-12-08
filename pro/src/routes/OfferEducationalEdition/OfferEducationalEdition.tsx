@@ -9,7 +9,8 @@ import {
   DEFAULT_EAC_FORM_VALUES,
   Mode,
 } from 'core/OfferEducational'
-import * as pcapi from 'repository/pcapi/pcapi'
+import getOfferAdapter from 'core/OfferEducational/adapters/getOfferAdapter'
+import { Offer } from 'custom_types/offer'
 import {
   getCategoriesAdapter,
   getOfferersAdapter,
@@ -26,6 +27,13 @@ type AsyncScreenProps = Pick<
   IOfferEducationalProps,
   'educationalCategories' | 'educationalSubCategories' | 'userOfferers'
 >
+
+const isLoadOfferSuccess = (response: {
+  isOk: boolean
+  message: string | null
+  payload: { offer: Offer | null }
+}): response is { isOk: boolean; message: null; payload: { offer: Offer } } =>
+  response.isOk === true
 
 const OfferEducationalEdition = ({
   tracking,
@@ -60,16 +68,21 @@ const OfferEducationalEdition = ({
   useEffect(() => {
     if (!isReady) {
       const loadData = async () => {
-        const offer = await pcapi.loadOffer(offerId)
-        const results = await Promise.all([
+        const [offerResult, ...results] = await Promise.all([
+          getOfferAdapter(offerId),
           getCategoriesAdapter(null),
-          getOfferersAdapter(offer.offererId),
+          getOfferersAdapter(null),
         ])
 
         if (results.some(res => !res.isOk)) {
           notify.error(results?.find(res => !res.isOk)?.message)
         }
 
+        if (!isLoadOfferSuccess(offerResult)) {
+          return notify.error(offerResult.message)
+        }
+
+        const offer = offerResult.payload.offer
         const [categories, offerers] = results
 
         const offerSubcategory =

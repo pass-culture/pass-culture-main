@@ -1,10 +1,10 @@
 import { action } from '@storybook/addon-actions'
 import React from 'react'
 
+import { OfferStatus } from 'custom_types/offer'
+
 import { withPageTemplate } from '../../stories/decorators/withPageTemplate'
 import { withRouterDecorator } from '../../stories/decorators/withRouter'
-
-import { OfferStatus } from './constants/offerStatus'
 
 import OfferEducationalStock from '.'
 export default {
@@ -28,6 +28,14 @@ const Template = () => (
       venue: {
         departementCode: '974',
       },
+      isActive: true,
+      audioDisabilityCompliant: true,
+      mentalDisabilityCompliant: true,
+      motorDisabilityCompliant: true,
+      visualDisabilityCompliant: true,
+      name: 'Mon offre',
+      subcategoryId: 'CINEMA',
+      venueId: 'DA',
     }}
     onSubmit={action('onSubmit')}
   />
