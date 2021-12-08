@@ -16,6 +16,7 @@ from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.ext.mutable import MutableDict
 from sqlalchemy.ext.mutable import MutableList
 from sqlalchemy.sql import expression
+import transitions
 
 from pcapi import settings
 from pcapi.core.users import utils as users_utils
@@ -120,18 +121,19 @@ def _get_latest_birthday(birth_date: date) -> date:
 
 
 class SubscriptionState(enum.Enum):
-    ACCOUNT_CREATED = "account_created"
-    BENEFICIARY_15_17 = "beneficiary_15_17"
-    BENEFICIARY_18 = "beneficiary_18"
-    EMAIL_VALIDATED = "email_validated"
-    IDENTITY_CHECK_KO = "identity_check_ko"
-    IDENTITY_CHECK_PENDING = "identity_check_pending"
-    IDENTITY_CHECK_VALIDATED = "identity_check_validated"
-    PHONE_VALIDATED = "phone_validated"
-    PHONE_VALIDATION_KO = "phone_validation_ko"
-    PROFILE_COMPLETED = "profile_completed"
-    REJECTED_BY_ADMIN = "rejected_by_admin"
-    USER_PROFILING_OK = "user_profiling_ok"
+    account_created = "account_created"
+    beneficiary_15_17 = "beneficiary_15_17"
+    beneficiary_18 = "beneficiary_18"
+    email_validated = "email_validated"
+    identity_check_ko = "identity_check_ko"
+    identity_check_pending = "identity_check_pending"
+    identity_check_validated = "identity_check_validated"
+    phone_validated = "phone_validated"
+    phone_validation_ko = "phone_validation_ko"
+    profile_completed = "profile_completed"
+    rejected_by_admin = "rejected_by_admin"
+    user_profiling_ko = "user_profiling_ko"
+    user_profiling_validated = "user_profiling_validated"
 
 
 class ActivityEnum(enum.Enum):
@@ -491,6 +493,30 @@ class User(PcObject, Model, NeedsValidationMixin):
         return (eligibility == EligibilityType.UNDERAGE and not self.has_underage_beneficiary_role) or (
             eligibility == EligibilityType.AGE18 and not self.has_beneficiary_role
         )
+
+    @classmethod
+    def init_subscription_state_machine(cls, obj, *args, **kwargs):
+        from pcapi.core.subscription import transitions as subscription_transitions
+
+        if not kwargs:
+            kwargs = args[-1]
+
+        initial_state = obj.subscriptionState or kwargs.get("subscriptionState", SubscriptionState.account_created)
+
+        machine = transitions.Machine(
+            model=obj,
+            states=SubscriptionState,
+            transitions=subscription_transitions.TRANSITIONS,
+            initial=initial_state,
+            model_attribute="subscriptionState",
+            ignore_invalid_triggers=True,
+        )
+
+        setattr(obj, "_subscriptionStateMachine", machine)
+
+
+sa.event.listen(User, "init", User.init_subscription_state_machine)
+sa.event.listen(User, "load", User.init_subscription_state_machine)
 
 
 class ExpenseDomain(enum.Enum):
