@@ -1,3 +1,4 @@
+import format from 'date-fns/format'
 import React, { useCallback, useState } from 'react'
 
 import {
@@ -7,6 +8,7 @@ import {
 } from 'app/components/Layout/Notification/Notification'
 import { preBookStock } from 'repository/pcapi/pcapi'
 import { StockType } from 'utils/types'
+
 import './PrebookingButton.scss'
 
 const PrebookingButton = ({
@@ -45,14 +47,22 @@ const PrebookingButton = ({
   return (
     <>
       {canPrebookOffers && (
-        <button
-          className={`prebooking-button ${className}`}
-          disabled={isButtonDisabled}
-          onClick={preBookCurrentStock}
-          type="button"
-        >
-          pré-réserver
-        </button>
+        <div className={`prebooking-button-container ${className}`}>
+          <button
+            className="prebooking-button"
+            disabled={isButtonDisabled}
+            onClick={preBookCurrentStock}
+            type="button"
+          >
+            pré-réserver
+          </button>
+          {stock.bookingLimitDatetime && (
+            <span>
+              avant le :{' '}
+              {format(new Date(stock.bookingLimitDatetime), 'dd/MM/yyyy')}
+            </span>
+          )}
+        </div>
       )}
       {notification && <NotificationComponent notification={notification} />}
     </>
