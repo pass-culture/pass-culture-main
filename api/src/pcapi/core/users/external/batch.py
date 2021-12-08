@@ -3,7 +3,7 @@ import logging
 from typing import Optional
 
 from pcapi.core.users.external.models import UserAttributes
-from pcapi.notifications import push as batch_push
+from pcapi.tasks import batch_tasks
 
 
 logger = logging.getLogger(__name__)
@@ -17,7 +17,10 @@ def update_user_attributes(user_id: int, user_attributes: UserAttributes) -> Non
         return
 
     formatted_attributes = format_user_attributes(user_attributes)
-    batch_push.update_user_attributes(user_id=user_id, attribute_values=formatted_attributes)
+    payload = batch_tasks.UpdateBatchAttributesRequest(attributes=formatted_attributes, user_id=user_id)
+
+    batch_tasks.update_user_attributes_android_task.delay(payload)
+    batch_tasks.update_user_attributes_ios_task.delay(payload)
 
 
 def format_user_attributes(user_attributes: UserAttributes) -> dict:

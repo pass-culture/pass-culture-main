@@ -118,7 +118,7 @@ class BookOfferTest:
 
         # One request should have been sent to Batch with the user's
         # updated attributes
-        assert len(push_testing.requests) == 1
+        assert len(push_testing.requests) == 2
 
         data = push_testing.requests[0]
         assert data["attribute_values"]["u.credit"] == 49_000  # values in cents
@@ -179,7 +179,7 @@ class BookOfferTest:
 
         # One request should have been sent to Batch with the user's
         # updated attributes
-        assert len(push_testing.requests) == 1
+        assert len(push_testing.requests) == 2
 
         data = push_testing.requests[0]
         expected_date = booking.dateCreated.strftime(BATCH_DATETIME_FORMAT)
@@ -219,7 +219,7 @@ class BookOfferTest:
 
         # One request should have been sent to Batch with the user's
         # updated attributes
-        assert len(push_testing.requests) == 1
+        assert len(push_testing.requests) == 2
 
         data = push_testing.requests[0]
         assert data["attribute_values"]["u.credit"] == 49_000  # values in cents
@@ -598,7 +598,7 @@ class MarkAsUsedTest:
         api.mark_as_used(booking)
         assert booking.isUsed
         assert booking.status is BookingStatus.USED
-        assert len(push_testing.requests) == 1
+        assert len(push_testing.requests) == 2
 
     @freeze_time("2021-09-08")
     def test_mark_as_used_with_uncancel(self):
@@ -653,7 +653,7 @@ class MarkAsUnusedTest:
         api.mark_as_unused(booking)
         assert not booking.isUsed
         assert booking.status is not BookingStatus.USED
-        assert len(push_testing.requests) == 1
+        assert len(push_testing.requests) == 2
 
     @override_features(AUTO_ACTIVATE_DIGITAL_BOOKINGS=True)
     def test_mark_as_unused_digital_offer(self):

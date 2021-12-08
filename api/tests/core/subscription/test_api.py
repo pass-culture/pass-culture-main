@@ -551,7 +551,7 @@ class OnSucessfulDMSApplicationTest:
         assert first.civility == "Mme"
         assert first.activity == "Étudiant"
         assert first.has_beneficiary_role
-        assert len(push_testing.requests) == 1
+        assert len(push_testing.requests) == 2
         assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 2016025
 
     def test_an_import_status_is_saved_if_beneficiary_is_created(self):

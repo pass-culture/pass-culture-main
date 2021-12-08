@@ -417,7 +417,7 @@ class CreateBeneficiaryTest:
         beneficiary_import.setStatus(ImportStatus.CREATED)
         subscription_api.activate_beneficiary(user, "test")
 
-        assert len(batch_testing.requests) == 1
+        assert len(batch_testing.requests) == 2
         assert len(sendinblue_testing.sendinblue_requests) == 1
 
 

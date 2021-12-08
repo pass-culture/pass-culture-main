@@ -427,7 +427,7 @@ class AccountCreationTest:
         mocked_check_recaptcha_token_is_valid.assert_called()
         assert len(mails_testing.outbox) == 1
         assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 2015423
-        assert len(push_testing.requests) == 1
+        assert len(push_testing.requests) == 2
         assert len(users_testing.sendinblue_requests) == 1
 
         email_validation_token = Token.query.filter_by(user=user, type=TokenType.EMAIL_VALIDATION).one_or_none()
@@ -475,7 +475,7 @@ class AccountCreationTest:
         assert response.status_code == 204, response.json
         assert len(mails_testing.outbox) == 1
         assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 2015423
-        assert len(push_testing.requests) == 1
+        assert len(push_testing.requests) == 2
         subscriber.checkPassword(data["password"])
 
         tokens = Token.query.all()
@@ -541,7 +541,7 @@ class UserProfileUpdateTest:
 
         assert user.get_notification_subscriptions().marketing_push
         assert not user.get_notification_subscriptions().marketing_email
-        assert len(push_testing.requests) == 1
+        assert len(push_testing.requests) == 2
 
     def test_unsubscribe_push_notifications(self, client, app):
         user = users_factories.UserFactory(email=self.identifier)
@@ -1537,7 +1537,7 @@ class UpdateBeneficiaryInformationTest:
         assert user.has_beneficiary_role
         assert user.deposit
 
-        assert len(push_testing.requests) == 1
+        assert len(push_testing.requests) == 2
         notification = push_testing.requests[0]
 
         assert notification["user_id"] == user.id
@@ -1588,7 +1588,7 @@ class UpdateBeneficiaryInformationTest:
         assert user.has_beneficiary_role
         assert user.deposit
 
-        assert len(push_testing.requests) == 1
+        assert len(push_testing.requests) == 2
         notification = push_testing.requests[0]
 
         assert notification["user_id"] == user.id
@@ -1639,7 +1639,7 @@ class UpdateBeneficiaryInformationTest:
         assert user.has_beneficiary_role
         assert user.deposit
 
-        assert len(push_testing.requests) == 1
+        assert len(push_testing.requests) == 2
 
     @override_features(ENABLE_PHONE_VALIDATION=True)
     def test_update_beneficiary_underage(self, client, app):
@@ -1685,7 +1685,7 @@ class UpdateBeneficiaryInformationTest:
         assert user.roles == [UserRole.UNDERAGE_BENEFICIARY]
         assert user.deposit.amount == 20
 
-        assert len(push_testing.requests) == 1
+        assert len(push_testing.requests) == 2
 
     @override_features(ENABLE_UBBLE=True)
     @pytest.mark.parametrize("age", [15, 16, 17, 18])

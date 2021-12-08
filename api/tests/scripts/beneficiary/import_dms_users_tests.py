@@ -598,7 +598,7 @@ class RunIntegrationTest:
         assert beneficiary_import.applicationId == 123
         assert beneficiary_import.beneficiary == user
         assert beneficiary_import.currentStatus == ImportStatus.CREATED
-        assert len(push_testing.requests) == 1
+        assert len(push_testing.requests) == 2
 
     @patch(
         "pcapi.scripts.beneficiary.import_dms_users.get_closed_application_ids_for_demarche_simplifiee",
@@ -769,9 +769,9 @@ class RunIntegrationTest:
         assert beneficiary_import.applicationId == 123
         assert beneficiary_import.beneficiary == user
         assert beneficiary_import.currentStatus == ImportStatus.CREATED
-        assert len(push_testing.requests) == 1
+        assert len(push_testing.requests) == 2
 
-        assert len(push_testing.requests) == 1
+        assert len(push_testing.requests) == 2
 
     @patch(
         "pcapi.scripts.beneficiary.import_dms_users.get_closed_application_ids_for_demarche_simplifiee",
@@ -999,7 +999,7 @@ class RunIntegrationTest:
         assert len(mails_testing.outbox) == 1
         assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 2016025
 
-        assert len(push_testing.requests) == 1
+        assert len(push_testing.requests) == 2
         assert push_testing.requests[0]["attribute_values"]["u.is_beneficiary"]
 
     @patch("pcapi.scripts.beneficiary.import_dms_users.user_emails.send_activation_email")
