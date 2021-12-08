@@ -3,6 +3,7 @@ from unittest.mock import patch
 
 import pytest
 
+from pcapi.connectors import api_entreprises
 from pcapi.connectors.api_entreprises import ApiEntrepriseException
 from pcapi.connectors.api_entreprises import get_by_offerer
 from pcapi.connectors.api_entreprises import get_offerer_legal_category
@@ -349,3 +350,22 @@ class GetOffererLegalCategoryTest:
             "legal_category_code": "XXXX",
             "legal_category_label": "Catégorie factice (hors Prod)",
         }
+
+
+class CheckSiretIsStillActiveTest:
+    @pytest.mark.parametrize("remote_status,expected", [("A", True), ("F", False)])
+    def test_check_siret_is_still_active(self, remote_status, expected, requests_mock):
+        # Given
+        json_response = {"etablissement": {"etat_administratif": remote_status}}
+        requests_mock.register_uri(
+            "GET",
+            "https://entreprise.data.gouv.fr/api/sirene/v3/etablissements/1234567",
+            json=json_response,
+            status_code=200,
+        )
+
+        # When
+        result = api_entreprises.check_siret_is_still_active("1234567")
+
+        # Then
+        assert result == expected

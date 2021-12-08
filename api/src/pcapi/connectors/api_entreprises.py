@@ -28,6 +28,15 @@ def get_by_offerer(offerer: "Offerer") -> dict:
     return response_json
 
 
+def get_by_siret(siret: str) -> dict:
+    response = requests.get(f"https://entreprise.data.gouv.fr/api/sirene/v3/etablissements/{siret}")
+
+    if response.status_code != 200:
+        raise ApiEntrepriseException(f"Error getting API entreprise DATA for SIRET : {siret}")
+
+    return response.json()["etablissement"]
+
+
 def _extract_etablissements_communs_siren(etablissements: list[dict]) -> list[dict]:
     etablissements_communs = [
         etablissement for etablissement in etablissements if etablissement["etablissement_siege"] == "false"
@@ -46,3 +55,9 @@ def get_offerer_legal_category(offerer: "Offerer") -> dict:
         legal_category_label = "Catégorie factice (hors Prod)"
 
     return {"legal_category_code": legal_category, "legal_category_label": legal_category_label}
+
+
+def check_siret_is_still_active(siret: str) -> bool:
+    venue_data = get_by_siret(siret)
+    # See https://www.sirene.fr/sirene/public/variable/etatAdministratifEtablissement for the field
+    return venue_data.get("etat_administratif", "F") == "A"
