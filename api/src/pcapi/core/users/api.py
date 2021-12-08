@@ -74,6 +74,7 @@ from pcapi.utils.mailing import MailServiceException
 
 from . import constants
 from . import exceptions
+from . import models
 from ..offerers.api import create_digital_venue
 from ..offerers.models import Offerer
 
@@ -193,6 +194,7 @@ def create_account(
         departementCode=departement_code,
         phoneNumber=phone_number,
         lastConnectionDate=datetime.now(),
+        subscriptionState=models.SubscriptionState.account_created,
     )
 
     if not user.age or user.age < constants.ACCOUNT_CREATION_MINIMUM_AGE:
@@ -703,6 +705,7 @@ def validate_phone_number(user: User, code: str) -> None:
     check_phone_number_not_used(phone_data.phone_number)
 
     user.phoneValidationStatus = PhoneValidationStatusType.VALIDATED
+    user.validate_phone()
     repository.save(user)
 
 
@@ -860,15 +863,23 @@ def fraud_manager(user: User, phone_number: str) -> typing.Generator:
         yield
     except exceptions.BlacklistedPhoneNumber:
         fraud_api.handle_blacklisted_sms_recipient(user, phone_number)
+        user.validate_phone_failed()
+        repository.save(user)
         raise
     except exceptions.PhoneAlreadyExists:
         fraud_api.handle_phone_already_exists(user, phone_number)
+        user.validate_phone_failed()
+        repository.save(user)
         raise
     except exceptions.SMSSendingLimitReached:
         fraud_api.handle_sms_sending_limit_reached(user)
+        user.validate_phone_failed()
+        repository.save(user)
         raise
     except exceptions.PhoneValidationAttemptsLimitReached as error:
         fraud_api.handle_phone_validation_attempts_limit_reached(user, error.attempts)
+        user.validate_phone_failed()
+        repository.save(user)
         raise
 
 

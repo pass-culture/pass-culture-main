@@ -509,6 +509,7 @@ def on_user_profiling_check_result(
     risk_rating = tmx_content.risk_rating
     user_profiling_status = USER_PROFILING_RISK_MAPPING[risk_rating]
     if not user_profiling_status == models.FraudStatus.OK:
+        user.validate_profiling_failed()
         upsert_fraud_result(
             user, user_profiling_status, user.eligibility, f"threat-metrix risk rating is {risk_rating.value}"
         )
@@ -516,6 +517,10 @@ def on_user_profiling_check_result(
         from pcapi.core.subscription import messages as subscription_messages
 
         subscription_messages.on_user_subscription_journey_stopped(user)
+    else:
+        user.validate_profiling()
+
+    repository.save(user)
 
 
 def get_source_data(user: users_models.User) -> pydantic.BaseModel:

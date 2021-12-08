@@ -6,7 +6,6 @@ from pcapi.connectors import api_recaptcha
 from pcapi.core.users import api as users_api
 from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import repository as users_repo
-from pcapi.core.users.external import update_external_user
 from pcapi.core.users.models import TokenType
 from pcapi.core.users.models import User
 from pcapi.domain.password import check_password_strength
@@ -94,6 +93,8 @@ def reset_password(body: ResetPasswordRequest) -> None:
 
     user.setPassword(body.new_password)
     user.isEmailValidated = True
+    if user.is_subscriptionState_account_created():
+        user.validate_email()
     repository.save(user)
 
 
@@ -127,9 +128,10 @@ def validate_email(body: ValidateEmailRequest) -> ValidateEmailResponse:
     if not user:
         raise ApiErrors({"token": ["Le token de validation d'email est invalide."]})
 
+    user.validate_email()
     user.isEmailValidated = True
     repository.save(user)
-    update_external_user(user)
+    users_api.update_external_user(user)
 
     response = ValidateEmailResponse(
         access_token=users_api.create_user_access_token(user),
