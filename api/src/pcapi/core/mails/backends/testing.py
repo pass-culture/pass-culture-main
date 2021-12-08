@@ -21,7 +21,6 @@ class TestingBackend(BaseBackend):
         self,
         recipients: Iterable[str],
         data: Union[SendinblueTransactionalEmailData, dict],
-        sending_to_priority_queue: bool = False,
     ) -> MailResult:
         if not isinstance(data, dict):
             data = asdict(data)
@@ -53,7 +52,6 @@ class FailingBackend(BaseBackend):
         self,
         recipients: Iterable[str],
         data: Union[SendinblueTransactionalEmailData, dict],
-        sending_to_priority_queue: bool = False,
     ) -> MailResult:
         data["To"] = ", ".join(recipients)
         return MailResult(sent_data=data, successful=False)

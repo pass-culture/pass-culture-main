@@ -246,6 +246,7 @@ class SendinblueSendWarningToBeneficiaryAfterProBookingCancellationTest:
             "id_not_prod": 37,
             "id_prod": 225,
             "tags": ["jeunes_offre_annulee_pros"],
+            "use_priority_queue": False,
         }
         assert mails_testing.outbox[0].sent_data["To"] == "user@example.com"
         assert mails_testing.outbox[0].sent_data["params"] == {
