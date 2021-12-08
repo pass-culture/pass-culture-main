@@ -41,6 +41,24 @@ class TransactionalEmail(Enum):
     BOOKING_CANCELLATION_BY_PRO_TO_BENEFICIARY = Template(
         id_prod=225, id_not_prod=37, tags=["jeunes_offre_annulee_pros"]
     )
+    SUBSCRIPTION_UNREADABLE_DOCUMENT_ERROR = Template(
+        id_prod=304,
+        id_not_prod=38,
+        tags=["jeunes_document_illisible"],
+        use_priority_queue=True,
+    )
+    SUBSCRIPTION_INVALID_DOCUMENT_ERROR = Template(
+        id_prod=384,
+        id_not_prod=39,
+        tags=["jeunes_document_invalide"],
+        use_priority_queue=True,
+    )
+    SUBSCRIPTION_FOREIGN_DOCUMENT_ERROR = Template(
+        id_prod=385,
+        id_not_prod=40,
+        tags=["jeunes_document_etranger"],
+        use_priority_queue=True,
+    )
 
     BOOKING_CANCELLATION_BY_BENEFICIARY = Template(id_prod=223, id_not_prod=33, tags=["jeunes_offre_annulee_jeune"])
     BOOKING_CONFIRMATION_BY_BENEFICIARY = Template(id_prod=219, id_not_prod=29, tags=["jeunes_reservation_confirmee"])

@@ -50,7 +50,6 @@ from pcapi.emails.offerer_bookings_recap_after_deleting_stock import (
 from pcapi.emails.offerer_expired_bookings import build_expired_bookings_recap_email_data_for_offerer
 from pcapi.emails.pro_reset_password import retrieve_data_for_reset_password_link_to_admin_email
 from pcapi.emails.pro_reset_password import retrieve_data_for_reset_password_pro_email
-from pcapi.emails.user_document_validation import build_data_for_document_verification_error
 from pcapi.emails.user_notification_after_stock_update import (
     retrieve_data_to_warn_user_after_stock_update_affecting_booking,
 )
@@ -247,11 +246,6 @@ def send_offer_validation_status_update_email(
         offer_data = retrieve_data_for_offer_rejection_email(offer)
         return mails.send(recipients=recipient_emails, data=offer_data)
     return True
-
-
-def send_document_verification_error_email(email: str, code: str) -> bool:
-    data = build_data_for_document_verification_error(code)
-    return mails.send(recipients=[email], data=data)
 
 
 def send_withdrawal_terms_to_newly_validated_offerer(offerer: Offerer) -> bool:

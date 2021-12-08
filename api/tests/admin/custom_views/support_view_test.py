@@ -5,7 +5,6 @@ from dateutil.relativedelta import relativedelta
 import freezegun
 import pytest
 
-from pcapi import settings
 import pcapi.core.fraud.factories as fraud_factories
 import pcapi.core.fraud.models as fraud_models
 import pcapi.core.mails.testing as mails_testing
@@ -298,7 +297,6 @@ class BeneficiaryValidationViewTest:
         assert len(mails_testing.outbox) == 1
         sent_data = mails_testing.outbox[0].sent_data
 
-        assert sent_data["Vars"]["url"] == settings.DMS_USER_URL
         assert sent_data["MJ-TemplateID"] == 2958557
 
         assert subscription_models.SubscriptionMessage.query.count() == 1
