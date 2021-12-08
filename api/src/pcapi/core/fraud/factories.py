@@ -48,7 +48,7 @@ class JouveContentFactory(factory.Factory):
     postalCode = "75008"
     posteCodeCtrl = "75"
     serviceCodeCtrl = factory.Faker("pystr")
-    registrationDate = datetime.utcnow()
+    registrationDate = LazyAttribute(lambda _: (datetime.utcnow()).strftime("%d/%m/%Y %H:%M"))
 
 
 USERPROFILING_RATING = [rating.value for rating in models.UserProfilingRiskRating]
