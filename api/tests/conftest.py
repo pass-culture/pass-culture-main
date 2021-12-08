@@ -5,6 +5,7 @@ from pprint import pprint
 import typing
 from unittest.mock import MagicMock
 from unittest.mock import patch
+import urllib.parse
 
 from alembic import command
 from alembic.config import Config
@@ -270,9 +271,16 @@ class TestClient:
         self._print_spec("DELETE", route, None, result)
         return result
 
-    def get(self, route: str, headers=None):
+    def get(self, route: str, params=None, headers=None):
         headers = headers or {}
-        result = self.client.get(route, headers={**self.auth_header, **headers})
+        kwargs = {}
+        if params:
+            kwargs["query_string"] = urllib.parse.urlencode(params)
+        result = self.client.get(
+            route,
+            headers={**self.auth_header, **headers},
+            **kwargs,
+        )
         self._print_spec("GET", route, None, result)
         return result
 
