@@ -1,7 +1,7 @@
 from datetime import datetime
 
+from pcapi.core.offerers.models import Offerer
 from pcapi.domain.bank_informations.bank_informations import BankInformations
-from pcapi.domain.offerer.offerer import Offerer
 from pcapi.models.bank_information import BankInformationStatus
 
 

@@ -10,7 +10,6 @@ from pcapi.domain.demarches_simplifiees import ApplicationDetail
 from pcapi.infrastructure.repository.bank_informations.bank_informations_sql_repository import (
     BankInformationsSQLRepository,
 )
-from pcapi.infrastructure.repository.offerer.offerer_sql_repository import OffererSQLRepository
 from pcapi.infrastructure.repository.venue.venue_with_basic_information.venue_with_basic_information_sql_repository import (
     VenueWithBasicInformationSQLRepository,
 )
@@ -35,7 +34,6 @@ class SaveVenueBankInformationsTest:
     class GetReferentVenueTest:
         def setup_method(self):
             self.save_venue_bank_informations = SaveVenueBankInformations(
-                offerer_repository=OffererSQLRepository(),
                 venue_repository=VenueWithBasicInformationSQLRepository(),
                 bank_informations_repository=BankInformationsSQLRepository(),
             )
@@ -99,7 +97,6 @@ class SaveVenueBankInformationsTest:
         class VenueWithSiretTest:
             def setup_method(self):
                 self.save_venue_bank_informations = SaveVenueBankInformations(
-                    offerer_repository=OffererSQLRepository(),
                     venue_repository=VenueWithBasicInformationSQLRepository(),
                     bank_informations_repository=BankInformationsSQLRepository(),
                 )
@@ -360,7 +357,6 @@ class SaveVenueBankInformationsTest:
         class VenueWitoutSiretTest:
             def setup_method(self):
                 self.save_venue_bank_informations = SaveVenueBankInformations(
-                    offerer_repository=OffererSQLRepository(),
                     venue_repository=VenueWithBasicInformationSQLRepository(),
                     bank_informations_repository=BankInformationsSQLRepository(),
                 )
@@ -620,7 +616,6 @@ class SaveVenueBankInformationsTest:
     class UpdateBankInformationByApplicationIdTest:
         def setup_method(self):
             self.save_venue_bank_informations = SaveVenueBankInformations(
-                offerer_repository=OffererSQLRepository(),
                 venue_repository=VenueWithBasicInformationSQLRepository(),
                 bank_informations_repository=BankInformationsSQLRepository(),
             )
@@ -729,7 +724,6 @@ class SaveVenueBankInformationsTest:
     class UpdateBankInformationByVenueIdTest:
         def setup_method(self):
             self.save_venue_bank_informations = SaveVenueBankInformations(
-                offerer_repository=OffererSQLRepository(),
                 venue_repository=VenueWithBasicInformationSQLRepository(),
                 bank_informations_repository=BankInformationsSQLRepository(),
             )

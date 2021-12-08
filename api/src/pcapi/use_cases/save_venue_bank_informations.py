@@ -1,6 +1,7 @@
 from typing import Optional
 
 from pcapi import settings
+from pcapi.core.offerers.models import Offerer
 from pcapi.domain.bank_information import CannotRegisterBankInformation
 from pcapi.domain.bank_information import check_new_bank_information_has_a_more_advanced_status
 from pcapi.domain.bank_information import check_new_bank_information_older_than_saved_one
@@ -9,8 +10,6 @@ from pcapi.domain.bank_informations.bank_informations import BankInformations
 from pcapi.domain.bank_informations.bank_informations_repository import BankInformationsRepository
 from pcapi.domain.demarches_simplifiees import ApplicationDetail
 from pcapi.domain.demarches_simplifiees import get_venue_bank_information_application_details_by_application_id
-from pcapi.domain.offerer.offerer import Offerer
-from pcapi.domain.offerer.offerer_repository import OffererRepository
 from pcapi.domain.venue.venue_with_basic_information.venue_with_basic_information import VenueWithBasicInformation
 from pcapi.domain.venue.venue_with_basic_information.venue_with_basic_information_repository import (
     VenueWithBasicInformationRepository,
@@ -27,11 +26,9 @@ PROCEDURE_ID_VERSION_MAP = {
 class SaveVenueBankInformations:
     def __init__(
         self,
-        offerer_repository: OffererRepository,
         venue_repository: VenueWithBasicInformationRepository,
         bank_informations_repository: BankInformationsRepository,
     ):
-        self.offerer_repository = offerer_repository
         self.venue_repository = venue_repository
         self.bank_informations_repository = bank_informations_repository
 
@@ -44,7 +41,7 @@ class SaveVenueBankInformations:
 
         try:
             siren = application_details.siren
-            offerer = self.offerer_repository.find_by_siren(siren)
+            offerer = Offerer.query.filter_by(siren=siren).one_or_none()
             check_offerer_presence(offerer)
             venue = self.get_referent_venue(application_details, offerer)
         except CannotRegisterBankInformation as error:
