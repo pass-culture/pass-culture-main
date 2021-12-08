@@ -246,3 +246,4 @@ class Invoice(Model):
     businessUnit = sqla_orm.relationship("BusinessUnit", back_populates="invoices")
     # See the note about `amount` at the beginning of this module.
     amount = sqla.Column(sqla.Integer, nullable=False)
+    url = sqla.Column(sqla.Text, nullable=False, unique=True)
