@@ -44,7 +44,13 @@ def price_bookings(max_age: datetime.timedelta = DEFAULT_MAX_AGE_TO_PRICE):
         )
         .filter(models.Pricing.id.is_(None))
         .join(bookings_models.Booking.venue)
-        .filter(offerers_models.Venue.businessUnitId.isnot(None))
+        # FIXME (dbaty, 2021-12-08): we can get rid of this filter
+        # once BusinessUnit.siret is set as NOT NULLable.
+        .join(offerers_models.Venue.businessUnit)
+        .filter(models.BusinessUnit.siret.isnot(None))
+        # FIXME (dbaty, 2021-12-08): once BusinessUnit can have a
+        # deletion date, we should also exclude deleted business units
+        # here.
         .order_by(bookings_models.Booking.dateUsed, bookings_models.Booking.id)
         .options(
             sqla_orm.load_only(bookings_models.Booking.id),
@@ -113,6 +119,14 @@ def price_booking(booking: bookings_models.Booking) -> models.Pricing:
         # fetched it before we acquired the lock.
         if not booking.isUsed:
             return None
+
+        # FIXME (dbaty, 2021-12-08): we can get rid of this condition
+        # once BusinessUnit.siret is set as NOT NULLable.
+        if not booking.venue.businessUnit.siret:
+            return None
+        # FIXME (dbaty, 2021-12-08): once BusinessUnit can have a
+        # deletion date, we should also ignore deleted business units
+        # here.
 
         # Pricing the same booking twice is not allowed (and would be
         # rejected by a database constraint, anyway).
