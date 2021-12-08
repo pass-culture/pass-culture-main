@@ -15,7 +15,6 @@ class BaseBackend:
         self,
         recipients: Iterable[str],
         data: Union[SendinblueTransactionalEmailData, dict],
-        sending_to_priority_queue: bool = False,
     ) -> MailResult:
         if isinstance(data, dict):  # for mailjet
             data.setdefault("FromEmail", settings.SUPPORT_EMAIL_ADDRESS)
@@ -23,13 +22,12 @@ class BaseBackend:
                 data["Vars"].setdefault("env", "" if settings.IS_PROD else f"-{settings.ENV}")
             return self._send(recipients=recipients, data=data)
 
-        return self._send(recipients=recipients, data=data, sending_to_priority_queue=sending_to_priority_queue)
+        return self._send(recipients=recipients, data=data)
 
     def _send(
         self,
         recipients: Iterable,
         data: Union[SendinblueTransactionalEmailData, dict],
-        sending_to_priority_queue: bool = False,
     ) -> MailResult:
         raise NotImplementedError()
 
