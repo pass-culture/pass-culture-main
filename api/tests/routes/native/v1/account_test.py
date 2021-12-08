@@ -352,6 +352,57 @@ class AccountTest:
         assert not response.json["allowedEligibilityCheckMethods"]
         assert not response.json["nextBeneficiaryValidationStep"]
 
+    @pytest.mark.parametrize(
+        "fraud_check_status,ubble_status,next_step",
+        [
+            (fraud_models.FraudCheckStatus.PENDING, fraud_models.IdentificationStatus.INITIATED, None),
+            (fraud_models.FraudCheckStatus.PENDING, fraud_models.IdentificationStatus.PROCESSING, None),
+            (fraud_models.FraudCheckStatus.OK, fraud_models.IdentificationStatus.PROCESSED, None),
+            (fraud_models.FraudCheckStatus.KO, fraud_models.IdentificationStatus.PROCESSED, None),
+            (fraud_models.FraudCheckStatus.CANCELED, fraud_models.IdentificationStatus.ABORTED, "id-check"),
+        ],
+    )
+    @override_features(ENABLE_UBBLE=True)
+    def test_next_beneficiary_validation_step_ubble(self, client, app, fraud_check_status, ubble_status, next_step):
+        user = users_factories.UserFactory(
+            email=self.identifier, dateOfBirth=datetime.now() - relativedelta(years=18, days=5)
+        )
+        client.with_token(user.email)
+
+        response = client.get("/native/v1/me")
+
+        assert response.json["nextBeneficiaryValidationStep"] == "phone-validation"
+        assert response.status_code == 200
+
+        # Perform phone validation and user profiling
+        user.phoneValidationStatus = PhoneValidationStatusType.VALIDATED
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.USER_PROFILING,
+            resultContent=fraud_factories.UserProfilingFraudDataFactory(
+                risk_rating=fraud_models.UserProfilingRiskRating.TRUSTED
+            ),
+        )
+
+        response = client.get("/native/v1/me")
+
+        assert response.status_code == 200
+        assert response.json["nextBeneficiaryValidationStep"] == "id-check"
+
+        # Perform first id check with Ubble
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.UBBLE,
+            status=fraud_check_status,
+            resultContent=fraud_factories.UbbleContentFactory(status=ubble_status),
+        )
+
+        # Check next step: only a single non-aborted Ubble identification is allowed
+        response = client.get("/native/v1/me")
+
+        assert response.status_code == 200
+        assert response.json["nextBeneficiaryValidationStep"] == next_step
+
     def test_user_messages_passes_pydantic_serialization(self, client):
         user = users_factories.UserFactory()
         client.with_token(user.email)
@@ -1943,3 +1994,76 @@ class IdentificationSessionTest:
         assert response.json["code"] == "IDCHECK_SERVICE_ERROR"
         assert len(user.beneficiaryFraudChecks) == 0
         assert ubble_mock_http_error_status.call_count == 1
+
+    @pytest.mark.parametrize(
+        "fraud_check_status,ubble_status",
+        [
+            (fraud_models.FraudCheckStatus.PENDING, fraud_models.IdentificationStatus.INITIATED),
+            (fraud_models.FraudCheckStatus.PENDING, fraud_models.IdentificationStatus.PROCESSING),
+            (fraud_models.FraudCheckStatus.OK, fraud_models.IdentificationStatus.PROCESSED),
+            (fraud_models.FraudCheckStatus.KO, fraud_models.IdentificationStatus.PROCESSED),
+        ],
+    )
+    def test_request_ubble_second_check_blocked(self, client, ubble_mock, fraud_check_status, ubble_status):
+        user = users_factories.UserFactory(dateOfBirth=datetime.now() - relativedelta(years=18, days=5))
+        client.with_token(user.email)
+
+        # Perform phone validation and user profiling
+        user.phoneValidationStatus = PhoneValidationStatusType.VALIDATED
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.USER_PROFILING,
+            resultContent=fraud_factories.UserProfilingFraudDataFactory(
+                risk_rating=fraud_models.UserProfilingRiskRating.TRUSTED
+            ),
+        )
+
+        # Perform first id check with Ubble
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.UBBLE,
+            status=fraud_check_status,
+            resultContent=fraud_factories.UbbleContentFactory(status=ubble_status),
+        )
+
+        # Initiate second id check with Ubble
+        # It should be blocked - only one identification is allowed
+        response = client.post("/native/v1/ubble_identification", json={"redirectUrl": "http://example.com/deeplink"})
+
+        assert response.status_code == 400
+        assert response.json["code"] == "IDCHECK_ALREADY_PROCESSED"
+        assert len(user.beneficiaryFraudChecks) == 2
+
+    def test_request_ubble_second_check_after_first_aborted(self, client, ubble_mock):
+        user = users_factories.UserFactory(dateOfBirth=datetime.now() - relativedelta(years=18, days=5))
+        client.with_token(user.email)
+
+        # Perform phone validation and user profiling
+        user.phoneValidationStatus = PhoneValidationStatusType.VALIDATED
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.USER_PROFILING,
+            resultContent=fraud_factories.UserProfilingFraudDataFactory(
+                risk_rating=fraud_models.UserProfilingRiskRating.TRUSTED
+            ),
+        )
+
+        # Perform first id check with Ubble
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.UBBLE,
+            status=fraud_models.FraudCheckStatus.CANCELED,
+            resultContent=fraud_factories.UbbleContentFactory(status=fraud_models.IdentificationStatus.ABORTED),
+        )
+
+        # Initiate second id check with Ubble
+        # Accepted because the first one was canceled
+        response = client.post("/native/v1/ubble_identification", json={"redirectUrl": "http://example.com/deeplink"})
+
+        assert response.status_code == 200
+        assert len(user.beneficiaryFraudChecks) == 3
+        assert ubble_mock.call_count == 1
+
+        check = user.beneficiaryFraudChecks[2]
+        assert check.type == fraud_models.FraudCheckType.UBBLE
+        assert response.json["identificationUrl"] == "https://id.ubble.ai/29d9eca4-dce6-49ed-b1b5-8bb0179493a8"

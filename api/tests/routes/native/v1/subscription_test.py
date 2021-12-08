@@ -56,6 +56,71 @@ class NextStepTest:
             "maintenancePageType": "with-dms",
         }
 
+    @pytest.mark.parametrize(
+        "fraud_check_status,ubble_status,next_step",
+        [
+            (fraud_models.FraudCheckStatus.PENDING, fraud_models.IdentificationStatus.INITIATED, None),
+            (fraud_models.FraudCheckStatus.PENDING, fraud_models.IdentificationStatus.PROCESSING, None),
+            (fraud_models.FraudCheckStatus.OK, fraud_models.IdentificationStatus.PROCESSED, None),
+            (fraud_models.FraudCheckStatus.KO, fraud_models.IdentificationStatus.PROCESSED, None),
+            (fraud_models.FraudCheckStatus.CANCELED, fraud_models.IdentificationStatus.ABORTED, "identity-check"),
+        ],
+    )
+    @override_features(ENABLE_UBBLE=True)
+    def test_next_subscription_test_ubble(self, client, fraud_check_status, ubble_status, next_step):
+        user = users_factories.UserFactory(
+            dateOfBirth=datetime.datetime.combine(datetime.date.today(), datetime.time(0, 0))
+            - relativedelta(years=18, months=5),
+        )
+
+        client.with_token(user.email)
+
+        response = client.get("/native/v1/subscription/next_step")
+
+        assert response.status_code == 200
+        assert response.json == {
+            "nextSubscriptionStep": "phone-validation",
+            "allowedIdentityCheckMethods": ["ubble"],
+            "maintenancePageType": None,
+        }
+
+        # Perform phone validation and user profiling
+        user.phoneValidationStatus = users_models.PhoneValidationStatusType.VALIDATED
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.USER_PROFILING,
+            resultContent=fraud_factories.UserProfilingFraudDataFactory(
+                risk_rating=fraud_models.UserProfilingRiskRating.TRUSTED
+            ),
+        )
+
+        response = client.get("/native/v1/subscription/next_step")
+
+        assert response.status_code == 200
+        assert response.json == {
+            "nextSubscriptionStep": "identity-check",
+            "allowedIdentityCheckMethods": ["ubble"],
+            "maintenancePageType": None,
+        }
+
+        # Perform first id check with Ubble
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.UBBLE,
+            status=fraud_check_status,
+            resultContent=fraud_factories.UbbleContentFactory(status=ubble_status),
+        )
+
+        # Check next step: only a single non-aborted Ubble identification is allowed
+        response = client.get("/native/v1/subscription/next_step")
+
+        assert response.status_code == 200
+        assert response.json == {
+            "nextSubscriptionStep": next_step,
+            "allowedIdentityCheckMethods": ["ubble"],
+            "maintenancePageType": None,
+        }
+
 
 class UpdateProfileTest:
     @override_features(ENABLE_UBBLE=True)

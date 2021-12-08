@@ -759,20 +759,23 @@ def get_id_check_validation_step(user: User) -> Optional[BeneficiaryValidationSt
 
 
 def get_next_beneficiary_validation_step(user: User) -> Optional[BeneficiaryValidationStep]:
-    if not user.is_eligible_for_beneficiary_upgrade():
-        return None
+    """
+    This function is for legacy use. Now replaced with pcapi.core.subscription.get_next_subscription_step
+    """
+    if user.is_eligible_for_beneficiary_upgrade():
+        if user.eligibility == EligibilityType.AGE18:
+            if not user.is_phone_validated and FeatureToggle.ENABLE_PHONE_VALIDATION.is_active():
+                return BeneficiaryValidationStep.PHONE_VALIDATION
 
-    if user.eligibility == EligibilityType.AGE18:
-        if not user.is_phone_validated and FeatureToggle.ENABLE_PHONE_VALIDATION.is_active():
-            return BeneficiaryValidationStep.PHONE_VALIDATION
+            if not (
+                fraud_api.is_risky_user_profile(user)
+                or (fraud_api.has_user_performed_ubble_check(user) and FeatureToggle.ENABLE_UBBLE.is_active())
+            ):
+                return get_id_check_validation_step(user)
 
-        if fraud_api.is_risky_user_profile(user):
-            return None
+        elif user.eligibility == EligibilityType.UNDERAGE:
+            return get_id_check_validation_step(user)
 
-        return get_id_check_validation_step(user)
-
-    if user.eligibility == EligibilityType.UNDERAGE:
-        return get_id_check_validation_step(user)
     return None
 
 
