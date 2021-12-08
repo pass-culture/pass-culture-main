@@ -316,6 +316,7 @@ class FraudCheckStatus(enum.Enum):
     OK = "ok"
     SUSPICIOUS = "suspiscious"
     PENDING = "pending"
+    CANCELED = "canceled"
 
 
 class BeneficiaryFraudCheck(PcObject, Model):

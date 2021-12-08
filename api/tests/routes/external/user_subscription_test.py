@@ -406,7 +406,7 @@ class UbbleWebhookTest:
         fraud_check = get_ubble_fraud_check(ubble_identification_response.data.attributes.identification_id)
         assert fraud_check.reason is None
         assert fraud_check.reasonCodes is None
-        assert fraud_check.status is FraudCheckStatus.PENDING
+        assert fraud_check.status is FraudCheckStatus.CANCELED
         assert fraud_check.type == FraudCheckType.UBBLE
         assert fraud_check.thirdPartyId == ubble_identification_response.data.attributes.identification_id
         content = UbbleContent(**fraud_check.resultContent)

@@ -407,6 +407,13 @@ def profiling_session_id(user: User) -> serializers.UserProfilingSessionIdRespon
 def start_identification_session(
     user: User, body: serializers.IdentificationSessionRequest
 ) -> serializers.IdentificationSessionResponse:
+
+    if fraud_api.has_user_performed_ubble_check(user):
+        raise ApiErrors(
+            {"code": "IDCHECK_ALREADY_PROCESSED", "message": "Une identification a déjà été traitée"},
+            status_code=400,
+        )
+
     try:
         identification_url = subscription_api.start_ubble_workflow(user, body.redirectUrl)
         return serializers.IdentificationSessionResponse(identificationUrl=identification_url)

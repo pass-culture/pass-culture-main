@@ -10,7 +10,6 @@ import pcapi.core.fraud.models as fraud_models
 import pcapi.core.fraud.repository as fraud_repository
 from pcapi.core.mails.transactional.users import accepted_as_beneficiary_email
 from pcapi.core.payments import api as payments_api
-from pcapi.core.subscription import exceptions as subscription_exceptions
 from pcapi.core.users import api as users_api
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import exceptions as users_exception
@@ -148,7 +147,7 @@ def check_and_activate_beneficiary(
             return user
         try:
             user = activate_beneficiary(user, deposit_source, has_activated_account)
-        except subscription_exceptions.CannotUpgradeBeneficiaryRole:
+        except exceptions.CannotUpgradeBeneficiaryRole:
             db.session.rollback()
             return user
         return user
@@ -237,6 +236,10 @@ def update_ubble_workflow(
     elif status == fraud_models.IdentificationStatus.PROCESSED:
         fraud_api.on_ubble_result(fraud_check)
 
+    elif status == fraud_models.IdentificationStatus.ABORTED:
+        fraud_check.status = fraud_models.FraudCheckStatus.CANCELED
+        pcapi_repository.repository.save(fraud_check)
+
     return fraud_check
 
 
@@ -274,7 +277,8 @@ def get_next_subscription_step(user: users_models.User) -> Optional[models.Subsc
     if (
         not user.hasCompletedIdCheck
         and user.allowed_eligibility_check_methods
-        and not user.extraData.get("is_identity_document_uploaded")
+        and not (fraud_api.has_user_performed_ubble_check(user) and FeatureToggle.ENABLE_UBBLE.is_active())
+        and not user.extraData.get("is_identity_document_uploaded")  # Jouve
     ):
         return models.SubscriptionStep.IDENTITY_CHECK
 
