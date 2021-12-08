@@ -423,7 +423,11 @@ def _check_user_not_already_beneficiary(
     if not user.is_eligible_for_beneficiary_upgrade(eligibility):
         return models.FraudItem(
             status=models.FraudStatus.KO,
-            detail=(f"L’utilisateur est déjà bénéfiaire du pass {eligibility.name if eligibility is not None else ''}"),
+            detail=(
+                f"L’utilisateur est déjà bénéfiaire du pass {eligibility.name}"
+                if eligibility
+                else "L'utilisateur n'est pas éligible"
+            ),
             reason_code=models.FraudReasonCode.ALREADY_BENEFICIARY,
         )
     return models.FraudItem(status=models.FraudStatus.OK, detail="L'utilisateur n'est pas déjà bénéficaire")

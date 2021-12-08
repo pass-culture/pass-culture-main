@@ -53,7 +53,7 @@ class JouveFraudCheckTest:
         "postalCode": "",
         "posteCode": "678083",
         "posteCodeCtrl": "OK",
-        "registrationDate": "10/06/2021 21:00",
+        "registrationDate": f"{datetime.datetime.now():%d/%m/%Y %H%M}",
         "serviceCode": "1",
         "serviceCodeCtrl": "OK",
     }
@@ -84,6 +84,8 @@ class JouveFraudCheckTest:
 
         db.session.refresh(user)
         assert user.has_beneficiary_role
+        assert user.firstName == "CHRISTOPHE"
+        assert user.lastName == "DUPO"
 
     @patch("pcapi.connectors.beneficiaries.jouve_backend._get_raw_content")
     def test_jouve_update_duplicate_user(self, _get_raw_content, client):
