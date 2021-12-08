@@ -13,6 +13,7 @@ from pcapi.models import db
 from pcapi.models.bank_information import BankInformation
 from pcapi.models.bank_information import BankInformationStatus
 from pcapi.models.user_offerer import UserOfferer
+from pcapi.utils.human_ids import dehumanize
 
 from . import exceptions
 from . import models
@@ -106,6 +107,10 @@ def find_user_offerer_by_validation_token(token: str) -> Optional[UserOfferer]:
 
 def find_offerer_by_validation_token(token: str) -> Optional[UserOfferer]:
     return models.Offerer.query.filter_by(validationToken=token).one_or_none()
+
+
+def find_user_offerers(user: int, offerer_id: str) -> UserOfferer:
+    return UserOfferer.query.filter_by(user=user, offererId=dehumanize(offerer_id)).all()
 
 
 def find_venue_by_id(venue_id: int) -> Optional[models.Venue]:
