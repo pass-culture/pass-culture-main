@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { QueryCache, QueryClient, QueryClientProvider } from 'react-query'
 
 import '@fontsource/barlow'
+import '@fontsource/barlow/600.css'
 import { UnauthenticatedError } from 'app/components/UnauthenticatedError/UnauthenticatedError'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { Role, VenueFilterType } from 'utils/types'

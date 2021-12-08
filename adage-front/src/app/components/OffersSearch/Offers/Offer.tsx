@@ -1,12 +1,14 @@
 import './Offer.scss'
-import React from 'react'
+import cn from 'classnames'
+import React, { useState } from 'react'
 
+import { ReactComponent as ChevronIcon } from 'assets/chevron.svg'
 import { ReactComponent as Logo } from 'assets/logo-without-text.svg'
 import { OfferType } from 'utils/types'
 
+import OfferDetails from './OfferDetails/OfferDetails'
 import OfferSummary from './OfferSummary/OfferSummary'
 import PrebookingButton from './PrebookingButton/PrebookingButton'
-
 const formatToReadableString = (input: string | null): string | null => {
   if (input == null) {
     return input
@@ -22,6 +24,8 @@ export const Offer = ({
   canPrebookOffers: boolean
   offer: OfferType
 }): JSX.Element => {
+  const [displayDetails, setDisplayDetails] = useState(false)
+
   return (
     <li className="offer">
       <div className="offer-image-placeholder" data-testid="thumb-placeholder">
@@ -41,6 +45,19 @@ export const Offer = ({
         </div>
         <OfferSummary offer={offer} />
         <p className="offer-description">{offer.description}</p>
+        <button
+          className="offer-see-more"
+          onClick={() => setDisplayDetails(!displayDetails)}
+          type="button"
+        >
+          <ChevronIcon
+            className={cn('offer-see-more-icon', {
+              'offer-see-more-icon-closed': !displayDetails,
+            })}
+          />
+          en savoir plus
+        </button>
+        {displayDetails && <OfferDetails offer={offer} />}
       </div>
     </li>
   )

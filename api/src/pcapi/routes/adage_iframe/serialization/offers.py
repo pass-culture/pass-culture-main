@@ -69,6 +69,11 @@ class OfferResponse(BaseModel):
     stocks: list[OfferStockResponse]
     venue: OfferVenueResponse
     extraData: Any
+    durationMinutes: Optional[int]
+    motorDisabilityCompliant: bool
+    visualDisabilityCompliant: bool
+    audioDisabilityCompliant: bool
+    mentalDisabilityCompliant: bool
 
     class Config:
         orm_mode = True
