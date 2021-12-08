@@ -30,13 +30,14 @@ def send_transactional_email(payload: SendTransactionalEmailRequest) -> bool:
         api_instance.send_transac_email(send_smtp_email)
         return True
     except ApiException as e:
-        logger.error(
-            "Exception when calling SMTPApi->send_transac_email (status=%s): %s\n",
-            e.status,
-            e,
-            extra={"status": e.status, "template_id": payload.template_id, "recipients": payload.recipients},
+        logger.exception(  # pylint: disable=logging-fstring-interpolation
+            f"Exception when calling SMTPApi->send_transac_email with status={e.status}",
+            extra={"template_id": payload.template_id, "recipients": payload.recipients},
         )
         return False
     except Exception as e:  # pylint: disable=broad-except
-        logger.error("Unknown exception occurred when calling SMTPApi->send_transac_email: %s\n", e)
+        logger.exception(
+            "Unknown exception occurred when calling SMTPApi->send_transac_email",
+            extra={"template_id": payload.template_id, "recipients": payload.recipients},
+        )
         return False
