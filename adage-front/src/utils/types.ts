@@ -51,6 +51,7 @@ export interface VenueFilterType {
 export interface StockType {
   id: number
   beginningDatetime: Date
+  bookingLimitDatetime: Date
   isBookable: boolean
   price: number
   numberOfTickets?: number
