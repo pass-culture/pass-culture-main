@@ -148,7 +148,7 @@ class UpdateProfileTest:
         assert user.has_beneficiary_role
         assert user.deposit
 
-        assert len(push_testing.requests) == 1
+        assert len(push_testing.requests) == 2
         notification = push_testing.requests[0]
 
         assert notification["user_id"] == user.id
@@ -204,7 +204,7 @@ class UpdateProfileTest:
         assert user.roles == [users_models.UserRole.UNDERAGE_BENEFICIARY]
         assert user.deposit.amount == 20
 
-        assert len(push_testing.requests) == 1
+        assert len(push_testing.requests) == 2
 
 
 class SchoolTypeTest:

@@ -101,7 +101,7 @@ def test_saved_a_beneficiary_from_application(app):
     assert beneficiary_import.beneficiary == beneficiary
 
     assert len(mails_testing.outbox) == 1
-    assert len(push_testing.requests) == 1
+    assert len(push_testing.requests) == 2
 
 
 @override_features(PAUSE_JOUVE_SUBSCRIPTION=True)
@@ -157,7 +157,7 @@ def test_application_for_native_app_user(app):
     assert beneficiary_import.beneficiary == beneficiary
     assert beneficiary.notificationSubscriptions == {"marketing_push": True, "marketing_email": False}
 
-    assert len(push_testing.requests) == 1
+    assert len(push_testing.requests) == 2
 
 
 @override_features(FORCE_PHONE_VALIDATION=False)
@@ -246,7 +246,7 @@ def test_application_for_native_app_user_with_load_smoothing(_get_raw_content, a
     assert beneficiary_import.beneficiary == beneficiary
     assert beneficiary.notificationSubscriptions == {"marketing_push": True, "marketing_email": True}
 
-    assert len(push_testing.requests) == 1
+    assert len(push_testing.requests) == 2
     assert len(mails_testing.outbox) == 1
     assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 2016025
 
