@@ -1,6 +1,9 @@
 import React, { useState } from 'react'
 
 import { getToday } from 'utils/date'
+
+import ReimbursementsTable from '../../../new_components/Table'
+
 import ReimbursementsSectionHeader from './ReimbursementsSectionHeader'
 
 type venuesOptionsType = [
@@ -13,22 +16,32 @@ type venuesOptionsType = [
 interface IReimbursementsProofsProps {
   isCurrentUserAdmin: boolean
   venuesOptions: venuesOptionsType
+  invoices: []
+  columns: [
+    {
+      title: string
+      sortBy: string
+      selfDirection: string
+    }
+  ]
 }
 
 const ReimbursementsProofs = ({
   isCurrentUserAdmin,
   venuesOptions,
+  invoices,
+  columns,
 }: IReimbursementsProofsProps): JSX.Element => {
   const ALL_VENUES_OPTION_ID = 'allVenues'
   const today = getToday()
-  const oneYearAgo = new Date(
-    today.getFullYear() - 1,
-    today.getMonth(),
+  const oneMonthAgo = new Date(
+    today.getFullYear(),
+    today.getMonth() - 1,
     today.getDate()
   )
   const INITIAL_FILTERS = {
     venue: ALL_VENUES_OPTION_ID,
-    periodStart: oneYearAgo,
+    periodStart: oneMonthAgo,
     periodEnd: today,
   }
 
@@ -59,10 +72,10 @@ const ReimbursementsProofs = ({
           disabled={shouldDisableButton}
           type="button"
         >
-          Afficher
+          Lancer la recherche
         </button>
       </ReimbursementsSectionHeader>
-      <div> TABLEAU </div>
+      <ReimbursementsTable columns={columns} invoices={invoices} />
     </>
   )
 }

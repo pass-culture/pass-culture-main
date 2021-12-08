@@ -1,5 +1,5 @@
 import isEqual from 'lodash.isequal'
-import React, { useCallback, useState } from 'react'
+import React, { useCallback } from 'react'
 
 import PeriodSelector from 'components/layout/inputs/PeriodSelector/PeriodSelector'
 import Select from 'components/layout/inputs/Select'
