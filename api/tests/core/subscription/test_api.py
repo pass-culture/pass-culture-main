@@ -217,17 +217,37 @@ class UbbleWorkflowTest:
         assert ubble_request["data"]["attributes"]["webhook"] == "http://localhost/webhooks/ubble/application_status"
 
     @pytest.mark.parametrize(
-        "state, status",
+        "state, status, fraud_check_status",
         [
-            (IdentificationState.INITIATED, fraud_models.IdentificationStatus.INITIATED),
-            (IdentificationState.PROCESSING, fraud_models.IdentificationStatus.PROCESSING),
-            (IdentificationState.VALID, fraud_models.IdentificationStatus.PROCESSED),
-            (IdentificationState.INVALID, fraud_models.IdentificationStatus.PROCESSED),
-            (IdentificationState.UNPROCESSABLE, fraud_models.IdentificationStatus.PROCESSED),
-            (IdentificationState.ABORTED, fraud_models.IdentificationStatus.ABORTED),
+            (
+                IdentificationState.INITIATED,
+                fraud_models.IdentificationStatus.INITIATED,
+                fraud_models.FraudCheckStatus.PENDING,
+            ),
+            (
+                IdentificationState.PROCESSING,
+                fraud_models.IdentificationStatus.PROCESSING,
+                fraud_models.FraudCheckStatus.PENDING,
+            ),
+            (IdentificationState.VALID, fraud_models.IdentificationStatus.PROCESSED, fraud_models.FraudCheckStatus.OK),
+            (
+                IdentificationState.INVALID,
+                fraud_models.IdentificationStatus.PROCESSED,
+                fraud_models.FraudCheckStatus.KO,
+            ),
+            (
+                IdentificationState.UNPROCESSABLE,
+                fraud_models.IdentificationStatus.PROCESSED,
+                fraud_models.FraudCheckStatus.KO,
+            ),
+            (
+                IdentificationState.ABORTED,
+                fraud_models.IdentificationStatus.ABORTED,
+                fraud_models.FraudCheckStatus.CANCELED,
+            ),
         ],
     )
-    def test_update_ubble_workflow(self, ubble_mocker, state, status):
+    def test_update_ubble_workflow(self, ubble_mocker, state, status, fraud_check_status):
         user = users_factories.UserFactory()
         fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(type=fraud_models.FraudCheckType.UBBLE, user=user)
         ubble_response = UbbleIdentificationResponseFactory(identification_state=state)
@@ -242,6 +262,7 @@ class UbbleWorkflowTest:
 
         ubble_content = updated_fraud_check.resultContent
         assert ubble_content["status"] == status.value
+        assert updated_fraud_check.status == fraud_check_status
 
 
 @pytest.mark.usefixtures("db_session")
