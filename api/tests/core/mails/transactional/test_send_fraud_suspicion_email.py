@@ -11,7 +11,12 @@ class FraudSuspicionEmailTest:
         send_fraud_suspicion_email(beneficiary_pre_subscription)
 
         assert mails_testing.outbox[0].sent_data == {
-            "template": {"id_prod": 82, "id_not_prod": 24, "tags": ["jeunes_compte_en_cours_d_analyse"]},
+            "template": {
+                "id_prod": 82,
+                "id_not_prod": 24,
+                "tags": ["jeunes_compte_en_cours_d_analyse"],
+                "use_priority_queue": False,
+            },
             "To": beneficiary_pre_subscription.email,
             "params": {},
         }

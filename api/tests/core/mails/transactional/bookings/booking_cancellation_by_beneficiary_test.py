@@ -140,6 +140,7 @@ class SendSendiblueBeneficiaryBookingCancellationEmailTest:
             "id_prod": 223,
             "id_not_prod": 33,
             "tags": ["jeunes_offre_annulee_jeune"],
+            "use_priority_queue": False,
         }
         assert mails_testing.outbox[0].sent_data["To"] == booking.individualBooking.user.email
         params_key_list = [

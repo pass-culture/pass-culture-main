@@ -32,4 +32,4 @@ def get_duplicate_beneficiary_pre_subscription_rejected_data() -> Union[dict, Se
 
 def send_duplicate_beneficiary_pre_subscription_rejected_data(email: str) -> bool:
     data = get_duplicate_beneficiary_pre_subscription_rejected_data()
-    return mails.send(recipients=[email], data=data, sending_to_priority_queue=True)
+    return mails.send(recipients=[email], data=data)

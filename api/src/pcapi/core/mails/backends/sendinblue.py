@@ -24,7 +24,6 @@ class SendinblueBackend(BaseBackend):
         self,
         recipients: Iterable,
         data: typing.Union[SendinblueTransactionalEmailData, dict],
-        sending_to_priority_queue: bool = False,
     ) -> MailResult:
         if isinstance(data, dict):
             raise ValueError(f"Tried sending an email via sendinblue, but received incorrectly formatted data: {data}")
@@ -32,7 +31,7 @@ class SendinblueBackend(BaseBackend):
         payload = SendTransactionalEmailRequest(
             recipients=list(recipients), template_id=data.template.id, params=data.params, tags=data.template.tags
         )
-        if sending_to_priority_queue:
+        if data.template.use_priority_queue:
             send_transactional_email_primary_task.delay(payload)
         else:
             send_transactional_email_secondary_task.delay(payload)
@@ -54,7 +53,6 @@ class ToDevSendinblueBackend(SendinblueBackend):
         self,
         recipients: Iterable,
         data: typing.Union[SendinblueTransactionalEmailData, dict],
-        sending_to_priority_queue: bool = False,
     ) -> MailResult:
         recipients = [settings.DEV_EMAIL_ADDRESS]
-        return super().send_mail(recipients=recipients, data=data, sending_to_priority_queue=sending_to_priority_queue)
+        return super().send_mail(recipients=recipients, data=data)
