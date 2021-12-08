@@ -1,4 +1,4 @@
-@import "sass-rem";
+@import 'sass-rem';
 
 .prebooking-button {
   text-align: center;
@@ -12,4 +12,12 @@
   font-weight: bold;
   font-size: 15px;
   cursor: pointer;
+}
+
+.prebooking-button-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: rem(12px);
+  font-weight: bold;
 }

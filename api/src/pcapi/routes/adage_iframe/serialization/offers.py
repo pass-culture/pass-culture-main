@@ -19,6 +19,7 @@ logger = logging.getLogger(__name__)
 class OfferStockResponse(BaseModel):
     id: int
     beginningDatetime: Optional[datetime]
+    bookingLimitDatetime: Optional[datetime]
     isBookable: bool
     price: int
 
