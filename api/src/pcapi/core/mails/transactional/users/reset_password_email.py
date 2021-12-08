@@ -1,4 +1,4 @@
-import typing
+from typing import Union
 
 from pcapi.core import mails
 from pcapi.core.mails.transactional.sendinblue_template_ids import SendinblueTransactionalEmailData
@@ -20,7 +20,7 @@ def retrieve_data_for_reset_password_user_email(user: User, token: Token) -> dic
 
 def retrieve_data_for_reset_password_native_app_email(
     user: User, token: Token
-) -> typing.Union[dict, SendinblueTransactionalEmailData]:
+) -> Union[dict, SendinblueTransactionalEmailData]:
     reset_password_link = generate_firebase_dynamic_link(
         path="mot-de-passe-perdu",
         params={
