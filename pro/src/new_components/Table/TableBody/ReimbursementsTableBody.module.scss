@@ -1,0 +1,14 @@
+tbody.reimbursement-body {
+  .date {
+    @include bold();
+  }
+
+  .business-unit {
+    width: rem(220px);
+  }
+
+  .amount {
+    padding-left: rem(40px);
+    text-align: right;
+  }
+}

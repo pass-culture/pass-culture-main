@@ -13,7 +13,6 @@ import * as pcapi from 'repository/pcapi/pcapi'
 import { Banner } from 'ui-kit'
 
 import './Reimbursement.scss'
-import Table from "../../../new_components/Table"
 import useActiveFeature from '../../hooks/useActiveFeature'
 
 import ReimbursementsDetails from './ReimbursementsDetails'
@@ -71,77 +70,53 @@ const Reimbursements = ({ currentUser }) => {
 
   const hasNoResults = !isLoading && !venuesOptions.length
   const hasResults = !isLoading && venuesOptions.length > 0
-  const rows = [
+
+  const invoices = [
     {
-      date: "11/12/1212",
-      lieux: "Som du lieu sur 2 lignes lorem ipsum dolor",
-      reference: "J0000001",
-      montant: "1000"
+      date: '11/12/1212',
+      businessUnit: 'Som du lieu sur 2 lignes lorem ipsum dolor',
+      reference: 'J0000001',
+      amount: '1000',
     },
     {
-      date: "19/12/1212",
-      lieux: "Zom du lieu sur 2 lignes lorem ipsum dolor",
-      reference: "J0000019",
-      montant: "10"
+      date: '19/12/1212',
+      businessUnit: 'Zom du lieu sur 2 lignes lorem ipsum dolor',
+      reference: 'J0000019',
+      amount: '10',
     },
     {
-      date: "12/12/1212",
-      lieux: "Com du lieu sur 2 lignes lorem ipsum dolor",
-      reference: "J0000007",
-      montant: "100000"
-    },{
-      date: "12/12/1212",
-      lieux: "Bom du lieu sur 2 lignes lorem ipsum dolor",
-      reference: "J0000007",
-      montant: "100000"
-    },{
-      date: "12/12/1212",
-      lieux: "Aom du lieu sur 2 lignes lorem ipsum dolor",
-      reference: "J0000007",
-      montant: "100000"
-    },{
-      date: "12/12/1212",
-      lieux: "Dom du lieu sur 2 lignes lorem ipsum dolor",
-      reference: "J0000007",
-      montant: "100000"
-    },{
-      date: "12/12/1212",
-      lieux: "Gom du lieu sur 2 lignes lorem ipsum dolor",
-      reference: "J0000007",
-      montant: "100000"
+      date: '12/12/1212',
+      businessUnit: 'Com du lieu sur 2 lignes lorem ipsum dolor',
+      reference: 'J0000007',
+      amount: '100000',
     },
     {
-      date: "08/12/1212",
-      lieux: "Aom du lieu sur 2 lignes lorem ipsum dolor",
-      reference: "J0000099",
-      montant: "1"
-    }
+      date: '08/12/1212',
+      businessUnit: 'Aom du lieu sur 2 lignes lorem ipsum dolor',
+      reference: 'J0000099',
+      amount: '1',
+    },
   ]
-  // rename everywhere
-  // style correction own style
-  // alt sur images
-  // pass icon in tsx if easy :)
-  // move table in right place in code
-  const cellTitlesOptions = [
+  const columns = [
     {
       title: 'Date',
-      sortBy: "date",
-      selfDirection: 'default'
+      sortBy: 'date',
+      selfDirection: 'default',
     },
     {
-      title: 'Lieux',
-      sortBy: "lieux",
-      selfDirection: 'default'
+      title: 'Point de facturation',
+      sortBy: 'businessUnit',
+      selfDirection: 'default',
     },
     {
       title: 'Référence',
-      sortBy: "reference",
-      selfDirection: 'default'
+      sortBy: 'reference',
+      selfDirection: 'default',
     },
     {
-      title: 'Prix',
-      sortBy: "montant",
-      selfDirection: 'default'
+      title: 'Montant remboursé',
+      sortBy: 'amount',
+      selfDirection: 'default',
     },
   ]
 
@@ -229,6 +204,8 @@ const Reimbursements = ({ currentUser }) => {
                 role="tabpanel"
               >
                 <ReimbursementsProofs
+                  columns={columns}
+                  invoices={invoices}
                   isCurrentUserAdmin={currentUser.isAdmin}
                   venuesOptions={venuesOptions}
                 />
@@ -246,10 +223,6 @@ const Reimbursements = ({ currentUser }) => {
                   venuesOptions={venuesOptions}
                 />
               </div>
-              <Table
-                rows={rows}
-                rowsTitleOptions={cellTitlesOptions}
-              />
             </>
           ) : (
             <ReimbursementsDetails
