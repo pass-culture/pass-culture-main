@@ -1,17 +1,15 @@
-from flask import jsonify
 from flask_login import current_user
 from flask_login import login_required
 
-from pcapi.models.user_offerer import UserOfferer
+from pcapi.core.offerers.repository import find_user_offerers
 from pcapi.routes.apis import private_api
-from pcapi.routes.serialization import as_dict
-from pcapi.utils.human_ids import dehumanize
-from pcapi.utils.includes import USER_OFFERER_INCLUDES
+from pcapi.routes.serialization.offerers_serialize import ListUserOfferersResponseModel
+from pcapi.serialization.decorator import spectree_serialize
 
 
-# @debt api-migration
 @private_api.route("/userOfferers/<offerer_id>", methods=["GET"])
 @login_required
-def get_user_offerer(offerer_id):
-    user_offerers = UserOfferer.query.filter_by(user=current_user, offererId=dehumanize(offerer_id)).all()
-    return jsonify([as_dict(user_offerer, includes=USER_OFFERER_INCLUDES) for user_offerer in user_offerers]), 200
+@spectree_serialize(response_model=ListUserOfferersResponseModel)
+def get_user_offerer(offerer_id: str) -> ListUserOfferersResponseModel:
+    user_offerers = find_user_offerers(current_user, offerer_id)
+    return ListUserOfferersResponseModel(__root__=user_offerers)
