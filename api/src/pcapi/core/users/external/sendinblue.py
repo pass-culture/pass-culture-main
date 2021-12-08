@@ -161,9 +161,8 @@ def make_update_request(payload: UpdateSendinblueContactRequest) -> bool:
 
     except SendinblueApiException as exception:
         if exception.status == 524:
-            logger.warning(
-                "Timeout when calling ContactsApi->create_contact: %s",
-                exception,
+            logger.exception(
+                "Timeout when calling ContactsApi->create_contact",
                 extra={
                     "email": payload.email,
                     "attributes": payload.attributes,
@@ -171,15 +170,25 @@ def make_update_request(payload: UpdateSendinblueContactRequest) -> bool:
                 },
             )
         else:
-            logger.exception(
-                "Exception when calling ContactsApi->create_contact: %s",
-                exception,
+            logger.exception(  # pylint: disable=logging-fstring-interpolation
+                f"Exception when calling ContactsApi->create_contact with status={exception.status}",
                 extra={
                     "email": payload.email,
                     "attributes": payload.attributes,
                     "emailBlacklisted": payload.emailBlacklisted,
                 },
             )
+        return False
+
+    except Exception as exception:  # pylint: disable=broad-except
+        logger.exception(
+            "Exception when calling ContactsApi->create_contact",
+            extra={
+                "email": payload.email,
+                "attributes": payload.attributes,
+                "emailBlacklisted": payload.emailBlacklisted,
+            },
+        )
         return False
 
 
