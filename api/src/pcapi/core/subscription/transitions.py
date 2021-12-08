@@ -10,12 +10,12 @@ TRANSITIONS = [
         users_models.SubscriptionState.phone_validation_ko,
     ],
     [
-        "profile_user",
+        "validate_profiling",
         users_models.SubscriptionState.phone_validated,
         users_models.SubscriptionState.user_profiling_validated,
     ],
     [
-        "profile_user_failed",
+        "validate_profiling_failed",
         users_models.SubscriptionState.phone_validated,
         users_models.SubscriptionState.user_profiling_ko,
     ],

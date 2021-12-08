@@ -199,6 +199,7 @@ def test_reset_password_success(client):
     assert response.status_code == 204
     db.session.refresh(user)
     assert user.password == crypto.hash_password(new_password)
+    assert user.is_subscriptionState_email_validated()
 
     token = Token.query.get(token.id)
     assert token.isUsed
@@ -217,6 +218,7 @@ def test_reset_password_for_unvalidated_email(client):
     db.session.refresh(user)
     assert user.password == crypto.hash_password(new_password)
     assert user.isEmailValidated
+    assert user.is_subscriptionState_email_validated()
 
 
 def test_reset_password_fail_for_password_strength(client):
