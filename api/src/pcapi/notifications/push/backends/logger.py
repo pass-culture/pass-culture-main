@@ -1,5 +1,6 @@
 import logging
 
+from pcapi.notifications.push.backends.batch import BatchAPI
 from pcapi.notifications.push.backends.batch import UserUpdateData
 from pcapi.notifications.push.transactional_notifications import TransactionalNotificationData
 
@@ -8,11 +9,12 @@ logger = logging.getLogger(__name__)
 
 
 class LoggerBackend:
-    def update_user_attributes(self, user_id: int, attribute_values: dict) -> None:
+    def update_user_attributes(self, batch_api: BatchAPI, user_id: int, attribute_values: dict) -> None:
         logger.info(
-            "A request to update user attributes would be sent for user with id=%d with new attributes=%s",
+            "A request to update user attributes would be sent for user with id=%d with new attributes=%s to api=%s",
             user_id,
             attribute_values,
+            batch_api.name,
         )
 
     def update_users_attributes(self, users_data: list[UserUpdateData]) -> None:

@@ -104,7 +104,7 @@ class Returns201Test:
         assert favorite.userId == user.id
 
         # One call should be sent to batch, and one to sendinblue
-        assert len(push_testing.requests) == 1
+        assert len(push_testing.requests) == 2
         assert len(users_testing.sendinblue_requests) == 1
         sendinblue_data = users_testing.sendinblue_requests[0]
         assert sendinblue_data["attributes"]["LAST_FAVORITE_CREATION_DATE"] is not None
@@ -129,7 +129,7 @@ class Returns201Test:
         assert response.status_code == 201
 
         # One call should be sent to batch, and one to sendinblue
-        assert len(push_testing.requests) == 1
+        assert len(push_testing.requests) == 2
         assert len(users_testing.sendinblue_requests) == 1
         sendinblue_data = users_testing.sendinblue_requests[0]
         assert sendinblue_data["attributes"]["LAST_FAVORITE_CREATION_DATE"] is not None

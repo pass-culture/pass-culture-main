@@ -43,7 +43,7 @@ def test_update_external_user():
     ):
         update_external_user(user)
 
-    assert len(batch_testing.requests) == 1
+    assert len(batch_testing.requests) == 2
     assert len(sendinblue_testing.sendinblue_requests) == 1
 
 

@@ -313,7 +313,7 @@ def test_validate_email_when_eligible(client):
     assert protected_response.status_code == 200
 
     # assert we updated the external users
-    assert len(bash_testing.requests) == 1
+    assert len(bash_testing.requests) == 2
     assert len(sendinblue_testing.sendinblue_requests) == 1
 
     # Ensure the access token contains user.id
@@ -340,7 +340,7 @@ def test_validate_email_when_not_eligible(client):
     assert response.status_code == 200
 
     # assert we updated the external users
-    assert len(bash_testing.requests) == 1
+    assert len(bash_testing.requests) == 2
     assert len(sendinblue_testing.sendinblue_requests) == 1
 
     # Ensure the access token is valid

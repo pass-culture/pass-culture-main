@@ -95,7 +95,7 @@ class BeneficiaryUserViewTest:
             },
         }
 
-        assert len(push_testing.requests) == 1
+        assert len(push_testing.requests) == 2
 
     @clean_database
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
@@ -278,11 +278,11 @@ class BeneficiaryUserViewTest:
 
         user_edited = User.query.filter_by(email="edited@email.com").one_or_none()
         assert user_edited is not None
-        assert len(push_testing.requests) == 1
+        assert len(push_testing.requests) == 2
 
         mocked_flask_flash.assert_not_called()
         assert not mails_testing.outbox
-        assert len(push_testing.requests) == 1
+        assert len(push_testing.requests) == 2
         assert len(sendinblue_testing.sendinblue_requests) == 1
 
     @clean_database

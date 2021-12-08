@@ -45,7 +45,7 @@ def test_change_password_validates_email(app):
     assert token.isUsed
 
     # One call should be sent to batch, and one to sendinblue
-    assert len(push_testing.requests) == 1
+    assert len(push_testing.requests) == 2
     assert len(users_testing.sendinblue_requests) == 1
     sendinblue_data = users_testing.sendinblue_requests[0]
     assert sendinblue_data["attributes"]["IS_EMAIL_VALIDATED"]
