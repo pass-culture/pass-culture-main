@@ -7,7 +7,6 @@ from pcapi.domain.bank_information import CannotRegisterBankInformation
 from pcapi.infrastructure.repository.bank_informations.bank_informations_sql_repository import (
     BankInformationsSQLRepository,
 )
-from pcapi.infrastructure.repository.offerer.offerer_sql_repository import OffererSQLRepository
 from pcapi.model_creators.generic_creators import create_bank_information
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.models.api_errors import ApiErrors
@@ -26,7 +25,7 @@ class SaveOffererBankInformationsTest:
     class SaveNewBankInformationsTest:
         def setup_method(self):
             self.save_offerer_bank_informations = SaveOffererBankInformations(
-                offerer_repository=OffererSQLRepository(), bank_informations_repository=BankInformationsSQLRepository()
+                bank_informations_repository=BankInformationsSQLRepository()
             )
 
         @pytest.mark.usefixtures("db_session")
@@ -208,7 +207,7 @@ class SaveOffererBankInformationsTest:
     class UpdateBankInformationsByApplicationIdTest:
         def setup_method(self):
             self.save_offerer_bank_informations = SaveOffererBankInformations(
-                offerer_repository=OffererSQLRepository(), bank_informations_repository=BankInformationsSQLRepository()
+                bank_informations_repository=BankInformationsSQLRepository()
             )
 
         @pytest.mark.usefixtures("db_session")
@@ -320,7 +319,7 @@ class SaveOffererBankInformationsTest:
     class UpdateBankInformationsByOffererIdTest:
         def setup_method(self):
             self.save_offerer_bank_informations = SaveOffererBankInformations(
-                offerer_repository=OffererSQLRepository(), bank_informations_repository=BankInformationsSQLRepository()
+                bank_informations_repository=BankInformationsSQLRepository()
             )
 
         @pytest.mark.usefixtures("db_session")
