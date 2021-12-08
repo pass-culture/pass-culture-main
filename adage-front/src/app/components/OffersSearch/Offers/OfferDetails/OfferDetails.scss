@@ -1,0 +1,14 @@
+@import 'sass-rem';
+
+.offer-details {
+  &-title {
+    font-size: rem(20px);
+    font-weight: bold;
+    margin: rem(20px) 0;
+  }
+
+  &-list {
+    list-style: none;
+    padding: 0;
+  }
+}
