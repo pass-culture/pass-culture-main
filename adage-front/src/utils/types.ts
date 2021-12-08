@@ -25,6 +25,11 @@ export interface OfferType {
   stocks: StockType[]
   isSoldOut: boolean
   isExpired: boolean
+  durationMinutes?: number
+  mentalDisabilityCompliant: boolean
+  visualDisabilityCompliant: boolean
+  audioDisabilityCompliant: boolean
+  motorDisabilityCompliant: boolean
   extraData?: {
     contactEmail?: string
     contactPhone?: string
