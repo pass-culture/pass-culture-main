@@ -66,6 +66,7 @@ class UserFactory(BaseFactory):
     isAdmin = False
     roles = []
     hasSeenProTutorials = True
+    subscriptionState = models.SubscriptionState.account_created
 
     @classmethod
     def _create(cls, model_class, *args, **kwargs):
@@ -137,7 +138,7 @@ class BeneficiaryGrant18Factory(BaseFactory):
     isAdmin = False
     roles = [users_models.UserRole.BENEFICIARY]
     hasSeenProTutorials = True
-    subscriptionState = users_models.SubscriptionState.BENEFICIARY_18
+    subscriptionState = users_models.SubscriptionState.beneficiary_18
 
     @classmethod
     def _create(cls, model_class, *args, **kwargs):
@@ -232,7 +233,7 @@ class UnderageBeneficiaryFactory(BeneficiaryGrant18Factory):
     dateCreated = LazyAttribute(lambda user: user.dateOfBirth + relativedelta(years=user.subscription_age, hours=12))
     ineHash = factory.Sequence(lambda _: "".join(random.choices(string.ascii_lowercase + string.digits, k=32)))
 
-    subscriptionState = users_models.SubscriptionState.BENEFICIARY_15_17
+    subscriptionState = users_models.SubscriptionState.beneficiary_15_17
 
     @factory.post_generation
     def deposit(obj, create, extracted, **kwargs):  # pylint: disable=no-self-argument
