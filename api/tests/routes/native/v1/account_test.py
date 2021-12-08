@@ -28,6 +28,7 @@ import pcapi.core.subscription.messages as subscription_messages
 from pcapi.core.testing import override_features
 from pcapi.core.testing import override_settings
 from pcapi.core.users import factories as users_factories
+from pcapi.core.users import models as users_models
 from pcapi.core.users import testing as users_testing
 from pcapi.core.users.api import create_phone_validation_token
 from pcapi.core.users.constants import SuspensionReason
@@ -1383,7 +1384,10 @@ class SendPhoneValidationCodeTest:
 
 class ValidatePhoneNumberTest:
     def test_validate_phone_number(self, client, app):
-        user = users_factories.UserFactory(phoneNumber="+33607080900")
+        user = users_factories.UserFactory(
+            phoneNumber="+33607080900",
+            subscriptionState=users_models.SubscriptionState.email_validated,
+        )
         client.with_token(email=user.email)
         token = create_phone_validation_token(user)
 
@@ -1394,6 +1398,7 @@ class ValidatePhoneNumberTest:
         assert response.status_code == 204
         user = User.query.get(user.id)
         assert user.is_phone_validated
+        assert user.is_subscriptionState_phone_validated()
         assert not user.has_beneficiary_role
 
         token = Token.query.filter_by(userId=user.id, type=TokenType.PHONE_VALIDATION).first()
@@ -1403,7 +1408,11 @@ class ValidatePhoneNumberTest:
         assert int(app.redis_client.get(f"phone_validation_attempts_user_{user.id}")) == 2
 
     def test_validate_phone_number_and_become_beneficiary(self, client, app):
-        user = users_factories.UserFactory(phoneNumber="+33607080900", hasCompletedIdCheck=True)
+        user = users_factories.UserFactory(
+            phoneNumber="+33607080900",
+            hasCompletedIdCheck=True,
+            subscriptionState=users_models.SubscriptionState.email_validated,
+        )
 
         beneficiary_import = BeneficiaryImportFactory(beneficiary=user)
         beneficiary_import.setStatus(ImportStatus.CREATED)
@@ -1416,11 +1425,15 @@ class ValidatePhoneNumberTest:
         assert response.status_code == 204
         user = User.query.get(user.id)
         assert user.is_phone_validated
+        assert user.is_subscriptionState_phone_validated()
         assert user.has_beneficiary_role
 
     @override_settings(MAX_PHONE_VALIDATION_ATTEMPTS=1)
     def test_validate_phone_number_too_many_attempts(self, client, app):
-        user = users_factories.UserFactory(phoneNumber="+33607080900")
+        user = users_factories.UserFactory(
+            phoneNumber="+33607080900",
+            subscriptionState=users_models.SubscriptionState.email_validated,
+        )
         client.with_token(email=user.email)
         token = create_phone_validation_token(user)
 
@@ -1433,6 +1446,7 @@ class ValidatePhoneNumberTest:
 
         db.session.refresh(user)
         assert not user.is_phone_validated
+        assert user.is_subscriptionState_phone_validation_ko
 
         attempts_count = int(app.redis_client.get(f"phone_validation_attempts_user_{user.id}"))
         assert attempts_count == 1
@@ -1456,7 +1470,10 @@ class ValidatePhoneNumberTest:
         assert user.beneficiaryFraudResults[0].reason == expected_reason
 
     def test_wrong_code(self, client, app):
-        user = users_factories.UserFactory(phoneNumber="+33607080900")
+        user = users_factories.UserFactory(
+            phoneNumber="+33607080900",
+            subscriptionState=users_models.SubscriptionState.email_validated,
+        )
         client.with_token(email=user.email)
         create_phone_validation_token(user)
 
@@ -1466,10 +1483,14 @@ class ValidatePhoneNumberTest:
         assert response.json["code"] == "INVALID_VALIDATION_CODE"
 
         assert not User.query.get(user.id).is_phone_validated
+        assert user.is_subscriptionState_phone_validation_ko
         assert Token.query.filter_by(userId=user.id, type=TokenType.PHONE_VALIDATION).first()
 
     def test_expired_code(self, client, app):
-        user = users_factories.UserFactory(phoneNumber="+33607080900")
+        user = users_factories.UserFactory(
+            phoneNumber="+33607080900",
+            subscriptionState=users_models.SubscriptionState.email_validated,
+        )
         token = create_phone_validation_token(user)
 
         with freeze_time(datetime.now() + timedelta(minutes=20)):
@@ -1480,11 +1501,15 @@ class ValidatePhoneNumberTest:
         assert response.json["code"] == "EXPIRED_VALIDATION_CODE"
 
         assert not User.query.get(user.id).is_phone_validated
+        assert user.is_subscriptionState_phone_validation_ko
         assert Token.query.filter_by(userId=user.id, type=TokenType.PHONE_VALIDATION).first()
 
     @override_settings(BLACKLISTED_SMS_RECIPIENTS={"+33607080900"})
     def test_blocked_phone_number(self, client, app):
-        user = users_factories.UserFactory(phoneNumber="+33607080900")
+        user = users_factories.UserFactory(
+            phoneNumber="+33607080900",
+            subscriptionState=users_models.SubscriptionState.email_validated,
+        )
         token = create_phone_validation_token(user)
 
         client.with_token(email=user.email)
@@ -1494,10 +1519,14 @@ class ValidatePhoneNumberTest:
         assert response.json["code"] == "INVALID_PHONE_NUMBER"
 
         assert not User.query.get(user.id).is_phone_validated
+        assert user.is_subscriptionState_phone_validation_ko
         assert Token.query.filter_by(userId=user.id, type=TokenType.PHONE_VALIDATION).first()
 
     def test_validate_phone_number_with_non_french_number(self, client, app):
-        user = users_factories.UserFactory(phoneNumber="+46766123456")
+        user = users_factories.UserFactory(
+            phoneNumber="+46766123456",
+            subscriptionState=users_models.SubscriptionState.email_validated,
+        )
         token = create_phone_validation_token(user)
 
         client.with_token(email=user.email)
@@ -1507,11 +1536,14 @@ class ValidatePhoneNumberTest:
         assert response.json["code"] == "INVALID_PHONE_NUMBER"
 
         assert not User.query.get(user.id).is_phone_validated
+        assert user.is_subscriptionState_phone_validation_ko
         assert Token.query.filter_by(userId=user.id, type=TokenType.PHONE_VALIDATION).first()
 
     def test_validate_phone_number_with_already_validated_phone(self, client, app):
         users_factories.UserFactory(
-            phoneValidationStatus=PhoneValidationStatusType.VALIDATED, phoneNumber="+33607080900"
+            phoneValidationStatus=PhoneValidationStatusType.VALIDATED,
+            phoneNumber="+33607080900",
+            subscriptionState=users_models.SubscriptionState.email_validated,
         )
         user = users_factories.UserFactory(phoneNumber="+33607080900")
         client.with_token(email=user.email)
@@ -1523,6 +1555,7 @@ class ValidatePhoneNumberTest:
         assert response.status_code == 400
         user = User.query.get(user.id)
         assert not user.is_phone_validated
+        assert user.is_subscriptionState_phone_validation_ko
 
         token = Token.query.filter_by(userId=user.id, type=TokenType.PHONE_VALIDATION).first()
         assert not token
@@ -1797,7 +1830,7 @@ class ProfilingFraudScoreTest:
     )
     @override_settings(USER_PROFILING_URL=USER_PROFILING_URL)
     def test_profiling_fraud_score_call(self, client, requests_mock, session_id_key, session_id_value):
-        user = users_factories.UserFactory()
+        user = users_factories.UserFactory(subscriptionState=users_models.SubscriptionState.phone_validated)
         matcher = requests_mock.register_uri(
             "POST",
             settings.USER_PROFILING_URL,
@@ -1811,10 +1844,11 @@ class ProfilingFraudScoreTest:
         )
         assert response.status_code == 204
         assert matcher.call_count == 1
+        assert user.is_subscriptionState_user_profiling_validated()
 
     @override_settings(USER_PROFILING_URL=USER_PROFILING_URL)
     def test_profiling_fraud_score_call_error(self, client, requests_mock, caplog):
-        user = users_factories.UserFactory()
+        user = users_factories.UserFactory(subscriptionState=users_models.SubscriptionState.phone_validated)
         matcher = requests_mock.register_uri(
             "POST",
             settings.USER_PROFILING_URL,
@@ -1833,7 +1867,9 @@ class ProfilingFraudScoreTest:
 
     @override_settings(USER_PROFILING_URL=USER_PROFILING_URL)
     def test_profiling_fraud_score_user_without_birth_date(self, client, requests_mock, caplog):
-        user = users_factories.UserFactory(dateOfBirth=None)
+        user = users_factories.UserFactory(
+            dateOfBirth=None, subscriptionState=users_models.SubscriptionState.phone_validated
+        )
         matcher = requests_mock.register_uri(
             "POST",
             settings.USER_PROFILING_URL,
@@ -1859,7 +1895,7 @@ class ProfilingFraudScoreTest:
     @pytest.mark.parametrize("session_id_value", ["gdavmoioeuboaobç!p'è", "", "a" * 150])
     @override_settings(USER_PROFILING_URL=USER_PROFILING_URL)
     def test_profiling_session_id_invalid(self, client, requests_mock, session_id_value):
-        user = users_factories.UserFactory()
+        user = users_factories.UserFactory(subscriptionState=users_models.SubscriptionState.phone_validated)
         matcher = requests_mock.register_uri(
             "POST",
             settings.USER_PROFILING_URL,
@@ -1882,7 +1918,7 @@ class ProfilingFraudScoreTest:
         ),
     )
     def test_fraud_result_on_risky_user_profiling(self, client, requests_mock, risk_rating):
-        user = users_factories.UserFactory()
+        user = users_factories.UserFactory(subscriptionState=users_models.SubscriptionState.phone_validated)
         session_id = "8663ac09-db2a-46a1-9ccd-49a07d5cd7ae"
         payload = fraud_factories.UserProfilingFraudDataFactory(risk_rating=risk_rating).dict()
         payload["event_datetime"] = payload["event_datetime"].isoformat()  # because datetime is not json serializable
@@ -1905,6 +1941,7 @@ class ProfilingFraudScoreTest:
         assert len(user.subscriptionMessages) == 1
         sub_message = user.subscriptionMessages[0]
         assert sub_message.userMessage == "Ton inscription n'a pas pu aboutir."
+        assert user.is_subscriptionState_user_profiling_ko()
 
     @override_settings(USER_PROFILING_URL=USER_PROFILING_URL)
     @pytest.mark.parametrize(
@@ -1916,7 +1953,7 @@ class ProfilingFraudScoreTest:
         ),
     )
     def test_no_fraud_result_on_safe_user_profiling(self, client, requests_mock, risk_rating):
-        user = users_factories.UserFactory()
+        user = users_factories.UserFactory(subscriptionState=users_models.SubscriptionState.phone_validated)
         payload = fraud_factories.UserProfilingFraudDataFactory(risk_rating=risk_rating).dict()
         payload["event_datetime"] = payload["event_datetime"].isoformat()  # because datetime is not json serializable
         payload["risk_rating"] = payload["risk_rating"].value  # because Enum is not json serializable
@@ -1936,6 +1973,7 @@ class ProfilingFraudScoreTest:
             fraud_models.BeneficiaryFraudResult.query.filter(fraud_models.BeneficiaryFraudResult.user == user).count()
             == 0
         )
+        assert user.is_subscriptionState_user_profiling_validated()
 
 
 class ProfilingSessionIdTest:
