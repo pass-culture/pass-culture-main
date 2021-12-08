@@ -17,8 +17,7 @@ class Returns200Test:
         request = TestClient(app.test_client()).get("/users/token/" + token)
 
         # then
-        assert request.status_code == 200
-        assert request.json == {}
+        assert request.status_code == 204
 
 
 class Returns404Test:
