@@ -63,8 +63,8 @@ const renderReimbursements = (store, props) => {
     },
     filters: {
       venue: screen.queryByLabelText('Lieu'),
-      periodStart: screen.queryByLabelText('début de la période'),
-      periodEnd: screen.queryByLabelText('fin de la période'),
+      periodStart: screen.queryAllByLabelText('début de la période')[0],
+      periodEnd: screen.queryAllByLabelText('fin de la période')[0],
     },
     buttons: {
       download: screen.queryByRole('button', {
