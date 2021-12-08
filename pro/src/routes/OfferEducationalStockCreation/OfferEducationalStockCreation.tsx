@@ -4,11 +4,9 @@ import { useParams } from 'react-router-dom'
 
 import useNotification from 'components/hooks/useNotification'
 import Spinner from 'components/layout/Spinner'
-import {
-  Offer,
-  OfferEducationalStockFormValues,
-} from 'core/OfferEducationalStock/types'
-import * as pcapi from 'repository/pcapi/pcapi'
+import getOfferAdapter from 'core/OfferEducational/adapters/getOfferAdapter'
+import { OfferEducationalStockFormValues } from 'core/OfferEducationalStock/types'
+import { Offer } from 'custom_types/offer'
 import OfferEducationalStockScreen from 'screens/OfferEducationalStock'
 
 import postEducationalStockAdapter from './adapters/postEducationalStock'
@@ -44,11 +42,18 @@ const OfferEducationalStockCreation = (): JSX.Element => {
   }
 
   useEffect(() => {
-    pcapi.loadOffer(offerId).then((offer: Offer) => {
-      setOffer(offer)
-      setIsReady(true)
-    })
-  }, [offerId])
+    const loadOffer = async () => {
+      const { payload, message, isOk } = await getOfferAdapter(offerId)
+      if (isOk) {
+        setOffer(payload.offer)
+        setIsReady(true)
+        return
+      }
+      notify.error(message)
+    }
+
+    loadOffer()
+  }, [offerId, notify])
 
   return offer && isReady ? (
     <OfferEducationalStockScreen

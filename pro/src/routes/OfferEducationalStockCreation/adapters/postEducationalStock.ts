@@ -1,8 +1,6 @@
 import { hasStatusCode } from 'core/OfferEducational/utils'
-import {
-  Offer,
-  OfferEducationalStockFormValues,
-} from 'core/OfferEducationalStock/types'
+import { OfferEducationalStockFormValues } from 'core/OfferEducationalStock/types'
+import { Offer } from 'custom_types/offer'
 import * as pcapi from 'repository/pcapi/pcapi'
 
 import { StockCreationPayload } from '../types'

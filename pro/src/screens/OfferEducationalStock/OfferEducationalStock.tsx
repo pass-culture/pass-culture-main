@@ -2,14 +2,11 @@ import { useFormik, FormikProvider } from 'formik'
 import React from 'react'
 
 import Banner from 'components/layout/Banner/Banner'
-import {
-  Offer,
-  OfferEducationalStockFormValues,
-} from 'core/OfferEducationalStock/types'
+import { OfferEducationalStockFormValues } from 'core/OfferEducationalStock/types'
+import { Offer, OfferStatus } from 'custom_types/offer'
 import FormLayout from 'new_components/FormLayout'
 import { SubmitButton } from 'ui-kit'
 
-import { OfferStatus } from './constants/offerStatus'
 import FormStock from './FormStock'
 import styles from './OfferEducationalStock.module.scss'
 import { isOfferDisabled } from './utils'
