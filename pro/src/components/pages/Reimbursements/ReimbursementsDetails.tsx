@@ -1,10 +1,7 @@
-import isEqual from 'lodash.isequal'
 import React, { useCallback, useEffect, useState } from 'react'
 
 import CsvTableButtonContainer from 'components/layout/CsvTableButton/CsvTableButtonContainer'
 import DownloadButtonContainer from 'components/layout/DownloadButton/DownloadButtonContainer'
-import PeriodSelector from 'components/layout/inputs/PeriodSelector/PeriodSelector'
-import Select from 'components/layout/inputs/Select'
 import { API_URL } from 'utils/config'
 import {
   FORMAT_ISO_DATE_ONLY,
@@ -12,18 +9,14 @@ import {
   getToday,
 } from 'utils/date'
 
+import ReimbursementsSectionHeader from './ReimbursementsSectionHeader'
+
 type venuesOptionsType = [
   {
     id: string
     displayName: string
   }
 ]
-
-type filtersType = {
-  venue: string
-  periodStart: Date
-  periodEnd: Date
-}
 
 interface IReimbursementsDetailsProps {
   isCurrentUserAdmin: boolean
@@ -64,10 +57,6 @@ const ReimbursementsDetails = ({
   const shouldDisableButtons =
     !isPeriodFilterSelected || requireVenueFilterForAdmin
 
-  function resetFilters() {
-    setFilters(INITIAL_FILTERS)
-  }
-
   const buildCsvUrlWithParameters = useCallback(
     (
       selectedVenue: string,
@@ -99,37 +88,6 @@ const ReimbursementsDetails = ({
     [INITIAL_CSV_URL]
   )
 
-  const setVenueFilter = useCallback(
-    event => {
-      const venueId = event.target.value
-      setFilters((prevFilters: filtersType) => ({
-        ...prevFilters,
-        venue: venueId,
-      }))
-    },
-    [setFilters]
-  )
-
-  const setStartDateFilter = useCallback(
-    startDate => {
-      setFilters((prevFilters: filtersType) => ({
-        ...prevFilters,
-        periodStart: startDate,
-      }))
-    },
-    [setFilters]
-  )
-
-  const setEndDateFilter = useCallback(
-    endDate => {
-      setFilters((prevFilters: filtersType) => ({
-        ...prevFilters,
-        periodEnd: endDate,
-      }))
-    },
-    [setFilters]
-  )
-
   useEffect(() => {
     setCsvUrl(
       buildCsvUrlWithParameters(
@@ -147,62 +105,28 @@ const ReimbursementsDetails = ({
 
   return (
     <>
-      <div className="header">
-        <h2 className="header-title">Affichage des remboursements</h2>
-        <button
-          className="tertiary-button reset-filters"
-          disabled={isEqual(filters, INITIAL_FILTERS)}
-          onClick={resetFilters}
-          type="button"
+      <ReimbursementsSectionHeader
+        filters={filters}
+        headerTitle="Affichage des remboursements"
+        initialFilters={INITIAL_FILTERS}
+        setFilters={setFilters}
+        venuesOptions={venuesOptions}
+      >
+        <DownloadButtonContainer
+          filename="remboursements_pass_culture"
+          href={csvUrl}
+          isDisabled={shouldDisableButtons}
+          mimeType="text/csv"
         >
-          Réinitialiser les filtres
-        </button>
-      </div>
-
-      <div className="filters">
-        <Select
-          defaultOption={{
-            displayName: 'Tous les lieux',
-            id: ALL_VENUES_OPTION_ID,
-          }}
-          handleSelection={setVenueFilter}
-          label="Lieu"
-          name="lieu"
-          options={venuesOptions}
-          selectedValue={selectedVenue}
-        />
-        <PeriodSelector
-          changePeriodBeginningDateValue={setStartDateFilter}
-          changePeriodEndingDateValue={setEndDateFilter}
-          isDisabled={false}
-          label="Période"
-          maxDateEnding={getToday()}
-          periodBeginningDate={selectedPeriodStart}
-          periodEndingDate={selectedPeriodEnd}
-          todayDate={getToday()}
-        />
-      </div>
-
-      <div className="button-group">
-        <span className="button-group-separator" />
-        <div className="button-group-buttons">
-          <DownloadButtonContainer
-            filename="remboursements_pass_culture"
-            href={csvUrl}
-            isDisabled={shouldDisableButtons}
-            mimeType="text/csv"
-          >
-            Télécharger
-          </DownloadButtonContainer>
-          <CsvTableButtonContainer
-            href={csvUrl}
-            isDisabled={shouldDisableButtons}
-          >
-            Afficher
-          </CsvTableButtonContainer>
-        </div>
-      </div>
-
+          Télécharger
+        </DownloadButtonContainer>
+        <CsvTableButtonContainer
+          href={csvUrl}
+          isDisabled={shouldDisableButtons}
+        >
+          Afficher
+        </CsvTableButtonContainer>
+      </ReimbursementsSectionHeader>
       <p className="format-mention">
         Le fichier est au format CSV, compatible avec tous les tableurs et
         éditeurs de texte.
