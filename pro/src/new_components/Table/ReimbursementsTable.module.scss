@@ -1,0 +1,42 @@
+table.reimbursement-table {
+  display: flex;
+  flex-direction: column;
+
+  tr {
+    align-items: center;
+    display: flex;
+    justify-content: flex-start;
+
+    th {
+      @include caption();
+
+      align-items: center;
+      cursor: pointer;
+      display: flex;
+
+      img {
+        height: rem(20px);
+        margin-left: rem(10px);
+      }
+    }
+
+    td,
+    th {
+      padding: rem(20px) rem(16px);
+      width: rem(110px);
+    }
+
+    th:nth-child(2) {
+      width: rem(220px);
+    }
+
+    th:nth-child(4) {
+      justify-content: flex-end;
+      margin-left: rem(20px);
+    }
+  }
+
+  tbody tr:nth-child(n+1):nth-child(odd) {
+    background-color: #f1f1f4;
+  }
+}
