@@ -9,11 +9,10 @@ import {
   DEFAULT_EAC_FORM_VALUES,
   IOfferEducationalFormValues,
   Mode,
-} from 'core/OfferEducational'
-import {
+  setInitialFormValues,
   getCategoriesAdapter,
   getOfferersAdapter,
-} from 'core/OfferEducational/adapters'
+} from 'core/OfferEducational'
 import OfferEducationalScreen from 'screens/OfferEducational'
 import { IOfferEducationalProps } from 'screens/OfferEducational/OfferEducational'
 import { Title } from 'ui-kit'
@@ -21,7 +20,6 @@ import { Title } from 'ui-kit'
 import { getIsOffererEligibleToEducationalOfferAdapter } from './adapters'
 import postOfferAdapter from './adapters/postOfferAdapter'
 import style from './OfferEductaionalCreation.module.scss'
-import setInitialFormValues from './utils/setInitialFormValues'
 
 type AsyncScreenProps = Pick<
   IOfferEducationalProps,
