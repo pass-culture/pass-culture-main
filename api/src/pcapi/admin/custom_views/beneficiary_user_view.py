@@ -177,7 +177,7 @@ class BeneficiaryUserView(ResendValidationEmailMixin, SuspensionMixin, BaseAdmin
     ]
 
     column_labels = dict(
-        comment="Commentaire équipe anti-fraude",
+        comment="Commentaire",
         dateOfBirth="Date de naissance",
         departementCode="Département",
         deposit_type="Type du portefeuille",
