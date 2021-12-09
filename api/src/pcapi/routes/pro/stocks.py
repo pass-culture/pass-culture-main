@@ -3,11 +3,13 @@ from typing import List
 from flask_login import current_user
 from flask_login import login_required
 
+from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import Venue
 import pcapi.core.offerers.repository
 from pcapi.core.offers import exceptions as offers_exceptions
+from pcapi.core.offers import repository as offers_repository
 import pcapi.core.offers.api as offers_api
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
@@ -15,6 +17,7 @@ from pcapi.core.offers.repository import get_stocks_for_offer
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization.stock_serialize import EducationalStockCreationBodyModel
+from pcapi.routes.serialization.stock_serialize import EducationalStockEditionBodyModel
 from pcapi.routes.serialization.stock_serialize import StockIdResponseModel
 from pcapi.routes.serialization.stock_serialize import StockIdsResponseModel
 from pcapi.routes.serialization.stock_serialize import StockResponseModel
@@ -133,5 +136,44 @@ def create_educational_stock(body: EducationalStockCreationBodyModel) -> StockId
         raise ApiErrors({"offerer": ["Aucune structure trouvée à partir de cette offre"]}, status_code=404)
     check_user_has_access_to_offerer(current_user, offerer.id)
 
-        stock = offers_api.create_educational_stock(body, current_user)
+    stock = offers_api.create_educational_stock(body, current_user)
     return StockIdResponseModel.from_orm(stock)
+
+
+@private_api.route("/stocks/educational/<stock_id>", methods=["PATCH"])
+@login_required
+@spectree_serialize(on_success_status=204, on_error_statuses=[400, 401, 404, 422])
+def edit_educational_stock(stock_id: str, body: EducationalStockEditionBodyModel) -> None:
+    try:
+        stock = offers_repository.get_non_deleted_stock_by_id(dehumanize(stock_id))
+        offerer = pcapi.core.offerers.repository.get_by_offer_id(stock.offerId)
+    except offers_exceptions.StockDoesNotExist:
+        raise ApiErrors({"educationalStock": ["Le stock n'existe pas"]}, status_code=404)
+    except offerers_exceptions.CannotFindOffererForOfferId:
+        raise ApiErrors({"offerer": ["Aucune structure trouvée à partir de cette offre"]}, status_code=404)
+    check_user_has_access_to_offerer(current_user, offerer.id)
+
+    try:
+        offers_api.edit_educational_stock(stock, body.dict(exclude_unset=True))
+    except educational_exceptions.OfferIsNotEducational:
+        raise ApiErrors(
+            {"educationalStock": ["L'offre associée au stock n'est pas une offre éducationnelle"]}, status_code=422
+        )
+    except offers_exceptions.BookingLimitDatetimeTooLate:
+        raise ApiErrors(
+            {"educationalStock": ["La date limite de confirmation ne peut être fixée après la date de l évènement"]},
+            status_code=400,
+        )
+    except (
+        offers_exceptions.EducationalOfferStockBookedAndBookingConfirmed,
+        offers_exceptions.EducationalOfferStockBookedAndBookingReimbursed,
+        offers_exceptions.EducationalOfferStockBookedAndBookingUsed,
+    ):
+        raise ApiErrors(
+            {
+                "educationalStock": [
+                    "Ce stock fait l'objet d'une réservation dont le statut ne permet pas sa modification"
+                ]
+            },
+            status_code=400,
+        )

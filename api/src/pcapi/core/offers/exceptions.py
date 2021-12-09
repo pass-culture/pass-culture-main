@@ -101,3 +101,24 @@ class ReportMalformed(OfferReportError):
 
 
 class EducationalOfferStockBookedAndBookingUsed(Exception):
+    pass
+
+
+class EducationalOfferStockBookedAndBookingConfirmed(Exception):
+    pass
+
+
+class EducationalOfferStockBookedAndBookingReimbursed(Exception):
+    pass
+
+
+class CannotModifiedPastEventStock(Exception):
+    pass
+
+
+class CannotUpdateStockRelatedToNonApprovedOffer(Exception):
+    pass
+
+
+class BookingLimitDatetimeTooLate(Exception):
+    pass
