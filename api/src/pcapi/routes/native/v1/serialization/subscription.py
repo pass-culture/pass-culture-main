@@ -33,7 +33,7 @@ class ProfileUpdateRequest(BaseModel):
 
 class SchoolTypeResponseModel(BaseModel):
     id: school_types.SCHOOL_TYPE_ID_ENUM
-    label: school_types.SCHOOL_TYPE_LABEL_ENUM
+    label: str
 
     class Config:
         alias_generator = to_camel
@@ -43,7 +43,7 @@ class SchoolTypeResponseModel(BaseModel):
 
 class ActivityResponseModel(BaseModel):
     id: school_types.ACTIVITY_ID_ENUM
-    label: school_types.ACTIVITY_LABEL_ENUM
+    label: str
     associated_school_types_ids: Optional[list[school_types.SCHOOL_TYPE_ID_ENUM]]
 
     class Config:
