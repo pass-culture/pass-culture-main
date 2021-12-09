@@ -45,6 +45,7 @@ from pcapi.core.users.models import PhoneValidationStatusType
 from pcapi.core.users.models import Token
 from pcapi.core.users.models import TokenType
 from pcapi.core.users.models import User
+from pcapi.core.users.models import UserEmailHistory
 from pcapi.core.users.models import VOID_PUBLIC_NAME
 from pcapi.core.users.repository import does_validated_phone_exist
 from pcapi.domain import user_emails as old_user_emails
@@ -452,14 +453,21 @@ def bulk_unsuspend_account(user_ids: list[int], actor: User) -> None:
     )
 
 
-def change_user_email(current_email: str, new_email: str) -> None:
+def change_user_email(current_email: str, new_email: str, device_id: typing.Optional[str] = None) -> None:
     current_user = user_queries.find_user_by_email(current_email)
     if not current_user:
         raise exceptions.UserDoesNotExist()
 
+    email_history = UserEmailHistory.build_validation(
+        user=current_user,
+        old_email=current_email,
+        new_email=new_email,
+        device_id=device_id,
+    )
+
     try:
         current_user.email = new_email
-        repository.save(current_user)
+        repository.save(current_user, email_history)
     except ApiErrors as error:
         # The caller might not want to inform the end client that the
         # email address exists. To do so, raise a specific error and

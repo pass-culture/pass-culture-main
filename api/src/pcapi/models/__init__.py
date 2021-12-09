@@ -7,7 +7,7 @@ import pydantic.json
 from pcapi import settings
 
 
-def install_models():
+def install_models() -> None:
     """Let SQLAlchemy know about our database models."""
     # pylint: disable=unused-import
     import pcapi.core.bookings.models

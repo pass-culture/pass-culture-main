@@ -10,6 +10,8 @@ from pcapi.core.users import constants
 from pcapi.core.users import exceptions
 from pcapi.core.users import repository as users_repository
 from pcapi.core.users.models import User
+from pcapi.core.users.models import UserEmailHistory
+from pcapi.repository import repository
 from pcapi.repository import user_queries
 
 from .send import send_user_emails_for_email_change
@@ -18,7 +20,7 @@ from .send import send_user_emails_for_email_change
 logger = logging.getLogger(__name__)
 
 
-def request_email_update(user: User, email: str, password: str) -> None:
+def request_email_update(user: User, email: str, password: str, device_id: typing.Optional[str] = None) -> None:
     check_email_update_attempts(user)
 
     expiration_date = generate_token_expiration_date()
@@ -26,6 +28,14 @@ def request_email_update(user: User, email: str, password: str) -> None:
 
     check_email_address_does_not_exist(email)
     check_user_password(user, password)
+
+    email_history = UserEmailHistory.build_update_request(
+        user=user,
+        old_email=user.email,
+        new_email=email,
+        device_id=device_id,
+    )
+    repository.save(email_history)
 
     send_user_emails_for_email_change(user, email, expiration_date)
 
