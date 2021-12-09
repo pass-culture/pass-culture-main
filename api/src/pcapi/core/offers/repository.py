@@ -118,10 +118,9 @@ def get_offers_by_filters(
             .filter(and_(UserOfferer.userId == user_id, UserOfferer.validationToken.is_(None)))
         )
     if offerer_id is not None:
-        venue_alias = aliased(Venue)
-        query = query.join(venue_alias, Offer.venueId == venue_alias.id).filter(
-            venue_alias.managingOffererId == offerer_id
-        )
+        if user_is_admin:
+            query = query.join(Venue)
+        query = query.filter(Venue.managingOffererId == offerer_id)
     if venue_id is not None:
         query = query.filter(Offer.venueId == venue_id)
     if creation_mode is not None:
