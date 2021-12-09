@@ -183,3 +183,54 @@ class Return400Test:
 
         # Then
         assert response.status_code == 400
+
+    def should_not_allow_stock_edition_when_numberOfTickets_has_been_set_to_none(self, app, client):
+        # Given
+        stock = offer_factories.EducationalEventStockFactory()
+        offer_factories.UserOffererFactory(user__email="user@example.com", offerer=stock.offer.venue.managingOfferer)
+
+        # When
+        stock_edition_payload = {
+            "numberOfTickets": None,
+        }
+
+        client.with_session_auth("user@example.com")
+        response = client.patch(f"/stocks/educational/{humanize(stock.id)}", json=stock_edition_payload)
+
+        # Then
+        assert response.status_code == 400
+        assert response.json == {"numberOfTickets": ["Le nombre de places ne peut être nul"]}
+
+    def should_not_allow_stock_edition_when_totalPrice_has_been_set_to_none(self, app, client):
+        # Given
+        stock = offer_factories.EducationalEventStockFactory()
+        offer_factories.UserOffererFactory(user__email="user@example.com", offerer=stock.offer.venue.managingOfferer)
+
+        # When
+        stock_edition_payload = {
+            "totalPrice": None,
+        }
+
+        client.with_session_auth("user@example.com")
+        response = client.patch(f"/stocks/educational/{humanize(stock.id)}", json=stock_edition_payload)
+
+        # Then
+        assert response.status_code == 400
+        assert response.json == {"totalPrice": ["Le prix ne peut être nul"]}
+
+    def should_not_allow_stock_edition_when_beginnningDatetime_has_been_set_to_none(self, app, client):
+        # Given
+        stock = offer_factories.EducationalEventStockFactory()
+        offer_factories.UserOffererFactory(user__email="user@example.com", offerer=stock.offer.venue.managingOfferer)
+
+        # When
+        stock_edition_payload = {
+            "beginningDatetime": None,
+        }
+
+        client.with_session_auth("user@example.com")
+        response = client.patch(f"/stocks/educational/{humanize(stock.id)}", json=stock_edition_payload)
+
+        # Then
+        assert response.status_code == 400
+        assert response.json == {"beginningDatetime": ["La date d’évènement ne peut être nulle"]}
