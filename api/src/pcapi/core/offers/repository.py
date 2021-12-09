@@ -8,7 +8,6 @@ from sqlalchemy import and_
 from sqlalchemy import func
 from sqlalchemy import or_
 from sqlalchemy.orm import Query
-from sqlalchemy.orm import aliased
 from sqlalchemy.orm import joinedload
 from sqlalchemy.orm import load_only
 from sqlalchemy.sql.functions import coalesce
@@ -143,30 +142,31 @@ def get_offers_by_filters(
     if status is not None:
         query = _filter_by_status(query, status)
     if period_beginning_date is not None or period_ending_date is not None:
-        stock_alias = aliased(Stock)
-        venue_alias = aliased(Venue)
-        query = (
-            query.join(stock_alias, Offer.id == stock_alias.offerId)
-            .join(venue_alias, Offer.venueId == venue_alias.id)
-            .filter(stock_alias.isSoftDeleted.is_(False))
+        subquery = (
+            Stock.query.with_entities(Stock.offerId)
+            .distinct(Stock.offerId)
+            .join(Offer)
+            .join(Venue)
+            .filter(Stock.isSoftDeleted.is_(False))
         )
         if period_beginning_date is not None:
-            query = query.filter(
+            subquery = subquery.filter(
                 func.timezone(
-                    venue_alias.timezone,
-                    func.timezone("UTC", stock_alias.beginningDatetime),
+                    Venue.timezone,
+                    func.timezone("UTC", Stock.beginningDatetime),
                 )
                 >= period_beginning_date
             )
         if period_ending_date is not None:
-            query = query.filter(
+            subquery = subquery.filter(
                 func.timezone(
-                    venue_alias.timezone,
-                    func.timezone("UTC", stock_alias.beginningDatetime),
+                    Venue.timezone,
+                    func.timezone("UTC", Stock.beginningDatetime),
                 )
                 <= period_ending_date
             )
-
+        q2 = subquery.subquery()
+        query = query.join(q2, q2.c.offerId == Offer.id)
     return query
 
 
