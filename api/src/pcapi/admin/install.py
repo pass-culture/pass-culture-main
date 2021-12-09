@@ -33,11 +33,11 @@ import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.models as offers_models
 from pcapi.core.offers.models import OfferValidationConfig
 from pcapi.core.payments.models import CustomReimbursementRule
+from pcapi.core.providers.models import AllocinePivot
 from pcapi.core.providers.models import VenueProvider
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.users.models import User
 from pcapi.core.users.models import UserEmailHistory
-from pcapi.models.allocine_pivot import AllocinePivot
 from pcapi.models.beneficiary_import import BeneficiaryImport
 from pcapi.models.criterion import Criterion
 from pcapi.models.feature import Feature

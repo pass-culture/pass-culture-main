@@ -3,6 +3,8 @@ from typing import Optional
 
 from sqlalchemy.orm import query
 
+from pcapi.core.offerers.models import Venue
+from pcapi.core.providers.models import AllocinePivot
 from pcapi.core.providers.models import Provider
 from pcapi.core.providers.models import VenueProvider
 
@@ -43,3 +45,8 @@ def get_providers_enabled_for_pro_excluding_specific_provider(allocine_local_cla
         .order_by(Provider.name)
         .all()
     )
+
+
+def has_allocine_pivot_for_venue(venue: Venue) -> bool:
+    allocine_link = AllocinePivot.query.filter_by(siret=venue.siret).one_or_none()
+    return allocine_link is not None

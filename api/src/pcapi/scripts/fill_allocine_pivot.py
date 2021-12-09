@@ -5,9 +5,9 @@ import csv
 
 import sqlalchemy.exc
 
+from pcapi.core.providers.models import AllocinePivot
 from pcapi.flask_app import app
 from pcapi.models import db
-from pcapi.models.allocine_pivot import AllocinePivot
 
 
 def read_allocine_csv(file_path: str) -> list[tuple]:

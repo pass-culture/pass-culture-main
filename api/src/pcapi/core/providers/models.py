@@ -190,3 +190,11 @@ class StockDetail:
     stocks_provider_reference: str
     available_quantity: int
     price: Optional[float]
+
+
+class AllocinePivot(PcObject, Model):
+    siret = Column(String(14), nullable=False, unique=True)
+
+    theaterId = Column(String(20), nullable=False, unique=True)
+
+    internalId = Column(Text, nullable=False, unique=True)
