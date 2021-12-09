@@ -51,6 +51,7 @@ from pcapi.core.users.factories import UserFactory
 from pcapi.core.users.models import Credit
 from pcapi.core.users.models import DomainsCredit
 from pcapi.core.users.models import EligibilityType
+from pcapi.core.users.models import EmailHistoryEventTypeEnum
 from pcapi.core.users.models import PhoneValidationStatusType
 from pcapi.core.users.models import Token
 from pcapi.core.users.models import TokenType
@@ -340,17 +341,27 @@ class UnsuspendAccountTest:
 class ChangeUserEmailTest:
     def test_change_user_email(self):
         # Given
-        user = users_factories.UserFactory(email="oldemail@mail.com", firstName="UniqueNameForEmailChangeTest")
+        old_email = "oldemail@mail.com"
+        user = users_factories.UserFactory(email=old_email, firstName="UniqueNameForEmailChangeTest")
         users_factories.UserSessionFactory(user=user)
+        new_email = "newemail@mail.com"
 
         # When
-        users_api.change_user_email("oldemail@mail.com", "newemail@mail.com")
+        users_api.change_user_email(old_email, new_email)
 
         # Then
-        user = User.query.get(user.id)
-        assert user.email == "newemail@mail.com"
-        assert User.query.filter_by(email="oldemail@mail.com").first() is None
-        assert UserSession.query.filter_by(userId=user.id).first() is None
+        reloaded_user = User.query.get(user.id)
+        assert reloaded_user.email == new_email
+        assert User.query.filter_by(email=old_email).first() is None
+        assert UserSession.query.filter_by(userId=reloaded_user.id).first() is None
+
+        assert len(reloaded_user.email_history) == 1
+
+        history = reloaded_user.email_history[0]
+        assert history.oldEmail == old_email
+        assert history.newEmail == new_email
+        assert history.eventType == EmailHistoryEventTypeEnum.VALIDATION
+        assert history.id is not None
 
     def test_change_user_email_new_email_already_existing(self):
         # Given
@@ -379,6 +390,21 @@ class ChangeUserEmailTest:
 
         new_user = User.query.filter_by(email="newemail@mail.com").first()
         assert new_user is None
+
+    def test_no_history_on_error(self):
+        # Given
+        old_email = "oldemail@mail.com"
+        user = users_factories.UserFactory(email=old_email, firstName="UniqueNameForEmailChangeTest")
+        users_factories.UserSessionFactory(user=user)
+        new_email = "newemail@mail.com"
+
+        # When
+        with pytest.raises(users_exceptions.UserDoesNotExist):
+            users_api.change_user_email(old_email + "_error", new_email)
+
+        # Then
+        reloaded_user = User.query.get(user.id)
+        assert not reloaded_user.email_history
 
 
 class CreateBeneficiaryTest:

@@ -570,3 +570,75 @@ class Favorite(PcObject, Model):
             name="unique_favorite",
         ),
     )
+
+
+def split_email(email: str) -> tuple[str, str]:
+    user_email, domain_email = email.split("@")
+    return user_email, domain_email
+
+
+class EmailHistoryEventTypeEnum(enum.Enum):
+    UPDATE_REQUEST = "UPDATE_REQUEST"
+    VALIDATION = "VALIDATION"
+
+
+class UserEmailHistory(PcObject, Model):
+    __tablename__ = "user_email_history"
+
+    id = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
+
+    userId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id", ondelete="SET NULL"), index=True, nullable=True)
+    user = orm.relationship("User", foreign_keys=[userId], backref=orm.backref("email_history", passive_deletes=True))
+
+    oldUserEmail = sa.Column(sa.String(120), nullable=False, unique=False, index=True)
+    oldDomainEmail = sa.Column(sa.String(120), nullable=False, unique=False, index=True)
+
+    newUserEmail = sa.Column(sa.String(120), nullable=False, unique=False, index=True)
+    newDomainEmail = sa.Column(sa.String(120), nullable=False, unique=False, index=True)
+
+    creationDate = sa.Column(sa.DateTime, nullable=False, server_default=sa.func.now())
+
+    eventType = sa.Column(sa.Enum(EmailHistoryEventTypeEnum), nullable=False)
+
+    deviceId = sa.Column(sa.String, nullable=True)
+
+    @classmethod
+    def _build(
+        cls,
+        user: User,
+        old_email: str,
+        new_email: str,
+        device_id: Optional[str],
+        event_type: EmailHistoryEventTypeEnum,
+    ) -> "UserEmailHistory":
+        old_user_email, old_domain_email = split_email(old_email)
+        new_user_email, new_domain_email = split_email(new_email)
+        return cls(
+            user=user,
+            oldUserEmail=old_user_email,
+            oldDomainEmail=old_domain_email,
+            newUserEmail=new_user_email,
+            newDomainEmail=new_domain_email,
+            deviceId=device_id,
+            eventType=event_type,
+        )
+
+    @classmethod
+    def build_update_request(
+        cls, user: User, old_email: str, new_email: str, device_id: Optional[str]
+    ) -> "UserEmailHistory":
+        return cls._build(user, old_email, new_email, device_id, event_type=EmailHistoryEventTypeEnum.UPDATE_REQUEST)
+
+    @classmethod
+    def build_validation(
+        cls, user: User, old_email: str, new_email: str, device_id: Optional[str]
+    ) -> "UserEmailHistory":
+        return cls._build(user, old_email, new_email, device_id, event_type=EmailHistoryEventTypeEnum.VALIDATION)
+
+    @property
+    def oldEmail(self) -> str:
+        return f"{self.oldUserEmail}@{self.oldDomainEmail}"
+
+    @property
+    def newEmail(self) -> str:
+        return f"{self.newUserEmail}@{self.newDomainEmail}"
