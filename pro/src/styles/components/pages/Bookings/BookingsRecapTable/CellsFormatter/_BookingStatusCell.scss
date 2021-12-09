@@ -16,6 +16,11 @@
     background-color: $secondary;
   }
 
+  .booking-status-pending {
+    background-color: $booking-pending-status;
+    color: $black;
+  }
+
   .booking-status-validated {
     background-color: $accent;
   }
@@ -105,6 +110,10 @@
 
     &.bs-history-booked {
       background-color: $secondary;
+    }
+
+    &.bs-history-pending {
+      background-color: $booking-pending-status;
     }
 
     &.bs-history-cancelled {
