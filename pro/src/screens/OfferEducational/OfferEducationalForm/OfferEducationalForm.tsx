@@ -48,6 +48,7 @@ const OfferEducationalForm = ({
     const selectedOfferer = userOfferers.find(
       offerer => offerer.id === values.offererId
     )
+
     if (selectedOfferer) {
       const checkOffererEligibilityToEducationalOffer = async () => {
         setIsLoading(true)
