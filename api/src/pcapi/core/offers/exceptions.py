@@ -100,9 +100,4 @@ class ReportMalformed(OfferReportError):
     code = "REPORT_MALFORMED"
 
 
-class BookingLimitDatetimeTooLate(ClientError):
-    def __init__(self):
-        super().__init__(
-            "bookingLimitDatetime",
-            "La date limite de réservation pour cette offre est postérieure à la date de début de l'évènement",
-        )
+class EducationalOfferStockBookedAndBookingUsed(Exception):

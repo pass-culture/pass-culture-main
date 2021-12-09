@@ -133,8 +133,5 @@ def create_educational_stock(body: EducationalStockCreationBodyModel) -> StockId
         raise ApiErrors({"offerer": ["Aucune structure trouvée à partir de cette offre"]}, status_code=404)
     check_user_has_access_to_offerer(current_user, offerer.id)
 
-    try:
         stock = offers_api.create_educational_stock(body, current_user)
-    except offers_exceptions.BookingLimitDatetimeTooLate as error:
-        raise ApiErrors(error.errors, status_code=400)
     return StockIdResponseModel.from_orm(stock)
