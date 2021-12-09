@@ -11,7 +11,7 @@ const FAILING_RESPONSE = {
   },
 }
 
-const getOfferAdapter: GetOfferAdapter = async offerId => {
+export const getOfferAdapter: GetOfferAdapter = async offerId => {
   try {
     const offer = (await pcapi.loadOffer(offerId)) as Offer
 
@@ -26,5 +26,3 @@ const getOfferAdapter: GetOfferAdapter = async offerId => {
     return FAILING_RESPONSE
   }
 }
-
-export default getOfferAdapter

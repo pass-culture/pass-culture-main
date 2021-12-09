@@ -10,15 +10,15 @@ import {
   IOfferEducationalFormValues,
   Mode,
 } from 'core/OfferEducational'
+import {
+  getCategoriesAdapter,
+  getOfferersAdapter,
+} from 'core/OfferEducational/adapters'
 import OfferEducationalScreen from 'screens/OfferEducational'
 import { IOfferEducationalProps } from 'screens/OfferEducational/OfferEducational'
 import { Title } from 'ui-kit'
 
-import {
-  getIsOffererEligibleToEducationalOfferAdapter,
-  getCategoriesAdapter,
-  getOfferersAdapter,
-} from './adapters'
+import { getIsOffererEligibleToEducationalOfferAdapter } from './adapters'
 import postOfferAdapter from './adapters/postOfferAdapter'
 import style from './OfferEductaionalCreation.module.scss'
 import setInitialFormValues from './utils/setInitialFormValues'
