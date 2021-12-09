@@ -529,9 +529,7 @@ def create_educational_stock(stock_data: EducationalStockCreationBodyModel, user
     if not offer.isEducational:
         raise educational_exceptions.OfferIsNotEducational(offer_id)
     validation.check_validation_status(offer)
-    if booking_limit_datetime is not None:
-        validation.check_booking_limit_datetime(beginning, booking_limit_datetime)
-    else:
+    if booking_limit_datetime is None:
         booking_limit_datetime = beginning
 
     stock = Stock(
