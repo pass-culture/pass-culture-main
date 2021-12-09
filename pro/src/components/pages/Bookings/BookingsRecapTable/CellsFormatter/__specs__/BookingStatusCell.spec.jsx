@@ -63,6 +63,43 @@ describe('bookings | bookingsStatusCell', () => {
     expect(title).toBeInTheDocument()
   })
 
+  it('should display the pending status label', () => {
+    // Given
+    const props = {
+      bookingRecapInfo: {
+        original: {
+          stock: {
+            event_beginning_datetime: '2020-06-05T16:31:59.102163+02:00',
+            offer_name: 'Matrix',
+            type: 'event',
+          },
+          booking_is_duo: true,
+          beneficiary: {
+            email: 'loulou.duck@example.com',
+            firstname: 'Loulou',
+            lastname: 'Duck',
+          },
+          booking_date: '2020-01-04T20:31:12+01:00',
+          booking_token: '5U7M6U',
+          booking_status: 'pending',
+          booking_status_history: [
+            {
+              status: 'pending',
+              date: '2020-01-04T20:31:12+01:00',
+            },
+          ],
+        },
+      },
+    }
+
+    // When
+    renderBookingStatusCell(props)
+
+    // Then
+    const title = screen.getByText('pré-réservé', { selector: 'span' })
+    expect(title).toBeInTheDocument()
+  })
+
   describe('tooltip', () => {
     it('should display the offer title and history title and amount when it is not free', () => {
       // Given

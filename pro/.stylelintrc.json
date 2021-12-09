@@ -33,7 +33,8 @@
           "#ff8097": "$notification-error",
           "#b3e7ff": "$notification-info",
           "#b8e986": "$notification-success",
-          "#ffd580": "$notification-warning"
+          "#ffd580": "$notification-warning",
+          "#f9c030": "$booking-pending-status"
         }
       }
     ],

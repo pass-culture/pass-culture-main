@@ -10,6 +10,7 @@ export const BOOKING_STATUS = {
   CONFIRMED: 'confirmed',
   REIMBURSED: 'reimbursed',
   VALIDATED: 'validated',
+  PENDING: 'pending',
 }
 
 const BOOKING_STATUS_DISPLAY_INFORMATIONS = [
@@ -40,6 +41,15 @@ const BOOKING_STATUS_DISPLAY_INFORMATIONS = [
     statusClassName: 'booking-status-booked',
     dateFormat: FORMAT_DD_MM_YYYY_HH_mm,
     svgIconFilename: 'ico-status-booked',
+  },
+  {
+    id: BOOKING_STATUS.PENDING,
+    status: 'pré-réservé',
+    label: 'Pré-réservé (scolaire)',
+    historyClassName: 'bs-history-pending',
+    statusClassName: 'booking-status-pending',
+    dateFormat: FORMAT_DD_MM_YYYY_HH_mm,
+    svgIconFilename: 'ico-status-pending-tag',
   },
   {
     id: BOOKING_STATUS.REIMBURSED,
