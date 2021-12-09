@@ -160,29 +160,26 @@ const Venue = ({
             </div>
           </div>
           {isStatOpen && (
-            <>
-              <div className="od-separator horizontal" />
-              <div className="venue-stats">
-                {venueStatData.map(stat => (
-                  <Fragment key={stat.label}>
-                    <VenueStat stat={stat} />
-                  </Fragment>
-                ))}
-                <div className="h-card-col v-add-offer-link">
-                  <Link
-                    className="tertiary-link"
-                    to={`${offerCreationLink}?structure=${offererId}&lieu=${id}`}
-                  >
-                    <IcoPlus />
-                    <div>
-                      {isVirtual
-                        ? 'Créer une nouvelle offre numérique'
-                        : 'Créer une nouvelle offre'}
-                    </div>
-                  </Link>
-                </div>
+            <div className="venue-stats">
+              {venueStatData.map(stat => (
+                <Fragment key={stat.label}>
+                  <VenueStat stat={stat} />
+                </Fragment>
+              ))}
+              <div className="h-card-col v-add-offer-link">
+                <Link
+                  className="tertiary-link"
+                  to={`${offerCreationLink}?structure=${offererId}&lieu=${id}`}
+                >
+                  <IcoPlus />
+                  <div>
+                    {isVirtual
+                      ? 'Créer une nouvelle offre numérique'
+                      : 'Créer une nouvelle offre'}
+                  </div>
+                </Link>
               </div>
-            </>
+            </div>
           )}
         </div>
       </div>
