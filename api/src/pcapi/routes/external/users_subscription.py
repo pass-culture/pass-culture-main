@@ -87,9 +87,12 @@ def dms_webhook_update_application_status(form: dms_validation.DMSWebhookRequest
             status=import_status,
         )
 
-    if form.state == api_demarches_simplifiees.GraphQLApplicationStates.draft:
+    if form.state == api_demarches_simplifiees.GraphQLApplicationStates.accepted:
+        subscription_api.start_workflow(user, str(form.dossier_id), application)
+
+    elif form.state == api_demarches_simplifiees.GraphQLApplicationStates.draft:
         subscription_messages.on_dms_application_received(user)
-    if form.state == api_demarches_simplifiees.GraphQLApplicationStates.refused:
+    elif form.state == api_demarches_simplifiees.GraphQLApplicationStates.refused:
         subscription_messages.on_dms_application_refused(user)
     if not user.hasCompletedIdCheck:
         user.hasCompletedIdCheck = True

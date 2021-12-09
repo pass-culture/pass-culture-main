@@ -32,3 +32,7 @@ class BeneficiaryFraudResultCannotBeDowngraded(FraudException):
 
 class InvalidContentTypeException(FraudException):
     pass
+
+
+class ApplicationValidationAlreadyStarted(FraudException):
+    pass

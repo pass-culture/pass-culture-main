@@ -15,6 +15,7 @@ import pcapi.core.mails.testing as mails_testing
 from pcapi.core.subscription import messages as subscription_messages
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.users import factories as users_factories
+from pcapi.core.users import models as users_models
 from pcapi.models.beneficiary_import import BeneficiaryImport
 from pcapi.models.beneficiary_import import BeneficiaryImportSources
 from pcapi.models.beneficiary_import_status import ImportStatus
@@ -244,6 +245,38 @@ class DmsWebhookApplicationTest:
         assert execute_query.call_count == 1
         assert send_user_message.call_count == 1
         assert send_user_message.call_args[0][2] == subscription_messages.DMS_ERROR_MESSAGE_ERROR_POSTAL_CODE
+
+    @patch.object(DMSGraphQLClient, "execute_query")
+    @pytest.mark.parametrize(
+        "subscription_state",
+        [
+            users_models.SubscriptionState.user_profiling_validated,
+            users_models.SubscriptionState.phone_validated,
+        ],
+    )
+    def test_dms_accepted_application_by_operator(self, execute_query, client, subscription_state):
+        user = users_factories.UserFactory(subscriptionState=subscription_state)
+        execute_query.return_value = make_single_application(
+            12, state=GraphQLApplicationStates.accepted.value, email=user.email
+        )
+
+        form_data = {
+            "procedure_id": "48860",
+            "dossier_id": "6044787",
+            "state": GraphQLApplicationStates.accepted.value,
+            "updated_at": "2021-09-30 17:55:58 +0200",
+        }
+
+        response = client.post(
+            f"/webhooks/dms/application_status?token={settings.DMS_WEBHOOK_TOKEN}",
+            form=form_data,
+            headers={"Content-Type": "application/x-www-form-urlencoded"},
+        )
+        assert response.status_code == 204
+
+        assert user.subscriptionState == users_models.SubscriptionState.identity_check_pending
+        assert user.beneficiaryFraudChecks[0].status == fraud_models.FraudCheckStatus.PENDING
+        assert user.beneficiaryFraudChecks[0].type == fraud_models.FraudCheckType.DMS
 
 
 @pytest.mark.usefixtures("db_session")

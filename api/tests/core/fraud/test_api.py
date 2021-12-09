@@ -1,5 +1,6 @@
 import datetime
 from unittest.mock import patch
+import uuid
 
 from dateutil.relativedelta import relativedelta
 import pytest
@@ -758,3 +759,153 @@ class HasUserPerformedIdentityCheckTest:
         fraud_factories.BeneficiaryFraudCheckFactory(type=fraud_models.FraudCheckType.USER_PROFILING, user=user)
 
         assert not fraud_api.has_user_performed_identity_check(user)
+
+
+@pytest.mark.usefixtures("db_session")
+class FraudCheckLifeCycleTest:
+    @pytest.mark.parametrize(
+        "check_type",
+        [
+            fraud_models.FraudCheckType.DMS,
+            fraud_models.FraudCheckType.EDUCONNECT,
+            fraud_models.FraudCheckType.JOUVE,
+            fraud_models.FraudCheckType.UBBLE,
+        ],
+    )
+    def test_start_fraud_check(self, check_type):
+        user = users_factories.UserFactory()
+        fraud_factories.BeneficiaryFraudCheckFactory(type=check_type)
+        factory_class = fraud_factories.FRAUD_CHECK_TYPE_MODEL_ASSOCIATION[check_type]
+
+        source_data = factory_class()
+
+        fraud_check = fraud_api.start_fraud_check(user, str(uuid.uuid4()), source_data)
+
+        assert fraud_check.status == fraud_models.FraudCheckStatus.PENDING
+        assert fraud_models.BeneficiaryFraudCheck.query.filter_by(user=user).count() == 1
+
+    @pytest.mark.parametrize(
+        "check_type",
+        [
+            fraud_models.FraudCheckType.DMS,
+            fraud_models.FraudCheckType.EDUCONNECT,
+            fraud_models.FraudCheckType.JOUVE,
+            fraud_models.FraudCheckType.UBBLE,
+        ],
+    )
+    def test_start_fraud_check_already_pending(self, check_type):
+        user = users_factories.UserFactory()
+        application_id = str(uuid.uuid4())
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user, type=check_type, thirdPartyId=application_id, status=fraud_models.FraudCheckStatus.PENDING
+        )
+        factory_class = fraud_factories.FRAUD_CHECK_TYPE_MODEL_ASSOCIATION[check_type]
+
+        source_data = factory_class()
+
+        with pytest.raises(fraud_exceptions.ApplicationValidationAlreadyStarted):
+            fraud_api.start_fraud_check(user, application_id, source_data)
+
+        assert (
+            fraud_models.BeneficiaryFraudCheck.query.filter_by(
+                user=user,
+                type=check_type,
+            ).count()
+            == 1
+        )
+
+    @pytest.mark.parametrize(
+        "check_type",
+        [
+            fraud_models.FraudCheckType.DMS,
+            fraud_models.FraudCheckType.EDUCONNECT,
+            fraud_models.FraudCheckType.JOUVE,
+            fraud_models.FraudCheckType.UBBLE,
+        ],
+    )
+    @pytest.mark.parametrize(
+        "closed_state",
+        [
+            fraud_models.FraudCheckStatus.OK,
+            fraud_models.FraudCheckStatus.KO,
+            fraud_models.FraudCheckStatus.SUSPICIOUS,
+        ],
+    )
+    def test_start_fraud_check_with_other_check_finished(self, check_type, closed_state):
+        user = users_factories.UserFactory()
+        application_id = str(uuid.uuid4())
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user, type=check_type, thirdPartyId=application_id, status=closed_state
+        )
+        factory_class = fraud_factories.FRAUD_CHECK_TYPE_MODEL_ASSOCIATION[check_type]
+
+        source_data = factory_class()
+        fraud_api.start_fraud_check(user, str(uuid.uuid4()), source_data)
+        assert (
+            fraud_models.BeneficiaryFraudCheck.query.filter_by(
+                user=user,
+                type=check_type,
+            ).count()
+            == 2
+        )
+
+    @pytest.mark.parametrize(
+        "check_type",
+        [
+            fraud_models.FraudCheckType.DMS,
+            fraud_models.FraudCheckType.EDUCONNECT,
+            fraud_models.FraudCheckType.JOUVE,
+            fraud_models.FraudCheckType.UBBLE,
+        ],
+    )
+    def test_mark_fraud_check_failed(self, check_type):
+        user = users_factories.UserFactory()
+        application_id = str(uuid.uuid4())
+
+        fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=check_type,
+            status=fraud_models.FraudCheckStatus.PENDING,
+            thirdPartyId=application_id,
+        )
+        fraud_api.mark_fraud_check_failed(
+            user,
+            application_id,
+            fraud_check.source_data(),
+            reasons=[fraud_models.FraudReasonCode.DUPLICATE_USER],
+        )
+
+        assert fraud_check.status == fraud_models.FraudCheckStatus.KO
+        assert (
+            fraud_models.BeneficiaryFraudCheck.query.filter_by(
+                user=user,
+                type=check_type,
+            ).count()
+            == 1
+        )
+
+    @pytest.mark.parametrize(
+        "check_type",
+        [
+            fraud_models.FraudCheckType.DMS,
+            fraud_models.FraudCheckType.EDUCONNECT,
+            fraud_models.FraudCheckType.JOUVE,
+            fraud_models.FraudCheckType.UBBLE,
+        ],
+    )
+    def test_mark_fraud_check_failed_unexistant_previous_check(self, check_type):
+        user = users_factories.UserFactory()
+        application_id = str(uuid.uuid4())
+
+        factory_class = fraud_factories.FRAUD_CHECK_TYPE_MODEL_ASSOCIATION[check_type]
+        source_data = factory_class()
+
+        fraud_api.mark_fraud_check_failed(
+            user,
+            application_id,
+            source_data,
+            reasons=[fraud_models.FraudReasonCode.DUPLICATE_USER],
+        )
+
+        fraud_check = fraud_models.BeneficiaryFraudCheck.query.first()
+        assert fraud_check.status == fraud_models.FraudCheckStatus.KO
