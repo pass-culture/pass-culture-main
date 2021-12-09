@@ -62,6 +62,7 @@ class TransactionalEmail(Enum):
 
     BOOKING_CANCELLATION_BY_BENEFICIARY = Template(id_prod=223, id_not_prod=33, tags=["jeunes_offre_annulee_jeune"])
     BOOKING_CONFIRMATION_BY_BENEFICIARY = Template(id_prod=219, id_not_prod=29, tags=["jeunes_reservation_confirmee"])
+    BOOKING_POSTPONED_BY_PRO_TO_BENEFICIARY = Template(id_prod=224, id_not_prod=36, tags=["jeunes_offre_reportee_pro"])
 
 
 @dataclasses.dataclass

@@ -50,9 +50,6 @@ from pcapi.emails.offerer_bookings_recap_after_deleting_stock import (
 from pcapi.emails.offerer_expired_bookings import build_expired_bookings_recap_email_data_for_offerer
 from pcapi.emails.pro_reset_password import retrieve_data_for_reset_password_link_to_admin_email
 from pcapi.emails.pro_reset_password import retrieve_data_for_reset_password_pro_email
-from pcapi.emails.user_notification_after_stock_update import (
-    retrieve_data_to_warn_user_after_stock_update_affecting_booking,
-)
 from pcapi.utils.mailing import make_admin_user_validation_email
 from pcapi.utils.mailing import make_offerer_driven_cancellation_email_for_offerer
 from pcapi.utils.mailing import make_pro_user_validation_email
@@ -202,18 +199,6 @@ def send_activation_email(user: User, reset_password_token_life_time: typing.Opt
     data = beneficiary_activation.get_activation_email_data(user=user, token=token)
 
     return mails.send(recipients=[user.email], data=data)
-
-
-def send_batch_stock_postponement_emails_to_users(bookings: list[Booking]) -> bool:
-    success = True
-    for booking in bookings:
-        success &= send_booking_postponement_emails_to_users(booking)
-    return success
-
-
-def send_booking_postponement_emails_to_users(booking: Booking) -> bool:
-    data = retrieve_data_to_warn_user_after_stock_update_affecting_booking(booking)
-    return mails.send(recipients=[booking.email], data=data)
 
 
 def send_rejection_email_to_beneficiary_pre_subscription(

@@ -108,7 +108,7 @@ class UpsertStocksTest:
         assert approved_offer.validation == offer_models.OfferValidationStatus.APPROVED
         assert approved_offer.isActive
 
-    @mock.patch("pcapi.domain.user_emails.send_batch_stock_postponement_emails_to_users")
+    @mock.patch("pcapi.core.offers.api.send_batch_booking_postponement_email_to_users")
     def test_sends_email_if_beginning_date_changes_on_edition(self, mocked_send_email):
         # Given
         user = users_factories.ProFactory()

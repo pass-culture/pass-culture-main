@@ -27,6 +27,9 @@ from pcapi.core.educational.utils import compute_educational_booking_cancellatio
 from pcapi.core.mails.transactional.bookings.booking_cancellation_by_pro_to_beneficiary import (
     send_booking_cancellation_by_pro_to_beneficiary_email,
 )
+from pcapi.core.mails.transactional.bookings.booking_postponed_by_pro_to_beneficiary import (
+    send_batch_booking_postponement_email_to_users,
+)
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers import validation
@@ -409,7 +412,7 @@ def _notify_beneficiaries_upon_stock_edit(stock: Stock):
         check_event_is_in_more_than_48_hours = stock.beginningDatetime > date_in_two_days
         if check_event_is_in_more_than_48_hours:
             bookings = _invalidate_bookings(bookings)
-        if not user_emails.send_batch_stock_postponement_emails_to_users(bookings):
+        if not send_batch_booking_postponement_email_to_users(bookings):
             logger.warning(
                 "Could not notify beneficiaries about update of stock",
                 extra={"stock": stock.id},
