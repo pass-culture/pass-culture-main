@@ -8,27 +8,35 @@ import '@testing-library/jest-dom'
 import { within } from '@testing-library/dom'
 import { render, screen } from '@testing-library/react'
 import React from 'react'
+import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
+
+import { configureTestStore } from 'store/testUtils'
 
 import OfferItem from '../OfferItem'
 
-const renderOfferItem = props => {
+const renderOfferItem = (props, store) => {
   return render(
-    <MemoryRouter>
-      <table>
-        <tbody>
-          <OfferItem {...props} />
-        </tbody>
-      </table>
-    </MemoryRouter>
+    <Provider store={store}>
+      <MemoryRouter>
+        <table>
+          <tbody>
+            <OfferItem {...props} />
+          </tbody>
+        </table>
+      </MemoryRouter>
+    </Provider>
   )
 }
 
 describe('src | components | pages | Offers | OfferItem', () => {
   let props
   let eventOffer
+  let store
 
   beforeEach(() => {
+    store = configureTestStore({})
+
     eventOffer = {
       id: 'M4',
       isActive: true,
@@ -65,7 +73,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
     describe('thumb Component', () => {
       it('should render an image with url from offer when offer has a thumb url', () => {
         // when
-        renderOfferItem(props)
+        renderOfferItem(props, store)
 
         // then
         expect(screen.getByAltText("Miniature d'offre")).toHaveAttribute(
@@ -79,7 +87,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
         props.offer.thumbUrl = null
 
         // when
-        renderOfferItem(props)
+        renderOfferItem(props, store)
 
         // then
         expect(screen.getByText("Miniature d'offre")).toBeInTheDocument()
@@ -89,7 +97,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
     describe('action buttons', () => {
       it('should display a button to show offer stocks', () => {
         // given
-        renderOfferItem(props)
+        renderOfferItem(props, store)
 
         // then
         expect(screen.queryByText('Stocks')).toBeInTheDocument()
@@ -102,7 +110,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
       describe('edit offer link', () => {
         it('should be displayed when offer is editable', () => {
           // when
-          renderOfferItem(props)
+          renderOfferItem(props, store)
 
           // then
           const links = screen.getAllByRole('link')
@@ -116,7 +124,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
           props.offer.isEditable = false
 
           // when
-          renderOfferItem(props)
+          renderOfferItem(props, store)
 
           // then
           const links = screen.getAllByRole('link')
@@ -131,7 +139,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
     describe('offer title', () => {
       it('should contain a link with the offer name and details link', () => {
         // when
-        renderOfferItem(props)
+        renderOfferItem(props, store)
 
         // then
         const offerTitle = screen.queryByText(props.offer.name, 'a')
@@ -155,7 +163,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
       }
 
       // when
-      renderOfferItem(props)
+      renderOfferItem(props, store)
 
       // then
       expect(screen.queryByText(props.offer.venue.name)).toBeInTheDocument()
@@ -170,7 +178,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
       }
 
       // when
-      renderOfferItem(props)
+      renderOfferItem(props, store)
 
       // then
       expect(
@@ -188,7 +196,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
       }
 
       // when
-      renderOfferItem(props)
+      renderOfferItem(props, store)
 
       // then
       expect(
@@ -201,7 +209,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
       eventOffer.productIsbn = '123456789'
 
       // when
-      renderOfferItem(props)
+      renderOfferItem(props, store)
 
       // then
       expect(screen.queryByText('123456789')).toBeInTheDocument()
@@ -212,7 +220,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
       eventOffer.isEducational = true
 
       // when
-      renderOfferItem(props)
+      renderOfferItem(props, store)
 
       // then
       expect(screen.getByText('Offre collective')).toBeInTheDocument()
@@ -221,7 +229,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
     describe('offer remaining quantity', () => {
       it('should be 0 when offer has no stock', () => {
         // when
-        renderOfferItem(props)
+        renderOfferItem(props, store)
 
         // then
         expect(screen.queryByText('0')).toBeInTheDocument()
@@ -236,7 +244,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
         ]
 
         // when
-        renderOfferItem(props)
+        renderOfferItem(props, store)
 
         // then
         expect(screen.queryByText('5')).toBeInTheDocument()
@@ -250,7 +258,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
         ]
 
         // when
-        renderOfferItem(props)
+        renderOfferItem(props, store)
 
         // then
         expect(screen.queryByText('Illimité')).toBeInTheDocument()
@@ -266,7 +274,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
         ]
 
         // when
-        renderOfferItem(props)
+        renderOfferItem(props, store)
 
         // then
         expect(screen.queryByText('2 dates')).toBeInTheDocument()
@@ -279,7 +287,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
         ]
 
         // when
-        renderOfferItem(props)
+        renderOfferItem(props, store)
 
         // then
         expect(screen.getByText('27/05/2021 17:00')).toBeInTheDocument()
@@ -293,7 +301,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
         ]
 
         // when
-        renderOfferItem(props)
+        renderOfferItem(props, store)
 
         // then
         const numberOfStocks = screen.getByText('2 dates').closest('span')
@@ -311,7 +319,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
         eventOffer.status = 'SOLD_OUT'
 
         // when
-        renderOfferItem(props)
+        renderOfferItem(props, store)
 
         // then
         const numberOfStocks = screen.getByText('2 dates').closest('span')
@@ -331,7 +339,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
         ]
 
         // when
-        renderOfferItem(props)
+        renderOfferItem(props, store)
 
         // then
         const numberOfStocks = screen.getByText('2 dates').closest('span')
@@ -353,7 +361,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
         ]
 
         // when
-        renderOfferItem(props)
+        renderOfferItem(props, store)
 
         // then
         const numberOfStocks = screen.getByText('3 dates').closest('span')
@@ -368,7 +376,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
       props.offer.status = 'PENDING'
 
       // When
-      renderOfferItem(props)
+      renderOfferItem(props, store)
 
       // Then
       expect(screen.getByText('My little offer').closest('tr')).toHaveClass(
@@ -381,7 +389,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
       props.offer.status = 'REJECTED'
 
       // When
-      renderOfferItem(props)
+      renderOfferItem(props, store)
 
       // Then
       expect(screen.getByText('My little offer').closest('tr')).toHaveClass(
@@ -394,7 +402,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
       props.offer.isActive = false
 
       // When
-      renderOfferItem(props)
+      renderOfferItem(props, store)
 
       // Then
       expect(screen.getByText('My little offer').closest('tr')).toHaveClass(
@@ -407,7 +415,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
       props.offer.status = 'ACTIVE'
 
       // When
-      renderOfferItem(props)
+      renderOfferItem(props, store)
 
       // Then
       expect(screen.getByText('My little offer').closest('tr')).not.toHaveClass(
