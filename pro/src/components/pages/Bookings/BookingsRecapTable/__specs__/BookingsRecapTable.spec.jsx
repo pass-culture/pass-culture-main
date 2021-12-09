@@ -6,7 +6,9 @@
 
 import { mount, shallow } from 'enzyme'
 import React from 'react'
+import { Provider } from 'react-redux'
 
+import { configureTestStore } from 'store/testUtils'
 import { ReactComponent } from 'utils/svgrMock'
 
 import BookingsRecapTable from '../BookingsRecapTable'
@@ -32,6 +34,12 @@ jest.mock('lodash.debounce', () => jest.fn(callback => callback))
 jest.mock('../utils/filterBookingsRecap', () => jest.fn())
 
 describe('components | BookingsRecapTable', () => {
+  let store
+
+  beforeEach(() => {
+    store = configureTestStore({})
+  })
+
   it('should render a TableContainer component with columns and data props', () => {
     // Given
     const bookingsRecap = [
@@ -152,7 +160,11 @@ describe('components | BookingsRecapTable', () => {
     filterBookingsRecap.mockReturnValue(props.bookingsRecap)
 
     // When
-    const wrapper = mount(<BookingsRecapTable {...props} />)
+    const wrapper = mount(
+      <Provider store={store}>
+        <BookingsRecapTable {...props} />
+      </Provider>
+    )
 
     // Then
     const firstHeader = wrapper.find('th').at(0)
@@ -210,7 +222,11 @@ describe('components | BookingsRecapTable', () => {
     filterBookingsRecap.mockReturnValue(props.bookingsRecap)
 
     // When
-    const wrapper = mount(<BookingsRecapTable {...props} />)
+    const wrapper = mount(
+      <Provider store={store}>
+        <BookingsRecapTable {...props} />
+      </Provider>
+    )
 
     // Then
     const sixthHeader = wrapper.find('th').at(5)
@@ -261,7 +277,11 @@ describe('components | BookingsRecapTable', () => {
     }
 
     // When
-    const wrapper = mount(<BookingsRecapTable {...props} />)
+    const wrapper = mount(
+      <Provider store={store}>
+        <BookingsRecapTable {...props} />
+      </Provider>
+    )
 
     // Then
     const bookingOfferCell = wrapper.find(BookingOfferCell)
@@ -335,13 +355,17 @@ describe('components | BookingsRecapTable', () => {
     }
 
     // When
-    const wrapper = mount(<BookingsRecapTable {...props} />)
+    const wrapper = mount(
+      <Provider store={store}>
+        <BookingsRecapTable {...props} />
+      </Provider>
+    )
 
     // Then
     const table = wrapper.find(TableFrame)
     expect(table).toHaveLength(1)
     expect(table.props()).toStrictEqual({
-      columns: wrapper.state('columns'),
+      columns: wrapper.find(BookingsRecapTable).state('columns'),
       data: bookingsRecap,
       nbBookings: 1,
       nbBookingsPerPage: NB_BOOKINGS_PER_PAGE,
@@ -488,7 +512,11 @@ describe('components | BookingsRecapTable', () => {
     }
 
     // When
-    const wrapper = mount(<BookingsRecapTable {...props} />)
+    const wrapper = mount(
+      <Provider store={store}>
+        <BookingsRecapTable {...props} />
+      </Provider>
+    )
     const paginate = wrapper.find(TablePagination)
     const nextPageButton = paginate.find('button').at(1)
     nextPageButton.simulate('click')
@@ -712,7 +740,11 @@ describe('components | BookingsRecapTable', () => {
       bookingsRecap: [booking],
       isLoading: false,
     }
-    const wrapper = mount(<BookingsRecapTable {...props} />)
+    const wrapper = mount(
+      <Provider store={store}>
+        <BookingsRecapTable {...props} />
+      </Provider>
+    )
     const input = wrapper
       .find(Filters)
       .find({ placeholder: "Rechercher par nom d'offre" })
@@ -768,7 +800,11 @@ describe('components | BookingsRecapTable', () => {
       isLoading: false,
     }
     filterBookingsRecap.mockReturnValue([])
-    const wrapper = mount(<BookingsRecapTable {...props} />)
+    const wrapper = mount(
+      <Provider store={store}>
+        <BookingsRecapTable {...props} />
+      </Provider>
+    )
 
     const offerNameInput = wrapper
       .find(Filters)
@@ -914,7 +950,11 @@ describe('components | BookingsRecapTable', () => {
       bookingsRecap: bookingsRecap,
       isLoading: false,
     }
-    const wrapper = mount(<BookingsRecapTable {...props} />)
+    const wrapper = mount(
+      <Provider store={store}>
+        <BookingsRecapTable {...props} />
+      </Provider>
+    )
     const newBooking = {
       stock: {
         offer_name: 'Jurassic Park',
