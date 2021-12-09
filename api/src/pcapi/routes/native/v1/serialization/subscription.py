@@ -19,13 +19,14 @@ class NextSubscriptionStepResponse(BaseModel):
 
 
 class ProfileUpdateRequest(BaseModel):
-    activity: users_models.ActivityEnum
+    activity_id: Optional[school_types.ACTIVITY_ID_ENUM]
+    activity: Optional[users_models.ActivityEnum]  # TODO: CorentinN: remove this field when frontend sends activity_id
     address: Optional[str]
     city: str
     first_name: str
     last_name: str
     postal_code: str
-    school_type: Optional[users_models.SchoolTypeEnum]
+    school_type_id: Optional[school_types.SCHOOL_TYPE_ID_ENUM]
 
     class Config:
         alias_generator = to_camel
