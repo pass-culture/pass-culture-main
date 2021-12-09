@@ -217,6 +217,8 @@ def edit_educational_offer(
 
     except orm_exc.NoResultFound:
         raise ApiErrors({"offerId": "no educational offer has been found with this id"}, 404)
+    except exceptions.SubcategoryNotEligibleForEducationalOffer:
+        raise ApiErrors({"subcategoryId": "this subcategory is not educational"}, 400)
 
 
 @private_api.route("/offers/thumbnail-url-validation", methods=["POST"])

@@ -6,7 +6,6 @@ import {
   IEducationalSubCategory,
   DEFAULT_EAC_FORM_VALUES,
   IOfferEducationalFormValues,
-  Mode,
 } from 'core/OfferEducational'
 import FormLayout from 'new_components/FormLayout'
 import { Select, TextArea, TextInput } from 'ui-kit'
@@ -23,13 +22,11 @@ import buildSelectOptions from '../../utils/buildSelectOptions'
 interface IFormTypeProps {
   categories: IEducationalCategory[]
   subCategories: IEducationalSubCategory[]
-  mode: Mode
 }
 
 const FormCategory = ({
   categories,
   subCategories,
-  mode,
 }: IFormTypeProps): JSX.Element => {
   const { values, setFieldValue } =
     useFormikContext<IOfferEducationalFormValues>()
@@ -38,14 +35,22 @@ const FormCategory = ({
   >(null)
 
   useEffect(() => {
-    setFieldValue('subCategory', DEFAULT_EAC_FORM_VALUES.subCategory, false)
+    const subCategoryObject = subCategories.find(
+      ({ id }) => id === values.subCategory
+    )
+    if (
+      !values.subCategory ||
+      (subCategoryObject && subCategoryObject.categoryId !== values.category)
+    ) {
+      setFieldValue('subCategory', DEFAULT_EAC_FORM_VALUES.subCategory, false)
+    }
 
     setAvailableSubCategories(
       subCategories.filter(
         subCategory => subCategory.categoryId === values.category
       )
     )
-  }, [values.category, setFieldValue, subCategories])
+  }, [values.category, setFieldValue, subCategories, values.subCategory])
 
   return (
     <FormLayout.Section
@@ -54,7 +59,6 @@ const FormCategory = ({
     >
       <FormLayout.Row>
         <Select
-          disabled={mode === Mode.EDITION}
           label={CATEGORY_LABEL}
           name="category"
           options={buildSelectOptions(
@@ -68,7 +72,6 @@ const FormCategory = ({
       {!!availableSubCategories?.length && (
         <FormLayout.Row>
           <Select
-            disabled={mode === Mode.EDITION}
             label={SUBCATEGORY_LABEL}
             name="subCategory"
             options={buildSelectOptions(
