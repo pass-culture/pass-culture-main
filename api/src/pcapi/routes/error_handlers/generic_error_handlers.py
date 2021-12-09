@@ -65,7 +65,7 @@ def unauthorized_error(error: UnauthorizedError) -> Response:
 def method_not_allowed(error: MethodNotAllowed) -> tuple[dict, int]:
     api_errors = ApiErrors()
     api_errors.add_error("global", "La méthode que vous utilisez n'existe pas sur notre serveur")
-    logger.error("405 %s", error)
+    logger.warning("405 %s", error)
     return jsonify(api_errors.errors), 405
 
 
@@ -73,7 +73,7 @@ def method_not_allowed(error: MethodNotAllowed) -> tuple[dict, int]:
 def invalid_id_for_dehumanize_error(error: NonDehumanizableId) -> tuple[dict, int]:
     api_errors = ApiErrors()
     api_errors.add_error("global", "La page que vous recherchez n'existe pas")
-    logger.error("404 %s", error)
+    logger.warning("404 %s", error)
     return jsonify(api_errors.errors), 404
 
 
