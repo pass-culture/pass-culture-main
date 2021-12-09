@@ -315,7 +315,7 @@ class RunTest:
                 procedure_id=6712558,
                 department="67",
                 phone="0123456789",
-                birth_date=AGE18_ELIGIBLE_BIRTH_DATE,
+                birth_date=AGE18_ELIGIBLE_BIRTH_DATE.date(),
                 activity="Étudiant",
                 address="35 Rue Saint Denis 93130 Noisy-le-Sec",
                 postal_code="67200",
@@ -1239,7 +1239,10 @@ class GraphQLSourceProcessApplicationTest:
 
     @patch.object(DMSGraphQLClient, "get_applications_with_details")
     def test_run(self, get_applications_with_details):
-        user = users_factories.UserFactory(dateOfBirth=AGE18_ELIGIBLE_BIRTH_DATE)
+        user = users_factories.UserFactory(
+            dateOfBirth=AGE18_ELIGIBLE_BIRTH_DATE,
+            subscriptionState=users_models.SubscriptionState.identity_check_pending,
+        )
         application_id = 123123
 
         get_applications_with_details.return_value = [
@@ -1251,6 +1254,9 @@ class GraphQLSourceProcessApplicationTest:
 
         assert import_status.currentStatus == ImportStatus.CREATED
         assert import_status.beneficiary == user
+
+        assert user.has_beneficiary_role
+        assert user.is_subscriptionState_beneficiary_18()
 
     @patch.object(DMSGraphQLClient, "get_applications_with_details")
     def test_dms_application_value_error(self, get_applications_with_details):

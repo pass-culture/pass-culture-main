@@ -120,8 +120,10 @@ def activate_beneficiary(
         raise exceptions.CannotUpgradeBeneficiaryRole()
 
     if eligibility == users_models.EligibilityType.UNDERAGE:
+        user.validate_user_identity_15_17()
         user.add_underage_beneficiary_role()
     elif eligibility == users_models.EligibilityType.AGE18:
+        user.validate_user_identity_18()
         user.add_beneficiary_role()
         user.remove_underage_beneficiary_role()
     else:
@@ -502,3 +504,12 @@ def handle_validation_errors(
             subscription_messages.on_duplicate_user(user)
         if error_code == fraud_models.FraudReasonCode.DUPLICATE_ID_PIECE_NUMBER:
             subscription_messages.on_duplicate_user(user)
+
+
+def start_workflow(
+    user: users_models.User, thirdparty_id: str, content: fraud_models.DMSContent
+) -> fraud_models.BeneficiaryFraudCheck:
+    user.submit_user_identity()
+    pcapi_repository.repository.save(user)
+    fraud_check = fraud_api.start_fraud_check(user, thirdparty_id, content)
+    return fraud_check

@@ -672,3 +672,16 @@ class OnSucessfulDMSApplicationTest:
                 source_id=123456,
             )
         assert applicant.has_beneficiary_role
+
+
+@pytest.mark.usefixtures("db_session")
+class DMSSubscriptionTest:
+    def test_dms_subscription(self):
+        user = users_factories.UserFactory(subscriptionState=users_models.SubscriptionState.phone_validated)
+        application_id = 12
+        content = fraud_factories.DMSContentFactory()
+        fraud_check = subscription_api.start_workflow(user, thirdparty_id=str(application_id), content=content)
+
+        assert user.subscriptionState == users_models.SubscriptionState.identity_check_pending
+        assert fraud_check.user == user
+        assert fraud_check.status == fraud_models.FraudCheckStatus.PENDING
