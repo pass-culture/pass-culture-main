@@ -34,6 +34,8 @@ def filter_email(value: Optional[str]) -> Optional[str]:
 class PartnerUserView(ResendValidationEmailMixin, SuspensionMixin, BaseAdminView):
     can_edit = True
     can_create = True
+    can_view_details = True
+
     column_list = [
         "id",
         "isActive",
@@ -48,7 +50,9 @@ class PartnerUserView(ResendValidationEmailMixin, SuspensionMixin, BaseAdminView
         "isEmailValidated",
         "actions",
     ]
+
     column_labels = dict(
+        comment="Commentaire",
         isActive="Est activé",
         email="Email",
         firstName="Prénom",
@@ -60,10 +64,17 @@ class PartnerUserView(ResendValidationEmailMixin, SuspensionMixin, BaseAdminView
         postalCode="Code postal",
         isEmailValidated="Email validé ?",
     )
+
     column_searchable_list = ["id", "publicName", "email", "firstName", "lastName"]
     column_filters = ["isEmailValidated"]
+    column_details_list = ["comment"]
 
-    form_columns = ["email", "firstName", "lastName", "dateOfBirth", "departementCode", "postalCode", "phoneNumber"]
+    @property
+    def form_columns(self):
+        fields = ("email", "firstName", "lastName", "dateOfBirth", "departementCode", "postalCode", "phoneNumber")
+        if self.check_super_admins():
+            fields += ("comment",)
+        return fields
 
     def scaffold_form(self) -> BaseForm:
         form_class = super().scaffold_form()

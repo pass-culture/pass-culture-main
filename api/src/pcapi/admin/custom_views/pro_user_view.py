@@ -79,7 +79,7 @@ class ProUserView(SuspensionMixin, BaseAdminView):
         "actions",
     ]
     column_labels = dict(
-        comment="Commentaire équipe anti-fraude",
+        comment="Commentaire",
         email="Email",
         isActive="Est activé",
         firstName="Prénom",
