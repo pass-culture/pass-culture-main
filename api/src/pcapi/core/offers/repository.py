@@ -3,6 +3,7 @@ from datetime import time
 from datetime import timedelta
 from operator import attrgetter
 from typing import Optional
+from typing import Union
 
 from sqlalchemy import and_
 from sqlalchemy import func
@@ -316,7 +317,7 @@ def get_current_offer_validation_config() -> Optional[OfferValidationConfig]:
     return OfferValidationConfig.query.order_by(OfferValidationConfig.id.desc()).first()
 
 
-def get_expired_offers(interval: [datetime, datetime]) -> Query:
+def get_expired_offers(interval: Union[datetime, datetime]) -> Query:
     """Return a query of offers whose latest booking limit occurs within
     the given interval.
 
@@ -360,3 +361,10 @@ def get_available_activation_code(stock: Stock) -> Optional[ActivationCode]:
 
 def get_educational_offer_by_id(offer_id: str) -> Offer:
     return Offer.query.filter(Offer.isEducational == True, Offer.id == offer_id).one()
+
+
+def get_non_deleted_stock_by_id(stock_id: int):
+    stock = Stock.queryNotSoftDeleted().filter_by(id=stock_id).first()
+    if stock is None:
+        raise StockDoesNotExist()
+    return stock

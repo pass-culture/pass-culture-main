@@ -6,7 +6,6 @@ from typing import Union
 
 from psycopg2.errorcodes import CHECK_VIOLATION
 from psycopg2.errorcodes import UNIQUE_VIOLATION
-import pytz
 from sqlalchemy import exc
 from sqlalchemy.orm import joinedload
 import yaml
@@ -24,6 +23,7 @@ import pcapi.core.bookings.repository as bookings_repository
 from pcapi.core.categories import subcategories
 from pcapi.core.categories.conf import can_create_from_isbn
 from pcapi.core.educational import exceptions as educational_exceptions
+from pcapi.core.educational.utils import compute_educational_booking_cancellation_limit_date
 from pcapi.core.mails.transactional.bookings.booking_cancellation_by_pro_to_beneficiary import (
     send_booking_cancellation_by_pro_to_beneficiary_email,
 )
@@ -41,6 +41,7 @@ from pcapi.core.offers.models import Stock
 from pcapi.core.offers.offer_validation import compute_offer_validation_score
 from pcapi.core.offers.offer_validation import parse_offer_validation_config
 import pcapi.core.offers.repository as offers_repository
+from pcapi.core.offers.utils import as_utc_without_timezone
 from pcapi.core.offers.validation import KEY_VALIDATION_CONFIG
 from pcapi.core.offers.validation import check_offer_is_eligible_for_educational
 from pcapi.core.offers.validation import check_offer_not_duo_and_educational
@@ -72,6 +73,7 @@ from pcapi.utils import mailing
 from pcapi.utils.human_ids import dehumanize
 from pcapi.utils.rest import check_user_has_access_to_offerer
 from pcapi.utils.rest import load_or_raise_error
+from pcapi.validation.models import entity_validator
 from pcapi.workers.push_notification_job import send_cancel_booking_notification
 
 from .exceptions import ThumbnailStorageError
@@ -360,8 +362,6 @@ def _edit_stock(
     # a change for the "beginningDatetime" field for Allocine stocks:
     # because we do not allow it to be changed, we raise an error when
     # we should not.
-    def as_utc_without_timezone(d: datetime.datetime) -> datetime.datetime:
-        return d.astimezone(pytz.utc).replace(tzinfo=None)
 
     if beginning:
         beginning = as_utc_without_timezone(beginning)
@@ -549,6 +549,62 @@ def create_educational_stock(stock_data: EducationalStockCreationBodyModel, user
     search.async_index_offer_ids([offer.id])
 
     return stock
+
+
+def edit_educational_stock(stock: Stock, stock_data: dict) -> None:
+    beginning = stock_data.get("beginning_datetime")
+    booking_limit_datetime = stock_data.get("booking_limit_datetime")
+    price = stock_data.get("total_price")
+    number_of_tickets = stock_data.get("number_of_tickets")
+
+    beginning = as_utc_without_timezone(beginning) if beginning else None
+    booking_limit_datetime = as_utc_without_timezone(booking_limit_datetime) if booking_limit_datetime else None
+    validation.check_booking_limit_datetime(stock, beginning, booking_limit_datetime)
+
+    if not stock.offer.isEducational:
+        raise educational_exceptions.OfferIsNotEducational(stock.offerId)
+
+    associated_bookings = bookings_repository.find_bookings_by_stock_id(stock.id)
+    if associated_bookings:
+        stock_unique_booking = associated_bookings[0]
+        validation.check_stock_booking_status(stock_unique_booking)
+        if beginning:
+            updated_booking = _update_educational_booking_cancellation_limit_date(stock_unique_booking, beginning)
+            db.session.add(updated_booking)
+
+    validation.check_educational_stock_is_editable(stock)
+
+    updatable_fields = {
+        "beginningDatetime": beginning,
+        "bookingLimitDatetime": booking_limit_datetime,
+        "price": price,
+        "numberOfTickets": number_of_tickets,
+    }
+
+    with transaction():
+        stock = offers_repository.get_and_lock_stock(stock.id)
+        for attribute, new_value in updatable_fields.items():
+            if new_value is not None and getattr(stock, attribute) != new_value:
+                setattr(stock, attribute, new_value)
+
+        api_errors = entity_validator.validate(stock)
+        if api_errors.errors.keys():
+            raise api_errors
+        db.session.add(stock)
+        db.session.commit()
+
+    logger.info("Stock has been updated", extra={"stock": stock.id})
+
+    search.async_index_offer_ids([stock.offerId])
+
+
+def _update_educational_booking_cancellation_limit_date(
+    booking: Booking, new_beginning_datetime: datetime.datetime
+) -> Booking:
+    booking.cancellationLimitDate = compute_educational_booking_cancellation_limit_date(
+        new_beginning_datetime, datetime.datetime.utcnow()
+    )
+    return booking
 
 
 def _invalidate_bookings(bookings: list[Booking]) -> list[Booking]:
