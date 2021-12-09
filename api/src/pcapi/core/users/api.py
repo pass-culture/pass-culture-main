@@ -266,7 +266,7 @@ def validate_phone_number_and_activate_user(user: User, code: str) -> User:
 
 def update_user_information_from_external_source(
     user: User,
-    data: Union[fraud_models.DMSContent, fraud_models.JouveContent, fraud_models.EduconnectContent],
+    data: fraud_models.SubscriptionContentType,
     commit=False,
 ) -> User:
     if isinstance(data, fraud_models.DMSContent):

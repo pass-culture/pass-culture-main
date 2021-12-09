@@ -253,9 +253,7 @@ def get_ubble_fraud_check(identification_id: str) -> typing.Optional[models.Bene
     return fraud_check
 
 
-def get_eligibility_type(
-    data: typing.Union[models.EduconnectContent, models.JouveContent, models.DMSContent]
-) -> typing.Optional[users_models.EligibilityType]:
+def get_eligibility_type(data: models.SubscriptionContentType) -> typing.Optional[users_models.EligibilityType]:
     from pcapi.core.users import api as users_api
 
     if isinstance(data, models.EduconnectContent):
