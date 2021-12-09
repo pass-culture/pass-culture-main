@@ -195,6 +195,7 @@ class PatchEducationalOfferBodyModel(BaseModel):
     mentalDisabilityCompliant: Optional[bool]
     motorDisabilityCompliant: Optional[bool]
     visualDisabilityCompliant: Optional[bool]
+    subcategoryId: Optional[SubcategoryIdEnum]
 
     @validator("name", allow_reuse=True)
     def validate_name(cls, name):  # pylint: disable=no-self-argument

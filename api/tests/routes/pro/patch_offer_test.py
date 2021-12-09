@@ -17,11 +17,8 @@ pytestmark = pytest.mark.usefixtures("db_session")
 class Returns200Test:
     def test_patch_offer(self, app, client):
         # Given
-        offer = offers_factories.OfferFactory()
-        offers_factories.UserOffererFactory(
-            user__email="user@example.com",
-            offerer=offer.venue.managingOfferer,
-        )
+        offer = offers_factories.OfferFactory(subcategoryId="SEANCE_CINE")
+        offers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
 
         # When
         data = {
@@ -40,6 +37,7 @@ class Returns200Test:
         assert updated_offer.name == "New name"
         assert updated_offer.externalTicketOfficeUrl == "http://example.net"
         assert updated_offer.mentalDisabilityCompliant
+        assert updated_offer.subcategoryId == "SEANCE_CINE"
 
 
 class Returns400Test:

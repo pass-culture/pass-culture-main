@@ -122,7 +122,6 @@ const OfferEducationalForm = ({
         <>
           <FormCategory
             categories={educationalCategories}
-            mode={mode}
             subCategories={educationalSubCategories}
           />
           <FormEventAddress
