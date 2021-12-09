@@ -37,7 +37,7 @@ const OfferEducationalConfirmation = ({
         <p className={styles['form-layout-section-description']}>
           Votre offre est désormais disponible sur ADAGE (L'Application Dédiée À
           la Généralisation de l’Éducation artistique et culturelle) et visible
-          par les professeurs et chefs d’établissement de l’Éducation Nationale.
+          par les enseignants et chefs d’établissement de l’Éducation nationale.
         </p>
       </div>
       <div className={styles['confirmation-actions']}>

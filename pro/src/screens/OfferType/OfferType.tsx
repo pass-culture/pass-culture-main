@@ -43,19 +43,19 @@ const OfferType = (): JSX.Element => {
     <div>
       <h1 className={styles['offer-type-title']}>Créer une nouvelle offre</h1>
       <FormLayout>
-        <FormLayout.Section title="Quel type d’offre souhaitez-vous proposer ?">
+        <FormLayout.Section title="À qui destinez-vous cette offre ? ">
           <FormLayout.Row inline>
             <OfferTypeButton
               Icon={UserIcon}
               isSelected={offerType === INDIVIDUAL_OR_DUO}
-              label="Une offre à destination du grand public"
+              label="Au grand public"
               onChange={handleOfferTypeChange}
               value={INDIVIDUAL_OR_DUO}
             />
             <OfferTypeButton
               Icon={LibraryIcon}
               isSelected={offerType === EDUCATIONAL}
-              label="Une offre à destination d'un groupe scolaire"
+              label="À un groupe scolaire"
               onChange={handleOfferTypeChange}
               value={EDUCATIONAL}
             />
