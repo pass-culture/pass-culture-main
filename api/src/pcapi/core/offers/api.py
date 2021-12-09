@@ -557,19 +557,21 @@ def edit_educational_stock(stock: Stock, stock_data: dict) -> None:
     price = stock_data.get("total_price")
     number_of_tickets = stock_data.get("number_of_tickets")
 
+    if not stock.offer.isEducational:
+        raise educational_exceptions.OfferIsNotEducational(stock.offerId)
+
     beginning = as_utc_without_timezone(beginning) if beginning else None
     booking_limit_datetime = as_utc_without_timezone(booking_limit_datetime) if booking_limit_datetime else None
     validation.check_booking_limit_datetime(stock, beginning, booking_limit_datetime)
 
-    if not stock.offer.isEducational:
-        raise educational_exceptions.OfferIsNotEducational(stock.offerId)
-
-    associated_bookings = bookings_repository.find_bookings_by_stock_id(stock.id)
+    associated_bookings = bookings_repository.find_non_cancelled_bookings_by_stock_id(stock.id)
     if associated_bookings:
-        stock_unique_booking = associated_bookings[0]
-        validation.check_stock_booking_status(stock_unique_booking)
+        educational_stock_unique_booking = associated_bookings[0]
+        validation.check_stock_booking_status(educational_stock_unique_booking)
         if beginning:
-            updated_booking = _update_educational_booking_cancellation_limit_date(stock_unique_booking, beginning)
+            updated_booking = _update_educational_booking_cancellation_limit_date(
+                educational_stock_unique_booking, beginning
+            )
             db.session.add(updated_booking)
 
     validation.check_educational_stock_is_editable(stock)
