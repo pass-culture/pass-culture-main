@@ -91,7 +91,11 @@ def change_beneficiary_email_request(body: ChangeBeneficiaryEmailRequestBody) ->
 def change_beneficiary_email(body: ChangeBeneficiaryEmailBody) -> None:
     try:
         payload = ChangeEmailTokenContent.from_token(body.token)
-        users_api.change_user_email(current_email=payload.current_email, new_email=payload.new_email)
+        users_api.change_user_email(
+            current_email=payload.current_email,
+            new_email=payload.new_email,
+            device_id=request.headers.get("device-id"),
+        )
     except pydantic.ValidationError:
         # Do nothing to avoid a breaking change
         pass
