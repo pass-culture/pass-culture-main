@@ -35,6 +35,7 @@ from pcapi.routes.serialization import venues_serialize
 from pcapi.routes.serialization.offerers_serialize import CreateOffererQueryModel
 from pcapi.routes.serialization.venues_serialize import PostVenueBodyModel
 from pcapi.utils import crypto
+from pcapi.utils.human_ids import dehumanize
 
 from . import validation
 from .exceptions import ApiKeyCountMaxReached
@@ -299,7 +300,9 @@ def get_educational_offerers(offerer_id: Union[None, str], current_user: User) -
         raise MissingOffererIdQueryParameter
 
     if offerer_id and current_user.isAdmin:
-        offerer = Offerer.query.filter(Offerer.validationToken.is_(None), Offerer.isActive.is_(True)).first()
+        offerer = Offerer.query.filter(
+            Offerer.validationToken.is_(None), Offerer.isActive.is_(True), Offerer.id == dehumanize(offerer_id)
+        ).first()
         offerers = [offerer]
 
     else:
