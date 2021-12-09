@@ -46,7 +46,7 @@ class AdminUserView(SuspensionMixin, BaseAdminView):
         "actions",
     ]
     column_labels = dict(
-        comment="Commentaire équipe anti-fraude",
+        comment="Commentaire",
         isActive="Est activé",
         email="Email",
         firstName="Prénom",
