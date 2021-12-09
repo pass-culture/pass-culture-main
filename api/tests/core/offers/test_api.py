@@ -695,31 +695,6 @@ class CreateEducationalOfferStocksTest:
         assert not draft_fraudulent_offer.isActive
         assert draft_fraudulent_offer.lastValidationDate == datetime(2020, 11, 17, 15, 0)
 
-    def test_does_not_allow_booking_limit_after_beginning_datetime(self):
-        # Given
-        user = users_factories.ProFactory()
-        offer = offer_factories.EducationalEventOfferFactory()
-        beginning_date = datetime.utcnow() + timedelta(days=4)
-        booking_limit = beginning_date + timedelta(days=4)
-        created_stock_data = stock_serialize.EducationalStockCreationBodyModel(
-            offerId=offer.id,
-            beginningDatetime=beginning_date,
-            bookingLimitDatetime=booking_limit,
-            totalPrice=1500,
-            numberOfTickets=38,
-        )
-
-        # When
-        with pytest.raises(offer_exceptions.BookingLimitDatetimeTooLate) as error:
-            api.create_educational_stock(stock_data=created_stock_data, user=user)
-
-        # Then
-        assert error.value.errors == {
-            "bookingLimitDatetime": [
-                "La date limite de réservation pour cette offre est postérieure à la date de début de l'évènement"
-            ]
-        }
-
     def test_create_stock_for_non_approved_offer_fails(self):
         # Given
         user = users_factories.ProFactory()
