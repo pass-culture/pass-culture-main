@@ -59,14 +59,14 @@ export const validationSchema = yup.object().shape({
   phone: yup.string().required('Veuillez renseigner un numéro de téléphone'),
   email: yup
     .string()
-    .required('Veuillez renseigner une adresse email')
-    .email('L’email renseigné n’est pas valide. Exemple : email@gmail.com'),
+    .required('Veuillez renseigner une adresse e-mail')
+    .email('L’e-mail renseigné n’est pas valide. Exemple : email@gmail.com'),
   notifications: yup.boolean(),
   notificationEmail: yup.string().when('notifications', {
     is: true,
     then: yup
       .string()
-      .required('Veuillez renseigner une adresse email')
-      .email('L’email renseigné n’est pas valide. Exemple : email@gmail.com'),
+      .required('Veuillez renseigner une adresse e-mail')
+      .email('L’e-mail renseigné n’est pas valide. Exemple : email@gmail.com'),
   }),
 })

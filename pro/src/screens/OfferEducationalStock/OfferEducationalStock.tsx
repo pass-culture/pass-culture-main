@@ -40,21 +40,22 @@ const OfferEducationalStock = ({
       <form onSubmit={formik.handleSubmit}>
         <FormLayout>
           <FormLayout.Section title="Date et prix">
-            <Banner type="notification-info">
-              La date et le prix que vous indiquez sont à titre indicatif. Vous
-              pouvez par la suite définir toutes les dates réelles avec les
-              établissements scolaires.
-              <br />
-              Suite à votre événement, vous recevrez un mail pour confirmer les
-              éléments de votre offre et mettre à jour le nombre de participants
-              réels.
+            <Banner
+              href="#"
+              linkTitle="Consulter l’article “Comment modifier une offre collective qui est pré-réservée par un établissement ?”"
+              type="notification-info"
+            >
+              Vous pourrez modifier ces informations en fonction de vos échange
+              avec l'établissement scolaire.
             </Banner>
             <p className={styles['description-text']}>
-              Indiquez le prix total du nombre de places maximum pour un
-              établissement scolaire.
+              Indiquez le prix total de l’événement et le nombre de personnes
+              qui y participeront.
               <br />
-              (ex : mon offre s'élève à 200 euros pour 30 places dédiées à un
-              établissement scolaire.)
+              <span className={styles['description-text-italic']}>
+                (Exemple : j’accueille 30 élèves à 5€ la place, le prix total de
+                mon offre s'élève à 150€)
+              </span>
             </p>
             <FormLayout.Row inline>
               <FormStock />

@@ -1,3 +1,7 @@
 .description-text {
   margin-bottom: rem(24px);
+
+  &-italic {
+    font-style: italic;
+  }
 }

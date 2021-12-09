@@ -77,7 +77,7 @@ const FormEventAddress = ({
 
   return (
     <FormLayout.Section
-      description="Ces informations seront visibles par les établissements scolaires"
+      description="Ces informations sont visibles par les enseignants et les chefs d’établissement."
       title="Informations pratiques"
     >
       <FormLayout.SubSection title="Adresse où aura lieu l’événement">

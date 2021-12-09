@@ -46,7 +46,7 @@ const FormCategory = ({
 
   return (
     <FormLayout.Section
-      description="Le type de l'offre permet de la caractériser et de la valoriser au mieux dans l'application."
+      description="Le type de l’offre permet de la caractériser et de la valoriser au mieux pour les enseignants et chefs d’établissement."
       title="Type d'offre"
     >
       <FormLayout.Row>

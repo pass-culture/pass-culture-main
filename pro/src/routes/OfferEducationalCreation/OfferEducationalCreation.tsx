@@ -87,7 +87,7 @@ const OfferEducationalCreation = (): JSX.Element => {
   return isReady && screenProps ? (
     <>
       <Title className={style.heading} level={1}>
-        Nouvelle offre de groupe
+        Créer une nouvelle offre scolaire
       </Title>
       <OfferEducationalScreen
         {...screenProps}
