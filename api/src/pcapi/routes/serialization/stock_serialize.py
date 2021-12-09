@@ -103,6 +103,39 @@ class EducationalStockCreationBodyModel(BaseModel):
             raise ValueError("La date limite de réservation ne peut être postérieure à la date de début de l'évènement")
         return booking_limit_datetime
 
+
+class EducationalStockEditionBodyModel(BaseModel):
+    beginning_datetime: Optional[datetime]
+    booking_limit_datetime: Optional[datetime]
+    total_price: Optional[float]
+    number_of_tickets: Optional[int]
+
+    class Config:
+        alias_generator = to_camel
+        extra = "forbid"
+
+    @validator("number_of_tickets", pre=True)
+    def validate_number_of_tickets(cls, number_of_tickets):  # pylint: disable=no-self-argument
+        if number_of_tickets < 0:
+            raise ValueError("Le nombre de places ne peut pas être négatif.")
+        return number_of_tickets
+
+    @validator("total_price", pre=True)
+    def validate_price(cls, price):  # pylint: disable=no-self-argument
+        if price < 0:
+            raise ValueError("Le prix ne peut pas être négatif.")
+        return price
+
+    @validator("booking_limit_datetime")
+    def validate_booking_limit_datetime(cls, booking_limit_datetime, values):  # pylint: disable=no-self-argument
+        if (
+            all({booking_limit_datetime, values["beginning_datetime"]})
+            and booking_limit_datetime > values["beginning_datetime"]
+        ):
+            raise ValueError("La date limite de réservation ne peut être postérieure à la date de début de l'évènement")
+        return booking_limit_datetime
+
+
 class StockEditionBodyModel(BaseModel):
     beginning_datetime: Optional[datetime]
     booking_limit_datetime: Optional[datetime]

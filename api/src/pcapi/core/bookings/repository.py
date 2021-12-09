@@ -157,6 +157,10 @@ def find_by_pro_user(
     )
 
 
+def find_bookings_by_stock_id(stock_id: int) -> list[Booking]:
+    return Booking.query.filter_by(stockId=stock_id).all()
+
+
 def find_ongoing_bookings_by_stock(stock_id: int) -> list[Booking]:
     return Booking.query.filter_by(stockId=stock_id, isCancelled=False, isUsed=False).all()
 

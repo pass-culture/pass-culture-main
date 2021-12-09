@@ -1,3 +1,4 @@
+import copy
 from datetime import datetime
 from datetime import timedelta
 from io import BytesIO
@@ -7,6 +8,8 @@ from typing import Union
 from PIL import Image
 
 from pcapi import settings
+from pcapi.core.bookings.models import Booking
+from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
 from pcapi.core.users.models import User
@@ -152,10 +155,19 @@ def check_stock_can_be_created_for_offer(offer: Offer) -> None:
 
 def check_stock_is_updatable(stock: Stock) -> None:
     check_offer_existing_stocks_are_editable(stock.offer)
+    check_event_expiration(stock)
+
+
+def check_event_expiration(stock):
     if stock.isEventExpired:
         api_errors = ApiErrors()
         api_errors.add_error("global", "Les événements passés ne sont pas modifiables")
         raise api_errors
+
+
+def check_educational_stock_is_editable(stock: Stock) -> None:
+    check_validation_status(stock.offer)
+    check_event_expiration(stock)
 
 
 def check_stock_is_deletable(stock: Stock) -> None:
@@ -337,8 +349,23 @@ def check_offer_subcategory_is_valid(offer_subcategory_id):
         raise exceptions.SubCategoryIsInactive()
 
 
+def check_stock_booking_status(booking: Booking) -> Union[None, Exception]:
+    if booking.status is BookingStatus.CONFIRMED:
+        raise exceptions.EducationalOfferStockBookedAndBookingConfirmed()
+    if booking.status is BookingStatus.REIMBURSED:
+        raise exceptions.EducationalOfferStockBookedAndBookingReimbursed()
+    if booking.status is BookingStatus.USED or booking.isUsed:
+        raise exceptions.EducationalOfferStockBookedAndBookingUsed()
+
+
 def check_booking_limit_datetime(
-    beginning_datetime: datetime, booking_limit_datetime: datetime
-) -> Union[None, ApiErrors]:
-    if booking_limit_datetime > beginning_datetime:
+    stock: Stock, beginning: Optional[datetime], booking_limit_datetime: Optional[datetime]
+) -> None:
+    beginning = copy.deepcopy(beginning)
+    booking_limit_datetime = copy.deepcopy(booking_limit_datetime)
+
+    beginning = stock.beginningDatetime if beginning is None else beginning
+    booking_limit_datetime = stock.bookingLimitDatetime if booking_limit_datetime is None else booking_limit_datetime
+
+    if booking_limit_datetime > beginning:
         raise exceptions.BookingLimitDatetimeTooLate()
