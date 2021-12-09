@@ -224,7 +224,7 @@ class DMSContent(pydantic.BaseModel):
     activity: typing.Optional[str]
     address: typing.Optional[str]
     id_piece_number: typing.Optional[str]
-    registration_datetime: datetime.datetime
+    registration_datetime: typing.Optional[datetime.datetime]
 
 
 class UserProfilingRiskRating(enum.Enum):
