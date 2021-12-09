@@ -14,6 +14,7 @@ from . import models
 def get_business_units_for_offerer_id(offerer_id: str) -> list:
     return (
         models.BusinessUnit.query.join(BankInformation)
+        .filter(models.BusinessUnit.status == models.BusinessUnitStatus.ACTIVE)
         .filter(BankInformation.status == BankInformationStatus.ACCEPTED)
         .join(offerers_models.Venue, models.BusinessUnit.id == offerers_models.Venue.businessUnitId)
         .filter(offerers_models.Venue.managingOffererId == offerer_id)
