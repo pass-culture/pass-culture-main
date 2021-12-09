@@ -943,6 +943,31 @@ class EditEducationalOfferStocksTest:
         booking_updated = Booking.query.filter_by(id=booking.id).one()
         assert booking_updated.cancellationLimitDate == datetime.utcnow()
 
+    def test_should_allow_stock_edition_and_not_modify_cancellation_limit_date_when_booking_cancelled(self):
+        # Given
+        initial_event_date = datetime.now() + timedelta(days=20)
+        cancellation_limit_date = datetime.now() + timedelta(days=5)
+        stock_to_be_updated = offer_factories.EducationalEventStockFactory(
+            beginningDatetime=initial_event_date, quantity=1, dnBookedQuantity=1
+        )
+        booking = bookings_factories.EducationalBookingFactory(
+            stock=stock_to_be_updated, status=BookingStatus.CANCELLED, cancellation_limit_date=cancellation_limit_date
+        )
+
+        new_event_date = datetime.now() + timedelta(days=25, hours=5)
+        new_stock_data = stock_serialize.EducationalStockEditionBodyModel(
+            beginningDatetime=new_event_date,
+        )
+
+        # When
+        api.edit_educational_stock(stock=stock_to_be_updated, stock_data=new_stock_data.dict(exclude_unset=True))
+
+        # Then
+        booking = Booking.query.filter_by(id=booking.id).one()
+        assert booking.cancellationLimitDate == cancellation_limit_date
+        stock = offer_models.Stock.query.filter_by(id=stock_to_be_updated.id).one()
+        assert stock.beginningDatetime == new_event_date
+
     def test_does_not_allow_edition_of_an_expired_event_stock(self):
         # Given
         initial_event_date = datetime.now() - timedelta(days=1)
@@ -1023,6 +1048,23 @@ class EditEducationalOfferStocksTest:
         # Then
         stock = offer_models.Stock.query.filter_by(id=stock_to_be_updated.id).one()
         assert stock.bookingLimitDatetime == datetime(2021, 12, 5)
+
+    def test_should_not_allow_stock_edition_when_bookingLimitDatetime_not_provided_and_beginningDatetime_set_before_existing_event_datetime(
+        self,
+    ):
+        # Given
+        stock_to_be_updated = offer_factories.EducationalEventStockFactory(
+            beginningDatetime=datetime(2021, 12, 10), bookingLimitDatetime=datetime(2021, 12, 5)
+        )
+        new_stock_data = stock_serialize.EducationalStockEditionBodyModel(beginningDatetime=datetime(2021, 12, 4))
+
+        # When
+        with pytest.raises(offer_exceptions.BookingLimitDatetimeTooLate):
+            api.edit_educational_stock(stock=stock_to_be_updated, stock_data=new_stock_data.dict(exclude_unset=True))
+
+        # Then
+        stock = offer_models.Stock.query.filter_by(id=stock_to_be_updated.id).one()
+        assert stock.beginningDatetime == datetime(2021, 12, 10)
 
 
 class DeleteStockTest:

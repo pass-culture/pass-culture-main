@@ -139,7 +139,7 @@ class EducationalStockEditionBodyModel(BaseModel):
     @validator("booking_limit_datetime")
     def validate_booking_limit_datetime(cls, booking_limit_datetime, values):  # pylint: disable=no-self-argument
         if (
-            all({booking_limit_datetime, values["beginning_datetime"]})
+            all([booking_limit_datetime, values["beginning_datetime"]])
             and booking_limit_datetime > values["beginning_datetime"]
         ):
             raise ValueError("La date limite de réservation ne peut être postérieure à la date de début de l'évènement")

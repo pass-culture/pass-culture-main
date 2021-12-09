@@ -20,6 +20,7 @@ from sqlalchemy.orm import Query
 from sqlalchemy.orm import contains_eager
 from sqlalchemy.orm import joinedload
 from sqlalchemy.orm.attributes import InstrumentedAttribute
+from sqlalchemy.sql.elements import not_
 from sqlalchemy.sql.functions import coalesce
 from sqlalchemy.util._collections import AbstractKeyedTuple
 
@@ -157,8 +158,10 @@ def find_by_pro_user(
     )
 
 
-def find_bookings_by_stock_id(stock_id: int) -> list[Booking]:
-    return Booking.query.filter_by(stockId=stock_id).all()
+def find_non_cancelled_bookings_by_stock_id(stock_id: int) -> list[Booking]:
+    return Booking.query.filter(
+        Booking.stockId == stock_id, Booking.isCancelled.is_(False), not_(Booking.status == BookingStatus.CANCELLED)
+    ).all()
 
 
 def find_ongoing_bookings_by_stock(stock_id: int) -> list[Booking]:
