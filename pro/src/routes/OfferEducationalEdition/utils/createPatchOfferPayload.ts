@@ -34,6 +34,9 @@ export const createPatchOfferPayload = (
         case 'duration':
           changedValues.durationMinutes = parseDuration(offer.duration)
           break
+        case 'subCategory':
+          changedValues.subcategoryId = offer.subCategory
+          break
         case 'eventAddress':
           changedValues = {
             ...changedValues,

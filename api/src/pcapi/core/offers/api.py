@@ -292,6 +292,10 @@ def update_educational_offer(
 
             offer.extraData = extra_data
             continue
+        if key == "subcategoryId":
+            validation.check_offer_is_eligible_for_educational(value.name, True)
+            offer.subcategoryId = value.name
+            continue
 
         setattr(offer, key, value)
 

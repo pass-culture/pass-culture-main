@@ -84,15 +84,15 @@ const OfferEducationalEdition = ({
         const [categories, offerers] = results
 
         const offerSubcategory =
-          categories.payload.educationalSubCategories.filter(
+          categories.payload.educationalSubCategories.find(
             ({ id }) => offer.subcategoryId === id
           )
 
-        const offerCategory = offerSubcategory[0]
-          ? categories.payload.educationalCategories.filter(
-              ({ id }) => offerSubcategory[0].categoryId === id
+        const offerCategory = offerSubcategory
+          ? categories.payload.educationalCategories.find(
+              ({ id }) => offerSubcategory.categoryId === id
             )
-          : []
+          : undefined
 
         const userOfferers = offerers.payload.filter(offerer =>
           offerer.managedVenues.map(venue => venue.id).includes(offer.venueId)
@@ -100,13 +100,13 @@ const OfferEducationalEdition = ({
 
         const initialValuesFromOffer = computeInitialValuesFromOffer(
           offer,
-          offerCategory[0].id,
-          offerSubcategory[0].id
+          offerCategory?.id ?? '',
+          offerSubcategory?.id ?? ''
         )
 
         setScreenProps({
-          educationalCategories: offerCategory,
-          educationalSubCategories: offerSubcategory,
+          educationalCategories: categories.payload.educationalCategories,
+          educationalSubCategories: categories.payload.educationalSubCategories,
           userOfferers,
         })
 
