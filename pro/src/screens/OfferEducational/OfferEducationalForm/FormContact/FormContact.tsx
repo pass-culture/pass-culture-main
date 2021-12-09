@@ -7,7 +7,7 @@ import { EMAIL_LABEL, PHONE_LABEL } from '../../constants/labels'
 
 const FormContact = (): JSX.Element => (
   <FormLayout.Section
-    description="Ces informations seront affichées sur votre offre pour permettre aux établissements scolaires de vous contacter"
+    description={`Ces informations sont affichées sur votre offre.\n Elles permettent aux enseignants et aux chefs d’établissement scolaires de vous contacter.`}
     title="Contact"
   >
     <FormLayout.Row>

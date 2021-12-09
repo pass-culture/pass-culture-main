@@ -8,7 +8,7 @@ import { participantsOptions } from './participantsOptions'
 const FormParticipants = (): JSX.Element => (
   <FormLayout.Section
     description="Cette offre s'adresse aux élèves de :"
-    title="Public visé"
+    title="Participants"
   >
     <FormLayout.Row>
       <CheckboxGroup group={participantsOptions} groupName="participants" />
