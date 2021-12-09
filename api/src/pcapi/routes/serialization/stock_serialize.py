@@ -114,14 +114,24 @@ class EducationalStockEditionBodyModel(BaseModel):
         alias_generator = to_camel
         extra = "forbid"
 
+    @validator("beginning_datetime", pre=True)
+    def validate_beginning_datetime(cls, beginning_datetime):  # pylint: disable=no-self-argument
+        if beginning_datetime is None:
+            raise ValueError("La date d’évènement ne peut être nulle")
+        return beginning_datetime
+
     @validator("number_of_tickets", pre=True)
     def validate_number_of_tickets(cls, number_of_tickets):  # pylint: disable=no-self-argument
+        if number_of_tickets is None:
+            raise ValueError("Le nombre de places ne peut être nul")
         if number_of_tickets < 0:
             raise ValueError("Le nombre de places ne peut pas être négatif.")
         return number_of_tickets
 
     @validator("total_price", pre=True)
     def validate_price(cls, price):  # pylint: disable=no-self-argument
+        if price is None:
+            raise ValueError("Le prix ne peut être nul")
         if price < 0:
             raise ValueError("Le prix ne peut pas être négatif.")
         return price
