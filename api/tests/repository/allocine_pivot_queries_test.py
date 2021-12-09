@@ -2,8 +2,8 @@ import pytest
 
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.providers.factories import AllocinePivotFactory
+from pcapi.core.providers.repository import has_allocine_pivot_for_venue
 from pcapi.repository.allocine_pivot_queries import get_allocine_pivot_for_venue
-from pcapi.repository.allocine_pivot_queries import has_allocine_pivot_for_venue
 
 
 class HasAllocinePivotForVenueTest:

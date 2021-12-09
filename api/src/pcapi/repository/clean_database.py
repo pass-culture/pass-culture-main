@@ -31,6 +31,7 @@ from pcapi.core.offers.models import Stock
 from pcapi.core.payments.models import CustomReimbursementRule
 from pcapi.core.payments.models import Deposit
 from pcapi.core.payments.models import Recredit
+from pcapi.core.providers.models import AllocinePivot
 from pcapi.core.providers.models import AllocineVenueProvider
 from pcapi.core.providers.models import AllocineVenueProviderPriceRule
 from pcapi.core.providers.models import Provider
@@ -40,7 +41,6 @@ from pcapi.core.users.models import Token
 from pcapi.core.users.models import User
 from pcapi.local_providers.install import install_local_providers
 from pcapi.models import db
-from pcapi.models.allocine_pivot import AllocinePivot
 from pcapi.models.bank_information import BankInformation
 from pcapi.models.beneficiary_import import BeneficiaryImport
 from pcapi.models.beneficiary_import_status import BeneficiaryImportStatus

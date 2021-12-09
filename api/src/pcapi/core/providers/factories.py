@@ -1,5 +1,5 @@
+from pcapi.core.providers.models import AllocinePivot
 from pcapi.core.testing import BaseFactory
-from pcapi.models.allocine_pivot import AllocinePivot
 
 
 class AllocinePivotFactory(BaseFactory):
