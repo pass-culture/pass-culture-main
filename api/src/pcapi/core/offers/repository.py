@@ -70,6 +70,7 @@ def get_capped_offers_for_filters(
         .options(joinedload(Offer.stocks))
         .options(joinedload(Offer.mediations))
         .options(joinedload(Offer.product))
+        .options(joinedload(Offer.lastProvider))
         .limit(offers_limit)
         .all()
     )
