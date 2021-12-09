@@ -1,5 +1,6 @@
 import pytest
 
+import pcapi.core.finance.models as finance_models
 from pcapi.core.offers.factories import OffererFactory
 from pcapi.core.offers.factories import UserOffererFactory
 from pcapi.core.offers.factories import VenueFactory
@@ -24,6 +25,11 @@ class Returns200Test:
         VenueFactory(
             managingOfferer=offerer,
             businessUnit__bankAccount__status=BankInformationStatus.DRAFT,
+        )
+        VenueFactory(
+            managingOfferer=offerer,
+            businessUnit__bankAccount__status=BankInformationStatus.ACCEPTED,
+            businessUnit__status=finance_models.BusinessUnitStatus.DELETED,
         )
         VenueFactory(
             businessUnit__bankAccount__status=BankInformationStatus.ACCEPTED,

@@ -13,6 +13,7 @@ class BusinessUnitFactory(BaseFactory):
 
     name = factory.Sequence("Business unit #{}".format)
     siret = factory.Sequence("{:014}".format)
+    status = models.BusinessUnitStatus.ACTIVE
 
     bankAccount = factory.SubFactory("pcapi.core.offers.factories.BankInformationFactory")
 
