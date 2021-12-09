@@ -95,7 +95,7 @@ const serializeOfferers = (offerers: IAPIOfferer[]): IUserOfferer[] =>
     managedVenues: serializeVenues(offerer.managedVenues),
   }))
 
-const getOfferersAdapter: GetOfferersAdapter = async (
+export const getOfferersAdapter: GetOfferersAdapter = async (
   offererId: string | null
 ) => {
   try {

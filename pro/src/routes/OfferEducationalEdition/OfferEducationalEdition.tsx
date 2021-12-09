@@ -9,12 +9,12 @@ import {
   DEFAULT_EAC_FORM_VALUES,
   Mode,
 } from 'core/OfferEducational'
-import getOfferAdapter from 'core/OfferEducational/adapters/getOfferAdapter'
-import { Offer } from 'custom_types/offer'
 import {
   getCategoriesAdapter,
   getOfferersAdapter,
-} from 'routes/OfferEducationalCreation/adapters'
+  getOfferAdapter,
+} from 'core/OfferEducational/adapters'
+import { Offer } from 'custom_types/offer'
 import setInitialFormValues from 'routes/OfferEducationalCreation/utils/setInitialFormValues'
 import OfferEducationalScreen from 'screens/OfferEducational'
 import { IOfferEducationalProps } from 'screens/OfferEducational/OfferEducational'
