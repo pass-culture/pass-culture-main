@@ -86,10 +86,12 @@ class GetEducationalOfferersTest:
         # given
         admin_user = users_factories.AdminFactory()
         offerer_1 = offers_factories.OffererFactory()
-        venue_offerer_1 = offers_factories.VenueFactory(managingOfferer=offerer_1)
+        offerer_2 = offers_factories.OffererFactory()
+        offers_factories.VenueFactory(managingOfferer=offerer_1)
+        venue_offerer_2 = offers_factories.VenueFactory(managingOfferer=offerer_2)
 
         # when
-        api_url = f"/offerers/educational?offerer_id={humanize(offerer_1.id)}"
+        api_url = f"/offerers/educational?offerer_id={humanize(offerer_2.id)}"
         response = client.with_session_auth(admin_user.email).get(api_url)
 
         # then
@@ -97,20 +99,20 @@ class GetEducationalOfferersTest:
         assert response.json == {
             "educationalOfferers": [
                 {
-                    "id": humanize(offerer_1.id),
-                    "name": offerer_1.name,
+                    "id": humanize(offerer_2.id),
+                    "name": offerer_2.name,
                     "managedVenues": [
                         {
-                            "address": venue_offerer_1.address,
-                            "audioDisabilityCompliant": venue_offerer_1.audioDisabilityCompliant,
-                            "city": venue_offerer_1.city,
-                            "id": humanize(venue_offerer_1.id),
-                            "isVirtual": venue_offerer_1.isVirtual,
-                            "mentalDisabilityCompliant": venue_offerer_1.mentalDisabilityCompliant,
-                            "motorDisabilityCompliant": venue_offerer_1.motorDisabilityCompliant,
-                            "publicName": venue_offerer_1.publicName,
-                            "postalCode": venue_offerer_1.postalCode,
-                            "visualDisabilityCompliant": venue_offerer_1.visualDisabilityCompliant,
+                            "address": venue_offerer_2.address,
+                            "audioDisabilityCompliant": venue_offerer_2.audioDisabilityCompliant,
+                            "city": venue_offerer_2.city,
+                            "id": humanize(venue_offerer_2.id),
+                            "isVirtual": venue_offerer_2.isVirtual,
+                            "mentalDisabilityCompliant": venue_offerer_2.mentalDisabilityCompliant,
+                            "motorDisabilityCompliant": venue_offerer_2.motorDisabilityCompliant,
+                            "publicName": venue_offerer_2.publicName,
+                            "postalCode": venue_offerer_2.postalCode,
+                            "visualDisabilityCompliant": venue_offerer_2.visualDisabilityCompliant,
                         }
                     ],
                 },

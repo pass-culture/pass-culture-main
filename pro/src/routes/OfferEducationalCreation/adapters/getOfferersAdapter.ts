@@ -89,13 +89,11 @@ const serializeVenues = (venues: IAPIOfferer['managedVenues']): IUserVenue[] =>
     }))
 
 const serializeOfferers = (offerers: IAPIOfferer[]): IUserOfferer[] =>
-  offerers
-    .map(offerer => ({
-      id: offerer.id,
-      name: offerer.name,
-      managedVenues: serializeVenues(offerer.managedVenues),
-    }))
-    .filter(offerer => offerer.managedVenues.length > 0)
+  offerers.map(offerer => ({
+    id: offerer.id,
+    name: offerer.name,
+    managedVenues: serializeVenues(offerer.managedVenues),
+  }))
 
 const getOfferersAdapter: GetOfferersAdapter = async (
   offererId: string | null
