@@ -282,6 +282,9 @@ class InternalReviewFraudData(pydantic.BaseModel):
     phone_number: typing.Optional[str]
 
 
+SubscriptionContentType = typing.Union[EduconnectContent, JouveContent, UbbleContent, DMSContent]
+
+
 FRAUD_CHECK_MAPPING = {
     FraudCheckType.DMS: DMSContent,
     FraudCheckType.USER_PROFILING: UserProfilingFraudData,
@@ -345,7 +348,7 @@ class BeneficiaryFraudCheck(PcObject, Model):
         nullable=True,
     )
 
-    def source_data(self) -> typing.Union[JouveContent, DMSContent, UserProfilingFraudData, EduconnectContent]:
+    def source_data(self) -> typing.Union[SubscriptionContentType, UserProfilingFraudData]:
         if self.type not in FRAUD_CHECK_MAPPING:
             raise NotImplementedError(f"Cannot unserialize type {self.type}")
         return FRAUD_CHECK_MAPPING[self.type](**self.resultContent)
