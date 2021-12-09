@@ -24,7 +24,7 @@ const FAILING_RESPONSE = {
   },
 }
 
-const getCategoriesAdapter: GetCategoriesAdapter = async () => {
+export const getCategoriesAdapter: GetCategoriesAdapter = async () => {
   try {
     const result = await pcapi.loadCategories()
 
@@ -37,5 +37,3 @@ const getCategoriesAdapter: GetCategoriesAdapter = async () => {
     return FAILING_RESPONSE
   }
 }
-
-export default getCategoriesAdapter

@@ -4,7 +4,7 @@ import { useParams } from 'react-router-dom'
 
 import useNotification from 'components/hooks/useNotification'
 import Spinner from 'components/layout/Spinner'
-import getOfferAdapter from 'core/OfferEducational/adapters/getOfferAdapter'
+import { getOfferAdapter } from 'core/OfferEducational/adapters/getOfferAdapter'
 import { OfferEducationalStockFormValues } from 'core/OfferEducationalStock/types'
 import { Offer } from 'custom_types/offer'
 import OfferEducationalStockScreen from 'screens/OfferEducationalStock'
