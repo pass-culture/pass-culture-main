@@ -1,19 +1,14 @@
-from flask import request
-
 from pcapi.routes.apis import public_api
+from pcapi.routes.serialization.mailing_contacts_serialize import MailingContactBodyModel
+from pcapi.routes.serialization.mailing_contacts_serialize import MailingContactResponseModel
+from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils.rest import expect_json_data
-from pcapi.validation.routes.mailing_contacts import validate_save_mailing_contact_request
 from pcapi.workers.mailing_contacts_job import mailing_contacts_job
 
 
-# @debt api-migration
 @public_api.route("/mailing-contacts", methods=["POST"])
+@spectree_serialize(response_model=MailingContactResponseModel, on_error_statuses=[400], on_success_status=201)
 @expect_json_data
-def save_mailing_contact():
-    json = request.get_json()
-    validate_save_mailing_contact_request(json)
-    contact_email = json["email"]
-    contact_date_of_birth = json["dateOfBirth"]
-    contact_department_code = json["departmentCode"]
-    mailing_contacts_job.delay(contact_email, contact_date_of_birth, contact_department_code)
-    return "", 201
+def save_mailing_contact(body: MailingContactBodyModel) -> MailingContactResponseModel:
+    mailing_contacts_job.delay(body.email, body.dateOfBirth, body.departmentCode)
+    return MailingContactResponseModel()
