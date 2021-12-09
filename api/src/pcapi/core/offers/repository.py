@@ -2,8 +2,8 @@ from datetime import datetime
 from datetime import time
 from datetime import timedelta
 from operator import attrgetter
+from typing import List
 from typing import Optional
-from typing import Union
 
 from sqlalchemy import and_
 from sqlalchemy import func
@@ -317,7 +317,7 @@ def get_current_offer_validation_config() -> Optional[OfferValidationConfig]:
     return OfferValidationConfig.query.order_by(OfferValidationConfig.id.desc()).first()
 
 
-def get_expired_offers(interval: Union[datetime, datetime]) -> Query:
+def get_expired_offers(interval: List[datetime]) -> Query:
     """Return a query of offers whose latest booking limit occurs within
     the given interval.
 
