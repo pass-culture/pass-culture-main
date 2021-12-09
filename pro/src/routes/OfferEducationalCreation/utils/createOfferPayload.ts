@@ -1,11 +1,9 @@
 import {
   EducationalOfferModelPayload,
   IOfferEducationalFormValues,
-} from 'core/OfferEducational'
-import {
   parseDuration,
   serializeParticipants,
-} from 'core/OfferEducational/utils'
+} from 'core/OfferEducational'
 
 const disabilityCompliances = (
   accessibility: IOfferEducationalFormValues['accessibility']

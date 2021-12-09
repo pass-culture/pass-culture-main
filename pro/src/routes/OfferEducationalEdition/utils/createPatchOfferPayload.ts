@@ -3,9 +3,9 @@ import isEqual from 'lodash.isequal'
 import {
   EducationalOfferModelPayload,
   IOfferEducationalFormValues,
+  parseDuration,
+  serializeParticipants,
 } from 'core/OfferEducational'
-import { parseDuration } from 'core/OfferEducational/utils'
-import { serializeParticipants } from 'core/OfferEducational/utils/serializeParticipants'
 
 type DeepPartialEducationalOfferModelPayload = Omit<
   Partial<EducationalOfferModelPayload>,

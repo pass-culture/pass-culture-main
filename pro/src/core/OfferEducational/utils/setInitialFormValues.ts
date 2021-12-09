@@ -4,7 +4,7 @@ import {
   IUserOfferer,
 } from 'core/OfferEducational'
 
-const setInitialFormValues = (
+export const setInitialFormValues = (
   values: IOfferEducationalFormValues,
   offerers: IUserOfferer[],
   offererId: string | null,
@@ -50,5 +50,3 @@ const setInitialFormValues = (
     venueId: setVenueId(),
   }
 }
-
-export default setInitialFormValues

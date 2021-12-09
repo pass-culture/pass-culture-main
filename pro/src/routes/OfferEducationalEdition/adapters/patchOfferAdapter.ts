@@ -1,5 +1,7 @@
-import { IOfferEducationalFormValues } from 'core/OfferEducational'
-import { hasStatusCode } from 'core/OfferEducational/utils'
+import {
+  IOfferEducationalFormValues,
+  hasStatusCode,
+} from 'core/OfferEducational'
 import * as pcapi from 'repository/pcapi/pcapi'
 
 import { createPatchOfferPayload } from '../utils/createPatchOfferPayload'
