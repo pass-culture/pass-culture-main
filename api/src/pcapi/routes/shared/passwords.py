@@ -9,17 +9,17 @@ from pcapi.connectors.api_recaptcha import ReCaptchaException
 from pcapi.connectors.api_recaptcha import check_webapp_recaptcha_token
 from pcapi.core.mails.transactional import users as user_emails
 from pcapi.core.users import repository as users_repo
+from pcapi.core.users.api import update_user_password
 from pcapi.core.users.external import update_external_user
 from pcapi.core.users.models import TokenType
 from pcapi.domain.password import check_password_strength
 from pcapi.domain.password import check_password_validity
-from pcapi.domain.password import validate_change_password_request
-from pcapi.domain.password import validate_new_password_request
 from pcapi.domain.user_emails import send_reset_password_email_to_pro
 from pcapi.models.api_errors import ApiErrors
 from pcapi.repository import repository
 from pcapi.repository.user_queries import find_user_by_email
 from pcapi.routes.apis import private_api
+from pcapi.routes.serialization.password_serialize import ChangePasswordBodyModel
 from pcapi.routes.serialization.password_serialize import ResetPasswordBodyModel
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils.rest import expect_json_data
@@ -28,21 +28,16 @@ from pcapi.utils.rest import expect_json_data
 logger = logging.getLogger(__name__)
 
 
-# @debt api-migration
 @private_api.route("/users/current/change-password", methods=["POST"])
 @login_required
-@expect_json_data
-def post_change_password():
+@spectree_serialize(on_success_status=204, on_error_statuses=[400])
+def post_change_password(body: ChangePasswordBodyModel) -> None:
     user = current_user._get_current_object()  # get underlying User object from proxy
-    json = request.get_json()
-    validate_change_password_request(json)
-    new_password = json["newPassword"]
-    new_confirmation_password = json["newConfirmationPassword"]
-    old_password = json["oldPassword"]
+    new_password = body.newPassword
+    new_confirmation_password = body.newConfirmationPassword
+    old_password = body.oldPassword
     check_password_validity(new_password, new_confirmation_password, old_password, user)
-    user.setPassword(new_password)
-    repository.save(user)
-    return "", 204
+    update_user_password(user, new_password)
 
 
 # @debt api-migration

@@ -7,7 +7,6 @@ from pcapi.domain.password import _ensure_new_password_is_different_from_old
 from pcapi.domain.password import _ensure_new_password_is_strong_enough
 from pcapi.domain.password import check_password_validity
 from pcapi.domain.password import random_password
-from pcapi.domain.password import validate_change_password_request
 from pcapi.models.api_errors import ApiErrors
 
 
@@ -22,101 +21,6 @@ class RandomPasswordTest:
         # Then
         _ensure_new_password_is_strong_enough("password", password, errors)
         errors.maybe_raise()
-
-
-class ValidateChangePasswordRequestTest:
-    def test_change_password_raises_an_error_if_old_password_is_not_given_as_key_in_json(self):
-        # given
-        user = User()
-        user.setPassword("0ld__p455w0rd")
-        json = {"newPassword": "N3w__p455w0rd", "newConfirmationPassword": "N3w__c0nfirm__p455w0rd"}
-
-        # when
-        with pytest.raises(ApiErrors) as api_errors:
-            validate_change_password_request(json)
-
-        # then
-        assert api_errors.value.errors["oldPassword"] == ["Ancien mot de passe manquant"]
-
-    def test_change_password_raises_an_error_if_new_password_is_not_given_as_key_in_json(self):
-        # given
-        user = User()
-        user.setPassword("0ld__p455w0rd")
-        json = {"oldPassword": "0ld__p455w0rd", "newConfirmationPassword": "N3w__c0nfirm__p455w0rd"}
-
-        # when
-        with pytest.raises(ApiErrors) as api_errors:
-            validate_change_password_request(json)
-
-        # then
-        assert api_errors.value.errors["newPassword"] == ["Nouveau mot de passe manquant"]
-
-    def test_change_password_raises_an_error_if_new_confirmation_password_is_not_given_as_key_in_json(self):
-        # given
-        user = User()
-        user.setPassword("0ld__p455w0rd")
-        json = {"oldPassword": "0ld__p455w0rd", "newPassword": "N3w__p455w0rd"}
-
-        # when
-        with pytest.raises(ApiErrors) as api_errors:
-            validate_change_password_request(json)
-
-        # then
-        assert api_errors.value.errors["newConfirmationPassword"] == ["Confirmation du nouveau mot de passe manquante"]
-
-    def test_change_password_raises_an_error_if_old_password_has_no_value_in_json(self):
-        # given
-        user = User()
-        user.setPassword("0ld__p455w0rd")
-        json = {"oldPassword": "", "newPassword": "N3w__p455w0rd", "newConfirmationPassword": "N3w__c0nfirm__p455w0rd"}
-
-        # when
-        with pytest.raises(ApiErrors) as api_errors:
-            validate_change_password_request(json)
-
-        # then
-        assert api_errors.value.errors["oldPassword"] == ["Ancien mot de passe manquant"]
-
-    def test_change_password_raises_an_error_if_new_password_has_no_value_in_json(self):
-        # given
-        user = User()
-        user.setPassword("0ld__p455w0rd")
-        json = {"oldPassword": "0ld__p455w0rd", "newPassword": "", "newConfirmationPassword": "N3w__c0nfirm__p455w0rd"}
-
-        # when
-        with pytest.raises(ApiErrors) as api_errors:
-            validate_change_password_request(json)
-
-        # then
-        assert api_errors.value.errors["newPassword"] == ["Nouveau mot de passe manquant"]
-
-    def test_change_password_raises_an_error_if_new_confirmation_password_has_no_value_in_json(self):
-        # given
-        user = User()
-        user.setPassword("0ld__p455w0rd")
-        json = {"oldPassword": "0ld__p455w0rd", "newPassword": "N3w__p455w0rd", "newConfirmationPassword": ""}
-
-        # when
-        with pytest.raises(ApiErrors) as api_errors:
-            validate_change_password_request(json)
-
-        # then
-        assert api_errors.value.errors["newConfirmationPassword"] == ["Confirmation du nouveau mot de passe manquante"]
-
-    def test_change_password_raises_an_error_if_no_password_is_provided(self):
-        # given
-        user = User()
-        user.setPassword("0ld__p455w0rd")
-        json = {}
-
-        # when
-        with pytest.raises(ApiErrors) as api_errors:
-            validate_change_password_request(json)
-
-        # then
-        assert api_errors.value.errors["newPassword"] == ["Nouveau mot de passe manquant"]
-        assert api_errors.value.errors["oldPassword"] == ["Ancien mot de passe manquant"]
-        assert api_errors.value.errors["newConfirmationPassword"] == ["Confirmation du nouveau mot de passe manquante"]
 
 
 class CheckPasswordValidityTest:

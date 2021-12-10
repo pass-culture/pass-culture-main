@@ -1,10 +1,7 @@
-from unittest.mock import patch
-
 import pytest
 
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
-from pcapi.models.api_errors import ApiErrors
 
 from tests.conftest import TestClient
 
@@ -36,14 +33,32 @@ class Returns200Test:
 
 class Returns400Test:
     @pytest.mark.usefixtures("db_session")
-    @patch("pcapi.routes.shared.passwords.validate_change_password_request")
-    def when_one_password_is_missing_in_the_request_body(self, validate_change_password_request, app):
+    def when_data_is_empty_in_the_request_body(self, app):
         # given
-        api_errors = ApiErrors()
-        api_errors.add_error("password", "missing password")
-        api_errors.status_code = 400
         user = users_factories.UserFactory(email="user@example.com")
-        validate_change_password_request.side_effect = api_errors
+        data = {
+            "oldPassword": "",
+            "newPassword": "",
+            "newConfirmationPassword": "",
+        }
+
+        # when
+        response = (
+            TestClient(app.test_client())
+            .with_session_auth(user.email)
+            .post("/users/current/change-password", json=data)
+        )
+
+        # then
+        assert response.status_code == 400
+        assert response.json["oldPassword"] == ["Ce champ est obligatoire"]
+        assert response.json["newPassword"] == ["Ce champ est obligatoire"]
+        assert response.json["newConfirmationPassword"] == ["Ce champ est obligatoire"]
+
+    @pytest.mark.usefixtures("db_session")
+    def when_data_is_missing_in_the_request_body(self, app):
+        # given
+        user = users_factories.UserFactory(email="user@example.com")
         data = {}
 
         # when
@@ -55,4 +70,6 @@ class Returns400Test:
 
         # then
         assert response.status_code == 400
-        assert response.json["password"] == ["missing password"]
+        assert response.json["oldPassword"] == ["Ce champ est obligatoire"]
+        assert response.json["newPassword"] == ["Ce champ est obligatoire"]
+        assert response.json["newConfirmationPassword"] == ["Ce champ est obligatoire"]
