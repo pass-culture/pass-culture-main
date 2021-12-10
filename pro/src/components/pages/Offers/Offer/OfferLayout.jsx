@@ -12,20 +12,16 @@ import { OfferHeader } from 'components/pages/Offers/Offer/OfferStatus/OfferHead
 import RouteLeavingGuardOfferCreation from 'components/pages/Offers/Offer/RouteLeavingGuardOfferCreation'
 import StocksContainer from 'components/pages/Offers/Offer/Stocks/StocksContainer'
 import { OFFER_STATUS_DRAFT } from 'components/pages/Offers/Offers/_constants'
-import Breadcrumb, {
-  STEP_ID_CONFIRMATION,
-  STEP_ID_DETAILS,
-  STEP_ID_STOCKS,
-} from 'new_components/OfferBreadcrumb'
+import Breadcrumb, { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 import * as pcapi from 'repository/pcapi/pcapi'
 
 import OfferDetails from './OfferDetails'
 
 const mapPathToStep = {
-  creation: STEP_ID_DETAILS,
-  edition: STEP_ID_DETAILS,
-  stocks: STEP_ID_STOCKS,
-  confirmation: STEP_ID_CONFIRMATION,
+  creation: OfferBreadcrumbStep.DETAILS,
+  edition: OfferBreadcrumbStep.DETAILS,
+  stocks: OfferBreadcrumbStep.STOCKS,
+  confirmation: OfferBreadcrumbStep.CONFIRMATION,
 }
 
 const OfferLayout = ({ location, match }) => {
