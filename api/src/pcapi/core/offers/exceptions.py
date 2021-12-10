@@ -100,16 +100,10 @@ class ReportMalformed(OfferReportError):
     code = "REPORT_MALFORMED"
 
 
-class EducationalOfferStockBookedAndBookingUsed(Exception):
-    pass
-
-
-class EducationalOfferStockBookedAndBookingConfirmed(Exception):
-    pass
-
-
-class EducationalOfferStockBookedAndBookingReimbursed(Exception):
-    pass
+class EducationalOfferStockBookedAndBookingNotPending(Exception):
+    def __init__(self, status, booking_id):
+        self.booking_status = status
+        super().__init__()
 
 
 class CannotModifiedPastEventStock(Exception):
