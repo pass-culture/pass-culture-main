@@ -8,6 +8,7 @@ import freezegun
 import pytest
 
 from pcapi.connectors.beneficiaries import jouve_backend
+from pcapi.core.fraud import factories as fraud_factories
 from pcapi.core.fraud import models as fraud_models
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
@@ -64,8 +65,11 @@ JOUVE_CONTENT = {
 @patch("pcapi.connectors.beneficiaries.jouve_backend._get_raw_content", return_value=JOUVE_CONTENT)
 def test_saved_a_beneficiary_from_application(app):
     # Given
-    users_factories.UserFactory(
+    user = users_factories.UserFactory(
         firstName=JOUVE_CONTENT["firstName"], lastName=JOUVE_CONTENT["lastName"], email=JOUVE_CONTENT["email"]
+    )
+    fraud_factories.BeneficiaryFraudCheckFactory(
+        user=user, type=fraud_models.FraudCheckType.HONOR_STATEMENT, status=fraud_models.FraudCheckStatus.OK
     )
     # When
     create_beneficiary_from_application.execute(APPLICATION_ID)
@@ -123,9 +127,9 @@ def test_marked_subscription_on_hold_when_jouve_subscription_journed_is_paused(_
 
 @override_features(FORCE_PHONE_VALIDATION=False)
 @patch("pcapi.connectors.beneficiaries.jouve_backend._get_raw_content", return_value=JOUVE_CONTENT)
-def test_application_for_native_app_user(app):
+def test_application_for_native_app_user(_get_raw_content_mock, client):
     # Given
-    users_api.create_account(
+    user = users_api.create_account(
         email=JOUVE_CONTENT["email"],
         password="123456789",
         birthdate=AGE18_ELIGIBLE_BIRTH_DATE,
@@ -134,12 +138,19 @@ def test_application_for_native_app_user(app):
         marketing_email_subscription=False,
         phone_number="0607080900",
     )
+
     push_testing.reset_requests()
 
-    # When
     create_beneficiary_from_application.execute(APPLICATION_ID)
+    profile_data = {
+        "address": "1 rue des rues",
+        "city": "Uneville",
+        "postalCode": "77000",
+        "activity": "Lycéen",
+    }
+    client.with_token(email=user.email)
+    client.patch("/native/v1/beneficiary_information", profile_data)
 
-    # Then
     beneficiary = User.query.one()
 
     # the fake Jouve backend returns a default phone number. Since a User
@@ -157,19 +168,22 @@ def test_application_for_native_app_user(app):
     assert beneficiary_import.beneficiary == beneficiary
     assert beneficiary.notificationSubscriptions == {"marketing_push": True, "marketing_email": False}
 
-    assert len(push_testing.requests) == 2
+    assert len(push_testing.requests) == 4
 
 
 @override_features(FORCE_PHONE_VALIDATION=False)
 @patch("pcapi.connectors.beneficiaries.jouve_backend._get_raw_content", return_value=JOUVE_CONTENT)
 def test_application_for_ex_underage_user(app):
     with freezegun.freeze_time(datetime.utcnow() - relativedelta(years=3)):
-        users_factories.UnderageBeneficiaryFactory(
+        user = users_factories.UnderageBeneficiaryFactory(
             email=JOUVE_CONTENT["email"],
             firstName=JOUVE_CONTENT["firstName"],
             lastName=JOUVE_CONTENT["lastName"],
             dateOfBirth=datetime.strptime(JOUVE_CONTENT["birthDateTxt"], "%d/%m/%Y"),
             subscription_age=15,
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user, type=fraud_models.FraudCheckType.HONOR_STATEMENT, status=fraud_models.FraudCheckStatus.OK
         )
 
     create_beneficiary_from_application.execute(APPLICATION_ID)
@@ -188,16 +202,16 @@ def test_application_for_ex_underage_user(app):
 
 @override_features(FORCE_PHONE_VALIDATION=False)
 @patch("pcapi.connectors.beneficiaries.jouve_backend._get_raw_content")
-def test_application_for_native_app_user_with_load_smoothing(_get_raw_content, app, db_session):
+def test_application_for_native_app_user_with_load_smoothing(_get_raw_content, client, app, db_session):
     # Given
     application_id = 35
     user = UserFactory(
         dateOfBirth=AGE18_ELIGIBLE_BIRTH_DATE,
         phoneNumber="0607080900",
-        address="an address",
-        city="Nantes",
-        postalCode="44300",
-        activity="Apprenti",
+        address=None,
+        city=None,
+        postalCode=None,
+        activity=None,
         hasCompletedIdCheck=True,
     )
     push_testing.reset_requests()
@@ -224,6 +238,14 @@ def test_application_for_native_app_user_with_load_smoothing(_get_raw_content, a
 
     # When
     create_beneficiary_from_application.execute(application_id)
+    profile_data = {
+        "address": "1 rue des rues",
+        "city": "Uneville",
+        "postalCode": "77000",
+        "activity": "Lycéen",
+    }
+    client.with_token(email=user.email)
+    client.patch("/native/v1/beneficiary_information", profile_data)
 
     # Then
     beneficiary = User.query.one()
@@ -231,9 +253,9 @@ def test_application_for_native_app_user_with_load_smoothing(_get_raw_content, a
     # the fake Jouve backend returns a default phone number. Since a User
     # alredy exists, the phone number should not be updated during the import process
     assert beneficiary.phoneNumber == "0607080900"
-    assert beneficiary.address == "an address"
-    assert beneficiary.activity == "Apprenti"
-    assert beneficiary.postalCode == "44300"
+    assert beneficiary.address == "1 rue des rues"
+    assert beneficiary.activity == "Lycéen"
+    assert beneficiary.postalCode == "77000"
 
     deposit = Deposit.query.one()
     assert deposit.amount == 300
@@ -246,7 +268,7 @@ def test_application_for_native_app_user_with_load_smoothing(_get_raw_content, a
     assert beneficiary_import.beneficiary == beneficiary
     assert beneficiary.notificationSubscriptions == {"marketing_push": True, "marketing_email": True}
 
-    assert len(push_testing.requests) == 2
+    assert len(push_testing.requests) == 4
     assert len(mails_testing.outbox) == 1
     assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 2016025
 
@@ -457,6 +479,9 @@ def test_id_piece_number_no_duplicate(
         email=BASE_JOUVE_CONTENT["email"],
         idPieceNumber=None,
     )
+    fraud_factories.BeneficiaryFraudCheckFactory(
+        user=subscribing_user, type=fraud_models.FraudCheckType.HONOR_STATEMENT, status=fraud_models.FraudCheckStatus.OK
+    )
     mocked_get_content.return_value = BASE_JOUVE_CONTENT | {"bodyPieceNumber": ID_PIECE_NUMBER}
 
     # When
@@ -612,6 +637,9 @@ def test_id_piece_number_by_pass(
     )
     UserFactory(idPieceNumber=ID_PIECE_NUMBER)
     UserFactory(idPieceNumber=None)
+    fraud_factories.BeneficiaryFraudCheckFactory(
+        user=subscribing_user, type=fraud_models.FraudCheckType.HONOR_STATEMENT, status=fraud_models.FraudCheckStatus.OK
+    )
     mocked_get_content.return_value = BASE_JOUVE_CONTENT | {"bodyPieceNumber": ID_PIECE_NUMBER}
 
     # When

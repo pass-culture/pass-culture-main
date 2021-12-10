@@ -3,6 +3,8 @@ from datetime import datetime
 from dateutil.relativedelta import relativedelta
 import pytest
 
+from pcapi.core.fraud import factories as fraud_factories
+from pcapi.core.fraud import models as fraud_models
 from pcapi.core.testing import override_settings
 from pcapi.core.users.api import create_phone_validation_token
 from pcapi.core.users.factories import BeneficiaryImportFactory
@@ -59,6 +61,9 @@ def test_send_phone_validation_and_become_beneficiary(app):
     )
     beneficiary_import = BeneficiaryImportFactory(beneficiary=user)
     beneficiary_import.setStatus(ImportStatus.CREATED)
+    fraud_factories.BeneficiaryFraudCheckFactory(
+        user=user, type=fraud_models.FraudCheckType.HONOR_STATEMENT, status=fraud_models.FraudCheckStatus.OK
+    )
 
     client = TestClient(app.test_client()).with_session_auth(email=user.email)
 
