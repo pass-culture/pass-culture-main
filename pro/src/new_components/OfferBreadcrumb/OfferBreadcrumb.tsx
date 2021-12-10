@@ -16,6 +16,7 @@ interface IOfferBreadcrumb {
   isCreatingOffer: boolean
   offerId?: string
   isOfferEducational?: boolean
+  className?: string
 }
 
 const OfferBreadcrumb = ({
@@ -23,6 +24,7 @@ const OfferBreadcrumb = ({
   isCreatingOffer,
   offerId = '',
   isOfferEducational = false,
+  className,
 }: IOfferBreadcrumb): JSX.Element => {
   const editionUrl = useFeatureFlagedOfferEditionURL(
     isOfferEducational,
@@ -64,6 +66,7 @@ const OfferBreadcrumb = ({
   return (
     <Breadcrumb
       activeStep={activeStep}
+      className={className}
       steps={steps}
       styleType={
         isCreatingOffer ? BreadcrumbStyle.DEFAULT : BreadcrumbStyle.TAB
