@@ -169,13 +169,15 @@ def edit_educational_stock(stock_id: str, body: EducationalStockEditionBodyModel
             {"educationalStock": ["La date limite de confirmation ne peut être fixée après la date de l évènement"]},
             status_code=400,
         )
-    except (
-        offers_exceptions.EducationalOfferStockBookedAndBookingConfirmed,
-        offers_exceptions.EducationalOfferStockBookedAndBookingReimbursed,
-        offers_exceptions.EducationalOfferStockBookedAndBookingUsed,
-    ):
+    except offers_exceptions.EducationalOfferStockBookedAndBookingNotPending as error:
         raise ApiErrors(
             {
+                "educationalStockEdition": [
+                    f"Un stock lié à une offre éducationnelle, dont la réservation associée a le statut {error.booking_status.value}, ne peut être édité "
+                ]
+            },
+            status_code=400,
+        )
     except SQLAMultipleResultsFound:
         logger.exception(
             "Several non cancelled bookings found while trying to edit related educational stock",
