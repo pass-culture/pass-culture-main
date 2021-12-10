@@ -9,7 +9,7 @@ import useFeatureFlagedOfferEditionURL from 'components/hooks/useFeatureFlaggedO
 import Breadcrumb, {
   STYLE_TYPE_TAB,
   STYLE_TYPE_DEFAULT,
-} from 'components/layout/Breadcrumb'
+} from 'new_components/Breadcrumb/Breadcrumb'
 
 export const STEP_ID_DETAILS = 'details'
 export const STEP_ID_STOCKS = 'stocks'
