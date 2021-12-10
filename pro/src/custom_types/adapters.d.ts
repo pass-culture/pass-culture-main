@@ -1,5 +1,15 @@
-type Adapter<Params, Payload> = (params: Params) => Promise<{
-  isOk: boolean
+type AdapterSuccess<T> = {
+  isOk: true
   message: string | null
-  payload: Payload
-}>
+  payload: T
+}
+
+type AdapterFailure<T> = {
+  isOk: false
+  message: string
+  payload: T
+}
+
+type Adapter<Params, SuccessPayload, FailurePayload> = (
+  params: Params
+) => Promise<AdapterSuccess<SuccessPayload> | AdapterFailure<FailurePayload>>

@@ -13,7 +13,7 @@ interface IPayload {
   educationalSubCategories: IEducationalSubCategory[]
 }
 
-type GetCategoriesAdapter = Adapter<Params, IPayload>
+type GetCategoriesAdapter = Adapter<Params, IPayload, IPayload>
 
 const FAILING_RESPONSE = {
   isOk: false,

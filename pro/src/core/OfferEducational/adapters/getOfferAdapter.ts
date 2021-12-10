@@ -1,9 +1,11 @@
 import { Offer } from 'custom_types/offer'
 import * as pcapi from 'repository/pcapi/pcapi'
 
-type GetOfferAdapter = Adapter<string, { offer: Offer | null }>
+type IPayloadSuccess = { offer: Offer }
+type IPayloadFailure = { offer: null }
+type GetOfferAdapter = Adapter<string, IPayloadSuccess, IPayloadFailure>
 
-const FAILING_RESPONSE = {
+const FAILING_RESPONSE: AdapterFailure<IPayloadFailure> = {
   isOk: false,
   message: 'Une erreur est survenue lors de la récupération de votre offre',
   payload: {
