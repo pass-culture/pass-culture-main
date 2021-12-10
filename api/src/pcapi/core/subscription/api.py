@@ -196,6 +196,11 @@ def create_beneficiary_import(user: users_models.User, eligibilityType: users_mo
 
     users_api.update_user_information_from_external_source(user, fraud_check.source_data(), commit=True)
 
+    if not users_api.steps_to_become_beneficiary(user):
+        activate_beneficiary(user)
+    else:
+        users_external.update_external_user(user)
+
 
 def _send_beneficiary_activation_email(user: users_models.User, has_activated_account: bool):
     if not has_activated_account:
