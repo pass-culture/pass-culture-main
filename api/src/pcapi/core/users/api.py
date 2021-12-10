@@ -90,6 +90,7 @@ class BeneficiaryValidationStep(Enum):
     PHONE_VALIDATION = "phone-validation"
     ID_CHECK = "id-check"
     BENEFICIARY_INFORMATION = "beneficiary-information"
+    HONOR_STATEMENT = "honor-statement"
 
 
 def create_email_validation_token(user: User) -> Token:
@@ -246,6 +247,9 @@ def steps_to_become_beneficiary(user: User) -> list[BeneficiaryValidationStep]:
         beneficiary_import.eligibilityType == EligibilityType.UNDERAGE and user.has_underage_beneficiary_role
     ):
         missing_steps.append(BeneficiaryValidationStep.ID_CHECK)
+
+    if not fraud_api.has_performed_honor_statement(user):
+        missing_steps.append(BeneficiaryValidationStep.HONOR_STATEMENT)
 
     return missing_steps
 

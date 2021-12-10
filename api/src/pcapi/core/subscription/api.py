@@ -116,7 +116,7 @@ def activate_beneficiary(
     eligibility = beneficiary_import.eligibilityType
     deposit_source = beneficiary_import.get_detailed_source()
 
-    if not user.is_eligible_for_beneficiary_upgrade:
+    if not user.is_eligible_for_beneficiary_upgrade(eligibility):
         raise exceptions.CannotUpgradeBeneficiaryRole()
 
     if eligibility == users_models.EligibilityType.UNDERAGE:

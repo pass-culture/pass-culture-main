@@ -68,7 +68,56 @@ class JouveFraudCheckTest:
         )
         _get_raw_content.return_value = self.JOUVE_CONTENT
 
+        profile_data = {
+            "address": "1 rue des rues",
+            "city": "Uneville",
+            "postalCode": "77000",
+            "activity": "Lycéen",
+        }
+        client.with_token(email=user.email)
+        client.patch("/native/v1/beneficiary_information", profile_data)
+
         response = client.post("/beneficiaries/application_update", json={"id": self.application_id})
+
+        assert response.status_code == 200
+
+        fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(
+            user=user, type=fraud_models.FraudCheckType.JOUVE
+        ).first()
+        fraud_result = fraud_models.BeneficiaryFraudResult.query.filter_by(user=user).first()
+        jouve_fraud_content = fraud_models.JouveContent(**fraud_check.resultContent)
+
+        assert jouve_fraud_content.bodyPieceNumber == "140767100016"
+        assert fraud_check.dateCreated
+        assert fraud_check.thirdPartyId == "35"
+        assert fraud_result.status == fraud_models.FraudStatus.OK
+
+        db.session.refresh(user)
+        assert user.has_beneficiary_role
+        assert user.firstName == "CHRISTOPHE"
+        assert user.lastName == "DUPO"
+
+    @patch("pcapi.connectors.beneficiaries.jouve_backend._get_raw_content")
+    def test_jouve_update_before_profile_update(self, _get_raw_content, client):
+        user = users_factories.UserFactory(
+            hasCompletedIdCheck=True,
+            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
+            dateOfBirth=self.AGE18_ELIGIBLE_BIRTH_DATE,
+            email=self.user_email,
+        )
+        _get_raw_content.return_value = self.JOUVE_CONTENT
+
+        response = client.post("/beneficiaries/application_update", json={"id": self.application_id})
+
+        profile_data = {
+            "address": "1 rue des rues",
+            "city": "Uneville",
+            "postalCode": "77000",
+            "activity": "Lycéen",
+        }
+        client.with_token(email=user.email)
+        client.patch("/native/v1/beneficiary_information", profile_data)
+
         assert response.status_code == 200
 
         fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(

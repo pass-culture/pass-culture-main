@@ -150,7 +150,6 @@ class EduconnectTest:
         assert user.lastName == "SENS"
         assert user.dateOfBirth == datetime.datetime(2006, 8, 18, 0, 0)
         assert user.ineHash == ine_hash
-        assert user.roles == [user_models.UserRole.UNDERAGE_BENEFICIARY]
 
     @patch("pcapi.core.users.external.educonnect.api.get_saml_client")
     def test_user_type_not_student(self, mock_get_educonnect_saml_client, client, caplog, app):

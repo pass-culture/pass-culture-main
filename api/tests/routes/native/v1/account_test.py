@@ -1407,6 +1407,9 @@ class ValidatePhoneNumberTest:
 
         beneficiary_import = BeneficiaryImportFactory(beneficiary=user)
         beneficiary_import.setStatus(ImportStatus.CREATED)
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user, type=fraud_models.FraudCheckType.HONOR_STATEMENT, status=fraud_models.FraudCheckStatus.OK
+        )
 
         client.with_token(email=user.email)
         token = create_phone_validation_token(user)
