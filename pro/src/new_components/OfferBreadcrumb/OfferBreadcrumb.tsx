@@ -42,7 +42,7 @@ const OfferBreadcrumb = ({
       },
       {
         id: OfferBreadcrumbStep.STOCKS,
-        label: 'Stock et prix',
+        label: isOfferEducational ? 'Date et prix' : 'Stock et prix',
         url: `/offres/${offerId}/stocks`,
       },
     ]
@@ -54,7 +54,7 @@ const OfferBreadcrumb = ({
       },
       {
         id: OfferBreadcrumbStep.STOCKS,
-        label: 'Stock et prix',
+        label: isOfferEducational ? 'Date et prix' : 'Stock et prix',
       },
       {
         id: OfferBreadcrumbStep.CONFIRMATION,
