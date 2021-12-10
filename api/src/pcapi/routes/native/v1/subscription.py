@@ -1,6 +1,7 @@
 import logging
 from typing import Optional
 
+from pcapi.core.fraud import api as fraud_api
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import school_types
 from pcapi.core.users import models as users_models
@@ -66,3 +67,10 @@ def get_school_types() -> serializers.SchoolTypesResponse:
         ],
         activities=[serializers.ActivityResponseModel.from_orm(activity) for activity in school_types.ALL_ACTIVITIES],
     )
+
+
+@blueprint.native_v1.route("/subscription/honor_statement", methods=["POST"])
+@spectree_serialize(on_success_status=204, api=blueprint.api)
+@authenticated_user_required
+def create_honor_statement_fraud_check(user: users_models.User) -> None:
+    fraud_api.create_honor_statement_fraud_check(user, "statement from /subscription/honor_statement endpoint")

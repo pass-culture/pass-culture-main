@@ -748,3 +748,16 @@ def is_user_fraudster(user: users_models.User) -> bool:
         beneficiary_fraud_result.status != models.FraudStatus.OK
         for beneficiary_fraud_result in user.beneficiaryFraudResults
     )
+
+
+def create_honor_statement_fraud_check(user: users_models.User, origin: str) -> None:
+    # TODO(viconnex) -> add eligibility type
+    fraud_check = models.BeneficiaryFraudCheck(
+        user=user,
+        type=models.FraudCheckType.HONOR_STATEMENT,
+        status=models.FraudCheckStatus.OK,
+        reason=origin,
+        thirdPartyId=f"internal_check_{user.id}",
+    )
+    db.session.add(fraud_check)
+    db.session.commit()
