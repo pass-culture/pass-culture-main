@@ -7,6 +7,8 @@ import Spinner from 'components/layout/Spinner'
 import { getOfferAdapter } from 'core/OfferEducational'
 import { OfferEducationalStockFormValues } from 'core/OfferEducationalStock/types'
 import { Offer } from 'custom_types/offer'
+import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
+import OfferEducationalLayout from 'new_components/OfferEducationalLayout'
 import OfferEducationalStockScreen from 'screens/OfferEducationalStock'
 
 import postEducationalStockAdapter from './adapters/postEducationalStock'
@@ -55,14 +57,22 @@ const OfferEducationalStockCreation = (): JSX.Element => {
     loadOffer()
   }, [offerId, notify])
 
-  return offer && isReady ? (
-    <OfferEducationalStockScreen
-      initialValues={initialValues}
-      offer={offer}
-      onSubmit={handleSubmitStock}
-    />
-  ) : (
-    <Spinner />
+  return (
+    <OfferEducationalLayout
+      activeStep={OfferBreadcrumbStep.STOCKS}
+      isCreatingOffer
+      title="Créer une nouvelle offre scolaire"
+    >
+      {offer && isReady ? (
+        <OfferEducationalStockScreen
+          initialValues={initialValues}
+          offer={offer}
+          onSubmit={handleSubmitStock}
+        />
+      ) : (
+        <Spinner />
+      )}
+    </OfferEducationalLayout>
   )
 }
 

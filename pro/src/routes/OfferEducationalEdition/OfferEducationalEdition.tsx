@@ -13,9 +13,10 @@ import {
   getOfferAdapter,
   setInitialFormValues,
 } from 'core/OfferEducational'
+import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
+import OfferEducationalLayout from 'new_components/OfferEducationalLayout'
 import OfferEducationalScreen from 'screens/OfferEducational'
 import { IOfferEducationalProps } from 'screens/OfferEducational/OfferEducational'
-import { Title } from 'ui-kit'
 
 import patchOfferAdapter from './adapters/patchOfferAdapter'
 import { computeInitialValuesFromOffer } from './utils/computeInitialValuesFromOffer'
@@ -124,19 +125,25 @@ const OfferEducationalEdition = ({
     }
   }, [isReady, offerId, notify])
 
-  return isReady && screenProps ? (
-    <>
-      <Title level={1}>Éditer une offre</Title>
-      <OfferEducationalScreen
-        {...screenProps}
-        initialValues={initialValues}
-        mode={Mode.EDITION}
-        notify={notify}
-        onSubmit={editOffer}
-      />
-    </>
-  ) : (
-    <Spinner />
+  return (
+    <OfferEducationalLayout
+      activeStep={OfferBreadcrumbStep.DETAILS}
+      isCreatingOffer={false}
+      offerId={offerId}
+      title="Éditer une offre"
+    >
+      {isReady && screenProps ? (
+        <OfferEducationalScreen
+          {...screenProps}
+          initialValues={initialValues}
+          mode={Mode.EDITION}
+          notify={notify}
+          onSubmit={editOffer}
+        />
+      ) : (
+        <Spinner />
+      )}
+    </OfferEducationalLayout>
   )
 }
 

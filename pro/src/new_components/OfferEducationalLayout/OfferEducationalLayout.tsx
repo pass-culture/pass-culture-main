@@ -31,6 +31,7 @@ const OfferEducationalLayout = ({
         activeStep={activeStep}
         className={styles.breadcrumb}
         isCreatingOffer={isCreatingOffer}
+        isOfferEducational
         offerId={offerId}
       />
       {children}
