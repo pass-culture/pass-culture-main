@@ -8,7 +8,7 @@ import React from 'react'
 import Breadcrumb, {
   STYLE_TYPE_TAB,
   STYLE_TYPE_DEFAULT,
-} from 'components/layout/Breadcrumb'
+} from 'new_components/Breadcrumb'
 
 export const STEP_ID_INFORMATIONS = 'informations'
 export const STEP_ID_MANAGEMENT = 'management'
