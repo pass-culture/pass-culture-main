@@ -491,6 +491,11 @@ def change_user_email(current_email: str, new_email: str, device_id: typing.Opti
     logger.info("User has changed their email", extra={"user": current_user.id})
 
 
+def update_user_password(user: User, new_password: str) -> None:
+    user.setPassword(new_password)
+    repository.save(user)
+
+
 def update_user_info(
     user,
     cultural_survey_filled_date=UNCHANGED,

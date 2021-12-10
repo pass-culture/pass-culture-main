@@ -33,21 +33,6 @@ def check_password_validity(new_password: str, new_confirmation_password: str, o
         raise api_errors
 
 
-def validate_change_password_request(json: dict) -> None:
-    api_errors = ApiErrors()
-    if "oldPassword" not in json or not json["oldPassword"]:
-        api_errors.add_error("oldPassword", "Ancien mot de passe manquant")
-
-    if "newPassword" not in json or not json["newPassword"]:
-        api_errors.add_error("newPassword", "Nouveau mot de passe manquant")
-
-    if "newConfirmationPassword" not in json or not json["newConfirmationPassword"]:
-        api_errors.add_error("newConfirmationPassword", "Confirmation du nouveau mot de passe manquante")
-
-    if len(api_errors.errors) > 0:
-        raise api_errors
-
-
 def validate_new_password_request(request):
     if "token" not in request.get_json():
         errors = ApiErrors()
