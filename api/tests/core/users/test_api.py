@@ -698,6 +698,7 @@ class UpdateBeneficiaryMandatoryInformationTest:
             city=new_city,
             postal_code="93000",
             activity=user.activity,
+            has_completed_id_check=True,
         )
 
         user = User.query.get(user.id)
@@ -737,7 +738,6 @@ class UpdateBeneficiaryMandatoryInformationTest:
         assert user.address == new_address
         assert user.city == new_city
 
-        assert user.hasCompletedIdCheck
         assert not user.has_beneficiary_role
         assert not user.deposit
 

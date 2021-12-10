@@ -295,6 +295,7 @@ def update_user_profile(
     last_name: Optional[str] = None,
     school_type: Optional[users_models.SchoolTypeEnum] = None,
     phone_number: Optional[str] = None,
+    has_completed_id_check: Optional[bool] = None,
 ) -> None:
     user_initial_roles = user.roles
 
@@ -304,7 +305,6 @@ def update_user_profile(
         "postalCode": postal_code,
         "departementCode": PostalCode(postal_code).get_departement_code(),
         "activity": activity,
-        "hasCompletedIdCheck": True,
         "schoolType": school_type,
     }
 
@@ -317,6 +317,9 @@ def update_user_profile(
     # TODO (viconnex): remove phone number update after app native mandatory version is >= 164
     if not FeatureToggle.ENABLE_PHONE_VALIDATION.is_active() and not user.phoneNumber and phone_number:
         update_payload["phoneNumber"] = phone_number
+
+    if has_completed_id_check:
+        update_payload["hasCompletedIdCheck"] = True
 
     with transaction():
         users_models.User.query.filter(users_models.User.id == user.id).update(update_payload)
