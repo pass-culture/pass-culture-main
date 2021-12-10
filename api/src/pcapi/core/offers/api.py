@@ -581,10 +581,6 @@ def edit_educational_stock(stock: Stock, stock_data: dict) -> None:
         for attribute, new_value in updatable_fields.items():
             if new_value is not None and getattr(stock, attribute) != new_value:
                 setattr(stock, attribute, new_value)
-
-        api_errors = entity_validator.validate(stock)
-        if api_errors.errors.keys():
-            raise api_errors
         db.session.add(stock)
         db.session.commit()
 
