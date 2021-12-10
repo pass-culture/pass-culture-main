@@ -67,21 +67,24 @@ const OfferEducationalEdition = ({
   useEffect(() => {
     if (!isReady) {
       const loadData = async () => {
-        const [offerResult, ...results] = await Promise.all([
-          getOfferAdapter(offerId),
+        const offerResponse = await getOfferAdapter(offerId)
+
+        if (!isLoadOfferSuccess(offerResponse)) {
+          return notify.error(offerResponse.message)
+        }
+
+        const offer = offerResponse.payload.offer
+        const offererId = offer.venue.managingOffererId
+
+        const results = await Promise.all([
           getCategoriesAdapter(null),
-          getOfferersAdapter(null),
+          getOfferersAdapter(offererId),
         ])
 
         if (results.some(res => !res.isOk)) {
           notify.error(results?.find(res => !res.isOk)?.message)
         }
 
-        if (!isLoadOfferSuccess(offerResult)) {
-          return notify.error(offerResult.message)
-        }
-
-        const offer = offerResult.payload.offer
         const [categories, offerers] = results
 
         const offerSubcategory =
