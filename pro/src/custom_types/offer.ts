@@ -12,6 +12,7 @@ export enum OfferStatus {
 
 type Venue = {
   departementCode: string
+  managingOffererId: string
 }
 
 export type Offer = {
