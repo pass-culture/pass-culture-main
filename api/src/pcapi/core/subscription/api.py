@@ -243,6 +243,10 @@ def update_ubble_workflow(
     return fraud_check
 
 
+def has_completed_profile(user: users_models.User) -> bool:
+    return user.city is not None
+
+
 # pylint: disable=too-many-return-statements
 def get_next_subscription_step(user: users_models.User) -> Optional[models.SubscriptionStep]:
     # TODO(viconnex): base the next step on the user.subscriptionState that will be added later on
@@ -271,7 +275,7 @@ def get_next_subscription_step(user: users_models.User) -> Optional[models.Subsc
         if user_profiling.source_data().risk_rating == fraud_models.UserProfilingRiskRating.HIGH:
             return None
 
-    if not user.address:
+    if not has_completed_profile(user):
         return models.SubscriptionStep.PROFILE_COMPLETION
 
     if (
