@@ -69,6 +69,7 @@ class Returns200Test:
             "prebookings": [
                 {
                     "address": venue.address,
+                    "accessibility": "Non accessible",
                     "beginningDatetime": format_into_utc_date(stock.beginningDatetime),
                     "cancellationDate": None,
                     "cancellationLimitDate": format_into_utc_date(booking.cancellationLimitDate),
@@ -77,6 +78,7 @@ class Returns200Test:
                     if educational_booking.confirmationDate
                     else None,
                     "confirmationLimitDate": format_into_utc_date(educational_booking.confirmationLimitDate),
+                    "contact": {"email": None, "phone": None},
                     "coordinates": {
                         "latitude": float(venue.latitude),
                         "longitude": float(venue.longitude),
@@ -90,6 +92,8 @@ class Returns200Test:
                     "isDigital": offer.isDigital,
                     "venueName": venue.name,
                     "name": offer.name,
+                    "numberOfTickets": 30,
+                    "participants": [],
                     "postalCode": venue.postalCode,
                     "price": booking.amount,
                     "quantity": booking.quantity,
@@ -102,6 +106,7 @@ class Returns200Test:
                     "UAICode": educational_booking.educationalInstitution.institutionId,
                     "yearId": int(educational_booking.educationalYearId),
                     "status": "CONFIRMED",
+                    "subcategoryLabel": "Séance de cinéma",
                     "venueTimezone": venue.timezone,
                     "totalAmount": booking.amount * booking.quantity,
                     "url": offer_webapp_link(offer),
