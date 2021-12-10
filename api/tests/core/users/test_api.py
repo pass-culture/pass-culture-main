@@ -447,6 +447,9 @@ class StepsToBecomeBeneficiaryTest:
         )
         beneficiary_import.setStatus(ImportStatus.CREATED, author=user)
         user.hasCompletedIdCheck = True
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user, type=fraud_models.FraudCheckType.HONOR_STATEMENT, status=fraud_models.FraudCheckStatus.OK
+        )
 
         assert steps_to_become_beneficiary(user) == []
 
@@ -457,6 +460,9 @@ class StepsToBecomeBeneficiaryTest:
         beneficiary_import = BeneficiaryImportFactory(beneficiary=user)
         beneficiary_import.setStatus(ImportStatus.CREATED, author=user)
         user.hasCompletedIdCheck = True
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user, type=fraud_models.FraudCheckType.HONOR_STATEMENT, status=fraud_models.FraudCheckStatus.OK
+        )
 
         assert steps_to_become_beneficiary(user) == [BeneficiaryValidationStep.PHONE_VALIDATION]
         assert not user.has_beneficiary_role
@@ -467,6 +473,9 @@ class StepsToBecomeBeneficiaryTest:
 
         beneficiary_import = BeneficiaryImportFactory(beneficiary=user)
         beneficiary_import.setStatus(ImportStatus.REJECTED, author=user)
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user, type=fraud_models.FraudCheckType.HONOR_STATEMENT, status=fraud_models.FraudCheckStatus.OK
+        )
 
         expected = [
             BeneficiaryValidationStep.PHONE_VALIDATION,
@@ -482,6 +491,7 @@ class StepsToBecomeBeneficiaryTest:
         expected = [
             BeneficiaryValidationStep.PHONE_VALIDATION,
             BeneficiaryValidationStep.ID_CHECK,
+            BeneficiaryValidationStep.HONOR_STATEMENT,
         ]
         assert steps_to_become_beneficiary(user) == expected
         assert not user.has_beneficiary_role

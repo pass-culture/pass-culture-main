@@ -4,6 +4,8 @@ from unittest.mock import patch
 from dateutil.relativedelta import relativedelta
 import pytest
 
+from pcapi.core.fraud import factories as fraud_factories
+from pcapi.core.fraud import models as fraud_models
 from pcapi.core.payments.models import Deposit
 from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
@@ -68,6 +70,7 @@ class Returns200Test:
         _get_raw_content,
         mocked_send_activation_email,
         mocked_send_accepted_as_beneficiary_email,
+        client,
         app,
     ):
         """
@@ -79,15 +82,18 @@ class Returns200Test:
         application_id = 35
         _get_raw_content.return_value = JOUVE_CONTENT
 
-        users_factories.UserFactory(
+        user = users_factories.UserFactory(
             email="rennes@example.org",
             isEmailValidated=True,
             phoneValidationStatus=PhoneValidationStatusType.VALIDATED,
         )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user, type=fraud_models.FraudCheckType.HONOR_STATEMENT, status=fraud_models.FraudCheckStatus.OK
+        )
 
         # When
         data = {"id": "35"}
-        response = TestClient(app.test_client()).post("/beneficiaries/application_update", json=data)
+        response = client.post("/beneficiaries/application_update", json=data)
 
         # Then
         assert response.status_code == 200
