@@ -309,6 +309,14 @@
         <td>{{ check.type.value }}</td>
       </tr>
       <tr>
+        <th scope="row">Etat</th>
+        {% if check.status %}
+        <td>{{ check.status.value }}</td>
+        {% else %}
+        <td>Inconnu</td>
+        {% endif %}
+      </tr>
+      <tr>
         <th scope="row">Date de création</th>
         <td>{{ check.dateCreated.strftime('le %d/%m/%Y à %H:%M:%S') }}</td>
       </tr>
@@ -316,6 +324,19 @@
         <th scope="row">Identifiant technique</th>
         <td>{{ check.thirdPartyId }}</td>
       </tr>
+      <tr>
+        <th>Codes d'erreurs</th>
+        <td>
+          <ul>
+            {% for code in check.reasonCodes|default([], true) %}
+            <li>{{code.value}}</li>
+            {% else %}
+            Aucune erreur
+            {% endfor %}
+          </ul>
+        </td>
+      </tr>
+
     </table>
     <h4>Détails techniques</h4>
     <div class="row">
