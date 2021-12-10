@@ -764,7 +764,7 @@ def has_user_performed_identity_check(user: users_models.User) -> bool:
     return db.session.query(
         models.BeneficiaryFraudCheck.query.filter(
             models.BeneficiaryFraudCheck.user == user,
-            models.BeneficiaryFraudCheck.status != models.FraudCheckStatus.CANCELED,
+            models.BeneficiaryFraudCheck.status.is_distinct_from(models.FraudCheckStatus.CANCELED),
             models.BeneficiaryFraudCheck.type.in_(models.IDENTITY_CHECK_TYPES),
         ).exists()
     ).scalar()
@@ -778,7 +778,7 @@ def has_user_performed_ubble_check(user: users_models.User) -> bool:
     return db.session.query(
         models.BeneficiaryFraudCheck.query.filter(
             models.BeneficiaryFraudCheck.user == user,
-            models.BeneficiaryFraudCheck.status != models.FraudCheckStatus.CANCELED,
+            models.BeneficiaryFraudCheck.status.is_distinct_from(models.FraudCheckStatus.CANCELED),
             models.BeneficiaryFraudCheck.type == models.FraudCheckType.UBBLE,
         ).exists()
     ).scalar()
