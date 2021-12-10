@@ -8,6 +8,7 @@ from pydantic.fields import Field
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.educational.models import EducationalBooking
 from pcapi.core.educational.models import EducationalBookingStatus
+from pcapi.core.offers import models as offers_models
 from pcapi.core.offers.utils import offer_webapp_link
 from pcapi.routes.adage.v1.serialization.config import AdageBaseResponseModel
 from pcapi.routes.native.v1.serialization.common_models import Coordinates
@@ -35,7 +36,13 @@ class Redactor(AdageBaseResponseModel):
         alias_generator = to_camel
 
 
+class Contact(AdageBaseResponseModel):
+    email: Optional[str]
+    phone: Optional[str]
+
+
 class EducationalBookingResponse(AdageBaseResponseModel):
+    accessibility: str = Field(description="Accessibility of the offer")
     address: str = Field(description="Adresse of event")
     beginningDatetime: datetime = Field(description="Beginnning date of event")
     cancellationDate: Optional[datetime] = Field(description="Date of cancellation if prebooking is cancelled")
@@ -43,6 +50,7 @@ class EducationalBookingResponse(AdageBaseResponseModel):
     city: str
     confirmationDate: Optional[datetime] = Field(description="Date of confirmation if prebooking is confirmed")
     confirmationLimitDate: datetime = Field(description="Limit date to confirm the prebooking")
+    contact: Contact = Field(description="Contact of the prebooking")
     coordinates: Coordinates
     creationDate: datetime
     description: Optional[str] = Field(description="Offer description")
@@ -53,6 +61,7 @@ class EducationalBookingResponse(AdageBaseResponseModel):
     isDigital: bool = Field(description="If true the event is accessed digitally")
     venueName: str = Field(description="Name of cultural venue proposing the event")
     name: str = Field(description="Name of event")
+    numberOfTickets: Optional[int] = Field(description="Number of tickets")
     postalCode: str
     price: float
     quantity: int = Field(description="Number of place prebooked")
@@ -60,7 +69,9 @@ class EducationalBookingResponse(AdageBaseResponseModel):
     UAICode: str = Field(description="Educational institution UAI code")
     yearId: int = Field(description="Shared year id")
     status: Union[EducationalBookingStatus, BookingStatus]
+    participants: list[str] = Field(description="List of class levels which can participate")
     venueTimezone: str
+    subcategoryLabel: str = Field(description="Subcategory label")
     totalAmount: float = Field(description="Total price of the prebooking")
     url: Optional[str] = Field(description="Url to access the offer")
     withdrawalDetails: Optional[str]
@@ -92,13 +103,15 @@ def serialize_educational_booking(educational_booking: EducationalBooking) -> Ed
     offer = stock.offer
     venue = offer.venue
     return EducationalBookingResponse(
-        address=venue.address,
+        accessibility=_get_educational_offer_accessibility(offer),
+        address=_get_educational_offer_address(offer),
         beginningDatetime=stock.beginningDatetime,
         cancellationDate=booking.cancellationDate,
         cancellationLimitDate=booking.cancellationLimitDate,
         city=venue.city,
         confirmationDate=educational_booking.confirmationDate,
         confirmationLimitDate=educational_booking.confirmationLimitDate,
+        contact=_get_educational_offer_contact(offer),
         coordinates={
             "latitude": venue.latitude,
             "longitude": venue.longitude,
@@ -112,6 +125,8 @@ def serialize_educational_booking(educational_booking: EducationalBooking) -> Ed
         isDigital=offer.isDigital,
         venueName=venue.name,
         name=offer.name,
+        numberOfTickets=stock.numberOfTickets,
+        participants=offer.extraData.get("students", []) if offer.extraData is not None else [],
         postalCode=venue.postalCode,
         price=booking.amount,
         quantity=booking.quantity,
@@ -125,6 +140,7 @@ def serialize_educational_booking(educational_booking: EducationalBooking) -> Ed
         yearId=educational_booking.educationalYearId,
         status=get_educational_booking_status(educational_booking),
         venueTimezone=venue.timezone,
+        subcategoryLabel=offer.subcategory.app_label,
         totalAmount=booking.total_amount,
         url=offer_webapp_link(offer),
         withdrawalDetails=offer.withdrawalDetails,
@@ -144,3 +160,46 @@ def get_educational_booking_status(
         return educational_booking.status.value
 
     return educational_booking.booking.status.value
+
+
+def _get_educational_offer_contact(offer: offers_models.Offer) -> Contact:
+    if offer.extraData is None:
+        return Contact(email=None, phone=None)
+
+    return Contact(
+        email=offer.extraData.get("contactEmail", None),
+        phone=offer.extraData.get("contactPhone", None),
+    )
+
+
+def _get_educational_offer_address(offer: offers_models.Offer) -> str:
+    default_address = offer.venue.address
+    if offer.extraData is None or offer.extraData.get("offerVenue", None) is None:
+        return default_address
+
+    address_type = offer.extraData["offerVenue"]["addressType"]
+
+    if address_type == "offererVenue":
+        return default_address
+
+    if address_type == "other":
+        return offer.extraData["offerVenue"]["otherAddress"]
+
+    if address_type == "school":
+        return "Dans l’établissement scolaire"
+
+    return default_address
+
+
+def _get_educational_offer_accessibility(offer: offers_models.Offer) -> str:
+    disability_compliance = []
+    if offer.audioDisabilityCompliant:
+        disability_compliance.append("Auditif")
+    if offer.mentalDisabilityCompliant:
+        disability_compliance.append("Psychique ou cognitif")
+    if offer.motorDisabilityCompliant:
+        disability_compliance.append("Moteur")
+    if offer.visualDisabilityCompliant:
+        disability_compliance.append("Visuel")
+
+    return ", ".join(disability_compliance) or "Non accessible"
