@@ -114,7 +114,6 @@ describe('src | components | pages | Offers | Offers', () => {
         parse,
       },
       getOfferer: jest.fn().mockResolvedValue({}),
-      showInformationNotification: jest.fn(),
     }
     fetchAllVenuesByProUser.mockResolvedValue(proVenues)
   })
@@ -222,9 +221,9 @@ describe('src | components | pages | Offers | Offers', () => {
         expect(queryByTextTrimHtml(screen, '1 offre')).toBeInTheDocument()
       })
 
-      it('should display 200+ for total number of offers if more than 200 offers are fetched', async () => {
+      it('should display 500+ for total number of offers if more than 500 offers are fetched', async () => {
         // Given
-        offersRecap = Array.from({ length: 201 }, offerFactory)
+        offersRecap = Array.from({ length: 501 }, offerFactory)
         pcapi.loadFilteredOffers.mockResolvedValueOnce(offersRecap)
 
         // When
@@ -232,7 +231,7 @@ describe('src | components | pages | Offers | Offers', () => {
 
         // Then
         await screen.findByText(offersRecap[0].name)
-        expect(queryByTextTrimHtml(screen, '200+ offres')).toBeInTheDocument()
+        expect(queryByTextTrimHtml(screen, '500\\+ offres')).toBeInTheDocument()
       })
     })
 
@@ -1459,25 +1458,12 @@ describe('src | components | pages | Offers | Offers', () => {
       expect(nextIcon.closest('button')).toBeDisabled()
     })
 
-    it('should not inform user there is more offers to fetch when less than 201', () => {
-      // Given
-      pcapi.loadFilteredOffers.mockResolvedValueOnce(offersRecap)
-
-      // When
-      renderOffers(props, store)
-
-      // Then
-      expect(props.showInformationNotification).not.toHaveBeenCalledWith(
-        'L’affichage des offres a été limité à 200 offres. Vous pouvez modifier les filtres pour affiner votre recherche.'
-      )
-    })
-
-    describe('when 201 offers are fetched', () => {
+    describe('when 501 offers are fetched', () => {
       beforeEach(() => {
-        offersRecap = Array.from({ length: 201 }, offerFactory)
+        offersRecap = Array.from({ length: 501 }, offerFactory)
       })
 
-      it('should have max number page of 20', async () => {
+      it('should have max number page of 50', async () => {
         // Given
         pcapi.loadFilteredOffers.mockResolvedValueOnce(offersRecap)
 
@@ -1486,43 +1472,26 @@ describe('src | components | pages | Offers | Offers', () => {
 
         // Then
         await expect(
-          screen.findByText('Page 1/20')
+          screen.findByText('Page 1/50')
         ).resolves.toBeInTheDocument()
       })
 
-      it('should not display the 201st offer', async () => {
+      it('should not display the 501st offer', async () => {
         // Given
         pcapi.loadFilteredOffers.mockResolvedValueOnce(offersRecap)
         renderOffers(props, store)
         const nextIcon = await screen.findByAltText('Aller à la page suivante')
 
         // When
-        for (let i = 1; i < 21; i++) {
+        for (let i = 1; i < 51; i++) {
           fireEvent.click(nextIcon)
         }
 
         // Then
-        expect(screen.getByText(offersRecap[199].name)).toBeInTheDocument()
+        expect(screen.getByText(offersRecap[499].name)).toBeInTheDocument()
         expect(
-          screen.queryByText(offersRecap[200].name)
+          screen.queryByText(offersRecap[500].name)
         ).not.toBeInTheDocument()
-      })
-
-      it('should inform user on the last page there is more offers to fetch', async () => {
-        // Given
-        pcapi.loadFilteredOffers.mockResolvedValueOnce(offersRecap)
-        renderOffers(props, store)
-        const nextIcon = await screen.findByAltText('Aller à la page suivante')
-
-        // When
-        for (let i = 1; i < 20; i++) {
-          fireEvent.click(nextIcon)
-        }
-
-        // Then
-        expect(props.showInformationNotification).toHaveBeenCalledWith(
-          'L’affichage des offres a été limité à 200 offres. Vous pouvez modifier les filtres pour affiner votre recherche.'
-        )
       })
     })
   })
