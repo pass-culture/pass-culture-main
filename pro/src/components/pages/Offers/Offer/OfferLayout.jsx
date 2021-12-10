@@ -7,16 +7,16 @@ import React, { useCallback, useEffect, useState } from 'react'
 import { Route, Switch } from 'react-router-dom'
 
 import Titles from 'components/layout/Titles/Titles'
-import Breadcrumb, {
-  STEP_ID_CONFIRMATION,
-  STEP_ID_DETAILS,
-  STEP_ID_STOCKS,
-} from 'components/pages/Offers/Offer/Breadcrumb'
 import ConfirmationContainer from 'components/pages/Offers/Offer/Confirmation/ConfirmationContainer'
 import { OfferHeader } from 'components/pages/Offers/Offer/OfferStatus/OfferHeader'
 import RouteLeavingGuardOfferCreation from 'components/pages/Offers/Offer/RouteLeavingGuardOfferCreation'
 import StocksContainer from 'components/pages/Offers/Offer/Stocks/StocksContainer'
 import { OFFER_STATUS_DRAFT } from 'components/pages/Offers/Offers/_constants'
+import Breadcrumb, {
+  STEP_ID_CONFIRMATION,
+  STEP_ID_DETAILS,
+  STEP_ID_STOCKS,
+} from 'new_components/OfferBreadcrumb'
 import * as pcapi from 'repository/pcapi/pcapi'
 
 import OfferDetails from './OfferDetails'
