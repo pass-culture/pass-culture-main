@@ -12,7 +12,7 @@ type Step = {
   id: string
   label: string
   onClick?: (e: React.MouseEvent) => void
-  url: string
+  url?: string
   hash?: string
 }
 
