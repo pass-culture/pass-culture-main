@@ -24,6 +24,7 @@ class FraudCheckType(enum.Enum):
     INTERNAL_REVIEW = "internal_review"
     EDUCONNECT = "educonnect"
     UBBLE = "ubble"
+    HONOR_STATEMENT = "honor_statement"
 
 
 IDENTITY_CHECK_TYPES = [FraudCheckType.JOUVE, FraudCheckType.DMS, FraudCheckType.UBBLE, FraudCheckType.EDUCONNECT]
