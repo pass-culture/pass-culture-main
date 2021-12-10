@@ -816,7 +816,7 @@ def mark_fraud_check_failed(
 
 
 def create_honor_statement_fraud_check(user: users_models.User, origin: str) -> None:
-    # TODO(viconnex) -> add eligibility type
+    # TODO(viconnex) add eligibility type
     fraud_check = models.BeneficiaryFraudCheck(
         user=user,
         type=models.FraudCheckType.HONOR_STATEMENT,
@@ -826,3 +826,14 @@ def create_honor_statement_fraud_check(user: users_models.User, origin: str) -> 
     )
     db.session.add(fraud_check)
     db.session.commit()
+
+
+def has_performed_honor_statement(user: users_models.User) -> bool:
+    # TODO(viconnex) add eligibility type filter
+    return db.session.query(
+        models.BeneficiaryFraudCheck.query.filter_by(
+            user=user,
+            type=models.FraudCheckType.HONOR_STATEMENT,
+            status=models.FraudCheckStatus.OK,
+        ).exists()
+    ).scalar()

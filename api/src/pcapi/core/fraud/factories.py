@@ -152,6 +152,7 @@ FRAUD_CHECK_TYPE_MODEL_ASSOCIATION = {
     models.FraudCheckType.USER_PROFILING: UserProfilingFraudDataFactory,
     models.FraudCheckType.UBBLE: UbbleContentFactory,
     models.FraudCheckType.EDUCONNECT: EduconnectContentFactory,
+    models.FraudCheckType.HONOR_STATEMENT: None,
 }
 
 
@@ -169,9 +170,9 @@ class BeneficiaryFraudCheckFactory(testing.BaseFactory):
         """Override the default ``_create`` with our custom call."""
         factory_class = FRAUD_CHECK_TYPE_MODEL_ASSOCIATION.get(kwargs["type"])
         content = {}
-        if "resultContent" not in kwargs:
+        if factory_class and "resultContent" not in kwargs:
             content = factory_class().dict(by_alias=True)
-        if isinstance(kwargs.get("resultContent"), factory_class._meta.get_model_class()):
+        if factory_class and isinstance(kwargs.get("resultContent"), factory_class._meta.get_model_class()):
             content = kwargs["resultContent"].dict(by_alias=True)
 
         kwargs["resultContent"] = content
