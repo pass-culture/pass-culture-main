@@ -26,6 +26,23 @@ class Returns200Test:
             educationalBooking__educationalInstitution=educationalInstitution,
             educationalBooking__educationalRedactor=redactor,
             stock__offer__description=None,
+            stock__offer__extraData={
+                "students": [
+                    "CAP - 1re ann\u00e9e",
+                    "CAP - 2e ann\u00e9e",
+                    "Lyc\u00e9e - Seconde",
+                    "Lyc\u00e9e - Premi\u00e8re",
+                ],
+                "offerVenue": {
+                    "addressType": "other",
+                    "otherAddress": "1 rue des polissons, Paris 75017",
+                    "venueId": "",
+                },
+                "contactEmail": "miss.rond@point.com",
+                "contactPhone": "01010100101",
+            },
+            stock__offer__audioDisabilityCompliant=True,
+            stock__offer__visualDisabilityCompliant=True,
         )
         other_educational_year = EducationalYearFactory(adageId="adageId")
         other_educational_institution = EducationalInstitutionFactory(institutionId="institutionId")
@@ -46,13 +63,15 @@ class Returns200Test:
         assert response.json == {
             "prebookings": [
                 {
-                    "address": venue.address,
+                    "accessibility": "Auditif, Visuel",
+                    "address": "1 rue des polissons, Paris 75017",
                     "beginningDatetime": format_into_utc_date(stock.beginningDatetime),
                     "cancellationDate": None,
                     "cancellationLimitDate": format_into_utc_date(booking.cancellationLimitDate),
                     "city": venue.city,
                     "confirmationDate": None,
                     "confirmationLimitDate": format_into_utc_date(educational_booking.confirmationLimitDate),
+                    "contact": {"email": "miss.rond@point.com", "phone": "01010100101"},
                     "coordinates": {
                         "latitude": float(venue.latitude),
                         "longitude": float(venue.longitude),
@@ -66,6 +85,13 @@ class Returns200Test:
                     "isDigital": offer.isDigital,
                     "venueName": venue.name,
                     "name": offer.name,
+                    "numberOfTickets": 30,
+                    "participants": [
+                        "CAP - 1re ann\u00e9e",
+                        "CAP - 2e ann\u00e9e",
+                        "Lyc\u00e9e - Seconde",
+                        "Lyc\u00e9e - Premi\u00e8re",
+                    ],
                     "postalCode": venue.postalCode,
                     "price": booking.amount,
                     "quantity": booking.quantity,
@@ -78,6 +104,7 @@ class Returns200Test:
                     "UAICode": educational_booking.educationalInstitution.institutionId,
                     "yearId": int(educational_booking.educationalYearId),
                     "status": "CONFIRMED",
+                    "subcategoryLabel": offer.subcategory.app_label,
                     "venueTimezone": venue.timezone,
                     "totalAmount": booking.amount * booking.quantity,
                     "url": offer_webapp_link(offer),
@@ -135,6 +162,7 @@ class Returns200Test:
         assert response.json == {
             "prebookings": [
                 {
+                    "accessibility": "Non accessible",
                     "address": venue.address,
                     "beginningDatetime": format_into_utc_date(stock.beginningDatetime),
                     "cancellationDate": None,
@@ -142,6 +170,10 @@ class Returns200Test:
                     "city": venue.city,
                     "confirmationDate": None,
                     "confirmationLimitDate": format_into_utc_date(educational_booking.confirmationLimitDate),
+                    "contact": {
+                        "email": None,
+                        "phone": None,
+                    },
                     "coordinates": {
                         "latitude": float(venue.latitude),
                         "longitude": float(venue.longitude),
@@ -155,6 +187,8 @@ class Returns200Test:
                     "isDigital": offer.isDigital,
                     "venueName": venue.name,
                     "name": offer.name,
+                    "numberOfTickets": 30,
+                    "participants": [],
                     "postalCode": venue.postalCode,
                     "price": booking.amount,
                     "quantity": booking.quantity,
@@ -167,6 +201,7 @@ class Returns200Test:
                     "UAICode": educational_booking.educationalInstitution.institutionId,
                     "yearId": int(educational_booking.educationalYearId),
                     "status": "USED_BY_INSTITUTE",
+                    "subcategoryLabel": "Séance de cinéma",
                     "venueTimezone": venue.timezone,
                     "totalAmount": booking.total_amount,
                     "url": offer_webapp_link(offer),
