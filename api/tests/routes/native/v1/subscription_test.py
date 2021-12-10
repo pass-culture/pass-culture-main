@@ -57,18 +57,34 @@ class NextStepTest:
     @pytest.mark.parametrize(
         "fraud_check_status,ubble_status,next_step",
         [
-            (fraud_models.FraudCheckStatus.PENDING, fraud_models.ubble.UbbleIdentificationStatus.INITIATED, None),
-            (fraud_models.FraudCheckStatus.PENDING, fraud_models.ubble.UbbleIdentificationStatus.PROCESSING, None),
-            (fraud_models.FraudCheckStatus.OK, fraud_models.ubble.UbbleIdentificationStatus.PROCESSED, None),
-            (fraud_models.FraudCheckStatus.KO, fraud_models.ubble.UbbleIdentificationStatus.PROCESSED, None),
+            (
+                fraud_models.FraudCheckStatus.PENDING,
+                fraud_models.ubble.UbbleIdentificationStatus.INITIATED,
+                "honor-statement",
+            ),
+            (
+                fraud_models.FraudCheckStatus.PENDING,
+                fraud_models.ubble.UbbleIdentificationStatus.PROCESSING,
+                "honor-statement",
+            ),
+            (
+                fraud_models.FraudCheckStatus.OK,
+                fraud_models.ubble.UbbleIdentificationStatus.PROCESSED,
+                "honor-statement",
+            ),
+            (
+                fraud_models.FraudCheckStatus.KO,
+                fraud_models.ubble.UbbleIdentificationStatus.PROCESSED,
+                "honor-statement",
+            ),
             (
                 fraud_models.FraudCheckStatus.CANCELED,
                 fraud_models.ubble.UbbleIdentificationStatus.ABORTED,
                 "identity-check",
             ),
-            (None, fraud_models.ubble.UbbleIdentificationStatus.INITIATED, None),
-            (None, fraud_models.ubble.UbbleIdentificationStatus.PROCESSING, None),
-            (None, fraud_models.ubble.UbbleIdentificationStatus.PROCESSED, None),
+            (None, fraud_models.ubble.UbbleIdentificationStatus.INITIATED, "honor-statement"),
+            (None, fraud_models.ubble.UbbleIdentificationStatus.PROCESSING, "honor-statement"),
+            (None, fraud_models.ubble.UbbleIdentificationStatus.PROCESSED, "honor-statement"),
         ],
     )
     @override_features(ENABLE_UBBLE=True)
