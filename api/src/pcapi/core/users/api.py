@@ -496,6 +496,14 @@ def update_user_password(user: User, new_password: str) -> None:
     repository.save(user)
 
 
+def update_password_and_external_user(user, new_password):
+    user.setPassword(new_password)
+    if not user.isEmailValidated:
+        user.isEmailValidated = True
+        update_external_user(user)
+    repository.save(user)
+
+
 def update_user_info(
     user,
     cultural_survey_filled_date=UNCHANGED,
