@@ -2,6 +2,7 @@ import unittest
 from unittest.mock import Mock, patch
 from cloudsqlpostgresinstance import CloudSQLPostgresInstance
 
+
 class TestCloudSQLPostgresInstance(unittest.TestCase):
     def setUp(self):
         self.sqladmin_backup_runs_service = Mock()
@@ -248,6 +249,7 @@ class TestCloudSQLPostgresInstance(unittest.TestCase):
 
         self.sqladmin_operations_service.get.assert_called_with(project=self.instance.project, operation=self.fake_sql_operation_name.get("name"))
         self.sqladmin_operations_service.get.return_value.execute.assert_called()
+
 
 if __name__ == '__main__':
     unittest.main()
