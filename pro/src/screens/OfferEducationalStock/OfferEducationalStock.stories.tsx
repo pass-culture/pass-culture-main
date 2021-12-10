@@ -27,6 +27,7 @@ const Template = () => (
       status: OfferStatus.OFFER_STATUS_DRAFT,
       venue: {
         departementCode: '974',
+        managingOffererId: 'AB',
       },
       isActive: true,
       audioDisabilityCompliant: true,
