@@ -5,6 +5,7 @@ from unittest import mock
 import zipfile
 
 import pytest
+import pytz
 import sqlalchemy.orm as sqla_orm
 
 import pcapi.core.bookings.factories as bookings_factories
@@ -14,6 +15,7 @@ from pcapi.core.finance import api
 from pcapi.core.finance import exceptions
 from pcapi.core.finance import factories
 from pcapi.core.finance import models
+import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.payments.factories as payments_factories
 from pcapi.core.testing import assert_num_queries
@@ -48,6 +50,7 @@ class PriceBookingTest:
         assert models.Pricing.query.count() == 1
         assert pricing.booking == booking
         assert pricing.businessUnit == booking.venue.businessUnit
+        assert pricing.siret == booking.venue.siret
         assert pricing.valueDate == booking.dateUsed
         assert pricing.amount == -1000
         assert pricing.standardRule == "Remboursement total pour les offres physiques"
@@ -81,10 +84,9 @@ class PriceBookingTest:
 
     def test_accrue_revenue(self):
         booking1 = bookings_factories.UsedBookingFactory(amount=10)
-        business_unit = booking1.venue.businessUnit
         booking2 = bookings_factories.UsedBookingFactory(
             amount=20,
-            stock__offer__venue__businessUnit=business_unit,
+            stock__offer__venue=booking1.venue,
         )
         pricing1 = api.price_booking(booking1)
         pricing2 = api.price_booking(booking2)
@@ -137,6 +139,62 @@ class PriceBookingTest:
         queries += 1  # commit
         with assert_num_queries(queries):
             api.price_booking(booking)
+
+
+class GetRevenuePeriodTest:
+    def test_after_midnight(self):
+        # Year is 2021 in CET.
+        value_date = datetime.datetime(2021, 1, 1, 0, 0)
+        period = api._get_revenue_period(value_date)
+
+        start = datetime.datetime(2020, 12, 31, 23, 0, tzinfo=pytz.utc)
+        end = datetime.datetime(2021, 12, 31, 22, 59, 59, 999999, tzinfo=pytz.utc)
+        assert period == (start, end)
+
+    def test_before_midnight(self):
+        # Year is 2022 in CET.
+        value_date = datetime.datetime(2021, 12, 31, 23, 30)
+        period = api._get_revenue_period(value_date)
+
+        start = datetime.datetime(2021, 12, 31, 23, 0, tzinfo=pytz.utc)
+        end = datetime.datetime(2022, 12, 31, 22, 59, 59, 999999, tzinfo=pytz.utc)
+        assert period == (start, end)
+
+
+class GetSiretAndCurrentRevenueTest:
+    def test_use_venue_siret(self):
+        venue = offers_factories.VenueFactory(siret="123456")
+        booking1 = bookings_factories.UsedBookingFactory(stock__offer__venue=venue, amount=20)
+        _pricing1 = factories.PricingFactory(booking=booking1)
+        booking2 = bookings_factories.UsedBookingFactory(stock__offer__venue=venue)
+        _pricing_other = factories.PricingFactory(amount=40)
+
+        siret, current_revenue = api._get_siret_and_current_revenue(booking2)
+        assert siret == "123456"
+        assert current_revenue == 2000
+
+    def test_use_business_unit_siret(self):
+        venue = offers_factories.VirtualVenueFactory(siret=None, businessUnit__siret="654321")
+        booking = bookings_factories.UsedBookingFactory(stock__offer__venue=venue, amount=20)
+
+        siret, current_revenue = api._get_siret_and_current_revenue(booking)
+        assert siret == "654321"
+        assert current_revenue == 0
+
+    def test_consider_booking_date_used(self):
+        venue = offerers_factories.VenueFactory()
+        _pricing_2020 = factories.PricingFactory(revenue=1000)
+        _pricing_1_2021 = factories.PricingFactory(revenue=2000, siret=venue.siret)
+        _pricing_2_2021 = factories.PricingFactory(revenue=3000, siret=venue.siret)
+        booking = bookings_factories.UsedBookingFactory(
+            dateCreated=datetime.datetime(2020, 7, 1),
+            dateUsed=datetime.datetime(2021, 7, 1),
+            stock__offer__venue=venue,
+        )
+
+        siret, current_revenue = api._get_siret_and_current_revenue(booking)
+        assert siret == venue.siret
+        assert current_revenue == 3000
 
 
 class CancelPricingTest:

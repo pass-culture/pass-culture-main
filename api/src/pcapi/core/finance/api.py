@@ -7,6 +7,7 @@ import tempfile
 import typing
 import zipfile
 
+import pytz
 import sqlalchemy as sqla
 import sqlalchemy.orm as sqla_orm
 import sqlalchemy.sql.functions as sqla_func
@@ -16,6 +17,7 @@ import pcapi.core.bookings.models as bookings_models
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.models as offers_models
 import pcapi.core.payments.models as payments_models
+import pcapi.core.payments.utils as payments_utils
 from pcapi.domain import reimbursement
 from pcapi.models import db
 from pcapi.models.bank_information import BankInformation
@@ -158,20 +160,51 @@ def price_booking(booking: bookings_models.Booking) -> models.Pricing:
     return pricing
 
 
-def _price_booking(booking: bookings_models.Booking) -> models.Pricing:
+def _get_revenue_period(value_date: datetime.datetime) -> [datetime.datetime, datetime.datetime]:
+    """Return a datetime (year) period for the given value date, i.e. the
+    first and last seconds of the year of the ``value_date``.
+    """
+    year = value_date.replace(tzinfo=pytz.utc).astimezone(payments_utils.ACCOUNTING_TIMEZONE).year
+    first_second = payments_utils.ACCOUNTING_TIMEZONE.localize(
+        datetime.datetime.combine(
+            datetime.date(year, 1, 1),
+            datetime.time.min,
+        )
+    ).astimezone(pytz.utc)
+    last_second = payments_utils.ACCOUNTING_TIMEZONE.localize(
+        datetime.datetime.combine(
+            datetime.date(year, 12, 31),
+            datetime.time.max,
+        )
+    ).astimezone(pytz.utc)
+    return first_second, last_second
+
+
+def _get_siret_and_current_revenue(booking: bookings_models.Booking) -> typing.Union[str, int]:
+    """Return the SIRET to use for the requested booking, and the current
+    year revenue for this SIRET, NOT including the requested booking.
+    """
+    siret = booking.venue.siret or booking.venue.businessUnit.siret
+    revenue_period = _get_revenue_period(booking.dateUsed)
     latest_pricing = (
-        models.Pricing.query.filter_by(businessUnitId=booking.venue.businessUnitId)
+        models.Pricing.query.filter_by(siret=siret)
+        .filter(models.Pricing.valueDate.between(*revenue_period))
         .order_by(models.Pricing.valueDate.desc())
         .first()
     )
-    revenue = latest_pricing.revenue if latest_pricing else 0
-    revenue += utils.to_eurocents(booking.total_amount)
+    current_revenue = latest_pricing.revenue if latest_pricing else 0
+    return siret, current_revenue
+
+
+def _price_booking(booking: bookings_models.Booking) -> models.Pricing:
+    siret, current_revenue = _get_siret_and_current_revenue(booking)
+    new_revenue = current_revenue + utils.to_eurocents(booking.total_amount)
     rule_finder = reimbursement.CustomRuleFinder()
     # FIXME (dbaty, 2021-11-10): `revenue` here is in eurocents but
     # `get_reimbursement_rule` expects euros. Clean that once the
     # old payment code has been removed and the function accepts
     # eurocents instead.
-    rule = reimbursement.get_reimbursement_rule(booking, rule_finder, revenue / 100)
+    rule = reimbursement.get_reimbursement_rule(booking, rule_finder, new_revenue / 100)
 
     amount = -utils.to_eurocents(rule.apply(booking))  # outgoing, thus negative
     # `Pricing.amount` equals the sum of the amount of all lines.
@@ -191,11 +224,12 @@ def _price_booking(booking: bookings_models.Booking) -> models.Pricing:
         status=_get_initial_pricing_status(booking),
         bookingId=booking.id,
         businessUnitId=booking.venue.businessUnitId,
+        siret=siret,
         valueDate=booking.dateUsed,
         amount=amount,
         standardRule=rule.description if not isinstance(rule, payments_models.CustomReimbursementRule) else "",
         customRuleId=rule.id if isinstance(rule, payments_models.CustomReimbursementRule) else None,
-        revenue=revenue,
+        revenue=new_revenue,
         lines=lines,
     )
     return pricing

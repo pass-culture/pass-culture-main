@@ -1,6 +1,7 @@
 """Finance-related models.
 
-In all models, the amount is in euro cents. It is signed:
+In all models of this package, amounts are in euro cents. They are
+signed:
 - a negative amount will be outgoing (payable by us to someone);
 - a positive amount will be incoming (payable to us by someone).
 """
@@ -83,9 +84,13 @@ class Pricing(Model):
     booking = sqla_orm.relationship("Booking", foreign_keys=[bookingId], backref="pricings")
     businessUnitId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("business_unit.id"), index=True, nullable=False)
     businessUnit = sqla_orm.relationship("BusinessUnit", foreign_keys=[businessUnitId])
+    # `siret` is either the SIRET of the venue if it has one, or the
+    # SIRET of its business unit (at the time of the creation of the
+    # pricing).
+    siret = sqla.Column(sqla.String(14), nullable=False, index=True)
 
     creationDate = sqla.Column(sqla.DateTime, nullable=False, server_default=sqla.func.now())
-    # valueDate is `Booking.dateUsed` but it's useful to denormalize
+    # `valueDate` is `Booking.dateUsed` but it's useful to denormalize
     # it here: many queries use this column and we thus avoid a JOIN.
     valueDate = sqla.Column(sqla.DateTime, nullable=False)
 
