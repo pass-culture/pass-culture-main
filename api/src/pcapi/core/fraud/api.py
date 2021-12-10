@@ -145,7 +145,7 @@ def educonnect_fraud_checks(
         )
     )
     fraud_items.append(_underage_user_fraud_item(educonnect_content.birth_date))
-    fraud_items.append(_duplicate_ine_hash_fraud_item(educonnect_content.ine_hash))
+    fraud_items.append(_duplicate_ine_hash_fraud_item(educonnect_content.ine_hash, user.id))
     if FeatureToggle.ENABLE_INE_WHITELIST_FILTER.is_active():
         fraud_items.append(_whitelisted_ine_fraud_item(educonnect_content.ine_hash))
 
@@ -378,8 +378,10 @@ def _duplicate_id_piece_number_fraud_item(user: users_models.User, document_id_n
     )
 
 
-def _duplicate_ine_hash_fraud_item(ine_hash: str) -> models.FraudItem:
-    duplicate_user = users_models.User.query.filter(users_models.User.ineHash == ine_hash).first()
+def _duplicate_ine_hash_fraud_item(ine_hash: str, excluded_user_id: int) -> models.FraudItem:
+    duplicate_user = users_models.User.query.filter(
+        users_models.User.ineHash == ine_hash, users_models.User.id != excluded_user_id
+    ).first()
     return models.FraudItem(
         status=models.FraudStatus.SUSPICIOUS if duplicate_user else models.FraudStatus.OK,
         detail=f"L'INE {ine_hash} est déjà pris par l'utilisateur {duplicate_user.id}"
