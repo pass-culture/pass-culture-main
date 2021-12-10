@@ -13,7 +13,6 @@ import {
   getOfferAdapter,
   setInitialFormValues,
 } from 'core/OfferEducational'
-import { Offer } from 'custom_types/offer'
 import OfferEducationalScreen from 'screens/OfferEducational'
 import { IOfferEducationalProps } from 'screens/OfferEducational/OfferEducational'
 import { Title } from 'ui-kit'
@@ -25,14 +24,6 @@ type AsyncScreenProps = Pick<
   IOfferEducationalProps,
   'educationalCategories' | 'educationalSubCategories' | 'userOfferers'
 >
-
-/* @debt mathilde: should remove this typeguard when Adapter has Success and Failure type */
-const isLoadOfferSuccess = (response: {
-  isOk: boolean
-  message: string | null
-  payload: { offer: Offer | null }
-}): response is { isOk: boolean; message: null; payload: { offer: Offer } } =>
-  response.isOk === true
 
 const OfferEducationalEdition = ({
   tracking,
@@ -69,7 +60,7 @@ const OfferEducationalEdition = ({
       const loadData = async () => {
         const offerResponse = await getOfferAdapter(offerId)
 
-        if (!isLoadOfferSuccess(offerResponse)) {
+        if (!offerResponse.isOk) {
           return notify.error(offerResponse.message)
         }
 

@@ -4,7 +4,9 @@ import {
 } from 'core/OfferEducational'
 import * as pcapi from 'repository/pcapi/pcapi'
 
-const FAILING_RESPONSE = {
+const FAILING_RESPONSE: AdapterFailure<{
+  isOffererEligibleToEducationalOffer: false
+}> = {
   isOk: false,
   message:
     "Une erreur est survenue lors de la vérification de votre éligibilité à la création d'offre collective",

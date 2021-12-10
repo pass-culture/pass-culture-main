@@ -76,7 +76,8 @@ export type IOfferEducationalFormValues = {
 
 export type GetIsOffererEligibleToEducationalOffer = Adapter<
   string,
-  { isOffererEligibleToEducationalOffer: boolean }
+  { isOffererEligibleToEducationalOffer: boolean },
+  { isOffererEligibleToEducationalOffer: false }
 >
 
 export enum Mode {

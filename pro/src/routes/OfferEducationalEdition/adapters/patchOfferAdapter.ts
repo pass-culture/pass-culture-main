@@ -12,7 +12,7 @@ type Params = {
   initialValues: IOfferEducationalFormValues
 }
 
-type PostOfferAdapter = Adapter<Params, null>
+type PostOfferAdapter = Adapter<Params, null, null>
 
 const BAD_REQUEST_FAILING_RESPONSE = {
   isOk: false,

@@ -5,7 +5,7 @@ type Params = string | null
 
 type IPayload = IUserOfferer[]
 
-type GetOfferersAdapter = Adapter<Params, IPayload>
+type GetOfferersAdapter = Adapter<Params, IPayload, IPayload>
 
 const FAILING_RESPONSE = {
   isOk: false,
