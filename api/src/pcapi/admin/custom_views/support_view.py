@@ -335,6 +335,9 @@ class BeneficiaryView(base_configuration.BaseAdminView):
                 pre_subscription = subscription_models.BeneficiaryPreSubscription.from_dms_source(
                     fraud_check.source_data()
                 )
+                fraud_api.create_honor_statement_fraud_check(
+                    user, "honor statement contained in DMS application after admin review"
+                )
             beneficiary_repository.BeneficiarySQLRepository.save(pre_subscription, user)
 
         flask.flash(f"N° de pièce d'identitée modifiée sur le bénéficiaire {user.firstName} {user.lastName}")

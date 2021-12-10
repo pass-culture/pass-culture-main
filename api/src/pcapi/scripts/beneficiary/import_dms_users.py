@@ -196,6 +196,7 @@ def process_application(
             return
 
         try:
+            fraud_api.create_honor_statement_fraud_check(user, "honor statement contained in DMS application")
             subscription_api.on_successful_application(
                 user=user,
                 source_data=information,
