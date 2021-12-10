@@ -350,12 +350,8 @@ def check_offer_subcategory_is_valid(offer_subcategory_id):
 
 
 def check_stock_booking_status(booking: Booking) -> Union[None, Exception]:
-    if booking.status is BookingStatus.CONFIRMED:
-        raise exceptions.EducationalOfferStockBookedAndBookingConfirmed()
-    if booking.status is BookingStatus.REIMBURSED:
-        raise exceptions.EducationalOfferStockBookedAndBookingReimbursed()
-    if booking.status is BookingStatus.USED or booking.isUsed:
-        raise exceptions.EducationalOfferStockBookedAndBookingUsed()
+    if booking.status is not BookingStatus.PENDING:
+        raise exceptions.EducationalOfferStockBookedAndBookingNotPending(booking.status, booking.id)
 
 
 def check_booking_limit_datetime(
