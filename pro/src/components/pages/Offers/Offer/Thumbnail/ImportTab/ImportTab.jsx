@@ -10,7 +10,7 @@ import {
   IMPORT_TAB_ID,
   URL_TAB_ID,
 } from 'components/pages/Offers/Offer/Thumbnail/_constants'
-import Breadcrumb, { STYLE_TYPE_TAB } from 'new_components/Breadcrumb'
+import Breadcrumb, { BreadcrumbStyle } from 'new_components/Breadcrumb'
 
 const ImportTab = ({ activeTab, changeTab, isLoading }) => {
   const steps = [
@@ -33,7 +33,7 @@ const ImportTab = ({ activeTab, changeTab, isLoading }) => {
       activeStep={activeTab}
       isDisabled={isLoading}
       steps={steps}
-      styleType={STYLE_TYPE_TAB}
+      styleType={BreadcrumbStyle.TAB}
     />
   )
 }
