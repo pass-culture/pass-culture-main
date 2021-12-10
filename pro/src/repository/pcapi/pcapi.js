@@ -2,7 +2,10 @@
  * @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
  */
 
-import { DEFAULT_PRE_FILTERS } from 'components/pages/Bookings/PreFilters/_constants'
+import {
+  DEFAULT_INVOICES_FILTERS,
+  DEFAULT_PRE_FILTERS,
+} from 'components/pages/Bookings/PreFilters/_constants'
 import {
   ALL_OFFERERS,
   DEFAULT_SEARCH_FILTERS,
@@ -381,11 +384,49 @@ export const invalidateBooking = code => {
 //
 
 export const getBusinessUnits = offererId => {
-  return client.get(`/finance/business-units?offererId=${offererId}`)
+  const queryParams = offererId ? `?offererId=${offererId}` : ''
+
+  return client.get(`/finance/business-units${queryParams}`)
 }
 
 export const editBusinessUnit = (businessUnitId, siret) => {
   return client.patch(`/finance/business-units/${businessUnitId}`, {
     siret: siret,
   })
+}
+
+//
+// Invoices
+//
+
+const buildInvoicesQuery = ({
+  businessUnitId = DEFAULT_INVOICES_FILTERS.businessUnitId,
+  periodBeginningDate = DEFAULT_INVOICES_FILTERS.periodBeginningDate,
+  periodEndingDate = DEFAULT_INVOICES_FILTERS.periodEndingDate,
+}) => {
+  const params = {}
+  if (businessUnitId !== DEFAULT_INVOICES_FILTERS.businessUnitId) {
+    params.businessUnitId = businessUnitId
+  }
+
+  if (periodBeginningDate !== DEFAULT_INVOICES_FILTERS.periodBeginningDate) {
+    params.periodBeginningDate = formatBrowserTimezonedDateAsUTC(
+      periodBeginningDate,
+      FORMAT_ISO_DATE_ONLY
+    )
+  }
+
+  if (periodEndingDate !== DEFAULT_INVOICES_FILTERS.periodEndingDate) {
+    params.periodEndingDate = formatBrowserTimezonedDateAsUTC(
+      periodEndingDate,
+      FORMAT_ISO_DATE_ONLY
+    )
+  }
+
+  return stringify(params)
+}
+
+export const getInvoices = async params => {
+  const queryParams = buildInvoicesQuery(params)
+  return client.get(`/finance/invoices?${queryParams}`)
 }

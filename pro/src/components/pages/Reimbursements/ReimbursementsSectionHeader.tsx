@@ -1,11 +1,11 @@
 import isEqual from 'lodash.isequal'
-import React, { useCallback } from 'react'
+import React, { Dispatch, SetStateAction, useCallback } from 'react'
 
 import PeriodSelector from 'components/layout/inputs/PeriodSelector/PeriodSelector'
 import Select from 'components/layout/inputs/Select'
 import { getToday } from 'utils/date'
 
-type venuesOptionsType = [
+type selectableOptionsType = [
   {
     id: string
     displayName: string
@@ -13,32 +13,38 @@ type venuesOptionsType = [
 ]
 
 type filtersType = {
-  venue: string
+  spot: string
   periodStart: Date
   periodEnd: Date
 }
 
 interface IReimbursementsSectionHeaderProps {
   children: React.ReactNode | React.ReactNode[]
+  defaultSelectDisplayName: string
+  defaultSelectId: string
   filters: filtersType
   headerTitle: string
   initialFilters: filtersType
-  setFilters: any
-  venuesOptions: venuesOptionsType
+  selectLabel: string
+  selectName: string
+  setFilters: Dispatch<SetStateAction<filtersType>>
+  selectableOptions: selectableOptionsType
 }
 
 const ReimbursementsSectionHeader = ({
   children,
+  defaultSelectDisplayName,
+  defaultSelectId,
   headerTitle,
   initialFilters,
-  venuesOptions,
+  selectLabel,
+  selectName,
+  selectableOptions,
   filters,
   setFilters,
 }: IReimbursementsSectionHeaderProps): JSX.Element => {
-  const ALL_VENUES_OPTION_ID = 'allVenues'
-
   const {
-    venue: selectedVenue,
+    spot: selectedSpot,
     periodStart: selectedPeriodStart,
     periodEnd: selectedPeriodEnd,
   } = filters
@@ -47,12 +53,12 @@ const ReimbursementsSectionHeader = ({
     setFilters(initialFilters)
   }
 
-  const setVenueFilter = useCallback(
+  const setSpotFilter = useCallback(
     event => {
-      const venueId = event.target.value
+      const spotId = event.target.value
       setFilters((prevFilters: filtersType) => ({
         ...prevFilters,
-        venue: venueId,
+        spot: spotId,
       }))
     },
     [setFilters]
@@ -95,14 +101,14 @@ const ReimbursementsSectionHeader = ({
       <div className="filters">
         <Select
           defaultOption={{
-            displayName: 'Tous les lieux',
-            id: ALL_VENUES_OPTION_ID,
+            displayName: defaultSelectDisplayName,
+            id: defaultSelectId,
           }}
-          handleSelection={setVenueFilter}
-          label="Lieu"
-          name="lieu"
-          options={venuesOptions}
-          selectedValue={selectedVenue}
+          handleSelection={setSpotFilter}
+          label={selectLabel}
+          name={selectName}
+          options={selectableOptions}
+          selectedValue={selectedSpot}
         />
         <PeriodSelector
           changePeriodBeginningDateValue={setStartDateFilter}
