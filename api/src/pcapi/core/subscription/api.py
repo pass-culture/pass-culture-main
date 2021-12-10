@@ -337,6 +337,9 @@ def get_next_subscription_step(user: users_models.User) -> typing.Optional[model
     ):
         return models.SubscriptionStep.IDENTITY_CHECK
 
+    if not fraud_api.has_performed_honor_statement(user):
+        return models.SubscriptionStep.HONOR_STATEMENT
+
     return None
 
 
