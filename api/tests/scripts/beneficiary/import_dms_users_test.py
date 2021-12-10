@@ -121,9 +121,7 @@ class RunTest:
         ]
 
         # when
-        import_dms_users.run(
-            procedure_id=6712558,
-        )
+        import_dms_users.run(procedure_id=6712558)
 
         # then
         assert on_sucessful_application.call_count == 3
@@ -172,9 +170,7 @@ class RunTest:
         ]
 
         # when
-        import_dms_users.run(
-            procedure_id=6712558,
-        )
+        import_dms_users.run(procedure_id=6712558)
 
         # then
         assert on_sucessful_application.call_count == 3
@@ -198,9 +194,7 @@ class RunTest:
         mocked_parse_beneficiary_information.side_effect = [Exception()]
 
         # when
-        import_dms_users.run(
-            procedure_id=6712558,
-        )
+        import_dms_users.run(procedure_id=6712558)
 
         # then
         beneficiary_import = BeneficiaryImport.query.first()
@@ -231,9 +225,7 @@ class RunTest:
         get_details.return_value = make_new_beneficiary_application_details(123, "closed")
 
         # when
-        import_dms_users.run(
-            procedure_id=6712558,
-        )
+        import_dms_users.run(procedure_id=6712558)
 
         # then
         on_sucessful_application.assert_not_called()
@@ -259,9 +251,7 @@ class RunTest:
         initial_beneficiary_import_id = user.beneficiaryImports[0].id
 
         # when
-        import_dms_users.run(
-            procedure_id=6712558,
-        )
+        import_dms_users.run(procedure_id=6712558)
 
         # then
         beneficiary_import = BeneficiaryImport.query.filter(
@@ -299,9 +289,7 @@ class RunTest:
         applicant = users_factories.UserFactory(firstName="Doe", lastName="John", email="john.doe@test.com")
 
         # when
-        import_dms_users.run(
-            procedure_id=6712558,
-        )
+        import_dms_users.run(procedure_id=6712558)
 
         # then
         on_sucessful_application.assert_called_with(
@@ -786,12 +774,24 @@ class RunIntegrationTest:
         assert user.phoneNumber == "0102030405"
         assert user.idPieceNumber == "1234123412"
 
-        assert len(user.beneficiaryFraudChecks) == 1
-        fraud_check = user.beneficiaryFraudChecks[0]
-        assert fraud_check.type == fraud_models.FraudCheckType.DMS
-        fraud_content = fraud_models.DMSContent(**fraud_check.resultContent)
+        assert len(user.beneficiaryFraudChecks) == 2
+
+        dms_fraud_check = next(
+            fraud_check
+            for fraud_check in user.beneficiaryFraudChecks
+            if fraud_check.type == fraud_models.FraudCheckType.DMS
+        )
+        dms_fraud_check = user.beneficiaryFraudChecks[0]
+        assert dms_fraud_check.type == fraud_models.FraudCheckType.DMS
+        fraud_content = fraud_models.DMSContent(**dms_fraud_check.resultContent)
         assert fraud_content.birth_date == user.dateOfBirth.date()
         assert fraud_content.address == "11 Rue du Test"
+
+        assert next(
+            fraud_check
+            for fraud_check in user.beneficiaryFraudChecks
+            if fraud_check.type == fraud_models.FraudCheckType.HONOR_STATEMENT
+        )
 
         assert BeneficiaryImport.query.count() == 1
         beneficiary_import = BeneficiaryImport.query.first()
@@ -1232,10 +1232,21 @@ class GraphQLSourceProcessApplicationTest:
         import_status = BeneficiaryImport.query.one_or_none()
         assert import_status.currentStatus == ImportStatus.CREATED
         assert import_status.beneficiary == user
-        assert len(user.beneficiaryFraudChecks) == 1
-        fraud_check = user.beneficiaryFraudChecks[0]
-        assert not fraud_check.reasonCodes
-        assert fraud_check.status == fraud_models.FraudCheckStatus.OK
+        assert len(user.beneficiaryFraudChecks) == 2
+        dms_fraud_check = next(
+            fraud_check
+            for fraud_check in user.beneficiaryFraudChecks
+            if fraud_check.type == fraud_models.FraudCheckType.DMS
+        )
+        assert not dms_fraud_check.reasonCodes
+        assert dms_fraud_check.status == fraud_models.FraudCheckStatus.OK
+        statement_fraud_check = next(
+            fraud_check
+            for fraud_check in user.beneficiaryFraudChecks
+            if fraud_check.type == fraud_models.FraudCheckType.HONOR_STATEMENT
+        )
+        assert statement_fraud_check.status == fraud_models.FraudCheckStatus.OK
+        assert statement_fraud_check.reason == "honor statement contained in DMS application"
 
     @patch.object(DMSGraphQLClient, "get_applications_with_details")
     def test_run(self, get_applications_with_details):
