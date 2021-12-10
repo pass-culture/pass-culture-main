@@ -1,10 +1,10 @@
 import cloudsqlpostgresinstance
-import env_vars
+from os import getenv
 
 ehp = cloudsqlpostgresinstance.CloudSQLPostgresInstanceFactory.create(
-    project=env_vars.SOURCE_PROJECT,
-    name=env_vars.SOURCE_INSTANCE,
-    region=env_vars.SOURCE_INSTANCE_REGION,
+    project=getenv("EHP_INSTANCE_PROJECT", "passculture-metier-ehp"),
+    name=getenv("EHP_INSTANCE_NAME"),
+    region=getenv("EHP_INSTANCE_REGION", "europe-west1"),
 )
 
 ehp.backup()

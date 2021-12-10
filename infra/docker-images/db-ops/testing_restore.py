@@ -1,28 +1,34 @@
 from datetime import datetime
 
 import cloudsqlpostgresinstance
-import env_vars
+from os import getenv
 
 testing = cloudsqlpostgresinstance.CloudSQLPostgresInstanceFactory.create(
-    project=env_vars.DEST_PROJECT,
-    name=env_vars.DEST_INSTANCE,
-    region=env_vars.DEST_INSTANCE_REGION,
+    project=getenv("TESTING_INSTANCE_PROJECT", "passculture-metier-ehp"),
+    name=getenv("TESTING_INSTANCE_NAME"),
+    region=getenv("TESTING_INSTANCE_REGION", "europe-west1"),
 )
 
-testing.create_user(env_vars.DEST_NEW_USER, env_vars.DEST_NEW_USER_PASSWORD)
-testing.create_database(env_vars.DEST_DATABASE_NAME)
+testing_user = getenv("TESTING_USER", "pcapi-testing")
+
+testing.create_user(testing_user, getenv("TESTING_USER_PASSWORD"))
+
+testing_database_name = getenv("TESTING_DATABASE_NAME", "pcapi-testing")
+testing.create_database(testing_database_name)
+
+dump_bucket = getenv("DUMP_BUCKET")
 
 try:
-    dump_uri = "gs://%s/%s.gz" % (env_vars.DUMP_BUCKET, env_vars.DEST_DATABASE_NAME)
+    dump_uri = "gs://%s/%s.gz" % (dump_bucket, testing_database_name)
     print("Restoring dump %s to %s" % (dump_uri, testing.name))
     testing.import_dump(
-        target_database=env_vars.DEST_DATABASE_NAME,
-        dump_uri="gs://%s/%s.gz" % (env_vars.DUMP_BUCKET, env_vars.DEST_DATABASE_NAME),
-        import_user=env_vars.DEST_NEW_USER
+        target_database=testing_database_name,
+        dump_uri="gs://%s/%s.gz" % (dump_bucket, testing_database_name),
+        import_user=testing_user
     )
     print("Ended: Restoring dump %s to %s @%s" % (dump_uri, testing.name, datetime.now()))
 except Exception as e:
-    print("Import failed, dropping newly created database %s" % env_vars.DEST_DATABASE_NAME)
-    testing.drop_database(env_vars.DEST_DATABASE_NAME)
-    print("Import failed, dropping newly created role %s" % env_vars.DEST_NEW_USER)
-    testing.drop_role(env_vars.DEST_NEW_USER)
+    print("Import failed, dropping newly created database %s" % testing_database_name)
+    testing.drop_database(testing_database_name)
+    print("Import failed, dropping newly created role %s" % testing_user)
+    testing.drop_role(testing_user)

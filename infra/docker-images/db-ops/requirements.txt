@@ -1,2 +1,3 @@
-google-api-python-client==2.19.1
+google-api-python-client==2.32.0
 cloud-sql-python-connector[pg8000]==0.4.0
+pytest~=6.2.5

@@ -145,8 +145,6 @@ class CloudSQLPostgresInstance:
     def get_info(self):
         return self.sqladmin_instances_service.get(project=self.project, instance=self.name).execute()
 
-
-
     def get_last_successful_backup_run_id(self) -> str:
         """
         This function returns the backupRunId (that has a successful status)
@@ -231,7 +229,7 @@ class CloudSQLPostgresInstance:
         return instance_info["replicaNames"] if "replicaNames" in instance_info else []
 
     def get_ip_address(self, ip_address_type: str) -> str:
-        if ip_address_type == "PUBLIC":
+        if ip_address_type.casefold() == "PUBLIC".casefold():
             ip_address_type = "PRIMARY"
         for item in self.get_info()["ipAddresses"]:
             if item["type"] == ip_address_type:

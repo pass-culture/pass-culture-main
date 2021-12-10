@@ -1,10 +1,15 @@
+import random
+import string
+
 from cloudsqlpostgresinstance import CloudSQLPostgresInstance
 from datetime import datetime
 from os import getenv
-import env_vars
 import subprocess
 
-def transform_database(
+def generate_random_string(length: int):
+    return ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(length))
+
+def rename_database_and_change_owner(
     instance: CloudSQLPostgresInstance,
     old_database_name: str,
     new_database_name: str,
@@ -35,16 +40,13 @@ def disable_venue_providers(instance: CloudSQLPostgresInstance):
 
 def import_users():
     print("Starting: user import script %s" % datetime.now())
-    subprocess.run(
-        ["python3", "%s/%s" % (env_vars.PCAPI_ROOT_PATH, env_vars.IMPORT_USERS_SCRIPT_PATH), env_vars.USERS_CSV_PATH]
-        , check=True
-    )
+    subprocess.run(["python3",  getenv("IMPORT_USERS_SCRIPT_PATH"), getenv("USERS_CSV_PATH")], check=True)
     print("Ended: user import script %s" % datetime.now())
 
 
 def anonymize(database_url: str):
     print("Starting: psql anonymize script %s" % datetime.now())
-    anonymize_sql_script = open(env_vars.ANONYMIZE_SQL_SCRIPT_PATH, mode='r').read()
+    anonymize_sql_script = open(getenv("ANONYMIZE_SQL_SCRIPT_PATH"), mode='r').read()
     subprocess.run(
         ["psql", database_url],
         env={"PATH": getenv("PATH")},
@@ -57,24 +59,17 @@ def anonymize(database_url: str):
 
 def empty_tables(instance: CloudSQLPostgresInstance, tables: list[str]):
     print("Emptying unneeded tables: %s" % ", ".join(tables))
-    for table in env_vars.TABLES_TO_EMPTY:
+    for table in tables:
         truncate_table_query = "TRUNCATE TABLE %s" % table
         print(truncate_table_query)
         instance.execute_query(truncate_table_query)
 
 
 def build_database_url(database_host: str, database_port: int, database_name: str, username: str, password: str):
-    return "postgresql://%s:%s@%s:%s/%s" % (username, password, database_host, database_port, database_name)
+    return "postgresql://%s:%s@%s:%s/%s?keepalives=1" % (username, password, database_host, database_port, database_name)
 
 
 def run_flask_command(*args: str):
     print("Starting: flask %s %s" % (' '.join(args), datetime.now()))
     subprocess.run(["flask"] + list(args), check=True)
     print("Ended: flask %s %s" % (' '.join(args), datetime.now()))
-
-
-def post_process(instance: CloudSQLPostgresInstance, database_url):
-    empty_tables(instance=instance, tables=env_vars.TABLES_TO_EMPTY)
-    anonymize(database_url=database_url)
-    import_users()
-    disable_venue_providers(instance)

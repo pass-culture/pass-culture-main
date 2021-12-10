@@ -16,4 +16,11 @@ COPY . /scripts
 
 WORKDIR /usr/src/app
 
-ENTRYPOINT /bin/bash
+ENV PCAPI_ROOT_PATH /usr/src/app
+ENV IMPORT_USERS_SCRIPT_PATH /usr/src/app/src/pcapi/scripts/beneficiary/import_users.py
+
+ENV ANONYMIZE_SQL_SCRIPT_PATH /scripts/anonymize.sql
+ENV USERS_CSV_PATH /scripts/data_pass-culture-api-staging.csv
+
+ENTRYPOINT []
+CMD []
