@@ -1,4 +1,5 @@
 import copy
+import datetime
 import random
 import string
 from typing import Optional
@@ -229,6 +230,7 @@ def make_new_beneficiary_application_details(
     activity: str = "Étudiant",
     id_piece_number: Optional[str] = None,
     email: Optional[str] = None,
+    birth_date: Optional[datetime.datetime] = None,
 ) -> dict:
     application = copy.deepcopy(APPLICATION_DETAIL_STANDARD_RESPONSE)
     application["dossier"]["id"] = application_id
@@ -243,6 +245,9 @@ def make_new_beneficiary_application_details(
             field["value"] = postal_code
         if field["type_de_champ"]["libelle"] == "Veuillez indiquer votre statut":
             field["value"] = activity
+        if birth_date:
+            if field["type_de_champ"]["libelle"] == "Quelle est votre date de naissance":
+                field["value"] = birth_date.strftime("%Y-%m-%d")
 
     if id_piece_number:
         application["dossier"]["champs"].append(
