@@ -471,7 +471,6 @@ class StepsToBecomeBeneficiaryTest:
         expected = [
             BeneficiaryValidationStep.PHONE_VALIDATION,
             BeneficiaryValidationStep.ID_CHECK,
-            BeneficiaryValidationStep.BENEFICIARY_INFORMATION,
         ]
         assert steps_to_become_beneficiary(user) == expected
         assert not user.has_beneficiary_role
@@ -483,7 +482,6 @@ class StepsToBecomeBeneficiaryTest:
         expected = [
             BeneficiaryValidationStep.PHONE_VALIDATION,
             BeneficiaryValidationStep.ID_CHECK,
-            BeneficiaryValidationStep.BENEFICIARY_INFORMATION,
         ]
         assert steps_to_become_beneficiary(user) == expected
         assert not user.has_beneficiary_role

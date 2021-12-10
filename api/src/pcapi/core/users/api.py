@@ -247,9 +247,6 @@ def steps_to_become_beneficiary(user: User) -> list[BeneficiaryValidationStep]:
     ):
         missing_steps.append(BeneficiaryValidationStep.ID_CHECK)
 
-    if not user.hasCompletedIdCheck:
-        missing_steps.append(BeneficiaryValidationStep.BENEFICIARY_INFORMATION)
-
     return missing_steps
 
 
