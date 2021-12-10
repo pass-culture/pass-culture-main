@@ -6,7 +6,7 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 
-import Breadcrumb, { STYLE_TYPE_TAB } from 'components/layout/Breadcrumb'
+import Breadcrumb, { STYLE_TYPE_TAB } from 'new_components/Breadcrumb'
 
 import { doesUserPreferReducedMotion } from '../../../utils/windowMatchMedia'
 
