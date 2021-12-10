@@ -360,6 +360,9 @@ class AccountTest:
             (fraud_models.FraudCheckStatus.OK, fraud_models.IdentificationStatus.PROCESSED, None),
             (fraud_models.FraudCheckStatus.KO, fraud_models.IdentificationStatus.PROCESSED, None),
             (fraud_models.FraudCheckStatus.CANCELED, fraud_models.IdentificationStatus.ABORTED, "id-check"),
+            (None, fraud_models.IdentificationStatus.INITIATED, None),
+            (None, fraud_models.IdentificationStatus.PROCESSING, None),
+            (None, fraud_models.IdentificationStatus.PROCESSED, None),
         ],
     )
     @override_features(ENABLE_UBBLE=True)
