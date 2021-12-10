@@ -696,7 +696,7 @@ class UpdateBeneficiaryMandatoryInformationTest:
             city=new_city,
             postal_code="93000",
             activity=user.activity,
-            has_completed_id_check=True,
+            is_legacy_behaviour=True,
         )
 
         user = User.query.get(user.id)

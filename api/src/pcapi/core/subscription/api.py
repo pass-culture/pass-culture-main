@@ -352,7 +352,7 @@ def update_user_profile(
     last_name: typing.Optional[str] = None,
     school_type: typing.Optional[users_models.SchoolTypeEnum] = None,
     phone_number: typing.Optional[str] = None,
-    has_completed_id_check: typing.Optional[bool] = None,
+    is_legacy_behaviour: typing.Optional[bool] = False,
 ) -> None:
     user_initial_roles = user.roles
 
@@ -371,12 +371,12 @@ def update_user_profile(
     if last_name and not user.lastName:
         update_payload["lastName"] = last_name
 
-    # TODO (viconnex): remove phone number update after app native mandatory version is >= 164
-    if not FeatureToggle.ENABLE_PHONE_VALIDATION.is_active() and not user.phoneNumber and phone_number:
-        update_payload["phoneNumber"] = phone_number
-
-    if has_completed_id_check:
+    if is_legacy_behaviour:
+        # TODO (viconnex): remove phone number update after app native mandatory version is >= 164
+        if not user.phoneNumber and phone_number and not FeatureToggle.ENABLE_PHONE_VALIDATION.is_active():
+            update_payload["phoneNumber"] = phone_number
         update_payload["hasCompletedIdCheck"] = True
+        fraud_api.create_honor_statement_fraud_check(user, "legacy /beneficiary_information route")
 
     with pcapi_repository.transaction():
         users_models.User.query.filter(users_models.User.id == user.id).update(update_payload)
