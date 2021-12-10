@@ -9,7 +9,7 @@ import { createStockPayload } from './utils/createStockPayload'
 
 type Params = { offer: Offer; values: OfferEducationalStockFormValues }
 
-type PostEducationalStockAdapter = Adapter<Params, null>
+type PostEducationalStockAdapter = Adapter<Params, null, null>
 
 const BAD_REQUEST_FAILING_RESPONSE = {
   isOk: false,

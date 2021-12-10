@@ -8,13 +8,12 @@ import { createOfferPayload } from '../utils/createOfferPayload'
 
 type Params = IOfferEducationalFormValues
 
-interface IPayload {
-  offerId: string | null
-}
+type IPayloadSuccess = { offerId: string }
+type IPayloadFailure = { offerId: null }
 
-type PostOfferAdapter = Adapter<Params, IPayload>
+type PostOfferAdapter = Adapter<Params, IPayloadSuccess, IPayloadFailure>
 
-const BAD_REQUEST_FAILING_RESPONSE = {
+const BAD_REQUEST_FAILING_RESPONSE: AdapterFailure<IPayloadFailure> = {
   isOk: false,
   message: 'Une ou plusieurs erreurs sont présentes dans le formulaire',
   payload: {
@@ -22,7 +21,7 @@ const BAD_REQUEST_FAILING_RESPONSE = {
   },
 }
 
-const UNKNOWN_FAILING_RESPONSE = {
+const UNKNOWN_FAILING_RESPONSE: AdapterFailure<IPayloadFailure> = {
   isOk: false,
   message: 'Une erreur est survenue lors de la création de votre offre',
   payload: {
