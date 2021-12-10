@@ -28,15 +28,18 @@ SCHOOL_TYPE_LABEL_ENUM = enum.Enum(
 class Activity:
     id: str
     label: str
+    description: typing.Optional[str]
     associated_school_types_ids: typing.Optional[list[SCHOOL_TYPE_ID_ENUM]]
 
     def __init__(
         self,
         activity: users_models.ActivityEnum,
+        description: typing.Optional[str] = None,
         associated_school_types_ids: typing.Optional[list[SCHOOL_TYPE_ID_ENUM]] = None,
     ) -> None:
         self.id = activity.name
         self.label = activity.value
+        self.description = description
         self.associated_school_types_ids = associated_school_types_ids or []
         super().__init__()
 
@@ -66,7 +69,7 @@ ALL_SCHOOL_TYPES = [
 
 MIDDLE_SCHOOL_STUDENT = Activity(
     users_models.ActivityEnum.MIDDLE_SCHOOL_STUDENT,
-    [
+    associated_school_types_ids=[
         PRIVATE_SECONDARY_SCHOOL.id,
         PUBLIC_SECONDARY_SCHOOL.id,
         HOME_OR_REMOTE_SCHOOLING.id,
@@ -74,7 +77,7 @@ MIDDLE_SCHOOL_STUDENT = Activity(
 )
 HIGH_SCHOOL_STUDENT = Activity(
     users_models.ActivityEnum.HIGH_SCHOOL_STUDENT,
-    [
+    associated_school_types_ids=[
         AGRICULTURAL_HIGH_SCHOOL.id,
         MILITARY_HIGH_SCHOOL.id,
         NAVAL_HIGH_SCHOOL.id,
@@ -88,9 +91,10 @@ STUDENT = Activity(users_models.ActivityEnum.STUDENT)
 EMPLOYEE = Activity(users_models.ActivityEnum.EMPLOYEE)
 APPRENTICE = Activity(users_models.ActivityEnum.APPRENTICE)
 APPRENTICE_STUDENT = Activity(users_models.ActivityEnum.APPRENTICE_STUDENT)
-VOLUNTEER = Activity(users_models.ActivityEnum.VOLUNTEER)
-INACTIVE = Activity(users_models.ActivityEnum.INACTIVE)
-UNEMPLOYED = Activity(users_models.ActivityEnum.UNEMPLOYED)
+VOLUNTEER = Activity(users_models.ActivityEnum.VOLUNTEER, description="En service civique")
+INACTIVE = Activity(users_models.ActivityEnum.INACTIVE, description="En incapacité de travailler")
+UNEMPLOYED = Activity(users_models.ActivityEnum.UNEMPLOYED, description="En recherche d'emploi")
+
 
 ALL_ACTIVITIES = [
     MIDDLE_SCHOOL_STUDENT,
