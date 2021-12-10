@@ -2,11 +2,9 @@ import datetime
 
 from pcapi.core.bookings.factories import EducationalBookingFactory
 from pcapi.core.bookings.factories import UsedEducationalBookingFactory
-from pcapi.core.bookings.factories import UsedIndividualBookingFactory
 from pcapi.core.bookings.models import BookingStatus
 import pcapi.core.educational.factories as educational_factories
 from pcapi.core.offers.factories import EducationalEventStockFactory
-from pcapi.core.offers.factories import EventStockFactory
 from pcapi.core.offers.factories import MediationFactory
 from pcapi.core.offers.factories import UserOffererFactory
 from pcapi.core.offers.factories import VenueFactory
@@ -101,6 +99,23 @@ def create_industrial_educational_bookings() -> None:
                 offer__description="Une description multi-lignes.\nOù il est notamment question du nombre d'élèves.\nNbr d'élèves max: 50",
                 offer__name=stock_data["name"],
                 offer__venue=venue,
+                offer__extraData={
+                    "students": [
+                        "CAP - 1re ann\u00e9e",
+                        "CAP - 2e ann\u00e9e",
+                        "Lyc\u00e9e - Seconde",
+                        "Lyc\u00e9e - Premi\u00e8re",
+                    ],
+                    "offerVenue": {
+                        "addressType": "other",
+                        "otherAddress": "1 rue des polissons, Paris 75017",
+                        "venueId": "",
+                    },
+                    "contactEmail": "miss.rond@point.com",
+                    "contactPhone": "01010100101",
+                },
+                offer__motorDisabilityCompliant=True,
+                offer__visualDisabilityCompliant=True,
             )
         )
 
@@ -118,6 +133,23 @@ def create_industrial_educational_bookings() -> None:
             offer__description="Une description multi-lignes.\nOù il est notamment question du nombre d'élèves.\nNbr d'élèves max: 50",
             offer__name="Stage d'initiation à la photographie : prise en main de l'appareil-photo",
             offer__venue=venue,
+            offer__extraData={
+                "students": [
+                    "CAP - 1re ann\u00e9e",
+                    "CAP - 2e ann\u00e9e",
+                    "Lyc\u00e9e - Seconde",
+                    "Lyc\u00e9e - Premi\u00e8re",
+                ],
+                "offerVenue": {
+                    "addressType": "other",
+                    "otherAddress": "1 rue des polissons, Paris 75017",
+                    "venueId": "",
+                },
+                "contactEmail": "miss.rond@point.com",
+                "contactPhone": "01010100101",
+            },
+            offer__motorDisabilityCompliant=True,
+            offer__visualDisabilityCompliant=True,
         ),
         EducationalEventStockFactory(
             quantity=60,
@@ -128,6 +160,23 @@ def create_industrial_educational_bookings() -> None:
             offer__description="Une description multi-lignes.\nOù il est notamment question du nombre d'élèves.\nNbr d'élèves max: 50",
             offer__name="Explorer la nature au Parc Zoologique et Botanique de Mulhouse",
             offer__venue=venue,
+            offer__extraData={
+                "students": [
+                    "CAP - 1re ann\u00e9e",
+                    "CAP - 2e ann\u00e9e",
+                    "Lyc\u00e9e - Seconde",
+                    "Lyc\u00e9e - Premi\u00e8re",
+                ],
+                "offerVenue": {
+                    "addressType": "other",
+                    "otherAddress": "1 rue des polissons, Paris 75017",
+                    "venueId": "",
+                },
+                "contactEmail": "miss.rond@point.com",
+                "contactPhone": "01010100101",
+            },
+            offer__motorDisabilityCompliant=True,
+            offer__visualDisabilityCompliant=True,
         ),
     ]
 
@@ -175,19 +224,23 @@ def create_industrial_educational_bookings() -> None:
                     beginningDatetime=now - datetime.timedelta(days=10),
                     bookingLimitDatetime=now - datetime.timedelta(days=10),
                     offer__venue=venue_reimbursements,
-                ),
-            )
-
-            # Here are individual booking data to make it easier for PO to review the correct generation of the csv listing payments
-            # FIXME (gvanneste, 2021-11-16) : delete the factory below when user stories has been reviewed by PO on testing
-            UsedIndividualBookingFactory(
-                cancellation_limit_date=now - datetime.timedelta(days=15),
-                dateUsed=now - datetime.timedelta(6),
-                status=BookingStatus.USED,
-                stock=EventStockFactory(
-                    beginningDatetime=now - datetime.timedelta(days=10),
-                    bookingLimitDatetime=now - datetime.timedelta(days=10),
-                    offer__venue=venue_reimbursements,
+                    offer__extraData={
+                        "students": [
+                            "CAP - 1re ann\u00e9e",
+                            "CAP - 2e ann\u00e9e",
+                            "Lyc\u00e9e - Seconde",
+                            "Lyc\u00e9e - Premi\u00e8re",
+                        ],
+                        "offerVenue": {
+                            "addressType": "other",
+                            "otherAddress": "1 rue des polissons, Paris 75017",
+                            "venueId": "",
+                        },
+                        "contactEmail": "miss.rond@point.com",
+                        "contactPhone": "01010100101",
+                    },
+                    offer__motorDisabilityCompliant=True,
+                    offer__visualDisabilityCompliant=True,
                 ),
             )
 
@@ -200,4 +253,21 @@ def create_industrial_educational_bookings() -> None:
                 educationalBooking__confirmationLimitDate=now + datetime.timedelta(days=30),
                 status=BookingStatus.PENDING,
                 stock=next_year_stock,
+                offer__extraData={
+                    "students": [
+                        "CAP - 1re ann\u00e9e",
+                        "CAP - 2e ann\u00e9e",
+                        "Lyc\u00e9e - Seconde",
+                        "Lyc\u00e9e - Premi\u00e8re",
+                    ],
+                    "offerVenue": {
+                        "addressType": "other",
+                        "otherAddress": "1 rue des polissons, Paris 75017",
+                        "venueId": "",
+                    },
+                    "contactEmail": "miss.rond@point.com",
+                    "contactPhone": "01010100101",
+                },
+                offer__motorDisabilityCompliant=True,
+                offer__visualDisabilityCompliant=True,
             )
