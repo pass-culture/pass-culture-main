@@ -18,9 +18,7 @@ const ReimbursementsTableHead = ({
   sortBy,
 }: IReimbursementsTableHead): JSX.Element => {
   const changeDirection = (columnOption: columnOptionType) => {
-    const otherColumnOption = columns.filter(
-      title => title !== columnOption
-    )
+    const otherColumnOption = columns.filter(title => title !== columnOption)
 
     otherColumnOption.forEach(columnOption => {
       columnOption.selfDirection = 'default'

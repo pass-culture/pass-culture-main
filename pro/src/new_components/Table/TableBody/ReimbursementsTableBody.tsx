@@ -4,9 +4,7 @@ import styles from './ReimbursementsTableBody.module.scss'
 
 type ColumnData = {
   date: string
-  businessUnit: {
-    name: string
-  }
+  businessUnitName: string
   reference: string
   amount: string
 }
@@ -22,7 +20,9 @@ const ReimbursementsTableBody = ({ invoices }: ITableBody): JSX.Element => {
         return (
           <tr key={invoice.reference}>
             <td className={styles['date']}>{invoice.date}</td>
-            <td className={styles['business-unit']}>{invoice.businessUnit}</td>
+            <td className={styles['business-unit']}>
+              {invoice.businessUnitName}
+            </td>
             <td>{invoice.reference}</td>
             <td className={styles['amount']}>{invoice.amount}€</td>
           </tr>

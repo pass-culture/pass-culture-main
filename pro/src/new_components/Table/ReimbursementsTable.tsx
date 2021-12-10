@@ -4,6 +4,14 @@ import styles from './ReimbursementsTable.module.scss'
 import ReimbursementsTableBody from './TableBody/ReimbursementsTableBody'
 import ReimbursementsTableHead from './TableHead/ReimbursementsTableHead'
 
+type invoice = {
+  date: string
+  businessUnitName: string
+  reference: string
+  amount: string
+}
+
+// TODO specify type 'invoice' to invoices Array makes the app crash on line 43, find a solution
 interface ITableProps {
   columns: [
     {
@@ -12,7 +20,7 @@ interface ITableProps {
       selfDirection: string
     }
   ]
-  invoices: []
+  invoices: Array<any>
 }
 
 const IS_ASCENDENT = 'asc'
@@ -29,16 +37,19 @@ const ReimbursementsTable = ({
 
   const changeDirection = (directionToChange: string) =>
     directionToChange === IS_ASCENDENT ? IS_DESCENDENT : IS_ASCENDENT
-  const sortBy = (fieldToSort: string, sortDirection: string) => {
-    const newSortedInvoices = invoices.sort((columnA, columnB) => {
-      if (columnA[fieldToSort] < columnB[fieldToSort])
-        return sortDirection === IS_ASCENDENT ? -1 : 1
-      if (columnA[fieldToSort] > columnB[fieldToSort])
-        return sortDirection === IS_ASCENDENT ? 1 : -1
-      return 0
-    })
-    setSortedInvoices(newSortedInvoices)
-  }
+  const sortBy = useCallback(
+    (fieldToSort: string, sortDirection: string) => {
+      const newSortedInvoices = invoices.sort((columnA, columnB) => {
+        if (columnA[fieldToSort] < columnB[fieldToSort])
+          return sortDirection === IS_ASCENDENT ? -1 : 1
+        if (columnA[fieldToSort] > columnB[fieldToSort])
+          return sortDirection === IS_ASCENDENT ? 1 : -1
+        return 0
+      })
+      setSortedInvoices(newSortedInvoices)
+    },
+    [invoices]
+  )
 
   const targetedColumn = useCallback(
     newSelectedColumn => {
@@ -51,12 +62,12 @@ const ReimbursementsTable = ({
       setSelectedTitle(newSelectedColumn)
       setDirection(newDirection)
     },
-    [selectedColumn, direction]
+    [selectedColumn, direction, sortBy]
   )
 
   useEffect(() => {
     sortBy(selectedColumn, direction)
-  }, [invoices, direction, sortBy, selectedColumn])
+  }, [direction, selectedColumn, sortBy])
 
   return (
     <table className={styles['reimbursement-table']}>

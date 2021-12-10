@@ -36,14 +36,14 @@ const ReimbursementsDetails = ({
     today.getDate()
   )
   const INITIAL_FILTERS = {
-    venue: ALL_VENUES_OPTION_ID,
+    spot: ALL_VENUES_OPTION_ID,
     periodStart: oneMonthAGo,
     periodEnd: today,
   }
 
   const [filters, setFilters] = useState(INITIAL_FILTERS)
   const {
-    venue: selectedVenue,
+    spot: selectedVenue,
     periodStart: selectedPeriodStart,
     periodEnd: selectedPeriodEnd,
   } = filters
@@ -53,7 +53,7 @@ const ReimbursementsDetails = ({
     formatBrowserTimezonedDateAsUTC(date, FORMAT_ISO_DATE_ONLY)
   const isPeriodFilterSelected = selectedPeriodStart && selectedPeriodEnd
   const requireVenueFilterForAdmin =
-    isCurrentUserAdmin && selectedVenue === 'allVenues'
+    isCurrentUserAdmin && selectedVenue === ALL_VENUES_OPTION_ID
   const shouldDisableButtons =
     !isPeriodFilterSelected || requireVenueFilterForAdmin
 
@@ -106,11 +106,15 @@ const ReimbursementsDetails = ({
   return (
     <>
       <ReimbursementsSectionHeader
+        defaultSelectDisplayName="Tous les lieux"
+        defaultSelectId="allVenues"
         filters={filters}
         headerTitle="Affichage des remboursements"
         initialFilters={INITIAL_FILTERS}
+        selectLabel="Lieu"
+        selectName="lieu"
+        selectableOptions={venuesOptions}
         setFilters={setFilters}
-        venuesOptions={venuesOptions}
       >
         <DownloadButtonContainer
           filename="remboursements_pass_culture"
