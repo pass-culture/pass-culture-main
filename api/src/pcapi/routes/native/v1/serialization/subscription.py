@@ -45,6 +45,7 @@ class SchoolTypeResponseModel(BaseModel):
 class ActivityResponseModel(BaseModel):
     id: school_types.ACTIVITY_ID_ENUM
     label: str
+    description: Optional[str]
     associated_school_types_ids: Optional[list[school_types.SCHOOL_TYPE_ID_ENUM]]
 
     class Config:

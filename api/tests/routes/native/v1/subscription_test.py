@@ -227,6 +227,7 @@ class SchoolTypeTest:
                 {
                     "id": "MIDDLE_SCHOOL_STUDENT",
                     "label": "Collégien",
+                    "description": None,
                     "associatedSchoolTypesIds": [
                         "PRIVATE_SECONDARY_SCHOOL",
                         "PUBLIC_SECONDARY_SCHOOL",
@@ -236,6 +237,7 @@ class SchoolTypeTest:
                 {
                     "id": "HIGH_SCHOOL_STUDENT",
                     "label": "Lycéen",
+                    "description": None,
                     "associatedSchoolTypesIds": [
                         "AGRICULTURAL_HIGH_SCHOOL",
                         "MILITARY_HIGH_SCHOOL",
@@ -246,13 +248,28 @@ class SchoolTypeTest:
                         "APPRENTICE_FORMATION_CENTER",
                     ],
                 },
-                {"id": "STUDENT", "label": "Étudiant", "associatedSchoolTypesIds": []},
-                {"id": "EMPLOYEE", "label": "Employé", "associatedSchoolTypesIds": []},
-                {"id": "APPRENTICE", "label": "Apprenti", "associatedSchoolTypesIds": []},
-                {"id": "APPRENTICE_STUDENT", "label": "Alternant", "associatedSchoolTypesIds": []},
-                {"id": "VOLUNTEER", "label": "Volontaire", "associatedSchoolTypesIds": []},
-                {"id": "INACTIVE", "label": "Inactif", "associatedSchoolTypesIds": []},
-                {"id": "UNEMPLOYED", "label": "Chômeur", "associatedSchoolTypesIds": []},
+                {"id": "STUDENT", "label": "Étudiant", "description": None, "associatedSchoolTypesIds": []},
+                {"id": "EMPLOYEE", "label": "Employé", "description": None, "associatedSchoolTypesIds": []},
+                {"id": "APPRENTICE", "label": "Apprenti", "description": None, "associatedSchoolTypesIds": []},
+                {"id": "APPRENTICE_STUDENT", "label": "Alternant", "description": None, "associatedSchoolTypesIds": []},
+                {
+                    "id": "VOLUNTEER",
+                    "label": "Volontaire",
+                    "description": "En service civique",
+                    "associatedSchoolTypesIds": [],
+                },
+                {
+                    "id": "INACTIVE",
+                    "label": "Inactif",
+                    "description": "En incapacité de travailler",
+                    "associatedSchoolTypesIds": [],
+                },
+                {
+                    "id": "UNEMPLOYED",
+                    "label": "Chômeur",
+                    "description": "En recherche d'emploi",
+                    "associatedSchoolTypesIds": [],
+                },
             ],
             "school_types": [
                 {"id": "AGRICULTURAL_HIGH_SCHOOL", "label": "Lycée agricole"},
