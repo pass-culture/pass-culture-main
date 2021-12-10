@@ -13,13 +13,13 @@ import {
   getCategoriesAdapter,
   getOfferersAdapter,
 } from 'core/OfferEducational'
+import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
+import OfferEducationalLayout from 'new_components/OfferEducationalLayout'
 import OfferEducationalScreen from 'screens/OfferEducational'
 import { IOfferEducationalProps } from 'screens/OfferEducational/OfferEducational'
-import { Title } from 'ui-kit'
 
 import { getIsOffererEligibleToEducationalOfferAdapter } from './adapters'
 import postOfferAdapter from './adapters/postOfferAdapter'
-import style from './OfferEductaionalCreation.module.scss'
 
 type AsyncScreenProps = Pick<
   IOfferEducationalProps,
@@ -83,24 +83,27 @@ const OfferEducationalCreation = (): JSX.Element => {
     }
   }, [isReady, venueId, offererId])
 
-  return isReady && screenProps ? (
-    <>
-      <Title className={style.heading} level={1}>
-        Créer une nouvelle offre scolaire
-      </Title>
-      <OfferEducationalScreen
-        {...screenProps}
-        getIsOffererEligibleToEducationalOfferAdapter={
-          getIsOffererEligibleToEducationalOfferAdapter
-        }
-        initialValues={initialValues}
-        mode={Mode.CREATION}
-        notify={notify}
-        onSubmit={createOffer}
-      />
-    </>
-  ) : (
-    <Spinner />
+  return (
+    <OfferEducationalLayout
+      activeStep={OfferBreadcrumbStep.DETAILS}
+      isCreatingOffer
+      title="Créer une nouvelle offre scolaire"
+    >
+      {isReady && screenProps ? (
+        <OfferEducationalScreen
+          {...screenProps}
+          getIsOffererEligibleToEducationalOfferAdapter={
+            getIsOffererEligibleToEducationalOfferAdapter
+          }
+          initialValues={initialValues}
+          mode={Mode.CREATION}
+          notify={notify}
+          onSubmit={createOffer}
+        />
+      ) : (
+        <Spinner />
+      )}
+    </OfferEducationalLayout>
   )
 }
 
