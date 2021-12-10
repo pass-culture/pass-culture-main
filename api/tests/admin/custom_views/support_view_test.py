@@ -332,6 +332,9 @@ class UpdateIDPieceNumberTest:
         fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
             user=user, type=fraud_models.FraudCheckType.JOUVE, resultContent=content
         )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user, type=fraud_models.FraudCheckType.HONOR_STATEMENT, status=fraud_models.FraudCheckStatus.OK
+        )
         fraud_factories.BeneficiaryFraudResultFactory(user=user, status=fraud_models.FraudStatus.SUSPICIOUS)
         id_piece_number = "123123123123"
         client.with_session_auth(self.jouve_admin.email)
@@ -356,6 +359,9 @@ class UpdateIDPieceNumberTest:
     def test_update_beneficiary_id_piece_number_from_dms_data(self, client):
         user = users_factories.UserFactory()
         fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(user=user, type=fraud_models.FraudCheckType.DMS)
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user, type=fraud_models.FraudCheckType.HONOR_STATEMENT, status=fraud_models.FraudCheckStatus.OK
+        )
         fraud_factories.BeneficiaryFraudResultFactory(user=user, status=fraud_models.FraudStatus.SUSPICIOUS)
         client.with_session_auth(self.jouve_admin.email)
         id_piece_number = "123123123123"
@@ -377,6 +383,9 @@ class UpdateIDPieceNumberTest:
         user = users_factories.UserFactory()
         fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(user=user, type=fraud_models.FraudCheckType.DMS)
         fraud_factories.BeneficiaryFraudResultFactory(user=user, status=fraud_models.FraudStatus.SUSPICIOUS)
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user, type=fraud_models.FraudCheckType.HONOR_STATEMENT, status=fraud_models.FraudCheckStatus.OK
+        )
         dms_data = fraud_check.source_data()
         beneficiary_import = users_factories.BeneficiaryImportFactory(
             beneficiary=user,
@@ -430,6 +439,9 @@ class UpdateIDPieceNumberTest:
             user=user, type=fraud_models.FraudCheckType.JOUVE, resultContent=content
         )
         fraud_factories.BeneficiaryFraudResultFactory(user=user, status=fraud_models.FraudStatus.SUSPICIOUS)
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user, type=fraud_models.FraudCheckType.HONOR_STATEMENT, status=fraud_models.FraudCheckStatus.OK
+        )
 
         client.with_session_auth(admin.email)
         client.post(

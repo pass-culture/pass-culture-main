@@ -129,7 +129,8 @@ class AttachBenerificaryImportDetailsTest:
 class EduconnectFlowTest:
     @freeze_time("2021-10-10")
     @patch("pcapi.core.users.external.educonnect.api.get_saml_client")
-    def test_educonnect_subscription(self, mock_get_educonnect_saml_client, client, app):
+    def test_legacy_educonnect_subscription(self, mock_get_educonnect_saml_client, client, app):
+        # TODO (viconnex): remove this journey after app native mandatory version is >= 164
         ine_hash = "5ba682c0fc6a05edf07cd8ed0219258f"
         fraud_factories.IneHashWhitelistFactory(ine_hash=ine_hash)
         user = users_factories.UserFactory(dateOfBirth=datetime(2004, 1, 1))
@@ -195,6 +196,90 @@ class EduconnectFlowTest:
         }
 
         response = client.patch("/native/v1/beneficiary_information", profile_data)
+
+        assert response.status_code == 204
+        assert user.roles == [users_models.UserRole.UNDERAGE_BENEFICIARY]
+        assert user.deposit.amount == 20
+
+    @freeze_time("2021-10-10")
+    @patch("pcapi.core.users.external.educonnect.api.get_saml_client")
+    def test_educonnect_subscription(self, mock_get_educonnect_saml_client, client, app):
+        ine_hash = "5ba682c0fc6a05edf07cd8ed0219258f"
+        fraud_factories.IneHashWhitelistFactory(ine_hash=ine_hash)
+        user = users_factories.UserFactory(dateOfBirth=datetime(2004, 1, 1))
+        access_token = create_access_token(identity=user.email)
+        client.auth_header = {"Authorization": f"Bearer {access_token}"}
+        mock_saml_client = MagicMock()
+        mock_get_educonnect_saml_client.return_value = mock_saml_client
+        mock_saml_client.prepare_for_authenticate.return_value = (
+            "request_id_123",
+            {"headers": [("Location", "https://pr4.educonnect.phm.education.gouv.fr/idp")]},
+        )
+
+        profile_data = {
+            "activity": "Lycéen",
+            "schoolTypeId": "PUBLIC_HIGH_SCHOOL",
+            "address": "1 rue des rues",
+            "city": "Uneville",
+            "firstName": "WrongFirstName",
+            "lastName": "Wrong Lastname",
+            "postalCode": "77000",
+        }
+
+        response = client.post("/native/v1/subscription/profile", profile_data)
+
+        assert user.city == "Uneville"
+        assert subscription_api.has_completed_profile(user)
+        assert not user.hasCompletedIdCheck
+
+        # Get educonnect login form with saml protocol
+        response = client.get("/saml/educonnect/login")
+        assert response.status_code == 302
+        assert response.location.startswith("https://pr4.educonnect.phm.education.gouv.fr/idp")
+
+        prefixed_request_id = app.redis_client.keys("educonnect-saml-request-*")[0]
+        request_id = prefixed_request_id[len("educonnect-saml-request-") :]
+
+        mock_saml_response = MagicMock()
+        mock_saml_client.parse_authn_request_response.return_value = mock_saml_response
+        mock_saml_response.get_identity.return_value = {
+            "givenName": ["Max"],
+            "sn": ["SENS"],
+            "urn:oid:1.3.6.1.4.1.20326.10.999.1.57": [
+                "e6759833fb379e0340322889f2a367a5a5150f1533f80dfe963d21e43e33f7164b76cc802766cdd33c6645e1abfd1875"
+            ],
+            "urn:oid:1.3.6.1.4.1.20326.10.999.1.5": ["https://educonnect.education.gouv.fr/Logout"],
+            "urn:oid:1.3.6.1.4.1.20326.10.999.1.67": ["2006-08-18"],
+            "urn:oid:1.3.6.1.4.1.20326.10.999.1.73": ["2212"],
+            "urn:oid:1.3.6.1.4.1.20326.10.999.1.6": ["2021-10-08 11:51:33.437"],
+            "urn:oid:1.3.6.1.4.1.20326.10.999.1.64": [ine_hash],
+            "urn:oid:1.3.6.1.4.1.20326.10.999.1.7": ["eleve1d"],
+            "urn:oid:1.3.6.1.4.1.20326.10.999.1.72": ["school_uai"],
+        }
+        mock_saml_response.in_response_to = request_id
+
+        response = client.post("/saml/acs", form={"SAMLResponse": "encrypted_data"})
+
+        assert response.status_code == 302
+        assert (
+            response.location
+            == "https://webapp-v2.example.com/idcheck/validation?firstName=Max&lastName=SENS&dateOfBirth=2006-08-18&logoutUrl=https%3A%2F%2Feduconnect.education.gouv.fr%2FLogout"
+        )
+
+        assert len(user.beneficiaryFraudResults) == 1
+        assert user.beneficiaryFraudResults[0].status == fraud_models.FraudStatus.OK
+
+        beneficiary_import = BeneficiaryImport.query.filter_by(beneficiaryId=user.id).one_or_none()
+        assert beneficiary_import is not None
+        assert beneficiary_import.currentStatus == ImportStatus.CREATED
+        assert user.firstName == "Max"
+        assert user.lastName == "SENS"
+        assert user.dateOfBirth == datetime(2006, 8, 18, 0, 0)
+        assert user.ineHash == ine_hash
+
+        assert not user.is_beneficiary
+
+        response = client.post("/native/v1/subscription/honor_statement")
 
         assert response.status_code == 204
         assert user.roles == [users_models.UserRole.UNDERAGE_BENEFICIARY]
@@ -583,6 +668,9 @@ class OnSucessfulDMSApplicationTest:
             registration_datetime=datetime.today(),
         )
         applicant = users_factories.UserFactory(email=information.email)
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=applicant, type=fraud_models.FraudCheckType.HONOR_STATEMENT, status=fraud_models.FraudCheckStatus.OK
+        )
         # when
 
         subscription_api.on_successful_application(
@@ -679,6 +767,11 @@ class OnSucessfulDMSApplicationTest:
                 civility="Mme",
                 activity="Étudiant",
                 registration_datetime=datetime.today(),
+            )
+            fraud_factories.BeneficiaryFraudCheckFactory(
+                user=applicant,
+                type=fraud_models.FraudCheckType.HONOR_STATEMENT,
+                status=fraud_models.FraudCheckStatus.OK,
             )
 
         assert applicant.has_beneficiary_role is False
