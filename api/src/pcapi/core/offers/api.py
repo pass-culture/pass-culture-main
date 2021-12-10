@@ -562,9 +562,8 @@ def edit_educational_stock(stock: Stock, stock_data: dict) -> None:
     booking_limit_datetime = as_utc_without_timezone(booking_limit_datetime) if booking_limit_datetime else None
     validation.check_booking_limit_datetime(stock, beginning, booking_limit_datetime)
 
-    associated_bookings = bookings_repository.find_non_cancelled_bookings_by_stock_id(stock.id)
-    if associated_bookings:
-        educational_stock_unique_booking = associated_bookings[0]
+    educational_stock_unique_booking = bookings_repository.find_unique_eac_booking_if_any(stock.id)
+    if educational_stock_unique_booking:
         validation.check_stock_booking_status(educational_stock_unique_booking)
         if beginning:
             updated_booking = _update_educational_booking_cancellation_limit_date(

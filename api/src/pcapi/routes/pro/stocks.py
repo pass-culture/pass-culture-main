@@ -1,7 +1,9 @@
+import logging
 from typing import List
 
 from flask_login import current_user
 from flask_login import login_required
+from sqlalchemy.orm.exc import MultipleResultsFound as SQLAMultipleResultsFound
 
 from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.offerers import exceptions as offerers_exceptions
@@ -34,6 +36,9 @@ from pcapi.workers.synchronize_stocks_job import synchronize_stocks_job
 
 from .blueprints import api
 from .blueprints import pro_api_v2
+
+
+logger = logging.getLogger(__name__)
 
 
 @private_api.route("/offers/<offer_id>/stocks", methods=["GET"])
@@ -171,8 +176,15 @@ def edit_educational_stock(stock_id: str, body: EducationalStockEditionBodyModel
     ):
         raise ApiErrors(
             {
-                "educationalStock": [
-                    "Ce stock fait l'objet d'une réservation dont le statut ne permet pas sa modification"
+    except SQLAMultipleResultsFound:
+        logger.exception(
+            "Several non cancelled bookings found while trying to edit related educational stock",
+            extra={"stock_id": stock_id},
+        )
+        raise ApiErrors(
+            {
+                "educationalStockEdition": [
+                    "Plusieurs réservations non annulées portent sur ce stock d'une offre éducationnelle"
                 ]
             },
             status_code=400,
