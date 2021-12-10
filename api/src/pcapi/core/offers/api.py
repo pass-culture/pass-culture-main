@@ -81,7 +81,7 @@ from .models import Mediation
 logger = logging.getLogger(__name__)
 
 
-OFFERS_RECAP_LIMIT = 201
+OFFERS_RECAP_LIMIT = 501
 UNCHANGED = object()
 VALIDATION_KEYWORDS_MAPPING = {
     "APPROVED": OfferValidationStatus.APPROVED,
