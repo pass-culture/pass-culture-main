@@ -8,8 +8,6 @@ from pcapi.core.fraud import models as fraud_models
 from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
-from pcapi.core.users.factories import BeneficiaryImportFactory
-from pcapi.models.beneficiary_import_status import ImportStatus
 from pcapi.notifications.push import testing as push_testing
 
 
@@ -153,6 +151,7 @@ class UpdateProfileTest:
             "city": "Uneville",
             "postalCode": "77000",
             "activityId": "HIGH_SCHOOL_STUDENT",
+            "schoolTypeId": "PUBLIC_HIGH_SCHOOL",
         }
 
         client.with_token(user.email)
@@ -167,112 +166,16 @@ class UpdateProfileTest:
         assert user.city == "Uneville"
         assert user.postalCode == "77000"
         assert user.activity == "Lycéen"
-        assert user.phoneNumber == "+33609080706"
-
-    def test_update_profile_when_fraud_check_done(self, client):
-        """
-        Test that valid request:
-            * updates the user's profile information;
-            * sets the user to beneficiary;
-            * send a request to Batch to update the user's information
-        """
-        user = users_factories.UserFactory(
-            address=None,
-            city=None,
-            postalCode=None,
-            activity=None,
-            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
-        )
-        fraud_factories.BeneficiaryFraudCheckFactory(user=user, type=fraud_models.FraudCheckType.JOUVE)
-        fraud_factories.BeneficiaryFraudResultFactory(user=user, status=fraud_models.FraudStatus.OK)
-
-        beneficiary_import = BeneficiaryImportFactory(beneficiary=user)
-        beneficiary_import.setStatus(ImportStatus.CREATED)
-
-        profile_data = {
-            "firstName": "John",
-            "lastName": "Doe",
-            "address": "1 rue des rues",
-            "city": "Uneville",
-            "postalCode": "77000",
-            "activityId": "HIGH_SCHOOL_STUDENT",
-            "schoolTypeId": "PUBLIC_HIGH_SCHOOL",
-        }
-
-        client.with_token(email=user.email)
-        response = client.post("/native/v1/subscription/profile", profile_data)
-
-        assert response.status_code == 204
-
-        user = users_models.User.query.get(user.id)
-        assert user.firstName != "John"
-        assert user.lastName != "Doe"
-        assert user.address == "1 rue des rues"
-        assert user.city == "Uneville"
-        assert user.postalCode == "77000"
-        assert user.activity == "Lycéen"
         assert user.schoolType == users_models.SchoolTypeEnum.PUBLIC_HIGH_SCHOOL
-
-        assert user.has_beneficiary_role
-        assert user.deposit
+        assert user.phoneNumber == "+33609080706"
+        assert not user.hasCompletedIdCheck
 
         assert len(push_testing.requests) == 2
         notification = push_testing.requests[0]
 
         assert notification["user_id"] == user.id
-        assert notification["attribute_values"]["u.is_beneficiary"]
+        assert not notification["attribute_values"]["u.is_beneficiary"]
         assert notification["attribute_values"]["u.postal_code"] == "77000"
-
-    @override_features(ENABLE_PHONE_VALIDATION=True)
-    def test_update_beneficiary_underage(self, client, app):
-        """
-        Test that valid request:
-            * updates the user's profile information;
-            * sets the user to beneficiary;
-            * send a request to Batch to update the user's information
-        """
-        user = users_factories.UserFactory(
-            address=None,
-            city=None,
-            dateOfBirth=datetime.datetime.now() - relativedelta(years=15, months=4),
-            postalCode=None,
-            activity=None,
-        )
-        fraud_factories.BeneficiaryFraudCheckFactory(user=user, type=fraud_models.FraudCheckType.EDUCONNECT)
-        fraud_factories.BeneficiaryFraudResultFactory(user=user, status=fraud_models.FraudStatus.OK)
-
-        beneficiary_import = BeneficiaryImportFactory(
-            beneficiary=user, eligibilityType=users_models.EligibilityType.UNDERAGE
-        )
-        beneficiary_import.setStatus(ImportStatus.CREATED)
-
-        profile_data = {
-            "address": None,
-            "firstName": "John",
-            "lastName": "Doe",
-            "city": "Uneville",
-            "postalCode": "77000",
-            "activityId": "HIGH_SCHOOL_STUDENT",
-            "schoolTypeId": "MILITARY_HIGH_SCHOOL",
-        }
-
-        client.with_token(email=user.email)
-        response = client.post("/native/v1/subscription/profile", profile_data)
-
-        assert response.status_code == 204
-
-        user = users_models.User.query.get(user.id)
-        assert user.address is None
-        assert user.city == "Uneville"
-        assert user.postalCode == "77000"
-        assert user.activity == "Lycéen"
-        assert user.phoneNumber is None
-        assert user.schoolType == users_models.SchoolTypeEnum.MILITARY_HIGH_SCHOOL
-
-        assert user.roles == [users_models.UserRole.UNDERAGE_BENEFICIARY]
-        assert user.deposit.amount == 20
-
-        assert len(push_testing.requests) == 2
 
     # TODO: CorentinN: Remove this when frontend only sends Enum Keys
     def test_update_profile_backward_compatibility(self, client):
@@ -283,11 +186,6 @@ class UpdateProfileTest:
             activity=None,
             phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
         )
-        fraud_factories.BeneficiaryFraudCheckFactory(user=user, type=fraud_models.FraudCheckType.JOUVE)
-        fraud_factories.BeneficiaryFraudResultFactory(user=user, status=fraud_models.FraudStatus.OK)
-
-        beneficiary_import = BeneficiaryImportFactory(beneficiary=user)
-        beneficiary_import.setStatus(ImportStatus.CREATED)
 
         profile_data = {
             "firstName": "John",
@@ -311,14 +209,11 @@ class UpdateProfileTest:
         assert user.postalCode == "77000"
         assert user.activity == "Lycéen"
 
-        assert user.has_beneficiary_role
-        assert user.deposit
-
         assert len(push_testing.requests) == 2
         notification = push_testing.requests[0]
 
         assert notification["user_id"] == user.id
-        assert notification["attribute_values"]["u.is_beneficiary"]
+        assert not notification["attribute_values"]["u.is_beneficiary"]
         assert notification["attribute_values"]["u.postal_code"] == "77000"
 
 
