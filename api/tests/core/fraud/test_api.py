@@ -686,6 +686,27 @@ class EduconnectFraudTest:
         )
 
     @override_features(ENABLE_NATIVE_EAC_INDIVIDUAL=True)
+    def test_ine_duplicates_fraud_checks_self_ine(self):
+        fraud_factories.IneHashWhitelistFactory(ine_hash="ylwavk71o3jiwyla83fxk5pcmmu0ws01")
+        user_in_validation = users_factories.UserFactory(ineHash="ylwavk71o3jiwyla83fxk5pcmmu0ws01")
+        fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
+            type=fraud_models.FraudCheckType.EDUCONNECT,
+            resultContent=fraud_factories.EduconnectContentFactory(ine_hash=user_in_validation.ineHash),
+            user=user_in_validation,
+        )
+        result = fraud_api.educonnect_fraud_checks(user_in_validation, fraud_check)
+
+        duplicate_ine_check = next(
+            (
+                fraud_check
+                for fraud_check in result
+                if fraud_check.reason_code == fraud_models.FraudReasonCode.INE_NOT_WHITELISTED
+            ),
+            None,
+        )
+        assert duplicate_ine_check is None
+
+    @override_features(ENABLE_NATIVE_EAC_INDIVIDUAL=True)
     def test_ine_whitelisted_fraud_checks_pass(self):
         user = users_factories.UserFactory()
         fraud_factories.IneHashWhitelistFactory(ine_hash="identifiantWhitelisté1")
