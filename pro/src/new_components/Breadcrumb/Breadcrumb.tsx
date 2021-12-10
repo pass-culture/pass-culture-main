@@ -1,3 +1,4 @@
+import cn from 'classnames'
 import React from 'react'
 import { Link } from 'react-router-dom'
 
@@ -21,6 +22,7 @@ interface IBreadcrumb {
   isDisabled?: boolean
   styleType?: BreadcrumbStyle
   steps: Step[]
+  className?: string
 }
 
 const Breadcrumb = ({
@@ -28,13 +30,14 @@ const Breadcrumb = ({
   isDisabled = false,
   styleType = BreadcrumbStyle.DEFAULT,
   steps,
+  className,
 }: IBreadcrumb): JSX.Element => {
-  let className = `pc-breadcrumb bc-${styleType}`
+  const breadcrumbClassName = `pc-breadcrumb bc-${styleType}`
   className = isDisabled ? `${className} bc-disabled` : className
   const lastStepIndex = steps.length - 1
 
   return (
-    <ul className={className}>
+    <ul className={cn(breadcrumbClassName, className)}>
       {steps.map((step, stepIndex) => {
         const isActive = activeStep === step.id
         const isLastStep = lastStepIndex === stepIndex
