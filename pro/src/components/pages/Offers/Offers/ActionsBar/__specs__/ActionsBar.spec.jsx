@@ -77,15 +77,15 @@ describe('src | components | pages | Offers | ActionsBar', () => {
     expect(screen.queryByText('2 offres sélectionnées')).toBeInTheDocument()
   })
 
-  it('should say how many offers are selected when more than 200 offers are selected', () => {
+  it('should say how many offers are selected when more than 500 offers are selected', () => {
     // given
-    props.nbSelectedOffers = 201
+    props.nbSelectedOffers = 501
 
     // when
     renderActionsBar(props)
 
     // then
-    expect(screen.queryByText('200+ offres sélectionnées')).toBeInTheDocument()
+    expect(screen.queryByText('500+ offres sélectionnées')).toBeInTheDocument()
   })
 
   describe('on click on "Activer" button', () => {
