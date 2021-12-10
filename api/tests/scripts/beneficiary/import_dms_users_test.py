@@ -97,13 +97,25 @@ class RunTest:
         users_factories.UserFactory(email="email3@example.com")
         get_details.side_effect = [
             make_new_beneficiary_application_details(
-                123, "closed", email="email1@example.com", id_piece_number="123123121"
+                123,
+                "closed",
+                email="email1@example.com",
+                id_piece_number="123123121",
+                birth_date=AGE18_ELIGIBLE_BIRTH_DATE,
             ),
             make_new_beneficiary_application_details(
-                456, "closed", email="email2@example.com", id_piece_number="123123122"
+                456,
+                "closed",
+                email="email2@example.com",
+                id_piece_number="123123122",
+                birth_date=AGE18_ELIGIBLE_BIRTH_DATE,
             ),
             make_new_beneficiary_application_details(
-                789, "closed", email="email3@example.com", id_piece_number="123123123"
+                789,
+                "closed",
+                email="email3@example.com",
+                id_piece_number="123123123",
+                birth_date=AGE18_ELIGIBLE_BIRTH_DATE,
             ),
         ]
 
@@ -136,13 +148,25 @@ class RunTest:
 
         get_details.side_effect = [
             make_new_beneficiary_application_details(
-                123, "closed", email="email1@example.com", id_piece_number="123123121"
+                123,
+                "closed",
+                email="email1@example.com",
+                id_piece_number="123123121",
+                birth_date=AGE18_ELIGIBLE_BIRTH_DATE,
             ),
             make_new_beneficiary_application_details(
-                456, "closed", email="email2@example.com", id_piece_number="123123122"
+                456,
+                "closed",
+                email="email2@example.com",
+                id_piece_number="123123122",
+                birth_date=AGE18_ELIGIBLE_BIRTH_DATE,
             ),
             make_new_beneficiary_application_details(
-                789, "closed", email="email3@example.com", id_piece_number="123123123"
+                789,
+                "closed",
+                email="email3@example.com",
+                id_piece_number="123123123",
+                birth_date=AGE18_ELIGIBLE_BIRTH_DATE,
             ),
         ]
 
@@ -242,9 +266,10 @@ class RunTest:
         beneficiary_import = BeneficiaryImport.query.filter(
             BeneficiaryImport.id != initial_beneficiary_import_id
         ).first()
+        details = [status.detail for status in beneficiary_import.statuses]
         assert beneficiary_import.currentStatus == ImportStatus.REJECTED
         assert beneficiary_import.applicationId == 123
-        assert beneficiary_import.detail == "Compte existant avec cet email"
+        assert details == ["Compte existant avec cet email", "Voir les details dans la page support"]
         assert beneficiary_import.beneficiary == user
         on_sucessful_application.assert_not_called()
 
@@ -264,7 +289,11 @@ class RunTest:
         get_closed_application_ids_for_demarche_simplifiee.return_value = [123]
         find_applications_ids_to_retry.return_value = []
 
-        get_details.side_effect = [make_new_beneficiary_application_details(123, "closed", id_piece_number="123123121")]
+        get_details.side_effect = [
+            make_new_beneficiary_application_details(
+                123, "closed", id_piece_number="123123121", birth_date=AGE18_ELIGIBLE_BIRTH_DATE
+            )
+        ]
 
         applicant = users_factories.UserFactory(firstName="Doe", lastName="John", email="john.doe@test.com")
 
@@ -285,7 +314,7 @@ class RunTest:
                 procedure_id=6712558,
                 department="67",
                 phone="0123456789",
-                birth_date=date(2000, 5, 1),
+                birth_date=AGE18_ELIGIBLE_BIRTH_DATE,
                 activity="Étudiant",
                 address="35 Rue Saint Denis 93130 Noisy-le-Sec",
                 postal_code="67200",
@@ -843,7 +872,10 @@ class RunIntegrationTest:
         assert BeneficiaryImport.query.filter_by(beneficiary=user).count() == 1
         user = users_models.User.query.get(user.id)
         assert len(user.beneficiaryFraudChecks) == 1
-        assert user.beneficiaryFraudChecks[0].type == fraud_models.FraudCheckType.DMS
+        fraud_check = user.beneficiaryFraudChecks[0]
+        assert fraud_check.type == fraud_models.FraudCheckType.DMS
+        assert fraud_models.FraudReasonCode.DUPLICATE_USER in fraud_check.reasonCodes
+        assert fraud_check.status == fraud_models.FraudCheckStatus.SUSPICIOUS
 
         assert user.beneficiaryFraudResults[0].status == fraud_models.FraudStatus.SUSPICIOUS
         assert f"Duplicat de l'utilisateur {existing_user.id}" in user.beneficiaryFraudResults[0].reason
@@ -940,6 +972,7 @@ class RunIntegrationTest:
         assert BeneficiaryImport.query.filter(BeneficiaryImport.beneficiary != beneficiary).count() == 1
         fraud_check = applicant.beneficiaryFraudChecks[0]
         assert fraud_check.type == fraud_models.FraudCheckType.DMS
+        assert fraud_models.FraudReasonCode.DUPLICATE_ID_PIECE_NUMBER in fraud_check.reasonCodes
 
         beneficiary_import = BeneficiaryImport.query.filter(BeneficiaryImport.beneficiary != beneficiary).first()
         assert beneficiary_import.source == "demarches_simplifiees"
@@ -1197,6 +1230,10 @@ class GraphQLSourceProcessApplicationTest:
         import_status = BeneficiaryImport.query.one_or_none()
         assert import_status.currentStatus == ImportStatus.CREATED
         assert import_status.beneficiary == user
+        assert len(user.beneficiaryFraudChecks) == 1
+        fraud_check = user.beneficiaryFraudChecks[0]
+        assert not fraud_check.reasonCodes
+        assert fraud_check.status == fraud_models.FraudCheckStatus.OK
 
     @patch.object(DMSGraphQLClient, "get_applications_with_details")
     def test_run(self, get_applications_with_details):
