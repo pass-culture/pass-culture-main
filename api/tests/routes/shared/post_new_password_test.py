@@ -89,7 +89,7 @@ def test_fail_if_token_is_missing(app):
     response = client.post("/users/new-password", json=data)
 
     assert response.status_code == 400
-    assert response.json["token"] == ["Votre lien de changement de mot de passe est invalide."]
+    assert response.json["token"] == ["Ce champ est obligatoire"]
 
 
 @pytest.mark.usefixtures("db_session")
@@ -100,7 +100,7 @@ def test_fail_if_new_password_is_missing(app):
     response = TestClient(client).post("/users/new-password", json=data)
 
     assert response.status_code == 400
-    assert response.json["newPassword"] == ["Vous devez renseigner un nouveau mot de passe."]
+    assert response.json["newPassword"] == ["Ce champ est obligatoire"]
 
 
 @pytest.mark.usefixtures("db_session")

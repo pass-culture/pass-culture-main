@@ -1,6 +1,5 @@
 import logging
 
-from flask import request
 from flask_login import current_user
 from flask_login import login_required
 
@@ -9,17 +8,17 @@ from pcapi.connectors.api_recaptcha import ReCaptchaException
 from pcapi.connectors.api_recaptcha import check_webapp_recaptcha_token
 from pcapi.core.mails.transactional import users as user_emails
 from pcapi.core.users import repository as users_repo
+from pcapi.core.users.api import update_password_and_external_user
 from pcapi.core.users.api import update_user_password
-from pcapi.core.users.external import update_external_user
 from pcapi.core.users.models import TokenType
 from pcapi.domain.password import check_password_strength
 from pcapi.domain.password import check_password_validity
 from pcapi.domain.user_emails import send_reset_password_email_to_pro
 from pcapi.models.api_errors import ApiErrors
-from pcapi.repository import repository
 from pcapi.repository.user_queries import find_user_by_email
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization.password_serialize import ChangePasswordBodyModel
+from pcapi.routes.serialization.password_serialize import NewPasswordBodyModel
 from pcapi.routes.serialization.password_serialize import ResetPasswordBodyModel
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils.rest import expect_json_data
@@ -67,13 +66,11 @@ def post_for_password_token(body: ResetPasswordBodyModel) -> None:
         logger.warning("Could not send reset password email", extra={"user": user.id})
 
 
-# @debt api-migration
 @private_api.route("/users/new-password", methods=["POST"])
-@expect_json_data
-def post_new_password():
-    validate_new_password_request(request)
-    token = request.get_json()["token"]
-    new_password = request.get_json()["newPassword"]
+@spectree_serialize(on_success_status=204, on_error_statuses=[400])
+def post_new_password(body: NewPasswordBodyModel) -> None:
+    token = body.token
+    new_password = body.newPassword
 
     check_password_strength("newPassword", new_password)
 
@@ -84,11 +81,4 @@ def post_new_password():
         errors.add_error("token", "Votre lien de changement de mot de passe est invalide.")
         raise errors
 
-    user.setPassword(new_password)
-    if not user.isEmailValidated:
-        user.isEmailValidated = True
-        update_external_user(user)
-
-    repository.save(user)
-
-    return "", 204
+    update_password_and_external_user(user, new_password)
