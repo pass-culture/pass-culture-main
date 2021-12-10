@@ -11,6 +11,7 @@ import { Link } from 'react-router-dom'
 
 import useFeatureFlagedOfferCreationURL from 'components/hooks/useFeatureFlagedOfferCreationURL'
 import ActionsBarPortal from 'components/layout/ActionsBarPortal/ActionsBarPortal'
+import Banner from 'components/layout/Banner/Banner'
 import Icon from 'components/layout/Icon'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Spinner from 'components/layout/Spinner'
@@ -40,12 +41,7 @@ import OffersTableBody from './OffersTableBody/OffersTableBody'
 import OffersTableHead from './OffersTableHead/OffersTableHead'
 import SearchFilters from './SearchFilters/SearchFilters'
 
-const Offers = ({
-  currentUser,
-  getOfferer,
-  query,
-  showInformationNotification,
-}) => {
+const Offers = ({ currentUser, getOfferer, query }) => {
   const dispatch = useDispatch()
 
   useEffect(() => {
@@ -327,15 +323,6 @@ const Offers = ({
 
   const isLastPage = currentPageNumber === pageCount
 
-  useEffect(() => {
-    const hasMoreOffersToFetch = offersCount > MAX_OFFERS_TO_DISPLAY
-    if (isLastPage && hasMoreOffersToFetch) {
-      showInformationNotification(
-        'L’affichage des offres a été limité à 200 offres. Vous pouvez modifier les filtres pour affiner votre recherche.'
-      )
-    }
-  }, [isLastPage, offersCount, showInformationNotification])
-
   return (
     <div className="offers-page">
       <PageTitle title="Vos offres" />
@@ -382,6 +369,12 @@ const Offers = ({
               <Spinner />
             ) : (
               <>
+                {offersCount > MAX_OFFERS_TO_DISPLAY && (
+                  <Banner type="notification-info">
+                    L’affichage est limité à 500 offres. Modifiez les filtres
+                    pour affiner votre recherche.
+                  </Banner>
+                )}
                 {hasOffers && (
                   <div className="offers-count">
                     {`${getOffersCountToDisplay(offersCount)} ${
@@ -452,7 +445,6 @@ Offers.propTypes = {
     change: PropTypes.func.isRequired,
     parse: PropTypes.func.isRequired,
   }).isRequired,
-  showInformationNotification: PropTypes.func.isRequired,
 }
 
 export default Offers
