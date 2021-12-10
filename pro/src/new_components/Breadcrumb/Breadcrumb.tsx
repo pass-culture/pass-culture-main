@@ -1,17 +1,34 @@
-/*
- * @debt directory "Gaël: this file should be migrated within the new directory structure"
- */
-
-import PropTypes from 'prop-types'
 import React from 'react'
 import { Link } from 'react-router-dom'
 
 import { ReactComponent as BreadcumbSeparator } from 'icons/ico-breadcrumb-arrow-right.svg'
 
-export const STYLE_TYPE_DEFAULT = 'default'
-export const STYLE_TYPE_TAB = 'tab'
+export enum BreadcrumbStyle {
+  DEFAULT = 'default',
+  TAB = 'tab',
+}
 
-const Breadcrumb = ({ activeStep, isDisabled, styleType, steps }) => {
+type Step = {
+  id: string
+  label: string
+  onClick?: (e: React.MouseEvent) => void
+  url: string
+  hash?: string
+}
+
+interface IBreadcrumb {
+  activeStep: string
+  isDisabled?: boolean
+  styleType?: BreadcrumbStyle
+  steps: Step[]
+}
+
+const Breadcrumb = ({
+  activeStep,
+  isDisabled = false,
+  styleType = BreadcrumbStyle.DEFAULT,
+  steps,
+}: IBreadcrumb): JSX.Element => {
   let className = `pc-breadcrumb bc-${styleType}`
   className = isDisabled ? `${className} bc-disabled` : className
   const lastStepIndex = steps.length - 1
@@ -30,7 +47,7 @@ const Breadcrumb = ({ activeStep, isDisabled, styleType, steps }) => {
             <span className="bcs-label" key={`breadcrumb-step-${step.id}`}>
               {step.url ? (
                 <Link
-                  onClick={step.onClick ? step.onClick : null}
+                  onClick={step.onClick ? step.onClick : undefined}
                   to={step.url}
                 >
                   {step.label}
@@ -38,7 +55,7 @@ const Breadcrumb = ({ activeStep, isDisabled, styleType, steps }) => {
               ) : step.hash ? (
                 <a
                   href={`#${step.hash}`}
-                  onClick={step.onClick ? step.onClick : null}
+                  onClick={step.onClick ? step.onClick : undefined}
                 >
                   {step.label}
                 </a>
@@ -47,7 +64,7 @@ const Breadcrumb = ({ activeStep, isDisabled, styleType, steps }) => {
               )}
             </span>
 
-            {styleType === STYLE_TYPE_DEFAULT && !isLastStep && (
+            {styleType === BreadcrumbStyle.DEFAULT && !isLastStep && (
               <div className="separator">
                 <BreadcumbSeparator />
               </div>
@@ -57,25 +74,6 @@ const Breadcrumb = ({ activeStep, isDisabled, styleType, steps }) => {
       })}
     </ul>
   )
-}
-
-Breadcrumb.defaultProps = {
-  isDisabled: false,
-  styleType: STYLE_TYPE_DEFAULT,
-}
-
-Breadcrumb.propTypes = {
-  activeStep: PropTypes.string.isRequired,
-  isDisabled: PropTypes.bool,
-  steps: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.string.isRequired,
-      label: PropTypes.string.isRequired,
-      onClick: PropTypes.func,
-      url: PropTypes.string,
-    })
-  ).isRequired,
-  styleType: PropTypes.oneOf([STYLE_TYPE_DEFAULT, STYLE_TYPE_TAB]),
 }
 
 export default Breadcrumb
