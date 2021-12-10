@@ -26,6 +26,7 @@ type AsyncScreenProps = Pick<
   'educationalCategories' | 'educationalSubCategories' | 'userOfferers'
 >
 
+/* @debt mathilde: should remove this typeguard when Adapter has Success and Failure type */
 const isLoadOfferSuccess = (response: {
   isOk: boolean
   message: string | null

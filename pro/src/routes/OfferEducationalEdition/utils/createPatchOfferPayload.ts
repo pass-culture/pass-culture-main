@@ -14,6 +14,104 @@ type DeepPartialEducationalOfferModelPayload = Omit<
   extraData?: Partial<EducationalOfferModelPayload['extraData']>
 }
 
+const serializer = {
+  title: (
+    payload: DeepPartialEducationalOfferModelPayload,
+    offer: IOfferEducationalFormValues
+  ) => ({ ...payload, name: offer.title }),
+  description: (
+    payload: DeepPartialEducationalOfferModelPayload,
+    offer: IOfferEducationalFormValues
+  ) => ({ ...payload, description: offer.description }),
+  duration: (
+    payload: DeepPartialEducationalOfferModelPayload,
+    offer: IOfferEducationalFormValues
+  ) => ({ ...payload, durationMinutes: parseDuration(offer.duration) }),
+  subCategory: (
+    payload: DeepPartialEducationalOfferModelPayload,
+    offer: IOfferEducationalFormValues
+  ) => ({ ...payload, subcategoryId: offer.subCategory }),
+  eventAddress: (
+    payload: DeepPartialEducationalOfferModelPayload,
+    offer: IOfferEducationalFormValues
+  ) => ({
+    ...payload,
+    extraData: { ...payload.extraData, offerVenue: offer.eventAddress },
+  }),
+  participants: (
+    payload: DeepPartialEducationalOfferModelPayload,
+    offer: IOfferEducationalFormValues
+  ) => ({
+    ...payload,
+    extraData: {
+      ...payload.extraData,
+      students: serializeParticipants(offer.participants),
+    },
+  }),
+  accessibility: (
+    payload: DeepPartialEducationalOfferModelPayload,
+    offer: IOfferEducationalFormValues
+  ) => ({
+    ...payload,
+    mentalDisabilityCompliant: offer.accessibility.mental,
+    motorDisabilityCompliant: offer.accessibility.motor,
+    audioDisabilityCompliant: offer.accessibility.audio,
+    visualDisabilityCompliant: offer.accessibility.visual,
+  }),
+  phone: (
+    payload: DeepPartialEducationalOfferModelPayload,
+    offer: IOfferEducationalFormValues
+  ) => ({
+    ...payload,
+    extraData: {
+      ...payload.extraData,
+      contactPhone: offer.phone,
+    },
+  }),
+  email: (
+    payload: DeepPartialEducationalOfferModelPayload,
+    offer: IOfferEducationalFormValues
+  ) => ({
+    ...payload,
+    extraData: {
+      ...payload.extraData,
+      contactEmail: offer.email,
+    },
+  }),
+  notificationEmail: (
+    payload: DeepPartialEducationalOfferModelPayload,
+    offer: IOfferEducationalFormValues
+  ) => {
+    if (offer.notifications) {
+      return {
+        ...payload,
+        bookingEmail: offer.notificationEmail,
+      }
+    }
+    return payload
+  },
+  notifications: (
+    payload: DeepPartialEducationalOfferModelPayload,
+    offer: IOfferEducationalFormValues
+  ) => {
+    if (offer.notifications) {
+      return {
+        ...payload,
+        bookingEmail: offer.notificationEmail,
+      }
+    }
+    return {
+      ...payload,
+      bookingEmail: '',
+    }
+  },
+  // Unchanged keys
+  // Need to put them here for ts not to raise an error
+  offererId: (payload: DeepPartialEducationalOfferModelPayload) => payload,
+  venueId: (payload: DeepPartialEducationalOfferModelPayload) => payload,
+  category: (payload: DeepPartialEducationalOfferModelPayload) => payload,
+}
+
 export const createPatchOfferPayload = (
   offer: IOfferEducationalFormValues,
   initialValues: IOfferEducationalFormValues
@@ -24,74 +122,7 @@ export const createPatchOfferPayload = (
 
   offerKeys.forEach(key => {
     if (!isEqual(offer[key], initialValues[key])) {
-      switch (key) {
-        case 'title':
-          changedValues.name = offer.title
-          break
-        case 'description':
-          changedValues.description = offer.description
-          break
-        case 'duration':
-          changedValues.durationMinutes = parseDuration(offer.duration)
-          break
-        case 'subCategory':
-          changedValues.subcategoryId = offer.subCategory
-          break
-        case 'eventAddress':
-          changedValues = {
-            ...changedValues,
-            extraData: {
-              ...changedValues.extraData,
-              offerVenue: offer.eventAddress,
-            },
-          }
-          break
-        case 'participants':
-          changedValues = {
-            ...changedValues,
-            extraData: {
-              ...changedValues.extraData,
-              students: serializeParticipants(offer.participants),
-            },
-          }
-          break
-        case 'accessibility':
-          changedValues.mentalDisabilityCompliant = offer.accessibility.mental
-          changedValues.motorDisabilityCompliant = offer.accessibility.motor
-          changedValues.audioDisabilityCompliant = offer.accessibility.audio
-          changedValues.visualDisabilityCompliant = offer.accessibility.visual
-          break
-        case 'phone':
-          changedValues = {
-            ...changedValues,
-            extraData: {
-              ...changedValues.extraData,
-              contactPhone: offer.phone,
-            },
-          }
-          break
-        case 'email':
-          changedValues = {
-            ...changedValues,
-            extraData: {
-              ...changedValues.extraData,
-              contactEmail: offer.email,
-            },
-          }
-          break
-        case 'notificationEmail':
-          if (offer.notifications) {
-            changedValues.bookingEmail = offer.notificationEmail
-          }
-          break
-        case 'notifications':
-          if (offer.notifications === true) {
-            changedValues.bookingEmail = offer.notificationEmail
-          } else {
-            changedValues.bookingEmail = ''
-          }
-          break
-      }
+      changedValues = serializer[key](changedValues, offer)
     }
   })
 
