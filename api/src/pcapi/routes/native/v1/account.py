@@ -150,7 +150,7 @@ def update_beneficiary_mandatory_information(user: User, body: serializers.Benef
         postal_code=body.postal_code,
         activity=body.activity,
         phone_number=body.phone,
-        has_completed_id_check=True,
+        is_legacy_behaviour=True,
     )
 
 
