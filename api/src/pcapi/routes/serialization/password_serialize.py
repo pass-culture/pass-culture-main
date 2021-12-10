@@ -4,6 +4,7 @@ from pydantic.class_validators import validator
 from pydantic.main import BaseModel
 
 from pcapi.models.api_errors import ApiErrors
+from pcapi.serialization.utils import validate_not_empty_string_when_provided
 
 
 class ResetPasswordBodyModel(BaseModel):
@@ -18,3 +19,13 @@ class ResetPasswordBodyModel(BaseModel):
             raise errors
 
         return email
+
+
+class ChangePasswordBodyModel(BaseModel):
+    oldPassword: str
+    newPassword: str
+    newConfirmationPassword: str
+
+    _validate_oldPassword = validate_not_empty_string_when_provided("oldPassword")
+    _validate_newPassword = validate_not_empty_string_when_provided("newPassword")
+    _validate_newConfirmationPassword = validate_not_empty_string_when_provided("newConfirmationPassword")
