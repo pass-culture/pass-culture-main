@@ -284,7 +284,7 @@ class NextSubscriptionStepTest:
     def test_next_subscription_step_underage(self):
         user = users_factories.UserFactory(
             dateOfBirth=self.fifteen_years_ago,
-            address=None,
+            city=None,
         )
         assert (
             subscription_api.get_next_subscription_step(user) == subscription_models.SubscriptionStep.PROFILE_COMPLETION
@@ -294,7 +294,7 @@ class NextSubscriptionStepTest:
         user = users_factories.UserFactory(
             dateOfBirth=self.eighteen_years_ago,
             phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
-            address=None,
+            city=None,
         )
         assert subscription_api.get_next_subscription_step(user) == subscription_models.SubscriptionStep.USER_PROFILING
 
@@ -302,7 +302,7 @@ class NextSubscriptionStepTest:
         user = users_factories.UserFactory(
             dateOfBirth=self.eighteen_years_ago,
             phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
-            address=None,
+            city=None,
         )
         content = fraud_factories.UserProfilingFraudDataFactory(risk_rating="high")
         fraud_factories.BeneficiaryFraudCheckFactory(
@@ -315,7 +315,7 @@ class NextSubscriptionStepTest:
         user = users_factories.UserFactory(
             dateOfBirth=self.eighteen_years_ago,
             phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
-            address=None,
+            city=None,
         )
         content = fraud_factories.UserProfilingFraudDataFactory(risk_rating="trusted")
         fraud_factories.BeneficiaryFraudCheckFactory(
@@ -330,7 +330,7 @@ class NextSubscriptionStepTest:
         user = users_factories.UserFactory(
             dateOfBirth=self.eighteen_years_ago,
             phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
-            address="3 rue du quai",
+            city="Zanzibar",
         )
         content = fraud_factories.UserProfilingFraudDataFactory(risk_rating="trusted")
         fraud_factories.BeneficiaryFraudCheckFactory(
