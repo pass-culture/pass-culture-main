@@ -73,6 +73,21 @@ class BeneficiaryDetailViewTest:
         response = client.get("/pc/back-office/support_beneficiary/?id={user.id}")
         assert response.status_code == 200
 
+    def test_detail_view_with_new_fraud_error_reason_codes(self, client):
+        admin = users_factories.AdminFactory(email="admin@example.com")
+        user = users_factories.UserFactory()
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            reasonCodes=[
+                fraud_models.FraudReasonCode.DUPLICATE_ID_PIECE_NUMBER,
+                fraud_models.FraudReasonCode.DUPLICATE_INE,
+            ],
+        )
+        fraud_factories.BeneficiaryFraudResultFactory(user=user)
+        client.with_session_auth(admin.email)
+        response = client.get("/pc/back-office/support_beneficiary/?id={user.id}")
+        assert response.status_code == 200
+
 
 @pytest.mark.usefixtures("db_session")
 class BeneficiaryValidationViewTest:
