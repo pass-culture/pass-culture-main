@@ -813,3 +813,16 @@ def mark_fraud_check_failed(
     fraud_check.reasonCodes = reasons
 
     repository.save(fraud_check)
+
+
+def create_honor_statement_fraud_check(user: users_models.User, origin: str) -> None:
+    # TODO(viconnex) -> add eligibility type
+    fraud_check = models.BeneficiaryFraudCheck(
+        user=user,
+        type=models.FraudCheckType.HONOR_STATEMENT,
+        status=models.FraudCheckStatus.OK,
+        reason=origin,
+        thirdPartyId=f"internal_check_{user.id}",
+    )
+    db.session.add(fraud_check)
+    db.session.commit()
