@@ -554,8 +554,6 @@ def create_educational_stock(stock_data: EducationalStockCreationBodyModel, user
 def edit_educational_stock(stock: Stock, stock_data: dict) -> None:
     beginning = stock_data.get("beginning_datetime")
     booking_limit_datetime = stock_data.get("booking_limit_datetime")
-    price = stock_data.get("total_price")
-    number_of_tickets = stock_data.get("number_of_tickets")
 
     if not stock.offer.isEducational:
         raise educational_exceptions.OfferIsNotEducational(stock.offerId)
@@ -576,12 +574,7 @@ def edit_educational_stock(stock: Stock, stock_data: dict) -> None:
 
     validation.check_educational_stock_is_editable(stock)
 
-    updatable_fields = {
-        "beginningDatetime": beginning,
-        "bookingLimitDatetime": booking_limit_datetime,
-        "price": price,
-        "numberOfTickets": number_of_tickets,
-    }
+    updatable_fields = _extract_updatable_fields_from_stock_data(stock, stock_data, beginning, booking_limit_datetime)
 
     with transaction():
         stock = offers_repository.get_and_lock_stock(stock.id)
@@ -598,6 +591,23 @@ def edit_educational_stock(stock: Stock, stock_data: dict) -> None:
     logger.info("Stock has been updated", extra={"stock": stock.id})
 
     search.async_index_offer_ids([stock.offerId])
+
+
+def _extract_updatable_fields_from_stock_data(
+    stock: Stock, stock_data: dict, beginning: datetime.datetime, booking_limit_datetime: datetime.datetime
+) -> dict:
+    # if booking_limit_datetime is provided but null, set it to default value which is event datetime
+    if "booking_limit_datetime" in stock_data.keys() and booking_limit_datetime is None:
+        booking_limit_datetime = beginning if beginning else stock.beginningDatetime
+
+    updatable_fields = {
+        "beginningDatetime": beginning,
+        "bookingLimitDatetime": booking_limit_datetime,
+        "price": stock_data.get("total_price"),
+        "numberOfTickets": stock_data.get("number_of_tickets"),
+    }
+
+    return updatable_fields
 
 
 def _update_educational_booking_cancellation_limit_date(
