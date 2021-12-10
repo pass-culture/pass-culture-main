@@ -228,14 +228,14 @@ def handle_validation_errors(
             _process_rejection(information, procedure_id=procedure_id, reason="Compte existant avec cet email")
         if error_code == fraud_models.FraudReasonCode.DUPLICATE_USER:
             subscription_messages.on_duplicate_user(user)
-        if error_code == fraud_models.FraudReasonCode.DUPLICATE_ID_NUMBER:
+        if error_code == fraud_models.FraudReasonCode.DUPLICATE_ID_PIECE_NUMBER:
             subscription_messages.on_duplicate_user(user)
 
     # keeps the creation of a beneficiaryImport to avoid reprocess the same application
     # forever, it's mandatory to make get_already_processed_applications_ids work
     save_beneficiary_import_with_status(
         ImportStatus.REJECTED,
-        information.application_id,
+        application_id=information.application_id,
         source=BeneficiaryImportSources.demarches_simplifiees,
         source_id=procedure_id,
         user=user,
