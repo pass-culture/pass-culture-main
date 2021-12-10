@@ -69,6 +69,7 @@
         "prop": "parens-new-line"
       }
     ],
+    "react/jsx-no-bind": "off",
     "react/no-set-state": "off",
     "react/destructuring-assignment": "off",
     "react/require-optimization": "off",
