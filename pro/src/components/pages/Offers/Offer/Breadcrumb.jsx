@@ -7,8 +7,7 @@ import React from 'react'
 
 import useFeatureFlagedOfferEditionURL from 'components/hooks/useFeatureFlaggedOfferEditionURL'
 import Breadcrumb, {
-  STYLE_TYPE_TAB,
-  STYLE_TYPE_DEFAULT,
+  BreadcrumbStyle,
 } from 'new_components/Breadcrumb/Breadcrumb'
 
 export const STEP_ID_DETAILS = 'details'
@@ -61,7 +60,9 @@ const OfferBreadcrumb = ({
     <Breadcrumb
       activeStep={activeStep}
       steps={steps}
-      styleType={isCreatingOffer ? STYLE_TYPE_DEFAULT : STYLE_TYPE_TAB}
+      styleType={
+        isCreatingOffer ? BreadcrumbStyle.DEFAULT : BreadcrumbStyle.TAB
+      }
     />
   )
 }

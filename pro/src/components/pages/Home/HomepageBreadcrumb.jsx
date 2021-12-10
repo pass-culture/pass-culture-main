@@ -6,7 +6,7 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 
-import Breadcrumb, { STYLE_TYPE_TAB } from 'new_components/Breadcrumb'
+import Breadcrumb, { BreadcrumbStyle } from 'new_components/Breadcrumb'
 
 import { doesUserPreferReducedMotion } from '../../../utils/windowMatchMedia'
 
@@ -42,7 +42,7 @@ const HomepageBreadcrumb = ({ activeStep, profileRef }) => {
     <Breadcrumb
       activeStep={activeStep}
       steps={Object.values(steps)}
-      styleType={STYLE_TYPE_TAB}
+      styleType={BreadcrumbStyle.TAB}
     />
   )
 }

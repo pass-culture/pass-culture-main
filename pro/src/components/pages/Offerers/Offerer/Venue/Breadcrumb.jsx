@@ -5,10 +5,7 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 
-import Breadcrumb, {
-  STYLE_TYPE_TAB,
-  STYLE_TYPE_DEFAULT,
-} from 'new_components/Breadcrumb'
+import Breadcrumb, { BreadcrumbStyle } from 'new_components/Breadcrumb'
 
 export const STEP_ID_INFORMATIONS = 'informations'
 export const STEP_ID_MANAGEMENT = 'management'
@@ -39,7 +36,9 @@ const VenueBreadcrumb = ({ activeStep, offererId, venueId }) => {
     <Breadcrumb
       activeStep={activeStep}
       steps={steps}
-      styleType={isCreatingVenue ? STYLE_TYPE_DEFAULT : STYLE_TYPE_TAB}
+      styleType={
+        isCreatingVenue ? BreadcrumbStyle.DEFAULT : BreadcrumbStyle.TAB
+      }
     />
   )
 }
