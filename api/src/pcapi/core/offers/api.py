@@ -73,7 +73,6 @@ from pcapi.utils import mailing
 from pcapi.utils.human_ids import dehumanize
 from pcapi.utils.rest import check_user_has_access_to_offerer
 from pcapi.utils.rest import load_or_raise_error
-from pcapi.validation.models import entity_validator
 from pcapi.workers.push_notification_job import send_cancel_booking_notification
 
 from .exceptions import ThumbnailStorageError

@@ -3,6 +3,7 @@ from datetime import timedelta
 
 import pytest
 
+from pcapi.core.bookings import factories as booking_factories
 from pcapi.core.offers import factories as offer_factories
 from pcapi.core.offers.models import Stock
 from pcapi.utils.human_ids import humanize
@@ -234,3 +235,27 @@ class Return400Test:
         # Then
         assert response.status_code == 400
         assert response.json == {"beginningDatetime": ["La date d’évènement ne peut être nulle"]}
+
+    def should_raise_error_when_more_than_one_non_cancelled_bookings_associated_with_stock(self, app, client):
+        # Given
+        stock = offer_factories.EducationalEventStockFactory(price=1200, quantity=2, dnBookedQuantity=2)
+        booking_factories.EducationalBookingFactory(stock=stock)
+        booking_factories.EducationalBookingFactory(stock=stock)
+
+        offer_factories.UserOffererFactory(user__email="user@example.com", offerer=stock.offer.venue.managingOfferer)
+
+        # When
+        stock_edition_payload = {
+            "totalPrice": 1500,
+        }
+
+        client.with_session_auth("user@example.com")
+        response = client.patch(f"/stocks/educational/{humanize(stock.id)}", json=stock_edition_payload)
+
+        # Then
+        assert response.status_code == 400
+        assert response.json == {
+            "educationalStockEdition": [
+                "Plusieurs réservations non annulées portent sur ce stock d'une offre éducationnelle"
+            ]
+        }

@@ -820,6 +820,48 @@ class EditEducationalOfferStocksTest:
         assert stock.price == 1200
         assert stock.numberOfTickets == 35
 
+    def test_should_replace_bookingLimitDatetime_with_new_event_datetime_if_provided_but_none(self):
+        # Given
+        initial_event_date = datetime.now() + timedelta(days=5)
+        initial_booking_limit_date = datetime.now() + timedelta(days=3)
+        stock_to_be_updated = offer_factories.EducationalEventStockFactory(
+            beginningDatetime=initial_event_date,
+            bookingLimitDatetime=initial_booking_limit_date,
+        )
+        new_event_datetime = datetime.now() + timedelta(days=7, hours=5)
+        new_stock_data = stock_serialize.EducationalStockEditionBodyModel(
+            beginningDatetime=new_event_datetime,
+            bookingLimitDatetime=None,
+        )
+
+        # When
+        api.edit_educational_stock(stock=stock_to_be_updated, stock_data=new_stock_data.dict(exclude_unset=True))
+
+        # Then
+        stock = offer_models.Stock.query.filter_by(id=stock_to_be_updated.id).one()
+        assert stock.bookingLimitDatetime == new_event_datetime
+
+    def test_should_replace_bookingLimitDatetime_with_old_event_datetime_if_provided_but_none_and_event_date_unchanged(
+        self,
+    ):
+        # Given
+        initial_event_date = datetime.now() + timedelta(days=5)
+        initial_booking_limit_date = datetime.now() + timedelta(days=3)
+        stock_to_be_updated = offer_factories.EducationalEventStockFactory(
+            beginningDatetime=initial_event_date,
+            bookingLimitDatetime=initial_booking_limit_date,
+        )
+        new_stock_data = stock_serialize.EducationalStockEditionBodyModel(
+            bookingLimitDatetime=None,
+        )
+
+        # When
+        api.edit_educational_stock(stock=stock_to_be_updated, stock_data=new_stock_data.dict(exclude_unset=True))
+
+        # Then
+        stock = offer_models.Stock.query.filter_by(id=stock_to_be_updated.id).one()
+        assert stock.bookingLimitDatetime == initial_event_date
+
     @mock.patch("pcapi.core.search.async_index_offer_ids")
     def test_should_reindex_offer_on_algolia(self, mocked_async_index_offer_ids):
         # Given
@@ -844,7 +886,7 @@ class EditEducationalOfferStocksTest:
         stock = offer_models.Stock.query.filter_by(id=stock_to_be_updated.id).one()
         mocked_async_index_offer_ids.assert_called_once_with([stock.offerId])
 
-    def test_should_not_allow_stock_edition_when_booked_and_booking_status_is_used(self):
+    def test_should_not_allow_stock_edition_when_booking_status_is_not_PENDING(self):
         # Given
         stock_to_be_updated = offer_factories.EducationalEventStockFactory(price=1200, quantity=1, dnBookedQuantity=1)
         bookings_factories.UsedEducationalBookingFactory(stock=stock_to_be_updated)
@@ -854,41 +896,7 @@ class EditEducationalOfferStocksTest:
         )
 
         # When
-        with pytest.raises(offer_exceptions.EducationalOfferStockBookedAndBookingUsed):
-            api.edit_educational_stock(stock=stock_to_be_updated, stock_data=new_stock_data.dict(exclude_unset=True))
-
-        # Then
-        stock = offer_models.Stock.query.filter_by(id=stock_to_be_updated.id).first()
-        assert stock.price == 1200
-
-    def test_should_not_allow_stock_edition_when_booked_and_booking_status_is_confirmed(self):
-        # Given
-        stock_to_be_updated = offer_factories.EducationalEventStockFactory(price=1200, quantity=1, dnBookedQuantity=1)
-        bookings_factories.EducationalBookingFactory(stock=stock_to_be_updated)
-
-        new_stock_data = stock_serialize.EducationalStockEditionBodyModel(
-            totalPrice=1500,
-        )
-
-        # When
-        with pytest.raises(offer_exceptions.EducationalOfferStockBookedAndBookingConfirmed):
-            api.edit_educational_stock(stock=stock_to_be_updated, stock_data=new_stock_data.dict(exclude_unset=True))
-
-        # Then
-        stock = offer_models.Stock.query.filter_by(id=stock_to_be_updated.id).first()
-        assert stock.price == 1200
-
-    def test_should_not_allow_stock_edition_when_booked_and_booking_status_is_reimbursed(self):
-        # Given
-        stock_to_be_updated = offer_factories.EducationalEventStockFactory(price=1200, quantity=1, dnBookedQuantity=1)
-        bookings_factories.UsedEducationalBookingFactory(stock=stock_to_be_updated, status=BookingStatus.REIMBURSED)
-
-        new_stock_data = stock_serialize.EducationalStockEditionBodyModel(
-            totalPrice=1500,
-        )
-
-        # When
-        with pytest.raises(offer_exceptions.EducationalOfferStockBookedAndBookingReimbursed):
+        with pytest.raises(offer_exceptions.EducationalOfferStockBookedAndBookingNotPending):
             api.edit_educational_stock(stock=stock_to_be_updated, stock_data=new_stock_data.dict(exclude_unset=True))
 
         # Then
