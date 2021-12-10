@@ -23,6 +23,7 @@ class SettingsResponse(BaseModel):
     display_dms_redirection: bool
     enable_native_id_check_verbose_debugging: bool
     enable_id_check_retention: bool
+    enable_cultural_survey: bool
     enable_native_eac_individual: bool
     enable_phone_validation: bool
     enable_underage_generalisation: bool
