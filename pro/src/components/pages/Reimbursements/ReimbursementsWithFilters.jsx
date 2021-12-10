@@ -16,7 +16,7 @@ import './Reimbursement.scss'
 import useActiveFeature from '../../hooks/useActiveFeature'
 
 import ReimbursementsDetails from './ReimbursementsDetails'
-import ReimbursementsProofs from './ReimbursementsProofs'
+import ReimbursementsInvoices from './ReimbursementsInvoices'
 
 const sortByKeyAlphabeticalOrder = keyName => (x, y) =>
   x[keyName].localeCompare(y[keyName])
@@ -34,18 +34,19 @@ const buildAndSortVenueFilterOptions = venues =>
 const Reimbursements = ({ currentUser }) => {
   const areInvoicesEnabled = useActiveFeature('SHOW_INVOICES_ON_PRO_PORTAL')
   const [isLoading, setIsLoading] = useState(true)
-  const [isRefundProofActive, setIsRefundProofActive] = useState(true)
+  const [isRefundInvoicesActive, setIsRefundInvoicesActive] = useState(true)
   const [isRefundDetailsActive, setIsRefundDetailsActive] = useState(false)
   const [venuesOptions, setVenuesOptions] = useState([])
+  const [businessUnitsOptions, setBusinessUnitsOptions] = useState([])
 
   const showSection = useCallback(
     sectionId => () => {
-      if (sectionId === 'refund-proof') {
-        setIsRefundProofActive(true)
+      if (sectionId === 'refund-invoices') {
+        setIsRefundInvoicesActive(true)
         setIsRefundDetailsActive(false)
       } else {
         setIsRefundDetailsActive(true)
-        setIsRefundProofActive(false)
+        setIsRefundInvoicesActive(false)
       }
     },
     []
@@ -64,39 +65,18 @@ const Reimbursements = ({ currentUser }) => {
     }
   }, [setVenuesOptions])
 
-  useEffect(() => {
-    loadVenues()
-  }, [loadVenues])
+  const loadBusinessUnits = useCallback(async () => {
+    try {
+      const businessUnitsResponse = await pcapi.getBusinessUnits()
+      setBusinessUnitsOptions(businessUnitsResponse)
+    } catch (err) {
+      console.error(err)
+    }
+  }, [setBusinessUnitsOptions])
 
   const hasNoResults = !isLoading && !venuesOptions.length
   const hasResults = !isLoading && venuesOptions.length > 0
 
-  const invoices = [
-    {
-      date: '11/12/1212',
-      businessUnit: 'Som du lieu sur 2 lignes lorem ipsum dolor',
-      reference: 'J0000001',
-      amount: '1000',
-    },
-    {
-      date: '19/12/1212',
-      businessUnit: 'Zom du lieu sur 2 lignes lorem ipsum dolor',
-      reference: 'J0000019',
-      amount: '10',
-    },
-    {
-      date: '12/12/1212',
-      businessUnit: 'Com du lieu sur 2 lignes lorem ipsum dolor',
-      reference: 'J0000007',
-      amount: '100000',
-    },
-    {
-      date: '08/12/1212',
-      businessUnit: 'Aom du lieu sur 2 lignes lorem ipsum dolor',
-      reference: 'J0000099',
-      amount: '1',
-    },
-  ]
   const columns = [
     {
       title: 'Date',
@@ -104,7 +84,7 @@ const Reimbursements = ({ currentUser }) => {
       selfDirection: 'default',
     },
     {
-      title: 'Point de facturation',
+      title: 'Point de remboursement',
       sortBy: 'businessUnit',
       selfDirection: 'default',
     },
@@ -119,6 +99,11 @@ const Reimbursements = ({ currentUser }) => {
       selfDirection: 'default',
     },
   ]
+
+  useEffect(() => {
+    loadBusinessUnits()
+    loadVenues()
+  }, [loadVenues, loadBusinessUnits])
 
   return (
     <AppLayout
@@ -168,13 +153,13 @@ const Reimbursements = ({ currentUser }) => {
             <>
               <div aria-label="Catégories de remboursement" role="tablist">
                 <button
-                  aria-controls="refund-proof"
-                  aria-selected={isRefundProofActive}
+                  aria-controls="refund-invoices"
+                  aria-selected={isRefundInvoicesActive}
                   className={`refund-section-nav ${
-                    isRefundProofActive ? 'is-active' : ''
+                    isRefundInvoicesActive ? 'is-active' : ''
                   }`}
-                  id="refund-proof-nav"
-                  onClick={showSection('refund-proof')}
+                  id="refund-invoices-nav"
+                  onClick={showSection('refund-invoices')}
                   role="tab"
                   type="button"
                 >
@@ -195,19 +180,18 @@ const Reimbursements = ({ currentUser }) => {
                 </button>
               </div>
               <div
-                aria-hidden={!isRefundProofActive}
-                aria-labelledby="refund-proof"
+                aria-hidden={!isRefundInvoicesActive}
+                aria-labelledby="refund-invoices"
                 className={`refund-section ${
-                  isRefundProofActive ? 'is-active' : ''
+                  isRefundInvoicesActive ? 'is-active' : ''
                 }`}
-                id="refund-proof"
+                id="refund-invoices"
                 role="tabpanel"
               >
-                <ReimbursementsProofs
+                <ReimbursementsInvoices
+                  businessUnitsOptions={businessUnitsOptions}
                   columns={columns}
-                  invoices={invoices}
                   isCurrentUserAdmin={currentUser.isAdmin}
-                  venuesOptions={venuesOptions}
                 />
               </div>
               <div
@@ -220,6 +204,7 @@ const Reimbursements = ({ currentUser }) => {
               >
                 <ReimbursementsDetails
                   isCurrentUserAdmin={currentUser.isAdmin}
+                  loadVenues={loadVenues}
                   venuesOptions={venuesOptions}
                 />
               </div>
@@ -227,6 +212,7 @@ const Reimbursements = ({ currentUser }) => {
           ) : (
             <ReimbursementsDetails
               isCurrentUserAdmin={currentUser.isAdmin}
+              loadVenues={loadVenues}
               venuesOptions={venuesOptions}
             />
           )}

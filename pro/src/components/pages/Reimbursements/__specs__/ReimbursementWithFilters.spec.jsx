@@ -28,6 +28,7 @@ jest.mock('utils/date', () => ({
 
 jest.mock('repository/pcapi/pcapi', () => ({
   getVenuesForOfferer: jest.fn(),
+  getInvoices: jest.fn(),
 }))
 
 const initialStore = {
@@ -58,7 +59,7 @@ const renderReimbursements = (store, props) => {
 
   const getElements = () => ({
     nav: {
-      refundProof: screen.queryByText('Justificatifs de remboursement'),
+      refundInvoices: screen.queryByText('Justificatifs de remboursement'),
       refundDetails: screen.queryByText('Détails des remboursements'),
     },
     filters: {
@@ -141,19 +142,41 @@ const BASE_VENUES = [
   },
 ]
 
+const BASE_INVOICES = [
+  {
+    id: 'INVOICE1',
+    date: '13-01-2022',
+    reference: 'ABC',
+    businessUnitId: 1,
+    amount: 100,
+    url: 'url1',
+  },
+  {
+    id: 'INVOICE2',
+    date: '13-01-2022',
+    reference: 'DEF',
+    businessUnitId: 2,
+    amount: 100,
+    url: 'url2',
+  },
+]
+
 describe('reimbursementsWithFilters', () => {
   let props
   let store
   let venues
+  let invoices
 
   beforeEach(() => {
     store = configureTestStore(initialStore)
     props = { currentUser: { isAdmin: false } }
     venues = BASE_VENUES
+    invoices = BASE_INVOICES
     pcapi.getVenuesForOfferer.mockResolvedValue(venues)
+    pcapi.getInvoices.mockResolvedValue(invoices)
   })
 
-  it('should display a new refund proof section when feature flag is up', async () => {
+  it('should display a new refund invoices section when feature flag is up', async () => {
     store = configureTestStore({
       data: {
         users: [{ publicName: 'Damien', isAdmin: false }],
@@ -168,7 +191,7 @@ describe('reimbursementsWithFilters', () => {
     const { nav } = await getElementsOnLoadingComplete()
 
     // then
-    expect(nav.refundProof).toBeInTheDocument()
+    expect(nav.refundInvoices).toBeInTheDocument()
     expect(nav.refundDetails).toBeInTheDocument()
   })
 
