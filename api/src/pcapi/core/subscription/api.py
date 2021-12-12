@@ -105,6 +105,12 @@ def create_successfull_beneficiary_import(
     return beneficiary_import
 
 
+def can_activate_beneficiary(user: users_models.User, eligibilityType: users_models.EligibilityType) -> bool:
+    return user.is_eligible_for_beneficiary_upgrade(eligibilityType) and not get_missing_subscription_steps(
+        user, eligibilityType
+    )
+
+
 def activate_beneficiary(
     user: users_models.User, deposit_source: str = None, has_activated_account: typing.Optional[bool] = True
 ) -> users_models.User:
@@ -168,7 +174,6 @@ def check_and_activate_beneficiary(
 def create_beneficiary_import(user: users_models.User, eligibilityType: users_models.EligibilityType) -> None:
     fraud_result = fraud_models.BeneficiaryFraudResult.query.filter_by(
         user=user,
-        # find fraud result by eligibility. If eligibilityType is None, the FraudResult has the default value AGE18
         eligibilityType=eligibilityType or users_models.EligibilityType.AGE18,
     ).one_or_none()
     if not fraud_result:
@@ -208,7 +213,7 @@ def create_beneficiary_import(user: users_models.User, eligibilityType: users_mo
 
     users_api.update_user_information_from_external_source(user, fraud_check.source_data(), commit=True)
 
-    if not users_api.steps_to_become_beneficiary(user):
+    if can_activate_beneficiary(user, eligibilityType):
         activate_beneficiary(user)
     else:
         users_external.update_external_user(user)
@@ -300,6 +305,39 @@ def has_completed_profile(user: users_models.User) -> bool:
     return user.city is not None
 
 
+def needs_to_validate_phone_number(user: users_models.User, eligibilityType: users_models.EligibilityType):
+    return (
+        eligibilityType == users_models.EligibilityType.AGE18
+        and not user.is_phone_validated
+        and FeatureToggle.ENABLE_PHONE_VALIDATION.is_active()
+    )
+
+
+def get_missing_subscription_steps(
+    user: users_models.User, eligibilityType: users_models.EligibilityType
+) -> list[models.SubscriptionStep]:
+    missing_steps = []
+
+    if not user.isEmailValidated:
+        missing_steps.append(models.SubscriptionStep.EMAIL_VALIDATION)
+
+    if needs_to_validate_phone_number(user, eligibilityType):
+        missing_steps.append(models.SubscriptionStep.PHONE_VALIDATION)
+
+    beneficiary_import = subscription_repository.get_beneficiary_import_for_beneficiary(user)
+    if not beneficiary_import or (beneficiary_import.eligibilityType != eligibilityType):
+        missing_steps.append(models.SubscriptionStep.IDENTITY_CHECK)
+
+    if not fraud_api.has_performed_honor_statement(user):
+        if not FeatureToggle.IS_HONOR_STATEMENT_MANDATORY_TO_ACTIVATE_BENEFICIARY.is_active():
+            logger.warning("The honor statement has not been performed or recorded", extra={"user_id": user.id})
+        else:
+            missing_steps.append(models.SubscriptionStep.HONOR_STATEMENT)
+        missing_steps.append(models.SubscriptionStep.HONOR_STATEMENT)
+
+    return missing_steps
+
+
 # pylint: disable=too-many-return-statements
 def get_next_subscription_step(user: users_models.User) -> typing.Optional[models.SubscriptionStep]:
     # TODO(viconnex): base the next step on the user.subscriptionState that will be added later on
@@ -312,11 +350,7 @@ def get_next_subscription_step(user: users_models.User) -> typing.Optional[model
     if not user.is_eligible_for_beneficiary_upgrade():
         return None
 
-    if (
-        not user.is_phone_validated
-        and user.eligibility == users_models.EligibilityType.AGE18
-        and FeatureToggle.ENABLE_PHONE_VALIDATION.is_active()
-    ):
+    if needs_to_validate_phone_number(user, user.eligibility):
         return models.SubscriptionStep.PHONE_VALIDATION
 
     if user.eligibility == users_models.EligibilityType.AGE18:
@@ -385,12 +419,7 @@ def update_user_profile(
         users_models.User.query.filter(users_models.User.id == user.id).update(update_payload)
     db.session.refresh(user)
 
-    if (
-        not users_api.steps_to_become_beneficiary(user)
-        # the 2 following checks should be useless
-        and fraud_api.has_user_performed_identity_check(user)
-        and not fraud_api.is_user_fraudster(user)
-    ):
+    if can_activate_beneficiary(user, user.eligibility):
         check_and_activate_beneficiary(user.id)
     else:
         users_api.update_external_user(user)
@@ -481,16 +510,18 @@ def on_successful_application(
     user.hasCompletedIdCheck = True
     pcapi_repository.repository.save(user)
 
+    eligibility = fraud_api.get_eligibility_type(source_data)
+
     create_successfull_beneficiary_import(
         user=user,
         source=source,
         source_id=source_id,
         application_id=application_id,
-        eligibility_type=fraud_api.get_eligibility_type(source_data),
+        eligibility_type=eligibility,
         third_party_id=third_party_id,
     )
 
-    if not users_api.steps_to_become_beneficiary(user):
+    if can_activate_beneficiary(user, eligibility):
         activate_beneficiary(user)
     else:
         users_external.update_external_user(user)
