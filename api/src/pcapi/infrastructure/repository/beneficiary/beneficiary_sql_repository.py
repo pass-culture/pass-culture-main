@@ -28,7 +28,7 @@ class BeneficiarySQLRepository:
         repository.save(user_sql_entity)
 
         if subscription_api.can_activate_beneficiary(user, beneficiary_pre_subscription.eligibility_type):
-            user_sql_entity = subscription_api.check_and_activate_beneficiary(
+            user_sql_entity = subscription_api.lock_user_to_activate_beneficiary(
                 user_sql_entity.id, has_activated_account=user is not None
             )
         else:

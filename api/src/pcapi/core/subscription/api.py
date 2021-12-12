@@ -152,7 +152,7 @@ def activate_beneficiary(
     return user
 
 
-def check_and_activate_beneficiary(
+def lock_user_to_activate_beneficiary(
     userId: int, deposit_source: str = None, has_activated_account: typing.Optional[bool] = True
 ) -> users_models.User:
     with pcapi_repository.transaction():
@@ -418,7 +418,7 @@ def update_user_profile(
     db.session.refresh(user)
 
     if can_activate_beneficiary(user, user.eligibility):
-        check_and_activate_beneficiary(user.id)
+        lock_user_to_activate_beneficiary(user.id)
     else:
         users_api.update_external_user(user)
 
