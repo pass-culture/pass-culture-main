@@ -303,6 +303,18 @@ def has_completed_profile(user: users_models.User) -> bool:
     return user.city is not None
 
 
+def needs_to_perform_identity_check(user: users_models.User) -> bool:
+    # TODO(viconnex): make same behaviour for Educonnect, Ubble and DMS
+    if subscription_repository.has_created_beneficiary_import_of_eligibility(user, user.eligibility):  # Educonnect
+        return False
+    if fraud_api.has_user_performed_ubble_check(user) and FeatureToggle.ENABLE_UBBLE.is_active():
+        return False
+    if user.extraData.get("is_identity_document_uploaded") and not FeatureToggle.ENABLE_UBBLE.is_active():  # Jouve
+        return False
+
+    return not user.hasCompletedIdCheck  # DMS
+
+
 def needs_to_validate_phone_number(user: users_models.User, eligibilityType: users_models.EligibilityType):
     return (
         eligibilityType == users_models.EligibilityType.AGE18
@@ -363,12 +375,7 @@ def get_next_subscription_step(user: users_models.User) -> typing.Optional[model
     if not has_completed_profile(user):
         return models.SubscriptionStep.PROFILE_COMPLETION
 
-    if (
-        not user.hasCompletedIdCheck
-        and user.allowed_eligibility_check_methods
-        and not (fraud_api.has_user_performed_ubble_check(user) and FeatureToggle.ENABLE_UBBLE.is_active())
-        and not user.extraData.get("is_identity_document_uploaded")  # Jouve
-    ):
+    if needs_to_perform_identity_check(user) and user.allowed_eligibility_check_methods:
         return models.SubscriptionStep.IDENTITY_CHECK
 
     if not fraud_api.has_performed_honor_statement(user):
