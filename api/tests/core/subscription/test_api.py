@@ -787,3 +787,81 @@ class OnSucessfulDMSApplicationTest:
                 source_id=123456,
             )
         assert applicant.has_beneficiary_role
+
+
+@pytest.mark.usefixtures("db_session")
+class MissingSubscriptionStepsTest:
+    AGE18_ELIGIBLE_BIRTH_DATE = datetime.now() - relativedelta(years=18, months=4)
+
+    def eligible_user(self, validate_phone: bool):
+        phone_validation_status = users_models.PhoneValidationStatusType.VALIDATED if validate_phone else None
+        return users_factories.UserFactory(
+            dateOfBirth=self.AGE18_ELIGIBLE_BIRTH_DATE, phoneValidationStatus=phone_validation_status
+        )
+
+    def set_beneficiary_import(self, user, status: str = ImportStatus.CREATED) -> BeneficiaryImport:
+        beneficiary_import = users_factories.BeneficiaryImportFactory(
+            beneficiary=user, source=BeneficiaryImportSources.jouve
+        )
+        beneficiary_import.setStatus(status, author=user)
+
+        return beneficiary_import
+
+    def test_no_missing_step(self):
+        user = self.eligible_user(validate_phone=True)
+
+        beneficiary_import = users_factories.BeneficiaryImportFactory(
+            applicationId=0, beneficiary=user, source=BeneficiaryImportSources.jouve.value
+        )
+        beneficiary_import.setStatus(ImportStatus.CREATED, author=user)
+        user.hasCompletedIdCheck = True
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user, type=fraud_models.FraudCheckType.HONOR_STATEMENT, status=fraud_models.FraudCheckStatus.OK
+        )
+
+        assert subscription_api.get_missing_subscription_steps(user, user.eligibility) == []
+
+    @override_features(FORCE_PHONE_VALIDATION=True)
+    def test_missing_step(self):
+        user = self.eligible_user(validate_phone=False)
+
+        beneficiary_import = users_factories.BeneficiaryImportFactory(beneficiary=user)
+        beneficiary_import.setStatus(ImportStatus.CREATED, author=user)
+        user.hasCompletedIdCheck = True
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user, type=fraud_models.FraudCheckType.HONOR_STATEMENT, status=fraud_models.FraudCheckStatus.OK
+        )
+
+        assert subscription_api.get_missing_subscription_steps(user, user.eligibility) == [
+            subscription_models.SubscriptionStep.PHONE_VALIDATION
+        ]
+        assert not user.has_beneficiary_role
+
+    @override_features(FORCE_PHONE_VALIDATION=True)
+    def test_rejected_import(self):
+        user = self.eligible_user(validate_phone=False)
+
+        beneficiary_import = users_factories.BeneficiaryImportFactory(beneficiary=user)
+        beneficiary_import.setStatus(ImportStatus.REJECTED, author=user)
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user, type=fraud_models.FraudCheckType.HONOR_STATEMENT, status=fraud_models.FraudCheckStatus.OK
+        )
+
+        expected = [
+            subscription_models.SubscriptionStep.PHONE_VALIDATION,
+            subscription_models.SubscriptionStep.IDENTITY_CHECK,
+        ]
+        assert subscription_api.get_missing_subscription_steps(user, user.eligibility) == expected
+        assert not user.has_beneficiary_role
+
+    @override_features(FORCE_PHONE_VALIDATION=True)
+    def test_missing_all(self):
+        user = self.eligible_user(validate_phone=False)
+
+        expected = [
+            subscription_models.SubscriptionStep.PHONE_VALIDATION,
+            subscription_models.SubscriptionStep.IDENTITY_CHECK,
+            subscription_models.SubscriptionStep.HONOR_STATEMENT,
+        ]
+        assert subscription_api.get_missing_subscription_steps(user, user.eligibility) == expected
+        assert not user.has_beneficiary_role

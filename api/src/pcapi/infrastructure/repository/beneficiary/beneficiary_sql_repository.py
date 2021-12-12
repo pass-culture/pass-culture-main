@@ -2,7 +2,6 @@ from typing import Optional
 
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription.models import BeneficiaryPreSubscription
-from pcapi.core.users import api as users_api
 from pcapi.core.users.external import update_external_user
 from pcapi.core.users.models import User
 from pcapi.infrastructure.repository.beneficiary import beneficiary_pre_subscription_sql_converter
@@ -28,7 +27,7 @@ class BeneficiarySQLRepository:
         )
         repository.save(user_sql_entity)
 
-        if not users_api.steps_to_become_beneficiary(user_sql_entity):
+        if subscription_api.can_activate_beneficiary(user, beneficiary_pre_subscription.eligibility_type):
             user_sql_entity = subscription_api.check_and_activate_beneficiary(
                 user_sql_entity.id, has_activated_account=user is not None
             )

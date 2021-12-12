@@ -31,7 +31,6 @@ import pcapi.core.payments.api as payment_api
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import exceptions as subscription_exceptions
 from pcapi.core.subscription import messages as subscription_messages
-import pcapi.core.subscription.repository as subscription_repository
 from pcapi.core.users import utils as users_utils
 from pcapi.core.users.constants import UNDERAGE_GENERALISATION_BROAD_OPENING_DATETIME
 from pcapi.core.users.constants import UNDERAGE_GENERALISATION_EARLY_OPENING_DATETIME
@@ -232,35 +231,10 @@ def initialize_account(
     return user
 
 
-def steps_to_become_beneficiary(user: User) -> list[BeneficiaryValidationStep]:
-    missing_steps = []
-
-    if (
-        not user.is_phone_validated
-        and user.eligibility != EligibilityType.UNDERAGE
-        and FeatureToggle.FORCE_PHONE_VALIDATION.is_active()
-    ):
-        missing_steps.append(BeneficiaryValidationStep.PHONE_VALIDATION)
-
-    beneficiary_import = subscription_repository.get_beneficiary_import_for_beneficiary(user)
-    if not beneficiary_import or (
-        beneficiary_import.eligibilityType == EligibilityType.UNDERAGE and user.has_underage_beneficiary_role
-    ):
-        missing_steps.append(BeneficiaryValidationStep.ID_CHECK)
-
-    if not fraud_api.has_performed_honor_statement(user):
-        if not FeatureToggle.IS_HONOR_STATEMENT_MANDATORY_TO_ACTIVATE_BENEFICIARY.is_active():
-            logger.warning("The honor statement has not been performed or recorded", extra={"user_id": user.id})
-        else:
-            missing_steps.append(BeneficiaryValidationStep.HONOR_STATEMENT)
-
-    return missing_steps
-
-
 def validate_phone_number_and_activate_user(user: User, code: str) -> User:
     validate_phone_number(user, code)
 
-    if not steps_to_become_beneficiary(user):
+    if subscription_api.can_activate_beneficiary(user, user.eligibility):
         try:
             subscription_api.activate_beneficiary(user)
         except subscription_exceptions.CannotUpgradeBeneficiaryRole:
