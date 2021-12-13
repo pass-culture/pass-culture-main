@@ -11,6 +11,7 @@
 
     color: $grey-medium;
     display: flex;
+    align-items: center;
 
     a {
       color: $black;
@@ -34,7 +35,6 @@
     .separator {
       align-items: center;
       display: flex;
-      height: rem(24px);
       justify-content: center;
       width: rem(24px);
 
