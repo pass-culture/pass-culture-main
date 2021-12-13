@@ -44,7 +44,7 @@ def get_all_applications_for_procedure(
 
     if response.status_code != 200:
         raise ApiDemarchesSimplifieesException(
-            f"Error getting API démarches simplifiées DATA for procedure_id: {procedure_id} and token {token}"
+            f"Error getting API démarches simplifiées DATA for procedure_id: {procedure_id}"
         )
 
     return response.json()
@@ -57,7 +57,7 @@ def get_application_details(application_id: str, procedure_id: str, token: str) 
 
     if response.status_code != 200:
         raise ApiDemarchesSimplifieesException(
-            f"Error getting API démarches simplifiées DATA for procedure_id: {procedure_id}, application_id: {application_id} and token {token}"
+            f"Error getting API démarches simplifiées DATA for procedure_id: {procedure_id}, application_id: {application_id}"
         )
 
     return response.json()

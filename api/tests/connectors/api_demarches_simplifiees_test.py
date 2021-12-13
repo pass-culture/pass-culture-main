@@ -49,9 +49,7 @@ class GetAllApplicationsForProcedureTest:
             get_all_applications_for_procedure(procedure_id=procedure_id, token=token)
 
         # Then
-        assert (
-            str(exception.value) == "Error getting API démarches simplifiées DATA for procedure_id: 1 and token 12345"
-        )
+        assert str(exception.value) == "Error getting API démarches simplifiées DATA for procedure_id: 1"
 
 
 class GetApplicationDetailsTest:
