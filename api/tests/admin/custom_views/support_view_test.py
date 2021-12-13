@@ -99,6 +99,7 @@ class BeneficiaryValidationViewTest:
         assert response.headers["Location"] == "http://localhost/pc/back-office/"
 
     @override_features(BENEFICIARY_VALIDATION_AFTER_FRAUD_CHECKS=True)
+    @override_features(IS_HONOR_STATEMENT_MANDATORY_TO_ACTIVATE_BENEFICIARY=True)
     def test_validation_view_validate_user_from_jouve_data_staging(self, client):
         user = users_factories.UserFactory(isBeneficiary=False, dateOfBirth=AGE18_ELIGIBLE_BIRTH_DATE)
 
@@ -132,6 +133,7 @@ class BeneficiaryValidationViewTest:
         assert user.lastName == jouve_content.lastName
 
     @override_features(BENEFICIARY_VALIDATION_AFTER_FRAUD_CHECKS=True)
+    @override_features(IS_HONOR_STATEMENT_MANDATORY_TO_ACTIVATE_BENEFICIARY=True)
     def test_validation_view_validate_user_from_dms_data_staging(self, client):
         user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=18, months=2))
         check = fraud_factories.BeneficiaryFraudCheckFactory(user=user, type=fraud_models.FraudCheckType.DMS)
@@ -379,13 +381,11 @@ class UpdateIDPieceNumberTest:
         assert len(user.beneficiaryImports) == 1
         assert user.beneficiaryImports[0].currentStatus == ImportStatus.CREATED
 
+    @override_features(IS_HONOR_STATEMENT_MANDATORY_TO_ACTIVATE_BENEFICIARY=True)
     def test_update_beneficiary_id_piece_number_from_dms_data_with_existing_beneficiary_import(self, client):
         user = users_factories.UserFactory()
         fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(user=user, type=fraud_models.FraudCheckType.DMS)
         fraud_factories.BeneficiaryFraudResultFactory(user=user, status=fraud_models.FraudStatus.SUSPICIOUS)
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user, type=fraud_models.FraudCheckType.HONOR_STATEMENT, status=fraud_models.FraudCheckStatus.OK
-        )
         dms_data = fraud_check.source_data()
         beneficiary_import = users_factories.BeneficiaryImportFactory(
             beneficiary=user,

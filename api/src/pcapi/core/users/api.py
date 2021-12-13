@@ -249,7 +249,10 @@ def steps_to_become_beneficiary(user: User) -> list[BeneficiaryValidationStep]:
         missing_steps.append(BeneficiaryValidationStep.ID_CHECK)
 
     if not fraud_api.has_performed_honor_statement(user):
-        missing_steps.append(BeneficiaryValidationStep.HONOR_STATEMENT)
+        if not FeatureToggle.IS_HONOR_STATEMENT_MANDATORY_TO_ACTIVATE_BENEFICIARY.is_active():
+            logger.warning("The honor statement has not been performed or recorded", extra={"user_id": user.id})
+        else:
+            missing_steps.append(BeneficiaryValidationStep.HONOR_STATEMENT)
 
     return missing_steps
 
