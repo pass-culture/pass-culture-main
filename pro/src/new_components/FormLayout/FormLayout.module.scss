@@ -11,8 +11,8 @@
     }
 
     &-description {
-      margin-top: rem(16px);
       white-space: pre-line;
+      margin-top: rem(8px);
     }
   }
 
@@ -25,8 +25,12 @@
   }
 
   &-row {
-    margin-bottom: rem(38px);
+    margin-bottom: rem(8px);
     max-width: 100%;
+
+    &.large-space-after {
+      margin-bottom: rem(32px);
+    }
 
     &.inline-group {
       display: flex;
