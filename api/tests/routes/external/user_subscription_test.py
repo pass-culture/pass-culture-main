@@ -176,6 +176,12 @@ class DmsWebhookApplicationTest:
         assert execute_query.call_count == 1
         assert send_user_message.call_count == 1
         assert send_user_message.call_args[0][2] == subscription_messages.DMS_ERROR_MESSAGE_DOUBLE_ERROR
+        assert len(user.subscriptionMessages) == 1
+        assert user.subscriptionMessages[0].popOverIcon == subscription_models.PopOverIcon.WARNING
+        assert (
+            user.subscriptionMessages[0].userMessage
+            == "Il semblerait que ‘ta pièce d'identité, ton code postal’ soient erronés. Tu peux te rendre sur le site Démarche-simplifiées pour les rectifier.",
+        )
 
     @patch.object(DMSGraphQLClient, "execute_query")
     @patch.object(DMSGraphQLClient, "send_user_message")
@@ -227,6 +233,12 @@ class DmsWebhookApplicationTest:
         assert execute_query.call_count == 1
         assert send_user_message.call_count == 1
         assert send_user_message.call_args[0][2] == subscription_messages.DMS_ERROR_MESSAGE_ERROR_ID_PIECE
+        assert len(user.subscriptionMessages) == 1
+        assert user.subscriptionMessages[0].popOverIcon == subscription_models.PopOverIcon.WARNING
+        assert (
+            user.subscriptionMessages[0].userMessage
+            == "Il semblerait que ‘ta pièce d'identité’ soit erroné. Tu peux te rendre sur le site Démarche-simplifiées pour le rectifier.",
+        )
 
     @patch.object(DMSGraphQLClient, "execute_query")
     @patch.object(DMSGraphQLClient, "send_user_message")
@@ -251,6 +263,12 @@ class DmsWebhookApplicationTest:
         assert execute_query.call_count == 1
         assert send_user_message.call_count == 1
         assert send_user_message.call_args[0][2] == subscription_messages.DMS_ERROR_MESSAGE_ERROR_POSTAL_CODE
+        assert len(user.subscriptionMessages) == 1
+        assert user.subscriptionMessages[0].popOverIcon == subscription_models.PopOverIcon.WARNING
+        assert (
+            user.subscriptionMessages[0].userMessage
+            == "Il semblerait que ‘ton code postal’ soit erroné. Tu peux te rendre sur le site Démarche-simplifiées pour le rectifier.",
+        )
 
     @patch.object(DMSGraphQLClient, "execute_query")
     @patch.object(DMSGraphQLClient, "send_user_message")
@@ -280,6 +298,12 @@ class DmsWebhookApplicationTest:
         assert execute_query.call_count == 1
         assert send_user_message.call_count == 1
         assert send_user_message.call_args[0][2] == subscription_messages.DMS_ERROR_MESSSAGE_BIRTH_DATE
+        assert len(user.subscriptionMessages) == 1
+        assert user.subscriptionMessages[0].popOverIcon == subscription_models.PopOverIcon.WARNING
+        assert (
+            user.subscriptionMessages[0].userMessage
+            == "Il semblerait que ‘ta date de naissance’ soit erronée. Tu peux te rendre sur le site Démarche-simplifiées pour le rectifier.",
+        )
 
     @patch.object(DMSGraphQLClient, "execute_query")
     @pytest.mark.parametrize(

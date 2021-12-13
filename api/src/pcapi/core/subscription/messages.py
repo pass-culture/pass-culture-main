@@ -238,6 +238,7 @@ def _generate_form_field_error(error_text_singular: str, error_text_plural: str,
     french_field_name = {
         "id_piece_number": "ta pièce d'identité",
         "postal_code": "ton code postal",
+        "birth_date": "ta date de naissance",
     }
 
     user_message = error_text_singular.format(
