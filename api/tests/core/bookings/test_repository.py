@@ -1970,6 +1970,68 @@ class GetCsvReportTest:
         assert data_dict["Statut de la contremarque"] == booking_repository.BOOKING_STATUS_LABELS[booking.status]
         assert data_dict["Date et heure de remboursement"] == ""
 
+    def test_should_not_return_token_for_non_used_goods(self, app: fixture):
+        # Given
+        beneficiary = users_factories.BeneficiaryGrant18Factory(
+            email="beneficiary@example.com", firstName="Ron", lastName="Weasley"
+        )
+        pro = users_factories.ProFactory()
+        offerer = offers_factories.OffererFactory()
+        offers_factories.UserOffererFactory(user=pro, offerer=offerer)
+
+        venue = offers_factories.VenueFactory(managingOfferer=offerer)
+        product = offers_factories.ThingProductFactory(name="Harry Potter")
+        offer = offers_factories.ThingOfferFactory(venue=venue, product=product)
+        stock = offers_factories.ThingStockFactory(offer=offer, price=0)
+        booking_date = datetime(2020, 1, 1, 10, 0, 0) - timedelta(days=1)
+        booking = bookings_factories.BookingFactory(
+            user=beneficiary,
+            stock=stock,
+            dateCreated=booking_date,
+            token="ABCDEF",
+            amount=12,
+        )
+
+        # When
+        bookings_csv = booking_repository.get_csv_report(
+            user=pro, booking_period=(booking_date - timedelta(days=365), booking_date + timedelta(days=365))
+        )
+
+        # Then
+        headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
+        assert headers == [
+            "Lieu",
+            "Nom de l’offre",
+            "Date de l'évènement",
+            "ISBN",
+            "Nom et prénom du bénéficiaire",
+            "Email du bénéficiaire",
+            "Téléphone du bénéficiaire",
+            "Date et heure de réservation",
+            "Date et heure de validation",
+            "Contremarque",
+            "Prix de la réservation",
+            "Statut de la contremarque",
+            "Date et heure de remboursement",
+        ]
+        assert len(data) == 1
+        data_dict = dict(zip(headers, data[0]))
+        assert data_dict["Lieu"] == venue.name
+        assert data_dict["Nom de l’offre"] == offer.name
+        assert data_dict["Date de l'évènement"] == ""
+        assert data_dict["ISBN"] == ((offer.extraData or {}).get("isbn") or "")
+        assert data_dict["Nom et prénom du bénéficiaire"] == " ".join((beneficiary.lastName, beneficiary.firstName))
+        assert data_dict["Email du bénéficiaire"] == beneficiary.email
+        assert data_dict["Téléphone du bénéficiaire"] == (beneficiary.phoneNumber or "")
+        assert data_dict["Date et heure de réservation"] == str(
+            booking.dateCreated.astimezone(tz.gettz("Europe/Paris"))
+        )
+        assert data_dict["Date et heure de validation"] == ""
+        assert data_dict["Contremarque"] == ""
+        assert data_dict["Prix de la réservation"] == f"{booking.amount:.2f}"
+        assert data_dict["Statut de la contremarque"] == booking_repository.BOOKING_STATUS_LABELS[booking.status]
+        assert data_dict["Date et heure de remboursement"] == ""
+
     def test_should_return_booking_as_duo_when_quantity_is_two(self, app: fixture):
         # Given
         beneficiary = users_factories.BeneficiaryGrant18Factory(
