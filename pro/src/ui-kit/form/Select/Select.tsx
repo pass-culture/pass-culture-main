@@ -1,62 +1,65 @@
-import cn from 'classnames'
 import { useField } from 'formik'
 import React, { useEffect } from 'react'
 
-import FieldError from '../FieldError'
+import { FieldLayout } from '../shared'
 
-import styles from './Select.module.scss'
+import SelectInput from './SelectInput'
 
 type Option = {
   value: string
   label: string
 }
 
-interface ISelectProps {
+interface ISelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
   name: string
   options: Option[]
   className?: string
   disabled?: boolean
-  label?: string
+  label: string
+  isOptional?: boolean
+  smallLabel?: boolean
 }
 
 const Select = ({
   name,
   options,
   className,
+  isOptional = false,
   disabled,
   label,
+  smallLabel,
+  ...selectAttributes
 }: ISelectProps): JSX.Element => {
   const [field, meta, helpers] = useField({ name, type: 'select' })
 
   useEffect(() => {
-    if (options.length === 1 && field.value !== options[0].value) {
+    if (
+      !isOptional &&
+      options.length === 1 &&
+      field.value !== options[0].value
+    ) {
       helpers.setValue(options[0].value)
     }
-  }, [options, helpers, field])
+  }, [options, helpers, field, isOptional])
 
   return (
-    <div
-      className={cn(styles['select'], className, {
-        [styles['has-error']]: meta.touched && !!meta.error,
-      })}
+    <FieldLayout
+      className={className}
+      error={meta.error}
+      isOptional={isOptional}
+      label={label}
+      name={name}
+      showError={meta.touched && !!meta.error}
+      smallLabel={smallLabel}
     >
-      <label className={styles['select-label']} htmlFor={name}>
-        {label}
-      </label>
-      <select
-        className={styles['select-input']}
+      <SelectInput
         disabled={disabled}
-        id={name}
+        hasError={meta.touched && !!meta.error}
+        options={options}
+        {...selectAttributes}
         {...field}
-      >
-        {options.map(option => (
-          <option key={option.value} value={option.value}>
-            {option.label}
-          </option>
-        ))}
-      </select>
-      {meta.touched && meta.error && <FieldError>{meta.error}</FieldError>}
-    </div>
+      />
+    </FieldLayout>
   )
 }
 
