@@ -2,7 +2,7 @@ import cn from 'classnames'
 import { useField } from 'formik'
 import React from 'react'
 
-import FieldError from '../FieldError'
+import { FieldError } from '../shared'
 
 import styles from './CheckboxGroup.module.scss'
 import CheckboxGroupItem from './CheckboxGroupItem'
@@ -38,6 +38,7 @@ const CheckboxGroup = ({
         <div className={styles['checkbox-group-item']} key={item.name}>
           <CheckboxGroupItem
             Icon={item.icon}
+            hasError={meta.touched && !!meta.error}
             label={item.label}
             name={item.name}
             setGroupTouched={() =>
@@ -46,8 +47,9 @@ const CheckboxGroup = ({
           />
         </div>
       ))}
-
-      {meta.touched && !!meta.error && <FieldError>{meta.error}</FieldError>}
+      <div className={styles['checkbox-group-error-wrapper']}>
+        {meta.touched && !!meta.error && <FieldError>{meta.error}</FieldError>}
+      </div>
     </div>
   )
 }
