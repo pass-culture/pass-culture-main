@@ -1,5 +1,6 @@
 import React from 'react'
 
+import HelpLink from 'new_components/HelpLink'
 import OfferBreadcrumb, {
   OfferBreadcrumbStep,
 } from 'new_components/OfferBreadcrumb'
@@ -35,6 +36,7 @@ const OfferEducationalLayout = ({
         offerId={offerId}
       />
       {children}
+      <HelpLink />
     </>
   )
 }
