@@ -607,10 +607,8 @@ def _payment_details_row_formatter(sql_row):
         raise ValueError("Unknown booking type (not educational nor individual)")
 
     booking_total_amount = sql_row.booking_amount * sql_row.booking_quantity
-    reimbursement_rate = decimal.Decimal(-sql_row.pricing_amount / booking_total_amount / 100).quantize(
-        decimal.Decimal("0.01")
-    )
     reimbursed_amount = utils.to_euros(-sql_row.pricing_amount)
+    reimbursement_rate = (reimbursed_amount / booking_total_amount).quantize(decimal.Decimal("0.01"))
     return (
         human_ids.humanize(sql_row.business_unit_venue_id),
         sql_row.business_unit_siret,
