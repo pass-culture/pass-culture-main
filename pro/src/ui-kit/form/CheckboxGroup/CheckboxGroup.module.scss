@@ -2,43 +2,8 @@
   &-item {
     margin-bottom: rem(8px);
   }
-}
 
-.checkbox {
-  &-label {
-    display: inline-flex;
-    cursor: pointer;
-    align-items: center;
-    line-height: 1em;
-
-    .has-error & {
-      color: $primary;
-    }
-  }
-
-  &-icon {
-    margin-right: rem(8px);
-    width: rem(24px)
-  }
-
-  &-input {
-    -webkit-appearance: none;
-    appearance: none;
-    background-color: $white;
-    border: 2px solid $grey-dark;
-    border-radius: 4px;
-
-    .has-error & {
-      border-color: $primary;
-    }
-
-    &:hover {
-      border-color: $primary;
-
-      &:checked {
-        background-color: $primary;
-        border-color: $primary;
-      }
-    }
+  &-error-wrapper {
+    height: rem(32px);
   }
 }
