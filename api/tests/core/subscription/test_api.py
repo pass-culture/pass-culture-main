@@ -353,6 +353,40 @@ class UbbleWorkflowTest:
         assert ubble_content["status"] == status.value
         assert fraud_check.status == fraud_check_status
 
+    def test_ubble_workflow_processing_add_inapp_message(self, ubble_mocker):
+        user = users_factories.UserFactory()
+        fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
+            type=fraud_models.FraudCheckType.UBBLE, status=fraud_models.FraudCheckStatus.PENDING, user=user
+        )
+        ubble_response = UbbleIdentificationResponseFactory(identification_state=IdentificationState.PROCESSING)
+        with ubble_mocker(
+            fraud_check.thirdPartyId,
+            json.dumps(ubble_response.dict(by_alias=True), sort_keys=True, default=json_default),
+        ):
+            subscription_api.update_ubble_workflow(fraud_check, ubble_response.data.attributes.status)
+            message = subscription_models.SubscriptionMessage.query.one()
+            assert message.userMessage == "Ton document d'identité est en cours de vérification."
+            assert message.popOverIcon == subscription_models.PopOverIcon.CLOCK
+
+    def test_ubble_workflow_rejected_add_inapp_message(self, ubble_mocker):
+        user = users_factories.UserFactory()
+        fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
+            type=fraud_models.FraudCheckType.UBBLE, status=fraud_models.FraudCheckStatus.PENDING, user=user
+        )
+        ubble_response = UbbleIdentificationResponseFactory(identification_state=IdentificationState.INVALID)
+        with ubble_mocker(
+            fraud_check.thirdPartyId,
+            json.dumps(ubble_response.dict(by_alias=True), sort_keys=True, default=json_default),
+        ):
+            subscription_api.update_ubble_workflow(fraud_check, ubble_response.data.attributes.status)
+            message = subscription_models.SubscriptionMessage.query.one()
+            assert (
+                message.userMessage
+                == "Désolé, la vérification de ton identité n'a pas pu aboutir. Nous t'invitons à passer par le site Démarches-Simplifiées."
+            )
+            assert message.callToActionLink == "passculture://verification-identite/demarches-simplifiees"
+            assert message.callToActionIcon == subscription_models.CallToActionIcon.EXTERNAL
+
 
 @pytest.mark.usefixtures("db_session")
 class NextSubscriptionStepTest:

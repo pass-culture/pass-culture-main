@@ -7,6 +7,7 @@ from . import models
 
 
 INBOX_URL = "passculture://openInbox"
+REDIRECT_TO_DMS_VIEW = "passculture://verification-identite/demarches-simplifiees"
 
 DMS_ERROR_MESSAGE_USER_NOT_FOUND = """Bonjour,
                 
@@ -77,6 +78,25 @@ def create_message_jouve_manual_review(user: users_models.User, application_id: 
         user=user,
         userMessage=f"Nous avons reçu ton dossier le {today:%d/%m/%Y} et son analyse est en cours. Cela peut prendre jusqu'à 5 jours.",
         popOverIcon=models.PopOverIcon.CLOCK,
+    )
+    repository.save(message)
+
+
+def on_review_pending(user: users_models.User) -> None:
+    message = models.SubscriptionMessage(
+        user=user,
+        userMessage="Ton document d'identité est en cours de vérification.",
+        popOverIcon=models.PopOverIcon.CLOCK,
+    )
+    repository.save(message)
+
+
+def on_ubble_journey_cannot_continue(user: users_models.User) -> None:
+    message = models.SubscriptionMessage(
+        user=user,
+        userMessage="Désolé, la vérification de ton identité n'a pas pu aboutir. Nous t'invitons à passer par le site Démarches-Simplifiées.",
+        callToActionLink=REDIRECT_TO_DMS_VIEW,
+        callToActionIcon=models.CallToActionIcon.EXTERNAL,
     )
     repository.save(message)
 

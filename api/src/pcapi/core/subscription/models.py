@@ -111,6 +111,7 @@ class BeneficiaryPreSubscription:
 class CallToActionIcon(enum.Enum):
     EMAIL = "EMAIL"
     RETRY = "RETRY"
+    EXTERNAL = "EXTERNAL"
 
 
 class PopOverIcon(enum.Enum):
