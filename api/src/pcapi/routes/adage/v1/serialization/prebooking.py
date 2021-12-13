@@ -70,6 +70,7 @@ class EducationalBookingResponse(AdageBaseResponseModel):
     yearId: int = Field(description="Shared year id")
     status: Union[EducationalBookingStatus, BookingStatus]
     participants: list[str] = Field(description="List of class levels which can participate")
+    priceDetail: Optional[str] = Field(description="Offer's stock price detail")
     venueTimezone: str
     subcategoryLabel: str = Field(description="Subcategory label")
     totalAmount: float = Field(description="Total price of the prebooking")
@@ -127,6 +128,7 @@ def serialize_educational_booking(educational_booking: EducationalBooking) -> Ed
         name=offer.name,
         numberOfTickets=stock.numberOfTickets,
         participants=offer.extraData.get("students", []) if offer.extraData is not None else [],
+        priceDetail=stock.educationalPriceDetail,
         postalCode=venue.postalCode,
         price=booking.amount,
         quantity=booking.quantity,
