@@ -1,6 +1,7 @@
 import React from 'react'
 
 import useFeatureFlagedOfferEditionURL from 'components/hooks/useFeatureFlaggedOfferEditionURL'
+import useFeatureFlagedOfferStockEditionURL from 'components/hooks/useFeatureFlaggedOfferStockEditionURL'
 import Breadcrumb, {
   BreadcrumbStyle,
 } from 'new_components/Breadcrumb/Breadcrumb'
@@ -26,7 +27,11 @@ const OfferBreadcrumb = ({
   isOfferEducational = false,
   className,
 }: IOfferBreadcrumb): JSX.Element => {
-  const editionUrl = useFeatureFlagedOfferEditionURL(
+  const offerEditionUrl = useFeatureFlagedOfferEditionURL(
+    isOfferEducational,
+    offerId
+  )
+  const stockEditionUrl = useFeatureFlagedOfferStockEditionURL(
     isOfferEducational,
     offerId
   )
@@ -38,12 +43,12 @@ const OfferBreadcrumb = ({
       {
         id: OfferBreadcrumbStep.DETAILS,
         label: "Détails de l'offre",
-        url: editionUrl,
+        url: offerEditionUrl,
       },
       {
         id: OfferBreadcrumbStep.STOCKS,
         label: isOfferEducational ? 'Date et prix' : 'Stock et prix',
-        url: `/offres/${offerId}/stocks`,
+        url: stockEditionUrl,
       },
     ]
   } else {

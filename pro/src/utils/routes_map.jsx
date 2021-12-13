@@ -21,6 +21,7 @@ import OfferEducationalConfirmation from 'routes/OfferEducationalConfirmation'
 import OfferEducationalCreation from 'routes/OfferEducationalCreation'
 import OfferEducationalEdition from 'routes/OfferEducationalEdition'
 import OfferEducationalStockCreation from 'routes/OfferEducationalStockCreation'
+import OfferEducationalStockEdition from 'routes/OfferEducationalStockEdition/OfferEducationalStockEdition'
 import OfferType from 'routes/OfferType'
 import { UNAVAILABLE_ERROR_PAGE } from 'utils/routes'
 
@@ -203,6 +204,13 @@ const routes = [
     featureName: 'ENABLE_NEW_EDUCATIONAL_OFFER_CREATION_FORM',
     path: '/offre/:offerId([A-Z0-9]+)/scolaire/edition',
     title: 'Edition d’une offre scolaire',
+  },
+  {
+    component: OfferEducationalStockEdition,
+    exact: true,
+    featureName: 'ENABLE_NEW_EDUCATIONAL_OFFER_CREATION_FORM',
+    path: '/offre/:offerId([A-Z0-9]+)/scolaire/stocks/edition',
+    title: 'Edition d’un stock d’une offre scolaire',
   },
 ]
 
