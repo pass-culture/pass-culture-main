@@ -1,10 +1,11 @@
+/* eslint-disable react/no-multi-comp */
 import { action } from '@storybook/addon-actions'
-import { boolean } from '@storybook/addon-knobs'
 import { Story } from '@storybook/react'
 import { Formik } from 'formik'
 import React from 'react'
 
 import Select from './Select'
+import SelectInput from './SelectInput'
 
 export default {
   title: 'ui-kit/forms/Select',
@@ -17,24 +18,53 @@ const mockCategoriesOptions = [
   { value: 'musique', label: 'Musique' },
 ]
 
-const Template: Story<{ label?: string }> = ({ label }) => (
+type SelectArgs = {
+  label: string
+  options: {
+    value: string
+    label: string
+  }[]
+  disabled: boolean
+}
+
+const Template: Story<SelectArgs> = args => (
   <Formik
     initialValues={{ categorie: 'theatre' }}
     onSubmit={action('onSubmit')}
   >
     {({ getFieldProps }) => {
-      return (
-        <Select
-          {...getFieldProps('categorie')}
-          disabled={boolean('disabled', false)}
-          label={label}
-          options={mockCategoriesOptions}
-        />
-      )
+      return <Select {...getFieldProps('categorie')} {...args} />
     }}
   </Formik>
 )
 
-export const WithoutLabel = Template.bind({})
-export const WithLabel = Template.bind({})
-WithLabel.args = { label: 'Catégorie' }
+export const FormikField = Template.bind({})
+
+FormikField.args = {
+  label: 'Catégorie',
+  options: mockCategoriesOptions,
+  disabled: false,
+}
+
+type SelectInputArgs = {
+  name: string
+  hasError: boolean
+  options: {
+    value: string
+    label: string
+  }[]
+  disabled: boolean
+}
+
+const SelectInputTemplate: Story<SelectInputArgs> = args => (
+  <SelectInput {...args} />
+)
+
+export const StandeloneSelect = SelectInputTemplate.bind({})
+
+StandeloneSelect.args = {
+  name: 'select',
+  hasError: false,
+  options: mockCategoriesOptions,
+  disabled: false,
+}
