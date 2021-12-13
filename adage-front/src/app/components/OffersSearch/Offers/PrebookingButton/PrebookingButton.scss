@@ -4,7 +4,7 @@
   text-align: center;
   padding: rem(11px) rem(24px);
   margin: auto;
-  background: linear-gradient(98.84deg, #eb0055 0%, #320096 120.92%);
+  background: #eb0055;
   box-shadow: 0px 2px 6px rgba(37, 2, 108, 0.2);
   border-radius: 30px;
   border: none;
@@ -12,6 +12,10 @@
   font-weight: bold;
   font-size: 15px;
   cursor: pointer;
+
+  &-booking-limit {
+    margin-top: rem(10px);
+  }
 }
 
 .prebooking-button-container {
@@ -20,4 +24,16 @@
   align-items: center;
   font-size: rem(12px);
   font-weight: bold;
+}
+
+.prebooking-tag {
+  padding: rem(4px) rem(8px);
+  background: #f9c030;
+  border-radius: rem(4px);
+  display: flex;
+  align-items: center;
+
+  &-icon {
+    margin-right: rem(4px);
+  }
 }
