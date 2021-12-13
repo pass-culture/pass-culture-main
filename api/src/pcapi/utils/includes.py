@@ -53,6 +53,7 @@ WEBAPP_GET_BOOKING_INCLUDES = [
             "remainingQuantity",
             "-dnBookedQuantity",
             "-rawProviderQuantity",
+            "-educationalPriceDetail",
             {
                 "key": "offer",
                 "includes": [
@@ -75,6 +76,7 @@ WEBAPP_GET_BOOKING_INCLUDES = [
                             "remainingQuantity",
                             "-dnBookedQuantity",
                             "-rawProviderQuantity",
+                            "-educationalPriceDetail",
                         ],
                     },
                     {"key": "venue", "includes": ["-validationToken", "-businessUnitId"]},
