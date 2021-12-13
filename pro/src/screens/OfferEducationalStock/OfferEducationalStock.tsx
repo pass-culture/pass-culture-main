@@ -13,12 +13,14 @@ import { isOfferDisabled } from './utils'
 import { validationSchema } from './validationSchema'
 
 export interface IOfferEducationalStockProps {
+  isEditable?: boolean
   initialValues: OfferEducationalStockFormValues
   offer: Offer
   onSubmit: (offer: Offer, values: OfferEducationalStockFormValues) => void
 }
 
 const OfferEducationalStock = ({
+  isEditable = true,
   initialValues,
   offer,
   onSubmit,
@@ -55,7 +57,7 @@ const OfferEducationalStock = ({
               </span>
             </p>
             <FormLayout.Row inline>
-              <FormStock />
+              <FormStock isEditable={isEditable} />
             </FormLayout.Row>
           </FormLayout.Section>
           <FormLayout.Actions className={styles['action-section']}>
