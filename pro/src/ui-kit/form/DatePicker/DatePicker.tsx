@@ -1,12 +1,11 @@
-import cn from 'classnames'
 import fr from 'date-fns/locale/fr'
 import { useField } from 'formik'
 import React from 'react'
 import { default as ReactDatePicker, registerLocale } from 'react-datepicker'
 
-import FieldError from '../FieldError'
+import { BaseInput, FieldLayout } from '../shared'
 
-import styles from './DatePicker.module.scss'
+import { ReactComponent as Calendar } from './assets/calendar.svg'
 
 registerLocale('fr', fr)
 
@@ -14,10 +13,11 @@ interface IDatePickerProps {
   name: string
   className?: string
   disabled?: boolean
-  label?: string
+  label: string
   maxDateTime?: Date
   minDateTime?: Date
   openingDateTime?: Date
+  smallLabel?: boolean
 }
 
 const DatePicker = ({
@@ -28,24 +28,27 @@ const DatePicker = ({
   className,
   disabled,
   label,
+  smallLabel,
 }: IDatePickerProps): JSX.Element => {
   const [field, meta, helpers] = useField({ name, type: 'date' })
 
   return (
-    <div
-      className={cn(styles['date-picker'], className, {
-        [styles['has-error']]: meta.touched && !!meta.error,
-      })}
+    <FieldLayout
+      className={className}
+      error={meta.error}
+      label={label}
+      name={name}
+      showError={meta.touched && !!meta.error}
+      smallLabel={smallLabel}
     >
-      <label
-        className={styles['date-picker-label']}
-        htmlFor={`datepicker-${name}`}
-      >
-        {label}
-      </label>
       <ReactDatePicker
         {...field}
-        className={styles['date-picker-input']}
+        customInput={
+          <BaseInput
+            RightIcon={Calendar}
+            hasError={meta.touched && !!meta.error}
+          />
+        }
         dateFormat="dd/MM/yyyy"
         disabled={disabled}
         dropdownMode="scroll"
@@ -60,9 +63,7 @@ const DatePicker = ({
         placeholderText="JJ/MM/AAAA"
         selected={field.value}
       />
-
-      {meta.touched && !!meta.error && <FieldError>{meta.error}</FieldError>}
-    </div>
+    </FieldLayout>
   )
 }
 
