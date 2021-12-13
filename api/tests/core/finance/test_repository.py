@@ -3,6 +3,7 @@ import datetime
 import pytest
 
 from pcapi.core.finance import factories
+from pcapi.core.finance import models
 from pcapi.core.finance import repository
 import pcapi.core.offerers.factories as offerers_factories
 
@@ -26,7 +27,7 @@ class GetInvoicesTest:
         _other_venue = offerers_factories.VenueFactory(businessUnit=other_business_unit)
         _other_invoice = factories.InvoiceFactory(businessUnit=other_business_unit)
 
-        invoices = repository.get_invoices_query(offerer.id)
+        invoices = repository.get_invoices_query(offerer.id).order_by(models.Invoice.id)
         assert list(invoices) == [invoice1, invoice2]
 
     def test_filter_on_date(self):
