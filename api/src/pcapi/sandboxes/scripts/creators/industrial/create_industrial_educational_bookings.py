@@ -253,21 +253,4 @@ def create_industrial_educational_bookings() -> None:
                 educationalBooking__confirmationLimitDate=now + datetime.timedelta(days=30),
                 status=BookingStatus.PENDING,
                 stock=next_year_stock,
-                offer__extraData={
-                    "students": [
-                        "CAP - 1re ann\u00e9e",
-                        "CAP - 2e ann\u00e9e",
-                        "Lyc\u00e9e - Seconde",
-                        "Lyc\u00e9e - Premi\u00e8re",
-                    ],
-                    "offerVenue": {
-                        "addressType": "other",
-                        "otherAddress": "1 rue des polissons, Paris 75017",
-                        "venueId": "",
-                    },
-                    "contactEmail": "miss.rond@point.com",
-                    "contactPhone": "01010100101",
-                },
-                offer__motorDisabilityCompliant=True,
-                offer__visualDisabilityCompliant=True,
             )
