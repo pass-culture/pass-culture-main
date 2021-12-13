@@ -65,12 +65,10 @@ JOUVE_CONTENT = {
 @patch("pcapi.connectors.beneficiaries.jouve_backend._get_raw_content", return_value=JOUVE_CONTENT)
 def test_saved_a_beneficiary_from_application(app):
     # Given
-    user = users_factories.UserFactory(
+    users_factories.UserFactory(
         firstName=JOUVE_CONTENT["firstName"], lastName=JOUVE_CONTENT["lastName"], email=JOUVE_CONTENT["email"]
     )
-    fraud_factories.BeneficiaryFraudCheckFactory(
-        user=user, type=fraud_models.FraudCheckType.HONOR_STATEMENT, status=fraud_models.FraudCheckStatus.OK
-    )
+
     # When
     create_beneficiary_from_application.execute(APPLICATION_ID)
 
@@ -125,7 +123,7 @@ def test_marked_subscription_on_hold_when_jouve_subscription_journed_is_paused(_
     assert len(push_testing.requests) == 0
 
 
-@override_features(FORCE_PHONE_VALIDATION=False)
+@override_features(FORCE_PHONE_VALIDATION=False, IS_HONOR_STATEMENT_MANDATORY_TO_ACTIVATE_BENEFICIARY=True)
 @patch("pcapi.connectors.beneficiaries.jouve_backend._get_raw_content", return_value=JOUVE_CONTENT)
 def test_application_for_native_app_user(_get_raw_content_mock, client):
     # Given
@@ -171,6 +169,44 @@ def test_application_for_native_app_user(_get_raw_content_mock, client):
     assert len(push_testing.requests) == 4
 
 
+@override_features(FORCE_PHONE_VALIDATION=False, IS_HONOR_STATEMENT_MANDATORY_TO_ACTIVATE_BENEFICIARY=False)
+@patch("pcapi.connectors.beneficiaries.jouve_backend._get_raw_content", return_value=JOUVE_CONTENT)
+def test_application_for_native_app_user_honor_statemlent_optional(_get_raw_content_mock):
+    # Given
+    users_api.create_account(
+        email=JOUVE_CONTENT["email"],
+        password="123456789",
+        birthdate=AGE18_ELIGIBLE_BIRTH_DATE,
+        is_email_validated=True,
+        send_activation_mail=False,
+        marketing_email_subscription=False,
+        phone_number="0607080900",
+    )
+
+    push_testing.reset_requests()
+
+    create_beneficiary_from_application.execute(APPLICATION_ID)
+
+    beneficiary = User.query.one()
+
+    # the fake Jouve backend returns a default phone number. Since a User
+    # alredy exists, the phone number should not be updated during the import process
+    assert beneficiary.phoneNumber == "0607080900"
+
+    deposit = Deposit.query.one()
+    assert deposit.amount == 300
+    assert deposit.source == "dossier jouve [35]"
+    assert deposit.userId == beneficiary.id
+
+    beneficiary_import = BeneficiaryImport.query.one()
+    assert beneficiary_import.currentStatus == ImportStatus.CREATED
+    assert beneficiary_import.applicationId == APPLICATION_ID
+    assert beneficiary_import.beneficiary == beneficiary
+    assert beneficiary.notificationSubscriptions == {"marketing_push": True, "marketing_email": False}
+
+    assert len(push_testing.requests) == 2
+
+
 @override_features(FORCE_PHONE_VALIDATION=False)
 @patch("pcapi.connectors.beneficiaries.jouve_backend._get_raw_content", return_value=JOUVE_CONTENT)
 def test_application_for_ex_underage_user(app):
@@ -200,7 +236,7 @@ def test_application_for_ex_underage_user(app):
     assert BeneficiaryImport.query.count() == 2
 
 
-@override_features(FORCE_PHONE_VALIDATION=False)
+@override_features(FORCE_PHONE_VALIDATION=False, IS_HONOR_STATEMENT_MANDATORY_TO_ACTIVATE_BENEFICIARY=True)
 @patch("pcapi.connectors.beneficiaries.jouve_backend._get_raw_content")
 def test_application_for_native_app_user_with_load_smoothing(_get_raw_content, client, app, db_session):
     # Given

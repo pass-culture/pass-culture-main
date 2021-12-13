@@ -484,7 +484,7 @@ class StepsToBecomeBeneficiaryTest:
         assert steps_to_become_beneficiary(user) == expected
         assert not user.has_beneficiary_role
 
-    @override_features(FORCE_PHONE_VALIDATION=True)
+    @override_features(FORCE_PHONE_VALIDATION=True, IS_HONOR_STATEMENT_MANDATORY_TO_ACTIVATE_BENEFICIARY=True)
     def test_missing_all(self):
         user = self.eligible_user(validate_phone=False)
 
@@ -492,6 +492,17 @@ class StepsToBecomeBeneficiaryTest:
             BeneficiaryValidationStep.PHONE_VALIDATION,
             BeneficiaryValidationStep.ID_CHECK,
             BeneficiaryValidationStep.HONOR_STATEMENT,
+        ]
+        assert steps_to_become_beneficiary(user) == expected
+        assert not user.has_beneficiary_role
+
+    @override_features(FORCE_PHONE_VALIDATION=True, IS_HONOR_STATEMENT_MANDATORY_TO_ACTIVATE_BENEFICIARY=False)
+    def test_missing_all_honor_statement_optional(self):
+        user = self.eligible_user(validate_phone=False)
+
+        expected = [
+            BeneficiaryValidationStep.PHONE_VALIDATION,
+            BeneficiaryValidationStep.ID_CHECK,
         ]
         assert steps_to_become_beneficiary(user) == expected
         assert not user.has_beneficiary_role
