@@ -1,6 +1,7 @@
 import { action } from '@storybook/addon-actions'
 import React from 'react'
 
+import { Mode } from 'core/OfferEducational'
 import { DEFAULT_EAC_STOCK_FORM_VALUES } from 'core/OfferEducationalStock/constants'
 import { OfferStatus } from 'custom_types/offer'
 
@@ -17,6 +18,7 @@ export default {
 const Template = () => (
   <OfferEducationalStock
     initialValues={DEFAULT_EAC_STOCK_FORM_VALUES}
+    mode={Mode.CREATION}
     offer={{
       id: '1234',
       status: OfferStatus.OFFER_STATUS_DRAFT,

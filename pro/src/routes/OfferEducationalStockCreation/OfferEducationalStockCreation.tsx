@@ -4,7 +4,7 @@ import { useParams } from 'react-router-dom'
 
 import useNotification from 'components/hooks/useNotification'
 import Spinner from 'components/layout/Spinner'
-import { getOfferAdapter } from 'core/OfferEducational'
+import { getOfferAdapter, Mode } from 'core/OfferEducational'
 import { DEFAULT_EAC_STOCK_FORM_VALUES } from 'core/OfferEducationalStock/constants'
 import { OfferEducationalStockFormValues } from 'core/OfferEducationalStock/types'
 import { Offer } from 'custom_types/offer'
@@ -61,6 +61,7 @@ const OfferEducationalStockCreation = (): JSX.Element => {
       {offer && isReady ? (
         <OfferEducationalStockScreen
           initialValues={DEFAULT_EAC_STOCK_FORM_VALUES}
+          mode={Mode.CREATION}
           offer={offer}
           onSubmit={handleSubmitStock}
         />
