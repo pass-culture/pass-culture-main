@@ -28,6 +28,7 @@ from pcapi.utils import human_ids
 from . import exceptions
 from . import models
 from . import utils
+from . import validation
 
 
 logger = logging.getLogger(__name__)
@@ -634,3 +635,14 @@ def _generate_wallets_file() -> pathlib.Path:
     query = user_queries.get_all_users_wallet_balances()
     row_formatter = lambda row: (row.user_id, row.current_balance, row.real_balance)
     return _write_csv("soldes_des_utilisateurs", header, rows=query, row_formatter=row_formatter)
+
+
+def edit_business_unit(business_unit: models.BusinessUnit, siret: str) -> None:
+    if business_unit.siret:
+        raise ValueError("Cannot edit a business unit that already has a SIRET.")
+
+    validation.check_business_unit_siret(business_unit, siret)
+
+    business_unit.siret = siret
+    db.session.add(business_unit)
+    db.session.commit()

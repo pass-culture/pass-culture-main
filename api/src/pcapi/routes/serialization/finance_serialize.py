@@ -4,6 +4,7 @@ from typing import Optional
 from pydantic import BaseModel
 
 import pcapi.core.finance.models as finance_models
+import pcapi.serialization.utils as serialization_utils
 
 
 class BusinessUnitResponseModel(BaseModel):
@@ -52,3 +53,11 @@ class InvoiceResponseModel(BaseModel):
 
 class InvoiceListResponseModel(BaseModel):
     __root__: list[InvoiceResponseModel]
+
+
+class BusinessUnitEditionBodyModel(BaseModel):
+    class Config:
+        alias_generator = serialization_utils.to_camel
+        extra = "forbid"
+
+    siret: str

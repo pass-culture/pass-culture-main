@@ -4,3 +4,7 @@ class FinanceError(Exception):
 
 class NonCancellablePricingError(FinanceError):
     pass
+
+
+class InvalidSiret(Exception):
+    pass
