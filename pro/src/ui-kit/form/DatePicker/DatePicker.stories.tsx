@@ -10,14 +10,22 @@ export default {
   component: DatePicker,
 }
 
-const Template: Story<{ label?: string }> = ({ label }) => (
+const Template: Story<{
+  disabled: boolean
+  smallLabel: boolean
+  label: string
+}> = props => (
   <Formik initialValues={{ date: '' }} onSubmit={action('onSubmit')}>
     {({ getFieldProps }) => {
-      return <DatePicker {...getFieldProps('date')} label={label} name="date" />
+      return <DatePicker {...getFieldProps('date')} {...props} />
     }}
   </Formik>
 )
 
 export const WithoutLabel = Template.bind({})
 export const WithLabel = Template.bind({})
-WithLabel.args = { label: 'Date' }
+WithLabel.args = {
+  disabled: false,
+  label: 'label',
+  smallLabel: false,
+}
