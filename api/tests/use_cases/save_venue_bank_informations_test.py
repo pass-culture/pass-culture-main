@@ -93,6 +93,7 @@ class SaveVenueBankInformationsTest:
             assert error.value.args == ("Venue name not found",)
 
     class SaveBankInformationTest:
+        @patch("pcapi.connectors.api_entreprises.check_siret_is_still_active")
         @patch("pcapi.connectors.api_demarches_simplifiees.get_application_details")
         class VenueWithSiretTest:
             def setup_method(self):
@@ -103,13 +104,14 @@ class SaveVenueBankInformationsTest:
 
             @pytest.mark.usefixtures("db_session")
             def test_when_dms_state_is_refused_should_create_the_correct_bank_information(
-                self, mock_application_details, app
+                self, mock_application_details, mock_check_siret_is_still_active, app
             ):
                 # Given
                 application_id = "8"
                 offerer = create_offerer(siren="793875030")
                 venue = create_venue(offerer, siret="79387503012345")
                 repository.save(venue)
+                mock_check_siret_is_still_active.return_value = True
                 mock_application_details.return_value = (
                     venue_demarche_simplifiee_application_detail_response_with_siret(
                         siret="79387503012345",
@@ -133,13 +135,14 @@ class SaveVenueBankInformationsTest:
 
             @pytest.mark.usefixtures("db_session")
             def test_when_dms_state_is_without_continuation_should_create_the_correct_bank_information(
-                self, mock_application_details, app
+                self, mock_application_details, mock_check_siret_is_still_active, app
             ):
                 # Given
                 application_id = "8"
                 offerer = create_offerer(siren="793875030")
                 venue = create_venue(offerer, siret="79387503012345")
                 repository.save(venue)
+                mock_check_siret_is_still_active.return_value = True
                 mock_application_details.return_value = (
                     venue_demarche_simplifiee_application_detail_response_with_siret(
                         siret="79387503012345",
@@ -163,13 +166,14 @@ class SaveVenueBankInformationsTest:
 
             @pytest.mark.usefixtures("db_session")
             def test_when_dms_state_is_closed_should_create_the_correct_bank_information(
-                self, mock_application_details, app
+                self, mock_application_details, mock_check_siret_is_still_active, app
             ):
                 # Given
                 application_id = "8"
                 offerer = create_offerer(siren="793875030")
                 venue = create_venue(offerer, siret="79387503012345")
                 repository.save(venue)
+                mock_check_siret_is_still_active.return_value = True
                 mock_application_details.return_value = (
                     venue_demarche_simplifiee_application_detail_response_with_siret(
                         siret="79387503012345",
@@ -195,13 +199,14 @@ class SaveVenueBankInformationsTest:
 
             @pytest.mark.usefixtures("db_session")
             def test_when_dms_state_is_received_should_create_the_correct_bank_information(
-                self, mock_application_details, app
+                self, mock_application_details, mock_check_siret_is_still_active, app
             ):
                 # Given
                 application_id = "8"
                 offerer = create_offerer(siren="793875030")
                 venue = create_venue(offerer, siret="79387503012345")
                 repository.save(venue)
+                mock_check_siret_is_still_active.return_value = True
                 mock_application_details.return_value = (
                     venue_demarche_simplifiee_application_detail_response_with_siret(
                         siret="79387503012345",
@@ -224,14 +229,42 @@ class SaveVenueBankInformationsTest:
                 assert bank_information.status == BankInformationStatus.DRAFT
 
             @pytest.mark.usefixtures("db_session")
-            def test_when_dms_state_is_initiated_should_create_the_correct_bank_information(
-                self, mock_application_details, app
+            def test_when_siret_is_not_valid_should_not_create_the_correct_bank_information(
+                self, mock_application_details, mock_check_siret_is_still_active, app
             ):
                 # Given
                 application_id = "8"
                 offerer = create_offerer(siren="793875030")
                 venue = create_venue(offerer, siret="79387503012345")
                 repository.save(venue)
+                mock_check_siret_is_still_active.return_value = False
+                mock_application_details.return_value = (
+                    venue_demarche_simplifiee_application_detail_response_with_siret(
+                        siret="79387503012345",
+                        bic="SOGEFRPP",
+                        iban="FR7630007000111234567890144",
+                        idx=8,
+                        state="received",
+                    )
+                )
+
+                # When
+                self.save_venue_bank_informations.execute(application_id)
+
+                # Then
+                bank_information_count = BankInformation.query.count()
+                assert bank_information_count == 0
+
+            @pytest.mark.usefixtures("db_session")
+            def test_when_dms_state_is_initiated_should_create_the_correct_bank_information(
+                self, mock_application_details, mock_check_siret_is_still_active, app
+            ):
+                # Given
+                application_id = "8"
+                offerer = create_offerer(siren="793875030")
+                venue = create_venue(offerer, siret="79387503012345")
+                repository.save(venue)
+                mock_check_siret_is_still_active.return_value = True
                 mock_application_details.return_value = (
                     venue_demarche_simplifiee_application_detail_response_with_siret(
                         siret="79387503012345",
@@ -255,10 +288,11 @@ class SaveVenueBankInformationsTest:
 
             @pytest.mark.usefixtures("db_session")
             def test_when_no_offerer_is_found_and_status_is_closed_should_raise_and_not_create_bank_information(
-                self, mock_application_details, app
+                self, mock_application_details, mock_check_siret_is_still_active, app
             ):
                 # Given
                 application_id = "8"
+                mock_check_siret_is_still_active.return_value = True
                 mock_application_details.return_value = (
                     venue_demarche_simplifiee_application_detail_response_with_siret(
                         siret="79387503012345",
@@ -280,10 +314,11 @@ class SaveVenueBankInformationsTest:
 
             @pytest.mark.usefixtures("db_session")
             def test_when_no_offerer_is_found_but_status_is_not_closed_should_not_create_bank_information_and_not_raise(
-                self, mock_application_details, app
+                self, mock_application_details, mock_check_siret_is_still_active, app
             ):
                 # Given
                 application_id = "8"
+                mock_check_siret_is_still_active.return_value = True
                 mock_application_details.return_value = (
                     venue_demarche_simplifiee_application_detail_response_with_siret(
                         siret="79387503012345",
@@ -303,12 +338,13 @@ class SaveVenueBankInformationsTest:
 
             @pytest.mark.usefixtures("db_session")
             def test_when_no_venue_is_found_and_status_is_closed_should_raise_and_not_create_bank_information(
-                self, mock_application_details, app
+                self, mock_application_details, mock_check_siret_is_still_active, app
             ):
                 # Given
                 application_id = "8"
                 offerer = create_offerer(siren="793875030")
                 repository.save(offerer)
+                mock_check_siret_is_still_active.return_value = True
                 mock_application_details.return_value = (
                     venue_demarche_simplifiee_application_detail_response_with_siret(
                         siret="79387503012345",
@@ -330,12 +366,13 @@ class SaveVenueBankInformationsTest:
 
             @pytest.mark.usefixtures("db_session")
             def test_when_no_venue_is_found_but_status_is_not_closed_should_not_create_bank_information_and_not_raise(
-                self, mock_application_details, app
+                self, mock_application_details, mock_check_siret_is_still_active, app
             ):
                 # Given
                 application_id = "8"
                 offerer = create_offerer(siren="793875030")
                 repository.save(offerer)
+                mock_check_siret_is_still_active.return_value = True
                 mock_application_details.return_value = (
                     venue_demarche_simplifiee_application_detail_response_with_siret(
                         siret="79387503012345",
@@ -353,6 +390,7 @@ class SaveVenueBankInformationsTest:
                 bank_information_count = BankInformation.query.count()
                 assert bank_information_count == 0
 
+        @patch("pcapi.connectors.api_entreprises.check_siret_is_still_active", return_value=True)
         @patch("pcapi.connectors.api_demarches_simplifiees.get_application_details")
         class VenueWitoutSiretTest:
             def setup_method(self):
@@ -612,6 +650,7 @@ class SaveVenueBankInformationsTest:
                 bank_information_count = BankInformation.query.count()
                 assert bank_information_count == 0
 
+    @patch("pcapi.connectors.api_entreprises.check_siret_is_still_active", return_value=True)
     @patch("pcapi.connectors.api_demarches_simplifiees.get_application_details")
     class UpdateBankInformationByApplicationIdTest:
         def setup_method(self):
@@ -720,6 +759,7 @@ class SaveVenueBankInformationsTest:
                 "Une entrée avec cet identifiant existe déjà dans notre base de données"
             ]
 
+    @patch("pcapi.connectors.api_entreprises.check_siret_is_still_active", return_value=True)
     @patch("pcapi.connectors.api_demarches_simplifiees.get_application_details")
     class UpdateBankInformationByVenueIdTest:
         def setup_method(self):
