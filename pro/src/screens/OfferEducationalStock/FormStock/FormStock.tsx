@@ -23,17 +23,20 @@ const EACOfferStockCreationType = (): JSX.Element => {
         label={EVENT_DATE_LABEL}
         minDateTime={new Date()}
         name="eventDate"
+        smallLabel
       />
       <TimePicker
         className={styles['form-field']}
         label={EVENT_TIME_LABEL}
         name="eventTime"
+        smallLabel
       />
       <TextInput
         className={styles['form-field']}
         label={NUMBER_OF_PLACES_LABEL}
         name="numberOfPlaces"
         placeholder="Ex : 30"
+        smallLabel
         type="number"
       />
       <TextInput
@@ -41,6 +44,7 @@ const EACOfferStockCreationType = (): JSX.Element => {
         label={TOTAL_PRICE_LABEL}
         name="totalPrice"
         placeholder="Ex : 200€"
+        smallLabel
         type="number"
       />
       <DatePicker
@@ -48,6 +52,7 @@ const EACOfferStockCreationType = (): JSX.Element => {
         label={BOOKING_LIMIT_DATETIME_LABEL}
         maxDateTime={new Date(values.eventDate)}
         name="bookingLimitDatetime"
+        smallLabel
       />
     </>
   )
