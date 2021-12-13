@@ -14,12 +14,17 @@ import {
 
 import styles from './FormStock.module.scss'
 
-const EACOfferStockCreationType = (): JSX.Element => {
+const EACOfferStockCreationType = ({
+  isEditable,
+}: {
+  isEditable: boolean
+}): JSX.Element => {
   const { values } = useFormikContext<OfferEducationalStockFormValues>()
   return (
     <>
       <DatePicker
         className={styles['form-field']}
+        disabled={!isEditable}
         label={EVENT_DATE_LABEL}
         minDateTime={new Date()}
         name="eventDate"
@@ -27,12 +32,14 @@ const EACOfferStockCreationType = (): JSX.Element => {
       />
       <TimePicker
         className={styles['form-field']}
+        disabled={!isEditable}
         label={EVENT_TIME_LABEL}
         name="eventTime"
         smallLabel
       />
       <TextInput
         className={styles['form-field']}
+        disabled={!isEditable}
         label={NUMBER_OF_PLACES_LABEL}
         name="numberOfPlaces"
         placeholder="Ex : 30"
@@ -41,6 +48,7 @@ const EACOfferStockCreationType = (): JSX.Element => {
       />
       <TextInput
         className={styles['form-field']}
+        disabled={!isEditable}
         label={TOTAL_PRICE_LABEL}
         name="totalPrice"
         placeholder="Ex : 200€"
@@ -49,6 +57,7 @@ const EACOfferStockCreationType = (): JSX.Element => {
       />
       <DatePicker
         className={styles['form-field']}
+        disabled={!isEditable}
         label={BOOKING_LIMIT_DATETIME_LABEL}
         maxDateTime={new Date(values.eventDate)}
         name="bookingLimitDatetime"
