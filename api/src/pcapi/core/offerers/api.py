@@ -11,6 +11,7 @@ from pcapi.connectors.api_adage import AdageException
 from pcapi.connectors.api_adage import CulturalPartnerNotFoundException
 from pcapi.core import object_storage
 from pcapi.core import search
+import pcapi.core.finance.models as finance_models
 from pcapi.core.offerers.exceptions import MissingOffererIdQueryParameter
 from pcapi.core.offerers.models import ApiKey
 from pcapi.core.offerers.models import Offerer
@@ -79,6 +80,15 @@ def update_venue(
     if not modifications:
         return venue
 
+    business_unit_id = modifications.get("businessUnitId")
+    if business_unit_id and venue.businessUnit:
+        if venue.businessUnitId != business_unit_id and venue.isBusinessUnitMainVenue:
+            delete_business_unit(venue.businessUnit)
+            logger.info(
+                "Change Venue.businessUnitId where Venue.siret and BusinessUnit.siret are equal",
+                extra={"venue_id": venue.id, "business_unit_id": business_unit_id},
+            )
+
     venue.populate_from_dict(modifications)
 
     # TODO: Remove this step when a new stable venue type system is setup
@@ -92,6 +102,17 @@ def update_venue(
         search.async_index_offers_of_venue_ids([venue.id])
 
     return venue
+
+
+def delete_business_unit(business_unit: finance_models.BusinessUnit) -> None:
+    Venue.query.filter(Venue.businessUnitId == business_unit.id).update(
+        {"businessUnitId": None}, synchronize_session=False
+    )
+
+    business_unit.status = finance_models.BusinessUnitStatus.DELETED
+    db.session.add(business_unit)
+    db.session.commit()
+    logger.info("Set BusinessUnit.status as DELETED", extra={"business_unit_id": business_unit.id})
 
 
 def upsert_venue_contact(venue: Venue, contact_data: venues_serialize.VenueContactModel) -> Venue:
