@@ -240,6 +240,10 @@ export const createEducationalStock = stock => {
   return client.post(`/stocks/educational`, stock)
 }
 
+export const editEducationalStock = (stockId, stock) => {
+  return client.patch(`/stocks/educational/${stockId}`, stock)
+}
+
 //
 // thumbnail
 //
