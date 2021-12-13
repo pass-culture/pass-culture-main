@@ -204,7 +204,7 @@ def _price_booking(booking: bookings_models.Booking) -> models.Pricing:
     # `get_reimbursement_rule` expects euros. Clean that once the
     # old payment code has been removed and the function accepts
     # eurocents instead.
-    rule = reimbursement.get_reimbursement_rule(booking, rule_finder, new_revenue / 100)
+    rule = reimbursement.get_reimbursement_rule(booking, rule_finder, utils.to_euros(new_revenue))
 
     amount = -utils.to_eurocents(rule.apply(booking))  # outgoing, thus negative
     # `Pricing.amount` equals the sum of the amount of all lines.
@@ -610,7 +610,7 @@ def _payment_details_row_formatter(sql_row):
     reimbursement_rate = decimal.Decimal(-sql_row.pricing_amount / booking_total_amount / 100).quantize(
         decimal.Decimal("0.01")
     )
-    reimbursed_amount = decimal.Decimal(-sql_row.pricing_amount / 100).quantize(decimal.Decimal("0.01"))
+    reimbursed_amount = utils.to_euros(-sql_row.pricing_amount)
     return (
         human_ids.humanize(sql_row.business_unit_venue_id),
         sql_row.business_unit_siret,
