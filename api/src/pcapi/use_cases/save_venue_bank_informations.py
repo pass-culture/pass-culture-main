@@ -1,6 +1,7 @@
 from typing import Optional
 
 from pcapi import settings
+from pcapi.connectors import api_entreprises
 from pcapi.core.offerers.models import Offerer
 from pcapi.domain.bank_information import CannotRegisterBankInformation
 from pcapi.domain.bank_information import check_new_bank_information_has_a_more_advanced_status
@@ -101,6 +102,8 @@ class SaveVenueBankInformations:
             venue = self.venue_repository.find_by_siret(siret)
             if not venue:
                 raise CannotRegisterBankInformation("Venue not found")
+            if not api_entreprises.check_siret_is_still_active(siret):
+                raise CannotRegisterBankInformation("SIRET is no longer active")
         else:
             name = application_details.venue_name
             venues = self.venue_repository.find_by_name(name, offerer.id)
