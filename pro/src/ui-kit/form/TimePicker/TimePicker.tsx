@@ -1,20 +1,19 @@
-import cn from 'classnames'
 import fr from 'date-fns/locale/fr'
 import { useField } from 'formik'
 import React from 'react'
 import ReactDatePicker, { registerLocale } from 'react-datepicker'
 
-import FieldError from '../FieldError'
+import { BaseInput, FieldLayout } from '../shared'
 
-import styles from './TimePicker.module.scss'
 registerLocale('fr', fr)
 
 interface ITimePickerProps {
   name: string
   className?: string
   disabled?: boolean
-  label?: string
+  label: string
   dateTime?: Date
+  smallLabel?: boolean
 }
 
 const TimePicker = ({
@@ -22,24 +21,22 @@ const TimePicker = ({
   className,
   disabled,
   label,
+  smallLabel,
 }: ITimePickerProps): JSX.Element => {
   const [field, meta, helpers] = useField({ name, type: 'text' })
 
   return (
-    <div
-      className={cn(styles['time-picker'], className, {
-        [styles['has-error']]: meta.touched && !!meta.error,
-      })}
+    <FieldLayout
+      className={className}
+      error={meta.error}
+      label={label}
+      name={name}
+      showError={meta.touched && !!meta.error}
+      smallLabel={smallLabel}
     >
-      <label
-        className={styles['time-picker-label']}
-        htmlFor={`time-picker-${name}`}
-      >
-        {label}
-      </label>
       <ReactDatePicker
         {...field}
-        className={styles['time-picker-input']}
+        customInput={<BaseInput hasError={meta.touched && !!meta.error} />}
         dateFormat="HH:mm"
         disabled={disabled}
         dropdownMode="scroll"
@@ -56,9 +53,7 @@ const TimePicker = ({
         timeFormat="HH:mm"
         timeIntervals={15}
       />
-
-      {meta.touched && !!meta.error && <FieldError>{meta.error}</FieldError>}
-    </div>
+    </FieldLayout>
   )
 }
 

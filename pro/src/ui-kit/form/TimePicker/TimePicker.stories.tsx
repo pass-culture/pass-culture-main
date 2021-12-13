@@ -10,7 +10,7 @@ export default {
   component: TimePicker,
 }
 
-const Template: Story<{ label?: string }> = ({ label }) => (
+const Template: Story<{ label: string }> = ({ label }) => (
   <Formik initialValues={{ time: '' }} onSubmit={action('onSubmit')}>
     {({ getFieldProps }) => {
       return <TimePicker {...getFieldProps('time')} label={label} name="time" />
