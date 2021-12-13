@@ -5,8 +5,8 @@ import { ReactComponent as Down } from './assets/down.svg'
 import styles from './Select.module.scss'
 
 type Option = {
-  value: string
   label: string
+  value: string
 }
 
 interface ISelectInputProps {
@@ -18,6 +18,7 @@ interface ISelectInputProps {
 
 const SelectInput = ({
   hasError = false,
+  name,
   disabled,
   options,
   ...field
@@ -28,6 +29,7 @@ const SelectInput = ({
         [styles['has-error']]: hasError,
       })}
       disabled={disabled}
+      id={name}
       {...field}
     >
       {options.map(option => (

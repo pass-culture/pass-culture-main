@@ -49,6 +49,7 @@ const TextArea = ({
           [styles['has-error']]: meta.touched && !!meta.error,
         })}
         disabled={disabled}
+        id={name}
         maxLength={maxLength}
         placeholder={placeholder}
         {...field}
