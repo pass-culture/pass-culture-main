@@ -4,7 +4,7 @@ import { useParams } from 'react-router-dom'
 
 import useNotification from 'components/hooks/useNotification'
 import Spinner from 'components/layout/Spinner'
-import { getOfferAdapter } from 'core/OfferEducational'
+import { DEFAULT_EAC_STOCK_FORM_VALUES } from 'core/OfferEducationalStock/constants'
 import { OfferEducationalStockFormValues } from 'core/OfferEducationalStock/types'
 import { Offer } from 'custom_types/offer'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
@@ -19,14 +19,6 @@ const OfferEducationalStockCreation = (): JSX.Element => {
   const { offerId } = useParams<{ offerId: string }>()
   const notify = useNotification()
   const history = useHistory()
-
-  const initialValues: OfferEducationalStockFormValues = {
-    eventDate: '',
-    eventTime: '',
-    numberOfPlaces: '',
-    totalPrice: '',
-    bookingLimitDatetime: '',
-  }
 
   const handleSubmitStock = async (
     offer: Offer,
@@ -67,7 +59,7 @@ const OfferEducationalStockCreation = (): JSX.Element => {
     >
       {offer && isReady ? (
         <OfferEducationalStockScreen
-          initialValues={initialValues}
+      initialValues={DEFAULT_EAC_STOCK_FORM_VALUES}
           offer={offer}
           onSubmit={handleSubmitStock}
         />
