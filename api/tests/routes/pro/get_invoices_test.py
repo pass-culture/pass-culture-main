@@ -13,9 +13,11 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 def test_get_invoices_query(client):
     business_unit1 = finance_factories.BusinessUnitFactory()
-    invoice1 = finance_factories.InvoiceFactory(businessUnit=business_unit1, amount=1234)
+    dt1 = datetime.datetime(2021, 1, 1)
+    invoice1 = finance_factories.InvoiceFactory(businessUnit=business_unit1, date=dt1)
     business_unit2 = finance_factories.BusinessUnitFactory()
-    invoice2 = finance_factories.InvoiceFactory(businessUnit=business_unit2)
+    dt2 = dt1 + datetime.timedelta(days=15)
+    invoice2 = finance_factories.InvoiceFactory(businessUnit=business_unit2, date=dt2, amount=1234)
     venue1 = offerers_factories.VenueFactory(businessUnit=business_unit1)
     offerer = venue1.managingOfferer
     _venue2 = offerers_factories.VenueFactory(
@@ -35,13 +37,13 @@ def test_get_invoices_query(client):
     invoices = response.json
     assert len(invoices) == 2
     assert invoices[0] == {
-        "reference": invoice1.reference,
-        "date": invoice1.date.date().isoformat(),
+        "reference": invoice2.reference,
+        "date": invoice2.date.date().isoformat(),
         "amount": 12.34,
-        "url": invoice1.url,
-        "businessUnitName": business_unit1.name,
+        "url": invoice2.url,
+        "businessUnitName": business_unit2.name,
     }
-    assert invoices[1]["reference"] == invoice2.reference
+    assert invoices[1]["reference"] == invoice1.reference
 
 
 def test_get_invoices_query_specify_business_unit(client):
