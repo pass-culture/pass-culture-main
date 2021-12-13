@@ -1,0 +1,24 @@
+.base-input {
+  @include input-theme();  
+
+  &::-webkit-inner-spin-button,
+  &::-webkit-calendar-picker-indicator{
+    display: none;
+  }
+  
+  &.has-error {
+    @include input-theme-error();
+  }
+
+  &-with-right-icon {
+    padding-right: rem(36px);
+  }
+
+  &-right-icon {
+    @include input-icon-wrapper(16px)
+  }
+
+  &-wrapper {
+    position: relative;
+  }
+}

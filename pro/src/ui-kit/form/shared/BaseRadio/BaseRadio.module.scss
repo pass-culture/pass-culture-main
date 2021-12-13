@@ -1,0 +1,62 @@
+.base-radio {
+  display: inline-flex;
+  cursor: pointer;
+  align-items: center;
+
+  &-label {
+    line-height: 1em;
+
+    :disabled + & {
+      color: $input-text-color-disabled;
+      cursor: default;
+    }
+  }
+
+  &-input {
+    -webkit-appearance: none;
+    appearance: none;
+    border: 2px solid $input-border-color;
+    border-radius: 50%;
+    box-shadow: inset 0 0 0 10px $white;
+    background-color: $white;
+   
+    transition: 
+      border 150ms ease,
+      background 150ms ease,
+      box-shadow 150ms ease;
+
+    &:hover,
+    &:focus {
+      border-color: $input-border-color-focus;
+    }
+
+    &:checked {
+      box-shadow: inset 0 0 0 2px $white;
+    }
+
+    &:hover:checked,
+    &:focus:checked {
+      box-shadow: inset 0 0 0 2px $white;
+      background-color: $input-border-color-focus;
+    }
+
+    &.has-error {
+      border-color: $input-border-color-error;
+    }
+
+    &:checked.has-error {
+      box-shadow: inset 0 0 0 2px $white;
+      background-color: $input-border-color-error;
+    }
+
+    &:disabled  {
+      cursor: default;
+      border-color: $input-border-color-disabled;
+    }
+
+    &:checked:disabled  {
+      box-shadow: inset 0 0 0 2px $white;
+      background-color: $input-border-color-disabled;
+    }
+  }
+}
