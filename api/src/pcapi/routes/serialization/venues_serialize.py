@@ -162,6 +162,7 @@ class GetVenueResponseModel(BaseModel):
     iban: Optional[str]
     id: str
     idAtProviders: Optional[str]
+    isBusinessUnitMainVenue: Optional[bool]
     isValidated: bool
     isVirtual: bool
     lastProviderId: Optional[str]

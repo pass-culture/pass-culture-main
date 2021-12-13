@@ -260,6 +260,10 @@ class Venue(PcObject, Model, HasThumbMixin, HasAddressMixin, ProvidableMixin, Ne
         n_approved_offers += len([offer for offer in self.offers if offer.validation == OfferValidationStatus.APPROVED])
         return n_approved_offers
 
+    @property
+    def isBusinessUnitMainVenue(self) -> bool:
+        return self.businessUnit and self.siret == self.businessUnit.siret
+
     @hybrid_property
     def timezone(self) -> str:
         if self.departementCode is None:

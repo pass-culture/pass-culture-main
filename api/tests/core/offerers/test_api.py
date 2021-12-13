@@ -4,6 +4,8 @@ from unittest.mock import patch
 from freezegun import freeze_time
 import pytest
 
+from pcapi.core.finance import factories as finance_factories
+from pcapi.core.finance import models as finance_models
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
@@ -210,6 +212,33 @@ class EditVenueTest:
         assert venue.contact
         assert venue.contact.phone_number == contact_data.phone_number
         assert venue.contact.email == contact_data.email
+
+    def test_update_venue_holder_business_unit(self):
+        offerer = offers_factories.OffererFactory(siren="000000000")
+        venue = offers_factories.VenueFactory(
+            siret="00000000000011", businessUnit__siret="00000000000011", managingOfferer=offerer
+        )
+        deleted_business_unit = venue.businessUnit
+        offers_factories.VenueFactory(
+            siret="00000000000012", businessUnit=deleted_business_unit, managingOfferer=offerer
+        )
+        offers_factories.VenueFactory(
+            siret="00000000000013", businessUnit=deleted_business_unit, managingOfferer=offerer
+        )
+        offers_factories.VenueFactory(
+            siret="00000000000014", businessUnit=deleted_business_unit, managingOfferer=offerer
+        )
+        offers_factories.VenueFactory(siret="00000000000015", managingOfferer=offerer)
+
+        business_unit = finance_factories.BusinessUnitFactory(siret="00000000000013")
+
+        venue_data = {"businessUnitId": business_unit.id}
+
+        offerers_api.update_venue(venue, **venue_data)
+
+        assert venue.businessUnitId == business_unit.id
+        assert deleted_business_unit.status == finance_models.BusinessUnitStatus.DELETED
+        assert offerers_models.Venue.query.filter(offerers_models.Venue.businessUnitId.is_(None)).count() == 3
 
 
 class EditVenueContactTest:

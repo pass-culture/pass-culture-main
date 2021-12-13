@@ -39,6 +39,7 @@ class Returns200Test:
             "iban": bank_information.iban,
             "id": humanize(venue.id),
             "idAtProviders": venue.idAtProviders,
+            "isBusinessUnitMainVenue": True,
             "isValidated": venue.isValidated,
             "isVirtual": venue.isVirtual,
             "latitude": float(venue.latitude),
