@@ -14,7 +14,7 @@ const FormAccessibility = (): JSX.Element => {
       description="Cette offre est accessible au public en situation de handicap :"
       title="Accessibilité"
     >
-      <FormLayout.Row>
+      <FormLayout.Row lgSpaceAfter>
         <CheckboxGroup group={accessibilityOptions} groupName="accessibility" />
       </FormLayout.Row>
     </FormLayout.Section>
