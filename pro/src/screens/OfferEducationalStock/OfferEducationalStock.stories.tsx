@@ -1,6 +1,7 @@
 import { action } from '@storybook/addon-actions'
 import React from 'react'
 
+import { DEFAULT_EAC_STOCK_FORM_VALUES } from 'core/OfferEducationalStock/constants'
 import { OfferStatus } from 'custom_types/offer'
 
 import { withPageTemplate } from '../../stories/decorators/withPageTemplate'
@@ -15,13 +16,7 @@ export default {
 
 const Template = () => (
   <OfferEducationalStock
-    initialValues={{
-      eventDate: '',
-      eventTime: '',
-      numberOfPlaces: '',
-      totalPrice: '',
-      bookingLimitDatetime: '',
-    }}
+    initialValues={DEFAULT_EAC_STOCK_FORM_VALUES}
     offer={{
       id: '1234',
       status: OfferStatus.OFFER_STATUS_DRAFT,
