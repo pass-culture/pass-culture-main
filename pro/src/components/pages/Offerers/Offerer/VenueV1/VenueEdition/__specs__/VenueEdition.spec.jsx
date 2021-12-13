@@ -88,6 +88,7 @@ describe('test page : VenueEdition', () => {
         dateModifiedAtLastProvider: '2021-09-13T14:59:21.661955Z',
         departementCode: '75',
         id: 'AQ',
+        isBusinessUnitMainVenue: false,
         isValidated: true,
         isVirtual: false,
         latitude: 48.91683,
@@ -476,6 +477,85 @@ describe('test page : VenueEdition', () => {
         expect(props.handleSubmitRequest).toHaveBeenCalledWith(
           expect.objectContaining({ formValues: expectedRequestParams })
         )
+      })
+
+      it('should display confirmation dialog when edit business unit main venue', async () => {
+        // Given
+        props.venue.isBusinessUnitMainVenue = true
+
+        await renderVenueEdition({ props, storeOverrides })
+
+        // When
+        await act(async () =>
+          fireEvent.change(
+            await screen.findByLabelText(
+              'Coordonnées bancaires pour vos remboursements :'
+            ),
+            { target: { value: 21 } }
+          )
+        )
+
+        fireEvent.click(screen.queryByRole('button', { name: 'Valider' }))
+
+        // Then
+        expect(props.handleSubmitRequest).not.toHaveBeenCalled()
+
+        expect(
+          screen.getByText(
+            'Vous avez modifié les coordonnées bancaires associées à ce lieu'
+          )
+        ).toBeInTheDocument()
+        fireEvent.click(screen.getByRole('button', { name: 'Continuer' }))
+        expect(props.handleSubmitRequest).toHaveBeenCalledTimes(1)
+      })
+
+      it('should not submit data when cancel edition of business unit main venue', async () => {
+        // Given
+        props.venue.isBusinessUnitMainVenue = true
+
+        await renderVenueEdition({ props, storeOverrides })
+
+        // When
+        await act(async () =>
+          fireEvent.change(
+            await screen.findByLabelText(
+              'Coordonnées bancaires pour vos remboursements :'
+            ),
+            { target: { value: 21 } }
+          )
+        )
+
+        fireEvent.click(screen.queryByRole('button', { name: 'Valider' }))
+        expect(
+          screen.getByText(
+            'Vous avez modifié les coordonnées bancaires associées à ce lieu'
+          )
+        ).toBeInTheDocument()
+
+        fireEvent.click(screen.getByRole('button', { name: 'Annuler' }))
+
+        // Then
+        expect(props.handleSubmitRequest).not.toHaveBeenCalled()
+      })
+
+      it('should not display confirmation dialog when edit business unit not main venue', async () => {
+        // Given
+        await renderVenueEdition({ props, storeOverrides })
+
+        // When
+        await act(async () =>
+          fireEvent.change(
+            await screen.findByLabelText(
+              'Coordonnées bancaires pour vos remboursements :'
+            ),
+            { target: { value: 21 } }
+          )
+        )
+
+        fireEvent.click(screen.queryByRole('button', { name: 'Valider' }))
+
+        // Then
+        expect(props.handleSubmitRequest).toHaveBeenCalledTimes(1)
       })
     })
   })

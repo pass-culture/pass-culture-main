@@ -6,7 +6,7 @@
  */
 
 import PropTypes from 'prop-types'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { Form } from 'react-final-form'
 import { getCanSubmit, parseSubmitErrors } from 'react-final-form-utils'
 import { Link, NavLink } from 'react-router-dom'
@@ -35,6 +35,7 @@ import WithdrawalDetailsFields from '../fields/WithdrawalDetailsFields/Withdrawa
 import VenueLabel from '../ValueObjects/VenueLabel'
 import VenueType from '../ValueObjects/VenueType'
 
+import DeleteBusinessUnitConfirmationDialog from './DeleteBusinessUnitConfirmationDialog/DeleteBusinessUnitConfirmationDialog'
 import VenueProvidersManager from './VenueProvidersManager'
 
 const VenueEdition = ({
@@ -54,7 +55,10 @@ const VenueEdition = ({
   venueTypes,
   withdrawalDetailActive,
 }) => {
+  // let submit
   const [isRequestPending, setIsRequestPending] = useState(false)
+  const [showConfirmationDialog, setShowConfirmationDialog] = useState(false)
+  const deleteBusinessUnitConfirmed = useRef(false)
 
   const isBankInformationWithSiretActive = useActiveFeature(
     'ENFORCE_BANK_INFORMATION_WITH_SIRET'
@@ -64,6 +68,12 @@ const VenueEdition = ({
   useEffect(() => handleInitialRequest(), [handleInitialRequest])
 
   const pageNotFoundRedirect = () => history.push('/404')
+
+  const onConfirmDeleteBusinessUnit = submit => {
+    deleteBusinessUnitConfirmed.current = true
+    setShowConfirmationDialog(false)
+    submit()
+  }
 
   const handleFormFail = formResolver => (_state, action) => {
     const { payload } = action
@@ -85,6 +95,15 @@ const VenueEdition = ({
     }
 
   const handleOnFormSubmit = formValues => {
+    if (
+      !deleteBusinessUnitConfirmed.current &&
+      venue.isBusinessUnitMainVenue &&
+      formValues.businessUnitId != venue.businessUnitId
+    ) {
+      setShowConfirmationDialog(true)
+      return
+    }
+    deleteBusinessUnitConfirmed.current = false
     setIsRequestPending(true)
     const hasDelayedUpdates = [
       formValues.isAccessibilityAppliedOnAllOffers,
@@ -112,6 +131,7 @@ const VenueEdition = ({
     } = venue || {}
     const canSubmit = getCanSubmit(formProps)
     const { form, handleSubmit, values } = formProps
+    // submit = handleSubmit
     const {
       bookingEmail,
       isLocationFrozen: formIsLocationFrozen,
@@ -128,84 +148,94 @@ const VenueEdition = ({
       !readOnly && siretValidOnModification
 
     return (
-      <form
-        data-testid="venue-edition-form"
-        name="venue"
-        onSubmit={handleSubmit}
-      >
-        <IdentifierFields
-          fieldReadOnlyBecauseFrozenFormSiret={
-            fieldReadOnlyBecauseFrozenFormSiret
-          }
-          formSiret={formSiret}
-          initialSiret={initialSiret}
-          isDirtyFieldBookingEmail={isDirtyFieldBookingEmail}
-          readOnly={readOnly || initialIsVirtual}
-          venueIsVirtual={initialIsVirtual}
-          venueLabelId={venueLabelId}
-          venueLabels={venueLabels}
-          venueTypeId={venueTypeId}
-          venueTypes={venueTypes}
-        />
-        {withdrawalDetailActive && !initialIsVirtual && (
-          <WithdrawalDetailsFields
-            initialWithdrawalDetails={initialWithdrawalDetails}
-            readOnly={readOnly}
+      <>
+        <form
+          data-testid="venue-edition-form"
+          name="venue"
+          onSubmit={handleSubmit}
+        >
+          <IdentifierFields
+            fieldReadOnlyBecauseFrozenFormSiret={
+              fieldReadOnlyBecauseFrozenFormSiret
+            }
+            formSiret={formSiret}
+            initialSiret={initialSiret}
+            isDirtyFieldBookingEmail={isDirtyFieldBookingEmail}
+            readOnly={readOnly || initialIsVirtual}
+            venueIsVirtual={initialIsVirtual}
+            venueLabelId={venueLabelId}
+            venueLabels={venueLabels}
+            venueTypeId={venueTypeId}
+            venueTypes={venueTypes}
           />
-        )}
-        {isBankInformationWithSiretActive ? (
-          <BusinessUnitFields
-            offerer={offerer}
-            readOnly={readOnly}
-            venue={venue}
-          />
-        ) : (
-          <BankInformation offerer={offerer} venue={venue} />
-        )}
-        {!initialIsVirtual && (
-          <>
-            <LocationFields
-              fieldReadOnlyBecauseFrozenFormSiret={
-                fieldReadOnlyBecauseFrozenFormSiret
-              }
-              form={form}
-              formIsLocationFrozen={formIsLocationFrozen}
-              formLatitude={
-                formLatitude === '' ? FRANCE_POSITION.latitude : formLatitude
-              }
-              formLongitude={
-                formLongitude === '' ? FRANCE_POSITION.longitude : formLongitude
-              }
+          {withdrawalDetailActive && !initialIsVirtual && (
+            <WithdrawalDetailsFields
+              initialWithdrawalDetails={initialWithdrawalDetails}
               readOnly={readOnly}
             />
-            <AccessibilityFields
-              formValues={values}
+          )}
+          {isBankInformationWithSiretActive ? (
+            <BusinessUnitFields
+              offerer={offerer}
               readOnly={readOnly}
               venue={venue}
             />
-            <ContactInfosFields readOnly={readOnly} />
-          </>
+          ) : (
+            <BankInformation offerer={offerer} venue={venue} />
+          )}
+          {!initialIsVirtual && (
+            <>
+              <LocationFields
+                fieldReadOnlyBecauseFrozenFormSiret={
+                  fieldReadOnlyBecauseFrozenFormSiret
+                }
+                form={form}
+                formIsLocationFrozen={formIsLocationFrozen}
+                formLatitude={
+                  formLatitude === '' ? FRANCE_POSITION.latitude : formLatitude
+                }
+                formLongitude={
+                  formLongitude === ''
+                    ? FRANCE_POSITION.longitude
+                    : formLongitude
+                }
+                readOnly={readOnly}
+              />
+              <AccessibilityFields
+                formValues={values}
+                readOnly={readOnly}
+                venue={venue}
+              />
+              <ContactInfosFields readOnly={readOnly} />
+            </>
+          )}
+          <hr />
+          <div
+            className="field is-grouped is-grouped-centered"
+            style={{ justifyContent: 'space-between' }}
+          >
+            <ModifyOrCancelControl
+              form={form}
+              history={history}
+              offererId={offererId}
+              readOnly={readOnly}
+              venueId={venueId}
+            />
+            <ReturnOrSubmitControl
+              canSubmit={canSubmit}
+              isRequestPending={isRequestPending}
+              offererId={offererId}
+              readOnly={readOnly}
+            />
+          </div>
+        </form>
+        {showConfirmationDialog && (
+          <DeleteBusinessUnitConfirmationDialog
+            onCancel={() => setShowConfirmationDialog(false)}
+            onConfirm={() => onConfirmDeleteBusinessUnit(handleSubmit)}
+          />
         )}
-        <hr />
-        <div
-          className="field is-grouped is-grouped-centered"
-          style={{ justifyContent: 'space-between' }}
-        >
-          <ModifyOrCancelControl
-            form={form}
-            history={history}
-            offererId={offererId}
-            readOnly={readOnly}
-            venueId={venueId}
-          />
-          <ReturnOrSubmitControl
-            canSubmit={canSubmit}
-            isRequestPending={isRequestPending}
-            offererId={offererId}
-            readOnly={readOnly}
-          />
-        </div>
-      </form>
+      </>
     )
   }
 
@@ -246,7 +276,9 @@ const VenueEdition = ({
         initialValues={initialValues}
         name="venue"
         onSubmit={handleOnFormSubmit}
-        render={onHandleRender}
+        render={formProps => {
+          return onHandleRender(formProps)
+        }}
       />
     )
   }
