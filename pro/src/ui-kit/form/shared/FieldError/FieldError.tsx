@@ -1,8 +1,7 @@
 import cn from 'classnames'
 import React from 'react'
 
-import Icon from 'components/layout/Icon'
-
+import { ReactComponent as ErrorIcon } from './assets/error-icon.svg'
 import styles from './FieldError.module.scss'
 
 interface IFieldErrorProps {
@@ -12,8 +11,8 @@ interface IFieldErrorProps {
 
 const FieldError = ({ children, className }: IFieldErrorProps): JSX.Element => (
   <div className={cn(styles['field-error'], className)}>
-    <Icon alt={null} png={null} svg="ico-notification-error-red" />
-    <span>{children}</span>
+    <ErrorIcon />
+    <span className={styles['field-error-text']}>{children}</span>
   </div>
 )
 
