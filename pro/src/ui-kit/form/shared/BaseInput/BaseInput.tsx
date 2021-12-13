@@ -5,8 +5,8 @@ import styles from './BaseInput.module.scss'
 
 interface IBaseInputProps
   extends Partial<React.InputHTMLAttributes<HTMLInputElement>> {
-  hasError?: boolean
   className?: string
+  hasError?: boolean
   RightIcon?: React.FunctionComponent<
     React.SVGProps<SVGSVGElement> & {
       title?: string | undefined
@@ -15,9 +15,10 @@ interface IBaseInputProps
 }
 
 const BaseInput = ({
-  hasError,
-  RightIcon,
   className,
+  hasError,
+  name,
+  RightIcon,
   ...props
 }: IBaseInputProps): JSX.Element =>
   !RightIcon ? (
@@ -30,6 +31,7 @@ const BaseInput = ({
         },
         className
       )}
+      id={name}
     />
   ) : (
     <div className={styles['base-input-wrapper']}>

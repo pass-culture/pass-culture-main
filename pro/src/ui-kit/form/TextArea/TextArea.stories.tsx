@@ -11,7 +11,7 @@ export default {
   component: TextArea,
 }
 
-const Template: Story<{ label?: string }> = ({ label }) => (
+const Template: Story<{ label: string }> = ({ label }) => (
   <Formik initialValues={{ description: '' }} onSubmit={action('onSubmit')}>
     {({ getFieldProps }) => {
       return (
