@@ -199,6 +199,10 @@ def _silence_noisy_loggers():
     logging.getLogger("rq.worker").setLevel(logging.CRITICAL)
 
 
+def log_for_supervision(logger: logging.Logger, log_level: int, log_message: str, *args, **kwargs) -> None:
+    logger.log(log_level, log_message, *args, **kwargs)
+
+
 # Do NOT use this logger outside of this module. It is used only to
 # report errors from this module.
 _internal_logger = None
