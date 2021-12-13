@@ -4,6 +4,7 @@ export { default as Select } from './Select'
 export { default as RadioButton } from './RadioButton'
 export { default as Checkbox } from './Checkbox'
 export { default as CheckboxGroup } from './CheckboxGroup'
-export { default as FieldError } from './FieldError'
 export { default as DatePicker } from './DatePicker'
 export { default as TimePicker } from './TimePicker'
+
+export * as shared from './shared'
