@@ -98,6 +98,8 @@ class Stock(PcObject, Model, ProvidableMixin, SoftDeletableMixin):
 
     numberOfTickets = Column(Integer, nullable=True)
 
+    educationalPriceDetail = Column(Text, nullable=True)
+
     @property
     def isBookable(self):
         return not self.isExpired and self.offer.isReleased and not self.isSoldOut
