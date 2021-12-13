@@ -54,6 +54,12 @@
   font-weight: 500;
 }
 
+// seems future captions will be smaller
+@mixin small-caption() {
+  font-size: rem(12px);
+  font-weight: 500;
+}
+
 @mixin preview-text() {
   font-size: rem(12px);
   font-weight: 400;
@@ -72,6 +78,12 @@
 @mixin gabarit() {
   font-size: rem(18px);
   font-style: normal;
+  font-weight: 300;
+}
+
+@mixin placeholder() {
+  font-size: rem(15px);
+  font-style: italic;
   font-weight: 300;
 }
 
