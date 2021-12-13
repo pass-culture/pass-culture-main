@@ -45,6 +45,7 @@ def dms_webhook_update_application_status(form: dms_validation.DMSWebhookRequest
                 settings.DMS_INSTRUCTOR_ID,
                 subscription_messages.DMS_ERROR_MESSAGE_USER_NOT_FOUND,
             )
+
         logger.info(
             "User not found for application %d procedure %d email %s",
             raw_data["dossier"]["number"],
@@ -72,6 +73,10 @@ def dms_webhook_update_application_status(form: dms_validation.DMSWebhookRequest
             },
         )
     except import_dms_users.DMSParsingError as parsing_error:
+        subscription_messages.on_dms_application_parsing_errors_but_updatables_values(
+            user, list(parsing_error.errors.keys())
+        )
+
         if raw_data["dossier"]["state"] == api_demarches_simplifiees.GraphQLApplicationStates.draft.value:
             import_dms_users.notify_parsing_exception(parsing_error.errors, raw_data["dossier"]["id"], client)
 
