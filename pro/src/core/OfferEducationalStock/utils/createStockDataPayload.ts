@@ -4,7 +4,7 @@ import { OfferEducationalStockFormValues } from 'core/OfferEducationalStock/type
 import { toISOStringWithoutMilliseconds } from 'utils/date'
 import { getUtcDateTimeFromLocalDepartement } from 'utils/timezone'
 
-import { StockCreationPayload } from '../../types'
+import { StockPayload } from '../../../routes/OfferEducationalStockCreation/types'
 
 const buildBeginningDatetime = (
   beginningDateIsoString: Date,
@@ -38,11 +38,10 @@ const getBookingLimitDatetime = (
   }
 }
 
-export const createStockPayload = (
-  offerId: string,
+export const createStockDataPayload = (
   values: OfferEducationalStockFormValues,
   departementCode: string
-): StockCreationPayload => {
+): StockPayload => {
   const beginningDateTimeInDepartementTimezone = buildBeginningDatetime(
     new Date(values.eventDate),
     new Date(values.eventTime)
@@ -56,7 +55,6 @@ export const createStockPayload = (
     departementCode
   )
   return {
-    offerId: offerId,
     beginningDatetime: toISOStringWithoutMilliseconds(
       beginningDateTimeInUTCTimezone
     ),

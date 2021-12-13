@@ -1,7 +1,6 @@
-export type StockCreationPayload = {
-  offerId: string
+export type StockPayload = {
   beginningDatetime: Date
   bookingLimitDatetime: Date | null
-  totalPrice: string
-  numberOfTickets: string
+  totalPrice: number | ''
+  numberOfTickets: number | ''
 }
