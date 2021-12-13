@@ -249,6 +249,7 @@ def update_ubble_workflow(
     if status == fraud_models.ubble.UbbleIdentificationStatus.PROCESSING:
         user.hasCompletedIdCheck = True
         pcapi_repository.repository.save(user)
+        subscription_messages.on_review_pending(user)
 
     elif status == fraud_models.ubble.UbbleIdentificationStatus.PROCESSED:
         try:
@@ -268,6 +269,7 @@ def update_ubble_workflow(
                     user=user,
                     reason_codes=fraud_check.reasonCodes,
                 )
+                subscription_messages.on_ubble_journey_cannot_continue(user)
                 return
 
             try:
