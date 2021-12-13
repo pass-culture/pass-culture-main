@@ -1,11 +1,10 @@
 import { hasStatusCode } from 'core/OfferEducational/utils'
 import { OfferEducationalStockFormValues } from 'core/OfferEducationalStock/types'
+import { createStockDataPayload } from 'core/OfferEducationalStock/utils/createStockDataPayload'
 import { Offer } from 'custom_types/offer'
 import * as pcapi from 'repository/pcapi/pcapi'
 
-import { StockCreationPayload } from '../types'
-
-import { createStockPayload } from './utils/createStockPayload'
+import { StockPayload } from '../types'
 
 type Params = { offer: Offer; values: OfferEducationalStockFormValues }
 
@@ -27,13 +26,13 @@ const postEducationalStockAdapter: PostEducationalStockAdapter = async ({
   offer,
   values,
 }: Params) => {
-  const payload: StockCreationPayload = createStockPayload(
-    offer.id,
+  const stockPayload: StockPayload = createStockDataPayload(
     values,
     offer.venue.departementCode
   )
+  const stockCreationPayload = { offerId: offer.id, ...stockPayload }
   try {
-    await pcapi.createEducationalStock(payload)
+    await pcapi.createEducationalStock(stockCreationPayload)
     return {
       isOk: true,
       message: null,
