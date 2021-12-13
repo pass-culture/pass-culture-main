@@ -140,3 +140,8 @@ class ListBookingsResponseModel(BaseModel):
     page: int
     pages: int
     total: int
+
+
+class PatchBookingByTokenQueryModel(BaseModel):
+    email: Optional[str]
+    offer_id: Optional[str]

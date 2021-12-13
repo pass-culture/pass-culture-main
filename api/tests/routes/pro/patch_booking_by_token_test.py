@@ -9,19 +9,18 @@ import pcapi.core.offers.factories as offers_factories
 from pcapi.core.users import factories as users_factories
 from pcapi.utils.human_ids import humanize
 
-from tests.conftest import TestClient
-
 
 @pytest.mark.usefixtures("db_session")
 class Returns204Test:
     class WhenUserIsAnonymousTest:
-        def expect_booking_to_be_used(self, app):
+        def expect_booking_to_be_used(self, client):
             booking = bookings_factories.IndividualBookingFactory(token="ABCDEF")
 
             url = (
                 f"/bookings/token/{booking.token}?" f"email={booking.email}&offer_id={humanize(booking.stock.offerId)}"
             )
-            response = TestClient(app.test_client()).patch(url)
+
+            response = client.patch(url)
 
             assert response.status_code == 204
             booking = Booking.query.one()
@@ -29,26 +28,26 @@ class Returns204Test:
             assert booking.status is BookingStatus.USED
 
     class WhenUserIsLoggedInTest:
-        def expect_booking_to_be_used(self, app):
+        def expect_booking_to_be_used(self, client):
             booking = bookings_factories.IndividualBookingFactory(token="ABCDEF")
             pro_user = users_factories.ProFactory(email="pro@example.com")
             offers_factories.UserOffererFactory(user=pro_user, offerer=booking.offerer)
 
             url = f"/bookings/token/{booking.token}"
-            response = TestClient(app.test_client()).with_session_auth("pro@example.com").patch(url)
+            response = client.with_session_auth("pro@example.com").patch(url)
 
             assert response.status_code == 204
             booking = Booking.query.one()
             assert booking.isUsed
             assert booking.status is BookingStatus.USED
 
-        def expect_booking_with_token_in_lower_case_to_be_used(self, app):
+        def expect_booking_with_token_in_lower_case_to_be_used(self, client):
             booking = bookings_factories.IndividualBookingFactory(token="ABCDEF")
             pro_user = users_factories.ProFactory(email="pro@example.com")
             offers_factories.UserOffererFactory(user=pro_user, offerer=booking.offerer)
 
             url = f"/bookings/token/{booking.token.lower()}"
-            response = TestClient(app.test_client()).with_session_auth("pro@example.com").patch(url)
+            response = client.with_session_auth("pro@example.com").patch(url)
 
             assert response.status_code == 204
             booking = Booking.query.one()
@@ -57,7 +56,7 @@ class Returns204Test:
 
         # FIXME: what is the purpose of this test? Are we testing that
         # Flask knows how to URL-decode parameters?
-        def expect_booking_to_be_used_with_special_char_in_url(self, app):
+        def expect_booking_to_be_used_with_special_char_in_url(self, client):
             booking = bookings_factories.IndividualBookingFactory(
                 token="ABCDEF", individualBooking__user__email="user+plus@example.com"
             )
@@ -66,7 +65,7 @@ class Returns204Test:
 
             quoted_email = urllib.parse.quote("user+plus@example.com")
             url = f"/bookings/token/{booking.token}?email={quoted_email}"
-            client = TestClient(app.test_client()).with_session_auth("pro@example.com")
+            client = client.with_session_auth("pro@example.com")
             response = client.patch(url)
 
             assert response.status_code == 204
@@ -78,13 +77,13 @@ class Returns204Test:
 @pytest.mark.usefixtures("db_session")
 class Returns400Test:
     class WhenUserIsAnonymousTest:
-        def when_email_is_missing(self, app):
+        def when_email_is_missing(self, client):
             # Given
             booking = bookings_factories.IndividualBookingFactory()
             url = "/bookings/token/{}?&offer_id={}".format(booking.token, humanize(booking.stock.offer.id))
 
             # When
-            response = TestClient(app.test_client()).patch(url)
+            response = client.patch(url)
 
             # Then
             assert response.status_code == 400
@@ -92,25 +91,25 @@ class Returns400Test:
                 "L'adresse email qui a servie à la réservation est obligatoire dans l'URL [?email=<email>]"
             ]
 
-        def when_offer_id_is_missing(self, app):
+        def when_offer_id_is_missing(self, client):
             # Given
             booking = bookings_factories.IndividualBookingFactory()
             url = "/bookings/token/{}?email={}".format(booking.token, booking.email)
 
             # When
-            response = TestClient(app.test_client()).patch(url)
+            response = client.patch(url)
 
             # Then
             assert response.status_code == 400
             assert response.json["offer_id"] == ["L'id de l'offre réservée est obligatoire dans l'URL [?offer_id=<id>]"]
 
-        def when_both_email_and_offer_id_are_missing(self, app):
+        def when_both_email_and_offer_id_are_missing(self, client):
             # Given
             booking = bookings_factories.IndividualBookingFactory()
             url = "/bookings/token/{}".format(booking.token)
 
             # When
-            response = TestClient(app.test_client()).patch(url)
+            response = client.patch(url)
 
             # Then
             assert response.status_code == 400
@@ -122,7 +121,7 @@ class Returns400Test:
 
 @pytest.mark.usefixtures("db_session")
 class Returns403Test:  # Forbidden
-    def when_user_is_not_attached_to_linked_offerer(self, app):
+    def when_user_is_not_attached_to_linked_offerer(self, client):
         # Given
         pro = users_factories.ProFactory(email="pro@example.com")
         booking = bookings_factories.IndividualBookingFactory()
@@ -130,7 +129,7 @@ class Returns403Test:  # Forbidden
         url = "/bookings/token/{}?email={}".format(booking.token, booking.email)
 
         # When
-        response = TestClient(app.test_client()).with_session_auth(pro.email).patch(url)
+        response = client.with_session_auth(pro.email).patch(url)
 
         # Then
         booking = Booking.query.get(booking.id)
@@ -141,14 +140,14 @@ class Returns403Test:  # Forbidden
         assert not booking.isUsed
         assert booking.status is not BookingStatus.USED
 
-    def when_booking_has_been_cancelled_already(self, app):
+    def when_booking_has_been_cancelled_already(self, client):
         # Given
         admin = users_factories.AdminFactory()
         booking = bookings_factories.CancelledBookingFactory()
         url = f"/bookings/token/{booking.token}"
 
         # When
-        response = TestClient(app.test_client()).with_session_auth(admin.email).patch(url)
+        response = client.with_session_auth(admin.email).patch(url)
 
         # Then
         assert response.status_code == 403
@@ -159,7 +158,7 @@ class Returns403Test:  # Forbidden
 @pytest.mark.usefixtures("db_session")
 class Returns404Test:
     class WhenUserIsAnonymousTest:
-        def when_booking_does_not_exist(self, app):
+        def when_booking_does_not_exist(self, client):
             # Given
             booking = bookings_factories.IndividualBookingFactory()
 
@@ -168,27 +167,27 @@ class Returns404Test:
             )
 
             # When
-            response = TestClient(app.test_client()).patch(url)
+            response = client.patch(url)
 
             # Then
             assert response.status_code == 404
             assert response.json["global"] == ["Cette contremarque n'a pas été trouvée"]
 
     class WhenUserIsLoggedInTest:
-        def when_user_is_not_editor_and_email_does_not_match(self, app):
+        def when_user_is_not_editor_and_email_does_not_match(self, client):
             # Given
             user_admin = users_factories.AdminFactory(email="admin@example.com")
             booking = bookings_factories.IndividualBookingFactory()
             url = "/bookings/token/{}?email={}".format(booking.token, "wrong@example.com")
 
             # When
-            response = TestClient(app.test_client()).with_session_auth(user_admin.email).patch(url)
+            response = client.with_session_auth(user_admin.email).patch(url)
 
             # Then
             assert response.status_code == 404
             assert Booking.query.get(booking.id).isUsed is False
 
-        def when_email_has_special_characters_but_is_not_url_encoded(self, app):
+        def when_email_has_special_characters_but_is_not_url_encoded(self, client):
             # Given
             user = users_factories.BeneficiaryGrant18Factory(email="user+plus@example.com")
             user_admin = users_factories.AdminFactory(email="admin@example.com")
@@ -197,11 +196,11 @@ class Returns404Test:
             url = "/bookings/token/{}?email={}".format(booking.token, booking.email)
 
             # When
-            response = TestClient(app.test_client()).with_session_auth(user_admin.email).patch(url)
+            response = client.with_session_auth(user_admin.email).patch(url)
             # Then
             assert response.status_code == 404
 
-        def when_user_is_not_editor_and_offer_id_is_invalid(self, app):
+        def when_user_is_not_editor_and_offer_id_is_invalid(self, client):
             # Given
             user_admin = users_factories.AdminFactory(email="admin@example.com")
             booking = bookings_factories.IndividualBookingFactory()
@@ -209,7 +208,7 @@ class Returns404Test:
             url = "/bookings/token/{}?email={}&offer_id={}".format(booking.token, booking.email, humanize(123))
 
             # When
-            response = TestClient(app.test_client()).with_session_auth(user_admin.email).patch(url)
+            response = client.with_session_auth(user_admin.email).patch(url)
 
             # Then
             assert response.status_code == 404

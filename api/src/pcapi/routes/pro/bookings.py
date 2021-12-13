@@ -14,6 +14,7 @@ from pcapi.routes.apis import public_api
 from pcapi.routes.serialization import serialize
 from pcapi.routes.serialization.bookings_recap_serialize import ListBookingsQueryModel
 from pcapi.routes.serialization.bookings_recap_serialize import ListBookingsResponseModel
+from pcapi.routes.serialization.bookings_recap_serialize import PatchBookingByTokenQueryModel
 from pcapi.routes.serialization.bookings_recap_serialize import _serialize_booking_recap
 from pcapi.routes.serialization.bookings_serialize import GetBookingResponse
 from pcapi.routes.serialization.bookings_serialize import get_booking_response
@@ -63,12 +64,11 @@ def get_booking_by_token(token: str) -> tuple[str, int]:
     return "", 204
 
 
-# @debt api-migration
 @public_api.route("/bookings/token/<token>", methods=["PATCH"])
-def patch_booking_by_token(token: str) -> tuple[str, int]:
-    email: Optional[str] = request.args.get("email", None)
-    humanized_offer_id: Optional[str] = request.args.get("offer_id")
-    offer_id: Optional[int] = dehumanize(humanized_offer_id)
+@spectree_serialize(on_success_status=204)
+def patch_booking_by_token(token: str, query: PatchBookingByTokenQueryModel) -> None:
+    email = query.email
+    offer_id = dehumanize(query.offer_id)
     booking = booking_repository.find_by(token, email, offer_id)
 
     if current_user.is_authenticated:
@@ -77,8 +77,6 @@ def patch_booking_by_token(token: str) -> tuple[str, int]:
         check_email_and_offer_id_for_anonymous_user(email, offer_id)
 
     bookings_api.mark_as_used(booking)
-
-    return "", 204
 
 
 @private_api.route("/bookings/pro", methods=["GET"])
