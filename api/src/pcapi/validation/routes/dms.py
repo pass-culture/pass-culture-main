@@ -75,3 +75,12 @@ def check_demarches_simplifiees_webhook_token(token: str) -> None:
         errors = ForbiddenError()
         errors.add_error("token", "Invalid token")
         raise errors
+
+
+class BankInformationDmsFormModel(pydantic.BaseModel):
+    dossier_id: str
+    procedure_id: str
+
+
+class BankInformationDmsResponseModel(pydantic.BaseModel):
+    pass
