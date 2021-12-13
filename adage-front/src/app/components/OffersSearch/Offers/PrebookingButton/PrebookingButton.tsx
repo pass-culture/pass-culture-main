@@ -6,6 +6,7 @@ import {
   Notification,
   NotificationComponent,
 } from 'app/components/Layout/Notification/Notification'
+import { ReactComponent as HourGlassIcon } from 'assets/hourglass.svg'
 import { preBookStock } from 'repository/pcapi/pcapi'
 import { StockType } from 'utils/types'
 
@@ -20,20 +21,22 @@ const PrebookingButton = ({
   stock: StockType
   canPrebookOffers: boolean
 }): JSX.Element => {
+  const [hasPrebookedOffer, setHasPrebookedOffer] = useState(false)
   const [isButtonDisabled, setIsButtonDisabled] = useState(false)
   const [notification, setNotification] = useState<Notification | null>(null)
 
   const preBookCurrentStock = useCallback(() => {
     setIsButtonDisabled(true)
     return preBookStock(stock.id)
-      .then(() =>
+      .then(() => {
+        setHasPrebookedOffer(true)
         setNotification(
           new Notification(
             NotificationType.success,
             'Votre préréservation a été effectuée avec succès.'
           )
         )
-      )
+      })
       .catch(() =>
         setNotification(
           new Notification(
@@ -48,19 +51,28 @@ const PrebookingButton = ({
     <>
       {canPrebookOffers && (
         <div className={`prebooking-button-container ${className}`}>
-          <button
-            className="prebooking-button"
-            disabled={isButtonDisabled}
-            onClick={preBookCurrentStock}
-            type="button"
-          >
-            pré-réserver
-          </button>
-          {stock.bookingLimitDatetime && (
-            <span>
-              avant le :{' '}
-              {format(new Date(stock.bookingLimitDatetime), 'dd/MM/yyyy')}
-            </span>
+          {hasPrebookedOffer ? (
+            <div className="prebooking-tag">
+              <HourGlassIcon className="prebooking-tag-icon" />
+              Pré-réservé
+            </div>
+          ) : (
+            <>
+              <button
+                className="prebooking-button"
+                disabled={isButtonDisabled}
+                onClick={preBookCurrentStock}
+                type="button"
+              >
+                Pré-réserver
+              </button>
+              {stock.bookingLimitDatetime && (
+                <span className="prebooking-button-booking-limit">
+                  avant le :{' '}
+                  {format(new Date(stock.bookingLimitDatetime), 'dd/MM/yyyy')}
+                </span>
+              )}
+            </>
           )}
         </div>
       )}
