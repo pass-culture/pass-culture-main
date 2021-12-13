@@ -2,7 +2,7 @@ import cn from 'classnames'
 import { useField } from 'formik'
 import React from 'react'
 
-import FieldError from '../FieldError'
+import { FieldError, BaseRadio } from '../shared'
 
 import style from './RadioButton.module.scss'
 
@@ -24,10 +24,7 @@ const RadioButton = ({
 
   return (
     <div className={cn(style['radio-button'], className)}>
-      <label className={style['radio-button-label']}>
-        <input {...field} type="radio" value={value} />
-        {label}
-      </label>
+      <BaseRadio {...field} label={label} value={value} />
       {meta.touched && meta.error && <FieldError>{meta.error}</FieldError>}
     </div>
   )
