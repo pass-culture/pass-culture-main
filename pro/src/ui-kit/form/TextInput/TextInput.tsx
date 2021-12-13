@@ -1,21 +1,19 @@
-import cn from 'classnames'
 import { useField } from 'formik'
 import React from 'react'
 
-import { default as LayoutTextInput } from 'components/layout/inputs/TextInput/TextInput'
-
-import styles from './TextInput.module.scss'
+import { BaseInput, FieldLayout } from '../shared'
 
 interface ITextInputProps {
   name: string
   className?: string
   disabled?: boolean
-  label?: string
+  label: string
   placeholder?: string
-  type?: 'text' | 'number'
+  type?: 'text' | 'number' | 'email' | 'url' | 'password' | 'tel'
   countCharacters?: boolean
   maxLength?: number
-  required?: boolean
+  isOptional?: boolean
+  smallLabel?: boolean
 }
 
 const TextInput = ({
@@ -27,23 +25,35 @@ const TextInput = ({
   placeholder,
   countCharacters,
   maxLength,
-  required,
+  smallLabel,
+  isOptional = false,
 }: ITextInputProps): JSX.Element => {
-  const [field, meta] = useField({ name, disabled })
+  const [field, meta] = useField({
+    name,
+    type,
+  })
 
   return (
-    <div className={cn(styles['text-input'], className)}>
-      <LayoutTextInput
-        countCharacters={countCharacters}
-        error={meta.touched && !!meta.error ? meta.error : null}
-        label={label ?? ''}
+    <FieldLayout
+      className={className}
+      count={countCharacters ? field.value.length : undefined}
+      error={meta.error}
+      isOptional={isOptional}
+      label={label}
+      maxLength={maxLength}
+      name={name}
+      showError={meta.touched && !!meta.error}
+      smallLabel={smallLabel}
+    >
+      <BaseInput
+        disabled={disabled}
+        hasError={meta.touched && !!meta.error}
         maxLength={maxLength}
         placeholder={placeholder}
-        required={required}
         type={type}
         {...field}
       />
-    </div>
+    </FieldLayout>
   )
 }
 

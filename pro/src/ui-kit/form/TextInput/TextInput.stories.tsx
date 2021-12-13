@@ -10,7 +10,7 @@ export default {
   component: TextInput,
 }
 
-const Template: Story<{ label?: string }> = ({ label }) => (
+const Template: Story<{ label: string }> = ({ label }) => (
   <Formik initialValues={{ email: '' }} onSubmit={action('onSubmit')}>
     {({ getFieldProps }) => (
       <TextInput
