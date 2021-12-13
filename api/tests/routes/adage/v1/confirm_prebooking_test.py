@@ -87,6 +87,7 @@ class Returns200Test:
             "name": offer.name,
             "numberOfTickets": 30,
             "participants": [],
+            "priceDetail": stock.educationalPriceDetail,
             "postalCode": venue.postalCode,
             "price": booking.amount,
             "quantity": booking.quantity,
