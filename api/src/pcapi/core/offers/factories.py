@@ -195,6 +195,9 @@ class EducationalEventStockFactory(StockFactory):
     beginningDatetime = factory.LazyFunction(lambda: datetime.datetime.now() + datetime.timedelta(days=5))
     bookingLimitDatetime = factory.LazyAttribute(lambda stock: stock.beginningDatetime - datetime.timedelta(minutes=60))
     numberOfTickets = 30
+    educationalPriceDetail = (
+        "Le prix inclus l'accès à la séance et un atelier une fois la séance terminée. 1000 caractères max."
+    )
 
 
 class StockWithActivationCodesFactory(StockFactory):
