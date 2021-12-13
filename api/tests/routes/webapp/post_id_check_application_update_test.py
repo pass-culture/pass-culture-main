@@ -4,8 +4,6 @@ from unittest.mock import patch
 from dateutil.relativedelta import relativedelta
 import pytest
 
-from pcapi.core.fraud import factories as fraud_factories
-from pcapi.core.fraud import models as fraud_models
 from pcapi.core.payments.models import Deposit
 from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
@@ -82,13 +80,10 @@ class Returns200Test:
         application_id = 35
         _get_raw_content.return_value = JOUVE_CONTENT
 
-        user = users_factories.UserFactory(
+        users_factories.UserFactory(
             email="rennes@example.org",
             isEmailValidated=True,
             phoneValidationStatus=PhoneValidationStatusType.VALIDATED,
-        )
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user, type=fraud_models.FraudCheckType.HONOR_STATEMENT, status=fraud_models.FraudCheckStatus.OK
         )
 
         # When
