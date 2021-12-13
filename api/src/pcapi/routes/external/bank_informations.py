@@ -1,27 +1,26 @@
-from flask import request
-
 from pcapi.routes.apis import public_api
-from pcapi.validation.routes import dms as dms_validation
+from pcapi.serialization.decorator import spectree_serialize
+from pcapi.validation.routes.dms import BankInformationDmsFormModel
+from pcapi.validation.routes.dms import BankInformationDmsResponseModel
+from pcapi.validation.routes.dms import require_dms_token
 from pcapi.workers.bank_information_job import bank_information_job
 
 
-# @debt api-migration
 @public_api.route("/bank_informations/venue/application_update", methods=["POST"])
-def update_venue_demarches_simplifiees_application():
-    dms_validation.check_demarches_simplifiees_webhook_token(request.args.get("token"))
-    dms_validation.check_demarches_simplifiees_webhook_payload(request)
-    application_id = request.form["dossier_id"]
-    procedure_id = request.form["procedure_id"]
-    bank_information_job.delay(application_id, "venue", procedure_id)
-    return "", 202
+@require_dms_token
+@spectree_serialize(on_success_status=202, on_error_statuses=[400, 403])
+def update_venue_demarches_simplifiees_application(
+    form: BankInformationDmsFormModel,
+) -> BankInformationDmsResponseModel:
+    bank_information_job.delay(form.dossier_id, "venue", form.procedure_id)
+    return BankInformationDmsResponseModel()
 
 
-# @debt api-migration
 @public_api.route("/bank_informations/offerer/application_update", methods=["POST"])
-def update_offerer_demarches_simplifiees_application():
-    dms_validation.check_demarches_simplifiees_webhook_token(request.args.get("token"))
-    dms_validation.check_demarches_simplifiees_webhook_payload(request)
-    application_id = request.form["dossier_id"]
-    procedure_id = request.form["procedure_id"]
-    bank_information_job.delay(application_id, "offerer", procedure_id)
-    return "", 202
+@require_dms_token
+@spectree_serialize(on_success_status=202, on_error_statuses=[400, 403])
+def update_offerer_demarches_simplifiees_application(
+    form: BankInformationDmsFormModel,
+) -> BankInformationDmsResponseModel:
+    bank_information_job.delay(form.dossier_id, "offerer", form.procedure_id)
+    return BankInformationDmsResponseModel()
