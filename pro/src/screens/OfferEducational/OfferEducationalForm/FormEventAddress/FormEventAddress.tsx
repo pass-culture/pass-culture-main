@@ -19,6 +19,7 @@ import {
   EVENT_ADDRESS_OTHER_ADDRESS_LABEL,
   EVENT_ADDRESS_OFFERER_VENUE_SELECT_LABEL,
 } from '../../constants/labels'
+import styles from '../OfferEducationalForm.module.scss'
 
 interface IFormEventAddressProps {
   venuesOptions: SelectOptions
@@ -81,7 +82,7 @@ const FormEventAddress = ({
       title="Informations pratiques"
     >
       <FormLayout.SubSection title="Adresse où aura lieu l’événement">
-        <FormLayout.Row>
+        <FormLayout.Row lgSpaceAfter>
           <RadioButton
             checked
             label={EVENT_ADDRESS_OFFERER_LABEL}
@@ -101,24 +102,25 @@ const FormEventAddress = ({
         </FormLayout.Row>
 
         {values.eventAddress.addressType === ADRESS_TYPE.OFFERER_VENUE && (
-          <>
-            <FormLayout.Row>
-              <Select
-                disabled={venuesOptions.length === 1}
-                label={EVENT_ADDRESS_OFFERER_VENUE_SELECT_LABEL}
-                name="eventAddress.venueId"
-                options={venuesOptions}
-              />
-            </FormLayout.Row>
+          <FormLayout.Row>
+            <Select
+              disabled={venuesOptions.length === 1}
+              label={EVENT_ADDRESS_OFFERER_VENUE_SELECT_LABEL}
+              name="eventAddress.venueId"
+              options={venuesOptions}
+            />
             {currentVenue && (
-              <Banner type="light">
+              <Banner
+                className={styles['educational-form-adress-banner']}
+                type="light"
+              >
                 {currentVenue.name}
                 <br />
                 {currentVenue.address.street}, {currentVenue.address.postalCode}{' '}
                 {currentVenue.address.city}
               </Banner>
             )}
-          </>
+          </FormLayout.Row>
         )}
 
         {values.eventAddress.addressType === ADRESS_TYPE.OTHER && (

@@ -10,7 +10,7 @@ const FormParticipants = (): JSX.Element => (
     description="Cette offre s'adresse aux élèves de :"
     title="Participants"
   >
-    <FormLayout.Row>
+    <FormLayout.Row lgSpaceAfter>
       <CheckboxGroup group={participantsOptions} groupName="participants" />
     </FormLayout.Row>
   </FormLayout.Section>
