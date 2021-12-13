@@ -1,33 +1,5 @@
 .checkbox {
-  &-label {
-    display: inline-flex;
-    cursor: pointer;
-    align-items: center;
-    line-height: 1em;
-
-    &.has-error {
-      color: $primary;
-    }
-  }
-
-  &-input {
-    -webkit-appearance: none;
-    appearance: none;
-    background-color: $white;
-    border: 2px solid $grey-dark;
-    border-radius: 4px;
-
-    .has-error & {
-      border-color: $primary;
-    }
-
-    &:hover {
-      border-color: $primary;
-
-      &:checked {
-        background-color: $primary;
-        border-color: $primary;
-      }
-    }
+  &-error {
+    min-height: rem(32px);
   }
 }
