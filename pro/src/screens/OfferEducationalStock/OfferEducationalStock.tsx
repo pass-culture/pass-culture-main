@@ -1,9 +1,12 @@
 import { useFormik, FormikProvider } from 'formik'
 import React from 'react'
+import { Link } from 'react-router-dom'
 
 import Banner from 'components/layout/Banner/Banner'
+import { computeOffersUrl } from 'components/pages/Offers/utils/computeOffersUrl'
+import { Mode } from 'core/OfferEducational'
 import { OfferEducationalStockFormValues } from 'core/OfferEducationalStock/types'
-import { Offer, OfferStatus } from 'custom_types/offer'
+import { Offer } from 'custom_types/offer'
 import FormLayout from 'new_components/FormLayout'
 import { SubmitButton } from 'ui-kit'
 
@@ -17,6 +20,7 @@ export interface IOfferEducationalStockProps {
   initialValues: OfferEducationalStockFormValues
   offer: Offer
   onSubmit: (offer: Offer, values: OfferEducationalStockFormValues) => void
+  mode: Mode
 }
 
 const OfferEducationalStock = ({
@@ -24,8 +28,8 @@ const OfferEducationalStock = ({
   initialValues,
   offer,
   onSubmit,
+  mode,
 }: IOfferEducationalStockProps): JSX.Element => {
-  const isOfferDraft = offer.status === OfferStatus.OFFER_STATUS_DRAFT
   const offerIsDisbaled = isOfferDisabled(offer.status)
 
   const formik = useFormik({
@@ -61,12 +65,17 @@ const OfferEducationalStock = ({
             </FormLayout.Row>
           </FormLayout.Section>
           <FormLayout.Actions className={styles['action-section']}>
+            <Link className="secondary-link" to={computeOffersUrl({})}>
+              Annuler et quitter
+            </Link>
             <SubmitButton
               className=""
               disabled={offerIsDisbaled}
               isLoading={false}
             >
-              {isOfferDraft ? 'Valider et créer l’offre' : 'Enregistrer'}
+              {mode === Mode.CREATION
+                ? 'Valider et créer l’offre'
+                : 'Enregistrer'}
             </SubmitButton>
           </FormLayout.Actions>
         </FormLayout>
