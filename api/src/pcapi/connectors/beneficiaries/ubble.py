@@ -7,6 +7,7 @@ import requests
 
 from pcapi import settings
 from pcapi.connectors.beneficiaries import exceptions
+from pcapi.core import logging as core_logging
 from pcapi.core.fraud.models import ubble as ubble_models
 
 
@@ -114,16 +115,33 @@ def start_identification(
         response = session.post(build_url("/identifications/"), json=data)
     except IOError as e:
         # Any exception explicitely raised by requests or urllib3 inherits from IOError
-        logger.exception("Request error while starting Ubble identification: %s", e, extra={"alert": "Ubble error"})
+        core_logging.log_for_supervision(
+            logger,
+            logging.ERROR,
+            "Request error while starting Ubble identification: %s",
+            e,
+            extra={
+                "alert": "Ubble error",
+                "error_type": "network",
+                "request_type": "start-identification",
+            },
+        )
         raise exceptions.IdentificationServiceUnavailable()
 
     if not response.ok:
         # https://ubbleai.github.io/developer-documentation/#errors
-        logger.error(
+        core_logging.log_for_supervision(
+            logger,
+            logging.ERROR,
             "Error while starting Ubble identification: %s, %s",
             response.status_code,
             response.text,
-            extra={"alert": "Ubble error"},
+            extra={
+                "alert": "Ubble error",
+                "error_type": "http",
+                "status_code": response.status_code,
+                "request_type": "start-identification",
+            },
         )
         if response.status_code in (410, 429):
             raise exceptions.IdentificationServiceUnavailable()
@@ -131,6 +149,16 @@ def start_identification(
         raise exceptions.IdentificationServiceError()
 
     content = _extract_useful_content_from_response(response.json())
+    core_logging.log_for_supervision(
+        logger,
+        logging.INFO,
+        "Valid response from Ubble",
+        extra={
+            "status_code": response.status_code,
+            "identification_id": str(content.identification_id),
+            "request_type": "start-identification",
+        },
+    )
     return content
 
 
@@ -139,5 +167,32 @@ def get_content(identification_id: str) -> ubble_models.UbbleContent:
     response = session.get(
         build_url(f"/identifications/{identification_id}/"),
     )
+
+    if not response.ok:
+        core_logging.log_for_supervision(
+            logger,
+            logging.ERROR,
+            "Error while fetching Ubble identification",
+            extra={
+                "status_code": response.status_code,
+                "identification_id": identification_id,
+                "request_type": "get-content",
+                "error_type": "http",
+            },
+        )
+        response.raise_for_status()
+
     content = _extract_useful_content_from_response(response.json())
+    core_logging.log_for_supervision(
+        logger,
+        logging.INFO,
+        "Valid response from Ubble",
+        extra={
+            "status_code": response.status_code,
+            "identification_id": identification_id,
+            "score": content.score,
+            "status": content.status.value,
+            "request_type": "get-content",
+        },
+    )
     return content
