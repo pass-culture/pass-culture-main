@@ -552,6 +552,7 @@ def _generate_payments_file(batch_id: int) -> pathlib.Path:
         models.Pricing.query.filter_by(status=models.PricingStatus.VALIDATED)
         .join(models.Pricing.cashflows)
         .join(models.Pricing.booking)
+        .filter(bookings_models.Booking.amount != 0)
         .join(models.Pricing.businessUnit)
         .join(
             BusinessUnitVenue,

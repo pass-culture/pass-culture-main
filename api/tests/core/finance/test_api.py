@@ -451,6 +451,15 @@ def test_generate_payments_file():
         booking__stock__offer__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
         booking__stock__offer__venue=venue1,
     )
+    # A free booking that should not appear in the CSV file.
+    factories.PricingFactory(
+        amount=0,
+        booking__amount=0,
+        booking__dateUsed=used_date,
+        booking__stock__offer__name="Une histoire gratuite",
+        booking__stock__offer__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
+        booking__stock__offer__venue=venue1,
+    )
     # These other pricings belong to a business unit whose venue is
     # NOT the venue of the offers.
     business_unit_venue2 = offers_factories.VenueFactory(
