@@ -1899,7 +1899,6 @@ class GetCsvReportTest:
         assert data_dict["Date et heure de validation"] == ""
         assert data_dict["Contremarque"] == ""
         assert data_dict["Prix de la réservation"] == f"{booking.amount:.2f}"
-        assert data_dict["Statut de la contremarque"] == booking_repository.BOOKING_STATUS_LABELS[booking.status]
         assert data_dict["Date et heure de remboursement"] == ""
 
     def test_should_return_booking_as_duo_when_quantity_is_two(self, app: fixture):
