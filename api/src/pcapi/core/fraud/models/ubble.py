@@ -4,6 +4,8 @@ import typing
 
 import pydantic
 
+from .common import SubscriptionContentType
+
 
 class UbbleIdentificationStatus(enum.Enum):
     UNINITIATED = "uninitiated"
@@ -19,7 +21,7 @@ class UbbleScore(enum.Enum):
     UNDECIDABLE = -1.0
 
 
-class UbbleContent(pydantic.BaseModel):
+class UbbleContent(SubscriptionContentType):
     birth_date: typing.Optional[datetime.date]
     comment: typing.Optional[str]
     document_type: typing.Optional[str]
@@ -37,6 +39,12 @@ class UbbleContent(pydantic.BaseModel):
     _parse_birth_date = pydantic.validator("birth_date", pre=True, allow_reuse=True)(
         lambda d: datetime.datetime.strptime(d, "%Y-%m-%d").date() if d is not None else None
     )
+
+    def get_registration_datetime(self) -> typing.Optional[datetime.datetime]:
+        return self.registration_datetime
+
+    def get_birth_date(self) -> typing.Optional[datetime.date]:
+        return self.birth_date
 
 
 class UbbleIdentificationAttributes(pydantic.BaseModel):
