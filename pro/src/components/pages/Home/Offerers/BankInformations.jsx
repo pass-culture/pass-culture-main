@@ -20,7 +20,7 @@ const BankInformations = ({
         Coordonnées bancaires
         {hasMissingBankInformation && (
           <Icon
-            alt="Informations bancaires manquantes"
+            alt="Siret manquant"
             className="ico-bank-warning"
             svg="ico-alert-filled"
           />
@@ -54,6 +54,7 @@ BankInformations.propTypes = {
   hasMissingBankInformation: PropTypes.bool.isRequired,
   hasRejectedOrDraftOffererBankInformations: PropTypes.bool.isRequired,
   offerer: PropTypes.shape({
+    id: PropTypes.string,
     iban: PropTypes.string,
     bic: PropTypes.string,
     demarchesSimplifieesApplicationId: PropTypes.string,

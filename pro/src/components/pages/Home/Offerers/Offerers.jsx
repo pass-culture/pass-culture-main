@@ -63,7 +63,7 @@ const Offerers = () => {
   )
 
   useEffect(() => {
-    async function loadOfferer (offererId) {
+    async function loadOfferer(offererId) {
       try {
         const receivedOfferer = await pcapi.getOfferer(offererId)
         setSelectedOfferer(receivedOfferer)
@@ -76,9 +76,8 @@ const Offerers = () => {
         setVirtualVenue(virtualVenue)
         setIsUserOffererValidated(true)
 
-        const receivedBusinessUnitList = await pcapi.getBusinessUnitList(offererId)
+        const receivedBusinessUnitList = await pcapi.getBusinessUnits(offererId)
         setBusinessUnitList(receivedBusinessUnitList)
-
       } catch (error) {
         if (error.status === HTTP_STATUS.FORBIDDEN) {
           setSelectedOfferer({ id: offererId, managedVenues: [] })

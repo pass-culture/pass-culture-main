@@ -28,7 +28,7 @@ const OffererDetailsLayout = () => {
       </Route>
       <FeaturedRoute
         featureName="ENFORCE_BANK_INFORMATION_WITH_SIRET"
-        path={`${match.path}/points-de-facturations`}
+        path={`${match.path}/point-de-remboursement`}
       >
         <BusinessUnitList />
       </FeaturedRoute>
