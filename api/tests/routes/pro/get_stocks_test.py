@@ -5,6 +5,7 @@ import pytest
 
 from pcapi.core import testing
 import pcapi.core.bookings.factories as bookings_factories
+from pcapi.core.bookings.models import BookingStatus
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.utils.human_ids import humanize
@@ -54,11 +55,118 @@ class Returns200Test:
                     "dateCreated": "2020-10-15T00:00:00Z",
                     "dateModified": "2020-10-15T00:00:00Z",
                     "id": humanize(stock.id),
+                    "isEducationalStockEditable": False,
                     "isEventDeletable": True,
                     "isEventExpired": True,
+                    "numberOfTickets": None,
                     "offerId": humanize(stock.offer.id),
                     "price": 10.0,
                     "quantity": 1000,
+                }
+            ],
+        }
+
+    @freeze_time("2020-10-15 00:00:00")
+    def test_returns_an_editable_educational_stock(self, app, assert_num_queries):
+        # Given
+        now = datetime.utcnow()
+        pro = users_factories.ProFactory()
+        stock = offers_factories.EducationalEventStockFactory(
+            dateCreated=now,
+            dateModified=now,
+            dateModifiedAtLastProvider=now,
+            beginningDatetime=now,
+            bookingLimitDatetime=now,
+        )
+        bookings_factories.EducationalBookingFactory.create_batch(3, stock=stock, status=BookingStatus.PENDING)
+        bookings_factories.EducationalBookingFactory(stock=stock, status=BookingStatus.CANCELLED)
+        offers_factories.UserOffererFactory(user=pro, offerer=stock.offer.venue.managingOfferer)
+        client = TestClient(app.test_client()).with_session_auth(email=pro.email)
+
+        # When
+        offer_id = stock.offer.id
+        n_query_select_offerer = 1
+        n_query_exist_user_offerer = 1
+        n_query_select_stock = 1
+
+        with assert_num_queries(
+            testing.AUTHENTICATION_QUERIES + n_query_select_offerer + n_query_exist_user_offerer + n_query_select_stock
+        ):
+            response = client.get(f"/offers/{humanize(offer_id)}/stocks")
+
+        # Then
+        assert response.status_code == 200
+        assert response.json == {
+            "stocks": [
+                {
+                    "hasActivationCodes": False,
+                    "activationCodesExpirationDatetime": None,
+                    "beginningDatetime": "2020-10-15T00:00:00Z",
+                    "bookingLimitDatetime": "2020-10-15T00:00:00Z",
+                    "bookingsQuantity": 4,
+                    "dateCreated": "2020-10-15T00:00:00Z",
+                    "dateModified": "2020-10-15T00:00:00Z",
+                    "id": humanize(stock.id),
+                    "isEventDeletable": True,
+                    "isEventExpired": True,
+                    "numberOfTickets": 30,
+                    "offerId": humanize(stock.offer.id),
+                    "price": 10.0,
+                    "quantity": 1000,
+                    "isEducationalStockEditable": True,
+                }
+            ],
+        }
+
+    # TODO gvanneste
+    @freeze_time("2020-10-15 00:00:00")
+    def test_returns_a_non_editable_educational_stock(self, app, assert_num_queries):
+        # Given
+        now = datetime.utcnow()
+        pro = users_factories.ProFactory()
+        stock = offers_factories.EducationalEventStockFactory(
+            dateCreated=now,
+            dateModified=now,
+            dateModifiedAtLastProvider=now,
+            beginningDatetime=now,
+            bookingLimitDatetime=now,
+        )
+        bookings_factories.EducationalBookingFactory.create_batch(2, stock=stock, status=BookingStatus.PENDING)
+        bookings_factories.EducationalBookingFactory(stock=stock, status=BookingStatus.CONFIRMED)
+        offers_factories.UserOffererFactory(user=pro, offerer=stock.offer.venue.managingOfferer)
+        client = TestClient(app.test_client()).with_session_auth(email=pro.email)
+
+        # When
+        offer_id = stock.offer.id
+        n_query_select_offerer = 1
+        n_query_exist_user_offerer = 1
+        n_query_select_stock = 1
+
+        with assert_num_queries(
+            testing.AUTHENTICATION_QUERIES + n_query_select_offerer + n_query_exist_user_offerer + n_query_select_stock
+        ):
+            response = client.get(f"/offers/{humanize(offer_id)}/stocks")
+
+        # Then
+        assert response.status_code == 200
+        assert response.json == {
+            "stocks": [
+                {
+                    "hasActivationCodes": False,
+                    "activationCodesExpirationDatetime": None,
+                    "beginningDatetime": "2020-10-15T00:00:00Z",
+                    "bookingLimitDatetime": "2020-10-15T00:00:00Z",
+                    "bookingsQuantity": 3,
+                    "dateCreated": "2020-10-15T00:00:00Z",
+                    "dateModified": "2020-10-15T00:00:00Z",
+                    "id": humanize(stock.id),
+                    "isEventDeletable": True,
+                    "isEventExpired": True,
+                    "numberOfTickets": 30,
+                    "offerId": humanize(stock.offer.id),
+                    "price": 10.0,
+                    "quantity": 1000,
+                    "isEducationalStockEditable": False,
                 }
             ],
         }
@@ -95,8 +203,10 @@ class Returns200Test:
                     "dateCreated": "2019-10-15T00:00:00Z",
                     "dateModified": "2019-10-15T00:00:00Z",
                     "id": humanize(stock.id),
+                    "isEducationalStockEditable": False,
                     "isEventDeletable": True,
                     "isEventExpired": False,
+                    "numberOfTickets": None,
                     "offerId": humanize(stock.offer.id),
                     "price": 10.0,
                     "quantity": 1000,
@@ -151,9 +261,11 @@ class Returns200Test:
             "bookingsQuantity": 0,
             "dateCreated": "2019-10-15T00:00:00Z",
             "dateModified": "2019-10-15T00:00:00Z",
+            "isEducationalStockEditable": False,
             "id": humanize(stock.id),
             "isEventDeletable": True,
             "isEventExpired": False,
+            "numberOfTickets": None,
             "offerId": humanize(stock.offer.id),
             "price": 10.0,
             "quantity": 1000,
@@ -191,6 +303,7 @@ class Returns200Test:
         )
         bookings_factories.BookingFactory(stock=stock_1)
         bookings_factories.BookingFactory(stock=stock_1)
+        bookings_factories.EducationalBookingFactory(stock=stock_1)
         bookings_factories.BookingFactory(stock=stock_2)
         offers_factories.UserOffererFactory(user=pro, offerer=offer.venue.managingOfferer)
         client = TestClient(app.test_client()).with_session_auth(email=pro.email)
