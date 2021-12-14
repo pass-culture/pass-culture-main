@@ -16,7 +16,7 @@ from pcapi.models import Model
 from pcapi.models.pc_object import PcObject
 
 from . import ubble as ubble_models
-from .common import SubscriptionContentType
+from .common import IdentityCheckContent
 
 
 class FraudCheckType(enum.Enum):
@@ -83,7 +83,7 @@ def _parse_jouve_datetime(date: typing.Optional[str]) -> typing.Optional[datetim
         return None
 
 
-class EduconnectContent(SubscriptionContentType):
+class EduconnectContent(IdentityCheckContent):
     birth_date: datetime.date
     educonnect_id: str
     first_name: str
@@ -100,7 +100,7 @@ class EduconnectContent(SubscriptionContentType):
         return self.birth_date
 
 
-class JouveContent(SubscriptionContentType):
+class JouveContent(IdentityCheckContent):
     # TODO: analyze jouve results to see where we can remove "optional"
     activity: typing.Optional[str]
     address: typing.Optional[str]
@@ -144,7 +144,7 @@ class JouveContent(SubscriptionContentType):
         return self.birthDateTxt.date() if self.birthDateTxt else None
 
 
-class DMSContent(SubscriptionContentType):
+class DMSContent(IdentityCheckContent):
     last_name: str
     first_name: str
     civility: str
@@ -299,7 +299,7 @@ class BeneficiaryFraudCheck(PcObject, Model):
         nullable=True,
     )
 
-    def source_data(self) -> typing.Union[SubscriptionContentType, UserProfilingFraudData]:
+    def source_data(self) -> typing.Union[IdentityCheckContent, UserProfilingFraudData]:
         if self.type not in FRAUD_CHECK_MAPPING:
             raise NotImplementedError(f"Cannot unserialize type {self.type}")
         return FRAUD_CHECK_MAPPING[self.type](**self.resultContent)

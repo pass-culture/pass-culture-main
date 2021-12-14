@@ -4,7 +4,7 @@ import typing
 import pydantic
 
 
-class SubscriptionContentType(pydantic.BaseModel):
+class IdentityCheckContent(pydantic.BaseModel):
     def get_registration_datetime(self) -> typing.Optional[datetime.datetime]:
         raise NotImplementedError()
 

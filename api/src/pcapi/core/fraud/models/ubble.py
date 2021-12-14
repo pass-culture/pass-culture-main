@@ -4,7 +4,7 @@ import typing
 
 import pydantic
 
-from .common import SubscriptionContentType
+from .common import IdentityCheckContent
 
 
 class UbbleIdentificationStatus(enum.Enum):
@@ -21,7 +21,7 @@ class UbbleScore(enum.Enum):
     UNDECIDABLE = -1.0
 
 
-class UbbleContent(SubscriptionContentType):
+class UbbleContent(IdentityCheckContent):
     birth_date: typing.Optional[datetime.date]
     comment: typing.Optional[str]
     document_type: typing.Optional[str]
