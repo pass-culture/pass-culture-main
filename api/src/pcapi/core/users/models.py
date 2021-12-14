@@ -496,11 +496,12 @@ class User(PcObject, Model, NeedsValidationMixin):
         )
 
     @classmethod
-    def init_subscription_state_machine(cls, obj, *args, **kwargs):
+    def init_subscription_state_machine(cls, obj, *args, **kwargs) -> None:
         from pcapi.core.subscription import transitions as subscription_transitions
 
         if not kwargs:
-            kwargs = args[-1]
+            if isinstance(args[-1], dict):
+                kwargs = args[-1]
 
         initial_state = obj.subscriptionState or kwargs.get("subscriptionState", SubscriptionState.account_created)
 
