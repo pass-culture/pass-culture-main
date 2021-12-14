@@ -7,6 +7,8 @@ from typing import Iterable
 from typing import Optional
 from typing import Union
 
+from pydantic.main import BaseModel
+
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.payment_status import TransactionStatus
 from pcapi.repository.reimbursement_queries import find_all_offerers_payments
@@ -175,3 +177,9 @@ def validate_reimbursement_period(
     if len(api_errors.errors) > 0:
         raise api_errors
     return reimbursement_period_dates or [None, None]
+
+
+class ReimbursementCsvQueryModel(BaseModel):
+    venueId: Optional[str]
+    reimbursementPeriodBeginningDate: Optional[str]
+    reimbursementPeriodEndingDate: Optional[str]
