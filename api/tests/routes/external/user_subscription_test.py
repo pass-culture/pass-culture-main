@@ -14,6 +14,7 @@ from pcapi.core.fraud import models as fraud_models
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.subscription import messages as subscription_messages
 from pcapi.core.subscription import models as subscription_models
+from pcapi.core.testing import override_settings
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.models.beneficiary_import import BeneficiaryImport
@@ -660,3 +661,157 @@ class UbbleWebhookTest:
         assert (
             content.identification_url == f"{settings.UBBLE_API_URL}/identifications/{str(content.identification_id)}"
         )
+
+    def test_bypass_of_reference_birthdate_check(self, client, ubble_mocker, mocker):
+        user = users_factories.UserFactory(email="whatever@ubble.test")
+        fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
+            type=fraud_models.FraudCheckType.UBBLE,
+            resultContent=fraud_factories.UbbleContentFactory(
+                status=test_factories.STATE_STATUS_MAPPING[test_factories.IdentificationState.PROCESSING].value,
+            ),
+            user=user,
+        )
+        request_data = self._get_request_body(fraud_check, fraud_models.ubble.UbbleIdentificationStatus.PROCESSED)
+        payload = json.dumps(request_data.dict(by_alias=True), default=json_default)
+        signature = self._get_signature(payload)
+        ubble_identification_response = test_factories.UbbleIdentificationResponseFactory(
+            identification_state=test_factories.IdentificationState.INVALID,
+            data__attributes__identification_id=str(request_data.identification_id),
+            included=[
+                test_factories.UbbleIdentificationIncludedDocumentsFactory(),
+                test_factories.UbbleIdentificationIncludedDocumentChecksFactory(),
+                test_factories.UbbleIdentificationIncludedFaceChecksFactory(),
+                test_factories.UbbleIdentificationIncludedDocFaceMatchesFactory(),
+                test_factories.UbbleIdentificationIncludedReferenceDataChecksFactory(
+                    attributes__score=fraud_models.ubble.UbbleScore.INVALID.value
+                ),
+            ],
+        )
+
+        with ubble_mocker(
+            request_data.identification_id,
+            json.dumps(ubble_identification_response.dict(by_alias=True), sort_keys=True, default=json_default),
+        ):
+            client.post(
+                "/webhooks/ubble/application_status",
+                headers={"Ubble-Signature": signature},
+                raw_json=payload,
+            )
+
+        fraud_check = fraud_api.ubble.get_ubble_fraud_check(
+            ubble_identification_response.data.attributes.identification_id
+        )
+        assert fraud_check.reason == ""
+        assert fraud_check.reasonCodes == []
+        assert fraud_check.status is fraud_models.FraudCheckStatus.OK
+
+        assert fraud_check.user.has_beneficiary_role
+
+        content = fraud_models.ubble.UbbleContent(**fraud_check.resultContent)
+        assert content.score == fraud_models.ubble.UbbleScore.VALID.value
+
+    @pytest.mark.parametrize(
+        "score",
+        (
+            fraud_models.ubble.UbbleScore.INVALID.value,
+            fraud_models.ubble.UbbleScore.UNDECIDABLE.value,
+        ),
+    )
+    def test_bypass_of_reference_birthdate_check_with_other_invalid_checks(self, client, ubble_mocker, mocker, score):
+        notified_identification_state = test_factories.IdentificationState.INVALID
+        user = users_factories.UserFactory(email="whatever@ubble.test")
+        fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
+            type=fraud_models.FraudCheckType.UBBLE,
+            resultContent=fraud_factories.UbbleContentFactory(
+                status=test_factories.STATE_STATUS_MAPPING[test_factories.IdentificationState.PROCESSING].value,
+            ),
+            user=user,
+        )
+        request_data = self._get_request_body(
+            fraud_check, test_factories.STATE_STATUS_MAPPING[notified_identification_state]
+        )
+        payload = json.dumps(request_data.dict(by_alias=True), default=json_default)
+        signature = self._get_signature(payload)
+        ubble_identification_response = test_factories.UbbleIdentificationResponseFactory(
+            identification_state=notified_identification_state,
+            data__attributes__identification_id=str(request_data.identification_id),
+            included=[
+                test_factories.UbbleIdentificationIncludedDocumentsFactory(),
+                test_factories.UbbleIdentificationIncludedDocumentChecksFactory(),
+                test_factories.UbbleIdentificationIncludedFaceChecksFactory(attributes__score=score),
+                test_factories.UbbleIdentificationIncludedDocFaceMatchesFactory(),
+                test_factories.UbbleIdentificationIncludedReferenceDataChecksFactory(
+                    attributes__score=fraud_models.ubble.UbbleScore.INVALID.value
+                ),
+            ],
+        )
+
+        with ubble_mocker(
+            request_data.identification_id,
+            json.dumps(ubble_identification_response.dict(by_alias=True), sort_keys=True, default=json_default),
+        ):
+            client.post(
+                "/webhooks/ubble/application_status",
+                headers={"Ubble-Signature": signature},
+                raw_json=payload,
+            )
+
+        fraud_check = fraud_api.ubble.get_ubble_fraud_check(
+            ubble_identification_response.data.attributes.identification_id
+        )
+        assert fraud_check.status is fraud_models.FraudCheckStatus.KO
+
+        assert not fraud_check.user.has_beneficiary_role
+
+        content = fraud_models.ubble.UbbleContent(**fraud_check.resultContent)
+        assert content.score == score
+
+    @override_settings(IS_PROD=True)
+    def test_bypass_of_reference_birthdate_check_disabled_on_production(self, client, ubble_mocker, mocker):
+        notified_identification_state = test_factories.IdentificationState.INVALID
+        user = users_factories.UserFactory(email="whatever@ubble.test")
+        fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
+            type=fraud_models.FraudCheckType.UBBLE,
+            resultContent=fraud_factories.UbbleContentFactory(
+                status=test_factories.STATE_STATUS_MAPPING[test_factories.IdentificationState.PROCESSING].value,
+            ),
+            user=user,
+        )
+        request_data = self._get_request_body(
+            fraud_check, test_factories.STATE_STATUS_MAPPING[notified_identification_state]
+        )
+        payload = json.dumps(request_data.dict(by_alias=True), default=json_default)
+        signature = self._get_signature(payload)
+        ubble_identification_response = test_factories.UbbleIdentificationResponseFactory(
+            identification_state=notified_identification_state,
+            data__attributes__identification_id=str(request_data.identification_id),
+            included=[
+                test_factories.UbbleIdentificationIncludedDocumentsFactory(),
+                test_factories.UbbleIdentificationIncludedDocumentChecksFactory(),
+                test_factories.UbbleIdentificationIncludedFaceChecksFactory(),
+                test_factories.UbbleIdentificationIncludedDocFaceMatchesFactory(),
+                test_factories.UbbleIdentificationIncludedReferenceDataChecksFactory(
+                    attributes__score=fraud_models.ubble.UbbleScore.INVALID.value
+                ),
+            ],
+        )
+
+        with ubble_mocker(
+            request_data.identification_id,
+            json.dumps(ubble_identification_response.dict(by_alias=True), sort_keys=True, default=json_default),
+        ):
+            client.post(
+                "/webhooks/ubble/application_status",
+                headers={"Ubble-Signature": signature},
+                raw_json=payload,
+            )
+
+        fraud_check = fraud_api.ubble.get_ubble_fraud_check(
+            ubble_identification_response.data.attributes.identification_id
+        )
+        assert fraud_check.status is fraud_models.FraudCheckStatus.KO
+
+        assert not fraud_check.user.has_beneficiary_role
+
+        content = fraud_models.ubble.UbbleContent(**fraud_check.resultContent)
+        assert content.score == fraud_models.ubble.UbbleScore.INVALID.value

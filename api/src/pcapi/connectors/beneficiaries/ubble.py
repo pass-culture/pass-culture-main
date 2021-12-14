@@ -33,6 +33,9 @@ def build_url(path: str) -> str:
 INCLUDED_MODELS = {
     "documents": ubble_models.UbbleIdentificationDocuments,
     "document-checks": ubble_models.UbbleIdentificationDocumentChecks,
+    "face-checks": ubble_models.UbbleIdentificationFaceChecks,
+    "reference-data-checks": ubble_models.UbbleIdentificationReferenceDataChecks,
+    "doc-face-matches": ubble_models.UbbleIdentificationDocFaceMatches,
 }
 
 
@@ -134,10 +137,54 @@ def start_identification(
     return content
 
 
-def get_content(identification_id: str) -> ubble_models.UbbleContent:
+def get_content(
+    identification_id: str, disable_invalid_reference_data_error: bool = False
+) -> ubble_models.UbbleContent:
     session = configure_session()
     response = session.get(
         build_url(f"/identifications/{identification_id}/"),
-    )
-    content = _extract_useful_content_from_response(response.json())
+    ).json()
+
+    if disable_invalid_reference_data_error:
+        _discard_reference_data_error(response)
+
+    content = _extract_useful_content_from_response(response)
     return content
+
+
+def _discard_reference_data_error(response: ubble_models.UbbleIdentificationResponse) -> None:
+    reference_data_checks: ubble_models.UbbleIdentificationReferenceDataChecks = _get_included_attributes(
+        response, "reference-data-checks"
+    )
+
+    if reference_data_checks.score == ubble_models.UbbleScore.INVALID.value:
+        reference_data_checks.score = ubble_models.UbbleScore.VALID
+
+        document_checks = ubble_models.UbbleIdentificationDocumentChecks = _get_included_attributes(
+            response, "document-checks"
+        )
+        face_checks = ubble_models.UbbleIdentificationFaceChecks = _get_included_attributes(response, "face-checks")
+        doc_face_matches = ubble_models.UbbleIdentificationDocFaceMatches = _get_included_attributes(
+            response, "doc-face-matches"
+        )
+        all_scores_but_reference_data_checks = list(
+            map(
+                int,
+                filter(
+                    lambda v: v is not None,
+                    [
+                        *document_checks.dict().values(),
+                        *face_checks.dict().values(),
+                        *doc_face_matches.dict().values(),
+                    ],
+                ),
+            )
+        )
+        # Ubble score priority = 0, -1, 1:
+        # - if at least one sub-score is 0 -> score is 0
+        # - else if at least one sub-score is -1 -> score is -1
+        # - else score is 1
+        for score in (0, -1, 1):
+            if score in map(int, all_scores_but_reference_data_checks):
+                response["data"]["attributes"]["score"] = score
+                break

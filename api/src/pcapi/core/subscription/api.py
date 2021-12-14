@@ -30,6 +30,7 @@ from pcapi.workers import apps_flyer_job
 from . import exceptions
 from . import models
 from . import repository as subscription_repository
+from ... import settings
 
 
 logger = logging.getLogger(__name__)
@@ -240,11 +241,15 @@ def start_ubble_workflow(user: users_models.User, redirect_url: str) -> str:
 def update_ubble_workflow(
     fraud_check: fraud_models.BeneficiaryFraudCheck, status: fraud_models.ubble.UbbleIdentificationStatus
 ) -> None:
-    content = ubble.get_content(fraud_check.thirdPartyId)
+    user = fraud_check.user
+    # this variable MUST NEVER be True in production environment
+    discard_reference_data_error = (not settings.IS_PROD) and user.email.endswith("@ubble.test")
+
+    content = ubble.get_content(
+        fraud_check.thirdPartyId, disable_invalid_reference_data_error=discard_reference_data_error
+    )
     fraud_check.resultContent = content
     pcapi_repository.repository.save(fraud_check)
-
-    user = fraud_check.user
 
     if status == fraud_models.ubble.UbbleIdentificationStatus.PROCESSING:
         user.hasCompletedIdCheck = True
