@@ -88,8 +88,6 @@ class FeatureToggle(enum.Enum):
     SYNCHRONIZE_TITELIVE_PRODUCTS_DESCRIPTION = "Permettre limport journalier des résumés des livres"
     SYNCHRONIZE_TITELIVE_PRODUCTS_THUMBS = "Permettre limport journalier des couvertures de livres"
     UPDATE_BOOKING_USED = "Permettre la validation automatique des contremarques 48h après la fin de lévènement"
-    USE_APP_SEARCH_ON_NATIVE_APP = "Utiliser App Search au lieu d'Algolia sur l'app native"
-    USE_APP_SEARCH_ON_WEBAPP = "Utiliser App Search au lieu d'Algolia sur la webapp"
     USER_PROFILING_FRAUD_CHECK = "Détection de la fraude basée sur le profil de l'utilisateur"
     WEBAPP_HOMEPAGE = "Permettre l affichage de la nouvelle page d accueil de la webapp"
     WEBAPP_V2_ENABLED = "Utiliser la nouvelle web app (décli web/v2) au lieu de l'ancienne"
@@ -148,7 +146,6 @@ FEATURES_DISABLED_BY_DEFAULT = (
     FeatureToggle.PERF_VENUE_STATS,
     FeatureToggle.PRICE_BOOKINGS,
     FeatureToggle.PRO_REIMBURSEMENTS_FILTERS,
-    FeatureToggle.USE_APP_SEARCH_ON_WEBAPP,
     FeatureToggle.USER_PROFILING_FRAUD_CHECK,
     FeatureToggle.WEBAPP_V2_ENABLED,
     FeatureToggle.SHOW_INVOICES_ON_PRO_PORTAL,
