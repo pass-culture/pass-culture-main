@@ -68,6 +68,8 @@ class Returns200Test:
                     "id": stock1.id,
                     "isBookable": True,
                     "price": 1000,
+                    "educationalPriceDetail": "Le prix inclus l'accès à la séance et un atelier une fois la séance terminée. 1000 caractères max.",
+                    "numberOfTickets": 30,
                 },
                 {
                     "beginningDatetime": "2021-05-16T00:00:00Z",
@@ -75,6 +77,8 @@ class Returns200Test:
                     "id": stock2.id,
                     "isBookable": True,
                     "price": 20000,
+                    "educationalPriceDetail": "Le prix inclus l'accès à la séance et un atelier une fois la séance terminée. 1000 caractères max.",
+                    "numberOfTickets": 30,
                 },
             ],
             "subcategoryLabel": "Séance de cinéma",

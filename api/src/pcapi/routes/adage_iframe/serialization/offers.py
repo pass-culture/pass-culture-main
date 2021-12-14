@@ -22,6 +22,8 @@ class OfferStockResponse(BaseModel):
     bookingLimitDatetime: Optional[datetime]
     isBookable: bool
     price: int
+    numberOfTickets: Optional[int]
+    educationalPriceDetail: Optional[str]
 
     _convert_price = validator("price", pre=True, allow_reuse=True)(convert_to_cent)
 
