@@ -7,9 +7,13 @@ import { createStockDataPayload } from 'core/OfferEducationalStock/utils/createS
 import { Offer } from 'custom_types/offer'
 import * as pcapi from 'repository/pcapi/pcapi'
 
-type Params = { offer: Offer; values: OfferEducationalStockFormValues }
+type Params = {
+  offer: Offer
+  stockId: string
+  values: OfferEducationalStockFormValues
+}
 
-type PostEducationalStockAdapter = Adapter<Params, null, null>
+type PatchEducationalStockAdapter = Adapter<Params, null, null>
 
 const BAD_REQUEST_FAILING_RESPONSE = {
   isOk: false,
@@ -19,24 +23,24 @@ const BAD_REQUEST_FAILING_RESPONSE = {
 
 const UNKNOWN_FAILING_RESPONSE = {
   isOk: false,
-  message: 'Une erreur est survenue lors de la création de votre stock.',
+  message: 'Une erreur est survenue lors de la mise à jour de votre stock.',
   payload: null,
 }
 
-const postEducationalStockAdapter: PostEducationalStockAdapter = async ({
+const patchEducationalStockAdapter: PatchEducationalStockAdapter = async ({
   offer,
+  stockId,
   values,
 }: Params) => {
   const stockPayload: StockPayload = createStockDataPayload(
     values,
     offer.venue.departementCode
   )
-  const stockCreationPayload = { offerId: offer.id, ...stockPayload }
   try {
-    await pcapi.createEducationalStock(stockCreationPayload)
+    await pcapi.editEducationalStock(stockId, stockPayload)
     return {
       isOk: true,
-      message: null,
+      message: 'Le détail de votre stock a bien été modifié.',
       payload: null,
     }
   } catch (error) {
@@ -48,4 +52,4 @@ const postEducationalStockAdapter: PostEducationalStockAdapter = async ({
   }
 }
 
-export default postEducationalStockAdapter
+export default patchEducationalStockAdapter

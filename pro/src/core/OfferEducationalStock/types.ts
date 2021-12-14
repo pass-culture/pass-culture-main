@@ -5,3 +5,10 @@ export type OfferEducationalStockFormValues = {
   totalPrice: number | ''
   bookingLimitDatetime: Date | ''
 }
+
+export type StockPayload = {
+  beginningDatetime: Date
+  bookingLimitDatetime: Date | null
+  totalPrice: number | ''
+  numberOfTickets: number | ''
+}

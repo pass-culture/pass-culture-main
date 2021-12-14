@@ -10,9 +10,9 @@ import { Offer } from 'custom_types/offer'
 import OfferEducationalStockScreen from 'screens/OfferEducationalStock'
 
 import { getEducationalStockAdapter } from './adapters/getEducationalStockAdapter'
-import patchEducationalStockAdapter from './adapters/patchEducationalStock'
-import { extractInitialStockValues } from './extractInitialStockValues'
+import patchEducationalStockAdapter from './adapters/patchEducationalStockAdatper'
 import { StockResponse } from './types'
+import { extractInitialStockValues } from './utils/extractInitialStockValues'
 
 const OfferEducationalStockEdition = (): JSX.Element => {
   const [initialValues, setInitialValues] =
@@ -27,7 +27,10 @@ const OfferEducationalStockEdition = (): JSX.Element => {
     offer: Offer,
     values: OfferEducationalStockFormValues
   ) => {
-    const stockId = stock?.id
+    if(!stock) {
+      return notify.error('Impossible de mettre à jour le stock.')
+    }
+    const stockId = stock.id
     const { isOk, message } = await patchEducationalStockAdapter({
       offer,
       stockId,
@@ -43,14 +46,16 @@ const OfferEducationalStockEdition = (): JSX.Element => {
   useEffect(() => {
     if (!isReady) {
       const loadStockAndOffer = async () => {
-        const results = await Promise.all([
+        const [offerResponse, stockResponse] = await Promise.all([
           getOfferAdapter(offerId),
           getEducationalStockAdapter(offerId),
         ])
-        if (results.some(res => !res.isOk)) {
-          return notify.error(results?.find(res => !res.isOk)?.message)
+        if (!offerResponse.isOk){
+          return notify.error(offerResponse.message)
         }
-        const [offerResponse, stockResponse] = results
+        if (!stockResponse.isOk){
+          return notify.error(stockResponse.message)
+        }
         setOffer(offerResponse.payload.offer)
         setStock(stockResponse.payload.stock)
         const initialValuesFromStock = extractInitialStockValues(
