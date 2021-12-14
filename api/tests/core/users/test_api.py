@@ -1326,6 +1326,16 @@ class EligibilityStartDateTest:
         assert get_eligibility_start_datetime(datetime(2006, 1, 10)) == datetime(2021, 1, 10)
 
     @override_features(ENABLE_UNDERAGE_GENERALISATION=True)
+    @override_settings(
+        UNDERAGE_BROAD_OPENING_DATETIME=datetime(2022, 1, 31),
+        UNDERAGE_EARLY_OPENING_DATETIME=datetime(2022, 1, 3),
+        UNDERAGE_16_YO_OPENING_DATETIME=datetime(2022, 1, 20),
+        UNDERAGE_17_YO_OPENING_DATETIME=datetime(2022, 1, 10),
+    )
+    @patch(
+        "pcapi.core.users.constants.UNDERAGE_OPENING_DATETIMES_BY_AGE",
+        {15: datetime(2022, 1, 31), 16: datetime(2022, 1, 20), 17: datetime(2022, 1, 10)},
+    )
     @pytest.mark.parametrize(
         "date_of_birth,expected_date",
         [
@@ -1346,6 +1356,16 @@ class EligibilityStartDateTest:
 
 class GetEligibilityTest:
     @override_features(ENABLE_UNDERAGE_GENERALISATION=True)
+    @override_settings(
+        UNDERAGE_BROAD_OPENING_DATETIME=datetime(2022, 1, 31),
+        UNDERAGE_EARLY_OPENING_DATETIME=datetime(2022, 1, 3),
+        UNDERAGE_16_YO_OPENING_DATETIME=datetime(2022, 1, 20),
+        UNDERAGE_17_YO_OPENING_DATETIME=datetime(2022, 1, 10),
+    )
+    @patch(
+        "pcapi.core.users.constants.UNDERAGE_OPENING_DATETIMES_BY_AGE",
+        {15: datetime(2022, 1, 31), 16: datetime(2022, 1, 20), 17: datetime(2022, 1, 10)},
+    )
     @pytest.mark.parametrize(
         "date_of_birth,specified_date,expected_eligibility",
         [
@@ -1366,6 +1386,11 @@ class GetEligibilityTest:
     )
     def test_eligibility_at_date(self, date_of_birth, specified_date, expected_eligibility):
         assert get_eligibility_at_date(date_of_birth, specified_date) == expected_eligibility
+
+    @override_features(ENABLE_UNDERAGE_GENERALISATION=True)
+    def test_eligibility_at_date_testing(self):
+        assert get_eligibility_at_date(datetime(2005, 12, 18), datetime(2021, 12, 13)) == EligibilityType.UNDERAGE
+        assert get_eligibility_at_date(datetime(2005, 12, 18), datetime(2021, 12, 12)) == None
 
     @override_features(ENABLE_UNDERAGE_GENERALISATION=False)
     @pytest.mark.parametrize(
