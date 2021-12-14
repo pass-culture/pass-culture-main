@@ -215,7 +215,18 @@ def get_eligibility_type(data: models.SubscriptionContentType) -> typing.Optiona
     if registration_datetime is None or birth_date is None:
         return None
 
-    return users_api.get_eligibility_at_date(birth_date, registration_datetime)
+    eligibility_at_registration = users_api.get_eligibility_at_date(birth_date, registration_datetime)
+    eligibility_today = users_api.get_eligibility_at_date(birth_date, datetime.datetime.now())
+
+    # When a user turns 18, the underage credit expires.
+    # If they turned 18 between registration and today, we consider the application as coming from a 18 years old user.
+    if (
+        eligibility_today == users_models.EligibilityType.AGE18
+        and eligibility_at_registration == users_models.EligibilityType.UNDERAGE
+    ):
+        return users_models.EligibilityType.AGE18
+
+    return eligibility_at_registration
 
 
 def on_identity_fraud_check_result(
