@@ -337,7 +337,8 @@ class User(PcObject, Model, NeedsValidationMixin):
         return users_utils.get_age_from_birth_date(self.dateOfBirth.date()) if self.dateOfBirth is not None else None
 
     @property
-    def allowed_eligibility_check_methods(self) -> Optional[list[EligibilityCheckMethods]]:
+    def legacy_allowed_eligibility_check_methods(self) -> Optional[list[EligibilityCheckMethods]]:
+        # TODO (viconnex) remove this method after v164 native app is forced
         eligibility = self.eligibility
         if eligibility is None:
             return None

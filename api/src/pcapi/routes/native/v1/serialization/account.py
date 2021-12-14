@@ -161,6 +161,7 @@ class SubscriptionMessage(BaseModel):
 
 
 class UserProfileResponse(BaseModel):
+    # TODO (viconnex) remove allowed_eligibility_check_methods after v164 native app is forced
     allowed_eligibility_check_methods: Optional[list[EligibilityCheckMethods]]
     booked_offers: dict[str, int]
     dateOfBirth: Optional[datetime.date]
@@ -237,6 +238,7 @@ class UserProfileResponse(BaseModel):
         user.isEligibleForBeneficiaryUpgrade = user.is_eligible_for_beneficiary_upgrade()
         user.eligibility_end_datetime = get_eligibility_end_datetime(user.dateOfBirth)
         user.eligibility_start_datetime = get_eligibility_start_datetime(user.dateOfBirth)
+        user.allowed_eligibility_check_methods = user.legacy_allowed_eligibility_check_methods
         result = super().from_orm(user)
         result.subscriptionMessage = SubscriptionMessage.from_model(
             subscription_api.get_latest_subscription_message(user)
