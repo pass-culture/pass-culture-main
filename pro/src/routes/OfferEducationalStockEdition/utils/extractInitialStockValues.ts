@@ -3,16 +3,15 @@ import { OfferEducationalStockFormValues } from 'core/OfferEducationalStock/type
 import { Offer } from 'custom_types/offer'
 import { getLocalDepartementDateTimeFromUtc } from 'utils/timezone'
 
-import { StockResponse } from './types'
+import { StockResponse } from '../types'
 
 export const extractInitialStockValues = (
   stock: StockResponse | null,
-  offer: Offer | null
+  offer: Offer
 ): OfferEducationalStockFormValues => {
-  if (!stock || !offer) {
+  if (!stock) {
     return DEFAULT_EAC_STOCK_FORM_VALUES
   }
-  console.log(stock)
 
   return {
     eventDate:
@@ -25,7 +24,8 @@ export const extractInitialStockValues = (
         stock.beginningDatetime,
         offer.venue.departementCode
       ) || DEFAULT_EAC_STOCK_FORM_VALUES.eventTime,
-    numberOfPlaces: stock.numberOfTickets,
+    numberOfPlaces:
+      stock.numberOfTickets || DEFAULT_EAC_STOCK_FORM_VALUES.numberOfPlaces,
     totalPrice: stock.price,
     bookingLimitDatetime:
       getLocalDepartementDateTimeFromUtc(stock.bookingLimitDatetime) ||

@@ -7,6 +7,7 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 
 import useFeatureFlagedOfferEditionURL from 'components/hooks/useFeatureFlaggedOfferEditionURL'
+import useFeatureFlagedOfferStockEditionURL from 'components/hooks/useFeatureFlaggedOfferStockEditionURL'
 import Icon from 'components/layout/Icon'
 import Thumb from 'components/layout/Thumb'
 import { isOfferDisabled } from 'components/pages/Offers/domain/isOfferDisabled'
@@ -21,6 +22,10 @@ const OfferItem = ({ disabled, offer, isSelected, selectOffer }) => {
   const { venue, stocks, id, isEducational } = offer
 
   const editionOfferLink = useFeatureFlagedOfferEditionURL(isEducational, id)
+  const editionStockLink = useFeatureFlagedOfferStockEditionURL(
+    isEducational,
+    id
+  )
 
   function handleOnChangeSelected() {
     selectOffer(offer.id, !isSelected)
@@ -129,10 +134,7 @@ const OfferItem = ({ disabled, offer, isSelected, selectOffer }) => {
         <StatusLabel status={offer.status} />
       </td>
       <td className="switch-column">
-        <Link
-          className="secondary-link with-icon"
-          to={`/offres/${offer.id}/stocks`}
-        >
+        <Link className="secondary-link with-icon" to={editionStockLink}>
           <Icon svg="ico-guichet-full" />
           Stocks
         </Link>
