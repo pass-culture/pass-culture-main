@@ -190,7 +190,8 @@ def get_stocks_for_offers(offer_ids: list[int]) -> list[Stock]:
 
 def get_stocks_for_offer(offer_id: int) -> list[Stock]:
     return (
-        Stock.query.options(joinedload(Stock.offer).load_only(Offer.url))
+        Stock.query.options(joinedload(Stock.offer).load_only(Offer.url, Offer.isEducational))
+        .options(joinedload(Stock.bookings).load_only(Booking.status, Booking.isCancelled))
         .filter(Stock.offerId == offer_id)
         .filter(Stock.isSoftDeleted.is_(False))
         .all()
