@@ -424,8 +424,8 @@ def generate_payment_files(batch_id: int):
     ).count()
     if not_pending_cashflows:
         raise ValueError(
-            "Refusing to generate payment files, since some cashflows are not pending",
-            extra={"batch": batch_id, "not_pending": not_pending_cashflows},
+            f"Refusing to generate payment files for {batch_id}, "
+            f"because {not_pending_cashflows} cashflows are not pending",
         )
 
     file_paths = {}
