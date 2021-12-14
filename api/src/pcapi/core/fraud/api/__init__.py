@@ -192,7 +192,7 @@ def dms_fraud_checks(
     return fraud_items
 
 
-def get_eligibility_type(data: models.SubscriptionContentType) -> typing.Optional[users_models.EligibilityType]:
+def get_eligibility_type(data: models.IdentityCheckContent) -> typing.Optional[users_models.EligibilityType]:
     from pcapi.core.users import api as users_api
 
     registration_datetime = data.get_registration_datetime()
