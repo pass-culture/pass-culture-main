@@ -306,6 +306,7 @@ def needs_to_perform_identity_check(user: users_models.User) -> bool:
         not user.hasCompletedIdCheck
         and not (fraud_api.has_user_performed_ubble_check(user) and FeatureToggle.ENABLE_UBBLE.is_active())
         and not user.extraData.get("is_identity_document_uploaded")  # Jouve
+        and not (fraud_api.has_passed_educonnect(user) and user.eligibility == users_models.EligibilityType.UNDERAGE)
     )
 
 
