@@ -8,34 +8,39 @@ import React from 'react'
 import Banner from 'components/layout/Banner/Banner'
 import Icon from 'components/layout/Icon'
 
-const BankInformations = ({ offererId }) => {
-  const businessUnitRoutePath = `/structures/${offererId}/points-de-facturations/`
+const BusinessUnits = ({ offererId, hasTitle = true }) => {
+  const businessUnitRoutePath = `/structures/${offererId}/point-de-remboursement/`
   return (
     <>
-      <h3 className="h-card-secondary-title">
-        Points de facturation
-        <Icon
-          alt="Informations bancaires manquantes"
-          className="ico-bank-warning"
-          svg="ico-alert-filled"
-        />
-      </h3>
+      {hasTitle && (
+        <h3 className="h-card-secondary-title">
+          Points de facturation
+          <Icon
+            alt="Siret manquant"
+            className="ico-bank-warning"
+            svg="ico-alert-filled"
+          />
+        </h3>
+      )}
 
       <div className="h-card-content">
         <Banner
-        href={businessUnitRoutePath}
-        linkTitle="Consultez vos points de facturations"
+          href={businessUnitRoutePath}
+          icon="ico-outer-pen"
+          linkTitle="Renseigner un SIRET de référence"
         >
-        Certains de vos points de facturation ne sont pas rattachés à SIRET.
-        Pour percevoir vos remboursements, veuillez renseignez un SIRET.
+          Certains de vos points de facturation ne sont pas rattachés à un
+          SIRET. Pour continuer à percevoir vos remboursements, veuillez
+          renseigner un SIRET de référence.
         </Banner>
       </div>
     </>
   )
 }
 
-BankInformations.propTypes = {
+BusinessUnits.propTypes = {
+  hasTitle: PropTypes.bool.isRequired,
   offererId: PropTypes.string.isRequired,
 }
 
-export default BankInformations
+export default BusinessUnits
