@@ -83,6 +83,7 @@ export type GetIsOffererEligibleToEducationalOffer = Adapter<
 export enum Mode {
   CREATION,
   EDITION,
+  READ_ONLY,
 }
 
 export type EducationalOfferModelPayload = {
@@ -107,4 +108,19 @@ export type EducationalOfferModelPayload = {
       venueId: string
     }
   }
+}
+
+export type OfferEducationalStockFormValues = {
+  eventDate: Date | ''
+  eventTime: Date | ''
+  numberOfPlaces: number | ''
+  totalPrice: number | ''
+  bookingLimitDatetime: Date | ''
+}
+
+export type StockPayload = {
+  beginningDatetime: Date
+  bookingLimitDatetime: Date | null
+  totalPrice: number
+  numberOfTickets: number
 }

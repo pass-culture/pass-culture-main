@@ -4,9 +4,12 @@ import { useParams } from 'react-router-dom'
 
 import useNotification from 'components/hooks/useNotification'
 import Spinner from 'components/layout/Spinner'
-import { getOfferAdapter, Mode } from 'core/OfferEducational'
-import { DEFAULT_EAC_STOCK_FORM_VALUES } from 'core/OfferEducationalStock/constants'
-import { OfferEducationalStockFormValues } from 'core/OfferEducationalStock/types'
+import {
+  DEFAULT_EAC_STOCK_FORM_VALUES,
+  getOfferAdapter,
+  Mode,
+  OfferEducationalStockFormValues,
+} from 'core/OfferEducational'
 import { Offer } from 'custom_types/offer'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 import OfferEducationalLayout from 'new_components/OfferEducationalLayout'
@@ -40,12 +43,11 @@ const OfferEducationalStockCreation = (): JSX.Element => {
     if (!isReady) {
       const loadOffer = async () => {
         const { payload, message, isOk } = await getOfferAdapter(offerId)
-        if (isOk) {
-          setOffer(payload.offer)
-          setIsReady(true)
-          return
+        if (!isOk) {
+          return notify.error(message)
         }
-        notify.error(message)
+        setOffer(payload.offer)
+        setIsReady(true)
       }
 
       loadOffer()
