@@ -197,6 +197,7 @@ class BeneficiaryGrant18Factory(BaseFactory):
 
         return fraud_factories.BeneficiaryFraudCheckFactory(
             user=obj,
+            status=fraud_models.FraudCheckStatus.OK,
             type=fraud_models.FraudCheckType.EDUCONNECT
             if obj.eligibility == users_models.EligibilityType.UNDERAGE
             else fraud_models.FraudCheckType.JOUVE,
