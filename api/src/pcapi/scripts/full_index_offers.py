@@ -11,7 +11,6 @@ from sqlalchemy.orm import joinedload
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.models as offers_models
 from pcapi.core.search.backends import algolia
-from pcapi.core.search.backends import appsearch
 
 
 BATCH_SIZE = 1_000
@@ -31,22 +30,20 @@ def _get_eta(end, current, elapsed_per_batch):
 
 
 @blueprint.cli.command("full_index_offers")
-@click.argument("backend", required=True, type=click.Choice(("algolia", "appsearch")))
 @click.argument("start", type=int, required=True)
 @click.argument("end", type=int, required=True)
-def full_index_offers(backend, start, end):
+def full_index_offers(start, end):
     """Reindex all bookable offers.
 
     The script iterates over all active offers. For each offer, it
-    indexes it on the selected backend Algolia or App Search) if the
-    offer is bookable. Otherwise, the offer is NOT unindexed, as we
-    suppose that the offer has already been unindexed through the
-    normally-run code. That way, this script skips a lot of
-    unnecessary unindexation requests.
+    indexes it on the backend (Algolia) if the offer is bookable.
+    Otherwise, the offer is NOT unindexed, as we suppose that the
+    offer has already been unindexed through the normally-run
+    code. That way, this script skips a lot of unnecessary
+    unindexation requests.
 
-    This script processes batches of 1.000 offers (note that HTTP
-    requests to App Search cannot have include more than 100 offers)
-    and reports back every 10.000 offers.
+    This script processes batches of 1.000 offers and reports back
+    every 10.000 offers.
 
     Errors are logged and are not blocking. You MUST check the logs
     for batches that failed and MUST re-run all these batches.
@@ -61,11 +58,10 @@ def full_index_offers(backend, start, end):
 
     Using "_" as thousands separator is supported (and encouraged for
     clarity).
-
     """
     if start > end:
         raise ValueError('"start" must be less than "end"')
-    backend = {"algolia": algolia.AlgoliaBackend(), "appsearch": appsearch.AppSearchBackend()}[backend]
+    backend = algolia.AlgoliaBackend()
 
     queue = []
 

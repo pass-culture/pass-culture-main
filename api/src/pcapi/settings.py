@@ -341,8 +341,6 @@ APPS_FLYER_IOS_API_KEY = os.environ.get("APPS_FLYER_IOS_API_KEY", "")
 
 # SEARCH
 SEARCH_BACKEND = os.environ.get("SEARCH_BACKEND", _default_search_backend)
-APPSEARCH_API_KEY = os.environ.get("APPSEARCH_API_KEY", "")
-APPSEARCH_HOST = os.environ.get("APPSEARCH_HOST", "")
 
 # ADAGE
 ADAGE_API_KEY = os.environ.get("ADAGE_API_KEY", None)
