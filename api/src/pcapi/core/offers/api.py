@@ -518,6 +518,7 @@ def create_educational_stock(stock_data: EducationalStockCreationBodyModel, user
     booking_limit_datetime = stock_data.booking_limit_datetime
     total_price = stock_data.total_price
     number_of_tickets = stock_data.number_of_tickets
+    educational_price_detail = stock_data.educational_price_detail
 
     offer = Offer.query.filter_by(id=offer_id).one()
     if not offer.isEducational:
@@ -532,6 +533,7 @@ def create_educational_stock(stock_data: EducationalStockCreationBodyModel, user
         bookingLimitDatetime=booking_limit_datetime,
         price=total_price,
         numberOfTickets=number_of_tickets,
+        educationalPriceDetail=educational_price_detail,
         quantity=1,
     )
     repository.save(stock)
