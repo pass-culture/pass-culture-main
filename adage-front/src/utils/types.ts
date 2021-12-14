@@ -55,6 +55,7 @@ export interface StockType {
   isBookable: boolean
   price: number
   numberOfTickets?: number
+  educationalPriceDetail?: string
 }
 
 // See attributesToRetrieve

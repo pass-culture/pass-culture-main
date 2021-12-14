@@ -50,8 +50,10 @@ const OfferDetails = ({ offer }: { offer: OfferType }): JSX.Element => {
     mentalDisabilityCompliant,
     motorDisabilityCompliant,
     visualDisabilityCompliant,
+    stocks,
   } = offer
   const { students, offerVenue, contactEmail, contactPhone } = extraData ?? {}
+  const { educationalPriceDetail } = stocks[0] ?? {}
 
   const durationString = computeDurationString(durationMinutes)
   const displayContactSection = contactEmail || contactPhone
@@ -77,6 +79,12 @@ const OfferDetails = ({ offer }: { offer: OfferType }): JSX.Element => {
           </ul>
         </OfferSection>
       )}
+      {educationalPriceDetail && (
+        <OfferSection title="Détail du prix total">
+          {educationalPriceDetail}
+        </OfferSection>
+      )}
+
       <OfferSection title="Adresse où se déroulera l’évènement">
         <OfferVenue offerVenue={offerVenue} venue={venue} />
       </OfferSection>
