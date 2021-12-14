@@ -781,7 +781,6 @@ class RunIntegrationTest:
             for fraud_check in user.beneficiaryFraudChecks
             if fraud_check.type == fraud_models.FraudCheckType.DMS
         )
-        dms_fraud_check = user.beneficiaryFraudChecks[0]
         assert dms_fraud_check.type == fraud_models.FraudCheckType.DMS
         fraud_content = fraud_models.DMSContent(**dms_fraud_check.resultContent)
         assert fraud_content.birth_date == user.dateOfBirth.date()
