@@ -7,6 +7,7 @@ import pydantic
 from pydantic.class_validators import validator
 import pydantic.datetime_parse
 import pydantic.errors
+import pytz
 import sqlalchemy.dialects.postgresql
 import sqlalchemy.orm
 
@@ -15,6 +16,7 @@ from pcapi.models import Model
 from pcapi.models.pc_object import PcObject
 
 from . import ubble as ubble_models
+from .common import SubscriptionContentType
 
 
 class FraudCheckType(enum.Enum):
@@ -81,7 +83,7 @@ def _parse_jouve_datetime(date: typing.Optional[str]) -> typing.Optional[datetim
         return None
 
 
-class EduconnectContent(pydantic.BaseModel):
+class EduconnectContent(SubscriptionContentType):
     birth_date: datetime.date
     educonnect_id: str
     first_name: str
@@ -91,8 +93,14 @@ class EduconnectContent(pydantic.BaseModel):
     school_uai: typing.Optional[str]
     student_level: typing.Optional[str]
 
+    def get_registration_datetime(self) -> datetime.datetime:
+        return self.registration_datetime
 
-class JouveContent(pydantic.BaseModel):
+    def get_birth_date(self) -> datetime.date:
+        return self.birth_date
+
+
+class JouveContent(SubscriptionContentType):
     # TODO: analyze jouve results to see where we can remove "optional"
     activity: typing.Optional[str]
     address: typing.Optional[str]
@@ -129,8 +137,14 @@ class JouveContent(pydantic.BaseModel):
     _parse_birth_date = validator("birthDateTxt", pre=True, allow_reuse=True)(_parse_jouve_date)
     _parse_registration_date = validator("registrationDate", pre=True, allow_reuse=True)(_parse_jouve_datetime)
 
+    def get_registration_datetime(self) -> typing.Optional[datetime.datetime]:
+        return self.registrationDate
 
-class DMSContent(pydantic.BaseModel):
+    def get_birth_date(self) -> typing.Optional[datetime.date]:
+        return self.birthDateTxt.date() if self.birthDateTxt else None
+
+
+class DMSContent(SubscriptionContentType):
     last_name: str
     first_name: str
     civility: str
@@ -145,6 +159,14 @@ class DMSContent(pydantic.BaseModel):
     address: typing.Optional[str]
     id_piece_number: typing.Optional[str]
     registration_datetime: typing.Optional[datetime.datetime]
+
+    def get_registration_datetime(self) -> typing.Optional[datetime.datetime]:
+        return (
+            self.registration_datetime.astimezone(pytz.utc).replace(tzinfo=None) if self.registration_datetime else None
+        )
+
+    def get_birth_date(self) -> datetime.date:
+        return self.birth_date
 
 
 class UserProfilingRiskRating(enum.Enum):
@@ -210,9 +232,6 @@ class InternalReviewFraudData(pydantic.BaseModel):
     source: InternalReviewSource
     message: str
     phone_number: typing.Optional[str]
-
-
-SubscriptionContentType = typing.Union[EduconnectContent, JouveContent, ubble_models.UbbleContent, DMSContent]
 
 
 FRAUD_CHECK_MAPPING = {

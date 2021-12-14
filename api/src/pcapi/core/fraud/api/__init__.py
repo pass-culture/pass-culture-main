@@ -4,12 +4,10 @@ import re
 import typing
 
 import pydantic
-import pytz
 import sqlalchemy
 
 from pcapi.connectors.beneficiaries import jouve_backend
 from pcapi.core.fraud import exceptions
-from pcapi.core.fraud import models as fraud_models
 from pcapi.core.fraud.exceptions import BeneficiaryFraudResultCannotBeDowngraded
 from pcapi.core.users import constants
 from pcapi.core.users import models as users_models
@@ -197,20 +195,8 @@ def dms_fraud_checks(
 def get_eligibility_type(data: models.SubscriptionContentType) -> typing.Optional[users_models.EligibilityType]:
     from pcapi.core.users import api as users_api
 
-    if isinstance(data, models.EduconnectContent):
-        registration_datetime = data.registration_datetime
-        birth_date = data.birth_date
-    elif isinstance(data, models.JouveContent):
-        registration_datetime = data.registrationDate
-        birth_date = data.birthDateTxt.date() if data.birthDateTxt else None
-    elif isinstance(data, fraud_models.ubble.UbbleContent):
-        registration_datetime = data.registration_datetime
-        birth_date = data.birth_date
-    elif isinstance(data, models.DMSContent):
-        registration_datetime = data.registration_datetime.astimezone(pytz.utc).replace(tzinfo=None)
-        birth_date = data.birth_date
-    else:
-        raise exceptions.InvalidContentTypeException()
+    registration_datetime = data.get_registration_datetime()
+    birth_date = data.get_birth_date()
 
     if registration_datetime is None or birth_date is None:
         return None
