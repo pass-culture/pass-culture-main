@@ -333,7 +333,7 @@ def get_next_subscription_step(user: users_models.User) -> typing.Optional[model
 
     if (
         not user.hasCompletedIdCheck
-        and user.allowed_eligibility_check_methods
+        and allowed_identity_check_methods
         and not (fraud_api.has_user_performed_ubble_check(user) and FeatureToggle.ENABLE_UBBLE.is_active())
         and not user.extraData.get("is_identity_document_uploaded")  # Jouve
     ):
