@@ -1,3 +1,8 @@
+# temporary
+# FIXME: remove pygments version restriction when no more needed
+pygments<2.11.2  # because pygments 2.11.2 breaks pgcli, see https://github.com/dbcli/pgcli/issues/1303
+# /temporary
+
 alembic==1.4.3
 algoliasearch==2.4.0
 # astroid is required by pylint and version 2.5.7 and 2.5.8 crashes
