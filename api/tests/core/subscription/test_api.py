@@ -203,7 +203,7 @@ class EduconnectFlowTest:
 
     @freeze_time("2021-10-10")
     @patch("pcapi.core.users.external.educonnect.api.get_saml_client")
-    @override_features(IS_HONOR_STATEMENT_MANDATORY_TO_ACTIVATE_BENEFICIARY=True)
+    @override_features(IS_HONOR_STATEMENT_MANDATORY_TO_ACTIVATE_BENEFICIARY=True, ENABLE_EDUCONNECT_AUTHENTICATION=True)
     def test_educonnect_subscription(self, mock_get_educonnect_saml_client, client, app):
         ine_hash = "5ba682c0fc6a05edf07cd8ed0219258f"
         fraud_factories.IneHashWhitelistFactory(ine_hash=ine_hash)
@@ -279,6 +279,7 @@ class EduconnectFlowTest:
         assert user.ineHash == ine_hash
 
         assert not user.is_beneficiary
+        assert subscription_api.get_next_subscription_step(user) == subscription_models.SubscriptionStep.HONOR_STATEMENT
 
         response = client.post("/native/v1/subscription/honor_statement")
 
