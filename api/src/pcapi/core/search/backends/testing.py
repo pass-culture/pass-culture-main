@@ -2,26 +2,26 @@ from flask import current_app
 
 from pcapi.core.search import testing
 
-from .appsearch import AppSearchBackend
+from .algolia import AlgoliaBackend
 
 
 class FakeClient:
     def __init__(self, key):
         self.key = key
 
-    def create_or_update_documents(self, documents):
-        for document in documents:
-            testing.search_store[self.key][document["id"]] = document
+    def save_objects(self, objects):
+        for obj in objects:
+            testing.search_store[self.key][obj["objectID"]] = obj
 
-    def delete_documents(self, document_ids):
-        for document_id in document_ids:
-            testing.search_store[self.key].pop(document_id, None)
+    def delete_objects(self, object_ids):
+        for object_id in object_ids:
+            testing.search_store[self.key].pop(object_id, None)
 
-    def delete_all_documents(self):
+    def clear_objects(self):
         testing.search_store[self.key] = {}
 
 
-class TestingBackend(AppSearchBackend):
+class TestingBackend(AlgoliaBackend):
     """A backend to be used by automated tests.
 
     We subclass a real-looking backend to be as close as possible to
@@ -30,7 +30,6 @@ class TestingBackend(AppSearchBackend):
     """
 
     def __init__(self):  # pylint: disable=super-init-not-called
-        self.offers_engine = FakeClient("offers")
-        self.venues_engine = FakeClient("venues")
-        self.educational_offers_engine = FakeClient("educational-offers")
+        self.algolia_offers_client = FakeClient("offers")
+        self.algolia_venues_client = FakeClient("venues")
         self.redis_client = current_app.redis_client
