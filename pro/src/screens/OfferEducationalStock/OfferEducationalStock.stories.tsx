@@ -1,8 +1,7 @@
 import { action } from '@storybook/addon-actions'
 import React from 'react'
 
-import { Mode } from 'core/OfferEducational'
-import { DEFAULT_EAC_STOCK_FORM_VALUES } from 'core/OfferEducationalStock/constants'
+import { DEFAULT_EAC_STOCK_FORM_VALUES, Mode } from 'core/OfferEducational'
 import { OfferStatus } from 'custom_types/offer'
 
 import { withPageTemplate } from '../../stories/decorators/withPageTemplate'

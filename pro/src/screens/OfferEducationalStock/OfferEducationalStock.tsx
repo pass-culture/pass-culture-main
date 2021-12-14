@@ -3,9 +3,9 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 
 import Banner from 'components/layout/Banner/Banner'
+/* @debt standard "Gautier: Do not load internal page dependencies"*/
 import { computeOffersUrl } from 'components/pages/Offers/utils/computeOffersUrl'
-import { Mode } from 'core/OfferEducational'
-import { OfferEducationalStockFormValues } from 'core/OfferEducationalStock/types'
+import { Mode, OfferEducationalStockFormValues } from 'core/OfferEducational'
 import { Offer } from 'custom_types/offer'
 import FormLayout from 'new_components/FormLayout'
 import { SubmitButton } from 'ui-kit'
@@ -24,7 +24,6 @@ export interface IOfferEducationalStockProps {
 }
 
 const OfferEducationalStock = ({
-  isEditable = true,
   initialValues,
   offer,
   onSubmit,
@@ -37,6 +36,8 @@ const OfferEducationalStock = ({
     onSubmit: values => onSubmit(offer, values),
     validationSchema: validationSchema,
   })
+
+  const isFormDisabled = mode === Mode.READ_ONLY
 
   return (
     <FormikProvider value={formik}>
@@ -61,7 +62,7 @@ const OfferEducationalStock = ({
               </span>
             </p>
             <FormLayout.Row inline>
-              <FormStock isEditable={isEditable} />
+              <FormStock isFormDisabled={isFormDisabled} />
             </FormLayout.Row>
           </FormLayout.Section>
           <FormLayout.Actions className={styles['action-section']}>

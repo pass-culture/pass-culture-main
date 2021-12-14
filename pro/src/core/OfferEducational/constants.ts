@@ -1,4 +1,5 @@
 import { IOfferEducationalFormValues, ADRESS_TYPE } from './types'
+import { OfferEducationalStockFormValues } from './types'
 
 export const DEFAULT_EAC_FORM_VALUES: IOfferEducationalFormValues = {
   category: '',
@@ -43,4 +44,12 @@ export const PARTICIPANTS: Record<string, string> = {
   seconde: 'Lycée - Seconde',
   premiere: 'Lycée - Première',
   terminale: 'Lycée - Terminale',
+}
+
+export const DEFAULT_EAC_STOCK_FORM_VALUES: OfferEducationalStockFormValues = {
+  eventDate: '',
+  eventTime: '',
+  numberOfPlaces: '',
+  totalPrice: '',
+  bookingLimitDatetime: '',
 }
