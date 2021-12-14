@@ -33,9 +33,9 @@ from pcapi.core.subscription import exceptions as subscription_exceptions
 from pcapi.core.subscription import messages as subscription_messages
 import pcapi.core.subscription.repository as subscription_repository
 from pcapi.core.users import utils as users_utils
-from pcapi.core.users.constants import UNDERAGE_GENERALISATION_BROAD_OPENING_DATETIME
-from pcapi.core.users.constants import UNDERAGE_GENERALISATION_EARLY_OPENING_DATETIME
-from pcapi.core.users.constants import UNDERAGE_GENERALISATION_OPENING_DATETIMES_BY_AGE
+from pcapi.core.users.constants import UNDERAGE_BROAD_OPENING_DATETIME
+from pcapi.core.users.constants import UNDERAGE_EARLY_OPENING_DATETIME
+from pcapi.core.users.constants import UNDERAGE_OPENING_DATETIMES_BY_AGE
 from pcapi.core.users.external import update_external_user
 from pcapi.core.users.models import Credit
 from pcapi.core.users.models import DomainsCredit
@@ -961,20 +961,20 @@ def get_eligibility_start_datetime(date_of_birth: Optional[Union[date, datetime]
     age = users_utils.get_age_from_birth_date(date_of_birth.date())
 
     is_recredit_birthday_in_scaling_phase = age in constants.ELIGIBILITY_UNDERAGE_RANGE and (
-        UNDERAGE_GENERALISATION_EARLY_OPENING_DATETIME
-        <= date_of_birth.replace(year=UNDERAGE_GENERALISATION_EARLY_OPENING_DATETIME.year)
-        < UNDERAGE_GENERALISATION_BROAD_OPENING_DATETIME
+        UNDERAGE_EARLY_OPENING_DATETIME
+        <= date_of_birth.replace(year=UNDERAGE_EARLY_OPENING_DATETIME.year)
+        < UNDERAGE_BROAD_OPENING_DATETIME
     )
 
     if is_recredit_birthday_in_scaling_phase:
-        # A scaling phase is planned where users will become eligible after UNDERAGE_GENERALISATION_OPENING_DATETIMES_BY_AGE
+        # A scaling phase is planned where users will become eligible after UNDERAGE_OPENING_DATETIMES_BY_AGE
         # However, as the legal opening day is on january 3rd 2022, if user's birthday happens between these dates, we let it enjoy a credit as soon as possible because otherwise it would not be given
-        return max(fifteenth_birthday, UNDERAGE_GENERALISATION_EARLY_OPENING_DATETIME)
+        return max(fifteenth_birthday, UNDERAGE_EARLY_OPENING_DATETIME)
 
-    if age in UNDERAGE_GENERALISATION_OPENING_DATETIMES_BY_AGE:
-        return UNDERAGE_GENERALISATION_OPENING_DATETIMES_BY_AGE[age]
+    if age in UNDERAGE_OPENING_DATETIMES_BY_AGE:
+        return UNDERAGE_OPENING_DATETIMES_BY_AGE[age]
 
-    first_date_with_fifteen_after_opening = max(fifteenth_birthday, UNDERAGE_GENERALISATION_BROAD_OPENING_DATETIME)
+    first_date_with_fifteen_after_opening = max(fifteenth_birthday, UNDERAGE_BROAD_OPENING_DATETIME)
 
     return min(first_date_with_fifteen_after_opening, eighteenth_birthday)
 
