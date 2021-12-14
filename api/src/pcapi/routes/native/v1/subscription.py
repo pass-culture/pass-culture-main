@@ -30,6 +30,7 @@ def next_subscription_step(
         next_subscription_step=subscription_api.get_next_subscription_step(user),
         allowed_identity_check_methods=subscription_api.get_allowed_identity_check_methods(user),
         maintenance_page_type=subscription_api.get_maintenance_page_type(user),
+        has_identity_check_pending=fraud_api.has_user_pending_identity_check(user),
     )
 
 
