@@ -10,6 +10,7 @@ from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.notifications.push import testing as push_testing
+import pcapi.repository as pcapi_repository
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -31,6 +32,7 @@ class NextStepTest:
             "nextSubscriptionStep": "phone-validation",
             "allowedIdentityCheckMethods": ["jouve"],
             "maintenancePageType": None,
+            "hasIdentityCheckPending": False,
         }
 
     @override_features(
@@ -53,6 +55,7 @@ class NextStepTest:
             "nextSubscriptionStep": "maintenance",
             "allowedIdentityCheckMethods": [],
             "maintenancePageType": "with-dms",
+            "hasIdentityCheckPending": False,
         }
 
     @pytest.mark.parametrize(
@@ -104,6 +107,7 @@ class NextStepTest:
             "nextSubscriptionStep": "phone-validation",
             "allowedIdentityCheckMethods": ["ubble"],
             "maintenancePageType": None,
+            "hasIdentityCheckPending": False,
         }
 
         # Perform phone validation and user profiling
@@ -124,6 +128,7 @@ class NextStepTest:
             "nextSubscriptionStep": "identity-check",
             "allowedIdentityCheckMethods": ["ubble"],
             "maintenancePageType": None,
+            "hasIdentityCheckPending": False,
         }
 
         # Perform first id check with Ubble
@@ -142,6 +147,7 @@ class NextStepTest:
             "nextSubscriptionStep": next_step,
             "allowedIdentityCheckMethods": ["ubble"],
             "maintenancePageType": None,
+            "hasIdentityCheckPending": fraud_check_status == fraud_models.FraudCheckStatus.PENDING,
         }
 
     @pytest.mark.parametrize(
@@ -193,6 +199,7 @@ class NextStepTest:
             "nextSubscriptionStep": "phone-validation",
             "allowedIdentityCheckMethods": ["ubble"],
             "maintenancePageType": None,
+            "hasIdentityCheckPending": False,
         }
 
         # Perform phone validation
@@ -205,6 +212,7 @@ class NextStepTest:
             "nextSubscriptionStep": "user-profiling",
             "allowedIdentityCheckMethods": ["ubble"],
             "maintenancePageType": None,
+            "hasIdentityCheckPending": False,
         }
 
         # Perform user profiling
@@ -224,15 +232,16 @@ class NextStepTest:
             "nextSubscriptionStep": "identity-check",
             "allowedIdentityCheckMethods": ["ubble"],
             "maintenancePageType": None,
+            "hasIdentityCheckPending": False,
         }
 
         # Perform id check with Ubble
-        fraud_factories.BeneficiaryFraudCheckFactory(
+        ubble_fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
             user=user,
             type=fraud_models.FraudCheckType.UBBLE,
-            status=fraud_models.FraudCheckStatus.OK,
+            status=fraud_models.FraudCheckStatus.PENDING,
             resultContent=fraud_factories.UbbleContentFactory(
-                status=fraud_models.ubble.UbbleIdentificationStatus.PROCESSED
+                status=fraud_models.ubble.UbbleIdentificationStatus.PROCESSING
             ),
             eligibilityType=users_models.EligibilityType.AGE18,
         )
@@ -244,6 +253,7 @@ class NextStepTest:
             "nextSubscriptionStep": "honor-statement",
             "allowedIdentityCheckMethods": ["ubble"],
             "maintenancePageType": None,
+            "hasIdentityCheckPending": True,
         }
 
         fraud_factories.BeneficiaryFraudCheckFactory(
@@ -260,6 +270,23 @@ class NextStepTest:
             "nextSubscriptionStep": None,
             "allowedIdentityCheckMethods": ["ubble"],
             "maintenancePageType": None,
+            "hasIdentityCheckPending": True,
+        }
+
+        # ubble now confirms the status
+        ubble_fraud_check.status = fraud_models.FraudCheckStatus.OK
+        ubble_fraud_check.resultContent = fraud_factories.UbbleContentFactory(
+            status=fraud_models.ubble.UbbleIdentificationStatus.PROCESSED
+        )
+        pcapi_repository.repository.save(ubble_fraud_check)
+        response = client.get("/native/v1/subscription/next_step")
+
+        assert response.status_code == 200
+        assert response.json == {
+            "nextSubscriptionStep": None,
+            "allowedIdentityCheckMethods": ["ubble"],
+            "maintenancePageType": None,
+            "hasIdentityCheckPending": False,
         }
 
 

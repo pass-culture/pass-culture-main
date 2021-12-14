@@ -717,6 +717,17 @@ def update_or_create_fraud_result(
     return fraud_result
 
 
+def has_user_pending_identity_check(user: users_models.User) -> bool:
+    return db.session.query(
+        models.BeneficiaryFraudCheck.query.filter(
+            models.BeneficiaryFraudCheck.user == user,
+            models.BeneficiaryFraudCheck.status == models.FraudCheckStatus.PENDING,
+            models.BeneficiaryFraudCheck.type.in_(models.IDENTITY_CHECK_TYPES),
+            models.BeneficiaryFraudCheck.eligibilityType == user.eligibility,
+        ).exists()
+    ).scalar()
+
+
 def has_user_performed_identity_check(user: users_models.User) -> bool:
     return db.session.query(
         models.BeneficiaryFraudCheck.query.filter(
