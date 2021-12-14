@@ -86,6 +86,7 @@ class EducationalStockCreationBodyModel(BaseModel):
     booking_limit_datetime: Optional[datetime]
     total_price: float
     number_of_tickets: int
+    educational_price_detail: Optional[str]
 
     _dehumanize_id = dehumanize_field("offer_id")
 
@@ -110,6 +111,12 @@ class EducationalStockCreationBodyModel(BaseModel):
         if booking_limit_datetime and booking_limit_datetime > values["beginning_datetime"]:
             raise ValueError("La date limite de réservation ne peut être postérieure à la date de début de l'évènement")
         return booking_limit_datetime
+
+    @validator("educational_price_detail")
+    def validate_price_detail(cls, educational_price_detail):  # pylint: disable=no-self-argument
+        if len(educational_price_detail) > 1000:
+            raise ValueError("Le détail du prix ne doit pas excéder 1000 caractères.")
+        return educational_price_detail
 
 
 class EducationalStockEditionBodyModel(BaseModel):

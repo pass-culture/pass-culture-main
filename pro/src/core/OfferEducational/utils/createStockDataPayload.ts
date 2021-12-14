@@ -64,5 +64,6 @@ export const createStockDataPayload = (
     bookingLimitDatetime: toISOStringWithoutMilliseconds(bookingLimitDatetime),
     totalPrice: values.totalPrice,
     numberOfTickets: values.numberOfPlaces,
+    educationalPriceDetail: values.priceDetail,
   }
 }

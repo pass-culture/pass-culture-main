@@ -61,9 +61,7 @@ const OfferEducationalStock = ({
                 mon offre s'élève à 150€)
               </span>
             </p>
-            <FormLayout.Row inline>
-              <FormStock isFormDisabled={isFormDisabled} />
-            </FormLayout.Row>
+            <FormStock isFormDisabled={isFormDisabled} />
           </FormLayout.Section>
           <FormLayout.Actions className={styles['action-section']}>
             <Link className="secondary-link" to={computeOffersUrl({})}>
