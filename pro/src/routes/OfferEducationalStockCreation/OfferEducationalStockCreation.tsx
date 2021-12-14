@@ -44,18 +44,20 @@ const OfferEducationalStockCreation = (): JSX.Element => {
   }
 
   useEffect(() => {
-    const loadOffer = async () => {
-      const { payload, message, isOk } = await getOfferAdapter(offerId)
-      if (isOk) {
-        setOffer(payload.offer)
-        setIsReady(true)
-        return
+    if (!isReady) {
+      const loadOffer = async () => {
+        const { payload, message, isOk } = await getOfferAdapter(offerId)
+        if (isOk) {
+          setOffer(payload.offer)
+          setIsReady(true)
+          return
+        }
+        notify.error(message)
       }
-      notify.error(message)
-    }
 
-    loadOffer()
-  }, [offerId, notify])
+      loadOffer()
+    }
+  }, [offerId, notify, isReady])
 
   return (
     <OfferEducationalLayout
