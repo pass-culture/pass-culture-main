@@ -1,10 +1,11 @@
 import { endOfDay, isSameDay, set } from 'date-fns'
 
-import { OfferEducationalStockFormValues } from 'core/OfferEducationalStock/types'
+import {
+  OfferEducationalStockFormValues,
+  StockPayload,
+} from 'core/OfferEducationalStock/types'
 import { toISOStringWithoutMilliseconds } from 'utils/date'
 import { getUtcDateTimeFromLocalDepartement } from 'utils/timezone'
-
-import { StockPayload } from '../../../routes/OfferEducationalStockCreation/types'
 
 const buildBeginningDatetime = (
   beginningDateIsoString: Date,
