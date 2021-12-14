@@ -67,8 +67,8 @@ const BankInformationWithBusinessUnit = ({ readOnly, offerer, venue }) => {
       setIsLoading(false)
     }
     loadBusinessUnits(offerer.id)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
-    businessUnits,
     offerer.id,
     setBusinessUnits,
     setDisplayedBanners,
