@@ -1,24 +1,18 @@
 import { endOfDay, isSameDay, set } from 'date-fns'
 
-import {
-  OfferEducationalStockFormValues,
-  StockPayload,
-} from 'core/OfferEducationalStock/types'
 import { toISOStringWithoutMilliseconds } from 'utils/date'
 import { getUtcDateTimeFromLocalDepartement } from 'utils/timezone'
+
+import { OfferEducationalStockFormValues, StockPayload } from '..'
 
 const buildBeginningDatetime = (
   beginningDateIsoString: Date,
   beginningTimeIsoString: Date
-): Date => {
-  if (beginningDateIsoString === null || beginningTimeIsoString === null) {
-    throw Error('Missing date or time')
-  }
-  return set(beginningDateIsoString, {
+): Date =>
+  set(beginningDateIsoString, {
     hours: beginningTimeIsoString.getHours(),
     minutes: beginningTimeIsoString.getMinutes(),
   })
-}
 
 const getBookingLimitDatetime = (
   values: OfferEducationalStockFormValues,
@@ -43,9 +37,17 @@ export const createStockDataPayload = (
   values: OfferEducationalStockFormValues,
   departementCode: string
 ): StockPayload => {
+  if (
+    !values.eventDate ||
+    !values.eventTime ||
+    !values.numberOfPlaces ||
+    !values.totalPrice
+  ) {
+    throw Error('Missing required values')
+  }
   const beginningDateTimeInDepartementTimezone = buildBeginningDatetime(
-    new Date(values.eventDate),
-    new Date(values.eventTime)
+    values.eventDate,
+    values.eventTime
   )
   const bookingLimitDatetime = getUtcDateTimeFromLocalDepartement(
     getBookingLimitDatetime(values, beginningDateTimeInDepartementTimezone),

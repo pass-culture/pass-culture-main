@@ -27,7 +27,7 @@ export const getEducationalStockAdapter: GetEducationalStockAdapter =
       return {
         isOk: true,
         message: '',
-        payload: { stock: stocks.length > 0 ? stocks[0] : null },
+        payload: { stock: stocks[0] ?? null },
       }
     } catch (e) {
       return FAILING_RESPONSE

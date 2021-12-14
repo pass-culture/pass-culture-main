@@ -1,9 +1,9 @@
 import { useFormikContext } from 'formik'
 import React from 'react'
 
+import { OfferEducationalStockFormValues } from 'core/OfferEducational'
 import { DatePicker, TextInput, TimePicker } from 'ui-kit'
 
-import { OfferEducationalStockFormValues } from '../../../core/OfferEducationalStock/types'
 import {
   BOOKING_LIMIT_DATETIME_LABEL,
   EVENT_DATE_LABEL,
@@ -14,17 +14,17 @@ import {
 
 import styles from './FormStock.module.scss'
 
-const EACOfferStockCreationType = ({
-  isEditable,
+const FormStock = ({
+  isFormDisabled,
 }: {
-  isEditable: boolean
+  isFormDisabled: boolean
 }): JSX.Element => {
   const { values } = useFormikContext<OfferEducationalStockFormValues>()
   return (
     <>
       <DatePicker
         className={styles['form-field']}
-        disabled={!isEditable}
+        disabled={isFormDisabled}
         label={EVENT_DATE_LABEL}
         minDateTime={new Date()}
         name="eventDate"
@@ -32,14 +32,14 @@ const EACOfferStockCreationType = ({
       />
       <TimePicker
         className={styles['form-field']}
-        disabled={!isEditable}
+        disabled={isFormDisabled}
         label={EVENT_TIME_LABEL}
         name="eventTime"
         smallLabel
       />
       <TextInput
         className={styles['form-field']}
-        disabled={!isEditable}
+        disabled={isFormDisabled}
         label={NUMBER_OF_PLACES_LABEL}
         name="numberOfPlaces"
         placeholder="Ex : 30"
@@ -48,7 +48,7 @@ const EACOfferStockCreationType = ({
       />
       <TextInput
         className={styles['form-field']}
-        disabled={!isEditable}
+        disabled={isFormDisabled}
         label={TOTAL_PRICE_LABEL}
         name="totalPrice"
         placeholder="Ex : 200€"
@@ -57,9 +57,9 @@ const EACOfferStockCreationType = ({
       />
       <DatePicker
         className={styles['form-field']}
-        disabled={!isEditable}
+        disabled={isFormDisabled}
         label={BOOKING_LIMIT_DATETIME_LABEL}
-        maxDateTime={new Date(values.eventDate)}
+        maxDateTime={values.eventDate ? values.eventDate : undefined}
         name="bookingLimitDatetime"
         smallLabel
       />
@@ -67,4 +67,4 @@ const EACOfferStockCreationType = ({
   )
 }
 
-export default EACOfferStockCreationType
+export default FormStock

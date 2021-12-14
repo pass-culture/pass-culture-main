@@ -3,9 +3,12 @@ import { useParams } from 'react-router-dom'
 
 import useNotification from 'components/hooks/useNotification'
 import Spinner from 'components/layout/Spinner'
-import { getOfferAdapter, Mode } from 'core/OfferEducational'
-import { DEFAULT_EAC_STOCK_FORM_VALUES } from 'core/OfferEducationalStock/constants'
-import { OfferEducationalStockFormValues } from 'core/OfferEducationalStock/types'
+import {
+  DEFAULT_EAC_STOCK_FORM_VALUES,
+  getOfferAdapter,
+  Mode,
+  OfferEducationalStockFormValues,
+} from 'core/OfferEducational'
 import { Offer } from 'custom_types/offer'
 import OfferEducationalStockScreen from 'screens/OfferEducationalStock'
 
@@ -27,7 +30,7 @@ const OfferEducationalStockEdition = (): JSX.Element => {
     offer: Offer,
     values: OfferEducationalStockFormValues
   ) => {
-    if(!stock) {
+    if (!stock) {
       return notify.error('Impossible de mettre à jour le stock.')
     }
     const stockId = stock.id
@@ -50,10 +53,10 @@ const OfferEducationalStockEdition = (): JSX.Element => {
           getOfferAdapter(offerId),
           getEducationalStockAdapter(offerId),
         ])
-        if (!offerResponse.isOk){
+        if (!offerResponse.isOk) {
           return notify.error(offerResponse.message)
         }
-        if (!stockResponse.isOk){
+        if (!stockResponse.isOk) {
           return notify.error(stockResponse.message)
         }
         setOffer(offerResponse.payload.offer)
@@ -64,7 +67,6 @@ const OfferEducationalStockEdition = (): JSX.Element => {
         )
         setInitialValues(initialValuesFromStock)
         setIsReady(true)
-        return
       }
       loadStockAndOffer()
     }
@@ -73,8 +75,7 @@ const OfferEducationalStockEdition = (): JSX.Element => {
   return offer && isReady ? (
     <OfferEducationalStockScreen
       initialValues={initialValues}
-      isEditable={stock?.isStockEditable}
-      mode={Mode.EDITION}
+      mode={stock?.isEducationalStockEditable ? Mode.EDITION : Mode.READ_ONLY}
       offer={offer}
       onSubmit={handleSubmitStock}
     />

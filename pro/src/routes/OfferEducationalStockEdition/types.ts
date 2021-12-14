@@ -4,5 +4,5 @@ export type StockResponse = {
   bookingLimitDatetime?: string
   price: number
   numberOfTickets?: number
-  isStockEditable?: boolean
+  isEducationalStockEditable?: boolean
 }
