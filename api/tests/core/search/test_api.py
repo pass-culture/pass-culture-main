@@ -135,7 +135,7 @@ class ReindexVenueIdsTest:
 
 
 @override_settings(REDIS_OFFER_IDS_CHUNK_SIZE=3)
-@mock.patch("pcapi.core.search._reindex_offer_ids")
+@mock.patch("pcapi.core.search.reindex_offer_ids")
 class IndexOffersInQueueTest:
     def test_cron_behaviour(self, mocked_reindex_offer_ids, app):
         items = range(1, 9)  # 8 items: 1..8
@@ -147,10 +147,10 @@ class IndexOffersInQueueTest:
         # indexes another set of 3 items. And stops because there are
         # less than REDIS_OFFER_IDS_CHUNK_SIZE items left in the
         # queue.
-        calls = mocked_reindex_offer_ids.mock_calls
-        assert len(calls) == 2
-        assert calls[0].args[1] == {8, 7, 6}
-        assert calls[1].args[1] == {5, 4, 3}
+        assert mocked_reindex_offer_ids.mock_calls == [
+            mock.call({8, 7, 6}),
+            mock.call({5, 4, 3}),
+        ]
 
         assert app.redis_client.lrange("offer_ids", 0, 5) == ["2", "1"]
 
@@ -163,11 +163,11 @@ class IndexOffersInQueueTest:
         # First run pops and indexes 8, 7, 6. Second run pops and
         # indexes 5, 4, 3. Third run pops 2, 1 and stops because the
         # queue is empty.
-        calls = mocked_reindex_offer_ids.mock_calls
-        assert len(calls) == 3
-        assert calls[0].args[1] == {8, 7, 6}
-        assert calls[1].args[1] == {5, 4, 3}
-        assert calls[2].args[1] == {2, 1}
+        assert mocked_reindex_offer_ids.mock_calls == [
+            mock.call({8, 7, 6}),
+            mock.call({5, 4, 3}),
+            mock.call({2, 1}),
+        ]
 
         assert app.redis_client.llen("offer_ids") == 0
 
