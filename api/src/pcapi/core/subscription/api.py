@@ -105,7 +105,11 @@ def create_successfull_beneficiary_import(
     return beneficiary_import
 
 
-def can_activate_beneficiary(user: users_models.User, eligibilityType: users_models.EligibilityType) -> bool:
+def can_activate_beneficiary(
+    user: users_models.User, eligibilityType: typing.Optional[users_models.EligibilityType] = None
+) -> bool:
+    if not eligibilityType:
+        eligibilityType = user.eligibility
     return user.is_eligible_for_beneficiary_upgrade(eligibilityType) and not get_missing_subscription_steps(
         user, eligibilityType
     )
