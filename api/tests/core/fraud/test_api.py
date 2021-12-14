@@ -3,6 +3,7 @@ from unittest.mock import patch
 import uuid
 
 from dateutil.relativedelta import relativedelta
+import freezegun
 import pytest
 
 import pcapi.core.fraud.api as fraud_api
@@ -315,6 +316,39 @@ class CommonTest:
 
         assert isinstance(expected, fraud_models.JouveContent)
         assert expected == fraud_models.JouveContent(**fraud_data.resultContent)
+
+    @freezegun.freeze_time("2018-01-01")
+    @pytest.mark.parametrize(
+        "registration_datetime, user_birth_date, expected_eligibility_type",
+        [
+            (
+                datetime.datetime(year=2017, month=12, day=25),  # User registered at 17
+                datetime.date(year=2000, month=1, day=12),  # User is 17 today (nominal case)
+                users_models.EligibilityType.UNDERAGE,
+            ),
+            (
+                datetime.datetime(year=2017, month=12, day=25),  # User registered at 17
+                datetime.date(year=2000, month=1, day=1),  # User is 18 today
+                users_models.EligibilityType.AGE18,
+            ),
+            (
+                datetime.datetime(year=2017, month=12, day=12),  # User registered at 18
+                datetime.date(year=1999, month=1, day=1),  # User is 19 today
+                users_models.EligibilityType.AGE18,
+            ),
+            (
+                datetime.datetime(year=2018, month=1, day=1),  # User registered at 19
+                datetime.date(year=1998, month=12, day=20),  # User is 19 today
+                None,
+            ),
+        ],
+    )
+    def test_get_eligibility_type_dms(self, registration_datetime, user_birth_date, expected_eligibility_type):
+        data = fraud_factories.DMSContentFactory(
+            birth_date=user_birth_date,
+            registration_datetime=registration_datetime,
+        )
+        assert fraud_api.get_eligibility_type(data) == expected_eligibility_type
 
 
 @pytest.mark.usefixtures("db_session")
