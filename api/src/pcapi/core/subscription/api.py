@@ -302,6 +302,15 @@ def has_completed_profile(user: users_models.User) -> bool:
     return user.city is not None
 
 
+def needs_to_perform_identity_check(user: users_models.User) -> bool:
+    # TODO (viconnex) refacto this method to base result on fraud_checks made
+    return (
+        not user.hasCompletedIdCheck
+        and not (fraud_api.has_user_performed_ubble_check(user) and FeatureToggle.ENABLE_UBBLE.is_active())
+        and not user.extraData.get("is_identity_document_uploaded")  # Jouve
+    )
+
+
 # pylint: disable=too-many-return-statements
 def get_next_subscription_step(user: users_models.User) -> typing.Optional[models.SubscriptionStep]:
     # TODO(viconnex): base the next step on the user.subscriptionState that will be added later on
@@ -333,12 +342,7 @@ def get_next_subscription_step(user: users_models.User) -> typing.Optional[model
     if not has_completed_profile(user):
         return models.SubscriptionStep.PROFILE_COMPLETION
 
-    if (
-        not user.hasCompletedIdCheck
-        and allowed_identity_check_methods
-        and not (fraud_api.has_user_performed_ubble_check(user) and FeatureToggle.ENABLE_UBBLE.is_active())
-        and not user.extraData.get("is_identity_document_uploaded")  # Jouve
-    ):
+    if needs_to_perform_identity_check(user) and allowed_identity_check_methods:
         return models.SubscriptionStep.IDENTITY_CHECK
 
     if not fraud_api.has_performed_honor_statement(user):
