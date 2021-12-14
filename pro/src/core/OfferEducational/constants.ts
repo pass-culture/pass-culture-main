@@ -52,4 +52,5 @@ export const DEFAULT_EAC_STOCK_FORM_VALUES: OfferEducationalStockFormValues = {
   numberOfPlaces: '',
   totalPrice: '',
   bookingLimitDatetime: '',
+  priceDetail: '',
 }
