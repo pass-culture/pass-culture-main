@@ -10,9 +10,10 @@ import Banner from 'components/layout/Banner/Banner'
 import Icon from 'components/layout/Icon'
 import { DEMARCHES_SIMPLIFIEES_OFFERER_RIB_UPLOAD_PROCEDURE_URL } from 'utils/config'
 
+import BusinessUnits from '../../../../Home/Offerers/BusinessUnits'
 import { Offerer } from '../Offerer'
 
-const BankInformation = ({ offerer }) => (
+const BankInformation = ({ offerer, hasBusinessUnitError = false }) => (
   <div className="section op-content-section bank-information">
     <div className="main-list-title title-actions-container">
       <h2 className="main-list-title-text">
@@ -57,6 +58,9 @@ const BankInformation = ({ offerer }) => (
         </Banner>
       )
     )}
+    {hasBusinessUnitError && (
+      <BusinessUnits hasTitle={false} offererId={offerer.id} />
+    )}
     <Banner
       href="https://aide.passculture.app/fr/articles/5096833-calendrier-des-prochains-remboursements"
       linkTitle="En savoir plus sur les remboursements"
@@ -66,6 +70,7 @@ const BankInformation = ({ offerer }) => (
 )
 
 BankInformation.propTypes = {
+  hasBusinessUnitError: PropTypes.bool.isRequired,
   offerer: PropTypes.instanceOf(Offerer).isRequired,
 }
 

@@ -34,7 +34,9 @@ const OffererDetails = ({
 }) => {
   const [isExpanded, setIsExpanded] = useState(!hasPhysicalVenues)
 
-  const isBankInformationWithSiretActive = useActiveFeature('ENFORCE_BANK_INFORMATION_WITH_SIRET')
+  const isBankInformationWithSiretActive = useActiveFeature(
+    'ENFORCE_BANK_INFORMATION_WITH_SIRET'
+  )
 
   useEffect(() => setIsExpanded(!hasPhysicalVenues), [hasPhysicalVenues])
 
@@ -48,11 +50,13 @@ const OffererDetails = ({
     return hasRejectedOrDraftBankInformation(selectedOfferer)
   }, [selectedOfferer])
 
-  const haveInvalidBusinessUnits = useMemo(() => {
+  const hasInvalidBusinessUnits = useMemo(() => {
     if (!isBankInformationWithSiretActive) return false
     if (!selectedOfferer) return false
-    return businessUnitList.filter((businessUnit) => !businessUnit.siret).length > 0
-  }, [selectedOfferer, businessUnitList])
+    return (
+      businessUnitList.filter(businessUnit => !businessUnit.siret).length > 0
+    )
+  }, [selectedOfferer, businessUnitList, isBankInformationWithSiretActive])
 
   return (
     <div className="h-card h-card-secondary" data-testid="offerrer-wrapper">
@@ -84,25 +88,21 @@ const OffererDetails = ({
               </>
             )}
           </button>
-          {(
-            isBankInformationWithSiretActive ? (
-              haveInvalidBusinessUnits && (
-                <Icon
-                  alt="Informations bancaires manquantes"
-                  className="ico-bank-warning"
-                  svg="ico-alert-filled"
-                />
-              )
-            ) : (
-              selectedOfferer.hasMissingBankInformation && (
-                <Icon
-                  alt="Informations bancaires manquantes"
-                  className="ico-bank-warning"
-                  svg="ico-alert-filled"
-                />
-              )
-            )
+          {isBankInformationWithSiretActive && hasInvalidBusinessUnits && (
+            <Icon
+              alt="SIRET Manquant"
+              className="ico-bank-warning"
+              svg="ico-alert-filled"
+            />
           )}
+          {selectedOfferer.hasMissingBankInformation &&
+            !hasInvalidBusinessUnits && (
+              <Icon
+                alt="Informations bancaires manquantes"
+                className="ico-bank-warning"
+                svg="ico-alert-filled"
+              />
+            )}
           <div className="od-separator vertical small" />
           {isUserOffererValidated ? (
             <Link
@@ -161,17 +161,13 @@ const OffererDetails = ({
                     </ul>
                   </div>
                 </div>
-                {(
-                  (isBankInformationWithSiretActive && haveInvalidBusinessUnits) ? (
-                    <div className="h-card-col">
-                      <BusinessUnits
-                        offererId={selectedOfferer.id}
-                      />
-                    </div>
-                  ) : (
-                    selectedOfferer.hasMissingBankInformation ||
-                    hasRejectedOrDraftOffererBankInformations
-                  ) && (
+                {isBankInformationWithSiretActive && hasInvalidBusinessUnits ? (
+                  <div className="h-card-col">
+                    <BusinessUnits offererId={selectedOfferer.id} />
+                  </div>
+                ) : (
+                  (selectedOfferer.hasMissingBankInformation ||
+                    hasRejectedOrDraftOffererBankInformations) && (
                     <div className="h-card-col">
                       <BankInformations
                         hasMissingBankInformation={

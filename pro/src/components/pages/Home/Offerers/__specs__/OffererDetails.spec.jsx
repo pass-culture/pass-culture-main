@@ -411,7 +411,7 @@ describe('offererDetailsLegacy', () => {
         name: 'Afficher',
       })
       fireEvent.click(showButton)
-
+      console.log(screen.debug())
       // Then
       const link = screen.getByRole('link', {
         name: 'Renseignez les coordonnées bancaires',
@@ -422,7 +422,6 @@ describe('offererDetailsLegacy', () => {
       )
       let nbWarningIcons = 0
       nbWarningIcons += 1 // in offerers header
-      nbWarningIcons += 1 // in bank account card title
       expect(warningIcons).toHaveLength(nbWarningIcons)
     })
 
