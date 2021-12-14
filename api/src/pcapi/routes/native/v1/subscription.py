@@ -55,7 +55,7 @@ def update_profile(user: users_models.User, body: serializers.ProfileUpdateReque
     )
 
 
-@blueprint.native_v1.route("/subscription/school_types", methods=["GET"])
+@blueprint.native_v1.route("/subscription/profile_options", methods=["GET"])
 @spectree_serialize(
     response_model=serializers.SchoolTypesResponse,
     on_success_status=200,

@@ -239,7 +239,7 @@ class UpdateProfileTest:
 
 class SchoolTypeTest:
     def test_get_all_school_types(self, client):
-        response = client.get("/native/v1/subscription/school_types")
+        response = client.get("/native/v1/subscription/profile_options")
 
         assert response.status_code == 200
         assert response.json == {
