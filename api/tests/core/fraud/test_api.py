@@ -54,7 +54,7 @@ class JouveFraudCheckTest:
         "postalCode": "",
         "posteCode": "678083",
         "posteCodeCtrl": "OK",
-        "registrationDate": f"{datetime.datetime.now():%d/%m/%Y %H%M}",
+        "registrationDate": f"{datetime.datetime.now():%d/%m/%Y %H:%M}",
         "serviceCode": "1",
         "serviceCodeCtrl": "OK",
     }
