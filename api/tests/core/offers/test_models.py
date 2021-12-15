@@ -533,6 +533,18 @@ class StockIsBookableTest:
         stock = factories.StockFactory()
         assert stock.isBookable
 
+    def test_is_forbidden_to_underage(self):
+        stock = factories.StockFactory(offer__subcategoryId=subcategories.ABO_JEU_VIDEO.id, price=10)
+
+        assert stock.is_forbidden_to_underage
+
+    def test_is_forbidden_to_underage_when_free(self):
+        not_free_stock = factories.StockFactory(offer__subcategoryId=subcategories.VISITE_VIRTUELLE.id, price=10)
+        free_stock = factories.StockFactory(offer__subcategoryId=subcategories.VISITE_VIRTUELLE.id, price=0)
+
+        assert not_free_stock.is_forbidden_to_underage
+        assert not free_stock.is_forbidden_to_underage
+
 
 class StockIsEventExpiredTest:
     def test_is_not_expired_when_stock_is_not_an_event(self):

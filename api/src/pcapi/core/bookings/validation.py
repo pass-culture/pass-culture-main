@@ -218,7 +218,5 @@ def check_offer_category_is_bookable_by_user(user: User, stock: Stock) -> None:
     if user.has_beneficiary_role:
         return
 
-    if (stock.price > 0 and not stock.offer.subcategory.is_bookable_by_underage_when_not_free) or (
-        stock.price == 0 and not stock.offer.subcategory.is_bookable_by_underage_when_free
-    ):
+    if stock.is_forbidden_to_underage:
         raise OfferCategoryNotBookableByUser()
