@@ -305,6 +305,10 @@
   <div class="col-lg-4">
     <table class="table">
       <tr>
+        <th scope="row">Souscription</th>
+        <td>{{ "pass 15-17" if check.eligibilityType.value == "underage" else "pass 18 ans" if check.eligibilityType.value == "age-18" else "inconnu" }}</td>
+      </tr>
+      <tr>
         <th scope="row">Type</th>
         <td>{{ check.type.value }}</td>
       </tr>

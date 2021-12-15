@@ -15,9 +15,12 @@ def get_current_beneficiary_fraud_result(
 
 
 def get_last_user_profiling_fraud_check(user: users_models.User) -> Optional[models.BeneficiaryFraudCheck]:
+    # User profiling is not performed for UNDERAGE credit, no need to filter on eligibilityType here
     return (
-        models.BeneficiaryFraudCheck.query.filter(models.BeneficiaryFraudCheck.user == user)
-        .filter(models.BeneficiaryFraudCheck.type == models.FraudCheckType.USER_PROFILING)
+        models.BeneficiaryFraudCheck.query.filter(
+            models.BeneficiaryFraudCheck.user == user,
+            models.BeneficiaryFraudCheck.type == models.FraudCheckType.USER_PROFILING,
+        )
         .order_by(models.BeneficiaryFraudCheck.dateCreated.desc())
         .first()
     )

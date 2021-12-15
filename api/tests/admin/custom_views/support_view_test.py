@@ -402,6 +402,7 @@ class UpdateIDPieceNumberTest:
 
         assert len(user.beneficiaryFraudResults) == 1
         assert user.beneficiaryFraudResults[0].status == fraud_models.FraudStatus.OK
+        assert user.beneficiaryFraudResults[0].eligibilityType == users_models.EligibilityType.AGE18
         assert fraud_check.resultContent["id_piece_number"] == id_piece_number
         assert user.idPieceNumber == id_piece_number
         assert user.has_beneficiary_role

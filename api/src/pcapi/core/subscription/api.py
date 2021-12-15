@@ -177,6 +177,7 @@ def create_beneficiary_import(user: users_models.User, eligibilityType: users_mo
     fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(
         user=user,
         type=fraud_models.FraudCheckType.EDUCONNECT,
+        eligibilityType=eligibilityType,
     ).one_or_none()
 
     fraud_ko_reasons = fraud_result.reason_codes
@@ -208,7 +209,7 @@ def create_beneficiary_import(user: users_models.User, eligibilityType: users_mo
 
     users_api.update_user_information_from_external_source(user, fraud_check.source_data(), commit=True)
 
-    if not users_api.steps_to_become_beneficiary(user):
+    if not users_api.steps_to_become_beneficiary(user, eligibilityType):
         activate_beneficiary(user)
     else:
         users_external.update_external_user(user)
@@ -277,6 +278,7 @@ def update_ubble_workflow(
                     user=user,
                     source=BeneficiaryImportSources.ubble,
                     source_data=fraud_check.source_data(),
+                    eligibility_type=fraud_check.eligibilityType,
                     third_party_id=fraud_check.thirdPartyId,
                     source_id=None,
                 )
@@ -324,14 +326,10 @@ def get_next_subscription_step(user: users_models.User) -> typing.Optional[model
     if not user.is_eligible_for_beneficiary_upgrade():
         return None
 
-    if (
-        not user.is_phone_validated
-        and user.eligibility == users_models.EligibilityType.AGE18
-        and FeatureToggle.ENABLE_PHONE_VALIDATION.is_active()
-    ):
-        return models.SubscriptionStep.PHONE_VALIDATION
-
     if user.eligibility == users_models.EligibilityType.AGE18:
+        if not user.is_phone_validated and FeatureToggle.ENABLE_PHONE_VALIDATION.is_active():
+            return models.SubscriptionStep.PHONE_VALIDATION
+
         user_profiling = fraud_repository.get_last_user_profiling_fraud_check(user)
 
         if not user_profiling:
@@ -346,7 +344,7 @@ def get_next_subscription_step(user: users_models.User) -> typing.Optional[model
     if needs_to_perform_identity_check(user) and allowed_identity_check_methods:
         return models.SubscriptionStep.IDENTITY_CHECK
 
-    if not fraud_api.has_performed_honor_statement(user):
+    if not fraud_api.has_performed_honor_statement(user, user.eligibility):
         return models.SubscriptionStep.HONOR_STATEMENT
 
     return None
@@ -393,7 +391,7 @@ def update_user_profile(
     db.session.refresh(user)
 
     if (
-        not users_api.steps_to_become_beneficiary(user)
+        not users_api.steps_to_become_beneficiary(user, user.eligibility)
         # the 2 following checks should be useless
         and fraud_api.has_user_performed_identity_check(user)
         and not fraud_api.is_user_fraudster(user)
@@ -478,6 +476,7 @@ def on_successful_application(
     user: users_models.User,
     source_data: fraud_models.DMSContent,
     source: BeneficiaryImportSources,
+    eligibility_type: users_models.EligibilityType,
     application_id: typing.Optional[int] = None,
     source_id: typing.Optional[int] = None,
     third_party_id: typing.Optional[str] = None,
@@ -493,11 +492,11 @@ def on_successful_application(
         source=source,
         source_id=source_id,
         application_id=application_id,
-        eligibility_type=fraud_api.get_eligibility_type(source_data),
+        eligibility_type=eligibility_type,
         third_party_id=third_party_id,
     )
 
-    if not users_api.steps_to_become_beneficiary(user):
+    if not users_api.steps_to_become_beneficiary(user, eligibility_type):
         activate_beneficiary(user)
     else:
         users_external.update_external_user(user)

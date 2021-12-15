@@ -277,6 +277,7 @@ class DmsWebhookApplicationTest:
         assert user.subscriptionState == users_models.SubscriptionState.identity_check_pending
         assert user.beneficiaryFraudChecks[0].status == fraud_models.FraudCheckStatus.PENDING
         assert user.beneficiaryFraudChecks[0].type == fraud_models.FraudCheckType.DMS
+        assert user.beneficiaryFraudChecks[0].eligibilityType == users_models.EligibilityType.AGE18
 
 
 @pytest.mark.usefixtures("db_session")

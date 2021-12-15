@@ -299,6 +299,13 @@ class BeneficiaryFraudCheck(PcObject, Model):
         nullable=True,
     )
 
+    # Unlike BeneficiaryFraudResult, the eligibility is nullable here to support existing objects.
+    # A script may fill in this column for past objects.
+    eligibilityType = sqlalchemy.Column(
+        sqlalchemy.Enum(users_models.EligibilityType, create_constraint=False),
+        nullable=True,
+    )
+
     def source_data(self) -> typing.Union[IdentityCheckContent, UserProfilingFraudData]:
         if self.type not in FRAUD_CHECK_MAPPING:
             raise NotImplementedError(f"Cannot unserialize type {self.type}")

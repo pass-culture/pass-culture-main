@@ -310,6 +310,7 @@ class RunTest:
                 registration_datetime=datetime(2020, 4, 17, 7, 18, 22, 534000, tzinfo=timezone.utc),
                 id_piece_number="123123121",
             ),
+            eligibility_type=users_models.EligibilityType.AGE18,
             application_id=123,
             source_id=6712558,
             source=BeneficiaryImportSources.demarches_simplifiees,
