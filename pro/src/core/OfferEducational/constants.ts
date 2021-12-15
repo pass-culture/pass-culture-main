@@ -1,5 +1,8 @@
-import { IOfferEducationalFormValues, ADRESS_TYPE } from './types'
-import { OfferEducationalStockFormValues } from './types'
+import {
+  IOfferEducationalFormValues,
+  ADRESS_TYPE,
+  OfferEducationalStockFormValues,
+} from './types'
 
 export const DEFAULT_EAC_FORM_VALUES: IOfferEducationalFormValues = {
   category: '',
