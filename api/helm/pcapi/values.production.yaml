@@ -189,7 +189,7 @@ nativeV1:
   autoscaling:
     enabled: true
     minReplicas: 2
-    maxReplicas: 10
+    maxReplicas: 40
     targetCPUUtilization: 70
     # Enable this option to scale on memory percentage
     # targetMemoryUtilization: 70
