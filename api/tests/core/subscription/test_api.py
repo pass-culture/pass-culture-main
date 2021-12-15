@@ -405,7 +405,7 @@ class NextSubscriptionStepTest:
         )
 
     @override_features(ENABLE_EDUCONNECT_AUTHENTICATION=True)
-    def test_next_subscription_step_underage(self):
+    def test_next_subscription_step_underage_profile_completion(self):
         user = users_factories.UserFactory(
             dateOfBirth=self.fifteen_years_ago,
             city=None,
@@ -413,6 +413,31 @@ class NextSubscriptionStepTest:
         assert (
             subscription_api.get_next_subscription_step(user) == subscription_models.SubscriptionStep.PROFILE_COMPLETION
         )
+
+    @override_features(ENABLE_EDUCONNECT_AUTHENTICATION=True)
+    def test_next_subscription_step_underage_honor_statement(self):
+        user = users_factories.UserFactory(
+            dateOfBirth=self.fifteen_years_ago,
+            city="Zanzibar",
+            hasCompletedIdCheck=True,
+        )
+        assert subscription_api.get_next_subscription_step(user) == subscription_models.SubscriptionStep.HONOR_STATEMENT
+
+    @override_features(ENABLE_EDUCONNECT_AUTHENTICATION=True)
+    def test_next_subscription_step_underage_finished(self):
+        user = users_factories.UserFactory(
+            dateOfBirth=self.fifteen_years_ago,
+            city="Zanzibar",
+            hasCompletedIdCheck=True,
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            type=fraud_models.FraudCheckType.HONOR_STATEMENT,
+            resultContent=None,
+            user=user,
+            status=fraud_models.FraudCheckStatus.OK,
+            eligibilityType=users_models.EligibilityType.UNDERAGE,
+        )
+        assert subscription_api.get_next_subscription_step(user) == None
 
     def test_next_subscription_step_user_profiling(self):
         user = users_factories.UserFactory(
@@ -493,7 +518,6 @@ class NextSubscriptionStepTest:
             resultContent=None,
             user=user,
             status=fraud_models.FraudCheckStatus.OK,
-            # TODO(viconnex) add eligibility type
         )
 
         assert subscription_api.get_next_subscription_step(user) == None
@@ -704,7 +728,7 @@ class OnSucessfulDMSApplicationTest:
             registration_datetime=datetime.today(),
         )
         applicant = users_factories.UserFactory(email=information.email)
-        fraud_factories.BeneficiaryFraudCheckFactory(
+        check = fraud_factories.BeneficiaryFraudCheckFactory(
             user=applicant, type=fraud_models.FraudCheckType.HONOR_STATEMENT, status=fraud_models.FraudCheckStatus.OK
         )
         # when
@@ -713,6 +737,7 @@ class OnSucessfulDMSApplicationTest:
             user=applicant,
             source=BeneficiaryImportSources.demarches_simplifiees,
             source_data=information,
+            eligibility_type=check.eligibilityType,
             application_id=123,
             source_id=123456,
         )
@@ -750,6 +775,7 @@ class OnSucessfulDMSApplicationTest:
             user=applicant,
             source=BeneficiaryImportSources.demarches_simplifiees,
             source_data=information,
+            eligibility_type=users_models.EligibilityType.AGE18,
             application_id=123,
             source_id=123456,
         )
@@ -775,6 +801,7 @@ class OnSucessfulDMSApplicationTest:
                 user=applicant,
                 source=BeneficiaryImportSources.demarches_simplifiees,
                 source_data=information,
+                eligibility_type=users_models.EligibilityType.AGE18,
                 application_id=123,
                 source_id=123456,
             )
@@ -818,6 +845,7 @@ class OnSucessfulDMSApplicationTest:
                 user=applicant,
                 source=BeneficiaryImportSources.demarches_simplifiees,
                 source_data=information,
+                eligibility_type=users_models.EligibilityType.AGE18,
                 application_id=123,
                 source_id=123456,
             )
@@ -835,3 +863,4 @@ class DMSSubscriptionTest:
         assert user.subscriptionState == users_models.SubscriptionState.identity_check_pending
         assert fraud_check.user == user
         assert fraud_check.status == fraud_models.FraudCheckStatus.PENDING
+        assert fraud_check.eligibilityType == users_models.EligibilityType.AGE18

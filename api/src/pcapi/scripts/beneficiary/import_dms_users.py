@@ -196,10 +196,15 @@ def process_application(
             return
 
         try:
-            fraud_api.create_honor_statement_fraud_check(user, "honor statement contained in DMS application")
+            eligibility_type = fraud_api.get_eligibility_type(information)
+
+            fraud_api.create_honor_statement_fraud_check(
+                user, "honor statement contained in DMS application", eligibility_type
+            )
             subscription_api.on_successful_application(
                 user=user,
                 source_data=information,
+                eligibility_type=eligibility_type,
                 application_id=application_id,
                 source_id=procedure_id,
                 source=BeneficiaryImportSources.demarches_simplifiees,

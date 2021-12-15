@@ -55,7 +55,7 @@ class JouveFraudCheckTest:
         "postalCode": "",
         "posteCode": "678083",
         "posteCodeCtrl": "OK",
-        "registrationDate": f"{datetime.datetime.now():%d/%m/%Y %H%M}",
+        "registrationDate": f"{datetime.datetime.now():%d/%m/%Y %H:%M}",
         "serviceCode": "1",
         "serviceCodeCtrl": "OK",
     }
@@ -131,6 +131,7 @@ class JouveFraudCheckTest:
         assert jouve_fraud_content.bodyPieceNumber == "140767100016"
         assert fraud_check.dateCreated
         assert fraud_check.thirdPartyId == "35"
+        assert fraud_check.eligibilityType == users_models.EligibilityType.AGE18
         assert fraud_result.status == fraud_models.FraudStatus.OK
 
         db.session.refresh(user)
@@ -490,6 +491,7 @@ class CommonFraudCheckTest:
             type=fraud_models.FraudCheckType.EDUCONNECT,
             user=user,
             resultContent=fraud_factories.EduconnectContentFactory(),
+            eligibilityType=users_models.EligibilityType.UNDERAGE,
         )
         with pytest.raises(fraud_exceptions.BeneficiaryFraudResultCannotBeDowngraded):
             fraud_api.on_identity_fraud_check_result(user, fraud_check)
@@ -562,6 +564,8 @@ class DMSFraudCheckTest:
             user=user, type=fraud_models.FraudCheckType.DMS
         ).one_or_none()
 
+        assert fraud_check.eligibilityType == users_models.EligibilityType.AGE18
+
         expected_content = fraud_models.DMSContent(**fraud_check.resultContent)
         assert content == expected_content
 
@@ -600,7 +604,8 @@ class UserFraudsterTest:
 class EduconnectFraudTest:
     def test_on_educonnect_result(self):
         fraud_factories.IneHashWhitelistFactory(ine_hash="5ba682c0fc6a05edf07cd8ed0219258f")
-        birth_date = (datetime.datetime.today() - relativedelta(years=15)).date()
+        birth_date = (datetime.datetime.today() - relativedelta(years=15, days=5)).date()
+        registration_date = datetime.datetime.utcnow() - relativedelta(days=3)  # eligible 15-17
         user = users_factories.UserFactory(dateOfBirth=birth_date)
         fraud_api.on_educonnect_result(
             user,
@@ -610,25 +615,27 @@ class EduconnectFraudTest:
                 first_name="Lucy",
                 ine_hash="5ba682c0fc6a05edf07cd8ed0219258f",
                 last_name="Ellingson",
-                registration_datetime=datetime.datetime(2020, 1, 1),
+                registration_datetime=registration_date,
                 school_uai="shchool-uai",
                 student_level="2212",
             ),
         )
 
         fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(
-            user=user, type=fraud_models.FraudCheckType.EDUCONNECT
+            user=user,
+            type=fraud_models.FraudCheckType.EDUCONNECT,
         ).one_or_none()
         assert fraud_check is not None
         assert fraud_check.userId == user.id
         assert fraud_check.type == fraud_models.FraudCheckType.EDUCONNECT
+        assert fraud_check.eligibilityType == users_models.EligibilityType.UNDERAGE
         assert fraud_check.source_data().__dict__ == {
             "educonnect_id": "id-1",
             "first_name": "Lucy",
             "ine_hash": "5ba682c0fc6a05edf07cd8ed0219258f",
             "last_name": "Ellingson",
             "birth_date": birth_date,
-            "registration_datetime": datetime.datetime(2020, 1, 1),
+            "registration_datetime": registration_date,
             "school_uai": "shchool-uai",
             "student_level": "2212",
         }
@@ -645,24 +652,26 @@ class EduconnectFraudTest:
                 first_name="Lucille",
                 ine_hash="0000",
                 last_name="Ellingson",
-                registration_datetime=datetime.datetime(2020, 1, 1),
+                registration_datetime=registration_date,
                 school_uai="shchool-uai",
                 student_level="2212",
             ),
         )
 
         fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(
-            user=user, type=fraud_models.FraudCheckType.EDUCONNECT
+            user=user,
+            type=fraud_models.FraudCheckType.EDUCONNECT,
         ).one_or_none()
         assert fraud_check.userId == user.id
         assert fraud_check.type == fraud_models.FraudCheckType.EDUCONNECT
+        assert fraud_check.eligibilityType == users_models.EligibilityType.UNDERAGE
         assert fraud_check.source_data().__dict__ == {
             "educonnect_id": "id-1",
             "first_name": "Lucille",
             "ine_hash": "0000",
             "last_name": "Ellingson",
             "birth_date": birth_date,
-            "registration_datetime": datetime.datetime(2020, 1, 1),
+            "registration_datetime": registration_date,
             "school_uai": "shchool-uai",
             "student_level": "2212",
         }
@@ -741,6 +750,7 @@ class EduconnectFraudTest:
                 birth_date=underage_user.dateOfBirth,
             ),
             user=underage_user,
+            eligibilityType=users_models.EligibilityType.UNDERAGE,
         )
         result = fraud_api.educonnect_fraud_checks(underage_user, fraud_check)
 
@@ -831,11 +841,31 @@ class EduconnectFraudTest:
 
 @pytest.mark.usefixtures("db_session")
 class HasUserPerformedIdentityCheckTest:
-    def test_has_user_performed_identity_check(self):
-        user = users_factories.UserFactory()
-        fraud_factories.BeneficiaryFraudCheckFactory(type=fraud_models.FraudCheckType.JOUVE, user=user)
+    @pytest.mark.parametrize(
+        "age, eligibility_type",
+        [
+            (15, users_models.EligibilityType.UNDERAGE),
+            (16, users_models.EligibilityType.UNDERAGE),
+            (17, users_models.EligibilityType.UNDERAGE),
+            (18, users_models.EligibilityType.AGE18),
+        ],
+    )
+    @pytest.mark.parametrize("check_type", [fraud_models.FraudCheckType.JOUVE, fraud_models.FraudCheckType.UBBLE])
+    def test_has_user_performed_identity_check(self, age, eligibility_type, check_type):
+        user = users_factories.UserFactory(dateOfBirth=datetime.datetime.now() - relativedelta(years=age, months=1))
+        fraud_factories.BeneficiaryFraudCheckFactory(type=check_type, user=user, eligibilityType=eligibility_type)
 
         assert fraud_api.has_user_performed_identity_check(user)
+        assert fraud_api.has_user_performed_ubble_check(user) == (check_type == fraud_models.FraudCheckType.UBBLE)
+
+    def test_has_user_performed_identity_check_turned_18(self):
+        user = users_factories.UserFactory(dateOfBirth=datetime.datetime.now() - relativedelta(years=18, months=1))
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            type=fraud_models.FraudCheckType.UBBLE, user=user, eligibilityType=users_models.EligibilityType.UNDERAGE
+        )
+
+        assert not fraud_api.has_user_performed_identity_check(user)
+        assert not fraud_api.has_user_performed_ubble_check(user)
 
     def test_has_user_performed_identity_check_without_identity_fraud_check(self):
         user = users_factories.UserFactory()
@@ -968,15 +998,15 @@ class FraudCheckLifeCycleTest:
         )
 
     @pytest.mark.parametrize(
-        "check_type",
+        "check_type,eligibility_type",
         [
-            fraud_models.FraudCheckType.DMS,
-            fraud_models.FraudCheckType.EDUCONNECT,
-            fraud_models.FraudCheckType.JOUVE,
-            fraud_models.FraudCheckType.UBBLE,
+            (fraud_models.FraudCheckType.DMS, users_models.EligibilityType.AGE18),
+            (fraud_models.FraudCheckType.EDUCONNECT, users_models.EligibilityType.UNDERAGE),  # age = 15 in factory
+            (fraud_models.FraudCheckType.JOUVE, users_models.EligibilityType.AGE18),
+            (fraud_models.FraudCheckType.UBBLE, users_models.EligibilityType.AGE18),
         ],
     )
-    def test_mark_fraud_check_failed_unexistant_previous_check(self, check_type):
+    def test_mark_fraud_check_failed_unexistant_previous_check(self, check_type, eligibility_type):
         user = users_factories.UserFactory()
         application_id = str(uuid.uuid4())
 
@@ -992,3 +1022,4 @@ class FraudCheckLifeCycleTest:
 
         fraud_check = fraud_models.BeneficiaryFraudCheck.query.first()
         assert fraud_check.status == fraud_models.FraudCheckStatus.KO
+        assert fraud_check.eligibilityType == eligibility_type

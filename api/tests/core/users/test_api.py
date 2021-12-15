@@ -476,7 +476,7 @@ class StepsToBecomeBeneficiaryTest:
             user=user, type=fraud_models.FraudCheckType.HONOR_STATEMENT, status=fraud_models.FraudCheckStatus.OK
         )
 
-        assert steps_to_become_beneficiary(user) == []
+        assert steps_to_become_beneficiary(user, EligibilityType.AGE18) == []
 
     @override_features(FORCE_PHONE_VALIDATION=True)
     def test_missing_step(self):
@@ -489,7 +489,7 @@ class StepsToBecomeBeneficiaryTest:
             user=user, type=fraud_models.FraudCheckType.HONOR_STATEMENT, status=fraud_models.FraudCheckStatus.OK
         )
 
-        assert steps_to_become_beneficiary(user) == [BeneficiaryValidationStep.PHONE_VALIDATION]
+        assert steps_to_become_beneficiary(user, EligibilityType.AGE18) == [BeneficiaryValidationStep.PHONE_VALIDATION]
         assert not user.has_beneficiary_role
 
     @override_features(FORCE_PHONE_VALIDATION=True)
@@ -506,7 +506,7 @@ class StepsToBecomeBeneficiaryTest:
             BeneficiaryValidationStep.PHONE_VALIDATION,
             BeneficiaryValidationStep.ID_CHECK,
         ]
-        assert steps_to_become_beneficiary(user) == expected
+        assert steps_to_become_beneficiary(user, EligibilityType.AGE18) == expected
         assert not user.has_beneficiary_role
 
     @override_features(FORCE_PHONE_VALIDATION=True, IS_HONOR_STATEMENT_MANDATORY_TO_ACTIVATE_BENEFICIARY=True)
@@ -518,7 +518,7 @@ class StepsToBecomeBeneficiaryTest:
             BeneficiaryValidationStep.ID_CHECK,
             BeneficiaryValidationStep.HONOR_STATEMENT,
         ]
-        assert steps_to_become_beneficiary(user) == expected
+        assert steps_to_become_beneficiary(user, EligibilityType.AGE18) == expected
         assert not user.has_beneficiary_role
 
     @override_features(FORCE_PHONE_VALIDATION=True, IS_HONOR_STATEMENT_MANDATORY_TO_ACTIVATE_BENEFICIARY=False)
@@ -529,7 +529,7 @@ class StepsToBecomeBeneficiaryTest:
             BeneficiaryValidationStep.PHONE_VALIDATION,
             BeneficiaryValidationStep.ID_CHECK,
         ]
-        assert steps_to_become_beneficiary(user) == expected
+        assert steps_to_become_beneficiary(user, EligibilityType.AGE18) == expected
         assert not user.has_beneficiary_role
 
 

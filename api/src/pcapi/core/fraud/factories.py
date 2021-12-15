@@ -11,6 +11,7 @@ import pytz
 
 from pcapi.core import testing
 import pcapi.core.fraud.models as fraud_models
+from pcapi.core.users import models as users_models
 import pcapi.core.users.factories as users_factories
 
 from . import models
@@ -117,9 +118,9 @@ class UbbleContentFactory(factory.Factory):
         model = fraud_models.ubble.UbbleContent
 
     status = None
-    birth_date = None
-    first_name = None
-    last_name = None
+    birth_date = (date.today() - relativedelta(years=18, months=4)).isoformat()
+    first_name = factory.Faker("first_name")
+    last_name = factory.Faker("last_name")
     document_type = None
     id_document_number = None
     score = None
@@ -128,7 +129,7 @@ class UbbleContentFactory(factory.Factory):
     supported = None
     identification_id = None
     identification_url = None
-    registration_datetime = None
+    registration_datetime = datetime.now()
 
 
 class EduconnectContentFactory(factory.Factory):
@@ -164,6 +165,7 @@ class BeneficiaryFraudCheckFactory(testing.BaseFactory):
     type = models.FraudCheckType.JOUVE
     thirdPartyId = factory.LazyFunction(lambda: str(uuid.uuid4()))
     status = models.FraudCheckStatus.PENDING
+    eligibilityType = users_models.EligibilityType.AGE18
 
     @classmethod
     def _create(cls, model_class, *args, **kwargs):

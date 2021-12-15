@@ -1197,9 +1197,23 @@ class SendPhoneValidationCodeTest:
         user = User.query.get(user.id)
         assert user.is_phone_validated
 
+    @pytest.mark.parametrize(
+        "age,eligibility_type",
+        [
+            (15, EligibilityType.UNDERAGE),
+            (16, EligibilityType.UNDERAGE),
+            (17, EligibilityType.UNDERAGE),
+            (18, EligibilityType.AGE18),
+            (19, None),
+        ],
+    )
     @override_settings(MAX_SMS_SENT_FOR_PHONE_VALIDATION=1)
-    def test_send_phone_validation_code_too_many_attempts(self, client, app):
-        user = users_factories.UserFactory(departementCode="93", phoneNumber="+33601020304")
+    def test_send_phone_validation_code_too_many_attempts(self, client, app, age, eligibility_type):
+        user = users_factories.UserFactory(
+            departementCode="93",
+            phoneNumber="+33601020304",
+            dateOfBirth=datetime.now() - relativedelta(years=age, days=5),
+        )
         client.with_token(email=user.email)
 
         response = client.post("/native/v1/send_phone_validation_code")
@@ -1211,10 +1225,13 @@ class SendPhoneValidationCodeTest:
 
         # check that a fraud check has been created
         fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(
-            userId=user.id, type=fraud_models.FraudCheckType.INTERNAL_REVIEW, thirdPartyId=f"PC-{user.id}"
+            userId=user.id,
+            type=fraud_models.FraudCheckType.INTERNAL_REVIEW,
+            thirdPartyId=f"PC-{user.id}",
         ).one_or_none()
 
         assert fraud_check is not None
+        assert fraud_check.eligibilityType == eligibility_type
 
         content = fraud_check.resultContent
         expected_reason = "Le nombre maximum de sms envoyés est atteint"
@@ -1277,13 +1294,29 @@ class SendPhoneValidationCodeTest:
         db.session.refresh(user)
         assert user.phoneNumber == "+33102030405"
 
-    def test_send_phone_validation_code_for_new_validated_duplicated_phone_number(self, client, app):
+    @pytest.mark.parametrize(
+        "age,eligibility_type",
+        [
+            (15, EligibilityType.UNDERAGE),
+            (16, EligibilityType.UNDERAGE),
+            (17, EligibilityType.UNDERAGE),
+            (18, EligibilityType.AGE18),
+            (19, None),
+        ],
+    )
+    def test_send_phone_validation_code_for_new_validated_duplicated_phone_number(
+        self, client, app, age, eligibility_type
+    ):
         orig_user = users_factories.UserFactory(
             isEmailValidated=True,
             phoneValidationStatus=PhoneValidationStatusType.VALIDATED,
             phoneNumber="+33102030405",
         )
-        user = users_factories.UserFactory(isEmailValidated=True, phoneNumber="+33601020304")
+        user = users_factories.UserFactory(
+            isEmailValidated=True,
+            phoneNumber="+33601020304",
+            dateOfBirth=datetime.now() - relativedelta(years=age, days=5),
+        )
         client.with_token(email=user.email)
 
         response = client.post("/native/v1/send_phone_validation_code", json={"phoneNumber": "+33102030405"})
@@ -1297,10 +1330,13 @@ class SendPhoneValidationCodeTest:
 
         # check that a fraud check has been created
         fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(
-            userId=user.id, type=fraud_models.FraudCheckType.INTERNAL_REVIEW, thirdPartyId=f"PC-{user.id}"
+            userId=user.id,
+            type=fraud_models.FraudCheckType.INTERNAL_REVIEW,
+            thirdPartyId=f"PC-{user.id}",
         ).one_or_none()
 
         assert fraud_check is not None
+        assert fraud_check.eligibilityType == eligibility_type
 
         content = fraud_check.resultContent
         assert content["source"] == fraud_models.InternalReviewSource.PHONE_ALREADY_EXISTS.value
@@ -1355,9 +1391,23 @@ class SendPhoneValidationCodeTest:
         db.session.refresh(user)
         assert user.phoneNumber == "+46766123456"
 
+    @pytest.mark.parametrize(
+        "age,eligibility_type",
+        [
+            (15, EligibilityType.UNDERAGE),
+            (16, EligibilityType.UNDERAGE),
+            (17, EligibilityType.UNDERAGE),
+            (18, EligibilityType.AGE18),
+            (19, None),
+        ],
+    )
     @override_settings(BLACKLISTED_SMS_RECIPIENTS={"+33601020304"})
-    def test_blocked_phone_number(self, client, app):
-        user = users_factories.UserFactory(departementCode="93", phoneNumber="+33601020304")
+    def test_blocked_phone_number(self, client, app, age, eligibility_type):
+        user = users_factories.UserFactory(
+            departementCode="93",
+            phoneNumber="+33601020304",
+            dateOfBirth=datetime.now() - relativedelta(years=age, days=5),
+        )
         client.with_token(email=user.email)
 
         response = client.post("/native/v1/send_phone_validation_code")
@@ -1371,10 +1421,13 @@ class SendPhoneValidationCodeTest:
 
         # check that a fraud check has been created
         fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(
-            userId=user.id, type=fraud_models.FraudCheckType.INTERNAL_REVIEW, thirdPartyId=f"PC-{user.id}"
+            userId=user.id,
+            type=fraud_models.FraudCheckType.INTERNAL_REVIEW,
+            thirdPartyId=f"PC-{user.id}",
         ).one_or_none()
 
         assert fraud_check is not None
+        assert fraud_check.eligibilityType == eligibility_type
 
         content = fraud_check.resultContent
         assert content["source"] == fraud_models.InternalReviewSource.BLACKLISTED_PHONE_NUMBER.value
@@ -1435,6 +1488,7 @@ class ValidatePhoneNumberTest:
     def test_validate_phone_number_too_many_attempts(self, client, app):
         user = users_factories.UserFactory(
             phoneNumber="+33607080900",
+            dateOfBirth=datetime.now() - relativedelta(years=18, days=5),
             subscriptionState=users_models.SubscriptionState.email_validated,
         )
         client.with_token(email=user.email)
@@ -1456,10 +1510,13 @@ class ValidatePhoneNumberTest:
 
         # check that a fraud check has been created
         fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(
-            userId=user.id, type=fraud_models.FraudCheckType.INTERNAL_REVIEW, thirdPartyId=f"PC-{user.id}"
+            userId=user.id,
+            type=fraud_models.FraudCheckType.INTERNAL_REVIEW,
+            thirdPartyId=f"PC-{user.id}",
         ).one_or_none()
 
         assert fraud_check is not None
+        assert fraud_check.eligibilityType == EligibilityType.AGE18
 
         expected_reason = f"Le nombre maximum de tentatives de validation est atteint: {attempts_count}"
         content = fraud_check.resultContent
@@ -1590,6 +1647,7 @@ class UpdateBeneficiaryInformationTest:
         user = users_factories.UserFactory(
             address=None,
             city=None,
+            dateOfBirth=datetime.now() - relativedelta(years=18, months=2),
             postalCode=None,
             activity=None,
             phoneValidationStatus=PhoneValidationStatusType.VALIDATED,
@@ -1645,6 +1703,7 @@ class UpdateBeneficiaryInformationTest:
         user = users_factories.UserFactory(
             address=None,
             city=None,
+            dateOfBirth=datetime.now() - relativedelta(years=18, months=2),
             postalCode=None,
             activity=None,
             phoneValidationStatus=PhoneValidationStatusType.VALIDATED,
@@ -1696,11 +1755,14 @@ class UpdateBeneficiaryInformationTest:
         user = users_factories.UserFactory(
             address=None,
             city=None,
+            dateOfBirth=datetime.now() - relativedelta(years=18, months=2),
             postalCode=None,
             activity=None,
             phoneValidationStatus=PhoneValidationStatusType.VALIDATED,
         )
-        fraud_factories.BeneficiaryFraudCheckFactory(user=user, type=fraud_models.FraudCheckType.UBBLE)
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user, type=fraud_models.FraudCheckType.UBBLE, eligibilityType=EligibilityType.AGE18
+        )
         fraud_factories.BeneficiaryFraudResultFactory(user=user, status=fraud_models.FraudStatus.OK)
 
         beneficiary_import = BeneficiaryImportFactory(beneficiary=user)
@@ -1746,7 +1808,9 @@ class UpdateBeneficiaryInformationTest:
             postalCode=None,
             activity=None,
         )
-        fraud_factories.BeneficiaryFraudCheckFactory(user=user, type=fraud_models.FraudCheckType.EDUCONNECT)
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user, type=fraud_models.FraudCheckType.EDUCONNECT, eligibilityType=EligibilityType.UNDERAGE
+        )
         fraud_factories.BeneficiaryFraudResultFactory(user=user, status=fraud_models.FraudStatus.OK)
 
         beneficiary_import = BeneficiaryImportFactory(beneficiary=user, eligibilityType=EligibilityType.UNDERAGE)
@@ -1894,6 +1958,7 @@ class ProfilingFraudScoreTest:
         fraud_check = fraud_models.BeneficiaryFraudCheck.query.first()
         assert fraud_check.userId == user.id
         assert fraud_check.type == fraud_models.FraudCheckType.USER_PROFILING
+        assert fraud_check.eligibilityType == None
 
     @pytest.mark.parametrize("session_id_value", ["gdavmoioeuboaobç!p'è", "", "a" * 150])
     @override_settings(USER_PROFILING_URL=USER_PROFILING_URL)
@@ -2000,8 +2065,9 @@ class ProfilingSessionIdTest:
 
 
 class IdentificationSessionTest:
-    def test_request(self, client, ubble_mock):
-        user = users_factories.UserFactory()
+    @pytest.mark.parametrize("age", [15, 16, 17, 18])
+    def test_request(self, client, ubble_mock, age):
+        user = users_factories.UserFactory(dateOfBirth=datetime.now() - relativedelta(years=age, days=5))
 
         client.with_token(user.email)
 
@@ -2015,8 +2081,21 @@ class IdentificationSessionTest:
         assert check.type == fraud_models.FraudCheckType.UBBLE
         assert response.json["identificationUrl"] == "https://id.ubble.ai/29d9eca4-dce6-49ed-b1b5-8bb0179493a8"
 
+    @pytest.mark.parametrize("age", [14, 19, 20])
+    def test_request_not_eligible(self, client, ubble_mock, age):
+        user = users_factories.UserFactory(dateOfBirth=datetime.now() - relativedelta(years=age, days=5))
+
+        client.with_token(user.email)
+
+        response = client.post("/native/v1/ubble_identification", json={"redirectUrl": "http://example.com/deeplink"})
+
+        assert response.status_code == 400
+        assert response.json["code"] == "IDCHECK_NOT_ELIGIBLE"
+        assert len(user.beneficiaryFraudChecks) == 0
+        assert ubble_mock.call_count == 0
+
     def test_request_connection_error(self, client, ubble_mock_connection_error):
-        user = users_factories.UserFactory()
+        user = users_factories.UserFactory(dateOfBirth=datetime.now() - relativedelta(years=18, days=5))
 
         client.with_token(user.email)
 
@@ -2028,7 +2107,7 @@ class IdentificationSessionTest:
         assert ubble_mock_connection_error.call_count == 1
 
     def test_request_ubble_http_error_status(self, client, ubble_mock_http_error_status):
-        user = users_factories.UserFactory()
+        user = users_factories.UserFactory(dateOfBirth=datetime.now() - relativedelta(years=18, days=5))
 
         client.with_token(user.email)
 
@@ -2110,6 +2189,7 @@ class IdentificationSessionTest:
         assert len(user.beneficiaryFraudChecks) == 3
         assert ubble_mock.call_count == 1
 
-        check = user.beneficiaryFraudChecks[2]
+        sorted_fraud_checks = sorted(user.beneficiaryFraudChecks, key=lambda x: x.id)
+        check = sorted_fraud_checks[2]
         assert check.type == fraud_models.FraudCheckType.UBBLE
         assert response.json["identificationUrl"] == "https://id.ubble.ai/29d9eca4-dce6-49ed-b1b5-8bb0179493a8"

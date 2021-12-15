@@ -208,6 +208,9 @@ class BeneficiaryGrant18Factory(BaseFactory):
             )
             if obj.eligibility == users_models.EligibilityType.UNDERAGE
             else fraud_factories.JouveContentFactory(firstName=obj.firstName, lastName=obj.lastName),
+            eligibilityType=users_models.EligibilityType.UNDERAGE
+            if obj.eligibility == users_models.EligibilityType.UNDERAGE
+            else users_models.EligibilityType.AGE18,
         )
 
     @factory.post_generation

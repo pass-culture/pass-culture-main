@@ -53,6 +53,7 @@ def start_ubble_fraud_check(user: users_models.User, ubble_content: fraud_models
         thirdPartyId=str(ubble_content.identification_id),
         resultContent=ubble_content,
         status=fraud_models.FraudCheckStatus.PENDING,
+        eligibilityType=user.eligibility,
     )
     db.session.add(fraud_check)
     db.session.commit()
@@ -61,7 +62,7 @@ def start_ubble_fraud_check(user: users_models.User, ubble_content: fraud_models
 def get_ubble_fraud_check(identification_id: str) -> typing.Optional[fraud_models.BeneficiaryFraudCheck]:
     fraud_check = (
         fraud_models.BeneficiaryFraudCheck.query.filter(
-            fraud_models.BeneficiaryFraudCheck.type == fraud_models.FraudCheckType.UBBLE
+            fraud_models.BeneficiaryFraudCheck.type == fraud_models.FraudCheckType.UBBLE,
         )
         .filter(fraud_models.BeneficiaryFraudCheck.thirdPartyId == identification_id)
         .one_or_none()
