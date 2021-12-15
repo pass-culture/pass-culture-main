@@ -1,9 +1,20 @@
+import { parsePhoneNumberFromString } from 'libphonenumber-js'
 import * as yup from 'yup'
 
 import { ADRESS_TYPE } from 'core/OfferEducational'
 
 const isOneTrue = (values: Record<string, boolean>): boolean =>
   Object.values(values).includes(true)
+
+const isPhoneValid = (phone: string | undefined): boolean => {
+  if (!phone) {
+    return false
+  }
+
+  const phoneNumber = parsePhoneNumberFromString(phone, 'FR')
+  const isValid = phoneNumber?.isValid()
+  return Boolean(isValid)
+}
 
 export const validationSchema = yup.object().shape({
   category: yup.string().required('Veuillez sélectionner une catégorie'),
@@ -56,7 +67,14 @@ export const validationSchema = yup.object().shape({
       motor: yup.boolean(),
       none: yup.boolean(),
     }),
-  phone: yup.string().required('Veuillez renseigner un numéro de téléphone'),
+  phone: yup
+    .string()
+    .required('Veuillez renseigner un numéro de téléphone')
+    .test({
+      name: 'is-phone-valid',
+      message: 'Le numéro de téléphone n’est pas valide',
+      test: isPhoneValid,
+    }),
   email: yup
     .string()
     .required('Veuillez renseigner une adresse e-mail')
