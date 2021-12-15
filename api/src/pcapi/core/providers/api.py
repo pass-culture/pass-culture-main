@@ -378,7 +378,12 @@ def _should_reindex_offer(new_quantity: int, new_price: float, existing_stock: d
     if existing_stock["price"] != new_price:
         return True
 
-    is_existing_stock_empty = existing_stock["quantity"] <= existing_stock["booking_quantity"]
+    is_existing_stock_empty = (
+        # Existing stock could be None (i.e. infinite) if the offerer manually overrides
+        # the quantity of this synchronized stock.
+        existing_stock["quantity"] is not None
+        and existing_stock["quantity"] <= existing_stock["booking_quantity"]
+    )
     is_new_quantity_stock_empty = new_quantity == 0
 
     return is_existing_stock_empty != is_new_quantity_stock_empty
