@@ -19,11 +19,14 @@ from pcapi.core.educational.models import EducationalDeposit
 from pcapi.core.educational.models import EducationalInstitution
 from pcapi.core.educational.models import EducationalRedactor
 from pcapi.core.educational.utils import compute_educational_booking_cancellation_limit_date
+from pcapi.core.mails.transactional.sendinblue_template_ids import SendinblueTransactionalEmailData
+from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import repository as offers_repository
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
 from pcapi.models import db
+from pcapi.models.feature import FeatureToggle
 from pcapi.repository import repository
 from pcapi.repository import transaction
 from pcapi.routes.adage.v1.serialization.prebooking import serialize_educational_booking
@@ -230,6 +233,19 @@ def refuse_educational_booking(educational_booking_id: int) -> EducationalBookin
             "reason": str(booking.cancellationReason),
         },
     )
+
+    booking_email = booking.stock.offer.bookingEmail
+    if booking_email:
+        if FeatureToggle.ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS.is_active():
+            data = SendinblueTransactionalEmailData(
+                template=TransactionalEmail.EDUCATIONAL_BOOKING_CANCELLATION_BY_INSTITUTION.value,
+                params={
+                    "OFFER_NAME": stock.offer.name,
+                    "EVENT_BEGINNING_DATETIME": stock.beginningDatetime.strftime("%d/%m/%Y à %H:%M"),
+                    "BOOKING_CREATION_DATE": booking.dateCreated.strftime("%d/%m/%Y à %H:%M"),
+                },
+            )
+            mails.send(recipients=[booking_email], data=data)
 
     search.async_index_offer_ids([stock.offerId])
 
