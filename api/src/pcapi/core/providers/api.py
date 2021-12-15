@@ -386,4 +386,4 @@ def _should_reindex_offer(new_quantity: int, new_price: float, existing_stock: d
     )
     is_new_quantity_stock_empty = new_quantity == 0
 
-    return is_existing_stock_empty != is_new_quantity_stock_empty
+    return is_existing_stock_empty is not is_new_quantity_stock_empty
