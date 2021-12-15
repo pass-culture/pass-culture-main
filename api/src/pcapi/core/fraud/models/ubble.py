@@ -3,6 +3,7 @@ import enum
 import typing
 
 import pydantic
+import pytz
 
 from .common import IdentityCheckContent
 
@@ -41,7 +42,9 @@ class UbbleContent(IdentityCheckContent):
     )
 
     def get_registration_datetime(self) -> typing.Optional[datetime.datetime]:
-        return self.registration_datetime
+        return (
+            self.registration_datetime.astimezone(pytz.utc).replace(tzinfo=None) if self.registration_datetime else None
+        )
 
     def get_birth_date(self) -> typing.Optional[datetime.date]:
         return self.birth_date
