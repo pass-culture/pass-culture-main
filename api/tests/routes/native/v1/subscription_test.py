@@ -237,8 +237,8 @@ class UpdateProfileTest:
         assert notification["attribute_values"]["u.postal_code"] == "77000"
 
 
-class SchoolTypeTest:
-    def test_get_all_school_types(self, client):
+class ProfileOptionsTypeTest:
+    def test_get_profile_options(self, client):
         response = client.get("/native/v1/subscription/profile_options")
 
         assert response.status_code == 200

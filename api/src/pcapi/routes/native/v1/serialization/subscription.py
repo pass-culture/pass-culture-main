@@ -1,7 +1,7 @@
 from typing import Optional
 
 from pcapi.core.subscription import models as subscription_models
-from pcapi.core.subscription import school_types
+from pcapi.core.subscription import profile_options
 from pcapi.core.users import models as users_models
 from pcapi.serialization.utils import to_camel
 
@@ -19,21 +19,21 @@ class NextSubscriptionStepResponse(BaseModel):
 
 
 class ProfileUpdateRequest(BaseModel):
-    activity_id: Optional[school_types.ACTIVITY_ID_ENUM]
+    activity_id: Optional[profile_options.ACTIVITY_ID_ENUM]
     activity: Optional[users_models.ActivityEnum]  # TODO: CorentinN: remove this field when frontend sends activity_id
     address: Optional[str]
     city: str
     first_name: str
     last_name: str
     postal_code: str
-    school_type_id: Optional[school_types.SCHOOL_TYPE_ID_ENUM]
+    school_type_id: Optional[profile_options.SCHOOL_TYPE_ID_ENUM]
 
     class Config:
         alias_generator = to_camel
 
 
 class SchoolTypeResponseModel(BaseModel):
-    id: school_types.SCHOOL_TYPE_ID_ENUM
+    id: profile_options.SCHOOL_TYPE_ID_ENUM
     label: str
 
     class Config:
@@ -43,10 +43,10 @@ class SchoolTypeResponseModel(BaseModel):
 
 
 class ActivityResponseModel(BaseModel):
-    id: school_types.ACTIVITY_ID_ENUM
+    id: profile_options.ACTIVITY_ID_ENUM
     label: str
     description: Optional[str]
-    associated_school_types_ids: Optional[list[school_types.SCHOOL_TYPE_ID_ENUM]]
+    associated_school_types_ids: Optional[list[profile_options.SCHOOL_TYPE_ID_ENUM]]
 
     class Config:
         alias_generator = to_camel
@@ -54,6 +54,6 @@ class ActivityResponseModel(BaseModel):
         orm_mode = True
 
 
-class SchoolTypesResponse(BaseModel):
+class ProfileOptionsResponse(BaseModel):
     activities: list[ActivityResponseModel]
     school_types: list[SchoolTypeResponseModel]
