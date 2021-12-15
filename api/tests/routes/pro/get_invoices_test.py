@@ -11,7 +11,7 @@ from pcapi.utils import human_ids
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
-def test_get_invoices_query(client):
+def test_get_invoices(client):
     business_unit1 = finance_factories.BusinessUnitFactory()
     dt1 = datetime.datetime(2021, 1, 1)
     invoice1 = finance_factories.InvoiceFactory(businessUnit=business_unit1, date=dt1)
@@ -46,7 +46,7 @@ def test_get_invoices_query(client):
     assert invoices[1]["reference"] == invoice1.reference
 
 
-def test_get_invoices_query_specify_business_unit(client):
+def test_get_invoices_specify_business_unit(client):
     business_unit1 = finance_factories.BusinessUnitFactory()
     invoice1 = finance_factories.InvoiceFactory(businessUnit=business_unit1)
     business_unit2 = finance_factories.BusinessUnitFactory()
@@ -66,7 +66,7 @@ def test_get_invoices_query_specify_business_unit(client):
     assert invoices[0]["reference"] == invoice1.reference
 
 
-def test_get_invoices_query_specify_dates(client):
+def test_get_invoices_specify_dates(client):
     business_unit = finance_factories.BusinessUnitFactory()
     _invoice_before = finance_factories.InvoiceFactory(
         businessUnit=business_unit,
@@ -95,7 +95,7 @@ def test_get_invoices_query_specify_dates(client):
     assert invoices[0]["reference"] == invoice_within.reference
 
 
-def test_get_invoices_query_unauthorized_offerer(client):
+def test_get_invoices_unauthorized_offerer(client):
     offerer = offerers_factories.OffererFactory()
     pro = users_factories.ProFactory()
 
@@ -106,7 +106,7 @@ def test_get_invoices_query_unauthorized_offerer(client):
     assert response.status_code == 403
 
 
-def test_get_invoices_query_unauthorized_business_unit(client):
+def test_get_invoices_unauthorized_business_unit(client):
     offerer = offerers_factories.OffererFactory()
     pro = users_factories.ProFactory(offerers=[offerer])
     other_invoice = finance_factories.InvoiceFactory()
