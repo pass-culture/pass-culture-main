@@ -952,7 +952,7 @@ def get_eligibility_end_datetime(date_of_birth: Optional[Union[date, datetime]])
     if not date_of_birth:
         return None
 
-    return datetime.combine(date_of_birth, time(0, 0)) + relativedelta(years=constants.ELIGIBILITY_AGE_18 + 1)
+    return datetime.combine(date_of_birth, time(0, 0)) + relativedelta(years=constants.ELIGIBILITY_AGE_18 + 1, hour=11)
 
 
 def get_eligibility_start_datetime(date_of_birth: Optional[Union[date, datetime]]) -> Optional[datetime]:
@@ -1000,10 +1000,13 @@ def get_eligibility_at_date(
         return None
 
     age = users_utils.get_age_at_date(date_of_birth, specified_datetime)
+    if age is None:
+        return None
 
     if age in constants.ELIGIBILITY_UNDERAGE_RANGE:
         return EligibilityType.UNDERAGE
-    if age == constants.ELIGIBILITY_AGE_18:
+    # If the user is older than 18 in UTC timezone, we consider them eligible until they reach eligibility_end
+    if constants.ELIGIBILITY_AGE_18 <= age and specified_datetime < eligibility_end:
         return EligibilityType.AGE18
 
     return None
