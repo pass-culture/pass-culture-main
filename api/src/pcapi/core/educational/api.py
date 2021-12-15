@@ -242,7 +242,7 @@ def refuse_educational_booking(educational_booking_id: int) -> EducationalBookin
                 params={
                     "OFFER_NAME": stock.offer.name,
                     "EVENT_BEGINNING_DATETIME": stock.beginningDatetime.strftime("%d/%m/%Y à %H:%M"),
-                    "BOOKING_CREATION_DATE": booking.dateCreated.strftime("%d/%m/%Y à %H:%M"),
+                    "EDUCATIONAL_REDACTOR_EMAIL": educational_booking.educationalRedactor.email,
                 },
             )
             mails.send(recipients=[booking_email], data=data)

@@ -331,11 +331,14 @@ def find_expired_educational_bookings() -> list[EducationalBooking]:
         .filter(Booking.cancellationReason == BookingCancellationReasons.EXPIRED)
         .options(
             contains_eager(EducationalBooking.booking)
-            .load_only(Booking.stock)
-            .joinedload(Booking.stock)
+            .load_only(Booking.stockId)
+            .joinedload(Booking.stock, innerjoin=True)
             .load_only(Stock.beginningDatetime)
-            .joinedload(Stock.offer)
+            .joinedload(Stock.offer, innerjoin=True)
             .load_only(Offer.name)
+        )
+        .options(
+            joinedload(EducationalBooking.educationalRedactor, innerjoin=True).load_only(EducationalRedactor.email)
         )
         .all()
     )

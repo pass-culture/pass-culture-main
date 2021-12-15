@@ -61,7 +61,12 @@ def get_confirmed_educational_bookings_amount(
 
 
 def find_educational_booking_by_id(educational_booking_id: int) -> Optional[EducationalBooking]:
-    return EducationalBooking.query.filter(EducationalBooking.id == educational_booking_id).join(Booking).one_or_none()
+    return (
+        EducationalBooking.query.filter(EducationalBooking.id == educational_booking_id)
+        .join(Booking)
+        .options(joinedload(EducationalBooking.educationalRedactor).load_only(EducationalRedactor.email))
+        .one_or_none()
+    )
 
 
 def find_educational_year_by_date(date: datetime) -> Optional[EducationalYear]:
