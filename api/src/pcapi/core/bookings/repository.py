@@ -322,6 +322,25 @@ def find_expired_individual_bookings_ordered_by_offerer(expired_on: date = None)
     )
 
 
+def find_expired_educational_bookings() -> list[EducationalBooking]:
+    expired_on = date.today()
+    return (
+        EducationalBooking.query.join(Booking)
+        .filter(Booking.isCancelled.is_(True))
+        .filter(cast(Booking.cancellationDate, Date) == expired_on)
+        .filter(Booking.cancellationReason == BookingCancellationReasons.EXPIRED)
+        .options(
+            contains_eager(EducationalBooking.booking)
+            .load_only(Booking.stock)
+            .joinedload(Booking.stock)
+            .load_only(Stock.beginningDatetime)
+            .joinedload(Stock.offer)
+            .load_only(Offer.name)
+        )
+        .all()
+    )
+
+
 def get_active_bookings_quantity_for_offerer(offerer_id: int) -> dict:
     return dict(
         Booking.query.filter(
