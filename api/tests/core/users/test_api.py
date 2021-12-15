@@ -1369,7 +1369,7 @@ class GetEligibilityTest:
             (datetime(2007, 6, 6), datetime(2022, 6, 6), EligibilityType.UNDERAGE),  # 15 years old on 2O22/6/6 at 15
             (datetime(2007, 6, 6), datetime(2022, 6, 5), None),  # 15 years old on 2O22/6/6 before 15
             (datetime(2007, 6, 6), datetime(2025, 6, 6), EligibilityType.AGE18),  # 15 years old on 2O22/6/6 at 18
-            (datetime(2007, 6, 6), datetime(2026, 6, 6), None),  # 15 years old on 2O22/6/6 at 19
+            (datetime(2007, 6, 6), datetime(2026, 6, 7), None),  # 15 years old on 2O22/6/6 at 19
             (datetime(2007, 1, 10), datetime(2022, 1, 11), None),  # 15 years old on 2022/1/10 before opening
             (
                 datetime(2007, 1, 10),
@@ -1396,7 +1396,7 @@ class GetEligibilityTest:
             (datetime(2007, 6, 6), datetime(2022, 6, 6), EligibilityType.UNDERAGE),  # 15 years old on 2O22/6/6 at 15
             (datetime(2007, 6, 6), datetime(2022, 6, 5), None),  # 15 years old on 2O22/6/6 before 15
             (datetime(2007, 6, 6), datetime(2025, 6, 6), EligibilityType.AGE18),  # 15 years old on 2O22/6/6 at 18
-            (datetime(2007, 6, 6), datetime(2026, 6, 6), None),  # 15 years old on 2O22/6/6 at 19
+            (datetime(2007, 6, 6), datetime(2026, 6, 7), None),  # 15 years old on 2O22/6/6 at 19
             (
                 datetime(2003, 12, 1),
                 datetime(2021, 11, 30),
@@ -1406,3 +1406,12 @@ class GetEligibilityTest:
     )
     def test_eligibility_at_date_generalisation_off(self, date_of_birth, specified_date, expected_eligibility):
         assert get_eligibility_at_date(date_of_birth, specified_date) == expected_eligibility
+
+    def test_get_eligibility_at_date_timezones_tolerance(self):
+        date_of_birth = datetime(2000, 2, 1, 0, 0)
+
+        specified_date = datetime(2019, 2, 1, 8, 0)
+        assert get_eligibility_at_date(date_of_birth, specified_date) == EligibilityType.AGE18
+
+        specified_date = datetime(2019, 2, 1, 12, 0)
+        assert get_eligibility_at_date(date_of_birth, specified_date) is None
