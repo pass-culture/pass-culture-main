@@ -249,7 +249,7 @@ class BeneficiaryView(base_configuration.BaseAdminView):
             flask.flash("Fonctionnalité non activée", "error")
             return flask.redirect(flask.url_for(".details_view", id=user_id))
         if not self.check_super_admins() and not flask_login.current_user.has_jouve_role:
-            flask.flash("Vous n'avez pas les droits suffisant pour activer ce bénéficiaire", "error")
+            flask.flash("Vous n'avez pas les droits suffisants pour activer ce bénéficiaire", "error")
             return flask.redirect(flask.url_for(".details_view", id=user_id))
         form = FraudReviewForm(flask.request.form)
         if not form.validate():
@@ -304,7 +304,7 @@ class BeneficiaryView(base_configuration.BaseAdminView):
     @flask_admin.expose("/update/beneficiary/id_piece_number/<user_id>", methods=["POST"])
     def update_beneficiary_id_piece_number(self, user_id: int) -> Response:
         if not self.check_super_admins() and not flask_login.current_user.has_jouve_role:
-            flask.flash("Vous n'avez pas les droits suffisant pour activer ce bénéficiaire", "error")
+            flask.flash("Vous n'avez pas les droits suffisants pour activer ce bénéficiaire", "error")
             return flask.redirect(flask.url_for(".details_view", id=user_id))
 
         form = IDPieceNumberForm(flask.request.form)
@@ -338,18 +338,20 @@ class BeneficiaryView(base_configuration.BaseAdminView):
                     fraud_check.source_data()
                 )
                 fraud_api.create_honor_statement_fraud_check(
-                    user, "honor statement contained in DMS application after admin review"
+                    user,
+                    "honor statement contained in DMS application after admin review",
+                    fraud_api.get_eligibility_type(fraud_check.source_data()),
                 )
             beneficiary_repository.BeneficiarySQLRepository.save(pre_subscription, user)
 
-        flask.flash(f"N° de pièce d'identitée modifiée sur le bénéficiaire {user.firstName} {user.lastName}")
+        flask.flash(f"N° de pièce d'identité modifiée sur le bénéficiaire {user.firstName} {user.lastName}")
         return flask.redirect(flask.url_for(".details_view", id=user_id))
 
     @flask_admin.expose("/validate/beneficiary/phone_number/<user_id>", methods=["POST"])
     def validate_phone_number(self, user_id: int) -> Response:
         if not flask_login.current_user.has_admin_role:
             flask.flash(
-                "Vous n'avez pas les droits suffisant pour valider le numéro de téléphone de cet utilisateur", "error"
+                "Vous n'avez pas les droits suffisants pour valider le numéro de téléphone de cet utilisateur", "error"
             )
             return flask.redirect(flask.url_for(".details_view", id=user_id))
 

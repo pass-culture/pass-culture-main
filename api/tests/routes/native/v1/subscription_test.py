@@ -1,6 +1,7 @@
 import datetime
 
 from dateutil.relativedelta import relativedelta
+from freezegun import freeze_time
 import pytest
 
 from pcapi.core.fraud import factories as fraud_factories
@@ -113,6 +114,7 @@ class NextStepTest:
             resultContent=fraud_factories.UserProfilingFraudDataFactory(
                 risk_rating=fraud_models.UserProfilingRiskRating.TRUSTED
             ),
+            eligibilityType=users_models.EligibilityType.AGE18,
         )
 
         response = client.get("/native/v1/subscription/next_step")
@@ -138,6 +140,124 @@ class NextStepTest:
         assert response.status_code == 200
         assert response.json == {
             "nextSubscriptionStep": next_step,
+            "allowedIdentityCheckMethods": ["ubble"],
+            "maintenancePageType": None,
+        }
+
+    @pytest.mark.parametrize(
+        "underage_fraud_check_status,underage_ubble_status",
+        [
+            (fraud_models.FraudCheckStatus.PENDING, fraud_models.ubble.UbbleIdentificationStatus.PROCESSING),
+            (fraud_models.FraudCheckStatus.OK, fraud_models.ubble.UbbleIdentificationStatus.PROCESSED),
+            (fraud_models.FraudCheckStatus.KO, fraud_models.ubble.UbbleIdentificationStatus.PROCESSED),
+            (fraud_models.FraudCheckStatus.CANCELED, fraud_models.ubble.UbbleIdentificationStatus.ABORTED),
+            (None, fraud_models.ubble.UbbleIdentificationStatus.PROCESSING),
+            (None, fraud_models.ubble.UbbleIdentificationStatus.PROCESSED),
+        ],
+    )
+    @override_features(ENABLE_UBBLE=True)
+    def test_next_subscription_full_ubble_turned_18(self, client, underage_fraud_check_status, underage_ubble_status):
+        # User has already performed id check with Ubble for underage credit (successfully or not), 2 years ago
+        with freeze_time(datetime.datetime.utcnow() - relativedelta(years=2)):
+            user = users_factories.UserFactory(
+                dateOfBirth=datetime.datetime.combine(datetime.date.today(), datetime.time(0, 0))
+                - relativedelta(years=16, days=5),
+            )
+
+            # 15-17: no phone validation, no user profiling
+
+            # Perform first id check with Ubble
+            fraud_factories.BeneficiaryFraudCheckFactory(
+                user=user,
+                type=fraud_models.FraudCheckType.UBBLE,
+                status=underage_fraud_check_status,
+                resultContent=fraud_factories.UbbleContentFactory(status=underage_ubble_status),
+                eligibilityType=users_models.EligibilityType.UNDERAGE,
+            )
+
+            fraud_factories.BeneficiaryFraudCheckFactory(
+                user=user,
+                type=fraud_models.FraudCheckType.HONOR_STATEMENT,
+                status=fraud_models.FraudCheckStatus.OK,
+                eligibilityType=users_models.EligibilityType.UNDERAGE,
+            )
+
+        # Now user turned 18, phone and user profiling are requested and Ubble identification is requested again
+        # Process should not depend on Ubble result performed when underage
+        client.with_token(user.email)
+
+        response = client.get("/native/v1/subscription/next_step")
+
+        assert response.status_code == 200
+        assert response.json == {
+            "nextSubscriptionStep": "phone-validation",
+            "allowedIdentityCheckMethods": ["ubble"],
+            "maintenancePageType": None,
+        }
+
+        # Perform phone validation
+        user.phoneValidationStatus = users_models.PhoneValidationStatusType.VALIDATED
+
+        response = client.get("/native/v1/subscription/next_step")
+
+        assert response.status_code == 200
+        assert response.json == {
+            "nextSubscriptionStep": "user-profiling",
+            "allowedIdentityCheckMethods": ["ubble"],
+            "maintenancePageType": None,
+        }
+
+        # Perform user profiling
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.USER_PROFILING,
+            resultContent=fraud_factories.UserProfilingFraudDataFactory(
+                risk_rating=fraud_models.UserProfilingRiskRating.TRUSTED
+            ),
+            eligibilityType=users_models.EligibilityType.AGE18,
+        )
+
+        response = client.get("/native/v1/subscription/next_step")
+
+        assert response.status_code == 200
+        assert response.json == {
+            "nextSubscriptionStep": "identity-check",
+            "allowedIdentityCheckMethods": ["ubble"],
+            "maintenancePageType": None,
+        }
+
+        # Perform id check with Ubble
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.UBBLE,
+            status=fraud_models.FraudCheckStatus.OK,
+            resultContent=fraud_factories.UbbleContentFactory(
+                status=fraud_models.ubble.UbbleIdentificationStatus.PROCESSED
+            ),
+            eligibilityType=users_models.EligibilityType.AGE18,
+        )
+
+        response = client.get("/native/v1/subscription/next_step")
+
+        assert response.status_code == 200
+        assert response.json == {
+            "nextSubscriptionStep": "honor-statement",
+            "allowedIdentityCheckMethods": ["ubble"],
+            "maintenancePageType": None,
+        }
+
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.HONOR_STATEMENT,
+            status=fraud_models.FraudCheckStatus.OK,
+            eligibilityType=users_models.EligibilityType.AGE18,
+        )
+
+        response = client.get("/native/v1/subscription/next_step")
+
+        assert response.status_code == 200
+        assert response.json == {
+            "nextSubscriptionStep": None,
             "allowedIdentityCheckMethods": ["ubble"],
             "maintenancePageType": None,
         }
@@ -205,6 +325,7 @@ class UpdateProfileTest:
             postalCode=None,
             activity=None,
             phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
+            dateOfBirth=datetime.date.today() - relativedelta(years=18, months=6),
         )
 
         profile_data = {
@@ -309,8 +430,17 @@ class ProfileOptionsTypeTest:
 
 
 class HonorStatementTest:
-    def test_create_honor_statement_fraud_check(self, client):
-        user = users_factories.UserFactory()
+    @pytest.mark.parametrize(
+        "age,eligibility_type",
+        [
+            (15, users_models.EligibilityType.UNDERAGE),
+            (16, users_models.EligibilityType.UNDERAGE),
+            (17, users_models.EligibilityType.UNDERAGE),
+            (18, users_models.EligibilityType.AGE18),
+        ],
+    )
+    def test_create_honor_statement_fraud_check(self, client, age, eligibility_type):
+        user = users_factories.UserFactory(dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=age, days=10))
 
         client.with_token(user.email)
 
@@ -324,4 +454,4 @@ class HonorStatementTest:
 
         assert fraud_check.status == fraud_models.FraudCheckStatus.OK
         assert fraud_check.reason == "statement from /subscription/honor_statement endpoint"
-        # TODO(viconnex) add eligibility type -- assert fraud_check.eligibilityType == eligibilityType
+        assert fraud_check.eligibilityType == eligibility_type

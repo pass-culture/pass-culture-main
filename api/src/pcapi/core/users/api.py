@@ -230,8 +230,15 @@ def initialize_account(
     return user
 
 
-def steps_to_become_beneficiary(user: User) -> list[BeneficiaryValidationStep]:
+# eligibility_type may be different from user.eligibility because user may have turned 18 or 19 between registration
+# date and asynchronous validation (DMS, Ubble)
+def steps_to_become_beneficiary(
+    user: User, eligibility_type: Optional[models.EligibilityType]
+) -> list[BeneficiaryValidationStep]:
     missing_steps = []
+
+    if not eligibility_type:
+        logger.warning("Calling steps_to_become_beneficiary without eligibility", extra={"user_id": user.id})
 
     if (
         not user.is_phone_validated
@@ -246,7 +253,7 @@ def steps_to_become_beneficiary(user: User) -> list[BeneficiaryValidationStep]:
     ):
         missing_steps.append(BeneficiaryValidationStep.ID_CHECK)
 
-    if not fraud_api.has_performed_honor_statement(user):
+    if not fraud_api.has_performed_honor_statement(user, eligibility_type):
         if not FeatureToggle.IS_HONOR_STATEMENT_MANDATORY_TO_ACTIVATE_BENEFICIARY.is_active():
             logger.warning("The honor statement has not been performed or recorded", extra={"user_id": user.id})
         else:
@@ -258,7 +265,7 @@ def steps_to_become_beneficiary(user: User) -> list[BeneficiaryValidationStep]:
 def validate_phone_number_and_activate_user(user: User, code: str) -> User:
     validate_phone_number(user, code)
 
-    if not steps_to_become_beneficiary(user):
+    if not steps_to_become_beneficiary(user, user.eligibility):
         try:
             subscription_api.activate_beneficiary(user)
         except subscription_exceptions.CannotUpgradeBeneficiaryRole:

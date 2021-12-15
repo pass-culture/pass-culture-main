@@ -58,6 +58,8 @@ JOUVE_CONTENT = {
     "lastName": "DURAND",
     "phoneNumber": "0123456789",
     "postalCode": "35123",
+    "registrationDate": f"{datetime.now():%d/%m/%Y %H:%M}",
+    "serviceCodeCtrl": "OK",
 }
 
 
@@ -152,7 +154,7 @@ def test_application_for_native_app_user(_get_raw_content_mock, client):
     beneficiary = User.query.one()
 
     # the fake Jouve backend returns a default phone number. Since a User
-    # alredy exists, the phone number should not be updated during the import process
+    # already exists, the phone number should not be updated during the import process
     assert beneficiary.phoneNumber == "0607080900"
 
     deposit = Deposit.query.one()
@@ -171,7 +173,7 @@ def test_application_for_native_app_user(_get_raw_content_mock, client):
 
 @override_features(FORCE_PHONE_VALIDATION=False, IS_HONOR_STATEMENT_MANDATORY_TO_ACTIVATE_BENEFICIARY=False)
 @patch("pcapi.connectors.beneficiaries.jouve_backend._get_raw_content", return_value=JOUVE_CONTENT)
-def test_application_for_native_app_user_honor_statemlent_optional(_get_raw_content_mock):
+def test_application_for_native_app_user_honor_statement_optional(_get_raw_content_mock):
     # Given
     users_api.create_account(
         email=JOUVE_CONTENT["email"],

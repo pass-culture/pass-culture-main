@@ -38,9 +38,12 @@ USER_PROFILING_RISK_MAPPING = {
 
 
 def on_educonnect_result(user: users_models.User, educonnect_content: models.EduconnectContent) -> None:
+    eligibility_type = get_eligibility_type(educonnect_content)
+
     fraud_check = models.BeneficiaryFraudCheck.query.filter(
         models.BeneficiaryFraudCheck.user == user,
         models.BeneficiaryFraudCheck.type == models.FraudCheckType.EDUCONNECT,
+        models.BeneficiaryFraudCheck.eligibilityType == eligibility_type,
     ).one_or_none()
 
     if fraud_check:
@@ -52,16 +55,20 @@ def on_educonnect_result(user: users_models.User, educonnect_content: models.Edu
             type=models.FraudCheckType.EDUCONNECT,
             thirdPartyId=str(educonnect_content.educonnect_id),
             resultContent=educonnect_content.dict(),
+            eligibilityType=eligibility_type,
         )
     on_identity_fraud_check_result(user, fraud_check)
     repository.save(fraud_check)
 
 
 def on_jouve_result(user: users_models.User, jouve_content: models.JouveContent) -> None:
+    eligibility_type = get_eligibility_type(jouve_content)
+
     if (
         models.BeneficiaryFraudCheck.query.filter(
             models.BeneficiaryFraudCheck.user == user,
             models.BeneficiaryFraudCheck.type.in_([models.FraudCheckType.JOUVE, models.FraudCheckType.DMS]),
+            models.BeneficiaryFraudCheck.eligibilityType == eligibility_type,
         ).count()
         > 0
     ):
@@ -73,6 +80,7 @@ def on_jouve_result(user: users_models.User, jouve_content: models.JouveContent)
         type=models.FraudCheckType.JOUVE,
         thirdPartyId=str(jouve_content.id),
         resultContent=jouve_content.dict(),
+        eligibilityType=eligibility_type,
     )
     repository.save(fraud_check)
 
@@ -85,11 +93,14 @@ def on_dms_fraud_result(
     dms_content: models.DMSContent,
 ) -> models.BeneficiaryFraudResult:
 
+    eligibility_type = get_eligibility_type(dms_content)
+
     fraud_check = models.BeneficiaryFraudCheck(
         user=user,
         type=models.FraudCheckType.DMS,
         thirdPartyId=str(dms_content.application_id),
         resultContent=dms_content,
+        eligibilityType=eligibility_type,
     )
 
     db.session.add(fraud_check)
@@ -100,6 +111,7 @@ def on_dms_fraud_result(
 def admin_update_identity_fraud_check_result(
     user: users_models.User, id_piece_number: str
 ) -> typing.Union[models.BeneficiaryFraudCheck, None]:
+    # Do not filter on eligibilityType here, a manual action validates the last one, either 15-17 or 18
     fraud_check = (
         models.BeneficiaryFraudCheck.query.filter(
             models.BeneficiaryFraudCheck.userId == user.id,
@@ -221,8 +233,6 @@ def on_identity_fraud_check_result(
 ) -> models.BeneficiaryFraudResult:
     fraud_items: list[models.FraudItem] = []
 
-    eligibilityType = get_eligibility_type(beneficiary_fraud_check.source_data())
-
     if beneficiary_fraud_check.type == models.FraudCheckType.JOUVE:
         fraud_items += jouve_fraud_checks(user, beneficiary_fraud_check)
 
@@ -238,11 +248,11 @@ def on_identity_fraud_check_result(
     else:
         raise Exception("The fraud_check type is not known")
 
-    fraud_items.append(_check_user_has_no_active_deposit(user, eligibilityType))
+    fraud_items.append(_check_user_has_no_active_deposit(user, beneficiary_fraud_check.eligibilityType))
     fraud_items.append(_check_user_email_is_validated(user))
-    fraud_items.append(_check_user_not_already_beneficiary(user, eligibilityType))
+    fraud_items.append(_check_user_not_already_beneficiary(user, beneficiary_fraud_check.eligibilityType))
 
-    fraud_result = validate_frauds(user, fraud_items, beneficiary_fraud_check, eligibilityType)
+    fraud_result = validate_frauds(user, fraud_items, beneficiary_fraud_check, beneficiary_fraud_check.eligibilityType)
     if (
         beneficiary_fraud_check.type == models.FraudCheckType.JOUVE
         and FeatureToggle.PAUSE_JOUVE_SUBSCRIPTION.is_active()
@@ -495,6 +505,7 @@ def on_user_profiling_result(
         type=models.FraudCheckType.USER_PROFILING,
         thirdPartyId=profiling_infos.session_id,
         resultContent=profiling_infos,
+        eligibilityType=user.eligibility,
     )
     repository.save(fraud_check)
     on_user_profiling_check_result(user, profiling_infos)
@@ -579,6 +590,7 @@ def create_internal_review_fraud_check(
         type=models.FraudCheckType.INTERNAL_REVIEW,
         thirdPartyId=f"PC-{user.id}",
         resultContent=fraud_check_data,
+        eligibilityType=user.eligibility,
     )
 
     repository.save(fraud_check)
@@ -689,7 +701,7 @@ def update_or_create_fraud_result(
     reason: str,
     reason_codes: list[models.FraudReasonCode],
     eligibility_type: users_models.EligibilityType,
-):
+) -> models.BeneficiaryFraudResult:
     existing_fraud_result = fraud_repository.get_current_beneficiary_fraud_result(user, eligibility_type)
     if existing_fraud_result:
         fraud_result = existing_fraud_result
@@ -711,6 +723,7 @@ def has_user_performed_identity_check(user: users_models.User) -> bool:
             models.BeneficiaryFraudCheck.user == user,
             models.BeneficiaryFraudCheck.status.is_distinct_from(models.FraudCheckStatus.CANCELED),
             models.BeneficiaryFraudCheck.type.in_(models.IDENTITY_CHECK_TYPES),
+            models.BeneficiaryFraudCheck.eligibilityType == user.eligibility,
         ).exists()
     ).scalar()
 
@@ -725,6 +738,7 @@ def has_user_performed_ubble_check(user: users_models.User) -> bool:
             models.BeneficiaryFraudCheck.user == user,
             models.BeneficiaryFraudCheck.status.is_distinct_from(models.FraudCheckStatus.CANCELED),
             models.BeneficiaryFraudCheck.type == models.FraudCheckType.UBBLE,
+            models.BeneficiaryFraudCheck.eligibilityType == user.eligibility,
         ).exists()
     ).scalar()
 
@@ -740,9 +754,12 @@ def has_passed_educonnect(user: users_models.User) -> bool:
 
 
 def is_risky_user_profile(user: users_models.User) -> bool:
+    # No need to filter on eligibilityType ; profiling is performed only for AGE18 users.
     user_profiling = (
-        models.BeneficiaryFraudCheck.query.filter(models.BeneficiaryFraudCheck.user == user)
-        .filter(models.BeneficiaryFraudCheck.type == models.FraudCheckType.USER_PROFILING)
+        models.BeneficiaryFraudCheck.query.filter(
+            models.BeneficiaryFraudCheck.user == user,
+            models.BeneficiaryFraudCheck.type == models.FraudCheckType.USER_PROFILING,
+        )
         .order_by(models.BeneficiaryFraudCheck.dateCreated.desc())
         .first()
     )
@@ -767,7 +784,7 @@ def is_user_fraudster(user: users_models.User) -> bool:
 def start_fraud_check(
     user: users_models.User,
     application_id: str,
-    source_data: typing.Union[models.DMSContent, ubble_models.UbbleIdentificationResponse] = None,
+    source_data: typing.Union[models.DMSContent, ubble_models.UbbleContent],
 ) -> models.BeneficiaryFraudCheck:
 
     source_type = models.FRAUD_CONTENT_MAPPING[type(source_data)]
@@ -786,6 +803,7 @@ def start_fraud_check(
         thirdPartyId=application_id,
         resultContent=source_data.dict(),
         status=models.FraudCheckStatus.PENDING,
+        eligibilityType=get_eligibility_type(source_data),
     )
 
     repository.save(fraud_check)
@@ -796,7 +814,7 @@ def start_fraud_check(
 def mark_fraud_check_failed(
     user: users_models.User,
     application_id: str,
-    source_data: typing.Union[models.DMSContent, ubble_models.UbbleIdentificationResponse],
+    source_data: typing.Union[models.DMSContent, ubble_models.UbbleContent],
     reasons: list[models.FraudItem],
 ) -> None:
     source_type = models.FRAUD_CONTENT_MAPPING[type(source_data)]
@@ -814,6 +832,7 @@ def mark_fraud_check_failed(
             thirdPartyId=application_id,
             resultContent=source_data.dict(),
             status=models.FraudCheckStatus.PENDING,
+            eligibilityType=get_eligibility_type(source_data),
         )
 
     fraud_check.status = models.FraudCheckStatus.KO
@@ -822,25 +841,27 @@ def mark_fraud_check_failed(
     repository.save(fraud_check)
 
 
-def create_honor_statement_fraud_check(user: users_models.User, origin: str) -> None:
-    # TODO(viconnex) add eligibility type
+def create_honor_statement_fraud_check(
+    user: users_models.User, origin: str, eligibility_type: typing.Optional[users_models.EligibilityType] = None
+) -> None:
     fraud_check = models.BeneficiaryFraudCheck(
         user=user,
         type=models.FraudCheckType.HONOR_STATEMENT,
         status=models.FraudCheckStatus.OK,
         reason=origin,
         thirdPartyId=f"internal_check_{user.id}",
+        eligibilityType=eligibility_type if eligibility_type else user.eligibility,
     )
     db.session.add(fraud_check)
     db.session.commit()
 
 
-def has_performed_honor_statement(user: users_models.User) -> bool:
-    # TODO(viconnex) add eligibility type filter
+def has_performed_honor_statement(user: users_models.User, eligibility_type: users_models.EligibilityType) -> bool:
     return db.session.query(
         models.BeneficiaryFraudCheck.query.filter_by(
             user=user,
             type=models.FraudCheckType.HONOR_STATEMENT,
             status=models.FraudCheckStatus.OK,
+            eligibilityType=eligibility_type,
         ).exists()
     ).scalar()

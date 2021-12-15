@@ -418,6 +418,12 @@ def start_identification_session(
     user: User, body: serializers.IdentificationSessionRequest
 ) -> serializers.IdentificationSessionResponse:
 
+    if user.eligibility is None:
+        raise ApiErrors(
+            {"code": "IDCHECK_NOT_ELIGIBLE", "message": "Non éligible à un crédit"},
+            status_code=400,
+        )
+
     if fraud_api.has_user_performed_ubble_check(user):
         raise ApiErrors(
             {"code": "IDCHECK_ALREADY_PROCESSED", "message": "Une identification a déjà été traitée"},
