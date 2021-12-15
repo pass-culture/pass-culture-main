@@ -45,7 +45,7 @@ const OfferEducationalStock = ({
         <FormLayout>
           <FormLayout.Section title="Date et prix">
             <Banner
-              href="#"
+              href="https://aide.passculture.app/fr/articles/5779623-acteurs-culturels-comment-modifier-une-offre-collective-pre-reservee"
               linkTitle="Consulter l’article “Comment modifier une offre collective qui est pré-réservée par un établissement ?”"
               type="notification-info"
             >
@@ -63,7 +63,7 @@ const OfferEducationalStock = ({
             </p>
             <FormStock isFormDisabled={isFormDisabled} />
           </FormLayout.Section>
-          <FormLayout.Actions className={styles['action-section']}>
+          <FormLayout.Actions>
             <Link className="secondary-link" to={computeOffersUrl({})}>
               Annuler et quitter
             </Link>
