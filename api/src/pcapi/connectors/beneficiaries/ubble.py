@@ -1,4 +1,3 @@
-import datetime
 import logging
 import typing
 import urllib.parse
@@ -84,7 +83,6 @@ def _extract_useful_content_from_response(
 def start_identification(
     user_id: int,
     phone_number: str,
-    birth_date: datetime.date,
     first_name: str,
     last_name: str,
     webhook_url: str,
@@ -101,7 +99,6 @@ def start_identification(
                     "phone-number": phone_number,
                 },
                 "reference-data": {
-                    "birth-date": datetime.date.strftime(birth_date, "%Y-%m-%d"),
                     "first-name": first_name,
                     "last-name": last_name,
                 },

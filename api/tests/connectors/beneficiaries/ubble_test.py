@@ -1,4 +1,3 @@
-import datetime
 import json
 import logging
 
@@ -20,7 +19,6 @@ class StartIdentificationTest:
             response = ubble.start_identification(
                 user_id=123,
                 phone_number="+33601232323",
-                birth_date=datetime.date(2001, 2, 23),
                 first_name="prenom",
                 last_name="nom",
                 webhook_url="http://webhook/url/",
@@ -34,7 +32,6 @@ class StartIdentificationTest:
         assert attributes["identification-form"]["external-user-id"] == 123
         assert attributes["identification-form"]["phone-number"] == "+33601232323"
 
-        assert attributes["reference-data"]["birth-date"] == "2001-02-23"
         assert attributes["reference-data"]["first-name"] == "prenom"
         assert attributes["reference-data"]["last-name"] == "nom"
         assert attributes["webhook"] == "http://webhook/url/"
@@ -53,7 +50,6 @@ class StartIdentificationTest:
                 ubble.start_identification(
                     user_id=123,
                     phone_number="+33601232323",
-                    birth_date=datetime.date(2001, 2, 23),
                     first_name="prenom",
                     last_name="nom",
                     webhook_url="http://webhook/url/",
@@ -72,7 +68,6 @@ class StartIdentificationTest:
             ubble.start_identification(
                 user_id=123,
                 phone_number="+33601232323",
-                birth_date=datetime.date(2001, 2, 23),
                 first_name="prenom",
                 last_name="nom",
                 webhook_url="http://webhook/url/",

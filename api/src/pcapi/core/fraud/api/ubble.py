@@ -1,9 +1,14 @@
+import re
 import typing
 
+from pcapi import settings
 from pcapi.core.fraud import api as fraud_api
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.users import models as users_models
 from pcapi.models import db
+
+
+UBBLE_TEST_EMAIL_RE = re.compile(r"^.+\+ubble_test@.+$")
 
 
 def on_ubble_result(fraud_check: fraud_models.BeneficiaryFraudCheck) -> None:
@@ -68,3 +73,11 @@ def get_ubble_fraud_check(identification_id: str) -> typing.Optional[fraud_model
         .one_or_none()
     )
     return fraud_check
+
+
+def does_match_ubble_test_email(email: str) -> typing.Optional[re.Match]:
+    # This function MUST ALWAYS return None in production environment
+    if settings.IS_PROD:
+        return None
+
+    return UBBLE_TEST_EMAIL_RE.match(email)
