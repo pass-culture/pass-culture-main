@@ -6,24 +6,30 @@ import pcapi.core.offerers.models as offerers_models
 import pcapi.core.payments.utils as payments_utils
 from pcapi.models.bank_information import BankInformation
 from pcapi.models.bank_information import BankInformationStatus
+from pcapi.models.user_offerer import UserOfferer
 import pcapi.utils.date as date_utils
 
 from . import models
 
 
-def get_business_units_for_offerer_id(offerer_id: str) -> list:
-    return (
+def get_business_units_query(user, offerer_id: int = None):
+    query = (
         models.BusinessUnit.query.join(BankInformation)
         .filter(models.BusinessUnit.status == models.BusinessUnitStatus.ACTIVE)
         .filter(BankInformation.status == BankInformationStatus.ACCEPTED)
-        .join(offerers_models.Venue, models.BusinessUnit.id == offerers_models.Venue.businessUnitId)
-        .filter(offerers_models.Venue.managingOffererId == offerer_id)
-        .distinct(models.BusinessUnit.id)
-        .with_entities(
-            models.BusinessUnit.id, models.BusinessUnit.siret, models.BusinessUnit.name, BankInformation.iban
-        )
-        .all()
+        .join(offerers_models.Venue, offerers_models.Venue.businessUnitId == models.BusinessUnit.id)
     )
+    venue_subquery = offerers_models.Venue.query
+    if not user.has_admin_role:
+        venue_subquery = venue_subquery.join(
+            UserOfferer, offerers_models.Venue.managingOffererId == UserOfferer.offererId
+        ).filter(UserOfferer.user == user)
+    if offerer_id:
+        venue_subquery = venue_subquery.filter(offerers_models.Venue.managingOffererId == offerer_id)
+    if venue_subquery.whereclause is not None:
+        venue_subquery = venue_subquery.with_entities(offerers_models.Venue.id).subquery()
+        query = query.filter(offerers_models.Venue.id.in_(venue_subquery))
+    return query
 
 
 def get_invoices_query(

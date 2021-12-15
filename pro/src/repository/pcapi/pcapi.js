@@ -377,5 +377,5 @@ export const invalidateBooking = code => {
 //
 
 export const getBusinessUnits = offererId => {
-  return client.get(`/offerers/${offererId}/business_units`)
+  return client.get(`/finance/business-units?offererId=${offererId}`)
 }
