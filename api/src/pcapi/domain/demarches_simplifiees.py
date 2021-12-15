@@ -179,15 +179,17 @@ def get_venue_bank_information_application_details_by_application_id(
     if version == 2:
         client = api_demarches_simplifiees.DMSGraphQLClient()
         raw_data = client.get_bic(int(application_id))
-        data = parse_raw_bic_data(raw_data["data"])
+        data = parse_raw_bic_data(raw_data)
         return ApplicationDetail(
             siren=data["siren"],
-            status=data["status"],
+            status=_get_status_from_demarches_simplifiees_application_state_v2(
+                api_demarches_simplifiees.GraphQLApplicationStates(data["status"])
+            ),
             application_id=int(application_id),
             iban=data["iban"],
             bic=data["bic"],
             siret=data["siret"],
-            modification_date=data["updated_at"],
+            modification_date=datetime.fromisoformat(data["updated_at"]).astimezone().replace(tzinfo=None),
         )
     raise ValueError("Unknown version %s" % version)
 
@@ -221,6 +223,18 @@ def _get_status_from_demarches_simplifiees_application_state(state: str) -> Bank
     if dms_state in draft_states:
         return BankInformationStatus.DRAFT
     raise ValueError(f"Unexpected DMS status: '{state}'")
+
+
+def _get_status_from_demarches_simplifiees_application_state_v2(
+    state: api_demarches_simplifiees.GraphQLApplicationStates,
+) -> BankInformationStatus:
+    return {
+        api_demarches_simplifiees.GraphQLApplicationStates.draft: BankInformationStatus.DRAFT,
+        api_demarches_simplifiees.GraphQLApplicationStates.on_going: BankInformationStatus.DRAFT,
+        api_demarches_simplifiees.GraphQLApplicationStates.accepted: BankInformationStatus.ACCEPTED,
+        api_demarches_simplifiees.GraphQLApplicationStates.refused: BankInformationStatus.REJECTED,
+        api_demarches_simplifiees.GraphQLApplicationStates.without_continuation: BankInformationStatus.REJECTED,
+    }[state]
 
 
 def _find_value_in_fields(fields: list[dict], value_name: str) -> Optional[dict]:

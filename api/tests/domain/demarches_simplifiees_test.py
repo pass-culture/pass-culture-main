@@ -230,8 +230,9 @@ class GetOffererBankInformation_applicationDetailsByApplicationIdTest:
 
 
 @patch("pcapi.connectors.api_demarches_simplifiees.get_application_details")
+@patch("pcapi.connectors.api_demarches_simplifiees.DMSGraphQLClient")
 class GetVenueBankInformation_applicationDetailsByApplicationIdTest:
-    def test_retrieve_and_format_all_fields_when_with_siret(self, get_application_details):
+    def test_retrieve_and_format_all_fields_when_with_siret(self, DMSGraphQLClient, get_application_details):
         # Given
         updated_at = datetime(2020, 1, 3)
         get_application_details.return_value = venue_demarche_simplifiee_application_detail_response_with_siret(
@@ -258,7 +259,52 @@ class GetVenueBankInformation_applicationDetailsByApplicationIdTest:
         assert application_details.venue_name == None
         assert application_details.modification_date == updated_at
 
-    def test_retrieve_and_format_all_fields_when_without_siret(self, get_application_details):
+    def test_retrieve_and_format_all_fields_v2(self, DMSGraphQLClient, get_application_details):
+        # Given
+        updated_at = datetime(2020, 1, 3)
+        DMSGraphQLClient.return_value.get_bic.return_value = {
+            "dossier": {
+                "champs": [
+                    {
+                        "etablissement": {
+                            "entreprise": {
+                                "siren": "123456789",
+                            },
+                            "siret": "12345678900014",
+                        },
+                        "id": "Q2hhbXAtNzgyODAw",
+                        "label": "SIRET",
+                        "stringValue": "12345678900014",
+                    },
+                    {"id": "Q2hhbXAtNzAwNTA5", "label": "Vos coordonnées bancaires", "stringValue": "", "value": None},
+                    {
+                        "id": "Q2hhbXAtMzUyNzIy",
+                        "label": "IBAN",
+                        "stringValue": "FR7630007000111234567890144",
+                        "value": "FR7630007000111234567890144",
+                    },
+                    {"id": "Q2hhbXAtMzUyNzI3", "label": "BIC", "stringValue": "SOGEFRPP", "value": "SOGEFRPP"},
+                ],
+                "dateDerniereModification": "2020-01-03T01:00:00+01:00",
+                "state": "accepte",
+            }
+        }
+
+        # When
+        application_details = get_venue_bank_information_application_details_by_application_id(8, 2)
+
+        # Then
+        assert isinstance(application_details, ApplicationDetail)
+        assert application_details.siren == "123456789"
+        assert application_details.status == BankInformationStatus.ACCEPTED
+        assert application_details.application_id == 8
+        assert application_details.iban == "FR7630007000111234567890144"
+        assert application_details.bic == "SOGEFRPP"
+        assert application_details.siret == "12345678900014"
+        # assert application_details.venue_name == "VENUE_NAME"
+        assert application_details.modification_date == updated_at
+
+    def test_retrieve_and_format_all_fields_when_without_siret(self, DMSGraphQLClient, get_application_details):
         # Given
         updated_at = datetime(2020, 1, 3)
         get_application_details.return_value = venue_demarche_simplifiee_application_detail_response_without_siret(
@@ -285,7 +331,9 @@ class GetVenueBankInformation_applicationDetailsByApplicationIdTest:
         assert application_details.modification_date == updated_at
 
     @patch("pcapi.domain.demarches_simplifiees.format_raw_iban_and_bic")
-    def test_format_bic_and_iban_when_with_siret(self, mock_format_raw_iban_and_bic, get_application_details):
+    def test_format_bic_and_iban_when_with_siret(
+        self, mock_format_raw_iban_and_bic, DMSGraphQLClient, get_application_details
+    ):
         # Given
         updated_at = datetime(2020, 1, 3)
         get_application_details.return_value = venue_demarche_simplifiee_application_detail_response_with_siret(
@@ -304,7 +352,9 @@ class GetVenueBankInformation_applicationDetailsByApplicationIdTest:
         mock_format_raw_iban_and_bic.assert_has_calls([call("F R763000 700011123 45 67890144"), call("SOGeferp")])
 
     @patch("pcapi.domain.demarches_simplifiees.format_raw_iban_and_bic")
-    def test_format_bic_and_iban_when_without_siret(self, mock_format_raw_iban_and_bic, get_application_details):
+    def test_format_bic_and_iban_when_without_siret(
+        self, mock_format_raw_iban_and_bic, DMSGraphQLClient, get_application_details
+    ):
         # Given
         updated_at = datetime(2020, 1, 3)
         get_application_details.return_value = venue_demarche_simplifiee_application_detail_response_without_siret(
