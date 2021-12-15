@@ -104,6 +104,12 @@ class Stock(PcObject, Model, ProvidableMixin, SoftDeletableMixin):
     def isBookable(self):
         return not self.isExpired and self.offer.isReleased and not self.isSoldOut
 
+    @property
+    def is_forbidden_to_underage(self):
+        return (self.price > 0 and not self.offer.subcategory.is_bookable_by_underage_when_not_free) or (
+            self.price == 0 and not self.offer.subcategory.is_bookable_by_underage_when_free
+        )
+
     @hybrid_property
     def hasBookingLimitDatetimePassed(self):
         return bool(self.bookingLimitDatetime and self.bookingLimitDatetime <= datetime.utcnow())
@@ -475,6 +481,10 @@ class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ProvidableMixin):
     @property
     def bookableStocks(self) -> list[Stock]:
         return [stock for stock in self.stocks if stock.isBookable]
+
+    @property
+    def is_forbidden_to_underage(self) -> bool:
+        return all(stock.is_forbidden_to_underage for stock in self.bookableStocks)
 
     @property
     def subcategory(self) -> subcategories.Subcategory:
