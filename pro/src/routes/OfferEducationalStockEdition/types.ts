@@ -5,4 +5,5 @@ export type StockResponse = {
   price: number
   numberOfTickets?: number
   isEducationalStockEditable?: boolean
+  educationalPriceDetail?: string
 }

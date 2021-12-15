@@ -20,6 +20,7 @@ class Return200Test:
             price=1200,
             numberOfTickets=32,
             bookingLimitDatetime=datetime(2021, 12, 1),
+            educationalPriceDetail="Détail du prix",
         )
         offer_factories.UserOffererFactory(user__email="user@example.com", offerer=stock.offer.venue.managingOfferer)
 
@@ -29,6 +30,7 @@ class Return200Test:
             "bookingLimitDatetime": "2021-12-31T20:00:00Z",
             "totalPrice": 1500,
             "numberOfTickets": 38,
+            "educationalPriceDetail": "Nouvelle description du prix",
         }
 
         client.with_session_auth("user@example.com")
@@ -41,6 +43,7 @@ class Return200Test:
         assert edited_stock.bookingLimitDatetime == datetime(2021, 12, 31, 20)
         assert edited_stock.price == 1500
         assert edited_stock.numberOfTickets == 38
+        assert edited_stock.educationalPriceDetail == "Nouvelle description du prix"
 
     def test_edit_educational_stock_partially(self, app, client):
         # Given
@@ -49,6 +52,7 @@ class Return200Test:
             price=1200,
             numberOfTickets=32,
             bookingLimitDatetime=datetime(2021, 12, 1),
+            educationalPriceDetail="Détail du prix",
         )
         offer_factories.UserOffererFactory(user__email="user@example.com", offerer=stock.offer.venue.managingOfferer)
 
@@ -68,6 +72,7 @@ class Return200Test:
         assert edited_stock.bookingLimitDatetime == stock.bookingLimitDatetime
         assert edited_stock.price == 1500
         assert edited_stock.numberOfTickets == 32
+        assert edited_stock.educationalPriceDetail == "Détail du prix"
 
 
 class Return403Test:
@@ -259,3 +264,26 @@ class Return400Test:
                 "Plusieurs réservations non annulées portent sur ce stock d'une offre éducationnelle"
             ]
         }
+
+    def should_raise_error_when_educational_price_detail_length_is_greater_than_1000(self, app, client):
+        # Given
+        stock = offer_factories.EducationalEventStockFactory(
+            beginningDatetime=datetime(2021, 12, 18),
+            price=1200,
+            numberOfTickets=32,
+            bookingLimitDatetime=datetime(2021, 12, 1),
+            educationalPriceDetail="Détail du prix",
+        )
+        offer_factories.UserOffererFactory(user__email="user@example.com", offerer=stock.offer.venue.managingOfferer)
+
+        # When
+        stock_edition_payload = {
+            "educationalPriceDetail": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer sodales commodo tellus, at dictum odio vulputate nec. Donec iaculis rutrum nunc. Nam euismod, odio vel iaculis tincidunt, enim ante iaculis purus, ac vehicula ex lacus sit amet nisl. Aliquam et diam tellus. Curabitur in pharetra augue. Nunc scelerisque lectus non diam efficitur, eu porta neque vestibulum. Nullam elementum purus ac ligula viverra tincidunt. Etiam tincidunt metus nec nibh tempor tincidunt. Pellentesque ac ipsum purus. Duis vestibulum mollis nisi a vulputate. Nullam malesuada eros eu convallis rhoncus. Maecenas eleifend ex at posuere maximus. Suspendisse faucibus egestas dolor, sit amet dignissim odio condimentum vitae. Pellentesque ultricies eleifend nisi, quis pellentesque nisi faucibus finibus. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Suspendisse potenti. Aliquam convallis diam nisl, eget ullamcorper odio convallis ac. Ut quis nulla fringilla, commodo tellus ut.",
+        }
+
+        client.with_session_auth("user@example.com")
+        response = client.patch(f"/stocks/educational/{humanize(stock.id)}", json=stock_edition_payload)
+
+        # Then
+        assert response.status_code == 400
+        assert response.json == {"educationalPriceDetail": ["Le détail du prix ne doit pas excéder 1000 caractères."]}

@@ -62,6 +62,7 @@ class Returns200Test:
                     "offerId": humanize(stock.offer.id),
                     "price": 10.0,
                     "quantity": 1000,
+                    "educationalPriceDetail": None,
                 }
             ],
         }
@@ -114,6 +115,7 @@ class Returns200Test:
                     "price": 10.0,
                     "quantity": 1000,
                     "isEducationalStockEditable": True,
+                    "educationalPriceDetail": "Le prix inclus l'accès à la séance et un atelier une fois la séance terminée. 1000 caractères max.",
                 }
             ],
         }
@@ -167,6 +169,7 @@ class Returns200Test:
                     "price": 10.0,
                     "quantity": 1000,
                     "isEducationalStockEditable": False,
+                    "educationalPriceDetail": "Le prix inclus l'accès à la séance et un atelier une fois la séance terminée. 1000 caractères max.",
                 }
             ],
         }
@@ -210,6 +213,7 @@ class Returns200Test:
                     "offerId": humanize(stock.offer.id),
                     "price": 10.0,
                     "quantity": 1000,
+                    "educationalPriceDetail": None,
                 }
             ],
         }
@@ -269,6 +273,7 @@ class Returns200Test:
             "offerId": humanize(stock.offer.id),
             "price": 10.0,
             "quantity": 1000,
+            "educationalPriceDetail": None,
         }
 
     def test_does_not_return_soft_deleted_stock(self, app):
