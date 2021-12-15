@@ -1,9 +1,9 @@
 import {
+  createStockDataPayload,
   hasStatusCode,
   OfferEducationalStockFormValues,
   StockPayload,
 } from 'core/OfferEducational'
-import { createStockDataPayload } from 'core/OfferEducational/utils/createStockDataPayload'
 import { Offer } from 'custom_types/offer'
 import * as pcapi from 'repository/pcapi/pcapi'
 
