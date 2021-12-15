@@ -279,6 +279,7 @@ class AlgoliaBackend(base.SearchBackend):
                 "isDuo": offer.isDuo,
                 "isEducational": offer.isEducational,
                 "isEvent": offer.isEvent,
+                "isForbiddenToUnderage": offer.is_forbidden_to_underage,
                 "isThing": offer.isThing,
                 # FIXME remove once subcategory logic is fully implemented
                 "label": offer.subcategory.app_label,
