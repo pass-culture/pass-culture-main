@@ -34,6 +34,9 @@ def build_url(path: str) -> str:
 INCLUDED_MODELS = {
     "documents": ubble_models.UbbleIdentificationDocuments,
     "document-checks": ubble_models.UbbleIdentificationDocumentChecks,
+    "face-checks": ubble_models.UbbleIdentificationFaceChecks,
+    "reference-data-checks": ubble_models.UbbleIdentificationReferenceDataChecks,
+    "doc-face-matches": ubble_models.UbbleIdentificationDocFaceMatches,
 }
 
 
@@ -162,7 +165,7 @@ def start_identification(
     return content
 
 
-def get_content(identification_id: str) -> ubble_models.UbbleContent:
+def get_content(identification_id: str, override_scores: bool = False) -> ubble_models.UbbleContent:
     session = configure_session()
     response = session.get(
         build_url(f"/identifications/{identification_id}/"),
@@ -182,7 +185,11 @@ def get_content(identification_id: str) -> ubble_models.UbbleContent:
         )
         response.raise_for_status()
 
-    content = _extract_useful_content_from_response(response.json())
+    response_body = response.json()
+    if override_scores:
+        _override_scores(response_body)
+    content = _extract_useful_content_from_response(response_body)
+
     core_logging.log_for_supervision(
         logger,
         logging.INFO,
@@ -196,3 +203,35 @@ def get_content(identification_id: str) -> ubble_models.UbbleContent:
         },
     )
     return content
+
+
+def _override_scores(response: ubble_models.UbbleIdentificationResponse) -> None:
+    response["data"]["attributes"]["score"] = ubble_models.UbbleScore.VALID.value
+
+    doc_face_matches = next(filter(lambda i: i["type"] == "doc-face-matches", response["included"]))
+    doc_face_matches["attributes"]["score"] = ubble_models.UbbleScore.VALID.value
+
+    document_checks = next(filter(lambda i: i["type"] == "document-checks", response["included"]))
+    document_checks["attributes"]["data-extracted-score"] = ubble_models.UbbleScore.VALID.value
+    document_checks["attributes"]["expiry-date-score"] = ubble_models.UbbleScore.VALID.value
+    document_checks["attributes"]["issue-date-score"] = ubble_models.UbbleScore.VALID.value
+    document_checks["attributes"]["live-video-capture-score"] = ubble_models.UbbleScore.VALID.value
+    document_checks["attributes"]["mrz-validity-score"] = ubble_models.UbbleScore.VALID.value
+    document_checks["attributes"]["mrz-viz-score"] = ubble_models.UbbleScore.VALID.value
+    document_checks["attributes"]["ove-back-score"] = ubble_models.UbbleScore.VALID.value
+    document_checks["attributes"]["ove-front-score"] = ubble_models.UbbleScore.VALID.value
+    document_checks["attributes"]["ove-score"] = ubble_models.UbbleScore.VALID.value
+    document_checks["attributes"]["quality-score"] = ubble_models.UbbleScore.VALID.value
+    document_checks["attributes"]["score"] = ubble_models.UbbleScore.VALID.value
+    document_checks["attributes"]["supported"] = ubble_models.UbbleScore.VALID.value
+    document_checks["attributes"]["visual-back-score"] = ubble_models.UbbleScore.VALID.value
+    document_checks["attributes"]["visual-front-score"] = ubble_models.UbbleScore.VALID.value
+
+    face_chekcs = next(filter(lambda i: i["type"] == "face-checks", response["included"]))
+    face_chekcs["attributes"]["active-liveness-score"] = ubble_models.UbbleScore.VALID.value
+    face_chekcs["attributes"]["live-video-capture-score"] = ubble_models.UbbleScore.VALID.value
+    face_chekcs["attributes"]["quality-score"] = ubble_models.UbbleScore.VALID.value
+    face_chekcs["attributes"]["score"] = ubble_models.UbbleScore.VALID.value
+
+    reference_data_checks = next(filter(lambda i: i["type"] == "reference-data-checks", response["included"]))
+    reference_data_checks["attributes"]["score"] = ubble_models.UbbleScore.VALID.value
