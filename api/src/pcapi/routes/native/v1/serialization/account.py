@@ -139,11 +139,7 @@ class SubscriptionMessage(BaseModel):
         use_enum_values = True
 
     @classmethod
-    def from_model(
-        cls, model_instance: Optional[subscription_models.SubscriptionMessage]
-    ) -> Optional["SubscriptionMessage"]:
-        if not model_instance:
-            return None
+    def from_model(cls, model_instance: subscription_models.SubscriptionMessage) -> "SubscriptionMessage":
         cta_message = None
         if any((model_instance.callToActionTitle, model_instance.callToActionLink, model_instance.callToActionIcon)):
             cta_message = CallToActionMessage(
@@ -158,6 +154,15 @@ class SubscriptionMessage(BaseModel):
             updatedAt=model_instance.dateCreated,
         )
         return subscription_message
+
+    @classmethod
+    def beneficiary_maintenance_message(cls) -> "SubscriptionMessage":
+        return cls(
+            userMessage="La vérification d'identité est momentanément indisponible. L'équipe du pass Culture met tout en oeuvre pour la rétablir au plus vite.",
+            callToAction=None,
+            popOverIcon=subscription_models.PopOverIcon.CLOCK,
+            updatedAt=datetime.datetime.utcnow(),
+        )
 
 
 class UserProfileResponse(BaseModel):
@@ -229,6 +234,24 @@ class UserProfileResponse(BaseModel):
         return {booking.stock.offer.id: booking.id for booking in not_cancelled_bookings}
 
     @classmethod
+    def _get_subscription_message(cls, user: User) -> Optional[SubscriptionMessage]:
+        """
+        Return the user's latest subscription message, regarding his
+        signup process UNLESS the beneficiary signup process has been
+        deactivated: return a generic maintenance message in this case.
+        """
+        if not subscription_api.get_allowed_identity_check_methods(user):
+            # no identity check methods found => no beneficiary signup
+            # available
+            return SubscriptionMessage.beneficiary_maintenance_message()
+
+        latest_message = subscription_api.get_latest_subscription_message(user)
+        if latest_message:
+            return SubscriptionMessage.from_model(latest_message)
+
+        return None
+
+    @classmethod
     def from_orm(cls, user: User):  # type: ignore
         user.show_eligible_card = cls._show_eligible_card(user)
         user.subscriptions = user.get_notification_subscriptions()
@@ -240,9 +263,7 @@ class UserProfileResponse(BaseModel):
         user.eligibility_start_datetime = get_eligibility_start_datetime(user.dateOfBirth)
         user.allowed_eligibility_check_methods = user.legacy_allowed_eligibility_check_methods
         result = super().from_orm(user)
-        result.subscriptionMessage = SubscriptionMessage.from_model(
-            subscription_api.get_latest_subscription_message(user)
-        )
+        result.subscriptionMessage = cls._get_subscription_message(user)
         # FIXME: (Lixxday) Remove after isBeneficiary column has been deleted
         result.isBeneficiary = user.is_beneficiary
         return result
