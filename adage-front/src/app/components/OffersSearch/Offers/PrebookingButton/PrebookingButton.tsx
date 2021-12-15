@@ -12,6 +12,7 @@ import { preBookStock } from 'repository/pcapi/pcapi'
 import { StockType } from 'utils/types'
 
 import './PrebookingButton.scss'
+import PrebookingModal from './PrebookingModal'
 
 const PrebookingButton = ({
   className,
@@ -25,18 +26,14 @@ const PrebookingButton = ({
   const [hasPrebookedOffer, setHasPrebookedOffer] = useState(false)
   const [isButtonDisabled, setIsButtonDisabled] = useState(false)
   const [notification, setNotification] = useState<Notification | null>(null)
+  const [isModalOpen, setIsModalOpen] = useState(false)
 
   const preBookCurrentStock = useCallback(() => {
     setIsButtonDisabled(true)
     return preBookStock(stock.id)
       .then(() => {
         setHasPrebookedOffer(true)
-        setNotification(
-          new Notification(
-            NotificationType.success,
-            'Votre préréservation a été effectuée avec succès.'
-          )
-        )
+        setIsModalOpen(true)
       })
       .catch((error) =>
         setNotification(
@@ -47,6 +44,10 @@ const PrebookingButton = ({
         )
       )
   }, [stock.id])
+
+  const closeModal = () => {
+    setIsModalOpen(false)
+  }
 
   return (
     <>
@@ -78,6 +79,7 @@ const PrebookingButton = ({
         </div>
       )}
       {notification && <NotificationComponent notification={notification} />}
+      <PrebookingModal closeModal={closeModal} isOpen={isModalOpen} />
     </>
   )
 }
