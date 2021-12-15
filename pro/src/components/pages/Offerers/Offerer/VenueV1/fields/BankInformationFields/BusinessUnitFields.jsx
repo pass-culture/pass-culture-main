@@ -52,13 +52,9 @@ const BankInformationWithBusinessUnit = ({ readOnly, offerer, venue }) => {
           }))
       )
 
-      const isBusinessUnitMainVenue =
-        venue.businessUnitId &&
-        venueBusinessUnitResponse.siret &&
-        venue.siret !== venueBusinessUnitResponse.siret
       setDisplayedBanners({
-        [CREATE_DMS_FILE_BANNER]: !isBusinessUnitMainVenue,
-        [REPLACE_DMS_FILE_BUTTON]: isBusinessUnitMainVenue,
+        [CREATE_DMS_FILE_BANNER]: !venue.isBusinessUnitMainVenue,
+        [REPLACE_DMS_FILE_BUTTON]: venue.isBusinessUnitMainVenue,
         [PENDING_DMS_FILE_BANNER]:
           !venue.businessUnitId && venue.demarchesSimplifieesApplicationId,
       })
@@ -70,6 +66,7 @@ const BankInformationWithBusinessUnit = ({ readOnly, offerer, venue }) => {
     setDisplayedBanners,
     venue.businessUnitId,
     venue.demarchesSimplifieesApplicationId,
+    venue.isBusinessUnitMainVenue,
     venue.siret,
   ])
 
