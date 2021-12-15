@@ -3,7 +3,7 @@ from typing import Optional
 
 from pcapi.core.fraud import api as fraud_api
 from pcapi.core.subscription import api as subscription_api
-from pcapi.core.subscription import school_types
+from pcapi.core.subscription import profile_options
 from pcapi.core.users import api as users_api
 from pcapi.core.users import models as users_models
 from pcapi.routes.native.security import authenticated_user_required
@@ -57,16 +57,19 @@ def update_profile(user: users_models.User, body: serializers.ProfileUpdateReque
 
 @blueprint.native_v1.route("/subscription/profile_options", methods=["GET"])
 @spectree_serialize(
-    response_model=serializers.SchoolTypesResponse,
+    response_model=serializers.ProfileOptionsResponse,
     on_success_status=200,
     api=blueprint.api,
 )  # type: ignore
-def get_school_types() -> serializers.SchoolTypesResponse:
-    return serializers.SchoolTypesResponse(
+def get_profile_options() -> serializers.ProfileOptionsResponse:
+    return serializers.ProfileOptionsResponse(
         school_types=[
-            serializers.SchoolTypeResponseModel.from_orm(school_type) for school_type in school_types.ALL_SCHOOL_TYPES
+            serializers.SchoolTypeResponseModel.from_orm(school_type)
+            for school_type in profile_options.ALL_SCHOOL_TYPES
         ],
-        activities=[serializers.ActivityResponseModel.from_orm(activity) for activity in school_types.ALL_ACTIVITIES],
+        activities=[
+            serializers.ActivityResponseModel.from_orm(activity) for activity in profile_options.ALL_ACTIVITIES
+        ],
     )
 
 
