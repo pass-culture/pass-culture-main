@@ -1,11 +1,12 @@
 .educational-form {
   &-information {
-    margin-bottom: rem(24px);
-    font-size: rem(14px);
+    @include small-caption();
+    margin-bottom: rem(32px);
+    color: $grey-dark;
   }
 
   &-banner {
-    margin-bottom: rem(32px)!important;
+    margin-bottom: rem(32px) !important;
   }
 
   &-adress-banner {
