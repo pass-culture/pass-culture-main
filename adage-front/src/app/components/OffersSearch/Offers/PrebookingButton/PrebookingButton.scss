@@ -1,6 +1,6 @@
 @import 'sass-rem';
-
-.prebooking-button {
+.prebooking-button,
+.prebooking-modal-button {
   text-align: center;
   padding: rem(11px) rem(24px);
   margin: auto;
@@ -36,4 +36,10 @@
   &-icon {
     margin-right: rem(4px);
   }
+}
+
+.prebooking-modal-button {
+  display: flex;
+  justify-content: center;
+  margin-top: rem(32px);
 }
