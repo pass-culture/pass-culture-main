@@ -10,6 +10,8 @@ import {
   OfferEducationalStockFormValues,
 } from 'core/OfferEducational'
 import { Offer } from 'custom_types/offer'
+import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
+import OfferEducationalLayout from 'new_components/OfferEducationalLayout'
 import OfferEducationalStockScreen from 'screens/OfferEducationalStock'
 
 import { getEducationalStockAdapter } from './adapters/getEducationalStockAdapter'
@@ -72,15 +74,26 @@ const OfferEducationalStockEdition = (): JSX.Element => {
     }
   }, [offerId, isReady, notify])
 
-  return offer && isReady ? (
-    <OfferEducationalStockScreen
-      initialValues={initialValues}
-      mode={stock?.isEducationalStockEditable ? Mode.EDITION : Mode.READ_ONLY}
-      offer={offer}
-      onSubmit={handleSubmitStock}
-    />
-  ) : (
-    <Spinner />
+  return (
+    <OfferEducationalLayout
+      activeStep={OfferBreadcrumbStep.STOCKS}
+      isCreatingOffer={false}
+      offerId={offerId}
+      title="Éditer une offre"
+    >
+      {offer && isReady ? (
+        <OfferEducationalStockScreen
+          initialValues={initialValues}
+          mode={
+            stock?.isEducationalStockEditable ? Mode.EDITION : Mode.READ_ONLY
+          }
+          offer={offer}
+          onSubmit={handleSubmitStock}
+        />
+      ) : (
+        <Spinner />
+      )}
+    </OfferEducationalLayout>
   )
 }
 
