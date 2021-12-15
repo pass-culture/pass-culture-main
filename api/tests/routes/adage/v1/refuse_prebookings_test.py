@@ -119,7 +119,7 @@ class Returns200Test:
         assert mails_testing.outbox[0].sent_data["params"] == {
             "OFFER_NAME": offer.name,
             "EVENT_BEGINNING_DATETIME": "01/01/2020 à 12:53",
-            "BOOKING_CREATION_DATE": "15/12/2021 à 10:05",
+            "EDUCATIONAL_REDACTOR_EMAIL": "jean.doux@example.com",
         }
 
     def test_refuse_educational_booking_when_pending(self, client) -> None:
