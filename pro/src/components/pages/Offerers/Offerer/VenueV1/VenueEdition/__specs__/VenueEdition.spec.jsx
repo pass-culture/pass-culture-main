@@ -414,6 +414,70 @@ describe('test page : VenueEdition', () => {
         expect(props.trackModifyVenue).toHaveBeenCalledWith(props.venue.id)
       })
     })
+
+    describe('bank information', () => {
+      const storeOverrides = {
+        features: {
+          list: [
+            {
+              nameKey: 'ENFORCE_BANK_INFORMATION_WITH_SIRET',
+              isActive: true,
+            },
+          ],
+        },
+      }
+      beforeEach(() => {
+        pcapi.getBusinessUnits.mockResolvedValue([
+          {
+            id: 20,
+            iban: 'FR0000000000000002',
+            name: 'Business unit #1',
+            siret: '22222222311111',
+          },
+          {
+            id: 21,
+            iban: 'FR0000000000000003',
+            name: 'Business unit #2',
+            siret: '22222222311222',
+          },
+        ])
+      })
+
+      it('should be able to edit bank information', async () => {
+        // Given
+        props = {
+          ...props,
+          venue: {
+            ...props.venue,
+            businessUnitId: 20,
+          },
+        }
+
+        await renderVenueEdition({ props, storeOverrides })
+
+        // When
+        await act(async () =>
+          fireEvent.change(
+            await screen.findByLabelText(
+              'Coordonnées bancaires pour vos remboursements :'
+            ),
+            { target: { value: 21 } }
+          )
+        )
+
+        fireEvent.click(screen.queryByRole('button', { name: 'Valider' }))
+
+        // Then
+        const expectedRequestParams = {
+          ...props.venue,
+          businessUnitId: '21',
+        }
+
+        expect(props.handleSubmitRequest).toHaveBeenCalledWith(
+          expect.objectContaining({ formValues: expectedRequestParams })
+        )
+      })
+    })
   })
 
   describe('when reading', () => {

@@ -22,7 +22,6 @@ const REPLACE_DMS_FILE_BUTTON = 'replace_dms_file_button'
 const PENDING_DMS_FILE_BANNER = 'pending_dms_file_banner'
 
 const BankInformationWithBusinessUnit = ({ readOnly, offerer, venue }) => {
-  const [businessUnits, setBusinessUnits] = useState([])
   const [businessUnitOptions, setBusinessUnitOptions] = useState([])
   const [venueBusinessUnit, setVenueBusinessUnit] = useState(null)
   const [displayedBanners, setDisplayedBanners] = useState({
@@ -39,13 +38,12 @@ const BankInformationWithBusinessUnit = ({ readOnly, offerer, venue }) => {
     async function loadBusinessUnits(offererId) {
       const businessUnitsResponse = await getBusinessUnits(offererId)
       const venueBusinessUnitResponse = businessUnitsResponse.find(
-        businessUnit => businessUnit.id
+        businessUnit => businessUnit.id === venue.businessUnitId
       )
 
       setVenueBusinessUnit(venueBusinessUnitResponse)
-      setBusinessUnits(businessUnitsResponse)
       setBusinessUnitOptions(
-        businessUnits
+        businessUnitsResponse
           .filter(businessUnit => businessUnit.siret != null)
           .map(businessUnit => ({
             key: `venue-business-unit-${businessUnit.id}`,
@@ -67,10 +65,8 @@ const BankInformationWithBusinessUnit = ({ readOnly, offerer, venue }) => {
       setIsLoading(false)
     }
     loadBusinessUnits(offerer.id)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     offerer.id,
-    setBusinessUnits,
     setDisplayedBanners,
     venue.businessUnitId,
     venue.demarchesSimplifieesApplicationId,
@@ -78,7 +74,6 @@ const BankInformationWithBusinessUnit = ({ readOnly, offerer, venue }) => {
   ])
 
   if (isLoading) return <Spinner />
-
   return (
     <div className="section vp-content-section bank-information">
       <div className="main-list-title title-actions-container">
@@ -101,7 +96,7 @@ const BankInformationWithBusinessUnit = ({ readOnly, offerer, venue }) => {
         Ces coordonnées bancaires seront utilisées pour les remboursements des
         offres éligibles de ce lieu.
       </p>
-      {businessUnits.length && (
+      {!!businessUnitOptions.length && (
         <div className="field field-select">
           <div className="field-label">
             <label htmlFor="venue-business-unit">
