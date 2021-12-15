@@ -7,17 +7,35 @@ import pcapi.core.finance.models as finance_models
 import pcapi.serialization.utils as serialization_utils
 
 
-class BusinessUnitResponseModel(BaseModel):
-    id: int
-    iban: str
-    name: str
-    siret: Optional[str]
+class BusinessUnitListQueryModel(BaseModel):
+    class Config:
+        alias_generator = serialization_utils.to_camel
+        extra = "forbid"
 
+    _dehumanize_id = serialization_utils.dehumanize_field("offerer_id")
+    offerer_id: Optional[int]
+
+
+class BusinessUnitResponseModel(BaseModel):
     class Config:
         orm_mode = True
 
+    id: int
+    iban: str
+    name: str
+    # FIXME (dbaty, 2021-12-15): SIRET may be NULL while we initialize
+    # business units. In a few months, all business units should have
+    # a SIRET and we should remove `Optional`.
+    siret: Optional[str]
 
-class ListBusinessUnitResponseModel(BaseModel):
+    @classmethod
+    def from_orm(cls, business_unit: finance_models.BusinessUnit):
+        business_unit.iban = business_unit.bankAccount.iban
+        res = super().from_orm(business_unit)
+        return res
+
+
+class BusinessUnitListResponseModel(BaseModel):
     __root__: list[BusinessUnitResponseModel]
 
     class Config:

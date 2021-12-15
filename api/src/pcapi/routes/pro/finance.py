@@ -44,6 +44,27 @@ def get_invoices(
     )
 
 
+@private_api.route("/finance/business-units", methods=["GET"])
+@login_required
+@spectree_serialize(response_model=finance_serialize.BusinessUnitListResponseModel)
+def get_business_units(query: finance_serialize.BusinessUnitListQueryModel) -> None:
+    if query.offerer_id:
+        check_user_has_access_to_offerer(current_user, query.offerer_id)
+    business_units = finance_repository.get_business_units_query(
+        user=current_user,
+        offerer_id=query.offerer_id,
+    )
+    business_units = business_units.options(
+        sqla_orm.contains_eager(finance_models.BusinessUnit.bankAccount),
+    )
+    business_units = business_units.order_by(finance_models.BusinessUnit.name)
+    return finance_serialize.BusinessUnitListResponseModel(
+        __root__=[
+            finance_serialize.BusinessUnitResponseModel.from_orm(business_unit) for business_unit in business_units
+        ],
+    )
+
+
 @private_api.route("/finance/business-units/<int:business_unit_id>", methods=["PATCH"])
 @login_required
 @spectree_serialize(on_success_status=204)
