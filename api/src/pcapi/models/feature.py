@@ -35,7 +35,7 @@ class FeatureToggle(enum.Enum):
     BENEFICIARY_VALIDATION_AFTER_FRAUD_CHECKS = "Active la validation d'un bénéficiaire via les contrôles de sécurité"
     DISPLAY_DMS_REDIRECTION = "Affiche une redirection vers DMS si ID Check est KO"
     ENABLE_ACTIVATION_CODES = "Permet la création de codes d'activation"
-    ENABLE_CULTURAL_SURVEY = "Conditionner l'apparition du questionnaire des pratiques initiales (cultural study) afin d'éviter de bloquer les utilisateurs si notre prestataire Typeform ne tient pas la charge"
+    ENABLE_CULTURAL_SURVEY = "Activer l'affichage du questionnaire des pratiques initiales pour les bénéficiaires"
     ENABLE_DMS_GRAPHQL_API = "Utilise l'API GraphQL de DMS"
     ENABLE_DMS_LINK_ON_MAINTENANCE_PAGE_FOR_AGE_18 = (
         "Permet l'affichage du lien vers DMS sur la page de maintenance pour les 18 ans"
