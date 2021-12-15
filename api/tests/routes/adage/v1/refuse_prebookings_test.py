@@ -9,9 +9,11 @@ from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.educational.factories import EducationalRedactorFactory
 from pcapi.core.educational.models import EducationalBookingStatus
+import pcapi.core.mails.testing as mails_testing
 from pcapi.core.offers.factories import EventStockFactory
 from pcapi.core.offers.models import Stock
 from pcapi.core.offers.utils import offer_webapp_link
+from pcapi.core.testing import override_features
 from pcapi.utils.date import format_into_utc_date
 
 from tests.conftest import TestClient
@@ -20,20 +22,30 @@ from tests.conftest import TestClient
 @pytest.mark.usefixtures("db_session")
 class Returns200Test:
     @freeze_time("2022-11-17 15:00:00")
-    def test_refuse_educational_booking(self, app) -> None:
+    @override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=True)
+    def test_refuse_educational_booking(
+        self,
+        app,
+    ) -> None:
         redactor = EducationalRedactorFactory(
             civility="M.",
             firstName="Jean",
             lastName="Doudou",
             email="jean.doux@example.com",
         )
-        stock: Stock = EventStockFactory(quantity=200, dnBookedQuantity=0)
+        stock: Stock = EventStockFactory(
+            quantity=200,
+            dnBookedQuantity=0,
+            offer__bookingEmail="test@mail.com",
+            beginningDatetime=datetime(2020, 1, 1, 12, 53, 00),
+        )
         booking = EducationalBookingFactory(
             educationalBooking__educationalRedactor=redactor,
             status=BookingStatus.CONFIRMED,
             stock=stock,
             quantity=20,
             cancellation_limit_date=datetime(2023, 1, 1),
+            dateCreated=datetime(2021, 12, 15, 10, 5, 5),
         )
 
         client = TestClient(app.test_client()).with_eac_token()
@@ -95,6 +107,20 @@ class Returns200Test:
         assert stock.dnBookedQuantity == 0
         assert booking.status == BookingStatus.CANCELLED
         assert booking.cancellationReason == BookingCancellationReasons.REFUSED_BY_INSTITUTE
+
+        assert len(mails_testing.outbox) == 1
+        assert mails_testing.outbox[0].sent_data["template"] == {
+            "id_not_prod": 41,
+            "id_prod": 406,
+            "tags": [],
+            "use_priority_queue": False,
+        }
+        assert mails_testing.outbox[0].sent_data["To"] == "test@mail.com"
+        assert mails_testing.outbox[0].sent_data["params"] == {
+            "OFFER_NAME": offer.name,
+            "EVENT_BEGINNING_DATETIME": "01/01/2020 à 12:53",
+            "BOOKING_CREATION_DATE": "15/12/2021 à 10:05",
+        }
 
     def test_refuse_educational_booking_when_pending(self, client) -> None:
         booking = EducationalBookingFactory(
