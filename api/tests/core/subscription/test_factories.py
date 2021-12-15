@@ -36,6 +36,9 @@ STATE_STATUS_MAPPING = {
 class IdentificationIncludedType(Enum):
     DOCUMENT_CHECKS = "document-checks"
     DOCUMENTS = "documents"
+    FACE_CHECKS = "face-checks"
+    REFERENCE_DATA_CHECKS = "reference-data-checks"
+    DOC_FACE_MATCHES = "doc-face-matches"
 
 
 class UbbleIdentificationDataAttributesFactory(factory.Factory):
@@ -259,6 +262,41 @@ class UbbleIdentificationIncludedDocumentChecksAttributesFactory(factory.Factory
         }.get(self.identification_state)
 
 
+class UbbleIdentificationIncludedDocFaceMatchesAttributesFactory(factory.Factory):
+    class Meta:
+        model = ubble_models.UbbleIdentificationDocFaceMatches
+
+    class Params:
+        identification_state = IdentificationState.VALID
+
+    score = ubble_models.UbbleScore.VALID.value
+
+
+class UbbleIdentificationIncludedFaceChecksAttributesFactory(factory.Factory):
+    class Meta:
+        model = ubble_models.UbbleIdentificationFaceChecks
+        rename = {
+            "active_liveness_score": "active-liveness-score",
+            "live_video_capture_score": "live-video-capture-score",
+            "quality_score": "quality-score",
+        }
+
+    class Params:
+        identification_state = IdentificationState.VALID
+
+    active_liveness_score = None
+    live_video_capture_score = None
+    quality_score = None
+    score = ubble_models.UbbleScore.VALID.value
+
+
+class UbbleIdentificationIncludedReferenceDataChecksAttributesFactory(factory.Factory):
+    class Meta:
+        model = ubble_models.UbbleIdentificationReferenceDataChecks
+
+    score = ubble_models.UbbleScore.VALID.value
+
+
 class UbbleIdentificationIncludedFactory(factory.Factory):
     class Meta:
         model = ubble_models.UbbleIdentificationIncluded
@@ -269,14 +307,44 @@ class UbbleIdentificationIncludedFactory(factory.Factory):
     attributes = None
 
 
-class UbbleUbbleIdentificationIncludedDocumentsFactory(UbbleIdentificationIncludedFactory):
+class UbbleIdentificationIncludedDocumentsFactory(UbbleIdentificationIncludedFactory):
+    class Meta:
+        model = ubble_models.UbbleIdentificationIncludedDocuments
+
     type = IdentificationIncludedType.DOCUMENTS.value
     attributes = factory.SubFactory(UbbleIdentificationIncludedDocumentsAttributesFactory)
 
 
-class UbbleUbbleIdentificationIncludedDocumentChecksFactory(UbbleIdentificationIncludedFactory):
+class UbbleIdentificationIncludedDocumentChecksFactory(UbbleIdentificationIncludedFactory):
+    class Meta:
+        model = ubble_models.UbbleIdentificationIncludedDocumentChecks
+
     type = IdentificationIncludedType.DOCUMENT_CHECKS.value
     attributes = factory.SubFactory(UbbleIdentificationIncludedDocumentChecksAttributesFactory)
+
+
+class UbbleIdentificationIncludedFaceChecksFactory(UbbleIdentificationIncludedFactory):
+    class Meta:
+        model = ubble_models.UbbleIdentificationIncludedFaceChecks
+
+    type = IdentificationIncludedType.FACE_CHECKS.value
+    attributes = factory.SubFactory(UbbleIdentificationIncludedFaceChecksAttributesFactory)
+
+
+class UbbleIdentificationIncludedReferenceDataChecksFactory(UbbleIdentificationIncludedFactory):
+    class Meta:
+        model = ubble_models.UbbleIdentificationIncludedReferenceDataChecks
+
+    type = IdentificationIncludedType.REFERENCE_DATA_CHECKS.value
+    attributes = factory.SubFactory(UbbleIdentificationIncludedReferenceDataChecksAttributesFactory)
+
+
+class UbbleIdentificationIncludedDocFaceMatchesFactory(UbbleIdentificationIncludedFactory):
+    class Meta:
+        model = ubble_models.UbbleIdentificationIncludedDocFaceMatches
+
+    type = IdentificationIncludedType.DOC_FACE_MATCHES.value
+    attributes = factory.SubFactory(UbbleIdentificationIncludedDocFaceMatchesAttributesFactory)
 
 
 class UbbleIdentificationResponseFactory(factory.Factory):
@@ -296,21 +364,31 @@ class UbbleIdentificationResponseFactory(factory.Factory):
             list,
             {
                 IdentificationState.PROCESSING: [
-                    UbbleUbbleIdentificationIncludedDocumentsFactory,
+                    UbbleIdentificationIncludedDocumentsFactory,
                 ],
                 IdentificationState.VALID: [
-                    UbbleUbbleIdentificationIncludedDocumentsFactory,
-                    UbbleUbbleIdentificationIncludedDocumentChecksFactory,
+                    UbbleIdentificationIncludedDocumentsFactory,
+                    UbbleIdentificationIncludedDocumentChecksFactory,
+                    UbbleIdentificationIncludedFaceChecksFactory,
+                    UbbleIdentificationIncludedDocFaceMatchesFactory,
+                    UbbleIdentificationIncludedReferenceDataChecksFactory,
                 ],
                 IdentificationState.INVALID: [
-                    UbbleUbbleIdentificationIncludedDocumentsFactory,
-                    UbbleUbbleIdentificationIncludedDocumentChecksFactory,
+                    UbbleIdentificationIncludedDocumentsFactory,
+                    UbbleIdentificationIncludedDocumentChecksFactory,
+                    UbbleIdentificationIncludedFaceChecksFactory,
+                    UbbleIdentificationIncludedDocFaceMatchesFactory,
+                    UbbleIdentificationIncludedReferenceDataChecksFactory,
                 ],
                 IdentificationState.UNPROCESSABLE: [
-                    UbbleUbbleIdentificationIncludedDocumentsFactory,
-                    UbbleUbbleIdentificationIncludedDocumentChecksFactory,
+                    UbbleIdentificationIncludedDocumentsFactory,
+                    UbbleIdentificationIncludedDocumentChecksFactory,
+                    UbbleIdentificationIncludedFaceChecksFactory,
+                    UbbleIdentificationIncludedDocFaceMatchesFactory,
+                    UbbleIdentificationIncludedReferenceDataChecksFactory,
                 ],
             },
         )[self.identification_state]
 
-        return [sf(identification_state=self.identification_state) for sf in included_data]
+        included_data = [sf(identification_state=self.identification_state) for sf in included_data]
+        return included_data

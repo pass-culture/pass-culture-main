@@ -1,3 +1,4 @@
+import datetime
 import json
 import time
 from unittest.mock import patch
@@ -8,6 +9,7 @@ import pytest
 from pcapi import settings
 from pcapi.connectors.api_demarches_simplifiees import DMSGraphQLClient
 from pcapi.connectors.api_demarches_simplifiees import GraphQLApplicationStates
+from pcapi.core import testing
 from pcapi.core.fraud import api as fraud_api
 from pcapi.core.fraud import factories as fraud_factories
 from pcapi.core.fraud import models as fraud_models
@@ -16,6 +18,7 @@ from pcapi.core.subscription import messages as subscription_messages
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
+from pcapi.models import db
 from pcapi.models.beneficiary_import import BeneficiaryImport
 from pcapi.models.beneficiary_import import BeneficiaryImportSources
 from pcapi.models.beneficiary_import_status import ImportStatus
@@ -661,3 +664,124 @@ class UbbleWebhookTest:
         assert (
             content.identification_url == f"{settings.UBBLE_API_URL}/identifications/{str(content.identification_id)}"
         )
+
+    def test_birth_date_not_updated_with_ubble_test_emails(self, client, ubble_mocker, mocker):
+        email = "whatever+ubble_test@example.com"
+        subscription_birth_date = datetime.datetime.combine(datetime.date(1980, 1, 1), datetime.time(0, 0))
+        document_birth_date = datetime.datetime.combine(datetime.date(2004, 6, 16), datetime.time(0, 0))
+        user = users_factories.UserFactory(email=email, dateOfBirth=subscription_birth_date)
+        fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
+            type=fraud_models.FraudCheckType.UBBLE,
+            resultContent=fraud_factories.UbbleContentFactory(
+                status=test_factories.STATE_STATUS_MAPPING[test_factories.IdentificationState.PROCESSING].value,
+            ),
+            user=user,
+        )
+        request_data = self._get_request_body(fraud_check, fraud_models.ubble.UbbleIdentificationStatus.PROCESSED)
+        payload = json.dumps(request_data.dict(by_alias=True), default=json_default)
+        signature = self._get_signature(payload)
+        ubble_identification_response = test_factories.UbbleIdentificationResponseFactory(
+            identification_state=test_factories.IdentificationState.VALID,
+            data__attributes__identification_id=str(request_data.identification_id),
+            included=[
+                test_factories.UbbleIdentificationIncludedDocumentsFactory(
+                    attributes__birth_date=document_birth_date.date().isoformat()
+                ),
+                test_factories.UbbleIdentificationIncludedDocumentChecksFactory(),
+            ],
+        )
+
+        with ubble_mocker(
+            request_data.identification_id,
+            json.dumps(ubble_identification_response.dict(by_alias=True), sort_keys=True, default=json_default),
+        ):
+            client.post(
+                "/webhooks/ubble/application_status",
+                headers={"Ubble-Signature": signature},
+                raw_json=payload,
+            )
+
+        db.session.refresh(user)
+        assert user.dateOfBirth != document_birth_date
+        assert user.dateOfBirth == subscription_birth_date
+
+    def test_birth_date_updated_non_with_ubble_test_emails(self, client, ubble_mocker, mocker):
+        email = "whatever@example.com"
+        subscription_birth_date = datetime.datetime.combine(datetime.date(1980, 1, 1), datetime.time(0, 0))
+        document_birth_date = datetime.datetime.combine(datetime.date(2004, 6, 16), datetime.time(0, 0))
+        user = users_factories.UserFactory(email=email, dateOfBirth=subscription_birth_date)
+        fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
+            type=fraud_models.FraudCheckType.UBBLE,
+            resultContent=fraud_factories.UbbleContentFactory(
+                status=test_factories.STATE_STATUS_MAPPING[test_factories.IdentificationState.PROCESSING].value,
+            ),
+            user=user,
+        )
+        request_data = self._get_request_body(fraud_check, fraud_models.ubble.UbbleIdentificationStatus.PROCESSED)
+        payload = json.dumps(request_data.dict(by_alias=True), default=json_default)
+        signature = self._get_signature(payload)
+        ubble_identification_response = test_factories.UbbleIdentificationResponseFactory(
+            identification_state=test_factories.IdentificationState.VALID,
+            data__attributes__identification_id=str(request_data.identification_id),
+            included=[
+                test_factories.UbbleIdentificationIncludedDocumentsFactory(
+                    attributes__birth_date=document_birth_date.date().isoformat()
+                ),
+                test_factories.UbbleIdentificationIncludedDocumentChecksFactory(),
+            ],
+        )
+
+        with ubble_mocker(
+            request_data.identification_id,
+            json.dumps(ubble_identification_response.dict(by_alias=True), sort_keys=True, default=json_default),
+        ):
+            client.post(
+                "/webhooks/ubble/application_status",
+                headers={"Ubble-Signature": signature},
+                raw_json=payload,
+            )
+
+        db.session.refresh(user)
+        assert user.dateOfBirth == document_birth_date
+        assert user.dateOfBirth != subscription_birth_date
+
+    @testing.override_settings(IS_PROD=True)
+    def test_ubble_test_emails_not_actives_on_production(self, client, ubble_mocker, mocker):
+        email = "whatever+ubble_test@example.com"
+        subscription_birth_date = datetime.datetime.combine(datetime.date(1980, 1, 1), datetime.time(0, 0))
+        document_birth_date = datetime.datetime.combine(datetime.date(2004, 6, 16), datetime.time(0, 0))
+        user = users_factories.UserFactory(email=email, dateOfBirth=subscription_birth_date)
+        fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
+            type=fraud_models.FraudCheckType.UBBLE,
+            resultContent=fraud_factories.UbbleContentFactory(
+                status=test_factories.STATE_STATUS_MAPPING[test_factories.IdentificationState.PROCESSING].value,
+            ),
+            user=user,
+        )
+        request_data = self._get_request_body(fraud_check, fraud_models.ubble.UbbleIdentificationStatus.PROCESSED)
+        payload = json.dumps(request_data.dict(by_alias=True), default=json_default)
+        signature = self._get_signature(payload)
+        ubble_identification_response = test_factories.UbbleIdentificationResponseFactory(
+            identification_state=test_factories.IdentificationState.VALID,
+            data__attributes__identification_id=str(request_data.identification_id),
+            included=[
+                test_factories.UbbleIdentificationIncludedDocumentsFactory(
+                    attributes__birth_date=document_birth_date.date().isoformat()
+                ),
+                test_factories.UbbleIdentificationIncludedDocumentChecksFactory(),
+            ],
+        )
+
+        with ubble_mocker(
+            request_data.identification_id,
+            json.dumps(ubble_identification_response.dict(by_alias=True), sort_keys=True, default=json_default),
+        ):
+            client.post(
+                "/webhooks/ubble/application_status",
+                headers={"Ubble-Signature": signature},
+                raw_json=payload,
+            )
+
+        db.session.refresh(user)
+        assert user.dateOfBirth == document_birth_date
+        assert user.dateOfBirth != subscription_birth_date

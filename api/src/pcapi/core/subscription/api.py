@@ -228,7 +228,6 @@ def start_ubble_workflow(user: users_models.User, redirect_url: str) -> str:
     content = ubble.start_identification(
         user_id=user.id,
         phone_number=user.phoneNumber,
-        birth_date=user.dateOfBirth.date(),
         first_name=user.firstName,
         last_name=user.lastName,
         webhook_url=flask.url_for("Public API.ubble_webhook_update_application_status", _external=True),
@@ -474,7 +473,7 @@ def get_maintenance_page_type(user: users_models.User) -> typing.Optional[models
 
 def on_successful_application(
     user: users_models.User,
-    source_data: fraud_models.DMSContent,
+    source_data: fraud_models.IdentityCheckContent,
     source: BeneficiaryImportSources,
     eligibility_type: users_models.EligibilityType,
     application_id: typing.Optional[int] = None,
