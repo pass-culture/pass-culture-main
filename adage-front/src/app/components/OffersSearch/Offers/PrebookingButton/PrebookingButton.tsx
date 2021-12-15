@@ -1,5 +1,6 @@
 import format from 'date-fns/format'
 import React, { useCallback, useState } from 'react'
+import { getErrorMessage } from './utils'
 
 import {
   NotificationType,
@@ -37,11 +38,11 @@ const PrebookingButton = ({
           )
         )
       })
-      .catch(() =>
+      .catch((error) =>
         setNotification(
           new Notification(
             NotificationType.error,
-            'Impossible de préréserver cette offre.\nVeuillez contacter le support'
+            getErrorMessage(error)
           )
         )
       )
