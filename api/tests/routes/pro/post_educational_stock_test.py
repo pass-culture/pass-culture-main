@@ -142,7 +142,7 @@ class Return400Test:
             ]
         }
 
-    def should_not_accept_payload_with_price_details_with_more_than_1000_caracters(seld, app, client):
+    def should_not_accept_payload_with_price_details_with_more_than_1000_caracters(self, app, client):
         # Given
         offer = offer_factories.EducationalEventOfferFactory()
         offer_factories.UserOffererFactory(
