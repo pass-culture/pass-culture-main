@@ -12524,6 +12524,11 @@ levn@^0.4.1:
     prelude-ls "^1.2.1"
     type-check "~0.4.0"
 
+libphonenumber-js@^1.9.44:
+  version "1.9.44"
+  resolved "https://registry.yarnpkg.com/libphonenumber-js/-/libphonenumber-js-1.9.44.tgz#d036364fe4c1e27205d1d283c7bf8fc25625200b"
+  integrity sha512-zhw8nUMJuQf7jG1dZfEOKKOS6M3QYIv3HnvB/vGohNd0QfxIQcObH3a6Y6s350H+9xgBeOXClOJkS0hJ0yvS3g==
+
 license-checker@^24.0.1:
   version "24.1.0"
   resolved "https://registry.yarnpkg.com/license-checker/-/license-checker-24.1.0.tgz#c9ccbac4cf18273a3c5ca3bf5c61d16cfd103d90"
