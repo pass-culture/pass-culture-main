@@ -80,8 +80,35 @@ class UbbleIdentificationDocuments(pydantic.BaseModel):
 
 
 class UbbleIdentificationDocumentChecks(pydantic.BaseModel):
-    expiry_date_score: float = pydantic.Field(None, alias="expiry-date-score")
-    supported: float
+    data_extracted_score: typing.Optional[float] = pydantic.Field(None, alias="data-extracted-score")
+    expiry_date_score: typing.Optional[float] = pydantic.Field(None, alias="expiry-date-score")
+    issue_date_score: typing.Optional[float] = pydantic.Field(None, alias="issue-date-score")
+    live_video_capture_score: typing.Optional[float] = pydantic.Field(None, alias="live-video-capture-score")
+    mrz_validity_score: typing.Optional[float] = pydantic.Field(None, alias="mrz-validity-score")
+    mrz_viz_score: typing.Optional[float] = pydantic.Field(None, alias="mrz-viz-score")
+    ove_back_score: typing.Optional[float] = pydantic.Field(None, alias="ove-back-score")
+    ove_front_score: typing.Optional[float] = pydantic.Field(None, alias="ove-front-score")
+    ove_score: typing.Optional[float] = pydantic.Field(None, alias="ove-score")
+    quality_score: typing.Optional[float] = pydantic.Field(None, alias="quality-score")
+    score: typing.Optional[float] = pydantic.Field(None, alias="score")
+    supported: typing.Optional[float] = None
+    visual_back_score: typing.Optional[float] = pydantic.Field(None, alias="visual-back-score")
+    visual_front_score: typing.Optional[float] = pydantic.Field(None, alias="visual-front-score")
+
+
+class UbbleIdentificationFaceChecks(pydantic.BaseModel):
+    active_liveness_score: typing.Optional[float] = pydantic.Field(None, alias="active-liveness-score")
+    live_video_capture_score: typing.Optional[float] = pydantic.Field(None, alias="live-video-capture-score")
+    quality_score: typing.Optional[float] = pydantic.Field(None, alias="quality-score")
+    score: typing.Optional[float] = None
+
+
+class UbbleIdentificationReferenceDataChecks(pydantic.BaseModel):
+    score: typing.Optional[float] = None
+
+
+class UbbleIdentificationDocFaceMatches(pydantic.BaseModel):
+    score: typing.Optional[float] = None
 
 
 class UbbleIdentificationIncluded(pydantic.BaseModel):
@@ -89,6 +116,26 @@ class UbbleIdentificationIncluded(pydantic.BaseModel):
     id: int
     attributes: typing.Union[UbbleIdentificationDocumentChecks, UbbleIdentificationDocuments]
     relationships: typing.Optional[dict]
+
+
+class UbbleIdentificationIncludedDocuments(UbbleIdentificationIncluded):
+    attributes: UbbleIdentificationDocuments
+
+
+class UbbleIdentificationIncludedDocumentChecks(UbbleIdentificationIncluded):
+    attributes: UbbleIdentificationDocumentChecks
+
+
+class UbbleIdentificationIncludedFaceChecks(UbbleIdentificationIncluded):
+    attributes: UbbleIdentificationFaceChecks
+
+
+class UbbleIdentificationIncludedReferenceDataChecks(UbbleIdentificationIncluded):
+    attributes: UbbleIdentificationReferenceDataChecks
+
+
+class UbbleIdentificationIncludedDocFaceMatches(UbbleIdentificationIncluded):
+    attributes: UbbleIdentificationDocFaceMatches
 
 
 class UbbleIdentificationResponse(pydantic.BaseModel):
