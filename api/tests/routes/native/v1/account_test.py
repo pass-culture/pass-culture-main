@@ -25,6 +25,7 @@ from pcapi.core.fraud import models as fraud_models
 import pcapi.core.mails.testing as mails_testing
 import pcapi.core.subscription.factories as subscription_factories
 import pcapi.core.subscription.messages as subscription_messages
+import pcapi.core.subscription.models as subscription_models
 from pcapi.core.testing import override_features
 from pcapi.core.testing import override_settings
 from pcapi.core.users import factories as users_factories
@@ -454,6 +455,26 @@ class AccountTest:
         subscription_messages.on_duplicate_user(user)
         response = client.get("/native/v1/me")
         assert response.status_code == 200
+
+    @override_features(ENABLE_NATIVE_EAC_INDIVIDUAL=False, ALLOW_IDCHECK_REGISTRATION=False)
+    def test_maintenance_message(self, client):
+        """
+        Test that when a user has no subscription message and when the
+        whole beneficiary signup process has been deactivated, the call
+        to /me returns a generic maintenance message.
+        """
+        user = users_factories.UserFactory(
+            email=self.identifier, dateOfBirth=datetime.now() - relativedelta(years=18, days=5)
+        )
+        client.with_token(user.email)
+
+        response = client.get("/native/v1/me")
+        assert response.status_code == 200
+
+        msg = response.json["subscriptionMessage"]
+        assert msg["userMessage"] is not None
+        assert msg["callToAction"] is None
+        assert msg["popOverIcon"] == subscription_models.PopOverIcon.CLOCK.value
 
 
 class AccountCreationTest:
