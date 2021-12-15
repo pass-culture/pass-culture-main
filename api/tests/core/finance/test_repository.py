@@ -82,7 +82,7 @@ class GetBusinessUnitsTest:
         assert business_units == [business_unit1]
 
 
-class GetInvoicesTest:
+class GetInvoicesQueryTest:
     def test_basics(self):
         business_unit1 = factories.BusinessUnitFactory()
         invoice1 = factories.InvoiceFactory(businessUnit=business_unit1)
