@@ -32,5 +32,7 @@ export const extractInitialStockValues = (
     bookingLimitDatetime:
       getLocalDepartementDateTimeFromUtc(stock.bookingLimitDatetime) ??
       DEFAULT_EAC_STOCK_FORM_VALUES.bookingLimitDatetime,
+    priceDetail:
+      stock.educationalPriceDetail ?? DEFAULT_EAC_STOCK_FORM_VALUES.priceDetail,
   }
 }

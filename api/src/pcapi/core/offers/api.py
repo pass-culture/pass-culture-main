@@ -596,6 +596,7 @@ def _extract_updatable_fields_from_stock_data(
         "bookingLimitDatetime": booking_limit_datetime,
         "price": stock_data.get("total_price"),
         "numberOfTickets": stock_data.get("number_of_tickets"),
+        "educationalPriceDetail": stock_data.get("educational_price_detail"),
     }
 
     return updatable_fields
