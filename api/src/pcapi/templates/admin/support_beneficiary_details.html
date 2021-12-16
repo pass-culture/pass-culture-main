@@ -190,30 +190,30 @@
   </div>
   <div class="col">
     <h3>Résultat de l'algorithme</h3>
-    {% for beneficiary_fraud_result in model.beneficiaryFraudResults|reverse %}
+    {% for result in model.beneficiaryFraudResults|reverse %}
     <table class="table">
       <tr>
         <th scope="row">Souscription</th>
-        <td>{{ "pass 15-17" if beneficiary_fraud_result.eligibilityType.value == "underage" else "pass 18 ans" }}</td>
+        <td>{{ "pass 15-17" if result.eligibilityType and result.eligibilityType.value == "underage" else "pass 18 ans" if result.eligibilityType and result.eligibilityType.value == "age-18" else "inconnu" }}</td>
       </tr>
       <tr>
         <th scope="row">Etat</th>
-        <td>{{ beneficiary_fraud_result.status.value }}</td>
+        <td>{{ result.status.value }}</td>
       </tr>
       <tr>
         <th scope="row">Date de création</th>
-        <td>{{ beneficiary_fraud_result.dateCreated.strftime('le %d/%m/%Y à %H:%M:%S') }}</dd>
+        <td>{{ result.dateCreated.strftime('le %d/%m/%Y à %H:%M:%S') }}</dd>
         </td>
       </tr>
       <tr>
         <th scope="row">Dernière mise à jour</th>
-        <td>{% if beneficiary_fraud_result.dateUpdated %}{{ beneficiary_fraud_result.dateUpdated.strftime('le
+        <td>{% if result.dateUpdated %}{{ result.dateUpdated.strftime('le
           %d/%m/%Y à %H:%M:%S') }}{% else %}Inconnue{% endif %}</dd>
         </td>
       </tr>
       <tr>
         <th scope="row">Explication</th>
-        <td>{{ beneficiary_fraud_result.reason }}</dd>
+        <td>{{ result.reason }}</dd>
         </td>
       </tr>
     </table>
