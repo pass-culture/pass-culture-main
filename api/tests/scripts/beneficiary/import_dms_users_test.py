@@ -497,7 +497,7 @@ class ParseBeneficiaryInformationTest:
             assert content.application_id == 5718303
             assert content.procedure_id == 32
             assert content.department == None
-            assert content.birth_date == date(1984, 12, 19)
+            assert content.birth_date == date(2004, 12, 19)
             assert content.phone == "0601010101"
             assert content.postal_code == "92700"
             assert content.activity == "Employé"
@@ -515,7 +515,7 @@ class ParseBeneficiaryInformationTest:
             assert content.application_id == 5742994
             assert content.procedure_id == 32
             assert content.department == None
-            assert content.birth_date == date(2000, 12, 18)
+            assert content.birth_date == date(2006, 5, 12)
             assert content.phone == "0601010101"
             assert content.postal_code == "92700"
             assert content.activity == "Employé"
@@ -1209,7 +1209,7 @@ class GraphQLSourceProcessApplicationTest:
         assert beneficiary_information.application_id == application_id
         assert beneficiary_information.procedure_id == 123
         assert beneficiary_information.department == "67"
-        assert beneficiary_information.birth_date == date(2002, 5, 12)
+        assert beneficiary_information.birth_date == date(2003, 5, 12)
         assert beneficiary_information.phone == "0783442376"
         assert beneficiary_information.postal_code == "67200"
         assert beneficiary_information.activity == "Étudiant"
