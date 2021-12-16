@@ -8,6 +8,7 @@ from flask_jwt_extended.utils import create_access_token
 from freezegun import freeze_time
 import pytest
 
+from pcapi import settings
 from pcapi.core.fraud import factories as fraud_factories
 from pcapi.core.fraud import models as fraud_models
 import pcapi.core.mails.testing as mails_testing
@@ -17,6 +18,7 @@ from pcapi.core.testing import override_features
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
+from pcapi.core.users import utils as users_utils
 from pcapi.models import api_errors
 from pcapi.models.beneficiary_import import BeneficiaryImport
 from pcapi.models.beneficiary_import import BeneficiaryImportSources
@@ -865,3 +867,31 @@ class DMSSubscriptionTest:
         assert fraud_check.user == user
         assert fraud_check.status == fraud_models.FraudCheckStatus.PENDING
         assert fraud_check.eligibilityType == users_models.EligibilityType.AGE18
+
+
+@pytest.mark.usefixtures("db_session")
+class OverflowSubscriptionLimitationTest:
+    @override_features(ENABLE_UBBLE_SUBSCRIPTION_LIMITATION=True)
+    @pytest.mark.parametrize("age", [15, 16, 17, 18])
+    def test_is_ubble_allowed_if_subscription_overflow(self, age):
+        # user birthday is in settings.UBBLE_SUBSCRIPTION_LIMITATION_DAYS days
+        birth_date = datetime.utcnow() - relativedelta(years=age + 1)
+        birth_date += relativedelta(days=settings.UBBLE_SUBSCRIPTION_LIMITATION_DAYS - 1)
+
+        # the user has:
+        # email v
+        user_approching_birthday = users_factories.UserFactory(dateOfBirth=birth_date)
+
+        users_utils.get_age_from_birth_date(user_approching_birthday.dateOfBirth)
+        user_not_allowed = users_factories.UserFactory(
+            dateOfBirth=datetime.utcnow()
+            - relativedelta(years=age, days=settings.UBBLE_SUBSCRIPTION_LIMITATION_DAYS + 10)
+        )
+
+        assert subscription_api.is_ubble_allowed_if_subscription_overflow(user_approching_birthday)
+        assert not subscription_api.is_ubble_allowed_if_subscription_overflow(user_not_allowed)
+
+    @override_features(ENABLE_UBBLE_SUBSCRIPTION_LIMITATION=False)
+    def test_subscription_is_possible_if_flag_is_false(self):
+        user = users_factories.UserFactory()
+        assert subscription_api.is_ubble_allowed_if_subscription_overflow(user)
