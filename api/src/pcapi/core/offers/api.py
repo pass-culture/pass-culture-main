@@ -560,10 +560,12 @@ def edit_educational_stock(stock: Stock, stock_data: dict) -> None:
     if educational_stock_unique_booking:
         validation.check_stock_booking_status(educational_stock_unique_booking)
         if beginning:
-            updated_booking = _update_educational_booking_cancellation_limit_date(
-                educational_stock_unique_booking, beginning
-            )
-            db.session.add(updated_booking)
+            _update_educational_booking_cancellation_limit_date(educational_stock_unique_booking, beginning)
+            db.session.add(educational_stock_unique_booking)
+
+        if stock_data.get("total_price"):
+            educational_stock_unique_booking.amount = stock_data.get("total_price")
+            db.session.add(educational_stock_unique_booking)
 
     validation.check_educational_stock_is_editable(stock)
 
@@ -602,11 +604,10 @@ def _extract_updatable_fields_from_stock_data(
 
 def _update_educational_booking_cancellation_limit_date(
     booking: Booking, new_beginning_datetime: datetime.datetime
-) -> Booking:
+) -> None:
     booking.cancellationLimitDate = compute_educational_booking_cancellation_limit_date(
         new_beginning_datetime, datetime.datetime.utcnow()
     )
-    return booking
 
 
 def _invalidate_bookings(bookings: list[Booking]) -> list[Booking]:

@@ -871,6 +871,33 @@ class EditEducationalOfferStocksTest:
         assert stock.price == 1200
         assert stock.numberOfTickets == 35
 
+    def test_should_update_educational_booking_amount(self):
+        # Given
+        initial_event_date = datetime.now() + timedelta(days=5)
+        initial_booking_limit_date = datetime.now() + timedelta(days=3)
+        stock_to_be_updated = offer_factories.EducationalEventStockFactory(
+            beginningDatetime=initial_event_date,
+            price=1200,
+            quantity=1,
+            numberOfTickets=30,
+            bookingLimitDatetime=initial_booking_limit_date,
+        )
+        booking = bookings_factories.EducationalBookingFactory(
+            amount=1200,
+            status=BookingStatus.PENDING,
+            stock=stock_to_be_updated,
+        )
+
+        new_stock_data = stock_serialize.EducationalStockEditionBodyModel(totalPrice=1400)
+
+        # When
+        api.edit_educational_stock(stock=stock_to_be_updated, stock_data=new_stock_data.dict(exclude_unset=True))
+
+        # Then
+        stock = offer_models.Stock.query.filter_by(id=stock_to_be_updated.id).one()
+        assert stock.price == 1400
+        assert booking.amount == 1400
+
     def test_should_replace_bookingLimitDatetime_with_new_event_datetime_if_provided_but_none(self):
         # Given
         initial_event_date = datetime.now() + timedelta(days=5)
