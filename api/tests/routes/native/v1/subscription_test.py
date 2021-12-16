@@ -319,10 +319,14 @@ class NextStepTest:
             phoneNumber="+33609080706",
         )
 
+        user_profiling = fraud_factories.UserProfilingFraudDataFactory(
+            risk_rating=fraud_models.UserProfilingRiskRating.TRUSTED
+        )
         fraud_factories.BeneficiaryFraudCheckFactory(
             user=user_approching_birthday,
             type=fraud_models.FraudCheckType.USER_PROFILING,
             status=fraud_models.FraudCheckStatus.OK,
+            resultContent=user_profiling,
         )
         client.with_token(user_approching_birthday.email)
         response = client.get("/native/v1/subscription/next_step")
@@ -350,6 +354,7 @@ class NextStepTest:
             user=user_not_eligible_for_ubble,
             type=fraud_models.FraudCheckType.USER_PROFILING,
             status=fraud_models.FraudCheckStatus.OK,
+            resultContent=user_profiling,
         )
 
         client.with_token(user_not_eligible_for_ubble.email)
