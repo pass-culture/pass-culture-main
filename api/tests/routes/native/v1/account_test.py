@@ -1897,7 +1897,10 @@ class ProfilingFraudScoreTest:
     )
     @override_settings(USER_PROFILING_URL=USER_PROFILING_URL)
     def test_profiling_fraud_score_call(self, client, requests_mock, session_id_key, session_id_value):
-        user = users_factories.UserFactory(subscriptionState=users_models.SubscriptionState.phone_validated)
+        user = users_factories.UserFactory(
+            subscriptionState=users_models.SubscriptionState.phone_validated,
+            phoneValidationStatus=PhoneValidationStatusType.VALIDATED,
+        )
         matcher = requests_mock.register_uri(
             "POST",
             settings.USER_PROFILING_URL,
@@ -1913,9 +1916,19 @@ class ProfilingFraudScoreTest:
         assert matcher.call_count == 1
         assert user.is_subscriptionState_user_profiling_validated()
 
+        assert fraud_models.BeneficiaryFraudCheck.query.count() == 1
+        fraud_check = fraud_models.BeneficiaryFraudCheck.query.first()
+        assert fraud_check.userId == user.id
+        assert fraud_check.type == fraud_models.FraudCheckType.USER_PROFILING
+        assert fraud_check.eligibilityType == None
+        assert fraud_check.status == fraud_models.FraudCheckStatus.OK
+
     @override_settings(USER_PROFILING_URL=USER_PROFILING_URL)
     def test_profiling_fraud_score_call_error(self, client, requests_mock, caplog):
-        user = users_factories.UserFactory(subscriptionState=users_models.SubscriptionState.phone_validated)
+        user = users_factories.UserFactory(
+            subscriptionState=users_models.SubscriptionState.phone_validated,
+            phoneValidationStatus=PhoneValidationStatusType.VALIDATED,
+        )
         matcher = requests_mock.register_uri(
             "POST",
             settings.USER_PROFILING_URL,
@@ -1935,7 +1948,9 @@ class ProfilingFraudScoreTest:
     @override_settings(USER_PROFILING_URL=USER_PROFILING_URL)
     def test_profiling_fraud_score_user_without_birth_date(self, client, requests_mock, caplog):
         user = users_factories.UserFactory(
-            dateOfBirth=None, subscriptionState=users_models.SubscriptionState.phone_validated
+            dateOfBirth=None,
+            subscriptionState=users_models.SubscriptionState.phone_validated,
+            phoneValidationStatus=PhoneValidationStatusType.VALIDATED,
         )
         matcher = requests_mock.register_uri(
             "POST",
@@ -1959,6 +1974,7 @@ class ProfilingFraudScoreTest:
         assert fraud_check.userId == user.id
         assert fraud_check.type == fraud_models.FraudCheckType.USER_PROFILING
         assert fraud_check.eligibilityType == None
+        assert fraud_check.status == fraud_models.FraudCheckStatus.OK
 
     @pytest.mark.parametrize("session_id_value", ["gdavmoioeuboaobç!p'è", "", "a" * 150])
     @override_settings(USER_PROFILING_URL=USER_PROFILING_URL)
@@ -1979,14 +1995,17 @@ class ProfilingFraudScoreTest:
 
     @override_settings(USER_PROFILING_URL=USER_PROFILING_URL)
     @pytest.mark.parametrize(
-        "risk_rating",
+        "risk_rating,expected_check_status",
         (
-            fraud_models.UserProfilingRiskRating.HIGH,
-            fraud_models.UserProfilingRiskRating.MEDIUM,
+            (fraud_models.UserProfilingRiskRating.HIGH, fraud_models.FraudCheckStatus.KO),
+            (fraud_models.UserProfilingRiskRating.MEDIUM, fraud_models.FraudCheckStatus.SUSPICIOUS),
         ),
     )
-    def test_fraud_result_on_risky_user_profiling(self, client, requests_mock, risk_rating):
-        user = users_factories.UserFactory(subscriptionState=users_models.SubscriptionState.phone_validated)
+    def test_fraud_result_on_risky_user_profiling(self, client, requests_mock, risk_rating, expected_check_status):
+        user = users_factories.UserFactory(
+            subscriptionState=users_models.SubscriptionState.phone_validated,
+            phoneValidationStatus=PhoneValidationStatusType.VALIDATED,
+        )
         session_id = "8663ac09-db2a-46a1-9ccd-49a07d5cd7ae"
         payload = fraud_factories.UserProfilingFraudDataFactory(risk_rating=risk_rating).dict()
         payload["event_datetime"] = payload["event_datetime"].isoformat()  # because datetime is not json serializable
@@ -2011,6 +2030,13 @@ class ProfilingFraudScoreTest:
         assert sub_message.userMessage == "Ton inscription n'a pas pu aboutir."
         assert user.is_subscriptionState_user_profiling_ko()
 
+        assert fraud_models.BeneficiaryFraudCheck.query.count() == 1
+        fraud_check = fraud_models.BeneficiaryFraudCheck.query.first()
+        assert fraud_check.userId == user.id
+        assert fraud_check.type == fraud_models.FraudCheckType.USER_PROFILING
+        assert fraud_check.eligibilityType == None
+        assert fraud_check.status == expected_check_status
+
     @override_settings(USER_PROFILING_URL=USER_PROFILING_URL)
     @pytest.mark.parametrize(
         "risk_rating",
@@ -2021,7 +2047,10 @@ class ProfilingFraudScoreTest:
         ),
     )
     def test_no_fraud_result_on_safe_user_profiling(self, client, requests_mock, risk_rating):
-        user = users_factories.UserFactory(subscriptionState=users_models.SubscriptionState.phone_validated)
+        user = users_factories.UserFactory(
+            subscriptionState=users_models.SubscriptionState.phone_validated,
+            phoneValidationStatus=PhoneValidationStatusType.VALIDATED,
+        )
         payload = fraud_factories.UserProfilingFraudDataFactory(risk_rating=risk_rating).dict()
         payload["event_datetime"] = payload["event_datetime"].isoformat()  # because datetime is not json serializable
         payload["risk_rating"] = payload["risk_rating"].value  # because Enum is not json serializable

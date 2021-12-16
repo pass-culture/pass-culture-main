@@ -34,6 +34,14 @@ USER_PROFILING_RISK_MAPPING = {
     models.UserProfilingRiskRating.HIGH: models.FraudStatus.KO,
 }
 
+USER_PROFILING_FRAUD_CHECK_STATUS_RISK_MAPPING = {
+    models.UserProfilingRiskRating.TRUSTED: models.FraudCheckStatus.OK,
+    models.UserProfilingRiskRating.NEUTRAL: models.FraudCheckStatus.OK,
+    models.UserProfilingRiskRating.LOW: models.FraudCheckStatus.OK,
+    models.UserProfilingRiskRating.MEDIUM: models.FraudCheckStatus.SUSPICIOUS,
+    models.UserProfilingRiskRating.HIGH: models.FraudCheckStatus.KO,
+}
+
 
 def on_educonnect_result(user: users_models.User, educonnect_content: models.EduconnectContent) -> None:
     eligibility_type = get_eligibility_type(educonnect_content)
@@ -498,28 +506,30 @@ def _underage_user_fraud_item(birth_date: datetime.date) -> models.FraudItem:
 def on_user_profiling_result(
     user: users_models.User, profiling_infos: models.UserProfilingFraudData
 ) -> models.BeneficiaryFraudCheck:
+    risk_rating = profiling_infos.risk_rating
+    fraud_check_status = USER_PROFILING_FRAUD_CHECK_STATUS_RISK_MAPPING[risk_rating]
     fraud_check = models.BeneficiaryFraudCheck(
         user=user,
         type=models.FraudCheckType.USER_PROFILING,
         thirdPartyId=profiling_infos.session_id,
         resultContent=profiling_infos,
+        status=fraud_check_status,
         eligibilityType=user.eligibility,
     )
     repository.save(fraud_check)
-    on_user_profiling_check_result(user, profiling_infos)
+    on_user_profiling_check_result(user, risk_rating)
     return fraud_check
 
 
 def on_user_profiling_check_result(
     user: users_models.User,
-    profiling_content: models.UserProfilingFraudData,
+    risk_rating: models.UserProfilingRiskRating,
 ) -> None:
-    risk_rating = profiling_content.risk_rating
     user_profiling_status = USER_PROFILING_RISK_MAPPING[risk_rating]
     if not user_profiling_status == models.FraudStatus.OK:
         user.validate_profiling_failed()
         upsert_fraud_result(
-            user, user_profiling_status, user.eligibility, f"profiling risk rating is {risk_rating.value}"
+            user, user_profiling_status, user.eligibility, f"user profiling risk rating is {risk_rating.value}"
         )
 
         from pcapi.core.subscription import messages as subscription_messages
