@@ -99,6 +99,8 @@ class BookingRecap:
 
     @property
     def booking_status(self) -> BookingRecapStatus:
+        if self.booking_raw_status == bookings_models.BookingStatus.PENDING:
+            return BookingRecapStatus.pending
         if self.booking_is_reimbursed:
             return BookingRecapStatus.reimbursed
         if self.booking_is_cancelled:
@@ -107,8 +109,6 @@ class BookingRecap:
             return BookingRecapStatus.validated
         if self.booking_is_confirmed:
             return BookingRecapStatus.confirmed
-        if self.booking_raw_status == bookings_models.BookingStatus.PENDING:
-            return BookingRecapStatus.pending
         return BookingRecapStatus.booked
 
     def build_status_history(
@@ -120,6 +120,9 @@ class BookingRecap:
         date_used: Optional[datetime],
         confirmation_date: Optional[datetime],
     ) -> BookingRecapHistory:
+        if self.booking_status == BookingRecapStatus.pending:
+            return BookingRecapPendingHistory(booking_date=booking_date)
+
         if self.booking_is_reimbursed:
             return BookingRecapReimbursedHistory(
                 booking_date=booking_date,
@@ -147,8 +150,7 @@ class BookingRecap:
                 cancellation_limit_date=cancellation_limit_date,
                 confirmation_date=confirmation_date,
             )
-        if self.booking_status == BookingRecapStatus.pending:
-            return BookingRecapPendingHistory(booking_date=booking_date)
+
         return BookingRecapHistory(booking_date, confirmation_date)
 
 
