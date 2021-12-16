@@ -12,6 +12,7 @@ import {
 import { Role, VenueFilterType } from 'utils/types'
 
 import { Offers } from './Offers/Offers'
+import Pagination from './Offers/Pagination'
 import { SearchBox } from './SearchBox'
 
 const searchClient = algoliasearch(ALGOLIA_APP_ID, ALGOLIA_API_KEY)
@@ -49,6 +50,7 @@ export const OffersSearch = ({
           attributesToHighlight={[]}
           attributesToRetrieve={attributesToRetrieve}
           facetFilters={facetFilters}
+          hitsPerPage={8}
         />
         <SearchBox />
         <div className="search-results">
@@ -60,6 +62,7 @@ export const OffersSearch = ({
           )}
           <Offers userRole={userRole} />
         </div>
+        <Pagination />
       </InstantSearch>
     </>
   )
