@@ -49,6 +49,7 @@ class OfferStockResponse(BaseModel):
     bookingLimitDatetime: Optional[datetime]
     cancellation_limit_datetime: Optional[datetime]
     isBookable: bool
+    is_forbidden_to_underage: bool
     isSoldOut: bool
     isExpired: bool
     price: int
