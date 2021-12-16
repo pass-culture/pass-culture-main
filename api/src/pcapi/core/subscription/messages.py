@@ -95,6 +95,7 @@ def on_ubble_journey_cannot_continue(user: users_models.User) -> None:
     message = models.SubscriptionMessage(
         user=user,
         userMessage="Désolé, la vérification de ton identité n'a pas pu aboutir. Nous t'invitons à passer par le site Démarches-Simplifiées.",
+        callToActionTitle="Accéder au site Démarches-Simplifiées",
         callToActionLink=REDIRECT_TO_DMS_VIEW,
         callToActionIcon=models.CallToActionIcon.EXTERNAL,
     )
