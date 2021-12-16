@@ -103,6 +103,12 @@ Les différentes fixtures utilisées dans les tests sont définies dans `tests/c
 - La combinaison `pylint` + `astroid` a parfois quelques soucis : elle est pour l'instant figée à `2.8.3` pour `pylint` et
   `2.5.6` pour `astroid`. Ceci pourra être modifié quand ces problèmes seront réglés.
 
+## Secrets et variables d'environnement
+
+Les variables d'environnement nécessaires au bon fonctionnement mais qui porte des données sensibles (identifiants, clés d'API, ...)
+ne sont pas enregistrés dans les fichiers d'environnement du dépôt.
+Il faut les ajouter dans le fichier `api/.env.local.secret` .
+
 ## Démarrage du serveur back api
 
 ### Option 1 : Lancement via le script `pc` présent dans pass-culture-main
@@ -162,8 +168,10 @@ locale. Pour ça:
 
 ## Authentification Backend pour Flask-Admin
 
-Le backend ne permet pas (encore) de s'authentifier directement, on le fera depuis Webapp ou Pro. Une fois authentifié
-depuis l'un de ces deux fronts, un cookie de session est stocké et le back validera le cookie.
+Le backend ne permet pas (encore) de s'authentifier directement.
+On peut s'authentifier de deux manières:
+- En se connectant sur Pro. Une fois authentifié, un cookie de session est stocké et le back validera le cookie.
+- Sans session depuis le front **Pro**, une authentification est proposée via Google Account. Seuls les utilisateurs du projet **passculture.app** sont autorisés.
 
 ## Connexion aux bases de données
 

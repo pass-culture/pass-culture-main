@@ -5,10 +5,9 @@ from pcapi.routes.apis import public_api
 
 
 def install_all_routes(app: Flask) -> None:
+    from pcapi.admin.install import install_admin
     from pcapi.admin.install import install_admin_autocomplete_views
     from pcapi.admin.install import install_admin_template_filters
-    from pcapi.admin.install import install_admin_views
-    from pcapi.flask_app import admin
     from pcapi.models import db
     from pcapi.routes.adage.v1.blueprint import adage_v1
     from pcapi.routes.adage_iframe.blueprint import adage_iframe
@@ -18,7 +17,7 @@ def install_all_routes(app: Flask) -> None:
     import pcapi.tasks
     from pcapi.tasks.decorator import cloud_task_api
 
-    install_admin_views(admin, db.session)
+    install_admin(app, db.session)
     install_admin_autocomplete_views()
     install_routes(app)
     pcapi.tasks.install_handlers(app)
