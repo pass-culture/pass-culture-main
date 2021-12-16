@@ -71,6 +71,9 @@ class FeatureToggle(enum.Enum):
     ENABLE_VENUE_WITHDRAWAL_DETAILS = "Active les modalités de retrait sur la page lieu"
     ENFORCE_BANK_INFORMATION_WITH_SIRET = "Forcer les informations banquaires à être liées à un SIRET."
     FORCE_PHONE_VALIDATION = "Forcer la validation du numéro de téléphone pour devenir bénéficiaire"
+    GENERATE_CASHFLOWS_BY_CRON = (
+        "Active la génération automatique (via cron) des flux monétaires et fichiers de remboursement"
+    )
     ID_CHECK_ADDRESS_AUTOCOMPLETION = "Autocomplétion de l'adresse lors du parcours IDCheck"
     IS_HONOR_STATEMENT_MANDATORY_TO_ACTIVATE_BENEFICIARY = "Vérifier que l'utilisateur a bien rempli l'étape de confirmation sur l'honneur avant d'activer son compte bénéficiaire"  # TODO (vionnex) remove after v164 is forced on native app
     IMPROVE_BOOKINGS_PERF = "Améliore les performances pour la page pro des réservations"
@@ -140,6 +143,7 @@ FEATURES_DISABLED_BY_DEFAULT = (
     FeatureToggle.ENFORCE_BANK_INFORMATION_WITH_SIRET,
     FeatureToggle.IMPROVE_BOOKINGS_PERF,
     FeatureToggle.FORCE_PHONE_VALIDATION,
+    FeatureToggle.GENERATE_CASHFLOWS_BY_CRON,
     FeatureToggle.ID_CHECK_ADDRESS_AUTOCOMPLETION,
     FeatureToggle.IS_HONOR_STATEMENT_MANDATORY_TO_ACTIVATE_BENEFICIARY,
     FeatureToggle.PAUSE_JOUVE_SUBSCRIPTION,

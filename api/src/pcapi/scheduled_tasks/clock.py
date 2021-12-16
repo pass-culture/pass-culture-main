@@ -204,7 +204,7 @@ def price_bookings() -> None:
 
 @cron_context
 @log_cron_with_transaction
-@cron_require_feature(FeatureToggle.PRICE_BOOKINGS)
+@cron_require_feature(FeatureToggle.GENERATE_CASHFLOWS_BY_CRON)
 def generate_cashflows_and_payment_files() -> None:
     # FIXME (dbaty, 2011-11-18): once `get_cutoff_as_datetime()` is
     # only used here (and not by the old payment generation script
