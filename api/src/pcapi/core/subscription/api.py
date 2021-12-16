@@ -168,7 +168,12 @@ def check_and_activate_beneficiary(
         return user
 
 
-def create_beneficiary_import(user: users_models.User, eligibilityType: users_models.EligibilityType) -> None:
+def create_beneficiary_import_after_educonnect(
+    user: users_models.User, eligibilityType: typing.Optional[users_models.EligibilityType]
+) -> None:
+    if not eligibilityType:
+        raise fraud_exceptions.UserAgeNotValid()
+
     fraud_result = fraud_models.BeneficiaryFraudResult.query.filter_by(
         user=user, eligibilityType=eligibilityType
     ).one_or_none()

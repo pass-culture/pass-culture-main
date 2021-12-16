@@ -120,7 +120,9 @@ def on_educonnect_authentication_response() -> Response:  # pylint: disable=too-
 
     try:
         # TODO(viconnex): use generic subscription_api.on_successful_application
-        subscription_api.create_beneficiary_import(user, fraud_api.get_eligibility_type(educonnect_content))
+        subscription_api.create_beneficiary_import_after_educonnect(
+            user, fraud_api.get_eligibility_type(educonnect_content)
+        )
     except fraud_exceptions.UserAgeNotValid:
         logger.warning(
             "User age not valid",

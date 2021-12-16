@@ -256,7 +256,7 @@ def on_identity_fraud_check_result(
 
     fraud_items.append(_check_user_has_no_active_deposit(user, beneficiary_fraud_check.eligibilityType))
     fraud_items.append(_check_user_email_is_validated(user))
-    fraud_items.append(_check_user_not_already_beneficiary(user, beneficiary_fraud_check.eligibilityType))
+    fraud_items.append(_check_user_eligibility(user, beneficiary_fraud_check.eligibilityType))
 
     fraud_result = validate_frauds(user, fraud_items, beneficiary_fraud_check, beneficiary_fraud_check.eligibilityType)
     if (
@@ -371,9 +371,7 @@ def _check_user_has_no_active_deposit(
     return models.FraudItem(status=models.FraudStatus.OK, detail="L'utilisateur n'a pas déjà un deposit actif")
 
 
-def _check_user_not_already_beneficiary(
-    user: users_models.User, eligibility: users_models.EligibilityType
-) -> models.FraudItem:
+def _check_user_eligibility(user: users_models.User, eligibility: users_models.EligibilityType) -> models.FraudItem:
     if not user.is_eligible_for_beneficiary_upgrade(eligibility):
         return models.FraudItem(
             status=models.FraudStatus.KO,

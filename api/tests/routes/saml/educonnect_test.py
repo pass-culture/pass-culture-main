@@ -203,6 +203,28 @@ class EduconnectTest:
         assert caplog.messages == ["Fraud suspicion after Educonnect authentication: "]
         assert caplog.records[0].extra == {"userId": user.id, "educonnectId": educonnect_user.educonnect_id}
 
+    @override_features(ENABLE_UNDERAGE_GENERALISATION=True)
+    @patch("pcapi.core.users.external.educonnect.api.get_educonnect_user")
+    @override_features(ENABLE_INE_WHITELIST_FILTER=False)
+    @freezegun.freeze_time("2021-12-15")  # during opening
+    def test_16_year_old_but_not_eligible(self, mock_get_educonnect_user, client, app):
+        user, request_id = self.connect_to_educonnect(client, app)
+        user.dateOfBirth = datetime.date(2005, 12, 17)  # birthday during opening and required age
+        educonnect_user = users_factories.EduconnectUserFactory(
+            saml_request_id=request_id,
+            birth_date=datetime.date(2006, 12, 11),  # birthday before opening but required age
+        )
+        mock_get_educonnect_user.return_value = educonnect_user
+
+        response = client.post("/saml/acs", form={"SAMLResponse": "encrypted_data"})
+
+        assert response.status_code == 302
+
+        assert not BeneficiaryImport.query.filter_by(beneficiary=user).first()
+        assert response.location == (
+            "https://webapp-v2.example.com/idcheck/educonnect/erreur?code=UserAgeNotValid&logoutUrl=https%3A%2F%2Feduconnect.education.gouv.fr%2FLogout"
+        )
+
     @patch("pcapi.core.users.external.educonnect.api.get_educonnect_user")
     def test_educonnect_redirects_to_error_page_too_young(self, mock_get_educonnect_user, client, app):
         _, request_id = self.connect_to_educonnect(client, app)
