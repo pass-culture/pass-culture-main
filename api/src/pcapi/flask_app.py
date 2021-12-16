@@ -3,12 +3,12 @@ import sys
 import time
 import typing
 
+from authlib.integrations.flask_client import OAuth
 from flask import Flask
 from flask import g
 from flask import request
 from flask.logging import default_handler
 import flask.wrappers
-from flask_admin import Admin
 from flask_jwt_extended import JWTManager
 from flask_login import LoginManager
 from flask_login import current_user
@@ -103,7 +103,6 @@ if not settings.IS_DEV or settings.IS_RUNNING_TESTS:
     app.logger.removeHandler(default_handler)
 
 login_manager = LoginManager()
-admin = Admin(name="Back Office du Pass Culture", url="/pc/back-office/", template_mode="bootstrap4")
 
 if settings.PROFILE_REQUESTS:
     profiling_restrictions = [settings.PROFILE_REQUESTS_LINES_LIMIT]
@@ -134,7 +133,15 @@ app.config["FLASK_ADMIN_SWATCH"] = "flatly"
 app.config["FLASK_ADMIN_FLUID_LAYOUT"] = True
 app.config["JWT_SECRET_KEY"] = settings.JWT_SECRET_KEY
 app.config["RATELIMIT_STORAGE_URL"] = settings.REDIS_URL
+app.config["GOOGLE_CLIENT_ID"] = settings.GOOGLE_CLIENT_ID
+app.config["GOOGLE_CLIENT_SECRET"] = settings.GOOGLE_CLIENT_SECRET
 
+oauth = OAuth(app)
+oauth.register(
+    name="google",
+    server_metadata_url="https://accounts.google.com/.well-known/openid-configuration",
+    client_kwargs={"scope": "openid email profile"},
+)
 
 jwt = JWTManager(app)
 
@@ -152,7 +159,6 @@ def remove_db_session(
 
 
 install_models()
-admin.init_app(app)
 db.init_app(app)
 orm.configure_mappers()
 login_manager.init_app(app)

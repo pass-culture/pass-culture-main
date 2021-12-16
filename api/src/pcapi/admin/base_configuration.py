@@ -1,12 +1,20 @@
 import logging
 
+from flask import session
 from flask import url_for
+from flask_admin import expose
+from flask_admin.base import AdminIndexView as AdminIndexBaseView
 from flask_admin.base import BaseView
 from flask_admin.contrib.sqla import ModelView
 from flask_admin.form import SecureForm
 from flask_admin.helpers import get_form_data
 from flask_login import current_user
+from flask_login import login_user
+from flask_login import logout_user
 from werkzeug.utils import redirect
+
+from pcapi.core.users import models as users_models
+from pcapi.flask_app import oauth
 
 
 logger = logging.getLogger(__name__)
@@ -34,7 +42,7 @@ class BaseAdminMixin:
     def is_accessible(self) -> bool:
         authorized = current_user.is_authenticated and current_user.isAdmin
         if not authorized:
-            logger.warning("[ADMIN] Tentative d'accès non autorisé à l'interface d'administation par %s", current_user)
+            logger.warning("[ADMIN] Tentative d'accès non autorisé à l'interface d'administration par %s", current_user)
 
         return authorized
 
@@ -72,3 +80,51 @@ class BaseCustomAdminView(BaseAdminMixin, BaseView):
         if not current_user or not current_user.is_authenticated:
             return False
         return current_user.is_super_admin()
+
+
+class AdminIndexView(AdminIndexBaseView):
+    @expose("/")
+    def index(self):
+        if not current_user.is_authenticated:
+            return redirect(url_for(".login_view"))
+        return super().index()
+
+    @expose("/login/", methods=("GET", "POST"))
+    def login_view(self):
+        redirect_uri = url_for(".authorize", _external=True)
+        return oauth.google.authorize_redirect(redirect_uri)
+
+    @expose("/logout/")
+    def logout_view(self):
+        from pcapi.utils import login_manager
+
+        logout_user()
+        login_manager.discard_session()
+        return redirect(url_for(".index"))
+
+    @expose("/authorize/")
+    def authorize(self):
+        from pcapi.utils import login_manager
+
+        token = oauth.google.authorize_access_token()
+        google_user = oauth.google.parse_id_token(token)
+        google_email = google_user["email"]
+        db_user = users_models.User.query.filter_by(email=google_email).one_or_none()
+        if not db_user:
+            session["google_email"] = google_email
+            return redirect(url_for(".no_user_found_view"))
+
+        login_user(db_user, remember=True)
+        login_manager.stamp_session(db_user)
+        return redirect(url_for(".index"))
+
+    @expose("/no-user-found/")
+    def no_user_found_view(self):
+        from pcapi.utils import login_manager
+
+        if not session:
+            return redirect(url_for(".index"))
+
+        rendered_view = self.render("admin/no_user_found.html", email=session["google_email"])
+        login_manager.discard_session()
+        return rendered_view
