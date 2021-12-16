@@ -1,3 +1,4 @@
+import flask
 from flask import jsonify
 from flask_login import current_user
 from flask_login import login_required
@@ -8,7 +9,6 @@ from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import repository as users_repo
 from pcapi.core.users.models import TokenType
 from pcapi.models.api_errors import ApiErrors
-from pcapi.models.api_errors import ResourceNotFoundError
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import users as serializers
 from pcapi.serialization.decorator import spectree_serialize
@@ -31,7 +31,7 @@ def get_profile():
 def check_activation_token_exists(token: str) -> None:
     user = users_repo.get_user_with_valid_token(token, [TokenType.RESET_PASSWORD], use_token=False)
     if user is None:
-        raise ResourceNotFoundError()
+        flask.abort(404)
 
 
 @private_api.route("/users/signin", methods=["POST"])
