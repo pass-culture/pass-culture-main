@@ -13,6 +13,7 @@ import pcapi.core.fraud.exceptions as fraud_exceptions
 import pcapi.core.fraud.models as fraud_models
 import pcapi.core.subscription.api as subscription_api
 import pcapi.core.subscription.messages as subscription_messages
+import pcapi.core.users.api as users_api
 import pcapi.core.users.models as users_models
 from pcapi.domain import user_emails
 from pcapi.domain.demarches_simplifiees import get_closed_application_ids_for_demarche_simplifiee
@@ -92,7 +93,11 @@ def run(procedure_id: int, use_graphql_api: bool = False) -> None:
 
 
 def notify_parsing_exception(parsing_error: DMSParsingError, application_techid: str, client):
-    if "postal_code" in parsing_error and "id_piece_number" in parsing_error:
+    if "birth_date" in parsing_error:
+        client.send_user_message(
+            application_techid, settings.DMS_INSTRUCTOR_ID, subscription_messages.DMS_ERROR_MESSSAGE_BIRTH_DATE
+        )
+    elif "postal_code" in parsing_error and "id_piece_number" in parsing_error:
         client.send_user_message(
             application_techid, settings.DMS_INSTRUCTOR_ID, subscription_messages.DMS_ERROR_MESSAGE_DOUBLE_ERROR
         )
@@ -322,7 +327,12 @@ def parse_beneficiary_information_graphql(application_detail: dict, procedure_id
         if "Veuillez indiquer votre département" in label:
             information["department"] = re.search("^[0-9]{2,3}|[2BbAa]{2}", value).group(0)
         if label in ("Quelle est votre date de naissance", "Quelle est ta date de naissance ?"):
-            information["birth_date"] = date_parser.parse(value, FrenchParserInfo())
+            birth_date = date_parser.parse(value, FrenchParserInfo())
+            if users_api.get_eligibility_at_date(birth_date, datetime.now()) is not None:
+                information["birth_date"] = birth_date
+            else:
+                parsing_errors["birth_date"] = value
+
         if label in (
             "Quel est votre numéro de téléphone",
             "Quel est ton numéro de téléphone ?",

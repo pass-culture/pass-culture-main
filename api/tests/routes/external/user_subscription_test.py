@@ -253,6 +253,35 @@ class DmsWebhookApplicationTest:
         assert send_user_message.call_args[0][2] == subscription_messages.DMS_ERROR_MESSAGE_ERROR_POSTAL_CODE
 
     @patch.object(DMSGraphQLClient, "execute_query")
+    @patch.object(DMSGraphQLClient, "send_user_message")
+    @freezegun.freeze_time("2021-12-20 09:00:00")
+    @pytest.mark.parametrize("birthday_date", [datetime.date(2012, 5, 12), datetime.date(1999, 6, 12)])
+    def test_dms_birth_date_error(self, send_user_message, execute_query, client, birthday_date):
+        user = users_factories.UserFactory()
+        return_value = make_single_application(
+            12, state=GraphQLApplicationStates.draft.value, email=user.email, birth_date=birthday_date
+        )
+
+        execute_query.return_value = return_value
+
+        form_data = {
+            "procedure_id": "48860",
+            "dossier_id": "6044787",
+            "state": GraphQLApplicationStates.draft.value,
+            "updated_at": "2021-09-30 17:55:58 +0200",
+        }
+        response = client.post(
+            f"/webhooks/dms/application_status?token={settings.DMS_WEBHOOK_TOKEN}",
+            form=form_data,
+            headers={"Content-Type": "application/x-www-form-urlencoded"},
+        )
+
+        assert response.status_code == 204
+        assert execute_query.call_count == 1
+        assert send_user_message.call_count == 1
+        assert send_user_message.call_args[0][2] == subscription_messages.DMS_ERROR_MESSSAGE_BIRTH_DATE
+
+    @patch.object(DMSGraphQLClient, "execute_query")
     @pytest.mark.parametrize(
         "subscription_state",
         [
