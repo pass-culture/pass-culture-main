@@ -43,6 +43,7 @@ from pcapi.models.criterion import Criterion
 from pcapi.models.feature import Feature
 from pcapi.models.user_offerer import UserOfferer
 
+from . import base_configuration
 from . import templating
 from .custom_views.suspend_fraudulent_users_by_ids import SuspendFraudulentUsersByUserIdsView
 
@@ -57,7 +58,18 @@ class Category(Enum):
     SUPPORT = "Support"
 
 
-def install_admin_views(admin: Admin, session: Session) -> None:
+def install_admin(app: Flask, session: Session) -> None:
+    admin = Admin(
+        name="Back Office du Pass Culture",
+        url="/pc/back-office/",
+        index_view=base_configuration.AdminIndexView(url="/pc/back-office/"),
+        template_mode="bootstrap4",
+    )
+    admin.init_app(app)
+    install_views(admin, session)
+
+
+def install_views(admin: Admin, session: Session) -> None:
     admin.add_view(
         offer_view.OfferView(offers_models.Offer, session, name="Offres", category=Category.OFFRES_STRUCTURES_LIEUX)
     )
