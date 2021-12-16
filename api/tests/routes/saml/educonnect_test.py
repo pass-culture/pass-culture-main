@@ -211,8 +211,8 @@ class EduconnectTest:
         response = client.post("/saml/acs", form={"SAMLResponse": "encrypted_data"})
 
         assert response.status_code == 302
-        assert response.location.startswith(
-            "https://webapp-v2.example.com/idcheck/educonnect/erreur?code=UserAgeNotValid"
+        assert response.location == (
+            "https://webapp-v2.example.com/idcheck/educonnect/erreur?code=UserAgeNotValid&logoutUrl=https%3A%2F%2Feduconnect.education.gouv.fr%2FLogout"
         )
 
     @patch("pcapi.core.users.external.educonnect.api.get_educonnect_user")
@@ -226,8 +226,8 @@ class EduconnectTest:
         response = client.post("/saml/acs", form={"SAMLResponse": "encrypted_data"})
 
         assert response.status_code == 302
-        assert response.location.startswith(
-            "https://webapp-v2.example.com/idcheck/educonnect/erreur?code=UserAgeNotValid18YearsOld"
+        assert response.location == (
+            "https://webapp-v2.example.com/idcheck/educonnect/erreur?code=UserAgeNotValid18YearsOld&logoutUrl=https%3A%2F%2Feduconnect.education.gouv.fr%2FLogout"
         )
 
     @patch("pcapi.core.users.external.educonnect.api.get_educonnect_user")
@@ -241,8 +241,8 @@ class EduconnectTest:
         response = client.post("/saml/acs", form={"SAMLResponse": "encrypted_data"})
 
         assert response.status_code == 302
-        assert response.location.startswith(
-            "https://webapp-v2.example.com/idcheck/educonnect/erreur?code=UserAgeNotValid"
+        assert response.location == (
+            "https://webapp-v2.example.com/idcheck/educonnect/erreur?code=UserAgeNotValid18YearsOld&logoutUrl=https%3A%2F%2Feduconnect.education.gouv.fr%2FLogout"
         )
 
     @patch("pcapi.core.users.external.educonnect.api.get_educonnect_user")
@@ -281,8 +281,8 @@ class EduconnectTest:
         response = client.post("/saml/acs", form={"SAMLResponse": "encrypted_data"})
 
         assert response.status_code == 302
-        assert response.location.startswith(
-            "https://webapp-v2.example.com/idcheck/educonnect/erreur?code=UserNotWhitelisted"
+        assert response.location == (
+            "https://webapp-v2.example.com/idcheck/educonnect/erreur?code=UserNotWhitelisted&logoutUrl=https%3A%2F%2Feduconnect.education.gouv.fr%2FLogout"
         )
 
     @override_features(ENABLE_INE_WHITELIST_FILTER=False)
@@ -310,13 +310,14 @@ class EduconnectTest:
         response = client.post("/saml/acs", form={"SAMLResponse": "encrypted_data"})
 
         assert response.status_code == 302
-        assert response.location.startswith(
-            "https://webapp-v2.example.com/idcheck/educonnect/erreur?code=UserAgeNotValid"
+        assert response.location == (
+            "https://webapp-v2.example.com/idcheck/educonnect/erreur?code=UserAgeNotValid&logoutUrl=https%3A%2F%2Feduconnect.education.gouv.fr%2FLogout"
         )
+
         assert user.beneficiaryFraudResults[0].status == fraud_models.FraudStatus.KO
 
         response = client.post("/saml/acs", form={"SAMLResponse": "encrypted_data"})
         assert response.status_code == 302
-        assert response.location.startswith(
-            "https://webapp-v2.example.com/idcheck/educonnect/erreur?code=UserAgeNotValid"
+        assert response.location == (
+            "https://webapp-v2.example.com/idcheck/educonnect/erreur?code=UserAgeNotValid&logoutUrl=https%3A%2F%2Feduconnect.education.gouv.fr%2FLogout"
         )

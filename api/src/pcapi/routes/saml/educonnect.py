@@ -117,6 +117,7 @@ def on_educonnect_authentication_response() -> Response:  # pylint: disable=too-
         logger.exception("Error on educonnect result: %s", e, extra={"user_id": user.id})
         return redirect(ERROR_PAGE_URL, code=302)
 
+    base_query_param = {"logoutUrl": educonnect_user.logout_url}
     try:
         # TODO(viconnex): use generic subscription_api.on_successful_application
         subscription_api.create_beneficiary_import(user, fraud_api.get_eligibility_type(educonnect_content))
@@ -129,11 +130,11 @@ def on_educonnect_authentication_response() -> Response:  # pylint: disable=too-
             "code": "UserAgeNotValid18YearsOld"
             if users_utils.get_age_from_birth_date(educonnect_content.birth_date) == ELIGIBILITY_AGE_18
             else "UserAgeNotValid"
-        }
+        } | base_query_param
         return redirect(ERROR_PAGE_URL + urlencode(error_query_param), code=302)
 
     except fraud_exceptions.NotWhitelistedINE:
-        error_query_param = {"code": "UserNotWhitelisted"}
+        error_query_param = {"code": "UserNotWhitelisted"} | base_query_param
         return redirect(ERROR_PAGE_URL + urlencode(error_query_param), code=302)
 
     except fraud_exceptions.UserAlreadyBeneficiary:
@@ -141,7 +142,7 @@ def on_educonnect_authentication_response() -> Response:  # pylint: disable=too-
             "User already beneficiary",
             extra={"userId": user.id, "educonnectId": educonnect_user.educonnect_id},
         )
-        error_query_param = {"code": "UserAlreadyBeneficiary"}
+        error_query_param = {"code": "UserAlreadyBeneficiary"} | base_query_param
         return redirect(ERROR_PAGE_URL + urlencode(error_query_param), code=302)
 
     except fraud_exceptions.FraudException as e:
@@ -160,8 +161,7 @@ def on_educonnect_authentication_response() -> Response:  # pylint: disable=too-
         "firstName": educonnect_user.first_name,
         "lastName": educonnect_user.last_name,
         "dateOfBirth": educonnect_user.birth_date,
-        "logoutUrl": educonnect_user.logout_url,
-    }
+    } | base_query_param
 
     return redirect(user_information_validation_base_url + urlencode(query_params), code=302)
 
