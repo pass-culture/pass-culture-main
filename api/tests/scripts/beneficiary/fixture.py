@@ -4,6 +4,8 @@ import random
 import string
 from typing import Optional
 
+from pcapi.utils.date import format_birth_date
+
 
 APPLICATION_DETAIL_STANDARD_RESPONSE = {
     "dossier": {
@@ -230,7 +232,7 @@ def make_new_beneficiary_application_details(
     activity: str = "Étudiant",
     id_piece_number: Optional[str] = None,
     email: Optional[str] = None,
-    birth_date: Optional[datetime.datetime] = None,
+    birth_date: Optional[datetime.date] = None,
 ) -> dict:
     application = copy.deepcopy(APPLICATION_DETAIL_STANDARD_RESPONSE)
     application["dossier"]["id"] = application_id
@@ -274,6 +276,7 @@ def make_graphql_application(
     activity: str = "Étudiant",
     id_piece_number: Optional[str] = "123123123",
     email: Optional[str] = "young.individual@example.com",
+    birth_date: Optional[datetime.datetime] = datetime.datetime(2003, 5, 12),
     full_graphql_response: bool = False,
     has_next_page: bool = False,
 ) -> dict:
@@ -302,7 +305,11 @@ def make_graphql_application(
                 "label": "Veuillez indiquer votre département de résidence",
                 "stringValue": department_code,
             },
-            {"id": "Q2hhbXAtNTgyMjIw", "label": "Quelle est votre date de naissance", "stringValue": "12 mai 2002"},
+            {
+                "id": "Q2hhbXAtNTgyMjIw",
+                "label": "Quelle est votre date de naissance",
+                "stringValue": format_birth_date(birth_date),
+            },
             {"id": "Q2hhbXAtNzE4MjIy", "label": "Pièces justificatives acceptées", "stringValue": ""},
             {
                 "id": "Q2hhbXAtNDU5ODE5",
@@ -558,7 +565,7 @@ def make_new_application():
             {
                 "id": "Q2hhbXAtNTgyMjIw",
                 "label": "Quelle est votre date de naissance",
-                "stringValue": "19 décembre 1984",
+                "stringValue": "19 décembre 2004",
             },
             {"id": "Q2hhbXAtNzE4MjIy", "label": "Pièces justificatives acceptées", "stringValue": ""},
             {
@@ -668,7 +675,7 @@ def make_new_stranger_application():
             {
                 "id": "Q2hhbXAtNTgyMjIw",
                 "label": "Quelle est votre date de naissance",
-                "stringValue": "18 décembre 2000",
+                "stringValue": "12 mai 2006",
             },
             {"id": "Q2hhbXAtNzE4MjIy", "label": "Pièces justificatives acceptées", "stringValue": ""},
             {"id": "Q2hhbXAtNDU5ODE5", "label": "Pièce d'identité (page avec votre photo)", "stringValue": ""},
