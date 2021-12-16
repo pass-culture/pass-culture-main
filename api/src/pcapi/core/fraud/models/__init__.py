@@ -182,10 +182,10 @@ class UserProfilingFraudData(pydantic.BaseModel):
     account_email_first_seen: typing.Optional[datetime.date]
     account_email_result: str
     account_email_score: typing.Optional[int]
-    account_telephone_result: str
+    account_telephone_result: typing.Optional[str]  # Optional because Phone Validation may be disabled by FF
     account_telephone_first_seen: typing.Optional[datetime.date]
     account_telephone_score: typing.Optional[int]
-    account_telephone_is_valid: str
+    account_telephone_is_valid: typing.Optional[str]  # Optional because Phone Validation may be disabled by FF
     bb_bot_rating: str
     bb_bot_score: float
     bb_fraud_rating: str
