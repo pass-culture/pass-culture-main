@@ -387,6 +387,7 @@ class UbbleWorkflowTest:
             )
             assert message.callToActionLink == "passculture://verification-identite/demarches-simplifiees"
             assert message.callToActionIcon == subscription_models.CallToActionIcon.EXTERNAL
+            assert message.callToActionTitle == "Accéder au site Démarches-Simplifiées"
 
 
 @pytest.mark.usefixtures("db_session")
