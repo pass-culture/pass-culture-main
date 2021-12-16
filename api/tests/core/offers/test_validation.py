@@ -9,7 +9,6 @@ from pcapi.core.offers import exceptions
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import validation
 from pcapi.core.offers.models import OfferValidationStatus
-import pcapi.core.payments.factories as payments_factories
 from pcapi.models.api_errors import ApiErrors
 
 import tests
@@ -433,14 +432,3 @@ class CheckValidationStatusTest:
         assert error.value.errors["global"] == [
             "Les offres refusées ou en attente de validation ne sont pas modifiables"
         ]
-
-
-@pytest.mark.usefixtures("db_session")
-def test_check_stock_has_no_custom_reimbursement_rule():
-    stock = offers_factories.StockFactory()
-    validation.check_stock_has_no_custom_reimbursement_rule(stock)  # should not raise
-
-    payments_factories.CustomReimbursementRuleFactory(offer=stock.offer)
-    with pytest.raises(ApiErrors) as error:
-        validation.check_stock_has_no_custom_reimbursement_rule(stock)
-    assert error.value.errors["price"] == ["Vous ne pouvez pas modifier le prix de cette offre"]

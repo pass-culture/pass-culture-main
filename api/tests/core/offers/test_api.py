@@ -21,6 +21,7 @@ from pcapi.core.offers import exceptions as offer_exceptions
 from pcapi.core.offers import factories as offer_factories
 from pcapi.core.offers import models as offer_models
 from pcapi.core.offers import offer_validation
+import pcapi.core.payments.factories as payments_factories
 from pcapi.core.testing import override_features
 from pcapi.core.testing import override_settings
 import pcapi.core.users.factories as users_factories
@@ -332,6 +333,55 @@ class UpsertStocksTest:
 
         # Then
         assert existing_stock.price == 301
+
+    def test_cannot_edit_price_if_reimbursement_rule_exists(self):
+        user = users_factories.AdminFactory()
+        stock = offer_factories.ThingStockFactory(price=10)
+        payments_factories.CustomReimbursementRuleFactory(offer=stock.offer)
+
+        data = stock_serialize.StockEditionBodyModel(id=stock.id, price=9)
+        with pytest.raises(api_errors.ApiErrors) as error:
+            api.upsert_stocks(offer_id=stock.offerId, stock_data_list=[data], user=user)
+        assert error.value.errors["price"][0].startswith("Vous ne pouvez pas modifier le prix")
+
+    def test_cannot_create_stock_with_different_price_if_reimbursement_rule_exists(self):
+        # If a stock exists with a price, we cannot add a new stock
+        # with another price.
+        user = users_factories.AdminFactory()
+        stock = offer_factories.ThingStockFactory(price=10)
+        offer = stock.offer
+        payments_factories.CustomReimbursementRuleFactory(offer=stock.offer)
+
+        data = stock_serialize.StockCreationBodyModel(price=9)
+        with pytest.raises(api_errors.ApiErrors) as error:
+            api.upsert_stocks(offer_id=offer.id, stock_data_list=[data], user=user)
+        assert error.value.errors["price"][0].startswith("Vous ne pouvez pas modifier le prix")
+
+    def test_cannot_create_stock_with_different_price_if_reimbursement_rule_exists_with_soft_deleted_price(self):
+        # Same as above, but with an offer than only has one,
+        # soft-deleted stock.
+        user = users_factories.AdminFactory()
+        stock = offer_factories.ThingStockFactory(price=10, isSoftDeleted=True)
+        offer = stock.offer
+        payments_factories.CustomReimbursementRuleFactory(offer=stock.offer)
+
+        data = stock_serialize.StockCreationBodyModel(price=9)
+        with pytest.raises(api_errors.ApiErrors) as error:
+            api.upsert_stocks(offer_id=offer.id, stock_data_list=[data], user=user)
+        assert error.value.errors["price"][0].startswith("Vous ne pouvez pas modifier le prix")
+
+    def test_cannot_create_stock_if_reimbursement_rule_exists(self):
+        # We really should not have a custom reimbursement rule for an
+        # offer that does not have any stock. Let's be defensive,
+        # though, and block stock creation.
+        user = users_factories.AdminFactory()
+        offer = offer_factories.ThingOfferFactory()
+        payments_factories.CustomReimbursementRuleFactory(offer=offer)
+
+        data = stock_serialize.StockCreationBodyModel(price=9)
+        with pytest.raises(api_errors.ApiErrors) as error:
+            api.upsert_stocks(offer_id=offer.id, stock_data_list=[data], user=user)
+        assert error.value.errors["price"][0].startswith("Vous ne pouvez pas modifier le prix")
 
     def test_does_not_allow_beginning_datetime_on_thing_offer_on_creation_and_edition(self):
         # Given
