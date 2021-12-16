@@ -71,6 +71,17 @@ DMS_ERROR_MESSAGE_DOUBLE_ERROR = """Bonjour,
                                  
                                  L’équipe pass Culture"""
 
+DMS_ERROR_MESSSAGE_BIRTH_DATE = """Bonjour,
+
+                        Nous avons bien reçu ton dossier, mais il y a une erreur dans la date de naissance inscrite sur le formulaire en ligne.
+
+                        Merci de corriger ton dossier.
+                        Tu trouveras de l'aide dans cet article : <a href="https://aide.passculture.app/fr/articles/5100876-jeunes-ou-puis-je-trouver-de-l-aide-concernant-mon-dossier-d-inscription-sur-demarches-simplifiees">https://aide.passculture.app/fr/articles/5100876-jeunes-ou-puis-je-trouver-de-l-aide-concernant-mon-dossier-d-inscription-sur-demarches-simplifiees</a>
+
+                        Bonne journée,
+
+                        L'équipe du pass Culture"""
+
 
 def create_message_jouve_manual_review(user: users_models.User, application_id: int) -> None:
     today = datetime.date.today()
