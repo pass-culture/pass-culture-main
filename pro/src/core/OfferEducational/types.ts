@@ -115,7 +115,7 @@ export type OfferEducationalStockFormValues = {
   eventTime: Date | ''
   numberOfPlaces: number | ''
   totalPrice: number | ''
-  bookingLimitDatetime: Date | ''
+  bookingLimitDatetime: Date | null
   priceDetail: string
 }
 

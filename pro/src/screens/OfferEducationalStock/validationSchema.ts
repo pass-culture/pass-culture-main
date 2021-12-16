@@ -28,6 +28,7 @@ export const validationSchema = yup.object().shape({
     .required('Champ requis'),
   bookingLimitDatetime: yup
     .date()
+    .notRequired()
     .when(
       'eventDate',
       (eventDate: Date, schema: yup.DateSchema) =>
@@ -36,5 +37,6 @@ export const validationSchema = yup.object().shape({
           eventDate,
           "La date limite de réservation doit être fixée au plus tard le jour de l'évènement"
         )
-    ),
+    )
+    .nullable(),
 })
