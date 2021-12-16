@@ -16,6 +16,7 @@ from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.ext.mutable import MutableDict
 from sqlalchemy.ext.mutable import MutableList
 from sqlalchemy.sql import expression
+from sqlalchemy.sql.functions import func
 import transitions
 
 from pcapi import settings
@@ -623,10 +624,18 @@ class UserEmailHistory(PcObject, Model):
     def build_validation(cls, user: User, new_email: str, device_id: Optional[str]) -> "UserEmailHistory":
         return cls._build(user, new_email, device_id, event_type=EmailHistoryEventTypeEnum.VALIDATION)
 
-    @property
+    @hybrid_property
     def oldEmail(self) -> str:
         return f"{self.oldUserEmail}@{self.oldDomainEmail}"
 
-    @property
+    @oldEmail.expression
+    def oldEmail(cls):  # pylint: disable=no-self-argument # type: ignore[no-redef]
+        return func.concat(cls.oldUserEmail, "@", cls.oldDomainEmail)
+
+    @hybrid_property
     def newEmail(self) -> str:
         return f"{self.newUserEmail}@{self.newDomainEmail}"
+
+    @newEmail.expression
+    def newEmail(cls):  # pylint: disable=no-self-argument # type: ignore[no-redef]
+        return func.concat(cls.newUserEmail, "@", cls.newDomainEmail)
