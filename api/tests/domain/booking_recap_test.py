@@ -1,5 +1,6 @@
 from datetime import datetime
 
+from pcapi.core.bookings.models import BookingStatus
 from pcapi.domain.booking_recap.booking_recap import BookingRecapStatus
 from pcapi.domain.booking_recap.booking_recap_history import BookingRecapCancelledHistory
 from pcapi.domain.booking_recap.booking_recap_history import BookingRecapConfirmedHistory
@@ -146,6 +147,18 @@ class BookingRecapTest:
 
                 # Then
                 assert booking_recap_status == BookingRecapStatus.reimbursed
+
+            def test_should_return_pending_status_when_booking_is_pending_and_confirmed(self):
+                # Given
+                booking_recap = create_domain_booking_recap(
+                    booking_status=BookingStatus.PENDING, booking_is_confirmed=True
+                )
+
+                # When
+                booking_recap_status = booking_recap.booking_status
+
+                # Then
+                assert booking_recap_status == BookingRecapStatus.pending
 
     class TokenTest:
         def test_should_not_return_token_when_offer_is_thing_and_booking_is_not_used_nor_cancelled(self):
