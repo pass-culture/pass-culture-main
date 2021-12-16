@@ -108,16 +108,16 @@ def on_educonnect_authentication_response() -> Response:  # pylint: disable=too-
         student_level=educonnect_user.student_level,
     )
 
+    base_query_param = {"logoutUrl": educonnect_user.logout_url}
     try:
         fraud_api.on_educonnect_result(user, educonnect_content)
     except fraud_exceptions.BeneficiaryFraudResultCannotBeDowngraded:
         logger.exception("Trying to downgrade FraudResult after eduonnect response", extra={"user_id": user.id})
-        return redirect(ERROR_PAGE_URL, code=302)
+        return redirect(ERROR_PAGE_URL + urlencode(base_query_param), code=302)
     except Exception as e:  # pylint: disable=broad-except
         logger.exception("Error on educonnect result: %s", e, extra={"user_id": user.id})
-        return redirect(ERROR_PAGE_URL, code=302)
+        return redirect(ERROR_PAGE_URL + urlencode(base_query_param), code=302)
 
-    base_query_param = {"logoutUrl": educonnect_user.logout_url}
     try:
         # TODO(viconnex): use generic subscription_api.on_successful_application
         subscription_api.create_beneficiary_import(user, fraud_api.get_eligibility_type(educonnect_content))
