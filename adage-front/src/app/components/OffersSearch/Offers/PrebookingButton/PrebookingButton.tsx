@@ -1,6 +1,5 @@
 import format from 'date-fns/format'
 import React, { useCallback, useState } from 'react'
-import { getErrorMessage } from './utils'
 
 import {
   NotificationType,
@@ -13,6 +12,7 @@ import { StockType } from 'utils/types'
 
 import './PrebookingButton.scss'
 import PrebookingModal from './PrebookingModal'
+import { getErrorMessage } from './utils'
 
 const PrebookingButton = ({
   className,
@@ -35,12 +35,9 @@ const PrebookingButton = ({
         setHasPrebookedOffer(true)
         setIsModalOpen(true)
       })
-      .catch((error) =>
+      .catch(error =>
         setNotification(
-          new Notification(
-            NotificationType.error,
-            getErrorMessage(error)
-          )
+          new Notification(NotificationType.error, getErrorMessage(error))
         )
       )
   }, [stock.id])
