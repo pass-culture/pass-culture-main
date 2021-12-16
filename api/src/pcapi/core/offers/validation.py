@@ -2,6 +2,7 @@ import copy
 from datetime import datetime
 from datetime import timedelta
 from io import BytesIO
+import logging
 from typing import Optional
 from typing import Union
 
@@ -24,6 +25,8 @@ from ..providers.models import Provider
 from .models import ActivationCode
 from .models import OfferValidationStatus
 
+
+logger = logging.getLogger(__name__)
 
 EDITABLE_FIELDS_FOR_OFFER_FROM_PROVIDER = {
     "audioDisabilityCompliant",
@@ -121,6 +124,28 @@ def check_stock_price(price: float, offer: Offer) -> None:
             "Le prix d’une offre ne peut excéder 300 euros.",
         )
         raise api_errors
+    if offer.custom_reimbursement_rules:
+        error = (
+            "Vous ne pouvez pas modifier le prix ou créer un stock pour cette offre, "
+            "car elle bénéficie d'un montant de remboursement spécifique."
+        )
+        current_prices = {stock.price for stock in offer.stocks if not stock.isSoftDeleted}
+        if len(current_prices) > 1:
+            # This is not supposed to happen, we should be notified.
+            logger.error(
+                "An offer with a custom reimbursement rule has multiple prices",
+                extra={
+                    "offer": offer.id,
+                    "prices": current_prices,
+                },
+            )
+            raise ApiErrors({"price": [error]})
+        if not current_prices:
+            # Do not allow an offerer to (soft-)delete all its stocks
+            # and create a new one with a different price.
+            raise ApiErrors({"price": [error]})
+        if current_prices.pop() != price:
+            raise ApiErrors({"price": [error]})
 
 
 def check_required_dates_for_stock(
@@ -181,14 +206,6 @@ def check_update_only_allowed_stock_fields_for_allocine_offer(updated_fields: se
         api_errors = ApiErrors()
         api_errors.status_code = 400
         api_errors.add_error("global", "Pour les offres importées, certains champs ne sont pas modifiables")
-        raise api_errors
-
-
-def check_stock_has_no_custom_reimbursement_rule(stock: Stock):
-    if stock.offer.custom_reimbursement_rules:
-        api_errors = ApiErrors()
-        api_errors.status_code = 400
-        api_errors.add_error("price", "Vous ne pouvez pas modifier le prix de cette offre")
         raise api_errors
 
 

@@ -385,16 +385,14 @@ def _edit_stock(
         "bookingLimitDatetime": booking_limit_datetime,
     }
 
-    # fmt: off
-    updated_fields = {
-        attr
-        for attr, new_value in updates.items()
-        if new_value != getattr(stock, attr)
-    }
-    # fmt: on
-    if "price" in updated_fields:
-        validation.check_stock_has_no_custom_reimbursement_rule(stock)
     if stock.offer.isFromAllocine:
+        # fmt: off
+        updated_fields = {
+            attr
+            for attr, new_value in updates.items()
+            if new_value != getattr(stock, attr)
+        }
+        # fmt: on
         validation.check_update_only_allowed_stock_fields_for_allocine_offer(updated_fields)
         stock.fieldsUpdated = list(updated_fields)
 
