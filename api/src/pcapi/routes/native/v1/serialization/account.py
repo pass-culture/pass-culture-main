@@ -36,6 +36,7 @@ from pcapi.core.users.models import User
 from pcapi.core.users.models import UserRole
 from pcapi.core.users.models import VOID_FIRST_NAME
 from pcapi.core.users.models import VOID_PUBLIC_NAME
+from pcapi.models.feature import FeatureToggle
 from pcapi.routes.native.utils import convert_to_cent
 from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_utc_date
@@ -264,6 +265,10 @@ class UserProfileResponse(BaseModel):
         user.allowed_eligibility_check_methods = user.legacy_allowed_eligibility_check_methods
         result = super().from_orm(user)
         result.subscriptionMessage = cls._get_subscription_message(user)
+
+        if not (FeatureToggle.ENABLE_CULTURAL_SURVEY.is_active() and user.is_beneficiary):
+            result.needsToFillCulturalSurvey = False
+
         # FIXME: (Lixxday) Remove after isBeneficiary column has been deleted
         result.isBeneficiary = user.is_beneficiary
         return result
