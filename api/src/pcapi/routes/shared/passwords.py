@@ -21,7 +21,6 @@ from pcapi.routes.serialization.password_serialize import ChangePasswordBodyMode
 from pcapi.routes.serialization.password_serialize import NewPasswordBodyModel
 from pcapi.routes.serialization.password_serialize import ResetPasswordBodyModel
 from pcapi.serialization.decorator import spectree_serialize
-from pcapi.utils.rest import expect_json_data
 
 
 logger = logging.getLogger(__name__)

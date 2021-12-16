@@ -9,16 +9,13 @@ from pcapi.core.users import testing as users_testing
 from pcapi.core.users.models import TokenType
 from pcapi.notifications.push import testing as push_testing
 
-from tests.conftest import TestClient
-
 
 @pytest.mark.usefixtures("db_session")
-def test_change_password(app):
+def test_change_password(client):
     user = users_factories.UserFactory()
     token = users_factories.TokenFactory(user=user, type=TokenType.RESET_PASSWORD)
     data = {"token": token.value, "newPassword": "N3W_p4ssw0rd"}
 
-    client = TestClient(app.test_client())
     response = client.post("/users/new-password", json=data)
 
     assert response.status_code == 204
@@ -30,12 +27,11 @@ def test_change_password(app):
 
 
 @pytest.mark.usefixtures("db_session")
-def test_change_password_validates_email(app):
+def test_change_password_validates_email(client):
     user = users_factories.UserFactory(isEmailValidated=False)
     token = users_factories.TokenFactory(user=user, type=TokenType.RESET_PASSWORD)
     data = {"token": token.value, "newPassword": "N3W_p4ssw0rd"}
 
-    client = TestClient(app.test_client())
     response = client.post("/users/new-password", json=data)
 
     assert response.status_code == 204
@@ -52,7 +48,7 @@ def test_change_password_validates_email(app):
 
 
 @pytest.mark.usefixtures("db_session")
-def test_fail_if_token_has_expired(app):
+def test_fail_if_token_has_expired(client):
     user = users_factories.UserFactory(password="Old_P4ssword")
     token = users_factories.TokenFactory(
         userId=user.id,
@@ -61,7 +57,6 @@ def test_fail_if_token_has_expired(app):
     )
     data = {"token": token.value, "newPassword": "N3W_p4ssw0rd"}
 
-    client = TestClient(app.test_client())
     response = client.post("/users/new-password", json=data)
 
     assert response.status_code == 400
@@ -70,22 +65,20 @@ def test_fail_if_token_has_expired(app):
 
 
 @pytest.mark.usefixtures("db_session")
-def test_fail_if_token_is_unknown(app):
+def test_fail_if_token_is_unknown(client):
     user = users_factories.UserFactory()
     users_factories.TokenFactory(user=user, type=TokenType.RESET_PASSWORD, value="ONE TOKEN")
     data = {"token": "OTHER TOKEN", "newPassword": "N3W_p4ssw0rd"}
 
-    client = TestClient(app.test_client())
     response = client.post("/users/new-password", json=data)
 
     assert response.status_code == 400
     assert response.json["token"] == ["Votre lien de changement de mot de passe est invalide."]
 
 
-def test_fail_if_token_is_missing(app):
+def test_fail_if_token_is_missing(client):
     data = {"newPassword": "N3W_p4ssw0rd"}
 
-    client = TestClient(app.test_client())
     response = client.post("/users/new-password", json=data)
 
     assert response.status_code == 400
@@ -93,21 +86,19 @@ def test_fail_if_token_is_missing(app):
 
 
 @pytest.mark.usefixtures("db_session")
-def test_fail_if_new_password_is_missing(app):
+def test_fail_if_new_password_is_missing(client):
     data = {"token": "KL89PBNG51"}
 
-    client = app.test_client()
-    response = TestClient(client).post("/users/new-password", json=data)
+    response = client.post("/users/new-password", json=data)
 
     assert response.status_code == 400
     assert response.json["newPassword"] == ["Ce champ est obligatoire"]
 
 
 @pytest.mark.usefixtures("db_session")
-def test_fail_if_new_password_is_not_strong_enough(app):
+def test_fail_if_new_password_is_not_strong_enough(client):
     data = {"token": "TOKEN", "newPassword": "weak_password"}
 
-    client = TestClient(app.test_client())
     response = client.post("/users/new-password", json=data)
 
     assert response.status_code == 400
