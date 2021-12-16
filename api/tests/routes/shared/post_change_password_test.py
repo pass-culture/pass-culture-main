@@ -3,12 +3,10 @@ import pytest
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 
-from tests.conftest import TestClient
-
 
 class Returns200Test:
     @pytest.mark.usefixtures("db_session")
-    def when_current_user_changes_password(self, app):
+    def when_current_user_changes_password(self, client):
         # given
         user = users_factories.UserFactory(email="user@example.com")
         data = {
@@ -19,11 +17,8 @@ class Returns200Test:
         user_id = user.id
 
         # when
-        response = (
-            TestClient(app.test_client())
-            .with_session_auth(user.email)
-            .post("/users/current/change-password", json=data)
-        )
+        client = client.with_session_auth(user.email)
+        response = client.post("/users/current/change-password", json=data)
 
         # then
         user = users_models.User.query.get(user_id)
@@ -33,7 +28,7 @@ class Returns200Test:
 
 class Returns400Test:
     @pytest.mark.usefixtures("db_session")
-    def when_data_is_empty_in_the_request_body(self, app):
+    def when_data_is_empty_in_the_request_body(self, client):
         # given
         user = users_factories.UserFactory(email="user@example.com")
         data = {
@@ -43,11 +38,8 @@ class Returns400Test:
         }
 
         # when
-        response = (
-            TestClient(app.test_client())
-            .with_session_auth(user.email)
-            .post("/users/current/change-password", json=data)
-        )
+        client = client.with_session_auth(user.email)
+        response = client.post("/users/current/change-password", json=data)
 
         # then
         assert response.status_code == 400
@@ -56,17 +48,14 @@ class Returns400Test:
         assert response.json["newConfirmationPassword"] == ["Ce champ est obligatoire"]
 
     @pytest.mark.usefixtures("db_session")
-    def when_data_is_missing_in_the_request_body(self, app):
+    def when_data_is_missing_in_the_request_body(self, client):
         # given
         user = users_factories.UserFactory(email="user@example.com")
         data = {}
 
         # when
-        response = (
-            TestClient(app.test_client())
-            .with_session_auth(user.email)
-            .post("/users/current/change-password", json=data)
-        )
+        client = client.with_session_auth(user.email)
+        response = client.post("/users/current/change-password", json=data)
 
         # then
         assert response.status_code == 400
