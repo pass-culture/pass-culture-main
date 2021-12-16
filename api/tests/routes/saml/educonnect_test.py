@@ -175,7 +175,10 @@ class EduconnectTest:
             response = client.post("/saml/acs", form={"SAMLResponse": "encrypted_data"})
 
         assert response.status_code == 302
-        assert response.location == "https://webapp-v2.example.com/idcheck/educonnect/erreur?code=UserTypeNotStudent"
+        assert (
+            response.location
+            == "https://webapp-v2.example.com/idcheck/educonnect/erreur?code=UserTypeNotStudent&logoutUrl=https%3A%2F%2Feduconnect.education.gouv.fr%2FLogout"
+        )
         assert caplog.records[0].extra == {"saml_request_id": self.request_id, "user_id": str(user.id)}
         assert caplog.records[0].message == "Wrong user type of educonnect user"
 

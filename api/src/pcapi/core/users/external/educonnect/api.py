@@ -102,9 +102,10 @@ def get_educonnect_user(saml_response: str) -> models.EduconnectUser:
     saml_request_id = authn_response.in_response_to
 
     user_type = educonnect_identity.get(_get_field_oid("7"), [None])[0]
+    logout_url = educonnect_identity[_get_field_oid("5")][0]
 
     if user_type in ["resp1d", "resp2d"]:
-        raise exceptions.UserTypeNotStudent(saml_request_id, user_type)
+        raise exceptions.UserTypeNotStudent(saml_request_id, user_type, logout_url)
 
     if user_type not in ["eleve1d", "eleve2d"]:
         logger.error("Unknwon user type %s", user_type, extra={"saml_request_id": saml_request_id})

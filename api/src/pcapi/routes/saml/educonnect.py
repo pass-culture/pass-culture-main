@@ -62,7 +62,7 @@ def on_educonnect_authentication_response() -> Response:  # pylint: disable=too-
             "Wrong user type of educonnect user",
             extra={"user_id": _user_id_from_saml_request_id(exc.request_id), "saml_request_id": exc.request_id},
         )
-        error_query_param = {"code": "UserTypeNotStudent"}
+        error_query_param = {"code": "UserTypeNotStudent", "logoutUrl": exc.logout_url}
         return redirect(ERROR_PAGE_URL + urlencode(error_query_param), code=302)
 
     except Exception as exc:  # pylint: disable=broad-except
@@ -70,12 +70,13 @@ def on_educonnect_authentication_response() -> Response:  # pylint: disable=too-
         return redirect(ERROR_PAGE_URL, code=302)
 
     user_id = _user_id_from_saml_request_id(educonnect_user.saml_request_id)
+    base_query_param = {"logoutUrl": educonnect_user.logout_url}
 
     if user_id is None:
         logger.error(
             "No user_id corresponding to educonnect request_id", extra={"request_id": educonnect_user.saml_request_id}
         )
-        return redirect(ERROR_PAGE_URL, code=302)
+        return redirect(ERROR_PAGE_URL + urlencode(base_query_param), code=302)
 
     user = users_models.User.query.get(user_id)
 
@@ -108,7 +109,6 @@ def on_educonnect_authentication_response() -> Response:  # pylint: disable=too-
         student_level=educonnect_user.student_level,
     )
 
-    base_query_param = {"logoutUrl": educonnect_user.logout_url}
     try:
         fraud_api.on_educonnect_result(user, educonnect_content)
     except fraud_exceptions.BeneficiaryFraudResultCannotBeDowngraded:
