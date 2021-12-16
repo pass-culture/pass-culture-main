@@ -374,6 +374,13 @@ def suspend_account(user: User) -> None:
 def profiling_fraud_score(user: User, body: serializers.UserProfilingFraudRequest) -> None:
     handler = user_profiling.UserProfilingClient()
 
+    # User Profiling step must be after Phone Validation
+    if not user.is_phone_validated and FeatureToggle.ENABLE_PHONE_VALIDATION.is_active():
+        raise ApiErrors(
+            {"message": "Le numéro de téléphone est n'a pas été validé", "code": "MISSING_PHONE_VALIDATION"},
+            status_code=400,
+        )
+
     try:
         profiling_infos = handler.get_user_profiling_fraud_data(
             session_id=body.sessionId,

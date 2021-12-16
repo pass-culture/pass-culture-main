@@ -7,8 +7,6 @@ import pydantic
 import sqlalchemy
 
 from pcapi.connectors.beneficiaries import jouve_backend
-from pcapi.core.fraud import exceptions
-from pcapi.core.fraud.exceptions import BeneficiaryFraudResultCannotBeDowngraded
 from pcapi.core.users import constants
 from pcapi.core.users import models as users_models
 from pcapi.core.users import utils as users_utils
@@ -514,14 +512,14 @@ def on_user_profiling_result(
 
 def on_user_profiling_check_result(
     user: users_models.User,
-    tmx_content: models.UserProfilingFraudData,
+    profiling_content: models.UserProfilingFraudData,
 ) -> None:
-    risk_rating = tmx_content.risk_rating
+    risk_rating = profiling_content.risk_rating
     user_profiling_status = USER_PROFILING_RISK_MAPPING[risk_rating]
     if not user_profiling_status == models.FraudStatus.OK:
         user.validate_profiling_failed()
         upsert_fraud_result(
-            user, user_profiling_status, user.eligibility, f"threat-metrix risk rating is {risk_rating.value}"
+            user, user_profiling_status, user.eligibility, f"profiling risk rating is {risk_rating.value}"
         )
 
         from pcapi.core.subscription import messages as subscription_messages
@@ -707,7 +705,7 @@ def update_or_create_fraud_result(
         fraud_result = existing_fraud_result
 
         if fraud_result.status == models.FraudStatus.OK and status != models.FraudStatus.OK:
-            raise BeneficiaryFraudResultCannotBeDowngraded()
+            raise exceptions.BeneficiaryFraudResultCannotBeDowngraded()
 
         fraud_result.status = status
     else:
