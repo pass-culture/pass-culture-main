@@ -188,6 +188,7 @@ class BeneficiaryFraudResultFactory(testing.BaseFactory):
     user = factory.SubFactory(users_factories.BeneficiaryGrant18Factory)
     status = models.FraudStatus.OK
     reason = factory.Sequence("Fraud Result excuse #{0}".format)
+    eligibilityType = users_models.EligibilityType.AGE18
 
 
 class BeneficiaryFraudReviewFactory(testing.BaseFactory):

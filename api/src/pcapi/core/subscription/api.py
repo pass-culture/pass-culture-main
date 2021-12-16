@@ -167,9 +167,7 @@ def check_and_activate_beneficiary(
 
 def create_beneficiary_import(user: users_models.User, eligibilityType: users_models.EligibilityType) -> None:
     fraud_result = fraud_models.BeneficiaryFraudResult.query.filter_by(
-        user=user,
-        # find fraud result by eligibility. If eligibilityType is None, the FraudResult has the default value AGE18
-        eligibilityType=eligibilityType or users_models.EligibilityType.AGE18,
+        user=user, eligibilityType=eligibilityType
     ).one_or_none()
     if not fraud_result:
         raise exceptions.BeneficiaryFraudResultMissing()

@@ -298,3 +298,25 @@ class EduconnectTest:
         assert response.status_code == 302
         assert response.location.startswith("https://webapp-v2.example.com/idcheck/validation")
         assert user.beneficiaryFraudResults[0].status == fraud_models.FraudStatus.OK
+
+    @override_features(ENABLE_INE_WHITELIST_FILTER=False)
+    @patch("pcapi.core.users.external.educonnect.api.get_educonnect_user")
+    def test_educonnect_not_eligible_fails_twice(self, mock_get_educonnect_user, client, app):
+        user, request_id = self.connect_to_educonnect(client, app)
+        mock_get_educonnect_user.return_value = users_factories.EduconnectUserFactory(
+            saml_request_id=request_id, age=14
+        )
+
+        response = client.post("/saml/acs", form={"SAMLResponse": "encrypted_data"})
+
+        assert response.status_code == 302
+        assert response.location.startswith(
+            "https://webapp-v2.example.com/idcheck/educonnect/erreur?code=UserAgeNotValid"
+        )
+        assert user.beneficiaryFraudResults[0].status == fraud_models.FraudStatus.KO
+
+        response = client.post("/saml/acs", form={"SAMLResponse": "encrypted_data"})
+        assert response.status_code == 302
+        assert response.location.startswith(
+            "https://webapp-v2.example.com/idcheck/educonnect/erreur?code=UserAgeNotValid"
+        )

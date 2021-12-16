@@ -325,8 +325,7 @@ class BeneficiaryFraudResult(PcObject, Model):
 
     eligibilityType = sqlalchemy.Column(
         sqlalchemy.Enum(users_models.EligibilityType, create_constraint=False),
-        nullable=False,
-        server_default=sqlalchemy.text(users_models.EligibilityType.AGE18.name),
+        nullable=True,
     )
 
     status = sqlalchemy.Column(sqlalchemy.Enum(FraudStatus, create_constraint=False))
