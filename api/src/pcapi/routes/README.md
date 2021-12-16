@@ -8,7 +8,7 @@ Pour faire un feature flipping dans l'API du pass Culture, les étapes suivantes
 
 - Dans models/features ajouter une constante décrivant la fonctionnalité avec la description associée :
 
-exemple :
+exemple 
 
 ```python
 ENABLE_FROBULATE = 'Active la frobulation'
