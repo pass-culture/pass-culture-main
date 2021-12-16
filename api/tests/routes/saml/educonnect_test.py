@@ -233,7 +233,7 @@ class EduconnectTest:
     @patch("pcapi.core.users.external.educonnect.api.get_educonnect_user")
     def test_educonnect_redirects_to_error_page_too_old(self, mock_get_educonnect_user, client, app):
         _, request_id = self.connect_to_educonnect(client, app)
-        age = 18
+        age = 20
         mock_get_educonnect_user.return_value = users_factories.EduconnectUserFactory(
             saml_request_id=request_id, age=age
         )
@@ -242,7 +242,7 @@ class EduconnectTest:
 
         assert response.status_code == 302
         assert response.location == (
-            "https://webapp-v2.example.com/idcheck/educonnect/erreur?code=UserAgeNotValid18YearsOld&logoutUrl=https%3A%2F%2Feduconnect.education.gouv.fr%2FLogout"
+            "https://webapp-v2.example.com/idcheck/educonnect/erreur?code=UserAgeNotValid&logoutUrl=https%3A%2F%2Feduconnect.education.gouv.fr%2FLogout"
         )
 
     @patch("pcapi.core.users.external.educonnect.api.get_educonnect_user")
