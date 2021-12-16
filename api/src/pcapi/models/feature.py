@@ -68,6 +68,7 @@ class FeatureToggle(enum.Enum):
         "Active le nouveau parcours de création d'offres avec les offres collectives"
     )
     ENABLE_UBBLE = "Active la vérification d'identité par Ubble"
+    ENABLE_UBBLE_SUBSCRIPTION_LIMITATION = "Active la limitation en fonction de l'âge lors de pic d'inscription"
     ENABLE_VENUE_WITHDRAWAL_DETAILS = "Active les modalités de retrait sur la page lieu"
     ENFORCE_BANK_INFORMATION_WITH_SIRET = "Forcer les informations banquaires à être liées à un SIRET."
     FORCE_PHONE_VALIDATION = "Forcer la validation du numéro de téléphone pour devenir bénéficiaire"
@@ -135,6 +136,7 @@ FEATURES_DISABLED_BY_DEFAULT = (
     FeatureToggle.ENABLE_PRO_BOOKINGS_V2,
     FeatureToggle.ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS,
     FeatureToggle.ENABLE_UBBLE,
+    FeatureToggle.ENABLE_UBBLE_SUBSCRIPTION_LIMITATION,
     FeatureToggle.ENABLE_UNDERAGE_GENERALISATION,
     FeatureToggle.ENABLE_VENUE_WITHDRAWAL_DETAILS,
     FeatureToggle.ENFORCE_BANK_INFORMATION_WITH_SIRET,

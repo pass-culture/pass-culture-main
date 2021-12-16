@@ -1,8 +1,10 @@
+import datetime
 import logging
 import typing
 
 import flask
 
+from pcapi import settings
 from pcapi.connectors.beneficiaries import ubble
 from pcapi.core.fraud import exceptions as fraud_exceptions
 import pcapi.core.fraud.api as fraud_api
@@ -17,6 +19,7 @@ from pcapi.core.users import exceptions as users_exception
 from pcapi.core.users import external as users_external
 from pcapi.core.users import models as users_models
 from pcapi.core.users import repository as users_repository
+from pcapi.core.users import utils as users_utils
 from pcapi.domain import user_emails as old_user_emails
 from pcapi.domain.postal_code.postal_code import PostalCode
 from pcapi.models import db
@@ -433,21 +436,35 @@ def get_allowed_identity_check_methods(user: users_models.User) -> list[models.I
             allowed_methods.append(models.IdentityCheckMethod.EDUCONNECT)
 
         if is_identity_check_with_document_method_allowed_for_underage(user):
-            allowed_methods.append(
-                models.IdentityCheckMethod.UBBLE
-                if FeatureToggle.ENABLE_UBBLE.is_active()
-                else models.IdentityCheckMethod.JOUVE
-            )
+            if FeatureToggle.ENABLE_UBBLE.is_active() and is_ubble_allowed_if_subscription_overflow(user):
+                allowed_methods.append(models.IdentityCheckMethod.UBBLE)
+            if not FeatureToggle.ENABLE_UBBLE.is_active():
+                allowed_methods.append(models.IdentityCheckMethod.JOUVE)
 
     elif user.eligibility == users_models.EligibilityType.AGE18:
         if FeatureToggle.ALLOW_IDCHECK_REGISTRATION.is_active():
-            allowed_methods.append(
-                models.IdentityCheckMethod.UBBLE
-                if FeatureToggle.ENABLE_UBBLE.is_active()
-                else models.IdentityCheckMethod.JOUVE
-            )
+            if FeatureToggle.ENABLE_UBBLE.is_active() and is_ubble_allowed_if_subscription_overflow(user):
+                allowed_methods.append(models.IdentityCheckMethod.UBBLE)
+            if not FeatureToggle.ENABLE_UBBLE.is_active():
+                allowed_methods.append(models.IdentityCheckMethod.JOUVE)
 
     return allowed_methods
+
+
+def is_ubble_allowed_if_subscription_overflow(user: users_models.User) -> bool:
+    if not FeatureToggle.ENABLE_UBBLE_SUBSCRIPTION_LIMITATION.is_active():
+        return True
+
+    future_age = users_utils.get_age_at_date(
+        user.dateOfBirth,
+        datetime.datetime.utcnow() + datetime.timedelta(days=settings.UBBLE_SUBSCRIPTION_LIMITATION_DAYS),
+    )
+    eligbility_ranges = users_constants.ELIGIBILITY_UNDERAGE_RANGE + [users_constants.ELIGIBILITY_AGE_18]
+    eligbility_ranges = [age + 1 for age in eligbility_ranges]
+    if future_age > user.age and future_age in eligbility_ranges:
+        return True
+
+    return False
 
 
 def get_maintenance_page_type(user: users_models.User) -> typing.Optional[models.MaintenancePageType]:
