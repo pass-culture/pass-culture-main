@@ -332,7 +332,7 @@ def get_next_subscription_step(user: users_models.User) -> typing.Optional[model
         if not user_profiling:
             return models.SubscriptionStep.USER_PROFILING
 
-        if user_profiling.source_data().risk_rating == fraud_models.UserProfilingRiskRating.HIGH:
+        if fraud_api.is_risky_user_profile(user):
             return None
 
     if not has_completed_profile(user):

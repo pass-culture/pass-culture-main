@@ -26,8 +26,10 @@ logger = logging.getLogger(__name__)
 def next_subscription_step(
     user: users_models.User,
 ) -> Optional[serializers.NextSubscriptionStepResponse]:
+    next_step = subscription_api.get_next_subscription_step(user)
+    logger.info("next_subscription_step: %s", next_step.value if next_step else None, extra={"user_id": user.id})
     return serializers.NextSubscriptionStepResponse(
-        next_subscription_step=subscription_api.get_next_subscription_step(user),
+        next_subscription_step=next_step,
         allowed_identity_check_methods=subscription_api.get_allowed_identity_check_methods(user),
         maintenance_page_type=subscription_api.get_maintenance_page_type(user),
         has_identity_check_pending=fraud_api.has_user_pending_identity_check(user),
