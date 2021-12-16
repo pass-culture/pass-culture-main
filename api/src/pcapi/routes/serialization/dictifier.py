@@ -4,8 +4,6 @@ from typing import Iterable
 
 from sqlalchemy.orm.collections import InstrumentedList
 
-from pcapi.core.providers.models import AllocineVenueProvider
-from pcapi.core.providers.models import VenueProvider
 from pcapi.domain.reimbursement import BookingReimbursement
 from pcapi.models.pc_object import PcObject
 from pcapi.routes.serialization.serializer import serialize
@@ -29,28 +27,6 @@ def _(booking_reimbursement, column=None, includes: Iterable = ()):
 def _(models, column=None, includes: Iterable = ()):
     not_deleted_objects = filter(lambda x: not x.is_soft_deleted(), models)
     return [as_dict(o, includes=includes) for o in not_deleted_objects]
-
-
-@as_dict.register(AllocineVenueProvider)
-def _(model, column=None, includes: Iterable = ()):
-    result = OrderedDict()
-
-    venue_provider_columns = VenueProvider.__table__.columns._data
-    allocine_specific_columns = AllocineVenueProvider.__table__.columns._data
-    allocine_venue_provider_columns = OrderedDict(venue_provider_columns.items() + allocine_specific_columns.items())
-
-    for key in _keys_to_serialize(model, includes):
-        value = getattr(model, key)
-        column = allocine_venue_provider_columns.get(key)
-        result[key] = as_dict(value, column=column)
-
-    for join in _joins_to_serialize(includes):
-        key = join["key"]
-        sub_includes = join.get("includes", set())
-        value = getattr(model, key)
-        result[key] = as_dict(value, includes=sub_includes)
-
-    return result
 
 
 @as_dict.register(PcObject)
