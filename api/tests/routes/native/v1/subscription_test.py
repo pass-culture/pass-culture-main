@@ -4,6 +4,7 @@ from dateutil.relativedelta import relativedelta
 from freezegun import freeze_time
 import pytest
 
+from pcapi import settings
 from pcapi.core.fraud import factories as fraud_factories
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.testing import override_features
@@ -286,6 +287,78 @@ class NextStepTest:
             "nextSubscriptionStep": None,
             "allowedIdentityCheckMethods": ["ubble"],
             "maintenancePageType": None,
+            "hasIdentityCheckPending": False,
+        }
+
+    @override_features(
+        ENABLE_UBBLE_SUBSCRIPTION_LIMITATION=True,
+        ALLOW_IDCHECK_UNDERAGE_REGISTRATION=True,
+        ENABLE_UBBLE=True,
+        ENABLE_DMS_LINK_ON_MAINTENANCE_PAGE_FOR_AGE_18=False,
+        ENABLE_DMS_LINK_ON_MAINTENANCE_PAGE_FOR_UNDERAGE=False,
+    )
+    @pytest.mark.parametrize("age", [15, 16, 17, 18])
+    def test_ubble_subcription_limited(self, client, age):
+        birth_date = datetime.datetime.utcnow() - relativedelta(years=age + 1)
+        birth_date += relativedelta(days=settings.UBBLE_SUBSCRIPTION_LIMITATION_DAYS - 1)
+        # the user has:
+        # 1. Email Validated
+        # 2. Phone Validated
+        # 3. Profile Completed
+        # 4. UserProfiling Valid
+        user_approching_birthday = users_factories.UserFactory(
+            dateOfBirth=birth_date,
+            isEmailValidated=True,
+            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
+            city="Paris",
+            firstName="Jean",
+            lastName="Neige",
+            address="1 rue des prés",
+            postalCode="75001",
+            activity="Lycéen",
+            phoneNumber="+33609080706",
+        )
+
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user_approching_birthday,
+            type=fraud_models.FraudCheckType.USER_PROFILING,
+            status=fraud_models.FraudCheckStatus.OK,
+        )
+        client.with_token(user_approching_birthday.email)
+        response = client.get("/native/v1/subscription/next_step")
+        assert response.status_code == 200
+        assert response.json == {
+            "nextSubscriptionStep": "identity-check",
+            "allowedIdentityCheckMethods": ["ubble"],
+            "maintenancePageType": None,
+            "hasIdentityCheckPending": False,
+        }
+
+        user_not_eligible_for_ubble = users_factories.UserFactory(
+            dateOfBirth=birth_date + relativedelta(days=10),
+            isEmailValidated=True,
+            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
+            city="Paris",
+            firstName="Jean",
+            lastName="Neige",
+            address="1 rue des prés",
+            postalCode="75001",
+            activity="Lycéen",
+            phoneNumber="+33609080706",
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user_not_eligible_for_ubble,
+            type=fraud_models.FraudCheckType.USER_PROFILING,
+            status=fraud_models.FraudCheckStatus.OK,
+        )
+
+        client.with_token(user_not_eligible_for_ubble.email)
+        response = client.get("/native/v1/subscription/next_step")
+        assert response.status_code == 200
+        assert response.json == {
+            "nextSubscriptionStep": "maintenance",
+            "allowedIdentityCheckMethods": [],
+            "maintenancePageType": "without-dms",
             "hasIdentityCheckPending": False,
         }
 
