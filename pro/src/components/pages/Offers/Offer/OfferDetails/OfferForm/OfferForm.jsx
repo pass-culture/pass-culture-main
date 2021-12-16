@@ -58,6 +58,7 @@ const getOfferConditionalFields = ({
   isUserAdmin = null,
   receiveNotificationEmails = null,
   venue = null,
+  isNewOfferFormActivated = false,
 }) => {
   let offerConditionalFields = []
 
@@ -69,7 +70,7 @@ const getOfferConditionalFields = ({
     offerConditionalFields.push('isDuo')
   }
 
-  if (offerSubCategory?.canBeEducational) {
+  if (offerSubCategory?.canBeEducational && !isNewOfferFormActivated) {
     offerConditionalFields.push('isEducational')
   }
 
@@ -134,6 +135,9 @@ const OfferForm = ({
 
   const isIsbnRequiredInLivreEditionEnabled = useActiveFeature(
     'ENABLE_ISBN_REQUIRED_IN_LIVRE_EDITION_OFFER_CREATION'
+  )
+  const isNewOfferFormActivated = useActiveFeature(
+    'ENABLE_NEW_EDUCATIONAL_OFFER_CREATION_FORM'
   )
 
   const [mandatoryFields, setMandatoryFields] = useState([...MANDATORY_FIELDS])
@@ -250,6 +254,7 @@ const OfferForm = ({
         isUserAdmin,
         receiveNotificationEmails,
         venue,
+        isNewOfferFormActivated,
       })
       let offerSubCategoryConditionalFields = offerSubCategory
         ? offerSubCategory.conditionalFields
@@ -262,7 +267,13 @@ const OfferForm = ({
       ]
       setOfferFormFields(newFormFields)
     },
-    [offerSubCategory, isUserAdmin, receiveNotificationEmails, venue]
+    [
+      offerSubCategory,
+      isUserAdmin,
+      receiveNotificationEmails,
+      venue,
+      isNewOfferFormActivated,
+    ]
   )
 
   useEffect(
