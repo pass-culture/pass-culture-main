@@ -39,8 +39,8 @@ class BeneficiaryImport(PcObject, Model):
     eligibilityType = sa.Column(
         sa.Enum(EligibilityType, create_constraint=False),
         nullable=False,
-        default=EligibilityType.AGE18,
-        server_default=sa.text(EligibilityType.AGE18.name),
+        default=EligibilityType.AGE18,  # TODO (viconnex) remove default values
+        server_default=sa.text(EligibilityType.AGE18.name),  # TODO (viconnex) remove default values
     )
     beneficiary = relationship("User", foreign_keys=[beneficiaryId], backref="beneficiaryImports")
 
