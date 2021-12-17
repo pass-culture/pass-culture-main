@@ -150,11 +150,12 @@ const BankInformationWithBusinessUnit = ({ readOnly, offerer, venue }) => {
 }
 
 BankInformationWithBusinessUnit.defaultProps = {
+  readOnly: false,
   venue: {},
 }
 BankInformationWithBusinessUnit.propTypes = {
   offerer: PropTypes.shape().isRequired,
-  readOnly: PropTypes.bool.isRequired,
+  readOnly: PropTypes.bool,
   venue: PropTypes.shape(),
 }
 
