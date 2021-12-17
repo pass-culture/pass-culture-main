@@ -242,7 +242,7 @@ def steps_to_become_beneficiary(
 
     if (
         not user.is_phone_validated
-        and user.eligibility != EligibilityType.UNDERAGE
+        and eligibility_type != EligibilityType.UNDERAGE
         and FeatureToggle.FORCE_PHONE_VALIDATION.is_active()
     ):
         missing_steps.append(BeneficiaryValidationStep.PHONE_VALIDATION)
