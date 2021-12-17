@@ -118,7 +118,7 @@ def activate_beneficiary(
     eligibility = beneficiary_import.eligibilityType
     deposit_source = beneficiary_import.get_detailed_source()
 
-    if not eligibility or not user.is_eligible_for_beneficiary_upgrade(eligibility):
+    if not users_api.is_eligible_for_beneficiary_upgrade(user, eligibility):
         raise exceptions.CannotUpgradeBeneficiaryRole()
 
     if eligibility == users_models.EligibilityType.UNDERAGE:
@@ -327,7 +327,7 @@ def get_next_subscription_step(user: users_models.User) -> typing.Optional[model
     if not user.isEmailValidated:
         return models.SubscriptionStep.EMAIL_VALIDATION
 
-    if not user.is_eligible_for_beneficiary_upgrade():
+    if not users_api.is_eligible_for_beneficiary_upgrade(user, user.eligibility):
         return None
 
     if user.eligibility == users_models.EligibilityType.AGE18:
