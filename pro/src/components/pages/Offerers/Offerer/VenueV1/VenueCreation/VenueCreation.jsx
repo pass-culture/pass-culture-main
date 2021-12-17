@@ -21,6 +21,7 @@ import AccessibilityFields, {
   autoFillNoDisabilityCompliantDecorator,
 } from '../fields/AccessibilityFields'
 import BankInformation from '../fields/BankInformationFields'
+import BusinessUnitFields from '../fields/BankInformationFields/BusinessUnitFields'
 import ContactInfosFields from '../fields/ContactInfosFields'
 import IdentifierFields, {
   bindGetSiretInformationToSiret,
@@ -103,6 +104,7 @@ class VenueCreation extends PureComponent {
       venueLabels,
       offerer,
       withdrawalDetailActive,
+      isBankInformationWithSiretActive,
     } = this.props
     const { isRequestPending } = this.state
     const readOnly = false
@@ -118,7 +120,6 @@ class VenueCreation extends PureComponent {
 
     const siretValidOnCreation =
       formSiret && formatSiret(formSiret).length === 14
-
     return (
       <form name="venue" onSubmit={handleSubmit}>
         <IdentifierFields
@@ -132,7 +133,11 @@ class VenueCreation extends PureComponent {
         {withdrawalDetailActive && (
           <WithdrawalDetailsFields isCreatedEntity readOnly={readOnly} />
         )}
-        <BankInformation offerer={offerer} />
+        {isBankInformationWithSiretActive ? (
+          <BusinessUnitFields offerer={offerer} />
+        ) : (
+          <BankInformation offerer={offerer} />
+        )}
         <LocationFields
           fieldReadOnlyBecauseFrozenFormSiret={siretValidOnCreation}
           form={form}
@@ -224,6 +229,7 @@ VenueCreation.propTypes = {
   handleSubmitRequestFail: PropTypes.func.isRequired,
   handleSubmitRequestSuccess: PropTypes.func.isRequired,
   history: PropTypes.shape().isRequired,
+  isBankInformationWithSiretActive: PropTypes.bool.isRequired,
   match: PropTypes.shape().isRequired,
   offerer: PropTypes.shape().isRequired,
   trackCreateVenue: PropTypes.func.isRequired,
