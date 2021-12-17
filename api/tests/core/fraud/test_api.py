@@ -521,26 +521,6 @@ class CommonFraudCheckTest:
         assert "L'email de l'utilisateur n'est pas validé" in fraud_result.reason
         assert fraud_result.status == fraud_models.FraudStatus.KO
 
-    @override_features(FORCE_PHONE_VALIDATION=True)
-    @pytest.mark.parametrize(
-        "phone_status",
-        [
-            users_models.PhoneValidationStatusType.BLOCKED_TOO_MANY_CODE_SENDINGS,
-            users_models.PhoneValidationStatusType.BLOCKED_TOO_MANY_CODE_VERIFICATION_TRIES,
-        ],
-    )
-    @pytest.mark.parametrize("fraud_check_type", [fraud_models.FraudCheckType.DMS, fraud_models.FraudCheckType.JOUVE])
-    def test_user_validation_has_phone_validated(self, phone_status, fraud_check_type):
-        user = users_factories.UserFactory(
-            isEmailValidated=True,
-            phoneValidationStatus=phone_status,
-        )
-        fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(type=fraud_check_type, user=user)
-        fraud_result = fraud_api.on_identity_fraud_check_result(user, fraud_check)
-
-        assert "Le n° de téléphone de l'utilisateur n'est pas validé" in fraud_result.reason
-        assert fraud_result.status == fraud_models.FraudStatus.KO
-
     @pytest.mark.parametrize("fraud_check_type", [fraud_models.FraudCheckType.DMS, fraud_models.FraudCheckType.JOUVE])
     def test_previously_validated_user_with_retry(self, fraud_check_type):
         # The user is already beneficiary, and has already done all the checks but
