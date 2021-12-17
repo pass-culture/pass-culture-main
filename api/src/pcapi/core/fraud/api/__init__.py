@@ -254,11 +254,12 @@ def on_identity_fraud_check_result(
     else:
         raise Exception("The fraud_check type is not known")
 
-    fraud_items.append(_check_user_has_no_active_deposit(user, beneficiary_fraud_check.eligibilityType))
+    content_eligibility_type = get_eligibility_type(beneficiary_fraud_check.source_data())
+    fraud_items.append(_check_user_has_no_active_deposit(user, content_eligibility_type))
     fraud_items.append(_check_user_email_is_validated(user))
-    fraud_items.append(_check_user_eligibility(user, beneficiary_fraud_check.eligibilityType))
+    fraud_items.append(_check_user_eligibility(user, content_eligibility_type))
 
-    fraud_result = validate_frauds(user, fraud_items, beneficiary_fraud_check, beneficiary_fraud_check.eligibilityType)
+    fraud_result = validate_frauds(user, fraud_items, beneficiary_fraud_check, content_eligibility_type)
     if (
         beneficiary_fraud_check.type == models.FraudCheckType.JOUVE
         and FeatureToggle.PAUSE_JOUVE_SUBSCRIPTION.is_active()
@@ -670,7 +671,7 @@ def validate_frauds(
     user: users_models.User,
     fraud_items: list[models.FraudItem],
     fraud_check: models.BeneficiaryFraudCheck,
-    eligibilityType: users_models.EligibilityType,
+    content_eligibility_type: users_models.EligibilityType,
 ) -> models.BeneficiaryFraudResult:
     if all(fraud_item.status == models.FraudStatus.OK for fraud_item in fraud_items):
         status = models.FraudStatus.OK
@@ -696,7 +697,7 @@ def validate_frauds(
     fraud_check.reasonCodes = reason_codes
     repository.save(fraud_check)
 
-    fraud_result = update_or_create_fraud_result(user, status, reason, reason_codes, eligibilityType)
+    fraud_result = update_or_create_fraud_result(user, status, reason, reason_codes, content_eligibility_type)
 
     return fraud_result
 

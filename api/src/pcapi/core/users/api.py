@@ -337,8 +337,7 @@ def update_user_information_from_external_source(
     elif isinstance(data, fraud_models.ubble.UbbleContent):
         user.firstName = data.first_name
         user.lastName = data.last_name
-        if not fraud_api.ubble.does_match_ubble_test_email(user.email):
-            user.dateOfBirth = datetime.combine(data.birth_date, time(0, 0))
+        user.dateOfBirth = datetime.combine(data.birth_date, time(0, 0))
 
     # update user fields to be correctly initialized
     user.hasSeenTutorials = False
