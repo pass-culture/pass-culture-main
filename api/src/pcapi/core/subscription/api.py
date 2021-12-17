@@ -247,6 +247,7 @@ def update_ubble_workflow(
 ) -> None:
     content = ubble.get_content(fraud_check.thirdPartyId)
     fraud_check.resultContent = content
+    fraud_check.eligibilityType = fraud_api.get_eligibility_type(content)
     pcapi_repository.repository.save(fraud_check)
 
     user = fraud_check.user
