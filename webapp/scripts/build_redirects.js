@@ -57,6 +57,7 @@ function createRedirectFile() {
     const v1 = publicRedirectFileContent.match(/.*\n/g, '').map((line) => line.replace(/\n/, '').split(' ').filter((arr) => arr.length > 1))
 
     const v1tov2 = [
+      ['/version.txt', '/version.txt', '200'],
       ['/accueil/details/:offerId', '/accueil/details/:offerId', '200'],
       ['/*', process.env.WEBAPP_V2_URL, '302!'],
     ]
