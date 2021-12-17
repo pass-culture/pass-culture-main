@@ -2,6 +2,10 @@ class SubscriptionException(Exception):
     pass
 
 
+class InvalidEligibilityTypeException(SubscriptionException):
+    pass
+
+
 class BeneficiaryImportMissingException(SubscriptionException):
     pass
 

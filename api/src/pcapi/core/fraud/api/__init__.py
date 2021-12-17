@@ -541,7 +541,7 @@ def on_user_profiling_check_result(
 
 def get_source_data(user: users_models.User) -> pydantic.BaseModel:
     mapped_class = {models.FraudCheckType.DMS: models.DMSContent, models.FraudCheckType.JOUVE: models.JouveContent}
-    fraud_check_type = (
+    fraud_check = (
         models.BeneficiaryFraudCheck.query.filter(
             models.BeneficiaryFraudCheck.userId == user.id,
             models.BeneficiaryFraudCheck.type.in_([models.FraudCheckType.JOUVE, models.FraudCheckType.DMS]),
@@ -549,7 +549,7 @@ def get_source_data(user: users_models.User) -> pydantic.BaseModel:
         .order_by(models.BeneficiaryFraudCheck.dateCreated.desc())
         .first()
     )
-    return mapped_class[fraud_check_type.type](**fraud_check_type.resultContent)
+    return mapped_class[fraud_check.type](**fraud_check.resultContent)
 
 
 def upsert_fraud_result(
