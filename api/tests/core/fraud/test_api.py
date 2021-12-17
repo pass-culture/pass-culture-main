@@ -853,6 +853,18 @@ class HasUserPerformedIdentityCheckTest:
 
         assert not fraud_api.has_user_performed_identity_check(user)
 
+    def test_has_user_performed_identity_check_status_initiated(self):
+        user = users_factories.UserFactory()
+        ubble_content = fraud_factories.UbbleContentFactory(
+            status=fraud_models.ubble_models.UbbleIdentificationStatus.INITIATED
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            type=fraud_models.FraudCheckType.UBBLE,
+            user=user,
+            resultContent=ubble_content,
+            status=fraud_models.FraudCheckStatus.PENDING,
+        )
+
 
 @pytest.mark.usefixtures("db_session")
 class FraudCheckLifeCycleTest:

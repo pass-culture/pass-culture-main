@@ -60,40 +60,45 @@ class NextStepTest:
         }
 
     @pytest.mark.parametrize(
-        "fraud_check_status,ubble_status,next_step",
+        "fraud_check_status,ubble_status,next_step,pending_idcheck",
         [
             (
                 fraud_models.FraudCheckStatus.PENDING,
                 fraud_models.ubble.UbbleIdentificationStatus.INITIATED,
-                "honor-statement",
+                "identity-check",
+                False,
             ),
             (
                 fraud_models.FraudCheckStatus.PENDING,
                 fraud_models.ubble.UbbleIdentificationStatus.PROCESSING,
                 "honor-statement",
+                True,
             ),
             (
                 fraud_models.FraudCheckStatus.OK,
                 fraud_models.ubble.UbbleIdentificationStatus.PROCESSED,
                 "honor-statement",
+                False,
             ),
             (
                 fraud_models.FraudCheckStatus.KO,
                 fraud_models.ubble.UbbleIdentificationStatus.PROCESSED,
                 "honor-statement",
+                False,
             ),
             (
                 fraud_models.FraudCheckStatus.CANCELED,
                 fraud_models.ubble.UbbleIdentificationStatus.ABORTED,
                 "identity-check",
+                False,
             ),
-            (None, fraud_models.ubble.UbbleIdentificationStatus.INITIATED, "honor-statement"),
-            (None, fraud_models.ubble.UbbleIdentificationStatus.PROCESSING, "honor-statement"),
-            (None, fraud_models.ubble.UbbleIdentificationStatus.PROCESSED, "honor-statement"),
+            (None, fraud_models.ubble.UbbleIdentificationStatus.INITIATED, "identity-check", False),
+            (None, fraud_models.ubble.UbbleIdentificationStatus.PROCESSING, "honor-statement", False),
+            (None, fraud_models.ubble.UbbleIdentificationStatus.PROCESSED, "honor-statement", False),
         ],
     )
     @override_features(ENABLE_UBBLE=True)
-    def test_next_subscription_test_ubble(self, client, fraud_check_status, ubble_status, next_step):
+    def test_next_subscription_test_ubble(self, client, fraud_check_status, ubble_status, next_step, pending_idcheck):
         user = users_factories.UserFactory(
             dateOfBirth=datetime.datetime.combine(datetime.date.today(), datetime.time(0, 0))
             - relativedelta(years=18, months=5),
@@ -148,7 +153,7 @@ class NextStepTest:
             "nextSubscriptionStep": next_step,
             "allowedIdentityCheckMethods": ["ubble"],
             "maintenancePageType": None,
-            "hasIdentityCheckPending": fraud_check_status == fraud_models.FraudCheckStatus.PENDING,
+            "hasIdentityCheckPending": pending_idcheck,
         }
 
     @pytest.mark.parametrize(
@@ -364,6 +369,51 @@ class NextStepTest:
             "nextSubscriptionStep": "maintenance",
             "allowedIdentityCheckMethods": [],
             "maintenancePageType": "without-dms",
+            "hasIdentityCheckPending": False,
+        }
+
+    @override_features(ENABLE_UBBLE=True)
+    def test_ubble_restart_workflow(self, client):
+        user = users_factories.UserFactory(
+            dateOfBirth=datetime.datetime.combine(datetime.date.today(), datetime.time(0, 0))
+            - relativedelta(years=18, months=5),
+            isEmailValidated=True,
+            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
+            city="Paris",
+            firstName="Jean",
+            lastName="Neige",
+            address="1 rue des prés",
+            postalCode="75001",
+            activity="Lycéen",
+            phoneNumber="+33609080706",
+        )
+        user_profiling = fraud_factories.UserProfilingFraudDataFactory(
+            risk_rating=fraud_models.UserProfilingRiskRating.TRUSTED
+        )
+
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.USER_PROFILING,
+            status=fraud_models.FraudCheckStatus.OK,
+            resultContent=user_profiling,
+        )
+
+        ubble_content = fraud_factories.UbbleContentFactory(
+            status=fraud_models.ubble_models.UbbleIdentificationStatus.INITIATED
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            type=fraud_models.FraudCheckType.UBBLE,
+            user=user,
+            resultContent=ubble_content,
+            status=fraud_models.FraudCheckStatus.PENDING,
+        )
+        client.with_token(user.email)
+        response = client.get("/native/v1/subscription/next_step")
+        assert response.status_code == 200
+        assert response.json == {
+            "nextSubscriptionStep": "identity-check",
+            "allowedIdentityCheckMethods": ["ubble"],
+            "maintenancePageType": None,
             "hasIdentityCheckPending": False,
         }
 

@@ -437,6 +437,17 @@ def start_identification_session(
             status_code=400,
         )
 
+    fraud_check = fraud_api.get_pending_identity_check(user)
+    if fraud_check:
+        if subscription_api.is_ubble_workflow_restartable(fraud_check):
+            return serializers.IdentificationSessionResponse(
+                identificationUrl=fraud_check.source_data().identification_url
+            )
+        raise ApiErrors(
+            {"code": "IDCHECK_ALREADY_PROCESSED", "message": "Une identification a déjà été traitée"},
+            status_code=400,
+        )
+
     try:
         identification_url = subscription_api.start_ubble_workflow(user, body.redirectUrl)
         return serializers.IdentificationSessionResponse(identificationUrl=identification_url)

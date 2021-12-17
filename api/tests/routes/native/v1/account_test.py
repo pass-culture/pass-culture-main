@@ -357,12 +357,12 @@ class AccountTest:
     @pytest.mark.parametrize(
         "fraud_check_status,ubble_status,next_step",
         [
-            (fraud_models.FraudCheckStatus.PENDING, fraud_models.ubble.UbbleIdentificationStatus.INITIATED, None),
+            (fraud_models.FraudCheckStatus.PENDING, fraud_models.ubble.UbbleIdentificationStatus.INITIATED, "id-check"),
             (fraud_models.FraudCheckStatus.PENDING, fraud_models.ubble.UbbleIdentificationStatus.PROCESSING, None),
             (fraud_models.FraudCheckStatus.OK, fraud_models.ubble.UbbleIdentificationStatus.PROCESSED, None),
             (fraud_models.FraudCheckStatus.KO, fraud_models.ubble.UbbleIdentificationStatus.PROCESSED, None),
             (fraud_models.FraudCheckStatus.CANCELED, fraud_models.ubble.UbbleIdentificationStatus.ABORTED, "id-check"),
-            (None, fraud_models.ubble.UbbleIdentificationStatus.INITIATED, None),
+            (None, fraud_models.ubble.UbbleIdentificationStatus.INITIATED, "id-check"),
             (None, fraud_models.ubble.UbbleIdentificationStatus.PROCESSING, None),
             (None, fraud_models.ubble.UbbleIdentificationStatus.PROCESSED, None),
         ],
@@ -2209,7 +2209,6 @@ class IdentificationSessionTest:
     @pytest.mark.parametrize(
         "fraud_check_status,ubble_status",
         [
-            (fraud_models.FraudCheckStatus.PENDING, fraud_models.ubble.UbbleIdentificationStatus.INITIATED),
             (fraud_models.FraudCheckStatus.PENDING, fraud_models.ubble.UbbleIdentificationStatus.PROCESSING),
             (fraud_models.FraudCheckStatus.OK, fraud_models.ubble.UbbleIdentificationStatus.PROCESSED),
             (fraud_models.FraudCheckStatus.KO, fraud_models.ubble.UbbleIdentificationStatus.PROCESSED),
@@ -2281,3 +2280,29 @@ class IdentificationSessionTest:
         check = sorted_fraud_checks[2]
         assert check.type == fraud_models.FraudCheckType.UBBLE
         assert response.json["identificationUrl"] == "https://id.ubble.ai/29d9eca4-dce6-49ed-b1b5-8bb0179493a8"
+
+    def test_allow_rerun_identification(self, client, ubble_mock):
+        user = users_factories.UserFactory(dateOfBirth=datetime.now() - relativedelta(years=18, days=5))
+        client.with_token(user.email)
+
+        expected_url = "https://id.ubble.ai/ef055567-3794-4ca5-afad-dce60fe0f227"
+
+        ubble_content = fraud_factories.UbbleContentFactory(
+            status=fraud_models.ubble_models.UbbleIdentificationStatus.INITIATED,
+            identification_url=expected_url,
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            type=fraud_models.FraudCheckType.UBBLE,
+            status=fraud_models.FraudCheckStatus.PENDING,
+            user=user,
+            resultContent=ubble_content,
+        )
+        response = client.post("/native/v1/ubble_identification", json={"redirectUrl": "http://example.com/deeplink"})
+
+        assert response.status_code == 200
+        assert len(user.beneficiaryFraudChecks) == 1
+        assert ubble_mock.call_count == 0
+
+        check = user.beneficiaryFraudChecks[0]
+        assert check.type == fraud_models.FraudCheckType.UBBLE
+        assert response.json["identificationUrl"] == expected_url
