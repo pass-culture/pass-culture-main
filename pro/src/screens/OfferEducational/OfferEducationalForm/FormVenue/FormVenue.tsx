@@ -49,7 +49,10 @@ const FormVenue = ({
         />
       </FormLayout.Row>
       {isEligible === false && (
-        <Banner href="#" linkTitle="Faire une demande de référencement">
+        <Banner
+          href="https://passculture.typeform.com/to/WHrAY5KB"
+          linkTitle="Faire une demande de référencement"
+        >
           Pour proposer des offres à destination d’un groupe scolaire, vous
           devez être référencé auprès du ministère de l’Éducation Nationale et
           du ministère de la Culture.

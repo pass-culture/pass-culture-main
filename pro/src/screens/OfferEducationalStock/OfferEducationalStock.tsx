@@ -46,10 +46,10 @@ const OfferEducationalStock = ({
           <FormLayout.Section title="Date et prix">
             <Banner
               href="https://aide.passculture.app/fr/articles/5779623-acteurs-culturels-comment-modifier-une-offre-collective-pre-reservee"
-              linkTitle="Consulter l’article “Comment modifier une offre collective qui est pré-réservée par un établissement ?”"
+              linkTitle="Consultez l’article “Comment modifier une offre collective qui est pré-réservée par un établissement ?”"
               type="notification-info"
             >
-              Vous pourrez modifier ces informations en fonction de vos échange
+              Vous pourrez modifier ces informations en fonction de vos échanges
               avec l'établissement scolaire.
             </Banner>
             <p className={styles['description-text']}>
