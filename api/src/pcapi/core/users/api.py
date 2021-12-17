@@ -799,7 +799,7 @@ def get_next_beneficiary_validation_step(user: User) -> Optional[BeneficiaryVali
     """
     This function is for legacy use. Now replaced with pcapi.core.subscription.get_next_subscription_step
     """
-    if user.is_eligible_for_beneficiary_upgrade():
+    if is_eligible_for_beneficiary_upgrade(user, user.eligibility):
         if user.eligibility == EligibilityType.AGE18:
             if not user.is_phone_validated and FeatureToggle.ENABLE_PHONE_VALIDATION.is_active():
                 return BeneficiaryValidationStep.PHONE_VALIDATION
@@ -1024,3 +1024,9 @@ def get_eligibility_at_date(
         return EligibilityType.AGE18
 
     return None
+
+
+def is_eligible_for_beneficiary_upgrade(user: models.User, eligibility: Optional[EligibilityType]) -> bool:
+    return (eligibility == EligibilityType.UNDERAGE and not user.has_underage_beneficiary_role) or (
+        eligibility == EligibilityType.AGE18 and not user.has_beneficiary_role
+    )

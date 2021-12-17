@@ -487,14 +487,6 @@ class User(PcObject, Model, NeedsValidationMixin):
     def has_underage_beneficiary_role(cls) -> bool:  # pylint: disable=no-self-argument
         return cls.roles.contains([UserRole.UNDERAGE_BENEFICIARY])
 
-    def is_eligible_for_beneficiary_upgrade(self, eligibility: Optional[EligibilityType] = None) -> bool:
-        if not eligibility:
-            eligibility = self.eligibility
-
-        return (eligibility == EligibilityType.UNDERAGE and not self.has_underage_beneficiary_role) or (
-            eligibility == EligibilityType.AGE18 and not self.has_beneficiary_role
-        )
-
     @classmethod
     def init_subscription_state_machine(cls, obj, *args, **kwargs) -> None:
         from pcapi.core.subscription import transitions as subscription_transitions

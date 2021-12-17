@@ -104,13 +104,17 @@ def validate(
     ignore_id_piece_number_field: bool = False,
     eligibility: EligibilityType = EligibilityType.AGE18,
 ) -> None:
+    from pcapi.core.users import api as users_api
+
     _check_subscription_on_hold(beneficiary_pre_subscription)
     _check_department_is_eligible(beneficiary_pre_subscription)
     if not preexisting_account:
         _check_email_is_not_taken(beneficiary_pre_subscription)
     else:
         if (
-            not preexisting_account.is_eligible_for_beneficiary_upgrade(eligibility)
+            not users_api.is_eligible_for_beneficiary_upgrade(
+                preexisting_account, eligibility or preexisting_account.eligibility
+            )
             or not preexisting_account.isEmailValidated
         ):
             raise BeneficiaryIsADuplicate(f"Email {beneficiary_pre_subscription.email} is already taken.")
