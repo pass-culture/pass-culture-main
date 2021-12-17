@@ -15,6 +15,7 @@ import pcapi.core.fraud.models as fraud_models
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.payments.models import Deposit
 from pcapi.core.payments.models import DepositType
+import pcapi.core.subscription.api as subscription_api
 import pcapi.core.subscription.models as subscription_models
 from pcapi.core.testing import override_features
 from pcapi.core.users import api as users_api
@@ -715,25 +716,25 @@ class RunIntegrationTest:
 
         assert not user.has_beneficiary_role
 
-        assert len(user.beneficiaryFraudChecks) == 1
-        fraud_check = user.beneficiaryFraudChecks[0]
-        assert fraud_check.type == fraud_models.FraudCheckType.DMS
-        fraud_content = fraud_models.DMSContent(**fraud_check.resultContent)
-        assert fraud_content.birth_date == user.dateOfBirth.date()
-        assert fraud_content.address == "11 Rue du Test"
-
+        assert len(user.beneficiaryFraudChecks) == 2
         assert len(user.beneficiaryFraudResults) == 1
-        fraud_result = user.beneficiaryFraudResults[0]
-        assert fraud_result.status == fraud_models.FraudStatus.KO
-        assert "Le n° de téléphone de l'utilisateur n'est pas validé" in fraud_result.reason
-        assert BeneficiaryImport.query.count() == 1
-        beneficiary_import = BeneficiaryImport.query.first()
 
+        fraud_result = user.beneficiaryFraudResults[0]
+        assert fraud_result.status == fraud_models.FraudStatus.OK
+        assert BeneficiaryImport.query.count() == 1
+
+        beneficiary_import = BeneficiaryImport.query.first()
         assert beneficiary_import.source == "demarches_simplifiees"
         assert beneficiary_import.applicationId == 123
         assert beneficiary_import.beneficiary == user
-        assert beneficiary_import.currentStatus == ImportStatus.REJECTED
-        assert len(push_testing.requests) == 0
+        assert beneficiary_import.currentStatus == ImportStatus.CREATED
+        assert len(push_testing.requests) == 2
+
+        assert not user.is_beneficiary
+        assert not user.deposit
+        assert (
+            subscription_api.get_next_subscription_step(user) == subscription_models.SubscriptionStep.PHONE_VALIDATION
+        )
 
     @patch(
         "pcapi.scripts.beneficiary.import_dms_users.get_closed_application_ids_for_demarche_simplifiee",
