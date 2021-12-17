@@ -243,7 +243,9 @@ class BeneficiaryView(base_configuration.BaseAdminView):
             has_performed_identity_check=fraud_api.has_user_performed_identity_check(user),
         )
 
-    @flask_admin.expose("/validate/beneficiary/<user_id>", methods=["POST"])
+    @flask_admin.expose(
+        "/validate/beneficiary/<user_id>", methods=["POST"]
+    )  # pylint: disable=too-many-return-statements
     def validate_beneficiary(self, user_id: int) -> Response:
         if not FeatureToggle.BENEFICIARY_VALIDATION_AFTER_FRAUD_CHECKS.is_active():
             flask.flash("Fonctionnalité non activée", "error")
@@ -274,6 +276,12 @@ class BeneficiaryView(base_configuration.BaseAdminView):
         )
         if review.review == fraud_models.FraudReviewStatus.OK.value:
             users_api.update_user_information_from_external_source(user, fraud_api.get_source_data(user))
+            eligibility = fraud_api.get_eligibility_type(fraud_api.get_source_data(user))
+
+            if eligibility is None:
+                flask.flash("La date de naissance du dossier indique que l'utilisateur n'est pas éligible", "error")
+                return flask.redirect(flask.url_for(".details_view", id=user_id))
+
             try:
                 beneficiary_import = subscription_api.BeneficiaryImport(
                     sourceId=None,
@@ -302,7 +310,9 @@ class BeneficiaryView(base_configuration.BaseAdminView):
         return flask.redirect(flask.url_for(".details_view", id=user_id))
 
     @flask_admin.expose("/update/beneficiary/id_piece_number/<user_id>", methods=["POST"])
-    def update_beneficiary_id_piece_number(self, user_id: int) -> Response:
+    def update_beneficiary_id_piece_number(  # pylint: disable=too-many-return-statements
+        self, user_id: int
+    ) -> Response:
         if not self.check_super_admins() and not flask_login.current_user.has_jouve_role:
             flask.flash("Vous n'avez pas les droits suffisants pour activer ce bénéficiaire", "error")
             return flask.redirect(flask.url_for(".details_view", id=user_id))
@@ -342,6 +352,14 @@ class BeneficiaryView(base_configuration.BaseAdminView):
                     "honor statement contained in DMS application after admin review",
                     fraud_api.get_eligibility_type(fraud_check.source_data()),
                 )
+            else:
+                flask.flash("Le dossier doit être de type DMS ou Jouve", "error")
+                return flask.redirect(flask.url_for(".details_view", id=user_id))
+
+            if pre_subscription.eligibility_type is None:
+                flask.flash("La date de naissance du dossier indique que l'utilisateur n'est pas éligible", "error")
+                return flask.redirect(flask.url_for(".details_view", id=user_id))
+
             beneficiary_repository.BeneficiarySQLRepository.save(pre_subscription, user)
 
         flask.flash(f"N° de pièce d'identité modifiée sur le bénéficiaire {user.firstName} {user.lastName}")

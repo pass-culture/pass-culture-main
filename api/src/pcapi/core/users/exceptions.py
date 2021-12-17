@@ -116,10 +116,6 @@ class InvalidUserRoleException(Exception):
     pass
 
 
-class InvalidEligibilityTypeException(Exception):
-    pass
-
-
 class EmailUpdateLimitReached(Exception):
     pass
 

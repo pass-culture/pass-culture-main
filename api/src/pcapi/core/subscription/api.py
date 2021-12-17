@@ -15,7 +15,6 @@ from pcapi.core.payments import api as payments_api
 from pcapi.core.subscription import messages as subscription_messages
 from pcapi.core.users import api as users_api
 from pcapi.core.users import constants as users_constants
-from pcapi.core.users import exceptions as users_exception
 from pcapi.core.users import external as users_external
 from pcapi.core.users import models as users_models
 from pcapi.core.users import repository as users_repository
@@ -119,7 +118,7 @@ def activate_beneficiary(
     eligibility = beneficiary_import.eligibilityType
     deposit_source = beneficiary_import.get_detailed_source()
 
-    if not user.is_eligible_for_beneficiary_upgrade(eligibility):
+    if not eligibility or not user.is_eligible_for_beneficiary_upgrade(eligibility):
         raise exceptions.CannotUpgradeBeneficiaryRole()
 
     if eligibility == users_models.EligibilityType.UNDERAGE:
@@ -130,7 +129,7 @@ def activate_beneficiary(
         user.add_beneficiary_role()
         user.remove_underage_beneficiary_role()
     else:
-        raise users_exception.InvalidEligibilityTypeException()
+        raise exceptions.InvalidEligibilityTypeException()
 
     if "apps_flyer" in user.externalIds:
         apps_flyer_job.log_user_becomes_beneficiary_event_job.delay(user.id)
