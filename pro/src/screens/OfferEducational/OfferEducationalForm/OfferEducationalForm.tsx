@@ -108,7 +108,7 @@ const OfferEducationalForm = ({
         <b>une date</b>, <b>une heure</b> et <b>un prix</b>
         <br />
         <br />
-        Pour proposer plusieurs dates, heures ou prix, il vous sera nécéssaire
+        Pour proposer plusieurs dates, heures ou prix, il vous sera nécessaire
         de <b>créer plusieurs offres</b>
       </Banner>
 
