@@ -112,7 +112,7 @@ class Returns200Test:
         assert mails_testing.outbox[0].sent_data["template"] == {
             "id_not_prod": 41,
             "id_prod": 406,
-            "tags": [],
+            "tags": ["eac_annulationoffre"],
             "use_priority_queue": False,
         }
         assert mails_testing.outbox[0].sent_data["To"] == "test@mail.com"
