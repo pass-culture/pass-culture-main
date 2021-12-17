@@ -49,6 +49,10 @@ export const mapStateToProps = (state, ownProps) => {
       state,
       'ENABLE_VENUE_WITHDRAWAL_DETAILS'
     ),
+    isBankInformationWithSiretActive: isFeatureActive(
+      state,
+      'ENFORCE_BANK_INFORMATION_WITH_SIRET'
+    ),
   }
 }
 
