@@ -113,8 +113,6 @@ def find_educational_bookings_for_adage(
             .joinedload(Stock.offer, innerjoin=True)
             .options(
                 joinedload(Offer.venue, innerjoin=True),
-                joinedload(Offer.product, innerjoin=True),
-                joinedload(Offer.mediations),
             )
         )
         .join(educational_models.EducationalInstitution)

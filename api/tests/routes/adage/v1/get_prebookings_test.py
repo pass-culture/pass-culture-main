@@ -81,7 +81,7 @@ class Returns200Test:
                     "durationMinutes": offer.durationMinutes,
                     "expirationDate": booking.expirationDate,
                     "id": educational_booking.id,
-                    "image": {"url": offer.image.url, "credit": offer.image.credit} if offer.image else None,
+                    "image": None,
                     "isDigital": offer.isDigital,
                     "venueName": venue.name,
                     "name": offer.name,
