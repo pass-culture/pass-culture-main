@@ -1,5 +1,5 @@
 import cn from 'classnames'
-import React from 'react'
+import React, { ForwardedRef, forwardRef } from 'react'
 
 import styles from './BaseInput.module.scss'
 
@@ -14,27 +14,12 @@ interface IBaseInputProps
   >
 }
 
-const BaseInput = ({
-  className,
-  hasError,
-  name,
-  RightIcon,
-  ...props
-}: IBaseInputProps): JSX.Element =>
-  !RightIcon ? (
-    <input
-      {...props}
-      className={cn(
-        styles['base-input'],
-        {
-          [styles['has-error']]: hasError,
-        },
-        className
-      )}
-      id={name}
-    />
-  ) : (
-    <div className={styles['base-input-wrapper']}>
+const BaseInput = forwardRef(
+  (
+    { className, hasError, name, RightIcon, ...props }: IBaseInputProps,
+    ref: ForwardedRef<HTMLInputElement>
+  ): JSX.Element =>
+    !RightIcon ? (
       <input
         {...props}
         className={cn(
@@ -45,11 +30,31 @@ const BaseInput = ({
           },
           className
         )}
+        id={name}
+        name={name}
+        ref={ref}
       />
-      <span className={styles['base-input-right-icon']}>
-        <RightIcon />
-      </span>
-    </div>
-  )
+    ) : (
+      <div className={styles['base-input-wrapper']}>
+        <input
+          {...props}
+          className={cn(
+            styles['base-input'],
+            styles['base-input-with-right-icon'],
+            {
+              [styles['has-error']]: hasError,
+            },
+            className
+          )}
+          name={name}
+          ref={ref}
+        />
+        <span className={styles['base-input-right-icon']}>
+          <RightIcon />
+        </span>
+      </div>
+    )
+)
 
+BaseInput.displayName = 'BaseInput'
 export default BaseInput
