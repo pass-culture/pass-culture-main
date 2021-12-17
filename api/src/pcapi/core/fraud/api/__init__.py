@@ -173,7 +173,6 @@ def jouve_fraud_checks(
     jouve_content = models.JouveContent(**beneficiary_fraud_check.resultContent)
 
     fraud_items = []
-    fraud_items.append(_check_user_phone_is_validated(user))
     # TODO: factorise in on_identity_fraud_check_result for the 4 *_fraud_checks
     fraud_items.append(
         _duplicate_user_fraud_item(
@@ -196,7 +195,6 @@ def dms_fraud_checks(
     dms_content = models.DMSContent(**beneficiary_fraud_check.resultContent)
 
     fraud_items = []
-    fraud_items.append(_check_user_phone_is_validated(user))
     # TODO: factorise in on_identity_fraud_check_result for the 4 *_fraud_checks
     fraud_items.append(
         _duplicate_user_fraud_item(
@@ -395,16 +393,6 @@ def _check_user_email_is_validated(user: users_models.User) -> models.FraudItem:
             reason_code=models.FraudReasonCode.EMAIL_NOT_VALIDATED,
         )
     return models.FraudItem(status=models.FraudStatus.OK, detail="L'email est validé")
-
-
-def _check_user_phone_is_validated(user: users_models.User) -> models.FraudItem:
-    if FeatureToggle.FORCE_PHONE_VALIDATION.is_active() and not user.is_phone_validated:
-        return models.FraudItem(
-            status=models.FraudStatus.KO,
-            detail="Le n° de téléphone de l'utilisateur n'est pas validé",
-            reason_code=models.FraudReasonCode.PHONE_NOT_VALIDATED,
-        )
-    return models.FraudItem(status=models.FraudStatus.OK, detail="Le numéro de téléphone est validé")
 
 
 def _id_check_fraud_items(content: models.JouveContent) -> list[models.FraudItem]:
