@@ -94,6 +94,7 @@ const FormCategory = ({
       <FormLayout.Row>
         <TextArea
           countCharacters
+          isOptional
           label={DESCRIPTION_LABEL}
           maxLength={1000}
           name="description"
@@ -101,7 +102,12 @@ const FormCategory = ({
         />
       </FormLayout.Row>
       <FormLayout.Row>
-        <TextInput label={DURATION_LABEL} name="duration" placeholder="HH:MM" />
+        <TextInput
+          isOptional
+          label={DURATION_LABEL}
+          name="duration"
+          placeholder="HH:MM"
+        />
       </FormLayout.Row>
     </FormLayout.Section>
   )
