@@ -156,6 +156,12 @@ def start_identification(
             "request_type": "start-identification",
         },
     )
+
+    logger.info(
+        "Ubble identification started",
+        extra={"identification_id": str(content.identification_id), "status": str(content.status)},
+    )
+
     return content
 
 
