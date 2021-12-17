@@ -69,9 +69,9 @@ describe('screens | OfferEducational', () => {
     ) as HTMLTextAreaElement
     expect(descriptionTextArea).toHaveValue('')
 
-    const durationInput = screen.getByLabelText(
-      DURATION_LABEL
-    ) as HTMLTextAreaElement
+    const durationInput = screen.getByLabelText(DURATION_LABEL, {
+      exact: false,
+    }) as HTMLTextAreaElement
     expect(durationInput).toHaveValue('')
 
     const offerVenueRadio1 = screen.getByLabelText(
