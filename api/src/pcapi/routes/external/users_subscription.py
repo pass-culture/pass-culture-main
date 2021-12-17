@@ -2,6 +2,7 @@ import logging
 
 from pcapi import settings
 from pcapi.connectors import api_demarches_simplifiees
+from pcapi.core import logging as core_logging
 from pcapi.core.fraud import api as fraud_api
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import messages as subscription_messages
@@ -59,6 +60,17 @@ def dms_webhook_update_application_status(form: dms_validation.DMSWebhookRequest
         return
     try:
         application = import_dms_users.parse_beneficiary_information_graphql(raw_data["dossier"], form.procedure_id)
+        core_logging.log_for_supervision(
+            logger=logger,
+            log_level=logging.INFO,
+            log_message="Successfully parsed DMS application",
+            extra={
+                "application_id": raw_data["dossier"]["number"],
+                "dossier_id": form.dossier_id,
+                "procedure_id": form.procedure_id,
+                "user_email": raw_data["dossier"]["usager"]["email"],
+            },
+        )
     except import_dms_users.DMSParsingError as parsing_error:
         if raw_data["dossier"]["state"] == api_demarches_simplifiees.GraphQLApplicationStates.draft.value:
             import_dms_users.notify_parsing_exception(parsing_error.errors, raw_data["dossier"]["id"], client)
