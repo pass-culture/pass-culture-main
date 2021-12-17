@@ -1,6 +1,6 @@
 import fr from 'date-fns/locale/fr'
 import { useField } from 'formik'
-import React from 'react'
+import React, { createRef } from 'react'
 import { default as ReactDatePicker, registerLocale } from 'react-datepicker'
 
 import { BaseInput, FieldLayout } from '../shared'
@@ -31,6 +31,7 @@ const DatePicker = ({
   smallLabel,
 }: IDatePickerProps): JSX.Element => {
   const [field, meta, helpers] = useField({ name, type: 'date' })
+  const ref = createRef<HTMLInputElement>()
 
   return (
     <FieldLayout
@@ -47,6 +48,7 @@ const DatePicker = ({
           <BaseInput
             RightIcon={Calendar}
             hasError={meta.touched && !!meta.error}
+            ref={ref}
           />
         }
         dateFormat="dd/MM/yyyy"
