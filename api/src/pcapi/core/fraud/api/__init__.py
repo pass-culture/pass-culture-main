@@ -372,7 +372,9 @@ def _check_user_has_no_active_deposit(
 
 
 def _check_user_eligibility(user: users_models.User, eligibility: users_models.EligibilityType) -> models.FraudItem:
-    if not eligibility or not user.is_eligible_for_beneficiary_upgrade(eligibility):
+    from pcapi.core.users import api as users_api
+
+    if not users_api.is_eligible_for_beneficiary_upgrade(user, eligibility):
         return models.FraudItem(
             status=models.FraudStatus.KO,
             detail=(
