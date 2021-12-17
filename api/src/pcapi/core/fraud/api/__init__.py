@@ -719,6 +719,8 @@ def has_user_pending_identity_check(user: users_models.User) -> bool:
             models.BeneficiaryFraudCheck.status == models.FraudCheckStatus.PENDING,
             models.BeneficiaryFraudCheck.type.in_(models.IDENTITY_CHECK_TYPES),
             models.BeneficiaryFraudCheck.eligibilityType == user.eligibility,
+            models.BeneficiaryFraudCheck.resultContent["status"]
+            != models.ubble_models.UbbleIdentificationStatus.INITIATED,
         ).exists()
     ).scalar()
 
@@ -734,19 +736,36 @@ def has_user_performed_identity_check(user: users_models.User) -> bool:
     ).scalar()
 
 
+def get_pending_identity_check(user: users_models.User) -> typing.Optional[models.BeneficiaryFraudCheck]:
+    return (
+        models.BeneficiaryFraudCheck.query.filter(
+            models.BeneficiaryFraudCheck.user == user,
+            models.BeneficiaryFraudCheck.status == models.FraudCheckStatus.PENDING,
+            models.BeneficiaryFraudCheck.type.in_(models.IDENTITY_CHECK_TYPES),
+            models.BeneficiaryFraudCheck.eligibilityType == user.eligibility,
+        )
+        .order_by(models.BeneficiaryFraudCheck.dateCreated.desc())
+        .one_or_none()
+    )
+
+
 def has_user_performed_ubble_check(user: users_models.User) -> bool:
     """
     Look for any Ubble identification already started, processed or not, but not aborted.
     There should not be more than one result in the database (later this function can count if limit is greater than 1).
     """
-    return db.session.query(
-        models.BeneficiaryFraudCheck.query.filter(
-            models.BeneficiaryFraudCheck.user == user,
-            models.BeneficiaryFraudCheck.status.is_distinct_from(models.FraudCheckStatus.CANCELED),
-            models.BeneficiaryFraudCheck.type == models.FraudCheckType.UBBLE,
-            models.BeneficiaryFraudCheck.eligibilityType == user.eligibility,
-        ).exists()
-    ).scalar()
+    fraud_check = models.BeneficiaryFraudCheck.query.filter(
+        models.BeneficiaryFraudCheck.user == user,
+        models.BeneficiaryFraudCheck.status.is_distinct_from(models.FraudCheckStatus.CANCELED),
+        models.BeneficiaryFraudCheck.type == models.FraudCheckType.UBBLE,
+        models.BeneficiaryFraudCheck.eligibilityType == user.eligibility,
+    ).one_or_none()
+    if not fraud_check:
+        return False
+
+    if fraud_check.source_data().status == models.ubble_models.UbbleIdentificationStatus.INITIATED:
+        return False
+    return True
 
 
 def has_passed_educonnect(user: users_models.User) -> bool:

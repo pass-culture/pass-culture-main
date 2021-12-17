@@ -242,6 +242,16 @@ def start_ubble_workflow(user: users_models.User, redirect_url: str) -> str:
     return content.identification_url
 
 
+def is_ubble_workflow_restartable(fraud_check: fraud_models.BeneficiaryFraudCheck) -> bool:
+    if fraud_check.type != fraud_models.FraudCheckType.UBBLE:
+        return False
+
+    ubble_content: fraud_models.ubble_models.UbbleContent = fraud_check.source_data()
+    if ubble_content.status == fraud_models.ubble_models.UbbleIdentificationStatus.INITIATED:
+        return True
+    return False
+
+
 def update_ubble_workflow(
     fraud_check: fraud_models.BeneficiaryFraudCheck, status: fraud_models.ubble.UbbleIdentificationStatus
 ) -> None:
