@@ -372,7 +372,7 @@ def _check_user_has_no_active_deposit(
 
 
 def _check_user_eligibility(user: users_models.User, eligibility: users_models.EligibilityType) -> models.FraudItem:
-    if not user.is_eligible_for_beneficiary_upgrade(eligibility):
+    if not eligibility or not user.is_eligible_for_beneficiary_upgrade(eligibility):
         return models.FraudItem(
             status=models.FraudStatus.KO,
             detail=(
