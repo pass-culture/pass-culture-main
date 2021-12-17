@@ -31,7 +31,6 @@ def request_email_update(user: User, email: str, password: str, device_id: typin
 
     email_history = UserEmailHistory.build_update_request(
         user=user,
-        old_email=user.email,
         new_email=email,
         device_id=device_id,
     )
