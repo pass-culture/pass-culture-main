@@ -6,6 +6,7 @@ const creation_authorized_input_field = [
   'address',
   'bic',
   'bookingEmail',
+  'businessUnitId',
   'city',
   'comment',
   'description',
