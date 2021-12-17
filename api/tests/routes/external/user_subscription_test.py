@@ -2,7 +2,9 @@ import datetime
 import json
 import time
 from unittest.mock import patch
+import uuid
 
+from dateutil import relativedelta
 import freezegun
 import pytest
 
@@ -22,6 +24,7 @@ from pcapi.models import db
 from pcapi.models.beneficiary_import import BeneficiaryImport
 from pcapi.models.beneficiary_import import BeneficiaryImportSources
 from pcapi.models.beneficiary_import_status import ImportStatus
+from pcapi.repository import repository
 from pcapi.validation.routes import ubble as ubble_routes
 
 from tests.core.subscription import test_factories
@@ -814,3 +817,114 @@ class UbbleWebhookTest:
         db.session.refresh(user)
         assert user.dateOfBirth == document_birth_date
         assert user.dateOfBirth != subscription_birth_date
+
+    def test_older_than_18_cannot_become_beneficiary(self, client, ubble_mocker):
+        fraudulous_birth_date = datetime.datetime.now() - relativedelta.relativedelta(years=18, months=6)
+        document_birth_date = datetime.datetime.now() - relativedelta.relativedelta(years=28)
+        user = users_factories.UserFactory(
+            dateOfBirth=fraudulous_birth_date,
+        )
+        profiling_fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.USER_PROFILING,
+            resultContent={},
+            status=fraud_models.FraudCheckStatus.OK,
+            reason=None,
+            reasonCodes=None,
+            eligibilityType=users_models.EligibilityType.AGE18,
+        )
+        repository.save(profiling_fraud_check)
+        identification_id = str(uuid.uuid4())
+        ubble_fraud_check = fraud_models.BeneficiaryFraudCheck(
+            user=user,
+            type=fraud_models.FraudCheckType.UBBLE,
+            thirdPartyId=identification_id,
+            resultContent={
+                "birth_date": document_birth_date.date().isoformat(),
+                "comment": "",
+                "document_type": "CI",
+                "expiry_date_score": None,
+                "first_name": user.firstName,
+                "id_document_number": "012345678910",
+                "identification_id": identification_id,
+                "identification_url": f"https://id.ubble.ai/{identification_id}",
+                "last_name": user.lastName,
+                "registration_datetime": datetime.datetime.now().isoformat(),
+                "score": None,
+                "status": fraud_models.ubble.UbbleIdentificationStatus.PROCESSING.value,
+                "supported": None,
+            },
+            status=fraud_models.FraudCheckStatus.PENDING,
+            reason=None,
+            reasonCodes=None,
+            eligibilityType=users_models.EligibilityType.AGE18,
+        )
+        repository.save(ubble_fraud_check)
+        honor_fraud_check = fraud_models.BeneficiaryFraudCheck(
+            user=user,
+            type=fraud_models.FraudCheckType.HONOR_STATEMENT,
+            thirdPartyId="internal_check_4483",
+            resultContent=None,
+            status=fraud_models.FraudCheckStatus.OK,
+            reason=None,
+            reasonCodes=None,
+            eligibilityType=users_models.EligibilityType.AGE18,
+        )
+        repository.save(honor_fraud_check)
+
+        request_data = self._get_request_body(ubble_fraud_check, fraud_models.ubble.UbbleIdentificationStatus.PROCESSED)
+        payload = json.dumps(request_data.dict(by_alias=True), default=json_default)
+        signature = self._get_signature(payload)
+        ubble_identification_response = test_factories.UbbleIdentificationResponseFactory(
+            identification_state=test_factories.IdentificationState.VALID,
+            data__attributes__identification_id=str(request_data.identification_id),
+            included=[
+                test_factories.UbbleIdentificationIncludedDocumentsFactory(
+                    attributes__birth_date=ubble_fraud_check.resultContent["birth_date"],
+                    attributes__document_number=ubble_fraud_check.resultContent["id_document_number"],
+                    attributes__document_type=ubble_fraud_check.resultContent["document_type"],
+                    attributes__first_name=ubble_fraud_check.resultContent["first_name"],
+                    attributes__last_name=ubble_fraud_check.resultContent["last_name"],
+                ),
+                test_factories.UbbleIdentificationIncludedDocumentChecksFactory(
+                    attributes__data_extracted_score=fraud_models.ubble.UbbleScore.VALID.value,
+                    attributes__expiry_date_score=fraud_models.ubble.UbbleScore.VALID.value,
+                    attributes__issue_date_score=fraud_models.ubble.UbbleScore.VALID.value,
+                    attributes__live_video_capture_score=fraud_models.ubble.UbbleScore.VALID.value,
+                    attributes__mrz_validity_score=fraud_models.ubble.UbbleScore.VALID.value,
+                    attributes__mrz_viz_score=fraud_models.ubble.UbbleScore.VALID.value,
+                    attributes__ove_back_score=fraud_models.ubble.UbbleScore.VALID.value,
+                    attributes__ove_front_score=fraud_models.ubble.UbbleScore.VALID.value,
+                    attributes__ove_score=fraud_models.ubble.UbbleScore.VALID.value,
+                    attributes__quality_score=fraud_models.ubble.UbbleScore.VALID.value,
+                    attributes__visual_back_score=fraud_models.ubble.UbbleScore.VALID.value,
+                    attributes__visual_front_score=fraud_models.ubble.UbbleScore.VALID.value,
+                ),
+                test_factories.UbbleIdentificationIncludedFaceChecksFactory(
+                    attributes__active_liveness_score=fraud_models.ubble.UbbleScore.VALID.value,
+                    attributes__live_video_capture_score=fraud_models.ubble.UbbleScore.VALID.value,
+                    attributes__quality_score=fraud_models.ubble.UbbleScore.VALID.value,
+                ),
+                test_factories.UbbleIdentificationIncludedDocFaceMatchesFactory(
+                    attributes__score=fraud_models.ubble.UbbleScore.VALID.value,
+                ),
+                test_factories.UbbleIdentificationIncludedReferenceDataChecksFactory(
+                    attributes__score=fraud_models.ubble.UbbleScore.VALID.value,
+                ),
+            ],
+        )
+
+        with ubble_mocker(
+            request_data.identification_id,
+            json.dumps(ubble_identification_response.dict(by_alias=True), sort_keys=True, default=json_default),
+        ):
+            client.post(
+                "/webhooks/ubble/application_status",
+                headers={"Ubble-Signature": signature},
+                raw_json=payload,
+            )
+
+        db.session.refresh(user)
+        assert not user.has_beneficiary_role
+        db.session.refresh(ubble_fraud_check)
+        assert ubble_fraud_check.reason == "L'utilisateur n'est pas éligible"
