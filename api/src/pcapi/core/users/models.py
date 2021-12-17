@@ -607,12 +607,11 @@ class UserEmailHistory(PcObject, Model):
     def _build(
         cls,
         user: User,
-        old_email: str,
         new_email: str,
         device_id: Optional[str],
         event_type: EmailHistoryEventTypeEnum,
     ) -> "UserEmailHistory":
-        old_user_email, old_domain_email = split_email(old_email)
+        old_user_email, old_domain_email = split_email(user.email)
         new_user_email, new_domain_email = split_email(new_email)
         return cls(
             user=user,
@@ -625,16 +624,12 @@ class UserEmailHistory(PcObject, Model):
         )
 
     @classmethod
-    def build_update_request(
-        cls, user: User, old_email: str, new_email: str, device_id: Optional[str]
-    ) -> "UserEmailHistory":
-        return cls._build(user, old_email, new_email, device_id, event_type=EmailHistoryEventTypeEnum.UPDATE_REQUEST)
+    def build_update_request(cls, user: User, new_email: str, device_id: Optional[str]) -> "UserEmailHistory":
+        return cls._build(user, new_email, device_id, event_type=EmailHistoryEventTypeEnum.UPDATE_REQUEST)
 
     @classmethod
-    def build_validation(
-        cls, user: User, old_email: str, new_email: str, device_id: Optional[str]
-    ) -> "UserEmailHistory":
-        return cls._build(user, old_email, new_email, device_id, event_type=EmailHistoryEventTypeEnum.VALIDATION)
+    def build_validation(cls, user: User, new_email: str, device_id: Optional[str]) -> "UserEmailHistory":
+        return cls._build(user, new_email, device_id, event_type=EmailHistoryEventTypeEnum.VALIDATION)
 
     @property
     def oldEmail(self) -> str:

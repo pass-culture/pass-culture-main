@@ -467,7 +467,6 @@ def change_user_email(current_email: str, new_email: str, device_id: typing.Opti
 
     email_history = UserEmailHistory.build_validation(
         user=current_user,
-        old_email=current_email,
         new_email=new_email,
         device_id=device_id,
     )
