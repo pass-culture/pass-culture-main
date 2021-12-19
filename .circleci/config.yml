@@ -151,6 +151,8 @@ commands:
         type: string
       helm_values_file:
         type: string
+      helm_private_values_file:
+        type: string
       app_version:
         type: string
     steps:
@@ -160,6 +162,7 @@ commands:
             --install --wait \
             --namespace << parameters.kubernetes_namespace >> \
             --values << parameters.helm_values_file >> \
+            --values << parameters.helm_private_values_file >> \
             --set-string image.tag=<< parameters.app_version >>
 
   build-frontend-app:
@@ -206,6 +209,12 @@ commands:
       - run:
           name: Invalidate cache
           command: gcloud compute url-maps invalidate-cdn-cache << parameters.url_map_name >> --path "/*"
+
+  clone-pass-culture-deployment-repo:
+    steps:
+      - run:
+          name: Clone pass-culture-deployment-repo
+          command: git clone git@github.com:pass-culture/pass-culture-deployment.git ~/pass-culture-deployment
 
 ###################
 #  JOBS
@@ -665,10 +674,11 @@ jobs:
       NAMESPACE: operations
     steps:
       - checkout
+      - clone-pass-culture-deployment-repo
       - authenticate_gcp:
           gcp-key-name: GCP_METIER_KEY
       - export_chart_version:
-          version_file: ./api/helm/db-ops/chart_version.txt
+          version_file: ~/pass-culture-deployment/helm/db-ops/chart_version.txt
       - run:
           name: Get GKE cluster credentials
           command: gcloud container clusters get-credentials --region ${GCP_REGION} ${GKE_CLUSTER_NAME}
@@ -690,6 +700,7 @@ jobs:
           helm_release_name: ${CHART_RELEASE}
           kubernetes_namespace: ${NAMESPACE}
           helm_values_file: ./api/helm/db-ops/values.${DBOPS_ENV}.yaml
+          helm_private_values_file: ~/pass-culture-deployment/helm/db-ops/values.${DBOPS_ENV}.yaml
           app_version: latest
 
   deploy-pcapi:
@@ -706,11 +717,12 @@ jobs:
         default: ${APP_VERSION}
     steps:
       - checkout
+      - clone-pass-culture-deployment-repo
       - authenticate_gcp:
           gcp-key-name: GCP_METIER_KEY
       - export_app_version
       - export_chart_version:
-          version_file: ./api/helm/pcapi/chart_version.txt
+          version_file: ~/pass-culture-deployment/helm/pcapi/chart_version.txt
       - run:
           name: Get GKE cluster credentials
           command: gcloud container clusters get-credentials --region ${GCP_REGION} ${GKE_CLUSTER_NAME}
@@ -732,6 +744,7 @@ jobs:
           helm_release_name: <<parameters.helm_environment>>
           kubernetes_namespace: <<parameters.helm_environment>>
           helm_values_file: ./api/helm/pcapi/values.<<parameters.helm_environment>>.yaml
+          helm_private_values_file: ~/pass-culture-deployment/helm/pcapi/values.<<parameters.helm_environment>>.yaml
           app_version: <<parameters.app_version>>
       - run:
           name: Send failure notification
