@@ -637,6 +637,7 @@ class UpsertStocksTest:
         assert not mocked_offer_creation_notification_to_admin.called
 
 
+@freeze_time("2020-11-17 15:00:00")
 class CreateEducationalOfferStocksTest:
     @mock.patch("pcapi.core.search.async_index_offer_ids")
     def should_create_one_stock_on_educational_offer_stock_creation(self, mocked_async_index_offer_ids):
@@ -702,7 +703,6 @@ class CreateEducationalOfferStocksTest:
         saved_stocks = offer_models.Stock.query.all()
         assert len(saved_stocks) == 0
 
-    @freeze_time("2020-11-17 15:00:00")
     def test_create_stock_triggers_draft_offer_validation(self):
         # Given
         user_pro = users_factories.ProFactory()
@@ -1118,6 +1118,7 @@ class EditEducationalOfferStocksTest:
         stock = offer_models.Stock.query.filter_by(id=stock_to_be_updated.id).one()
         assert stock.numberOfTickets == 30
 
+    @freeze_time("2020-11-17 15:00:00")
     def test_should_not_allow_stock_edition_when_beginningDatetime_not_provided_and_bookingLimitDatetime_set_after_existing_event_datetime(
         self,
     ):
@@ -1135,6 +1136,7 @@ class EditEducationalOfferStocksTest:
         stock = offer_models.Stock.query.filter_by(id=stock_to_be_updated.id).one()
         assert stock.bookingLimitDatetime == datetime(2021, 12, 5)
 
+    @freeze_time("2020-11-17 15:00:00")
     def test_should_not_allow_stock_edition_when_bookingLimitDatetime_not_provided_and_beginningDatetime_set_before_existing_event_datetime(
         self,
     ):
