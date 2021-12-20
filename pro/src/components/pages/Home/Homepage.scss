@@ -1,4 +1,19 @@
 .homepage {
+  .bi-banner {
+    p {
+      color: $black;
+    }
+  }
+  .bi-link {
+    display: flex;
+    margin-top: rem(8px);
+
+    img {
+      display: block;
+      flex: 0 1 rem(25px);
+    }
+  }
+
   .pc-breadcrumb {
     margin-bottom: rem(32px);
     margin-top: rem(24px);
@@ -113,22 +128,6 @@
 
       p {
         color: $grey-dark;
-      }
-
-      .bi-banner {
-        p {
-          color: $black;
-        }
-
-        .bi-link {
-          display: flex;
-          margin-top: rem(8px);
-
-          img {
-            display: block;
-            flex: 0 1 rem(25px);
-          }
-        }
       }
     }
 
