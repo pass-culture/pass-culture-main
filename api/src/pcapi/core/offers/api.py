@@ -15,7 +15,7 @@ from pcapi import settings
 from pcapi.connectors.thumb_storage import create_thumb
 from pcapi.connectors.thumb_storage import remove_thumb
 from pcapi.core import search
-from pcapi.core.bookings.api import cancel_bookings_when_offerer_deletes_stock
+from pcapi.core.bookings.api import cancel_bookings_from_stock_by_offerer
 from pcapi.core.bookings.api import mark_as_unused
 from pcapi.core.bookings.api import update_cancellation_limit_dates
 from pcapi.core.bookings.models import Booking
@@ -624,7 +624,7 @@ def delete_stock(stock: Stock) -> None:
     repository.save(stock)
 
     # the algolia sync for the stock will happen within this function
-    cancelled_bookings = cancel_bookings_when_offerer_deletes_stock(stock)
+    cancelled_bookings = cancel_bookings_from_stock_by_offerer(stock)
 
     logger.info(
         "Deleted stock and cancelled its bookings",

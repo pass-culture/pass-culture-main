@@ -101,7 +101,7 @@ class BookOfferConcurrencyTest:
             connection.execute(text("""SELECT * FROM stock WHERE stock.id = :stock_id FOR UPDATE"""), stock_id=stock.id)
 
             with pytest.raises(sqlalchemy.exc.OperationalError):
-                api.cancel_bookings_when_offerer_deletes_stock(stock)
+                api.cancel_bookings_from_stock_by_offerer(stock)
 
         assert models.Booking.query.filter().count() == 4
         assert models.Booking.query.filter(models.Booking.isCancelled == True).count() == 1
@@ -554,7 +554,7 @@ class CancelByOffererTest:
         used_booking = booking_factories.UsedIndividualBookingFactory(stock=stock)
         cancelled_booking = booking_factories.CancelledIndividualBookingFactory(stock=stock)
 
-        api.cancel_bookings_when_offerer_deletes_stock(stock)
+        api.cancel_bookings_from_stock_by_offerer(stock)
 
         # cancellation can trigger more than one request to Batch
         assert len(push_testing.requests) >= 1
