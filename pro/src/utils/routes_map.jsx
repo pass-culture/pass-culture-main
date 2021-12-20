@@ -195,7 +195,7 @@ const routes = [
     component: OfferEducationalConfirmation,
     exact: true,
     featureName: 'ENABLE_NEW_EDUCATIONAL_OFFER_CREATION_FORM',
-    path: '/offre/scolaire/confirmation',
+    path: '/offre/:offerId([A-Z0-9]+)/scolaire/confirmation',
     title: 'Page de confirmation de création d’offre',
   },
   {
