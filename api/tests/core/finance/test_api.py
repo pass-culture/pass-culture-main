@@ -31,9 +31,8 @@ def create_booking_with_undeletable_dependent(date_used=None):
     if not date_used:
         date_used = datetime.datetime.utcnow()
     booking = bookings_factories.UsedBookingFactory(dateUsed=date_used)
-    business_unit = booking.venue.businessUnit
     factories.PricingFactory(
-        businessUnit=business_unit,
+        siret=booking.venue.siret,
         valueDate=booking.dateUsed + datetime.timedelta(seconds=1),
         status=models.PricingStatus.BILLED,
     )
@@ -99,7 +98,7 @@ class PriceBookingTest:
         before = booking1.dateUsed - datetime.timedelta(seconds=60)
         booking2 = bookings_factories.UsedBookingFactory(
             dateUsed=before,
-            stock__offer__venue__businessUnit=pricing1.businessUnit,
+            stock__offer__venue=booking1.venue,
         )
         api.price_booking(booking2)
         # Pricing of `booking1` has been deleted.
@@ -225,7 +224,7 @@ class CancelPricingTest:
     def test_cancel_with_dependent_booking(self):
         pricing = factories.PricingFactory()
         _dependent_pricing = factories.PricingFactory(
-            businessUnit=pricing.businessUnit,
+            siret=pricing.siret,
             valueDate=pricing.valueDate + datetime.timedelta(seconds=1),
         )
         pricing = api.cancel_pricing(pricing.booking, models.PricingLogReason.MARK_AS_UNUSED)
@@ -236,17 +235,16 @@ class CancelPricingTest:
 class DeleteDependentPricingsTest:
     def test_basics(self):
         booking = bookings_factories.UsedBookingFactory()
-        business_unit = booking.venue.businessUnit
         earlier_pricing = factories.PricingFactory(
-            businessUnit=business_unit,
+            siret=booking.venue.siret,
             valueDate=booking.dateUsed - datetime.timedelta(seconds=1),
         )
         _later_pricing = factories.PricingFactory(
-            businessUnit=business_unit,
+            siret=booking.venue.siret,
             valueDate=booking.dateUsed + datetime.timedelta(seconds=1),
         )
         _same_date_pricing_but_greater_booking_id = factories.PricingFactory(
-            businessUnit=business_unit,
+            siret=booking.venue.siret,
             valueDate=booking.dateUsed,
         )
         api._delete_dependent_pricings(booking, "some log message")
