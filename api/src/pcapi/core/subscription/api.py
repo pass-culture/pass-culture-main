@@ -504,9 +504,10 @@ def on_successful_application(
     third_party_id: typing.Optional[str] = None,
 ) -> None:
     users_api.update_user_information_from_external_source(user, source_data)
-    # unsure ?
-    # not needed for Ubble since it has been set to True on `processing` notif
+
+    # TODO (viconnex) remove when we also look for DMS files to know if the user has completed id check
     user.hasCompletedIdCheck = True
+
     pcapi_repository.repository.save(user)
 
     create_successfull_beneficiary_import(
