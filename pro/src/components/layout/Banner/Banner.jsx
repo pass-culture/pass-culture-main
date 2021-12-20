@@ -13,6 +13,7 @@ const Banner = ({
   href,
   linkTitle,
   children,
+  targetLink,
   type,
   closable,
   handleOnClick,
@@ -34,7 +35,7 @@ const Banner = ({
             className="bi-link tertiary-link"
             href={href}
             rel="noopener noreferrer"
-            target="_blank"
+            target={targetLink}
           >
             <Icon svg={icon} />
             {linkTitle}
@@ -53,6 +54,7 @@ Banner.defaultProps = {
   href: null,
   icon: 'ico-external-site',
   linkTitle: null,
+  targetLink: '_blank',
   type: 'attention',
 }
 
@@ -64,6 +66,7 @@ Banner.propTypes = {
   href: requiredIfComponentHasProp('linkTitle', 'string'),
   icon: PropTypes.string,
   linkTitle: requiredIfComponentHasProp('href', 'string'),
+  targetLink: PropTypes.string,
   type: PropTypes.oneOf(['notification-info', 'attention', 'light']),
 }
 

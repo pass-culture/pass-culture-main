@@ -21,6 +21,7 @@ const expectReimbursementBannerToBePresent = wrapper => {
     handleOnClick: null,
     type: 'notification-info',
     linkTitle: 'En savoir plus sur les remboursements',
+    targetLink: '_blank',
     href: 'https://aide.passculture.app/fr/articles/5096833-calendrier-des-prochains-remboursements',
     icon: 'ico-external-site',
     children: null,
@@ -85,6 +86,7 @@ describe('src | Offerer | BankInformation', () => {
       type: 'attention',
       children: 'Votre dossier est en cours pour cette structure',
       linkTitle: 'Accéder au dossier',
+      targetLink: '_blank',
       href: 'https://www.demarches-simplifiees.fr/dossiers/12',
       icon: 'ico-external-site',
     })
