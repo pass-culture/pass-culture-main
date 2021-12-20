@@ -5,8 +5,8 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 
-import Banner from 'components/layout/Banner/Banner'
 import Icon from 'components/layout/Icon'
+import InternalBanner from 'components/layout/InternalBanner'
 
 const BusinessUnits = ({ offererId, hasTitle = true }) => {
   const businessUnitRoutePath = `/structures/${offererId}/point-de-remboursement/`
@@ -24,16 +24,16 @@ const BusinessUnits = ({ offererId, hasTitle = true }) => {
       )}
 
       <div className="h-card-content">
-        <Banner
+        <InternalBanner
           href={businessUnitRoutePath}
-          icon="ico-outer-pen"
+          icon="ico-pen-black"
           linkTitle="Renseigner un SIRET de référence"
           targetLink="_self"
         >
           Certains de vos points de remboursement ne sont pas rattachés à un
           SIRET. Pour continuer à percevoir vos remboursements, veuillez
           renseigner un SIRET de référence.
-        </Banner>
+        </InternalBanner>
       </div>
     </>
   )
