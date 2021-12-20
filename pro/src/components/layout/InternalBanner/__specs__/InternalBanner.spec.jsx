@@ -2,7 +2,7 @@ import '@testing-library/jest-dom'
 import { render, screen } from '@testing-library/react'
 import React from 'react'
 
-import InternalBanner from 'components/layout/Banner/InternalBanner'
+import InternalBanner from '../InternalBanner'
 
 describe('src | components | layout | InternalBanner', () => {
   describe('render', () => {
@@ -31,7 +31,7 @@ describe('src | components | layout | InternalBanner', () => {
       // then
       expect(screen.getByText(props.subtitle).closest('div')).toHaveAttribute(
         'class',
-        'bi-banner attention '
+        'bi-banner attention'
       )
     })
 
@@ -44,7 +44,7 @@ describe('src | components | layout | InternalBanner', () => {
       // then
       expect(screen.getByText(props.subtitle).closest('div')).toHaveAttribute(
         'class',
-        'bi-banner notification-info '
+        'bi-banner notification-info'
       )
     })
   })
