@@ -1,6 +1,7 @@
 from datetime import datetime
 from datetime import timedelta
 
+from freezegun import freeze_time
 import pytest
 
 from pcapi.core.bookings import factories as booking_factories
@@ -12,6 +13,7 @@ from pcapi.utils.human_ids import humanize
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
+@freeze_time("2020-11-17 15:00:00")
 class Return200Test:
     def test_edit_educational_stock(self, app, client):
         # Given
@@ -75,6 +77,7 @@ class Return200Test:
         assert edited_stock.educationalPriceDetail == "Détail du prix"
 
 
+@freeze_time("2020-11-17 15:00:00")
 class Return403Test:
     def test_edit_educational_stocks_should_not_be_possible_when_user_not_linked_to_offerer(self, app, client):
         stock = offer_factories.EducationalEventStockFactory(
@@ -101,6 +104,7 @@ class Return403Test:
         }
 
 
+@freeze_time("2020-11-17 15:00:00")
 class Return400Test:
     def should_not_allow_number_of_tickets_to_be_negative_on_edition(self, app, client):
         # Given
