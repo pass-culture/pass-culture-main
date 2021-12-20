@@ -13,6 +13,7 @@ import { Link, NavLink } from 'react-router-dom'
 
 import useActiveFeature from 'components/hooks/useActiveFeature'
 import useFeatureFlagedOfferCreationURL from 'components/hooks/useFeatureFlagedOfferCreationURL'
+import Banner from 'components/layout/Banner/Banner'
 import Icon from 'components/layout/Icon'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Titles from 'components/layout/Titles/Titles'
@@ -322,6 +323,17 @@ const VenueEdition = ({
         <Icon svg="ico-back" />
         Accueil
       </NavLink>
+      {!venue?.siret && (
+        <Banner
+          href={`/structures/${offererId}/point-de-remboursement/`}
+          icon="ico-right-circle-arrow"
+          linkTitle="Rattacher votre lieu à un point de remboursement valide"
+        >
+          Ce lieu n’est pas rattaché à un point de remboursement valide. Pour
+          continuer à percevoir vos remboursements, veuillez renseigner un SIRET
+          de référence pour votre point de remboursement.
+        </Banner>
+      )}
       <PageTitle title={pageTitle} />
       <Titles
         action={actionLink || undefined}
