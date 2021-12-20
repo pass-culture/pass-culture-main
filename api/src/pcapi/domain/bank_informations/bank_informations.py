@@ -12,6 +12,7 @@ class BankInformations:
         venue_id: int = None,
         date_modified: datetime = None,
     ):
+        self.id = None
         self.application_id = application_id
         self.status = status
         self.iban = iban

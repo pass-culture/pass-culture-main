@@ -2,6 +2,7 @@ from typing import Optional
 
 from pcapi import settings
 from pcapi.connectors import api_entreprises
+from pcapi.core.finance.models import BusinessUnit
 from pcapi.core.offerers.models import Offerer
 from pcapi.domain.bank_information import CannotRegisterBankInformation
 from pcapi.domain.bank_information import check_new_bank_information_has_a_more_advanced_status
@@ -16,6 +17,7 @@ from pcapi.domain.venue.venue_with_basic_information.venue_with_basic_informatio
     VenueWithBasicInformationRepository,
 )
 from pcapi.models.bank_information import BankInformationStatus
+from pcapi.repository import repository
 
 
 PROCEDURE_ID_VERSION_MAP = {
@@ -41,59 +43,52 @@ class SaveVenueBankInformations:
         )
 
         try:
+            siret = application_details.siret
             siren = application_details.siren
             offerer = Offerer.query.filter_by(siren=siren).one_or_none()
             check_offerer_presence(offerer)
             venue = self.get_referent_venue(application_details, offerer)
+            business_unit = BusinessUnit.query.filter(BusinessUnit.siret == siret).one_or_none()
         except CannotRegisterBankInformation as error:
             if application_details.status == BankInformationStatus.ACCEPTED:
                 raise error
             return None
 
-        result = self.update_already_processed_bank_information(application_details, venue)
-        if result:
-            return result
+        bank_information = self.bank_informations_repository.get_by_application(application_details.application_id)
+        if not bank_information:
+            bank_information = self.bank_informations_repository.find_by_venue(venue.identifier)
 
-        result = self.update_bank_information_for_venue(application_details, venue)
-        if result:
-            return result
+        if bank_information:
+            check_new_bank_information_older_than_saved_one(bank_information, application_details.modification_date)
+            if (
+                bank_information.venue_id == venue.identifier
+                and bank_information.application_id != application_details.application_id
+            ):
+                check_new_bank_information_has_a_more_advanced_status(bank_information, application_details.status)
 
         new_bank_informations = self.create_new_bank_informations(application_details, venue.identifier)
-        return self.bank_informations_repository.save(new_bank_informations)
 
-    def update_already_processed_bank_information(
-        self, application_details: ApplicationDetail, venue: VenueWithBasicInformation
-    ) -> Optional[BankInformations]:
-        bank_information_by_application_id = self.bank_informations_repository.get_by_application(
-            application_details.application_id
-        )
+        if not bank_information:
+            updated_bank_information = self.bank_informations_repository.save(new_bank_informations)
+        elif bank_information.application_id == application_details.application_id:
+            updated_bank_information = self.bank_informations_repository.update_by_application_id(new_bank_informations)
+        elif bank_information.venue_id == venue.identifier:
+            updated_bank_information = self.bank_informations_repository.update_by_venue_id(new_bank_informations)
+        else:
+            raise NotImplementedError()
 
-        if bank_information_by_application_id:
-            check_new_bank_information_older_than_saved_one(
-                bank_information_by_application_id, application_details.modification_date
-            )
-            new_bank_informations = self.create_new_bank_informations(application_details, venue.identifier)
-            return self.bank_informations_repository.update_by_application_id(new_bank_informations)
+        # TODO(xordoquy): remove the siret condition once the old DMS procedure is dropped
+        if siret:
+            if not business_unit:
+                business_unit = BusinessUnit(
+                    name=venue.name,
+                    siret=siret,
+                    bankAccountId=updated_bank_information.id,
+                )
+            business_unit.bankAccountId = updated_bank_information.id
+            repository.save(business_unit)
 
-        return None
-
-    def update_bank_information_for_venue(
-        self, application_details: ApplicationDetail, venue: VenueWithBasicInformation
-    ) -> Optional[BankInformations]:
-        bank_information_by_venue_id = self.bank_informations_repository.find_by_venue(venue.identifier)
-
-        if bank_information_by_venue_id:
-            check_new_bank_information_older_than_saved_one(
-                bank_information_by_venue_id, application_details.modification_date
-            )
-            check_new_bank_information_has_a_more_advanced_status(
-                bank_information_by_venue_id, application_details.status
-            )
-
-            new_bank_informations = self.create_new_bank_informations(application_details, venue.identifier)
-            return self.bank_informations_repository.update_by_venue_id(new_bank_informations)
-
-        return None
+        return bank_information
 
     def get_referent_venue(self, application_details: ApplicationDetail, offerer: Offerer) -> VenueWithBasicInformation:
         siret = application_details.siret

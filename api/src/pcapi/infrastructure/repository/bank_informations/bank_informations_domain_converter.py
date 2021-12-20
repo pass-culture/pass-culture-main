@@ -10,6 +10,7 @@ def to_domain(bank_informations_sql_entity: BankInformationsSQLEntity) -> BankIn
         iban=bank_informations_sql_entity.iban,
         bic=bank_informations_sql_entity.bic,
         date_modified=bank_informations_sql_entity.dateModified,
+        venue_id=bank_informations_sql_entity.venueId,
     )
 
 
