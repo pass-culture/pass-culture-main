@@ -219,7 +219,7 @@ def cancel_booking_by_offerer(booking: Booking) -> None:
     send_cancel_booking_notification.delay([booking.id])
 
 
-def cancel_bookings_when_offerer_deletes_stock(stock: Stock) -> list[Booking]:
+def cancel_bookings_from_stock_by_offerer(stock: Stock) -> list[Booking]:
     cancelled_bookings = _cancel_bookings_from_stock(stock, BookingCancellationReasons.OFFERER)
     search.async_index_offer_ids([stock.offerId])
     return cancelled_bookings
