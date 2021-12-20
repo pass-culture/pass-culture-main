@@ -5,6 +5,7 @@ from flask import request
 from flask_login import current_user
 from flask_login import login_required
 from sqlalchemy.orm import exc as orm_exc
+from sqlalchemy.orm import joinedload
 
 from pcapi.connectors.api_adage import AdageException
 from pcapi.connectors.api_adage import CulturalPartnerNotFoundException
@@ -13,6 +14,7 @@ from pcapi.core.categories import subcategories
 from pcapi.core.offers import exceptions
 import pcapi.core.offers.api as offers_api
 from pcapi.core.offers.models import Offer
+from pcapi.core.offers.models import Stock
 import pcapi.core.offers.repository as offers_repository
 from pcapi.core.offers.validation import check_image
 from pcapi.core.offers.validation import get_distant_image
@@ -278,3 +280,29 @@ def get_categories() -> offers_serialize.CategoriesResponseModel:
             for subcategory in subcategories.ALL_SUBCATEGORIES
         ],
     )
+
+
+@private_api.route("/offers/<offer_id>/cancel_booking", methods=["PATCH"])
+@login_required
+@spectree_serialize(on_success_status=204, on_error_statuses=[400, 403, 404])
+def cancel_educational_offer_booking(offer_id: str) -> None:
+    try:
+        offer = (
+            offers_repository.get_educational_offer_by_id_base_query(offer_id)
+            .options(joinedload(Offer.stocks).joinedload(Stock.bookings))
+            .options(joinedload(Offer.venue).load_only("id", "managingOffererId"))
+            .one()
+        )
+    except orm_exc.NoResultFound:
+        raise ApiErrors({"offerId": "No educational offer has been found with this id"}, 404)
+
+    check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
+    try:
+        offers_api.cancel_educational_offer_booking(offer)
+    except exceptions.StockNotFound:
+        raise ApiErrors({"offerId": "No active stock has been found with this id"}, 404)
+    except exceptions.EducationalOfferHasMultipleStocks:
+        raise ApiErrors({"offerId": "This educational offer has multiple active stocks"}, 400)
+    except exceptions.NoBookingToCancel:
+        raise ApiErrors({"offerId": "This educational offer has no booking to cancel"}, 400)
+    return

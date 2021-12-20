@@ -116,3 +116,15 @@ class CannotUpdateStockRelatedToNonApprovedOffer(Exception):
 
 class BookingLimitDatetimeTooLate(Exception):
     pass
+
+
+class StockNotFound(Exception):
+    pass
+
+
+class EducationalOfferHasMultipleStocks(Exception):
+    pass
+
+
+class NoBookingToCancel(Exception):
+    pass

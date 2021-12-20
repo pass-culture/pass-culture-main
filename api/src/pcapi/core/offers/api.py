@@ -32,6 +32,7 @@ from pcapi.core.mails.transactional.bookings.booking_postponed_by_pro_to_benefic
 )
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers.models import Venue
+from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import validation
 from pcapi.core.offers.exceptions import OfferAlreadyReportedError
 from pcapi.core.offers.exceptions import ReportMalformed
@@ -969,3 +970,35 @@ def report_offer(user: User, offer: Offer, reason: str, custom_reason: Optional[
         raise
 
     offer_report_emails.send_report_notification(user, offer, reason, custom_reason)
+
+
+def cancel_educational_offer_booking(offer: Offer) -> None:
+    if offer.activeStocks is None or len(offer.activeStocks) == 0:
+        raise offers_exceptions.StockNotFound()
+
+    if len(offer.activeStocks) > 1:
+        raise offers_exceptions.EducationalOfferHasMultipleStocks()
+
+    stock = offer.activeStocks[0]
+
+    # Offer is reindexed in the end of this function
+    cancelled_bookings = cancel_bookings_from_stock_by_offerer(stock)
+
+    if len(cancelled_bookings) == 0:
+        raise offers_exceptions.NoBookingToCancel()
+
+    logger.info(
+        "Deleted stock and cancelled its bookings",
+        extra={"stock": stock.id, "bookings": [b.id for b in cancelled_bookings]},
+    )
+    for booking in cancelled_bookings:
+        if not send_booking_cancellation_by_pro_to_beneficiary_email(booking):
+            logger.warning(
+                "Could not notify beneficiary about deletion of stock",
+                extra={"stock": stock.id, "booking": booking.id},
+            )
+    if not user_emails.send_offerer_bookings_recap_email_after_offerer_cancellation(cancelled_bookings):
+        logger.warning(
+            "Could not notify offerer about deletion of stock",
+            extra={"stock": stock.id},
+        )
