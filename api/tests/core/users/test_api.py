@@ -1375,6 +1375,21 @@ class EligibilityStartDateTest:
     def test_eligibility_start_datetime_generalisation(self, date_of_birth, expected_date):
         assert get_eligibility_start_datetime(date_of_birth) == expected_date
 
+    @override_features(ENABLE_UNDERAGE_GENERALISATION=True)
+    @override_settings(
+        UNDERAGE_BROAD_OPENING_DATETIME=datetime(2022, 1, 31),
+        UNDERAGE_EARLY_OPENING_DATETIME=datetime(2022, 1, 3),
+        UNDERAGE_16_YO_OPENING_DATETIME=datetime(2022, 1, 20),
+        UNDERAGE_17_YO_OPENING_DATETIME=datetime(2022, 1, 10),
+    )
+    @patch(
+        "pcapi.core.users.constants.UNDERAGE_OPENING_DATETIMES_BY_AGE",
+        {15: datetime(2022, 1, 31), 16: datetime(2022, 1, 20), 17: datetime(2022, 1, 10)},
+    )
+    @freeze_time("2021-01-09")
+    def test_eligibility_start_datetime_during_generalisation(self):
+        assert get_eligibility_start_datetime(datetime(2004, 1, 8)) == datetime(2022, 1, 3)
+
 
 class GetEligibilityTest:
     @override_features(ENABLE_UNDERAGE_GENERALISATION=True)
