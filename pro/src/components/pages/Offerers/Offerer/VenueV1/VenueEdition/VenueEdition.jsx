@@ -132,7 +132,7 @@ const VenueEdition = ({
     } = venue || {}
     const canSubmit = getCanSubmit(formProps)
     const { form, handleSubmit, values } = formProps
-    // submit = handleSubmit
+
     const {
       bookingEmail,
       isLocationFrozen: formIsLocationFrozen,

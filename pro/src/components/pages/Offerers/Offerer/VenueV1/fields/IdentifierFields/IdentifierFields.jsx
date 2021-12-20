@@ -168,7 +168,7 @@ class IdentifierFields extends PureComponent {
             name="bookingEmail"
             readOnly={readOnly}
             renderValue={this.handleRender(readOnly)}
-            required
+            required={!venueIsVirtual}
             type="email"
           />
           {!isCreatedEntity && !readOnly && isDirtyFieldBookingEmail && (
