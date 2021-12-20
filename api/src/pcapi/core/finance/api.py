@@ -272,9 +272,9 @@ def _delete_dependent_pricings(booking: bookings_models.Booking, log_message: st
       happens only if we unmark a booking (i.e. mark as unused), which
       should be very rare.
     """
-    business_unit_id = booking.venue.businessUnitId
+    siret = booking.venue.siret or booking.venue.businessUnit.siret
     query = models.Pricing.query.filter(
-        models.Pricing.businessUnitId == business_unit_id,
+        models.Pricing.siret == siret,
         sqla.or_(
             models.Pricing.valueDate > booking.dateUsed,
             sqla.and_(
@@ -289,9 +289,9 @@ def _delete_dependent_pricings(booking: bookings_models.Booking, log_message: st
     for pricing in pricings:
         if pricing.status not in models.DELETABLE_PRICING_STATUSES:
             logger.error(
-                "Found non-deletable pricing for a business unit that has an older booking to price or cancel",
+                "Found non-deletable pricing for a SIRET that has an older booking to price or cancel",
                 extra={
-                    "business_unit": pricing.businessUnitId,
+                    "siret": pricing.siret,
                     "booking_being_priced_or_cancelled": booking.id,
                     "older_pricing": pricing.id,
                     "older_pricing_status": pricing.status,
@@ -311,7 +311,7 @@ def _delete_dependent_pricings(booking: bookings_models.Booking, log_message: st
         extra={
             "booking_being_priced": booking.id,
             "booking_already_priced": [p.bookingId for p in pricings],
-            "business_unit": business_unit_id,
+            "siret": siret,
         },
     )
 
