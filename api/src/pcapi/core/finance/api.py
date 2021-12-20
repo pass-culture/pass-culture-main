@@ -21,6 +21,7 @@ import pcapi.core.payments.utils as payments_utils
 from pcapi.domain import reimbursement
 from pcapi.models import db
 from pcapi.models.bank_information import BankInformation
+from pcapi.models.bank_information import BankInformationStatus
 from pcapi.repository import transaction
 from pcapi.repository import user_queries
 from pcapi.utils import human_ids
@@ -57,13 +58,13 @@ def price_bookings(max_age: datetime.timedelta = DEFAULT_MAX_AGE_TO_PRICE):
         )
         .filter(models.Pricing.id.is_(None))
         .join(bookings_models.Booking.venue)
+        .join(offerers_models.Venue.businessUnit)
         # FIXME (dbaty, 2021-12-08): we can get rid of this filter
         # once BusinessUnit.siret is set as NOT NULLable.
-        .join(offerers_models.Venue.businessUnit)
         .filter(models.BusinessUnit.siret.isnot(None))
-        # FIXME (dbaty, 2021-12-08): once BusinessUnit can have a
-        # deletion date, we should also exclude deleted business units
-        # here.
+        .filter(models.BusinessUnit.status == models.BusinessUnitStatus.ACTIVE)
+        .join(models.BusinessUnit.bankAccount)
+        .filter(BankInformation.status == BankInformationStatus.ACCEPTED)
         .order_by(bookings_models.Booking.dateUsed, bookings_models.Booking.id)
         .options(
             sqla_orm.load_only(bookings_models.Booking.id),
@@ -107,6 +108,7 @@ def lock_business_unit(business_unit_id: int):
 
 
 def price_booking(booking: bookings_models.Booking) -> models.Pricing:
+    # pylint: disable=too-many-return-statements
     business_unit_id = booking.venue.businessUnitId
     if not business_unit_id:
         return None
@@ -120,9 +122,9 @@ def price_booking(booking: bookings_models.Booking) -> models.Pricing:
         booking = (
             bookings_models.Booking.query.filter_by(id=booking.id)
             .options(
-                sqla_orm.joinedload(bookings_models.Booking.venue, innerjoin=True).joinedload(
-                    offerers_models.Venue.businessUnit, innerjoin=True
-                ),
+                sqla_orm.joinedload(bookings_models.Booking.venue, innerjoin=True)
+                .joinedload(offerers_models.Venue.businessUnit, innerjoin=True)
+                .joinedload(models.BusinessUnit.bankAccount, innerjoin=True),
                 sqla_orm.joinedload(bookings_models.Booking.stock, innerjoin=True).joinedload(
                     offers_models.Stock.offer, innerjoin=True
                 ),
@@ -135,13 +137,15 @@ def price_booking(booking: bookings_models.Booking) -> models.Pricing:
         if not booking.isUsed:
             return None
 
+        business_unit = booking.venue.businessUnit
         # FIXME (dbaty, 2021-12-08): we can get rid of this condition
         # once BusinessUnit.siret is set as NOT NULLable.
-        if not booking.venue.businessUnit.siret:
+        if not business_unit.siret:
             return None
-        # FIXME (dbaty, 2021-12-08): once BusinessUnit can have a
-        # deletion date, we should also ignore deleted business units
-        # here.
+        if business_unit.status != models.BusinessUnitStatus.ACTIVE:
+            return None
+        if business_unit.bankAccount.status != BankInformationStatus.ACCEPTED:
+            return None
 
         # Pricing the same booking twice is not allowed (and would be
         # rejected by a database constraint, anyway).
