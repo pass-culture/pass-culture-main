@@ -17,7 +17,6 @@ import React, {
 import { Link } from 'react-router-dom'
 
 import useActiveFeature from 'components/hooks/useActiveFeature'
-import InternalBanner from 'components/layout/InternalBanner'
 import CheckboxInput from 'components/layout/inputs/CheckboxInput'
 import DurationInput from 'components/layout/inputs/DurationInput/DurationInput'
 import Select, {
@@ -26,6 +25,7 @@ import Select, {
 } from 'components/layout/inputs/Select'
 import TextareaInput from 'components/layout/inputs/TextareaInput'
 import TextInput from 'components/layout/inputs/TextInput/TextInput'
+import InternalBanner from 'components/layout/InternalBanner'
 import Spinner from 'components/layout/Spinner'
 import { SubmitButton } from 'ui-kit'
 import { doesUserPreferReducedMotion } from 'utils/windowMatchMedia'

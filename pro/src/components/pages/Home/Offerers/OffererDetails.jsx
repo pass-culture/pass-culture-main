@@ -24,6 +24,17 @@ const hasRejectedOrDraftBankInformation = offerer =>
     offerer.demarchesSimplifieesApplicationId && !offerer.iban && !offerer.bic
   )
 
+const initialIsExpanded = (
+  hasPhysicalVenues,
+  isBankInformationWithSiretActive,
+  hasInvalidBusinessUnits
+) => {
+  return (
+    !hasPhysicalVenues ||
+    (isBankInformationWithSiretActive && hasInvalidBusinessUnits)
+  )
+}
+
 const OffererDetails = ({
   businessUnitList,
   handleChangeOfferer,
@@ -32,17 +43,8 @@ const OffererDetails = ({
   offererOptions,
   selectedOfferer,
 }) => {
-  const [isExpanded, setIsExpanded] = useState(!hasPhysicalVenues)
-
   const isBankInformationWithSiretActive = useActiveFeature(
     'ENFORCE_BANK_INFORMATION_WITH_SIRET'
-  )
-
-  useEffect(() => setIsExpanded(!hasPhysicalVenues), [hasPhysicalVenues])
-
-  const toggleVisibility = useCallback(
-    () => setIsExpanded(currentVisibility => !currentVisibility),
-    []
   )
 
   const hasRejectedOrDraftOffererBankInformations = useMemo(() => {
@@ -57,6 +59,35 @@ const OffererDetails = ({
       businessUnitList.filter(businessUnit => !businessUnit.siret).length > 0
     )
   }, [selectedOfferer, businessUnitList, isBankInformationWithSiretActive])
+
+  const [isExpanded, setIsExpanded] = useState(
+    initialIsExpanded(
+      hasPhysicalVenues,
+      isBankInformationWithSiretActive,
+      hasInvalidBusinessUnits
+    )
+  )
+
+  useEffect(
+    () =>
+      setIsExpanded(
+        initialIsExpanded(
+          hasPhysicalVenues,
+          isBankInformationWithSiretActive,
+          hasInvalidBusinessUnits
+        )
+      ),
+    [
+      hasPhysicalVenues,
+      isBankInformationWithSiretActive,
+      hasInvalidBusinessUnits,
+    ]
+  )
+
+  const toggleVisibility = useCallback(
+    () => setIsExpanded(currentVisibility => !currentVisibility),
+    []
+  )
 
   return (
     <div className="h-card h-card-secondary" data-testid="offerrer-wrapper">
@@ -88,21 +119,21 @@ const OffererDetails = ({
               </>
             )}
           </button>
-          {isBankInformationWithSiretActive && hasInvalidBusinessUnits && (
-            <Icon
-              alt="SIRET Manquant"
-              className="ico-bank-warning"
-              svg="ico-alert-filled"
-            />
-          )}
-          {selectedOfferer.hasMissingBankInformation &&
-            !hasInvalidBusinessUnits && (
-              <Icon
-                alt="Informations bancaires manquantes"
-                className="ico-bank-warning"
-                svg="ico-alert-filled"
-              />
-            )}
+          {isBankInformationWithSiretActive
+            ? hasInvalidBusinessUnits && (
+                <Icon
+                  alt="SIRET Manquant"
+                  className="ico-bank-warning"
+                  svg="ico-alert-filled"
+                />
+              )
+            : selectedOfferer.hasMissingBankInformation && (
+                <Icon
+                  alt="Informations bancaires manquantes"
+                  className="ico-bank-warning"
+                  svg="ico-alert-filled"
+                />
+              )}
           <div className="od-separator vertical small" />
           {isUserOffererValidated ? (
             <Link
