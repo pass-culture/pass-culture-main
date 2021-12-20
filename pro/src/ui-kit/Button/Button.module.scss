@@ -1,0 +1,85 @@
+.button {
+  @include button();
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-width: 2px;
+  border-style: solid;
+  border-radius: rem(24px);
+  height: rem(40px);
+  line-height: rem(36px);
+  padding: 0 rem(16px);
+
+  svg {
+    height: rem(20px);
+    margin-right: rem(6px);
+    margin-left: rem(-4px); // compensate for icon white space adding to padding
+    width: rem(20px);
+  }
+
+  &:focus {
+    outline: none;
+  }
+  
+  &:hover {
+    cursor: pointer;
+  }
+
+  &:disabled {
+    cursor: default;
+  }
+
+  &-primary {
+    color: $white;
+    background-color: $primary;
+    border-color: $primary;
+
+    &:hover,
+    &:focus {
+      background-color: $primary-dark;
+      border-color: $primary-dark;
+      
+    }
+
+    &:disabled {
+      background-color: $primary-disabled;
+      border-color: $primary-disabled;
+    }
+  }
+  
+  
+  &-secondary {
+    color: $primary;
+    background-color: $white;
+    border-color: $primary;
+
+    &:hover,
+    &:focus {
+      color: $white;
+      background-color: $primary;
+    }
+
+    &:disabled {
+      background-color: $white;
+      border-color: $primary-disabled;
+      color: $primary-disabled;
+    }
+  }
+  
+  &-ternary {
+    color: $black;
+    background-color: transparent;
+    border-color: transparent;
+    padding: 0 rem(8px);
+
+    &:hover,
+    &:focus {
+      text-decoration: underline;
+    }
+
+    &:disabled {
+      color: $grey-medium;
+      text-decoration: none;
+    }
+  }
+}
