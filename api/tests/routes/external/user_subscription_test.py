@@ -736,6 +736,7 @@ class UbbleWebhookTest:
         db.session.refresh(user)
         assert user.dateOfBirth != document_birth_date
         assert user.dateOfBirth == subscription_birth_date
+        assert fraud_check.source_data().birth_date == user.dateOfBirth.date()
 
     def test_birth_date_updated_non_with_ubble_test_emails(self, client, ubble_mocker, mocker):
         email = "whatever@example.com"
