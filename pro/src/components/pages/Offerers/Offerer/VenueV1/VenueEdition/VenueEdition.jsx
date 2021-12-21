@@ -143,6 +143,11 @@ const VenueEdition = ({
       venueLabelId,
     } = values
 
+    const cancelBusinessUnitModification = form => {
+      form.change('businessUnitId', venue.businessUnitId)
+      setShowConfirmationDialog(false)
+    }
+
     const isDirtyFieldBookingEmail = bookingEmail !== venue.bookingEmail
     const siretValidOnModification = initialSiret !== null
     const fieldReadOnlyBecauseFrozenFormSiret =
@@ -232,7 +237,7 @@ const VenueEdition = ({
         </form>
         {showConfirmationDialog && (
           <DeleteBusinessUnitConfirmationDialog
-            onCancel={() => setShowConfirmationDialog(false)}
+            onCancel={() => cancelBusinessUnitModification(form)}
             onConfirm={() => onConfirmDeleteBusinessUnit(handleSubmit)}
           />
         )}
