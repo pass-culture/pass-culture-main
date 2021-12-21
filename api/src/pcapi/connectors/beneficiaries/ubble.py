@@ -84,6 +84,8 @@ def _extract_useful_content_from_response(
         score=score,
         status=status,
         supported=getattr(document_checks, "supported", None),
+        signed_image_front_url=getattr(documents, "signed_image_front_url", None),
+        signed_image_back_url=getattr(documents, "signed_image_back_url", None),
     )
     return content
 

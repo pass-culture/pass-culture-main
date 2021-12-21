@@ -4,3 +4,7 @@ class FraudException(Exception):
 
 class UserAlreadyBeneficiary(FraudException):
     pass
+
+
+class IncompatibleFraudCheckStatus(FraudException):
+    pass

@@ -496,6 +496,7 @@ class OnSuccessfulDMSApplicationTest:
         fraud_factories.BeneficiaryFraudCheckFactory(
             user=applicant, type=fraud_models.FraudCheckType.DMS, status=fraud_models.FraudCheckStatus.OK
         )
+
         # when
         subscription_api.on_successful_application(user=applicant, source_data=information)
 

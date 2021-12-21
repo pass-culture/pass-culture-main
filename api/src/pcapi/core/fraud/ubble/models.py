@@ -42,6 +42,8 @@ class UbbleContent(IdentityCheckContent):
     score: typing.Optional[float]
     status: typing.Optional[UbbleIdentificationStatus]
     supported: typing.Optional[float]
+    signed_image_front_url: typing.Optional[pydantic.HttpUrl]
+    signed_image_back_url: typing.Optional[pydantic.HttpUrl]
 
     _parse_birth_date = pydantic.validator("birth_date", pre=True, allow_reuse=True)(
         lambda d: datetime.datetime.strptime(d, "%Y-%m-%d").date() if d is not None else None
@@ -104,6 +106,8 @@ class UbbleIdentificationDocuments(UbbleIdentificationObject):
     gender: users_models.GenderEnum = pydantic.Field(None)
     last_name: str = pydantic.Field(None, alias="last-name")
     married_name: str = pydantic.Field(None, alias="married-name")
+    signed_image_front_url: str = pydantic.Field(None, alias="signed-image-front-url")
+    signed_image_back_url: str = pydantic.Field(None, alias="signed-image-back-url")
 
 
 class UbbleIdentificationDocumentChecks(UbbleIdentificationObject):

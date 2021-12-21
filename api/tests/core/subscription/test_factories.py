@@ -197,6 +197,8 @@ class UbbleIdentificationIncludedDocumentsAttributesFactory(factory.Factory):
             "issuing_state_code": "issuing-state-code",
             "last_name": "last-name",
             "married_name": "married-name",
+            "signed_image_front_url": "signed-image-front-url",
+            "signed_image_back_url": "signed-image-back-url",
         }
 
     birth_date = factory.LazyFunction(lambda: str(datetime.date.today() - relativedelta(years=18)))
@@ -218,6 +220,8 @@ class UbbleIdentificationIncludedDocumentsAttributesFactory(factory.Factory):
     obtaining_date = None
     personal_number = None
     remarks = None
+    signed_image_front_url = None
+    signed_image_back_url = None
 
 
 class UbbleIdentificationIncludedDocumentChecksAttributesFactory(factory.Factory):

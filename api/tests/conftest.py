@@ -221,10 +221,19 @@ def ubble_mock_http_error_status(requests_mock):  # pylint: disable=redefined-ou
 @pytest.fixture
 def ubble_mocker() -> typing.Callable:
     @contextlib.contextmanager
-    def ubble_mock(identification_id: str, response: str, method="get") -> None:  # pylint: disable=redefined-outer-name
+    def ubble_mock(  # pylint: disable=redefined-outer-name
+        identification_id: str, response: str, method="get", mocker: requests_mock.Mocker = None
+    ) -> None:
+
         url = f"{settings.UBBLE_API_URL}/identifications/{identification_id}/"
-        with requests_mock.Mocker() as m:
-            getattr(m, method)(url, text=response)
+
+        if mocker is None:
+            mocker = requests_mock.Mocker()
+            with mocker:
+                getattr(mocker, method)(url, text=response)
+                yield
+        else:
+            getattr(mocker, method)(url, text=response)
             yield
 
     return ubble_mock

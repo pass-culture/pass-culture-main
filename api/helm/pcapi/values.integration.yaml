@@ -43,3 +43,5 @@ secrets:
   - name: APPS_FLYER_IOS_API_KEY
   - name: GOOGLE_CLIENT_ID
   - name: GOOGLE_CLIENT_SECRET
+  - name: OUTSCALE_ACCESS_KEY
+  - name: OUTSCALE_SECRET_KEY
