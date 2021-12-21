@@ -53,10 +53,12 @@ const BankInformationWithBusinessUnit = ({ readOnly, offerer, venue }) => {
       )
 
       setDisplayedBanners({
-        [CREATE_DMS_FILE_BANNER]: !venue.isBusinessUnitMainVenue,
-        [REPLACE_DMS_FILE_BUTTON]: venue.isBusinessUnitMainVenue,
+        [CREATE_DMS_FILE_BANNER]: venue.id && !venue.isBusinessUnitMainVenue,
+        [REPLACE_DMS_FILE_BUTTON]: venue.id && venue.isBusinessUnitMainVenue,
         [PENDING_DMS_FILE_BANNER]:
-          !venue.businessUnitId && venue.demarchesSimplifieesApplicationId,
+          venue.id &&
+          !venue.businessUnitId &&
+          venue.demarchesSimplifieesApplicationId,
       })
       setIsLoading(false)
     }
