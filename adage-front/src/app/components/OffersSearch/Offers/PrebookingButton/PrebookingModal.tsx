@@ -26,8 +26,19 @@ const PrebookingModal = ({
     <p>
       Votre préréservation a été effectuée avec succès !<br />
       <br /> Pour que votre chef d’établissement puisse la valider, rendez-vous
-      dans la rubrique <b>Recensement</b>, puis cliquez sur <b>Recenser</b> pour
-      créer ou rattacher votre offre à un projet.
+      dans la rubrique{' '}
+      <b>
+        <a
+          className="prebooking-modal-link"
+          href={`${document.referrer}/adage/etab/volet`}
+          target="_parent"
+        >
+          Recensement
+        </a>
+      </b>
+      , puis cliquez sur <b>Recenser</b> pour rattacher votre offre à un{' '}
+      <b>enseignement artistique</b>, un <b>projet</b>, une <b>action</b> ou un{' '}
+      <b>événement culturel</b>.
     </p>
     <button
       className="prebooking-modal-button"

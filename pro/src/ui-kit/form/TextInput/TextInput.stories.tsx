@@ -24,4 +24,4 @@ const Template: Story<{ label: string }> = ({ label }) => (
 
 export const WithoutLabel = Template.bind({})
 export const WithLabel = Template.bind({})
-WithLabel.args = { label: 'Email' }
+WithLabel.args = { label: 'E-mail' }

@@ -38,8 +38,14 @@
   }
 }
 
-.prebooking-modal-button {
-  display: flex;
-  justify-content: center;
-  margin-top: rem(32px);
+.prebooking-modal {
+  &-button {
+    display: flex;
+    justify-content: center;
+    margin-top: rem(32px);
+  }
+
+  &-link {
+    color: inherit;
+  }
 }
