@@ -697,10 +697,14 @@ class UbbleWebhookTest:
             content.identification_url == f"{settings.UBBLE_API_URL}/identifications/{str(content.identification_id)}"
         )
 
-    def test_birth_date_not_updated_with_ubble_test_emails(self, client, ubble_mocker, mocker):
+    def test_birth_date_overrided_with_ubble_test_emails(self, client, ubble_mocker, mocker):
         email = "whatever+ubble_test@example.com"
-        subscription_birth_date = datetime.datetime.combine(datetime.date(1980, 1, 1), datetime.time(0, 0))
-        document_birth_date = datetime.datetime.combine(datetime.date(2004, 6, 16), datetime.time(0, 0))
+        subscription_birth_date = datetime.datetime.combine(
+            datetime.date.today(), datetime.time(0, 0)
+        ) - relativedelta.relativedelta(years=18, months=6)
+        document_birth_date = datetime.datetime.combine(
+            datetime.date.today(), datetime.time(0, 0)
+        ) - relativedelta.relativedelta(years=28)
         user = users_factories.UserFactory(email=email, dateOfBirth=subscription_birth_date)
         fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
             type=fraud_models.FraudCheckType.UBBLE,
@@ -708,6 +712,10 @@ class UbbleWebhookTest:
                 status=test_factories.STATE_STATUS_MAPPING[test_factories.IdentificationState.PROCESSING].value,
             ),
             user=user,
+            status=fraud_models.FraudCheckStatus.PENDING,
+            reason=None,
+            reasonCodes=None,
+            eligibilityType=users_models.EligibilityType.AGE18,
         )
         request_data = self._get_request_body(fraud_check, fraud_models.ubble.UbbleIdentificationStatus.PROCESSED)
         payload = json.dumps(request_data.dict(by_alias=True), default=json_default)
@@ -734,14 +742,20 @@ class UbbleWebhookTest:
             )
 
         db.session.refresh(user)
-        assert user.dateOfBirth != document_birth_date
-        assert user.dateOfBirth == subscription_birth_date
-        assert fraud_check.source_data().birth_date == user.dateOfBirth.date()
+        db.session.refresh(fraud_check)
+        assert fraud_check.source_data().birth_date != document_birth_date.date()
+        assert fraud_check.source_data().birth_date == subscription_birth_date.date()
+        assert user.has_beneficiary_role is True
+        assert fraud_check.status == fraud_models.FraudCheckStatus.OK
 
-    def test_birth_date_updated_non_with_ubble_test_emails(self, client, ubble_mocker, mocker):
+    def test_birth_date_not_overrided_with_non_ubble_test_emails(self, client, ubble_mocker, mocker):
         email = "whatever@example.com"
-        subscription_birth_date = datetime.datetime.combine(datetime.date(1980, 1, 1), datetime.time(0, 0))
-        document_birth_date = datetime.datetime.combine(datetime.date(2004, 6, 16), datetime.time(0, 0))
+        subscription_birth_date = datetime.datetime.combine(
+            datetime.date.today(), datetime.time(0, 0)
+        ) - relativedelta.relativedelta(years=18, months=6)
+        document_birth_date = datetime.datetime.combine(
+            datetime.date.today(), datetime.time(0, 0)
+        ) - relativedelta.relativedelta(years=28)
         user = users_factories.UserFactory(email=email, dateOfBirth=subscription_birth_date)
         fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
             type=fraud_models.FraudCheckType.UBBLE,
@@ -749,6 +763,10 @@ class UbbleWebhookTest:
                 status=test_factories.STATE_STATUS_MAPPING[test_factories.IdentificationState.PROCESSING].value,
             ),
             user=user,
+            status=fraud_models.FraudCheckStatus.PENDING,
+            reason=None,
+            reasonCodes=None,
+            eligibilityType=users_models.EligibilityType.AGE18,
         )
         request_data = self._get_request_body(fraud_check, fraud_models.ubble.UbbleIdentificationStatus.PROCESSED)
         payload = json.dumps(request_data.dict(by_alias=True), default=json_default)
@@ -775,14 +793,21 @@ class UbbleWebhookTest:
             )
 
         db.session.refresh(user)
-        assert user.dateOfBirth == document_birth_date
-        assert user.dateOfBirth != subscription_birth_date
+        db.session.refresh(fraud_check)
+        assert fraud_check.source_data().birth_date == document_birth_date.date()
+        assert fraud_check.source_data().birth_date != subscription_birth_date.date()
+        assert user.has_beneficiary_role is False
+        assert fraud_check.status == fraud_models.FraudCheckStatus.KO
 
     @testing.override_settings(IS_PROD=True)
     def test_ubble_test_emails_not_actives_on_production(self, client, ubble_mocker, mocker):
         email = "whatever+ubble_test@example.com"
-        subscription_birth_date = datetime.datetime.combine(datetime.date(1980, 1, 1), datetime.time(0, 0))
-        document_birth_date = datetime.datetime.combine(datetime.date(2004, 6, 16), datetime.time(0, 0))
+        subscription_birth_date = datetime.datetime.combine(
+            datetime.date.today(), datetime.time(0, 0)
+        ) - relativedelta.relativedelta(years=18, months=6)
+        document_birth_date = datetime.datetime.combine(
+            datetime.date.today(), datetime.time(0, 0)
+        ) - relativedelta.relativedelta(years=28)
         user = users_factories.UserFactory(email=email, dateOfBirth=subscription_birth_date)
         fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
             type=fraud_models.FraudCheckType.UBBLE,
@@ -790,6 +815,10 @@ class UbbleWebhookTest:
                 status=test_factories.STATE_STATUS_MAPPING[test_factories.IdentificationState.PROCESSING].value,
             ),
             user=user,
+            status=fraud_models.FraudCheckStatus.PENDING,
+            reason=None,
+            reasonCodes=None,
+            eligibilityType=users_models.EligibilityType.AGE18,
         )
         request_data = self._get_request_body(fraud_check, fraud_models.ubble.UbbleIdentificationStatus.PROCESSED)
         payload = json.dumps(request_data.dict(by_alias=True), default=json_default)
@@ -816,14 +845,17 @@ class UbbleWebhookTest:
             )
 
         db.session.refresh(user)
-        assert user.dateOfBirth == document_birth_date
-        assert user.dateOfBirth != subscription_birth_date
+        db.session.refresh(fraud_check)
+        assert fraud_check.source_data().birth_date == document_birth_date.date()
+        assert fraud_check.source_data().birth_date != subscription_birth_date.date()
+        assert user.has_beneficiary_role is False
+        assert fraud_check.status == fraud_models.FraudCheckStatus.KO
 
     def test_older_than_18_cannot_become_beneficiary(self, client, ubble_mocker):
-        fraudulous_birth_date = datetime.datetime.now() - relativedelta.relativedelta(years=18, months=6)
-        document_birth_date = datetime.datetime.now() - relativedelta.relativedelta(years=28)
+        fraudulous_birth_date = datetime.datetime.now().date() - relativedelta.relativedelta(years=18, months=6)
+        document_birth_date = datetime.datetime.now().date() - relativedelta.relativedelta(years=28)
         user = users_factories.UserFactory(
-            dateOfBirth=fraudulous_birth_date,
+            dateOfBirth=datetime.datetime.combine(fraudulous_birth_date, datetime.time(0, 0)),
         )
         profiling_fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
             user=user,
@@ -841,7 +873,7 @@ class UbbleWebhookTest:
             type=fraud_models.FraudCheckType.UBBLE,
             thirdPartyId=identification_id,
             resultContent={
-                "birth_date": document_birth_date.date().isoformat(),
+                "birth_date": document_birth_date.isoformat(),
                 "comment": "",
                 "document_type": "CI",
                 "expiry_date_score": None,
