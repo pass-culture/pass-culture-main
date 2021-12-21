@@ -568,18 +568,23 @@ class ProfileOptionsTypeTest:
                 },
             ],
             "school_types": [
-                {"id": "AGRICULTURAL_HIGH_SCHOOL", "label": "Lycée agricole"},
+                {"id": "AGRICULTURAL_HIGH_SCHOOL", "description": None, "label": "Lycée agricole"},
                 {
                     "id": "APPRENTICE_FORMATION_CENTER",
+                    "description": None,
                     "label": "Centre de formation d'apprentis",
                 },
-                {"id": "MILITARY_HIGH_SCHOOL", "label": "Lycée militaire"},
-                {"id": "HOME_OR_REMOTE_SCHOOLING", "label": "À domicile ou au CNED"},
-                {"id": "NAVAL_HIGH_SCHOOL", "label": "Lycée maritime"},
-                {"id": "PRIVATE_HIGH_SCHOOL", "label": "Lycée privé"},
-                {"id": "PRIVATE_SECONDARY_SCHOOL", "label": "Collège privé"},
-                {"id": "PUBLIC_HIGH_SCHOOL", "label": "Lycée public"},
-                {"id": "PUBLIC_SECONDARY_SCHOOL", "label": "Collège public"},
+                {"id": "MILITARY_HIGH_SCHOOL", "description": None, "label": "Lycée militaire"},
+                {
+                    "id": "HOME_OR_REMOTE_SCHOOLING",
+                    "description": "À domicile, CNED, institut de santé, etc.",
+                    "label": "Accompagnement spécialisé",
+                },
+                {"id": "NAVAL_HIGH_SCHOOL", "description": None, "label": "Lycée maritime"},
+                {"id": "PRIVATE_HIGH_SCHOOL", "description": None, "label": "Lycée privé"},
+                {"id": "PRIVATE_SECONDARY_SCHOOL", "description": None, "label": "Collège privé"},
+                {"id": "PUBLIC_HIGH_SCHOOL", "description": None, "label": "Lycée public"},
+                {"id": "PUBLIC_SECONDARY_SCHOOL", "description": None, "label": "Collège public"},
             ],
         }
 
