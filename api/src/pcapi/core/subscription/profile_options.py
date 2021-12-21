@@ -70,21 +70,21 @@ ALL_SCHOOL_TYPES = [
 MIDDLE_SCHOOL_STUDENT = Activity(
     users_models.ActivityEnum.MIDDLE_SCHOOL_STUDENT,
     associated_school_types_ids=[
-        PRIVATE_SECONDARY_SCHOOL.id,
         PUBLIC_SECONDARY_SCHOOL.id,
+        PRIVATE_SECONDARY_SCHOOL.id,
         HOME_OR_REMOTE_SCHOOLING.id,
     ],
 )
 HIGH_SCHOOL_STUDENT = Activity(
     users_models.ActivityEnum.HIGH_SCHOOL_STUDENT,
     associated_school_types_ids=[
+        PUBLIC_HIGH_SCHOOL.id,
+        PRIVATE_HIGH_SCHOOL.id,
         AGRICULTURAL_HIGH_SCHOOL.id,
         MILITARY_HIGH_SCHOOL.id,
         NAVAL_HIGH_SCHOOL.id,
-        PRIVATE_HIGH_SCHOOL.id,
-        PUBLIC_HIGH_SCHOOL.id,
-        HOME_OR_REMOTE_SCHOOLING.id,
         APPRENTICE_FORMATION_CENTER.id,
+        HOME_OR_REMOTE_SCHOOLING.id,
     ],
 )
 STUDENT = Activity(users_models.ActivityEnum.STUDENT)
