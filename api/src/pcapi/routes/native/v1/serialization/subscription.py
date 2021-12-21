@@ -35,6 +35,7 @@ class ProfileUpdateRequest(BaseModel):
 
 class SchoolTypeResponseModel(BaseModel):
     id: profile_options.SCHOOL_TYPE_ID_ENUM
+    description: Optional[str]
     label: str
 
     class Config:

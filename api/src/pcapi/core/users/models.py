@@ -152,7 +152,7 @@ class SchoolTypeEnum(enum.Enum):
     AGRICULTURAL_HIGH_SCHOOL = "Lycée agricole"
     APPRENTICE_FORMATION_CENTER = "Centre de formation d'apprentis"
     MILITARY_HIGH_SCHOOL = "Lycée militaire"
-    HOME_OR_REMOTE_SCHOOLING = "À domicile ou au CNED"
+    HOME_OR_REMOTE_SCHOOLING = "Accompagnement spécialisé"
     NAVAL_HIGH_SCHOOL = "Lycée maritime"
     PRIVATE_HIGH_SCHOOL = "Lycée privé"
     PRIVATE_SECONDARY_SCHOOL = "Collège privé"
