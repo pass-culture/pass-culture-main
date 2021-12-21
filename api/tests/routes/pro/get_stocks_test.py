@@ -7,6 +7,7 @@ from pcapi.core import testing
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.bookings.models import BookingStatus
 import pcapi.core.offers.factories as offers_factories
+from pcapi.core.testing import assert_num_queries
 import pcapi.core.users.factories as users_factories
 from pcapi.utils.human_ids import humanize
 
@@ -16,7 +17,7 @@ from tests.conftest import TestClient
 @pytest.mark.usefixtures("db_session")
 class Returns200Test:
     @freeze_time("2020-10-15 00:00:00")
-    def test_returns_an_event_stock(self, app, assert_num_queries):
+    def test_returns_an_event_stock(self, app):
         # Given
         now = datetime.utcnow()
         pro = users_factories.ProFactory()
@@ -68,7 +69,7 @@ class Returns200Test:
         }
 
     @freeze_time("2020-10-15 00:00:00")
-    def test_returns_an_editable_educational_stock(self, app, assert_num_queries):
+    def test_returns_an_editable_educational_stock(self, app):
         # Given
         now = datetime.utcnow()
         pro = users_factories.ProFactory()
@@ -122,7 +123,7 @@ class Returns200Test:
 
     # TODO gvanneste
     @freeze_time("2020-10-15 00:00:00")
-    def test_returns_a_non_editable_educational_stock(self, app, assert_num_queries):
+    def test_returns_a_non_editable_educational_stock(self, app):
         # Given
         now = datetime.utcnow()
         pro = users_factories.ProFactory()
@@ -219,7 +220,7 @@ class Returns200Test:
         }
 
     @freeze_time("2019-10-15 00:00:00")
-    def test_returns_a_thing_stock_with_activation_codes(self, app, assert_num_queries):
+    def test_returns_a_thing_stock_with_activation_codes(self, app):
         # Given
         now = datetime.utcnow()
         pro = users_factories.ProFactory()
@@ -292,7 +293,7 @@ class Returns200Test:
             "stocks": [],
         }
 
-    def test_query_performance(self, app, db_session, assert_num_queries):
+    def test_query_performance(self, app, db_session):
         # Given
         now = datetime.utcnow()
         pro = users_factories.ProFactory()

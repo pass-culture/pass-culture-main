@@ -3,6 +3,7 @@ from unittest.mock import patch
 
 from pcapi.core import testing
 import pcapi.core.offers.factories as offers_factories
+from pcapi.core.testing import assert_num_queries
 import pcapi.core.users.factories as users_factories
 from pcapi.utils.human_ids import humanize
 
@@ -11,7 +12,7 @@ from tests.conftest import TestClient
 
 class Returns200Test:
     def should_filter_by_venue_when_user_is_admin_and_request_specific_venue_with_no_rights_on_it(
-        self, app, db_session, assert_num_queries
+        self, app, db_session
     ):
         # Given
         admin = users_factories.AdminFactory()

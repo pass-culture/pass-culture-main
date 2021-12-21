@@ -75,9 +75,9 @@ def assert_num_queries(expected_n_queries):
     """A context manager that verifies that we do not perform unexpected
     SQL queries.
 
-    Usage (through the fixture of the same name)::
+    Usage::
 
-        def test_func(assert_num_queries):
+        def test_func():
             n_queries = 1   # authentication
             n_queries += 1  # select blobs
             n_queries += 2  # update blobs
