@@ -3,6 +3,7 @@ from typing import Optional
 from pcapi import settings
 from pcapi.connectors import api_entreprises
 from pcapi.core.finance.models import BusinessUnit
+from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers.models import Offerer
 from pcapi.domain.bank_information import CannotRegisterBankInformation
 from pcapi.domain.bank_information import check_new_bank_information_has_a_more_advanced_status
@@ -87,6 +88,7 @@ class SaveVenueBankInformations:
                 )
             business_unit.bankAccountId = updated_bank_information.id
             repository.save(business_unit)
+            offerers_api.set_business_unit_to_venue_id(business_unit.id, venue.identifier)
 
         return bank_information
 

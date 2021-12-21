@@ -29,6 +29,7 @@ class BankInformationsSQLRepository(BankInformationsRepository):
     def save(self, bank_informations: BankInformations) -> BankInformations:
         bank_informations_sql_entity = bank_informations_domain_converter.to_model(bank_informations)
         repository.save(bank_informations_sql_entity)
+        bank_informations.id = bank_informations_sql_entity.id
         return bank_informations
 
     def update_by_application_id(self, bank_informations: BankInformations) -> BankInformations:
@@ -48,6 +49,7 @@ class BankInformationsSQLRepository(BankInformationsRepository):
         bank_informations_sql_entity.dateModified = bank_informations.date_modified
 
         repository.save(bank_informations_sql_entity)
+        bank_informations.id = bank_informations_sql_entity.id
         return bank_informations
 
     def update_by_offerer_id(self, bank_informations: BankInformations) -> BankInformations:
@@ -66,6 +68,7 @@ class BankInformationsSQLRepository(BankInformationsRepository):
         bank_informations_sql_entity.dateModified = bank_informations.date_modified
 
         repository.save(bank_informations_sql_entity)
+        bank_informations.id = bank_informations_sql_entity.id
         return bank_informations
 
     def update_by_venue_id(self, bank_informations: BankInformations) -> BankInformations:
@@ -84,4 +87,5 @@ class BankInformationsSQLRepository(BankInformationsRepository):
         bank_informations_sql_entity.dateModified = bank_informations.date_modified
 
         repository.save(bank_informations_sql_entity)
+        bank_informations.id = bank_informations_sql_entity.id
         return bank_informations
