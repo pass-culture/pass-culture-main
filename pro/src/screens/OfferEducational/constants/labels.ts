@@ -11,7 +11,7 @@ export const EVENT_ADDRESS_OTHER_LABEL = 'Autre'
 export const EVENT_ADDRESS_OFFERER_VENUE_SELECT_LABEL = 'Sélectionner le lieu'
 export const EVENT_ADDRESS_OTHER_ADDRESS_LABEL = 'Adresse de l’événement'
 export const PHONE_LABEL = 'Téléphone'
-export const EMAIL_LABEL = 'Email'
+export const EMAIL_LABEL = 'E-mail'
 export const NOTIFICATIONS_LABEL = 'Être notifié par e-mail des réservations'
 export const NOTIFICATIONS_EMAIL_LABEL =
   'E-mail auquel envoyer les notifications'
