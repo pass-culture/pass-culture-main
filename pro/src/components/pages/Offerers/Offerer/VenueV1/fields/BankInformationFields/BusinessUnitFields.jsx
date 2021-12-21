@@ -11,7 +11,7 @@ import Banner from 'components/layout/Banner/Banner'
 import Icon from 'components/layout/Icon'
 import Spinner from 'components/layout/Spinner'
 import { getBusinessUnits } from 'repository/pcapi/pcapi'
-import { DEMARCHES_SIMPLIFIEES_VENUE_RIB_UPLOAD_PROCEDURE_URL } from 'utils/config'
+import { DEMARCHES_SIMPLIFIEES_BUSINESS_UNIT_RIB_UPLOAD_PROCEDURE_URL } from 'utils/config'
 
 import { formatSiret } from '../../siret/formatSiret'
 
@@ -84,7 +84,7 @@ const BankInformationWithBusinessUnit = ({ readOnly, offerer, venue }) => {
         {displayedBanners[REPLACE_DMS_FILE_BUTTON] && (
           <a
             className="tertiary-link"
-            href={DEMARCHES_SIMPLIFIEES_VENUE_RIB_UPLOAD_PROCEDURE_URL}
+            href={DEMARCHES_SIMPLIFIEES_BUSINESS_UNIT_RIB_UPLOAD_PROCEDURE_URL}
             rel="noopener noreferrer"
             target="_blank"
           >
@@ -137,7 +137,7 @@ const BankInformationWithBusinessUnit = ({ readOnly, offerer, venue }) => {
         )}
         {displayedBanners[CREATE_DMS_FILE_BANNER] && (
           <Banner
-            href={DEMARCHES_SIMPLIFIEES_VENUE_RIB_UPLOAD_PROCEDURE_URL}
+            href={DEMARCHES_SIMPLIFIEES_BUSINESS_UNIT_RIB_UPLOAD_PROCEDURE_URL}
             linkTitle="Rendez-vous sur Démarches Simplifiées"
           >
             Vous souhaitez modifier ou ajouter des coordonnées bancaires ?
