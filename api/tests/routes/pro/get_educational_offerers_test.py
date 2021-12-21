@@ -41,6 +41,7 @@ class GetEducationalOfferersTest:
                             "publicName": venue_offerer_1.publicName,
                             "postalCode": venue_offerer_1.postalCode,
                             "visualDisabilityCompliant": venue_offerer_1.visualDisabilityCompliant,
+                            "name": venue_offerer_1.name,
                         }
                     ],
                 },
@@ -59,6 +60,7 @@ class GetEducationalOfferersTest:
                             "publicName": venue_offerer_2.publicName,
                             "postalCode": venue_offerer_2.postalCode,
                             "visualDisabilityCompliant": venue_offerer_2.visualDisabilityCompliant,
+                            "name": venue_offerer_2.name,
                         }
                     ],
                 },
@@ -113,6 +115,7 @@ class GetEducationalOfferersTest:
                             "publicName": venue_offerer_2.publicName,
                             "postalCode": venue_offerer_2.postalCode,
                             "visualDisabilityCompliant": venue_offerer_2.visualDisabilityCompliant,
+                            "name": venue_offerer_2.name,
                         }
                     ],
                 },
