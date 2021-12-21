@@ -70,6 +70,7 @@ const BankInformationWithBusinessUnit = ({ readOnly, offerer, venue }) => {
     venue.demarchesSimplifieesApplicationId,
     venue.isBusinessUnitMainVenue,
     venue.siret,
+    venue.id,
   ])
 
   if (isLoading) return <Spinner />
