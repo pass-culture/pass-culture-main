@@ -111,7 +111,7 @@ class EduconnectTest:
         assert response.status_code == 302
         assert (
             response.location
-            == "https://webapp-v2.example.com/idcheck/validation?firstName=Max&lastName=SENS&dateOfBirth=2006-08-18&logoutUrl=https%3A%2F%2Feduconnect.education.gouv.fr%2FLogout"
+            == "https://webapp-v2.example.com/validation?firstName=Max&lastName=SENS&dateOfBirth=2006-08-18&logoutUrl=https%3A%2F%2Feduconnect.education.gouv.fr%2FLogout"
         )
 
         assert caplog.records[0].extra == {
@@ -199,7 +199,7 @@ class EduconnectTest:
             response = client.post("/saml/acs", form={"SAMLResponse": "encrypted_data"})
 
         assert response.status_code == 302
-        assert response.location.startswith("https://webapp-v2.example.com/idcheck/validation")
+        assert response.location.startswith("https://webapp-v2.example.com/validation")
         assert caplog.messages == ["Fraud suspicion after Educonnect authentication: "]
         assert caplog.records[0].extra == {"userId": user.id, "educonnectId": educonnect_user.educonnect_id}
 
@@ -321,7 +321,7 @@ class EduconnectTest:
         response = client.post("/saml/acs", form={"SAMLResponse": "encrypted_data"})
 
         assert response.status_code == 302
-        assert response.location.startswith("https://webapp-v2.example.com/idcheck/validation")
+        assert response.location.startswith("https://webapp-v2.example.com/validation")
         assert user.beneficiaryFraudResults[0].status == fraud_models.FraudStatus.OK
 
     @override_features(ENABLE_INE_WHITELIST_FILTER=False)

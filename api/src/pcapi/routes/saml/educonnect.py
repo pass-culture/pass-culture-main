@@ -158,7 +158,7 @@ def on_educonnect_authentication_response() -> Response:  # pylint: disable=too-
         logger.exception("Error while creating BeneficiaryImport from Educonnect: %s", e, extra={"user_id": user.id})
         return redirect(ERROR_PAGE_URL, code=302)
 
-    user_information_validation_base_url = f"{settings.WEBAPP_V2_URL}/idcheck/validation?"
+    user_information_validation_base_url = f"{settings.WEBAPP_V2_URL}/validation?"
     query_params = {
         "firstName": educonnect_user.first_name,
         "lastName": educonnect_user.last_name,

@@ -176,7 +176,7 @@ class EduconnectFlowTest:
         assert response.status_code == 302
         assert (
             response.location
-            == "https://webapp-v2.example.com/idcheck/validation?firstName=Max&lastName=SENS&dateOfBirth=2006-08-18&logoutUrl=https%3A%2F%2Feduconnect.education.gouv.fr%2FLogout"
+            == "https://webapp-v2.example.com/validation?firstName=Max&lastName=SENS&dateOfBirth=2006-08-18&logoutUrl=https%3A%2F%2Feduconnect.education.gouv.fr%2FLogout"
         )
 
         assert len(user.beneficiaryFraudResults) == 1
@@ -266,7 +266,7 @@ class EduconnectFlowTest:
         assert response.status_code == 302
         assert (
             response.location
-            == "https://webapp-v2.example.com/idcheck/validation?firstName=Max&lastName=SENS&dateOfBirth=2006-08-18&logoutUrl=https%3A%2F%2Feduconnect.education.gouv.fr%2FLogout"
+            == "https://webapp-v2.example.com/validation?firstName=Max&lastName=SENS&dateOfBirth=2006-08-18&logoutUrl=https%3A%2F%2Feduconnect.education.gouv.fr%2FLogout"
         )
 
         assert len(user.beneficiaryFraudResults) == 1
