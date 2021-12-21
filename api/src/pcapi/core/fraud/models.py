@@ -352,6 +352,11 @@ class BeneficiaryFraudCheck(PcObject, Model):
         nullable=True,
     )
 
+    idPicturesStored = sqlalchemy.Column(
+        sqlalchemy.Boolean(),
+        nullable=True,
+    )
+
     def source_data(self) -> typing.Union[common_models.IdentityCheckContent, UserProfilingFraudData]:
         if self.type not in FRAUD_CHECK_MAPPING:
             raise NotImplementedError(f"Cannot unserialize type {self.type}")

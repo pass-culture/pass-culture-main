@@ -35,10 +35,14 @@ class WebhookRequestHeaders(pydantic.BaseModel):
 
 
 # Ubble only consider HTTP status 200 and 201 as success
-# but we are not able to resond with empty body unless we return a 204 HTTP status
+# but we are not able to respond with empty body unless we return a 204 HTTP status
 # so we need a dummy reponse_model to be used for the webhook response
 class WebhookDummyReponse(pydantic.BaseModel):
     status: str = "ok"
+
+
+class WebhookStoreIdPicturesRequest(pydantic.BaseModel):
+    identification_id: str
 
 
 def require_ubble_signature(route_function: Callable[..., Any]):

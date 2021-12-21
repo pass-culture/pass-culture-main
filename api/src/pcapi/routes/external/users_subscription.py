@@ -1,7 +1,9 @@
 import logging
 
+from pcapi.core.fraud.exceptions import IncompatibleFraudCheckStatus
 from pcapi.core.fraud.ubble import api as ubble_fraud_api
 from pcapi.core.subscription.dms import api as dms_subscription_api
+from pcapi.core.subscription.exceptions import BeneficiaryFraudCheckMissingException
 from pcapi.core.subscription.ubble import api as ubble_subscription_api
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.apis import public_api
@@ -44,5 +46,24 @@ def ubble_webhook_update_application_status(
             extra={"identitfication_id": body.identification_id, "user_id": fraud_check.userId},
         )
         raise ApiErrors({"msg": "an error occured during workflow update"}, status_code=500)
+
+    return ubble_validation.WebhookDummyReponse()
+
+
+@public_api.route("/webhooks/ubble/store_id_pictures", methods=["POST"])
+@spectree_serialize(
+    on_success_status=200,
+    response_model=ubble_validation.WebhookDummyReponse,
+)
+def ubble_webhook_store_id_pictures(
+    body: ubble_validation.WebhookStoreIdPicturesRequest,
+) -> ubble_validation.WebhookDummyReponse:
+    logger.info("Webhook store id pictures called ", extra={"identification_id": body.identification_id})
+    try:
+        ubble_subscription_api.archive_ubble_user_id_pictures(body.identification_id)
+    except BeneficiaryFraudCheckMissingException as err:
+        raise ApiErrors({"err": str(err)}, status_code=404)
+    except IncompatibleFraudCheckStatus as err:
+        raise ApiErrors({"err": str(err)}, status_code=422)
 
     return ubble_validation.WebhookDummyReponse()
