@@ -258,7 +258,7 @@ def update_ubble_workflow(
     content = ubble.get_content(fraud_check.thirdPartyId)
 
     if not settings.IS_PROD and fraud_api.ubble.does_match_ubble_test_email(fraud_check.user.email):
-        content.birth_date = fraud_check.user.dateOfBirth
+        content.birth_date = fraud_check.user.dateOfBirth.date() if fraud_check.user.dateOfBirth else None
 
     fraud_check.resultContent = content
     pcapi_repository.repository.save(fraud_check)
