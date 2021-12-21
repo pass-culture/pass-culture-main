@@ -1,5 +1,9 @@
 import datetime
+from io import BytesIO
 import json
+import logging
+import pathlib
+from unittest.mock import patch
 
 from dateutil.relativedelta import relativedelta
 import freezegun
@@ -7,20 +11,31 @@ import pytest
 
 from pcapi.core.fraud import factories as fraud_factories
 from pcapi.core.fraud import models as fraud_models
+from pcapi.core.fraud.exceptions import IncompatibleFraudCheckStatus
+from pcapi.core.fraud.factories import BeneficiaryFraudCheckFactory
+from pcapi.core.fraud.models import BeneficiaryFraudCheck
+from pcapi.core.fraud.models import FraudCheckStatus
+from pcapi.core.fraud.models import FraudCheckType
 from pcapi.core.fraud.ubble import api as ubble_fraud_api
 from pcapi.core.fraud.ubble import models as ubble_fraud_models
+from pcapi.core.fraud.ubble.models import UbbleContent
 from pcapi.core.subscription import messages as subscription_messages
 from pcapi.core.subscription import models as subscription_models
+from pcapi.core.subscription.exceptions import BeneficiaryFraudCheckMissingException
 from pcapi.core.subscription.ubble import api as ubble_subscription_api
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 
+import tests
 from tests.core.subscription.test_factories import IdentificationState
 from tests.core.subscription.test_factories import UbbleIdentificationIncludedDocumentsFactory
 from tests.core.subscription.test_factories import UbbleIdentificationIncludedReferenceDataChecksFactory
 from tests.core.subscription.test_factories import UbbleIdentificationResponseFactory
 from tests.test_utils import json_default
+
+
+IMAGES_DIR = pathlib.Path(tests.__path__[0]) / "files"
 
 
 @pytest.mark.usefixtures("db_session")
@@ -369,3 +384,257 @@ class UbbleSubscriptionItemStatusTest:
         )
 
         assert status == subscription_models.SubscriptionItemStatus.KO
+
+
+class DownloadUbbleDocumentPictureTest:
+    picture_path = "https://storage.ubble.ai/FRA-I4-Front-1640326309790.png"
+    ubble_content = UbbleContent(signed_image_front_url=picture_path, signed_image_back_url=None)
+    fraud_check = BeneficiaryFraudCheck(userId=123, thirdPartyId="abcd")
+
+    def test_download_ubble_document_pictures_with_expired_request(self, requests_mock, caplog):
+        # Given
+        requests_mock.register_uri(
+            "GET",
+            self.picture_path,
+            status_code=403,
+            body="""<?xml version="1.0" encoding="UTF-8"?>
+                <Error>
+                    <Code>AccessDenied</Code>
+                    <Message>Request has expired</Message>
+                </Error>""",
+        )
+
+        # When
+        with caplog.at_level(logging.INFO):
+            res = ubble_subscription_api.download_ubble_document_pictures(
+                ubble_content=self.ubble_content, fraud_check=self.fraud_check
+            )
+
+        # Then
+        assert res["front"] is None
+        assert res["back"] is None
+        record = caplog.records[1]
+        assert "Unable to retrieve ubble file, request is expired" in record.message
+        assert self.picture_path in record.extra["url"]
+
+    def test_download_ubble_document_pictures_with_empty_file(self, requests_mock, caplog):
+        # Given
+        empty_file = BytesIO()
+
+        requests_mock.register_uri(
+            "GET", self.picture_path, status_code=200, headers={"content-type": "image/png"}, body=empty_file
+        )
+
+        # When
+        with caplog.at_level(logging.INFO):
+            res = ubble_subscription_api.download_ubble_document_pictures(
+                ubble_content=self.ubble_content, fraud_check=self.fraud_check
+            )
+
+        # Then
+        assert res["front"] is None
+        assert res["back"] is None
+        assert len(caplog.records) >= 2
+        record = caplog.records[0]
+        assert "External service called" in record.message
+        record = caplog.records[1]
+        assert "Ubble identity file URL given but uploaded file is empty" in record.message
+        assert self.picture_path in record.extra["url"]
+
+    def test_download_ubble_document_pictures_with_unknown_error(self, requests_mock, caplog):
+        # Given
+        requests_mock.register_uri("GET", self.picture_path, status_code=503)
+
+        # When
+        with caplog.at_level(logging.INFO):
+            res = ubble_subscription_api.download_ubble_document_pictures(
+                ubble_content=self.ubble_content, fraud_check=self.fraud_check
+            )
+
+        # Then
+        assert res["front"] is None
+        assert res["back"] is None
+        record = caplog.records[1]
+        assert "Unable to retrieve ubble file, unknown error" in record.message
+        assert self.picture_path in record.extra["url"]
+        assert record.extra["status_code"] == 503
+
+    def test_download_ubble_document_pictures_successfully(self, requests_mock):
+        # Given
+        with open(f"{IMAGES_DIR}/carte_identite_front.png", "rb") as img:
+            identity_file_picture = BytesIO(img.read())
+
+        requests_mock.register_uri(
+            "GET", self.picture_path, status_code=200, headers={"content-type": "image/png"}, body=identity_file_picture
+        )
+
+        # When
+        res = ubble_subscription_api.download_ubble_document_pictures(
+            ubble_content=self.ubble_content, fraud_check=self.fraud_check
+        )
+
+        # Then
+        assert res["front"]["file_name"] == "123-abcd-front.png"
+        assert res["front"]["file_path"].exists()
+        assert res["back"] is None
+
+
+@pytest.mark.usefixtures("db_session")
+class ArchiveUbbleUserIdPicturesTest:
+    front_picture_url = "https://storage.ubble.ai/front-picture.png?response-content-type=image%2Fpng"
+    back_picture_url = "https://storage.ubble.ai/back-picture.png?response-content-type=image%2Fpng"
+
+    def test_archive_ubble_user_id_pictures_with_unknown_fraud_check(self):
+        # Given
+        unknown_fraud_check_id = "unknown_fraud_check_id"
+
+        # When
+        with pytest.raises(BeneficiaryFraudCheckMissingException) as error:
+            ubble_subscription_api.archive_ubble_user_id_pictures(unknown_fraud_check_id)
+
+        # Then
+        assert f"No validated Identity fraudCheck found with identification_id {unknown_fraud_check_id}" in str(
+            error.value
+        )
+
+    def test_archive_ubble_user_id_pictures_fraud_check_is_not_ok(self, ubble_mocker, requests_mock):
+        # Given
+        fraud_check = BeneficiaryFraudCheckFactory(status=FraudCheckStatus.KO, type=FraudCheckType.UBBLE)
+
+        # When
+        with pytest.raises(IncompatibleFraudCheckStatus) as error:
+            ubble_subscription_api.archive_ubble_user_id_pictures(fraud_check.thirdPartyId)
+
+        # Then
+        assert (
+            f"Fraud check status FraudCheckStatus.KO is incompatible with pictures archives for identification_id {fraud_check.thirdPartyId}"
+            in str(error.value)
+        )
+
+    def test_archive_ubble_user_id_pictures_no_file_saved(self, ubble_mocker, requests_mock):
+        # Given
+        fraud_check = BeneficiaryFraudCheckFactory(status=FraudCheckStatus.OK, type=FraudCheckType.UBBLE)
+
+        ubble_response = UbbleIdentificationResponseFactory(
+            identification_state=IdentificationState.VALID,
+            data__attributes__identification_id=str(fraud_check.thirdPartyId),
+            included=[
+                UbbleIdentificationIncludedDocumentsFactory(
+                    attributes__signed_image_front_url=self.front_picture_url,
+                    attributes__signed_image_back_url=self.back_picture_url,
+                ),
+            ],
+        )
+
+        requests_mock.register_uri("GET", self.front_picture_url, status_code=403)
+        requests_mock.register_uri("GET", self.back_picture_url, status_code=403)
+
+        expected_id_pictures_stored = False
+
+        # When
+        with ubble_mocker(
+            fraud_check.thirdPartyId,
+            json.dumps(ubble_response.dict(by_alias=True), sort_keys=True, default=json_default),
+            mocker=requests_mock,
+        ):
+            actual = ubble_subscription_api.archive_ubble_user_id_pictures(fraud_check.thirdPartyId)
+
+        # Then
+        assert actual is expected_id_pictures_stored
+        db.session.refresh(fraud_check)
+        assert fraud_check.idPicturesStored is expected_id_pictures_stored
+
+    @patch("pcapi.connectors.beneficiaries.outscale.boto3.client")
+    def test_archive_ubble_user_id_pictures_only_front_saved(self, mock_s3_client, ubble_mocker, requests_mock):
+        # Given
+        fraud_check = BeneficiaryFraudCheckFactory(status=FraudCheckStatus.OK, type=FraudCheckType.UBBLE)
+
+        ubble_response = UbbleIdentificationResponseFactory(
+            identification_state=IdentificationState.VALID,
+            data__attributes__identification_id=str(fraud_check.thirdPartyId),
+            included=[
+                UbbleIdentificationIncludedDocumentsFactory(
+                    attributes__signed_image_front_url=self.front_picture_url,
+                    attributes__signed_image_back_url=self.back_picture_url,
+                ),
+            ],
+        )
+        with open(f"{IMAGES_DIR}/carte_identite_front.png", "rb") as img:
+            identity_file_picture_front = BytesIO(img.read())
+
+        requests_mock.register_uri(
+            "GET",
+            self.front_picture_url,
+            status_code=200,
+            headers={"content-type": "image/png"},
+            body=identity_file_picture_front,
+        )
+        requests_mock.register_uri("GET", self.back_picture_url, status_code=503)
+
+        expected_id_pictures_stored = False
+
+        # When
+        with ubble_mocker(
+            fraud_check.thirdPartyId,
+            json.dumps(ubble_response.dict(by_alias=True), sort_keys=True, default=json_default),
+            mocker=requests_mock,
+        ):
+            actual = ubble_subscription_api.archive_ubble_user_id_pictures(fraud_check.thirdPartyId)
+
+        # Then
+        assert actual is expected_id_pictures_stored
+        db.session.refresh(fraud_check)
+        assert fraud_check.idPicturesStored is expected_id_pictures_stored
+        assert mock_s3_client.return_value.upload_file.call_count == 1
+
+    @patch("pcapi.connectors.beneficiaries.outscale.boto3.client")
+    def test_archive_ubble_user_id_pictures_both_files_saved(self, mock_s3_client, ubble_mocker, requests_mock):
+        # Given
+        fraud_check = BeneficiaryFraudCheckFactory(status=FraudCheckStatus.OK, type=FraudCheckType.UBBLE)
+
+        ubble_response = UbbleIdentificationResponseFactory(
+            identification_state=IdentificationState.VALID,
+            data__attributes__identification_id=str(fraud_check.thirdPartyId),
+            included=[
+                UbbleIdentificationIncludedDocumentsFactory(
+                    attributes__signed_image_front_url=self.front_picture_url,
+                    attributes__signed_image_back_url=self.back_picture_url,
+                ),
+            ],
+        )
+
+        with open(f"{IMAGES_DIR}/carte_identite_front.png", "rb") as img_front:
+            identity_file_picture_front = BytesIO(img_front.read())
+        with open(f"{IMAGES_DIR}/carte_identite_back.png", "rb") as img_back:
+            identity_file_picture_back = BytesIO(img_back.read())
+
+        requests_mock.register_uri(
+            "GET",
+            self.front_picture_url,
+            status_code=200,
+            headers={"content-type": "image/png"},
+            body=identity_file_picture_front,
+        )
+        requests_mock.register_uri(
+            "GET",
+            self.back_picture_url,
+            status_code=200,
+            headers={"content-type": "image/png"},
+            body=identity_file_picture_back,
+        )
+
+        expected_id_pictures_stored = True
+
+        # When
+        with ubble_mocker(
+            fraud_check.thirdPartyId,
+            json.dumps(ubble_response.dict(by_alias=True), sort_keys=True, default=json_default),
+            mocker=requests_mock,
+        ):
+            actual = ubble_subscription_api.archive_ubble_user_id_pictures(fraud_check.thirdPartyId)
+
+        # Then
+        assert actual is expected_id_pictures_stored
+        db.session.refresh(fraud_check)
+        assert fraud_check.idPicturesStored is expected_id_pictures_stored
+        assert mock_s3_client.return_value.upload_file.call_count == 2
