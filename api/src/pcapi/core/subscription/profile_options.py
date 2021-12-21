@@ -8,10 +8,12 @@ from pcapi.core.users import models as users_models
 @dataclasses.dataclass()
 class SchoolType:
     id: str
+    description: typing.Optional[str]
     label: str
 
-    def __init__(self, school_type: users_models.SchoolTypeEnum) -> None:
+    def __init__(self, school_type: users_models.SchoolTypeEnum, description: typing.Optional[str] = None) -> None:
         self.id = school_type.name
+        self.description = description
         self.label = school_type.value
         super().__init__()
 
@@ -47,7 +49,9 @@ class Activity:
 AGRICULTURAL_HIGH_SCHOOL = SchoolType(users_models.SchoolTypeEnum.AGRICULTURAL_HIGH_SCHOOL)
 APPRENTICE_FORMATION_CENTER = SchoolType(users_models.SchoolTypeEnum.APPRENTICE_FORMATION_CENTER)
 MILITARY_HIGH_SCHOOL = SchoolType(users_models.SchoolTypeEnum.MILITARY_HIGH_SCHOOL)
-HOME_OR_REMOTE_SCHOOLING = SchoolType(users_models.SchoolTypeEnum.HOME_OR_REMOTE_SCHOOLING)
+HOME_OR_REMOTE_SCHOOLING = SchoolType(
+    users_models.SchoolTypeEnum.HOME_OR_REMOTE_SCHOOLING, description="À domicile, CNED, institut de santé, etc."
+)
 NAVAL_HIGH_SCHOOL = SchoolType(users_models.SchoolTypeEnum.NAVAL_HIGH_SCHOOL)
 PRIVATE_HIGH_SCHOOL = SchoolType(users_models.SchoolTypeEnum.PRIVATE_HIGH_SCHOOL)
 PRIVATE_SECONDARY_SCHOOL = SchoolType(users_models.SchoolTypeEnum.PRIVATE_SECONDARY_SCHOOL)
