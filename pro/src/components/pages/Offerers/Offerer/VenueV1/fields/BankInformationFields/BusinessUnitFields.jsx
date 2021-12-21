@@ -77,9 +77,7 @@ const BankInformationWithBusinessUnit = ({ readOnly, offerer, venue }) => {
   return (
     <div className="section vp-content-section bank-information">
       <div className="main-list-title title-actions-container">
-        <h2 className="main-list-title-text">
-          Coordonnées bancaires du lieu (remboursement)
-        </h2>
+        <h2 className="main-list-title-text">Coordonnées bancaires du lieu</h2>
         {displayedBanners[REPLACE_DMS_FILE_BUTTON] && (
           <a
             className="tertiary-link"

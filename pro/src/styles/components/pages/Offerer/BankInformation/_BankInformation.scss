@@ -26,6 +26,9 @@
     width: initial;
   }
   .select {
+    position: relative;
+    width: fit-content;
+
     select {
       @include body-important();
 
@@ -36,7 +39,7 @@
       height: rem(36px);
       max-width: 100%;
       outline: none;
-      padding: rem(4px) rem(40px) rem(4px) rem(16px);
+      padding: rem(4px) rem(46px) rem(4px) rem(16px);
     }
 
     &::after {
@@ -44,11 +47,11 @@
       border-radius: rem(2px);
       border-right: 0;
       border-top: 0;
-      content: " ";
+      content: "";
       height: rem(10px);
       margin-top: rem(-19px);
       position: absolute;
-      right: rem(460px);
+      right: rem(20px);
       top: 75%;
       transform: rotate(-45deg);
       transform-origin: center;

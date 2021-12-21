@@ -196,7 +196,7 @@ describe('test page : VenueEdition', () => {
 
       expect(screen.getByText('Informations lieu')).toBeInTheDocument()
       expect(
-        screen.getByText('Coordonnées bancaires du lieu (remboursement)')
+        screen.getByText('Coordonnées bancaires du lieu')
       ).toBeInTheDocument()
 
       expect(screen.getByLabelText('Nom du lieu :')).toBeDisabled()
@@ -502,7 +502,7 @@ describe('test page : VenueEdition', () => {
 
         expect(
           screen.getByText(
-            'Vous avez modifié les coordonnées bancaires associées à ce lieu'
+            'Vous allez modifier les coordonnées bancaires associées à ce lieu'
           )
         ).toBeInTheDocument()
         fireEvent.click(screen.getByRole('button', { name: 'Continuer' }))
@@ -528,7 +528,7 @@ describe('test page : VenueEdition', () => {
         fireEvent.click(screen.queryByRole('button', { name: 'Valider' }))
         expect(
           screen.getByText(
-            'Vous avez modifié les coordonnées bancaires associées à ce lieu'
+            'Vous allez modifier les coordonnées bancaires associées à ce lieu'
           )
         ).toBeInTheDocument()
 
