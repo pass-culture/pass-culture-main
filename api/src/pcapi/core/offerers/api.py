@@ -159,6 +159,11 @@ def create_venue(venue_data: PostVenueBodyModel) -> Venue:
     return venue
 
 
+def set_business_unit_to_venue_id(business_unit_id: int, venue_id: int) -> None:
+    Venue.query.filter(Venue.id == venue_id).update({"businessUnitId": business_unit_id})
+    db.session.commit()
+
+
 def generate_and_save_api_key(offerer_id: int) -> str:
     if ApiKey.query.filter_by(offererId=offerer_id).count() >= settings.MAX_API_KEY_PER_OFFERER:
         raise ApiKeyCountMaxReached()

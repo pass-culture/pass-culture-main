@@ -3,6 +3,7 @@ from unittest.mock import patch
 
 import pytest
 
+import pcapi.core.finance.models as finance_models
 from pcapi.core.offerers.factories import OffererFactory
 from pcapi.core.offers.factories import VenueFactory
 from pcapi.domain.bank_information import CannotRegisterBankInformation
@@ -796,6 +797,10 @@ class SaveVenueBankInformationsTest:
             assert bank_information.bic == "SOGEFRPP"
             assert bank_information.iban == "FR7630007000111234567890144"
             assert bank_information.applicationId == 8
+            assert finance_models.BusinessUnit.query.count() == 1
+            business_unit = finance_models.BusinessUnit.query.one()
+            assert business_unit.bankAccountId == bank_information.id
+            assert venue.businessUnitId == business_unit.id
 
         @pytest.mark.usefixtures("db_session")
         def test_when_receive_new_application_with_draft_state_should_update_previously_rejected_bank_information(
