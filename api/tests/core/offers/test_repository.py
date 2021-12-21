@@ -838,7 +838,7 @@ class GetCappedOffersForFiltersTest:
 
             # when
             offers = get_capped_offers_for_filters(
-                user_id=self.pro.id, user_is_admin=self.pro.isAdmin, offers_limit=5, status="SOLD_OUT"
+                user_id=self.pro.id, user_is_admin=self.pro.isAdmin, offers_limit=10, status="SOLD_OUT"
             )
 
             # then
