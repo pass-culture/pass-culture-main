@@ -167,9 +167,7 @@ def start_identification(
 
 def get_content(identification_id: str) -> ubble_models.UbbleContent:
     session = configure_session()
-    response = session.get(
-        build_url(f"/identifications/{identification_id}/"),
-    )
+    response = session.get(build_url(f"/identifications/{identification_id}/"))
 
     if not response.ok:
         core_logging.log_for_supervision(
