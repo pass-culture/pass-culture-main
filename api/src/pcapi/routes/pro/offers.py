@@ -294,15 +294,21 @@ def cancel_educational_offer_booking(offer_id: str) -> None:
             .one()
         )
     except orm_exc.NoResultFound:
-        raise ApiErrors({"offerId": "No educational offer has been found with this id"}, 404)
+        raise ApiErrors(
+            {"code": "NO_EDUCATIONAL_OFFER_FOUND", "message": "No educational offer has been found with this id"}, 404
+        )
 
     check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
     try:
         offers_api.cancel_educational_offer_booking(offer)
     except exceptions.StockNotFound:
-        raise ApiErrors({"offerId": "No active stock has been found with this id"}, 404)
+        raise ApiErrors(
+            {"code": "NO_ACTIVE_STOCK_FOUND", "message": "No active stock has been found with this id"}, 404
+        )
     except exceptions.EducationalOfferHasMultipleStocks:
-        raise ApiErrors({"offerId": "This educational offer has multiple active stocks"}, 400)
+        raise ApiErrors(
+            {"code": "MULTIPLE_STOCKS", "message": "This educational offer has multiple active stocks"}, 400
+        )
     except exceptions.NoBookingToCancel:
-        raise ApiErrors({"offerId": "This educational offer has no booking to cancel"}, 400)
+        raise ApiErrors({"code": "NO_BOOKING", "message": "This educational offer has no booking to cancel"}, 400)
     return
