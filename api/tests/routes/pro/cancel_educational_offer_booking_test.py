@@ -49,7 +49,10 @@ class Returns404Test:
         response = client.patch(f"/offers/{offer_id}/cancel_booking")
 
         assert response.status_code == 404
-        assert response.json == {"offerId": "No educational offer has been found with this id"}
+        assert response.json == {
+            "code": "NO_EDUCATIONAL_OFFER_FOUND",
+            "message": "No educational offer has been found with this id",
+        }
 
     def test_no_active_stock_found(self, client):
         user = user_factories.AdminFactory()
@@ -60,7 +63,10 @@ class Returns404Test:
         response = client.patch(f"/offers/{offer_id}/cancel_booking")
 
         assert response.status_code == 404
-        assert response.json == {"offerId": "No active stock has been found with this id"}
+        assert response.json == {
+            "code": "NO_ACTIVE_STOCK_FOUND",
+            "message": "No active stock has been found with this id",
+        }
 
 
 class Returns403Test:
@@ -95,7 +101,10 @@ class Returns400Test:
 
         assert response.status_code == 400
         assert educational_booking.status == BookingStatus.PENDING
-        assert response.json == {"offerId": "This educational offer has multiple active stocks"}
+        assert response.json == {
+            "code": "MULTIPLE_STOCKS",
+            "message": "This educational offer has multiple active stocks",
+        }
 
     def test_offer_has_no_booking_to_cancel(self, client):
         user = user_factories.AdminFactory()
@@ -106,4 +115,4 @@ class Returns400Test:
         response = client.patch(f"/offers/{offer_id}/cancel_booking")
 
         assert response.status_code == 400
-        assert response.json == {"offerId": "This educational offer has no booking to cancel"}
+        assert response.json == {"code": "NO_BOOKING", "message": "This educational offer has no booking to cancel"}
