@@ -139,18 +139,20 @@ const Venue = ({
               </span>
             </h3>
             <div className="button-group">
-              {isBankInformationWithSiretActive && !hasBusinessUnit && (
-                <>
-                  <Link
-                    className="add-rib-link tertiary-link"
-                    to={editVenueLink}
-                  >
-                    <IcoPlus />
-                    Ajouter un RIB
-                  </Link>
-                  <span className="button-group-separator" />
-                </>
-              )}
+              {isBankInformationWithSiretActive &&
+                !hasBusinessUnit &&
+                !isVirtual && (
+                  <>
+                    <Link
+                      className="add-rib-link tertiary-link"
+                      to={editVenueLink}
+                    >
+                      <IcoPlus />
+                      Ajouter un RIB
+                    </Link>
+                    <span className="button-group-separator" />
+                  </>
+                )}
               {(!isVirtual || isBankInformationWithSiretActive) && (
                 <Link className="tertiary-link" to={editVenueLink}>
                   <Icon svg="ico-outer-pen" />

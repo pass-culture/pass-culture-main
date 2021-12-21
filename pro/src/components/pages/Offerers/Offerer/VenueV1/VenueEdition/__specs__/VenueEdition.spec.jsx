@@ -100,6 +100,7 @@ describe('test page : VenueEdition', () => {
         publicName: 'Maison de la Brique',
         siret: '22222222311111',
         venueTypeId: 'DE',
+        businessUnit: { id: 20 },
         contact: {
           email: '',
           phoneNumber: '',
@@ -183,6 +184,7 @@ describe('test page : VenueEdition', () => {
     it('should render readonly form when venue is virtual and feature flag active', async () => {
       // given
       props.venue.isVirtual = true
+      props.venue.businessUnit = null
       const storeOverrides = {
         features: {
           list: [
@@ -195,9 +197,9 @@ describe('test page : VenueEdition', () => {
       await renderVenueEdition({ props, storeOverrides })
 
       expect(screen.getByText('Informations lieu')).toBeInTheDocument()
-      expect(
-        screen.getByText('Coordonnées bancaires du lieu')
-      ).toBeInTheDocument()
+      await expect(
+        screen.findByText('Coordonnées bancaires du lieu')
+      ).resolves.toBeInTheDocument()
 
       expect(screen.getByLabelText('Nom du lieu :')).toBeDisabled()
       expect(screen.getByLabelText('E-mail :')).toBeDisabled()
@@ -451,6 +453,7 @@ describe('test page : VenueEdition', () => {
           venue: {
             ...props.venue,
             businessUnitId: 20,
+            businessUnit: { id: 20 },
           },
         }
 
@@ -540,22 +543,30 @@ describe('test page : VenueEdition', () => {
 
       it('should not display confirmation dialog when edit business unit not main venue', async () => {
         // Given
-        await renderVenueEdition({ props, storeOverrides })
+        await renderVenueEdition({
+          props: {
+            ...props,
+            venue: {
+              ...props.venue,
+              businessUnitId: null,
+              businessUnit: null,
+            },
+          },
+          storeOverrides,
+        })
 
-        // When
-        await act(async () =>
-          fireEvent.change(
-            await screen.findByLabelText(
-              'Coordonnées bancaires pour vos remboursements :'
-            ),
-            { target: { value: 21 } }
-          )
+        const bankSelect = await screen.findByLabelText(
+          'Coordonnées bancaires pour vos remboursements :'
         )
 
+        // When
+        fireEvent.change(bankSelect, { target: { value: 21 } })
         fireEvent.click(screen.queryByRole('button', { name: 'Valider' }))
 
         // Then
-        expect(props.handleSubmitRequest).toHaveBeenCalledTimes(1)
+        await waitFor(() => {
+          expect(props.handleSubmitRequest).toHaveBeenCalledTimes(1)
+        })
       })
     })
   })

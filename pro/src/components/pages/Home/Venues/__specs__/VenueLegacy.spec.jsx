@@ -151,7 +151,6 @@ describe('venues', () => {
 
     it('should display add bank information when venue does not have a business unit', async () => {
       // Given
-      props.isVirtual = true
       props.hasBusinessUnit = false
       const storeOverrides = configureTestStore({
         features: {

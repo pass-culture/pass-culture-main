@@ -34,6 +34,7 @@ def test_response_serialization(app):
         "publicName": venue.publicName,
         "isVirtual": venue.isVirtual,
         "bookingEmail": venue.bookingEmail,
+        "businessUnit": None,
         "withdrawalDetails": venue.withdrawalDetails,
         "audioDisabilityCompliant": venue.audioDisabilityCompliant,
         "mentalDisabilityCompliant": venue.mentalDisabilityCompliant,

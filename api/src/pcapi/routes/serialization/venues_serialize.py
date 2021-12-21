@@ -13,6 +13,7 @@ from pydantic import root_validator
 from pydantic import validator
 
 from pcapi.core.offerers.validation import VENUE_BANNER_MAX_SIZE
+from pcapi.routes.serialization.finance_serialize import BusinessUnitResponseModel
 from pcapi.serialization.utils import dehumanize_field
 from pcapi.serialization.utils import humanize_field
 from pcapi.serialization.utils import string_to_boolean_field
@@ -184,6 +185,7 @@ class GetVenueResponseModel(BaseModel):
     visualDisabilityCompliant: Optional[bool]
     contact: Optional[VenueContactModel]
     businessUnitId: Optional[int]
+    businessUnit: Optional[BusinessUnitResponseModel]
 
     _humanize_id = humanize_field("id")
     _humanize_managing_offerer_id = humanize_field("managingOffererId")
@@ -238,6 +240,7 @@ class VenueListItemResponseModel(BaseModel):
     motorDisabilityCompliant: Optional[bool]
     visualDisabilityCompliant: Optional[bool]
     businessUnitId: Optional[int]
+    businessUnit: Optional[BusinessUnitResponseModel]
     siret: Optional[str]
     isBusinessUnitMainVenue: Optional[bool]
 
