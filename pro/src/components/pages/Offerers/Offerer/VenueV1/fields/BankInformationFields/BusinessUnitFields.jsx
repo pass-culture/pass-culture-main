@@ -66,6 +66,7 @@ const BankInformationWithBusinessUnit = ({ readOnly, offerer, venue }) => {
   }, [
     offerer.id,
     setDisplayedBanners,
+    venue.id,
     venue.businessUnitId,
     venue.demarchesSimplifieesApplicationId,
     venue.isBusinessUnitMainVenue,
