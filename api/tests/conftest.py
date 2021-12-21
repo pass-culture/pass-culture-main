@@ -139,11 +139,6 @@ def _db(app):
 pcapi.core.testing.register_event_for_assert_num_queries()
 
 
-@pytest.fixture()
-def assert_num_queries():
-    return pcapi.core.testing.assert_num_queries
-
-
 @pytest.fixture(name="client")
 def client_fixture(app: Flask):
     return TestClient(app.test_client())
