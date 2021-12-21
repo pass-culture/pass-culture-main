@@ -29,7 +29,7 @@ const ConfirmDialog = ({
       extraClassNames={styles['confirm-dialog']}
       hasCloseButton={false}
       initialFocusRef={buttonRef}
-      labelledBy=""
+      labelledBy={title}
     >
       <AlertSvg />
       <div className={styles['confirm-dialog-title']}>
