@@ -32,19 +32,40 @@ const BankInformationWithBusinessUnit = ({ readOnly, offerer, venue }) => {
   const [isLoading, setIsLoading] = useState(true)
 
   const businessUnitDisplayName = businessUnit =>
-    `${formatSiret(businessUnit.siret)} - ${businessUnit.iban}`
+    businessUnit
+      ? `${
+          businessUnit.siret
+            ? formatSiret(businessUnit.siret)
+            : 'SIRET manquant'
+        } - ${businessUnit.iban}`
+      : ''
 
   useEffect(() => {
     async function loadBusinessUnits(offererId) {
       const businessUnitsResponse = await getBusinessUnits(offererId)
-      const venueBusinessUnitResponse = businessUnitsResponse.find(
-        businessUnit => businessUnit.id === venue.businessUnitId
-      )
 
+      let venueBusinessUnitResponse = null
+      if (venue.businessUnit) {
+        if (venue.businessUnit.siret) {
+          venueBusinessUnitResponse = businessUnitsResponse.find(
+            businessUnit => businessUnit.id === venue.businessUnitId
+          )
+        } else {
+          venueBusinessUnitResponse = {
+            iban: venue.businessUnit.iban,
+            siret: '',
+            id: venue.businessUnit.id,
+          }
+        }
+      }
       setVenueBusinessUnit(venueBusinessUnitResponse)
       setBusinessUnitOptions(
         businessUnitsResponse
-          .filter(businessUnit => businessUnit.siret != null)
+          .filter(
+            businessUnit =>
+              businessUnit.siret !== null ||
+              businessUnit.id === venue.businessUnitId
+          )
           .map(businessUnit => ({
             key: `venue-business-unit-${businessUnit.id}`,
             displayName: businessUnitDisplayName(businessUnit),
@@ -66,9 +87,10 @@ const BankInformationWithBusinessUnit = ({ readOnly, offerer, venue }) => {
   }, [
     offerer.id,
     setDisplayedBanners,
-    venue.id,
+    venue.businessUnit,
     venue.businessUnitId,
     venue.demarchesSimplifieesApplicationId,
+    venue.id,
     venue.isBusinessUnitMainVenue,
     venue.siret,
   ])
