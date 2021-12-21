@@ -79,7 +79,7 @@ const BankInformationWithBusinessUnit = ({ readOnly, offerer, venue }) => {
         <h2 className="main-list-title-text">
           Coordonnées bancaires du lieu (remboursement)
         </h2>
-        {displayedBanners[CREATE_DMS_FILE_BANNER] && (
+        {displayedBanners[REPLACE_DMS_FILE_BUTTON] && (
           <a
             className="tertiary-link"
             href={DEMARCHES_SIMPLIFIEES_VENUE_RIB_UPLOAD_PROCEDURE_URL}
