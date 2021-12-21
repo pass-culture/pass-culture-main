@@ -56,7 +56,6 @@ const VenueEdition = ({
   venueTypes,
   withdrawalDetailActive,
 }) => {
-  // let submit
   const [isRequestPending, setIsRequestPending] = useState(false)
   const [showConfirmationDialog, setShowConfirmationDialog] = useState(false)
   const deleteBusinessUnitConfirmed = useRef(false)
@@ -181,11 +180,16 @@ const VenueEdition = ({
             />
           )}
           {isBankInformationWithSiretActive ? (
-            <BusinessUnitFields
-              offerer={offerer}
-              readOnly={readOnly}
-              venue={venue}
-            />
+            // FIXME
+            // the first response on offerers do not return  venue.BusinessUnit
+            // the second on venues does
+            venue.businessUnit !== undefined && (
+              <BusinessUnitFields
+                offerer={offerer}
+                readOnly={readOnly}
+                venue={venue}
+              />
+            )
           ) : (
             <BankInformation offerer={offerer} venue={venue} />
           )}
@@ -319,6 +323,8 @@ const VenueEdition = ({
 
   const pageSubtitle = initialIsVirtual ? getVirtualVenueName() : initialName
 
+  if (!venue) return null
+
   return (
     <div className="venue-page">
       <NavLink
@@ -328,7 +334,7 @@ const VenueEdition = ({
         <Icon svg="ico-back" />
         Accueil
       </NavLink>
-      {!venue?.siret && (
+      {venue.businessUnit && !venue.businessUnit.siret && (
         <Banner
           href={`/structures/${offererId}/point-de-remboursement/`}
           icon="ico-right-circle-arrow"
