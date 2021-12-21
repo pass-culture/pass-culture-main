@@ -765,7 +765,10 @@ def has_user_performed_ubble_check(user: users_models.User) -> bool:
     if not fraud_check:
         return False
 
-    if fraud_check.source_data().status == models.ubble_models.UbbleIdentificationStatus.INITIATED:
+    if fraud_check.source_data().status in [
+        models.ubble_models.UbbleIdentificationStatus.INITIATED,
+        models.ubble_models.UbbleIdentificationStatus.UNINITIATED,
+    ]:
         return False
     return True
 
