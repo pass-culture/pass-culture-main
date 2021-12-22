@@ -14,6 +14,7 @@ from pcapi.core.fraud import api as fraud_api
 from pcapi.core.logging import get_or_set_correlation_id
 from pcapi.core.offers.exceptions import FileSizeExceeded
 from pcapi.core.subscription import api as subscription_api
+from pcapi.core.subscription.ubble import api as ubble_subscription_api
 from pcapi.core.users import api
 from pcapi.core.users import constants
 from pcapi.core.users import email as email_api
@@ -439,7 +440,7 @@ def start_identification_session(
 
     fraud_check = fraud_api.get_pending_identity_check(user)
     if fraud_check:
-        if subscription_api.is_ubble_workflow_restartable(fraud_check):
+        if ubble_subscription_api.is_ubble_workflow_restartable(fraud_check):
             return serializers.IdentificationSessionResponse(
                 identificationUrl=fraud_check.source_data().identification_url
             )
@@ -449,7 +450,7 @@ def start_identification_session(
         )
 
     try:
-        identification_url = subscription_api.start_ubble_workflow(user, body.redirectUrl)
+        identification_url = ubble_subscription_api.start_ubble_workflow(user, body.redirectUrl)
         return serializers.IdentificationSessionResponse(identificationUrl=identification_url)
 
     except beneficiaries_exceptions.IdentificationServiceUnavailable:
