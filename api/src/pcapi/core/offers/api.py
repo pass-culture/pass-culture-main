@@ -560,6 +560,10 @@ def edit_educational_stock(stock: Stock, stock_data: dict) -> None:
     educational_stock_unique_booking = bookings_repository.find_unique_eac_booking_if_any(stock.id)
     if educational_stock_unique_booking:
         validation.check_stock_booking_status(educational_stock_unique_booking)
+
+        educational_stock_unique_booking.educationalBooking.confirmationLimitDate = booking_limit_datetime
+        db.session.add(educational_stock_unique_booking.educationalBooking)
+
         if beginning:
             _update_educational_booking_cancellation_limit_date(educational_stock_unique_booking, beginning)
             db.session.add(educational_stock_unique_booking)
