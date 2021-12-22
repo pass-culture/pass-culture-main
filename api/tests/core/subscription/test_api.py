@@ -766,7 +766,7 @@ class DMSSubscriptionTest:
 class OverflowSubscriptionLimitationTest:
     @override_features(ENABLE_UBBLE_SUBSCRIPTION_LIMITATION=True)
     @pytest.mark.parametrize("age", [15, 16, 17, 18])
-    def test_is_ubble_allowed_if_subscription_overflow(self, age):
+    def test__is_ubble_allowed_if_subscription_overflow(self, age):
         # user birthday is in settings.UBBLE_SUBSCRIPTION_LIMITATION_DAYS days
         birth_date = datetime.utcnow() - relativedelta(years=age + 1)
         birth_date += relativedelta(days=settings.UBBLE_SUBSCRIPTION_LIMITATION_DAYS - 1)
@@ -781,10 +781,10 @@ class OverflowSubscriptionLimitationTest:
             - relativedelta(years=age, days=settings.UBBLE_SUBSCRIPTION_LIMITATION_DAYS + 10)
         )
 
-        assert subscription_api.is_ubble_allowed_if_subscription_overflow(user_approching_birthday)
-        assert not subscription_api.is_ubble_allowed_if_subscription_overflow(user_not_allowed)
+        assert subscription_api._is_ubble_allowed_if_subscription_overflow(user_approching_birthday)
+        assert not subscription_api._is_ubble_allowed_if_subscription_overflow(user_not_allowed)
 
     @override_features(ENABLE_UBBLE_SUBSCRIPTION_LIMITATION=False)
     def test_subscription_is_possible_if_flag_is_false(self):
         user = users_factories.UserFactory()
-        assert subscription_api.is_ubble_allowed_if_subscription_overflow(user)
+        assert subscription_api._is_ubble_allowed_if_subscription_overflow(user)
