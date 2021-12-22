@@ -5,7 +5,9 @@ from pcapi.core.users import factories as users_factories
 from pcapi.model_creators.generic_creators import create_bank_information
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_user_offerer
+from pcapi.model_creators.generic_creators import create_venue
 from pcapi.repository import repository
+from pcapi.sandboxes.scripts.mocks.educational_siren_mocks import MOCK_ADAGE_ELIGIBLE_SIREN
 from pcapi.sandboxes.scripts.mocks.offerer_mocks import MOCK_NAMES
 from pcapi.sandboxes.scripts.mocks.user_mocks import MOCK_DOMAINS
 from pcapi.sandboxes.scripts.mocks.user_mocks import MOCK_FIRST_NAMES
@@ -156,6 +158,7 @@ def create_industrial_offerers_with_pro_users():
     application_id_prefix = "23"
 
     for (location_index, location) in enumerate(OFFERER_LOCATIONS):
+        create_educational_offerer = location_index == 0
 
         mock_index = location_index % len(MOCK_NAMES) + starting_index
 
@@ -170,6 +173,19 @@ def create_industrial_offerers_with_pro_users():
             postal_code=location["postalCode"],
             siren=str(incremented_siren),
         )
+
+        if create_educational_offerer:
+            offerer.siren = MOCK_ADAGE_ELIGIBLE_SIREN
+            create_venue(
+                offerer,
+                address=offerer.address,
+                booking_email="fake@email.com",
+                city=offerer.city,
+                comment="Salle de cinéma",
+                name=offerer.name + " - Salle 1",
+                postal_code=offerer.postalCode,
+                siret="88145723811111",
+            )
 
         # create every OFFERERS_WITH_IBAN_REMOVE_MODULO an offerer with no iban
         if location_index % OFFERERS_WITH_IBAN_REMOVE_MODULO:
@@ -197,7 +213,7 @@ def create_industrial_offerers_with_pro_users():
         else:
             user_validation_token = "{}{}".format(user_validation_prefix, user_validation_suffix)
 
-        if location_index % VALIDATED_OFFERERS_REMOVE_MODULO == 0:
+        if location_index % VALIDATED_OFFERERS_REMOVE_MODULO == 0 and create_educational_offerer == False:
             offerer.generate_validation_token()
 
         pro = users_factories.ProFactory(
