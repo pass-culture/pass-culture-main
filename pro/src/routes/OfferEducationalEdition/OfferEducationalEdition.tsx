@@ -10,7 +10,6 @@ import {
   Mode,
   getCategoriesAdapter,
   getOfferersAdapter,
-  getOfferAdapter,
   setInitialFormValues,
 } from 'core/OfferEducational'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
@@ -18,6 +17,7 @@ import OfferEducationalLayout from 'new_components/OfferEducationalLayout'
 import OfferEducationalScreen from 'screens/OfferEducational'
 import { IOfferEducationalProps } from 'screens/OfferEducational/OfferEducational'
 
+import getOfferAdapter from './adapters/getOfferAdapter'
 import patchOfferAdapter from './adapters/patchOfferAdapter'
 import { computeInitialValuesFromOffer } from './utils/computeInitialValuesFromOffer'
 
@@ -65,7 +65,7 @@ const OfferEducationalEdition = ({
           return notify.error(offerResponse.message)
         }
 
-        const offer = offerResponse.payload.offer
+        const offer = offerResponse.payload
         const offererId = offer.venue.managingOffererId
 
         const results = await Promise.all([

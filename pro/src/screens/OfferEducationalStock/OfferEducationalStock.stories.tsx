@@ -1,4 +1,5 @@
 import { action } from '@storybook/addon-actions'
+import { Story } from '@storybook/react'
 import React from 'react'
 
 import { DEFAULT_EAC_STOCK_FORM_VALUES, Mode } from 'core/OfferEducational'
@@ -11,31 +12,34 @@ import OfferEducationalStock from '.'
 export default {
   title: 'screens/OfferEducationalStock',
   component: OfferEducationalStock,
+  argTypes: {
+    mode: {
+      options: [Mode.CREATION, Mode.EDITION, Mode.READ_ONLY],
+      control: { type: 'radio' },
+    },
+  },
   decorators: [withRouterDecorator, withPageTemplate],
 }
 
-const Template = () => (
+const Template: Story<{ mode: Mode }> = args => (
   <OfferEducationalStock
     initialValues={DEFAULT_EAC_STOCK_FORM_VALUES}
-    mode={Mode.CREATION}
     offer={{
       id: '1234',
       status: OfferStatus.OFFER_STATUS_DRAFT,
-      venue: {
-        departementCode: '974',
-        managingOffererId: 'AB',
-      },
+      venueDepartmentCode: '974',
       isActive: true,
-      audioDisabilityCompliant: true,
-      mentalDisabilityCompliant: true,
-      motorDisabilityCompliant: true,
-      visualDisabilityCompliant: true,
-      name: 'Mon offre',
-      subcategoryId: 'CINEMA',
-      venueId: 'DA',
+      isBooked: true,
     }}
     onSubmit={action('onSubmit')}
+    resetActiveBookings={() => null}
+    setIsOfferActive={() => null}
+    {...args}
   />
 )
 
 export const Default = Template.bind({})
+
+Default.args = {
+  mode: Mode.READ_ONLY,
+}

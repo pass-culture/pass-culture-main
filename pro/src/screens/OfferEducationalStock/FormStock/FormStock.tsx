@@ -1,7 +1,7 @@
 import { useFormikContext } from 'formik'
 import React from 'react'
 
-import { OfferEducationalStockFormValues } from 'core/OfferEducational'
+import { OfferEducationalStockFormValues, Mode } from 'core/OfferEducational'
 import FormLayout from 'new_components/FormLayout'
 import { DatePicker, TextArea, TextInput, TimePicker } from 'ui-kit'
 
@@ -14,35 +14,33 @@ import {
   TOTAL_PRICE_LABEL,
 } from '../constants/labels'
 
+interface IFormStockProps {
+  mode: Mode
+}
+
 import styles from './FormStock.module.scss'
 
-const FormStock = ({
-  isFormDisabled,
-}: {
-  isFormDisabled: boolean
-}): JSX.Element => {
+const FormStock = ({ mode }: IFormStockProps): JSX.Element => {
   const { values } = useFormikContext<OfferEducationalStockFormValues>()
+
   return (
     <>
       <FormLayout.Row inline>
         <DatePicker
-          className={styles['form-field']}
-          disabled={isFormDisabled}
+          disabled={mode === Mode.READ_ONLY}
           label={EVENT_DATE_LABEL}
           minDateTime={new Date()}
           name="eventDate"
           smallLabel
         />
         <TimePicker
-          className={styles['form-field']}
-          disabled={isFormDisabled}
+          disabled={mode === Mode.READ_ONLY}
           label={EVENT_TIME_LABEL}
           name="eventTime"
           smallLabel
         />
         <TextInput
-          className={styles['form-field']}
-          disabled={isFormDisabled}
+          disabled={mode === Mode.READ_ONLY}
           label={NUMBER_OF_PLACES_LABEL}
           name="numberOfPlaces"
           placeholder="Ex : 30"
@@ -50,8 +48,7 @@ const FormStock = ({
           type="number"
         />
         <TextInput
-          className={styles['form-field']}
-          disabled={isFormDisabled}
+          disabled={mode === Mode.READ_ONLY}
           label={TOTAL_PRICE_LABEL}
           name="totalPrice"
           placeholder="Ex : 200€"
@@ -59,8 +56,7 @@ const FormStock = ({
           type="number"
         />
         <DatePicker
-          className={styles['form-field']}
-          disabled={isFormDisabled}
+          disabled={mode === Mode.READ_ONLY}
           label={BOOKING_LIMIT_DATETIME_LABEL}
           maxDateTime={values.eventDate ? values.eventDate : undefined}
           name="bookingLimitDatetime"
@@ -71,6 +67,7 @@ const FormStock = ({
         <TextArea
           className={styles['price-details']}
           countCharacters
+          disabled={mode === Mode.READ_ONLY}
           isOptional
           label={DETAILS_PRICE_LABEL}
           maxLength={1000}

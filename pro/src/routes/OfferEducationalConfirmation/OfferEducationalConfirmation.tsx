@@ -4,7 +4,7 @@ import { useLocation, useParams } from 'react-router'
 import useNotification from 'components/hooks/useNotification'
 import Spinner from 'components/layout/Spinner'
 import { queryParamsFromOfferer } from 'components/pages/Offers/utils/queryParamsFromOfferer'
-import { getOfferAdapter } from 'core/OfferEducational'
+import { getStockOfferAdapter } from 'core/OfferEducational'
 import { OfferStatus } from 'custom_types/offer'
 import OfferEducationalConfirmationScreen from 'screens/OfferEducationalConfirmation'
 
@@ -19,13 +19,13 @@ const OfferEducationalConfirmation = (): JSX.Element => {
 
   useEffect(() => {
     const loadOffer = async () => {
-      const offerResponse = await getOfferAdapter(offerId)
+      const offerResponse = await getStockOfferAdapter(offerId)
 
       if (!offerResponse.isOk) {
         return notify.error(offerResponse.message)
       }
 
-      setOfferStatus(offerResponse.payload.offer.status)
+      setOfferStatus(offerResponse.payload.status)
     }
 
     loadOffer()
