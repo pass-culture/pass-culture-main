@@ -54,7 +54,7 @@ def full_index_offers(start, end):
 
     Usage:
 
-        $ flask full_index_offers.py algolia 10_000_000 20_000_000
+        $ flask full_index_offers.py 10_000_000 20_000_000
 
     Using "_" as thousands separator is supported (and encouraged for
     clarity).
