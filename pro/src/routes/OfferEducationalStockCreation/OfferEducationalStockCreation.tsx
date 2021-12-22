@@ -6,11 +6,11 @@ import useNotification from 'components/hooks/useNotification'
 import Spinner from 'components/layout/Spinner'
 import {
   DEFAULT_EAC_STOCK_FORM_VALUES,
-  getOfferAdapter,
+  getStockOfferAdapter,
+  GetStockOfferSuccessPayload,
   Mode,
   OfferEducationalStockFormValues,
 } from 'core/OfferEducational'
-import { Offer } from 'custom_types/offer'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 import OfferEducationalLayout from 'new_components/OfferEducationalLayout'
 import OfferEducationalStockScreen from 'screens/OfferEducationalStock'
@@ -18,14 +18,14 @@ import OfferEducationalStockScreen from 'screens/OfferEducationalStock'
 import postEducationalStockAdapter from './adapters/postEducationalStock'
 
 const OfferEducationalStockCreation = (): JSX.Element => {
-  const [offer, setOffer] = useState<Offer | null>(null)
+  const [offer, setOffer] = useState<GetStockOfferSuccessPayload | null>(null)
   const [isReady, setIsReady] = useState<boolean>(false)
   const { offerId } = useParams<{ offerId: string }>()
   const notify = useNotification()
   const history = useHistory()
 
   const handleSubmitStock = async (
-    offer: Offer,
+    offer: GetStockOfferSuccessPayload,
     values: OfferEducationalStockFormValues
   ) => {
     const { isOk, message } = await postEducationalStockAdapter({
@@ -42,11 +42,13 @@ const OfferEducationalStockCreation = (): JSX.Element => {
   useEffect(() => {
     if (!isReady) {
       const loadOffer = async () => {
-        const { payload, message, isOk } = await getOfferAdapter(offerId)
+        const { payload, message, isOk } = await getStockOfferAdapter(offerId)
+
         if (!isOk) {
           return notify.error(message)
         }
-        setOffer(payload.offer)
+
+        setOffer(payload)
         setIsReady(true)
       }
 

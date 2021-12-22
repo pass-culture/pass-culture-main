@@ -5,11 +5,13 @@ import useNotification from 'components/hooks/useNotification'
 import Spinner from 'components/layout/Spinner'
 import {
   DEFAULT_EAC_STOCK_FORM_VALUES,
-  getOfferAdapter,
+  getStockOfferAdapter,
   Mode,
   OfferEducationalStockFormValues,
+  patchIsOfferActiveAdapter,
+  deleteActiveBookingsAdapter,
+  GetStockOfferSuccessPayload,
 } from 'core/OfferEducational'
-import { Offer } from 'custom_types/offer'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 import OfferEducationalLayout from 'new_components/OfferEducationalLayout'
 import OfferEducationalStockScreen from 'screens/OfferEducationalStock'
@@ -22,20 +24,22 @@ import { extractInitialStockValues } from './utils/extractInitialStockValues'
 const OfferEducationalStockEdition = (): JSX.Element => {
   const [initialValues, setInitialValues] =
     useState<OfferEducationalStockFormValues>(DEFAULT_EAC_STOCK_FORM_VALUES)
-  const [offer, setOffer] = useState<Offer | null>(null)
+  const [offer, setOffer] = useState<GetStockOfferSuccessPayload | null>(null)
   const [stock, setStock] = useState<StockResponse | null>(null)
   const [isReady, setIsReady] = useState<boolean>(false)
   const { offerId } = useParams<{ offerId: string }>()
   const notify = useNotification()
 
   const handleSubmitStock = async (
-    offer: Offer,
+    offer: GetStockOfferSuccessPayload,
     values: OfferEducationalStockFormValues
   ) => {
     if (!stock) {
       return notify.error('Impossible de mettre à jour le stock.')
     }
+
     const stockId = stock.id
+
     const { isOk, message } = await patchEducationalStockAdapter({
       offer,
       stockId,
@@ -45,14 +49,40 @@ const OfferEducationalStockEdition = (): JSX.Element => {
     if (!isOk) {
       return notify.error(message)
     }
+
     notify.success(message)
+  }
+
+  const setIsOfferActive = async (isActive: boolean) => {
+    const { isOk, message } = await patchIsOfferActiveAdapter({
+      isActive,
+      offerId,
+    })
+
+    if (!isOk) {
+      return notify.error(message)
+    }
+
+    notify.success(message)
+    setIsReady(false)
+  }
+
+  const resetActiveBookings = async () => {
+    const { isOk, message } = await deleteActiveBookingsAdapter({ offerId })
+
+    if (!isOk) {
+      return notify.error(message)
+    }
+
+    notify.success(message)
+    setIsReady(false)
   }
 
   useEffect(() => {
     if (!isReady) {
       const loadStockAndOffer = async () => {
         const [offerResponse, stockResponse] = await Promise.all([
-          getOfferAdapter(offerId),
+          getStockOfferAdapter(offerId),
           getEducationalStockAdapter(offerId),
         ])
         if (!offerResponse.isOk) {
@@ -61,11 +91,11 @@ const OfferEducationalStockEdition = (): JSX.Element => {
         if (!stockResponse.isOk) {
           return notify.error(stockResponse.message)
         }
-        setOffer(offerResponse.payload.offer)
+        setOffer(offerResponse.payload)
         setStock(stockResponse.payload.stock)
         const initialValuesFromStock = extractInitialStockValues(
           stockResponse.payload.stock,
-          offerResponse.payload.offer
+          offerResponse.payload
         )
         setInitialValues(initialValuesFromStock)
         setIsReady(true)
@@ -89,6 +119,8 @@ const OfferEducationalStockEdition = (): JSX.Element => {
           }
           offer={offer}
           onSubmit={handleSubmitStock}
+          resetActiveBookings={resetActiveBookings}
+          setIsOfferActive={setIsOfferActive}
         />
       ) : (
         <Spinner />

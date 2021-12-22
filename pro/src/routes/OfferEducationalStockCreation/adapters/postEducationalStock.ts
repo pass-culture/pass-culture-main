@@ -3,11 +3,14 @@ import {
   hasStatusCode,
   OfferEducationalStockFormValues,
   StockPayload,
+  GetStockOfferSuccessPayload,
 } from 'core/OfferEducational'
-import { Offer } from 'custom_types/offer'
 import * as pcapi from 'repository/pcapi/pcapi'
 
-type Params = { offer: Offer; values: OfferEducationalStockFormValues }
+type Params = {
+  offer: GetStockOfferSuccessPayload
+  values: OfferEducationalStockFormValues
+}
 
 type PostEducationalStockAdapter = Adapter<Params, null, null>
 
@@ -29,7 +32,7 @@ const postEducationalStockAdapter: PostEducationalStockAdapter = async ({
 }: Params) => {
   const stockPayload: StockPayload = createStockDataPayload(
     values,
-    offer.venue.departementCode
+    offer.venueDepartmentCode
   )
   const stockCreationPayload = { offerId: offer.id, ...stockPayload }
   try {
