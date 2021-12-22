@@ -42,16 +42,12 @@ def price_bookings(max_age: datetime.timedelta = DEFAULT_MAX_AGE_TO_PRICE):
 
     This function is normally called by a cron job.
     """
-    # The lower bound avoids querying the whole table. If all goes
-    # well, bookings with an older `dateUsed` will have already been
-    # priced.
-    # The upper bound avoids selecting a very recent booking that may
-    # have been COMMITed to the database just before another booking
-    # with a slightly older `dateUsed`.
-    now = datetime.datetime.utcnow()
-    time_range = (now - max_age, now - datetime.timedelta(minutes=1))
+    # The filter on `dateUsed` avoids selecting a very recent booking
+    # that may have been COMMITed to the database just before another
+    # booking with a slightly older `dateUsed`.
+    threshold = datetime.datetime.utcnow() - datetime.timedelta(minutes=1)
     bookings = (
-        bookings_models.Booking.query.filter(bookings_models.Booking.dateUsed.between(*time_range))
+        bookings_models.Booking.query.filter(bookings_models.Booking.dateUsed < threshold)
         .outerjoin(
             models.Pricing,
             models.Pricing.bookingId == bookings_models.Booking.id,
