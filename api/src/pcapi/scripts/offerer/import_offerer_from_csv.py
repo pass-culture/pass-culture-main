@@ -11,10 +11,10 @@ from pcapi.core.offerers.models import VenueType
 from pcapi.core.offerers.repository import find_offerer_by_siren
 from pcapi.core.users.api import create_pro_user
 from pcapi.core.users.api import create_reset_password_token
+from pcapi.core.users.repository import find_user_by_email
 from pcapi.domain.password import random_password
 from pcapi.models.api_errors import ApiErrors
 from pcapi.repository import repository
-from pcapi.repository.user_queries import find_user_by_email
 from pcapi.routes.serialization.users import ProUserCreationBodyModel
 
 

@@ -1,7 +1,7 @@
 import logging
 
 from pcapi.core.offers.api import import_offer_validation_config
-from pcapi.repository.user_queries import find_user_by_email
+from pcapi.core.users.repository import find_user_by_email
 
 
 logger = logging.getLogger(__name__)

@@ -3,9 +3,9 @@ import ipaddress
 from flask import request
 
 from pcapi import settings
+from pcapi.core.users.repository import find_user_by_email
 from pcapi.models.api_errors import ApiErrors
 from pcapi.repository import repository
-from pcapi.repository.user_queries import find_user_by_email
 from pcapi.routes.apis import public_api
 from pcapi.serialization.decorator import spectree_serialize
 
