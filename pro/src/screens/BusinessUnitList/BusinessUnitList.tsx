@@ -2,8 +2,7 @@ import React from 'react'
 
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Titles from 'components/layout/Titles/Titles'
-
-import Banner from '../../components/layout/Banner/Banner'
+import { Banner } from 'ui-kit'
 
 import BusinessUnitCard from './BusinessUnitCard'
 import styles from './BusinessUnitList.module.scss'

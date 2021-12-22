@@ -2,7 +2,6 @@ import { useFormik, FormikProvider } from 'formik'
 import React from 'react'
 import { Link } from 'react-router-dom'
 
-import Banner from 'components/layout/Banner/Banner'
 /* @debt standard "Gautier: Do not load internal page dependencies"*/
 import { computeOffersUrl } from 'components/pages/Offers/utils/computeOffersUrl'
 import {
@@ -13,6 +12,7 @@ import {
 import FormLayout from 'new_components/FormLayout'
 import OfferEducationalActions from 'new_components/OfferEducationalActions'
 import { SubmitButton } from 'ui-kit'
+import { Banner } from 'ui-kit'
 
 import FormStock from './FormStock'
 import styles from './OfferEducationalStock.module.scss'

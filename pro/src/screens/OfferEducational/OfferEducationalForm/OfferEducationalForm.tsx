@@ -2,7 +2,6 @@ import { useFormikContext } from 'formik'
 import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 
-import Banner from 'components/layout/Banner/Banner'
 import { computeOffersUrl } from 'components/pages/Offers/utils/computeOffersUrl'
 import {
   IOfferEducationalFormValues,
@@ -11,6 +10,7 @@ import {
 } from 'core/OfferEducational'
 import FormLayout from 'new_components/FormLayout'
 import { SubmitButton } from 'ui-kit'
+import { Banner } from 'ui-kit'
 
 import { IOfferEducationalProps } from '../OfferEducational'
 import buildSelectOptions from '../utils/buildSelectOptions'

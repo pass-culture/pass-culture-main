@@ -11,7 +11,6 @@ import { Link } from 'react-router-dom'
 
 import useFeatureFlagedOfferCreationURL from 'components/hooks/useFeatureFlagedOfferCreationURL'
 import ActionsBarPortal from 'components/layout/ActionsBarPortal/ActionsBarPortal'
-import Banner from 'components/layout/Banner/Banner'
 import Icon from 'components/layout/Icon'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Spinner from 'components/layout/Spinner'
@@ -21,6 +20,7 @@ import { isOfferDisabled } from 'components/pages/Offers/domain/isOfferDisabled'
 import { ReactComponent as AddOfferSvg } from 'icons/ico-plus.svg'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { savePageNumber, saveSearchFilters } from 'store/offers/actions'
+import { Banner } from 'ui-kit'
 import {
   mapApiToBrowser,
   mapBrowserToApi,

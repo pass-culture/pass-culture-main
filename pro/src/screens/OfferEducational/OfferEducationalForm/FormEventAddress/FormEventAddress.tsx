@@ -1,7 +1,6 @@
 import { useFormikContext } from 'formik'
 import React, { useEffect, useState } from 'react'
 
-import Banner from 'components/layout/Banner/Banner'
 import {
   DEFAULT_EAC_FORM_VALUES,
   ADRESS_TYPE,
@@ -11,6 +10,7 @@ import {
 } from 'core/OfferEducational'
 import FormLayout from 'new_components/FormLayout'
 import { RadioButton, Select, TextArea } from 'ui-kit'
+import { Banner } from 'ui-kit'
 
 import {
   EVENT_ADDRESS_OFFERER_LABEL,
