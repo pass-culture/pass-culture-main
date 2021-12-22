@@ -844,7 +844,7 @@ class HasUserPerformedIdentityCheckTest:
             type=fraud_models.FraudCheckType.UBBLE, user=user, eligibilityType=users_models.EligibilityType.UNDERAGE
         )
 
-        assert not fraud_api.has_user_performed_identity_check(user)
+        assert fraud_api.has_user_performed_identity_check(user)
         assert not fraud_api.has_user_performed_ubble_check(user)
 
     def test_has_user_performed_identity_check_without_identity_fraud_check(self):
