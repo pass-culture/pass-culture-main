@@ -80,7 +80,7 @@ const serializeVenues = (venues: IAPIOfferer['managedVenues']): IUserVenue[] =>
     .filter(venue => !venue.isVirtual)
     .map(venue => ({
       id: venue.id,
-      name: venue.publicName,
+      name: venue.publicName || venue.name,
       address: {
         street: venue.address,
         city: venue.city,
