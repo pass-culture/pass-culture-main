@@ -110,6 +110,8 @@ def get_bookings(user: User) -> BookingsResponse:
             .joinedload(Offer.venue)
             .load_only(
                 Venue.name,
+                Venue.address,
+                Venue.postalCode,
                 Venue.city,
                 Venue.latitude,
                 Venue.longitude,
