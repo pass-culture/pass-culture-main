@@ -6,6 +6,7 @@ from typing import Optional
 from dateutil.relativedelta import relativedelta
 from sqlalchemy.orm import joinedload
 from sqlalchemy.orm.query import Query
+from sqlalchemy.sql.functions import func
 
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingStatus
@@ -14,12 +15,12 @@ from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
+from pcapi.core.users.utils import sanitize_email
 from pcapi.domain.beneficiary_pre_subscription.validator import _is_postal_code_eligible
 from pcapi.domain.favorite.favorite import FavoriteDomain
 from pcapi.infrastructure.repository.favorite import favorite_domain_converter
 from pcapi.models.user_offerer import UserOfferer
 from pcapi.repository import repository
-from pcapi.repository.user_queries import find_user_by_email
 from pcapi.utils import crypto
 
 from . import constants
@@ -54,6 +55,16 @@ def get_user_with_credentials(identifier: str, password: str) -> User:
     user = find_user_by_email(identifier)
     check_user_and_credentials(user, password)
     return user
+
+
+def _find_user_by_email_query(email: str):
+    # FIXME (dbaty, 2021-05-02): remove call to `func.lower()` once
+    # all emails have been sanitized in the database.
+    return User.query.filter(func.lower(User.email) == sanitize_email(email))
+
+
+def find_user_by_email(email: str) -> Optional[User]:
+    return _find_user_by_email_query(email).one_or_none()
 
 
 def get_user_with_valid_token(

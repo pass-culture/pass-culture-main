@@ -7,10 +7,10 @@ from pcapi.core.fraud import api as fraud_api
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import messages as subscription_messages
 from pcapi.core.subscription.ubble import api as ubble_subscription_api
+from pcapi.core.users.repository import find_user_by_email
 from pcapi.models.beneficiary_import import BeneficiaryImportSources
 from pcapi.models.beneficiary_import_status import ImportStatus
 from pcapi.repository import repository
-from pcapi.repository.user_queries import find_user_by_email
 from pcapi.routes.apis import public_api
 from pcapi.scripts.beneficiary import import_dms_users
 from pcapi.serialization.decorator import spectree_serialize

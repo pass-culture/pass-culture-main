@@ -29,10 +29,6 @@ def count_users_by_email(email: str) -> int:
     return _find_user_by_email_query(email).count()
 
 
-def find_user_by_email(email: str) -> Optional[User]:
-    return _find_user_by_email_query(email).one_or_none()
-
-
 def find_beneficiary_users_by_email_provider(email_provider: str) -> list[User]:
     formatted_email_provider = f"%@{email_provider}"
     return (

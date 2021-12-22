@@ -5,6 +5,7 @@ from pcapi.core.fraud.api import on_jouve_result
 from pcapi.core.fraud.exceptions import BeneficiaryFraudResultCannotBeDowngraded
 from pcapi.core.mails.transactional.users.fraud_suspicion import send_fraud_suspicion_email
 from pcapi.core.subscription import messages as subscription_messages
+from pcapi.core.users.repository import find_user_by_email
 from pcapi.domain import user_emails as old_user_emails
 from pcapi.domain.beneficiary_pre_subscription.exceptions import BeneficiaryIsADuplicate
 from pcapi.domain.beneficiary_pre_subscription.exceptions import CantRegisterBeneficiary
@@ -17,7 +18,6 @@ from pcapi.infrastructure.repository.beneficiary.beneficiary_sql_repository impo
 from pcapi.models.beneficiary_import import BeneficiaryImportSources
 from pcapi.models.beneficiary_import_status import ImportStatus
 from pcapi.repository.beneficiary_import_queries import save_beneficiary_import_with_status
-from pcapi.repository.user_queries import find_user_by_email
 
 
 logger = logging.getLogger(__name__)

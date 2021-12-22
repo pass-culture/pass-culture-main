@@ -3,8 +3,8 @@ from datetime import datetime
 from pcapi.core.mails.transactional.users.email_address_change import send_confirmation_email_change_email
 from pcapi.core.mails.transactional.users.email_address_change import send_information_email_change_email
 from pcapi.core.users.models import User
+from pcapi.core.users.repository import find_user_by_email
 from pcapi.core.users.utils import encode_jwt_payload
-from pcapi.repository.user_queries import find_user_by_email
 from pcapi.utils.urls import generate_firebase_dynamic_link
 
 

@@ -12,7 +12,6 @@ from pcapi.domain.beneficiary_pre_subscription.exceptions import SubscriptionJou
 from pcapi.domain.beneficiary_pre_subscription.exceptions import SuspiciousFraudDetected
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository.user_queries import beneficiary_by_civility_query
-from pcapi.repository.user_queries import find_user_by_email
 
 
 EXCLUDED_DEPARTMENTS = {
@@ -35,6 +34,8 @@ def _is_postal_code_eligible(code: Optional[str]) -> bool:
 
 
 def _check_email_is_not_taken(beneficiary_pre_subscription: BeneficiaryPreSubscription) -> None:
+    from pcapi.core.users.repository import find_user_by_email
+
     email = beneficiary_pre_subscription.email
 
     if find_user_by_email(email):

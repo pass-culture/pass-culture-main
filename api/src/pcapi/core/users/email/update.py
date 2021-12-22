@@ -9,10 +9,10 @@ from pcapi import settings
 from pcapi.core.users import constants
 from pcapi.core.users import exceptions
 from pcapi.core.users import repository as users_repository
+from pcapi.core.users.api import find_user_by_email
 from pcapi.core.users.models import User
 from pcapi.core.users.models import UserEmailHistory
 from pcapi.repository import repository
-from pcapi.repository import user_queries
 
 from .send import send_user_emails_for_email_change
 
@@ -101,5 +101,5 @@ def check_user_password(user: User, password: str) -> None:
 
 
 def check_email_address_does_not_exist(email: str) -> None:
-    if user_queries.find_user_by_email(email):
+    if find_user_by_email(email):
         raise exceptions.EmailExistsError(email)

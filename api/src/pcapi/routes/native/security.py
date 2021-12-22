@@ -7,8 +7,8 @@ from flask_jwt_extended.utils import get_jwt_identity
 from flask_jwt_extended.view_decorators import jwt_required
 import sentry_sdk
 
+from pcapi.core.users.repository import find_user_by_email
 from pcapi.models.api_errors import ForbiddenError
-from pcapi.repository.user_queries import find_user_by_email
 from pcapi.routes.native.v1.blueprint import JWT_AUTH
 from pcapi.serialization.spec_tree import add_security_scheme
 

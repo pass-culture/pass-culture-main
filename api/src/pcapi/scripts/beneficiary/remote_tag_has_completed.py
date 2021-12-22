@@ -5,9 +5,9 @@ from typing import Callable
 from pcapi import settings
 from pcapi.connectors.api_demarches_simplifiees import get_application_details
 from pcapi.core.users.models import User
+from pcapi.core.users.repository import find_user_by_email
 from pcapi.domain.demarches_simplifiees import get_received_application_ids_for_demarche_simplifiee
 from pcapi.repository import repository
-from pcapi.repository.user_queries import find_user_by_email
 
 
 logger = logging.getLogger(__name__)
