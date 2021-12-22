@@ -35,10 +35,9 @@ const PrebookingModal = ({
         >
           Recensement
         </a>
-      </b>
-      , puis cliquez sur <b>Recenser</b> pour rattacher votre offre à un{' '}
-      <b>enseignement artistique</b>, un <b>projet</b>, une <b>action</b> ou un{' '}
-      <b>événement culturel</b>.
+      </b>{' '}
+      pour rattacher votre offre à un <b>enseignement artistique</b>, un{' '}
+      <b>projet</b>, une <b>action</b> ou un <b>événement culturel</b>.
     </p>
     <button
       className="prebooking-modal-button"
