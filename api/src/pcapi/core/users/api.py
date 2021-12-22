@@ -46,6 +46,7 @@ from pcapi.core.users.models import User
 from pcapi.core.users.models import UserEmailHistory
 from pcapi.core.users.models import VOID_PUBLIC_NAME
 from pcapi.core.users.repository import does_validated_phone_exist
+from pcapi.core.users.repository import find_user_by_email
 from pcapi.domain import user_emails as old_user_emails
 from pcapi.domain.password import random_hashed_password
 from pcapi.domain.postal_code.postal_code import PostalCode
@@ -58,8 +59,6 @@ from pcapi.notifications.sms import send_transactional_sms
 from pcapi.notifications.sms.sending_limit import is_SMS_sending_allowed
 from pcapi.notifications.sms.sending_limit import update_sent_SMS_counter
 from pcapi.repository import repository
-from pcapi.repository import user_queries
-from pcapi.repository.user_queries import find_user_by_email
 from pcapi.routes.serialization.users import ProUserCreationBodyModel
 from pcapi.tasks import batch_tasks
 from pcapi.tasks.account import VerifyIdentityDocumentRequest
@@ -464,7 +463,8 @@ def change_user_email(
     device_id: typing.Optional[str] = None,
     admin: bool = False,
 ) -> None:
-    current_user = user_queries.find_user_by_email(current_email)
+    current_user = find_user_by_email(current_email)
+
     if not current_user:
         raise exceptions.UserDoesNotExist()
 

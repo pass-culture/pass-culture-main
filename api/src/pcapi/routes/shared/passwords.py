@@ -11,11 +11,11 @@ from pcapi.core.users import repository as users_repo
 from pcapi.core.users.api import update_password_and_external_user
 from pcapi.core.users.api import update_user_password
 from pcapi.core.users.models import TokenType
+from pcapi.core.users.repository import find_user_by_email
 from pcapi.domain.password import check_password_strength
 from pcapi.domain.password import check_password_validity
 from pcapi.domain.user_emails import send_reset_password_email_to_pro
 from pcapi.models.api_errors import ApiErrors
-from pcapi.repository.user_queries import find_user_by_email
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization.password_serialize import ChangePasswordBodyModel
 from pcapi.routes.serialization.password_serialize import NewPasswordBodyModel

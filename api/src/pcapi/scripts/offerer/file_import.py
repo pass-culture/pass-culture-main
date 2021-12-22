@@ -9,11 +9,11 @@ from pcapi.core.offerers.repository import find_offerer_by_siren
 from pcapi.core.offerers.repository import find_venue_by_managing_offerer_id
 from pcapi.core.users.api import fulfill_account_password
 from pcapi.core.users.models import User
+from pcapi.core.users.repository import find_user_by_email
 from pcapi.core.users.utils import sanitize_email
 from pcapi.models.user_offerer import UserOfferer
 from pcapi.repository import repository
 from pcapi.repository.user_offerer_queries import find_one_or_none_by_user_id_and_offerer_id
-from pcapi.repository.user_queries import find_user_by_email
 
 
 logger = logging.getLogger(__name__)

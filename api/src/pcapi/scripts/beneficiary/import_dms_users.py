@@ -15,6 +15,7 @@ import pcapi.core.subscription.api as subscription_api
 import pcapi.core.subscription.messages as subscription_messages
 import pcapi.core.users.api as users_api
 import pcapi.core.users.models as users_models
+from pcapi.core.users.repository import find_user_by_email
 from pcapi.domain import user_emails
 from pcapi.domain.demarches_simplifiees import get_closed_application_ids_for_demarche_simplifiee
 from pcapi.models.api_errors import ApiErrors
@@ -23,7 +24,6 @@ from pcapi.models.beneficiary_import_status import ImportStatus
 from pcapi.repository.beneficiary_import_queries import find_applications_ids_to_retry
 from pcapi.repository.beneficiary_import_queries import get_already_processed_applications_ids
 from pcapi.repository.beneficiary_import_queries import save_beneficiary_import_with_status
-from pcapi.repository.user_queries import find_user_by_email
 from pcapi.utils.date import FrenchParserInfo
 
 
