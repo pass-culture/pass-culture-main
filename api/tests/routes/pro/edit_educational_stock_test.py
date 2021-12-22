@@ -5,6 +5,8 @@ from freezegun import freeze_time
 import pytest
 
 from pcapi.core.bookings import factories as booking_factories
+from pcapi.core.bookings.models import Booking
+from pcapi.core.educational.models import EducationalBooking
 from pcapi.core.offers import factories as offer_factories
 from pcapi.core.offers.models import Stock
 from pcapi.utils.human_ids import humanize
@@ -75,6 +77,43 @@ class Return200Test:
         assert edited_stock.price == 1500
         assert edited_stock.numberOfTickets == 32
         assert edited_stock.educationalPriceDetail == "Détail du prix"
+
+    def test_edit_educational_stock_with_pending_booking(self, app, client):
+        # Given
+        stock = offer_factories.EducationalEventStockFactory(
+            beginningDatetime=datetime(2021, 12, 18),
+            price=1200,
+            numberOfTickets=32,
+            bookingLimitDatetime=datetime(2021, 12, 1),
+            educationalPriceDetail="Détail du prix",
+        )
+        booking = booking_factories.PendingEducationalBookingFactory(stock=stock)
+        offer_factories.UserOffererFactory(user__email="user@example.com", offerer=stock.offer.venue.managingOfferer)
+
+        # When
+        stock_edition_payload = {
+            "beginningDatetime": "2022-01-17T22:00:00Z",
+            "bookingLimitDatetime": "2021-12-31T20:00:00Z",
+            "totalPrice": 1500,
+            "numberOfTickets": 38,
+            "educationalPriceDetail": "Nouvelle description du prix",
+        }
+
+        client.with_session_auth("user@example.com")
+        response = client.patch(f"/stocks/educational/{humanize(stock.id)}", json=stock_edition_payload)
+
+        # Then
+        assert response.status_code == 204
+        edited_stock = Stock.query.get(stock.id)
+        edited_booking = Booking.query.get(booking.id)
+        edited_educational_booking = EducationalBooking.query.get(edited_booking.educationalBookingId)
+        assert edited_stock.beginningDatetime == datetime(2022, 1, 17, 22)
+        assert edited_stock.bookingLimitDatetime == datetime(2021, 12, 31, 20)
+        assert edited_stock.price == 1500
+        assert edited_stock.numberOfTickets == 38
+        assert edited_stock.educationalPriceDetail == "Nouvelle description du prix"
+        assert edited_booking.amount == 1500
+        assert edited_educational_booking.confirmationLimitDate == datetime(2021, 12, 31, 20)
 
 
 @freeze_time("2020-11-17 15:00:00")
