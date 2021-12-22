@@ -288,7 +288,7 @@ def get_categories() -> offers_serialize.CategoriesResponseModel:
 def cancel_educational_offer_booking(offer_id: str) -> None:
     try:
         offer = (
-            offers_repository.get_educational_offer_by_id_base_query(offer_id)
+            offers_repository.get_educational_offer_by_id_base_query(dehumanize(offer_id))
             .options(joinedload(Offer.stocks).joinedload(Stock.bookings))
             .options(joinedload(Offer.venue).load_only("id", "managingOffererId"))
             .one()

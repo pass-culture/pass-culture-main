@@ -244,6 +244,10 @@ export const editEducationalStock = (stockId, stock) => {
   return client.patch(`/stocks/educational/${stockId}`, stock)
 }
 
+export const cancelEducationalBooking = offerId => {
+  return client.patch(`/offers/${offerId}/cancel_booking`)
+}
+
 //
 // thumbnail
 //
