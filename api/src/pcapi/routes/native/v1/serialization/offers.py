@@ -195,6 +195,7 @@ class OfferResponse(BaseModel):
     externalTicketOfficeUrl: Optional[str]
     extraData: Optional[OfferExtraData]
     isExpired: bool
+    is_forbidden_to_underage: bool
     isReleased: bool
     isSoldOut: bool
     isDigital: bool
