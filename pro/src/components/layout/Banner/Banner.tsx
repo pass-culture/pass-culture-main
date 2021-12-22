@@ -2,23 +2,33 @@
  * @debt directory "Gaël: this file should be migrated within the new directory structure"
  */
 
-import PropTypes from 'prop-types'
 import React from 'react'
 
 import Icon from 'components/layout/Icon'
-import { requiredIfComponentHasProp } from 'utils/propTypes'
+
+interface IBannerProps {
+  icon?: string
+  href?: string
+  linkTitle?: string
+  children: React.ReactNode | React.ReactNode[]
+  targetLink?: string
+  type?: 'notification-info' | 'attention' | 'light'
+  closable?: boolean
+  handleOnClick?: () => void
+  className?: string
+}
 
 const Banner = ({
-  icon,
+  icon = 'ico-external-site',
   href,
   linkTitle,
   children,
-  targetLink,
-  type,
-  closable,
+  targetLink = '_blank',
+  type = 'attention',
+  closable = false,
   handleOnClick,
   className,
-}) => {
+}: IBannerProps): JSX.Element => {
   return (
     <div className={`bi-banner ${type} ${className}`}>
       {closable && (
@@ -44,30 +54,6 @@ const Banner = ({
       )}
     </div>
   )
-}
-
-Banner.defaultProps = {
-  children: null,
-  className: '',
-  closable: false,
-  handleOnClick: null,
-  href: null,
-  icon: 'ico-external-site',
-  linkTitle: null,
-  targetLink: '_blank',
-  type: 'attention',
-}
-
-Banner.propTypes = {
-  children: PropTypes.node,
-  className: PropTypes.string,
-  closable: PropTypes.bool,
-  handleOnClick: PropTypes.func,
-  href: requiredIfComponentHasProp('linkTitle', 'string'),
-  icon: PropTypes.string,
-  linkTitle: requiredIfComponentHasProp('href', 'string'),
-  targetLink: PropTypes.string,
-  type: PropTypes.oneOf(['notification-info', 'attention', 'light']),
 }
 
 export default Banner
