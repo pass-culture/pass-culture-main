@@ -1,7 +1,6 @@
 import { useFormikContext } from 'formik'
 import React from 'react'
 
-import Banner from 'components/layout/Banner/Banner'
 import {
   IOfferEducationalFormValues,
   IUserOfferer,
@@ -9,6 +8,7 @@ import {
 } from 'core/OfferEducational'
 import FormLayout from 'new_components/FormLayout'
 import { Select } from 'ui-kit'
+import { Banner } from 'ui-kit'
 
 import { OFFERER_LABEL, VENUE_LABEL } from '../../constants/labels'
 import buildSelectOptions from '../../utils/buildSelectOptions'

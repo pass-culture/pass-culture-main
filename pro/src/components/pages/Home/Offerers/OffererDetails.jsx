@@ -8,9 +8,9 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 
 import useActiveFeature from 'components/hooks/useActiveFeature'
-import Banner from 'components/layout/Banner/Banner'
 import Icon from 'components/layout/Icon'
 import Select from 'components/layout/inputs/Select'
+import { Banner } from 'ui-kit'
 
 import { STEP_OFFERER_HASH } from '../HomepageBreadcrumb'
 

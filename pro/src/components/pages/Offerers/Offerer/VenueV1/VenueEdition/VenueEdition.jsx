@@ -13,11 +13,11 @@ import { Link, NavLink } from 'react-router-dom'
 
 import useActiveFeature from 'components/hooks/useActiveFeature'
 import useFeatureFlagedOfferCreationURL from 'components/hooks/useFeatureFlagedOfferCreationURL'
-import Banner from 'components/layout/Banner/Banner'
 import Icon from 'components/layout/Icon'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Titles from 'components/layout/Titles/Titles'
 import { ReactComponent as AddOfferSvg } from 'icons/ico-plus.svg'
+import { Banner } from 'ui-kit'
 
 import ModifyOrCancelControl from '../controls/ModifyOrCancelControl/ModifyOrCancelControl'
 import ReturnOrSubmitControl from '../controls/ReturnOrSubmitControl/ReturnOrSubmitControl'

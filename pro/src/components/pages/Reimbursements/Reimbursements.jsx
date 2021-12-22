@@ -5,12 +5,12 @@
 import React from 'react'
 
 import AppLayout from 'app/AppLayout'
-import Banner from 'components/layout/Banner/Banner'
 import CsvTableButtonContainer from 'components/layout/CsvTableButton/CsvTableButtonContainer'
 import DownloadButtonContainer from 'components/layout/DownloadButton/DownloadButtonContainer'
 import Icon from 'components/layout/Icon'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Titles from 'components/layout/Titles/Titles'
+import { Banner } from 'ui-kit'
 import { API_URL } from 'utils/config'
 
 const Reimbursements = () => (

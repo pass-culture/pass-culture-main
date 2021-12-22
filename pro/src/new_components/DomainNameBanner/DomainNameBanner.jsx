@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 
-import Banner from 'components/layout/Banner/Banner'
+import { Banner } from 'ui-kit'
 
 export const DomainNameBanner = ({ handleOnClick }) => {
   const isOnVenuePage = window.location.href.indexOf('lieux') > -1

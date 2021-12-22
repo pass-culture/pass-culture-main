@@ -7,11 +7,11 @@ import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 
 import AppLayout from 'app/AppLayout'
-import Banner from 'components/layout/Banner/Banner'
 import TextInput from 'components/layout/inputs/TextInput/TextInput'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Titles from 'components/layout/Titles/Titles'
 import ConfirmDialog from 'new_components/ConfirmDialog'
+import { Banner } from 'ui-kit'
 import { formatLocalTimeDateString } from 'utils/timezone'
 
 class Desk extends Component {
