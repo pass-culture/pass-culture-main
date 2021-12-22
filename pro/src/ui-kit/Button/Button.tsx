@@ -28,7 +28,7 @@ const Button = ({
     type={type}
     {...buttonAttrs}
   >
-    {Icon && <Icon />}
+    {Icon && <Icon className={styles['button-icon']} />}
     {children}
   </button>
 )

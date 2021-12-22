@@ -23,6 +23,7 @@ export default {
 
 const Template: Story<{ mode: Mode }> = args => (
   <OfferEducationalStock
+    cancelActiveBookings={() => null}
     initialValues={DEFAULT_EAC_STOCK_FORM_VALUES}
     offer={{
       id: '1234',
@@ -32,7 +33,6 @@ const Template: Story<{ mode: Mode }> = args => (
       isBooked: true,
     }}
     onSubmit={action('onSubmit')}
-    resetActiveBookings={() => null}
     setIsOfferActive={() => null}
     {...args}
   />
