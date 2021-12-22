@@ -213,6 +213,8 @@ class GetBookingsTest:
                     "name": used2.stock.offer.name,
                     "url": f"https://demo.pass/some/path?token={used2.token}&email=pascal.ture@example.com&offerId={humanize(used2.stock.offer.id)}",
                     "venue": {
+                        "address": "1 boulevard Poissonnière",
+                        "postalCode": "75000",
                         "city": "Paris",
                         "coordinates": {"latitude": 48.87004, "longitude": 2.3785},
                         "id": used2.venue.id,
@@ -225,6 +227,14 @@ class GetBookingsTest:
             "token": used2.token,
             "totalAmount": 1000,
         }
+
+        venue = response.json["ongoing_bookings"][0]["stock"]["offer"]["venue"]
+        assert venue["city"] == "Paris"
+        assert venue["name"] == "Le Petit Rintintin 7"
+        assert venue["publicName"] == "Le Petit Rintintin 7"
+        assert venue["address"] == "1 boulevard Poissonnière"
+        assert venue["postalCode"] == "75000"
+        assert venue["coordinates"] == {"latitude": 48.87004, "longitude": 2.3785}
 
         for booking in response.json["ongoing_bookings"]:
             assert booking["qrCodeData"] is not None
