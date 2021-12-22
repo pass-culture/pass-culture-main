@@ -733,7 +733,6 @@ def has_user_performed_identity_check(user: users_models.User) -> bool:
             models.BeneficiaryFraudCheck.user == user,
             models.BeneficiaryFraudCheck.status.is_distinct_from(models.FraudCheckStatus.CANCELED),
             models.BeneficiaryFraudCheck.type.in_(models.IDENTITY_CHECK_TYPES),
-            models.BeneficiaryFraudCheck.eligibilityType == user.eligibility,
         ).exists()
     ).scalar()
 
