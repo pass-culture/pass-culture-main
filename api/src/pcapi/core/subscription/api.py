@@ -362,14 +362,14 @@ def get_allowed_identity_check_methods(user: users_models.User) -> list[models.I
             allowed_methods.append(models.IdentityCheckMethod.EDUCONNECT)
 
         if is_identity_check_with_document_method_allowed_for_underage(user):
-            if FeatureToggle.ENABLE_UBBLE.is_active() and is_ubble_allowed_if_subscription_overflow(user):
+            if FeatureToggle.ENABLE_UBBLE.is_active() and _is_ubble_allowed_if_subscription_overflow(user):
                 allowed_methods.append(models.IdentityCheckMethod.UBBLE)
             if not FeatureToggle.ENABLE_UBBLE.is_active():
                 allowed_methods.append(models.IdentityCheckMethod.JOUVE)
 
     elif user.eligibility == users_models.EligibilityType.AGE18:
         if FeatureToggle.ALLOW_IDCHECK_REGISTRATION.is_active():
-            if FeatureToggle.ENABLE_UBBLE.is_active() and is_ubble_allowed_if_subscription_overflow(user):
+            if FeatureToggle.ENABLE_UBBLE.is_active() and _is_ubble_allowed_if_subscription_overflow(user):
                 allowed_methods.append(models.IdentityCheckMethod.UBBLE)
             if not FeatureToggle.ENABLE_UBBLE.is_active():
                 allowed_methods.append(models.IdentityCheckMethod.JOUVE)
@@ -377,7 +377,7 @@ def get_allowed_identity_check_methods(user: users_models.User) -> list[models.I
     return allowed_methods
 
 
-def is_ubble_allowed_if_subscription_overflow(user: users_models.User) -> bool:
+def _is_ubble_allowed_if_subscription_overflow(user: users_models.User) -> bool:
     if not FeatureToggle.ENABLE_UBBLE_SUBSCRIPTION_LIMITATION.is_active():
         return True
 
