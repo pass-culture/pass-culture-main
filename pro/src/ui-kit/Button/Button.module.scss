@@ -10,13 +10,6 @@
   line-height: rem(36px);
   padding: 0 rem(16px);
 
-  svg {
-    height: rem(20px);
-    margin-right: rem(6px);
-    margin-left: rem(-4px); // compensate for icon white space adding to padding
-    width: rem(20px);
-  }
-
   &:focus {
     outline: none;
   }
@@ -27,6 +20,13 @@
 
   &:disabled {
     cursor: default;
+  }
+
+  &-icon {
+    height: rem(20px);
+    margin-right: rem(6px);
+    margin-left: rem(-4px); // compensate for icon white space adding to padding
+    width: rem(20px);
   }
 
   &-primary {
