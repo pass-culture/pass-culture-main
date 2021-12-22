@@ -76,8 +76,9 @@ export const mapDispatchToProps = (
     },
 
     handleSubmitRequest: ({ formValues, handleFail, handleSuccess }) => {
-      const body = formatVenuePayload(formValues, false)
-
+      const body = formValues.isVirtual
+        ? { businessUnitId: formValues.businessUnitId }
+        : formatVenuePayload(formValues, false)
       dispatch(
         requestData({
           apiPath: `/venues/${venueId}`,
