@@ -5,12 +5,12 @@ import PropTypes from 'prop-types'
 import React, { useCallback, useEffect, useState } from 'react'
 
 import AppLayout from 'app/AppLayout'
-import Banner from 'components/layout/Banner/Banner'
 import Icon from 'components/layout/Icon'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Spinner from 'components/layout/Spinner'
 import Titles from 'components/layout/Titles/Titles'
 import * as pcapi from 'repository/pcapi/pcapi'
+import { Banner } from 'ui-kit'
 
 import './Reimbursement.scss'
 import useActiveFeature from '../../hooks/useActiveFeature'

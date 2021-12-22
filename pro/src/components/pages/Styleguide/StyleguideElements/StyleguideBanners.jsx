@@ -4,7 +4,7 @@
 
 import React from 'react'
 
-import Banner from '../../../layout/Banner/Banner'
+import { Banner } from 'ui-kit'
 
 const StyleguideBanners = () => {
   const attentionBanner = String.raw`

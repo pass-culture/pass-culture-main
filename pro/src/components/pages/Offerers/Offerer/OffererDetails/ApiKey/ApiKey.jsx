@@ -8,13 +8,13 @@ import PropTypes from 'prop-types'
 import React, { useCallback, useState } from 'react'
 
 import useNotification from 'components/hooks/useNotification'
-import Banner from 'components/layout/Banner/Banner'
 import Icon from 'components/layout/Icon'
 import DialogBox from 'new_components/DialogBox/DialogBox'
 import {
   deleteOffererApiKey,
   generateOffererApiKey,
 } from 'repository/pcapi/pcapi'
+import { Banner } from 'ui-kit'
 /* @debt duplicated "Gaël: delete icon import and regroup buttons within one component"*/
 import { ReactComponent as SpinnerIcon } from 'ui-kit/SubmitButton/assets/loader.svg'
 import { ENV_WORDING } from 'utils/config'
