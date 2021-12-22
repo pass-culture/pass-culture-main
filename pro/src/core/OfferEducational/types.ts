@@ -1,3 +1,5 @@
+import { Offer } from 'custom_types/offer'
+
 export type IUserVenue = {
   id: string
   name: string
@@ -125,4 +127,12 @@ export type StockPayload = {
   totalPrice: number
   numberOfTickets: number
   educationalPriceDetail: string
+}
+
+export type GetStockOfferSuccessPayload = {
+  id: string
+  isActive: boolean
+  status: Offer['status']
+  isBooked: boolean
+  venueDepartmentCode: string
 }

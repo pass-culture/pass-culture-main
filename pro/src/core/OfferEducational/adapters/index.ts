@@ -1,3 +1,5 @@
 export * from './getCategoriesAdapter'
-export * from './getOfferAdapter'
+export * from './getStockOfferAdapter'
 export * from './getOfferersAdapter'
+export * from './deleteActiveBookingsAdapter'
+export * from './patchIsOfferActiveAdapter'
