@@ -29,12 +29,12 @@ const ButtonLink = ({
 
   return isExternal ? (
     <a className={classNames} href={to} {...linkAttrs}>
-      {Icon && <Icon />}
+      {Icon && <Icon className={styles['button-icon']} />}
       {children}
     </a>
   ) : (
     <Link className={classNames} to={to} {...linkAttrs}>
-      {Icon && <Icon />}
+      {Icon && <Icon className={styles['button-icon']} />}
       {children}
     </Link>
   )

@@ -33,7 +33,7 @@ const OfferEducationalModal = ({
       </Title>
       <p className={styles['modal-paragraph']}>
         L’établissement scolaire concerné recevra un message lui indiquant
-        l’annulation de sa réservation.{' '}
+        l’annulation de sa réservation.
       </p>
       <div className={styles['modal-buttons']}>
         <Button
@@ -41,7 +41,7 @@ const OfferEducationalModal = ({
           onClick={onDismiss}
           variant={Button.variant.SECONDARY}
         >
-          Annuller
+          Annuler
         </Button>
         <Button
           className={styles['modal-button']}

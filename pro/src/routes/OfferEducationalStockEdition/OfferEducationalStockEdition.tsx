@@ -9,7 +9,7 @@ import {
   Mode,
   OfferEducationalStockFormValues,
   patchIsOfferActiveAdapter,
-  deleteActiveBookingsAdapter,
+  cancelActiveBookingsAdapter,
   GetStockOfferSuccessPayload,
 } from 'core/OfferEducational'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
@@ -67,8 +67,8 @@ const OfferEducationalStockEdition = (): JSX.Element => {
     setIsReady(false)
   }
 
-  const resetActiveBookings = async () => {
-    const { isOk, message } = await deleteActiveBookingsAdapter({ offerId })
+  const cancelActiveBookings = async () => {
+    const { isOk, message } = await cancelActiveBookingsAdapter({ offerId })
 
     if (!isOk) {
       return notify.error(message)
@@ -113,13 +113,13 @@ const OfferEducationalStockEdition = (): JSX.Element => {
     >
       {offer && isReady ? (
         <OfferEducationalStockScreen
+          cancelActiveBookings={cancelActiveBookings}
           initialValues={initialValues}
           mode={
             stock?.isEducationalStockEditable ? Mode.EDITION : Mode.READ_ONLY
           }
           offer={offer}
           onSubmit={handleSubmitStock}
-          resetActiveBookings={resetActiveBookings}
           setIsOfferActive={setIsOfferActive}
         />
       ) : (

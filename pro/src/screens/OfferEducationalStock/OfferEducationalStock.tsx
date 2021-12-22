@@ -23,12 +23,12 @@ export interface IOfferEducationalStockProps {
   isEditable?: boolean
   initialValues: OfferEducationalStockFormValues
   offer: GetStockOfferSuccessPayload
-  onSubmit: (
+  onSubmit(
     offer: GetStockOfferSuccessPayload,
     values: OfferEducationalStockFormValues
-  ) => void
+  ): void
   mode: Mode
-  resetActiveBookings?(): void
+  cancelActiveBookings?(): void
   setIsOfferActive?(isActive: boolean): void
 }
 
@@ -37,7 +37,7 @@ const OfferEducationalStock = ({
   offer,
   onSubmit,
   mode,
-  resetActiveBookings,
+  cancelActiveBookings,
   setIsOfferActive,
 }: IOfferEducationalStockProps): JSX.Element => {
   const offerIsDisbaled = isOfferDisabled(offer.status)
@@ -51,16 +51,16 @@ const OfferEducationalStock = ({
   const shouldShowOfferActions =
     (mode === Mode.EDITION || mode === Mode.READ_ONLY) &&
     setIsOfferActive &&
-    resetActiveBookings
+    cancelActiveBookings
 
   return (
     <>
       {shouldShowOfferActions && (
         <OfferEducationalActions
+          cancelActiveBookings={cancelActiveBookings}
           className={styles.actions}
           isBooked={offer.isBooked}
           isOfferActive={offer.isActive}
-          resetActiveBookings={resetActiveBookings}
           setIsOfferActive={setIsOfferActive}
         />
       )}

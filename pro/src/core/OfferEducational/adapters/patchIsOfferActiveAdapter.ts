@@ -21,8 +21,8 @@ export const patchIsOfferActiveAdapter: PatchIsOfferActiveAdapter = async ({
     return {
       isOk: true,
       message: isActive
-        ? 'Votre offre est maintenant active et visible dans Adage'
-        : 'Votre offre est maintenant inactive et sera invisible pour les utilisateurs d’adage',
+        ? 'Votre offre est maintenant active et visible dans ADAGE'
+        : 'Votre offre est maintenant inactive et sera invisible pour les utilisateurs d’ADAGE',
       payload: null,
     }
   } catch (error) {

@@ -13,31 +13,31 @@ interface IOfferEducationalActions {
   isOfferActive: boolean
   isBooked: boolean
   setIsOfferActive?(isActive: boolean): void
-  resetActiveBookings?(): void
+  cancelActiveBookings?(): void
 }
 
 const OfferEducationalActions = ({
   className,
   isOfferActive,
   isBooked,
-  resetActiveBookings,
+  cancelActiveBookings,
   setIsOfferActive,
 }: IOfferEducationalActions): JSX.Element => {
   const [isModalOpen, setIsModalOpen] = useState(false)
 
   return (
     <>
-      {isModalOpen && resetActiveBookings && (
+      {isModalOpen && cancelActiveBookings && (
         <ConfirmModal
           onDismiss={() => setIsModalOpen(false)}
-          onValidate={resetActiveBookings}
+          onValidate={cancelActiveBookings}
         />
       )}
       <div className={cn(style['actions'], className)}>
         {setIsOfferActive && (
           <Button
             Icon={isOfferActive ? IconInactive : IconActive}
-            className={cn(style['actions-button'])}
+            className={style['actions-button']}
             onClick={() => setIsOfferActive(!isOfferActive)}
             variant={Button.variant.TERNARY}
           >
@@ -45,9 +45,9 @@ const OfferEducationalActions = ({
           </Button>
         )}
 
-        {isBooked && resetActiveBookings && (
+        {isBooked && cancelActiveBookings && (
           <Button
-            className={cn(style['actions-button'])}
+            className={style['actions-button']}
             onClick={() => setIsModalOpen(true)}
             variant={Button.variant.SECONDARY}
           >
