@@ -134,7 +134,7 @@ class VenueCreation extends PureComponent {
           <WithdrawalDetailsFields isCreatedEntity readOnly={readOnly} />
         )}
         {isBankInformationWithSiretActive ? (
-          <BusinessUnitFields offerer={offerer} />
+          <BusinessUnitFields isCreatingVenue offerer={offerer} />
         ) : (
           <BankInformation offerer={offerer} />
         )}
