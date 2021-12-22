@@ -19,6 +19,7 @@ from . import ubble as ubble_api
 from .. import exceptions
 from .. import models
 from .. import repository as fraud_repository
+from ..models import BeneficiaryFraudCheck
 from ..models import ubble as ubble_models
 
 
@@ -43,7 +44,9 @@ USER_PROFILING_FRAUD_CHECK_STATUS_RISK_MAPPING = {
 }
 
 
-def on_educonnect_result(user: users_models.User, educonnect_content: models.EduconnectContent) -> None:
+def on_educonnect_result(
+    user: users_models.User, educonnect_content: models.EduconnectContent
+) -> BeneficiaryFraudCheck:
     eligibility_type = get_eligibility_type(educonnect_content)
 
     fraud_check = models.BeneficiaryFraudCheck.query.filter(
@@ -65,6 +68,7 @@ def on_educonnect_result(user: users_models.User, educonnect_content: models.Edu
         )
     on_identity_fraud_check_result(user, fraud_check)
     repository.save(fraud_check)
+    return fraud_check
 
 
 def on_jouve_result(user: users_models.User, jouve_content: models.JouveContent) -> None:

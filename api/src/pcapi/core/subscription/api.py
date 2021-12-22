@@ -3,7 +3,6 @@ import logging
 import typing
 
 from pcapi import settings
-from pcapi.core.fraud import exceptions as fraud_exceptions
 import pcapi.core.fraud.api as fraud_api
 import pcapi.core.fraud.models as fraud_models
 import pcapi.core.fraud.repository as fraud_repository
@@ -162,59 +161,6 @@ def check_and_activate_beneficiary(
             db.session.rollback()
             return user
         return user
-
-
-def create_beneficiary_import_after_educonnect(
-    user: users_models.User, eligibilityType: typing.Optional[users_models.EligibilityType]
-) -> None:
-    if not eligibilityType:
-        raise fraud_exceptions.UserAgeNotValid()
-
-    fraud_result = fraud_models.BeneficiaryFraudResult.query.filter_by(
-        user=user, eligibilityType=eligibilityType
-    ).one_or_none()
-    if not fraud_result:
-        raise exceptions.BeneficiaryFraudResultMissing()
-
-    fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(
-        user=user,
-        type=fraud_models.FraudCheckType.EDUCONNECT,
-        eligibilityType=eligibilityType,
-    ).one_or_none()
-
-    fraud_ko_reasons = fraud_result.reason_codes
-    if fraud_models.FraudReasonCode.DUPLICATE_USER in fraud_ko_reasons:
-        raise fraud_exceptions.DuplicateUser()
-
-    if fraud_models.FraudReasonCode.AGE_NOT_VALID in fraud_ko_reasons:
-        raise fraud_exceptions.UserAgeNotValid()
-
-    if fraud_models.FraudReasonCode.INE_NOT_WHITELISTED in fraud_ko_reasons:
-        raise fraud_exceptions.NotWhitelistedINE()
-
-    if fraud_check.type != fraud_models.FraudCheckType.EDUCONNECT:
-        raise NotImplementedError()
-
-    if fraud_result.status != fraud_models.FraudStatus.OK:
-        raise fraud_exceptions.FraudException()
-
-    beneficiary_import = BeneficiaryImport(
-        thirdPartyId=fraud_check.thirdPartyId,
-        beneficiaryId=user.id,
-        sourceId=None,
-        source=BeneficiaryImportSources.educonnect.value,
-        beneficiary=user,
-        eligibilityType=eligibilityType,
-    )
-    beneficiary_import.setStatus(ImportStatus.CREATED)
-    pcapi_repository.repository.save(beneficiary_import)
-
-    users_api.update_user_information_from_external_source(user, fraud_check.source_data(), commit=True)
-
-    if not users_api.steps_to_become_beneficiary(user, eligibilityType):
-        activate_beneficiary(user)
-    else:
-        users_external.update_external_user(user)
 
 
 def _send_beneficiary_activation_email(user: users_models.User, has_activated_account: bool):

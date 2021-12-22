@@ -1,4 +1,3 @@
-import datetime
 import logging
 from typing import Optional
 from urllib.parse import urlencode
@@ -9,15 +8,15 @@ from flask import request
 from werkzeug.wrappers import Response
 
 from pcapi import settings
-from pcapi.core.fraud import api as fraud_api
-from pcapi.core.fraud import exceptions as fraud_exceptions
 from pcapi.core.fraud import models as fraud_models
-from pcapi.core.subscription import api as subscription_api
+from pcapi.core.subscription.educonnect import api as educonnect_subscription_api
+from pcapi.core.subscription.educonnect import exceptions as educonnect_subscription_exceptions
 from pcapi.core.users import models as users_models
 from pcapi.core.users import utils as users_utils
 from pcapi.core.users.constants import ELIGIBILITY_AGE_18
 from pcapi.core.users.external.educonnect import api as educonnect_api
 from pcapi.core.users.external.educonnect import exceptions as educonnect_exceptions
+from pcapi.core.users.external.educonnect import models as educonnect_models
 from pcapi.routes.native.security import authenticated_user_required
 
 from . import blueprint
@@ -26,6 +25,7 @@ from . import blueprint
 logger = logging.getLogger(__name__)
 
 ERROR_PAGE_URL = f"{settings.WEBAPP_V2_URL}/idcheck/educonnect/erreur?"
+SUCCESS_PAGE_URL = f"{settings.WEBAPP_V2_URL}/idcheck/validation?"
 
 
 @blueprint.saml_blueprint.route("educonnect/login", methods=["GET"])
@@ -98,76 +98,49 @@ def on_educonnect_authentication_response() -> Response:  # pylint: disable=too-
         },
     )
 
-    educonnect_content = fraud_models.EduconnectContent(
-        birth_date=educonnect_user.birth_date,
-        educonnect_id=educonnect_user.educonnect_id,
-        first_name=educonnect_user.first_name,
-        ine_hash=educonnect_user.ine_hash,
-        last_name=educonnect_user.last_name,
-        registration_datetime=datetime.datetime.now(),
-        school_uai=educonnect_user.school_uai,
-        student_level=educonnect_user.student_level,
-    )
-
-    try:
-        fraud_api.on_educonnect_result(user, educonnect_content)
-    except fraud_exceptions.BeneficiaryFraudResultCannotBeDowngraded:
-        logger.exception("Trying to downgrade FraudResult after eduonnect response", extra={"user_id": user.id})
-        return redirect(ERROR_PAGE_URL + urlencode(base_query_param), code=302)
-    except Exception as e:  # pylint: disable=broad-except
-        logger.exception("Error on educonnect result: %s", e, extra={"user_id": user.id})
-        return redirect(ERROR_PAGE_URL + urlencode(base_query_param), code=302)
-
-    try:
-        # TODO(viconnex): use generic subscription_api.on_successful_application
-        subscription_api.create_beneficiary_import_after_educonnect(
-            user, fraud_api.get_eligibility_type(educonnect_content)
-        )
-    except fraud_exceptions.UserAgeNotValid:
-        logger.warning(
-            "User age not valid",
-            extra={"userId": user.id, "educonnectId": educonnect_user.educonnect_id, "age": user.age},
-        )
-        error_query_param = {
-            "code": "UserAgeNotValid18YearsOld"
-            if users_utils.get_age_from_birth_date(educonnect_content.birth_date) == ELIGIBILITY_AGE_18
-            else "UserAgeNotValid"
-        } | base_query_param
-        return redirect(ERROR_PAGE_URL + urlencode(error_query_param), code=302)
-
-    except fraud_exceptions.NotWhitelistedINE:
-        error_query_param = {"code": "UserNotWhitelisted"} | base_query_param
-        return redirect(ERROR_PAGE_URL + urlencode(error_query_param), code=302)
-
-    except fraud_exceptions.UserAlreadyBeneficiary:
-        logger.warning(
-            "User already beneficiary",
-            extra={"userId": user.id, "educonnectId": educonnect_user.educonnect_id},
-        )
-        error_query_param = {"code": "UserAlreadyBeneficiary"} | base_query_param
-        return redirect(ERROR_PAGE_URL + urlencode(error_query_param), code=302)
-
-    except fraud_exceptions.FraudException as e:
-        logger.warning(
-            "Fraud suspicion after Educonnect authentication: %s",
-            e,
-            extra={"userId": user.id, "educonnectId": educonnect_user.educonnect_id},
-        )
-
-    except Exception as e:  # pylint: disable=broad-except
-        logger.exception("Error while creating BeneficiaryImport from Educonnect: %s", e, extra={"user_id": user.id})
-        return redirect(ERROR_PAGE_URL, code=302)
-
-    user_information_validation_base_url = f"{settings.WEBAPP_V2_URL}/idcheck/validation?"
-    query_params = {
+    success_query_params = {
         "firstName": educonnect_user.first_name,
         "lastName": educonnect_user.last_name,
         "dateOfBirth": educonnect_user.birth_date,
     } | base_query_param
 
-    return redirect(user_information_validation_base_url + urlencode(query_params), code=302)
+    try:
+        error_codes = educonnect_subscription_api.handle_educonnect_authentication(user, educonnect_user)
+    except educonnect_subscription_exceptions.EduconnectSubscriptionException:
+        return redirect(ERROR_PAGE_URL + urlencode(base_query_param), code=302)
+
+    if error_codes:
+        return _on_educonnect_authentication_errors(
+            error_codes, educonnect_user, base_query_param, success_query_params
+        )
+
+    return redirect(SUCCESS_PAGE_URL + urlencode(success_query_params), code=302)
 
 
 def _user_id_from_saml_request_id(saml_request_id: str) -> Optional[int]:
     key = educonnect_api.build_saml_request_id_key(saml_request_id)
     return app.redis_client.get(key)
+
+
+def _on_educonnect_authentication_errors(
+    error_codes: list[fraud_models.FraudReasonCode],
+    educonnect_user: educonnect_models.EduconnectUser,
+    base_query_param: dict,
+    success_query_params: dict,
+) -> Response:
+    if fraud_models.FraudReasonCode.DUPLICATE_USER in error_codes:
+        return redirect(SUCCESS_PAGE_URL + urlencode(success_query_params), code=302)
+
+    if fraud_models.FraudReasonCode.AGE_NOT_VALID in error_codes:
+        error_query_param = {
+            "code": "UserAgeNotValid18YearsOld"
+            if users_utils.get_age_from_birth_date(educonnect_user.birth_date) == ELIGIBILITY_AGE_18
+            else "UserAgeNotValid"
+        } | base_query_param
+        return redirect(ERROR_PAGE_URL + urlencode(error_query_param), code=302)
+
+    if fraud_models.FraudReasonCode.INE_NOT_WHITELISTED in error_codes:
+        error_query_param = {"code": "UserNotWhitelisted"} | base_query_param
+        return redirect(ERROR_PAGE_URL + urlencode(error_query_param), code=302)
+
+    return redirect(ERROR_PAGE_URL + urlencode(base_query_param), code=302)
