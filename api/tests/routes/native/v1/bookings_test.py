@@ -213,6 +213,8 @@ class GetBookingsTest:
                     "name": used2.stock.offer.name,
                     "url": f"https://demo.pass/some/path?token={used2.token}&email=pascal.ture@example.com&offerId={humanize(used2.stock.offer.id)}",
                     "venue": {
+                        "address": "1 boulevard Poissonnière",
+                        "postalCode": "75000",
                         "city": "Paris",
                         "coordinates": {"latitude": 48.87004, "longitude": 2.3785},
                         "id": used2.venue.id,

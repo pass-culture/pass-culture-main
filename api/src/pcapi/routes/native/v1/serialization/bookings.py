@@ -31,6 +31,8 @@ class BookOfferResponse(BaseModel):
 
 class BookingVenueResponse(BaseModel):
     id: int
+    address: Optional[str]
+    postalCode: Optional[str]
     city: Optional[str]
     name: str
     publicName: Optional[str]
