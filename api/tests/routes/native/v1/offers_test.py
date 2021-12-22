@@ -136,6 +136,7 @@ class OffersTest:
             },
             "image": {"url": "http://localhost/storage/thumbs/mediations/N4", "credit": "street credit"},
             "isExpired": False,
+            "isForbiddenToUnderage": False,
             "isSoldOut": False,
             "isDuo": True,
             "isEducational": False,
