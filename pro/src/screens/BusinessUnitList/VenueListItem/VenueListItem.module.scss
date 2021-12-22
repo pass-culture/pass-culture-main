@@ -31,7 +31,12 @@
   display: flex;
   margin-left: rem(4px);
 
+  &:hover,
+  &:focus {
+    text-decoration: underline;
+  }
+
   path {
-    fill: #151515;
+    fill: $black;
   }
 }
