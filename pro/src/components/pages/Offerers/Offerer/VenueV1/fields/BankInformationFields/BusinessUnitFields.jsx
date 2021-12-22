@@ -21,7 +21,12 @@ const CREATE_DMS_FILE_BANNER = 'create_dms_file_banner'
 const REPLACE_DMS_FILE_BUTTON = 'replace_dms_file_button'
 const PENDING_DMS_FILE_BANNER = 'pending_dms_file_banner'
 
-const BankInformationWithBusinessUnit = ({ readOnly, offerer, venue }) => {
+const BankInformationWithBusinessUnit = ({
+  readOnly,
+  offerer,
+  venue,
+  isCreatingVenue,
+}) => {
   const [businessUnitOptions, setBusinessUnitOptions] = useState([])
   const [venueBusinessUnit, setVenueBusinessUnit] = useState(null)
   const [displayedBanners, setDisplayedBanners] = useState({
@@ -74,7 +79,9 @@ const BankInformationWithBusinessUnit = ({ readOnly, offerer, venue }) => {
       )
 
       setDisplayedBanners({
-        [CREATE_DMS_FILE_BANNER]: venue.id && !venue.isBusinessUnitMainVenue,
+        [CREATE_DMS_FILE_BANNER]: isCreatingVenue
+          ? true
+          : venue.id && !venue.isBusinessUnitMainVenue,
         [REPLACE_DMS_FILE_BUTTON]: venue.id && venue.isBusinessUnitMainVenue,
         [PENDING_DMS_FILE_BANNER]:
           venue.id &&
@@ -85,6 +92,7 @@ const BankInformationWithBusinessUnit = ({ readOnly, offerer, venue }) => {
     }
     loadBusinessUnits(offerer.id)
   }, [
+    isCreatingVenue,
     offerer.id,
     setDisplayedBanners,
     venue.businessUnit,
@@ -157,9 +165,10 @@ const BankInformationWithBusinessUnit = ({ readOnly, offerer, venue }) => {
         {displayedBanners[CREATE_DMS_FILE_BANNER] && (
           <Banner
             href={DEMARCHES_SIMPLIFIEES_BUSINESS_UNIT_RIB_UPLOAD_PROCEDURE_URL}
-            linkTitle="Rendez-vous sur Démarches Simplifiées"
+            linkTitle="Ajouter des coordonnées bancaires"
           >
-            Vous souhaitez modifier ou ajouter des coordonnées bancaires ?
+            Pour ajouter de nouvelles coordonnées bancaires, rendez-vous sur
+            Démarches Simplifiées.
           </Banner>
         )}
         <Banner
@@ -173,10 +182,12 @@ const BankInformationWithBusinessUnit = ({ readOnly, offerer, venue }) => {
 }
 
 BankInformationWithBusinessUnit.defaultProps = {
+  isCreatingVenue: false,
   readOnly: false,
   venue: {},
 }
 BankInformationWithBusinessUnit.propTypes = {
+  isCreatingVenue: PropTypes.bool,
   offerer: PropTypes.shape().isRequired,
   readOnly: PropTypes.bool,
   venue: PropTypes.shape(),
