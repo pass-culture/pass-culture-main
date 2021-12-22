@@ -15,6 +15,10 @@ type Venue = {
   managingOffererId: string
 }
 
+type Stock = {
+  bookingsQuantity: number
+}
+
 export type Offer = {
   id: string
   bookingEmail?: string
@@ -30,6 +34,7 @@ export type Offer = {
       addressType: ADRESS_TYPE
     }
   }
+  stocks: Stock[]
   isActive: boolean
   audioDisabilityCompliant: boolean
   mentalDisabilityCompliant: boolean
