@@ -1,0 +1,65 @@
+import pytest
+import sqlalchemy as sqla
+import sqlalchemy.sql as sqla_sql
+
+from pcapi.core.reference import exceptions
+from pcapi.core.reference import factories
+from pcapi.core.reference import models
+from pcapi.models import db
+
+from tests.conftest import clean_database
+
+
+class ReferenceSchemeTest:
+    @pytest.mark.usefixtures("db_session")
+    def test_format_reference_with_year(self):
+        scheme = factories.ReferenceSchemeFactory(year=None)
+        assert scheme.formatted_reference == "F0000001"
+
+    @pytest.mark.usefixtures("db_session")
+    def test_format_reference_without_year(self):
+        scheme = factories.ReferenceSchemeFactory(year=2023)
+        assert scheme.formatted_reference == "F230000001"
+
+    @pytest.mark.usefixtures("db_session")
+    def test_increment_after_use(self):
+        scheme = factories.ReferenceSchemeFactory(year=2023, nextNumber=1)
+        scheme.increment_after_use()
+        scheme = models.ReferenceScheme.query.one()
+        assert scheme.nextNumber == 2
+
+    @pytest.mark.usefixtures("db_session")
+    def test_usage(self):
+        factories.ReferenceSchemeFactory(name="x", year=2023, nextNumber=1)
+
+        scheme = models.ReferenceScheme.get_and_lock("x", 2023)
+        scheme.increment_after_use()
+        db.session.commit()
+
+        scheme = models.ReferenceScheme.query.one()
+        assert scheme.nextNumber == 2
+
+    @clean_database
+    def test_usage_without_proper_lock(self, app):
+        scheme = factories.ReferenceSchemeFactory(year=2023, nextNumber=1)
+
+        # Simulate another transaction locking the reference.
+        engine = sqla.create_engine(app.config["SQLALCHEMY_DATABASE_URI"])
+        with engine.connect() as connection:
+            res = connection.execute(
+                sqla_sql.text("""SELECT * FROM reference_scheme WHERE id = :scheme_id FOR UPDATE"""),
+                scheme_id=scheme.id,
+            )
+            assert len(res.fetchall()) == 1
+
+            # Now we'll use another connection/transaction that forgot
+            # to lock the reference before trying to increment it.
+            scheme = models.ReferenceScheme.query.one()
+            try:
+                with pytest.raises(exceptions.ReferenceIncrementWithoutLock):
+                    scheme.increment_after_use()
+            finally:
+                # Rollback otherwise `clean_database()` fails because
+                # "current transaction is aborted, commands ignored
+                # until end of transaction block".
+                db.session.rollback()

@@ -19,6 +19,7 @@ def install_models() -> None:
     import pcapi.core.offers.models
     import pcapi.core.payments.models
     import pcapi.core.providers.models
+    import pcapi.core.reference.models
     import pcapi.core.subscription.models
     import pcapi.core.users.models
     import pcapi.models.bank_information

@@ -1,0 +1,2 @@
+class ReferenceIncrementWithoutLock(Exception):
+    pass
