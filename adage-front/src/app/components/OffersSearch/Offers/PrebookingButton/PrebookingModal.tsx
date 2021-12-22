@@ -30,7 +30,7 @@ const PrebookingModal = ({
       <b>
         <a
           className="prebooking-modal-link"
-          href={`${document.referrer}/adage/etab/volet`}
+          href={`${document.referrer}adage/etab/volet`}
           target="_parent"
         >
           Recensement
