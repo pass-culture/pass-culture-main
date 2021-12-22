@@ -1,0 +1,34 @@
+.modal {
+  text-align: center;
+  max-width: rem(600px);
+  
+  &-icon-wrapper {
+    margin-top: rem(32px);
+    margin-bottom: rem(36px);
+    color: $grey-dark;
+    
+    svg {
+      width: rem(66px);
+      height: auto;
+    }
+  }
+  
+  &-header {
+    margin-bottom: rem(16px);
+  }
+  
+  &-paragraph {
+    margin-bottom: rem(48px);
+  }
+  
+  &-buttons {
+    display: flex;
+    margin-bottom: rem(16px);
+    justify-content: center;
+  }
+  
+  &-button {
+    min-width: rem(192px);
+    margin: 0 rem(12px);
+  }
+}

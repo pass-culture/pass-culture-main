@@ -6,7 +6,7 @@ import CloseButton from './CloseButton'
 
 interface IDialogProps {
   children: React.ReactNode | React.ReactNode[]
-  extraClassNames: string
+  extraClassNames?: string
   hasCloseButton: boolean
   labelledBy: string
   onDismiss?: () => void
