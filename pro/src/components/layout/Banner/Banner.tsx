@@ -5,12 +5,11 @@
 import React from 'react'
 
 import Icon from 'components/layout/Icon'
-
-interface IBannerProps {
+export interface IBannerProps {
   icon?: string
   href?: string
   linkTitle?: string
-  children: React.ReactNode | React.ReactNode[]
+  children?: React.ReactNode | React.ReactNode[]
   targetLink?: string
   type?: 'notification-info' | 'attention' | 'light'
   closable?: boolean

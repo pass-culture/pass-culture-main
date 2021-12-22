@@ -2,11 +2,11 @@ import '@testing-library/jest-dom'
 import { render, screen } from '@testing-library/react'
 import React from 'react'
 
-import Banner from 'components/layout/Banner/Banner'
+import Banner, { IBannerProps } from 'components/layout/Banner/Banner'
 
 describe('src | components | layout | Banner', () => {
   describe('render', () => {
-    let props = {
+    const props: IBannerProps = {
       href: '/some/site',
       linkTitle: 'linkTitle',
     }
