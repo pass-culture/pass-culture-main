@@ -24,20 +24,20 @@ const OfferEducationalLayout = ({
   title,
 }: IOfferEducationalLayout): JSX.Element => {
   return (
-    <>
-      <Title className={styles.heading} level={1}>
+    <div className={styles['eac-layout']}>
+      <Title className={styles['eac-layout-heading']} level={1}>
         {title}
       </Title>
       <OfferBreadcrumb
         activeStep={activeStep}
-        className={styles.breadcrumb}
+        className={styles['eac-layout-breadcrumb']}
         isCreatingOffer={isCreatingOffer}
         isOfferEducational
         offerId={offerId}
       />
       {children}
       <HelpLink />
-    </>
+    </div>
   )
 }
 
