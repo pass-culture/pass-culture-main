@@ -11,6 +11,7 @@ import styles from './BusinessUnitList.module.scss'
 export interface IBusinessUnitVenue {
   id: string
   name: string
+  publicName: string
   siret: string | null
   businessUnitId: number | null
   managingOffererId: string

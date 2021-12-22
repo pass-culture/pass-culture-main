@@ -26,7 +26,7 @@ const VenueListItem = ({
     <div className={styles['venue-list-item-infos']}>
       {svg && <Icon svg={svg} />}
       <span>
-        {venue.name} -{' '}
+        {venue.publicName || venue.name} -{' '}
         {venue.siret ? (
           venue.siret
         ) : venue.isVirtual ? (
