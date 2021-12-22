@@ -9,21 +9,22 @@ interface IButtonProps
   extends SharedButtonProps,
     React.HTMLProps<HTMLButtonElement> {
   type?: 'button' | 'submit'
-  ref?: React.RefObject<HTMLButtonElement>
+  innerRef?: React.RefObject<HTMLButtonElement>
+  className?: string
 }
 
 const Button = ({
   className,
   children,
   Icon,
-  ref,
   variant = ButtonVariant.PRIMARY,
   type = 'button',
+  innerRef,
   ...buttonAttrs
 }: IButtonProps): JSX.Element => (
   <button
     className={cn(styles['button'], styles[`button-${variant}`], className)}
-    ref={ref}
+    ref={innerRef}
     type={type}
     {...buttonAttrs}
   >

@@ -1,5 +1,5 @@
 import cn from 'classnames'
-import React, { useState, useRef } from 'react'
+import React, { useState } from 'react'
 
 import { Button } from 'ui-kit'
 
@@ -23,14 +23,12 @@ const OfferEducationalActions = ({
   resetActiveBookings,
   setIsOfferActive,
 }: IOfferEducationalActions): JSX.Element => {
-  const modalButtonRef = useRef<HTMLButtonElement>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
 
   return (
     <>
       {isModalOpen && resetActiveBookings && (
         <ConfirmModal
-          modalButtonRef={modalButtonRef}
           onDismiss={() => setIsModalOpen(false)}
           onValidate={resetActiveBookings}
         />
