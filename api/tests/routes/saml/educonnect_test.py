@@ -200,8 +200,10 @@ class EduconnectTest:
 
         assert response.status_code == 302
         assert response.location.startswith("https://webapp-v2.example.com/idcheck/validation")
-        assert caplog.messages == ["Fraud suspicion after Educonnect authentication: "]
-        assert caplog.records[0].extra == {"userId": user.id, "educonnectId": educonnect_user.educonnect_id}
+        assert caplog.messages == [
+            "Fraud suspicion after educonnect authentication with codes: duplicate_user, ine_not_whitelisted"
+        ]
+        assert caplog.records[0].extra == {"user_id": user.id}
 
     @override_features(ENABLE_UNDERAGE_GENERALISATION=True)
     @patch("pcapi.core.users.external.educonnect.api.get_educonnect_user")
