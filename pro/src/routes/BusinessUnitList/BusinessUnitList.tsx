@@ -115,6 +115,7 @@ const BusinessUnitList = (): JSX.Element => {
             return {
               id: apiVenue.id,
               name: apiVenue.name,
+              publicName: apiVenue.publicName,
               siret: apiVenue.siret,
               businessUnitId: apiVenue.businessUnitId,
               managingOffererId: apiVenue.managingOffererId,
