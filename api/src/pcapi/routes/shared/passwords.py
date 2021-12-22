@@ -38,7 +38,6 @@ def post_change_password(body: ChangePasswordBodyModel) -> None:
     update_user_password(user, new_password)
 
 
-# @debt api-migration
 @private_api.route("/users/reset-password", methods=["POST"])
 @spectree_serialize(on_success_status=204)
 def post_for_password_token(body: ResetPasswordBodyModel) -> None:
