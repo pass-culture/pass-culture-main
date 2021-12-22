@@ -1,0 +1,2 @@
+class EduconnectSubscriptionException(Exception):
+    pass
