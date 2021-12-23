@@ -58,7 +58,7 @@ JOUVE_CONTENT = {
     "lastName": "DURAND",
     "phoneNumber": "0123456789",
     "postalCode": "35123",
-    "registrationDate": f"{datetime.now():%d/%m/%Y %H:%M}",
+    "registrationDate": f"{datetime.now():%m/%d/%Y %H:%M %p}",
     "serviceCodeCtrl": "OK",
 }
 
