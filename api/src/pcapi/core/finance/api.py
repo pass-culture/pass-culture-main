@@ -34,20 +34,24 @@ from . import validation
 
 logger = logging.getLogger(__name__)
 
-DEFAULT_MAX_AGE_TO_PRICE = datetime.timedelta(minutes=60)
+# When used through the cron, only price bookings that were used in 2022.
+# Prior bookings will be priced manually.
+# FIXME (dbaty, 2021-12-23): remove once prior bookings have been priced.
+MIN_DATE_TO_PRICE = datetime.datetime(2021, 12, 31, 23, 0)  # UTC
 
 
-def price_bookings(max_age: datetime.timedelta = DEFAULT_MAX_AGE_TO_PRICE):
+def price_bookings(min_date: datetime.datetime = MIN_DATE_TO_PRICE):
     """Price bookings that have been recently marked as used.
 
     This function is normally called by a cron job.
     """
-    # The filter on `dateUsed` avoids selecting a very recent booking
+    # The upper bound on `dateUsed` avoids selecting a very recent booking
     # that may have been COMMITed to the database just before another
     # booking with a slightly older `dateUsed`.
     threshold = datetime.datetime.utcnow() - datetime.timedelta(minutes=1)
+    window = (min_date, threshold)
     bookings = (
-        bookings_models.Booking.query.filter(bookings_models.Booking.dateUsed < threshold)
+        bookings_models.Booking.query.filter(bookings_models.Booking.dateUsed.between(*window))
         .outerjoin(
             models.Pricing,
             models.Pricing.bookingId == bookings_models.Booking.id,
