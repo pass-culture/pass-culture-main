@@ -1,2 +1,0 @@
-google-api-python-client==2.19.1
-cloud-sql-python-connector[pg8000]==0.4.0
