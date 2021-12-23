@@ -216,6 +216,12 @@ commands:
           name: Clone pass-culture-deployment-repo
           command: git clone git@github.com:pass-culture/pass-culture-deployment.git ~/pass-culture-deployment
 
+  clone-pass-culture-db-operations-repo:
+      steps:
+        - run:
+            name: Clone pass-culture-db-operations-repo
+            command: git clone git@github.com:pass-culture/pass-culture-db-operations.git ~/pass-culture-db-operations
+
 ###################
 #  JOBS
 ###################
@@ -647,7 +653,7 @@ jobs:
   build-and-push-image-db-ops:
     executor: gcp-sdk
     steps:
-      - checkout
+      - clone-pass-culture-db-operations-repo
       - setup_remote_docker:
           version: 19.03.13
           docker_layer_caching: true
@@ -657,8 +663,8 @@ jobs:
       - run: gcloud beta auth configure-docker ${GCP_REGION}-docker.pkg.dev
       - run: |
           source ${BASH_ENV}
-          docker build ./infra/docker-images/db-ops \
-            -f ./infra/docker-images/db-ops/Dockerfile \
+          docker build ~/pass-culture-db-operations \
+            -f ~/pass-culture-db-operations/Dockerfile \
             --build-arg BASE_PCAPI_TAG=${APP_VERSION} \
             -t ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_TOOLS_REGISTRY_NAME}/db-ops:${APP_VERSION} \
             -t ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_TOOLS_REGISTRY_NAME}/db-ops:latest

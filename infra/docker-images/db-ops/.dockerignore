@@ -1,5 +1,0 @@
-.dockerignore
-*venv
-*__
-Dockerfile
-README.md
