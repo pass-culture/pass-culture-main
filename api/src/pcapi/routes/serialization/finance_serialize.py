@@ -21,8 +21,8 @@ class BusinessUnitResponseModel(BaseModel):
         orm_mode = True
 
     id: int
-    iban: str
-    bic: str
+    iban: Optional[str]
+    bic: Optional[str]
     name: str
     # FIXME (dbaty, 2021-12-15): SIRET may be NULL while we initialize
     # business units. In a few months, all business units should have
