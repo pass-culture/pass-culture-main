@@ -32,8 +32,8 @@ jest.mock('react-router-dom', () => ({
 }))
 
 jest.mock('utils/config', () => ({
-  DEMARCHES_SIMPLIFIEES_VENUE_RIB_UPLOAD_PROCEDURE_URL:
-    'link/to/venue/demarchesSimplifiees/procedure',
+  DEMARCHES_SIMPLIFIEES_BUSINESS_UNIT_RIB_UPLOAD_PROCEDURE_URL:
+    'link/to/businesUnit/demarchesSimplifiees/procedure',
 }))
 
 jest.mock('repository/pcapi/pcapi', () => ({
