@@ -7,7 +7,7 @@ import React from 'react'
 
 import Banner from 'components/layout/Banner/Banner'
 import Icon from 'components/layout/Icon'
-import { DEMARCHES_SIMPLIFIEES_VENUE_RIB_UPLOAD_PROCEDURE_URL } from 'utils/config'
+import { DEMARCHES_SIMPLIFIEES_BUSINESS_UNIT_RIB_UPLOAD_PROCEDURE_URL } from 'utils/config'
 
 const BankInformations = ({
   offerer,
@@ -37,7 +37,7 @@ const BankInformations = ({
           </Banner>
         ) : (
           <Banner
-            href={DEMARCHES_SIMPLIFIEES_VENUE_RIB_UPLOAD_PROCEDURE_URL}
+            href={DEMARCHES_SIMPLIFIEES_BUSINESS_UNIT_RIB_UPLOAD_PROCEDURE_URL}
             linkTitle="Renseignez les coordonnées bancaires"
           >
             Certains de vos lieux ne sont pas rattachés à des coordonnées
