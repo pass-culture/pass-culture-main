@@ -90,6 +90,7 @@ class GetInvoicesQueryTest:
         invoice2 = factories.InvoiceFactory(businessUnit=business_unit2)
         venue1 = offerers_factories.VenueFactory(businessUnit=business_unit1)
         offerer = venue1.managingOfferer
+        pro = users_factories.ProFactory(offerers=[offerer])
         _venue2 = offerers_factories.VenueFactory(
             managingOfferer=offerer,
             businessUnit=business_unit2,
@@ -98,12 +99,13 @@ class GetInvoicesQueryTest:
         _other_venue = offerers_factories.VenueFactory(businessUnit=other_business_unit)
         _other_invoice = factories.InvoiceFactory(businessUnit=other_business_unit)
 
-        invoices = repository.get_invoices_query(offerer.id).order_by(models.Invoice.id)
+        invoices = repository.get_invoices_query(pro).order_by(models.Invoice.id)
         assert list(invoices) == [invoice1, invoice2]
 
     def test_filter_on_date(self):
         business_unit = factories.BusinessUnitFactory()
         venue = offerers_factories.VenueFactory(businessUnit=business_unit)
+        pro = users_factories.ProFactory(offerers=[venue.managingOfferer])
         _invoice_before = factories.InvoiceFactory(
             businessUnit=business_unit,
             date=datetime.date(2021, 6, 15),
@@ -116,10 +118,9 @@ class GetInvoicesQueryTest:
             businessUnit=business_unit,
             date=datetime.date(2021, 8, 1),
         )
-        offerer = venue.managingOfferer
 
         invoices = repository.get_invoices_query(
-            offerer.id,
+            pro,
             date_from=datetime.date(2021, 7, 1),
             date_until=datetime.date(2021, 8, 1),
         )
@@ -128,13 +129,13 @@ class GetInvoicesQueryTest:
     def test_filter_on_business_unit(self):
         business_unit1 = factories.BusinessUnitFactory()
         invoice1 = factories.InvoiceFactory(businessUnit=business_unit1)
+        venue1 = offerers_factories.VenueFactory(businessUnit=business_unit1)
+        pro1 = users_factories.ProFactory(offerers=[venue1.managingOfferer])
         business_unit2 = factories.BusinessUnitFactory()
         _invoice2 = factories.InvoiceFactory(businessUnit=business_unit2)
-        venue1 = offerers_factories.VenueFactory(businessUnit=business_unit1)
-        offerer = venue1.managingOfferer
 
         invoices = repository.get_invoices_query(
-            offerer.id,
+            pro1,
             business_unit_id=business_unit1.id,
         )
         assert list(invoices) == [invoice1]
@@ -145,14 +146,35 @@ class GetInvoicesQueryTest:
         business_unit1 = factories.BusinessUnitFactory()
         _invoice1 = factories.InvoiceFactory(businessUnit=business_unit1)
         venue1 = offerers_factories.VenueFactory(businessUnit=business_unit1)
-        offerer = venue1.managingOfferer
+        pro1 = users_factories.ProFactory(offerers=[venue1.managingOfferer])
 
         other_business_unit = factories.BusinessUnitFactory()
         _other_venue = offerers_factories.VenueFactory(businessUnit=other_business_unit)
         _other_invoice = factories.InvoiceFactory(businessUnit=other_business_unit)
 
         invoices = repository.get_invoices_query(
-            offerer.id,
+            pro1,
             business_unit_id=other_business_unit.id,
         )
+        assert list(invoices) == []
+
+    def test_admin_filter_on_business_unit(self):
+        invoice1 = factories.InvoiceFactory()
+        _venue1 = offerers_factories.VenueFactory(businessUnit=invoice1.businessUnit)
+        invoice2 = factories.InvoiceFactory()
+        _venue2 = offerers_factories.VenueFactory(businessUnit=invoice2.businessUnit)
+        admin = users_factories.AdminFactory()
+
+        invoices = repository.get_invoices_query(
+            admin,
+            business_unit_id=invoice1.businessUnitId,
+        )
+        assert list(invoices) == [invoice1]
+
+    def test_admin_without_filter(self):
+        invoice = factories.InvoiceFactory()
+        _venue = offerers_factories.VenueFactory(businessUnit=invoice.businessUnit)
+        admin = users_factories.AdminFactory()
+
+        invoices = repository.get_invoices_query(admin)
         assert list(invoices) == []
