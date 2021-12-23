@@ -20,7 +20,7 @@ def get_application_by_detail_response(application_id: int = 2, birth_date: str 
     return {
         "id": application_id,
         "birthDateTxt": birth_date,
-        "registrationDate": "04/06/2020 06:00",
+        "registrationDate": "06/04/2020 6:00 AM",
         "address": "18 avenue des fleurs",
         "city": "RENNES",
         "email": "rennes@example.org",
