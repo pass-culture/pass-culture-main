@@ -396,6 +396,8 @@ def handle_validation_errors(
     for error_code in reason_codes:
         if error_code == fraud_models.FraudReasonCode.ALREADY_BENEFICIARY:
             subscription_messages.on_already_beneficiary(user)
+        if error_code == fraud_models.FraudReasonCode.NOT_ELIGIBLE:
+            subscription_messages.on_not_eligible(user)
         if error_code == fraud_models.FraudReasonCode.DUPLICATE_USER:
             subscription_messages.on_duplicate_user(user)
         if error_code == fraud_models.FraudReasonCode.DUPLICATE_ID_PIECE_NUMBER:
