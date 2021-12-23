@@ -377,17 +377,23 @@ def _check_user_has_no_active_deposit(
 def _check_user_eligibility(user: users_models.User, eligibility: users_models.EligibilityType) -> models.FraudItem:
     from pcapi.core.users import api as users_api
 
+    if not eligibility:
+        return models.FraudItem(
+            status=models.FraudStatus.KO,
+            detail="L'âge indiqué dans le dossier indique que l'utilisateur n'est pas éligible",
+            reason_code=models.FraudReasonCode.NOT_ELIGIBLE,
+        )
+
     if not users_api.is_eligible_for_beneficiary_upgrade(user, eligibility):
         return models.FraudItem(
             status=models.FraudStatus.KO,
-            detail=(
-                f"L’utilisateur est déjà bénéfiaire du pass {eligibility.name}"
-                if eligibility
-                else "L'utilisateur n'est pas éligible"
-            ),
+            detail=(f"L’utilisateur est déjà bénéfiaire du pass {eligibility.name}"),
             reason_code=models.FraudReasonCode.ALREADY_BENEFICIARY,
         )
-    return models.FraudItem(status=models.FraudStatus.OK, detail="L'utilisateur n'est pas déjà bénéficaire")
+
+    return models.FraudItem(
+        status=models.FraudStatus.OK, detail="L'utilisateur est éligible à un nouveau statut bénéficiaire"
+    )
 
 
 def _check_user_email_is_validated(user: users_models.User) -> models.FraudItem:
