@@ -90,7 +90,10 @@ def full_index_offers(start, end):
             .options(joinedload(offers_models.Offer.mediations))
             .options(joinedload(offers_models.Offer.product))
             .options(joinedload(offers_models.Offer.stocks))
-            .filter(offers_models.Offer.isActive.is_(True), offers_models.Offer.id.between(start, start + BATCH_SIZE))
+            .filter(
+                offers_models.Offer.isActive.is_(True),
+                offers_models.Offer.id.between(start, min(start + BATCH_SIZE, end)),
+            )
             .order_by(offers_models.Offer.id)
         )
         for offer in offers:
