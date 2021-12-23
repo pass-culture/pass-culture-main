@@ -3,6 +3,8 @@ import pcapi.core.users.factories as users_factories
 from pcapi.utils.mailing import make_admin_user_validation_email
 from pcapi.utils.mailing import make_pro_user_validation_email
 
+from tests.conftest import clean_database
+
 
 class ProValidationEmailsTest:
     def test_make_pro_user_validation_email_includes_validation_url_with_token_and_user_email(self):
@@ -28,6 +30,7 @@ class ProValidationEmailsTest:
 
 
 class AdminValidationEmailsTest:
+    @clean_database
     def test_make_admin_user_validation_email_includes_validation_url_with_token_and_user_email(self):
         # Given
         user = users_factories.AdminFactory.build(email="admin@example.com")
