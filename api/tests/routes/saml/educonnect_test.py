@@ -226,10 +226,17 @@ class EduconnectTest:
         assert response.location == (
             "https://webapp-v2.example.com/idcheck/educonnect/erreur?code=UserAgeNotValid&logoutUrl=https%3A%2F%2Feduconnect.education.gouv.fr%2FLogout"
         )
+        assert len(user.subscriptionMessages) == 1
+        assert (
+            user.subscriptionMessages[0].userMessage
+            == "La date de naissance de ton dossier Educonnect (11/12/2006) indique que tu n'es pas éligible. Tu seras éligible le 22/12/2021."
+        )
 
     @patch("pcapi.core.users.external.educonnect.api.get_educonnect_user")
+    @freezegun.freeze_time("2021-12-21")
+    @override_features(ENABLE_INE_WHITELIST_FILTER=False)
     def test_educonnect_redirects_to_error_page_too_young(self, mock_get_educonnect_user, client, app):
-        _, request_id = self.connect_to_educonnect(client, app)
+        user, request_id = self.connect_to_educonnect(client, app)
         age = 14
         mock_get_educonnect_user.return_value = users_factories.EduconnectUserFactory(
             saml_request_id=request_id, age=age
@@ -241,10 +248,17 @@ class EduconnectTest:
         assert response.location == (
             "https://webapp-v2.example.com/idcheck/educonnect/erreur?code=UserAgeNotValid&logoutUrl=https%3A%2F%2Feduconnect.education.gouv.fr%2FLogout"
         )
+        assert len(user.subscriptionMessages) == 1
+        assert (
+            user.subscriptionMessages[0].userMessage
+            == "Ton dossier a été refusé. La date de naissance enregistrée sur ton compte Educonnect (21/11/2007) indique que tu n'as pas entre 15 et 17 ans."
+        )
 
     @patch("pcapi.core.users.external.educonnect.api.get_educonnect_user")
+    @override_features(ENABLE_INE_WHITELIST_FILTER=False)
+    @freezegun.freeze_time("2021-12-21")
     def test_educonnect_redirects_to_error_page_18_years_old(self, mock_get_educonnect_user, client, app):
-        _, request_id = self.connect_to_educonnect(client, app)
+        user, request_id = self.connect_to_educonnect(client, app)
         age = 18
         mock_get_educonnect_user.return_value = users_factories.EduconnectUserFactory(
             saml_request_id=request_id, age=age
@@ -256,10 +270,17 @@ class EduconnectTest:
         assert response.location == (
             "https://webapp-v2.example.com/idcheck/educonnect/erreur?code=UserAgeNotValid18YearsOld&logoutUrl=https%3A%2F%2Feduconnect.education.gouv.fr%2FLogout"
         )
+        assert len(user.subscriptionMessages) == 1
+        assert (
+            user.subscriptionMessages[0].userMessage
+            == "Ton dossier a été refusé. La date de naissance enregistrée sur ton compte Educonnect (21/11/2003) indique que tu n'as pas entre 15 et 17 ans."
+        )
 
     @patch("pcapi.core.users.external.educonnect.api.get_educonnect_user")
+    @freezegun.freeze_time("2021-12-21")
+    @override_features(ENABLE_INE_WHITELIST_FILTER=False)
     def test_educonnect_redirects_to_error_page_too_old(self, mock_get_educonnect_user, client, app):
-        _, request_id = self.connect_to_educonnect(client, app)
+        user, request_id = self.connect_to_educonnect(client, app)
         age = 20
         mock_get_educonnect_user.return_value = users_factories.EduconnectUserFactory(
             saml_request_id=request_id, age=age
@@ -270,6 +291,11 @@ class EduconnectTest:
         assert response.status_code == 302
         assert response.location == (
             "https://webapp-v2.example.com/idcheck/educonnect/erreur?code=UserAgeNotValid&logoutUrl=https%3A%2F%2Feduconnect.education.gouv.fr%2FLogout"
+        )
+        assert len(user.subscriptionMessages) == 1
+        assert (
+            user.subscriptionMessages[0].userMessage
+            == "Ton dossier a été refusé. La date de naissance enregistrée sur ton compte Educonnect (21/11/2001) indique que tu n'as pas entre 15 et 17 ans."
         )
 
     @patch("pcapi.core.users.external.educonnect.api.get_educonnect_user")
@@ -300,7 +326,7 @@ class EduconnectTest:
 
     @patch("pcapi.core.users.external.educonnect.api.get_educonnect_user")
     def test_educonnect_ine_not_whitelisted(self, mock_get_educonnect_user, client, app):
-        _, request_id = self.connect_to_educonnect(client, app)
+        user, request_id = self.connect_to_educonnect(client, app)
         mock_get_educonnect_user.return_value = users_factories.EduconnectUserFactory(
             saml_request_id=request_id, ine_hash="identifiantNonWhitlisté"
         )
@@ -310,6 +336,11 @@ class EduconnectTest:
         assert response.status_code == 302
         assert response.location == (
             "https://webapp-v2.example.com/idcheck/educonnect/erreur?code=UserNotWhitelisted&logoutUrl=https%3A%2F%2Feduconnect.education.gouv.fr%2FLogout"
+        )
+        assert len(user.subscriptionMessages) == 1
+        assert (
+            user.subscriptionMessages[0].userMessage
+            == "Tu ne fais pas partie de la phase de test. Encore un peu de patience, on se donne rendez-vous en janvier."
         )
 
     @override_features(ENABLE_INE_WHITELIST_FILTER=False)
