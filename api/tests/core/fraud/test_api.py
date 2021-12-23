@@ -55,7 +55,7 @@ class JouveFraudCheckTest:
         "postalCode": "",
         "posteCode": "678083",
         "posteCodeCtrl": "OK",
-        "registrationDate": f"{datetime.datetime.now():%d/%m/%Y %H:%M}",
+        "registrationDate": f"{datetime.datetime.now():%m/%d/%Y %H:%M %p}",
         "serviceCode": "1",
         "serviceCodeCtrl": "OK",
     }
@@ -92,6 +92,7 @@ class JouveFraudCheckTest:
         assert jouve_fraud_content.bodyPieceNumber == "140767100016"
         assert fraud_check.dateCreated
         assert fraud_check.thirdPartyId == "35"
+        assert fraud_check.eligibilityType == users_models.EligibilityType.AGE18
         assert fraud_result.status == fraud_models.FraudStatus.OK
 
         db.session.refresh(user)
