@@ -2,6 +2,7 @@ import React, { useRef } from 'react'
 
 import DialogBox from 'new_components/DialogBox'
 import { Button, Title } from 'ui-kit'
+import { ButtonVariant } from 'ui-kit/Button/types'
 
 import { ReactComponent as Trash } from './assets/trash.svg'
 import styles from './OfferEducationalActionsModal.module.scss'
@@ -39,7 +40,7 @@ const OfferEducationalModal = ({
         <Button
           className={styles['modal-button']}
           onClick={onDismiss}
-          variant={Button.variant.SECONDARY}
+          variant={ButtonVariant.SECONDARY}
         >
           Annuler
         </Button>
@@ -47,7 +48,7 @@ const OfferEducationalModal = ({
           className={styles['modal-button']}
           innerRef={modalButtonRef}
           onClick={onValidate}
-          variant={Button.variant.PRIMARY}
+          variant={ButtonVariant.PRIMARY}
         >
           Supprimer
         </Button>

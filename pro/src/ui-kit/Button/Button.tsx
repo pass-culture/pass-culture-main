@@ -33,6 +33,4 @@ const Button = ({
   </button>
 )
 
-Button.variant = ButtonVariant
-
 export default Button

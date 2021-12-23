@@ -2,6 +2,7 @@ import cn from 'classnames'
 import React, { useState } from 'react'
 
 import { Button } from 'ui-kit'
+import { ButtonVariant } from 'ui-kit/Button/types'
 
 import { ReactComponent as IconActive } from './assets/icon-active.svg'
 import { ReactComponent as IconInactive } from './assets/icon-inactive.svg'
@@ -39,7 +40,7 @@ const OfferEducationalActions = ({
             Icon={isOfferActive ? IconInactive : IconActive}
             className={style['actions-button']}
             onClick={() => setIsOfferActive(!isOfferActive)}
-            variant={Button.variant.TERNARY}
+            variant={ButtonVariant.TERNARY}
           >
             {isOfferActive ? 'Désactiver l’offre' : 'Activer l’offre'}
           </Button>
@@ -49,7 +50,7 @@ const OfferEducationalActions = ({
           <Button
             className={style['actions-button']}
             onClick={() => setIsModalOpen(true)}
-            variant={Button.variant.SECONDARY}
+            variant={ButtonVariant.SECONDARY}
           >
             Annuler la réservation
           </Button>
