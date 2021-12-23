@@ -49,10 +49,7 @@ def update_ubble_workflow(
 
         else:
             if fraud_check.status != fraud_models.FraudCheckStatus.OK:
-                subscription_api.handle_validation_errors(
-                    user=user,
-                    reason_codes=fraud_check.reasonCodes,
-                )
+                subscription_api.handle_validation_errors(user=user, reason_codes=fraud_check.reasonCodes)
                 subscription_messages.on_ubble_journey_cannot_continue(user)
                 return
 
