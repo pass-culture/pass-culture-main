@@ -261,7 +261,7 @@ class RunTest:
         details = [status.detail for status in beneficiary_import.statuses]
         assert beneficiary_import.currentStatus == ImportStatus.REJECTED
         assert beneficiary_import.applicationId == 123
-        assert details == ["Compte existant avec cet email", "Voir les details dans la page support"]
+        assert details == ["L'utilisateur n'est pas éligible", "Voir les details dans la page support"]
         assert beneficiary_import.beneficiary == user
         on_sucessful_application.assert_not_called()
 

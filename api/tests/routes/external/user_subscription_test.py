@@ -984,4 +984,4 @@ class UbbleWebhookTest:
         db.session.refresh(user)
         assert not user.has_beneficiary_role
         db.session.refresh(ubble_fraud_check)
-        assert ubble_fraud_check.reason == "L'utilisateur n'est pas éligible"
+        assert ubble_fraud_check.reason == "L'âge indiqué dans le dossier indique que l'utilisateur n'est pas éligible"
