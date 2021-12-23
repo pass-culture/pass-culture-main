@@ -78,7 +78,11 @@ def _parse_jouve_datetime(date: typing.Optional[str]) -> typing.Optional[datetim
     except pydantic.DateTimeError:
         pass
     try:
-        return datetime.datetime.strptime(date, "%m/%d/%Y %H:%M %p")
+        return datetime.datetime.strptime(date, "%m/%d/%Y %H:%M %p")  # production format
+    except ValueError:
+        pass
+    try:
+        return datetime.datetime.strptime(date, "%d/%m/%Y %H:%M")  # testing format
     except ValueError:
         return None
 
