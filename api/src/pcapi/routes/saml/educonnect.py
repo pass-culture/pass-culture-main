@@ -131,7 +131,10 @@ def _on_educonnect_authentication_errors(
     if fraud_models.FraudReasonCode.DUPLICATE_USER in error_codes:
         return redirect(SUCCESS_PAGE_URL + urlencode(success_query_params), code=302)
 
-    if fraud_models.FraudReasonCode.AGE_NOT_VALID in error_codes:
+    if (
+        fraud_models.FraudReasonCode.AGE_NOT_VALID in error_codes
+        or fraud_models.FraudReasonCode.NOT_ELIGIBLE in error_codes
+    ):
         error_query_param = {
             "code": "UserAgeNotValid18YearsOld"
             if users_utils.get_age_from_birth_date(educonnect_user.birth_date) == ELIGIBILITY_AGE_18
