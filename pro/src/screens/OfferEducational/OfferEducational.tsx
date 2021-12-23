@@ -9,7 +9,9 @@ import {
   IUserOfferer,
   Mode,
 } from 'core/OfferEducational'
+import OfferEducationalActions from 'new_components/OfferEducationalActions'
 
+import styles from './OfferEducational.module.scss'
 import OfferEducationalForm from './OfferEducationalForm'
 import { validationSchema } from './validationSchema'
 
@@ -27,6 +29,10 @@ export interface IOfferEducationalProps {
     information: (msg: string | null) => void
   }
   mode: Mode
+  cancelActiveBookings?: () => void
+  setIsOfferActive?: (isActive: boolean) => void
+  isOfferBooked?: boolean
+  isOfferActive?: boolean
 }
 
 const OfferEducational = ({
@@ -38,6 +44,10 @@ const OfferEducational = ({
   getIsOffererEligibleToEducationalOfferAdapter,
   notify,
   mode,
+  cancelActiveBookings,
+  setIsOfferActive,
+  isOfferBooked = false,
+  isOfferActive = false,
 }: IOfferEducationalProps): JSX.Element => {
   const formik = useFormik({
     initialValues,
@@ -45,21 +55,37 @@ const OfferEducational = ({
     validationSchema,
   })
 
+  const shouldShowOfferActions =
+    (mode === Mode.EDITION || mode === Mode.READ_ONLY) &&
+    setIsOfferActive &&
+    cancelActiveBookings
+
   return (
-    <FormikProvider value={formik}>
-      <form onSubmit={formik.handleSubmit}>
-        <OfferEducationalForm
-          educationalCategories={educationalCategories}
-          educationalSubCategories={educationalSubCategories}
-          getIsOffererEligibleToEducationalOfferAdapter={
-            getIsOffererEligibleToEducationalOfferAdapter
-          }
-          mode={mode}
-          notify={notify}
-          userOfferers={userOfferers}
+    <>
+      {shouldShowOfferActions && (
+        <OfferEducationalActions
+          cancelActiveBookings={cancelActiveBookings}
+          className={styles.actions}
+          isBooked={isOfferBooked}
+          isOfferActive={isOfferActive}
+          setIsOfferActive={setIsOfferActive}
         />
-      </form>
-    </FormikProvider>
+      )}
+      <FormikProvider value={formik}>
+        <form onSubmit={formik.handleSubmit}>
+          <OfferEducationalForm
+            educationalCategories={educationalCategories}
+            educationalSubCategories={educationalSubCategories}
+            getIsOffererEligibleToEducationalOfferAdapter={
+              getIsOffererEligibleToEducationalOfferAdapter
+            }
+            mode={mode}
+            notify={notify}
+            userOfferers={userOfferers}
+          />
+        </form>
+      </FormikProvider>
+    </>
   )
 }
 

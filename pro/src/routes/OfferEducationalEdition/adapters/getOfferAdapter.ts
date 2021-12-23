@@ -13,11 +13,13 @@ const FAILING_RESPONSE: AdapterFailure<IPayloadFailure> = {
 const getOfferAdapter: GetOfferAdapter = async offerId => {
   try {
     const offer = (await pcapi.loadOffer(offerId)) as Offer
+    /* @debt bugRisk "Gaël: we can't be sure this way that the stock is really booked, it can also be USED"*/
+    const isBooked = offer?.stocks[0]?.bookingsQuantity > 0
 
     return {
       isOk: true,
       message: '',
-      payload: offer,
+      payload: { ...offer, isBooked },
     }
   } catch (error) {
     return FAILING_RESPONSE
