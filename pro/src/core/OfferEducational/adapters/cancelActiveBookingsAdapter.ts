@@ -1,5 +1,7 @@
 import * as pcapi from 'repository/pcapi/pcapi'
 
+import { hasStatusCodeAndCode } from '../utils'
+
 type IPayloadSuccess = null
 type IPayloadFailure = null
 type CancelActiveBookingsAdapter = Adapter<
@@ -26,7 +28,11 @@ export const cancelActiveBookingsAdapter: CancelActiveBookingsAdapter = async ({
       payload: null,
     }
 
-    if (error.status === '400' && error.code === 'NO_BOOKING') {
+    if (
+      hasStatusCodeAndCode(error) &&
+      error.status === 400 &&
+      error.code === 'NO_BOOKING'
+    ) {
       return {
         ...errorResponse,
         message:

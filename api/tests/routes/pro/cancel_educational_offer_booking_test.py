@@ -5,6 +5,7 @@ from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.offerers import factories as offerer_factories
 from pcapi.core.offers import factories as offer_factories
 from pcapi.core.users import factories as user_factories
+from pcapi.utils.human_ids import humanize
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -20,7 +21,7 @@ class Returns204Test:
             stock__offer__venue__managingOfferer=offerer
         )
 
-        offer_id = educational_booking.stock.offer.id
+        offer_id = humanize(educational_booking.stock.offer.id)
         client = client.with_session_auth(user.email)
         response = client.patch(f"/offers/{offer_id}/cancel_booking")
 
@@ -30,7 +31,7 @@ class Returns204Test:
     def test_cancel_confirmed_booking(self, client):
         user = user_factories.AdminFactory()
         educational_booking = booking_factories.EducationalBookingFactory()
-        offer_id = educational_booking.stock.offer.id
+        offer_id = humanize(educational_booking.stock.offer.id)
 
         client = client.with_session_auth(user.email)
         response = client.patch(f"/offers/{offer_id}/cancel_booking")
@@ -43,7 +44,7 @@ class Returns404Test:
     def test_no_educational_offer_found(self, client):
         user = user_factories.AdminFactory()
         offer = offer_factories.OfferFactory()
-        offer_id = offer.id
+        offer_id = humanize(offer.id)
 
         client = client.with_session_auth(user.email)
         response = client.patch(f"/offers/{offer_id}/cancel_booking")
@@ -57,7 +58,7 @@ class Returns404Test:
     def test_no_active_stock_found(self, client):
         user = user_factories.AdminFactory()
         stock = offer_factories.EducationalEventStockFactory(isSoftDeleted=True)
-        offer_id = stock.offer.id
+        offer_id = humanize(stock.offer.id)
 
         client = client.with_session_auth(user.email)
         response = client.patch(f"/offers/{offer_id}/cancel_booking")
@@ -77,7 +78,7 @@ class Returns403Test:
 
         offer = offer_factories.EducationalEventOfferFactory(venue__managingOfferer=offerer)
 
-        offer_id = offer.id
+        offer_id = humanize(offer.id)
         client = client.with_session_auth(user.email)
         response = client.patch(f"/offers/{offer_id}/cancel_booking")
 
@@ -95,7 +96,7 @@ class Returns400Test:
         offer_factories.EducationalEventStockFactory(offer=offer)
         educational_booking = booking_factories.PendingEducationalBookingFactory(stock=stock1)
 
-        offer_id = offer.id
+        offer_id = humanize(offer.id)
         client = client.with_session_auth(user.email)
         response = client.patch(f"/offers/{offer_id}/cancel_booking")
 
@@ -109,7 +110,18 @@ class Returns400Test:
     def test_offer_has_no_booking_to_cancel(self, client):
         user = user_factories.AdminFactory()
         educational_booking = booking_factories.RefusedEducationalBookingFactory()
-        offer_id = educational_booking.stock.offer.id
+        offer_id = humanize(educational_booking.stock.offer.id)
+
+        client = client.with_session_auth(user.email)
+        response = client.patch(f"/offers/{offer_id}/cancel_booking")
+
+        assert response.status_code == 400
+        assert response.json == {"code": "NO_BOOKING", "message": "This educational offer has no booking to cancel"}
+
+    def test_offer_has_no_booking_to_cancel_because_used(self, client):
+        user = user_factories.AdminFactory()
+        educational_booking = booking_factories.UsedEducationalBookingFactory()
+        offer_id = humanize(educational_booking.stock.offer.id)
 
         client = client.with_session_auth(user.email)
         response = client.patch(f"/offers/{offer_id}/cancel_booking")

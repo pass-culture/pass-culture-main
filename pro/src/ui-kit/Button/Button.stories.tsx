@@ -39,7 +39,7 @@ export const DefaultButton = Template.bind({})
 DefaultButton.args = {
   children: 'Hello world',
   disabled: false,
-  variant: Button.variant.PRIMARY,
+  variant: ButtonVariant.PRIMARY,
 }
 
 export const DefaultButtonWithIcon = Template.bind({})

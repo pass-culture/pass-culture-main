@@ -23,13 +23,13 @@ export interface IOfferEducationalStockProps {
   isEditable?: boolean
   initialValues: OfferEducationalStockFormValues
   offer: GetStockOfferSuccessPayload
-  onSubmit(
+  onSubmit: (
     offer: GetStockOfferSuccessPayload,
     values: OfferEducationalStockFormValues
-  ): void
+  ) => void
   mode: Mode
-  cancelActiveBookings?(): void
-  setIsOfferActive?(isActive: boolean): void
+  cancelActiveBookings?: () => void
+  setIsOfferActive?: (isActive: boolean) => void
 }
 
 const OfferEducationalStock = ({
