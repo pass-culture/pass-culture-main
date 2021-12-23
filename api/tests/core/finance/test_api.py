@@ -263,7 +263,7 @@ class PriceBookingsTest:
 
     def test_basics(self):
         booking = bookings_factories.UsedBookingFactory(dateUsed=self.few_minutes_ago)
-        api.price_bookings()
+        api.price_bookings(min_date=self.few_minutes_ago)
         assert len(booking.pricings) == 1
 
     @mock.patch("pcapi.core.finance.api.price_booking", lambda booking: None)
@@ -271,13 +271,13 @@ class PriceBookingsTest:
         bookings_factories.UsedBookingFactory(dateUsed=self.few_minutes_ago)
         n_queries = 1
         with assert_num_queries(n_queries):
-            api.price_bookings()
+            api.price_bookings(self.few_minutes_ago)
 
     def test_error_on_a_booking_does_not_block_other_bookings(self):
         booking1 = create_booking_with_undeletable_dependent(date_used=self.few_minutes_ago)
         booking2 = bookings_factories.UsedBookingFactory(dateUsed=self.few_minutes_ago)
 
-        api.price_bookings()
+        api.price_bookings(self.few_minutes_ago)
 
         assert not booking1.pricings
         assert len(booking2.pricings) == 1
