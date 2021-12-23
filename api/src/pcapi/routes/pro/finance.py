@@ -12,26 +12,21 @@ from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import finance_serialize
 from pcapi.serialization.decorator import spectree_serialize
-from pcapi.utils import human_ids
 from pcapi.utils.rest import check_user_has_access_to_offerer
 
 
-@private_api.route("/finance/<humanized_offerer_id>/invoices", methods=["GET"])
+@private_api.route("/finance/invoices", methods=["GET"])
 @login_required
 @spectree_serialize(response_model=finance_serialize.InvoiceListResponseModel)
 def get_invoices(
-    humanized_offerer_id: str,
     query: finance_serialize.InvoiceListQueryModel,
 ) -> finance_serialize.InvoiceListResponseModel:
-    offerer_id = human_ids.dehumanize(humanized_offerer_id)
-    check_user_has_access_to_offerer(current_user, offerer_id)
-
     # Frontend sends a period with *inclusive* bounds, but
     # `get_invoices_query` expects the upper bound to be *exclusive*.
     if query.periodEndingDate:
         query.periodEndingDate += datetime.timedelta(days=1)
     invoices = finance_repository.get_invoices_query(
-        offerer_id,
+        current_user,
         business_unit_id=query.businessUnitId,
         date_from=query.periodBeginningDate,
         date_until=query.periodEndingDate,

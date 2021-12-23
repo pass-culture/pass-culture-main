@@ -4,6 +4,7 @@ import pytz
 
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.payments.utils as payments_utils
+import pcapi.core.users.models as users_models
 from pcapi.models.bank_information import BankInformation
 from pcapi.models.bank_information import BankInformationStatus
 from pcapi.models.user_offerer import UserOfferer
@@ -12,7 +13,10 @@ import pcapi.utils.date as date_utils
 from . import models
 
 
-def get_business_units_query(user, offerer_id: int = None):
+def get_business_units_query(
+    user: users_models.User,
+    offerer_id: int = None,
+):
     query = (
         models.BusinessUnit.query.join(BankInformation)
         .filter(models.BusinessUnit.status == models.BusinessUnitStatus.ACTIVE)
@@ -33,7 +37,7 @@ def get_business_units_query(user, offerer_id: int = None):
 
 
 def get_invoices_query(
-    offerer_id,
+    user: users_models.User,
     business_unit_id: int = None,
     date_from: datetime.date = None,
     date_until: datetime.date = None,
@@ -43,16 +47,27 @@ def get_invoices_query(
     If given, ``date_from`` is **inclusive**, ``date_until`` is
     **exclusive**.
     """
-    business_units_subquery = offerers_models.Venue.query.filter_by(managingOffererId=offerer_id).with_entities(
-        offerers_models.Venue.businessUnitId
-    )
+    business_units_subquery = offerers_models.Venue.query
+    if not user.has_admin_role:
+        business_units_subquery = business_units_subquery.join(
+            UserOfferer, UserOfferer.offererId == offerers_models.Venue.managingOffererId
+        ).filter(UserOfferer.user == user)
     if business_unit_id:
         # Filtering like this makes sure that the requested business
-        # unit id belongs to the offerer.
+        # unit id is accessible by the requesting user.
         business_units_subquery = business_units_subquery.filter(
             offerers_models.Venue.businessUnitId == business_unit_id
         )
-    invoices = models.Invoice.query.filter(models.Invoice.businessUnitId.in_(business_units_subquery.subquery()))
+    elif user.has_admin_role:
+        # The following intentionally returns nothing for admin users,
+        # so that we do NOT return all invoices of all business units
+        # for them. Admin users must select a business unit.
+        business_units_subquery = business_units_subquery.filter(False)
+    invoices = models.Invoice.query.filter(
+        models.Invoice.businessUnitId.in_(
+            business_units_subquery.with_entities(offerers_models.Venue.businessUnitId).subquery()
+        )
+    )
     convert_to_datetime = lambda date: date_utils.get_day_start(date, payments_utils.ACCOUNTING_TIMEZONE).astimezone(
         pytz.utc
     )

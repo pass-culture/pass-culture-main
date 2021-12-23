@@ -5,7 +5,6 @@ import pytest
 import pcapi.core.finance.factories as finance_factories
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.users.factories as users_factories
-from pcapi.utils import human_ids
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -30,8 +29,7 @@ def test_get_invoices(client):
     pro = users_factories.ProFactory(offerers=[offerer])
 
     client = client.with_session_auth(pro.email)
-    humanized_offerer_id = human_ids.humanize(offerer.id)
-    response = client.get(f"/finance/{humanized_offerer_id}/invoices")
+    response = client.get("/finance/invoices")
 
     assert response.status_code == 200
     invoices = response.json
@@ -57,8 +55,7 @@ def test_get_invoices_specify_business_unit(client):
 
     client = client.with_session_auth(pro.email)
     params = {"businessUnitId": business_unit1.id}
-    humanized_offerer_id = human_ids.humanize(offerer.id)
-    response = client.get(f"/finance/{humanized_offerer_id}/invoices", params=params)
+    response = client.get("/finance/invoices", params=params)
 
     assert response.status_code == 200
     invoices = response.json
@@ -86,24 +83,12 @@ def test_get_invoices_specify_dates(client):
 
     client = client.with_session_auth(pro.email)
     params = {"periodBeginningDate": "2021-07-01", "periodEndingDate": "2021-07-31"}
-    humanized_offerer_id = human_ids.humanize(offerer.id)
-    response = client.get(f"/finance/{humanized_offerer_id}/invoices", params=params)
+    response = client.get("/finance/invoices", params=params)
 
     assert response.status_code == 200
     invoices = response.json
     assert len(invoices) == 1
     assert invoices[0]["reference"] == invoice_within.reference
-
-
-def test_get_invoices_unauthorized_offerer(client):
-    offerer = offerers_factories.OffererFactory()
-    pro = users_factories.ProFactory()
-
-    client = client.with_session_auth(pro.email)
-    humanized_offerer_id = human_ids.humanize(offerer.id)
-    response = client.get(f"/finance/{humanized_offerer_id}/invoices")
-
-    assert response.status_code == 403
 
 
 def test_get_invoices_unauthorized_business_unit(client):
@@ -113,9 +98,8 @@ def test_get_invoices_unauthorized_business_unit(client):
     other_business_unit = other_invoice.businessUnit
 
     client = client.with_session_auth(pro.email)
-    humanized_offerer_id = human_ids.humanize(offerer.id)
     params = {"businessUnitId": other_business_unit.id}
-    response = client.get(f"/finance/{humanized_offerer_id}/invoices", params=params)
+    response = client.get("/finance/invoices", params=params)
 
     assert response.status_code == 200
     invoices = response.json
