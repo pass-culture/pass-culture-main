@@ -11,7 +11,10 @@ import {
   getCategoriesAdapter,
   getOfferersAdapter,
   setInitialFormValues,
+  patchIsOfferActiveAdapter,
+  cancelActiveBookingsAdapter,
 } from 'core/OfferEducational'
+import { Offer } from 'custom_types/offer'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 import OfferEducationalLayout from 'new_components/OfferEducationalLayout'
 import OfferEducationalScreen from 'screens/OfferEducational'
@@ -37,6 +40,7 @@ const OfferEducationalEdition = ({
   const [screenProps, setScreenProps] = useState<AsyncScreenProps | null>(null)
   const [initialValues, setInitialValues] =
     useState<IOfferEducationalFormValues>(DEFAULT_EAC_FORM_VALUES)
+  const [offer, setOffer] = useState<Offer>()
 
   const notify = useNotification()
 
@@ -56,6 +60,31 @@ const OfferEducationalEdition = ({
     notify.success(message)
   }
 
+  const setIsOfferActive = async (isActive: boolean) => {
+    const { isOk, message } = await patchIsOfferActiveAdapter({
+      isActive,
+      offerId,
+    })
+
+    if (!isOk) {
+      return notify.error(message)
+    }
+
+    notify.success(message)
+    setIsReady(false)
+  }
+
+  const cancelActiveBookings = async () => {
+    const { isOk, message } = await cancelActiveBookingsAdapter({ offerId })
+
+    if (!isOk) {
+      return notify.error(message)
+    }
+
+    notify.success(message)
+    setIsReady(false)
+  }
+
   useEffect(() => {
     if (!isReady) {
       const loadData = async () => {
@@ -66,6 +95,7 @@ const OfferEducationalEdition = ({
         }
 
         const offer = offerResponse.payload
+        setOffer(offer)
         const offererId = offer.venue.managingOffererId
 
         const results = await Promise.all([
@@ -135,10 +165,14 @@ const OfferEducationalEdition = ({
       {isReady && screenProps ? (
         <OfferEducationalScreen
           {...screenProps}
+          cancelActiveBookings={cancelActiveBookings}
           initialValues={initialValues}
+          isOfferActive={offer?.isActive}
+          isOfferBooked={offer?.isBooked}
           mode={Mode.EDITION}
           notify={notify}
           onSubmit={editOffer}
+          setIsOfferActive={setIsOfferActive}
         />
       ) : (
         <Spinner />

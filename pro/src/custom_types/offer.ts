@@ -45,4 +45,5 @@ export type Offer = {
   venueId: string
   status: OfferStatus
   venue: Venue
+  isBooked: boolean
 }
