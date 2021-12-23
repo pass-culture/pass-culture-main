@@ -1,3 +1,5 @@
+import pytest
+
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.mails.transactional.users.email_duplicate_pre_subscription_rejected import (
     get_duplicate_beneficiary_pre_subscription_rejected_data,
@@ -17,6 +19,7 @@ def test_make_not_eligible_beneficiary_pre_subscription_rejected_data():
     }
 
 
+@pytest.mark.usefixtures("db_session")
 class GetDuplicateEmailRejectedTest:
     @override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=False)
     def test_get_duplicate_beneficiary_pre_subscription_rejected_data_dict_when_toggle_feature_false(self):
