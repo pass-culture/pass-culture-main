@@ -9,13 +9,13 @@ from dateutil.relativedelta import relativedelta
 import factory
 from factory.declarations import LazyAttribute
 
+from pcapi.connectors.beneficiaries.educonnect import models as educonnect_models
 from pcapi.core.fraud import models as fraud_models
 import pcapi.core.payments.api as payments_api
 import pcapi.core.payments.models as payments_models
 from pcapi.core.testing import BaseFactory
 from pcapi.core.users import models as users_models
 import pcapi.core.users.constants as users_constants
-from pcapi.core.users.external.educonnect import models as educonnect_models
 from pcapi.models import user_session
 from pcapi.models.beneficiary_import import BeneficiaryImport
 from pcapi.models.beneficiary_import import BeneficiaryImportSources
