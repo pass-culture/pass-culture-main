@@ -15,6 +15,7 @@ import pcapi.core.payments.api as payments_api
 import pcapi.core.payments.models as payments_models
 from pcapi.core.testing import BaseFactory
 from pcapi.core.users import models as users_models
+from pcapi.core.users import utils as users_utils
 import pcapi.core.users.constants as users_constants
 from pcapi.models import user_session
 from pcapi.models.beneficiary_import import BeneficiaryImport
@@ -343,9 +344,13 @@ class DepositGrantFactory(BaseFactory):
     def _create(cls, model_class, *args, **kwargs):
         if "amount" in kwargs:
             raise ValueError("You cannot directly set deposit amount: set version instead")
-        granted_deposit = payments_api.get_granted_deposit(
-            kwargs["user"], kwargs["user"].eligibility, kwargs.get("version")
+        age = users_utils.get_age_from_birth_date(kwargs["user"].dateOfBirth)
+        eligibility = (
+            models.EligibilityType.UNDERAGE
+            if age in users_constants.ELIGIBILITY_UNDERAGE_RANGE
+            else models.EligibilityType.AGE18
         )
+        granted_deposit = payments_api.get_granted_deposit(kwargs["user"], eligibility, kwargs.get("version"))
         if "version" not in kwargs:
             kwargs["version"] = granted_deposit.version
         kwargs["amount"] = granted_deposit.amount
