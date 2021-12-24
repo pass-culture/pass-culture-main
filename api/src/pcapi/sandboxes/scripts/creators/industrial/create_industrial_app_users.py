@@ -14,7 +14,6 @@ from pcapi.core.bookings import factories as bookings_factory
 from pcapi.core.fraud import factories as fraud_factories
 from pcapi.core.payments.conf import GRANT_18_VALIDITY_IN_YEARS
 from pcapi.core.payments.models import DepositType
-from pcapi.core.subscription import api as subscription_api
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users.constants import ELIGIBILITY_AGE_18
 from pcapi.core.users.models import TokenType
@@ -309,7 +308,9 @@ def create_short_email_beneficiaries() -> dict:
         fraud_factories.BeneficiaryFraudResultFactory(user=beneficiary_and_exunderage)
         beneficiary_import = users_factories.BeneficiaryImportFactory(beneficiary=beneficiary_and_exunderage)
         users_factories.BeneficiaryImportStatusFactory(beneficiaryImport=beneficiary_import, author=None)
-        subscription_api.activate_beneficiary(beneficiary_and_exunderage)
+        users_factories.DepositGrantFactory(user=beneficiary_and_exunderage)
+        beneficiary_and_exunderage.add_beneficiary_role()
+        beneficiary_and_exunderage.remove_underage_beneficiary_role()
         users.append(beneficiary_and_exunderage)
 
     with freeze_time(datetime.utcnow() - relativedelta(years=GRANT_18_VALIDITY_IN_YEARS, months=5)):
