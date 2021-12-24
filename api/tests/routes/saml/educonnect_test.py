@@ -76,7 +76,7 @@ class EduconnectTest:
         request_id = app.redis_client.keys(f"{self.request_id_key_prefix}*")[0]
         assert int(app.redis_client.get(request_id)) == user.id
 
-    @patch("pcapi.core.users.external.educonnect.api.get_saml_client")
+    @patch("pcapi.connectors.beneficiaries.educonnect.educonnect_connector.get_saml_client")
     def test_on_educonnect_authentication_response(self, mock_get_educonnect_saml_client, client, caplog, app):
         # set user_id in redis as if /saml/educonnect/login was called
         ine_hash = "5ba682c0fc6a05edf07cd8ed0219258f"
@@ -153,7 +153,7 @@ class EduconnectTest:
         assert user.dateOfBirth == datetime.datetime(2006, 8, 18, 0, 0)
         assert user.ineHash == ine_hash
 
-    @patch("pcapi.core.users.external.educonnect.api.get_saml_client")
+    @patch("pcapi.connectors.beneficiaries.educonnect.educonnect_connector.get_saml_client")
     def test_user_type_not_student(self, mock_get_educonnect_saml_client, client, caplog, app):
         # set user_id in redis as if /saml/educonnect/login was called
         user = users_factories.UserFactory(email=self.email)
@@ -182,7 +182,7 @@ class EduconnectTest:
         assert caplog.records[0].extra == {"saml_request_id": self.request_id, "user_id": str(user.id)}
         assert caplog.records[0].message == "Wrong user type of educonnect user"
 
-    @patch("pcapi.core.users.external.educonnect.api.get_educonnect_user")
+    @patch("pcapi.connectors.beneficiaries.educonnect.educonnect_connector.get_educonnect_user")
     def test_educonnect_redirects_to_success_page_with_warning_log(self, mock_get_educonnect_user, client, app, caplog):
         user, request_id = self.connect_to_educonnect(client, app)
         educonnect_user = users_factories.EduconnectUserFactory(saml_request_id=request_id)
@@ -206,7 +206,7 @@ class EduconnectTest:
         assert caplog.records[0].extra == {"user_id": user.id}
 
     @override_features(ENABLE_UNDERAGE_GENERALISATION=True)
-    @patch("pcapi.core.users.external.educonnect.api.get_educonnect_user")
+    @patch("pcapi.connectors.beneficiaries.educonnect.educonnect_connector.get_educonnect_user")
     @override_features(ENABLE_INE_WHITELIST_FILTER=False)
     @freezegun.freeze_time("2021-12-15")  # during opening
     def test_16_year_old_but_not_eligible(self, mock_get_educonnect_user, client, app):
@@ -232,7 +232,7 @@ class EduconnectTest:
             == "La date de naissance de ton dossier Educonnect (11/12/2006) indique que tu n'es pas éligible. Tu seras éligible le 22/12/2021."
         )
 
-    @patch("pcapi.core.users.external.educonnect.api.get_educonnect_user")
+    @patch("pcapi.connectors.beneficiaries.educonnect.educonnect_connector.get_educonnect_user")
     @freezegun.freeze_time("2021-12-21")
     @override_features(ENABLE_INE_WHITELIST_FILTER=False)
     def test_educonnect_redirects_to_error_page_too_young(self, mock_get_educonnect_user, client, app):
@@ -254,7 +254,7 @@ class EduconnectTest:
             == "Ton dossier a été refusé. La date de naissance enregistrée sur ton compte Educonnect (21/11/2007) indique que tu n'as pas entre 15 et 17 ans."
         )
 
-    @patch("pcapi.core.users.external.educonnect.api.get_educonnect_user")
+    @patch("pcapi.connectors.beneficiaries.educonnect.educonnect_connector.get_educonnect_user")
     @override_features(ENABLE_INE_WHITELIST_FILTER=False)
     @freezegun.freeze_time("2021-12-21")
     def test_educonnect_redirects_to_error_page_18_years_old(self, mock_get_educonnect_user, client, app):
@@ -276,7 +276,7 @@ class EduconnectTest:
             == "Ton dossier a été refusé. La date de naissance enregistrée sur ton compte Educonnect (21/11/2003) indique que tu n'as pas entre 15 et 17 ans."
         )
 
-    @patch("pcapi.core.users.external.educonnect.api.get_educonnect_user")
+    @patch("pcapi.connectors.beneficiaries.educonnect.educonnect_connector.get_educonnect_user")
     @freezegun.freeze_time("2021-12-21")
     @override_features(ENABLE_INE_WHITELIST_FILTER=False)
     def test_educonnect_redirects_to_error_page_too_old(self, mock_get_educonnect_user, client, app):
@@ -298,7 +298,7 @@ class EduconnectTest:
             == "Ton dossier a été refusé. La date de naissance enregistrée sur ton compte Educonnect (21/11/2001) indique que tu n'as pas entre 15 et 17 ans."
         )
 
-    @patch("pcapi.core.users.external.educonnect.api.get_educonnect_user")
+    @patch("pcapi.connectors.beneficiaries.educonnect.educonnect_connector.get_educonnect_user")
     @override_features(ENABLE_INE_WHITELIST_FILTER=False)
     def test_educonnect_connection_synchronizes_data(self, mock_get_educonnect_user, client, app):
         user, request_id = self.connect_to_educonnect(client, app)
@@ -324,7 +324,7 @@ class EduconnectTest:
             datetime.date.today() - relativedelta(years=age, months=1), datetime.time(0, 0)
         )
 
-    @patch("pcapi.core.users.external.educonnect.api.get_educonnect_user")
+    @patch("pcapi.connectors.beneficiaries.educonnect.educonnect_connector.get_educonnect_user")
     def test_educonnect_ine_not_whitelisted(self, mock_get_educonnect_user, client, app):
         user, request_id = self.connect_to_educonnect(client, app)
         mock_get_educonnect_user.return_value = users_factories.EduconnectUserFactory(
@@ -344,7 +344,7 @@ class EduconnectTest:
         )
 
     @override_features(ENABLE_INE_WHITELIST_FILTER=False)
-    @patch("pcapi.core.users.external.educonnect.api.get_educonnect_user")
+    @patch("pcapi.connectors.beneficiaries.educonnect.educonnect_connector.get_educonnect_user")
     def test_educonnect_ine_whitelist_filter_off(self, mock_get_educonnect_user, client, app):
         user, request_id = self.connect_to_educonnect(client, app)
         mock_get_educonnect_user.return_value = users_factories.EduconnectUserFactory(
@@ -358,7 +358,7 @@ class EduconnectTest:
         assert user.beneficiaryFraudResults[0].status == fraud_models.FraudStatus.OK
 
     @override_features(ENABLE_INE_WHITELIST_FILTER=False)
-    @patch("pcapi.core.users.external.educonnect.api.get_educonnect_user")
+    @patch("pcapi.connectors.beneficiaries.educonnect.educonnect_connector.get_educonnect_user")
     def test_educonnect_not_eligible_fails_twice(self, mock_get_educonnect_user, client, app):
         user, request_id = self.connect_to_educonnect(client, app)
         mock_get_educonnect_user.return_value = users_factories.EduconnectUserFactory(

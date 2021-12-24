@@ -125,7 +125,7 @@ class AttachBenerificaryImportDetailsTest:
 @pytest.mark.usefixtures("db_session")
 class EduconnectFlowTest:
     @freeze_time("2021-10-10")
-    @patch("pcapi.core.users.external.educonnect.api.get_saml_client")
+    @patch("pcapi.connectors.beneficiaries.educonnect.educonnect_connector.get_saml_client")
     def test_legacy_educonnect_subscription(self, mock_get_educonnect_saml_client, client, app):
         # TODO (viconnex): remove this journey after app native mandatory version is >= 164
         ine_hash = "5ba682c0fc6a05edf07cd8ed0219258f"
@@ -199,7 +199,7 @@ class EduconnectFlowTest:
         assert user.deposit.amount == 20
 
     @freeze_time("2021-10-10")
-    @patch("pcapi.core.users.external.educonnect.api.get_saml_client")
+    @patch("pcapi.connectors.beneficiaries.educonnect.educonnect_connector.get_saml_client")
     @override_features(IS_HONOR_STATEMENT_MANDATORY_TO_ACTIVATE_BENEFICIARY=True, ENABLE_EDUCONNECT_AUTHENTICATION=True)
     def test_educonnect_subscription(self, mock_get_educonnect_saml_client, client, app):
         ine_hash = "5ba682c0fc6a05edf07cd8ed0219258f"

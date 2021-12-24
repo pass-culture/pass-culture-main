@@ -1,6 +1,7 @@
 import datetime
 import logging
 
+from pcapi.connectors.beneficiaries.educonnect import models as educonnect_models
 from pcapi.core.fraud import api as fraud_api
 from pcapi.core.fraud import exceptions as fraud_exceptions
 from pcapi.core.fraud import models as fraud_models
@@ -9,7 +10,6 @@ from pcapi.core.subscription import messages as subscription_messages
 from pcapi.core.users import api as users_api
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import models as users_models
-from pcapi.core.users.external.educonnect import models as educonnect_models
 from pcapi.models.beneficiary_import import BeneficiaryImportSources
 
 from . import exceptions
