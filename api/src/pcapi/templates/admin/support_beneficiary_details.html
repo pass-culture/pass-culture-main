@@ -258,7 +258,7 @@
     <p class="card card-body">
         Pas de changement d'adresse email pour le moment
     </p>
-    {% elif current_user.is_super_admin() %}
+    {% else %}
     <a href="/pc/back-office/user_email_history/?search=pctest&flt1_0={{ model.id }}">Vue détaillée</a>
     <table class="table table-striped table-hover">
       <thead>
@@ -282,10 +282,6 @@
         {% endfor %}
       </tbody>
     </table>
-    {% else %}
-    <p class="card card-body">
-        L'utilisateur a changé d'adresse email depuis la création de son compte
-    </p>
     {% endif %}
   </div>
 </div>

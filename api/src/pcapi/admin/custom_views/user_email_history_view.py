@@ -36,6 +36,3 @@ class UserEmailHistoryView(SuspensionMixin, BaseAdminView):
         "eventType",
         "deviceId",
     ]
-
-    def is_accessible(self):
-        return super().is_accessible() and self.check_super_admins()
