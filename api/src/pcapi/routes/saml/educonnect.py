@@ -9,6 +9,8 @@ from flask import request
 from werkzeug.wrappers import Response
 
 from pcapi import settings
+from pcapi.connectors.beneficiaries.educonnect import educonnect_connector
+from pcapi.connectors.beneficiaries.educonnect import exceptions as educonnect_exceptions
 from pcapi.core.fraud import api as fraud_api
 from pcapi.core.fraud import exceptions as fraud_exceptions
 from pcapi.core.fraud import models as fraud_models
@@ -16,8 +18,6 @@ from pcapi.core.subscription import api as subscription_api
 from pcapi.core.users import models as users_models
 from pcapi.core.users import utils as users_utils
 from pcapi.core.users.constants import ELIGIBILITY_AGE_18
-from pcapi.core.users.external.educonnect import api as educonnect_api
-from pcapi.core.users.external.educonnect import exceptions as educonnect_exceptions
 from pcapi.routes.native.security import authenticated_user_required
 
 from . import blueprint
@@ -32,7 +32,7 @@ ERROR_PAGE_URL = f"{settings.WEBAPP_V2_URL}/idcheck/educonnect/erreur?"
 @authenticated_user_required
 def login_educonnect(user: users_models.User) -> Response:
     should_redirect = request.args.get("redirect", default=True, type=lambda v: v.lower() == "true")
-    redirect_url = educonnect_api.get_login_redirect_url(user)
+    redirect_url = educonnect_connector.get_login_redirect_url(user)
     response = Response()
 
     if not should_redirect:
@@ -51,7 +51,7 @@ def login_educonnect(user: users_models.User) -> Response:
 @blueprint.saml_blueprint.route("acs", methods=["POST"])
 def on_educonnect_authentication_response() -> Response:  # pylint: disable=too-many-return-statements
     try:
-        educonnect_user = educonnect_api.get_educonnect_user(request.form["SAMLResponse"])
+        educonnect_user = educonnect_connector.get_educonnect_user(request.form["SAMLResponse"])
 
     except educonnect_exceptions.ResponseTooOld:
         logger.warning("Educonnect saml_response too old")
@@ -169,5 +169,5 @@ def on_educonnect_authentication_response() -> Response:  # pylint: disable=too-
 
 
 def _user_id_from_saml_request_id(saml_request_id: str) -> Optional[int]:
-    key = educonnect_api.build_saml_request_id_key(saml_request_id)
+    key = educonnect_connector.build_saml_request_id_key(saml_request_id)
     return app.redis_client.get(key)
