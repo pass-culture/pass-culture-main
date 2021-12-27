@@ -10,7 +10,7 @@ from pcapi.models.feature import FeatureToggle
 from pcapi.utils.urls import generate_firebase_dynamic_link
 
 
-def retrieve_data_for_reset_password_user_email(user: User, token: Token) -> dict:
+def get_reset_password_user_email_data(user: User, token: Token) -> dict:
     return {
         "MJ-TemplateID": 912168,
         "MJ-TemplateLanguage": True,
@@ -18,9 +18,7 @@ def retrieve_data_for_reset_password_user_email(user: User, token: Token) -> dic
     }
 
 
-def retrieve_data_for_reset_password_native_app_email(
-    user: User, token: Token
-) -> Union[dict, SendinblueTransactionalEmailData]:
+def get_reset_password_native_app_email_data(user: User, token: Token) -> Union[dict, SendinblueTransactionalEmailData]:
     reset_password_link = generate_firebase_dynamic_link(
         path="mot-de-passe-perdu",
         params={
@@ -45,11 +43,11 @@ def retrieve_data_for_reset_password_native_app_email(
 
 def send_reset_password_email_to_user(user: User) -> bool:
     token = users_api.create_reset_password_token(user)
-    data = retrieve_data_for_reset_password_user_email(user, token)
+    data = get_reset_password_user_email_data(user, token)
     return mails.send(recipients=[user.email], data=data)
 
 
 def send_reset_password_email_to_native_app_user(user: User) -> bool:
     token = users_api.create_reset_password_token(user)
-    data = retrieve_data_for_reset_password_native_app_email(user, token)
+    data = get_reset_password_native_app_email_data(user, token)
     return mails.send(recipients=[user.email], data=data)

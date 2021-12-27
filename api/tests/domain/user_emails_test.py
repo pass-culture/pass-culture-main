@@ -1,7 +1,3 @@
-from dataclasses import asdict
-from datetime import datetime
-from datetime import timedelta
-from unittest.mock import call
 from unittest.mock import patch
 
 import pytest
@@ -9,17 +5,12 @@ import pytest
 from pcapi.core.bookings import factories as booking_factories
 from pcapi.core.categories import subcategories
 import pcapi.core.mails.testing as mails_testing
-from pcapi.core.mails.transactional import users as user_emails
-from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.mails.transactional.users.email_confirmation_email import send_email_confirmation_email
 from pcapi.core.offers.factories import OfferFactory
 from pcapi.core.offers.factories import OffererFactory
-from pcapi.core.offers.factories import ProductFactory
 from pcapi.core.offers.factories import UserOffererFactory
 from pcapi.core.offers.factories import VenueFactory
 from pcapi.core.offers.models import OfferValidationStatus
-from pcapi.core.subscription.factories import BeneficiaryPreSubscriptionFactory
-from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
 from pcapi.domain.user_emails import send_activation_email
 from pcapi.domain.user_emails import send_admin_user_validation_email
@@ -29,9 +20,7 @@ from pcapi.domain.user_emails import send_offer_validation_status_update_email
 from pcapi.domain.user_emails import send_offerer_bookings_recap_email_after_offerer_cancellation
 from pcapi.domain.user_emails import send_offerer_driven_cancellation_email_to_offerer
 from pcapi.domain.user_emails import send_pro_user_validation_email
-from pcapi.domain.user_emails import send_rejection_email_to_beneficiary_pre_subscription
 from pcapi.domain.user_emails import send_reset_password_email_to_pro
-from pcapi.domain.user_emails import send_soon_to_be_expired_individual_bookings_recap_email_to_beneficiary
 from pcapi.domain.user_emails import send_user_driven_cancellation_email_to_offerer
 from pcapi.domain.user_emails import send_withdrawal_terms_to_newly_validated_offerer
 from pcapi.model_creators.generic_creators import create_booking
@@ -203,131 +192,6 @@ class SendResetPasswordProEmailTest:
         assert mails_testing.outbox[0].sent_data["MJ-TemplateID"] == 779295
 
 
-class SendResetPasswordUserEmailTest:
-    @patch(
-        "pcapi.core.mails.transactional.users.reset_password_email.retrieve_data_for_reset_password_user_email",
-        return_value={"MJ-TemplateID": 912168},
-    )
-    def when_feature_send_emails_enabled_sends_a_reset_password_email_to_user(
-        self, mock_retrieve_data_for_reset_password_user_email, app
-    ):
-        # given
-        user = users_factories.UserFactory(email="bobby@example.com")
-
-        # when
-        user_emails.send_reset_password_email_to_user(user)
-
-        # then
-        mock_retrieve_data_for_reset_password_user_email.assert_called_once_with(user, user.tokens[0])
-        assert len(mails_testing.outbox) == 1  # test number of emails sent
-        assert mails_testing.outbox[0].sent_data["MJ-TemplateID"] == 912168
-
-    @patch(
-        "pcapi.core.mails.transactional.users.reset_password_email.retrieve_data_for_reset_password_native_app_email",
-        return_value={"MJ-TemplateID": 12345},
-    )
-    def when_feature_send_emails_enabled_sends_a_reset_password_email_to_native_app_user(
-        self, retrieve_data_for_reset_password_native_app_email
-    ):
-        # given
-        user = users_factories.UserFactory(email="bobby@example.com")
-
-        # when
-        user_emails.send_reset_password_email_to_native_app_user(user)
-
-        # then
-        retrieve_data_for_reset_password_native_app_email.assert_called_once_with(user, user.tokens[0])
-        assert len(mails_testing.outbox) == 1  # test number of emails sent
-        assert mails_testing.outbox[0].sent_data["MJ-TemplateID"] == 12345
-
-    @override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=True)
-    def test_send_a_reset_password_email_to_native_app_user_via_sendinblue(self):
-        # given
-        user = users_factories.UserFactory(email="bobby@example.com")
-
-        # when
-        user_emails.send_reset_password_email_to_native_app_user(user)
-
-        # then
-        assert len(mails_testing.outbox) == 1  # test number of emails sent
-
-        native_app_link = mails_testing.outbox[0].sent_data["params"]["NATIVE_APP_LINK"]
-        assert user.tokens[0].value in native_app_link
-        assert mails_testing.outbox[0].sent_data["template"] == asdict(TransactionalEmail.NEW_PASSWORD_REQUEST.value)
-        assert mails_testing.outbox[0].sent_data["To"] == "bobby@example.com"
-
-
-class SendRejectionEmailToBeneficiaryPreSubscriptionTest:
-    @patch(
-        "pcapi.core.mails.transactional.users.email_duplicate_pre_subscription_rejected.get_duplicate_beneficiary_pre_subscription_rejected_data",
-        return_value={"MJ-TemplateID": 1530996},
-    )
-    @override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=False)
-    def when_beneficiary_is_a_duplicate_sends_correct_template(self, mocked_make_data, app):
-        # given
-        beneficiary_pre_subscription = BeneficiaryPreSubscriptionFactory()
-
-        # when
-        send_rejection_email_to_beneficiary_pre_subscription(beneficiary_pre_subscription, beneficiary_is_eligible=True)
-
-        # then
-        mocked_make_data.assert_called_once()
-        assert len(mails_testing.outbox) == 1  # test number of emails sent
-        assert mails_testing.outbox[0].sent_data["MJ-TemplateID"] == 1530996
-
-    @override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=True)
-    def when_beneficiary_is_a_duplicate_sends_correct_template_sendinblue(self, app):
-        # given
-        beneficiary_pre_subscription = BeneficiaryPreSubscriptionFactory()
-
-        # when
-        send_rejection_email_to_beneficiary_pre_subscription(beneficiary_pre_subscription, beneficiary_is_eligible=True)
-
-        # then
-        assert len(mails_testing.outbox) == 1  # test number of emails sent
-        assert mails_testing.outbox[0].sent_data["template"] == asdict(
-            TransactionalEmail.EMAIL_DUPLICATE_BENEFICIARY_PRE_SUBCRIPTION_REJECTED.value
-        )
-
-    @patch(
-        "pcapi.core.mails.transactional.users.email_duplicate_pre_subscription_rejected.get_not_eligible_beneficiary_pre_subscription_rejected_data",
-        return_value={"MJ-TemplateID": 1619528},
-    )
-    @override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=False)
-    def when_beneficiary_is_not_eligible_sends_correct_template(self, mocked_make_data, app):
-        # given
-        beneficiary_pre_subscription = BeneficiaryPreSubscriptionFactory()
-
-        # when
-        send_rejection_email_to_beneficiary_pre_subscription(
-            beneficiary_pre_subscription, beneficiary_is_eligible=False
-        )
-
-        # then
-        mocked_make_data.assert_called_once()
-        assert len(mails_testing.outbox) == 1  # test number of emails sent
-        assert mails_testing.outbox[0].sent_data["MJ-TemplateID"] == 1619528
-
-    @patch(
-        "pcapi.core.mails.transactional.users.email_duplicate_pre_subscription_rejected.get_not_eligible_beneficiary_pre_subscription_rejected_data",
-        return_value={"MJ-TemplateID": 1619528},
-    )
-    @override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=True)
-    def when_beneficiary_is_not_eligible_sends_correct_template_sendinblue(self, mocked_make_data, app):
-        # given
-        beneficiary_pre_subscription = BeneficiaryPreSubscriptionFactory()
-
-        # when
-        send_rejection_email_to_beneficiary_pre_subscription(
-            beneficiary_pre_subscription, beneficiary_is_eligible=False
-        )
-
-        # then
-        mocked_make_data.assert_called_once()
-        assert len(mails_testing.outbox) == 1  # test number of emails sent
-        assert mails_testing.outbox[0].sent_data["MJ-TemplateID"] == 1619528
-
-
 class SendExpiredBookingsRecapEmailToOffererTest:
     def test_should_send_email_to_offerer_when_expired_bookings_cancelled(self, app):
         offerer = OffererFactory()
@@ -369,105 +233,6 @@ class SendExpiredBookingsRecapEmailToOffererTest:
         assert mails_testing.outbox[1].sent_data["Mj-TemplateID"] == 3095184
         assert mails_testing.outbox[1].sent_data["Vars"]["withdrawal_period"] == 30
         assert mails_testing.outbox[1].sent_data["Vars"]["bookings"][0]["offer_name"] == "Intouchables"
-
-
-class SendSoonToBeExpiredBookingsRecapEmailToBeneficiaryTest:
-    @patch(
-        "pcapi.domain.user_emails.build_soon_to_be_expired_bookings_recap_email_data_for_beneficiary",
-        return_value={"MJ-TemplateID": 12345},
-    )
-    def test_should_send_email_to_beneficiary_when_they_have_soon_to_be_expired_bookings(
-        self, build_soon_to_be_expired_bookings_recap_email_data_for_beneficiary
-    ):
-        # given
-        now = datetime.utcnow()
-        user = users_factories.BeneficiaryGrant18Factory(email="isasimov@example.com")
-        created_23_days_ago = now - timedelta(days=23)
-
-        dvd = ProductFactory(subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id)
-        soon_to_be_expired_dvd_booking = booking_factories.IndividualBookingFactory(
-            stock__offer__product=dvd,
-            stock__offer__name="Fondation",
-            stock__offer__venue__name="Première Fondation",
-            dateCreated=created_23_days_ago,
-            user=user,
-        )
-
-        cd = ProductFactory(subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE.id)
-        soon_to_be_expired_cd_booking = booking_factories.IndividualBookingFactory(
-            stock__offer__product=cd,
-            stock__offer__name="Fondation et Empire",
-            stock__offer__venue__name="Seconde Fondation",
-            dateCreated=created_23_days_ago,
-            user=user,
-        )
-
-        # when
-        send_soon_to_be_expired_individual_bookings_recap_email_to_beneficiary(
-            user, [soon_to_be_expired_cd_booking, soon_to_be_expired_dvd_booking]
-        )
-
-        # then
-        build_soon_to_be_expired_bookings_recap_email_data_for_beneficiary.assert_called_once_with(
-            beneficiary=user,
-            bookings=[soon_to_be_expired_cd_booking, soon_to_be_expired_dvd_booking],
-            days_before_cancel=7,
-            days_from_booking=23,
-        )
-        assert len(mails_testing.outbox) == 1  # test number of emails sent
-        assert mails_testing.outbox[0].sent_data["MJ-TemplateID"] == 12345
-
-    @patch(
-        "pcapi.domain.user_emails.build_soon_to_be_expired_bookings_recap_email_data_for_beneficiary",
-        return_value={"MJ-TemplateID": 12345},
-    )
-    def test_should_send_two_emails_to_beneficiary_when_they_book_and_other_things_have_soon_to_be_expired_bookings(
-        self, build_soon_to_be_expired_bookings_recap_email_data_for_beneficiary
-    ):
-        # given
-        now = datetime.utcnow()
-        user = users_factories.BeneficiaryGrant18Factory(email="isasimov@example.com")
-        created_5_days_ago = now - timedelta(days=5)
-        created_23_days_ago = now - timedelta(days=23)
-
-        book = ProductFactory(subcategoryId=subcategories.LIVRE_PAPIER.id)
-        soon_to_be_expired_book_booking = booking_factories.IndividualBookingFactory(
-            stock__offer__product=book,
-            stock__offer__name="Fondation",
-            stock__offer__venue__name="Première Fondation",
-            dateCreated=created_5_days_ago,
-            user=user,
-        )
-
-        cd = ProductFactory(subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE.id)
-        soon_to_be_expired_cd_booking = booking_factories.IndividualBookingFactory(
-            stock__offer__product=cd,
-            stock__offer__name="Fondation et Empire",
-            stock__offer__venue__name="Seconde Fondation",
-            dateCreated=created_23_days_ago,
-            user=user,
-        )
-
-        # when
-        send_soon_to_be_expired_individual_bookings_recap_email_to_beneficiary(
-            user, [soon_to_be_expired_book_booking, soon_to_be_expired_cd_booking]
-        )
-
-        # then
-        call1 = call(
-            beneficiary=user, bookings=[soon_to_be_expired_book_booking], days_before_cancel=5, days_from_booking=5
-        )
-        call2 = call(
-            beneficiary=user, bookings=[soon_to_be_expired_cd_booking], days_before_cancel=7, days_from_booking=23
-        )
-        calls = [call1, call2]
-
-        build_soon_to_be_expired_bookings_recap_email_data_for_beneficiary.assert_has_calls(calls, any_order=False)
-
-        assert build_soon_to_be_expired_bookings_recap_email_data_for_beneficiary.call_count == 2
-        assert len(mails_testing.outbox) == 2  # test number of emails sent
-        assert mails_testing.outbox[0].sent_data["MJ-TemplateID"] == 12345
-        assert mails_testing.outbox[1].sent_data["MJ-TemplateID"] == 12345
 
 
 class SendOfferValidationTest:
