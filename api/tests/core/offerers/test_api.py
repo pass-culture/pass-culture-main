@@ -240,6 +240,17 @@ class EditVenueTest:
         assert deleted_business_unit.status == finance_models.BusinessUnitStatus.DELETED
         assert offerers_models.Venue.query.filter(offerers_models.Venue.businessUnitId.is_(None)).count() == 3
 
+    def test_update_virtual_venue_business_unit(self):
+        offerer = offers_factories.OffererFactory(siren="000000000")
+        venue = offers_factories.VenueFactory(siret="00000000000011", managingOfferer=offerer)
+        virtual_venue = offers_factories.VirtualVenueFactory(managingOfferer=offerer)
+
+        venue_data = {"businessUnitId": venue.businessUnitId}
+
+        offerers_api.update_venue(virtual_venue, **venue_data)
+
+        assert virtual_venue.businessUnitId == venue.businessUnitId
+
 
 class EditVenueContactTest:
     def test_create_venue_contact(self, app):
