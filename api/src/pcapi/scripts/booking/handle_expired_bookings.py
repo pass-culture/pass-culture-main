@@ -12,7 +12,7 @@ from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.bookings.models import BookingStatus
 import pcapi.core.bookings.repository as bookings_repository
-from pcapi.core.mails.transactional.bookings.expired_bookings_to_beneficiary import (
+from pcapi.core.mails.transactional.bookings.booking_expired_to_beneficiary import (
     send_expired_bookings_to_beneficiary_email,
 )
 from pcapi.core.mails.transactional.sendinblue_template_ids import SendinblueTransactionalEmailData

@@ -31,6 +31,9 @@ class TransactionalEmail(Enum):
     )
     BOOKING_CONFIRMATION_BY_BENEFICIARY = Template(id_prod=219, id_not_prod=29, tags=["jeunes_reservation_confirmee"])
     BOOKING_POSTPONED_BY_PRO_TO_BENEFICIARY = Template(id_prod=224, id_not_prod=36, tags=["jeunes_offre_reportee_pro"])
+    BOOKING_SOON_TO_BE_EXPIRED_TO_BENEFICIARY = Template(
+        id_prod=144, id_not_prod=42, tags=["jeunes_reservation_bientot_expiree"]
+    )
     EDUCATIONAL_BOOKING_CANCELLATION_BY_INSTITUTION = Template(
         id_prod=406, id_not_prod=41, tags=["eac_annulationoffre"]
     )
@@ -46,6 +49,7 @@ class TransactionalEmail(Enum):
     EMAIL_DUPLICATE_BENEFICIARY_PRE_SUBCRIPTION_REJECTED = Template(
         id_prod=80, id_not_prod=19, tags=["jeunes_compte_refuse_doublon"], use_priority_queue=True
     )
+
     EXPIRED_BOOKINGS_TO_BENEFICIARY = Template(id_prod=145, id_not_prod=34, tags=["jeunes_resa_expiree"])
     FRAUD_SUSPICION = Template(id_prod=82, id_not_prod=24, tags=["jeunes_compte_en_cours_d_analyse"])
     NEW_PASSWORD_REQUEST = Template(id_prod=141, id_not_prod=26, tags=["jeunes_nouveau_mdp"], use_priority_queue=True)
