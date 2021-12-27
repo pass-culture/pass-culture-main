@@ -61,14 +61,22 @@ class BatchBackend:
                     json=[payload_template(user) for user in users_data],
                 )
             except Exception:  # pylint: disable=broad-except
-                logger.exception("Error with Batch Custom Data API trying to update attributes of users")
+                logger.exception(
+                    "Error with Batch Custom Data API trying to update attributes of users",
+                    extra={"users": {user.user_id for user in users_data}, "api": api.name},
+                )
                 return
 
             if not response.ok:
                 logger.error(  # pylint: disable=logging-fstring-interpolation
                     f"Got {response.status_code} status code from Batch Custom Data API (batch update)",
                     response.status_code,
-                    extra={"response_content": response.content},
+                    extra={
+                        "users": {user.user_id for user in users_data},
+                        "api": api.name,
+                        "response_content": response.content,
+                        "status_code": response.status_code,
+                    },
                 )
 
         make_post_request(BatchAPI.ANDROID)
@@ -96,6 +104,11 @@ class BatchBackend:
                     notification_data.group_id,
                     notification_data.user_ids,
                     exc,
+                    extra={
+                        "api": api.name,
+                        "group_id": notification_data.group_id,
+                        "user_ids": notification_data.user_ids,
+                    },
                 )
                 return
 
@@ -104,6 +117,12 @@ class BatchBackend:
                     "Got %d status code from Batch Transactional API: content=%s",
                     response.status_code,
                     response.content,
+                    extra={
+                        "api": api.name,
+                        "status_code": response.status_code,
+                        "group_id": notification_data.group_id,
+                        "user_ids": notification_data.user_ids,
+                    },
                 )
 
         make_post_request(BatchAPI.ANDROID)
