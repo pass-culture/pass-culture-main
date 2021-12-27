@@ -72,6 +72,10 @@ class VirtualVenueFactory(VenueFactory):
     postalCode = None
     city = None
     siret = None
+    audioDisabilityCompliant = None
+    mentalDisabilityCompliant = None
+    motorDisabilityCompliant = None
+    visualDisabilityCompliant = None
 
 
 class ProductFactory(BaseFactory):
