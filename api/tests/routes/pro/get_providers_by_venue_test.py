@@ -6,11 +6,9 @@ from pcapi.core.providers.factories import AllocinePivotFactory
 from pcapi.core.users.factories import UserFactory
 from pcapi.utils.human_ids import humanize
 
-from tests.conftest import TestClient
-
 
 @pytest.mark.usefixtures("db_session")
-def test_venue_has_known_allocine_id(app):
+def test_venue_has_known_allocine_id(client):
     # Given
     user = UserFactory()
     venue = VenueFactory(siret="12345678912345")
@@ -20,8 +18,7 @@ def test_venue_has_known_allocine_id(app):
     other_provider = ProviderFactory(localClass="B provider")
 
     # When
-    client = TestClient(app.test_client()).with_session_auth(email=user.email)
-    response = client.get(f"/providers/{humanize(venue.id)}")
+    response = client.with_session_auth(email=user.email).get(f"/providers/{humanize(venue.id)}")
 
     # Then
     assert response.status_code == 200
@@ -46,7 +43,7 @@ def test_venue_has_known_allocine_id(app):
 
 
 @pytest.mark.usefixtures("db_session")
-def test_venue_has_no_allocine_id(app):
+def test_venue_has_no_allocine_id(client):
     # Given
     user = UserFactory(email="user@example.com")
     venue = VenueFactory()
@@ -55,8 +52,7 @@ def test_venue_has_no_allocine_id(app):
     other_provider = ProviderFactory(localClass="B provider")
 
     # When
-    client = TestClient(app.test_client()).with_session_auth(email=user.email)
-    response = client.get(f"/providers/{humanize(venue.id)}")
+    response = client.with_session_auth(email=user.email).get(f"/providers/{humanize(venue.id)}")
 
     # Then
     assert response.status_code == 200
@@ -73,18 +69,16 @@ def test_venue_has_no_allocine_id(app):
 
 
 @pytest.mark.usefixtures("db_session")
-def test_venue_does_not_exist(app):
+def test_venue_does_not_exist(client):
     user = UserFactory()
 
-    client = TestClient(app.test_client()).with_session_auth(email=user.email)
-    response = client.get("/providers/AZER")
+    response = client.with_session_auth(email=user.email).get("/providers/AZER")
 
     assert response.status_code == 404
 
 
 @pytest.mark.usefixtures("db_session")
-def test_user_is_not_logged_in(app):
-    client = TestClient(app.test_client())
+def test_user_is_not_logged_in(client):
     response = client.get("/providers/AZER")
 
     assert response.status_code == 401
