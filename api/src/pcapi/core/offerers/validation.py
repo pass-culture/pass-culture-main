@@ -91,7 +91,7 @@ def check_venue_edition(modifications, venue):
         venue_with_same_siret = Venue.query.filter_by(siret=siret).one_or_none()
         if venue_with_same_siret:
             raise ApiErrors(errors={"siret": ["Un lieu avec le même siret existe déjà"]})
-    if None in venue_disability_compliance and None in modifications_disability_compliance:
+    if not venue.isVirtual and None in venue_disability_compliance and None in modifications_disability_compliance:
         raise ApiErrors(errors={"global": ["L'accessibilité du lieu doit etre définie."]})
 
     if business_unit_id:
