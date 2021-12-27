@@ -1,7 +1,6 @@
 import logging
 
-from flask import jsonify
-from flask import request
+from flask.ctx import after_this_request
 from flask_login import current_user
 from flask_login import login_required
 from sqlalchemy.orm import exc as orm_exc
@@ -25,20 +24,20 @@ from pcapi.infrastructure.repository.pro_offerers.paginated_offerers_sql_reposit
 from pcapi.models.api_errors import ApiErrors
 from pcapi.repository import transaction
 from pcapi.routes.apis import private_api
-from pcapi.routes.serialization import as_dict
 from pcapi.routes.serialization.offerers_serialize import CreateOffererQueryModel
 from pcapi.routes.serialization.offerers_serialize import GenerateOffererApiKeyResponse
 from pcapi.routes.serialization.offerers_serialize import GetEducationalOffererResponseModel
 from pcapi.routes.serialization.offerers_serialize import GetEducationalOfferersQueryModel
 from pcapi.routes.serialization.offerers_serialize import GetEducationalOfferersResponseModel
+from pcapi.routes.serialization.offerers_serialize import GetOffererListQueryModel
 from pcapi.routes.serialization.offerers_serialize import GetOffererNameResponseModel
 from pcapi.routes.serialization.offerers_serialize import GetOffererResponseModel
+from pcapi.routes.serialization.offerers_serialize import GetOfferersListResponseModel
 from pcapi.routes.serialization.offerers_serialize import GetOfferersNamesQueryModel
 from pcapi.routes.serialization.offerers_serialize import GetOfferersNamesResponseModel
 from pcapi.routes.serialization.venues_serialize import VenueStatsResponseModel
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils.human_ids import dehumanize
-from pcapi.utils.includes import OFFERER_INCLUDES
 from pcapi.utils.rest import check_user_has_access_to_offerer
 from pcapi.utils.rest import load_or_404
 
@@ -46,22 +45,12 @@ from pcapi.utils.rest import load_or_404
 logger = logging.getLogger(__name__)
 
 
-def get_dict_offerer(offerer: Offerer) -> dict:
-    offerer.append_user_has_access_attribute(user_id=current_user.id, is_admin=current_user.isAdmin)
-
-    return as_dict(offerer, includes=OFFERER_INCLUDES)
-
-
-def get_dict_offerers(offerers: list[Offerer]) -> list:
-    return [as_dict(offerer, includes=OFFERER_INCLUDES) for offerer in offerers]
-
-
-# @debt api-migration
 @private_api.route("/offerers", methods=["GET"])
 @login_required
-def get_offerers():
-    keywords = request.args.get("keywords")
-    only_validated_offerers = request.args.get("validated")
+@spectree_serialize(on_error_statuses=[400], response_model=GetOfferersListResponseModel)
+def get_offerers(query: GetOffererListQueryModel) -> GetOfferersListResponseModel:
+    keywords = query.keywords
+    only_validated_offerers = query.validated
 
     is_filtered_by_offerer_status = only_validated_offerers is not None
 
@@ -79,15 +68,19 @@ def get_offerers():
         is_filtered_by_offerer_status=is_filtered_by_offerer_status,
         only_validated_offerers=only_validated_offerers,
         keywords=keywords,
-        pagination_limit=int(request.args.get("paginate", "10")),
-        page=int(request.args.get("page", "0")),
+        pagination_limit=query.paginate,
+        page=query.page,
     )
+    offerers_count = paginated_offerers.total
 
-    response = jsonify(get_dict_offerers(paginated_offerers.offerers))
-    response.headers["Total-Data-Count"] = paginated_offerers.total
-    response.headers["Access-Control-Expose-Headers"] = "Total-Data-Count"
+    @after_this_request
+    def add_header(response):
+        nonlocal offerers_count
+        response.headers["Total-Data-Count"] = offerers_count
+        response.headers["Access-Control-Expose-Headers"] = "Total-Data-Count"
+        return response
 
-    return response, 200
+    return GetOfferersListResponseModel(__root__=paginated_offerers.offerers)
 
 
 @private_api.route("/offerers/names", methods=["GET"])

@@ -15,16 +15,6 @@ BENEFICIARY_INCLUDES = [
     "needsToSeeTutorials",
 ]
 
-OFFERER_INCLUDES = [
-    {"key": "managedVenues", "includes": ["-validationToken", "nOffers", "iban", "bic"]},
-    "nOffers",
-    "isValidated",
-    "userHasAccess",
-    "bic",
-    "iban",
-    "demarchesSimplifieesApplicationId",
-    "-validationToken",
-]
 
 USER_INCLUDES = [
     "-culturalSurveyId",
