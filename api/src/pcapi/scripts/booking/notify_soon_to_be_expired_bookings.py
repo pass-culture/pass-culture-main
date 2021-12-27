@@ -5,7 +5,9 @@ from operator import attrgetter
 
 from pcapi import settings
 import pcapi.core.bookings.repository as bookings_repository
-from pcapi.domain.user_emails import send_soon_to_be_expired_individual_bookings_recap_email_to_beneficiary
+from pcapi.core.mails.transactional.bookings.booking_soon_to_be_expired_to_beneficiary import (
+    send_soon_to_be_expired_individual_bookings_recap_email_to_beneficiary,
+)
 
 
 logger = logging.getLogger(__name__)

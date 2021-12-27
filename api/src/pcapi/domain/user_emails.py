@@ -32,9 +32,6 @@ from pcapi.emails.beneficiary_offer_cancellation import (
     retrieve_offerer_booking_recap_email_data_after_user_cancellation,
 )
 from pcapi.emails.beneficiary_pre_subscription_rejected import make_dms_wrong_values_data
-from pcapi.emails.beneficiary_soon_to_be_expired_bookings import (
-    build_soon_to_be_expired_bookings_recap_email_data_for_beneficiary,
-)
 from pcapi.emails.beneficiary_soon_to_be_expired_bookings import filter_books_bookings
 from pcapi.emails.new_offer_validation import retrieve_data_for_offer_approval_email
 from pcapi.emails.new_offer_validation import retrieve_data_for_offer_rejection_email
@@ -65,7 +62,7 @@ def send_individual_booking_confirmation_email_to_offerer(individual_booking: In
     return mails.send(recipients=[offerer_booking_email], data=data)
 
 
-def send_user_webapp_offer_link_email(user: User, offer: Offer) -> None:
+def send_user_webapp_offer_link_email(user: User, offer: Offer) -> bool:
     data = build_data_for_offer_webapp_link(user, offer)
     return mails.send(recipients=[user.email], data=data)
 
@@ -86,7 +83,7 @@ def send_offerer_driven_cancellation_email_to_offerer(booking: Booking) -> bool:
     return mails.send(recipients=[offerer_booking_email], data=email)
 
 
-def send_reset_password_email_to_pro(user: User) -> None:
+def send_reset_password_email_to_pro(user: User) -> bool:
     token = users_api.create_reset_password_token(user)
     data = retrieve_data_for_reset_password_pro_email(user, token)
     return mails.send(recipients=[user.email], data=data)
@@ -145,34 +142,6 @@ def send_pro_user_validation_email(user: User) -> bool:
 def send_admin_user_validation_email(user: User, token: Token) -> bool:
     data = make_admin_user_validation_email(user, token.value)
     return mails.send(recipients=[user.email], data=data)
-
-
-def send_soon_to_be_expired_individual_bookings_recap_email_to_beneficiary(
-    beneficiary: User, bookings: list[Booking]
-) -> bool:
-    success = True
-    books_bookings, other_bookings = filter_books_bookings(bookings)
-    if books_bookings:
-        books_bookings_data = build_soon_to_be_expired_bookings_recap_email_data_for_beneficiary(
-            beneficiary=beneficiary,
-            bookings=books_bookings,
-            days_before_cancel=booking_constants.BOOKS_BOOKINGS_EXPIRY_NOTIFICATION_DELAY.days,
-            days_from_booking=booking_constants.BOOKS_BOOKINGS_AUTO_EXPIRY_DELAY.days
-            - booking_constants.BOOKS_BOOKINGS_EXPIRY_NOTIFICATION_DELAY.days,
-        )
-        success &= mails.send(recipients=[beneficiary.email], data=books_bookings_data)
-
-    if other_bookings:
-        other_bookings_data = build_soon_to_be_expired_bookings_recap_email_data_for_beneficiary(
-            beneficiary=beneficiary,
-            bookings=other_bookings,
-            days_before_cancel=booking_constants.BOOKINGS_EXPIRY_NOTIFICATION_DELAY.days,
-            days_from_booking=booking_constants.BOOKINGS_AUTO_EXPIRY_DELAY.days
-            - booking_constants.BOOKINGS_EXPIRY_NOTIFICATION_DELAY.days,
-        )
-        success &= mails.send(recipients=[beneficiary.email], data=other_bookings_data)
-
-    return success
 
 
 def send_activation_email(user: User, reset_password_token_life_time: typing.Optional[timedelta] = None) -> bool:
