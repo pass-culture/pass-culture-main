@@ -232,29 +232,31 @@ class Returns200Test:
         # then
         assert response.status_code == 200
         assert len(response.json) == 2
-        assert list(response.json[0].keys()) == [
-            "address",
-            "bic",
-            "city",
-            "dateCreated",
-            "dateModifiedAtLastProvider",
-            "dateValidated",
-            "demarchesSimplifieesApplicationId",
-            "fieldsUpdated",
-            "iban",
-            "id",
-            "idAtProviders",
-            "isActive",
-            "isValidated",
-            "lastProviderId",
-            "managedVenues",
-            "nOffers",
-            "name",
-            "postalCode",
-            "siren",
-            "thumbCount",
-            "userHasAccess",
-        ]
+        assert set(response.json[0].keys()) == set(
+            [
+                "address",
+                "bic",
+                "city",
+                "dateCreated",
+                "dateModifiedAtLastProvider",
+                "dateValidated",
+                "demarchesSimplifieesApplicationId",
+                "fieldsUpdated",
+                "iban",
+                "id",
+                "idAtProviders",
+                "isActive",
+                "isValidated",
+                "lastProviderId",
+                "managedVenues",
+                "nOffers",
+                "name",
+                "postalCode",
+                "siren",
+                "thumbCount",
+                "userHasAccess",
+            ]
+        )
 
     @pytest.mark.usefixtures("db_session")
     def when_no_bank_information_for_offerer(self, client):
