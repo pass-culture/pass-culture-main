@@ -49,6 +49,7 @@ class TransactionalEmail(Enum):
     EXPIRED_BOOKINGS_TO_BENEFICIARY = Template(id_prod=145, id_not_prod=34, tags=["jeunes_resa_expiree"])
     FRAUD_SUSPICION = Template(id_prod=82, id_not_prod=24, tags=["jeunes_compte_en_cours_d_analyse"])
     NEW_PASSWORD_REQUEST = Template(id_prod=141, id_not_prod=26, tags=["jeunes_nouveau_mdp"], use_priority_queue=True)
+    RECREDIT_TO_UNDERAGE_BENEFICIARY = Template(id_prod=303, id_not_prod=31, tags=["anniversaire_16_17_ans"])
     SUBSCRIPTION_FOREIGN_DOCUMENT_ERROR = Template(
         id_prod=385,
         id_not_prod=40,
