@@ -54,6 +54,12 @@ class TransactionalEmail(Enum):
         tags=["jeunes_document_etranger"],
         use_priority_queue=True,
     )
+    SUBSCRIPTION_INFORMATION_ERROR = Template(
+        id_prod=410,
+        id_not_prod=43,
+        tags=["jeunes_infos_erronees"],
+        use_priority_queue=True,
+    )
     SUBSCRIPTION_INVALID_DOCUMENT_ERROR = Template(
         id_prod=384,
         id_not_prod=39,
