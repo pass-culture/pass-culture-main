@@ -191,11 +191,6 @@ def send_rejection_email_to_beneficiary_pre_subscription(
     return send_duplicate_beneficiary_pre_subscription_rejected_data(beneficiary_pre_subscription.email)
 
 
-def send_newly_eligible_user_email(user: User) -> bool:
-    data = beneficiary_activation.get_newly_eligible_user_email_data(user)
-    return mails.send(recipients=[user.email], data=data)
-
-
 def send_reset_password_link_to_admin_email(created_user: User, admin_email: User, reset_password_link: str) -> bool:
     data = retrieve_data_for_reset_password_link_to_admin_email(created_user, reset_password_link)
     return mails.send(recipients=[admin_email], data=data)

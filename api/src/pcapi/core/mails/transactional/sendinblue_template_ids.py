@@ -24,6 +24,7 @@ class TransactionalEmail(Enum):
     ACCEPTED_AS_EAC_BENEFICIARY = Template(
         id_prod=257, id_not_prod=27, tags=["jeunes_pass_credite_eac"], use_priority_queue=True
     )
+    ANNIVERSARY_AGE_18 = Template(id_prod=78, id_not_prod=32, tags=["anniversaire_18_ans"])
     BOOKING_CANCELLATION_BY_BENEFICIARY = Template(id_prod=223, id_not_prod=33, tags=["jeunes_offre_annulee_jeune"])
     BOOKING_CANCELLATION_BY_PRO_TO_BENEFICIARY = Template(
         id_prod=225, id_not_prod=37, tags=["jeunes_offre_annulee_pros"]
