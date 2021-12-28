@@ -145,7 +145,7 @@ def pc_notify_soon_to_be_expired_individual_bookings() -> None:
 
 @cron_context
 @log_cron_with_transaction
-def pc_notify_newly_eligible_users() -> None:
+def pc_notify_newly_eligible_age_18_users() -> None:
     if not settings.IS_PROD and not settings.IS_TESTING:
         return
     yesterday = datetime.date.today() - datetime.timedelta(days=1)
@@ -282,7 +282,7 @@ def clock() -> None:
         minute="30",
     )
 
-    scheduler.add_job(pc_notify_newly_eligible_users, "cron", day="*", hour="3")
+    scheduler.add_job(pc_notify_newly_eligible_age_18_users, "cron", day="*", hour="3")
 
     scheduler.add_job(pc_clean_expired_tokens, "cron", day="*", hour="2")
 
