@@ -99,7 +99,7 @@ def get_id_check_token(token_value: str) -> models.Token:
     ).one_or_none()
 
 
-def get_newly_eligible_users(since: date) -> list[User]:
+def get_newly_eligible_age_18_users(since: date) -> list[User]:
     """get users that are eligible between `since` (excluded) and now (included) and that have
     created their account before `since`"""
     today = datetime.combine(datetime.today(), datetime.min.time())

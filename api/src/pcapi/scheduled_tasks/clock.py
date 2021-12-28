@@ -8,6 +8,9 @@ from sentry_sdk import set_tag
 from pcapi import settings
 import pcapi.core.bookings.api as bookings_api
 import pcapi.core.finance.api as finance_api
+from pcapi.core.mails.transactional.users.anniversary_to_newly_eligible_user import (
+    send_newly_eligible_age_18_user_email,
+)
 from pcapi.core.offerers.repository import get_offerers_by_date_validated
 from pcapi.core.offers.repository import check_stock_consistency
 from pcapi.core.offers.repository import delete_past_draft_offers
@@ -22,8 +25,7 @@ from pcapi.core.users.external.user_automations import users_ex_beneficiary_auto
 from pcapi.core.users.external.user_automations import users_inactive_since_30_days_automation
 from pcapi.core.users.external.user_automations import users_one_year_with_pass_automation
 from pcapi.core.users.external.user_automations import users_turned_eighteen_automation
-from pcapi.core.users.repository import get_newly_eligible_users
-from pcapi.domain.user_emails import send_newly_eligible_user_email
+from pcapi.core.users.repository import get_newly_eligible_age_18_users
 from pcapi.domain.user_emails import send_withdrawal_terms_to_newly_validated_offerer
 from pcapi.local_providers.provider_api import provider_api_stocks
 from pcapi.local_providers.provider_manager import synchronize_venue_providers_for_provider
@@ -147,8 +149,8 @@ def pc_notify_newly_eligible_users() -> None:
     if not settings.IS_PROD and not settings.IS_TESTING:
         return
     yesterday = datetime.date.today() - datetime.timedelta(days=1)
-    for user in get_newly_eligible_users(yesterday):
-        send_newly_eligible_user_email(user)
+    for user in get_newly_eligible_age_18_users(yesterday):
+        send_newly_eligible_age_18_user_email(user)
 
 
 @cron_context
