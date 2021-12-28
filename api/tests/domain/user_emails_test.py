@@ -4,7 +4,6 @@ from datetime import timedelta
 from unittest.mock import call
 from unittest.mock import patch
 
-from dateutil.relativedelta import relativedelta
 import pytest
 
 from pcapi.core.bookings import factories as booking_factories
@@ -26,7 +25,6 @@ from pcapi.domain.user_emails import send_activation_email
 from pcapi.domain.user_emails import send_admin_user_validation_email
 from pcapi.domain.user_emails import send_expired_individual_bookings_recap_email_to_offerer
 from pcapi.domain.user_emails import send_individual_booking_confirmation_email_to_offerer
-from pcapi.domain.user_emails import send_newly_eligible_user_email
 from pcapi.domain.user_emails import send_offer_validation_status_update_email
 from pcapi.domain.user_emails import send_offerer_bookings_recap_email_after_offerer_cancellation
 from pcapi.domain.user_emails import send_offerer_driven_cancellation_email_to_offerer
@@ -470,28 +468,6 @@ class SendSoonToBeExpiredBookingsRecapEmailToBeneficiaryTest:
         assert len(mails_testing.outbox) == 2  # test number of emails sent
         assert mails_testing.outbox[0].sent_data["MJ-TemplateID"] == 12345
         assert mails_testing.outbox[1].sent_data["MJ-TemplateID"] == 12345
-
-
-class SendNewlyEligibleUserEmailTest:
-    def test_send_activation_email(self):
-        # given
-        user = users_factories.UserFactory(
-            dateOfBirth=(datetime.now() - relativedelta(years=18, days=5)), departementCode="93"
-        )
-
-        # when
-        send_newly_eligible_user_email(user)
-
-        # then
-        assert len(mails_testing.outbox) == 1  # test number of emails sent
-        assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 2030056
-        assert (
-            mails_testing.outbox[0].sent_data["Vars"]["nativeAppLink"][:118]
-            == "https://passcultureapptestauto.page.link/?link=https%3A%2F%2F"
-            "app-native.testing.internal-passculture.app%2Fid-check%3F"
-        )
-        assert "email" in mails_testing.outbox[0].sent_data["Vars"]["nativeAppLink"]
-        assert mails_testing.outbox[0].sent_data["Vars"]["depositAmount"] == 300
 
 
 class SendOfferValidationTest:

@@ -89,9 +89,9 @@ class GetNewlyEligibleUsersTest:
         users_factories.UserFactory(dateOfBirth=datetime(2000, 1, 2), dateCreated=datetime(2017, 12, 1))
 
         # Users 18 on the day `since` should not appear, nor those that are not 18 yet
-        users = repository.get_newly_eligible_users(since=date(2017, 12, 31))
+        users = repository.get_newly_eligible_age_18_users(since=date(2017, 12, 31))
         assert set(users) == {user_just_18_in_eligible_area, user_just_18_in_ineligible_area}
-        users = repository.get_newly_eligible_users(since=date(2017, 12, 30))
+        users = repository.get_newly_eligible_age_18_users(since=date(2017, 12, 30))
         assert set(users) == {user_just_18_in_eligible_area, user_just_18_in_ineligible_area, user_already_18}
 
 
