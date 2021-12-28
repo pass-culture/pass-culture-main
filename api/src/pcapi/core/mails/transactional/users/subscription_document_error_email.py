@@ -30,31 +30,14 @@ def get_subscription_document_error_email_data(code: str) -> Union[dict, Sendinb
         return handler()
 
     error_codes_switch = {
-        "unread-document": _get_unread_document_sendinblue_email_data,
-        "invalid-document": _get_invalid_document_sendinblue_email_data,
-        "unread-mrz-document": _get_invalid_mrz_sendinblue_email_data,
+        "information-error": TransactionalEmail.SUBSCRIPTION_INFORMATION_ERROR,
+        "unread-document": TransactionalEmail.SUBSCRIPTION_UNREADABLE_DOCUMENT_ERROR,
+        "invalid-document": TransactionalEmail.SUBSCRIPTION_INVALID_DOCUMENT_ERROR,
+        "unread-mrz-document": TransactionalEmail.SUBSCRIPTION_FOREIGN_DOCUMENT_ERROR,
     }
 
-    handler = error_codes_switch.get(code, _get_unread_document_sendinblue_email_data)
-    return handler()
-
-
-def _get_unread_document_sendinblue_email_data() -> SendinblueTransactionalEmailData:
-    return SendinblueTransactionalEmailData(
-        template=TransactionalEmail.SUBSCRIPTION_UNREADABLE_DOCUMENT_ERROR.value,
-    )
-
-
-def _get_invalid_document_sendinblue_email_data() -> SendinblueTransactionalEmailData:
-    return SendinblueTransactionalEmailData(
-        template=TransactionalEmail.SUBSCRIPTION_INVALID_DOCUMENT_ERROR.value,
-    )
-
-
-def _get_invalid_mrz_sendinblue_email_data() -> SendinblueTransactionalEmailData:
-    return SendinblueTransactionalEmailData(
-        template=TransactionalEmail.SUBSCRIPTION_FOREIGN_DOCUMENT_ERROR.value,
-    )
+    template = error_codes_switch.get(code, TransactionalEmail.SUBSCRIPTION_INFORMATION_ERROR)
+    return SendinblueTransactionalEmailData(template=template.value)
 
 
 def _get_unread_document_email_data() -> dict:
