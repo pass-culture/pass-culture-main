@@ -8,9 +8,9 @@ import React, { Fragment } from 'react'
 
 import Banner from 'components/layout/Banner/Banner'
 import Icon from 'components/layout/Icon'
+import InvalidBusinessUnits from 'components/pages/Home/Offerers/InvalidBusinessUnits'
 import { DEMARCHES_SIMPLIFIEES_OFFERER_RIB_UPLOAD_PROCEDURE_URL } from 'utils/config'
 
-import BusinessUnits from '../../../../Home/Offerers/BusinessUnits'
 import { Offerer } from '../Offerer'
 
 const BankInformation = ({ offerer, hasBusinessUnitError = false }) => (
@@ -59,7 +59,7 @@ const BankInformation = ({ offerer, hasBusinessUnitError = false }) => (
       )
     )}
     {hasBusinessUnitError && (
-      <BusinessUnits hasTitle={false} offererId={offerer.id} />
+      <InvalidBusinessUnits hasTitle={false} offererId={offerer.id} />
     )}
     <Banner
       href="https://aide.passculture.app/fr/articles/5096833-calendrier-des-prochains-remboursements"
