@@ -4,6 +4,9 @@ import logging
 from dateutil.relativedelta import relativedelta
 from sqlalchemy.orm import joinedload
 
+from pcapi.core.mails.transactional.users.recredit_to_underage_beneficiary import (
+    send_recredit_email_to_underage_beneficiary,
+)
 from pcapi.core.payments import models as payments_models
 import pcapi.core.payments.conf as deposit_conf
 from pcapi.core.users import models as users_models
@@ -56,3 +59,6 @@ def recredit_underage_users() -> None:
             db.session.add(recredit)
 
     logger.info("Recredited %s underage users deposits", len(users_to_recredit))
+    for user in users_to_recredit:
+        if not send_recredit_email_to_underage_beneficiary(user):
+            logger.error("Failed to send recredit email to: %s", user.email)

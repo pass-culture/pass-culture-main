@@ -16,7 +16,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 class MailjetSendNewlyEligibleUserEmailTest:
     @override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=False)
-    def test_send_anniversary_email(self):
+    def test_send_anniversary_age_18_email(self):
         # given
         user = users_factories.UserFactory(
             dateOfBirth=(datetime.now() - relativedelta(years=18, days=5)), departementCode="93"
@@ -39,7 +39,7 @@ class MailjetSendNewlyEligibleUserEmailTest:
 
 class SendinblueSendNewlyEligibleUserEmailTest:
     @override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=True)
-    def test_send_anniversary_email(self):
+    def test_send_anniversary_age_18_email(self):
         # given
         user = users_factories.UserFactory()
 
