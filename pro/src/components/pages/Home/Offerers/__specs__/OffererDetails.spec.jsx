@@ -40,23 +40,10 @@ jest.mock('repository/pcapi/pcapi', () => ({
   getOfferer: jest.fn(),
   getAllOfferersNames: jest.fn(),
   getVenueStats: jest.fn(),
+  getBusinessUnits: jest.fn(),
 }))
 
-const renderHomePage = () => {
-  const store = configureTestStore({
-    data: {
-      users: [
-        {
-          id: 'fake_id',
-          firstName: 'John',
-          lastName: 'Do',
-          email: 'john.do@dummy.xyz',
-          phoneNumber: '01 00 00 00 00',
-        },
-      ],
-    },
-  })
-
+const renderHomePage = ({ store }) => {
   const utils = render(
     <Provider store={store}>
       <MemoryRouter>
@@ -91,6 +78,7 @@ const renderHomePage = () => {
 }
 
 describe('offererDetailsLegacy', () => {
+  let store
   let baseOfferers
   let firstOffererByAlphabeticalOrder
   let baseOfferersNames
@@ -99,6 +87,19 @@ describe('offererDetailsLegacy', () => {
   let physicalVenueWithPublicName
 
   beforeEach(() => {
+    store = configureTestStore({
+      data: {
+        users: [
+          {
+            id: 'fake_id',
+            firstName: 'John',
+            lastName: 'Do',
+            email: 'john.do@dummy.xyz',
+            phoneNumber: '01 00 00 00 00',
+          },
+        ],
+      },
+    })
     virtualVenue = {
       id: 'test_venue_id_1',
       isVirtual: true,
@@ -203,7 +204,7 @@ describe('offererDetailsLegacy', () => {
   })
 
   it('should display offerer select', async () => {
-    const { waitForElements } = renderHomePage()
+    const { waitForElements } = renderHomePage({ store })
     const { offerer } = await waitForElements()
     const showButton = within(offerer).getByRole('button', { name: 'Afficher' })
     fireEvent.click(showButton)
@@ -215,7 +216,7 @@ describe('offererDetailsLegacy', () => {
 
   it('should not warn user when offerer is validated', async () => {
     // Given
-    const { waitForElements } = renderHomePage()
+    const { waitForElements } = renderHomePage({ store })
     const { offerer } = await waitForElements()
     const showButton = within(offerer).getByRole('button', { name: 'Afficher' })
 
@@ -229,7 +230,7 @@ describe('offererDetailsLegacy', () => {
   })
 
   it('should display first offerer informations', async () => {
-    const { waitForElements } = renderHomePage()
+    const { waitForElements } = renderHomePage({ store })
     const { offerer } = await waitForElements()
     const showButton = within(offerer).getByRole('button', { name: 'Afficher' })
     fireEvent.click(showButton)
@@ -251,7 +252,7 @@ describe('offererDetailsLegacy', () => {
   })
 
   it('should display offerer venues informations', async () => {
-    const { waitForElements } = renderHomePage()
+    const { waitForElements } = renderHomePage({ store })
     const { offerer } = await waitForElements()
     const showButton = within(offerer).getByRole('button', { name: 'Afficher' })
     fireEvent.click(showButton)
@@ -290,7 +291,7 @@ describe('offererDetailsLegacy', () => {
     pcapi.getOfferer.mockResolvedValue(firstOffererByAlphabeticalOrder)
 
     // When
-    const { waitForElements } = renderHomePage()
+    const { waitForElements } = renderHomePage({ store })
     const { venues } = await waitForElements()
 
     // Then
@@ -335,7 +336,7 @@ describe('offererDetailsLegacy', () => {
           },
         ],
       }
-      const { waitForElements } = renderHomePage()
+      const { waitForElements } = renderHomePage({ store })
       const { selectOfferer } = await waitForElements()
       pcapi.getOfferer.mockResolvedValue(newSelectedOfferer)
 
@@ -389,7 +390,7 @@ describe('offererDetailsLegacy', () => {
   describe('when selecting "add offerer" option"', () => {
     it('should redirect to offerer creation page', async () => {
       // Given
-      const { waitForElements } = renderHomePage()
+      const { waitForElements } = renderHomePage({ store })
       const { selectOfferer } = await waitForElements()
       // When
       selectOfferer('+ Ajouter une structure')
@@ -405,7 +406,7 @@ describe('offererDetailsLegacy', () => {
       pcapi.getOfferer.mockResolvedValue(firstOffererByAlphabeticalOrder)
 
       // When
-      const { waitForElements } = renderHomePage()
+      const { waitForElements } = renderHomePage({ store })
       const { offerer } = await waitForElements()
       const showButton = within(offerer).getByRole('button', {
         name: 'Afficher',
@@ -430,7 +431,7 @@ describe('offererDetailsLegacy', () => {
         ...firstOffererByAlphabeticalOrder,
         hasMissingBankInformation: false,
       })
-      const { waitForElements } = renderHomePage()
+      const { waitForElements } = renderHomePage({ store })
       const { offerer } = await waitForElements()
       const warningIcons = within(offerer).queryByAltText(
         'Informations bancaires manquantes'
@@ -450,7 +451,7 @@ describe('offererDetailsLegacy', () => {
         },
       ]
       pcapi.getOfferer.mockResolvedValue(baseOfferers[0])
-      const { waitForElements } = renderHomePage()
+      const { waitForElements } = renderHomePage({ store })
       const { offerer } = await waitForElements()
       const showButton = within(offerer).getByRole('button', {
         name: 'Afficher',
@@ -496,7 +497,7 @@ describe('offererDetailsLegacy', () => {
 
     it('should display offerer informations', async () => {
       // When
-      const { waitForElements } = renderHomePage()
+      const { waitForElements } = renderHomePage({ store })
       const { offerer } = await waitForElements()
 
       // Then
@@ -523,7 +524,7 @@ describe('offererDetailsLegacy', () => {
 
     it('should hide offerer informations on click on hide button', async () => {
       // Given
-      const { waitForElements } = renderHomePage()
+      const { waitForElements } = renderHomePage({ store })
       const { offerer } = await waitForElements()
       const hideButton = within(offerer).getByRole('button', {
         name: 'Masquer',
@@ -586,7 +587,7 @@ describe('offererDetailsLegacy', () => {
 
     it('should not display offerer informations', async () => {
       // When
-      const { waitForElements } = renderHomePage()
+      const { waitForElements } = renderHomePage({ store })
       const { offerer } = await waitForElements()
 
       // Then
@@ -606,7 +607,7 @@ describe('offererDetailsLegacy', () => {
 
     it('should show offerer informations on click on show button', async () => {
       // Given
-      const { waitForElements } = renderHomePage()
+      const { waitForElements } = renderHomePage({ store })
       const { offerer } = await waitForElements()
       const showButton = within(offerer).getByRole('button', {
         name: 'Afficher',
@@ -654,7 +655,7 @@ describe('offererDetailsLegacy', () => {
 
     it('should warn user that offerer is being validated', async () => {
       // When
-      const { waitForElements } = renderHomePage()
+      const { waitForElements } = renderHomePage({ store })
       const { offerer } = await waitForElements()
 
       // Then
@@ -665,7 +666,7 @@ describe('offererDetailsLegacy', () => {
 
     it('should allow user to view offerer informations', async () => {
       // When
-      const { waitForElements } = renderHomePage()
+      const { waitForElements } = renderHomePage({ store })
       const { offerer } = await waitForElements()
 
       // Then
@@ -676,7 +677,7 @@ describe('offererDetailsLegacy', () => {
 
     it('should allow user to add venue and offer', async () => {
       // When
-      const { waitForElements } = renderHomePage()
+      const { waitForElements } = renderHomePage({ store })
       await waitForElements()
 
       // Then
@@ -703,7 +704,7 @@ describe('offererDetailsLegacy', () => {
 
     it('should warn user offerer is being validated', async () => {
       // When
-      const { waitForElements } = renderHomePage()
+      const { waitForElements } = renderHomePage({ store })
       await waitForElements()
 
       // Then
@@ -714,7 +715,7 @@ describe('offererDetailsLegacy', () => {
 
     it('should not allow user to view offerer informations', async () => {
       // When
-      const { waitForElements } = renderHomePage()
+      const { waitForElements } = renderHomePage({ store })
       await waitForElements()
       // Then
       expect(
@@ -727,7 +728,7 @@ describe('offererDetailsLegacy', () => {
 
     it('should not allow user to update offerer informations', async () => {
       // When
-      const { waitForElements } = renderHomePage()
+      const { waitForElements } = renderHomePage({ store })
       await waitForElements()
 
       // Then
@@ -740,7 +741,7 @@ describe('offererDetailsLegacy', () => {
 
     it('should not allow user to add venue and virtual offer', async () => {
       // When
-      const { waitForElements } = renderHomePage()
+      const { waitForElements } = renderHomePage({ store })
       await waitForElements()
 
       // Then
@@ -768,7 +769,7 @@ describe('offererDetailsLegacy', () => {
         })
         .mockRejectedValueOnce({ status: 403 })
 
-      const { waitForElements } = renderHomePage()
+      const { waitForElements } = renderHomePage({ store })
       await waitForElements()
 
       // When
@@ -795,6 +796,88 @@ describe('offererDetailsLegacy', () => {
       expect(
         previouslySelectedOfferersPhysicalVenueName
       ).not.toBeInTheDocument()
+    })
+  })
+
+  describe('when FF enforce siret is enabled', () => {
+    beforeEach(() => {
+      store = configureTestStore({
+        data: {
+          users: [
+            {
+              id: 'fake_id',
+              firstName: 'John',
+              lastName: 'Do',
+              email: 'john.do@dummy.xyz',
+              phoneNumber: '01 00 00 00 00',
+            },
+          ],
+        },
+        features: {
+          list: [
+            { isActive: true, nameKey: 'ENFORCE_BANK_INFORMATION_WITH_SIRET' },
+          ],
+        },
+      })
+    })
+    it('should display invalid business unit banner when a BU does not have a siret', async () => {
+      firstOffererByAlphabeticalOrder = {
+        ...firstOffererByAlphabeticalOrder,
+        managedVenues: [
+          {
+            ...physicalVenue,
+            businessUnitId: 2,
+          },
+        ],
+      }
+      pcapi.getOfferer.mockResolvedValue(firstOffererByAlphabeticalOrder)
+      pcapi.getBusinessUnits.mockResolvedValue([
+        {
+          name: 'Business Unit #2',
+          siret: null,
+          id: 2,
+          bic: 'BDFEFRPP',
+          iban: 'FR9410010000000000000000022',
+        },
+      ])
+      const { waitForElements } = renderHomePage({ store })
+      const { offerer } = await waitForElements()
+
+      expect(
+        within(offerer).getByRole('button', {
+          name: 'Masquer',
+        })
+      ).toBeInTheDocument()
+      expect(
+        within(offerer).getByText('Points de remboursement')
+      ).toBeInTheDocument()
+    })
+
+    it('should display missing business unit banner when venue has no BU', async () => {
+      firstOffererByAlphabeticalOrder = {
+        ...firstOffererByAlphabeticalOrder,
+        managedVenues: [
+          {
+            ...physicalVenue,
+            businessUnitId: null,
+          },
+        ],
+      }
+
+      pcapi.getOfferer.mockResolvedValue(firstOffererByAlphabeticalOrder)
+      pcapi.getBusinessUnits.mockResolvedValue([])
+
+      const { waitForElements } = renderHomePage({ store })
+      const { offerer } = await waitForElements()
+
+      expect(
+        within(offerer).getByRole('button', {
+          name: 'Masquer',
+        })
+      ).toBeInTheDocument()
+      expect(
+        within(offerer).getByText('Coordonnées bancaires')
+      ).toBeInTheDocument()
     })
   })
 })

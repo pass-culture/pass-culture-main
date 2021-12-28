@@ -17,7 +17,8 @@ import { STEP_OFFERER_HASH } from '../HomepageBreadcrumb'
 import { ReactComponent as ClosedEyeSvg } from './assets/ico-eye-close.svg'
 import { ReactComponent as OpenedEyeSvg } from './assets/ico-eye-open.svg'
 import BankInformations from './BankInformations'
-import BusinessUnits from './BusinessUnits'
+import InvalidBusinessUnits from './InvalidBusinessUnits'
+import MissingBusinessUnits from './MissingBusinessUnits'
 
 const hasRejectedOrDraftBankInformation = offerer =>
   Boolean(
@@ -27,11 +28,13 @@ const hasRejectedOrDraftBankInformation = offerer =>
 const initialIsExpanded = (
   hasPhysicalVenues,
   isBankInformationWithSiretActive,
-  hasInvalidBusinessUnits
+  hasInvalidBusinessUnits,
+  hasMissingBusinessUnits
 ) => {
   return (
     !hasPhysicalVenues ||
-    (isBankInformationWithSiretActive && hasInvalidBusinessUnits)
+    (isBankInformationWithSiretActive &&
+      (hasInvalidBusinessUnits || hasMissingBusinessUnits))
   )
 }
 
@@ -60,11 +63,20 @@ const OffererDetails = ({
     )
   }, [selectedOfferer, businessUnitList, isBankInformationWithSiretActive])
 
+  const hasMissingBusinessUnits = useMemo(() => {
+    if (!isBankInformationWithSiretActive) return false
+    if (!selectedOfferer) return false
+    return selectedOfferer.managedVenues
+      .map(venue => !venue.businessUnitId)
+      .some(Boolean)
+  }, [isBankInformationWithSiretActive, selectedOfferer])
+
   const [isExpanded, setIsExpanded] = useState(
     initialIsExpanded(
       hasPhysicalVenues,
       isBankInformationWithSiretActive,
-      hasInvalidBusinessUnits
+      hasInvalidBusinessUnits,
+      hasMissingBusinessUnits
     )
   )
 
@@ -74,13 +86,15 @@ const OffererDetails = ({
         initialIsExpanded(
           hasPhysicalVenues,
           isBankInformationWithSiretActive,
-          hasInvalidBusinessUnits
+          hasInvalidBusinessUnits,
+          hasMissingBusinessUnits
         )
       ),
     [
       hasPhysicalVenues,
       isBankInformationWithSiretActive,
       hasInvalidBusinessUnits,
+      hasMissingBusinessUnits,
     ]
   )
 
@@ -119,21 +133,31 @@ const OffererDetails = ({
               </>
             )}
           </button>
-          {isBankInformationWithSiretActive
-            ? hasInvalidBusinessUnits && (
+          {isBankInformationWithSiretActive ? (
+            hasInvalidBusinessUnits ? (
+              <Icon
+                alt="SIRET Manquant"
+                className="ico-bank-warning"
+                svg="ico-alert-filled"
+              />
+            ) : (
+              hasMissingBusinessUnits && (
                 <Icon
-                  alt="SIRET Manquant"
+                  alt="Coordonnées bancaires manquantes"
                   className="ico-bank-warning"
                   svg="ico-alert-filled"
                 />
               )
-            : selectedOfferer.hasMissingBankInformation && (
-                <Icon
-                  alt="Informations bancaires manquantes"
-                  className="ico-bank-warning"
-                  svg="ico-alert-filled"
-                />
-              )}
+            )
+          ) : (
+            selectedOfferer.hasMissingBankInformation && (
+              <Icon
+                alt="Informations bancaires manquantes"
+                className="ico-bank-warning"
+                svg="ico-alert-filled"
+              />
+            )
+          )}
           <div className="od-separator vertical small" />
           {isUserOffererValidated ? (
             <Link
@@ -192,11 +216,21 @@ const OffererDetails = ({
                     </ul>
                   </div>
                 </div>
-                {isBankInformationWithSiretActive && hasInvalidBusinessUnits ? (
-                  <div className="h-card-col">
-                    <BusinessUnits offererId={selectedOfferer.id} />
-                  </div>
-                ) : (
+                {isBankInformationWithSiretActive && (
+                  <>
+                    {hasInvalidBusinessUnits && (
+                      <div className="h-card-col">
+                        <InvalidBusinessUnits offererId={selectedOfferer.id} />
+                      </div>
+                    )}
+                    {!hasInvalidBusinessUnits && hasMissingBusinessUnits && (
+                      <div className="h-card-col">
+                        <MissingBusinessUnits />
+                      </div>
+                    )}
+                  </>
+                )}
+                {!isBankInformationWithSiretActive &&
                   (selectedOfferer.hasMissingBankInformation ||
                     hasRejectedOrDraftOffererBankInformations) && (
                     <div className="h-card-col">
@@ -210,8 +244,7 @@ const OffererDetails = ({
                         offerer={selectedOfferer}
                       />
                     </div>
-                  )
-                )}
+                  )}
               </div>
             )}
           </>
