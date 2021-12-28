@@ -148,26 +148,6 @@ describe('venues', () => {
         screen.getByRole('link', { name: 'Créer une nouvelle offre numérique' })
       ).toBeInTheDocument()
     })
-
-    it('should display add bank information when venue does not have a business unit', async () => {
-      // Given
-      props.hasBusinessUnit = false
-      const storeOverrides = configureTestStore({
-        features: {
-          list: [
-            { isActive: true, nameKey: 'ENFORCE_BANK_INFORMATION_WITH_SIRET' },
-          ],
-        },
-      })
-
-      // When
-      await renderVenue(props, storeOverrides)
-
-      // Then
-      expect(screen.getByRole('link', { name: 'Ajouter un RIB' }).href).toBe(
-        'http://localhost/structures/OFFERER01/lieux/VENUE01?modification'
-      )
-    })
   })
 
   describe('physical venue section', () => {

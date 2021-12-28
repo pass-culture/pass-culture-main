@@ -8,7 +8,7 @@ import React from 'react'
 import Icon from 'components/layout/Icon'
 import InternalBanner from 'components/layout/InternalBanner'
 
-const BusinessUnits = ({ offererId, hasTitle = true }) => {
+const InvalidBusinessUnits = ({ offererId, hasTitle = true }) => {
   const businessUnitRoutePath = `/structures/${offererId}/point-de-remboursement/`
   return (
     <>
@@ -39,9 +39,9 @@ const BusinessUnits = ({ offererId, hasTitle = true }) => {
   )
 }
 
-BusinessUnits.propTypes = {
+InvalidBusinessUnits.propTypes = {
   hasTitle: PropTypes.bool.isRequired,
   offererId: PropTypes.string.isRequired,
 }
 
-export default BusinessUnits
+export default InvalidBusinessUnits
