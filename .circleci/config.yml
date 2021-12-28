@@ -653,6 +653,7 @@ jobs:
   build-and-push-image-db-ops:
     executor: gcp-sdk
     steps:
+      - checkout
       - clone-pass-culture-db-operations-repo
       - setup_remote_docker:
           version: 19.03.13
