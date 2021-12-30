@@ -41,7 +41,7 @@ const VenueListItem = ({
     {!venue.siret && !hasInvalidBusinessUnit && !venue.isVirtual && (
       <Link
         className={styles['venue-edit-link']}
-        to={`/structures/${venue.managingOffererId}/lieux/${venue.id}`}
+        to={`/structures/${venue.managingOffererId}/lieux/${venue.id}?modification`}
       >
         <Icon svg="ico-outer-pen" />
         Renseigner un SIRET
