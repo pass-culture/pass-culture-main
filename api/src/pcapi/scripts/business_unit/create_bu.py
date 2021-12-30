@@ -51,6 +51,9 @@ staging >>> bi_val.validate = fake_val
 
 staging >>> from pcapi.scripts.create_bu import create_all_business_units
 staging >>> create_all_business_units()
+staging >>> from pcapi.scripts.purge_virtual_venue_business_units import purge_virtual_venue_business_units
+staging >>> # Clear some business unit with virtual venues
+staging >>> purge_virtual_venue_business_units()
 """
 
 
