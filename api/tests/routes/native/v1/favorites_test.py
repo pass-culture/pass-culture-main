@@ -292,9 +292,9 @@ class PostTest:
         def when_user_creates_a_favorite(self, app):
             # Given
             user, test_client = utils.create_user_and_test_client(app)
-            offerer = offers_factories.OffererFactory()
-            venue = offers_factories.VenueFactory(managingOfferer=offerer)
-            offer1 = offers_factories.EventOfferFactory(venue=venue)
+            stock = offers_factories.EventStockFactory()
+            offer1 = stock.offer
+
             assert Favorite.query.count() == 0
 
             # When
@@ -308,6 +308,7 @@ class PostTest:
             assert favorite.userId == user.id
             assert response.json["id"] == favorite.id
             assert response.json["offer"]
+            assert response.json["offer"]["price"]
 
             # One call should be sent to batch, and one to sendinblue
             assert len(push_testing.requests) == 2
