@@ -65,6 +65,8 @@ const BusinessUnitList = ({
 
       <Banner
         className={styles['business-unit-info-banner']}
+        href="https://aide.passculture.app/fr/articles/5830361-comment-rattacher-mes-points-de-remboursement-et-mes-coordonnees-bancaires-a-un-siret-de-reference"
+        linkTitle="En savoir plus sur les points de remboursements"
         type="notification-info"
       >
         À partir de janvier 2022, vous recevrez un justificatif et un virement
