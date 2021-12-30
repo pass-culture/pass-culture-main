@@ -1,5 +1,6 @@
 from datetime import datetime
 from decimal import Decimal
+from typing import Optional
 
 from sqlalchemy import and_
 from sqlalchemy import exc
@@ -79,7 +80,7 @@ def get_favorites_count(user: User) -> serializers.FavoritesCountResponse:
     return serializers.FavoritesCountResponse(count=Favorite.query.filter_by(user=user).count())
 
 
-def get_favorites_for(user: User) -> list[Favorite]:
+def get_favorites_for(user: User, favorite_id: Optional[int] = None) -> list[Favorite]:
     active_stock_filters = and_(
         Offer.isActive == True,
         Stock.isSoftDeleted == False,
@@ -137,6 +138,9 @@ def get_favorites_for(user: User) -> list[Favorite]:
         .options(joinedload(Favorite.offer).joinedload(Offer.stocks))
         .order_by(Favorite.id.desc())
     )
+
+    if favorite_id:
+        query = query.filter(Favorite.id == favorite_id)
 
     favorites = query.all()
 
@@ -201,6 +205,8 @@ def create_favorite(user: User, body: serializers.FavoriteRequest) -> serializer
         favorite = Favorite.query.filter_by(offerId=body.offerId, userId=user.id).one_or_none()
         if not favorite:
             raise exception
+
+    favorite = get_favorites_for(user, favorite.id)[0]
 
     return serializers.FavoriteResponse.from_orm(favorite)
 
