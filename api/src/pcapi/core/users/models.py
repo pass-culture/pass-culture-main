@@ -574,6 +574,7 @@ def split_email(email: str) -> tuple[str, str]:
 class EmailHistoryEventTypeEnum(enum.Enum):
     UPDATE_REQUEST = "UPDATE_REQUEST"
     VALIDATION = "VALIDATION"
+    ADMIN_VALIDATION = "ADMIN_VALIDATION"
 
 
 class UserEmailHistory(PcObject, Model):
@@ -621,7 +622,9 @@ class UserEmailHistory(PcObject, Model):
         return cls._build(user, new_email, device_id, event_type=EmailHistoryEventTypeEnum.UPDATE_REQUEST)
 
     @classmethod
-    def build_validation(cls, user: User, new_email: str, device_id: Optional[str]) -> "UserEmailHistory":
+    def build_validation(cls, user: User, new_email: str, device_id: Optional[str], admin: bool) -> "UserEmailHistory":
+        if admin:
+            return cls._build(user, new_email, device_id, event_type=EmailHistoryEventTypeEnum.ADMIN_VALIDATION)
         return cls._build(user, new_email, device_id, event_type=EmailHistoryEventTypeEnum.VALIDATION)
 
     @hybrid_property
