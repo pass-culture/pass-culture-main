@@ -320,3 +320,15 @@ def clean_temporary_files(test_function):
             cleanup()
 
     return wrapper
+
+
+@contextlib.contextmanager
+def assert_model_count_delta(model, delta):
+    start_count = model.query.count()
+    expected_count = start_count + delta
+
+    yield
+
+    end_count = model.query.count()
+    if end_count != expected_count:
+        pytest.fail(f"Got {end_count} {model.__class__.__name__} instead of {expected_count}")

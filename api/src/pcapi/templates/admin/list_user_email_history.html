@@ -1,0 +1,14 @@
+{% extends 'admin/model/list.html' %}
+
+{% block list_row_actions %} 
+    {% if row.eventType.value == enum_update_request_value %}
+        <form action={{ url_for(".validate_user_email", entry_id=get_pk_value(row)) }} method="POST">
+            <button
+                class="btn btn-secondary"
+                onclick="return confirm('Êtes-vous certain de vouloir valider l\'adresse email {{ row.newEmail }}')"
+                title="Approve">
+                Valider
+            </button>
+        </form>
+    {% endif %}
+{% endblock %}

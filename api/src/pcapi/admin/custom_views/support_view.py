@@ -241,6 +241,7 @@ class BeneficiaryView(base_configuration.BaseAdminView):
             get_value=self.get_detail_value,
             return_url=return_url,
             has_performed_identity_check=fraud_api.has_user_performed_identity_check(user),
+            enum_update_request_value=users_models.EmailHistoryEventTypeEnum.UPDATE_REQUEST.value,
         )
 
     @flask_admin.expose(

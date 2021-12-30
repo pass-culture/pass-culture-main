@@ -460,15 +460,18 @@ def bulk_unsuspend_account(user_ids: list[int], actor: User) -> None:
     )
 
 
-def change_user_email(current_email: str, new_email: str, device_id: typing.Optional[str] = None) -> None:
+def change_user_email(
+    current_email: str,
+    new_email: str,
+    device_id: typing.Optional[str] = None,
+    admin: bool = False,
+) -> None:
     current_user = user_queries.find_user_by_email(current_email)
     if not current_user:
         raise exceptions.UserDoesNotExist()
 
     email_history = UserEmailHistory.build_validation(
-        user=current_user,
-        new_email=new_email,
-        device_id=device_id,
+        user=current_user, new_email=new_email, device_id=device_id, admin=admin
     )
 
     try:
