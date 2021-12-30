@@ -263,6 +263,9 @@
     <table class="table table-striped table-hover">
       <thead>
         <tr>
+          {% if current_user.is_super_admin() %}
+            <th scope="col">Validation</th>
+          {% endif %}
           <th scope="col">Ancienne adresse email</th>
           <th scope="col">Nouvelle adresse email</th>
           <th scope="col">Date</th>
@@ -273,6 +276,22 @@
       <tbody>
         {% for email_history in model.email_history %}
         <tr>
+          {% if current_user.is_super_admin() %}
+              <td>
+                {% if email_history.eventType.value == enum_update_request_value %}
+                    <form
+                        action={{ url_for("/user_email_history.validate_user_email", entry_id=email_history.id, next="support_beneficiary.details_view", id=model.id) }}
+                        method="POST">
+                        <button
+                            class="btn btn-secondary"
+                            onclick="return confirm('Êtes-vous certain de vouloir valider l\'adresse email {{ email_history.newEmail }}')"
+                            title="Approve">
+                            Valider
+                        </button>
+                    </form>
+                {% endif %}
+              </td>
+          {% endif %}
           <td>{{ email_history.oldEmail }}</td>
           <td>{{ email_history.newEmail }}</td>
           <td>{{ email_history.creationDate.strftime('le %d/%m/%Y à %H:%M:%S') }}</td>

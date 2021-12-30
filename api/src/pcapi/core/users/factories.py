@@ -379,3 +379,28 @@ class EduconnectUserFactory(factory.Factory):
     ine_hash = "5ba682c0fc6a05edf07cd8ed0219258f"
     student_level = "2212"
     school_uai = "0910620E"
+
+
+class UserEmailHistoryFactory(BaseFactory):
+    class Meta:
+        model = users_models.UserEmailHistory
+        abstract = True
+
+    user = factory.SubFactory(UserFactory)
+    oldUserEmail = factory.LazyAttribute(lambda o: o.user.email.split("@")[0])
+    oldDomainEmail = factory.LazyAttribute(lambda o: o.user.email.split("@")[1])
+    newUserEmail = factory.LazyAttribute(lambda o: o.user.email.split("@")[0])
+    newDomainEmail = factory.LazyAttribute(lambda o: o.user.email.split("@")[1] + ".update")
+    deviceId = "deviceId"
+
+
+class EmailUpdateEntryFactory(UserEmailHistoryFactory):
+    eventType = users_models.EmailHistoryEventTypeEnum.UPDATE_REQUEST.value
+
+
+class EmailValidationEntryFactory(UserEmailHistoryFactory):
+    eventType = users_models.EmailHistoryEventTypeEnum.VALIDATION.value
+
+
+class EmailAdminValidationEntryFactory(UserEmailHistoryFactory):
+    eventType = users_models.EmailHistoryEventTypeEnum.ADMIN_VALIDATION.value
