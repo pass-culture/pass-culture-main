@@ -1,3 +1,4 @@
+from collections.abc import Iterable
 from datetime import date
 from datetime import datetime
 from typing import List
@@ -5,7 +6,6 @@ from typing import List
 from dateutil.relativedelta import relativedelta
 from sqlalchemy import func
 from sqlalchemy.orm import Query
-from sqlalchemy.orm import load_only
 from sqlalchemy.sql.expression import and_
 from sqlalchemy.sql.expression import or_
 
@@ -13,6 +13,7 @@ from pcapi import settings
 from pcapi.core.payments.models import Deposit
 from pcapi.core.users.external.sendinblue import add_contacts_to_list
 from pcapi.core.users.models import User
+from pcapi.models import db
 
 
 YIELD_COUNT_PER_DB_QUERY = 1000
@@ -23,21 +24,23 @@ DAYS_IN_18_YEARS = 365 * 14 + 366 * 4
 
 def get_young_users_emails_query() -> Query:
     return (
-        User.query.yield_per(YIELD_COUNT_PER_DB_QUERY)
-        .options(load_only(User.email))
+        db.session.query(User.email)
+        .yield_per(YIELD_COUNT_PER_DB_QUERY)
         .filter(User.has_pro_role.is_(False))
         .filter(User.has_admin_role.is_(False))
     )
 
 
-def get_users_who_will_turn_eighteen_in_one_month() -> List[User]:
+def get_emails_who_will_turn_eighteen_in_one_month() -> Iterable[str]:
     # Keep in days and not years and months to ensure that we get birth dates continuously day after day
     # Otherwise, 2022-02-28 - 18y + 30m = 2004-03-29
     #            2022-03-01 - 18y + 30m = 2004-03-31
     #            => users born on 2004-03-30 would be missed
     expected_birth_date = date.today() - relativedelta(days=DAYS_IN_18_YEARS - 30)
 
-    return get_young_users_emails_query().filter(func.date(User.dateOfBirth) == expected_birth_date).all()
+    return (
+        email for email, in get_young_users_emails_query().filter(func.date(User.dateOfBirth) == expected_birth_date)
+    )
 
 
 def users_turned_eighteen_automation() -> bool:
@@ -46,16 +49,17 @@ def users_turned_eighteen_automation() -> bool:
 
     List: jeunes-18-m-1
     """
-    user_emails = (user.email for user in get_users_who_will_turn_eighteen_in_one_month())
     return add_contacts_to_list(
-        user_emails, settings.SENDINBLUE_AUTOMATION_YOUNG_18_IN_1_MONTH_LIST_ID, clear_list_first=True
+        get_emails_who_will_turn_eighteen_in_one_month(),
+        settings.SENDINBLUE_AUTOMATION_YOUNG_18_IN_1_MONTH_LIST_ID,
+        clear_list_first=True,
     )
 
 
 def get_users_beneficiary_credit_expiration_within_next_3_months() -> List[User]:
     return (
-        User.query.yield_per(YIELD_COUNT_PER_DB_QUERY)
-        .options(load_only(User.email))
+        db.session.query(User.email)
+        .yield_per(YIELD_COUNT_PER_DB_QUERY)
         .join(User.deposits)
         .filter(User.is_beneficiary.is_(True))
         .filter(
@@ -64,7 +68,6 @@ def get_users_beneficiary_credit_expiration_within_next_3_months() -> List[User]
                 datetime.combine(date.today() + relativedelta(days=90), datetime.max.time()),
             )
         )
-        .all()
     )
 
 
@@ -77,7 +80,7 @@ def users_beneficiary_credit_expiration_within_next_3_months_automation() -> boo
 
     List: jeunes-expiration-M-3
     """
-    user_emails = (user.email for user in get_users_beneficiary_credit_expiration_within_next_3_months())
+    user_emails = (email for email, in get_users_beneficiary_credit_expiration_within_next_3_months())
     return add_contacts_to_list(
         user_emails, settings.SENDINBLUE_AUTOMATION_YOUNG_EXPIRATION_M3_ID, clear_list_first=True
     )
@@ -85,8 +88,7 @@ def users_beneficiary_credit_expiration_within_next_3_months_automation() -> boo
 
 def get_users_ex_beneficiary() -> List[User]:
     return (
-        User.query.yield_per(YIELD_COUNT_PER_DB_QUERY)
-        .options(load_only(User.email))
+        db.session.query(User.email)
         .join(User.deposits)
         .filter(User.is_beneficiary.is_(True))
         .filter(
@@ -98,7 +100,7 @@ def get_users_ex_beneficiary() -> List[User]:
                 ),
             )
         )
-        .all()
+        .yield_per(YIELD_COUNT_PER_DB_QUERY)
     )
 
 
@@ -111,16 +113,19 @@ def users_ex_beneficiary_automation() -> bool:
 
     List: jeunes-ex-benefs
     """
-    user_emails = (user.email for user in get_users_ex_beneficiary())
+    user_emails = (email for email, in get_users_ex_beneficiary())
     return add_contacts_to_list(
         user_emails, settings.SENDINBLUE_AUTOMATION_YOUNG_EX_BENEFICIARY_ID, clear_list_first=False
     )
 
 
-def get_inactive_user_since_thirty_days() -> List[User]:
+def get_email_for_inactive_user_since_thirty_days() -> Iterable[str]:
     date_30_days_ago = date.today() - relativedelta(days=30)
 
-    return get_young_users_emails_query().filter(func.date(User.lastConnectionDate) <= date_30_days_ago).all()
+    return (
+        email
+        for email, in get_young_users_emails_query().filter(func.date(User.lastConnectionDate) <= date_30_days_ago)
+    )
 
 
 def users_inactive_since_30_days_automation() -> bool:
@@ -132,25 +137,25 @@ def users_inactive_since_30_days_automation() -> bool:
 
     List: jeunes-utilisateurs-inactifs
     """
-    user_emails = (user.email for user in get_inactive_user_since_thirty_days())
     return add_contacts_to_list(
-        user_emails, settings.SENDINBLUE_AUTOMATION_YOUNG_INACTIVE_30_DAYS_LIST_ID, clear_list_first=True
+        get_email_for_inactive_user_since_thirty_days(),
+        settings.SENDINBLUE_AUTOMATION_YOUNG_INACTIVE_30_DAYS_LIST_ID,
+        clear_list_first=True,
     )
 
 
-def get_users_by_month_created_one_year_before() -> List[User]:
+def get_email_for_users_created_one_year_ago_per_month() -> Iterable[str]:
     first_day_of_month = (date.today() - relativedelta(months=12)).replace(day=1)
     last_day_of_month = first_day_of_month + relativedelta(months=1, days=-1)
 
     return (
-        get_young_users_emails_query()
-        .filter(
+        email
+        for email, in get_young_users_emails_query().filter(
             User.dateCreated.between(
                 datetime.combine(first_day_of_month, datetime.min.time()),
                 datetime.combine(last_day_of_month, datetime.max.time()),
             )
         )
-        .all()
     )
 
 
@@ -163,7 +168,8 @@ def users_one_year_with_pass_automation() -> bool:
 
     List: jeunes-un-an-sur-le-pass
     """
-    user_emails = (user.email for user in get_users_by_month_created_one_year_before())
     return add_contacts_to_list(
-        user_emails, settings.SENDINBLUE_AUTOMATION_YOUNG_1_YEAR_WITH_PASS_LIST_ID, clear_list_first=True
+        get_email_for_users_created_one_year_ago_per_month(),
+        settings.SENDINBLUE_AUTOMATION_YOUNG_1_YEAR_WITH_PASS_LIST_ID,
+        clear_list_first=True,
     )

@@ -14,11 +14,11 @@ from pcapi.core.users.external.user_automations import (
     users_beneficiary_credit_expiration_within_next_3_months_automation,
 )
 from pcapi.core.users.external.user_automations import DAYS_IN_18_YEARS
-from pcapi.core.users.external.user_automations import get_inactive_user_since_thirty_days
+from pcapi.core.users.external.user_automations import get_email_for_inactive_user_since_thirty_days
+from pcapi.core.users.external.user_automations import get_email_for_users_created_one_year_ago_per_month
+from pcapi.core.users.external.user_automations import get_emails_who_will_turn_eighteen_in_one_month
 from pcapi.core.users.external.user_automations import get_users_beneficiary_credit_expiration_within_next_3_months
-from pcapi.core.users.external.user_automations import get_users_by_month_created_one_year_before
 from pcapi.core.users.external.user_automations import get_users_ex_beneficiary
-from pcapi.core.users.external.user_automations import get_users_who_will_turn_eighteen_in_one_month
 from pcapi.core.users.external.user_automations import users_ex_beneficiary_automation
 from pcapi.core.users.external.user_automations import users_inactive_since_30_days_automation
 from pcapi.core.users.external.user_automations import users_one_year_with_pass_automation
@@ -51,11 +51,11 @@ class UserAutomationsTest:
         )
 
     @freeze_time("2021-08-01 10:00:00")
-    def test_get_users_who_will_turn_eighteen_in_one_month(self):
+    def test_get_emails_who_will_turn_eighteen_in_one_month(self):
         self._create_users_around_18()
 
-        result = get_users_who_will_turn_eighteen_in_one_month()
-        assert sorted([user.email for user in result]) == ["fabien+test@example.net", "gerard+test@example.net"]
+        result = get_emails_who_will_turn_eighteen_in_one_month()
+        assert sorted(result) == ["fabien+test@example.net", "gerard+test@example.net"]
         assert len(User.query.all()) == 6
 
     @patch("pcapi.core.users.external.sendinblue.sib_api_v3_sdk.api.process_api.ProcessApi.get_process")
@@ -250,7 +250,7 @@ class UserAutomationsTest:
 
         assert result is True
 
-    def test_get_inactive_user_since_thirty_days(self):
+    def test_get_email_for_inactive_user_since_thirty_days(self):
         with freeze_time("2021-08-01 15:00:00") as frozen_time:
             beneficiary = users_factories.BeneficiaryGrant18Factory(
                 email="fabien+test@example.net", lastConnectionDate=datetime(2021, 8, 1)
@@ -264,8 +264,8 @@ class UserAutomationsTest:
             users_factories.UserFactory(email="gerard+test@example.net", dateCreated=datetime(2021, 9, 1))
 
             frozen_time.move_to("2021-09-01 15:00:01")
-            results = get_inactive_user_since_thirty_days()
-            assert sorted([user.email for user in results]) == sorted([beneficiary.email, not_beneficiary.email])
+            results = get_email_for_inactive_user_since_thirty_days()
+            assert sorted(results) == sorted([beneficiary.email, not_beneficiary.email])
 
     @patch("pcapi.core.users.external.sendinblue.sib_api_v3_sdk.api.process_api.ProcessApi.get_process")
     @patch("pcapi.core.users.external.sendinblue.sib_api_v3_sdk.api.contacts_api.ContactsApi.import_contacts")
@@ -338,7 +338,7 @@ class UserAutomationsTest:
 
             assert result is True
 
-    def test_get_users_by_month_created_one_year_before(self):
+    def test_get_email_for_users_created_one_year_ago_per_month(self):
         matching_users = []
 
         users_factories.UserFactory(email="fabien+test@example.net", dateCreated=datetime(2021, 7, 31))
@@ -356,8 +356,8 @@ class UserAutomationsTest:
 
         # matching: from 2021-08-01 to 2021-08-31
         with freeze_time("2022-08-10 15:00:00"):
-            results = get_users_by_month_created_one_year_before()
-            assert sorted([user.email for user in results]) == sorted([user.email for user in matching_users])
+            results = get_email_for_users_created_one_year_ago_per_month()
+            assert sorted(results) == sorted([user.email for user in matching_users])
 
     @patch("pcapi.core.users.external.sendinblue.sib_api_v3_sdk.api.process_api.ProcessApi.get_process")
     @patch("pcapi.core.users.external.sendinblue.sib_api_v3_sdk.api.contacts_api.ContactsApi.import_contacts")
