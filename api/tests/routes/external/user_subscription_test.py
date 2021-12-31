@@ -180,7 +180,7 @@ class DmsWebhookApplicationTest:
         assert user.subscriptionMessages[0].popOverIcon == subscription_models.PopOverIcon.WARNING
         assert (
             user.subscriptionMessages[0].userMessage
-            == "Il semblerait que ‘ta pièce d'identité, ton code postal’ soient erronés. Tu peux te rendre sur le site Démarche-simplifiées pour les rectifier.",
+            == "Il semblerait que ‘ta pièce d'identité, ton code postal’ soient erronés. Tu peux te rendre sur le site Démarche-simplifiées pour les rectifier."
         )
 
     @patch.object(DMSGraphQLClient, "execute_query")
@@ -237,7 +237,7 @@ class DmsWebhookApplicationTest:
         assert user.subscriptionMessages[0].popOverIcon == subscription_models.PopOverIcon.WARNING
         assert (
             user.subscriptionMessages[0].userMessage
-            == "Il semblerait que ‘ta pièce d'identité’ soit erroné. Tu peux te rendre sur le site Démarche-simplifiées pour le rectifier.",
+            == "Il semblerait que ‘ta pièce d'identité’ soit erroné. Tu peux te rendre sur le site Démarche-simplifiées pour le rectifier."
         )
 
     @patch.object(DMSGraphQLClient, "execute_query")
@@ -267,7 +267,7 @@ class DmsWebhookApplicationTest:
         assert user.subscriptionMessages[0].popOverIcon == subscription_models.PopOverIcon.WARNING
         assert (
             user.subscriptionMessages[0].userMessage
-            == "Il semblerait que ‘ton code postal’ soit erroné. Tu peux te rendre sur le site Démarche-simplifiées pour le rectifier.",
+            == "Il semblerait que ‘ton code postal’ soit erroné. Tu peux te rendre sur le site Démarche-simplifiées pour le rectifier."
         )
 
     @patch.object(DMSGraphQLClient, "execute_query")
@@ -302,7 +302,7 @@ class DmsWebhookApplicationTest:
         assert user.subscriptionMessages[0].popOverIcon == subscription_models.PopOverIcon.WARNING
         assert (
             user.subscriptionMessages[0].userMessage
-            == "Il semblerait que ‘ta date de naissance’ soit erronée. Tu peux te rendre sur le site Démarche-simplifiées pour le rectifier.",
+            == "Il semblerait que ‘ta date de naissance’ soit erroné. Tu peux te rendre sur le site Démarche-simplifiées pour le rectifier."
         )
 
     @patch.object(DMSGraphQLClient, "execute_query")
