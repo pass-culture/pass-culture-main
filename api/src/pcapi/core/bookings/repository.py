@@ -828,15 +828,9 @@ def _serialize_booking_recap_legacy(booking: AbstractKeyedTuple) -> BookingRecap
 
 
 def _get_booking_status(status: BookingStatus, is_confirmed: bool) -> str:
-    if status in [
-        BookingStatus.CANCELLED,
-        BookingStatus.USED,
-        BookingStatus.REIMBURSED,
-    ]:
-        return BOOKING_STATUS_LABELS[status]
-    if is_confirmed:
+    cancellation_limit_date_exists_and_past = is_confirmed
+    if cancellation_limit_date_exists_and_past and status == BookingStatus.CONFIRMED:
         return BOOKING_STATUS_LABELS["confirmed"]
-
     return BOOKING_STATUS_LABELS[status]
 
 
