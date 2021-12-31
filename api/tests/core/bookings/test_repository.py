@@ -2598,7 +2598,7 @@ class GetCsvReportTest:
             expected_booking.dateCreated.astimezone(tz.gettz("Europe/Paris"))
         )
 
-    def should_consider_venue_locale_datetime_when_filtering_by_booking_period(self, app: fixture):
+    def test_should_consider_venue_locale_datetime_when_filtering_by_booking_period(self, app: fixture):
         # Given
         user_offerer = offers_factories.UserOffererFactory()
         requested_booking_period_beginning = datetime(2020, 4, 21, 20, 00).date()
@@ -2638,6 +2638,283 @@ class GetCsvReportTest:
         data_dicts = [dict(zip(headers, line)) for line in data]
         tokens = [booking["Contremarque"] for booking in data_dicts]
         assert sorted(tokens) == sorted([cayenne_booking.token, mayotte_booking.token])
+
+    class BookingStatusInCsvReportTest:
+        @freeze_time("2021-12-15 09:00:00")
+        def test_should_output_the_correct_status_for_individual_bookings_before_cancellationLimitDate(self, app):
+            # Given
+            date_created = datetime.utcnow() - timedelta(hours=6)
+
+            pro = users_factories.ProFactory()
+            offerer = offers_factories.OffererFactory()
+            offers_factories.UserOffererFactory(user=pro, offerer=offerer)
+            venue = offers_factories.VenueFactory(managingOfferer=offerer)
+
+            bookings_factories.CancelledIndividualBookingFactory(
+                stock__offer__venue=venue,
+                dateCreated=date_created,
+            )
+            bookings_factories.IndividualBookingFactory(
+                stock__offer__venue=venue,
+                dateCreated=date_created,
+            )
+
+            # When
+            beginning_period = datetime.fromisoformat("2021-10-15")
+            ending_period = datetime.fromisoformat("2022-02-15")
+            bookings_csv = booking_repository.get_csv_report(
+                user=pro,
+                booking_period=(beginning_period, ending_period),
+            )
+
+            # Then
+            headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
+            assert len(data) == 2
+            pos_cm = headers.index("Statut de la contremarque")
+            assert sorted([line[pos_cm] for line in data]) == ["annulé", "réservé"]
+
+        @freeze_time("2021-12-15 09:00:00")
+        def test_should_output_the_correct_status_for_individual_bookings_things_after_cancellationLimitDate(self, app):
+            # Given
+            date_created = datetime.utcnow() - timedelta(days=10)
+
+            pro = users_factories.ProFactory()
+            offerer = offers_factories.OffererFactory()
+            offers_factories.UserOffererFactory(user=pro, offerer=offerer)
+            venue = offers_factories.VenueFactory(managingOfferer=offerer)
+
+            bookings_factories.CancelledIndividualBookingFactory(
+                stock__offer__venue=venue,
+                dateCreated=date_created,
+            )
+            bookings_factories.IndividualBookingFactory(
+                stock__offer__venue=venue,
+                dateCreated=date_created,
+            )
+            bookings_factories.UsedIndividualBookingFactory(
+                stock__offer__venue=venue,
+                dateCreated=date_created,
+            )
+            bookings_factories.UsedIndividualBookingFactory(
+                status=BookingStatus.REIMBURSED,
+                stock__offer__venue=venue,
+                dateCreated=date_created,
+            )
+
+            # When
+            beginning_period = datetime.fromisoformat("2021-10-15")
+            ending_period = datetime.fromisoformat("2022-02-15")
+            bookings_csv = booking_repository.get_csv_report(
+                user=pro,
+                booking_period=(beginning_period, ending_period),
+            )
+
+            # Then
+            headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
+            assert len(data) == 4
+            pos_cm = headers.index("Statut de la contremarque")
+            assert sorted([line[pos_cm] for line in data]) == ["annulé", "remboursé", "réservé", "validé"]
+
+        @freeze_time("2021-12-15 09:00:00")
+        def test_should_output_the_correct_status_for_individual_bookings_events_after_cancellationLimitDate(self, app):
+            # Given
+            date_created = datetime.utcnow() - timedelta(days=10)
+            event_date = datetime.utcnow() + timedelta(days=2)
+
+            pro = users_factories.ProFactory()
+            offerer = offers_factories.OffererFactory()
+            offers_factories.UserOffererFactory(user=pro, offerer=offerer)
+            venue = offers_factories.VenueFactory(managingOfferer=offerer)
+            event_stock = offers_factories.EventStockFactory(beginningDatetime=event_date, offer__venue=venue)
+            bookings_factories.CancelledIndividualBookingFactory(
+                stock=event_stock,
+                dateCreated=date_created,
+            )
+            bookings_factories.IndividualBookingFactory(
+                stock=event_stock,
+                dateCreated=date_created,
+            )
+            bookings_factories.UsedIndividualBookingFactory(
+                stock=event_stock,
+                dateCreated=date_created,
+            )
+            bookings_factories.UsedIndividualBookingFactory(
+                status=BookingStatus.REIMBURSED,
+                stock=event_stock,
+                dateCreated=date_created,
+            )
+
+            # When
+            beginning_period = datetime.fromisoformat("2021-10-15")
+            ending_period = datetime.fromisoformat("2022-02-15")
+            bookings_csv = booking_repository.get_csv_report(
+                user=pro,
+                booking_period=(beginning_period, ending_period),
+            )
+
+            # Then
+            headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
+            assert len(data) == 4
+            pos_cm = headers.index("Statut de la contremarque")
+            assert sorted([line[pos_cm] for line in data]) == ["annulé", "confirmé", "remboursé", "validé"]
+
+        @freeze_time("2021-12-15 09:00:00")
+        def test_should_output_the_correct_status_for_eac_bookings_before_cancellationLimitDate(self, app):
+            # Given
+            date_created = datetime.utcnow() - timedelta(days=20)
+            cancellation_limit_date = datetime.utcnow() + timedelta(days=10)
+            event_date = datetime.utcnow() + timedelta(days=25)
+
+            pro = users_factories.ProFactory()
+            offerer = offers_factories.OffererFactory()
+            offers_factories.UserOffererFactory(user=pro, offerer=offerer)
+
+            venue = offers_factories.VenueFactory(managingOfferer=offerer)
+            bookings_factories.RefusedEducationalBookingFactory(
+                stock__offer__venue=venue,
+                dateCreated=date_created,
+                cancellation_limit_date=cancellation_limit_date,
+                stock__beginningDatetime=event_date,
+            )
+            bookings_factories.PendingEducationalBookingFactory(
+                stock__offer__venue=venue,
+                dateCreated=date_created,
+                cancellation_limit_date=cancellation_limit_date,
+                stock__beginningDatetime=event_date,
+            )
+            bookings_factories.EducationalBookingFactory(
+                stock__offer__venue=venue,
+                dateCreated=date_created,
+                cancellation_limit_date=cancellation_limit_date,
+                stock__beginningDatetime=event_date,
+            )
+
+            # When
+            beginning_period = datetime.fromisoformat("2021-10-15")
+            ending_period = datetime.fromisoformat("2022-02-15")
+            bookings_csv = booking_repository.get_csv_report(
+                user=pro,
+                booking_period=(beginning_period, ending_period),
+            )
+
+            # Then
+            headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
+            assert len(data) == 3
+            pos_cm = headers.index("Statut de la contremarque")
+            assert sorted([line[pos_cm] for line in data]) == ["annulé", "préréservé", "réservé"]
+
+        @freeze_time("2021-12-15 09:00:00")
+        def test_should_output_the_correct_status_for_eac_bookings_after_cancellationLimitDate_but_before_event(
+            self, app
+        ):
+            # Given
+            date_created = datetime.utcnow() - timedelta(days=20)
+            cancellation_limit_date = datetime.utcnow() - timedelta(days=2)
+            event_date = datetime.utcnow() + timedelta(days=10)
+
+            pro = users_factories.ProFactory()
+            offerer = offers_factories.OffererFactory()
+            offers_factories.UserOffererFactory(user=pro, offerer=offerer)
+
+            venue = offers_factories.VenueFactory(managingOfferer=offerer)
+            bookings_factories.RefusedEducationalBookingFactory(
+                stock__offer__venue=venue,
+                dateCreated=date_created,
+                cancellation_limit_date=cancellation_limit_date,
+                stock__beginningDatetime=event_date,
+            )
+            bookings_factories.PendingEducationalBookingFactory(
+                stock__offer__venue=venue,
+                dateCreated=date_created,
+                cancellation_limit_date=cancellation_limit_date,
+                stock__beginningDatetime=event_date,
+            )
+            bookings_factories.EducationalBookingFactory(
+                stock__offer__venue=venue,
+                dateCreated=date_created,
+                cancellation_limit_date=cancellation_limit_date,
+                stock__beginningDatetime=event_date,
+            )
+
+            # When
+            beginning_period = datetime.fromisoformat("2021-10-15")
+            ending_period = datetime.fromisoformat("2022-02-15")
+            bookings_csv = booking_repository.get_csv_report(
+                user=pro,
+                booking_period=(beginning_period, ending_period),
+            )
+
+            # Then
+            headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
+            assert len(data) == 3
+            pos_cm = headers.index("Statut de la contremarque")
+            assert sorted([line[pos_cm] for line in data]) == ["annulé", "confirmé", "préréservé"]
+
+        @freeze_time("2021-12-15 09:00:00")
+        def test_should_output_the_correct_status_for_eac_bookings_after_cancellationLimitDate_and_after_event(
+            self, app
+        ):
+            # Given
+            date_created = datetime.utcnow() - timedelta(days=20)
+            cancellation_limit_date = datetime.utcnow() - timedelta(days=7)
+            event_date = datetime.utcnow() - timedelta(days=1)
+
+            pro = users_factories.ProFactory()
+            offerer = offers_factories.OffererFactory()
+            offers_factories.UserOffererFactory(user=pro, offerer=offerer)
+
+            venue = offers_factories.VenueFactory(managingOfferer=offerer)
+            bookings_factories.RefusedEducationalBookingFactory(
+                stock__offer__venue=venue,
+                dateCreated=date_created,
+                cancellation_limit_date=cancellation_limit_date,
+                stock__beginningDatetime=event_date,
+            )
+            bookings_factories.PendingEducationalBookingFactory(
+                stock__offer__venue=venue,
+                dateCreated=date_created,
+                cancellation_limit_date=cancellation_limit_date,
+                stock__beginningDatetime=event_date,
+            )
+            bookings_factories.EducationalBookingFactory(
+                stock__offer__venue=venue,
+                dateCreated=date_created,
+                cancellation_limit_date=cancellation_limit_date,
+                stock__beginningDatetime=event_date,
+            )
+            bookings_factories.UsedEducationalBookingFactory(
+                stock__offer__venue=venue,
+                dateCreated=date_created,
+                cancellation_limit_date=cancellation_limit_date,
+                stock__beginningDatetime=event_date,
+            )
+            bookings_factories.UsedEducationalBookingFactory(
+                stock__offer__venue=venue,
+                dateCreated=date_created,
+                cancellation_limit_date=cancellation_limit_date,
+                stock__beginningDatetime=event_date,
+                status=BookingStatus.REIMBURSED,
+            )
+
+            # When
+            beginning_period = datetime.fromisoformat("2021-10-15")
+            ending_period = datetime.fromisoformat("2022-02-15")
+            bookings_csv = booking_repository.get_csv_report(
+                user=pro,
+                booking_period=(beginning_period, ending_period),
+            )
+
+            # Then
+            headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
+            assert len(data) == 5
+            pos_cm = headers.index("Statut de la contremarque")
+            assert sorted([line[pos_cm] for line in data]) == [
+                "annulé",
+                "confirmé",
+                "préréservé",
+                "remboursé",
+                "validé",
+            ]
 
 
 class FindSoonToBeExpiredBookingsTest:
