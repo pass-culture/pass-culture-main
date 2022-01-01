@@ -36,11 +36,3 @@ class GetUrlSettingsTest:
     @override_features(WEBAPP_V2_ENABLED=True)
     def test_get_webapp_url_when_webapp_v2_enabled_is_true(self):
         assert utils.get_webapp_url() == settings.WEBAPP_V2_URL
-
-    @override_features(WEBAPP_V2_ENABLED=False)
-    def test_get_webapp_for_native_redirection_url_when_webapp_v2_enabled_is_false(self):
-        assert utils.get_webapp_for_native_redirection_url() == settings.WEBAPP_FOR_NATIVE_REDIRECTION
-
-    @override_features(WEBAPP_V2_ENABLED=True)
-    def test_get_webapp_for_native_redirection_url_when_webapp_v2_enabled_is_true(self):
-        assert utils.get_webapp_for_native_redirection_url() == settings.WEBAPP_V2_URL
