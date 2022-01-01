@@ -29,9 +29,9 @@ class MailjetSendNewlyEligibleUserEmailTest:
         assert len(mails_testing.outbox) == 1  # test number of emails sent
         assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 2030056
         assert (
-            mails_testing.outbox[0].sent_data["Vars"]["nativeAppLink"][:118]
+            mails_testing.outbox[0].sent_data["Vars"]["nativeAppLink"][:96]
             == "https://passcultureapptestauto.page.link/?link=https%3A%2F%2F"
-            "app-native.testing.internal-passculture.app%2Fid-check%3F"
+            "webapp-v2.example.com%2Fid-check%3F"
         )
         assert "email" in mails_testing.outbox[0].sent_data["Vars"]["nativeAppLink"]
         assert mails_testing.outbox[0].sent_data["Vars"]["depositAmount"] == 300
