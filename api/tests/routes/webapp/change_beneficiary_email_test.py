@@ -48,7 +48,6 @@ class Returns204Test:
             "leHAiOjE2MDI4Mzg4MDB9.Q2-583JqPSfDjuMD6ZMhMnb07Rr47iBZFRwlFC"
             "ymSf0"
         )
-        confirmation_link = f"{settings.WEBAPP_URL}/changement-email?"
 
         app_link = (
             f"{settings.WEBAPP_FOR_NATIVE_REDIRECTION}/changement-email?"

@@ -74,8 +74,7 @@ API_APPLICATION_NAME = os.environ.get("API_APPLICATION_NAME", None)
 
 
 # Applications urls
-WEBAPP_URL = os.environ.get("WEBAPP_URL")
-WEBAPP_V2_URL = os.environ.get("WEBAPP_V2_URL")
+WEBAPP_V2_URL = os.environ.get("WEBAPP_V2_URL")  # TODO(antoinewg): rename this to WEBAPP_URL ?
 PRO_URL = os.environ.get("PRO_URL")
 FIREBASE_DYNAMIC_LINKS_URL = os.environ.get("FIREBASE_DYNAMIC_LINKS_URL")
 
