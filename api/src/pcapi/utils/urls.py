@@ -2,13 +2,6 @@ from typing import Optional
 from urllib.parse import urlencode
 
 from pcapi import settings
-from pcapi.models.feature import FeatureToggle
-
-
-def get_webapp_url() -> Optional[str]:
-    if FeatureToggle.WEBAPP_V2_ENABLED.is_active():
-        return settings.WEBAPP_V2_URL
-    return settings.WEBAPP_URL
 
 
 def generate_firebase_dynamic_link(path: str, params: Optional[dict]) -> str:
