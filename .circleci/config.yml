@@ -38,22 +38,21 @@ executors:
     docker:
       - image: ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_TOOLS_REGISTRY_NAME}/helm-gcp:3.4.1
         auth:
-          username: _json_key  # default username when using a JSON key file to authenticate
+          username: _json_key # default username when using a JSON key file to authenticate
           password: $GCP_INFRA_KEY
 
   node-gcp-12:
     docker:
       - image: ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_TOOLS_REGISTRY_NAME}/node-gcp:12
         auth:
-          username: _json_key  # default username when using a JSON key file to authenticate
+          username: _json_key # default username when using a JSON key file to authenticate
           password: $GCP_INFRA_KEY
-
 
   node-gcp-14:
     docker:
       - image: ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_TOOLS_REGISTRY_NAME}/node-gcp:14
         auth:
-          username: _json_key  # default username when using a JSON key file to authenticate
+          username: _json_key # default username when using a JSON key file to authenticate
           password: $GCP_INFRA_KEY
 
 ###################
@@ -89,30 +88,32 @@ commands:
         type: string
     description: Skip if no changes to "<< parameters.paths >>"
     steps:
-      - run: |
-          echo "Skip debugging"
-          echo "--------------"
-          GIT_BASE_BRANCH=<<parameters.git_base_branch>>
-          PATHS=<<parameters.paths>>
-          EXCEPT_BRANCHES=<<parameters.except_branches>>
-          echo "GIT_BASE_BRANCH=$GIT_BASE_BRANCH"
-          echo "PATHS=$PATHS"
-          echo "EXCEPT_BRANCHES=$EXCEPT_BRANCHES"
+      - run:
+          name: Skip job when not modifying this folder
+          command: |
+            echo "Skip debugging"
+            echo "--------------"
+            GIT_BASE_BRANCH=<<parameters.git_base_branch>>
+            PATHS=<<parameters.paths>>
+            EXCEPT_BRANCHES=<<parameters.except_branches>>
+            echo "GIT_BASE_BRANCH=$GIT_BASE_BRANCH"
+            echo "PATHS=$PATHS"
+            echo "EXCEPT_BRANCHES=$EXCEPT_BRANCHES"
 
-          BRANCH_NAME="$(git rev-parse --abbrev-ref HEAD)"
-          echo "BRANCH_NAME=$BRANCH_NAME"
+            BRANCH_NAME="$(git rev-parse --abbrev-ref HEAD)"
+            echo "BRANCH_NAME=$BRANCH_NAME"
 
-          IFS=' ' read -ra paths_arr \<<< "$PATHS"
-          echo "paths_arr=" "${paths_arr[@]}"
+            IFS=' ' read -ra paths_arr \<<< "$PATHS"
+            echo "paths_arr=" "${paths_arr[@]}"
 
-          CHANGED_FILES="$(git diff "$GIT_BASE_BRANCH"..."$(git symbolic-ref --short -q HEAD)" --name-only --diff-filter=ACMRT "${paths_arr[@]}")";
-          echo "CHANGED_FILES=$CHANGED_FILES"
+            CHANGED_FILES="$(git diff "$GIT_BASE_BRANCH"..."$(git symbolic-ref --short -q HEAD)" --name-only --diff-filter=ACMRT "${paths_arr[@]}")";
+            echo "CHANGED_FILES=$CHANGED_FILES"
 
-          if [[ "$EXCEPT_BRANCHES" == *"${BRANCH_NAME}"* ]] || [ -n "${CHANGED_FILES}" ];
-          then
-              exit 0;
-          fi
-          circleci step halt;
+            if [[ "$EXCEPT_BRANCHES" == *"${BRANCH_NAME}"* ]] || [ -n "${CHANGED_FILES}" ];
+            then
+                exit 0;
+            fi
+            circleci step halt;
   authenticate_gcp:
     description: Authenticate to a GCP project
     parameters:
@@ -130,7 +131,7 @@ commands:
         type: string
         default: ./api/version.txt
     steps:
-    - run: echo "export APP_VERSION=$(cat << parameters.version_file >> | tr -d '[:space:]')" >> $BASH_ENV
+      - run: echo "export APP_VERSION=$(cat << parameters.version_file >> | tr -d '[:space:]')" >> $BASH_ENV
 
   export_chart_version:
     description: Export Helm chart version number as environment variable
@@ -138,7 +139,7 @@ commands:
       version_file:
         type: string
     steps:
-    - run: echo "export CHART_VERSION=$(cat << parameters.version_file >> | tr -d '[:space:]')" >> $BASH_ENV
+      - run: echo "export CHART_VERSION=$(cat << parameters.version_file >> | tr -d '[:space:]')" >> $BASH_ENV
 
   deploy-helm-chart:
     description: Deploy Crons and worker via helm to Kubernetes Cluster
@@ -217,10 +218,10 @@ commands:
           command: git clone git@github.com:pass-culture/pass-culture-deployment.git ~/pass-culture-deployment
 
   clone-pass-culture-db-operations-repo:
-      steps:
-        - run:
-            name: Clone pass-culture-db-operations-repo
-            command: git clone git@github.com:pass-culture/pass-culture-db-operations.git ~/pass-culture-db-operations
+    steps:
+      - run:
+          name: Clone pass-culture-db-operations-repo
+          command: git clone git@github.com:pass-culture/pass-culture-db-operations.git ~/pass-culture-db-operations
 
 ###################
 #  JOBS
@@ -286,10 +287,10 @@ jobs:
           working_directory: api
       - when:
           condition:
-            equal: [ "master", << pipeline.git.branch >> ]
+            equal: ["master", << pipeline.git.branch >>]
           steps:
             - notify-slack:
-               channel: shérif
+                channel: shérif
 
   tests-script-pc:
     machine:
@@ -401,10 +402,10 @@ jobs:
           path: api/test-results
       - when:
           condition:
-            equal: [ "master", << pipeline.git.branch >> ]
+            equal: ["master", << pipeline.git.branch >>]
           steps:
             - notify-slack:
-               channel: shérif
+                channel: shérif
 
   tests-webapp:
     machine:
@@ -459,10 +460,10 @@ jobs:
           path: ~/pass-culture/webapp/testcafe_screenshots
       - when:
           condition:
-            equal: [ "master", << pipeline.git.branch >> ]
+            equal: ["master", << pipeline.git.branch >>]
           steps:
             - notify-slack:
-               channel: shérif
+                channel: shérif
 
   tests-adage-front:
     docker:
@@ -480,10 +481,10 @@ jobs:
             yarn test:unit
       - when:
           condition:
-            equal: [ "master", << pipeline.git.branch >> ]
+            equal: ["master", << pipeline.git.branch >>]
           steps:
             - notify-slack:
-               channel: shérif
+                channel: shérif
 
   quality-pro:
     machine:
@@ -528,10 +529,10 @@ jobs:
             yarn lint:js
       - when:
           condition:
-            equal: [ "master", << pipeline.git.branch >> ]
+            equal: ["master", << pipeline.git.branch >>]
           steps:
             - notify-slack:
-               channel: shérif
+                channel: shérif
 
   tests-pro-unit-tests:
     machine:
@@ -553,10 +554,10 @@ jobs:
             yarn test:unit
       - when:
           condition:
-            equal: [ "master", << pipeline.git.branch >> ]
+            equal: ["master", << pipeline.git.branch >>]
           steps:
             - notify-slack:
-               channel: shérif
+                channel: shérif
 
   tests-pro-e2e-tests:
     machine:
@@ -604,10 +605,10 @@ jobs:
           path: ~/pass-culture/pro/testcafe_screenshots
       - when:
           condition:
-            equal: [ "master", << pipeline.git.branch >> ]
+            equal: ["master", << pipeline.git.branch >>]
           steps:
             - notify-slack:
-               channel: shérif
+                channel: shérif
 
   tests-perf:
     working_directory: ~
@@ -914,11 +915,11 @@ workflows:
       - tests-script-pc
       - quality-pro:
           filters:
-              branches:
-                ignore:
-                  - production
-                  - staging
-                  - integration
+            branches:
+              ignore:
+                - production
+                - staging
+                - integration
           context: Slack
       - quality-api:
           filters:
