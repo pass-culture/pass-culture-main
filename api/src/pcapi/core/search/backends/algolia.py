@@ -12,7 +12,6 @@ import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.models as offers_models
 from pcapi.core.search.backends import base
 import pcapi.utils.date as date_utils
-from pcapi.utils.human_ids import humanize
 from pcapi.utils.stopwords import STOPWORDS
 
 
@@ -240,7 +239,6 @@ class AlgoliaBackend(base.SearchBackend):
     def serialize_offer(cls, offer: offers_models.Offer) -> dict:
         venue = offer.venue
         offerer = venue.managingOfferer
-        humanize_offer_id = humanize(offer.id)
         prices = map(lambda stock: stock.price, offer.bookableStocks)
         prices_sorted = sorted(prices, key=float)
         dates = []
@@ -256,11 +254,9 @@ class AlgoliaBackend(base.SearchBackend):
         extra_data = offer.extraData or {}
         artist = " ".join(extra_data.get(key, "") for key in ("author", "performer", "speaker", "stageDirector"))
 
-        isbn = extra_data.get("isbn")
-        visa = extra_data.get("visa")
         # Field used by Algolia (not the frontend) to deduplicate results
         # https://www.algolia.com/doc/api-reference/api-parameters/distinct/
-        distinct = isbn or visa or str(offer.id)
+        distinct = extra_data.get("isbn") or extra_data.get("visa") or str(offer.id)
 
         object_to_index = {
             "distinct": distinct,
@@ -271,18 +267,12 @@ class AlgoliaBackend(base.SearchBackend):
                 "dateCreated": date_created,
                 "dates": sorted(dates),
                 "description": remove_stopwords(offer.description or ""),
-                # TODO(antoinewg): still used for webapp: delete when migration to decliweb complete
-                "id": humanize_offer_id,
-                # TODO(antoinewg): delete after re-indexation (once we have `distinct` on all docs)
-                "isbn": isbn,
                 "isDigital": offer.isDigital,
                 "isDuo": offer.isDuo,
                 "isEducational": offer.isEducational,
                 "isEvent": offer.isEvent,
                 "isForbiddenToUnderage": offer.is_forbidden_to_underage,
                 "isThing": offer.isThing,
-                # FIXME remove once subcategory logic is fully implemented
-                "label": offer.subcategory.app_label,
                 "name": offer.name,
                 "prices": prices_sorted,
                 "searchGroupName": offer.subcategory.search_group_name,
@@ -291,14 +281,11 @@ class AlgoliaBackend(base.SearchBackend):
                 "thumbUrl": url_path(offer.thumbUrl),
                 "tags": tags,
                 "times": list(set(times)),
-                # TODO(antoinewg): delete after re-indexation (once we have `distinct` on all docs)
-                "visa": visa,
             },
             "offerer": {
                 "name": offerer.name,
             },
             "venue": {
-                "departementCode": venue.departementCode,
                 "id": venue.id,
                 "name": venue.name,
                 "publicName": venue.publicName,
