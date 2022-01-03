@@ -20,7 +20,6 @@ from pcapi.models.user_offerer import UserOfferer
 from pcapi.utils.date import format_datetime
 from pcapi.utils.date import utc_datetime_to_department_timezone
 from pcapi.utils.human_ids import humanize
-from pcapi.utils.urls import get_webapp_url
 
 
 def build_pc_pro_offer_link(offer: Offer) -> str:
@@ -40,7 +39,7 @@ def build_pc_pro_reset_password_link(token_value: str) -> str:
 
 
 def build_pc_webapp_reset_password_link(token_value: str) -> str:
-    return f"{get_webapp_url()}/mot-de-passe-perdu?token={token_value}"
+    return f"{settings.WEBAPP_V2_URL}/mot-de-passe-perdu?token={token_value}"
 
 
 def extract_users_information_from_bookings(bookings: list[Booking]) -> list[dict]:
