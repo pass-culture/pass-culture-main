@@ -9,7 +9,6 @@ import {
   createImageFile,
   renderThumbnail,
 } from 'components/pages/Offers/Offer/Thumbnail/__specs__/setup'
-import * as pcapi from 'repository/pcapi/pcapi'
 
 // The tests files have been separated in two because this mock
 // breaks other tests
@@ -132,57 +131,7 @@ describe('when the user is on the preview step', () => {
         width: 0.27,
         height: 0.7,
       },
-      thumbUrl: '',
       thumbnail: file,
-    })
-  })
-
-  it('should save thumbnail info and close the modal when finishing import from URL', async () => {
-    // Given
-    const closeModal = jest.fn()
-    const setThumbnailInfo = jest.fn()
-    renderThumbnail({
-      setIsModalOpened: closeModal,
-      setThumbnailInfo: setThumbnailInfo,
-    })
-    pcapi.validateDistantImage.mockResolvedValue({ errors: [], image: '' })
-    fireEvent.click(screen.getByText('Utiliser une URL'))
-    fireEvent.change(screen.getByLabelText('URL de l’image'), {
-      target: { value: 'https://url_example.com' },
-    })
-    const sumbitButton = screen.getByText('Valider', { selector: 'button' })
-    await waitFor(() => {
-      expect(sumbitButton).toBeEnabled()
-    })
-    fireEvent.click(screen.getByText('Valider', { selector: 'button' }))
-    fireEvent.change(await screen.findByPlaceholderText('Photographe...'), {
-      target: { value: 'Mon crédit' },
-    })
-    fireEvent.click(await screen.findByText('Suivant', { selector: 'button' }))
-    fireEvent.click(screen.getByText('Prévisualiser', { selector: 'button' }))
-
-    // When
-    fireEvent.click(screen.getByText('Valider', { selector: 'button' }))
-
-    // Then
-    await waitFor(() => {
-      expect(
-        screen.queryByText(
-          'Prévisualisation de votre image dans l’application pass Culture'
-        )
-      ).not.toBeInTheDocument()
-    })
-    expect(closeModal).toHaveBeenCalledWith(false)
-    expect(setThumbnailInfo).toHaveBeenCalledWith({
-      credit: 'Mon crédit',
-      croppingRect: {
-        x: 0.23,
-        y: 0.15,
-        width: 0.27,
-        height: 0.7,
-      },
-      thumbUrl: 'https://url_example.com',
-      thumbnail: {},
     })
   })
 })
