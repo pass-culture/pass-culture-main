@@ -121,7 +121,7 @@ describe('offerDetails - Edition', () => {
 
     editedOffer = {
       id: 'ABC12',
-      nonHumanizedOfferId: 111,
+      nonHumanizedId: 111,
       subcategoryId: 'ID',
       name: 'My edited offer',
       venue: editedOfferVenue,
@@ -200,7 +200,7 @@ describe('offerDetails - Edition', () => {
         beforeEach(async () => {
           const editedOffer = {
             id: 'ABC12',
-            nonHumanizedOfferId: 111,
+            nonHumanizedId: 111,
             subcategoryId: 'ID',
             name: 'My edited offer',
             venue: editedOfferVenue,
@@ -303,7 +303,7 @@ describe('offerDetails - Edition', () => {
           { selector: 'a' }
         )
         expect(previewLink).toBeInTheDocument()
-        const expectedWebappUri = `offre/details/${editedOffer.id}`
+        const expectedWebappUri = `offre/${editedOffer.nonHumanizedId}`
         expect(previewLink).toHaveAttribute(
           'href',
           expect.stringContaining(expectedWebappUri)
@@ -323,7 +323,7 @@ describe('offerDetails - Edition', () => {
           { selector: 'a' }
         )
         expect(previewLink).toBeInTheDocument()
-        const expectedWebappUri = `offre/details/`
+        const expectedWebappUri = `offre/`
         expect(previewLink).toHaveAttribute(
           'href',
           expect.stringContaining(expectedWebappUri)
@@ -526,7 +526,7 @@ describe('offerDetails - Edition', () => {
       editedOfferVenue.isVirtual = true
       const editedOffer = {
         id: 'ABC12',
-        nonHumanizedOfferId: 111,
+        nonHumanizedId: 111,
         subcategoryId: 'ID',
         bookingEmail: 'booking@example.net',
         description: 'Offer description',
@@ -735,7 +735,7 @@ describe('offerDetails - Edition', () => {
       editedOfferVenue.isVirtual = true
       const editedOffer = {
         id: 'ABC12',
-        nonHumanizedOfferId: 111,
+        nonHumanizedId: 111,
         subcategoryId: 'ID',
         name: 'My edited offer',
         description: 'Offer description',
@@ -832,7 +832,7 @@ describe('offerDetails - Edition', () => {
       // Given
       const editedOffer = {
         id: 'ABC12',
-        nonHumanizedOfferId: 111,
+        nonHumanizedId: 111,
         subcategoryId: 'ID2',
         name: 'My edited offer',
         description: 'Offer description',
@@ -857,7 +857,7 @@ describe('offerDetails - Edition', () => {
       // Given
       const editedOffer = {
         id: 'ABC12',
-        nonHumanizedOfferId: 111,
+        nonHumanizedId: 111,
         subcategoryId: 'ID',
         name: 'My edited offer',
         description: 'Offer description',
@@ -909,7 +909,7 @@ describe('offerDetails - Edition', () => {
         // Given
         const editedOffer = {
           id: 'ABC12',
-          nonHumanizedOfferId: 111,
+          nonHumanizedId: 111,
           subcategoryId: 'ID',
           name: 'My synchronized offer',
           showType: 400,
@@ -954,7 +954,7 @@ describe('offerDetails - Edition', () => {
         editedOfferVenue.isVirtual = true
         const editedOffer = {
           id: 'ABC12',
-          nonHumanizedOfferId: 111,
+          nonHumanizedId: 111,
           subcategoryId: 'ID',
           name: 'My edited offer',
           showType: 400,
@@ -998,7 +998,7 @@ describe('offerDetails - Edition', () => {
         editedOfferVenue.isVirtual = true
         const editedOffer = {
           id: 'ABC12',
-          nonHumanizedOfferId: 111,
+          nonHumanizedId: 111,
           subcategoryId: 'ID',
           name: 'My edited offer',
           showType: '400',
@@ -1082,7 +1082,7 @@ describe('offerDetails - Edition', () => {
         // Given
         const editedOffer = {
           id: 'ABC12',
-          nonHumanizedOfferId: 111,
+          nonHumanizedId: 111,
           subcategoryId: 'ID',
           name: 'My edited offer',
           description: 'Offer description',
@@ -1123,7 +1123,7 @@ describe('offerDetails - Edition', () => {
         // Given
         const editedOffer = {
           id: 'ABC12',
-          nonHumanizedOfferId: 111,
+          nonHumanizedId: 111,
           subcategoryId: 'ID',
           name: 'My edited offer',
           showType: 400,
@@ -1174,7 +1174,7 @@ describe('offerDetails - Edition', () => {
         // given
         const editedOffer = {
           id: 'ABC12',
-          nonHumanizedOfferId: 111,
+          nonHumanizedId: 111,
           subcategoryId: 'ID',
           name: 'My edited offer',
           description: 'Offer description',
@@ -1266,7 +1266,7 @@ describe('offerDetails - Edition', () => {
       // Given
       const editedOffer = {
         id: 'ABC12',
-        nonHumanizedOfferId: 111,
+        nonHumanizedId: 111,
         subcategoryId: 'ID',
         name: 'My edited offer',
         description: 'Offer description',
@@ -1305,7 +1305,7 @@ describe('offerDetails - Edition', () => {
       // Given
       const editedOffer = {
         id: 'ABC12',
-        nonHumanizedOfferId: 111,
+        nonHumanizedId: 111,
         subcategoryId: 'ID',
         name: 'My edited offer',
         description: 'Offer description',
@@ -1341,7 +1341,7 @@ describe('offerDetails - Edition', () => {
       // Given
       const editedOffer = {
         id: 'ABC12',
-        nonHumanizedOfferId: 111,
+        nonHumanizedId: 111,
         subcategoryId: 'ID',
         name: 'My edited offer',
         description: 'Offer description',
@@ -1400,7 +1400,7 @@ describe('offerDetails - Edition', () => {
       // Given
       const editedOffer = {
         id: 'ABC12',
-        nonHumanizedOfferId: 111,
+        nonHumanizedId: 111,
         subcategoryId: 'ID',
         name: 'My edited offer',
         description: 'Offer description',
@@ -1442,7 +1442,7 @@ describe('offerDetails - Edition', () => {
       // Given
       const editedOffer = {
         id: 'ABC12',
-        nonHumanizedOfferId: 111,
+        nonHumanizedId: 111,
         subcategoryId: 'ID',
         name: 'My edited offer',
         description: 'Offer description',
@@ -1481,7 +1481,7 @@ describe('offerDetails - Edition', () => {
       // Given
       const editedOffer = {
         id: 'ABC12',
-        nonHumanizedOfferId: 111,
+        nonHumanizedId: 111,
         subcategoryId: 'ID',
         name: 'My edited offer',
         description: 'Offer description',
@@ -1535,7 +1535,7 @@ describe('offerDetails - Edition', () => {
       // Given
       const editedOffer = {
         id: 'ABC12',
-        nonHumanizedOfferId: 111,
+        nonHumanizedId: 111,
         subcategoryId: 'ID',
         name: 'My edited offer',
         description: 'Offer description',
@@ -1574,7 +1574,7 @@ describe('offerDetails - Edition', () => {
       // Given
       const editedOffer = {
         id: 'ABC12',
-        nonHumanizedOfferId: 111,
+        nonHumanizedId: 111,
         subcategoryId: 'ID',
         name: 'My edited offer',
         description: 'Offer description',
@@ -1611,7 +1611,7 @@ describe('offerDetails - Edition', () => {
       // Given
       const editedOffer = {
         id: 'ABC12',
-        nonHumanizedOfferId: 111,
+        nonHumanizedId: 111,
         subcategoryId: 'ID',
         name: 'My edited offer',
         description: 'Offer description',
@@ -1689,7 +1689,7 @@ describe('offerDetails - Edition', () => {
 
       const editedOffer = {
         id: 'ABC12',
-        nonHumanizedOfferId: 111,
+        nonHumanizedId: 111,
         subcategoryId: 'ID',
         name: 'My edited offer',
         description: 'Offer description',
@@ -1723,7 +1723,7 @@ describe('offerDetails - Edition', () => {
       })
       const editedOffer = {
         id: 'ABC12',
-        nonHumanizedOfferId: 111,
+        nonHumanizedId: 111,
         subcategoryId: 'ID',
         name: 'My edited offer',
         description: 'Offer description',
