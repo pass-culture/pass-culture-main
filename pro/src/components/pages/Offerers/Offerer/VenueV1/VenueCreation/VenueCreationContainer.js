@@ -12,7 +12,6 @@ import { requestData } from 'redux-saga-data'
 
 import { withQueryRouter } from 'components/hocs/with-query-router/withQueryRouter'
 import { CREATION } from 'components/hocs/withFrenchQueryRouter'
-import withTracking from 'components/hocs/withTracking'
 import { isFeatureActive } from 'store/features/selectors'
 import { showNotification } from 'store/reducers/notificationReducer'
 import { selectOffererById } from 'store/selectors/data/offerersSelectors'
@@ -148,22 +147,7 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
   }
 }
 
-export const mergeProps = (stateProps, dispatchProps, ownProps) => {
-  return {
-    ...stateProps,
-    ...dispatchProps,
-    ...ownProps,
-    trackCreateVenue: createdVenueId => {
-      ownProps.tracking.trackEvent({
-        action: 'createVenue',
-        name: createdVenueId,
-      })
-    },
-  }
-}
-
 export default compose(
-  withTracking('Venue'),
   withQueryRouter(),
-  connect(mapStateToProps, mapDispatchToProps, mergeProps)
+  connect(mapStateToProps, mapDispatchToProps)
 )(VenueCreation)

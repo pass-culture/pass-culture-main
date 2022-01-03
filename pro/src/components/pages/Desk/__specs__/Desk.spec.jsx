@@ -38,7 +38,6 @@ describe('src | components | Desk', () => {
     props = {
       getBooking: jest.fn(),
       invalidateBooking: jest.fn(),
-      trackValidateBookingSuccess: jest.fn(),
       validateBooking: jest.fn(),
     }
   })

@@ -131,26 +131,7 @@ describe('src | components | pages | Offerer | OfferCreation | OffererCreationCo
       expect(mergedProps).toStrictEqual({
         getOfferer: expect.any(Function),
         match: ownProps.match,
-        trackCreateOfferer: expect.any(Function),
         redirectAfterSubmit: expect.any(Function),
-      })
-    })
-
-    it('should map a tracking event for create an offer', () => {
-      // given
-      const stateProps = {}
-      const ownProps = {
-        tracking: {
-          trackEvent: jest.fn(),
-        },
-      }
-      // when
-      mergeProps(stateProps, {}, ownProps).trackCreateOfferer('RTgfd67')
-
-      // then
-      expect(ownProps.tracking.trackEvent).toHaveBeenCalledWith({
-        action: 'createOfferer',
-        name: 'RTgfd67',
       })
     })
   })

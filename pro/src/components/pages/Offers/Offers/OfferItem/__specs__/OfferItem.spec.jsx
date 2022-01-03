@@ -63,8 +63,6 @@ describe('src | components | pages | Offers | OfferItem', () => {
         search: '?orderBy=offer.id+desc',
       },
       selectOffer: jest.fn(),
-      trackActivateOffer: jest.fn(),
-      trackDeactivateOffer: jest.fn(),
       refreshOffers: jest.fn(),
     }
   })

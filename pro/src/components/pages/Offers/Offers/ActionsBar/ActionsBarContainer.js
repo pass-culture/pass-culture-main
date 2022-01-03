@@ -5,7 +5,6 @@
 import { connect } from 'react-redux'
 import { compose } from 'redux'
 
-import withTracking from 'components/hocs/withTracking'
 import { showNotification } from 'store/reducers/notificationReducer'
 
 import ActionsBar from './ActionsBar'
@@ -35,27 +34,4 @@ export const mapDispatchToProps = dispatch => {
   }
 }
 
-export const mergeProps = (stateProps, dispatchProps, ownProps) => {
-  return {
-    ...stateProps,
-    ...dispatchProps,
-    ...ownProps,
-    trackActivateOffers: offerIds => {
-      ownProps.tracking.trackEvent({
-        action: 'activateOffers',
-        names: offerIds,
-      })
-    },
-    trackDeactivateOffers: offerIds => {
-      ownProps.tracking.trackEvent({
-        action: 'deactivateOffers',
-        names: offerIds,
-      })
-    },
-  }
-}
-
-export default compose(
-  withTracking('OffersActionsBar'),
-  connect(mapStateToProps, mapDispatchToProps, mergeProps)
-)(ActionsBar)
+export default compose(connect(mapStateToProps, mapDispatchToProps))(ActionsBar)

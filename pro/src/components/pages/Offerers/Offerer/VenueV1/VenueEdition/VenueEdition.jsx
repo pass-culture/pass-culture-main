@@ -50,7 +50,6 @@ const VenueEdition = ({
   },
   offerer,
   query,
-  trackModifyVenue,
   venue,
   venueLabels,
   venueTypes,
@@ -85,11 +84,8 @@ const VenueEdition = ({
 
   const handleFormSuccess =
     (formResolver, hasDelayedUpdates) => (_state, action) => {
-      const { id: venueId } = venue
-
       handleSubmitRequestSuccess(action, { hasDelayedUpdates })
       formResolver()
-      trackModifyVenue(venueId)
       query.changeToReadOnly(null)
       setIsRequestPending(false)
     }
@@ -371,7 +367,6 @@ VenueEdition.propTypes = {
   match: PropTypes.shape().isRequired,
   offerer: PropTypes.shape(),
   query: PropTypes.shape().isRequired,
-  trackModifyVenue: PropTypes.func.isRequired,
   venue: PropTypes.shape(),
   venueLabels: PropTypes.arrayOf(PropTypes.instanceOf(VenueLabel)).isRequired,
   venueTypes: PropTypes.arrayOf(PropTypes.instanceOf(VenueType)).isRequired,

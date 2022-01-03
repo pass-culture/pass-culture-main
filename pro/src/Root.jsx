@@ -5,7 +5,6 @@ import { PersistGate } from 'redux-persist/integration/react'
 
 import AppContainer from 'app/AppContainer'
 import AppLayout from 'app/AppLayout'
-import MatomoContainer from 'components/matomo/MatomoContainer'
 import NotFound from 'components/pages/Errors/NotFound/NotFound'
 import FeaturedRoute from 'components/router/FeaturedRoute'
 import configureStore from 'store'
@@ -49,7 +48,6 @@ const Root = () => {
               })}
               <Route component={NotFound} />
             </Switch>
-            <MatomoContainer />
           </AppContainer>
         </BrowserRouter>
       </PersistGate>

@@ -136,7 +136,6 @@ describe('test page : VenueEdition', () => {
           readOnly: false,
         }),
       },
-      trackModifyVenue: jest.fn(),
       venueTypes: [],
       venueLabels: [],
     }
@@ -398,7 +397,7 @@ describe('test page : VenueEdition', () => {
       expect(getApplyEmailBookingOnAllOffersLabel()).toBeInTheDocument()
     })
 
-    it('should reset url search params and and track venue modification.', async () => {
+    it('should reset url search params.', async () => {
       // jest
       props.handleSubmitRequest.mockImplementation(({ handleSuccess }) => {
         handleSuccess(jest.fn(), false)()
@@ -414,7 +413,6 @@ describe('test page : VenueEdition', () => {
 
       await waitFor(() => {
         expect(props.query.changeToReadOnly).toHaveBeenCalledWith(null)
-        expect(props.trackModifyVenue).toHaveBeenCalledWith(props.venue.id)
       })
     })
 

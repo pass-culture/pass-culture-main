@@ -41,8 +41,6 @@ const ActionsBar = props => {
     clearSelectedOfferIds,
     showPendingNotification,
     showSuccessNotification,
-    trackActivateOffers,
-    trackDeactivateOffers,
     toggleSelectAllCheckboxes,
     areAllOffersSelected,
     searchFilters,
@@ -82,11 +80,6 @@ const ActionsBar = props => {
                 : computeDeactivationSuccessMessage(nbSelectedOffers)
             )
         handleClose()
-        if (!areAllOffersSelected) {
-          isActivating
-            ? trackActivateOffers(selectedOfferIds)
-            : trackDeactivateOffers(selectedOfferIds)
-        }
       })
     },
     [
@@ -98,8 +91,6 @@ const ActionsBar = props => {
       nbSelectedOffers,
       showSuccessNotification,
       handleClose,
-      trackActivateOffers,
-      trackDeactivateOffers,
     ]
   )
 
@@ -167,8 +158,6 @@ ActionsBar.propTypes = {
   showPendingNotification: PropTypes.func.isRequired,
   showSuccessNotification: PropTypes.func.isRequired,
   toggleSelectAllCheckboxes: PropTypes.func.isRequired,
-  trackActivateOffers: PropTypes.func.isRequired,
-  trackDeactivateOffers: PropTypes.func.isRequired,
 }
 
 export default ActionsBar
