@@ -336,6 +336,7 @@ const VenueEdition = ({
       </NavLink>
       {venue.businessUnit && !venue.businessUnit.siret && (
         <Banner
+          className="banner-invalid-bu"
           href={`/structures/${offererId}/point-de-remboursement/`}
           icon="ico-right-circle-arrow"
           linkTitle="Rattacher votre lieu à un point de remboursement valide"
