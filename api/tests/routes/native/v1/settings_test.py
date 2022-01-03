@@ -10,10 +10,8 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 class SettingsTest:
     @override_features(
-        ALLOW_IDCHECK_REGISTRATION=True,
         AUTO_ACTIVATE_DIGITAL_BOOKINGS=False,
         DISPLAY_DMS_REDIRECTION=True,
-        ENABLE_CULTURAL_SURVEY=True,
         ENABLE_ID_CHECK_RETENTION=False,
         ENABLE_NATIVE_APP_RECAPTCHA=True,
         ENABLE_NATIVE_EAC_INDIVIDUAL=False,
@@ -27,9 +25,7 @@ class SettingsTest:
         assert response.status_code == 200
         assert response.json == {
             "accountCreationMinimumAge": 15,
-            "allowIdCheckRegistration": True,
             "autoActivateDigitalBookings": False,
-            "depositAmount": 30000,
             "depositAmountsByAge": {"age_15": 2000, "age_16": 3000, "age_17": 3000, "age_18": 30000},
             "displayDmsRedirection": True,
             "enableIdCheckRetention": False,
@@ -37,7 +33,6 @@ class SettingsTest:
             "enableNativeIdCheckVerboseDebugging": False,
             "enablePhoneValidation": True,
             "enableUnderageGeneralisation": False,
-            "enableCulturalSurvey": True,
             "idCheckAddressAutocompletion": True,
             "isRecaptchaEnabled": True,
             "isWebappV2Enabled": False,
@@ -45,29 +40,24 @@ class SettingsTest:
         }
 
     @override_features(
-        ALLOW_IDCHECK_REGISTRATION=False,
-        ENABLE_NATIVE_APP_RECAPTCHA=False,
-        ENABLE_NATIVE_ID_CHECK_VERBOSE_DEBUGGING=True,
-        ENABLE_ID_CHECK_RETENTION=True,
         AUTO_ACTIVATE_DIGITAL_BOOKINGS=True,
-        ENABLE_CULTURAL_SURVEY=False,
-        WEBAPP_V2_ENABLED=True,
-        ENABLE_PHONE_VALIDATION=False,
         DISPLAY_DMS_REDIRECTION=False,
-        ID_CHECK_ADDRESS_AUTOCOMPLETION=False,
+        ENABLE_ID_CHECK_RETENTION=True,
+        ENABLE_NATIVE_APP_RECAPTCHA=False,
         ENABLE_NATIVE_EAC_INDIVIDUAL=True,
+        ENABLE_NATIVE_ID_CHECK_VERBOSE_DEBUGGING=True,
+        ENABLE_PHONE_VALIDATION=False,
+        ID_CHECK_ADDRESS_AUTOCOMPLETION=False,
+        WEBAPP_V2_ENABLED=True,
     )
     def test_get_settings_feature_combination_2(self, app):
         response = TestClient(app.test_client()).get("/native/v1/settings")
         assert response.status_code == 200
         assert response.json == {
             "accountCreationMinimumAge": 15,
-            "allowIdCheckRegistration": False,
             "autoActivateDigitalBookings": True,
-            "depositAmount": 30000,
             "depositAmountsByAge": {"age_15": 2000, "age_16": 3000, "age_17": 3000, "age_18": 30000},
             "displayDmsRedirection": False,
-            "enableCulturalSurvey": False,
             "enableIdCheckRetention": True,
             "enableNativeEacIndividual": True,
             "enableNativeIdCheckVerboseDebugging": True,
