@@ -33,22 +33,6 @@ const isNotDuo = Selector('.offer-form [name="offerOption"]').withAttribute(
 const noDisabilityCompliantCheckbox =
   '.offer-form [name="noDisabilityCompliant"]'
 const thumbnailButton = Selector('.of-placeholder')
-const importFromUrlButton = Selector(
-  '.thumbnail-dialog .bc-step:not(.active) a'
-)
-const importFromUrlInput = Selector(
-  '.thumbnail-dialog .tnf-form input[name="url"]'
-)
-const importFromUrlSubmitButton = Selector('.thumbnail-dialog .tnf-url-button')
-const creditSubmitButton = Selector(
-  '.thumbnail-dialog .tnd-actions .primary-button'
-)
-const previewSubmitButton = Selector(
-  '.thumbnail-dialog .tnd-actions .primary-button'
-)
-const validateThumbnailButton = Selector(
-  '.thumbnail-dialog .tnd-actions .primary-button'
-)
 const submitButton = Selector('.actions-section .primary-button')
 const navBrandLogoItem = Selector('.nav-brand .logo')
 const exitOfferCreationMessage = Selector(
@@ -204,15 +188,6 @@ test("je peux modifier la thumbnail d'une offre", async t => {
   const previousThumbnailSrc = await offerThumbnail().attributes['src']
   await t
     .click(thumbnailButton)
-    .click(importFromUrlButton)
-    .typeText(
-      importFromUrlInput,
-      'https://pass.culture.fr/wp-content/uploads/2020/11/N_PASS_CULTURE_HD.png'
-    )
-    .click(importFromUrlSubmitButton)
-    .click(creditSubmitButton)
-    .click(previewSubmitButton)
-    .click(validateThumbnailButton)
     .click(noDisabilityCompliantCheckbox)
     .click(submitButton)
   await t.eval(() => location.reload(true))
@@ -316,15 +291,6 @@ test('Je peux créer une offre avec médiation', async t => {
     .click(subcategoryOption.withText('Support physique (DVD, Blu-ray...)'))
     .typeText(nameInput, 'Rencontre avec Franck Lepage')
     .click(thumbnailButton)
-    .click(importFromUrlButton)
-    .typeText(
-      importFromUrlInput,
-      'https://pass.culture.fr/wp-content/uploads/2020/11/N_PASS_CULTURE_HD.png'
-    )
-    .click(importFromUrlSubmitButton)
-    .click(creditSubmitButton)
-    .click(previewSubmitButton)
-    .click(validateThumbnailButton)
     .click(noDisabilityCompliantCheckbox)
     .click(submitButton)
     .expect(getPathname())
