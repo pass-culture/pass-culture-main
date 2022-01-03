@@ -12,7 +12,9 @@ delete require.cache[require.resolve('./paths')]
 
 const NODE_ENV = process.env.NODE_ENV
 if (!NODE_ENV) {
-  throw new Error('The NODE_ENV environment variable is required but was not specified.')
+  throw new Error(
+    'The NODE_ENV environment variable is required but was not specified.'
+  )
 }
 
 // https://github.com/bkeepers/dotenv#what-other-env-files-can-i-use
@@ -72,7 +74,6 @@ function getClientEnvironment(publicUrl) {
       {
         API_URL_OLD: process.env.API_URL_OLD,
         API_URL_NEW: process.env.API_URL_NEW,
-        WEBAPP_URL_OLD: process.env.WEBAPP_URL_OLD,
         WEBAPP_URL_NEW: process.env.WEBAPP_URL_NEW,
         ENVIRONMENT_NAME: process.env.ENVIRONMENT_NAME,
         ENV_WORDING: process.env.ENV_WORDING,
@@ -82,7 +83,8 @@ function getClientEnvironment(publicUrl) {
         SENTRY_SAMPLE_RATE: process.env.SENTRY_SAMPLE_RATE,
         SENTRY_SERVER_URL: process.env.SENTRY_SERVER_URL,
         URL_FOR_MAINTENANCE: process.env.URL_FOR_MAINTENANCE,
-        MAINTENANCE_PAGE_AVAILABLE: process.env.MAINTENANCE_PAGE_AVAILABLE === 'true' || false,
+        MAINTENANCE_PAGE_AVAILABLE:
+          process.env.MAINTENANCE_PAGE_AVAILABLE === 'true',
         DEMARCHES_SIMPLIFIEES_OFFERER_RIB_UPLOAD_PROCEDURE_URL:
           process.env.DEMARCHES_SIMPLIFIEES_OFFERER_RIB_UPLOAD_PROCEDURE_URL,
         DEMARCHES_SIMPLIFIEES_VENUE_RIB_UPLOAD_PROCEDURE_URL:

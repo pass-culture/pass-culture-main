@@ -29,7 +29,6 @@ export const {
   ASSETS_URL,
   RECAPTCHA_SITE_KEY,
   WEBAPP_URL_NEW,
-  WEBAPP_URL_OLD,
 } = process.env
 
 let CALC_ROOT_PATH = ''
