@@ -11,7 +11,6 @@ import { loadFakeApiOffer } from 'utils/fakeApi'
 
 jest.mock('utils/config', () => {
   return {
-    WEBAPP_URL_OLD: 'http://localhost',
     WEBAPP_URL_NEW: 'http://localhost',
   }
 })
