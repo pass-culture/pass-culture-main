@@ -72,7 +72,6 @@ function getClientEnvironment(publicUrl) {
         return env
       },
       {
-        API_URL_OLD: process.env.API_URL_OLD,
         API_URL_NEW: process.env.API_URL_NEW,
         WEBAPP_URL: process.env.WEBAPP_URL,
         ENVIRONMENT_NAME: process.env.ENVIRONMENT_NAME,

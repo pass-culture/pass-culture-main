@@ -8,14 +8,7 @@ export const IS_DEV = NODE_ENV === 'development'
 
 export const CGU_URL = 'https://pass.culture.fr/cgu-professionnels/'
 
-// FIXME : Remove when transition to new domain is done
-let apiUrlBasedOnDomain
-if (typeof window !== 'undefined') {
-  apiUrlBasedOnDomain = window.location.hostname.includes('beta.gouv')
-    ? process.env.API_URL_OLD
-    : process.env.API_URL_NEW
-}
-export const API_URL = apiUrlBasedOnDomain || 'http://localhost'
+export const API_URL = process.env.API_URL_NEW || 'http://localhost'
 
 export const {
   ENVIRONMENT_NAME,
