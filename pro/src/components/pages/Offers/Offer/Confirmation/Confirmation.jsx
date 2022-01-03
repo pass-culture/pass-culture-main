@@ -63,7 +63,7 @@ const Confirmation = ({ isCreatingOffer, location, offer, setOffer }) => {
         </div>
       )}
       <div className="oc-actions">
-        <OfferPreviewLink nonHumanizedOfferId={offer.nonHumanizedId} />
+        <OfferPreviewLink nonHumanizedId={offer.nonHumanizedId} />
         <Link
           className="primary-link"
           onClick={resetOffer}

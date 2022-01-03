@@ -38,7 +38,7 @@ describe('confirmation page', () => {
     ).toBeInTheDocument()
     expect(
       screen.getByText('Prévisualiser dans l’app', { selector: 'a' })
-    ).toHaveAttribute('href', `http://localhost/offre/details/${offer.id}`)
+    ).toHaveAttribute('href', `http://localhost/offre/${offer.nonHumanizedId}`)
     expect(
       screen.getByText('Créer une nouvelle offre', { selector: 'a' })
     ).toHaveAttribute('href', '/offres/creation')

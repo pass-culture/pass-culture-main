@@ -7,8 +7,8 @@ import React, { useCallback } from 'react'
 
 import { WEBAPP_URL_NEW } from 'utils/config'
 
-const OfferPreviewLink = ({ nonHumanizedOfferId }) => {
-  const offerPreviewUrl = `${WEBAPP_URL_NEW}/offre/${nonHumanizedOfferId}`
+const OfferPreviewLink = ({ nonHumanizedId }) => {
+  const offerPreviewUrl = `${WEBAPP_URL_NEW}/offre/${nonHumanizedId}`
 
   const openWindow = useCallback(
     event => {
@@ -39,7 +39,7 @@ const OfferPreviewLink = ({ nonHumanizedOfferId }) => {
 }
 
 OfferPreviewLink.propTypes = {
-  nonHumanizedOfferId: PropTypes.number.isRequired,
+  nonHumanizedId: PropTypes.number.isRequired,
 }
 
 export default OfferPreviewLink
