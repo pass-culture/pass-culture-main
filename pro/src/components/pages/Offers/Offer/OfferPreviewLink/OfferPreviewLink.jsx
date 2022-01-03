@@ -5,10 +5,10 @@
 import PropTypes from 'prop-types'
 import React, { useCallback } from 'react'
 
-import { WEBAPP_URL_NEW } from 'utils/config'
+import { WEBAPP_URL } from 'utils/config'
 
 const OfferPreviewLink = ({ nonHumanizedId }) => {
-  const offerPreviewUrl = `${WEBAPP_URL_NEW}/offre/${nonHumanizedId}`
+  const offerPreviewUrl = `${WEBAPP_URL}/offre/${nonHumanizedId}`
 
   const openWindow = useCallback(
     event => {
