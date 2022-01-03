@@ -50,6 +50,7 @@
       content: "";
       height: rem(10px);
       margin-top: rem(-19px);
+      pointer-events: none;
       position: absolute;
       right: rem(20px);
       top: 75%;
@@ -57,9 +58,5 @@
       transform-origin: center;
       width: rem(10px);
     }
-  }
-
-  .banners {
-    margin-top: rem(70px);
   }
 }

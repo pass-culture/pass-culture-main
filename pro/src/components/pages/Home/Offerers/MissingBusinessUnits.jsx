@@ -26,7 +26,7 @@ const MissingBusinessUnits = ({ hasTitle }) => {
       <div className="h-card-content">
         <InternalBanner
           href={DEMARCHES_SIMPLIFIEES_BUSINESS_UNIT_RIB_UPLOAD_PROCEDURE_URL}
-          icon="ico-pen-black"
+          icon="ico-outer-pen"
           linkTitle="Renseignez les coordonnées bancaires"
           targetLink="_self"
         >

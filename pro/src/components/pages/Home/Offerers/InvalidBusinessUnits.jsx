@@ -26,7 +26,7 @@ const InvalidBusinessUnits = ({ offererId, hasTitle = true }) => {
       <div className="h-card-content">
         <InternalBanner
           href={businessUnitRoutePath}
-          icon="ico-pen-black"
+          icon="ico-outer-pen"
           linkTitle="Renseigner un SIRET de référence"
           targetLink="_self"
         >

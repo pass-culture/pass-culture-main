@@ -54,9 +54,10 @@
       border-radius: rem(2px);
       border-right: 0;
       border-top: 0;
-      content: " ";
+      content: "";
       height: rem(10px);
       margin-top: rem(-7px);
+      pointer-events: none;
       position: absolute;
       right: rem(18px);
       top: 50%;
