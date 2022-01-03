@@ -8,7 +8,7 @@ export const IS_DEV = NODE_ENV === 'development'
 
 export const CGU_URL = 'https://pass.culture.fr/cgu-professionnels/'
 
-export const API_URL = process.env.API_URL_NEW || 'http://localhost'
+export const API_URL = process.env.API_URL || 'http://localhost'
 
 export const {
   ENVIRONMENT_NAME,
