@@ -26,6 +26,7 @@ class SettingsResponse(BaseModel):
     is_recaptcha_enabled: bool
     is_webapp_v2_enabled: bool
     object_storage_url: str
+    ubble_eta_message: str
 
     class Config:
         alias_generator = to_camel

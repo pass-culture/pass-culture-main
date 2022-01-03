@@ -49,4 +49,5 @@ def get_settings() -> serializers.SettingsResponse:
         # the last forced release v1.166.3 was not future proof enough to delete yet in this PR.
         is_webapp_v2_enabled=features[FeatureToggle.WEBAPP_V2_ENABLED],
         object_storage_url=OBJECT_STORAGE_URL,
+        ubble_eta_message=constants.UBBLE_ETA_MESSAGE,
     )

@@ -37,6 +37,7 @@ class SettingsTest:
             "isRecaptchaEnabled": True,
             "isWebappV2Enabled": False,
             "objectStorageUrl": "http://localhost/storage",
+            "ubbleEtaMessage": "Environ 3 heures",
         }
 
     @override_features(
@@ -67,4 +68,5 @@ class SettingsTest:
             "isRecaptchaEnabled": False,
             "isWebappV2Enabled": True,
             "objectStorageUrl": "http://localhost/storage",
+            "ubbleEtaMessage": "Environ 3 heures",
         }
