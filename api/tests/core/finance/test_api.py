@@ -181,13 +181,19 @@ class GetSiretAndCurrentRevenueTest:
         assert current_revenue == 0
 
     def test_consider_booking_date_used(self):
+        in_2020 = datetime.datetime(2020, 7, 1)
+        in_2021 = datetime.datetime(2021, 7, 1)
         venue = offerers_factories.VenueFactory()
-        _pricing_2020 = factories.PricingFactory(revenue=1000)
-        _pricing_1_2021 = factories.PricingFactory(revenue=2000, siret=venue.siret)
-        _pricing_2_2021 = factories.PricingFactory(revenue=3000, siret=venue.siret)
+        _pricing_2020 = factories.PricingFactory(revenue=1000, valueDate=in_2020)
+        _pricing_1_2021 = factories.PricingFactory(revenue=2000, siret=venue.siret, valueDate=in_2021)
+        _pricing_2_2021 = factories.PricingFactory(
+            revenue=3000,
+            siret=venue.siret,
+            valueDate=in_2021 + datetime.timedelta(seconds=1),  # make it the latest pricing
+        )
         booking = bookings_factories.UsedBookingFactory(
-            dateCreated=datetime.datetime(2020, 7, 1),
-            dateUsed=datetime.datetime(2021, 7, 1),
+            dateCreated=in_2020,
+            dateUsed=in_2021,
             stock__offer__venue=venue,
         )
 
