@@ -158,7 +158,6 @@ class Returns200Test:
         n_queries += 1  # Check for educational institution
         n_queries += 1  # Get needed data
         n_queries += 1  # Get deposit
-        n_queries += 1  # Check webapp_v2 feature toggle
 
         with assert_num_queries(n_queries):
             client.get(f"/adage/v1/years/{adage_id}/educational_institution/{institution_id}")
