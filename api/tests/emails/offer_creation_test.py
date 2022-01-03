@@ -1,5 +1,3 @@
-from urllib.parse import quote_plus
-
 from bs4 import BeautifulSoup
 import pytest
 
@@ -40,9 +38,7 @@ class MakeOfferCreationNotificationEmailTest:
         assert "Vient d'être créée par : Cinéma de Montreuil" in offerer_html
 
         webapp_offer_link = str(parsed_email.find("p", {"id": "webapp_offer_link"}))
-        offer_link = f"{settings.WEBAPP_V2_URL}/offre/{offer.id}"
-        full_offer_link = f"{settings.FIREBASE_DYNAMIC_LINKS_URL}/?link={quote_plus(offer_link)}"
-        assert f"Lien vers l'offre dans la Webapp : {full_offer_link}" in webapp_offer_link
+        assert f"Lien vers l'offre dans la Webapp :" f" {settings.WEBAPP_V2_URL}/offre/{offer.id}" in webapp_offer_link
 
         pro_offer_link = str(parsed_email.find("p", {"id": "pro_offer_link"}))
         assert (
