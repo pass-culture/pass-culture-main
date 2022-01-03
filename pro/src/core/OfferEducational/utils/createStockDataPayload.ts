@@ -41,7 +41,7 @@ export const createStockDataPayload = (
     !values.eventDate ||
     !values.eventTime ||
     !values.numberOfPlaces ||
-    !values.totalPrice
+    typeof values.totalPrice !== 'number'
   ) {
     throw Error('Missing required values')
   }
