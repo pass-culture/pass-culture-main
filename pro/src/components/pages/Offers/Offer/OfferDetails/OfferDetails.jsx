@@ -240,10 +240,7 @@ const OfferDetails = ({
               <OfferPreview offerPreviewData={offerPreviewData} />
             </div>
             {offer ? (
-              <OfferPreviewLink
-                nonHumanizedOfferId={offer.nonHumanizedId}
-                offerId={offer.id}
-              />
+              <OfferPreviewLink nonHumanizedOfferId={offer.nonHumanizedId} />
             ) : null}
           </div>
         )}

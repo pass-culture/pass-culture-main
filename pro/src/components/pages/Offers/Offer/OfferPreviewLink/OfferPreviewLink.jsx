@@ -5,15 +5,10 @@
 import PropTypes from 'prop-types'
 import React, { useCallback } from 'react'
 
-import { WEBAPP_URL_NEW, WEBAPP_URL_OLD } from 'utils/config'
+import { WEBAPP_URL_NEW } from 'utils/config'
 
-import useActiveFeature from '../../../../hooks/useActiveFeature'
-
-const OfferPreviewLink = ({ offerId, nonHumanizedOfferId }) => {
-  const isWebappV2Enabled = useActiveFeature('WEBAPP_V2_ENABLED')
-  const offerPreviewUrl = isWebappV2Enabled
-    ? `${WEBAPP_URL_NEW}/offre/${nonHumanizedOfferId}`
-    : `${WEBAPP_URL_OLD}/offre/details/${offerId}`
+const OfferPreviewLink = ({ nonHumanizedOfferId }) => {
+  const offerPreviewUrl = `${WEBAPP_URL_NEW}/offre/${nonHumanizedOfferId}`
 
   const openWindow = useCallback(
     event => {
@@ -45,7 +40,6 @@ const OfferPreviewLink = ({ offerId, nonHumanizedOfferId }) => {
 
 OfferPreviewLink.propTypes = {
   nonHumanizedOfferId: PropTypes.number.isRequired,
-  offerId: PropTypes.string.isRequired,
 }
 
 export default OfferPreviewLink
