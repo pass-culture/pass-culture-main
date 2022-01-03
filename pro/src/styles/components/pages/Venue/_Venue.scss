@@ -64,9 +64,12 @@
       @include body();
     }
   }
+
+  .banner-invalid-bu img {
+    width: rem(18px);
+  }
 }
 
 .venue-domain-name-banner {
   margin: rem(32px) 0 rem(8px) 0;
 }
-
