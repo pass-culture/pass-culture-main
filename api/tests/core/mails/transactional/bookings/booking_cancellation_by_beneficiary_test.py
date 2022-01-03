@@ -186,7 +186,7 @@ class MakeBeneficiaryBookingCancellationEmailSendinblueDataTest:
             "OFFER_NAME": "Test thing name",
             "OFFER_PRICE": 10.20,
             "USER_FIRST_NAME": "Fabien",
-            "OFFER_LINK": "https://passcultureapptestauto.page.link/?link=https%3A%2F%2Fwebapp-v2.example.com%2Foffre%2F123456",
+            "OFFER_LINK": "https://webapp-v2.example.com/offre/123456",
         }
 
     @freeze_time("2019-11-26 18:29:20.891028")
@@ -216,7 +216,7 @@ class MakeBeneficiaryBookingCancellationEmailSendinblueDataTest:
             "OFFER_NAME": "Test event name",
             "OFFER_PRICE": 10.20,
             "USER_FIRST_NAME": "Fabien",
-            "OFFER_LINK": "https://passcultureapptestauto.page.link/?link=https%3A%2F%2Fwebapp-v2.example.com%2Foffre%2F123456",
+            "OFFER_LINK": "https://webapp-v2.example.com/offre/123456",
         }
 
     @override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=True)
