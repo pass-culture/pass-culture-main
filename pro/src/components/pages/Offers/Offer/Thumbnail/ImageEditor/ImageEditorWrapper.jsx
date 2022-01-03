@@ -14,9 +14,7 @@ const ImageEditorWrapper = ({
   setStep,
   step,
   thumbnail,
-  url,
 }) => {
-  const image = url !== '' ? url : thumbnail
   const editorRef = useRef({})
 
   const previousStep = useCallback(() => {
@@ -36,7 +34,7 @@ const ImageEditorWrapper = ({
   return (
     <>
       <div className="tnd-subtitle">Recadrer votre image</div>
-      <ImageEditor image={image} ref={editorRef} />
+      <ImageEditor image={thumbnail} ref={editorRef} />
       <div className="tnd-actions">
         <button
           className="secondary-button"
@@ -61,7 +59,6 @@ const ImageEditorWrapper = ({
 
 ImageEditorWrapper.defaultProps = {
   thumbnail: {},
-  url: '',
 }
 
 ImageEditorWrapper.propTypes = {
@@ -70,7 +67,6 @@ ImageEditorWrapper.propTypes = {
   setStep: PropTypes.func.isRequired,
   step: PropTypes.number.isRequired,
   thumbnail: PropTypes.shape(),
-  url: PropTypes.string,
 }
 
 export default ImageEditorWrapper

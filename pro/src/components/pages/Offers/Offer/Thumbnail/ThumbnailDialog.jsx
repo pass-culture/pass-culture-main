@@ -11,8 +11,6 @@ import Advices from 'components/pages/Offers/Offer/Thumbnail/Advices/Advices'
 import Credit from 'components/pages/Offers/Offer/Thumbnail/Credit/Credit'
 import ImageEditorWrapper from 'components/pages/Offers/Offer/Thumbnail/ImageEditor/ImageEditorWrapper'
 import ImportFromComputer from 'components/pages/Offers/Offer/Thumbnail/ImportFromComputer/ImportFromComputer'
-import ImportFromURL from 'components/pages/Offers/Offer/Thumbnail/ImportFromURL/ImportFromURL'
-import ImportTab from 'components/pages/Offers/Offer/Thumbnail/ImportTab/ImportTab'
 import Preview from 'components/pages/Offers/Offer/Thumbnail/Preview/Preview'
 import DialogBox from 'new_components/DialogBox/DialogBox'
 
@@ -24,18 +22,14 @@ const ThumbnailDialog = ({
   setThumbnailInfo,
 }) => {
   const DIALOG_LABEL_ID = 'label_for_aria'
+  const activeTab = IMPORT_TAB_ID
 
-  const [activeTab, setActiveTab] = useState(IMPORT_TAB_ID)
   const [credit, setCredit] = useState('')
   const [hidden, setHidden] = useState(true)
   const [step, setStep] = useState(1)
-  const [tabId, setTabId] = useState(IMPORT_TAB_ID)
   const [thumbnail, setThumbnail] = useState({})
-  const [url, setURL] = useState('')
-  const [previewBase64, setPreviewBase64] = useState('')
   const [editedThumbnail, setEditedThumbnail] = useState('')
   const [croppingRect, setCroppingRect] = useState({})
-  const [isLoading, setIsLoading] = useState(false)
 
   const IMPORT_STEP = 1
   const CREDIT_STEP = 2
@@ -57,7 +51,6 @@ const ThumbnailDialog = ({
         credit: credit,
         thumbnail: thumbnail,
         croppingRect: croppingRect,
-        thumbUrl: url,
       }
 
       setThumbnailInfo(thumbnailInfo)
@@ -77,16 +70,7 @@ const ThumbnailDialog = ({
     setThumbnailInfo,
     step,
     thumbnail,
-    url,
   ])
-
-  const changeTab = useCallback(
-    tabId => () => {
-      setTabId(tabId)
-      setActiveTab(tabId)
-    },
-    []
-  )
 
   return (
     <DialogBox
@@ -105,27 +89,11 @@ const ThumbnailDialog = ({
       <>
         {step === IMPORT_STEP && (
           <>
-            <ImportTab
-              activeTab={activeTab}
-              changeTab={changeTab}
-              isLoading={isLoading}
+            <ImportFromComputer
+              setStep={setStep}
+              setThumbnail={setThumbnail}
+              step={step}
             />
-            {tabId === IMPORT_TAB_ID ? (
-              <ImportFromComputer
-                setStep={setStep}
-                setThumbnail={setThumbnail}
-                step={step}
-              />
-            ) : (
-              <ImportFromURL
-                isLoading={isLoading}
-                setIsLoading={setIsLoading}
-                setPreviewBase64={setPreviewBase64}
-                setStep={setStep}
-                setURL={setURL}
-                step={step}
-              />
-            )}
             <hr className="tnd-hr" />
             <Advices hidden={hidden} setHidden={setHidden} />
           </>
@@ -145,7 +113,6 @@ const ThumbnailDialog = ({
             setStep={setStep}
             step={step}
             thumbnail={thumbnail}
-            url={previewBase64}
           />
         )}
         {step === PREVIEW_STEP && (
