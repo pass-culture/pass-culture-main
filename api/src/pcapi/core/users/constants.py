@@ -4,23 +4,22 @@ from enum import Enum
 from pcapi import settings
 
 
-RESET_PASSWORD_TOKEN_LIFE_TIME = datetime.timedelta(hours=24)
-RESET_PASSWORD_TOKEN_LIFE_TIME_EXTENDED = datetime.timedelta(days=30)
-EMAIL_VALIDATION_TOKEN_LIFE_TIME = datetime.timedelta(hours=24)
-EMAIL_CHANGE_TOKEN_LIFE_TIME = datetime.timedelta(hours=24)
-ID_CHECK_TOKEN_LIFE_TIME = datetime.timedelta(hours=settings.ID_CHECK_TOKEN_LIFE_TIME_HOURS)
-PHONE_VALIDATION_TOKEN_LIFE_TIME = datetime.timedelta(minutes=10)
-
+ACCOUNT_CREATION_MINIMUM_AGE = 15
+EDUCONNECT_SAML_REQUEST_ID_TTL = 24 * 60 * 60  # 1 day in seconds
 ELIGIBILITY_AGE_18 = 18
 ELIGIBILITY_UNDERAGE_RANGE = [15, 16, 17]
-
+EMAIL_CHANGE_TOKEN_LIFE_TIME = datetime.timedelta(hours=24)
+EMAIL_VALIDATION_TOKEN_LIFE_TIME = datetime.timedelta(hours=24)
+ID_CHECK_TOKEN_LIFE_TIME = datetime.timedelta(hours=settings.ID_CHECK_TOKEN_LIFE_TIME_HOURS)
+PHONE_VALIDATION_TOKEN_LIFE_TIME = datetime.timedelta(minutes=10)
+RESET_PASSWORD_TOKEN_LIFE_TIME = datetime.timedelta(hours=24)
+RESET_PASSWORD_TOKEN_LIFE_TIME_EXTENDED = datetime.timedelta(days=30)
 UNDERAGE_OPENING_DATETIMES_BY_AGE = {
     15: settings.UNDERAGE_BROAD_OPENING_DATETIME,
     16: settings.UNDERAGE_16_YO_OPENING_DATETIME,
     17: settings.UNDERAGE_17_YO_OPENING_DATETIME,
 }
 
-ACCOUNT_CREATION_MINIMUM_AGE = 15
 
 WHITELISTED_COUNTRY_PHONE_CODES = {
     33,  # France métropolitaine
@@ -36,8 +35,6 @@ WHITELISTED_COUNTRY_PHONE_CODES = {
     689,  # Tahiti
     687,  # Nouvelle-Calédonie
 }
-
-EDUCONNECT_SAML_REQUEST_ID_TTL = 24 * 60 * 60  # 1 day in seconds
 
 
 class SuspensionReason(Enum):
@@ -96,5 +93,4 @@ PHONE_PREFIX_BY_DEPARTEMENT_CODE = {
     "987": "689",  # Tahiti
     "988": "687",  # Nouvelle-Calédonie
 }
-
 METROPOLE_PHONE_PREFIX = "33"
