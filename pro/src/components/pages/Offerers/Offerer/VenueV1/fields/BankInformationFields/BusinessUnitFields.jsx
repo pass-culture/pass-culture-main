@@ -81,12 +81,13 @@ const BankInformationWithBusinessUnit = ({
       setDisplayedBanners({
         [CREATE_DMS_FILE_BANNER]: isCreatingVenue
           ? true
-          : venue.id && !venue.isBusinessUnitMainVenue,
+          : venue.id && !venue.isBusinessUnitMainVenue && !venue.isVirtual,
         [REPLACE_DMS_FILE_BUTTON]: venue.id && venue.isBusinessUnitMainVenue,
         [PENDING_DMS_FILE_BANNER]:
           venue.id &&
           !venue.businessUnitId &&
-          venue.demarchesSimplifieesApplicationId,
+          venue.demarchesSimplifieesApplicationId &&
+          !venue.isVirtual,
       })
       setIsLoading(false)
     }
@@ -100,6 +101,7 @@ const BankInformationWithBusinessUnit = ({
     venue.demarchesSimplifieesApplicationId,
     venue.id,
     venue.isBusinessUnitMainVenue,
+    venue.isVirtual,
     venue.siret,
   ])
 
