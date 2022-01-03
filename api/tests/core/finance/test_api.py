@@ -81,6 +81,15 @@ class PriceBookingTest:
         assert pricing2.lines[1].category == models.PricingLineCategory.OFFERER_CONTRIBUTION
         assert pricing2.lines[1].amount == 5 * 100
 
+    def test_price_free_booking(self):
+        booking = bookings_factories.UsedBookingFactory(
+            amount=0,
+            stock=offers_factories.ThingStockFactory(),
+        )
+        pricing = api.price_booking(booking)
+        assert models.Pricing.query.count() == 1
+        assert pricing.amount == 0
+
     def test_accrue_revenue(self):
         booking1 = bookings_factories.UsedBookingFactory(amount=10)
         booking2 = bookings_factories.UsedBookingFactory(
