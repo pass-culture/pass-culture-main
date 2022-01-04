@@ -1,3 +1,6 @@
+from datetime import datetime
+from decimal import Decimal
+
 from sqlalchemy import and_
 from sqlalchemy import exc
 from sqlalchemy import func
@@ -23,6 +26,50 @@ from pcapi.serialization.decorator import spectree_serialize
 
 from . import blueprint
 from .serialization import favorites as serializers
+
+
+def _fill_offer_price(
+    offer: Offer,
+    min_price: Decimal,
+    max_price: Decimal,
+) -> None:
+    offer.price = None
+    offer.startPrice = None
+    if min_price == max_price:
+        offer.price = min_price
+    else:
+        offer.startPrice = min_price
+
+
+def _fill_offer_date(offer: Offer, min_beginning_datetime: datetime, max_beginning_datetime: datetime) -> None:
+    offer.date = None
+    offer.startDate = None
+    if min_beginning_datetime == max_beginning_datetime:
+        offer.date = min_beginning_datetime
+    else:
+        offer.startDate = min_beginning_datetime
+
+
+def _fill_offer_expired(offer: Offer, non_expired_count: int, active_count: int) -> None:
+    if active_count and not non_expired_count:
+        offer.isExpired = True
+    else:
+        offer.isExpired = False
+
+
+def _fill_favorite_offer(
+    favorite: Favorite,
+    min_price: Decimal,
+    max_price: Decimal,
+    min_beginning_datetime: datetime,
+    max_beginning_datetime: datetime,
+    non_expired_count: int,
+    active_count: int,
+) -> None:
+    offer = favorite.offer
+    _fill_offer_price(offer, min_price, max_price)
+    _fill_offer_date(offer, min_beginning_datetime, max_beginning_datetime)
+    _fill_offer_expired(offer, non_expired_count, active_count)
 
 
 @blueprint.native_v1.route("/me/favorites/count", methods=["GET"])
@@ -95,31 +142,8 @@ def get_favorites(user: User) -> serializers.PaginatedFavoritesResponse:
         .all()
     )
 
-    for (
-        fav,
-        min_price,
-        max_price,
-        min_beginning_datetime,
-        max_beginning_datetime,
-        non_expired_count,
-        active_count,
-    ) in favorites:
-        fav.offer.price = None
-        fav.offer.startPrice = None
-        if min_price == max_price:
-            fav.offer.price = min_price
-        else:
-            fav.offer.startPrice = min_price
-        fav.offer.date = None
-        fav.offer.startDate = None
-        if min_beginning_datetime == max_beginning_datetime:
-            fav.offer.date = min_beginning_datetime
-        else:
-            fav.offer.startDate = min_beginning_datetime
-        if active_count and not non_expired_count:
-            fav.offer.isExpired = True
-        else:
-            fav.offer.isExpired = False
+    for row in favorites:
+        _fill_favorite_offer(*row)
 
     favorites = [fav for (fav, *_) in favorites]
 
