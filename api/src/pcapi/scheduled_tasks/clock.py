@@ -8,8 +8,8 @@ from sentry_sdk import set_tag
 from pcapi import settings
 import pcapi.core.bookings.api as bookings_api
 import pcapi.core.finance.api as finance_api
-from pcapi.core.mails.transactional.users.anniversary_to_newly_eligible_user import (
-    send_newly_eligible_age_18_user_email,
+from pcapi.core.mails.transactional.users.birthday_to_newly_eligible_user import (
+    send_birthday_age_18_email_to_newly_eligible_user,
 )
 from pcapi.core.offerers.repository import get_offerers_by_date_validated
 from pcapi.core.offers.repository import check_stock_consistency
@@ -150,7 +150,7 @@ def pc_notify_newly_eligible_age_18_users() -> None:
         return
     yesterday = datetime.date.today() - datetime.timedelta(days=1)
     for user in get_newly_eligible_age_18_users(yesterday):
-        send_newly_eligible_age_18_user_email(user)
+        send_birthday_age_18_email_to_newly_eligible_user(user)
 
 
 @cron_context

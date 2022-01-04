@@ -27,7 +27,7 @@ def get_expired_bookings_to_beneficiary_data(
         }
 
     return SendinblueTransactionalEmailData(
-        template=TransactionalEmail.EXPIRED_BOOKINGS_TO_BENEFICIARY.value,
+        template=TransactionalEmail.EXPIRED_BOOKING_TO_BENEFICIARY.value,
         params={
             "FIRSTNAME": beneficiary.firstName,
             "BOOKINGS": _extract_bookings_information_from_bookings_list(bookings),

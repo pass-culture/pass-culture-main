@@ -22,7 +22,7 @@ from pcapi.core.educational.models import EducationalBooking
 from pcapi.core.educational.models import EducationalBookingStatus
 import pcapi.core.finance.api as finance_api
 import pcapi.core.finance.models as finance_models
-from pcapi.core.mails.transactional.users.booking_confirmation_email import (
+from pcapi.core.mails.transactional.bookings.booking_confirmation_to_beneficiary import (
     send_individual_booking_confirmation_email_to_beneficiary,
 )
 from pcapi.core.offers import repository as offers_repository

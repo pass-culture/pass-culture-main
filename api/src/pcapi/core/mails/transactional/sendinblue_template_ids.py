@@ -24,7 +24,7 @@ class TransactionalEmail(Enum):
     ACCEPTED_AS_EAC_BENEFICIARY = Template(
         id_prod=257, id_not_prod=27, tags=["jeunes_pass_credite_eac"], use_priority_queue=True
     )
-    ANNIVERSARY_AGE_18 = Template(id_prod=78, id_not_prod=32, tags=["anniversaire_18_ans"])
+    BIRTHDAY_AGE_18_TO_NEWLY_ELIGIBLE_USER = Template(id_prod=78, id_not_prod=32, tags=["anniversaire_18_ans"])
     BOOKING_CANCELLATION_BY_BENEFICIARY = Template(id_prod=223, id_not_prod=33, tags=["jeunes_offre_annulee_jeune"])
     BOOKING_CANCELLATION_BY_PRO_TO_BENEFICIARY = Template(
         id_prod=225, id_not_prod=37, tags=["jeunes_offre_annulee_pros"]
@@ -50,7 +50,7 @@ class TransactionalEmail(Enum):
         id_prod=80, id_not_prod=19, tags=["jeunes_compte_refuse_doublon"], use_priority_queue=True
     )
 
-    EXPIRED_BOOKINGS_TO_BENEFICIARY = Template(id_prod=145, id_not_prod=34, tags=["jeunes_resa_expiree"])
+    EXPIRED_BOOKING_TO_BENEFICIARY = Template(id_prod=145, id_not_prod=34, tags=["jeunes_resa_expiree"])
     FRAUD_SUSPICION = Template(id_prod=82, id_not_prod=24, tags=["jeunes_compte_en_cours_d_analyse"])
     NEW_PASSWORD_REQUEST = Template(id_prod=141, id_not_prod=26, tags=["jeunes_nouveau_mdp"], use_priority_queue=True)
     RECREDIT_TO_UNDERAGE_BENEFICIARY = Template(id_prod=303, id_not_prod=31, tags=["anniversaire_16_17_ans"])

@@ -1,5 +1,5 @@
 import pcapi.core.mails.testing as mails_testing
-from pcapi.core.mails.transactional.users.fraud_suspicion_email import send_fraud_suspicion_email
+from pcapi.core.mails.transactional.users.fraud_suspicion import send_fraud_suspicion_email
 from pcapi.core.subscription.factories import BeneficiaryPreSubscriptionFactory
 from pcapi.core.testing import override_features
 
