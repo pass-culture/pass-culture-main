@@ -6,7 +6,6 @@ import pytest
 from pcapi.core.subscription.factories import BeneficiaryPreSubscriptionFactory
 import pcapi.core.users.factories as users_factories
 from pcapi.domain.beneficiary_pre_subscription.exceptions import BeneficiaryIsADuplicate
-from pcapi.domain.beneficiary_pre_subscription.exceptions import BeneficiaryIsNotEligible
 from pcapi.domain.beneficiary_pre_subscription.exceptions import CantRegisterBeneficiary
 from pcapi.domain.beneficiary_pre_subscription.validator import validate
 
@@ -149,31 +148,3 @@ def test_doesnt_raise_if_no_exact_duplicate(app):
     except CantRegisterBeneficiary:
         # Then
         assert pytest.fail("Should not raise an exception when email not given")
-
-
-@pytest.mark.parametrize("postal_code", ["98735", "98800", "98800"])
-@pytest.mark.usefixtures("db_session")
-def test_raises_if_not_eligible(postal_code):
-    # Given
-    beneficiary_pre_subcription = BeneficiaryPreSubscriptionFactory(postal_code=postal_code)
-
-    # When
-    with pytest.raises(BeneficiaryIsNotEligible) as error:
-        validate(beneficiary_pre_subcription)
-
-    # Then
-    assert str(error.value) == f"Postal code {postal_code} is not eligible."
-
-
-@pytest.mark.parametrize("postal_code", ["36000", "36034", "97400"])
-@pytest.mark.usefixtures("db_session")
-def test_should_not_raise_if_eligible(postal_code):
-    # Given
-    beneficiary_pre_subcription = BeneficiaryPreSubscriptionFactory(postal_code=postal_code)
-
-    try:
-        # When
-        validate(beneficiary_pre_subcription)
-    except CantRegisterBeneficiary:
-        # Then
-        assert pytest.fail("Should not raise when postal code is eligible")

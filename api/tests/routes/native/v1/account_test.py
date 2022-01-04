@@ -111,7 +111,6 @@ class AccountTest:
             deposit__expirationDate=datetime(2040, 1, 1),
             notificationSubscriptions={"marketing_push": True},
             publicName="jdo",
-            departementCode="93",
             **USER_DATA,
         )
         subscription_factories.SubscriptionMessageFactory(user=user)
@@ -1067,7 +1066,7 @@ class ResendEmailValidationTest:
 @freeze_time("2018-06-01")
 class GetIdCheckTokenTest:
     def test_get_id_check_token_eligible(self, client, app):
-        user = users_factories.UserFactory(dateOfBirth=datetime(2000, 1, 1), departementCode="93")
+        user = users_factories.UserFactory(dateOfBirth=datetime(2000, 1, 1))
         client.with_token(email=user.email)
 
         response = client.get("/native/v1/id_check_token")
@@ -1075,17 +1074,8 @@ class GetIdCheckTokenTest:
         assert response.status_code == 200
         assert get_id_check_token(response.json["token"])
 
-    def test_get_id_check_token_not_eligible(self, client, app):
-        user = users_factories.UserFactory(dateOfBirth=datetime(2001, 1, 1), departementCode="984")
-        client.with_token(email=user.email)
-
-        response = client.get("/native/v1/id_check_token")
-
-        assert response.status_code == 400
-        assert response.json == {"code": "USER_NOT_ELIGIBLE"}
-
     def test_get_id_check_token_limit_reached(self, client, app):
-        user = users_factories.UserFactory(dateOfBirth=datetime(2000, 1, 1), departementCode="93")
+        user = users_factories.UserFactory(dateOfBirth=datetime(2000, 1, 1))
 
         expiration_date = datetime.now() + timedelta(hours=2)
         users_factories.IdCheckToken.create_batch(
@@ -1114,7 +1104,7 @@ class UploadIdentityDocumentTest:
         client,
         app,
     ):
-        user = users_factories.UserFactory(dateOfBirth=datetime(2000, 1, 1), departementCode="93")
+        user = users_factories.UserFactory(dateOfBirth=datetime(2000, 1, 1))
         token = TokenFactory(user=user, type=TokenType.ID_CHECK)
         client.with_token(email=user.email)
         mocked_token_urlsafe.return_value = "a_very_random_secret"
@@ -1139,21 +1129,8 @@ class UploadIdentityDocumentTest:
             {"image_storage_path": "identity_documents/a_very_random_secret.jpg"}
         )
 
-    def test_ineligible_user(self, client, app):
-        user = users_factories.UserFactory(dateOfBirth=datetime(2000, 1, 1), departementCode="984")
-        client.with_token(email=user.email)
-        token = TokenFactory(user=user, type=TokenType.ID_CHECK)
-
-        thumb = (self.IMAGES_DIR / "pixel.png").read_bytes()
-        data = {"identityDocumentFile": (BytesIO(thumb), "image.jpg"), "token": token.value}
-
-        response = client.post("/native/v1/identity_document", form=data)
-
-        assert response.status_code == 400
-        assert response.json == {"code": "USER_NOT_ELIGIBLE"}
-
     def test_token_expired(self, client, app):
-        user = users_factories.UserFactory(dateOfBirth=datetime(2000, 1, 1), departementCode="93")
+        user = users_factories.UserFactory(dateOfBirth=datetime(2000, 1, 1))
         client.with_token(email=user.email)
         token = TokenFactory(user=user, type=TokenType.ID_CHECK, expirationDate=datetime(2000, 1, 1))
 
@@ -1166,7 +1143,7 @@ class UploadIdentityDocumentTest:
         assert response.json == {"code": "EXPIRED_TOKEN", "message": "Token expiré"}
 
     def test_token_used(self, client, app):
-        user = users_factories.UserFactory(dateOfBirth=datetime(2000, 1, 1), departementCode="93")
+        user = users_factories.UserFactory(dateOfBirth=datetime(2000, 1, 1))
         token = TokenFactory(user=user, type=TokenType.ID_CHECK, isUsed=True)
 
         thumb = (self.IMAGES_DIR / "pixel.png").read_bytes()
@@ -1182,7 +1159,7 @@ class UploadIdentityDocumentTest:
         assert response.json["code"] == "EXPIRED_TOKEN"
 
     def test_no_token_found(self, client, app):
-        user = users_factories.UserFactory(dateOfBirth=datetime(2000, 1, 1), departementCode="93")
+        user = users_factories.UserFactory(dateOfBirth=datetime(2000, 1, 1))
         token = TokenFactory(user=user, type=TokenType.ID_CHECK, isUsed=True)
 
         thumb = (self.IMAGES_DIR / "pixel.png").read_bytes()
@@ -1203,9 +1180,7 @@ class ShowEligibleCardTest:
     def test_against_different_age(self, age, expected):
         date_of_birth = datetime.now() - relativedelta(years=age, days=5)
         date_of_creation = datetime.now() - relativedelta(years=4)
-        user = users_factories.UserFactory.build(
-            dateOfBirth=date_of_birth, dateCreated=date_of_creation, departementCode="93"
-        )
+        user = users_factories.UserFactory.build(dateOfBirth=date_of_birth, dateCreated=date_of_creation)
         assert account_serializers.UserProfileResponse._show_eligible_card(user) == expected
 
     @pytest.mark.parametrize("beneficiary,expected", [(False, True), (True, False)])
@@ -1216,7 +1191,6 @@ class ShowEligibleCardTest:
         user = users_factories.UserFactory.build(
             dateOfBirth=date_of_birth,
             dateCreated=date_of_creation,
-            departementCode="93",
             roles=roles,
         )
         assert account_serializers.UserProfileResponse._show_eligible_card(user) == expected
@@ -1230,7 +1204,7 @@ class ShowEligibleCardTest:
 
 class SendPhoneValidationCodeTest:
     def test_send_phone_validation_code(self, client, app):
-        user = users_factories.UserFactory(departementCode="93", phoneNumber="+33601020304")
+        user = users_factories.UserFactory(phoneNumber="+33601020304")
         client.with_token(email=user.email)
 
         response = client.post("/native/v1/send_phone_validation_code")
@@ -1270,7 +1244,6 @@ class SendPhoneValidationCodeTest:
     @override_settings(MAX_SMS_SENT_FOR_PHONE_VALIDATION=1)
     def test_send_phone_validation_code_too_many_attempts(self, client, app, age, eligibility_type):
         user = users_factories.UserFactory(
-            departementCode="93",
             phoneNumber="+33601020304",
             dateOfBirth=datetime.now() - relativedelta(years=age, days=5),
         )
@@ -1464,7 +1437,6 @@ class SendPhoneValidationCodeTest:
     @override_settings(BLACKLISTED_SMS_RECIPIENTS={"+33601020304"})
     def test_blocked_phone_number(self, client, app, age, eligibility_type):
         user = users_factories.UserFactory(
-            departementCode="93",
             phoneNumber="+33601020304",
             dateOfBirth=datetime.now() - relativedelta(years=age, days=5),
         )

@@ -382,10 +382,6 @@ class User(PcObject, Model, NeedsValidationMixin):
     @property
     def eligibility(self) -> Optional[EligibilityType]:
         from pcapi.core.users import api as users_api
-        from pcapi.domain.beneficiary_pre_subscription.validator import _is_postal_code_eligible
-
-        if not _is_postal_code_eligible(self.departementCode):
-            return None
 
         return users_api.get_eligibility_at_date(self.dateOfBirth, datetime.now())
 

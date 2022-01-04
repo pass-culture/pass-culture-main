@@ -41,21 +41,18 @@ class GetUsersInformationFromStockBookingsTest:
     def test_returns_correct_users_information_from_bookings_stock(self):
         # Given
         user_1 = users_factories.BeneficiaryGrant18Factory.build(
-            departementCode="93",
             email="test@example.com",
             firstName="Jean",
             lastName="Dupont",
             publicName="Test",
         )
         user_2 = users_factories.BeneficiaryGrant18Factory.build(
-            departementCode="93",
             email="mail@example.com",
             firstName="Jaja",
             lastName="Dudu",
             publicName="Test",
         )
         user_3 = users_factories.BeneficiaryGrant18Factory.build(
-            departementCode="93",
             email="mail@example.com",
             firstName="Toto",
             lastName="Titi",
@@ -185,7 +182,7 @@ class FormatBookingHoursForEmailTest:
 class MakeValidationEmailObjectTest:
     def test_should_return_subject_with_correct_departement_code(self):
         # Given
-        user = users_factories.UserFactory.build(departementCode="93")
+        user = users_factories.UserFactory.build()
         offerer = create_offerer(postal_code="95490")
         user_offerer = create_user_offerer(user=user, offerer=offerer)
 

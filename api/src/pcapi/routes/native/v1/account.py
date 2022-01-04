@@ -198,7 +198,6 @@ def create_account(body: serializers.AccountRequest) -> None:
             birthdate=body.birthdate,
             marketing_email_subscription=body.marketing_email_subscription,
             is_email_validated=False,
-            postal_code=body.postal_code,
             apps_flyer_user_id=body.apps_flyer_user_id,
             apps_flyer_platform=body.apps_flyer_platform,
         )

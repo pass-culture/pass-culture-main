@@ -59,7 +59,6 @@ class UserFactory(BaseFactory):
     address = factory.Sequence("{} place des noces rouges".format)
     city = "La Rochelle"
     dateOfBirth = datetime.combine(date(1980, 1, 1), time(0, 0))
-    departementCode = "75"
     firstName = "Jean"
     lastName = "Neige"
     publicName = "Jean Neige"
@@ -131,7 +130,6 @@ class BeneficiaryGrant18Factory(BaseFactory):
         lambda _: datetime.combine(date.today(), time(0, 0))
         - relativedelta(years=users_constants.ELIGIBILITY_AGE_18, months=1)
     )
-    departementCode = "75"
     firstName = "Jeanne"
     lastName = "Doux"
     hasCompletedIdCheck = False

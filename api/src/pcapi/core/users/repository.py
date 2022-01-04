@@ -16,7 +16,6 @@ from pcapi.core.offerers.models import Venue
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
 from pcapi.core.users.utils import sanitize_email
-from pcapi.domain.beneficiary_pre_subscription.validator import _is_postal_code_eligible
 from pcapi.domain.favorite.favorite import FavoriteDomain
 from pcapi.infrastructure.repository.favorite import favorite_domain_converter
 from pcapi.models.user_offerer import UserOfferer
@@ -128,7 +127,6 @@ def get_newly_eligible_age_18_users(since: date) -> list[User]:
         )
         .all()
     )
-    eligible_users = [user for user in eligible_users if _is_postal_code_eligible(user.departementCode)]
     return eligible_users
 
 
