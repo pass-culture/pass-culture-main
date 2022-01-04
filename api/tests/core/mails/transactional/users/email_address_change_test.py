@@ -10,7 +10,7 @@ from pcapi.core.users import factories as users_factories
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
-class AddressEmailChangeTest:
+class MailjetEmailAddressChangeTest:
     @override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=False)
     def test_should_return_dict_when_feature_toogle_false(self):
         # Given
@@ -28,6 +28,8 @@ class AddressEmailChangeTest:
             "Vars": {"beneficiary_name": "Fabien", "confirmation_link": "ABCD123"},
         }
 
+
+class SendinblueEmailAddressChangeTest:
     @override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=True)
     def test_should_return_sendinblue_data_when_feature_toggled(self):
         # Given

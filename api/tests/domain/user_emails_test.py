@@ -5,7 +5,6 @@ import pytest
 from pcapi.core.bookings import factories as booking_factories
 from pcapi.core.categories import subcategories
 import pcapi.core.mails.testing as mails_testing
-from pcapi.core.mails.transactional.users.email_confirmation_email import send_email_confirmation_email
 from pcapi.core.offers.factories import OfferFactory
 from pcapi.core.offers.factories import OffererFactory
 from pcapi.core.offers.factories import UserOffererFactory
@@ -158,19 +157,6 @@ class SendActivationEmailTest:
         # then
         assert len(mails_testing.outbox) == 1
         assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 994771
-
-    def test_send_activation_email_for_native(self):
-        # given
-        beneficiary = users_factories.BeneficiaryGrant18Factory.build()
-        token = users_factories.EmailValidationToken.build(user=beneficiary)
-
-        # when
-        send_email_confirmation_email(beneficiary, token=token)
-
-        # then
-        assert len(mails_testing.outbox) == 1  # test number of emails sent
-        native_app_link = mails_testing.outbox[0].sent_data["Vars"]["nativeAppLink"]
-        assert token.value in native_app_link
 
 
 class SendResetPasswordProEmailTest:

@@ -26,10 +26,8 @@ import pcapi.core.bookings.repository as bookings_repository
 import pcapi.core.fraud.api as fraud_api
 import pcapi.core.fraud.models as fraud_models
 from pcapi.core.mails.transactional import users as user_emails
-from pcapi.core.mails.transactional.users.email_confirmation_email import send_email_confirmation_email
-from pcapi.core.mails.transactional.users.subscription_document_error_email import (
-    send_subscription_document_error_email,
-)
+from pcapi.core.mails.transactional.users.email_address_change_confirmation import send_email_confirmation_email
+from pcapi.core.mails.transactional.users.subscription_document_error import send_subscription_document_error_email
 import pcapi.core.payments.api as payment_api
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import exceptions as subscription_exceptions

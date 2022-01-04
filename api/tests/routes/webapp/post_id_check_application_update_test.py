@@ -59,7 +59,7 @@ class Returns200Test:
         assert response.status_code == 200
         mocked_beneficiary_job.assert_called_once_with(5)
 
-    @patch("pcapi.core.mails.transactional.users.accepted_as_beneficiary_email.send_accepted_as_beneficiary_email")
+    @patch("pcapi.core.mails.transactional.users.accepted_as_beneficiary.send_accepted_as_beneficiary_email")
     @patch("pcapi.domain.user_emails.send_activation_email")
     @patch("pcapi.connectors.beneficiaries.jouve_backend._get_raw_content")
     @pytest.mark.usefixtures("db_session")
@@ -131,7 +131,7 @@ class Returns200Test:
         assert len(users_testing.sendinblue_requests) == 1
 
     @override_features(FORCE_PHONE_VALIDATION=True)
-    @patch("pcapi.core.mails.transactional.users.accepted_as_beneficiary_email.send_accepted_as_beneficiary_email")
+    @patch("pcapi.core.mails.transactional.users.accepted_as_beneficiary.send_accepted_as_beneficiary_email")
     @patch("pcapi.domain.user_emails.send_activation_email")
     @patch("pcapi.connectors.beneficiaries.jouve_backend._get_raw_content")
     @pytest.mark.usefixtures("db_session")

@@ -1,7 +1,5 @@
 import pcapi.core.mails.testing as mails_testing
-from pcapi.core.mails.transactional.users.subscription_document_error_email import (
-    send_subscription_document_error_email,
-)
+from pcapi.core.mails.transactional.users.subscription_document_error import send_subscription_document_error_email
 from pcapi.core.testing import override_features
 
 

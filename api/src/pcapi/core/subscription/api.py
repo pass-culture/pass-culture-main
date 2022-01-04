@@ -6,7 +6,7 @@ from pcapi import settings
 import pcapi.core.fraud.api as fraud_api
 import pcapi.core.fraud.models as fraud_models
 import pcapi.core.fraud.repository as fraud_repository
-from pcapi.core.mails.transactional.users import accepted_as_beneficiary_email
+from pcapi.core.mails.transactional.users import accepted_as_beneficiary
 from pcapi.core.payments import api as payments_api
 from pcapi.core.subscription import messages as subscription_messages
 from pcapi.core.users import api as users_api
@@ -169,7 +169,7 @@ def _send_beneficiary_activation_email(user: users_models.User, has_activated_ac
             user=user, reset_password_token_life_time=users_constants.RESET_PASSWORD_TOKEN_LIFE_TIME_EXTENDED
         )
     else:
-        accepted_as_beneficiary_email.send_accepted_as_beneficiary_email(user=user)
+        accepted_as_beneficiary.send_accepted_as_beneficiary_email(user=user)
 
 
 def has_completed_profile(user: users_models.User) -> bool:

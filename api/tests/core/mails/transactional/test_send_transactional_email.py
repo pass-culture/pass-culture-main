@@ -4,7 +4,7 @@ from sib_api_v3_sdk.rest import ApiException
 
 from pcapi.core.mails.transactional.send_transactional_email import send_transactional_email
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
-from pcapi.core.mails.transactional.users.email_confirmation_email import send_email_confirmation_email
+from pcapi.core.mails.transactional.users.email_address_change_confirmation import send_email_confirmation_email
 from pcapi.core.testing import override_features
 from pcapi.core.testing import override_settings
 import pcapi.core.users.factories as users_factories
