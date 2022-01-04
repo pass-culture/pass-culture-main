@@ -112,7 +112,6 @@ def cancel_expired_bookings(query: Query, batch_size: int = 500) -> None:
             .filter(Booking.id.in_(expiring_booking_ids))
             .update(
                 {
-                    "isCancelled": True,
                     "status": BookingStatus.CANCELLED,
                     "cancellationReason": BookingCancellationReasons.EXPIRED,
                     "cancellationDate": datetime.datetime.utcnow(),
