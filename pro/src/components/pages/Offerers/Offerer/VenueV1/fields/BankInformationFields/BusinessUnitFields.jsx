@@ -144,7 +144,7 @@ const BankInformationWithBusinessUnit = ({
                   name="businessUnitId"
                   readOnly={readOnly}
                 >
-                  <option value="">
+                  <option disabled value="">
                     Sélectionner des coordonnées dans la liste
                   </option>
                   {businessUnitOptions.map(option => (
