@@ -388,18 +388,18 @@ def update_cancellation_limit_dates(
 
 
 def recompute_dnBookedQuantity(stock_ids: list[int]) -> None:
-    query = """
+    query = f"""
       WITH bookings_per_stock AS (
         SELECT
           stock.id AS stock_id,
           COALESCE(SUM(booking.quantity), 0) AS total_bookings
         FROM stock
-        -- The `NOT isCancelled` condition MUST be part of the JOIN.
+        -- The `NOT status CANCELLED` condition MUST be part of the JOIN.
         -- If it were part of the WHERE clause, that would exclude
         -- stocks that only have cancelled bookings.
         LEFT OUTER JOIN booking
           ON booking."stockId" = stock.id
-          AND NOT booking."isCancelled"
+          AND booking.status != '{BookingStatus.CANCELLED.value}'
         WHERE stock.id IN :stock_ids
         GROUP BY stock.id
       )

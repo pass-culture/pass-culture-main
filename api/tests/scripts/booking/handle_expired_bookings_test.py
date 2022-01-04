@@ -33,13 +33,11 @@ class CancelExpiredBookingsTest:
 
         handle_expired_bookings.cancel_expired_individual_bookings()
 
-        assert old_book_booking.isCancelled
         assert old_book_booking.status is BookingStatus.CANCELLED
         assert old_book_booking.cancellationDate.timestamp() == pytest.approx(datetime.utcnow().timestamp(), rel=1)
         assert old_book_booking.cancellationReason == BookingCancellationReasons.EXPIRED
         assert old_book_booking.stock.dnBookedQuantity == 0
 
-        assert old_dvd_booking.isCancelled
         assert old_dvd_booking.status is BookingStatus.CANCELLED
         assert old_dvd_booking.cancellationDate.timestamp() == pytest.approx(datetime.utcnow().timestamp(), rel=1)
         assert old_dvd_booking.cancellationReason == BookingCancellationReasons.EXPIRED
@@ -51,7 +49,6 @@ class CancelExpiredBookingsTest:
 
         handle_expired_bookings.cancel_expired_individual_bookings()
 
-        assert not book_booking.isCancelled
         assert book_booking.status is not BookingStatus.CANCELLED
         assert not book_booking.cancellationDate
         assert not book_booking.cancellationReason
@@ -68,7 +65,6 @@ class CancelExpiredBookingsTest:
 
         handle_expired_bookings.cancel_expired_individual_bookings()
 
-        assert not old_concert_booking.isCancelled
         assert old_concert_booking.status is not BookingStatus.CANCELLED
         assert not old_concert_booking.cancellationDate
         assert not old_concert_booking.cancellationReason
@@ -82,7 +78,6 @@ class CancelExpiredBookingsTest:
 
         handle_expired_bookings.cancel_expired_individual_bookings()
 
-        assert not old_press_subscription_booking.isCancelled
         assert old_press_subscription_booking.status is not BookingStatus.CANCELLED
         assert not old_press_subscription_booking.cancellationDate
         assert not old_press_subscription_booking.cancellationReason
@@ -94,7 +89,6 @@ class CancelExpiredBookingsTest:
 
         handle_expired_bookings.cancel_expired_individual_bookings()
 
-        assert old_book_booking.isCancelled
         assert old_book_booking.status is BookingStatus.CANCELLED
         assert old_book_booking.cancellationDate == initial_cancellation_date
         assert old_book_booking.cancellationReason == BookingCancellationReasons.BENEFICIARY
@@ -119,17 +113,14 @@ class CancelExpiredBookingsTest:
 
         handle_expired_bookings.cancel_expired_individual_bookings()
 
-        assert old_guitar_booking.isCancelled
         assert old_guitar_booking.status is BookingStatus.CANCELLED
         assert old_guitar_booking.cancellationDate.timestamp() == pytest.approx(datetime.utcnow().timestamp(), rel=1)
         assert old_guitar_booking.cancellationReason == BookingCancellationReasons.EXPIRED
 
-        assert old_disc_booking.isCancelled
         assert old_disc_booking.status is BookingStatus.CANCELLED
         assert old_disc_booking.cancellationDate.timestamp() == pytest.approx(datetime.utcnow().timestamp(), rel=1)
         assert old_disc_booking.cancellationReason == BookingCancellationReasons.EXPIRED
 
-        assert not old_vod_booking.isCancelled
         assert old_vod_booking.status is not BookingStatus.CANCELLED
         assert not old_vod_booking.cancellationDate
         assert not old_vod_booking.cancellationReason
@@ -328,7 +319,6 @@ class NotifyUsersOfExpiredBookingsTest:
         booking_factories.EducationalBookingFactory(
             stock__offer__product=dvd,
             dateCreated=long_ago,
-            isCancelled=True,
             status=BookingStatus.CANCELLED,
             cancellationReason=BookingCancellationReasons.EXPIRED,
         )
@@ -388,7 +378,6 @@ class NotifyOfferersOfExpiredBookingsTest:
         booking_factories.EducationalBookingFactory(
             stock__offer__product=dvd,
             dateCreated=long_ago,
-            isCancelled=True,
             status=BookingStatus.CANCELLED,
             cancellationReason=BookingCancellationReasons.EXPIRED,
         )
