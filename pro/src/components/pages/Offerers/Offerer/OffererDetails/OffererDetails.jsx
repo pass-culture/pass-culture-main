@@ -1,93 +1,125 @@
 /*
  * @debt directory "Gaël: this file should be migrated within the new directory structure"
- * @debt standard "Gaël: migration from classes components to function components"
  */
 
 import PropTypes from 'prop-types'
-import React, { PureComponent } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { NavLink } from 'react-router-dom'
 
+import useActiveFeature from 'components/hooks/useActiveFeature'
 import Icon from 'components/layout/Icon'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
+import Spinner from 'components/layout/Spinner'
 import Titles from 'components/layout/Titles/Titles'
+import * as pcapi from 'repository/pcapi/pcapi'
+import { HTTP_STATUS } from 'repository/pcapi/pcapiClient'
 
 import ApiKey from './ApiKey/ApiKeyContainer'
 import BankInformation from './BankInformation/BankInformation'
 import { Offerer } from './Offerer'
 import VenuesContainer from './Venues/VenuesContainer'
 
-/**
- * @debt standard "Annaëlle: Composant de classe à migrer en fonctionnel"
- */
-class OffererDetails extends PureComponent {
-  componentDidMount() {
-    const { offererId, loadOffererById } = this.props
-    loadOffererById(offererId)
-  }
+const OffererDetails = ({ offererId }) => {
+  const isBankInformationWithSiretActive = useActiveFeature(
+    'ENFORCE_BANK_INFORMATION_WITH_SIRET'
+  )
+  const [offerer, setOfferer] = useState(null)
+  const [physicalVenues, setPhysicalVenues] = useState([])
+  const [businessUnitList, setBusinessUnitList] = useState([])
+  const [isLoading, setIsLoading] = useState(true)
 
-  render() {
-    const { offerer, venues } = this.props
+  const hasInvalidBusinessUnits = useMemo(() => {
+    if (!isBankInformationWithSiretActive) return false
+    if (!offerer) return false
     return (
-      <div className="offerer-page">
-        <NavLink
-          className="back-button has-text-primary"
-          to={`/accueil?structure=${offerer.id}`}
-        >
-          <Icon svg="ico-back" />
-          Accueil
-        </NavLink>
-        <PageTitle title="Détails de votre structure" />
-        <Titles subtitle={offerer.name} title="Structure" />
-        <p className="op-teaser">
-          Détails de la structure rattachée, des lieux et des fournisseurs de
-          ses offres.
-        </p>
-        <div className="section op-content-section">
-          <h2 className="main-list-title">Informations structure</h2>
-          <div className="op-detail">
-            <span>{'SIREN : '}</span>
-            <span>{offerer.formattedSiren}</span>
-          </div>
-          <div className="op-detail">
-            <span>{'Désignation : '}</span>
-            <span>{offerer.name}</span>
-          </div>
-          <div className="op-detail">
-            <span>{'Siège social : '}</span>
-            <span>
-              {`${offerer.address} - ${offerer.postalCode} ${offerer.city}`}
-            </span>
-          </div>
+      businessUnitList.filter(businessUnit => !businessUnit.siret).length > 0
+    )
+  }, [offerer, businessUnitList, isBankInformationWithSiretActive])
+
+  useEffect(() => {
+    async function loadOfferer(offererId) {
+      try {
+        const receivedOfferer = await pcapi.getOfferer(offererId)
+        setOfferer(new Offerer(receivedOfferer))
+        setPhysicalVenues(
+          receivedOfferer.managedVenues.filter(venue => !venue.isVirtual)
+        )
+
+        const receivedBusinessUnitList = await pcapi.getBusinessUnits(offererId)
+        setBusinessUnitList(receivedBusinessUnitList)
+      } catch (error) {
+        if (error.status === HTTP_STATUS.FORBIDDEN) {
+          setOfferer({ id: offererId, managedVenues: [] })
+          setBusinessUnitList([])
+          setPhysicalVenues([])
+        }
+      }
+      setIsLoading(false)
+    }
+
+    offererId && loadOfferer(offererId)
+  }, [offererId])
+
+  if (isLoading) {
+    return (
+      <div className="h-card h-card-secondary h-card-placeholder">
+        <div className="h-card-inner">
+          <Spinner />
         </div>
-        {offerer.areBankInformationProvided && (
-          <BankInformation offerer={offerer} />
-        )}
-        <ApiKey
-          maxAllowedApiKeys={offerer.apiKey.maxAllowed}
-          offererId={offerer.id}
-          savedApiKeys={offerer.apiKey.savedApiKeys}
-        />
-        <VenuesContainer offererId={offerer.id} venues={venues} />
       </div>
     )
   }
+
+  return (
+    <div className="offerer-page">
+      <NavLink
+        className="back-button has-text-primary"
+        to={`/accueil?structure=${offerer.id}`}
+      >
+        <Icon svg="ico-back" />
+        Accueil
+      </NavLink>
+      <PageTitle title="Détails de votre structure" />
+      <Titles subtitle={offerer.name} title="Structure" />
+      <p className="op-teaser">
+        Détails de la structure rattachée, des lieux et des fournisseurs de ses
+        offres.
+      </p>
+      <div className="section op-content-section">
+        <h2 className="main-list-title">Informations structure</h2>
+        <div className="op-detail">
+          <span>{'SIREN : '}</span>
+          <span>{offerer.formattedSiren}</span>
+        </div>
+        <div className="op-detail">
+          <span>{'Désignation : '}</span>
+          <span>{offerer.name}</span>
+        </div>
+        <div className="op-detail">
+          <span>{'Siège social : '}</span>
+          <span>
+            {`${offerer.address} - ${offerer.postalCode} ${offerer.city}`}
+          </span>
+        </div>
+      </div>
+      {offerer.areBankInformationProvided && (
+        <BankInformation
+          hasBusinessUnitError={hasInvalidBusinessUnits}
+          offerer={offerer}
+        />
+      )}
+      <ApiKey
+        maxAllowedApiKeys={offerer.apiKey.maxAllowed}
+        offererId={offerer.id}
+        savedApiKeys={offerer.apiKey.savedApiKeys}
+      />
+      <VenuesContainer offererId={offerer.id} venues={physicalVenues} />
+    </div>
+  )
 }
 
 OffererDetails.propTypes = {
-  loadOffererById: PropTypes.func.isRequired,
-  offerer: PropTypes.instanceOf(Offerer).isRequired,
   offererId: PropTypes.string.isRequired,
-  venues: PropTypes.arrayOf(
-    PropTypes.shape({
-      address: PropTypes.string,
-      city: PropTypes.string,
-      id: PropTypes.string,
-      managingOffererId: PropTypes.string,
-      name: PropTypes.string,
-      postalCode: PropTypes.string,
-      publicName: PropTypes.string,
-    })
-  ).isRequired,
 }
 
 export default OffererDetails
