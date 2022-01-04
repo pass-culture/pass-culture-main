@@ -122,7 +122,7 @@ class AdminIndexView(AdminIndexBaseView):
     def no_user_found_view(self):
         from pcapi.utils import login_manager
 
-        if not session:
+        if current_user.is_authenticated:
             return redirect(url_for(".index"))
 
         rendered_view = self.render("admin/no_user_found.html", email=session["google_email"])
