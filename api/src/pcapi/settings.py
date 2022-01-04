@@ -212,6 +212,9 @@ MAILJET_HTTP_TIMEOUT = int(os.environ.get("MAILJET_HTTP_TIMEOUT", 5))
 
 # JWT
 JWT_SECRET_KEY = os.environ.get("JWT_SECRET_KEY")
+# default is 15 minutes
+# https://flask-jwt-extended.readthedocs.io/en/stable/options/#JWT_ACCESS_TOKEN_EXPIRES
+JWT_ACCESS_TOKEN_EXPIRES = int(os.environ.get("JWT_ACCESS_TOKEN_EXPIRES", 60 * 15))
 
 
 # TITELIVE
