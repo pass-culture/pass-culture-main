@@ -1,4 +1,18 @@
+import markupsafe
+
+from pcapi import settings
 from pcapi.admin.base_configuration import BaseAdminView
+from pcapi.utils import human_ids
+
+
+def format_offerer_name(view, context, model, name):
+    offerer = model.offerer
+    humanized_id = human_ids.humanize(offerer.id)
+    url = f"{settings.PRO_URL}/accueil?structure={humanized_id}"
+    return markupsafe.Markup('<a href="{url}">{offerer.name}</a>').format(
+        url=url,
+        offerer=offerer,
+    )
 
 
 class UserOffererView(BaseAdminView):
@@ -42,3 +56,6 @@ class UserOffererView(BaseAdminView):
         "offerer.address",
         "offerer.name",
     ]
+    column_formatters = {
+        "offerer.name": format_offerer_name,
+    }
