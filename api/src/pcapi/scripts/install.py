@@ -1,13 +1,16 @@
 import importlib
 
+import flask
 
-def install_commands(app):
+
+def install_commands(app: flask.Flask) -> None:
     module_paths = (
         "pcapi.scheduled_tasks.algolia_clock",
         "pcapi.scheduled_tasks.clock",
         "pcapi.scheduled_tasks.titelive_clock",
         "pcapi.scripts.algolia_indexing.commands",
         "pcapi.scripts.clean_database",
+        "pcapi.scripts.force_19yo_dms_import",
         "pcapi.scripts.full_index_offers",
         "pcapi.scripts.install_data",
         "pcapi.scripts.offerer.commands",
