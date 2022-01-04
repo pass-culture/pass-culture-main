@@ -879,5 +879,79 @@ describe('offererDetailsLegacy', () => {
         within(offerer).getByText('Coordonnées bancaires')
       ).toBeInTheDocument()
     })
+
+    it('should not display missing business unit banner when virtual venue has no offer has no BU', async () => {
+      firstOffererByAlphabeticalOrder = {
+        ...firstOffererByAlphabeticalOrder,
+        hasDigitalVenueAtLeastOneOffer: false,
+        managedVenues: [
+          {
+            ...physicalVenue,
+            businessUnitId: 2,
+          },
+          {
+            ...virtualVenue,
+            businessUnitId: null,
+          },
+        ],
+      }
+
+      pcapi.getOfferer.mockResolvedValue(firstOffererByAlphabeticalOrder)
+      pcapi.getBusinessUnits.mockResolvedValue([
+        {
+          name: 'Business Unit #2',
+          siret: '222222222222222222',
+          id: 2,
+          bic: 'BDFEFRPP',
+          iban: 'FR9410010000000000000000022',
+        },
+      ])
+
+      const { waitForElements } = renderHomePage({ store })
+      const { offerer } = await waitForElements()
+
+      const displayButton = within(offerer).getByRole('button', {
+        name: 'Afficher',
+      })
+      expect(displayButton).toBeInTheDocument()
+
+      // open offerer and wait that the block open.
+      fireEvent.click(displayButton)
+      await within(offerer).findByRole('button', {
+        name: 'Masquer',
+      })
+
+      expect(
+        within(offerer).queryByText('Coordonnées bancaires')
+      ).not.toBeInTheDocument()
+    })
+
+    it('should not display missing business unit banner when offerer has only virtual venue with no offer', async () => {
+      firstOffererByAlphabeticalOrder = {
+        ...firstOffererByAlphabeticalOrder,
+        hasDigitalVenueAtLeastOneOffer: false,
+        managedVenues: [
+          {
+            ...virtualVenue,
+            businessUnitId: null,
+          },
+        ],
+      }
+
+      pcapi.getOfferer.mockResolvedValue(firstOffererByAlphabeticalOrder)
+      pcapi.getBusinessUnits.mockResolvedValue([])
+
+      const { waitForElements } = renderHomePage({ store })
+      const { offerer } = await waitForElements()
+
+      expect(
+        within(offerer).getByRole('button', {
+          name: 'Masquer',
+        })
+      ).toBeInTheDocument()
+      expect(
+        within(offerer).queryByText('Coordonnées bancaires')
+      ).not.toBeInTheDocument()
+    })
   })
 })
