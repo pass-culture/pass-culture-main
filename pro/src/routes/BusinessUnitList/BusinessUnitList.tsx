@@ -83,6 +83,8 @@ const BusinessUnitList = (): JSX.Element => {
       setOfferer({
         id: offererResponse.id,
         name: offererResponse.name,
+        hasDigitalVenueAtLeastOneOffer:
+          offererResponse.hasDigitalVenueAtLeastOneOffer,
       })
     }
 
