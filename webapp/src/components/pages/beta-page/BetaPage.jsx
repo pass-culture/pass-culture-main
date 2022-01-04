@@ -6,6 +6,7 @@ import {
   ANDROID_APP_ID,
   IOS_APP_STORE_ID,
   IOS_APP_ID,
+  WEBAPP_V2_URL,
   UNIVERSAL_LINK,
 } from '../../../utils/config'
 
@@ -21,6 +22,10 @@ const BetaPage = () => {
 
   useEffect(() => {
     appTitle.current.focus()
+    window.location.replace(WEBAPP_V2_URL)
+    return () => {
+      window.location.replace(WEBAPP_V2_URL)
+    }
   }, [])
 
   return (
