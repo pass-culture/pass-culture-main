@@ -3,7 +3,7 @@ import logging
 from pcapi.connectors.beneficiaries import jouve_backend
 from pcapi.core.fraud.api import on_jouve_result
 from pcapi.core.fraud.exceptions import BeneficiaryFraudResultCannotBeDowngraded
-from pcapi.core.mails.transactional.users.fraud_suspicion_email import send_fraud_suspicion_email
+from pcapi.core.mails.transactional.users.fraud_suspicion import send_fraud_suspicion_email
 from pcapi.core.subscription import messages as subscription_messages
 from pcapi.domain import user_emails as old_user_emails
 from pcapi.domain.beneficiary_pre_subscription.exceptions import BeneficiaryIsADuplicate

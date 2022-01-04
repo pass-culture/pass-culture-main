@@ -4,17 +4,51 @@ from datetime import timedelta
 import pytest
 
 from pcapi.core.bookings import factories as booking_factories
+from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.categories import subcategories
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.mails.transactional.bookings.booking_soon_to_be_expired_to_beneficiary import (
     send_soon_to_be_expired_individual_bookings_recap_email_to_beneficiary,
 )
+from pcapi.core.mails.transactional.bookings.booking_soon_to_be_expired_to_beneficiary import _filter_books_bookings
 from pcapi.core.offers.factories import ProductFactory
 from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
+
+
+class FilterBooksBookingsTest:
+    def test_filter_books_bookings_with_empty_list(self):
+        # Given
+        bookings = []
+
+        # When
+        books_bookings, other_bookings = _filter_books_bookings(bookings)
+
+        # Then
+        assert books_bookings == []
+        assert other_bookings == []
+
+    def test_filter_books_bookings_with_one_book_and_one_other_booking(self):
+        # Given
+        book_booking = BookingFactory(
+            stock__offer__subcategoryId=subcategories.LIVRE_PAPIER.id,
+        )
+
+        other_booking = BookingFactory(
+            stock__offer__subcategoryId=subcategories.CINE_VENTE_DISTANCE.id,
+        )
+
+        bookings = [book_booking, other_booking]
+
+        # When
+        books_bookings, other_bookings = _filter_books_bookings(bookings)
+
+        # Then
+        assert books_bookings == [book_booking]
+        assert other_bookings == [other_booking]
 
 
 class MailjetSendSoonToBeExpiredBookingsEmailToBeneficiaryTest:

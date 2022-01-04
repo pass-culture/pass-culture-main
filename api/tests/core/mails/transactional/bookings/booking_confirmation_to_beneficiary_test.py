@@ -1,7 +1,5 @@
 from datetime import datetime
 from datetime import timezone
-from re import T
-from unittest.mock import patch
 
 from freezegun import freeze_time
 import pytest
@@ -10,14 +8,14 @@ from pcapi.core.bookings.factories import IndividualBookingFactory
 from pcapi.core.bookings.factories import UsedIndividualBookingFactory
 from pcapi.core.categories import subcategories
 import pcapi.core.mails.testing as mails_testing
-from pcapi.core.mails.transactional.sendinblue_template_ids import SendinblueTransactionalEmailData
-from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
-from pcapi.core.mails.transactional.users.booking_confirmation_email import (
+from pcapi.core.mails.transactional.bookings.booking_confirmation_to_beneficiary import (
     get_booking_confirmation_to_beneficiary_email_data,
 )
-from pcapi.core.mails.transactional.users.booking_confirmation_email import (
+from pcapi.core.mails.transactional.bookings.booking_confirmation_to_beneficiary import (
     send_individual_booking_confirmation_email_to_beneficiary,
 )
+from pcapi.core.mails.transactional.sendinblue_template_ids import SendinblueTransactionalEmailData
+from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.testing import override_features
 from pcapi.core.users.factories import BeneficiaryGrant18Factory

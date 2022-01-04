@@ -14,12 +14,8 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 
 class MailjetSendRejectionEmailToBeneficiaryPreSubscriptionTest:
-    @patch(
-        "pcapi.core.mails.transactional.users.email_duplicate_pre_subscription_rejected.get_duplicate_beneficiary_pre_subscription_rejected_data",
-        return_value={"MJ-TemplateID": 1530996},
-    )
     @override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=False)
-    def when_beneficiary_is_a_duplicate_sends_correct_template(self, mocked_make_data) -> None:
+    def when_beneficiary_is_a_duplicate_sends_correct_template(self) -> None:
         # given
         beneficiary_pre_subscription = BeneficiaryPreSubscriptionFactory()
 
@@ -27,16 +23,11 @@ class MailjetSendRejectionEmailToBeneficiaryPreSubscriptionTest:
         send_rejection_email_to_beneficiary_pre_subscription(beneficiary_pre_subscription, beneficiary_is_eligible=True)
 
         # then
-        mocked_make_data.assert_called_once()
         assert len(mails_testing.outbox) == 1  # test number of emails sent
-        assert mails_testing.outbox[0].sent_data["MJ-TemplateID"] == 1530996
+        assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 1530996
 
-    @patch(
-        "pcapi.core.mails.transactional.users.email_duplicate_pre_subscription_rejected.get_not_eligible_beneficiary_pre_subscription_rejected_data",
-        return_value={"MJ-TemplateID": 1619528},
-    )
     @override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=False)
-    def when_beneficiary_is_not_eligible_sends_correct_template(self, mocked_make_data) -> None:
+    def when_beneficiary_is_not_eligible_sends_correct_template(self) -> None:
         # given
         beneficiary_pre_subscription = BeneficiaryPreSubscriptionFactory()
 
@@ -46,9 +37,8 @@ class MailjetSendRejectionEmailToBeneficiaryPreSubscriptionTest:
         )
 
         # then
-        mocked_make_data.assert_called_once()
         assert len(mails_testing.outbox) == 1  # test number of emails sent
-        assert mails_testing.outbox[0].sent_data["MJ-TemplateID"] == 1619528
+        assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 1619528
 
 
 class SendinblueSendRejectionEmailToBeneficiaryPreSubscriptionTest:
@@ -66,12 +56,8 @@ class SendinblueSendRejectionEmailToBeneficiaryPreSubscriptionTest:
             TransactionalEmail.EMAIL_DUPLICATE_BENEFICIARY_PRE_SUBCRIPTION_REJECTED.value
         )
 
-    @patch(
-        "pcapi.core.mails.transactional.users.email_duplicate_pre_subscription_rejected.get_not_eligible_beneficiary_pre_subscription_rejected_data",
-        return_value={"MJ-TemplateID": 1619528},  # currently no sendinblue equivalent email
-    )
     @override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=True)
-    def when_beneficiary_is_not_eligible_sends_correct_template_sendinblue(self, mocked_make_data) -> None:
+    def when_beneficiary_is_not_eligible_sends_correct_template_sendinblue(self) -> None:
         # given
         beneficiary_pre_subscription = BeneficiaryPreSubscriptionFactory()
 
@@ -81,6 +67,5 @@ class SendinblueSendRejectionEmailToBeneficiaryPreSubscriptionTest:
         )
 
         # then
-        mocked_make_data.assert_called_once()
         assert len(mails_testing.outbox) == 1  # test number of emails sent
-        assert mails_testing.outbox[0].sent_data["MJ-TemplateID"] == 1619528
+        assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 1619528

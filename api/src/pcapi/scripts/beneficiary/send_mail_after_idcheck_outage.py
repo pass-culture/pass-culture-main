@@ -6,8 +6,8 @@ from dateutil.relativedelta import relativedelta
 from sqlalchemy import not_
 from sqlalchemy.orm import Query
 
-from pcapi.core.mails.transactional.users.anniversary_to_newly_eligible_user import (
-    send_newly_eligible_age_18_user_email,
+from pcapi.core.mails.transactional.users.birthday_to_newly_eligible_user import (
+    send_birthday_age_18_email_to_newly_eligible_user,
 )
 from pcapi.core.users import constants
 from pcapi.core.users.models import EligibilityType
@@ -60,7 +60,7 @@ def send_mail_to_potential_beneficiaries(
     try:
         for i, user in enumerate(_get_eligible_users_created_between(start_date, end_date, max_number)):
             if user.eligibility == EligibilityType.AGE18:
-                if not send_newly_eligible_age_18_user_email(user):
+                if not send_birthday_age_18_email_to_newly_eligible_user(user):
                     print(f"Could not send mail to user {user.id}")
             if i % 100:
                 print(f"Processed {i} users")

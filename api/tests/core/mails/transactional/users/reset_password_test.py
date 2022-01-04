@@ -5,10 +5,10 @@ import pytest
 
 from pcapi.core.mails import testing as mails_testing
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
-from pcapi.core.mails.transactional.users.reset_password_email import get_reset_password_native_app_email_data
-from pcapi.core.mails.transactional.users.reset_password_email import get_reset_password_user_email_data
-from pcapi.core.mails.transactional.users.reset_password_email import send_reset_password_email_to_native_app_user
-from pcapi.core.mails.transactional.users.reset_password_email import send_reset_password_email_to_user
+from pcapi.core.mails.transactional.users.reset_password import get_reset_password_native_app_email_data
+from pcapi.core.mails.transactional.users.reset_password import get_reset_password_user_email_data
+from pcapi.core.mails.transactional.users.reset_password import send_reset_password_email_to_native_app_user
+from pcapi.core.mails.transactional.users.reset_password import send_reset_password_email_to_user
 from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
 from pcapi.model_creators.generic_creators import create_offerer
