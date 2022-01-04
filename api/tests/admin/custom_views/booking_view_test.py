@@ -52,7 +52,6 @@ class BookingViewTest:
         content = response.data.decode(response.charset)
         assert "La réservation a été dés-annulée et marquée comme utilisée." in content
         booking = Booking.query.get(booking.id)
-        assert not booking.isCancelled
         assert booking.status is not BookingStatus.CANCELLED
         assert booking.isUsed
         assert booking.status is BookingStatus.USED
@@ -87,7 +86,6 @@ class BookingViewTest:
         content = response.data.decode(response.charset)
         assert "La réservation a été dés-annulée et marquée comme utilisée." in content
         booking = Booking.query.get(booking.id)
-        assert not booking.isCancelled
         assert booking.status is not BookingStatus.CANCELLED
         assert booking.isUsed
         assert booking.status is BookingStatus.USED
@@ -95,7 +93,7 @@ class BookingViewTest:
 
     def test_cancel_booking(self, app, client):
         admin = users_factories.AdminFactory()
-        booking = bookings_factories.IndividualBookingFactory(isCancelled=False)
+        booking = bookings_factories.IndividualBookingFactory()
 
         route = f"/pc/back-office/bookings/cancel/{booking.id}"
         response = client.with_session_auth(admin.email).post(route, form={})
@@ -108,7 +106,7 @@ class BookingViewTest:
         assert "La réservation a été marquée comme annulée" in content
 
         booking = Booking.query.get(booking.id)
-        assert booking.isCancelled
+        assert booking.status == BookingStatus.CANCELLED
 
     def test_can_not_cancel_refunded_booking(self, app):
         users_factories.UserFactory(email="admin@example.com", isAdmin=True)
@@ -127,7 +125,7 @@ class BookingViewTest:
         assert "L&#39;opération a échoué : la réservation a déjà été remboursée" in content
 
         booking = Booking.query.get(booking.id)
-        assert not booking.isCancelled
+        assert not booking.status == BookingStatus.CANCELLED
 
     def test_cant_cancel_cancelled_booking(self, app):
         users_factories.UserFactory(email="admin@example.com", isAdmin=True)
@@ -145,4 +143,4 @@ class BookingViewTest:
         assert "L&#39;opération a échoué : la réservation a déjà été annulée" in content
 
         booking = Booking.query.get(booking.id)
-        assert booking.isCancelled
+        assert booking.status == BookingStatus.CANCELLED
