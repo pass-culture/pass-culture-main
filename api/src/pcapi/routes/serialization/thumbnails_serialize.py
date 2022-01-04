@@ -9,7 +9,6 @@ from pcapi.serialization.utils import to_camel
 
 
 class CreateThumbnailBodyModel(BaseModel):
-    thumb_url: Optional[str]
     offer_id: int
     credit: Optional[str]
     cropping_rect_x: Optional[float]
@@ -29,8 +28,7 @@ class CreateThumbnailBodyModel(BaseModel):
 
     def get_image_as_bytes(self, request) -> bytes:
         """
-        Get the image from the POSTed data (request) or from the form field
-        (in which case it's supposed to be an URL that we are going to request.
+        Get the image from the POSTed data (request)
         Only the max size is checked at this stage, and possibly the content type header
         """
         if "thumb" in request.files:
@@ -38,10 +36,7 @@ class CreateThumbnailBodyModel(BaseModel):
             image_as_bytes = blob.read()
             return validation.get_uploaded_image(image_as_bytes)
 
-        if self.thumb_url:
-            return validation.get_distant_image(self.thumb_url)
-
-        raise validation.exceptions.MissingImage
+        raise validation.exceptions.MissingImage()
 
 
 class CreateThumbnailResponseModel(BaseModel):

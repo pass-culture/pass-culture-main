@@ -2,7 +2,6 @@ import datetime
 import pathlib
 
 import pytest
-import requests
 
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offers import exceptions
@@ -263,101 +262,6 @@ class CheckStockIsUpdatableTest:
             validation.check_stock_is_updatable(stock)
 
         assert error.value.errors["global"] == ["Les événements passés ne sont pas modifiables"]
-
-
-class GetDistantImageTest:
-    def test_ok_with_headers(self, requests_mock):
-        remote_image_url = "https://example.com/image.jpg"
-        requests_mock.get(
-            remote_image_url,
-            headers={"content-type": "image/jpeg", "content-length": "4"},
-            content=b"\xff\xd8\xff\xd9",
-        )
-
-        validation.get_distant_image(
-            url=remote_image_url,
-            accepted_types=("jpeg", "jpg"),
-            max_size=100000,
-        )
-
-    def test_ok_without_headers(self, requests_mock):
-        remote_image_url = "https://example.com/image.jpg"
-        requests_mock.get(
-            remote_image_url,
-            headers={},
-            content=b"\xff\xd8\xff\xd9",
-        )
-
-        validation.get_distant_image(
-            url=remote_image_url,
-            accepted_types=("jpeg", "jpg"),
-            max_size=100000,
-        )
-
-    def test_unaccessible_file(self, requests_mock):
-        remote_image_url = "https://example.com/this-goes-nowhere"
-        requests_mock.get(
-            remote_image_url,
-            status_code=404,
-        )
-
-        with pytest.raises(exceptions.FailureToRetrieve):
-            validation.get_distant_image(
-                url=remote_image_url,
-                accepted_types=("jpeg", "jpg"),
-                max_size=100000,
-            )
-
-    def test_content_length_header_too_large(self, requests_mock):
-        remote_image_url = "https://example.com/image.jpg"
-        requests_mock.get(
-            remote_image_url,
-            headers={"content-type": "image/jpeg", "content-length": "2000"},
-            content=b"\xff\xd8\xff\xd9",
-        )
-
-        with pytest.raises(exceptions.FileSizeExceeded):
-            validation.get_distant_image(
-                url=remote_image_url,
-                accepted_types=("jpeg", "jpg", "png"),
-                max_size=1000,
-            )
-
-    def test_content_type_header_not_accepted(self, requests_mock):
-        remote_image_url = "https://example.com/image.gif"
-        requests_mock.get(
-            remote_image_url,
-            headers={"content-type": "image/gif", "content-length": "27661"},
-        )
-
-        with pytest.raises(exceptions.UnacceptedFileType):
-            validation.get_distant_image(
-                url=remote_image_url,
-                accepted_types=("jpeg", "jpg", "png"),
-                max_size=100000,
-            )
-
-    def test_timeout(self, requests_mock):
-        remote_image_url = "https://example.com/image.jpg"
-        requests_mock.get(remote_image_url, exc=requests.exceptions.ConnectTimeout)
-
-        with pytest.raises(exceptions.FailureToRetrieve):
-            validation.get_distant_image(
-                url=remote_image_url,
-                accepted_types=("jpeg", "jpg"),
-                max_size=100000,
-            )
-
-    def test_content_too_large(self, requests_mock):
-        remote_image_url = "https://example.com/image.jpg"
-        requests_mock.get(remote_image_url, content=b"1234567890")
-
-        with pytest.raises(exceptions.FileSizeExceeded):
-            validation.get_distant_image(
-                url=remote_image_url,
-                accepted_types=("jpeg", "jpg", "png"),
-                max_size=5,
-            )
 
 
 class CheckImageTest:
