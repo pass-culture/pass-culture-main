@@ -111,7 +111,7 @@ class EduconnectTest:
         assert response.status_code == 302
         assert (
             response.location
-            == "https://webapp-v2.example.com/idcheck/validation?firstName=Max&lastName=SENS&dateOfBirth=2006-08-18&logoutUrl=https%3A%2F%2Feduconnect.education.gouv.fr%2FLogout"
+            == "https://webapp-v2.example.com/educonnect/validation?firstName=Max&lastName=SENS&dateOfBirth=2006-08-18&logoutUrl=https%3A%2F%2Feduconnect.education.gouv.fr%2FLogout"
         )
 
         assert caplog.records[0].extra == {
@@ -177,7 +177,7 @@ class EduconnectTest:
         assert response.status_code == 302
         assert (
             response.location
-            == "https://webapp-v2.example.com/idcheck/educonnect/erreur?code=UserTypeNotStudent&logoutUrl=https%3A%2F%2Feduconnect.education.gouv.fr%2FLogout"
+            == "https://webapp-v2.example.com/educonnect/erreur?code=UserTypeNotStudent&logoutUrl=https%3A%2F%2Feduconnect.education.gouv.fr%2FLogout"
         )
         assert caplog.records[0].extra == {"saml_request_id": self.request_id, "user_id": str(user.id)}
         assert caplog.records[0].message == "Wrong user type of educonnect user"
@@ -199,7 +199,7 @@ class EduconnectTest:
             response = client.post("/saml/acs", form={"SAMLResponse": "encrypted_data"})
 
         assert response.status_code == 302
-        assert response.location.startswith("https://webapp-v2.example.com/idcheck/validation")
+        assert response.location.startswith("https://webapp-v2.example.com/educonnect/validation")
         assert caplog.messages == [
             "Fraud suspicion after educonnect authentication with codes: duplicate_user, ine_not_whitelisted"
         ]
@@ -224,7 +224,7 @@ class EduconnectTest:
 
         assert not BeneficiaryImport.query.filter_by(beneficiary=user).first()
         assert response.location == (
-            "https://webapp-v2.example.com/idcheck/educonnect/erreur?code=UserAgeNotValid&logoutUrl=https%3A%2F%2Feduconnect.education.gouv.fr%2FLogout"
+            "https://webapp-v2.example.com/educonnect/erreur?code=UserAgeNotValid&logoutUrl=https%3A%2F%2Feduconnect.education.gouv.fr%2FLogout"
         )
         assert len(user.subscriptionMessages) == 1
         assert (
@@ -246,7 +246,7 @@ class EduconnectTest:
 
         assert response.status_code == 302
         assert response.location == (
-            "https://webapp-v2.example.com/idcheck/educonnect/erreur?code=UserAgeNotValid&logoutUrl=https%3A%2F%2Feduconnect.education.gouv.fr%2FLogout"
+            "https://webapp-v2.example.com/educonnect/erreur?code=UserAgeNotValid&logoutUrl=https%3A%2F%2Feduconnect.education.gouv.fr%2FLogout"
         )
         assert len(user.subscriptionMessages) == 1
         assert (
@@ -268,7 +268,7 @@ class EduconnectTest:
 
         assert response.status_code == 302
         assert response.location == (
-            "https://webapp-v2.example.com/idcheck/educonnect/erreur?code=UserAgeNotValid18YearsOld&logoutUrl=https%3A%2F%2Feduconnect.education.gouv.fr%2FLogout"
+            "https://webapp-v2.example.com/educonnect/erreur?code=UserAgeNotValid18YearsOld&logoutUrl=https%3A%2F%2Feduconnect.education.gouv.fr%2FLogout"
         )
         assert len(user.subscriptionMessages) == 1
         assert (
@@ -290,7 +290,7 @@ class EduconnectTest:
 
         assert response.status_code == 302
         assert response.location == (
-            "https://webapp-v2.example.com/idcheck/educonnect/erreur?code=UserAgeNotValid&logoutUrl=https%3A%2F%2Feduconnect.education.gouv.fr%2FLogout"
+            "https://webapp-v2.example.com/educonnect/erreur?code=UserAgeNotValid&logoutUrl=https%3A%2F%2Feduconnect.education.gouv.fr%2FLogout"
         )
         assert len(user.subscriptionMessages) == 1
         assert (
@@ -335,7 +335,7 @@ class EduconnectTest:
 
         assert response.status_code == 302
         assert response.location == (
-            "https://webapp-v2.example.com/idcheck/educonnect/erreur?code=UserNotWhitelisted&logoutUrl=https%3A%2F%2Feduconnect.education.gouv.fr%2FLogout"
+            "https://webapp-v2.example.com/educonnect/erreur?code=UserNotWhitelisted&logoutUrl=https%3A%2F%2Feduconnect.education.gouv.fr%2FLogout"
         )
         assert len(user.subscriptionMessages) == 1
         assert (
@@ -354,7 +354,7 @@ class EduconnectTest:
         response = client.post("/saml/acs", form={"SAMLResponse": "encrypted_data"})
 
         assert response.status_code == 302
-        assert response.location.startswith("https://webapp-v2.example.com/idcheck/validation")
+        assert response.location.startswith("https://webapp-v2.example.com/educonnect/validation")
         assert user.beneficiaryFraudResults[0].status == fraud_models.FraudStatus.OK
 
     @override_features(ENABLE_INE_WHITELIST_FILTER=False)
@@ -369,7 +369,7 @@ class EduconnectTest:
 
         assert response.status_code == 302
         assert response.location == (
-            "https://webapp-v2.example.com/idcheck/educonnect/erreur?code=UserAgeNotValid&logoutUrl=https%3A%2F%2Feduconnect.education.gouv.fr%2FLogout"
+            "https://webapp-v2.example.com/educonnect/erreur?code=UserAgeNotValid&logoutUrl=https%3A%2F%2Feduconnect.education.gouv.fr%2FLogout"
         )
 
         assert user.beneficiaryFraudResults[0].status == fraud_models.FraudStatus.KO
@@ -377,5 +377,5 @@ class EduconnectTest:
         response = client.post("/saml/acs", form={"SAMLResponse": "encrypted_data"})
         assert response.status_code == 302
         assert response.location == (
-            "https://webapp-v2.example.com/idcheck/educonnect/erreur?code=UserAgeNotValid&logoutUrl=https%3A%2F%2Feduconnect.education.gouv.fr%2FLogout"
+            "https://webapp-v2.example.com/educonnect/erreur?code=UserAgeNotValid&logoutUrl=https%3A%2F%2Feduconnect.education.gouv.fr%2FLogout"
         )

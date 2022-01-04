@@ -24,8 +24,8 @@ from . import blueprint
 
 logger = logging.getLogger(__name__)
 
-ERROR_PAGE_URL = f"{settings.WEBAPP_V2_URL}/idcheck/educonnect/erreur?"
-SUCCESS_PAGE_URL = f"{settings.WEBAPP_V2_URL}/idcheck/validation?"
+ERROR_PAGE_URL = f"{settings.WEBAPP_V2_URL}/educonnect/erreur?"
+SUCCESS_PAGE_URL = f"{settings.WEBAPP_V2_URL}/educonnect/validation?"
 
 
 @blueprint.saml_blueprint.route("educonnect/login", methods=["GET"])
