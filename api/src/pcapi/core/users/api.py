@@ -166,7 +166,6 @@ def create_account(
     is_email_validated: bool = False,
     send_activation_mail: bool = True,
     remote_updates: bool = True,
-    postal_code: str = None,
     phone_number: str = None,
     apps_flyer_user_id: str = None,
     apps_flyer_platform: str = None,
@@ -175,8 +174,6 @@ def create_account(
     if find_user_by_email(email):
         raise exceptions.UserAlreadyExistsException()
 
-    departement_code = PostalCode(postal_code).get_departement_code() if postal_code else None
-
     user = User(
         email=email,
         dateOfBirth=datetime.combine(birthdate, datetime.min.time()),
@@ -184,8 +181,6 @@ def create_account(
         publicName=VOID_PUBLIC_NAME,  # Required because model validation requires 3+ chars
         hasSeenTutorials=False,
         notificationSubscriptions=asdict(NotificationSubscriptions(marketing_email=marketing_email_subscription)),
-        postalCode=postal_code,
-        departementCode=departement_code,
         phoneNumber=phone_number,
         lastConnectionDate=datetime.now(),
         subscriptionState=models.SubscriptionState.account_created,

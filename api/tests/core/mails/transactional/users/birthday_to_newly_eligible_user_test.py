@@ -18,9 +18,7 @@ class MailjetSendNewlyEligibleUserEmailTest:
     @override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=False)
     def test_send_anniversary_age_18_email(self):
         # given
-        user = users_factories.UserFactory(
-            dateOfBirth=(datetime.now() - relativedelta(years=18, days=5)), departementCode="93"
-        )
+        user = users_factories.UserFactory(dateOfBirth=(datetime.now() - relativedelta(years=18, days=5)))
 
         # when
         send_birthday_age_18_email_to_newly_eligible_user(user)

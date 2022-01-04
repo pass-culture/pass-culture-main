@@ -1,36 +1,15 @@
 from datetime import timedelta
-from typing import Optional
 
 from pcapi.core.fraud import api as fraud_api
 from pcapi.core.subscription.models import BeneficiaryPreSubscription
 from pcapi.core.users.models import EligibilityType
 from pcapi.core.users.models import User
 from pcapi.domain.beneficiary_pre_subscription.exceptions import BeneficiaryIsADuplicate
-from pcapi.domain.beneficiary_pre_subscription.exceptions import BeneficiaryIsNotEligible
 from pcapi.domain.beneficiary_pre_subscription.exceptions import IdPieceNumberDuplicate
 from pcapi.domain.beneficiary_pre_subscription.exceptions import SubscriptionJourneyOnHold
 from pcapi.domain.beneficiary_pre_subscription.exceptions import SuspiciousFraudDetected
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository.user_queries import beneficiary_by_civility_query
-
-
-EXCLUDED_DEPARTMENTS = {
-    "984",  # Terres australes et antarctiques françaises
-    "987",  # Polynésie Française
-    "988",  # Nouvelle-Calédonie
-}
-
-
-def _is_postal_code_eligible(code: Optional[str]) -> bool:
-    # departmentCode can now be null
-    if not code:
-        return True
-
-    # New behaviour: all departments are eligible, except a few.
-    for department in EXCLUDED_DEPARTMENTS:
-        if code.startswith(department):
-            return False
-    return True
 
 
 def _check_email_is_not_taken(beneficiary_pre_subscription: BeneficiaryPreSubscription) -> None:
@@ -40,13 +19,6 @@ def _check_email_is_not_taken(beneficiary_pre_subscription: BeneficiaryPreSubscr
 
     if find_user_by_email(email):
         raise BeneficiaryIsADuplicate(f"Email {email} is already taken.")
-
-
-def _check_department_is_eligible(beneficiary_pre_subscription: BeneficiaryPreSubscription) -> None:
-    postal_code = beneficiary_pre_subscription.postal_code
-
-    if not _is_postal_code_eligible(postal_code):
-        raise BeneficiaryIsNotEligible(f"Postal code {postal_code} is not eligible.")
 
 
 def _check_not_a_duplicate(beneficiary_pre_subscription: BeneficiaryPreSubscription) -> None:
@@ -108,7 +80,6 @@ def validate(
     from pcapi.core.users import api as users_api
 
     _check_subscription_on_hold(beneficiary_pre_subscription)
-    _check_department_is_eligible(beneficiary_pre_subscription)
     if not preexisting_account:
         _check_email_is_not_taken(beneficiary_pre_subscription)
     else:

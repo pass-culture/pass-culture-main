@@ -3,8 +3,6 @@ import logging
 from typing import Optional
 
 from dateutil.relativedelta import relativedelta
-from sqlalchemy import not_
-from sqlalchemy.orm import Query
 
 from pcapi.core.mails.transactional.users.birthday_to_newly_eligible_user import (
     send_birthday_age_18_email_to_newly_eligible_user,
@@ -12,17 +10,10 @@ from pcapi.core.mails.transactional.users.birthday_to_newly_eligible_user import
 from pcapi.core.users import constants
 from pcapi.core.users.models import EligibilityType
 from pcapi.core.users.models import User
-from pcapi.domain.beneficiary_pre_subscription.validator import EXCLUDED_DEPARTMENTS
 from pcapi.models.user_offerer import UserOfferer
 
 
 logger = logging.getLogger(__name__)
-
-
-# Basically, this is _is_postal_code_eligible refactored for queries
-def _filter_by_eligible_postal_code(query: Query) -> Query:
-    excluded_departments_arg = "(%s)%%" % ("|".join(EXCLUDED_DEPARTMENTS))
-    return query.filter(not_(User.postalCode.op("SIMILAR TO")(excluded_departments_arg)))
 
 
 def _get_eligible_users_created_between(
@@ -37,7 +28,6 @@ def _get_eligible_users_created_between(
         User.dateOfBirth > today - relativedelta(years=(constants.ELIGIBILITY_AGE_18 + 1)),  # less than 19yo
         User.dateOfBirth <= today - relativedelta(years=constants.ELIGIBILITY_AGE_18),  # more than or 18yo
     )
-    query = _filter_by_eligible_postal_code(query)
     if max_number:
         query = query.limit(max_number)
     return query.order_by(User.dateCreated).all()

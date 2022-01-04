@@ -17,7 +17,6 @@ class Returns200Test:
         # given
         user = users_factories.BeneficiaryGrant18Factory(
             civility="M.",
-            departementCode="93",
             city=None,
             address=None,
             needsToFillCulturalSurvey=False,
@@ -45,7 +44,7 @@ class Returns200Test:
             "civility": "M.",
             "dateCreated": format_into_utc_date(user.dateCreated),
             "dateOfBirth": format_into_utc_date(user.dateOfBirth),
-            "departementCode": "93",
+            "departementCode": None,
             "email": "user@example.com",
             "firstName": "Jean",
             "hasPhysicalVenues": False,
@@ -66,7 +65,7 @@ class Returns200Test:
     @pytest.mark.usefixtures("db_session")
     def when_user_has_no_departement_code(self, app):
         # given
-        user = users_factories.UserFactory(email="USER@example.COM", departementCode=None)
+        user = users_factories.UserFactory(email="USER@example.COM")
         data = {"identifier": user.email, "password": user.clearTextPassword}
 
         # when

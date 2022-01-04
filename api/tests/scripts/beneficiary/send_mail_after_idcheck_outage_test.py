@@ -17,23 +17,15 @@ class SendMailAfterIdcheckOutageTest:
     def test_get_eligible_users_created_between(self, app):
         ELIGIBLE_CONDTIONS = {
             "dateCreated": datetime.now(),
-            "postalCode": "93000",
             "isBeneficiary": False,
         }
         # 19 yo
         factories.UserFactory(dateOfBirth=datetime(1999, 1, 1), **ELIGIBLE_CONDTIONS)
         user_just_18_in_eligible_area = factories.UserFactory(dateOfBirth=datetime(2000, 1, 1), **ELIGIBLE_CONDTIONS)
-        # User just 18 but in an ineligible area
-        factories.UserFactory(
-            dateOfBirth=datetime(2000, 1, 1),
-            dateCreated=datetime.now(),
-            postalCode="98712",
-        )
         # Beneficiary
         factories.BeneficiaryGrant18Factory(
             dateOfBirth=datetime(2000, 1, 1),
             dateCreated=datetime.now(),
-            postalCode="93000",
         )
         # Admin
         factories.AdminFactory(dateOfBirth=datetime(2000, 1, 1), **ELIGIBLE_CONDTIONS)

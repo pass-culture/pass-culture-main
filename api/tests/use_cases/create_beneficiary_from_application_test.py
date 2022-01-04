@@ -346,26 +346,6 @@ def test_cannot_save_beneficiary_if_duplicate(app):
     assert sub_msg.callToActionIcon == subscription_models.CallToActionIcon.EMAIL
 
 
-@patch("pcapi.connectors.beneficiaries.jouve_backend._get_raw_content")
-def test_cannot_save_beneficiary_if_department_is_not_eligible(get_application_content, app):
-    # Given
-    postal_code = "984"
-    get_application_content.return_value = JOUVE_CONTENT | {"postalCode": postal_code}
-    applicant = users_factories.UserFactory(
-        firstName=JOUVE_CONTENT["firstName"], lastName=JOUVE_CONTENT["lastName"], email=JOUVE_CONTENT["email"]
-    )
-
-    # When
-    create_beneficiary_from_application.execute(APPLICATION_ID)
-
-    # Then
-    beneficiary_import = BeneficiaryImport.query.one()
-    assert beneficiary_import.currentStatus == ImportStatus.REJECTED
-    assert beneficiary_import.applicationId == APPLICATION_ID
-    assert beneficiary_import.beneficiary == applicant
-    assert beneficiary_import.detail == f"Postal code {postal_code} is not eligible."
-
-
 @patch("pcapi.use_cases.create_beneficiary_from_application.validate")
 @patch("pcapi.connectors.beneficiaries.jouve_backend._get_raw_content")
 def test_calls_send_rejection_mail_with_validation_error(_get_raw_content, stubed_validate, app):
