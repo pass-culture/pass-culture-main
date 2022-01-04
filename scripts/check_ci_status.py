@@ -1,6 +1,6 @@
 import sys
 import requests
-from typing import List, Optional
+from typing import Optional
 
 
 def extract_commit_status(commit_sha1: str, project_jobs_infos: str, test_name:str) -> Optional[str]:
@@ -20,7 +20,7 @@ def get_project_jobs_infos(branch_name: str) -> Optional[str]:
 
 
 def main():
-    tests_names = ["tests-script-pc", "tests-api", "tests-webapp", "tests-pro"]
+    tests_names = ["tests-script-pc", "tests-api", "tests-pro"]
 
     if len(sys.argv) < 3:
         print('Error : Scripts needs to be called with 2 arguments, a commit hash and a tag name')
