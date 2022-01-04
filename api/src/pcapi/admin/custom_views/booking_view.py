@@ -10,9 +10,8 @@ from wtforms import StringField
 from wtforms import validators
 
 from pcapi.admin.base_configuration import BaseCustomAdminView
+from pcapi.core.bookings import models as booking_models
 import pcapi.core.bookings.api as bookings_api
-from pcapi.core.bookings.models import Booking
-from pcapi.core.bookings.models import IndividualBooking
 from pcapi.core.educational.models import EducationalBooking
 from pcapi.core.offers.models import Stock
 from pcapi.domain.client_exceptions import ClientError
@@ -50,10 +49,18 @@ class BookingView(BaseCustomAdminView):
             if search_form.validate():
                 token = search_form.token.data.strip().upper()
                 booking = (
-                    Booking.query.filter_by(token=token)
-                    .options(joinedload(Booking.individualBooking).joinedload(IndividualBooking.user))
-                    .options(joinedload(Booking.educationalBooking).joinedload(EducationalBooking.educationalRedactor))
-                    .options(joinedload(Booking.stock).joinedload(Stock.offer))
+                    booking_models.Booking.query.filter_by(token=token)
+                    .options(
+                        joinedload(booking_models.Booking.individualBooking).joinedload(
+                            booking_models.IndividualBooking.user
+                        )
+                    )
+                    .options(
+                        joinedload(booking_models.Booking.educationalBooking).joinedload(
+                            EducationalBooking.educationalRedactor
+                        )
+                    )
+                    .options(joinedload(booking_models.Booking.stock).joinedload(Stock.offer))
                     .one_or_none()
                 )
                 if not booking:
@@ -66,8 +73,12 @@ class BookingView(BaseCustomAdminView):
                     cancel_form = CancelForm(booking_id=booking.id)
         elif "id" in request.args:
             booking = (
-                Booking.query.options(joinedload(Booking.individualBooking).joinedload(IndividualBooking.user))
-                .options(joinedload(Booking.stock).joinedload(Stock.offer))
+                booking_models.Booking.query.options(
+                    joinedload(booking_models.Booking.individualBooking).joinedload(
+                        booking_models.IndividualBooking.user
+                    )
+                )
+                .options(joinedload(booking_models.Booking.stock).joinedload(Stock.offer))
                 .get(request.args["id"])
             )
 
@@ -81,7 +92,7 @@ class BookingView(BaseCustomAdminView):
 
     @expose("/mark-as-used/<int:booking_id>", methods=["POST"])
     def uncancel_and_mark_as_used(self, booking_id: int) -> werkzeug.Response:
-        booking = Booking.query.get_or_404(booking_id)
+        booking = booking_models.Booking.query.get_or_404(booking_id)
         booking_url = url_for(".search", id=booking.id)
 
         if not booking.isCancelled:
@@ -106,7 +117,7 @@ class BookingView(BaseCustomAdminView):
         Parse form, cancel booking and then send and email to the booking's
         offerer
         """
-        booking = Booking.query.get_or_404(booking_id)
+        booking = booking_models.Booking.query.get_or_404(booking_id)
         booking_url = url_for(".search", id=booking.id)
 
         try:
