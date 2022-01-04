@@ -11,6 +11,7 @@ import parseSubmitErrors from '../../forms/utils/parseSubmitErrors'
 import { campaignTracker } from '../../../tracking/mediaCampaignsTracking'
 import validateEmailField from '../../forms/validators/validateEmailField'
 import validatePasswordField from '../../forms/validators/validatePasswordField'
+import { WEBAPP_V2_URL } from '../../../utils/config'
 
 class SignIn extends PureComponent {
   constructor(props) {
@@ -22,6 +23,15 @@ class SignIn extends PureComponent {
 
   componentDidMount() {
     campaignTracker.signin()
+    this.v2Redirect()
+  }
+
+  componentWillUnmount() {
+    this.v2Redirect()
+  }
+
+  v2Redirect = () => {
+    window.location.replace(WEBAPP_V2_URL)
   }
 
   handleFail = formResolver => (state, action) => {
