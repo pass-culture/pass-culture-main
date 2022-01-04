@@ -16,7 +16,6 @@ from pcapi.core.offers.models import Stock
 from pcapi.core.users.models import User
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.api_errors import ForbiddenError
-from pcapi.utils import requests as pcapi_requests
 
 from . import exceptions
 from ..categories import subcategories
@@ -46,8 +45,6 @@ ACCEPTED_THUMBNAIL_FORMATS = (
     "jpg",
     "jpeg",
 )
-DISTANT_IMAGE_REQUEST_TIMEOUT = 5
-CHUNK_SIZE_IN_BYTES = 4096
 
 
 KEY_VALIDATION_CONFIG = {
@@ -207,37 +204,6 @@ def check_update_only_allowed_stock_fields_for_allocine_offer(updated_fields: se
         api_errors.status_code = 400
         api_errors.add_error("global", "Pour les offres importées, certains champs ne sont pas modifiables")
         raise api_errors
-
-
-def get_distant_image(
-    url: str,
-    accepted_types: tuple = ACCEPTED_THUMBNAIL_FORMATS,
-    max_size: int = MAX_THUMBNAIL_SIZE,
-) -> bytes:
-    try:
-        streaming_response = pcapi_requests.get(
-            url, timeout=DISTANT_IMAGE_REQUEST_TIMEOUT, stream=True, log_at_error_level=False
-        )
-        streaming_response.raise_for_status()
-    except Exception:
-        raise exceptions.FailureToRetrieve()
-
-    # These two headers are recommended to be included by the server, but they could be missing
-    content_type = streaming_response.headers.get("Content-Type", "")
-    if content_type and content_type.lstrip("image/") not in accepted_types:
-        raise exceptions.UnacceptedFileType(accepted_types=accepted_types)
-
-    content_length = streaming_response.headers.get("Content-Length", 0)
-    if int(content_length) > max_size:
-        raise exceptions.FileSizeExceeded(max_size=max_size)
-
-    response_content = b""
-    for chunk in streaming_response.iter_content(CHUNK_SIZE_IN_BYTES):
-        response_content += chunk
-        if len(response_content) > max_size:
-            streaming_response.close()
-            raise exceptions.FileSizeExceeded(max_size=max_size)
-    return response_content
 
 
 def get_uploaded_image(image_as_bytes: bytes, max_size: int = MAX_THUMBNAIL_SIZE) -> bytes:
