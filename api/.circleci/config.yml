@@ -7,7 +7,6 @@ parameters:
     type: string
     default: 'deps1-{{ checksum "/home/circleci/.pyenv/version" }}-{{ checksum "requirements.txt" }}'
 
-
 ###################
 #  EXECUTORS
 ###################
@@ -71,7 +70,6 @@ commands:
             --namespace << parameters.kubernetes_namespace >> \
             --values << parameters.helm_values_file >> \
             --set-string image.tag=<< parameters.app_version >>
-
 
   notify-slack:
     description: Send notification to Slack
@@ -176,7 +174,7 @@ jobs:
 
                   venv/bin/coveralls || echo "Encountered an error while running coveralls"
             - notify-slack:
-               channel: shérif
+                channel: shérif
       - unless:
           condition: << parameters.is_nightly_build >>
           steps:
@@ -245,7 +243,7 @@ jobs:
           condition: << parameters.is_nightly_build >>
           steps:
             - notify-slack:
-               channel: shérif
+                channel: shérif
 
   build-container:
     machine:
@@ -324,68 +322,7 @@ jobs:
           helm_values_file: ./helm/pcapi/values.testing.yaml
           app_version: ${CIRCLE_SHA1}
       - notify-slack:
-         channel: alertes-deploiement
-
-  functional-tests-webapp:
-    machine:
-      image: ubuntu-2004:202101-01
-    working_directory: ~/
-    steps:
-      - run:
-          name: Initialize environment
-          command: |
-            git clone https://github.com/pass-culture/pass-culture-main.git
-            cd pass-culture-main
-            git clone https://github.com/pass-culture/pass-culture-browser.git webapp
-            ./install_lib_ci_with_chrome.sh
-      - checkout:
-          path: ~/pass-culture-main/api
-      - run:
-          name: Install dockerize
-          command: |
-            wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
-            sudo tar -C /usr/local/bin -xzvf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
-            rm dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
-          environment:
-            DOCKERIZE_VERSION: v0.6.1
-      - run:
-          name: Running API server
-          command: |
-            cd ~/pass-culture-main/api
-            cd ~/pass-culture-main
-            ./pc start-backend
-          background: true
-      - run:
-          name: Run Frontend Webapp (Prod version)
-          command: |
-            export NVM_DIR="/opt/circleci/.nvm"
-            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-            cd ~/pass-culture-main/webapp
-            nvm install
-            git checkout master
-            yarn install
-            yarn start
-          background: true
-      - run:
-          name: Running Sandbox
-          command: |
-            cd pass-culture-main
-            dockerize -wait http://localhost/health/api -timeout 5m -wait-retry-interval 5s
-            dockerize -wait http://localhost/health/database -timeout 5m -wait-retry-interval 5s
-            ./pc sandbox --name=industrial
-      - run:
-          name: Running end2end tests WEBAPP
-          command: |
-            export NVM_DIR="/opt/circleci/.nvm"
-            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-            cd ~/pass-culture-main/webapp
-            nvm install
-            dockerize -wait http://localhost:3000 -timeout 5m -wait-retry-interval 5s
-            yarn test:cafe
-      - store_artifacts:
-          path: ~/pass-culture-main/webapp/testcafe_screenshots
-      - notify-slack:
-         channel: shérif
+          channel: alertes-deploiement
 
   functional-tests-pro:
     machine:
@@ -446,7 +383,7 @@ jobs:
       - store_artifacts:
           path: ~/pass-culture-main/pro/testcafe_screenshots
       - notify-slack:
-         channel: shérif
+          channel: shérif
 
   restart-pcapi:
     executor: gcp-sdk
@@ -460,7 +397,7 @@ jobs:
           command: gcloud container clusters get-credentials --region ${GCP_REGION} ${GKE_CLUSTER_NAME}
       - run: kubectl get deploy -n testing -o name | xargs -L 1 kubectl rollout restart -n testing
       - notify-slack:
-         channel: alertes-deploiement
+          channel: alertes-deploiement
 
 ###################
 #  WORKFLOWS
@@ -522,8 +459,6 @@ workflows:
               only:
                 - master
     jobs:
-      - functional-tests-webapp:
-          context: Slack
       - functional-tests-pro:
           context: Slack
       - run-tests:
@@ -535,16 +470,8 @@ workflows:
           context: Slack
           is_nightly_build: true
 
-
   e2e:
     jobs:
-      - functional-tests-webapp:
-          name: "Run webapp e2e tests after commit to master"
-          filters:
-            branches:
-              only:
-                - master
-          context: Slack
       - functional-tests-pro:
           name: "Run pro e2e tests after commit to master"
           filters:
