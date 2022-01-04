@@ -66,9 +66,11 @@ const OffererDetails = ({
   const hasMissingBusinessUnits = useMemo(() => {
     if (!isBankInformationWithSiretActive) return false
     if (!selectedOfferer) return false
-    return selectedOfferer.managedVenues
-      .map(venue => !venue.businessUnitId)
-      .some(Boolean)
+    let managedVenues = selectedOfferer.managedVenues
+    if (!selectedOfferer.hasDigitalVenueAtLeastOneOffer) {
+      managedVenues = managedVenues.filter(venue => !venue.isVirtual)
+    }
+    return managedVenues.map(venue => !venue.businessUnitId).some(Boolean)
   }, [isBankInformationWithSiretActive, selectedOfferer])
 
   const [isExpanded, setIsExpanded] = useState(
