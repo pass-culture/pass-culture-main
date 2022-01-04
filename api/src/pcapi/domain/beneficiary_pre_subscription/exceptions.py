@@ -6,10 +6,6 @@ class BeneficiaryIsADuplicate(CantRegisterBeneficiary):
     pass
 
 
-class BeneficiaryIsNotEligible(CantRegisterBeneficiary):
-    pass
-
-
 class SubscriptionJourneyOnHold(CantRegisterBeneficiary):
     pass
 

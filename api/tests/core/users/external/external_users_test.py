@@ -61,7 +61,7 @@ def test_update_external_pro_user():
 
 
 def test_get_user_attributes():
-    user = BeneficiaryGrant18Factory(deposit__version=1)
+    user = BeneficiaryGrant18Factory(deposit__version=1, departementCode="75")
     offer = OfferFactory(product__id=list(TRACKED_PRODUCT_IDS.keys())[0])
     b1 = IndividualBookingFactory(individualBooking__user=user, amount=10, stock__offer=offer)
     b2 = IndividualBookingFactory(

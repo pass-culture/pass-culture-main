@@ -187,7 +187,7 @@ class ValidateJwtTokenTest:
 class GenerateIdCheckTokenIfEligibleTest:
     @freeze_time("2018-06-01")
     def test_when_elible(self):
-        user = users_factories.UserFactory(dateOfBirth=datetime(2000, 1, 1), departementCode="93")
+        user = users_factories.UserFactory(dateOfBirth=datetime(2000, 1, 1))
         token = create_id_check_token(user)
         assert token
 
@@ -1124,7 +1124,6 @@ class BeneficiaryInformationUpdateTest:
             activity=None,
             address=None,
             city=None,
-            departementCode=None,
             firstName=None,
             lastName=None,
             postalCode=None,
@@ -1154,7 +1153,6 @@ class BeneficiaryInformationUpdateTest:
         assert beneficiary.firstName == "Jane"
         assert beneficiary.publicName == "Jane Doe"
         assert beneficiary.phoneNumber == "0612345678"
-        assert beneficiary.departementCode == "67"
         assert beneficiary.postalCode == "67200"
         assert beneficiary.address == "11 Rue du Test"
         assert beneficiary.dateOfBirth == datetime(2000, 5, 1, 0, 0)
@@ -1171,7 +1169,6 @@ class BeneficiaryInformationUpdateTest:
             activity=None,
             address=None,
             city=None,
-            departementCode=None,
             firstName=None,
             lastName=None,
             postalCode=None,

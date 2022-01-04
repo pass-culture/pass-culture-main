@@ -46,7 +46,6 @@ class AccountRequest(BaseModel):
     birthdate: datetime.date
     marketing_email_subscription: Optional[bool] = False
     token: str
-    postal_code: Optional[str] = None
     apps_flyer_user_id: Optional[str] = None
     apps_flyer_platform: Optional[str] = None
 
