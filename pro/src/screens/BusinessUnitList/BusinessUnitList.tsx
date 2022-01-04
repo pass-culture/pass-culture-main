@@ -30,6 +30,7 @@ export interface IBusinessUnit {
 export interface IOfferer {
   id: string
   name: string
+  hasDigitalVenueAtLeastOneOffer: boolean
 }
 
 interface IBusinessUnitListProps {
@@ -47,10 +48,17 @@ const BusinessUnitList = ({
 }: IBusinessUnitListProps): JSX.Element => {
   const getBusinessUnitVenues = (
     businessUnit: IBusinessUnit
-  ): IBusinessUnitVenue[] =>
-    venues.filter(
+  ): IBusinessUnitVenue[] => {
+    let filteredVenues = venues
+    if (!offerer.hasDigitalVenueAtLeastOneOffer) {
+      filteredVenues = venues.filter(
+        (venue: IBusinessUnitVenue) => !venue.isVirtual
+      )
+    }
+    return filteredVenues.filter(
       (venue: IBusinessUnitVenue) => venue.businessUnitId === businessUnit.id
     )
+  }
   const invalidBusinessUnits = businessUnitList.filter(
     businessUnit => !businessUnit.siret
   )
