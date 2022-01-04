@@ -7,12 +7,12 @@ import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import { NavLink } from 'react-router-dom'
 
+import Banner from 'components/layout/Banner/Banner'
 import Icon from 'components/layout/Icon'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Titles from 'components/layout/Titles/Titles'
 
 import ApiKey from './ApiKey/ApiKeyContainer'
-import BankInformation from './BankInformation/BankInformation'
 import { Offerer } from './Offerer'
 import VenuesContainer from './Venues/VenuesContainer'
 
@@ -59,9 +59,13 @@ class OffererDetails extends PureComponent {
             </span>
           </div>
         </div>
-        {offerer.areBankInformationProvided && (
-          <BankInformation offerer={offerer} />
-        )}
+        <div className="section">
+          <Banner
+            href="https://aide.passculture.app/fr/articles/5096833-calendrier-des-prochains-remboursements"
+            linkTitle="En savoir plus sur les remboursements"
+            type="notification-info"
+          />
+        </div>
         <ApiKey
           maxAllowedApiKeys={offerer.apiKey.maxAllowed}
           offererId={offerer.id}
