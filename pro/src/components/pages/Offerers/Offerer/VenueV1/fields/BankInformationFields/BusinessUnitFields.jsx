@@ -85,7 +85,8 @@ const BankInformationWithBusinessUnit = ({
         [REPLACE_DMS_FILE_BUTTON]: venue.id && venue.isBusinessUnitMainVenue,
         [PENDING_DMS_FILE_BANNER]:
           venue.id &&
-          !venue.businessUnitId &&
+          !venue.iban &&
+          !venue.bic &&
           venue.demarchesSimplifieesApplicationId &&
           !venue.isVirtual,
       })
@@ -96,9 +97,11 @@ const BankInformationWithBusinessUnit = ({
     isCreatingVenue,
     offerer.id,
     setDisplayedBanners,
+    venue.bic,
     venue.businessUnit,
     venue.businessUnitId,
     venue.demarchesSimplifieesApplicationId,
+    venue.iban,
     venue.id,
     venue.isBusinessUnitMainVenue,
     venue.isVirtual,
