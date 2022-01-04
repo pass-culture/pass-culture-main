@@ -288,7 +288,7 @@ def mark_as_used_with_uncancelling(booking: Booking) -> None:
     # Since I lock the stock, I really want to make sure the lock is
     # removed ASAP.
     with transaction():
-        if booking.isCancelled or booking.status == BookingStatus.CANCELLED:
+        if booking.status == BookingStatus.CANCELLED:
             booking.uncancel_booking_set_used()
             stock = offers_repository.get_and_lock_stock(stock_id=booking.stockId)
             stock.dnBookedQuantity += booking.quantity
@@ -308,7 +308,7 @@ def mark_as_cancelled(booking: Booking) -> None:
     say that a booking with payment, whatever its status, should be considered
     refunded.
     """
-    if booking.isCancelled:
+    if booking.status == BookingStatus.CANCELLED:
         raise exceptions.BookingAlreadyCancelled("la réservation a déjà été annulée")
 
     if booking.payments:

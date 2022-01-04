@@ -65,9 +65,12 @@ class BookingView(BaseCustomAdminView):
                 )
                 if not booking:
                     flash("Aucune réservation n'existe avec ce code de contremarque.", "error")
-                elif booking.isCancelled:
+                elif booking.status == booking_models.BookingStatus.CANCELLED:
                     mark_as_used_form = MarkAsUsedForm(booking_id=booking.id)
-                elif booking.educationalBookingId is not None and not booking.isCancelled:
+                elif (
+                    booking.educationalBookingId is not None
+                    and booking.status != booking_models.BookingStatus.CANCELLED
+                ):
                     flash("Vous ne pouvez pas annuler une réservation associée à une offre collective")
                 elif not booking.payments:
                     cancel_form = CancelForm(booking_id=booking.id)
@@ -95,7 +98,7 @@ class BookingView(BaseCustomAdminView):
         booking = booking_models.Booking.query.get_or_404(booking_id)
         booking_url = url_for(".search", id=booking.id)
 
-        if not booking.isCancelled:
+        if booking.status != booking_models.BookingStatus.CANCELLED:
             flash("Cette réservation n'est pas annulée, elle ne peut pas être validée via ce formulaire.", "error")
             return redirect(booking_url)
 

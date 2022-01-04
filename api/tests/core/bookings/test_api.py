@@ -605,7 +605,6 @@ class MarkAsUsedTest:
         booking = booking_factories.CancelledIndividualBookingFactory()
         api.mark_as_used_with_uncancelling(booking)
         assert booking.isUsed
-        assert not booking.isCancelled
         assert booking.status is BookingStatus.USED
         assert booking.dateUsed == datetime.utcnow()
         assert not booking.cancellationReason
