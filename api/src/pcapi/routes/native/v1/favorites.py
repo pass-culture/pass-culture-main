@@ -79,10 +79,7 @@ def get_favorites_count(user: User) -> serializers.FavoritesCountResponse:
     return serializers.FavoritesCountResponse(count=Favorite.query.filter_by(user=user).count())
 
 
-@blueprint.native_v1.route("/me/favorites", methods=["GET"])
-@spectree_serialize(response_model=serializers.PaginatedFavoritesResponse, api=blueprint.api)  # type: ignore
-@authenticated_user_required
-def get_favorites(user: User) -> serializers.PaginatedFavoritesResponse:
+def get_favorites_for(user: User) -> list[Favorite]:
     active_stock_filters = and_(
         Offer.isActive == True,
         Stock.isSoftDeleted == False,
@@ -92,7 +89,7 @@ def get_favorites(user: User) -> serializers.PaginatedFavoritesResponse:
         not_(Stock.hasBookingLimitDatetimePassed),
         active_stock_filters,
     )
-    favorites = (
+    query = (
         db.session.query(
             Favorite,
             func.min(Stock.price).filter(stock_filters).over(partition_by=Stock.offerId).label("min_price"),
@@ -139,13 +136,39 @@ def get_favorites(user: User) -> serializers.PaginatedFavoritesResponse:
         .options(joinedload(Favorite.offer).joinedload(Offer.product).load_only(Product.id, Product.thumbCount))
         .options(joinedload(Favorite.offer).joinedload(Offer.stocks))
         .order_by(Favorite.id.desc())
-        .all()
     )
 
-    for row in favorites:
-        _fill_favorite_offer(*row)
+    favorites = query.all()
+
+    for (
+        favorite,
+        min_price,
+        max_price,
+        min_beginning_datetime,
+        max_beginning_datetime,
+        non_expired_count,
+        active_count,
+    ) in favorites:
+        _fill_favorite_offer(
+            favorite=favorite,
+            min_price=min_price,
+            max_price=max_price,
+            min_beginning_datetime=min_beginning_datetime,
+            max_beginning_datetime=max_beginning_datetime,
+            non_expired_count=non_expired_count,
+            active_count=active_count,
+        )
 
     favorites = [fav for (fav, *_) in favorites]
+
+    return favorites
+
+
+@blueprint.native_v1.route("/me/favorites", methods=["GET"])
+@spectree_serialize(response_model=serializers.PaginatedFavoritesResponse, api=blueprint.api)  # type: ignore
+@authenticated_user_required
+def get_favorites(user: User) -> serializers.PaginatedFavoritesResponse:
+    favorites = get_favorites_for(user)
 
     paginated_favorites = {
         "page": 1,
