@@ -4,8 +4,8 @@ from dateutil.relativedelta import relativedelta
 import pytest
 
 import pcapi.core.mails.testing as mails_testing
-from pcapi.core.mails.transactional.users.anniversary_to_newly_eligible_user import (
-    send_newly_eligible_age_18_user_email,
+from pcapi.core.mails.transactional.users.birthday_to_newly_eligible_user import (
+    send_birthday_age_18_email_to_newly_eligible_user,
 )
 from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
@@ -23,7 +23,7 @@ class MailjetSendNewlyEligibleUserEmailTest:
         )
 
         # when
-        send_newly_eligible_age_18_user_email(user)
+        send_birthday_age_18_email_to_newly_eligible_user(user)
 
         # then
         assert len(mails_testing.outbox) == 1  # test number of emails sent
@@ -44,7 +44,7 @@ class SendinblueSendNewlyEligibleUserEmailTest:
         user = users_factories.UserFactory()
 
         # when
-        send_newly_eligible_age_18_user_email(user)
+        send_birthday_age_18_email_to_newly_eligible_user(user)
 
         # then
         assert len(mails_testing.outbox) == 1  # test number of emails sent

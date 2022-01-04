@@ -13,10 +13,10 @@ from pcapi.core.mails.transactional.bookings.booking_cancellation_by_beneficiary
 from pcapi.core.mails.transactional.bookings.booking_cancellation_by_pro_to_beneficiary import (
     send_booking_cancellation_by_pro_to_beneficiary_email,
 )
-from pcapi.core.mails.transactional.users.email_duplicate_pre_subscription_rejected import (
+from pcapi.core.mails.transactional.users.duplicate_pre_subscription_rejected import (
     send_duplicate_beneficiary_pre_subscription_rejected_data,
 )
-from pcapi.core.mails.transactional.users.email_duplicate_pre_subscription_rejected import (
+from pcapi.core.mails.transactional.users.duplicate_pre_subscription_rejected import (
     send_not_eligible_beneficiary_pre_subscription_rejected_data,
 )
 from pcapi.core.offerers.models import Offerer
