@@ -407,64 +407,6 @@ jobs:
             - notify-slack:
                 channel: shérif
 
-  tests-webapp:
-    machine:
-      image: ubuntu-2004:202101-01
-    working_directory: ~/pass-culture
-    steps:
-      - checkout
-      - skip_unchanged:
-          paths: webapp
-      - run: ./install_lib_ci_with_chrome.sh
-      - run: sudo ./pc symlink
-      - run: ./scripts/install_dockerize.sh $DOCKERIZE_VERSION
-      - run:
-          name: Run Unit Test WEBAPP
-          command: |
-            export NVM_DIR="/opt/circleci/.nvm"
-            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-            cd webapp
-            nvm install
-            yarn install
-            yarn test:unit
-      - run:
-          name: Running API server
-          command: |
-            cd api
-            pc start-backend
-          background: true
-      - run:
-          name: Run Frontend WEBAPP
-          command: |
-            export NVM_DIR="/opt/circleci/.nvm"
-            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-            cd webapp
-            nvm install
-            yarn start
-          background: true
-      - run:
-          name: Running Sandbox
-          command: |
-            dockerize -wait http://localhost/health/api -timeout 5m -wait-retry-interval 5s
-            dockerize -wait http://localhost/health/database -timeout 5m -wait-retry-interval 5s
-            pc sandbox --name=industrial
-      - run:
-          name: Running functional tests WEBAPP
-          command: |
-            export NVM_DIR="/opt/circleci/.nvm"
-            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-            cd webapp
-            nvm install
-            yarn test:cafe
-      - store_artifacts:
-          path: ~/pass-culture/webapp/testcafe_screenshots
-      - when:
-          condition:
-            equal: ["master", << pipeline.git.branch >>]
-          steps:
-            - notify-slack:
-                channel: shérif
-
   tests-adage-front:
     docker:
       - image: cimg/node:14.17
@@ -959,14 +901,6 @@ workflows:
                 - staging
                 - integration
           context: Slack
-      - tests-webapp:
-          filters:
-            branches:
-              ignore:
-                - production
-                - staging
-                - integration
-          context: Slack
       - tests-adage-front:
           filters:
             branches:
@@ -1048,7 +982,6 @@ workflows:
               only:
                 - master
           requires:
-            - tests-webapp
             - restart-pcapi
           context:
             - GCP
