@@ -3,7 +3,6 @@ from pathlib import Path
 from unittest import mock
 
 import pytest
-import requests_mock
 
 from pcapi.core.offers import exceptions
 import pcapi.core.offers.factories as offers_factories
@@ -47,118 +46,6 @@ class CreateThumbnailWithoutImageTest:
         # Then
         assert response.status_code == 400
         assert response.json == {"errors": ["Nous n'avons pas réceptionné l'image, merci d'essayer à nouveau."]}
-
-
-@pytest.mark.usefixtures("db_session")
-class CreateThumbnailFromUrlTest:
-    def test_import_from_url(self, app, offer, offerer):
-        # given
-        client = TestClient(app.test_client()).with_session_auth(email="user@example.com")
-        image_as_bytes = (IMAGES_DIR / "mouette_full_size.jpg").read_bytes()
-        data = {
-            "offerId": humanize(offer.id),
-            "thumbUrl": "https://example.com/image.jpg",
-        }
-
-        # when
-        with requests_mock.Mocker() as request_mock:
-            request_mock.get(
-                "https://example.com/image.jpg",
-                content=image_as_bytes,
-                headers={"Content-Type": "image/jpeg"},
-            )
-            response = client.post("/offers/thumbnails", form=data)
-
-        # then
-        assert response.status_code == 201
-        mediation = Mediation.query.one()
-        assert mediation.thumbCount == 1
-        assert response.json == {
-            "id": humanize(mediation.id),
-        }
-
-    def test_unavailable_image_url(self, app, offer, offerer):
-        # given
-        client = TestClient(app.test_client()).with_session_auth(email="user@example.com")
-        data = {
-            "offerId": humanize(offer.id),
-            "thumbUrl": "https://example.com/image.jpg",
-        }
-
-        # when
-        with requests_mock.Mocker() as request_mock:
-            request_mock.get("https://example.com/image.jpg", status_code=404)
-            response = client.post("/offers/thumbnails", form=data)
-
-        # then
-        assert response.status_code == 400
-        assert response.json == {
-            "errors": [
-                'Nous n’avons pas pu récupérer cette image; vous pouvez la télécharger puis l’importer depuis l’onglet "Importer"'
-            ]
-        }
-        assert Mediation.query.count() == 0
-
-    def test_wrong_content_type(self, app, offer, offerer):
-        # given
-        client = TestClient(app.test_client()).with_session_auth(email="user@example.com")
-        data = {
-            "offerId": humanize(offer.id),
-            "thumbUrl": "https://example.com/image.jpg",
-        }
-
-        # when
-        with requests_mock.Mocker() as request_mock:
-            request_mock.get(
-                "https://example.com/image.jpg",
-                content=b"plop",
-                headers={"Content-Type": "image/jpeg"},
-            )
-            response = client.post("/offers/thumbnails", form=data)
-
-        # then
-        assert response.status_code == 400
-        assert response.json == {"errors": ["Utilisez un format png, jpg, jpeg"]}
-
-    @mock.patch("pcapi.core.offers.validation.check_image")
-    def test_image_too_small(self, mock_check_image, app, offer, offerer):
-        # given
-        mock_check_image.side_effect = exceptions.ImageTooSmall(min_width=400, min_height=400)
-        client = TestClient(app.test_client()).with_session_auth(email="user@example.com")
-        data = {
-            "offerId": humanize(offer.id),
-            "thumbUrl": "https://example.com/image.jpg",
-        }
-
-        # when
-        with requests_mock.Mocker() as request_mock:
-            request_mock.get(
-                "https://example.com/image.jpg",
-                content=b"plop",
-                headers={"Content-Type": "image/jpeg"},
-            )
-            response = client.post("/offers/thumbnails", form=data)
-
-        # then
-        assert response.status_code == 400
-        assert response.json == {"errors": ["Utilisez une image plus grande (supérieure à 400px par 400px)"]}
-
-    @mock.patch("pcapi.core.offers.validation.get_distant_image")
-    def test_content_too_large(self, mock_get_distant_image, app, offer, offerer):
-        # given
-        mock_get_distant_image.side_effect = exceptions.FileSizeExceeded(max_size=10_000_000)
-        client = TestClient(app.test_client()).with_session_auth(email="user@example.com")
-        data = {
-            "offerId": humanize(offer.id),
-            "thumbUrl": "https://example.com/image.jpg",
-        }
-
-        # when
-        response = client.post("/offers/thumbnails", form=data)
-
-        # then
-        assert response.status_code == 400
-        assert response.json == {"errors": ["Utilisez une image dont le poids est inférieur à 10.0 MB"]}
 
 
 @pytest.mark.usefixtures("db_session")

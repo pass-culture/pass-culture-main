@@ -31,14 +31,6 @@ class UnacceptedFileType(ImageValidationError):
         super().__init__(f"Utilisez un format {', '.join(accepted_types)}")
 
 
-class FailureToRetrieve(ImageValidationError):
-    def __init__(self):
-        super().__init__(
-            "Nous n’avons pas pu récupérer cette image; vous pouvez la télécharger "
-            'puis l’importer depuis l’onglet "Importer"'
-        )
-
-
 class MissingImage(ImageValidationError):
     def __init__(self):
         super().__init__("Nous n'avons pas réceptionné l'image, merci d'essayer à nouveau.")

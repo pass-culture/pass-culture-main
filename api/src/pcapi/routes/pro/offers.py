@@ -1,4 +1,3 @@
-import base64
 import logging
 
 from flask import request
@@ -16,8 +15,6 @@ import pcapi.core.offers.api as offers_api
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
 import pcapi.core.offers.repository as offers_repository
-from pcapi.core.offers.validation import check_image
-from pcapi.core.offers.validation import get_distant_image
 from pcapi.models.api_errors import ApiErrors
 from pcapi.repository.offer_queries import get_offer_by_id
 from pcapi.routes.apis import private_api
@@ -221,31 +218,6 @@ def edit_educational_offer(
         raise ApiErrors({"offerId": "no educational offer has been found with this id"}, 404)
     except exceptions.SubcategoryNotEligibleForEducationalOffer:
         raise ApiErrors({"subcategoryId": "this subcategory is not educational"}, 400)
-
-
-@private_api.route("/offers/thumbnail-url-validation", methods=["POST"])
-@login_required
-@spectree_serialize(response_model=offers_serialize.ImageResponseModel)
-def validate_distant_image(body: offers_serialize.ImageBodyModel) -> offers_serialize.ImageResponseModel:
-    errors = []
-
-    try:
-        image = get_distant_image(body.url)
-        check_image(image)
-        image_as_base64 = base64.b64encode(image)
-        return offers_serialize.ImageResponseModel(
-            image=f'data:image/png;base64,{str(image_as_base64, encoding="utf-8")}', errors=errors
-        )
-    except (
-        exceptions.FileSizeExceeded,
-        exceptions.ImageTooSmall,
-        exceptions.UnacceptedFileType,
-        exceptions.FailureToRetrieve,
-    ) as exc:
-        logger.info("When validating image at: %s, this error was encountered: %s", body.url, exc.__class__.__name__)
-        errors.append(exc.args[0])
-
-    return offers_serialize.ImageResponseModel(errors=errors)
 
 
 @private_api.route("/offers/thumbnails/", methods=["POST"])
