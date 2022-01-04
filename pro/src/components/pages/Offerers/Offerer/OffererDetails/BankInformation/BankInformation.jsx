@@ -13,7 +13,7 @@ import { DEMARCHES_SIMPLIFIEES_OFFERER_RIB_UPLOAD_PROCEDURE_URL } from 'utils/co
 
 import { Offerer } from '../Offerer'
 
-const BankInformation = ({ offerer, hasBusinessUnitError = false }) => (
+const BankInformation = ({ offerer, hasBusinessUnitError }) => (
   <div className="section op-content-section bank-information">
     <div className="main-list-title title-actions-container">
       <h2 className="main-list-title-text">
@@ -68,9 +68,11 @@ const BankInformation = ({ offerer, hasBusinessUnitError = false }) => (
     />
   </div>
 )
-
+BankInformation.defaultProps = {
+  hasBusinessUnitError: false,
+}
 BankInformation.propTypes = {
-  hasBusinessUnitError: PropTypes.bool.isRequired,
+  hasBusinessUnitError: PropTypes.bool,
   offerer: PropTypes.instanceOf(Offerer).isRequired,
 }
 
