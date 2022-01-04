@@ -460,8 +460,13 @@ class Results extends PureComponent {
             ref={this.inputRef}
             value={keywordsToSearch}
           />
-          <div className="sr-items-wrapper" onScroll={this.handleOnScroll}>
-            <div className="sr-spinner">{isLoading && <Spinner label="Recherche en cours" />}</div>
+          <div
+            className="sr-items-wrapper"
+            onScroll={this.handleOnScroll}
+          >
+            <div className="sr-spinner">
+              {isLoading && <Spinner label="Recherche en cours" />}
+            </div>
             {isSearchEmpty && (
               <EmptyResult
                 onNewSearchAroundMe={this.handleNewSearchAroundMe}
@@ -488,10 +493,18 @@ class Results extends PureComponent {
                 onClick={this.handleGoTo('filtres')}
                 type="button"
               >
-                <Icon alt="Filtrer les résultats" svg="filtrer" />
-                <span className="sr-filter-button-text">{'Filtrer'}</span>
+                <Icon
+                  alt="Filtrer les résultats"
+                  svg="filtrer"
+                />
+                <span className="sr-filter-button-text">
+                  {'Filtrer'}
+                </span>
                 {numberOfActiveFilters > 0 && (
-                  <span className="sr-filter-button-counter" data-test="sr-filter-button-counter">
+                  <span
+                    className="sr-filter-button-counter"
+                    data-test="sr-filter-button-counter"
+                  >
                     {numberOfActiveFilters}
                   </span>
                 )}
@@ -504,7 +517,10 @@ class Results extends PureComponent {
             path={`${SEARCH_RESULTS_URI}/:details(details|transition)/:offerId([A-Z0-9]+)/:booking(reservation)?/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?/:confirmation(confirmation)?`}
           >
             <div className="offer-details">
-              <HeaderContainer shouldBackFromDetails title="Recherche" />
+              <HeaderContainer
+                shouldBackFromDetails
+                title="Recherche"
+              />
               <ResultDetailContainer />
             </div>
           </Route>

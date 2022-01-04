@@ -16,7 +16,7 @@ describe('signOut', () => {
         json: () => Promise.resolve({}),
       })
     )
-    window.batchSDK = jest.fn()
+    jest.spyOn(window, 'batchSDK').mockImplementation()
 
     // when
     await signOut()
@@ -27,7 +27,7 @@ describe('signOut', () => {
 
   it('should call fetch', async () => {
     // Given
-    window.batchSDK = jest.fn()
+    jest.spyOn(window, 'batchSDK').mockImplementation()
 
     jest.spyOn(global, 'fetch').mockImplementation(() =>
       Promise.resolve({
