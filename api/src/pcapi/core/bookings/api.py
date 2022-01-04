@@ -423,7 +423,7 @@ def auto_mark_as_used_after_event() -> None:
     # fmt: off
     bookings = (
         Booking.query
-            .filter_by(isUsed=False, isCancelled=False)
+            .filter(Booking.isUsed.is_(False), Booking.status != BookingStatus.CANCELLED)
             .filter(Stock.id == Booking.stockId)
             .filter(Stock.beginningDatetime < threshold)
     )
