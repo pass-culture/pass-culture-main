@@ -2,6 +2,7 @@ import csv
 from datetime import date
 from datetime import datetime
 from datetime import time
+from datetime import timedelta
 from io import StringIO
 import math
 from typing import Callable
@@ -298,14 +299,32 @@ def generate_booking_token() -> str:
     raise ValueError("Could not generate new booking token")
 
 
-def find_expired_individual_bookings_ordered_by_user(expired_on: date = None) -> list[IndividualBooking]:
+def find_users_with_expired_individual_bookings(expired_on: date = None) -> Iterable[User]:
+    expired_on = expired_on or date.today()
+    return (
+        User.query.join(IndividualBooking)
+        .join(Booking)
+        .filter(
+            Booking.isCancelled.is_(True),
+            Booking.cancellationDate >= expired_on,
+            Booking.cancellationDate < (expired_on + timedelta(days=1)),
+            Booking.cancellationReason == BookingCancellationReasons.EXPIRED,
+        )
+        .yield_per(1000)
+    )
+
+
+def get_expired_individual_bookings_for_user(user: User, expired_on: date = None) -> list[IndividualBooking]:
     expired_on = expired_on or date.today()
     return (
         IndividualBooking.query.join(Booking)
-        .filter(Booking.isCancelled.is_(True))
-        .filter(cast(Booking.cancellationDate, Date) == expired_on)
-        .filter(Booking.cancellationReason == BookingCancellationReasons.EXPIRED)
-        .order_by(IndividualBooking.userId)
+        .filter(
+            IndividualBooking.user == user,
+            Booking.isCancelled.is_(True),
+            Booking.cancellationDate >= expired_on,
+            Booking.cancellationDate < (expired_on + timedelta(days=1)),
+            Booking.cancellationReason == BookingCancellationReasons.EXPIRED,
+        )
         .all()
     )
 
