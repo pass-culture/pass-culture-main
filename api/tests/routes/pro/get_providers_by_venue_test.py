@@ -22,21 +22,18 @@ def test_venue_has_known_allocine_id(client):
 
     # Then
     assert response.status_code == 200
-    returned_providers = sorted(response.json, key=lambda d: d["localClass"])
-    assert len(returned_providers) == 5
-    assert returned_providers[:2] == [
+    assert len(response.json) == 5
+    assert response.json[:2] == [
         {
             "enabledForPro": True,
             "id": humanize(allocine_provider.id),
             "isActive": True,
-            "localClass": "AllocineStocks",
             "name": "Allociné",
         },
         {
             "enabledForPro": True,
             "id": humanize(other_provider.id),
             "isActive": True,
-            "localClass": other_provider.localClass,
             "name": other_provider.name,
         },
     ]
@@ -56,16 +53,14 @@ def test_venue_has_no_allocine_id(client):
 
     # Then
     assert response.status_code == 200
-    returned_providers = sorted(response.json, key=lambda d: d["localClass"])
-    assert len(returned_providers) == 4
-    assert returned_providers[0] == {
+    assert len(response.json) == 4
+    assert response.json[0] == {
         "enabledForPro": True,
         "id": humanize(other_provider.id),
         "isActive": True,
-        "localClass": other_provider.localClass,
         "name": other_provider.name,
     }
-    assert humanize(allocine_provider.id) not in [p["id"] for p in returned_providers]
+    assert humanize(allocine_provider.id) not in [p["id"] for p in response.json]
 
 
 @pytest.mark.usefixtures("db_session")
