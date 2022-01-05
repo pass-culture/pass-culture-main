@@ -304,8 +304,12 @@ def _delete_dependent_pricings(booking: bookings_models.Booking, log_message: st
     # exclusive lock on the business unit to avoid that)... but I'd
     # rather be safe than sorry.
     pricing_ids = [p.id for p in pricings]
-    query = models.Pricing.query.filter(models.Pricing.id.in_(pricing_ids))
-    query.delete(synchronize_session=False)
+    lines = models.PricingLine.query.filter(models.PricingLine.pricingId.in_(pricing_ids))
+    lines.delete(synchronize_session=False)
+    logs = models.PricingLog.query.filter(models.PricingLog.pricingId.in_(pricing_ids))
+    logs.delete(synchronize_session=False)
+    pricings = models.Pricing.query.filter(models.Pricing.id.in_(pricing_ids))
+    pricings.delete(synchronize_session=False)
     logger.info(
         log_message,
         extra={

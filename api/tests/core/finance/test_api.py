@@ -239,10 +239,12 @@ class DeleteDependentPricingsTest:
             siret=booking.venue.siret,
             valueDate=booking.dateUsed - datetime.timedelta(seconds=1),
         )
-        _later_pricing = factories.PricingFactory(
+        later_pricing = factories.PricingFactory(
             siret=booking.venue.siret,
             valueDate=booking.dateUsed + datetime.timedelta(seconds=1),
         )
+        factories.PricingLineFactory(pricing=later_pricing)
+        factories.PricingLogFactory(pricing=later_pricing)
         _same_date_pricing_but_greater_booking_id = factories.PricingFactory(
             siret=booking.venue.siret,
             valueDate=booking.dateUsed,
