@@ -2,11 +2,14 @@ import datetime
 
 import pytz
 
+import pcapi.core.bookings.models as bookings_models
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.payments.utils as payments_utils
 import pcapi.core.users.models as users_models
+from pcapi.models import db
 from pcapi.models.bank_information import BankInformation
 from pcapi.models.bank_information import BankInformationStatus
+from pcapi.models.payment import Payment
 from pcapi.models.user_offerer import UserOfferer
 import pcapi.utils.date as date_utils
 
@@ -79,3 +82,16 @@ def get_invoices_query(
         invoices = invoices.filter(models.Invoice.date < datetime_until)
 
     return invoices
+
+
+def has_reimbursement(booking: bookings_models.Booking) -> bool:
+    """Return whether the requested booking has been reimbursed."""
+    if db.session.query(Payment.query.filter_by(bookingId=booking.id).exists()).scalar():
+        return True
+    paid_pricings = models.Pricing.query.filter(
+        models.Pricing.bookingId == booking.id,
+        models.Pricing.status.in_(
+            (models.PricingStatus.PAID, models.PricingStatus.PROCESSED, models.PricingStatus.INVOICED)
+        ),
+    )
+    return db.session.query(paid_pricings.exists()).scalar()

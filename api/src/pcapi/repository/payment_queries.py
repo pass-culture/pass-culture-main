@@ -1,6 +1,5 @@
 import datetime
 from typing import Iterable
-from typing import Optional
 
 from sqlalchemy import func
 from sqlalchemy.orm import joinedload
@@ -22,10 +21,6 @@ from pcapi.models.payment_status import TransactionStatus
 
 def find_payments_by_message(message_name: str) -> list[Payment]:
     return Payment.query.join(PaymentMessage).filter(PaymentMessage.name == message_name).all()
-
-
-def has_payment(booking: Booking) -> Optional[Payment]:
-    return db.session.query(Payment.query.filter_by(bookingId=booking.id).exists()).scalar()
 
 
 def find_not_processable_with_bank_information() -> list[Payment]:

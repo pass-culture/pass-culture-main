@@ -18,6 +18,8 @@ from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.categories import subcategories
 from pcapi.core.educational.models import EducationalBookingStatus
+import pcapi.core.finance.factories as finance_factories
+import pcapi.core.finance.models as finance_models
 import pcapi.core.mails.testing as mails_testing
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offers_models
@@ -653,7 +655,15 @@ class MarkAsUnusedTest:
         assert not booking.isUsed  # unchanged
         assert booking.status is not BookingStatus.USED
 
-    def test_raise_if_has_payment(self):
+    def test_raise_if_has_reimbursement(self):
+        booking = booking_factories.UsedIndividualBookingFactory()
+        finance_factories.PricingFactory(booking=booking, status=finance_models.PricingStatus.PROCESSED)
+        with pytest.raises(api_errors.ResourceGoneError):
+            api.mark_as_unused(booking)
+        assert booking.isUsed  # unchanged
+        assert booking.status is BookingStatus.USED
+
+    def test_raise_if_has_reimbursement_legacy_payment(self):
         booking = booking_factories.UsedIndividualBookingFactory()
         payments_factories.PaymentFactory(booking=booking)
         with pytest.raises(api_errors.ResourceGoneError):
