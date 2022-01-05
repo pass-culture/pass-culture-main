@@ -80,7 +80,6 @@ class FeatureToggle(enum.Enum):
     IMPROVE_BOOKINGS_PERF = "Améliore les performances pour la page pro des réservations"
     OFFER_VALIDATION_MOCK_COMPUTATION = "Active le calcul automatique de validation d'offre depuis le nom de l'offre"
     PRICE_BOOKINGS = "Active la valorisation des réservations"
-    PRO_REIMBURSEMENTS_FILTERS = "Permet de filtrer la liste de remboursements"
     QR_CODE = "Permettre la validation dune contremarque via QR code"
     SYNCHRONIZE_ALLOCINE = "Permettre la synchronisation journalière avec Allociné"
     SYNCHRONIZE_BANK_INFORMATION = (
@@ -145,7 +144,6 @@ FEATURES_DISABLED_BY_DEFAULT = (
     FeatureToggle.ID_CHECK_ADDRESS_AUTOCOMPLETION,
     FeatureToggle.IS_HONOR_STATEMENT_MANDATORY_TO_ACTIVATE_BENEFICIARY,
     FeatureToggle.PRICE_BOOKINGS,
-    FeatureToggle.PRO_REIMBURSEMENTS_FILTERS,
     FeatureToggle.USER_PROFILING_FRAUD_CHECK,
     FeatureToggle.SHOW_INVOICES_ON_PRO_PORTAL,
 )

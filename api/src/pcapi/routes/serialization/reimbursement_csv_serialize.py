@@ -13,7 +13,6 @@ from pcapi.core.offers.serialize import serialize_offer_type_educational_or_indi
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.payment_status import TransactionStatus
 from pcapi.repository.reimbursement_queries import find_all_offerers_payments
-from pcapi.repository.reimbursement_queries import legacy_find_all_offerers_payments
 from pcapi.utils.date import MONTHS_IN_FRENCH
 
 
@@ -139,19 +138,6 @@ def find_all_offerers_reimbursement_details(
     offerer_ids: list[int], reimbursements_period: tuple[Optional[date], Optional[date]], venue_id: Optional[int] = None
 ) -> list[ReimbursementDetails]:
     offerer_payments = find_all_offerers_payments(offerer_ids, reimbursements_period, venue_id)
-    reimbursement_details = [ReimbursementDetails(offerer_payment) for offerer_payment in offerer_payments]
-
-    return reimbursement_details
-
-
-# TODO : delete this legacy function when feature PRO_REIMBURSEMENTS_FILTERS is deleted or activate in production
-def legacy_find_all_offerer_reimbursement_details(offerer_id: int) -> list[ReimbursementDetails]:
-    return legacy_find_all_offerers_reimbursement_details([offerer_id])
-
-
-# TODO : delete this legacy function when feature PRO_REIMBURSEMENTS_FILTERS is deleted or activate in production
-def legacy_find_all_offerers_reimbursement_details(offerer_ids: list[int]) -> list[ReimbursementDetails]:
-    offerer_payments = legacy_find_all_offerers_payments(offerer_ids)
     reimbursement_details = [ReimbursementDetails(offerer_payment) for offerer_payment in offerer_payments]
 
     return reimbursement_details
