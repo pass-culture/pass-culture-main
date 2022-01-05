@@ -294,7 +294,7 @@ def clock() -> None:
 
     scheduler.add_job(pc_send_withdrawal_terms_to_offerers_validated_yesterday, "cron", day="*", hour="6")
 
-    scheduler.add_job(pc_recredit_underage_users, "cron", day="*", hour="0")
+    scheduler.add_job(pc_recredit_underage_users, "cron", day="*", hour="7")
 
     scheduler.add_job(price_bookings, "cron", day="*", minute="5,15,25,35,45,55")
 
