@@ -4,13 +4,14 @@ from pcapi.core.offers import factories as offers_factories
 from pcapi.core.users import factories as users_factories
 from pcapi.model_creators.generic_creators import create_bank_information
 from pcapi.repository import repository
+from pcapi.utils.human_ids import dehumanize
 
 
 class Returns200Test:
     @pytest.mark.usefixtures("db_session")
     def when_logged_in_and_return_an_offerer_with_one_managed_venue(self, client):
         # given
-        offerer1 = offers_factories.OffererFactory(siren="123456781", name="offreur C")
+        offerer1 = offers_factories.OffererFactory(siren="123456781", name="offreur C", id=1)
         venue = offers_factories.VenueFactory(managingOfferer=offerer1)
         repository.save(offerer1, venue)
 
@@ -24,6 +25,7 @@ class Returns200Test:
         offerer_response = response.json[0]
         managed_venues_response = offerer_response["managedVenues"][0]
         assert "validationToken" not in managed_venues_response
+        assert dehumanize(offerer_response["id"]) == 1
 
     @pytest.mark.usefixtures("db_session")
     def when_logged_in_and_return_a_list_of_offerers_sorted_alphabetically(self, client):
