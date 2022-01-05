@@ -9,9 +9,7 @@
 
 {% block access_control %}
     <ul class="nav navbar-nav navbar-right">
-        <li>
-            <a href="#">{{ current_user.email }}</a>
-        </li>
+        <li>{{ current_user.email }}</li>
     </ul>
 {% endblock %}
 
