@@ -223,6 +223,8 @@ class GetOfferersResponseModel(BaseModel):
     thumbCount: int
     managedVenues: list[GetOffererVenueResponseModel]
 
+    _humanize_id = humanize_field("id")
+
     class Config:
         orm_mode = True
 
