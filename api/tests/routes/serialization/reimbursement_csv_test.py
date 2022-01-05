@@ -11,7 +11,6 @@ from pcapi.core.payments.factories import PaymentWithCustomRuleFactory
 from pcapi.models.payment_status import TransactionStatus
 from pcapi.repository.reimbursement_queries import find_all_offerer_payments
 from pcapi.routes.serialization.reimbursement_csv_serialize import ReimbursementDetails
-from pcapi.routes.serialization.reimbursement_csv_serialize import _get_reimbursement_current_status_in_details
 from pcapi.routes.serialization.reimbursement_csv_serialize import find_all_offerer_reimbursement_details
 from pcapi.routes.serialization.reimbursement_csv_serialize import generate_reimbursement_details_csv
 
@@ -103,43 +102,6 @@ class ReimbursementDetailsTest:
 
         # then
         assert raw_csv[13] == ""
-
-
-@pytest.mark.parametrize(
-    "current_status,expected_display",
-    [
-        (TransactionStatus.PENDING, "Remboursement en cours"),
-        (TransactionStatus.NOT_PROCESSABLE, "Remboursement impossible : Iban Non Fourni"),
-        (TransactionStatus.SENT, "Remboursement envoyé"),
-        (TransactionStatus.RETRY, "Remboursement à renvoyer"),
-        (TransactionStatus.BANNED, "Remboursement rejeté"),
-        (TransactionStatus.ERROR, "Remboursement en cours"),
-        (TransactionStatus.UNDER_REVIEW, "Remboursement en cours"),
-    ],
-)
-def test_human_friendly_status_can_contain_details_only_for_not_processable_transaction(
-    current_status, expected_display
-):
-    # given
-    current_status_details = "Iban Non Fourni"
-
-    # when
-    human_friendly_status = _get_reimbursement_current_status_in_details(current_status, current_status_details)
-
-    # then
-    assert human_friendly_status == expected_display
-
-
-def test_human_friendly_status_contains_details_for_not_processable_transaction_only_when_details_exists():
-    # given
-    current_status = TransactionStatus.NOT_PROCESSABLE
-    current_status_details = ""
-
-    # when
-    human_friendly_status = _get_reimbursement_current_status_in_details(current_status, current_status_details)
-
-    # then
-    assert human_friendly_status == "Remboursement impossible"
 
 
 @pytest.mark.usefixtures("db_session")
