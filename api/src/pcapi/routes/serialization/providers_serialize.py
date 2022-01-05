@@ -6,7 +6,6 @@ from pcapi.serialization.utils import humanize_field
 class ProviderResponse(BaseModel):
     id: str
     name: str
-    localClass: str
     enabledForPro: bool
     isActive: bool
 
