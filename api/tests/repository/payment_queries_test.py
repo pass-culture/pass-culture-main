@@ -187,15 +187,6 @@ class FindNotProcessableWithBankInformationTest:
 
 
 @pytest.mark.usefixtures("db_session")
-def test_has_payment():
-    booking = bookings_factories.UsedIndividualBookingFactory()
-    assert not payment_queries.has_payment(booking)
-
-    factories.PaymentFactory(booking=booking)
-    assert payment_queries.has_payment(booking)
-
-
-@pytest.mark.usefixtures("db_session")
 def test_get_payment_count_by_status():
     batch_date = datetime.datetime.now()
     other_date = datetime.datetime.now()

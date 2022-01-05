@@ -7,6 +7,7 @@ from pcapi.core.bookings import exceptions
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.bookings.models import IndividualBooking
+import pcapi.core.finance.repository as finance_repository
 from pcapi.core.offers import repository as offers_repository
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
@@ -15,7 +16,6 @@ from pcapi.core.users.models import User
 from pcapi.models import api_errors
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
-from pcapi.repository import payment_queries
 from pcapi.utils.date import utc_datetime_to_department_timezone
 
 from ..educational.models import EducationalBookingStatus
@@ -125,7 +125,7 @@ def check_booking_can_be_cancelled(booking: Booking) -> None:
 # desired HTTP-related exception (such as ResourceGone and Forbidden)
 # See also functions below.
 def check_is_usable(booking: Booking) -> None:
-    if payment_queries.has_payment(booking):
+    if finance_repository.has_reimbursement(booking):
         forbidden = api_errors.ForbiddenError()
         forbidden.add_error("payment", "Cette réservation a été remboursée")
         raise forbidden
@@ -193,7 +193,7 @@ def check_can_be_mark_as_unused(booking: Booking) -> None:
         forbidden.add_error("booking", "Cette réservation a été annulée")
         raise forbidden
 
-    if payment_queries.has_payment(booking):
+    if finance_repository.has_reimbursement(booking):
         gone = api_errors.ResourceGoneError()
         gone.add_error("payment", "Le remboursement est en cours de traitement")
         raise gone

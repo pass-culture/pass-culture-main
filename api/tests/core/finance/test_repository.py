@@ -2,11 +2,13 @@ import datetime
 
 import pytest
 
+import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.finance import factories
 from pcapi.core.finance import models
 from pcapi.core.finance import repository
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.users.factories as users_factories
+from pcapi.models import db
 from pcapi.models.bank_information import BankInformationStatus
 
 
@@ -178,3 +180,16 @@ class GetInvoicesQueryTest:
 
         invoices = repository.get_invoices_query(admin)
         assert list(invoices) == []
+
+
+def test_has_reimbursement():
+    booking = bookings_factories.UsedIndividualBookingFactory()
+    assert not repository.has_reimbursement(booking)
+
+    pricing = factories.PricingFactory(booking=booking, status=models.PricingStatus.VALIDATED)
+    assert not repository.has_reimbursement(booking)
+
+    pricing.status = models.PricingStatus.PROCESSED
+    db.session.add(pricing)
+    db.session.commit()
+    assert repository.has_reimbursement(booking)
