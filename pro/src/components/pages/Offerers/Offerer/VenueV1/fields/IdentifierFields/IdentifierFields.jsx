@@ -115,6 +115,10 @@ class IdentifierFields extends PureComponent {
       venueTypeId,
     } = this.props
 
+    const venueTypesWithoutVirtualOffer = venueTypes.filter(
+      venueType => venueType.label !== 'Offre numérique'
+    )
+
     const siretLabel = isCreatedEntity
       ? 'SIRET du lieu qui accueille vos offres (si applicable) : '
       : 'SIRET : '
@@ -220,7 +224,7 @@ class IdentifierFields extends PureComponent {
                       <option value="">
                         Choisissez un type de lieu dans la liste
                       </option>
-                      {venueTypes.map(venueType => (
+                      {venueTypesWithoutVirtualOffer.map(venueType => (
                         <option
                           key={`venue-type-${venueType.id}`}
                           value={venueType.id}
