@@ -189,9 +189,6 @@ def needs_to_perform_identity_check(user: users_models.User) -> bool:
 # pylint: disable=too-many-return-statements
 def get_next_subscription_step(user: users_models.User) -> typing.Optional[models.SubscriptionStep]:
     # TODO(viconnex): base the next step on the user.subscriptionState that will be added later on
-    allowed_identity_check_methods = get_allowed_identity_check_methods(user)
-    if not allowed_identity_check_methods:
-        return models.SubscriptionStep.MAINTENANCE
     if not user.isEmailValidated:
         return models.SubscriptionStep.EMAIL_VALIDATION
 
@@ -213,7 +210,9 @@ def get_next_subscription_step(user: users_models.User) -> typing.Optional[model
     if not has_completed_profile(user):
         return models.SubscriptionStep.PROFILE_COMPLETION
 
-    if needs_to_perform_identity_check(user) and allowed_identity_check_methods:
+    if needs_to_perform_identity_check(user):
+        if not get_allowed_identity_check_methods(user):
+            return models.SubscriptionStep.MAINTENANCE
         return models.SubscriptionStep.IDENTITY_CHECK
 
     if not fraud_api.has_performed_honor_statement(user, user.eligibility):
