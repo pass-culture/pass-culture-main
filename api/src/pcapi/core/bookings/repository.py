@@ -161,23 +161,25 @@ def find_by_pro_user(
 
 def find_unique_eac_booking_if_any(stock_id: int) -> list[Booking]:
     return Booking.query.filter(
-        Booking.stockId == stock_id, Booking.isCancelled.is_(False), not_(Booking.status == BookingStatus.CANCELLED)
+        Booking.stockId == stock_id, not_(Booking.status == BookingStatus.CANCELLED)
     ).one_or_none()
 
 
 def find_ongoing_bookings_by_stock(stock_id: int) -> list[Booking]:
-    return Booking.query.filter_by(stockId=stock_id, isCancelled=False, isUsed=False).all()
+    return Booking.query.filter(
+        Booking.stockId == stock_id, Booking.status != BookingStatus.CANCELLED, Booking.isUsed.is_(False)
+    ).all()
 
 
 def find_not_cancelled_bookings_by_stock(stock: Stock) -> list[Booking]:
-    return Booking.query.filter_by(stockId=stock.id, isCancelled=False).all()
+    return Booking.query.filter(Booking.stockId == stock.id, Booking.status != BookingStatus.CANCELLED).all()
 
 
 def find_bookings_eligible_for_payment_for_venue(venue_id: int, cutoff_date: datetime) -> list[Booking]:
     bookings = Booking.query
     # There should not be any booking that is both cancelled and used,
     # but here we want to be extra cautious.
-    bookings = bookings.filter_by(isCancelled=False, isUsed=True)
+    bookings = bookings.filter(Booking.status != BookingStatus.CANCELLED, Booking.isUsed.is_(True))
     bookings = bookings.filter_by(venueId=venue_id)
     # fmt: off
     bookings = (
@@ -213,7 +215,7 @@ def token_exists(token: str) -> bool:
 
 
 def find_not_used_and_not_cancelled() -> list[Booking]:
-    return Booking.query.filter_by(isUsed=False, isCancelled=False).all()
+    return Booking.query.filter(Booking.isUsed.is_(False), Booking.status != BookingStatus.CANCELLED).all()
 
 
 def find_used_by_token(token: str) -> Booking:
@@ -227,7 +229,7 @@ def find_expiring_individual_bookings_query() -> Query:
         .join(Stock)
         .join(Offer)
         .filter(
-            ~Booking.isCancelled,
+            Booking.status != BookingStatus.CANCELLED,
             ~Booking.isUsed,
             Offer.canExpire,
             case(
@@ -274,7 +276,7 @@ def find_soon_to_be_expiring_individual_bookings_ordered_by_user(given_date: dat
         .join(Stock)
         .join(Offer)
         .filter(
-            ~Booking.isCancelled,
+            Booking.status != BookingStatus.CANCELLED,
             ~Booking.isUsed,
             Offer.canExpire,
             case(
@@ -305,7 +307,7 @@ def find_users_with_expired_individual_bookings(expired_on: date = None) -> Iter
         User.query.join(IndividualBooking)
         .join(Booking)
         .filter(
-            Booking.isCancelled.is_(True),
+            Booking.status == BookingStatus.CANCELLED,
             Booking.cancellationDate >= expired_on,
             Booking.cancellationDate < (expired_on + timedelta(days=1)),
             Booking.cancellationReason == BookingCancellationReasons.EXPIRED,
@@ -320,7 +322,7 @@ def get_expired_individual_bookings_for_user(user: User, expired_on: date = None
         IndividualBooking.query.join(Booking)
         .filter(
             IndividualBooking.user == user,
-            Booking.isCancelled.is_(True),
+            Booking.status == BookingStatus.CANCELLED,
             Booking.cancellationDate >= expired_on,
             Booking.cancellationDate < (expired_on + timedelta(days=1)),
             Booking.cancellationReason == BookingCancellationReasons.EXPIRED,
@@ -333,7 +335,7 @@ def find_expired_individual_bookings_ordered_by_offerer(expired_on: date = None)
     expired_on = expired_on or date.today()
     return (
         IndividualBooking.query.join(Booking)
-        .filter(Booking.isCancelled.is_(True))
+        .filter(Booking.status == BookingStatus.CANCELLED)
         .filter(cast(Booking.cancellationDate, Date) == expired_on)
         .filter(Booking.cancellationReason == BookingCancellationReasons.EXPIRED)
         .order_by(Booking.offererId)
@@ -345,7 +347,7 @@ def find_expired_educational_bookings() -> list[EducationalBooking]:
     expired_on = date.today()
     return (
         EducationalBooking.query.join(Booking)
-        .filter(Booking.isCancelled.is_(True))
+        .filter(Booking.status == BookingStatus.CANCELLED)
         .filter(cast(Booking.cancellationDate, Date) == expired_on)
         .filter(Booking.cancellationReason == BookingCancellationReasons.EXPIRED)
         .options(
@@ -368,7 +370,7 @@ def get_active_bookings_quantity_for_offerer(offerer_id: int) -> dict:
         Booking.query.filter(
             offerer_id == Booking.offererId,
             Booking.isUsed.is_(False),
-            Booking.isCancelled.is_(False),
+            Booking.status != BookingStatus.CANCELLED,
             Booking.isConfirmed.is_(False),
         )
         .with_entities(Booking.venueId, coalesce(func.sum(Booking.quantity), 0))
@@ -383,7 +385,7 @@ def get_legacy_active_bookings_quantity_for_venue(venue_id: int) -> int:
         Booking.query.filter(
             Booking.venueId == venue_id,
             Booking.isUsed.is_(False),
-            Booking.isCancelled.is_(False),
+            Booking.status != BookingStatus.CANCELLED,
             Booking.isConfirmed.is_(False),
         )
         .with_entities(coalesce(func.sum(Booking.quantity), 0))
@@ -393,7 +395,7 @@ def get_legacy_active_bookings_quantity_for_venue(venue_id: int) -> int:
 
 def get_validated_bookings_quantity_for_offerer(offerer_id: int) -> dict:
     return dict(
-        Booking.query.filter(Booking.isCancelled.is_(False), offerer_id == Booking.offererId)
+        Booking.query.filter(Booking.status != BookingStatus.CANCELLED, offerer_id == Booking.offererId)
         .filter(or_(Booking.isUsed.is_(True), Booking.isConfirmed.is_(True)))
         .with_entities(Booking.venueId, coalesce(func.sum(Booking.quantity), 0))
         .group_by(Booking.venueId)
@@ -405,7 +407,7 @@ def get_legacy_validated_bookings_quantity_for_venue(venue_id: int) -> int:
     return (
         Booking.query.filter(
             Booking.venueId == venue_id,
-            Booking.isCancelled.is_(False),
+            Booking.status != BookingStatus.CANCELLED,
             or_(Booking.isUsed.is_(True), Booking.isConfirmed.is_(True)),
         )
         .with_entities(coalesce(func.sum(Booking.quantity), 0))
@@ -428,7 +430,7 @@ def find_cancellable_bookings_by_beneficiaries(users: list[User]) -> list[Bookin
     return (
         Booking.query.join(IndividualBooking)
         .filter(IndividualBooking.userId.in_(user.id for user in users))
-        .filter(Booking.isCancelled.is_(False))
+        .filter(Booking.status != BookingStatus.CANCELLED)
         .filter(Booking.isUsed.is_(False))
         .all()
     )
@@ -437,7 +439,7 @@ def find_cancellable_bookings_by_beneficiaries(users: list[User]) -> list[Bookin
 def find_cancellable_bookings_by_offerer(offerer_id: int) -> list[Booking]:
     return Booking.query.filter(
         Booking.offererId == offerer_id,
-        Booking.isCancelled.is_(False),
+        Booking.status != BookingStatus.CANCELLED,
         Booking.isUsed.is_(False),
     ).all()
 
@@ -632,7 +634,6 @@ def _filter_bookings_recap_subquery(
             Booking.educationalBookingId,
             Booking.token.label("bookingToken"),
             Booking.dateCreated.label("bookingDate"),
-            Booking.isCancelled,
             Booking.isUsed,
             Booking.quantity,
             Booking.amount.label("bookingAmount"),
@@ -700,7 +701,6 @@ def _build_bookings_recap_query(bookings_recap_subquery: Query) -> Query:
         .with_entities(
             bookings_recap_subquery.c.bookingToken.label("bookingToken"),
             bookings_recap_subquery.c.bookingDate.label("bookingDate"),
-            bookings_recap_subquery.c.isCancelled,
             bookings_recap_subquery.c.isUsed,
             bookings_recap_subquery.c.quantity,
             bookings_recap_subquery.c.bookingAmount.label("bookingAmount"),
@@ -818,7 +818,7 @@ def _serialize_booking_recap_legacy(booking: AbstractKeyedTuple) -> BookingRecap
         booking_token=booking.bookingToken,
         booking_date=_serialize_date_with_timezone(booking.bookingDate, booking),
         booking_is_used=booking.isUsed,
-        booking_is_cancelled=booking.isCancelled,
+        booking_is_cancelled=booking.status == BookingStatus.CANCELLED,
         booking_is_confirmed=booking.isConfirmed,
         booking_is_reimbursed=booking.paymentStatus == TransactionStatus.SENT,
         booking_is_duo=booking.quantity == DUO_QUANTITY,
