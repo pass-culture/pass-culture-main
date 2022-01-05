@@ -1,8 +1,8 @@
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
-from pcapi.core.mails.transactional.users.email_duplicate_pre_subscription_rejected import (
+from pcapi.core.mails.transactional.users.duplicate_pre_subscription_rejected import (
     get_duplicate_beneficiary_pre_subscription_rejected_data,
 )
-from pcapi.core.mails.transactional.users.email_duplicate_pre_subscription_rejected import (
+from pcapi.core.mails.transactional.users.duplicate_pre_subscription_rejected import (
     get_not_eligible_beneficiary_pre_subscription_rejected_data,
 )
 from pcapi.core.testing import override_features
