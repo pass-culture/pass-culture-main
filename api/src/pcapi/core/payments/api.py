@@ -11,7 +11,6 @@ from pcapi.core.payments.models import CustomReimbursementRule
 from pcapi.core.payments.models import Deposit
 from pcapi.core.payments.models import DepositType
 from pcapi.core.payments.models import GrantedDeposit
-from pcapi.core.users.constants import ELIGIBILITY_AGE_18
 from pcapi.core.users.models import EligibilityType
 from pcapi.core.users.models import User
 from pcapi.models import db
@@ -36,9 +35,9 @@ def get_granted_deposit(
         return GrantedDeposit(
             # as the beneficiary activation process may be asynchronous (with Jouve or DMS),
             # beneficiary.age may be > 17 although it was <= 17 when the subscription was made
-            amount=deposit_conf.GRANTED_DEPOSIT_AMOUNT_BY_AGE_AND_VERSION[beneficiary.age][1]
-            if beneficiary.age in deposit_conf.GRANTED_DEPOSIT_AMOUNT_BY_AGE_AND_VERSION
-            else deposit_conf.GRANTED_DEPOSIT_AMOUNT_BY_AGE_AND_VERSION[17][1],
+            amount=deposit_conf.GRANTED_DEPOSIT_AMOUNTS_FOR_UNDERAGE_BY_AGE[beneficiary.age]
+            if beneficiary.age in deposit_conf.GRANTED_DEPOSIT_AMOUNTS_FOR_UNDERAGE_BY_AGE
+            else deposit_conf.GRANTED_DEPOSIT_AMOUNTS_FOR_UNDERAGE_BY_AGE[17],
             expiration_date=_compute_eighteenth_birthday(beneficiary.dateOfBirth),
             type=DepositType.GRANT_15_17,
             version=1,
@@ -48,7 +47,7 @@ def get_granted_deposit(
         if version is None:
             version = 2
         return GrantedDeposit(
-            amount=deposit_conf.GRANTED_DEPOSIT_AMOUNT_BY_AGE_AND_VERSION[ELIGIBILITY_AGE_18][version],
+            amount=deposit_conf.GRANTED_DEPOSIT_AMOUNTS_FOR_18_BY_VERSION[version],
             expiration_date=datetime.datetime.utcnow() + relativedelta(years=deposit_conf.GRANT_18_VALIDITY_IN_YEARS),
             type=DepositType.GRANT_18,
             version=version,
