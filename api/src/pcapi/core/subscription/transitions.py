@@ -1,3 +1,6 @@
+import flask
+import transitions
+
 from pcapi.core.users import models as users_models
 
 
@@ -36,3 +39,12 @@ TRANSITIONS = [
     ],
     ["admin_rejection", "*", users_models.SubscriptionState.rejected_by_admin],
 ]
+
+
+def install_machine():
+    flask.g.subscription_machine = transitions.Machine(
+        states=users_models.SubscriptionState,
+        transitions=TRANSITIONS,
+        model_attribute="subscriptionState",
+        ignore_invalid_triggers=True,
+    )
