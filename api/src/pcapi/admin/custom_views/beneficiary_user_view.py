@@ -165,7 +165,6 @@ class BeneficiaryUserView(ResendValidationEmailMixin, SuspensionMixin, BaseAdmin
         "lastName",
         "needsToFillCulturalSurvey",
         "notificationSubscriptions",
-        "password",
         "phoneNumber",
         "phoneValidationStatus",
         "postalCode",
