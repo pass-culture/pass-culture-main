@@ -24,7 +24,7 @@ def get_email_confirmation_email_data(
     )
 
     # 18 hard coded because the email template only talks about the 18 years old case
-    deposit_amount = deposit_conf.GRANTED_DEPOSIT_AMOUNT_BY_AGE_AND_VERSION[18][2]
+    deposit_amount = deposit_conf.GRANTED_DEPOSIT_AMOUNTS_FOR_18_BY_VERSION[2]
 
     if not FeatureToggle.ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS.is_active():
         return {
