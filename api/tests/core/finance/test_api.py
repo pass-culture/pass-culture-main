@@ -40,7 +40,7 @@ def create_booking_with_undeletable_dependent(date_used=None):
     factories.PricingFactory(
         siret=booking.venue.siret,
         valueDate=booking.dateUsed + datetime.timedelta(seconds=1),
-        status=models.PricingStatus.BILLED,
+        status=models.PricingStatus.PAID,
     )
     return booking
 
@@ -236,11 +236,11 @@ class CancelPricingTest:
         assert pricing.status == models.PricingStatus.CANCELLED  # unchanged
 
     def test_cancel_when_not_cancellable(self):
-        pricing = factories.PricingFactory(status=models.PricingStatus.BILLED)
+        pricing = factories.PricingFactory(status=models.PricingStatus.PAID)
         with pytest.raises(exceptions.NonCancellablePricingError):
             api.cancel_pricing(pricing.booking, models.PricingLogReason.MARK_AS_UNUSED)
         pricing = models.Pricing.query.one()
-        assert pricing.status == models.PricingStatus.BILLED  # unchanged
+        assert pricing.status == models.PricingStatus.PAID  # unchanged
 
     def test_cancel_with_dependent_booking(self):
         pricing = factories.PricingFactory()
@@ -333,6 +333,8 @@ class GenerateCashflowsTest:
         batch = models.CashflowBatch.query.one()
         assert batch.id == batch_id
         assert batch.cutoff == cutoff
+        assert pricing11.status == models.PricingStatus.PAID
+        assert pricing12.status == models.PricingStatus.PAID
         assert models.Cashflow.query.count() == 2
         assert len(pricing11.cashflows) == 1
         assert len(pricing12.cashflows) == 1
@@ -383,6 +385,7 @@ class GenerateCashflowsTest:
                 1,  # insert Cashflow
                 1,  # select pricings to...
                 1,  # ... insert CashflowPricing
+                1,  # update Pricing.status
                 1,  # commit
             )
         )

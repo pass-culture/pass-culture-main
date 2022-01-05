@@ -28,7 +28,7 @@ class PricingStatus(enum.Enum):
     CANCELLED = "cancelled"
     VALIDATED = "validated"
     REJECTED = "rejected"
-    BILLED = "billed"
+    PAID = "paid"
 
 
 class BusinessUnitStatus(enum.Enum):

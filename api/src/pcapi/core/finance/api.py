@@ -407,6 +407,13 @@ def generate_cashflows(cutoff: datetime.datetime) -> int:
         .with_entities(models.Pricing.businessUnitId, models.BusinessUnit.bankAccountId)
         .distinct()
     )
+
+    def _mark_as_paid(pricings):
+        pricings_to_update = models.Pricing.query.filter(
+            models.Pricing.id.in_(pricings.with_entities(models.Pricing.id))
+        )
+        pricings_to_update.update({"status": models.PricingStatus.PAID}, synchronize_session=False)
+
     for business_unit_id, bank_account_id in business_unit_ids_and_bank_account_ids:
         logger.info("Generating cashflow", extra={"business_unit": business_unit_id})
         try:
@@ -416,8 +423,10 @@ def generate_cashflows(cutoff: datetime.datetime) -> int:
                     *filters,
                 )
                 total = pricings.with_entities(sqla.func.sum(models.Pricing.amount)).scalar()
-                # FIXME: do we want to update Pricing.status? `CASHFLOWED`?!
                 if not total:
+                    # Mark as `PAID` even if there is no cashflow, so
+                    # that we will not process these pricings again.
+                    _mark_as_paid(pricings)
                     continue
                 cashflow = models.Cashflow(
                     batchId=batch_id,
@@ -427,6 +436,10 @@ def generate_cashflows(cutoff: datetime.datetime) -> int:
                 )
                 db.session.add(cashflow)
                 links = [models.CashflowPricing(cashflowId=cashflow.id, pricingId=pricing.id) for pricing in pricings]
+                # Mark as `PAID` now (and not before), otherwise the
+                # `pricings` query above will be empty since it
+                # filters on `VALIDATED` pricings.
+                _mark_as_paid(pricings)
                 db.session.bulk_save_objects(links)
                 db.session.commit()
                 logger.info("Generated cashflow", extra={"business_unit": business_unit_id})
@@ -582,7 +595,7 @@ def _generate_payments_file(batch_id: int) -> pathlib.Path:
     BusinessUnitVenue = sqla_orm.aliased(offerers_models.Venue)
     OfferVenue = sqla_orm.aliased(offerers_models.Venue)
     query = (
-        models.Pricing.query.filter_by(status=models.PricingStatus.VALIDATED)
+        models.Pricing.query.filter_by(status=models.PricingStatus.PAID)
         .join(models.Pricing.cashflows)
         .join(models.Pricing.booking)
         .filter(bookings_models.Booking.amount != 0)

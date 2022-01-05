@@ -24,4 +24,4 @@ def test_integration():
     cashflow = pricing.cashflows[0]
     assert cashflow.status == models.CashflowStatus.UNDER_REVIEW
     db.session.refresh(pricing)
-    assert pricing.status == models.PricingStatus.VALIDATED
+    assert pricing.status == models.PricingStatus.PAID
