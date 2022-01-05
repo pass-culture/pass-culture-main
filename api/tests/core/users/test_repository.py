@@ -10,6 +10,7 @@ from pcapi.core.offers import factories as offers_factories
 from pcapi.core.users import exceptions
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import repository
+from pcapi.core.users.models import UserRole
 from pcapi.core.users.repository import get_users_with_validated_attachment_by_offerer
 from pcapi.domain.favorite.favorite import FavoriteDomain
 
@@ -68,15 +69,14 @@ class GetNewlyEligibleUsersTest:
         user_already_18 = users_factories.UserFactory(
             dateOfBirth=datetime(1999, 12, 31), dateCreated=datetime(2017, 12, 1)
         )
-        user_just_18_in_eligible_area = users_factories.UserFactory(
+        user_just_18 = users_factories.UserFactory(
             dateOfBirth=datetime(2000, 1, 1),
             dateCreated=datetime(2017, 12, 31),
-            departementCode="93",
         )
-        user_just_18_in_ineligible_area = users_factories.UserFactory(
+        user_just_18_ex_underage_beneficiary = users_factories.UserFactory(
             dateOfBirth=datetime(2000, 1, 1),
             dateCreated=datetime(2017, 12, 1),
-            departementCode="92",
+            roles=[UserRole.UNDERAGE_BENEFICIARY],
         )
         # Possible beneficiary that registered too late
         users_factories.UserFactory(dateOfBirth=datetime(2000, 1, 1), dateCreated=datetime(2018, 1, 1))
@@ -90,9 +90,9 @@ class GetNewlyEligibleUsersTest:
 
         # Users 18 on the day `since` should not appear, nor those that are not 18 yet
         users = repository.get_newly_eligible_age_18_users(since=date(2017, 12, 31))
-        assert set(users) == {user_just_18_in_eligible_area, user_just_18_in_ineligible_area}
+        assert set(users) == {user_just_18, user_just_18_ex_underage_beneficiary}
         users = repository.get_newly_eligible_age_18_users(since=date(2017, 12, 30))
-        assert set(users) == {user_just_18_in_eligible_area, user_just_18_in_ineligible_area, user_already_18}
+        assert set(users) == {user_just_18, user_just_18_ex_underage_beneficiary, user_already_18}
 
 
 class FindByBeneficiaryTest:
