@@ -71,8 +71,6 @@ def find_all_offerers_payments(
             Payment.reimbursementRate.label("reimbursement_rate"),
             Payment.iban.label("iban"),
             Payment.transactionLabel.label("transactionLabel"),
-            PaymentStatus.status.label("status"),
-            PaymentStatus.detail.label("detail"),
         )
     )
 

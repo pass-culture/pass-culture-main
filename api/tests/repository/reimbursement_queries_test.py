@@ -91,8 +91,6 @@ class FindAllOffererPaymentsTest:
             Decimal("0.50"),
             "CF13QSDFGH456789",
             "pass Culture Pro - remboursement 1ère quinzaine 07-2019",
-            TransactionStatus.SENT,
-            "All good",
         )
 
         assert set(expected_elements).issubset(set(payments[0]))
@@ -149,8 +147,6 @@ class FindAllOffererPaymentsTest:
             Decimal("1.00"),
             "CF13QSDFGH456789",
             "pass Culture Pro - remboursement 1ère quinzaine 07-2019",
-            TransactionStatus.SENT,
-            "All good",
         )
 
     def test_should_return_last_matching_status_based_on_date_for_each_payment(self, app):
@@ -220,8 +216,6 @@ class FindAllOffererPaymentsTest:
             Decimal("0.50"),
             "CF13QSDFGH456789",
             "pass Culture Pro - remboursement 2ème quinzaine 07-2019",
-            TransactionStatus.SENT,
-            "All realy good",
         )
         assert payments[1] == (
             "User",
@@ -242,8 +236,6 @@ class FindAllOffererPaymentsTest:
             Decimal("0.50"),
             "CF13QSDFGH456789",
             "pass Culture Pro - remboursement 1ère quinzaine 07-2019",
-            TransactionStatus.SENT,
-            "All good",
         )
 
     def test_should_return_payments_from_multiple_venues(self, app):

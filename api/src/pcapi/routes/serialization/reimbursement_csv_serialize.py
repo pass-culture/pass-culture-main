@@ -11,7 +11,6 @@ from pydantic.main import BaseModel
 
 from pcapi.core.offers.serialize import serialize_offer_type_educational_or_individual
 from pcapi.models.api_errors import ApiErrors
-from pcapi.models.payment_status import TransactionStatus
 from pcapi.repository.reimbursement_queries import find_all_offerers_payments
 from pcapi.utils.date import MONTHS_IN_FRENCH
 
@@ -41,18 +40,6 @@ class ReimbursementDetails:
         "Type d'offre",
     ]
 
-    TRANSACTION_STATUSES_DETAILS = {
-        TransactionStatus.PENDING: "Remboursement en cours",
-        TransactionStatus.NOT_PROCESSABLE: "Remboursement impossible",
-        TransactionStatus.UNDER_REVIEW: "Remboursement en cours",
-        TransactionStatus.SENT: "Remboursement envoyé",
-        TransactionStatus.ERROR: "Remboursement en cours",
-        TransactionStatus.RETRY: "Remboursement à renvoyer",
-        TransactionStatus.BANNED: "Remboursement rejeté",
-    }
-
-    assert set(TRANSACTION_STATUSES_DETAILS) == set(TransactionStatus)
-
     def __init__(self, payment_info: namedtuple = None):
         if payment_info is not None:
             transfer_infos = payment_info.transactionLabel.replace("pass Culture Pro - ", "").split(" ")
@@ -61,13 +48,6 @@ class ReimbursementDetails:
             transfer_date = transfer_infos[-1]
             month_number, year = transfer_date.split("-")
             month_name = MONTHS_IN_FRENCH[int(month_number)]
-
-            payment_current_status = payment_info.status
-            payment_current_status_details = payment_info.detail
-
-            human_friendly_status = _get_reimbursement_current_status_in_details(
-                payment_current_status, payment_current_status_details
-            )
 
             self.year = year
             self.transfer_name = "{} : {}".format(month_name, transfer_label)
@@ -90,7 +70,9 @@ class ReimbursementDetails:
                 reimbursement_rate = ""
             self.reimbursement_rate = reimbursement_rate
             self.reimbursed_amount = format_number_as_french(payment_info.amount)
-            self.status = human_friendly_status
+            # Backward compatibility to avoid changing the format of the CSV. This field
+            # used to show different statuses.
+            self.status = "Remboursement envoyé"
             self.offer_type = serialize_offer_type_educational_or_individual(payment_info.offer_is_educational)
 
     def as_csv_row(self):
@@ -141,17 +123,6 @@ def find_all_offerers_reimbursement_details(
     reimbursement_details = [ReimbursementDetails(offerer_payment) for offerer_payment in offerer_payments]
 
     return reimbursement_details
-
-
-def _get_reimbursement_current_status_in_details(
-    current_status: TransactionStatus, current_status_details: str
-) -> Optional[str]:
-    human_friendly_status = ReimbursementDetails.TRANSACTION_STATUSES_DETAILS.get(current_status)
-
-    if current_status is not TransactionStatus.NOT_PROCESSABLE or not current_status_details:
-        return human_friendly_status
-
-    return f"{human_friendly_status} : {current_status_details}"
 
 
 def validate_reimbursement_period(
