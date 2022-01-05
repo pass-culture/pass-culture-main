@@ -9,6 +9,7 @@ from operator import attrgetter
 import typing
 from typing import Optional
 
+import flask
 import sqlalchemy as sa
 from sqlalchemy import orm
 from sqlalchemy.dialects import postgresql
@@ -17,7 +18,6 @@ from sqlalchemy.ext.mutable import MutableDict
 from sqlalchemy.ext.mutable import MutableList
 from sqlalchemy.sql import expression
 from sqlalchemy.sql.functions import func
-import transitions
 
 from pcapi import settings
 from pcapi.core.users import utils as users_utils
@@ -494,20 +494,31 @@ class User(PcObject, Model, NeedsValidationMixin):
 
         initial_state = obj.subscriptionState or kwargs.get("subscriptionState", SubscriptionState.account_created)
 
-        machine = transitions.Machine(
-            model=obj,
-            states=SubscriptionState,
-            transitions=subscription_transitions.TRANSITIONS,
-            initial=initial_state,
-            model_attribute="subscriptionState",
-            ignore_invalid_triggers=True,
+        if not hasattr(flask.g, "subscription_machine"):
+            subscription_transitions.install_machine()
+
+        flask.g.subscription_machine.add_model(obj, initial_state)
+
+        setattr(
+            obj,
+            "_subscriptionStateMachine",
+            flask.g.subscription_machine,
         )
 
-        setattr(obj, "_subscriptionStateMachine", machine)
+    @classmethod
+    def remove_subscription_state_machine(cls, target, attrs):
+        # avoid trying to remove the object multiple times from the machine
+        if attrs is None:
+            try:
+                flask.g.subscription_machine.remove_model(target)
+            except Exception:  # pylint: disable=broad-except
+                pass
 
 
 sa.event.listen(User, "init", User.init_subscription_state_machine)
 sa.event.listen(User, "load", User.init_subscription_state_machine)
+
+sa.event.listen(User, "expire", User.remove_subscription_state_machine)
 
 
 class ExpenseDomain(enum.Enum):
