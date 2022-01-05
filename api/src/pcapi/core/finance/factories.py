@@ -32,6 +32,25 @@ class PricingFactory(BaseFactory):
     revenue = LazyAttribute(lambda pricing: int(100 * pricing.booking.total_amount))
 
 
+class PricingLineFactory(BaseFactory):
+    class Meta:
+        model = models.PricingLine
+
+    pricing = factory.SubFactory(PricingFactory)
+    amount = LazyAttribute(lambda line: -line.pricing.amount)
+    category = models.PricingLineCategory.OFFERER_REVENUE
+
+
+class PricingLogFactory(BaseFactory):
+    class Meta:
+        model = models.PricingLog
+
+    pricing = factory.SubFactory(PricingFactory)
+    statusBefore = models.PricingStatus.VALIDATED
+    statusAfter = models.PricingStatus.CANCELLED
+    reason = models.PricingLogReason.MARK_AS_UNUSED
+
+
 class InvoiceFactory(BaseFactory):
     class Meta:
         model = models.Invoice
