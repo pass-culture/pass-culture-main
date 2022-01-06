@@ -33,8 +33,7 @@ from pcapi.validation.routes.users_authorizations import check_api_key_allows_to
 from pcapi.validation.routes.users_authorizations import check_user_can_validate_bookings
 from pcapi.validation.routes.users_authorizations import check_user_can_validate_bookings_v2
 
-from .blueprints import api
-from .blueprints import pro_api_v2
+from . import blueprint
 
 
 BASE_CODE_DESCRIPTIONS = {
@@ -134,11 +133,11 @@ def get_bookings_csv(query: ListBookingsQueryModel) -> bytes:
     return bookings.encode("utf-8-sig")
 
 
-@pro_api_v2.route("/bookings/token/<token>", methods=["GET"])
+@blueprint.pro_public_api_v2.route("/bookings/token/<token>", methods=["GET"])
 @ip_rate_limiter(deduct_when=lambda response: response.status_code == 401)
 @basic_auth_rate_limiter()
 @spectree_serialize(
-    api=api,
+    api=blueprint.api,
     response_model=GetBookingResponse,
     tags=["API Contremarque"],
     code_descriptions=BASE_CODE_DESCRIPTIONS | {"HTTP_200": "La contremarque existe et n’est pas validée"},
@@ -168,11 +167,11 @@ def get_booking_by_token_v2(token: str) -> GetBookingResponse:
     return get_booking_response(booking)
 
 
-@pro_api_v2.route("/bookings/use/token/<token>", methods=["PATCH"])
+@blueprint.pro_public_api_v2.route("/bookings/use/token/<token>", methods=["PATCH"])
 @ip_rate_limiter(deduct_when=lambda response: response.status_code == 401)
 @basic_auth_rate_limiter()
 @spectree_serialize(
-    api=api,
+    api=blueprint.api,
     tags=["API Contremarque"],
     on_success_status=204,
     code_descriptions=BASE_CODE_DESCRIPTIONS | {"HTTP_204": "La contremarque a bien été validée"},
@@ -198,12 +197,12 @@ def patch_booking_use_by_token(token: str) -> None:
     bookings_api.mark_as_used(booking)
 
 
-@pro_api_v2.route("/bookings/cancel/token/<token>", methods=["PATCH"])
+@blueprint.pro_public_api_v2.route("/bookings/cancel/token/<token>", methods=["PATCH"])
 @ip_rate_limiter(deduct_when=lambda response: response.status_code == 401)
 @basic_auth_rate_limiter()
 @login_or_api_key_required
 @spectree_serialize(
-    api=api,
+    api=blueprint.api,
     tags=["API Contremarque"],
     on_success_status=204,
     code_descriptions=BASE_CODE_DESCRIPTIONS
@@ -235,12 +234,12 @@ def patch_cancel_booking_by_token(token: str) -> None:
     bookings_api.cancel_booking_by_offerer(booking)
 
 
-@pro_api_v2.route("/bookings/keep/token/<token>", methods=["PATCH"])
+@blueprint.pro_public_api_v2.route("/bookings/keep/token/<token>", methods=["PATCH"])
 @ip_rate_limiter(deduct_when=lambda response: response.status_code == 401)
 @basic_auth_rate_limiter()
 @login_or_api_key_required
 @spectree_serialize(
-    api=api,
+    api=blueprint.api,
     tags=["API Contremarque"],
     on_success_status=204,
     code_descriptions=BASE_CODE_DESCRIPTIONS

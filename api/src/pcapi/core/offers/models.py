@@ -5,33 +5,7 @@ import enum
 import logging
 from typing import Optional
 
-from sqlalchemy import ARRAY
-from sqlalchemy import BigInteger
-from sqlalchemy import Boolean
-from sqlalchemy import CheckConstraint
-from sqlalchemy import Column
-from sqlalchemy import DDL
-from sqlalchemy import DateTime
-from sqlalchemy import Enum
-from sqlalchemy import ForeignKey
-from sqlalchemy import Index
-from sqlalchemy import Integer
-from sqlalchemy import Numeric
-from sqlalchemy import String
-from sqlalchemy import Text
-from sqlalchemy import UniqueConstraint
-from sqlalchemy import and_
-from sqlalchemy import case
-from sqlalchemy import event
-from sqlalchemy import exists
-from sqlalchemy import false
-from sqlalchemy import func
-from sqlalchemy import or_
-from sqlalchemy import text
-from sqlalchemy.dialects.postgresql import JSON
-from sqlalchemy.event import listens_for
-from sqlalchemy.ext.hybrid import hybrid_property
-from sqlalchemy.orm import relationship
+import sqlalchemy as sa
 
 import pcapi.core.bookings.constants as bookings_constants
 from pcapi.core.categories import subcategories
@@ -52,19 +26,19 @@ logger = logging.getLogger(__name__)
 class Mediation(PcObject, Model, HasThumbMixin, ProvidableMixin, DeactivableMixin):
     __tablename__ = "mediation"
 
-    id = Column(BigInteger, primary_key=True, autoincrement=True)
+    id = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
 
-    credit = Column(String(255), nullable=True)
+    credit = sa.Column(sa.String(255), nullable=True)
 
-    dateCreated = Column(DateTime, nullable=False, default=datetime.utcnow)
+    dateCreated = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow)
 
-    authorId = Column(BigInteger, ForeignKey("user.id"), nullable=True)
+    authorId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), nullable=True)
 
-    author = relationship("User", foreign_keys=[authorId], backref="mediations")
+    author = sa.orm.relationship("User", foreign_keys=[authorId], backref="mediations")
 
-    offerId = Column(BigInteger, ForeignKey("offer.id"), index=True, nullable=False)
+    offerId = sa.Column(sa.BigInteger, sa.ForeignKey("offer.id"), index=True, nullable=False)
 
-    offer = relationship("Offer", foreign_keys=[offerId], backref="mediations")
+    offer = sa.orm.relationship("Offer", foreign_keys=[offerId], backref="mediations")
 
     thumb_path_component = "mediations"
 
@@ -72,33 +46,35 @@ class Mediation(PcObject, Model, HasThumbMixin, ProvidableMixin, DeactivableMixi
 class Stock(PcObject, Model, ProvidableMixin, SoftDeletableMixin):
     __tablename__ = "stock"
 
-    id = Column(BigInteger, primary_key=True, autoincrement=True)
+    id = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
 
-    dateCreated = Column(DateTime, nullable=False, default=datetime.utcnow, server_default=func.now())
+    dateCreated = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow, server_default=sa.func.now())
 
-    dateModified = Column(DateTime, nullable=False, default=datetime.utcnow)
+    dateModified = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow)
 
-    beginningDatetime = Column(DateTime, index=True, nullable=True)
+    beginningDatetime = sa.Column(sa.DateTime, index=True, nullable=True)
 
-    offerId = Column(BigInteger, ForeignKey("offer.id"), index=True, nullable=False)
+    offerId = sa.Column(sa.BigInteger, sa.ForeignKey("offer.id"), index=True, nullable=False)
 
-    offer = relationship("Offer", foreign_keys=[offerId], backref="stocks")
+    offer = sa.orm.relationship("Offer", foreign_keys=[offerId], backref="stocks")
 
-    price = Column(Numeric(10, 2), CheckConstraint("price >= 0", name="check_price_is_not_negative"), nullable=False)
+    price = sa.Column(
+        sa.Numeric(10, 2), sa.CheckConstraint("price >= 0", name="check_price_is_not_negative"), nullable=False
+    )
 
-    quantity = Column(Integer, nullable=True)
+    quantity = sa.Column(sa.Integer, nullable=True)
 
-    bookingLimitDatetime = Column(DateTime, nullable=True)
+    bookingLimitDatetime = sa.Column(sa.DateTime, nullable=True)
 
-    dnBookedQuantity = Column(BigInteger, nullable=False, server_default=text("0"))
+    dnBookedQuantity = sa.Column(sa.BigInteger, nullable=False, server_default=sa.text("0"))
 
-    rawProviderQuantity = Column(Integer, nullable=True)
+    rawProviderQuantity = sa.Column(sa.Integer, nullable=True)
 
-    activationCodes = relationship("ActivationCode", back_populates="stock")
+    activationCodes = sa.orm.relationship("ActivationCode", back_populates="stock")
 
-    numberOfTickets = Column(Integer, nullable=True)
+    numberOfTickets = sa.Column(sa.Integer, nullable=True)
 
-    educationalPriceDetail = Column(Text, nullable=True)
+    educationalPriceDetail = sa.Column(sa.Text, nullable=True)
 
     @property
     def isBookable(self):
@@ -110,30 +86,30 @@ class Stock(PcObject, Model, ProvidableMixin, SoftDeletableMixin):
             self.price == 0 and not self.offer.subcategory.is_bookable_by_underage_when_free
         )
 
-    @hybrid_property
+    @sa.ext.hybrid.hybrid_property
     def hasBookingLimitDatetimePassed(self):
         return bool(self.bookingLimitDatetime and self.bookingLimitDatetime <= datetime.utcnow())
 
     @hasBookingLimitDatetimePassed.expression
     def hasBookingLimitDatetimePassed(cls):  # pylint: disable=no-self-argument
-        return and_(cls.bookingLimitDatetime != None, cls.bookingLimitDatetime <= func.now())
+        return sa.and_(cls.bookingLimitDatetime != None, cls.bookingLimitDatetime <= sa.func.now())
 
     # TODO(fseguin, 2021-03-25): replace unlimited by None (also in the front-end)
-    @hybrid_property
+    @sa.ext.hybrid.hybrid_property
     def remainingQuantity(self):
         return "unlimited" if self.quantity is None else self.quantity - self.dnBookedQuantity
 
     @remainingQuantity.expression
     def remainingQuantity(cls):  # pylint: disable=no-self-argument
-        return case([(cls.quantity.is_(None), None)], else_=(cls.quantity - cls.dnBookedQuantity))
+        return sa.case([(cls.quantity.is_(None), None)], else_=(cls.quantity - cls.dnBookedQuantity))
 
-    @hybrid_property
+    @sa.ext.hybrid.hybrid_property
     def isEventExpired(self):
         return bool(self.beginningDatetime and self.beginningDatetime <= datetime.utcnow())
 
     @isEventExpired.expression
     def isEventExpired(cls):  # pylint: disable=no-self-argument
-        return and_(cls.beginningDatetime != None, cls.beginningDatetime <= func.now())
+        return sa.and_(cls.beginningDatetime != None, cls.beginningDatetime <= sa.func.now())
 
     @property
     def isExpired(self):
@@ -179,7 +155,7 @@ class Stock(PcObject, Model, ProvidableMixin, SoftDeletableMixin):
         return self.offer.isDigital
 
 
-@listens_for(Stock, "before_insert")
+@sa.event.listens_for(Stock, "before_insert")
 def before_insert(mapper, configuration, self):
     if self.beginningDatetime and not self.bookingLimitDatetime:
         self.bookingLimitDatetime = self.beginningDatetime.replace(hour=23).replace(minute=59) - timedelta(days=3)
@@ -223,7 +199,7 @@ Stock.trig_ddl = """
     FOR EACH ROW EXECUTE PROCEDURE check_stock()
     """
 
-event.listen(Stock.__table__, "after_create", DDL(Stock.trig_ddl))
+sa.event.listen(Stock.__table__, "after_create", sa.DDL(Stock.trig_ddl))
 
 Stock.trig_update_date_ddl = """
     CREATE OR REPLACE FUNCTION save_stock_modification_date()
@@ -244,7 +220,7 @@ Stock.trig_update_date_ddl = """
     EXECUTE PROCEDURE save_stock_modification_date()
     """
 
-event.listen(Stock.__table__, "after_create", DDL(Stock.trig_update_date_ddl))
+sa.event.listen(Stock.__table__, "after_create", sa.DDL(Stock.trig_update_date_ddl))
 
 
 @dataclass
@@ -273,58 +249,60 @@ class OfferValidationStatus(enum.Enum):
 class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ProvidableMixin):
     __tablename__ = "offer"
 
-    id = Column(BigInteger, primary_key=True, autoincrement=True)
+    id = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
 
-    productId = Column(BigInteger, ForeignKey("product.id"), index=True, nullable=False)
+    productId = sa.Column(sa.BigInteger, sa.ForeignKey("product.id"), index=True, nullable=False)
 
-    product = relationship("Product", foreign_keys=[productId], backref="offers")
+    product = sa.orm.relationship("Product", foreign_keys=[productId], backref="offers")
 
-    venueId = Column(BigInteger, ForeignKey("venue.id"), nullable=False, index=True)
+    venueId = sa.Column(sa.BigInteger, sa.ForeignKey("venue.id"), nullable=False, index=True)
 
-    venue = relationship("Venue", foreign_keys=[venueId], backref="offers")
+    venue = sa.orm.relationship("Venue", foreign_keys=[venueId], backref="offers")
 
-    bookingEmail = Column(String(120), nullable=True)
+    bookingEmail = sa.Column(sa.String(120), nullable=True)
 
-    name = Column(String(140), nullable=False)
-    Index("idx_offer_trgm_name", name, postgresql_using="gin")
+    name = sa.Column(sa.String(140), nullable=False)
+    sa.Index("idx_offer_trgm_name", name, postgresql_using="gin")
 
-    description = Column(Text, nullable=True)
+    description = sa.Column(sa.Text, nullable=True)
 
-    withdrawalDetails = Column(Text, nullable=True)
+    withdrawalDetails = sa.Column(sa.Text, nullable=True)
 
-    conditions = Column(String(120), nullable=True)
+    conditions = sa.Column(sa.String(120), nullable=True)
 
-    ageMin = Column(Integer, nullable=True)
-    ageMax = Column(Integer, nullable=True)
+    ageMin = sa.Column(sa.Integer, nullable=True)
+    ageMax = sa.Column(sa.Integer, nullable=True)
 
-    url = Column(String(255), nullable=True)
+    url = sa.Column(sa.String(255), nullable=True)
 
-    mediaUrls = Column(ARRAY(String(220)), nullable=False, default=[])
+    mediaUrls = sa.Column(sa.ARRAY(sa.String(220)), nullable=False, default=[])
 
-    durationMinutes = Column(Integer, nullable=True)
+    durationMinutes = sa.Column(sa.Integer, nullable=True)
 
-    isNational = Column(Boolean, default=False, nullable=False)
+    isNational = sa.Column(sa.Boolean, default=False, nullable=False)
 
-    isDuo = Column(Boolean, server_default=false(), default=False, nullable=False)
+    isDuo = sa.Column(sa.Boolean, server_default=sa.false(), default=False, nullable=False)
 
-    dateCreated = Column(DateTime, nullable=False, default=datetime.utcnow)
+    dateCreated = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow)
 
-    criteria = relationship("Criterion", backref=db.backref("criteria", lazy="dynamic"), secondary="offer_criterion")
+    criteria = sa.orm.relationship(
+        "Criterion", backref=db.backref("criteria", lazy="dynamic"), secondary="offer_criterion"
+    )
 
-    audioDisabilityCompliant = Column(Boolean, nullable=True)
+    audioDisabilityCompliant = sa.Column(sa.Boolean, nullable=True)
 
-    mentalDisabilityCompliant = Column(Boolean, nullable=True)
+    mentalDisabilityCompliant = sa.Column(sa.Boolean, nullable=True)
 
-    motorDisabilityCompliant = Column(Boolean, nullable=True)
+    motorDisabilityCompliant = sa.Column(sa.Boolean, nullable=True)
 
-    visualDisabilityCompliant = Column(Boolean, nullable=True)
+    visualDisabilityCompliant = sa.Column(sa.Boolean, nullable=True)
 
-    externalTicketOfficeUrl = Column(String, nullable=True)
+    externalTicketOfficeUrl = sa.Column(sa.String, nullable=True)
 
-    lastValidationDate = Column(DateTime, index=True, nullable=True)
+    lastValidationDate = sa.Column(sa.DateTime, index=True, nullable=True)
 
-    validation = Column(
-        Enum(OfferValidationStatus),
+    validation = sa.Column(
+        sa.Enum(OfferValidationStatus),
         nullable=False,
         default=OfferValidationStatus.APPROVED,
         # changing the server_default will cost an UPDATE migration on all existing null rows
@@ -332,35 +310,35 @@ class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ProvidableMixin):
         index=True,
     )
 
-    authorId = Column(BigInteger, ForeignKey("user.id"), nullable=True)
+    authorId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), nullable=True)
 
-    author = relationship("User", foreign_keys=[authorId], backref="offers")
+    author = sa.orm.relationship("User", foreign_keys=[authorId], backref="offers")
 
-    rankingWeight = Column(Integer, nullable=True)
+    rankingWeight = sa.Column(sa.Integer, nullable=True)
 
     # This field will replace the idAtProviders coming from ProvidableMixin
-    idAtProvider = Column(
-        Text,
-        CheckConstraint(
+    idAtProvider = sa.Column(
+        sa.Text,
+        sa.CheckConstraint(
             '"lastProviderId" IS NULL OR "idAtProvider" IS NOT NULL',
             name="check_providable_with_provider_has_idatprovider",
         ),
         nullable=True,
     )
 
-    isEducational = Column(Boolean, server_default=false(), default=False, nullable=False)
+    isEducational = sa.Column(sa.Boolean, server_default=sa.false(), default=False, nullable=False)
 
-    subcategoryId = Column(Text, nullable=False, index=True)
+    subcategoryId = sa.Column(sa.Text, nullable=False, index=True)
 
-    dateUpdated: datetime = Column(DateTime, nullable=True, default=datetime.utcnow, onupdate=datetime.utcnow)
+    dateUpdated: datetime = sa.Column(sa.DateTime, nullable=True, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     # FIXME: We shoud be able to remove the index on `venueId`, since this composite index
     #  can be used by PostgreSQL when filtering on the `venueId` column only.
-    Index("venueId_idAtProvider_index", venueId, idAtProvider, unique=True)
+    sa.Index("venueId_idAtProvider_index", venueId, idAtProvider, unique=True)
 
-    Index("offer_expr_idx", ExtraDataMixin.extraData["isbn"].astext)
+    sa.Index("offer_expr_idx", ExtraDataMixin.extraData["isbn"].astext)
 
-    @hybrid_property
+    @sa.ext.hybrid.hybrid_property
     def isSoldOut(self):
         for stock in self.stocks:
             if (
@@ -374,11 +352,11 @@ class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ProvidableMixin):
     @isSoldOut.expression
     def isSoldOut(cls):  # pylint: disable=no-self-argument
         return (
-            ~exists()
+            ~sa.exists()
             .where(Stock.offerId == cls.id)
             .where(Stock.isSoftDeleted.is_(False))
-            .where(or_(Stock.beginningDatetime > func.now(), Stock.beginningDatetime.is_(None)))
-            .where(or_(Stock.remainingQuantity.is_(None), Stock.remainingQuantity > 0))
+            .where(sa.or_(Stock.beginningDatetime > sa.func.now(), Stock.beginningDatetime.is_(None)))
+            .where(sa.or_(Stock.remainingQuantity.is_(None), Stock.remainingQuantity > 0))
         )
 
     @property
@@ -387,7 +365,7 @@ class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ProvidableMixin):
         only_active = list(filter(lambda m: m.isActive, sorted_by_date_desc))
         return only_active[0] if only_active else None
 
-    @hybrid_property
+    @sa.ext.hybrid.hybrid_property
     def canExpire(self) -> bool:
         return self.subcategoryId in subcategories.EXPIRABLE_SUBCATEGORIES
 
@@ -405,7 +383,7 @@ class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ProvidableMixin):
             and self.venue.managingOfferer.isValidated
         )
 
-    @hybrid_property
+    @sa.ext.hybrid.hybrid_property
     def isPermanent(self) -> bool:
         return self.subcategoryId in subcategories.PERMANENT_SUBCATEGORIES
 
@@ -458,7 +436,7 @@ class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ProvidableMixin):
 
     is_eligible_for_search = isBookable
 
-    @hybrid_property
+    @sa.ext.hybrid.hybrid_property
     def hasBookingLimitDatetimesPassed(self) -> bool:
         if self.activeStocks:
             return all(stock.hasBookingLimitDatetimePassed for stock in self.activeStocks)
@@ -466,9 +444,9 @@ class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ProvidableMixin):
 
     @hasBookingLimitDatetimesPassed.expression
     def hasBookingLimitDatetimesPassed(cls):  # pylint: disable=no-self-argument
-        return and_(
-            exists().where(Stock.offerId == cls.id).where(Stock.isSoftDeleted.is_(False)),
-            ~exists()
+        return sa.and_(
+            sa.exists().where(Stock.offerId == cls.id).where(Stock.isSoftDeleted.is_(False)),
+            ~sa.exists()
             .where(Stock.offerId == cls.id)
             .where(Stock.isSoftDeleted.is_(False))
             .where(Stock.hasBookingLimitDatetimePassed.is_(False)),
@@ -515,7 +493,7 @@ class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ProvidableMixin):
     def is_offline_only(self) -> bool:
         return self.subcategory.online_offline_platform == subcategories.OnlineOfflinePlatformChoices.OFFLINE.value
 
-    @hybrid_property
+    @sa.ext.hybrid.hybrid_property
     def status(self) -> OfferStatus:
         # pylint: disable=too-many-return-statements
         if self.validation == OfferValidationStatus.REJECTED:
@@ -541,7 +519,7 @@ class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ProvidableMixin):
 
     @status.expression
     def status(cls):  # pylint: disable=no-self-argument
-        return case(
+        return sa.case(
             [
                 (cls.validation == OfferValidationStatus.REJECTED.name, OfferStatus.REJECTED.name),
                 (cls.validation == OfferValidationStatus.PENDING.name, OfferStatus.PENDING.name),
@@ -561,22 +539,22 @@ class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ProvidableMixin):
 class ActivationCode(PcObject, Model):
     __tablename__ = "activation_code"
 
-    id = Column(BigInteger, primary_key=True, autoincrement=True)
+    id = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
 
-    code = Column(Text, nullable=False)
+    code = sa.Column(sa.Text, nullable=False)
 
-    expirationDate = Column(DateTime, nullable=True, default=None)
+    expirationDate = sa.Column(sa.DateTime, nullable=True, default=None)
 
-    stockId = Column(BigInteger, ForeignKey("stock.id"), index=True, nullable=False)
+    stockId = sa.Column(sa.BigInteger, sa.ForeignKey("stock.id"), index=True, nullable=False)
 
-    stock = relationship("Stock", back_populates="activationCodes")
+    stock = sa.orm.relationship("Stock", back_populates="activationCodes")
 
-    bookingId = Column(BigInteger, ForeignKey("booking.id"), index=True, nullable=True)
+    bookingId = sa.Column(sa.BigInteger, sa.ForeignKey("booking.id"), index=True, nullable=True)
 
-    booking = relationship("Booking", back_populates="activationCode")
+    booking = sa.orm.relationship("Booking", back_populates="activationCode")
 
     __table_args__ = (
-        UniqueConstraint(
+        sa.UniqueConstraint(
             "stockId",
             "code",
             name="unique_code_in_stock",
@@ -587,15 +565,15 @@ class ActivationCode(PcObject, Model):
 class OfferValidationConfig(PcObject, Model):
     __tablename__ = "offer_validation_config"
 
-    id = Column(BigInteger, primary_key=True, autoincrement=True)
+    id = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
 
-    dateCreated = Column(DateTime, nullable=False, default=datetime.utcnow)
+    dateCreated = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow)
 
-    userId = Column(BigInteger, ForeignKey("user.id"))
+    userId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"))
 
-    user = relationship("User", foreign_keys=[userId], backref="offer_validation_configs")
+    user = sa.orm.relationship("User", foreign_keys=[userId], backref="offer_validation_configs")
 
-    specs = Column(JSON, nullable=False)
+    specs = sa.Column(sa.dialects.postgresql.JSON, nullable=False)
 
 
 @dataclass
@@ -654,33 +632,33 @@ class OfferReport(PcObject, Model):
     __tablename__ = "offer_report"
 
     __table_args__ = (
-        UniqueConstraint(
+        sa.UniqueConstraint(
             "userId",
             "offerId",
             name="unique_offer_per_user",
         ),
-        CheckConstraint(
+        sa.CheckConstraint(
             OFFER_REPORT_CUSTOM_REASONS_CONSTRAINT,
             name="custom_reason_null_only_if_reason_is_other",
         ),
     )
 
-    id = Column(BigInteger, primary_key=True, autoincrement=True)
+    id = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
 
-    userId = Column(BigInteger, ForeignKey("user.id", ondelete="CASCADE"), index=True, nullable=False)
+    userId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id", ondelete="CASCADE"), index=True, nullable=False)
 
-    user = relationship("User", foreign_keys=[userId], backref="reported_offers")
+    user = sa.orm.relationship("User", foreign_keys=[userId], backref="reported_offers")
 
-    offerId = Column(BigInteger, ForeignKey("offer.id", ondelete="CASCADE"), index=True, nullable=False)
+    offerId = sa.Column(sa.BigInteger, sa.ForeignKey("offer.id", ondelete="CASCADE"), index=True, nullable=False)
 
-    offer = relationship("Offer", foreign_keys=[offerId], backref="reports")
+    offer = sa.orm.relationship("Offer", foreign_keys=[offerId], backref="reports")
 
-    reportedAt = Column(DateTime, nullable=False, server_default=func.now())
+    reportedAt = sa.Column(sa.DateTime, nullable=False, server_default=sa.func.now())
 
-    reason = Column(Enum(Reason, create_constraint=False), nullable=False, index=True)
+    reason = sa.Column(sa.Enum(Reason, create_constraint=False), nullable=False, index=True)
 
     # If the reason code is OTHER, save the user's custom reason
-    customReasonContent = Column(Text, nullable=True)
+    customReasonContent = sa.Column(sa.Text, nullable=True)
 
     def __str__(self) -> str:
         return f"{self.__class__.__name__}#{self.id} userId={self.userId}, offerId={self.offerId}, when={self.when}"
