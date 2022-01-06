@@ -36,7 +36,7 @@ export const LegalInfos = ({ title, className }) => (
     </span>
     <a
       className="quaternary-link"
-      href="mailto:support@passculture.app"
+      href="mailto:support-pro@passculture.app"
       rel="noopener noreferrer"
       target="_blank"
     >

@@ -78,6 +78,6 @@ describe('src | components | pages | SetPassword', () => {
     expect(screen.getByText('Veuillez contacter notre support')).toBeVisible()
     const link = screen.getByText('Contacter')
     expect(link).toBeVisible()
-    expect(link.getAttribute('href')).toBe('mailto:support@passculture.app')
+    expect(link.getAttribute('href')).toBe('mailto:support-pro@passculture.app')
   })
 })

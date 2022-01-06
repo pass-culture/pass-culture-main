@@ -50,7 +50,7 @@ export const SetPasswordConfirm = props => {
 
                 <a
                   className="primary-link redirection-button"
-                  href="mailto:support@passculture.app"
+                  href="mailto:support-pro@passculture.app"
                   rel="noopener noreferrer"
                   target="_blank"
                 >

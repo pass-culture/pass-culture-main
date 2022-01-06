@@ -78,7 +78,7 @@ describe('src | Venue | BankInformation', () => {
         expect(informationLink).toBeInTheDocument()
         expect(informationLink).toHaveAttribute(
           'href',
-          'https://aide.passculture.app/fr/articles/5096833-calendrier-des-prochains-remboursements'
+          'https://passculture.zendesk.com/hc/fr/articles/4411992051601'
         )
       })
     })

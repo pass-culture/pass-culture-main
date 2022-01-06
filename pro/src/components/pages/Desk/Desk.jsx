@@ -313,7 +313,7 @@ class Desk extends Component {
             {message}
           </div>
           <Banner
-            href="https://aide.passculture.app/fr/articles/5147999-modalites-de-retrait-d-un-bien-dans-ma-structure"
+            href="https://passculture.zendesk.com/hc/fr/articles/4413389597329"
             linkTitle="En savoir plus"
             type="notification-info"
           >
