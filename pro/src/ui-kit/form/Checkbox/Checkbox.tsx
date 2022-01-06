@@ -41,7 +41,7 @@ const Checkbox = ({
       {!hideFooter && (
         <div className={styles['checkbox-error']}>
           {meta.touched && !!meta.error && (
-            <FieldError>{meta.error}</FieldError>
+            <FieldError name={name}>{meta.error}</FieldError>
           )}
         </div>
       )}
