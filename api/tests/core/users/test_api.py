@@ -282,11 +282,8 @@ class SuspendAccountTest:
         users_api.suspend_account(user, users_constants.SuspensionReason.FRAUD_SUSPICION, actor)
 
         assert not user.isActive
-        assert cancellable_booking.isCancelled
         assert cancellable_booking.status is BookingStatus.CANCELLED
-        assert confirmed_booking.isCancelled
         assert confirmed_booking.status is BookingStatus.CANCELLED
-        assert not used_booking.isCancelled
         assert used_booking.status is BookingStatus.USED
 
     def test_suspend_pro(self):
@@ -297,7 +294,6 @@ class SuspendAccountTest:
         users_api.suspend_account(pro, users_constants.SuspensionReason.FRAUD_SUSPICION, actor)
 
         assert not pro.isActive
-        assert booking.isCancelled
         assert booking.status is BookingStatus.CANCELLED
 
     def test_suspend_pro_with_other_offerer_users(self):
@@ -309,7 +305,6 @@ class SuspendAccountTest:
         users_api.suspend_account(pro, users_constants.SuspensionReason.FRAUD_SUSPICION, actor)
 
         assert not pro.isActive
-        assert not booking.isCancelled
         assert booking.status is not BookingStatus.CANCELLED
 
 

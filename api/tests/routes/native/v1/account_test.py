@@ -20,6 +20,7 @@ from pcapi import settings
 from pcapi.core.bookings import factories as booking_factories
 from pcapi.core.bookings.factories import CancelledIndividualBookingFactory
 from pcapi.core.bookings.factories import IndividualBookingFactory
+from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.fraud import factories as fraud_factories
 from pcapi.core.fraud import models as fraud_models
 import pcapi.core.mails.testing as mails_testing
@@ -1690,7 +1691,7 @@ def test_suspend_account(client, app):
     response = client.post("/native/v1/account/suspend")
 
     assert response.status_code == 204
-    assert booking.isCancelled
+    assert booking.status == BookingStatus.CANCELLED
     assert not user.isActive
     assert user.suspensionReason == SuspensionReason.UPON_USER_REQUEST.value
 
