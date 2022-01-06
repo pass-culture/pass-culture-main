@@ -714,3 +714,56 @@ class OverflowSubscriptionLimitationTest:
     def test_subscription_is_possible_if_flag_is_false(self):
         user = users_factories.UserFactory()
         assert subscription_api._is_ubble_allowed_if_subscription_overflow(user)
+
+
+@pytest.mark.usefixtures("db_session")
+class CommonSubscritpionTest:
+    def test_handle_eligibility_difference_between_declaration_and_identity_provider_no_difference(self):
+        user = users_factories.UserFactory()
+        fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.UBBLE,
+            status=fraud_models.FraudCheckStatus.PENDING,
+            eligibilityType=users_models.EligibilityType.AGE18,
+        )
+        assert (
+            subscription_api.handle_eligibility_difference_between_declaration_and_identity_provider(fraud_check)
+            == fraud_check
+        )
+
+    def test_handle_eligibility_difference_between_declaration_and_identity_provider_eligibility_diff(self):
+        user = users_factories.UserFactory()
+        fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.UBBLE,
+            status=fraud_models.FraudCheckStatus.PENDING,
+            eligibilityType=users_models.EligibilityType.UNDERAGE,
+            resultContent=fraud_factories.UbbleContentFactory(),  # default age is 18
+        )
+        assert (
+            subscription_api.handle_eligibility_difference_between_declaration_and_identity_provider(fraud_check)
+            != fraud_check
+        )
+
+        user_fraud_checks = fraud_models.BeneficiaryFraudCheck.query.filter_by(user=user).all()
+        assert len(user_fraud_checks) == 2
+        assert user_fraud_checks[0].eligibilityType == users_models.EligibilityType.UNDERAGE
+        assert user_fraud_checks[0].reason == "Eligibility type changed by the identity provider"
+        assert user_fraud_checks[0].status == fraud_models.FraudCheckStatus.CANCELED
+
+        assert user_fraud_checks[1].eligibilityType == users_models.EligibilityType.AGE18
+        assert user_fraud_checks[1].status == fraud_models.FraudCheckStatus.PENDING
+
+    def test_handle_eligibility_difference_between_declaration_and_identity_provider_unreadable_document(self):
+        user = users_factories.UserFactory()
+        fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.UBBLE,
+            status=fraud_models.FraudCheckStatus.PENDING,
+            eligibilityType=users_models.EligibilityType.UNDERAGE,
+            resultContent=fraud_factories.UbbleContentFactory(birth_date=None),  # default age is 18
+        )
+        assert (
+            subscription_api.handle_eligibility_difference_between_declaration_and_identity_provider(fraud_check)
+            == fraud_check
+        )
