@@ -7,4 +7,5 @@ def to_domain(venue_sql_entity: Venue) -> VenueWithBasicInformation:
         identifier=venue_sql_entity.id,
         name=venue_sql_entity.name,
         siret=venue_sql_entity.siret,
+        publicName=venue_sql_entity.publicName,
     )
