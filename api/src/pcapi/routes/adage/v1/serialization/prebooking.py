@@ -9,7 +9,7 @@ from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.educational.models import EducationalBooking
 from pcapi.core.educational.models import EducationalBookingStatus
 from pcapi.core.offers import models as offers_models
-from pcapi.core.offers.utils import offer_webapp_link
+from pcapi.core.offers.utils import offer_app_link
 from pcapi.routes.adage.v1.serialization.config import AdageBaseResponseModel
 from pcapi.routes.native.v1.serialization.common_models import Coordinates
 from pcapi.routes.native.v1.serialization.offers import OfferImageResponse
@@ -144,7 +144,7 @@ def serialize_educational_booking(educational_booking: EducationalBooking) -> Ed
         venueTimezone=venue.timezone,
         subcategoryLabel=offer.subcategory.app_label,
         totalAmount=booking.total_amount,
-        url=offer_webapp_link(offer),
+        url=offer_app_link(offer),
         withdrawalDetails=offer.withdrawalDetails,
     )
 

@@ -5,7 +5,7 @@ from pcapi.core.educational.factories import EducationalDepositFactory
 from pcapi.core.educational.factories import EducationalInstitutionFactory
 from pcapi.core.educational.factories import EducationalRedactorFactory
 from pcapi.core.educational.factories import EducationalYearFactory
-from pcapi.core.offers.utils import offer_webapp_link
+from pcapi.core.offers.utils import offer_app_link
 from pcapi.core.testing import assert_num_queries
 from pcapi.utils.date import format_into_utc_date
 
@@ -110,7 +110,7 @@ class Returns200Test:
                     "subcategoryLabel": "Séance de cinéma",
                     "venueTimezone": venue.timezone,
                     "totalAmount": booking.amount * booking.quantity,
-                    "url": offer_webapp_link(offer),
+                    "url": offer_app_link(offer),
                     "withdrawalDetails": offer.withdrawalDetails,
                 }
             ],

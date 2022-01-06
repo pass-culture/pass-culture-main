@@ -11,7 +11,7 @@ from pcapi.core.educational.factories import EducationalRedactorFactory
 from pcapi.core.educational.factories import EducationalYearFactory
 from pcapi.core.educational.models import EducationalBookingStatus
 from pcapi.core.educational.models import EducationalDeposit
-from pcapi.core.offers.utils import offer_webapp_link
+from pcapi.core.offers.utils import offer_app_link
 from pcapi.routes.adage.v1.serialization import constants
 from pcapi.utils.date import format_into_utc_date
 
@@ -103,7 +103,7 @@ class Returns200Test:
             "subcategoryLabel": "Séance de cinéma",
             "venueTimezone": venue.timezone,
             "totalAmount": booking.total_amount,
-            "url": offer_webapp_link(offer),
+            "url": offer_app_link(offer),
             "withdrawalDetails": offer.withdrawalDetails,
         }
         assert Booking.query.filter(Booking.id == booking.id).one().status == BookingStatus.CONFIRMED
