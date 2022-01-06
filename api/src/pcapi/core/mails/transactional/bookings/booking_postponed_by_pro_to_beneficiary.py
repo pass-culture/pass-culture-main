@@ -9,6 +9,7 @@ from pcapi.core.mails.transactional.sendinblue_template_ids import Transactional
 from pcapi.models.feature import FeatureToggle
 from pcapi.utils.mailing import format_booking_hours_for_email
 from pcapi.utils.mailing import get_event_datetime
+from pcapi.utils.urls import booking_app_link
 
 
 def send_batch_booking_postponement_email_to_users(bookings: list[Booking]) -> list[bool]:
@@ -43,9 +44,10 @@ def get_booking_postponed_by_pro_to_beneficiary_email_data(
             "Vars": {
                 "offer_name": offer.name,
                 "user_first_name": booking.firstName,
-                "venue_name": offer.venue.publicName if offer.venue.publicName else offer.venue.name,
+                "venue_name": offer.venue.publicName or offer.venue.name,
                 "event_date": event_date if event_date else "",
                 "event_hour": event_hour if event_hour else "",
+                "booking_link": booking_app_link(booking),
             },
         }
 
@@ -54,8 +56,9 @@ def get_booking_postponed_by_pro_to_beneficiary_email_data(
         params={
             "OFFER_NAME": offer.name,
             "FIRSTNAME": booking.firstName,
-            "VENUE_NAME": offer.venue.publicName if offer.venue.publicName else offer.venue.name,
+            "VENUE_NAME": offer.venue.publicName or offer.venue.name,
             "EVENT_DATE": event_date if event_date else "",
             "EVENT_HOUR": event_hour if event_hour else "",
+            "BOOKING_LINK": booking_app_link(booking),
         },
     )

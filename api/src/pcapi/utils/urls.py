@@ -2,6 +2,7 @@ from typing import Optional
 from urllib.parse import urlencode
 
 from pcapi import settings
+from pcapi.core.bookings.models import Booking
 
 
 def generate_firebase_dynamic_link(path: str, params: Optional[dict]) -> str:
@@ -11,3 +12,7 @@ def generate_firebase_dynamic_link(path: str, params: Optional[dict]) -> str:
 
     firebase_dynamic_query_string = urlencode({"link": universal_link_url})
     return f"{settings.FIREBASE_DYNAMIC_LINKS_URL}/?{firebase_dynamic_query_string}"
+
+
+def booking_app_link(booking: Booking) -> str:
+    return f"{settings.WEBAPP_V2_URL}/reservations/{booking.id}/details"

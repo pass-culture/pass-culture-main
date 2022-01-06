@@ -12,6 +12,7 @@ from pcapi.utils.date import get_date_formatted_for_email
 from pcapi.utils.date import get_time_formatted_for_email
 from pcapi.utils.date import utc_datetime_to_department_timezone
 from pcapi.utils.human_ids import humanize
+from pcapi.utils.urls import booking_app_link
 
 
 def send_individual_booking_confirmation_email_to_beneficiary(individual_booking: IndividualBooking) -> bool:
@@ -110,6 +111,7 @@ def get_booking_confirmation_to_beneficiary_email_data(
                 "has_offer_url": int(offer.isDigital),
                 "digital_offer_url": individual_booking.booking.completedUrl or "",
                 "offer_withdrawal_details": offer.withdrawalDetails or "",
+                "booking_link": booking_app_link(individual_booking.booking),
             },
         }
 
@@ -145,5 +147,6 @@ def get_booking_confirmation_to_beneficiary_email_data(
             "HAS_OFFER_URL": offer.isDigital,
             "DIGITAL_OFFER_URL": individual_booking.booking.completedUrl or None,
             "OFFER_WITHDRAWAL_DETAILS": offer.withdrawalDetails or None,
+            "BOOKING_LINK": booking_app_link(individual_booking.booking),
         },
     )

@@ -33,6 +33,7 @@ class GetBookingPostponedByProToBeneficiaryTest:
                 "venue_name": booking.venue.name,
                 "event_date": "mardi 20 août 2019",
                 "event_hour": "14h",
+                "booking_link": f"https://webapp-v2.example.com/reservations/{booking.id}/details",
             },
         }
 
@@ -52,4 +53,5 @@ class GetBookingPostponedByProToBeneficiaryTest:
             "VENUE_NAME": booking.venue.name,
             "EVENT_DATE": "mardi 20 août 2019",
             "EVENT_HOUR": "14h",
+            "BOOKING_LINK": f"https://webapp-v2.example.com/reservations/{booking.id}/details",
         }
