@@ -4,7 +4,7 @@
  */
 
 import PropTypes from 'prop-types'
-import React, { useCallback } from 'react'
+import React, { useCallback, useEffect, useRef } from 'react'
 
 import { NBSP } from 'components/pages/Offers/Offer/Thumbnail/_constants'
 import { ReactComponent as ArrowDown } from 'components/pages/Offers/Offer/Thumbnail/assets/arrow-down.svg'
@@ -18,12 +18,18 @@ const Advices = ({ hidden, setHidden }) => {
     setHidden(!hidden)
   }, [hidden, setHidden])
 
+  const defaultTargetedButton = useRef(null)
+  useEffect(() => {
+    defaultTargetedButton.current.focus()
+  }, [])
+
   return (
     <div className="tna-advices">
       <button
         aria-pressed={!hidden}
         className={`tna-toggle ${hidden ? 'up' : 'down'} tertiary-link`}
         onClick={toggle}
+        ref={defaultTargetedButton}
         type="button"
       >
         Conseils pour votre image
