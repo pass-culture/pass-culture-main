@@ -1,6 +1,5 @@
 from datetime import datetime
 from decimal import Decimal
-from operator import and_
 from typing import Optional
 from typing import Union
 
@@ -53,7 +52,7 @@ def get_confirmed_educational_bookings_amount(
             educationalInstitutionId=educational_institution_id, educationalYearId=educational_year_id
         )
         .join(Booking)
-        .filter(and_(Booking.isCancelled.is_(False), Booking.status != BookingStatus.PENDING))
+        .filter(~Booking.status.in_([BookingStatus.CANCELLED, BookingStatus.PENDING]))
         .options(joinedload(educational_models.EducationalBooking.booking).load_only(Booking.amount, Booking.quantity))
         .all()
     )
