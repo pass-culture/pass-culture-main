@@ -27,7 +27,6 @@ __pycache__/
 pc_env/
 
 pro-packed-staging/
-webapp-packed-staging/
 
 *.retry
 

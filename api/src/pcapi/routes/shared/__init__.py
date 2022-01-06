@@ -1,4 +1,4 @@
-# This package contains routes that are used by both webapp and pro.
+# This package contains routes that are used by pro.
 # The native app SHOULD NOT use these routes.
 
 from flask import Flask

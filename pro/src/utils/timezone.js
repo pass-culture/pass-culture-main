@@ -32,7 +32,7 @@ export const getUtcDateTimeFromLocalDepartement = (
 //   9:00 ------------ 12:00 ------- 14:00 --------------- 16:00
 
 export const getDepartmentTimezone = departementCode => {
-  // This mapping is also defined in the webapp and in the backend. Make
+  // This mapping is also defined in the backend. Make
   // sure that all are synchronized.
   switch (departementCode) {
     case '971':

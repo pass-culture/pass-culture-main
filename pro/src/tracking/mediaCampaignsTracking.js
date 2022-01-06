@@ -2,7 +2,8 @@ const LARGE_MULTIPLER = 10000000000000
 
 const TYPE = 'site'
 
-/* Beware : the same function is defined for webapp and id-check */
+/* Beware : the same function is defined for id-check */
+// TODO(antoinewg): do we still use Floodlight tracking ?
 export const createTrackingIframe = cat => {
   const randomInteger = Math.random() * LARGE_MULTIPLER
 
