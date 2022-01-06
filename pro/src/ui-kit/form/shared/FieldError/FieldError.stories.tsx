@@ -7,6 +7,6 @@ export default {
   component: FieldError,
 }
 
-const Template = () => <FieldError> field error message </FieldError>
+const Template = () => <FieldError name="foo"> field error message </FieldError>
 
 export const Default = Template.bind({})

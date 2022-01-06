@@ -10,6 +10,7 @@ interface IFieldSetLayoutProps {
   legend: string
   className?: string
   error?: string
+  name: string
   hideFooter?: boolean
 }
 
@@ -18,6 +19,7 @@ const FieldSetLayout = ({
   legend,
   className,
   error,
+  name,
   hideFooter = false,
 }: IFieldSetLayoutProps): JSX.Element => (
   <fieldset className={cn(styles['fieldset-layout'], className)}>
@@ -27,7 +29,7 @@ const FieldSetLayout = ({
 
     {!hideFooter && (
       <div className={styles['fieldset-layout-error']}>
-        {!!error && <FieldError>{error}</FieldError>}
+        {!!error && <FieldError name={name}>{error}</FieldError>}
       </div>
     )}
   </fieldset>
