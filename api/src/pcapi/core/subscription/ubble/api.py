@@ -37,6 +37,9 @@ def update_ubble_workflow(
 
     elif status == fraud_models.ubble.UbbleIdentificationStatus.PROCESSED:
         try:
+            fraud_check = subscription_api.handle_eligibility_difference_between_declaration_and_identity_provider(
+                fraud_check
+            )
             fraud_api.ubble.on_ubble_result(fraud_check)
 
         except fraud_exceptions.BeneficiaryFraudResultCannotBeDowngraded:
