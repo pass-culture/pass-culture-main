@@ -772,7 +772,7 @@ class UbbleWebhookTest:
         assert user.has_beneficiary_role is True
         assert fraud_check.status == fraud_models.FraudCheckStatus.OK
 
-    def test_birth_date_not_overrided_with_non_ubble_test_emails(self, client, ubble_mocker, mocker):
+    def test_birth_date_not_overridden_with_non_ubble_test_emails(self, client, ubble_mocker, mocker):
         email = "whatever@example.com"
         subscription_birth_date = datetime.datetime.combine(
             datetime.date.today(), datetime.time(0, 0)
