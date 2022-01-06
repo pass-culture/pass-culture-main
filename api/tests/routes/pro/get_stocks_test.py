@@ -81,7 +81,7 @@ class Returns200Test:
             bookingLimitDatetime=now,
         )
         bookings_factories.EducationalBookingFactory.create_batch(3, stock=stock, status=BookingStatus.PENDING)
-        bookings_factories.EducationalBookingFactory(stock=stock, status=BookingStatus.CANCELLED)
+        bookings_factories.RefusedEducationalBookingFactory(stock=stock)
         offers_factories.UserOffererFactory(user=pro, offerer=stock.offer.venue.managingOfferer)
         client = TestClient(app.test_client()).with_session_auth(email=pro.email)
 
@@ -105,7 +105,7 @@ class Returns200Test:
                     "activationCodesExpirationDatetime": None,
                     "beginningDatetime": "2020-10-15T00:00:00Z",
                     "bookingLimitDatetime": "2020-10-15T00:00:00Z",
-                    "bookingsQuantity": 4,
+                    "bookingsQuantity": 3,
                     "dateCreated": "2020-10-15T00:00:00Z",
                     "dateModified": "2020-10-15T00:00:00Z",
                     "id": humanize(stock.id),
