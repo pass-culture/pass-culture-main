@@ -1,43 +1,6 @@
-from datetime import datetime
-
-from sqlalchemy import func
-from sqlalchemy.orm import aliased
 from sqlalchemy.orm import joinedload
 
-from pcapi.core.bookings.models import Booking
 from pcapi.core.offers.models import Offer
-from pcapi.core.offers.models import Stock
-
-
-def _build_bookings_quantity_subquery():
-    stock_alias = aliased(Stock)
-    bookings_quantity = (
-        Booking.query.join(stock_alias)
-        .filter(Booking.isCancelled == False)
-        .group_by(Booking.stockId)
-        .with_entities(func.sum(Booking.quantity).label("quantity"), Booking.stockId.label("stockId"))
-        .subquery()
-    )
-    return bookings_quantity
-
-
-def filter_bookable_stocks_query(stocks_query):
-    beginning_date_is_in_the_future_predicate = Stock.beginningDatetime > datetime.utcnow()
-    booking_limit_date_is_in_the_future_predicate = Stock.bookingLimitDatetime > datetime.utcnow()
-    has_no_beginning_date_predicate = Stock.beginningDatetime.is_(None)
-    has_no_booking_limit_date_predicate = Stock.bookingLimitDatetime.is_(None)
-    is_not_soft_deleted_predicate = Stock.isSoftDeleted.is_(False)
-    bookings_quantity = _build_bookings_quantity_subquery()
-    has_remaining_stock = (Stock.quantity.is_(None)) | (
-        (Stock.quantity - func.coalesce(bookings_quantity.c.quantity, 0)) > 0
-    )
-
-    return stocks_query.outerjoin(bookings_quantity, Stock.id == bookings_quantity.c.stockId).filter(
-        is_not_soft_deleted_predicate
-        & (beginning_date_is_in_the_future_predicate | has_no_beginning_date_predicate)
-        & (booking_limit_date_is_in_the_future_predicate | has_no_booking_limit_date_predicate)
-        & has_remaining_stock
-    )
 
 
 def get_offer_by_id(offer_id: int):
