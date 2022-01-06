@@ -12,11 +12,6 @@ from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational.exceptions import EducationalDepositNotFound
 from pcapi.core.educational.exceptions import EducationalYearNotFound
-from pcapi.core.educational.models import EducationalBooking
-from pcapi.core.educational.models import EducationalDeposit
-from pcapi.core.educational.models import EducationalInstitution
-from pcapi.core.educational.models import EducationalRedactor
-from pcapi.core.educational.models import EducationalYear
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
 
@@ -59,39 +54,47 @@ def get_confirmed_educational_bookings_amount(
     return Decimal(sum([educational_booking.booking.total_amount for educational_booking in educational_bookings]))
 
 
-def find_educational_booking_by_id(educational_booking_id: int) -> Optional[EducationalBooking]:
+def find_educational_booking_by_id(
+    educational_booking_id: int,
+) -> Optional[educational_models.EducationalBooking]:
     return (
-        EducationalBooking.query.filter(EducationalBooking.id == educational_booking_id)
+        educational_models.EducationalBooking.query.filter(
+            educational_models.EducationalBooking.id == educational_booking_id
+        )
         .join(Booking)
-        .options(joinedload(EducationalBooking.educationalRedactor).load_only(EducationalRedactor.email))
+        .options(
+            joinedload(educational_models.EducationalBooking.educationalRedactor).load_only(
+                educational_models.EducationalRedactor.email
+            )
+        )
         .one_or_none()
     )
 
 
-def find_educational_year_by_date(date: datetime) -> Optional[EducationalYear]:
-    return EducationalYear.query.filter(
-        date >= EducationalYear.beginningDate,
-        date <= EducationalYear.expirationDate,
+def find_educational_year_by_date(date: datetime) -> Optional[educational_models.EducationalYear]:
+    return educational_models.EducationalYear.query.filter(
+        date >= educational_models.EducationalYear.beginningDate,
+        date <= educational_models.EducationalYear.expirationDate,
     ).one_or_none()
 
 
-def find_educational_institution_by_uai_code(uai_code: str) -> Optional[EducationalInstitution]:
-    return EducationalInstitution.query.filter_by(institutionId=uai_code).one_or_none()
+def find_educational_institution_by_uai_code(uai_code: str) -> Optional[educational_models.EducationalInstitution]:
+    return educational_models.EducationalInstitution.query.filter_by(institutionId=uai_code).one_or_none()
 
 
 def find_educational_deposit_by_institution_id_and_year(
     educational_institution_id: int,
     educational_year_id: str,
-) -> Optional[EducationalDeposit]:
-    return EducationalDeposit.query.filter(
-        EducationalDeposit.educationalInstitutionId == educational_institution_id,
-        EducationalDeposit.educationalYearId == educational_year_id,
+) -> Optional[educational_models.EducationalDeposit]:
+    return educational_models.EducationalDeposit.query.filter(
+        educational_models.EducationalDeposit.educationalInstitutionId == educational_institution_id,
+        educational_models.EducationalDeposit.educationalYearId == educational_year_id,
     ).one_or_none()
 
 
-def get_educational_year_beginning_at_given_year(year: int) -> EducationalYear:
-    educational_year = EducationalYear.query.filter(
-        extract("year", EducationalYear.beginningDate) == year
+def get_educational_year_beginning_at_given_year(year: int) -> educational_models.EducationalYear:
+    educational_year = educational_models.EducationalYear.query.filter(
+        extract("year", educational_models.EducationalYear.beginningDate) == year
     ).one_or_none()
     if educational_year is None:
         raise EducationalYearNotFound()
@@ -125,7 +128,7 @@ def find_educational_bookings_for_adage(
 
     if redactor_email is not None:
         educational_bookings_base_query = educational_bookings_base_query.filter(
-            EducationalRedactor.email == redactor_email
+            educational_models.EducationalRedactor.email == redactor_email
         )
 
     if status is not None:
@@ -140,5 +143,7 @@ def find_educational_bookings_for_adage(
     return educational_bookings_base_query.all()
 
 
-def find_redactor_by_email(redactor_email: str) -> Optional[EducationalRedactor]:
-    return EducationalRedactor.query.filter(EducationalRedactor.email == redactor_email).one_or_none()
+def find_redactor_by_email(redactor_email: str) -> Optional[educational_models.EducationalRedactor]:
+    return educational_models.EducationalRedactor.query.filter(
+        educational_models.EducationalRedactor.email == redactor_email
+    ).one_or_none()

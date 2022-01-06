@@ -2,9 +2,7 @@ from decimal import Decimal
 
 import pytest
 
-from pcapi.core.bookings.factories import EducationalBookingFactory
-from pcapi.core.bookings.factories import PendingEducationalBookingFactory
-from pcapi.core.bookings.factories import RefusedEducationalBookingFactory
+from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.educational import exceptions
 from pcapi.core.educational.factories import EducationalInstitutionFactory
@@ -22,33 +20,33 @@ class EducationalValidationTest:
             educationalYear=educational_year,
             amount=Decimal(1400.00),
         )
-        PendingEducationalBookingFactory(
+        bookings_factories.PendingEducationalBookingFactory(
             amount=Decimal(2000.00),
             quantity=1,
             educationalBooking__educationalInstitution=educational_institution,
             educationalBooking__educationalYear=educational_year,
         )
-        RefusedEducationalBookingFactory(
+        bookings_factories.RefusedEducationalBookingFactory(
             amount=Decimal(2000.00),
             quantity=1,
             educationalBooking__educationalInstitution=educational_institution,
             educationalBooking__educationalYear=educational_year,
         )
-        EducationalBookingFactory(
+        bookings_factories.EducationalBookingFactory(
             amount=Decimal(20.00),
             quantity=20,
             educationalBooking__educationalInstitution=educational_institution,
             educationalBooking__educationalYear=educational_year,
             status=BookingStatus.CONFIRMED,
         )
-        EducationalBookingFactory(
+        bookings_factories.EducationalBookingFactory(
             amount=Decimal(400.00),
             quantity=1,
             educationalBooking__educationalInstitution=educational_institution,
             educationalBooking__educationalYear=educational_year,
             status=BookingStatus.CONFIRMED,
         )
-        EducationalBookingFactory(
+        bookings_factories.EducationalBookingFactory(
             amount=Decimal(400.00),
             quantity=1,
             educationalBooking__educationalInstitution=educational_institution,
@@ -69,21 +67,21 @@ class EducationalValidationTest:
             amount=Decimal(1400.00),
             isFinal=False,
         )
-        EducationalBookingFactory(
+        bookings_factories.EducationalBookingFactory(
             amount=Decimal(20.00),
             quantity=20,
             educationalBooking__educationalInstitution=educational_institution,
             educationalBooking__educationalYear=educational_year,
             status=BookingStatus.CONFIRMED,
         )
-        EducationalBookingFactory(
+        bookings_factories.EducationalBookingFactory(
             amount=Decimal(400.00),
             quantity=1,
             educationalBooking__educationalInstitution=educational_institution,
             educationalBooking__educationalYear=educational_year,
             status=BookingStatus.CONFIRMED,
         )
-        EducationalBookingFactory(
+        bookings_factories.EducationalBookingFactory(
             amount=Decimal(400.00),
             quantity=1,
             educationalBooking__educationalInstitution=educational_institution,
@@ -104,21 +102,21 @@ class EducationalValidationTest:
             educationalYear=educational_year,
             amount=Decimal(400.00),
         )
-        EducationalBookingFactory(
+        bookings_factories.EducationalBookingFactory(
             amount=Decimal(20.00),
             quantity=20,
             educationalBooking__educationalInstitution=educational_institution,
             educationalBooking__educationalYear=educational_year,
             status=BookingStatus.CONFIRMED,
         )
-        EducationalBookingFactory(
+        bookings_factories.EducationalBookingFactory(
             amount=Decimal(400.00),
             quantity=1,
             educationalBooking__educationalInstitution=educational_institution,
             educationalBooking__educationalYear=educational_year,
             status=BookingStatus.CONFIRMED,
         )
-        EducationalBookingFactory(
+        bookings_factories.EducationalBookingFactory(
             amount=Decimal(400.00),
             quantity=1,
             educationalBooking__educationalInstitution=educational_institution,
