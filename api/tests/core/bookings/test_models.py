@@ -33,7 +33,7 @@ def test_save_cancellation_date_postgresql_function():
     booking = factories.BookingFactory()
     assert booking.cancellationDate is None
 
-    booking.isCancelled = True
+    booking.status = BookingStatus.CANCELLED
     db.session.commit()
     assert booking.cancellationDate is not None
 
@@ -44,7 +44,7 @@ def test_save_cancellation_date_postgresql_function():
     db.session.commit()
     assert booking.cancellationDate == previous
 
-    booking.isCancelled = False
+    booking.status = BookingStatus.CONFIRMED
     db.session.commit()
     assert booking.cancellationDate is None
 
