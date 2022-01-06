@@ -82,7 +82,7 @@ class SaveVenueBankInformations:
         if siret:
             if not business_unit:
                 business_unit = BusinessUnit(
-                    name=venue.name,
+                    name=venue.publicName or venue.name,
                     siret=siret,
                     bankAccountId=updated_bank_information.id,
                 )
