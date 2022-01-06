@@ -83,29 +83,6 @@ def get_booking_response(booking: Booking) -> GetBookingResponse:
     )
 
 
-def serialize_booking_minimal(booking: Booking) -> dict:
-    serializable_fields = {
-        "amount": float(booking.amount),
-        "completedUrl": booking.completedUrl,
-        "id": humanize(booking.id),
-        "isCancelled": booking.isCancelled,
-        "quantity": booking.quantity,
-        "stockId": humanize(booking.stockId),
-        "stock": {"price": booking.stock.price},
-        "token": booking.token,
-        "activationCode": None,
-        "qrCode": booking.qrCode,
-    }
-
-    if booking.activationCode:
-        serializable_fields["activationCode"] = {
-            "code": booking.activationCode.code,
-            "expirationDate": booking.activationCode.expirationDate,
-        }
-
-    return serializable_fields
-
-
 class PostBookingStockModel(BaseModel):
     price: float
 
@@ -121,20 +98,3 @@ class PostBookingBodyModel(BaseModel):
 class ActivationCode(BaseModel):
     code: str
     expirationDate: Optional[datetime]
-
-
-class PostBookingResponseModel(BaseModel):
-    amount: float
-    completedUrl: Optional[str]
-    id: str
-    isCancelled: bool
-    quantity: int
-    stock: PostBookingStockModel
-    stockId: str
-    token: str
-    activationCode: Optional[ActivationCode]
-    qrCode: Optional[str]
-
-    class Config:
-        allow_population_by_field_name = True
-        arbitrary_types_allowed = True
