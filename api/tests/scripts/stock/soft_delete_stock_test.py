@@ -50,5 +50,4 @@ class SoftDeleteStockTest:
         soft_delete_stock(booking.stock.id)
 
         # Then
-        assert booking.isCancelled
         assert booking.status is BookingStatus.CANCELLED

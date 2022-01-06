@@ -224,7 +224,6 @@ class UserProfileResponse(BaseModel):
             .filter(
                 IndividualBooking.userId == user.id,
                 Booking.status != BookingStatus.CANCELLED,
-                Booking.isCancelled.is_(False),
             )
         )
 
