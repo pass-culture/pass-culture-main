@@ -7,8 +7,10 @@ from pydantic import BaseModel
 from pcapi import settings
 from pcapi.models.api_errors import ApiErrors
 from pcapi.notifications.push import delete_user_attributes
+from pcapi.notifications.push import send_transactional_notification
 from pcapi.notifications.push import update_user_attributes
 from pcapi.notifications.push.backends.batch import BatchAPI
+from pcapi.notifications.push.transactional_notifications import TransactionalNotificationData
 from pcapi.tasks.decorator import task
 
 
@@ -41,3 +43,8 @@ def update_user_attributes_ios_task(payload: UpdateBatchAttributesRequest) -> No
 @task(settings.GCP_BATCH_CUSTOM_DATA_QUEUE_NAME, "/batch/delete_user_attributes")
 def delete_user_attributes_task(payload: DeleteBatchUserAttributesRequest) -> None:
     delete_user_attributes(payload.user_id)
+
+
+@task(settings.GCP_BATCH_NOTIFICATION_QUEUE_NAME, "/batch/send_transactional_notification")
+def send_transactional_notification_task(payload: TransactionalNotificationData) -> None:
+    send_transactional_notification(payload)

@@ -1,8 +1,11 @@
-from dataclasses import dataclass
-from dataclasses import field
+from datetime import date
 from enum import Enum
+import logging
 from typing import Optional
 
+from pydantic import BaseModel
+
+from pcapi.core.bookings import exceptions
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.bookings.models import IndividualBooking
@@ -11,24 +14,26 @@ from pcapi.core.offers.models import Stock
 from pcapi.core.offers.utils import offer_app_link
 
 
+logger = logging.getLogger(__name__)
+
+
 class GroupId(Enum):
     CANCEL_BOOKING = "Cancel_booking"
     TOMORROW_STOCK = "Tomorrow_stock"
     OFFER_LINK = "Offer_link"
+    SOON_EXPIRING_BOOKINGS = "Soon_expiring_bookings"
 
 
-@dataclass
-class TransactionalNotificationMessage:
+class TransactionalNotificationMessage(BaseModel):
     body: str
     title: Optional[str] = None
 
 
-@dataclass
-class TransactionalNotificationData:
+class TransactionalNotificationData(BaseModel):
     group_id: str  # Name of the campaign, useful for analytics purpose
     user_ids: list[int]
     message: TransactionalNotificationMessage
-    extra: dict = field(default_factory=dict)
+    extra: Optional[dict] = {}
 
 
 def get_bookings_cancellation_notification_data(booking_ids: list[int]) -> Optional[TransactionalNotificationData]:
@@ -80,4 +85,24 @@ def get_offer_notification_data(user_id: int, offer: Offer) -> TransactionalNoti
             body="Pour réserver, c'est par ici !",
         ),
         extra={"deeplink": offer_app_link(offer)},
+    )
+
+
+def get_soon_expiring_bookings_with_offers_notification_data(booking: Booking) -> TransactionalNotificationData:
+    remaining_days = (booking.expirationDate.date() - date.today()).days
+
+    if remaining_days < 0:
+        raise exceptions.BookingIsExpired(booking.id)
+
+    if remaining_days > 1:
+        body = f'Vite, il ne te reste plus que {remaining_days} jours pour récupérer "{booking.stock.offer.name}"'
+    elif remaining_days == 1:
+        body = f'Vite, il ne te reste plus qu\'un jour pour récupérer "{booking.stock.offer.name}"'
+    else:
+        body = f'Vite, dernier jour pour récupérer "{booking.stock.offer.name}"'
+
+    return TransactionalNotificationData(
+        group_id=GroupId.SOON_EXPIRING_BOOKINGS.value,
+        user_ids=[booking.userId],
+        message=TransactionalNotificationMessage(title="Tu n'as pas récupéré ta réservation", body=body),
     )
