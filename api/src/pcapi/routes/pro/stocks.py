@@ -34,8 +34,7 @@ from pcapi.validation.routes.users_authentifications import api_key_required
 from pcapi.validation.routes.users_authentifications import current_api_key
 from pcapi.workers.synchronize_stocks_job import synchronize_stocks_job
 
-from .blueprints import api
-from .blueprints import pro_api_v2
+from . import blueprint
 
 
 logger = logging.getLogger(__name__)
@@ -93,9 +92,9 @@ def delete_stock(stock_id: str) -> StockIdResponseModel:
     return StockIdResponseModel.from_orm(stock)
 
 
-@pro_api_v2.route("/venue/<int:venue_id>/stocks", methods=["POST"])
+@blueprint.pro_public_api_v2.route("/venue/<int:venue_id>/stocks", methods=["POST"])
 @api_key_required
-@spectree_serialize(on_success_status=204, on_error_statuses=[401, 404], api=api, tags=["API Stocks"])
+@spectree_serialize(on_success_status=204, on_error_statuses=[401, 404], api=blueprint.api, tags=["API Stocks"])
 def update_stocks(venue_id: int, body: UpdateVenueStocksBodyModel) -> None:
     # in French, to be used by Swagger for the API documentation
     """Mise à jour des stocks d'un lieu enregistré auprès du pass Culture.
