@@ -3,6 +3,7 @@ from decimal import Decimal
 
 import pytest
 
+from pcapi.core.bookings.factories import CancelledIndividualBookingFactory
 from pcapi.core.bookings.factories import IndividualBookingFactory
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.offers.factories import OfferFactory
@@ -126,6 +127,6 @@ def test_get_bookings_categories_and_subcategories():
 
     IndividualBookingFactory(individualBooking__user=user, stock__offer=offer)
     IndividualBookingFactory(individualBooking__user=user, stock__offer=offer)
-    IndividualBookingFactory(individualBooking__user=user, isCancelled=True)
+    CancelledIndividualBookingFactory(individualBooking__user=user)
 
     assert _get_bookings_categories_and_subcategories(_get_user_bookings(user)) == (["FILM"], ["SUPPORT_PHYSIQUE_FILM"])

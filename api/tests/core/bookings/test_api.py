@@ -66,7 +66,7 @@ class BookOfferConcurrencyTest:
                 api.cancel_booking_by_beneficiary(booking.individualBooking.user, booking)
 
         assert models.Booking.query.filter().count() == 1
-        assert models.Booking.query.filter(models.Booking.isCancelled == True).count() == 0
+        assert models.Booking.query.filter(models.Booking.status == BookingStatus.CANCELLED).count() == 0
 
     @pytest.mark.usefixtures("db_session")
     def test_cancel_booking_with_concurrent_cancel(self, app):
@@ -76,13 +76,15 @@ class BookOfferConcurrencyTest:
 
         # simulate concurent change
         db.session.query(Booking).filter(Booking.id == booking_id).update(
-            {Booking.isCancelled: True, Booking.cancellationReason: BookingCancellationReasons.BENEFICIARY},
+            {
+                Booking.status: BookingStatus.CANCELLED,
+                Booking.cancellationReason: BookingCancellationReasons.BENEFICIARY,
+            },
             synchronize_session=False,
         )
 
         # Cancelling the booking (that appears as not cancelled as verified) should
         # not alter dnBookedQuantity due to the concurrent cancellation
-        assert not booking.isCancelled
         assert booking.status is not BookingStatus.CANCELLED
         api._cancel_booking(booking, BookingCancellationReasons.BENEFICIARY)
         assert booking.stock.dnBookedQuantity == dnBookedQuantity
@@ -104,7 +106,7 @@ class BookOfferConcurrencyTest:
                 api.cancel_bookings_from_stock_by_offerer(stock)
 
         assert models.Booking.query.filter().count() == 4
-        assert models.Booking.query.filter(models.Booking.isCancelled == True).count() == 1
+        assert models.Booking.query.filter(models.Booking.status == BookingStatus.CANCELLED).count() == 1
 
 
 @pytest.mark.usefixtures("db_session")
@@ -137,7 +139,6 @@ class BookOfferTest:
         assert booking.amount == 10
         assert booking.stock == stock
         assert len(booking.token) == 6
-        assert not booking.isCancelled
         assert not booking.isUsed
         assert booking.status not in [BookingStatus.CANCELLED, BookingStatus.USED]
         assert booking.cancellationLimitDate is None
@@ -233,7 +234,6 @@ class BookOfferTest:
         assert booking.stock == stock
         assert stock.dnBookedQuantity == 6
         assert len(booking.token) == 6
-        assert not booking.isCancelled
         assert not booking.isUsed
         assert booking.status not in [BookingStatus.CANCELLED, BookingStatus.USED]
         assert booking.cancellationLimitDate == two_days_after_booking
@@ -400,7 +400,6 @@ class CancelByBeneficiaryTest:
         # cancellation can trigger more than one request to Batch
         assert len(push_testing.requests) >= 1
 
-        assert booking.isCancelled
         assert booking.status is BookingStatus.CANCELLED
         assert booking.cancellationReason == BookingCancellationReasons.BENEFICIARY
         assert len(mails_testing.outbox) == 2
@@ -418,7 +417,6 @@ class CancelByBeneficiaryTest:
         # cancellation can trigger more than one request to Batch
         assert len(push_testing.requests) >= 1
 
-        assert booking.isCancelled
         assert booking.status is BookingStatus.CANCELLED
         assert booking.stock.dnBookedQuantity == (initial_quantity - 1)
 
@@ -427,7 +425,6 @@ class CancelByBeneficiaryTest:
         # cancellation can trigger more than one request to Batch
         assert len(push_testing.requests) >= 1
 
-        assert booking.isCancelled
         assert booking.status is BookingStatus.CANCELLED
         assert booking.stock.dnBookedQuantity == (initial_quantity - 1)
 
@@ -436,7 +433,6 @@ class CancelByBeneficiaryTest:
 
         with pytest.raises(exceptions.BookingIsAlreadyUsed):
             api.cancel_booking_by_beneficiary(booking.individualBooking.user, booking)
-        assert not booking.isCancelled
         assert booking.status is not BookingStatus.CANCELLED
 
     def test_raise_if_event_too_close(self):
@@ -446,7 +442,6 @@ class CancelByBeneficiaryTest:
         )
         with pytest.raises(exceptions.CannotCancelConfirmedBooking) as exc:
             api.cancel_booking_by_beneficiary(booking.individualBooking.user, booking)
-        assert not booking.isCancelled
         assert booking.status is not BookingStatus.CANCELLED
         assert not booking.cancellationReason
         assert exc.value.errors["booking"] == [
@@ -463,7 +458,6 @@ class CancelByBeneficiaryTest:
         )
         with pytest.raises(exceptions.CannotCancelConfirmedBooking) as exc:
             api.cancel_booking_by_beneficiary(booking.individualBooking.user, booking)
-        assert not booking.isCancelled
         assert booking.status is not BookingStatus.CANCELLED
         assert not booking.cancellationReason
         assert exc.value.errors["booking"] == [
@@ -480,7 +474,6 @@ class CancelByBeneficiaryTest:
         )
         with pytest.raises(exceptions.CannotCancelConfirmedBooking) as exc:
             api.cancel_booking_by_beneficiary(booking.individualBooking.user, booking)
-        assert not booking.isCancelled
         assert booking.status is not BookingStatus.CANCELLED
         assert not booking.cancellationReason
         assert exc.value.errors["booking"] == [
@@ -493,7 +486,6 @@ class CancelByBeneficiaryTest:
         other_beneficiary = users_factories.BeneficiaryGrant18Factory()
         with pytest.raises(exceptions.BookingDoesntExist):
             api.cancel_booking_by_beneficiary(other_beneficiary, booking)
-        assert not booking.isCancelled
         assert booking.status is not BookingStatus.CANCELLED
         assert not booking.cancellationReason
 
@@ -508,7 +500,6 @@ class CancelByOffererTest:
         # cancellation can trigger more than one request to Batch
         assert len(push_testing.requests) >= 1
 
-        assert booking.isCancelled
         assert booking.status is BookingStatus.CANCELLED
         assert booking.cancellationReason == BookingCancellationReasons.OFFERER
 
@@ -530,7 +521,6 @@ class CancelByOffererTest:
         )
         with pytest.raises(api_errors.ResourceGoneError):
             api.cancel_booking_by_offerer(booking)
-        assert booking.isCancelled
         assert booking.status is BookingStatus.CANCELLED
         assert booking.cancellationReason == BookingCancellationReasons.BENEFICIARY  # unchanged
 
@@ -541,7 +531,6 @@ class CancelByOffererTest:
         with pytest.raises(api_errors.ForbiddenError):
             api.cancel_booking_by_offerer(booking)
         assert booking.isUsed
-        assert not booking.isCancelled
         assert booking.status is BookingStatus.USED
         assert not booking.cancellationReason
 
@@ -560,7 +549,7 @@ class CancelByOffererTest:
         assert len(push_testing.requests) >= 1
 
         assert models.Booking.query.filter().count() == 4
-        assert models.Booking.query.filter(models.Booking.isCancelled == True).count() == 3
+        assert models.Booking.query.filter(models.Booking.status == BookingStatus.CANCELLED).count() == 3
         assert models.Booking.query.filter(models.Booking.isUsed == True).count() == 1
         assert booking_1.status is BookingStatus.CANCELLED
         assert booking_1.cancellationReason == BookingCancellationReasons.OFFERER
@@ -568,7 +557,6 @@ class CancelByOffererTest:
         assert booking_2.cancellationReason == BookingCancellationReasons.OFFERER
         assert used_booking.status is not BookingStatus.CANCELLED
         assert not used_booking.cancellationReason
-        assert cancelled_booking.isCancelled
         assert cancelled_booking.status is BookingStatus.CANCELLED
         assert cancelled_booking.cancellationReason == BookingCancellationReasons.BENEFICIARY
 

@@ -1,6 +1,7 @@
 from decimal import Decimal
 
 from pcapi.core.bookings.factories import EducationalBookingFactory
+from pcapi.core.bookings.factories import RefusedEducationalBookingFactory
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.educational.factories import EducationalInstitutionFactory
 from pcapi.core.educational.factories import EducationalYearFactory
@@ -40,13 +41,11 @@ class EducationalRepositoryTest:
             educationalBooking__educationalYear=educational_year,
             status=BookingStatus.PENDING,
         )
-        EducationalBookingFactory(
+        RefusedEducationalBookingFactory(
             amount=Decimal(10.00),
             quantity=20,
             educationalBooking__educationalInstitution=educational_institution,
             educationalBooking__educationalYear=educational_year,
-            status=BookingStatus.CANCELLED,
-            isCancelled=True,
         )
         EducationalBookingFactory(
             amount=Decimal(10.00),

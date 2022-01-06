@@ -207,7 +207,6 @@ class BeneficiaryUserViewTest:
 
         assert response.status_code == 302
         assert not beneficiary.isActive
-        assert booking.isCancelled
         assert booking.status is BookingStatus.CANCELLED
 
     @clean_database

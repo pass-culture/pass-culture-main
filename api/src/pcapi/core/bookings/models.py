@@ -162,7 +162,7 @@ class Booking(PcObject, Model):
     def mark_as_used(self) -> None:
         if self.status is BookingStatus.USED or self.isUsed:
             raise exceptions.BookingHasAlreadyBeenUsed()
-        if self.status is BookingStatus.CANCELLED or self.isCancelled:
+        if self.status is BookingStatus.CANCELLED:
             raise exceptions.BookingIsCancelled()
         self.isUsed = True
         self.dateUsed = datetime.utcnow()
@@ -174,20 +174,18 @@ class Booking(PcObject, Model):
         self.status = BookingStatus.CONFIRMED
 
     def cancel_booking(self) -> None:
-        if self.status is BookingStatus.CANCELLED or self.isCancelled:
+        if self.status is BookingStatus.CANCELLED:
             raise exceptions.BookingIsAlreadyCancelled()
         if self.status is BookingStatus.USED or self.isUsed:
             raise exceptions.BookingIsAlreadyUsed()
-        self.isCancelled = True
         self.status = BookingStatus.CANCELLED
         self.cancellationDate = datetime.utcnow()
 
     def uncancel_booking_set_used(self) -> None:
-        if not (self.status is BookingStatus.CANCELLED or self.isCancelled):
+        if not (self.status is BookingStatus.CANCELLED):
             raise exceptions.BookingIsNotCancelledCannotBeUncancelled()
         if self.educationalBookingId is not None:
             self.educationalBooking.status = EducationalBookingStatus.USED_BY_INSTITUTE
-        self.isCancelled = False
         self.cancellationDate = None
         self.cancellationReason = None
         self.status = BookingStatus.USED
@@ -205,7 +203,7 @@ class Booking(PcObject, Model):
 
     @property
     def expirationDate(self) -> Optional[datetime]:
-        if self.isCancelled or self.isUsed:
+        if self.status == BookingStatus.CANCELLED or self.isUsed:
             return None
         if not self.stock.offer.canExpire:
             return None
@@ -261,10 +259,10 @@ class Booking(PcObject, Model):
 
         offer = self.stock.offer
         if offer.isEvent:
-            if self.isEventExpired or self.isCancelled:
+            if self.isEventExpired or self.status == BookingStatus.CANCELLED:
                 return None
             return api.generate_qr_code(self.token)
-        if self.isUsed or self.isCancelled:
+        if self.isUsed or self.status == BookingStatus.CANCELLED:
             return None
         return api.generate_qr_code(self.token)
 
