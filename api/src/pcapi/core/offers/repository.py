@@ -14,6 +14,7 @@ from sqlalchemy.orm import load_only
 from sqlalchemy.sql.functions import coalesce
 
 from pcapi.core.bookings.models import Booking
+from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.categories import subcategories
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import Venue
@@ -191,7 +192,7 @@ def get_stocks_for_offers(offer_ids: list[int]) -> list[Stock]:
 def get_stocks_for_offer(offer_id: int) -> list[Stock]:
     return (
         Stock.query.options(joinedload(Stock.offer).load_only(Offer.url, Offer.isEducational))
-        .options(joinedload(Stock.bookings).load_only(Booking.status, Booking.isCancelled))
+        .options(joinedload(Stock.bookings).load_only(Booking.status))
         .filter(Stock.offerId == offer_id)
         .filter(Stock.isSoftDeleted.is_(False))
         .all()
@@ -234,7 +235,7 @@ def get_offers_map_by_venue_reference(id_at_providers: list[str], venue_id: int)
 def get_stocks_by_id_at_providers(id_at_providers: list[str]) -> dict:
     stocks = (
         Stock.query.filter(Stock.idAtProviders.in_(id_at_providers))
-        .outerjoin(Booking, and_(Stock.id == Booking.stockId, Booking.isCancelled.is_(False)))
+        .outerjoin(Booking, and_(Stock.id == Booking.stockId, Booking.status != BookingStatus.CANCELLED))
         .group_by(Stock.id)
         .with_entities(
             Stock.id,
@@ -292,7 +293,8 @@ def check_stock_consistency() -> list[int]:
         .outerjoin(Stock.bookings)
         .group_by(Stock.id)
         .having(
-            Stock.dnBookedQuantity != func.coalesce(func.sum(Booking.quantity).filter(Booking.isCancelled == False), 0)
+            Stock.dnBookedQuantity
+            != func.coalesce(func.sum(Booking.quantity).filter(Booking.status != BookingStatus.CANCELLED), 0)
         )
         .all()
     ]
@@ -307,7 +309,7 @@ def find_tomorrow_event_stock_ids() -> set[int]:
     stocks = (
         Stock.query.filter(Stock.beginningDatetime.between(tomorrow_min, tomorrow_max))
         .join(Booking)
-        .filter(Booking.isCancelled == False)
+        .filter(Booking.status != BookingStatus.CANCELLED)
         .options(load_only(Stock.id))
     )
 
