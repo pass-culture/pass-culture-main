@@ -18,7 +18,6 @@ class SettingsTest:
         ENABLE_NATIVE_ID_CHECK_VERBOSE_DEBUGGING=False,
         ENABLE_PHONE_VALIDATION=True,
         ID_CHECK_ADDRESS_AUTOCOMPLETION=True,
-        WEBAPP_V2_ENABLED=False,
     )
     def test_get_settings_feature_combination_1(self, app):
         response = TestClient(app.test_client()).get("/native/v1/settings")
@@ -35,7 +34,7 @@ class SettingsTest:
             "enableUnderageGeneralisation": False,
             "idCheckAddressAutocompletion": True,
             "isRecaptchaEnabled": True,
-            "isWebappV2Enabled": False,
+            "isWebappV2Enabled": True,
             "objectStorageUrl": "http://localhost/storage",
         }
 
@@ -48,7 +47,6 @@ class SettingsTest:
         ENABLE_NATIVE_ID_CHECK_VERBOSE_DEBUGGING=True,
         ENABLE_PHONE_VALIDATION=False,
         ID_CHECK_ADDRESS_AUTOCOMPLETION=False,
-        WEBAPP_V2_ENABLED=True,
     )
     def test_get_settings_feature_combination_2(self, app):
         response = TestClient(app.test_client()).get("/native/v1/settings")
