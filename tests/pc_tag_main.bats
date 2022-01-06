@@ -79,30 +79,26 @@ teardown(){
     mock_set_output "${mock_git}" "" 2
     # git add version.txt
     mock_set_output "${mock_git}" "add version.txt" 3
-    # git add webapp package.json
-    mock_set_output "${mock_git}" "add package.json" 4
     # git add pro package.json
-    mock_set_output "${mock_git}" "add package.json" 5
+    mock_set_output "${mock_git}" "add package.json" 4
     # git add adage-front package.json
-    mock_set_output "${mock_git}" "add package.json" 6
+    mock_set_output "${mock_git}" "add package.json" 5
     # call with param: git commit -m "🚀 $TAG_VERSION"
-    mock_set_output "${mock_git}" "git commit -m 🚀 TAG_VERSION" 7
+    mock_set_output "${mock_git}" "git commit -m 🚀 TAG_VERSION" 6
     # call with param: git push origin master
-    mock_set_output "${mock_git}" "git push origin master" 8
+    mock_set_output "${mock_git}" "git push origin master" 7
     # call with param: git tag "$TAG_VERSION"
-    mock_set_output "${mock_git}" "tag-version main" 9
+    mock_set_output "${mock_git}" "tag-version main" 8
     # call with param: git push origin "$TAG_VERSION"
-    mock_set_output "${mock_git}" "push tag main" 10
+    mock_set_output "${mock_git}" "push tag main" 9
     # call with param: git checkout "$current_branch"
-    mock_set_output "${mock_git}" "git checkout current-branch" 11
+    mock_set_output "${mock_git}" "git checkout current-branch" 10
 
     # Mock yarn
     # call with param: yarn version --new-version "$TAG_NAME"
-    mock_set_output "${mock_yarn}" "yarn new-version webapp" 1
+    mock_set_output "${mock_yarn}" "yarn new-version pro" 1
     # call with param: yarn version --new-version "$TAG_NAME"
-    mock_set_output "${mock_yarn}" "yarn new-version pro" 2
-    # call with param: yarn version --new-version "$TAG_NAME"
-    mock_set_output "${mock_yarn}" "yarn new-version adage-front" 3
+    mock_set_output "${mock_yarn}" "yarn new-version adage-front" 2
 
 
     # Test mock is set up properly
@@ -115,8 +111,8 @@ teardown(){
     # Then
     echo "Number of calls: $(mock_get_call_num ${mock_git})"
     echo "Number of calls: $(mock_get_call_num ${mock_yarn})"
-    [[ "$(mock_get_call_num ${mock_git})" -eq 11 ]]
-    [[ "$(mock_get_call_num ${mock_yarn})" -eq 3 ]]
+    [[ "$(mock_get_call_num ${mock_git})" -eq 10 ]]
+    [[ "$(mock_get_call_num ${mock_yarn})" -eq 2 ]]
 
     # Allow to follow last steps
     for index in ${!lines[@]}; do

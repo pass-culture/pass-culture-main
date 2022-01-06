@@ -12,11 +12,6 @@ function tag_hotfix {
     echo "$TAG_VERSION" > version.txt
     git add version.txt
 
-    echo --- Change Webapp version $TAG_VERSION ---
-    cd $ROOT_PATH/webapp
-    yarn version --new-version "$TAG_NAME"
-    git add package.json
-
     echo --- Change Pro version $TAG_VERSION ---
     cd $ROOT_PATH/pro
     yarn version --new-version "$TAG_NAME"

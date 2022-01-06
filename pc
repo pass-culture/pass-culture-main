@@ -283,19 +283,15 @@ elif [[ "$CMD" == "start-backend" ]]; then
     source "$INFRA_SCRIPTS_PATH"start_backend.sh
     start_backend
 
-# Start webapp or pro application
-elif [[ "$CMD" == "start-webapp" ]] || [[ "$CMD" == "start-pro" ]] || [[ "$CMD" == "start-adage-front" ]]; then
-  if [[ "$CMD" == "start-webapp" ]]; then
-    RUN='cd $ROOT_PATH/webapp'
-  elif [[ "$CMD" == "start-pro" ]]; then
+# Start pro or adage application
+elif [[ "$CMD" == "start-pro" ]] || [[ "$CMD" == "start-adage-front" ]]; then
+  if [[ "$CMD" == "start-pro" ]]; then
     RUN='cd $ROOT_PATH/pro'
   else
     RUN='cd $ROOT_PATH/adage-front'
   fi
   if [[ "$BACKEND" == "testing" ]]; then
     RUN="$RUN"' && export THUMBS_URL=https://storage.gra3.cloud.ovh.net/v1/AUTH_810600e32fdc4cb49a8d15332b68d2cc/storage-pc/thumbs && export API_URL=https://backend.passculture-testing.beta.gouv.fr'
-  elif [[ "$BACKEND" == "ngrok" ]]; then
-    RUN="$RUN"' && NGROK_API_URL='$(node "$ROOT_PATH"/webapp/scripts/ngrok.js)
   elif [[ "$BACKEND" != "localhost" ]]; then
     echo "Can only set backend as localhost or testing for developping your front app."
     exit
@@ -312,14 +308,10 @@ elif [[ "$CMD" == "test-backend" ]]; then
 elif [[ "$CMD" == "test-backend-provider" ]]; then
   RUN='"$ROOT_PATH"/pc test-backend tests/10_local_providers.py::test_15_spreadsheet_exp_venue_provider tests/10_local_providers.py::test_15_spreadsheet_exp_stocks_provider tests/10_local_providers.py::test_16_openagenda_events_provider'
 
-# Run functional tests for webapp or pro application
+# Run functional tests for pro application
 # Need to run start-backend & start-frontend
-elif [[ "$CMD" == "test-cafe-webapp" ]] || [[ "$CMD" == "test-cafe-pro" ]]; then
-  if [[ "$CMD" == "test-cafe-webapp"  ]]; then
-    APP_PATH="$ROOT_PATH"/webapp
-  else
-    APP_PATH="$ROOT_PATH"/pro
-  fi
+elif  [[ "$CMD" == "test-cafe-pro" ]]; then
+  APP_PATH="$ROOT_PATH"/pro
   if [[ $# == 0 ]]; then
     if [[ "$MACHINE" == "Mac" ]]; then
       BROWSER="chrome"
@@ -375,9 +367,6 @@ elif [[ "$CMD" == "tag" ]]; then
     cd "$ROOT_PATH"/api
     echo "$TAG_VERSION" > version.txt
     git add version.txt
-
-    # TAG WEBAPP
-    tag_frontend_component webapp "$TAG_NAME"
 
     # TAG PRO
     tag_frontend_component pro "$TAG_NAME"
@@ -454,7 +443,6 @@ elif [[ "$CMD" == "deploy" ]]; then
 elif [[ "$CMD" == "install" ]]; then
   cd $ROOT_PATH;
   git checkout master;
-  cd $ROOT_PATH/webapp && yarn;
   cd $ROOT_PATH/pro && yarn;
   cd $ROOT_PATH/adage-front && yarn;
   pc install-hooks
