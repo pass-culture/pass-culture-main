@@ -258,6 +258,7 @@ class FraudReasonCode(enum.Enum):
     DUPLICATE_INE = "duplicate_ine"
     DUPLICATE_USER = "duplicate_user"
     EMAIL_NOT_VALIDATED = "email_not_validated"
+    ELIGIBILITY_CHANGED = "eligibility_changed"
     EMPTY_ID_PIECE_NUMBER = "empty_id_piece_number"
     ID_CHECK_INVALID = "id_check_invalid"
     ID_CHECK_UNPROCESSABLE = "id_check_unprocessable"
