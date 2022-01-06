@@ -1,6 +1,7 @@
 from sqlalchemy.orm import joinedload
 
 from pcapi.core.bookings.models import Booking
+from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.bookings.models import IndividualBooking
 from pcapi.core.offers.models import Stock
 from pcapi.utils.mailing import build_pc_pro_offer_link
@@ -12,7 +13,7 @@ from pcapi.utils.mailing import format_booking_hours_for_email
 def retrieve_offerer_booking_recap_email_data_after_user_cancellation(booking: Booking) -> dict:
     stock = booking.stock
     bookings = (
-        Booking.query.filter_by(isCancelled=False, stock=stock)
+        Booking.query.filter(Booking.status != BookingStatus.CANCELLED, Booking.stock == stock)
         .options(joinedload(Booking.individualBooking).joinedload(IndividualBooking.user))
         .all()
     )
