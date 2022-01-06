@@ -3,6 +3,8 @@ from decimal import Decimal
 import pytest
 
 from pcapi.core.bookings.factories import EducationalBookingFactory
+from pcapi.core.bookings.factories import PendingEducationalBookingFactory
+from pcapi.core.bookings.factories import RefusedEducationalBookingFactory
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.educational import exceptions
 from pcapi.core.educational.factories import EducationalInstitutionFactory
@@ -19,6 +21,18 @@ class EducationalValidationTest:
             educationalInstitution=educational_institution,
             educationalYear=educational_year,
             amount=Decimal(1400.00),
+        )
+        PendingEducationalBookingFactory(
+            amount=Decimal(2000.00),
+            quantity=1,
+            educationalBooking__educationalInstitution=educational_institution,
+            educationalBooking__educationalYear=educational_year,
+        )
+        RefusedEducationalBookingFactory(
+            amount=Decimal(2000.00),
+            quantity=1,
+            educationalBooking__educationalInstitution=educational_institution,
+            educationalBooking__educationalYear=educational_year,
         )
         EducationalBookingFactory(
             amount=Decimal(20.00),
