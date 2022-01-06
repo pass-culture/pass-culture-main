@@ -1,11 +1,9 @@
 # pass-culture-main
 
-Le repo `main` contient les 6 projets suivants :
+Le repo `main` contient les 5 projets suivants :
 
 - l'[api](./api/) (Flask)
 - le portail [pro](./pro) (React), pour les acteurs culturels
-- la [webapp](./webapp) (React) : version web de l'application des jeunes,
-  remplacée progressivement par l'[app native](https://github.com/pass-culture/pass-culture-app-native/)
 - [adage-front](./adage-front) (React, TS), application frontend pour les
   rédacteurs de projets scolaires
 - [doc](./doc) : documentation de l'API pour les partenaires du pass Culture
@@ -21,7 +19,7 @@ Le repo `main` contient les 6 projets suivants :
 - [NVM](https://github.com/creationix/nvm) (Node Version Manager)
   - `curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.34.0/install.sh | bash`
 - [Node](https://nodejs.org/en/download/)
-  - Lancer `nvm install` dans `/pro`, `/webapp` et `/adage-front`
+  - Lancer `nvm install` dans `/pro` et `/adage-front`
 - [Yarn](https://classic.yarnpkg.com/en/)
   - `npm install --global yarn` (NPM)
   - autres méthodes [dans la doc de Yarn](https://classic.yarnpkg.com/lang/en/docs/install/)
@@ -61,11 +59,6 @@ manières de lancer le backend.
 - `pc start-backend`
 - `pc sandbox -n industrial` (pour peupler la DB)
 
-#### webapp
-
-- `pc start-webapp`
-- `http://localhost:3000/` devrait être lancé et fonctionnel
-- Connectez-vous avec `pctest.jeune93.has-booked-some.v1@example.com`
 
 #### pro
 
@@ -82,7 +75,7 @@ manières de lancer le backend.
 
 #### Flask Admin
 
-- lancer `api`, et `pro` ou `webapp`
+- lancer `api` ou `pro`
 - se connecter avec les identifiants d'un compte admin, par exemple `pctest.admin93.0@example.com`
 - visiter `http://localhost/pc/back-office/`
 
@@ -135,7 +128,7 @@ Par exemple
 pc -t 138.0.0 tag
 ```
 
-Le fichier `version.txt` de l'API est mis à jours ainsi que les `package.json` de Webapp, Pro et Adage-front. Le tag est
+Le fichier `version.txt` de l'API est mis à jours ainsi que les `package.json` de Pro et Adage-front. Le tag est
 posé sur la branche locale _checked out_ (master). Il est ensuite
 poussé sur le repository distant. La CI lance alors des pipelines de tests.
 
