@@ -318,7 +318,7 @@ class Booking(PcObject, Model):
 # FIXME (dbaty, 2020-02-08): once `Deposit.expirationDate` has been
 # populated after the deployment of v122, make the column NOT NULLable
 # and remove the filter below (add a migration for _each_ change).
-Booking.trig_ddl = """
+Booking.trig_ddl = f"""
     CREATE OR REPLACE FUNCTION public.get_deposit_balance (deposit_id bigint, only_used_bookings boolean)
         RETURNS numeric
         AS $$
@@ -337,7 +337,7 @@ Booking.trig_ddl = """
             JOIN individual_booking ON (booking."individualBookingId" = individual_booking.id)
         WHERE
             individual_booking."depositId" = deposit_id
-            AND NOT booking."isCancelled"
+            AND NOT booking.status = '{BookingStatus.CANCELLED.value}'
             AND (NOT only_used_bookings OR booking."isUsed" = TRUE);
         RETURN
             deposit_amount - sum_bookings;
@@ -367,7 +367,7 @@ Booking.trig_ddl = """
         AND (
             (SELECT "quantity" FROM stock WHERE id=NEW."stockId")
             <
-            (SELECT SUM(quantity) FROM booking WHERE "stockId"=NEW."stockId" AND NOT "isCancelled")
+            (SELECT SUM(quantity) FROM booking WHERE "stockId"=NEW."stockId" AND status != '{BookingStatus.CANCELLED.value}')
             )
         THEN RAISE EXCEPTION 'tooManyBookings'
                     USING HINT = 'Number of bookings cannot exceed "stock.quantity"';
@@ -388,7 +388,7 @@ Booking.trig_ddl = """
             -- only if we are UNcancelling a booking. (Users with no credits left
             -- should be able to cancel their booking. Also, their booking can
             -- be marked as used or not used.)
-            OR (NEW."isCancelled" != OLD."isCancelled" AND NOT NEW."isCancelled")
+            OR (NEW.status != OLD.status AND OLD.status = '{BookingStatus.CANCELLED.value}' AND NEW.status != '{BookingStatus.CANCELLED.value}')
         )
         )
         AND (
@@ -408,19 +408,19 @@ Booking.trig_ddl = """
     DROP TRIGGER IF EXISTS booking_update ON booking;
     CREATE CONSTRAINT TRIGGER booking_update
     AFTER INSERT
-    OR UPDATE OF quantity, amount, "isCancelled", "isUsed", "userId"
+    OR UPDATE OF quantity, amount, status, "isUsed", "userId"
     ON booking
     FOR EACH ROW EXECUTE PROCEDURE check_booking()
     """
 event.listen(Booking.__table__, "after_create", DDL(Booking.trig_ddl))
 
-Booking.trig_update_cancellationDate_on_isCancelled_ddl = """
+Booking.trig_update_cancellationDate_on_isCancelled_ddl = f"""
     CREATE OR REPLACE FUNCTION save_cancellation_date()
     RETURNS TRIGGER AS $$
     BEGIN
-        IF NEW."isCancelled" IS TRUE AND OLD."cancellationDate" IS NULL THEN
+        IF NEW.status = '{BookingStatus.CANCELLED.value}' AND OLD."cancellationDate" IS NULL AND NEW."cancellationDate" THEN
             NEW."cancellationDate" = NOW();
-        ELSIF NEW."isCancelled" IS FALSE THEN
+        ELSIF NEW.status != '{BookingStatus.CANCELLED.value}' THEN
             NEW."cancellationDate" = NULL;
         END IF;
         RETURN NEW;
@@ -430,7 +430,7 @@ Booking.trig_update_cancellationDate_on_isCancelled_ddl = """
     DROP TRIGGER IF EXISTS stock_update_cancellation_date ON booking;
 
     CREATE TRIGGER stock_update_cancellation_date
-    BEFORE INSERT OR UPDATE ON booking
+    BEFORE INSERT OR UPDATE OF status ON booking
     FOR EACH ROW
     EXECUTE PROCEDURE save_cancellation_date()
     """

@@ -65,7 +65,6 @@ class UsedBookingFactory(BookingFactory):
 
 class CancelledBookingFactory(BookingFactory):
     status = models.BookingStatus.CANCELLED
-    isCancelled = True
     cancellationDate = factory.LazyFunction(datetime.datetime.utcnow)
     cancellationReason = models.BookingCancellationReasons.BENEFICIARY
 
@@ -99,7 +98,6 @@ class RefusedEducationalBookingFactory(BookingFactory):
     educationalBooking = factory.SubFactory(RefusedEducationalBookingSubFactory)
     stock = factory.SubFactory(offers_factories.EducationalEventStockFactory)
     status = models.BookingStatus.CANCELLED
-    isCancelled = True
     cancellationDate = factory.LazyFunction(datetime.datetime.utcnow)
     cancellationReason = models.BookingCancellationReasons.REFUSED_BY_INSTITUTE
     userId = None
