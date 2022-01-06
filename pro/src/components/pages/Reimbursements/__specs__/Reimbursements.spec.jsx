@@ -71,7 +71,7 @@ describe('src | components | pages | Reimbursements', () => {
       const links = wrapper.find('.tertiary-link')
       expect(links).toHaveLength(2)
       expect(links.at(0).prop('href')).toBe(
-        'https://aide.passculture.app/fr/articles/5096833-acteurs-culturels-quel-est-le-calendrier-des-prochains-remboursements'
+        'https://passculture.zendesk.com/hc/fr/articles/4411992051601'
       )
       expect(links.at(0).prop('children')).toContain(
         ' Les prochains remboursements'
@@ -79,7 +79,7 @@ describe('src | components | pages | Reimbursements', () => {
       expect(links.at(0).find('Icon').prop('svg')).toBe('ico-external-site')
 
       expect(links.at(1).prop('href')).toBe(
-        'https://aide.passculture.app/fr/articles/5096171-acteurs-culturels-comment-determiner-ses-modalites-de-remboursement'
+        'https://passculture.zendesk.com/hc/fr/articles/4412007300369'
       )
       expect(links.at(1).prop('children')).toContain(
         'Les modalités de remboursement'

@@ -431,8 +431,6 @@ describe('src | components | Desk', () => {
     expect(bannerMessage).toBeInTheDocument()
     expect(
       screen.getByText('En savoir plus', { selector: 'a' }).getAttribute('href')
-    ).toBe(
-      'https://aide.passculture.app/fr/articles/5147999-modalites-de-retrait-d-un-bien-dans-ma-structure'
-    )
+    ).toBe('https://passculture.zendesk.com/hc/fr/articles/4413389597329')
   })
 })
