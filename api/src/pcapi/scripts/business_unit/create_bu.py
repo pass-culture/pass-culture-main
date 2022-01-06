@@ -67,7 +67,7 @@ def create_business_unit(venue, bank_information, business_unit_name=None):
         status=BankInformationStatus.ACCEPTED,
     )
     business_unit = BusinessUnit(
-        name=business_unit_name if business_unit_name else venue.name,
+        name=business_unit_name or venue.publicName or venue.name,
         siret=venue.siret,
         bankAccount=bank_information,
     )
