@@ -64,7 +64,7 @@ class UbbleIdentificationDataAttributesFactory(factory.Factory):
         identification_state = IdentificationState.NEW
 
     anonymized_at = None
-    created_at = factory.LazyFunction(datetime.datetime.now)
+    created_at = factory.LazyFunction(lambda: datetime.datetime.now())  # pylint: disable=unnecessary-lambda
     identification_id = factory.LazyFunction(lambda: str(uuid.uuid4()))
     identification_url = factory.LazyAttribute(
         lambda o: f"{settings.UBBLE_API_URL}/identifications/{o.identification_id}"
