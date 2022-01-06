@@ -1,12 +1,26 @@
 from flask import Blueprint
 from flask_cors import CORS
 
+from pcapi import settings
 from pcapi.serialization.spec_tree import ExtendedSpecTree
 from pcapi.serialization.utils import before_handler
 
 
-pro_api_v2 = Blueprint("pro_api_v2", __name__)
-CORS(pro_api_v2, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
+pro_public_api_v2 = Blueprint("pro_public_api_v2", __name__)
+CORS(
+    pro_public_api_v2,
+    resources={r"/*": {"origins": "*"}},
+    supports_credentials=True,
+)
+
+
+pro_private_api = Blueprint("pro_private_api", __name__)
+CORS(
+    pro_private_api,
+    origins=settings.CORS_ALLOWED_ORIGINS,
+    supports_credentials=True,
+)
+
 
 API_KEY_AUTH = "ApiKeyAuth"
 
@@ -28,4 +42,5 @@ api = ExtendedSpecTree(
     security_schemes=security_schemes,
     version=2,
 )
-api.register(pro_api_v2)
+api.register(pro_public_api_v2)
+api.register(pro_private_api)
