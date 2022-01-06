@@ -58,7 +58,7 @@ def have_bank_information(source):
     return source.bankInformation and source.bankInformation.status == BankInformationStatus.ACCEPTED
 
 
-def create_business_unit(venue, bank_information):
+def create_business_unit(venue, bank_information, business_unit_name=None):
     print(f'Will create BusinessUnit for venueId {venue.id}, (isVirtual: {"Oui" if venue.isVirtual else "Non"})')
 
     bank_information = BankInformation(
@@ -67,7 +67,7 @@ def create_business_unit(venue, bank_information):
         status=BankInformationStatus.ACCEPTED,
     )
     business_unit = BusinessUnit(
-        name=venue.name,
+        name=business_unit_name if business_unit_name else venue.name,
         siret=venue.siret,
         bankAccount=bank_information,
     )
@@ -149,6 +149,7 @@ def get_tmp_business_unit_id(bank_information):
 
 def create_business_units_without_siret(venues):
     business_units = {}
+    nb_business_units_without_siret = 0
     for venue in venues:
         if venue.businessUnitId:
             continue
@@ -158,7 +159,10 @@ def create_business_units_without_siret(venues):
                 venue.businessUnitId = business_units[tmp_id].id
                 repository.save(venue)
             else:
-                business_units[tmp_id] = create_business_unit(venue, venue.bankInformation)
+                nb_business_units_without_siret += 1
+                business_units[tmp_id] = create_business_unit(
+                    venue, venue.bankInformation, f"Point de remboursement #{nb_business_units_without_siret}"
+                )
     return business_units.values()
 
 

@@ -176,3 +176,39 @@ def test_create_bu():
     }
     assert results["bu_with_siret"] == expected_results["bu_with_siret"]
     assert results["bu_without_siret"] == expected_results["bu_without_siret"]
+
+
+@pytest.mark.usefixtures("db_session")
+def test_business_unit_without_siret_name():
+    offerer = OffererFactory()
+    venue = VenueFactory(managingOfferer=offerer, businessUnit=None, siret=None, comment="no siret")
+    bank_information = BankInformationFactory(venue=venue)
+    venue = VenueFactory(
+        managingOfferer=offerer,
+        businessUnit=None,
+        siret=None,
+        comment="no siret",
+    )
+    BankInformationFactory(
+        venue=venue,
+        bic=bank_information.bic,
+        iban=bank_information.iban,
+    )
+    venue = VenueFactory(managingOfferer=offerer, businessUnit=None, siret=None, comment="no siret")
+    bank_information = BankInformationFactory(venue=venue)
+    venue = VenueFactory(
+        managingOfferer=offerer,
+        businessUnit=None,
+        siret=None,
+        comment="no siret",
+    )
+    BankInformationFactory(
+        venue=venue,
+        bic=bank_information.bic,
+        iban=bank_information.iban,
+    )
+
+    create_all_business_units()
+    business_unit = BusinessUnit.query.order_by("name").all()
+    assert business_unit[0].name == "Point de remboursement #1"
+    assert business_unit[1].name == "Point de remboursement #2"
