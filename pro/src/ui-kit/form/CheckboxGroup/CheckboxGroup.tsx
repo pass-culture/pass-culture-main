@@ -31,6 +31,7 @@ const CheckboxGroup = ({
       className={cn(styles['checkbox-group'], className)}
       error={meta.touched && !!meta.error ? meta.error : undefined}
       legend={legend}
+      name={groupName}
     >
       {group.map(item => (
         <div className={styles['checkbox-group-item']} key={item.name}>

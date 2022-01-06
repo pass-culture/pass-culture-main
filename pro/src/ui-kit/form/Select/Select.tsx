@@ -18,6 +18,7 @@ interface ISelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
   label: string
   isOptional?: boolean
   smallLabel?: boolean
+  hideFooter?: boolean
 }
 
 const Select = ({
@@ -28,6 +29,7 @@ const Select = ({
   disabled,
   label,
   smallLabel,
+  hideFooter,
   ...selectAttributes
 }: ISelectProps): JSX.Element => {
   const [field, meta, helpers] = useField({ name, type: 'select' })
@@ -46,6 +48,7 @@ const Select = ({
     <FieldLayout
       className={className}
       error={meta.error}
+      hideFooter={hideFooter}
       isOptional={isOptional}
       label={label}
       name={name}
