@@ -11,6 +11,7 @@ from sqlalchemy import DDL
 from sqlalchemy import DateTime
 from sqlalchemy import Enum
 from sqlalchemy import ForeignKey
+from sqlalchemy import Index
 from sqlalchemy import Integer
 from sqlalchemy import Numeric
 from sqlalchemy import String
@@ -83,6 +84,7 @@ class Booking(PcObject, Model):
     id = Column(BigInteger, primary_key=True, autoincrement=True)
 
     dateCreated = Column(DateTime, nullable=False, default=datetime.utcnow)
+    Index("ix_booking_date_created", dateCreated)
 
     dateUsed = Column(DateTime, nullable=True, index=True)
 
@@ -128,6 +130,7 @@ class Booking(PcObject, Model):
     )
 
     status = Column("status", Enum(BookingStatus), nullable=True, default=BookingStatus.CONFIRMED)
+    Index("ix_booking_status", status)
 
     reimbursementDate = Column(DateTime, nullable=True)
 
