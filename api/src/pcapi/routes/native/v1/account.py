@@ -146,7 +146,7 @@ def get_email_update_token_expiration_date(user: User) -> serializers.UpdateEmai
     return serializers.UpdateEmailTokenExpiration(expiration=email_api.get_active_token_expiration(user))
 
 
-# TODO (vionnex) remove this route after app native mandatory version is >= 164
+# TODO (viconnex): delete this route once all users have a version > v1.166.3
 @blueprint.native_v1.route("/beneficiary_information", methods=["PATCH"])
 @spectree_serialize(on_success_status=204, api=blueprint.api)
 @authenticated_user_required
@@ -223,11 +223,11 @@ def create_account(body: serializers.AccountRequest) -> None:
         raise ApiErrors({"dateOfBirth": "The birthdate is invalid"})
 
 
+# TODO (viconnex): delete this route once all users have a version > v1.166.3
 @blueprint.native_v1.route("/account/has_completed_id_check", methods=["POST"])
 @spectree_serialize(api=blueprint.api, on_success_status=204)
 @authenticated_user_required
 def has_completed_id_check(user: User) -> None:
-    # TODO(viconnex) remove route when frontend stops calling it
     return
 
 
@@ -249,6 +249,7 @@ def resend_email_validation(body: serializers.ResendEmailValidationRequest) -> N
         )
 
 
+# TODO (antoinewg): delete this route once all users have a version > v1.166.3
 @blueprint.native_v1.route("/id_check_token", methods=["GET"])
 @spectree_serialize(api=blueprint.api, response_model=serializers.GetIdCheckTokenResponse)
 @authenticated_user_required
@@ -274,6 +275,7 @@ def get_id_check_token(user: User) -> serializers.GetIdCheckTokenResponse:
         )
 
 
+# TODO (antoinewg): delete this route once all users have a version > v1.166.3
 @blueprint.native_v1.route("/identity_document", methods=["POST"])
 @spectree_serialize(api=blueprint.api, on_success_status=204)
 @authenticated_user_required
