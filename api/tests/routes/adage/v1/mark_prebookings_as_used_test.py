@@ -3,7 +3,7 @@ import pytest
 from pcapi.core.bookings.factories import EducationalBookingFactory
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.educational.factories import EducationalRedactorFactory
-from pcapi.core.offers.utils import offer_webapp_link
+from pcapi.core.offers.utils import offer_app_link
 from pcapi.utils.date import format_into_utc_date
 
 from tests.conftest import TestClient
@@ -73,7 +73,7 @@ class Returns200Test:
             "subcategoryLabel": "Séance de cinéma",
             "venueTimezone": venue.timezone,
             "totalAmount": booking.total_amount,
-            "url": offer_webapp_link(offer),
+            "url": offer_app_link(offer),
             "withdrawalDetails": offer.withdrawalDetails,
         }
 
