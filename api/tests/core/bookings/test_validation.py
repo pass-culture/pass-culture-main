@@ -288,7 +288,6 @@ class InsufficientFundsSQLCheckTest:
 
         # They should be able to cancel their booking.
         api.cancel_booking_by_beneficiary(user, booking_to_cancel)
-        assert booking_to_cancel.isCancelled
         assert booking_to_cancel.status is BookingStatus.CANCELLED
 
     def test_user_can_book_a_free_offer_even_if_expired_deposit(self):

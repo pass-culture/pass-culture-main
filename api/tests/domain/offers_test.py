@@ -64,5 +64,4 @@ class UpdateIsActiveStatusTest:
 
         # then
         assert any(not updated_offer.isActive for updated_offer in updated_offers)
-        assert not booking.isCancelled
         assert booking.status is not BookingStatus.CANCELLED

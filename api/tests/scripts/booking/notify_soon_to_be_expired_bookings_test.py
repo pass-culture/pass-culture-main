@@ -31,13 +31,11 @@ class NotifyUsersOfSoonToBeExpiredBookingsTest:
         expire_in_7_days_dvd_individual_booking = IndividualBookingFactory(
             stock__offer__product=dvd,
             dateCreated=booking_date_23_days_ago,
-            isCancelled=False,
         )
         non_expired_cd = ProductFactory(subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE.id)
         dont_expire_in_7_days_cd_individual_booking = IndividualBookingFactory(
             stock__offer__product=non_expired_cd,
             dateCreated=booking_date_22_days_ago,
-            isCancelled=False,
         )
         repository.save(dont_expire_in_7_days_cd_individual_booking)
 
@@ -69,7 +67,6 @@ class NotifyUsersOfSoonToBeExpiredBookingsTest:
         EducationalBookingFactory(
             stock__offer__product=dvd,
             dateCreated=booking_date_23_days_ago,
-            isCancelled=False,
         )
 
         # When

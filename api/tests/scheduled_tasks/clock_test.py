@@ -25,10 +25,10 @@ def test_pc_send_tomorrow_events_notifications_only_to_individual_bookings_users
     begin = datetime.now() + timedelta(days=7)
     stock_next_week = EventStockFactory(beginningDatetime=begin)
 
-    bookings_tomorrow = IndividualBookingFactory.create_batch(2, stock=stock_tomorrow, isCancelled=False)
-    BookingFactory.create_batch(2, stock=stock_tomorrow, isCancelled=True, status=BookingStatus.CANCELLED)
-    BookingFactory.create_batch(2, stock=stock_next_week, isCancelled=False)
-    EducationalBookingFactory.create_batch(2, stock=stock_tomorrow, isCancelled=False)
+    bookings_tomorrow = IndividualBookingFactory.create_batch(2, stock=stock_tomorrow)
+    BookingFactory.create_batch(2, stock=stock_tomorrow, status=BookingStatus.CANCELLED)
+    BookingFactory.create_batch(2, stock=stock_next_week)
+    EducationalBookingFactory.create_batch(2, stock=stock_tomorrow)
 
     pc_send_tomorrow_events_notifications()
 

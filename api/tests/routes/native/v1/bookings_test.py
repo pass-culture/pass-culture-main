@@ -9,6 +9,7 @@ from sqlalchemy.orm import joinedload
 from pcapi.core.bookings import factories as booking_factories
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
+from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.categories import subcategories
 from pcapi.core.offers.factories import EventStockFactory
 from pcapi.core.offers.factories import MediationFactory
@@ -248,7 +249,7 @@ class CancelBookingTest:
         assert response.status_code == 204
 
         booking = Booking.query.get(booking.id)
-        assert booking.isCancelled
+        assert booking.status == BookingStatus.CANCELLED
         assert booking.cancellationReason == BookingCancellationReasons.BENEFICIARY
 
     def test_cancel_others_booking(self, app):

@@ -42,14 +42,10 @@ def test_should_cancel_old_unused_bookings_for_venue():
     recent_booking_result = Booking.query.get(recent_booking.id)
     other_venue_booking = Booking.query.get(other_venue_booking.id)
 
-    assert to_cancel_booking_result.isCancelled
     assert to_cancel_booking_result.status is BookingStatus.CANCELLED
     assert to_cancel_booking_result.cancellationReason is BookingCancellationReasons.OFFERER
-    assert not used_booking_result.isCancelled
     assert used_booking_result.status is not BookingStatus.CANCELLED
-    assert not recent_booking_result.isCancelled
     assert recent_booking_result.status is not BookingStatus.CANCELLED
-    assert not other_venue_booking.isCancelled
     assert other_venue_booking.status is not BookingStatus.CANCELLED
 
 
