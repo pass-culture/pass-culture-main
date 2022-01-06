@@ -13,7 +13,7 @@ from pcapi.core.bookings.repository import find_ongoing_bookings_by_stock
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
-from pcapi.core.offers.utils import offer_webapp_link
+from pcapi.core.offers.utils import offer_app_link
 from pcapi.core.users.models import User
 from pcapi.domain.postal_code.postal_code import PostalCode
 from pcapi.models.user_offerer import UserOfferer
@@ -236,7 +236,7 @@ def make_offer_creation_notification_email(offer: Offer) -> dict:
     venue = offer.venue
     pro_link_to_offer = f"{settings.PRO_URL}/offres/{humanize(offer.id)}/edition"
     pro_venue_link = f"{settings.PRO_URL}/structures/{humanize(venue.managingOffererId)}/lieux/{humanize(venue.id)}"
-    webapp_link_to_offer = offer_webapp_link(offer)
+    webapp_link_to_offer = offer_app_link(offer)
     html = render_template(
         "mails/offer_creation_notification_email.html",
         offer=offer,

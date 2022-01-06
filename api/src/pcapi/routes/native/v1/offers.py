@@ -69,7 +69,7 @@ def user_reported_offers(user: User) -> serializers.UserReportedOffersResponse:
 @blueprint.native_v1.route("/send_offer_webapp_link_by_email/<int:offer_id>", methods=["POST"])
 @spectree_serialize(on_success_status=204, api=blueprint.api)  # type: ignore
 @authenticated_user_required
-def send_offer_webapp_link(user: User, offer_id: int) -> None:
+def send_offer_app_link(user: User, offer_id: int) -> None:
     """
     On iOS native app, users cannot book numeric offers with price > 0, so
     give them webapp link.

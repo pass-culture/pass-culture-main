@@ -12,7 +12,7 @@ from pcapi.core.educational.models import EducationalBookingStatus
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.offers.factories import EventStockFactory
 from pcapi.core.offers.models import Stock
-from pcapi.core.offers.utils import offer_webapp_link
+from pcapi.core.offers.utils import offer_app_link
 from pcapi.core.testing import override_features
 from pcapi.utils.date import format_into_utc_date
 
@@ -99,7 +99,7 @@ class Returns200Test:
             "subcategoryLabel": "Séance de cinéma",
             "venueTimezone": venue.timezone,
             "totalAmount": booking.total_amount,
-            "url": offer_webapp_link(offer),
+            "url": offer_app_link(offer),
             "withdrawalDetails": offer.withdrawalDetails,
         }
 

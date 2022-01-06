@@ -8,7 +8,7 @@ from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.bookings.models import IndividualBooking
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
-from pcapi.core.offers.utils import offer_webapp_link
+from pcapi.core.offers.utils import offer_app_link
 
 
 class GroupId(Enum):
@@ -79,5 +79,5 @@ def get_offer_notification_data(user_id: int, offer: Offer) -> TransactionalNoti
             title=f"{offer.name}",
             body="Pour réserver, c'est par ici !",
         ),
-        extra={"deeplink": offer_webapp_link(offer)},
+        extra={"deeplink": offer_app_link(offer)},
     )

@@ -6,7 +6,8 @@ from pcapi import settings
 from pcapi.core.offers.models import Offer
 
 
-def offer_webapp_link(offer: Offer) -> str:
+def offer_app_link(offer: Offer) -> str:
+    # This link opens the mobile app if installed, the browser app otherwise
     return f"{settings.WEBAPP_V2_URL}/offre/{offer.id}"
 
 
