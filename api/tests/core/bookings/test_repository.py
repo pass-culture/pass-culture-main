@@ -3325,3 +3325,28 @@ def test_get_deposit_booking():
         current_deposit_bookings = get_bookings_from_deposit(current_deposit_id)
 
     assert set(current_deposit_bookings) == {current_deposit_booking, current_deposit_booking_2}
+
+
+class SoonExpiringBookingsTest:
+    def test_get_soon_expiring_bookings(self):
+        stock = offers_factories.ThingStockFactory()
+
+        bookings_factories.UsedBookingFactory(stock=stock)
+        bookings_factories.CancelledBookingFactory(stock=stock)
+        booking = bookings_factories.IndividualBookingFactory(stock=stock)
+
+        creation_date = datetime.now() - timedelta(days=1)
+        bookings_factories.IndividualBookingFactory(stock=stock, dateCreated=creation_date)
+
+        remaining_days = (booking.expirationDate.date() - date.today()).days
+
+        bookings = set(booking_repository.get_soon_expiring_bookings(remaining_days))
+        assert {booking.id for booking in bookings} == {booking.id}
+
+    def test_no_unexpected_queries(self):
+        stocks = offers_factories.ThingStockFactory.create_batch(5)
+        bookings = [bookings_factories.IndividualBookingFactory(stock=stock) for stock in stocks]
+
+        remaining_days = (bookings[0].expirationDate.date() - date.today()).days
+        with assert_num_queries(1):
+            list(booking_repository.get_soon_expiring_bookings(remaining_days))

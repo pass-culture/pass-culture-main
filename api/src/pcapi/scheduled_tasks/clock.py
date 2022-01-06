@@ -6,7 +6,9 @@ from flask import Blueprint
 from sentry_sdk import set_tag
 
 from pcapi import settings
+from pcapi.core.bookings import exceptions as bookings_exceptions
 import pcapi.core.bookings.api as bookings_api
+import pcapi.core.bookings.repository as bookings_repository
 import pcapi.core.finance.api as finance_api
 from pcapi.core.mails.transactional.users.birthday_to_newly_eligible_user import (
     send_birthday_age_18_email_to_newly_eligible_user,
@@ -31,6 +33,9 @@ from pcapi.local_providers.provider_api import provider_api_stocks
 from pcapi.local_providers.provider_manager import synchronize_venue_providers_for_provider
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
+from pcapi.notifications.push.transactional_notifications import (
+    get_soon_expiring_bookings_with_offers_notification_data,
+)
 from pcapi.scheduled_tasks import utils
 from pcapi.scheduled_tasks.decorators import cron_context
 from pcapi.scheduled_tasks.decorators import cron_require_feature
@@ -40,6 +45,7 @@ from pcapi.scripts.beneficiary import import_dms_users
 from pcapi.scripts.booking.handle_expired_bookings import handle_expired_bookings
 from pcapi.scripts.booking.notify_soon_to_be_expired_bookings import notify_soon_to_be_expired_individual_bookings
 from pcapi.scripts.payment.user_recredit import recredit_underage_users
+from pcapi.tasks import batch_tasks
 from pcapi.workers.push_notification_job import send_tomorrow_stock_notification
 
 
@@ -228,6 +234,28 @@ def pc_users_one_year_with_pass_automation() -> None:
     users_one_year_with_pass_automation()
 
 
+@log_cron_with_transaction
+@cron_context
+def pc_notify_users_bookings_not_retrieved() -> None:
+    """
+    Find soon expiring bookings that will expire in exactly N days and
+    send a notification to each user.
+    """
+    bookings = bookings_repository.get_soon_expiring_bookings(settings.SOON_EXPIRING_BOOKINGS_DAYS_BEFORE_EXPIRATION)
+    for booking in bookings:
+        try:
+            notification_data = get_soon_expiring_bookings_with_offers_notification_data(booking)
+            batch_tasks.send_transactional_notification_task.delay(notification_data)
+        except bookings_exceptions.BookingIsExpired:
+            logger.exception("Booking %d is expired", booking.id, extra={"booking": booking.id, "user": booking.userId})
+        except Exception:  # pylint: disable=broad-except
+            logger.exception(
+                "Failed to register send_transactional_notification_task for booking %d",
+                booking.id,
+                extra={"booking": booking.id, "user": booking.userId},
+            )
+
+
 @blueprint.cli.command("clock")
 def clock() -> None:
     set_tag("pcapi.app_type", "clock")
@@ -289,5 +317,7 @@ def clock() -> None:
     scheduler.add_job(pc_user_ex_beneficiary_automation, "cron", day="*", hour="4", minute="40")
     scheduler.add_job(pc_users_inactive_since_30_days_automation, "cron", day="*", hour="5", minute="0")
     scheduler.add_job(pc_users_one_year_with_pass_automation, "cron", day="1", hour="5", minute="20")
+
+    scheduler.add_job(pc_notify_users_bookings_not_retrieved, "cron", hour="12")
 
     scheduler.start()

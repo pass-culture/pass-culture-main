@@ -5,6 +5,7 @@ from datetime import time
 from datetime import timedelta
 from io import StringIO
 import math
+import typing
 from typing import Callable
 from typing import Iterable
 from typing import List
@@ -915,3 +916,26 @@ def _serialize_csv_report(query: Query) -> str:
         )
 
     return output.getvalue()
+
+
+def get_soon_expiring_bookings(expiration_days_delta: int) -> typing.Generator[Booking, None, None]:
+    """
+    Find soon expiring bookings that will expire in exactly
+    `expiration_days_delta` days.
+    """
+    query = (
+        Booking.query.options(
+            contains_eager(Booking.stock).load_only(Stock.id).contains_eager(Stock.offer).load_only(Offer.subcategoryId)
+        )
+        .join(Stock, Offer)
+        .filter_by(canExpire=True)
+        .filter(Booking.individualBookingId != None)  # noqa
+        .filter(Booking.status == BookingStatus.CONFIRMED)
+        .yield_per(1_000)
+    )
+
+    delta = timedelta(days=expiration_days_delta)
+    for booking in query:
+        expiration_date = booking.expirationDate
+        if expiration_date and expiration_date.date() == date.today() + delta:
+            yield booking
