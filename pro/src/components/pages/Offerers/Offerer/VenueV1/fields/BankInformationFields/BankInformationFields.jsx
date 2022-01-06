@@ -63,7 +63,7 @@ const BankInformation = ({ venue, offerer }) => {
             </Fragment>
           )}
           <Banner
-            href="https://aide.passculture.app/fr/articles/5096833-calendrier-des-prochains-remboursements"
+            href="https://passculture.zendesk.com/hc/fr/articles/4411992051601"
             linkTitle="En savoir plus sur les remboursements"
             type="notification-info"
           />

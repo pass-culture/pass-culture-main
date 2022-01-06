@@ -31,7 +31,7 @@ const Support = () => {
             <li>
               <a
                 className="hs-link tertiary-link"
-                href="mailto:support@passculture.app"
+                href="mailto:support-pro@passculture.app"
                 rel="noopener noreferrer"
                 target="_blank"
               >

@@ -90,7 +90,7 @@ describe('src | components | pages | Signup | SignupForm', () => {
         .parent('a')
       expect(helpCenterLink).toHaveLength(1)
       expect(helpCenterLink.prop('href')).toBe(
-        'https://aide.passculture.app/fr/articles/5095632-comment-creer-un-compte-d-acteur-partenaire'
+        'https://passculture.zendesk.com/hc/fr/articles/4411999179665'
       )
     })
 
@@ -144,7 +144,7 @@ describe('src | components | pages | Signup | SignupForm', () => {
         .parent('a')
       expect(mailToSupportLink).toHaveLength(1)
       expect(mailToSupportLink.prop('href')).toBe(
-        'mailto:support@passculture.app'
+        'mailto:support-pro@passculture.app'
       )
     })
 
