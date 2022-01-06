@@ -10,10 +10,10 @@ class Returns200Test:
     @pytest.mark.usefixtures("db_session")
     def expect_the_existing_user_session_to_be_deleted_deleted(self, app):
         # given
-        user = users_factories.UserFactory(email="test@mail.com")
+        user = users_factories.ProFactory(email="test@mail.com")
         auth_request = TestClient(app.test_client()).with_session_auth(email=user.email)
 
-        assert auth_request.get("/bookings").status_code == 200
+        assert auth_request.get("/venues").status_code == 200
 
         # when
         response = auth_request.get("/users/signout")
