@@ -562,13 +562,10 @@ class CancelByOffererTest:
         assert models.Booking.query.filter().count() == 4
         assert models.Booking.query.filter(models.Booking.isCancelled == True).count() == 3
         assert models.Booking.query.filter(models.Booking.isUsed == True).count() == 1
-        assert booking_1.isCancelled
         assert booking_1.status is BookingStatus.CANCELLED
         assert booking_1.cancellationReason == BookingCancellationReasons.OFFERER
-        assert booking_2.isCancelled
         assert booking_2.status is BookingStatus.CANCELLED
         assert booking_2.cancellationReason == BookingCancellationReasons.OFFERER
-        assert not used_booking.isCancelled
         assert used_booking.status is not BookingStatus.CANCELLED
         assert not used_booking.cancellationReason
         assert cancelled_booking.isCancelled
@@ -586,7 +583,6 @@ class CancelForFraudTest:
         # cancellation can trigger more than one request to Batch
         assert len(push_testing.requests) >= 1
 
-        assert booking.isCancelled
         assert booking.status is BookingStatus.CANCELLED
         assert booking.cancellationReason == BookingCancellationReasons.FRAUD
 
