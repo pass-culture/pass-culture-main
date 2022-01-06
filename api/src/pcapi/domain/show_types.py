@@ -121,6 +121,18 @@ show_types = [
             {"code": 1504, "label": "Spectacle aquatique"},
         ],
     },
+    {
+        "code": 1510,
+        "label": "Opéra",
+        "children": [
+            {"code": 1511, "label": "Opéra série"},
+            {"code": 1512, "label": "Grand opéra"},
+            {"code": 1513, "label": "Opéra bouffe"},
+            {"code": 1514, "label": "Opéra comique"},
+            {"code": 1515, "label": "Opéra-ballet"},
+            {"code": 1516, "label": "Singspiel"},
+        ],
+    },
 ]
 
 SHOW_TYPES_DICT = {show_type["code"]: show_type["label"] for show_type in show_types}
