@@ -97,7 +97,7 @@ const Reimbursements = ({ currentUser }) => {
             En savoir plus sur
             <a
               className="bi-link tertiary-link"
-              href="https://aide.passculture.app/fr/articles/5096833-acteurs-culturels-quel-est-le-calendrier-des-prochains-remboursements"
+              href="https://passculture.zendesk.com/hc/fr/articles/4411992051601"
               rel="noopener noreferrer"
               target="_blank"
             >
@@ -106,7 +106,7 @@ const Reimbursements = ({ currentUser }) => {
             </a>
             <a
               className="bi-link tertiary-link"
-              href="https://aide.passculture.app/fr/articles/5096171-acteurs-culturels-comment-determiner-ses-modalites-de-remboursement"
+              href="https://passculture.zendesk.com/hc/fr/articles/4412007300369"
               rel="noopener noreferrer"
               target="_blank"
             >

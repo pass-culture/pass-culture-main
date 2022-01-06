@@ -39,7 +39,7 @@ describe('homepage: ProfileAndSupport: Support', () => {
       expect(helpCenterLink).toBeInTheDocument()
 
       expect(contactLink.getAttribute('href')).toBe(
-        'mailto:support@passculture.app'
+        'mailto:support-pro@passculture.app'
       )
       expect(cguLink.getAttribute('href')).toBe(
         'https://pass.culture.fr/cgu-professionnels/'

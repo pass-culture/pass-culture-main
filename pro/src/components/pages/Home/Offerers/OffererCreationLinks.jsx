@@ -23,7 +23,10 @@ const OffererCreationLinks = () => (
           <Link className="primary-link" to="/structures/creation">
             Ajouter une nouvelle structure
           </Link>
-          <a className="secondary-link" href="mailto:support@passculture.app">
+          <a
+            className="secondary-link"
+            href="mailto:support-pro@passculture.app"
+          >
             Contacter le support
           </a>
         </div>
