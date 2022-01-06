@@ -741,9 +741,7 @@ class OfferViewTest:
         assert response.status_code == 302
         assert offer.validation == OfferValidationStatus.REJECTED
         assert offer.lastValidationDate == datetime.datetime(2020, 12, 20, 15)
-        assert unused_booking.isCancelled
         assert unused_booking.status is BookingStatus.CANCELLED
-        assert not used_booking.isCancelled
         assert used_booking.status is not BookingStatus.CANCELLED
 
         mocked_send_cancel_booking_notification.assert_called_once_with([unused_booking.id])

@@ -141,9 +141,7 @@ def test_cancel_bookings_when_offerer_has_one_or_more():
     assert Offer.query.count() == 2
     assert Stock.query.count() == 2
     assert Booking.query.count() == 2
-    assert booking1.isCancelled
     assert booking1.status is BookingStatus.CANCELLED
     assert booking1.cancellationReason is BookingCancellationReasons.FRAUD
-    assert booking2.isCancelled
     assert booking2.status is BookingStatus.CANCELLED
     assert booking2.cancellationReason is BookingCancellationReasons.FRAUD

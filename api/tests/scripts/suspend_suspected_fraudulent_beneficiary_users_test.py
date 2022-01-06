@@ -39,9 +39,7 @@ class SuspendFraudulentBeneficiaryUsersByEmailProvidersTest:
 
         # Then
         assert not fraudulent_user.isActive
-        assert booking_1.isCancelled
         assert booking_1.status is BookingStatus.CANCELLED
-        assert booking_2.isCancelled
         assert booking_2.status is BookingStatus.CANCELLED
 
     @pytest.mark.usefixtures("db_session")
@@ -59,7 +57,6 @@ class SuspendFraudulentBeneficiaryUsersByEmailProvidersTest:
 
         # Then
         assert not fraudulent_user.isActive
-        assert not uncancellable_booking.isCancelled
         assert uncancellable_booking.status is not BookingStatus.CANCELLED
 
     @pytest.mark.usefixtures("db_session")
@@ -118,9 +115,7 @@ class SuspendFraudulentBeneficiaryUsersByIdsTest:
         suspend_fraudulent_beneficiary_users_by_ids(fraudulent_user_ids, admin_user, dry_run=False)
 
         assert not fraudulent_user.isActive
-        assert fraudulent_user_booking_1.isCancelled
         assert fraudulent_user_booking_1.status is BookingStatus.CANCELLED
-        assert fraudulent_user_booking_2.isCancelled
         assert fraudulent_user_booking_2.status is BookingStatus.CANCELLED
 
     @pytest.mark.usefixtures("db_session")
@@ -135,7 +130,6 @@ class SuspendFraudulentBeneficiaryUsersByIdsTest:
         suspend_fraudulent_beneficiary_users_by_ids(fraudulent_user_ids, admin_user, dry_run=False)
 
         assert not fraudulent_user.isActive
-        assert not uncancellable_booking.isCancelled
         assert uncancellable_booking.status is not BookingStatus.CANCELLED
 
     @pytest.mark.usefixtures("db_session")

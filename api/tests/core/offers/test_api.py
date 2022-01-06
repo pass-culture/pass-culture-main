@@ -1183,14 +1183,14 @@ class DeleteStockTest:
         stock = offer_models.Stock.query.one()
         assert stock.isSoftDeleted
         booking1 = Booking.query.get(booking1.id)
-        assert booking1.isCancelled
+        assert booking1.status == BookingStatus.CANCELLED
         assert booking1.cancellationReason == BookingCancellationReasons.OFFERER
         booking2 = Booking.query.get(booking2.id)
-        assert booking2.isCancelled  # unchanged
+        assert booking2.status == BookingStatus.CANCELLED  # unchanged
         assert booking2.cancellationReason == BookingCancellationReasons.BENEFICIARY
         booking3 = Booking.query.get(booking3.id)
-        assert not booking3.isCancelled  # unchanged
-        assert not booking3.cancellationReason
+        assert booking3.status != BookingStatus.CANCELLED  # unchanged
+        assert booking3.cancellationReason is None
 
         assert len(mails_testing.outbox) == 2
         assert mails_testing.outbox[0].sent_data["To"] == "beneficiary@example.com"
