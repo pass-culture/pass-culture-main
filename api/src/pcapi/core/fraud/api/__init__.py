@@ -748,16 +748,12 @@ def has_user_performed_identity_check(user: users_models.User) -> bool:
 
 
 def get_pending_identity_check(user: users_models.User) -> typing.Optional[models.BeneficiaryFraudCheck]:
-    return (
-        models.BeneficiaryFraudCheck.query.filter(
-            models.BeneficiaryFraudCheck.user == user,
-            models.BeneficiaryFraudCheck.status == models.FraudCheckStatus.PENDING,
-            models.BeneficiaryFraudCheck.type.in_(models.IDENTITY_CHECK_TYPES),
-            models.BeneficiaryFraudCheck.eligibilityType == user.eligibility,
-        )
-        .order_by(models.BeneficiaryFraudCheck.dateCreated.desc())
-        .one_or_none()
-    )
+    return models.BeneficiaryFraudCheck.query.filter(
+        models.BeneficiaryFraudCheck.user == user,
+        models.BeneficiaryFraudCheck.status == models.FraudCheckStatus.PENDING,
+        models.BeneficiaryFraudCheck.type.in_(models.IDENTITY_CHECK_TYPES),
+        models.BeneficiaryFraudCheck.eligibilityType == user.eligibility,
+    ).one_or_none()
 
 
 def has_user_performed_ubble_check(user: users_models.User) -> bool:
