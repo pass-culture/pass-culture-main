@@ -1,5 +1,6 @@
 import pcapi.core.bookings.api as bookings_api
 from pcapi.core.bookings.models import Booking
+from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.offers.models import Stock
 from pcapi.repository import repository
 
@@ -21,7 +22,7 @@ def soft_delete_stock(stock_id):
 
 
 def _get_bookings_for_stock(stock_id):
-    return Booking.query.filter(Booking.isCancelled.is_(False)).filter(Booking.stockId == stock_id).all()
+    return Booking.query.filter(Booking.status != BookingStatus.CANCELLED).filter(Booking.stockId == stock_id).all()
 
 
 def _check_bookings(bookings):

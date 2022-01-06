@@ -9,6 +9,7 @@ from typing import Optional
 from sqlalchemy.sql.functions import coalesce
 
 from pcapi.core.bookings.models import Booking
+from pcapi.core.bookings.models import BookingStatus
 import pcapi.core.bookings.repository as booking_repository
 from pcapi.core.offerers.models import Venue
 import pcapi.core.payments.api as payments_api
@@ -53,7 +54,7 @@ def get_venues_to_reimburse(cutoff_date: datetime) -> Iterable[tuple[id, str]]:
     # fmt: off
     bookings = (
         Booking.query
-        .filter(Booking.dateUsed < cutoff_date, ~Booking.isCancelled, Booking.amount > 0)
+        .filter(Booking.dateUsed < cutoff_date, Booking.status != BookingStatus.CANCELLED, Booking.amount > 0)
         .outerjoin(Payment, Booking.id == Payment.bookingId)
         .filter(Payment.id.is_(None))
         .with_entities(Booking.venueId)

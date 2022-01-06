@@ -6,6 +6,7 @@ from sqlalchemy.orm import joinedload
 import pcapi.core.bookings.api as bookings_api
 import pcapi.core.bookings.exceptions as exceptions
 from pcapi.core.bookings.models import Booking
+from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.bookings.models import IndividualBooking
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers.exceptions import StockDoesNotExist
@@ -163,7 +164,7 @@ def get_bookings(user: User) -> BookingsResponse:
 def is_ended_booking(booking: Booking) -> bool:
     if (
         booking.stock.beginningDatetime
-        and not booking.isCancelled
+        and booking.status != BookingStatus.CANCELLED
         and booking.stock.beginningDatetime >= datetime.utcnow()
     ):
         # consider future events events as "ongoing" even if they are used
@@ -178,7 +179,7 @@ def is_ended_booking(booking: Booking) -> bool:
         # let's use displayAsEnded
         return booking.displayAsEnded
 
-    return not booking.stock.offer.isPermanent if booking.isUsed else booking.isCancelled
+    return not booking.stock.offer.isPermanent if booking.isUsed else booking.status == BookingStatus.CANCELLED
 
 
 @blueprint.native_v1.route("/bookings/<int:booking_id>/cancel", methods=["POST"])
