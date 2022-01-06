@@ -740,49 +740,6 @@ jobs:
                   curl -X POST -H 'Content-type: application/json' --data "{'text': $BOT_MESSAGE}" $SLACK_OPS_BOT_URL
                 when: on_fail
 
-  deploy-webapp:
-    machine:
-      image: ubuntu-2004:202101-01
-    working_directory: ~/pass-culture
-    parameters:
-      app_environment:
-        type: string
-        default: ${CIRCLE_BRANCH}
-    steps:
-      - checkout
-      - run: ./install_lib_ci.sh
-      - run:
-          name: Build and Deploy WEBAPP
-          command: |
-            export NVM_DIR="/opt/circleci/.nvm"
-            [ -s "$NVM_DIR/nvm.sh" ] && source "$NVM_DIR/nvm.sh"
-            cd webapp
-            nvm install
-            yarn install
-
-            set -a; source ~/pass-culture/config/run_envs/"<<parameters.app_environment>>";
-
-            yarn build
-
-            npm install -g netlify-cli@2.46.0
-            netlify deploy -s "${NETLIFY_SITE_ID_WEBAPP}" -a "${NETLIFY_TOKEN}" -d build/ --prod
-      - unless:
-          condition:
-            equal: ["testing", <<parameters.app_environment>>]
-          steps:
-            - run:
-                name: Check deployed version
-                command: |
-                  COMPONENT_URL="https://$(./scripts/compute_webapp_url.sh <<parameters.app_environment>>)"
-                  ./scripts/check_current_tag_is_deployed.sh "$COMPONENT_URL"
-            - run:
-                name: Send failure notification
-                command: |
-                  VERSION_TO_DEPLOY=$(git describe --contains)
-                  BOT_MESSAGE="'*"<<parameters.app_environment>>"* : *Webapp* deployment *"$VERSION_TO_DEPLOY"* seems to have *FAILED* :collision:'"
-                  curl -X POST -H 'Content-type: application/json' --data "{'text': $BOT_MESSAGE}" $SLACK_OPS_BOT_URL
-                when: on_fail
-
   deploy-adage-front:
     executor: node-gcp-14
     parameters:
@@ -976,17 +933,6 @@ workflows:
             - GCP
             - GCP_EHP
           app_environment: testing
-      - deploy-webapp:
-          filters:
-            branches:
-              only:
-                - master
-          requires:
-            - restart-pcapi
-          context:
-            - GCP
-            - GCP_EHP
-          app_environment: testing
       - deploy-adage-front:
           filters:
             branches:
@@ -1044,9 +990,6 @@ workflows:
           context:
             - GCP
             - GCP_EHP
-      - deploy-webapp:
-          requires:
-            - deploy-pcapi
       - deploy-adage-front:
           filters:
             branches:
@@ -1060,7 +1003,6 @@ workflows:
           requires:
             - restart-pcapi
             - deploy-pro
-            - deploy-webapp
       - restart-pcapi:
           requires:
             - deploy-pcapi
@@ -1086,9 +1028,6 @@ workflows:
           context:
             - GCP
             - GCP_PROD
-      - deploy-webapp:
-          requires:
-            - deploy-pcapi
       - deploy-pro:
           requires:
             - deploy-pcapi
@@ -1105,7 +1044,6 @@ workflows:
           requires:
             - restart-pcapi
             - deploy-pro
-            - deploy-webapp
       - restart-pcapi:
           requires:
             - deploy-pcapi
