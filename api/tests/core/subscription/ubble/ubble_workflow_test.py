@@ -1,5 +1,7 @@
+import datetime
 import json
 
+import freezegun
 import pytest
 
 from pcapi.core.fraud import factories as fraud_factories
@@ -7,8 +9,10 @@ from pcapi.core.fraud import models as fraud_models
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription.ubble import api as ubble_subscription_api
 from pcapi.core.users import factories as users_factories
+from pcapi.core.users import models as users_models
 
 from tests.core.subscription.test_factories import IdentificationState
+from tests.core.subscription.test_factories import UbbleIdentificationIncludedDocumentsFactory
 from tests.core.subscription.test_factories import UbbleIdentificationResponseFactory
 from tests.test_utils import json_default
 
@@ -114,3 +118,44 @@ class UbbleWorkflowTest:
             assert message.callToActionLink == "passculture://verification-identite/demarches-simplifiees"
             assert message.callToActionIcon == subscription_models.CallToActionIcon.EXTERNAL
             assert message.callToActionTitle == "Accéder au site Démarches-Simplifiées"
+
+    @freezegun.freeze_time("2020-05-05")
+    def test_ubble_workflow_with_eligibility_change(self, ubble_mocker):
+        # User set his birth date as if 17 years old
+        user = users_factories.UserFactory(dateOfBirth=datetime.datetime(year=2003, month=5, day=6))
+        fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
+            type=fraud_models.FraudCheckType.UBBLE,
+            status=fraud_models.FraudCheckStatus.PENDING,
+            user=user,
+            eligibilityType=users_models.EligibilityType.UNDERAGE,
+        )
+        ubble_identification = fraud_check.thirdPartyId
+
+        # Receiving a response from the UBBLE service, saying the user is 18 years old
+        document_birth_date = datetime.datetime(year=2003, month=5, day=4)
+        ubble_response = UbbleIdentificationResponseFactory(
+            identification_state=IdentificationState.VALID,
+            data__attributes__identification_id=str(ubble_identification),
+            included=[
+                UbbleIdentificationIncludedDocumentsFactory(
+                    attributes__birth_date=document_birth_date.date().isoformat()
+                ),
+            ],
+        )
+        with ubble_mocker(
+            ubble_identification,
+            json.dumps(ubble_response.dict(by_alias=True), sort_keys=True, default=json_default),
+        ):
+            ubble_subscription_api.update_ubble_workflow(fraud_check, ubble_response.data.attributes.status)
+
+        fraud_checks = user.beneficiaryFraudChecks
+        assert len(fraud_checks) == 2
+        assert fraud_checks[0].type == fraud_models.FraudCheckType.UBBLE
+        assert fraud_checks[0].status == fraud_models.FraudCheckStatus.CANCELED
+        assert fraud_checks[0].eligibilityType == users_models.EligibilityType.UNDERAGE
+        assert fraud_checks[0].thirdPartyId != ubble_identification
+
+        assert fraud_checks[1].type == fraud_models.FraudCheckType.UBBLE
+        assert fraud_checks[1].status == fraud_models.FraudCheckStatus.OK
+        assert fraud_checks[1].eligibilityType == users_models.EligibilityType.AGE18
+        assert fraud_checks[1].thirdPartyId == ubble_identification
