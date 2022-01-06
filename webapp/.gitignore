@@ -5,7 +5,6 @@
 
 # testing
 /coverage
-/testcafe_screenshots
 
 # production
 /public/version.txt

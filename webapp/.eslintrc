@@ -63,9 +63,7 @@
   },
   "overrides": [
     {
-      "files": [
-        "testcafe/*.js"
-      ],
+      "files": [],
       "rules": {
         "jest/expect-expect": "off",
         "jest/lowercase-name": "off",

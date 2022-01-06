@@ -1,27 +1,11 @@
 import pytest
-from sqlalchemy import func
 
-from pcapi.core.bookings.factories import BookingFactory
-from pcapi.core.bookings.factories import CancelledBookingFactory
-from pcapi.core.offers.factories import ThingOfferFactory
-from pcapi.core.offers.factories import ThingProductFactory
-from pcapi.core.offers.factories import ThingStockFactory
-from pcapi.core.offers.factories import VenueFactory
-from pcapi.core.offers.models import Offer
-from pcapi.core.offers.models import Stock
-from pcapi.core.users import factories as users_factories
-from pcapi.model_creators.generic_creators import create_booking
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_venue
-from pcapi.model_creators.specific_creators import create_event_occurrence
 from pcapi.model_creators.specific_creators import create_offer_with_event_product
 from pcapi.model_creators.specific_creators import create_offer_with_thing_product
-from pcapi.model_creators.specific_creators import create_product_with_event_subcategory
 from pcapi.model_creators.specific_creators import create_product_with_thing_subcategory
-from pcapi.model_creators.specific_creators import create_stock_from_event_occurrence
-from pcapi.model_creators.specific_creators import create_stock_from_offer
 from pcapi.repository import repository
-from pcapi.repository.offer_queries import _build_bookings_quantity_subquery
 from pcapi.repository.offer_queries import get_offers_by_ids
 from pcapi.repository.offer_queries import get_offers_by_venue_id
 from pcapi.repository.offer_queries import get_paginated_active_offer_ids
@@ -44,139 +28,6 @@ class FindOffersTest:
         # Then
         assert len(offers) == 1
         assert offers[0].venueId == venue.id
-
-
-class QueryOfferWithRemainingStocksTest:
-    @pytest.mark.usefixtures("db_session")
-    def test_should_return_0_offer_when_there_is_no_stock(self, app):
-        # Given
-        ThingOfferFactory()
-
-        # When
-        offers_count = Offer.query.join(Stock).count()
-
-        # Then
-        assert offers_count == 0
-
-    @pytest.mark.usefixtures("db_session")
-    def test_should_return_1_offer_when_all_available_stock_is_not_booked(self, app):
-        # Given
-        beneficiary = users_factories.BeneficiaryGrant18Factory()
-        offer = ThingOfferFactory()
-        stock = ThingStockFactory(offer=offer, price=0, quantity=4)
-        BookingFactory(user=beneficiary, stock=stock, quantity=2)
-        BookingFactory(user=beneficiary, stock=stock, quantity=1)
-
-        # When
-        bookings_quantity = _build_bookings_quantity_subquery()
-        offers_count = (
-            Offer.query.join(Stock)
-            .outerjoin(bookings_quantity, Stock.id == bookings_quantity.c.stockId)
-            .filter((Stock.quantity == None) | ((Stock.quantity - func.coalesce(bookings_quantity.c.quantity, 0)) > 0))
-            .count()
-        )
-
-        # Then
-        assert offers_count == 1
-
-    @pytest.mark.usefixtures("db_session")
-    def test_should_return_0_offer_when_all_available_stock_is_booked(self, app):
-        # Given
-        beneficiary = users_factories.BeneficiaryGrant18Factory()
-        offer = ThingOfferFactory()
-        stock = ThingStockFactory(offer=offer, price=0, quantity=3)
-        BookingFactory(user=beneficiary, stock=stock, quantity=2)
-        BookingFactory(user=beneficiary, stock=stock, quantity=1)
-
-        # When
-        bookings_quantity = _build_bookings_quantity_subquery()
-        offers_count = (
-            Offer.query.join(Stock)
-            .outerjoin(bookings_quantity, Stock.id == bookings_quantity.c.stockId)
-            .filter((Stock.quantity == None) | ((Stock.quantity - func.coalesce(bookings_quantity.c.quantity, 0)) > 0))
-            .count()
-        )
-
-        # Then
-        assert offers_count == 0
-
-    @pytest.mark.usefixtures("db_session")
-    def test_should_return_1_offer_when_booking_was_cancelled(self, app):
-        # Given
-        beneficiary = users_factories.BeneficiaryGrant18Factory()
-        product = ThingProductFactory(name="Lire un livre", isNational=True)
-        venue = VenueFactory(postalCode="34000", departementCode="34")
-        offer = ThingOfferFactory(product=product, venue=venue)
-        stock = ThingStockFactory(offer=offer, price=0, quantity=2)
-        CancelledBookingFactory(user=beneficiary, stock=stock, quantity=2)
-
-        # When
-        bookings_quantity = _build_bookings_quantity_subquery()
-        offers_count = (
-            Offer.query.join(Stock)
-            .outerjoin(bookings_quantity, Stock.id == bookings_quantity.c.stockId)
-            .filter((Stock.quantity == None) | ((Stock.quantity - func.coalesce(bookings_quantity.c.quantity, 0)) > 0))
-            .count()
-        )
-
-        # Then
-        assert offers_count == 1
-
-    @pytest.mark.usefixtures("db_session")
-    def test_should_return_0_offer_when_there_is_no_remaining_stock(self):
-        # Given
-        beneficiary = users_factories.BeneficiaryGrant18Factory()
-        product = ThingProductFactory(name="Lire un livre", isNational=True)
-        venue = VenueFactory(postalCode="34000", departementCode="34")
-        offer = ThingOfferFactory(product=product, venue=venue)
-        stock = ThingStockFactory(offer=offer, price=0, quantity=2)
-        CancelledBookingFactory(user=beneficiary, stock=stock, quantity=2)
-        BookingFactory(user=beneficiary, stock=stock, quantity=2)
-
-        # When
-        bookings_quantity = _build_bookings_quantity_subquery()
-        offers_count = (
-            Offer.query.join(Stock)
-            .outerjoin(bookings_quantity, Stock.id == bookings_quantity.c.stockId)
-            .filter((Stock.quantity == None) | ((Stock.quantity - func.coalesce(bookings_quantity.c.quantity, 0)) > 0))
-            .count()
-        )
-
-        # Then
-        assert offers_count == 0
-
-    @pytest.mark.usefixtures("db_session")
-    def test_should_return_1_offer_when_there_are_one_full_stock_and_one_empty_stock(self):
-        # Given
-        product = create_product_with_thing_subcategory(thing_name="Lire un livre", is_national=True)
-        offerer = create_offerer()
-        venue = create_venue(offerer, postal_code="34000", departement_code="34")
-        offer = create_offer_with_thing_product(venue=venue, product=product)
-        stock1 = create_stock_from_offer(offer, price=0, quantity=2)
-        stock2 = create_stock_from_offer(offer, price=0, quantity=2)
-        beneficiary = users_factories.BeneficiaryGrant18Factory()
-        booking1 = create_booking(user=beneficiary, stock=stock1, quantity=2, venue=venue)
-        repository.save(booking1, stock2)
-        bookings_quantity = _build_bookings_quantity_subquery()
-
-        # When
-        offers_count = (
-            Offer.query.join(Stock)
-            .outerjoin(bookings_quantity, Stock.id == bookings_quantity.c.stockId)
-            .filter((Stock.quantity == None) | ((Stock.quantity - func.coalesce(bookings_quantity.c.quantity, 0)) > 0))
-            .count()
-        )
-
-        # Then
-        assert offers_count == 1
-
-
-def _create_event_stock_and_offer_for_date(venue, date):
-    product = create_product_with_event_subcategory()
-    offer = create_offer_with_event_product(venue=venue, product=product)
-    event_occurrence = create_event_occurrence(offer, beginning_datetime=date)
-    stock = create_stock_from_event_occurrence(event_occurrence, booking_limit_date=date)
-    return stock
 
 
 class GetOffersByIdsTest:

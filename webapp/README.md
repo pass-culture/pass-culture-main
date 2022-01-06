@@ -55,20 +55,6 @@ Lancer un seul fichier en mode watch
 # yarn test:unit ./path/to/file.spec.js --watch
 ```
 
-#### Tests Fonctionnels/E2E (Testcafe)
-
-Lancer tous les tests
-```bash
-pc reset-all-db
-pc sandbox --name=industrial
-yarn test:cafe
-```
-
-Lancer un seul fichier en ligne de commande depuis un environnement local
-```bash
-./node_modules/.bin/testcafe chrome ./testcafe/02_signin.js
-```
-
 ## Tracking (avec Matomo)
 
 ### Initialisation
