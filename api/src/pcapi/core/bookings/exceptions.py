@@ -129,3 +129,7 @@ class CannotMarkAsConfirmedIndividualBooking(Exception):
 
 class ConfirmationLimitDateHasPassed(Exception):
     pass
+
+
+class BookingIsExpired(Exception):
+    pass
