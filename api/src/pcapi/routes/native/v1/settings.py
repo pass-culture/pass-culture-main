@@ -31,7 +31,6 @@ def get_settings() -> serializers.SettingsResponse:
         FeatureToggle.ENABLE_PHONE_VALIDATION,
         FeatureToggle.ENABLE_UNDERAGE_GENERALISATION,
         FeatureToggle.ID_CHECK_ADDRESS_AUTOCOMPLETION,
-        FeatureToggle.WEBAPP_V2_ENABLED,
     )
 
     return serializers.SettingsResponse(
@@ -47,6 +46,6 @@ def get_settings() -> serializers.SettingsResponse:
         is_recaptcha_enabled=features[FeatureToggle.ENABLE_NATIVE_APP_RECAPTCHA],
         # TODO(antoinewg): remove this after next forced release (> v1.166.3)
         # the last forced release v1.166.3 was not future proof enough to delete yet in this PR.
-        is_webapp_v2_enabled=features[FeatureToggle.WEBAPP_V2_ENABLED],
+        is_webapp_v2_enabled=True,
         object_storage_url=OBJECT_STORAGE_URL,
     )
