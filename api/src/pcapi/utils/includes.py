@@ -1,21 +1,6 @@
 import copy
 
 
-BENEFICIARY_INCLUDES = [
-    "-culturalSurveyId",
-    "-culturalSurveyFilledDate",
-    "-extraData",
-    "-hasSeenTutorials",
-    "-lastConnectionDate",
-    "-password",
-    "-validationToken",
-    "wallet_balance",
-    "wallet_is_activated",
-    "deposit_expiration_date",
-    "needsToSeeTutorials",
-]
-
-
 USER_INCLUDES = [
     "-culturalSurveyId",
     "-culturalSurveyFilledDate",

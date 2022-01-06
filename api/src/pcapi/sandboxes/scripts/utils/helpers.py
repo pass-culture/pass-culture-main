@@ -4,7 +4,6 @@ from pcapi.core.users import factories as users_factories
 from pcapi.core.users.models import TokenType
 from pcapi.core.users.models import User
 from pcapi.routes.serialization import as_dict
-from pcapi.utils.includes import BENEFICIARY_INCLUDES
 from pcapi.utils.includes import USER_INCLUDES
 
 
@@ -53,17 +52,6 @@ def get_email(first_name, last_name, domain):
 def get_pro_helper(user):
     return dict(
         as_dict(user, includes=USER_INCLUDES),
-        **{
-            "resetPasswordToken": _get_reset_password_token(user),
-            "password": users_factories.DEFAULT_PASSWORD,
-            "validationToken": user.validationToken,
-        },
-    )
-
-
-def get_beneficiary_helper(user):
-    return dict(
-        as_dict(user, includes=BENEFICIARY_INCLUDES),
         **{
             "resetPasswordToken": _get_reset_password_token(user),
             "password": users_factories.DEFAULT_PASSWORD,

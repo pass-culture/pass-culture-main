@@ -89,10 +89,6 @@ def get_all_users_wallet_balances():
     )
 
 
-def keep_only_webapp_users(query: Query) -> Query:
-    return query.filter((~User.UserOfferers.any()) & (User.isAdmin.is_(False)))
-
-
 def find_most_recent_beneficiary_creation_date_for_source(source: BeneficiaryImportSources, source_id: int) -> datetime:
     most_recent_creation = (
         BeneficiaryImportStatus.query.join(BeneficiaryImport)
