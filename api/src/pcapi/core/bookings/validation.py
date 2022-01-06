@@ -41,7 +41,7 @@ def check_offer_already_booked(user: User, offer: Offer) -> None:
         IndividualBooking.query.join(Booking)
         .filter(
             IndividualBooking.user == user,
-            Booking.isCancelled == False,
+            Booking.status != BookingStatus.CANCELLED,
         )
         .join(Stock)
         .filter(Stock.offerId == offer.id)
@@ -108,7 +108,7 @@ def check_beneficiary_can_cancel_booking(user: User, booking: Booking) -> None:
 
 # FIXME: should not raise exceptions from `api_errors` (see below for details).
 def check_booking_can_be_cancelled(booking: Booking) -> None:
-    if booking.isCancelled or booking.status == BookingStatus.CANCELLED:
+    if booking.status == BookingStatus.CANCELLED:
         gone = api_errors.ResourceGoneError()
         gone.add_error("global", "Cette contremarque a déjà été annulée")
         raise gone
@@ -135,7 +135,7 @@ def check_is_usable(booking: Booking) -> None:
         gone.add_error("booking", "Cette réservation a déjà été validée")
         raise gone
 
-    if booking.isCancelled or booking.status is BookingStatus.CANCELLED:
+    if booking.status is BookingStatus.CANCELLED:
         forbidden = api_errors.ForbiddenError()
         forbidden.add_error("booking", "Cette réservation a été annulée")
         raise forbidden
@@ -188,7 +188,7 @@ def check_can_be_mark_as_unused(booking: Booking) -> None:
         forbidden.add_error("booking", "Cette réservation ne peut pas être marquée comme inutilisée")
         raise forbidden
 
-    if booking.isCancelled:
+    if booking.status == BookingStatus.CANCELLED:
         forbidden = api_errors.ForbiddenError()
         forbidden.add_error("booking", "Cette réservation a été annulée")
         raise forbidden

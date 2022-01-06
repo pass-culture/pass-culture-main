@@ -29,7 +29,6 @@ class Returns204Test:
         assert len(push_testing.requests) >= 1
         assert response.status_code == 204
         updated_booking = Booking.query.one()
-        assert updated_booking.isCancelled
         assert updated_booking.status is BookingStatus.CANCELLED
 
         assert push_testing.requests[-1] == {
@@ -55,7 +54,6 @@ class Returns204Test:
 
         assert response.status_code == 204
         booking = Booking.query.one()
-        assert booking.isCancelled
         assert booking.status is BookingStatus.CANCELLED
 
 
@@ -120,7 +118,6 @@ class Returns403Test:
         assert response.json["global"] == ["Impossible d'annuler une réservation consommée"]
         booking = Booking.query.first()
         assert booking.isUsed
-        assert not booking.isCancelled
         assert booking.status is BookingStatus.USED
         assert push_testing.requests == []
 
