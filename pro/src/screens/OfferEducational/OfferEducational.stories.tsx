@@ -6,9 +6,12 @@ import { DEFAULT_EAC_FORM_VALUES, Mode } from 'core/OfferEducational'
 import { withPageTemplate } from '../../stories/decorators/withPageTemplate'
 import { withRouterDecorator } from '../../stories/decorators/withRouter'
 
-import { categoriesFactory } from './__tests-utils__/categoryFactory'
-import { subCategoriesFactory } from './__tests-utils__/subCategoryFactory'
-import { userOfferersFactory } from './__tests-utils__/userOfferersFactory'
+import {
+  categoriesFactory,
+  managedVenuesFactory,
+  subCategoriesFactory,
+  userOfferersFactory,
+} from './__tests-utils__'
 import OfferEducational from './OfferEducational'
 
 const mockEducationalCategories = categoriesFactory([
@@ -46,14 +49,16 @@ export default {
   decorators: [withRouterDecorator, withPageTemplate],
 }
 
-const mockUserOfferers = userOfferersFactory([{}])
+const mockUserOfferers = userOfferersFactory([
+  { managedVenues: managedVenuesFactory([{}]) },
+])
 
 const Template = () => (
   <OfferEducational
     educationalCategories={mockEducationalCategories}
     educationalSubCategories={mockEducationalSubcategories}
-    getIsOffererEligibleToEducationalOfferAdapter={() => {
-      action('getIsOffererEligibleToEducationalOfferAdapter')
+    getIsOffererEligible={() => {
+      action('getIsOffererEligible')
       return Promise.resolve({
         isOk: true,
         message: null,

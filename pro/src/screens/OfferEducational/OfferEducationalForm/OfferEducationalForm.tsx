@@ -36,7 +36,7 @@ const OfferEducationalForm = ({
   educationalCategories,
   educationalSubCategories,
   userOfferers,
-  getIsOffererEligibleToEducationalOfferAdapter,
+  getIsOffererEligible,
   notify,
   mode,
 }: IOfferEducationalFormProps): JSX.Element => {
@@ -58,17 +58,16 @@ const OfferEducationalForm = ({
 
     if (selectedOfferer) {
       const checkOffererEligibilityToEducationalOffer = async () => {
-        if (!getIsOffererEligibleToEducationalOfferAdapter) {
+        if (!getIsOffererEligible) {
           setIsEligible(true)
           return
         }
 
         setIsLoading(true)
 
-        const { isOk, message, payload } =
-          await getIsOffererEligibleToEducationalOfferAdapter(
-            selectedOfferer.id
-          )
+        const { isOk, message, payload } = await getIsOffererEligible(
+          selectedOfferer.id
+        )
 
         if (isOk) {
           setIsEligible(payload.isOffererEligibleToEducationalOffer)
@@ -93,12 +92,7 @@ const OfferEducationalForm = ({
         )
       )
     }
-  }, [
-    values.offererId,
-    userOfferers,
-    notify,
-    getIsOffererEligibleToEducationalOfferAdapter,
-  ])
+  }, [values.offererId, userOfferers, notify, getIsOffererEligible])
 
   return (
     <FormLayout className={styles['educational-form']} small>

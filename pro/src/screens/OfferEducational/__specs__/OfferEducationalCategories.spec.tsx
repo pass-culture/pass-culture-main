@@ -1,26 +1,15 @@
 import '@testing-library/jest-dom'
-import { render, waitFor } from '@testing-library/react'
+import { waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { createBrowserHistory } from 'history'
-import React from 'react'
-import { Router } from 'react-router'
 
 import {
   getCategoriesSelect,
   getSubcategoriesSelect,
   selectOffererAndVenue,
-} from '../__tests-utils__/eacOfferCreationUtils'
-import setDefaultProps from '../__tests-utils__/setDefaultProps'
-import OfferEducational, { IOfferEducationalProps } from '../OfferEducational'
-
-const renderEACOfferCreation = (props: IOfferEducationalProps) => {
-  const history = createBrowserHistory()
-  return render(
-    <Router history={history}>
-      <OfferEducational {...props} />
-    </Router>
-  )
-}
+  setDefaultProps,
+  renderEACOfferForm,
+} from '../__tests-utils__/'
+import { IOfferEducationalProps } from '../OfferEducational'
 
 describe('screens | OfferEducational', () => {
   let props: IOfferEducationalProps
@@ -30,7 +19,7 @@ describe('screens | OfferEducational', () => {
   })
 
   it('should display empty category', async () => {
-    renderEACOfferCreation(props)
+    renderEACOfferForm(props)
 
     await selectOffererAndVenue()
 
@@ -42,7 +31,7 @@ describe('screens | OfferEducational', () => {
   })
 
   it('should update subcategories when category changes', async () => {
-    renderEACOfferCreation(props)
+    renderEACOfferForm(props)
 
     await selectOffererAndVenue()
 

@@ -93,9 +93,7 @@ const OfferEducationalCreation = (): JSX.Element => {
         <>
           <OfferEducationalScreen
             {...screenProps}
-            getIsOffererEligibleToEducationalOfferAdapter={
-              getIsOffererEligibleToEducationalOfferAdapter
-            }
+            getIsOffererEligible={getIsOffererEligibleToEducationalOfferAdapter}
             initialValues={initialValues}
             mode={Mode.CREATION}
             notify={notify}
