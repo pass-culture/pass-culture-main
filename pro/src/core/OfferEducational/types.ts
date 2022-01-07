@@ -76,7 +76,7 @@ export type IOfferEducationalFormValues = {
   notificationEmail: string
 }
 
-export type GetIsOffererEligibleToEducationalOffer = Adapter<
+export type GetIsOffererEligible = Adapter<
   string,
   { isOffererEligibleToEducationalOffer: boolean },
   { isOffererEligibleToEducationalOffer: false }

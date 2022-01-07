@@ -19,6 +19,10 @@ export const managedVenueFactory = (
     userVenueExtends
   )
 
+export const managedVenuesFactory = (
+  managedVenuesExtends: Partial<IUserVenue>[]
+): IUserVenue[] => managedVenuesExtends.map(managedVenueFactory)
+
 const userOffererFactory = (
   userOffererExtends: Partial<IUserOfferer>
 ): IUserOfferer => {
