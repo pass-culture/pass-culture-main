@@ -1,0 +1,15 @@
+name: Ping data team on slack
+on:
+  pull_request:
+    paths:
+      - 'pass-culture-main/api/src/pcapi/alembic/versions/**'
+
+jobs:
+  send-message:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Run a one-line script
+        run: echo Hello from pass Culture
