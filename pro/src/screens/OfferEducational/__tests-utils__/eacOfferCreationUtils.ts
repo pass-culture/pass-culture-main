@@ -1,11 +1,13 @@
 import { fireEvent, screen, waitFor } from '@testing-library/react'
 
+import { queryField } from 'ui-kit/form/__tests-utils__'
+
 import {
   CATEGORY_LABEL,
   OFFERER_LABEL,
   SUBCATEGORY_LABEL,
   VENUE_LABEL,
-} from 'screens/OfferEducational/constants/labels'
+} from '../constants/labels'
 
 export const getCategoriesSelect = (): HTMLSelectElement =>
   screen.queryByLabelText(CATEGORY_LABEL) as HTMLSelectElement
@@ -34,4 +36,11 @@ export const selectOffererAndVenue = async (): Promise<void> => {
     const venueSelect = getVenueSelect()
     fireEvent.change(venueSelect, { target: { value: 'VENUE_ID' } })
   })
+}
+
+export const queryElement = {
+  OffererSelect: () => queryField<HTMLSelectElement>(OFFERER_LABEL),
+  VenueSelect: () => queryField<HTMLSelectElement>(VENUE_LABEL),
+  CategorySelect: () => queryField<HTMLSelectElement>(CATEGORY_LABEL),
+  SubCategorySelect: () => queryField<HTMLSelectElement>(SUBCATEGORY_LABEL),
 }

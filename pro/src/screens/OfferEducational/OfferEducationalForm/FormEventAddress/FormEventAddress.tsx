@@ -108,6 +108,7 @@ const FormEventAddress = ({
         <FormLayout.Row>
           <Select
             disabled={venuesOptions.length === 1}
+            hideFooter
             label={EVENT_ADDRESS_OFFERER_VENUE_SELECT_LABEL}
             name="eventAddress.venueId"
             options={venuesOptions}

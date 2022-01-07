@@ -37,13 +37,13 @@ const mockEducationalSubcategories = subCategoriesFactory([
 
 const mockUserOfferers = userOfferersFactory([{}])
 
-const defaultProps = (): IOfferEducationalProps => ({
+export const defaultCreationProps: IOfferEducationalProps = {
   userOfferers: mockUserOfferers,
   initialValues: DEFAULT_EAC_FORM_VALUES,
   onSubmit: jest.fn(),
   educationalCategories: mockEducationalCategories,
   educationalSubCategories: mockEducationalSubcategories,
-  getIsOffererEligibleToEducationalOfferAdapter: jest.fn().mockResolvedValue({
+  getIsOffererEligible: jest.fn().mockResolvedValue({
     isOk: true,
     message: null,
     payload: { isOffererEligibleToEducationalOffer: true },
@@ -55,6 +55,4 @@ const defaultProps = (): IOfferEducationalProps => ({
     information: jest.fn(),
   },
   mode: Mode.CREATION,
-})
-
-export default defaultProps
+}
