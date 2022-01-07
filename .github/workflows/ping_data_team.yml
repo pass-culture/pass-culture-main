@@ -1,0 +1,19 @@
+name: Ping data team on slack
+on:
+  pull_request:
+    paths:
+      - 'api/src/pcapi/alembic/versions/**'
+
+jobs:
+  send-message:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Run a one-line script
+        shell: bash
+        env:
+          SLACK_WEBHOOK_DB_CHANGE: ${{ secrets.SLACK_WEBHOOK_DB_CHANGE }}
+        run: |
+          curl -X POST -H 'Content-type: application/json' --data '{"text":"Nouvelle PR avec une migration db -> ${{ github.event.pull_request.html_url }}"}'  "$SLACK_WEBHOOK_DB_CHANGE"
