@@ -8,7 +8,7 @@ from tests.conftest import TestClient
 
 class Returns200Test:
     @pytest.mark.usefixtures("db_session")
-    def expect_the_existing_user_session_to_be_deleted_deleted(self, app):
+    def expect_the_existing_user_session_to_be_deleted(self, app):
         # given
         user = users_factories.ProFactory(email="test@mail.com")
         auth_request = TestClient(app.test_client()).with_session_auth(email=user.email)

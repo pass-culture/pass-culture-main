@@ -607,15 +607,6 @@ class GetOfferResponseModel(BaseModel):
         use_enum_values = True
 
 
-class ImageBodyModel(BaseModel):
-    url: str
-
-
 class CategoriesResponseModel(BaseModel):
     categories: list[CategoryResponseModel]
     subcategories: list[SubcategoryResponseModel]
-
-
-class SubcategoriesForWebappResponseModel(BaseModel):
-    subcategories: list[SubcategoryResponseModel]
-    searchGroups: list[SearchGroupResponseModel]

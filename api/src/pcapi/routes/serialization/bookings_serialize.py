@@ -7,7 +7,6 @@ from pydantic import BaseModel
 
 from pcapi.core.bookings.models import Booking
 from pcapi.core.categories import subcategories
-from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_utc_date
 from pcapi.utils.human_ids import humanize
 
@@ -95,14 +94,6 @@ def get_booking_response(booking: Booking) -> GetBookingResponse:
 
 class PostBookingStockModel(BaseModel):
     price: float
-
-
-class PostBookingBodyModel(BaseModel):
-    stock_id: str
-    quantity: int
-
-    class Config:
-        alias_generator = to_camel
 
 
 class ActivationCode(BaseModel):
