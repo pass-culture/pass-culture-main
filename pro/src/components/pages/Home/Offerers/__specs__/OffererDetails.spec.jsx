@@ -880,10 +880,9 @@ describe('offererDetailsLegacy', () => {
       ).toBeInTheDocument()
     })
 
-    it('should not display missing business unit banner when virtual venue has no offer has no BU', async () => {
+    it('should not display missing business unit banner when virtual venue has no BU', async () => {
       firstOffererByAlphabeticalOrder = {
         ...firstOffererByAlphabeticalOrder,
-        hasDigitalVenueAtLeastOneOffer: false,
         managedVenues: [
           {
             ...physicalVenue,
@@ -921,34 +920,6 @@ describe('offererDetailsLegacy', () => {
         name: 'Masquer',
       })
 
-      expect(
-        within(offerer).queryByText('Coordonnées bancaires')
-      ).not.toBeInTheDocument()
-    })
-
-    it('should not display missing business unit banner when offerer has only virtual venue with no offer', async () => {
-      firstOffererByAlphabeticalOrder = {
-        ...firstOffererByAlphabeticalOrder,
-        hasDigitalVenueAtLeastOneOffer: false,
-        managedVenues: [
-          {
-            ...virtualVenue,
-            businessUnitId: null,
-          },
-        ],
-      }
-
-      pcapi.getOfferer.mockResolvedValue(firstOffererByAlphabeticalOrder)
-      pcapi.getBusinessUnits.mockResolvedValue([])
-
-      const { waitForElements } = renderHomePage({ store })
-      const { offerer } = await waitForElements()
-
-      expect(
-        within(offerer).getByRole('button', {
-          name: 'Masquer',
-        })
-      ).toBeInTheDocument()
       expect(
         within(offerer).queryByText('Coordonnées bancaires')
       ).not.toBeInTheDocument()
