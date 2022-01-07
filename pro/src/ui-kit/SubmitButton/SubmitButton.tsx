@@ -5,7 +5,7 @@ import { ReactComponent as SpinnerIcon } from './assets/loader.svg'
 import styles from './SubmitButton.module.scss'
 
 interface ISubmitButtonProps {
-  className: string
+  className?: string
   disabled: boolean
   isLoading: boolean
   onClick?(): void

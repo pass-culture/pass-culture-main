@@ -20,7 +20,7 @@ const RouteLeavingGuard = ({
   const [lastLocation, setLastLocation] = useState('')
   const [isConfirmedNavigation, setIsConfirmedNavigation] = useState(false)
 
-  const confirmQuitButton = useRef()
+  const confirmButtonRef = useRef()
 
   const closeModal = useCallback(() => {
     setIsModalVisible(false)
@@ -43,6 +43,19 @@ const RouteLeavingGuard = ({
     setIsConfirmedNavigation(true)
   }, [])
 
+  // eslint-disable-next-line react/display-name, react/no-multi-comp
+  const ConfirmButton = React.forwardRef((props, ref) => (
+    <button
+      className="primary-button"
+      // eslint-disable-next-line react/prop-types
+      onClick={props.onClick}
+      ref={ref}
+      type="button"
+    >
+      Quitter
+    </button>
+  ))
+
   return isConfirmedNavigation && lastLocation ? (
     <Redirect push to={lastLocation} />
   ) : (
@@ -51,9 +64,10 @@ const RouteLeavingGuard = ({
       {isModalVisible && (
         <DialogBox
           extraClassNames={extraClassNames}
+          hasCloseButton={false}
+          initialFocusRef={confirmButtonRef}
           labelledBy={labelledBy}
           onDismiss={closeModal}
-          ref={confirmQuitButton}
         >
           {children}
           <div className="action-buttons">
@@ -64,14 +78,10 @@ const RouteLeavingGuard = ({
             >
               Annuler
             </button>
-            <button
-              className="primary-button"
+            <ConfirmButton
               onClick={handleConfirmNavigationClick}
-              ref={confirmQuitButton}
-              type="button"
-            >
-              Quitter
-            </button>
+              ref={confirmButtonRef}
+            />
           </div>
         </DialogBox>
       )}
