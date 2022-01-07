@@ -28,9 +28,9 @@ class GetEducationalBookingsRequest(BaseModel):
 
 class Redactor(AdageBaseResponseModel):
     email: str
-    redactorFirstName: str
-    redactorLastName: str
-    redactorCivility: str
+    redactorFirstName: Optional[str]
+    redactorLastName: Optional[str]
+    redactorCivility: Optional[str]
 
     class Config:
         alias_generator = to_camel
