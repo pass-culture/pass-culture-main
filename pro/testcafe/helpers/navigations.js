@@ -62,6 +62,8 @@ export const navigateAfterVenueSubmit = creationOrModification => async t => {
 
 export const navigateToNewOfferAs =
   (user, offerer, venue, userRole) => async t => {
+    const nextStepAnchor = Selector('button').withText('Étape suivante')
+
     if (venue) {
       const venueWrapper = Selector('h3.h-card-title').withText(venue.name)
 
@@ -72,11 +74,12 @@ export const navigateToNewOfferAs =
       const newOfferAnchor = venueWrapper
         .parent('div.h-card-inner')
         .find('.venue-stats')
-        .find("a[href^='/offres/creation']")
+        .find("a[href^='/offre/creation']")
 
       await navigateToOffererAs(user, offerer, userRole)(t)
       await t.click(displayVenueStats)
       await t.click(newOfferAnchor)
+      await t.click(nextStepAnchor)
       return
     } else if (offerer) {
       const venueWrapper =
@@ -89,15 +92,16 @@ export const navigateToNewOfferAs =
       const newOfferAnchor = venueWrapper
         .parent('div.h-card-inner')
         .find('.venue-stats')
-        .find("a[href^='/offres/creation']")
+        .find("a[href^='/offre/creation']")
 
       await navigateToOffererAs(user, offerer, userRole)(t)
       await t.click(displayVenueStats)
 
       await t.click(newOfferAnchor)
+      await t.click(nextStepAnchor)
       return
     } else {
-      const newOfferAnchor = Selector("a[href^='/offres/creation']")
+      const newOfferAnchor = Selector("a[href^='/offre/creation']")
 
       await navigateToHomeAs(user, userRole)
 
@@ -106,6 +110,7 @@ export const navigateToNewOfferAs =
       } else {
         await t.useRole(createUserRole(user)).click(newOfferAnchor)
       }
+      await t.click(nextStepAnchor)
     }
   }
 
