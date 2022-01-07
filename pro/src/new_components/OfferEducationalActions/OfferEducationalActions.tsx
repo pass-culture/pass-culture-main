@@ -35,7 +35,7 @@ const OfferEducationalActions = ({
         />
       )}
       <div className={cn(style['actions'], className)}>
-        {setIsOfferActive && (
+        {!isBooked && setIsOfferActive && (
           <Button
             Icon={isOfferActive ? IconInactive : IconActive}
             className={style['actions-button']}
