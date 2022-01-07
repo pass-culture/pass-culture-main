@@ -39,3 +39,4 @@ tests/result_output.txt
 
 # misc
 .vscode/
+.dccache
