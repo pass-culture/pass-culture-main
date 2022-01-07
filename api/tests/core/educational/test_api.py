@@ -372,6 +372,46 @@ class BookEducationalOfferTest:
         assert adage_api_testing.adage_requests[0]["sent_data"] == expected_payload
         assert adage_api_testing.adage_requests[0]["url"] == "https://adage_base_url/v1/prereservation"
 
+    @override_settings(ADAGE_API_URL="https://adage_base_url")
+    @override_settings(ADAGE_API_KEY="adage-api-key")
+    def test_should_notify_adage_with_less_redactor_information(self):
+        # Given
+        stock = offers_factories.EducationalEventStockFactory(
+            beginningDatetime=datetime.datetime(2021, 5, 15),
+            offer__bookingEmail="test@email.com",
+        )
+        educational_institution = educational_factories.EducationalInstitutionFactory()
+        educational_factories.EducationalYearFactory(
+            beginningDate=datetime.datetime(2020, 9, 1), expirationDate=datetime.datetime(2021, 8, 31)
+        )
+        educational_factories.EducationalYearFactory(
+            beginningDate=datetime.datetime(2021, 9, 1), expirationDate=datetime.datetime(2022, 8, 31)
+        )
+        educational_redactor = educational_factories.EducationalRedactorFactory(
+            email="professeur@example.com",
+            firstName=None,
+            lastName=None,
+            civility=None,
+        )
+        redactor_informations = RedactorInformation(
+            email=educational_redactor.email,
+            civility=None,
+            firstname=None,
+            lastname=None,
+            uai=educational_institution.institutionId,
+        )
+
+        # When
+        booking = educational_api.book_educational_offer(
+            redactor_informations=redactor_informations,
+            stock_id=stock.id,
+        )
+
+        # Then
+        expected_payload = serialize_educational_booking(booking.educationalBooking)
+        assert adage_api_testing.adage_requests[0]["sent_data"] == expected_payload
+        assert adage_api_testing.adage_requests[0]["url"] == "https://adage_base_url/v1/prereservation"
+
     def test_should_create_educational_redactor_when_it_does_not_exist(self):
         # Given
         stock = offers_factories.EducationalEventStockFactory(beginningDatetime=datetime.datetime(2021, 5, 15))
