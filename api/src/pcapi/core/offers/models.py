@@ -197,7 +197,7 @@ Stock.trig_ddl = """
           SELECT SUM(booking.quantity)
           FROM booking
           WHERE "stockId"=NEW.id
-          AND NOT booking."isCancelled"
+          AND NOT booking.status = 'CANCELLED'
          ) > NEW.quantity
         )
       THEN
