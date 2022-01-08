@@ -1,0 +1,12 @@
+.section {
+  margin-top: 16px;
+}
+.row-section {
+  display: flex;
+}
+.row-element:not(:first-child) {
+  margin-left: 64px;
+}
+.subscription-info .additional-subscription-info {
+  margin-top: 32px;
+}

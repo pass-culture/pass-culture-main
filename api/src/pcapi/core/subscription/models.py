@@ -28,6 +28,23 @@ class SubscriptionStep(enum.Enum):
     HONOR_STATEMENT = "honor-statement"
 
 
+class SubscriptionItemStatus(enum.Enum):
+    KO = "ko"
+    NOT_APPLICABLE = "not-applicable"
+    NOT_ENABLED = "not-enabled"
+    OK = "ok"
+    PENDING = "pending"
+    SUSPICIOUS = "suspicious"
+    TODO = "todo"
+    VOID = "void"
+
+
+@dataclasses.dataclass
+class SubscriptionItem:
+    type: SubscriptionStep
+    status: SubscriptionItemStatus
+
+
 class IdentityCheckMethod(enum.Enum):
     EDUCONNECT = "educonnect"
     JOUVE = "jouve"
