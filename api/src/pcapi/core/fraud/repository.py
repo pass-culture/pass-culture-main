@@ -24,3 +24,13 @@ def get_last_user_profiling_fraud_check(user: users_models.User) -> Optional[mod
         .order_by(models.BeneficiaryFraudCheck.dateCreated.desc())
         .first()
     )
+
+
+def get_identity_fraud_checks(
+    user: users_models.User, eligibilityType: users_models.EligibilityType
+) -> list[models.BeneficiaryFraudCheck]:
+    return models.BeneficiaryFraudCheck.query.filter(
+        models.BeneficiaryFraudCheck.user == user,
+        models.BeneficiaryFraudCheck.type.in_(models.IDENTITY_CHECK_TYPES),
+        models.BeneficiaryFraudCheck.eligibilityType == eligibilityType,
+    ).all()

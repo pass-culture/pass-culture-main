@@ -173,6 +173,7 @@ def _send_beneficiary_activation_email(user: users_models.User, has_activated_ac
 
 
 def has_completed_profile(user: users_models.User) -> bool:
+    # TODO(add a check on user.activity once the field is mandatory in subscription/profile_completion route)
     return user.city is not None
 
 
@@ -186,9 +187,118 @@ def needs_to_perform_identity_check(user: users_models.User) -> bool:
     )
 
 
+def _is_eligibility_activable(
+    user: users_models.User, eligibility: typing.Optional[users_models.EligibilityType]
+) -> bool:
+    return user.eligibility == eligibility and users_api.is_eligible_for_beneficiary_upgrade(user, eligibility)
+
+
+def get_email_validation_subscription_item(
+    user: users_models.User, eligibility: typing.Optional[users_models.EligibilityType]
+) -> models.SubscriptionItem:
+    if user.isEmailValidated:
+        status = models.SubscriptionItemStatus.OK
+    else:
+        if _is_eligibility_activable(user, eligibility):
+            status = models.SubscriptionItemStatus.TODO
+        else:
+            status = models.SubscriptionItemStatus.VOID
+
+    return models.SubscriptionItem(type=models.SubscriptionStep.EMAIL_VALIDATION, status=status)
+
+
+def get_phone_validation_subscription_item(
+    user: users_models.User, eligibility: typing.Optional[users_models.EligibilityType]
+) -> models.SubscriptionItem:
+    if eligibility != users_models.EligibilityType.AGE18:
+        status = models.SubscriptionItemStatus.NOT_APPLICABLE
+    else:
+        if not user.phoneValidationStatus:
+            if FeatureToggle.ENABLE_PHONE_VALIDATION.is_active():
+                if _is_eligibility_activable(user, eligibility):
+                    status = models.SubscriptionItemStatus.TODO
+                else:
+                    status = models.SubscriptionItemStatus.VOID
+            else:
+                status = models.SubscriptionItemStatus.NOT_ENABLED
+        elif user.is_phone_validated:
+            status = models.SubscriptionItemStatus.OK
+        else:
+            status = models.SubscriptionItemStatus.KO
+
+    return models.SubscriptionItem(type=models.SubscriptionStep.PHONE_VALIDATION, status=status)
+
+
+def get_user_profiling_subscription_item(
+    user: users_models.User, eligibility: typing.Optional[users_models.EligibilityType]
+) -> models.SubscriptionItem:
+    if eligibility != users_models.EligibilityType.AGE18:
+        status = models.SubscriptionItemStatus.NOT_APPLICABLE
+    else:
+        user_profiling = fraud_repository.get_last_user_profiling_fraud_check(user)
+        if user_profiling:
+            status = user_profiling.status
+        elif _is_eligibility_activable(user, eligibility):
+            status = models.SubscriptionItemStatus.TODO
+        else:
+            status = models.SubscriptionItemStatus.VOID
+
+    return models.SubscriptionItem(type=models.SubscriptionStep.USER_PROFILING, status=status)
+
+
+def get_profile_completion_subscription_item(
+    user: users_models.User, eligibility: typing.Optional[users_models.EligibilityType]
+) -> models.SubscriptionItem:
+    if has_completed_profile(user):
+        status = models.SubscriptionItemStatus.OK
+    elif _is_eligibility_activable(user, eligibility):
+        status = models.SubscriptionItemStatus.TODO
+    else:
+        status = models.SubscriptionItemStatus.VOID
+
+    return models.SubscriptionItem(type=models.SubscriptionStep.PROFILE_COMPLETION, status=status)
+
+
+def get_identity_check_subscription_item(
+    user: users_models.User, eligibility: typing.Optional[users_models.EligibilityType]
+) -> models.SubscriptionItem:
+    identity_fraud_checks = fraud_repository.get_identity_fraud_checks(user, eligibility)
+
+    if any(check.status == fraud_models.FraudCheckStatus.OK for check in identity_fraud_checks):
+        status = models.SubscriptionItemStatus.OK
+    elif any(check.status == fraud_models.FraudCheckStatus.PENDING for check in identity_fraud_checks):
+        # TODO(consider ubble checks status STARTED as TODO when the status STARTED is introduced)
+        status = models.SubscriptionItemStatus.PENDING
+    elif any(check.status == fraud_models.FraudCheckStatus.SUSPICIOUS for check in identity_fraud_checks):
+        status = models.SubscriptionItemStatus.SUSPICIOUS
+    elif any(check.status == fraud_models.FraudCheckStatus.KO for check in identity_fraud_checks):
+        status = models.SubscriptionItemStatus.KO
+    else:
+        if _is_eligibility_activable(user, eligibility):
+            status = models.SubscriptionItemStatus.TODO
+        else:
+            status = models.SubscriptionItemStatus.VOID
+
+    return models.SubscriptionItem(type=models.SubscriptionStep.IDENTITY_CHECK, status=status)
+
+
+def get_honor_statement_subscription_item(
+    user: users_models.User, eligibility: typing.Optional[users_models.EligibilityType]
+) -> models.SubscriptionItem:
+    if fraud_api.has_performed_honor_statement(user, user.eligibility):
+        status = models.SubscriptionItemStatus.OK
+    else:
+        if _is_eligibility_activable(user, eligibility):
+            status = models.SubscriptionItemStatus.TODO
+        else:
+            status = models.SubscriptionItemStatus.VOID
+
+    return models.SubscriptionItem(type=models.SubscriptionStep.HONOR_STATEMENT, status=status)
+
+
 # pylint: disable=too-many-return-statements
 def get_next_subscription_step(user: users_models.User) -> typing.Optional[models.SubscriptionStep]:
-    # TODO(viconnex): base the next step on the user.subscriptionState that will be added later on
+    # TODO(viconnex): use SubscriptionItems when user.hasCompletedIdCheck is removed and STARTED status is used in ubble workflow
     if not user.isEmailValidated:
         return models.SubscriptionStep.EMAIL_VALIDATION
 

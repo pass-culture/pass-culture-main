@@ -240,6 +240,8 @@ class BeneficiaryView(base_configuration.BaseAdminView):
             return_url=return_url,
             has_performed_identity_check=fraud_api.has_user_performed_identity_check(user),
             enum_update_request_value=users_models.EmailHistoryEventTypeEnum.UPDATE_REQUEST.value,
+            subscription_items=_get_subscription_items_by_eligibility(user),
+            next_subscription_step=subscription_api.get_next_subscription_step(user),
         )
 
     @flask_admin.expose(
@@ -383,3 +385,23 @@ class BeneficiaryView(base_configuration.BaseAdminView):
         logger.info("flask-admin: Manual phone validation", extra={"validated_user": user.id})
         flask.flash(f"Le n° de téléphone de l'utilisateur {user.id} {user.firstName} {user.lastName} est validé")
         return flask.redirect(flask.url_for(".details_view", id=user_id))
+
+
+def _get_subscription_items_by_eligibility(user: users_models.User):
+    subscription_items = []
+    for method in [
+        subscription_api.get_email_validation_subscription_item,
+        subscription_api.get_phone_validation_subscription_item,
+        subscription_api.get_user_profiling_subscription_item,
+        subscription_api.get_profile_completion_subscription_item,
+        subscription_api.get_identity_check_subscription_item,
+        subscription_api.get_honor_statement_subscription_item,
+    ]:
+        subscription_items.append(
+            {
+                users_models.EligibilityType.UNDERAGE.name: method(user, users_models.EligibilityType.UNDERAGE),
+                users_models.EligibilityType.AGE18.name: method(user, users_models.EligibilityType.AGE18),
+            },
+        )
+
+    return subscription_items
