@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <style>
+        html {
+            font-family: sans-serif;
+            font-size: 11pt;
+            line-height: 1.5;
+        }
+
+        body {
+            margin: 5pt;
+        }
+
+        h1 {
+            color: purple;
+            font-size: 18pt;
+            margin: 0;
+            text-align: center;
+        }
+
+        h2 {
+            color: purple;
+            font-size: 12pt;
+            margin: 0;
+        }
+
+        table, th, td {
+            border: 0.2mm solid #2f1313;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        th {
+            font-weight: bold;
+        }
+
+        td {
+            padding-top: 7mm;
+        }
+
+        th, td {
+            text-align: center;
+        }
+
+
+    </style>
+    <title>Justificatif de remboursement</title>
+    <meta name="description" content="Etat justifiant du montant du remboursement">
+</head>
+
+<body>
+
+<h1>Justificatif de remboursement</h1>
+<h2 class="invoice_info">Relevé n°{{ invoice.reference }} du {{ invoice.date.strftime('%d/%m/%Y') }}</h2>
+
+<p>
+<div><b>Nom :</b> {{ invoice.businessUnit.name }}</div>
+<div><b>SIRET :</b> {{ invoice.businessUnit.siret }}</div>
+</p>
+
+<h4>
+    Détail des offres remboursées incluant la contribution offreur,
+    appliquée selon le barème définis dans nos conditions générales de ventes
+</h4>
+
+<table>
+    <thead>
+    <tr>
+        <th>Typologie</th>
+        <th>Taux de remboursement (%)</th>
+        <th>Montant des réservations validées (TTC)</th>
+        <th>Taux de contribution offreur (%)</th>
+        <th>Montant de la contribution offreur (TTC)</th>
+        <th>Montant remboursé (TTC)</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    {% for group in groups %}
+        <tr>
+            <td colspan="6" style="text-align:left;background: lightcyan"><b> {{ group.label }} </b></td>
+        </tr>
+
+        {% for line in group.lines %}
+            <tr>
+                <td>Montant remboursé</td>
+                <td>{{ line.rate|fr_percentage }}</td>
+                <td>{{ line.get_bookings_amount|fr_currency }}</td>
+                <td>{{ line.contribution_rate|fr_percentage }}</td>
+                <td>{{ line.contribution_amount|fr_currency }}</td>
+                <td>{{ line.reimbursed_amount|fr_currency }}</td>
+            </tr>
+        {% endfor %}
+
+        <tr style="color: dimgrey">
+            <td>SOUS-TOTAL</td>
+            <td></td>
+            <td>{{ group.used_bookings_subtotal|fr_currency }}</td>
+            <td></td>
+            <td>{{ group.contribution_subtotal|fr_currency }}</td>
+            <td>{{ group.reimbursed_amount_subtotal|fr_currency }}</td>
+        </tr>
+    {% endfor %}
+    <tr>
+        <td>TOTAL</td>
+        <td></td>
+        <td>{{ total_used_bookings_amount|fr_currency }}</td>
+        <td></td>
+        <td>{{ total_contribution_amount|fr_currency }}</td>
+        <td>{{ total_reimbursed_amount|fr_currency }}</td>
+    </tr>
+    </tbody>
+
+</table>
+
+
+<p>
+    Au regard de la taxe sur la valeur ajoutée (TVA), les remboursements s’entendent toutes taxes comprises (TTC).
+    L’Offreur s’engage à s’acquitter de la TVA résultant de l’application de son régime fiscal et selon le taux
+    applicable à ses Offres.
+    Il est considéré que la contribution offreur relative à l’application du barème constitue une réduction de
+    prix, au sens de l’article 267 du code général des impôts, et qu’à ce titre, les offreurs pourront ainsi
+    régulariser leur base imposable (article 267 du CGI).
+</p>
+
+
+<h3>Règlements effectués correspondant au montant remboursé</h3>
+
+<table>
+    <thead>
+    <tr>
+        <th>Mode de règlement</th>
+        <th>N° de Règlement</th>
+        <th>Date</th>
+        <th>Montant Réglé</th>
+        <th>Destinataire</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    {% for cashflow in invoice.cashflows %}
+        <tr>
+            <td>Virement {{ cashflow.bankAccount.iban }}</td>
+            <td class="cashflow_id">{{ cashflow.id }}</td>
+            <td class="cashflow_creation_date">{{ cashflow.creationDate.strftime("%d/%m/%Y") }}</td>
+            <td>{{ cashflow.amount|fr_currency }}</td>
+            <td> {{ invoice.businessUnit.name }}</td>
+        </tr>
+    {% endfor %}
+    <tr style="background: lightcyan">
+        <td colspan="3">TOTAL REGLEMENT PASS CULTURE</td>
+        <td>{{ invoice.amount|fr_currency }} </td>
+    </tr>
+    </tbody>
+</table>
+
+</body>
+</html>

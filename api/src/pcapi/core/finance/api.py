@@ -11,6 +11,7 @@ import tempfile
 import typing
 import zipfile
 
+from flask import render_template
 import pytz
 import sqlalchemy as sqla
 import sqlalchemy.orm as sqla_orm
@@ -18,6 +19,7 @@ import sqlalchemy.sql.functions as sqla_func
 
 from pcapi import settings
 import pcapi.core.bookings.models as bookings_models
+from pcapi.core.object_storage import store_public_object
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.models as offers_models
 import pcapi.core.payments.models as payments_models
@@ -29,6 +31,7 @@ from pcapi.models.bank_information import BankInformationStatus
 from pcapi.repository import transaction
 from pcapi.repository import user_queries
 from pcapi.utils import human_ids
+from pcapi.utils import pdf as pdf_utils
 
 from . import conf
 from . import exceptions
@@ -215,7 +218,6 @@ def _price_booking(booking: bookings_models.Booking) -> models.Pricing:
     # old payment code has been removed and the function accepts
     # eurocents instead.
     rule = reimbursement.get_reimbursement_rule(booking, rule_finder, utils.to_euros(new_revenue))
-
     amount = -utils.to_eurocents(rule.apply(booking))  # outgoing, thus negative
     # `Pricing.amount` equals the sum of the amount of all lines.
     lines = [
@@ -700,7 +702,12 @@ def _make_invoice_line(invoice: models.Invoice, group: conf.RuleGroups, pricings
     return invoice_line, reimbursed_amount
 
 
-def generate_invoice(reference: str, business_unit_id: int, cashflow_ids: list[int]):
+def generate_and_store_invoice(reference: str, business_unit_id: int, cashflow_ids: list[int]):
+    invoice = _generate_invoice(reference, business_unit_id, cashflow_ids)
+    invoice_html = _generate_invoice_html(invoice)
+    _store_invoice_pdf(invoice.token, invoice_html)
+
+
 def _generate_invoice(reference: str, business_unit_id: int, cashflow_ids: list[int]):
     invoice = models.Invoice(
         reference=reference,
@@ -754,3 +761,51 @@ def _generate_invoice(reference: str, business_unit_id: int, cashflow_ids: list[
     db.session.commit()
 
     return invoice
+
+
+def _generate_invoice_html(invoice) -> str:
+    invoice_lines = sorted(invoice.lines, key=lambda k: (k.group["position"], -k.rate))
+    total_used_bookings_amount = 0
+    total_contribution_amount = 0
+    total_reimbursed_amount = 0
+    invoice_groups = dict()
+    for group, lines in itertools.groupby(invoice_lines, attrgetter("group")):
+        invoice_groups[group["label"]] = (group, list(lines))
+
+    groups = []
+    for _group_label, group_and_lines in invoice_groups.items():
+        group = group_and_lines[0]
+        lines = group_and_lines[1]
+        contribution_subtotal = sum(line.contribution_amount for line in lines)
+        total_contribution_amount += contribution_subtotal
+        reimbursed_amount_subtotal = sum(line.reimbursed_amount for line in lines)
+        total_reimbursed_amount += reimbursed_amount_subtotal
+        used_bookings_subtotal = contribution_subtotal + reimbursed_amount_subtotal
+        total_used_bookings_amount += used_bookings_subtotal
+
+        invoice_group = models.InvoiceLineGroup(
+            position=group["position"],
+            label=group["label"],
+            contribution_subtotal=contribution_subtotal,
+            reimbursed_amount_subtotal=reimbursed_amount_subtotal,
+            used_bookings_subtotal=used_bookings_subtotal,
+            lines=lines,
+        )
+        groups.append(invoice_group)
+
+    context = dict(
+        invoice=invoice,
+        groups=groups,
+        total_used_bookings_amount=total_used_bookings_amount,
+        total_contribution_amount=total_contribution_amount,
+        total_reimbursed_amount=total_reimbursed_amount,
+    )
+
+    return render_template("invoices/invoice.html", **context)
+
+
+def _store_invoice_pdf(invoice_token, invoice_html):
+    invoice_pdf = pdf_utils.generate_pdf_from_html(invoice_html)
+    store_public_object(
+        bucket="invoices", object_id=f"{invoice_token}.pdf", blob=invoice_pdf, content_type="application/pdf"
+    )
