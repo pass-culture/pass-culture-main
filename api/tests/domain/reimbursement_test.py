@@ -360,6 +360,10 @@ class ReimbursementRuleIsActiveTest:
         def is_relevant(self, booking, cumulative_revenue):
             return True
 
+        @property
+        def group(self):
+            return None
+
     booking = Booking(dateCreated=datetime.now() + timedelta(days=365), dateUsed=datetime.now())
 
     def test_is_active_if_rule_has_no_start_nor_end(self):

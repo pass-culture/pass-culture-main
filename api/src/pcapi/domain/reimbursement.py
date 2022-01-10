@@ -6,6 +6,7 @@ from typing import Optional
 
 from pcapi.core.bookings.models import Booking
 from pcapi.core.categories import subcategories
+from pcapi.core.finance import conf as finance_conf
 from pcapi.core.offers.models import Offer
 import pcapi.core.payments.models as payments_models
 
@@ -17,6 +18,7 @@ SEPTEMBER_2021 = datetime.datetime(2021, 9, 1) - datetime.timedelta(hours=2)
 class DigitalThingsReimbursement(payments_models.ReimbursementRule):
     rate = Decimal(0)
     description = "Pas de remboursement pour les offres digitales"
+    group = finance_conf.RuleGroups.NOT_REIMBURSED
     valid_from = None
     valid_until = None
 
@@ -31,6 +33,7 @@ class DigitalThingsReimbursement(payments_models.ReimbursementRule):
 class EducationalOffersReimbursement(payments_models.ReimbursementRule):
     rate = Decimal(1)
     description = "Remboursement total pour les offres éducationnelles"
+    group = finance_conf.RuleGroups.STANDARD
     valid_from = None
     valid_until = None
 
@@ -42,6 +45,7 @@ class EducationalOffersReimbursement(payments_models.ReimbursementRule):
 class PhysicalOffersReimbursement(payments_models.ReimbursementRule):
     rate = Decimal(1)
     description = "Remboursement total pour les offres physiques"
+    group = finance_conf.RuleGroups.STANDARD
     valid_from = None
     valid_until = None
 
@@ -53,6 +57,7 @@ class MaxReimbursementByOfferer(payments_models.ReimbursementRule):
     # This rule is not used anymore.
     rate = Decimal(0)
     description = "Pas de remboursement au dessus du plafond de 20 000 € par acteur culturel"
+    group = finance_conf.RuleGroups.DEPRECATED
     valid_from = None
     valid_until = None
 
@@ -65,6 +70,7 @@ class MaxReimbursementByOfferer(payments_models.ReimbursementRule):
 class LegacyPreSeptember2021ReimbursementRateByVenueBetween20000And40000(payments_models.ReimbursementRule):
     rate = Decimal("0.95")
     description = "Remboursement à 95% entre 20 000 € et 40 000 € par lieu"
+    group = finance_conf.RuleGroups.STANDARD
     valid_from = None
     valid_until = SEPTEMBER_2021
 
@@ -77,6 +83,7 @@ class LegacyPreSeptember2021ReimbursementRateByVenueBetween20000And40000(payment
 class LegacyPreSeptember2021ReimbursementRateByVenueBetween40000And150000(payments_models.ReimbursementRule):
     rate = Decimal("0.85")
     description = "Remboursement à 85% entre 40 000 € et 150 000 € par lieu"
+    group = finance_conf.RuleGroups.STANDARD
     valid_from = None
     valid_until = SEPTEMBER_2021
 
@@ -89,6 +96,7 @@ class LegacyPreSeptember2021ReimbursementRateByVenueBetween40000And150000(paymen
 class LegacyPreSeptember2021ReimbursementRateByVenueAbove150000(payments_models.ReimbursementRule):
     rate = Decimal("0.70")
     description = "Remboursement à 70% au dessus de 150 000 € par lieu"
+    group = finance_conf.RuleGroups.STANDARD
     valid_from = None
     valid_until = SEPTEMBER_2021
 
@@ -101,6 +109,7 @@ class LegacyPreSeptember2021ReimbursementRateByVenueAbove150000(payments_models.
 class ReimbursementRateByVenueBetween20000And40000(payments_models.ReimbursementRule):
     rate = Decimal("0.95")
     description = "Remboursement à 95% entre 20 000 € et 40 000 € par lieu (>= 2021-09-01)"
+    group = finance_conf.RuleGroups.STANDARD
     valid_from = SEPTEMBER_2021
     valid_until = None
 
@@ -113,6 +122,7 @@ class ReimbursementRateByVenueBetween20000And40000(payments_models.Reimbursement
 class ReimbursementRateByVenueBetween40000And150000(payments_models.ReimbursementRule):
     rate = Decimal("0.92")
     description = "Remboursement à 92% entre 40 000 € et 150 000 € par lieu (>= 2021-09-01)"
+    group = finance_conf.RuleGroups.STANDARD
     valid_from = SEPTEMBER_2021
     valid_until = None
 
@@ -125,6 +135,7 @@ class ReimbursementRateByVenueBetween40000And150000(payments_models.Reimbursemen
 class ReimbursementRateByVenueAbove150000(payments_models.ReimbursementRule):
     rate = Decimal("0.90")
     description = "Remboursement à 90% au dessus de 150 000 € par lieu (>= 2021-09-01)"
+    group = finance_conf.RuleGroups.STANDARD
     valid_from = SEPTEMBER_2021
     valid_until = None
 
@@ -137,6 +148,7 @@ class ReimbursementRateByVenueAbove150000(payments_models.ReimbursementRule):
 class ReimbursementRateForBookBelow20000(payments_models.ReimbursementRule):
     rate = Decimal(1)
     description = "Remboursement à 100% jusqu'à 20 000 € pour les livres"
+    group = finance_conf.RuleGroups.BOOK
     valid_from = None
     valid_until = None
 
@@ -151,6 +163,7 @@ class ReimbursementRateForBookBelow20000(payments_models.ReimbursementRule):
 class ReimbursementRateForBookAbove20000(payments_models.ReimbursementRule):
     rate = Decimal("0.95")
     description = "Remboursement à 95% au dessus de 20 000 € pour les livres"
+    group = finance_conf.RuleGroups.BOOK
     valid_from = None
     valid_until = None
 
@@ -174,6 +187,21 @@ REGULAR_RULES = [
     ReimbursementRateByVenueAbove150000(),
     ReimbursementRateForBookBelow20000(),
     ReimbursementRateForBookAbove20000(),
+]
+
+# A description must be unique and should never be modified, or it will break Invoice generation
+assert [r.description for r in REGULAR_RULES] == [
+    "Pas de remboursement pour les offres digitales",
+    "Remboursement total pour les offres éducationnelles",
+    "Remboursement total pour les offres physiques",
+    "Remboursement à 95% entre 20 000 € et 40 000 € par lieu",
+    "Remboursement à 85% entre 40 000 € et 150 000 € par lieu",
+    "Remboursement à 70% au dessus de 150 000 € par lieu",
+    "Remboursement à 95% entre 20 000 € et 40 000 € par lieu (>= 2021-09-01)",
+    "Remboursement à 92% entre 40 000 € et 150 000 € par lieu (>= 2021-09-01)",
+    "Remboursement à 90% au dessus de 150 000 € par lieu (>= 2021-09-01)",
+    "Remboursement à 100% jusqu'à 20 000 € pour les livres",
+    "Remboursement à 95% au dessus de 20 000 € pour les livres",
 ]
 
 
