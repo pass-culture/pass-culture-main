@@ -34,7 +34,6 @@ from pcapi.utils.login_manager import stamp_session
 from pcapi.utils.rate_limiting import email_rate_limiter
 from pcapi.utils.rate_limiting import ip_rate_limiter
 from pcapi.validation.routes.users import check_valid_signin
-from pcapi.workers.beneficiary_job import beneficiary_job
 
 
 logger = logging.getLogger(__name__)
@@ -160,24 +159,6 @@ def verify_id_check_licence_token(
         raise ApiErrors({"token": "The given token is invalid"})
 
     return serialization_beneficiaries.VerifyIdCheckLicenceResponse()
-
-
-@public_api.route("/beneficiaries/application_update", methods=["POST"])
-@spectree_serialize(
-    response_model=serialization_beneficiaries.ApplicationUpdateResponse, on_success_status=200, on_error_statuses=[400]
-)
-def id_check_application_update(
-    body: serialization_beneficiaries.ApplicationUpdateRequest,
-) -> serialization_beneficiaries.ApplicationUpdateResponse:
-    try:
-        application_id = int(body.id)
-    except ValueError:
-        raise ApiErrors({"id": "Not a number"})  # pylint: disable=raise-missing-from
-    logger.info(
-        "Received an application to process", extra={"category": "BeneficiaryAccount", "applicationId": application_id}
-    )
-    beneficiary_job.delay(application_id)
-    return serialization_beneficiaries.ApplicationUpdateResponse()
 
 
 @private_api.route("/send_phone_validation_code", methods=["POST"])

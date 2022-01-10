@@ -1,10 +1,7 @@
-from datetime import date
 from datetime import datetime
 from datetime import timedelta
 from decimal import Decimal
-from io import BytesIO
 import logging
-from pathlib import Path
 import re
 from unittest.mock import patch
 from urllib.parse import parse_qs
@@ -36,7 +33,6 @@ from pcapi.core.users.api import create_phone_validation_token
 from pcapi.core.users.constants import SuspensionReason
 from pcapi.core.users.email import update as email_update
 from pcapi.core.users.factories import BeneficiaryImportFactory
-from pcapi.core.users.factories import TokenFactory
 from pcapi.core.users.models import EligibilityType
 from pcapi.core.users.models import PhoneValidationStatusType
 from pcapi.core.users.models import Token
@@ -48,14 +44,11 @@ from pcapi.core.users.repository import get_id_check_token
 from pcapi.core.users.utils import ALGORITHM_HS_256
 from pcapi.models import db
 from pcapi.models.beneficiary_import_status import ImportStatus
-from pcapi.models.feature import FeatureToggle
 from pcapi.notifications.push import testing as push_testing
 from pcapi.notifications.sms import testing as sms_testing
-from pcapi.repository import repository
 from pcapi.routes.native.v1.serialization import account as account_serializers
 from pcapi.scripts.payment.user_recredit import recredit_underage_users
 
-import tests
 from tests.connectors import user_profiling_fixtures
 
 from .utils import create_user_and_test_client
@@ -123,7 +116,6 @@ class AccountTest:
         response = client.get("/native/v1/me")
 
         EXPECTED_DATA = {
-            "allowedEligibilityCheckMethods": ["jouve"],
             "id": user.id,
             "bookedOffers": {str(booking.stock.offer.id): booking.id},
             "domainsCredit": {
@@ -142,7 +134,6 @@ class AccountTest:
             "isEligibleForBeneficiaryUpgrade": False,
             "roles": ["BENEFICIARY"],
             "hasCompletedIdCheck": False,
-            "nextBeneficiaryValidationStep": None,
             "pseudo": "jdo",
             "recreditAmountToShow": None,
             "showEligibleCard": False,
@@ -208,213 +199,9 @@ class AccountTest:
         db.session.refresh(user)
         assert not user.hasCompletedIdCheck
 
-    def test_next_beneficiary_validation_step(self, client, app):
-        user = users_factories.UserFactory(
-            email=self.identifier, dateOfBirth=datetime.now() - relativedelta(years=18, days=5)
-        )
-        client.with_token(user.email)
-
-        response = client.get("/native/v1/me")
-
-        assert response.json["nextBeneficiaryValidationStep"] == "phone-validation"
-        assert response.status_code == 200
-
-        # Perform phone validation and user profiling
-        user.phoneValidationStatus = PhoneValidationStatusType.VALIDATED
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user,
-            type=fraud_models.FraudCheckType.USER_PROFILING,
-            resultContent=fraud_factories.UserProfilingFraudDataFactory(
-                risk_rating=fraud_models.UserProfilingRiskRating.TRUSTED
-            ),
-        )
-
-        response = client.get("/native/v1/me")
-
-        assert response.status_code == 200
-        assert response.json["nextBeneficiaryValidationStep"] == "id-check"
-
-        # Perform ID card upload
-        user.extraData["is_identity_document_uploaded"] = True
-        repository.save(user)
-
-        response = client.get("/native/v1/me")
-
-        assert response.status_code == 200
-        assert response.json["nextBeneficiaryValidationStep"] == "beneficiary-information"
-
-        # Perform final step
-        user.add_beneficiary_role()
-
-        response = client.get("/native/v1/me")
-
-        assert response.status_code == 200
-        assert not response.json["nextBeneficiaryValidationStep"]
-
-    def test_next_beneficiary_validation_step_user_profiling_risk_rating_high(self, client):
-        user = users_factories.UserFactory(
-            email=self.identifier,
-            dateOfBirth=datetime.now() - relativedelta(years=18, days=5),
-        )
-        client.with_token(user.email)
-
-        # Perform phone validation and user profiling
-        user.phoneValidationStatus = PhoneValidationStatusType.VALIDATED
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user,
-            type=fraud_models.FraudCheckType.USER_PROFILING,
-            resultContent=fraud_factories.UserProfilingFraudDataFactory(
-                risk_rating=fraud_models.UserProfilingRiskRating.HIGH
-            ),
-        )
-
-        response = client.get("/native/v1/me")
-        assert response.status_code == 200
-        assert response.json["nextBeneficiaryValidationStep"] == None
-
-    @override_features(ALLOW_EMPTY_USER_PROFILING=False)
-    def test_next_beneficiary_validation_step_no_user_profiling(self, client):
-        user = users_factories.UserFactory(
-            email=self.identifier,
-            dateOfBirth=datetime.now() - relativedelta(years=18, days=5),
-        )
-        client.with_token(user.email)
-
-        # Perform phone validation but no user profiling
-        user.phoneValidationStatus = PhoneValidationStatusType.VALIDATED
-
-        response = client.get("/native/v1/me")
-
-        assert response.status_code == 200
-        assert response.json["nextBeneficiaryValidationStep"] == None
-
-    @override_features(ALLOW_EMPTY_USER_PROFILING=True)
-    def test_next_beneficiary_validation_step_no_user_profiling_bypass(self, client):
-        user = users_factories.UserFactory(
-            email=self.identifier,
-            dateOfBirth=datetime.now() - relativedelta(years=18, days=5),
-        )
-        client.with_token(user.email)
-
-        # Perform phone validation but no user profiling
-        user.phoneValidationStatus = PhoneValidationStatusType.VALIDATED
-
-        response = client.get("/native/v1/me")
-
-        assert response.status_code == 200
-        assert response.json["nextBeneficiaryValidationStep"] == "id-check"
-
-    @freeze_time("2021-06-01")
-    def test_next_beneficiary_validation_step_not_eligible(self, client, app):
-        users_factories.UserFactory(email=self.identifier, dateOfBirth=datetime(2000, 1, 1))
-
-        client.with_token(email=self.identifier)
-        response = client.get("/native/v1/me")
-
-        assert response.status_code == 200
-        assert not response.json["nextBeneficiaryValidationStep"]
-
-    @freeze_time("2021-06-01")
-    def test_next_beneficiary_validation_step_underage(self, client):
-        users_factories.UserFactory(email=self.identifier, dateOfBirth=datetime(2006, 1, 1))
-
-        client.with_token(email=self.identifier)
-
-        with override_features(ALLOW_IDCHECK_UNDERAGE_REGISTRATION=True, ENABLE_EDUCONNECT_AUTHENTICATION=False):
-            response = client.get("/native/v1/me")
-            assert response.status_code == 200
-            assert response.json["allowedEligibilityCheckMethods"] == ["jouve"]
-            assert response.json["nextBeneficiaryValidationStep"] == "id-check"
-
-        with override_features(ALLOW_IDCHECK_UNDERAGE_REGISTRATION=False, ENABLE_EDUCONNECT_AUTHENTICATION=True):
-            response = client.get("/native/v1/me")
-            assert response.status_code == 200
-            assert response.json["allowedEligibilityCheckMethods"] == ["educonnect"]
-            assert response.json["nextBeneficiaryValidationStep"] == "id-check"
-
-        with override_features(ALLOW_IDCHECK_UNDERAGE_REGISTRATION=True, ENABLE_EDUCONNECT_AUTHENTICATION=True):
-            response = client.get("/native/v1/me")
-            assert response.status_code == 200
-            assert response.json["allowedEligibilityCheckMethods"] == ["educonnect", "jouve"]
-            assert response.json["nextBeneficiaryValidationStep"] == "id-check"
-
-        response = client.get("/native/v1/me")
-        assert response.status_code == 200
-        assert not response.json["allowedEligibilityCheckMethods"]
-        assert not response.json["nextBeneficiaryValidationStep"]
-
-    @freeze_time("2021-06-01")
-    def test_next_beneficiary_validation_step_underage_not_eligible(self, client):
-        users_factories.UserFactory(email=self.identifier, dateOfBirth=datetime(2006, 1, 1))
-
-        client.with_token(email=self.identifier)
-
-        response = client.get("/native/v1/me")
-        assert response.status_code == 200
-        assert not response.json["allowedEligibilityCheckMethods"]
-        assert not response.json["nextBeneficiaryValidationStep"]
-
-    @pytest.mark.parametrize(
-        "fraud_check_status,ubble_status,next_step",
-        [
-            (fraud_models.FraudCheckStatus.PENDING, fraud_models.ubble.UbbleIdentificationStatus.INITIATED, "id-check"),
-            (fraud_models.FraudCheckStatus.PENDING, fraud_models.ubble.UbbleIdentificationStatus.PROCESSING, None),
-            (fraud_models.FraudCheckStatus.OK, fraud_models.ubble.UbbleIdentificationStatus.PROCESSED, None),
-            (fraud_models.FraudCheckStatus.KO, fraud_models.ubble.UbbleIdentificationStatus.PROCESSED, None),
-            (fraud_models.FraudCheckStatus.CANCELED, fraud_models.ubble.UbbleIdentificationStatus.ABORTED, "id-check"),
-            (None, fraud_models.ubble.UbbleIdentificationStatus.INITIATED, "id-check"),
-            (None, fraud_models.ubble.UbbleIdentificationStatus.PROCESSING, None),
-            (None, fraud_models.ubble.UbbleIdentificationStatus.PROCESSED, None),
-        ],
-    )
-    @override_features(ENABLE_UBBLE=True)
-    def test_next_beneficiary_validation_step_ubble(self, client, app, fraud_check_status, ubble_status, next_step):
-        user = users_factories.UserFactory(
-            email=self.identifier, dateOfBirth=datetime.now() - relativedelta(years=18, days=5)
-        )
-        client.with_token(user.email)
-
-        response = client.get("/native/v1/me")
-
-        assert response.json["nextBeneficiaryValidationStep"] == "phone-validation"
-        assert response.status_code == 200
-
-        # Perform phone validation and user profiling
-        user.phoneValidationStatus = PhoneValidationStatusType.VALIDATED
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user,
-            type=fraud_models.FraudCheckType.USER_PROFILING,
-            resultContent=fraud_factories.UserProfilingFraudDataFactory(
-                risk_rating=fraud_models.UserProfilingRiskRating.TRUSTED
-            ),
-        )
-
-        response = client.get("/native/v1/me")
-
-        assert response.status_code == 200
-        assert response.json["nextBeneficiaryValidationStep"] == "id-check"
-
-        # Perform first id check with Ubble
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user,
-            type=fraud_models.FraudCheckType.UBBLE,
-            status=fraud_check_status,
-            resultContent=fraud_factories.UbbleContentFactory(status=ubble_status),
-        )
-
-        # Check next step: only a single non-aborted Ubble identification is allowed
-        response = client.get("/native/v1/me")
-
-        assert response.status_code == 200
-        assert response.json["nextBeneficiaryValidationStep"] == next_step
-
     def test_user_messages_passes_pydantic_serialization(self, client):
         user = users_factories.UserFactory()
         client.with_token(user.email)
-
-        subscription_messages.create_message_jouve_manual_review(user, 1)
-        response = client.get("/native/v1/me")
-        assert response.status_code == 200
 
         subscription_messages.on_fraud_review_ko(user)
         response = client.get("/native/v1/me")
@@ -1089,92 +876,6 @@ class GetIdCheckTokenTest:
         assert response.json["code"] == "TOO_MANY_ID_CHECK_TOKEN"
 
 
-@freeze_time("2018-06-01")
-class UploadIdentityDocumentTest:
-    IMAGES_DIR = Path(tests.__path__[0]) / "files"
-
-    @patch("pcapi.core.users.api.verify_identity_document")
-    @patch("pcapi.core.users.utils.store_object")
-    @patch("secrets.token_urlsafe")
-    def test_upload_identity_document_successful(
-        self,
-        mocked_token_urlsafe,
-        mocked_store_object,
-        mocked_verify_identity_document,
-        client,
-        app,
-    ):
-        user = users_factories.UserFactory(dateOfBirth=datetime(2000, 1, 1))
-        token = TokenFactory(user=user, type=TokenType.ID_CHECK)
-        client.with_token(email=user.email)
-        mocked_token_urlsafe.return_value = "a_very_random_secret"
-
-        identity_document = (self.IMAGES_DIR / "mouette_small.jpg").read_bytes()
-        data = {
-            "identityDocumentFile": (BytesIO(identity_document), "image.jpg"),
-            "token": token.value,
-        }
-
-        response = client.post("/native/v1/identity_document", form=data)
-
-        assert response.status_code == 204
-        mocked_store_object.assert_called_once_with(
-            "identity_documents",
-            "a_very_random_secret.jpg",
-            identity_document,
-            content_type="image/jpeg",
-            metadata={"email": user.email},
-        )
-        mocked_verify_identity_document.delay.assert_called_once_with(
-            {"image_storage_path": "identity_documents/a_very_random_secret.jpg"}
-        )
-
-    def test_token_expired(self, client, app):
-        user = users_factories.UserFactory(dateOfBirth=datetime(2000, 1, 1))
-        client.with_token(email=user.email)
-        token = TokenFactory(user=user, type=TokenType.ID_CHECK, expirationDate=datetime(2000, 1, 1))
-
-        thumb = (self.IMAGES_DIR / "pixel.png").read_bytes()
-        data = {"identityDocumentFile": (BytesIO(thumb), "image.jpg"), "token": token.value}
-
-        response = client.post("/native/v1/identity_document", form=data)
-
-        assert response.status_code == 400
-        assert response.json == {"code": "EXPIRED_TOKEN", "message": "Token expiré"}
-
-    def test_token_used(self, client, app):
-        user = users_factories.UserFactory(dateOfBirth=datetime(2000, 1, 1))
-        token = TokenFactory(user=user, type=TokenType.ID_CHECK, isUsed=True)
-
-        thumb = (self.IMAGES_DIR / "pixel.png").read_bytes()
-        data = {
-            "identityDocumentFile": (BytesIO(thumb), "image.jpg"),
-            "token": token.value,
-        }
-
-        client.with_token(email=user.email)
-        response = client.post("/native/v1/identity_document", form=data)
-
-        assert response.status_code == 400
-        assert response.json["code"] == "EXPIRED_TOKEN"
-
-    def test_no_token_found(self, client, app):
-        user = users_factories.UserFactory(dateOfBirth=datetime(2000, 1, 1))
-        token = TokenFactory(user=user, type=TokenType.ID_CHECK, isUsed=True)
-
-        thumb = (self.IMAGES_DIR / "pixel.png").read_bytes()
-        data = {
-            "identityDocumentFile": (BytesIO(thumb), "image.jpg"),
-            "token": f"{token.value}wrongsuffix",
-        }
-
-        client.with_token(email=user.email)
-        response = client.post("/native/v1/identity_document", form=data)
-
-        assert response.status_code == 400
-        assert response.json["code"] == "INVALID_TOKEN"
-
-
 class ShowEligibleCardTest:
     @pytest.mark.parametrize("age,expected", [(17, False), (18, True), (19, False)])
     def test_against_different_age(self, age, expected):
@@ -1666,256 +1367,6 @@ def test_suspend_account(client, app):
     assert booking.status == BookingStatus.CANCELLED
     assert not user.isActive
     assert user.suspensionReason == SuspensionReason.UPON_USER_REQUEST.value
-
-
-class UpdateBeneficiaryInformationTest:
-    def test_update_beneficiary_information(self, client, app):
-        """
-        Test that valid request:
-            * updates the user's id check profile information;
-            * sets the user to beneficiary;
-            * send a request to Batch to update the user's information
-        """
-        user = users_factories.UserFactory(
-            address=None,
-            city=None,
-            dateOfBirth=datetime.now() - relativedelta(years=18, months=2),
-            postalCode=None,
-            activity=None,
-            phoneValidationStatus=PhoneValidationStatusType.VALIDATED,
-            phoneNumber="+33609080706",
-        )
-        fraud_factories.BeneficiaryFraudCheckFactory(user=user, type=fraud_models.FraudCheckType.JOUVE)
-        fraud_factories.BeneficiaryFraudResultFactory(user=user, status=fraud_models.FraudStatus.OK)
-
-        beneficiary_import = BeneficiaryImportFactory(beneficiary=user)
-        beneficiary_import.setStatus(ImportStatus.CREATED)
-
-        profile_data = {
-            "firstName": "John",
-            "lastName": "Doe",
-            "address": "1 rue des rues",
-            "city": "Uneville",
-            "postalCode": "77000",
-            "activity": "Lycéen",
-        }
-
-        client.with_token(email=user.email)
-        response = client.patch("/native/v1/beneficiary_information", profile_data)
-
-        assert response.status_code == 204
-
-        user = User.query.get(user.id)
-        assert user.firstName != "John"
-        assert user.lastName != "Doe"
-        assert user.address == "1 rue des rues"
-        assert user.city == "Uneville"
-        assert user.postalCode == "77000"
-        assert user.activity == "Lycéen"
-        assert user.phoneNumber == "+33609080706"
-
-        assert user.has_beneficiary_role
-        assert user.deposit
-
-        assert len(push_testing.requests) == 2
-        notification = push_testing.requests[0]
-
-        assert notification["user_id"] == user.id
-        assert notification["attribute_values"]["u.is_beneficiary"]
-        assert notification["attribute_values"]["u.postal_code"] == "77000"
-
-    @override_features(ENABLE_PHONE_VALIDATION=False)
-    def test_update_beneficiary_information_without_address(self, client, app):
-        """
-        Test that valid request:
-            * updates the user's id check profile information;
-            * sets the user to beneficiary;
-            * send a request to Batch to update the user's information
-        """
-        user = users_factories.UserFactory(
-            address=None,
-            city=None,
-            dateOfBirth=datetime.now() - relativedelta(years=18, months=2),
-            postalCode=None,
-            activity=None,
-            phoneValidationStatus=PhoneValidationStatusType.VALIDATED,
-        )
-        fraud_factories.BeneficiaryFraudCheckFactory(user=user, type=fraud_models.FraudCheckType.JOUVE)
-        fraud_factories.BeneficiaryFraudResultFactory(user=user, status=fraud_models.FraudStatus.OK)
-
-        beneficiary_import = BeneficiaryImportFactory(beneficiary=user)
-        beneficiary_import.setStatus(ImportStatus.CREATED)
-
-        profile_data = {
-            "address": None,
-            "city": "Uneville",
-            "postalCode": "77000",
-            "activity": "Lycéen",
-            "phone": "0601020304",
-        }
-
-        client.with_token(email=user.email)
-        response = client.patch("/native/v1/beneficiary_information", profile_data)
-
-        assert response.status_code == 204
-
-        user = User.query.get(user.id)
-        assert user.address is None
-        assert user.city == "Uneville"
-        assert user.postalCode == "77000"
-        assert user.activity == "Lycéen"
-        assert user.phoneNumber == "0601020304"
-
-        assert user.has_beneficiary_role
-        assert user.deposit
-
-        assert len(push_testing.requests) == 2
-        notification = push_testing.requests[0]
-
-        assert notification["user_id"] == user.id
-        assert notification["attribute_values"]["u.is_beneficiary"]
-        assert notification["attribute_values"]["u.postal_code"] == "77000"
-
-    @override_features(ENABLE_PHONE_VALIDATION=True)
-    def test_update_beneficiary_phone_number_not_updated(self, client, app):
-        """
-        Test that valid request:
-            * updates the user's id check profile information;
-            * sets the user to beneficiary;
-            * send a request to Batch to update the user's information
-        """
-        user = users_factories.UserFactory(
-            address=None,
-            city=None,
-            dateOfBirth=datetime.now() - relativedelta(years=18, months=2),
-            postalCode=None,
-            activity=None,
-            phoneValidationStatus=PhoneValidationStatusType.VALIDATED,
-        )
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user, type=fraud_models.FraudCheckType.UBBLE, eligibilityType=EligibilityType.AGE18
-        )
-        fraud_factories.BeneficiaryFraudResultFactory(user=user, status=fraud_models.FraudStatus.OK)
-
-        beneficiary_import = BeneficiaryImportFactory(beneficiary=user)
-        beneficiary_import.setStatus(ImportStatus.CREATED)
-
-        profile_data = {
-            "address": None,
-            "city": "Uneville",
-            "postalCode": "77000",
-            "activity": "Lycéen",
-            "phone": "0601020304",
-        }
-
-        client.with_token(email=user.email)
-        response = client.patch("/native/v1/beneficiary_information", profile_data)
-
-        assert response.status_code == 204
-
-        user = User.query.get(user.id)
-        assert user.address is None
-        assert user.city == "Uneville"
-        assert user.postalCode == "77000"
-        assert user.activity == "Lycéen"
-        assert user.phoneNumber is None
-
-        assert user.has_beneficiary_role
-        assert user.deposit
-
-        assert len(push_testing.requests) == 2
-
-    @override_features(ENABLE_PHONE_VALIDATION=True)
-    def test_update_beneficiary_underage(self, client, app):
-        """
-        Test that valid request:
-            * updates the user's id check profile information;
-            * sets the user to beneficiary;
-            * send a request to Batch to update the user's information
-        """
-        user = users_factories.UserFactory(
-            address=None,
-            city=None,
-            dateOfBirth=datetime.now() - relativedelta(years=15, months=4),
-            postalCode=None,
-            activity=None,
-        )
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user, type=fraud_models.FraudCheckType.EDUCONNECT, eligibilityType=EligibilityType.UNDERAGE
-        )
-        fraud_factories.BeneficiaryFraudResultFactory(user=user, status=fraud_models.FraudStatus.OK)
-
-        beneficiary_import = BeneficiaryImportFactory(beneficiary=user, eligibilityType=EligibilityType.UNDERAGE)
-        beneficiary_import.setStatus(ImportStatus.CREATED)
-
-        profile_data = {
-            "address": None,
-            "city": "Uneville",
-            "postalCode": "77000",
-            "activity": "Lycéen",
-            "phone": "0601020304",
-        }
-
-        client.with_token(email=user.email)
-        response = client.patch("/native/v1/beneficiary_information", profile_data)
-
-        assert response.status_code == 204
-
-        user = User.query.get(user.id)
-        assert user.address is None
-        assert user.city == "Uneville"
-        assert user.postalCode == "77000"
-        assert user.activity == "Lycéen"
-        assert user.phoneNumber is None
-
-        assert user.roles == [UserRole.UNDERAGE_BENEFICIARY]
-        assert user.deposit.amount == 20
-
-        assert len(push_testing.requests) == 2
-
-    @override_features(ENABLE_UBBLE=True)
-    @pytest.mark.parametrize("age", [15, 16, 17, 18])
-    def test_update_beneficiary_underage_ubble_eligible(self, age, client, app):
-        """
-        Test that valid request:
-            * updates the user's id check profile information;
-            * sets the user to beneficiary;
-            * send a request to Batch to update the user's information
-        """
-        assert FeatureToggle.ENABLE_UBBLE.is_active()
-
-        user = users_factories.UserFactory(
-            address=None,
-            city=None,
-            postalCode=None,
-            activity=None,
-            phoneValidationStatus=PhoneValidationStatusType.VALIDATED,
-            phoneNumber="+33609080706",
-            dateOfBirth=date.today() - relativedelta(years=age, months=6),
-        )
-
-        profile_data = {
-            "firstName": "John",
-            "lastName": "Doe",
-            "address": "1 rue des rues",
-            "city": "Uneville",
-            "postalCode": "77000",
-            "activity": "Lycéen",
-        }
-
-        client.with_token(user.email)
-        response = client.patch("/native/v1/beneficiary_information", profile_data)
-
-        assert response.status_code == 204
-
-        user = User.query.get(user.id)
-        assert user.firstName != "John"
-        assert user.lastName != "Doe"
-        assert user.address == "1 rue des rues"
-        assert user.city == "Uneville"
-        assert user.postalCode == "77000"
-        assert user.activity == "Lycéen"
-        assert user.phoneNumber == "+33609080706"
 
 
 class ProfilingFraudScoreTest:

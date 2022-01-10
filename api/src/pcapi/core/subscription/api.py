@@ -182,7 +182,6 @@ def needs_to_perform_identity_check(user: users_models.User) -> bool:
     return (
         not user.hasCompletedIdCheck
         and not (fraud_api.has_user_performed_ubble_check(user) and FeatureToggle.ENABLE_UBBLE.is_active())
-        and not user.extraData.get("is_identity_document_uploaded")  # Jouve
         and not (fraud_api.has_passed_educonnect(user) and user.eligibility == users_models.EligibilityType.UNDERAGE)
     )
 
@@ -419,15 +418,11 @@ def get_allowed_identity_check_methods(user: users_models.User) -> list[models.I
         if is_identity_check_with_document_method_allowed_for_underage(user):
             if FeatureToggle.ENABLE_UBBLE.is_active() and _is_ubble_allowed_if_subscription_overflow(user):
                 allowed_methods.append(models.IdentityCheckMethod.UBBLE)
-            if not FeatureToggle.ENABLE_UBBLE.is_active():
-                allowed_methods.append(models.IdentityCheckMethod.JOUVE)
 
     elif user.eligibility == users_models.EligibilityType.AGE18:
         if FeatureToggle.ALLOW_IDCHECK_REGISTRATION.is_active():
             if FeatureToggle.ENABLE_UBBLE.is_active() and _is_ubble_allowed_if_subscription_overflow(user):
                 allowed_methods.append(models.IdentityCheckMethod.UBBLE)
-            if not FeatureToggle.ENABLE_UBBLE.is_active():
-                allowed_methods.append(models.IdentityCheckMethod.JOUVE)
 
     return allowed_methods
 

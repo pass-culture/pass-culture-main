@@ -22,7 +22,7 @@ class FeatureToggle(enum.Enum):
     ALLOW_EMPTY_USER_PROFILING = "Autorise les inscriptions de bénéficiaires sans profile Threat Metrix"
     ALLOW_IDCHECK_REGISTRATION = "Autoriser les utilisateurs de 18 ans à suivre le parcours d inscription ID Check"
     ALLOW_IDCHECK_REGISTRATION_FOR_EDUCONNECT_ELIGIBLE = (
-        "Autoriser la redirection vers Jouve/Ubble (en backup) pour les utilisateurs éligibles à éduconnect"
+        "Autoriser la redirection vers Ubble (en backup) pour les utilisateurs éligibles à éduconnect"
     )
     ALLOW_IDCHECK_UNDERAGE_REGISTRATION = (
         "Autoriser les utilisateurs de moins de 15 à 17 ans à suivre le parcours d inscription ID Check"
@@ -79,7 +79,6 @@ class FeatureToggle(enum.Enum):
     IS_HONOR_STATEMENT_MANDATORY_TO_ACTIVATE_BENEFICIARY = "Vérifier que l'utilisateur a bien rempli l'étape de confirmation sur l'honneur avant d'activer son compte bénéficiaire"  # TODO (vionnex) remove after v164 is forced on native app
     IMPROVE_BOOKINGS_PERF = "Améliore les performances pour la page pro des réservations"
     OFFER_VALIDATION_MOCK_COMPUTATION = "Active le calcul automatique de validation d'offre depuis le nom de l'offre"
-    PAUSE_JOUVE_SUBSCRIPTION = "Mettre en pause les inscriptions depuis JOUVE"
     PERF_VENUE_STATS = "Permet de basculer vers une nouvelle implémentation performante de la page d'accueil pro contenant les indicateurs statistiques par venue"
     PRICE_BOOKINGS = "Active la valorisation des réservations"
     PRO_REIMBURSEMENTS_FILTERS = "Permet de filtrer la liste de remboursements"
@@ -137,7 +136,6 @@ FEATURES_DISABLED_BY_DEFAULT = (
     FeatureToggle.ENABLE_NEW_VENUE_PAGES,
     FeatureToggle.ENABLE_PRO_BOOKINGS_V2,
     FeatureToggle.ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS,
-    FeatureToggle.ENABLE_UBBLE,
     FeatureToggle.ENABLE_UBBLE_SUBSCRIPTION_LIMITATION,
     FeatureToggle.ENABLE_UNDERAGE_GENERALISATION,
     FeatureToggle.ENABLE_VENUE_WITHDRAWAL_DETAILS,
@@ -147,7 +145,6 @@ FEATURES_DISABLED_BY_DEFAULT = (
     FeatureToggle.GENERATE_CASHFLOWS_BY_CRON,
     FeatureToggle.ID_CHECK_ADDRESS_AUTOCOMPLETION,
     FeatureToggle.IS_HONOR_STATEMENT_MANDATORY_TO_ACTIVATE_BENEFICIARY,
-    FeatureToggle.PAUSE_JOUVE_SUBSCRIPTION,
     FeatureToggle.PERF_VENUE_STATS,
     FeatureToggle.PRICE_BOOKINGS,
     FeatureToggle.PRO_REIMBURSEMENTS_FILTERS,

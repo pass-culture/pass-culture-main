@@ -20,18 +20,15 @@ from google.cloud.storage.blob import Blob
 from redis import Redis
 
 from pcapi import settings
-from pcapi.connectors.beneficiaries.id_check_middleware import ask_for_identity_document_verification
 import pcapi.core.bookings.models as bookings_models
 import pcapi.core.bookings.repository as bookings_repository
 import pcapi.core.fraud.api as fraud_api
 import pcapi.core.fraud.models as fraud_models
 from pcapi.core.mails.transactional import users as user_emails
 from pcapi.core.mails.transactional.users.email_address_change_confirmation import send_email_confirmation_email
-from pcapi.core.mails.transactional.users.subscription_document_error import send_subscription_document_error_email
 import pcapi.core.payments.api as payment_api
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import exceptions as subscription_exceptions
-from pcapi.core.subscription import messages as subscription_messages
 import pcapi.core.subscription.repository as subscription_repository
 from pcapi.core.users import utils as users_utils
 from pcapi.core.users.external import update_external_user
@@ -61,8 +58,6 @@ from pcapi.notifications.sms.sending_limit import update_sent_SMS_counter
 from pcapi.repository import repository
 from pcapi.routes.serialization.users import ProUserCreationBodyModel
 from pcapi.tasks import batch_tasks
-from pcapi.tasks.account import VerifyIdentityDocumentRequest
-from pcapi.tasks.account import verify_identity_document
 from pcapi.utils import phone_number as phone_number_utils
 
 from . import constants
@@ -781,35 +776,6 @@ def check_sms_sending_is_allowed(user: User) -> None:
         raise exceptions.SMSSendingLimitReached()
 
 
-def get_id_check_validation_step(user: User) -> Optional[BeneficiaryValidationStep]:
-    if not user.hasCompletedIdCheck and user.legacy_allowed_eligibility_check_methods:
-        if not user.extraData.get("is_identity_document_uploaded"):
-            return BeneficiaryValidationStep.ID_CHECK
-        return BeneficiaryValidationStep.BENEFICIARY_INFORMATION
-    return None
-
-
-def get_next_beneficiary_validation_step(user: User) -> Optional[BeneficiaryValidationStep]:
-    """
-    This function is for legacy use. Now replaced with pcapi.core.subscription.get_next_subscription_step
-    """
-    if is_eligible_for_beneficiary_upgrade(user, user.eligibility):
-        if user.eligibility == EligibilityType.AGE18:
-            if not user.is_phone_validated and FeatureToggle.ENABLE_PHONE_VALIDATION.is_active():
-                return BeneficiaryValidationStep.PHONE_VALIDATION
-
-            if not (
-                fraud_api.is_risky_user_profile(user)
-                or (fraud_api.has_user_performed_ubble_check(user) and FeatureToggle.ENABLE_UBBLE.is_active())
-            ):
-                return get_id_check_validation_step(user)
-
-        elif user.eligibility == EligibilityType.UNDERAGE:
-            return get_id_check_validation_step(user)
-
-    return None
-
-
 def validate_token(userId: int, token_value: str) -> Token:
     token = Token.query.filter(
         Token.userId == userId, Token.value == token_value, Token.type == TokenType.ID_CHECK
@@ -822,30 +788,6 @@ def validate_token(userId: int, token_value: str) -> Token:
         raise exceptions.ExpiredCode()
 
     return token
-
-
-def asynchronous_identity_document_verification(image: bytes, email: str) -> None:
-    image_name = secrets.token_urlsafe(64) + ".jpg"
-    image_storage_path = f"identity_documents/{image_name}"
-    try:
-        users_utils.store_object(
-            "identity_documents",
-            image_name,
-            image,
-            content_type="image/jpeg",
-            metadata={"email": email},
-        )
-    except Exception as exception:
-        logger.exception("An error has occured while trying to upload image to encrypted gcp bucket: %s", exception)
-        raise exceptions.IdentityDocumentUploadException()
-
-    try:
-        verify_identity_document.delay(VerifyIdentityDocumentRequest(image_storage_path=image_storage_path))
-    except Exception as exception:
-        logger.exception("An error has occured while trying to add cloudtask in queue: %s", exception)
-        users_utils.delete_object(image_storage_path)
-        raise exceptions.CloudTaskCreationException()
-    return
 
 
 def _get_identity_document_informations(image_storage_path: str) -> Tuple[str, bytes]:
@@ -862,25 +804,6 @@ def _get_identity_document_informations(image_storage_path: str) -> Tuple[str, b
     image = image_blob.download_as_bytes()
 
     return (email, image)
-
-
-def verify_identity_document_informations(image_storage_path: str) -> None:
-    email, image = _get_identity_document_informations(image_storage_path)
-    valid, code = ask_for_identity_document_verification(email, image)
-    if not valid:
-        send_subscription_document_error_email(email, code)
-        fraud_api.handle_document_validation_error(email, code)
-        user = find_user_by_email(email)
-        if user:
-            message_function = {
-                "invalid-age": subscription_messages.on_idcheck_invalid_age,
-                "invalid-document": subscription_messages.on_idcheck_invalid_document,
-                "invalid-document-date": subscription_messages.on_idcheck_invalid_document_date,
-                "unread-document": subscription_messages.on_id_check_unread_document,
-                "unread-mrz-document": subscription_messages.on_idcheck_unread_mrz,
-            }.get(code, lambda x: None)
-            message_function(user)
-    users_utils.delete_object(image_storage_path)
 
 
 @contextmanager

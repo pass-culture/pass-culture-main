@@ -48,7 +48,7 @@ class BeneficiaryImportFactory(BaseFactory):
 
     applicationId = factory.Sequence(lambda n: n)
     beneficiary = factory.SubFactory("pcapi.core.users.factories.UserFactory")
-    source = BeneficiaryImportSources.jouve.value
+    source = BeneficiaryImportSources.ubble.value
 
 
 class UserFactory(BaseFactory):
@@ -181,7 +181,7 @@ class BeneficiaryGrant18Factory(BaseFactory):
             beneficiary=obj,
             source=BeneficiaryImportSources.educonnect.value
             if obj.eligibility == users_models.EligibilityType.UNDERAGE
-            else BeneficiaryImportSources.jouve.value,
+            else BeneficiaryImportSources.ubble.value,
             eligibilityType=obj.eligibility,
         )
         BeneficiaryImportStatusFactory(beneficiaryImport=beneficiary_import, author=None)
@@ -199,7 +199,7 @@ class BeneficiaryGrant18Factory(BaseFactory):
             status=fraud_models.FraudCheckStatus.OK,
             type=fraud_models.FraudCheckType.EDUCONNECT
             if obj.eligibility == users_models.EligibilityType.UNDERAGE
-            else fraud_models.FraudCheckType.JOUVE,
+            else fraud_models.FraudCheckType.UBBLE,
             resultContent=fraud_factories.EduconnectContentFactory(
                 first_name=obj.firstName,
                 last_name=obj.lastName,
@@ -207,7 +207,7 @@ class BeneficiaryGrant18Factory(BaseFactory):
                 ine_hash=obj.ineHash or "".join(random.choices(string.ascii_lowercase + string.digits, k=32)),
             )
             if obj.eligibility == users_models.EligibilityType.UNDERAGE
-            else fraud_factories.JouveContentFactory(firstName=obj.firstName, lastName=obj.lastName),
+            else fraud_factories.UbbleContentFactory(first_name=obj.firstName, last_name=obj.lastName),
             eligibilityType=users_models.EligibilityType.UNDERAGE
             if obj.eligibility == users_models.EligibilityType.UNDERAGE
             else users_models.EligibilityType.AGE18,
