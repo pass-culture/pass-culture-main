@@ -38,7 +38,7 @@ describe('src | components | layout | Banner', () => {
       // then
       expect(screen.getByText(message).closest('div')).toHaveAttribute(
         'class',
-        'bi-banner attention '
+        'bi-banner attention'
       )
     })
 
@@ -53,7 +53,7 @@ describe('src | components | layout | Banner', () => {
       // then
       expect(screen.getByText(message).closest('div')).toHaveAttribute(
         'class',
-        'bi-banner notification-info '
+        'bi-banner notification-info'
       )
     })
   })
