@@ -137,12 +137,12 @@ const EventStocks = ({
     })
   }, [])
 
-  const areValid = (stocks, isEvent, isEducational) => {
+  const areValid = stocks => {
     const stocksErrors = stocks.reduce((stocksErrors, stock) => {
       const isNewStock = stock.id === undefined
       const stockErrors = isNewStock
-        ? validateCreatedStock(stock, isEvent, isEducational)
-        : validateUpdatedStock(stock, isEvent, isEducational)
+        ? validateCreatedStock(stock)
+        : validateUpdatedStock(stock)
       const stockHasErrors = Object.keys(stockErrors).length > 0
       return stockHasErrors
         ? { ...stocksErrors, [stock.key]: stockErrors }
@@ -166,13 +166,7 @@ const EventStocks = ({
 
   const submitStocks = useCallback(() => {
     const updatedStocks = existingStocks.filter(stock => stock.updated)
-    if (
-      areValid(
-        [...stocksInCreation, ...updatedStocks],
-        offer.isEvent,
-        offer.isEducational
-      )
-    ) {
+    if (areValid([...stocksInCreation, ...updatedStocks])) {
       setIsSendingStocksOfferCreation(true)
       const stocksToCreate = stocksInCreation.map(stockInCreation =>
         createEventStockPayload(stockInCreation, offer.venue.departementCode)
@@ -224,8 +218,6 @@ const EventStocks = ({
     location,
     stocksInCreation,
     offer.id,
-    offer.isEducational,
-    offer.isEvent,
     isOfferDraft,
     offer.venue.departementCode,
     loadStocks,

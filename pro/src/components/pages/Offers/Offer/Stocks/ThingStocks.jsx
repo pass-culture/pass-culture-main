@@ -111,11 +111,11 @@ const ThingStocks = ({
     }))
   }, [])
 
-  const checkStockIsValid = (stock, isEvent, isEducational) => {
+  const checkStockIsValid = stock => {
     const isNewStock = stock.id === undefined
     const stockErrors = isNewStock
-      ? validateCreatedStock(stock, isEvent, isEducational)
-      : validateUpdatedStock(stock, isEvent, isEducational)
+      ? validateCreatedStock(stock)
+      : validateUpdatedStock(stock)
     const stockHasErrors = Object.keys(stockErrors).length > 0
 
     if (stockHasErrors) {
@@ -132,7 +132,7 @@ const ThingStocks = ({
   }
 
   const submitStocks = useCallback(() => {
-    if (checkStockIsValid(stock, offer.isEvent, offer.isEducational)) {
+    if (checkStockIsValid(stock)) {
       setEnableSubmitButtonSpinner(true)
       const stockToCreateOrEdit = {
         ...createThingStockPayload(stock, offer.venue.departementCode),
@@ -194,8 +194,6 @@ const ThingStocks = ({
     history,
     location,
     offer.id,
-    offer.isEducational,
-    offer.isEvent,
     isOfferDraft,
     offer.venue.departementCode,
     loadStocks,
