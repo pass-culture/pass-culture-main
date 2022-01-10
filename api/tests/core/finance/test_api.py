@@ -1,5 +1,6 @@
 import csv
 import datetime
+from decimal import Decimal
 import io
 from unittest import mock
 import zipfile
@@ -302,7 +303,7 @@ class PriceBookingsTest:
 
 class GenerateCashflowsTest:
     def test_basics(self):
-        business_unit1 = factories.BusinessUnitFactory()
+        business_unit1 = factories.BusinessUnitFactory(siret="85331845900023")
         pricing11 = factories.PricingFactory(
             status=models.PricingStatus.VALIDATED,
             businessUnit=business_unit1,
@@ -628,3 +629,241 @@ class EditBusinessUnitTest:
 
         with pytest.raises(exceptions.InvalidSiret):
             api.edit_business_unit(business_unit, siret=existing.siret)
+
+
+@pytest.fixture(name="invoice_data")
+def invoice_test_data():
+    venue = offers_factories.VenueFactory(
+        siret="85331845900023",
+        businessUnit__name="SARL LIBRAIRIE BOOKING",
+        businessUnit__bankAccount__iban="FR2710010000000000000000064",
+    )
+
+    business_unit = venue.businessUnit
+    thing_offer1 = offers_factories.ThingOfferFactory(venue=venue)
+    thing_offer2 = offers_factories.ThingOfferFactory(venue=venue)
+    book_offer1 = offers_factories.OfferFactory(venue=venue, subcategoryId=subcategories.LIVRE_PAPIER.id)
+    book_offer2 = offers_factories.OfferFactory(venue=venue, subcategoryId=subcategories.LIVRE_PAPIER.id)
+    digital_offer1 = offers_factories.DigitalOfferFactory(venue=venue)
+    digital_offer2 = offers_factories.DigitalOfferFactory(venue=venue)
+    custom_rule_offer1 = offers_factories.ThingOfferFactory(venue=venue)
+    payments_factories.CustomReimbursementRuleFactory(rate=0.94, offer=custom_rule_offer1)
+    custom_rule_offer2 = offers_factories.ThingOfferFactory(venue=venue)
+    payments_factories.CustomReimbursementRuleFactory(amount=22, offer=custom_rule_offer2)
+
+    stocks = [
+        offers_factories.StockFactory(offer=thing_offer1, price=30),
+        offers_factories.StockFactory(offer=book_offer1, price=20),
+        offers_factories.StockFactory(offer=thing_offer2, price=19_950),
+        offers_factories.StockFactory(offer=thing_offer2, price=80),
+        offers_factories.StockFactory(offer=book_offer2, price=40),
+        offers_factories.StockFactory(offer=digital_offer1, price=27),
+        offers_factories.StockFactory(offer=digital_offer2, price=31),
+        offers_factories.StockFactory(offer=custom_rule_offer1, price=20),
+        offers_factories.StockFactory(offer=custom_rule_offer2, price=23),
+    ]
+    return business_unit, stocks
+
+
+class GenerateInvoiceTest:
+    EXPECTED_NUM_QUERIES = (
+        1  # select cashflows, pricings, pricing_lines, and custom_reimbursement_rules
+        + 1  # insert invoice
+        + 1  # insert invoice lines
+        + 1  # select cashflows
+        + 1  # insert invoice_cashflows
+        + 1  # commit
+    )
+
+    def test_one_regular_rule_one_rate(self):
+        venue = offers_factories.VenueFactory(siret="85331845900023")
+        business_unit = venue.businessUnit
+        offer = offers_factories.ThingOfferFactory(venue=venue)
+        stock = offers_factories.ThingStockFactory(offer=offer, price=20)
+        booking1 = bookings_factories.UsedBookingFactory(stock=stock)
+        booking2 = bookings_factories.UsedBookingFactory(stock=stock)
+        api.price_booking(booking1)
+        api.price_booking(booking2)
+        api.generate_cashflows(datetime.datetime.utcnow())
+        cashflows = (
+            models.Cashflow.query.join(models.Cashflow.pricings)
+            .filter(models.Pricing.businessUnitId == business_unit.id)
+            .all()
+        )
+        cashflow_ids = [c.id for c in cashflows]
+        with assert_num_queries(self.EXPECTED_NUM_QUERIES):
+            invoice = api._generate_invoice(
+                reference="JUSTIFICATIF #1", business_unit_id=business_unit.id, cashflow_ids=cashflow_ids
+            )
+
+        assert invoice.reference == "JUSTIFICATIF #1"
+        assert invoice.businessUnit == business_unit
+        assert invoice.amount == -40 * 100
+        assert len(invoice.lines) == 1
+        line = invoice.lines[0]
+        assert line.group == {"label": "Barème général", "position": 1}
+        assert line.contribution_amount == 0
+        assert line.reimbursed_amount == -40 * 100
+        assert line.rate == 1
+        assert line.label == "Montant remboursé"
+
+    def test_two_regular_rules_two_rates(self):
+        venue = offers_factories.VenueFactory(siret="85331845900023")
+        business_unit = venue.businessUnit
+        offer = offers_factories.ThingOfferFactory(venue=venue)
+        stock1 = offers_factories.ThingStockFactory(offer=offer, price=19_850)
+        stock2 = offers_factories.ThingStockFactory(offer=offer, price=160)
+        booking1 = bookings_factories.UsedBookingFactory(stock=stock1)
+        booking2 = bookings_factories.UsedBookingFactory(stock=stock2)
+        api.price_booking(booking1)
+        api.price_booking(booking2)
+        api.generate_cashflows(datetime.datetime.utcnow())
+        cashflows = (
+            models.Cashflow.query.join(models.Cashflow.pricings)
+            .filter(models.Pricing.businessUnitId == business_unit.id)
+            .all()
+        )
+        cashflow_ids = [c.id for c in cashflows]
+
+        with assert_num_queries(self.EXPECTED_NUM_QUERIES):
+            invoice = api._generate_invoice(
+                reference="JUSTIFICATIF #2", business_unit_id=business_unit.id, cashflow_ids=cashflow_ids
+            )
+
+        assert invoice.reference == "JUSTIFICATIF #2"
+        assert invoice.businessUnit == business_unit
+        # 100% of 19_850*100 + 95% of 160*100 aka 152*100
+        assert invoice.amount == -20_002 * 100
+        assert len(invoice.lines) == 2
+        invoice_lines = sorted(invoice.lines, key=lambda x: x.rate, reverse=True)
+
+        line_rate_1 = invoice_lines[0]
+        assert line_rate_1.group == {"label": "Barème général", "position": 1}
+        assert line_rate_1.contribution_amount == 0
+        assert line_rate_1.reimbursed_amount == -19_850 * 100
+        assert line_rate_1.rate == 1
+        assert line_rate_1.label == "Montant remboursé"
+        line_rate_0_95 = invoice_lines[1]
+        assert line_rate_0_95.group == {"label": "Barème général", "position": 1}
+        assert line_rate_0_95.contribution_amount == 8 * 100
+        assert line_rate_0_95.reimbursed_amount == -152 * 100
+        assert line_rate_0_95.rate == Decimal("0.95")
+        assert line_rate_0_95.label == "Montant remboursé"
+
+    def test_one_custom_rule(self):
+        venue = offers_factories.VenueFactory(siret="85331845900023")
+        business_unit = venue.businessUnit
+        offer = offers_factories.ThingOfferFactory(venue=venue)
+        stock = offers_factories.ThingStockFactory(offer=offer, price=23)
+        payments_factories.CustomReimbursementRuleFactory(amount=22, offer=offer)
+        booking1 = bookings_factories.UsedBookingFactory(stock=stock)
+        booking2 = bookings_factories.UsedBookingFactory(stock=stock)
+        api.price_booking(booking1)
+        api.price_booking(booking2)
+        api.generate_cashflows(datetime.datetime.utcnow())
+        cashflows = (
+            models.Cashflow.query.join(models.Cashflow.pricings)
+            .filter(models.Pricing.businessUnitId == business_unit.id)
+            .all()
+        )
+        cashflow_ids = [c.id for c in cashflows]
+
+        with assert_num_queries(self.EXPECTED_NUM_QUERIES):
+            invoice = api._generate_invoice(
+                reference="JUSTIFICATIF #3", business_unit_id=business_unit.id, cashflow_ids=cashflow_ids
+            )
+
+        assert invoice.reference == "JUSTIFICATIF #3"
+        assert invoice.businessUnit == business_unit
+        assert invoice.amount == -4400
+        assert len(invoice.lines) == 1
+        line = invoice.lines[0]
+        assert line.group == {"label": "Barème dérogatoire", "position": 4}
+        assert line.contribution_amount == 200
+        assert line.reimbursed_amount == -4400
+        assert line.rate == Decimal("0.9565")
+        assert line.label == "Montant remboursé"
+
+    def test_many_rules_and_rates_two_cashflows(self, invoice_data):
+        business_unit, stocks = invoice_data
+        bookings = []
+        for stock in stocks:
+            booking = bookings_factories.UsedBookingFactory(stock=stock)
+            bookings.append(booking)
+        for booking in bookings[:3]:
+            api.price_booking(booking)
+        api.generate_cashflows(cutoff=datetime.datetime.utcnow())
+        for booking in bookings[3:]:
+            api.price_booking(booking)
+        api.generate_cashflows(cutoff=datetime.datetime.utcnow())
+        cashflows = (
+            models.Cashflow.query.join(models.Cashflow.pricings)
+            .filter(models.Pricing.businessUnitId == business_unit.id)
+            .all()
+        )
+        cashflow_ids = [c.id for c in cashflows]
+
+        with assert_num_queries(self.EXPECTED_NUM_QUERIES):
+            invoice = api._generate_invoice(
+                reference="JUSTIFICATIF #4", business_unit_id=business_unit.id, cashflow_ids=cashflow_ids
+            )
+
+        assert len(invoice.cashflows) == 2
+        assert invoice.reference == "JUSTIFICATIF #4"
+        assert invoice.businessUnit == business_unit
+        assert invoice.amount == -20_154.8 * 100
+        # général 100%, général 95%, livre 100%, livre 95%, pas remboursé, custom 1, custom 2
+        assert len(invoice.lines) == 7
+
+        # sort by group position asc then rate desc, as displayed in the PDF
+        invoice_lines = sorted(invoice.lines, key=lambda k: (k.group["position"], -k.rate))
+
+        line0 = invoice_lines[0]
+        assert line0.group == {"label": "Barème général", "position": 1}
+        assert line0.contribution_amount == 0
+        assert line0.reimbursed_amount == -19_980 * 100  # 19_950 + 30
+        assert line0.rate == Decimal("1.0000")
+        assert line0.label == "Montant remboursé"
+
+        line1 = invoice_lines[1]
+        assert line1.group == {"label": "Barème général", "position": 1}
+        assert line1.contribution_amount == 4 * 100
+        assert line1.reimbursed_amount == -76 * 100
+        assert line1.rate == Decimal("0.9500")
+        assert line1.label == "Montant remboursé"
+
+        line2 = invoice_lines[2]
+        assert line2.group == {"label": "Barème livres", "position": 2}
+        assert line2.contribution_amount == 0
+        assert line2.reimbursed_amount == -20 * 100
+        assert line2.rate == Decimal("1.0000")
+        assert line2.label == "Montant remboursé"
+
+        line3 = invoice_lines[3]
+        assert line3.group == {"label": "Barème livres", "position": 2}
+        assert line3.contribution_amount == 2 * 100
+        assert line3.reimbursed_amount == -38 * 100
+        assert line3.rate == Decimal("0.9500")
+        assert line3.label == "Montant remboursé"
+
+        line4 = invoice_lines[4]
+        assert line4.group == {"label": "Barème non remboursé", "position": 3}
+        assert line4.contribution_amount == 58 * 100
+        assert line4.reimbursed_amount == 0
+        assert line4.rate == Decimal("0.0000")
+        assert line4.label == "Montant remboursé"
+
+        line5 = invoice_lines[5]
+        assert line5.group == {"label": "Barème dérogatoire", "position": 4}
+        assert line5.contribution_amount == 100
+        assert line5.reimbursed_amount == -22 * 100
+        assert line5.rate == Decimal("0.9565")
+        assert line5.label == "Montant remboursé"
+
+        line6 = invoice_lines[6]
+        assert line6.group == {"label": "Barème dérogatoire", "position": 4}
+        assert line6.contribution_amount == 1.2 * 100
+        assert line6.reimbursed_amount == -18.8 * 100
+        assert line6.rate == Decimal("0.9400")
+        assert line6.label == "Montant remboursé"
+

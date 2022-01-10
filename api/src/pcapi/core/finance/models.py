@@ -5,7 +5,7 @@ signed:
 - a negative amount will be outgoing (payable by us to someone);
 - a positive amount will be incoming (payable to us by someone).
 """
-
+import dataclasses
 import enum
 import typing
 
@@ -200,6 +200,7 @@ class Cashflow(Model):
 
     logs = sqla_orm.relationship("CashflowLog", back_populates="cashflow", order_by="CashflowLog.timestamp")
     pricings = sqla_orm.relationship("Pricing", secondary="cashflow_pricing", back_populates="cashflows")
+    invoices = sqla_orm.relationship("Invoice", secondary="invoice_cashflow", back_populates="cashflows")
 
     __table_args__ = (sqla.CheckConstraint('("amount" != 0)', name="non_zero_amount_check"),)
 
@@ -258,6 +259,39 @@ class CashflowBatch(Model):
     cutoff = sqla.Column(sqla.DateTime, nullable=False, unique=True)
 
 
+class InvoiceLine(Model):
+    id = sqla.Column(sqla.BigInteger, primary_key=True, autoincrement=True)
+    invoiceId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("invoice.id"), index=True, nullable=False)
+    invoice = sqla_orm.relationship("Invoice", foreign_keys=[invoiceId], back_populates="lines")
+    label = sqla.Column(sqla.Text, nullable=False)
+    # a group is a dict of label and position, as defined in ..conf.InvoiceLineGroup
+    group = sqla.Column(sqla_psql.JSONB, nullable=False)
+    contribution_amount = sqla.Column(sqla.Integer, nullable=False)
+    reimbursed_amount = sqla.Column(sqla.Integer, nullable=False)
+    rate = sqla.Column(
+        sqla.Numeric(5, 4, asdecimal=True),
+        nullable=False,
+    )
+
+    @property
+    def get_bookings_amount(self):
+        return self.reimbursed_amount - self.contribution_amount
+
+    @property
+    def contribution_rate(self):
+        return 1 - self.rate
+
+
+@dataclasses.dataclass
+class InvoiceLineGroup:
+    position: int
+    label: str
+    lines: list[InvoiceLine]
+    used_bookings_subtotal: float
+    contribution_subtotal: float
+    reimbursed_amount_subtotal: float
+
+
 class Invoice(Model):
     """An invoice is linked to one or more cashflows and shows a summary
     of their related pricings.
@@ -270,4 +304,21 @@ class Invoice(Model):
     businessUnit = sqla_orm.relationship("BusinessUnit", back_populates="invoices")
     # See the note about `amount` at the beginning of this module.
     amount = sqla.Column(sqla.Integer, nullable=False)
-    url = sqla.Column(sqla.Text, nullable=False, unique=True)
+    token = sqla.Column(sqla.Text, unique=True, nullable=False)
+    lines = sqla_orm.relationship("InvoiceLine", back_populates="invoice")
+    cashflows = sqla_orm.relationship("Cashflow", secondary="invoice_cashflow", back_populates="invoices")
+
+
+class InvoiceCashflow(Model):
+    """An association table between invoices and cashflows for their many-to-many relationship."""
+
+    invoiceId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("invoice.id"), index=True, primary_key=True)
+    cashflowId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("cashflow.id"), index=True, primary_key=True)
+
+    __table_args__ = (
+        sqla.UniqueConstraint(
+            "invoiceId",
+            "cashflowId",
+            name="unique_invoice_cashflow_association",
+        ),
+    )

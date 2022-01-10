@@ -11,6 +11,7 @@ from sqlalchemy.dialects import postgresql
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql.sqltypes import SmallInteger
 
+from pcapi.core.finance import conf as finance_conf
 from pcapi.models import Model
 from pcapi.models.pc_object import PcObject
 
@@ -46,6 +47,10 @@ class ReimbursementRule:
 
     def apply(self, booking: "Booking") -> Decimal:
         return Decimal(booking.total_amount * self.rate)
+
+    @property
+    def group(self) -> str:
+        raise NotImplementedError()
 
 
 class CustomReimbursementRule(ReimbursementRule, Model):
@@ -123,6 +128,10 @@ class CustomReimbursementRule(ReimbursementRule, Model):
     @property
     def description(self):  # implementation of ReimbursementRule.description
         raise TypeError("A custom reimbursement rule does not have any description")
+
+    @property
+    def group(self):
+        return finance_conf.RuleGroups.CUSTOM
 
 
 class DepositType(enum.Enum):

@@ -28,7 +28,7 @@ class PricingFactory(BaseFactory):
     siret = factory.SelfAttribute("booking.venue.siret")
     valueDate = factory.SelfAttribute("booking.dateUsed")
     amount = LazyAttribute(lambda pricing: -int(100 * pricing.booking.total_amount))
-    standardRule = "full reimbursement"
+    standardRule = "Remboursement total pour les offres physiques"
     revenue = LazyAttribute(lambda pricing: int(100 * pricing.booking.total_amount))
 
 

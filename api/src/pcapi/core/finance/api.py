@@ -1,8 +1,12 @@
+from collections import defaultdict
 import csv
 import datetime
 import decimal
+import itertools
 import logging
+from operator import attrgetter
 import pathlib
+import secrets
 import tempfile
 import typing
 import zipfile
@@ -26,6 +30,7 @@ from pcapi.repository import transaction
 from pcapi.repository import user_queries
 from pcapi.utils import human_ids
 
+from . import conf
 from . import exceptions
 from . import models
 from . import utils
@@ -655,3 +660,97 @@ def edit_business_unit(business_unit: models.BusinessUnit, siret: str) -> None:
     business_unit.siret = siret
     db.session.add(business_unit)
     db.session.commit()
+
+
+def _find_reimbursement_rule(rule_reference: [str, int]) -> payments_models.ReimbursementRule:
+    # regular rule description
+    if isinstance(rule_reference, str):
+        for regular_rule in reimbursement.REGULAR_RULES:
+            if rule_reference == regular_rule.description:
+                return regular_rule
+    # CustomReimbursementRule.id
+    return payments_models.CustomReimbursementRule.query.get(rule_reference)
+
+
+def _make_invoice_line(invoice: models.Invoice, group: conf.RuleGroups, pricings: list):
+    reimbursed_amount = 0
+    flat_lines = list(itertools.chain.from_iterable(pricing.lines for pricing in pricings))
+    # positive
+    contribution_amount = sum(
+        line.amount for line in flat_lines if line.category == models.PricingLineCategory.OFFERER_CONTRIBUTION
+    )
+    # negative
+    offerer_revenue = sum(
+        line.amount for line in flat_lines if line.category == models.PricingLineCategory.OFFERER_REVENUE
+    )
+    passculture_commission = sum(
+        line.amount for line in flat_lines if line.category == models.PricingLineCategory.PASS_CULTURE_COMMISSION
+    )
+
+    reimbursed_amount += offerer_revenue + contribution_amount + passculture_commission
+
+    rate = decimal.Decimal(reimbursed_amount / offerer_revenue).quantize(decimal.Decimal("0.0001"))
+    invoice_line = models.InvoiceLine(
+        label="Montant remboursé",
+        group=group.value,
+        contribution_amount=contribution_amount,
+        reimbursed_amount=reimbursed_amount,
+        rate=rate,
+    )
+    return invoice_line, reimbursed_amount
+
+
+def generate_invoice(reference: str, business_unit_id: int, cashflow_ids: list[int]):
+def _generate_invoice(reference: str, business_unit_id: int, cashflow_ids: list[int]):
+    invoice = models.Invoice(
+        reference=reference,
+        businessUnitId=business_unit_id,
+    )
+    total_reimbursed_amount = 0
+    cashflows = models.Cashflow.query.filter(models.Cashflow.id.in_(cashflow_ids)).options(
+        sqla_orm.joinedload(models.Cashflow.pricings)
+        .options(sqla_orm.joinedload(models.Pricing.lines))
+        .options(sqla_orm.joinedload(models.Pricing.customRule))
+    )
+    pricings_and_rates_by_rule_group = defaultdict(list)
+    pricings_by_custom_rule = defaultdict(list)
+
+    cashflows_pricings = [cf.pricings for cf in cashflows]
+    flat_pricings = list(itertools.chain.from_iterable(cashflows_pricings))
+    for pricing in flat_pricings:
+        rule_reference = pricing.standardRule or pricing.customRuleId
+        rule = _find_reimbursement_rule(rule_reference)
+        if isinstance(rule, payments_models.CustomReimbursementRule):
+            pricings_by_custom_rule[rule].append(pricing)
+        else:
+            pricings_and_rates_by_rule_group[rule.group].append((pricing, rule.rate))
+
+    invoice_lines = []
+    for rule_group, pricings_and_rates in pricings_and_rates_by_rule_group.items():
+        rates = defaultdict(list)
+        for pricing, rate in pricings_and_rates:
+            rates[rate].append(pricing)
+        for rate, pricings in rates.items():
+            invoice_line, reimbursed_amount = _make_invoice_line(invoice, rule_group, pricings)
+            assert invoice_line.rate == rate
+            invoice_lines.append(invoice_line)
+            total_reimbursed_amount += reimbursed_amount
+
+    for custom_rule, pricings in pricings_by_custom_rule.items():
+        invoice_line, reimbursed_amount = _make_invoice_line(invoice, custom_rule.group, pricings)
+        invoice_lines.append(invoice_line)
+        total_reimbursed_amount += reimbursed_amount
+
+    invoice.amount = total_reimbursed_amount
+    # As of Python 3.9, DEFAULT_ENTROPY is 32 bytes
+    invoice.token = secrets.token_urlsafe()
+    db.session.add(invoice)
+    db.session.flush()
+    for line in invoice_lines:
+        line.invoiceId = invoice.id
+    db.session.bulk_save_objects(invoice_lines)
+    cf_links = [models.InvoiceCashflow(invoiceId=invoice.id, cashflowId=cashflow.id) for cashflow in cashflows]
+    db.session.bulk_save_objects(cf_links)
+    db.session.commit()
+
+    return invoice
