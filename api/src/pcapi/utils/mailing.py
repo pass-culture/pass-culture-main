@@ -99,7 +99,7 @@ def make_validation_email_object(
 def make_offerer_driven_cancellation_email_for_offerer(booking: Booking) -> dict:
     stock_name = booking.stock.offer.name
     venue = booking.venue
-    user_name = booking.publicName
+    user_name = booking.userName
     user_email = booking.email
     email_subject = "Confirmation de votre annulation de réservation pour {}, proposé par {}".format(
         stock_name, venue.name
