@@ -9,7 +9,7 @@ const FAILING_RESPONSE: AdapterFailure<{
 }> = {
   isOk: false,
   message:
-    "Une erreur est survenue lors de la vérification de votre éligibilité à la création d'offre collective",
+    'Une erreur technique est survenue lors de la vérification de votre éligibilité.',
   payload: {
     isOffererEligibleToEducationalOffer: false,
   },
@@ -28,7 +28,7 @@ const getIsOffererEligibleToEducationalOfferAdapter: GetIsOffererEligibleToEduca
         },
       }
     } catch (error) {
-      if (hasStatusCode(error) && error.status === 403) {
+      if (hasStatusCode(error) && error.status === 404) {
         return {
           isOk: true,
           message: null,
