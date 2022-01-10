@@ -15,12 +15,10 @@ from pcapi.models import api_errors
 from pcapi.routes.serialization import serialize
 from pcapi.utils.human_ids import humanize
 
-from tests.conftest import TestClient
-
 
 class Returns200Test:
     @pytest.mark.usefixtures("db_session")
-    def when_user_has_rights_and_regular_offer(self, app):
+    def when_user_has_rights_and_regular_offer(self, client):
         # Given
         user_admin = users_factories.AdminFactory(email="admin@example.com")
         user_offerer = offers_factories.UserOffererFactory(user=user_admin)
@@ -28,7 +26,7 @@ class Returns200Test:
         url = f"/bookings/token/{booking.token}"
 
         # When
-        response = TestClient(app.test_client()).with_session_auth(user_admin.email).get(url)
+        response = client.with_session_auth(user_admin.email).get(url)
 
         # Then
         assert response.status_code == 200
@@ -44,7 +42,7 @@ class Returns200Test:
         }
 
     @pytest.mark.usefixtures("db_session")
-    def when_user_has_rights_and_regular_offer_and_token_in_lower_case(self, app):
+    def when_user_has_rights_and_regular_offer_and_token_in_lower_case(self, client):
         # Given
         user = users_factories.BeneficiaryGrant18Factory(email="user@example.com", publicName="John Doe")
         user_admin = users_factories.AdminFactory(email="admin@example.com")
@@ -53,7 +51,7 @@ class Returns200Test:
         url = f"/bookings/token/{booking_token}"
 
         # When
-        response = TestClient(app.test_client()).with_session_auth(user_admin.email).get(url)
+        response = client.with_session_auth(user_admin.email).get(url)
 
         # Then
         assert response.status_code == 200
@@ -69,7 +67,7 @@ class Returns200Test:
         }
 
     @pytest.mark.usefixtures("db_session")
-    def when_user_has_rights_and_email_with_special_characters_url_encoded(self, app):
+    def when_user_has_rights_and_email_with_special_characters_url_encoded(self, client):
         # Given
         user = users_factories.BeneficiaryGrant18Factory(email="user+plus@example.com")
         user_admin = users_factories.AdminFactory(email="admin@example.com")
@@ -78,7 +76,7 @@ class Returns200Test:
         url = f"/bookings/token/{booking.token}?{url_email}"
 
         # When
-        response = TestClient(app.test_client()).with_session_auth(user_admin.email).get(url)
+        response = client.with_session_auth(user_admin.email).get(url)
 
         # Then
         assert response.status_code == 200
@@ -86,19 +84,21 @@ class Returns200Test:
 
 @pytest.mark.usefixtures("db_session")
 class Returns204Test:
-    def when_user_not_logged_in_and_gives_right_email(self, app):
+    def when_user_not_logged_in_and_gives_right_email(self, client):
         # Given
         user = users_factories.BeneficiaryGrant18Factory(email="user@example.com")
         booking = IndividualBookingFactory(individualBooking__user=user)
         url = f"/bookings/token/{booking.token}?email={user.email}"
 
         # When
-        response = TestClient(app.test_client()).get(url)
+        response = client.get(url)
 
         # Then
         assert response.status_code == 204
+        assert response.data == b""
+        assert response.json == None
 
-    def when_user_not_logged_in_and_give_right_email_and_event_offer_id(self, app):
+    def when_user_not_logged_in_and_give_right_email_and_event_offer_id(self, client):
         # Given
         yesterday = datetime.utcnow() - timedelta(days=1)
         user = users_factories.BeneficiaryGrant18Factory(email="user@example.com")
@@ -108,40 +108,44 @@ class Returns204Test:
         url = f"/bookings/token/{booking.token}?email={user.email}&offer_id={humanize(booking.stock.offer.id)}"
 
         # When
-        response = TestClient(app.test_client()).get(url)
+        response = client.get(url)
 
         # Then
         assert response.status_code == 204
+        assert response.data == b""
+        assert response.json == None
 
-    def when_user_not_logged_in_and_give_right_email_and_offer_id_thing(self, app):
+    def when_user_not_logged_in_and_give_right_email_and_offer_id_thing(self, client):
         # Given
         user = users_factories.BeneficiaryGrant18Factory(email="user@example.com")
         booking = IndividualBookingFactory(individualBooking__user=user, stock=offers_factories.ThingStockFactory())
         url = f"/bookings/token/{booking.token}?email={user.email}&offer_id={humanize(booking.stock.offerId)}"
 
         # When
-        response = TestClient(app.test_client()).get(url)
+        response = client.get(url)
 
         # Then
         assert response.status_code == 204
+        assert response.data == b""
+        assert response.json == None
 
 
 class Returns404Test:
     @pytest.mark.usefixtures("db_session")
-    def when_token_user_has_rights_but_token_not_found(self, app):
+    def when_token_user_has_rights_but_token_not_found(self, client):
         # Given
         user_admin = users_factories.AdminFactory(email="admin@example.com")
         url = "/bookings/token/12345"
 
         # When
-        response = TestClient(app.test_client()).with_session_auth(user_admin.email).get(url)
+        response = client.with_session_auth(user_admin.email).get(url)
 
         # Then
         assert response.status_code == 404
         assert response.json["global"] == ["Cette contremarque n'a pas été trouvée"]
 
     @pytest.mark.usefixtures("db_session")
-    def when_user_not_logged_in_and_wrong_email(self, app):
+    def when_user_not_logged_in_and_wrong_email(self, client):
         # Given
         user = users_factories.BeneficiaryGrant18Factory(email="user@example.com")
         user_admin = users_factories.AdminFactory(email="admin@example.com")
@@ -150,14 +154,14 @@ class Returns404Test:
         url = f"/bookings/token/{booking.token}?email=toto@example.com"
 
         # When
-        response = TestClient(app.test_client()).with_session_auth(user_admin.email).get(url)
+        response = client.with_session_auth(user_admin.email).get(url)
 
         # Then
         assert response.status_code == 404
         assert response.json["global"] == ["Cette contremarque n'a pas été trouvée"]
 
     @pytest.mark.usefixtures("db_session")
-    def when_user_not_logged_in_right_email_and_wrong_offer(self, app):
+    def when_user_not_logged_in_right_email_and_wrong_offer(self, client):
         # Given
 
         user = users_factories.BeneficiaryGrant18Factory(email="user@example.com")
@@ -166,14 +170,14 @@ class Returns404Test:
         url = f"/bookings/token/{booking.token}?email={user.email}&offer_id={humanize(0)}"
 
         # When
-        response = TestClient(app.test_client()).get(url)
+        response = client.get(url)
 
         # Then
         assert response.status_code == 404
         assert response.json["global"] == ["Cette contremarque n'a pas été trouvée"]
 
     @pytest.mark.usefixtures("db_session")
-    def when_user_has_rights_and_email_with_special_characters_not_url_encoded(self, app):
+    def when_user_has_rights_and_email_with_special_characters_not_url_encoded(self, client):
         # Given
         user = users_factories.BeneficiaryGrant18Factory(email="user+plus@example.com")
         user_admin = users_factories.AdminFactory(email="admin@example.com")
@@ -181,7 +185,7 @@ class Returns404Test:
         url = f"/bookings/token/{booking.token}?email={user.email}"
 
         # When
-        response = TestClient(app.test_client()).with_session_auth(user_admin.email).get(url)
+        response = client.with_session_auth(user_admin.email).get(url)
 
         # Then
         assert response.status_code == 404
@@ -189,14 +193,14 @@ class Returns404Test:
 
 class Returns400Test:
     @pytest.mark.usefixtures("db_session")
-    def when_user_not_logged_in_and_doesnt_give_email(self, app):
+    def when_user_not_logged_in_and_doesnt_give_email(self, client):
         # Given
         user = users_factories.BeneficiaryGrant18Factory(email="user@example.com")
         booking = IndividualBookingFactory(individualBooking__user=user)
         url = f"/bookings/token/{booking.token}"
 
         # When
-        response = TestClient(app.test_client()).get(url)
+        response = client.get(url)
 
         # Then
         assert response.status_code == 400
@@ -206,7 +210,7 @@ class Returns400Test:
         ]
 
     @pytest.mark.usefixtures("db_session")
-    def when_user_doesnt_have_rights_and_token_exists(self, app):
+    def when_user_doesnt_have_rights_and_token_exists(self, client):
         # Given
         user = users_factories.BeneficiaryGrant18Factory(email="user@example.com")
         users_factories.BeneficiaryGrant18Factory(email="querying@example.com")
@@ -214,7 +218,7 @@ class Returns400Test:
         url = f"/bookings/token/{booking.token}"
 
         # When
-        response = TestClient(app.test_client()).with_session_auth("querying@example.com").get(url)
+        response = client.with_session_auth("querying@example.com").get(url)
 
         # Then
         assert response.status_code == 400
@@ -224,7 +228,7 @@ class Returns400Test:
 class Returns403Test:
     @mock.patch("pcapi.core.bookings.validation.check_is_usable")
     @pytest.mark.usefixtures("db_session")
-    def when_booking_not_confirmed(self, mocked_check_is_usable, app):
+    def when_booking_not_confirmed(self, mocked_check_is_usable, client):
         # Given
         unconfirmed_booking = IndividualBookingFactory(stock=offers_factories.EventStockFactory())
         url = (
@@ -234,28 +238,28 @@ class Returns403Test:
         mocked_check_is_usable.side_effect = api_errors.ForbiddenError(errors={"booking": ["Not confirmed"]})
 
         # When
-        response = TestClient(app.test_client()).get(url)
+        response = client.get(url)
 
         # Then
         assert response.status_code == 403
         assert response.json["booking"] == ["Not confirmed"]
 
     @pytest.mark.usefixtures("db_session")
-    def when_booking_is_cancelled(self, app):
+    def when_booking_is_cancelled(self, client):
         # Given
         user = users_factories.BeneficiaryGrant18Factory(email="user@example.com")
         booking = CancelledIndividualBookingFactory(individualBooking__user=user)
         url = f"/bookings/token/{booking.token}?email={user.email}&offer_id={humanize(booking.stock.offerId)}"
 
         # When
-        response = TestClient(app.test_client()).get(url)
+        response = client.get(url)
 
         # Then
         assert response.status_code == 403
         assert response.json["booking"] == ["Cette réservation a été annulée"]
 
     @pytest.mark.usefixtures("db_session")
-    def when_booking_is_refunded(self, app):
+    def when_booking_is_refunded(self, client):
         # Given
         booking = PaymentFactory(booking=UsedIndividualBookingFactory()).booking
         url = (
@@ -264,7 +268,7 @@ class Returns403Test:
         )
 
         # When
-        response = TestClient(app.test_client()).get(url)
+        response = client.get(url)
 
         # Then
         assert response.status_code == 403
@@ -273,14 +277,14 @@ class Returns403Test:
 
 class Returns410Test:
     @pytest.mark.usefixtures("db_session")
-    def when_booking_is_already_validated(self, app):
+    def when_booking_is_already_validated(self, client):
         # Given
         user = users_factories.BeneficiaryGrant18Factory(email="user@example.com")
         booking = UsedIndividualBookingFactory(individualBooking__user=user)
         url = f"/bookings/token/{booking.token}?email={user.email}&offer_id={humanize(booking.stock.offerId)}"
 
         # When
-        response = TestClient(app.test_client()).get(url)
+        response = client.get(url)
 
         # Then
         assert response.status_code == 410
