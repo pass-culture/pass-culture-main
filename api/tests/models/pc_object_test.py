@@ -44,13 +44,6 @@ time_interval.end = datetime(2018, 2, 2, 5, 15, 25, 222000)
 now = datetime.utcnow()
 
 
-def test_equality():
-    assert Offer(id=1) == Offer(id=1)
-    assert Offer(id=1) != Offer(id=2)
-    assert Offer(id=1) != User(id=1)
-    assert Offer(id=1) != 1
-
-
 class SerializeTest:
     def test_on_datetime_list_returns_string_with_date_in_ISO_8601_list(self):
         # Given
