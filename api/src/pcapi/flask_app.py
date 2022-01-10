@@ -19,6 +19,7 @@ from werkzeug.middleware.profiler import ProfilerMiddleware
 from werkzeug.middleware.proxy_fix import ProxyFix
 
 from pcapi import settings
+from pcapi.core.finance import utils as finance_utils
 from pcapi.core.logging import get_or_set_correlation_id
 from pcapi.core.logging import install_logging
 from pcapi.models import db
@@ -164,7 +165,7 @@ db.init_app(app)
 orm.configure_mappers()
 login_manager.init_app(app)
 install_commands(app)
-
+finance_utils.install_template_filters(app)
 
 app.url_map.strict_slashes = False
 

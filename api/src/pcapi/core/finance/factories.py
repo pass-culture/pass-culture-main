@@ -1,3 +1,5 @@
+import secrets
+
 import factory
 from factory.declarations import LazyAttribute
 
@@ -58,7 +60,7 @@ class InvoiceFactory(BaseFactory):
     businessUnit = factory.SubFactory(BusinessUnitFactory)
     amount = 1000
     reference = factory.Sequence("{:09}".format)
-    url = LazyAttribute(lambda invoice: f"/finance/invoices/{invoice.reference}.pdf")
+    token = factory.LazyFunction(secrets.token_urlsafe)
 
 
 class CashflowBatchFactory(BaseFactory):
