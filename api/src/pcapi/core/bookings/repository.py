@@ -540,6 +540,7 @@ def _get_filtered_booking_report(
             Venue.departementCode.label("venueDepartmentCode"),
             Offerer.postalCode.label("offererPostalCode"),
             Offer.name.label("offerName"),
+            Offer.isEducational.label("offerIsEducational"),
             Stock.beginningDatetime.label("stockBeginningDatetime"),
             Stock.offerId,
             Offer.extraData["isbn"].label("isbn"),
@@ -884,6 +885,7 @@ def _serialize_csv_report(query: Query) -> str:
             "Prix de la réservation",
             "Statut de la contremarque",
             "Date et heure de remboursement",
+            "Type d'offre",
         )
     )
     for booking in query.yield_per(1000):
@@ -902,6 +904,7 @@ def _serialize_csv_report(query: Query) -> str:
                 booking.amount,
                 _get_booking_status(booking.status, booking.isConfirmed),
                 _serialize_date_with_timezone(booking.reimbursedAt, booking),
+                "offre scolaire" if booking.offerIsEducational else "offre grand public",
             )
         )
 

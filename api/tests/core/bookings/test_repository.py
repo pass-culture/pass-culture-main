@@ -1951,6 +1951,7 @@ class GetCsvReportTest:
             "Prix de la réservation",
             "Statut de la contremarque",
             "Date et heure de remboursement",
+            "Type d'offre",
         ]
         assert len(data) == 1
         data_dict = dict(zip(headers, data[0]))
@@ -1969,6 +1970,7 @@ class GetCsvReportTest:
         assert data_dict["Prix de la réservation"] == f"{booking.amount:.2f}"
         assert data_dict["Statut de la contremarque"] == booking_repository.BOOKING_STATUS_LABELS[booking.status]
         assert data_dict["Date et heure de remboursement"] == ""
+        assert data_dict["Type d'offre"] == "offre grand public"
 
     def test_should_not_return_token_for_non_used_goods(self, app: fixture):
         # Given
@@ -2013,6 +2015,7 @@ class GetCsvReportTest:
             "Prix de la réservation",
             "Statut de la contremarque",
             "Date et heure de remboursement",
+            "Type d'offre",
         ]
         assert len(data) == 1
         data_dict = dict(zip(headers, data[0]))
@@ -2118,6 +2121,7 @@ class GetCsvReportTest:
             "Prix de la réservation",
             "Statut de la contremarque",
             "Date et heure de remboursement",
+            "Type d'offre",
         ]
         assert len(data) == 1
         data_dict = dict(zip(headers, data[0]))
@@ -2638,6 +2642,49 @@ class GetCsvReportTest:
         data_dicts = [dict(zip(headers, line)) for line in data]
         tokens = [booking["Contremarque"] for booking in data_dicts]
         assert sorted(tokens) == sorted([cayenne_booking.token, mayotte_booking.token])
+
+    def test_should_output_the_correct_offer_type_depending_wether_offer_educational_or_not(self, app: fixture):
+        # Given
+        pro = users_factories.ProFactory()
+        offerer = offers_factories.OffererFactory()
+        offers_factories.UserOffererFactory(user=pro, offerer=offerer)
+        venue = offers_factories.VenueFactory(managingOfferer=offerer)
+
+        booking_1 = bookings_factories.EducationalBookingFactory(
+            stock__offer__venue=venue,
+        )
+        booking_2 = bookings_factories.IndividualBookingFactory(
+            stock__offer__venue=venue,
+        )
+        booking_3 = bookings_factories.RefusedEducationalBookingFactory(
+            stock__offer__venue=venue,
+        )
+        booking_4 = bookings_factories.UsedIndividualBookingFactory(
+            stock__offer__venue=venue,
+        )
+
+        # When
+        beginning_period = datetime.fromisoformat("2021-10-15")
+        ending_period = datetime.fromisoformat("2022-02-15")
+        bookings_csv = booking_repository.get_csv_report(
+            user=pro,
+            booking_period=(beginning_period, ending_period),
+        )
+
+        # Then
+        expected_type = {
+            booking_1.stock.offer.name: "offre scolaire",
+            booking_2.stock.offer.name: "offre grand public",
+            booking_3.stock.offer.name: "offre scolaire",
+            booking_4.stock.offer.name: "offre grand public",
+        }
+
+        headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
+        assert len(data) == 4
+        data_dicts = [dict(zip(headers, line)) for line in data]
+        for data_dict in data_dicts:
+            offer_name = data_dict["Nom de l’offre"]
+            assert data_dict["Type d'offre"] == expected_type[offer_name]
 
     class BookingStatusInCsvReportTest:
         @freeze_time("2021-12-15 09:00:00")
