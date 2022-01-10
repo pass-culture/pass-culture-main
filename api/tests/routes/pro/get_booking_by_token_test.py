@@ -39,7 +39,7 @@ class Returns200Test:
             "email": booking.email,
             "isUsed": False,
             "offerName": booking.stock.offer.name,
-            "userName": booking.publicName,
+            "userName": booking.userName,
             "venueDepartementCode": booking.stock.offer.venue.departementCode,
         }
 
@@ -64,7 +64,7 @@ class Returns200Test:
             "email": booking.email,
             "isUsed": False,
             "offerName": booking.stock.offer.product.name,
-            "userName": booking.publicName,
+            "userName": booking.userName,
             "venueDepartementCode": booking.stock.offer.venue.departementCode,
         }
 

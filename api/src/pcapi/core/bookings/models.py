@@ -295,9 +295,9 @@ class Booking(PcObject, Model):
         return None
 
     @property
-    def publicName(self) -> Optional[str]:
+    def userName(self) -> Optional[str]:
         if self.individualBooking is not None:
-            return self.individualBooking.user.publicName
+            return f"{self.individualBooking.user.firstName} {self.individualBooking.user.lastName}"
 
         if self.educationalBooking is not None:
             return f"{self.educationalBooking.educationalRedactor.firstName} {self.educationalBooking.educationalRedactor.lastName}"

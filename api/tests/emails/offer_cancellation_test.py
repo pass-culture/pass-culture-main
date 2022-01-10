@@ -39,7 +39,7 @@ class MakeOffererDrivenCancellationEmailForOffererTest:
         html_recap = str(email_html.find("p", {"id": "recap"}))
         html_no_recal = str(email_html.find("p", {"id": "no-recap"}))
         assert "Vous venez d'annuler" in html_action
-        assert booking.publicName in html_action
+        assert booking.userName in html_action
         assert booking.email in html_action
         assert f"pour {stock.offer.name}" in html_recap
         assert f"proposé par {venue.name}" in html_recap
@@ -100,7 +100,7 @@ class MakeOffererDrivenCancellationEmailForOffererTest:
         html_recap = email_html.find("p", {"id": "recap"}).text
         html_recap_table = email_html.find("table", {"id": "recap-table"}).text
         assert "Vous venez d'annuler" in html_action
-        assert booking.publicName in html_action
+        assert booking.userName in html_action
         assert booking.email in html_action
         assert f"pour {stock.offer.product.name}" in html_recap
         assert f"proposé par {venue.name}" in html_recap
@@ -149,7 +149,7 @@ class MakeOffererBookingRecapEmailAfterUserCancellationWithMailjetTemplateTest:
                 "date": "09-Oct-2019",
                 "heure": "12h20",
                 "quantite": booking.quantity,
-                "user_name": booking.publicName,
+                "user_name": booking.userName,
                 "user_email": booking.email,
                 "is_active": 1,
                 "nombre_resa": 0,
@@ -187,7 +187,7 @@ class MakeOffererBookingRecapEmailAfterUserCancellationWithMailjetTemplateTest:
                 "date": "09-Oct-2019",
                 "heure": "12h20",
                 "quantite": booking1.quantity,
-                "user_name": booking1.publicName,
+                "user_name": booking1.userName,
                 "user_email": booking1.email,
                 "is_active": 1,
                 "nombre_resa": 1,
@@ -232,7 +232,7 @@ class MakeOffererBookingRecapEmailAfterUserCancellationWithMailjetTemplateTest:
                 "date": "",
                 "heure": "",
                 "quantite": booking1.quantity,
-                "user_name": booking1.publicName,
+                "user_name": booking1.userName,
                 "user_email": booking1.email,
                 "is_active": 0,
                 "nombre_resa": 1,
@@ -277,7 +277,7 @@ class MakeOffererBookingRecapEmailAfterUserCancellationWithMailjetTemplateTest:
                 "date": "",
                 "heure": "",
                 "quantite": booking1.quantity,
-                "user_name": booking1.publicName,
+                "user_name": booking1.userName,
                 "user_email": booking1.email,
                 "is_active": 0,
                 "nombre_resa": 1,
