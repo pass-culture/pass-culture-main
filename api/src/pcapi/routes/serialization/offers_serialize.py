@@ -1,4 +1,5 @@
 from datetime import datetime
+import enum
 from typing import Any
 from typing import Optional
 from typing import Union
@@ -121,6 +122,33 @@ class PostOfferBodyModel(BaseModel):
         extra = "forbid"
 
 
+class OfferAddressType(enum.Enum):
+    OFFERER_VENUE = "offererVenue"
+    SCHOOL = "school"
+    OTHER = "other"
+
+
+class EducationalOfferExtraDataOfferVenueBodyModel(BaseModel):
+    addressType: OfferAddressType
+    otherAddress: str
+    venueId: str
+
+    class Config:
+        alias_generator = to_camel
+        extra = "forbid"
+
+
+class EducationalOfferExtraDataBodyModel(BaseModel):
+    students: list[str]
+    offer_venue: EducationalOfferExtraDataOfferVenueBodyModel
+    contact_email: str
+    contact_phone: str
+
+    class Config:
+        alias_generator = to_camel
+        extra = "forbid"
+
+
 class PostEducationalOfferBodyModel(BaseModel):
     offerer_id: str
     venue_id: str
@@ -133,7 +161,7 @@ class PostEducationalOfferBodyModel(BaseModel):
     mental_disability_compliant: bool = False
     motor_disability_compliant: bool = False
     visual_disability_compliant: bool = False
-    extra_data: Any
+    extra_data: EducationalOfferExtraDataBodyModel
 
     @validator("name", pre=True)
     def validate_name(cls, name, values):  # pylint: disable=no-self-argument
@@ -185,11 +213,22 @@ class PatchOfferBodyModel(BaseModel):
         extra = "forbid"
 
 
+class EducationalOfferPartialExtraDataBodyModel(BaseModel):
+    students: Optional[list[str]]
+    offerVenue: Optional[EducationalOfferExtraDataOfferVenueBodyModel]
+    contactEmail: Optional[str]
+    contactPhone: Optional[str]
+
+    class Config:
+        alias_generator = to_camel
+        extra = "forbid"
+
+
 class PatchEducationalOfferBodyModel(BaseModel):
     bookingEmail: Optional[str]
     description: Optional[str]
     name: Optional[str]
-    extraData: Any
+    extraData: Optional[EducationalOfferPartialExtraDataBodyModel]
     durationMinutes: Optional[int]
     audioDisabilityCompliant: Optional[bool]
     mentalDisabilityCompliant: Optional[bool]
