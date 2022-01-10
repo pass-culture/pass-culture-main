@@ -13,6 +13,7 @@ import sqlalchemy as sqla
 import sqlalchemy.dialects.postgresql as sqla_psql
 import sqlalchemy.orm as sqla_orm
 
+from pcapi import settings
 from pcapi.domain import payments
 from pcapi.models import Model
 import pcapi.utils.db as db_utils
@@ -307,6 +308,10 @@ class Invoice(Model):
     token = sqla.Column(sqla.Text, unique=True, nullable=False)
     lines = sqla_orm.relationship("InvoiceLine", back_populates="invoice")
     cashflows = sqla_orm.relationship("Cashflow", secondary="invoice_cashflow", back_populates="invoices")
+
+    @property
+    def url(self):
+        return f"{settings.OBJECT_STORAGE_URL}/invoices/{self.token}.pdf"
 
 
 class InvoiceCashflow(Model):

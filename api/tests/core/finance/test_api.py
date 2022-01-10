@@ -2,6 +2,8 @@ import csv
 import datetime
 from decimal import Decimal
 import io
+import os
+import pathlib
 from unittest import mock
 import zipfile
 
@@ -21,8 +23,11 @@ import pcapi.core.offers.factories as offers_factories
 import pcapi.core.payments.factories as payments_factories
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.testing import clean_temporary_files
+from pcapi.core.testing import override_settings
 import pcapi.core.users.factories as users_factories
 from pcapi.utils import human_ids
+
+import tests
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -867,3 +872,87 @@ class GenerateInvoiceTest:
         assert line6.rate == Decimal("0.9400")
         assert line6.label == "Montant remboursé"
 
+
+class GenerateInvoiceHtmlTest:
+    TEST_FILES_PATH = pathlib.Path(tests.__path__[0]) / "files"
+
+    def test_basics(self, invoice_data):
+        business_unit, stocks = invoice_data
+        bookings = []
+        for stock in stocks:
+            booking = bookings_factories.UsedBookingFactory(stock=stock)
+            bookings.append(booking)
+        for booking in bookings[:3]:
+            api.price_booking(booking)
+        api.generate_cashflows(cutoff=datetime.datetime.utcnow())
+        for booking in bookings[3:]:
+            api.price_booking(booking)
+        api.generate_cashflows(cutoff=datetime.datetime.utcnow())
+        cashflows = (
+            models.Cashflow.query.join(models.Cashflow.pricings)
+            .filter(models.Pricing.businessUnitId == business_unit.id)
+            .all()
+        )
+        cashflow_ids = [c.id for c in cashflows]
+        invoice = api._generate_invoice(
+            reference="JUSTIFICATIF #4", business_unit_id=business_unit.id, cashflow_ids=cashflow_ids
+        )
+
+        invoice_html = api._generate_invoice_html(invoice)
+
+        with open(self.TEST_FILES_PATH / "invoice" / "rendered_invoice.html", "r") as f:
+            expected_invoice_html = f.read()
+        # We need to replace Cashflow IDs and dates that were used when generating the expected html
+        expected_invoice_html = expected_invoice_html.replace(
+            '<td class="cashflow_id">144</td>', f'<td class="cashflow_id">{cashflow_ids[0]}</td>'
+        )
+        expected_invoice_html = expected_invoice_html.replace(
+            '<td class="cashflow_id">145</td>', f'<td class="cashflow_id">{cashflow_ids[1]}</td>'
+        )
+        expected_invoice_html = expected_invoice_html.replace(
+            '<td class="cashflow_creation_date">21/12/2021</td>',
+            f'<td class="cashflow_creation_date">{cashflows[0].creationDate.strftime("%d/%m/%Y")}</td>',
+        )
+        expected_invoice_html = expected_invoice_html.replace(
+            '<h2 class="invoice_info">Relevé n°JUSTIFICATIF #4 du 21/12/2021</h2>',
+            f'<h2 class="invoice_info">Relevé n°{invoice.reference} du {invoice.date.strftime("%d/%m/%Y")}</h2>',
+        )
+        assert expected_invoice_html == invoice_html
+
+
+class StoreInvoicePdfTest:
+    BASE_THUMBS_DIR = pathlib.Path(tests.__path__[0]) / ".." / "src" / "pcapi" / "static" / "object_store_data"
+    INVOICES_DIR = BASE_THUMBS_DIR / "invoices"
+
+    @override_settings(OBJECT_STORAGE_URL=BASE_THUMBS_DIR)
+    def test_basics(self, clear_tests_invoices_bucket, invoice_data):
+        existing_number_of_files = len(os.listdir(self.INVOICES_DIR))
+
+        business_unit, stocks = invoice_data
+        bookings = []
+        for stock in stocks:
+            booking = bookings_factories.UsedBookingFactory(stock=stock)
+            bookings.append(booking)
+        for booking in bookings[:3]:
+            api.price_booking(booking)
+        api.generate_cashflows(cutoff=datetime.datetime.utcnow())
+        for booking in bookings[3:]:
+            api.price_booking(booking)
+        api.generate_cashflows(cutoff=datetime.datetime.utcnow())
+        cashflows = (
+            models.Cashflow.query.join(models.Cashflow.pricings)
+            .filter(models.Pricing.businessUnitId == business_unit.id)
+            .all()
+        )
+        cashflow_ids = [c.id for c in cashflows]
+        invoice = api._generate_invoice(
+            reference="JUSTIFICATIF #4", business_unit_id=business_unit.id, cashflow_ids=cashflow_ids
+        )
+
+        invoice_html = api._generate_invoice_html(invoice)
+        api._store_invoice_pdf(invoice.token, invoice_html)
+
+        assert invoice.url == f"{self.INVOICES_DIR}/{invoice.token}.pdf"
+        assert len(os.listdir(self.INVOICES_DIR)) == existing_number_of_files + 2
+        assert (self.INVOICES_DIR / f"{invoice.token}.pdf").exists()
+        assert (self.INVOICES_DIR / f"{invoice.token}.pdf.type").exists()

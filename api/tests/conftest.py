@@ -106,6 +106,15 @@ def clear_tests_assets_bucket():
         object_storage_testing.reset_bucket()
 
 
+@pytest.fixture()
+def clear_tests_invoices_bucket():
+    try:
+        Path(settings.LOCAL_STORAGE_DIR / "invoices").mkdir(parents=True, exist_ok=True)
+        yield
+    finally:
+        object_storage_testing.reset_bucket()
+
+
 def clean_database(f: object) -> object:
     @wraps(f)
     def decorated_function(*args, **kwargs):
