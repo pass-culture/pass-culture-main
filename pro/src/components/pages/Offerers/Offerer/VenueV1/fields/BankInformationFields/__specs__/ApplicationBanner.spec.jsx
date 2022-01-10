@@ -20,15 +20,9 @@ describe('when offerer has no bank informations', () => {
 
     // then
     expect(wrapper.find('Banner').props()).toStrictEqual({
-      closable: false,
-      className: '',
-      handleOnClick: null,
-      type: 'attention',
       children: 'Votre dossier est en cours pour ce lieu',
       linkTitle: 'Accéder au dossier',
-      targetLink: '_blank',
       href: 'https://www.demarches-simplifiees.fr/dossiers/12',
-      icon: 'ico-external-site',
     })
   })
 })

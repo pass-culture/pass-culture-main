@@ -2,6 +2,7 @@
  * @debt directory "Gaël: this file should be migrated within the new directory structure"
  */
 
+import cn from 'classnames'
 import React from 'react'
 
 import Icon from 'components/layout/Icon'
@@ -29,7 +30,7 @@ const Banner = ({
   className,
 }: IBannerProps): JSX.Element => {
   return (
-    <div className={`bi-banner ${type} ${className}`}>
+    <div className={cn('bi-banner', type, className)}>
       {closable && (
         <button onClick={handleOnClick} type="button">
           <Icon svg="icons-close" />
