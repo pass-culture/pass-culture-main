@@ -9,6 +9,7 @@ from pcapi.core.mails.transactional.users.recredit_to_underage_beneficiary impor
 )
 from pcapi.core.payments import models as payments_models
 import pcapi.core.payments.conf as deposit_conf
+from pcapi.core.users import external as users_external
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.repository import transaction
@@ -80,7 +81,9 @@ def recredit_underage_users() -> None:
                 db.session.add(recredit)
 
         logger.info("Recredited %s underage users deposits", len(users_to_recredit))
+
         for user, recredit_amount in users_and_recredit_amounts:
+            users_external.update_external_user(user)
             if not send_recredit_email_to_underage_beneficiary(user, recredit_amount):
                 logger.error("Failed to send recredit email to: %s", user.email)
 
