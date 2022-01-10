@@ -16,15 +16,9 @@ jest.mock('utils/config', () => ({
 
 const expectReimbursementBannerToBePresent = wrapper => {
   expect(wrapper.find('Banner').last().props()).toStrictEqual({
-    closable: false,
-    className: '',
-    handleOnClick: null,
     type: 'notification-info',
     linkTitle: 'En savoir plus sur les remboursements',
-    targetLink: '_blank',
     href: 'https://passculture.zendesk.com/hc/fr/articles/4411992051601',
-    icon: 'ico-external-site',
-    children: null,
   })
 }
 
@@ -80,15 +74,9 @@ describe('src | Offerer | BankInformation', () => {
 
     // then
     expect(wrapper.find('Banner').first().props()).toStrictEqual({
-      closable: false,
-      className: '',
-      handleOnClick: null,
-      type: 'attention',
       children: 'Votre dossier est en cours pour cette structure',
       linkTitle: 'Accéder au dossier',
-      targetLink: '_blank',
       href: 'https://www.demarches-simplifiees.fr/dossiers/12',
-      icon: 'ico-external-site',
     })
     expectReimbursementBannerToBePresent(wrapper)
   })
