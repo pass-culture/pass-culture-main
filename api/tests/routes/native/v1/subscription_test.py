@@ -31,7 +31,7 @@ class NextStepTest:
         assert response.status_code == 200
         assert response.json == {
             "nextSubscriptionStep": "phone-validation",
-            "allowedIdentityCheckMethods": ["jouve"],
+            "allowedIdentityCheckMethods": ["ubble"],
             "maintenancePageType": None,
             "hasIdentityCheckPending": False,
         }

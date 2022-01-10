@@ -1,5 +1,4 @@
 import datetime
-from unittest.mock import patch
 import uuid
 
 from dateutil.relativedelta import relativedelta
@@ -13,294 +12,6 @@ import pcapi.core.fraud.models as fraud_models
 from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
 import pcapi.core.users.models as users_models
-from pcapi.models import db
-
-
-@pytest.mark.usefixtures("db_session")
-class JouveFraudCheckTest:
-    application_id = 35
-    user_email = "tour.de.passpass@example.com"
-    AGE18_ELIGIBLE_BIRTH_DATE = datetime.datetime.now() - relativedelta(years=18, months=4)
-
-    JOUVE_CONTENT = {
-        "activity": "Etudiant",
-        "address": "",
-        "birthDateTxt": f"{AGE18_ELIGIBLE_BIRTH_DATE:%d/%m/%Y}",
-        "birthLocation": "STRASBOURG I67)",
-        "birthLocationCtrl": "OK",
-        "bodyBirthDate": "06 06 2002",
-        "bodyBirthDateCtrl": "OK",
-        "bodyBirthDateLevel": "100",
-        "bodyFirstnameCtrl": "OK",
-        "bodyFirstnameLevel": "100",
-        "bodyName": "DUPO",
-        "bodyNameCtrl": "OK",
-        "bodyNameLevel": "100",
-        "bodyPieceNumber": "140767100016",
-        "bodyPieceNumberCtrl": "OK",
-        "bodyPieceNumberLevel": "100",
-        "city": "",
-        "creatorCtrl": "NOT_APPLICABLE",
-        "docFileID": 535,
-        "docObjectID": 535,
-        "email": user_email,
-        "firstName": "CHRISTOPHE",
-        "gender": "M",
-        "id": application_id,
-        "initial": "",
-        "initialNumberCtrl": "OK",
-        "initialSizeCtrl": "OK",
-        "lastName": "DUPO",
-        "phoneNumber": "",
-        "postalCode": "",
-        "posteCode": "678083",
-        "posteCodeCtrl": "OK",
-        "registrationDate": f"{datetime.datetime.now():%m/%d/%Y %H:%M %p}",
-        "serviceCode": "1",
-        "serviceCodeCtrl": "OK",
-    }
-
-    @patch("pcapi.connectors.beneficiaries.jouve_backend._get_raw_content")
-    def test_jouve_update(self, _get_raw_content, client):
-        user = users_factories.UserFactory(
-            hasCompletedIdCheck=True,
-            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
-            dateOfBirth=self.AGE18_ELIGIBLE_BIRTH_DATE,
-            email=self.user_email,
-        )
-        _get_raw_content.return_value = self.JOUVE_CONTENT
-
-        profile_data = {
-            "address": "1 rue des rues",
-            "city": "Uneville",
-            "postalCode": "77000",
-            "activity": "Lycéen",
-        }
-        client.with_token(email=user.email)
-        client.patch("/native/v1/beneficiary_information", profile_data)
-
-        response = client.post("/beneficiaries/application_update", json={"id": self.application_id})
-
-        assert response.status_code == 200
-
-        fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(
-            user=user, type=fraud_models.FraudCheckType.JOUVE
-        ).first()
-        fraud_result = fraud_models.BeneficiaryFraudResult.query.filter_by(user=user).first()
-        jouve_fraud_content = fraud_models.JouveContent(**fraud_check.resultContent)
-
-        assert jouve_fraud_content.bodyPieceNumber == "140767100016"
-        assert fraud_check.dateCreated
-        assert fraud_check.thirdPartyId == "35"
-        assert fraud_check.eligibilityType == users_models.EligibilityType.AGE18
-        assert fraud_result.status == fraud_models.FraudStatus.OK
-
-        db.session.refresh(user)
-        assert user.has_beneficiary_role
-        assert user.firstName == "CHRISTOPHE"
-        assert user.lastName == "DUPO"
-
-    @patch("pcapi.connectors.beneficiaries.jouve_backend._get_raw_content")
-    def test_jouve_update_before_profile_update(self, _get_raw_content, client):
-        user = users_factories.UserFactory(
-            hasCompletedIdCheck=True,
-            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
-            dateOfBirth=self.AGE18_ELIGIBLE_BIRTH_DATE,
-            email=self.user_email,
-        )
-        _get_raw_content.return_value = self.JOUVE_CONTENT
-
-        response = client.post("/beneficiaries/application_update", json={"id": self.application_id})
-
-        profile_data = {
-            "address": "1 rue des rues",
-            "city": "Uneville",
-            "postalCode": "77000",
-            "activity": "Lycéen",
-        }
-        client.with_token(email=user.email)
-        client.patch("/native/v1/beneficiary_information", profile_data)
-
-        assert response.status_code == 200
-
-        fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(
-            user=user, type=fraud_models.FraudCheckType.JOUVE
-        ).first()
-        fraud_result = fraud_models.BeneficiaryFraudResult.query.filter_by(user=user).first()
-        jouve_fraud_content = fraud_models.JouveContent(**fraud_check.resultContent)
-
-        assert jouve_fraud_content.bodyPieceNumber == "140767100016"
-        assert fraud_check.dateCreated
-        assert fraud_check.thirdPartyId == "35"
-        assert fraud_check.eligibilityType == users_models.EligibilityType.AGE18
-        assert fraud_result.status == fraud_models.FraudStatus.OK
-
-        db.session.refresh(user)
-        assert user.has_beneficiary_role
-        assert user.firstName == "CHRISTOPHE"
-        assert user.lastName == "DUPO"
-
-    @patch("pcapi.connectors.beneficiaries.jouve_backend._get_raw_content")
-    def test_jouve_update_duplicate_user(self, _get_raw_content, client):
-        existing_user = users_factories.BeneficiaryGrant18Factory(
-            firstName="Christophe",
-            lastName="Dupo",
-            dateOfBirth=self.AGE18_ELIGIBLE_BIRTH_DATE,
-            idPieceNumber="140767100016",
-        )
-        user = users_factories.UserFactory(
-            hasCompletedIdCheck=True,
-            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
-            dateOfBirth=self.AGE18_ELIGIBLE_BIRTH_DATE,
-            email=self.user_email,
-        )
-        _get_raw_content.return_value = self.JOUVE_CONTENT
-
-        response = client.post("/beneficiaries/application_update", json={"id": self.application_id})
-        assert response.status_code == 200
-
-        fraud_result = fraud_models.BeneficiaryFraudResult.query.filter_by(user=user).first()
-
-        assert fraud_result.status == fraud_models.FraudStatus.SUSPICIOUS
-        assert (
-            fraud_result.reason
-            == f"Duplicat de l'utilisateur {existing_user.id} ; Le n° de cni 140767100016 est déjà pris par l'utilisateur {existing_user.id}"
-        )
-
-        db.session.refresh(user)
-        assert not user.has_beneficiary_role
-
-    @override_features(PAUSE_JOUVE_SUBSCRIPTION=True)
-    @patch("pcapi.connectors.beneficiaries.jouve_backend._get_raw_content")
-    def test_jouve_subscription_journey_on_hold(self, _get_raw_content, client):
-        user = users_factories.UserFactory(
-            hasCompletedIdCheck=True,
-            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
-            dateOfBirth=self.AGE18_ELIGIBLE_BIRTH_DATE,
-            email=self.user_email,
-        )
-        _get_raw_content.return_value = self.JOUVE_CONTENT
-
-        response = client.post("/beneficiaries/application_update", json={"id": self.application_id})
-        assert response.status_code == 200
-
-        fraud_result = fraud_models.BeneficiaryFraudResult.query.filter_by(user=user).first()
-
-        assert fraud_result.status == fraud_models.FraudStatus.SUBSCRIPTION_ON_HOLD
-
-        db.session.refresh(user)
-        assert not user.has_beneficiary_role
-
-    @pytest.mark.parametrize("jouve_field", ["birthLocationCtrl", "bodyBirthDateCtrl", "bodyNameCtrl"])
-    @pytest.mark.parametrize("wrong_possible_value", ["NOT_APPLICABLE", "KO"])
-    def test_id_check_fraud_items_wrong_values_are_supiscious(self, jouve_field, wrong_possible_value):
-        jouve_content = fraud_factories.JouveContentFactory(**{jouve_field: wrong_possible_value})
-        item_found = False
-        for item in fraud_api._id_check_fraud_items(jouve_content):
-            if item.detail == f"Le champ {jouve_field} est {wrong_possible_value}":
-                assert item.status == fraud_models.FraudStatus.SUSPICIOUS
-                item_found = True
-
-        assert item_found
-
-    @pytest.mark.parametrize(
-        "id_piece_number",
-        [
-            "I III1",
-            "I I 1JII 11IB I E",
-            "",
-            "Passeport n: XXXXX",
-        ],
-    )
-    def test_jouve_id_piece_number_wrong_format(self, id_piece_number):
-        item = fraud_api.validate_id_piece_number_format_fraud_item(id_piece_number)
-        assert item.status == fraud_models.FraudStatus.SUSPICIOUS
-
-    @pytest.mark.parametrize(
-        "id_piece_number",
-        [
-            "321070751234",
-            "090435303687",
-            "Y808952",  # Tunisie
-            "U 13884935",  # Turquie
-            "AZ 1461290",  # Ancienne id italienne
-            "595-0103264-74",  # ID Belge
-            "1277367",  # ID Congolaise, Camerounaise, Mauricienne
-            "100030595009080004",  # ID Algerienne
-            "00000000 0 ZU4",  # portugal format
-            "03146310",  # andora CNI format
-        ],
-    )
-    def test_jouve_id_piece_number_valid_format(self, id_piece_number):
-        item = fraud_api.validate_id_piece_number_format_fraud_item(id_piece_number)
-        assert item.status == fraud_models.FraudStatus.OK
-
-    def test_on_identity_fraud_check_result_retry(self):
-        user = users_factories.UserFactory()
-        content = fraud_factories.JouveContentFactory(
-            birthLocationCtrl="OK",
-            bodyBirthDateCtrl="OK",
-            bodyBirthDateLevel=100,
-            bodyFirstnameCtrl="OK",
-            bodyFirstnameLevel=100,
-            bodyNameLevel=100,
-            bodyNameCtrl="OK",
-            bodyPieceNumber="wrong-id-piece-number",
-            bodyPieceNumberCtrl="KO",  # ensure we correctly update this field later in the test
-            bodyPieceNumberLevel=100,
-            creatorCtrl="OK",
-            initialSizeCtrl="OK",
-        )
-        fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
-            type=fraud_models.FraudCheckType.JOUVE, user=user, resultContent=content
-        )
-        fraud_check = fraud_api.admin_update_identity_fraud_check_result(user, "123123123123")
-        fraud_result = fraud_factories.BeneficiaryFraudResultFactory(
-            user=user, status=fraud_models.FraudStatus.SUSPICIOUS, reason="Suspiscious case"
-        )
-        fraud_api.on_identity_fraud_check_result(user, fraud_check)
-        fraud_result = fraud_models.BeneficiaryFraudResult.query.get(fraud_result.id)
-        assert fraud_result.status == fraud_models.FraudStatus.OK
-
-    def test_admin_update_identity_fraud_check_result(self):
-        user = users_factories.UserFactory()
-
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            type=fraud_models.FraudCheckType.JOUVE,
-            user=user,
-        )
-
-        fraud_check = fraud_api.admin_update_identity_fraud_check_result(user, "id-piece-number")
-        content = fraud_models.JouveContent(**fraud_check.resultContent)
-        assert content.bodyPieceNumberLevel == 100
-        assert content.bodyPieceNumber == "id-piece-number"
-        assert content.bodyPieceNumberCtrl == "OK"
-
-    # TODO(xordoquy): make fraud fields configurable and reactivate this test
-    # @patch("pcapi.connectors.beneficiaries.jouve_backend._get_raw_content")
-    # def test_jouve_update_id_fraud(self, _get_raw_content, client):
-
-    #     user = users_factories.users_factories.UserFactory(
-    #         hasCompletedIdCheck=True,
-    #         phoneValidationStatus=PhoneValidationStatusType.VALIDATED,
-    #         dateOfBirth=datetime(2002, 6, 8),
-    #         email=self.user_email,
-    #     )
-    #     _get_raw_content.return_value = self.JOUVE_CONTENT | {"serviceCodeCtrl": "KO", "bodyFirstnameLevel": "30"}
-
-    #     response = client.post("/beneficiaries/application_update", json={"id": self.application_id})
-    #     assert response.status_code == 200
-
-    #     fraud_result = fraud_models.BeneficiaryFraudResult.query.filter_by(user=user).first()
-
-    #     assert fraud_result.status == fraud_models.FraudStatus.KO
-    #     assert (
-    #         fraud_result.reason
-    #         == "Le champ serviceCodeCtrl est KO ; Le champ bodyFirstnameLevel a le score 30 (minimum 50)"
-    #     )
-
-    #     db.session.refresh(user)
-    #     assert not user.has_beneficiary_role
 
 
 @pytest.mark.usefixtures("db_session")
@@ -351,6 +62,38 @@ class CommonTest:
             registration_datetime=registration_datetime,
         )
         assert fraud_api.get_eligibility_type(data) == expected_eligibility_type
+
+    @pytest.mark.parametrize(
+        "id_piece_number",
+        [
+            "I III1",
+            "I I 1JII 11IB I E",
+            "",
+            "Passeport n: XXXXX",
+        ],
+    )
+    def test_id_piece_number_wrong_format(self, id_piece_number):
+        item = fraud_api.validate_id_piece_number_format_fraud_item(id_piece_number)
+        assert item.status == fraud_models.FraudStatus.SUSPICIOUS
+
+    @pytest.mark.parametrize(
+        "id_piece_number",
+        [
+            "321070751234",
+            "090435303687",
+            "Y808952",  # Tunisie
+            "U 13884935",  # Turquie
+            "AZ 1461290",  # Ancienne id italienne
+            "595-0103264-74",  # ID Belge
+            "1277367",  # ID Congolaise, Camerounaise, Mauricienne
+            "100030595009080004",  # ID Algerienne
+            "00000000 0 ZU4",  # portugal format
+            "03146310",  # andora CNI format
+        ],
+    )
+    def test_id_piece_number_valid_format(self, id_piece_number):
+        item = fraud_api.validate_id_piece_number_format_fraud_item(id_piece_number)
+        assert item.status == fraud_models.FraudStatus.OK
 
 
 @pytest.mark.usefixtures("db_session")
@@ -477,7 +220,7 @@ class CommonFraudCheckTest:
 
     @pytest.mark.parametrize(
         "fraud_check_type",
-        [fraud_models.FraudCheckType.DMS, fraud_models.FraudCheckType.JOUVE],
+        [fraud_models.FraudCheckType.DMS],
     )
     def test_user_validation_is_beneficiary(self, fraud_check_type):
         user = users_factories.BeneficiaryGrant18Factory()
@@ -499,7 +242,7 @@ class CommonFraudCheckTest:
 
     @pytest.mark.parametrize(
         "fraud_check_type",
-        [fraud_models.FraudCheckType.DMS, fraud_models.FraudCheckType.JOUVE],
+        [fraud_models.FraudCheckType.DMS],
     )
     def test_user_validation_has_email_validated(self, fraud_check_type):
         user = users_factories.UserFactory(isEmailValidated=False)
@@ -522,7 +265,7 @@ class CommonFraudCheckTest:
         assert "L'email de l'utilisateur n'est pas validé" in fraud_result.reason
         assert fraud_result.status == fraud_models.FraudStatus.KO
 
-    @pytest.mark.parametrize("fraud_check_type", [fraud_models.FraudCheckType.DMS, fraud_models.FraudCheckType.JOUVE])
+    @pytest.mark.parametrize("fraud_check_type", [fraud_models.FraudCheckType.DMS])
     def test_previously_validated_user_with_retry(self, fraud_check_type):
         # The user is already beneficiary, and has already done all the checks but
         # for any circumstances, someone is trying to redo the validation

@@ -16,17 +16,14 @@ from werkzeug import Response
 import wtforms.validators
 
 from pcapi.admin import base_configuration
-from pcapi.connectors.beneficiaries import jouve_backend
 import pcapi.core.fraud.api as fraud_api
 import pcapi.core.fraud.models as fraud_models
 from pcapi.core.mails.transactional.users.subscription_document_error import send_subscription_document_error_email
 from pcapi.core.subscription import messages as subscription_messages
 import pcapi.core.subscription.api as subscription_api
 import pcapi.core.subscription.exceptions as subscription_exceptions
-import pcapi.core.subscription.models as subscription_models
 import pcapi.core.users.api as users_api
 import pcapi.core.users.models as users_models
-import pcapi.infrastructure.repository.beneficiary.beneficiary_sql_repository as beneficiary_repository
 from pcapi.models import db
 from pcapi.models.beneficiary_import import BeneficiaryImportSources
 from pcapi.models.beneficiary_import_status import ImportStatus

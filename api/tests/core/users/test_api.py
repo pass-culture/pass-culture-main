@@ -1,9 +1,7 @@
 from datetime import date
 from datetime import datetime
-from datetime import time
 from datetime import timedelta
 from decimal import Decimal
-from pathlib import Path
 from unittest.mock import patch
 
 from dateutil.relativedelta import relativedelta
@@ -16,11 +14,9 @@ from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.categories import subcategories
 import pcapi.core.fraud.factories as fraud_factories
 import pcapi.core.fraud.models as fraud_models
-from pcapi.core.mails import testing as mails_testing
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.payments.conf import GRANT_18_VALIDITY_IN_YEARS
 from pcapi.core.subscription import api as subscription_api
-from pcapi.core.subscription import models as subscription_models
 from pcapi.core.testing import override_features
 from pcapi.core.testing import override_settings
 from pcapi.core.users import api as users_api
@@ -30,7 +26,6 @@ from pcapi.core.users import factories as users_factories
 from pcapi.core.users import testing as sendinblue_testing
 from pcapi.core.users.api import BeneficiaryValidationStep
 from pcapi.core.users.api import _set_offerer_departement_code
-from pcapi.core.users.api import asynchronous_identity_document_verification
 from pcapi.core.users.api import count_existing_id_check_tokens
 from pcapi.core.users.api import create_id_check_token
 from pcapi.core.users.api import create_pro_user
@@ -43,8 +38,6 @@ from pcapi.core.users.api import get_eligibility_at_date
 from pcapi.core.users.api import get_eligibility_start_datetime
 from pcapi.core.users.api import set_pro_tuto_as_seen
 from pcapi.core.users.api import steps_to_become_beneficiary
-from pcapi.core.users.exceptions import CloudTaskCreationException
-from pcapi.core.users.exceptions import IdentityDocumentUploadException
 from pcapi.core.users.factories import BeneficiaryImportFactory
 from pcapi.core.users.factories import UserFactory
 from pcapi.core.users.models import Credit
@@ -59,15 +52,11 @@ from pcapi.core.users.repository import get_user_with_valid_token
 from pcapi.core.users.utils import encode_jwt_payload
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.models import db
-from pcapi.models.beneficiary_import import BeneficiaryImport
 from pcapi.models.beneficiary_import import BeneficiaryImportSources
 from pcapi.models.beneficiary_import_status import ImportStatus
 from pcapi.models.user_session import UserSession
 from pcapi.notifications.push import testing as batch_testing
 from pcapi.routes.serialization.users import ProUserCreationBodyModel
-from pcapi.tasks.account import VerifyIdentityDocumentRequest
-
-import tests
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -453,17 +442,11 @@ class StepsToBecomeBeneficiaryTest:
             dateOfBirth=self.AGE18_ELIGIBLE_BIRTH_DATE, phoneValidationStatus=phone_validation_status
         )
 
-    def set_beneficiary_import(self, user, status: str = ImportStatus.CREATED) -> BeneficiaryImport:
-        beneficiary_import = BeneficiaryImportFactory(beneficiary=user, source=BeneficiaryImportSources.jouve)
-        beneficiary_import.setStatus(status, author=user)
-
-        return beneficiary_import
-
     def test_no_missing_step(self):
         user = self.eligible_user(validate_phone=True)
 
         beneficiary_import = BeneficiaryImportFactory(
-            applicationId=0, beneficiary=user, source=BeneficiaryImportSources.jouve.value
+            applicationId=0, beneficiary=user, source=BeneficiaryImportSources.ubble.value
         )
         beneficiary_import.setStatus(ImportStatus.CREATED, author=user)
         user.hasCompletedIdCheck = True
@@ -837,280 +820,6 @@ class CreateProUserTest:
         assert not pro_user.has_admin_role
         assert pro_user.has_beneficiary_role
         assert pro_user.deposits != []
-
-
-class AsynchronousIdentityDocumentVerificationTest:
-    IMAGES_DIR = Path(tests.__path__[0]) / "files"
-
-    @patch("pcapi.core.users.utils.store_object")
-    @patch("secrets.token_urlsafe")
-    @patch("pcapi.core.users.api.verify_identity_document")
-    def test_upload_identity_document_successful(
-        self,
-        mocked_verify_identity_document,
-        mocked_token_urlsafe,
-        mocked_store_object,
-        app,
-    ):
-        # Given
-        identity_document = (self.IMAGES_DIR / "pixel.png").read_bytes()
-        mocked_token_urlsafe.return_value = "a_very_random_secret"
-
-        # When
-        asynchronous_identity_document_verification(identity_document, "toto@example.com")
-
-        # Then
-        mocked_store_object.assert_called_once_with(
-            "identity_documents",
-            "a_very_random_secret.jpg",
-            identity_document,
-            content_type="image/jpeg",
-            metadata={"email": "toto@example.com"},
-        )
-        mocked_verify_identity_document.delay.assert_called_once_with(
-            VerifyIdentityDocumentRequest(image_storage_path="identity_documents/a_very_random_secret.jpg")
-        )
-
-    @patch("pcapi.core.users.utils.store_object")
-    def test_upload_identity_document_fails_on_upload(
-        self,
-        mocked_store_object,
-        app,
-    ):
-        # Given
-        mocked_store_object.side_effect = Exception
-        identity_document = (self.IMAGES_DIR / "mouette_small.jpg").read_bytes()
-
-        # Then
-        with pytest.raises(IdentityDocumentUploadException):
-            asynchronous_identity_document_verification(identity_document, "toto@example.com")
-
-    @patch("pcapi.core.users.utils.delete_object")
-    @patch("pcapi.core.users.utils.store_object")
-    @patch("secrets.token_urlsafe")
-    @patch("pcapi.core.users.api.verify_identity_document")
-    def test_cloud_task_creation_fails(
-        self,
-        mocked_verify_identity_document,
-        mocked_token_urlsafe,
-        mocked_store_object,
-        mocked_delete_object,
-        app,
-    ):
-        # Given
-        identity_document = (self.IMAGES_DIR / "pixel.png").read_bytes()
-        mocked_token_urlsafe.return_value = "a_very_random_secret"
-        mocked_verify_identity_document.delay.side_effect = Exception
-
-        # When
-        with pytest.raises(CloudTaskCreationException):
-            asynchronous_identity_document_verification(identity_document, "toto@example.com")
-
-        # Then
-        mocked_delete_object.assert_called_once_with("identity_documents/a_very_random_secret.jpg")
-
-
-class VerifyIdentityDocumentInformationsTest:
-    @patch("pcapi.core.users.utils.delete_object")
-    @patch("pcapi.core.users.api.ask_for_identity_document_verification")
-    @patch("pcapi.core.users.api._get_identity_document_informations")
-    def test_email_sent_when_document_is_invalid(
-        self, mocked_get_identity_informations, mocked_ask_for_identity, mocked_delete_object, app, caplog
-    ):
-        # Given
-        mocked_get_identity_informations.return_value = ("py@test.com", b"")
-        mocked_ask_for_identity.return_value = (False, "invalid-document-date")
-
-        users_api.verify_identity_document_informations("some_path")
-
-        assert len(mails_testing.outbox) == 1
-        sent_data = mails_testing.outbox[0].sent_data
-
-        assert sent_data["MJ-TemplateID"] == 2958563
-        assert caplog.records[0].message == "fraud internal validation : Cannot find user with email py@test.com"
-
-    @patch("pcapi.core.users.utils.delete_object")
-    @patch("pcapi.core.users.api.ask_for_identity_document_verification")
-    @patch("pcapi.core.users.api._get_identity_document_informations")
-    @freeze_time("2021-10-30 09:00:00")
-    def test_messages_when_age_is_invalid(
-        self, mocked_get_identity_informations, mocked_ask_for_identity, mocked_delete_object, app, caplog
-    ):
-        # Given
-        user = users_factories.UserFactory()
-        mocked_get_identity_informations.return_value = (user.email, b"")
-        mocked_ask_for_identity.return_value = (False, "invalid-age")
-
-        users_api.verify_identity_document_informations("some_path")
-
-        assert subscription_models.SubscriptionMessage.query.count() == 1
-        message = subscription_models.SubscriptionMessage.query.first()
-        assert not message.popOverIcon
-        assert (
-            message.userMessage
-            == "Ton dossier a été refusé : ton document indique que tu n’as pas 18 ans. Consulte l’e-mail envoyé le 30/10/2021 pour plus d’informations."
-        )
-
-    @patch("pcapi.core.users.utils.delete_object")
-    @patch("pcapi.core.users.api.ask_for_identity_document_verification")
-    @patch("pcapi.core.users.api._get_identity_document_informations")
-    @freeze_time("2021-10-30 09:00:00")
-    def test_known_user_email_sent_when_document_has_invalid_date(
-        self, mocked_get_identity_informations, mocked_ask_for_identity, mocked_delete_object, app
-    ):
-        # Given
-        existing_user = users_factories.UserFactory()
-        mocked_get_identity_informations.return_value = (existing_user.email, b"")
-        mocked_ask_for_identity.return_value = (False, "invalid-document-date")
-
-        users_api.verify_identity_document_informations("some_path")
-
-        assert len(mails_testing.outbox) == 1
-        sent_data = mails_testing.outbox[0].sent_data
-
-        assert sent_data["MJ-TemplateID"] == 2958563
-
-        assert len(existing_user.beneficiaryFraudChecks) == 1
-        fraud_check = existing_user.beneficiaryFraudChecks[0]
-        assert fraud_check.type == fraud_models.FraudCheckType.INTERNAL_REVIEW
-        assert fraud_check.resultContent["message"] == "Erreur de lecture du document : invalid-document-date"
-        assert fraud_check.resultContent["source"] == fraud_models.InternalReviewSource.DOCUMENT_VALIDATION_ERROR.value
-
-        assert subscription_models.SubscriptionMessage.query.count() == 1
-        message = subscription_models.SubscriptionMessage.query.first()
-        assert not message.popOverIcon
-        assert (
-            message.userMessage
-            == "Ton dossier a été refusé : le document que tu as transmis est expiré. Consulte l’e-mail envoyé le 30/10/2021 pour plus d’informations."
-        )
-
-    @patch("pcapi.core.users.utils.delete_object")
-    @patch("pcapi.core.users.api.ask_for_identity_document_verification")
-    @patch("pcapi.core.users.api._get_identity_document_informations")
-    @freeze_time("2021-10-30 09:00:00")
-    def test_known_user_email_sent_when_document_is_unreadable(
-        self, mocked_get_identity_informations, mocked_ask_for_identity, mocked_delete_object, app
-    ):
-        # Given
-        eligible_date_of_birth = datetime.combine(date.today(), time.min) - relativedelta(
-            years=users_constants.ELIGIBILITY_AGE_18, months=1
-        )
-        existing_user = users_factories.UserFactory(dateOfBirth=eligible_date_of_birth)
-        mocked_get_identity_informations.return_value = (existing_user.email, b"")
-        mocked_ask_for_identity.return_value = (False, "unread-document")
-
-        users_api.verify_identity_document_informations("some_path")
-
-        assert len(existing_user.beneficiaryFraudChecks) == 1
-        fraud_check = existing_user.beneficiaryFraudChecks[0]
-        assert fraud_check.type == fraud_models.FraudCheckType.INTERNAL_REVIEW
-        assert fraud_check.resultContent["message"] == "Erreur de lecture du document : unread-document"
-        assert fraud_check.resultContent["source"] == fraud_models.InternalReviewSource.DOCUMENT_VALIDATION_ERROR.value
-
-        assert subscription_models.SubscriptionMessage.query.count() == 1
-        message = subscription_models.SubscriptionMessage.query.first()
-        assert not message.popOverIcon
-        assert (
-            message.userMessage
-            == "Nous n'arrivons pas à traiter ton document. Consulte l'e-mail envoyé le 30/10/2021 pour plus d'informations."
-        )
-
-    @patch("pcapi.core.users.utils.delete_object")
-    @patch("pcapi.core.users.api.ask_for_identity_document_verification")
-    @patch("pcapi.core.users.api._get_identity_document_informations")
-    @freeze_time("2021-10-30 09:00:00")
-    def test_when_document_has_unread_mrz(
-        self, mocked_get_identity_informations, mocked_ask_for_identity, mocked_delete_object, app
-    ):
-        # Given
-        existing_user = users_factories.UserFactory()
-        mocked_get_identity_informations.return_value = (existing_user.email, b"")
-        mocked_ask_for_identity.return_value = (False, "unread-mrz-document")
-
-        users_api.verify_identity_document_informations("some_path")
-
-        assert len(mails_testing.outbox) == 1
-        sent_data = mails_testing.outbox[0].sent_data
-
-        assert sent_data["MJ-TemplateID"] == 3188025
-
-        assert len(existing_user.beneficiaryFraudChecks) == 1
-        fraud_check = existing_user.beneficiaryFraudChecks[0]
-        assert fraud_check.type == fraud_models.FraudCheckType.INTERNAL_REVIEW
-        assert fraud_check.resultContent["message"] == "Erreur de lecture du document : unread-mrz-document"
-        assert fraud_check.resultContent["source"] == fraud_models.InternalReviewSource.DOCUMENT_VALIDATION_ERROR.value
-
-        assert subscription_models.SubscriptionMessage.query.count() == 1
-        message = subscription_models.SubscriptionMessage.query.first()
-        assert not message.popOverIcon
-        assert (
-            message.userMessage
-            == "Nous n'arrivons pas à traiter ton document. Consulte l'e-mail envoyé le 30/10/2021 pour plus d'informations."
-        )
-
-    @patch("pcapi.core.users.utils.delete_object")
-    @patch("pcapi.core.users.api.ask_for_identity_document_verification")
-    @patch("pcapi.core.users.api._get_identity_document_informations")
-    @freeze_time("2021-10-30 09:00:00")
-    def test_known_user_email_sent_when_document_is_invalid(
-        self, mocked_get_identity_informations, mocked_ask_for_identity, mocked_delete_object, app
-    ):
-        # Given
-        existing_user = users_factories.UserFactory()
-        mocked_get_identity_informations.return_value = (existing_user.email, b"")
-        mocked_ask_for_identity.return_value = (False, "invalid-document")
-
-        users_api.verify_identity_document_informations("some_path")
-
-        assert len(mails_testing.outbox) == 1
-        sent_data = mails_testing.outbox[0].sent_data
-
-        assert sent_data["MJ-TemplateID"] == 2958584
-
-        assert len(existing_user.beneficiaryFraudChecks) == 1
-        fraud_check = existing_user.beneficiaryFraudChecks[0]
-        assert fraud_check.type == fraud_models.FraudCheckType.INTERNAL_REVIEW
-        assert fraud_check.resultContent["message"] == "Erreur de lecture du document : invalid-document"
-        assert fraud_check.resultContent["source"] == fraud_models.InternalReviewSource.DOCUMENT_VALIDATION_ERROR.value
-
-        assert subscription_models.SubscriptionMessage.query.count() == 1
-        message = subscription_models.SubscriptionMessage.query.first()
-        assert not message.popOverIcon
-        assert (
-            message.userMessage
-            == "Ton dossier a été refusé : le document transmis est invalide. Consulte l’e-mail envoyé le 30/10/2021 pour plus d’informations."
-        )
-
-    @patch("pcapi.core.users.utils.delete_object")
-    @patch("pcapi.core.users.api.ask_for_identity_document_verification")
-    @patch("pcapi.core.users.api._get_identity_document_informations")
-    def test_email_sent_with_default_template(
-        self, mocked_get_identity_informations, mocked_ask_for_identity, mocked_delete_object, app
-    ):
-        # Given
-        mocked_get_identity_informations.return_value = ("py@test.com", b"")
-        mocked_ask_for_identity.return_value = (False, "unknown-error-code")
-
-        users_api.verify_identity_document_informations("some_path")
-
-        assert len(mails_testing.outbox) == 1
-        sent_data = mails_testing.outbox[0].sent_data
-
-        assert sent_data["MJ-TemplateID"] == 2958557  # default email template used
-
-    @patch("pcapi.core.users.utils.delete_object")
-    @patch("pcapi.core.users.api.ask_for_identity_document_verification")
-    @patch("pcapi.core.users.api._get_identity_document_informations")
-    def test_no_email_sent_when_document_is_valid(
-        self, mocked_get_identity_informations, mocked_ask_for_identity, mocked_delete_object, app
-    ):
-        # Given
-        mocked_get_identity_informations.return_value = ("py@test.com", b"")
-        mocked_ask_for_identity.return_value = (True, "registration:completed")
-
-        users_api.verify_identity_document_informations("some_path")
-
-        assert not mails_testing.outbox
 
 
 class BeneficiaryInformationUpdateTest:

@@ -33,7 +33,7 @@ def get_granted_deposit(
 ) -> Optional[GrantedDeposit]:
     if eligibility == EligibilityType.UNDERAGE:
         return GrantedDeposit(
-            # as the beneficiary activation process may be asynchronous (with Jouve or DMS),
+            # as the beneficiary activation process may be asynchronous (with Ubble or DMS),
             # beneficiary.age may be > 17 although it was <= 17 when the subscription was made
             amount=deposit_conf.GRANTED_DEPOSIT_AMOUNTS_FOR_UNDERAGE_BY_AGE[beneficiary.age]
             if beneficiary.age in deposit_conf.GRANTED_DEPOSIT_AMOUNTS_FOR_UNDERAGE_BY_AGE

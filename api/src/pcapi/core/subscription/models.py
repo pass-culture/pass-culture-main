@@ -47,7 +47,6 @@ class SubscriptionItem:
 
 class IdentityCheckMethod(enum.Enum):
     EDUCONNECT = "educonnect"
-    JOUVE = "jouve"
     UBBLE = "ubble"
 
 

@@ -12,8 +12,6 @@ from pcapi.connectors import user_profiling
 from pcapi.connectors.beneficiaries import exceptions as beneficiaries_exceptions
 from pcapi.core.fraud import api as fraud_api
 from pcapi.core.logging import get_or_set_correlation_id
-from pcapi.core.offers.exceptions import FileSizeExceeded
-from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription.ubble import api as ubble_subscription_api
 from pcapi.core.users import api
 from pcapi.core.users import constants
@@ -24,7 +22,6 @@ from pcapi.core.users.models import User
 from pcapi.core.users.repository import find_user_by_email
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.feature import FeatureToggle
-from pcapi.repository import repository
 from pcapi.repository import transaction
 from pcapi.routes.native.security import authenticated_user_required
 from pcapi.routes.serialization import beneficiaries as beneficiaries_serialization
@@ -146,24 +143,6 @@ def get_email_update_token_expiration_date(user: User) -> serializers.UpdateEmai
     return serializers.UpdateEmailTokenExpiration(expiration=email_api.get_active_token_expiration(user))
 
 
-# TODO (vionnex) remove this route after app native mandatory version is >= 164
-@blueprint.native_v1.route("/beneficiary_information", methods=["PATCH"])
-@spectree_serialize(on_success_status=204, api=blueprint.api)
-@authenticated_user_required
-def update_beneficiary_mandatory_information(user: User, body: serializers.BeneficiaryInformationUpdateRequest) -> None:
-    subscription_api.update_user_profile(
-        user=user,
-        first_name=body.first_name,
-        last_name=body.last_name,
-        address=body.address,
-        city=body.city,
-        postal_code=body.postal_code,
-        activity=body.activity,
-        phone_number=body.phone,
-        is_legacy_behaviour=True,
-    )
-
-
 @blueprint.native_v1.route("/me/cultural_survey", methods=["POST"])
 @spectree_serialize(
     on_success_status=204,
@@ -271,42 +250,6 @@ def get_id_check_token(user: User) -> serializers.GetIdCheckTokenResponse:
             {"code": "ID_CHECK_ALREADY_COMPLETED", "message": "Tu as déjà déposé un dossier, il est en cours d'étude."},
             status_code=400,
         )
-
-
-@blueprint.native_v1.route("/identity_document", methods=["POST"])
-@spectree_serialize(api=blueprint.api, on_success_status=204)
-@authenticated_user_required
-def upload_identity_document(
-    user: User,
-    form: serializers.UploadIdentityDocumentRequest,
-) -> None:
-    if not user.is_eligible:
-        raise ApiErrors({"code": "USER_NOT_ELIGIBLE"})
-    try:
-        token = api.validate_token(user.id, form.token)
-        image = form.get_image_as_bytes(request)
-        api.asynchronous_identity_document_verification(image, user.email)
-        token.isUsed = True
-        user.extraData["is_identity_document_uploaded"] = True
-        repository.save(token, user)
-        return
-    except exceptions.ExpiredCode:
-        raise ApiErrors(
-            {"code": "EXPIRED_TOKEN", "message": "Token expiré"},
-            status_code=400,
-        )
-    except exceptions.NotValidCode:
-        raise ApiErrors(
-            {"code": "INVALID_TOKEN", "message": "Token invalide"},
-            status_code=400,
-        )
-    except FileSizeExceeded:
-        raise ApiErrors(
-            {"code": "FILE_SIZE_EXCEEDED", "message": "L'image envoyée dépasse 10Mo"},
-            status_code=400,
-        )
-    except (exceptions.IdentityDocumentUploadException, exceptions.CloudTaskCreationException):
-        raise ApiErrors({"code": "SERVICE_UNAVAILABLE", "message": "Token invalide"}, status_code=503)
 
 
 @blueprint.native_v1.route("/send_phone_validation_code", methods=["POST"])
