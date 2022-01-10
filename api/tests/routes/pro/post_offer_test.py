@@ -143,7 +143,12 @@ class Returns200Test:
             "durationMinutes": 60,
             "name": "La pièce de théâtre",
             "subcategoryId": subcategories.SPECTACLE_REPRESENTATION.id,
-            "extraData": {"toto": "text"},
+            "extraData": {
+                "students": ["Collège - 4e"],
+                "contactEmail": "toto@toto.com",
+                "contactPhone": "0600000000",
+                "offerVenue": {"addressType": "other", "otherAddress": "", "venueId": ""},
+            },
             "audioDisabilityCompliant": False,
             "mentalDisabilityCompliant": True,
             "motorDisabilityCompliant": False,
@@ -200,7 +205,12 @@ class Returns200Test:
         assert offer.mentalDisabilityCompliant == True
         assert offer.motorDisabilityCompliant == False
         assert offer.visualDisabilityCompliant == False
-        assert offer.extraData == {"toto": "text"}
+        assert offer.extraData == {
+            "students": ["Collège - 4e"],
+            "contactEmail": "toto@toto.com",
+            "contactPhone": "0600000000",
+            "offerVenue": {"addressType": "other", "otherAddress": "", "venueId": ""},
+        }
 
 
 @pytest.mark.usefixtures("db_session")
@@ -434,6 +444,69 @@ class Returns400Test:
         assert response.status_code == 400
         assert response.json["externalTicketOfficeUrl"] == ['L\'URL doit terminer par une extension (ex. ".fr")']
 
+    def test_create_educational_offer_with_wrong_extra_data(self, app, client):
+        # Given
+        venue = offers_factories.VenueFactory()
+        offerer = venue.managingOfferer
+        offers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
+
+        # When
+        data = {
+            "offererId": humanize(offerer.id),
+            "venueId": humanize(venue.id),
+            "bookingEmail": "offer@example.com",
+            "durationMinutes": 60,
+            "name": "La pièce de théâtre",
+            "subcategoryId": subcategories.SPECTACLE_REPRESENTATION.id,
+            "extraData": {
+                "students": ["Collège - 4e"],
+            },
+            "audioDisabilityCompliant": False,
+            "mentalDisabilityCompliant": True,
+            "motorDisabilityCompliant": False,
+            "visualDisabilityCompliant": False,
+        }
+
+        with requests_mock.Mocker() as request_mock:
+            request_mock.get(
+                f"https://adage-api-url/v1/partenaire-culturel/{offerer.siren}",
+                request_headers={
+                    "X-omogen-api-key": "adage-api-key",
+                },
+                status_code=200,
+                json=[
+                    {
+                        "id": "125334",
+                        "siret": "18004623700012",
+                        "regionId": "1",
+                        "academieId": "25",
+                        "statutId": "2",
+                        "labelId": "4",
+                        "typeId": "4",
+                        "communeId": "75101",
+                        "libelle": "Musée du Louvre",
+                        "adresse": "Rue de Rivoli",
+                        "siteWeb": "https://www.louvre.fr/",
+                        "latitude": "48.861863",
+                        "longitude": "2.338081",
+                        "actif": "1",
+                        "dateModification": "2021-09-01 00:00:00",
+                        "statutLibelle": "Établissement public",
+                        "labelLibelle": "Musée de France",
+                        "typeIcone": "museum",
+                        "typeLibelle": "Musée, domaine ou monument",
+                        "communeLibelle": "PARIS  1ER ARRONDISSEMENT",
+                        "domaines": "Architecture|Arts visuels, arts plastiques, arts appliqués|Patrimoine et archéologie|Photographie",
+                    }
+                ],
+            )
+
+            client.with_session_auth("user@example.com")
+            response = client.post("/offers/educational", json=data)
+
+        # Then
+        assert response.status_code == 400
+
 
 @pytest.mark.usefixtures("db_session")
 class Returns403Test:
@@ -476,7 +549,12 @@ class Returns403Test:
             "durationMinutes": 60,
             "name": "La pièce de théâtre",
             "subcategoryId": subcategories.SPECTACLE_REPRESENTATION.id,
-            "extraData": {"toto": "text"},
+            "extraData": {
+                "students": ["Collège - 4e"],
+                "contactEmail": "toto@toto.com",
+                "contactPhone": "0600000000",
+                "offerVenue": {"addressType": "other", "otherAddress": "", "venueId": ""},
+            },
             "audioDisabilityCompliant": False,
             "mentalDisabilityCompliant": True,
             "motorDisabilityCompliant": False,
