@@ -280,7 +280,7 @@ def _create_response_to_get_booking_by_token(booking: Booking) -> dict:
         "email": booking.email,
         "isUsed": booking.isUsed,
         "offerName": offer_name,
-        "userName": booking.publicName,
+        "userName": booking.userName,
         "venueDepartementCode": venue_departement_code,
     }
 

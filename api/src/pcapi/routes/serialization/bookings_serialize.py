@@ -76,7 +76,7 @@ def get_booking_response(booking: Booking) -> GetBookingResponse:
         price=booking.amount,
         quantity=booking.quantity,
         theater=extra_data.get("theater", ""),
-        userName=booking.publicName,
+        userName=booking.userName,
         venueAddress=booking.venue.address,
         venueDepartmentCode=booking.venue.departementCode,
         venueName=booking.venue.name,

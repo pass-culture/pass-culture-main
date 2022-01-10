@@ -24,7 +24,8 @@ def test_should_send_email_to_offerer_when_expired_bookings_cancelled_with_new_a
     long_ago = now - timedelta(days=31)
     dvd = ProductFactory(subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id)
     expired_today_dvd_booking = CancelledIndividualBookingFactory(
-        individualBooking__user__publicName="Dory",
+        individualBooking__user__firstName="Dory",
+        individualBooking__user__lastName="Who",
         individualBooking__user__email="dory@example.com",
         stock__offer__product=dvd,
         stock__offer__name="Memento",
@@ -36,7 +37,8 @@ def test_should_send_email_to_offerer_when_expired_bookings_cancelled_with_new_a
 
     cd = ProductFactory(subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE.id)
     expired_today_cd_booking = CancelledIndividualBookingFactory(
-        individualBooking__user__publicName="Dorian",
+        individualBooking__user__firstName="Dorian",
+        individualBooking__user__lastName="Gray",
         individualBooking__user__email="dorian@example.com",
         stock__offer__product=cd,
         stock__offer__name="Random Access Memories",
@@ -59,7 +61,7 @@ def test_should_send_email_to_offerer_when_expired_bookings_cancelled_with_new_a
                     "offer_name": "Memento",
                     "venue_name": "Mnémosyne",
                     "price": "10.00",
-                    "user_name": "Dory",
+                    "user_name": "Dory Who",
                     "user_email": "dory@example.com",
                     "pcpro_offer_link": "http://pc_pro.com/offer_link",
                 },
@@ -67,7 +69,7 @@ def test_should_send_email_to_offerer_when_expired_bookings_cancelled_with_new_a
                     "offer_name": "Random Access Memories",
                     "venue_name": "Virgin Megastore",
                     "price": "10.00",
-                    "user_name": "Dorian",
+                    "user_name": "Dorian Gray",
                     "user_email": "dorian@example.com",
                     "pcpro_offer_link": "http://pc_pro.com/offer_link",
                 },
