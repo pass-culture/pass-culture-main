@@ -53,9 +53,6 @@ class PcObject:
             object_id = f"{self.id}/{humanize(self.id)}"
         return "<%s #%s>" % (self.__class__.__name__, object_id)
 
-    def __hash__(self):
-        return hash(self.id)
-
     def dump(self):
         pprint(vars(self))
 
