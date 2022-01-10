@@ -67,11 +67,14 @@ const OfferEducationalForm = ({
             selectedOfferer.id
           )
 
+        if (isOk) {
+          setIsEligible(payload.isOffererEligibleToEducationalOffer)
+        }
+
         if (!isOk) {
           notify.error(message)
         }
 
-        setIsEligible(payload.isOffererEligibleToEducationalOffer)
         setIsLoading(false)
       }
 
