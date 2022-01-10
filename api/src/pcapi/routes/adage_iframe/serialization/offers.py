@@ -16,6 +16,13 @@ from pcapi.utils.date import format_into_utc_date
 logger = logging.getLogger(__name__)
 
 
+class OfferManagingOffererResponse(BaseModel):
+    name: str
+
+    class Config:
+        orm_mode = True
+
+
 class OfferStockResponse(BaseModel):
     id: int
     beginningDatetime: Optional[datetime]
@@ -47,6 +54,7 @@ class OfferVenueResponse(BaseModel):
     postalCode: Optional[str]
     publicName: Optional[str]
     coordinates: Coordinates
+    managingOfferer: OfferManagingOffererResponse
 
     class Config:
         orm_mode = True
