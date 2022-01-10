@@ -10,8 +10,7 @@ import { Title } from 'ui-kit'
 import styles from './OfferEducationalConfirmation.module.scss'
 
 interface IOfferEducationalConfirmationProps {
-  offererId: string | null
-  venueId: string | null
+  offererId?: string | null
   offerStatus?: OfferStatus
 }
 
@@ -31,18 +30,8 @@ const pendingOffer = {
 
 const OfferEducationalConfirmation = ({
   offererId,
-  venueId,
   offerStatus,
 }: IOfferEducationalConfirmationProps): JSX.Element => {
-  let queryString = ''
-  if (offererId) {
-    queryString = `?structure=${offererId}`
-  }
-
-  if (venueId) {
-    queryString += `&lieu=${venueId}`
-  }
-
   const { title, description, Icon } =
     offerStatus === OfferStatus.OFFER_STATUS_PENDING
       ? pendingOffer
@@ -70,7 +59,7 @@ const OfferEducationalConfirmation = ({
         </Link>
         <Link
           className={cn('primary-button', styles['confirmation-action'])}
-          to={`/offre/creation${queryString}`}
+          to={`/offre/creation${offererId ? `?structure=${offererId}` : ''}`}
         >
           Créer une nouvelle offre
         </Link>
