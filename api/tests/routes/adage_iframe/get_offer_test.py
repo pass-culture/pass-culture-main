@@ -90,6 +90,7 @@ class Returns200Test:
                 "name": offer.venue.name,
                 "postalCode": "75000",
                 "publicName": offer.venue.publicName,
+                "managingOfferer": {"name": offer.venue.managingOfferer.name},
             },
             "audioDisabilityCompliant": False,
             "mentalDisabilityCompliant": False,

@@ -8,6 +8,9 @@ export interface VenueType {
   name: string
   postalCode: string
   publicName?: string
+  managingOfferer: {
+    name: string
+  }
 }
 
 export enum ADRESS_TYPE {
