@@ -3,6 +3,7 @@ import pytest
 from pcapi.core.finance.models import BusinessUnit
 from pcapi.core.offerers.factories import OffererFactory
 from pcapi.core.offers.factories import BankInformationFactory
+from pcapi.core.offers.factories import OfferFactory
 from pcapi.core.offers.factories import VenueFactory
 from pcapi.scripts.business_unit.create_bu import create_all_business_units
 
@@ -212,3 +213,26 @@ def test_business_unit_without_siret_name():
     business_unit = BusinessUnit.query.order_by("name").all()
     assert business_unit[0].name == "Point de remboursement #1"
     assert business_unit[1].name == "Point de remboursement #2"
+
+
+@pytest.mark.usefixtures("db_session")
+def test_create_single_bu_without_siret_on_offerer_cb():
+    expected_results = {
+        "bu_with_siret": 0,
+        "bu_without_siret": 0,
+    }
+
+    offerer = OffererFactory()
+    BankInformationFactory(offerer=offerer)
+    venue = VenueFactory(
+        managingOfferer=offerer,
+        businessUnit=None,
+        siret=None,
+        isVirtual=True,
+    )
+    OfferFactory(venue=venue)
+
+    create_all_business_units()
+    business_units = BusinessUnit.query.all()
+
+    assert len(business_units) == 1
