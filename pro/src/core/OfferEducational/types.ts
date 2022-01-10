@@ -135,4 +135,5 @@ export type GetStockOfferSuccessPayload = {
   status: Offer['status']
   isBooked: boolean
   venueDepartmentCode: string
+  managingOffererId: string
 }

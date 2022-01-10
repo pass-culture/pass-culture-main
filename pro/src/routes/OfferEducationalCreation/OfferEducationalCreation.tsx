@@ -47,8 +47,7 @@ const OfferEducationalCreation = (): JSX.Element => {
       return notify.error(message)
     }
 
-    const queryString = `?structure=${offer.offererId}&lieu=${offer.venueId}`
-    history.push(`/offre/${payload.offerId}/scolaire/stocks${queryString}`)
+    history.push(`/offre/${payload.offerId}/scolaire/stocks`)
   }
 
   useEffect(() => {

@@ -1,21 +1,17 @@
 import React, { useEffect, useState } from 'react'
-import { useLocation, useParams } from 'react-router'
+import { useParams } from 'react-router'
 
 import useNotification from 'components/hooks/useNotification'
 import Spinner from 'components/layout/Spinner'
-import { queryParamsFromOfferer } from 'components/pages/Offers/utils/queryParamsFromOfferer'
 import { getStockOfferAdapter } from 'core/OfferEducational'
 import { OfferStatus } from 'custom_types/offer'
 import OfferEducationalConfirmationScreen from 'screens/OfferEducationalConfirmation'
 
 const OfferEducationalConfirmation = (): JSX.Element => {
-  const location = useLocation<{ structure?: string; lieu?: string }>()
   const { offerId } = useParams<{ offerId: string }>()
   const [offerStatus, setOfferStatus] = useState<undefined | OfferStatus>()
+  const [offererId, setOffererId] = useState<string>()
   const notify = useNotification()
-
-  const { structure: offererId, lieu: venueId } =
-    queryParamsFromOfferer(location)
 
   useEffect(() => {
     const loadOffer = async () => {
@@ -26,6 +22,7 @@ const OfferEducationalConfirmation = (): JSX.Element => {
       }
 
       setOfferStatus(offerResponse.payload.status)
+      setOffererId(offerResponse.payload.managingOffererId)
     }
 
     loadOffer()
@@ -39,7 +36,6 @@ const OfferEducationalConfirmation = (): JSX.Element => {
     <OfferEducationalConfirmationScreen
       offerStatus={offerStatus}
       offererId={offererId}
-      venueId={venueId}
     />
   )
 }
