@@ -1,7 +1,7 @@
 from datetime import datetime
 from decimal import Decimal
 from enum import Enum
-from typing import Optional
+import typing
 
 from pydantic import BaseModel
 
@@ -23,11 +23,21 @@ class BookingFormula(Enum):
     VOID = ""  # avoid breaking legacy value "" returned for void formula
 
 
+class LegacyBookingResponse(BaseModel):
+    bookingId: typing.Optional[str]
+    date: typing.Optional[str]
+    email: typing.Optional[str]
+    isUsed: typing.Optional[bool]
+    offerName: typing.Optional[str]
+    userName: typing.Optional[str]
+    venueDepartementCode: typing.Optional[str]
+
+
 class GetBookingResponse(BaseModel):
     bookingId: str
     dateOfBirth: str  # avoid breaking legacy value "" returned for void date
     datetime: str  # avoid breaking legacy value "" returned for void date
-    ean13: Optional[str]
+    ean13: typing.Optional[str]
     email: str
     formula: BookingFormula
     isUsed: bool
@@ -40,8 +50,8 @@ class GetBookingResponse(BaseModel):
     quantity: int
     theater: dict
     userName: str
-    venueAddress: Optional[str]
-    venueDepartmentCode: Optional[str]
+    venueAddress: typing.Optional[str]
+    venueDepartmentCode: typing.Optional[str]
     venueName: str
 
 
@@ -97,4 +107,4 @@ class PostBookingBodyModel(BaseModel):
 
 class ActivationCode(BaseModel):
     code: str
-    expirationDate: Optional[datetime]
+    expirationDate: typing.Optional[datetime]

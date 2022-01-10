@@ -13,6 +13,7 @@ def install_all_routes(app: Flask) -> None:
     from pcapi.routes.adage_iframe.blueprint import adage_iframe
     from pcapi.routes.native.v1.blueprint import native_v1
     from pcapi.routes.pro.blueprint import pro_private_api
+    from pcapi.routes.pro.blueprint import pro_public_api_v1
     from pcapi.routes.pro.blueprint import pro_public_api_v2
     from pcapi.routes.saml.blueprint import saml_blueprint
     import pcapi.tasks
@@ -26,6 +27,7 @@ def install_all_routes(app: Flask) -> None:
 
     app.register_blueprint(adage_v1, url_prefix="/adage/v1")
     app.register_blueprint(native_v1, url_prefix="/native/v1")
+    app.register_blueprint(pro_public_api_v1)
     app.register_blueprint(pro_public_api_v2, url_prefix="/v2")
     app.register_blueprint(pro_private_api)
     app.register_blueprint(adage_iframe, url_prefix="/adage-iframe")

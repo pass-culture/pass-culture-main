@@ -7,16 +7,16 @@ from pcapi.models.api_errors import ResourceNotFoundError
 from pcapi.repository import repository
 from pcapi.repository import user_offerer_queries
 from pcapi.repository import user_queries
-from pcapi.routes.apis import private_api
-from pcapi.routes.apis import public_api
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.validation.routes.validate import check_valid_token_for_user_validation
+
+from . import blueprint
 
 
 logger = logging.getLogger(__name__)
 
 
-@public_api.route("/validate/user-offerer/<token>", methods=["GET"])
+@blueprint.pro_public_api_v1.route("/validate/user-offerer/<token>", methods=["GET"])
 @spectree_serialize(on_success_status=202, json_format=False)
 def validate_offerer_attachment(token) -> str:
     try:
@@ -31,7 +31,7 @@ def validate_offerer_attachment(token) -> str:
     return "Validation du rattachement de la structure effectuée"
 
 
-@public_api.route("/validate/offerer/<token>", methods=["GET"])
+@blueprint.pro_public_api_v1.route("/validate/offerer/<token>", methods=["GET"])
 @spectree_serialize(on_success_status=202, json_format=False)
 def validate_new_offerer(token) -> str:
     try:
@@ -45,7 +45,7 @@ def validate_new_offerer(token) -> str:
     return "Validation effectuée"
 
 
-@private_api.route("/validate/user/<token>", methods=["PATCH"])
+@blueprint.pro_private_api.route("/validate/user/<token>", methods=["PATCH"])
 @spectree_serialize(on_success_status=204)
 def validate_user(token) -> None:
     user_to_validate = user_queries.find_by_validation_token(token)
