@@ -6,6 +6,14 @@ from pcapi.serialization.spec_tree import ExtendedSpecTree
 from pcapi.serialization.utils import before_handler
 
 
+pro_public_api_v1 = Blueprint("pro_public_api_v1", __name__)
+CORS(
+    pro_public_api_v1,
+    resources={r"/*": {"origins": "*"}},
+    supports_credentials=True,
+)
+
+
 pro_public_api_v2 = Blueprint("pro_public_api_v2", __name__)
 CORS(
     pro_public_api_v2,

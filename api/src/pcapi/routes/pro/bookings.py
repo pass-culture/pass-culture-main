@@ -1,6 +1,5 @@
 from typing import Optional
 
-from flask import jsonify
 from flask import request
 from flask_login import current_user
 from flask_login import login_required
@@ -9,14 +8,13 @@ import pcapi.core.bookings.api as bookings_api
 from pcapi.core.bookings.models import Booking
 import pcapi.core.bookings.repository as booking_repository
 import pcapi.core.bookings.validation as bookings_validation
-from pcapi.routes.apis import private_api
-from pcapi.routes.apis import public_api
 from pcapi.routes.serialization import serialize
 from pcapi.routes.serialization.bookings_recap_serialize import ListBookingsQueryModel
 from pcapi.routes.serialization.bookings_recap_serialize import ListBookingsResponseModel
 from pcapi.routes.serialization.bookings_recap_serialize import PatchBookingByTokenQueryModel
 from pcapi.routes.serialization.bookings_recap_serialize import _serialize_booking_recap
 from pcapi.routes.serialization.bookings_serialize import GetBookingResponse
+from pcapi.routes.serialization.bookings_serialize import LegacyBookingResponse
 from pcapi.routes.serialization.bookings_serialize import get_booking_response
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils.human_ids import dehumanize
@@ -43,11 +41,15 @@ BASE_CODE_DESCRIPTIONS = {
     "HTTP_410": "La contremarque n'est plus valide car elle a déjà été validée ou a été annulée",
 }
 
-# @debt api-migration
 # TODO (gvanneste, 2021-10-19) : retravailler cette fonction, notamment check_user_is_logged_in_or_email_is_provided
 # À brûler : juste checker si le user a droit de récupérer les bookings
-@public_api.route("/bookings/token/<token>", methods=["GET"])
-def get_booking_by_token(token: str) -> tuple[str, int]:
+@blueprint.pro_public_api_v1.route("/bookings/token/<token>", methods=["GET"])
+@spectree_serialize(
+    response_model=LegacyBookingResponse,
+    on_success_status=200,
+    on_empty_status=204,
+)
+def get_booking_by_token(token: str) -> Optional[LegacyBookingResponse]:
     email: Optional[str] = request.args.get("email", None)
     offer_id = dehumanize(request.args.get("offer_id", None))
 
@@ -58,12 +60,12 @@ def get_booking_by_token(token: str) -> tuple[str, int]:
 
     if check_user_can_validate_bookings(current_user, booking.offererId):
         response = _create_response_to_get_booking_by_token(booking)
-        return jsonify(response), 200
+        return LegacyBookingResponse(**response)
 
-    return "", 204
+    return None
 
 
-@public_api.route("/bookings/token/<token>", methods=["PATCH"])
+@blueprint.pro_public_api_v1.route("/bookings/token/<token>", methods=["PATCH"])
 @spectree_serialize(on_success_status=204)
 def patch_booking_by_token(token: str, query: PatchBookingByTokenQueryModel) -> None:
     email = query.email
@@ -78,7 +80,7 @@ def patch_booking_by_token(token: str, query: PatchBookingByTokenQueryModel) -> 
     bookings_api.mark_as_used(booking)
 
 
-@private_api.route("/bookings/pro", methods=["GET"])
+@blueprint.pro_private_api.route("/bookings/pro", methods=["GET"])
 @login_required
 @spectree_serialize(response_model=ListBookingsResponseModel)
 def get_bookings_pro(query: ListBookingsQueryModel) -> ListBookingsResponseModel:
@@ -109,7 +111,7 @@ def get_bookings_pro(query: ListBookingsQueryModel) -> ListBookingsResponseModel
     )
 
 
-@private_api.route("/bookings/csv", methods=["GET"])
+@blueprint.pro_private_api.route("/bookings/csv", methods=["GET"])
 @login_required
 @spectree_serialize(
     json_format=False,

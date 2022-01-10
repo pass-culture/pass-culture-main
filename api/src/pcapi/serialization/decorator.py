@@ -66,6 +66,7 @@ def spectree_serialize(
     response_by_alias: bool = True,
     exclude_none: bool = False,
     on_success_status: int = 200,
+    on_empty_status: Optional[int] = None,
     on_error_statuses: Optional[list[int]] = None,
     api: SpecTree = default_api,
     json_format: bool = True,
@@ -96,6 +97,7 @@ def spectree_serialize(
     on_error_statuses: list = on_error_statuses or []
     code_descriptions: dict = code_descriptions or {}
     response_headers: dict = response_headers or {}
+    on_empty_status = on_empty_status or on_success_status
 
     def decorate_validation(route: Callable[..., Any]) -> Callable[[Any], Any]:
         body_in_kwargs = route.__annotations__.get("body")
@@ -157,7 +159,7 @@ def spectree_serialize(
             if json_format:
                 return _make_json_response(
                     content=result,
-                    status_code=on_success_status,
+                    status_code=on_success_status if result else on_empty_status,
                     by_alias=response_by_alias,
                     exclude_none=exclude_none,
                     headers=response_headers,
