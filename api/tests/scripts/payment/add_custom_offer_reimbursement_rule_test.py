@@ -32,7 +32,7 @@ def test_basics(app):
     # fmt: on
     assert "Created new rule" in result.output
     rule = payments_models.CustomReimbursementRule.query.one()
-    assert rule.offer == offer
+    assert rule.offer.id == offer.id
     assert rule.amount == decimal.Decimal("12.34")
 
 
@@ -73,5 +73,5 @@ def test_force_with_warnings(app):
     # fmt: on
     assert "Created new rule" in result.output
     rule = payments_models.CustomReimbursementRule.query.one()
-    assert rule.offer == offer
+    assert rule.offer.id == offer.id
     assert rule.amount == decimal.Decimal("12.34")

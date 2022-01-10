@@ -259,20 +259,6 @@ class SynchronizeStocksTest:
         )
 
         # Then
-        assert new_offers == [
-            Offer(
-                bookingEmail="booking_email",
-                description="product_desc",
-                extraData="extra",
-                idAtProviders="offer_ref_2",
-                lastProviderId=provider.id,
-                name="product_name",
-                productId=456,
-                venueId=venue.id,
-                subcategoryId=subcategories.LIVRE_PAPIER.id,
-                withdrawalDetails=venue.withdrawalDetails,
-            ),
-        ]
         new_offer = new_offers[0]
         assert new_offer.bookingEmail == "booking_email"
         assert new_offer.description == "product_desc"
