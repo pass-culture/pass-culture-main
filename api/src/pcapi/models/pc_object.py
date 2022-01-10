@@ -53,13 +53,6 @@ class PcObject:
             object_id = f"{self.id}/{humanize(self.id)}"
         return "<%s #%s>" % (self.__class__.__name__, object_id)
 
-    def __eq__(self, other):
-        # pylint: disable=unidiomatic-typecheck
-        return other and type(self) == type(other) and self.id == other.id
-
-    def __ne__(self, other):
-        return not self.__eq__(other)
-
     def __hash__(self):
         return hash(self.id)
 
