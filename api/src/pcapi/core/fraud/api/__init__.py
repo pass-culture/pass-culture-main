@@ -6,7 +6,6 @@ import typing
 import pydantic
 import sqlalchemy
 
-from pcapi.connectors.beneficiaries import jouve_backend
 from pcapi.core.users import constants
 from pcapi.core.users import models as users_models
 from pcapi.core.users import utils as users_utils
@@ -69,33 +68,6 @@ def on_educonnect_result(
     on_identity_fraud_check_result(user, fraud_check)
     repository.save(fraud_check)
     return fraud_check
-
-
-def on_jouve_result(user: users_models.User, jouve_content: models.JouveContent) -> None:
-    eligibility_type = get_eligibility_type(jouve_content)
-
-    if (
-        models.BeneficiaryFraudCheck.query.filter(
-            models.BeneficiaryFraudCheck.user == user,
-            models.BeneficiaryFraudCheck.type.in_([models.FraudCheckType.JOUVE, models.FraudCheckType.DMS]),
-            models.BeneficiaryFraudCheck.eligibilityType == eligibility_type,
-        ).count()
-        > 0
-    ):
-        # TODO: raise error and do not allow 2 DMS/Jouve FraudChecks
-        return
-
-    fraud_check = models.BeneficiaryFraudCheck(
-        user=user,
-        type=models.FraudCheckType.JOUVE,
-        thirdPartyId=str(jouve_content.id),
-        resultContent=jouve_content.dict(),
-        eligibilityType=eligibility_type,
-    )
-    repository.save(fraud_check)
-
-    # TODO: save user fields from jouve_content
-    on_identity_fraud_check_result(user, fraud_check)
 
 
 def on_dms_fraud_result(
@@ -171,28 +143,6 @@ def educonnect_fraud_checks(
     return fraud_items
 
 
-def jouve_fraud_checks(
-    user: users_models.User, beneficiary_fraud_check: models.BeneficiaryFraudCheck
-) -> list[models.FraudItem]:
-    jouve_content = models.JouveContent(**beneficiary_fraud_check.resultContent)
-
-    fraud_items = []
-    # TODO: factorise in on_identity_fraud_check_result for the 4 *_fraud_checks
-    fraud_items.append(
-        _duplicate_user_fraud_item(
-            first_name=jouve_content.firstName,
-            last_name=jouve_content.lastName,
-            birth_date=jouve_content.birthDateTxt,
-            excluded_user_id=user.id,
-        )
-    )
-
-    fraud_items.append(validate_id_piece_number_format_fraud_item(jouve_content.bodyPieceNumber))
-    fraud_items.append(_duplicate_id_piece_number_fraud_item(user, jouve_content.bodyPieceNumber))
-    fraud_items.extend(_id_check_fraud_items(jouve_content))
-    return fraud_items
-
-
 def dms_fraud_checks(
     user: users_models.User, beneficiary_fraud_check: models.BeneficiaryFraudCheck
 ) -> list[models.FraudItem]:
@@ -241,10 +191,7 @@ def on_identity_fraud_check_result(
 ) -> models.BeneficiaryFraudResult:
     fraud_items: list[models.FraudItem] = []
 
-    if beneficiary_fraud_check.type == models.FraudCheckType.JOUVE:
-        fraud_items += jouve_fraud_checks(user, beneficiary_fraud_check)
-
-    elif beneficiary_fraud_check.type == models.FraudCheckType.UBBLE:
+    if beneficiary_fraud_check.type == models.FraudCheckType.UBBLE:
         fraud_items += ubble_api.ubble_fraud_checks(user, beneficiary_fraud_check)
 
     elif beneficiary_fraud_check.type == models.FraudCheckType.DMS:
@@ -262,11 +209,6 @@ def on_identity_fraud_check_result(
     fraud_items.append(_check_user_eligibility(user, content_eligibility_type))
 
     fraud_result = validate_frauds(user, fraud_items, beneficiary_fraud_check, content_eligibility_type)
-    if (
-        beneficiary_fraud_check.type == models.FraudCheckType.JOUVE
-        and FeatureToggle.PAUSE_JOUVE_SUBSCRIPTION.is_active()
-    ):
-        fraud_result.status = models.FraudStatus.SUBSCRIPTION_ON_HOLD
     repository.save(fraud_result)
 
     return fraud_result
@@ -404,88 +346,6 @@ def _check_user_email_is_validated(user: users_models.User) -> models.FraudItem:
             reason_code=models.FraudReasonCode.EMAIL_NOT_VALIDATED,
         )
     return models.FraudItem(status=models.FraudStatus.OK, detail="L'email est validé")
-
-
-def _id_check_fraud_items(content: models.JouveContent) -> list[models.FraudItem]:
-    if not FeatureToggle.ENABLE_IDCHECK_FRAUD_CONTROLS.is_active():
-        return []
-
-    fraud_items = []
-    fraud_items.append(
-        _get_boolean_id_fraud_item(
-            content.birthLocationCtrl, "birthLocationCtrl", models.FraudReasonCode.ID_CHECK_INVALID, False
-        )
-    )
-    fraud_items.append(
-        _get_boolean_id_fraud_item(
-            content.bodyBirthDateCtrl, "bodyBirthDateCtrl", models.FraudReasonCode.ID_CHECK_INVALID, False
-        )
-    )
-    fraud_items.append(
-        _get_boolean_id_fraud_item(content.bodyNameCtrl, "bodyNameCtrl", models.FraudReasonCode.ID_CHECK_INVALID, False)
-    )
-    fraud_items.append(
-        _get_boolean_id_fraud_item(
-            content.bodyPieceNumberCtrl, "bodyPieceNumberCtrl", models.FraudReasonCode.ID_CHECK_INVALID, False
-        )
-    )
-
-    fraud_items.append(
-        _get_threshold_id_fraud_item(
-            content.bodyBirthDateLevel, "bodyBirthDateLevel", 100, models.FraudReasonCode.ID_CHECK_INVALID, False
-        )
-    )
-    fraud_items.append(
-        _get_threshold_id_fraud_item(
-            content.bodyNameLevel, "bodyNameLevel", 50, models.FraudReasonCode.ID_CHECK_INVALID, False
-        )
-    )
-    fraud_items.append(
-        _get_threshold_id_fraud_item(
-            content.bodyPieceNumberLevel, "bodyPieceNumberLevel", 50, models.FraudReasonCode.ID_CHECK_INVALID, False
-        )
-    )
-
-    return fraud_items
-
-
-def _get_boolean_id_fraud_item(
-    value: typing.Optional[str], key: str, fail_reason: models.FraudReasonCode, is_strict_ko: bool
-) -> models.FraudItem:
-    # TODO: move those functions when using fraud v2 journey only
-    item = jouve_backend.get_boolean_fraud_detection_item(value, key)
-
-    if item.valid:
-        status = models.FraudStatus.OK
-    elif is_strict_ko:
-        status = models.FraudStatus.KO
-    else:
-        status = models.FraudStatus.SUSPICIOUS
-
-    return models.FraudItem(
-        status=status,
-        detail=f"Le champ {key} est {value}",
-        reason_code=None if status == models.FraudStatus.OK else fail_reason,
-    )
-
-
-def _get_threshold_id_fraud_item(
-    value: typing.Optional[int], key: str, threshold: int, fail_reason: models.FraudReasonCode, is_strict_ko: bool
-) -> models.FraudItem:
-    # TODO: move those functions when using fraud v2 journey only
-    item = jouve_backend.get_threshold_fraud_detection_item(value, key, threshold)
-    if item.valid:
-        status = models.FraudStatus.OK
-    elif is_strict_ko:
-        status = models.FraudStatus.KO
-    else:
-        status = models.FraudStatus.SUSPICIOUS
-
-    return models.FraudItem(
-        status=status,
-        detail=f"Le champ {key} a le score {value} (minimum {threshold})",
-        reason_code=None if status == models.FraudStatus.OK else fail_reason,
-    )
 
 
 def _underage_user_fraud_item(birth_date: datetime.date) -> models.FraudItem:

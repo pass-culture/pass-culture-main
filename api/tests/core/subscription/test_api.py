@@ -349,12 +349,6 @@ class NextSubscriptionStepTest:
         [
             # User 18
             (
-                {"ALLOW_IDCHECK_REGISTRATION": True, "ENABLE_UBBLE": False},
-                18,
-                None,
-                [subscription_models.IdentityCheckMethod.JOUVE],
-            ),
-            (
                 {"ALLOW_IDCHECK_REGISTRATION": True, "ENABLE_UBBLE": True},
                 18,
                 None,
@@ -414,29 +408,6 @@ class NextSubscriptionStepTest:
                 [],
             ),
             # Other schools
-            (
-                {
-                    "ENABLE_NATIVE_EAC_INDIVIDUAL": True,
-                    "ENABLE_EDUCONNECT_AUTHENTICATION": False,
-                    "ALLOW_IDCHECK_UNDERAGE_REGISTRATION": True,
-                    "ALLOW_IDCHECK_REGISTRATION_FOR_EDUCONNECT_ELIGIBLE": False,
-                    "ENABLE_UBBLE": False,
-                },
-                15,
-                users_models.SchoolTypeEnum.PRIVATE_HIGH_SCHOOL,
-                [subscription_models.IdentityCheckMethod.JOUVE],
-            ),
-            (
-                {
-                    "ENABLE_NATIVE_EAC_INDIVIDUAL": True,
-                    "ENABLE_EDUCONNECT_AUTHENTICATION": True,
-                    "ALLOW_IDCHECK_UNDERAGE_REGISTRATION": True,
-                    "ENABLE_UBBLE": False,
-                },
-                15,
-                users_models.SchoolTypeEnum.PRIVATE_HIGH_SCHOOL,
-                [subscription_models.IdentityCheckMethod.EDUCONNECT, subscription_models.IdentityCheckMethod.JOUVE],
-            ),
             (
                 {
                     "ENABLE_NATIVE_EAC_INDIVIDUAL": True,

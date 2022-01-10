@@ -25,7 +25,6 @@ from pcapi.core.subscription import models as subscription_models
 from pcapi.core.users import api as users_api
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users.models import ActivityEnum
-from pcapi.core.users.models import EligibilityCheckMethods
 from pcapi.core.users.models import EligibilityType
 from pcapi.core.users.models import ExpenseDomain
 from pcapi.core.users.models import User
@@ -162,8 +161,6 @@ class SubscriptionMessage(BaseModel):
 
 
 class UserProfileResponse(BaseModel):
-    # TODO (viconnex) remove allowed_eligibility_check_methods after v164 native app is forced
-    allowed_eligibility_check_methods: Optional[list[EligibilityCheckMethods]]
     booked_offers: dict[str, int]
     dateOfBirth: Optional[datetime.date]
     deposit_expiration_date: Optional[datetime.datetime]
@@ -181,7 +178,6 @@ class UserProfileResponse(BaseModel):
     isEligibleForBeneficiaryUpgrade: bool
     lastName: Optional[str]
     needsToFillCulturalSurvey: bool
-    next_beneficiary_validation_step: Optional[users_api.BeneficiaryValidationStep]
     phoneNumber: Optional[str]
     publicName: Optional[str] = Field(None, alias="pseudo")
     recreditAmountToShow: Optional[int]
@@ -252,11 +248,9 @@ class UserProfileResponse(BaseModel):
         user.subscriptions = user.get_notification_subscriptions()
         user.domains_credit = users_api.get_domains_credit(user)
         user.booked_offers = cls._get_booked_offers(user)
-        user.next_beneficiary_validation_step = users_api.get_next_beneficiary_validation_step(user)
         user.isEligibleForBeneficiaryUpgrade = users_api.is_eligible_for_beneficiary_upgrade(user, user.eligibility)
         user.eligibility_end_datetime = users_api.get_eligibility_end_datetime(user.dateOfBirth)
         user.eligibility_start_datetime = users_api.get_eligibility_start_datetime(user.dateOfBirth)
-        user.allowed_eligibility_check_methods = user.legacy_allowed_eligibility_check_methods
         result = super().from_orm(user)
         result.subscriptionMessage = cls._get_subscription_message(user)
 

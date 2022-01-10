@@ -24,7 +24,6 @@ from pcapi.core.users import utils as users_utils
 from pcapi.core.users.exceptions import InvalidUserRoleException
 from pcapi.models import Model
 from pcapi.models import db
-from pcapi.models.feature import FeatureToggle
 from pcapi.models.needs_validation_mixin import NeedsValidationMixin
 from pcapi.models.pc_object import PcObject
 from pcapi.utils import crypto
@@ -87,7 +86,6 @@ class EligibilityType(enum.Enum):
 
 
 class EligibilityCheckMethods(enum.Enum):
-    JOUVE = "jouve"
     EDUCONNECT = "educonnect"
 
 
@@ -336,26 +334,6 @@ class User(PcObject, Model, NeedsValidationMixin):
     @property
     def age(self) -> Optional[int]:
         return users_utils.get_age_from_birth_date(self.dateOfBirth.date()) if self.dateOfBirth is not None else None
-
-    @property
-    def legacy_allowed_eligibility_check_methods(self) -> Optional[list[EligibilityCheckMethods]]:
-        # TODO (viconnex) remove this method after v164 native app is forced
-        eligibility = self.eligibility
-        if eligibility is None:
-            return None
-
-        if eligibility == EligibilityType.AGE18:
-            return [EligibilityCheckMethods.JOUVE]
-
-        if eligibility == EligibilityType.UNDERAGE:
-            underage_elibility_check_methods = []
-            if FeatureToggle.ENABLE_EDUCONNECT_AUTHENTICATION.is_active():
-                underage_elibility_check_methods.append(EligibilityCheckMethods.EDUCONNECT)
-            if FeatureToggle.ALLOW_IDCHECK_UNDERAGE_REGISTRATION.is_active():
-                underage_elibility_check_methods.append(EligibilityCheckMethods.JOUVE)
-            return underage_elibility_check_methods
-
-        return None
 
     @property
     def deposit(self) -> Optional["Deposit"]:
