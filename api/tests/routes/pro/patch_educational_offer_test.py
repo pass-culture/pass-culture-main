@@ -158,6 +158,27 @@ class Returns400Test:
         # Then
         assert response.status_code == 400
 
+    def test_patch_offer_with_wrong_extra_data(self, app, client):
+        # Given
+        offer = offers_factories.OfferFactory(
+            mentalDisabilityCompliant=False,
+            extraData={"contactEmail": "johndoe@yopmail.com", "contactPhone": "0600000000"},
+            isEducational=True,
+        )
+        offers_factories.UserOffererFactory(
+            user__email="user@example.com",
+            offerer=offer.venue.managingOfferer,
+        )
+
+        # When
+        data = {"extraData": {"wrongKey": 1}}
+        response = client.with_session_auth("user@example.com").patch(
+            f"/offers/educational/{humanize(offer.id)}", json=data
+        )
+
+        # Then
+        assert response.status_code == 400
+
 
 class Returns403Test:
     def when_user_is_not_attached_to_offerer(self, app, client):
