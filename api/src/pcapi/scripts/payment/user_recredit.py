@@ -64,7 +64,7 @@ def recredit_underage_users() -> None:
             for user in users
             if has_celebrated_their_birthday_since_activation(user) and not has_been_recredited(user)
         ]
-        users_and_recredits = []
+        users_and_recredit_amounts = []
         with transaction():
             for user in users_to_recredit:
                 recredit = payments_models.Recredit(
@@ -72,7 +72,7 @@ def recredit_underage_users() -> None:
                     amount=deposit_conf.RECREDIT_TYPE_AMOUNT_MAPPING[deposit_conf.RECREDIT_TYPE_AGE_MAPPING[user.age]],
                     recreditType=deposit_conf.RECREDIT_TYPE_AGE_MAPPING[user.age],
                 )
-                users_and_recredits.append((user, recredit))
+                users_and_recredit_amounts.append((user, recredit.amount))
                 recredit.deposit.amount += recredit.amount
                 user.recreditAmountToShow = recredit.amount if recredit.amount > 0 else None
 
@@ -80,8 +80,8 @@ def recredit_underage_users() -> None:
                 db.session.add(recredit)
 
         logger.info("Recredited %s underage users deposits", len(users_to_recredit))
-        for user, recredit in users_and_recredits:
-            if not send_recredit_email_to_underage_beneficiary(user, recredit.amount):
+        for user, recredit_amount in users_and_recredit_amounts:
+            if not send_recredit_email_to_underage_beneficiary(user, recredit_amount):
                 logger.error("Failed to send recredit email to: %s", user.email)
 
         start_index += RECREDIT_BATCH_SIZE
