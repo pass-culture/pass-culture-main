@@ -183,7 +183,7 @@ def create_all_business_units():
                 # * bank_informatin with similar bic/iban than offerer bank_information
                 # * or no bank_informations
                 populate_business_unit(business_units[0], venues)
-            elif len(business_units) > 1:
+            else:
                 # create a business unit without siret
                 # for venue that have no siret and:
                 # * bank_informatin with similar bic/iban than offerer bank_information
