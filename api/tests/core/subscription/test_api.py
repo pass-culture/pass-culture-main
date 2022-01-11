@@ -745,7 +745,9 @@ class CommonSubscritpionTest:
             != fraud_check
         )
 
-        user_fraud_checks = fraud_models.BeneficiaryFraudCheck.query.filter_by(user=user).all()
+        user_fraud_checks = sorted(
+            fraud_models.BeneficiaryFraudCheck.query.filter_by(user=user).all(), key=lambda x: x.id
+        )
         assert len(user_fraud_checks) == 2
         assert user_fraud_checks[0].eligibilityType == users_models.EligibilityType.UNDERAGE
         assert user_fraud_checks[0].reason == "Eligibility type changed by the identity provider"
