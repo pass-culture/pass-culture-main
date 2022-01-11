@@ -13,17 +13,10 @@ from pcapi.core.mails.transactional.bookings.booking_cancellation_by_beneficiary
 from pcapi.core.mails.transactional.bookings.booking_cancellation_by_pro_to_beneficiary import (
     send_booking_cancellation_by_pro_to_beneficiary_email,
 )
-from pcapi.core.mails.transactional.users.duplicate_pre_subscription_rejected import (
-    send_duplicate_beneficiary_pre_subscription_rejected_data,
-)
-from pcapi.core.mails.transactional.users.duplicate_pre_subscription_rejected import (
-    send_not_eligible_beneficiary_pre_subscription_rejected_data,
-)
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.repository import find_new_offerer_user_email
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import OfferValidationStatus
-from pcapi.core.subscription.models import BeneficiaryPreSubscription
 from pcapi.core.users import api as users_api
 from pcapi.core.users.models import Token
 from pcapi.core.users.models import User
@@ -149,15 +142,6 @@ def send_activation_email(user: User, reset_password_token_life_time: typing.Opt
     data = beneficiary_activation.get_activation_email_data(user=user, token=token)
 
     return mails.send(recipients=[user.email], data=data)
-
-
-def send_rejection_email_to_beneficiary_pre_subscription(
-    beneficiary_pre_subscription: BeneficiaryPreSubscription,
-    beneficiary_is_eligible: bool,
-) -> bool:
-    if not beneficiary_is_eligible:
-        return send_not_eligible_beneficiary_pre_subscription_rejected_data(beneficiary_pre_subscription.email)
-    return send_duplicate_beneficiary_pre_subscription_rejected_data(beneficiary_pre_subscription.email)
 
 
 def send_reset_password_link_to_admin_email(created_user: User, admin_email: User, reset_password_link: str) -> bool:
