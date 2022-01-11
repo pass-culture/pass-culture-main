@@ -619,7 +619,3 @@ class CategoriesResponseModel(BaseModel):
 class SubcategoriesForWebappResponseModel(BaseModel):
     subcategories: list[SubcategoryResponseModel]
     searchGroups: list[SearchGroupResponseModel]
-
-
-def serialize_offer_type_educational_or_individual(offer_isEducational: bool) -> str:
-    return "offre scolaire" if offer_isEducational else "offre grand public"
