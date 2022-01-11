@@ -7,7 +7,6 @@ from dateutil import parser as date_parser
 from pcapi import settings
 from pcapi.connectors.api_demarches_simplifiees import DMSGraphQLClient
 from pcapi.connectors.api_demarches_simplifiees import GraphQLApplicationStates
-from pcapi.connectors.api_demarches_simplifiees import get_application_details
 import pcapi.core.fraud.api as fraud_api
 import pcapi.core.fraud.exceptions as fraud_exceptions
 import pcapi.core.fraud.models as fraud_models
@@ -17,7 +16,6 @@ import pcapi.core.users.api as users_api
 import pcapi.core.users.models as users_models
 from pcapi.core.users.repository import find_user_by_email
 from pcapi.domain import user_emails
-from pcapi.domain.demarches_simplifiees import get_closed_application_ids_for_demarche_simplifiee
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.beneficiary_import import BeneficiaryImportSources
 from pcapi.models.beneficiary_import_status import ImportStatus
@@ -52,40 +50,30 @@ def run(procedure_id: int, use_graphql_api: bool = False) -> None:
     )
 
     existing_applications_ids = get_already_processed_applications_ids(procedure_id)
-    if use_graphql_api:
-        client = DMSGraphQLClient()
-        for application_details in client.get_applications_with_details(
-            procedure_id, GraphQLApplicationStates.accepted
-        ):
-            application_id = application_details["number"]
-            if application_id in existing_applications_ids:
-                continue
-            process_application(
-                procedure_id,
-                application_id,
-                application_details,
-                retry_ids,
-                parsing_function=parse_beneficiary_information_graphql,
-            )
+    client = DMSGraphQLClient()
+    for application_details in client.get_applications_with_details(procedure_id, GraphQLApplicationStates.accepted):
+        application_id = application_details["number"]
+        if application_id in existing_applications_ids:
+            continue
 
-    else:
-        applications_ids = get_closed_application_ids_for_demarche_simplifiee(procedure_id, settings.DMS_TOKEN)
-        logger.info(
-            "[BATCH][REMOTE IMPORT BENEFICIARIES] %i new applications to process - Procedure %s",
-            len(applications_ids),
+        try:
+            information: fraud_models.IdCheckContent = parse_beneficiary_information_graphql(
+                application_details, procedure_id
+            )
+        except DMSParsingError as exc:
+            process_parsing_error(exc, procedure_id, application_id)
+            continue
+
+        except Exception as exc:  # pylint: disable=broad-except
+            process_parsing_exception(exc, procedure_id, application_id)
+            continue
+
+        process_application(
             procedure_id,
+            application_id,
+            information,
+            retry_ids,
         )
-
-        for application_id in retry_ids + applications_ids:
-            application_details = get_application_details(application_id, procedure_id, settings.DMS_TOKEN)
-
-            process_application(
-                procedure_id,
-                application_id,
-                application_details,
-                retry_ids,
-                parsing_function=parse_beneficiary_information,
-            )
 
     logger.info(
         "[BATCH][REMOTE IMPORT BENEFICIARIES] End import from Démarches Simplifiées - Procedure %s", procedure_id
@@ -162,19 +150,11 @@ def process_parsing_error(exception: DMSParsingError, procedure_id: int, applica
 
 
 def process_application(
-    procedure_id: int, application_id: int, application_details: dict, retry_ids: list[int], parsing_function
+    procedure_id: int,
+    application_id: int,
+    information: fraud_models.DMSContent,
+    retry_ids: list[int],
 ) -> None:
-
-    try:
-        information: fraud_models.IdCheckContent = parsing_function(application_details, procedure_id)
-    except DMSParsingError as exc:
-        process_parsing_error(exc, procedure_id, application_id)
-        return
-
-    except Exception as exc:  # pylint: disable=broad-except
-        process_parsing_exception(exc, procedure_id, application_id)
-        return
-
     user = find_user_by_email(information.email)
     if not user:
         save_beneficiary_import_with_status(
@@ -257,54 +237,6 @@ def handle_validation_errors(
         detail="Voir les details dans la page support",
         eligibility_type=information.get_eligibility_type(),
     )
-
-
-def parse_beneficiary_information(application_detail: dict, procedure_id: int) -> fraud_models.DMSContent:
-    dossier = application_detail["dossier"]
-    email = dossier["email"]
-
-    information = {
-        "last_name": dossier["individual"]["nom"],
-        "first_name": dossier["individual"]["prenom"],
-        "civility": dossier["individual"]["civilite"],
-        "email": email,
-        "application_id": dossier["id"],
-        "procedure_id": procedure_id,
-        "registration_datetime": dossier["created_at"],
-    }
-    parsing_errors = {}
-
-    for field in dossier["champs"]:
-        label = field["type_de_champ"]["libelle"]
-        value = field["value"]
-
-        if "Veuillez indiquer votre département" in label:
-            information["department"] = re.search("^[0-9]{2,3}|[2BbAa]{2}", value).group(0)
-        if label == "Quelle est votre date de naissance":
-            information["birth_date"] = datetime.strptime(value, "%Y-%m-%d")
-        if label == "Quel est votre numéro de téléphone":
-            information["phone"] = value
-        if label == "Quel est le code postal de votre commune de résidence ?":
-            space_free = str(value).strip().replace(" ", "")
-            try:
-                information["postal_code"] = re.search("^[0-9]{5}", space_free).group(0)
-            except Exception:  # pylint: disable=broad-except
-                parsing_errors["postal_code"] = value
-
-        if label == "Veuillez indiquer votre statut":
-            information["activity"] = value
-        if label == "Quelle est votre adresse de résidence":
-            information["address"] = value
-        if label == "Quel est le numéro de la pièce que vous venez de saisir ?":
-            value = value.strip()
-            if not fraud_api.validate_id_piece_number_format_fraud_item(value):
-                parsing_errors["id_piece_number"] = value
-            else:
-                information["id_piece_number"] = value
-
-    if parsing_errors:
-        raise DMSParsingError(email, parsing_errors, "Error validating")
-    return fraud_models.DMSContent(**information)
 
 
 def parse_beneficiary_information_graphql(application_detail: dict, procedure_id: int) -> fraud_models.DMSContent:
