@@ -111,3 +111,28 @@ def mark_booking_as_used(educational_booking_id: int) -> prebooking_serializatio
         raise ApiErrors({"code": "EDUCATIONAL_BOOKING_NOT_CONFIRMED_YET"}, status_code=422)
 
     return prebooking_serialization.serialize_educational_booking(educational_booking)
+
+
+@blueprint.adage_v1.route("/years/<string:educational_year_id>/prebookings", methods=["GET"])
+@spectree_serialize(
+    api=blueprint.api,
+    response_model=prebooking_serialization.EducationalBookingsPerYearResponse,
+    tags=("get bookings per year",),
+)
+@adage_api_key_required
+def get_all_bookings_per_year(
+    educational_year_id: str,
+) -> prebooking_serialization.EducationalBookingsPerYearResponse:
+    educational_bookings = prebooking_serialization.get_bookings_for_educational_year(educational_year_id)
+
+    serialized_bookings = [
+        prebooking_serialization.EducationalBookingPerYearResponse(
+            UAICode=educational_booking.educationalInstitution.institutionId,
+            status=prebooking_serialization.get_educational_booking_status(educational_booking),
+            confirmationLimitDate=educational_booking.confirmationLimitDate,
+            totalAmount=educational_booking.booking.total_amount,
+        )
+        for educational_booking in educational_bookings
+    ]
+
+    return prebooking_serialization.EducationalBookingsPerYearResponse(bookings=serialized_bookings)
