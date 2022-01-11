@@ -1,7 +1,7 @@
 {% extends 'admin/model/details.html' %}
 {% block head_css %}
-    {{ super() }}
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/support_beneficiary_details.css') }}">
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/support_beneficiary_details.css') }}">
 {% endblock %}
 
 {% import 'admin/lib.html' as lib with context %}
@@ -51,53 +51,12 @@
   </div>
 </div>
 
-<div class="modal fade" id="userIdPieceNumberUpdate" tabindex="-1" role="dialog"
-  aria-labelledby="userIdPieceNumberUpdateTitle" aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="userIdPieceNumberUpdateTitle">Validation de l'utilisateur {{ model.firstName}}
-          {{model.lastName}}</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <form method="POST"
-        action="{{ url_for('support_beneficiary.update_beneficiary_id_piece_number', user_id=model.id)}}">
-        <div class="modal-body">
-          <div class="form-group row">
-            <label for="id_piece_number" class="col-4 col-form-label">N° de carte d'identité</label>
-            <div class="col-8">
-              <div class="input-group">
-                <div class="input-group-prepend">
-                  <div class="input-group-text">
-                    <i class="fa fa-address-card"></i>
-                  </div>
-                </div>
-                <input id="id_piece_number" name="id_piece_number" type="text" class="form-control">
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
-          <button name="submit" type="submit" class="btn btn-primary">Valider</button>
-        </div>
-      </form>
-    </div>
-  </div>
-</div>
-<div class="section">
+<div class="row">
   <div class="col">
     {% if has_performed_identity_check and not model.beneficiaryFraudReview and (current_user.has_jouve_role or
     current_user.is_super_admin()) %}
     <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#userValidationModal">
       Soumettre une revue manuelle
-    </button>
-    {% endif %}
-    {% if current_user.has_jouve_role or current_user.is_super_admin() %}
-    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#userIdPieceNumberUpdate">
-      Mettre à jour la pièce d'identité
     </button>
     {% endif %}
     {% if current_user.isAdmin %}
@@ -172,23 +131,23 @@
     <h3>Parcours d'inscription</h3>
     <div class="table subscription-info">
       <table class="table">
-      <tr>
-          <th/>
+        <tr>
+          <th />
           <th scope="col" style="text-align: center;">pass 15-17</th>
           <th scope="col" style="text-align: center;">pass 18</th>
-      </tr>
-      {% for item in subscription_items %}
+        </tr>
+        {% for item in subscription_items %}
         <tr>
           <th scope="row">{{item.UNDERAGE.type.name}}</th>
           <td style="text-align: center;">{{ item.UNDERAGE.status|subscription_status_format }}</td>
           <td style="text-align: center;">{{ item.AGE18.status|subscription_status_format }}</td>
         </tr>
-      {% endfor %}
+        {% endfor %}
       </table>
     </div>
     <div class="table additional-subscription-info">
       <h4>Autres</h4>
-      <table >
+      <table>
         <tr>
           <th scope="row">Éligibilité</th>
           <td>{{ model.eligibility|eligibility_format }}</td>
@@ -267,7 +226,7 @@
   <h3>Historique des changements d'adresse email</h3>
   {% if model.email_history|length == 0 %}
   <p class="card card-body">
-      Pas de changement d'adresse email pour le moment
+    Pas de changement d'adresse email pour le moment
   </p>
   {% else %}
   <a href="{{ url_for('/user_email_history.index_view', flt1_0=model.id ) }}">Vue détaillée</a>
@@ -275,7 +234,7 @@
     <thead>
       <tr>
         {% if current_user.is_super_admin() %}
-          <th scope="col">Validation</th>
+        <th scope="col">Validation</th>
         {% endif %}
         <th scope="col">Ancienne adresse email</th>
         <th scope="col">Nouvelle adresse email</th>
@@ -288,20 +247,18 @@
       {% for email_history in model.email_history %}
       <tr>
         {% if current_user.is_super_admin() %}
-            <td>
-              {% if email_history.eventType.value == enum_update_request_value %}
-                  <form
-                      action={{ url_for("/user_email_history.validate_user_email", entry_id=email_history.id, next="support_beneficiary.details_view", id=model.id) }}
-                      method="POST">
-                      <button
-                          class="btn btn-secondary"
-                          onclick="return confirm('Êtes-vous certain de vouloir valider l\'adresse email {{ email_history.newEmail }}')"
-                          title="Approve">
-                          Valider
-                      </button>
-                  </form>
-              {% endif %}
-            </td>
+        <td>
+          {% if email_history.eventType.value == enum_update_request_value %}
+          <form action={{ url_for("/user_email_history.validate_user_email", entry_id=email_history.id,
+            next="support_beneficiary.details_view" , id=model.id) }} method="POST">
+            <button class="btn btn-secondary"
+              onclick="return confirm('Êtes-vous certain de vouloir valider l\'adresse email {{ email_history.newEmail }}')"
+              title="Approve">
+              Valider
+            </button>
+          </form>
+          {% endif %}
+        </td>
         {% endif %}
         <td>{{ email_history.oldEmail }}</td>
         <td>{{ email_history.newEmail }}</td>

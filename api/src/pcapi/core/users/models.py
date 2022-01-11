@@ -439,14 +439,6 @@ class User(PcObject, Model, NeedsValidationMixin):
         return cls.roles.contains([UserRole.BENEFICIARY])
 
     @hybrid_property
-    def has_jouve_role(self) -> bool:
-        return UserRole.JOUVE in self.roles if self.roles else False
-
-    @has_jouve_role.expression
-    def has_jouve_role(cls) -> bool:  # pylint: disable=no-self-argument
-        return cls.roles.contains([UserRole.JOUVE])
-
-    @hybrid_property
     def has_pro_role(self) -> bool:
         return UserRole.PRO in self.roles if self.roles else False
 

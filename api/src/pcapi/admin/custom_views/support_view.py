@@ -109,10 +109,6 @@ class BeneficiaryView(base_configuration.BaseAdminView):
             users_models.User.has_admin_role.is_(False),
             users_models.User.has_pro_role.is_(False),
         ),
-        "JOUVE": (
-            users_models.User.has_beneficiary_role.is_(False)
-            & users_models.User.beneficiaryFraudChecks.any(type=fraud_models.FraudCheckType.JOUVE)
-        ),
         "UNFILTERED": False,
     }
 
@@ -172,26 +168,14 @@ class BeneficiaryView(base_configuration.BaseAdminView):
         )
         return formatters
 
-    def is_accessible(self) -> bool:
-        # TODO: remove when we have a clean way to get groups from google.
-        # This is a hackish way to filter from a user role which is weak : we do want a way
-        # to add permissions based on groups and sync'ed from our google IDP, and not developp a way to do it here.
-        if flask_login.current_user.is_authenticated and flask_login.current_user.has_jouve_role:
-            return True
-
-        return super().is_accessible()
-
     def _are_search_and_filters_empty(self) -> bool:
         view_args = self._get_list_extra_args()
         return (not view_args.search) and (not view_args.filters)
 
     def get_view_filter(self) -> ColumnElement:
-        if flask_login.current_user.has_jouve_role:
-            role = "JOUVE"
-        elif self._are_search_and_filters_empty():
+        role = "INTERNAL"
+        if self._are_search_and_filters_empty():
             role = "UNFILTERED"
-        else:
-            role = "INTERNAL"
         return self.VIEW_FILTERS[role]
 
     def get_query(self) -> BaseQuery:
@@ -248,7 +232,7 @@ class BeneficiaryView(base_configuration.BaseAdminView):
         if not FeatureToggle.BENEFICIARY_VALIDATION_AFTER_FRAUD_CHECKS.is_active():
             flask.flash("Fonctionnalité non activée", "error")
             return flask.redirect(flask.url_for(".details_view", id=user_id))
-        if not self.check_super_admins() and not flask_login.current_user.has_jouve_role:
+        if not self.check_super_admins():
             flask.flash("Vous n'avez pas les droits suffisants pour activer ce bénéficiaire", "error")
             return flask.redirect(flask.url_for(".details_view", id=user_id))
         form = FraudReviewForm(flask.request.form)
@@ -305,62 +289,6 @@ class BeneficiaryView(base_configuration.BaseAdminView):
         db.session.commit()
 
         flask.flash(f"Une revue manuelle ajoutée pour le bénéficiaire {user.firstName} {user.lastName}")
-        return flask.redirect(flask.url_for(".details_view", id=user_id))
-
-    @flask_admin.expose("/update/beneficiary/id_piece_number/<user_id>", methods=["POST"])
-    def update_beneficiary_id_piece_number(  # pylint: disable=too-many-return-statements
-        self, user_id: int
-    ) -> Response:
-        if not self.check_super_admins() and not flask_login.current_user.has_jouve_role:
-            flask.flash("Vous n'avez pas les droits suffisants pour activer ce bénéficiaire", "error")
-            return flask.redirect(flask.url_for(".details_view", id=user_id))
-
-        form = IDPieceNumberForm(flask.request.form)
-        if not form.validate():
-            errors_html = Markup("Erreurs lors de la validation du formulaire: <br>")
-            for field, error in form.errors.items():
-                errors_html += Markup("{field}: {error[0]}").format(field=field, error=error)
-            flask.flash(errors_html, "error")
-            return flask.redirect(flask.url_for(".details_view", id=user_id))
-
-        user = users_models.User.query.get(user_id)
-        if not user:
-            flask.flash("Cet utilisateur n'existe pas", "error")
-            return flask.redirect(flask.url_for(".index_view"))
-        # TODO: Handle switch from underage_beneficiary to beneficiary
-        if user.is_beneficiary:
-            flask.flash(f"L'utilisateur {user.id} {user.firstName} {user.lastName} est déjà bénéficiaire")
-            return flask.redirect(flask.url_for(".details_view", id=user_id))
-        fraud_check = fraud_api.admin_update_identity_fraud_check_result(user, form.data["id_piece_number"])
-        if not fraud_check:
-            flask.flash("Aucune vérification de fraude disponible", "error")
-            return flask.redirect(flask.url_for(".details_view", id=user_id))
-        db.session.refresh(user)
-        fraud_result = fraud_api.on_identity_fraud_check_result(user, fraud_check)
-        if fraud_result.status == fraud_models.FraudStatus.OK:
-            # todo : cleanup to use fraud validation journey v2
-            if fraud_check.type == fraud_models.FraudCheckType.JOUVE:
-                pre_subscription = jouve_backend.get_subscription_from_content(fraud_check.source_data())
-            elif fraud_check.type == fraud_models.FraudCheckType.DMS:
-                pre_subscription = subscription_models.BeneficiaryPreSubscription.from_dms_source(
-                    fraud_check.source_data()
-                )
-                fraud_api.create_honor_statement_fraud_check(
-                    user,
-                    "honor statement contained in DMS application after admin review",
-                    fraud_api.get_eligibility_type(fraud_check.source_data()),
-                )
-            else:
-                flask.flash("Le dossier doit être de type DMS ou Jouve", "error")
-                return flask.redirect(flask.url_for(".details_view", id=user_id))
-
-            if pre_subscription.eligibility_type is None:
-                flask.flash("La date de naissance du dossier indique que l'utilisateur n'est pas éligible", "error")
-                return flask.redirect(flask.url_for(".details_view", id=user_id))
-
-            beneficiary_repository.BeneficiarySQLRepository.save(pre_subscription, user)
-
-        flask.flash(f"N° de pièce d'identité modifiée sur le bénéficiaire {user.firstName} {user.lastName}")
         return flask.redirect(flask.url_for(".details_view", id=user_id))
 
     @flask_admin.expose("/validate/beneficiary/phone_number/<user_id>", methods=["POST"])
