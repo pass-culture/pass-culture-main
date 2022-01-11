@@ -54,6 +54,7 @@ def update_ubble_workflow(
             if fraud_check.status != fraud_models.FraudCheckStatus.OK:
                 subscription_api.handle_validation_errors(user=user, reason_codes=fraud_check.reasonCodes)
                 subscription_messages.on_ubble_journey_cannot_continue(user)
+                subscription_api.update_user_birth_date(user, fraud_check.source_data().get_birth_date())
                 return
 
             try:
