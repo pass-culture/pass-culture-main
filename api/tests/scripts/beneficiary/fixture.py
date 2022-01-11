@@ -276,7 +276,7 @@ def make_graphql_application(
     activity: str = "Étudiant",
     id_piece_number: Optional[str] = "123123123",
     email: Optional[str] = "young.individual@example.com",
-    birth_date: Optional[datetime.datetime] = datetime.datetime(2003, 5, 12),
+    birth_date: Optional[datetime.datetime] = datetime.datetime(2004, 1, 1),
     full_graphql_response: bool = False,
     has_next_page: bool = False,
 ) -> dict:

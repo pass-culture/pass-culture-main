@@ -13,6 +13,7 @@ from pcapi.core.fraud import models as fraud_models
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import models as subscription_models
+from pcapi.core.subscription.dms import api as dms_subscription_api
 from pcapi.core.testing import override_features
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import factories as users_factories
@@ -621,13 +622,13 @@ class OnSuccessfulDMSApplicationTest:
 class DMSSubscriptionTest:
     def test_dms_subscription(self):
         user = users_factories.UserFactory(subscriptionState=users_models.SubscriptionState.phone_validated)
-        application_id = 12
         content = fraud_factories.DMSContentFactory()
-        fraud_check = subscription_api.start_workflow(user, thirdparty_id=str(application_id), content=content)
+        fraud_check = dms_subscription_api.start_dms_workflow(user, content=content)
 
         assert user.subscriptionState == users_models.SubscriptionState.identity_check_pending
         assert fraud_check.user == user
         assert fraud_check.status == fraud_models.FraudCheckStatus.PENDING
+        assert fraud_check.type == fraud_models.FraudCheckType.DMS
         assert fraud_check.eligibilityType == users_models.EligibilityType.AGE18
 
 

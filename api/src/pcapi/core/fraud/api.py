@@ -16,6 +16,7 @@ from pcapi.repository.user_queries import matching
 
 from . import exceptions
 from . import models
+from .dms import api as dms_api
 from .ubble import api as ubble_api
 from .ubble import models as ubble_fraud_models
 
@@ -74,18 +75,22 @@ def on_dms_fraud_result(
 ) -> models.BeneficiaryFraudCheck:
 
     eligibility_type = dms_content.get_eligibility_type()
+    fraud_check = dms_api.get_dms_fraud_check(user, str(dms_content.application_id))
+    if not fraud_check:
+        logger.warning("DMS fraud check from user %d not previously created", user.id)
+        fraud_check = models.BeneficiaryFraudCheck(
+            user=user,
+            type=models.FraudCheckType.DMS,
+            thirdPartyId=str(dms_content.application_id),
+            resultContent=dms_content.dict(),
+            eligibilityType=eligibility_type,
+        )
 
-    fraud_check = models.BeneficiaryFraudCheck(
-        user=user,
-        type=models.FraudCheckType.DMS,
-        thirdPartyId=str(dms_content.application_id),
-        resultContent=dms_content.dict(),
-        eligibilityType=eligibility_type,
-    )
-
+    if fraud_check.eligibilityType != eligibility_type:
+        logger.info("User changed his eligibility in DMS application", extra={"user_id": user.id})
+        fraud_check.eligibilityType = eligibility_type
     on_identity_fraud_check_result(user, fraud_check)
-    db.session.add(fraud_check)
-    db.session.commit()
+    repository.save(fraud_check)
 
     return fraud_check
 
@@ -582,6 +587,7 @@ def start_fraud_check(
         models.BeneficiaryFraudCheck.type == source_type,
         models.BeneficiaryFraudCheck.thirdPartyId == application_id,
     ).one_or_none()
+
     if fraud_check:
         raise exceptions.ApplicationValidationAlreadyStarted()
 
@@ -604,7 +610,7 @@ def mark_fraud_check_failed(
     application_id: str,
     source_data: typing.Union[models.DMSContent, ubble_fraud_models.UbbleContent],
     reasons: list[models.FraudItem],
-) -> None:
+) -> models.BeneficiaryFraudCheck:
     source_type = models.FRAUD_CONTENT_MAPPING[type(source_data)]
     fraud_check = models.BeneficiaryFraudCheck.query.filter(
         models.BeneficiaryFraudCheck.user == user,
@@ -625,8 +631,8 @@ def mark_fraud_check_failed(
 
     fraud_check.status = models.FraudCheckStatus.KO
     fraud_check.reasonCodes = reasons
-
     repository.save(fraud_check)
+    return fraud_check
 
 
 def create_honor_statement_fraud_check(

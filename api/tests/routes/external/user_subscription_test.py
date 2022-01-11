@@ -49,7 +49,8 @@ class DmsWebhookApplicationTest:
 
     @patch.object(DMSGraphQLClient, "execute_query")
     def test_dms_request(self, execute_query, client):
-        execute_query.return_value = make_single_application(12, state="closed")
+        user = users_factories.UserFactory()
+        execute_query.return_value = make_single_application(12, state="closed", email=user.email)
         form_data = {
             "procedure_id": "48860",
             "dossier_id": "6044787",
@@ -317,16 +318,21 @@ class DmsWebhookApplicationTest:
             users_models.SubscriptionState.phone_validated,
         ],
     )
-    def test_dms_accepted_application_by_operator(self, execute_query, client, subscription_state):
+    @pytest.mark.parametrize(
+        "graphql_app_state",
+        [
+            GraphQLApplicationStates.draft.value,
+            GraphQLApplicationStates.on_going.value,
+        ],
+    )
+    def test_dms_accepted_application_by_operator(self, execute_query, client, subscription_state, graphql_app_state):
         user = users_factories.UserFactory(subscriptionState=subscription_state)
-        execute_query.return_value = make_single_application(
-            12, state=GraphQLApplicationStates.accepted.value, email=user.email
-        )
+        execute_query.return_value = make_single_application(12, state=graphql_app_state, email=user.email)
 
         form_data = {
             "procedure_id": "48860",
             "dossier_id": "6044787",
-            "state": GraphQLApplicationStates.accepted.value,
+            "state": graphql_app_state,
             "updated_at": "2021-09-30 17:55:58 +0200",
         }
 
