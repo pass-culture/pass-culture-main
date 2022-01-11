@@ -9,11 +9,11 @@ from typing import Union
 
 from pydantic.main import BaseModel
 
+from pcapi.core.offers.serialize import serialize_offer_type_educational_or_individual
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.payment_status import TransactionStatus
 from pcapi.repository.reimbursement_queries import find_all_offerers_payments
 from pcapi.repository.reimbursement_queries import legacy_find_all_offerers_payments
-from pcapi.routes.serialization.offers_serialize import serialize_offer_type_educational_or_individual
 from pcapi.utils.date import MONTHS_IN_FRENCH
 
 

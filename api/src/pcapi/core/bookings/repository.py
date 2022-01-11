@@ -37,6 +37,7 @@ from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
+from pcapi.core.offers.serialize import serialize_offer_type_educational_or_individual
 from pcapi.core.users.models import User
 from pcapi.core.users.utils import sanitize_email
 from pcapi.domain.booking_recap.booking_recap import BookingRecap
@@ -49,7 +50,6 @@ from pcapi.models.feature import FeatureToggle
 from pcapi.models.payment import Payment
 from pcapi.models.payment_status import TransactionStatus
 from pcapi.models.user_offerer import UserOfferer
-from pcapi.routes.serialization.offers_serialize import serialize_offer_type_educational_or_individual
 from pcapi.utils.date import get_department_timezone
 from pcapi.utils.token import random_token
 
