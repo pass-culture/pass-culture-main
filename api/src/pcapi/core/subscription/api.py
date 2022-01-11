@@ -453,3 +453,17 @@ def handle_eligibility_difference_between_declaration_and_identity_provider(
     pcapi_repository.repository.save(new_fraud_check, fraud_check)
 
     return new_fraud_check
+
+
+def update_user_birth_date(user: users_models.User, birth_date: typing.Optional[datetime.date]) -> None:
+    """Updates the user birth date based on data received from the identity provider.
+
+    Args:
+        user (users_models.User): The user to update.
+        birth_date (typing.Optional[datetime.date]): The birth date to set.
+    """
+    if user.is_beneficiary:
+        return
+    if user.dateOfBirth != birth_date and birth_date is not None:
+        user.dateOfBirth = birth_date
+        pcapi_repository.repository.save(user)

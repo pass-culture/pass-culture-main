@@ -56,6 +56,7 @@ def handle_educonnect_authentication(
             raise exceptions.EduconnectSubscriptionException()
     else:
         _add_error_subscription_messages(user, fraud_check.reasonCodes, educonnect_user)
+        subscription_api.update_user_birth_date(user, fraud_check.source_data().get_birth_date())
         logger.warning(
             "Fraud suspicion after educonnect authentication with codes: %s",
             (", ").join([code.value for code in fraud_check.reasonCodes]),

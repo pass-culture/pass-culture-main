@@ -166,7 +166,7 @@ def process_application(
 ) -> None:
 
     try:
-        information = parsing_function(application_details, procedure_id)
+        information: fraud_models.IdCheckContent = parsing_function(application_details, procedure_id)
     except DMSParsingError as exc:
         process_parsing_error(exc, procedure_id, application_id)
         return
@@ -198,6 +198,7 @@ def process_application(
     else:
         if fraud_result.status != fraud_models.FraudStatus.OK:
             handle_validation_errors(user, fraud_result, information, procedure_id)
+            subscription_api.update_user_birth_date(user, information.get_birth_date())
             return
 
         try:
