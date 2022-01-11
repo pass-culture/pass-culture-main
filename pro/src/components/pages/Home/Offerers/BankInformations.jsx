@@ -38,7 +38,7 @@ const BankInformations = ({
         ) : (
           <Banner
             href={DEMARCHES_SIMPLIFIEES_BUSINESS_UNIT_RIB_UPLOAD_PROCEDURE_URL}
-            linkTitle="Renseignez des coordonnées bancaires"
+            linkTitle="Renseigner des coordonnées bancaires"
           >
             Certains de vos lieux ne sont pas rattachés à des coordonnées
             bancaires. Pour percevoir les remboursements liés aux offres de ces
