@@ -415,7 +415,7 @@ describe('offererDetailsLegacy', () => {
       console.log(screen.debug())
       // Then
       const link = screen.getByRole('link', {
-        name: 'Renseignez des coordonnées bancaires',
+        name: 'Renseigner des coordonnées bancaires',
       })
       expect(link).toBeInTheDocument()
       const warningIcons = screen.getAllByAltText(

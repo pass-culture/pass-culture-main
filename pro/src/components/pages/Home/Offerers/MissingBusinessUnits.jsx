@@ -27,7 +27,7 @@ const MissingBusinessUnits = ({ hasTitle }) => {
         <InternalBanner
           href={DEMARCHES_SIMPLIFIEES_BUSINESS_UNIT_RIB_UPLOAD_PROCEDURE_URL}
           icon="ico-outer-pen"
-          linkTitle="Renseignez des coordonnées bancaires"
+          linkTitle="Renseigner des coordonnées bancaires"
           targetLink="_self"
         >
           Certains de vos lieux ne sont pas rattachés à des coordonnées
