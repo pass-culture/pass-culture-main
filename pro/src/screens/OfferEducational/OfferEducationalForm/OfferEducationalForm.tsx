@@ -9,6 +9,7 @@ import {
   IUserOfferer,
   Mode,
 } from 'core/OfferEducational'
+import { useScrollToFirstErrorAfterSubmit } from 'hooks'
 import FormLayout from 'new_components/FormLayout'
 import { SubmitButton } from 'ui-kit'
 
@@ -47,6 +48,8 @@ const OfferEducationalForm = ({
   const [isEligible, setIsEligible] = useState<boolean>()
 
   const { values } = useFormikContext<IOfferEducationalFormValues>()
+
+  useScrollToFirstErrorAfterSubmit()
 
   useEffect(() => {
     const selectedOfferer = userOfferers.find(
