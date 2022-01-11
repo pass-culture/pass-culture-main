@@ -187,18 +187,6 @@ class AccountTest:
         me_response = client.get("/native/v1/me")
         assert me_response.json["recreditAmountToShow"] == 3000
 
-    def test_has_completed_id_check(self, client):
-        user = users_factories.UserFactory(email=self.identifier)
-
-        client.with_token(self.identifier)
-
-        response = client.post("/native/v1/account/has_completed_id_check")
-
-        assert response.status_code == 204
-
-        db.session.refresh(user)
-        assert not user.hasCompletedIdCheck
-
     def test_user_messages_passes_pydantic_serialization(self, client):
         user = users_factories.UserFactory()
         client.with_token(user.email)
