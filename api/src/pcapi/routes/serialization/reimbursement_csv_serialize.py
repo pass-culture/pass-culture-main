@@ -13,6 +13,7 @@ from pcapi.models.api_errors import ApiErrors
 from pcapi.models.payment_status import TransactionStatus
 from pcapi.repository.reimbursement_queries import find_all_offerers_payments
 from pcapi.repository.reimbursement_queries import legacy_find_all_offerers_payments
+from pcapi.routes.serialization.offers_serialize import serialize_offer_type_educational_or_individual
 from pcapi.utils.date import MONTHS_IN_FRENCH
 
 
@@ -38,6 +39,7 @@ class ReimbursementDetails:
         "Barème",
         "Montant remboursé",
         "Statut du remboursement",
+        "Type d'offre",
     ]
 
     TRANSACTION_STATUSES_DETAILS = {
@@ -90,6 +92,7 @@ class ReimbursementDetails:
             self.reimbursement_rate = reimbursement_rate
             self.reimbursed_amount = format_number_as_french(payment_info.amount)
             self.status = human_friendly_status
+            self.offer_type = serialize_offer_type_educational_or_individual(payment_info.offer_isEducational)
 
     def as_csv_row(self):
         return [
@@ -109,6 +112,7 @@ class ReimbursementDetails:
             self.reimbursement_rate,
             self.reimbursed_amount,
             self.status,
+            self.offer_type,
         ]
 
 

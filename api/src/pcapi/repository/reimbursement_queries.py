@@ -65,6 +65,7 @@ def find_all_offerers_payments(
             Booking.quantity.label("booking_quantity"),
             Booking.amount.label("booking_amount"),
             Offer.name.label("offer_name"),
+            Offer.isEducational.label("offer_isEducational"),
             Offerer.address.label("offerer_address"),
             Venue.name.label("venue_name"),
             Venue.siret.label("venue_siret"),
