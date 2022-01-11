@@ -1,4 +1,3 @@
-from datetime import MINYEAR
 from datetime import datetime
 from datetime import timedelta
 
@@ -7,11 +6,8 @@ import pytest
 import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
-from pcapi.models.beneficiary_import import BeneficiaryImportSources
-from pcapi.models.beneficiary_import_status import ImportStatus
 from pcapi.repository import repository
 from pcapi.repository.user_queries import beneficiary_by_civility_query
-from pcapi.repository.user_queries import find_most_recent_beneficiary_creation_date_for_source
 from pcapi.repository.user_queries import find_pro_users_by_email_provider
 from pcapi.repository.user_queries import get_all_users_wallet_balances
 
@@ -131,85 +127,3 @@ class BeneficiaryByCivilityQueryTest:
 
         users_found = beneficiary_by_civility_query("john", "doe", interval=timedelta(days=60)).all()
         assert len(users_found) == 2
-
-
-class FindMostRecentBeneficiaryCreationDateByProcedureIdTest:
-    @pytest.mark.usefixtures("db_session")
-    def test_returns_created_at_date_of_most_recent_beneficiary_import_with_created_status_for_one_procedure(self, app):
-        # given
-        source_id = 1
-        now = datetime.utcnow()
-        yesterday = now - timedelta(days=1)
-        two_days_ago = now - timedelta(days=2)
-        three_days_ago = now - timedelta(days=3)
-
-        users_factories.BeneficiaryGrant18Factory(dateCreated=yesterday, email="user1@example.com")
-        user2 = users_factories.BeneficiaryGrant18Factory(dateCreated=two_days_ago, email="user2@example.com")
-        user3 = users_factories.BeneficiaryGrant18Factory(dateCreated=three_days_ago, email="user3@example.com")
-        beneficiary_import = users_factories.BeneficiaryImportFactory(
-            beneficiary=user2,
-            applicationId=1,
-            sourceId=source_id,
-            source=BeneficiaryImportSources.demarches_simplifiees.value,
-        )
-        users_factories.BeneficiaryImportStatusFactory(
-            beneficiaryImport=beneficiary_import, status=ImportStatus.ERROR, date=two_days_ago
-        )
-
-        beneficiary_import = users_factories.BeneficiaryImportFactory(
-            beneficiary=user3,
-            applicationId=3,
-            sourceId=source_id,
-            source=BeneficiaryImportSources.demarches_simplifiees.value,
-        )
-        users_factories.BeneficiaryImportStatusFactory(
-            beneficiaryImport=beneficiary_import, status=ImportStatus.CREATED, date=three_days_ago
-        )
-        # when
-        most_recent_creation_date = find_most_recent_beneficiary_creation_date_for_source(
-            BeneficiaryImportSources.demarches_simplifiees, source_id
-        )
-
-        # then
-        assert most_recent_creation_date == three_days_ago
-
-    @pytest.mark.usefixtures("db_session")
-    def test_returns_min_year_if_no_beneficiary_import_exist_for_given_source_id(self, app):
-        # given
-        old_source_id = 1
-        new_source_id = 2
-        now = datetime.utcnow()
-        yesterday = now - timedelta(days=1)
-
-        user = users_factories.BeneficiaryGrant18Factory(dateCreated=yesterday, email="user@example.com")
-        beneficiary_import = users_factories.BeneficiaryImportFactory(
-            beneficiary=user,
-            applicationId=3,
-            sourceId=old_source_id,
-            source=BeneficiaryImportSources.demarches_simplifiees.value,
-        )
-        users_factories.BeneficiaryImportStatusFactory(
-            beneficiaryImport=beneficiary_import, status=ImportStatus.CREATED, date=yesterday
-        )
-
-        # when
-        most_recent_creation_date = find_most_recent_beneficiary_creation_date_for_source(
-            BeneficiaryImportSources.demarches_simplifiees, new_source_id
-        )
-
-        # then
-        assert most_recent_creation_date == datetime(MINYEAR, 1, 1)
-
-    @pytest.mark.usefixtures("db_session")
-    def test_returns_min_year_if_no_beneficiary_import_exist(self, app):
-        # given
-        yesterday = datetime.utcnow() - timedelta(days=1)
-        users_factories.BeneficiaryGrant18Factory(dateCreated=yesterday)
-
-        # when
-        most_recent_creation_date = find_most_recent_beneficiary_creation_date_for_source(
-            BeneficiaryImportSources.demarches_simplifiees, 1
-        )
-
-        # then
-        assert most_recent_creation_date == datetime(MINYEAR, 1, 1)

@@ -30,16 +30,13 @@ from pcapi.domain.user_emails import send_withdrawal_terms_to_newly_validated_of
 from pcapi.local_providers.provider_api import provider_api_stocks
 from pcapi.local_providers.provider_manager import synchronize_venue_providers_for_provider
 from pcapi.models import db
-from pcapi.models.beneficiary_import import BeneficiaryImportSources
 from pcapi.models.feature import FeatureToggle
-from pcapi.repository.user_queries import find_most_recent_beneficiary_creation_date_for_source
 from pcapi.scheduled_tasks import utils
 from pcapi.scheduled_tasks.decorators import cron_context
 from pcapi.scheduled_tasks.decorators import cron_require_feature
 from pcapi.scheduled_tasks.decorators import log_cron_with_transaction
 from pcapi.scripts.beneficiary import archive_dms_applications
 from pcapi.scripts.beneficiary import import_dms_users
-from pcapi.scripts.beneficiary import remote_tag_has_completed
 from pcapi.scripts.booking.handle_expired_bookings import handle_expired_bookings
 from pcapi.scripts.booking.notify_soon_to_be_expired_bookings import notify_soon_to_be_expired_individual_bookings
 from pcapi.scripts.payment.user_recredit import recredit_underage_users
@@ -77,11 +74,7 @@ def synchronize_provider_api() -> None:
 @log_cron_with_transaction
 def pc_import_dms_users_beneficiaries() -> None:
     procedure_id = settings.DMS_NEW_ENROLLMENT_PROCEDURE_ID
-    import_from_date = find_most_recent_beneficiary_creation_date_for_source(
-        BeneficiaryImportSources.demarches_simplifiees, procedure_id
-    )
     import_dms_users.run(procedure_id)
-    remote_tag_has_completed.run(import_from_date, procedure_id)
     archive_dms_applications.archive_applications(procedure_id, dry_run=False)
 
 
@@ -93,11 +86,7 @@ def pc_import_dms_users_beneficiaries_from_old_dms() -> None:
     if not settings.IS_PROD:
         return
     procedure_id = 44623
-    import_from_date = find_most_recent_beneficiary_creation_date_for_source(
-        BeneficiaryImportSources.demarches_simplifiees, procedure_id
-    )
     import_dms_users.run(procedure_id)
-    remote_tag_has_completed.run(import_from_date, procedure_id)
     archive_dms_applications.archive_applications(procedure_id, dry_run=False)
 
 
@@ -105,11 +94,7 @@ def pc_import_dms_users_beneficiaries_from_old_dms() -> None:
 @log_cron_with_transaction
 def pc_import_beneficiaries_from_dms_v3() -> None:
     procedure_id = settings.DMS_ENROLLMENT_PROCEDURE_ID_AFTER_GENERAL_OPENING
-    import_from_date = find_most_recent_beneficiary_creation_date_for_source(
-        BeneficiaryImportSources.demarches_simplifiees, procedure_id
-    )
     import_dms_users.run(procedure_id, use_graphql_api=FeatureToggle.ENABLE_DMS_GRAPHQL_API.is_active())
-    remote_tag_has_completed.run(import_from_date, procedure_id)
     archive_dms_applications.archive_applications(procedure_id, dry_run=False)
 
 
@@ -123,11 +108,7 @@ def pc_import_beneficiaries_from_dms_v4() -> None:
         if not procedure_id:
             logger.info("Skipping DMS %s because procedure id is empty", procedure_name)
             continue
-        import_from_date = find_most_recent_beneficiary_creation_date_for_source(
-            BeneficiaryImportSources.demarches_simplifiees, procedure_id
-        )
         import_dms_users.run(procedure_id, use_graphql_api=FeatureToggle.ENABLE_DMS_GRAPHQL_API.is_active())
-        remote_tag_has_completed.run(import_from_date, procedure_id)
         archive_dms_applications.archive_applications(procedure_id, dry_run=False)
 
 
