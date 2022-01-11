@@ -36,7 +36,6 @@ class FeatureToggle(enum.Enum):
     DISPLAY_DMS_REDIRECTION = "Affiche une redirection vers DMS si ID Check est KO"
     ENABLE_ACTIVATION_CODES = "Permet la création de codes d'activation"
     ENABLE_CULTURAL_SURVEY = "Activer l'affichage du questionnaire des pratiques initiales pour les bénéficiaires"
-    ENABLE_DMS_GRAPHQL_API = "Utilise l'API GraphQL de DMS"
     ENABLE_DMS_LINK_ON_MAINTENANCE_PAGE_FOR_AGE_18 = (
         "Permet l'affichage du lien vers DMS sur la page de maintenance pour les 18 ans"
     )
@@ -124,7 +123,6 @@ FEATURES_DISABLED_BY_DEFAULT = (
     FeatureToggle.ALLOW_EMPTY_USER_PROFILING,
     FeatureToggle.ALLOW_IDCHECK_UNDERAGE_REGISTRATION,
     FeatureToggle.ALLOW_IDCHECK_REGISTRATION_FOR_EDUCONNECT_ELIGIBLE,
-    FeatureToggle.ENABLE_DMS_GRAPHQL_API,
     FeatureToggle.ENABLE_DMS_LINK_ON_MAINTENANCE_PAGE_FOR_UNDERAGE,
     FeatureToggle.ENABLE_DUPLICATE_USER_RULE_WITHOUT_BIRTHDATE,
     FeatureToggle.ENABLE_EDUCONNECT_AUTHENTICATION,
