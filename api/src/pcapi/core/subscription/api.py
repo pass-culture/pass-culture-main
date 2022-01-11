@@ -113,7 +113,8 @@ def activate_beneficiary(
         raise exceptions.BeneficiaryImportMissingException()
 
     eligibility = beneficiary_import.eligibilityType
-    deposit_source = beneficiary_import.get_detailed_source()
+    if deposit_source is None:
+        deposit_source = beneficiary_import.get_detailed_source()
 
     if not users_api.is_eligible_for_beneficiary_upgrade(user, eligibility):
         raise exceptions.CannotUpgradeBeneficiaryRole()
