@@ -753,13 +753,13 @@ class GraphQLSourceProcessApplicationTest:
         user = users_factories.UserFactory(dateOfBirth=AGE18_ELIGIBLE_BIRTH_DATE)
         application_id = 123123
         application_details = make_graphql_application(application_id, "closed", email=user.email)
+        information = import_dms_users.parse_beneficiary_information_graphql(application_details, 123123)
         # fixture
         import_dms_users.process_application(
             123123,
             4234,
-            application_details,
+            information,
             [],
-            parsing_function=import_dms_users.parse_beneficiary_information_graphql,
         )
         assert BeneficiaryImport.query.count() == 1
         import_status = BeneficiaryImport.query.one_or_none()
