@@ -49,6 +49,7 @@ from pcapi.models.feature import FeatureToggle
 from pcapi.models.payment import Payment
 from pcapi.models.payment_status import TransactionStatus
 from pcapi.models.user_offerer import UserOfferer
+from pcapi.routes.serialization.offers_serialize import serialize_offer_type_educational_or_individual
 from pcapi.utils.date import get_department_timezone
 from pcapi.utils.token import random_token
 
@@ -904,7 +905,7 @@ def _serialize_csv_report(query: Query) -> str:
                 booking.amount,
                 _get_booking_status(booking.status, booking.isConfirmed),
                 _serialize_date_with_timezone(booking.reimbursedAt, booking),
-                "offre scolaire" if booking.offerIsEducational else "offre grand public",
+                serialize_offer_type_educational_or_individual(booking.offerIsEducational),
             )
         )
 
