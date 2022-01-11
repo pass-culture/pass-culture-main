@@ -90,6 +90,17 @@ class EducationalBookingsResponse(AdageBaseResponseModel):
         title = "List of prebookings"
 
 
+class EducationalBookingPerYearResponse(AdageBaseResponseModel):
+    UAICode: str
+    status: BookingStatus
+    confirmationLimitDate: datetime
+    totalAmount: float
+
+
+class EducationalBookingsPerYearResponse(AdageBaseResponseModel):
+    bookings: list[EducationalBookingPerYearResponse]
+
+
 def serialize_educational_bookings(educational_bookings: list[EducationalBooking]) -> list[EducationalBookingResponse]:
     serialized_educational_bookings = []
     for educational_booking in educational_bookings:
@@ -205,3 +216,7 @@ def _get_educational_offer_accessibility(offer: offers_models.Offer) -> str:
         disability_compliance.append("Visuel")
 
     return ", ".join(disability_compliance) or "Non accessible"
+
+
+def get_bookings_for_educational_year(educational_year_id: str) -> list[EducationalBooking]:
+    return EducationalBooking.query.filter(EducationalBooking.educationalYearId == educational_year_id)
