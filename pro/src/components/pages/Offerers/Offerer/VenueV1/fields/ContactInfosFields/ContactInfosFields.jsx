@@ -17,6 +17,11 @@ const ContactInfosFields = ({ readOnly }) => (
     <div className="main-list-title title-actions-container">
       <h2 className="main-list-title-text">Contact</h2>
     </div>
+    <p className="bi-subtitle">
+      Ces informations seront affichées dans votre page lieu, sur l’application
+      pass Culture. Elles permettront aux bénéficiaires de vous contacter en cas
+      de besoin.
+    </p>
 
     <TextField
       className="field text-field"
