@@ -7,7 +7,7 @@ ENV PYTHONUNBUFFERED 1
 WORKDIR /usr/local/bin
 
 RUN apt-get update \
-	&& apt-get -y install gcc libpq-dev libffi-dev xmlsec1 libxmlsec1-openssl libpango-1.0-0 libpangoft2-1.0-0 \
+	&& apt-get -y install gcc libpq-dev libffi-dev xmlsec1 libxmlsec1-openssl libpango-1.0-0 libharfbuzz0b libpangoft2-1.0-0 \
 	&& apt-get clean
 
 COPY ./requirements.txt ./
