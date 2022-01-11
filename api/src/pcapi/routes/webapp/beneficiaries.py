@@ -1,4 +1,3 @@
-from datetime import datetime
 import logging
 
 from flask import abort
@@ -10,19 +9,14 @@ from flask_login import login_user
 from jwt import InvalidTokenError
 import pydantic
 
-from pcapi import settings
-from pcapi.connectors.api_recaptcha import ReCaptchaException
-from pcapi.connectors.api_recaptcha import check_webapp_recaptcha_token
 from pcapi.core.users import api as users_api
 from pcapi.core.users import email as email_api
 from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import models as user_models
 from pcapi.core.users import repository as users_repo
 from pcapi.models.api_errors import ApiErrors
-from pcapi.repository import repository
 from pcapi.repository import transaction
 from pcapi.routes.apis import private_api
-from pcapi.routes.apis import public_api
 from pcapi.routes.serialization import beneficiaries as serialization_beneficiaries
 from pcapi.routes.serialization.beneficiaries import BeneficiaryAccountResponse
 from pcapi.routes.serialization.beneficiaries import ChangeBeneficiaryEmailBody
@@ -129,36 +123,6 @@ def signin_beneficiary() -> tuple[str, int]:
     login_user(user)
     stamp_session(user)
     return jsonify(), 200
-
-
-@public_api.route("/beneficiaries/licence_verify", methods=["POST"])
-@spectree_serialize(
-    response_model=serialization_beneficiaries.VerifyIdCheckLicenceResponse,
-    on_success_status=200,
-    on_error_statuses=[400, 422],
-)
-def verify_id_check_licence_token(
-    body: serialization_beneficiaries.VerifyIdCheckLicenceRequest,
-) -> serialization_beneficiaries.VerifyIdCheckLicenceResponse:
-    token = users_repo.get_id_check_token(body.token)
-    if token:
-        if not token.isUsed and token.expirationDate > datetime.now():
-            token.isUsed = True
-            repository.save(token)
-            return serialization_beneficiaries.VerifyIdCheckLicenceResponse()
-        raise ApiErrors(errors={"token": "Le token renseigné n'est pas valide"})
-
-    # Let's try with the legacy webapp tokens
-    try:
-        check_webapp_recaptcha_token(
-            body.token,
-            "submit",
-            settings.RECAPTCHA_LICENCE_MINIMAL_SCORE,
-        )
-    except ReCaptchaException:
-        raise ApiErrors({"token": "The given token is invalid"})
-
-    return serialization_beneficiaries.VerifyIdCheckLicenceResponse()
 
 
 @private_api.route("/send_phone_validation_code", methods=["POST"])
