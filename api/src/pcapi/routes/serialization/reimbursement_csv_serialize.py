@@ -92,7 +92,7 @@ class ReimbursementDetails:
             self.reimbursement_rate = reimbursement_rate
             self.reimbursed_amount = format_number_as_french(payment_info.amount)
             self.status = human_friendly_status
-            self.offer_type = serialize_offer_type_educational_or_individual(payment_info.offer_isEducational)
+            self.offer_type = serialize_offer_type_educational_or_individual(payment_info.offer_is_educational)
 
     def as_csv_row(self):
         return [
