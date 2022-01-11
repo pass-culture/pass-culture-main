@@ -147,6 +147,7 @@ def test_generate_reimbursement_details_csv():
     # given
     payment = PaymentFactory(
         booking__stock__offer__name='Mon titre ; un peu "spécial"',
+        booking__stock__offer__isEducational=False,
         booking__stock__offer__venue__name='Mon lieu ; un peu "spécial"',
         booking__stock__offer__venue__siret="siret-1234",
         booking__token="0E2722",
@@ -167,11 +168,11 @@ def test_generate_reimbursement_details_csv():
     rows = csv.splitlines()
     assert (
         rows[0]
-        == '"Année";"Virement";"Créditeur";"SIRET créditeur";"Adresse créditeur";"IBAN";"Raison sociale du lieu";"Nom de l\'offre";"Nom utilisateur";"Prénom utilisateur";"Contremarque";"Date de validation de la réservation";"Montant de la réservation";"Barème";"Montant remboursé";"Statut du remboursement"'
+        == '"Année";"Virement";"Créditeur";"SIRET créditeur";"Adresse créditeur";"IBAN";"Raison sociale du lieu";"Nom de l\'offre";"Nom utilisateur";"Prénom utilisateur";"Contremarque";"Date de validation de la réservation";"Montant de la réservation";"Barème";"Montant remboursé";"Statut du remboursement";"Type d\'offre"'
     )
     assert (
         rows[1]
-        == '"2019";"Juillet : remboursement 1ère quinzaine";"Mon lieu ; un peu ""spécial""";"siret-1234";"1 boulevard Poissonnière";"iban-1234";"Mon lieu ; un peu ""spécial""";"Mon titre ; un peu ""spécial""";"Doux";"Jeanne";"0E2722";"2021-01-01 12:00:00";"21,00";"100%";"21,00";"Remboursement envoyé"'
+        == '"2019";"Juillet : remboursement 1ère quinzaine";"Mon lieu ; un peu ""spécial""";"siret-1234";"1 boulevard Poissonnière";"iban-1234";"Mon lieu ; un peu ""spécial""";"Mon titre ; un peu ""spécial""";"Doux";"Jeanne";"0E2722";"2021-01-01 12:00:00";"21,00";"100%";"21,00";"Remboursement envoyé";"offre grand public"'
     )
 
 
@@ -204,11 +205,11 @@ def test_generate_reimbursement_details_csv_educational_booking():
     rows = csv.splitlines()
     assert (
         rows[0]
-        == '"Année";"Virement";"Créditeur";"SIRET créditeur";"Adresse créditeur";"IBAN";"Raison sociale du lieu";"Nom de l\'offre";"Nom utilisateur";"Prénom utilisateur";"Contremarque";"Date de validation de la réservation";"Montant de la réservation";"Barème";"Montant remboursé";"Statut du remboursement"'
+        == '"Année";"Virement";"Créditeur";"SIRET créditeur";"Adresse créditeur";"IBAN";"Raison sociale du lieu";"Nom de l\'offre";"Nom utilisateur";"Prénom utilisateur";"Contremarque";"Date de validation de la réservation";"Montant de la réservation";"Barème";"Montant remboursé";"Statut du remboursement";"Type d\'offre"'
     )
     assert (
         rows[1]
-        == '"2019";"Juillet : remboursement 1ère quinzaine";"Mon lieu ; un peu ""spécial""";"siret-1234";"1 boulevard Poissonnière";"iban-1234";"Mon lieu ; un peu ""spécial""";"Mon titre ; un peu ""spécial""";"Khteur";"Reda";"0E2722";"2021-01-01 12:00:00";"21,00";"100%";"21,00";"Remboursement envoyé"'
+        == '"2019";"Juillet : remboursement 1ère quinzaine";"Mon lieu ; un peu ""spécial""";"siret-1234";"1 boulevard Poissonnière";"iban-1234";"Mon lieu ; un peu ""spécial""";"Mon titre ; un peu ""spécial""";"Khteur";"Reda";"0E2722";"2021-01-01 12:00:00";"21,00";"100%";"21,00";"Remboursement envoyé";"offre scolaire"'
     )
 
 
