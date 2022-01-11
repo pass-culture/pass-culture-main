@@ -35,7 +35,7 @@ class DMSParsingError(ValueError):
         self.user_email = user_email
 
 
-def run(procedure_id: int, use_graphql_api: bool = False) -> None:
+def run(procedure_id: int) -> None:
     logger.info(
         "[BATCH][REMOTE IMPORT BENEFICIARIES] Start import from Démarches Simplifiées for "
         "procedure = %s - Procedure %s",

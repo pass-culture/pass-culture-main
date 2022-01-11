@@ -52,7 +52,7 @@ class RunTest:
             make_graphql_application(789, "closed", email="email3@example.com", id_piece_number="123123123"),
         ]
 
-        import_dms_users.run(procedure_id=6712558, use_graphql_api=True)
+        import_dms_users.run(procedure_id=6712558)
         assert get_applications_with_details.call_count == 1
         get_applications_with_details.assert_called_with(6712558, GraphQLApplicationStates.accepted)
 
@@ -90,7 +90,7 @@ class RunTest:
             ),
         ]
 
-        import_dms_users.run(procedure_id=6712558, use_graphql_api=True)
+        import_dms_users.run(procedure_id=6712558)
         assert on_sucessful_application.call_count == 3
 
     @patch.object(DMSGraphQLClient, "get_applications_with_details")
@@ -104,7 +104,7 @@ class RunTest:
         mocked_parse_beneficiary_information.side_effect = [Exception()]
 
         # when
-        import_dms_users.run(procedure_id=6712558, use_graphql_api=True)
+        import_dms_users.run(procedure_id=6712558)
 
         # then
         beneficiary_import = BeneficiaryImport.query.first()
@@ -129,7 +129,7 @@ class RunTest:
         get_applications_with_details.return_value = [make_graphql_application(123, "closed")]
 
         # when
-        import_dms_users.run(procedure_id=6712558, use_graphql_api=True)
+        import_dms_users.run(procedure_id=6712558)
 
         # then
         on_sucessful_application.assert_not_called()
@@ -146,7 +146,7 @@ class RunTest:
         ]
         initial_beneficiary_import_id = user.beneficiaryImports[0].id
 
-        import_dms_users.run(procedure_id=6712558, use_graphql_api=True)
+        import_dms_users.run(procedure_id=6712558)
 
         beneficiary_import = BeneficiaryImport.query.filter(
             BeneficiaryImport.id != initial_beneficiary_import_id
@@ -170,7 +170,7 @@ class RunTest:
             )
         ]
 
-        import_dms_users.run(procedure_id=6712558, use_graphql_api=True)
+        import_dms_users.run(procedure_id=6712558)
 
         on_sucessful_application.assert_called_with(
             user=applicant,
@@ -357,7 +357,7 @@ class RunIntegrationTest:
         get_applications_with_details.return_value = [
             make_graphql_application(application_id=123, state="closed", email=user.email)
         ]
-        import_dms_users.run(procedure_id=6712558, use_graphql_api=True)
+        import_dms_users.run(procedure_id=6712558)
 
         assert users_models.User.query.count() == 1
         user = users_models.User.query.first()
@@ -388,7 +388,7 @@ class RunIntegrationTest:
         details = make_graphql_application(application_id=123, state="closed", email=user.email)
         details["datePassageEnConstruction"] = datetime.now().isoformat()
         get_applications_with_details.return_value = [details]
-        import_dms_users.run(procedure_id=6712558, use_graphql_api=True)
+        import_dms_users.run(procedure_id=6712558)
 
         assert users_models.User.query.count() == 1
         user = users_models.User.query.first()
@@ -406,7 +406,7 @@ class RunIntegrationTest:
             make_graphql_application(application_id=123, state="closed", email="nonexistant@example.com")
         ]
 
-        import_dms_users.run(procedure_id=6712558, use_graphql_api=True)
+        import_dms_users.run(procedure_id=6712558)
         beneficiary_import = BeneficiaryImport.query.first()
         assert beneficiary_import.source == "demarches_simplifiees"
         assert beneficiary_import.applicationId == 123
@@ -435,7 +435,7 @@ class RunIntegrationTest:
             make_graphql_application(application_id=123, state="closed", email=user.email)
         ]
         # when
-        import_dms_users.run(procedure_id=6712558, use_graphql_api=True)
+        import_dms_users.run(procedure_id=6712558)
 
         # then
         assert users_models.User.query.count() == 1
@@ -483,7 +483,7 @@ class RunIntegrationTest:
             make_graphql_application(application_id=123, state="closed", email=user.email)
         ]
 
-        import_dms_users.run(procedure_id=6712558, use_graphql_api=True)
+        import_dms_users.run(procedure_id=6712558)
 
         assert users_models.User.query.count() == 1
         user = users_models.User.query.first()
@@ -539,7 +539,7 @@ class RunIntegrationTest:
         get_applications_with_details.return_value = [
             make_graphql_application(application_id=123, state="closed", email=user.email)
         ]
-        import_dms_users.run(procedure_id=6712558, use_graphql_api=True)
+        import_dms_users.run(procedure_id=6712558)
 
         user = users_models.User.query.one()
 
@@ -573,7 +573,7 @@ class RunIntegrationTest:
                 application_id=123, state="closed", email=user.email, birth_date=self.BENEFICIARY_BIRTH_DATE
             )
         ]
-        import_dms_users.run(procedure_id=6712558, use_graphql_api=True)
+        import_dms_users.run(procedure_id=6712558)
 
         assert users_models.User.query.count() == 2
 
@@ -621,7 +621,7 @@ class RunIntegrationTest:
         ]
 
         process_mock = mocker.patch("pcapi.core.subscription.api.on_successful_application")
-        import_dms_users.run(procedure_id=6712558, use_graphql_api=True)
+        import_dms_users.run(procedure_id=6712558)
 
         assert process_mock.call_count == 0
         assert users_models.User.query.count() == 2
@@ -675,7 +675,7 @@ class RunIntegrationTest:
                 email=user.email,
             )
         ]
-        import_dms_users.run(procedure_id=6712558, use_graphql_api=True)
+        import_dms_users.run(procedure_id=6712558)
 
         # then
         assert users_models.User.query.count() == 1
@@ -713,7 +713,7 @@ class RunIntegrationTest:
                 id_piece_number="121314",
             )
         ]
-        import_dms_users.run(procedure_id=6712558, use_graphql_api=True)
+        import_dms_users.run(procedure_id=6712558)
 
         beneficiary_import = BeneficiaryImport.query.first()
         assert beneficiary_import.currentStatus == ImportStatus.ERROR
@@ -733,7 +733,7 @@ class RunIntegrationTest:
                 application_id=1, state="closed", postal_code="Strasbourg", id_piece_number="121314", email=user.email
             )
         ]
-        import_dms_users.run(procedure_id=6712558, use_graphql_api=True)
+        import_dms_users.run(procedure_id=6712558)
 
         beneficiary_import = BeneficiaryImport.query.first()
         assert beneficiary_import.currentStatus == ImportStatus.ERROR
@@ -792,7 +792,7 @@ class GraphQLSourceProcessApplicationTest:
         get_applications_with_details.return_value = [
             make_graphql_application(application_id, "closed", email=user.email)
         ]
-        import_dms_users.run(123123, use_graphql_api=True)
+        import_dms_users.run(123123)
 
         import_status = BeneficiaryImport.query.one_or_none()
 
@@ -811,7 +811,7 @@ class GraphQLSourceProcessApplicationTest:
             )
         ]
 
-        import_dms_users.run(procedure_id=6712558, use_graphql_api=True)
+        import_dms_users.run(procedure_id=6712558)
 
         beneficiary_import = BeneficiaryImport.query.first()
         assert beneficiary_import.currentStatus == ImportStatus.ERROR
@@ -849,7 +849,7 @@ class GraphQLSourceProcessApplicationTest:
             ),
         ]
 
-        import_dms_users.run(procedure_id=procedure_id, use_graphql_api=True)
+        import_dms_users.run(procedure_id=procedure_id)
 
         imports = BeneficiaryImport.query.all()
         assert len(imports) == 2
