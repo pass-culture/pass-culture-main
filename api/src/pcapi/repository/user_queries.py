@@ -1,4 +1,3 @@
-from datetime import MINYEAR
 from datetime import datetime
 from datetime import timedelta
 from typing import Optional
@@ -12,10 +11,6 @@ from sqlalchemy.sql.functions import Function
 from pcapi.core.users.models import User
 from pcapi.core.users.utils import sanitize_email
 from pcapi.models import db
-from pcapi.models.beneficiary_import import BeneficiaryImport
-from pcapi.models.beneficiary_import import BeneficiaryImportSources
-from pcapi.models.beneficiary_import_status import BeneficiaryImportStatus
-from pcapi.models.beneficiary_import_status import ImportStatus
 from pcapi.models.user_offerer import UserOfferer
 
 
@@ -87,22 +82,6 @@ def get_all_users_wallet_balances():
         .filter(User.deposits != None)
         .order_by(User.id)
     )
-
-
-def find_most_recent_beneficiary_creation_date_for_source(source: BeneficiaryImportSources, source_id: int) -> datetime:
-    most_recent_creation = (
-        BeneficiaryImportStatus.query.join(BeneficiaryImport)
-        .filter(BeneficiaryImport.source == source.value)
-        .filter(BeneficiaryImport.sourceId == source_id)
-        .filter(BeneficiaryImportStatus.status == ImportStatus.CREATED)
-        .order_by(BeneficiaryImportStatus.date.desc())
-        .first()
-    )
-
-    if not most_recent_creation:
-        return datetime(MINYEAR, 1, 1)
-
-    return most_recent_creation.date
 
 
 def matching(column: Column, search_value: str) -> BinaryExpression:
