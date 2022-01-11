@@ -325,7 +325,7 @@ def make_graphql_application(
                 "label": "Quel est le numéro de la pièce que vous venez de saisir ?",
                 "stringValue": id_piece_number,
             },
-            {"id": "Q2hhbXAtNTgyMjE5", "label": "Quel est votre numéro de téléphone", "stringValue": "07 83 44 23 76"},
+            {"id": "Q2hhbXAtNTgyMjE5", "label": "Quel est votre numéro de téléphone", "stringValue": "01 23 45 67 89"},
             {
                 "id": "Q2hhbXAtNTgyMjIx",
                 "label": "Quel est le code postal de votre commune de résidence ?",
