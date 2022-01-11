@@ -94,7 +94,7 @@ def pc_import_dms_users_beneficiaries_from_old_dms() -> None:
 @log_cron_with_transaction
 def pc_import_beneficiaries_from_dms_v3() -> None:
     procedure_id = settings.DMS_ENROLLMENT_PROCEDURE_ID_AFTER_GENERAL_OPENING
-    import_dms_users.run(procedure_id, use_graphql_api=FeatureToggle.ENABLE_DMS_GRAPHQL_API.is_active())
+    import_dms_users.run(procedure_id)
     archive_dms_applications.archive_applications(procedure_id, dry_run=False)
 
 
@@ -108,7 +108,7 @@ def pc_import_beneficiaries_from_dms_v4() -> None:
         if not procedure_id:
             logger.info("Skipping DMS %s because procedure id is empty", procedure_name)
             continue
-        import_dms_users.run(procedure_id, use_graphql_api=FeatureToggle.ENABLE_DMS_GRAPHQL_API.is_active())
+        import_dms_users.run(procedure_id)
         archive_dms_applications.archive_applications(procedure_id, dry_run=False)
 
 
