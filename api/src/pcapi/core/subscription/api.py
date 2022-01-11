@@ -437,12 +437,14 @@ def handle_eligibility_difference_between_declaration_and_identity_provider(
 
     # Cancel the old fraud check
     fraud_check.status = fraud_models.FraudCheckStatus.CANCELED
-    if fraud_check.reason is None or fraud_check.reason == "":
-        fraud_check.reason = "Eligibility type changed by the identity provider"
-    else:
-        fraud_check.reason += (
-            f"{fraud_api.FRAUD_RESULT_REASON_SEPARATOR} Eligibility type changed by the identity provider"
-        )
+
+    reason_message = "Eligibility type changed by the identity provider"
+    fraud_check.reason = (
+        f"{fraud_check.reason} {fraud_api.FRAUD_RESULT_REASON_SEPARATOR} {reason_message}"
+        if fraud_check.reason
+        else reason_message
+    )
+
     if fraud_check.reasonCodes is None:
         fraud_check.reasonCodes = []
     fraud_check.reasonCodes.append(fraud_models.FraudReasonCode.ELIGIBILITY_CHANGED)
