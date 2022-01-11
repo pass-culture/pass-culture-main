@@ -508,16 +508,6 @@ def on_successful_application(
     activate_beneficiary_if_no_missing_step(user)
 
 
-# TODO (viconnex): move in a dms folder
-def start_workflow(
-    user: users_models.User, thirdparty_id: str, content: fraud_models.DMSContent
-) -> fraud_models.BeneficiaryFraudCheck:
-    user.submit_user_identity()
-    pcapi_repository.repository.save(user)
-    fraud_check = fraud_api.start_fraud_check(user, thirdparty_id, content)
-    return fraud_check
-
-
 # TODO (Lixxday): use a proper BeneficiaryFraudCHeck History model to track these kind of updates
 def handle_eligibility_difference_between_declaration_and_identity_provider(
     fraud_check: fraud_models.BeneficiaryFraudCheck,

@@ -6,6 +6,7 @@ from pcapi.core import logging as core_logging
 from pcapi.core.fraud.ubble import api as ubble_fraud_api
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import messages as subscription_messages
+from pcapi.core.subscription.dms import api as dms_subscription_api
 from pcapi.core.subscription.ubble import api as ubble_subscription_api
 from pcapi.core.users.repository import find_user_by_email
 from pcapi.models.beneficiary_import import BeneficiaryImportSources
@@ -57,7 +58,7 @@ def dms_webhook_update_application_status(form: dms_validation.DMSWebhookRequest
             )
 
         logger.info(
-            "User not found for application %d procedure %d email %s",
+            "User not found for application %s procedure %s email %s",
             raw_data["dossier"]["number"],
             form.procedure_id,
             raw_data["dossier"]["usager"]["email"],
@@ -76,12 +77,11 @@ def dms_webhook_update_application_status(form: dms_validation.DMSWebhookRequest
         subscription_messages.on_dms_application_parsing_errors_but_updatables_values(
             user, list(parsing_error.errors.keys())
         )
-
         if form.state == api_demarches_simplifiees.GraphQLApplicationStates.draft:
             import_dms_users.notify_parsing_exception(parsing_error.errors, raw_data["dossier"]["id"], client)
 
         logger.info(
-            "Cannot parse DMS application %d in webhook. Errors will be handled in the import_dms_users cron",
+            "Cannot parse DMS application %s in webhook. Errors will be handled in the import_dms_users cron",
             form.dossier_id,
             extra=log_extra_data,
         )
@@ -106,21 +106,16 @@ def dms_webhook_update_application_status(form: dms_validation.DMSWebhookRequest
     if import_status:
         subscription_api.attach_beneficiary_import_details(
             user,
-            form.dossier_id,
-            form.procedure_id,
+            int(form.dossier_id),
+            int(form.procedure_id),
             BeneficiaryImportSources.demarches_simplifiees,
             eligibility_type=application.get_eligibility_type(),
             details="Webhook status update",
             status=import_status,
         )
 
-    if form.state == api_demarches_simplifiees.GraphQLApplicationStates.accepted:
-        subscription_api.start_workflow(user, str(form.dossier_id), application)
+    dms_subscription_api.handle_dms_state(user, application, form.procedure_id, form.dossier_id, form.state)
 
-    elif form.state == api_demarches_simplifiees.GraphQLApplicationStates.draft:
-        subscription_messages.on_dms_application_received(user)
-    elif form.state == api_demarches_simplifiees.GraphQLApplicationStates.refused:
-        subscription_messages.on_dms_application_refused(user)
     if not user.hasCompletedIdCheck:
         user.hasCompletedIdCheck = True
         repository.save(user)

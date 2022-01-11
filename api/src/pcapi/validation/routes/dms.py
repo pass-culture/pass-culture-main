@@ -23,8 +23,8 @@ def coerce_for_enum(enum):
 
 
 class DMSWebhookRequest(pydantic.BaseModel):
-    procedure_id: int
-    dossier_id: int
+    procedure_id: str
+    dossier_id: str
     state: GraphQLApplicationStates
     updated_at: datetime.datetime
 
