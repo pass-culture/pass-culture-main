@@ -705,7 +705,9 @@ class UpdateBeneficiaryMandatoryInformationTest:
         """
         AGE18_ELIGIBLE_BIRTH_DATE = datetime.now() - relativedelta(years=18, months=4)
         user = users_factories.UserFactory(
-            phoneValidationStatus=PhoneValidationStatusType.VALIDATED, dateOfBirth=AGE18_ELIGIBLE_BIRTH_DATE
+            phoneValidationStatus=PhoneValidationStatusType.VALIDATED,
+            dateOfBirth=AGE18_ELIGIBLE_BIRTH_DATE,
+            hasCompletedIdCheck=True,
         )
         fraud_factories.BeneficiaryFraudCheckFactory(user=user, type=fraud_models.FraudCheckType.JOUVE)
         fraud_factories.BeneficiaryFraudResultFactory(user=user, status=fraud_models.FraudStatus.OK)
@@ -720,7 +722,6 @@ class UpdateBeneficiaryMandatoryInformationTest:
             city=new_city,
             postal_code="93000",
             activity=user.activity,
-            is_legacy_behaviour=True,
         )
 
         user = User.query.get(user.id)
