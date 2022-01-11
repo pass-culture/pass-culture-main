@@ -203,3 +203,57 @@ class UbbleWorkflowTest:
         assert fraud_checks[0].eligibilityType == users_models.EligibilityType.AGE18
         assert fraud_checks[0].thirdPartyId == ubble_identification
         assert fraud_models.FraudReasonCode.NOT_ELIGIBLE in fraud_checks[0].reasonCodes
+
+    def test_ubble_workflow_updates_user_when_processed(self, ubble_mocker):
+        user = users_factories.UserFactory(dateOfBirth=datetime.datetime(year=2002, month=5, day=6))
+        fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
+            type=fraud_models.FraudCheckType.UBBLE,
+            status=fraud_models.FraudCheckStatus.PENDING,
+            user=user,
+            eligibilityType=users_models.EligibilityType.UNDERAGE,
+        )
+
+        ubble_response = UbbleIdentificationResponseFactory(
+            identification_state=IdentificationState.INVALID,
+            data__attributes__identification_id=str(fraud_check.thirdPartyId),
+            included=[
+                UbbleIdentificationIncludedDocumentsFactory(
+                    attributes__birth_date=datetime.datetime(year=2002, month=5, day=4).date().isoformat()
+                ),
+            ],
+        )
+
+        with ubble_mocker(
+            fraud_check.thirdPartyId,
+            json.dumps(ubble_response.dict(by_alias=True), sort_keys=True, default=json_default),
+        ):
+            ubble_subscription_api.update_ubble_workflow(fraud_check, ubble_response.data.attributes.status)
+
+        db.session.refresh(user)
+        assert user.dateOfBirth == datetime.datetime(year=2002, month=5, day=4)
+
+    def test_ubble_workflow_does_not_erase_user_data(self, ubble_mocker):
+        user = users_factories.UserFactory(dateOfBirth=datetime.datetime(year=2002, month=5, day=6))
+        fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
+            type=fraud_models.FraudCheckType.UBBLE,
+            status=fraud_models.FraudCheckStatus.PENDING,
+            user=user,
+            eligibilityType=users_models.EligibilityType.UNDERAGE,
+        )
+
+        ubble_response = UbbleIdentificationResponseFactory(
+            identification_state=IdentificationState.INVALID,
+            data__attributes__identification_id=str(fraud_check.thirdPartyId),
+            included=[
+                UbbleIdentificationIncludedDocumentsFactory(attributes__birth_date=None),
+            ],
+        )
+
+        with ubble_mocker(
+            fraud_check.thirdPartyId,
+            json.dumps(ubble_response.dict(by_alias=True), sort_keys=True, default=json_default),
+        ):
+            ubble_subscription_api.update_ubble_workflow(fraud_check, ubble_response.data.attributes.status)
+
+        db.session.refresh(user)
+        assert user.dateOfBirth == datetime.datetime(year=2002, month=5, day=6)

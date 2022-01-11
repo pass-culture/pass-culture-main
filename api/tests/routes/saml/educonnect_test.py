@@ -379,3 +379,19 @@ class EduconnectTest:
         assert response.location == (
             "https://webapp-v2.example.com/educonnect/erreur?code=UserAgeNotValid&logoutUrl=https%3A%2F%2Feduconnect.education.gouv.fr%2FLogout"
         )
+
+    @pytest.mark.parametrize(
+        "age",
+        [15, 16, 17, 18, 19],
+    )
+    @patch("pcapi.connectors.beneficiaries.educonnect.educonnect_connector.get_educonnect_user")
+    def test_educonnect_connection_updates_user_birth_date(self, mock_get_educonnect_user, client, app, age):
+        user, request_id = self.connect_to_educonnect(client, app)
+        mock_get_educonnect_user.return_value = users_factories.EduconnectUserFactory(
+            saml_request_id=request_id, age=age
+        )
+
+        client.post("/saml/acs", form={"SAMLResponse": "encrypted_data"})
+        assert user.dateOfBirth == datetime.datetime.combine(
+            datetime.date.today() - relativedelta(years=age, months=1), datetime.time(0, 0)
+        )
