@@ -42,7 +42,12 @@ const FieldLayout = ({
       )}
     </label>
 
-    <div className={styles['field-layout-input']}>{children}</div>
+    <div
+      aria-invalid={showError && !!error ? 'true' : 'false'}
+      className={styles['field-layout-input']}
+    >
+      {children}
+    </div>
 
     <div className={styles['field-layout-footer']}>
       {showError && !!error && (
