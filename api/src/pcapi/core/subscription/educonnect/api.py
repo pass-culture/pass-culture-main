@@ -47,7 +47,7 @@ def handle_educonnect_authentication(
                 user=user,
                 source=BeneficiaryImportSources.educonnect,
                 source_data=fraud_check.source_data(),
-                eligibility_type=fraud_api.get_eligibility_type(fraud_check.source_data()),
+                eligibility_type=fraud_check.source_data().get_eligibility_type(),
                 third_party_id=fraud_check.thirdPartyId,
                 source_id=None,
             )

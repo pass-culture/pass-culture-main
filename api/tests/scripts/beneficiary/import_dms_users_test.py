@@ -890,7 +890,7 @@ class RunIntegrationTest:
         sub_msg = user.subscriptionMessages[0]
         assert (
             sub_msg.userMessage
-            == "Ce document a déjà été analysé. Vérifie que tu n’as pas créé de compte avec une autre adresse e-mail. Consulte l’e-mail envoyé le 30/10/2021 pour plus d’informations."
+            == "Ton dossier a été bloqué : Il y a déjà un compte à ton nom sur le pass Culture. Tu peux contacter le support pour plus d'informations."
         )
         assert sub_msg.callToActionIcon == subscription_models.CallToActionIcon.EMAIL
 
@@ -942,7 +942,7 @@ class RunIntegrationTest:
         sub_msg = applicant.subscriptionMessages[0]
         assert (
             sub_msg.userMessage
-            == "Ce document a déjà été analysé. Vérifie que tu n’as pas créé de compte avec une autre adresse e-mail. Consulte l’e-mail envoyé le 30/10/2021 pour plus d’informations."
+            == "Ton dossier a été bloqué : Il y a déjà un compte à ton nom sur le pass Culture. Tu peux contacter le support pour plus d'informations."
         )
         assert sub_msg.callToActionIcon == subscription_models.CallToActionIcon.EMAIL
 
@@ -985,7 +985,7 @@ class RunIntegrationTest:
 
         assert applicant.beneficiaryFraudResults[0].status == fraud_models.FraudStatus.SUSPICIOUS
         assert (
-            f"Le n° de cni 1234123412 est déjà pris par l'utilisateur {beneficiary.id}"
+            f"La pièce d'identité n°1234123412 est déjà prise par l'utilisateur {beneficiary.id}"
             in applicant.beneficiaryFraudResults[0].reason
         )
 

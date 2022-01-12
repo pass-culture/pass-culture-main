@@ -46,7 +46,7 @@ USER_PROFILING_FRAUD_CHECK_STATUS_RISK_MAPPING = {
 def on_educonnect_result(
     user: users_models.User, educonnect_content: models.EduconnectContent
 ) -> BeneficiaryFraudCheck:
-    eligibility_type = get_eligibility_type(educonnect_content)
+    eligibility_type = educonnect_content.get_eligibility_type()
 
     fraud_check = models.BeneficiaryFraudCheck.query.filter(
         models.BeneficiaryFraudCheck.user == user,
@@ -75,7 +75,7 @@ def on_dms_fraud_result(
     dms_content: models.DMSContent,
 ) -> models.BeneficiaryFraudResult:
 
-    eligibility_type = get_eligibility_type(dms_content)
+    eligibility_type = dms_content.get_eligibility_type()
 
     fraud_check = models.BeneficiaryFraudCheck(
         user=user,
@@ -126,16 +126,7 @@ def educonnect_fraud_checks(
 ) -> list[models.FraudItem]:
     educonnect_content = beneficiary_fraud_check.source_data()
     fraud_items = []
-    # TODO: factorise in on_identity_fraud_check_result for the 4 *_fraud_checks
-    fraud_items.append(
-        _duplicate_user_fraud_item(
-            first_name=educonnect_content.first_name,
-            last_name=educonnect_content.last_name,
-            birth_date=educonnect_content.birth_date,
-            excluded_user_id=user.id,
-        )
-    )
-    fraud_items.append(_underage_user_fraud_item(educonnect_content.birth_date))
+    fraud_items.append(_underage_user_fraud_item(educonnect_content.get_birth_date()))
     fraud_items.append(_duplicate_ine_hash_fraud_item(educonnect_content.ine_hash, user.id))
     if FeatureToggle.ENABLE_INE_WHITELIST_FILTER.is_active():
         fraud_items.append(_whitelisted_ine_fraud_item(educonnect_content.ine_hash))
@@ -149,40 +140,8 @@ def dms_fraud_checks(
     dms_content = models.DMSContent(**beneficiary_fraud_check.resultContent)
 
     fraud_items = []
-    # TODO: factorise in on_identity_fraud_check_result for the 4 *_fraud_checks
-    fraud_items.append(
-        _duplicate_user_fraud_item(
-            first_name=dms_content.first_name,
-            last_name=dms_content.last_name,
-            birth_date=dms_content.birth_date,
-            excluded_user_id=user.id,
-        )
-    )
-    fraud_items.append(_duplicate_id_piece_number_fraud_item(user, dms_content.id_piece_number))
+    fraud_items.append(duplicate_id_piece_number_fraud_item(user, dms_content.get_id_piece_number()))
     return fraud_items
-
-
-def get_eligibility_type(data: models.IdentityCheckContent) -> typing.Optional[users_models.EligibilityType]:
-    from pcapi.core.users import api as users_api
-
-    registration_datetime = data.get_registration_datetime()
-    birth_date = data.get_birth_date()
-
-    if registration_datetime is None or birth_date is None:
-        return None
-
-    eligibility_at_registration = users_api.get_eligibility_at_date(birth_date, registration_datetime)
-    eligibility_today = users_api.get_eligibility_at_date(birth_date, datetime.datetime.now())
-
-    # When a user turns 18, the underage credit expires.
-    # If they turned 18 between registration and today, we consider the application as coming from a 18 years old user.
-    if (
-        eligibility_today == users_models.EligibilityType.AGE18
-        and eligibility_at_registration == users_models.EligibilityType.UNDERAGE
-    ):
-        return users_models.EligibilityType.AGE18
-
-    return eligibility_at_registration
 
 
 def on_identity_fraud_check_result(
@@ -203,10 +162,28 @@ def on_identity_fraud_check_result(
     else:
         raise Exception("The fraud_check type is not known")
 
-    content_eligibility_type = get_eligibility_type(beneficiary_fraud_check.source_data())
+    content: models.IdentityCheckContent = beneficiary_fraud_check.source_data()
+    content_first_name = content.get_first_name()
+    content_last_name = content.get_last_name()
+    content_birth_date = content.get_birth_date()
+    content_eligibility_type = content.get_eligibility_type()
+
+    # Check for duplicate only when Id Check returns identity details
+    if content_first_name and content_last_name and content_birth_date:
+        fraud_items.append(
+            _duplicate_user_fraud_item(
+                first_name=content_first_name,
+                last_name=content_last_name,
+                birth_date=content_birth_date,
+                excluded_user_id=user.id,
+            )
+        )
+
+    if content_birth_date:
+        fraud_items.append(_check_user_eligibility(user, content_eligibility_type))
+
     fraud_items.append(_check_user_has_no_active_deposit(user, content_eligibility_type))
     fraud_items.append(_check_user_email_is_validated(user))
-    fraud_items.append(_check_user_eligibility(user, content_eligibility_type))
 
     fraud_result = validate_frauds(user, fraud_items, beneficiary_fraud_check, content_eligibility_type)
     repository.save(fraud_result)
@@ -214,7 +191,7 @@ def on_identity_fraud_check_result(
     return fraud_result
 
 
-def validate_id_piece_number_format_fraud_item(id_piece_number: str) -> models.FraudItem:
+def validate_id_piece_number_format_fraud_item(id_piece_number: typing.Optional[str]) -> models.FraudItem:
     if not id_piece_number or not id_piece_number.strip():
         return models.FraudItem(
             status=models.FraudStatus.SUSPICIOUS,
@@ -257,48 +234,57 @@ def _duplicate_user_fraud_item(
         & (users_models.User.id != excluded_user_id)
     ).first()
 
-    return models.FraudItem(
-        status=models.FraudStatus.SUSPICIOUS if duplicate_user else models.FraudStatus.OK,
-        detail=f"Duplicat de l'utilisateur {duplicate_user.id}" if duplicate_user else "Utilisateur non dupliqué",
-        reason_code=models.FraudReasonCode.DUPLICATE_USER if duplicate_user else None,
-    )
+    if duplicate_user:
+        return models.FraudItem(
+            status=models.FraudStatus.SUSPICIOUS,
+            detail=f"Duplicat de l'utilisateur {duplicate_user.id}",
+            reason_code=models.FraudReasonCode.DUPLICATE_USER,
+        )
+
+    return models.FraudItem(status=models.FraudStatus.OK, detail="Utilisateur non dupliqué")
 
 
-def _duplicate_id_piece_number_fraud_item(user: users_models.User, document_id_number: str) -> models.FraudItem:
+def duplicate_id_piece_number_fraud_item(user: users_models.User, document_id_number: str) -> models.FraudItem:
     duplicate_user = users_models.User.query.filter(
         users_models.User.id != user.id, users_models.User.idPieceNumber == document_id_number
     ).first()
-    return models.FraudItem(
-        status=models.FraudStatus.SUSPICIOUS if duplicate_user else models.FraudStatus.OK,
-        detail=f"Le n° de cni {document_id_number} est déjà pris par l'utilisateur {duplicate_user.id}"
-        if duplicate_user
-        else "Le numéro de CNI n'est pas déjà utilisé",
-        reason_code=models.FraudReasonCode.DUPLICATE_ID_PIECE_NUMBER if duplicate_user else None,
-    )
+
+    if duplicate_user:
+        return models.FraudItem(
+            status=models.FraudStatus.SUSPICIOUS,
+            detail=f"La pièce d'identité n°{document_id_number} est déjà prise par l'utilisateur {duplicate_user.id}",
+            reason_code=models.FraudReasonCode.DUPLICATE_ID_PIECE_NUMBER,
+        )
+
+    return models.FraudItem(status=models.FraudStatus.OK, detail="La pièce d'identité n'est pas déjà utilisée")
 
 
 def _duplicate_ine_hash_fraud_item(ine_hash: str, excluded_user_id: int) -> models.FraudItem:
     duplicate_user = users_models.User.query.filter(
         users_models.User.ineHash == ine_hash, users_models.User.id != excluded_user_id
     ).first()
-    return models.FraudItem(
-        status=models.FraudStatus.SUSPICIOUS if duplicate_user else models.FraudStatus.OK,
-        detail=f"L'INE {ine_hash} est déjà pris par l'utilisateur {duplicate_user.id}"
-        if duplicate_user
-        else "L'INE est OK",
-        reason_code=models.FraudReasonCode.DUPLICATE_INE if duplicate_user else None,
-    )
+
+    if duplicate_user:
+        return models.FraudItem(
+            status=models.FraudStatus.SUSPICIOUS,
+            detail=f"L'INE {ine_hash} est déjà pris par l'utilisateur {duplicate_user.id}",
+            reason_code=models.FraudReasonCode.DUPLICATE_INE,
+        )
+
+    return models.FraudItem(status=models.FraudStatus.OK, detail="L'INE n'est pas déjà pris")
 
 
 def _whitelisted_ine_fraud_item(ine_hash: str) -> models.FraudItem:
     is_ine_whitelisted = db.session.query(models.IneHashWhitelist.query.filter_by(ine_hash=ine_hash).exists()).scalar()
 
-    return models.FraudItem(
-        # TODO: ask if it is considered as KO or SUSPICIOUS
-        status=models.FraudStatus.OK if is_ine_whitelisted else models.FraudStatus.SUSPICIOUS,
-        detail=f"L'INE {ine_hash} n'est pas whitelisté" if not is_ine_whitelisted else "L'INE est whitelisté",
-        reason_code=models.FraudReasonCode.INE_NOT_WHITELISTED if not is_ine_whitelisted else None,
-    )
+    if not is_ine_whitelisted:
+        return models.FraudItem(
+            status=models.FraudStatus.SUSPICIOUS,
+            detail=f"L'INE {ine_hash} n'est pas whitelisté",
+            reason_code=models.FraudReasonCode.INE_NOT_WHITELISTED,
+        )
+
+    return models.FraudItem(status=models.FraudStatus.OK, detail="L'INE est whitelisté")
 
 
 def _check_user_has_no_active_deposit(
@@ -316,7 +302,9 @@ def _check_user_has_no_active_deposit(
     return models.FraudItem(status=models.FraudStatus.OK, detail="L'utilisateur n'a pas déjà un deposit actif")
 
 
-def _check_user_eligibility(user: users_models.User, eligibility: users_models.EligibilityType) -> models.FraudItem:
+def _check_user_eligibility(
+    user: users_models.User, eligibility: typing.Optional[users_models.EligibilityType]
+) -> models.FraudItem:
     from pcapi.core.users import api as users_api
 
     if not eligibility:
@@ -353,11 +341,11 @@ def _underage_user_fraud_item(birth_date: datetime.date) -> models.FraudItem:
     if age in constants.ELIGIBILITY_UNDERAGE_RANGE:
         return models.FraudItem(
             status=models.FraudStatus.OK,
-            detail=f"L'age de l'utilisateur est valide ({age} ans).",
+            detail=f"L'âge de l'utilisateur est valide ({age} ans).",
         )
     return models.FraudItem(
         status=models.FraudStatus.KO,
-        detail=f"L'age de l'utilisateur est invalide ({age} ans). Il devrait être parmi {constants.ELIGIBILITY_UNDERAGE_RANGE}",
+        detail=f"L'âge de l'utilisateur est invalide ({age} ans). Il devrait être parmi {constants.ELIGIBILITY_UNDERAGE_RANGE}",
         reason_code=models.FraudReasonCode.AGE_NOT_VALID,
     )
 
@@ -616,28 +604,6 @@ def get_pending_identity_check(user: users_models.User) -> typing.Optional[model
     ).one_or_none()
 
 
-def has_user_performed_ubble_check(user: users_models.User) -> bool:
-    """
-    Look for any Ubble identification already started, processed or not, but not aborted.
-    There should not be more than one result in the database (later this function can count if limit is greater than 1).
-    """
-    fraud_check = models.BeneficiaryFraudCheck.query.filter(
-        models.BeneficiaryFraudCheck.user == user,
-        models.BeneficiaryFraudCheck.status.is_distinct_from(models.FraudCheckStatus.CANCELED),
-        models.BeneficiaryFraudCheck.type == models.FraudCheckType.UBBLE,
-        models.BeneficiaryFraudCheck.eligibilityType == user.eligibility,
-    ).one_or_none()
-    if not fraud_check:
-        return False
-
-    if fraud_check.source_data().status in [
-        models.ubble_models.UbbleIdentificationStatus.INITIATED,
-        models.ubble_models.UbbleIdentificationStatus.UNINITIATED,
-    ]:
-        return False
-    return True
-
-
 def has_passed_educonnect(user: users_models.User) -> bool:
     return db.session.query(
         models.BeneficiaryFraudCheck.query.filter(
@@ -698,7 +664,7 @@ def start_fraud_check(
         thirdPartyId=application_id,
         resultContent=source_data.dict(),
         status=models.FraudCheckStatus.PENDING,
-        eligibilityType=get_eligibility_type(source_data),
+        eligibilityType=source_data.get_eligibility_type(),
     )
 
     repository.save(fraud_check)
@@ -727,7 +693,7 @@ def mark_fraud_check_failed(
             thirdPartyId=application_id,
             resultContent=source_data.dict(),
             status=models.FraudCheckStatus.PENDING,
-            eligibilityType=get_eligibility_type(source_data),
+            eligibilityType=source_data.get_eligibility_type(),
         )
 
     fraud_check.status = models.FraudCheckStatus.KO

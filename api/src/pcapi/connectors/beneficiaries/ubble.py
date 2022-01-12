@@ -33,12 +33,13 @@ def build_url(path: str) -> str:
 INCLUDED_MODELS = {
     "documents": ubble_models.UbbleIdentificationDocuments,
     "document-checks": ubble_models.UbbleIdentificationDocumentChecks,
+    "reference-data-checks": ubble_models.UbbleIdentificationReferenceDataChecks,
 }
 
 
 def _get_included_attributes(
     response: ubble_models.UbbleIdentificationResponse, type_: str
-) -> typing.Union[ubble_models.UbbleIdentificationDocuments, ubble_models.UbbleIdentificationDocumentChecks,]:
+) -> ubble_models.UbbleIdentificationObject:
     filtered = list(filter(lambda included: included["type"] == type_, response["included"]))
     attributes = INCLUDED_MODELS[type_](**filtered[0].get("attributes")) if filtered else None
     return attributes
@@ -55,6 +56,10 @@ def _extract_useful_content_from_response(
     document_checks: ubble_models.UbbleIdentificationDocumentChecks = _get_included_attributes(
         response, "document-checks"
     )
+    reference_data_checks: ubble_models.UbbleIdentificationReferenceDataChecks = _get_included_attributes(
+        response, "reference-data-checks"
+    )
+
     score = _get_data_attribute(response, "score")
     comment = _get_data_attribute(response, "comment")
     identification_id = _get_data_attribute(response, "identification-id")
@@ -71,6 +76,7 @@ def _extract_useful_content_from_response(
         id_document_number=getattr(documents, "document_number", None),
         score=score,
         comment=comment,
+        reference_data_check_score=getattr(reference_data_checks, "score", None),
         expiry_date_score=getattr(document_checks, "expiry_date_score", None),
         supported=getattr(document_checks, "supported", None),
         identification_id=identification_id,

@@ -100,8 +100,17 @@ class EduconnectContent(IdentityCheckContent):
     def get_registration_datetime(self) -> datetime.datetime:
         return self.registration_datetime
 
+    def get_first_name(self) -> str:
+        return self.first_name
+
+    def get_last_name(self) -> str:
+        return self.last_name
+
     def get_birth_date(self) -> datetime.date:
         return self.birth_date
+
+    def get_id_piece_number(self) -> typing.Optional[str]:
+        return None
 
 
 class JouveContent(IdentityCheckContent):
@@ -144,8 +153,17 @@ class JouveContent(IdentityCheckContent):
     def get_registration_datetime(self) -> typing.Optional[datetime.datetime]:
         return self.registrationDate
 
+    def get_first_name(self) -> typing.Optional[str]:
+        return self.firstName
+
+    def get_last_name(self) -> typing.Optional[str]:
+        return self.lastName
+
     def get_birth_date(self) -> typing.Optional[datetime.date]:
         return self.birthDateTxt.date() if self.birthDateTxt else None
+
+    def get_id_piece_number(self) -> typing.Optional[str]:
+        return self.bodyPieceNumber
 
 
 class DMSContent(IdentityCheckContent):
@@ -169,8 +187,17 @@ class DMSContent(IdentityCheckContent):
             self.registration_datetime.astimezone(pytz.utc).replace(tzinfo=None) if self.registration_datetime else None
         )
 
-    def get_birth_date(self) -> datetime.date:
+    def get_first_name(self) -> str:
+        return self.first_name
+
+    def get_last_name(self) -> str:
+        return self.last_name
+
+    def get_birth_date(self) -> typing.Optional[datetime.date]:
         return self.birth_date
+
+    def get_id_piece_number(self) -> typing.Optional[str]:
+        return self.id_piece_number
 
 
 class UserProfilingRiskRating(enum.Enum):
@@ -254,13 +281,19 @@ class FraudReasonCode(enum.Enum):
     ALREADY_BENEFICIARY = "already_beneficiary"
     ALREADY_HAS_ACTIVE_DEPOSIT = "already_has_active_deposit"
     AGE_NOT_VALID = "age_is_not_valid"
+    AGE_TOO_OLD = "age_too_old"
+    AGE_TOO_YOUNG = "age_too_young"
     DUPLICATE_ID_PIECE_NUMBER = "duplicate_id_piece_number"
     DUPLICATE_INE = "duplicate_ine"
     DUPLICATE_USER = "duplicate_user"
     EMAIL_NOT_VALIDATED = "email_not_validated"
     ELIGIBILITY_CHANGED = "eligibility_changed"
     EMPTY_ID_PIECE_NUMBER = "empty_id_piece_number"
+    ID_CHECK_DATA_MATCH = "id_check_data_match"
+    ID_CHECK_EXPIRED = "id_check_expired"
     ID_CHECK_INVALID = "id_check_invalid"
+    ID_CHECK_BLOCKED_OTHER = "id_check_bocked_other"
+    ID_CHECK_NOT_SUPPORTED = "id_check_not_supported"
     ID_CHECK_UNPROCESSABLE = "id_check_unprocessable"
     INE_NOT_WHITELISTED = "ine_not_whitelisted"
     INVALID_ID_PIECE_NUMBER = "invalid_id_piece_number"

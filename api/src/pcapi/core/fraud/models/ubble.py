@@ -32,6 +32,7 @@ class UbbleContent(IdentityCheckContent):
     identification_id: typing.Optional[pydantic.UUID4]
     identification_url: typing.Optional[pydantic.HttpUrl]
     last_name: typing.Optional[str]
+    reference_data_check_score: typing.Optional[float]
     registration_datetime: typing.Optional[datetime.datetime]
     score: typing.Optional[float]
     status: typing.Optional[UbbleIdentificationStatus]
@@ -46,11 +47,26 @@ class UbbleContent(IdentityCheckContent):
             self.registration_datetime.astimezone(pytz.utc).replace(tzinfo=None) if self.registration_datetime else None
         )
 
+    def get_first_name(self) -> typing.Optional[str]:
+        return self.first_name
+
+    def get_last_name(self) -> typing.Optional[str]:
+        return self.last_name
+
     def get_birth_date(self) -> typing.Optional[datetime.date]:
         return self.birth_date
 
+    def get_id_piece_number(self) -> typing.Optional[str]:
+        return self.id_document_number
 
-class UbbleIdentificationAttributes(pydantic.BaseModel):
+
+class UbbleIdentificationObject(pydantic.BaseModel):
+    # Parent class for any object defined in https://ubbleai.github.io/developer-documentation/#objects-2
+    pass
+
+
+class UbbleIdentificationAttributes(UbbleIdentificationObject):
+    # https://ubbleai.github.io/developer-documentation/#identifications
     comment: typing.Optional[str]
     created_at: datetime.datetime = pydantic.Field(alias="created-at")
     ended_at: typing.Optional[datetime.datetime] = pydantic.Field(None, alias="ended-at")
@@ -74,7 +90,8 @@ class UbbleIdentificationData(pydantic.BaseModel):
     attributes: UbbleIdentificationAttributes
 
 
-class UbbleIdentificationDocuments(pydantic.BaseModel):
+class UbbleIdentificationDocuments(UbbleIdentificationObject):
+    # https://ubbleai.github.io/developer-documentation/#documents
     birth_date: str = pydantic.Field(None, alias="birth-date")
     document_number: str = pydantic.Field(None, alias="document-number")
     document_type: str = pydantic.Field(None, alias="document-type")
@@ -82,7 +99,8 @@ class UbbleIdentificationDocuments(pydantic.BaseModel):
     last_name: str = pydantic.Field(None, alias="last-name")
 
 
-class UbbleIdentificationDocumentChecks(pydantic.BaseModel):
+class UbbleIdentificationDocumentChecks(UbbleIdentificationObject):
+    # https://ubbleai.github.io/developer-documentation/#document-checks
     data_extracted_score: typing.Optional[float] = pydantic.Field(None, alias="data-extracted-score")
     expiry_date_score: typing.Optional[float] = pydantic.Field(None, alias="expiry-date-score")
     issue_date_score: typing.Optional[float] = pydantic.Field(None, alias="issue-date-score")
@@ -99,25 +117,28 @@ class UbbleIdentificationDocumentChecks(pydantic.BaseModel):
     visual_front_score: typing.Optional[float] = pydantic.Field(None, alias="visual-front-score")
 
 
-class UbbleIdentificationFaceChecks(pydantic.BaseModel):
+class UbbleIdentificationFaceChecks(UbbleIdentificationObject):
+    # https://ubbleai.github.io/developer-documentation/#face-checks
     active_liveness_score: typing.Optional[float] = pydantic.Field(None, alias="active-liveness-score")
     live_video_capture_score: typing.Optional[float] = pydantic.Field(None, alias="live-video-capture-score")
     quality_score: typing.Optional[float] = pydantic.Field(None, alias="quality-score")
     score: typing.Optional[float] = None
 
 
-class UbbleIdentificationReferenceDataChecks(pydantic.BaseModel):
+class UbbleIdentificationReferenceDataChecks(UbbleIdentificationObject):
+    # https://ubbleai.github.io/developer-documentation/#reference-data-check
     score: typing.Optional[float] = None
 
 
-class UbbleIdentificationDocFaceMatches(pydantic.BaseModel):
+class UbbleIdentificationDocFaceMatches(UbbleIdentificationObject):
+    # https://ubbleai.github.io/developer-documentation/#doc-face-matches
     score: typing.Optional[float] = None
 
 
 class UbbleIdentificationIncluded(pydantic.BaseModel):
     type: str
     id: int
-    attributes: typing.Union[UbbleIdentificationDocumentChecks, UbbleIdentificationDocuments]
+    attributes: UbbleIdentificationObject
     relationships: typing.Optional[dict]
 
 

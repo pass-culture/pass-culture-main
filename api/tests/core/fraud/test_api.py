@@ -61,7 +61,7 @@ class CommonTest:
             birth_date=user_birth_date,
             registration_datetime=registration_datetime,
         )
-        assert fraud_api.get_eligibility_type(data) == expected_eligibility_type
+        assert data.get_eligibility_type() == expected_eligibility_type
 
     @pytest.mark.parametrize(
         "id_piece_number",
@@ -173,20 +173,20 @@ class UpsertFraudResultTest:
 class CommonFraudCheckTest:
     def test_duplicate_id_piece_number_ok(self):
         user = users_factories.UserFactory()
-        fraud_item = fraud_api._duplicate_id_piece_number_fraud_item(user, "random_id")
+        fraud_item = fraud_api.duplicate_id_piece_number_fraud_item(user, "random_id")
         assert fraud_item.status == fraud_models.FraudStatus.OK
 
     def test_duplicate_id_piece_number_suspicious(self):
         user = users_factories.BeneficiaryGrant18Factory()
         applicant = users_factories.UserFactory()
 
-        fraud_item = fraud_api._duplicate_id_piece_number_fraud_item(applicant, user.idPieceNumber)
+        fraud_item = fraud_api.duplicate_id_piece_number_fraud_item(applicant, user.idPieceNumber)
         assert fraud_item.status == fraud_models.FraudStatus.SUSPICIOUS
 
     def test_duplicate_id_piece_number_suspicious_not_self(self):
         applicant = users_factories.UserFactory(idPieceNumber="random_id")
 
-        fraud_item = fraud_api._duplicate_id_piece_number_fraud_item(applicant, applicant.idPieceNumber)
+        fraud_item = fraud_api.duplicate_id_piece_number_fraud_item(applicant, applicant.idPieceNumber)
         assert fraud_item.status == fraud_models.FraudStatus.OK
 
     def test_duplicate_user_fraud_ok(self):
@@ -418,7 +418,7 @@ class EduconnectFraudTest:
         )
         assert age_check.status == fraud_models.FraudStatus.KO
         assert (
-            age_check.detail == f"L'age de l'utilisateur est invalide ({age} ans). Il devrait être parmi [15, 16, 17]"
+            age_check.detail == f"L'âge de l'utilisateur est invalide ({age} ans). Il devrait être parmi [15, 16, 17]"
         )
 
     @pytest.mark.parametrize("age", [15, 16, 17])
@@ -453,14 +453,15 @@ class EduconnectFraudTest:
             ),
             user=user,
         )
-        result = fraud_api.educonnect_fraud_checks(user, fraud_check)
 
-        duplicate_check = next(
-            fraud_item for fraud_item in result if fraud_item.reason_code == fraud_models.FraudReasonCode.DUPLICATE_USER
-        )
+        # Do not call educonnect_fraud_checks directly because duplicate check is common
+        fraud_result = fraud_api.on_identity_fraud_check_result(user, fraud_check)
 
-        assert duplicate_check.status == fraud_models.FraudStatus.SUSPICIOUS
-        assert duplicate_check.detail == f"Duplicat de l'utilisateur {already_existing_user.id}"
+        assert fraud_result.status == fraud_models.FraudStatus.SUSPICIOUS
+        assert fraud_models.FraudReasonCode.DUPLICATE_USER in fraud_result.reason_codes
+        assert f"Duplicat de l'utilisateur {already_existing_user.id}" in [
+            s.strip() for s in fraud_result.reason.split(";")
+        ]
 
     @override_features(ENABLE_NATIVE_EAC_INDIVIDUAL=True)
     def test_same_user_is_not_duplicate(self):
@@ -575,12 +576,17 @@ class HasUserPerformedIdentityCheckTest:
         ],
     )
     @pytest.mark.parametrize("check_type", [fraud_models.FraudCheckType.JOUVE, fraud_models.FraudCheckType.UBBLE])
-    def test_has_user_performed_identity_check(self, age, eligibility_type, check_type):
+    @pytest.mark.parametrize("status", [fraud_models.FraudCheckStatus.PENDING, fraud_models.FraudCheckStatus.OK])
+    def test_has_user_performed_identity_check(self, age, eligibility_type, check_type, status):
         user = users_factories.UserFactory(dateOfBirth=datetime.datetime.now() - relativedelta(years=age, months=1))
-        fraud_factories.BeneficiaryFraudCheckFactory(type=check_type, user=user, eligibilityType=eligibility_type)
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            type=check_type, user=user, status=status, eligibilityType=eligibility_type
+        )
 
         assert fraud_api.has_user_performed_identity_check(user)
-        assert fraud_api.has_user_performed_ubble_check(user) == (check_type == fraud_models.FraudCheckType.UBBLE)
+        assert fraud_api.ubble.is_user_allowed_to_perform_ubble_check(user, user.eligibility) == (
+            check_type != fraud_models.FraudCheckType.UBBLE
+        )
 
     def test_has_user_performed_identity_check_turned_18(self):
         user = users_factories.UserFactory(dateOfBirth=datetime.datetime.now() - relativedelta(years=18, months=1))
@@ -589,7 +595,7 @@ class HasUserPerformedIdentityCheckTest:
         )
 
         assert fraud_api.has_user_performed_identity_check(user)
-        assert not fraud_api.has_user_performed_ubble_check(user)
+        assert fraud_api.ubble.is_user_allowed_to_perform_ubble_check(user, user.eligibility)
 
     def test_has_user_performed_identity_check_without_identity_fraud_check(self):
         user = users_factories.UserFactory()
@@ -608,6 +614,48 @@ class HasUserPerformedIdentityCheckTest:
             resultContent=ubble_content,
             status=fraud_models.FraudCheckStatus.PENDING,
         )
+
+    def test_has_user_performed_identity_check_ubble_suspicious(self):
+        user = users_factories.UserFactory(dateOfBirth=datetime.datetime.now() - relativedelta(years=18, months=1))
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            type=fraud_models.FraudCheckType.UBBLE,
+            user=user,
+            status=fraud_models.FraudCheckStatus.SUSPICIOUS,
+            reasonCodes=[fraud_models.FraudReasonCode.ID_CHECK_EXPIRED],
+            eligibilityType=users_models.EligibilityType.AGE18,
+        )
+
+        # Suspicous => Retry allowed
+        assert fraud_api.has_user_performed_identity_check(user)
+        assert fraud_api.ubble.is_user_allowed_to_perform_ubble_check(user, user.eligibility)
+
+    def test_has_user_performed_identity_check_ubble_suspicious_x3(self):
+        user = users_factories.UserFactory(dateOfBirth=datetime.datetime.now() - relativedelta(years=18, months=1))
+        for _ in range(3):
+            fraud_factories.BeneficiaryFraudCheckFactory(
+                type=fraud_models.FraudCheckType.UBBLE,
+                user=user,
+                status=fraud_models.FraudCheckStatus.SUSPICIOUS,
+                reasonCodes=[fraud_models.FraudReasonCode.ID_CHECK_UNPROCESSABLE],
+                eligibilityType=users_models.EligibilityType.AGE18,
+            )
+
+        # Suspicous but all retries already performed
+        assert fraud_api.has_user_performed_identity_check(user)
+        assert not fraud_api.ubble.is_user_allowed_to_perform_ubble_check(user, user.eligibility)
+
+    def test_has_user_performed_identity_check_ubble_ko(self):
+        user = users_factories.UserFactory(dateOfBirth=datetime.datetime.now() - relativedelta(years=18, months=1))
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            type=fraud_models.FraudCheckType.UBBLE,
+            user=user,
+            status=fraud_models.FraudCheckStatus.KO,
+            eligibilityType=users_models.EligibilityType.AGE18,
+        )
+
+        # Retry not allowed
+        assert fraud_api.has_user_performed_identity_check(user)
+        assert not fraud_api.ubble.is_user_allowed_to_perform_ubble_check(user, user.eligibility)
 
 
 @pytest.mark.usefixtures("db_session")

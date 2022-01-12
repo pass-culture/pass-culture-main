@@ -201,7 +201,7 @@ class EduconnectTest:
         assert response.status_code == 302
         assert response.location.startswith("https://webapp-v2.example.com/educonnect/validation")
         assert caplog.messages == [
-            "Fraud suspicion after educonnect authentication with codes: duplicate_user, ine_not_whitelisted"
+            "Fraud suspicion after educonnect authentication with codes: ine_not_whitelisted, duplicate_user"
         ]
         assert caplog.records[0].extra == {"user_id": user.id}
 

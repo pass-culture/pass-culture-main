@@ -100,7 +100,7 @@ def dms_webhook_update_application_status(form: dms_validation.DMSWebhookRequest
             form.dossier_id,
             form.procedure_id,
             BeneficiaryImportSources.demarches_simplifiees,
-            eligibility_type=fraud_api.get_eligibility_type(application),
+            eligibility_type=application.get_eligibility_type(),
             details="Webhook status update",
             status=import_status,
         )

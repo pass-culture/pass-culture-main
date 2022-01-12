@@ -125,6 +125,7 @@ class UbbleContentFactory(factory.Factory):
     id_document_number = None
     score = None
     comment = None
+    reference_data_check_score = None
     expiry_date_score = None
     supported = None
     identification_id = None

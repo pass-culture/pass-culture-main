@@ -305,8 +305,8 @@ def update_user_information_from_external_source(
 
         if data.bodyPieceNumber:
             items = (
-                fraud_api.validate_id_piece_number_format_fraud_item(data.bodyPieceNumber),
-                fraud_api._duplicate_id_piece_number_fraud_item(user, data.bodyPieceNumber),
+                fraud_api.validate_id_piece_number_format_fraud_item(data.get_id_piece_number()),
+                fraud_api.duplicate_id_piece_number_fraud_item(user, data.get_id_piece_number()),
             )
             if all((item.status == fraud_models.FraudStatus.OK) for item in items):
                 user.idPieceNumber = data.bodyPieceNumber
@@ -931,7 +931,7 @@ def get_eligibility_at_date(
         return None
 
     age = users_utils.get_age_at_date(date_of_birth, specified_datetime)
-    if age is None:
+    if not age:
         return None
 
     if age in constants.ELIGIBILITY_UNDERAGE_RANGE:
