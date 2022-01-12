@@ -45,6 +45,18 @@ def create_booking_with_undeletable_dependent(date_used=None):
     return booking
 
 
+class CleanStringTest:
+    def test_remove_new_line_if_string(self):
+        name = "saut de ligne\n"
+        result = api._clean_trailing_newline(name)
+        assert result == "saut de ligne"
+
+    def test_return_value_sent_if_not_string(self):
+        number = 1
+        result = api._clean_trailing_newline(number)
+        assert result == 1
+
+
 class PriceBookingTest:
     def test_basics(self):
         booking = bookings_factories.UsedBookingFactory(
@@ -412,10 +424,10 @@ def test_generate_payment_files():
 @clean_temporary_files
 def test_generate_business_units_file():
     venue1 = offers_factories.VenueFactory(
-        name="Venue 1 only name",
+        name="Venue 1 only name\n",
         publicName=None,
         siret="siret 1",
-        businessUnit__name="Business unit 1",
+        businessUnit__name="Business unit 1\n",
         businessUnit__bankAccount__bic="bic 1",
         businessUnit__bankAccount__iban="iban 1",
     )
@@ -424,8 +436,8 @@ def test_generate_business_units_file():
     venue2 = offers_factories.VenueFactory(
         name="dummy, we should use publicName instead",
         siret="siret 2",
-        publicName="Venue 2 public name",
-        businessUnit__name="Business unit 2",
+        publicName="Venue 2 public name\n",
+        businessUnit__name="Business unit 2\n",
         businessUnit__bankAccount__bic="bic 2",
         businessUnit__bankAccount__iban="iban 2",
     )
@@ -461,7 +473,7 @@ def test_generate_payments_file():
     # This pricing belong to a business unit whose venue is the same
     # as the venue of the offer.
     venue1 = offers_factories.VenueFactory(
-        name="Le Petit Rintintin",
+        name="Le Petit Rintintin\n",
         siret="11111111122222",
     )
     pricing1 = factories.PricingFactory(
@@ -485,11 +497,11 @@ def test_generate_payments_file():
     # NOT the venue of the offers.
     business_unit_venue2 = offers_factories.VenueFactory(
         siret="22222222233333",
-        name="BU du Gigantesque Cubitus",
+        name="BU du Gigantesque Cubitus\n",
     )
     business_unit2 = business_unit_venue2.businessUnit
     offer_venue2 = offers_factories.VenueFactory(
-        name="Le Gigantesque Cubitus",
+        name="Le Gigantesque Cubitus\n",
         siret="99999999999999",
         businessUnit=business_unit2,
     )

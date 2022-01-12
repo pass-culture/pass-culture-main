@@ -532,13 +532,20 @@ def _generate_business_units_file() -> pathlib.Path:
     )
     row_formatter = lambda row: (
         human_ids.humanize(row.venue_id),
-        row.business_unit_siret,
-        row.business_unit_name,
-        row.venue_name,
+        _clean_trailing_newline(row.business_unit_siret),
+        _clean_trailing_newline(row.business_unit_name),
+        _clean_trailing_newline(row.venue_name),
         row.iban,
         row.bic,
     )
     return _write_csv("business_units", header, rows=query, row_formatter=row_formatter)
+
+
+def _clean_trailing_newline(row: str) -> str:
+    """remove trailing new line if string --> intended for BU, venue and offerer name"""
+    if isinstance(row, str):
+        return row.rstrip("\n")
+    return row
 
 
 def _generate_payments_file(batch_id: int) -> pathlib.Path:
@@ -628,10 +635,10 @@ def _payment_details_row_formatter(sql_row):
     reimbursement_rate = (reimbursed_amount / booking_total_amount).quantize(decimal.Decimal("0.01"))
     return (
         human_ids.humanize(sql_row.business_unit_venue_id),
-        sql_row.business_unit_siret,
-        sql_row.business_unit_venue_name,
+        _clean_trailing_newline(sql_row.business_unit_siret),
+        _clean_trailing_newline(sql_row.business_unit_venue_name),
         human_ids.humanize(sql_row.offer_venue_id),
-        sql_row.offer_venue_name,
+        _clean_trailing_newline(sql_row.offer_venue_name),
         sql_row.offer_id,
         sql_row.offer_name,
         sql_row.offer_subcategory_id,
