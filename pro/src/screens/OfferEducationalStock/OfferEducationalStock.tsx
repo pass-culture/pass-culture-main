@@ -70,7 +70,7 @@ const OfferEducationalStock = ({
             <FormLayout.Section title="Date et prix">
               <Banner
                 href="https://passculture.zendesk.com/hc/fr/articles/4412973958673--Acteurs-culturels-Comment-modifier-une-offre-collective-pr%C3%A9-r%C3%A9serv%C3%A9e-"
-                linkTitle="Consultez l’article “Comment modifier une offre collective qui est pré-réservée par un établissement ?”"
+                linkTitle="Consultez l’article “Comment modifier ou annuler une offre collective préréservée ?”"
                 type="notification-info"
               >
                 Vous pourrez modifier ces informations en fonction de vos
