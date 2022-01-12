@@ -183,7 +183,7 @@ def process_application(
             source=BeneficiaryImportSources.demarches_simplifiees,
             source_id=procedure_id,
             detail=f"Aucun utilisateur trouvé pour l'email {information.email}",
-            eligibility_type=fraud_api.get_eligibility_type(information),
+            eligibility_type=information.get_eligibility_type(),
         )
         return
     try:
@@ -202,7 +202,7 @@ def process_application(
             return
 
         try:
-            eligibility_type = fraud_api.get_eligibility_type(information)
+            eligibility_type = information.get_eligibility_type()
 
             fraud_api.create_honor_statement_fraud_check(
                 user, "honor statement contained in DMS application", eligibility_type
@@ -255,7 +255,7 @@ def handle_validation_errors(
         source_id=procedure_id,
         user=user,
         detail="Voir les details dans la page support",
-        eligibility_type=fraud_api.get_eligibility_type(information),
+        eligibility_type=information.get_eligibility_type(),
     )
 
 
@@ -386,7 +386,7 @@ def _process_rejection(
         source_id=procedure_id,
         detail=reason,
         user=user,
-        eligibility_type=fraud_api.get_eligibility_type(information),
+        eligibility_type=information.get_eligibility_type(),
     )
     logger.warning(
         "[BATCH][REMOTE IMPORT BENEFICIARIES] Rejected application %s because of '%s' - Procedure %s",

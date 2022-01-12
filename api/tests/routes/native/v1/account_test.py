@@ -215,7 +215,7 @@ class AccountTest:
         response = client.get("/native/v1/me")
         assert response.status_code == 200
 
-        subscription_messages.on_id_check_unread_document(user)
+        subscription_messages.on_idcheck_unread_document(user)
         response = client.get("/native/v1/me")
         assert response.status_code == 200
 
@@ -1692,6 +1692,94 @@ class IdentificationSessionTest:
         check = sorted_fraud_checks[2]
         assert check.type == fraud_models.FraudCheckType.UBBLE
         assert response.json["identificationUrl"] == "https://id.ubble.ai/29d9eca4-dce6-49ed-b1b5-8bb0179493a8"
+
+    @pytest.mark.parametrize(
+        "retry_number,expected_status",
+        [(1, 200), (2, 200), (3, 400), (4, 400)],
+    )
+    @pytest.mark.parametrize(
+        "reason",
+        [
+            fraud_models.FraudReasonCode.ID_CHECK_NOT_SUPPORTED,
+            fraud_models.FraudReasonCode.ID_CHECK_EXPIRED,
+            fraud_models.FraudReasonCode.ID_CHECK_UNPROCESSABLE,
+        ],
+    )
+    def test_request_ubble_retry(self, client, ubble_mock, reason, retry_number, expected_status):
+        user = users_factories.UserFactory(dateOfBirth=datetime.now() - relativedelta(years=18, days=5))
+        client.with_token(user.email)
+
+        # Perform phone validation and user profiling
+        user.phoneValidationStatus = PhoneValidationStatusType.VALIDATED
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.USER_PROFILING,
+            resultContent=fraud_factories.UserProfilingFraudDataFactory(
+                risk_rating=fraud_models.UserProfilingRiskRating.TRUSTED
+            ),
+        )
+
+        # Perform previous Ubble identifications
+        for _ in range(0, retry_number):
+            fraud_factories.BeneficiaryFraudCheckFactory(
+                user=user,
+                type=fraud_models.FraudCheckType.UBBLE,
+                status=fraud_models.FraudCheckStatus.SUSPICIOUS,
+                reasonCodes=[reason],
+                resultContent=fraud_factories.UbbleContentFactory(
+                    status=fraud_models.ubble.UbbleIdentificationStatus.PROCESSED
+                ),
+            )
+
+        len_fraud_checks_before = len(user.beneficiaryFraudChecks)
+
+        response = client.post("/native/v1/ubble_identification", json={"redirectUrl": "http://example.com/deeplink"})
+
+        assert response.status_code == expected_status
+
+        if response.status_code == 200:
+            assert len(user.beneficiaryFraudChecks) == len_fraud_checks_before + 1
+
+        if response.status_code == 400:
+            assert len(user.beneficiaryFraudChecks) == len_fraud_checks_before
+
+    @pytest.mark.parametrize(
+        "reason",
+        [
+            fraud_models.FraudReasonCode.DUPLICATE_USER,
+            fraud_models.FraudReasonCode.ID_CHECK_DATA_MATCH,
+            fraud_models.FraudReasonCode.ID_CHECK_BLOCKED_OTHER,
+        ],
+    )
+    def test_request_ubble_retry_not_allowed(self, client, ubble_mock, reason):
+        user = users_factories.UserFactory(dateOfBirth=datetime.now() - relativedelta(years=18, days=5))
+        client.with_token(user.email)
+
+        # Perform phone validation and user profiling
+        user.phoneValidationStatus = PhoneValidationStatusType.VALIDATED
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.USER_PROFILING,
+            resultContent=fraud_factories.UserProfilingFraudDataFactory(
+                risk_rating=fraud_models.UserProfilingRiskRating.TRUSTED
+            ),
+        )
+
+        # Perform previous Ubble identification
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.UBBLE,
+            status=fraud_models.FraudCheckStatus.SUSPICIOUS,
+            reasonCodes=[reason],
+            resultContent=fraud_factories.UbbleContentFactory(
+                status=fraud_models.ubble.UbbleIdentificationStatus.PROCESSED
+            ),
+        )
+
+        response = client.post("/native/v1/ubble_identification", json={"redirectUrl": "http://example.com/deeplink"})
+
+        assert response.status_code == 400
+        assert len(user.beneficiaryFraudChecks) == 2
 
     def test_allow_rerun_identification(self, client, ubble_mock):
         user = users_factories.UserFactory(dateOfBirth=datetime.now() - relativedelta(years=18, days=5))

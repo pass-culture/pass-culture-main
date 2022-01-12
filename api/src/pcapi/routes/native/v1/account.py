@@ -366,7 +366,7 @@ def start_identification_session(
             status_code=400,
         )
 
-    if fraud_api.has_user_performed_ubble_check(user):
+    if not fraud_api.ubble.is_user_allowed_to_perform_ubble_check(user, user.eligibility):
         raise ApiErrors(
             {"code": "IDCHECK_ALREADY_PROCESSED", "message": "Une identification a déjà été traitée"},
             status_code=400,

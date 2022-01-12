@@ -60,45 +60,59 @@ class NextStepTest:
         }
 
     @pytest.mark.parametrize(
-        "fraud_check_status,ubble_status,next_step,pending_idcheck",
+        "fraud_check_status,reason_code,ubble_status,next_step,pending_idcheck",
         [
             (
                 fraud_models.FraudCheckStatus.PENDING,
+                None,
                 fraud_models.ubble.UbbleIdentificationStatus.INITIATED,
                 "identity-check",
                 False,
             ),
             (
                 fraud_models.FraudCheckStatus.PENDING,
+                None,
                 fraud_models.ubble.UbbleIdentificationStatus.PROCESSING,
                 "honor-statement",
                 True,
             ),
             (
                 fraud_models.FraudCheckStatus.OK,
+                None,
                 fraud_models.ubble.UbbleIdentificationStatus.PROCESSED,
                 "honor-statement",
                 False,
             ),
             (
                 fraud_models.FraudCheckStatus.KO,
+                fraud_models.FraudReasonCode.AGE_TOO_OLD,
                 fraud_models.ubble.UbbleIdentificationStatus.PROCESSED,
                 "honor-statement",
                 False,
             ),
             (
                 fraud_models.FraudCheckStatus.CANCELED,
+                None,
                 fraud_models.ubble.UbbleIdentificationStatus.ABORTED,
                 "identity-check",
                 False,
             ),
-            (None, fraud_models.ubble.UbbleIdentificationStatus.INITIATED, "identity-check", False),
-            (None, fraud_models.ubble.UbbleIdentificationStatus.PROCESSING, "honor-statement", False),
-            (None, fraud_models.ubble.UbbleIdentificationStatus.PROCESSED, "honor-statement", False),
+            (
+                fraud_models.FraudCheckStatus.SUSPICIOUS,
+                fraud_models.FraudReasonCode.ID_CHECK_NOT_SUPPORTED,
+                fraud_models.ubble.UbbleIdentificationStatus.PROCESSED,
+                "identity-check",  # User can retry
+                False,
+            ),
+            (None, None, fraud_models.ubble.UbbleIdentificationStatus.INITIATED, "identity-check", False),
+            (None, None, fraud_models.ubble.UbbleIdentificationStatus.PROCESSING, "honor-statement", False),
+            (None, None, fraud_models.ubble.UbbleIdentificationStatus.PROCESSED, "honor-statement", False),
         ],
     )
     @override_features(ENABLE_UBBLE=True)
-    def test_next_subscription_test_ubble(self, client, fraud_check_status, ubble_status, next_step, pending_idcheck):
+    def test_next_subscription_test_ubble(
+        self, client, fraud_check_status, reason_code, ubble_status, next_step, pending_idcheck
+    ):
         user = users_factories.UserFactory(
             dateOfBirth=datetime.datetime.combine(datetime.date.today(), datetime.time(0, 0))
             - relativedelta(years=18, months=5),
@@ -142,6 +156,7 @@ class NextStepTest:
             user=user,
             type=fraud_models.FraudCheckType.UBBLE,
             status=fraud_check_status,
+            reasonCodes=[reason_code],
             resultContent=fraud_factories.UbbleContentFactory(status=ubble_status),
         )
 
@@ -162,6 +177,7 @@ class NextStepTest:
             (fraud_models.FraudCheckStatus.PENDING, fraud_models.ubble.UbbleIdentificationStatus.PROCESSING),
             (fraud_models.FraudCheckStatus.OK, fraud_models.ubble.UbbleIdentificationStatus.PROCESSED),
             (fraud_models.FraudCheckStatus.KO, fraud_models.ubble.UbbleIdentificationStatus.PROCESSED),
+            (fraud_models.FraudCheckStatus.SUSPICIOUS, fraud_models.ubble.UbbleIdentificationStatus.PROCESSED),
             (fraud_models.FraudCheckStatus.CANCELED, fraud_models.ubble.UbbleIdentificationStatus.ABORTED),
             (None, fraud_models.ubble.UbbleIdentificationStatus.PROCESSING),
             (None, fraud_models.ubble.UbbleIdentificationStatus.PROCESSED),
