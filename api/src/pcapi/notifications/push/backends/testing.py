@@ -1,3 +1,4 @@
+from pcapi.notifications.push import models as push_models
 from pcapi.notifications.push import testing
 from pcapi.notifications.push.backends.batch import BatchAPI
 from pcapi.notifications.push.backends.batch import UserUpdateData
@@ -6,9 +7,12 @@ from pcapi.notifications.push.transactional_notifications import TransactionalNo
 
 
 class TestingBackend(LoggerBackend):
-    def update_user_attributes(self, batch_api: BatchAPI, user_id: int, attribute_values: dict) -> None:
+    def update_user_attributes(
+        self, batch_api: BatchAPI, user_id: int, attribute_values: dict
+    ) -> push_models.UpdateAttributeRequestResult:
         super().update_user_attributes(batch_api, user_id, attribute_values)
         testing.requests.append({"user_id": user_id, "attribute_values": attribute_values, "batch_api": batch_api.name})
+        return push_models.UpdateAttributeRequestResult(should_retry=False)
 
     def update_users_attributes(self, users_data: list[UserUpdateData]) -> None:
         super().update_users_attributes(users_data)
