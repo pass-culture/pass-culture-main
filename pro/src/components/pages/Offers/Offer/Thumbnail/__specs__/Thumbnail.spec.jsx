@@ -196,7 +196,7 @@ describe('thumbnail edition', () => {
           ).resolves.toBeInTheDocument()
         })
 
-        it('should only display the first encountered validation error', async () => {
+        it('should display all the encountered validation errors', async () => {
           // Given
           renderThumbnail()
           const file = createFile({ sizeInMB: 50 })
@@ -223,7 +223,7 @@ describe('thumbnail edition', () => {
                   selector: 'strong',
                 }
               )
-            ).not.toBeInTheDocument()
+            ).toBeInTheDocument()
           })
         })
 
