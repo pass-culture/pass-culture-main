@@ -293,7 +293,7 @@ def get_identity_check_subscription_item(
 def get_honor_statement_subscription_item(
     user: users_models.User, eligibility: typing.Optional[users_models.EligibilityType]
 ) -> models.SubscriptionItem:
-    if fraud_api.has_performed_honor_statement(user, user.eligibility):
+    if fraud_api.has_performed_honor_statement(user, eligibility):
         status = models.SubscriptionItemStatus.OK
     else:
         if _is_eligibility_activable(user, eligibility):
