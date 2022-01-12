@@ -3,6 +3,7 @@ from enum import Enum
 import logging
 
 from pcapi import settings
+from pcapi.notifications.push import models as push_models
 from pcapi.notifications.push.transactional_notifications import TransactionalNotificationData
 from pcapi.utils import requests
 
@@ -26,7 +27,9 @@ class BatchBackend:
         super().__init__()
         self.headers = {"Content-Type": "application/json", "X-Authorization": settings.BATCH_SECRET_API_KEY}
 
-    def update_user_attributes(self, batch_api: BatchAPI, user_id: int, attribute_values: dict) -> None:
+    def update_user_attributes(
+        self, batch_api: BatchAPI, user_id: int, attribute_values: dict
+    ) -> push_models.UpdateAttributeRequestResult:
         try:
             response = requests.post(
                 f"{settings.BATCH_API_URL}/1.0/{batch_api.value}/data/users/{user_id}",
@@ -38,13 +41,15 @@ class BatchBackend:
                 "Error with Batch Custom Data API trying to update attributes",
                 extra={"user_id": user_id, "attribute_values": attribute_values, "api": batch_api.name},
             )
-            return
+            return push_models.UpdateAttributeRequestResult(should_retry=True)
 
         if not response.ok:
             logger.error(  # pylint: disable=logging-fstring-interpolation
                 f"Got {response.status_code} status code from Batch Custom Data API",
                 extra={"response_content": response.content},
             )
+
+        return push_models.UpdateAttributeRequestResult(should_retry=False)
 
     def update_users_attributes(self, users_data: list[UserUpdateData]) -> None:
         def payload_template(user: UserUpdateData) -> dict:
