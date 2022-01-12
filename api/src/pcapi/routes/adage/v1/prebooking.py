@@ -127,6 +127,7 @@ def get_all_bookings_per_year(
 
     serialized_bookings = [
         prebooking_serialization.EducationalBookingPerYearResponse(
+            id=educational_booking.id,
             UAICode=educational_booking.educationalInstitution.institutionId,
             status=prebooking_serialization.get_educational_booking_status(educational_booking),
             confirmationLimitDate=educational_booking.confirmationLimitDate,

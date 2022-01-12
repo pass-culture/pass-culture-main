@@ -91,6 +91,7 @@ class EducationalBookingsResponse(AdageBaseResponseModel):
 
 
 class EducationalBookingPerYearResponse(AdageBaseResponseModel):
+    id: int
     UAICode: str
     status: BookingStatus
     confirmationLimitDate: datetime
