@@ -89,9 +89,9 @@ class OfferVenueResponse(BaseModel):
     @classmethod
     def from_orm(cls, venue):  # type: ignore
         venue.coordinates = {"latitude": venue.latitude, "longitude": venue.longitude}
-        result = super().from_orm(venue)
         # FIXME: remove this line once Venue.isPermanent is not nullable
-        result.isPermanent = result.isPermanent or False
+        venue.isPermanent = venue.isPermanent or False
+        result = super().from_orm(venue)
         return result
 
     id: int
