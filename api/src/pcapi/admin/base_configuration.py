@@ -1,4 +1,5 @@
 import logging
+import secrets
 
 from flask import session
 from flask import url_for
@@ -13,8 +14,10 @@ from flask_login import login_user
 from flask_login import logout_user
 from werkzeug.utils import redirect
 
+from pcapi import settings
 from pcapi.core.users import models as users_models
 from pcapi.flask_app import oauth
+from pcapi.models import db
 
 
 logger = logging.getLogger(__name__)
@@ -85,6 +88,7 @@ class BaseCustomAdminView(BaseAdminMixin, BaseView):
 class AdminIndexView(AdminIndexBaseView):
     @expose("/")
     def index(self):
+        print(f"yoenv {settings.ENV}")
         if not current_user.is_authenticated:
             return redirect(url_for(".login_view"))
         return super().index()
@@ -110,9 +114,26 @@ class AdminIndexView(AdminIndexBaseView):
         google_user = oauth.google.parse_id_token(token)
         google_email = google_user["email"]
         db_user = users_models.User.query.filter_by(email=google_email).one_or_none()
+
         if not db_user:
-            session["google_email"] = google_email
-            return redirect(url_for(".no_user_found_view"))
+            if settings.IS_TESTING or settings.IS_DEV:
+                db_user = users_models.User(
+                    firstName=google_user["given_name"],
+                    lastName=google_user["family_name"],
+                    email=google_user["email"],
+                    publicName=google_user["name"],
+                    isEmailValidated=True,
+                    isBeneficiary=False,
+                    isActive=True,
+                    isAdmin=True,
+                )
+                # generate a random password as the user won't login to anything else.
+                db_user.setPassword(secrets.token_urlsafe(20))
+                db.session.add(db_user)
+                db.session.commit()
+            else:
+                session["google_email"] = google_email
+                return redirect(url_for(".no_user_found_view"))
 
         login_user(db_user, remember=True)
         login_manager.stamp_session(db_user)
@@ -123,6 +144,9 @@ class AdminIndexView(AdminIndexBaseView):
         from pcapi.utils import login_manager
 
         if current_user.is_authenticated:
+            return redirect(url_for(".index"))
+
+        if session.get("google_email") is None:
             return redirect(url_for(".index"))
 
         rendered_view = self.render("admin/no_user_found.html", email=session["google_email"])
