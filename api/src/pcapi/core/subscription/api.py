@@ -236,7 +236,16 @@ def get_user_profiling_subscription_item(
     else:
         user_profiling = fraud_repository.get_last_user_profiling_fraud_check(user)
         if user_profiling:
-            status = user_profiling.status
+            if user_profiling.status == fraud_models.FraudCheckStatus.OK:
+                status = models.SubscriptionItemStatus.OK
+            elif user_profiling.status == fraud_models.FraudCheckStatus.KO:
+                status = models.SubscriptionItemStatus.KO
+            elif user_profiling.status == fraud_models.FraudCheckStatus.SUSPICIOUS:
+                status = models.SubscriptionItemStatus.SUSPICIOUS
+            else:
+                logger.exception("Unexpected UserProfiling status %s", user_profiling.status)
+                status = models.SubscriptionItemStatus.KO
+
         elif _is_eligibility_activable(user, eligibility):
             status = models.SubscriptionItemStatus.TODO
         else:
