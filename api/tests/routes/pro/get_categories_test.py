@@ -27,7 +27,6 @@ class Returns200Test:
             == [
                 "id",
                 "categoryId",
-                "matchingType",
                 "proLabel",
                 "appLabel",
                 "searchGroupName",
