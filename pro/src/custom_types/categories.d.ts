@@ -7,7 +7,6 @@ type Category = {
 type SubCategory = {
   id: string
   categoryId: string
-  matchingType: string
   proLabel: string
   appLabel: string
   searchGroupName: string
