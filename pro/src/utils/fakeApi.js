@@ -112,7 +112,6 @@ export const loadFakeApiCategories = () => {
       {
         id: 'SUPPORT_PHYSIQUE_FILM',
         categoryId: 'FILM',
-        matchingType: 'ThingType.AUDIOVISUEL',
         proLabel: 'Support physique (DVD, Bluray...)',
         appLabel: 'Support physique (DVD, Bluray...)',
         searchGroup: 'Films, séries, podcasts',
@@ -130,7 +129,6 @@ export const loadFakeApiCategories = () => {
       {
         id: 'ABO_MEDIATHEQUE',
         categoryId: 'FILM',
-        matchingType: 'ThingType.AUDIOVISUEL',
         proLabel: 'Abonnement médiathèque',
         appLabel: 'Abonnement médiathèque',
         searchGroup: 'Films, séries, podcasts',
@@ -148,7 +146,6 @@ export const loadFakeApiCategories = () => {
       {
         id: 'VOD',
         categoryId: 'FILM',
-        matchingType: 'ThingType.AUDIOVISUEL',
         proLabel: 'Vidéo à la demande',
         appLabel: 'Vidéo à la demande',
         searchGroup: 'Films, séries, podcasts',
@@ -166,7 +163,6 @@ export const loadFakeApiCategories = () => {
       {
         id: 'ABO_PLATEFORME_VIDEO',
         categoryId: 'FILM',
-        matchingType: 'ThingType.AUDIOVISUEL',
         proLabel: 'Abonnement plateforme streaming',
         appLabel: 'Abonnement plateforme streaming',
         searchGroup: 'Films, séries, podcasts',
@@ -184,7 +180,6 @@ export const loadFakeApiCategories = () => {
       {
         id: 'AUTRE_SUPPORT_NUMERIQUE',
         categoryId: 'FILM',
-        matchingType: 'ThingType.AUDIOVISUEL',
         proLabel: 'Autre support numérique',
         appLabel: 'Autre support numérique',
         searchGroup: 'Films, séries, podcasts',
@@ -202,7 +197,6 @@ export const loadFakeApiCategories = () => {
       {
         id: 'SOUS-CATEGORIE-NON-SELECTIONNABLE',
         categoryId: 'FILM',
-        matchingType: 'ThingType.AUDIOVISUEL',
         proLabel: 'Sous-catégorie non sélectionnable',
         appLabel: 'Sous-catégorie non sélectionnable',
         searchGroup: 'Films, séries, podcasts',
@@ -220,7 +214,6 @@ export const loadFakeApiCategories = () => {
       {
         id: 'CARTE_CINE_MULTISEANCES',
         categoryId: 'CINEMA',
-        matchingType: 'ThingType.CINEMA_ABO',
         proLabel: 'Carte cinéma multi-séances',
         appLabel: 'Carte cinéma multi-séances',
         searchGroup: 'Cinéma',
@@ -238,7 +231,6 @@ export const loadFakeApiCategories = () => {
       {
         id: 'CARTE_CINE_ILLIMITE',
         categoryId: 'CINEMA',
-        matchingType: 'ThingType.CINEMA_ABO',
         proLabel: 'Carte cinéma illimité',
         appLabel: 'Carte cinéma illimité',
         searchGroup: 'Cinéma',
@@ -256,7 +248,6 @@ export const loadFakeApiCategories = () => {
       {
         id: 'SEANCE_CINE',
         categoryId: 'CINEMA',
-        matchingType: 'EventType.CINEMA',
         proLabel: 'Séance de cinéma',
         appLabel: 'Séance de cinéma',
         searchGroup: 'Cinéma',
@@ -274,7 +265,6 @@ export const loadFakeApiCategories = () => {
       {
         id: 'EVENEMENT_CINE',
         categoryId: 'CINEMA',
-        matchingType: 'EventType.CINEMA',
         proLabel: 'Événement cinématographique',
         appLabel: 'Événement cinéma',
         searchGroup: 'Cinéma',
@@ -292,7 +282,6 @@ export const loadFakeApiCategories = () => {
       {
         id: 'FESTIVAL_CINE',
         categoryId: 'CINEMA',
-        matchingType: 'EventType.CINEMA',
         proLabel: 'Festival de cinéma',
         appLabel: 'Festival de cinéma',
         searchGroup: 'Cinéma',
@@ -310,7 +299,6 @@ export const loadFakeApiCategories = () => {
       {
         id: 'CINE_VENTE_DISTANCE',
         categoryId: 'CINEMA',
-        matchingType: 'ThingType.CINEMA_CARD',
         proLabel: 'Cinéma vente à distance',
         appLabel: 'Cinéma',
         searchGroup: 'Cinéma',
@@ -328,7 +316,6 @@ export const loadFakeApiCategories = () => {
       {
         id: 'CONFERENCE',
         categoryId: 'CONFERENCE',
-        matchingType: 'EventType.CONFERENCE_DEBAT_DEDICACE',
         proLabel: 'Conférence',
         appLabel: 'Conférence',
         searchGroup: 'Conférences, rencontres',
@@ -346,7 +333,6 @@ export const loadFakeApiCategories = () => {
       {
         id: 'RENCONTRE',
         categoryId: 'CONFERENCE',
-        matchingType: 'EventType.CONFERENCE_DEBAT_DEDICACE',
         proLabel: 'Rencontre',
         appLabel: 'Rencontre',
         searchGroup: 'Conférences, rencontres',
@@ -364,7 +350,6 @@ export const loadFakeApiCategories = () => {
       {
         id: 'DECOUVERTE_METIERS',
         categoryId: 'CONFERENCE',
-        matchingType: 'EventType.CONFERENCE_DEBAT_DEDICACE',
         proLabel: 'Découverte des métiers',
         appLabel: 'Découverte des métiers',
         searchGroup: 'Conférences, rencontres',
@@ -382,7 +367,6 @@ export const loadFakeApiCategories = () => {
       {
         id: 'SALON',
         categoryId: 'CONFERENCE',
-        matchingType: 'EventType.CONFERENCE_DEBAT_DEDICACE',
         proLabel: 'Salon / Convention',
         appLabel: 'Salon / Convention',
         searchGroup: 'Conférences, rencontres',
@@ -400,7 +384,6 @@ export const loadFakeApiCategories = () => {
       {
         id: 'CONCOURS',
         categoryId: 'JEU',
-        matchingType: 'EventType.JEUX',
         proLabel: 'Concours - jeux',
         appLabel: 'Concours - jeux',
         searchGroup: 'Jeux',
@@ -418,7 +401,6 @@ export const loadFakeApiCategories = () => {
       {
         id: 'RENCONTRE_JEU',
         categoryId: 'JEU',
-        matchingType: 'EventType.JEUX',
         proLabel: 'Rencontres - jeux',
         appLabel: 'Rencontres - jeux',
         searchGroup: 'Jeux',
@@ -436,7 +418,6 @@ export const loadFakeApiCategories = () => {
       {
         id: 'ESCAPE_GAME',
         categoryId: 'JEU',
-        matchingType: 'EventType.JEUX',
         proLabel: 'Escape game',
         appLabel: 'Escape game',
         searchGroup: 'Jeux',
@@ -454,7 +435,6 @@ export const loadFakeApiCategories = () => {
       {
         id: 'EVENEMENT_JEU',
         categoryId: 'JEU',
-        matchingType: 'EventType.JEUX',
         proLabel: 'Événements - jeux',
         appLabel: 'Événements - jeux',
         searchGroup: 'Jeux',
@@ -472,7 +452,6 @@ export const loadFakeApiCategories = () => {
       {
         id: 'JEU_EN_LIGNE',
         categoryId: 'JEU',
-        matchingType: 'ThingType.JEUX_VIDEO',
         proLabel: 'Jeux en ligne',
         appLabel: 'Jeux en ligne',
         searchGroup: 'Jeux',
@@ -490,7 +469,6 @@ export const loadFakeApiCategories = () => {
       {
         id: 'ABO_JEU_VIDEO',
         categoryId: 'JEU',
-        matchingType: 'ThingType.JEUX_VIDEO_ABO',
         proLabel: 'Abonnement jeux vidéos',
         appLabel: 'Abonnement jeux vidéos',
         searchGroup: 'Jeux',
@@ -508,7 +486,6 @@ export const loadFakeApiCategories = () => {
       {
         id: 'ABO_LUDOTHEQUE',
         categoryId: 'JEU',
-        matchingType: 'ThingType.JEUX_VIDEO_ABO',
         proLabel: 'Abonnement ludothèque',
         appLabel: 'Abonnement ludothèque',
         searchGroup: 'Jeux',
@@ -526,7 +503,6 @@ export const loadFakeApiCategories = () => {
       {
         id: 'LIVRE_PAPIER',
         categoryId: 'LIVRE',
-        matchingType: 'ThingType.LIVRE_EDITION',
         proLabel: 'Livre papier',
         appLabel: 'Livre',
         searchGroup: 'Livres',
@@ -544,7 +520,6 @@ export const loadFakeApiCategories = () => {
       {
         id: 'LIVRE_NUMERIQUE',
         categoryId: 'LIVRE',
-        matchingType: 'ThingType.LIVRE_AUDIO',
         proLabel: 'Livre numérique, e-book',
         appLabel: 'Livre numérique, e-book',
         searchGroup: 'Livres',
@@ -562,7 +537,6 @@ export const loadFakeApiCategories = () => {
       {
         id: 'TELECHARGEMENT_LIVRE_AUDIO',
         categoryId: 'LIVRE',
-        matchingType: 'ThingType.LIVRE_AUDIO',
         proLabel: 'Livre audio à télécharger',
         appLabel: 'Livre audio à télécharger',
         searchGroup: 'Livres',
@@ -580,7 +554,6 @@ export const loadFakeApiCategories = () => {
       {
         id: 'LIVRE_AUDIO_PHYSIQUE',
         categoryId: 'LIVRE',
-        matchingType: 'ThingType.LIVRE_AUDIO',
         proLabel: 'Livre audio sur support physique',
         appLabel: 'Livre audio sur support physique',
         searchGroup: 'Livres',
@@ -598,7 +571,6 @@ export const loadFakeApiCategories = () => {
       {
         id: 'ABO_BIBLIOTHEQUE',
         categoryId: 'LIVRE',
-        matchingType: 'ThingType.LIVRE_AUDIO',
         proLabel: 'Abonnement (bibliothèques, médiathèques...)',
         appLabel: 'Abonnement (bibliothèques, médiathèques...)',
         searchGroup: 'Livres',
@@ -616,7 +588,6 @@ export const loadFakeApiCategories = () => {
       {
         id: 'ABO_LIVRE_NUMERIQUE',
         categoryId: 'LIVRE',
-        matchingType: 'ThingType.LIVRE_AUDIO',
         proLabel: 'Abonnement livres numériques',
         appLabel: 'Abonnement livres numériques',
         searchGroup: 'Livres',
@@ -634,7 +605,6 @@ export const loadFakeApiCategories = () => {
       {
         id: 'FESTIVAL_LIVRE',
         categoryId: 'LIVRE',
-        matchingType: 'ThingType.LIVRE_AUDIO',
         proLabel: 'Festival et salon du livre',
         appLabel: 'Festival et salon du livre',
         searchGroup: 'Livres',
@@ -652,7 +622,6 @@ export const loadFakeApiCategories = () => {
       {
         id: 'CARTE_MUSEE',
         categoryId: 'MUSEE',
-        matchingType: 'ThingType.MUSEES_PATRIMOINE_ABO',
         proLabel:
           'Cartes musées, patrimoine, architecture, arts visuels ou contemporains',
         appLabel: 'Cartes musées, patrimoine...',
@@ -671,7 +640,6 @@ export const loadFakeApiCategories = () => {
       {
         id: 'ABO_MUSEE',
         categoryId: 'MUSEE',
-        matchingType: 'ThingType.MUSEES_PATRIMOINE_ABO',
         proLabel: 'Abonnement musée, patrimoine...',
         appLabel: 'Abonnement musée, patrimoine...',
         searchGroup: 'Visites, expositions',
@@ -689,7 +657,6 @@ export const loadFakeApiCategories = () => {
       {
         id: 'VISITE',
         categoryId: 'MUSEE',
-        matchingType: 'EventType.MUSEES_PATRIMOINE',
         proLabel: 'Visite',
         appLabel: 'Visite',
         searchGroup: 'Visites, expositions',
@@ -707,7 +674,6 @@ export const loadFakeApiCategories = () => {
       {
         id: 'VISITE_GUIDEE',
         categoryId: 'MUSEE',
-        matchingType: 'EventType.MUSEES_PATRIMOINE',
         proLabel: 'Visite guidée',
         appLabel: 'Visite guidée',
         searchGroup: 'Visites, expositions',
@@ -725,7 +691,6 @@ export const loadFakeApiCategories = () => {
       {
         id: 'EVENEMENT_PATRIMOINE',
         categoryId: 'MUSEE',
-        matchingType: 'EventType.MUSEES_PATRIMOINE',
         proLabel: 'Événement et atelier patrimoine',
         appLabel: 'Événement et atelier patrimoine',
         searchGroup: 'Visites, expositions',
@@ -743,7 +708,6 @@ export const loadFakeApiCategories = () => {
       {
         id: 'VISITE_VIRTUELLE',
         categoryId: 'MUSEE',
-        matchingType: 'EventType.MUSEES_PATRIMOINE',
         proLabel: 'Visite virtuelle',
         appLabel: 'Visite virtuelle',
         searchGroup: 'Visites, expositions',
@@ -761,7 +725,6 @@ export const loadFakeApiCategories = () => {
       {
         id: 'CONCERT',
         categoryId: 'MUSIQUE_LIVE',
-        matchingType: 'EventType.MUSIQUE',
         proLabel: 'Concert',
         appLabel: 'Concert',
         searchGroup: 'Musique',
@@ -779,7 +742,6 @@ export const loadFakeApiCategories = () => {
       {
         id: 'EVENEMENT_MUSIQUE',
         categoryId: 'MUSIQUE_LIVE',
-        matchingType: 'EventType.MUSIQUE',
         proLabel: "Autre type d'événement musical",
         appLabel: "Autre type d'événement musical",
         searchGroup: 'Musique',
@@ -797,7 +759,6 @@ export const loadFakeApiCategories = () => {
       {
         id: 'LIVESTREAM_MUSIQUE',
         categoryId: 'MUSIQUE_LIVE',
-        matchingType: 'EventType.MUSIQUE',
         proLabel: 'Livestream musical',
         appLabel: 'Livestream musical',
         searchGroup: 'Musique',
@@ -815,7 +776,6 @@ export const loadFakeApiCategories = () => {
       {
         id: 'ABO_CONCERT',
         categoryId: 'MUSIQUE_LIVE',
-        matchingType: 'ThingType.MUSIQUE_ABO',
         proLabel: 'Abonnement concert',
         appLabel: 'Abonnement concert',
         searchGroup: 'Musique',
@@ -833,7 +793,6 @@ export const loadFakeApiCategories = () => {
       {
         id: 'SUPPORT_PHYSIQUE_MUSIQUE',
         categoryId: 'MUSIQUE_ENREGISTREE',
-        matchingType: 'ThingType.MUSIQUE',
         proLabel: 'Support physique (CD, vinyle...)',
         appLabel: 'Support physique (CD, vinyle...)',
         searchGroup: 'Musique',
@@ -851,7 +810,6 @@ export const loadFakeApiCategories = () => {
       {
         id: 'TELECHARGEMENT_MUSIQUE',
         categoryId: 'MUSIQUE_ENREGISTREE',
-        matchingType: 'ThingType.MUSIQUE',
         proLabel: 'Téléchargement de musique',
         appLabel: 'Téléchargement de musique',
         searchGroup: 'Musique',
@@ -869,7 +827,6 @@ export const loadFakeApiCategories = () => {
       {
         id: 'ABO_PLATEFORME_MUSIQUE',
         categoryId: 'MUSIQUE_ENREGISTREE',
-        matchingType: 'ThingType.MUSIQUE_ABO',
         proLabel: 'Abonnement plateforme musicale',
         appLabel: 'Abonnement plateforme musicale',
         searchGroup: 'Musique',
@@ -887,7 +844,6 @@ export const loadFakeApiCategories = () => {
       {
         id: 'CAPTATION_MUSIQUE',
         categoryId: 'MUSIQUE_ENREGISTREE',
-        matchingType: 'ThingType.MUSIQUE',
         proLabel: 'Captation musicale',
         appLabel: 'Captation musicale',
         searchGroup: 'Musique',
@@ -905,7 +861,6 @@ export const loadFakeApiCategories = () => {
       {
         id: 'FESTIVAL_MUSIQUE',
         categoryId: 'MUSIQUE_LIVE',
-        matchingType: 'EventType.MUSIQUE',
         proLabel: 'Festival de musique',
         appLabel: 'Festival de musique',
         searchGroup: 'Musique',
@@ -923,7 +878,6 @@ export const loadFakeApiCategories = () => {
       {
         id: 'SEANCE_ESSAI_PRATIQUE_ART',
         categoryId: 'PRATIQUE_ART',
-        matchingType: 'EventType.PRATIQUE_ARTISTIQUE',
         proLabel: "Séance d'essai",
         appLabel: "Séance d'essai",
         searchGroup: 'Cours, ateliers',
@@ -941,7 +895,6 @@ export const loadFakeApiCategories = () => {
       {
         id: 'ATELIER_PRATIQUE_ART',
         categoryId: 'PRATIQUE_ART',
-        matchingType: 'EventType.PRATIQUE_ARTISTIQUE',
         proLabel: 'Atelier, stage de pratique artistique',
         appLabel: 'Atelier, stage de pratique artistique',
         searchGroup: 'Cours, ateliers',
@@ -959,7 +912,6 @@ export const loadFakeApiCategories = () => {
       {
         id: 'ABO_PRATIQUE_ART',
         categoryId: 'PRATIQUE_ART',
-        matchingType: 'ThingType.PRATIQUE_ARTISTIQUE_ABO',
         proLabel: 'Abonnement pratique artistique',
         appLabel: 'Abonnement pratique artistique',
         searchGroup: 'Cours, ateliers',
@@ -977,7 +929,6 @@ export const loadFakeApiCategories = () => {
       {
         id: 'ABO_PRESSE_EN_LIGNE',
         categoryId: 'MEDIA',
-        matchingType: 'ThingType.PRESSE_ABO',
         proLabel: 'Abonnement presse en ligne',
         appLabel: 'Abonnement presse en ligne',
         searchGroup: 'Presse',
@@ -995,7 +946,6 @@ export const loadFakeApiCategories = () => {
       {
         id: 'ARTICLE_PRESSE',
         categoryId: 'MEDIA',
-        matchingType: 'ThingType.PRESSE_ABO',
         proLabel: 'Article de presse',
         appLabel: 'Article de presse',
         searchGroup: 'Presse',
@@ -1013,7 +963,6 @@ export const loadFakeApiCategories = () => {
       {
         id: 'PODCAST',
         categoryId: 'MEDIA',
-        matchingType: 'ThingType.PRESSE_ABO',
         proLabel: 'Podcast',
         appLabel: 'Podcast',
         searchGroup: 'Films, séries, podcasts',
@@ -1031,7 +980,6 @@ export const loadFakeApiCategories = () => {
       {
         id: 'APP_CULTURELLE',
         categoryId: 'MEDIA',
-        matchingType: 'ThingType.PRESSE_ABO',
         proLabel: 'Application culturelle',
         appLabel: 'Application culturelle',
         searchGroup: 'Presse',
@@ -1049,7 +997,6 @@ export const loadFakeApiCategories = () => {
       {
         id: 'SPECTACLE_REPRESENTATION',
         categoryId: 'SPECTACLE',
-        matchingType: 'EventType.SPECTACLE_VIVANT',
         proLabel: 'Spectacle, représentation',
         appLabel: 'Spectacle, représentation',
         searchGroup: 'Spectacles',
@@ -1067,7 +1014,6 @@ export const loadFakeApiCategories = () => {
       {
         id: 'SPECTACLE_ENREGISTRE',
         categoryId: 'SPECTACLE',
-        matchingType: 'EventType.SPECTACLE_VIVANT',
         proLabel: 'Spectacle enregistré',
         appLabel: 'Spectacle enregistré',
         searchGroup: 'Spectacles',
@@ -1085,7 +1031,6 @@ export const loadFakeApiCategories = () => {
       {
         id: 'LIVESTREAM_EVENEMENT',
         categoryId: 'SPECTACLE',
-        matchingType: 'EventType.SPECTACLE_VIVANT',
         proLabel: "Livestream d'événement",
         appLabel: "Livestream d'événement",
         searchGroup: 'Spectacles',
@@ -1103,7 +1048,6 @@ export const loadFakeApiCategories = () => {
       {
         id: 'FESTIVAL_SPECTACLE',
         categoryId: 'SPECTACLE',
-        matchingType: 'EventType.SPECTACLE_VIVANT',
         proLabel: 'Festival',
         appLabel: 'Festival',
         searchGroup: 'Spectacles',
@@ -1121,7 +1065,6 @@ export const loadFakeApiCategories = () => {
       {
         id: 'ABO_SPECTACLE',
         categoryId: 'SPECTACLE',
-        matchingType: 'ThingType.SPECTACLE_VIVANT_ABO',
         proLabel: 'Abonnement spectacle',
         appLabel: 'Abonnement spectacle',
         searchGroup: 'Spectacles',
@@ -1139,7 +1082,6 @@ export const loadFakeApiCategories = () => {
       {
         id: 'ACHAT_INSTRUMENT',
         categoryId: 'INSTRUMENT',
-        matchingType: 'ThingType.INSTRUMENT',
         proLabel: 'Achat instrument',
         appLabel: 'Achat instrument',
         searchGroup: 'Instruments de musique',
@@ -1157,7 +1099,6 @@ export const loadFakeApiCategories = () => {
       {
         id: 'BON_ACHAT_INSTRUMENT',
         categoryId: 'INSTRUMENT',
-        matchingType: 'ThingType.INSTRUMENT',
         proLabel: "Bon d'achat instrument",
         appLabel: "Bon d'achat instrument",
         searchGroup: 'Instruments de musique',
@@ -1175,7 +1116,6 @@ export const loadFakeApiCategories = () => {
       {
         id: 'LOCATION_INSTRUMENT',
         categoryId: 'INSTRUMENT',
-        matchingType: 'ThingType.INSTRUMENT',
         proLabel: 'Location instrument',
         appLabel: 'Location instrument',
         searchGroup: 'Instruments de musique',
@@ -1193,7 +1133,6 @@ export const loadFakeApiCategories = () => {
       {
         id: 'PARTITION',
         categoryId: 'INSTRUMENT',
-        matchingType: 'ThingType.INSTRUMENT',
         proLabel: 'Partition',
         appLabel: 'Partition',
         searchGroup: 'Instruments de musique',
@@ -1211,7 +1150,6 @@ export const loadFakeApiCategories = () => {
       {
         id: 'MATERIEL_ART_CREATIF',
         categoryId: 'BEAUX_ARTS',
-        matchingType: 'ThingType.MATERIEL_ART_CREA',
         proLabel: 'Matériel arts créatifs',
         appLabel: 'Matériel arts créatifs',
         searchGroup: 'Matériel arts créatifs',
