@@ -38,10 +38,7 @@ LOG_LEVEL = int(os.environ.get("LOG_LEVEL", LOG_LEVEL_INFO))
 
 # Default backends
 if IS_PROD or IS_INTEGRATION:
-    if IS_PROD:
-        _default_search_backend = "pcapi.core.search.backends.algolia.AlgoliaBackend"
-    elif IS_INTEGRATION:
-        _default_search_backend = "pcapi.core.search.backends.dummy.DummyBackend"
+    _default_search_backend = "pcapi.core.search.backends.algolia.AlgoliaBackend"
     _default_email_backend = "pcapi.core.mails.backends.sendinblue.SendinblueBackend"
     _mailjet_email_backend = "pcapi.core.mails.backends.mailjet.MailjetBackend"
     _default_push_notification_backend = "pcapi.notifications.push.backends.batch.BatchBackend"
