@@ -45,6 +45,28 @@ def create_booking_with_undeletable_dependent(date_used=None):
     return booking
 
 
+class CleanStringTest:
+    def test_remove_string_starting_with_space_if_string(self):
+        name = " saut de ligne"
+        result = api._clean_for_accounting(name)
+        assert result == "saut de ligne"
+
+    def test_remove_doublequote_if_string(self):
+        name = 'saut de ligne "spécial"\n'
+        result = api._clean_for_accounting(name)
+        assert result == "saut de ligne spécial"
+
+    def test_remove_new_line_if_string(self):
+        name = "saut de ligne\n"
+        result = api._clean_for_accounting(name)
+        assert result == "saut de ligne"
+
+    def test_return_value_sent_if_not_string(self):
+        number = 1
+        result = api._clean_for_accounting(number)
+        assert result == 1
+
+
 class PriceBookingTest:
     def test_basics(self):
         booking = bookings_factories.UsedBookingFactory(
@@ -412,22 +434,22 @@ def test_generate_payment_files():
 @clean_temporary_files
 def test_generate_business_units_file():
     venue1 = offers_factories.VenueFactory(
-        name="Venue 1 only name",
+        name='Venue 1 only name "doublequote" \n',
         publicName=None,
-        siret="siret 1",
-        businessUnit__name="Business unit 1",
-        businessUnit__bankAccount__bic="bic 1",
-        businessUnit__bankAccount__iban="iban 1",
+        siret='siret 1 "t"',
+        businessUnit__name=' Business unit 1 "doublequote"\n',
+        businessUnit__bankAccount__bic='bic 1 "t"\n',
+        businessUnit__bankAccount__iban='iban 1 "t"\n',
     )
     business_unit1 = venue1.businessUnit
     offers_factories.VenueFactory(businessUnit=business_unit1)
     venue2 = offers_factories.VenueFactory(
         name="dummy, we should use publicName instead",
-        siret="siret 2",
-        publicName="Venue 2 public name",
-        businessUnit__name="Business unit 2",
-        businessUnit__bankAccount__bic="bic 2",
-        businessUnit__bankAccount__iban="iban 2",
+        siret="siret 2\n",
+        publicName="Venue 2 public name\n",
+        businessUnit__name="Business unit 2\n",
+        businessUnit__bankAccount__bic="bic 2\n",
+        businessUnit__bankAccount__iban="iban 2\n",
     )
 
     n_queries = 1  # select business unit data
@@ -439,11 +461,11 @@ def test_generate_business_units_file():
     assert len(rows) == 2
     assert rows[0] == {
         "Identifiant de la BU": human_ids.humanize(venue1.id),
-        "SIRET": "siret 1",
-        "Raison sociale de la BU": "Business unit 1",
-        "Libellé de la BU": "Venue 1 only name",
-        "IBAN": "iban 1",
-        "BIC": "bic 1",
+        "SIRET": "siret 1 t",
+        "Raison sociale de la BU": "Business unit 1 doublequote",
+        "Libellé de la BU": "Venue 1 only name doublequote",
+        "IBAN": "iban 1 t",
+        "BIC": "bic 1 t",
     }
     assert rows[1] == {
         "Identifiant de la BU": human_ids.humanize(venue2.id),
@@ -461,8 +483,8 @@ def test_generate_payments_file():
     # This pricing belong to a business unit whose venue is the same
     # as the venue of the offer.
     venue1 = offers_factories.VenueFactory(
-        name="Le Petit Rintintin",
-        siret="11111111122222",
+        name='Le Petit Rintintin "test"\n',
+        siret='123456 "test"\n',
     )
     pricing1 = factories.PricingFactory(
         amount=-1000,  # rate = 100 %
@@ -477,7 +499,7 @@ def test_generate_payments_file():
         amount=0,
         booking__amount=0,
         booking__dateUsed=used_date,
-        booking__stock__offer__name="Une histoire gratuite",
+        booking__stock__offer__name='Une histoire "gratuite"\n',
         booking__stock__offer__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
         booking__stock__offer__venue=venue1,
     )
@@ -485,11 +507,11 @@ def test_generate_payments_file():
     # NOT the venue of the offers.
     business_unit_venue2 = offers_factories.VenueFactory(
         siret="22222222233333",
-        name="BU du Gigantesque Cubitus",
+        name="BU du Gigantesque Cubitus\n",
     )
     business_unit2 = business_unit_venue2.businessUnit
     offer_venue2 = offers_factories.VenueFactory(
-        name="Le Gigantesque Cubitus",
+        name="Le Gigantesque Cubitus\n",
         siret="99999999999999",
         businessUnit=business_unit2,
     )
@@ -526,10 +548,10 @@ def test_generate_payments_file():
     assert len(rows) == 3
     assert rows[0] == {
         "Identifiant de la BU": human_ids.humanize(venue1.id),
-        "SIRET de la BU": "11111111122222",
-        "Libellé de la BU": "Le Petit Rintintin",
+        "SIRET de la BU": "123456 test",
+        "Libellé de la BU": "Le Petit Rintintin test",
         "Identifiant du lieu": human_ids.humanize(venue1.id),
-        "Libellé du lieu": "Le Petit Rintintin",
+        "Libellé du lieu": "Le Petit Rintintin test",
         "Identifiant de l'offre": pricing1.booking.stock.offerId,
         "Nom de l'offre": "Une histoire formidable",
         "Sous-catégorie de l'offre": "SUPPORT_PHYSIQUE_FILM",
