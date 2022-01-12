@@ -194,10 +194,6 @@
           <td>{{ model.eligibility|eligibility_format }}</td>
         </tr>
         <tr>
-          <th scope="row">État</th>
-          <td>{% if model.subscriptionState %} {{ model.subscriptionState.value }} {% else %}Inconnu{% endif %}</td>
-        </tr>
-        <tr>
           <th scope="row">Prochaine étape sur l'app</th>
           <td>{% if next_subscription_step %} {{ next_subscription_step.name }} {% else %}Aucune{% endif %}</td>
         </tr>
