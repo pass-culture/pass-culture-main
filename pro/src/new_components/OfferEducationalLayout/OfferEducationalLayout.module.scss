@@ -1,8 +1,11 @@
 .eac-layout {
   position: relative;
- 
-  &-heading, 
-  &-breadcrumb {
+
+  &-heading {
     margin-bottom: rem(32px);
+  }
+
+  &-breadcrumb {
+    margin-bottom: rem(24px);
   }
 }
