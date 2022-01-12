@@ -8,7 +8,6 @@ import pcapi.core.fraud.models as fraud_models
 import pcapi.core.fraud.repository as fraud_repository
 from pcapi.core.mails.transactional.users import accepted_as_beneficiary
 from pcapi.core.payments import api as payments_api
-from pcapi.core.subscription import messages as subscription_messages
 from pcapi.core.users import api as users_api
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import external as users_external
@@ -181,7 +180,10 @@ def needs_to_perform_identity_check(user: users_models.User) -> bool:
     # TODO (viconnex) refacto this method to base result on fraud_checks made
     return (
         not user.hasCompletedIdCheck
-        and not (fraud_api.has_user_performed_ubble_check(user) and FeatureToggle.ENABLE_UBBLE.is_active())
+        and not (
+            not fraud_api.ubble.is_user_allowed_to_perform_ubble_check(user, user.eligibility)
+            and FeatureToggle.ENABLE_UBBLE.is_active()
+        )
         and not (fraud_api.has_passed_educonnect(user) and user.eligibility == users_models.EligibilityType.UNDERAGE)
     )
 
@@ -494,21 +496,6 @@ def on_successful_application(
         users_external.update_external_user(user)
 
 
-def handle_validation_errors(
-    user: users_models.User,
-    reason_codes: list[fraud_models.FraudReasonCode],
-):
-    for error_code in reason_codes:
-        if error_code == fraud_models.FraudReasonCode.ALREADY_BENEFICIARY:
-            subscription_messages.on_already_beneficiary(user)
-        if error_code == fraud_models.FraudReasonCode.NOT_ELIGIBLE:
-            subscription_messages.on_not_eligible(user)
-        if error_code == fraud_models.FraudReasonCode.DUPLICATE_USER:
-            subscription_messages.on_duplicate_user(user)
-        if error_code == fraud_models.FraudReasonCode.DUPLICATE_ID_PIECE_NUMBER:
-            subscription_messages.on_duplicate_user(user)
-
-
 # TODO (viconnex): move in a dms folder
 def start_workflow(
     user: users_models.User, thirdparty_id: str, content: fraud_models.DMSContent
@@ -524,7 +511,7 @@ def handle_eligibility_difference_between_declaration_and_identity_provider(
     fraud_check: fraud_models.BeneficiaryFraudCheck,
 ) -> fraud_models.BeneficiaryFraudCheck:
     declared_eligibility = fraud_check.eligibilityType
-    id_provider_detected_eligibility = fraud_api.get_eligibility_type(fraud_check.source_data())
+    id_provider_detected_eligibility = fraud_check.source_data().get_eligibility_type()
 
     if declared_eligibility == id_provider_detected_eligibility or id_provider_detected_eligibility is None:
         return fraud_check

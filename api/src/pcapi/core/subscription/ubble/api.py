@@ -1,4 +1,5 @@
 import logging
+import typing
 
 import flask
 
@@ -7,6 +8,7 @@ from pcapi.connectors.beneficiaries import ubble
 from pcapi.core.fraud import exceptions as fraud_exceptions
 import pcapi.core.fraud.api as fraud_api
 import pcapi.core.fraud.models as fraud_models
+from pcapi.core.mails.transactional.users import subscription_document_error
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import messages as subscription_messages
 from pcapi.core.users import models as users_models
@@ -52,8 +54,8 @@ def update_ubble_workflow(
 
         else:
             if fraud_check.status != fraud_models.FraudCheckStatus.OK:
-                subscription_api.handle_validation_errors(user=user, reason_codes=fraud_check.reasonCodes)
-                subscription_messages.on_ubble_journey_cannot_continue(user)
+                can_retry = fraud_api.ubble.is_user_allowed_to_perform_ubble_check(user, fraud_check.eligibilityType)
+                handle_validation_errors(user, fraud_check.reasonCodes, can_retry=can_retry)
                 subscription_api.update_user_birth_date(user, fraud_check.source_data().get_birth_date())
                 return
 
@@ -62,7 +64,7 @@ def update_ubble_workflow(
                     user=user,
                     source=BeneficiaryImportSources.ubble,
                     source_data=fraud_check.source_data(),
-                    eligibility_type=fraud_api.get_eligibility_type(fraud_check.source_data()),
+                    eligibility_type=fraud_check.source_data().get_eligibility_type(),
                     third_party_id=fraud_check.thirdPartyId,
                     source_id=None,
                 )
@@ -105,3 +107,60 @@ def is_ubble_workflow_restartable(fraud_check: fraud_models.BeneficiaryFraudChec
     if ubble_content.status == fraud_models.ubble_models.UbbleIdentificationStatus.INITIATED:
         return True
     return False
+
+
+def handle_validation_errors(
+    user: users_models.User,
+    reason_codes: typing.Optional[list[fraud_models.FraudReasonCode]],
+    can_retry: bool = False,  # when available
+):
+    reason_codes = reason_codes or []
+
+    if fraud_models.FraudReasonCode.ID_CHECK_UNPROCESSABLE in reason_codes:
+        if can_retry:
+            subscription_messages.on_idcheck_unread_document_with_retry(user)
+        else:
+            subscription_messages.on_idcheck_unread_document(user)
+        subscription_document_error.send_subscription_document_error_email(user.email, "unread-document")
+
+    elif fraud_models.FraudReasonCode.ID_CHECK_DATA_MATCH in reason_codes:
+        subscription_messages.on_idcheck_document_data_not_matching(user)
+        subscription_document_error.send_subscription_document_error_email(user.email, "information-error")
+
+    elif fraud_models.FraudReasonCode.ID_CHECK_NOT_SUPPORTED in reason_codes:
+        if can_retry:
+            subscription_messages.on_idcheck_document_not_supported_with_retry(user)
+        else:
+            subscription_messages.on_idcheck_document_not_supported(user)
+        subscription_document_error.send_subscription_document_error_email(user.email, "unread-mrz-document")
+
+    elif fraud_models.FraudReasonCode.ID_CHECK_EXPIRED in reason_codes:
+        if can_retry:
+            subscription_messages.on_idcheck_invalid_document_date_with_retry(user)
+        else:
+            subscription_messages.on_idcheck_invalid_document_date(user)
+        subscription_document_error.send_subscription_document_error_email(user.email, "invalid-document")
+
+    elif fraud_models.FraudReasonCode.ID_CHECK_BLOCKED_OTHER in reason_codes:
+        subscription_messages.on_idcheck_rejected(user)
+
+    elif fraud_models.FraudReasonCode.DUPLICATE_USER in reason_codes:
+        subscription_messages.on_duplicate_user(user)
+
+    elif fraud_models.FraudReasonCode.DUPLICATE_ID_PIECE_NUMBER in reason_codes:
+        subscription_messages.on_duplicate_user(user)
+
+    elif fraud_models.FraudReasonCode.ALREADY_BENEFICIARY in reason_codes:
+        subscription_messages.on_already_beneficiary(user)
+
+    elif fraud_models.FraudReasonCode.AGE_TOO_YOUNG in reason_codes:
+        subscription_messages.on_age_too_young(user)
+
+    elif fraud_models.FraudReasonCode.AGE_TOO_OLD in reason_codes:
+        subscription_messages.on_age_too_old(user)
+
+    elif fraud_models.FraudReasonCode.NOT_ELIGIBLE in reason_codes:
+        subscription_messages.on_not_eligible(user)
+
+    else:
+        subscription_messages.on_ubble_journey_cannot_continue(user)

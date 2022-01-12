@@ -1,5 +1,6 @@
 import datetime
 
+from pcapi import settings
 import pcapi.core.users.models as users_models
 from pcapi.repository import repository
 
@@ -7,7 +8,11 @@ from . import models
 
 
 INBOX_URL = "passculture://openInbox"
+MAILTO_SUPPORT = f"mailto:{settings.SUPPORT_EMAIL_ADDRESS}"
 REDIRECT_TO_DMS_VIEW = "passculture://verification-identite/demarches-simplifiees"
+REDIRECT_TO_IDENTIFICATION = "passculture://verification-identite/identification"
+
+MAILTO_SUPPORT_PARAMS = "?subject=%23{id}+-+Mon+inscription+sur+le+pass+Culture+est+bloqu%C3%A9e"
 
 DMS_ERROR_MESSAGE_USER_NOT_FOUND = """Bonjour,
 
@@ -158,26 +163,79 @@ def on_idcheck_invalid_document(user: users_models.User) -> None:
     repository.save(message)
 
 
-def on_idcheck_invalid_document_date(user: users_models.User) -> None:
-    today = datetime.date.today()
+def on_idcheck_document_data_not_matching(user: users_models.User) -> None:
     message = models.SubscriptionMessage(
         user=user,
-        userMessage=f"Ton dossier a été refusé : le document que tu as transmis est expiré. Consulte l’e-mail envoyé le {today:%d/%m/%Y} pour plus d’informations.",
-        callToActionTitle="Consulter mes e-mails",
-        callToActionLink=INBOX_URL,
+        userMessage="Ton dossier a été bloqué : Les informations que tu as renseignées ne correspondent pas à celles de ta pièce d'identité. Tu peux contacter le support pour plus d'informations.",
+        callToActionTitle="Contacter le support",
+        callToActionLink=MAILTO_SUPPORT + MAILTO_SUPPORT_PARAMS.format(id=user.id),
         callToActionIcon=models.CallToActionIcon.EMAIL,
     )
     repository.save(message)
 
 
-def on_id_check_unread_document(user: users_models.User) -> None:
-    today = datetime.date.today()
+def on_idcheck_document_not_supported(user: users_models.User) -> None:
     message = models.SubscriptionMessage(
         user=user,
-        userMessage=f"Nous n'arrivons pas à traiter ton document. Consulte l'e-mail envoyé le {today:%d/%m/%Y} pour plus d'informations.",
-        callToActionTitle="Consulter mes e-mails",
-        callToActionLink=INBOX_URL,
+        userMessage="Ton document d'identité ne te permet pas de bénéficier du pass Culture. Passe par le site des démarches simplifiées pour renouveler ta demande.",
+        callToActionTitle="Accéder au site Démarches-Simplifiées",
+        callToActionLink=REDIRECT_TO_DMS_VIEW,
+        callToActionIcon=models.CallToActionIcon.EXTERNAL,
+    )
+    repository.save(message)
+
+
+def on_idcheck_document_not_supported_with_retry(user: users_models.User) -> None:
+    message = models.SubscriptionMessage(
+        user=user,
+        userMessage="Ton document d'identité ne te permet pas de bénéficier du pass Culture. Réessaye avec un passeport ou une carte d'identité française en cours de validité.",
+        callToActionTitle="Réessayer la vérification de mon identité",
+        callToActionLink=REDIRECT_TO_IDENTIFICATION,
+        callToActionIcon=models.CallToActionIcon.RETRY,
+    )
+    repository.save(message)
+
+
+def on_idcheck_invalid_document_date(user: users_models.User) -> None:
+    message = models.SubscriptionMessage(
+        user=user,
+        userMessage="Ton document d'identité est expiré. Passe par le site des démarches simplifiées avec un document en cours de validité pour renouveler ta demande.",
+        callToActionTitle="Contacter le support",
+        callToActionLink=MAILTO_SUPPORT + MAILTO_SUPPORT_PARAMS.format(id=user.id),
         callToActionIcon=models.CallToActionIcon.EMAIL,
+    )
+    repository.save(message)
+
+
+def on_idcheck_invalid_document_date_with_retry(user: users_models.User) -> None:
+    message = models.SubscriptionMessage(
+        user=user,
+        userMessage="Ton document d'identité est expiré. Réessaye avec un passeport ou une carte d'identité française en cours de validité.",
+        callToActionTitle="Réessayer la vérification de mon identité",
+        callToActionLink=REDIRECT_TO_IDENTIFICATION,
+        callToActionIcon=models.CallToActionIcon.RETRY,
+    )
+    repository.save(message)
+
+
+def on_idcheck_unread_document(user: users_models.User) -> None:
+    message = models.SubscriptionMessage(
+        user=user,
+        userMessage="Nous n'avons pas réussi à lire ton document. Passe par le site des démarches simplifiées pour renouveler ta demande.",
+        callToActionTitle="Accéder au site Démarches-Simplifiées",
+        callToActionLink=REDIRECT_TO_DMS_VIEW,
+        callToActionIcon=models.CallToActionIcon.EXTERNAL,
+    )
+    repository.save(message)
+
+
+def on_idcheck_unread_document_with_retry(user: users_models.User) -> None:
+    message = models.SubscriptionMessage(
+        user=user,
+        userMessage="Nous n'avons pas réussi à lire ton document. Réessaye avec un passeport ou une carte d'identité française en cours de validité dans un lieu bien éclairé.",
+        callToActionTitle="Réessayer la vérification de mon identité",
+        callToActionLink=REDIRECT_TO_IDENTIFICATION,
+        callToActionIcon=models.CallToActionIcon.RETRY,
     )
     repository.save(message)
 
@@ -190,6 +248,15 @@ def on_idcheck_unread_mrz(user: users_models.User) -> None:
         callToActionTitle="Consulter mes e-mails",
         callToActionLink=INBOX_URL,
         callToActionIcon=models.CallToActionIcon.EMAIL,
+    )
+    repository.save(message)
+
+
+def on_idcheck_rejected(user: users_models.User) -> None:
+    message = models.SubscriptionMessage(
+        user=user,
+        userMessage="Ton dossier a été bloqué : Les informations que tu as renseignées ne te permettent pas de bénéficier du pass Culture.",
+        popOverIcon=models.PopOverIcon.ERROR,
     )
     repository.save(message)
 
@@ -214,12 +281,11 @@ def on_dms_application_refused(user: users_models.User) -> None:
 
 
 def on_duplicate_user(user: users_models.User) -> None:
-    today = datetime.date.today()
     message = models.SubscriptionMessage(
         user=user,
-        userMessage=f"Ce document a déjà été analysé. Vérifie que tu n’as pas créé de compte avec une autre adresse e-mail. Consulte l’e-mail envoyé le {today:%d/%m/%Y} pour plus d’informations.",
-        callToActionLink="passculture://openInbox",
-        callToActionTitle="Consulter mes e-mails",
+        userMessage="Ton dossier a été bloqué : Il y a déjà un compte à ton nom sur le pass Culture. Tu peux contacter le support pour plus d'informations.",
+        callToActionTitle="Contacter le support",
+        callToActionLink=MAILTO_SUPPORT + MAILTO_SUPPORT_PARAMS.format(id=user.id),
         callToActionIcon=models.CallToActionIcon.EMAIL,
     )
     repository.save(message)
@@ -228,7 +294,25 @@ def on_duplicate_user(user: users_models.User) -> None:
 def on_not_eligible(user: users_models.User) -> None:
     message = models.SubscriptionMessage(
         user=user,
-        userMessage="La date de naissance de ton document indique que tu n'es pas éligbile.",
+        userMessage="La date de naissance de ton document indique que tu n'es pas éligible.",
+        popOverIcon=models.PopOverIcon.ERROR,
+    )
+    repository.save(message)
+
+
+def on_age_too_young(user: users_models.User) -> None:
+    message = models.SubscriptionMessage(
+        user=user,
+        userMessage="Ton dossier a été bloqué : Tu n'as pas encore l'âge pour bénéficier du pass Culture. Reviens à tes 15 ans pour profiter de ton crédit.",
+        popOverIcon=models.PopOverIcon.ERROR,
+    )
+    repository.save(message)
+
+
+def on_age_too_old(user: users_models.User) -> None:
+    message = models.SubscriptionMessage(
+        user=user,
+        userMessage="Ton dossier a été bloqué : Tu ne peux pas bénéficier du pass Culture. Il est réservé aux jeunes de 15 à 18 ans.",
         popOverIcon=models.PopOverIcon.ERROR,
     )
     repository.save(message)
