@@ -34,12 +34,14 @@ class Returns200Test:
         assert response.json == {
             "bookings": [
                 {
+                    "id": booking1.educationalBooking.id,
                     "UAICode": educationalInstitution.institutionId,
                     "status": "CONFIRMED",
                     "confirmationLimitDate": format_into_utc_date(booking1.educationalBooking.confirmationLimitDate),
                     "totalAmount": booking1.total_amount,
                 },
                 {
+                    "id": booking2.educationalBooking.id,
                     "UAICode": other_educational_institution.institutionId,
                     "status": "PENDING",
                     "confirmationLimitDate": format_into_utc_date(booking2.educationalBooking.confirmationLimitDate),
