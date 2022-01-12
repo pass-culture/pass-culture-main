@@ -59,7 +59,6 @@ class Returns400Test:
             "owningOffererId": "AA",
             "thumbCount": 2,
             "subcategoryId": subcategories.LIVRE_PAPIER,
-            "type": subcategories.LIVRE_PAPIER.matching_type,
         }
         response = client.with_session_auth("user@example.com").patch(f"offers/{humanize(offer.id)}", json=data)
 
@@ -75,7 +74,6 @@ class Returns400Test:
             "owningOffererId",
             "thumbCount",
             "subcategoryId",
-            "type",
         }
         for key in forbidden_keys:
             assert key in response.json
