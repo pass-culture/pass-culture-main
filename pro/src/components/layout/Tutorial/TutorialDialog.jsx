@@ -125,8 +125,12 @@ const TutorialDialog = ({ currentUser, setUserHasSeenTuto }) => {
   ) : null
 }
 
+TutorialDialog.defaultProps = {
+  currentUser: null,
+}
+
 TutorialDialog.propTypes = {
-  currentUser: PropTypes.shape().isRequired,
+  currentUser: PropTypes.shape(),
   setUserHasSeenTuto: PropTypes.func.isRequired,
 }
 
