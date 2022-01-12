@@ -1,6 +1,6 @@
 .educational-form {
   &-information {
-    @include small-caption();
+    @include caption();
     margin-bottom: rem(32px);
     color: $grey-dark;
   }
