@@ -184,7 +184,7 @@ class MakeBeneficiaryBookingCancellationEmailSendinblueDataTest:
             "IS_EVENT": False,
             "IS_FREE_OFFER": False,
             "OFFER_NAME": "Test thing name",
-            "OFFER_PRICE": 10.20,
+            "OFFER_PRICE": "10.20",
             "USER_FIRST_NAME": "Fabien",
             "OFFER_LINK": "https://webapp-v2.example.com/offre/123456",
         }
@@ -214,7 +214,7 @@ class MakeBeneficiaryBookingCancellationEmailSendinblueDataTest:
             "IS_EVENT": True,
             "IS_FREE_OFFER": False,
             "OFFER_NAME": "Test event name",
-            "OFFER_PRICE": 10.20,
+            "OFFER_PRICE": "10.20",
             "USER_FIRST_NAME": "Fabien",
             "OFFER_LINK": "https://webapp-v2.example.com/offre/123456",
         }
@@ -239,4 +239,4 @@ class MakeBeneficiaryBookingCancellationEmailSendinblueDataTest:
         email_data = get_booking_cancellation_by_beneficiary_email_data(booking.individualBooking)
 
         # Then
-        assert email_data.params["OFFER_PRICE"] == 20.00
+        assert email_data.params["OFFER_PRICE"] == "20.00"
