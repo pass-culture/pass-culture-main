@@ -81,8 +81,11 @@ const FormEventAddress = ({
       description="Ces informations sont visibles par les enseignants et les chefs d’établissement."
       title="Informations pratiques"
     >
-      <FormLayout.SubSection title="Adresse où aura lieu l’événement">
-        <FormLayout.Row lgSpaceAfter>
+      <FormLayout.Row>
+        <fieldset className={styles['educational-form-event-address-fieldset']}>
+          <legend className={styles['educational-form-event-address-legend']}>
+            Adresse où se déroulera l’événement
+          </legend>
           <RadioButton
             checked
             label={EVENT_ADDRESS_OFFERER_LABEL}
@@ -99,41 +102,41 @@ const FormEventAddress = ({
             name="eventAddress.addressType"
             value={ADRESS_TYPE.OTHER}
           />
+        </fieldset>
+      </FormLayout.Row>
+
+      {values.eventAddress.addressType === ADRESS_TYPE.OFFERER_VENUE && (
+        <FormLayout.Row>
+          <Select
+            disabled={venuesOptions.length === 1}
+            label={EVENT_ADDRESS_OFFERER_VENUE_SELECT_LABEL}
+            name="eventAddress.venueId"
+            options={venuesOptions}
+          />
+          {currentVenue && (
+            <Banner
+              className={styles['educational-form-adress-banner']}
+              type="light"
+            >
+              {currentVenue.name}
+              <br />
+              {currentVenue.address.street}, {currentVenue.address.postalCode}{' '}
+              {currentVenue.address.city}
+            </Banner>
+          )}
         </FormLayout.Row>
+      )}
 
-        {values.eventAddress.addressType === ADRESS_TYPE.OFFERER_VENUE && (
-          <FormLayout.Row>
-            <Select
-              disabled={venuesOptions.length === 1}
-              label={EVENT_ADDRESS_OFFERER_VENUE_SELECT_LABEL}
-              name="eventAddress.venueId"
-              options={venuesOptions}
-            />
-            {currentVenue && (
-              <Banner
-                className={styles['educational-form-adress-banner']}
-                type="light"
-              >
-                {currentVenue.name}
-                <br />
-                {currentVenue.address.street}, {currentVenue.address.postalCode}{' '}
-                {currentVenue.address.city}
-              </Banner>
-            )}
-          </FormLayout.Row>
-        )}
-
-        {values.eventAddress.addressType === ADRESS_TYPE.OTHER && (
-          <FormLayout.Row>
-            <TextArea
-              countCharacters
-              label={EVENT_ADDRESS_OTHER_ADDRESS_LABEL}
-              maxLength={200}
-              name="eventAddress.otherAddress"
-            />
-          </FormLayout.Row>
-        )}
-      </FormLayout.SubSection>
+      {values.eventAddress.addressType === ADRESS_TYPE.OTHER && (
+        <FormLayout.Row>
+          <TextArea
+            countCharacters
+            label={EVENT_ADDRESS_OTHER_ADDRESS_LABEL}
+            maxLength={200}
+            name="eventAddress.otherAddress"
+          />
+        </FormLayout.Row>
+      )}
     </FormLayout.Section>
   )
 }
