@@ -643,6 +643,24 @@ FESTIVAL_LIVRE = Subcategory(
     is_physical_deposit=False,
     reimbursement_rule=ReimbursementRuleChoices.STANDARD.value,
 )
+CARTE_JEUNES = Subcategory(
+    id="CARTE_JEUNES",
+    category_id=categories.CARTE_JEUNES.id,
+    pro_label="Carte jeunes",
+    app_label="Carte jeunes",
+    search_group_name=SearchGroups.CARTE_JEUNES.name,
+    homepage_label_name=HomepageLabels.CARTE_JEUNES.name,
+    is_event=False,
+    conditional_fields=[],
+    can_expire=True,
+    can_be_duo=False,
+    can_be_educational=False,
+    online_offline_platform=OnlineOfflinePlatformChoices.OFFLINE.value,
+    is_digital_deposit=False,
+    is_physical_deposit=True,
+    reimbursement_rule=ReimbursementRuleChoices.STANDARD.value,
+    is_bookable_by_underage_when_not_free=False,
+)
 # endregion
 # region VISITE
 
@@ -1392,6 +1410,7 @@ ALL_SUBCATEGORIES = (
     CAPTATION_MUSIQUE,
     CARTE_CINE_ILLIMITE,
     CARTE_CINE_MULTISEANCES,
+    CARTE_JEUNES,
     CARTE_MUSEE,
     CINE_PLEIN_AIR,
     CINE_VENTE_DISTANCE,
