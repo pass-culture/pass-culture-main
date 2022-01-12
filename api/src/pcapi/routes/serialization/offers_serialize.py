@@ -29,7 +29,6 @@ from pcapi.validation.routes.offers import check_offer_name_length_is_valid
 class SubcategoryResponseModel(BaseModel):
     id: str
     category_id: str
-    matching_type: str
     pro_label: str
     app_label: str
     search_group_name: Optional[str]
