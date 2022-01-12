@@ -5,9 +5,7 @@ import {
   MIN_IMAGE_WIDTH,
 } from './_constants'
 
-const isNotAnImage = file => !IMAGE_TYPE.includes(file.type)
-const isTooBig = file => file.size > MAX_IMAGE_SIZE
-const isOfPoorQuality = async file => {
+const getImageBitmap = async file => {
   // Polyfill for Safari and IE not supporting createImageBitmap
   if (!('createImageBitmap' in window)) {
     window.createImageBitmap = async blob =>
@@ -19,15 +17,24 @@ const isOfPoorQuality = async file => {
         img.src = URL.createObjectURL(blob)
       })
   }
-  const { height, width } = await createImageBitmap(file)
-  return height < MIN_IMAGE_HEIGHT || width < MIN_IMAGE_WIDTH
+  return await createImageBitmap(file).catch(() => null)
+}
+const isNotAnImage = async file =>
+  !IMAGE_TYPE.includes(file.type) || (await getImageBitmap(file)) === null
+const isTooBig = file => file.size > MAX_IMAGE_SIZE
+const isOfPoorQuality = async file => {
+  const imageBitmap = await getImageBitmap(file)
+  return (
+    imageBitmap !== null && (imageBitmap.height < MIN_IMAGE_HEIGHT ||
+    imageBitmap.width < MIN_IMAGE_WIDTH)
+  )
 }
 
 export const constraints = [
   {
     id: 'format',
     description: 'Formats supportés : JPG, PNG',
-    validator: isNotAnImage,
+    asyncValidator: isNotAnImage,
   },
   {
     id: 'size',
