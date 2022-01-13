@@ -297,6 +297,7 @@ class NextSubscriptionStepTest:
             subscription_api.get_next_subscription_step(user) == subscription_models.SubscriptionStep.PROFILE_COMPLETION
         )
 
+    @override_features(ENABLE_UBBLE=True)
     def test_next_subscription_step_identity_check(self):
         user = users_factories.UserFactory(
             dateOfBirth=self.eighteen_years_ago,
@@ -501,7 +502,7 @@ class NextSubscriptionStepTest:
 
 
 @pytest.mark.usefixtures("db_session")
-class OnSucessfulDMSApplicationTest:
+class OnSuccessfulDMSApplicationTest:
     @override_features(FORCE_PHONE_VALIDATION=False)
     def test_new_beneficiaries_are_recorded_with_deposit(self):
         # given
@@ -521,6 +522,9 @@ class OnSucessfulDMSApplicationTest:
             registration_datetime=datetime.today(),
         )
         applicant = users_factories.UserFactory(email=information.email)
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=applicant, type=fraud_models.FraudCheckType.DMS, status=fraud_models.FraudCheckStatus.OK
+        )
         check = fraud_factories.BeneficiaryFraudCheckFactory(
             user=applicant, type=fraud_models.FraudCheckType.HONOR_STATEMENT, status=fraud_models.FraudCheckStatus.OK
         )
@@ -544,40 +548,6 @@ class OnSucessfulDMSApplicationTest:
         assert first.has_beneficiary_role
         assert len(push_testing.requests) == 2
         assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 2016025
-
-    def test_an_import_status_is_saved_if_beneficiary_is_created(self):
-        # given
-        information = fraud_models.DMSContent(
-            department="93",
-            last_name="Doe",
-            first_name="Jane",
-            birth_date=datetime.utcnow() - relativedelta(years=users_constants.ELIGIBILITY_AGE_18),
-            email="jane.doe@example.com",
-            phone="0612345678",
-            postal_code="93130",
-            address="11 Rue du Test",
-            application_id=123,
-            procedure_id=123456,
-            civility="Mme",
-            activity="Étudiant",
-            registration_datetime=datetime.today(),
-        )
-        applicant = users_factories.UserFactory(email=information.email)
-        # when
-        subscription_api.on_successful_application(
-            user=applicant,
-            source=BeneficiaryImportSources.demarches_simplifiees,
-            source_data=information,
-            eligibility_type=users_models.EligibilityType.AGE18,
-            application_id=123,
-            source_id=123456,
-        )
-
-        # then
-        beneficiary_import = BeneficiaryImport.query.first()
-        assert beneficiary_import.beneficiary.email == "jane.doe@example.com"
-        assert beneficiary_import.currentStatus == ImportStatus.CREATED
-        assert beneficiary_import.applicationId == 123
 
     @patch("pcapi.repository.repository")
     @patch("pcapi.domain.user_emails.send_activation_email")
@@ -623,6 +593,11 @@ class OnSucessfulDMSApplicationTest:
                 civility="Mme",
                 activity="Étudiant",
                 registration_datetime=datetime.today(),
+            )
+            fraud_factories.BeneficiaryFraudCheckFactory(
+                user=applicant,
+                type=fraud_models.FraudCheckType.DMS,
+                status=fraud_models.FraudCheckStatus.OK,
             )
             fraud_factories.BeneficiaryFraudCheckFactory(
                 user=applicant,

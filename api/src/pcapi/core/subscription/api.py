@@ -28,7 +28,6 @@ from pcapi.workers import apps_flyer_job
 
 from . import exceptions
 from . import models
-from . import repository as subscription_repository
 
 
 logger = logging.getLogger(__name__)
@@ -107,14 +106,13 @@ def create_successfull_beneficiary_import(
 def activate_beneficiary(
     user: users_models.User, deposit_source: str = None, has_activated_account: typing.Optional[bool] = True
 ) -> users_models.User:
-
-    beneficiary_import = subscription_repository.get_beneficiary_import_for_beneficiary(user)
-    if not beneficiary_import:
-        raise exceptions.BeneficiaryImportMissingException()
-
-    eligibility = beneficiary_import.eligibilityType
-    if deposit_source is None:
-        deposit_source = beneficiary_import.get_detailed_source()
+    fraud_check = users_api.get_activable_identity_fraud_check(user)
+    if not fraud_check:
+        raise exceptions.BeneficiaryFraudCheckMissingException(
+            f"No validated Identity fraudCheck found when trying to activate user {user.id}"
+        )
+    eligibility = fraud_check.eligibilityType
+    deposit_source = fraud_check.get_detailed_source()
 
     if not users_api.is_eligible_for_beneficiary_upgrade(user, eligibility):
         raise exceptions.CannotUpgradeBeneficiaryRole()

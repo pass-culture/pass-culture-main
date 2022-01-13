@@ -195,6 +195,7 @@ class BeneficiaryGrant18Factory(BaseFactory):
                 last_name=obj.lastName,
                 birth_date=obj.dateOfBirth.date(),
                 ine_hash=obj.ineHash or "".join(random.choices(string.ascii_lowercase + string.digits, k=32)),
+                registration_datetime=obj.dateCreated,
             )
             if obj.eligibility == users_models.EligibilityType.UNDERAGE
             else fraud_factories.UbbleContentFactory(first_name=obj.firstName, last_name=obj.lastName),

@@ -20,9 +20,10 @@ class UserRecreditTest:
         [("2006-01-01", "2021-05-01", False), ("2006-01-01", "2020-05-01", True), ("2006-07-01", "2020-05-01", True)],
     )
     def test_has_celebrated_their_birthday_since_activation(self, birth_date, deposit_activation_date, expected_result):
-        user = user_factories.UserFactory(
+        user = user_factories.BeneficiaryGrant18Factory(
             dateOfBirth=birth_date,
         )
+        payments_models.Deposit.query.delete()
         user_factories.DepositGrantFactory(user=user, dateCreated=deposit_activation_date)
         assert has_celebrated_their_birthday_since_activation(user) == expected_result
 

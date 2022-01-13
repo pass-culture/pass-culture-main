@@ -31,7 +31,6 @@ from pcapi.core.mails.transactional.users.email_address_change_confirmation impo
 import pcapi.core.payments.api as payment_api
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import exceptions as subscription_exceptions
-import pcapi.core.subscription.repository as subscription_repository
 from pcapi.core.users import utils as users_utils
 from pcapi.core.users.external import update_external_user
 from pcapi.core.users.models import Credit
@@ -236,10 +235,7 @@ def steps_to_become_beneficiary(
     ):
         missing_steps.append(BeneficiaryValidationStep.PHONE_VALIDATION)
 
-    beneficiary_import = subscription_repository.get_beneficiary_import_for_beneficiary(user)
-    if not beneficiary_import or (
-        beneficiary_import.eligibilityType == EligibilityType.UNDERAGE and user.has_underage_beneficiary_role
-    ):
+    if not get_activable_identity_fraud_check(user):
         missing_steps.append(BeneficiaryValidationStep.ID_CHECK)
 
     if not fraud_api.has_performed_honor_statement(user, eligibility_type):
@@ -950,3 +946,35 @@ def is_eligible_for_beneficiary_upgrade(user: models.User, eligibility: Optional
     return (eligibility == EligibilityType.UNDERAGE and not user.has_underage_beneficiary_role) or (
         eligibility == EligibilityType.AGE18 and not user.has_beneficiary_role
     )
+
+
+def get_activable_identity_fraud_check(user: User) -> typing.Optional[fraud_models.BeneficiaryFraudCheck]:
+    """Finds first created activable identity fraud check for a user.
+
+    Args:
+        user (User): user to find activable identity fraud check for.
+
+    Returns:
+        BeneficiaryFraudCheck: activable identity fraud check for a user.
+    """
+    user_identity_fraud_checks = [
+        fraud_check
+        for fraud_check in user.beneficiaryFraudChecks
+        if fraud_check.status == fraud_models.FraudCheckStatus.OK
+        and fraud_check.type in fraud_models.IDENTITY_CHECK_TYPES
+        and is_eligible_for_beneficiary_upgrade(user, fraud_check.eligibilityType)
+        and not (
+            fraud_check.eligibilityType == EligibilityType.UNDERAGE and user.age >= constants.ELIGIBILITY_AGE_18
+        )  # TODO: put this condition inside is_eligible_for_beneficiary_upgrade
+    ]
+    # Remove Underage related fraud_checks if the user has underage beneficiary role
+    if user.has_underage_beneficiary_role:
+        user_identity_fraud_checks = [
+            fraud_check
+            for fraud_check in user_identity_fraud_checks
+            if not fraud_check.eligibilityType == EligibilityType.UNDERAGE
+        ]
+    if not user_identity_fraud_checks:
+        return None
+
+    return sorted(user_identity_fraud_checks, key=lambda fraud_check: fraud_check.dateCreated, reverse=True)[0]
