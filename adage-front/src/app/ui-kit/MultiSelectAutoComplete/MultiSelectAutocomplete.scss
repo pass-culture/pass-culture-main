@@ -1,0 +1,83 @@
+@import 'sass-rem';
+@import 'styles';
+
+.multi-select-autocomplete-container {
+  width: rem(213px);
+}
+
+.multi-select-autocomplete-label {
+  display: inline-block;
+  margin-bottom: rem(8px);
+  font-size: rem(15px);
+}
+
+// In this file, the use of important is necessary
+// to bypass default style of react-select
+.multi-select-autocomplete__control {
+  border: 1px solid $grey-medium !important;
+  font-size: rem(15px);
+  border-radius: rem(30px) !important;
+  padding: rem(8px) rem(16px);
+
+  &.multi-select-autocomplete__control--is-focused {
+    border-color: $black !important;
+    box-shadow: none;
+  }
+
+  .multi-select-autocomplete__value-container {
+    padding: 0;
+
+    .multi-select-autocomplete__placeholder {
+      font-style: italic;
+      color: $black;
+    }
+  }
+
+  &:hover {
+    border-color: $black !important;
+  }
+}
+
+.multi-select-autocomplete__menu {
+  margin: 0 !important;
+  width: rem(256px) !important;
+  right: 0 !important;
+  font-size: rem(15px);
+  box-shadow: 0px rem(2px) rem(16px) rgba(37, 2, 108, 0.15) !important;
+
+  .multi-select-autocomplete__menu-list {
+    padding: rem(8px) 0;
+  }
+
+  .multi-select-autocomplete__option {
+    &.multi-select-autocomplete__option--is-focused,
+    &.multi-select-autocomplete__option--is-focused.multi-select-autocomplete__option--is-selected {
+      background-color: $grey-light;
+    }
+
+    &.multi-select-autocomplete__option--is-selected {
+      background-color: $white;
+      color: $black;
+
+      &:hover,
+      &:focus {
+        background-color: $grey-light;
+      }
+    }
+  }
+}
+
+.multi-select-autocomplete__indicators {
+  .multi-select-autocomplete__indicator {
+    padding: 0;
+    color: $black;
+
+    svg {
+      fill: $black;
+    }
+  }
+}
+
+.multi-select-autocomplete__indicator-separator {
+  display: none;
+}
