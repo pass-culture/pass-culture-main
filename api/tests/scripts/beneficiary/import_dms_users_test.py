@@ -154,7 +154,7 @@ class RunTest:
         details = [status.detail for status in beneficiary_import.statuses]
         assert beneficiary_import.currentStatus == ImportStatus.REJECTED
         assert beneficiary_import.applicationId == 123
-        assert details == ["Compte existant avec cet email"]
+        assert details == ["Compte existant avec cet email", "Voir les details dans la page support"]
         assert beneficiary_import.beneficiary == user
         on_sucessful_application.assert_not_called()
 
@@ -374,11 +374,10 @@ class RunIntegrationTest:
 
     @override_features(FORCE_PHONE_VALIDATION=True)
     @patch.object(DMSGraphQLClient, "get_applications_with_details")
-    def test_import_does_not_make_user_beneficiary(self, get_applications_with_details):
+    def test_phone_not_validated_create_beneficiary_with_phone_to_validate(self, get_applications_with_details):
         """
         Test that an imported user without a validated phone number, and the
-        FORCE_PHONE_VALIDATION feature flag activated, cannot become
-        beneficiary.
+        FORCE_PHONE_VALIDATION feature flag activated, requires a future validation
         """
         date_of_birth = self.BENEFICIARY_BIRTH_DATE.strftime("%Y-%m-%dT%H:%M:%S")
 
@@ -400,13 +399,16 @@ class RunIntegrationTest:
         assert users_models.User.query.count() == 1
         user = users_models.User.query.first()
 
-        assert not user.has_beneficiary_role
-
         assert len(user.beneficiaryFraudChecks) == 2
-        assert len(user.beneficiaryFraudResults) == 1
 
-        fraud_result = user.beneficiaryFraudResults[0]
-        assert fraud_result.status == fraud_models.FraudStatus.OK
+        honor_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(
+            user=user, type=fraud_models.FraudCheckType.HONOR_STATEMENT
+        ).one_or_none()
+        assert honor_check
+        dms_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(
+            user=user, type=fraud_models.FraudCheckType.DMS, status=fraud_models.FraudCheckStatus.OK
+        ).one_or_none()
+        assert dms_check
         assert BeneficiaryImport.query.count() == 1
 
         beneficiary_import = BeneficiaryImport.query.first()
@@ -544,9 +546,6 @@ class RunIntegrationTest:
         assert fraud_models.FraudReasonCode.DUPLICATE_USER in fraud_check.reasonCodes
         assert fraud_check.status == fraud_models.FraudCheckStatus.SUSPICIOUS
 
-        assert user.beneficiaryFraudResults[0].status == fraud_models.FraudStatus.SUSPICIOUS
-        assert f"Duplicat de l'utilisateur {existing_user.id}" in user.beneficiaryFraudResults[0].reason
-
         beneficiary_import = BeneficiaryImport.query.filter(BeneficiaryImport.beneficiary != existing_user).first()
         assert beneficiary_import.source == "demarches_simplifiees"
         assert beneficiary_import.applicationId == 123
@@ -587,6 +586,12 @@ class RunIntegrationTest:
 
         fraud_check = applicant.beneficiaryFraudChecks[0]
         assert fraud_check.type == fraud_models.FraudCheckType.DMS
+
+        assert fraud_check.status == fraud_models.FraudCheckStatus.SUSPICIOUS
+        assert (
+            fraud_check.reason == f"La pièce d'identité n°1234123412 est déjà prise par l'utilisateur {beneficiary.id}"
+        )
+
         fraud_content = fraud_models.DMSContent(**fraud_check.resultContent)
         assert fraud_content.birth_date == applicant.dateOfBirth.date()
         assert fraud_content.address == "3 La Bigotais 22800 Saint-Donan"
@@ -600,12 +605,6 @@ class RunIntegrationTest:
         assert beneficiary_import.beneficiary == applicant
         assert beneficiary_import.currentStatus == ImportStatus.REJECTED
         assert beneficiary_import_status.beneficiaryImportId == beneficiary_import.id
-
-        assert applicant.beneficiaryFraudResults[0].status == fraud_models.FraudStatus.SUSPICIOUS
-        assert (
-            f"La pièce d'identité n°1234123412 est déjà prise par l'utilisateur {beneficiary.id}"
-            == applicant.beneficiaryFraudResults[0].reason
-        )
 
         sub_msg = applicant.subscriptionMessages[0]
         assert (

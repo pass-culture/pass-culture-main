@@ -962,11 +962,6 @@ class SendPhoneValidationCodeTest:
         assert content["message"] == expected_reason
         assert content["phone_number"] == "+33601020304"
 
-        # check that a fraud result has also been created
-        assert len(user.beneficiaryFraudResults) == 1
-        assert user.beneficiaryFraudResults[0].status == fraud_models.FraudStatus.SUSPICIOUS
-        assert user.beneficiaryFraudResults[0].reason == expected_reason
-
     def test_send_phone_validation_code_already_beneficiary(self, client, app):
         user = users_factories.BeneficiaryGrant18Factory(
             isEmailValidated=True, phoneNumber="+33601020304", roles=[UserRole.BENEFICIARY]
@@ -1246,11 +1241,6 @@ class ValidatePhoneNumberTest:
         assert content["message"] == expected_reason
         assert content["phone_number"] == "+33607080900"
 
-        # check that a fraud result has also been created
-        assert len(user.beneficiaryFraudResults) == 1
-        assert user.beneficiaryFraudResults[0].status == fraud_models.FraudStatus.SUSPICIOUS
-        assert user.beneficiaryFraudResults[0].reason == expected_reason
-
     def test_wrong_code(self, client, app):
         user = users_factories.UserFactory(
             phoneNumber="+33607080900",
@@ -1493,10 +1483,7 @@ class ProfilingFraudScoreTest:
         response = client.post("/native/v1/user_profiling", json={"sessionId": session_id, "agentType": "agent_mobile"})
 
         assert response.status_code == 204
-        assert (
-            fraud_models.BeneficiaryFraudResult.query.filter(fraud_models.BeneficiaryFraudResult.user == user).count()
-            == 1
-        )
+
         assert len(user.subscriptionMessages) == 1
         sub_message = user.subscriptionMessages[0]
         assert sub_message.userMessage == "Ton inscription n'a pas pu aboutir."
