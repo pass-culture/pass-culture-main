@@ -29,7 +29,6 @@ Par exemple :
 ```python
 @private_api.route('/eventOccurrences', methods=['POST'])
 @login_required
-@expect_json_data
 def create_event_occurrence():
     product = Product.query \
         .join(Offer) \

@@ -1,10 +1,7 @@
 from dataclasses import asdict
-from datetime import date
 import logging
 import typing
 from typing import Iterable
-
-from requests import Response
 
 from pcapi import settings
 from pcapi.core.mails.models import MailResult
@@ -37,15 +34,6 @@ class SendinblueBackend(BaseBackend):
             send_transactional_email_secondary_task.delay(payload)
 
         return MailResult(sent_data=asdict(data), successful=True)
-
-    def create_contact(self, email: str) -> Response:
-        pass
-
-    def update_contact(self, email: str, *, birth_date: date, department: str) -> Response:
-        pass
-
-    def add_contact_to_list(self, email: str, list_id: str) -> Response:
-        pass
 
 
 class ToDevSendinblueBackend(SendinblueBackend):

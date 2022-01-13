@@ -1,24 +1,9 @@
-from functools import wraps
-from typing import Callable
-from typing import Union
-
-from flask import request
 from sqlalchemy.orm.exc import NoResultFound
 
 from pcapi.core.users.models import User
 from pcapi.models import Model
 from pcapi.models.api_errors import ApiErrors
 from pcapi.utils.human_ids import dehumanize
-
-
-def expect_json_data(f: Callable) -> Callable:
-    @wraps(f)
-    def wrapper(*args: tuple, **kwargs: dict) -> Union[Callable, tuple[str, int]]:
-        if request.json is None:
-            return "JSON data expected", 400
-        return f(*args, **kwargs)
-
-    return wrapper
 
 
 def check_user_has_access_to_offerer(user: User, offerer_id: int) -> None:
