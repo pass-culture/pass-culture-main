@@ -97,6 +97,8 @@ class EducationalBookingPerYearResponse(AdageBaseResponseModel):
     confirmationLimitDate: datetime
     totalAmount: float
     beginningDatetime: datetime
+    venueTimezone: str
+    name: str
 
 
 class EducationalBookingsPerYearResponse(AdageBaseResponseModel):
