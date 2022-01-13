@@ -314,6 +314,7 @@ class SendinblueRetrieveDataToWarnUserAfterProBookingCancellationTest:
         email_data = get_booking_cancellation_by_pro_to_beneficiary_email_data(booking)
 
         # Then
+        assert email_data.template == Template(id_prod=475, id_not_prod=44, tags=["profs_annulation_offreur"])
         assert email_data.params == {
             "EVENT_DATE": "samedi 20 juillet 2019",
             "EVENT_HOUR": "14h",

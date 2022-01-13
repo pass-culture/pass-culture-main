@@ -47,7 +47,9 @@ def get_booking_cancellation_by_pro_to_beneficiary_email_data(
         }
 
     return SendinblueTransactionalEmailData(
-        template=TransactionalEmail.BOOKING_CANCELLATION_BY_PRO_TO_BENEFICIARY.value,
+        template=TransactionalEmail.BOOKING_CANCELLATION_BY_PRO_TO_BENEFICIARY.value
+        if booking.individualBooking is not None
+        else TransactionalEmail.BOOKING_CANCELLATION_BY_PRO_TO_TEACHER.value,
         params={
             "EVENT_DATE": event_date,
             "EVENT_HOUR": event_hour,
