@@ -58,11 +58,17 @@ class UserRecreditTest:
         ],
     )
     def test_has_been_recredited(self, user_age, user_recredits, expected_result):
-        user = user_factories.UserFactory(
-            dateOfBirth=datetime.datetime.combine(datetime.date.today(), datetime.time(0, 0))
-            - relativedelta(years=user_age)
-        )
-        user_factories.DepositGrantFactory(user=user)
+        if 15 <= user_age <= 17:
+            user = user_factories.UnderageBeneficiaryFactory(
+                dateOfBirth=datetime.datetime.combine(datetime.date.today(), datetime.time(0, 0))
+                - relativedelta(years=user_age)
+            )
+        elif user_age == 18:
+            user = user_factories.BeneficiaryGrant18Factory(
+                dateOfBirth=datetime.datetime.combine(datetime.date.today(), datetime.time(0, 0))
+                - relativedelta(years=user_age)
+            )
+
         for recredit in user_recredits:
             payments_factories.RecreditFactory(
                 deposit=user.deposit, recreditType=recredit["type"], dateCreated=recredit["date_created"]

@@ -8,6 +8,8 @@ from freezegun import freeze_time
 import pytest
 import pytz
 
+from pcapi.core.fraud import factories as fraud_factories
+from pcapi.core.fraud import models as fraud_models
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.payments import api
@@ -16,6 +18,7 @@ from pcapi.core.payments import factories as payments_factories
 from pcapi.core.payments.models import Deposit
 from pcapi.core.payments.models import DepositType
 from pcapi.core.testing import override_settings
+from pcapi.core.users import api as users_api
 from pcapi.core.users import factories as users_factories
 from pcapi.models import db
 from pcapi.models.payment import Payment
@@ -107,6 +110,40 @@ class CreateDepositTest:
         # Then
         assert Deposit.query.filter(Deposit.userId == beneficiary.id).count() == 1
         assert error.value.errors["user"] == ['Cet utilisateur a déjà été crédité de la subvention "GRANT_18".']
+
+    @pytest.mark.parametrize(
+        "birth_date,registration_date,current_date,expected_result",
+        [
+            (datetime(2000, 1, 10), datetime(2015, 1, 1), datetime(2015, 1, 12), 14),
+            (datetime(2000, 1, 10), datetime(2015, 1, 11), datetime(2015, 1, 12), 15),
+            (datetime(2000, 1, 10), datetime(2015, 1, 11), datetime(2016, 1, 12), 15),
+            (datetime(2000, 1, 10), datetime(1999, 1, 11), datetime(2015, 1, 12), 0),
+        ],
+    )
+    @pytest.mark.parametrize(
+        "ContentFactory,fraud_check_type",
+        [
+            (fraud_factories.UbbleContentFactory, fraud_models.FraudCheckType.UBBLE),
+            (fraud_factories.EduconnectContentFactory, fraud_models.FraudCheckType.EDUCONNECT),
+            (fraud_factories.DMSContentFactory, fraud_models.FraudCheckType.DMS),
+        ],
+    )
+    def test_get_user_age_at_registration(
+        self, birth_date, registration_date, current_date, expected_result, ContentFactory, fraud_check_type
+    ):
+        with freeze_time(current_date):
+            user = users_factories.UserFactory(dateOfBirth=birth_date)
+            content = ContentFactory(registration_datetime=registration_date)
+            fraud_factories.BeneficiaryFraudCheckFactory(
+                user=user,
+                resultContent=content,
+                eligibilityType=user.eligibility,
+                type=fraud_check_type,
+                status=fraud_models.FraudCheckStatus.OK,
+            )
+            age = users_api.get_user_age_at_registration(user)
+
+        assert age == expected_result
 
 
 class BulkCreatePaymentStatusesTest:
