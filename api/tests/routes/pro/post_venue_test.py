@@ -27,7 +27,6 @@ def create_valid_venue_data(user=None):
     if user:
         user_offerer_data["user"] = user
     user_offerer = offers_factories.UserOffererFactory(**user_offerer_data)
-    venue_type = offerers_factories.VenueTypeFactory(label="Musée")
     venue_label = offerers_factories.VenueLabelFactory(label="CAC - Centre d'art contemporain d'intérêt national")
 
     return {
@@ -41,7 +40,7 @@ def create_valid_venue_data(user=None):
         "latitude": 48.82387,
         "longitude": 2.35284,
         "publicName": "Ma venue publique",
-        "venueTypeId": humanize(venue_type.id),
+        "venueTypeCode": "BOOKSTORE",
         "venueLabelId": humanize(venue_label.id),
         "description": "Some description",
         "audioDisabilityCompliant": True,
@@ -53,10 +52,10 @@ def create_valid_venue_data(user=None):
 
 
 @pytest.mark.usefixtures("db_session")
-def test_should_register_new_venue(app):
+def test_should_register_new_venue(client):
     # given
     user = ProFactory()
-    auth_request = TestClient(app.test_client()).with_session_auth(email=user.email)
+    auth_request = client.with_session_auth(email=user.email)
     venue_data = create_valid_venue_data(user)
 
     # when
@@ -71,7 +70,7 @@ def test_should_register_new_venue(app):
     assert venue.name == venue_data["name"]
     assert venue.publicName == venue_data["publicName"]
     assert venue.siret == venue_data["siret"]
-    assert venue.venueTypeId == dehumanize(venue_data["venueTypeId"])
+    assert venue.venueTypeCode.name == "BOOKSTORE"
     assert venue.venueLabelId == dehumanize(venue_data["venueLabelId"])
     assert venue.description == venue_data["description"]
     assert venue.audioDisabilityCompliant == venue_data["audioDisabilityCompliant"]

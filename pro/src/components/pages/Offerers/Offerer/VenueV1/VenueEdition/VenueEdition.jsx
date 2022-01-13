@@ -141,7 +141,7 @@ const VenueEdition = ({
       latitude: formLatitude,
       longitude: formLongitude,
       siret: formSiret,
-      venueTypeId,
+      venueTypeCode,
       venueLabelId,
     } = values
 
@@ -173,7 +173,7 @@ const VenueEdition = ({
             venueIsVirtual={initialIsVirtual}
             venueLabelId={venueLabelId}
             venueLabels={venueLabels}
-            venueTypeId={venueTypeId}
+            venueTypeCode={venueTypeCode}
             venueTypes={venueTypes}
           />
           {!initialIsVirtual && (

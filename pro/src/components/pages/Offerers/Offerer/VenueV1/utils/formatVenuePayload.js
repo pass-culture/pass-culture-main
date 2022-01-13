@@ -19,7 +19,7 @@ const creation_authorized_input_field = [
   'publicName',
   'siret',
   'venueLabelId',
-  'venueTypeId',
+  'venueTypeCode',
   'withdrawalDetails',
   'audioDisabilityCompliant',
   'mentalDisabilityCompliant',
@@ -45,7 +45,7 @@ const edition_authorized_input_field = [
   'publicName',
   'siret',
   'venueLabelId',
-  'venueTypeId',
+  'venueTypeCode',
   'withdrawalDetails',
   'audioDisabilityCompliant',
   'mentalDisabilityCompliant',
@@ -81,7 +81,7 @@ export const formatVenuePayload = (payload, isCreatedEntity) => {
 
     if (payload[inputName] !== undefined) {
       requestPayload[inputName] = payload[inputName]
-    } else if (inputName === 'venueTypeId' || inputName === 'venueLabelId') {
+    } else if (inputName === 'venueTypeCode' || inputName === 'venueLabelId') {
       requestPayload[inputName] = null
     }
   })
