@@ -8,4 +8,3 @@ def install_routes(app: Flask) -> None:
     from . import mailing_contacts
     from . import music_types
     from . import show_types
-    from . import subcategories
