@@ -862,8 +862,10 @@ describe('offerDetails - Creation - pro user', () => {
           expect(screen.getByDisplayValue(venues[0].name)).toBeInTheDocument()
         })
 
-        it('should only display virtual venues when offer type is online only', async () => {
+        it('should select virtual venue and disable the input when offer subcategory is online only', async () => {
           // Given
+          pcapi.getVenuesForOfferer.mockResolvedValue([venues[2]])
+          pcapi.getVenue.mockResolvedValue(venues[2])
           await renderOffers(props, store)
 
           // When
@@ -871,9 +873,10 @@ describe('offerDetails - Creation - pro user', () => {
           setOfferValues({ subcategoryId: 'ABO_PRESSE_EN_LIGNE' })
 
           // Then
-          expect(screen.queryByText(venues[0].name)).not.toBeInTheDocument()
-          expect(screen.queryByText(venues[1].name)).not.toBeInTheDocument()
           expect(screen.getByText(venues[2].name)).toBeInTheDocument()
+          expect(
+            screen.getByText(venues[2].name).closest('select')
+          ).toBeDisabled()
         })
 
         it('should only display physical venues when offer type is offline only', async () => {
