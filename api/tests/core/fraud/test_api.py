@@ -98,81 +98,19 @@ class CommonTest:
         assert item.status == fraud_models.FraudStatus.OK
 
 
-@pytest.mark.usefixtures("db_session")
-class UpsertFraudResultTest:
-    def test_create_on_first_fraud_result(self):
-        user = users_factories.UserFactory()
-        assert fraud_models.BeneficiaryFraudResult.query.count() == 0
-
-        result = fraud_api.upsert_fraud_result(
-            user, fraud_models.FraudStatus.SUSPICIOUS, users_models.EligibilityType.AGE18, "no reason at all"
-        )
-
-        assert fraud_models.BeneficiaryFraudResult.query.count() == 1
-        assert result.user == user
-        assert result.reason == "no reason at all"
-
-    def test_update_on_following_fraud_results(self):
-        user = users_factories.UserFactory()
-        fraud_api.upsert_fraud_result(user, fraud_models.FraudStatus.OK, users_models.EligibilityType.AGE18)
-        assert fraud_models.BeneficiaryFraudResult.query.count() == 1
-
-        fraud_api.upsert_fraud_result(
-            user, fraud_models.FraudStatus.SUSPICIOUS, users_models.EligibilityType.AGE18, "no reason at all"
-        )
-        fraud_api.upsert_fraud_result(
-            user, fraud_models.FraudStatus.KO, users_models.EligibilityType.AGE18, "no reason at all"
-        )
-
-        assert fraud_models.BeneficiaryFraudResult.query.count() == 1
-
-    @pytest.mark.parametrize("fraud_status", (fraud_models.FraudStatus.SUSPICIOUS, fraud_models.FraudStatus.KO))
-    def test_reason_is_mandatory_when_not_ok(self, fraud_status):
-        user = users_factories.UserFactory()
-
-        with pytest.raises(ValueError) as excinfo:
-            fraud_api.upsert_fraud_result(user, fraud_status, users_models.EligibilityType.AGE18)
-
-        assert str(excinfo.value) == f"a reason should be provided when setting fraud result to {fraud_status.value}"
-
-    def test_do_not_repeat_previous_reason_and_keep_history(self):
-        """
-        Test that the upsert function does updated the reason when consecutive
-        calls do not use the same reason.
-        """
-        user = users_factories.UserFactory()
-        first_reason = "first reason"
-        second_reason = "second reason"
-
-        fraud_api.upsert_fraud_result(
-            user, fraud_models.FraudStatus.SUSPICIOUS, users_models.EligibilityType.AGE18, first_reason
-        )
-        fraud_api.upsert_fraud_result(
-            user, fraud_models.FraudStatus.SUSPICIOUS, users_models.EligibilityType.AGE18, first_reason
-        )
-        fraud_api.upsert_fraud_result(
-            user, fraud_models.FraudStatus.SUSPICIOUS, users_models.EligibilityType.AGE18, first_reason
-        )
-        fraud_api.upsert_fraud_result(
-            user, fraud_models.FraudStatus.SUSPICIOUS, users_models.EligibilityType.AGE18, second_reason
-        )
-        fraud_api.upsert_fraud_result(
-            user, fraud_models.FraudStatus.SUSPICIOUS, users_models.EligibilityType.AGE18, second_reason
-        )
-        fraud_api.upsert_fraud_result(
-            user, fraud_models.FraudStatus.SUSPICIOUS, users_models.EligibilityType.AGE18, first_reason
-        )
-        result = fraud_api.upsert_fraud_result(
-            user, fraud_models.FraudStatus.SUSPICIOUS, users_models.EligibilityType.AGE18, first_reason
-        )
-
-        assert fraud_models.BeneficiaryFraudResult.query.count() == 1
-        assert result.user == user
-        assert result.reason == f"{first_reason} ; {second_reason} ; {first_reason}"
+def filter_invalid_fraud_items_to_reason_code(
+    fraud_items: list[fraud_models.FraudItem],
+) -> list[fraud_models.FraudItem]:
+    return [item.reason_code for item in fraud_items if item.status != fraud_models.FraudStatus.OK]
 
 
 @pytest.mark.usefixtures("db_session")
 class CommonFraudCheckTest:
+    def filter_invalid_fraud_items_to_reason_code(
+        self, fraud_items: list[fraud_models.FraudItem]
+    ) -> list[fraud_models.FraudItem]:
+        return [item.reason_code for item in fraud_items if item.status != fraud_models.FraudStatus.OK]
+
     def test_duplicate_id_piece_number_ok(self):
         user = users_factories.UserFactory()
         fraud_item = fraud_api.duplicate_id_piece_number_fraud_item(user, "random_id")
@@ -220,17 +158,6 @@ class CommonFraudCheckTest:
 
         assert fraud_item.status == fraud_models.FraudStatus.OK
 
-    @pytest.mark.parametrize(
-        "fraud_check_type",
-        [fraud_models.FraudCheckType.DMS],
-    )
-    def test_user_validation_is_beneficiary(self, fraud_check_type):
-        user = users_factories.BeneficiaryGrant18Factory()
-        fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(type=fraud_check_type, user=user)
-
-        with pytest.raises(fraud_exceptions.BeneficiaryFraudResultCannotBeDowngraded):
-            fraud_api.on_identity_fraud_check_result(user, fraud_check)
-
     def test_underage_user_validation_is_beneficiary(self):
         user = users_factories.UnderageBeneficiaryFactory()
         fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
@@ -239,8 +166,11 @@ class CommonFraudCheckTest:
             resultContent=fraud_factories.EduconnectContentFactory(),
             eligibilityType=users_models.EligibilityType.UNDERAGE,
         )
-        with pytest.raises(fraud_exceptions.BeneficiaryFraudResultCannotBeDowngraded):
-            fraud_api.on_identity_fraud_check_result(user, fraud_check)
+
+        fraud_items = fraud_api.on_identity_fraud_check_result(user, fraud_check)
+        invalid_codes = filter_invalid_fraud_items_to_reason_code(fraud_items)
+        assert fraud_models.FraudReasonCode.ALREADY_HAS_ACTIVE_DEPOSIT in invalid_codes
+        assert fraud_models.FraudReasonCode.ALREADY_BENEFICIARY in invalid_codes
 
     @pytest.mark.parametrize(
         "fraud_check_type",
@@ -249,10 +179,11 @@ class CommonFraudCheckTest:
     def test_user_validation_has_email_validated(self, fraud_check_type):
         user = users_factories.UserFactory(isEmailValidated=False)
         fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(type=fraud_check_type, user=user)
-        fraud_result = fraud_api.on_identity_fraud_check_result(user, fraud_check)
+        fraud_items = fraud_api.on_identity_fraud_check_result(user, fraud_check)
 
-        assert "L'email de l'utilisateur n'est pas validé" in fraud_result.reason
-        assert fraud_result.status == fraud_models.FraudStatus.KO
+        invalid_codes = filter_invalid_fraud_items_to_reason_code(fraud_items)
+        assert len(invalid_codes) == 1
+        assert fraud_models.FraudReasonCode.EMAIL_NOT_VALIDATED in invalid_codes
 
     @pytest.mark.parametrize("age", [15, 16, 17])
     def test_underage_user_validation_has_email_validated(self, age):
@@ -262,10 +193,10 @@ class CommonFraudCheckTest:
             user=user,
             resultContent=fraud_factories.EduconnectContentFactory(age=age),
         )
-        fraud_result = fraud_api.on_identity_fraud_check_result(user, fraud_check)
+        fraud_items = fraud_api.on_identity_fraud_check_result(user, fraud_check)
 
-        assert "L'email de l'utilisateur n'est pas validé" in fraud_result.reason
-        assert fraud_result.status == fraud_models.FraudStatus.KO
+        invalid_codes = filter_invalid_fraud_items_to_reason_code(fraud_items)
+        assert fraud_models.FraudReasonCode.EMAIL_NOT_VALIDATED in invalid_codes
 
     @pytest.mark.parametrize("fraud_check_type", [fraud_models.FraudCheckType.DMS])
     def test_previously_validated_user_with_retry(self, fraud_check_type):
@@ -274,9 +205,10 @@ class CommonFraudCheckTest:
         # an error should be raised
         user = users_factories.BeneficiaryGrant18Factory()
         fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(type=fraud_check_type, user=user)
-
-        with pytest.raises(fraud_exceptions.BeneficiaryFraudResultCannotBeDowngraded):
-            fraud_api.on_identity_fraud_check_result(user, fraud_check)
+        fraud_items = fraud_api.on_identity_fraud_check_result(user, fraud_check)
+        invalid_codes = filter_invalid_fraud_items_to_reason_code(fraud_items)
+        assert fraud_models.FraudReasonCode.ALREADY_HAS_ACTIVE_DEPOSIT in invalid_codes
+        assert fraud_models.FraudReasonCode.ALREADY_BENEFICIARY in invalid_codes
 
 
 @pytest.mark.usefixtures("db_session")
@@ -284,19 +216,11 @@ class DMSFraudCheckTest:
     def test_dms_fraud_check(self):
         user = users_factories.UserFactory()
         content = fraud_factories.DMSContentFactory()
-        fraud_api.on_dms_fraud_result(user, content)
-
-        fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(
-            user=user, type=fraud_models.FraudCheckType.DMS
-        ).one_or_none()
-
+        fraud_check = fraud_api.on_dms_fraud_result(user, content)
         assert fraud_check.eligibilityType == users_models.EligibilityType.AGE18
 
         expected_content = fraud_models.DMSContent(**fraud_check.resultContent)
         assert content == expected_content
-
-        fraud_result = fraud_models.BeneficiaryFraudResult.query.filter_by(user=user).one_or_none()
-        assert fraud_result.status == fraud_models.FraudStatus.OK
 
     def test_admin_update_identity_fraud_check_result(self):
         user = users_factories.UserFactory()
@@ -316,14 +240,14 @@ class UserFraudsterTest:
     @pytest.mark.parametrize(
         "fraud_status,is_fraudster",
         (
-            (fraud_models.FraudStatus.OK, False),
-            (fraud_models.FraudStatus.KO, True),
-            (fraud_models.FraudStatus.SUSPICIOUS, True),
+            (fraud_models.FraudCheckStatus.OK, False),
+            (fraud_models.FraudCheckStatus.KO, True),
+            (fraud_models.FraudCheckStatus.SUSPICIOUS, True),
         ),
     )
     def test_is_user_fraudster(self, fraud_status, is_fraudster):
-        fraud_result = fraud_factories.BeneficiaryFraudResultFactory(status=fraud_status)
-        assert is_fraudster == fraud_api.is_user_fraudster(fraud_result.user)
+        fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(status=fraud_status)
+        assert is_fraudster == fraud_api.is_user_fraudster(fraud_check.user)
 
 
 @pytest.mark.usefixtures("db_session")
@@ -365,8 +289,6 @@ class EduconnectFraudTest:
             "school_uai": "shchool-uai",
             "student_level": "2212",
         }
-        assert len(user.beneficiaryFraudResults) == 1
-        assert user.beneficiaryFraudResults[0].status == fraud_models.FraudStatus.OK
 
         # If the user logs in again with another educonnect account, update the fraud check
         fraud_factories.IneHashWhitelistFactory(ine_hash="0000")
@@ -401,7 +323,6 @@ class EduconnectFraudTest:
             "school_uai": "shchool-uai",
             "student_level": "2212",
         }
-        assert user.beneficiaryFraudResults[0].status == fraud_models.FraudStatus.OK
 
     @pytest.mark.parametrize("age", [14, 18])
     def test_age_fraud_check_ko(self, age):
@@ -457,13 +378,13 @@ class EduconnectFraudTest:
         )
 
         # Do not call educonnect_fraud_checks directly because duplicate check is common
-        fraud_result = fraud_api.on_identity_fraud_check_result(user, fraud_check)
+        fraud_items = fraud_api.on_identity_fraud_check_result(user, fraud_check)
 
-        assert fraud_result.status == fraud_models.FraudStatus.SUSPICIOUS
-        assert fraud_models.FraudReasonCode.DUPLICATE_USER in fraud_result.reason_codes
-        assert f"Duplicat de l'utilisateur {already_existing_user.id}" in [
-            s.strip() for s in fraud_result.reason.split(";")
-        ]
+        invalid_item = [
+            item for item in fraud_items if item.reason_code == fraud_models.FraudReasonCode.DUPLICATE_USER
+        ][0]
+        assert f"Duplicat de l'utilisateur {already_existing_user.id}" in invalid_item.detail
+        assert invalid_item.status == fraud_models.FraudStatus.SUSPICIOUS
 
     @override_features(ENABLE_NATIVE_EAC_INDIVIDUAL=True)
     def test_same_user_is_not_duplicate(self):

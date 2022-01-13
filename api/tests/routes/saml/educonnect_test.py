@@ -143,9 +143,7 @@ class EduconnectTest:
             "school_uai": "school_uai",
             "student_level": "2212",
         }
-        assert len(user.beneficiaryFraudResults) == 1
         assert has_passed_educonnect(user)
-        assert user.beneficiaryFraudResults[0].status == fraud_models.FraudStatus.OK
         beneficiary_import = BeneficiaryImport.query.filter_by(beneficiaryId=user.id).one_or_none()
         assert beneficiary_import.currentStatus == ImportStatus.CREATED
         assert user.firstName == "Max"
@@ -355,7 +353,7 @@ class EduconnectTest:
 
         assert response.status_code == 302
         assert response.location.startswith("https://webapp-v2.example.com/educonnect/validation")
-        assert user.beneficiaryFraudResults[0].status == fraud_models.FraudStatus.OK
+        assert user.is_beneficiary
 
     @override_features(ENABLE_INE_WHITELIST_FILTER=False)
     @patch("pcapi.connectors.beneficiaries.educonnect.educonnect_connector.get_educonnect_user")
@@ -372,7 +370,7 @@ class EduconnectTest:
             "https://webapp-v2.example.com/educonnect/erreur?code=UserAgeNotValid&logoutUrl=https%3A%2F%2Feduconnect.education.gouv.fr%2FLogout"
         )
 
-        assert user.beneficiaryFraudResults[0].status == fraud_models.FraudStatus.KO
+        assert not user.is_beneficiary
 
         response = client.post("/saml/acs", form={"SAMLResponse": "encrypted_data"})
         assert response.status_code == 302
