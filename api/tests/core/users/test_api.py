@@ -52,7 +52,6 @@ from pcapi.core.users.repository import get_user_with_valid_token
 from pcapi.core.users.utils import encode_jwt_payload
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.models import db
-from pcapi.models.beneficiary_import import BeneficiaryImportSources
 from pcapi.models.beneficiary_import_status import ImportStatus
 from pcapi.models.user_session import UserSession
 from pcapi.notifications.push import testing as batch_testing
@@ -395,8 +394,9 @@ class CreateBeneficiaryTest:
 
     def test_with_eligible_user(self):
         user = users_factories.UserFactory(roles=[], dateOfBirth=self.AGE18_ELIGIBLE_BIRTH_DATE)
-        beneficiary_import = BeneficiaryImportFactory(beneficiary=user)
-        beneficiary_import.setStatus(ImportStatus.CREATED)
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user, type=fraud_models.FraudCheckType.UBBLE, status=fraud_models.FraudCheckStatus.OK
+        )
         user = subscription_api.activate_beneficiary(user, "test")
         assert user.has_beneficiary_role
         assert len(user.deposits) == 1
@@ -404,9 +404,9 @@ class CreateBeneficiaryTest:
     def test_apps_flyer_called(self):
         apps_flyer_data = {"apps_flyer": {"user": "some-user-id", "platform": "ANDROID"}}
         user = users_factories.UserFactory(dateOfBirth=self.AGE18_ELIGIBLE_BIRTH_DATE, externalIds=apps_flyer_data)
-        beneficiary_import = BeneficiaryImportFactory(beneficiary=user)
-        beneficiary_import.setStatus(ImportStatus.CREATED)
-
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user, type=fraud_models.FraudCheckType.UBBLE, status=fraud_models.FraudCheckStatus.OK
+        )
         expected = {
             "customer_user_id": str(user.id),
             "appsflyer_id": "some-user-id",
@@ -425,8 +425,9 @@ class CreateBeneficiaryTest:
 
     def test_external_users_updated(self):
         user = users_factories.UserFactory(roles=[], dateOfBirth=self.AGE18_ELIGIBLE_BIRTH_DATE)
-        beneficiary_import = BeneficiaryImportFactory(beneficiary=user)
-        beneficiary_import.setStatus(ImportStatus.CREATED)
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user, type=fraud_models.FraudCheckType.UBBLE, status=fraud_models.FraudCheckStatus.OK
+        )
         subscription_api.activate_beneficiary(user, "test")
 
         assert len(batch_testing.requests) == 2
@@ -444,12 +445,9 @@ class StepsToBecomeBeneficiaryTest:
 
     def test_no_missing_step(self):
         user = self.eligible_user(validate_phone=True)
-
-        beneficiary_import = BeneficiaryImportFactory(
-            applicationId=0, beneficiary=user, source=BeneficiaryImportSources.ubble.value
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user, type=fraud_models.FraudCheckType.UBBLE, status=fraud_models.FraudCheckStatus.OK
         )
-        beneficiary_import.setStatus(ImportStatus.CREATED, author=user)
-        user.hasCompletedIdCheck = True
         fraud_factories.BeneficiaryFraudCheckFactory(
             user=user, type=fraud_models.FraudCheckType.HONOR_STATEMENT, status=fraud_models.FraudCheckStatus.OK
         )
@@ -459,10 +457,9 @@ class StepsToBecomeBeneficiaryTest:
     @override_features(FORCE_PHONE_VALIDATION=True)
     def test_missing_step(self):
         user = self.eligible_user(validate_phone=False)
-
-        beneficiary_import = BeneficiaryImportFactory(beneficiary=user)
-        beneficiary_import.setStatus(ImportStatus.CREATED, author=user)
-        user.hasCompletedIdCheck = True
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user, type=fraud_models.FraudCheckType.UBBLE, status=fraud_models.FraudCheckStatus.OK
+        )
         fraud_factories.BeneficiaryFraudCheckFactory(
             user=user, type=fraud_models.FraudCheckType.HONOR_STATEMENT, status=fraud_models.FraudCheckStatus.OK
         )
@@ -474,8 +471,9 @@ class StepsToBecomeBeneficiaryTest:
     def test_rejected_import(self):
         user = self.eligible_user(validate_phone=False)
 
-        beneficiary_import = BeneficiaryImportFactory(beneficiary=user)
-        beneficiary_import.setStatus(ImportStatus.REJECTED, author=user)
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user, type=fraud_models.FraudCheckType.UBBLE, status=fraud_models.FraudCheckStatus.KO
+        )
         fraud_factories.BeneficiaryFraudCheckFactory(
             user=user, type=fraud_models.FraudCheckType.HONOR_STATEMENT, status=fraud_models.FraudCheckStatus.OK
         )
@@ -709,7 +707,9 @@ class UpdateBeneficiaryMandatoryInformationTest:
             dateOfBirth=AGE18_ELIGIBLE_BIRTH_DATE,
             hasCompletedIdCheck=True,
         )
-        fraud_factories.BeneficiaryFraudCheckFactory(user=user, type=fraud_models.FraudCheckType.JOUVE)
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user, type=fraud_models.FraudCheckType.JOUVE, status=fraud_models.FraudCheckStatus.OK
+        )
         fraud_factories.BeneficiaryFraudResultFactory(user=user, status=fraud_models.FraudStatus.OK)
         beneficiary_import = BeneficiaryImportFactory(beneficiary=user)
         beneficiary_import.setStatus(ImportStatus.CREATED)
