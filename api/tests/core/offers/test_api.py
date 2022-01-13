@@ -1887,7 +1887,8 @@ class DeactivateInappropriateProductTest:
 
         assert not any(product.isGcuCompatible for product in products)
         assert not any(offer.isActive for offer in offers)
-        mocked_async_index_offer_ids.assert_called_once_with([o.id for o in offers])
+        mocked_async_index_offer_ids.assert_called_once()
+        assert set(mocked_async_index_offer_ids.call_args[0][0]) == {o.id for o in offers}
 
 
 class ComputeOfferValidationTest:
