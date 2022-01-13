@@ -1,5 +1,4 @@
 import copy
-import datetime
 from unittest.mock import patch
 
 import pytest
@@ -54,43 +53,6 @@ class SendTest:
         assert successful
 
 
-class MailingListFunctionsTest:
-    @override_settings(MAILJET_EMAIL_BACKEND="pcapi.core.mails.backends.mailjet.MailjetBackend")
-    def test_create_contact_with_mailjet(self):
-        with requests_mock.Mocker() as mock:
-            posted = mock.post("https://api.eu.mailjet.com/v3/REST/contact")
-            response = mails.create_contact("contact@example.com")
-        assert response.status_code == 200
-        assert posted.last_request.json() == {"Email": "contact@example.com"}
-
-    @override_settings(MAILJET_EMAIL_BACKEND="pcapi.core.mails.backends.mailjet.MailjetBackend")
-    def test_update_contact_with_mailjet(self):
-        dt = datetime.date(2000, 1, 1)
-        timestamp = 946684800  # `TZ=UTC` is set in .env.development
-        with requests_mock.Mocker() as mock:
-            put = mock.put("https://api.eu.mailjet.com/v3/REST/contactdata/contact@example.com")
-            response = mails.update_contact("contact@example.com", birth_date=dt, department="86")
-        assert response.status_code == 200
-        assert put.last_request.json() == {
-            "Data": [
-                {"Name": "date_de_naissance", "Value": timestamp},
-                {"Name": "département", "Value": "86"},
-            ],
-        }
-
-    @override_settings(MAILJET_EMAIL_BACKEND="pcapi.core.mails.backends.mailjet.MailjetBackend")
-    def test_add_contact_to_list_with_mailjet(self):
-        with requests_mock.Mocker() as mock:
-            posted = mock.post("https://api.eu.mailjet.com/v3/REST/listrecipient")
-            response = mails.add_contact_to_list("contact@example.com", list_id="12345")
-        assert response.status_code == 200
-        assert posted.last_request.json() == {
-            "IsUnsubscribed": "false",
-            "ContactAlt": "contact@example.com",
-            "ListID": "12345",
-        }
-
-
 class MailjetBackendTest:
 
     recipients = ["recipient1@example.com", "recipient2@example.com"]
@@ -133,41 +95,6 @@ class MailjetBackendTest:
             mock.post("https://api.eu.mailjet.com/v3/send", exc=requests.exceptions.ConnectTimeout)
             result = backend.send_mail(recipients=self.recipients, data=self.data)
         assert not result.successful
-
-    def test_create_contact(self):
-        backend = self._get_backend()
-        with requests_mock.Mocker() as mock:
-            posted = mock.post("https://api.eu.mailjet.com/v3/REST/contact")
-            response = backend.create_contact("contact@example.com")
-        assert response.status_code == 200
-        assert posted.last_request.json() == {"Email": "contact@example.com"}
-
-    def test_update_contact(self):
-        backend = self._get_backend()
-        dt = datetime.date(2000, 1, 1)
-        timestamp = 946684800  # `TZ=UTC` is set in .env.development
-        with requests_mock.Mocker() as mock:
-            put = mock.put("https://api.eu.mailjet.com/v3/REST/contactdata/contact@example.com")
-            response = backend.update_contact("contact@example.com", birth_date=dt, department="86")
-        assert response.status_code == 200
-        assert put.last_request.json() == {
-            "Data": [
-                {"Name": "date_de_naissance", "Value": timestamp},
-                {"Name": "département", "Value": "86"},
-            ],
-        }
-
-    def test_add_contact_to_list(self):
-        backend = self._get_backend()
-        with requests_mock.Mocker() as mock:
-            posted = mock.post("https://api.eu.mailjet.com/v3/REST/listrecipient")
-            response = backend.add_contact_to_list("contact@example.com", list_id="12345")
-        assert response.status_code == 200
-        assert posted.last_request.json() == {
-            "IsUnsubscribed": "false",
-            "ContactAlt": "contact@example.com",
-            "ListID": "12345",
-        }
 
     @patch("pcapi.utils.requests.logger.info")
     def test_use_our_requests_wrapper_that_logs(self, mocked_logger):
@@ -229,38 +156,3 @@ class ToDevMailjetBackendTest:
         assert posted_json["Html-part"].endswith("<div>some HTML...<div>")
         assert "would have been sent to real1@example.com, real2@example.com" in posted_json["Html-part"]
         assert result.successful
-
-    def test_create_contact(self):
-        backend = self._get_backend()
-        with requests_mock.Mocker() as mock:
-            posted = mock.post("https://api.eu.mailjet.com/v3/REST/contact")
-            response = backend.create_contact("real@example.com")
-        assert response.status_code == 200
-        assert posted.last_request.json() == {"Email": "dev@example.com"}
-
-    def test_update_contact(self):
-        backend = self._get_backend()
-        dt = datetime.date(2000, 1, 1)
-        timestamp = 946684800  # `TZ=UTC` is set in .env.development
-        with requests_mock.Mocker() as mock:
-            put = mock.put("https://api.eu.mailjet.com/v3/REST/contactdata/dev@example.com")
-            response = backend.update_contact("real@example.com", birth_date=dt, department="86")
-        assert response.status_code == 200
-        assert put.last_request.json() == {
-            "Data": [
-                {"Name": "date_de_naissance", "Value": timestamp},
-                {"Name": "département", "Value": "86"},
-            ],
-        }
-
-    def test_add_contact_to_list(self):
-        backend = self._get_backend()
-        with requests_mock.Mocker() as mock:
-            posted = mock.post("https://api.eu.mailjet.com/v3/REST/listrecipient")
-            response = backend.add_contact_to_list("real@example.com", list_id="12345")
-        assert response.status_code == 200
-        assert posted.last_request.json() == {
-            "IsUnsubscribed": "false",
-            "ContactAlt": "dev@example.com",
-            "ListID": "12345",
-        }

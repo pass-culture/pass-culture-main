@@ -1,9 +1,7 @@
-import datetime
 import logging
 from typing import Iterable
 
 import mailjet_rest
-from requests import Response
 
 from pcapi import settings
 
@@ -66,29 +64,6 @@ class MailjetBackend(BaseBackend):
             successful=successful,
         )
 
-    def create_contact(self, email: str) -> Response:
-        data = {"Email": email}
-        return self.mailjet_client.contact.create(data=data, timeout=settings.MAILJET_HTTP_TIMEOUT)
-
-    def update_contact(self, email: str, *, birth_date: datetime.date, department: str) -> Response:
-        birth_timestamp = int(datetime.datetime.combine(birth_date, datetime.time(0, 0)).timestamp())
-
-        data = {
-            "Data": [
-                {"Name": "date_de_naissance", "Value": birth_timestamp},
-                {"Name": "département", "Value": department},
-            ]
-        }
-        return self.mailjet_client.contactdata.update(id=email, data=data, timeout=settings.MAILJET_HTTP_TIMEOUT)
-
-    def add_contact_to_list(self, email: str, list_id: str) -> Response:
-        data = {
-            "IsUnsubscribed": "false",
-            "ContactAlt": email,
-            "ListID": list_id,
-        }
-        return self.mailjet_client.listrecipient.create(data=data, timeout=settings.MAILJET_HTTP_TIMEOUT)
-
 
 class ToDevMailjetBackend(MailjetBackend):
     """A backend where the recipients are overriden.
@@ -116,15 +91,3 @@ class ToDevMailjetBackend(MailjetBackend):
         self._inject_html_test_notice(recipients, data)
         recipients = [settings.DEV_EMAIL_ADDRESS]
         return super().send_mail(recipients=recipients, data=data)
-
-    def create_contact(self, email: str) -> Response:
-        email = settings.DEV_EMAIL_ADDRESS
-        return super().create_contact(email)
-
-    def update_contact(self, email: str, **kwargs) -> Response:
-        email = settings.DEV_EMAIL_ADDRESS
-        return super().update_contact(email, **kwargs)
-
-    def add_contact_to_list(self, email: str, *args, **kwargs) -> Response:
-        email = settings.DEV_EMAIL_ADDRESS
-        return super().add_contact_to_list(email, *args, **kwargs)

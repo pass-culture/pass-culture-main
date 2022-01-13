@@ -1,9 +1,6 @@
 from dataclasses import asdict
-from datetime import date
 import logging
 import typing
-
-from requests import Response
 
 from pcapi.core.mails.transactional.sendinblue_template_ids import SendinblueTransactionalEmailData
 
@@ -34,21 +31,3 @@ class LoggerBackend(BaseBackend):
         result = MailResult(sent_data=data, successful=True)
 
         return result
-
-    def create_contact(self, email: str) -> Response:
-        logger.info("Creating contact for email=%s", email)
-        response = Response()
-        response.status_code = 200
-        return response
-
-    def update_contact(self, email: str, *, birth_date: date, department: str) -> Response:
-        logger.info("Updating contact information for email=%s", email)
-        response = Response()
-        response.status_code = 200
-        return response
-
-    def add_contact_to_list(self, email: str, list_id: str) -> Response:
-        logger.info("Adding email=%s to list=%s", email, list_id)
-        response = Response()
-        response.status_code = 200
-        return response
