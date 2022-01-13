@@ -4,20 +4,10 @@ import logging
 from typing import Optional
 
 from dateutil.relativedelta import relativedelta
-from sqlalchemy.orm import joinedload
-from sqlalchemy.orm.query import Query
 from sqlalchemy.sql.functions import func
 
-from pcapi.core.bookings.models import Booking
-from pcapi.core.bookings.models import BookingStatus
-from pcapi.core.bookings.models import IndividualBooking
 from pcapi.core.offerers.models import Offerer
-from pcapi.core.offerers.models import Venue
-from pcapi.core.offers.models import Offer
-from pcapi.core.offers.models import Stock
 from pcapi.core.users.utils import sanitize_email
-from pcapi.domain.favorite.favorite import FavoriteDomain
-from pcapi.infrastructure.repository.favorite import favorite_domain_converter
 from pcapi.models.user_offerer import UserOfferer
 from pcapi.repository import repository
 from pcapi.utils import crypto
@@ -106,54 +96,8 @@ def get_newly_eligible_age_18_users(since: date) -> list[User]:
     return eligible_users
 
 
-def find_favorite_for_offer_and_user(offer_id: int, user_id: int) -> Query:
-    return models.Favorite.query.filter(models.Favorite.offerId == offer_id, models.Favorite.userId == user_id)
-
-
 def get_favorites_for_offers(offer_ids: list[int]) -> list[models.Favorite]:
     return models.Favorite.query.filter(models.Favorite.offerId.in_(offer_ids)).all()
-
-
-def find_favorites_domain_by_beneficiary(beneficiary_identifier: int) -> list[FavoriteDomain]:
-    favorite_sql_entities = (
-        models.Favorite.query.filter(models.Favorite.userId == beneficiary_identifier)
-        .options(joinedload(models.Favorite.offer).joinedload(Offer.venue).joinedload(Venue.managingOfferer))
-        .options(joinedload(models.Favorite.mediation))
-        .options(joinedload(models.Favorite.offer).joinedload(Offer.stocks))
-        .options(joinedload(models.Favorite.offer).joinedload(Offer.product))
-        .options(joinedload(models.Favorite.offer).joinedload(Offer.mediations))
-        .all()
-    )
-
-    offer_ids = [favorite_sql_entity.offer.id for favorite_sql_entity in favorite_sql_entities]
-
-    bookings = (
-        Offer.query.filter(Offer.id.in_(offer_ids))
-        .join(Stock)
-        .join(Booking)
-        .join(IndividualBooking)
-        .filter(IndividualBooking.userId == beneficiary_identifier)
-        .filter(Booking.status != BookingStatus.CANCELLED)
-        .with_entities(
-            Booking.id.label("booking_id"),
-            Booking.quantity,
-            Offer.id.label("offer_id"),
-            Stock.id.label("stock_id"),
-        )
-        .all()
-    )
-
-    bookings_by_offer_id = {
-        booking.offer_id: {"id": booking.booking_id, "stock_id": booking.stock_id, "quantity": booking.quantity}
-        for booking in bookings
-    }
-
-    return [
-        favorite_domain_converter.to_domain(
-            favorite_sql_entity, bookings_by_offer_id.get(favorite_sql_entity.offerId, None)
-        )
-        for favorite_sql_entity in favorite_sql_entities
-    ]
 
 
 def does_validated_phone_exist(phone_number: str) -> bool:
