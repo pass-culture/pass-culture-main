@@ -63,22 +63,24 @@ describe('thumbnail edition', () => {
         expect(fileInput).toHaveAttribute('type', 'file')
         expect(fileInput).toHaveAttribute('accept', 'image/png,image/jpeg')
         expect(
-          screen.getByText('Formats supportés : JPG, PNG', {
+          screen.getByText('Formats de fichier supportés : JPG, PNG', {
             selector: 'li',
           })
         ).toBeInTheDocument()
         expect(
-          screen.getByText('Le poids du fichier ne doit pas dépasser 10 Mo', {
+          screen.getByText('Poids maximal du fichier : 10 Mo', {
             selector: 'li',
           })
         ).toBeInTheDocument()
         expect(
-          screen.getByText(
-            'La taille de l’image doit être au format 6/9, avec une largeur minimale de 400px',
-            {
-              selector: 'li',
-            }
-          )
+          screen.getByText('Proportions de l’image : 2/3 (portrait)', {
+            selector: 'li',
+          })
+        ).toBeInTheDocument()
+        expect(
+          screen.getByText('Largeur minimale de l’image : 400 px', {
+            selector: 'li',
+          })
         ).toBeInTheDocument()
       })
 
@@ -152,25 +154,19 @@ describe('thumbnail edition', () => {
           // Then
           await waitFor(() => {
             expect(
-              screen.queryByText('Formats supportés : JPG, PNG', {
+              screen.queryByText('Formats de fichier supportés : JPG, PNG', {
                 selector: 'strong',
               })
             ).not.toBeInTheDocument()
             expect(
-              screen.queryByText(
-                'Le poids du fichier ne doit pas dépasser 10 Mo',
-                {
-                  selector: 'strong',
-                }
-              )
+              screen.queryByText('Poids maximal du fichier : 10 Mo', {
+                selector: 'strong',
+              })
             ).not.toBeInTheDocument()
             expect(
-              screen.queryByText(
-                'La taille de l’image doit être au format 6/9, avec une largeur minimale de 400px',
-                {
-                  selector: 'strong',
-                }
-              )
+              screen.queryByText('Largeur minimale de l’image : 400 px', {
+                selector: 'strong',
+              })
             ).not.toBeInTheDocument()
           })
         })
@@ -190,7 +186,7 @@ describe('thumbnail edition', () => {
 
           // Then
           await expect(
-            screen.findByText('Formats supportés : JPG, PNG', {
+            screen.findByText('Formats de fichier supportés : JPG, PNG', {
               selector: 'strong',
             })
           ).resolves.toBeInTheDocument()
@@ -212,17 +208,14 @@ describe('thumbnail edition', () => {
           // Then
           await waitFor(() => {
             expect(
-              screen.getByText('Formats supportés : JPG, PNG', {
+              screen.getByText('Formats de fichier supportés : JPG, PNG', {
                 selector: 'strong',
               })
             ).toBeInTheDocument()
             expect(
-              screen.queryByText(
-                'Le poids du fichier ne doit pas dépasser 10 Mo',
-                {
-                  selector: 'strong',
-                }
-              )
+              screen.queryByText('Poids maximal du fichier : 10 Mo', {
+                selector: 'strong',
+              })
             ).toBeInTheDocument()
           })
         })
@@ -242,12 +235,9 @@ describe('thumbnail edition', () => {
 
           // Then
           await expect(
-            screen.findByText(
-              'Le poids du fichier ne doit pas dépasser 10 Mo',
-              {
-                selector: 'strong',
-              }
-            )
+            screen.findByText('Poids maximal du fichier : 10 Mo', {
+              selector: 'strong',
+            })
           ).resolves.toBeInTheDocument()
         })
 
@@ -266,12 +256,9 @@ describe('thumbnail edition', () => {
 
           // Then
           await expect(
-            screen.findByText(
-              'La taille de l’image doit être au format 6/9, avec une largeur minimale de 400px',
-              {
-                selector: 'strong',
-              }
-            )
+            screen.findByText('Largeur minimale de l’image : 400 px', {
+              selector: 'strong',
+            })
           ).resolves.toBeInTheDocument()
         })
 
@@ -290,12 +277,9 @@ describe('thumbnail edition', () => {
 
           // Then
           await expect(
-            screen.findByText(
-              'La taille de l’image doit être au format 6/9, avec une largeur minimale de 400px',
-              {
-                selector: 'strong',
-              }
-            )
+            screen.findByText('Largeur minimale de l’image : 400 px', {
+              selector: 'strong',
+            })
           ).resolves.toBeInTheDocument()
         })
       })
