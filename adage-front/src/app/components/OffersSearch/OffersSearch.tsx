@@ -11,6 +11,7 @@ import {
 } from 'utils/config'
 import { Role, VenueFilterType } from 'utils/types'
 
+import { OfferFilters } from './OfferFilters/OfferFilters'
 import { Offers } from './Offers/Offers'
 import Pagination from './Offers/Pagination'
 import { SearchBox } from './SearchBox'
@@ -53,6 +54,7 @@ export const OffersSearch = ({
           hitsPerPage={8}
         />
         <SearchBox />
+        <OfferFilters className="search-filters" />
         <div className="search-results">
           {venueFilter && (
             <VenueFilterStatus
