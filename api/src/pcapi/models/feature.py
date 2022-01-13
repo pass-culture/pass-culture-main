@@ -79,7 +79,6 @@ class FeatureToggle(enum.Enum):
     IS_HONOR_STATEMENT_MANDATORY_TO_ACTIVATE_BENEFICIARY = "Vérifier que l'utilisateur a bien rempli l'étape de confirmation sur l'honneur avant d'activer son compte bénéficiaire"  # TODO (vionnex) remove after v164 is forced on native app
     IMPROVE_BOOKINGS_PERF = "Améliore les performances pour la page pro des réservations"
     OFFER_VALIDATION_MOCK_COMPUTATION = "Active le calcul automatique de validation d'offre depuis le nom de l'offre"
-    PERF_VENUE_STATS = "Permet de basculer vers une nouvelle implémentation performante de la page d'accueil pro contenant les indicateurs statistiques par venue"
     PRICE_BOOKINGS = "Active la valorisation des réservations"
     PRO_REIMBURSEMENTS_FILTERS = "Permet de filtrer la liste de remboursements"
     QR_CODE = "Permettre la validation dune contremarque via QR code"
@@ -145,7 +144,6 @@ FEATURES_DISABLED_BY_DEFAULT = (
     FeatureToggle.GENERATE_CASHFLOWS_BY_CRON,
     FeatureToggle.ID_CHECK_ADDRESS_AUTOCOMPLETION,
     FeatureToggle.IS_HONOR_STATEMENT_MANDATORY_TO_ACTIVATE_BENEFICIARY,
-    FeatureToggle.PERF_VENUE_STATS,
     FeatureToggle.PRICE_BOOKINGS,
     FeatureToggle.PRO_REIMBURSEMENTS_FILTERS,
     FeatureToggle.USER_PROFILING_FRAUD_CHECK,
