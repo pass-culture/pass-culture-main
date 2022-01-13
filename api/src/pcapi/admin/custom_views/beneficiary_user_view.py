@@ -1,6 +1,7 @@
 from typing import Optional
 
 from flask.helpers import flash
+from flask_admin.contrib.sqla import tools
 from flask_admin.contrib.sqla.filters import BaseSQLAFilter
 from markupsafe import Markup
 from sqlalchemy import and_
@@ -187,6 +188,7 @@ class BeneficiaryUserView(ResendValidationEmailMixin, SuspensionMixin, BaseAdmin
         has_active_deposit="Dépôt valable ?",
         has_beneficiary_role="Bénéficiaire 18 ans ?",
         has_underage_beneficiary_role="Bénéficiaire 15-17 ?",
+        idPieceNumber="N° de pièce d'identité",
         isActive="Est activé",
         isEmailValidated="Email validé ?",
         lastName="Nom",
@@ -233,6 +235,9 @@ class BeneficiaryUserView(ResendValidationEmailMixin, SuspensionMixin, BaseAdmin
         )
         if self.check_super_admins():
             fields += ("firstName", "lastName", "comment")
+        if settings.IS_TESTING:
+            fields += ("idPieceNumber",)
+
         return fields
 
     form_args = dict(
@@ -278,6 +283,9 @@ class BeneficiaryUserView(ResendValidationEmailMixin, SuspensionMixin, BaseAdmin
                 "error",
             )
         super().after_model_change(form, model, is_created)
+
+    def get_one(self, model_id: str) -> query:
+        return User.query.get(tools.iterdecode(model_id))
 
     def get_query(self) -> query:
         return (
