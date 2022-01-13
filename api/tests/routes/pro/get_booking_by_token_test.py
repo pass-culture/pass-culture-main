@@ -245,20 +245,6 @@ class Returns403Test:
         assert response.json["booking"] == ["Not confirmed"]
 
     @pytest.mark.usefixtures("db_session")
-    def when_booking_is_cancelled(self, client):
-        # Given
-        user = users_factories.BeneficiaryGrant18Factory(email="user@example.com")
-        booking = CancelledIndividualBookingFactory(individualBooking__user=user)
-        url = f"/bookings/token/{booking.token}?email={user.email}&offer_id={humanize(booking.stock.offerId)}"
-
-        # When
-        response = client.get(url)
-
-        # Then
-        assert response.status_code == 403
-        assert response.json["booking"] == ["Cette réservation a été annulée"]
-
-    @pytest.mark.usefixtures("db_session")
     def when_booking_is_refunded(self, client):
         # Given
         booking = PaymentFactory(booking=UsedIndividualBookingFactory()).booking
@@ -276,6 +262,20 @@ class Returns403Test:
 
 
 class Returns410Test:
+    @pytest.mark.usefixtures("db_session")
+    def when_booking_is_cancelled(self, client):
+        # Given
+        user = users_factories.BeneficiaryGrant18Factory(email="user@example.com")
+        booking = CancelledIndividualBookingFactory(individualBooking__user=user)
+        url = f"/bookings/token/{booking.token}?email={user.email}&offer_id={humanize(booking.stock.offerId)}"
+
+        # When
+        response = client.get(url)
+
+        # Then
+        assert response.status_code == 410
+        assert response.json["booking"] == ["Cette réservation a été annulée"]
+
     @pytest.mark.usefixtures("db_session")
     def when_booking_is_already_validated(self, client):
         # Given

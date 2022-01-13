@@ -608,7 +608,7 @@ class MarkAsUsedTest:
 
     def test_raise_if_cancelled(self):
         booking = booking_factories.CancelledIndividualBookingFactory()
-        with pytest.raises(api_errors.ForbiddenError):
+        with pytest.raises(api_errors.ResourceGoneError):
             api.mark_as_used(booking)
         assert not booking.isUsed
         assert booking.status is not BookingStatus.USED

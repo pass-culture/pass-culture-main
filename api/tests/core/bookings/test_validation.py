@@ -364,7 +364,7 @@ class CheckIsUsableTest:
 
     def should_raise_if_cancelled(self):
         booking = factories.CancelledIndividualBookingFactory()
-        with pytest.raises(api_errors.ForbiddenError) as exc:
+        with pytest.raises(api_errors.ResourceGoneError) as exc:
             validation.check_is_usable(booking)
         assert exc.value.errors["booking"] == ["Cette réservation a été annulée"]
 
@@ -508,19 +508,19 @@ class CheckOffererCanCancelBookingTest:
 
 @pytest.mark.usefixtures("db_session")
 class CheckCanBeMarkAsUnusedTest:
-    def test_should_raises_resource_gone_error_if_not_used(self, app):
+    def test_should_raise_resource_gone_error_if_not_used(self, app):
         booking = factories.IndividualBookingFactory(isUsed=False)
         with pytest.raises(api_errors.ResourceGoneError) as exc:
             validation.check_can_be_mark_as_unused(booking)
         assert exc.value.errors["booking"] == ["Cette réservation n'a pas encore été validée"]
 
-    def test_should_raises_forbidden_error_if_cancelled(self, app):
+    def test_should_raise_resource_gone_error_if_cancelled(self, app):
         booking = factories.CancelledIndividualBookingFactory()
-        with pytest.raises(api_errors.ForbiddenError) as exc:
+        with pytest.raises(api_errors.ResourceGoneError) as exc:
             validation.check_can_be_mark_as_unused(booking)
         assert exc.value.errors["booking"] == ["Cette réservation a été annulée"]
 
-    def test_should_raises_resource_gone_error_if_payement_exists(self, app):
+    def test_should_raise_resource_gone_error_if_payement_exists(self, app):
         booking = payments_factories.PaymentFactory().booking
         with pytest.raises(api_errors.ResourceGoneError) as exc:
             validation.check_can_be_mark_as_unused(booking)
