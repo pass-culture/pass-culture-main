@@ -99,7 +99,7 @@ describe('test page : VenueEdition', () => {
         postalCode: '75000',
         publicName: 'Maison de la Brique',
         siret: '22222222311111',
-        venueTypeId: 'DE',
+        venueTypeCode: 'DE',
         businessUnit: { id: 20 },
         contact: {
           email: '',

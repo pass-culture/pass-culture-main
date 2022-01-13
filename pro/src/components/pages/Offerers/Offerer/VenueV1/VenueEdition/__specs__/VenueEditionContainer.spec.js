@@ -261,7 +261,7 @@ describe('src | components | pages | VenueContainer | mapDispatchToProps', () =>
             comment: 'Commentaire',
             description: '',
             address: '3 Place Saint-Michel',
-            venueTypeId: null,
+            venueTypeCode: null,
             venueLabelId: null,
           },
           handleFail: handleFail,
@@ -312,7 +312,7 @@ describe('src | components | pages | VenueContainer | mapDispatchToProps', () =>
           publicName: '',
           postalCode: '75008',
           siret: '25687265176',
-          venueTypeId: 'BA',
+          venueTypeCode: 'BA',
           venueLabelId: 'DA',
         }
 
@@ -345,7 +345,7 @@ describe('src | components | pages | VenueContainer | mapDispatchToProps', () =>
           postalCode: '75008',
           publicName: '',
           siret: '25687265176',
-          venueTypeId: 'BA',
+          venueTypeCode: 'BA',
           venueLabelId: 'DA',
         })
       })
@@ -389,7 +389,7 @@ describe('src | components | pages | VenueContainer | mapDispatchToProps', () =>
           publicName: '',
           postalCode: '75008',
           siret: '25687265176',
-          venueTypeId: 'BA',
+          venueTypeCode: 'BA',
         }
 
         const handleFail = jest.fn()
@@ -416,7 +416,7 @@ describe('src | components | pages | VenueContainer | mapDispatchToProps', () =>
           publicName: '',
           postalCode: '75008',
           siret: '25687265176',
-          venueTypeId: 'BA',
+          venueTypeCode: 'BA',
           venueLabelId: null,
         })
       })

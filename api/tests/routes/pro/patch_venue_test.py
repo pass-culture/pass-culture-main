@@ -24,7 +24,6 @@ def populate_missing_data_from_venue(venue_data: dict, venue: offerers_models.Ve
         "postalCode": venue.postalCode,
         "publicName": venue.publicName,
         "siret": venue.siret,
-        "venueTypeId": humanize(venue.venueTypeId),
         "venueLabelId": humanize(venue.venueLabelId),
         "withdrawalDetails": venue.withdrawalDetails,
         "isEmailAppliedOnAllOffers": False,
@@ -41,7 +40,6 @@ class Returns200Test:
         user_offerer = offers_factories.UserOffererFactory()
         venue = offers_factories.VenueFactory(name="old name", managingOfferer=user_offerer.offerer)
 
-        venue_type = offerers_factories.VenueTypeFactory(label="Musée")
         venue_label = offerers_factories.VenueLabelFactory(label="CAC - Centre d'art contemporain d'intérêt national")
 
         auth_request = TestClient(app.test_client()).with_session_auth(email=user_offerer.user.email)
@@ -51,7 +49,7 @@ class Returns200Test:
         venue_data = populate_missing_data_from_venue(
             {
                 "name": "Ma librairie",
-                "venueTypeId": humanize(venue_type.id),
+                "venueTypeCode": "BOOKSTORE",
                 "venueLabelId": humanize(venue_label.id),
             },
             venue,
@@ -63,7 +61,7 @@ class Returns200Test:
         assert response.status_code == 200
         venue = Venue.query.get(venue_id)
         assert venue.name == "Ma librairie"
-        assert venue.venueTypeId == venue_type.id
+        assert venue.venueTypeCode == "BOOKSTORE"
         json = response.json
         assert json["isValidated"] is True
         assert "validationToken" not in json

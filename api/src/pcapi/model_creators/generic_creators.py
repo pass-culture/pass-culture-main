@@ -3,6 +3,7 @@ from hashlib import sha256
 from typing import Optional
 
 from pcapi.core.bookings.models import Booking
+from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers.models import Mediation
@@ -264,7 +265,7 @@ def create_venue(
     siret: Optional[str] = "12345678912345",
     thumb_count: int = 0,
     validation_token: Optional[str] = None,
-    venue_type_id: int = None,
+    venue_type_code: Optional[offerers_models.VenueTypeCode] = None,
     date_created: Optional[datetime] = datetime.now(),
 ) -> Venue:
     venue = Venue()
@@ -282,7 +283,7 @@ def create_venue(
     venue.thumbCount = thumb_count
     venue.validationToken = validation_token
     venue.siret = siret
-    venue.venueTypeId = venue_type_id
+    venue.venueTypeCode = venue_type_code
 
     if not is_virtual:
         venue.address = address

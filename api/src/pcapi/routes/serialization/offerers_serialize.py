@@ -29,7 +29,6 @@ class GetOffererVenueResponseModel(BaseModel):
     postalCode: Optional[str]
     publicName: Optional[str]
     venueLabelId: Optional[str]
-    venueTypeId: Optional[str]
     withdrawalDetails: Optional[str]
     audioDisabilityCompliant: Optional[bool]
     mentalDisabilityCompliant: Optional[bool]
@@ -38,7 +37,6 @@ class GetOffererVenueResponseModel(BaseModel):
     _humanize_id = humanize_field("id")
     _humanize_managing_offerer_id = humanize_field("managingOffererId")
     _humanize_venue_label_id = humanize_field("venueLabelId")
-    _humanize_venue_type_id = humanize_field("venueTypeId")
 
     class Config:
         orm_mode = True

@@ -234,7 +234,6 @@ class Returns200Test:
                 "siret": "12345678912345",
                 "thumbCount": 0,
                 "venueLabelId": None,
-                "venueTypeId": humanize(venue.venueTypeId),
                 "visualDisabilityCompliant": False,
             },
             "venueId": humanize(venue.id),

@@ -12,6 +12,7 @@ from pydantic import BaseModel
 from pydantic import root_validator
 from pydantic import validator
 
+from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers.validation import VENUE_BANNER_MAX_SIZE
 from pcapi.routes.serialization.finance_serialize import BusinessUnitResponseModel
 from pcapi.serialization.utils import dehumanize_field
@@ -70,7 +71,7 @@ class PostVenueBodyModel(BaseModel):
     postalCode: str
     siret: Optional[str]
     venueLabelId: Optional[str]
-    venueTypeId: str
+    venueTypeCode: str
     withdrawalDetails: Optional[str]
     description: Optional[VenueDescription]  # type: ignore
     audioDisabilityCompliant: Optional[bool]
@@ -176,7 +177,7 @@ class GetVenueResponseModel(BaseModel):
     publicName: Optional[str]
     siret: Optional[str]
     venueLabelId: Optional[str]
-    venueTypeId: Optional[str]
+    venueTypeCode: Optional[offerers_models.VenueTypeCode]
     withdrawalDetails: Optional[str]
     description: Optional[VenueDescription]  # type: ignore
     audioDisabilityCompliant: Optional[bool]
@@ -190,7 +191,6 @@ class GetVenueResponseModel(BaseModel):
     _humanize_id = humanize_field("id")
     _humanize_managing_offerer_id = humanize_field("managingOffererId")
     _humanize_venue_label_id = humanize_field("venueLabelId")
-    _humanize_venue_type_id = humanize_field("venueTypeId")
 
     class Config:
         orm_mode = True
@@ -208,7 +208,7 @@ class EditVenueBodyModel(BaseModel):
     city: Optional[str]
     publicName: Optional[str]
     comment: Optional[str]
-    venueTypeId: Optional[int]
+    venueTypeCode: Optional[str]
     venueLabelId: Optional[int]
     withdrawalDetails: Optional[str]
     isAccessibilityAppliedOnAllOffers: Optional[bool]
@@ -223,7 +223,6 @@ class EditVenueBodyModel(BaseModel):
     businessUnitId: Optional[int]
 
     _dehumanize_venue_label_id = dehumanize_field("venueLabelId")
-    _dehumanize_venue_type_id = dehumanize_field("venueTypeId")
 
 
 class VenueListItemResponseModel(BaseModel):

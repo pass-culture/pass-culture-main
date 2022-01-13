@@ -31,7 +31,7 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
       isModifiedEntity: true,
       readOnly: true,
       venueTypes: [],
-      venueTypeId: null,
+      venueTypeCode: null,
       venueLabels: [],
       venueLabelId: null,
     }
@@ -423,7 +423,7 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
           it('should not exist', () => {
             // Given
             props.readOnly = true
-            props.venueTypeId = null
+            props.venueTypeCode = null
             props.venueTypes = [
               new VenueType({ id: 'A1', label: "Centre d'art et d'essais" }),
             ]
@@ -443,7 +443,7 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
           it('should display the label', () => {
             // Given
             props.readOnly = true
-            props.venueTypeId = 'A1'
+            props.venueTypeCode = 'A1'
             props.venueTypes = [
               new VenueType({ id: 'A1', label: "Centre d'art et d'essais" }),
             ]

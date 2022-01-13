@@ -51,7 +51,7 @@ describe('formatPatch', () => {
         publicName: 'Cinéma de la fin des fins',
         postalCode: '93600',
         siret: '22222222911111',
-        venueTypeId: null,
+        venueTypeCode: null,
         venueLabelId: null,
       }
       // then
@@ -104,15 +104,15 @@ describe('formatPatch', () => {
         publicName: 'Cinéma de la fin publique',
         postalCode: '93600',
         siret: '22222222911111',
-        venueTypeId: null,
+        venueTypeCode: null,
         venueLabelId: null,
       })
     })
 
-    it('should preserve venueTypeId and venueLabelId when empty', () => {
+    it('should preserve venueTypeCode and venueLabelId when empty', () => {
       // given
       const patch = {
-        venueTypeId: '',
+        venueTypeCode: '',
         venueLabelId: '',
       }
 
@@ -121,7 +121,7 @@ describe('formatPatch', () => {
 
       // then
       expect(result).toStrictEqual({
-        venueTypeId: '',
+        venueTypeCode: '',
         venueLabelId: '',
         description: '',
       })

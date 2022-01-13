@@ -112,7 +112,7 @@ class IdentifierFields extends PureComponent {
       venueLabels,
       venueLabelId,
       venueTypes,
-      venueTypeId,
+      venueTypeCode,
     } = this.props
 
     const venueTypesWithoutVirtualOffer = venueTypes.filter(
@@ -123,7 +123,7 @@ class IdentifierFields extends PureComponent {
       ? 'SIRET du lieu qui accueille vos offres (si applicable) : '
       : 'SIRET : '
 
-    const venueTypeLabel = getLabelFromList(venueTypes, venueTypeId)
+    const venueTypeLabel = getLabelFromList(venueTypes, venueTypeCode)
     const venueLabelText = getLabelFromList(venueLabels, venueLabelId)
 
     return (
@@ -217,7 +217,7 @@ class IdentifierFields extends PureComponent {
                     <Field
                       component="select"
                       id="venue-type"
-                      name="venueTypeId"
+                      name="venueTypeCode"
                       required
                       validate={this.venueTypeValidate}
                     >
@@ -304,7 +304,7 @@ IdentifierFields.defaultProps = {
   readOnly: true,
   venueIsVirtual: false,
   venueLabelId: null,
-  venueTypeId: null,
+  venueTypeCode: null,
 }
 
 IdentifierFields.propTypes = {
@@ -317,7 +317,7 @@ IdentifierFields.propTypes = {
   venueIsVirtual: PropTypes.bool,
   venueLabelId: PropTypes.string,
   venueLabels: PropTypes.arrayOf(PropTypes.instanceOf(VenueLabel)).isRequired,
-  venueTypeId: PropTypes.string,
+  venueTypeCode: PropTypes.string,
   venueTypes: PropTypes.arrayOf(PropTypes.instanceOf(VenueType)).isRequired,
 }
 
