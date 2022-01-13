@@ -42,7 +42,7 @@ const OfferEducationalModal = ({
           onClick={onDismiss}
           variant={ButtonVariant.SECONDARY}
         >
-          Annuler
+          Retour
         </Button>
         <Button
           className={styles['modal-button']}
@@ -50,7 +50,7 @@ const OfferEducationalModal = ({
           onClick={onValidate}
           variant={ButtonVariant.PRIMARY}
         >
-          Supprimer
+          Confirmer
         </Button>
       </div>
     </DialogBox>
