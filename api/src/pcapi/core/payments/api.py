@@ -11,6 +11,9 @@ from pcapi.core.payments.models import CustomReimbursementRule
 from pcapi.core.payments.models import Deposit
 from pcapi.core.payments.models import DepositType
 from pcapi.core.payments.models import GrantedDeposit
+from pcapi.core.users import api as users_api
+from pcapi.core.users import constants
+from pcapi.core.users import utils as users_utils
 from pcapi.core.users.models import EligibilityType
 from pcapi.core.users.models import User
 from pcapi.models import db
@@ -28,16 +31,29 @@ def _compute_eighteenth_birthday(birth_date: datetime.datetime) -> datetime.date
     return datetime.datetime.combine(birth_date, datetime.time(0, 0)) + relativedelta(years=18)
 
 
+def _get_user_age_at_registration(user: User, eligibility: EligibilityType) -> Optional[int]:
+    fraud_check = users_api.get_activable_identity_fraud_check(user)
+
+    if not fraud_check:
+        return None
+    registration_datetime = fraud_check.source_data().get_registration_datetime()
+    if registration_datetime is None:
+        return None
+    return users_utils.get_age_at_date(user.dateOfBirth, registration_datetime)
+
+
 def get_granted_deposit(
-    beneficiary: User, eligibility: EligibilityType, version: Optional[int] = None
+    beneficiary: User,
+    eligibility: EligibilityType,
+    version: Optional[int] = None,
 ) -> Optional[GrantedDeposit]:
     if eligibility == EligibilityType.UNDERAGE:
+        user_age_at_registration = _get_user_age_at_registration(beneficiary, eligibility)
+        if user_age_at_registration not in constants.ELIGIBILITY_UNDERAGE_RANGE:
+            raise exceptions.UserNotGrantable("User is not eligible for underage deposit")
+
         return GrantedDeposit(
-            # as the beneficiary activation process may be asynchronous (with Ubble or DMS),
-            # beneficiary.age may be > 17 although it was <= 17 when the subscription was made
-            amount=deposit_conf.GRANTED_DEPOSIT_AMOUNTS_FOR_UNDERAGE_BY_AGE[beneficiary.age]
-            if beneficiary.age in deposit_conf.GRANTED_DEPOSIT_AMOUNTS_FOR_UNDERAGE_BY_AGE
-            else deposit_conf.GRANTED_DEPOSIT_AMOUNTS_FOR_UNDERAGE_BY_AGE[17],
+            amount=deposit_conf.GRANTED_DEPOSIT_AMOUNTS_FOR_UNDERAGE_BY_AGE[user_age_at_registration],
             expiration_date=_compute_eighteenth_birthday(beneficiary.dateOfBirth),
             type=DepositType.GRANT_15_17,
             version=1,
