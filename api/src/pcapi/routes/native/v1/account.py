@@ -24,7 +24,6 @@ from pcapi.models.api_errors import ApiErrors
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository import transaction
 from pcapi.routes.native.security import authenticated_user_required
-from pcapi.routes.serialization import beneficiaries as beneficiaries_serialization
 from pcapi.serialization.decorator import spectree_serialize
 
 from . import blueprint
@@ -107,9 +106,9 @@ def update_user_email(user: User, body: serializers.UserProfileEmailUpdate) -> N
 
 @blueprint.native_v1.route("/profile/validate_email", methods=["PUT"])
 @spectree_serialize(on_success_status=204, api=blueprint.api)
-def validate_user_email(body: beneficiaries_serialization.ChangeBeneficiaryEmailBody) -> None:
+def validate_user_email(body: serializers.ChangeBeneficiaryEmailBody) -> None:
     try:
-        payload = beneficiaries_serialization.ChangeEmailTokenContent.from_token(body.token)
+        payload = serializers.ChangeEmailTokenContent.from_token(body.token)
         api.change_user_email(current_email=payload.current_email, new_email=payload.new_email)
     except pydantic.ValidationError:
         raise ApiErrors(
