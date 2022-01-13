@@ -45,6 +45,7 @@ pgcli==2.2.0
 phonenumberslite==8.12.23
 Pillow>=8.1.1
 pydantic[email]==1.8.2
+pygments==2.11.1 # remove version lock when pgcli works with versions > 2.11.1
 PyJWT[crypto]==2.1.0
 pylint==2.8.3
 pylint-strict-informational
