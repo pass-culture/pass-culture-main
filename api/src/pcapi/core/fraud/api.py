@@ -645,11 +645,10 @@ def create_honor_statement_fraud_check(
 
 
 def has_performed_honor_statement(user: users_models.User, eligibility_type: users_models.EligibilityType) -> bool:
-    return db.session.query(
-        models.BeneficiaryFraudCheck.query.filter_by(
-            user=user,
-            type=models.FraudCheckType.HONOR_STATEMENT,
-            status=models.FraudCheckStatus.OK,
-            eligibilityType=eligibility_type,
-        ).exists()
-    ).scalar()
+    fraud_checks = user.beneficiaryFraudChecks
+    return any(
+        fraud_check.type == models.FraudCheckType.HONOR_STATEMENT
+        and fraud_check.eligibilityType == eligibility_type
+        and fraud_check.status == models.FraudCheckStatus.OK
+        for fraud_check in fraud_checks
+    )

@@ -7,13 +7,11 @@ from pcapi.core.fraud import factories as fraud_factories
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.testing import override_settings
 from pcapi.core.users.api import create_phone_validation_token
-from pcapi.core.users.factories import BeneficiaryImportFactory
 from pcapi.core.users.factories import UserFactory
 from pcapi.core.users.models import Token
 from pcapi.core.users.models import TokenType
 from pcapi.core.users.models import User
 from pcapi.models import db
-from pcapi.models.beneficiary_import_status import ImportStatus
 from pcapi.notifications.sms import testing as sms_testing
 
 from tests.conftest import TestClient
@@ -49,8 +47,8 @@ def test_send_phone_validation(app):
 @pytest.mark.usefixtures("db_session")
 def test_send_phone_validation_and_become_beneficiary(app):
     """
-    Test that a user with a CREATED import becomes a beneficiary once its phone
-    number is vaidated.
+    Test that a user with an OK Identity FraudCheck becomes a beneficiary once its phone
+    number is validated.
     """
     AGE18_ELIGIBLE_BIRTH_DATE = datetime.now() - relativedelta(years=18, months=4)
     user = UserFactory(
@@ -59,8 +57,9 @@ def test_send_phone_validation_and_become_beneficiary(app):
         phoneNumber="+33601020304",
         hasCompletedIdCheck=True,
     )
-    beneficiary_import = BeneficiaryImportFactory(beneficiary=user)
-    beneficiary_import.setStatus(ImportStatus.CREATED)
+    fraud_factories.BeneficiaryFraudCheckFactory(
+        user=user, type=fraud_models.FraudCheckType.UBBLE, status=fraud_models.FraudCheckStatus.OK
+    )
     fraud_factories.BeneficiaryFraudCheckFactory(
         user=user, type=fraud_models.FraudCheckType.HONOR_STATEMENT, status=fraud_models.FraudCheckStatus.OK
     )

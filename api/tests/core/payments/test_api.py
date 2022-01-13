@@ -20,6 +20,7 @@ from pcapi.core.payments.models import DepositType
 from pcapi.core.testing import override_settings
 from pcapi.core.users import api as users_api
 from pcapi.core.users import factories as users_factories
+from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.models.payment import Payment
 from pcapi.models.payment_status import PaymentStatus
@@ -45,9 +46,16 @@ class CreateDepositTest:
 
     @pytest.mark.parametrize("age,expected_amount", [(15, Decimal(20)), (16, Decimal(30)), (17, Decimal(30))])
     def test_create_underage_deposit(self, age, expected_amount):
-        beneficiary = users_factories.UserFactory(
-            dateOfBirth=datetime.combine(datetime.utcnow(), time(0, 0)) - relativedelta(years=age, months=2)
-        )
+        with freeze_time(datetime.combine(datetime.utcnow(), time(0, 0)) - relativedelta(years=age, months=2)):
+            beneficiary = users_factories.UserFactory(dateOfBirth=datetime.utcnow())
+        with freeze_time(datetime.utcnow() - relativedelta(month=1)):
+            fraud_factories.BeneficiaryFraudCheckFactory(
+                user=beneficiary,
+                status=fraud_models.FraudCheckStatus.OK,
+                type=fraud_models.FraudCheckType.EDUCONNECT,
+                eligibilityType=users_models.EligibilityType.UNDERAGE,
+                resultContent=fraud_factories.EduconnectContentFactory(registration_datetime=datetime.utcnow()),
+            )
 
         deposit = api.create_deposit(beneficiary, "created by test", beneficiary.eligibility)
 

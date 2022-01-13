@@ -33,7 +33,6 @@ from pcapi.core.users import testing as users_testing
 from pcapi.core.users.api import create_phone_validation_token
 from pcapi.core.users.constants import SuspensionReason
 from pcapi.core.users.email import update as email_update
-from pcapi.core.users.factories import BeneficiaryImportFactory
 from pcapi.core.users.models import EligibilityType
 from pcapi.core.users.models import PhoneValidationStatusType
 from pcapi.core.users.models import Token
@@ -44,7 +43,6 @@ from pcapi.core.users.models import VOID_PUBLIC_NAME
 from pcapi.core.users.repository import get_id_check_token
 from pcapi.core.users.utils import ALGORITHM_HS_256
 from pcapi.models import db
-from pcapi.models.beneficiary_import_status import ImportStatus
 from pcapi.notifications.push import testing as push_testing
 from pcapi.notifications.sms import testing as sms_testing
 from pcapi.routes.native.v1.serialization import account as account_serializers
@@ -1184,8 +1182,9 @@ class ValidatePhoneNumberTest:
             subscriptionState=users_models.SubscriptionState.email_validated,
         )
 
-        beneficiary_import = BeneficiaryImportFactory(beneficiary=user)
-        beneficiary_import.setStatus(ImportStatus.CREATED)
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user, type=fraud_models.FraudCheckType.UBBLE, status=fraud_models.FraudCheckStatus.OK
+        )
         fraud_factories.BeneficiaryFraudCheckFactory(
             user=user, type=fraud_models.FraudCheckType.HONOR_STATEMENT, status=fraud_models.FraudCheckStatus.OK
         )

@@ -25,8 +25,6 @@ import pcapi.core.subscription.exceptions as subscription_exceptions
 import pcapi.core.users.api as users_api
 import pcapi.core.users.models as users_models
 from pcapi.models import db
-from pcapi.models.beneficiary_import import BeneficiaryImportSources
-from pcapi.models.beneficiary_import_status import ImportStatus
 from pcapi.models.feature import FeatureToggle
 
 
@@ -239,13 +237,20 @@ class BeneficiaryView(base_configuration.BaseAdminView):
                 return flask.redirect(flask.url_for(".details_view", id=user_id))
 
             try:
-                beneficiary_import = subscription_api.BeneficiaryImport(
-                    sourceId=None,
-                    source=BeneficiaryImportSources.jouve.value,
-                    beneficiary=user,
-                    eligibilityType=fraud_api.get_source_data(user).get_eligibility_type(),
-                )
-                beneficiary_import.setStatus(ImportStatus.CREATED.value)
+                fraud_check = users_api.get_activable_identity_fraud_check(user)
+                if not fraud_check:
+                    fraud_check = fraud_models.BeneficiaryFraudCheck(
+                        user=user,
+                        type=fraud_models.FraudCheckType.JOUVE,
+                        status=fraud_models.FraudCheckStatus.OK,
+                        reason="Validated by admin",
+                        eligibilityType=eligibility,
+                        thirdPartyId="admin_validation",
+                        resultContent={
+                            "id": 0,
+                            "registrationDate": datetime.datetime.now().isoformat(),
+                        },
+                    )
 
                 subscription_api.activate_beneficiary(user, "fraud_validation")
             except subscription_exceptions.CannotUpgradeBeneficiaryRole:

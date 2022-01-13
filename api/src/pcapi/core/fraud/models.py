@@ -350,6 +350,11 @@ class BeneficiaryFraudCheck(PcObject, Model):
             raise NotImplementedError(f"Cannot unserialize type {self.type}")
         return FRAUD_CHECK_MAPPING[self.type](**self.resultContent)
 
+    def get_detailed_source(self) -> str:
+        if self.type == FraudCheckType.DMS.value:
+            return f"démarches simplifiées dossier [{self.thirdPartyId}]"
+        return f"dossier {self.type} [{self.thirdPartyId}]"
+
 
 class BeneficiaryFraudResult(PcObject, Model):
     __tablename__ = "beneficiary_fraud_result"
