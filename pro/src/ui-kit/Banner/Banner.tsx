@@ -1,11 +1,8 @@
-/*
- * @debt directory "Gaël: this file should be migrated within the new directory structure"
- */
-
 import cn from 'classnames'
 import React from 'react'
 
 import Icon from 'components/layout/Icon'
+
 export interface IBannerProps {
   icon?: string
   href?: string
