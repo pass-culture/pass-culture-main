@@ -133,6 +133,8 @@ def get_all_bookings_per_year(
             confirmationLimitDate=educational_booking.confirmationLimitDate,
             totalAmount=educational_booking.booking.total_amount,
             beginningDatetime=educational_booking.booking.stock.beginningDatetime,
+            venueTimezone=educational_booking.booking.stock.offer.venue.timezone,
+            name=educational_booking.booking.stock.offer.name,
         )
         for educational_booking in educational_bookings
     ]

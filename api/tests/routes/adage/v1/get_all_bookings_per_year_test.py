@@ -40,6 +40,8 @@ class Returns200Test:
                     "confirmationLimitDate": format_into_utc_date(booking1.educationalBooking.confirmationLimitDate),
                     "totalAmount": booking1.total_amount,
                     "beginningDatetime": format_into_utc_date(booking1.stock.beginningDatetime),
+                    "venueTimezone": booking1.stock.offer.venue.timezone,
+                    "name": booking1.stock.offer.name,
                 },
                 {
                     "id": booking2.educationalBooking.id,
@@ -48,6 +50,8 @@ class Returns200Test:
                     "confirmationLimitDate": format_into_utc_date(booking2.educationalBooking.confirmationLimitDate),
                     "totalAmount": booking2.total_amount,
                     "beginningDatetime": format_into_utc_date(booking2.stock.beginningDatetime),
+                    "venueTimezone": booking2.stock.offer.venue.timezone,
+                    "name": booking2.stock.offer.name,
                 },
             ],
         }
