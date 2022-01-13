@@ -4,7 +4,6 @@ from typing import Optional
 from pcapi.core.fraud import api as fraud_api
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import profile_options
-from pcapi.core.users import api as users_api
 from pcapi.core.users import models as users_models
 from pcapi.routes.native.security import authenticated_user_required
 from pcapi.serialization.decorator import spectree_serialize
@@ -82,7 +81,4 @@ def get_profile_options() -> serializers.ProfileOptionsResponse:
 def create_honor_statement_fraud_check(user: users_models.User) -> None:
     fraud_api.create_honor_statement_fraud_check(user, "statement from /subscription/honor_statement endpoint")
 
-    if users_api.is_eligible_for_beneficiary_upgrade(
-        user, user.eligibility
-    ) and not users_api.steps_to_become_beneficiary(user, user.eligibility):
-        subscription_api.activate_beneficiary(user)
+    subscription_api.activate_beneficiary_if_no_missing_step(user, user.eligibility)

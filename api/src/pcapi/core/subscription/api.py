@@ -147,7 +147,7 @@ def activate_beneficiary(
 
 
 def check_and_activate_beneficiary(
-    userId: int, deposit_source: str = None, has_activated_account: typing.Optional[bool] = True
+    userId: int, has_activated_account: typing.Optional[bool] = True
 ) -> users_models.User:
     with pcapi_repository.transaction():
         user = users_repository.get_and_lock_user(userId)
@@ -156,7 +156,7 @@ def check_and_activate_beneficiary(
             db.session.rollback()
             return user
         try:
-            user = activate_beneficiary(user, deposit_source, has_activated_account)
+            user = activate_beneficiary(user, deposit_source=None, has_activated_account=has_activated_account)
         except exceptions.CannotUpgradeBeneficiaryRole:
             db.session.rollback()
             return user
@@ -466,6 +466,14 @@ def get_maintenance_page_type(user: users_models.User) -> typing.Optional[models
     return models.MaintenancePageType.WITHOUT_DMS
 
 
+def activate_beneficiary_if_no_missing_step(user: users_models.User, eligibility: users_models.EligibilityType) -> None:
+    steps_to_become_beneficiary = users_api.steps_to_become_beneficiary(user, eligibility)
+    if not steps_to_become_beneficiary:
+        activate_beneficiary(user)  # calls update_external_user
+    else:
+        users_external.update_external_user(user)
+
+
 def on_successful_application(
     user: users_models.User,
     source_data: common_fraud_models.IdentityCheckContent,
@@ -491,10 +499,7 @@ def on_successful_application(
         third_party_id=third_party_id,
     )
 
-    if not users_api.steps_to_become_beneficiary(user, eligibility_type):
-        activate_beneficiary(user)
-    else:
-        users_external.update_external_user(user)
+    activate_beneficiary_if_no_missing_step(user, eligibility_type)
 
 
 # TODO (viconnex): move in a dms folder
