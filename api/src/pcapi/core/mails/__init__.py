@@ -46,21 +46,3 @@ def _save_email(result: models.MailResult):
     from pcapi.repository import repository
 
     repository.save(email)
-
-
-# FIXME (dbaty, 2020-02-02): returning a Response object is not very
-# friendly. Could we not return a boolean instead? Ditto for other
-# functions below.
-def create_contact(email: str) -> Response:
-    backend = import_string(get_email_backend(False))
-    return backend().create_contact(email)
-
-
-def update_contact(email: str, *, birth_date: date, department: str) -> Response:
-    backend = import_string(get_email_backend(False))
-    return backend().update_contact(email, birth_date=birth_date, department=department)
-
-
-def add_contact_to_list(email: str, list_id: str) -> Response:
-    backend = import_string(get_email_backend(False))
-    return backend().add_contact_to_list(email, list_id)

@@ -1,8 +1,5 @@
-from datetime import date
 from typing import Iterable
 from typing import Union
-
-from requests import Response
 
 from pcapi import settings
 from pcapi.core.mails.transactional.sendinblue_template_ids import SendinblueTransactionalEmailData
@@ -29,13 +26,4 @@ class BaseBackend:
         recipients: Iterable,
         data: Union[SendinblueTransactionalEmailData, dict],
     ) -> MailResult:
-        raise NotImplementedError()
-
-    def create_contact(self, email: str) -> Response:
-        raise NotImplementedError()
-
-    def update_contact(self, email: str, *, birth_date: date, department: str) -> Response:
-        raise NotImplementedError()
-
-    def add_contact_to_list(self, email: str, list_id: str) -> Response:
         raise NotImplementedError()
