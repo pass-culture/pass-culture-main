@@ -22,29 +22,35 @@ const getImageBitmap = async file => {
 const isNotAnImage = async file =>
   !IMAGE_TYPE.includes(file.type) || (await getImageBitmap(file)) === null
 const isTooBig = file => file.size > MAX_IMAGE_SIZE
+const isOfBadProportions = () => false
 const isOfPoorQuality = async file => {
   const imageBitmap = await getImageBitmap(file)
   return (
-    imageBitmap !== null && (imageBitmap.height < MIN_IMAGE_HEIGHT ||
-    imageBitmap.width < MIN_IMAGE_WIDTH)
+    imageBitmap !== null &&
+    (imageBitmap.height < MIN_IMAGE_HEIGHT ||
+      imageBitmap.width < MIN_IMAGE_WIDTH)
   )
 }
 
 export const constraints = [
   {
     id: 'format',
-    description: 'Formats supportés : JPG, PNG',
+    description: 'Formats de fichier supportés : JPG, PNG',
     asyncValidator: isNotAnImage,
   },
   {
     id: 'size',
-    description: 'Le poids du fichier ne doit pas dépasser 10 Mo',
+    description: 'Poids maximal du fichier : 10 Mo',
     validator: isTooBig,
   },
   {
+    id: 'proportions',
+    description: 'Proportions de l’image : 2/3 (portrait)',
+    validator: isOfBadProportions,
+  },
+  {
     id: 'dimensions',
-    description:
-      'La taille de l’image doit être au format 6/9, avec une largeur minimale de 400px',
+    description: 'Largeur minimale de l’image : 400 px',
     asyncValidator: isOfPoorQuality,
   },
 ]
