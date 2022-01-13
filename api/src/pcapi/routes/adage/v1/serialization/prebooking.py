@@ -96,6 +96,7 @@ class EducationalBookingPerYearResponse(AdageBaseResponseModel):
     status: BookingStatus
     confirmationLimitDate: datetime
     totalAmount: float
+    beginningDatetime: datetime
 
 
 class EducationalBookingsPerYearResponse(AdageBaseResponseModel):

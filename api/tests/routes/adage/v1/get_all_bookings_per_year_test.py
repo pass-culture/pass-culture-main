@@ -39,6 +39,7 @@ class Returns200Test:
                     "status": "CONFIRMED",
                     "confirmationLimitDate": format_into_utc_date(booking1.educationalBooking.confirmationLimitDate),
                     "totalAmount": booking1.total_amount,
+                    "beginningDatetime": format_into_utc_date(booking1.stock.beginningDatetime),
                 },
                 {
                     "id": booking2.educationalBooking.id,
@@ -46,6 +47,7 @@ class Returns200Test:
                     "status": "PENDING",
                     "confirmationLimitDate": format_into_utc_date(booking2.educationalBooking.confirmationLimitDate),
                     "totalAmount": booking2.total_amount,
+                    "beginningDatetime": format_into_utc_date(booking2.stock.beginningDatetime),
                 },
             ],
         }

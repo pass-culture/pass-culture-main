@@ -132,6 +132,7 @@ def get_all_bookings_per_year(
             status=prebooking_serialization.get_educational_booking_status(educational_booking),
             confirmationLimitDate=educational_booking.confirmationLimitDate,
             totalAmount=educational_booking.booking.total_amount,
+            beginningDatetime=educational_booking.booking.stock.beginningDatetime,
         )
         for educational_booking in educational_bookings
     ]
