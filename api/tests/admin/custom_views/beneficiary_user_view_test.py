@@ -13,6 +13,7 @@ import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.bookings.models import BookingStatus
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.payments.models import Deposit
+from pcapi.core.testing import override_settings
 from pcapi.core.users import testing as sendinblue_testing
 import pcapi.core.users.factories as users_factories
 from pcapi.core.users.models import Token
@@ -298,3 +299,50 @@ class BeneficiaryUserViewTest:
         resend_validation_email_response = client.post(url, form={"csrf_token": "token"})
         assert resend_validation_email_response.status_code == 302
         mocked_request_email_confirmation.assert_called_once_with(beneficiary)
+
+
+@pytest.mark.usefixtures("db_session")
+class BeneficiaryUserUpdateTest:
+    @override_settings(IS_TESTING=True)
+    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    def test_update_idpiecenumber_testing_only(self, token, client):
+        admin = users_factories.AdminFactory()
+        client.with_session_auth(admin.email)
+
+        user_to_update = users_factories.UserFactory(departementCode="92", postalCode="92700")
+
+        url = f"/pc/back-office/beneficiary_users/edit/?id={user_to_update.id}"
+        client.post(
+            url,
+            form={
+                "id": user_to_update.id,
+                "idPieceNumber": "123123123",
+                "departementCode": user_to_update.departementCode,
+                "csrf_token": "token",
+                "email": user_to_update.email,
+                "postalCode": user_to_update.postalCode,
+            },
+        )
+
+        assert user_to_update.idPieceNumber == "123123123"
+
+    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    def test_update_idpiecenumber_not_updated(self, token, client):
+        admin = users_factories.AdminFactory()
+
+        user_to_update = users_factories.UserFactory(departementCode="92", postalCode="92700")
+        client.with_session_auth(admin.email)
+
+        url = f"/pc/back-office/beneficiary_users/edit/?id={user_to_update.id}"
+        client.post(
+            url,
+            form={
+                "idPieceNumber": "123123123",
+                "departementCode": user_to_update.departementCode,
+                "csrf_token": "token",
+                "email": user_to_update.email,
+                "postalCode": user_to_update.postalCode,
+            },
+        )
+
+        assert user_to_update.idPieceNumber != "123123123"
