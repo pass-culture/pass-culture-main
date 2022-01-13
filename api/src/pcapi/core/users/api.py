@@ -218,8 +218,6 @@ def initialize_account(
     return user
 
 
-# eligibility_type may be different from user.eligibility because user may have turned 18 or 19 between registration
-# date and asynchronous validation (DMS, Ubble)
 def steps_to_become_beneficiary(
     user: User, eligibility_type: Optional[models.EligibilityType]
 ) -> list[BeneficiaryValidationStep]:
@@ -250,12 +248,11 @@ def steps_to_become_beneficiary(
 def validate_phone_number_and_activate_user(user: User, code: str) -> User:
     validate_phone_number(user, code)
 
-    if not steps_to_become_beneficiary(user, user.eligibility):
-        try:
-            subscription_api.activate_beneficiary(user)
-        except subscription_exceptions.CannotUpgradeBeneficiaryRole:
-            # TODO(viconnex): there should not be any case where we activate beneficiary after phone validation
-            logger.warning("Trying to activate beneficiary right after phone validation", extra={"user_id": user.id})
+    try:
+        subscription_api.activate_beneficiary_if_no_missing_step(user, user.eligibility)
+    except subscription_exceptions.CannotUpgradeBeneficiaryRole:
+        # TODO(viconnex): there should not be any case where we activate beneficiary after phone validation
+        logger.warning("Trying to activate beneficiary right after phone validation", extra={"user_id": user.id})
 
 
 def update_user_information_from_external_source(
