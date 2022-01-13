@@ -1,8 +1,3 @@
-# temporary
-# FIXME: remove pygments version restriction when no more needed
-pygments<2.11.2  # because pygments 2.11.2 breaks pgcli, see https://github.com/dbcli/pgcli/issues/1303
-# /temporary
-
 alembic==1.4.3
 algoliasearch==2.4.0
 # astroid is required by pylint and version 2.5.7 and 2.5.8 crashes
@@ -41,7 +36,7 @@ mailjet-rest==1.3.3
 MarkupSafe==1.1.1
 mypy==0.812
 notion-client==0.4.0
-pgcli==2.2.0
+pgcli==3.3.0
 phonenumberslite==8.12.23
 Pillow>=8.1.1
 pydantic[email]==1.8.2
