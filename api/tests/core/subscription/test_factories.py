@@ -7,6 +7,7 @@ import uuid
 
 from dateutil.relativedelta import relativedelta
 import factory
+import pytz
 
 from pcapi import settings
 from pcapi.core.fraud.models import ubble as ubble_models
@@ -64,7 +65,7 @@ class UbbleIdentificationDataAttributesFactory(factory.Factory):
         identification_state = IdentificationState.NEW
 
     anonymized_at = None
-    created_at = factory.LazyFunction(lambda: datetime.datetime.now())  # pylint: disable=unnecessary-lambda
+    created_at = factory.LazyFunction(lambda: datetime.datetime.now(tz=pytz.utc))  # pylint: disable=unnecessary-lambda
     identification_id = factory.LazyFunction(lambda: str(uuid.uuid4()))
     identification_url = factory.LazyAttribute(
         lambda o: f"{settings.UBBLE_API_URL}/identifications/{o.identification_id}"
