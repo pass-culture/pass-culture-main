@@ -160,16 +160,6 @@ class BeneficiaryGrant18Factory(BaseFactory):
         return instance
 
     @factory.post_generation
-    def deposit(obj, create, extracted, **kwargs):  # pylint: disable=no-self-argument
-        if not create:
-            return None
-
-        if "dateCreated" not in kwargs:
-            kwargs["dateCreated"] = obj.dateCreated
-
-        return DepositGrantFactory(user=obj, **kwargs)
-
-    @factory.post_generation
     def beneficiaryImports(obj, create, extracted, **kwargs):  # pylint: disable=no-self-argument
         if not create:
             return None
@@ -223,6 +213,16 @@ class BeneficiaryGrant18Factory(BaseFactory):
         return fraud_factories.BeneficiaryFraudResultFactory(
             user=obj, status=fraud_models.FraudStatus.OK, eligibilityType=obj.eligibility, reason=None
         )
+
+    @factory.post_generation
+    def deposit(obj, create, extracted, **kwargs):  # pylint: disable=no-self-argument
+        if not create:
+            return None
+
+        if "dateCreated" not in kwargs:
+            kwargs["dateCreated"] = obj.dateCreated
+
+        return DepositGrantFactory(user=obj, **kwargs)
 
 
 class UnderageBeneficiaryFactory(BeneficiaryGrant18Factory):

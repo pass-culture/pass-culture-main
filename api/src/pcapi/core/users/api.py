@@ -945,6 +945,7 @@ def get_eligibility_at_date(
     return None
 
 
+# TODO: add checks based on the age of the user
 def is_eligible_for_beneficiary_upgrade(user: models.User, eligibility: Optional[EligibilityType]) -> bool:
     return (eligibility == EligibilityType.UNDERAGE and not user.has_underage_beneficiary_role) or (
         eligibility == EligibilityType.AGE18 and not user.has_beneficiary_role
