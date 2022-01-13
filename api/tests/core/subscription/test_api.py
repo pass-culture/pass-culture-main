@@ -190,9 +190,6 @@ class EduconnectFlowTest:
             == "https://webapp-v2.example.com/educonnect/validation?firstName=Max&lastName=SENS&dateOfBirth=2006-08-18&logoutUrl=https%3A%2F%2Feduconnect.education.gouv.fr%2FLogout"
         )
 
-        assert len(user.beneficiaryFraudResults) == 1
-        assert user.beneficiaryFraudResults[0].status == fraud_models.FraudStatus.OK
-
         beneficiary_import = BeneficiaryImport.query.filter_by(beneficiaryId=user.id).one_or_none()
         assert beneficiary_import is not None
         assert beneficiary_import.currentStatus == ImportStatus.CREATED

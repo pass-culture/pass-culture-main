@@ -16,7 +16,6 @@ from pcapi.repository.user_queries import matching
 
 from . import exceptions
 from . import models
-from . import repository as fraud_repository
 from .ubble import api as ubble_api
 from .ubble import models as ubble_fraud_models
 
@@ -72,7 +71,7 @@ def on_educonnect_result(
 def on_dms_fraud_result(
     user: users_models.User,
     dms_content: models.DMSContent,
-) -> models.BeneficiaryFraudResult:
+) -> models.BeneficiaryFraudCheck:
 
     eligibility_type = dms_content.get_eligibility_type()
 
@@ -80,13 +79,15 @@ def on_dms_fraud_result(
         user=user,
         type=models.FraudCheckType.DMS,
         thirdPartyId=str(dms_content.application_id),
-        resultContent=dms_content,
+        resultContent=dms_content.dict(),
         eligibilityType=eligibility_type,
     )
 
+    on_identity_fraud_check_result(user, fraud_check)
     db.session.add(fraud_check)
     db.session.commit()
-    return on_identity_fraud_check_result(user, fraud_check)
+
+    return fraud_check
 
 
 def admin_update_identity_fraud_check_result(
@@ -136,17 +137,17 @@ def educonnect_fraud_checks(
 def dms_fraud_checks(
     user: users_models.User, beneficiary_fraud_check: models.BeneficiaryFraudCheck
 ) -> list[models.FraudItem]:
-    dms_content = models.DMSContent(**beneficiary_fraud_check.resultContent)
-
     fraud_items = []
-    fraud_items.append(duplicate_id_piece_number_fraud_item(user, dms_content.get_id_piece_number()))
+    fraud_items.append(
+        duplicate_id_piece_number_fraud_item(user, beneficiary_fraud_check.source_data().get_id_piece_number())
+    )
     return fraud_items
 
 
 def on_identity_fraud_check_result(
     user: users_models.User,
     beneficiary_fraud_check: models.BeneficiaryFraudCheck,
-) -> models.BeneficiaryFraudResult:
+) -> list[models.FraudItem]:
     fraud_items: list[models.FraudItem] = []
 
     if beneficiary_fraud_check.type == models.FraudCheckType.UBBLE:
@@ -184,10 +185,7 @@ def on_identity_fraud_check_result(
     fraud_items.append(_check_user_has_no_active_deposit(user, content_eligibility_type))
     fraud_items.append(_check_user_email_is_validated(user))
 
-    fraud_result = validate_frauds(user, fraud_items, beneficiary_fraud_check, content_eligibility_type)
-    repository.save(fraud_result)
-
-    return fraud_result
+    return validate_frauds(fraud_items, beneficiary_fraud_check)
 
 
 def validate_id_piece_number_format_fraud_item(id_piece_number: typing.Optional[str]) -> models.FraudItem:
@@ -374,9 +372,6 @@ def on_user_profiling_check_result(
     user_profiling_status = USER_PROFILING_RISK_MAPPING[risk_rating]
     if not user_profiling_status == models.FraudStatus.OK:
         user.validate_profiling_failed()
-        upsert_fraud_result(
-            user, user_profiling_status, user.eligibility, f"user profiling risk rating is {risk_rating.value}"
-        )
 
         from pcapi.core.subscription import messages as subscription_messages
 
@@ -398,42 +393,6 @@ def get_source_data(user: users_models.User) -> pydantic.BaseModel:
         .first()
     )
     return mapped_class[fraud_check.type](**fraud_check.resultContent)
-
-
-def upsert_fraud_result(
-    user: users_models.User,
-    status: models.FraudStatus,
-    eligibilityType: typing.Optional[users_models.EligibilityType],
-    reason: str = None,
-) -> models.BeneficiaryFraudResult:
-    """
-    If the user has no fraud result: create one fraud result with status and the given reason.
-    If it already has one: append the reason to the already recorded ones.
-    """
-    if not eligibilityType:
-        eligibilityType = users_models.EligibilityType.AGE18
-    reason = reason or ""
-    if status != models.FraudStatus.OK and not reason:
-        raise ValueError(f"a reason should be provided when setting fraud result to {status.value}")
-
-    fraud_result = fraud_repository.get_current_beneficiary_fraud_result(user, eligibilityType)
-
-    if not fraud_result:
-        fraud_result = models.BeneficiaryFraudResult(
-            user=user, status=status, reason=reason, eligibilityType=eligibilityType
-        )
-    else:
-        fraud_result.status = status
-        # if this function is called twice (or more) in a row with the same
-        # reason, do not update the reason column with the same reason repeated
-        # over and over. It makes the reason less readable and therefore less
-        # useful.
-        last_reason = fraud_result.reason.split(FRAUD_RESULT_REASON_SEPARATOR)[-1].strip() if fraud_result else None
-        if last_reason != reason:
-            fraud_result.reason = f"{fraud_result.reason} {FRAUD_RESULT_REASON_SEPARATOR} {reason}"
-
-    repository.save(fraud_result)
-    return fraud_result
 
 
 def create_internal_review_fraud_check(
@@ -476,7 +435,7 @@ def handle_blacklisted_sms_recipient(user: users_models.User, phone_number: str)
     return create_internal_review_fraud_check(user, fraud_check_data)
 
 
-def handle_sms_sending_limit_reached(user: users_models.User) -> models.BeneficiaryFraudResult:
+def handle_sms_sending_limit_reached(user: users_models.User) -> None:
     reason = "Le nombre maximum de sms envoyés est atteint"
     fraud_check_data = models.InternalReviewFraudData(
         source=models.InternalReviewSource.SMS_SENDING_LIMIT_REACHED,
@@ -485,12 +444,9 @@ def handle_sms_sending_limit_reached(user: users_models.User) -> models.Benefici
     )
 
     create_internal_review_fraud_check(user, fraud_check_data)
-    return upsert_fraud_result(user, models.FraudStatus.SUSPICIOUS, user.eligibility, reason)
 
 
-def handle_phone_validation_attempts_limit_reached(
-    user: users_models.User, attempts_count: int
-) -> models.BeneficiaryFraudResult:
+def handle_phone_validation_attempts_limit_reached(user: users_models.User, attempts_count: int) -> None:
     reason = f"Le nombre maximum de tentatives de validation est atteint: {attempts_count}"
     fraud_check_data = models.InternalReviewFraudData(
         source=models.InternalReviewSource.PHONE_VALIDATION_ATTEMPTS_LIMIT_REACHED,
@@ -499,7 +455,6 @@ def handle_phone_validation_attempts_limit_reached(
     )
 
     create_internal_review_fraud_check(user, fraud_check_data)
-    return upsert_fraud_result(user, models.FraudStatus.SUSPICIOUS, user.eligibility, reason)
 
 
 def handle_document_validation_error(email: str, code: str) -> None:
@@ -515,19 +470,14 @@ def handle_document_validation_error(email: str, code: str) -> None:
 
 
 def validate_frauds(
-    user: users_models.User,
     fraud_items: list[models.FraudItem],
     fraud_check: models.BeneficiaryFraudCheck,
-    content_eligibility_type: users_models.EligibilityType,
-) -> models.BeneficiaryFraudResult:
+) -> list[models.FraudItem]:
     if all(fraud_item.status == models.FraudStatus.OK for fraud_item in fraud_items):
-        status = models.FraudStatus.OK
         fraud_check_status = models.FraudCheckStatus.OK
     elif any(fraud_item.status == models.FraudStatus.KO for fraud_item in fraud_items):
-        status = models.FraudStatus.KO
         fraud_check_status = models.FraudCheckStatus.KO
     else:
-        status = models.FraudStatus.SUSPICIOUS
         fraud_check_status = models.FraudCheckStatus.SUSPICIOUS
 
     reason = f" {FRAUD_RESULT_REASON_SEPARATOR} ".join(
@@ -544,31 +494,7 @@ def validate_frauds(
     fraud_check.reasonCodes = reason_codes
     repository.save(fraud_check)
 
-    fraud_result = update_or_create_fraud_result(user, status, reason, reason_codes, content_eligibility_type)
-
-    return fraud_result
-
-
-def update_or_create_fraud_result(
-    user: users_models.User,
-    status: models.FraudStatus,
-    reason: str,
-    reason_codes: list[models.FraudReasonCode],
-    eligibility_type: users_models.EligibilityType,
-) -> models.BeneficiaryFraudResult:
-    existing_fraud_result = fraud_repository.get_current_beneficiary_fraud_result(user, eligibility_type)
-    if existing_fraud_result:
-        fraud_result = existing_fraud_result
-
-        if fraud_result.status == models.FraudStatus.OK and status != models.FraudStatus.OK:
-            raise exceptions.BeneficiaryFraudResultCannotBeDowngraded()
-
-        fraud_result.status = status
-    else:
-        fraud_result = models.BeneficiaryFraudResult(user=user, status=status, eligibilityType=eligibility_type)
-    fraud_result.reason = reason
-    fraud_result.reason_codes = reason_codes
-    return fraud_result
+    return fraud_items
 
 
 def has_user_pending_identity_check(user: users_models.User) -> bool:
@@ -635,10 +561,12 @@ def is_risky_user_profile(user: users_models.User) -> bool:
 
 
 def is_user_fraudster(user: users_models.User) -> bool:
-    return any(
-        beneficiary_fraud_result.status != models.FraudStatus.OK
-        for beneficiary_fraud_result in user.beneficiaryFraudResults
-    )
+    return db.session.query(
+        models.BeneficiaryFraudCheck.query.filter(
+            models.BeneficiaryFraudCheck.user == user,
+            models.BeneficiaryFraudCheck.status.in_([models.FraudCheckStatus.KO, models.FraudCheckStatus.SUSPICIOUS]),
+        ).exists()
+    ).scalar()
 
 
 def start_fraud_check(

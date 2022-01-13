@@ -158,7 +158,7 @@ def process_application(
         )
         return
     try:
-        fraud_result = fraud_api.on_dms_fraud_result(user, information)
+        fraud_check = fraud_api.on_dms_fraud_result(user, information)
     except fraud_exceptions.BeneficiaryFraudResultCannotBeDowngraded:
         logger.warning("Trying to downgrade a BeneficiaryFraudResult status already OK", extra={"user_id": user.id})
         _process_rejection(information, procedure_id, "Compte existant avec cet email", user)
@@ -167,8 +167,8 @@ def process_application(
         logger.exception("Error on dms fraud check result: %s", exc)
 
     else:
-        if fraud_result.status != fraud_models.FraudStatus.OK:
-            handle_validation_errors(user, fraud_result, information, procedure_id)
+        if fraud_check.status != fraud_models.FraudCheckStatus.OK:
+            handle_validation_errors(user, fraud_check.reasonCodes, information, procedure_id)
             subscription_api.update_user_birth_date(user, information.get_birth_date())
             return
 
@@ -203,18 +203,18 @@ def process_application(
 
 def handle_validation_errors(
     user: users_models.User,
-    fraud_result: fraud_models.BeneficiaryFraudResult,
+    reason_codes: list[fraud_models.FraudReasonCode],
     information: fraud_models.DMSContent,
     procedure_id: int,
-):
-    for error_code in fraud_result.reason_codes:
-        if error_code == fraud_models.FraudReasonCode.ALREADY_BENEFICIARY:
+) -> None:
+    for item in reason_codes:
+        if item == fraud_models.FraudReasonCode.ALREADY_BENEFICIARY:
             _process_rejection(information, procedure_id=procedure_id, reason="Compte existant avec cet email")
-        if error_code == fraud_models.FraudReasonCode.NOT_ELIGIBLE:
+        if item == fraud_models.FraudReasonCode.NOT_ELIGIBLE:
             _process_rejection(information, procedure_id=procedure_id, reason="L'utilisateur n'est pas éligible")
-        if error_code == fraud_models.FraudReasonCode.DUPLICATE_USER:
+        if item == fraud_models.FraudReasonCode.DUPLICATE_USER:
             subscription_messages.on_duplicate_user(user)
-        if error_code == fraud_models.FraudReasonCode.DUPLICATE_ID_PIECE_NUMBER:
+        if item == fraud_models.FraudReasonCode.DUPLICATE_ID_PIECE_NUMBER:
             subscription_messages.on_duplicate_user(user)
 
     # keeps the creation of a beneficiaryImport to avoid reprocess the same application
