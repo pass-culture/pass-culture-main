@@ -315,13 +315,14 @@ def _delete_dependent_pricings(booking: bookings_models.Booking, log_message: st
     lines.delete(synchronize_session=False)
     logs = models.PricingLog.query.filter(models.PricingLog.pricingId.in_(pricing_ids))
     logs.delete(synchronize_session=False)
+    bookings_already_priced = [p.bookingId for p in pricings]
     pricings = models.Pricing.query.filter(models.Pricing.id.in_(pricing_ids))
     pricings.delete(synchronize_session=False)
     logger.info(
         log_message,
         extra={
             "booking_being_priced": booking.id,
-            "booking_already_priced": [p.bookingId for p in pricings],
+            "bookings_already_priced": bookings_already_priced,
             "siret": siret,
         },
     )
