@@ -33,7 +33,7 @@ interface IAPIVenue {
   postalCode: string | null
   publicName: string
   venueLabelId: string | null
-  venueTypeId: string | null
+  venueTypeCode: string | null
   withdrawalDetails: string | null
   audioDisabilityCompliant: boolean
   mentalDisabilityCompliant: boolean

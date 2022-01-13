@@ -1,6 +1,6 @@
 import pytest
 
-from pcapi.core.offerers.factories import VirtualVenueTypeFactory
+from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offers.factories import OffererFactory
 from pcapi.core.offers.factories import UserOffererFactory
@@ -31,7 +31,6 @@ class Returns204Test:
     def when_user_data_is_valid(self, app):
         # Given
         data = BASE_DATA_PRO.copy()
-        venue_type = VirtualVenueTypeFactory()
 
         # When
         response = TestClient(app.test_client()).post("/users/signup/pro", json=data)
@@ -59,7 +58,7 @@ class Returns204Test:
         assert offerer.validationToken is not None
         assert len(offerer.managedVenues) == 1
         assert offerer.managedVenues[0].isVirtual
-        assert offerer.managedVenues[0].venueTypeId == venue_type.id
+        assert offerer.managedVenues[0].venueTypeCode == offerers_models.VenueTypeCode.DIGITAL
         user_offerer = UserOfferer.query.filter_by(user=user, offerer=offerer).first()
         assert user_offerer is not None
         assert user_offerer.validationToken is None
@@ -68,7 +67,6 @@ class Returns204Test:
         # Given
         data_pro = BASE_DATA_PRO.copy()
         data_pro["contactOk"] = "true"
-        venue_type = VirtualVenueTypeFactory()
 
         # When
         response = TestClient(app.test_client()).post("/users/signup/pro", json=data_pro)
@@ -84,14 +82,13 @@ class Returns204Test:
         assert offerer.validationToken is not None
         assert len(offerer.managedVenues) == 1
         assert offerer.managedVenues[0].isVirtual
-        assert offerer.managedVenues[0].venueTypeId == venue_type.id
+        assert offerer.managedVenues[0].venueTypeCode == offerers_models.VenueTypeCode.DIGITAL
         user_offerer = UserOfferer.query.filter_by(user=user, offerer=offerer).first()
         assert user_offerer is not None
         assert user_offerer.validationToken is None
 
     def when_successful_and_existing_offerer_creates_editor_user_offerer_and_does_not_log_in(self, app):
         # Given
-        VirtualVenueTypeFactory()
         offerer = OffererFactory(siren="349974931", validationToken="not_validated")
         pro = ProFactory(email="bobby@test.com", publicName="bobby")
         UserOffererFactory(user=pro, offerer=offerer)
@@ -166,7 +163,6 @@ class Returns400Test:
         # Given
         data = BASE_DATA_PRO.copy()
         data["email"] = "toto"
-        VirtualVenueTypeFactory()
 
         # When
         response = TestClient(app.test_client()).post("/users/signup/pro", json=data)
@@ -179,7 +175,6 @@ class Returns400Test:
     def when_email_is_already_used(self, app):
         # Given
         data = BASE_DATA_PRO.copy()
-        VirtualVenueTypeFactory()
         TestClient(app.test_client()).post("/users/signup/pro", json=data)
 
         # When
@@ -194,7 +189,6 @@ class Returns400Test:
         # Given
         data = BASE_DATA_PRO.copy()
         del data["publicName"]
-        VirtualVenueTypeFactory()
 
         # When
         response = TestClient(app.test_client()).post("/users/signup/pro", json=data)
@@ -208,7 +202,6 @@ class Returns400Test:
         # Given
         data = BASE_DATA_PRO.copy()
         data["publicName"] = "x" * 300
-        VirtualVenueTypeFactory()
 
         # When
         response = TestClient(app.test_client()).post("/users/signup/pro", json=data)
@@ -254,7 +247,6 @@ class Returns400Test:
         # Given
         data = BASE_DATA_PRO.copy()
         del data["name"]
-        VirtualVenueTypeFactory()
 
         # When
         response = TestClient(app.test_client()).post("/users/signup/pro", json=data)
@@ -268,7 +260,6 @@ class Returns400Test:
         # Given
         data = BASE_DATA_PRO.copy()
         del data["city"]
-        VirtualVenueTypeFactory()
 
         # When
         response = TestClient(app.test_client()).post("/users/signup/pro", json=data)
@@ -282,7 +273,6 @@ class Returns400Test:
         # Given
         data = BASE_DATA_PRO.copy()
         del data["postalCode"]
-        VirtualVenueTypeFactory()
 
         # When
         response = TestClient(app.test_client()).post("/users/signup/pro", json=data)
@@ -296,7 +286,6 @@ class Returns400Test:
         # Given
         data = BASE_DATA_PRO.copy()
         data["postalCode"] = "111"
-        VirtualVenueTypeFactory()
 
         # When
         response = TestClient(app.test_client()).post("/users/signup/pro", json=data)
@@ -323,7 +312,6 @@ class Returns400Test:
             "isAdmin": True,
             "contactOk": "true",
         }
-        VirtualVenueTypeFactory()
 
         # When
         response = TestClient(app.test_client()).post("/users/signup/pro", json=user_json)
@@ -337,7 +325,6 @@ class Returns400Test:
         # Given
         data = BASE_DATA_PRO.copy()
         data["phoneNumber"] = "abc 123"
-        VirtualVenueTypeFactory()
 
         # When
         response = TestClient(app.test_client()).post("/users/signup/pro", json=data)

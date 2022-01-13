@@ -63,7 +63,6 @@ type IAPIOfferer = {
     thumbCount: number
     venueLabelId: string | null
     venueTypeCode: string
-    venueTypeId: string
     visualDisabilityCompliant: boolean
     withdrawalDetails: null
   }[]

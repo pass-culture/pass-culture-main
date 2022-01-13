@@ -10,7 +10,7 @@ from tests.conftest import TestClient
 
 class Returns200Test:
     @pytest.mark.usefixtures("db_session")
-    def when_user_has_rights_on_managing_offerer(self, app):
+    def when_user_has_rights_on_managing_offerer(self, client):
         # given
         user_offerer = offers_factories.UserOffererFactory(user__email="user.pro@test.com")
         venue = offers_factories.VenueFactory(name="L'encre et la plume", managingOfferer=user_offerer.offerer)
@@ -78,13 +78,13 @@ class Returns200Test:
             "publicName": venue.publicName,
             "siret": venue.siret,
             "venueLabelId": humanize(venue.venueLabelId),
-            "venueTypeId": humanize(venue.venueTypeId),
+            "venueTypeCode": venue.venueTypeCode.name if venue.venueTypeCode else None,
             "visualDisabilityCompliant": venue.visualDisabilityCompliant,
             "withdrawalDetails": None,
         }
 
         # when
-        auth_request = TestClient(app.test_client()).with_session_auth(email=user_offerer.user.email)
+        auth_request = client.with_session_auth(email=user_offerer.user.email)
         response = auth_request.get("/venues/%s" % humanize(venue.id))
 
         # then

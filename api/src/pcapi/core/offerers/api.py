@@ -12,12 +12,12 @@ from pcapi.connectors.api_adage import CulturalPartnerNotFoundException
 from pcapi.core import object_storage
 from pcapi.core import search
 import pcapi.core.finance.models as finance_models
+from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers.exceptions import MissingOffererIdQueryParameter
 from pcapi.core.offerers.models import ApiKey
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offerers.models import VenueContact
-from pcapi.core.offerers.models import VenueType
 from pcapi.core.offerers.repository import find_offerer_by_siren
 from pcapi.core.offerers.repository import find_offerer_by_validation_token
 from pcapi.core.offerers.repository import find_siren_by_offerer_id
@@ -55,13 +55,9 @@ def create_digital_venue(offerer: Offerer) -> Venue:
     digital_venue = Venue()
     digital_venue.isVirtual = True
     digital_venue.name = "Offre numérique"
-    digital_venue.venueTypeId = _get_digital_venue_type_id()
+    digital_venue.venueTypeCode = offerers_models.VenueTypeCode.DIGITAL
     digital_venue.managingOfferer = offerer
     return digital_venue
-
-
-def _get_digital_venue_type_id() -> int:
-    return VenueType.query.filter_by(label="Offre numérique").one().id
 
 
 def update_venue(
@@ -90,9 +86,6 @@ def update_venue(
             )
 
     venue.populate_from_dict(modifications)
-
-    # TODO: Remove this step when a new stable venue type system is setup
-    venue.fill_venue_type_code_from_label()
 
     repository.save(venue)
     search.async_index_venue_ids([venue.id])
@@ -149,9 +142,6 @@ def create_venue(venue_data: PostVenueBodyModel) -> Venue:
 
     if venue_data.contact:
         upsert_venue_contact(venue, venue_data.contact)
-
-    # TODO: Remove this step when a new stable venue type system is setup
-    venue.fill_venue_type_code_from_label()
 
     repository.save(venue)
 

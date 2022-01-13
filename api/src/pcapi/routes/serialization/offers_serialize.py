@@ -469,7 +469,6 @@ class GetOfferVenueResponseModel(BaseModel):
     siret: Optional[str]
     thumbCount: int
     venueLabelId: Optional[str]
-    venueTypeId: Optional[str]
     audioDisabilityCompliant: Optional[bool]
     mentalDisabilityCompliant: Optional[bool]
     motorDisabilityCompliant: Optional[bool]
@@ -479,7 +478,6 @@ class GetOfferVenueResponseModel(BaseModel):
     _humanize_managing_offerer_id = humanize_field("managingOffererId")
     _humanize_last_provider_id = humanize_field("lastProviderId")
     _humanize_venue_label_id = humanize_field("venueLabelId")
-    _humanize_venue_type_id = humanize_field("venueTypeId")
 
     class Config:
         orm_mode = True

@@ -11,7 +11,6 @@ from pcapi.core.offers.factories import UserOffererFactory
 from pcapi.core.users.factories import AdminFactory
 from pcapi.core.users.factories import ProFactory
 from pcapi.models.user_offerer import UserOfferer
-from pcapi.utils.human_ids import humanize
 
 from tests.conftest import TestClient
 
@@ -32,7 +31,8 @@ class Returns201Test:
         )
 
         pro = ProFactory()
-        digital_venue_type = VirtualVenueTypeFactory()
+        VirtualVenueTypeFactory()
+
         body = {
             "name": "Test Offerer",
             "siren": "418166096",
@@ -50,7 +50,6 @@ class Returns201Test:
         assert response.json["name"] == "Test Offerer"
         virtual_venues = list(filter(lambda v: v["isVirtual"], response.json["managedVenues"]))
         assert len(virtual_venues) == 1
-        assert virtual_venues[0]["venueTypeId"] == humanize(digital_venue_type.id)
 
     @patch("pcapi.connectors.api_entreprises.requests.get")
     @pytest.mark.usefixtures("db_session")
