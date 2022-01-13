@@ -136,9 +136,9 @@ def check_is_usable(booking: Booking) -> None:
         raise gone
 
     if booking.status is BookingStatus.CANCELLED:
-        forbidden = api_errors.ForbiddenError()
-        forbidden.add_error("booking", "Cette réservation a été annulée")
-        raise forbidden
+        gone = api_errors.ResourceGoneError()
+        gone.add_error("booking", "Cette réservation a été annulée")
+        raise gone
 
     if booking.educationalBookingId is not None:
         if booking.educationalBooking.status is EducationalBookingStatus.REFUSED:
@@ -189,7 +189,7 @@ def check_can_be_mark_as_unused(booking: Booking) -> None:
         raise forbidden
 
     if booking.status == BookingStatus.CANCELLED:
-        forbidden = api_errors.ForbiddenError()
+        forbidden = api_errors.ResourceGoneError()
         forbidden.add_error("booking", "Cette réservation a été annulée")
         raise forbidden
 

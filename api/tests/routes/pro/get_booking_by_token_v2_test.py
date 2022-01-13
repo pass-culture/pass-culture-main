@@ -202,19 +202,6 @@ class Returns403Test:
         assert response.status_code == 403
         assert "Veuillez attendre" in response.json["booking"][0]
 
-    def test_when_booking_is_cancelled(self, client):
-        # Given
-        booking = bookings_factories.CancelledBookingFactory()
-        pro_user = offers_factories.UserOffererFactory(offerer=booking.offerer).user
-
-        # When
-        url = f"/v2/bookings/token/{booking.token}"
-        response = client.with_basic_auth(pro_user.email).get(url)
-
-        # Then
-        assert response.status_code == 403
-        assert response.json["booking"] == ["Cette réservation a été annulée"]
-
     def test_when_booking_is_refunded(self, client):
         # Given
         booking = payments_factories.PaymentFactory().booking
@@ -314,3 +301,16 @@ class Returns410Test:
 
         assert response.status_code == 410
         assert response.json["booking"] == ["Cette réservation a déjà été validée"]
+
+    def test_when_booking_is_cancelled(self, client):
+        # Given
+        booking = bookings_factories.CancelledBookingFactory()
+        pro_user = offers_factories.UserOffererFactory(offerer=booking.offerer).user
+
+        # When
+        url = f"/v2/bookings/token/{booking.token}"
+        response = client.with_basic_auth(pro_user.email).get(url)
+
+        # Then
+        assert response.status_code == 410
+        assert response.json["booking"] == ["Cette réservation a été annulée"]

@@ -247,7 +247,7 @@ def patch_cancel_booking_by_token(token: str) -> None:
     code_descriptions=BASE_CODE_DESCRIPTIONS
     | {
         "HTTP_204": "L'annulation de la validation de la contremarque a bien été effectuée",
-        "HTTP_410": "La contremarque n’est plus valide car elle a déjà été validée, annulée ou bien le remboursement a été initié",
+        "HTTP_410": "La requête est refusée car la contremarque n'a pas encore été validée, a été annulée, ou son remboursement a été initié",
     },
 )
 def patch_booking_keep_by_token(token: str) -> None:

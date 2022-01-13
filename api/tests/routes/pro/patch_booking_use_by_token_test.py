@@ -111,23 +111,6 @@ class Returns403Test:
                 "Vous n’avez pas les droits suffisants pour valider cette contremarque car cette réservation n'a pas été faite sur une de vos offres, ou que votre rattachement à la structure est encore en cours de validation"
             ]
 
-        def test_when_api_key_is_provided_and_booking_has_been_cancelled_already(self, client):
-            # Given
-            booking = bookings_factories.CancelledBookingFactory()
-            ApiKeyFactory(offerer=booking.offerer)
-
-            # When
-            url = f"/v2/bookings/use/token/{booking.token}"
-            auth = "Bearer development_prefix_clearSecret"
-            response = client.patch(url, headers={"Authorization": auth})
-
-            # Then
-            assert response.status_code == 403
-            assert response.json["booking"] == ["Cette réservation a été annulée"]
-            booking = Booking.query.get(booking.id)
-            assert not booking.isUsed
-            assert booking.status is not BookingStatus.USED
-
     class WithBasicAuthTest:
         def test_when_user_is_not_attached_to_linked_offerer(self, client):
             # Given
@@ -143,22 +126,6 @@ class Returns403Test:
             assert response.json["user"] == [
                 "Vous n’avez pas les droits suffisants pour valider cette contremarque car cette réservation n'a pas été faite sur une de vos offres, ou que votre rattachement à la structure est encore en cours de validation"
             ]
-            booking = Booking.query.get(booking.id)
-            assert not booking.isUsed
-            assert booking.status is not BookingStatus.USED
-
-        def test_when_user_is_logged_in_and_booking_has_been_cancelled_already(self, client):
-            # Given
-            admin = users_factories.AdminFactory()
-            booking = bookings_factories.CancelledBookingFactory()
-            url = f"/v2/bookings/use/token/{booking.token}"
-
-            # When
-            response = client.with_session_auth(admin.email).patch(url)
-
-            # Then
-            assert response.status_code == 403
-            assert response.json["booking"] == ["Cette réservation a été annulée"]
             booking = Booking.query.get(booking.id)
             assert not booking.isUsed
             assert booking.status is not BookingStatus.USED
@@ -222,3 +189,38 @@ class Returns404Test:
         response = client.with_basic_auth(pro_user.email).patch("/v2/bookings/use/token/UNKNOWN")
         assert response.status_code == 404
         assert response.json["global"] == ["Cette contremarque n'a pas été trouvée"]
+
+
+class Returns410Test:
+    def test_when_api_key_is_provided_and_booking_has_been_cancelled_already(self, client):
+        # Given
+        booking = bookings_factories.CancelledBookingFactory()
+        ApiKeyFactory(offerer=booking.offerer)
+
+        # When
+        url = f"/v2/bookings/use/token/{booking.token}"
+        auth = "Bearer development_prefix_clearSecret"
+        response = client.patch(url, headers={"Authorization": auth})
+
+        # Then
+        assert response.status_code == 410
+        assert response.json["booking"] == ["Cette réservation a été annulée"]
+        booking = Booking.query.get(booking.id)
+        assert not booking.isUsed
+        assert booking.status is not BookingStatus.USED
+
+    def test_when_user_is_logged_in_and_booking_has_been_cancelled_already(self, client):
+        # Given
+        admin = users_factories.AdminFactory()
+        booking = bookings_factories.CancelledBookingFactory()
+        url = f"/v2/bookings/use/token/{booking.token}"
+
+        # When
+        response = client.with_session_auth(admin.email).patch(url)
+
+        # Then
+        assert response.status_code == 410
+        assert response.json["booking"] == ["Cette réservation a été annulée"]
+        booking = Booking.query.get(booking.id)
+        assert not booking.isUsed
+        assert booking.status is not BookingStatus.USED

@@ -140,20 +140,6 @@ class Returns403Test:  # Forbidden
         assert not booking.isUsed
         assert booking.status is not BookingStatus.USED
 
-    def when_booking_has_been_cancelled_already(self, client):
-        # Given
-        admin = users_factories.AdminFactory()
-        booking = bookings_factories.CancelledBookingFactory()
-        url = f"/bookings/token/{booking.token}"
-
-        # When
-        response = client.with_session_auth(admin.email).patch(url)
-
-        # Then
-        assert response.status_code == 403
-        assert response.json["booking"] == ["Cette réservation a été annulée"]
-        assert Booking.query.get(booking.id).isUsed is False
-
 
 @pytest.mark.usefixtures("db_session")
 class Returns404Test:
@@ -213,3 +199,20 @@ class Returns404Test:
             # Then
             assert response.status_code == 404
             assert Booking.query.get(booking.id).isUsed is False
+
+
+@pytest.mark.usefixtures("db_session")
+class Returns410Test:
+    def when_booking_has_been_cancelled_already(self, client):
+        # Given
+        admin = users_factories.AdminFactory()
+        booking = bookings_factories.CancelledBookingFactory()
+        url = f"/bookings/token/{booking.token}"
+
+        # When
+        response = client.with_session_auth(admin.email).patch(url)
+
+        # Then
+        assert response.status_code == 410
+        assert response.json["booking"] == ["Cette réservation a été annulée"]
+        assert Booking.query.get(booking.id).isUsed is False
