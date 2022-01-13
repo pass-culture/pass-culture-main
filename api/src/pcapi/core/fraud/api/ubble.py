@@ -22,7 +22,7 @@ def on_ubble_result(fraud_check: fraud_models.BeneficiaryFraudCheck) -> None:
 
 
 def _ubble_readable_score(score: typing.Optional[float]) -> str:
-    return fraud_models.ubble.UbbleScore(score).name if score else "AUCUN"
+    return fraud_models.ubble.UbbleScore(score).name if score is not None else "AUCUN"
 
 
 def _ubble_result_fraud_item(content: fraud_models.ubble.UbbleContent) -> fraud_models.FraudItem:
@@ -33,7 +33,7 @@ def _ubble_result_fraud_item(content: fraud_models.ubble.UbbleContent) -> fraud_
     # Decision from identification/score
     if content.score == fraud_models.ubble.UbbleScore.VALID.value:
         # Decision from age
-        age = users_utils.get_age_at_date(content.birth_date, content.registration_datetime)
+        age = users_utils.get_age_at_date(content.get_birth_date(), content.get_registration_datetime())
         if age < min(users_constants.ELIGIBILITY_UNDERAGE_RANGE):
             status = fraud_models.FraudStatus.KO
             reason_code = fraud_models.FraudReasonCode.AGE_TOO_YOUNG
