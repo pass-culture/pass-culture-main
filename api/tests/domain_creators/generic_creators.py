@@ -3,10 +3,7 @@ from typing import Optional
 
 from pcapi.core.bookings.api import compute_cancellation_limit_date
 from pcapi.core.bookings.models import BookingStatus
-from pcapi.core.offers.models import Mediation
-from pcapi.core.offers.models import Offer
 from pcapi.domain.booking_recap.booking_recap import BookingRecapLegacy
-from pcapi.domain.favorite.favorite import FavoriteDomain
 
 
 def create_domain_booking_recap(
@@ -72,7 +69,3 @@ def create_domain_booking_recap(
         venue_is_virtual=venue_is_virtual,
         event_beginning_datetime=event_beginning_datetime,
     )
-
-
-def create_domain_favorite(identifier: int, offer: Offer, mediation: Mediation = None, booking: dict = None):
-    return FavoriteDomain(identifier=identifier, offer=offer, mediation=mediation, booking=booking)

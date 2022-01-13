@@ -9,15 +9,6 @@ def check_offer_name_length_is_valid(offer_name: str):
         raise api_error
 
 
-def check_offer_id_is_present_in_request(offer_id: str):
-    if offer_id is None:
-        errors = ApiErrors()
-        errors.status_code = 400
-        errors.add_error("global", "Le paramètre offerId est obligatoire")
-        errors.maybe_raise()
-        raise errors
-
-
 def check_offer_isbn_is_valid(isbn: str):
     isbn_length = 13
     if not (isbn and isbn.isnumeric() and len(isbn) == isbn_length):
