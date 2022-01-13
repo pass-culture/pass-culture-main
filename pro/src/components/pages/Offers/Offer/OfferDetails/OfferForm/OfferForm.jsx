@@ -900,7 +900,9 @@ const OfferForm = ({
                   }}
                   error={getErrorMessage('venueId')}
                   handleSelection={handleChangeVenue}
-                  isDisabled={readOnlyFields.includes('venueId')}
+                  isDisabled={
+                    readOnlyFields.includes('venueId') || venue?.isVirtual
+                  }
                   label="Lieu"
                   name="venueId"
                   options={venueOptions}
