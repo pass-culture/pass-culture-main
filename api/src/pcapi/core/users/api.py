@@ -327,6 +327,7 @@ def update_user_information_from_external_source(
         user.firstName = data.first_name
         user.lastName = data.last_name
         user.dateOfBirth = datetime.combine(data.birth_date, time(0, 0))
+        user.idPieceNumber = data.get_id_piece_number()
 
     # update user fields to be correctly initialized
     user.hasSeenTutorials = False
