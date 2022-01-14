@@ -7,6 +7,7 @@ import pytest
 from pcapi import settings
 from pcapi.core.fraud import factories as fraud_factories
 from pcapi.core.fraud import models as fraud_models
+from pcapi.core.fraud.ubble import models as ubble_fraud_models
 from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
@@ -65,48 +66,48 @@ class NextStepTest:
             (
                 fraud_models.FraudCheckStatus.PENDING,
                 None,
-                fraud_models.ubble.UbbleIdentificationStatus.INITIATED,
+                ubble_fraud_models.UbbleIdentificationStatus.INITIATED,
                 "identity-check",
                 False,
             ),
             (
                 fraud_models.FraudCheckStatus.PENDING,
                 None,
-                fraud_models.ubble.UbbleIdentificationStatus.PROCESSING,
+                ubble_fraud_models.UbbleIdentificationStatus.PROCESSING,
                 "honor-statement",
                 True,
             ),
             (
                 fraud_models.FraudCheckStatus.OK,
                 None,
-                fraud_models.ubble.UbbleIdentificationStatus.PROCESSED,
+                ubble_fraud_models.UbbleIdentificationStatus.PROCESSED,
                 "honor-statement",
                 False,
             ),
             (
                 fraud_models.FraudCheckStatus.KO,
                 fraud_models.FraudReasonCode.AGE_TOO_OLD,
-                fraud_models.ubble.UbbleIdentificationStatus.PROCESSED,
+                ubble_fraud_models.UbbleIdentificationStatus.PROCESSED,
                 "honor-statement",
                 False,
             ),
             (
                 fraud_models.FraudCheckStatus.CANCELED,
                 None,
-                fraud_models.ubble.UbbleIdentificationStatus.ABORTED,
+                ubble_fraud_models.UbbleIdentificationStatus.ABORTED,
                 "identity-check",
                 False,
             ),
             (
                 fraud_models.FraudCheckStatus.SUSPICIOUS,
                 fraud_models.FraudReasonCode.ID_CHECK_NOT_SUPPORTED,
-                fraud_models.ubble.UbbleIdentificationStatus.PROCESSED,
+                ubble_fraud_models.UbbleIdentificationStatus.PROCESSED,
                 "identity-check",  # User can retry
                 False,
             ),
-            (None, None, fraud_models.ubble.UbbleIdentificationStatus.INITIATED, "identity-check", False),
-            (None, None, fraud_models.ubble.UbbleIdentificationStatus.PROCESSING, "honor-statement", False),
-            (None, None, fraud_models.ubble.UbbleIdentificationStatus.PROCESSED, "honor-statement", False),
+            (None, None, ubble_fraud_models.UbbleIdentificationStatus.INITIATED, "identity-check", False),
+            (None, None, ubble_fraud_models.UbbleIdentificationStatus.PROCESSING, "honor-statement", False),
+            (None, None, ubble_fraud_models.UbbleIdentificationStatus.PROCESSED, "honor-statement", False),
         ],
     )
     @override_features(ENABLE_UBBLE=True)
@@ -174,13 +175,13 @@ class NextStepTest:
     @pytest.mark.parametrize(
         "underage_fraud_check_status,underage_ubble_status",
         [
-            (fraud_models.FraudCheckStatus.PENDING, fraud_models.ubble.UbbleIdentificationStatus.PROCESSING),
-            (fraud_models.FraudCheckStatus.OK, fraud_models.ubble.UbbleIdentificationStatus.PROCESSED),
-            (fraud_models.FraudCheckStatus.KO, fraud_models.ubble.UbbleIdentificationStatus.PROCESSED),
-            (fraud_models.FraudCheckStatus.SUSPICIOUS, fraud_models.ubble.UbbleIdentificationStatus.PROCESSED),
-            (fraud_models.FraudCheckStatus.CANCELED, fraud_models.ubble.UbbleIdentificationStatus.ABORTED),
-            (None, fraud_models.ubble.UbbleIdentificationStatus.PROCESSING),
-            (None, fraud_models.ubble.UbbleIdentificationStatus.PROCESSED),
+            (fraud_models.FraudCheckStatus.PENDING, ubble_fraud_models.UbbleIdentificationStatus.PROCESSING),
+            (fraud_models.FraudCheckStatus.OK, ubble_fraud_models.UbbleIdentificationStatus.PROCESSED),
+            (fraud_models.FraudCheckStatus.KO, ubble_fraud_models.UbbleIdentificationStatus.PROCESSED),
+            (fraud_models.FraudCheckStatus.SUSPICIOUS, ubble_fraud_models.UbbleIdentificationStatus.PROCESSED),
+            (fraud_models.FraudCheckStatus.CANCELED, ubble_fraud_models.UbbleIdentificationStatus.ABORTED),
+            (None, ubble_fraud_models.UbbleIdentificationStatus.PROCESSING),
+            (None, ubble_fraud_models.UbbleIdentificationStatus.PROCESSED),
         ],
     )
     @override_features(ENABLE_UBBLE=True)
@@ -263,7 +264,7 @@ class NextStepTest:
             type=fraud_models.FraudCheckType.UBBLE,
             status=fraud_models.FraudCheckStatus.PENDING,
             resultContent=fraud_factories.UbbleContentFactory(
-                status=fraud_models.ubble.UbbleIdentificationStatus.PROCESSING
+                status=ubble_fraud_models.UbbleIdentificationStatus.PROCESSING
             ),
             eligibilityType=users_models.EligibilityType.AGE18,
         )
@@ -298,7 +299,7 @@ class NextStepTest:
         # ubble now confirms the status
         ubble_fraud_check.status = fraud_models.FraudCheckStatus.OK
         ubble_fraud_check.resultContent = fraud_factories.UbbleContentFactory(
-            status=fraud_models.ubble.UbbleIdentificationStatus.PROCESSED
+            status=ubble_fraud_models.UbbleIdentificationStatus.PROCESSED
         )
         pcapi_repository.repository.save(ubble_fraud_check)
         response = client.get("/native/v1/subscription/next_step")
@@ -415,7 +416,7 @@ class NextStepTest:
         )
 
         ubble_content = fraud_factories.UbbleContentFactory(
-            status=fraud_models.ubble_models.UbbleIdentificationStatus.INITIATED
+            status=ubble_fraud_models.UbbleIdentificationStatus.INITIATED
         )
         fraud_factories.BeneficiaryFraudCheckFactory(
             type=fraud_models.FraudCheckType.UBBLE,

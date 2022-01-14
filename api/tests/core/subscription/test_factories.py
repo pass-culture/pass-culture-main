@@ -10,7 +10,7 @@ import factory
 import pytz
 
 from pcapi import settings
-from pcapi.core.fraud.models import ubble as ubble_models
+from pcapi.core.fraud.ubble import models as ubble_fraud_models
 
 
 class IdentificationState(Enum):
@@ -24,13 +24,13 @@ class IdentificationState(Enum):
 
 
 STATE_STATUS_MAPPING = {
-    IdentificationState.NEW: ubble_models.UbbleIdentificationStatus.UNINITIATED,
-    IdentificationState.INITIATED: ubble_models.UbbleIdentificationStatus.INITIATED,
-    IdentificationState.ABORTED: ubble_models.UbbleIdentificationStatus.ABORTED,
-    IdentificationState.PROCESSING: ubble_models.UbbleIdentificationStatus.PROCESSING,
-    IdentificationState.VALID: ubble_models.UbbleIdentificationStatus.PROCESSED,
-    IdentificationState.INVALID: ubble_models.UbbleIdentificationStatus.PROCESSED,
-    IdentificationState.UNPROCESSABLE: ubble_models.UbbleIdentificationStatus.PROCESSED,
+    IdentificationState.NEW: ubble_fraud_models.UbbleIdentificationStatus.UNINITIATED,
+    IdentificationState.INITIATED: ubble_fraud_models.UbbleIdentificationStatus.INITIATED,
+    IdentificationState.ABORTED: ubble_fraud_models.UbbleIdentificationStatus.ABORTED,
+    IdentificationState.PROCESSING: ubble_fraud_models.UbbleIdentificationStatus.PROCESSING,
+    IdentificationState.VALID: ubble_fraud_models.UbbleIdentificationStatus.PROCESSED,
+    IdentificationState.INVALID: ubble_fraud_models.UbbleIdentificationStatus.PROCESSED,
+    IdentificationState.UNPROCESSABLE: ubble_fraud_models.UbbleIdentificationStatus.PROCESSED,
 }
 
 
@@ -44,7 +44,7 @@ class IdentificationIncludedType(Enum):
 
 class UbbleIdentificationDataAttributesFactory(factory.Factory):
     class Meta:
-        model = ubble_models.UbbleIdentificationAttributes
+        model = ubble_fraud_models.UbbleIdentificationAttributes
         rename = {
             "anonymized_at": "anonymized-at",
             "created_at": "created-at",
@@ -89,9 +89,9 @@ class UbbleIdentificationDataAttributesFactory(factory.Factory):
     @factory.lazy_attribute
     def score(self):
         return {
-            IdentificationState.UNPROCESSABLE: ubble_models.UbbleScore.UNDECIDABLE.value,
-            IdentificationState.INVALID: ubble_models.UbbleScore.INVALID.value,
-            IdentificationState.VALID: ubble_models.UbbleScore.VALID.value,
+            IdentificationState.UNPROCESSABLE: ubble_fraud_models.UbbleScore.UNDECIDABLE.value,
+            IdentificationState.INVALID: ubble_fraud_models.UbbleScore.INVALID.value,
+            IdentificationState.VALID: ubble_fraud_models.UbbleScore.VALID.value,
         }.get(self.identification_state)
 
     @factory.lazy_attribute
@@ -166,7 +166,7 @@ class UbbleIdentificationDataAttributesFactory(factory.Factory):
 
 class UbbleIdentificationDataFactory(factory.Factory):
     class Meta:
-        model = ubble_models.UbbleIdentificationData
+        model = ubble_fraud_models.UbbleIdentificationData
 
     class Params:
         identification_state = IdentificationState.NEW
@@ -181,7 +181,7 @@ class UbbleIdentificationDataFactory(factory.Factory):
 
 class UbbleIdentificationIncludedDocumentsAttributesFactory(factory.Factory):
     class Meta:
-        model = ubble_models.UbbleIdentificationDocuments
+        model = ubble_fraud_models.UbbleIdentificationDocuments
         rename = {
             "birth_date": "birth-date",
             "birth_place": "birth-place",
@@ -221,7 +221,7 @@ class UbbleIdentificationIncludedDocumentsAttributesFactory(factory.Factory):
 
 class UbbleIdentificationIncludedDocumentChecksAttributesFactory(factory.Factory):
     class Meta:
-        model = ubble_models.UbbleIdentificationDocumentChecks
+        model = ubble_fraud_models.UbbleIdentificationDocumentChecks
         rename = {
             "data_extracted_score": "data-extracted-score",
             "expiry_date_score": "expiry-date-score",
@@ -241,7 +241,7 @@ class UbbleIdentificationIncludedDocumentChecksAttributesFactory(factory.Factory
         identification_state = IdentificationState.VALID
 
     data_extracted_score = None
-    expiry_date_score = ubble_models.UbbleScore.VALID.value
+    expiry_date_score = ubble_fraud_models.UbbleScore.VALID.value
     issue_date_score = None
     live_video_capture_score = None
     mrz_validity_score = None
@@ -250,32 +250,32 @@ class UbbleIdentificationIncludedDocumentChecksAttributesFactory(factory.Factory
     ove_front_score = None
     ove_score = None
     quality_score: None
-    supported = ubble_models.UbbleScore.VALID.value
+    supported = ubble_fraud_models.UbbleScore.VALID.value
     visual_back_score = None
     visual_front_score = None
 
     @factory.lazy_attribute
     def score(self):
         return {
-            IdentificationState.UNPROCESSABLE: ubble_models.UbbleScore.INVALID.value,
-            IdentificationState.INVALID: ubble_models.UbbleScore.INVALID.value,
-            IdentificationState.VALID: ubble_models.UbbleScore.VALID.value,
+            IdentificationState.UNPROCESSABLE: ubble_fraud_models.UbbleScore.INVALID.value,
+            IdentificationState.INVALID: ubble_fraud_models.UbbleScore.INVALID.value,
+            IdentificationState.VALID: ubble_fraud_models.UbbleScore.VALID.value,
         }.get(self.identification_state)
 
 
 class UbbleIdentificationIncludedDocFaceMatchesAttributesFactory(factory.Factory):
     class Meta:
-        model = ubble_models.UbbleIdentificationDocFaceMatches
+        model = ubble_fraud_models.UbbleIdentificationDocFaceMatches
 
     class Params:
         identification_state = IdentificationState.VALID
 
-    score = ubble_models.UbbleScore.VALID.value
+    score = ubble_fraud_models.UbbleScore.VALID.value
 
 
 class UbbleIdentificationIncludedFaceChecksAttributesFactory(factory.Factory):
     class Meta:
-        model = ubble_models.UbbleIdentificationFaceChecks
+        model = ubble_fraud_models.UbbleIdentificationFaceChecks
         rename = {
             "active_liveness_score": "active-liveness-score",
             "live_video_capture_score": "live-video-capture-score",
@@ -288,19 +288,19 @@ class UbbleIdentificationIncludedFaceChecksAttributesFactory(factory.Factory):
     active_liveness_score = None
     live_video_capture_score = None
     quality_score = None
-    score = ubble_models.UbbleScore.VALID.value
+    score = ubble_fraud_models.UbbleScore.VALID.value
 
 
 class UbbleIdentificationIncludedReferenceDataChecksAttributesFactory(factory.Factory):
     class Meta:
-        model = ubble_models.UbbleIdentificationReferenceDataChecks
+        model = ubble_fraud_models.UbbleIdentificationReferenceDataChecks
 
-    score = ubble_models.UbbleScore.VALID.value
+    score = ubble_fraud_models.UbbleScore.VALID.value
 
 
 class UbbleIdentificationIncludedFactory(factory.Factory):
     class Meta:
-        model = ubble_models.UbbleIdentificationIncluded
+        model = ubble_fraud_models.UbbleIdentificationIncluded
         abstract = True
 
     type = None
@@ -310,7 +310,7 @@ class UbbleIdentificationIncludedFactory(factory.Factory):
 
 class UbbleIdentificationIncludedDocumentsFactory(UbbleIdentificationIncludedFactory):
     class Meta:
-        model = ubble_models.UbbleIdentificationIncludedDocuments
+        model = ubble_fraud_models.UbbleIdentificationIncludedDocuments
 
     type = IdentificationIncludedType.DOCUMENTS.value
     attributes = factory.SubFactory(UbbleIdentificationIncludedDocumentsAttributesFactory)
@@ -318,7 +318,7 @@ class UbbleIdentificationIncludedDocumentsFactory(UbbleIdentificationIncludedFac
 
 class UbbleIdentificationIncludedDocumentChecksFactory(UbbleIdentificationIncludedFactory):
     class Meta:
-        model = ubble_models.UbbleIdentificationIncludedDocumentChecks
+        model = ubble_fraud_models.UbbleIdentificationIncludedDocumentChecks
 
     type = IdentificationIncludedType.DOCUMENT_CHECKS.value
     attributes = factory.SubFactory(UbbleIdentificationIncludedDocumentChecksAttributesFactory)
@@ -326,7 +326,7 @@ class UbbleIdentificationIncludedDocumentChecksFactory(UbbleIdentificationInclud
 
 class UbbleIdentificationIncludedFaceChecksFactory(UbbleIdentificationIncludedFactory):
     class Meta:
-        model = ubble_models.UbbleIdentificationIncludedFaceChecks
+        model = ubble_fraud_models.UbbleIdentificationIncludedFaceChecks
 
     type = IdentificationIncludedType.FACE_CHECKS.value
     attributes = factory.SubFactory(UbbleIdentificationIncludedFaceChecksAttributesFactory)
@@ -334,7 +334,7 @@ class UbbleIdentificationIncludedFaceChecksFactory(UbbleIdentificationIncludedFa
 
 class UbbleIdentificationIncludedReferenceDataChecksFactory(UbbleIdentificationIncludedFactory):
     class Meta:
-        model = ubble_models.UbbleIdentificationIncludedReferenceDataChecks
+        model = ubble_fraud_models.UbbleIdentificationIncludedReferenceDataChecks
 
     type = IdentificationIncludedType.REFERENCE_DATA_CHECKS.value
     attributes = factory.SubFactory(UbbleIdentificationIncludedReferenceDataChecksAttributesFactory)
@@ -342,7 +342,7 @@ class UbbleIdentificationIncludedReferenceDataChecksFactory(UbbleIdentificationI
 
 class UbbleIdentificationIncludedDocFaceMatchesFactory(UbbleIdentificationIncludedFactory):
     class Meta:
-        model = ubble_models.UbbleIdentificationIncludedDocFaceMatches
+        model = ubble_fraud_models.UbbleIdentificationIncludedDocFaceMatches
 
     type = IdentificationIncludedType.DOC_FACE_MATCHES.value
     attributes = factory.SubFactory(UbbleIdentificationIncludedDocFaceMatchesAttributesFactory)
@@ -350,7 +350,7 @@ class UbbleIdentificationIncludedDocFaceMatchesFactory(UbbleIdentificationInclud
 
 class UbbleIdentificationResponseFactory(factory.Factory):
     class Meta:
-        model = ubble_models.UbbleIdentificationResponse
+        model = ubble_fraud_models.UbbleIdentificationResponse
 
     class Params:
         identification_state = IdentificationState.NEW

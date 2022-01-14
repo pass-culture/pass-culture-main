@@ -4,8 +4,10 @@ import typing
 
 from pcapi import settings
 import pcapi.core.fraud.api as fraud_api
+from pcapi.core.fraud.common import models as common_fraud_models
 import pcapi.core.fraud.models as fraud_models
 import pcapi.core.fraud.repository as fraud_repository
+from pcapi.core.fraud.ubble import api as ubble_fraud_api
 from pcapi.core.mails.transactional.users import accepted_as_beneficiary
 from pcapi.core.payments import api as payments_api
 from pcapi.core.users import api as users_api
@@ -181,7 +183,7 @@ def needs_to_perform_identity_check(user: users_models.User) -> bool:
     return (
         not user.hasCompletedIdCheck
         and not (
-            not fraud_api.ubble.is_user_allowed_to_perform_ubble_check(user, user.eligibility)
+            not ubble_fraud_api.is_user_allowed_to_perform_ubble_check(user, user.eligibility)
             and FeatureToggle.ENABLE_UBBLE.is_active()
         )
         and not (fraud_api.has_passed_educonnect(user) and user.eligibility == users_models.EligibilityType.UNDERAGE)
@@ -467,7 +469,7 @@ def get_maintenance_page_type(user: users_models.User) -> typing.Optional[models
 
 def on_successful_application(
     user: users_models.User,
-    source_data: fraud_models.IdentityCheckContent,
+    source_data: common_fraud_models.IdentityCheckContent,
     source: BeneficiaryImportSources,
     eligibility_type: users_models.EligibilityType,
     application_id: typing.Optional[int] = None,

@@ -3,7 +3,7 @@ import logging
 from pcapi import settings
 from pcapi.connectors import api_demarches_simplifiees
 from pcapi.core import logging as core_logging
-from pcapi.core.fraud import api as fraud_api
+from pcapi.core.fraud.ubble import api as ubble_fraud_api
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import messages as subscription_messages
 from pcapi.core.subscription.ubble import api as ubble_subscription_api
@@ -129,7 +129,7 @@ def ubble_webhook_update_application_status(
 ) -> ubble_validation.WebhookDummyReponse:
     logger.info("Ubble webhook called", extra={"identification_id": body.identification_id, "status": str(body.status)})
 
-    fraud_check = fraud_api.ubble.get_ubble_fraud_check(body.identification_id)
+    fraud_check = ubble_fraud_api.get_ubble_fraud_check(body.identification_id)
     if not fraud_check:
         raise ValueError(f"no Ubble fraud check found with identification_id {body.identification_id}")
 

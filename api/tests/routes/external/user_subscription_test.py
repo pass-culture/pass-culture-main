@@ -14,9 +14,10 @@ from pcapi import settings
 from pcapi.connectors.api_demarches_simplifiees import DMSGraphQLClient
 from pcapi.connectors.api_demarches_simplifiees import GraphQLApplicationStates
 from pcapi.core import testing
-from pcapi.core.fraud import api as fraud_api
 from pcapi.core.fraud import factories as fraud_factories
 from pcapi.core.fraud import models as fraud_models
+from pcapi.core.fraud.ubble import api as ubble_fraud_api
+from pcapi.core.fraud.ubble import models as ubble_fraud_models
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.subscription import messages as subscription_messages
 from pcapi.core.subscription import models as subscription_models
@@ -438,7 +439,7 @@ class UbbleWebhookTest:
 
         self._post_webhook(client, ubble_mocker, request_data, ubble_identification_response)
 
-        fraud_check = fraud_api.ubble.get_ubble_fraud_check(
+        fraud_check = ubble_fraud_api.get_ubble_fraud_check(
             ubble_identification_response.data.attributes.identification_id
         )
         assert fraud_check.reason is None
@@ -446,7 +447,7 @@ class UbbleWebhookTest:
         assert fraud_check.status is fraud_models.FraudCheckStatus.PENDING
         assert fraud_check.type == fraud_models.FraudCheckType.UBBLE
         assert fraud_check.thirdPartyId == ubble_identification_response.data.attributes.identification_id
-        content = fraud_models.ubble.UbbleContent(**fraud_check.resultContent)
+        content = ubble_fraud_models.UbbleContent(**fraud_check.resultContent)
         assert content.score is None
         assert content.status == test_factories.STATE_STATUS_MAPPING[notified_identification_state]
         assert content.comment is None
@@ -471,7 +472,7 @@ class UbbleWebhookTest:
 
         self._post_webhook(client, ubble_mocker, request_data, ubble_identification_response)
 
-        fraud_check = fraud_api.ubble.get_ubble_fraud_check(
+        fraud_check = ubble_fraud_api.get_ubble_fraud_check(
             ubble_identification_response.data.attributes.identification_id
         )
         assert fraud_check.reason is None
@@ -479,7 +480,7 @@ class UbbleWebhookTest:
         assert fraud_check.status is fraud_models.FraudCheckStatus.CANCELED
         assert fraud_check.type == fraud_models.FraudCheckType.UBBLE
         assert fraud_check.thirdPartyId == ubble_identification_response.data.attributes.identification_id
-        content = fraud_models.ubble.UbbleContent(**fraud_check.resultContent)
+        content = ubble_fraud_models.UbbleContent(**fraud_check.resultContent)
         assert content.score is None
         assert content.status == test_factories.STATE_STATUS_MAPPING[notified_identification_state]
         assert content.comment is None
@@ -504,7 +505,7 @@ class UbbleWebhookTest:
 
         self._post_webhook(client, ubble_mocker, request_data, ubble_identification_response)
 
-        fraud_check = fraud_api.ubble.get_ubble_fraud_check(
+        fraud_check = ubble_fraud_api.get_ubble_fraud_check(
             ubble_identification_response.data.attributes.identification_id
         )
         assert fraud_check.reason is None
@@ -513,7 +514,7 @@ class UbbleWebhookTest:
         assert fraud_check.type == fraud_models.FraudCheckType.UBBLE
         assert fraud_check.thirdPartyId == ubble_identification_response.data.attributes.identification_id
         assert fraud_check.user.hasCompletedIdCheck is True
-        content = fraud_models.ubble.UbbleContent(**fraud_check.resultContent)
+        content = ubble_fraud_models.UbbleContent(**fraud_check.resultContent)
         document = list(filter(lambda included: included.type == "documents", ubble_identification_response.included))[
             0
         ].attributes
@@ -541,7 +542,7 @@ class UbbleWebhookTest:
 
         self._post_webhook(client, ubble_mocker, request_data, ubble_identification_response)
 
-        fraud_check = fraud_api.ubble.get_ubble_fraud_check(
+        fraud_check = ubble_fraud_api.get_ubble_fraud_check(
             ubble_identification_response.data.attributes.identification_id
         )
         assert fraud_check.reason == ""
@@ -558,19 +559,19 @@ class UbbleWebhookTest:
         assert len(mails_testing.outbox) == 1
         assert mails_testing.outbox[0].sent_data["To"] == fraud_check.user.email
 
-        content = fraud_models.ubble.UbbleContent(**fraud_check.resultContent)
+        content = ubble_fraud_models.UbbleContent(**fraud_check.resultContent)
         document = list(filter(lambda included: included.type == "documents", ubble_identification_response.included))[
             0
         ].attributes
-        assert content.score == fraud_models.ubble.UbbleScore.VALID.value
+        assert content.score == ubble_fraud_models.UbbleScore.VALID.value
         assert content.status == test_factories.STATE_STATUS_MAPPING[notified_identification_state]
         assert content.comment == ubble_identification_response.data.attributes.comment
         assert content.last_name == document.last_name
         assert content.first_name == document.first_name
         assert str(content.birth_date) == document.birth_date
-        assert content.supported == fraud_models.ubble.UbbleScore.VALID.value
+        assert content.supported == ubble_fraud_models.UbbleScore.VALID.value
         assert content.document_type == document.document_type
-        assert content.expiry_date_score == fraud_models.ubble.UbbleScore.VALID.value
+        assert content.expiry_date_score == ubble_fraud_models.UbbleScore.VALID.value
         assert str(content.identification_id) == ubble_identification_response.data.attributes.identification_id
         assert content.id_document_number == document.document_number
         assert (
@@ -586,7 +587,7 @@ class UbbleWebhookTest:
 
         self._post_webhook(client, ubble_mocker, request_data, ubble_identification_response)
 
-        fraud_check = fraud_api.ubble.get_ubble_fraud_check(
+        fraud_check = ubble_fraud_api.get_ubble_fraud_check(
             ubble_identification_response.data.attributes.identification_id
         )
         assert fraud_check.reason is not None
@@ -600,14 +601,14 @@ class UbbleWebhookTest:
 
         assert len(mails_testing.outbox) == 0
 
-        content = fraud_models.ubble.UbbleContent(**fraud_check.resultContent)
+        content = ubble_fraud_models.UbbleContent(**fraud_check.resultContent)
         document = list(filter(lambda included: included.type == "documents", ubble_identification_response.included))[
             0
         ].attributes
         document_check = list(
             filter(lambda included: included.type == "document-checks", ubble_identification_response.included)
         )[0].attributes
-        assert content.score == fraud_models.ubble.UbbleScore.INVALID.value
+        assert content.score == ubble_fraud_models.UbbleScore.INVALID.value
         assert content.status == test_factories.STATE_STATUS_MAPPING[notified_identification_state]
         assert content.comment == ubble_identification_response.data.attributes.comment
         assert content.last_name == document.last_name
@@ -632,7 +633,7 @@ class UbbleWebhookTest:
 
         self._post_webhook(client, ubble_mocker, request_data, ubble_identification_response)
 
-        fraud_check = fraud_api.ubble.get_ubble_fraud_check(
+        fraud_check = ubble_fraud_api.get_ubble_fraud_check(
             ubble_identification_response.data.attributes.identification_id
         )
         assert fraud_check.reason == "Ubble score UNDECIDABLE: None | Ubble n'a pas réussi à lire le document"
@@ -646,14 +647,14 @@ class UbbleWebhookTest:
 
         self._assert_email_sent(fraud_check.user, 304)
 
-        content = fraud_models.ubble.UbbleContent(**fraud_check.resultContent)
+        content = ubble_fraud_models.UbbleContent(**fraud_check.resultContent)
         document = list(filter(lambda included: included.type == "documents", ubble_identification_response.included))[
             0
         ].attributes
         document_check = list(
             filter(lambda included: included.type == "document-checks", ubble_identification_response.included)
         )[0].attributes
-        assert content.score == fraud_models.ubble.UbbleScore.UNDECIDABLE.value
+        assert content.score == ubble_fraud_models.UbbleScore.UNDECIDABLE.value
         assert content.status == test_factories.STATE_STATUS_MAPPING[notified_identification_state]
         assert content.comment == ubble_identification_response.data.attributes.comment
         assert content.last_name == document.last_name
@@ -688,7 +689,7 @@ class UbbleWebhookTest:
             reasonCodes=None,
             eligibilityType=users_models.EligibilityType.AGE18,
         )
-        request_data = self._get_request_body(fraud_check, fraud_models.ubble.UbbleIdentificationStatus.PROCESSED)
+        request_data = self._get_request_body(fraud_check, ubble_fraud_models.UbbleIdentificationStatus.PROCESSED)
         ubble_identification_response = test_factories.UbbleIdentificationResponseFactory(
             identification_state=test_factories.IdentificationState.VALID,
             data__attributes__identification_id=str(request_data.identification_id),
@@ -729,7 +730,7 @@ class UbbleWebhookTest:
             reasonCodes=None,
             eligibilityType=users_models.EligibilityType.AGE18,
         )
-        request_data = self._get_request_body(fraud_check, fraud_models.ubble.UbbleIdentificationStatus.PROCESSED)
+        request_data = self._get_request_body(fraud_check, ubble_fraud_models.UbbleIdentificationStatus.PROCESSED)
         ubble_identification_response = test_factories.UbbleIdentificationResponseFactory(
             identification_state=test_factories.IdentificationState.VALID,
             data__attributes__identification_id=str(request_data.identification_id),
@@ -771,7 +772,7 @@ class UbbleWebhookTest:
             reasonCodes=None,
             eligibilityType=users_models.EligibilityType.AGE18,
         )
-        request_data = self._get_request_body(fraud_check, fraud_models.ubble.UbbleIdentificationStatus.PROCESSED)
+        request_data = self._get_request_body(fraud_check, ubble_fraud_models.UbbleIdentificationStatus.PROCESSED)
         ubble_identification_response = test_factories.UbbleIdentificationResponseFactory(
             identification_state=test_factories.IdentificationState.VALID,
             data__attributes__identification_id=str(request_data.identification_id),
@@ -824,7 +825,7 @@ class UbbleWebhookTest:
                 "last_name": None,
                 "registration_datetime": datetime.datetime.now().isoformat(),
                 "score": None,
-                "status": fraud_models.ubble.UbbleIdentificationStatus.PROCESSING.value,
+                "status": ubble_fraud_models.UbbleIdentificationStatus.PROCESSING.value,
                 "supported": None,
             },
             status=fraud_models.FraudCheckStatus.PENDING,
@@ -844,7 +845,7 @@ class UbbleWebhookTest:
             eligibilityType=users_models.EligibilityType.AGE18,
         )
         repository.save(honor_fraud_check)
-        request_data = self._get_request_body(ubble_fraud_check, fraud_models.ubble.UbbleIdentificationStatus.PROCESSED)
+        request_data = self._get_request_body(ubble_fraud_check, ubble_fraud_models.UbbleIdentificationStatus.PROCESSED)
         return user, ubble_fraud_check, request_data
 
     def _post_webhook(self, client, ubble_mocker, request_data, ubble_identification_response):
@@ -903,7 +904,7 @@ class UbbleWebhookTest:
         document_birth_date = datetime.datetime.now().date() - relativedelta.relativedelta(years=age)
         user, ubble_fraud_check, request_data = self._init_decision_test()
 
-        request_data = self._get_request_body(ubble_fraud_check, fraud_models.ubble.UbbleIdentificationStatus.PROCESSED)
+        request_data = self._get_request_body(ubble_fraud_check, ubble_fraud_models.UbbleIdentificationStatus.PROCESSED)
         ubble_identification_response = test_factories.UbbleIdentificationResponseFactory(
             identification_state=test_factories.IdentificationState.VALID,
             data__attributes__identification_id=str(request_data.identification_id),
@@ -916,29 +917,29 @@ class UbbleWebhookTest:
                     attributes__last_name=user.lastName,
                 ),
                 test_factories.UbbleIdentificationIncludedDocumentChecksFactory(
-                    attributes__data_extracted_score=fraud_models.ubble.UbbleScore.VALID.value,
-                    attributes__expiry_date_score=fraud_models.ubble.UbbleScore.VALID.value,
-                    attributes__issue_date_score=fraud_models.ubble.UbbleScore.VALID.value,
-                    attributes__live_video_capture_score=fraud_models.ubble.UbbleScore.VALID.value,
-                    attributes__mrz_validity_score=fraud_models.ubble.UbbleScore.VALID.value,
-                    attributes__mrz_viz_score=fraud_models.ubble.UbbleScore.VALID.value,
-                    attributes__ove_back_score=fraud_models.ubble.UbbleScore.VALID.value,
-                    attributes__ove_front_score=fraud_models.ubble.UbbleScore.VALID.value,
-                    attributes__ove_score=fraud_models.ubble.UbbleScore.VALID.value,
-                    attributes__quality_score=fraud_models.ubble.UbbleScore.VALID.value,
-                    attributes__visual_back_score=fraud_models.ubble.UbbleScore.VALID.value,
-                    attributes__visual_front_score=fraud_models.ubble.UbbleScore.VALID.value,
+                    attributes__data_extracted_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__expiry_date_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__issue_date_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__live_video_capture_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__mrz_validity_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__mrz_viz_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__ove_back_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__ove_front_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__ove_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__quality_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__visual_back_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__visual_front_score=ubble_fraud_models.UbbleScore.VALID.value,
                 ),
                 test_factories.UbbleIdentificationIncludedFaceChecksFactory(
-                    attributes__active_liveness_score=fraud_models.ubble.UbbleScore.VALID.value,
-                    attributes__live_video_capture_score=fraud_models.ubble.UbbleScore.VALID.value,
-                    attributes__quality_score=fraud_models.ubble.UbbleScore.VALID.value,
+                    attributes__active_liveness_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__live_video_capture_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__quality_score=ubble_fraud_models.UbbleScore.VALID.value,
                 ),
                 test_factories.UbbleIdentificationIncludedDocFaceMatchesFactory(
-                    attributes__score=fraud_models.ubble.UbbleScore.VALID.value,
+                    attributes__score=ubble_fraud_models.UbbleScore.VALID.value,
                 ),
                 test_factories.UbbleIdentificationIncludedReferenceDataChecksFactory(
-                    attributes__score=fraud_models.ubble.UbbleScore.VALID.value,
+                    attributes__score=ubble_fraud_models.UbbleScore.VALID.value,
                 ),
             ],
         )
@@ -955,7 +956,7 @@ class UbbleWebhookTest:
         assert reason_code in ubble_fraud_check.reasonCodes
         assert reason in [s.strip() for s in ubble_fraud_check.reason.split(";")]
 
-        assert not fraud_api.ubble.is_user_allowed_to_perform_ubble_check(user, user.eligibility)  # no retry
+        assert not ubble_fraud_api.is_user_allowed_to_perform_ubble_check(user, user.eligibility)  # no retry
 
         message = subscription_models.SubscriptionMessage.query.one()
         assert message.userMessage == inappmessage
@@ -985,29 +986,29 @@ class UbbleWebhookTest:
                     attributes__last_name=existing_user.lastName,
                 ),
                 test_factories.UbbleIdentificationIncludedDocumentChecksFactory(
-                    attributes__data_extracted_score=fraud_models.ubble.UbbleScore.VALID.value,
-                    attributes__expiry_date_score=fraud_models.ubble.UbbleScore.VALID.value,
-                    attributes__issue_date_score=fraud_models.ubble.UbbleScore.VALID.value,
-                    attributes__live_video_capture_score=fraud_models.ubble.UbbleScore.VALID.value,
-                    attributes__mrz_validity_score=fraud_models.ubble.UbbleScore.VALID.value,
-                    attributes__mrz_viz_score=fraud_models.ubble.UbbleScore.VALID.value,
-                    attributes__ove_back_score=fraud_models.ubble.UbbleScore.VALID.value,
-                    attributes__ove_front_score=fraud_models.ubble.UbbleScore.VALID.value,
-                    attributes__ove_score=fraud_models.ubble.UbbleScore.VALID.value,
-                    attributes__quality_score=fraud_models.ubble.UbbleScore.VALID.value,
-                    attributes__visual_back_score=fraud_models.ubble.UbbleScore.VALID.value,
-                    attributes__visual_front_score=fraud_models.ubble.UbbleScore.VALID.value,
+                    attributes__data_extracted_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__expiry_date_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__issue_date_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__live_video_capture_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__mrz_validity_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__mrz_viz_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__ove_back_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__ove_front_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__ove_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__quality_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__visual_back_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__visual_front_score=ubble_fraud_models.UbbleScore.VALID.value,
                 ),
                 test_factories.UbbleIdentificationIncludedFaceChecksFactory(
-                    attributes__active_liveness_score=fraud_models.ubble.UbbleScore.VALID.value,
-                    attributes__live_video_capture_score=fraud_models.ubble.UbbleScore.VALID.value,
-                    attributes__quality_score=fraud_models.ubble.UbbleScore.VALID.value,
+                    attributes__active_liveness_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__live_video_capture_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__quality_score=ubble_fraud_models.UbbleScore.VALID.value,
                 ),
                 test_factories.UbbleIdentificationIncludedDocFaceMatchesFactory(
-                    attributes__score=fraud_models.ubble.UbbleScore.VALID.value,
+                    attributes__score=ubble_fraud_models.UbbleScore.VALID.value,
                 ),
                 test_factories.UbbleIdentificationIncludedReferenceDataChecksFactory(
-                    attributes__score=fraud_models.ubble.UbbleScore.VALID.value,
+                    attributes__score=ubble_fraud_models.UbbleScore.VALID.value,
                 ),
             ],
         )
@@ -1022,7 +1023,7 @@ class UbbleWebhookTest:
         assert ubble_fraud_check.status == fraud_models.FraudCheckStatus.SUSPICIOUS
         assert fraud_models.FraudReasonCode.DUPLICATE_USER in ubble_fraud_check.reasonCodes
 
-        assert not fraud_api.ubble.is_user_allowed_to_perform_ubble_check(user, user.eligibility)  # no retry
+        assert not ubble_fraud_api.is_user_allowed_to_perform_ubble_check(user, user.eligibility)  # no retry
 
         message = subscription_models.SubscriptionMessage.query.one()
         assert (
@@ -1054,30 +1055,30 @@ class UbbleWebhookTest:
                     attributes__last_name="FRAUDSTER",
                 ),
                 test_factories.UbbleIdentificationIncludedDocumentChecksFactory(
-                    attributes__supported=fraud_models.ubble.UbbleScore.VALID.value,
-                    attributes__data_extracted_score=fraud_models.ubble.UbbleScore.VALID.value,
-                    attributes__expiry_date_score=fraud_models.ubble.UbbleScore.VALID.value,
-                    attributes__issue_date_score=fraud_models.ubble.UbbleScore.VALID.value,
-                    attributes__live_video_capture_score=fraud_models.ubble.UbbleScore.VALID.value,
-                    attributes__mrz_validity_score=fraud_models.ubble.UbbleScore.VALID.value,
-                    attributes__mrz_viz_score=fraud_models.ubble.UbbleScore.VALID.value,
-                    attributes__ove_back_score=fraud_models.ubble.UbbleScore.VALID.value,
-                    attributes__ove_front_score=fraud_models.ubble.UbbleScore.VALID.value,
-                    attributes__ove_score=fraud_models.ubble.UbbleScore.VALID.value,
-                    attributes__quality_score=fraud_models.ubble.UbbleScore.VALID.value,
-                    attributes__visual_back_score=fraud_models.ubble.UbbleScore.VALID.value,
-                    attributes__visual_front_score=fraud_models.ubble.UbbleScore.VALID.value,
+                    attributes__supported=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__data_extracted_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__expiry_date_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__issue_date_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__live_video_capture_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__mrz_validity_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__mrz_viz_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__ove_back_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__ove_front_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__ove_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__quality_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__visual_back_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__visual_front_score=ubble_fraud_models.UbbleScore.VALID.value,
                 ),
                 test_factories.UbbleIdentificationIncludedFaceChecksFactory(
-                    attributes__active_liveness_score=fraud_models.ubble.UbbleScore.VALID.value,
-                    attributes__live_video_capture_score=fraud_models.ubble.UbbleScore.VALID.value,
-                    attributes__quality_score=fraud_models.ubble.UbbleScore.VALID.value,
+                    attributes__active_liveness_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__live_video_capture_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__quality_score=ubble_fraud_models.UbbleScore.VALID.value,
                 ),
                 test_factories.UbbleIdentificationIncludedDocFaceMatchesFactory(
-                    attributes__score=fraud_models.ubble.UbbleScore.VALID.value,
+                    attributes__score=ubble_fraud_models.UbbleScore.VALID.value,
                 ),
                 test_factories.UbbleIdentificationIncludedReferenceDataChecksFactory(
-                    attributes__score=fraud_models.ubble.UbbleScore.INVALID.value,  # 0
+                    attributes__score=ubble_fraud_models.UbbleScore.INVALID.value,  # 0
                 ),
             ],
         )
@@ -1092,7 +1093,7 @@ class UbbleWebhookTest:
         assert ubble_fraud_check.status == fraud_models.FraudCheckStatus.SUSPICIOUS
         assert fraud_models.FraudReasonCode.ID_CHECK_DATA_MATCH in ubble_fraud_check.reasonCodes
 
-        assert not fraud_api.ubble.is_user_allowed_to_perform_ubble_check(user, user.eligibility)  # no retry
+        assert not ubble_fraud_api.is_user_allowed_to_perform_ubble_check(user, user.eligibility)  # no retry
 
         message = subscription_models.SubscriptionMessage.query.one()
         assert (
@@ -1110,7 +1111,7 @@ class UbbleWebhookTest:
 
     @pytest.mark.parametrize(
         "ref_data_check_score",
-        [fraud_models.ubble.UbbleScore.VALID.value, fraud_models.ubble.UbbleScore.UNDECIDABLE.value],
+        [ubble_fraud_models.UbbleScore.VALID.value, ubble_fraud_models.UbbleScore.UNDECIDABLE.value],
     )
     @override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=True)
     def test_decision_document_not_supported(self, client, ubble_mocker, ref_data_check_score):
@@ -1128,27 +1129,27 @@ class UbbleWebhookTest:
                     attributes__last_name=None,
                 ),
                 test_factories.UbbleIdentificationIncludedDocumentChecksFactory(
-                    attributes__supported=fraud_models.ubble.UbbleScore.INVALID.value,  # 0
-                    attributes__data_extracted_score=fraud_models.ubble.UbbleScore.UNDECIDABLE.value,  # -1
-                    attributes__expiry_date_score=fraud_models.ubble.UbbleScore.UNDECIDABLE.value,  # -1
-                    attributes__issue_date_score=fraud_models.ubble.UbbleScore.UNDECIDABLE.value,
-                    attributes__live_video_capture_score=fraud_models.ubble.UbbleScore.VALID.value,
-                    attributes__mrz_validity_score=fraud_models.ubble.UbbleScore.VALID.value,
-                    attributes__mrz_viz_score=fraud_models.ubble.UbbleScore.VALID.value,
-                    attributes__ove_back_score=fraud_models.ubble.UbbleScore.VALID.value,
-                    attributes__ove_front_score=fraud_models.ubble.UbbleScore.VALID.value,
-                    attributes__ove_score=fraud_models.ubble.UbbleScore.VALID.value,
-                    attributes__quality_score=fraud_models.ubble.UbbleScore.VALID.value,
-                    attributes__visual_back_score=fraud_models.ubble.UbbleScore.VALID.value,
-                    attributes__visual_front_score=fraud_models.ubble.UbbleScore.VALID.value,
+                    attributes__supported=ubble_fraud_models.UbbleScore.INVALID.value,  # 0
+                    attributes__data_extracted_score=ubble_fraud_models.UbbleScore.UNDECIDABLE.value,  # -1
+                    attributes__expiry_date_score=ubble_fraud_models.UbbleScore.UNDECIDABLE.value,  # -1
+                    attributes__issue_date_score=ubble_fraud_models.UbbleScore.UNDECIDABLE.value,
+                    attributes__live_video_capture_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__mrz_validity_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__mrz_viz_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__ove_back_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__ove_front_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__ove_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__quality_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__visual_back_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__visual_front_score=ubble_fraud_models.UbbleScore.VALID.value,
                 ),
                 test_factories.UbbleIdentificationIncludedFaceChecksFactory(
-                    attributes__active_liveness_score=fraud_models.ubble.UbbleScore.VALID.value,
-                    attributes__live_video_capture_score=fraud_models.ubble.UbbleScore.VALID.value,
-                    attributes__quality_score=fraud_models.ubble.UbbleScore.VALID.value,
+                    attributes__active_liveness_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__live_video_capture_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__quality_score=ubble_fraud_models.UbbleScore.VALID.value,
                 ),
                 test_factories.UbbleIdentificationIncludedDocFaceMatchesFactory(
-                    attributes__score=fraud_models.ubble.UbbleScore.VALID.value,
+                    attributes__score=ubble_fraud_models.UbbleScore.VALID.value,
                 ),
                 test_factories.UbbleIdentificationIncludedReferenceDataChecksFactory(
                     attributes__score=ref_data_check_score,  # 1 or -1
@@ -1166,7 +1167,7 @@ class UbbleWebhookTest:
         assert ubble_fraud_check.status == fraud_models.FraudCheckStatus.SUSPICIOUS
         assert fraud_models.FraudReasonCode.ID_CHECK_NOT_SUPPORTED in ubble_fraud_check.reasonCodes
 
-        assert fraud_api.ubble.is_user_allowed_to_perform_ubble_check(user, user.eligibility)  # retry allowed
+        assert ubble_fraud_api.is_user_allowed_to_perform_ubble_check(user, user.eligibility)  # retry allowed
 
         message = subscription_models.SubscriptionMessage.query.one()
         assert (
@@ -1180,11 +1181,11 @@ class UbbleWebhookTest:
         self._assert_email_sent(user, 385)
 
     @pytest.mark.parametrize(
-        "doc_supported", [fraud_models.ubble.UbbleScore.VALID.value, fraud_models.ubble.UbbleScore.UNDECIDABLE.value]
+        "doc_supported", [ubble_fraud_models.UbbleScore.VALID.value, ubble_fraud_models.UbbleScore.UNDECIDABLE.value]
     )
     @pytest.mark.parametrize(
         "ref_data_check_score",
-        [fraud_models.ubble.UbbleScore.VALID.value, fraud_models.ubble.UbbleScore.UNDECIDABLE.value],
+        [ubble_fraud_models.UbbleScore.VALID.value, ubble_fraud_models.UbbleScore.UNDECIDABLE.value],
     )
     @override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=True)
     def test_decision_document_expired(self, client, ubble_mocker, ref_data_check_score, doc_supported):
@@ -1203,26 +1204,26 @@ class UbbleWebhookTest:
                 ),
                 test_factories.UbbleIdentificationIncludedDocumentChecksFactory(
                     attributes__supported=doc_supported,  # 1 or -1
-                    attributes__data_extracted_score=fraud_models.ubble.UbbleScore.VALID.value,
-                    attributes__expiry_date_score=fraud_models.ubble.UbbleScore.INVALID.value,  # 0
-                    attributes__issue_date_score=fraud_models.ubble.UbbleScore.VALID.value,
-                    attributes__live_video_capture_score=fraud_models.ubble.UbbleScore.VALID.value,
-                    attributes__mrz_validity_score=fraud_models.ubble.UbbleScore.VALID.value,
-                    attributes__mrz_viz_score=fraud_models.ubble.UbbleScore.VALID.value,
-                    attributes__ove_back_score=fraud_models.ubble.UbbleScore.VALID.value,
-                    attributes__ove_front_score=fraud_models.ubble.UbbleScore.VALID.value,
-                    attributes__ove_score=fraud_models.ubble.UbbleScore.VALID.value,
-                    attributes__quality_score=fraud_models.ubble.UbbleScore.VALID.value,
-                    attributes__visual_back_score=fraud_models.ubble.UbbleScore.VALID.value,
-                    attributes__visual_front_score=fraud_models.ubble.UbbleScore.VALID.value,
+                    attributes__data_extracted_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__expiry_date_score=ubble_fraud_models.UbbleScore.INVALID.value,  # 0
+                    attributes__issue_date_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__live_video_capture_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__mrz_validity_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__mrz_viz_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__ove_back_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__ove_front_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__ove_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__quality_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__visual_back_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__visual_front_score=ubble_fraud_models.UbbleScore.VALID.value,
                 ),
                 test_factories.UbbleIdentificationIncludedFaceChecksFactory(
-                    attributes__active_liveness_score=fraud_models.ubble.UbbleScore.VALID.value,
-                    attributes__live_video_capture_score=fraud_models.ubble.UbbleScore.VALID.value,
-                    attributes__quality_score=fraud_models.ubble.UbbleScore.VALID.value,
+                    attributes__active_liveness_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__live_video_capture_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__quality_score=ubble_fraud_models.UbbleScore.VALID.value,
                 ),
                 test_factories.UbbleIdentificationIncludedDocFaceMatchesFactory(
-                    attributes__score=fraud_models.ubble.UbbleScore.VALID.value,
+                    attributes__score=ubble_fraud_models.UbbleScore.VALID.value,
                 ),
                 test_factories.UbbleIdentificationIncludedReferenceDataChecksFactory(
                     attributes__score=ref_data_check_score,  # 1 or -1
@@ -1240,7 +1241,7 @@ class UbbleWebhookTest:
         assert ubble_fraud_check.status == fraud_models.FraudCheckStatus.SUSPICIOUS
         assert fraud_models.FraudReasonCode.ID_CHECK_EXPIRED in ubble_fraud_check.reasonCodes
 
-        assert fraud_api.ubble.is_user_allowed_to_perform_ubble_check(user, user.eligibility)  # retry allowed
+        assert ubble_fraud_api.is_user_allowed_to_perform_ubble_check(user, user.eligibility)  # retry allowed
 
         message = subscription_models.SubscriptionMessage.query.one()
         assert (
@@ -1254,14 +1255,14 @@ class UbbleWebhookTest:
         self._assert_email_sent(user, 384)
 
     @pytest.mark.parametrize(
-        "expiry_score", [fraud_models.ubble.UbbleScore.VALID.value, fraud_models.ubble.UbbleScore.UNDECIDABLE.value]
+        "expiry_score", [ubble_fraud_models.UbbleScore.VALID.value, ubble_fraud_models.UbbleScore.UNDECIDABLE.value]
     )
     @pytest.mark.parametrize(
-        "doc_supported", [fraud_models.ubble.UbbleScore.VALID.value, fraud_models.ubble.UbbleScore.UNDECIDABLE.value]
+        "doc_supported", [ubble_fraud_models.UbbleScore.VALID.value, ubble_fraud_models.UbbleScore.UNDECIDABLE.value]
     )
     @pytest.mark.parametrize(
         "ref_data_check_score",
-        [fraud_models.ubble.UbbleScore.VALID.value, fraud_models.ubble.UbbleScore.UNDECIDABLE.value],
+        [ubble_fraud_models.UbbleScore.VALID.value, ubble_fraud_models.UbbleScore.UNDECIDABLE.value],
     )
     @override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=True)
     def test_decision_invalid_for_another_reason(
@@ -1282,26 +1283,26 @@ class UbbleWebhookTest:
                 ),
                 test_factories.UbbleIdentificationIncludedDocumentChecksFactory(
                     attributes__supported=doc_supported,  # 1 or -1
-                    attributes__data_extracted_score=fraud_models.ubble.UbbleScore.VALID.value,
+                    attributes__data_extracted_score=ubble_fraud_models.UbbleScore.VALID.value,
                     attributes__expiry_date_score=expiry_score,  # 1 or -1
-                    attributes__issue_date_score=fraud_models.ubble.UbbleScore.VALID.value,
-                    attributes__live_video_capture_score=fraud_models.ubble.UbbleScore.VALID.value,
-                    attributes__mrz_validity_score=fraud_models.ubble.UbbleScore.VALID.value,
-                    attributes__mrz_viz_score=fraud_models.ubble.UbbleScore.VALID.value,
-                    attributes__ove_back_score=fraud_models.ubble.UbbleScore.VALID.value,
-                    attributes__ove_front_score=fraud_models.ubble.UbbleScore.VALID.value,
-                    attributes__ove_score=fraud_models.ubble.UbbleScore.VALID.value,
-                    attributes__quality_score=fraud_models.ubble.UbbleScore.VALID.value,
-                    attributes__visual_back_score=fraud_models.ubble.UbbleScore.VALID.value,
-                    attributes__visual_front_score=fraud_models.ubble.UbbleScore.VALID.value,
+                    attributes__issue_date_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__live_video_capture_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__mrz_validity_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__mrz_viz_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__ove_back_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__ove_front_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__ove_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__quality_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__visual_back_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__visual_front_score=ubble_fraud_models.UbbleScore.VALID.value,
                 ),
                 test_factories.UbbleIdentificationIncludedFaceChecksFactory(
-                    attributes__active_liveness_score=fraud_models.ubble.UbbleScore.VALID.value,
-                    attributes__live_video_capture_score=fraud_models.ubble.UbbleScore.VALID.value,
-                    attributes__quality_score=fraud_models.ubble.UbbleScore.VALID.value,
+                    attributes__active_liveness_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__live_video_capture_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__quality_score=ubble_fraud_models.UbbleScore.VALID.value,
                 ),
                 test_factories.UbbleIdentificationIncludedDocFaceMatchesFactory(
-                    attributes__score=fraud_models.ubble.UbbleScore.VALID.value,
+                    attributes__score=ubble_fraud_models.UbbleScore.VALID.value,
                 ),
                 test_factories.UbbleIdentificationIncludedReferenceDataChecksFactory(
                     attributes__score=ref_data_check_score,  # 1 or -1
@@ -1319,7 +1320,7 @@ class UbbleWebhookTest:
         assert ubble_fraud_check.status == fraud_models.FraudCheckStatus.KO
         assert fraud_models.FraudReasonCode.ID_CHECK_BLOCKED_OTHER in ubble_fraud_check.reasonCodes
 
-        assert not fraud_api.ubble.is_user_allowed_to_perform_ubble_check(user, user.eligibility)  # retry not allowed
+        assert not ubble_fraud_api.is_user_allowed_to_perform_ubble_check(user, user.eligibility)  # retry not allowed
 
         message = subscription_models.SubscriptionMessage.query.one()
         assert (
@@ -1333,25 +1334,25 @@ class UbbleWebhookTest:
     @pytest.mark.parametrize(
         "expiry_score",
         [
-            fraud_models.ubble.UbbleScore.VALID.value,
-            fraud_models.ubble.UbbleScore.UNDECIDABLE.value,
-            fraud_models.ubble.UbbleScore.UNDECIDABLE.value,
+            ubble_fraud_models.UbbleScore.VALID.value,
+            ubble_fraud_models.UbbleScore.UNDECIDABLE.value,
+            ubble_fraud_models.UbbleScore.UNDECIDABLE.value,
         ],
     )
     @pytest.mark.parametrize(
         "doc_supported",
         [
-            fraud_models.ubble.UbbleScore.VALID.value,
-            fraud_models.ubble.UbbleScore.UNDECIDABLE.value,
-            fraud_models.ubble.UbbleScore.UNDECIDABLE.value,
+            ubble_fraud_models.UbbleScore.VALID.value,
+            ubble_fraud_models.UbbleScore.UNDECIDABLE.value,
+            ubble_fraud_models.UbbleScore.UNDECIDABLE.value,
         ],
     )
     @pytest.mark.parametrize(
         "ref_data_check_score",
         [
-            fraud_models.ubble.UbbleScore.VALID.value,
-            fraud_models.ubble.UbbleScore.UNDECIDABLE.value,
-            fraud_models.ubble.UbbleScore.UNDECIDABLE.value,
+            ubble_fraud_models.UbbleScore.VALID.value,
+            ubble_fraud_models.UbbleScore.UNDECIDABLE.value,
+            ubble_fraud_models.UbbleScore.UNDECIDABLE.value,
         ],
     )
     @override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=True)
@@ -1371,26 +1372,26 @@ class UbbleWebhookTest:
                 ),
                 test_factories.UbbleIdentificationIncludedDocumentChecksFactory(
                     attributes__supported=doc_supported,  # 1, 0 or -1
-                    attributes__data_extracted_score=fraud_models.ubble.UbbleScore.VALID.value,
+                    attributes__data_extracted_score=ubble_fraud_models.UbbleScore.VALID.value,
                     attributes__expiry_date_score=expiry_score,  # 1, 0 or -1
-                    attributes__issue_date_score=fraud_models.ubble.UbbleScore.VALID.value,
-                    attributes__live_video_capture_score=fraud_models.ubble.UbbleScore.VALID.value,
-                    attributes__mrz_validity_score=fraud_models.ubble.UbbleScore.VALID.value,
-                    attributes__mrz_viz_score=fraud_models.ubble.UbbleScore.VALID.value,
-                    attributes__ove_back_score=fraud_models.ubble.UbbleScore.VALID.value,
-                    attributes__ove_front_score=fraud_models.ubble.UbbleScore.VALID.value,
-                    attributes__ove_score=fraud_models.ubble.UbbleScore.VALID.value,
-                    attributes__quality_score=fraud_models.ubble.UbbleScore.VALID.value,
-                    attributes__visual_back_score=fraud_models.ubble.UbbleScore.VALID.value,
-                    attributes__visual_front_score=fraud_models.ubble.UbbleScore.VALID.value,
+                    attributes__issue_date_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__live_video_capture_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__mrz_validity_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__mrz_viz_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__ove_back_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__ove_front_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__ove_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__quality_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__visual_back_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__visual_front_score=ubble_fraud_models.UbbleScore.VALID.value,
                 ),
                 test_factories.UbbleIdentificationIncludedFaceChecksFactory(
-                    attributes__active_liveness_score=fraud_models.ubble.UbbleScore.VALID.value,
-                    attributes__live_video_capture_score=fraud_models.ubble.UbbleScore.VALID.value,
-                    attributes__quality_score=fraud_models.ubble.UbbleScore.VALID.value,
+                    attributes__active_liveness_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__live_video_capture_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__quality_score=ubble_fraud_models.UbbleScore.VALID.value,
                 ),
                 test_factories.UbbleIdentificationIncludedDocFaceMatchesFactory(
-                    attributes__score=fraud_models.ubble.UbbleScore.VALID.value,
+                    attributes__score=ubble_fraud_models.UbbleScore.VALID.value,
                 ),
                 test_factories.UbbleIdentificationIncludedReferenceDataChecksFactory(
                     attributes__score=ref_data_check_score,  # 1, 0 or -1
@@ -1408,7 +1409,7 @@ class UbbleWebhookTest:
         assert ubble_fraud_check.status == fraud_models.FraudCheckStatus.SUSPICIOUS
         assert fraud_models.FraudReasonCode.ID_CHECK_UNPROCESSABLE in ubble_fraud_check.reasonCodes
 
-        assert fraud_api.ubble.is_user_allowed_to_perform_ubble_check(user, user.eligibility)  # retry allowed
+        assert ubble_fraud_api.is_user_allowed_to_perform_ubble_check(user, user.eligibility)  # retry allowed
 
         message = subscription_models.SubscriptionMessage.query.one()
         assert (

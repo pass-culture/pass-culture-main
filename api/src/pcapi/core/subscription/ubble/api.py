@@ -6,8 +6,9 @@ import flask
 from pcapi import settings
 from pcapi.connectors.beneficiaries import ubble
 from pcapi.core.fraud import exceptions as fraud_exceptions
-import pcapi.core.fraud.api as fraud_api
 import pcapi.core.fraud.models as fraud_models
+from pcapi.core.fraud.ubble import api as ubble_fraud_api
+import pcapi.core.fraud.ubble.models as ubble_fraud_models
 from pcapi.core.mails.transactional.users import subscription_document_error
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import messages as subscription_messages
@@ -20,11 +21,11 @@ logger = logging.getLogger(__name__)
 
 
 def update_ubble_workflow(
-    fraud_check: fraud_models.BeneficiaryFraudCheck, status: fraud_models.ubble.UbbleIdentificationStatus
+    fraud_check: fraud_models.BeneficiaryFraudCheck, status: ubble_fraud_models.UbbleIdentificationStatus
 ) -> None:
     content = ubble.get_content(fraud_check.thirdPartyId)
 
-    if not settings.IS_PROD and fraud_api.ubble.does_match_ubble_test_email(fraud_check.user.email):
+    if not settings.IS_PROD and ubble_fraud_api.does_match_ubble_test_email(fraud_check.user.email):
         content.birth_date = fraud_check.user.dateOfBirth.date() if fraud_check.user.dateOfBirth else None
 
     fraud_check.resultContent = content
@@ -32,17 +33,17 @@ def update_ubble_workflow(
 
     user = fraud_check.user
 
-    if status == fraud_models.ubble.UbbleIdentificationStatus.PROCESSING:
+    if status == ubble_fraud_models.UbbleIdentificationStatus.PROCESSING:
         user.hasCompletedIdCheck = True
         pcapi_repository.repository.save(user)
         subscription_messages.on_review_pending(user)
 
-    elif status == fraud_models.ubble.UbbleIdentificationStatus.PROCESSED:
+    elif status == ubble_fraud_models.UbbleIdentificationStatus.PROCESSED:
         try:
             fraud_check = subscription_api.handle_eligibility_difference_between_declaration_and_identity_provider(
                 fraud_check
             )
-            fraud_api.ubble.on_ubble_result(fraud_check)
+            ubble_fraud_api.on_ubble_result(fraud_check)
 
         except fraud_exceptions.BeneficiaryFraudResultCannotBeDowngraded:
             logger.warning(
@@ -54,7 +55,7 @@ def update_ubble_workflow(
 
         else:
             if fraud_check.status != fraud_models.FraudCheckStatus.OK:
-                can_retry = fraud_api.ubble.is_user_allowed_to_perform_ubble_check(user, fraud_check.eligibilityType)
+                can_retry = ubble_fraud_api.is_user_allowed_to_perform_ubble_check(user, fraud_check.eligibilityType)
                 handle_validation_errors(user, fraud_check.reasonCodes, can_retry=can_retry)
                 subscription_api.update_user_birth_date(user, fraud_check.source_data().get_birth_date())
                 return
@@ -81,7 +82,7 @@ def update_ubble_workflow(
                     fraud_check.thirdPartyId,
                 )
 
-    elif status == fraud_models.ubble.UbbleIdentificationStatus.ABORTED:
+    elif status == ubble_fraud_models.UbbleIdentificationStatus.ABORTED:
         fraud_check.status = fraud_models.FraudCheckStatus.CANCELED
         pcapi_repository.repository.save(fraud_check)
 
@@ -95,7 +96,7 @@ def start_ubble_workflow(user: users_models.User, redirect_url: str) -> str:
         webhook_url=flask.url_for("Public API.ubble_webhook_update_application_status", _external=True),
         redirect_url=redirect_url,
     )
-    fraud_api.ubble.start_ubble_fraud_check(user, content)
+    ubble_fraud_api.start_ubble_fraud_check(user, content)
     return content.identification_url
 
 
@@ -103,8 +104,8 @@ def is_ubble_workflow_restartable(fraud_check: fraud_models.BeneficiaryFraudChec
     if fraud_check.type != fraud_models.FraudCheckType.UBBLE:
         return False
 
-    ubble_content: fraud_models.ubble_models.UbbleContent = fraud_check.source_data()
-    if ubble_content.status == fraud_models.ubble_models.UbbleIdentificationStatus.INITIATED:
+    ubble_content: ubble_fraud_models.UbbleContent = fraud_check.source_data()
+    if ubble_content.status == ubble_fraud_models.UbbleIdentificationStatus.INITIATED:
         return True
     return False
 

@@ -15,8 +15,8 @@ from pcapi.core.users import models as users_models
 from pcapi.models import Model
 from pcapi.models.pc_object import PcObject
 
-from . import ubble as ubble_models
-from .common import IdentityCheckContent
+from .common import models as common_models
+from .ubble import models as ubble_fraud_models
 
 
 class FraudCheckType(enum.Enum):
@@ -87,7 +87,7 @@ def _parse_jouve_datetime(date: typing.Optional[str]) -> typing.Optional[datetim
         return None
 
 
-class EduconnectContent(IdentityCheckContent):
+class EduconnectContent(common_models.IdentityCheckContent):
     birth_date: datetime.date
     educonnect_id: str
     first_name: str
@@ -113,7 +113,7 @@ class EduconnectContent(IdentityCheckContent):
         return None
 
 
-class JouveContent(IdentityCheckContent):
+class JouveContent(common_models.IdentityCheckContent):
     # TODO: analyze jouve results to see where we can remove "optional"
     activity: typing.Optional[str]
     address: typing.Optional[str]
@@ -166,7 +166,7 @@ class JouveContent(IdentityCheckContent):
         return self.bodyPieceNumber
 
 
-class DMSContent(IdentityCheckContent):
+class DMSContent(common_models.IdentityCheckContent):
     last_name: str
     first_name: str
     civility: str
@@ -246,7 +246,7 @@ IdCheckContent = typing.TypeVar(
     DMSContent,
     EduconnectContent,
     JouveContent,
-    ubble_models.UbbleContent,
+    ubble_fraud_models.UbbleContent,
     UserProfilingFraudData,
 )
 
@@ -271,7 +271,7 @@ FRAUD_CHECK_MAPPING = {
     FraudCheckType.JOUVE: JouveContent,
     FraudCheckType.INTERNAL_REVIEW: InternalReviewFraudData,
     FraudCheckType.EDUCONNECT: EduconnectContent,
-    FraudCheckType.UBBLE: ubble_models.UbbleContent,
+    FraudCheckType.UBBLE: ubble_fraud_models.UbbleContent,
 }
 
 FRAUD_CONTENT_MAPPING = {type: cls for cls, type in FRAUD_CHECK_MAPPING.items()}
@@ -345,7 +345,7 @@ class BeneficiaryFraudCheck(PcObject, Model):
         nullable=True,
     )
 
-    def source_data(self) -> typing.Union[IdentityCheckContent, UserProfilingFraudData]:
+    def source_data(self) -> typing.Union[common_models.IdentityCheckContent, UserProfilingFraudData]:
         if self.type not in FRAUD_CHECK_MAPPING:
             raise NotImplementedError(f"Cannot unserialize type {self.type}")
         return FRAUD_CHECK_MAPPING[self.type](**self.resultContent)

@@ -7,7 +7,7 @@ import requests
 from pcapi import settings
 from pcapi.connectors.beneficiaries import exceptions
 from pcapi.core import logging as core_logging
-from pcapi.core.fraud.models import ubble as ubble_models
+from pcapi.core.fraud.ubble import models as ubble_fraud_models
 
 
 logger = logging.getLogger(__name__)
@@ -31,32 +31,32 @@ def build_url(path: str) -> str:
 
 
 INCLUDED_MODELS = {
-    "documents": ubble_models.UbbleIdentificationDocuments,
-    "document-checks": ubble_models.UbbleIdentificationDocumentChecks,
-    "reference-data-checks": ubble_models.UbbleIdentificationReferenceDataChecks,
+    "documents": ubble_fraud_models.UbbleIdentificationDocuments,
+    "document-checks": ubble_fraud_models.UbbleIdentificationDocumentChecks,
+    "reference-data-checks": ubble_fraud_models.UbbleIdentificationReferenceDataChecks,
 }
 
 
 def _get_included_attributes(
-    response: ubble_models.UbbleIdentificationResponse, type_: str
-) -> ubble_models.UbbleIdentificationObject:
+    response: ubble_fraud_models.UbbleIdentificationResponse, type_: str
+) -> ubble_fraud_models.UbbleIdentificationObject:
     filtered = list(filter(lambda included: included["type"] == type_, response["included"]))
     attributes = INCLUDED_MODELS[type_](**filtered[0].get("attributes")) if filtered else None
     return attributes
 
 
-def _get_data_attribute(response: ubble_models.UbbleIdentificationResponse, name: str) -> typing.Any:
+def _get_data_attribute(response: ubble_fraud_models.UbbleIdentificationResponse, name: str) -> typing.Any:
     return response["data"]["attributes"].get(name)
 
 
 def _extract_useful_content_from_response(
-    response: ubble_models.UbbleIdentificationResponse,
-) -> ubble_models.UbbleContent:
-    documents: ubble_models.UbbleIdentificationDocuments = _get_included_attributes(response, "documents")
-    document_checks: ubble_models.UbbleIdentificationDocumentChecks = _get_included_attributes(
+    response: ubble_fraud_models.UbbleIdentificationResponse,
+) -> ubble_fraud_models.UbbleContent:
+    documents: ubble_fraud_models.UbbleIdentificationDocuments = _get_included_attributes(response, "documents")
+    document_checks: ubble_fraud_models.UbbleIdentificationDocumentChecks = _get_included_attributes(
         response, "document-checks"
     )
-    reference_data_checks: ubble_models.UbbleIdentificationReferenceDataChecks = _get_included_attributes(
+    reference_data_checks: ubble_fraud_models.UbbleIdentificationReferenceDataChecks = _get_included_attributes(
         response, "reference-data-checks"
     )
 
@@ -67,7 +67,7 @@ def _extract_useful_content_from_response(
     status = _get_data_attribute(response, "status")
     registered_at = _get_data_attribute(response, "created-at")
 
-    content = ubble_models.UbbleContent(
+    content = ubble_fraud_models.UbbleContent(
         status=status,
         birth_date=getattr(documents, "birth_date", None),
         first_name=getattr(documents, "first_name", None),
@@ -93,7 +93,7 @@ def start_identification(
     last_name: str,
     webhook_url: str,
     redirect_url: str,
-) -> ubble_models.UbbleContent:
+) -> ubble_fraud_models.UbbleContent:
     session = configure_session()
 
     data = {
@@ -171,7 +171,7 @@ def start_identification(
     return content
 
 
-def get_content(identification_id: str) -> ubble_models.UbbleContent:
+def get_content(identification_id: str) -> ubble_fraud_models.UbbleContent:
     session = configure_session()
     response = session.get(build_url(f"/identifications/{identification_id}/"))
 

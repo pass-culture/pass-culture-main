@@ -11,6 +11,7 @@ from pcapi.connectors import api_recaptcha
 from pcapi.connectors import user_profiling
 from pcapi.connectors.beneficiaries import exceptions as beneficiaries_exceptions
 from pcapi.core.fraud import api as fraud_api
+from pcapi.core.fraud.ubble import api as ubble_fraud_api
 from pcapi.core.logging import get_or_set_correlation_id
 from pcapi.core.subscription.ubble import api as ubble_subscription_api
 from pcapi.core.users import api
@@ -366,7 +367,7 @@ def start_identification_session(
             status_code=400,
         )
 
-    if not fraud_api.ubble.is_user_allowed_to_perform_ubble_check(user, user.eligibility):
+    if not ubble_fraud_api.is_user_allowed_to_perform_ubble_check(user, user.eligibility):
         raise ApiErrors(
             {"code": "IDCHECK_ALREADY_PROCESSED", "message": "Une identification a déjà été traitée"},
             status_code=400,
