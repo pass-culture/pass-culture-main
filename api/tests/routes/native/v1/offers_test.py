@@ -16,6 +16,7 @@ from pcapi.core.offers.factories import StockWithActivationCodesFactory
 from pcapi.core.offers.factories import ThingStockFactory
 from pcapi.core.offers.models import OfferReport
 from pcapi.core.testing import assert_num_queries
+from pcapi.core.testing import override_features
 from pcapi.core.users.factories import UserFactory
 import pcapi.notifications.push.testing as notifications_testing
 
@@ -243,16 +244,38 @@ class OffersTest:
 
 
 class SendOfferWebAppLinkTest:
-    def test_send_offer_webapp_link_by_email(self, app):
+    @override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=False)
+    def test_mailjet_send_offer_webapp_link_by_email(self, app):
         offer_id = OfferFactory().id
         user, test_client = create_user_and_test_client(app)
 
         # expected queries:
         #   * get User
         #   * find Offer
+        #   * get FF ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS.isactive
         #   * save email to DB (testing backend)
         #   * release savepoint after saving email
-        with assert_num_queries(4):
+        with assert_num_queries(5):
+            response = test_client.post(f"/native/v1/send_offer_webapp_link_by_email/{offer_id}")
+            assert response.status_code == 204
+
+        assert len(mails_testing.outbox) == 1
+
+        mail = mails_testing.outbox[0]
+        assert mail.sent_data["To"] == user.email
+
+    @override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=True)
+    def test_sendinblue_send_offer_webapp_link_by_email(self, app):
+        offer_id = OfferFactory().id
+        user, test_client = create_user_and_test_client(app)
+
+        # expected queries:
+        #   * get User
+        #   * find Offer
+        #   * get FF ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS.isactive
+        #   * save email to DB (testing backend)
+        #   * release savepoint after saving email
+        with assert_num_queries(5):
             response = test_client.post(f"/native/v1/send_offer_webapp_link_by_email/{offer_id}")
             assert response.status_code == 204
 
