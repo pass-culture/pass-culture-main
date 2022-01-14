@@ -1,11 +1,11 @@
 import React, { useState } from 'react'
 
+import { Option } from 'app/types'
+
 import MultiSelectAutocomplete from '../../../ui-kit/MultiSelectAutoComplete'
 
 import { departmentOptions } from './departmentOptions'
-
 import './OfferFilters.scss'
-import { Option } from 'app/types'
 
 export const OfferFilters = ({
   className,
