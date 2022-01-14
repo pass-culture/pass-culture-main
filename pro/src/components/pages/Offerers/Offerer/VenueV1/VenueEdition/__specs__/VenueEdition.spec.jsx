@@ -113,7 +113,6 @@ describe('test page : VenueEdition', () => {
         },
         push: push,
       },
-      withdrawalDetailActive: true,
       handleInitialRequest: jest.fn(),
       handleSubmitRequest: jest.fn(),
       handleSubmitRequestSuccess: jest.fn(),

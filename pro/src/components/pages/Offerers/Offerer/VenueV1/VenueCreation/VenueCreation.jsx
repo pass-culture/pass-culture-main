@@ -103,7 +103,6 @@ class VenueCreation extends PureComponent {
       venueTypes,
       venueLabels,
       offerer,
-      withdrawalDetailActive,
       isBankInformationWithSiretActive,
     } = this.props
     const { isRequestPending } = this.state
@@ -130,9 +129,7 @@ class VenueCreation extends PureComponent {
           venueLabels={venueLabels}
           venueTypes={venueTypes}
         />
-        {withdrawalDetailActive && (
-          <WithdrawalDetailsFields isCreatedEntity readOnly={readOnly} />
-        )}
+        <WithdrawalDetailsFields isCreatedEntity readOnly={readOnly} />
         {isBankInformationWithSiretActive ? (
           <BusinessUnitFields isCreatingVenue offerer={offerer} />
         ) : (
@@ -235,7 +232,6 @@ VenueCreation.propTypes = {
   trackCreateVenue: PropTypes.func.isRequired,
   venueLabels: PropTypes.arrayOf(PropTypes.instanceOf(VenueLabel)).isRequired,
   venueTypes: PropTypes.arrayOf(PropTypes.instanceOf(VenueType)).isRequired,
-  withdrawalDetailActive: PropTypes.bool.isRequired,
 }
 
 export default VenueCreation
