@@ -96,6 +96,7 @@ VENUE_TYPE_CODE_MAPPING = {
     "MOVIE": "Cinéma - Salle de projections",
     "PERFORMING_ARTS": "Spectacle vivant",
     "CREATIVE_ARTS_STORE": "Magasin arts créatifs",
+    "ADMINISTRATIVE": "Lieu administratif",
     "OTHER": "Autre",
 }
 
