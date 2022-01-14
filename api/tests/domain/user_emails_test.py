@@ -2,7 +2,7 @@ from unittest.mock import patch
 
 import pytest
 
-from pcapi.core.bookings import factories as booking_factories
+from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.categories import subcategories
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.offers.factories import OfferFactory
@@ -21,10 +21,6 @@ from pcapi.domain.user_emails import send_offerer_driven_cancellation_email_to_o
 from pcapi.domain.user_emails import send_pro_user_validation_email
 from pcapi.domain.user_emails import send_user_driven_cancellation_email_to_offerer
 from pcapi.domain.user_emails import send_withdrawal_terms_to_newly_validated_offerer
-from pcapi.model_creators.generic_creators import create_booking
-from pcapi.model_creators.generic_creators import create_offerer
-from pcapi.model_creators.generic_creators import create_venue
-from pcapi.model_creators.specific_creators import create_stock_with_event_offer
 from pcapi.utils.human_ids import humanize
 
 
@@ -53,13 +49,9 @@ class SendOffererDrivenCancellationEmailToOffererTest:
         self, make_offerer_driven_cancellation_email_for_offerer
     ):
         # Given
-        user = users_factories.BeneficiaryGrant18Factory.build(email="user@example.com")
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        venue.bookingEmail = "booking@example.com"
-        stock = create_stock_with_event_offer(offerer, venue)
-        stock.offer.bookingEmail = "offer@example.com"
-        booking = create_booking(user=user, stock=stock)
+        booking = bookings_factories.BookingFactory(
+            stock__offer__bookingEmail="offer@example.com",
+        )
 
         # When
         send_offerer_driven_cancellation_email_to_offerer(booking)
@@ -73,7 +65,7 @@ class SendOffererDrivenCancellationEmailToOffererTest:
 class SendBeneficiaryUserDrivenCancellationEmailToOffererTest:
     def test_should_send_booking_cancellation_email_to_offerer(self):
         # Given
-        booking = booking_factories.IndividualBookingFactory(stock__offer__bookingEmail="booking@example.com")
+        booking = bookings_factories.IndividualBookingFactory(stock__offer__bookingEmail="booking@example.com")
 
         # When
         send_user_driven_cancellation_email_to_offerer(booking)
@@ -86,7 +78,7 @@ class SendBeneficiaryUserDrivenCancellationEmailToOffererTest:
 
 class SendBookingConfirmationEmailToOffererTest:
     def test_send_to_offerer(self):
-        booking = booking_factories.IndividualBookingFactory(
+        booking = bookings_factories.IndividualBookingFactory(
             stock__offer__bookingEmail="booking.email@example.com",
         )
 
@@ -106,7 +98,7 @@ class SendOffererBookingsRecapEmailAfterOffererCancellationTest:
         self, retrieve_offerer_bookings_recap_email_data_after_offerer_cancellation
     ):
         # Given
-        booking = booking_factories.IndividualBookingFactory(stock__offer__bookingEmail="offerer@example.com")
+        booking = bookings_factories.IndividualBookingFactory(stock__offer__bookingEmail="offerer@example.com")
 
         # When
         send_offerer_bookings_recap_email_after_offerer_cancellation([booking])
@@ -161,10 +153,10 @@ class SendActivationEmailTest:
 class SendExpiredBookingsRecapEmailToOffererTest:
     def test_should_send_email_to_offerer_when_expired_bookings_cancelled(self, app):
         offerer = OffererFactory()
-        expired_today_dvd_booking = booking_factories.IndividualBookingFactory(
+        expired_today_dvd_booking = bookings_factories.IndividualBookingFactory(
             stock__offer__bookingEmail="offerer.booking@example.com"
         )
-        expired_today_cd_booking = booking_factories.IndividualBookingFactory(
+        expired_today_cd_booking = bookings_factories.IndividualBookingFactory(
             stock__offer__bookingEmail="offerer.booking@example.com"
         )
 
@@ -177,12 +169,12 @@ class SendExpiredBookingsRecapEmailToOffererTest:
 
     def test_should_send_two_emails_to_offerer_when_expired_books_bookings_and_other_bookings_cancelled(self):
         offerer = OffererFactory()
-        expired_today_dvd_booking = booking_factories.IndividualBookingFactory(
+        expired_today_dvd_booking = bookings_factories.IndividualBookingFactory(
             stock__offer__name="Intouchables",
             stock__offer__bookingEmail="offerer.booking@example.com",
             stock__offer__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
         )
-        expired_today_book_booking = booking_factories.IndividualBookingFactory(
+        expired_today_book_booking = bookings_factories.IndividualBookingFactory(
             stock__offer__name="Les misérables",
             stock__offer__bookingEmail="offerer.booking@example.com",
             stock__offer__subcategoryId=subcategories.LIVRE_PAPIER.id,

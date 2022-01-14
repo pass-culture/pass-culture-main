@@ -1,5 +1,6 @@
 import pytest
 
+import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.categories import subcategories
 from pcapi.core.offers.factories import ProductFactory
 from pcapi.core.offers.models import Mediation
@@ -7,7 +8,6 @@ from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users.models import Favorite
-from pcapi.model_creators.generic_creators import create_booking
 from pcapi.model_creators.generic_creators import create_favorite
 from pcapi.model_creators.generic_creators import create_mediation
 from pcapi.model_creators.generic_creators import create_offerer
@@ -88,18 +88,13 @@ class DeleteUnwantedExistingProductTest:
     ):
         # Given
         isbn = "1111111111111"
-        beneficiary = users_factories.BeneficiaryGrant18Factory()
-        offerer = create_offerer(siren="775671464")
-        venue = create_venue(offerer, name="Librairie Titelive", siret="77567146400110")
         product = ProductFactory(
             idAtProviders=isbn,
             isGcuCompatible=True,
             isSynchronizationCompatible=True,
             subcategoryId=subcategories.LIVRE_PAPIER.id,
         )
-        offer = create_offer_with_thing_product(venue, product=product, is_active=True)
-        stock = create_stock(offer=offer, price=0)
-        create_booking(user=beneficiary, is_cancelled=True, stock=stock)
+        bookings_factories.BookingFactory(stock__offer__product=product)
 
         # When
         with pytest.raises(ProductWithBookingsException):
