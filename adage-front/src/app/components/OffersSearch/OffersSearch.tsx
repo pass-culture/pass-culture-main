@@ -3,7 +3,6 @@ import algoliasearch from 'algoliasearch/lite'
 import * as React from 'react'
 import { Configure, InstantSearch } from 'react-instantsearch-dom'
 
-import { VenueFilterStatus } from 'app/components/OffersSearch/VenueFilterStatus/VenueFilterStatus'
 import {
   ALGOLIA_API_KEY,
   ALGOLIA_APP_ID,
@@ -60,12 +59,6 @@ export const OffersSearch = ({
           venueFilter={venueFilter}
         />
         <div className="search-results">
-          {venueFilter && (
-            <VenueFilterStatus
-              removeFilter={removeVenueFilter}
-              venueFilter={venueFilter}
-            />
-          )}
           <Offers userRole={userRole} />
         </div>
         <Pagination />
