@@ -6,7 +6,7 @@ from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
 import pcapi.core.offers.repository as offers_repository
 from pcapi.core.users.repository import get_favorites_for_offers
-from pcapi.domain.offers import update_is_active_status
+from pcapi.models import db
 from pcapi.models.product import Product
 from pcapi.repository import repository
 from pcapi.repository.mediation_queries import get_mediations_for_offers
@@ -27,12 +27,13 @@ def delete_unwanted_existing_product(isbn: str):
         return
 
     if product_has_at_least_one_booking:
-        offers = get_offers_by_product_id(product.id)
+        offers = Offer.query.filter_by(productId=product.id)
+        offers.update({"isActive": False}, synchronize_session=False)
+        db.session.commit()
         product.isGcuCompatible = False
         product.isSynchronizationCompatible = False
-        offers = update_is_active_status(offers, False)
-        repository.save(*offers, product)
-        raise ProductWithBookingsException
+        repository.save(product)
+        raise ProductWithBookingsException()
 
     objects_to_delete = []
     objects_to_delete.append(product)
