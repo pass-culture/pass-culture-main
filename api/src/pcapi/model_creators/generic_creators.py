@@ -1,13 +1,8 @@
 from datetime import datetime
-from decimal import Decimal
 from hashlib import sha256
 from typing import Optional
-from typing import Union
 
-from pcapi.core.bookings import api as bookings_api
 from pcapi.core.bookings.models import Booking
-from pcapi.core.bookings.models import BookingStatus
-from pcapi.core.bookings.models import IndividualBooking
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers.models import Mediation
@@ -20,8 +15,6 @@ from pcapi.core.providers.models import VenueProvider
 from pcapi.core.users.models import Favorite
 from pcapi.core.users.models import User
 from pcapi.domain.price_rule import PriceRule
-from pcapi.model_creators.specific_creators import create_offer_with_thing_product
-from pcapi.model_creators.specific_creators import create_stock_with_thing_offer
 from pcapi.models.bank_information import BankInformation
 from pcapi.models.bank_information import BankInformationStatus
 from pcapi.models.criterion import Criterion
@@ -30,7 +23,6 @@ from pcapi.models.payment_message import PaymentMessage
 from pcapi.models.payment_status import PaymentStatus
 from pcapi.models.payment_status import TransactionStatus
 from pcapi.models.user_offerer import UserOfferer
-from pcapi.utils.token import random_token
 
 
 def create_bank_information(
@@ -62,66 +54,6 @@ def create_criterion(description: str = None, name: str = "best offer", score_de
     criterion.description = description
 
     return criterion
-
-
-def create_booking(
-    user: User,
-    amount: Optional[Union[Decimal, float]] = None,
-    date_created: datetime = datetime.utcnow(),
-    date_used: datetime = None,
-    idx: int = None,
-    is_cancelled: bool = False,
-    is_used: bool = False,
-    status: BookingStatus = BookingStatus.CONFIRMED,
-    quantity: int = 1,
-    stock: Stock = None,
-    venue: Venue = None,
-    token: str = None,
-    offerer: Offerer = None,
-) -> Booking:
-    booking = Booking()
-    if offerer is None:
-        offerer = create_offerer(
-            siren="987654321", address="Test address", city="Test city", postal_code="93000", name="Test name"
-        )
-    if venue is None:
-        venue = create_venue(
-            offerer=offerer,
-            name="Test offerer",
-            booking_email="reservations@test.fr",
-            address="123 rue test",
-            postal_code="93000",
-            city="Test city",
-            departement_code="93",
-        )
-    if stock is None:
-        price = amount if amount is not None else 10
-        product_with_thing_type = create_offer_with_thing_product(venue)
-        stock = create_stock_with_thing_offer(offerer=offerer, venue=venue, offer=product_with_thing_type, price=price)
-
-    if not stock.offer:
-        stock.offer = create_offer_with_thing_product(venue)
-
-    booking.amount = amount if amount is not None else stock.price
-    booking.dateCreated = date_created
-    booking.dateUsed = date_used
-    booking.id = idx
-    booking.isUsed = is_used
-    booking.isCancelled = is_cancelled
-    booking.status = BookingStatus.USED if is_used else (BookingStatus.CANCELLED if is_cancelled else status)
-    booking.quantity = quantity
-    booking.stock = stock
-    booking.offerer = offerer
-    booking.venue = venue
-    booking.token = token if token is not None else random_token()
-    booking.cancellationLimitDate = bookings_api.compute_cancellation_limit_date(stock.beginningDatetime, date_created)
-
-    individual_booking = IndividualBooking()
-    individual_booking.user = user
-    individual_booking.userId = user.id
-    individual_booking.booking = booking
-
-    return individual_booking.booking
 
 
 def create_favorite(idx: int = None, mediation: Mediation = None, offer: Offer = None, user: User = None) -> Favorite:
