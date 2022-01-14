@@ -79,3 +79,8 @@
   margin-bottom: rem(8px);
   font-size: rem(15px);
 }
+
+.multi-select-autocomplete__menu-notice.multi-select-autocomplete__menu-notice--no-options {
+  color: $black;
+  text-align: left;
+}
