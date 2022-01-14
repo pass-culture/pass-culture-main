@@ -246,7 +246,7 @@ class VenueBannerTest:
         with tempfile.TemporaryDirectory() as tmpdirname:
             with override_settings(OBJECT_STORAGE_URL=tmpdirname):
                 settings.OBJECT_STORAGE_URL = tmpdirname
-                mock_local_dir.return_value = pathlib.Path(tmpdirname) / settings.BASE_BUCKET_NAME
+                mock_local_dir.return_value = pathlib.Path(tmpdirname) / settings.THUMBS_FOLDER_NAME
 
                 response = client.post(url, files=file)
                 assert response.status_code == 204

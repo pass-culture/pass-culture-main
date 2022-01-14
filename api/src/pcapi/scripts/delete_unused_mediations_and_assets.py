@@ -144,7 +144,7 @@ def delete_assets_tied_to_mediationsqlentities(
         for asset_name in old_mediationsqlentities_asset_names:
             logger.info("deleting asset: %s", asset_name)
             try:
-                backend().delete_public_object(bucket=folder_name, object_id=asset_name)
+                backend().delete_public_object(folder=folder_name, object_id=asset_name)
             except Exception as exc:  # pylint: disable=broad-except
                 logger.exception("An unexpected error was encountered during deletion: %s", exc)
 
@@ -212,7 +212,7 @@ def delete_assets_without_mediation(
         for orphan_assets_name in orphan_assets_names:
             logger.info("deleting asset: %s", orphan_assets_name)
             try:
-                backend().delete_public_object(bucket=folder_name, object_id=orphan_assets_name)
+                backend().delete_public_object(folder=folder_name, object_id=orphan_assets_name)
             except Exception as exc:  # pylint: disable=broad-except
                 logger.exception("An unexpected error was encountered during deletion: %s", exc)
 
