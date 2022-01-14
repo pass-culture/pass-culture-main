@@ -11,11 +11,13 @@ interface MultiSelectAutocompleteProps {
   options: Option[]
   onChange: (selectedOptions: Option[]) => void
   label?: string
+  initialValues: Option[]
 }
 const MultiSelectAutocomplete = ({
   options,
   onChange,
   label,
+  initialValues,
 }: MultiSelectAutocompleteProps): JSX.Element => (
   <div className="multi-select-autocomplete-container">
     <label
@@ -41,6 +43,7 @@ const MultiSelectAutocomplete = ({
       onChange={onChange}
       options={options}
       placeholder="Sélectionner"
+      value={initialValues}
     />
   </div>
 )
