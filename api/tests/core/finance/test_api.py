@@ -2,7 +2,6 @@ import csv
 import datetime
 from decimal import Decimal
 import io
-import os
 import pathlib
 from unittest import mock
 import zipfile
@@ -18,6 +17,7 @@ from pcapi.core.finance import api
 from pcapi.core.finance import exceptions
 from pcapi.core.finance import factories
 from pcapi.core.finance import models
+from pcapi.core.object_storage.testing import recursive_listdir
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.payments.factories as payments_factories
@@ -698,10 +698,10 @@ class GenerateInvoiceTest:
         cashflow_ids = [c.id for c in cashflows]
         with assert_num_queries(self.EXPECTED_NUM_QUERIES):
             invoice = api._generate_invoice(
-                reference="JUSTIFICATIF #1", business_unit_id=business_unit.id, cashflow_ids=cashflow_ids
+                reference="000001", business_unit_id=business_unit.id, cashflow_ids=cashflow_ids
             )
 
-        assert invoice.reference == "JUSTIFICATIF #1"
+        assert invoice.reference == "000001"
         assert invoice.businessUnit == business_unit
         assert invoice.amount == -40 * 100
         assert len(invoice.lines) == 1
@@ -732,10 +732,10 @@ class GenerateInvoiceTest:
 
         with assert_num_queries(self.EXPECTED_NUM_QUERIES):
             invoice = api._generate_invoice(
-                reference="JUSTIFICATIF #2", business_unit_id=business_unit.id, cashflow_ids=cashflow_ids
+                reference="000002", business_unit_id=business_unit.id, cashflow_ids=cashflow_ids
             )
 
-        assert invoice.reference == "JUSTIFICATIF #2"
+        assert invoice.reference == "000002"
         assert invoice.businessUnit == business_unit
         # 100% of 19_850*100 + 95% of 160*100 aka 152*100
         assert invoice.amount == -20_002 * 100
@@ -775,10 +775,10 @@ class GenerateInvoiceTest:
 
         with assert_num_queries(self.EXPECTED_NUM_QUERIES):
             invoice = api._generate_invoice(
-                reference="JUSTIFICATIF #3", business_unit_id=business_unit.id, cashflow_ids=cashflow_ids
+                reference="000003", business_unit_id=business_unit.id, cashflow_ids=cashflow_ids
             )
 
-        assert invoice.reference == "JUSTIFICATIF #3"
+        assert invoice.reference == "000003"
         assert invoice.businessUnit == business_unit
         assert invoice.amount == -4400
         assert len(invoice.lines) == 1
@@ -810,11 +810,11 @@ class GenerateInvoiceTest:
 
         with assert_num_queries(self.EXPECTED_NUM_QUERIES):
             invoice = api._generate_invoice(
-                reference="JUSTIFICATIF #4", business_unit_id=business_unit.id, cashflow_ids=cashflow_ids
+                reference="000004", business_unit_id=business_unit.id, cashflow_ids=cashflow_ids
             )
 
         assert len(invoice.cashflows) == 2
-        assert invoice.reference == "JUSTIFICATIF #4"
+        assert invoice.reference == "000004"
         assert invoice.businessUnit == business_unit
         assert invoice.amount == -20_154.8 * 100
         # général 100%, général 95%, livre 100%, livre 95%, pas remboursé, custom 1, custom 2
@@ -895,7 +895,7 @@ class GenerateInvoiceHtmlTest:
         )
         cashflow_ids = [c.id for c in cashflows]
         invoice = api._generate_invoice(
-            reference="JUSTIFICATIF #4", business_unit_id=business_unit.id, cashflow_ids=cashflow_ids
+            reference="000004", business_unit_id=business_unit.id, cashflow_ids=cashflow_ids
         )
 
         invoice_html = api._generate_invoice_html(invoice)
@@ -914,7 +914,7 @@ class GenerateInvoiceHtmlTest:
             f'<td class="cashflow_creation_date">{cashflows[0].creationDate.strftime("%d/%m/%Y")}</td>',
         )
         expected_invoice_html = expected_invoice_html.replace(
-            '<h2 class="invoice_info">Relevé n°JUSTIFICATIF #4 du 21/12/2021</h2>',
+            '<h2 class="invoice_info">Relevé n°000004 du 21/12/2021</h2>',
             f'<h2 class="invoice_info">Relevé n°{invoice.reference} du {invoice.date.strftime("%d/%m/%Y")}</h2>',
         )
         assert expected_invoice_html == invoice_html
@@ -926,7 +926,7 @@ class StoreInvoicePdfTest:
 
     @override_settings(OBJECT_STORAGE_URL=BASE_THUMBS_DIR)
     def test_basics(self, clear_tests_invoices_bucket, invoice_data):
-        existing_number_of_files = len(os.listdir(self.INVOICES_DIR))
+        existing_number_of_files = len(recursive_listdir(self.INVOICES_DIR))
 
         business_unit, stocks = invoice_data
         bookings = []
@@ -946,13 +946,16 @@ class StoreInvoicePdfTest:
         )
         cashflow_ids = [c.id for c in cashflows]
         invoice = api._generate_invoice(
-            reference="JUSTIFICATIF #4", business_unit_id=business_unit.id, cashflow_ids=cashflow_ids
+            reference="000005", business_unit_id=business_unit.id, cashflow_ids=cashflow_ids
         )
 
         invoice_html = api._generate_invoice_html(invoice)
-        api._store_invoice_pdf(invoice.token, invoice_html)
+        api._store_invoice_pdf(invoice, invoice_html)
 
-        assert invoice.url == f"{self.INVOICES_DIR}/{invoice.token}.pdf"
-        assert len(os.listdir(self.INVOICES_DIR)) == existing_number_of_files + 2
-        assert (self.INVOICES_DIR / f"{invoice.token}.pdf").exists()
-        assert (self.INVOICES_DIR / f"{invoice.token}.pdf.type").exists()
+        assert (
+            invoice.url == f"{self.INVOICES_DIR}/{invoice.token}/{invoice.date.strftime('%d%m%Y')}"
+            f"-000005-Justificatif-de-remboursement-pass-Culture.pdf"
+        )
+        assert len(recursive_listdir(self.INVOICES_DIR)) == existing_number_of_files + 2
+        assert (self.INVOICES_DIR / f"{invoice.storage_object_id}").exists()
+        assert (self.INVOICES_DIR / f"{invoice.storage_object_id}.type").exists()
