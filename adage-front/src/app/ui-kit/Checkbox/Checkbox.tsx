@@ -22,7 +22,7 @@ const BaseCheckbox = ({
   Icon,
   ...props
 }: IBaseCheckboxProps): JSX.Element => (
-  <label className={cn('base-checkbox', className)}>
+  <div className={cn('base-checkbox', className)}>
     <input
       type="checkbox"
       {...props}
@@ -35,8 +35,10 @@ const BaseCheckbox = ({
         <Icon />
       </span>
     )}
-    <span className="base-checkbox-label">{label}</span>
-  </label>
+    <label htmlFor={props.name}>
+      <span className="base-checkbox-label">{label}</span>
+    </label>
+  </div>
 )
 
 export default BaseCheckbox
