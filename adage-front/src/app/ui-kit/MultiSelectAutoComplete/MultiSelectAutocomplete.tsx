@@ -36,6 +36,7 @@ const MultiSelectAutocomplete = ({
       isClearable={false}
       isMulti
       name={`multi-select-autocmplete-${label}`}
+      noOptionsMessage={() => 'Aucun résultat'}
       onChange={onChange}
       options={options}
       placeholder="Sélectionner"
