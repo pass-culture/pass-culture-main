@@ -583,6 +583,12 @@ class UbbleWebhookTest:
             content.identification_url == f"{settings.UBBLE_API_URL}/identifications/{str(content.identification_id)}"
         )
 
+        # Ensure that user information has been updated with Ubble extracted data
+        assert fraud_check.user.firstName == document.first_name
+        assert fraud_check.user.lastName == document.last_name
+        assert fraud_check.user.dateOfBirth.date().isoformat() == document.birth_date
+        assert fraud_check.user.idPieceNumber == document.document_number
+
     def test_fraud_check_invalid(self, client, ubble_mocker, mocker):
         current_identification_state = test_factories.IdentificationState.PROCESSING
         notified_identification_state = test_factories.IdentificationState.INVALID
@@ -1043,6 +1049,81 @@ class UbbleWebhookTest:
         assert message.callToActionTitle == "Contacter le support"
 
         assert len(mails_testing.outbox) == 0
+
+    def test_decision_duplicate_id_piece_number(self, client, ubble_mocker):
+        users_factories.BeneficiaryGrant18Factory(
+            dateOfBirth=datetime.datetime.now().date() - relativedelta.relativedelta(years=18, months=2),
+            idPieceNumber="012345678910",
+        )
+
+        user, ubble_fraud_check, request_data = self._init_decision_test()
+
+        ubble_identification_response = test_factories.UbbleIdentificationResponseFactory(
+            identification_state=test_factories.IdentificationState.VALID,
+            data__attributes__identification_id=str(request_data.identification_id),
+            included=[
+                test_factories.UbbleIdentificationIncludedDocumentsFactory(
+                    attributes__birth_date=(
+                        datetime.datetime.now().date() - relativedelta.relativedelta(years=18, months=1)
+                    ).isoformat(),
+                    attributes__document_number="012345678910",
+                    attributes__document_type="CI",
+                    attributes__first_name="John",
+                    attributes__last_name="Doe",
+                ),
+                test_factories.UbbleIdentificationIncludedDocumentChecksFactory(
+                    attributes__data_extracted_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__expiry_date_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__issue_date_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__live_video_capture_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__mrz_validity_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__mrz_viz_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__ove_back_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__ove_front_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__ove_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__quality_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__visual_back_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__visual_front_score=ubble_fraud_models.UbbleScore.VALID.value,
+                ),
+                test_factories.UbbleIdentificationIncludedFaceChecksFactory(
+                    attributes__active_liveness_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__live_video_capture_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__quality_score=ubble_fraud_models.UbbleScore.VALID.value,
+                ),
+                test_factories.UbbleIdentificationIncludedDocFaceMatchesFactory(
+                    attributes__score=ubble_fraud_models.UbbleScore.VALID.value,
+                ),
+                test_factories.UbbleIdentificationIncludedReferenceDataChecksFactory(
+                    attributes__score=ubble_fraud_models.UbbleScore.VALID.value,
+                ),
+            ],
+        )
+
+        self._post_webhook(client, ubble_mocker, request_data, ubble_identification_response)
+
+        db.session.refresh(user)
+        db.session.refresh(ubble_fraud_check)
+        self._log_for_debug(user, ubble_fraud_check)
+
+        assert ubble_fraud_check.status == fraud_models.FraudCheckStatus.SUSPICIOUS
+        assert fraud_models.FraudReasonCode.DUPLICATE_ID_PIECE_NUMBER in ubble_fraud_check.reasonCodes
+
+        assert not ubble_fraud_api.is_user_allowed_to_perform_ubble_check(user, user.eligibility)  # no retry
+
+        message = subscription_models.SubscriptionMessage.query.one()
+        assert (
+            message.userMessage
+            == "Ton dossier a été bloqué : Il y a déjà un compte à ton nom sur le pass Culture. Tu peux contacter le support pour plus d'informations."
+        )
+        assert (
+            message.callToActionLink
+            == subscription_messages.MAILTO_SUPPORT + subscription_messages.MAILTO_SUPPORT_PARAMS.format(id=user.id)
+        )
+        assert message.callToActionIcon == subscription_models.CallToActionIcon.EMAIL
+        assert message.callToActionTitle == "Contacter le support"
+
+        assert len(mails_testing.outbox) == 0
+        assert not user.has_beneficiary_role
 
     @override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=True)
     def test_decision_reference_data_check_failed(self, client, ubble_mocker):
