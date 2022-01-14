@@ -1,32 +1,13 @@
 from typing import Optional
 
-from sqlalchemy import asc
 from sqlalchemy.orm import load_only
 
 from pcapi.core.users import models as users_models
-from pcapi.models import db
 from pcapi.models.beneficiary_import import BeneficiaryImport
 from pcapi.models.beneficiary_import import BeneficiaryImportSources
 from pcapi.models.beneficiary_import_status import BeneficiaryImportStatus
 from pcapi.models.beneficiary_import_status import ImportStatus
 from pcapi.repository import repository
-
-
-def is_already_imported(application_id: int) -> bool:
-    # FIXME (dbaty, 2021-04-22): `BeneficiaryImport.applicationId` is
-    # not unique, we should probably look for a `(applicationId,  sourceId)`
-    # pair (which is unique).
-    beneficiary_import = (
-        BeneficiaryImport.query.join(BeneficiaryImportStatus)
-        .filter(BeneficiaryImport.applicationId == application_id)
-        .filter(
-            BeneficiaryImportStatus.status.in_(
-                [ImportStatus.CREATED, ImportStatus.REJECTED, ImportStatus.DUPLICATE, ImportStatus.ERROR]
-            )
-        )
-        .first()
-    )
-    return beneficiary_import is not None
 
 
 def get_already_processed_applications_ids(procedure_id: int) -> set[int]:
@@ -71,14 +52,3 @@ def save_beneficiary_import_with_status(
     repository.save(beneficiary_import)
 
     return beneficiary_import
-
-
-def find_applications_ids_to_retry() -> list[int]:
-    ids = (
-        db.session.query(BeneficiaryImport.applicationId)
-        .filter(BeneficiaryImport.currentStatus == ImportStatus.RETRY)
-        .order_by(asc(BeneficiaryImport.applicationId))
-        .all()
-    )
-
-    return sorted(list(map(lambda result_set: result_set[0], ids)))
