@@ -27,6 +27,7 @@ const MultiSelectAutocomplete = ({
 
     <Select
       classNamePrefix="multi-select-autocomplete"
+      closeMenuOnSelect={false}
       components={{
         Option: CustomOption,
         DropdownIndicator: CustomDropdownIndicator,
