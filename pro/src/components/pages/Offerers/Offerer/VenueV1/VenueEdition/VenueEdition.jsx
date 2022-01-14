@@ -54,7 +54,6 @@ const VenueEdition = ({
   venue,
   venueLabels,
   venueTypes,
-  withdrawalDetailActive,
 }) => {
   const [isRequestPending, setIsRequestPending] = useState(false)
   const [showConfirmationDialog, setShowConfirmationDialog] = useState(false)
@@ -173,7 +172,7 @@ const VenueEdition = ({
             venueTypeId={venueTypeId}
             venueTypes={venueTypes}
           />
-          {withdrawalDetailActive && !initialIsVirtual && (
+          {!initialIsVirtual && (
             <WithdrawalDetailsFields
               initialWithdrawalDetails={initialWithdrawalDetails}
               readOnly={readOnly}
@@ -376,7 +375,6 @@ VenueEdition.propTypes = {
   venue: PropTypes.shape(),
   venueLabels: PropTypes.arrayOf(PropTypes.instanceOf(VenueLabel)).isRequired,
   venueTypes: PropTypes.arrayOf(PropTypes.instanceOf(VenueType)).isRequired,
-  withdrawalDetailActive: PropTypes.bool.isRequired,
 }
 
 export default VenueEdition

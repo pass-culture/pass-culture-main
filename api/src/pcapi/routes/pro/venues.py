@@ -9,7 +9,6 @@ from pcapi.core.offerers import repository as offerers_repository
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers.repository import get_active_offers_count_for_venue
 from pcapi.core.offers.repository import get_sold_out_offers_count_for_venue
-from pcapi.models.feature import FeatureToggle
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import as_dict
 from pcapi.routes.serialization import venues_serialize
@@ -121,9 +120,8 @@ def edit_venue(venue_id: str, body: EditVenueBodyModel) -> GetVenueResponseModel
         edited_accessibility = {field: venue_attrs[field] for field in accessibility_fields}
         update_all_venue_offers_accessibility_job.delay(venue, edited_accessibility)
 
-    if FeatureToggle.ENABLE_VENUE_WITHDRAWAL_DETAILS.is_active():
-        if have_withdrawal_details_changes and body.isWithdrawalAppliedOnAllOffers:
-            update_all_venue_offers_withdrawal_details_job.delay(venue, body.withdrawalDetails)
+    if have_withdrawal_details_changes and body.isWithdrawalAppliedOnAllOffers:
+        update_all_venue_offers_withdrawal_details_job.delay(venue, body.withdrawalDetails)
 
     if body.bookingEmail and body.isEmailAppliedOnAllOffers:
         update_all_venue_offers_email_job.delay(venue, body.bookingEmail)

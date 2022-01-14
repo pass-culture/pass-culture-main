@@ -7,7 +7,6 @@ import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offerers.models as offerers_models
 from pcapi.core.offerers.models import Venue
 import pcapi.core.offers.factories as offers_factories
-from pcapi.core.testing import override_features
 from pcapi.utils.human_ids import humanize
 
 from tests.conftest import TestClient
@@ -111,7 +110,6 @@ class Returns200Test:
         mocked_update_all_venue_offers_email_job.assert_called_once_with(venue, "new.venue@email.com")
 
     @pytest.mark.usefixtures("db_session")
-    @override_features(ENABLE_VENUE_WITHDRAWAL_DETAILS=True)
     @patch("pcapi.routes.pro.venues.update_all_venue_offers_withdrawal_details_job.delay")
     def test_edit_venue_withdrawal_details_with_applied_on_all_offers(
         self, mocked_update_all_venue_offers_withdrawal_details_job, app
@@ -143,7 +141,6 @@ class Returns200Test:
         )
 
     @pytest.mark.usefixtures("db_session")
-    @override_features(ENABLE_VENUE_WITHDRAWAL_DETAILS=True)
     @patch("pcapi.routes.pro.venues.update_all_venue_offers_accessibility_job.delay")
     def test_edit_venue_accessibility_with_applied_on_all_offers(
         self, mocked_update_all_venue_offers_accessibility_job, app
