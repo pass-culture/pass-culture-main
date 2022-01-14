@@ -290,11 +290,11 @@ def validate_offerer(token: str) -> None:
 
 
 def save_venue_banner(user: User, venue: Venue, content: bytes, content_type: str, file_name: str) -> None:
-    bucket_name = settings.BASE_BUCKET_NAME
+    bucket_name = settings.THUMBS_FOLDER_NAME
     object_id = f"venue_{venue.id}_banner"
 
     object_storage.store_public_object(
-        bucket=bucket_name,
+        folder=bucket_name,
         object_id=object_id,
         blob=content,
         content_type=f"image/{content_type.lower()}",

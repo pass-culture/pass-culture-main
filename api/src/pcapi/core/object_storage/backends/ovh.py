@@ -23,19 +23,19 @@ class OVHBackend(BaseBackend):
             auth_version="3",
         )
 
-    def store_public_object(self, bucket: str, object_id: str, blob: bytes, content_type: str) -> None:
+    def store_public_object(self, folder: str, object_id: str, blob: bytes, content_type: str) -> None:
         container_name = settings.SWIFT_BUCKET_NAME
         try:
-            storage_path = bucket + "/" + object_id
+            storage_path = folder + "/" + object_id
             self.swift_con().put_object(container_name, storage_path, contents=blob, content_type=content_type)
         except Exception as exc:
             logger.exception("An error has occured while trying to upload file on OVH bucket: %s", exc)
             raise exc
 
-    def delete_public_object(self, bucket: str, object_id: str) -> None:
+    def delete_public_object(self, folder: str, object_id: str) -> None:
         container_name = settings.SWIFT_BUCKET_NAME
         try:
-            storage_path = bucket + "/" + object_id
+            storage_path = folder + "/" + object_id
             self.swift_con().delete_object(container_name, storage_path)
         except Exception as exc:
             logger.exception("An error has occured while trying to delete file on OVH bucket: %s", exc)

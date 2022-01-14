@@ -51,13 +51,13 @@ def _get_backends() -> set:
     return backends_set
 
 
-def store_public_object(bucket: str, object_id: str, blob: bytes, content_type: str) -> None:
+def store_public_object(folder: str, object_id: str, blob: bytes, content_type: str) -> None:
     for backend_path in _get_backends():
         backend = import_string(backend_path)
-        backend().store_public_object(bucket, object_id, blob, content_type)
+        backend().store_public_object(folder, object_id, blob, content_type)
 
 
-def delete_public_object(bucket: str, object_id: str) -> None:
+def delete_public_object(folder: str, object_id: str) -> None:
     for backend_path in _get_backends():
         backend = import_string(backend_path)
-        backend().delete_public_object(bucket, object_id)
+        backend().delete_public_object(folder, object_id)
