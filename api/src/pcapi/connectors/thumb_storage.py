@@ -13,7 +13,7 @@ def create_thumb(
     image_as_bytes = standardize_image(image_as_bytes, crop_params)
 
     object_storage.store_public_object(
-        bucket=settings.BASE_BUCKET_NAME,
+        folder=settings.THUMBS_FOLDER_NAME,
         object_id=model_with_thumb.get_thumb_storage_id(image_index),
         blob=image_as_bytes,
         content_type="image/jpeg",
@@ -25,6 +25,6 @@ def remove_thumb(
     image_index: int,
 ) -> None:
     object_storage.delete_public_object(
-        bucket="thumbs",
+        folder="thumbs",
         object_id=model_with_thumb.get_thumb_storage_id(image_index),
     )

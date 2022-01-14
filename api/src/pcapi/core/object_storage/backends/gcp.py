@@ -20,8 +20,8 @@ class GCPBackend(BaseBackend):
 
         return storage_client.bucket(settings.GCP_BUCKET_NAME)
 
-    def store_public_object(self, bucket: str, object_id: str, blob: bytes, content_type: str) -> None:
-        storage_path = bucket + "/" + object_id
+    def store_public_object(self, folder: str, object_id: str, blob: bytes, content_type: str) -> None:
+        storage_path = folder + "/" + object_id
         try:
             bucket = self.get_gcp_storage_client_bucket()
             gcp_cloud_blob = bucket.blob(storage_path)
@@ -30,8 +30,8 @@ class GCPBackend(BaseBackend):
             logger.exception("An error has occured while trying to upload file on GCP bucket: %s", exc)
             raise exc
 
-    def delete_public_object(self, bucket: str, object_id: str) -> None:
-        storage_path = bucket + "/" + object_id
+    def delete_public_object(self, folder: str, object_id: str) -> None:
+        storage_path = folder + "/" + object_id
         try:
             bucket = self.get_gcp_storage_client_bucket()
             gcp_cloud_blob = bucket.blob(storage_path)

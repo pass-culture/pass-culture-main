@@ -259,7 +259,7 @@ OBJECT_STORAGE_PROVIDER = os.environ.get("OBJECT_STORAGE_PROVIDER", "")
 LOCAL_STORAGE_DIR = Path(os.path.dirname(os.path.realpath(__file__))) / "static" / "object_store_data"
 
 # THUMBS
-BASE_BUCKET_NAME = os.environ.get("BASE_BUCKET_NAME", "thumbs")
+THUMBS_FOLDER_NAME = os.environ.get("THUMBS_FOLDER_NAME", "thumbs")
 
 # SWIFT
 SWIFT_AUTH_URL = os.environ.get("SWIFT_AUTH_URL", "https://auth.cloud.ovh.net/v3/")

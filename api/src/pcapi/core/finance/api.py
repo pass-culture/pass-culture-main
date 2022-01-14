@@ -825,5 +825,5 @@ def _generate_invoice_html(invoice) -> str:
 def _store_invoice_pdf(invoice_token, invoice_html):
     invoice_pdf = pdf_utils.generate_pdf_from_html(invoice_html)
     store_public_object(
-        bucket="invoices", object_id=f"{invoice_token}.pdf", blob=invoice_pdf, content_type="application/pdf"
+        folder="invoices", object_id=f"{invoice_token}.pdf", blob=invoice_pdf, content_type="application/pdf"
     )
