@@ -54,7 +54,11 @@ export const OffersSearch = ({
           hitsPerPage={8}
         />
         <SearchBox />
-        <OfferFilters className="search-filters" />
+        <OfferFilters
+          className="search-filters"
+          removeVenueFilter={removeVenueFilter}
+          venueFilter={venueFilter}
+        />
         <div className="search-results">
           {venueFilter && (
             <VenueFilterStatus
