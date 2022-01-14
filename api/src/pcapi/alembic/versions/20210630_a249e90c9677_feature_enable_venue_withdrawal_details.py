@@ -1,11 +1,8 @@
 """feature_enable_venue_withdrawal_details
 
-Revision ID: a249e90c9677
-Revises: 29c8b67b67a5
-Create Date: 2021-06-30 12:59:01.298321
-
+This migration is now a no-op, since the ENABLE_VENUE_WITHDRAWAL_DETAILS
+feature flag is not defined anymore.
 """
-from pcapi.models import feature
 
 
 # revision identifiers, used by Alembic.
@@ -14,12 +11,10 @@ down_revision = "29c8b67b67a5"
 branch_labels = None
 depends_on = None
 
-FLAG = feature.FeatureToggle.ENABLE_VENUE_WITHDRAWAL_DETAILS
-
 
 def upgrade():
-    feature.add_feature_to_database(FLAG)
+    pass
 
 
 def downgrade():
-    feature.remove_feature_from_database(FLAG)
+    pass

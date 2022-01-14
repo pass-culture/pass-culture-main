@@ -75,7 +75,6 @@ describe('src | components | pages | VenueContainer | mapStateToProps', () => {
         },
         venueTypes: [],
         venueLabels: [],
-        withdrawalDetailActive: false,
       })
     })
 
