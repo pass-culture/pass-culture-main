@@ -23,7 +23,9 @@ from pcapi import settings
 import pcapi.core.bookings.models as bookings_models
 import pcapi.core.bookings.repository as bookings_repository
 import pcapi.core.fraud.api as fraud_api
+from pcapi.core.fraud.common import models as common_fraud_models
 import pcapi.core.fraud.models as fraud_models
+import pcapi.core.fraud.ubble.models as ubble_fraud_models
 from pcapi.core.mails.transactional import users as user_emails
 from pcapi.core.mails.transactional.users.email_address_change_confirmation import send_email_confirmation_email
 import pcapi.core.payments.api as payment_api
@@ -262,7 +264,7 @@ def validate_phone_number_and_activate_user(user: User, code: str) -> User:
 
 def update_user_information_from_external_source(
     user: User,
-    data: fraud_models.IdentityCheckContent,
+    data: common_fraud_models.IdentityCheckContent,
     commit=False,
 ) -> User:
     if isinstance(data, fraud_models.DMSContent):
@@ -321,7 +323,7 @@ def update_user_information_from_external_source(
         user.dateOfBirth = datetime.combine(data.birth_date, time(0, 0))
         user.ineHash = data.ine_hash
 
-    elif isinstance(data, fraud_models.ubble.UbbleContent):
+    elif isinstance(data, ubble_fraud_models.UbbleContent):
         user.firstName = data.first_name
         user.lastName = data.last_name
         user.dateOfBirth = datetime.combine(data.birth_date, time(0, 0))

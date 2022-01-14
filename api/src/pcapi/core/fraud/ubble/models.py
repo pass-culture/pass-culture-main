@@ -5,7 +5,7 @@ import typing
 import pydantic
 import pytz
 
-from .common import IdentityCheckContent
+from ..common.models import IdentityCheckContent
 
 
 class UbbleIdentificationStatus(enum.Enum):

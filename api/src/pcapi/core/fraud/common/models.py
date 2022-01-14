@@ -2,8 +2,10 @@ import datetime
 import typing
 
 import pydantic
+import pydantic.datetime_parse
+import pydantic.errors
 
-from pcapi.core.users.models import EligibilityType
+from pcapi.core.users import models as users_models
 
 
 class IdentityCheckContent(pydantic.BaseModel):
@@ -22,7 +24,7 @@ class IdentityCheckContent(pydantic.BaseModel):
     def get_id_piece_number(self) -> typing.Optional[str]:
         raise NotImplementedError()
 
-    def get_eligibility_type(self) -> typing.Optional[EligibilityType]:
+    def get_eligibility_type(self) -> typing.Optional[users_models.EligibilityType]:
         from pcapi.core.users import api as users_api
 
         registration_datetime = self.get_registration_datetime()
@@ -36,7 +38,10 @@ class IdentityCheckContent(pydantic.BaseModel):
 
         # When a user turns 18, his underage credit expires.
         # If he turned 18 between registration and today, we consider the application as coming from a 18 years old user
-        if eligibility_today == EligibilityType.AGE18 and eligibility_at_registration == EligibilityType.UNDERAGE:
-            return EligibilityType.AGE18
+        if (
+            eligibility_today == users_models.EligibilityType.AGE18
+            and eligibility_at_registration == users_models.EligibilityType.UNDERAGE
+        ):
+            return users_models.EligibilityType.AGE18
 
         return eligibility_at_registration

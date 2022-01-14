@@ -20,6 +20,7 @@ from pcapi.core.bookings.factories import IndividualBookingFactory
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.fraud import factories as fraud_factories
 from pcapi.core.fraud import models as fraud_models
+from pcapi.core.fraud.ubble import models as ubble_fraud_models
 import pcapi.core.mails.testing as mails_testing
 import pcapi.core.subscription.factories as subscription_factories
 import pcapi.core.subscription.messages as subscription_messages
@@ -1621,9 +1622,9 @@ class IdentificationSessionTest:
     @pytest.mark.parametrize(
         "fraud_check_status,ubble_status",
         [
-            (fraud_models.FraudCheckStatus.PENDING, fraud_models.ubble.UbbleIdentificationStatus.PROCESSING),
-            (fraud_models.FraudCheckStatus.OK, fraud_models.ubble.UbbleIdentificationStatus.PROCESSED),
-            (fraud_models.FraudCheckStatus.KO, fraud_models.ubble.UbbleIdentificationStatus.PROCESSED),
+            (fraud_models.FraudCheckStatus.PENDING, ubble_fraud_models.UbbleIdentificationStatus.PROCESSING),
+            (fraud_models.FraudCheckStatus.OK, ubble_fraud_models.UbbleIdentificationStatus.PROCESSED),
+            (fraud_models.FraudCheckStatus.KO, ubble_fraud_models.UbbleIdentificationStatus.PROCESSED),
         ],
     )
     def test_request_ubble_second_check_blocked(self, client, ubble_mock, fraud_check_status, ubble_status):
@@ -1676,7 +1677,7 @@ class IdentificationSessionTest:
             type=fraud_models.FraudCheckType.UBBLE,
             status=fraud_models.FraudCheckStatus.CANCELED,
             resultContent=fraud_factories.UbbleContentFactory(
-                status=fraud_models.ubble.UbbleIdentificationStatus.ABORTED
+                status=ubble_fraud_models.UbbleIdentificationStatus.ABORTED
             ),
         )
 
@@ -1727,7 +1728,7 @@ class IdentificationSessionTest:
                 status=fraud_models.FraudCheckStatus.SUSPICIOUS,
                 reasonCodes=[reason],
                 resultContent=fraud_factories.UbbleContentFactory(
-                    status=fraud_models.ubble.UbbleIdentificationStatus.PROCESSED
+                    status=ubble_fraud_models.UbbleIdentificationStatus.PROCESSED
                 ),
             )
 
@@ -1772,7 +1773,7 @@ class IdentificationSessionTest:
             status=fraud_models.FraudCheckStatus.SUSPICIOUS,
             reasonCodes=[reason],
             resultContent=fraud_factories.UbbleContentFactory(
-                status=fraud_models.ubble.UbbleIdentificationStatus.PROCESSED
+                status=ubble_fraud_models.UbbleIdentificationStatus.PROCESSED
             ),
         )
 
@@ -1788,7 +1789,7 @@ class IdentificationSessionTest:
         expected_url = "https://id.ubble.ai/ef055567-3794-4ca5-afad-dce60fe0f227"
 
         ubble_content = fraud_factories.UbbleContentFactory(
-            status=fraud_models.ubble_models.UbbleIdentificationStatus.INITIATED,
+            status=ubble_fraud_models.UbbleIdentificationStatus.INITIATED,
             identification_url=expected_url,
         )
         fraud_factories.BeneficiaryFraudCheckFactory(
