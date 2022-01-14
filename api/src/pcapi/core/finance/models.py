@@ -310,8 +310,15 @@ class Invoice(Model):
     cashflows = sqla_orm.relationship("Cashflow", secondary="invoice_cashflow", back_populates="invoices")
 
     @property
+    def storage_object_id(self):
+        return (
+            f"{self.token}/{self.date.strftime('%d%m%Y')}-{self.reference}-"
+            f"Justificatif-de-remboursement-pass-Culture.pdf"
+        )
+
+    @property
     def url(self):
-        return f"{settings.OBJECT_STORAGE_URL}/invoices/{self.token}.pdf"
+        return f"{settings.OBJECT_STORAGE_URL}/invoices/{self.storage_object_id}"
 
 
 class InvoiceCashflow(Model):
