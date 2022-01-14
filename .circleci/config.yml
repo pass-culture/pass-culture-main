@@ -73,6 +73,7 @@ commands:
           event: fail
           channel: << parameters.channel >>
           template: << parameters.template >>
+
   skip_unchanged:
     parameters:
       except_branches:
@@ -123,6 +124,13 @@ commands:
       - run: echo ${<< parameters.gcp-key-name >>} > ${HOME}/gcp-key.json
       - run: gcloud auth activate-service-account --key-file ${HOME}/gcp-key.json
       - run: gcloud --quiet config set project ${GCP_PROJECT}
+
+  authenticate_gcp_docker_registry:
+    description: Authenticate to docker registry
+    parameters:
+      registry-region:
+    steps:
+      - run: gcloud beta auth configure-docker << parameters.registry-region >>-docker.pkg.dev
 
   export_app_version:
     description: Export APP version number as environment variable
@@ -577,14 +585,27 @@ jobs:
           docker_layer_caching: true
       - authenticate_gcp:
           gcp-key-name: GCP_INFRA_KEY
+      - authenticate_gcp_docker_registry:
+          registry-region: ${GCP_REGION}
       - export_app_version
-      - run: |
-          source ${BASH_ENV}
-          gcloud beta auth configure-docker ${GCP_REGION}-docker.pkg.dev
-          docker build ./api \
-            -f ./api/Dockerfile \
-            -t ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_REGISTRY_NAME}/pcapi:<<parameters.app_version>>
-          docker push ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_REGISTRY_NAME}/pcapi:<<parameters.app_version>>
+      - run:
+            name: Build & push pcapi image
+            command: |
+              source ${BASH_ENV}
+              docker build ./api \
+                -f ./api/Dockerfile \
+                --target pcapi \
+                -t ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_REGISTRY_NAME}/pcapi:<<parameters.app_version>>
+              docker push ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_REGISTRY_NAME}/pcapi:<<parameters.app_version>>
+      - run:
+            name: Build & push pcapi-console image
+            command: |
+              source ${BASH_ENV}
+              docker build ./api \
+                -f ./api/Dockerfile \
+                --target pcapi-console \
+                -t ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_REGISTRY_NAME}/pcapi-console:<<parameters.app_version>>
+              docker push ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_REGISTRY_NAME}/pcapi-console:<<parameters.app_version>>
       - run:
           name: Send failure notification
           command: |
@@ -603,17 +624,20 @@ jobs:
           docker_layer_caching: true
       - authenticate_gcp:
           gcp-key-name: GCP_INFRA_KEY
+      - authenticate_gcp_docker_registry:
+          registry-region: ${GCP_REGION}
       - export_app_version
-      - run: gcloud beta auth configure-docker ${GCP_REGION}-docker.pkg.dev
-      - run: |
-          source ${BASH_ENV}
-          docker build ~/pass-culture-db-operations \
-            -f ~/pass-culture-db-operations/Dockerfile \
-            --build-arg BASE_PCAPI_TAG=${APP_VERSION} \
-            -t ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_TOOLS_REGISTRY_NAME}/db-ops:${APP_VERSION} \
-            -t ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_TOOLS_REGISTRY_NAME}/db-ops:latest
-          docker push ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_TOOLS_REGISTRY_NAME}/db-ops:${APP_VERSION}
-          docker push ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_TOOLS_REGISTRY_NAME}/db-ops:latest
+      - run:
+          name: Build & push db-ops image
+          command: |
+            source ${BASH_ENV}
+            docker build ./infra/docker-images/db-ops \
+              -f ./infra/docker-images/db-ops/Dockerfile \
+              --build-arg BASE_PCAPI_TAG=${APP_VERSION} \
+              -t ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_TOOLS_REGISTRY_NAME}/db-ops:${APP_VERSION} \
+              -t ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_TOOLS_REGISTRY_NAME}/db-ops:latest
+            docker push ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_TOOLS_REGISTRY_NAME}/db-ops:${APP_VERSION}
+            docker push ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_TOOLS_REGISTRY_NAME}/db-ops:latest
 
   deploy-dbops:
     executor: helm
