@@ -1,0 +1,16 @@
+@import 'sass-rem';
+@import 'styles';
+
+.pellet {
+  width: rem(18px);
+  height: rem(18px);
+  padding: rem(6px);
+  border-radius: rem(100px);
+  background-color: $primary;
+  color: $white;
+  font-size: rem(9px);
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

@@ -3,8 +3,10 @@ import Select from 'react-select'
 
 import { Option } from 'app/types'
 
+import CustomControl from './Control'
 import CustomDropdownIndicator from './DropdownIndicator'
-import CustomOption from './Option/Option'
+import CustomOption from './Option'
+import CustomPlaceholder from './Placeholder'
 import './MultiSelectAutocomplete.scss'
 
 interface MultiSelectAutocompleteProps {
@@ -33,13 +35,15 @@ const MultiSelectAutocomplete = ({
       components={{
         Option: CustomOption,
         DropdownIndicator: CustomDropdownIndicator,
+        Control: CustomControl,
+        Placeholder: CustomPlaceholder,
       }}
       controlShouldRenderValue={false}
       hideSelectedOptions={false}
       inputId={`multi-select-autocomplete-${label}`}
       isClearable={false}
       isMulti
-      name={`multi-select-autocomplete-${label}`}
+      name={label}
       noOptionsMessage={() => 'Aucun résultat'}
       onChange={onChange}
       options={options}
