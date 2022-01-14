@@ -186,41 +186,6 @@
   </div>
   {% endif %}
 </div>
-<div class="section">
-  <h3>Résultat de l'algorithme</h3>
-  {% for result in model.beneficiaryFraudResults|reverse %}
-  <table class="table">
-    <tr>
-      <th scope="row">Éligibilité</th>
-      <td>{{ result.eligibilityType|eligibility_format }}</td>
-    </tr>
-    <tr>
-      <th scope="row">Etat</th>
-      <td>{{ result.status.value }}</td>
-    </tr>
-    <tr>
-      <th scope="row">Date de création</th>
-      <td>{{ result.dateCreated.strftime('le %d/%m/%Y à %H:%M:%S') }}</dd>
-      </td>
-    </tr>
-    <tr>
-      <th scope="row">Dernière mise à jour</th>
-      <td>{% if result.dateUpdated %}{{ result.dateUpdated.strftime('le
-        %d/%m/%Y à %H:%M:%S') }}{% else %}Inconnue{% endif %}</dd>
-      </td>
-    </tr>
-    <tr>
-      <th scope="row">Explication</th>
-      <td>{{ result.reason }}</dd>
-      </td>
-    </tr>
-  </table>
-  {% else %}
-  <div class="card card-body">
-    Aucun résultat de fraude
-  </div>
-  {% endfor %}
-</div>
 
 <div class="section">
   <h3>Historique des changements d'adresse email</h3>
