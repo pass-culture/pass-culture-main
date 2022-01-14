@@ -3,7 +3,7 @@ from unittest.mock import patch
 
 import pytest
 
-from pcapi.core.bookings.factories import BookingFactory
+import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.categories import subcategories
 from pcapi.core.offers.factories import OffererFactory
 from pcapi.core.offers.factories import ThingOfferFactory
@@ -12,14 +12,8 @@ from pcapi.core.offers.factories import ThingStockFactory
 from pcapi.core.offers.factories import VenueFactory
 from pcapi.core.offers.models import Offer
 from pcapi.core.providers.repository import get_provider_by_local_class
-from pcapi.core.users import factories as users_factories
 from pcapi.local_providers import TiteLiveThings
-from pcapi.model_creators.generic_creators import create_booking
-from pcapi.model_creators.generic_creators import create_offerer
-from pcapi.model_creators.generic_creators import create_stock
-from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.provider_creators import activate_provider
-from pcapi.model_creators.specific_creators import create_offer_with_thing_product
 from pcapi.model_creators.specific_creators import create_product_with_thing_subcategory
 from pcapi.models.local_provider_event import LocalProviderEvent
 from pcapi.models.local_provider_event import LocalProviderEventType
@@ -361,41 +355,26 @@ class TiteliveThingsTest:
         self, get_lines_from_thing_file, get_files_to_process_from_titelive_ftp, app
     ):
         # Given
-        files_list = list()
-        files_list.append("Quotidien30.tit")
-
-        get_files_to_process_from_titelive_ftp.return_value = files_list
-
-        DATA_LINE_PARTS = BASE_DATA_LINE_PARTS[:]
-        DATA_LINE_PARTS[2] = "jeux de société"
-        DATA_LINE_PARTS[4] = "1234"
-        DATA_LINE_PARTS[13] = "O"
-        DATA_LINE_PARTS[27] = "Littérature scolaire"
-        DATA_LINE_PARTS[40] = ""
-
-        data_line = "~".join(DATA_LINE_PARTS)
-
+        get_files_to_process_from_titelive_ftp.return_value = ["Quotidien30.tit"]
+        data_line_parts = BASE_DATA_LINE_PARTS[:]
+        data_line_parts[2] = "jeux de société"
+        data_line_parts[4] = "1234"
+        data_line_parts[13] = "O"
+        data_line_parts[27] = "Littérature scolaire"
+        data_line_parts[40] = ""
+        data_line = "~".join(data_line_parts)
         get_lines_from_thing_file.return_value = iter([data_line])
 
-        beneficiary = users_factories.BeneficiaryGrant18Factory()
-        offerer = create_offerer(siren="775671464")
-        venue = create_venue(offerer, name="Librairie Titelive", siret="77567146400110")
-        titelive_provider = activate_provider("TiteLiveThings")
-        repository.save(venue)
-        product = create_product_with_thing_subcategory(
-            id_at_providers="9782895026310",
-            thing_name="Toto à la playa",
-            date_modified_at_last_provider=datetime(2001, 1, 1),
-            last_provider_id=titelive_provider.id,
+        provider = activate_provider("TiteLiveThings")
+        bookings_factories.BookingFactory(
+            stock__offer__product__dateModifiedAtLastProvider=datetime(2001, 1, 1),
+            stock__offer__product__idAtProviders="9782895026310",
+            stock__offer__product__lastProviderId=provider.id,
+            stock__offer__product__subcategoryId=subcategories.LIVRE_PAPIER.id,
         )
-        offer = create_offer_with_thing_product(venue, product=product)
-        stock = create_stock(offer=offer, price=0)
-        booking = create_booking(user=beneficiary, stock=stock)
-        repository.save(product, offer, stock, booking)
-
-        titelive_things = TiteLiveThings()
 
         # When
+        titelive_things = TiteLiveThings()
         titelive_things.updateObjects()
 
         # Then
@@ -501,7 +480,6 @@ class TiteliveThingsTest:
         titelive_provider = activate_provider("TiteLiveThings")
         repository.save(titelive_provider)
 
-        beneficiary = users_factories.BeneficiaryGrant18Factory(email="user@example.net")
         offerer = OffererFactory(siren="123456789")
         venue = VenueFactory(managingOfferer=offerer)
         product = ThingProductFactory(
@@ -513,7 +491,7 @@ class TiteliveThingsTest:
         )
         offer = ThingOfferFactory(product=product, venue=venue, isActive=True)
         stock = ThingStockFactory(offer=offer, price=0)
-        BookingFactory(user=beneficiary, stock=stock)
+        bookings_factories.BookingFactory(stock=stock)
 
         titelive_things = TiteLiveThings()
 

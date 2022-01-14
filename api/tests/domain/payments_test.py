@@ -7,10 +7,10 @@ import pytest
 
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.bookings.models import Booking
+from pcapi.core.categories import subcategories
 from pcapi.core.offerers.models import Offerer
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.payments.factories as payments_factories
-import pcapi.core.users.factories as users_factories
 from pcapi.domain.payments import PaymentDetails
 from pcapi.domain.payments import UnmatchedPayments
 from pcapi.domain.payments import _set_end_to_end_id_and_group_into_transactions
@@ -23,12 +23,7 @@ from pcapi.domain.payments import keep_only_not_processable_payments
 from pcapi.domain.payments import make_transaction_label
 from pcapi.domain.reimbursement import BookingReimbursement
 from pcapi.domain.reimbursement import PhysicalOffersReimbursement
-from pcapi.model_creators.generic_creators import create_booking
-from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_payment
-from pcapi.model_creators.generic_creators import create_stock
-from pcapi.model_creators.generic_creators import create_venue
-from pcapi.model_creators.specific_creators import create_offer_with_thing_product
 from pcapi.models.payment import Payment
 from pcapi.models.payment_status import TransactionStatus
 from pcapi.repository import payment_queries
@@ -168,12 +163,12 @@ class FilterOutBookingsWithoutCostTest:
         assert bookings_reimbursements_with_cost == []
 
 
+@pytest.mark.usefixtures("db_session")
 class KeepOnlyNotProcessablePaymentsTest:
     def test_it_returns_only_payments_with_current_status_as_not_processable(self):
         # given
-        user = users_factories.UserFactory.build()
-        booking = create_booking(user=user)
-        offerer = create_offerer()
+        booking = bookings_factories.BookingFactory()
+        offerer = booking.offerer
         payments = [
             create_payment(booking, offerer, 30, status=TransactionStatus.PENDING),
             create_payment(booking, offerer, 30, status=TransactionStatus.NOT_PROCESSABLE),
@@ -189,9 +184,8 @@ class KeepOnlyNotProcessablePaymentsTest:
 
     def test_it_returns_an_empty_list_if_everything_has_no_not_processable_payment(self):
         # given
-        user = users_factories.UserFactory.build()
-        booking = create_booking(user=user)
-        offerer = create_offerer()
+        booking = bookings_factories.BookingFactory()
+        offerer = booking.offerer
         payments = [
             create_payment(booking, offerer, 30, status=TransactionStatus.SENT),
             create_payment(booking, offerer, 30, status=TransactionStatus.SENT),
@@ -212,13 +206,15 @@ class KeepOnlyNotProcessablePaymentsTest:
         assert pending_payments == []
 
 
+@pytest.mark.usefixtures("db_session")
 class CreatePaymentDetailsTest:
     def test_contains_info_on_bank_transaction(self):
         # given
-        user = users_factories.UserFactory.build()
-        booking = create_booking(user=user)
-        offerer = create_offerer()
-        payment = create_payment(booking, offerer, 35, iban="123456789")
+        payment = payments_factories.PaymentFactory(
+            reimbursementRate=0.5,
+            amount=35,
+            iban="123456789",
+        )
 
         # when
         details = PaymentDetails(payment)
@@ -231,7 +227,7 @@ class CreatePaymentDetailsTest:
     @pytest.mark.usefixtures("db_session")
     def test_contains_info_on_booking(self):
         # given
-        booking = bookings_factories.IndividualBookingFactory(
+        booking = bookings_factories.UsedBookingFactory(
             dateCreated=datetime(2018, 2, 5),
             dateUsed=datetime(2018, 2, 19),
         )
@@ -247,13 +243,11 @@ class CreatePaymentDetailsTest:
 
     def test_contains_info_on_offerer(self):
         # given
-        user = users_factories.UserFactory.build(email="jane.doe@test.com", id=3)
-        offerer = create_offerer(siren="987654321", name="Joe le Libraire")
-        venue = create_venue(offerer)
-        offer = create_offer_with_thing_product(venue)
-        stock = create_stock(offer=offer, price=12, quantity=5)
-        booking = create_booking(user=user, stock=stock, date_created=datetime(2018, 2, 5), idx=5, quantity=2)
-        payment = create_payment(booking, offerer, 35)
+        booking = bookings_factories.UsedBookingFactory(
+            stock__offer__venue__managingOfferer__name="Joe le Libraire",
+            stock__offer__venue__managingOfferer__siren="987654321",
+        )
+        payment = payments_factories.PaymentFactory(booking=booking)
 
         # when
         details = PaymentDetails(payment)
@@ -264,13 +258,11 @@ class CreatePaymentDetailsTest:
 
     def test_contains_info_on_venue(self):
         # given
-        user = users_factories.UserFactory.build(email="jane.doe@test.com", id=3)
-        offerer = create_offerer(siren="987654321", name="Joe le Libraire")
-        venue = create_venue(offerer, name="Jack le Sculpteur", siret="1234567891234", idx=1)
-        offer = create_offer_with_thing_product(venue)
-        stock = create_stock(offer=offer, price=12, quantity=5)
-        booking = create_booking(user=user, stock=stock, date_created=datetime(2018, 2, 5), idx=5, quantity=2)
-        payment = create_payment(booking, offerer, 35)
+        booking = bookings_factories.UsedBookingFactory(
+            stock__offer__venue__name="Jack le Sculpteur",
+            stock__offer__venue__siret="1234567891234",
+        )
+        payment = payments_factories.PaymentFactory(booking=booking)
 
         # when
         details = PaymentDetails(payment)
@@ -278,17 +270,15 @@ class CreatePaymentDetailsTest:
         # then
         assert details.venue_name == "Jack le Sculpteur"
         assert details.venue_siret == "1234567891234"
-        assert details.venue_humanized_id == humanize(venue.id)
+        assert details.venue_humanized_id == humanize(booking.venueId)
 
     def test_contains_info_on_offer(self):
         # given
-        user = users_factories.UserFactory.build(email="jane.doe@test.com", id=3)
-        offerer = create_offerer(siren="987654321", name="Joe le Libraire")
-        venue = create_venue(offerer, name="Jack le Sculpteur", siret="1234567891234")
-        offer = create_offer_with_thing_product(venue)
-        stock = create_stock(offer=offer, price=12, quantity=5)
-        booking = create_booking(user=user, stock=stock, date_created=datetime(2018, 2, 5), idx=5, quantity=2)
-        payment = create_payment(booking, offerer, 35)
+        booking = bookings_factories.UsedBookingFactory(
+            stock__offer__product__name="Test Book",
+            stock__offer__product__subcategoryId=subcategories.VOD.id,
+        )
+        payment = payments_factories.PaymentFactory(booking=booking)
 
         # when
         details = PaymentDetails(payment)
