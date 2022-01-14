@@ -9,7 +9,7 @@ import flask
 import pydantic
 
 from pcapi import settings
-from pcapi.core.fraud import models as fraud_models
+from pcapi.core.fraud.ubble import models as ubble_fraud_models
 from pcapi.models.api_errors import ForbiddenError
 
 
@@ -23,7 +23,7 @@ class Configuration(pydantic.BaseModel):
 
 class WebhookRequest(pydantic.BaseModel):
     identification_id: str
-    status: fraud_models.ubble.UbbleIdentificationStatus
+    status: ubble_fraud_models.UbbleIdentificationStatus
     configuration: Configuration
 
 

@@ -5,9 +5,10 @@ from dateutil.relativedelta import relativedelta
 import freezegun
 import pytest
 
-from pcapi.core.fraud import api as fraud_api
 from pcapi.core.fraud import factories as fraud_factories
 from pcapi.core.fraud import models as fraud_models
+from pcapi.core.fraud.ubble import api as ubble_fraud_api
+from pcapi.core.fraud.ubble import models as ubble_fraud_models
 from pcapi.core.subscription import messages as subscription_messages
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription.ubble import api as ubble_subscription_api
@@ -43,32 +44,32 @@ class UbbleWorkflowTest:
         [
             (
                 IdentificationState.INITIATED,
-                fraud_models.ubble.UbbleIdentificationStatus.INITIATED,
+                ubble_fraud_models.UbbleIdentificationStatus.INITIATED,
                 fraud_models.FraudCheckStatus.PENDING,
             ),
             (
                 IdentificationState.PROCESSING,
-                fraud_models.ubble.UbbleIdentificationStatus.PROCESSING,
+                ubble_fraud_models.UbbleIdentificationStatus.PROCESSING,
                 fraud_models.FraudCheckStatus.PENDING,
             ),
             (
                 IdentificationState.VALID,
-                fraud_models.ubble.UbbleIdentificationStatus.PROCESSED,
+                ubble_fraud_models.UbbleIdentificationStatus.PROCESSED,
                 fraud_models.FraudCheckStatus.OK,
             ),
             (
                 IdentificationState.INVALID,
-                fraud_models.ubble.UbbleIdentificationStatus.PROCESSED,
+                ubble_fraud_models.UbbleIdentificationStatus.PROCESSED,
                 fraud_models.FraudCheckStatus.KO,
             ),
             (
                 IdentificationState.UNPROCESSABLE,
-                fraud_models.ubble.UbbleIdentificationStatus.PROCESSED,
+                ubble_fraud_models.UbbleIdentificationStatus.PROCESSED,
                 fraud_models.FraudCheckStatus.SUSPICIOUS,
             ),
             (
                 IdentificationState.ABORTED,
-                fraud_models.ubble.UbbleIdentificationStatus.ABORTED,
+                ubble_fraud_models.UbbleIdentificationStatus.ABORTED,
                 fraud_models.FraudCheckStatus.CANCELED,
             ),
         ],
@@ -178,7 +179,7 @@ class UbbleWorkflowTest:
         assert fraud_checks[1].thirdPartyId == ubble_identification
 
         db.session.refresh(user)
-        assert not fraud_api.ubble.is_user_allowed_to_perform_ubble_check(user, user.eligibility)
+        assert not ubble_fraud_api.is_user_allowed_to_perform_ubble_check(user, user.eligibility)
 
     @freezegun.freeze_time("2020-05-05")
     def test_ubble_workflow_with_eligibility_change_18_19(self, ubble_mocker):

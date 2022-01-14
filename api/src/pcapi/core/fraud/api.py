@@ -14,12 +14,11 @@ from pcapi.models.feature import FeatureToggle
 from pcapi.repository import repository
 from pcapi.repository.user_queries import matching
 
-from . import ubble as ubble_api
-from .. import exceptions
-from .. import models
-from .. import repository as fraud_repository
-from ..models import BeneficiaryFraudCheck
-from ..models import ubble as ubble_models
+from . import exceptions
+from . import models
+from . import repository as fraud_repository
+from .ubble import api as ubble_api
+from .ubble import models as ubble_fraud_models
 
 
 logger = logging.getLogger(__name__)
@@ -45,7 +44,7 @@ USER_PROFILING_FRAUD_CHECK_STATUS_RISK_MAPPING = {
 
 def on_educonnect_result(
     user: users_models.User, educonnect_content: models.EduconnectContent
-) -> BeneficiaryFraudCheck:
+) -> models.BeneficiaryFraudCheck:
     eligibility_type = educonnect_content.get_eligibility_type()
 
     fraud_check = models.BeneficiaryFraudCheck.query.filter(
@@ -580,7 +579,7 @@ def has_user_pending_identity_check(user: users_models.User) -> bool:
             models.BeneficiaryFraudCheck.type.in_(models.IDENTITY_CHECK_TYPES),
             models.BeneficiaryFraudCheck.eligibilityType == user.eligibility,
             models.BeneficiaryFraudCheck.resultContent["status"]
-            != models.ubble_models.UbbleIdentificationStatus.INITIATED,
+            != models.ubble_fraud_models.UbbleIdentificationStatus.INITIATED,
         ).exists()
     ).scalar()
 
@@ -645,7 +644,7 @@ def is_user_fraudster(user: users_models.User) -> bool:
 def start_fraud_check(
     user: users_models.User,
     application_id: str,
-    source_data: typing.Union[models.DMSContent, ubble_models.UbbleContent],
+    source_data: typing.Union[models.DMSContent, ubble_fraud_models.UbbleContent],
 ) -> models.BeneficiaryFraudCheck:
 
     source_type = models.FRAUD_CONTENT_MAPPING[type(source_data)]
@@ -675,7 +674,7 @@ def start_fraud_check(
 def mark_fraud_check_failed(
     user: users_models.User,
     application_id: str,
-    source_data: typing.Union[models.DMSContent, ubble_models.UbbleContent],
+    source_data: typing.Union[models.DMSContent, ubble_fraud_models.UbbleContent],
     reasons: list[models.FraudItem],
 ) -> None:
     source_type = models.FRAUD_CONTENT_MAPPING[type(source_data)]
