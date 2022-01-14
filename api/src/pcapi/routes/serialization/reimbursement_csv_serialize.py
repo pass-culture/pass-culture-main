@@ -40,40 +40,37 @@ class ReimbursementDetails:
         "Type d'offre",
     ]
 
-    def __init__(self, payment_info: namedtuple = None):
-        if payment_info is not None:
-            transfer_infos = payment_info.transactionLabel.replace("pass Culture Pro - ", "").split(" ")
-            transfer_label = " ".join(transfer_infos[:-1])
+    def __init__(self, payment_info: namedtuple):
+        transfer_infos = payment_info.transactionLabel.replace("pass Culture Pro - ", "").split(" ")
+        transfer_label = " ".join(transfer_infos[:-1])
 
-            transfer_date = transfer_infos[-1]
-            month_number, year = transfer_date.split("-")
-            month_name = MONTHS_IN_FRENCH[int(month_number)]
+        transfer_date = transfer_infos[-1]
+        month_number, year = transfer_date.split("-")
+        month_name = MONTHS_IN_FRENCH[int(month_number)]
 
-            self.year = year
-            self.transfer_name = "{} : {}".format(month_name, transfer_label)
-            self.venue_name = payment_info.venue_name
-            self.venue_siret = payment_info.venue_siret
-            self.venue_address = payment_info.venue_address or payment_info.offerer_address
-            self.payment_iban = payment_info.iban
-            self.venue_name = payment_info.venue_name
-            self.offer_name = payment_info.offer_name
-            self.user_last_name = payment_info.user_lastName or payment_info.redactor_lastname
-            self.user_first_name = payment_info.user_firstName or payment_info.redactor_firstname
-            self.booking_token = payment_info.booking_token
-            self.booking_used_date = payment_info.booking_dateUsed
-            self.booking_total_amount = format_number_as_french(
-                payment_info.booking_amount * payment_info.booking_quantity
-            )
-            if payment_info.reimbursement_rate:
-                reimbursement_rate = f"{int(payment_info.reimbursement_rate * 100)}%"
-            else:
-                reimbursement_rate = ""
-            self.reimbursement_rate = reimbursement_rate
-            self.reimbursed_amount = format_number_as_french(payment_info.amount)
-            # Backward compatibility to avoid changing the format of the CSV. This field
-            # used to show different statuses.
-            self.status = "Remboursement envoyé"
-            self.offer_type = serialize_offer_type_educational_or_individual(payment_info.offer_is_educational)
+        self.year = year
+        self.transfer_name = "{} : {}".format(month_name, transfer_label)
+        self.venue_name = payment_info.venue_name
+        self.venue_siret = payment_info.venue_siret
+        self.venue_address = payment_info.venue_address or payment_info.offerer_address
+        self.payment_iban = payment_info.iban
+        self.venue_name = payment_info.venue_name
+        self.offer_name = payment_info.offer_name
+        self.user_last_name = payment_info.user_lastName or payment_info.redactor_lastname
+        self.user_first_name = payment_info.user_firstName or payment_info.redactor_firstname
+        self.booking_token = payment_info.booking_token
+        self.booking_used_date = payment_info.booking_dateUsed
+        self.booking_total_amount = format_number_as_french(payment_info.booking_amount * payment_info.booking_quantity)
+        if payment_info.reimbursement_rate:
+            reimbursement_rate = f"{int(payment_info.reimbursement_rate * 100)}%"
+        else:
+            reimbursement_rate = ""
+        self.reimbursement_rate = reimbursement_rate
+        self.reimbursed_amount = format_number_as_french(payment_info.amount)
+        # Backward compatibility to avoid changing the format of the CSV. This field
+        # used to show different statuses.
+        self.status = "Remboursement envoyé"
+        self.offer_type = serialize_offer_type_educational_or_individual(payment_info.offer_is_educational)
 
     def as_csv_row(self):
         return [
