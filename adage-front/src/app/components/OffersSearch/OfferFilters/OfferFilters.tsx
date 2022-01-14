@@ -12,6 +12,8 @@ export const OfferFilters = ({
 }: {
   className?: string
 }): JSX.Element => {
+  // to delete when departments is used
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [departments, setDepartments] = useState<string[]>([])
 
   const onMultiSelectChange = (selectedOptions: Option[]): void => {
