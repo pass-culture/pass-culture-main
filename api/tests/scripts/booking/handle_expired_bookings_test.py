@@ -9,6 +9,7 @@ from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.categories import subcategories
+import pcapi.core.mails.testing as mails_testing
 from pcapi.core.offers.factories import ProductFactory
 from pcapi.core.testing import assert_num_queries
 from pcapi.scripts.booking import handle_expired_bookings
@@ -272,8 +273,7 @@ class CancelExpiredBookingsTest:
 
 
 class NotifyUsersOfExpiredBookingsTest:
-    @mock.patch("pcapi.scripts.booking.handle_expired_bookings.send_expired_bookings_to_beneficiary_email")
-    def should_notify_of_todays_expired_bookings(self, mocked_send_email_recap, app) -> None:
+    def should_notify_of_todays_expired_bookings(self, app) -> None:
         now = datetime.utcnow()
         yesterday = now - timedelta(days=1)
         long_ago = now - timedelta(days=31)
@@ -291,7 +291,7 @@ class NotifyUsersOfExpiredBookingsTest:
             cancellationReason=BookingCancellationReasons.EXPIRED,
         )
         painting = ProductFactory(subcategoryId=subcategories.OEUVRE_ART.id)
-        _expired_yesterday_booking = booking_factories.CancelledIndividualBookingFactory(
+        booking_factories.CancelledIndividualBookingFactory(
             stock__offer__product=painting,
             dateCreated=very_long_ago,
             cancellationReason=BookingCancellationReasons.EXPIRED,
@@ -300,15 +300,19 @@ class NotifyUsersOfExpiredBookingsTest:
 
         handle_expired_bookings.notify_users_of_expired_individual_bookings()
 
-        assert mocked_send_email_recap.call_count == 2
-        assert mocked_send_email_recap.call_args_list[0][0] == (
-            expired_today_dvd_booking.individualBooking.user,
-            [expired_today_dvd_booking.individualBooking.booking],
-        )
-        assert mocked_send_email_recap.call_args_list[1][0] == (
-            expired_today_cd_booking.individualBooking.user,
-            [expired_today_cd_booking.individualBooking.booking],
-        )
+        outbox = mails_testing.outbox
+        email_recaps = {
+            (outbox[0].sent_data["To"], outbox[0].sent_data["Vars"]["bookings"][0]["offer_name"]),
+            (outbox[1].sent_data["To"], outbox[1].sent_data["Vars"]["bookings"][0]["offer_name"]),
+        }
+
+        dvd_user_email = expired_today_dvd_booking.individualBooking.user.email
+        dvd_offer_name = expired_today_dvd_booking.individualBooking.booking.stock.offer.name
+
+        cd_user_email = expired_today_cd_booking.individualBooking.user.email
+        cd_offer_name = expired_today_cd_booking.individualBooking.booking.stock.offer.name
+
+        assert email_recaps == {(dvd_user_email, dvd_offer_name), (cd_user_email, cd_offer_name)}
 
     @mock.patch("pcapi.scripts.booking.handle_expired_bookings.send_expired_bookings_to_beneficiary_email")
     def test_should_not_notify_of_todays_expired_educational_bookings(self, mocked_send_email_recap, app) -> None:
