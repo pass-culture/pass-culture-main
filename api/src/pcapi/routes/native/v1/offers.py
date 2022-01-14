@@ -1,6 +1,7 @@
 from sqlalchemy.orm import joinedload
 
 from pcapi.core.categories import subcategories
+from pcapi.core.mails.transactional.users.offer_link_to_ios_user import send_offer_link_to_ios_user_email
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers import api
@@ -8,7 +9,6 @@ from pcapi.core.offers.exceptions import OfferReportError
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Reason
 from pcapi.core.users.models import User
-from pcapi.domain.user_emails import send_user_webapp_offer_link_email
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.product import Product
 from pcapi.routes.native.security import authenticated_user_required
@@ -75,7 +75,7 @@ def send_offer_app_link(user: User, offer_id: int) -> None:
     give them webapp link.
     """
     offer = Offer.query.options(joinedload(Offer.venue)).filter(Offer.id == offer_id).first_or_404()
-    send_user_webapp_offer_link_email(user, offer)
+    send_offer_link_to_ios_user_email(user, offer)
 
 
 @blueprint.native_v1.route("/send_offer_link_by_push/<int:offer_id>", methods=["POST"])

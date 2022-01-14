@@ -31,7 +31,6 @@ from pcapi.emails.new_offer_validation import retrieve_data_for_offer_rejection_
 from pcapi.emails.new_offerer_validated_withdrawal_terms import (
     retrieve_data_for_new_offerer_validated_withdrawal_terms_email,
 )
-from pcapi.emails.offer_app_link import build_data_for_offer_app_link
 from pcapi.emails.offerer_booking_recap import retrieve_data_for_offerer_booking_recap_email
 from pcapi.emails.offerer_bookings_recap_after_deleting_stock import (
     retrieve_offerer_bookings_recap_email_data_after_offerer_cancellation,
@@ -53,11 +52,6 @@ def send_individual_booking_confirmation_email_to_offerer(individual_booking: In
         return True
     data = retrieve_data_for_offerer_booking_recap_email(individual_booking)
     return mails.send(recipients=[offerer_booking_email], data=data)
-
-
-def send_user_webapp_offer_link_email(user: User, offer: Offer) -> bool:
-    data = build_data_for_offer_app_link(user, offer)
-    return mails.send(recipients=[user.email], data=data)
 
 
 def send_user_driven_cancellation_email_to_offerer(booking: Booking) -> bool:
