@@ -723,7 +723,7 @@ def _make_invoice_line(invoice: models.Invoice, group: conf.RuleGroups, pricings
 def generate_and_store_invoice(reference: str, business_unit_id: int, cashflow_ids: list[int]):
     invoice = _generate_invoice(reference, business_unit_id, cashflow_ids)
     invoice_html = _generate_invoice_html(invoice)
-    _store_invoice_pdf(invoice.token, invoice_html)
+    _store_invoice_pdf(invoice, invoice_html)
 
 
 def _generate_invoice(reference: str, business_unit_id: int, cashflow_ids: list[int]):
@@ -822,8 +822,8 @@ def _generate_invoice_html(invoice) -> str:
     return render_template("invoices/invoice.html", **context)
 
 
-def _store_invoice_pdf(invoice_token, invoice_html):
+def _store_invoice_pdf(invoice, invoice_html):
     invoice_pdf = pdf_utils.generate_pdf_from_html(invoice_html)
     store_public_object(
-        folder="invoices", object_id=f"{invoice_token}.pdf", blob=invoice_pdf, content_type="application/pdf"
+        folder="invoices", object_id=invoice.storage_object_id, blob=invoice_pdf, content_type="application/pdf"
     )
