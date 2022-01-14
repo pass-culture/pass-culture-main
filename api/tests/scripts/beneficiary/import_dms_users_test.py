@@ -303,47 +303,6 @@ class RunIntegrationTest:
     EMAIL = "john.doe@example.com"
     BENEFICIARY_BIRTH_DATE = date.today() - timedelta(days=6752)  # ~18.5 years
 
-    def _get_details(self, application_id: int, procedure_id: int, token: str):
-        return {
-            "dossier": {
-                "individual": {
-                    "nom": "doe",
-                    "prenom": "john",
-                    "civilite": "M",
-                },
-                "email": self.EMAIL,
-                "id": application_id,
-                "champs": [
-                    {"type_de_champ": {"libelle": "Veuillez indiquer votre département :"}, "value": "93"},
-                    {
-                        "type_de_champ": {"libelle": "Quelle est votre date de naissance"},
-                        "value": self.BENEFICIARY_BIRTH_DATE.strftime("%Y-%m-%d"),
-                    },
-                    {
-                        "type_de_champ": {"libelle": "Quel est votre numéro de téléphone"},
-                        "value": "0102030405",
-                    },
-                    {
-                        "type_de_champ": {"libelle": "Quel est le code postal de votre commune de résidence ?"},
-                        "value": "93450",
-                    },
-                    {
-                        "type_de_champ": {"libelle": "Quelle est votre adresse de résidence"},
-                        "value": "11 Rue du Test",
-                    },
-                    {"type_de_champ": {"libelle": "Veuillez indiquer votre statut"}, "value": "Etudiant"},
-                    {
-                        "type_de_champ": {"libelle": "Quel est le numéro de la pièce que vous venez de saisir ?"},
-                        "value": "1234123412",
-                    },
-                ],
-                "created_at": datetime.utcnow().isoformat(),
-            }
-        }
-
-    def _get_all_applications_ids(self, procedure_id: str, token: str):
-        return [123]
-
     @override_features(FORCE_PHONE_VALIDATION=False)
     @patch.object(DMSGraphQLClient, "get_applications_with_details")
     def test_import_user(self, get_applications_with_details):
@@ -759,7 +718,6 @@ class GraphQLSourceProcessApplicationTest:
             123123,
             4234,
             information,
-            [],
         )
         assert BeneficiaryImport.query.count() == 1
         import_status = BeneficiaryImport.query.one_or_none()
