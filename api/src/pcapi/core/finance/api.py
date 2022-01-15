@@ -112,11 +112,18 @@ def lock_business_unit(business_unit_id: int):
 
     The lock is automatically released at the end of the transaction.
     """
+    logger.info("Acquiring lock on business unit", extra={"business_unit": business_unit_id})
     models.BusinessUnit.query.with_for_update(nowait=False).get(business_unit_id)
+    logger.info("Acquired lock on business unit", extra={"business_unit": business_unit_id})
 
 
 def price_booking(booking: bookings_models.Booking) -> models.Pricing:
     # pylint: disable=too-many-return-statements
+    # Save booking id now, otherwise accessing `booking.id` for the
+    # ending log message after the commit yields an extra SQL request
+    # to fetch the booking again.
+    booking_id = booking.id
+    logger.info("Starting to price booking", extra={"booking": booking_id})
     business_unit_id = booking.venue.businessUnitId
     if not business_unit_id:
         return None
@@ -170,6 +177,7 @@ def price_booking(booking: bookings_models.Booking) -> models.Pricing:
         db.session.add(pricing)
 
         db.session.commit()
+    logger.info("Priced booking", extra={"booking": booking_id})
     return pricing
 
 
@@ -376,6 +384,7 @@ def generate_cashflows(cutoff: datetime.datetime) -> int:
     """Generate a new CashflowBatch and a new cashflow for each business
     unit for which there is money to transfer.
     """
+    logger.info("Started to generate cashflows")
     batch = models.CashflowBatch(cutoff=cutoff)
     db.session.add(batch)
     db.session.flush()
@@ -399,6 +408,7 @@ def generate_cashflows(cutoff: datetime.datetime) -> int:
         .distinct()
     )
     for business_unit_id, bank_account_id in business_unit_ids_and_bank_account_ids:
+        logger.info("Generating cashflow", extra={"business_unit": business_unit_id})
         try:
             with transaction():
                 pricings = models.Pricing.query.outerjoin(models.CashflowPricing).filter(
@@ -419,6 +429,7 @@ def generate_cashflows(cutoff: datetime.datetime) -> int:
                 links = [models.CashflowPricing(cashflowId=cashflow.id, pricingId=pricing.id) for pricing in pricings]
                 db.session.bulk_save_objects(links)
                 db.session.commit()
+                logger.info("Generated cashflow", extra={"business_unit": business_unit_id})
         except Exception:  # pylint: disable=broad-except
             if settings.IS_RUNNING_TESTS:
                 raise
@@ -434,6 +445,7 @@ def generate_payment_files(batch_id: int):
     """Generate all payment files that are related to the requested
     CashflowBatch and mark all related Cashflow as ``UNDER_REVIEW``.
     """
+    logger.info("Generating payment files")
     not_pending_cashflows = models.Cashflow.query.filter(
         models.Cashflow.batchId == batch_id,
         models.Cashflow.status != models.CashflowStatus.PENDING,
@@ -445,14 +457,18 @@ def generate_payment_files(batch_id: int):
         )
 
     file_paths = {}
+    logger.info("Generating business units file")
     file_paths["business_units"] = _generate_business_units_file()
+    logger.info("Generating payments file")
     file_paths["payments"] = _generate_payments_file(batch_id)
+    logger.info("Generating wallets file")
     file_paths["wallets"] = _generate_wallets_file()
     logger.info(
         "Finance files have been generated",
         extra={"paths": [str(path) for path in file_paths.values()]},
     )
 
+    logger.info("Updating cashflow status")
     db.session.execute(
         """
         WITH updated AS (
@@ -472,6 +488,7 @@ def generate_payment_files(batch_id: int):
         },
     )
     db.session.commit()
+    logger.info("Updated cashflow status")
 
 
 def _write_csv(
