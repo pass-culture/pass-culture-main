@@ -1,7 +1,6 @@
 @import "sass-rem";
+@import 'styles';
 
-$primary: #c91074;
-$secondary: #ccc;
 
 .search-wrapper {
   display: flex;
@@ -48,47 +47,6 @@ $secondary: #ccc;
   }
 }
 
-@media screen and (prefers-reduced-motion: reduce) {
-  .search-button {
-    background-color: $primary;
-    border: 1px solid $secondary;
-    border-color: $primary;
-    border-radius: rem(4px);
-    color: #fff;
-    padding: rem(12px);
-    transition: none;
-
-    &:focus {
-      box-shadow: 0 rem(2px) rem(6px) 0 rgba(0, 0, 0, 0.3);
-      outline: rem(5px) auto $primary;
-    }
-
-    &:hover:active,
-    &:focus:active {
-      box-shadow: 0 rem(2px) rem(6px) 0 rgba(0, 0, 0, 0.3);
-    }
-  }
-}
-
-.search-button {
-  background-color: $primary;
-  border: 1px solid $secondary;
-  border-color: $primary;
-  border-radius: rem(4px);
-  color: #fff;
-  padding: rem(12px);
-  transition: all 0.25s ease-in-out;
-
-  &:focus {
-    box-shadow: 0 rem(2px) rem(6px) 0 rgba(0, 0, 0, 0.3);
-    outline: rem(5px) auto $primary;
-  }
-
-  &:hover:active,
-  &:focus:active {
-    box-shadow: 0 rem(2px) rem(6px) 0 rgba(0, 0, 0, 0.3);
-  }
-}
 
 .search-filters {
   margin-top: rem(32px);

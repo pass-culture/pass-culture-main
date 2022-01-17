@@ -12,10 +12,12 @@ import './OfferFilters.scss'
 
 export const OfferFilters = ({
   className,
+  handleSearchButtonClick,
   venueFilter,
   removeVenueFilter,
 }: {
   className?: string
+  handleSearchButtonClick: (departments: string[]) => void
   venueFilter: VenueFilterType | null
   removeVenueFilter: () => void
 }): JSX.Element => {
@@ -47,6 +49,16 @@ export const OfferFilters = ({
         onChange={onMultiSelectChange}
         options={departmentOptions}
       />
+      <div className="offer-filters-button-container">
+        <div className="offer-filters-button-separator" />
+        <button
+          className="offer-filters-button"
+          onClick={() => handleSearchButtonClick(departments)}
+          type="button"
+        >
+          Lancer la recherche
+        </button>
+      </div>
       <OfferFiltersTags
         departments={departments}
         handleDeleteFilter={handleDeleteFilter}

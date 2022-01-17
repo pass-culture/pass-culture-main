@@ -1,4 +1,5 @@
 @import "sass-rem";
+@import 'styles';
 
 .search-results {
   display: flex;
@@ -6,3 +7,4 @@
   height: 100%;
   margin-left: rem(40px);
 }
+

@@ -29,9 +29,6 @@ export const SearchBoxComponent = ({
         type="search"
         value={currentRefinement}
       />
-      <button className="search-button" type="submit">
-        Rechercher
-      </button>
     </form>
   )
 }
