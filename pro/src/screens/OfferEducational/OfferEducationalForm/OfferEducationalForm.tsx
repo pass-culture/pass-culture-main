@@ -17,10 +17,10 @@ import { IOfferEducationalProps } from '../OfferEducational'
 import buildSelectOptions from '../utils/buildSelectOptions'
 
 import FormAccessibility from './FormAccessibility'
-import FormCategory from './FormCategory'
 import FormContact from './FormContact'
 import FormEventAddress from './FormEventAddress'
 import FormNotifications from './FormNotifications'
+import FormOfferType from './FormOfferType'
 import FormParticipants from './FormParticipants'
 import FormVenue from './FormVenue'
 import styles from './OfferEducationalForm.module.scss'
@@ -58,7 +58,7 @@ const OfferEducationalForm = ({
 
     if (selectedOfferer) {
       const checkOffererEligibilityToEducationalOffer = async () => {
-        if (!getIsOffererEligible) {
+        if (mode === Mode.EDITION || !getIsOffererEligible) {
           setIsEligible(true)
           return
         }
@@ -120,7 +120,7 @@ const OfferEducationalForm = ({
       />
       {isEligible && values.offererId && values.venueId ? (
         <>
-          <FormCategory
+          <FormOfferType
             categories={educationalCategories}
             subCategories={educationalSubCategories}
           />
