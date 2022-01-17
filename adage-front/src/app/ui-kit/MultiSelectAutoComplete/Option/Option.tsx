@@ -9,8 +9,8 @@ import './Option.scss'
 const Option = ({ isSelected, label, ...props }: OptionProps): JSX.Element => (
   <components.Option {...props} isSelected={isSelected} label={label}>
     <BaseCheckbox
-      checked={isSelected}
       className="multi-select-autocomplete-option"
+      defaultChecked={isSelected}
       label={label}
     />
   </components.Option>
