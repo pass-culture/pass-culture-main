@@ -14,7 +14,6 @@ from pcapi.core.users import api as users_api
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import external as users_external
 from pcapi.core.users import models as users_models
-from pcapi.core.users import repository as users_repository
 from pcapi.core.users import utils as users_utils
 from pcapi.domain import user_emails as old_user_emails
 from pcapi.domain.postal_code.postal_code import PostalCode
@@ -145,23 +144,6 @@ def activate_beneficiary(
     _send_beneficiary_activation_email(user, has_activated_account)
 
     return user
-
-
-def check_and_activate_beneficiary(
-    userId: int, deposit_source: str = None, has_activated_account: typing.Optional[bool] = True
-) -> users_models.User:
-    with pcapi_repository.transaction():
-        user = users_repository.get_and_lock_user(userId)
-
-        if not user.hasCompletedIdCheck:
-            db.session.rollback()
-            return user
-        try:
-            user = activate_beneficiary(user, deposit_source, has_activated_account)
-        except exceptions.CannotUpgradeBeneficiaryRole:
-            db.session.rollback()
-            return user
-        return user
 
 
 def _send_beneficiary_activation_email(user: users_models.User, has_activated_account: bool):
@@ -351,10 +333,7 @@ def update_user_profile(
     first_name: typing.Optional[str] = None,
     last_name: typing.Optional[str] = None,
     school_type: typing.Optional[users_models.SchoolTypeEnum] = None,
-    phone_number: typing.Optional[str] = None,
 ) -> None:
-    user_initial_roles = user.roles
-
     update_payload = {
         "address": address,
         "city": city,
@@ -372,28 +351,10 @@ def update_user_profile(
 
     with pcapi_repository.transaction():
         users_models.User.query.filter(users_models.User.id == user.id).update(update_payload)
-    db.session.refresh(user)
 
-    if (
-        not users_api.steps_to_become_beneficiary(user, user.eligibility)
-        # the 2 following checks should be useless
-        and fraud_api.has_user_performed_identity_check(user)
-        and not fraud_api.is_user_fraudster(user)
-    ):
-        check_and_activate_beneficiary(user.id)
-    else:
-        users_api.update_external_user(user)
+    users_api.update_external_user(user)
 
-    new_user_roles = user.roles
-    underage_user_has_been_activated = (
-        users_models.UserRole.UNDERAGE_BENEFICIARY in new_user_roles
-        and users_models.UserRole.UNDERAGE_BENEFICIARY not in user_initial_roles
-    )
-
-    logger.info(
-        "User id check profile updated",
-        extra={"user": user.id, "has_been_activated": user.has_beneficiary_role or underage_user_has_been_activated},
-    )
+    logger.info("User has completed profile", extra={"user": user.id})
 
 
 def is_identity_check_with_document_method_allowed_for_underage(user: users_models.User) -> bool:
