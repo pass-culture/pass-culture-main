@@ -519,7 +519,10 @@ def create_educational_stock(stock_data: EducationalStockCreationBodyModel, user
     number_of_tickets = stock_data.number_of_tickets
     educational_price_detail = stock_data.educational_price_detail
 
-    offer = Offer.query.filter_by(id=offer_id).one()
+    offer = Offer.query.filter_by(id=offer_id).options(joinedload(Offer.stocks)).one()
+    if len(offer.activeStocks) > 0:
+        raise educational_exceptions.EducationalStockAlreadyExists()
+
     if not offer.isEducational:
         raise educational_exceptions.OfferIsNotEducational(offer_id)
     validation.check_validation_status(offer)
