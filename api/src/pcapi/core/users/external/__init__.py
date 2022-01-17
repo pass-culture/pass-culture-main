@@ -35,14 +35,15 @@ def update_external_user(user: User, skip_batch: bool = False, skip_sendinblue: 
 
 
 def get_user_attributes(user: User) -> UserAttributes:
-    from pcapi.core.users.api import get_domains_credit
+    from pcapi.core.subscription import api as subscription_api
+    from pcapi.core.users import api as users_api
 
     is_pro_user = user.has_pro_role or db.session.query(UserOfferer.query.filter_by(userId=user.id).exists()).scalar()
     user_bookings: List[Booking] = _get_user_bookings(user) if not is_pro_user else []
     last_favorite = (
         Favorite.query.filter_by(userId=user.id).order_by(Favorite.id.desc()).first() if not is_pro_user else None
     )
-    domains_credit = get_domains_credit(user, user_bookings) if not is_pro_user else None
+    domains_credit = users_api.get_domains_credit(user, user_bookings) if not is_pro_user else None
     booking_categories, booking_subcategories = _get_bookings_categories_and_subcategories(user_bookings)
 
     return UserAttributes(
@@ -57,7 +58,7 @@ def get_user_attributes(user: User) -> UserAttributes:
         domains_credit=domains_credit,
         eligibility=user.eligibility,
         first_name=user.firstName,
-        has_completed_id_check=user.hasCompletedIdCheck,
+        has_completed_id_check=not subscription_api.can_perform_identity_check(user),
         user_id=user.id,
         is_beneficiary=user.is_beneficiary,
         is_eligible=user.is_eligible,
