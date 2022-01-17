@@ -58,7 +58,9 @@ describe('app', () => {
         'offer.isEducational:true',
       ])
       expect(Configure).toHaveBeenCalledTimes(1)
-      expect(screen.queryByText('Lieu filtré :')).not.toBeInTheDocument()
+      expect(
+        screen.queryByText(`Lieu : ${venue?.publicName}`)
+      ).not.toBeInTheDocument()
       expect(mockedPcapi.getVenueBySiret).not.toHaveBeenCalled()
     })
 
@@ -82,8 +84,9 @@ describe('app', () => {
         `venue.id:${venue.id}`,
       ])
       expect(Configure).toHaveBeenCalledTimes(1)
-      expect(screen.getByText('Lieu filtré :')).toBeInTheDocument()
-      expect(screen.getByText(venue.publicName as string)).toBeInTheDocument()
+      expect(
+        screen.getByText(`Lieu : ${venue?.publicName}`)
+      ).toBeInTheDocument()
       expect(mockedPcapi.getVenueBySiret).toHaveBeenCalledWith(siret)
     })
 
@@ -98,7 +101,7 @@ describe('app', () => {
       render(<App />)
 
       // Then
-      const venueFilter = await screen.findByText(venue.name)
+      const venueFilter = await screen.findByText(`Lieu : ${venue.name}`)
       expect(venueFilter).toBeInTheDocument()
     })
 
@@ -122,7 +125,9 @@ describe('app', () => {
         'offer.isEducational:true',
       ])
       expect(Configure).toHaveBeenCalledTimes(1)
-      expect(screen.queryByText('Lieu filtré :')).not.toBeInTheDocument()
+      expect(
+        screen.queryByText(`Lieu : ${venue?.publicName}`)
+      ).not.toBeInTheDocument()
       expect(
         screen.getByText('Lieu inconnu. Tous les résultats sont affichés.')
       ).toBeInTheDocument()
@@ -135,10 +140,8 @@ describe('app', () => {
       window.location = new URL(`https://www.example.com?siret=${siret}`)
       render(<App />)
 
-      const venueFilter = await screen.findByText('Lieu filtré :')
-      const removeFilterButton = within(venueFilter.closest('div')).getByRole(
-        'button'
-      )
+      const venueFilter = await screen.findByText(`Lieu : ${venue?.publicName}`)
+      const removeFilterButton = venueFilter.lastChild as ChildNode
 
       // When
       fireEvent.click(removeFilterButton)
@@ -155,7 +158,9 @@ describe('app', () => {
         'offer.isEducational:true',
       ])
       expect(Configure).toHaveBeenCalledTimes(2)
-      expect(screen.queryByText('Lieu filtré :')).not.toBeInTheDocument()
+      expect(
+        screen.queryByText(`Lieu : ${venue?.publicName}`)
+      ).not.toBeInTheDocument()
       expect(screen.queryByText(venue.name)).not.toBeInTheDocument()
     })
   })
