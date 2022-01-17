@@ -140,7 +140,14 @@ def create_educational_stock(body: EducationalStockCreationBodyModel) -> StockId
         raise ApiErrors({"offerer": ["Aucune structure trouvée à partir de cette offre"]}, status_code=404)
     check_user_has_access_to_offerer(current_user, offerer.id)
 
-    stock = offers_api.create_educational_stock(body, current_user)
+    try:
+        stock = offers_api.create_educational_stock(body, current_user)
+    except educational_exceptions.EducationalStockAlreadyExists:
+        raise ApiErrors(
+            {"code": "EDUCATIONAL_STOCK_ALREADY_EXISTS"},
+            status_code=400,
+        )
+
     return StockIdResponseModel.from_orm(stock)
 
 

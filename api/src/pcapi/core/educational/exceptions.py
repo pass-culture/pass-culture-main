@@ -66,3 +66,7 @@ class BookingIsCancelled(Exception):
 
 class MissingRequiredRedactorInformation(Exception):
     pass
+
+
+class EducationalStockAlreadyExists(Exception):
+    pass
