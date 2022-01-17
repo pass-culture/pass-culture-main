@@ -166,3 +166,28 @@ class Return400Test:
         # Then
         assert response.status_code == 400
         assert response.json == {"educationalPriceDetail": ["Le détail du prix ne doit pas excéder 1000 caractères."]}
+
+    def should_not_allow_multiple_stocks(self, client):
+        # Given
+        offer = offer_factories.EducationalEventStockFactory().offer
+        offer_factories.UserOffererFactory(
+            user__email="user@example.com",
+            offerer=offer.venue.managingOfferer,
+        )
+
+        # When
+        stock_payload = {
+            "offerId": humanize(offer.id),
+            "beginningDatetime": "2022-01-17T22:00:00Z",
+            "bookingLimitDatetime": "2021-12-31T20:00:00Z",
+            "totalPrice": 1500,
+            "numberOfTickets": 38,
+            "educationalPriceDetail": "Détail du prix",
+        }
+
+        client.with_session_auth("user@example.com")
+        response = client.post("/stocks/educational/", json=stock_payload)
+
+        # Then
+        assert response.status_code == 400
+        assert response.json == {"code": "EDUCATIONAL_STOCK_ALREADY_EXISTS"}

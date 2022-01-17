@@ -4,6 +4,7 @@ import {
   OfferEducationalStockFormValues,
   StockPayload,
   GetStockOfferSuccessPayload,
+  hasStatusCodeAndErrorsCode,
 } from 'core/OfferEducational'
 import * as pcapi from 'repository/pcapi/pcapi'
 
@@ -13,6 +14,11 @@ type Params = {
 }
 
 type PostEducationalStockAdapter = Adapter<Params, null, null>
+
+const KNOWN_BAD_REQUEST_CODES: Record<string, string> = {
+  EDUCATIONAL_STOCK_ALREADY_EXISTS:
+    "Une erreur s'est produite. Les informations date et prix existent déjà pour cette offre.",
+}
 
 const BAD_REQUEST_FAILING_RESPONSE = {
   isOk: false,
@@ -43,6 +49,14 @@ const postEducationalStockAdapter: PostEducationalStockAdapter = async ({
       payload: null,
     }
   } catch (error) {
+    if (hasStatusCodeAndErrorsCode(error) && error.status === 400) {
+      if (error.errors.code in KNOWN_BAD_REQUEST_CODES) {
+        return {
+          ...BAD_REQUEST_FAILING_RESPONSE,
+          message: KNOWN_BAD_REQUEST_CODES[error.errors.code],
+        }
+      }
+    }
     if (hasStatusCode(error) && error.status === 400) {
       return BAD_REQUEST_FAILING_RESPONSE
     } else {
