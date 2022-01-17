@@ -215,7 +215,7 @@ class Venue(PcObject, Model, HasThumbMixin, HasAddressMixin, ProvidableMixin, Ne
 
     @property
     def is_eligible_for_search(self) -> bool:
-        return self.isPermanent and self.managingOfferer.isActive
+        return self.isPermanent and self.managingOfferer.isActive and self.venueTypeCode != VenueTypeCode.ADMINISTRATIVE
 
     def store_departement_code(self) -> None:
         self.departementCode = PostalCode(self.postalCode).get_departement_code()
