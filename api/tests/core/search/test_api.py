@@ -3,6 +3,7 @@ from unittest import mock
 import pytest
 
 from pcapi.core import search
+from pcapi.core.offerers import models as offerers_models
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.search.testing as search_testing
 from pcapi.core.testing import override_settings
@@ -126,12 +127,23 @@ class ReindexVenueIdsTest:
         assert venue.id in search_testing.search_store["venues"]
 
     def test_unindex_ineligible_venues(self):
+        indexable_venue = offers_factories.VenueFactory(
+            isPermanent=True, managingOfferer__isActive=True, venueTypeCode=offerers_models.VenueTypeCode.BOOKSTORE
+        )
+
         venue1 = offers_factories.VenueFactory(isPermanent=False)
         venue2 = offers_factories.VenueFactory(isPermanent=True, managingOfferer__isActive=False)
+        venue3 = offers_factories.VenueFactory(
+            isPermanent=True, managingOfferer__isActive=True, venueTypeCode=offerers_models.VenueTypeCode.ADMINISTRATIVE
+        )
+
+        search_testing.search_store["venues"][indexable_venue.id] = "dummy"
         search_testing.search_store["venues"][venue1.id] = "dummy"
         search_testing.search_store["venues"][venue2.id] = "dummy"
-        search.reindex_venue_ids([venue1.id, venue2.id])
-        assert search_testing.search_store["venues"] == {}
+        search_testing.search_store["venues"][venue3.id] = "dummy"
+
+        search.reindex_venue_ids([indexable_venue.id, venue1.id, venue2.id, venue3.id])
+        assert search_testing.search_store["venues"].keys() == {indexable_venue.id}
 
 
 @override_settings(REDIS_OFFER_IDS_CHUNK_SIZE=3)
