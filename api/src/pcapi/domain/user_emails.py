@@ -37,8 +37,6 @@ from pcapi.emails.offerer_bookings_recap_after_deleting_stock import (
     retrieve_offerer_bookings_recap_email_data_after_offerer_cancellation,
 )
 from pcapi.emails.offerer_expired_bookings import build_expired_bookings_recap_email_data_for_offerer
-from pcapi.emails.pro_reset_password import retrieve_data_for_reset_password_link_to_admin_email
-from pcapi.emails.pro_reset_password import retrieve_data_for_reset_password_pro_email
 from pcapi.utils.mailing import make_admin_user_validation_email
 from pcapi.utils.mailing import make_offerer_driven_cancellation_email_for_offerer
 from pcapi.utils.mailing import make_pro_user_validation_email
@@ -74,12 +72,6 @@ def send_offerer_driven_cancellation_email_to_offerer(booking: Booking) -> bool:
         return True
     email = make_offerer_driven_cancellation_email_for_offerer(booking)
     return mails.send(recipients=[offerer_booking_email], data=email)
-
-
-def send_reset_password_email_to_pro(user: User) -> bool:
-    token = users_api.create_reset_password_token(user)
-    data = retrieve_data_for_reset_password_pro_email(user, token)
-    return mails.send(recipients=[user.email], data=data)
 
 
 def send_offerer_bookings_recap_email_after_offerer_cancellation(bookings: list[Booking]) -> bool:
@@ -142,11 +134,6 @@ def send_activation_email(user: User, reset_password_token_life_time: typing.Opt
     data = beneficiary_activation.get_activation_email_data(user=user, token=token)
 
     return mails.send(recipients=[user.email], data=data)
-
-
-def send_reset_password_link_to_admin_email(created_user: User, admin_email: User, reset_password_link: str) -> bool:
-    data = retrieve_data_for_reset_password_link_to_admin_email(created_user, reset_password_link)
-    return mails.send(recipients=[admin_email], data=data)
 
 
 def send_offer_validation_status_update_email(

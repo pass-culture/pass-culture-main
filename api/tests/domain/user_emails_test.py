@@ -19,7 +19,6 @@ from pcapi.domain.user_emails import send_offer_validation_status_update_email
 from pcapi.domain.user_emails import send_offerer_bookings_recap_email_after_offerer_cancellation
 from pcapi.domain.user_emails import send_offerer_driven_cancellation_email_to_offerer
 from pcapi.domain.user_emails import send_pro_user_validation_email
-from pcapi.domain.user_emails import send_reset_password_email_to_pro
 from pcapi.domain.user_emails import send_user_driven_cancellation_email_to_offerer
 from pcapi.domain.user_emails import send_withdrawal_terms_to_newly_validated_offerer
 from pcapi.model_creators.generic_creators import create_booking
@@ -157,25 +156,6 @@ class SendActivationEmailTest:
         # then
         assert len(mails_testing.outbox) == 1
         assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 994771
-
-
-class SendResetPasswordProEmailTest:
-    @patch(
-        "pcapi.domain.user_emails.retrieve_data_for_reset_password_pro_email", return_value={"MJ-TemplateID": 779295}
-    )
-    def when_feature_send_emails_enabled_sends_a_reset_password_email_to_pro_user(
-        self, mock_retrieve_data_for_reset_password_pro_email, app
-    ):
-        # given
-        user = users_factories.ProFactory(email="pro@example.com")
-
-        # when
-        send_reset_password_email_to_pro(user)
-
-        # then
-        mock_retrieve_data_for_reset_password_pro_email.assert_called_once_with(user, user.tokens[0])
-        assert len(mails_testing.outbox) == 1  # test number of emails sent
-        assert mails_testing.outbox[0].sent_data["MJ-TemplateID"] == 779295
 
 
 class SendExpiredBookingsRecapEmailToOffererTest:
