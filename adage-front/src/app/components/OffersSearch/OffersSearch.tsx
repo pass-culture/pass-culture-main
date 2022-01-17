@@ -1,6 +1,7 @@
 import './OffersSearch.scss'
 import algoliasearch from 'algoliasearch/lite'
 import * as React from 'react'
+import { useEffect, useState } from 'react'
 import { Configure, InstantSearch } from 'react-instantsearch-dom'
 
 import {
@@ -9,6 +10,8 @@ import {
   ALGOLIA_OFFERS_INDEX,
 } from 'utils/config'
 import { Role, VenueFilterType } from 'utils/types'
+
+import { Facets } from '../../types/facets'
 
 import { OfferFilters } from './OfferFilters/OfferFilters'
 import { Offers } from './Offers/Offers'
@@ -35,9 +38,29 @@ export const OffersSearch = ({
   removeVenueFilter: () => void
   venueFilter: VenueFilterType | null
 }): JSX.Element => {
-  const facetFilters = ['offer.isEducational:true']
-  if (venueFilter && venueFilter.id)
-    facetFilters.push(`venue.id:${venueFilter.id}`)
+  const initialFilters = ['offer.isEducational:true']
+  const [facetFilters, setFacetFilters] = useState<Facets>(initialFilters)
+
+  const handleSearchButtonClick = (departments: string[]): void => {
+    const updatedFilters: Facets = [...initialFilters]
+    const filteredDepartments: string[] = departments.map(
+      department => `venue.departementCode:${department}`
+    )
+    if (filteredDepartments.length > 0) {
+      updatedFilters.push(filteredDepartments)
+    }
+    if (venueFilter?.id) {
+      updatedFilters.push(`venue.id:${venueFilter.id}`)
+    }
+    setFacetFilters(updatedFilters)
+  }
+
+  useEffect(() => {
+    if (venueFilter?.id) {
+      setFacetFilters([...facetFilters, `venue.id:${venueFilter.id}`])
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [venueFilter])
 
   return (
     <>
@@ -53,6 +76,17 @@ export const OffersSearch = ({
           hitsPerPage={8}
         />
         <SearchBox />
+        <OfferFilters
+          className="search-filters"
+          handleSearchButtonClick={handleSearchButtonClick}
+        />
+        <div className="search-results">
+          {venueFilter && (
+            <VenueFilterStatus
+              removeFilter={removeVenueFilter}
+              venueFilter={venueFilter}
+            />
+          )}
         <OfferFilters
           className="search-filters"
           removeVenueFilter={removeVenueFilter}
