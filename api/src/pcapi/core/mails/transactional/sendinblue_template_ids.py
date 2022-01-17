@@ -80,6 +80,28 @@ class TransactionalEmail(Enum):
         use_priority_queue=True,
     )
 
+    # PRO EMAIL
+    ACCOUNT_CREATED_TO_PRO = Template(id_prod=0000, id_not_prod=0000, tags=["validation_email_invitation_pro"])
+    BOOKING_CANCELLATION_BY_BENEFICIARY_TO_PRO = Template(id_prod=0000, id_not_prod=0000, tags=["pro_annulation_offre"])
+    BOOKING_CANCELLATION_CONFIRMATION_BY_PRO = Template(
+        id_prod=0000, id_not_prod=0000, tags=["pro_annulation_rerservation"]
+    )
+    BOOKING_EXPIRATION_TO_PRO = Template(id_prod=0000, id_not_prod=0000, tags=["pro_annulation_reservation_30j"])
+    EAC_BOOKING_DAY_TO_PRO = Template(id_prod=0000, id_not_prod=0000, tags=[""])
+    EAC_NEW_BOOKING_TO_PRO = Template(id_prod=0000, id_not_prod=0000, tags=["pro_nouvelle_reservation_eac"])
+    EAC_NEW_PREBOOKING_TO_PRO = Template(id_prod=0000, id_not_prod=0000, tags=["pro_nouvelle_prereservation_eac"])
+    EAC_SATISFACTION_STUDY_TO_PRO = Template(id_prod=0000, id_not_prod=0000, tags=[""])
+    EXCEEDING_20K_REVENUE_TO_PRO = Template(id_prod=0000, id_not_prod=0000, tags=["pro_depassement_20k"])
+    FIRST_BOOKING_TO_PRO = Template(id_prod=0000, id_not_prod=0000, tags=[""])
+    FIRST_OFFER_CREATED_BY_PRO = Template(id_prod=0000, id_not_prod=0000, tags=[""])
+    FRAUD_PREVENTION_TO_PRO = Template(id_prod=0000, id_not_prod=0000, tags=[""])
+    NEW_BOOKING_TO_PRO = Template(id_prod=0000, id_not_prod=0000, tags=["pro_nouvelle_reservation"])
+    OFFER_MANUAL_VALIDATION_TO_PRO = Template(id_prod=0000, id_not_prod=0000, tags=["pro_validation_offre"])
+    OFFER_REJECTION_TO_PRO = Template(id_prod=0000, id_not_prod=0000, tags=["pro_offre_refusee"])
+    REFUND_TO_PRO = Template(id_prod=0000, id_not_prod=0000, tags=[""])
+    RESET_PASSWORD_TO_PRO = Template(id_prod=364, id_not_prod=47, tags=["pro_reinit_mdp"])
+    WELCOME_TO_PRO = Template(id_prod=0000, id_not_prod=0000, tags=["pro-bienvenue-sur-le-pass"])
+
 
 @dataclasses.dataclass
 class SendinblueTransactionalEmailData:

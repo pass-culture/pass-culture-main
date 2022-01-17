@@ -14,10 +14,10 @@ from wtforms.validators import DataRequired
 from wtforms.validators import ValidationError
 
 from pcapi.admin.base_configuration import BaseAdminView
+from pcapi.core.mails.transactional.pro.reset_password_to_pro import send_reset_password_link_to_admin_email
 from pcapi.core.users.constants import RESET_PASSWORD_TOKEN_LIFE_TIME_EXTENDED
 from pcapi.core.users.models import User
 from pcapi.core.users.utils import sanitize_email
-from pcapi.domain.user_emails import send_reset_password_link_to_admin_email
 from pcapi.models.user_offerer import UserOfferer
 from pcapi.utils.mailing import build_pc_pro_create_password_link
 from pcapi.validation.models.has_address_mixin import POSTAL_CODE_REGEX
