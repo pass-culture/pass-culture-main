@@ -22,7 +22,7 @@ const MultiSelectAutocomplete = ({
   <div className="multi-select-autocomplete-container">
     <label
       className="multi-select-autocomplete-label"
-      htmlFor={`multi-select-autocmplete-${label}`}
+      htmlFor={`multi-select-autocomplete-${label}`}
     >
       {label}
     </label>
@@ -36,9 +36,10 @@ const MultiSelectAutocomplete = ({
       }}
       controlShouldRenderValue={false}
       hideSelectedOptions={false}
+      inputId={`multi-select-autocomplete-${label}`}
       isClearable={false}
       isMulti
-      name={`multi-select-autocmplete-${label}`}
+      name={`multi-select-autocomplete-${label}`}
       noOptionsMessage={() => 'Aucun résultat'}
       onChange={onChange}
       options={options}
