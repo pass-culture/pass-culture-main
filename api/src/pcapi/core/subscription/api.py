@@ -178,15 +178,14 @@ def has_completed_profile(user: users_models.User) -> bool:
     return user.city is not None
 
 
-def needs_to_perform_identity_check(user: users_models.User) -> bool:
-    # TODO (viconnex) refacto this method to base result on fraud_checks made
+def can_perform_identity_check(user: users_models.User) -> bool:
+    if not users_api.is_eligible_for_beneficiary_upgrade(user, user.eligibility):
+        return False
+
     return (
-        not user.hasCompletedIdCheck
-        and not (
-            not ubble_fraud_api.is_user_allowed_to_perform_ubble_check(user, user.eligibility)
-            and FeatureToggle.ENABLE_UBBLE.is_active()
-        )
-        and not (fraud_api.has_passed_educonnect(user) and user.eligibility == users_models.EligibilityType.UNDERAGE)
+        not fraud_api.has_submitted_dms_for_eligibility(user, user.eligibility)
+        and ubble_fraud_api.is_user_allowed_to_perform_ubble_check(user, user.eligibility)
+        and not fraud_api.has_succeeded_educonnect_for_eligibility(user, user.eligibility)
     )
 
 
@@ -332,7 +331,7 @@ def get_next_subscription_step(user: users_models.User) -> typing.Optional[model
     if not has_completed_profile(user):
         return models.SubscriptionStep.PROFILE_COMPLETION
 
-    if needs_to_perform_identity_check(user):
+    if can_perform_identity_check(user):
         if not get_allowed_identity_check_methods(user):
             return models.SubscriptionStep.MAINTENANCE
         return models.SubscriptionStep.IDENTITY_CHECK

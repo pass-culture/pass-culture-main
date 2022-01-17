@@ -10,7 +10,7 @@ import freezegun
 import pytest
 
 from pcapi.core.fraud import factories as fraud_factories
-from pcapi.core.fraud.api import has_passed_educonnect
+from pcapi.core.fraud.api import has_succeeded_educonnect_for_eligibility
 import pcapi.core.fraud.models as fraud_models
 from pcapi.core.testing import override_features
 from pcapi.core.testing import override_settings
@@ -144,7 +144,7 @@ class EduconnectTest:
             "student_level": "2212",
         }
         assert len(user.beneficiaryFraudResults) == 1
-        assert has_passed_educonnect(user)
+        assert has_succeeded_educonnect_for_eligibility(user, user_models.EligibilityType.UNDERAGE)
         assert user.beneficiaryFraudResults[0].status == fraud_models.FraudStatus.OK
         beneficiary_import = BeneficiaryImport.query.filter_by(beneficiaryId=user.id).one_or_none()
         assert beneficiary_import.currentStatus == ImportStatus.CREATED

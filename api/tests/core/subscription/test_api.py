@@ -212,6 +212,68 @@ class EduconnectFlowTest:
 
 
 @pytest.mark.usefixtures("db_session")
+class NeedsToPerformIdentityCheckTest:
+    eighteen_years_ago = datetime.combine(datetime.today(), datetime.min.time()) - relativedelta(years=18, months=1)
+    fifteen_years_ago = datetime.combine(datetime.today(), datetime.min.time()) - relativedelta(years=15, months=1)
+
+    def test_cannot_perform_with_dms_submitted(self):
+        user = users_factories.UserFactory(dateOfBirth=self.fifteen_years_ago)
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.DMS,
+            eligibilityType=user.eligibility,
+            status=fraud_models.FraudCheckStatus.PENDING,
+        )
+        assert not subscription_api.can_perform_identity_check(user)
+
+    def test_can_perform_with_ubble_pending(self):
+        user = users_factories.UserFactory(dateOfBirth=self.fifteen_years_ago)
+        ubble_check = fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.UBBLE,
+            eligibilityType=user.eligibility,
+            status=fraud_models.FraudCheckStatus.PENDING,
+        )
+
+        ubble_check.resultContent = ubble_check.resultContent | {"status": "initiated"}
+        assert subscription_api.can_perform_identity_check(user)
+
+    def test_cannot_perform_with_ubble_processing(self):
+        user = users_factories.UserFactory(dateOfBirth=self.fifteen_years_ago)
+        ubble_check = fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.UBBLE,
+            eligibilityType=user.eligibility,
+            status=fraud_models.FraudCheckStatus.PENDING,
+        )
+
+        ubble_check.resultContent = ubble_check.resultContent | {"status": "processing"}
+        assert not subscription_api.can_perform_identity_check(user)
+
+    def test_can_perform_for_age18_with_educonnect_succeded(self):
+        user = users_factories.UserFactory(dateOfBirth=self.eighteen_years_ago)
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.EDUCONNECT,
+            eligibilityType=users_models.EligibilityType.UNDERAGE,
+            status=fraud_models.FraudCheckStatus.OK,
+        )
+
+        assert subscription_api.can_perform_identity_check(user)
+
+    def test_can_perform_with_educonnect_ko(self):
+        user = users_factories.UserFactory(dateOfBirth=self.fifteen_years_ago)
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.EDUCONNECT,
+            eligibilityType=users_models.EligibilityType.UNDERAGE,
+            status=fraud_models.FraudCheckStatus.KO,
+        )
+
+        assert subscription_api.can_perform_identity_check(user)
+
+
+@pytest.mark.usefixtures("db_session")
 class NextSubscriptionStepTest:
     eighteen_years_ago = datetime.combine(datetime.today(), datetime.min.time()) - relativedelta(years=18, months=1)
     fifteen_years_ago = datetime.combine(datetime.today(), datetime.min.time()) - relativedelta(years=15, months=1)
@@ -241,7 +303,12 @@ class NextSubscriptionStepTest:
         user = users_factories.UserFactory(
             dateOfBirth=self.fifteen_years_ago,
             city="Zanzibar",
-            hasCompletedIdCheck=True,
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.EDUCONNECT,
+            eligibilityType=user.eligibility,
+            status=fraud_models.FraudCheckStatus.OK,
         )
         assert subscription_api.get_next_subscription_step(user) == subscription_models.SubscriptionStep.HONOR_STATEMENT
 
@@ -250,7 +317,12 @@ class NextSubscriptionStepTest:
         user = users_factories.UserFactory(
             dateOfBirth=self.fifteen_years_ago,
             city="Zanzibar",
-            hasCompletedIdCheck=True,
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.EDUCONNECT,
+            eligibilityType=user.eligibility,
+            status=fraud_models.FraudCheckStatus.OK,
         )
         fraud_factories.BeneficiaryFraudCheckFactory(
             type=fraud_models.FraudCheckType.HONOR_STATEMENT,
@@ -321,6 +393,12 @@ class NextSubscriptionStepTest:
         fraud_factories.BeneficiaryFraudCheckFactory(
             type=fraud_models.FraudCheckType.USER_PROFILING, resultContent=content, user=user
         )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.DMS,
+            eligibilityType=user.eligibility,
+            status=fraud_models.FraudCheckStatus.OK,
+        )
 
         assert subscription_api.get_next_subscription_step(user) == subscription_models.SubscriptionStep.HONOR_STATEMENT
 
@@ -334,6 +412,12 @@ class NextSubscriptionStepTest:
         content = fraud_factories.UserProfilingFraudDataFactory(risk_rating="trusted")
         fraud_factories.BeneficiaryFraudCheckFactory(
             type=fraud_models.FraudCheckType.USER_PROFILING, resultContent=content, user=user
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.DMS,
+            eligibilityType=user.eligibility,
+            status=fraud_models.FraudCheckStatus.OK,
         )
         fraud_factories.BeneficiaryFraudCheckFactory(
             type=fraud_models.FraudCheckType.HONOR_STATEMENT,

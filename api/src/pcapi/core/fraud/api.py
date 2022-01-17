@@ -603,12 +603,30 @@ def get_pending_identity_check(user: users_models.User) -> typing.Optional[model
     ).one_or_none()
 
 
-def has_passed_educonnect(user: users_models.User) -> bool:
+def has_succeeded_educonnect_for_eligibility(
+    user: users_models.User, eligibilityType: typing.Optional[users_models.EligibilityType]
+) -> bool:
+    if eligibilityType != users_models.EligibilityType.UNDERAGE:
+        return False
+
     return db.session.query(
         models.BeneficiaryFraudCheck.query.filter(
             models.BeneficiaryFraudCheck.user == user,
             models.BeneficiaryFraudCheck.status == models.FraudCheckStatus.OK,
             models.BeneficiaryFraudCheck.type == models.FraudCheckType.EDUCONNECT,
+            models.BeneficiaryFraudCheck.eligibilityType == eligibilityType,
+        ).exists()
+    ).scalar()
+
+
+def has_submitted_dms_for_eligibility(
+    user: users_models.User, eligibilityType: typing.Optional[users_models.EligibilityType]
+) -> bool:
+    return db.session.query(
+        models.BeneficiaryFraudCheck.query.filter(
+            models.BeneficiaryFraudCheck.user == user,
+            models.BeneficiaryFraudCheck.type == models.FraudCheckType.DMS,
+            models.BeneficiaryFraudCheck.eligibilityType == eligibilityType,
         ).exists()
     ).scalar()
 
