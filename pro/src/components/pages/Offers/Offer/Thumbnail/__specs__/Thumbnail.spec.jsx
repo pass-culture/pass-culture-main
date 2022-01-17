@@ -63,7 +63,7 @@ describe('thumbnail edition', () => {
         expect(fileInput).toHaveAttribute('type', 'file')
         expect(fileInput).toHaveAttribute('accept', 'image/png,image/jpeg')
         expect(
-          screen.getByText('Formats de fichier supportés : JPG, PNG', {
+          screen.getByText('Formats supportés : JPG, PNG', {
             selector: 'li',
           })
         ).toBeInTheDocument()
@@ -154,7 +154,7 @@ describe('thumbnail edition', () => {
           // Then
           await waitFor(() => {
             expect(
-              screen.queryByText('Formats de fichier supportés : JPG, PNG', {
+              screen.queryByText('Formats supportés : JPG, PNG', {
                 selector: 'strong',
               })
             ).not.toBeInTheDocument()
@@ -186,7 +186,7 @@ describe('thumbnail edition', () => {
 
           // Then
           await expect(
-            screen.findByText('Formats de fichier supportés : JPG, PNG', {
+            screen.findByText('Formats supportés : JPG, PNG', {
               selector: 'strong',
             })
           ).resolves.toBeInTheDocument()
@@ -208,7 +208,7 @@ describe('thumbnail edition', () => {
           // Then
           await waitFor(() => {
             expect(
-              screen.getByText('Formats de fichier supportés : JPG, PNG', {
+              screen.getByText('Formats supportés : JPG, PNG', {
                 selector: 'strong',
               })
             ).toBeInTheDocument()

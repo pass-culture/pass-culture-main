@@ -35,7 +35,7 @@ const isOfPoorQuality = async file => {
 export const constraints = [
   {
     id: 'format',
-    description: 'Formats de fichier supportés : JPG, PNG',
+    description: 'Formats supportés : JPG, PNG',
     asyncValidator: isNotAnImage,
   },
   {
