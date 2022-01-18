@@ -353,6 +353,10 @@
           <td>{{ check.thirdPartyId }}</td>
         </tr>
         <tr>
+          <th scope="row">Explication</th>
+          <td>{{ check.reason|default("Aucune") }}</td>
+        </tr>
+        <tr>
           <th>Codes d'erreurs</th>
           <td>
             <ul>
