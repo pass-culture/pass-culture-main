@@ -24,7 +24,7 @@ interface IFormTypeProps {
   subCategories: IEducationalSubCategory[]
 }
 
-const FormCategory = ({
+const FormOfferType = ({
   categories,
   subCategories,
 }: IFormTypeProps): JSX.Element => {
@@ -113,4 +113,4 @@ const FormCategory = ({
   )
 }
 
-export default FormCategory
+export default FormOfferType

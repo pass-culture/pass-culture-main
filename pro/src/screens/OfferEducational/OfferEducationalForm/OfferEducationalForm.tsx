@@ -10,8 +10,7 @@ import {
 } from 'core/OfferEducational'
 import { useScrollToFirstErrorAfterSubmit } from 'hooks'
 import FormLayout from 'new_components/FormLayout'
-import { SubmitButton } from 'ui-kit'
-import { Banner } from 'ui-kit'
+import { SubmitButton, Banner } from 'ui-kit'
 
 import { IOfferEducationalProps } from '../OfferEducational'
 import buildSelectOptions from '../utils/buildSelectOptions'
@@ -92,7 +91,7 @@ const OfferEducationalForm = ({
         )
       )
     }
-  }, [values.offererId, userOfferers, notify, getIsOffererEligible])
+  }, [values.offererId, userOfferers, notify, getIsOffererEligible, mode])
 
   return (
     <FormLayout className={styles['educational-form']} small>
