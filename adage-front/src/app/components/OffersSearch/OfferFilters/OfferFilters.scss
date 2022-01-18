@@ -22,22 +22,3 @@
   z-index: -1;
   top: 50%;
 }
-
-.offer-filters-button {
-  border-style: none;
-  border-radius: rem(24px);
-  padding: rem(10px) rem(24px);
-  font-weight: 700;
-  font-size: rem(15px);
-  color: $white;
-  background-color: $primary;
-
-  &:focus {
-    outline: none;
-    background-color: $primary-dark;
-  }
-
-  &:hover {
-    cursor: pointer;
-  }
-}
