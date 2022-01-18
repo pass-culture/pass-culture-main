@@ -6,6 +6,9 @@ from decimal import Decimal
 import pytest
 
 from pcapi.core.bookings import factories as bookings_factories
+import pcapi.core.finance.api as finance_api
+import pcapi.core.finance.factories as finance_factories
+import pcapi.core.finance.models as finance_models
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers.factories import OffererFactory
 from pcapi.core.offers.factories import VenueFactory
@@ -290,3 +293,102 @@ class FindAllOffererPaymentsTest:
         assert len(payments) == 1
         assert payment_1.booking.token in payments[0]
         assert venue_1.name in payments[0]
+
+    # FIXME (dbaty, 2021-01-14): when we remove the old `Payment` and
+    # `PaymentStatus` models, this test could be renamed and updated.
+    # Some tests above could be updated, some could be removed when
+    # they don't make sense.
+    def test_with_new_models(self):
+        stock = offers_factories.ThingStockFactory(
+            offer__name="Test Book",
+            offer__venue__managingOfferer__address="7 rue du livre",
+            offer__venue__name="La petite librairie",
+            offer__venue__address="123 rue de Paris",
+            offer__venue__siret=12345678912345,
+            offer__venue__businessUnit__bankAccount__iban="CF13QSDFGH456789",
+            price=10,
+        )
+        booking = bookings_factories.UsedIndividualBookingFactory(
+            individualBooking__user__lastName="Doe",
+            individualBooking__user__firstName="Jane",
+            stock=stock,
+            token="ABCDEF",
+        )
+
+        # Create an old-style payment
+        payment = payments_factories.PaymentFactory(
+            amount=9.5,
+            reimbursementRate=0.95,
+            booking=booking,
+            iban="CF13QSDFGH456789",
+            transactionLabel="pass Culture Pro - remboursement 1ère quinzaine 07-2019",
+        )
+        payments_factories.PaymentStatusFactory(
+            payment=payment,
+            status=TransactionStatus.SENT,
+        )
+
+        # Create a new-style pricing on the same booking. In real life
+        # we cannot have a booking linked to both sets of models, but
+        # here it's useful because we can test that the data is the
+        # same.
+        finance_factories.PricingFactory(
+            booking=booking,
+            amount=-9500,
+            standardRule="Remboursement à 95% au dessus de 20 000 € pour les livres",
+            status=finance_models.PricingStatus.VALIDATED,
+        )
+        finance_api.generate_cashflows(datetime.utcnow())
+        finance_models.Pricing.query.update(
+            {"status": finance_models.PricingStatus.INVOICED},
+            synchronize_session=False,
+        )
+
+        payments = find_all_offerer_payments(booking.offerer.id, reimbursement_period)
+
+        expected_in_both = {
+            "user_lastName": "Doe",
+            "user_firstName": "Jane",
+            "redactor_firstname": None,
+            "redactor_lastname": None,
+            "booking_token": "ABCDEF",
+            "booking_dateUsed": booking.dateUsed,
+            "booking_quantity": 1,
+            "booking_amount": Decimal("10.00"),
+            "offer_name": "Test Book",
+            "offer_is_educational": False,
+            "offerer_address": "7 rue du livre",
+            "venue_name": "La petite librairie",
+            "venue_siret": "12345678912345",
+            "venue_address": "123 rue de Paris",
+            "iban": "CF13QSDFGH456789",
+        }
+        specific_for_payment = {
+            "amount": Decimal("9.50"),
+            "reimbursement_rate": Decimal("0.95"),
+            "transactionLabel": "pass Culture Pro - remboursement 1ère quinzaine 07-2019",
+        }
+        specific_for_pricing = {
+            "amount": Decimal("9500"),
+            "rule_name": "Remboursement à 95% au dessus de 20 000 € pour les livres",
+            "rule_id": None,
+            "cashflow_date": booking.pricings[0].cashflows[0].creationDate,
+        }
+
+        missing_for_payment = (set(expected_in_both.keys()) | set(specific_for_payment.keys())).symmetric_difference(
+            set(payments[0]._asdict())
+        )
+        assert missing_for_payment == set()
+        for attr, expected in expected_in_both.items():
+            assert getattr(payments[0], attr) == expected
+        for attr, expected in specific_for_payment.items():
+            assert getattr(payments[0], attr) == expected, f"wrong {attr}"
+
+        missing_for_pricing = (set(expected_in_both.keys()) | set(specific_for_pricing.keys())).symmetric_difference(
+            set(payments[1]._asdict())
+        )
+        assert missing_for_pricing == set()
+        for attr, expected in expected_in_both.items():
+            assert getattr(payments[1], attr) == expected
+        for attr, expected in specific_for_pricing.items():
+            assert getattr(payments[1], attr) == expected

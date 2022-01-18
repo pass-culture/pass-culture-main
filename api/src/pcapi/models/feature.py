@@ -92,6 +92,9 @@ class FeatureToggle(enum.Enum):
     WEBAPP_HOMEPAGE = "Permettre l affichage de la nouvelle page d accueil de la webapp"
     WEBAPP_V2_ENABLED = "Utiliser la nouvelle web app (décli web/v2) au lieu de l'ancienne"
     SHOW_INVOICES_ON_PRO_PORTAL = "Activer l'affichage des remboursements sur le portail pro"
+    INCLUDE_LEGACY_PAYMENTS_FOR_REIMBURSEMENTS = (
+        "Inclure les anciens modèles de données pour le téléchargement des remboursements "
+    )
 
     def is_active(self) -> bool:
         if flask.has_request_context():
