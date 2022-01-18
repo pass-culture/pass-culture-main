@@ -48,6 +48,7 @@ from pcapi.models.bank_information import BankInformation
 from pcapi.models.beneficiary_import import BeneficiaryImport
 from pcapi.models.beneficiary_import_status import BeneficiaryImportStatus
 from pcapi.models.criterion import Criterion
+from pcapi.models.feature import Feature
 from pcapi.models.feature import install_feature_flags
 from pcapi.models.local_provider_event import LocalProviderEvent
 from pcapi.models.offer_criterion import OfferCriterion
@@ -121,6 +122,7 @@ def clean_all_database(*args, **kwargs):
     EducationalInstitution.query.delete()
     EducationalYear.query.delete()
     EducationalRedactor.query.delete()
+    Feature.query.delete()
 
     # Dans le cadre du projet EAC, notre partenaire Adage requête notre api sur le endpoint get_pre_bookings.
     # Ils récupèrent les pré-réservations EAC liées à un utilisateur EAC et stockent les ids en base.
