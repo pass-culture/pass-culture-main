@@ -241,4 +241,5 @@ def install_admin_autocomplete_views():
 def install_admin_template_filters(app: Flask) -> None:
     app.jinja_env.filters["yesno"] = templating.yesno
     app.jinja_env.filters["subscription_status_format"] = templating.subscription_status_format
+    app.jinja_env.filters["fraud_check_status_format"] = templating.fraud_check_status_format
     app.jinja_env.filters["eligibility_format"] = templating.eligibility_format

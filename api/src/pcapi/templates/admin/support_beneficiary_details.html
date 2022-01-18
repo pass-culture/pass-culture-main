@@ -337,12 +337,8 @@
           <td>{{ check.type.value }}</td>
         </tr>
         <tr>
-          <th scope="row">Etat</th>
-          {% if check.status %}
-          <td>{{ check.status.value }}</td>
-          {% else %}
-          <td>Inconnu</td>
-          {% endif %}
+          <th scope="row">Statut</th>
+          <td>{{ check.status|fraud_check_status_format }}</td>
         </tr>
         <tr>
           <th scope="row">Date de création</th>
