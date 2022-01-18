@@ -47,5 +47,4 @@ class ToDevSendinblueBackend(SendinblueBackend):
         data: typing.Union[SendinblueTransactionalEmailData, dict],
     ) -> MailResult:
         recipients = [settings.DEV_EMAIL_ADDRESS]
-        print(data.template.sender)
         return super().send_mail(recipients=recipients, data=data)

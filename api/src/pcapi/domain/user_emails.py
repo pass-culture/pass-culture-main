@@ -15,8 +15,6 @@ from pcapi.core.mails.transactional.bookings.booking_cancellation_by_pro_to_bene
 )
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.repository import find_new_offerer_user_email
-from pcapi.core.offers.models import Offer
-from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.core.users import api as users_api
 from pcapi.core.users.models import Token
 from pcapi.core.users.models import User
@@ -26,8 +24,6 @@ from pcapi.emails.beneficiary_offer_cancellation import (
 )
 from pcapi.emails.beneficiary_pre_subscription_rejected import make_dms_wrong_values_data
 from pcapi.emails.beneficiary_soon_to_be_expired_bookings import filter_books_bookings
-from pcapi.emails.new_offer_validation import retrieve_data_for_offer_approval_email
-from pcapi.emails.new_offer_validation import retrieve_data_for_offer_rejection_email
 from pcapi.emails.new_offerer_validated_withdrawal_terms import (
     retrieve_data_for_new_offerer_validated_withdrawal_terms_email,
 )
@@ -128,19 +124,6 @@ def send_activation_email(user: User, reset_password_token_life_time: typing.Opt
     data = beneficiary_activation.get_activation_email_data(user=user, token=token)
 
     return mails.send(recipients=[user.email], data=data)
-
-
-def send_offer_validation_status_update_email(
-    offer: Offer, validation_status: OfferValidationStatus, recipient_emails: list[str]
-) -> bool:
-    if validation_status is OfferValidationStatus.APPROVED:
-        offer_data = retrieve_data_for_offer_approval_email(offer)
-        return mails.send(recipients=recipient_emails, data=offer_data)
-
-    if validation_status is OfferValidationStatus.REJECTED:
-        offer_data = retrieve_data_for_offer_rejection_email(offer)
-        return mails.send(recipients=recipient_emails, data=offer_data)
-    return True
 
 
 def send_withdrawal_terms_to_newly_validated_offerer(offerer: Offerer) -> bool:
