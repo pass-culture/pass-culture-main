@@ -17,7 +17,7 @@ export const OfferFilters = ({
   removeVenueFilter,
 }: {
   className?: string
-  handleSearchButtonClick: (departments: string[]) => void
+  handleSearchButtonClick: (departments: Option[]) => void
   venueFilter: VenueFilterType | null
   removeVenueFilter: () => void
 }): JSX.Element => {
