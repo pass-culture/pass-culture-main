@@ -330,7 +330,7 @@ def _delete_dependent_pricings(booking: bookings_models.Booking, log_message: st
     logger.info(
         log_message,
         extra={
-            "booking_being_priced": booking.id,
+            "booking_being_priced_or_cancelled": booking.id,
             "bookings_already_priced": bookings_already_priced,
             "siret": siret,
         },
