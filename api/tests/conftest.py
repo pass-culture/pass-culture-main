@@ -30,6 +30,7 @@ from pcapi.install_database_extensions import install_database_extensions
 from pcapi.local_providers.install import install_local_providers
 from pcapi.models import db
 from pcapi.models.feature import install_feature_flags
+from pcapi.notifications.internal import testing as internal_notifications_testing
 from pcapi.notifications.push import testing as push_notifications_testing
 from pcapi.notifications.sms import testing as sms_notifications_testing
 from pcapi.repository.clean_database import clean_all_database
@@ -81,6 +82,7 @@ def clear_outboxes():
     try:
         yield
     finally:
+        internal_notifications_testing.reset_requests()
         mails_testing.reset_outbox()
         push_notifications_testing.reset_requests()
         search_testing.reset_search_store()
