@@ -13,7 +13,7 @@ class SlackBackend:
     def __init__(self):
         self.client = WebClient(token=settings.SLACK_BOT_TOKEN)
 
-    def send_internal_message(self, channel: str, blocks, icon_emoji: str):
+    def send_internal_message(self, channel: str, blocks: list[dict], icon_emoji: str):
         try:
             self.client.chat_postMessage(
                 blocks=blocks,
