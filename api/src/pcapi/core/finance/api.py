@@ -395,8 +395,19 @@ def generate_cashflows(cutoff: datetime.datetime) -> int:
     filters = (
         models.Pricing.status == models.PricingStatus.VALIDATED,
         models.Pricing.valueDate < cutoff,
+        # We should not have any validated pricing with a cashflow,
+        # this is a safety belt.
         models.CashflowPricing.pricingId.is_(None),
     )
+
+    def _mark_as_processed(pricings):
+        pricings_to_update = models.Pricing.query.filter(
+            models.Pricing.id.in_(pricings.with_entities(models.Pricing.id))
+        )
+        pricings_to_update.update(
+            {"status": models.PricingStatus.PROCESSED},
+            synchronize_session=False,
+        )
 
     business_unit_ids_and_bank_account_ids = (
         models.Pricing.query.filter(
@@ -417,8 +428,10 @@ def generate_cashflows(cutoff: datetime.datetime) -> int:
                     *filters,
                 )
                 total = pricings.with_entities(sqla.func.sum(models.Pricing.amount)).scalar()
-                # FIXME: do we want to update Pricing.status? `CASHFLOWED`?!
                 if not total:
+                    # Mark as `PROCESSED` even if there is no cashflow, so
+                    # that we will not process these pricings again.
+                    _mark_as_processed(pricings)
                     continue
                 cashflow = models.Cashflow(
                     batchId=batch_id,
@@ -428,6 +441,10 @@ def generate_cashflows(cutoff: datetime.datetime) -> int:
                 )
                 db.session.add(cashflow)
                 links = [models.CashflowPricing(cashflowId=cashflow.id, pricingId=pricing.id) for pricing in pricings]
+                # Mark as `PROCESSED` now (and not before), otherwise the
+                # `pricings` query above will be empty since it
+                # filters on `VALIDATED` pricings.
+                _mark_as_processed(pricings)
                 db.session.bulk_save_objects(links)
                 db.session.commit()
                 logger.info("Generated cashflow", extra={"business_unit": business_unit_id})
@@ -595,7 +612,7 @@ def _generate_payments_file(batch_id: int) -> pathlib.Path:
     BusinessUnitVenue = sqla_orm.aliased(offerers_models.Venue)
     OfferVenue = sqla_orm.aliased(offerers_models.Venue)
     query = (
-        models.Pricing.query.filter_by(status=models.PricingStatus.VALIDATED)
+        models.Pricing.query.filter_by(status=models.PricingStatus.PROCESSED)
         .join(models.Pricing.cashflows)
         .join(models.Pricing.booking)
         .filter(bookings_models.Booking.amount != 0)
@@ -790,6 +807,18 @@ def _generate_invoice(business_unit_id: int, cashflow_ids: list[int]):
     db.session.bulk_save_objects(invoice_lines)
     cf_links = [models.InvoiceCashflow(invoiceId=invoice.id, cashflowId=cashflow.id) for cashflow in cashflows]
     db.session.bulk_save_objects(cf_links)
+    # SQLAlchemy ORM cannot call `update()` if a query has been JOINed.
+    db.session.execute(
+        """
+        UPDATE pricing
+        SET status = :status
+        FROM cashflow_pricing
+        WHERE
+          cashflow_pricing."pricingId" = pricing.id
+          AND cashflow_pricing."cashflowId" IN :cashflow_ids
+        """,
+        {"status": models.PricingStatus.INVOICED.value, "cashflow_ids": tuple(cashflow_ids)},
+    )
     db.session.commit()
     return invoice
 
