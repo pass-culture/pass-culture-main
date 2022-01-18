@@ -18,4 +18,9 @@
     margin-left: rem(5px);
     cursor: pointer;
   }
+
+  &:hover,
+  &:focus {
+    background-color: $grey-medium;
+  }
 }
