@@ -11,6 +11,7 @@ import {
 } from 'utils/config'
 import { Role, VenueFilterType } from 'utils/types'
 
+import { Option } from '../../types'
 import { Facets } from '../../types/facets'
 
 import { OfferFilters } from './OfferFilters/OfferFilters'
@@ -41,10 +42,10 @@ export const OffersSearch = ({
   const initialFilters = ['offer.isEducational:true']
   const [facetFilters, setFacetFilters] = useState<Facets>(initialFilters)
 
-  const handleSearchButtonClick = (departments: string[]): void => {
+  const handleSearchButtonClick = (departments: Option[]): void => {
     const updatedFilters: Facets = [...initialFilters]
     const filteredDepartments: string[] = departments.map(
-      department => `venue.departementCode:${department}`
+      department => `venue.departementCode:${department.value}`
     )
     if (filteredDepartments.length > 0) {
       updatedFilters.push(filteredDepartments)
@@ -79,16 +80,6 @@ export const OffersSearch = ({
         <OfferFilters
           className="search-filters"
           handleSearchButtonClick={handleSearchButtonClick}
-        />
-        <div className="search-results">
-          {venueFilter && (
-            <VenueFilterStatus
-              removeFilter={removeVenueFilter}
-              venueFilter={venueFilter}
-            />
-          )}
-        <OfferFilters
-          className="search-filters"
           removeVenueFilter={removeVenueFilter}
           venueFilter={venueFilter}
         />
