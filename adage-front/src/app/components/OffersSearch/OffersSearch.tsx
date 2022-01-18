@@ -58,7 +58,7 @@ export const OffersSearch = ({
 
   useEffect(() => {
     if (venueFilter?.id) {
-      setFacetFilters([...facetFilters, `venue.id:${venueFilter.id}`])
+      setFacetFilters([...initialFilters, `venue.id:${venueFilter.id}`])
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [venueFilter])
