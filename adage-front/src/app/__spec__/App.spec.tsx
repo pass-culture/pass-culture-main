@@ -1,6 +1,7 @@
 import { fireEvent, render, screen, within } from '@testing-library/react'
 import React from 'react'
 import { Configure } from 'react-instantsearch-dom'
+import selectEvent from 'react-select-event'
 
 import * as pcapi from 'repository/pcapi/pcapi'
 import { Role, VenueFilterType } from 'utils/types'
@@ -78,15 +79,15 @@ describe('app', () => {
         selector: 'h2',
       })
       expect(contentTitle).toBeInTheDocument()
-      const searchConfiguration = Configure.mock.calls[0][0]
+      expect(Configure).toHaveBeenCalledTimes(2)
+      expect(
+        screen.getByText(`Lieu : ${venue?.publicName}`)
+      ).toBeInTheDocument()
+      const searchConfiguration = Configure.mock.calls[1][0]
       expect(searchConfiguration.facetFilters).toStrictEqual([
         'offer.isEducational:true',
         `venue.id:${venue.id}`,
       ])
-      expect(Configure).toHaveBeenCalledTimes(1)
-      expect(
-        screen.getByText(`Lieu : ${venue?.publicName}`)
-      ).toBeInTheDocument()
       expect(mockedPcapi.getVenueBySiret).toHaveBeenCalledWith(siret)
     })
 
@@ -140,28 +141,102 @@ describe('app', () => {
       window.location = new URL(`https://www.example.com?siret=${siret}`)
       render(<App />)
 
+      const launchSearchButton = await screen.findByText(
+        'Lancer la recherche',
+        { selector: 'button' }
+      )
       const venueFilter = await screen.findByText(`Lieu : ${venue?.publicName}`)
-      const removeFilterButton = venueFilter.lastChild as ChildNode
+      const removeFilterButton = within(venueFilter).getByRole('button')
 
       // When
       fireEvent.click(removeFilterButton)
+      fireEvent.click(launchSearchButton)
 
       // Then
-      const searchConfigurationFirstCall = Configure.mock.calls[0][0]
+      expect(Configure).toHaveBeenCalledTimes(4)
+      const searchConfigurationFirstCall = Configure.mock.calls[2][0]
       expect(searchConfigurationFirstCall.facetFilters).toStrictEqual([
         'offer.isEducational:true',
         `venue.id:${venue.id}`,
       ])
 
-      const searchConfigurationLastCall = Configure.mock.calls[1][0]
+      const searchConfigurationLastCall = Configure.mock.calls[3][0]
       expect(searchConfigurationLastCall.facetFilters).toStrictEqual([
         'offer.isEducational:true',
       ])
-      expect(Configure).toHaveBeenCalledTimes(2)
       expect(
         screen.queryByText(`Lieu : ${venue?.publicName}`)
       ).not.toBeInTheDocument()
       expect(screen.queryByText(venue.name)).not.toBeInTheDocument()
+    })
+
+    it('should send selected departments as filters to Algolia', async () => {
+      // Given
+      render(<App />)
+      const departmentFilter = await screen.findByLabelText('Département', {
+        selector: 'input',
+      })
+      const launchSearchButton = await screen.findByText(
+        'Lancer la recherche',
+        { selector: 'button' }
+      )
+
+      // When
+      await selectEvent.select(departmentFilter, 'Ain - 01')
+      fireEvent.click(launchSearchButton)
+      await selectEvent.select(departmentFilter, 'Nord - 59')
+      fireEvent.click(launchSearchButton)
+
+      // Then
+      expect(Configure).toHaveBeenCalledTimes(3)
+      const searchConfigurationFirstCall = Configure.mock.calls[1][0]
+      expect(searchConfigurationFirstCall.facetFilters).toStrictEqual([
+        'offer.isEducational:true',
+        ['venue.departementCode:01'],
+      ])
+      const searchConfigurationSecondCall = Configure.mock.calls[2][0]
+      expect(searchConfigurationSecondCall.facetFilters).toStrictEqual([
+        'offer.isEducational:true',
+        ['venue.departementCode:01', 'venue.departementCode:59'],
+      ])
+    })
+
+    it('should remove deselected departments from filters sent to Algolia', async () => {
+      // Given
+      render(<App />)
+      const departmentFilter = await screen.findByLabelText('Département', {
+        selector: 'input',
+      })
+      await selectEvent.select(departmentFilter, 'Ain - 01')
+      await selectEvent.select(departmentFilter, 'Nord - 59')
+      const launchSearchButton = await screen.findByText(
+        'Lancer la recherche',
+        { selector: 'button' }
+      )
+
+      // When
+      fireEvent.click(launchSearchButton)
+      await selectEvent.select(departmentFilter, 'Ain - 01')
+      fireEvent.click(launchSearchButton)
+      await selectEvent.select(departmentFilter, 'Nord - 59')
+      fireEvent.click(launchSearchButton)
+
+      // Then
+      expect(Configure).toHaveBeenCalledTimes(4)
+      const searchConfigurationFirstCall = Configure.mock.calls[1][0]
+      expect(searchConfigurationFirstCall.facetFilters).toStrictEqual([
+        'offer.isEducational:true',
+        ['venue.departementCode:01', 'venue.departementCode:59'],
+      ])
+      const searchConfigurationSecondCall = Configure.mock.calls[2][0]
+      expect(searchConfigurationSecondCall.facetFilters).toStrictEqual([
+        'offer.isEducational:true',
+        ['venue.departementCode:59'],
+      ])
+      const searchConfigurationThirdCall = Configure.mock.calls[3][0]
+      expect(searchConfigurationThirdCall.facetFilters).toStrictEqual([
+        'offer.isEducational:true',
+      ])
     })
   })
 
