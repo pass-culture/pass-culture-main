@@ -167,6 +167,10 @@ def get_offers_by_filters(
                 )
                 <= period_ending_date
             )
+        if venue_id is not None:
+            subquery = subquery.filter(Offer.venueId == venue_id)
+        if offerer_id is not None:
+            subquery = subquery.filter(Venue.managingOffererId == offerer_id)
         q2 = subquery.subquery()
         query = query.join(q2, q2.c.offerId == Offer.id)
     return query
