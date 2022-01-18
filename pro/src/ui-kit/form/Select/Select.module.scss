@@ -1,6 +1,6 @@
 .select-input {
   @include input-theme();
-  padding-right: $input-right-icon-padding;
+  padding-right: rem($input-right-icon-padding);
 
   &.has-error {
     @include input-theme-error();
