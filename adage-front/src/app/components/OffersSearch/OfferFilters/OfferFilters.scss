@@ -12,7 +12,7 @@
   justify-content: center;
   display: flex;
   position: relative;
-  margin-top: 32px;
+  margin-top: rem(32px);
 }
 
 .offer-filters-button-separator {
@@ -24,20 +24,17 @@
 }
 
 .offer-filters-button {
-  border-width: rem(2px);
-  border-style: solid;
+  border-style: none;
   border-radius: rem(24px);
   padding: rem(10px) rem(24px);
   font-weight: 700;
   font-size: rem(15px);
   color: $white;
   background-color: $primary;
-  border-color: $primary;
 
   &:focus {
     outline: none;
     background-color: $primary-dark;
-    border-color: $primary-dark;
   }
 
   &:hover {
