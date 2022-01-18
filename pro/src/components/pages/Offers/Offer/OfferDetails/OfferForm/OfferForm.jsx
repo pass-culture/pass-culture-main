@@ -557,6 +557,17 @@ const OfferForm = ({
     [setOfferVenue]
   )
 
+  const resetFormError = useCallback(
+    field => {
+      if (field in formErrors) {
+        let newFormErrors = { ...formErrors }
+        delete newFormErrors[field]
+        setFormErrors(newFormErrors)
+      }
+    },
+    [formErrors, setFormErrors]
+  )
+
   const handleSingleFormUpdate = useCallback(
     event => {
       const field = event.target.name
@@ -564,25 +575,23 @@ const OfferForm = ({
         event.target.type === 'checkbox'
           ? !formValues[field]
           : event.target.value
+      if (value !== null) {
+        resetFormError(field)
+      }
       handleFormUpdate({ [field]: value })
     },
-    [formValues, handleFormUpdate]
+    [formValues, handleFormUpdate, resetFormError]
   )
 
   const handleDisabilityCompliantUpdate = useCallback(
     disabilityCompliantValues => {
-      if (
-        Object.values(disabilityCompliantValues).includes(true) &&
-        'disabilityCompliant' in formErrors
-      ) {
-        let newFormErrors = { ...formErrors }
-        delete newFormErrors.disabilityCompliant
-        setFormErrors(newFormErrors)
+      if (Object.values(disabilityCompliantValues).includes(true)) {
+        resetFormError('disabilityCompliant')
       }
 
       handleFormUpdate(disabilityCompliantValues)
     },
-    [formErrors, handleFormUpdate, setFormErrors]
+    [handleFormUpdate, resetFormError]
   )
 
   const handleDurationChange = useCallback(
@@ -689,6 +698,7 @@ const OfferForm = ({
             readOnlyFields={readOnlyFields}
             subCategories={subCategories}
             updateCategoriesFormValues={handleFormUpdate}
+            updateFormErrors={setFormErrors}
           />
           {isTypeOfflineButOnlyVirtualVenues && (
             <InternalBanner
