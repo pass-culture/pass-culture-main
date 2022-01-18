@@ -5,23 +5,18 @@ import pytest
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.categories import subcategories
 import pcapi.core.mails.testing as mails_testing
-from pcapi.core.offers.factories import OfferFactory
 from pcapi.core.offers.factories import OffererFactory
 from pcapi.core.offers.factories import UserOffererFactory
-from pcapi.core.offers.factories import VenueFactory
-from pcapi.core.offers.models import OfferValidationStatus
 import pcapi.core.users.factories as users_factories
 from pcapi.domain.user_emails import send_activation_email
 from pcapi.domain.user_emails import send_admin_user_validation_email
 from pcapi.domain.user_emails import send_expired_individual_bookings_recap_email_to_offerer
 from pcapi.domain.user_emails import send_individual_booking_confirmation_email_to_offerer
-from pcapi.domain.user_emails import send_offer_validation_status_update_email
 from pcapi.domain.user_emails import send_offerer_bookings_recap_email_after_offerer_cancellation
 from pcapi.domain.user_emails import send_offerer_driven_cancellation_email_to_offerer
 from pcapi.domain.user_emails import send_pro_user_validation_email
 from pcapi.domain.user_emails import send_user_driven_cancellation_email_to_offerer
 from pcapi.domain.user_emails import send_withdrawal_terms_to_newly_validated_offerer
-from pcapi.utils.human_ids import humanize
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -191,44 +186,6 @@ class SendExpiredBookingsRecapEmailToOffererTest:
         assert mails_testing.outbox[1].sent_data["Mj-TemplateID"] == 3095184
         assert mails_testing.outbox[1].sent_data["Vars"]["withdrawal_period"] == 30
         assert mails_testing.outbox[1].sent_data["Vars"]["bookings"][0]["offer_name"] == "Intouchables"
-
-
-class SendOfferValidationTest:
-    def test_send_offer_approval_email(
-        self,
-    ):
-        # Given
-        venue = VenueFactory(name="Sibérie orientale")
-        offer = OfferFactory(name="Michel Strogoff", venue=venue)
-
-        # When
-        send_offer_validation_status_update_email(offer, OfferValidationStatus.APPROVED, ["jules.verne@example.com"])
-
-        # Then
-        assert len(mails_testing.outbox) == 1  # test number of emails sent
-        assert mails_testing.outbox[0].sent_data["MJ-TemplateID"] == 2613721
-        assert mails_testing.outbox[0].sent_data["Vars"]["offer_name"] == "Michel Strogoff"
-        assert mails_testing.outbox[0].sent_data["Vars"]["venue_name"] == "Sibérie orientale"
-        assert humanize(offer.id) in mails_testing.outbox[0].sent_data["Vars"]["pc_pro_offer_link"]
-        assert mails_testing.outbox[0].sent_data["To"] == "jules.verne@example.com"
-
-    def test_send_offer_refusing_email(
-        self,
-    ):
-        # Given
-        venue = VenueFactory(name="Sibérie orientale")
-        offer = OfferFactory(name="Michel Strogoff", venue=venue)
-
-        # When
-        send_offer_validation_status_update_email(offer, OfferValidationStatus.REJECTED, ["jules.verne@example.com"])
-
-        # Then
-        assert len(mails_testing.outbox) == 1  # test number of emails sent
-        assert mails_testing.outbox[0].sent_data["MJ-TemplateID"] == 2613942
-        assert mails_testing.outbox[0].sent_data["Vars"]["offer_name"] == "Michel Strogoff"
-        assert mails_testing.outbox[0].sent_data["Vars"]["venue_name"] == "Sibérie orientale"
-        assert mails_testing.outbox[0].sent_data["To"] == "jules.verne@example.com"
-        assert humanize(offer.id) in mails_testing.outbox[0].sent_data["Vars"]["pc_pro_offer_link"]
 
 
 class SendWithdrawalTermsToNewlyValidatedOffererTest:
