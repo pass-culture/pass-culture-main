@@ -49,6 +49,13 @@ export const OfferFilters = ({
         onChange={onMultiSelectChange}
         options={departmentOptions}
       />
+      <OfferFiltersTags
+        departments={departments}
+        handleDeleteFilter={handleDeleteFilter}
+        handleResetFilters={handleResetFilters}
+        removeVenueFilter={removeVenueFilter}
+        venueFilter={venueFilter}
+      />
       <div className="offer-filters-button-container">
         <div className="offer-filters-button-separator" />
         <button
@@ -59,13 +66,6 @@ export const OfferFilters = ({
           Lancer la recherche
         </button>
       </div>
-      <OfferFiltersTags
-        departments={departments}
-        handleDeleteFilter={handleDeleteFilter}
-        handleResetFilters={handleResetFilters}
-        removeVenueFilter={removeVenueFilter}
-        venueFilter={venueFilter}
-      />
     </div>
   )
 }
