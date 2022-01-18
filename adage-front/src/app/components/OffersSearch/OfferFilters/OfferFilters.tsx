@@ -4,6 +4,7 @@ import { Option } from 'app/types'
 import { VenueFilterType } from 'utils/types'
 
 import MultiSelectAutocomplete from '../../../ui-kit/MultiSelectAutoComplete'
+import SearchButton from '../../../ui-kit/SearchButton'
 
 import { departmentOptions } from './departmentOptions'
 import OfferFiltersTags from './OfferFiltersTags'
@@ -58,13 +59,10 @@ export const OfferFilters = ({
       />
       <div className="offer-filters-button-container">
         <div className="offer-filters-button-separator" />
-        <button
-          className="offer-filters-button"
+        <SearchButton
+          label="Lancer la recherche"
           onClick={() => handleSearchButtonClick(departments)}
-          type="button"
-        >
-          Lancer la recherche
-        </button>
+        />
       </div>
     </div>
   )
