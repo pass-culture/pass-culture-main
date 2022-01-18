@@ -19,7 +19,7 @@ import RouteLeavingGuardOfferCreation from 'new_components/RouteLeavingGuardOffe
 import OfferEducationalScreen from 'screens/OfferEducational'
 import { IOfferEducationalProps } from 'screens/OfferEducational/OfferEducational'
 
-import { getIsOffererEligibleToEducationalOfferAdapter } from './adapters'
+import { getIsOffererEligibleAdapter } from './adapters'
 import postOfferAdapter from './adapters/postOfferAdapter'
 
 type AsyncScreenProps = Pick<
@@ -93,7 +93,7 @@ const OfferEducationalCreation = (): JSX.Element => {
         <>
           <OfferEducationalScreen
             {...screenProps}
-            getIsOffererEligible={getIsOffererEligibleToEducationalOfferAdapter}
+            getIsOffererEligible={getIsOffererEligibleAdapter}
             initialValues={initialValues}
             mode={Mode.CREATION}
             notify={notify}

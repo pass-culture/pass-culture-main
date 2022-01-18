@@ -44,7 +44,7 @@ const mockEducationalSubcategories = subCategoriesFactory([
 ])
 
 export default {
-  title: 'screens/OfferEducational',
+  title: 'screens/OfferEducationalForm',
   component: OfferEducational,
   decorators: [withRouterDecorator, withPageTemplate],
 }

@@ -1,1 +1,1 @@
-export { default as getIsOffererEligibleToEducationalOfferAdapter } from './getIsOffererEligibleToEducationalOfferAdapter'
+export { default as getIsOffererEligibleAdapter } from './getIsOffererEligibleAdapter'
