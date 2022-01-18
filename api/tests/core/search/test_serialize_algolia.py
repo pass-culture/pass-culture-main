@@ -49,6 +49,7 @@ class BuildObjectTest:
             thumb_count=1,
             date_created=datetime(2020, 1, 1, 10, 0, 0),
             ranking_weight=3,
+            extra_data={"students": ["Collège - 4e"]},
         )
         stock1 = create_stock(
             beginning_datetime=in_four_days,
@@ -116,6 +117,7 @@ class BuildObjectTest:
                 "thumbUrl": f"/storage/thumbs/products/{humanized_product_id}",
                 "tags": [],
                 "times": [32400],
+                "students": ["Collège - 4e"],
             },
             "offerer": {
                 "name": "Offerer name",
@@ -412,6 +414,7 @@ class BuildObjectTest:
                 "rankingWeight": None,
                 "searchGroupName": subcategories.SearchGroups.MUSIQUE.name,
                 "stocksDateCreated": [1607166000.0],
+                "students": [],
                 "subcategoryId": subcategories.EVENEMENT_MUSIQUE.id,
                 "thumbUrl": f"/storage/thumbs/products/{humanized_product_id}",
                 "tags": ["Mon tag associé"],
@@ -491,6 +494,7 @@ class BuildObjectTest:
                 "rankingWeight": None,
                 "searchGroupName": subcategories.SearchGroups.MUSIQUE.name,
                 "stocksDateCreated": [1607166000.0],
+                "students": [],
                 "subcategoryId": subcategories.EVENEMENT_MUSIQUE.id,
                 "thumbUrl": f"/storage/thumbs/products/{humanized_product_id}",
                 "tags": {"Mon tag associé", "Iron Man mon super héros"},
