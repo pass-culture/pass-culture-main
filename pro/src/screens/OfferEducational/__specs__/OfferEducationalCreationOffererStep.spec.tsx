@@ -3,16 +3,22 @@ import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import merge from 'lodash/merge'
 
-import { queryField, triggerFieldValidation } from 'ui-kit/form/__tests-utils__'
-
 import {
   defaultCreationProps,
   renderEACOfferForm,
   userOfferersFactory,
   managedVenuesFactory,
+  elements,
+  triggerFieldValidation,
 } from '../__tests-utils__'
-import { OFFERER_LABEL, VENUE_LABEL } from '../constants/labels'
 import { IOfferEducationalProps } from '../OfferEducational'
+
+const {
+  queryOffererSelect,
+  queryVenueSelect,
+  findOfferTypeTitle,
+  queryOfferTypeTitle,
+} = elements
 
 const eligibilityResponse = (
   eligible: boolean,
@@ -37,11 +43,15 @@ describe('screens | OfferEducational : creation offerer step', () => {
         ...defaultCreationProps,
         userOfferers: userOfferersFactory([{}]),
       }
+
+      getIsOffererEligible = jest
+        .fn()
+        .mockResolvedValue(eligibilityResponse(true))
     })
 
     it('should display offerer select with pre-selected options', async () => {
       renderEACOfferForm(props)
-      const offererSelect = queryField<HTMLSelectElement>(OFFERER_LABEL)
+      const offererSelect = queryOffererSelect()
 
       await waitFor(() => expect(offererSelect.input).toBeInTheDocument())
 
@@ -52,17 +62,13 @@ describe('screens | OfferEducational : creation offerer step', () => {
     })
 
     it('should test eligibility and display venue input if offerer is eligible', async () => {
-      getIsOffererEligible = jest
-        .fn()
-        .mockResolvedValue(eligibilityResponse(true))
-
       renderEACOfferForm({ ...props, getIsOffererEligible })
-      const offererSelect = queryField<HTMLSelectElement>(OFFERER_LABEL)
+      const offererSelect = queryOffererSelect()
 
       await waitFor(() => expect(offererSelect.input).toBeInTheDocument())
       expect(getIsOffererEligible).toHaveBeenCalledTimes(1)
 
-      const venueSelect = queryField<HTMLSelectElement>(VENUE_LABEL)
+      const venueSelect = queryVenueSelect()
       expect(venueSelect.input).toBeInTheDocument()
     })
 
@@ -72,7 +78,7 @@ describe('screens | OfferEducational : creation offerer step', () => {
         .mockResolvedValue(eligibilityResponse(false))
 
       renderEACOfferForm({ ...props, getIsOffererEligible })
-      const offererSelect = queryField<HTMLSelectElement>(OFFERER_LABEL)
+      const offererSelect = queryOffererSelect()
 
       await waitFor(() => expect(offererSelect.input).toBeInTheDocument())
 
@@ -86,9 +92,7 @@ describe('screens | OfferEducational : creation offerer step', () => {
         screen.getByRole('link', { name: 'Faire une demande de référencement' })
       ).toBeInTheDocument()
 
-      expect(
-        queryField<HTMLSelectElement>(VENUE_LABEL).input
-      ).not.toBeInTheDocument()
+      expect(queryVenueSelect().input).not.toBeInTheDocument()
     })
   })
   describe('when there is only one managed venue associated with the offerer and offerer is eligible', () => {
@@ -105,12 +109,10 @@ describe('screens | OfferEducational : creation offerer step', () => {
 
     it('should pre-select both selects and display the next step', async () => {
       renderEACOfferForm(props)
-      await screen.findByRole('heading', {
-        name: 'Type d’offre',
-      })
+      const offerTypeTitle = await findOfferTypeTitle()
 
-      const offererSelect = queryField<HTMLSelectElement>(OFFERER_LABEL)
-      const venueSelect = queryField<HTMLSelectElement>(VENUE_LABEL)
+      const offererSelect = queryOffererSelect()
+      const venueSelect = queryVenueSelect()
 
       expect(offererSelect.input).toBeInTheDocument()
       expect(offererSelect.input).toHaveValue('OFFERER_ID')
@@ -126,11 +128,7 @@ describe('screens | OfferEducational : creation offerer step', () => {
       expect(venueSelect.isOptionnal).toBeFalsy()
       expect(venueSelect.getError()).not.toBeInTheDocument()
 
-      expect(
-        screen.getByRole('heading', {
-          name: 'Type d’offre',
-        })
-      ).toBeInTheDocument()
+      expect(offerTypeTitle).toBeInTheDocument()
     })
   })
 
@@ -143,13 +141,14 @@ describe('screens | OfferEducational : creation offerer step', () => {
           { id: 'OFFERER_2' },
         ]),
       }
-    })
-    it('should require an offerer selection from the user', async () => {
+
       getIsOffererEligible = jest
         .fn()
         .mockResolvedValue(eligibilityResponse(true))
+    })
+    it('should require an offerer selection from the user and trigger eligibility check at selection', async () => {
       renderEACOfferForm({ ...props, getIsOffererEligible })
-      const offererSelect = queryField<HTMLSelectElement>(OFFERER_LABEL)
+      const offererSelect = queryOffererSelect()
 
       expect(offererSelect.input).toBeInTheDocument()
       expect(offererSelect.input).toHaveValue('')
@@ -181,13 +180,9 @@ describe('screens | OfferEducational : creation offerer step', () => {
     })
 
     it('should check eligibility every time a diferent offerer is selected', async () => {
-      getIsOffererEligible = jest
-        .fn()
-        .mockResolvedValue(eligibilityResponse(true))
-
       renderEACOfferForm({ ...props, getIsOffererEligible })
 
-      const offererSelect = queryField<HTMLSelectElement>(OFFERER_LABEL)
+      const offererSelect = queryOffererSelect()
 
       userEvent.selectOptions(
         offererSelect.input as HTMLSelectElement,
@@ -223,13 +218,9 @@ describe('screens | OfferEducational : creation offerer step', () => {
     it('should require a venue selection from the user', async () => {
       renderEACOfferForm(props)
 
-      await waitFor(() =>
-        expect(
-          queryField<HTMLSelectElement>(VENUE_LABEL).input
-        ).toBeInTheDocument()
-      )
+      await waitFor(() => expect(queryVenueSelect().input).toBeInTheDocument())
 
-      const venueSelect = queryField<HTMLSelectElement>(VENUE_LABEL)
+      const venueSelect = queryVenueSelect()
       expect(venueSelect.input).toBeInTheDocument()
       expect(venueSelect.input).toHaveValue('')
       expect(venueSelect.input).toHaveDisplayValue('Sélectionner un lieu')
@@ -238,11 +229,7 @@ describe('screens | OfferEducational : creation offerer step', () => {
       expect(venueSelect.isOptionnal).toBeFalsy()
       expect(venueSelect.getError()).not.toBeInTheDocument()
 
-      expect(
-        screen.queryByRole('heading', {
-          name: 'Type d’offre',
-        })
-      ).not.toBeInTheDocument()
+      expect(queryOfferTypeTitle()).not.toBeInTheDocument()
 
       triggerFieldValidation(venueSelect.input as HTMLSelectElement)
 
@@ -259,11 +246,7 @@ describe('screens | OfferEducational : creation offerer step', () => {
 
       expect(venueSelect.input).toHaveDisplayValue('Venue 1')
 
-      expect(
-        screen.getByRole('heading', {
-          name: 'Type d’offre',
-        })
-      ).toBeInTheDocument()
+      expect(queryOfferTypeTitle()).toBeInTheDocument()
     })
   })
 })

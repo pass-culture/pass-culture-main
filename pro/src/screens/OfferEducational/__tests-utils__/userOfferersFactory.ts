@@ -29,10 +29,7 @@ const userOffererFactory = (
   return {
     id: 'OFFERER_ID',
     name: 'offerer name',
-    managedVenues: [
-      managedVenueFactory({}),
-      managedVenueFactory({ id: 'VENUE_ID_2', name: 'Venue name 2' }),
-    ],
+    managedVenues: [managedVenueFactory({})],
     ...userOffererExtends,
   }
 }

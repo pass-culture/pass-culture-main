@@ -1,9 +1,12 @@
-import { DEFAULT_EAC_FORM_VALUES, Mode } from 'core/OfferEducational'
+import {
+  DEFAULT_EAC_FORM_VALUES,
+  Mode,
+  ADRESS_TYPE,
+} from 'core/OfferEducational'
 
 import { IOfferEducationalProps } from '../OfferEducational'
 
-import { categoriesFactory } from './categoryFactory'
-import { subCategoriesFactory } from './subCategoryFactory'
+import { categoriesFactory, subCategoriesFactory } from './categoryFactory'
 import { userOfferersFactory } from './userOfferersFactory'
 
 const mockEducationalCategories = categoriesFactory([
@@ -55,4 +58,54 @@ export const defaultCreationProps: IOfferEducationalProps = {
     information: jest.fn(),
   },
   mode: Mode.CREATION,
+}
+
+const editionFormValues = {
+  category: 'MUSEE',
+  subCategory: 'VISITE_GUIDEE',
+  title: 'offer title',
+  description: 'offer description',
+  duration: '',
+  offererId: 'OFFERER_ID',
+  venueId: 'VENUE_ID',
+  eventAddress: {
+    addressType: ADRESS_TYPE.OTHER,
+    otherAddress: 'other adress string',
+    venueId: '',
+  },
+  participants: {
+    quatrieme: true,
+    troisieme: true,
+    CAPAnnee1: true,
+    CAPAnnee2: true,
+    seconde: true,
+    premiere: true,
+    terminale: true,
+  },
+  accessibility: {
+    visual: true,
+    audio: true,
+    motor: true,
+    mental: true,
+    none: false,
+  },
+  phone: '0466841425',
+  email: 'email@email.com',
+  notifications: true,
+  notificationEmail: 'email.notification@email.com',
+}
+
+export const defaultEditionProps: IOfferEducationalProps = {
+  userOfferers: mockUserOfferers,
+  initialValues: editionFormValues,
+  onSubmit: jest.fn(),
+  educationalCategories: mockEducationalCategories,
+  educationalSubCategories: mockEducationalSubcategories,
+  notify: {
+    success: jest.fn(),
+    pending: jest.fn(),
+    error: jest.fn(),
+    information: jest.fn(),
+  },
+  mode: Mode.EDITION,
 }
