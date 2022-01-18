@@ -41,7 +41,7 @@ def create_booking_with_undeletable_dependent(date_used=None):
     factories.PricingFactory(
         siret=booking.venue.siret,
         valueDate=booking.dateUsed + datetime.timedelta(seconds=1),
-        status=models.PricingStatus.BILLED,
+        status=models.PricingStatus.PROCESSED,
     )
     return booking
 
@@ -259,11 +259,11 @@ class CancelPricingTest:
         assert pricing.status == models.PricingStatus.CANCELLED  # unchanged
 
     def test_cancel_when_not_cancellable(self):
-        pricing = factories.PricingFactory(status=models.PricingStatus.BILLED)
+        pricing = factories.PricingFactory(status=models.PricingStatus.PROCESSED)
         with pytest.raises(exceptions.NonCancellablePricingError):
             api.cancel_pricing(pricing.booking, models.PricingLogReason.MARK_AS_UNUSED)
         pricing = models.Pricing.query.one()
-        assert pricing.status == models.PricingStatus.BILLED  # unchanged
+        assert pricing.status == models.PricingStatus.PROCESSED  # unchanged
 
     def test_cancel_with_dependent_booking(self):
         pricing = factories.PricingFactory()
@@ -356,6 +356,8 @@ class GenerateCashflowsTest:
         batch = models.CashflowBatch.query.one()
         assert batch.id == batch_id
         assert batch.cutoff == cutoff
+        assert pricing11.status == models.PricingStatus.PROCESSED
+        assert pricing12.status == models.PricingStatus.PROCESSED
         assert models.Cashflow.query.count() == 2
         assert len(pricing11.cashflows) == 1
         assert len(pricing12.cashflows) == 1
@@ -406,6 +408,7 @@ class GenerateCashflowsTest:
                 1,  # insert Cashflow
                 1,  # select pricings to...
                 1,  # ... insert CashflowPricing
+                1,  # update Pricing.status
                 1,  # commit
             )
         )
@@ -702,6 +705,7 @@ class GenerateInvoiceTest:
         + 1  # insert invoice lines
         + 1  # select cashflows
         + 1  # insert invoice_cashflows
+        + 1  # update Pricing.status
         + 1  # commit
     )
 
@@ -709,8 +713,8 @@ class GenerateInvoiceTest:
         reference_factories.ReferenceSchemeFactory(name="invoice.reference", prefix="F", year=2022)
         venue = offers_factories.VenueFactory(siret="85331845900023")
         business_unit = venue.businessUnit
-        invoice = api._generate_invoice(business_unit_id=business_unit.id, cashflow_ids=[])
-        second_invoice = api._generate_invoice(business_unit_id=business_unit.id, cashflow_ids=[])
+        invoice = api._generate_invoice(business_unit_id=business_unit.id, cashflow_ids=[1, 2])
+        second_invoice = api._generate_invoice(business_unit_id=business_unit.id, cashflow_ids=[1, 2])
 
         assert invoice.reference == "F220000001"
         assert second_invoice.reference == "F220000002"
