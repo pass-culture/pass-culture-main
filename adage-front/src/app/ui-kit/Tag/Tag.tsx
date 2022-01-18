@@ -13,7 +13,7 @@ const Tag = ({ label, onClick }: TagProps): JSX.Element => {
   return (
     <div className="tag">
       {label}
-      <CloseIcon className="tag-close-icon" onClick={onClick} />
+      <CloseIcon className="tag-close-icon" onClick={onClick} role="button" />
     </div>
   )
 }
