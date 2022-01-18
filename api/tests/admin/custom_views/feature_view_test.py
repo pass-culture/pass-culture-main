@@ -1,14 +1,16 @@
 from unittest.mock import patch
 
+import pytest
+
 import pcapi.core.users.factories as users_factories
 from pcapi.models.feature import Feature
 from pcapi.notifications.internal import testing as internal_notification_testing
 
-from tests.conftest import clean_database
+
+pytestmark = pytest.mark.usefixtures("db_session")
 
 
 class FeatureViewTest:
-    @clean_database
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     def test_feature_edition(self, mocked_validate_csrf_token, client):
         users_factories.AdminFactory(email="admin@example.com")
