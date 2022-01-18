@@ -514,7 +514,12 @@ def _write_csv(
                 writer.writerows(row_formatter(row) for row in rows_)
     if compress:
         compressed_path = pathlib.Path(str(path) + ".zip")
-        with zipfile.ZipFile(compressed_path, "w") as zfile:
+        with zipfile.ZipFile(
+            compressed_path,
+            "w",
+            compression=zipfile.ZIP_DEFLATED,
+            compresslevel=9,
+        ) as zfile:
             zfile.write(path, arcname=path.name)
         path = compressed_path
     return path
