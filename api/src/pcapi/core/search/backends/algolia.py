@@ -277,6 +277,7 @@ class AlgoliaBackend(base.SearchBackend):
                 "prices": prices_sorted,
                 "searchGroupName": offer.subcategory.search_group_name,
                 "stocksDateCreated": sorted(stocks_date_created),
+                "students": extra_data.get("students") or [],
                 "subcategoryId": offer.subcategory.id,
                 "thumbUrl": url_path(offer.thumbUrl),
                 "tags": tags,
