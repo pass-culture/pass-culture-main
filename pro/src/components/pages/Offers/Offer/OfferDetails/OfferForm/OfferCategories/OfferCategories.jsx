@@ -21,6 +21,7 @@ const OfferCategories = ({
   readOnlyFields,
   subCategories,
   updateCategoriesFormValues,
+  updateFormErrors,
 }) => {
   const categoriesOptions = buildSelectOptions(
     'id',
@@ -39,12 +40,18 @@ const OfferCategories = ({
             subCategory.categoryId === categoriesFormValues.categoryId &&
             subCategory.isSelectable
         )
+        updateFormErrors({})
         setSubCategoriesOptions(buildSelectOptions('id', 'proLabel', options))
       } else {
         setSubCategoriesOptions(null)
       }
     },
-    [categoriesFormValues.categoryId, subCategories, updateCategoriesFormValues]
+    [
+      categoriesFormValues.categoryId,
+      subCategories,
+      updateCategoriesFormValues,
+      updateFormErrors,
+    ]
   )
 
   useEffect(
@@ -59,13 +66,13 @@ const OfferCategories = ({
           .conditionalFields.filter(
             field => field === 'musicType' || field === 'showType'
           )
-
+        updateFormErrors({})
         setSubCategoryConditionalFields(currentSubCategoryConditionalFields)
       } else {
         setSubCategoryConditionalFields([])
       }
     },
-    [categoriesFormValues.subcategoryId, subCategories]
+    [categoriesFormValues.subcategoryId, subCategories, updateFormErrors]
   )
 
   const getDefaultSubCategory = useCallback(
@@ -218,6 +225,7 @@ OfferCategories.propTypes = {
   readOnlyFields: PropTypes.arrayOf(PropTypes.string).isRequired,
   subCategories: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   updateCategoriesFormValues: PropTypes.func.isRequired,
+  updateFormErrors: PropTypes.func.isRequired,
 }
 
 export default OfferCategories
