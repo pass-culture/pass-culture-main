@@ -93,7 +93,7 @@ class EducationalBookingsResponse(AdageBaseResponseModel):
 class EducationalBookingPerYearResponse(AdageBaseResponseModel):
     id: int
     UAICode: str
-    status: BookingStatus
+    status: Union[EducationalBookingStatus, BookingStatus]
     confirmationLimitDate: datetime
     totalAmount: float
     beginningDatetime: datetime
@@ -173,6 +173,7 @@ def get_educational_booking_status(
     ):
         return BookingStatus.USED.value
 
+    # This is to return REFUSED instead of CANCELLED if educational booking is REFUSED
     if educational_booking.status is not None:
         return educational_booking.status.value
 
