@@ -41,24 +41,28 @@ if IS_PROD or IS_INTEGRATION:
     _default_search_backend = "pcapi.core.search.backends.algolia.AlgoliaBackend"
     _default_email_backend = "pcapi.core.mails.backends.sendinblue.SendinblueBackend"
     _mailjet_email_backend = "pcapi.core.mails.backends.mailjet.MailjetBackend"
+    _default_internal_notification_backend = "pcapi.notifications.internal.backends.slack.SlackBackend"
     _default_push_notification_backend = "pcapi.notifications.push.backends.batch.BatchBackend"
     _default_sms_notification_backend = "pcapi.notifications.sms.backends.sendinblue.SendinblueBackend"
 elif IS_STAGING or IS_TESTING:
     _default_search_backend = "pcapi.core.search.backends.algolia.AlgoliaBackend"
     _default_email_backend = "pcapi.core.mails.backends.sendinblue.ToDevSendinblueBackend"
     _mailjet_email_backend = "pcapi.core.mails.backends.mailjet.ToDevMailjetBackend"
+    _default_internal_notification_backend = "pcapi.notifications.internal.backends.slack.SlackBackend"
     _default_push_notification_backend = "pcapi.notifications.push.backends.batch.BatchBackend"
     _default_sms_notification_backend = "pcapi.notifications.sms.backends.sendinblue.ToDevSendinblueBackend"
 elif IS_RUNNING_TESTS:
     _default_search_backend = "pcapi.core.search.backends.testing.TestingBackend"
     _default_email_backend = "pcapi.core.mails.backends.testing.TestingBackend"
     _mailjet_email_backend = "pcapi.core.mails.backends.testing.TestingBackend"
+    _default_internal_notification_backend = "pcapi.notifications.internal.backends.testing.TestingBackend"
     _default_push_notification_backend = "pcapi.notifications.push.backends.testing.TestingBackend"
     _default_sms_notification_backend = "pcapi.notifications.sms.backends.testing.TestingBackend"
 elif IS_DEV:
     _default_search_backend = "pcapi.core.search.backends.testing.TestingBackend"
     _default_email_backend = "pcapi.core.mails.backends.logger.LoggerBackend"
     _mailjet_email_backend = "pcapi.core.mails.backends.logger.LoggerBackend"
+    _default_internal_notification_backend = "pcapi.notifications.internal.backends.logger.LoggerBackend"
     _default_push_notification_backend = "pcapi.notifications.push.backends.logger.LoggerBackend"
     _default_sms_notification_backend = "pcapi.notifications.sms.backends.logger.LoggerBackend"
 else:
@@ -137,6 +141,7 @@ WHITELISTED_EMAIL_RECIPIENTS = utils.parse_str_to_list(os.environ.get("WHITELIST
 WHITELISTED_SMS_RECIPIENTS = utils.parse_phone_numbers(os.environ.get("WHITELISTED_SMS_RECIPIENTS"))
 
 # NOTIFICATIONS
+INTERNAL_NOTIFICATION_BACKEND = os.environ.get("INTERNAL_NOTIFICATION_BACKEND", _default_internal_notification_backend)
 PUSH_NOTIFICATION_BACKEND = os.environ.get("PUSH_NOTIFICATION_BACKEND", _default_push_notification_backend)
 SMS_NOTIFICATION_BACKEND = os.environ.get("SMS_NOTIFICATION_BACKEND", _default_sms_notification_backend)
 
