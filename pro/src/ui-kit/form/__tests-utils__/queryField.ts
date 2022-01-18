@@ -1,18 +1,20 @@
 import { screen, within } from '@testing-library/react'
 
-const contains = (str: string): RegExp => new RegExp(`^.*${str}.*$`, 'i')
+const contains = (str: string): RegExp => new RegExp(`^${str}.*$`, 'i')
 
-export const queryField = <
-  T extends HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
->(
-  label: string
-): {
+export type QueryFieldResponse<T> = {
   input: T | null
   wrapper: HTMLElement | null
   isOptionnal: boolean
   getCounter(): HTMLElement | null
   getError(): HTMLElement | null
-} => {
+}
+
+export const queryField = <
+  T extends HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+>(
+  label: string
+): QueryFieldResponse<T> => {
   const input = screen.queryByLabelText(contains(label)) as T | null
 
   if (!input) {
