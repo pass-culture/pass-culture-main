@@ -22,6 +22,7 @@ class Template:
     id_not_prod: int
     tags: list[str] = dataclasses.field(default_factory=list)
     use_priority_queue: bool = False
+
     # Tag your emails to find them more easily cf doc https://developers.sendinblue.com/reference/sendtransacemail
     sender: SendinblueTransactionalSender = SendinblueTransactionalSender.SUPPORT
 
@@ -123,7 +124,7 @@ class TransactionalEmail(Enum):
         id_prod=0000, id_not_prod=0000, tags=["pro_validation_offre"], sender=SendinblueTransactionalSender.COMPLIANCE
     )
     OFFER_REJECTION_TO_PRO = TemplatePro(
-        id_prod=0000, id_not_prod=0000, tags=["pro_offre_refusee"], sender=SendinblueTransactionalSender.COMPLIANCE
+        id_prod=375, id_not_prod=48, tags=["pro_offre_refusee"], sender=SendinblueTransactionalSender.COMPLIANCE
     )
     REFUND_TO_PRO = TemplatePro(id_prod=0000, id_not_prod=0000, tags=[""])
     RESET_PASSWORD_TO_PRO = TemplatePro(id_prod=364, id_not_prod=47, tags=["pro_reinit_mdp"])

@@ -38,6 +38,7 @@ from pcapi.core import search
 from pcapi.core.bookings.api import cancel_bookings_from_rejected_offer
 from pcapi.core.categories import categories
 from pcapi.core.categories import subcategories
+from pcapi.core.mails.transactional.pro.offer_validation_to_pro import send_offer_validation_status_update_email
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers import api as offers_api
@@ -50,7 +51,6 @@ from pcapi.core.offers.offer_validation import parse_offer_validation_config
 import pcapi.core.offers.repository as offers_repository
 from pcapi.core.offers.validation import check_user_can_load_config
 from pcapi.domain.admin_emails import send_offer_validation_notification_to_administration
-from pcapi.domain.user_emails import send_offer_validation_status_update_email
 from pcapi.models import db
 from pcapi.models.criterion import Criterion
 from pcapi.models.offer_criterion import OfferCriterion
