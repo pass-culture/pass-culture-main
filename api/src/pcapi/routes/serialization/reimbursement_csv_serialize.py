@@ -1,6 +1,7 @@
 from collections import namedtuple
 import csv
 from datetime import date
+import decimal
 from io import StringIO
 from typing import Callable
 from typing import Iterable
@@ -9,6 +10,8 @@ from typing import Union
 
 from pydantic.main import BaseModel
 
+import pcapi.core.finance.api as finance_api
+import pcapi.core.finance.utils as finance_utils
 from pcapi.core.offers.serialize import serialize_offer_type_educational_or_individual
 from pcapi.models.api_errors import ApiErrors
 from pcapi.repository.reimbursement_queries import find_all_offerers_payments
@@ -41,15 +44,32 @@ class ReimbursementDetails:
     ]
 
     def __init__(self, payment_info: namedtuple):
-        transfer_infos = payment_info.transactionLabel.replace("pass Culture Pro - ", "").split(" ")
-        transfer_label = " ".join(transfer_infos[:-1])
+        # FIXME (dbaty, 2021-01-14): once we have created
+        # pricing+cashflow data for pre-2022 payments, remove handling
+        # of legacy Payment data from this function.
 
-        transfer_date = transfer_infos[-1]
-        month_number, year = transfer_date.split("-")
-        month_name = MONTHS_IN_FRENCH[int(month_number)]
+        using_legacy_models = hasattr(payment_info, "transactionLabel")
+
+        if using_legacy_models:
+            # Turn "pass Culture Pro - remboursement 2nde quinzaine 06-2019"
+            # into "Décembre : remboursement 2nde quinzaine"
+            transfer_infos = payment_info.transactionLabel.replace("pass Culture Pro - ", "").split(" ")
+            transfer_label = " ".join(transfer_infos[:-1])
+            transfer_date = transfer_infos[-1]
+            month_number, year = transfer_date.split("-")
+            month_name = MONTHS_IN_FRENCH[int(month_number)]
+            self.transfer_name = "{} : {}".format(month_name, transfer_label)
+        else:
+            year = payment_info.cashflow_date.year
+            self.transfer_name = MONTHS_IN_FRENCH[payment_info.cashflow_date.month]
+            self.transfer_name += " : remboursement"
+            if payment_info.cashflow_date.day >= 16:
+                self.transfer_name += " 2nde"
+            else:
+                self.transfer_name += " 1ère"
+            self.transfer_name += " quinzaine"
 
         self.year = year
-        self.transfer_name = "{} : {}".format(month_name, transfer_label)
         self.venue_name = payment_info.venue_name
         self.venue_siret = payment_info.venue_siret
         self.venue_address = payment_info.venue_address or payment_info.offerer_address
@@ -61,12 +81,22 @@ class ReimbursementDetails:
         self.booking_token = payment_info.booking_token
         self.booking_used_date = payment_info.booking_dateUsed
         self.booking_total_amount = format_number_as_french(payment_info.booking_amount * payment_info.booking_quantity)
-        if payment_info.reimbursement_rate:
-            reimbursement_rate = f"{int(payment_info.reimbursement_rate * 100)}%"
+        if using_legacy_models:
+            if payment_info.reimbursement_rate:
+                rate = f"{int(payment_info.reimbursement_rate * 100)}%"
+            else:
+                rate = ""
+        else:  # using Pricing.standardRule or Pricing.customRule
+            rule = finance_api._find_reimbursement_rule(payment_info.rule_name or payment_info.rule_id)
+            rate = decimal.Decimal(rule.rate * 100).quantize(decimal.Decimal("0.01"))
+            if rate == int(rate):  # omit decimals if round number
+                rate = int(rate)
+            rate = format_number_as_french(rate) + " %"
+        self.reimbursement_rate = rate
+        if using_legacy_models:
+            self.reimbursed_amount = format_number_as_french(payment_info.amount)
         else:
-            reimbursement_rate = ""
-        self.reimbursement_rate = reimbursement_rate
-        self.reimbursed_amount = format_number_as_french(payment_info.amount)
+            self.reimbursed_amount = format_number_as_french(finance_utils.to_euros(payment_info.amount))
         # Backward compatibility to avoid changing the format of the CSV. This field
         # used to show different statuses.
         self.status = "Remboursement envoyé"
