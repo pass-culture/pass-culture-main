@@ -4,15 +4,13 @@ import * as React from 'react'
 import { useEffect, useState } from 'react'
 import { Configure, InstantSearch } from 'react-instantsearch-dom'
 
+import { Facets, Option } from 'app/types'
 import {
   ALGOLIA_API_KEY,
   ALGOLIA_APP_ID,
   ALGOLIA_OFFERS_INDEX,
 } from 'utils/config'
 import { Role, VenueFilterType } from 'utils/types'
-
-import { Option } from '../../types'
-import { Facets } from '../../types/facets'
 
 import { OfferFilters } from './OfferFilters/OfferFilters'
 import { Offers } from './Offers/Offers'
