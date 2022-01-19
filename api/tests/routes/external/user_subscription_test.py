@@ -53,7 +53,7 @@ class DmsWebhookApplicationTest:
         form_data = {
             "procedure_id": "48860",
             "dossier_id": "6044787",
-            "state": "en_construction",
+            "state": "accepte",
             "updated_at": "2021-09-30 17:55:58 +0200",
         }
         response = client.post(

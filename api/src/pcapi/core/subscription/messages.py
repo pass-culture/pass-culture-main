@@ -81,7 +81,7 @@ DMS_ERROR_MESSSAGE_BIRTH_DATE = """Bonjour,
                         Nous avons bien reçu ton dossier, mais il y a une erreur dans la date de naissance inscrite sur le formulaire en ligne.
 
                         Merci de corriger ton dossier.
-                        Tu trouveras de l'aide dans cet article : <a href="https://aide.passculture.app/fr/articles/5100876-jeunes-ou-puis-je-trouver-de-l-aide-concernant-mon-dossier-d-inscription-sur-demarches-simplifiees">https://aide.passculture.app/fr/articles/5100876-jeunes-ou-puis-je-trouver-de-l-aide-concernant-mon-dossier-d-inscription-sur-demarches-simplifiees</a>
+                        Tu trouveras de l'aide dans cet article : <a href="https://aide.passculture.app/hc/fr/sections/4411991878545-Inscription-sur-D%C3%A9marches-Simplifi%C3%A9es">https://aide.passculture.app/hc/fr/sections/4411991878545-Inscription-sur-Démarches-Simplifiées</a>
 
                         Bonne journée,
 
