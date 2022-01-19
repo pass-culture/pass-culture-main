@@ -4,6 +4,7 @@ from typing import Union
 
 from pydantic import BaseModel
 from pydantic.fields import Field
+from sqlalchemy.orm import joinedload
 
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.educational.models import EducationalBooking
@@ -99,6 +100,7 @@ class EducationalBookingPerYearResponse(AdageBaseResponseModel):
     beginningDatetime: datetime
     venueTimezone: str
     name: str
+    redactorEmail: str
 
 
 class EducationalBookingsPerYearResponse(AdageBaseResponseModel):
@@ -224,4 +226,6 @@ def _get_educational_offer_accessibility(offer: offers_models.Offer) -> str:
 
 
 def get_bookings_for_educational_year(educational_year_id: str) -> list[EducationalBooking]:
-    return EducationalBooking.query.filter(EducationalBooking.educationalYearId == educational_year_id)
+    return EducationalBooking.query.filter(EducationalBooking.educationalYearId == educational_year_id).options(
+        joinedload(EducationalBooking.educationalRedactor)
+    )
