@@ -182,9 +182,9 @@ describe('app', () => {
       )
 
       // When
-      await selectEvent.select(departmentFilter, 'Ain - 01')
+      await selectEvent.select(departmentFilter, '01 - Ain')
       fireEvent.click(launchSearchButton)
-      await selectEvent.select(departmentFilter, 'Nord - 59')
+      await selectEvent.select(departmentFilter, '59 - Nord')
       fireEvent.click(launchSearchButton)
 
       // Then
@@ -207,8 +207,8 @@ describe('app', () => {
       const departmentFilter = await screen.findByLabelText('Département', {
         selector: 'input',
       })
-      await selectEvent.select(departmentFilter, 'Ain - 01')
-      await selectEvent.select(departmentFilter, 'Nord - 59')
+      await selectEvent.select(departmentFilter, '01 - Ain')
+      await selectEvent.select(departmentFilter, '59 - Nord')
       const launchSearchButton = await screen.findByText(
         'Lancer la recherche',
         { selector: 'button' }
@@ -216,9 +216,9 @@ describe('app', () => {
 
       // When
       fireEvent.click(launchSearchButton)
-      await selectEvent.select(departmentFilter, 'Ain - 01')
+      await selectEvent.select(departmentFilter, '01 - Ain')
       fireEvent.click(launchSearchButton)
-      await selectEvent.select(departmentFilter, 'Nord - 59')
+      await selectEvent.select(departmentFilter, '59 - Nord')
       fireEvent.click(launchSearchButton)
 
       // Then
