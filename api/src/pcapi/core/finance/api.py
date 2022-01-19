@@ -208,14 +208,37 @@ def _get_siret_and_current_revenue(booking: bookings_models.Booking) -> typing.U
     """
     siret = booking.venue.siret or booking.venue.businessUnit.siret
     revenue_period = _get_revenue_period(booking.dateUsed)
-    latest_pricing = (
-        models.Pricing.query.filter_by(siret=siret)
-        .filter(models.Pricing.valueDate.between(*revenue_period))
-        .order_by(models.Pricing.valueDate.desc())
-        .first()
+    # I tried to be clever and store the accruing revenue on `Pricing`
+    # for quick access. But my first attempt had a bug. I *think* that
+    # the right way is to do this (but it has NOT been field-tested):
+    #
+    #     latest_pricing = (
+    #         models.Pricing.query.filter_by(siret=siret)
+    #         .filter(models.Pricing.valueDate.between(*revenue_period))
+    #         # See `order_by` used in `price_bookings()`
+    #         .order_by(models.Pricing.valueDate.desc(), models.Pricing.bookingId.desc())
+    #         .first()
+    #     )
+    #
+    # ... but a less error-prone and actually fast enough way is to
+    # just calculate the sum on-the-fly.
+    current_revenue = (
+        bookings_models.Booking.query.join(models.Pricing)
+        .filter(
+            models.Pricing.siret == siret,
+            models.Pricing.bookingId != booking.id,
+            models.Pricing.valueDate.between(*revenue_period),
+            models.Pricing.status.notin_(
+                (
+                    models.PricingStatus.CANCELLED,
+                    models.PricingStatus.REJECTED,
+                )
+            ),
+        )
+        .with_entities(sqla.func.sum(bookings_models.Booking.amount * bookings_models.Booking.quantity))
+        .scalar()
     )
-    current_revenue = latest_pricing.revenue if latest_pricing else 0
-    return siret, current_revenue
+    return siret, utils.to_eurocents(current_revenue or 0)
 
 
 def _price_booking(booking: bookings_models.Booking) -> models.Pricing:
