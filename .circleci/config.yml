@@ -21,6 +21,9 @@ parameters:
   pro_cache_key:
     type: string
     default: 'yarn-packages-{{ checksum "pro/yarn.lock" }}'
+  adage-front_cache_key:
+    type: string
+    default: 'yarn-packages-{{ checksum "adage-front/yarn.lock" }}'
 
 ###################
 #  EXECUTORS
@@ -400,6 +403,47 @@ jobs:
           working_directory: api
       - store_test_results:
           path: api/test-results
+      - when:
+          condition:
+            equal: ["master", << pipeline.git.branch >>]
+          steps:
+            - notify-slack:
+                channel: shérif
+  
+  quality-adage-front:
+    docker:
+      - image: cimg/node:14.17
+    working_directory: ~/pass-culture
+    steps:
+      - checkout
+      - skip_unchanged:
+          paths: adage-front
+      - unless:
+          condition:
+            equal: ["master", << pipeline.git.branch >>]
+          steps:
+            - restore_cache:
+                name: Restore Yarn Package Cache
+                key: << pipeline.parameters.adage-front_cache_key >>
+      - run:
+          name: Install dependencies
+          working_directory: adage-front
+          command: |
+            yarn install
+      - unless:
+          condition:
+            equal: ["master", << pipeline.git.branch >>]
+          steps:
+            - save_cache:
+                name: Save Yarn Package Cache
+                key: << pipeline.parameters.adage-front_cache_key >>
+                paths:
+                  - ~/.cache/yarn
+      - run:
+          name: Running linter
+          working_directory: adage-front
+          command: |
+            yarn lint:js
       - when:
           condition:
             equal: ["master", << pipeline.git.branch >>]
@@ -850,6 +894,14 @@ workflows:
                 - staging
                 - integration
           context: Slack
+      - quality-adage-front:
+          filters:
+            branches:
+              ignore:
+                - production
+                - staging
+                - integration
+          context: Slack
       - quality-api:
           filters:
             branches:
@@ -976,6 +1028,7 @@ workflows:
               only:
                 - master
           requires:
+            - quality-adage-front
             - tests-adage-front
             - restart-pcapi
           context:
