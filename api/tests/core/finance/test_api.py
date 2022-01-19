@@ -204,7 +204,7 @@ class GetSiretAndCurrentRevenueTest:
         booking1 = bookings_factories.UsedBookingFactory(stock__offer__venue=venue, amount=20)
         _pricing1 = factories.PricingFactory(booking=booking1)
         booking2 = bookings_factories.UsedBookingFactory(stock__offer__venue=venue)
-        _pricing_other = factories.PricingFactory(amount=40)
+        _pricing_other = factories.PricingFactory()
 
         siret, current_revenue = api._get_siret_and_current_revenue(booking2)
         assert siret == "123456"
@@ -218,16 +218,36 @@ class GetSiretAndCurrentRevenueTest:
         assert siret == "654321"
         assert current_revenue == 0
 
+    def test_use_booking_quantity(self):
+        venue = offers_factories.VenueFactory(siret="123456")
+        factories.PricingFactory(
+            booking__stock__offer__venue=venue,
+            booking__amount=10,
+            booking__quantity=2,
+        )
+        booking = bookings_factories.UsedBookingFactory(stock__offer__venue=venue)
+        siret, current_revenue = api._get_siret_and_current_revenue(booking)
+        assert siret == venue.siret
+        assert current_revenue == 2000
+
     def test_consider_booking_date_used(self):
         in_2020 = datetime.datetime(2020, 7, 1)
         in_2021 = datetime.datetime(2021, 7, 1)
         venue = offerers_factories.VenueFactory()
-        _pricing_2020 = factories.PricingFactory(revenue=1000, valueDate=in_2020)
-        _pricing_1_2021 = factories.PricingFactory(revenue=2000, siret=venue.siret, valueDate=in_2021)
-        _pricing_2_2021 = factories.PricingFactory(
-            revenue=3000,
+        _pricing_2020 = factories.PricingFactory(
             siret=venue.siret,
-            valueDate=in_2021 + datetime.timedelta(seconds=1),  # make it the latest pricing
+            valueDate=in_2020,
+            booking__amount=10,
+        )
+        _pricing_1_2021 = factories.PricingFactory(
+            siret=venue.siret,
+            valueDate=in_2021,
+            booking__amount=20,
+        )
+        _pricing_2_2021 = factories.PricingFactory(
+            siret=venue.siret,
+            valueDate=in_2021,
+            booking__amount=40,
         )
         booking = bookings_factories.UsedBookingFactory(
             dateCreated=in_2020,
@@ -237,6 +257,15 @@ class GetSiretAndCurrentRevenueTest:
 
         siret, current_revenue = api._get_siret_and_current_revenue(booking)
         assert siret == venue.siret
+        assert current_revenue == 6000
+
+    def test_handle_duplicate_value_date(self):
+        value_date = datetime.datetime.utcnow()
+        booking = bookings_factories.UsedBookingFactory()
+        siret = booking.venue.siret
+        factories.PricingFactory(valueDate=value_date, siret=siret, booking__amount=10)
+        factories.PricingFactory(valueDate=value_date, siret=siret, booking__amount=20)
+        siret, current_revenue = api._get_siret_and_current_revenue(booking)
         assert current_revenue == 3000
 
 
