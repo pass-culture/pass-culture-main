@@ -49,7 +49,7 @@ export const OffersComponent = ({
     if (queries.every(query => !query.isLoading)) {
       setIsLoading(false)
     }
-  }, [])
+  }, [queries, setIsLoading])
 
   if (queries.some(query => query.isLoading)) {
     return (
