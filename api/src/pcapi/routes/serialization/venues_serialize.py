@@ -164,6 +164,7 @@ class GetVenueResponseModel(BaseModel):
     id: str
     idAtProviders: Optional[str]
     isBusinessUnitMainVenue: Optional[bool]
+    isPermanent: Optional[bool]
     isValidated: bool
     isVirtual: bool
     lastProviderId: Optional[str]
