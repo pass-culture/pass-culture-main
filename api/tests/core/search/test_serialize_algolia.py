@@ -124,7 +124,7 @@ class BuildObjectTest:
             },
             "venue": {
                 "id": 2,
-                "departementCode": "93",
+                "departmentCode": "93",
                 "name": "Venue name",
                 "publicName": "Venue public name",
             },
@@ -426,7 +426,7 @@ class BuildObjectTest:
             },
             "venue": {
                 "id": 2,
-                "departementCode": "93",
+                "departmentCode": "93",
                 "name": "Venue name",
                 "publicName": "Venue public name",
             },
@@ -507,7 +507,7 @@ class BuildObjectTest:
             },
             "venue": {
                 "id": 2,
-                "departementCode": "93",
+                "departmentCode": "93",
                 "name": "Venue name",
                 "publicName": "Venue public name",
             },
