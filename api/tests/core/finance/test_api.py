@@ -21,6 +21,7 @@ from pcapi.core.object_storage.testing import recursive_listdir
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.payments.factories as payments_factories
+import pcapi.core.reference.factories as reference_factories
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.testing import clean_temporary_files
 from pcapi.core.testing import override_settings
@@ -695,6 +696,8 @@ def invoice_test_data():
 class GenerateInvoiceTest:
     EXPECTED_NUM_QUERIES = (
         1  # select cashflows, pricings, pricing_lines, and custom_reimbursement_rules
+        + 1  # select and lock ReferenceScheme
+        + 1  # update ReferenceScheme
         + 1  # insert invoice
         + 1  # insert invoice lines
         + 1  # select cashflows
@@ -702,7 +705,18 @@ class GenerateInvoiceTest:
         + 1  # commit
     )
 
+    def test_reference_scheme_increments(self):
+        reference_factories.ReferenceSchemeFactory(name="invoice.reference", prefix="F", year=2022)
+        venue = offers_factories.VenueFactory(siret="85331845900023")
+        business_unit = venue.businessUnit
+        invoice = api._generate_invoice(business_unit_id=business_unit.id, cashflow_ids=[])
+        second_invoice = api._generate_invoice(business_unit_id=business_unit.id, cashflow_ids=[])
+
+        assert invoice.reference == "F220000001"
+        assert second_invoice.reference == "F220000002"
+
     def test_one_regular_rule_one_rate(self):
+        reference_factories.ReferenceSchemeFactory(name="invoice.reference", prefix="F", year=2022)
         venue = offers_factories.VenueFactory(siret="85331845900023")
         business_unit = venue.businessUnit
         offer = offers_factories.ThingOfferFactory(venue=venue)
@@ -719,11 +733,9 @@ class GenerateInvoiceTest:
         )
         cashflow_ids = [c.id for c in cashflows]
         with assert_num_queries(self.EXPECTED_NUM_QUERIES):
-            invoice = api._generate_invoice(
-                reference="000001", business_unit_id=business_unit.id, cashflow_ids=cashflow_ids
-            )
+            invoice = api._generate_invoice(business_unit_id=business_unit.id, cashflow_ids=cashflow_ids)
 
-        assert invoice.reference == "000001"
+        assert invoice.reference == "F220000001"
         assert invoice.businessUnit == business_unit
         assert invoice.amount == -40 * 100
         assert len(invoice.lines) == 1
@@ -735,6 +747,7 @@ class GenerateInvoiceTest:
         assert line.label == "Montant remboursé"
 
     def test_two_regular_rules_two_rates(self):
+        reference_factories.ReferenceSchemeFactory(name="invoice.reference", prefix="F", year=2022)
         venue = offers_factories.VenueFactory(siret="85331845900023")
         business_unit = venue.businessUnit
         offer = offers_factories.ThingOfferFactory(venue=venue)
@@ -753,11 +766,9 @@ class GenerateInvoiceTest:
         cashflow_ids = [c.id for c in cashflows]
 
         with assert_num_queries(self.EXPECTED_NUM_QUERIES):
-            invoice = api._generate_invoice(
-                reference="000002", business_unit_id=business_unit.id, cashflow_ids=cashflow_ids
-            )
+            invoice = api._generate_invoice(business_unit_id=business_unit.id, cashflow_ids=cashflow_ids)
 
-        assert invoice.reference == "000002"
+        assert invoice.reference == "F220000001"
         assert invoice.businessUnit == business_unit
         # 100% of 19_850*100 + 95% of 160*100 aka 152*100
         assert invoice.amount == -20_002 * 100
@@ -778,6 +789,7 @@ class GenerateInvoiceTest:
         assert line_rate_0_95.label == "Montant remboursé"
 
     def test_one_custom_rule(self):
+        reference_factories.ReferenceSchemeFactory(name="invoice.reference", prefix="F", year=2022)
         venue = offers_factories.VenueFactory(siret="85331845900023")
         business_unit = venue.businessUnit
         offer = offers_factories.ThingOfferFactory(venue=venue)
@@ -796,11 +808,9 @@ class GenerateInvoiceTest:
         cashflow_ids = [c.id for c in cashflows]
 
         with assert_num_queries(self.EXPECTED_NUM_QUERIES):
-            invoice = api._generate_invoice(
-                reference="000003", business_unit_id=business_unit.id, cashflow_ids=cashflow_ids
-            )
+            invoice = api._generate_invoice(business_unit_id=business_unit.id, cashflow_ids=cashflow_ids)
 
-        assert invoice.reference == "000003"
+        assert invoice.reference == "F220000001"
         assert invoice.businessUnit == business_unit
         assert invoice.amount == -4400
         assert len(invoice.lines) == 1
@@ -812,6 +822,7 @@ class GenerateInvoiceTest:
         assert line.label == "Montant remboursé"
 
     def test_many_rules_and_rates_two_cashflows(self, invoice_data):
+        reference_factories.ReferenceSchemeFactory(name="invoice.reference", prefix="F", year=2022)
         business_unit, stocks = invoice_data
         bookings = []
         for stock in stocks:
@@ -831,12 +842,10 @@ class GenerateInvoiceTest:
         cashflow_ids = [c.id for c in cashflows]
 
         with assert_num_queries(self.EXPECTED_NUM_QUERIES):
-            invoice = api._generate_invoice(
-                reference="000004", business_unit_id=business_unit.id, cashflow_ids=cashflow_ids
-            )
+            invoice = api._generate_invoice(business_unit_id=business_unit.id, cashflow_ids=cashflow_ids)
 
         assert len(invoice.cashflows) == 2
-        assert invoice.reference == "000004"
+        assert invoice.reference == "F220000001"
         assert invoice.businessUnit == business_unit
         assert invoice.amount == -20_154.8 * 100
         # général 100%, général 95%, livre 100%, livre 95%, pas remboursé, custom 1, custom 2
@@ -899,6 +908,7 @@ class GenerateInvoiceHtmlTest:
     TEST_FILES_PATH = pathlib.Path(tests.__path__[0]) / "files"
 
     def test_basics(self, invoice_data):
+        reference_factories.ReferenceSchemeFactory(name="invoice.reference", prefix="F", year=2022)
         business_unit, stocks = invoice_data
         bookings = []
         for stock in stocks:
@@ -916,9 +926,7 @@ class GenerateInvoiceHtmlTest:
             .all()
         )
         cashflow_ids = [c.id for c in cashflows]
-        invoice = api._generate_invoice(
-            reference="000004", business_unit_id=business_unit.id, cashflow_ids=cashflow_ids
-        )
+        invoice = api._generate_invoice(business_unit_id=business_unit.id, cashflow_ids=cashflow_ids)
 
         invoice_html = api._generate_invoice_html(invoice)
 
@@ -936,7 +944,7 @@ class GenerateInvoiceHtmlTest:
             f'<td class="cashflow_creation_date">{cashflows[0].creationDate.strftime("%d/%m/%Y")}</td>',
         )
         expected_invoice_html = expected_invoice_html.replace(
-            '<h2 class="invoice_info">Relevé n°000004 du 21/12/2021</h2>',
+            '<h2 class="invoice_info">Relevé n°F220000001 du 21/12/2021</h2>',
             f'<h2 class="invoice_info">Relevé n°{invoice.reference} du {invoice.date.strftime("%d/%m/%Y")}</h2>',
         )
         assert expected_invoice_html == invoice_html
@@ -949,7 +957,7 @@ class StoreInvoicePdfTest:
     @override_settings(OBJECT_STORAGE_URL=BASE_THUMBS_DIR)
     def test_basics(self, clear_tests_invoices_bucket, invoice_data):
         existing_number_of_files = len(recursive_listdir(self.INVOICES_DIR))
-
+        reference_factories.ReferenceSchemeFactory(name="invoice.reference", prefix="F", year=2022)
         business_unit, stocks = invoice_data
         bookings = []
         for stock in stocks:
@@ -967,17 +975,12 @@ class StoreInvoicePdfTest:
             .all()
         )
         cashflow_ids = [c.id for c in cashflows]
-        invoice = api._generate_invoice(
-            reference="000005", business_unit_id=business_unit.id, cashflow_ids=cashflow_ids
-        )
+        invoice = api._generate_invoice(business_unit_id=business_unit.id, cashflow_ids=cashflow_ids)
 
         invoice_html = api._generate_invoice_html(invoice)
-        api._store_invoice_pdf(invoice, invoice_html)
+        api._store_invoice_pdf(invoice.storage_object_id, invoice_html)
 
-        assert (
-            invoice.url == f"{self.INVOICES_DIR}/{invoice.token}/{invoice.date.strftime('%d%m%Y')}"
-            f"-000005-Justificatif-de-remboursement-pass-Culture.pdf"
-        )
+        assert invoice.url == f"{self.INVOICES_DIR}/{invoice.storage_object_id}"
         assert len(recursive_listdir(self.INVOICES_DIR)) == existing_number_of_files + 2
         assert (self.INVOICES_DIR / f"{invoice.storage_object_id}").exists()
         assert (self.INVOICES_DIR / f"{invoice.storage_object_id}.type").exists()
