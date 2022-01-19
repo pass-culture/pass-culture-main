@@ -375,7 +375,7 @@ def update_user_profile(
     db.session.refresh(user)
 
     if (
-        not users_api.steps_to_become_beneficiary(user, user.eligibility)
+        users_api.has_passed_all_checks_to_become_beneficiary(user)
         # the 2 following checks should be useless
         and fraud_api.has_user_performed_identity_check(user)
         and not fraud_api.is_user_fraudster(user)
@@ -467,8 +467,7 @@ def get_maintenance_page_type(user: users_models.User) -> typing.Optional[models
 
 
 def activate_beneficiary_if_no_missing_step(user: users_models.User, eligibility: users_models.EligibilityType) -> None:
-    steps_to_become_beneficiary = users_api.steps_to_become_beneficiary(user, eligibility)
-    if not steps_to_become_beneficiary:
+    if users_api.has_passed_all_checks_to_become_beneficiary(user):
         activate_beneficiary(user)  # calls update_external_user
     else:
         users_external.update_external_user(user)
