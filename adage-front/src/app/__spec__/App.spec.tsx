@@ -227,7 +227,7 @@ describe('app', () => {
 
       // Then
       expect(Configure).toHaveBeenCalledTimes(7)
-      const searchConfigurationFirstCall = Configure.mock.calls[2][0]
+      const searchConfigurationFirstCall = Configure.mock.calls[1][0]
       expect(searchConfigurationFirstCall.facetFilters).toStrictEqual([
         'offer.isEducational:true',
         ['venue.departmentCode:01', 'venue.departmentCode:59'],
