@@ -38,6 +38,7 @@ from pcapi.scripts.venue.venue_label.create_venue_labels import create_venue_lab
 
 
 def save_industrial_sandbox() -> None:
+    venue_types = create_industrial_venue_types()
     (offerers_by_name, pro_users_by_name) = create_industrial_offerers_with_pro_users()
 
     admin_users_by_name = create_industrial_admin_users()
@@ -45,8 +46,6 @@ def save_industrial_sandbox() -> None:
     app_users_by_name = create_industrial_app_users()
 
     users_by_name = dict(dict(admin_users_by_name, **pro_users_by_name), **app_users_by_name)
-
-    venue_types = create_industrial_venue_types()
 
     venues_by_name = create_industrial_venues(offerers_by_name, venue_types)
 

@@ -8,6 +8,7 @@ from pcapi.core.offerers.factories import AllocineVenueProviderPriceRuleFactory
 from pcapi.core.offerers.factories import VenueProviderFactory
 from pcapi.core.offerers.models import VENUE_TYPE_CODE_MAPPING
 from pcapi.core.offerers.models import VenueType
+from pcapi.core.offerers.models import VenueTypeCode
 from pcapi.core.offers.factories import BankInformationFactory
 from pcapi.core.offers.factories import VenueFactory
 from pcapi.core.offers.factories import VirtualVenueFactory
@@ -73,7 +74,7 @@ def create_industrial_venues(offerers_by_name: dict, venue_types: list[VenueType
             # the venue_type table has been finally replaced by the
             # VenueTypeCode enum
             venue_type = random.choice(venue_types)
-            venue_type_code = label_to_code.get(venue_type.label, "OTHER")
+            venue_type_code = VenueTypeCode[label_to_code.get(venue_type.label, "OTHER")]
 
             venue = VenueFactory(
                 managingOfferer=offerer,
