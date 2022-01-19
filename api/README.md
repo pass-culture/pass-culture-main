@@ -14,9 +14,11 @@ Une documentation Swagger des APIs est générée selon l'OpenAPI Specification 
 Spectree:
 
 * [API Contremarque](https://backend.passculture.app/v2/swagger)
-* [App Native](https://backend.passculture.app/v2/swagger)
+* [App Native](https://backend.passculture.app/native/v1/swagger)
 * [Adage](https://backend.passculture.app/adage-iframe/swagger)
 * [API privée et API publique dépréciée](https://backend.passculture.app/apidoc/swagger)
+* [API pro publique v2](https://backend.passculture.app/v2/swagger)
+* [API pro privée](https://backend.passculture.app/pro/swagger)
 
 ## Tests
 

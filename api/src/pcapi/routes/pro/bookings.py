@@ -139,7 +139,7 @@ def get_bookings_csv(query: ListBookingsQueryModel) -> bytes:
 @ip_rate_limiter(deduct_when=lambda response: response.status_code == 401)
 @basic_auth_rate_limiter()
 @spectree_serialize(
-    api=blueprint.api,
+    api=blueprint.api_v2,
     response_model=GetBookingResponse,
     tags=["API Contremarque"],
     code_descriptions=BASE_CODE_DESCRIPTIONS | {"HTTP_200": "La contremarque existe et n’est pas validée"},
@@ -173,7 +173,7 @@ def get_booking_by_token_v2(token: str) -> GetBookingResponse:
 @ip_rate_limiter(deduct_when=lambda response: response.status_code == 401)
 @basic_auth_rate_limiter()
 @spectree_serialize(
-    api=blueprint.api,
+    api=blueprint.api_v2,
     tags=["API Contremarque"],
     on_success_status=204,
     code_descriptions=BASE_CODE_DESCRIPTIONS | {"HTTP_204": "La contremarque a bien été validée"},
@@ -204,7 +204,7 @@ def patch_booking_use_by_token(token: str) -> None:
 @basic_auth_rate_limiter()
 @login_or_api_key_required
 @spectree_serialize(
-    api=blueprint.api,
+    api=blueprint.api_v2,
     tags=["API Contremarque"],
     on_success_status=204,
     code_descriptions=BASE_CODE_DESCRIPTIONS
@@ -241,7 +241,7 @@ def patch_cancel_booking_by_token(token: str) -> None:
 @basic_auth_rate_limiter()
 @login_or_api_key_required
 @spectree_serialize(
-    api=blueprint.api,
+    api=blueprint.api_v2,
     tags=["API Contremarque"],
     on_success_status=204,
     code_descriptions=BASE_CODE_DESCRIPTIONS
