@@ -1,6 +1,6 @@
 import './Offers.scss'
 import { captureException } from '@sentry/react'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { connectHits } from 'react-instantsearch-core'
 import { useQueries } from 'react-query'
 
@@ -18,9 +18,11 @@ const offerIsBookable = (offer: OfferType): boolean =>
 
 export const OffersComponent = ({
   userRole,
+  setIsLoading,
   hits,
 }: {
   userRole: Role
+  setIsLoading: (isLoading: boolean) => void
   hits: ResultType[]
 }): JSX.Element => {
   const offersThumbById = {}
@@ -42,6 +44,12 @@ export const OffersComponent = ({
       staleTime: 1 * 60 * 1000, // We consider an offer valid for 1 min
     }))
   )
+
+  useEffect(() => {
+    if (queries.every(query => !query.isLoading)) {
+      setIsLoading(false)
+    }
+  }, [])
 
   if (queries.some(query => query.isLoading)) {
     return (

@@ -283,7 +283,10 @@ describe('offers', () => {
   describe('should display no results page', () => {
     it('when there are no results', async () => {
       // When
-      render(<Offers hits={[]} userRole={Role.redactor} />, { wrapper })
+      render(
+        <Offers hits={[]} setIsLoading={jest.fn} userRole={Role.redactor} />,
+        { wrapper }
+      )
 
       // Then
       const errorMessage = await screen.findByText(
@@ -302,9 +305,16 @@ describe('offers', () => {
       mockedPcapi.getOffer.mockResolvedValueOnce(offerInCayenne)
 
       // When
-      render(<Offers hits={searchFakeResults} userRole={Role.redactor} />, {
-        wrapper,
-      })
+      render(
+        <Offers
+          hits={searchFakeResults}
+          setIsLoading={jest.fn}
+          userRole={Role.redactor}
+        />,
+        {
+          wrapper,
+        }
+      )
 
       // Then
       const errorMessage = await screen.findByText(

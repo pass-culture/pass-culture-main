@@ -40,11 +40,13 @@ export const OffersSearch = ({
   venueFilter: VenueFilterType | null
 }): JSX.Element => {
   const [facetFilters, setFacetFilters] = useState<Facets>(initialFilters)
+  const [isLoading, setIsLoading] = useState<boolean>(false)
 
   const handleSearchButtonClick = (
     departments: Option[],
     students: Option[]
   ): void => {
+    setIsLoading(true)
     const updatedFilters: Facets = [...initialFilters]
     const filteredDepartments: string[] = departments.map(
       department => `venue.departmentCode:${department.value}`
@@ -89,11 +91,12 @@ export const OffersSearch = ({
         <OfferFilters
           className="search-filters"
           handleSearchButtonClick={handleSearchButtonClick}
+          isLoading={isLoading}
           removeVenueFilter={removeVenueFilter}
           venueFilter={venueFilter}
         />
         <div className="search-results">
-          <Offers userRole={userRole} />
+          <Offers setIsLoading={setIsLoading} userRole={userRole} />
         </div>
         <Pagination />
       </InstantSearch>

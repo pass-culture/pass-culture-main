@@ -18,4 +18,11 @@
   &:hover {
     cursor: pointer;
   }
+
+  &:disabled {
+    background-color: $primary-disabled;
+    border: rem(3px) solid $primary-disabled;
+    cursor: not-allowed;
+  }
+
 }
