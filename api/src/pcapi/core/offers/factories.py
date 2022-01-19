@@ -53,6 +53,9 @@ class VenueFactory(BaseFactory):
     siret = factory.LazyAttributeSequence(lambda o, n: f"{o.managingOfferer.siren}{n:05}")
     isVirtual = False
     venueTypeCode = offerers_models.VenueTypeCode.OTHER
+    venueType = factory.SubFactory(
+        "pcapi.core.offerers.factories.VenueTypeFactory", label=factory.SelfAttribute("..venueTypeCode.value")
+    )
     description = factory.Faker("text", max_nb_chars=64)
     audioDisabilityCompliant = False
     mentalDisabilityCompliant = False
@@ -76,6 +79,7 @@ class VirtualVenueFactory(VenueFactory):
     mentalDisabilityCompliant = None
     motorDisabilityCompliant = None
     visualDisabilityCompliant = None
+    venueTypeCode = offerers_models.VenueTypeCode.DIGITAL
 
 
 class ProductFactory(BaseFactory):

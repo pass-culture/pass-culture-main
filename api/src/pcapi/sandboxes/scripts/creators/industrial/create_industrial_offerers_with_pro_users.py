@@ -1,11 +1,12 @@
 import logging
 
+from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers.repository import check_if_siren_already_exists
+from pcapi.core.offers import factories as offers_factories
 from pcapi.core.users import factories as users_factories
 from pcapi.model_creators.generic_creators import create_bank_information
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_user_offerer
-from pcapi.model_creators.generic_creators import create_venue
 from pcapi.repository import repository
 from pcapi.sandboxes.scripts.mocks.educational_siren_mocks import MOCK_ADAGE_ELIGIBLE_SIREN
 from pcapi.sandboxes.scripts.mocks.offerer_mocks import MOCK_NAMES
@@ -176,15 +177,16 @@ def create_industrial_offerers_with_pro_users():
 
         if create_educational_offerer:
             offerer.siren = MOCK_ADAGE_ELIGIBLE_SIREN
-            create_venue(
-                offerer,
+            offers_factories.VenueFactory(
+                managingOfferer=offerer,
                 address=offerer.address,
-                booking_email="fake@email.com",
+                bookingEmail="fake@email.com",
                 city=offerer.city,
                 comment="Salle de cinéma",
                 name=offerer.name + " - Salle 1",
-                postal_code=offerer.postalCode,
+                postalCode=offerer.postalCode,
                 siret="88145723811111",
+                venueTypeCode=offerers_models.VenueTypeCode.MOVIE,
             )
 
         # create every OFFERERS_WITH_IBAN_REMOVE_MODULO an offerer with no iban
