@@ -47,7 +47,7 @@ export const OffersSearch = ({
   ): void => {
     const updatedFilters: Facets = [...initialFilters]
     const filteredDepartments: string[] = departments.map(
-      department => `venue.departementCode:${department.value}`
+      department => `venue.departmentCode:${department.value}`
     )
     const filteredStudents: string[] = students.map(
       student => `offer.students:${student.value}`
