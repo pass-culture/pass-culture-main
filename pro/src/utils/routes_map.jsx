@@ -79,7 +79,6 @@ export const routesWithMain = [
   },
   {
     component: ReimbursementsContainer,
-    exact: true,
     path: '/remboursements',
     title: 'Remboursements',
   },
@@ -92,7 +91,7 @@ export const routesWithMain = [
   {
     component: CsvDetailViewContainer,
     exact: true,
-    path: '/remboursements/detail',
+    path: '/remboursements-details',
     title: 'Remboursements',
   },
   {

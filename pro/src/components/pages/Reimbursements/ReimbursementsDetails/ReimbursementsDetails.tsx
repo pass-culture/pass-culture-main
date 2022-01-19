@@ -9,7 +9,7 @@ import {
   getToday,
 } from 'utils/date'
 
-import ReimbursementsSectionHeader from './ReimbursementsSectionHeader'
+import DetailsFilters from './DetailsFilters'
 
 type venuesOptionsType = [
   {
@@ -36,14 +36,14 @@ const ReimbursementsDetails = ({
     today.getDate()
   )
   const INITIAL_FILTERS = {
-    spot: ALL_VENUES_OPTION_ID,
+    venue: ALL_VENUES_OPTION_ID,
     periodStart: oneMonthAGo,
     periodEnd: today,
   }
 
   const [filters, setFilters] = useState(INITIAL_FILTERS)
   const {
-    spot: selectedVenue,
+    venue: selectedVenue,
     periodStart: selectedPeriodStart,
     periodEnd: selectedPeriodEnd,
   } = filters
@@ -105,9 +105,9 @@ const ReimbursementsDetails = ({
 
   return (
     <>
-      <ReimbursementsSectionHeader
+      <DetailsFilters
         defaultSelectDisplayName="Tous les lieux"
-        defaultSelectId="allVenues"
+        defaultSelectId={ALL_VENUES_OPTION_ID}
         filters={filters}
         headerTitle="Affichage des remboursements"
         initialFilters={INITIAL_FILTERS}
@@ -127,10 +127,11 @@ const ReimbursementsDetails = ({
         <CsvTableButtonContainer
           href={csvUrl}
           isDisabled={shouldDisableButtons}
+          url="/remboursements-details"
         >
           Afficher
         </CsvTableButtonContainer>
-      </ReimbursementsSectionHeader>
+      </DetailsFilters>
       <p className="format-mention">
         Le fichier est au format CSV, compatible avec tous les tableurs et
         éditeurs de texte.

@@ -15,40 +15,6 @@
   * @debt duplicated "Gaël : duplicated styles for reset filters (in ...pages/Offers/Offers.scss), + we already have a tertiary-button class that is very close... we should create a component for this and standardise a behavior"
   */
 
-  .refund-section-nav {
-    @include button();
-
-    background: none;
-    border: none;
-    position: relative;
-
-    &#refund-invoices-nav {
-      margin-right: rem(16px);
-    }
-
-    &.is-active {
-      color: $primary;
-
-      &::before {
-        border-bottom: 2px solid $primary;
-        content: "";
-        height: 1px;
-        left: 0;
-        position: absolute;
-        top: rem(22px);
-        width: rem(56px);
-      }
-    }
-  }
-
-  .refund-section {
-    display: none;
-
-    &.is-active {
-      display: block;
-    }
-  }
-
   .reset-filters {
     @include body-important();
 

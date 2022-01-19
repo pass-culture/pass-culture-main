@@ -10,7 +10,7 @@ type ColumnData = {
 }
 
 interface ITableBody {
-  invoices: Array<ColumnData>
+  invoices: ColumnData[]
 }
 
 const ReimbursementsTableBody = ({ invoices }: ITableBody): JSX.Element => {

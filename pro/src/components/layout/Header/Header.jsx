@@ -62,7 +62,11 @@ const Header = ({ isStyleguideActive, isUserAdmin }) => {
             Réservations
           </NavLink>
 
-          <NavLink className="nav-item" role="menuitem" to="/remboursements">
+          <NavLink
+            className="nav-item"
+            role="menuitem"
+            to="/remboursements/justificatifs"
+          >
             <RefundsSvg aria-hidden />
             Remboursements
           </NavLink>

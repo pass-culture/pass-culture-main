@@ -333,7 +333,7 @@ describe('reimbursementsWithFilters', () => {
     const withVenueFilterUrlParams =
       'venueId=VENUE2&reimbursementPeriodBeginningDate=2020-11-15&reimbursementPeriodEndingDate=2020-12-15'
     const displayRouteParams = filtersParams => [
-      '//detail',
+      '/remboursements-details',
       `${API_URL}/reimbursements/csv?${filtersParams}`,
     ]
 
