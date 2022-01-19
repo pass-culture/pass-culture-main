@@ -9,6 +9,7 @@ const aliases = {
   core: resolve('../src/core'),
   components: resolve('../src/components'),
   new_components: resolve('../src/new_components'),
+  hooks: resolve('../src/hooks'),
   'ui-kit': resolve('../src/ui-kit'),
   styles: resolve('../src/styles'),
   images: resolve('../src/images'),
