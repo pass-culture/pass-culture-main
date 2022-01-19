@@ -80,13 +80,13 @@ describe('offerFilters', () => {
       const departmentFilter = screen.getByLabelText('Département', {
         selector: 'input',
       })
-      await selectEvent.select(departmentFilter, 'Ain - 01')
+      await selectEvent.select(departmentFilter, '01 - Ain')
 
       expect(
         screen.queryByText('Réinitialiser les filtres')
       ).toBeInTheDocument()
       expect(
-        screen.queryByText('Ain - 01', { selector: 'div' }) // use selector div otherwise the option is found
+        screen.queryByText('01 - Ain', { selector: 'div' }) // use selector div otherwise the option is found
       ).toBeInTheDocument()
     })
 
@@ -103,9 +103,9 @@ describe('offerFilters', () => {
       const departmentFilter = screen.getByLabelText('Département', {
         selector: 'input',
       })
-      await selectEvent.select(departmentFilter, 'Ain - 01')
+      await selectEvent.select(departmentFilter, '01 - Ain')
       expect(
-        screen.getByText('Ain - 01', { selector: 'div' })
+        screen.getByText('01 - Ain', { selector: 'div' })
       ).toBeInTheDocument()
 
       const resetFiltersButton = screen.getByText('Réinitialiser les filtres')
@@ -114,7 +114,7 @@ describe('offerFilters', () => {
       // Then
       expect(removeVenueFilter).toHaveBeenCalledWith()
       expect(
-        screen.queryByText('Ain - 01', { selector: 'div' })
+        screen.queryByText('01 - Ain', { selector: 'div' })
       ).not.toBeInTheDocument()
     })
 
@@ -131,9 +131,9 @@ describe('offerFilters', () => {
       const departmentFilter = screen.getByLabelText('Département', {
         selector: 'input',
       })
-      await selectEvent.select(departmentFilter, 'Ain - 01')
+      await selectEvent.select(departmentFilter, '01 - Ain')
 
-      const filterTag = screen.getByText('Ain - 01', { selector: 'div' })
+      const filterTag = screen.getByText('01 - Ain', { selector: 'div' })
       expect(filterTag).toBeInTheDocument()
 
       const closeIcon = filterTag.lastChild
@@ -142,7 +142,7 @@ describe('offerFilters', () => {
 
       // Then
       expect(
-        screen.queryByText('Ain - 01', { selector: 'div' })
+        screen.queryByText('01 - Ain', { selector: 'div' })
       ).not.toBeInTheDocument()
     })
   })
