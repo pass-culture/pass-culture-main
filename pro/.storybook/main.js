@@ -17,6 +17,7 @@ const aliases = {
   utils: resolve('../src/utils'),
   custom_types: resolve('../src/custom_types'),
   repository: resolve('../src/repository'),
+  hooks: resolve('../src/hooks'),
 }
 
 const sassResourcesLoader = {
