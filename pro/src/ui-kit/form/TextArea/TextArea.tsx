@@ -45,6 +45,7 @@ const TextArea = ({
       smallLabel={smallLabel}
     >
       <Textarea
+        aria-invalid={meta.touched && !!meta.error}
         className={cn(styles['text-area'], {
           [styles['has-error']]: meta.touched && !!meta.error,
         })}

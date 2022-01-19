@@ -29,6 +29,7 @@ const Template = () => (
             name: `checkBoxes.${item}`,
           }))}
           groupName="checkBoxes"
+          legend="This is the legend"
         />
       )
     }}

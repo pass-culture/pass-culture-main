@@ -16,11 +16,8 @@
     color: $grey-dark;
   }
 
-  &-input {
-    margin-bottom: rem($input-space-before-error);
-  }
-
   &-footer {
+    margin-top: rem($input-space-before-error);
     display: flex;
     justify-content: flex-end;
     min-height: rem($input-error-reserved-space);

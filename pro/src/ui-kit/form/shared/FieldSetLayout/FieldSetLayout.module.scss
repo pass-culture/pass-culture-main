@@ -5,11 +5,8 @@
     margin-bottom: rem(16px);
   }
   
-  &-fields {
-    margin-bottom: rem($input-space-before-error);
-  }
-  
   &-error {
+    margin-top: rem($input-space-before-error);
     min-height: rem($input-error-reserved-space);
   }
 }
