@@ -3,13 +3,14 @@ import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import merge from 'lodash/merge'
 
+import { triggerFieldValidation } from 'ui-kit/form/__tests-utils__'
+
 import {
   defaultCreationProps,
   renderEACOfferForm,
   userOfferersFactory,
   managedVenuesFactory,
   elements,
-  triggerFieldValidation,
 } from '../__tests-utils__'
 import { IOfferEducationalProps } from '../OfferEducational'
 

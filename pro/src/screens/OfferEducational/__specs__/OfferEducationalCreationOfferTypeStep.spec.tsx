@@ -2,25 +2,26 @@ import '@testing-library/jest-dom'
 import { waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
+import { triggerFieldValidation } from 'ui-kit/form/__tests-utils__'
+
 import {
   categoriesFactory,
   defaultCreationProps,
   elements,
   renderEACOfferForm,
   subCategoriesFactory,
-  triggerFieldValidation,
 } from '../__tests-utils__'
 import { IOfferEducationalProps } from '../OfferEducational'
 
 const {
   findOfferTypeTitle,
-  queryOfferTypeTitle,
   queryCategorySelect,
   querySubcategorySelect,
   queryTitleInput,
   queryDescriptionTextArea,
   queryDurationInput,
 } = elements
+
 describe('screens | OfferEducational : creation offer type step', () => {
   let props: IOfferEducationalProps
 
@@ -31,7 +32,6 @@ describe('screens | OfferEducational : creation offer type step', () => {
   it('should display the right fields and titles', async () => {
     renderEACOfferForm(props)
     await findOfferTypeTitle()
-    expect(queryOfferTypeTitle()).toBeInTheDocument()
 
     const categorySelect = queryCategorySelect()
     expect(categorySelect.input).toBeInTheDocument()
@@ -90,7 +90,7 @@ describe('screens | OfferEducational : creation offer type step', () => {
         ]),
       }
     })
-    it('should require user to select a category before displaying subcatégories', async () => {
+    it('should require user to select a category before displaying subcategories', async () => {
       renderEACOfferForm(props)
       await findOfferTypeTitle()
 
@@ -186,6 +186,95 @@ describe('screens | OfferEducational : creation offer type step', () => {
 
       expect(categorySelect.input).toHaveValue('CAT_1')
       expect(subCategorySelect.input).toHaveValue('SUBCAT_1')
+    })
+  })
+
+  describe('title, description and duration inputs', () => {
+    it('should require a title with less than 90 chars (and truncate longer strings)', async () => {
+      renderEACOfferForm(props)
+      await findOfferTypeTitle()
+
+      const titleMaxLength = 90
+
+      const titleInput = queryTitleInput()
+      expect(titleInput.input).toHaveValue('')
+      expect(titleInput.getCounter()).toHaveTextContent(`0/${titleMaxLength}`)
+
+      triggerFieldValidation(titleInput.input as HTMLInputElement)
+
+      await waitFor(() => expect(titleInput.getError()).toBeInTheDocument())
+
+      expect(titleInput.getError()).toHaveTextContent(
+        'Veuillez renseigner un titre'
+      )
+
+      const title = 'a valid title'
+      userEvent.paste(titleInput.input as HTMLInputElement, title)
+
+      await waitFor(() => expect(titleInput.getError()).not.toBeInTheDocument())
+      expect(titleInput.getCounter()).toHaveTextContent(
+        `${title.length}/${titleMaxLength}`
+      )
+
+      await expect(titleInput.doesTruncateAt(titleMaxLength)).resolves.toBe(
+        true
+      )
+    })
+
+    it('should require a description with less than 1000 chars (and truncate longer strings)', async () => {
+      renderEACOfferForm(props)
+      await findOfferTypeTitle()
+
+      const descMaxLength = 1000
+
+      const description = queryDescriptionTextArea()
+      expect(description.input).toHaveValue('')
+      expect(description.getCounter()).toHaveTextContent(`0/${descMaxLength}`)
+
+      const descriptionString = 'my description that is valid'
+
+      userEvent.paste(
+        description.input as HTMLTextAreaElement,
+        descriptionString
+      )
+
+      await waitFor(() =>
+        expect(description.input).toHaveValue(descriptionString)
+      )
+
+      expect(description.getCounter()).toHaveTextContent(
+        `${descriptionString.length}/${descMaxLength}`
+      )
+
+      await expect(description.doesTruncateAt(descMaxLength)).resolves.toBe(
+        true
+      )
+    })
+
+    it('should have a duration field with a format of hh:mm', async () => {
+      renderEACOfferForm(props)
+      await findOfferTypeTitle()
+
+      const duration = queryDurationInput()
+      expect(duration.input).toHaveValue('')
+
+      userEvent.paste(duration.input as HTMLInputElement, 'bad String')
+
+      await waitFor(() => expect(duration.input).toHaveValue('bad String'))
+
+      triggerFieldValidation(duration.input as HTMLInputElement)
+
+      await waitFor(() =>
+        expect(duration.getError()).toHaveTextContent(
+          'Veuillez renseigner une durée en heures au format hh:mm. Exemple: 1:30'
+        )
+      )
+
+      userEvent.clear(duration.input as HTMLInputElement)
+      userEvent.paste(duration.input as HTMLInputElement, '2:30')
+
+      await waitFor(() => expect(duration.input).toHaveValue('2:30'))
+      await waitFor(() => expect(duration.getError()).not.toBeInTheDocument())
     })
   })
 })
