@@ -11,7 +11,12 @@ import {
 const FormNotifications = (): JSX.Element => (
   <FormLayout.Section title="Notifications">
     <FormLayout.Row>
-      <Checkbox label={NOTIFICATIONS_LABEL} name="notifications" value="" />
+      <Checkbox
+        hideFooter
+        label={NOTIFICATIONS_LABEL}
+        name="notifications"
+        value=""
+      />
     </FormLayout.Row>
     <FormLayout.Row>
       <TextInput label={NOTIFICATIONS_EMAIL_LABEL} name="notificationEmail" />
