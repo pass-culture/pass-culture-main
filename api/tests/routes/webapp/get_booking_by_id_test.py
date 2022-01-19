@@ -155,7 +155,7 @@ class Returns200Test:
                         "siret": offer.venue.siret,
                         "thumbCount": 0,
                         "venueLabelId": None,
-                        "venueTypeId": None,
+                        "venueTypeId": humanize(offer.venue.venueTypeId),
                         "visualDisabilityCompliant": False,
                         "venueTypeCode": offer.venue.venueTypeCode.value,
                         "withdrawalDetails": None,

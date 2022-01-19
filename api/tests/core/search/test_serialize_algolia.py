@@ -7,6 +7,7 @@ import pytest
 
 from pcapi.core.categories import subcategories
 import pcapi.core.offerers.factories as offerers_factories
+import pcapi.core.offerers.models as offerers_models
 from pcapi.core.search.backends.algolia import AlgoliaBackend
 from pcapi.model_creators.generic_creators import create_criterion
 from pcapi.model_creators.generic_creators import create_offerer
@@ -518,7 +519,7 @@ class BuildObjectTest:
 @pytest.mark.usefixtures("db_session")
 def test_serialize_venue():
     venue = offerers_factories.VenueFactory(
-        venueTypeCode="VISUAL_ARTS",
+        venueTypeCode=offerers_models.VenueTypeCode.VISUAL_ARTS,
         audioDisabilityCompliant=True,
         contact__email="venue@example.com",
         contact__website="http://venue.example.com",
