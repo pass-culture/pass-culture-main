@@ -6,12 +6,13 @@ import { CheckboxGroup } from 'ui-kit'
 import { participantsOptions } from './participantsOptions'
 
 const FormParticipants = (): JSX.Element => (
-  <FormLayout.Section
-    description="Cette offre s'adresse aux élèves de :"
-    title="Participants"
-  >
-    <FormLayout.Row lgSpaceAfter>
-      <CheckboxGroup group={participantsOptions} groupName="participants" />
+  <FormLayout.Section title="Participants">
+    <FormLayout.Row>
+      <CheckboxGroup
+        group={participantsOptions}
+        groupName="participants"
+        legend="Cette offre s'adresse aux élèves de :"
+      />
     </FormLayout.Row>
   </FormLayout.Section>
 )
