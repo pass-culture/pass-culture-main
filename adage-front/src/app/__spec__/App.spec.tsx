@@ -192,12 +192,12 @@ describe('app', () => {
       const searchConfigurationFirstCall = Configure.mock.calls[1][0]
       expect(searchConfigurationFirstCall.facetFilters).toStrictEqual([
         'offer.isEducational:true',
-        ['venue.departementCode:01'],
+        ['venue.departmentCode:01'],
       ])
       const searchConfigurationSecondCall = Configure.mock.calls[2][0]
       expect(searchConfigurationSecondCall.facetFilters).toStrictEqual([
         'offer.isEducational:true',
-        ['venue.departementCode:01', 'venue.departementCode:59'],
+        ['venue.departmentCode:01', 'venue.departmentCode:59'],
       ])
     })
 
@@ -226,12 +226,12 @@ describe('app', () => {
       const searchConfigurationFirstCall = Configure.mock.calls[1][0]
       expect(searchConfigurationFirstCall.facetFilters).toStrictEqual([
         'offer.isEducational:true',
-        ['venue.departementCode:01', 'venue.departementCode:59'],
+        ['venue.departmentCode:01', 'venue.departmentCode:59'],
       ])
       const searchConfigurationSecondCall = Configure.mock.calls[2][0]
       expect(searchConfigurationSecondCall.facetFilters).toStrictEqual([
         'offer.isEducational:true',
-        ['venue.departementCode:59'],
+        ['venue.departmentCode:59'],
       ])
       const searchConfigurationThirdCall = Configure.mock.calls[3][0]
       expect(searchConfigurationThirdCall.facetFilters).toStrictEqual([
