@@ -1,3 +1,4 @@
+import { Category, SubCategory } from 'app/types'
 import { client } from 'repository/pcapi/pcapiClient'
 import { OfferType, Role, VenueFilterType } from 'utils/types'
 
@@ -21,4 +22,11 @@ export const getVenueBySiret = async (
 
 export const preBookStock = async (stockId: number): Promise<number> => {
   return client.post('/adage-iframe/bookings', { stockId })
+}
+
+export const getEducationalCategories = async (): Promise<{
+  subcategories: SubCategory[]
+  categories: Category[]
+}> => {
+  return client.get('/adage-iframe/offers/categories')
 }
