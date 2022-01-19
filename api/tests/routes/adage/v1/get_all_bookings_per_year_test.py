@@ -42,6 +42,7 @@ class Returns200Test:
                     "beginningDatetime": format_into_utc_date(booking1.stock.beginningDatetime),
                     "venueTimezone": booking1.stock.offer.venue.timezone,
                     "name": booking1.stock.offer.name,
+                    "redactorEmail": booking1.educationalBooking.educationalRedactor.email,
                 },
                 {
                     "id": booking2.educationalBooking.id,
@@ -52,6 +53,7 @@ class Returns200Test:
                     "beginningDatetime": format_into_utc_date(booking2.stock.beginningDatetime),
                     "venueTimezone": booking2.stock.offer.venue.timezone,
                     "name": booking2.stock.offer.name,
+                    "redactorEmail": booking2.educationalBooking.educationalRedactor.email,
                 },
             ],
         }
