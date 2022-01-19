@@ -1,9 +1,8 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import React from 'react'
 import selectEvent from 'react-select-event'
 
-import * as pcapi from 'repository/pcapi/pcapi'
-import { Role, VenueFilterType } from 'utils/types'
+import { VenueFilterType } from 'utils/types'
 
 import { OfferFilters } from './OfferFilters'
 
@@ -11,7 +10,6 @@ jest.mock('repository/pcapi/pcapi', () => ({
   authenticate: jest.fn(),
   getVenueBySiret: jest.fn(),
 }))
-const mockedPcapi = pcapi as jest.Mocked<typeof pcapi>
 
 describe('offerFilters', () => {
   describe('filter tags', () => {

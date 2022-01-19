@@ -1,1 +1,1 @@
-export type Facets = (string|string[])[]
+export type Facets = (string | string[])[]
