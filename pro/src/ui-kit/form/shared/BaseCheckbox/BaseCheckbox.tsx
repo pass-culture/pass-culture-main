@@ -24,6 +24,7 @@ const BaseCheckbox = ({
 }: IBaseCheckboxProps): JSX.Element => (
   <label className={cn(styles['base-checkbox'], className)}>
     <input
+      aria-invalid={hasError}
       type="checkbox"
       {...props}
       className={cn(styles['base-checkbox-input'], {

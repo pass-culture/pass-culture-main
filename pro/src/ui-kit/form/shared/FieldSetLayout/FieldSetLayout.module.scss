@@ -1,8 +1,14 @@
-.checkbox {
-  &-input {
+.fieldset-layout {
+  border: none;
+  
+  &-legend {
+    margin-bottom: rem(16px);
+  }
+  
+  &-fields {
     margin-bottom: rem($input-space-before-error);
   }
-
+  
   &-error {
     min-height: rem($input-error-reserved-space);
   }
