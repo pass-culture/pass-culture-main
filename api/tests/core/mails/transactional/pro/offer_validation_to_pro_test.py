@@ -99,6 +99,42 @@ class MailjetSendOfferValidationTest:
 
 class SendinblueSendOfferValidationTest:
     @override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=True)
+    def test_get_validation_approval_correct_email_metadata(self):
+        # Given
+        offer = offer_factories.OfferFactory(name="Ma petite offre", venue__name="Mon stade")
+
+        # When
+        new_offer_validation_email = retrieve_data_for_offer_approval_email(offer)
+
+        # Then
+        assert new_offer_validation_email.template == TransactionalEmail.OFFER_APPROVAL_TO_PRO.value
+        assert new_offer_validation_email.params == {
+            "OFFER_NAME": "Ma petite offre",
+            "VENUE_NAME": "Mon stade",
+            "PC_PRO_OFFER_LINK": f"{PRO_URL}/offres/{humanize(offer.id)}/edition",
+        }
+
+    @override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=True)
+    def test_send_offer_approval_email(
+        self,
+    ):
+        # Given
+        venue = VenueFactory(name="Sibérie orientale")
+        offer = OfferFactory(name="Michel Strogoff", venue=venue)
+
+        # When
+        send_offer_validation_status_update_email(offer, OfferValidationStatus.APPROVED, ["jules.verne@example.com"])
+
+        # Then
+        assert len(mails_testing.outbox) == 1  # test number of emails sent
+        assert mails_testing.outbox[0].sent_data["To"] == "jules.verne@example.com"
+        assert mails_testing.outbox[0].sent_data["params"] == {
+            "OFFER_NAME": offer.name,
+            "PC_PRO_OFFER_LINK": f"{PRO_URL}/offres/{humanize(offer.id)}/edition",
+            "VENUE_NAME": venue.name,
+        }
+
+    @override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=True)
     def test_get_validation_rejection_correct_email_metadata(self):
         # Given
         offer = offer_factories.OfferFactory(name="Ma petite offre", venue__name="Mon stade")
