@@ -87,6 +87,7 @@ class VirtualVenueTypeFactory(BaseFactory):
 class VenueTypeFactory(BaseFactory):
     class Meta:
         model = VenueType
+        sqlalchemy_get_or_create = ("label",)
 
     label = "Librairie"
 
