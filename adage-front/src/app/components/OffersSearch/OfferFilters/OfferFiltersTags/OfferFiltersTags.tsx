@@ -14,16 +14,21 @@ export const OfferFiltersTags = ({
   handleDeleteFilter,
   handleResetFilters,
   students,
+  categories,
 }: {
   venueFilter: VenueFilterType | null
   removeVenueFilter: () => void
   departments: Option[]
-  handleDeleteFilter: (filterValue: string) => void
+  handleDeleteFilter: (filterValue: string | string[]) => void
   handleResetFilters: () => void
   students: Option[]
+  categories: Option<string[]>[]
 }): JSX.Element => {
   const hasActiveFilters = Boolean(
-    venueFilter?.id || departments.length > 0 || students.length > 0
+    venueFilter?.id ||
+      departments.length > 0 ||
+      students.length > 0 ||
+      categories.length > 0
   )
 
   return (
@@ -41,6 +46,13 @@ export const OfferFiltersTags = ({
             key={department.value}
             label={department.label}
             onClick={() => handleDeleteFilter(department.value)}
+          />
+        ))}
+        {categories.map(category => (
+          <Tag
+            key={category.value.join(',')}
+            label={category.label}
+            onClick={() => handleDeleteFilter(category.value)}
           />
         ))}
         {students.map(department => (
