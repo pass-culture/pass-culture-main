@@ -1,5 +1,6 @@
 import './OffersSearch.scss'
 import algoliasearch from 'algoliasearch/lite'
+import flatMap from 'lodash/flatMap'
 import * as React from 'react'
 import { useEffect, useState } from 'react'
 import { Configure, InstantSearch } from 'react-instantsearch-dom'
@@ -45,6 +46,7 @@ export const OffersSearch = ({
 
   const handleSearchButtonClick = (
     departments: Option[],
+    categories: Option<string[]>[],
     students: Option[]
   ): void => {
     setIsLoading(true)
@@ -52,12 +54,23 @@ export const OffersSearch = ({
     const filteredDepartments: string[] = departments.map(
       department => `venue.departmentCode:${department.value}`
     )
+    const filteredcategories: string[] = flatMap(
+      categories,
+      (category: Option<string[]>) =>
+        // category.value contains all subcategoryIds for this category
+        category.value.map(
+          subcategoryId => `offer.subcategoryId:${subcategoryId}`
+        )
+    )
     const filteredStudents: string[] = students.map(
       student => `offer.students:${student.value}`
     )
 
     if (filteredDepartments.length > 0) {
       updatedFilters.push(filteredDepartments)
+    }
+    if (filteredcategories.length > 0) {
+      updatedFilters.push(filteredcategories)
     }
     if (filteredStudents.length > 0) {
       updatedFilters.push(filteredStudents)
