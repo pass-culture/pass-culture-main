@@ -144,9 +144,16 @@ describe('offers', () => {
     mockedPcapi.getOffer.mockResolvedValueOnce(offerInCayenne)
 
     // When
-    render(<Offers hits={searchFakeResults} userRole={Role.redactor} />, {
-      wrapper,
-    })
+    render(
+      <Offers
+        hits={searchFakeResults}
+        setIsLoading={() => jest.fn()}
+        userRole={Role.redactor}
+      />,
+      {
+        wrapper,
+      }
+    )
 
     // Then
     const listItemsInOffer = await screen.findAllByRole('listitem')
@@ -160,7 +167,11 @@ describe('offers', () => {
     mockedPcapi.getOffer.mockResolvedValueOnce(offerInParis)
     mockedPcapi.getOffer.mockResolvedValueOnce(offerInCayenne)
     const { rerender } = render(
-      <Offers hits={searchFakeResults} userRole={Role.redactor} />,
+      <Offers
+        hits={searchFakeResults}
+        setIsLoading={() => jest.fn()}
+        userRole={Role.redactor}
+      />,
       { wrapper }
     )
     mockedPcapi.getOffer.mockResolvedValueOnce(otherOffer)
@@ -178,7 +189,13 @@ describe('offers', () => {
     }
 
     // When
-    rerender(<Offers hits={[otherSearchResult]} userRole={Role.redactor} />)
+    rerender(
+      <Offers
+        hits={[otherSearchResult]}
+        setIsLoading={() => jest.fn()}
+        userRole={Role.redactor}
+      />
+    )
 
     // Then
     const otherOfferName = await screen.findByText(otherOffer.name)
@@ -195,7 +212,11 @@ describe('offers', () => {
     )
     mockedPcapi.getOffer.mockResolvedValueOnce(offerInCayenne)
     const { rerender } = render(
-      <Offers hits={searchFakeResults} userRole={Role.redactor} />,
+      <Offers
+        hits={searchFakeResults}
+        setIsLoading={() => jest.fn()}
+        userRole={Role.redactor}
+      />,
       { wrapper }
     )
     mockedPcapi.getOffer.mockResolvedValueOnce(otherOffer)
@@ -213,7 +234,13 @@ describe('offers', () => {
     }
 
     // When
-    rerender(<Offers hits={[otherSearchResult]} userRole={Role.redactor} />)
+    rerender(
+      <Offers
+        hits={[otherSearchResult]}
+        setIsLoading={() => jest.fn()}
+        userRole={Role.redactor}
+      />
+    )
 
     // Then
     const otherOfferName = await screen.findByText(otherOffer.name)
@@ -235,9 +262,16 @@ describe('offers', () => {
     mockedPcapi.getOffer.mockResolvedValueOnce(offerInCayenne)
 
     // When
-    render(<Offers hits={searchFakeResults} userRole={Role.redactor} />, {
-      wrapper,
-    })
+    render(
+      <Offers
+        hits={searchFakeResults}
+        setIsLoading={() => jest.fn()}
+        userRole={Role.redactor}
+      />,
+      {
+        wrapper,
+      }
+    )
 
     // Then
     const loader = await screen.findByText('Recherche en cours')
@@ -253,9 +287,16 @@ describe('offers', () => {
     mockedPcapi.getOffer.mockResolvedValueOnce(offerInCayenne)
 
     // When
-    render(<Offers hits={searchFakeResults} userRole={Role.redactor} />, {
-      wrapper,
-    })
+    render(
+      <Offers
+        hits={searchFakeResults}
+        setIsLoading={() => jest.fn()}
+        userRole={Role.redactor}
+      />,
+      {
+        wrapper,
+      }
+    )
 
     // Then
     const listItemsInOffer = await screen.findAllByRole('listitem')
@@ -270,9 +311,16 @@ describe('offers', () => {
     mockedPcapi.getOffer.mockResolvedValueOnce(offerInCayenne)
 
     // When
-    render(<Offers hits={searchFakeResults} userRole={Role.redactor} />, {
-      wrapper,
-    })
+    render(
+      <Offers
+        hits={searchFakeResults}
+        setIsLoading={() => jest.fn()}
+        userRole={Role.redactor}
+      />,
+      {
+        wrapper,
+      }
+    )
 
     // Then
     const listItemsInOffer = await screen.findAllByRole('listitem')
@@ -284,7 +332,11 @@ describe('offers', () => {
     it('when there are no results', async () => {
       // When
       render(
-        <Offers hits={[]} setIsLoading={jest.fn} userRole={Role.redactor} />,
+        <Offers
+          hits={[]}
+          setIsLoading={() => jest.fn()}
+          userRole={Role.redactor}
+        />,
         { wrapper }
       )
 
@@ -308,7 +360,7 @@ describe('offers', () => {
       render(
         <Offers
           hits={searchFakeResults}
-          setIsLoading={jest.fn}
+          setIsLoading={() => jest.fn()}
           userRole={Role.redactor}
         />,
         {
@@ -331,9 +383,16 @@ describe('offers', () => {
       mockedPcapi.getOffer.mockRejectedValue('Offre inconnue')
 
       // When
-      render(<Offers hits={searchFakeResults} userRole={Role.redactor} />, {
-        wrapper,
-      })
+      render(
+        <Offers
+          hits={searchFakeResults}
+          setIsLoading={() => jest.fn()}
+          userRole={Role.redactor}
+        />,
+        {
+          wrapper,
+        }
+      )
 
       // Then
       const errorMessage = await screen.findByText(

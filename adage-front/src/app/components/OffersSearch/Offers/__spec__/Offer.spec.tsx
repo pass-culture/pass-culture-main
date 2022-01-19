@@ -101,9 +101,16 @@ describe('offer', () => {
       mockedPcapi.getOffer.mockResolvedValue(offerInParis)
 
       // When
-      render(<Offers hits={[searchFakeResult]} userRole={Role.redactor} />, {
-        wrapper,
-      })
+      render(
+        <Offers
+          hits={[searchFakeResult]}
+          setIsLoading={() => jest.fn()}
+          userRole={Role.redactor}
+        />,
+        {
+          wrapper,
+        }
+      )
 
       // Then
       const offerName = await screen.findByText(offerInParis.name)
@@ -120,9 +127,16 @@ describe('offer', () => {
       mockedPcapi.getOffer.mockResolvedValue(offerInCayenne)
 
       // When
-      render(<Offers hits={[searchFakeResult]} userRole={Role.redactor} />, {
-        wrapper,
-      })
+      render(
+        <Offers
+          hits={[searchFakeResult]}
+          setIsLoading={() => jest.fn()}
+          userRole={Role.redactor}
+        />,
+        {
+          wrapper,
+        }
+      )
 
       // Then
       const stockInformation = await screen.findByText(
@@ -147,9 +161,16 @@ describe('offer', () => {
       mockedPcapi.getOffer.mockResolvedValue(offerInParis)
 
       // When
-      render(<Offers hits={[searchFakeResult]} userRole={Role.redactor} />, {
-        wrapper,
-      })
+      render(
+        <Offers
+          hits={[searchFakeResult]}
+          setIsLoading={() => jest.fn()}
+          userRole={Role.redactor}
+        />,
+        {
+          wrapper,
+        }
+      )
 
       // Then
       const listItemsInOffer = await screen.findAllByRole('listitem')
@@ -171,9 +192,16 @@ describe('offer', () => {
       mockedPcapi.getOffer.mockResolvedValue(offerInParis)
 
       // When
-      render(<Offers hits={[searchFakeResult]} userRole={Role.redactor} />, {
-        wrapper,
-      })
+      render(
+        <Offers
+          hits={[searchFakeResult]}
+          setIsLoading={() => jest.fn()}
+          userRole={Role.redactor}
+        />,
+        {
+          wrapper,
+        }
+      )
 
       // Then
       const listItemsInOffer = await screen.findAllByRole('listitem')
@@ -189,9 +217,16 @@ describe('offer', () => {
     mockedPcapi.getOffer.mockResolvedValue(offerInParis)
 
     // When
-    render(<Offers hits={[searchFakeResult]} userRole={Role.redactor} />, {
-      wrapper,
-    })
+    render(
+      <Offers
+        hits={[searchFakeResult]}
+        setIsLoading={() => jest.fn()}
+        userRole={Role.redactor}
+      />,
+      {
+        wrapper,
+      }
+    )
 
     // Then
     const offerThumb = await screen.findByRole('img')
@@ -223,9 +258,16 @@ describe('offer', () => {
     }
 
     // When
-    render(<Offers hits={[searchResult]} userRole={Role.redactor} />, {
-      wrapper,
-    })
+    render(
+      <Offers
+        hits={[searchResult]}
+        setIsLoading={() => jest.fn()}
+        userRole={Role.redactor}
+      />,
+      {
+        wrapper,
+      }
+    )
 
     // Then
     const thumbPlaceholder = await screen.findByTestId('thumb-placeholder')
