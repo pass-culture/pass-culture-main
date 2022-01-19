@@ -79,12 +79,7 @@ def reset_recredit_amount_to_show(user: User) -> None:
 @authenticated_user_required
 def update_user_email(user: User, body: serializers.UserProfileEmailUpdate) -> None:
     try:
-        email_api.request_email_update(
-            user,
-            body.email,
-            body.password,
-            device_id=request.headers.get("device-id"),
-        )
+        email_api.request_email_update(user, body.email, body.password)
     except exceptions.EmailUpdateTokenExists:
         raise ApiErrors(
             {"code": "TOKEN_EXISTS", "message": "Une demande de modification d'adresse e-mail est déjà en cours"},
@@ -116,11 +111,7 @@ def update_user_email(user: User, body: serializers.UserProfileEmailUpdate) -> N
 def validate_user_email(body: beneficiaries_serialization.ChangeBeneficiaryEmailBody) -> None:
     try:
         payload = beneficiaries_serialization.ChangeEmailTokenContent.from_token(body.token)
-        api.change_user_email(
-            current_email=payload.current_email,
-            new_email=payload.new_email,
-            device_id=request.headers.get("device-id"),
-        )
+        api.change_user_email(current_email=payload.current_email, new_email=payload.new_email)
     except pydantic.ValidationError:
         raise ApiErrors(
             {"code": "INVALID_EMAIL", "message": "Adresse email invalide"},

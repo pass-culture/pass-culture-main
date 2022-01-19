@@ -393,7 +393,6 @@ class UserEmailHistoryFactory(BaseFactory):
     oldDomainEmail = factory.LazyAttribute(lambda o: o.user.email.split("@")[1])
     newUserEmail = factory.LazyAttribute(lambda o: o.user.email.split("@")[0])
     newDomainEmail = factory.LazyAttribute(lambda o: o.user.email.split("@")[1] + ".update")
-    deviceId = "deviceId"
 
 
 class EmailUpdateEntryFactory(UserEmailHistoryFactory):

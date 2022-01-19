@@ -3,7 +3,6 @@ from flask import request
 from flask import url_for
 from flask.helpers import flash
 from flask_admin import expose
-from flask_login import current_user
 from werkzeug import Response
 from werkzeug.exceptions import BadRequestKeyError
 from werkzeug.routing import BuildError
@@ -26,7 +25,6 @@ class UserEmailHistoryView(SuspensionMixin, BaseAdminView):
         "newEmail",
         "creationDate",
         "eventType",
-        "deviceId",
     ]
 
     column_labels = dict(
@@ -37,14 +35,12 @@ class UserEmailHistoryView(SuspensionMixin, BaseAdminView):
         newDomainEmail="Nouveau nom de domaine d'adresse email",
         creationDate="Date de création",
         eventType="Type d'événement",
-        deviceId="Device ID",
     )
 
     column_searchable_list = [
         "userId",
         "oldEmail",
         "newEmail",
-        "deviceId",
     ]
 
     column_filters = [
@@ -54,7 +50,6 @@ class UserEmailHistoryView(SuspensionMixin, BaseAdminView):
         "newEmail",
         "newDomainEmail",
         "eventType",
-        "deviceId",
     ]
 
     @expose("/")
@@ -86,9 +81,7 @@ class UserEmailHistoryView(SuspensionMixin, BaseAdminView):
             )
         else:
             try:
-                users_api.change_user_email(
-                    current_email=entry.oldEmail, new_email=entry.newEmail, admin=True, device_id=current_user.email
-                )
+                users_api.change_user_email(current_email=entry.oldEmail, new_email=entry.newEmail, admin=True)
             except users_exceptions.UserDoesNotExist:
                 flash(f"L'utilisateur avec l'adresse email {entry.oldEmail} n'a pas été trouvé", category="error")
             except users_exceptions.EmailExistsError:
