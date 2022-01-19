@@ -24,7 +24,6 @@ from pcapi.core.users import constants as users_constants
 from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import testing as sendinblue_testing
-from pcapi.core.users.api import BeneficiaryValidationStep
 from pcapi.core.users.api import _set_offerer_departement_code
 from pcapi.core.users.api import count_existing_id_check_tokens
 from pcapi.core.users.api import create_id_check_token
@@ -36,8 +35,8 @@ from pcapi.core.users.api import generate_and_save_token
 from pcapi.core.users.api import get_domains_credit
 from pcapi.core.users.api import get_eligibility_at_date
 from pcapi.core.users.api import get_eligibility_start_datetime
+from pcapi.core.users.api import has_passed_all_checks_to_become_beneficiary
 from pcapi.core.users.api import set_pro_tuto_as_seen
-from pcapi.core.users.api import steps_to_become_beneficiary
 from pcapi.core.users.factories import BeneficiaryImportFactory
 from pcapi.core.users.factories import UserFactory
 from pcapi.core.users.models import Credit
@@ -452,7 +451,7 @@ class StepsToBecomeBeneficiaryTest:
             user=user, type=fraud_models.FraudCheckType.HONOR_STATEMENT, status=fraud_models.FraudCheckStatus.OK
         )
 
-        assert steps_to_become_beneficiary(user, EligibilityType.AGE18) == []
+        assert users_api.has_passed_all_checks_to_become_beneficiary(user) is True
 
     @override_features(FORCE_PHONE_VALIDATION=True)
     def test_missing_step(self):
@@ -464,7 +463,7 @@ class StepsToBecomeBeneficiaryTest:
             user=user, type=fraud_models.FraudCheckType.HONOR_STATEMENT, status=fraud_models.FraudCheckStatus.OK
         )
 
-        assert steps_to_become_beneficiary(user, EligibilityType.AGE18) == [BeneficiaryValidationStep.PHONE_VALIDATION]
+        assert users_api.has_passed_all_checks_to_become_beneficiary(user) is False
         assert not user.has_beneficiary_role
 
     @override_features(FORCE_PHONE_VALIDATION=True)
@@ -478,34 +477,20 @@ class StepsToBecomeBeneficiaryTest:
             user=user, type=fraud_models.FraudCheckType.HONOR_STATEMENT, status=fraud_models.FraudCheckStatus.OK
         )
 
-        expected = [
-            BeneficiaryValidationStep.PHONE_VALIDATION,
-            BeneficiaryValidationStep.ID_CHECK,
-        ]
-        assert steps_to_become_beneficiary(user, EligibilityType.AGE18) == expected
+        assert has_passed_all_checks_to_become_beneficiary(user) is False
         assert not user.has_beneficiary_role
 
     @override_features(FORCE_PHONE_VALIDATION=True, IS_HONOR_STATEMENT_MANDATORY_TO_ACTIVATE_BENEFICIARY=True)
     def test_missing_all(self):
         user = self.eligible_user(validate_phone=False)
 
-        expected = [
-            BeneficiaryValidationStep.PHONE_VALIDATION,
-            BeneficiaryValidationStep.ID_CHECK,
-            BeneficiaryValidationStep.HONOR_STATEMENT,
-        ]
-        assert steps_to_become_beneficiary(user, EligibilityType.AGE18) == expected
+        assert has_passed_all_checks_to_become_beneficiary(user) is False
         assert not user.has_beneficiary_role
 
     @override_features(FORCE_PHONE_VALIDATION=True, IS_HONOR_STATEMENT_MANDATORY_TO_ACTIVATE_BENEFICIARY=False)
     def test_missing_all_honor_statement_optional(self):
         user = self.eligible_user(validate_phone=False)
-
-        expected = [
-            BeneficiaryValidationStep.PHONE_VALIDATION,
-            BeneficiaryValidationStep.ID_CHECK,
-        ]
-        assert steps_to_become_beneficiary(user, EligibilityType.AGE18) == expected
+        assert has_passed_all_checks_to_become_beneficiary(user) is False
         assert not user.has_beneficiary_role
 
 
