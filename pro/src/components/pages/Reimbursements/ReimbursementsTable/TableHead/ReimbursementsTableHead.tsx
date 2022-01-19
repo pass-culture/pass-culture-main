@@ -2,14 +2,14 @@ import React from 'react'
 
 import Icon from 'components/layout/Icon'
 
-type columnOptionType = {
+type ColumnOptionType = {
   title: string
   sortBy: string
   selfDirection: string
 }
 
 interface IReimbursementsTableHead {
-  columns: [columnOptionType]
+  columns: ColumnOptionType[]
   sortBy: (sortBy: string) => void
 }
 
@@ -17,7 +17,7 @@ const ReimbursementsTableHead = ({
   columns,
   sortBy,
 }: IReimbursementsTableHead): JSX.Element => {
-  const changeDirection = (columnOption: columnOptionType) => {
+  const changeDirection = (columnOption: ColumnOptionType) => {
     const otherColumnOption = columns.filter(title => title !== columnOption)
 
     otherColumnOption.forEach(columnOption => {

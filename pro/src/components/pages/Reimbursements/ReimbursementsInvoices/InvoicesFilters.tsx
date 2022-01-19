@@ -13,7 +13,7 @@ type selectableOptionsType = [
 ]
 
 type filtersType = {
-  spot: string
+  businessUnit: string
   periodStart: Date
   periodEnd: Date
 }
@@ -31,7 +31,7 @@ interface IReimbursementsSectionHeaderProps {
   selectableOptions: selectableOptionsType
 }
 
-const ReimbursementsSectionHeader = ({
+const InvoicesFilters = ({
   children,
   defaultSelectDisplayName,
   defaultSelectId,
@@ -44,7 +44,7 @@ const ReimbursementsSectionHeader = ({
   setFilters,
 }: IReimbursementsSectionHeaderProps): JSX.Element => {
   const {
-    spot: selectedSpot,
+    businessUnit: selectedBusinessUnit,
     periodStart: selectedPeriodStart,
     periodEnd: selectedPeriodEnd,
   } = filters
@@ -53,12 +53,12 @@ const ReimbursementsSectionHeader = ({
     setFilters(initialFilters)
   }
 
-  const setSpotFilter = useCallback(
+  const setBusinessUnitFilter = useCallback(
     event => {
-      const spotId = event.target.value
+      const businessUnitId = event.target.value
       setFilters((prevFilters: filtersType) => ({
         ...prevFilters,
-        spot: spotId,
+        businessUnit: businessUnitId,
       }))
     },
     [setFilters]
@@ -104,11 +104,11 @@ const ReimbursementsSectionHeader = ({
             displayName: defaultSelectDisplayName,
             id: defaultSelectId,
           }}
-          handleSelection={setSpotFilter}
+          handleSelection={setBusinessUnitFilter}
           label={selectLabel}
           name={selectName}
           options={selectableOptions}
-          selectedValue={selectedSpot}
+          selectedValue={selectedBusinessUnit}
         />
         <PeriodSelector
           changePeriodBeginningDateValue={setStartDateFilter}
@@ -130,4 +130,4 @@ const ReimbursementsSectionHeader = ({
   )
 }
 
-export default ReimbursementsSectionHeader
+export default InvoicesFilters

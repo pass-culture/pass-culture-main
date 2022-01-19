@@ -6,17 +6,11 @@ export const ALL_VENUES = 'all'
 export const ALL_DATES = 'all'
 export const EMPTY_FILTER_VALUE = ''
 export const DEFAULT_BOOKING_PERIOD = 30
-export const DEFAULT_INVOICES_PERIOD = 30
 export const DEFAULT_PRE_FILTERS = {
   bookingBeginningDate: startOfDay(subDays(getToday(), DEFAULT_BOOKING_PERIOD)),
   bookingEndingDate: startOfDay(getToday()),
   offerEventDate: ALL_DATES,
   offerVenueId: ALL_VENUES,
-}
-export const DEFAULT_INVOICES_FILTERS = {
-  businessUnitId: 'all',
-  periodBeginningDate: startOfDay(subDays(getToday(), DEFAULT_INVOICES_PERIOD)),
-  periodEndingDate: startOfDay(getToday()),
 }
 export const ALL_VENUES_OPTION = {
   displayName: 'Tous les lieux',

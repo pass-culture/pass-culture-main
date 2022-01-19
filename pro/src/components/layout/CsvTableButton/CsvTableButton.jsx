@@ -11,9 +11,9 @@ import React, { PureComponent } from 'react'
  */
 class CsvTableButton extends PureComponent {
   handleRedirectToUrl = () => {
-    const { history, href, location } = this.props
+    const { history, href, location, url } = this.props
     const { pathname } = location
-    const nextUrl = pathname + '/detail'
+    const nextUrl = url ? url : pathname + '/detail'
     history.push(nextUrl, href)
   }
 
@@ -35,6 +35,7 @@ class CsvTableButton extends PureComponent {
 CsvTableButton.defaultProps = {
   children: '',
   isDisabled: false,
+  url: undefined,
 }
 
 CsvTableButton.propTypes = {
@@ -43,6 +44,7 @@ CsvTableButton.propTypes = {
   href: PropTypes.string.isRequired,
   isDisabled: PropTypes.bool,
   location: PropTypes.shape().isRequired,
+  url: PropTypes.string,
 }
 
 export default CsvTableButton

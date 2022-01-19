@@ -2,14 +2,12 @@
  * @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
  */
 
-import {
-  DEFAULT_INVOICES_FILTERS,
-  DEFAULT_PRE_FILTERS,
-} from 'components/pages/Bookings/PreFilters/_constants'
+import { DEFAULT_PRE_FILTERS } from 'components/pages/Bookings/PreFilters/_constants'
 import {
   ALL_OFFERERS,
   DEFAULT_SEARCH_FILTERS,
 } from 'components/pages/Offers/Offers/_constants'
+import { DEFAULT_INVOICES_FILTERS } from 'components/pages/Reimbursements/_constants'
 import { client } from 'repository/pcapi/pcapiClient'
 import {
   FORMAT_ISO_DATE_ONLY,
