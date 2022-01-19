@@ -4,23 +4,22 @@ import styles from './ReimbursementsTable.module.scss'
 import ReimbursementsTableBody from './TableBody/ReimbursementsTableBody'
 import ReimbursementsTableHead from './TableHead/ReimbursementsTableHead'
 
-type invoice = {
+type Invoice = {
   date: string
   businessUnitName: string
   reference: string
   amount: string
 }
 
-// TODO specify type 'invoice' to invoices Array makes the app crash on line 43, find a solution
+type Column = {
+  title: string
+  sortBy: string
+  selfDirection: string
+}
+
 interface ITableProps {
-  columns: [
-    {
-      title: string
-      sortBy: string
-      selfDirection: string
-    }
-  ]
-  invoices: Array<any>
+  columns: Column[]
+  invoices: Invoice[]
 }
 
 const IS_ASCENDENT = 'asc'
@@ -40,9 +39,15 @@ const ReimbursementsTable = ({
   const sortBy = useCallback(
     (fieldToSort: string, sortDirection: string) => {
       const newSortedInvoices = invoices.sort((columnA, columnB) => {
-        if (columnA[fieldToSort] < columnB[fieldToSort])
+        if (
+          columnA[fieldToSort as keyof Invoice] <
+          columnB[fieldToSort as keyof Invoice]
+        )
           return sortDirection === IS_ASCENDENT ? -1 : 1
-        if (columnA[fieldToSort] > columnB[fieldToSort])
+        if (
+          columnA[fieldToSort as keyof Invoice] >
+          columnB[fieldToSort as keyof Invoice]
+        )
           return sortDirection === IS_ASCENDENT ? 1 : -1
         return 0
       })

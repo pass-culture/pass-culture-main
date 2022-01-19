@@ -1,12 +1,12 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 
+import * as pcapi from 'repository/pcapi/pcapi'
 import { getToday } from 'utils/date'
 
-import ReimbursementsTable from '../../../new_components/Table'
-import * as pcapi from '../../../repository/pcapi/pcapi'
-import Spinner from '../../layout/Spinner'
+import Spinner from '../../../layout/Spinner'
+import ReimbursementsTable from '../ReimbursementsTable'
 
-import ReimbursementsSectionHeader from './ReimbursementsSectionHeader'
+import InvoicesFilters from './InvoicesFilters'
 
 type businessUnitsOptionsType = [
   {
@@ -18,20 +18,35 @@ type businessUnitsOptionsType = [
 interface IReimbursementsInvoicesProps {
   isCurrentUserAdmin: boolean
   businessUnitsOptions: businessUnitsOptionsType
-  columns: [
-    {
-      title: string
-      sortBy: string
-      selfDirection: string
-    }
-  ]
 }
 
 const ReimbursementsInvoices = ({
   isCurrentUserAdmin,
   businessUnitsOptions,
-  columns,
 }: IReimbursementsInvoicesProps): JSX.Element => {
+  const columns = [
+    {
+      title: 'Date',
+      sortBy: 'date',
+      selfDirection: 'default',
+    },
+    {
+      title: 'Point de remboursement',
+      sortBy: 'businessUnit',
+      selfDirection: 'default',
+    },
+    {
+      title: 'Référence',
+      sortBy: 'reference',
+      selfDirection: 'default',
+    },
+    {
+      title: 'Montant remboursé',
+      sortBy: 'amount',
+      selfDirection: 'default',
+    },
+  ]
+
   const ALL_BUSINESS_UNITS_OPTION_ID = 'all'
   const today = getToday()
   const oneMonthAgo = new Date(
@@ -40,7 +55,7 @@ const ReimbursementsInvoices = ({
     today.getDate()
   )
   const INITIAL_FILTERS = {
-    spot: ALL_BUSINESS_UNITS_OPTION_ID,
+    businessUnit: ALL_BUSINESS_UNITS_OPTION_ID,
     periodStart: oneMonthAgo,
     periodEnd: today,
   }
@@ -49,9 +64,10 @@ const ReimbursementsInvoices = ({
   const [invoices, setInvoices] = useState([])
   const [isLoading, setIsLoading] = useState(true)
   const [hasError, setHasError] = useState(false)
+  const isCalledOnceRef = useRef(false)
 
   const {
-    spot: selectedBusinessUnit,
+    businessUnit: selectedBusinessUnit,
     periodStart: selectedPeriodStart,
     periodEnd: selectedPeriodEnd,
   } = filters
@@ -62,35 +78,35 @@ const ReimbursementsInvoices = ({
   const shouldDisableButton =
     !isPeriodFilterSelected || requireVenueFilterForAdmin
 
-  const loadInvoices = useCallback(
-    async filters => {
-      const invoicesFilters = {
-        businessUnitId: filters.spot,
-        periodBeginningDate: filters.periodStart,
-        periodEndingDate: filters.periodEnd,
-      }
-      pcapi
-        .getInvoices(invoicesFilters)
-        .then(invoices => {
-          setInvoices(invoices)
-          setIsLoading(false)
-          setHasError(false)
-        })
-        .catch(() => {
-          setIsLoading(false)
-          setHasError(true)
-        })
-    },
-    [setInvoices]
-  )
+  const loadInvoices = useCallback(() => {
+    const invoicesFilters = {
+      businessUnitId: filters.businessUnit,
+      periodBeginningDate: filters.periodStart,
+      periodEndingDate: filters.periodEnd,
+    }
+    pcapi
+      .getInvoices(invoicesFilters)
+      .then(invoices => {
+        setInvoices(invoices)
+        setIsLoading(false)
+        setHasError(false)
+      })
+      .catch(() => {
+        setIsLoading(false)
+        setHasError(true)
+      })
+  }, [filters.businessUnit, filters.periodEnd, filters.periodStart])
 
   useEffect(() => {
-    loadInvoices(filters)
-  }, [filters, loadInvoices])
+    if (!isCalledOnceRef.current) {
+      isCalledOnceRef.current = true
+      loadInvoices()
+    }
+  }, [loadInvoices])
 
   return (
     <>
-      <ReimbursementsSectionHeader
+      <InvoicesFilters
         defaultSelectDisplayName="Tous les points de remboursement"
         defaultSelectId="all"
         filters={filters}
@@ -104,12 +120,12 @@ const ReimbursementsInvoices = ({
         <button
           className="primary-button"
           disabled={shouldDisableButton}
-          onClick={() => loadInvoices(filters)}
+          onClick={() => loadInvoices()}
           type="button"
         >
           Lancer la recherche
         </button>
-      </ReimbursementsSectionHeader>
+      </InvoicesFilters>
       {isLoading && <Spinner />}
       {hasError && 'Une erreur est survenue, veuillez réessayer plus tard.'}
       {!hasError && invoices.length === 0 && 'Pas de résultats'}

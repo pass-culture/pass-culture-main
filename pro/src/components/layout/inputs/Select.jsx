@@ -67,7 +67,7 @@ const Select = ({
       )}
       {options.map(option => (
         <option key={option.id} value={option.id}>
-          {option.displayName || option.name}
+          {option.displayName}
         </option>
       ))}
     </select>
