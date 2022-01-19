@@ -1,5 +1,6 @@
 import logging
 
+from google.cloud.exceptions import NotFound
 from google.cloud.storage import Client
 from google.cloud.storage.bucket import Bucket
 from google.oauth2.service_account import Credentials
@@ -36,6 +37,8 @@ class GCPBackend(BaseBackend):
             bucket = self.get_gcp_storage_client_bucket()
             gcp_cloud_blob = bucket.blob(storage_path)
             gcp_cloud_blob.delete()
+        except NotFound:
+            logger.info("File not found on deletion on GCP bucket: %s", storage_path)
         except Exception as exc:
             logger.exception("An error has occured while trying to delete file on GCP bucket: %s", exc)
             raise exc
