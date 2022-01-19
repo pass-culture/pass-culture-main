@@ -1,4 +1,3 @@
-import { action } from '@storybook/addon-actions'
 import React from 'react'
 
 import { DEFAULT_EAC_FORM_VALUES, Mode } from 'core/OfferEducational'
@@ -57,21 +56,20 @@ const Template = () => (
   <OfferEducational
     educationalCategories={mockEducationalCategories}
     educationalSubCategories={mockEducationalSubcategories}
-    getIsOffererEligible={() => {
-      action('getIsOffererEligible')
-      return Promise.resolve({
+    getIsOffererEligible={() =>
+      Promise.resolve({
         isOk: true,
         message: null,
         payload: { isOffererEligibleToEducationalOffer: true },
       })
-    }}
+    }
     initialValues={DEFAULT_EAC_FORM_VALUES}
     mode={Mode.CREATION}
     notify={{
-      success: action('success'),
-      error: action('error'),
-      information: action('information'),
-      pending: action('pending'),
+      success: () => null,
+      error: () => null,
+      information: () => null,
+      pending: () => null,
     }}
     onSubmit={values => {
       console.log(JSON.stringify(values, null, 2))
