@@ -1,5 +1,7 @@
+from unittest.mock import MagicMock
 from unittest.mock import patch
 
+from google.cloud.exceptions import NotFound
 import pytest
 
 from pcapi.core.object_storage import BACKENDS_MAPPING
@@ -85,6 +87,24 @@ class DeletePublicObjectTest:
     def test_gcp_backend_call(self, mock_gcp_delete_public_object):
         delete_public_object("bucket", "object_id")
         mock_gcp_delete_public_object.assert_called_once_with("bucket", "object_id")
+
+    @override_settings(OBJECT_STORAGE_PROVIDER="GCP")
+    @patch("pcapi.core.object_storage.backends.gcp.GCPBackend.get_gcp_storage_client_bucket")
+    def test_gcp_backend_call_when_gcp_return_return_not_found_error_not_raises_exception(
+        self, mocked_get_gcp_storage_client_bucket
+    ):
+        mocked_bucket = MagicMock()
+        gcp_cloud_blob = MagicMock()
+        gcp_cloud_blob.delete.side_effect = NotFound(
+            "DELETE storage/v1/o/thumbs%2Fmediations%object_id?prettyPrint=false: No such object: thumbs/mediations/object_id"
+        )
+        mocked_bucket.blob.return_value = gcp_cloud_blob
+        mocked_get_gcp_storage_client_bucket.return_value = mocked_bucket
+
+        try:
+            delete_public_object("bucket", "object_id")
+        except NotFound as exc:
+            assert False, f"'delete_public_object' raised an exception {exc}"
 
     @override_settings(OBJECT_STORAGE_PROVIDER="OVH,GCP")
     @patch("pcapi.core.object_storage.backends.ovh.OVHBackend.delete_public_object")
