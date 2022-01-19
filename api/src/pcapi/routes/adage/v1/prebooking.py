@@ -135,6 +135,7 @@ def get_all_bookings_per_year(
             beginningDatetime=educational_booking.booking.stock.beginningDatetime,
             venueTimezone=educational_booking.booking.stock.offer.venue.timezone,
             name=educational_booking.booking.stock.offer.name,
+            redactorEmail=educational_booking.educationalRedactor.email,
         )
         for educational_booking in educational_bookings
     ]
