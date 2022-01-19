@@ -120,8 +120,8 @@ class TransactionalEmail(Enum):
     FIRST_OFFER_CREATED_BY_PRO = TemplatePro(id_prod=0000, id_not_prod=0000, tags=[""])
     FRAUD_PREVENTION_TO_PRO = TemplatePro(id_prod=0000, id_not_prod=0000, tags=[""])
     NEW_BOOKING_TO_PRO = TemplatePro(id_prod=0000, id_not_prod=0000, tags=["pro_nouvelle_reservation"])
-    OFFER_MANUAL_VALIDATION_TO_PRO = TemplatePro(
-        id_prod=0000, id_not_prod=0000, tags=["pro_validation_offre"], sender=SendinblueTransactionalSender.COMPLIANCE
+    OFFER_APPROVAL_TO_PRO = TemplatePro(
+        id_prod=349, id_not_prod=49, tags=["pro_validation_offre"], sender=SendinblueTransactionalSender.COMPLIANCE
     )
     OFFER_REJECTION_TO_PRO = TemplatePro(
         id_prod=375, id_not_prod=48, tags=["pro_offre_refusee"], sender=SendinblueTransactionalSender.COMPLIANCE
