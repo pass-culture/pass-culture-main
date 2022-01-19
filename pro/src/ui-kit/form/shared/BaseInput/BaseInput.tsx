@@ -22,9 +22,9 @@ const BaseInput = forwardRef(
     !RightIcon ? (
       <input
         {...props}
+        aria-invalid={hasError}
         className={cn(
           styles['base-input'],
-          styles['base-input-with-right-icon'],
           {
             [styles['has-error']]: hasError,
           },

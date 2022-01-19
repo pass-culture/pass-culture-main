@@ -25,6 +25,7 @@ const SelectInput = ({
 }: ISelectInputProps): JSX.Element => (
   <div className={styles['select-input-wrapper']}>
     <select
+      aria-invalid={hasError}
       className={cn(styles['select-input'], {
         [styles['has-error']]: hasError,
       })}
