@@ -22,3 +22,11 @@
   z-index: -1;
   top: 50%;
 }
+
+.offer-filters-row {
+  display: flex;
+}
+
+.offer-filters-filter:not(:last-of-type) {
+  margin-right: rem(24px);
+}

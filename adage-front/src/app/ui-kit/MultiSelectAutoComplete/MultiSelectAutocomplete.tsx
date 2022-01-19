@@ -1,3 +1,4 @@
+import cn from 'classnames'
 import React from 'react'
 import Select from 'react-select'
 
@@ -14,14 +15,17 @@ interface MultiSelectAutocompleteProps {
   onChange: (selectedOptions: Option[]) => void
   label?: string
   initialValues: Option[]
+  className?: string
 }
+
 const MultiSelectAutocomplete = ({
   options,
   onChange,
   label,
   initialValues,
+  className,
 }: MultiSelectAutocompleteProps): JSX.Element => (
-  <div className="multi-select-autocomplete-container">
+  <div className={cn(className, 'multi-select-autocomplete-container')}>
     <label
       className="multi-select-autocomplete-label"
       htmlFor={`multi-select-autocomplete-${label}`}
