@@ -2,13 +2,14 @@ import cn from 'classnames'
 import { useField } from 'formik'
 import React from 'react'
 
-import { FieldError } from '../shared'
+import { FieldSetLayout } from '../shared'
 
 import styles from './CheckboxGroup.module.scss'
 import CheckboxGroupItem from './CheckboxGroupItem'
 
 interface ICheckboxGroupProps {
   groupName: string
+  legend: string
   group: {
     name: string
     label: string
@@ -20,19 +21,16 @@ interface ICheckboxGroupProps {
 const CheckboxGroup = ({
   group,
   groupName,
+  legend,
   className,
 }: ICheckboxGroupProps): JSX.Element => {
   const [, meta, helpers] = useField({ name: groupName })
 
   return (
-    <div
-      className={cn(
-        styles['checkbox-group'],
-        {
-          [styles['has-error']]: meta.touched && !!meta.error,
-        },
-        className
-      )}
+    <FieldSetLayout
+      className={cn(styles['checkbox-group'], className)}
+      error={meta.touched && !!meta.error ? meta.error : undefined}
+      legend={legend}
     >
       {group.map(item => (
         <div className={styles['checkbox-group-item']} key={item.name}>
@@ -47,10 +45,7 @@ const CheckboxGroup = ({
           />
         </div>
       ))}
-      <div className={styles['checkbox-group-error-wrapper']}>
-        {meta.touched && !!meta.error && <FieldError>{meta.error}</FieldError>}
-      </div>
-    </div>
+    </FieldSetLayout>
   )
 }
 

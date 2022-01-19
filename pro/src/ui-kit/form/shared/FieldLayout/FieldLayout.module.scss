@@ -1,6 +1,6 @@
 .field-layout {
   &-label {
-    margin-bottom: rem(8px);
+    margin-bottom: rem($label-space-before-input);
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -17,13 +17,13 @@
   }
 
   &-input {
-    margin-bottom: rem(8px);
+    margin-bottom: rem($input-space-before-error);
   }
 
   &-footer {
     display: flex;
     justify-content: flex-end;
-    min-height: rem(24px);
+    min-height: rem($input-error-reserved-space);
   }
 
   &-error {
