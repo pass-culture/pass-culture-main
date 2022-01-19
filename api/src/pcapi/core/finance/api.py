@@ -24,6 +24,7 @@ import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.models as offers_models
 import pcapi.core.payments.models as payments_models
 import pcapi.core.payments.utils as payments_utils
+import pcapi.core.reference.models as reference_models
 from pcapi.domain import reimbursement
 from pcapi.models import db
 from pcapi.models.bank_information import BankInformation
@@ -732,17 +733,14 @@ def _make_invoice_line(invoice: models.Invoice, group: conf.RuleGroups, pricings
     return invoice_line, reimbursed_amount
 
 
-def generate_and_store_invoice(reference: str, business_unit_id: int, cashflow_ids: list[int]):
-    invoice = _generate_invoice(reference, business_unit_id, cashflow_ids)
+def generate_and_store_invoice(business_unit_id: int, cashflow_ids: list[int]):
+    invoice = _generate_invoice(business_unit_id, cashflow_ids)
     invoice_html = _generate_invoice_html(invoice)
     _store_invoice_pdf(invoice, invoice_html)
 
 
-def _generate_invoice(reference: str, business_unit_id: int, cashflow_ids: list[int]):
-    invoice = models.Invoice(
-        reference=reference,
-        businessUnitId=business_unit_id,
-    )
+def _generate_invoice(business_unit_id: int, cashflow_ids: list[int]):
+    invoice = models.Invoice(businessUnitId=business_unit_id)
     total_reimbursed_amount = 0
     cashflows = models.Cashflow.query.filter(models.Cashflow.id.in_(cashflow_ids)).options(
         sqla_orm.joinedload(models.Cashflow.pricings)
@@ -781,6 +779,10 @@ def _generate_invoice(reference: str, business_unit_id: int, cashflow_ids: list[
     invoice.amount = total_reimbursed_amount
     # As of Python 3.9, DEFAULT_ENTROPY is 32 bytes
     invoice.token = secrets.token_urlsafe()
+    scheme = reference_models.ReferenceScheme.get_and_lock(name="invoice.reference", year=datetime.date.today().year)
+    invoice.reference = scheme.formatted_reference
+    scheme.increment_after_use()
+    db.session.add(scheme)
     db.session.add(invoice)
     db.session.flush()
     for line in invoice_lines:
@@ -789,7 +791,6 @@ def _generate_invoice(reference: str, business_unit_id: int, cashflow_ids: list[
     cf_links = [models.InvoiceCashflow(invoiceId=invoice.id, cashflowId=cashflow.id) for cashflow in cashflows]
     db.session.bulk_save_objects(cf_links)
     db.session.commit()
-
     return invoice
 
 
@@ -834,8 +835,8 @@ def _generate_invoice_html(invoice) -> str:
     return render_template("invoices/invoice.html", **context)
 
 
-def _store_invoice_pdf(invoice, invoice_html):
+def _store_invoice_pdf(invoice_storage_id, invoice_html):
     invoice_pdf = pdf_utils.generate_pdf_from_html(invoice_html)
     store_public_object(
-        folder="invoices", object_id=invoice.storage_object_id, blob=invoice_pdf, content_type="application/pdf"
+        folder="invoices", object_id=invoice_storage_id, blob=invoice_pdf, content_type="application/pdf"
     )
