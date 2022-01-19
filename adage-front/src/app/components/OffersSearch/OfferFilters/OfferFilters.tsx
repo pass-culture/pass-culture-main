@@ -16,11 +16,13 @@ export const OfferFilters = ({
   handleSearchButtonClick,
   venueFilter,
   removeVenueFilter,
+  isLoading,
 }: {
   className?: string
   handleSearchButtonClick: (departments: Option[], students: Option[]) => void
   venueFilter: VenueFilterType | null
   removeVenueFilter: () => void
+  isLoading: boolean
 }): JSX.Element => {
   const [departments, setDepartments] = useState<Option[]>([])
   const [students, setStudents] = useState<Option[]>([])
@@ -68,6 +70,7 @@ export const OfferFilters = ({
       <div className="offer-filters-button-container">
         <div className="offer-filters-button-separator" />
         <SearchButton
+          disabled={isLoading}
           label="Lancer la recherche"
           onClick={() => handleSearchButtonClick(departments, students)}
         />

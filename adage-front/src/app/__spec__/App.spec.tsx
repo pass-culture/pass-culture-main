@@ -1,4 +1,11 @@
-import { fireEvent, render, screen, within } from '@testing-library/react'
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import React from 'react'
 import { Configure } from 'react-instantsearch-dom'
 import selectEvent from 'react-select-event'
@@ -141,10 +148,9 @@ describe('app', () => {
       window.location = new URL(`https://www.example.com?siret=${siret}`)
       render(<App />)
 
-      const launchSearchButton = await screen.findByText(
-        'Lancer la recherche',
-        { selector: 'button' }
-      )
+      const launchSearchButton = await screen.findByRole('button', {
+        name: 'Lancer la recherche',
+      })
       const venueFilter = await screen.findByText(`Lieu : ${venue?.publicName}`)
       const removeFilterButton = within(venueFilter).getByRole('button')
 
@@ -153,7 +159,7 @@ describe('app', () => {
       fireEvent.click(launchSearchButton)
 
       // Then
-      expect(Configure).toHaveBeenCalledTimes(4)
+      expect(Configure).toHaveBeenCalledTimes(5)
       const searchConfigurationFirstCall = Configure.mock.calls[2][0]
       expect(searchConfigurationFirstCall.facetFilters).toStrictEqual([
         'offer.isEducational:true',
@@ -176,10 +182,9 @@ describe('app', () => {
       const departmentFilter = await screen.findByLabelText('Département', {
         selector: 'input',
       })
-      const launchSearchButton = await screen.findByText(
-        'Lancer la recherche',
-        { selector: 'button' }
-      )
+      const launchSearchButton = await screen.findByRole('button', {
+        name: 'Lancer la recherche',
+      })
 
       // When
       await selectEvent.select(departmentFilter, '01 - Ain')
@@ -188,13 +193,13 @@ describe('app', () => {
       fireEvent.click(launchSearchButton)
 
       // Then
-      expect(Configure).toHaveBeenCalledTimes(3)
+      expect(Configure).toHaveBeenCalledTimes(5)
       const searchConfigurationFirstCall = Configure.mock.calls[1][0]
       expect(searchConfigurationFirstCall.facetFilters).toStrictEqual([
         'offer.isEducational:true',
         ['venue.departmentCode:01'],
       ])
-      const searchConfigurationSecondCall = Configure.mock.calls[2][0]
+      const searchConfigurationSecondCall = Configure.mock.calls[3][0]
       expect(searchConfigurationSecondCall.facetFilters).toStrictEqual([
         'offer.isEducational:true',
         ['venue.departmentCode:01', 'venue.departmentCode:59'],
@@ -209,10 +214,9 @@ describe('app', () => {
       })
       await selectEvent.select(departmentFilter, '01 - Ain')
       await selectEvent.select(departmentFilter, '59 - Nord')
-      const launchSearchButton = await screen.findByText(
-        'Lancer la recherche',
-        { selector: 'button' }
-      )
+      const launchSearchButton = await screen.findByRole('button', {
+        name: 'Lancer la recherche',
+      })
 
       // When
       fireEvent.click(launchSearchButton)
@@ -222,21 +226,35 @@ describe('app', () => {
       fireEvent.click(launchSearchButton)
 
       // Then
-      expect(Configure).toHaveBeenCalledTimes(4)
-      const searchConfigurationFirstCall = Configure.mock.calls[1][0]
+      expect(Configure).toHaveBeenCalledTimes(7)
+      const searchConfigurationFirstCall = Configure.mock.calls[2][0]
       expect(searchConfigurationFirstCall.facetFilters).toStrictEqual([
         'offer.isEducational:true',
         ['venue.departmentCode:01', 'venue.departmentCode:59'],
       ])
-      const searchConfigurationSecondCall = Configure.mock.calls[2][0]
+      const searchConfigurationSecondCall = Configure.mock.calls[4][0]
       expect(searchConfigurationSecondCall.facetFilters).toStrictEqual([
         'offer.isEducational:true',
         ['venue.departmentCode:59'],
       ])
-      const searchConfigurationThirdCall = Configure.mock.calls[3][0]
+      const searchConfigurationThirdCall = Configure.mock.calls[6][0]
       expect(searchConfigurationThirdCall.facetFilters).toStrictEqual([
         'offer.isEducational:true',
       ])
+    })
+
+    it('should disable Lancer La Recherche button when app is fetching offers', async () => {
+      // Given
+      render(<App />)
+      const launchSearchButton = await screen.findByRole('button', {
+        name: 'Lancer la recherche',
+      })
+
+      // When
+      userEvent.click(launchSearchButton)
+
+      // Then
+      await waitFor(() => expect(launchSearchButton).toBeDisabled())
     })
   })
 
