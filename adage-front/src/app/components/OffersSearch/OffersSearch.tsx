@@ -41,14 +41,25 @@ export const OffersSearch = ({
 }): JSX.Element => {
   const [facetFilters, setFacetFilters] = useState<Facets>(initialFilters)
 
-  const handleSearchButtonClick = (departments: Option[]): void => {
+  const handleSearchButtonClick = (
+    departments: Option[],
+    students: Option[]
+  ): void => {
     const updatedFilters: Facets = [...initialFilters]
     const filteredDepartments: string[] = departments.map(
       department => `venue.departementCode:${department.value}`
     )
+    const filteredStudents: string[] = students.map(
+      student => `offer.students:${student.value}`
+    )
+
     if (filteredDepartments.length > 0) {
       updatedFilters.push(filteredDepartments)
     }
+    if (filteredStudents.length > 0) {
+      updatedFilters.push(filteredStudents)
+    }
+
     if (venueFilter?.id) {
       updatedFilters.push(`venue.id:${venueFilter.id}`)
     }

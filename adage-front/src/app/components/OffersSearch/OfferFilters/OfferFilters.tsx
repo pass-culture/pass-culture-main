@@ -8,8 +8,8 @@ import SearchButton from '../../../ui-kit/SearchButton'
 
 import { departmentOptions } from './departmentOptions'
 import OfferFiltersTags from './OfferFiltersTags'
-
 import './OfferFilters.scss'
+import { studentsOptions } from './studentsOptions'
 
 export const OfferFilters = ({
   className,
@@ -18,50 +18,58 @@ export const OfferFilters = ({
   removeVenueFilter,
 }: {
   className?: string
-  handleSearchButtonClick: (departments: Option[]) => void
+  handleSearchButtonClick: (departments: Option[], students: Option[]) => void
   venueFilter: VenueFilterType | null
   removeVenueFilter: () => void
 }): JSX.Element => {
-  // to delete when departments is used
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [departments, setDepartments] = useState<Option[]>([])
-
-  const onMultiSelectChange = (selectedOptions: Option[]): void => {
-    setDepartments(selectedOptions)
-  }
+  const [students, setStudents] = useState<Option[]>([])
 
   const handleDeleteFilter = (filterValue: string) => {
     setDepartments(
       departments.filter(department => department.value !== filterValue)
     )
+    setStudents(students.filter(student => student.value !== filterValue))
   }
 
   const handleResetFilters = () => {
     removeVenueFilter()
     setDepartments([])
+    setStudents([])
   }
 
   return (
     <div className={className}>
       <span className="offer-filters-title">Filter par :</span>
-      <MultiSelectAutocomplete
-        initialValues={departments}
-        label="Département"
-        onChange={onMultiSelectChange}
-        options={departmentOptions}
-      />
+      <div className="offer-filters-row">
+        <MultiSelectAutocomplete
+          className="offer-filters-filter"
+          initialValues={departments}
+          label="Département"
+          onChange={setDepartments}
+          options={departmentOptions}
+        />
+        <MultiSelectAutocomplete
+          className="offer-filters-filter"
+          initialValues={students}
+          label="Niveau scolaire"
+          onChange={setStudents}
+          options={studentsOptions}
+        />
+      </div>
       <OfferFiltersTags
         departments={departments}
         handleDeleteFilter={handleDeleteFilter}
         handleResetFilters={handleResetFilters}
         removeVenueFilter={removeVenueFilter}
+        students={students}
         venueFilter={venueFilter}
       />
       <div className="offer-filters-button-container">
         <div className="offer-filters-button-separator" />
         <SearchButton
           label="Lancer la recherche"
-          onClick={() => handleSearchButtonClick(departments)}
+          onClick={() => handleSearchButtonClick(departments, students)}
         />
       </div>
     </div>

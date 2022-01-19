@@ -13,12 +13,14 @@ export const OfferFiltersTags = ({
   departments,
   handleDeleteFilter,
   handleResetFilters,
+  students,
 }: {
   venueFilter: VenueFilterType | null
   removeVenueFilter: () => void
   departments: Option[]
   handleDeleteFilter: (filterValue: string) => void
   handleResetFilters: () => void
+  students: Option[]
 }): JSX.Element => {
   const hasActiveFilters = Boolean(venueFilter?.id || departments.length > 0)
 
@@ -33,6 +35,13 @@ export const OfferFiltersTags = ({
           />
         ) : null}
         {departments.map(department => (
+          <Tag
+            key={department.value}
+            label={department.label}
+            onClick={() => handleDeleteFilter(department.value)}
+          />
+        ))}
+        {students.map(department => (
           <Tag
             key={department.value}
             label={department.label}
