@@ -145,7 +145,7 @@ class Pricing(Model):
 class PricingLine(Model):
     id = sqla.Column(sqla.BigInteger, primary_key=True, autoincrement=True)
 
-    pricingId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("pricing.id"), nullable=True)
+    pricingId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("pricing.id"), index=True, nullable=True)
     pricing = sqla_orm.relationship("Pricing", foreign_keys=[pricingId], back_populates="lines")
 
     # See the note about `amount` at the beginning of this module.
