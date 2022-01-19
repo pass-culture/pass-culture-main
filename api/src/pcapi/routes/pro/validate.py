@@ -17,7 +17,11 @@ logger = logging.getLogger(__name__)
 
 
 @blueprint.pro_public_api_v1.route("/validate/user-offerer/<token>", methods=["GET"])
-@spectree_serialize(on_success_status=202, json_format=False)
+@spectree_serialize(
+    api=blueprint.public_api_v1,
+    on_success_status=202,
+    json_format=False,
+)
 def validate_offerer_attachment(token) -> str:
     try:
         api.validate_offerer_attachment(token)
@@ -32,7 +36,11 @@ def validate_offerer_attachment(token) -> str:
 
 
 @blueprint.pro_public_api_v1.route("/validate/offerer/<token>", methods=["GET"])
-@spectree_serialize(on_success_status=202, json_format=False)
+@spectree_serialize(
+    api=blueprint.public_api_v1,
+    on_success_status=202,
+    json_format=False,
+)
 def validate_new_offerer(token) -> str:
     try:
         api.validate_offerer(token)
