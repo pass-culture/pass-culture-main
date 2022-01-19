@@ -1,5 +1,7 @@
-import React, { useState } from 'react'
+import isEqual from 'lodash/isEqual'
+import React, { useEffect, useState } from 'react'
 
+import { getEducationalCategoriesOptionsAdapter } from 'app/adapters/getEducationalCategoriesOptionsAdapter'
 import { Option } from 'app/types'
 import { VenueFilterType } from 'utils/types'
 
@@ -19,26 +21,56 @@ export const OfferFilters = ({
   isLoading,
 }: {
   className?: string
-  handleSearchButtonClick: (departments: Option[], students: Option[]) => void
+  handleSearchButtonClick: (
+    departments: Option[],
+    categories: Option<string[]>[],
+    students: Option[]
+  ) => void
   venueFilter: VenueFilterType | null
   removeVenueFilter: () => void
   isLoading: boolean
 }): JSX.Element => {
   const [departments, setDepartments] = useState<Option[]>([])
+  const [categories, setCategories] = useState<Option<string[]>[]>([])
   const [students, setStudents] = useState<Option[]>([])
 
-  const handleDeleteFilter = (filterValue: string) => {
-    setDepartments(
-      departments.filter(department => department.value !== filterValue)
-    )
-    setStudents(students.filter(student => student.value !== filterValue))
+  const [categoriesOptions, setCategoriesOptions] = useState<
+    Option<string[]>[]
+  >([])
+
+  const handleDeleteFilter = (filterValue: string | string[]) => {
+    if (typeof filterValue === 'string') {
+      setDepartments(
+        departments.filter(department => department.value !== filterValue)
+      )
+      setStudents(students.filter(student => student.value !== filterValue))
+    } else {
+      setCategories(
+        categories.filter(category => !isEqual(category.value, filterValue))
+      )
+    }
   }
 
   const handleResetFilters = () => {
     removeVenueFilter()
     setDepartments([])
+    setCategories([])
     setStudents([])
   }
+
+  useEffect(() => {
+    const loadSubCategoriesOptions = async () => {
+      const { payload, isOk } = await getEducationalCategoriesOptionsAdapter(
+        null
+      )
+
+      if (isOk) {
+        setCategoriesOptions(payload.educationalCategories)
+      }
+    }
+
+    loadSubCategoriesOptions()
+  }, [])
 
   return (
     <div className={className}>
@@ -54,6 +86,14 @@ export const OfferFilters = ({
         />
         <MultiSelectAutocomplete
           className="offer-filters-filter"
+          initialValues={categories}
+          label="Catégorie"
+          onChange={setCategories}
+          options={categoriesOptions}
+          pluralLabel="Catégories"
+        />
+        <MultiSelectAutocomplete
+          className="offer-filters-filter"
           initialValues={students}
           label="Niveau scolaire"
           onChange={setStudents}
@@ -62,6 +102,7 @@ export const OfferFilters = ({
         />
       </div>
       <OfferFiltersTags
+        categories={categories}
         departments={departments}
         handleDeleteFilter={handleDeleteFilter}
         handleResetFilters={handleResetFilters}
@@ -74,7 +115,9 @@ export const OfferFilters = ({
         <SearchButton
           disabled={isLoading}
           label="Lancer la recherche"
-          onClick={() => handleSearchButtonClick(departments, students)}
+          onClick={() =>
+            handleSearchButtonClick(departments, categories, students)
+          }
         />
       </div>
     </div>
