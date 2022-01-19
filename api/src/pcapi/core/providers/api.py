@@ -166,7 +166,7 @@ def synchronize_stocks(
     stock_details: Iterable[StockDetail], venue: Venue, provider_id: Optional[int] = None
 ) -> dict[str, int]:
     products_provider_references = [stock_detail.products_provider_reference for stock_detail in stock_details]
-    # here product.id_at_providers is the "ref" field that provider api give use.
+    # here product.id_at_providers is the "ref" field that provider api gives use.
     products_by_provider_reference = get_products_map_by_provider_reference(products_provider_references)
 
     stock_details = [
@@ -174,8 +174,7 @@ def synchronize_stocks(
     ]
 
     offers_provider_references = [stock_detail.offers_provider_reference for stock_detail in stock_details]
-    # here offers.id_at_providers is: ref@venue.siret
-    offers_by_provider_reference = get_offers_map_by_id_at_providers(offers_provider_references)
+    offers_by_provider_reference = get_offers_map_by_id_at_providers(offers_provider_references, venue.id)
 
     products_references = [stock_detail.products_provider_reference for stock_detail in stock_details]
     offers_by_venue_reference = get_offers_map_by_venue_reference(products_references, venue.id)
@@ -197,7 +196,7 @@ def synchronize_stocks(
 
     db.session.bulk_save_objects(new_offers)
 
-    new_offers_by_provider_reference = get_offers_map_by_id_at_providers(new_offers_references)
+    new_offers_by_provider_reference = get_offers_map_by_id_at_providers(new_offers_references, venue.id)
     offers_by_provider_reference = {**offers_by_provider_reference, **new_offers_by_provider_reference}
 
     stocks_provider_references = [stock.stocks_provider_reference for stock in stock_details]

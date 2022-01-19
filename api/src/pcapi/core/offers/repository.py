@@ -213,10 +213,12 @@ def get_products_map_by_provider_reference(id_at_providers: list[str]) -> dict[s
     return {product.idAtProviders: product for product in products}
 
 
-def get_offers_map_by_id_at_providers(id_at_providers: list[str]) -> dict[str, int]:
+def get_offers_map_by_id_at_providers(id_at_providers: list[str], venue_id: int) -> dict[str, int]:
     offers_map = {}
     for offer_id, offer_id_at_providers in (
-        db.session.query(Offer.id, Offer.idAtProviders).filter(Offer.idAtProviders.in_(id_at_providers)).all()
+        db.session.query(Offer.id, Offer.idAtProviders)
+        .filter(Offer.venueId == venue_id, Offer.idAtProviders.in_(id_at_providers))
+        .all()
     ):
         offers_map[offer_id_at_providers] = offer_id
 
@@ -226,12 +228,12 @@ def get_offers_map_by_id_at_providers(id_at_providers: list[str]) -> dict[str, i
 def get_offers_map_by_venue_reference(id_at_providers: list[str], venue_id: int) -> dict[str, int]:
 
     offers_map = {}
-    for offer_id, offer_id_at_provider in (
-        db.session.query(Offer.id, Offer.idAtProvider)
-        .filter(Offer.venueId == venue_id, Offer.idAtProvider.in_(id_at_providers))
+    for offer_id, offer_id_at_providers in (
+        db.session.query(Offer.id, Offer.idAtProviders)
+        .filter(Offer.venueId == venue_id, Offer.idAtProviders.in_(id_at_providers))
         .all()
     ):
-        offers_map[compute_venue_reference(offer_id_at_provider, venue_id)] = offer_id
+        offers_map[compute_venue_reference(offer_id_at_providers, venue_id)] = offer_id
 
     return offers_map
 
@@ -261,13 +263,13 @@ def get_stocks_by_id_at_providers(id_at_providers: list[str]) -> dict:
     }
 
 
-def get_active_offers_count_for_venue(venue_id) -> int:
+def get_active_offers_count_for_venue(venue_id: int) -> int:
     query = Offer.query.filter(Offer.venueId == venue_id)
     query = _filter_by_status(query, OfferStatus.ACTIVE.name)
     return query.distinct(Offer.id).count()
 
 
-def get_sold_out_offers_count_for_venue(venue_id) -> int:
+def get_sold_out_offers_count_for_venue(venue_id: int) -> int:
     query = Offer.query.filter(Offer.venueId == venue_id)
     query = _filter_by_status(query, OfferStatus.SOLD_OUT.name)
     return query.distinct(Offer.id).count()
@@ -374,7 +376,7 @@ def get_educational_offer_by_id_base_query(offer_id: str) -> Offer:
     return Offer.query.filter(Offer.isEducational == True, Offer.id == offer_id)
 
 
-def get_non_deleted_stock_by_id(stock_id: int):
+def get_non_deleted_stock_by_id(stock_id: int) -> Stock:
     stock = Stock.queryNotSoftDeleted().filter_by(id=stock_id).first()
     if stock is None:
         raise StockDoesNotExist()

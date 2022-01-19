@@ -19,7 +19,7 @@ Si [alembic ne détecte pas automatiquement les différences entre le modèle et
 4. Jouer la migration :
 
 ```
-pc alembic upgrade head`
+pc alembic upgrade head
 ```
 
 5. Tester la fonction de downgrade

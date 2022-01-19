@@ -8,6 +8,7 @@ from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.bookings.factories import CancelledBookingFactory
 from pcapi.core.categories import subcategories
 import pcapi.core.offerers.factories as offerers_factories
+from pcapi.core.offerers.models import Venue
 from pcapi.core.offers import factories
 from pcapi.core.offers.factories import OfferFactory
 from pcapi.core.offers.factories import StockFactory
@@ -45,12 +46,12 @@ def create_product(isbn, **kwargs):
     )
 
 
-def create_offer(isbn, siret):
-    return factories.OfferFactory(product=create_product(isbn), idAtProviders=f"{isbn}@{siret}")
+def create_offer(isbn, venue: Venue):
+    return factories.OfferFactory(product=create_product(isbn), idAtProviders=isbn, idAtProvider=isbn, venue=venue)
 
 
-def create_stock(isbn, siret, **kwargs):
-    return factories.StockFactory(offer=create_offer(isbn, siret), idAtProviders=f"{isbn}@{siret}", **kwargs)
+def create_stock(isbn, siret, venue: Venue, **kwargs):
+    return factories.StockFactory(offer=create_offer(isbn, venue), idAtProviders=f"{isbn}@{siret}", **kwargs)
 
 
 @pytest.mark.usefixtures("db_session")
@@ -140,20 +141,21 @@ class SynchronizeStocksTest:
         stock = create_stock(
             spec[0]["ref"],
             siret,
+            venue,
             quantity=20,
         )
-        offer = create_offer(spec[1]["ref"], siret)
+        offer = create_offer(spec[1]["ref"], venue)
         product = create_product(spec[2]["ref"])
         create_product(spec[4]["ref"])
         create_product(spec[6]["ref"], isGcuCompatible=False)
         create_product(spec[8]["ref"], isSynchronizationCompatible=False)
 
-        stock_with_booking = create_stock(spec[5]["ref"], siret, quantity=20)
+        stock_with_booking = create_stock(spec[5]["ref"], siret, venue, quantity=20)
         BookingFactory(stock=stock_with_booking)
         BookingFactory(stock=stock_with_booking, quantity=2)
 
         create_product(spec[7]["ref"])
-        OfferFactory(venue=venue, idAtProviders="out-of-date-id-at-p", idAtProvider=spec[7]["ref"])
+        OfferFactory(venue=venue, idAtProviders=spec[7]["ref"], idAtProvider="out-of-date-id-at-p")
 
         # When
         api.synchronize_stocks(stock_details, venue, provider_id=provider.id)
@@ -170,17 +172,19 @@ class SynchronizeStocksTest:
         assert created_stock.rawProviderQuantity == 4
 
         # Test creates offer if does not exist
-        created_offer = Offer.query.filter_by(idAtProviders=f"{spec[2]['ref']}@{siret}").one()
+        created_offer = Offer.query.filter_by(idAtProviders=spec[2]["ref"], venueId=venue.id).one()
         assert created_offer.stocks[0].quantity == 18
 
         # Test doesn't create offer if product does not exist or not gcu compatible or not synchronization compatible
-        assert Offer.query.filter_by(idAtProviders=f"{spec[3]['ref']}@{siret}").count() == 0
-        assert Offer.query.filter_by(idAtProviders=f"{spec[6]['ref']}@{siret}").count() == 0
-        assert Offer.query.filter_by(idAtProviders=f"{spec[8]['ref']}@{siret}").count() == 0
+        assert Offer.query.filter_by(idAtProviders=spec[3]["ref"]).count() == 0
+        assert Offer.query.filter_by(idAtProviders=spec[6]["ref"]).count() == 0
+        assert Offer.query.filter_by(idAtProviders=spec[8]["ref"]).count() == 0
 
         # Test second page is actually processed
-        second_created_offer = Offer.query.filter_by(idAtProviders=f"{spec[4]['ref']}@{siret}").one()
+        second_created_offer = Offer.query.filter_by(idAtProviders=spec[4]["ref"], venueId=venue.id).one()
         assert second_created_offer.stocks[0].quantity == 17
+        third_created_offer = Offer.query.filter_by(idAtProviders=spec[7]["ref"], venueId=venue.id).one()
+        assert third_created_offer.stocks[0].quantity == 1
 
         # Test existing bookings are added to quantity
         assert stock_with_booking.quantity == 17 + 1 + 2
@@ -197,12 +201,19 @@ class SynchronizeStocksTest:
         assert created_offer.name == product.name
         assert created_offer.productId == product.id
         assert created_offer.venueId == venue.id
-        assert created_offer.idAtProviders == f"{spec[2]['ref']}@{siret}"
+        assert created_offer.idAtProviders == spec[2]["ref"]
         assert created_offer.lastProviderId == provider.id
 
         # Test offer reindexation
         mock_async_index_offer_ids.assert_called_with(
-            {stock.offer.id, offer.id, stock_with_booking.offer.id, created_offer.id, second_created_offer.id}
+            {
+                stock.offer.id,
+                offer.id,
+                stock_with_booking.offer.id,
+                created_offer.id,
+                second_created_offer.id,
+                third_created_offer.id,
+            }
         )
 
     def test_build_new_offers_from_stock_details(self, db_session):

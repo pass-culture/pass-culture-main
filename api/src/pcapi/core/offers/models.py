@@ -338,6 +338,14 @@ class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ProvidableMixin):
 
     sa.Index("offer_expr_idx", ExtraDataMixin.extraData["isbn"].astext)
 
+    __table_args__ = (
+        sa.UniqueConstraint(
+            "venueId",
+            "idAtProviders",
+            name="unique_venueId_and_idAtProviders_in_offer",
+        ),
+    )
+
     @sa.ext.hybrid.hybrid_property
     def isSoldOut(self):
         for stock in self.stocks:
