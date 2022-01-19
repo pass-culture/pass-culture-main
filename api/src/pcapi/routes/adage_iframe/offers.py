@@ -2,6 +2,7 @@ import logging
 
 from sqlalchemy.orm import joinedload
 
+from pcapi.core.educational import api as educational_api
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
 from pcapi.routes.adage_iframe import blueprint
@@ -34,3 +35,22 @@ def get_offer(authenticated_information: AuthenticatedInformation, offer_id: int
     )
 
     return serializers.OfferResponse.from_orm(offer)
+
+
+@blueprint.adage_iframe.route("/offers/categories", methods=["GET"])
+@adage_jwt_required
+@spectree_serialize(response_model=serializers.CategoriesResponseModel, api=blueprint.api)
+def get_educational_offers_categories(
+    authenticated_information: AuthenticatedInformation,
+) -> serializers.CategoriesResponseModel:
+    educational_categories = educational_api.get_educational_categories()
+
+    return serializers.CategoriesResponseModel(
+        categories=[
+            serializers.CategoryResponseModel.from_orm(category) for category in educational_categories["categories"]
+        ],
+        subcategories=[
+            serializers.SubcategoryResponseModel.from_orm(subcategory)
+            for subcategory in educational_categories["subcategories"]
+        ],
+    )
