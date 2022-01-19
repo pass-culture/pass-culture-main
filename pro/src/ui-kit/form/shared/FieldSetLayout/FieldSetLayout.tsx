@@ -23,7 +23,7 @@ const FieldSetLayout = ({
   <fieldset className={cn(styles['fieldset-layout'], className)}>
     <legend className={styles['fieldset-layout-legend']}>{legend}</legend>
 
-    <div className={styles['fieldset-layout-fields']}>{children}</div>
+    <div>{children}</div>
 
     {!hideFooter && (
       <div className={styles['fieldset-layout-error']}>

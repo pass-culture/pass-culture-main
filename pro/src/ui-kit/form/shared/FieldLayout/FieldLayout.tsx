@@ -42,7 +42,7 @@ const FieldLayout = ({
       )}
     </label>
 
-    <div className={styles['field-layout-input']}>{children}</div>
+    <div>{children}</div>
 
     <div className={styles['field-layout-footer']}>
       {showError && !!error && (

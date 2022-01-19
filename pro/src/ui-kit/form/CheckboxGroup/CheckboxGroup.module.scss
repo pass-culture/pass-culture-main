@@ -1,5 +1,9 @@
 .checkbox-group {
   &-item {
     margin-bottom: rem(8px);
+
+    &:last-of-type {
+      margin-bottom: 0;
+    }
   }
 }

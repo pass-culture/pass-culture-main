@@ -34,7 +34,6 @@ const Checkbox = ({
       <BaseCheckbox
         {...field}
         Icon={Icon}
-        className={styles['checkbox-input']}
         hasError={meta.touched && !!meta.error}
         label={label}
         value={value}
