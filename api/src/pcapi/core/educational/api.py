@@ -9,6 +9,8 @@ from pcapi.core import mails
 from pcapi.core import search
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.bookings import repository as bookings_repository
+from pcapi.core.categories import categories
+from pcapi.core.categories import subcategories
 from pcapi.core.educational import exceptions
 from pcapi.core.educational import repository as educational_repository
 from pcapi.core.educational import validation
@@ -330,3 +332,15 @@ def _build_booking_confirmation_mail_data(booking: bookings_models.Booking) -> d
             "is_event": int(offer.isEvent),
         },
     }
+
+
+def get_educational_categories() -> dict:
+    educational_subcategories = [
+        subcategory for subcategory in subcategories.ALL_SUBCATEGORIES if subcategory.can_be_educational == True
+    ]
+    educational_categories_ids = list(set(subcategory.category_id for subcategory in educational_subcategories))
+    educational_categories = [
+        category for category in categories.ALL_CATEGORIES if category.id in educational_categories_ids
+    ]
+
+    return {"subcategories": educational_subcategories, "categories": educational_categories}

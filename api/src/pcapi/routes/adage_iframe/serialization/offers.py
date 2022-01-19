@@ -91,3 +91,31 @@ class OfferResponse(BaseModel):
         alias_generator = to_camel
         allow_population_by_field_name = True
         json_encoders = {datetime: format_into_utc_date}
+
+
+class CategoryResponseModel(BaseModel):
+    id: str
+    pro_label: str
+
+    class Config:
+        alias_generator = to_camel
+        allow_population_by_field_name = True
+        orm_mode = True
+
+
+class SubcategoryResponseModel(BaseModel):
+    id: str
+    category_id: str
+
+    class Config:
+        alias_generator = to_camel
+        allow_population_by_field_name = True
+        orm_mode = True
+
+
+class CategoriesResponseModel(BaseModel):
+    categories: list[CategoryResponseModel]
+    subcategories: list[SubcategoryResponseModel]
+
+    class Config:
+        orm_mode = True
