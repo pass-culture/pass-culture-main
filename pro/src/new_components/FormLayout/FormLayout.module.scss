@@ -12,7 +12,7 @@
 
     &-description {
       white-space: pre-line;
-      margin-top: rem(16px);
+      margin-top: rem(8px);
     }
   }
 
@@ -25,7 +25,7 @@
   }
 
   &-row {
-    margin-bottom: rem(8px);
+    margin-bottom: rem(16px);
     max-width: 100%;
 
     &.large-space-after {
@@ -38,6 +38,10 @@
       > *:not(:last-child) {
         margin-right: rem(24px);
       }
+    }
+
+    &:last-child {
+      margin-bottom: 0!important;
     }
   }
 
