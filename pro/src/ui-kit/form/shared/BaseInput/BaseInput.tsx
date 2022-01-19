@@ -38,6 +38,7 @@ const BaseInput = forwardRef(
       <div className={styles['base-input-wrapper']}>
         <input
           {...props}
+          aria-invalid={hasError}
           className={cn(
             styles['base-input'],
             styles['base-input-with-right-icon'],

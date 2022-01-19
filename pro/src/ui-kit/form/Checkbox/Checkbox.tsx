@@ -11,6 +11,7 @@ interface ICheckboxProps {
   value: string
   label: string
   className?: string
+  hideFooter?: boolean
   Icon?: React.FunctionComponent<
     React.SVGProps<SVGSVGElement> & {
       title?: string | undefined
@@ -24,6 +25,7 @@ const Checkbox = ({
   label,
   className,
   Icon,
+  hideFooter,
 }: ICheckboxProps): JSX.Element => {
   const [field, meta] = useField({ name, type: 'checkbox' })
 
@@ -32,13 +34,18 @@ const Checkbox = ({
       <BaseCheckbox
         {...field}
         Icon={Icon}
+        className={styles['checkbox-input']}
         hasError={meta.touched && !!meta.error}
         label={label}
         value={value}
       />
-      <div className={styles['checkbox-error']}>
-        {meta.touched && !!meta.error && <FieldError>{meta.error}</FieldError>}
-      </div>
+      {!hideFooter && (
+        <div className={styles['checkbox-error']}>
+          {meta.touched && !!meta.error && (
+            <FieldError>{meta.error}</FieldError>
+          )}
+        </div>
+      )}
     </div>
   )
 }
