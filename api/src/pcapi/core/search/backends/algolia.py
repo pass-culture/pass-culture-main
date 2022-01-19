@@ -287,6 +287,7 @@ class AlgoliaBackend(base.SearchBackend):
                 "name": offerer.name,
             },
             "venue": {
+                "departementCode": venue.departementCode,
                 "id": venue.id,
                 "name": venue.name,
                 "publicName": venue.publicName,
