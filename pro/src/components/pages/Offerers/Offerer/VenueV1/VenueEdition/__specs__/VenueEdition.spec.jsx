@@ -91,6 +91,7 @@ describe('test page : VenueEdition', () => {
         isBusinessUnitMainVenue: false,
         isValidated: true,
         isVirtual: false,
+        isPermanent: true,
         latitude: 48.91683,
         longitude: 2.43884,
         managingOffererId: 'AM',
@@ -566,6 +567,63 @@ describe('test page : VenueEdition', () => {
         await waitFor(() => {
           expect(props.handleSubmitRequest).toHaveBeenCalledTimes(1)
         })
+      })
+    })
+
+    describe('image uploader', () => {
+      const storeOverrides = {
+        features: {
+          list: [
+            {
+              isActive: true,
+              nameKey: 'PRO_ENABLE_UPLOAD_VENUE_IMAGE',
+            },
+          ],
+        },
+      }
+
+      it('hides when feature flag is disabled', async () => {
+        const storeOverrides = {
+          features: {
+            list: [
+              {
+                isActive: false,
+                nameKey: 'PRO_ENABLE_UPLOAD_VENUE_IMAGE',
+              },
+            ],
+          },
+        }
+
+        await renderVenueEdition({ props, storeOverrides })
+
+        expect(
+          screen.queryByTestId('image-venue-uploader-section')
+        ).not.toBeInTheDocument()
+      })
+
+      it('hides when venue is not permanent', async () => {
+        await renderVenueEdition({
+          props: {
+            ...props,
+            venue: {
+              ...props.venue,
+              isPermanent: false,
+            },
+          },
+          storeOverrides,
+        })
+
+        expect(
+          screen.queryByTestId('image-venue-uploader-section')
+        ).not.toBeInTheDocument()
+      })
+
+      it('displays when feature flag is enabled and venue is permanent', async () => {
+        await renderVenueEdition({ props, storeOverrides })
+
+        expect(
+          screen.queryByTestId('image-venue-uploader-section')
+        ).toBeInTheDocument()
       })
     })
   })

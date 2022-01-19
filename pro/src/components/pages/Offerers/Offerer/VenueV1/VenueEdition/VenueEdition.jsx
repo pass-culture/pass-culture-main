@@ -37,6 +37,7 @@ import VenueLabel from '../ValueObjects/VenueLabel'
 import VenueType from '../ValueObjects/VenueType'
 
 import DeleteBusinessUnitConfirmationDialog from './DeleteBusinessUnitConfirmationDialog/DeleteBusinessUnitConfirmationDialog'
+import { ImageVenueUploaderSection } from './ImageVenueUploaderSection/ImageVenueUploaderSection'
 import VenueProvidersManager from './VenueProvidersManager'
 
 const VenueEdition = ({
@@ -62,6 +63,9 @@ const VenueEdition = ({
   const isBankInformationWithSiretActive = useActiveFeature(
     'ENFORCE_BANK_INFORMATION_WITH_SIRET'
   )
+
+  const shouldDisplayImageVenueUploaderSection =
+    useActiveFeature('PRO_ENABLE_UPLOAD_VENUE_IMAGE') && venue?.isPermanent
 
   // TODO check that it's execute only once when initialize
   useEffect(() => handleInitialRequest(), [handleInitialRequest])
@@ -177,6 +181,9 @@ const VenueEdition = ({
               initialWithdrawalDetails={initialWithdrawalDetails}
               readOnly={readOnly}
             />
+          )}
+          {!!shouldDisplayImageVenueUploaderSection && (
+            <ImageVenueUploaderSection />
           )}
           {isBankInformationWithSiretActive ? (
             // FIXME
