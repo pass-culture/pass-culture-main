@@ -59,7 +59,7 @@ export const OffersSearch = ({
     if (venueFilter?.id) {
       setFacetFilters([...initialFilters, `venue.id:${venueFilter.id}`])
     }
-  }, [venueFilter, initialFilters])
+  }, [venueFilter])
 
   return (
     <>
