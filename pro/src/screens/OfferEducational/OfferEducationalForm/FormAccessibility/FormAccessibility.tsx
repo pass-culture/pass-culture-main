@@ -10,12 +10,13 @@ const FormAccessibility = (): JSX.Element => {
   useAccessibilityUpdates()
 
   return (
-    <FormLayout.Section
-      description="Cette offre est accessible au public en situation de handicap :"
-      title="Accessibilité"
-    >
-      <FormLayout.Row lgSpaceAfter>
-        <CheckboxGroup group={accessibilityOptions} groupName="accessibility" />
+    <FormLayout.Section title="Accessibilité">
+      <FormLayout.Row>
+        <CheckboxGroup
+          group={accessibilityOptions}
+          groupName="accessibility"
+          legend="Cette offre est accessible au public en situation de handicap :"
+        />
       </FormLayout.Row>
     </FormLayout.Section>
   )

@@ -9,7 +9,7 @@ import {
   IUserVenue,
 } from 'core/OfferEducational'
 import FormLayout from 'new_components/FormLayout'
-import { RadioButton, Select, TextArea } from 'ui-kit'
+import { RadioGroup, Select, TextArea } from 'ui-kit'
 import { Banner } from 'ui-kit'
 
 import {
@@ -25,6 +25,21 @@ interface IFormEventAddressProps {
   venuesOptions: SelectOptions
   currentOfferer: IUserOfferer | null
 }
+
+const adressTypeRadios = [
+  {
+    label: EVENT_ADDRESS_OFFERER_LABEL,
+    value: ADRESS_TYPE.OFFERER_VENUE,
+  },
+  {
+    label: EVENT_ADDRESS_SCHOOL_LABEL,
+    value: ADRESS_TYPE.SCHOOL,
+  },
+  {
+    label: EVENT_ADDRESS_OTHER_LABEL,
+    value: ADRESS_TYPE.OTHER,
+  },
+]
 
 const FormEventAddress = ({
   venuesOptions,
@@ -82,27 +97,11 @@ const FormEventAddress = ({
       title="Informations pratiques"
     >
       <FormLayout.Row>
-        <fieldset className={styles['educational-form-event-address-fieldset']}>
-          <legend className={styles['educational-form-event-address-legend']}>
-            Adresse où se déroulera l’événement
-          </legend>
-          <RadioButton
-            checked
-            label={EVENT_ADDRESS_OFFERER_LABEL}
-            name="eventAddress.addressType"
-            value={ADRESS_TYPE.OFFERER_VENUE}
-          />
-          <RadioButton
-            label={EVENT_ADDRESS_SCHOOL_LABEL}
-            name="eventAddress.addressType"
-            value={ADRESS_TYPE.SCHOOL}
-          />
-          <RadioButton
-            label={EVENT_ADDRESS_OTHER_LABEL}
-            name="eventAddress.addressType"
-            value={ADRESS_TYPE.OTHER}
-          />
-        </fieldset>
+        <RadioGroup
+          group={adressTypeRadios}
+          legend="Adresse où se déroulera l’événement :"
+          name="eventAddress.addressType"
+        />
       </FormLayout.Row>
 
       {values.eventAddress.addressType === ADRESS_TYPE.OFFERER_VENUE && (
