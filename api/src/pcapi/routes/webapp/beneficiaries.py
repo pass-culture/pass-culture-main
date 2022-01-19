@@ -87,7 +87,6 @@ def change_beneficiary_email(body: ChangeBeneficiaryEmailBody) -> None:
         users_api.change_user_email(
             current_email=payload.current_email,
             new_email=payload.new_email,
-            device_id=request.headers.get("device-id"),
         )
     except pydantic.ValidationError:
         # Do nothing to avoid a breaking change
