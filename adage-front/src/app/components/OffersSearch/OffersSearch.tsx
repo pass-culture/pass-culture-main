@@ -30,6 +30,8 @@ const attributesToRetrieve = [
   'venue.publicName',
 ]
 
+const initialFilters = ['offer.isEducational:true']
+
 export const OffersSearch = ({
   userRole,
   removeVenueFilter,
@@ -39,7 +41,6 @@ export const OffersSearch = ({
   removeVenueFilter: () => void
   venueFilter: VenueFilterType | null
 }): JSX.Element => {
-  const initialFilters = ['offer.isEducational:true']
   const [facetFilters, setFacetFilters] = useState<Facets>(initialFilters)
 
   const handleSearchButtonClick = (departments: Option[]): void => {
@@ -60,8 +61,7 @@ export const OffersSearch = ({
     if (venueFilter?.id) {
       setFacetFilters([...initialFilters, `venue.id:${venueFilter.id}`])
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [venueFilter])
+  }, [venueFilter, initialFilters])
 
   return (
     <>
