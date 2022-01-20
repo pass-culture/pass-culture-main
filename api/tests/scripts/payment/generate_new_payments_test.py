@@ -5,6 +5,7 @@ import pytest
 
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.categories import subcategories
+import pcapi.core.finance.factories as finance_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.payments.factories as payments_factories
 from pcapi.core.testing import assert_num_queries
@@ -36,7 +37,7 @@ class GenerateNewPaymentsTest:
 
         beneficiary = users_factories.BeneficiaryGrant18Factory(email="user@example.com")
         offerer = offers_factories.OffererFactory()
-        offer = offers_factories.ThingOfferFactory(venue__managingOfferer=offerer)
+        offer = offers_factories.ThingOfferFactory(venue__managingOfferer=offerer, venue__businessUnit=None)
         paying_stock = offers_factories.ThingStockFactory(offer=offer)
         free_stock = offers_factories.ThingStockFactory(offer=offer, price=0)
         bookings_factories.UsedBookingFactory(user=beneficiary, stock=paying_stock, dateUsed=before_cutoff)
@@ -75,9 +76,13 @@ class GenerateNewPaymentsTest:
         beneficiary = users_factories.BeneficiaryGrant18Factory(email="user@example.com")
         offerer1 = offers_factories.OffererFactory(siren="123456789")
         offerer2 = offers_factories.OffererFactory(siren="987654321")
-        offers_factories.BankInformationFactory(bic="BDFEFR2LCCB", iban="FR7630006000011234567890189", offerer=offerer1)
-        venue1 = offers_factories.VenueFactory(managingOfferer=offerer1, siret="12345678912345")
-        venue2 = offers_factories.VenueFactory(managingOfferer=offerer2, siret="98765432154321")
+        bu = finance_factories.BusinessUnitFactory(
+            bankAccount__bic="BDFEFR2LCCB",
+            bankAccount__iban="FR7630006000011234567890189",
+            bankAccount__offererId=offerer1.id,
+        )
+        venue1 = offers_factories.VenueFactory(managingOfferer=offerer1, siret="12345678912345", businessUnit=bu)
+        venue2 = offers_factories.VenueFactory(managingOfferer=offerer2, siret="98765432154321", businessUnit=None)
         offer1 = offers_factories.ThingOfferFactory(venue=venue1)
         offer2 = offers_factories.ThingOfferFactory(venue=venue2)
 

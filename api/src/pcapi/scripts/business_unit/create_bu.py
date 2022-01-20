@@ -67,6 +67,7 @@ def create_business_unit(venue, bank_information, business_unit_name=None):
     bank_information = BankInformation(
         bic=bank_information.bic,
         iban=bank_information.iban,
+        applicationId=bank_information.applicationId,
         status=BankInformationStatus.ACCEPTED,
     )
     business_unit = BusinessUnit(

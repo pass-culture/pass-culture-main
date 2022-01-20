@@ -222,25 +222,25 @@ class Venue(PcObject, Model, HasThumbMixin, HasAddressMixin, ProvidableMixin, Ne
 
     @property
     def bic(self) -> Optional[str]:
-        return self.bankInformation.bic if self.bankInformation else None
+        return self.businessUnit.bankAccount.bic if self.businessUnit and self.businessUnit.bankAccount else None
 
     @property
     def iban(self) -> Optional[str]:
-        return self.bankInformation.iban if self.bankInformation else None
+        return self.businessUnit.bankAccount.iban if self.businessUnit and self.businessUnit.bankAccount else None
 
     @property
     def demarchesSimplifieesApplicationId(self) -> Optional[int]:
-        if not self.bankInformation:
+        if not (self.businessUnit and self.businessUnit.bankAccount):
             return None
 
         can_show_application_id = (
-            self.bankInformation.status == BankInformationStatus.DRAFT
-            or self.bankInformation.status == BankInformationStatus.ACCEPTED
+            self.businessUnit.bankAccount.status == BankInformationStatus.DRAFT
+            or self.businessUnit.bankAccount.status == BankInformationStatus.ACCEPTED
         )
         if not can_show_application_id:
             return None
 
-        return self.bankInformation.applicationId
+        return self.businessUnit.bankAccount.applicationId
 
     @property
     def nOffers(self) -> int:

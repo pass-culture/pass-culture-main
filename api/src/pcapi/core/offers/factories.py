@@ -61,11 +61,23 @@ class VenueFactory(BaseFactory):
     mentalDisabilityCompliant = False
     motorDisabilityCompliant = False
     visualDisabilityCompliant = False
-    businessUnit = factory.SubFactory(
-        "pcapi.core.finance.factories.BusinessUnitFactory",
-        siret=factory.LazyAttribute(lambda bu: bu.factory_parent.siret),
+    businessUnit = factory.Maybe(
+        factory.LazyAttribute(lambda o: o.isVirtual),
+        None,
+        factory.SubFactory(
+            "pcapi.core.finance.factories.BusinessUnitFactory",
+            siret=factory.LazyAttribute(lambda bu: bu.factory_parent.siret),
+        ),
     )
     contact = factory.RelatedFactory("pcapi.core.offerers.factories.VenueContactFactory", factory_related_name="venue")
+
+    # @factory.post_generation
+    # def businessUnit(self, create, extracted, **kwargs):  # pylint: disable=method-hidden
+    #     import pcapi.core.finance.factories as finance_factories
+
+    #     if "siret" in kwargs and not self.businessUnit:
+    #         self.businessUnit = finance_factories.BusinessUnitFactory(**kwargs)
+    #         self.businessUnitId = self.businessUnit.id
 
 
 class VirtualVenueFactory(VenueFactory):

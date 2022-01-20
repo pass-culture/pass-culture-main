@@ -456,6 +456,7 @@ class GenerateCashflowsTest:
 def test_generate_payment_files():
     # The contents of generated files is unit-tested in other test
     # functions below.
+    offers_factories.VenueFactory()
     factories.PricingFactory(status=models.PricingStatus.VALIDATED)
     cutoff = datetime.datetime.utcnow()
     batch_id = api.generate_cashflows(cutoff)

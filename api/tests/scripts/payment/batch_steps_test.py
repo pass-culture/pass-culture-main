@@ -5,6 +5,7 @@ from lxml.etree import DocumentInvalid
 import pytest
 
 import pcapi.core.bookings.factories as bookings_factories
+import pcapi.core.finance.factories as finance_factories
 import pcapi.core.mails.testing as mails_testing
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.payments.factories as payments_factories
@@ -242,9 +243,14 @@ class SetNotProcessablePaymentsWithBankInformationToRetryTest:
     ):
         # Given
         offerer = offers_factories.OffererFactory(name="first offerer")
-        stock = offers_factories.ThingStockFactory(offer__venue__managingOfferer=offerer)
+        bu = finance_factories.BusinessUnitFactory(
+            bankAccount__iban="FR7611808009101234567890147",
+            bankAccount__bic="CCBPFRPPVER",
+            bankAccount__offererId=offerer.id,
+        )
+        stock = offers_factories.ThingStockFactory(offer__venue__managingOfferer=offerer, offer__venue__businessUnit=bu)
         booking = bookings_factories.UsedBookingFactory(stock=stock)
-        offers_factories.BankInformationFactory(offerer=offerer, iban="FR7611808009101234567890147", bic="CCBPFRPPVER")
+
         not_processable_payment = payments_factories.PaymentFactory(
             amount=10,
             booking=booking,
@@ -314,9 +320,13 @@ class SetNotProcessablePaymentsWithBankInformationToRetryTest:
     ):
         # Given
         offerer = offers_factories.OffererFactory(name="first offerer")
-        stock = offers_factories.ThingStockFactory(offer__venue__managingOfferer=offerer)
+        bu = finance_factories.BusinessUnitFactory(
+            bankAccount__iban="FR7611808009101234567890147",
+            bankAccount__bic="CCBPFRPPVER",
+            bankAccount__offererId=offerer.id,
+        )
+        stock = offers_factories.ThingStockFactory(offer__venue__managingOfferer=offerer, offer__venue__businessUnit=bu)
         booking = bookings_factories.UsedBookingFactory(stock=stock)
-        offers_factories.BankInformationFactory(offerer=offerer, iban="FR7611808009101234567890147", bic="CCBPFRPPVER")
         not_processable_payment = payments_factories.PaymentFactory(booking=booking, amount=10, iban=None, bic=None)
         payments_factories.PaymentStatusFactory(
             payment=not_processable_payment, status=TransactionStatus.NOT_PROCESSABLE

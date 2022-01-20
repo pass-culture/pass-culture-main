@@ -8,6 +8,7 @@ import pytest
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.bookings.models import Booking
 from pcapi.core.categories import subcategories
+import pcapi.core.finance.factories as finance_factories
 from pcapi.core.offerers.models import Offerer
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.payments.factories as payments_factories
@@ -49,15 +50,17 @@ class CreatePaymentForBookingTest:
         assert payment.author == "batch"
         assert payment.transactionLabel == "pass Culture Pro - remboursement 1ère quinzaine 01-2021"
         assert payment.batchDate == batch_date
-        assert payment.iban is None
-        assert payment.bic is None
+        assert payment.iban == reimbursement.booking.venue.iban
+        assert payment.bic == reimbursement.booking.venue.bic
         assert payment.recipientName == "offerer"
         assert payment.recipientSiren == "123456"
 
     def test_use_iban_and_bic_from_venue(self):
         booking = bookings_factories.IndividualBookingFactory()
-        offers_factories.BankInformationFactory(venue=booking.venue, iban="iban1", bic="bic1")
-        offers_factories.BankInformationFactory(offerer=booking.offerer, iban="iban2", bic="bic2")
+        bu1 = finance_factories.BusinessUnitFactory(bankAccount__iban="iban1", bankAccount__bic="bic1")
+        booking.venue.businessUnit = bu1
+        bu2 = finance_factories.BusinessUnitFactory(bankAccount__iban="iban2", bankAccount__bic="bic2")
+        booking.offerer.businessUnit = bu2
         reimbursement = BookingReimbursement(booking, PhysicalOffersReimbursement(), Decimal(10))
         batch_date = datetime.utcnow()
 
@@ -68,7 +71,10 @@ class CreatePaymentForBookingTest:
 
     def test_use_iban_and_bic_from_offerer(self):
         booking = bookings_factories.IndividualBookingFactory()
-        offers_factories.BankInformationFactory(offerer=booking.offerer, iban="iban", bic="bic")
+        finance_factories.BusinessUnitFactory(
+            bankAccount__iban="iban", bankAccount__bic="bic", bankAccount__offererId=booking.offerer.id
+        )
+        booking.venue.businessUnit = None
         reimbursement = BookingReimbursement(booking, PhysicalOffersReimbursement(), Decimal(10))
         batch_date = datetime.utcnow()
 

@@ -14,12 +14,11 @@ class Returns200Test:
         # given
         user_offerer = offers_factories.UserOffererFactory(user__email="user.pro@test.com")
         venue = offers_factories.VenueFactory(name="L'encre et la plume", managingOfferer=user_offerer.offerer)
-        bank_information = offers_factories.BankInformationFactory(venue=venue)
 
         expected_serialized_venue = {
             "address": venue.address,
             "audioDisabilityCompliant": venue.audioDisabilityCompliant,
-            "bic": bank_information.bic,
+            "bic": venue.businessUnit.bankAccount.bic,
             "bookingEmail": venue.bookingEmail,
             "businessUnit": {
                 "bic": venue.businessUnit.bankAccount.bic,
@@ -43,7 +42,7 @@ class Returns200Test:
             "departementCode": venue.departementCode,
             "description": venue.description,
             "fieldsUpdated": venue.fieldsUpdated,
-            "iban": bank_information.iban,
+            "iban": venue.businessUnit.bankAccount.iban,
             "id": humanize(venue.id),
             "idAtProviders": venue.idAtProviders,
             "isBusinessUnitMainVenue": True,

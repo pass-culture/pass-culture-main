@@ -8,6 +8,7 @@ from pcapi.model_creators.specific_creators import create_offer_with_thing_produ
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.bank_information import BankInformationStatus
 from pcapi.repository import repository
+from pcapi.scripts.business_unit.create_bu import create_business_unit
 
 
 @pytest.mark.usefixtures("db_session")
@@ -322,8 +323,8 @@ class VenueBankInformationTest:
         # Given
         offerer = create_offerer(siren="123456789")
         venue = create_venue(offerer, siret="12345678912345")
-        bank_information = create_bank_information(bic="BDFEFR2LCCB", venue=venue)
-        repository.save(bank_information)
+        businessUnit = create_business_unit(venue, create_bank_information(bic="BDFEFR2LCCB"))
+        repository.save(businessUnit)
 
         # When
         bic = venue.bic
@@ -349,8 +350,8 @@ class VenueBankInformationTest:
         # Given
         offerer = create_offerer(siren="123456789")
         venue = create_venue(offerer, siret="12345678912345")
-        bank_information = create_bank_information(iban="FR7630007000111234567890144", venue=venue)
-        repository.save(bank_information)
+        businessUnit = create_business_unit(venue, create_bank_information(iban="FR7630007000111234567890144"))
+        repository.save(businessUnit)
 
         # When
         iban = venue.iban
@@ -376,10 +377,10 @@ class VenueBankInformationTest:
         # Given
         offerer = create_offerer(siren="123456789")
         venue = create_venue(offerer, siret="12345678912345")
-        bank_information = create_bank_information(
-            application_id=12345, venue=venue, status=BankInformationStatus.DRAFT, iban=None, bic=None
+        businessUnit = create_business_unit(
+            venue, create_bank_information(application_id=12345, status=BankInformationStatus.DRAFT)
         )
-        repository.save(bank_information)
+        repository.save(businessUnit)
 
         # When
         field = venue.demarchesSimplifieesApplicationId

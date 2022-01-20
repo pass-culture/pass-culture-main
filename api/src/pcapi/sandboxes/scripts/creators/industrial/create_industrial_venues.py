@@ -9,7 +9,6 @@ from pcapi.core.offerers.factories import VenueProviderFactory
 from pcapi.core.offerers.models import VENUE_TYPE_CODE_MAPPING
 from pcapi.core.offerers.models import VenueType
 from pcapi.core.offerers.models import VenueTypeCode
-from pcapi.core.offers.factories import BankInformationFactory
 from pcapi.core.offers.factories import VenueFactory
 from pcapi.core.offers.factories import VirtualVenueFactory
 from pcapi.core.providers.factories import AllocinePivotFactory
@@ -75,7 +74,15 @@ def create_industrial_venues(offerers_by_name: dict, venue_types: list[VenueType
             # VenueTypeCode enum
             venue_type = random.choice(venue_types)
             venue_type_code = VenueTypeCode[label_to_code.get(venue_type.label, "OTHER")]
-
+            buData = {}
+            if iban and siret:
+                buData = {
+                    "businessUnit__bankAccount__iban": iban,
+                    "businessUnit__bankAccount__bic": bic,
+                    "businessUnit__bankAccount__applicationId": application_id_prefix + str(offerer_index),
+                }
+            else:
+                buData = {"businessUnit": None}
             venue = VenueFactory(
                 managingOfferer=offerer,
                 bookingEmail="fake@example.com",
@@ -87,15 +94,11 @@ def create_industrial_venues(offerers_by_name: dict, venue_types: list[VenueType
                 venueTypeId=venue_type.id,
                 venueTypeCode=venue_type_code,
                 isPermanent=True,
+                **buData,
             )
             VenueProviderFactory(venue=venue)
 
             venue_by_name[venue_name] = venue
-
-            if iban and venue.siret:
-                BankInformationFactory(
-                    venue=venue, bic=bic, iban=iban, applicationId=application_id_prefix + str(offerer_index)
-                )
 
         bic_suffix += 1
         mock_index += 1
