@@ -22,7 +22,9 @@ export const OfferFiltersTags = ({
   handleResetFilters: () => void
   students: Option[]
 }): JSX.Element => {
-  const hasActiveFilters = Boolean(venueFilter?.id || departments.length > 0)
+  const hasActiveFilters = Boolean(
+    venueFilter?.id || departments.length > 0 || students.length > 0
+  )
 
   return (
     <div className="offer-filters-tags-container">
