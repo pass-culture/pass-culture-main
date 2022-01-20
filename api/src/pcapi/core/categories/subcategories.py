@@ -818,7 +818,6 @@ LIVESTREAM_MUSIQUE = Subcategory(
     is_digital_deposit=True,
     is_physical_deposit=False,
     reimbursement_rule=ReimbursementRuleChoices.STANDARD.value,
-    is_selectable=False,
     is_bookable_by_underage_when_not_free=False,
 )
 ABO_CONCERT = Subcategory(
@@ -1143,7 +1142,6 @@ LIVESTREAM_EVENEMENT = Subcategory(
     is_digital_deposit=True,
     is_physical_deposit=False,
     reimbursement_rule=ReimbursementRuleChoices.STANDARD.value,
-    is_selectable=False,
     is_bookable_by_underage_when_not_free=False,
 )
 FESTIVAL_SPECTACLE = Subcategory(
