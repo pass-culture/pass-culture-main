@@ -376,19 +376,19 @@ class FindAllOffererPaymentsTest:
         }
 
         missing_for_payment = (set(expected_in_both.keys()) | set(specific_for_payment.keys())).symmetric_difference(
-            set(payments[0]._asdict())
+            set(payments[1]._asdict())
         )
         assert missing_for_payment == set()
         for attr, expected in expected_in_both.items():
-            assert getattr(payments[0], attr) == expected
+            assert getattr(payments[1], attr) == expected
         for attr, expected in specific_for_payment.items():
-            assert getattr(payments[0], attr) == expected, f"wrong {attr}"
+            assert getattr(payments[1], attr) == expected, f"wrong {attr}"
 
         missing_for_pricing = (set(expected_in_both.keys()) | set(specific_for_pricing.keys())).symmetric_difference(
-            set(payments[1]._asdict())
+            set(payments[0]._asdict())
         )
         assert missing_for_pricing == set()
         for attr, expected in expected_in_both.items():
-            assert getattr(payments[1], attr) == expected
+            assert getattr(payments[0], attr) == expected
         for attr, expected in specific_for_pricing.items():
-            assert getattr(payments[1], attr) == expected
+            assert getattr(payments[0], attr) == expected
