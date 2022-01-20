@@ -14,6 +14,8 @@ import {
   findStudentsFilter,
   findDepartmentFilter,
   findLaunchSearchButton,
+  findCategoriesFilter,
+  queryTag,
 } from './__test_utils__/elements'
 
 jest.mock('utils/config', () => ({
@@ -32,6 +34,34 @@ jest.mock('react-instantsearch-dom', () => {
 jest.mock('repository/pcapi/pcapi', () => ({
   authenticate: jest.fn(),
   getVenueBySiret: jest.fn(),
+  getEducationalCategories: jest.fn().mockResolvedValue({
+    categories: [
+      { id: 'CINEMA', proLabel: 'Cinéma' },
+      { id: 'MUSEE', proLabel: 'Musée' },
+    ],
+    subcategories: [
+      {
+        id: 'CINE_PLEIN_AIR',
+        proLabel: 'Cinéma plein air',
+        categoryId: 'CINEMA',
+      },
+      {
+        id: 'EVENEMENT_CINE',
+        proLabel: 'Événement cinéma',
+        categoryId: 'CINEMA',
+      },
+      {
+        id: 'VISITE_GUIDEE',
+        proLabel: 'Visite guidée',
+        categoryId: 'MUSEE',
+      },
+      {
+        id: 'VISITE',
+        proLabel: 'Visite',
+        categoryId: 'MUSEE',
+      },
+    ],
+  }),
 }))
 const mockedPcapi = pcapi as jest.Mocked<typeof pcapi>
 
@@ -97,9 +127,7 @@ describe('app', () => {
         `venue.id:${venue.id}`,
       ])
 
-      expect(
-        screen.getByText(`Lieu : ${venue?.publicName}`)
-      ).toBeInTheDocument()
+      expect(queryTag(`Lieu : ${venue?.publicName}`)).toBeInTheDocument()
       expect(queryResetFiltersButton()).toBeInTheDocument()
 
       expect(mockedPcapi.getVenueBySiret).toHaveBeenCalledWith(siret)
@@ -141,9 +169,7 @@ describe('app', () => {
         'offer.isEducational:true',
       ])
       expect(Configure).toHaveBeenCalledTimes(1)
-      expect(
-        screen.queryByText(`Lieu : ${venue?.publicName}`)
-      ).not.toBeInTheDocument()
+      expect(queryTag(`Lieu : ${venue?.publicName}`)).not.toBeInTheDocument()
       expect(queryResetFiltersButton()).not.toBeInTheDocument()
       expect(
         screen.getByText('Lieu inconnu. Tous les résultats sont affichés.')
@@ -177,24 +203,26 @@ describe('app', () => {
       expect(searchConfigurationLastCall.facetFilters).toStrictEqual([
         'offer.isEducational:true',
       ])
-      expect(
-        screen.queryByText(`Lieu : ${venue?.publicName}`)
-      ).not.toBeInTheDocument()
+      expect(queryTag(`Lieu : ${venue?.publicName}`)).not.toBeInTheDocument()
       expect(queryResetFiltersButton()).not.toBeInTheDocument()
     })
 
-    it('should send selected departments and students as filters to Algolia', async () => {
+    it('should send selected filters to Algolia', async () => {
       // Given
       render(<App />)
 
       const departmentFilter = await findDepartmentFilter()
+      const studentsFilter = await findStudentsFilter()
+      const categoriesFilter = await findCategoriesFilter()
       const launchSearchButton = await findLaunchSearchButton()
 
       // When
       await selectEvent.select(departmentFilter, '01 - Ain')
       userEvent.click(launchSearchButton)
       await selectEvent.select(departmentFilter, '59 - Nord')
-      await selectEvent.select(await findStudentsFilter(), 'Collège - 4e')
+      await selectEvent.select(studentsFilter, 'Collège - 4e')
+      await selectEvent.select(categoriesFilter, 'Cinéma')
+      await selectEvent.select(categoriesFilter, 'Musée')
       userEvent.click(launchSearchButton)
 
       // Then
@@ -208,18 +236,20 @@ describe('app', () => {
       expect(searchConfigurationSecondCall.facetFilters).toStrictEqual([
         'offer.isEducational:true',
         ['venue.departmentCode:01', 'venue.departmentCode:59'],
+        [
+          'offer.subcategoryId:CINE_PLEIN_AIR',
+          'offer.subcategoryId:EVENEMENT_CINE',
+          'offer.subcategoryId:VISITE_GUIDEE',
+          'offer.subcategoryId:VISITE',
+        ],
         ['offer.students:Collège - 4e'],
       ])
 
-      expect(
-        screen.queryByText('01 - Ain', { selector: 'div' }) // use selector div otherwise the option is found
-      ).toBeInTheDocument()
-      expect(
-        screen.queryByText('59 - Nord', { selector: 'div' }) // use selector div otherwise the option is found
-      ).toBeInTheDocument()
-      expect(
-        screen.queryByText('Collège - 4e', { selector: 'div' }) // use selector div otherwise the option is found
-      ).toBeInTheDocument()
+      expect(queryTag('01 - Ain')).toBeInTheDocument()
+      expect(queryTag('59 - Nord')).toBeInTheDocument()
+      expect(queryTag('Collège - 4e')).toBeInTheDocument()
+      expect(queryTag('Cinéma')).toBeInTheDocument()
+      expect(queryTag('Musée')).toBeInTheDocument()
     })
 
     it('should remove deselected departments and students from filters sent to Algolia', async () => {
@@ -261,15 +291,9 @@ describe('app', () => {
         'offer.isEducational:true',
       ])
 
-      expect(
-        screen.queryByText('01 - Ain', { selector: 'div' }) // use selector div otherwise the option is found
-      ).not.toBeInTheDocument()
-      expect(
-        screen.queryByText('59 - Nord', { selector: 'div' }) // use selector div otherwise the option is found
-      ).not.toBeInTheDocument()
-      expect(
-        screen.queryByText('Collège - 4e', { selector: 'div' }) // use selector div otherwise the option is found
-      ).not.toBeInTheDocument()
+      expect(queryTag('01 - Ain')).not.toBeInTheDocument()
+      expect(queryTag('59 - Nord')).not.toBeInTheDocument()
+      expect(queryTag('Collège - 4e')).not.toBeInTheDocument()
     })
 
     it('should reset filters', async () => {
@@ -277,11 +301,13 @@ describe('app', () => {
 
       const departmentFilter = await findDepartmentFilter()
       const studentsFilter = await findStudentsFilter()
+      const categoriesFilter = await findCategoriesFilter()
       const launchSearchButton = await findLaunchSearchButton()
 
       await selectEvent.select(departmentFilter, '01 - Ain')
       await selectEvent.select(departmentFilter, '59 - Nord')
       await selectEvent.select(studentsFilter, 'Collège - 4e')
+      await selectEvent.select(categoriesFilter, 'Cinéma')
       userEvent.click(launchSearchButton)
 
       const resetFiltersButton = queryResetFiltersButton() as HTMLElement
@@ -296,21 +322,20 @@ describe('app', () => {
       expect(searchConfigurationFirstCall.facetFilters).toStrictEqual([
         'offer.isEducational:true',
         ['venue.departmentCode:01', 'venue.departmentCode:59'],
+        [
+          'offer.subcategoryId:CINE_PLEIN_AIR',
+          'offer.subcategoryId:EVENEMENT_CINE',
+        ],
         ['offer.students:Collège - 4e'],
       ])
       const searchConfigurationLastCall = Configure.mock.calls[4][0]
       expect(searchConfigurationLastCall.facetFilters).toStrictEqual([
         'offer.isEducational:true',
       ])
-      expect(
-        screen.queryByText('01 - Ain', { selector: 'div' })
-      ).not.toBeInTheDocument()
-      expect(
-        screen.queryByText('59 - Nord', { selector: 'div' })
-      ).not.toBeInTheDocument()
-      expect(
-        screen.queryByText('Collège - 4e', { selector: 'div' })
-      ).not.toBeInTheDocument()
+      expect(queryTag('01 - Ain')).not.toBeInTheDocument()
+      expect(queryTag('59 - Nord')).not.toBeInTheDocument()
+      expect(queryTag('Collège - 4e')).not.toBeInTheDocument()
+      expect(queryTag('Cinéma')).not.toBeInTheDocument()
     })
 
     it('should disable Lancer La Recherche button when app is fetching offers', async () => {
