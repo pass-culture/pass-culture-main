@@ -473,7 +473,7 @@ def get_maintenance_page_type(user: users_models.User) -> typing.Optional[models
     return models.MaintenancePageType.WITHOUT_DMS
 
 
-def activate_beneficiary_if_no_missing_step(user: users_models.User, eligibility: users_models.EligibilityType) -> None:
+def activate_beneficiary_if_no_missing_step(user: users_models.User) -> None:
     if users_api.has_passed_all_checks_to_become_beneficiary(user):
         activate_beneficiary(user)  # calls update_external_user
     else:
@@ -505,7 +505,7 @@ def on_successful_application(
         third_party_id=third_party_id,
     )
 
-    activate_beneficiary_if_no_missing_step(user, eligibility_type)
+    activate_beneficiary_if_no_missing_step(user)
 
 
 # TODO (viconnex): move in a dms folder

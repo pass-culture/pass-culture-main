@@ -243,7 +243,7 @@ def validate_phone_number_and_activate_user(user: User, code: str) -> User:
     validate_phone_number(user, code)
 
     try:
-        subscription_api.activate_beneficiary_if_no_missing_step(user, user.eligibility)
+        subscription_api.activate_beneficiary_if_no_missing_step(user)
     except subscription_exceptions.CannotUpgradeBeneficiaryRole:
         # TODO(viconnex): there should not be any case where we activate beneficiary after phone validation
         logger.warning("Trying to activate beneficiary right after phone validation", extra={"user_id": user.id})
