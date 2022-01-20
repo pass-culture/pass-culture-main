@@ -11,5 +11,9 @@ class AdageSpyClient(AdageClient):
         testing.adage_requests.append({"url": f"{self.base_url}/v1/prereservation", "sent_data": data})
         return AdageApiResult(sent_data=data, response={"status_code": 201}, success=True)
 
+    def notify_offer_or_stock_edition(self, data: EducationalBookingResponse) -> AdageApiResult:
+        testing.adage_requests.append({"url": f"{self.base_url}/v1/prereservation-edit", "sent_data": data})
+        return AdageApiResult(sent_data=data.dict(), response={"status_code": 201}, success=True)
+
     def get_adage_offerer(self, siren: str) -> list[AdageVenue]:
         raise Exception("Do not use the spy for this method, mock the get request instead")
