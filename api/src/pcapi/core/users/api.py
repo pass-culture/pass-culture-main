@@ -958,14 +958,17 @@ def get_activable_identity_fraud_check(user: User) -> typing.Optional[fraud_mode
             fraud_check.eligibilityType == EligibilityType.UNDERAGE and user.age >= constants.ELIGIBILITY_AGE_18
         )  # TODO: put this condition inside is_eligible_for_beneficiary_upgrade
     ]
-    # Remove Underage related fraud_checks if the user has underage beneficiary role
-    if user.has_underage_beneficiary_role:
-        user_identity_fraud_checks = [
-            fraud_check
-            for fraud_check in user_identity_fraud_checks
-            if not fraud_check.eligibilityType == EligibilityType.UNDERAGE
-        ]
     if not user_identity_fraud_checks:
         return None
 
     return sorted(user_identity_fraud_checks, key=lambda fraud_check: fraud_check.dateCreated, reverse=True)[0]
+
+
+def get_user_age_at_registration(user: User) -> Optional[int]:
+    fraud_check = get_activable_identity_fraud_check(user)
+    if not fraud_check:
+        return None
+    registration_datetime = fraud_check.source_data().get_registration_datetime()
+    if registration_datetime is None:
+        return None
+    return users_utils.get_age_at_date(user.dateOfBirth, registration_datetime)

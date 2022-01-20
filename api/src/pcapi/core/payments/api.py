@@ -13,9 +13,7 @@ from pcapi.core.payments.models import DepositType
 from pcapi.core.payments.models import GrantedDeposit
 from pcapi.core.users import api as users_api
 from pcapi.core.users import constants
-from pcapi.core.users import utils as users_utils
-from pcapi.core.users.models import EligibilityType
-from pcapi.core.users.models import User
+from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.models.payment import Payment
 from pcapi.models.payment_status import PaymentStatus
@@ -31,24 +29,13 @@ def _compute_eighteenth_birthday(birth_date: datetime.datetime) -> datetime.date
     return datetime.datetime.combine(birth_date, datetime.time(0, 0)) + relativedelta(years=18)
 
 
-def _get_user_age_at_registration(user: User, eligibility: EligibilityType) -> Optional[int]:
-    fraud_check = users_api.get_activable_identity_fraud_check(user)
-
-    if not fraud_check:
-        return None
-    registration_datetime = fraud_check.source_data().get_registration_datetime()
-    if registration_datetime is None:
-        return None
-    return users_utils.get_age_at_date(user.dateOfBirth, registration_datetime)
-
-
 def get_granted_deposit(
-    beneficiary: User,
-    eligibility: EligibilityType,
+    beneficiary: users_models.User,
+    eligibility: users_models.EligibilityType,
+    user_age_at_registration: int,
     version: Optional[int] = None,
 ) -> Optional[GrantedDeposit]:
-    if eligibility == EligibilityType.UNDERAGE:
-        user_age_at_registration = _get_user_age_at_registration(beneficiary, eligibility)
+    if eligibility == users_models.EligibilityType.UNDERAGE:
         if user_age_at_registration not in constants.ELIGIBILITY_UNDERAGE_RANGE:
             raise exceptions.UserNotGrantable("User is not eligible for underage deposit")
 
@@ -59,7 +46,7 @@ def get_granted_deposit(
             version=1,
         )
 
-    if eligibility == EligibilityType.AGE18 or settings.IS_INTEGRATION:
+    if eligibility == users_models.EligibilityType.AGE18 or settings.IS_INTEGRATION:
         if version is None:
             version = 2
         return GrantedDeposit(
@@ -73,16 +60,24 @@ def get_granted_deposit(
 
 
 def create_deposit(
-    beneficiary: User,
+    beneficiary: users_models.User,
     deposit_source: str,
-    eligibility: Optional[EligibilityType] = EligibilityType.AGE18,
+    eligibility: Optional[users_models.EligibilityType] = users_models.EligibilityType.AGE18,
     version: int = None,
+    age_at_registration: Optional[int] = None,
 ) -> Deposit:
     """Create a new deposit for the user if there is no deposit yet.
 
     The ``version`` argument MUST NOT be used outside (very specific) tests.
     """
-    granted_deposit = get_granted_deposit(beneficiary, eligibility, version=version)
+    if age_at_registration is None:
+        age_at_registration = users_api.get_user_age_at_registration(beneficiary)
+    granted_deposit = get_granted_deposit(
+        beneficiary,
+        eligibility,
+        user_age_at_registration=age_at_registration,
+        version=version,
+    )
 
     if not granted_deposit:
         raise exceptions.UserNotGrantable()

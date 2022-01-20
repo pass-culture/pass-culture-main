@@ -130,7 +130,14 @@ def activate_beneficiary(
     if "apps_flyer" in user.externalIds:
         apps_flyer_job.log_user_becomes_beneficiary_event_job.delay(user.id)
 
-    deposit = payments_api.create_deposit(user, deposit_source=deposit_source, eligibility=eligibility)
+    deposit = payments_api.create_deposit(
+        user,
+        deposit_source=deposit_source,
+        eligibility=eligibility,
+        age_at_registration=users_utils.get_age_at_date(
+            user.dateOfBirth, fraud_check.source_data().get_registration_datetime()
+        ),
+    )
 
     user.hasCompletedIdCheck = False
 
