@@ -8,6 +8,7 @@ from operator import attrgetter
 import pathlib
 import secrets
 import tempfile
+import time
 import typing
 import zipfile
 
@@ -91,7 +92,17 @@ def price_bookings(min_date: datetime.datetime = MIN_DATE_TO_PRICE):
         try:
             if booking.venue.businessUnitId in errorred_business_unit_ids:
                 continue
+            start = time.perf_counter()
             price_booking(booking)
+            elapsed = time.perf_counter() - start
+            logger.info(
+                "Priced booking",
+                extra={
+                    "booking": booking.id,
+                    "business_unit_id": booking.venue.businessUnitId,
+                    "elapsed": elapsed,
+                },
+            )
         except Exception as exc:  # pylint: disable=broad-except
             errorred_business_unit_ids.add(booking.venue.businessUnitId)
             logger.exception(
@@ -120,11 +131,6 @@ def lock_business_unit(business_unit_id: int):
 
 def price_booking(booking: bookings_models.Booking) -> models.Pricing:
     # pylint: disable=too-many-return-statements
-    # Save booking id now, otherwise accessing `booking.id` for the
-    # ending log message after the commit yields an extra SQL request
-    # to fetch the booking again.
-    booking_id = booking.id
-    logger.info("Starting to price booking", extra={"booking": booking_id})
     business_unit_id = booking.venue.businessUnitId
     if not business_unit_id:
         return None
@@ -178,7 +184,6 @@ def price_booking(booking: bookings_models.Booking) -> models.Pricing:
         db.session.add(pricing)
 
         db.session.commit()
-    logger.info("Priced booking", extra={"booking": booking_id})
     return pricing
 
 
