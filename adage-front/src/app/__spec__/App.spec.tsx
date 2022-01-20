@@ -1,10 +1,4 @@
-import {
-  fireEvent,
-  render,
-  screen,
-  waitFor,
-  within,
-} from '@testing-library/react'
+import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 import { Configure } from 'react-instantsearch-dom'
@@ -16,10 +10,10 @@ import { Role, VenueFilterType } from 'utils/types'
 import { App } from '../App'
 
 import {
-  getResetFiltersButton,
-  getStudentsFilter,
-  getDepartmentFilter,
-  getLaunchSearchButton,
+  queryResetFiltersButton,
+  findStudentsFilter,
+  findDepartmentFilter,
+  findLaunchSearchButton,
 } from './__test_utils__/elements'
 
 jest.mock('utils/config', () => ({
@@ -74,7 +68,7 @@ describe('app', () => {
       ])
       expect(Configure).toHaveBeenCalledTimes(1)
 
-      expect(getResetFiltersButton()).not.toBeInTheDocument()
+      expect(queryResetFiltersButton()).not.toBeInTheDocument()
       expect(
         screen.queryByText('Lieu :', { exact: false })
       ).not.toBeInTheDocument()
@@ -106,7 +100,7 @@ describe('app', () => {
       expect(
         screen.getByText(`Lieu : ${venue?.publicName}`)
       ).toBeInTheDocument()
-      expect(getResetFiltersButton()).toBeInTheDocument()
+      expect(queryResetFiltersButton()).toBeInTheDocument()
 
       expect(mockedPcapi.getVenueBySiret).toHaveBeenCalledWith(siret)
     })
@@ -124,7 +118,7 @@ describe('app', () => {
       // Then
       const venueFilter = await screen.findByText(`Lieu : ${venue.name}`)
       expect(venueFilter).toBeInTheDocument()
-      expect(getResetFiltersButton()).toBeInTheDocument()
+      expect(queryResetFiltersButton()).toBeInTheDocument()
     })
 
     it("should show search offers input with no filter when venue isn't recognized", async () => {
@@ -150,7 +144,7 @@ describe('app', () => {
       expect(
         screen.queryByText(`Lieu : ${venue?.publicName}`)
       ).not.toBeInTheDocument()
-      expect(getResetFiltersButton()).not.toBeInTheDocument()
+      expect(queryResetFiltersButton()).not.toBeInTheDocument()
       expect(
         screen.getByText('Lieu inconnu. Tous les résultats sont affichés.')
       ).toBeInTheDocument()
@@ -165,14 +159,14 @@ describe('app', () => {
 
       const venueFilter = await screen.findByText(`Lieu : ${venue?.publicName}`)
       const removeFilterButton = within(venueFilter).getByRole('button')
-      const launchSearchButton = await getLaunchSearchButton()
+      const launchSearchButton = await findLaunchSearchButton()
 
       // When
-      fireEvent.click(removeFilterButton)
-      fireEvent.click(launchSearchButton)
+      userEvent.click(removeFilterButton)
+      userEvent.click(launchSearchButton)
 
       // Then
-      expect(Configure).toHaveBeenCalledTimes(5)
+      await waitFor(() => expect(Configure).toHaveBeenCalledTimes(5))
       const searchConfigurationFirstCall = Configure.mock.calls[2][0]
       expect(searchConfigurationFirstCall.facetFilters).toStrictEqual([
         'offer.isEducational:true',
@@ -186,25 +180,25 @@ describe('app', () => {
       expect(
         screen.queryByText(`Lieu : ${venue?.publicName}`)
       ).not.toBeInTheDocument()
-      expect(getResetFiltersButton()).not.toBeInTheDocument()
+      expect(queryResetFiltersButton()).not.toBeInTheDocument()
     })
 
     it('should send selected departments and students as filters to Algolia', async () => {
       // Given
       render(<App />)
 
-      const departmentFilter = await getDepartmentFilter()
-      const launchSearchButton = await getLaunchSearchButton()
+      const departmentFilter = await findDepartmentFilter()
+      const launchSearchButton = await findLaunchSearchButton()
 
       // When
       await selectEvent.select(departmentFilter, '01 - Ain')
-      fireEvent.click(launchSearchButton)
+      userEvent.click(launchSearchButton)
       await selectEvent.select(departmentFilter, '59 - Nord')
-      await selectEvent.select(await getStudentsFilter(), 'Collège - 4e')
-      fireEvent.click(launchSearchButton)
+      await selectEvent.select(await findStudentsFilter(), 'Collège - 4e')
+      userEvent.click(launchSearchButton)
 
       // Then
-      expect(Configure).toHaveBeenCalledTimes(5)
+      await waitFor(() => expect(Configure).toHaveBeenCalledTimes(5))
       const searchConfigurationFirstCall = Configure.mock.calls[1][0]
       expect(searchConfigurationFirstCall.facetFilters).toStrictEqual([
         'offer.isEducational:true',
@@ -232,24 +226,24 @@ describe('app', () => {
       // Given
       render(<App />)
 
-      const departmentFilter = await getDepartmentFilter()
-      const studentsFilter = await getStudentsFilter()
-      const launchSearchButton = await getLaunchSearchButton()
+      const departmentFilter = await findDepartmentFilter()
+      const studentsFilter = await findStudentsFilter()
+      const launchSearchButton = await findLaunchSearchButton()
 
       await selectEvent.select(departmentFilter, '01 - Ain')
       await selectEvent.select(departmentFilter, '59 - Nord')
       await selectEvent.select(studentsFilter, 'Collège - 4e')
 
       // When
-      fireEvent.click(launchSearchButton)
+      userEvent.click(launchSearchButton)
       await selectEvent.select(departmentFilter, '01 - Ain')
-      fireEvent.click(launchSearchButton)
+      userEvent.click(launchSearchButton)
       await selectEvent.select(departmentFilter, '59 - Nord')
       await selectEvent.select(studentsFilter, 'Collège - 4e')
-      fireEvent.click(launchSearchButton)
+      userEvent.click(launchSearchButton)
 
       // Then
-      expect(Configure).toHaveBeenCalledTimes(7)
+      await waitFor(() => expect(Configure).toHaveBeenCalledTimes(7))
       const searchConfigurationFirstCall = Configure.mock.calls[1][0]
       expect(searchConfigurationFirstCall.facetFilters).toStrictEqual([
         'offer.isEducational:true',
@@ -281,23 +275,23 @@ describe('app', () => {
     it('should reset filters', async () => {
       render(<App />)
 
-      const departmentFilter = await getDepartmentFilter()
-      const studentsFilter = await getStudentsFilter()
-      const launchSearchButton = await getLaunchSearchButton()
+      const departmentFilter = await findDepartmentFilter()
+      const studentsFilter = await findStudentsFilter()
+      const launchSearchButton = await findLaunchSearchButton()
 
       await selectEvent.select(departmentFilter, '01 - Ain')
       await selectEvent.select(departmentFilter, '59 - Nord')
       await selectEvent.select(studentsFilter, 'Collège - 4e')
-      fireEvent.click(launchSearchButton)
+      userEvent.click(launchSearchButton)
 
-      const resetFiltersButton = getResetFiltersButton() as HTMLElement
+      const resetFiltersButton = queryResetFiltersButton() as HTMLElement
 
       // When
-      await waitFor(() => fireEvent.click(resetFiltersButton))
-      fireEvent.click(launchSearchButton)
+      userEvent.click(resetFiltersButton)
+      userEvent.click(launchSearchButton)
 
       // Then
-      expect(Configure).toHaveBeenCalledTimes(5)
+      await waitFor(() => expect(Configure).toHaveBeenCalledTimes(5))
       const searchConfigurationFirstCall = Configure.mock.calls[1][0]
       expect(searchConfigurationFirstCall.facetFilters).toStrictEqual([
         'offer.isEducational:true',
@@ -322,7 +316,7 @@ describe('app', () => {
     it('should disable Lancer La Recherche button when app is fetching offers', async () => {
       // Given
       render(<App />)
-      const launchSearchButton = await getLaunchSearchButton()
+      const launchSearchButton = await findLaunchSearchButton()
 
       // When
       userEvent.click(launchSearchButton)
