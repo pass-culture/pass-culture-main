@@ -11,7 +11,7 @@ from pcapi.utils.human_ids import dehumanize
 MAX_LONGITUDE = 180
 MAX_LATITUDE = 90
 
-VENUE_BANNER_MAX_SIZE = 200_000
+VENUE_BANNER_MAX_SIZE = 10_000_000
 
 
 def check_existing_business_unit(business_unit_id: int, offerer: Offerer):
