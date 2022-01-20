@@ -78,7 +78,7 @@ class Return200Test:
         assert response.status_code == 204
         edited_stock = Stock.query.get(stock.id)
         assert edited_stock.beginningDatetime == datetime(2022, 1, 17, 22)
-        assert edited_stock.bookingLimitDatetime == stock.bookingLimitDatetime
+        assert edited_stock.bookingLimitDatetime == datetime(2021, 12, 1)
         assert edited_stock.price == 1500
         assert edited_stock.numberOfTickets == 32
         assert edited_stock.educationalPriceDetail == "Détail du prix"
@@ -100,8 +100,6 @@ class Return200Test:
 
         # When
         stock_edition_payload = {
-            "beginningDatetime": "2022-01-17T22:00:00Z",
-            "bookingLimitDatetime": "2021-12-31T20:00:00Z",
             "totalPrice": 1500,
             "numberOfTickets": 38,
             "educationalPriceDetail": "Nouvelle description du prix",
@@ -115,23 +113,17 @@ class Return200Test:
         edited_stock = Stock.query.get(stock.id)
         edited_booking = Booking.query.get(booking.id)
         edited_educational_booking = EducationalBooking.query.get(edited_booking.educationalBookingId)
-        assert edited_stock.beginningDatetime == datetime(2022, 1, 17, 22)
-        assert edited_stock.bookingLimitDatetime == datetime(2021, 12, 31, 20)
+        assert edited_stock.beginningDatetime == datetime(2021, 12, 18)
+        assert edited_stock.bookingLimitDatetime == datetime(2021, 12, 1)
         assert edited_stock.price == 1500
         assert edited_stock.numberOfTickets == 38
         assert edited_stock.educationalPriceDetail == "Nouvelle description du prix"
         assert edited_booking.amount == 1500
-        assert edited_educational_booking.confirmationLimitDate == datetime(2021, 12, 31, 20)
+        assert edited_educational_booking.confirmationLimitDate is not None
 
         expected_payload = EducationalBookingEdition(
             **serialize_educational_booking(booking.educationalBooking).dict(),
-            updatedFields=[
-                "beginningDatetime",
-                "bookingLimitDatetime",
-                "price",
-                "numberOfTickets",
-                "educationalPriceDetail",
-            ],
+            updatedFields=["price", "numberOfTickets", "educationalPriceDetail"],
         )
         assert adage_api_testing.adage_requests[0]["sent_data"] == expected_payload
         assert adage_api_testing.adage_requests[0]["url"] == "https://adage_base_url/v1/prereservation-edit"
