@@ -502,6 +502,53 @@ class NextSubscriptionStepTest:
 @pytest.mark.usefixtures("db_session")
 class OnSuccessfulDMSApplicationTest:
     @override_features(FORCE_PHONE_VALIDATION=False)
+    def test_new_beneficiaries_requires_userprofiling(self):
+        # given
+        information = fraud_models.DMSContent(
+            department="93",
+            last_name="Doe",
+            first_name="Jane",
+            birth_date=datetime.utcnow() - relativedelta(years=users_constants.ELIGIBILITY_AGE_18),
+            email="jane.doe@example.com",
+            phone="0612345678",
+            postal_code="93130",
+            address="11 Rue du Test",
+            application_id=123,
+            procedure_id=123456,
+            civility="Mme",
+            activity="Étudiant",
+            registration_datetime=datetime.today(),
+        )
+        applicant = users_factories.UserFactory(email=information.email)
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=applicant, type=fraud_models.FraudCheckType.USER_PROFILING, status=fraud_models.FraudCheckStatus.OK
+        )
+
+        check = fraud_factories.BeneficiaryFraudCheckFactory(
+            user=applicant, type=fraud_models.FraudCheckType.HONOR_STATEMENT, status=fraud_models.FraudCheckStatus.OK
+        )
+        # when
+
+        subscription_api.on_successful_application(
+            user=applicant,
+            source=BeneficiaryImportSources.demarches_simplifiees,
+            source_data=information,
+            eligibility_type=check.eligibilityType,
+            application_id=123,
+            source_id=123456,
+        )
+
+        # then
+        first = users_models.User.query.first()
+        assert first.email == "jane.doe@example.com"
+        assert first.civility == "Mme"
+        assert first.activity == "Étudiant"
+        assert not first.has_beneficiary_role
+        assert (
+            subscription_api.get_next_subscription_step(first) == subscription_models.SubscriptionStep.PHONE_VALIDATION
+        )
+
+    @override_features(FORCE_PHONE_VALIDATION=False)
     def test_new_beneficiaries_are_recorded_with_deposit(self):
         # given
         information = fraud_models.DMSContent(
@@ -520,6 +567,9 @@ class OnSuccessfulDMSApplicationTest:
             registration_datetime=datetime.today(),
         )
         applicant = users_factories.UserFactory(email=information.email)
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=applicant, type=fraud_models.FraudCheckType.USER_PROFILING, status=fraud_models.FraudCheckStatus.OK
+        )
         fraud_factories.BeneficiaryFraudCheckFactory(
             user=applicant, type=fraud_models.FraudCheckType.DMS, status=fraud_models.FraudCheckStatus.OK
         )
@@ -573,7 +623,9 @@ class OnSuccessfulDMSApplicationTest:
 
     def test_activate_beneficiary_when_confirmation_happens_after_18_birthday(self):
         with freeze_time("2020-01-01"):
-            applicant = users_factories.UserFactory()
+            applicant = users_factories.UserFactory(
+                phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED
+            )
             eighteen_years_and_one_month_ago = datetime.today() - relativedelta(years=18, months=1)
 
             # the user deposited their DMS application before turning 18
@@ -592,6 +644,12 @@ class OnSuccessfulDMSApplicationTest:
                 activity="Étudiant",
                 registration_datetime=datetime.today(),
             )
+            fraud_factories.BeneficiaryFraudCheckFactory(
+                user=applicant,
+                type=fraud_models.FraudCheckType.USER_PROFILING,
+                status=fraud_models.FraudCheckStatus.OK,
+            )
+
             fraud_factories.BeneficiaryFraudCheckFactory(
                 user=applicant,
                 type=fraud_models.FraudCheckType.DMS,
@@ -616,6 +674,59 @@ class OnSuccessfulDMSApplicationTest:
                 source_id=123456,
             )
         assert applicant.has_beneficiary_role
+
+    def test_activate_beneficiary_when_confirmation_happens_after_18_birthday_requires_phone_validation(self):
+        with freeze_time("2020-01-01"):
+            applicant = users_factories.UserFactory()
+            eighteen_years_and_one_month_ago = datetime.today() - relativedelta(years=18, months=1)
+
+            # the user deposited their DMS application before turning 18
+            information = fraud_models.DMSContent(
+                department="93",
+                last_name="Doe",
+                first_name="Jane",
+                birth_date=eighteen_years_and_one_month_ago,
+                email="jane.doe@example.com",
+                phone="0612345678",
+                postal_code="93130",
+                address="11 Rue du Test",
+                application_id=123,
+                procedure_id=123456,
+                civility="Mme",
+                activity="Étudiant",
+                registration_datetime=datetime.today(),
+            )
+
+            fraud_factories.BeneficiaryFraudCheckFactory(
+                user=applicant,
+                type=fraud_models.FraudCheckType.DMS,
+                status=fraud_models.FraudCheckStatus.OK,
+            )
+            fraud_factories.BeneficiaryFraudCheckFactory(
+                user=applicant,
+                type=fraud_models.FraudCheckType.HONOR_STATEMENT,
+                status=fraud_models.FraudCheckStatus.OK,
+            )
+
+        assert applicant.has_beneficiary_role is False
+
+        with freeze_time("2020-03-01"):
+            # the DMS application is confirmed after the user turns 18
+            subscription_api.on_successful_application(
+                user=applicant,
+                source=BeneficiaryImportSources.demarches_simplifiees,
+                source_data=information,
+                eligibility_type=users_models.EligibilityType.AGE18,
+                application_id=123,
+                source_id=123456,
+            )
+
+        # TODO: why ?
+        assert applicant.has_beneficiary_role is False
+        assert (
+            subscription_api.get_next_subscription_step(applicant)
+            == subscription_models.SubscriptionStep.PHONE_VALIDATION
+        )
 
 
 @pytest.mark.usefixtures("db_session")
@@ -728,6 +839,10 @@ class HasPassedAllChecksToBecomeBeneficiaryTest:
     def test_no_missing_step(self):
         user = self.eligible_user(validate_phone=True)
         fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user, type=fraud_models.FraudCheckType.USER_PROFILING, status=fraud_models.FraudCheckStatus.OK
+        )
+
+        fraud_factories.BeneficiaryFraudCheckFactory(
             user=user, type=fraud_models.FraudCheckType.UBBLE, status=fraud_models.FraudCheckStatus.OK
         )
         fraud_factories.BeneficiaryFraudCheckFactory(
@@ -775,3 +890,11 @@ class HasPassedAllChecksToBecomeBeneficiaryTest:
         user = self.eligible_user(validate_phone=False)
         assert subscription_api.has_passed_all_checks_to_become_beneficiary(user) is False
         assert not user.has_beneficiary_role
+
+    def test_missing_userprofiling_after_dms_application(self):
+        user = self.eligible_user(validate_phone=True)
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user, type=fraud_models.FraudCheckType.DMS, status=fraud_models.FraudCheckStatus.OK
+        )
+        result = subscription_api.has_passed_all_checks_to_become_beneficiary(user)
+        assert not result

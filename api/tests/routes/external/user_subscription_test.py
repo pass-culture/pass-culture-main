@@ -366,7 +366,13 @@ class UbbleWebhookTest:
         return f"ts={timestamp},v1={token}"
 
     def _init_test(self, current_identification_state, notified_identification_state):
-        user = users_factories.UserFactory()
+        user = users_factories.UserFactory(phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED)
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.USER_PROFILING,
+            status=fraud_models.FraudCheckStatus.OK,
+            eligibilityType=users_models.EligibilityType.AGE18,
+        )
         fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
             type=fraud_models.FraudCheckType.UBBLE,
             resultContent=fraud_factories.UbbleContentFactory(
@@ -688,7 +694,17 @@ class UbbleWebhookTest:
         document_birth_date = datetime.datetime.combine(
             datetime.date.today(), datetime.time(0, 0)
         ) - relativedelta.relativedelta(years=28)
-        user = users_factories.UserFactory(email=email, dateOfBirth=subscription_birth_date)
+        user = users_factories.UserFactory(
+            email=email,
+            dateOfBirth=subscription_birth_date,
+            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.USER_PROFILING,
+            status=fraud_models.FraudCheckStatus.OK,
+            eligibilityType=users_models.EligibilityType.AGE18,
+        )
         fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
             type=fraud_models.FraudCheckType.UBBLE,
             resultContent=fraud_factories.UbbleContentFactory(

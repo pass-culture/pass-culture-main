@@ -9,6 +9,7 @@ import freezegun
 import pytest
 
 from pcapi.connectors.dms import api as api_dms
+import pcapi.core.fraud.factories as fraud_factories
 import pcapi.core.fraud.models as fraud_models
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.payments.models import Deposit
@@ -342,7 +343,14 @@ class RunIntegrationTest:
                 lastName="doe",
                 dateOfBirth=AGE18_ELIGIBLE_BIRTH_DATE,
                 subscription_age=15,
+                phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
             )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.USER_PROFILING,
+            status=fraud_models.FraudCheckStatus.OK,
+            eligibilityType=users_models.EligibilityType.AGE18,
+        )
         details = make_graphql_application(application_id=123, state="closed", email=user.email)
         details["datePassageEnConstruction"] = datetime.now().isoformat()
         get_applications_with_details.return_value = [details]
@@ -423,6 +431,52 @@ class RunIntegrationTest:
             subscription_api.get_next_subscription_step(user) == subscription_models.SubscriptionStep.PHONE_VALIDATION
         )
 
+    @override_features(FORCE_PHONE_VALIDATION=True)
+    @patch.object(api_dms.DMSGraphQLClient, "get_applications_with_details")
+    def test_import_user_requires_userprofiling(self, get_applications_with_details):
+        date_of_birth = self.BENEFICIARY_BIRTH_DATE.strftime("%Y-%m-%dT%H:%M:%S")
+
+        # Create a user that has validated its email and phone number, meaning it
+        # should become beneficiary.
+        user = users_factories.UserFactory(
+            email=self.EMAIL,
+            isEmailValidated=True,
+            dateOfBirth=date_of_birth,
+            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
+        )
+        get_applications_with_details.return_value = [
+            make_graphql_application(application_id=123, state="closed", email=user.email)
+        ]
+        # when
+        import_dms_users.run(procedure_id=6712558)
+
+        # then
+        assert users_models.User.query.count() == 1
+        user = users_models.User.query.first()
+
+        assert len(user.beneficiaryFraudChecks) == 2
+
+        honor_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(
+            user=user, type=fraud_models.FraudCheckType.HONOR_STATEMENT
+        ).one_or_none()
+        assert honor_check
+        dms_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(
+            user=user, type=fraud_models.FraudCheckType.DMS, status=fraud_models.FraudCheckStatus.OK
+        ).one_or_none()
+        assert dms_check
+        assert BeneficiaryImport.query.count() == 1
+
+        beneficiary_import = BeneficiaryImport.query.first()
+        assert beneficiary_import.source == "demarches_simplifiees"
+        assert beneficiary_import.applicationId == 123
+        assert beneficiary_import.beneficiary == user
+        assert beneficiary_import.currentStatus == ImportStatus.CREATED
+        assert len(push_testing.requests) == 2
+
+        assert not user.is_beneficiary
+        assert not user.deposit
+        assert subscription_api.get_next_subscription_step(user) == subscription_models.SubscriptionStep.USER_PROFILING
+
     @patch.object(api_dms.DMSGraphQLClient, "get_applications_with_details")
     def test_import_makes_user_beneficiary(self, get_applications_with_details):
         """
@@ -439,6 +493,13 @@ class RunIntegrationTest:
             dateOfBirth=date_of_birth,
             phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
         )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.USER_PROFILING,
+            status=fraud_models.FraudCheckStatus.OK,
+            eligibilityType=users_models.EligibilityType.AGE18,
+        )
+
         get_applications_with_details.return_value = [
             make_graphql_application(application_id=123, state="closed", email=user.email)
         ]
@@ -455,7 +516,7 @@ class RunIntegrationTest:
         assert user.phoneNumber == "0123456789"
         assert user.idPieceNumber == "123123123"
 
-        assert len(user.beneficiaryFraudChecks) == 2
+        assert len(user.beneficiaryFraudChecks) == 3
 
         dms_fraud_check = next(
             fraud_check
@@ -495,6 +556,12 @@ class RunIntegrationTest:
             isEmailValidated=True,
             dateOfBirth=date_of_birth,
             phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.USER_PROFILING,
+            status=fraud_models.FraudCheckStatus.OK,
+            eligibilityType=users_models.EligibilityType.AGE18,
         )
         get_applications_with_details.return_value = [
             make_graphql_application(application_id=123, state="closed", email=user.email)
@@ -624,6 +691,12 @@ class RunIntegrationTest:
             send_activation_mail=False,
             phone_number="0607080900",
         )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.USER_PROFILING,
+            status=fraud_models.FraudCheckStatus.OK,
+            eligibilityType=users_models.EligibilityType.AGE18,
+        )
         push_testing.reset_requests()
         get_applications_with_details.return_value = [
             make_graphql_application(
@@ -738,27 +811,6 @@ class GraphQLSourceProcessApplicationTest:
         assert statement_fraud_check.reason == "honor statement contained in DMS application"
 
     @patch.object(api_dms.DMSGraphQLClient, "get_applications_with_details")
-    def test_run(self, get_applications_with_details):
-        user = users_factories.UserFactory(
-            dateOfBirth=AGE18_ELIGIBLE_BIRTH_DATE,
-            subscriptionState=users_models.SubscriptionState.identity_check_pending,
-        )
-        application_id = 123123
-
-        get_applications_with_details.return_value = [
-            make_graphql_application(application_id, "closed", email=user.email)
-        ]
-        import_dms_users.run(123123)
-
-        import_status = BeneficiaryImport.query.one_or_none()
-
-        assert import_status.currentStatus == ImportStatus.CREATED
-        assert import_status.beneficiary == user
-
-        assert user.has_beneficiary_role
-        assert user.is_subscriptionState_beneficiary_18()
-
-    @patch.object(api_dms.DMSGraphQLClient, "get_applications_with_details")
     def test_dms_application_value_error(self, get_applications_with_details):
         user = users_factories.UserFactory()
         get_applications_with_details.return_value = [
@@ -791,7 +843,16 @@ class GraphQLSourceProcessApplicationTest:
     @patch.object(api_dms.DMSGraphQLClient, "get_applications_with_details")
     def test_avoid_reimporting_already_imported_user(self, get_applications_with_details):
         procedure_id = 42
-        user = users_factories.UserFactory(dateOfBirth=AGE18_ELIGIBLE_BIRTH_DATE)
+        user = users_factories.UserFactory(
+            dateOfBirth=AGE18_ELIGIBLE_BIRTH_DATE,
+            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.USER_PROFILING,
+            status=fraud_models.FraudCheckStatus.OK,
+            eligibilityType=users_models.EligibilityType.AGE18,
+        )
         already_imported_user = users_factories.BeneficiaryGrant18Factory(beneficiaryImports=[])
         users_factories.BeneficiaryImportFactory(
             beneficiary=already_imported_user, applicationId=2, sourceId=procedure_id
