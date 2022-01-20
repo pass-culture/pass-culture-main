@@ -1,9 +1,22 @@
-@import "sass-rem";
+@import 'sass-rem';
 
 .search-results {
   display: flex;
   flex-direction: column;
   height: 100%;
-  margin-left: rem(40px);
 }
 
+.offers-search-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: rem(24px) 0 rem(32px);
+
+  .app-logo {
+    width: rem(120px);
+  }
+}
+
+.offers-search-title {
+  margin: 0;
+}
