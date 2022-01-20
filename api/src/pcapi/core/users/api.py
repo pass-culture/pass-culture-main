@@ -186,27 +186,6 @@ def initialize_account(
     return user
 
 
-def has_passed_all_checks_to_become_beneficiary(user: User) -> bool:
-    fraud_check = get_activable_identity_fraud_check(user)
-    if not fraud_check:
-        return False
-
-    if (
-        not user.is_phone_validated
-        and fraud_check.eligibilityType != EligibilityType.UNDERAGE
-        and FeatureToggle.FORCE_PHONE_VALIDATION.is_active()
-    ):
-        return False
-
-    if not fraud_api.has_performed_honor_statement(user, fraud_check.eligibilityType):
-        if not FeatureToggle.IS_HONOR_STATEMENT_MANDATORY_TO_ACTIVATE_BENEFICIARY.is_active():
-            logger.warning("The honor statement has not been performed or recorded", extra={"user_id": user.id})
-        else:
-            return False
-
-    return True
-
-
 def validate_phone_number_and_activate_user(user: User, code: str) -> User:
     validate_phone_number(user, code)
 

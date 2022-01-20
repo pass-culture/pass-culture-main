@@ -33,7 +33,6 @@ from pcapi.core.users.api import generate_and_save_token
 from pcapi.core.users.api import get_domains_credit
 from pcapi.core.users.api import get_eligibility_at_date
 from pcapi.core.users.api import get_eligibility_start_datetime
-from pcapi.core.users.api import has_passed_all_checks_to_become_beneficiary
 from pcapi.core.users.api import set_pro_tuto_as_seen
 from pcapi.core.users.factories import UserFactory
 from pcapi.core.users.models import Credit
@@ -389,67 +388,6 @@ class CreateBeneficiaryTest:
 
         assert len(batch_testing.requests) == 2
         assert len(sendinblue_testing.sendinblue_requests) == 1
-
-
-class StepsToBecomeBeneficiaryTest:
-    AGE18_ELIGIBLE_BIRTH_DATE = datetime.now() - relativedelta(years=18, months=4)
-
-    def eligible_user(self, validate_phone: bool):
-        phone_validation_status = PhoneValidationStatusType.VALIDATED if validate_phone else None
-        return users_factories.UserFactory(
-            dateOfBirth=self.AGE18_ELIGIBLE_BIRTH_DATE, phoneValidationStatus=phone_validation_status
-        )
-
-    def test_no_missing_step(self):
-        user = self.eligible_user(validate_phone=True)
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user, type=fraud_models.FraudCheckType.UBBLE, status=fraud_models.FraudCheckStatus.OK
-        )
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user, type=fraud_models.FraudCheckType.HONOR_STATEMENT, status=fraud_models.FraudCheckStatus.OK
-        )
-
-        assert users_api.has_passed_all_checks_to_become_beneficiary(user) is True
-
-    @override_features(FORCE_PHONE_VALIDATION=True)
-    def test_missing_step(self):
-        user = self.eligible_user(validate_phone=False)
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user, type=fraud_models.FraudCheckType.UBBLE, status=fraud_models.FraudCheckStatus.OK
-        )
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user, type=fraud_models.FraudCheckType.HONOR_STATEMENT, status=fraud_models.FraudCheckStatus.OK
-        )
-
-        assert users_api.has_passed_all_checks_to_become_beneficiary(user) is False
-        assert not user.has_beneficiary_role
-
-    @override_features(FORCE_PHONE_VALIDATION=True)
-    def test_rejected_import(self):
-        user = self.eligible_user(validate_phone=False)
-
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user, type=fraud_models.FraudCheckType.UBBLE, status=fraud_models.FraudCheckStatus.KO
-        )
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user, type=fraud_models.FraudCheckType.HONOR_STATEMENT, status=fraud_models.FraudCheckStatus.OK
-        )
-
-        assert has_passed_all_checks_to_become_beneficiary(user) is False
-        assert not user.has_beneficiary_role
-
-    @override_features(FORCE_PHONE_VALIDATION=True, IS_HONOR_STATEMENT_MANDATORY_TO_ACTIVATE_BENEFICIARY=True)
-    def test_missing_all(self):
-        user = self.eligible_user(validate_phone=False)
-
-        assert has_passed_all_checks_to_become_beneficiary(user) is False
-        assert not user.has_beneficiary_role
-
-    @override_features(FORCE_PHONE_VALIDATION=True, IS_HONOR_STATEMENT_MANDATORY_TO_ACTIVATE_BENEFICIARY=False)
-    def test_missing_all_honor_statement_optional(self):
-        user = self.eligible_user(validate_phone=False)
-        assert has_passed_all_checks_to_become_beneficiary(user) is False
-        assert not user.has_beneficiary_role
 
 
 class FulfillBeneficiaryDataTest:
