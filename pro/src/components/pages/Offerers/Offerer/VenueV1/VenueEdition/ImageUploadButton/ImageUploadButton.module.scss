@@ -1,0 +1,37 @@
+.image-upload-button {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  width: 260px;
+  height: 176px;
+  border: 1px solid $grey-medium;
+  background-color: $grey-light;
+  color: $black;
+  box-shadow: 0px 1px 8px rgba($black-with-transparency, $alpha: 0.15);
+  border-radius: 4px;
+
+  &:hover {
+    box-shadow: 0px 1px 8px rgba($black-with-transparency, $alpha: 0.3);
+
+    .image-upload-button-label {
+      text-decoration: underline;
+    }
+  }
+
+  &:active {
+    background-color: $grey-medium;
+  }
+
+  &-icon {
+    height: 42px;
+  }
+
+  &-label {
+    font-family: Barlow;
+    font-weight: bold;
+    font-size: 15px;
+    line-height: 18px;
+  }
+}
