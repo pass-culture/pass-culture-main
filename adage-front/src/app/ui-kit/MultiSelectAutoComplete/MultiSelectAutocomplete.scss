@@ -20,6 +20,7 @@
       .multi-select-autocomplete__value-container
         .multi-select-autocomplete__placeholder {
         font-style: normal;
+        font-weight: normal;
       }
     }
 
@@ -29,6 +30,7 @@
       .multi-select-autocomplete__placeholder {
         font-style: italic;
         color: $black;
+        font-weight: 300;
       }
     }
 
