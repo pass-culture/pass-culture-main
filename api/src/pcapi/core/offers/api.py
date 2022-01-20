@@ -22,6 +22,7 @@ from pcapi.core.bookings.models import Booking
 import pcapi.core.bookings.repository as bookings_repository
 from pcapi.core.categories import subcategories
 from pcapi.core.categories.conf import can_create_from_isbn
+from pcapi.core.educational import api as educational_api
 from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational.utils import compute_educational_booking_cancellation_limit_date
 from pcapi.core.mails.transactional.bookings.booking_cancellation_by_pro_to_beneficiary import (
@@ -284,18 +285,25 @@ def update_offer(
 
 def update_educational_offer(
     offer: Offer,
-    offer_as_dict: dict,
+    new_values: dict,
 ) -> Offer:
     validation.check_validation_status(offer)
-    for key, value in offer_as_dict.items():
+    # This variable is meant for Adage mailing
+    updated_fields = []
+    for key, value in new_values.items():
         if key == "extraData":
             extra_data = copy.deepcopy(offer.extraData)
 
             for extra_data_key, extra_data_value in value.items():
+                # We denormalize extra_data for Adage mailing
+                updated_fields.append(extra_data_key)
                 extra_data[extra_data_key] = extra_data_value
 
             offer.extraData = extra_data
             continue
+
+        updated_fields.append(key)
+
         if key == "subcategoryId":
             validation.check_offer_is_eligible_for_educational(value.name, True)
             offer.subcategoryId = value.name
@@ -306,6 +314,11 @@ def update_educational_offer(
     repository.save(offer)
 
     search.async_index_offer_ids([offer.id])
+
+    educational_api.notify_educational_redactor_on_educational_offer_or_stock_edit(
+        offer.id,
+        updated_fields,
+    )
 
     return offer
 
@@ -590,6 +603,11 @@ def edit_educational_stock(stock: Stock, stock_data: dict) -> None:
     logger.info("Stock has been updated", extra={"stock": stock.id})
 
     search.async_index_offer_ids([stock.offerId])
+
+    educational_api.notify_educational_redactor_on_educational_offer_or_stock_edit(
+        stock.offerId,
+        list(updatable_fields.keys()),
+    )
 
 
 def _extract_updatable_fields_from_stock_data(

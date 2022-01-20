@@ -2,10 +2,15 @@ from datetime import datetime
 
 import pytest
 
+import pcapi.core.bookings.factories as bookings_factories
+import pcapi.core.educational.testing as adage_api_testing
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import OfferValidationStatus
+from pcapi.core.testing import override_settings
 import pcapi.core.users.factories as users_factories
+from pcapi.routes.adage.v1.serialization.prebooking import EducationalBookingEdition
+from pcapi.routes.adage.v1.serialization.prebooking import serialize_educational_booking
 from pcapi.routes.serialization import serialize
 from pcapi.utils.human_ids import humanize
 
@@ -14,7 +19,8 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 
 class Returns200Test:
-    def test_patch_educational_offer(self, app, client):
+    @override_settings(ADAGE_API_URL="https://adage_base_url")
+    def test_patch_educational_offer(self, client):
         # Given
         offer = offers_factories.OfferFactory(
             mentalDisabilityCompliant=False,
@@ -22,6 +28,7 @@ class Returns200Test:
             isEducational=True,
             subcategoryId="CINE_PLEIN_AIR",
         )
+        booking = bookings_factories.EducationalBookingFactory(stock__offer=offer)
         offers_factories.UserOffererFactory(
             user__email="user@example.com",
             offerer=offer.venue.managingOfferer,
@@ -48,6 +55,38 @@ class Returns200Test:
         assert updated_offer.mentalDisabilityCompliant
         assert updated_offer.extraData == {"contactEmail": "toto@example.com", "contactPhone": "0600000000"}
         assert updated_offer.subcategoryId == "CONCERT"
+
+        expected_payload = EducationalBookingEdition(
+            **serialize_educational_booking(booking.educationalBooking).dict(),
+            updatedFields=["name", "contactEmail", "mentalDisabilityCompliant", "subcategoryId"],
+        )
+        assert adage_api_testing.adage_requests[0]["sent_data"] == expected_payload
+        assert adage_api_testing.adage_requests[0]["url"] == "https://adage_base_url/v1/prereservation-edit"
+
+    @override_settings(ADAGE_API_URL="https://adage_base_url")
+    def test_patch_educational_offer_do_not_notify_educational_redactor_when_no_active_booking(
+        self,
+        client,
+    ):
+        # Given
+        offer = offers_factories.EducationalEventOfferFactory()
+        bookings_factories.RefusedEducationalBookingFactory(stock__offer=offer)
+        offers_factories.UserOffererFactory(
+            user__email="user@example.com",
+            offerer=offer.venue.managingOfferer,
+        )
+
+        # When
+        data = {
+            "name": "New name",
+        }
+        response = client.with_session_auth("user@example.com").patch(
+            f"/offers/educational/{humanize(offer.id)}", json=data
+        )
+
+        # Then
+        assert response.status_code == 200
+        assert len(adage_api_testing.adage_requests) == 0
 
 
 class Returns400Test:
