@@ -459,11 +459,31 @@ jobs:
       - checkout
       - skip_unchanged:
           paths: adage-front
+      - unless:
+          condition:
+            equal: ["master", << pipeline.git.branch >>]
+          steps:
+            - restore_cache:
+                name: Restore Yarn Package Cache
+                key: << pipeline.parameters.adage-front_cache_key >>
+      - run:
+          name: Install dependencies
+          working_directory: adage-front
+          command: |
+            yarn install
+      - unless:
+          condition:
+            equal: ["master", << pipeline.git.branch >>]
+          steps:
+            - save_cache:
+                name: Save Yarn Package Cache
+                key: << pipeline.parameters.adage-front_cache_key >>
+                paths:
+                  - ~/.cache/yarn
       - run:
           name: Run Unit Test Adage-front
+          working_directory: adage-front
           command: |
-            cd adage-front
-            yarn install
             yarn test:unit
       - when:
           condition:
