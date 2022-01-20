@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react'
 import { Configure, InstantSearch } from 'react-instantsearch-dom'
 
 import { Facets, Option } from 'app/types'
+import { ReactComponent as Logo } from 'assets/logo-with-text.svg'
 import {
   ALGOLIA_API_KEY,
   ALGOLIA_APP_ID,
@@ -76,7 +77,10 @@ export const OffersSearch = ({
 
   return (
     <>
-      <h2>Rechercher une offre</h2>
+      <div className="offers-search-header">
+        <h2 className="offers-search-title">Rechercher une offre</h2>
+        <Logo className="app-logo" />
+      </div>
       <InstantSearch
         indexName={ALGOLIA_OFFERS_INDEX}
         searchClient={searchClient}
