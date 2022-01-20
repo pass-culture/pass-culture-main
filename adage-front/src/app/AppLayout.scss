@@ -1,16 +1,4 @@
-@import "sass-rem";
-
-header {
-  grid-column-end: end-line;
-  grid-column-start: col-start;
-  grid-row-start: row-header;
-  padding-left: rem(16px);
-  padding-top: rem(16px);
-
-  svg {
-    height: rem(60px);
-  }
-}
+@import 'sass-rem';
 
 main.app-layout {
   display: flex;
