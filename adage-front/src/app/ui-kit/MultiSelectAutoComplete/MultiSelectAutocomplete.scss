@@ -16,6 +16,13 @@
       box-shadow: none;
     }
 
+    &.multi-select-autocomplete-input--has-selected-value {
+      .multi-select-autocomplete__value-container
+        .multi-select-autocomplete__placeholder {
+        font-style: normal;
+      }
+    }
+
     .multi-select-autocomplete__value-container {
       padding: 0;
 
