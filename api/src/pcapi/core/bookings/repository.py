@@ -7,6 +7,7 @@ from io import StringIO
 import math
 from typing import Callable
 from typing import Iterable
+from typing import List
 from typing import Optional
 
 from dateutil import tz
@@ -302,19 +303,23 @@ def generate_booking_token() -> str:
     raise ValueError("Could not generate new booking token")
 
 
-def find_users_with_expired_individual_bookings(expired_on: date = None) -> Iterable[User]:
+def find_user_ids_with_expired_individual_bookings(expired_on: date = None) -> List[int]:
     expired_on = expired_on or date.today()
-    return (
-        User.query.join(IndividualBooking)
-        .join(Booking)
-        .filter(
-            Booking.status == BookingStatus.CANCELLED,
-            Booking.cancellationDate >= expired_on,
-            Booking.cancellationDate < (expired_on + timedelta(days=1)),
-            Booking.cancellationReason == BookingCancellationReasons.EXPIRED,
+    return [
+        user_id
+        for user_id, in (
+            db.session.query(User.id)
+            .join(IndividualBooking)
+            .join(Booking)
+            .filter(
+                Booking.status == BookingStatus.CANCELLED,
+                Booking.cancellationDate >= expired_on,
+                Booking.cancellationDate < (expired_on + timedelta(days=1)),
+                Booking.cancellationReason == BookingCancellationReasons.EXPIRED,
+            )
+            .all()
         )
-        .yield_per(1000)
-    )
+    ]
 
 
 def get_expired_individual_bookings_for_user(user: User, expired_on: date = None) -> list[IndividualBooking]:
