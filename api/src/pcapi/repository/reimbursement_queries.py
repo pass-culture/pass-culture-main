@@ -98,7 +98,7 @@ def find_all_offerers_payments(
         .join(Stock)
         .join(Offer)
         .join(Venue)
-        .order_by(finance_models.Cashflow.id.desc())
+        .order_by(Booking.dateUsed.desc(), Booking.id.desc())
         .with_entities(
             User.lastName.label("user_lastName"),
             User.firstName.label("user_firstName"),
@@ -123,10 +123,8 @@ def find_all_offerers_payments(
         )
     )
 
-    results = []
+    results = sent_pricings.all()
     if FeatureToggle.INCLUDE_LEGACY_PAYMENTS_FOR_REIMBURSEMENTS.is_active():
         results.extend(sent_payments.all())
-
-    results.extend(sent_pricings.all())
 
     return results

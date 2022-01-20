@@ -46,7 +46,7 @@ class ReimbursementDetailsTest:
         payments_info = find_all_offerer_payments(payment.booking.offerer.id, reimbursement_period)
 
         # legacy payment data
-        raw_csv = ReimbursementDetails(payments_info[0]).as_csv_row()
+        raw_csv = ReimbursementDetails(payments_info[1]).as_csv_row()
         assert raw_csv[0] == "2019"
         assert raw_csv[1] == "Juillet : remboursement 1ère quinzaine"
         assert raw_csv[2] == payment.booking.venue.name
@@ -66,7 +66,7 @@ class ReimbursementDetailsTest:
         assert raw_csv[16] == "offre grand public"
 
         # new pricing+cashflow data
-        row = ReimbursementDetails(payments_info[1]).as_csv_row()
+        row = ReimbursementDetails(payments_info[0]).as_csv_row()
         # The first 2 cells are tested in a separate test below.
         assert row[2] == payment.booking.venue.name
         assert row[3] == payment.booking.venue.siret
@@ -110,7 +110,7 @@ class ReimbursementDetailsTest:
         payments_info = find_all_offerer_payments(payment.booking.offerer.id, reimbursement_period)
 
         # legacy payment data
-        raw_csv = ReimbursementDetails(payments_info[0]).as_csv_row()
+        raw_csv = ReimbursementDetails(payments_info[1]).as_csv_row()
         assert raw_csv[0] == "2019"
         assert raw_csv[1] == "Juillet : remboursement 1ère quinzaine"
         assert raw_csv[2] == payment.booking.venue.name
@@ -130,7 +130,7 @@ class ReimbursementDetailsTest:
         assert raw_csv[16] == "offre scolaire"
 
         # new pricing+cashflow data
-        row = ReimbursementDetails(payments_info[1]).as_csv_row()
+        row = ReimbursementDetails(payments_info[0]).as_csv_row()
         # The first 2 cells are tested in a separate test below.
         assert row[2] == payment.booking.venue.name
         assert row[3] == payment.booking.venue.siret
@@ -177,11 +177,11 @@ class ReimbursementDetailsTest:
         payments_info = find_all_offerer_payments(payment.booking.offererId, reimbursement_period)
 
         # legacy payment data
-        row = ReimbursementDetails(payments_info[0]).as_csv_row()
+        row = ReimbursementDetails(payments_info[1]).as_csv_row()
         assert row[13] == ""
 
         # new pricing+cashflow data
-        row = ReimbursementDetails(payments_info[1]).as_csv_row()
+        row = ReimbursementDetails(payments_info[0]).as_csv_row()
         assert row[13] == "12,34 %"
 
     def test_reimbursement_details_date_columns(self):
@@ -262,11 +262,11 @@ def test_generate_reimbursement_details_csv():
         == '"Année";"Virement";"Créditeur";"SIRET créditeur";"Adresse créditeur";"IBAN";"Raison sociale du lieu";"Nom de l\'offre";"Nom utilisateur";"Prénom utilisateur";"Contremarque";"Date de validation de la réservation";"Montant de la réservation";"Barème";"Montant remboursé";"Statut du remboursement";"Type d\'offre"'
     )
     assert (  # legacy payment data
-        rows[1]
+        rows[2]
         == '"2019";"Juillet : remboursement 1ère quinzaine";"Mon lieu ; un peu ""spécial""";"siret-1234";"1 boulevard Poissonnière";"CF13QSDFGH456789";"Mon lieu ; un peu ""spécial""";"Mon titre ; un peu ""spécial""";"Doux";"Jeanne";"0E2722";"2021-01-01 12:00:00";"21,00";"100%";"21,00";"Remboursement envoyé";"offre grand public"'
     )
     assert (  # new pricing+cashflow data
-        rows[2]
+        rows[1]
         == '2019;"Juillet : remboursement 1ère quinzaine";"Mon lieu ; un peu ""spécial""";"siret-1234";"1 boulevard Poissonnière";"CF13QSDFGH456789";"Mon lieu ; un peu ""spécial""";"Mon titre ; un peu ""spécial""";"Doux";"Jeanne";"0E2722";"2021-01-01 12:00:00";"21,00";"100 %";"21,00";"Remboursement envoyé";"offre grand public"'
     )
 
