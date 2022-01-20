@@ -107,6 +107,10 @@ class EducationalBookingsPerYearResponse(AdageBaseResponseModel):
     bookings: list[EducationalBookingPerYearResponse]
 
 
+class EducationalBookingEdition(EducationalBookingResponse):
+    updatedFields: list[str] = Field(description="List of fields updated")
+
+
 def serialize_educational_bookings(educational_bookings: list[EducationalBooking]) -> list[EducationalBookingResponse]:
     serialized_educational_bookings = []
     for educational_booking in educational_bookings:

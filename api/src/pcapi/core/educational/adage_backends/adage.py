@@ -6,6 +6,7 @@ from pcapi.connectors.api_adage import CulturalPartnerNotFoundException
 from pcapi.connectors.serialization.api_adage_serializers import AdageVenue
 from pcapi.core.educational.adage_backends.base import AdageClient
 from pcapi.core.educational.models import AdageApiResult
+from pcapi.routes.adage.v1.serialization.prebooking import EducationalBookingEdition
 from pcapi.routes.adage.v1.serialization.prebooking import EducationalBookingResponse
 from pcapi.utils import requests
 
@@ -30,6 +31,23 @@ class AdageHttpClient(AdageClient):
             )
 
         return AdageApiResult(sent_data=data, response=dict(api_response.json()), success=True)
+
+    def notify_offer_or_stock_edition(self, data: EducationalBookingEdition) -> AdageApiResult:
+        api_url = f"{self.base_url}/v1/prereservation-edit"
+        api_response = requests.put(
+            api_url,
+            headers={self.header_key: self.api_key, "Content-Type": "application/json"},
+            data=data.json(),
+        )
+
+        if api_response.status_code != 201:
+            raise AdageException(
+                "Error posting booking edition notification to Adage API.",
+                api_response.status_code,
+                api_response.text,
+            )
+
+        return AdageApiResult(sent_data=data.dict(), response=dict(api_response.json()), success=True)
 
     def get_adage_offerer(self, siren: str) -> list[AdageVenue]:
         api_url = f"{self.base_url}/v1/partenaire-culturel/{siren}"
