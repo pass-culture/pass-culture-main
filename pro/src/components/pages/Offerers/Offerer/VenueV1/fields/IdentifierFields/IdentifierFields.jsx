@@ -168,7 +168,7 @@ class IdentifierFields extends PureComponent {
             />
           )}
           <TextField
-            label="E-mail : "
+            label="Mail : "
             name="bookingEmail"
             readOnly={readOnly}
             renderValue={this.handleRender(readOnly)}
