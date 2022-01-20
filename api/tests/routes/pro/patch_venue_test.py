@@ -150,7 +150,6 @@ class Returns200Test:
             name="old name",
             managingOfferer=user_offerer.offerer,
         )
-        print("vefore", venue.audioDisabilityCompliant)
 
         auth_request = TestClient(app.test_client()).with_session_auth(email=user_offerer.user.email)
 

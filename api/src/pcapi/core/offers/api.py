@@ -563,34 +563,37 @@ def create_educational_stock(stock_data: EducationalStockCreationBodyModel, user
 
 
 def edit_educational_stock(stock: Stock, stock_data: dict) -> None:
-    beginning = stock_data.get("beginning_datetime")
-    booking_limit_datetime = stock_data.get("booking_limit_datetime")
+    beginning = stock_data.get("beginningDatetime")
+    booking_limit_datetime = stock_data.get("bookingLimitDatetime")
 
     if not stock.offer.isEducational:
         raise educational_exceptions.OfferIsNotEducational(stock.offerId)
 
     beginning = as_utc_without_timezone(beginning) if beginning else None
     booking_limit_datetime = as_utc_without_timezone(booking_limit_datetime) if booking_limit_datetime else None
+
+    updatable_fields = _extract_updatable_fields_from_stock_data(stock, stock_data, beginning, booking_limit_datetime)
+
     validation.check_booking_limit_datetime(stock, beginning, booking_limit_datetime)
 
     educational_stock_unique_booking = bookings_repository.find_unique_eac_booking_if_any(stock.id)
     if educational_stock_unique_booking:
         validation.check_stock_booking_status(educational_stock_unique_booking)
 
-        educational_stock_unique_booking.educationalBooking.confirmationLimitDate = booking_limit_datetime
+        educational_stock_unique_booking.educationalBooking.confirmationLimitDate = updatable_fields[
+            "bookingLimitDatetime"
+        ]
         db.session.add(educational_stock_unique_booking.educationalBooking)
 
         if beginning:
             _update_educational_booking_cancellation_limit_date(educational_stock_unique_booking, beginning)
             db.session.add(educational_stock_unique_booking)
 
-        if stock_data.get("total_price"):
-            educational_stock_unique_booking.amount = stock_data.get("total_price")
+        if stock_data.get("price"):
+            educational_stock_unique_booking.amount = stock_data.get("price")
             db.session.add(educational_stock_unique_booking)
 
     validation.check_educational_stock_is_editable(stock)
-
-    updatable_fields = _extract_updatable_fields_from_stock_data(stock, stock_data, beginning, booking_limit_datetime)
 
     with transaction():
         stock = offers_repository.get_and_lock_stock(stock.id)
@@ -606,7 +609,7 @@ def edit_educational_stock(stock: Stock, stock_data: dict) -> None:
 
     educational_api.notify_educational_redactor_on_educational_offer_or_stock_edit(
         stock.offerId,
-        list(updatable_fields.keys()),
+        list(stock_data.keys()),
     )
 
 
@@ -614,15 +617,18 @@ def _extract_updatable_fields_from_stock_data(
     stock: Stock, stock_data: dict, beginning: datetime.datetime, booking_limit_datetime: datetime.datetime
 ) -> dict:
     # if booking_limit_datetime is provided but null, set it to default value which is event datetime
-    if "booking_limit_datetime" in stock_data.keys() and booking_limit_datetime is None:
+    if "bookingLimitDatetime" in stock_data.keys() and booking_limit_datetime is None:
         booking_limit_datetime = beginning if beginning else stock.beginningDatetime
+
+    if "bookingLimitDatetime" not in stock_data.keys():
+        booking_limit_datetime = stock.bookingLimitDatetime
 
     updatable_fields = {
         "beginningDatetime": beginning,
         "bookingLimitDatetime": booking_limit_datetime,
-        "price": stock_data.get("total_price"),
-        "numberOfTickets": stock_data.get("number_of_tickets"),
-        "educationalPriceDetail": stock_data.get("educational_price_detail"),
+        "price": stock_data.get("price"),
+        "numberOfTickets": stock_data.get("numberOfTickets"),
+        "educationalPriceDetail": stock_data.get("educationalPriceDetail"),
     }
 
     return updatable_fields

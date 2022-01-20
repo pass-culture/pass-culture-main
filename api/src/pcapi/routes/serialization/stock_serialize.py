@@ -121,23 +121,22 @@ class EducationalStockCreationBodyModel(BaseModel):
 
 
 class EducationalStockEditionBodyModel(BaseModel):
-    beginning_datetime: Optional[datetime]
-    booking_limit_datetime: Optional[datetime]
-    total_price: Optional[float]
-    number_of_tickets: Optional[int]
-    educational_price_detail: Optional[str]
+    beginningDatetime: Optional[datetime]
+    bookingLimitDatetime: Optional[datetime]
+    price: Optional[float] = Field(alias="totalPrice")
+    numberOfTickets: Optional[int]
+    educationalPriceDetail: Optional[str]
 
     class Config:
-        alias_generator = to_camel
         extra = "forbid"
 
-    @validator("beginning_datetime", pre=True)
+    @validator("beginningDatetime", pre=True)
     def validate_beginning_datetime(cls, beginning_datetime):  # pylint: disable=no-self-argument
         if beginning_datetime is None:
             raise ValueError("La date d’évènement ne peut être nulle")
         return beginning_datetime
 
-    @validator("number_of_tickets", pre=True)
+    @validator("numberOfTickets", pre=True)
     def validate_number_of_tickets(cls, number_of_tickets):  # pylint: disable=no-self-argument
         if number_of_tickets is None:
             raise ValueError("Le nombre de places ne peut être nul")
@@ -145,7 +144,7 @@ class EducationalStockEditionBodyModel(BaseModel):
             raise ValueError("Le nombre de places ne peut pas être négatif.")
         return number_of_tickets
 
-    @validator("total_price", pre=True)
+    @validator("price", pre=True)
     def validate_price(cls, price):  # pylint: disable=no-self-argument
         if price is None:
             raise ValueError("Le prix ne peut être nul")
@@ -153,16 +152,16 @@ class EducationalStockEditionBodyModel(BaseModel):
             raise ValueError("Le prix ne peut pas être négatif.")
         return price
 
-    @validator("booking_limit_datetime")
+    @validator("bookingLimitDatetime")
     def validate_booking_limit_datetime(cls, booking_limit_datetime, values):  # pylint: disable=no-self-argument
         if (
-            all([booking_limit_datetime, values["beginning_datetime"]])
-            and booking_limit_datetime > values["beginning_datetime"]
+            all([booking_limit_datetime, values["beginningDatetime"]])
+            and booking_limit_datetime > values["beginningDatetime"]
         ):
             raise ValueError("La date limite de réservation ne peut être postérieure à la date de début de l'évènement")
         return booking_limit_datetime
 
-    @validator("educational_price_detail")
+    @validator("educationalPriceDetail")
     def validate_educational_price_detail(cls, educational_price_detail):  # pylint: disable=no-self-argument
         if len(educational_price_detail) > 1000:
             raise ValueError("Le détail du prix ne doit pas excéder 1000 caractères.")
