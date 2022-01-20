@@ -75,7 +75,7 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
       expect(textFields.at(2).prop('name')).toBe('publicName')
       expect(textFields.at(2).prop('required')).toBe(false)
 
-      expect(textFields.at(3).prop('label')).toBe('E-mail : ')
+      expect(textFields.at(3).prop('label')).toBe('Mail : ')
       expect(textFields.at(3).prop('name')).toBe('bookingEmail')
       expect(textFields.at(3).prop('required')).toBe(true)
 

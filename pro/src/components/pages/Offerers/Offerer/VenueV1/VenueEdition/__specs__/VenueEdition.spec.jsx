@@ -6,6 +6,7 @@ import {
   screen,
   waitFor,
   waitForElementToBeRemoved,
+  within,
 } from '@testing-library/react'
 import { createBrowserHistory } from 'history'
 import React from 'react'
@@ -200,8 +201,9 @@ describe('test page : VenueEdition', () => {
         screen.findByText('Coordonnées bancaires du lieu')
       ).resolves.toBeInTheDocument()
 
+      const informationsNode = screen.getByText('Informations lieu').parentNode
       expect(screen.getByLabelText('Nom du lieu :')).toBeDisabled()
-      expect(screen.getByLabelText('E-mail :')).toBeDisabled()
+      expect(within(informationsNode).getByLabelText('Mail :')).toBeDisabled()
       expect(screen.getByText('Offre numérique')).toBeInTheDocument()
       expect(screen.queryByText('SIRET :')).not.toBeInTheDocument()
       expect(
@@ -384,9 +386,13 @@ describe('test page : VenueEdition', () => {
       // then
       expect(getApplyEmailBookingOnAllOffersLabel()).not.toBeInTheDocument()
 
-      const emailBookingField = screen.getByLabelText('E-mail :', {
-        exact: false,
-      })
+      const informationsNode = screen.getByText('Informations lieu').parentNode
+      const emailBookingField = within(informationsNode).getByLabelText(
+        'Mail :',
+        {
+          exact: false,
+        }
+      )
       // react-final-form interactions need to be wrap into a act()
       await act(
         async () =>
