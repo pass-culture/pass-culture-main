@@ -147,3 +147,21 @@ def find_redactor_by_email(redactor_email: str) -> Optional[educational_models.E
     return educational_models.EducationalRedactor.query.filter(
         educational_models.EducationalRedactor.email == redactor_email
     ).one_or_none()
+
+
+def find_active_educational_booking_by_offer_id(offer_id: int) -> Optional[educational_models.EducationalBooking]:
+    return (
+        educational_models.EducationalBooking.query.join(Booking)
+        .filter(Booking.status.in_([BookingStatus.CONFIRMED, BookingStatus.PENDING]))
+        .join(Stock)
+        .filter(Stock.offerId == offer_id, Stock.isSoftDeleted.is_(False))
+        .options(
+            contains_eager(educational_models.EducationalBooking.booking)
+            .contains_eager(Booking.stock)
+            .joinedload(Stock.offer, innerjoin=True)
+            .joinedload(Offer.venue, innerjoin=True)
+        )
+        .options(joinedload(educational_models.EducationalBooking.educationalInstitution, innerjoin=True))
+        .options(joinedload(educational_models.EducationalBooking.educationalRedactor, innerjoin=True))
+        .one_or_none()
+    )

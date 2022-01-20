@@ -31,6 +31,7 @@ from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository import repository
 from pcapi.repository import transaction
+from pcapi.routes.adage.v1.serialization.prebooking import EducationalBookingEdition
 from pcapi.routes.adage.v1.serialization.prebooking import serialize_educational_booking
 from pcapi.routes.adage_iframe.serialization.adage_authentication import AuthenticatedInformation
 from pcapi.routes.adage_iframe.serialization.adage_authentication import RedactorInformation
@@ -344,3 +345,29 @@ def get_educational_categories() -> dict:
     ]
 
     return {"subcategories": educational_subcategories, "categories": educational_categories}
+
+
+def notify_educational_redactor_on_educational_offer_or_stock_edit(
+    offer_id: str,
+    updated_fields: list[str],
+) -> None:
+    active_educational_bookings = educational_repository.find_active_educational_booking_by_offer_id(offer_id)
+    if active_educational_bookings is None:
+        return
+
+    data = EducationalBookingEdition(
+        **serialize_educational_booking(active_educational_bookings).dict(),
+        updatedFields=updated_fields,
+    )
+    try:
+        adage_client.notify_offer_or_stock_edition(data)
+    except AdageException as exception:
+        logger.error(
+            "Error while sending notification to Adage",
+            extra={
+                "adage_response_message": exception.message,
+                "adage_response_status_code": exception.status_code,
+                "adage_response_response_text": exception.response_text,
+                "data": data.dict(),
+            },
+        )
