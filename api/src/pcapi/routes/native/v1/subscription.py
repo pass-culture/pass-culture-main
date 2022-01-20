@@ -81,4 +81,4 @@ def get_profile_options() -> serializers.ProfileOptionsResponse:
 def create_honor_statement_fraud_check(user: users_models.User) -> None:
     fraud_api.create_honor_statement_fraud_check(user, "statement from /subscription/honor_statement endpoint")
 
-    subscription_api.activate_beneficiary_if_no_missing_step(user, user.eligibility)
+    subscription_api.activate_beneficiary_if_no_missing_step(user)
