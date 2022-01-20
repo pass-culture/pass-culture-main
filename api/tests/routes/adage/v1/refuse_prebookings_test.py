@@ -77,7 +77,6 @@ class Returns200Test:
             "durationMinutes": offer.durationMinutes,
             "expirationDate": booking.expirationDate,
             "id": educational_booking.id,
-            "image": None,
             "isDigital": offer.isDigital,
             "venueName": venue.name,
             "name": offer.name,

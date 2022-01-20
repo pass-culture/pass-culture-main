@@ -13,7 +13,6 @@ from pcapi.core.offers import models as offers_models
 from pcapi.core.offers.utils import offer_app_link
 from pcapi.routes.adage.v1.serialization.config import AdageBaseResponseModel
 from pcapi.routes.native.v1.serialization.common_models import Coordinates
-from pcapi.routes.native.v1.serialization.offers import OfferImageResponse
 from pcapi.serialization.utils import to_camel
 
 
@@ -58,7 +57,6 @@ class EducationalBookingResponse(AdageBaseResponseModel):
     durationMinutes: Optional[int] = Field(description="Offer's duration in minutes")
     expirationDate: Optional[datetime] = Field(description="Expiration date after which booking is cancelled")
     id: int = Field(description="pass Culture's prebooking id")
-    image: Optional[OfferImageResponse]
     isDigital: bool = Field(description="If true the event is accessed digitally")
     venueName: str = Field(description="Name of cultural venue proposing the event")
     name: str = Field(description="Name of event")
@@ -143,7 +141,6 @@ def serialize_educational_booking(educational_booking: EducationalBooking) -> Ed
         durationMinutes=offer.durationMinutes,
         expirationDate=booking.expirationDate,
         id=educational_booking.id,
-        image=None,
         isDigital=offer.isDigital,
         venueName=venue.name,
         name=offer.name,
