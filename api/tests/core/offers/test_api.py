@@ -840,8 +840,8 @@ class EditEducationalOfferStocksTest:
 
         # Then
         stock = offer_models.Stock.query.filter_by(id=stock_to_be_updated.id).one()
-        assert stock.beginningDatetime == new_stock_data.beginning_datetime
-        assert stock.bookingLimitDatetime == new_stock_data.booking_limit_datetime
+        assert stock.beginningDatetime == new_stock_data.beginningDatetime
+        assert stock.bookingLimitDatetime == new_stock_data.bookingLimitDatetime
         assert stock.price == 1500
         assert stock.numberOfTickets == 35
 
@@ -866,7 +866,7 @@ class EditEducationalOfferStocksTest:
 
         # Then
         stock = offer_models.Stock.query.filter_by(id=stock_to_be_updated.id).one()
-        assert stock.beginningDatetime == new_stock_data.beginning_datetime
+        assert stock.beginningDatetime == new_stock_data.beginningDatetime
         assert stock.bookingLimitDatetime == initial_booking_limit_date
         assert stock.price == 1200
         assert stock.numberOfTickets == 35
@@ -886,6 +886,7 @@ class EditEducationalOfferStocksTest:
             amount=1200,
             status=BookingStatus.PENDING,
             stock=stock_to_be_updated,
+            educationalBooking__confirmationLimitDate=initial_booking_limit_date,
         )
 
         new_stock_data = stock_serialize.EducationalStockEditionBodyModel(totalPrice=1400)
@@ -897,6 +898,7 @@ class EditEducationalOfferStocksTest:
         stock = offer_models.Stock.query.filter_by(id=stock_to_be_updated.id).one()
         assert stock.price == 1400
         assert booking.amount == 1400
+        assert booking.educationalBooking.confirmationLimitDate == initial_booking_limit_date
 
     def test_should_replace_bookingLimitDatetime_with_new_event_datetime_if_provided_but_none(self):
         # Given
