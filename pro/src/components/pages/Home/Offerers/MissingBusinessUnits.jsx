@@ -6,7 +6,7 @@ import PropTypes from 'prop-types'
 import React from 'react'
 
 import Icon from 'components/layout/Icon'
-import InternalBanner from 'components/layout/InternalBanner'
+import { Banner } from 'ui-kit'
 import { DEMARCHES_SIMPLIFIEES_BUSINESS_UNIT_RIB_UPLOAD_PROCEDURE_URL } from 'utils/config'
 
 const MissingBusinessUnits = ({ hasTitle }) => {
@@ -24,16 +24,15 @@ const MissingBusinessUnits = ({ hasTitle }) => {
       )}
 
       <div className="h-card-content">
-        <InternalBanner
+        <Banner
           href={DEMARCHES_SIMPLIFIEES_BUSINESS_UNIT_RIB_UPLOAD_PROCEDURE_URL}
           icon="ico-outer-pen"
           linkTitle="Renseigner des coordonnées bancaires"
-          targetLink="_self"
         >
           Certains de vos lieux ne sont pas rattachés à des coordonnées
           bancaires. Pour percevoir les remboursements liés aux offres de ces
           lieux, veuillez renseigner des coordonnées bancaires.
-        </InternalBanner>
+        </Banner>
       </div>
     </>
   )
