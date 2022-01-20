@@ -202,14 +202,16 @@ commands:
             gsutil rsync -r << parameters.build_path >> gs://<< parameters.bucket_name >>
 
   invalidate-cache:
-    description: Invalidate Cache
+    description: Invalidate Cache asynchronously
     parameters:
       url_map_name:
         type: string
     steps:
       - run:
           name: Invalidate cache
-          command: gcloud compute url-maps invalidate-cdn-cache << parameters.url_map_name >> --path "/*"
+          command: |
+            gcloud compute url-maps invalidate-cdn-cache << parameters.url_map_name >> --path "/*"  --async
+            echo "An invalidateCache operation has been requested. You can follow its progress on https://console.cloud.google.com/compute/operations"
 
   clone-pass-culture-deployment-repo:
     steps:
