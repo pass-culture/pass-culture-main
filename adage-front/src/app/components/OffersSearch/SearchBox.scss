@@ -1,28 +1,32 @@
-@import "sass-rem";
+@import 'sass-rem';
 @import 'styles';
-
 
 .search-wrapper {
   display: flex;
   justify-content: space-between;
+  position: relative;
 }
 
 @media screen and (prefers-reduced-motion: reduce) {
   .search-box {
     border: 1px solid $secondary;
-    border-radius: rem(4px);
+    border-radius: rem(30px);
     flex: 1;
     margin-right: rem(12px);
     outline: none;
     padding: rem(12px);
+    padding-left: rem(46px);
     transition: none;
+    &::placeholder {
+      font-style: italic;
+    }
 
     &:hover {
-      border: 1px solid $primary;
+      border: 1px solid $grey-dark;
     }
 
     &:focus {
-      border: 1px solid $primary;
+      border: 1px solid $grey-dark;
       box-shadow: 0 rem(2px) rem(6px) 0 rgba(0, 0, 0, 0.1);
     }
   }
@@ -30,24 +34,35 @@
 
 .search-box {
   border: 1px solid $secondary;
-  border-radius: rem(4px);
+  border-radius: rem(30px);
   flex: 1;
   margin-right: rem(12px);
   outline: none;
   padding: rem(12px);
+  padding-left: rem(46px);
   transition: all 0.25s ease-in-out;
 
+  &::placeholder {
+    font-style: italic;
+  }
+
   &:hover {
-    border: 1px solid $primary;
+    border: 1px solid $grey-dark;
   }
 
   &:focus {
-    border: 1px solid $primary;
+    border: 1px solid $grey-dark;
     box-shadow: 0 rem(2px) rem(6px) 0 rgba(0, 0, 0, 0.1);
   }
 }
 
-
 .search-filters {
   margin-top: rem(32px);
+}
+
+.search-icon {
+  position: absolute;
+  left: rem(16px);
+  top: 50%;
+  transform: translateY(-50%);
 }
