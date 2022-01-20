@@ -11,9 +11,11 @@ import { Banner } from 'ui-kit'
 export const ApplicationBanner = ({ applicationId }) => (
   <Banner
     href={`https://www.demarches-simplifiees.fr/dossiers/${applicationId}`}
-    linkTitle="Accéder au dossier"
+    linkTitle="Voir le dossier en cours"
+    type="notification-info"
   >
-    Votre dossier est en cours pour ce lieu
+    Les coordonnées bancaires de votre lieu sont en cours de validation par
+    notre service financier.
   </Banner>
 )
 
