@@ -50,6 +50,7 @@ export const OfferFilters = ({
           label="Département"
           onChange={setDepartments}
           options={departmentOptions}
+          pluralLabel="Départements"
         />
         <MultiSelectAutocomplete
           className="offer-filters-filter"
@@ -57,6 +58,7 @@ export const OfferFilters = ({
           label="Niveau scolaire"
           onChange={setStudents}
           options={studentsOptions}
+          pluralLabel="Niveaux scolaires"
         />
       </div>
       <OfferFiltersTags

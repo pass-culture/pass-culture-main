@@ -16,6 +16,7 @@ interface MultiSelectAutocompleteProps {
   label?: string
   initialValues: Option[]
   className?: string
+  pluralLabel: string
 }
 
 const MultiSelectAutocomplete = ({
@@ -24,6 +25,7 @@ const MultiSelectAutocomplete = ({
   label,
   initialValues,
   className,
+  pluralLabel,
 }: MultiSelectAutocompleteProps): JSX.Element => (
   <div className={cn(className, 'multi-select-autocomplete-container')}>
     <label
@@ -47,7 +49,7 @@ const MultiSelectAutocomplete = ({
       inputId={`multi-select-autocomplete-${label}`}
       isClearable={false}
       isMulti
-      name={label}
+      name={initialValues.length > 1 ? pluralLabel : label}
       noOptionsMessage={() => 'Aucun résultat'}
       onChange={onChange}
       options={options}
