@@ -6,7 +6,10 @@ from babel import numbers
 
 def to_eurocents(amount_in_euros: typing.Union[decimal.Decimal, float]) -> int:
     exponent = decimal.Decimal("0.01")
-    return int(100 * decimal.Decimal(f"{amount_in_euros}").quantize(exponent))
+    # 0.010 to 0.014 -> 0.01
+    # 0.015 to 0.019 -> 0.02
+    rounding = decimal.ROUND_HALF_UP
+    return int(100 * decimal.Decimal(f"{amount_in_euros}").quantize(exponent, rounding))
 
 
 def to_euros(amount_in_eurocents: int) -> decimal.Decimal:
