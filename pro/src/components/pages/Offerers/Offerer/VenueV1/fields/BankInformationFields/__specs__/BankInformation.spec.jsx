@@ -157,7 +157,7 @@ describe('src | Venue | BankInformation', () => {
 
         // then
         const expectedUrl = `https://www.demarches-simplifiees.fr/dossiers/${props.venue.demarchesSimplifieesApplicationId}`
-        const seeDataLink = screen.getByText('Accéder au dossier')
+        const seeDataLink = screen.getByText('Voir le dossier en cours')
         expect(seeDataLink).toBeInTheDocument()
         expect(seeDataLink).toHaveAttribute('href', expectedUrl)
       })
@@ -186,7 +186,7 @@ describe('src | Venue | BankInformation', () => {
 
         // then
         const expectedUrl = `https://www.demarches-simplifiees.fr/dossiers/${props.venue.demarchesSimplifieesApplicationId}`
-        const seeDataLink = screen.getByText('Accéder au dossier')
+        const seeDataLink = screen.getByText('Voir le dossier en cours')
         expect(seeDataLink).toBeInTheDocument()
         expect(seeDataLink).toHaveAttribute('href', expectedUrl)
 
@@ -211,7 +211,7 @@ describe('src | Venue | BankInformation', () => {
 
         // then
         const expectedUrl = `https://www.demarches-simplifiees.fr/dossiers/${props.venue.demarchesSimplifieesApplicationId}`
-        const seeDataLink = screen.getByText('Accéder au dossier')
+        const seeDataLink = screen.getByText('Voir le dossier en cours')
         expect(seeDataLink).toBeInTheDocument()
         expect(seeDataLink).toHaveAttribute('href', expectedUrl)
 
@@ -241,7 +241,7 @@ describe('src | Venue | BankInformation', () => {
 
         // then
         const expectedUrl = `https://www.demarches-simplifiees.fr/dossiers/${props.venue.demarchesSimplifieesApplicationId}`
-        const seeDataLink = screen.getByText('Accéder au dossier')
+        const seeDataLink = screen.getByText('Voir le dossier en cours')
         expect(seeDataLink).toBeInTheDocument()
         expect(seeDataLink).toHaveAttribute('href', expectedUrl)
 
