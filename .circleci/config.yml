@@ -1004,14 +1004,6 @@ workflows:
           context:
             - GCP
             - GCP_EHP
-      - deploy-dbops:
-          filters:
-            branches:
-              only:
-                - staging
-          context:
-            - GCP
-            - GCP_EHP
       - deploy-pcapi:
           filters:
             branches:
@@ -1056,7 +1048,7 @@ workflows:
                 - production
           context:
             - GCP
-            - GCP_PROD
+            - GCP_EHP
       - deploy-pcapi:
           filters:
             branches:
