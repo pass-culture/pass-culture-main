@@ -45,7 +45,7 @@ def test_send_phone_validation(app):
 
 
 @pytest.mark.usefixtures("db_session")
-def test_send_phone_validation_and_become_beneficiary(app):
+def test_send_phone_validation_and_become_beneficiary(app, client):
     """
     Test that a user with an OK Identity FraudCheck becomes a beneficiary once its phone
     number is validated.
@@ -58,13 +58,18 @@ def test_send_phone_validation_and_become_beneficiary(app):
         hasCompletedIdCheck=True,
     )
     fraud_factories.BeneficiaryFraudCheckFactory(
+        user=user,
+        type=fraud_models.FraudCheckType.USER_PROFILING,
+        status=fraud_models.FraudCheckStatus.OK,
+    )
+    fraud_factories.BeneficiaryFraudCheckFactory(
         user=user, type=fraud_models.FraudCheckType.UBBLE, status=fraud_models.FraudCheckStatus.OK
     )
     fraud_factories.BeneficiaryFraudCheckFactory(
         user=user, type=fraud_models.FraudCheckType.HONOR_STATEMENT, status=fraud_models.FraudCheckStatus.OK
     )
 
-    client = TestClient(app.test_client()).with_session_auth(email=user.email)
+    client.with_session_auth(email=user.email)
 
     response = client.post("/send_phone_validation_code")
 
