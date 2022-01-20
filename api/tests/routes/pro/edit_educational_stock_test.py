@@ -7,8 +7,12 @@ import pytest
 from pcapi.core.bookings import factories as booking_factories
 from pcapi.core.bookings.models import Booking
 from pcapi.core.educational.models import EducationalBooking
+import pcapi.core.educational.testing as adage_api_testing
 from pcapi.core.offers import factories as offer_factories
 from pcapi.core.offers.models import Stock
+from pcapi.core.testing import override_settings
+from pcapi.routes.adage.v1.serialization.prebooking import EducationalBookingEdition
+from pcapi.routes.adage.v1.serialization.prebooking import serialize_educational_booking
 from pcapi.utils.human_ids import humanize
 
 
@@ -17,7 +21,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 @freeze_time("2020-11-17 15:00:00")
 class Return200Test:
-    def test_edit_educational_stock(self, app, client):
+    def test_edit_educational_stock(self, client):
         # Given
         stock = offer_factories.EducationalEventStockFactory(
             beginningDatetime=datetime(2021, 12, 18),
@@ -49,7 +53,7 @@ class Return200Test:
         assert edited_stock.numberOfTickets == 38
         assert edited_stock.educationalPriceDetail == "Nouvelle description du prix"
 
-    def test_edit_educational_stock_partially(self, app, client):
+    def test_edit_educational_stock_partially(self, client):
         # Given
         stock = offer_factories.EducationalEventStockFactory(
             beginningDatetime=datetime(2021, 12, 18),
@@ -58,6 +62,7 @@ class Return200Test:
             bookingLimitDatetime=datetime(2021, 12, 1),
             educationalPriceDetail="Détail du prix",
         )
+        booking_factories.RefusedEducationalBookingFactory(stock=stock)
         offer_factories.UserOffererFactory(user__email="user@example.com", offerer=stock.offer.venue.managingOfferer)
 
         # When
@@ -78,7 +83,10 @@ class Return200Test:
         assert edited_stock.numberOfTickets == 32
         assert edited_stock.educationalPriceDetail == "Détail du prix"
 
-    def test_edit_educational_stock_with_pending_booking(self, app, client):
+        assert len(adage_api_testing.adage_requests) == 0
+
+    @override_settings(ADAGE_API_URL="https://adage_base_url")
+    def test_edit_educational_stock_with_pending_booking(self, client):
         # Given
         stock = offer_factories.EducationalEventStockFactory(
             beginningDatetime=datetime(2021, 12, 18),
@@ -114,6 +122,19 @@ class Return200Test:
         assert edited_stock.educationalPriceDetail == "Nouvelle description du prix"
         assert edited_booking.amount == 1500
         assert edited_educational_booking.confirmationLimitDate == datetime(2021, 12, 31, 20)
+
+        expected_payload = EducationalBookingEdition(
+            **serialize_educational_booking(booking.educationalBooking).dict(),
+            updatedFields=[
+                "beginningDatetime",
+                "bookingLimitDatetime",
+                "price",
+                "numberOfTickets",
+                "educationalPriceDetail",
+            ],
+        )
+        assert adage_api_testing.adage_requests[0]["sent_data"] == expected_payload
+        assert adage_api_testing.adage_requests[0]["url"] == "https://adage_base_url/v1/prereservation-edit"
 
 
 @freeze_time("2020-11-17 15:00:00")
