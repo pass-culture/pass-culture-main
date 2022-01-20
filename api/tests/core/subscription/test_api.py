@@ -713,3 +713,65 @@ class CommonSubscritpionTest:
             subscription_api.handle_eligibility_difference_between_declaration_and_identity_provider(fraud_check)
             == fraud_check
         )
+
+
+@pytest.mark.usefixtures("db_session")
+class HasPassedAllChecksToBecomeBeneficiaryTest:
+    AGE18_ELIGIBLE_BIRTH_DATE = datetime.now() - relativedelta(years=18, months=4)
+
+    def eligible_user(self, validate_phone: bool):
+        phone_validation_status = users_models.PhoneValidationStatusType.VALIDATED if validate_phone else None
+        return users_factories.UserFactory(
+            dateOfBirth=self.AGE18_ELIGIBLE_BIRTH_DATE, phoneValidationStatus=phone_validation_status
+        )
+
+    def test_no_missing_step(self):
+        user = self.eligible_user(validate_phone=True)
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user, type=fraud_models.FraudCheckType.UBBLE, status=fraud_models.FraudCheckStatus.OK
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user, type=fraud_models.FraudCheckType.HONOR_STATEMENT, status=fraud_models.FraudCheckStatus.OK
+        )
+
+        assert subscription_api.has_passed_all_checks_to_become_beneficiary(user) is True
+
+    @override_features(FORCE_PHONE_VALIDATION=True)
+    def test_missing_step(self):
+        user = self.eligible_user(validate_phone=False)
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user, type=fraud_models.FraudCheckType.UBBLE, status=fraud_models.FraudCheckStatus.OK
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user, type=fraud_models.FraudCheckType.HONOR_STATEMENT, status=fraud_models.FraudCheckStatus.OK
+        )
+
+        assert subscription_api.has_passed_all_checks_to_become_beneficiary(user) is False
+        assert not user.has_beneficiary_role
+
+    @override_features(FORCE_PHONE_VALIDATION=True)
+    def test_rejected_import(self):
+        user = self.eligible_user(validate_phone=False)
+
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user, type=fraud_models.FraudCheckType.UBBLE, status=fraud_models.FraudCheckStatus.KO
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user, type=fraud_models.FraudCheckType.HONOR_STATEMENT, status=fraud_models.FraudCheckStatus.OK
+        )
+
+        assert subscription_api.has_passed_all_checks_to_become_beneficiary(user) is False
+        assert not user.has_beneficiary_role
+
+    @override_features(FORCE_PHONE_VALIDATION=True, IS_HONOR_STATEMENT_MANDATORY_TO_ACTIVATE_BENEFICIARY=True)
+    def test_missing_all(self):
+        user = self.eligible_user(validate_phone=False)
+
+        assert subscription_api.has_passed_all_checks_to_become_beneficiary(user) is False
+        assert not user.has_beneficiary_role
+
+    @override_features(FORCE_PHONE_VALIDATION=True, IS_HONOR_STATEMENT_MANDATORY_TO_ACTIVATE_BENEFICIARY=False)
+    def test_missing_all_honor_statement_optional(self):
+        user = self.eligible_user(validate_phone=False)
+        assert subscription_api.has_passed_all_checks_to_become_beneficiary(user) is False
+        assert not user.has_beneficiary_role
