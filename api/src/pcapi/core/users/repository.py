@@ -102,13 +102,6 @@ def get_and_lock_user(user_id: int) -> User:
     return user
 
 
-def get_id_check_token(token_value: str) -> models.Token:
-    return models.Token.query.filter(
-        models.Token.value == token_value,
-        models.Token.type == models.TokenType.ID_CHECK,
-    ).one_or_none()
-
-
 def get_newly_eligible_age_18_users(since: date) -> list[User]:
     """get users that are eligible between `since` (excluded) and now (included) and that have
     created their account before `since`"""

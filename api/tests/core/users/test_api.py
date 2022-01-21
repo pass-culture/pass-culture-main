@@ -25,8 +25,6 @@ from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import testing as sendinblue_testing
 from pcapi.core.users.api import _set_offerer_departement_code
-from pcapi.core.users.api import count_existing_id_check_tokens
-from pcapi.core.users.api import create_id_check_token
 from pcapi.core.users.api import create_pro_user
 from pcapi.core.users.api import delete_expired_tokens
 from pcapi.core.users.api import fulfill_account_password
@@ -169,44 +167,6 @@ class ValidateJwtTokenTest:
         associated_user = get_user_with_valid_token(self.token_value, [token_type])
 
         assert associated_user is None
-
-
-class GenerateIdCheckTokenIfEligibleTest:
-    @freeze_time("2018-06-01")
-    def test_when_elible(self):
-        user = users_factories.UserFactory(dateOfBirth=datetime(2000, 1, 1))
-        token = create_id_check_token(user)
-        assert token
-
-    @freeze_time("2018-06-01")
-    def test_when_not_elible_above_age(self):
-        # user is 19 years old
-        user = users_factories.UserFactory(dateOfBirth=datetime(1999, 5, 1))
-        token = create_id_check_token(user)
-        assert not token
-
-
-class CountIdCheckTokenTest:
-    def test_count_no_token(self):
-        user = users_factories.UserFactory(dateOfBirth=datetime(1999, 5, 1))
-        assert count_existing_id_check_tokens(user) == 0
-
-    def test_count_one_unused_token(self):
-        user = users_factories.UserFactory(dateOfBirth=datetime(1999, 5, 1))
-
-        users_factories.IdCheckToken(user=user, expirationDate=datetime.now() + timedelta(hours=2))
-        assert count_existing_id_check_tokens(user) == 1
-
-    def test_count_multiple_mixed_token(self):
-        user = users_factories.UserFactory(dateOfBirth=datetime(1999, 5, 1))
-
-        past_expiration_date = datetime.now() - timedelta(hours=2)
-        future_expiration_date = datetime.now() + timedelta(hours=2)
-
-        users_factories.IdCheckToken.create_batch(3, user=user, expirationDate=past_expiration_date)
-        users_factories.IdCheckToken.create_batch(2, user=user, expirationDate=future_expiration_date)
-
-        assert count_existing_id_check_tokens(user) == 2
 
 
 class DeleteExpiredTokensTest:

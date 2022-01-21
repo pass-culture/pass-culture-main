@@ -6,7 +6,6 @@ from flask import request
 from jwt import InvalidTokenError
 import pydantic
 
-from pcapi import settings
 from pcapi.connectors import api_recaptcha
 from pcapi.connectors import user_profiling
 from pcapi.connectors.beneficiaries import exceptions as beneficiaries_exceptions
@@ -207,31 +206,6 @@ def resend_email_validation(body: serializers.ResendEmailValidationRequest) -> N
     except exceptions.EmailNotSent:
         raise ApiErrors(
             {"code": "EMAIL_NOT_SENT", "general": ["L'email n'a pas pu être envoyé"]},
-            status_code=400,
-        )
-
-
-@blueprint.native_v1.route("/id_check_token", methods=["GET"])
-@spectree_serialize(api=blueprint.api, response_model=serializers.GetIdCheckTokenResponse)
-@authenticated_user_required
-def get_id_check_token(user: User) -> serializers.GetIdCheckTokenResponse:
-    if not api.is_eligible_for_beneficiary_upgrade(user, user.eligibility):
-        raise ApiErrors({"code": "USER_NOT_ELIGIBLE"})
-    try:
-        id_check_token = api.create_id_check_token(user)
-        return serializers.GetIdCheckTokenResponse(
-            token=id_check_token.value if id_check_token else None,
-            token_timestamp=id_check_token.expirationDate if id_check_token else None,
-        )
-    except exceptions.IdCheckTokenLimitReached:
-        message = f"Tu as fait trop de demandes pour le moment, réessaye dans {settings.ID_CHECK_TOKEN_LIFE_TIME_HOURS} heures"
-        raise ApiErrors(
-            {"code": "TOO_MANY_ID_CHECK_TOKEN", "message": message},
-            status_code=400,
-        )
-    except exceptions.IdCheckAlreadyCompleted:
-        raise ApiErrors(
-            {"code": "ID_CHECK_ALREADY_COMPLETED", "message": "Tu as déjà déposé un dossier, il est en cours d'étude."},
             status_code=400,
         )
 

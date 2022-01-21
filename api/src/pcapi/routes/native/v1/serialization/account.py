@@ -297,11 +297,6 @@ class ResendEmailValidationRequest(BaseModel):
     email: str
 
 
-class GetIdCheckTokenResponse(BaseModel):
-    token: Optional[str]
-    token_timestamp: Optional[datetime.datetime]
-
-
 class ValidatePhoneNumberRequest(BaseModel):
     code: str
 
