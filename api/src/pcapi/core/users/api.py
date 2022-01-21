@@ -5,7 +5,6 @@ from datetime import datetime
 from datetime import time
 from datetime import timedelta
 from decimal import Decimal
-from enum import Enum
 import logging
 import secrets
 import typing
@@ -73,13 +72,6 @@ if typing.TYPE_CHECKING:
 
 UNCHANGED = object()
 logger = logging.getLogger(__name__)
-
-
-class BeneficiaryValidationStep(Enum):
-    PHONE_VALIDATION = "phone-validation"
-    ID_CHECK = "id-check"
-    BENEFICIARY_INFORMATION = "beneficiary-information"
-    HONOR_STATEMENT = "honor-statement"
 
 
 def create_email_validation_token(user: User) -> Token:
