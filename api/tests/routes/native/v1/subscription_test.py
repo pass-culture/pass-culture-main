@@ -489,46 +489,6 @@ class UpdateProfileTest:
         assert not notification["attribute_values"]["u.is_beneficiary"]
         assert notification["attribute_values"]["u.postal_code"] == "77000"
 
-    # TODO: CorentinN: Remove this when frontend only sends Enum Keys
-    def test_update_profile_backward_compatibility(self, client):
-        user = users_factories.UserFactory(
-            address=None,
-            city=None,
-            postalCode=None,
-            activity=None,
-            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
-            dateOfBirth=datetime.date.today() - relativedelta(years=18, months=6),
-        )
-
-        profile_data = {
-            "firstName": "John",
-            "lastName": "Doe",
-            "address": "1 rue des rues",
-            "city": "Uneville",
-            "postalCode": "77000",
-            "activity": "Lycéen",
-        }
-
-        client.with_token(email=user.email)
-        response = client.post("/native/v1/subscription/profile", profile_data)
-
-        assert response.status_code == 204
-
-        user = users_models.User.query.get(user.id)
-        assert user.firstName != "John"
-        assert user.lastName != "Doe"
-        assert user.address == "1 rue des rues"
-        assert user.city == "Uneville"
-        assert user.postalCode == "77000"
-        assert user.activity == "Lycéen"
-
-        assert len(push_testing.requests) == 2
-        notification = push_testing.requests[0]
-
-        assert notification["user_id"] == user.id
-        assert not notification["attribute_values"]["u.is_beneficiary"]
-        assert notification["attribute_values"]["u.postal_code"] == "77000"
-
 
 class ProfileOptionsTypeTest:
     def test_get_profile_options(self, client):

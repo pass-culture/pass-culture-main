@@ -35,7 +35,6 @@ from pcapi.core.users.api import get_eligibility_at_date
 from pcapi.core.users.api import get_eligibility_start_datetime
 from pcapi.core.users.api import has_passed_all_checks_to_become_beneficiary
 from pcapi.core.users.api import set_pro_tuto_as_seen
-from pcapi.core.users.factories import BeneficiaryImportFactory
 from pcapi.core.users.factories import UserFactory
 from pcapi.core.users.models import Credit
 from pcapi.core.users.models import DomainsCredit
@@ -49,7 +48,6 @@ from pcapi.core.users.repository import get_user_with_valid_token
 from pcapi.core.users.utils import encode_jwt_payload
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.models import db
-from pcapi.models.beneficiary_import_status import ImportStatus
 from pcapi.models.user_session import UserSession
 from pcapi.notifications.push import testing as batch_testing
 from pcapi.routes.serialization.users import ProUserCreationBodyModel
@@ -637,102 +635,6 @@ class DomainsCreditTest:
         user = users_factories.UserFactory()
 
         assert not get_domains_credit(user)
-
-
-@pytest.mark.usefixtures("db_session")
-class UpdateBeneficiaryMandatoryInformationTest:
-    def test_all_steps_to_become_beneficiary(self):
-        """
-        Test that the user's id check profile information are updated and that
-        it becomes beneficiary (and therefore has a deposit)
-        """
-        AGE18_ELIGIBLE_BIRTH_DATE = datetime.now() - relativedelta(years=18, months=4)
-        user = users_factories.UserFactory(
-            phoneValidationStatus=PhoneValidationStatusType.VALIDATED,
-            dateOfBirth=AGE18_ELIGIBLE_BIRTH_DATE,
-            hasCompletedIdCheck=True,
-        )
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user, type=fraud_models.FraudCheckType.JOUVE, status=fraud_models.FraudCheckStatus.OK
-        )
-        fraud_factories.BeneficiaryFraudResultFactory(user=user, status=fraud_models.FraudStatus.OK)
-        beneficiary_import = BeneficiaryImportFactory(beneficiary=user)
-        beneficiary_import.setStatus(ImportStatus.CREATED)
-
-        new_address = f"{user.address}_test"
-        new_city = f"{user.city}_test"
-        subscription_api.update_user_profile(
-            user=user,
-            address=new_address,
-            city=new_city,
-            postal_code="93000",
-            activity=user.activity,
-        )
-
-        user = User.query.get(user.id)
-
-        assert user.address == new_address
-        assert user.city == new_city
-
-        assert not user.hasCompletedIdCheck
-        assert user.has_beneficiary_role
-        assert user.deposit
-
-    @override_features(FORCE_PHONE_VALIDATION=True)
-    def test_missing_step_to_become_beneficiary(self):
-        """
-        Test that a user with no an unverified phone number does not become
-        beneficiary, even if the identity document has been successfully
-        imported
-        """
-        user = users_factories.UserFactory(
-            phoneValidationStatus=None,  # missing step to become beneficiary
-        )
-        beneficiary_import = BeneficiaryImportFactory(beneficiary=user)
-        beneficiary_import.setStatus(ImportStatus.CREATED)
-
-        new_address = f"{user.address}_test"
-        new_city = f"{user.city}_test"
-        subscription_api.update_user_profile(
-            user=user,
-            address=new_address,
-            city=new_city,
-            postal_code="93000",
-            activity=user.activity,
-        )
-
-        user = User.query.get(user.id)
-
-        assert user.address == new_address
-        assert user.city == new_city
-
-        assert not user.has_beneficiary_role
-        assert not user.deposit
-
-    def test_user_has_not_passed_fraud_checks(self):
-        user = users_factories.UserFactory()
-        subscription_api.update_user_profile(
-            user=user,
-            address=f"{user.address}_test",
-            city=f"{user.city}_test",
-            postal_code="93000",
-            activity=user.activity,
-        )
-        assert not user.has_beneficiary_role
-        assert not user.deposit
-
-    def test_user_is_fraudster(self):
-        user = users_factories.UserFactory()
-        fraud_factories.BeneficiaryFraudResultFactory(user=user, status=fraud_models.FraudStatus.OK)
-        subscription_api.update_user_profile(
-            user=user,
-            address=f"{user.address}_test",
-            city=f"{user.city}_test",
-            postal_code="93000",
-            activity=user.activity,
-        )
-        assert not user.has_beneficiary_role
-        assert not user.deposit
 
 
 class CreateProUserTest:

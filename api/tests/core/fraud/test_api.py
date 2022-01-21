@@ -236,21 +236,6 @@ class DMSFraudCheckTest:
 
 
 @pytest.mark.usefixtures("db_session")
-class UserFraudsterTest:
-    @pytest.mark.parametrize(
-        "fraud_status,is_fraudster",
-        (
-            (fraud_models.FraudCheckStatus.OK, False),
-            (fraud_models.FraudCheckStatus.KO, True),
-            (fraud_models.FraudCheckStatus.SUSPICIOUS, True),
-        ),
-    )
-    def test_is_user_fraudster(self, fraud_status, is_fraudster):
-        fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(status=fraud_status)
-        assert is_fraudster == fraud_api.is_user_fraudster(fraud_check.user)
-
-
-@pytest.mark.usefixtures("db_session")
 class EduconnectFraudTest:
     def test_on_educonnect_result(self):
         fraud_factories.IneHashWhitelistFactory(ine_hash="5ba682c0fc6a05edf07cd8ed0219258f")
