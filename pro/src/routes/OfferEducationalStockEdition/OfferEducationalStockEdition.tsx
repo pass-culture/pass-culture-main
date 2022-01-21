@@ -1,23 +1,23 @@
-import React, { useState, useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
 import useNotification from 'components/hooks/useNotification'
 import Spinner from 'components/layout/Spinner'
 import {
+  cancelActiveBookingsAdapter,
   DEFAULT_EAC_STOCK_FORM_VALUES,
   getStockOfferAdapter,
+  GetStockOfferSuccessPayload,
   Mode,
   OfferEducationalStockFormValues,
   patchIsOfferActiveAdapter,
-  cancelActiveBookingsAdapter,
-  GetStockOfferSuccessPayload,
 } from 'core/OfferEducational'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 import OfferEducationalLayout from 'new_components/OfferEducationalLayout'
 import OfferEducationalStockScreen from 'screens/OfferEducationalStock'
 
 import { getEducationalStockAdapter } from './adapters/getEducationalStockAdapter'
-import patchEducationalStockAdapter from './adapters/patchEducationalStockAdatper'
+import patchEducationalStockAdapter from './adapters/patchEducationalStockAdapter'
 import { StockResponse } from './types'
 import { extractInitialStockValues } from './utils/extractInitialStockValues'
 
@@ -44,6 +44,7 @@ const OfferEducationalStockEdition = (): JSX.Element => {
       offer,
       stockId,
       values,
+      initialValues,
     })
 
     if (!isOk) {
