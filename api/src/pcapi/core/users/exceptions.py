@@ -72,14 +72,6 @@ class ExpiredCode(NotValidCode):
     pass
 
 
-class IdCheckTokenLimitReached(Exception):
-    pass
-
-
-class IdCheckAlreadyCompleted(Exception):
-    pass
-
-
 class InvalidPhoneNumber(PhoneVerificationException):
     pass
 

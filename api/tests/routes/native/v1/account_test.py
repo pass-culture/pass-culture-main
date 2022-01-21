@@ -40,7 +40,6 @@ from pcapi.core.users.models import TokenType
 from pcapi.core.users.models import User
 from pcapi.core.users.models import UserRole
 from pcapi.core.users.models import VOID_PUBLIC_NAME
-from pcapi.core.users.repository import get_id_check_token
 from pcapi.core.users.utils import ALGORITHM_HS_256
 from pcapi.models import db
 from pcapi.notifications.push import testing as push_testing
@@ -835,32 +834,6 @@ class ResendEmailValidationTest:
 
         assert response.status_code == 204
         assert not mails_testing.outbox
-
-
-@freeze_time("2018-06-01")
-class GetIdCheckTokenTest:
-    def test_get_id_check_token_eligible(self, client, app):
-        user = users_factories.UserFactory(dateOfBirth=datetime(2000, 1, 1))
-        client.with_token(email=user.email)
-
-        response = client.get("/native/v1/id_check_token")
-
-        assert response.status_code == 200
-        assert get_id_check_token(response.json["token"])
-
-    def test_get_id_check_token_limit_reached(self, client, app):
-        user = users_factories.UserFactory(dateOfBirth=datetime(2000, 1, 1))
-
-        expiration_date = datetime.now() + timedelta(hours=2)
-        users_factories.IdCheckToken.create_batch(
-            settings.ID_CHECK_MAX_ALIVE_TOKEN, user=user, expirationDate=expiration_date, isUsed=False
-        )
-
-        client.with_token(email=user.email)
-        response = client.get("/native/v1/id_check_token")
-
-        assert response.status_code == 400
-        assert response.json["code"] == "TOO_MANY_ID_CHECK_TOKEN"
 
 
 class ShowEligibleCardTest:

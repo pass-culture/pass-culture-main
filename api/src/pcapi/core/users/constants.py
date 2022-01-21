@@ -8,7 +8,6 @@ RESET_PASSWORD_TOKEN_LIFE_TIME = datetime.timedelta(hours=24)
 RESET_PASSWORD_TOKEN_LIFE_TIME_EXTENDED = datetime.timedelta(days=30)
 EMAIL_VALIDATION_TOKEN_LIFE_TIME = datetime.timedelta(hours=24)
 EMAIL_CHANGE_TOKEN_LIFE_TIME = datetime.timedelta(hours=24)
-ID_CHECK_TOKEN_LIFE_TIME = datetime.timedelta(hours=settings.ID_CHECK_TOKEN_LIFE_TIME_HOURS)
 PHONE_VALIDATION_TOKEN_LIFE_TIME = datetime.timedelta(minutes=10)
 
 ELIGIBILITY_AGE_18 = 18

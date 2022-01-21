@@ -300,12 +300,6 @@ class EmailValidationToken(TokenFactory):
     expirationDate = factory.LazyFunction(lambda: datetime.now() + constants.EMAIL_VALIDATION_TOKEN_LIFE_TIME)
 
 
-class IdCheckToken(TokenFactory):
-    type = models.TokenType.ID_CHECK
-    creationDate = factory.LazyFunction(datetime.now)
-    expirationDate = factory.LazyFunction(lambda: datetime.now() + constants.ID_CHECK_TOKEN_LIFE_TIME)
-
-
 class UserSessionFactory(BaseFactory):
     class Meta:
         model = user_session.UserSession
