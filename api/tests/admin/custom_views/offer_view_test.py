@@ -34,7 +34,7 @@ class BeneficiaryUserViewTest:
 @pytest.mark.usefixtures("db_session")
 class OfferValidationViewTest:
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
-    @patch("pcapi.admin.custom_views.offer_view.get_offerer_legal_category")
+    @patch("pcapi.connectors.api_entreprises.get_offerer_legal_category")
     def test_approve_offer_and_go_to_next_offer(
         self, mocked_get_offerer_legal_category, mocked_validate_csrf_token, app
     ):
@@ -81,7 +81,7 @@ class OfferValidationViewTest:
         assert response.headers["location"] == f"http://localhost/pc/back-office/validation/edit/?id={oldest_offer.id}"
 
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
-    @patch("pcapi.admin.custom_views.offer_view.get_offerer_legal_category")
+    @patch("pcapi.connectors.api_entreprises.get_offerer_legal_category")
     def test_approve_last_pending_offer_and_go_to_the_next_offer_redirect_to_validation_page(
         self, mocked_get_offerer_legal_category, mocked_validate_csrf_token, app
     ):
@@ -113,7 +113,7 @@ class OfferValidationViewTest:
         assert response.headers["location"] == "http://localhost/pc/back-office/validation/"
 
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
-    @patch("pcapi.admin.custom_views.offer_view.get_offerer_legal_category")
+    @patch("pcapi.connectors.api_entreprises.get_offerer_legal_category")
     @patch("pcapi.admin.custom_views.offer_view.send_offer_validation_status_update_email")
     def test_approve_virtual_offer_and_send_mail_to_managing_offerer(
         self,
@@ -148,7 +148,7 @@ class OfferValidationViewTest:
         )
 
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
-    @patch("pcapi.admin.custom_views.offer_view.get_offerer_legal_category")
+    @patch("pcapi.connectors.api_entreprises.get_offerer_legal_category")
     @patch("pcapi.admin.custom_views.offer_view.send_offer_validation_status_update_email")
     def test_approve_physical_offer_and_send_mail_to_venue_booking_email(
         self,
@@ -312,7 +312,7 @@ class OfferValidationViewTest:
 
     @freeze_time("2020-11-17 15:00:00")
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
-    @patch("pcapi.admin.custom_views.offer_view.get_offerer_legal_category")
+    @patch("pcapi.connectors.api_entreprises.get_offerer_legal_category")
     @patch("pcapi.admin.custom_views.offer_view.send_offer_validation_notification_to_administration")
     def test_approve_offer_and_send_mail_to_administration(
         self,
@@ -358,7 +358,7 @@ class OfferValidationViewTest:
 
     @freeze_time("2020-11-17 15:00:00")
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
-    @patch("pcapi.admin.custom_views.offer_view.get_offerer_legal_category")
+    @patch("pcapi.connectors.api_entreprises.get_offerer_legal_category")
     @patch("pcapi.admin.custom_views.offer_view.send_offer_validation_notification_to_administration")
     def test_reject_offer_and_send_mail_to_administration(
         self,
@@ -483,7 +483,7 @@ class OfferValidationViewTest:
         "action,expected", [("approve", OfferValidationStatus.APPROVED), ("reject", OfferValidationStatus.REJECTED)]
     )
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
-    @patch("pcapi.admin.custom_views.offer_view.get_offerer_legal_category")
+    @patch("pcapi.connectors.api_entreprises.get_offerer_legal_category")
     def test_batch_approve_offers(
         self, mocked_get_offerer_legal_category, mocked_validate_csrf_token, action, expected, client, app
     ):
@@ -526,7 +526,7 @@ class OfferValidationViewTest:
 
     @pytest.mark.parametrize("action", ["approve", "reject"])
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
-    @patch("pcapi.admin.custom_views.offer_view.get_offerer_legal_category")
+    @patch("pcapi.connectors.api_entreprises.get_offerer_legal_category")
     @patch("pcapi.core.offers.api.update_pending_offer_validation")
     def test_batch_approve_reject_offers_not_updated(
         self,
@@ -594,7 +594,7 @@ class GetOfferValidationViewTest:
         import_offer_validation_config(self.CONFIG_YAML)
         users_factories.AdminFactory(email="admin@example.com")
         offerer = offers_factories.OffererFactory()
-        offers_factories.OfferFactory(
+        offer = offers_factories.OfferFactory(
             validation=OfferValidationStatus.PENDING, isActive=False, venue__managingOfferer=offerer
         )
         offers_factories.OfferFactory(
@@ -609,14 +609,16 @@ class GetOfferValidationViewTest:
             "legal_category_label": "Société en nom collectif",
         }
 
-        response = client.get("/pc/back-office/validation/")
+        response_1 = client.get("/pc/back-office/validation/")
+        response_2 = client.get("/pc/back-office/validation/")
+        response_3 = client.get(f"/pc/back-office/validation/edit?id={offer.id}")
 
-        assert response.status_code == 200
+        assert response_1.status_code == response_2.status_code == response_3.status_code == 200
         assert mocked_get_offerer_legal_category.call_count == 1
 
     @clean_database
     @patch("pcapi.connectors.api_entreprises.get_by_offerer")
-    def test_view_form_loads_if_wrong_siren_on_non_prod_env(self, mocked_get_by_offerer, app, client):
+    def test_view_form_loads_if_wrong_siren(self, mocked_get_by_offerer, app, client, caplog):
         import_offer_validation_config(self.CONFIG_YAML)
         users_factories.AdminFactory(email="admin@example.com")
         offerer = offers_factories.OffererFactory()
@@ -627,27 +629,10 @@ class GetOfferValidationViewTest:
         mocked_get_by_offerer.side_effect = ApiEntrepriseException(
             f"Error getting API entreprise DATA for SIREN:{offerer.siren}"
         )
-
         response = client.get(f"/pc/back-office/validation/edit?id={offer.id}")
+
         assert response.status_code == 200
-
-    @clean_database
-    @patch("pcapi.connectors.api_entreprises.settings")
-    @patch("pcapi.connectors.api_entreprises.get_by_offerer")
-    def test_view_form_fails_if_wrong_siren_on_prod_env(self, mocked_get_by_offerer, mocked_settings, app, client):
-        import_offer_validation_config(self.CONFIG_YAML)
-        users_factories.AdminFactory(email="admin@example.com")
-        offerer = offers_factories.OffererFactory()
-        offer = offers_factories.OfferFactory(
-            validation=OfferValidationStatus.PENDING, isActive=False, venue__managingOfferer=offerer
-        )
-        client = client.with_session_auth("admin@example.com")
-        mocked_settings.IS_PROD = True
-        mocked_get_by_offerer.side_effect = ApiEntrepriseException(
-            f"Error getting API entreprise DATA for SIREN:{offerer.siren}"
-        )
-        response = client.get(f"/pc/back-office/validation/edit?id={offer.id}")
-        assert response.status_code == 500
+        assert caplog.messages == ["Could not reach API Entreprise"]
 
 
 class OfferViewTest:

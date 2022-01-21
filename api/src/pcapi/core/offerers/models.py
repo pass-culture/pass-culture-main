@@ -486,8 +486,8 @@ class Offerer(
         )
 
     @cached_property
-    def legal_category(self) -> str:
-        return get_offerer_legal_category(self)["legal_category_code"]
+    def legal_category(self) -> dict:
+        return get_offerer_legal_category(self)
 
 
 offerer_ts_indexes = [

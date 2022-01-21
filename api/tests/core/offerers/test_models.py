@@ -109,15 +109,16 @@ class OffererNValidatedOffersTest:
 class OffererLegalCategoryTest:
     @patch("pcapi.core.offerers.models.get_offerer_legal_category")
     def test_offerer_legal_category_called_many_times(self, mocked_get_offerer_legal_category):
-        mocked_get_offerer_legal_category.return_value = {
+        info = {
             "legal_category_code": "5202",
             "legal_category_label": "Société en nom collectif",
         }
+        mocked_get_offerer_legal_category.return_value = info
         offerer = offers_factories.OffererFactory()
 
-        assert offerer.legal_category == "5202"
-        assert offerer.legal_category == "5202"
-        assert offerer.legal_category == "5202"
+        assert offerer.legal_category == info
+        assert offerer.legal_category == info
+        assert offerer.legal_category == info
         assert mocked_get_offerer_legal_category.call_count == 1
 
 

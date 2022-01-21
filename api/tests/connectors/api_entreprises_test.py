@@ -330,25 +330,23 @@ class GetOffererLegalCategoryTest:
 
     @patch("pcapi.connectors.api_entreprises.get_by_offerer")
     @override_settings(IS_PROD=True)
-    def test_error_get_by_offerer_on_prod_env(self, mocked_get_by_offerer):
-        mocked_get_by_offerer.side_effect = [
-            ApiEntrepriseException("Error getting API entreprise DATA for SIREN : xxx")
-        ]
+    def test_handle_error_get_by_offerer_on_prod_env(self, mocked_get_by_offerer):
+        mocked_get_by_offerer.side_effect = [ApiEntrepriseException()]
         offerer = offers_factories.OffererFactory()
 
-        with pytest.raises(ApiEntrepriseException) as error:
-            get_offerer_legal_category(offerer)
-
-        assert "Error getting API entreprise DATA for SIREN : xxx" in str(error.value)
+        assert get_offerer_legal_category(offerer) == {
+            "legal_category_code": "Donnée indisponible",
+            "legal_category_label": "Donnée indisponible",
+        }
 
     @patch("pcapi.connectors.api_entreprises.get_by_offerer")
-    def test_error_get_by_offerer_on_non_prod_env(self, mocked_get_by_offerer):
+    def test_handle_error_get_by_offerer_on_non_prod_env(self, mocked_get_by_offerer):
         mocked_get_by_offerer.side_effect = [ApiEntrepriseException]
         offerer = offers_factories.OffererFactory()
 
         assert get_offerer_legal_category(offerer) == {
-            "legal_category_code": "XXXX",
-            "legal_category_label": "Catégorie factice (hors Prod)",
+            "legal_category_code": "Donnée indisponible",
+            "legal_category_label": "Donnée indisponible",
         }
 
 
