@@ -4,6 +4,7 @@ from datetime import timedelta
 from freezegun import freeze_time
 import pytest
 
+from pcapi.core import testing
 from pcapi.core.categories import subcategories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
@@ -34,6 +35,22 @@ class Returns200Test:
         assert "validationToken" not in response_json["venue"]["managingOfferer"]
         assert "thumbUrl" in response_json
         assert response_json["nonHumanizedId"] == offer.id
+
+    def test_performance(self, client):
+        # Given
+        beneficiary = users_factories.BeneficiaryGrant18Factory()
+        offer = offers_factories.ThingOfferFactory()
+        offers_factories.EventStockFactory.create_batch(5, offer=offer)
+
+        # When
+        client.with_session_auth(email=beneficiary.email)
+        humanized_offer_id = humanize(offer.id)
+
+        num_queries = testing.AUTHENTICATION_QUERIES
+        num_queries += 1  # Get offer by id
+
+        with testing.assert_num_queries(num_queries):
+            client.get(f"/offers/{humanized_offer_id}")
 
     def test_access_even_if_offerer_has_no_siren(self, app):
         # Given
