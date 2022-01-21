@@ -1,8 +1,7 @@
 import logging
 
 from pcapi import settings
-from pcapi.connectors.api_demarches_simplifiees import DMSGraphQLClient
-from pcapi.connectors.api_demarches_simplifiees import GraphQLApplicationStates
+from pcapi.connectors.dms import api as api_demarches_simplifiees
 from pcapi.core.users import models as users_models
 from pcapi.models.beneficiary_import import BeneficiaryImport
 from pcapi.models.beneficiary_import_status import BeneficiaryImportStatus
@@ -15,8 +14,10 @@ logger = logging.getLogger()
 def archive_applications(procedure_id: int, dry_run: bool = True) -> None:
     total_applications = 0
     archived_applications = 0
-    client = DMSGraphQLClient()
-    for application_details in client.get_applications_with_details(procedure_id, GraphQLApplicationStates.accepted):
+    client = api_demarches_simplifiees.DMSGraphQLClient()
+    for application_details in client.get_applications_with_details(
+        procedure_id, api_demarches_simplifiees.GraphQLApplicationStates.accepted
+    ):
         application_techid = application_details["id"]
         application_number = application_details["number"]
         total_applications += 1

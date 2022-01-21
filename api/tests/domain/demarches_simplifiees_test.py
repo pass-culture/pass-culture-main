@@ -24,7 +24,7 @@ from tests.connector_creators.demarches_simplifiees_creators import (
 )
 
 
-@patch("pcapi.connectors.api_demarches_simplifiees.get_application_details")
+@patch("pcapi.connectors.dms.api.get_application_details")
 class GetOffererBankInformation_applicationDetailsByApplicationIdTest:
     def test_retrieve_and_format_all_fields(self, get_application_details):
         # Given
@@ -72,8 +72,8 @@ class GetOffererBankInformation_applicationDetailsByApplicationIdTest:
         mock_format_raw_iban_and_bic.assert_has_calls([call("F R763000 700011123 45 67890144"), call("SOGeferp")])
 
 
-@patch("pcapi.connectors.api_demarches_simplifiees.get_application_details")
-@patch("pcapi.connectors.api_demarches_simplifiees.DMSGraphQLClient")
+@patch("pcapi.connectors.dms.api.get_application_details")
+@patch("pcapi.connectors.dms.api.DMSGraphQLClient")
 class GetVenueBankInformation_applicationDetailsByApplicationIdTest:
     def test_retrieve_and_format_all_fields_when_with_siret(self, DMSGraphQLClient, get_application_details):
         # Given

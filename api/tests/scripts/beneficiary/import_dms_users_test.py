@@ -8,8 +8,8 @@ from dateutil.relativedelta import relativedelta
 import freezegun
 import pytest
 
-from pcapi.connectors.api_demarches_simplifiees import DMSGraphQLClient
-from pcapi.connectors.api_demarches_simplifiees import GraphQLApplicationStates
+from pcapi.connectors.dms.api import DMSGraphQLClient
+from pcapi.connectors.dms.api import GraphQLApplicationStates
 import pcapi.core.fraud.models as fraud_models
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.payments.models import Deposit

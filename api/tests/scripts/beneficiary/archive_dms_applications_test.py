@@ -3,7 +3,7 @@ from unittest.mock import patch
 
 import pytest
 
-from pcapi.connectors.api_demarches_simplifiees import DMSGraphQLClient
+from pcapi.connectors.dms.api import DMSGraphQLClient
 from pcapi.core import testing
 from pcapi.core.users import factories as users_factories
 from pcapi.models.beneficiary_import_status import ImportStatus
