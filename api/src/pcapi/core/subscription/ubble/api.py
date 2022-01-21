@@ -35,8 +35,9 @@ def update_ubble_workflow(
 
     if status == ubble_fraud_models.UbbleIdentificationStatus.PROCESSING:
         user.hasCompletedIdCheck = True
-        pcapi_repository.repository.save(user)
         subscription_messages.on_review_pending(user)
+        fraud_check.status = fraud_models.FraudCheckStatus.PENDING
+        pcapi_repository.repository.save(user, fraud_check)
 
     elif status == ubble_fraud_models.UbbleIdentificationStatus.PROCESSED:
         try:

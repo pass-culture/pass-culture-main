@@ -1539,6 +1539,7 @@ class IdentificationSessionTest:
 
         check = user.beneficiaryFraudChecks[0]
         assert check.type == fraud_models.FraudCheckType.UBBLE
+        assert check.status == fraud_models.FraudCheckStatus.STARTED
         assert response.json["identificationUrl"] == "https://id.ubble.ai/29d9eca4-dce6-49ed-b1b5-8bb0179493a8"
 
     @pytest.mark.parametrize("age", [14, 19, 20])

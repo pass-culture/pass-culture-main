@@ -307,6 +307,7 @@ class FraudReasonCode(enum.Enum):
 class FraudCheckStatus(enum.Enum):
     KO = "ko"
     OK = "ok"
+    STARTED = "started"
     SUSPICIOUS = "suspiscious"
     PENDING = "pending"
     CANCELED = "canceled"
