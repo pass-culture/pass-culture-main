@@ -3,7 +3,7 @@ from unittest.mock import patch
 
 import pytest
 
-from pcapi.connectors.dms.api import DMSGraphQLClient
+from pcapi.connectors.dms import api as api_dms
 from pcapi.core import testing
 from pcapi.core.users import factories as users_factories
 from pcapi.models.beneficiary_import_status import ImportStatus
@@ -17,8 +17,8 @@ class ArchiveDMSApplicationsTest:
 
     PROCEDURE_ID = 123
 
-    @patch.object(DMSGraphQLClient, "get_applications_with_details")
-    @patch.object(DMSGraphQLClient, "archive_application")
+    @patch.object(api_dms.DMSGraphQLClient, "get_applications_with_details")
+    @patch.object(api_dms.DMSGraphQLClient, "archive_application")
     def test_archive_applications(self, dms_archive, dms_applications):
         application_id = 42
         user = users_factories.BeneficiaryGrant18Factory()
@@ -33,8 +33,8 @@ class ArchiveDMSApplicationsTest:
         archive_dms_applications.archive_applications(self.PROCEDURE_ID, dry_run=False)
         assert dms_archive.call_count == 1
 
-    @patch.object(DMSGraphQLClient, "get_applications_with_details")
-    @patch.object(DMSGraphQLClient, "archive_application")
+    @patch.object(api_dms.DMSGraphQLClient, "get_applications_with_details")
+    @patch.object(api_dms.DMSGraphQLClient, "archive_application")
     def test_archive_applications_dry_run(self, dms_archive, dms_applications):
         application_id = 42
         user = users_factories.BeneficiaryGrant18Factory()
@@ -50,8 +50,8 @@ class ArchiveDMSApplicationsTest:
 
         assert dms_archive.call_count == 0
 
-    @patch.object(DMSGraphQLClient, "get_applications_with_details")
-    @patch.object(DMSGraphQLClient, "archive_application")
+    @patch.object(api_dms.DMSGraphQLClient, "get_applications_with_details")
+    @patch.object(api_dms.DMSGraphQLClient, "archive_application")
     @testing.override_settings(DMS_ENROLLMENT_INSTRUCTOR="SomeInstructorId")
     def test_archive_applications_only_archive_beneficiary(self, dms_archive, dms_applications, caplog):
         caplog.set_level(logging.INFO)
