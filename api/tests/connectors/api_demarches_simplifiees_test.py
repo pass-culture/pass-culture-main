@@ -1,16 +1,16 @@
 from unittest.mock import MagicMock
 from unittest.mock import patch
 
-from pcapi.connectors.api_demarches_simplifiees import DMSGraphQLClient
-from pcapi.connectors.api_demarches_simplifiees import GraphQLApplicationStates
-from pcapi.connectors.api_demarches_simplifiees import get_application_details
+from pcapi.connectors.dms.api import DMSGraphQLClient
+from pcapi.connectors.dms.api import GraphQLApplicationStates
+from pcapi.connectors.dms.api import get_application_details
 
 from tests.scripts.beneficiary.fixture import make_graphql_application
 from tests.scripts.beneficiary.fixture import make_single_application
 
 
 class GetApplicationDetailsTest:
-    @patch("pcapi.connectors.api_demarches_simplifiees.requests.get")
+    @patch("pcapi.connectors.dms.api.requests.get")
     def test_calls_demarche_simplifiee_api_with_right_link(self, requests_get):
         # Given
         response_return_value = MagicMock(status_code=200, text="")

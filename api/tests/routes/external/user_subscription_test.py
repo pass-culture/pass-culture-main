@@ -11,8 +11,8 @@ import freezegun
 import pytest
 
 from pcapi import settings
-from pcapi.connectors.api_demarches_simplifiees import DMSGraphQLClient
-from pcapi.connectors.api_demarches_simplifiees import GraphQLApplicationStates
+from pcapi.connectors.dms.api import DMSGraphQLClient
+from pcapi.connectors.dms.api import GraphQLApplicationStates
 from pcapi.core import testing
 from pcapi.core.fraud import factories as fraud_factories
 from pcapi.core.fraud import models as fraud_models

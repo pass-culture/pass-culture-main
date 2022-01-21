@@ -1,7 +1,7 @@
 import logging
 
 from pcapi import settings
-from pcapi.connectors import api_demarches_simplifiees
+from pcapi.connectors.dms import api as api_demarches_simplifiees
 from pcapi.core import logging as core_logging
 from pcapi.core.fraud.ubble import api as ubble_fraud_api
 from pcapi.core.subscription import api as subscription_api
