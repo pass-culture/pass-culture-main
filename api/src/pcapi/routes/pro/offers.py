@@ -56,7 +56,15 @@ def list_offers(query: offers_serialize.ListOffersQueryModel) -> offers_serializ
 @login_required
 @spectree_serialize(response_model=offers_serialize.GetOfferResponseModel)
 def get_offer(offer_id: str) -> offers_serialize.GetOfferResponseModel:
-    offer = load_or_404(Offer, offer_id)
+    try:
+        offer = offers_repository.get_offer_by_id(dehumanize(offer_id))
+    except exceptions.OfferNotFound:
+        raise ApiErrors(
+            errors={
+                "global": ["Aucun objet ne correspond à cet identifiant dans notre base de données"],
+            },
+            status_code=404,
+        )
     return offers_serialize.GetOfferResponseModel.from_orm(offer)
 
 

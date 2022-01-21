@@ -11,6 +11,7 @@ from sqlalchemy import or_
 from sqlalchemy.orm import Query
 from sqlalchemy.orm import joinedload
 from sqlalchemy.orm import load_only
+from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.sql.functions import coalesce
 
 from pcapi.core.bookings.models import Booking
@@ -18,6 +19,7 @@ from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.categories import subcategories
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import Venue
+from pcapi.core.offers.exceptions import OfferNotFound
 from pcapi.core.offers.exceptions import StockDoesNotExist
 from pcapi.core.offers.models import ActivationCode
 from pcapi.core.offers.models import Mediation
@@ -385,3 +387,22 @@ def get_non_deleted_stock_by_id(stock_id: int):
     if stock is None:
         raise StockDoesNotExist()
     return stock
+
+
+def get_offer_by_id(offer_id: int) -> Offer:
+    try:
+        return (
+            Offer.query.filter(Offer.id == offer_id)
+            .options(joinedload(Offer.mediations))
+            .options(joinedload(Offer.stocks))
+            .options(joinedload(Offer.product, innerjoin=True))
+            .options(
+                joinedload(Offer.venue, innerjoin=True,).joinedload(
+                    Venue.managingOfferer,
+                    innerjoin=True,
+                )
+            )
+            .one()
+        )
+    except NoResultFound:
+        raise OfferNotFound()
