@@ -3,7 +3,7 @@ import logging
 from typing import Optional
 
 from pcapi import settings
-from pcapi.connectors import api_demarches_simplifiees
+from pcapi.connectors.dms import api as api_demarches_simplifiees
 from pcapi.domain.bank_account import format_raw_iban_and_bic
 from pcapi.domain.bank_information import CannotRegisterBankInformation
 from pcapi.models.bank_information import BankInformationStatus

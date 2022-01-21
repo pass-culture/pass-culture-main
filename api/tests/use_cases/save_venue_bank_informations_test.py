@@ -95,7 +95,7 @@ class SaveVenueBankInformationsTest:
 
     class SaveBankInformationTest:
         @patch("pcapi.connectors.api_entreprises.check_siret_is_still_active")
-        @patch("pcapi.connectors.api_demarches_simplifiees.get_application_details")
+        @patch("pcapi.connectors.dms.api.get_application_details")
         class VenueWithSiretTest:
             def setup_method(self):
                 self.save_venue_bank_informations = SaveVenueBankInformations(
@@ -392,7 +392,7 @@ class SaveVenueBankInformationsTest:
                 assert bank_information_count == 0
 
         @patch("pcapi.connectors.api_entreprises.check_siret_is_still_active", return_value=True)
-        @patch("pcapi.connectors.api_demarches_simplifiees.get_application_details")
+        @patch("pcapi.connectors.dms.api.get_application_details")
         class VenueWitoutSiretTest:
             def setup_method(self):
                 self.save_venue_bank_informations = SaveVenueBankInformations(
@@ -652,7 +652,7 @@ class SaveVenueBankInformationsTest:
                 assert bank_information_count == 0
 
     @patch("pcapi.connectors.api_entreprises.check_siret_is_still_active", return_value=True)
-    @patch("pcapi.connectors.api_demarches_simplifiees.get_application_details")
+    @patch("pcapi.connectors.dms.api.get_application_details")
     class UpdateBankInformationByApplicationIdTest:
         def setup_method(self):
             self.save_venue_bank_informations = SaveVenueBankInformations(
@@ -761,7 +761,7 @@ class SaveVenueBankInformationsTest:
             ]
 
     @patch("pcapi.connectors.api_entreprises.check_siret_is_still_active", return_value=True)
-    @patch("pcapi.connectors.api_demarches_simplifiees.get_application_details")
+    @patch("pcapi.connectors.dms.api.get_application_details")
     class UpdateBankInformationByVenueIdTest:
         def setup_method(self):
             self.save_venue_bank_informations = SaveVenueBankInformations(

@@ -12,7 +12,7 @@ from pcapi.utils import requests
 
 
 logger = logging.getLogger(__name__)
-GRAPHQL_DIRECTORY = pathlib.Path(os.path.dirname(__file__)) / "beneficiaries" / "dms" / "graphql"
+GRAPHQL_DIRECTORY = pathlib.Path(os.path.dirname(__file__)) / "graphql"
 
 
 class ApiDemarchesSimplifieesException(Exception):
@@ -65,7 +65,7 @@ class DMSGraphQLClient:
     def get_applications_with_details(
         self, procedure_id: int, state: GraphQLApplicationStates, page_token: str = ""
     ) -> Any:
-        query = self.build_query("get_applications_with_details")
+        query = self.build_query("beneficiaries/get_applications_with_details")
         variables = {
             "demarcheNumber": procedure_id,
             "state": state.value,
@@ -101,7 +101,7 @@ class DMSGraphQLClient:
         )
 
     def get_single_application_details(self, application_id: int) -> Any:
-        query = self.build_query("get_single_application_details")
+        query = self.build_query("beneficiaries/get_single_application_details")
 
         return self.execute_query(query, variables={"applicationNumber": application_id})
 

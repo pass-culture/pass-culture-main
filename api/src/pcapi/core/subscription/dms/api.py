@@ -1,6 +1,6 @@
 import logging
 
-from pcapi.connectors import api_demarches_simplifiees
+from pcapi.connectors.dms import api as api_demarches_simplifiees
 import pcapi.core.fraud.api as fraud_api
 from pcapi.core.fraud.dms import api as fraud_dms_api
 import pcapi.core.fraud.models as fraud_models
