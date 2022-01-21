@@ -6,7 +6,6 @@ import pcapi.core.bookings.api as bookings_api
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.finance import api
 from pcapi.core.finance import models
-import pcapi.core.reference.factories as reference_factories
 from pcapi.models import db
 
 
@@ -27,7 +26,6 @@ def test_integration():
     db.session.refresh(pricing)
     assert pricing.status == models.PricingStatus.PROCESSED
 
-    reference_factories.ReferenceSchemeFactory()
     api._generate_invoice(pricing.businessUnitId, [cashflow.id])
     db.session.refresh(pricing)
     assert pricing.status == models.PricingStatus.INVOICED

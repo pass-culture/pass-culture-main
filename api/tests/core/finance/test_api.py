@@ -21,7 +21,6 @@ from pcapi.core.object_storage.testing import recursive_listdir
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.payments.factories as payments_factories
-import pcapi.core.reference.factories as reference_factories
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.testing import clean_temporary_files
 from pcapi.core.testing import override_settings
@@ -748,7 +747,6 @@ class GenerateInvoiceTest:
     )
 
     def test_reference_scheme_increments(self):
-        reference_factories.ReferenceSchemeFactory(name="invoice.reference", prefix="F", year=2022)
         venue = offers_factories.VenueFactory(siret="85331845900023")
         business_unit = venue.businessUnit
         invoice = api._generate_invoice(business_unit_id=business_unit.id, cashflow_ids=[1, 2])
@@ -758,7 +756,6 @@ class GenerateInvoiceTest:
         assert second_invoice.reference == "F220000002"
 
     def test_one_regular_rule_one_rate(self):
-        reference_factories.ReferenceSchemeFactory(name="invoice.reference", prefix="F", year=2022)
         venue = offers_factories.VenueFactory(siret="85331845900023")
         business_unit = venue.businessUnit
         offer = offers_factories.ThingOfferFactory(venue=venue)
@@ -789,7 +786,6 @@ class GenerateInvoiceTest:
         assert line.label == "Montant remboursé"
 
     def test_two_regular_rules_two_rates(self):
-        reference_factories.ReferenceSchemeFactory(name="invoice.reference", prefix="F", year=2022)
         venue = offers_factories.VenueFactory(siret="85331845900023")
         business_unit = venue.businessUnit
         offer = offers_factories.ThingOfferFactory(venue=venue)
@@ -831,7 +827,6 @@ class GenerateInvoiceTest:
         assert line_rate_0_95.label == "Montant remboursé"
 
     def test_one_custom_rule(self):
-        reference_factories.ReferenceSchemeFactory(name="invoice.reference", prefix="F", year=2022)
         venue = offers_factories.VenueFactory(siret="85331845900023")
         business_unit = venue.businessUnit
         offer = offers_factories.ThingOfferFactory(venue=venue)
@@ -864,7 +859,6 @@ class GenerateInvoiceTest:
         assert line.label == "Montant remboursé"
 
     def test_many_rules_and_rates_two_cashflows(self, invoice_data):
-        reference_factories.ReferenceSchemeFactory(name="invoice.reference", prefix="F", year=2022)
         business_unit, stocks = invoice_data
         bookings = []
         for stock in stocks:
@@ -950,7 +944,6 @@ class GenerateInvoiceHtmlTest:
     TEST_FILES_PATH = pathlib.Path(tests.__path__[0]) / "files"
 
     def test_basics(self, invoice_data):
-        reference_factories.ReferenceSchemeFactory(name="invoice.reference", prefix="F", year=2022)
         business_unit, stocks = invoice_data
         bookings = []
         for stock in stocks:
@@ -999,7 +992,6 @@ class StoreInvoicePdfTest:
     @override_settings(OBJECT_STORAGE_URL=BASE_THUMBS_DIR)
     def test_basics(self, clear_tests_invoices_bucket, invoice_data):
         existing_number_of_files = len(recursive_listdir(self.INVOICES_DIR))
-        reference_factories.ReferenceSchemeFactory(name="invoice.reference", prefix="F", year=2022)
         business_unit, stocks = invoice_data
         bookings = []
         for stock in stocks:
@@ -1033,7 +1025,6 @@ class GenerateAndStoreInvoiceTest:
 
     @override_settings(OBJECT_STORAGE_URL=BASE_THUMBS_DIR)
     def test_basics(self, clear_tests_invoices_bucket, invoice_data):
-        reference_factories.ReferenceSchemeFactory(name="invoice.reference", prefix="F", year=2022)
         business_unit, stocks = invoice_data
         bookings = []
         for stock in stocks:
