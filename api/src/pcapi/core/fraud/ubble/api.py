@@ -113,7 +113,7 @@ def start_ubble_fraud_check(user: users_models.User, ubble_content: ubble_fraud_
         type=fraud_models.FraudCheckType.UBBLE,
         thirdPartyId=str(ubble_content.identification_id),
         resultContent=ubble_content,
-        status=fraud_models.FraudCheckStatus.PENDING,
+        status=fraud_models.FraudCheckStatus.STARTED,
         eligibilityType=user.eligibility,
     )
     db.session.add(fraud_check)
@@ -156,6 +156,7 @@ def is_user_allowed_to_perform_ubble_check(
     fraud_checks = fraud_models.BeneficiaryFraudCheck.query.filter(
         fraud_models.BeneficiaryFraudCheck.user == user,
         fraud_models.BeneficiaryFraudCheck.status.is_distinct_from(fraud_models.FraudCheckStatus.CANCELED),
+        fraud_models.BeneficiaryFraudCheck.status.is_distinct_from(fraud_models.FraudCheckStatus.STARTED),
         fraud_models.BeneficiaryFraudCheck.type == fraud_models.FraudCheckType.UBBLE,
         fraud_models.BeneficiaryFraudCheck.eligibilityType == eligibility_type,
     ).all()

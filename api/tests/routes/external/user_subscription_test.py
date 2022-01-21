@@ -379,6 +379,7 @@ class UbbleWebhookTest:
                 status=test_factories.STATE_STATUS_MAPPING[current_identification_state].value,
             ),
             user=user,
+            status=fraud_models.FraudCheckStatus.STARTED,
         )
         request_data = self._get_request_body(
             fraud_check, test_factories.STATE_STATUS_MAPPING[notified_identification_state]
@@ -441,7 +442,7 @@ class UbbleWebhookTest:
         assert response.status_code == 403
         assert response.json == {"signature": ["Invalid signature"]}
 
-    def test_fraud_check_intiated(self, client, ubble_mocker):
+    def test_fraud_check_initiated(self, client, ubble_mocker):
         current_identification_state = test_factories.IdentificationState.NEW
         notified_identification_state = test_factories.IdentificationState.INITIATED
         _, request_data, ubble_identification_response = self._init_test(
@@ -455,7 +456,7 @@ class UbbleWebhookTest:
         )
         assert fraud_check.reason is None
         assert fraud_check.reasonCodes is None
-        assert fraud_check.status is fraud_models.FraudCheckStatus.PENDING
+        assert fraud_check.status is fraud_models.FraudCheckStatus.STARTED
         assert fraud_check.type == fraud_models.FraudCheckType.UBBLE
         assert fraud_check.thirdPartyId == ubble_identification_response.data.attributes.identification_id
         content = ubble_fraud_models.UbbleContent(**fraud_check.resultContent)
