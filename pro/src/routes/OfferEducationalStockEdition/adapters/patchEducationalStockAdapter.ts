@@ -1,5 +1,5 @@
 import {
-  createStockDataPayload,
+  createPatchStockDataPayload,
   GetStockOfferSuccessPayload,
   hasStatusCode,
   OfferEducationalStockFormValues,
@@ -11,6 +11,7 @@ type Params = {
   offer: GetStockOfferSuccessPayload
   stockId: string
   values: OfferEducationalStockFormValues
+  initialValues: OfferEducationalStockFormValues
 }
 
 type PatchEducationalStockAdapter = Adapter<Params, null, null>
@@ -31,13 +32,15 @@ const patchEducationalStockAdapter: PatchEducationalStockAdapter = async ({
   offer,
   stockId,
   values,
+  initialValues,
 }: Params) => {
-  const stockPayload: StockPayload = createStockDataPayload(
+  const patchStockPayload: Partial<StockPayload> = createPatchStockDataPayload(
     values,
-    offer.venueDepartmentCode
+    offer.venueDepartmentCode,
+    initialValues
   )
   try {
-    await pcapi.editEducationalStock(stockId, stockPayload)
+    await pcapi.editEducationalStock(stockId, patchStockPayload)
     return {
       isOk: true,
       message: 'Le détail de votre stock a bien été modifié.',
