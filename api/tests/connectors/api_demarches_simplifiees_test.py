@@ -1,9 +1,7 @@
 from unittest.mock import MagicMock
 from unittest.mock import patch
 
-from pcapi.connectors.dms.api import DMSGraphQLClient
-from pcapi.connectors.dms.api import GraphQLApplicationStates
-from pcapi.connectors.dms.api import get_application_details
+from pcapi.connectors.dms import api as api_dms
 
 from tests.scripts.beneficiary.fixture import make_graphql_application
 from tests.scripts.beneficiary.fixture import make_single_application
@@ -21,7 +19,7 @@ class GetApplicationDetailsTest:
         token = "12345"
 
         # When
-        application_details = get_application_details(application_id, procedure_id, token)
+        application_details = api_dms.get_application_details(application_id, procedure_id, token)
 
         # Then
         call_args = requests_get.call_args
@@ -30,34 +28,34 @@ class GetApplicationDetailsTest:
 
 
 class GraphqlResponseTest:
-    @patch.object(DMSGraphQLClient, "execute_query")
+    @patch.object(api_dms.DMSGraphQLClient, "execute_query")
     def test_get_applications_with_details(self, execute_query):
         execute_query.side_effect = [
             make_graphql_application(123, "closed", full_graphql_response=True, has_next_page=True),
             make_graphql_application(456, "closed", full_graphql_response=True),
         ]
 
-        client = DMSGraphQLClient()
-        results = list(client.get_applications_with_details(123, GraphQLApplicationStates.accepted))
+        client = api_dms.DMSGraphQLClient()
+        results = list(client.get_applications_with_details(123, api_dms.GraphQLApplicationStates.accepted))
         assert client.execute_query.call_count == 2
         assert len(results) == 2
 
-    @patch.object(DMSGraphQLClient, "execute_query")
+    @patch.object(api_dms.DMSGraphQLClient, "execute_query")
     def test_archive_application(self, execute_query):
         technical_id = "RandomApplicationId"
 
         execute_query.return_value = {"dossierArchiver": {"dossier": {"id": technical_id}, "errors": None}}
-        client = DMSGraphQLClient()
+        client = api_dms.DMSGraphQLClient()
         client.archive_application("ApplicationTechnicalId", "InstructorTechId")
 
         assert client.execute_query.call_count == 1
 
-    @patch.object(DMSGraphQLClient, "execute_query")
+    @patch.object(api_dms.DMSGraphQLClient, "execute_query")
     def test_get_single_application_details(self, execute_query):
 
         execute_query.return_value = make_single_application(12, state="closed")
 
-        client = DMSGraphQLClient()
+        client = api_dms.DMSGraphQLClient()
         client.get_single_application_details(42)
 
         assert client.execute_query.call_count == 1

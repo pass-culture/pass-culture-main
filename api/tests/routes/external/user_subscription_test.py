@@ -11,8 +11,7 @@ import freezegun
 import pytest
 
 from pcapi import settings
-from pcapi.connectors.dms.api import DMSGraphQLClient
-from pcapi.connectors.dms.api import GraphQLApplicationStates
+from pcapi.connectors.dms import api as api_dms
 from pcapi.core import testing
 from pcapi.core.fraud import factories as fraud_factories
 from pcapi.core.fraud import models as fraud_models
@@ -47,7 +46,7 @@ class DmsWebhookApplicationTest:
 
         assert response.status_code == 400
 
-    @patch.object(DMSGraphQLClient, "execute_query")
+    @patch.object(api_dms.DMSGraphQLClient, "execute_query")
     def test_dms_request(self, execute_query, client):
         user = users_factories.UserFactory()
         execute_query.return_value = make_single_application(12, state="closed", email=user.email)
@@ -66,13 +65,13 @@ class DmsWebhookApplicationTest:
         assert response.status_code == 204
         assert execute_query.call_count == 1
 
-    @patch.object(DMSGraphQLClient, "execute_query")
+    @patch.object(api_dms.DMSGraphQLClient, "execute_query")
     @pytest.mark.parametrize(
         "dms_status,import_status",
         [
-            (GraphQLApplicationStates.draft, ImportStatus.DRAFT),
-            (GraphQLApplicationStates.on_going, ImportStatus.ONGOING),
-            (GraphQLApplicationStates.refused, ImportStatus.REJECTED),
+            (api_dms.GraphQLApplicationStates.draft, ImportStatus.DRAFT),
+            (api_dms.GraphQLApplicationStates.on_going, ImportStatus.ONGOING),
+            (api_dms.GraphQLApplicationStates.refused, ImportStatus.REJECTED),
         ],
     )
     def test_dms_request_with_existing_user(self, execute_query, dms_status, import_status, client):
@@ -106,7 +105,7 @@ class DmsWebhookApplicationTest:
         assert user.hasCompletedIdCheck
 
     @freezegun.freeze_time("2021-10-30 09:00:00")
-    @patch.object(DMSGraphQLClient, "execute_query")
+    @patch.object(api_dms.DMSGraphQLClient, "execute_query")
     def test_dms_request_draft_application(self, execute_query, client):
         user = users_factories.UserFactory()
         execute_query.return_value = make_single_application(12, state="closed", email=user.email)
@@ -114,7 +113,7 @@ class DmsWebhookApplicationTest:
         form_data = {
             "procedure_id": "48860",
             "dossier_id": "6044787",
-            "state": GraphQLApplicationStates.draft.value,
+            "state": api_dms.GraphQLApplicationStates.draft.value,
             "updated_at": "2021-09-30 17:55:58 +0200",
         }
         client.post(
@@ -130,7 +129,7 @@ class DmsWebhookApplicationTest:
             == "Nous avons bien reçu ton dossier le 30/10/2021. Rends toi sur la messagerie du site Démarches-Simplifiées pour être informé en temps réel."
         )
 
-    @patch.object(DMSGraphQLClient, "execute_query")
+    @patch.object(api_dms.DMSGraphQLClient, "execute_query")
     def test_dms_request_refused_application(self, execute_query, client):
         user = users_factories.UserFactory()
         execute_query.return_value = make_single_application(12, state="closed", email=user.email)
@@ -138,7 +137,7 @@ class DmsWebhookApplicationTest:
         form_data = {
             "procedure_id": "48860",
             "dossier_id": "6044787",
-            "state": GraphQLApplicationStates.refused.value,
+            "state": api_dms.GraphQLApplicationStates.refused.value,
             "updated_at": "2021-09-30 17:55:58 +0200",
         }
         client.post(
@@ -154,19 +153,19 @@ class DmsWebhookApplicationTest:
             == "Ton dossier déposé sur le site Démarches-Simplifiées a été rejeté. Tu n’es malheureusement pas éligible au pass culture."
         )
 
-    @patch.object(DMSGraphQLClient, "execute_query")
-    @patch.object(DMSGraphQLClient, "send_user_message")
+    @patch.object(api_dms.DMSGraphQLClient, "execute_query")
+    @patch.object(api_dms.DMSGraphQLClient, "send_user_message")
     def test_dms_double_parsing_error(self, send_user_message, execute_query, client):
         user = users_factories.UserFactory()
         form_data = {
             "procedure_id": "48860",
             "dossier_id": "6044787",
-            "state": GraphQLApplicationStates.draft.value,
+            "state": api_dms.GraphQLApplicationStates.draft.value,
             "updated_at": "2021-09-30 17:55:58 +0200",
         }
         execute_query.return_value = make_single_application(
             12,
-            state=GraphQLApplicationStates.draft.value,
+            state=api_dms.GraphQLApplicationStates.draft.value,
             email=user.email,
             postal_code="error_postal_code",
             id_piece_number="error_identity_piece_number",
@@ -188,17 +187,17 @@ class DmsWebhookApplicationTest:
             == "Il semblerait que ‘ta pièce d'identité, ton code postal’ soient erronés. Tu peux te rendre sur le site Démarche-simplifiées pour les rectifier."
         )
 
-    @patch.object(DMSGraphQLClient, "execute_query")
-    @patch.object(DMSGraphQLClient, "send_user_message")
+    @patch.object(api_dms.DMSGraphQLClient, "execute_query")
+    @patch.object(api_dms.DMSGraphQLClient, "send_user_message")
     def test_dms_request_with_unexisting_user(self, send_user_message, execute_query, client):
 
         execute_query.return_value = make_single_application(
-            12, state=GraphQLApplicationStates.draft.value, email="user@example.com"
+            12, state=api_dms.GraphQLApplicationStates.draft.value, email="user@example.com"
         )
         form_data = {
             "procedure_id": "48860",
             "dossier_id": "6044787",
-            "state": GraphQLApplicationStates.draft.value,
+            "state": api_dms.GraphQLApplicationStates.draft.value,
             "updated_at": "2021-09-30 17:55:58 +0200",
         }
         response = client.post(
@@ -212,20 +211,20 @@ class DmsWebhookApplicationTest:
         assert send_user_message.call_count == 1
         assert send_user_message.call_args[0][2] == subscription_messages.DMS_ERROR_MESSAGE_USER_NOT_FOUND
 
-    @patch.object(DMSGraphQLClient, "execute_query")
-    @patch.object(DMSGraphQLClient, "send_user_message")
+    @patch.object(api_dms.DMSGraphQLClient, "execute_query")
+    @patch.object(api_dms.DMSGraphQLClient, "send_user_message")
     def test_dms_id_piece_number_error(self, send_user_message, execute_query, client):
         user = users_factories.UserFactory()
         execute_query.return_value = make_single_application(
             12,
-            state=GraphQLApplicationStates.draft.value,
+            state=api_dms.GraphQLApplicationStates.draft.value,
             email=user.email,
             id_piece_number="error_identity_piece_number",
         )
         form_data = {
             "procedure_id": "48860",
             "dossier_id": "6044787",
-            "state": GraphQLApplicationStates.draft.value,
+            "state": api_dms.GraphQLApplicationStates.draft.value,
             "updated_at": "2021-09-30 17:55:58 +0200",
         }
         response = client.post(
@@ -245,17 +244,17 @@ class DmsWebhookApplicationTest:
             == "Il semblerait que ‘ta pièce d'identité’ soit erroné. Tu peux te rendre sur le site Démarche-simplifiées pour le rectifier."
         )
 
-    @patch.object(DMSGraphQLClient, "execute_query")
-    @patch.object(DMSGraphQLClient, "send_user_message")
+    @patch.object(api_dms.DMSGraphQLClient, "execute_query")
+    @patch.object(api_dms.DMSGraphQLClient, "send_user_message")
     def test_dms_postal_code_error(self, send_user_message, execute_query, client):
         user = users_factories.UserFactory()
         execute_query.return_value = make_single_application(
-            12, state=GraphQLApplicationStates.draft.value, email=user.email, postal_code="error_postal_code"
+            12, state=api_dms.GraphQLApplicationStates.draft.value, email=user.email, postal_code="error_postal_code"
         )
         form_data = {
             "procedure_id": "48860",
             "dossier_id": "6044787",
-            "state": GraphQLApplicationStates.draft.value,
+            "state": api_dms.GraphQLApplicationStates.draft.value,
             "updated_at": "2021-09-30 17:55:58 +0200",
         }
         response = client.post(
@@ -275,14 +274,14 @@ class DmsWebhookApplicationTest:
             == "Il semblerait que ‘ton code postal’ soit erroné. Tu peux te rendre sur le site Démarche-simplifiées pour le rectifier."
         )
 
-    @patch.object(DMSGraphQLClient, "execute_query")
-    @patch.object(DMSGraphQLClient, "send_user_message")
+    @patch.object(api_dms.DMSGraphQLClient, "execute_query")
+    @patch.object(api_dms.DMSGraphQLClient, "send_user_message")
     @freezegun.freeze_time("2021-12-20 09:00:00")
     @pytest.mark.parametrize("birthday_date", [datetime.date(2012, 5, 12), datetime.date(1999, 6, 12)])
     def test_dms_birth_date_error(self, send_user_message, execute_query, client, birthday_date):
         user = users_factories.UserFactory()
         return_value = make_single_application(
-            12, state=GraphQLApplicationStates.draft.value, email=user.email, birth_date=birthday_date
+            12, state=api_dms.GraphQLApplicationStates.draft.value, email=user.email, birth_date=birthday_date
         )
 
         execute_query.return_value = return_value
@@ -290,7 +289,7 @@ class DmsWebhookApplicationTest:
         form_data = {
             "procedure_id": "48860",
             "dossier_id": "6044787",
-            "state": GraphQLApplicationStates.draft.value,
+            "state": api_dms.GraphQLApplicationStates.draft.value,
             "updated_at": "2021-09-30 17:55:58 +0200",
         }
         response = client.post(
@@ -310,7 +309,7 @@ class DmsWebhookApplicationTest:
             == "Il semblerait que ‘ta date de naissance’ soit erroné. Tu peux te rendre sur le site Démarche-simplifiées pour le rectifier."
         )
 
-    @patch.object(DMSGraphQLClient, "execute_query")
+    @patch.object(api_dms.DMSGraphQLClient, "execute_query")
     @pytest.mark.parametrize(
         "subscription_state",
         [
@@ -321,8 +320,8 @@ class DmsWebhookApplicationTest:
     @pytest.mark.parametrize(
         "graphql_app_state",
         [
-            GraphQLApplicationStates.draft.value,
-            GraphQLApplicationStates.on_going.value,
+            api_dms.GraphQLApplicationStates.draft.value,
+            api_dms.GraphQLApplicationStates.on_going.value,
         ],
     )
     def test_dms_accepted_application_by_operator(self, execute_query, client, subscription_state, graphql_app_state):
