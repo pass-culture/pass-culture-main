@@ -2,8 +2,11 @@ from datetime import datetime
 import logging
 
 from dateutil.relativedelta import relativedelta
+import freezegun
 import pytest
 
+from pcapi.admin.custom_views.support_view.api import BeneficiaryActivationStatus
+from pcapi.admin.custom_views.support_view.api import get_beneficiary_activation_status
 import pcapi.core.fraud.factories as fraud_factories
 import pcapi.core.fraud.models as fraud_models
 import pcapi.core.mails.testing as mails_testing
@@ -281,3 +284,36 @@ class ValidatePhoneNumberTest:
 
         assert user.phoneValidationStatus == users_models.PhoneValidationStatusType.VALIDATED
         assert "flask-admin: Manual phone validation" in caplog.messages
+
+
+@pytest.mark.usefixtures("db_session")
+class BeneficiaryActivationStatusTest:
+    def test_not_eligible(self):
+        user = users_factories.UserFactory(dateOfBirth=datetime.now() - relativedelta(years=25))
+        assert get_beneficiary_activation_status(user) == BeneficiaryActivationStatus.NOT_APPLICABLE
+
+    def test_beneficiary(self):
+        user = users_factories.BeneficiaryGrant18Factory()
+        # even if there was a passed fraud_check ko
+        fraud_factories.BeneficiaryFraudCheckFactory(user=user, status=fraud_models.FraudCheckStatus.KO)
+        assert get_beneficiary_activation_status(user) == BeneficiaryActivationStatus.OK
+
+    def test_ex_underage(self):
+        with freezegun.freeze_time(datetime.utcnow() - relativedelta(years=3)):
+            user = users_factories.UnderageBeneficiaryFactory(
+                dateOfBirth=datetime.now() - relativedelta(years=15, months=5),
+            )
+        assert get_beneficiary_activation_status(user) == BeneficiaryActivationStatus.INCOMPLETE
+
+    def test_ex_underage_with_some_fraud_check_ko(self):
+        with freezegun.freeze_time(datetime.utcnow() - relativedelta(years=3)):
+            user = users_factories.UnderageBeneficiaryFactory(
+                dateOfBirth=datetime.now() - relativedelta(years=15, months=5),
+            )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user, type=fraud_models.FraudCheckType.HONOR_STATEMENT, status=fraud_models.FraudCheckStatus.OK
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user, type=fraud_models.FraudCheckType.UBBLE, status=fraud_models.FraudCheckStatus.KO
+        )
+        assert get_beneficiary_activation_status(user) == BeneficiaryActivationStatus.KO
