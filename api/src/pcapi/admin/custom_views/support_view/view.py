@@ -87,6 +87,7 @@ class BeneficiaryView(base_configuration.BaseAdminView):
         "email",
         "dateCreated",
         "beneficiaryFraudChecks.type",
+        "beneficiaryFraudChecks.status",
         "beneficiaryFraudReview",
     ]
 
