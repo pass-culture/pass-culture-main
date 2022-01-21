@@ -1,19 +1,43 @@
+import logging
+from typing import Optional
+
 from alembic import context
 from sqlalchemy import create_engine
+from sqlalchemy import schema
 
 from pcapi import settings
 from pcapi.models import db
 
 
+logger = logging.getLogger(__name__)
+
 target_metadata = db.metadata
 
+IGNORED_COLUMNS_BY_TABLE = {"booking": ("isUsed", "isCancelled")}
+IGNORED_TABLES = ("transaction", "activity")
 
-def include_object(object, name, type_, reflected, compare_to) -> bool:  # pylint: disable=redefined-builtin
+
+def include_object(
+    object: schema.SchemaItem,  # pylint: disable=redefined-builtin
+    name: str,
+    type_: str,
+    reflected: bool,
+    compare_to: Optional[schema.SchemaItem],
+) -> bool:
     # Don't generate DROP tables with autogenerate
     # https://alembic.sqlalchemy.org/en/latest/cookbook.html#don-t-generate-any-drop-table-directives-with-autogenerate
     if type_ == "table" and reflected and compare_to is None:
+        logger.warning(">>>>> Ignoring DROP TABLE for table '%s' <<<<<", object.name)
         return False
-    if name in ("transaction", "activity"):
+    if type_ == "table" and name in IGNORED_TABLES:
+        logger.warning(">>>>> Ignoring table '%s' from IGNORED_TABLES <<<<<", object.name)
+        return False
+    if type_ == "column" and name in IGNORED_COLUMNS_BY_TABLE.get(object.table.name, ()):
+        logger.warning(
+            ">>>>> Ignoring column '%s' in table '%s' from IGNORED_COLUMNS_BY_TABLE <<<<<",
+            object.name,
+            object.table.name,
+        )
         return False
     return True
 
