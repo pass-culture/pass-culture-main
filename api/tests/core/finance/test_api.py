@@ -1017,3 +1017,30 @@ class StoreInvoicePdfTest:
         assert len(recursive_listdir(self.INVOICES_DIR)) == existing_number_of_files + 2
         assert (self.INVOICES_DIR / f"{invoice.storage_object_id}").exists()
         assert (self.INVOICES_DIR / f"{invoice.storage_object_id}.type").exists()
+
+
+class GenerateAndStoreInvoiceTest:
+    BASE_THUMBS_DIR = pathlib.Path(tests.__path__[0]) / ".." / "src" / "pcapi" / "static" / "object_store_data"
+
+    @override_settings(OBJECT_STORAGE_URL=BASE_THUMBS_DIR)
+    def test_basics(self, clear_tests_invoices_bucket, invoice_data):
+        reference_factories.ReferenceSchemeFactory(name="invoice.reference", prefix="F", year=2022)
+        business_unit, stocks = invoice_data
+        bookings = []
+        for stock in stocks:
+            booking = bookings_factories.UsedBookingFactory(stock=stock)
+            bookings.append(booking)
+        for booking in bookings[:3]:
+            api.price_booking(booking)
+        api.generate_cashflows(cutoff=datetime.datetime.utcnow())
+        for booking in bookings[3:]:
+            api.price_booking(booking)
+        api.generate_cashflows(cutoff=datetime.datetime.utcnow())
+        cashflows = (
+            models.Cashflow.query.join(models.Cashflow.pricings)
+            .filter(models.Pricing.businessUnitId == business_unit.id)
+            .all()
+        )
+        cashflow_ids = [c.id for c in cashflows]
+
+        api.generate_and_store_invoice(business_unit_id=business_unit.id, cashflow_ids=cashflow_ids)  # does not raise
