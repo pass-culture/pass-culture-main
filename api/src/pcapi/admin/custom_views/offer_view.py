@@ -34,7 +34,6 @@ import yaml
 
 from pcapi import settings
 from pcapi.admin.base_configuration import BaseAdminView
-from pcapi.connectors.api_entreprises import get_offerer_legal_category
 from pcapi.core import search
 from pcapi.core.bookings.api import cancel_bookings_from_rejected_offer
 from pcapi.core.categories import categories
@@ -557,7 +556,7 @@ class ValidationView(BaseAdminView):
 
         form.validation.default = offer.validation.value
         form.process()
-        legal_category = get_offerer_legal_category(offer.venue.managingOfferer)
+        legal_category = offer.venue.managingOfferer.legal_category
         legal_category_code = legal_category["legal_category_code"] or "Ce lieu n'a pas de code de catégorie juridique"
         legal_category_label = (
             legal_category["legal_category_label"] or "Ce lieu n'a pas de libellé de catégorie juridique"
