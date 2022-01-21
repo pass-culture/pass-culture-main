@@ -30,7 +30,6 @@ from pcapi.core.mails.transactional import users as user_emails
 from pcapi.core.mails.transactional.users.email_address_change_confirmation import send_email_confirmation_email
 import pcapi.core.payments.api as payment_api
 from pcapi.core.subscription import api as subscription_api
-from pcapi.core.subscription import exceptions as subscription_exceptions
 from pcapi.core.users import utils as users_utils
 from pcapi.core.users.external import update_external_user
 from pcapi.core.users.models import Credit
@@ -219,11 +218,7 @@ def has_passed_all_checks_to_become_beneficiary(user: User) -> bool:
 def validate_phone_number_and_activate_user(user: User, code: str) -> User:
     validate_phone_number(user, code)
 
-    try:
-        subscription_api.activate_beneficiary_if_no_missing_step(user)
-    except subscription_exceptions.CannotUpgradeBeneficiaryRole:
-        # TODO(viconnex): there should not be any case where we activate beneficiary after phone validation
-        logger.warning("Trying to activate beneficiary right after phone validation", extra={"user_id": user.id})
+    subscription_api.activate_beneficiary_if_no_missing_step(user)
 
 
 def update_user_information_from_external_source(
