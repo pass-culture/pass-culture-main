@@ -726,7 +726,13 @@ def _generate_wallets_file() -> pathlib.Path:
     header = ["ID de l'utilisateur", "Solde théorique", "Solde réel"]
     query = user_queries.get_all_users_wallet_balances()
     row_formatter = lambda row: (row.user_id, row.current_balance, row.real_balance)
-    return _write_csv("soldes_des_utilisateurs", header, rows=query, row_formatter=row_formatter)
+    return _write_csv(
+        "soldes_des_utilisateurs",
+        header,
+        rows=query,
+        row_formatter=row_formatter,
+        compress=True,
+    )
 
 
 def edit_business_unit(business_unit: models.BusinessUnit, siret: str) -> None:
