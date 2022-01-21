@@ -98,6 +98,10 @@
         <td>{% if model.dateOfBirth %}{{ model.dateOfBirth.strftime('%d/%m/%Y') }}{% else %}Inconnue{% endif %}</td>
       </tr>
       <tr>
+        <th scope="row">Date de création du compte</th>
+        <td>{{ model.dateCreated.strftime('%d/%m/%Y') }}</td>
+      </tr>
+      <tr>
         <th scope="row">N° de la pièce d'identité</th>
         <td>{{ model.idPieceNumber }}</td>
       </tr>
