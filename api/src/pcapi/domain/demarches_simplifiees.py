@@ -3,7 +3,7 @@ import logging
 from typing import Optional
 
 from pcapi import settings
-from pcapi.connectors.dms import api as api_demarches_simplifiees
+from pcapi.connectors.dms import api as api_dms
 from pcapi.domain.bank_account import format_raw_iban_and_bic
 from pcapi.domain.bank_information import CannotRegisterBankInformation
 from pcapi.models.bank_information import BankInformationStatus
@@ -18,14 +18,14 @@ FIELD_FOR_VENUE_WITH_SIRET = (
 )
 FIELD_FOR_VENUE_WITHOUT_SIRET = "Si vous souhaitez renseigner les coordonn\u00e9es bancaires d'un lieu sans SIRET, merci de saisir le \"Nom du lieu\", \u00e0 l'identique de celui dans le pass Culture Pro :"
 
-ACCEPTED_DMS_STATUS = (api_demarches_simplifiees.DmsApplicationStates.closed,)
+ACCEPTED_DMS_STATUS = (api_dms.DmsApplicationStates.closed,)
 DRAFT_DMS_STATUS = (
-    api_demarches_simplifiees.DmsApplicationStates.received,
-    api_demarches_simplifiees.DmsApplicationStates.initiated,
+    api_dms.DmsApplicationStates.received,
+    api_dms.DmsApplicationStates.initiated,
 )
 REJECTED_DMS_STATUS = (
-    api_demarches_simplifiees.DmsApplicationStates.refused,
-    api_demarches_simplifiees.DmsApplicationStates.without_continuation,
+    api_dms.DmsApplicationStates.refused,
+    api_dms.DmsApplicationStates.without_continuation,
 )
 
 
@@ -54,7 +54,7 @@ class ApplicationDetail:
 def get_offerer_bank_information_application_details_by_application_id(application_id: str) -> ApplicationDetail:
     assert settings.DMS_OFFERER_PROCEDURE_ID
     assert settings.DMS_TOKEN
-    response_application_details = api_demarches_simplifiees.get_application_details(
+    response_application_details = api_dms.get_application_details(
         application_id, procedure_id=settings.DMS_OFFERER_PROCEDURE_ID, token=settings.DMS_TOKEN
     )
 
@@ -98,7 +98,7 @@ def get_venue_bank_information_application_details_by_application_id(
     if version == 1:
         assert settings.DMS_VENUE_PROCEDURE_ID
         assert settings.DMS_TOKEN
-        response_application_details = api_demarches_simplifiees.get_application_details(
+        response_application_details = api_dms.get_application_details(
             application_id, procedure_id=settings.DMS_VENUE_PROCEDURE_ID, token=settings.DMS_TOKEN
         )
 
@@ -122,13 +122,13 @@ def get_venue_bank_information_application_details_by_application_id(
         )
         return application_details
     if version == 2:
-        client = api_demarches_simplifiees.DMSGraphQLClient()
+        client = api_dms.DMSGraphQLClient()
         raw_data = client.get_bic(int(application_id))
         data = parse_raw_bic_data(raw_data)
         return ApplicationDetail(
             siren=data["siren"],
             status=_get_status_from_demarches_simplifiees_application_state_v2(
-                api_demarches_simplifiees.GraphQLApplicationStates(data["status"])
+                api_dms.GraphQLApplicationStates(data["status"])
             ),
             application_id=int(application_id),
             iban=data["iban"],
@@ -141,7 +141,7 @@ def get_venue_bank_information_application_details_by_application_id(
 
 def _get_status_from_demarches_simplifiees_application_state(state: str) -> BankInformationStatus:
     try:
-        dms_state = api_demarches_simplifiees.DmsApplicationStates[state]
+        dms_state = api_dms.DmsApplicationStates[state]
     except KeyError:
         raise CannotRegisterBankInformation(f"Unknown Demarches Simplifiées state {state}")
     rejected_states = REJECTED_DMS_STATUS
@@ -157,14 +157,14 @@ def _get_status_from_demarches_simplifiees_application_state(state: str) -> Bank
 
 
 def _get_status_from_demarches_simplifiees_application_state_v2(
-    state: api_demarches_simplifiees.GraphQLApplicationStates,
+    state: api_dms.GraphQLApplicationStates,
 ) -> BankInformationStatus:
     return {
-        api_demarches_simplifiees.GraphQLApplicationStates.draft: BankInformationStatus.DRAFT,
-        api_demarches_simplifiees.GraphQLApplicationStates.on_going: BankInformationStatus.DRAFT,
-        api_demarches_simplifiees.GraphQLApplicationStates.accepted: BankInformationStatus.ACCEPTED,
-        api_demarches_simplifiees.GraphQLApplicationStates.refused: BankInformationStatus.REJECTED,
-        api_demarches_simplifiees.GraphQLApplicationStates.without_continuation: BankInformationStatus.REJECTED,
+        api_dms.GraphQLApplicationStates.draft: BankInformationStatus.DRAFT,
+        api_dms.GraphQLApplicationStates.on_going: BankInformationStatus.DRAFT,
+        api_dms.GraphQLApplicationStates.accepted: BankInformationStatus.ACCEPTED,
+        api_dms.GraphQLApplicationStates.refused: BankInformationStatus.REJECTED,
+        api_dms.GraphQLApplicationStates.without_continuation: BankInformationStatus.REJECTED,
     }[state]
 
 

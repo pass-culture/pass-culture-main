@@ -4,7 +4,7 @@ import re
 from dateutil import parser as date_parser
 
 from pcapi import settings
-from pcapi.connectors.dms import api as api_demarches_simplifiees
+from pcapi.connectors.dms import api as api_dms
 import pcapi.core.fraud.api as fraud_api
 import pcapi.core.fraud.exceptions as fraud_exceptions
 import pcapi.core.fraud.models as fraud_models
@@ -40,9 +40,9 @@ def run(procedure_id: int) -> None:
     )
 
     existing_applications_ids = get_already_processed_applications_ids(procedure_id)
-    client = api_demarches_simplifiees.DMSGraphQLClient()
+    client = api_dms.DMSGraphQLClient()
     for application_details in client.get_applications_with_details(
-        procedure_id, api_demarches_simplifiees.GraphQLApplicationStates.accepted
+        procedure_id, api_dms.GraphQLApplicationStates.accepted
     ):
         application_id = application_details["number"]
         if application_id in existing_applications_ids:
