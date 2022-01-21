@@ -95,29 +95,6 @@ def create_reset_password_token(user: User, token_life_time: timedelta = None) -
     )
 
 
-def count_existing_id_check_tokens(user: User) -> int:
-    return (
-        Token.query.filter(Token.userId == user.id)
-        .filter_by(type=TokenType.ID_CHECK)
-        .filter(Token.expirationDate > datetime.now())
-        .count()
-    )
-
-
-def create_id_check_token(user: User) -> Optional[Token]:
-    if user.eligibility is None or user.has_beneficiary_role:
-        return None
-
-    alive_token_count = count_existing_id_check_tokens(user)
-    if alive_token_count >= settings.ID_CHECK_MAX_ALIVE_TOKEN:
-        raise exceptions.IdCheckTokenLimitReached(alive_token_count)
-
-    if user.hasCompletedIdCheck:
-        raise exceptions.IdCheckAlreadyCompleted()
-
-    return generate_and_save_token(user, TokenType.ID_CHECK, constants.ID_CHECK_TOKEN_LIFE_TIME)
-
-
 def create_phone_validation_token(user: User) -> Optional[Token]:
     secret_code = "{:06}".format(secrets.randbelow(1_000_000))  # 6 digits
     return generate_and_save_token(
