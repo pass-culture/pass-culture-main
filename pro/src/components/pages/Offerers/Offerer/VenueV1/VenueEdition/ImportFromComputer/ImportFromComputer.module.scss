@@ -1,0 +1,10 @@
+.import-from-computer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  &-header {
+    @include title3;
+  }
+}
