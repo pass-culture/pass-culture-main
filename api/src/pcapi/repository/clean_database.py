@@ -11,6 +11,9 @@ from pcapi.core.finance.models import Cashflow
 from pcapi.core.finance.models import CashflowBatch
 from pcapi.core.finance.models import CashflowLog
 from pcapi.core.finance.models import CashflowPricing
+from pcapi.core.finance.models import Invoice
+from pcapi.core.finance.models import InvoiceCashflow
+from pcapi.core.finance.models import InvoiceLine
 from pcapi.core.finance.models import Pricing
 from pcapi.core.finance.models import PricingLine
 from pcapi.core.finance.models import PricingLog
@@ -70,11 +73,14 @@ def clean_all_database(*args, **kwargs):
     PaymentMessage.query.delete()
     CashflowPricing.query.delete()
     CashflowLog.query.delete()
+    InvoiceCashflow.query.delete()
     Cashflow.query.delete()
     CashflowBatch.query.delete()
     PricingLine.query.delete()
     PricingLog.query.delete()
     Pricing.query.delete()
+    InvoiceLine.query.delete()
+    Invoice.query.delete()
     CustomReimbursementRule.query.delete()
     Booking.query.delete()
     IndividualBooking.query.delete()
