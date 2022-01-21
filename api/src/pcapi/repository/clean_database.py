@@ -36,7 +36,6 @@ from pcapi.core.providers.models import AllocineVenueProvider
 from pcapi.core.providers.models import AllocineVenueProviderPriceRule
 from pcapi.core.providers.models import Provider
 from pcapi.core.providers.models import VenueProvider
-from pcapi.core.reference.models import ReferenceScheme
 from pcapi.core.users.models import Favorite
 from pcapi.core.users.models import Token
 from pcapi.core.users.models import User
@@ -73,7 +72,6 @@ def clean_all_database(*args, **kwargs):
     CashflowLog.query.delete()
     Cashflow.query.delete()
     CashflowBatch.query.delete()
-    ReferenceScheme.query.delete()
     PricingLine.query.delete()
     PricingLog.query.delete()
     Pricing.query.delete()

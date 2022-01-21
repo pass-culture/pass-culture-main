@@ -23,25 +23,35 @@ class ReferenceSchemeTest:
 
     @pytest.mark.usefixtures("db_session")
     def test_increment_after_use(self):
-        scheme = factories.ReferenceSchemeFactory(year=2023, nextNumber=1)
+        scheme = factories.ReferenceSchemeFactory()
+        scheme.nextNumber = 1
+        db.session.add(scheme)
+        db.session.commit()
+
         scheme.increment_after_use()
-        scheme = models.ReferenceScheme.query.one()
+        db.session.refresh(scheme)
         assert scheme.nextNumber == 2
 
     @pytest.mark.usefixtures("db_session")
     def test_usage(self):
-        factories.ReferenceSchemeFactory(name="x", year=2023, nextNumber=1)
+        scheme = factories.ReferenceSchemeFactory(name="x", year=2023)
+        scheme.nextNumber = 1
+        db.session.add(scheme)
+        db.session.commit()
 
         scheme = models.ReferenceScheme.get_and_lock("x", 2023)
         scheme.increment_after_use()
         db.session.commit()
 
-        scheme = models.ReferenceScheme.query.one()
+        db.session.refresh(scheme)
         assert scheme.nextNumber == 2
 
     @clean_database
     def test_usage_without_proper_lock(self, app):
-        scheme = factories.ReferenceSchemeFactory(year=2023, nextNumber=1)
+        scheme = factories.ReferenceSchemeFactory()
+        scheme.nextNumber = 1
+        db.session.add(scheme)
+        db.session.commit()
 
         # Simulate another transaction locking the reference.
         engine = sqla.create_engine(app.config["SQLALCHEMY_DATABASE_URI"])
@@ -54,7 +64,6 @@ class ReferenceSchemeTest:
 
             # Now we'll use another connection/transaction that forgot
             # to lock the reference before trying to increment it.
-            scheme = models.ReferenceScheme.query.one()
             try:
                 with pytest.raises(exceptions.ReferenceIncrementWithoutLock):
                     scheme.increment_after_use()
