@@ -565,15 +565,6 @@ def is_risky_user_profile(user: users_models.User) -> bool:
     return False
 
 
-def is_user_fraudster(user: users_models.User) -> bool:
-    return db.session.query(
-        models.BeneficiaryFraudCheck.query.filter(
-            models.BeneficiaryFraudCheck.user == user,
-            models.BeneficiaryFraudCheck.status.in_([models.FraudCheckStatus.KO, models.FraudCheckStatus.SUSPICIOUS]),
-        ).exists()
-    ).scalar()
-
-
 def start_fraud_check(
     user: users_models.User,
     application_id: str,
