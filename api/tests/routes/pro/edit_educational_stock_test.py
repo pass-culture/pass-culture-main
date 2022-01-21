@@ -13,6 +13,7 @@ from pcapi.core.offers.models import Stock
 from pcapi.core.testing import override_settings
 from pcapi.routes.adage.v1.serialization.prebooking import EducationalBookingEdition
 from pcapi.routes.adage.v1.serialization.prebooking import serialize_educational_booking
+from pcapi.utils.date import format_into_utc_date
 from pcapi.utils.human_ids import humanize
 
 
@@ -45,13 +46,151 @@ class Return200Test:
         response = client.patch(f"/stocks/educational/{humanize(stock.id)}", json=stock_edition_payload)
 
         # Then
-        assert response.status_code == 204
+        assert response.status_code == 200
         edited_stock = Stock.query.get(stock.id)
         assert edited_stock.beginningDatetime == datetime(2022, 1, 17, 22)
         assert edited_stock.bookingLimitDatetime == datetime(2021, 12, 31, 20)
         assert edited_stock.price == 1500
         assert edited_stock.numberOfTickets == 38
         assert edited_stock.educationalPriceDetail == "Nouvelle description du prix"
+
+        offer = stock.offer
+        product = offer.product
+        venue = offer.venue
+        offerer = venue.managingOfferer
+        assert response.json == {
+            "activeMediation": None,
+            "ageMax": None,
+            "ageMin": None,
+            "audioDisabilityCompliant": False,
+            "bookingEmail": None,
+            "conditions": None,
+            "dateCreated": format_into_utc_date(offer.dateCreated),
+            "dateModifiedAtLastProvider": format_into_utc_date(offer.dateModifiedAtLastProvider),
+            "dateRange": ["2022-01-17T22:00:00Z", "2022-01-17T22:00:00Z"],
+            "description": offer.description,
+            "durationMinutes": None,
+            "externalTicketOfficeUrl": None,
+            "extraData": None,
+            "fieldsUpdated": [],
+            "hasBookingLimitDatetimesPassed": False,
+            "id": humanize(offer.id),
+            "idAtProviders": None,
+            "isActive": True,
+            "isBookable": True,
+            "isDigital": False,
+            "isDuo": False,
+            "isEditable": True,
+            "isEducational": True,
+            "isEvent": True,
+            "isNational": False,
+            "isThing": False,
+            "lastProvider": None,
+            "lastProviderId": None,
+            "mediaUrls": [],
+            "mediations": [],
+            "mentalDisabilityCompliant": False,
+            "motorDisabilityCompliant": False,
+            "name": offer.name,
+            "nonHumanizedId": offer.id,
+            "product": {
+                "ageMax": None,
+                "ageMin": None,
+                "conditions": None,
+                "dateModifiedAtLastProvider": format_into_utc_date(product.dateModifiedAtLastProvider),
+                "description": product.description,
+                "durationMinutes": None,
+                "extraData": None,
+                "fieldsUpdated": [],
+                "id": humanize(product.id),
+                "idAtProviders": None,
+                "isGcuCompatible": True,
+                "isNational": False,
+                "lastProviderId": None,
+                "mediaUrls": [],
+                "name": product.name,
+                "owningOffererId": None,
+                "thumbCount": 0,
+                "url": None,
+            },
+            "productId": humanize(product.id),
+            "status": "ACTIVE",
+            "stocks": [
+                {
+                    "beginningDatetime": "2022-01-17T22:00:00Z",
+                    "bookingLimitDatetime": "2021-12-31T20:00:00Z",
+                    "bookingsQuantity": 0,
+                    "cancellationLimitDate": "2020-11-19T15:00:00Z",
+                    "dateCreated": format_into_utc_date(stock.dateCreated),
+                    "dateModified": format_into_utc_date(stock.dateModified),
+                    "dateModifiedAtLastProvider": format_into_utc_date(stock.dateModifiedAtLastProvider),
+                    "fieldsUpdated": [],
+                    "hasActivationCode": False,
+                    "id": humanize(stock.id),
+                    "idAtProviders": None,
+                    "isBookable": True,
+                    "isEventDeletable": True,
+                    "isEventExpired": False,
+                    "isSoftDeleted": False,
+                    "lastProviderId": None,
+                    "offerId": humanize(offer.id),
+                    "price": 1500.0,
+                    "quantity": 1000,
+                    "remainingQuantity": 1000,
+                }
+            ],
+            "subcategoryId": "SEANCE_CINE",
+            "thumbUrl": None,
+            "url": None,
+            "venue": {
+                "address": "1 boulevard Poissonnière",
+                "audioDisabilityCompliant": False,
+                "bookingEmail": None,
+                "city": "Paris",
+                "comment": None,
+                "dateCreated": format_into_utc_date(venue.dateCreated),
+                "dateModifiedAtLastProvider": format_into_utc_date(venue.dateModifiedAtLastProvider),
+                "departementCode": "75",
+                "fieldsUpdated": [],
+                "id": humanize(venue.id),
+                "idAtProviders": None,
+                "isValidated": True,
+                "isVirtual": False,
+                "lastProviderId": None,
+                "latitude": 48.87004,
+                "longitude": 2.3785,
+                "managingOfferer": {
+                    "address": "1 boulevard Poissonnière",
+                    "city": "Paris",
+                    "dateCreated": format_into_utc_date(offerer.dateCreated),
+                    "dateModifiedAtLastProvider": format_into_utc_date(offerer.dateModifiedAtLastProvider),
+                    "fieldsUpdated": [],
+                    "id": humanize(offerer.id),
+                    "idAtProviders": None,
+                    "isActive": True,
+                    "isValidated": True,
+                    "lastProviderId": None,
+                    "name": offerer.name,
+                    "postalCode": "75000",
+                    "siren": offerer.siren,
+                    "thumbCount": 0,
+                },
+                "managingOffererId": humanize(offerer.id),
+                "mentalDisabilityCompliant": False,
+                "motorDisabilityCompliant": False,
+                "name": venue.name,
+                "postalCode": "75000",
+                "publicName": venue.publicName,
+                "siret": venue.siret,
+                "thumbCount": 0,
+                "venueLabelId": None,
+                "venueTypeId": humanize(venue.venueTypeId),
+                "visualDisabilityCompliant": False,
+            },
+            "venueId": humanize(venue.id),
+            "visualDisabilityCompliant": False,
+            "withdrawalDetails": None,
+        }
 
     def test_edit_educational_stock_partially(self, client):
         # Given
@@ -75,7 +214,7 @@ class Return200Test:
         response = client.patch(f"/stocks/educational/{humanize(stock.id)}", json=stock_edition_payload)
 
         # Then
-        assert response.status_code == 204
+        assert response.status_code == 200
         edited_stock = Stock.query.get(stock.id)
         assert edited_stock.beginningDatetime == datetime(2022, 1, 17, 22)
         assert edited_stock.bookingLimitDatetime == datetime(2021, 12, 1)
@@ -109,7 +248,7 @@ class Return200Test:
         response = client.patch(f"/stocks/educational/{humanize(stock.id)}", json=stock_edition_payload)
 
         # Then
-        assert response.status_code == 204
+        assert response.status_code == 200
         edited_stock = Stock.query.get(stock.id)
         edited_booking = Booking.query.get(booking.id)
         edited_educational_booking = EducationalBooking.query.get(edited_booking.educationalBookingId)
