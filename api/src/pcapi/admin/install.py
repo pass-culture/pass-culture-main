@@ -6,7 +6,6 @@ from sqlalchemy.orm.session import Session
 
 from pcapi.admin.custom_views import inapp_messages
 from pcapi.admin.custom_views import offer_view
-from pcapi.admin.custom_views import support_view
 from pcapi.admin.custom_views.admin_user_view import AdminUserView
 from pcapi.admin.custom_views.allocine_pivot_view import AllocinePivotView
 from pcapi.admin.custom_views.api_key_view import ApiKeyView
@@ -22,6 +21,7 @@ from pcapi.admin.custom_views.many_offers_operations_view import ManyOffersOpera
 from pcapi.admin.custom_views.offerer_view import OffererView
 from pcapi.admin.custom_views.partner_user_view import PartnerUserView
 from pcapi.admin.custom_views.pro_user_view import ProUserView
+from pcapi.admin.custom_views.support_view import view
 from pcapi.admin.custom_views.suspend_fraudulent_users_by_email_providers import (
     SuspendFraudulentUsersByEmailProvidersView,
 )
@@ -74,7 +74,7 @@ def install_views(admin: Admin, session: Session) -> None:
         offer_view.OfferView(offers_models.Offer, session, name="Offres", category=Category.OFFRES_STRUCTURES_LIEUX)
     )
     admin.add_view(
-        support_view.BeneficiaryView(
+        view.BeneficiaryView(
             User, session, name="Bénéficiaires", endpoint="support_beneficiary", category=Category.SUPPORT
         )
     )

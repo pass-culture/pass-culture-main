@@ -1,5 +1,4 @@
 import datetime
-import enum
 import logging
 from typing import Callable
 
@@ -23,7 +22,6 @@ from pcapi.core.mails.transactional.users.subscription_document_error import sen
 from pcapi.core.subscription import messages as subscription_messages
 import pcapi.core.subscription.api as subscription_api
 import pcapi.core.subscription.exceptions as subscription_exceptions
-from pcapi.core.subscription.models import SubscriptionItemStatus
 import pcapi.core.users.api as users_api
 import pcapi.core.users.models as users_models
 from pcapi.models import db
@@ -32,49 +30,8 @@ from pcapi.models.feature import FeatureToggle
 
 logger = logging.getLogger(__name__)
 
-
-def beneficiary_fraud_review_formatter(view, context, model, name) -> Markup:
-    result_mapping_class = {
-        fraud_models.FraudReviewStatus.OK: "badge-success",
-        fraud_models.FraudReviewStatus.KO: "badge-danger",
-        fraud_models.FraudReviewStatus.REDIRECTED_TO_DMS: "badge-secondary",
-    }
-    if model.beneficiaryFraudReview is None:
-        return Markup("""<span class="badge badge-secondary">inconnu</span>""")
-
-    reviewer = model.beneficiaryFraudReview.author
-    reviewer_name = f"{reviewer.firstName} {reviewer.lastName}"
-    review_result = model.beneficiaryFraudReview.review
-    badge = result_mapping_class[review_result]
-    return Markup(
-        """
-          <div><span>{reviewer_name}</span></div>
-          <span class="badge {badge}">{review_result_value}</span>
-        """
-    ).format(reviewer_name=reviewer_name, badge=badge, review_result_value=review_result.value)
-
-
-def beneficiary_fraud_checks_formatter(view, context, model, name) -> Markup:
-    html = Markup("<ul>")
-    for instance in model.beneficiaryFraudChecks:
-        html += Markup("<li>{instance.type.value}</li>").format(instance=instance)
-    html += Markup("</ul>")
-    return html
-
-
-def beneficiary_subscription_status_formatter(view, context, model, name) -> Markup:
-    result_mapping_class = {
-        BeneficiaryActivationStatus.OK: {"class": "badge-success", "text": "OK"},
-        BeneficiaryActivationStatus.KO: {"class": "badge-danger", "text": "KO"},
-        BeneficiaryActivationStatus.SUSPICIOUS: {"class": "badge-warning", "text": "SUSPICIOUS"},
-        BeneficiaryActivationStatus.INCOMPLETE: {"class": "badge-info", "text": "INCOMPLETE"},
-        BeneficiaryActivationStatus.NOT_APPLICABLE: {"class": "badge-void", "text": "N/A"},
-    }
-    status = _get_beneficiary_activation_status(model)
-
-    return Markup("""<span class="badge {badge}">{text}</span>""").format(
-        badge=result_mapping_class[status]["class"], text=result_mapping_class[status]["text"]
-    )
+from . import api as support_api
+from . import utils as support_utils
 
 
 class FraudReviewForm(wtforms.Form):
@@ -154,9 +111,9 @@ class BeneficiaryView(base_configuration.BaseAdminView):
         formatters = super().column_formatters
         formatters.update(
             {
-                "subscription_status": beneficiary_subscription_status_formatter,
-                "beneficiaryFraudChecks": beneficiary_fraud_checks_formatter,
-                "beneficiaryFraudReview": beneficiary_fraud_review_formatter,
+                "subscription_status": support_utils.beneficiary_subscription_status_formatter,
+                "beneficiaryFraudChecks": support_utils.beneficiary_fraud_checks_formatter,
+                "beneficiaryFraudReview": support_utils.beneficiary_fraud_review_formatter,
             }
         )
         return formatters
@@ -213,7 +170,7 @@ class BeneficiaryView(base_configuration.BaseAdminView):
             return_url=return_url,
             has_performed_identity_check=fraud_api.has_user_performed_identity_check(user),
             enum_update_request_value=users_models.EmailHistoryEventTypeEnum.UPDATE_REQUEST.value,
-            subscription_items=_get_subscription_items_by_eligibility(user),
+            subscription_items=support_api.get_subscription_items_by_eligibility(user),
             next_subscription_step=subscription_api.get_next_subscription_step(user),
         )
 
@@ -309,52 +266,3 @@ class BeneficiaryView(base_configuration.BaseAdminView):
         logger.info("flask-admin: Manual phone validation", extra={"validated_user": user.id})
         flask.flash(f"Le n° de téléphone de l'utilisateur {user.id} {user.firstName} {user.lastName} est validé")
         return flask.redirect(flask.url_for(".details_view", id=user_id))
-
-
-SUBSCRIPTION_ITEM_METHODS = [
-    subscription_api.get_email_validation_subscription_item,
-    subscription_api.get_phone_validation_subscription_item,
-    subscription_api.get_user_profiling_subscription_item,
-    subscription_api.get_profile_completion_subscription_item,
-    subscription_api.get_identity_check_subscription_item,
-    subscription_api.get_honor_statement_subscription_item,
-]
-
-
-def _get_subscription_items_by_eligibility(user: users_models.User):
-    subscription_items = []
-    for method in SUBSCRIPTION_ITEM_METHODS:
-        subscription_items.append(
-            {
-                users_models.EligibilityType.UNDERAGE.name: method(user, users_models.EligibilityType.UNDERAGE),
-                users_models.EligibilityType.AGE18.name: method(user, users_models.EligibilityType.AGE18),
-            },
-        )
-
-    return subscription_items
-
-
-class BeneficiaryActivationStatus(enum.Enum):
-    INCOMPLETE = "incomplete"
-    KO = "ko"
-    NOT_APPLICABLE = "n/a"
-    OK = "ok"
-    SUSPICIOUS = "suspicious"
-
-
-def _get_beneficiary_activation_status(user: users_models.User) -> BeneficiaryActivationStatus:
-    if user.is_beneficiary and not users_api.is_eligible_for_beneficiary_upgrade(user, user.eligibility):
-        return BeneficiaryActivationStatus.OK
-
-    # even if the user is above 18, we want to know the status in case subscription steps were performed
-    eligibility = user.eligibility or users_models.EligibilityType.AGE18
-
-    subscription_items = [method(user, eligibility) for method in SUBSCRIPTION_ITEM_METHODS]
-    if any(item.status == SubscriptionItemStatus.KO for item in subscription_items):
-        return BeneficiaryActivationStatus.KO
-    if any(item.status == SubscriptionItemStatus.SUSPICIOUS for item in subscription_items):
-        return BeneficiaryActivationStatus.SUSPICIOUS
-    if any(item.status in (SubscriptionItemStatus.TODO, SubscriptionItemStatus.PENDING) for item in subscription_items):
-        return BeneficiaryActivationStatus.INCOMPLETE
-
-    return BeneficiaryActivationStatus.NOT_APPLICABLE
