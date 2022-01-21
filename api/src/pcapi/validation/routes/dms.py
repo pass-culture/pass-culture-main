@@ -9,7 +9,7 @@ import wtforms
 import wtforms.validators
 
 from pcapi import settings
-from pcapi.connectors.dms import api as api_demarches_simplifiees
+from pcapi.connectors.dms import api as api_dms
 from pcapi.models.api_errors import ForbiddenError
 
 
@@ -25,7 +25,7 @@ def coerce_for_enum(enum):
 class DMSWebhookRequest(pydantic.BaseModel):
     procedure_id: str
     dossier_id: str
-    state: api_demarches_simplifiees.GraphQLApplicationStates
+    state: api_dms.GraphQLApplicationStates
     updated_at: datetime.datetime
 
     @pydantic.validator("updated_at", pre=True)
@@ -50,12 +50,12 @@ class DmsWebhookApplicationForm(wtforms.Form):
     procedure_id = wtforms.IntegerField(validators=[wtforms.validators.InputRequired()])
     dossier_id = wtforms.IntegerField(validators=[wtforms.validators.InputRequired()])
     state = wtforms.SelectField(
-        choices=list(api_demarches_simplifiees.GraphQLApplicationStates),
+        choices=list(api_dms.GraphQLApplicationStates),
         validators=[
             wtforms.validators.InputRequired(),
-            wtforms.validators.AnyOf(values=list(api_demarches_simplifiees.GraphQLApplicationStates)),
+            wtforms.validators.AnyOf(values=list(api_dms.GraphQLApplicationStates)),
         ],
-        coerce=coerce_for_enum(api_demarches_simplifiees.GraphQLApplicationStates),
+        coerce=coerce_for_enum(api_dms.GraphQLApplicationStates),
     )
     updated_at = wtforms.DateTimeField(validators=[wtforms.validators.InputRequired()], format="%Y-%m-%d %H:%M:%S %z")
 

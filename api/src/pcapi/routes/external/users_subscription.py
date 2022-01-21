@@ -1,7 +1,7 @@
 import logging
 
 from pcapi import settings
-from pcapi.connectors.dms import api as api_demarches_simplifiees
+from pcapi.connectors.dms import api as api_dms
 from pcapi.core import logging as core_logging
 from pcapi.core.fraud.ubble import api as ubble_fraud_api
 from pcapi.core.subscription import api as subscription_api
@@ -22,13 +22,13 @@ from pcapi.validation.routes import ubble as ubble_validation
 logger = logging.getLogger(__name__)
 
 DMS_APPLICATION_MAP = {
-    api_demarches_simplifiees.GraphQLApplicationStates.draft: ImportStatus.DRAFT,
-    api_demarches_simplifiees.GraphQLApplicationStates.on_going: ImportStatus.ONGOING,
-    # api_demarches_simplifiees.GraphQLApplicationStates.accepted: ImportStatus what to do with it ?
+    api_dms.GraphQLApplicationStates.draft: ImportStatus.DRAFT,
+    api_dms.GraphQLApplicationStates.on_going: ImportStatus.ONGOING,
+    # api_dms.GraphQLApplicationStates.accepted: ImportStatus what to do with it ?
     # for now it will be done in the import_dms_users script
     # later we might want to run the user validation and then archive the application
-    api_demarches_simplifiees.GraphQLApplicationStates.refused: ImportStatus.REJECTED,
-    api_demarches_simplifiees.GraphQLApplicationStates.without_continuation: ImportStatus.WITHOUT_CONTINUATION,
+    api_dms.GraphQLApplicationStates.refused: ImportStatus.REJECTED,
+    api_dms.GraphQLApplicationStates.without_continuation: ImportStatus.WITHOUT_CONTINUATION,
 }
 
 
@@ -36,7 +36,7 @@ DMS_APPLICATION_MAP = {
 @dms_validation.require_dms_token
 @spectree_serialize(on_success_status=204, json_format=False)
 def dms_webhook_update_application_status(form: dms_validation.DMSWebhookRequest) -> None:
-    client = api_demarches_simplifiees.DMSGraphQLClient()
+    client = api_dms.DMSGraphQLClient()
     raw_data = client.get_single_application_details(form.dossier_id)
     # todo(bcalvez) Use new IdcheckBackend to correctly convert this data
     user_email = raw_data["dossier"]["usager"]["email"]
@@ -50,7 +50,7 @@ def dms_webhook_update_application_status(form: dms_validation.DMSWebhookRequest
 
     user = find_user_by_email(user_email)
     if not user:
-        if form.state == api_demarches_simplifiees.GraphQLApplicationStates.draft:
+        if form.state == api_dms.GraphQLApplicationStates.draft:
             client.send_user_message(
                 raw_data["dossier"]["id"],
                 settings.DMS_INSTRUCTOR_ID,
@@ -77,7 +77,7 @@ def dms_webhook_update_application_status(form: dms_validation.DMSWebhookRequest
         subscription_messages.on_dms_application_parsing_errors_but_updatables_values(
             user, list(parsing_error.errors.keys())
         )
-        if form.state == api_demarches_simplifiees.GraphQLApplicationStates.draft:
+        if form.state == api_dms.GraphQLApplicationStates.draft:
             import_dms_users.notify_parsing_exception(parsing_error.errors, raw_data["dossier"]["id"], client)
 
         logger.info(
@@ -94,7 +94,7 @@ def dms_webhook_update_application_status(form: dms_validation.DMSWebhookRequest
             extra=log_extra_data,
         )
         subscription_messages.on_dms_application_parsing_errors_but_updatables_values(user, ["birth_date"])
-        if form.state == api_demarches_simplifiees.GraphQLApplicationStates.draft:
+        if form.state == api_dms.GraphQLApplicationStates.draft:
             client.send_user_message(
                 raw_data["dossier"]["id"],
                 settings.DMS_INSTRUCTOR_ID,
