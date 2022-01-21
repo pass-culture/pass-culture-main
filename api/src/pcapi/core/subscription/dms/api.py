@@ -1,6 +1,6 @@
 import logging
 
-from pcapi.connectors.dms import api as api_demarches_simplifiees
+from pcapi.connectors.dms import api as api_dms
 import pcapi.core.fraud.api as fraud_api
 from pcapi.core.fraud.dms import api as fraud_dms_api
 import pcapi.core.fraud.models as fraud_models
@@ -31,10 +31,10 @@ def handle_dms_state(
     application: fraud_models.DMSContent,
     procedure_id: str,
     application_id: str,
-    state: api_demarches_simplifiees.GraphQLApplicationStates,
+    state: api_dms.GraphQLApplicationStates,
 ) -> None:
 
-    if state == api_demarches_simplifiees.GraphQLApplicationStates.accepted:
+    if state == api_dms.GraphQLApplicationStates.accepted:
 
         logger.info(
             "DMS Application accepted.",
@@ -45,8 +45,8 @@ def handle_dms_state(
             },
         )
     elif state in (
-        api_demarches_simplifiees.GraphQLApplicationStates.draft,
-        api_demarches_simplifiees.GraphQLApplicationStates.on_going,
+        api_dms.GraphQLApplicationStates.draft,
+        api_dms.GraphQLApplicationStates.on_going,
     ):
         subscription_messages.on_dms_application_received(user)
         start_dms_workflow(user, application)
@@ -60,7 +60,7 @@ def handle_dms_state(
             },
         )
 
-    elif state == api_demarches_simplifiees.GraphQLApplicationStates.refused:
+    elif state == api_dms.GraphQLApplicationStates.refused:
         subscription_messages.on_dms_application_refused(user)
         stop_dms_workflow(user, application_id, application)
 
