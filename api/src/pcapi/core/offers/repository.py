@@ -169,8 +169,14 @@ def get_offers_by_filters(
             )
         if venue_id is not None:
             subquery = subquery.filter(Offer.venueId == venue_id)
-        if offerer_id is not None:
+        elif offerer_id is not None:
             subquery = subquery.filter(Venue.managingOffererId == offerer_id)
+        elif not user_is_admin:
+            subquery = (
+                subquery.join(Offerer)
+                .join(UserOfferer)
+                .filter(and_(UserOfferer.userId == user_id, UserOfferer.validationToken.is_(None)))
+            )
         q2 = subquery.subquery()
         query = query.join(q2, q2.c.offerId == Offer.id)
     return query
