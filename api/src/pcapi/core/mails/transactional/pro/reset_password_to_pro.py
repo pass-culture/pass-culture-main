@@ -2,7 +2,6 @@ from typing import Union
 
 from pcapi.core import mails
 from pcapi.core.mails.transactional.sendinblue_template_ids import SendinblueTransactionalEmailData
-from pcapi.core.mails.transactional.sendinblue_template_ids import SendinblueTransactionalSender
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.users.api import create_reset_password_token
 from pcapi.core.users.models import Token
@@ -21,7 +20,6 @@ def get_reset_password_to_pro_email_data(user: User, token: Token) -> Union[dict
         }
 
     return SendinblueTransactionalEmailData(
-        sender=SendinblueTransactionalSender.SUPPORT_PRO,
         template=TransactionalEmail.RESET_PASSWORD_TO_PRO.value,
         params={
             "LIEN_NOUVEAU_MDP": reinit_password_url,

@@ -12,6 +12,7 @@ from pcapi.core.mails.transactional.bookings.booking_cancellation_by_pro_to_bene
     send_booking_cancellation_by_pro_to_beneficiary_email,
 )
 from pcapi.core.mails.transactional.sendinblue_template_ids import Template
+from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.testing import override_features
 
@@ -242,12 +243,10 @@ class SendinblueSendWarningToBeneficiaryAfterProBookingCancellationTest:
         send_booking_cancellation_by_pro_to_beneficiary_email(booking)
 
         # Then
-        assert mails_testing.outbox[0].sent_data["template"] == {
-            "id_not_prod": 37,
-            "id_prod": 225,
-            "tags": ["jeunes_offre_annulee_pros"],
-            "use_priority_queue": False,
-        }
+        assert (
+            mails_testing.outbox[0].sent_data["template"]
+            == TransactionalEmail.BOOKING_CANCELLATION_BY_PRO_TO_BENEFICIARY.value.__dict__
+        )
         assert mails_testing.outbox[0].sent_data["To"] == "user@example.com"
         assert mails_testing.outbox[0].sent_data["params"] == {
             "EVENT_DATE": None,

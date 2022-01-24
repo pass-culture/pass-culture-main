@@ -10,6 +10,7 @@ from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.educational.factories import EducationalRedactorFactory
 from pcapi.core.educational.models import EducationalBookingStatus
 import pcapi.core.mails.testing as mails_testing
+from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.offers.factories import EventStockFactory
 from pcapi.core.offers.models import Stock
 from pcapi.core.offers.utils import offer_app_link
@@ -108,12 +109,10 @@ class Returns200Test:
         assert booking.cancellationReason == BookingCancellationReasons.REFUSED_BY_INSTITUTE
 
         assert len(mails_testing.outbox) == 1
-        assert mails_testing.outbox[0].sent_data["template"] == {
-            "id_not_prod": 41,
-            "id_prod": 406,
-            "tags": ["eac_annulationoffre"],
-            "use_priority_queue": False,
-        }
+        assert (
+            mails_testing.outbox[0].sent_data["template"]
+            == TransactionalEmail.EDUCATIONAL_BOOKING_CANCELLATION_BY_INSTITUTION.value.__dict__
+        )
         assert mails_testing.outbox[0].sent_data["To"] == "test@mail.com"
         assert mails_testing.outbox[0].sent_data["params"] == {
             "OFFER_NAME": offer.name,

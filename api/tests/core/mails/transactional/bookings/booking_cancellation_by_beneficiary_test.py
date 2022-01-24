@@ -12,6 +12,7 @@ from pcapi.core.mails.transactional.bookings.booking_cancellation_by_beneficiary
 from pcapi.core.mails.transactional.bookings.booking_cancellation_by_beneficiary import (
     send_booking_cancellation_by_beneficiary_email,
 )
+from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.offers.factories import EventStockFactory
 from pcapi.core.offers.factories import ThingStockFactory
 from pcapi.core.testing import override_features
@@ -136,12 +137,10 @@ class SendSendiblueBeneficiaryBookingCancellationEmailTest:
         send_booking_cancellation_by_beneficiary_email(booking.individualBooking)
 
         # then
-        assert mails_testing.outbox[0].sent_data["template"] == {
-            "id_prod": 223,
-            "id_not_prod": 33,
-            "tags": ["jeunes_offre_annulee_jeune"],
-            "use_priority_queue": False,
-        }
+        assert (
+            mails_testing.outbox[0].sent_data["template"]
+            == TransactionalEmail.BOOKING_CANCELLATION_BY_BENEFICIARY.value.__dict__
+        )
         assert mails_testing.outbox[0].sent_data["To"] == booking.individualBooking.user.email
         params_key_list = [
             "CAN_BOOK_AGAIN",
