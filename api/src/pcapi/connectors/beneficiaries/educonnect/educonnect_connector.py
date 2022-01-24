@@ -90,11 +90,11 @@ def get_educonnect_user(saml_response: str) -> models.EduconnectUser:
     saml_client = get_saml_client()
     try:
         authn_response = saml_client.parse_authn_request_response(saml_response, BINDING_HTTP_POST)
-    except ResponseLifetimeExceed as exception:
-        logger.error("Educonnect response more than 10 minutes old: %s", exception)
+    except ResponseLifetimeExceed:
+        logger.exception("Educonnect response more than 10 minutes old")
         raise exceptions.ResponseTooOld()
-    except Exception as exception:
-        logger.error("Impossible to parse educonnect saml response: %s", exception)
+    except Exception:
+        logger.exception("Impossible to parse educonnect saml response")
         raise exceptions.EduconnectAuthenticationException()
 
     educonnect_identity = authn_response.get_identity()
@@ -118,26 +118,15 @@ def get_educonnect_user(saml_response: str) -> models.EduconnectUser:
             first_name=educonnect_identity["givenName"][0],
             ine_hash=educonnect_identity[_get_field_oid("64")][0],
             last_name=educonnect_identity["sn"][0],
-            logout_url=educonnect_identity[_get_field_oid("5")][0],
+            logout_url=logout_url,
             user_type=user_type,
             saml_request_id=saml_request_id,
             school_uai=educonnect_identity.get(_get_field_oid("72"))[0],
             student_level=educonnect_identity.get(_get_field_oid("73"))[0],
         )
-    except KeyError as exception:
-        logger.error(
-            "Key error raised when parsing educonnect saml response: %s",
-            repr(exception),
-            extra={"saml_request_id": saml_request_id},
-        )
-        raise exceptions.ParsingError()
-    except Exception as exception:
-        logger.error(
-            "Error when parsing educonnect saml response: %s",
-            repr(exception),
-            extra={"saml_request_id": saml_request_id},
-        )
-        raise exceptions.ParsingError()
+
+    except Exception:
+        raise exceptions.ParsingError(educonnect_identity, logout_url)
 
 
 def _get_field_oid(oid_key: str) -> str:

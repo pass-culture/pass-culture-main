@@ -10,7 +10,13 @@ class ResponseTooOld(EduconnectAuthenticationException):
 
 
 class ParsingError(EduconnectAuthenticationException):
-    pass
+    parsed_dict: dict
+    logout_url: Optional[str]
+
+    def __init__(self, parsed_dict: dict, logout_url: str, *args: object) -> None:
+        super().__init__(*args)
+        self.parsed_dict = parsed_dict
+        self.logout_url = logout_url
 
 
 class UserTypeNotStudent(EduconnectAuthenticationException):
