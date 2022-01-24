@@ -6,13 +6,13 @@
 import * as PropTypes from 'prop-types'
 import React, { useCallback } from 'react'
 
-import Icon from 'components/layout/Icon'
 import {
   IMAGE_TYPE,
   MAX_IMAGE_SIZE,
   MIN_IMAGE_HEIGHT,
   MIN_IMAGE_WIDTH,
 } from 'components/pages/Offers/Offer/Thumbnail/_constants'
+import { ConstraintCheck } from 'new_components/ConstraintCheck/ConstraintCheck'
 import { imageConstraints } from 'new_components/ConstraintCheck/imageConstraints'
 import { useCheckAndSetImage } from 'new_components/ConstraintCheck/useCheckAndSetImage'
 import { PreferredOrientation } from 'new_components/PreferredOrientation/PreferredOrientation'
@@ -38,22 +38,6 @@ const ImportFromComputer = ({ setStep, setThumbnail, step }) => {
     onSetImage,
   })
 
-  const fileConstraint = () =>
-    constraints.map(constraint => {
-      let description = constraint.description
-
-      if (errors.includes(constraint.id)) {
-        description = (
-          <strong aria-live="assertive" aria-relevant="all">
-            <Icon svg="ico-notification-error-red" />
-            {description}
-          </strong>
-        )
-      }
-
-      return <li key={constraint.id}>{description}</li>
-    })
-
   return (
     <form action="#" className="tnf-form">
       <PreferredOrientation orientation="portrait" />
@@ -67,7 +51,7 @@ const ImportFromComputer = ({ setStep, setThumbnail, step }) => {
           type="file"
         />
       </label>
-      <ul className="tnf-mandatory">{fileConstraint()}</ul>
+      <ConstraintCheck constraints={constraints} failingConstraints={errors} />
     </form>
   )
 }

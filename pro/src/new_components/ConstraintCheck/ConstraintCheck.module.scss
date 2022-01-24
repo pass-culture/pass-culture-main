@@ -1,0 +1,22 @@
+.constraint-check {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  @include caption();
+
+  color: $grey-dark;
+
+  &-failing-constraint {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: $red-error;
+
+    img {
+      margin: rem(3px);
+      width: rem(14px);
+    }
+  }
+}
