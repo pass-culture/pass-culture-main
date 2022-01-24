@@ -11,6 +11,7 @@ from saml2.validate import ResponseLifetimeExceed
 
 from pcapi import settings
 from pcapi.core.users import constants
+from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 
 from . import exceptions
@@ -143,16 +144,12 @@ def _get_mocked_user_for_performance_tests(user_id: str) -> models.EduconnectUse
     key = build_saml_request_id_key(mocked_saml_request_id)
     app.redis_client.set(name=key, value=user.id, ex=constants.EDUCONNECT_SAML_REQUEST_ID_TTL)
 
-    return models.EduconnectUser(
+    return users_factories.EduconnectUserFactory(
         birth_date=user.dateOfBirth.date(),
         connection_datetime=datetime.now(),
         educonnect_id=f"educonnect-id_perf-test_{user.id}",
         first_name=f"firstname_perf-test_{user.id}",
         ine_hash=f"inehash_perf-test_{user.id}",
         last_name=f"lastname_perf-test_{user.id}",
-        logout_url="example.com/logout",
-        user_type="eleve1d",
         saml_request_id=mocked_saml_request_id,
-        school="mocked_uai",
-        student_level="2212",
     )
