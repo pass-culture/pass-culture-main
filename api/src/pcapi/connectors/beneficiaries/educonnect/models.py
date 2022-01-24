@@ -14,5 +14,5 @@ class EduconnectUser:
     logout_url: str
     user_type: Optional[str]
     saml_request_id: str
-    school_uai: str
-    student_level: str
+    school_uai: Optional[str]
+    student_level: Optional[str]

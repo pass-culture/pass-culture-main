@@ -121,8 +121,8 @@ def get_educonnect_user(saml_response: str) -> models.EduconnectUser:
             logout_url=logout_url,
             user_type=user_type,
             saml_request_id=saml_request_id,
-            school_uai=educonnect_identity.get(_get_field_oid("72"))[0],
-            student_level=educonnect_identity.get(_get_field_oid("73"))[0],
+            school_uai=educonnect_identity.get(_get_field_oid("72"), [None])[0],
+            student_level=educonnect_identity.get(_get_field_oid("73"), [None])[0],
         )
 
     except Exception:
