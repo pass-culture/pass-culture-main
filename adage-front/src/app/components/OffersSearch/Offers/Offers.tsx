@@ -23,7 +23,7 @@ interface OffersComponentProps extends HitsProvided<ResultType> {
   setIsLoading: (isLoading: boolean) => void
 }
 
-const OffersComponent = ({
+export const OffersComponent = ({
   userRole,
   setIsLoading,
   hits,

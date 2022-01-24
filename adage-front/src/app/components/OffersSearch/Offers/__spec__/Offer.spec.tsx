@@ -11,6 +11,13 @@ jest.mock('repository/pcapi/pcapi', () => ({
   getOffer: jest.fn(),
 }))
 
+jest.mock('react-instantsearch-dom', () => {
+  return {
+    ...jest.requireActual('react-instantsearch-dom'),
+    Stats: jest.fn(() => <div>2 résultats</div>),
+  }
+})
+
 const queryCache = new QueryCache()
 const queryClient = new QueryClient({ queryCache })
 const wrapper = ({ children }) => (
