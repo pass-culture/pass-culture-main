@@ -9,7 +9,7 @@ import React, { useCallback, useRef, useState } from 'react'
 import Icon from 'components/layout/Icon'
 import { IMAGE_TYPE } from 'components/pages/Offers/Offer/Thumbnail/_constants'
 import { constraints } from 'components/pages/Offers/Offer/Thumbnail/_error_validator'
-import { ReactComponent as ThumbnailSampleIcon } from 'components/pages/Offers/Offer/Thumbnail/assets/thumbnail-sample.svg'
+import { PreferredOrientation } from 'new_components/PreferredOrientation/PreferredOrientation'
 
 const ImportFromComputer = ({ setStep, setThumbnail, step }) => {
   const [errors, setErrors] = useState([])
@@ -56,10 +56,7 @@ const ImportFromComputer = ({ setStep, setThumbnail, step }) => {
 
   return (
     <form action="#" className="tnf-form">
-      <ThumbnailSampleIcon />
-      <p className="tnf-info">
-        Utilisez de préférence un visuel en orientation portrait
-      </p>
+      <PreferredOrientation orientation="portrait" />
       <label className="tnf-file-label primary-link">
         Importer une image depuis l’ordinateur
         <input
