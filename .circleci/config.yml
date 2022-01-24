@@ -213,7 +213,7 @@ commands:
       - run:
           name: Invalidate cache
           command: |
-            gcloud compute url-maps invalidate-cdn-cache << parameters.url_map_name >> --path "/*"  --async
+            gcloud compute url-maps invalidate-cdn-cache << parameters.url_map_name >> --path "/index.html"  --async
             echo "An invalidateCache operation has been requested. You can follow its progress on https://console.cloud.google.com/compute/operations"
 
   clone-pass-culture-deployment-repo:
