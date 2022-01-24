@@ -1,0 +1,14 @@
+.sign-up-unavailable-section {
+  align-items: center;
+  display: flex;
+  height: 100%;
+  justify-content: center;
+
+  .content {
+    max-width: 50%;
+  }
+
+  .heading-1 {
+    margin: rem(24px) 0;
+  }
+}
