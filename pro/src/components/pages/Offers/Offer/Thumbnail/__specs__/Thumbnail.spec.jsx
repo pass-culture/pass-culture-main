@@ -53,7 +53,7 @@ describe('thumbnail edition', () => {
           screen.getByText(
             'Utilisez de préférence un visuel en orientation portrait',
             {
-              selector: 'p',
+              selector: 'figcaption',
             }
           )
         ).toBeInTheDocument()
