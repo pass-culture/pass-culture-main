@@ -721,12 +721,9 @@ class OnSuccessfulDMSApplicationTest:
                 source_id=123456,
             )
 
-        # TODO: why ?
+        # TODO: requires 19yo fixes : PC-12560
         assert applicant.has_beneficiary_role is False
-        assert (
-            subscription_api.get_next_subscription_step(applicant)
-            == subscription_models.SubscriptionStep.PHONE_VALIDATION
-        )
+        assert subscription_api.get_next_subscription_step(applicant) == None
 
 
 @pytest.mark.usefixtures("db_session")
