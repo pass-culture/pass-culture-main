@@ -12,11 +12,10 @@ logger = logging.getLogger(__name__)
 
 def send_transactional_email(payload: SendTransactionalEmailRequest) -> bool:
     to = [{"email": email} for email in payload.recipients]
-    #  FIXME(2022-01-20, tgabin): use an env variable
     sender = (
         {"email": settings.SUPPORT_EMAIL_ADDRESS, "name": "pass Culture"}
         if payload.template_id != 364
-        else {"email": "support-pro@passculture.app", "name": "pass Culture [PRO]"}
+        else {"email": settings.SUPPORT_PRO_EMAIL_ADDRESS, "name": "pass Culture"}
     )
     template_id = payload.template_id
     tags = payload.tags

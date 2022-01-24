@@ -130,6 +130,7 @@ PAYMENTS_REPORT_RECIPIENTS = utils.parse_str_to_list(os.environ.get("PAYMENTS_RE
 REPORT_OFFER_EMAIL_ADDRESS = os.environ.get("REPORT_OFFER_EMAIL_ADDRESS", "")
 SUPER_ADMIN_EMAIL_ADDRESSES = utils.parse_str_to_list(os.environ.get("SUPER_ADMIN_EMAIL_ADDRESSES"))
 SUPPORT_EMAIL_ADDRESS = os.environ.get("SUPPORT_EMAIL_ADDRESS", "")
+SUPPORT_PRO_EMAIL_ADDRESS = os.environ.get("SUPPORT_PRO_EMAIL_ADDRESS", "")
 TRANSACTIONS_RECIPIENTS = utils.parse_str_to_list(os.environ.get("TRANSACTIONS_RECIPIENTS"))
 WALLET_BALANCES_RECIPIENTS = utils.parse_str_to_list(os.environ.get("WALLET_BALANCES_RECIPIENTS"))
 WHITELISTED_EMAIL_RECIPIENTS = utils.parse_str_to_list(os.environ.get("WHITELISTED_EMAIL_RECIPIENTS"))
