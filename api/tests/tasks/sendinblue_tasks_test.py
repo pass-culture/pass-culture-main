@@ -17,6 +17,7 @@ class SendinblueTasksTest:
                 "params": {"IMPORTANT_DATA_FOR_TEMPLATE": "Hello there"},
                 "template_id": 1,
                 "tags": [],
+                "sender": {"email": "support@example.com", "name": "pass Culture"},
             },
             headers={AUTHORIZATION_HEADER_KEY: AUTHORIZATION_HEADER_VALUE},
         )
@@ -27,6 +28,10 @@ class SendinblueTasksTest:
         assert mock_send_transac_email.call_args_list[0][0][0].tags == []
         assert mock_send_transac_email.call_args_list[0][0][0].template_id == 1
         assert mock_send_transac_email.call_args_list[0][0][0].to == [{"email": "general-kenobi@coruscant.com"}]
+        assert mock_send_transac_email.call_args_list[0][0][0].sender == {
+            "email": "support@example.com",
+            "name": "pass Culture",
+        }
 
     @patch(
         "pcapi.core.mails.transactional.send_transactional_email.sib_api_v3_sdk.api.TransactionalEmailsApi.send_transac_email"
@@ -39,6 +44,7 @@ class SendinblueTasksTest:
                 "params": {"IMPORTANT_DATA_FOR_TEMPLATE": "Hello there"},
                 "template_id": 1,
                 "tags": [],
+                "sender": {"email": "support@example.com", "name": "pass Culture"},
             },
             headers={AUTHORIZATION_HEADER_KEY: AUTHORIZATION_HEADER_VALUE},
         )
@@ -49,3 +55,7 @@ class SendinblueTasksTest:
         assert mock_send_transac_email.call_args_list[0][0][0].tags == []
         assert mock_send_transac_email.call_args_list[0][0][0].template_id == 1
         assert mock_send_transac_email.call_args_list[0][0][0].to == [{"email": "general-kenobi@coruscant.com"}]
+        assert mock_send_transac_email.call_args_list[0][0][0].sender == {
+            "email": "support@example.com",
+            "name": "pass Culture",
+        }
