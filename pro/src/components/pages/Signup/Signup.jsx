@@ -7,18 +7,22 @@ import React, { useEffect } from 'react'
 import { Route, Switch } from 'react-router-dom'
 
 import AppLayout from 'app/AppLayout'
+import useActiveFeature from 'components/hooks/useActiveFeature'
 import Logo from 'components/layout/Logo'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import { campaignTracker } from 'tracking/mediaCampaignsTracking'
 
 import SignupConfirmationContainer from './SignupConfirmation/SignupConfirmationContainer'
 import SignupFormContainer from './SignupForm/SignupFormContainer'
+import SignupUnavailable from './SignupUnavailable/SignupUnavailable'
 
 const Signup = ({ location }) => {
   useEffect(() => {
     campaignTracker.signUp()
   }, [])
-
+  const isProAccountCreationEnabled = useActiveFeature(
+    'ENABLE_PRO_ACCOUNT_CREATION'
+  )
   return (
     <AppLayout
       layoutConfig={{
@@ -30,14 +34,17 @@ const Signup = ({ location }) => {
       <div className="logo-side">
         <Logo noLink signPage />
       </div>
-
-      <Switch location={location}>
-        <Route component={SignupFormContainer} exact path="/inscription" />
-        <Route
-          component={SignupConfirmationContainer}
-          path="/inscription/confirmation"
-        />
-      </Switch>
+      {isProAccountCreationEnabled ? (
+        <Switch location={location}>
+          <Route component={SignupFormContainer} exact path="/inscription" />
+          <Route
+            component={SignupConfirmationContainer}
+            path="/inscription/confirmation"
+          />
+        </Switch>
+      ) : (
+        <SignupUnavailable />
+      )}
     </AppLayout>
   )
 }
