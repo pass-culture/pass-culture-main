@@ -59,24 +59,6 @@
   width: 0;
 }
 
-.tnf-mandatory {
-  @include caption();
-
-  color: $grey-dark;
-
-  strong {
-    align-items: center;
-    color: $red-error;
-    display: flex;
-    justify-content: center;
-
-    img {
-      margin: rem(3px);
-      width: rem(14px);
-    }
-  }
-}
-
 .tnf-url-button {
   color: $white;
   width: rem(334px);
