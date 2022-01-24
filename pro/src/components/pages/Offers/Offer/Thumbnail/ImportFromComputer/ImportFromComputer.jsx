@@ -4,39 +4,39 @@
  */
 
 import * as PropTypes from 'prop-types'
-import React, { useCallback, useRef, useState } from 'react'
+import React, { useCallback } from 'react'
 
 import Icon from 'components/layout/Icon'
-import { IMAGE_TYPE } from 'components/pages/Offers/Offer/Thumbnail/_constants'
-import { constraints } from 'components/pages/Offers/Offer/Thumbnail/_error_validator'
+import {
+  IMAGE_TYPE,
+  MAX_IMAGE_SIZE,
+  MIN_IMAGE_HEIGHT,
+  MIN_IMAGE_WIDTH,
+} from 'components/pages/Offers/Offer/Thumbnail/_constants'
+import { imageConstraints } from 'new_components/ConstraintCheck/imageConstraints'
+import { useCheckAndSetImage } from 'new_components/ConstraintCheck/useCheckAndSetImage'
 import { PreferredOrientation } from 'new_components/PreferredOrientation/PreferredOrientation'
 
+const constraints = [
+  imageConstraints.portrait(),
+  imageConstraints.formats(IMAGE_TYPE),
+  imageConstraints.size(MAX_IMAGE_SIZE),
+  imageConstraints.width(MIN_IMAGE_WIDTH),
+  imageConstraints.height(MIN_IMAGE_HEIGHT),
+]
+
 const ImportFromComputer = ({ setStep, setThumbnail, step }) => {
-  const [errors, setErrors] = useState([])
-  const file = useRef({})
-
-  const getValidatorErrors = async file => {
-    let validatorErrors = []
-    for (const constraint of constraints) {
-      const inError = constraint.asyncValidator
-        ? await constraint.asyncValidator(file)
-        : constraint.validator(file)
-      if (inError) {
-        validatorErrors = [...validatorErrors, constraint.id]
-      }
-    }
-    return Promise.resolve(validatorErrors)
-  }
-
-  const submitThumbnail = useCallback(async () => {
-    const currentFile = file.current.files[0]
-    const validatorErrors = await getValidatorErrors(currentFile)
-    if (validatorErrors.length === 0) {
-      setThumbnail(currentFile)
+  const onSetImage = useCallback(
+    file => {
+      setThumbnail(file)
       setStep(step + 1)
-    }
-    setErrors(validatorErrors)
-  }, [setStep, setThumbnail, step])
+    },
+    [setThumbnail, setStep, step]
+  )
+  const { errors, checkAndSetImage } = useCheckAndSetImage({
+    constraints,
+    onSetImage,
+  })
 
   const fileConstraint = () =>
     constraints.map(constraint => {
@@ -63,8 +63,7 @@ const ImportFromComputer = ({ setStep, setThumbnail, step }) => {
           accept={IMAGE_TYPE.join()}
           aria-invalid={errors}
           className="tnf-file-input"
-          onChange={submitThumbnail}
-          ref={file}
+          onChange={checkAndSetImage}
           type="file"
         />
       </label>
