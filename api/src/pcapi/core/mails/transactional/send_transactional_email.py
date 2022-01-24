@@ -12,11 +12,7 @@ logger = logging.getLogger(__name__)
 
 def send_transactional_email(payload: SendTransactionalEmailRequest) -> bool:
     to = [{"email": email} for email in payload.recipients]
-    sender = (
-        {"email": settings.SUPPORT_EMAIL_ADDRESS, "name": "pass Culture"}
-        if payload.template_id != 364
-        else {"email": settings.SUPPORT_PRO_EMAIL_ADDRESS, "name": "pass Culture"}
-    )
+    sender = payload.sender
     template_id = payload.template_id
     tags = payload.tags
 

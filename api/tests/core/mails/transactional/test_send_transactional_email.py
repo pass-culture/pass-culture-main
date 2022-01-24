@@ -17,7 +17,7 @@ class BeneficiaryTransactionalEmailsTest:
         side_effect=ApiException(),
     )
     def test_send_transactional_email_expect_api_error(self, caplog):
-        payload = SendTransactionalEmailRequest(recipients=[], params={}, template_id=1, tags=[])
+        payload = SendTransactionalEmailRequest(recipients=[], params={}, template_id=1, tags=[], sender={})
         assert not send_transactional_email(payload)
         assert caplog.messages[0].startswith("Exception when calling SMTPApi->send_transac_email:")
 
@@ -26,6 +26,7 @@ class BeneficiaryTransactionalEmailsTest:
     )
     def test_send_transactional_email_success(self, mock_send_transac_email):
         payload = SendTransactionalEmailRequest(
+            sender={"email": "support@example.com", "name": "pass Culture"},
             recipients=["avery.kelly@woobmail.com"],
             template_id=TransactionalEmail.EMAIL_CONFIRMATION.value.id,
             params={"name": "Avery"},
@@ -47,6 +48,7 @@ class BeneficiaryTransactionalEmailsTest:
     )
     def test_send_transactional_email_success_empty_params(self, mock_send_transac_email):
         payload = SendTransactionalEmailRequest(
+            sender={"email": "support@example.com", "name": "pass Culture"},
             recipients=["avery.kelly@woobmail.com"],
             template_id=TransactionalEmail.EMAIL_CONFIRMATION.value.id,
             params={},

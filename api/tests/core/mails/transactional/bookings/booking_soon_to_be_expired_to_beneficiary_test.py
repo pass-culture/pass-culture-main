@@ -133,48 +133,44 @@ class SendinblueSendSoonToBeExpiredBookingsEmailToBeneficiaryTest:
 
         # then
         assert len(mails_testing.outbox) == 2  # test number of emails sent
-        assert mails_testing.outbox[0].sent_data == {
-            "template": {
-                "id_prod": 144,
-                "id_not_prod": 42,
-                "tags": ["jeunes_reservation_bientot_expiree"],
-                "use_priority_queue": False,
-            },
-            "params": {
-                "FIRSTNAME": user.firstName,
-                "BOOKINGS": [
-                    {
-                        "offer_name": soon_to_be_expired_book_booking.stock.offer.name,
-                        "venue_name": soon_to_be_expired_book_booking.stock.offer.venue.name,
-                    }
-                ],
-                "DAYS_BEFORE_CANCEL": 5,
-                "DAYS_FROM_BOOKING": 5,
-            },
-            "To": "isasimov@example.com",
+        assert mails_testing.outbox[0].sent_data["template"] == {
+            "id_prod": 144,
+            "id_not_prod": 42,
+            "tags": ["jeunes_reservation_bientot_expiree"],
+            "use_priority_queue": False,
         }
+        assert mails_testing.outbox[0].sent_data["params"] == {
+            "FIRSTNAME": user.firstName,
+            "BOOKINGS": [
+                {
+                    "offer_name": soon_to_be_expired_book_booking.stock.offer.name,
+                    "venue_name": soon_to_be_expired_book_booking.stock.offer.venue.name,
+                }
+            ],
+            "DAYS_BEFORE_CANCEL": 5,
+            "DAYS_FROM_BOOKING": 5,
+        }
+        assert mails_testing.outbox[0].sent_data["To"] == "isasimov@example.com"
 
-        assert mails_testing.outbox[1].sent_data == {
-            "template": {
-                "id_prod": 144,
-                "id_not_prod": 42,
-                "tags": ["jeunes_reservation_bientot_expiree"],
-                "use_priority_queue": False,
-            },
-            "params": {
-                "FIRSTNAME": user.firstName,
-                "BOOKINGS": [
-                    {
-                        "offer_name": soon_to_be_expired_cd_booking.stock.offer.name,
-                        "venue_name": soon_to_be_expired_cd_booking.stock.offer.venue.name,
-                    },
-                    {
-                        "offer_name": soon_to_be_expired_dvd_booking.stock.offer.name,
-                        "venue_name": soon_to_be_expired_dvd_booking.stock.offer.venue.name,
-                    },
-                ],
-                "DAYS_BEFORE_CANCEL": 7,
-                "DAYS_FROM_BOOKING": 23,
-            },
-            "To": "isasimov@example.com",
+        assert mails_testing.outbox[1].sent_data["template"] == {
+            "id_prod": 144,
+            "id_not_prod": 42,
+            "tags": ["jeunes_reservation_bientot_expiree"],
+            "use_priority_queue": False,
         }
+        assert mails_testing.outbox[1].sent_data["params"] == {
+            "FIRSTNAME": user.firstName,
+            "BOOKINGS": [
+                {
+                    "offer_name": soon_to_be_expired_cd_booking.stock.offer.name,
+                    "venue_name": soon_to_be_expired_cd_booking.stock.offer.venue.name,
+                },
+                {
+                    "offer_name": soon_to_be_expired_dvd_booking.stock.offer.name,
+                    "venue_name": soon_to_be_expired_dvd_booking.stock.offer.venue.name,
+                },
+            ],
+            "DAYS_BEFORE_CANCEL": 7,
+            "DAYS_FROM_BOOKING": 23,
+        }
+        assert mails_testing.outbox[1].sent_data["To"] == "isasimov@example.com"
