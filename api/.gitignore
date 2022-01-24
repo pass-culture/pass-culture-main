@@ -72,6 +72,8 @@ target/
 
 # IPython Notebook
 .ipynb_checkpoints
+.ipython
+!.ipython/profile_default/ipython_config.py
 
 # pyenv
 .python-version
