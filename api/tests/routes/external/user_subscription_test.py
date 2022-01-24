@@ -122,7 +122,40 @@ class DmsWebhookApplicationTest:
             headers={"Content-Type": "application/x-www-form-urlencoded"},
         )
 
+        assert len(user.beneficiaryFraudChecks) == 1
+        fraud_check = user.beneficiaryFraudChecks[0]
+        assert fraud_check.type == fraud_models.FraudCheckType.DMS
+        assert fraud_check.status == fraud_models.FraudCheckStatus.STARTED
         assert len(user.subscriptionMessages) == 1
+        assert user.subscriptionMessages[0].popOverIcon == subscription_models.PopOverIcon.FILE
+        assert (
+            user.subscriptionMessages[0].userMessage
+            == "Nous avons bien reçu ton dossier le 30/10/2021. Rends toi sur la messagerie du site Démarches-Simplifiées pour être informé en temps réel."
+        )
+
+    @freezegun.freeze_time("2021-10-30 09:00:00")
+    @patch.object(api_dms.DMSGraphQLClient, "execute_query")
+    def test_dms_request_on_going_application(self, execute_query, client):
+        user = users_factories.UserFactory()
+        execute_query.return_value = make_single_application(12, state="closed", email=user.email)
+
+        form_data = {
+            "procedure_id": "48860",
+            "dossier_id": "6044787",
+            "state": api_dms.GraphQLApplicationStates.on_going.value,
+            "updated_at": "2021-09-30 17:55:58 +0200",
+        }
+        client.post(
+            f"/webhooks/dms/application_status?token={settings.DMS_WEBHOOK_TOKEN}",
+            form=form_data,
+            headers={"Content-Type": "application/x-www-form-urlencoded"},
+        )
+
+        assert len(user.subscriptionMessages) == 1
+        assert len(user.beneficiaryFraudChecks) == 1
+        fraud_check = user.beneficiaryFraudChecks[0]
+        assert fraud_check.type == fraud_models.FraudCheckType.DMS
+        assert fraud_check.status == fraud_models.FraudCheckStatus.PENDING
         assert user.subscriptionMessages[0].popOverIcon == subscription_models.PopOverIcon.FILE
         assert (
             user.subscriptionMessages[0].userMessage
@@ -147,6 +180,10 @@ class DmsWebhookApplicationTest:
         )
 
         assert len(user.subscriptionMessages) == 1
+        assert len(user.beneficiaryFraudChecks) == 1
+        fraud_check = user.beneficiaryFraudChecks[0]
+        assert fraud_check.type == fraud_models.FraudCheckType.DMS
+        assert fraud_check.status == fraud_models.FraudCheckStatus.KO
         assert user.subscriptionMessages[0].popOverIcon == subscription_models.PopOverIcon.ERROR
         assert (
             user.subscriptionMessages[0].userMessage
@@ -320,7 +357,6 @@ class DmsWebhookApplicationTest:
     @pytest.mark.parametrize(
         "graphql_app_state",
         [
-            api_dms.GraphQLApplicationStates.draft.value,
             api_dms.GraphQLApplicationStates.on_going.value,
         ],
     )
