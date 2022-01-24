@@ -1,5 +1,7 @@
 import React from 'react'
 
+import { ReactComponent as DownloadSvg } from 'icons/ico-download.svg'
+
 import styles from './ReimbursementsTableBody.module.scss'
 
 type ColumnData = {
@@ -7,6 +9,7 @@ type ColumnData = {
   businessUnitName: string
   reference: string
   amount: string
+  url: string
 }
 
 interface ITableBody {
@@ -25,6 +28,18 @@ const ReimbursementsTableBody = ({ invoices }: ITableBody): JSX.Element => {
             </td>
             <td>{invoice.reference}</td>
             <td className={styles['amount']}>{invoice.amount}€</td>
+            <td className={styles['invoice']}>
+              <a
+                className="bi-link tertiary-link"
+                download
+                href={invoice.url}
+                rel="noopener noreferrer"
+                target="_blank"
+              >
+                <DownloadSvg />
+                Télécharger le PDF
+              </a>
+            </td>
           </tr>
         )
       })}
