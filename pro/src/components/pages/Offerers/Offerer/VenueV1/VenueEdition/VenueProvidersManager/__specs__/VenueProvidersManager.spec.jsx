@@ -69,6 +69,29 @@ describe('src | VenueProvidersManager', () => {
     expect(pcapi.loadVenueProviders).toHaveBeenCalledTimes(1)
   })
 
+  describe('when all providers are disabled for pro', () => {
+    it('should display provider section if venue already have one', async () => {
+      // Given
+      venueProviders = [
+        {
+          id: 'AD',
+          nOffers: 1,
+          provider: { id: 'providerId', name: 'TiteLive' },
+          venueId: props.venue.id,
+          lastSyncDate: '2018-01-01T10:00:00',
+        },
+      ]
+      pcapi.loadProviders.mockResolvedValue([])
+      pcapi.loadVenueProviders.mockResolvedValue(venueProviders)
+
+      // When
+      await renderVenueProvidersManager(props)
+
+      // Then
+      expect(screen.queryByText('Importer des offres')).not.toBeInTheDocument()
+    })
+  })
+
   describe('when venue has providers synchronized', () => {
     it('should display the list of synchronized providers', async () => {
       // given
