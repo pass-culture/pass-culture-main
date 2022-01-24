@@ -1,3 +1,26 @@
+"""Finance-related functions.
+
+Dependent pricings
+==================
+
+The reimbursement rule to be applied for each booking depends on the
+yearly revenue to date. That means that we must price bookings in the
+order in which they are marked as used. As such:
+
+- When a booking B is priced, we should delete all pricings of
+  bookings that have been marked as used later than booking B. It
+  could happen if two HTTP requests ask to mark two bookings as used,
+  and the COMMIT that updates the "first" one is delayed and we try to
+  price the second one first. This is why we have a grace period in
+  `price_bookings` that avoids pricing bookings that have been very
+  recently marked as used.
+
+ - When a pricing is cancelled, we should delete all dependent
+   pricings (since the revenue will be different), so that related
+   booking can be priced again. That happens only if we mark a booking
+   as unused, which should be very rare.
+"""
+
 from collections import defaultdict
 import csv
 import datetime
@@ -55,9 +78,10 @@ def price_bookings(min_date: datetime.datetime = MIN_DATE_TO_PRICE):
 
     This function is normally called by a cron job.
     """
-    # The upper bound on `dateUsed` avoids selecting a very recent booking
-    # that may have been COMMITed to the database just before another
-    # booking with a slightly older `dateUsed`.
+    # The upper bound on `dateUsed` avoids selecting a very recent
+    # booking that may have been COMMITed to the database just before
+    # another booking with a slightly older `dateUsed` (see note in
+    # module docstring).
     threshold = datetime.datetime.utcnow() - datetime.timedelta(minutes=1)
     window = (min_date, threshold)
     bookings = (
@@ -296,31 +320,17 @@ def _delete_dependent_pricings(booking: bookings_models.Booking, log_message: st
     """Delete pricings for bookings that have been used after the given
     ``booking``.
 
-    FIXME (dbaty, 2021-11-03): review explanation, I am not sure it's
-    clear...
-
-    Bookings must be priced in the order in which they are marked as
-    used, because:
-    - Reimbursement threshold rules depend on the revenue as of the
-      pricing, so the order in which bookings are priced is relevant;
-    - We want the pricing to be replicable.
-
-    As such:
-    - When a booking is priced, we should delete any pricing that
-      relates to a booking that has been marked as used later. It
-      could happen if two HTTP requests ask to mark two bookings as
-      used, and the COMMIT that updates the "first" one is delayed and
-      we try to price the second one first.
-    - When a pricing is cancelled, we should delete all subsequent
-      pricings, so that related booking can be priced again. That
-      happens only if we unmark a booking (i.e. mark as unused), which
-      should be very rare.
+    See note in the module docstring for further details.
     """
     siret = booking.venue.siret or booking.venue.businessUnit.siret
+    _period_start, period_end = _get_revenue_period(booking.dateUsed)
     query = models.Pricing.query.filter(
         models.Pricing.siret == siret,
         sqla.or_(
-            models.Pricing.valueDate > booking.dateUsed,
+            sqla.and_(
+                models.Pricing.valueDate > booking.dateUsed,
+                models.Pricing.valueDate <= period_end,
+            ),
             sqla.and_(
                 models.Pricing.valueDate == booking.dateUsed,
                 models.Pricing.bookingId > booking.id,
