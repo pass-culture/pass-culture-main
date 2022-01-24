@@ -9,6 +9,7 @@ type Invoice = {
   businessUnitName: string
   reference: string
   amount: string
+  url: string
 }
 
 type Column = {
