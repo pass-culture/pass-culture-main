@@ -79,8 +79,8 @@ def beneficiary_deposit_type_formatter(view, context, model, name) -> Markup:
         DepositType.GRANT_18: "#FF9AA2",
     }
     return Markup("""<span class="badge" style="background-color:{color}">{deposit_type_name}</span>""").format(
-        color=colors[model.deposit_type],
-        deposit_type_name=model.deposit_type.name,
+        color=colors.get(model.deposit_type, "#FFFFFF"),
+        deposit_type_name=model.deposit_type.name if model.deposit_type else "No deposit",
     )
 
 
@@ -235,7 +235,7 @@ class BeneficiaryUserView(ResendValidationEmailMixin, SuspensionMixin, BaseAdmin
         )
         if self.check_super_admins():
             fields += ("firstName", "lastName", "comment")
-        if settings.IS_TESTING:
+        if settings.IS_TESTING or settings.IS_STAGING:
             fields += ("idPieceNumber",)
 
         return fields
