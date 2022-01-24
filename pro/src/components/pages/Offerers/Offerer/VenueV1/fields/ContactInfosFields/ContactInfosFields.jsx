@@ -27,6 +27,7 @@ const ContactInfosFields = ({ readOnly }) => (
       className="field text-field"
       label="Téléphone :"
       name="contact.phoneNumber"
+      placeholder="0612345678"
       readOnly={readOnly}
       type="phone"
       validate={validatePhone}
@@ -35,6 +36,7 @@ const ContactInfosFields = ({ readOnly }) => (
       className="field text-field"
       label="Mail :"
       name="contact.email"
+      placeholder="mail@exemple.com"
       readOnly={readOnly}
       type="email"
       validate={validateEmail}
@@ -43,6 +45,7 @@ const ContactInfosFields = ({ readOnly }) => (
       className="field text-field"
       label="URL de votre site web :"
       name="contact.website"
+      placeholder="http://exemple.com"
       readOnly={readOnly}
       type="url"
       validate={validateUrl}
