@@ -15,3 +15,4 @@ class SendTransactionalEmailRequest(BaseModel):
     params: dict
     template_id: int
     tags: Optional[list[str]]
+    sender: dict

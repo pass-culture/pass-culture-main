@@ -103,7 +103,14 @@ class TransactionalEmail(Enum):
     WELCOME_TO_PRO = Template(id_prod=0000, id_not_prod=0000, tags=["pro-bienvenue-sur-le-pass"])
 
 
+class SendinblueTransactionalSender(Enum):
+    SUPPORT = {"email": settings.SUPPORT_EMAIL_ADDRESS, "name": "pass Culture"}
+    SUPPORT_PRO = {"email": settings.SUPPORT_PRO_EMAIL_ADDRESS, "name": "pass Culture"}
+    COMPLIANCE = {"email": settings.COMPLIANCE_EMAIL_ADDRESS, "name": "pass Culture"}
+
+
 @dataclasses.dataclass
 class SendinblueTransactionalEmailData:
     template: Template
     params: dict = dataclasses.field(default_factory=dict)
+    sender: SendinblueTransactionalSender = dataclasses.field(default=SendinblueTransactionalSender.SUPPORT)
