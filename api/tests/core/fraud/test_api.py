@@ -6,7 +6,6 @@ import freezegun
 import pytest
 
 import pcapi.core.fraud.api as fraud_api
-import pcapi.core.fraud.dms.api as fraud_dms_api
 import pcapi.core.fraud.exceptions as fraud_exceptions
 import pcapi.core.fraud.factories as fraud_factories
 import pcapi.core.fraud.models as fraud_models
@@ -214,20 +213,6 @@ class CommonFraudCheckTest:
 
 @pytest.mark.usefixtures("db_session")
 class DMSFraudCheckTest:
-    def test_dms_fraud_check_already_started(self):
-        application_id = "123123"
-        user = users_factories.UserFactory()
-        dms_content = fraud_factories.DMSContentFactory(application_id=application_id)
-        fraud_dms_api.start_dms_fraud_check(user, dms_content)
-        fraud_api.on_dms_fraud_result(user, dms_content)
-
-        fraud_checks = fraud_models.BeneficiaryFraudCheck.query.filter_by(user=user).all()
-        assert len(fraud_checks) == 1
-        fraud_check = fraud_checks[0]
-
-        assert fraud_check.type == fraud_models.FraudCheckType.DMS
-        assert fraud_check.status == fraud_models.FraudCheckStatus.OK
-
     def test_dms_fraud_check(self):
         user = users_factories.UserFactory()
         content = fraud_factories.DMSContentFactory()

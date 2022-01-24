@@ -75,7 +75,7 @@ def on_dms_fraud_result(
 ) -> models.BeneficiaryFraudCheck:
 
     eligibility_type = dms_content.get_eligibility_type()
-    fraud_check = dms_api.get_dms_fraud_check(user, str(dms_content.application_id))
+    fraud_check = dms_api.get_fraud_check(user, str(dms_content.application_id))
     if not fraud_check:
         logger.warning("DMS fraud check from user %d not previously created", user.id)
         fraud_check = models.BeneficiaryFraudCheck(

@@ -13,7 +13,6 @@ from pcapi.core.fraud import models as fraud_models
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import models as subscription_models
-from pcapi.core.subscription.dms import api as dms_subscription_api
 from pcapi.core.testing import override_features
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import factories as users_factories
@@ -724,20 +723,6 @@ class OnSuccessfulDMSApplicationTest:
         # TODO: requires 19yo fixes : PC-12560
         assert applicant.has_beneficiary_role is False
         assert subscription_api.get_next_subscription_step(applicant) == None
-
-
-@pytest.mark.usefixtures("db_session")
-class DMSSubscriptionTest:
-    def test_dms_subscription(self):
-        user = users_factories.UserFactory(subscriptionState=users_models.SubscriptionState.phone_validated)
-        content = fraud_factories.DMSContentFactory()
-        fraud_check = dms_subscription_api.start_dms_workflow(user, content=content)
-
-        assert user.subscriptionState == users_models.SubscriptionState.identity_check_pending
-        assert fraud_check.user == user
-        assert fraud_check.status == fraud_models.FraudCheckStatus.PENDING
-        assert fraud_check.type == fraud_models.FraudCheckType.DMS
-        assert fraud_check.eligibilityType == users_models.EligibilityType.AGE18
 
 
 @pytest.mark.usefixtures("db_session")
