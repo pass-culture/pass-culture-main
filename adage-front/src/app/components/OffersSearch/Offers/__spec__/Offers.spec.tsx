@@ -1,5 +1,6 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import React from 'react'
+import type { Hit } from 'react-instantsearch-core'
 import { QueryCache, QueryClient, QueryClientProvider } from 'react-query'
 
 import * as pcapi from 'repository/pcapi/pcapi'
@@ -11,6 +12,13 @@ jest.mock('repository/pcapi/pcapi', () => ({
   getOffer: jest.fn(),
 }))
 
+jest.mock('react-instantsearch-dom', () => {
+  return {
+    ...jest.requireActual('react-instantsearch-dom'),
+    Stats: jest.fn(() => <div>2 résultats</div>),
+  }
+})
+
 const queryCache = new QueryCache()
 const queryClient = new QueryClient({ queryCache })
 const wrapper = ({ children }) => (
@@ -19,7 +27,7 @@ const wrapper = ({ children }) => (
 
 const mockedPcapi = pcapi as jest.Mocked<typeof pcapi>
 
-const searchFakeResults: ResultType[] = [
+const searchFakeResults: Hit<ResultType>[] = [
   {
     objectID: '479',
     offer: {
@@ -31,6 +39,7 @@ const searchFakeResults: ResultType[] = [
       name: 'Le Petit Rintintin 25',
       publicName: 'Le Petit Rintintin 25',
     },
+    _highlightResult: {},
   },
   {
     objectID: '480',
@@ -43,6 +52,7 @@ const searchFakeResults: ResultType[] = [
       name: 'Le Petit Coco',
       publicName: 'Le Petit Coco',
     },
+    _highlightResult: {},
   },
 ]
 
@@ -62,6 +72,7 @@ describe('offers', () => {
         {
           id: 825,
           beginningDatetime: new Date('2022-09-16T00:00:00Z'),
+          bookingLimitDatetime: new Date('2022-09-16T00:00:00Z'),
           isBookable: true,
           price: 140000,
         },
@@ -76,9 +87,16 @@ describe('offers', () => {
           latitude: 48.87004,
           longitude: 2.3785,
         },
+        managingOfferer: {
+          name: 'Le Petit Rintintin Management',
+        },
       },
       isSoldOut: false,
       isExpired: false,
+      visualDisabilityCompliant: true,
+      mentalDisabilityCompliant: true,
+      audioDisabilityCompliant: true,
+      motorDisabilityCompliant: true,
     }
 
     offerInCayenne = {
@@ -90,6 +108,7 @@ describe('offers', () => {
         {
           id: 826,
           beginningDatetime: new Date('2021-09-25T22:00:00Z'),
+          bookingLimitDatetime: new Date('2021-09-25T22:00:00Z'),
           isBookable: true,
           price: 80000,
         },
@@ -100,6 +119,9 @@ describe('offers', () => {
         name: 'Le Petit Rintintin 33',
         postalCode: '97300',
         publicName: 'Le Petit Rintintin 33',
+        managingOfferer: {
+          name: 'Le Petit Rintintin Management',
+        },
         coordinates: {
           latitude: 48.87004,
           longitude: 2.3785,
@@ -107,6 +129,10 @@ describe('offers', () => {
       },
       isSoldOut: false,
       isExpired: false,
+      visualDisabilityCompliant: true,
+      mentalDisabilityCompliant: true,
+      audioDisabilityCompliant: true,
+      motorDisabilityCompliant: true,
     }
 
     otherOffer = {
@@ -118,6 +144,7 @@ describe('offers', () => {
         {
           id: 827,
           beginningDatetime: new Date('2021-09-25T22:00:00Z'),
+          bookingLimitDatetime: new Date('2021-09-25T22:00:00Z'),
           isBookable: true,
           price: 3000,
         },
@@ -132,9 +159,16 @@ describe('offers', () => {
           latitude: 48.87004,
           longitude: 2.3785,
         },
+        managingOfferer: {
+          name: 'Le Petit Rintintin Management',
+        },
       },
       isSoldOut: false,
       isExpired: false,
+      visualDisabilityCompliant: true,
+      mentalDisabilityCompliant: true,
+      audioDisabilityCompliant: true,
+      motorDisabilityCompliant: true,
     }
   })
 
@@ -160,6 +194,7 @@ describe('offers', () => {
     expect(listItemsInOffer).toHaveLength(4)
     expect(screen.getByText(offerInParis.name)).toBeInTheDocument()
     expect(screen.getByText(offerInCayenne.name)).toBeInTheDocument()
+    expect(screen.getByText('2 résultats')).toBeInTheDocument()
   })
 
   it('should remove previous rendered offers on results update', async () => {
@@ -175,7 +210,7 @@ describe('offers', () => {
       { wrapper }
     )
     mockedPcapi.getOffer.mockResolvedValueOnce(otherOffer)
-    const otherSearchResult: ResultType = {
+    const otherSearchResult: Hit<ResultType> = {
       objectID: '481',
       offer: {
         dates: [new Date('2021-09-29T13:54:30+00:00').valueOf()],
@@ -186,6 +221,7 @@ describe('offers', () => {
         name: 'Un autre lieu',
         publicName: 'Un autre lieu public',
       },
+      _highlightResult: {},
     }
 
     // When
@@ -203,6 +239,7 @@ describe('offers', () => {
     expect(screen.getAllByRole('listitem')).toHaveLength(2)
     expect(screen.queryByText(offerInParis.name)).not.toBeInTheDocument()
     expect(screen.queryByText(offerInCayenne.name)).not.toBeInTheDocument()
+    expect(screen.getByText('2 résultats')).toBeInTheDocument()
   })
 
   it('should show most recent results and cancel previous request', async () => {
@@ -220,7 +257,7 @@ describe('offers', () => {
       { wrapper }
     )
     mockedPcapi.getOffer.mockResolvedValueOnce(otherOffer)
-    const otherSearchResult: ResultType = {
+    const otherSearchResult: Hit<ResultType> = {
       objectID: '481',
       offer: {
         dates: [new Date('2021-09-29T13:54:30+00:00').valueOf()],
@@ -231,6 +268,7 @@ describe('offers', () => {
         name: 'Un autre lieu',
         publicName: 'Un autre lieu public',
       },
+      _highlightResult: {},
     }
 
     // When
