@@ -2,6 +2,7 @@ import './Offers.scss'
 import { captureException } from '@sentry/react'
 import React, { useEffect } from 'react'
 import { connectHits } from 'react-instantsearch-core'
+import type { HitsProvided } from 'react-instantsearch-core'
 import { Stats } from 'react-instantsearch-dom'
 import { useQueries } from 'react-query'
 
@@ -17,15 +18,16 @@ import { OfferLegacy } from './OfferLegacy'
 const offerIsBookable = (offer: OfferType): boolean =>
   !offer.isSoldOut && !offer.isExpired
 
-export const OffersComponent = ({
+interface OffersComponentProps extends HitsProvided<ResultType> {
+  userRole: Role
+  setIsLoading: (isLoading: boolean) => void
+}
+
+const OffersComponent = ({
   userRole,
   setIsLoading,
   hits,
-}: {
-  userRole: Role
-  setIsLoading: (isLoading: boolean) => void
-  hits: ResultType[]
-}): JSX.Element => {
+}: OffersComponentProps): JSX.Element => {
   const offersThumbById = {}
   hits.forEach(hit => {
     offersThumbById[hit.objectID] = hit.offer.thumbUrl
@@ -103,4 +105,6 @@ export const OffersComponent = ({
   )
 }
 
-export const Offers = connectHits(OffersComponent)
+export const Offers = connectHits<OffersComponentProps, ResultType>(
+  OffersComponent
+)
