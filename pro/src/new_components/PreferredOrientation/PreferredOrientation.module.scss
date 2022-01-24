@@ -1,0 +1,18 @@
+.preferred-orientation {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  &-image-container {
+    display: flex;
+    align-items: center;
+    height: rem(128px);
+  }
+
+  &-label {
+    color: $grey-dark;
+    margin-bottom: rem(40px);
+    margin-top: rem(8px);
+  }
+}
