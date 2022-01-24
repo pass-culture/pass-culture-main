@@ -30,7 +30,7 @@ class SendinblueBackend(BaseBackend):
             template_id=data.template.id,
             params=data.params,
             tags=data.template.tags,
-            sender=data.sender.value,
+            sender=asdict(data.template.sender.value),
         )
         if data.template.use_priority_queue:
             send_transactional_email_primary_task.delay(payload)
@@ -47,4 +47,5 @@ class ToDevSendinblueBackend(SendinblueBackend):
         data: typing.Union[SendinblueTransactionalEmailData, dict],
     ) -> MailResult:
         recipients = [settings.DEV_EMAIL_ADDRESS]
+        print(data.template.sender)
         return super().send_mail(recipients=recipients, data=data)

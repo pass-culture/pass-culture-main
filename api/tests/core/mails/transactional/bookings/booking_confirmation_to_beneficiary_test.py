@@ -53,12 +53,10 @@ class SendSendinblueBookingConfirmationEmailToBeneficiaryTest:
         # Then
         assert len(mails_testing.outbox) == 1  # test number of emails sent
         assert mails_testing.outbox[0].sent_data["To"] == user.email
-        assert mails_testing.outbox[0].sent_data["template"] == {
-            "id_prod": 219,
-            "id_not_prod": 29,
-            "tags": ["jeunes_reservation_confirmee"],
-            "use_priority_queue": False,
-        }
+        assert (
+            mails_testing.outbox[0].sent_data["template"]
+            == TransactionalEmail.BOOKING_CONFIRMATION_BY_BENEFICIARY.value.__dict__
+        )
 
 
 def make_booking(**kwargs):

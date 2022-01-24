@@ -1,6 +1,7 @@
 import pytest
 
 import pcapi.core.mails.testing as mails_testing
+from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.mails.transactional.users.recredit_to_underage_beneficiary import (
     get_recredit_to_underage_beneficiary_email_data,
 )
@@ -27,12 +28,10 @@ class SendinblueSendNewlyEligibleUserEmailTest:
 
         # then
         assert len(mails_testing.outbox) == 1  # test number of emails sent
-        assert mails_testing.outbox[0].sent_data["template"] == {
-            "id_prod": 303,
-            "id_not_prod": 31,
-            "tags": ["anniversaire_16_17_ans"],
-            "use_priority_queue": False,
-        }
+        assert (
+            mails_testing.outbox[0].sent_data["template"]
+            == TransactionalEmail.RECREDIT_TO_UNDERAGE_BENEFICIARY.value.__dict__
+        )
 
     @override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=True)
     def test_return_correct_recredit_email_to_underage_beneficiary_email_data(
