@@ -88,6 +88,7 @@ def on_educonnect_authentication_response() -> Response:  # pylint: disable=too-
         "Received educonnect authentication response",
         extra={
             "user_email": user.email,
+            "user_id": user.id,
             "date_of_birth": educonnect_user.birth_date.isoformat(),
             "educonnect_connection_date": educonnect_user.connection_datetime.isoformat(),
             "educonnect_id": educonnect_user.educonnect_id,

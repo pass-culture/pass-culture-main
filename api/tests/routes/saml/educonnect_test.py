@@ -127,6 +127,7 @@ class EduconnectTest:
             "school_uai": "school_uai",
             "student_level": "2212",
             "user_email": self.email,
+            "user_id": user.id,
         }
 
         fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(
