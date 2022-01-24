@@ -30,7 +30,6 @@ freezegun==0.3.12
 google-auth==1.23.0
 google-cloud-storage==1.35.0
 google-cloud-tasks==2.3.0
-# once moving to gql 3.0 we might want to limit dependances with installing gql[requests]
 gql[requests]
 gunicorn==20.0.4
 ipaddress
