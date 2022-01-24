@@ -43,22 +43,6 @@
   }
 }
 
-.tnf-file-label {
-  cursor: pointer;
-  margin-bottom: rem(16px);
-  padding: 0 rem(32px);
-  width: rem(372px);
-
-  &:focus-within {
-    @include primary-focus();
-  }
-}
-
-.tnf-file-input {
-  height: 0;
-  width: 0;
-}
-
 .tnf-url-button {
   color: $white;
   width: rem(334px);

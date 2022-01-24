@@ -1,0 +1,17 @@
+.import-from-computer-input {
+  cursor: pointer;
+  margin-bottom: rem(16px);
+  padding: 0 rem(32px);
+  width: rem(372px);
+  text-align: center;
+
+  &:focus-within {
+    background-color: $primary-dark;
+    border: 3px solid $primary-dark;
+  }
+
+  &-file-input {
+    height: 0;
+    width: 0;
+  }
+}
