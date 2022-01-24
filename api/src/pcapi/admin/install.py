@@ -21,6 +21,7 @@ from pcapi.admin.custom_views.many_offers_operations_view import ManyOffersOpera
 from pcapi.admin.custom_views.offerer_view import OffererView
 from pcapi.admin.custom_views.partner_user_view import PartnerUserView
 from pcapi.admin.custom_views.pro_user_view import ProUserView
+from pcapi.admin.custom_views.provider_view import ProviderView
 from pcapi.admin.custom_views.support_view import view
 from pcapi.admin.custom_views.suspend_fraudulent_users_by_email_providers import (
     SuspendFraudulentUsersByEmailProvidersView,
@@ -34,6 +35,7 @@ import pcapi.core.offers.models as offers_models
 from pcapi.core.offers.models import OfferValidationConfig
 from pcapi.core.payments.models import CustomReimbursementRule
 from pcapi.core.providers.models import AllocinePivot
+from pcapi.core.providers.models import Provider
 from pcapi.core.providers.models import VenueProvider
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.users.models import User
@@ -149,6 +151,15 @@ def install_views(admin: Admin, session: Session) -> None:
     )
     admin.add_view(
         AllocinePivotView(AllocinePivot, session, name="Pivot Allocine", category=Category.OFFRES_STRUCTURES_LIEUX)
+    )
+    admin.add_view(
+        ProviderView(
+            Provider,
+            session,
+            name="Fournisseurs d'import",
+            endpoint="/providers",
+            category=Category.CUSTOM_OPERATIONS,
+        )
     )
     admin.add_view(
         ManyOffersOperationsView(
