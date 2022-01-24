@@ -246,7 +246,7 @@ class OfferValidationStatus(enum.Enum):
     REJECTED = "REJECTED"
 
 
-class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ProvidableMixin):
+class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin):
     __tablename__ = "offer"
 
     id = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
@@ -332,11 +332,25 @@ class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ProvidableMixin):
 
     dateUpdated: datetime = sa.Column(sa.DateTime, nullable=True, default=datetime.utcnow, onupdate=datetime.utcnow)
 
+    dateModifiedAtLastProvider = sa.Column(sa.DateTime, nullable=True, default=datetime.utcnow)
+
+    fieldsUpdated = sa.Column(sa.ARRAY(sa.String(100)), nullable=False, default=[], server_default="{}")
+
+    idAtProviders = sa.orm.synonym("idAtProvider")
+
     # FIXME: We shoud be able to remove the index on `venueId`, since this composite index
     #  can be used by PostgreSQL when filtering on the `venueId` column only.
     sa.Index("venueId_idAtProvider_index", venueId, idAtProvider, unique=True)
 
     sa.Index("offer_expr_idx", ExtraDataMixin.extraData["isbn"].astext)
+
+    @sa.ext.declarative.declared_attr
+    def lastProviderId(cls):  # pylint: disable=no-self-argument
+        return sa.Column(sa.BigInteger, sa.ForeignKey("provider.id"), nullable=True)
+
+    @sa.ext.declarative.declared_attr
+    def lastProvider(cls):  # pylint: disable=no-self-argument
+        return sa.orm.relationship("Provider", foreign_keys=[cls.lastProviderId])
 
     @sa.ext.hybrid.hybrid_property
     def isSoldOut(self):

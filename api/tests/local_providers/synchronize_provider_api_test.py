@@ -8,6 +8,7 @@ import requests_mock
 from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.categories import subcategories
 import pcapi.core.offerers.factories as offerers_factories
+from pcapi.core.offerers.models import Venue
 from pcapi.core.offers import factories
 from pcapi.core.offers.factories import VenueFactory
 from pcapi.core.offers.models import Offer
@@ -63,15 +64,13 @@ def create_product(isbn, product_price, **kwargs):
     )
 
 
-def create_offer(isbn, siret, product_price):
-    return factories.OfferFactory(
-        product=create_product(isbn, product_price), idAtProviders=f"{isbn}@{siret}", idAtProvider=isbn
-    )
+def create_offer(isbn, venue: Venue, product_price):
+    return factories.OfferFactory(product=create_product(isbn, product_price), idAtProvider=isbn, venue=venue)
 
 
-def create_stock(isbn, siret, product_price, **kwargs):
+def create_stock(isbn, siret, venue: Venue, product_price, **kwargs):
     return factories.StockFactory(
-        offer=create_offer(isbn, siret, product_price), idAtProviders=f"{isbn}@{siret}", **kwargs
+        offer=create_offer(isbn, venue, product_price), idAtProviders=f"{isbn}@{siret}", **kwargs
     )
 
 
@@ -93,16 +92,17 @@ class ProviderAPICronTest:
         stock = create_stock(
             ISBNs[0],
             siret,
+            venue,
             quantity=20,
             product_price="5.01",
         )
-        offer = create_offer(ISBNs[1], siret, product_price="5.02")
+        offer = create_offer(ISBNs[1], venue, product_price="5.02")
         product = create_product(ISBNs[2], product_price="8.01")
         create_product(ISBNs[4], product_price="10.02")
         create_product(ISBNs[6], isGcuCompatible=False, product_price="10.04")
         create_product(ISBNs[8], isSynchronizationCompatible=False, product_price="7.08")
 
-        stock_with_booking = create_stock(ISBNs[5], siret, quantity=20, product_price="18.01")
+        stock_with_booking = create_stock(ISBNs[5], siret, venue, quantity=20, product_price="18.01")
         BookingFactory(stock=stock_with_booking)
         BookingFactory(stock=stock_with_booking, quantity=2)
 
@@ -131,16 +131,16 @@ class ProviderAPICronTest:
         assert created_stock.lastProviderId == provider.id
 
         # Test creates offer if does not exist
-        created_offer = Offer.query.filter_by(idAtProviders=f"{ISBNs[2]}@{siret}").one()
+        created_offer = Offer.query.filter_by(idAtProvider=ISBNs[2]).one()
         assert created_offer.stocks[0].quantity == 18
 
         # Test doesn't create offer if product does not exist or not gcu or not synchronization compatible
-        assert Offer.query.filter_by(idAtProviders=f"{ISBNs[3]}@{siret}").count() == 0
-        assert Offer.query.filter_by(idAtProviders=f"{ISBNs[6]}@{siret}").count() == 0
-        assert Offer.query.filter_by(idAtProviders=f"{ISBNs[8]}@{siret}").count() == 0
+        assert Offer.query.filter_by(idAtProvider=ISBNs[3]).count() == 0
+        assert Offer.query.filter_by(idAtProvider=ISBNs[6]).count() == 0
+        assert Offer.query.filter_by(idAtProvider=ISBNs[8]).count() == 0
 
         # Test second page is actually processed
-        second_created_offer = Offer.query.filter_by(idAtProviders=f"{ISBNs[4]}@{siret}").one()
+        second_created_offer = Offer.query.filter_by(idAtProvider=ISBNs[4]).one()
         assert second_created_offer.stocks[0].quantity == 17
 
         # Test existing bookings are added to quantity
@@ -161,7 +161,6 @@ class ProviderAPICronTest:
         assert created_offer.name == product.name
         assert created_offer.productId == product.id
         assert created_offer.venueId == venue_provider.venue.id
-        assert created_offer.idAtProviders == f"{ISBNs[2]}@{siret}"
         assert created_offer.idAtProvider == ISBNs[2]
         assert created_offer.lastProviderId == provider.id
         assert created_offer.withdrawalDetails == venue_provider.venue.withdrawalDetails
@@ -203,7 +202,7 @@ class ProviderAPICronTest:
             assert result == [
                 StockDetail(
                     available_quantity=17,
-                    offers_provider_reference="3010000108123@siret",
+                    offers_provider_reference="3010000108123",
                     price=Decimal("23.99"),
                     products_provider_reference="3010000108123",
                     stocks_provider_reference="3010000108123@siret",
@@ -211,7 +210,7 @@ class ProviderAPICronTest:
                 ),
                 StockDetail(
                     available_quantity=17,
-                    offers_provider_reference="3010000108124@siret",
+                    offers_provider_reference="3010000108124",
                     price=Decimal("28.99"),
                     products_provider_reference="3010000108124",
                     stocks_provider_reference="3010000108124@siret",
@@ -235,7 +234,7 @@ class ProviderAPICronTest:
                 StockDetail(
                     available_quantity=17,
                     price=Decimal("28.99"),  # latest wins
-                    offers_provider_reference="3010000108123@siret",
+                    offers_provider_reference="3010000108123",
                     products_provider_reference="3010000108123",
                     stocks_provider_reference="3010000108123@siret",
                     venue_reference="3010000108123@12",
@@ -258,7 +257,7 @@ class ProviderAPICronTest:
                 StockDetail(
                     available_quantity=17,
                     price=Decimal("12.34"),  # latest wins
-                    offers_provider_reference="3010000108123@siret",
+                    offers_provider_reference="3010000108123",
                     products_provider_reference="3010000108123",
                     stocks_provider_reference="3010000108123@siret",
                     venue_reference="3010000108123@13",

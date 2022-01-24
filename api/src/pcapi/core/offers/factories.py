@@ -131,8 +131,8 @@ class OfferFactory(BaseFactory):
     @classmethod
     def _create(cls, model_class, *args, **kwargs):
         # Graciously provide the required idAtProviders if lastProvider is given.
-        if kwargs.get("lastProvider") and not kwargs.get("idAtProviders"):
-            kwargs["idAtProviders"] = uuid.uuid4()
+        if kwargs.get("lastProvider") and not kwargs.get("idAtProvider"):
+            kwargs["idAtProvider"] = uuid.uuid4()
 
         if kwargs.get("isActive") is None:
             kwargs["isActive"] = kwargs.get("validation") not in (

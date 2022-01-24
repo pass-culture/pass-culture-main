@@ -73,14 +73,14 @@ class SynchronizeVenueProviderTest:
             extraData={"prix_livre": 10},
             subcategoryId=subcategories.LIVRE_PAPIER.id,
         )
-        offer_id_at_providers = f"{existing_product.idAtProviders}@{venue.siret}"
+        stock_id_at_providers = f"{existing_product.idAtProviders}@{venue.siret}"
         existing_stock = offers_factories.StockFactory(
             quantity=10,
             offer__venue=venue,
             offer__product=existing_product,
             lastProviderId=old_provider.id,
-            offer__idAtProviders=offer_id_at_providers,
-            idAtProviders=offer_id_at_providers,
+            offer__idAtProviders=existing_product.idAtProviders,
+            idAtProviders=stock_id_at_providers,
         )
         bookings_factories.BookingFactory(stock=existing_stock)
 
