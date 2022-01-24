@@ -1,11 +1,10 @@
 import { DialogContent, DialogOverlay } from '@reach/dialog'
 import '@reach/dialog/styles.css'
-import React from 'react'
+import React, { FunctionComponent } from 'react'
 
 import CloseButton from './CloseButton'
 
-interface IDialogProps {
-  children: React.ReactNode | React.ReactNode[]
+interface DialogProps {
   extraClassNames?: string
   hasCloseButton: boolean
   labelledBy: string
@@ -13,14 +12,14 @@ interface IDialogProps {
   initialFocusRef: React.RefObject<HTMLButtonElement>
 }
 
-const DialogBox = ({
+const DialogBox: FunctionComponent<DialogProps> = ({
   children,
   extraClassNames,
   hasCloseButton,
   labelledBy,
   onDismiss,
   initialFocusRef,
-}: IDialogProps): JSX.Element => (
+}) => (
   <DialogOverlay
     className="dialog-box-overlay"
     initialFocusRef={initialFocusRef}
