@@ -2,6 +2,7 @@ import './Offers.scss'
 import { captureException } from '@sentry/react'
 import React, { useEffect } from 'react'
 import { connectHits } from 'react-instantsearch-core'
+import { Stats } from 'react-instantsearch-dom'
 import { useQueries } from 'react-query'
 
 import { Spinner } from 'app/components/Layout/Spinner/Spinner'
@@ -68,26 +69,37 @@ export const OffersComponent = ({
   }
 
   return (
-    <ul className="offers">
-      {offers.map(offer => (
-        <div key={offer.id}>
-          {isNewOfferDesignEnabled() ? (
-            <Offer
-              canPrebookOffers={userRole == Role.redactor}
-              key={offer.id}
-              offer={offer}
-            />
-          ) : (
-            <OfferLegacy
-              canPrebookOffers={userRole == Role.redactor}
-              key={offer.id}
-              offer={offer}
-              thumbUrl={offersThumbById[offer.id]}
-            />
-          )}
-        </div>
-      ))}
-    </ul>
+    <>
+      <div className="offers-stats">
+        <Stats
+          translations={{
+            stats(nbHits: number) {
+              return `${nbHits} résultat${nbHits > 1 ? 's' : ''}`
+            },
+          }}
+        />
+      </div>
+      <ul className="offers">
+        {offers.map(offer => (
+          <div key={offer.id}>
+            {isNewOfferDesignEnabled() ? (
+              <Offer
+                canPrebookOffers={userRole == Role.redactor}
+                key={offer.id}
+                offer={offer}
+              />
+            ) : (
+              <OfferLegacy
+                canPrebookOffers={userRole == Role.redactor}
+                key={offer.id}
+                offer={offer}
+                thumbUrl={offersThumbById[offer.id]}
+              />
+            )}
+          </div>
+        ))}
+      </ul>
+    </>
   )
 }
 
