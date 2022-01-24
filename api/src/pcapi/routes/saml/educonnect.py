@@ -65,8 +65,12 @@ def on_educonnect_authentication_response() -> Response:  # pylint: disable=too-
         error_query_param = {"code": "UserTypeNotStudent", "logoutUrl": exc.logout_url}
         return redirect(ERROR_PAGE_URL + urlencode(error_query_param), code=302)
 
+    except educonnect_exceptions.ParsingError as exc:
+        logger.exception("KeyError after educonnect exception", extra={"parsed_data": exc.parsed_dict})
+        return redirect(ERROR_PAGE_URL + urlencode({"logout_url": exc.logout_url}), code=302)
+
     except Exception as exc:  # pylint: disable=broad-except
-        logger.exception("Error after educonnect authentication: %s", exc)
+        logger.exception("Error after educonnect authentication")
         return redirect(ERROR_PAGE_URL, code=302)
 
     user_id = _user_id_from_saml_request_id(educonnect_user.saml_request_id)
