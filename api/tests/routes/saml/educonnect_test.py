@@ -450,3 +450,17 @@ class EduconnectTest:
         assert user.dateOfBirth == datetime.datetime.combine(
             datetime.date.today() - relativedelta(years=age, months=1), datetime.time(0, 0)
         )
+
+
+class PerformanceTest:
+    @override_settings(IS_PERFORMANCE_TESTS=True)
+    @override_features(ENABLE_INE_WHITELIST_FILTER=False)
+    def test_performance_tests(self, client):
+        user = users_factories.UserFactory(dateOfBirth=datetime.date.today() - relativedelta(years=15))
+
+        response = client.post("/saml/acs", form={"SAMLResponse": str(user.id)})
+
+        assert response.status_code == 302
+        assert fraud_models.BeneficiaryFraudCheck.query.filter_by(
+            user=user, type=fraud_models.FraudCheckType.EDUCONNECT, status=fraud_models.FraudCheckStatus.OK
+        ).one()
