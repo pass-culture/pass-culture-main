@@ -9,7 +9,7 @@ interface DialogProps {
   hasCloseButton: boolean
   labelledBy: string
   onDismiss?: () => void
-  initialFocusRef: React.RefObject<HTMLButtonElement>
+  initialFocusRef?: React.RefObject<HTMLButtonElement>
 }
 
 const DialogBox: FunctionComponent<DialogProps> = ({
