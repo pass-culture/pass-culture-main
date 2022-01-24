@@ -35,7 +35,7 @@ def _get_venue_name_and_id(venue: Venue) -> str:
 
 class VenueProviderView(BaseAdminView):
     can_edit = True
-    can_create = False
+    can_create = True
     can_delete = False
 
     column_list = [
@@ -47,6 +47,7 @@ class VenueProviderView(BaseAdminView):
         "isDuo",
         "quantity",
         "provider.isActive",
+        "lastSyncDate",
         "venue_link",
     ]
     column_labels = {
@@ -60,6 +61,7 @@ class VenueProviderView(BaseAdminView):
         "isDuo": "En duo ? (Allocine seulement)",
         "quantity": "Quantité (Allocine seulement)",
         "provider.isActive": "Provider activé",
+        "lastSyncDate": "Date de dernière synchronisation",
         "venue_link": "Lien",
     }
 
