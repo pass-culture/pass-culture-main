@@ -33,6 +33,7 @@ FRAUD_CHECK_STATUS_FORMATS = {
     fraud_models.FraudCheckStatus.KO: "danger",
     fraud_models.FraudCheckStatus.OK: "success",
     fraud_models.FraudCheckStatus.PENDING: "warning",
+    fraud_models.FraudCheckStatus.STARTED: "warning",
     fraud_models.FraudCheckStatus.SUSPICIOUS: "warning",
     fraud_models.FraudCheckStatus.CANCELED: "warning",
 }
