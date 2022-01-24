@@ -40,7 +40,7 @@ const VenueProvidersManager = ({ venue }) => {
     setVenueProviders(newVenueProviders)
   }
 
-  if (!isLoading && !providers.length) {
+  if (!isLoading && !providers.length && !venueProviders.length) {
     return null
   }
 
