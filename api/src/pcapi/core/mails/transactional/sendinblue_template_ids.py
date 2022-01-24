@@ -5,16 +5,34 @@ from pcapi import settings
 
 
 @dataclasses.dataclass
+class SenderInfo:
+    email: str
+    name: str
+
+
+class SendinblueTransactionalSender(Enum):
+    SUPPORT = SenderInfo(settings.SUPPORT_EMAIL_ADDRESS, "pass Culture")
+    SUPPORT_PRO = SenderInfo(settings.SUPPORT_PRO_EMAIL_ADDRESS, "pass Culture")
+    COMPLIANCE = SenderInfo(settings.COMPLIANCE_EMAIL_ADDRESS, "pass Culture")
+
+
+@dataclasses.dataclass
 class Template:
     id_prod: int
     id_not_prod: int
     tags: list[str] = dataclasses.field(default_factory=list)
     use_priority_queue: bool = False
     # Tag your emails to find them more easily cf doc https://developers.sendinblue.com/reference/sendtransacemail
+    sender: SendinblueTransactionalSender = SendinblueTransactionalSender.SUPPORT
 
     @property
     def id(self) -> int:
         return self.id_prod if settings.IS_PROD else self.id_not_prod
+
+
+@dataclasses.dataclass
+class TemplatePro(Template):
+    sender: SendinblueTransactionalSender = SendinblueTransactionalSender.SUPPORT_PRO
 
 
 class TransactionalEmail(Enum):
@@ -81,36 +99,35 @@ class TransactionalEmail(Enum):
     )
 
     # PRO EMAIL
-    ACCOUNT_CREATED_TO_PRO = Template(id_prod=0000, id_not_prod=0000, tags=["validation_email_invitation_pro"])
-    BOOKING_CANCELLATION_BY_BENEFICIARY_TO_PRO = Template(id_prod=0000, id_not_prod=0000, tags=["pro_annulation_offre"])
-    BOOKING_CANCELLATION_CONFIRMATION_BY_PRO = Template(
+    ACCOUNT_CREATED_TO_PRO = TemplatePro(id_prod=0000, id_not_prod=0000, tags=["validation_email_invitation_pro"])
+    BOOKING_CANCELLATION_BY_BENEFICIARY_TO_PRO = TemplatePro(
+        id_prod=0000, id_not_prod=0000, tags=["pro_annulation_offre"]
+    )
+    BOOKING_CANCELLATION_CONFIRMATION_BY_PRO = TemplatePro(
         id_prod=0000, id_not_prod=0000, tags=["pro_annulation_rerservation"]
     )
-    BOOKING_EXPIRATION_TO_PRO = Template(id_prod=0000, id_not_prod=0000, tags=["pro_annulation_reservation_30j"])
-    EAC_BOOKING_DAY_TO_PRO = Template(id_prod=0000, id_not_prod=0000, tags=[""])
-    EAC_NEW_BOOKING_TO_PRO = Template(id_prod=0000, id_not_prod=0000, tags=["pro_nouvelle_reservation_eac"])
-    EAC_NEW_PREBOOKING_TO_PRO = Template(id_prod=0000, id_not_prod=0000, tags=["pro_nouvelle_prereservation_eac"])
-    EAC_SATISFACTION_STUDY_TO_PRO = Template(id_prod=0000, id_not_prod=0000, tags=[""])
-    EXCEEDING_20K_REVENUE_TO_PRO = Template(id_prod=0000, id_not_prod=0000, tags=["pro_depassement_20k"])
-    FIRST_BOOKING_TO_PRO = Template(id_prod=0000, id_not_prod=0000, tags=[""])
-    FIRST_OFFER_CREATED_BY_PRO = Template(id_prod=0000, id_not_prod=0000, tags=[""])
-    FRAUD_PREVENTION_TO_PRO = Template(id_prod=0000, id_not_prod=0000, tags=[""])
-    NEW_BOOKING_TO_PRO = Template(id_prod=0000, id_not_prod=0000, tags=["pro_nouvelle_reservation"])
-    OFFER_MANUAL_VALIDATION_TO_PRO = Template(id_prod=0000, id_not_prod=0000, tags=["pro_validation_offre"])
-    OFFER_REJECTION_TO_PRO = Template(id_prod=0000, id_not_prod=0000, tags=["pro_offre_refusee"])
-    REFUND_TO_PRO = Template(id_prod=0000, id_not_prod=0000, tags=[""])
-    RESET_PASSWORD_TO_PRO = Template(id_prod=364, id_not_prod=47, tags=["pro_reinit_mdp"])
-    WELCOME_TO_PRO = Template(id_prod=0000, id_not_prod=0000, tags=["pro-bienvenue-sur-le-pass"])
-
-
-class SendinblueTransactionalSender(Enum):
-    SUPPORT = {"email": settings.SUPPORT_EMAIL_ADDRESS, "name": "pass Culture"}
-    SUPPORT_PRO = {"email": settings.SUPPORT_PRO_EMAIL_ADDRESS, "name": "pass Culture"}
-    COMPLIANCE = {"email": settings.COMPLIANCE_EMAIL_ADDRESS, "name": "pass Culture"}
+    BOOKING_EXPIRATION_TO_PRO = TemplatePro(id_prod=0000, id_not_prod=0000, tags=["pro_annulation_reservation_30j"])
+    EAC_BOOKING_DAY_TO_PRO = TemplatePro(id_prod=0000, id_not_prod=0000, tags=[""])
+    EAC_NEW_BOOKING_TO_PRO = TemplatePro(id_prod=0000, id_not_prod=0000, tags=["pro_nouvelle_reservation_eac"])
+    EAC_NEW_PREBOOKING_TO_PRO = TemplatePro(id_prod=0000, id_not_prod=0000, tags=["pro_nouvelle_prereservation_eac"])
+    EAC_SATISFACTION_STUDY_TO_PRO = TemplatePro(id_prod=0000, id_not_prod=0000, tags=[""])
+    EXCEEDING_20K_REVENUE_TO_PRO = TemplatePro(id_prod=0000, id_not_prod=0000, tags=["pro_depassement_20k"])
+    FIRST_BOOKING_TO_PRO = TemplatePro(id_prod=0000, id_not_prod=0000, tags=[""])
+    FIRST_OFFER_CREATED_BY_PRO = TemplatePro(id_prod=0000, id_not_prod=0000, tags=[""])
+    FRAUD_PREVENTION_TO_PRO = TemplatePro(id_prod=0000, id_not_prod=0000, tags=[""])
+    NEW_BOOKING_TO_PRO = TemplatePro(id_prod=0000, id_not_prod=0000, tags=["pro_nouvelle_reservation"])
+    OFFER_MANUAL_VALIDATION_TO_PRO = TemplatePro(
+        id_prod=0000, id_not_prod=0000, tags=["pro_validation_offre"], sender=SendinblueTransactionalSender.COMPLIANCE
+    )
+    OFFER_REJECTION_TO_PRO = TemplatePro(
+        id_prod=0000, id_not_prod=0000, tags=["pro_offre_refusee"], sender=SendinblueTransactionalSender.COMPLIANCE
+    )
+    REFUND_TO_PRO = TemplatePro(id_prod=0000, id_not_prod=0000, tags=[""])
+    RESET_PASSWORD_TO_PRO = TemplatePro(id_prod=364, id_not_prod=47, tags=["pro_reinit_mdp"])
+    WELCOME_TO_PRO = TemplatePro(id_prod=0000, id_not_prod=0000, tags=["pro-bienvenue-sur-le-pass"])
 
 
 @dataclasses.dataclass
 class SendinblueTransactionalEmailData:
     template: Template
     params: dict = dataclasses.field(default_factory=dict)
-    sender: SendinblueTransactionalSender = dataclasses.field(default=SendinblueTransactionalSender.SUPPORT)

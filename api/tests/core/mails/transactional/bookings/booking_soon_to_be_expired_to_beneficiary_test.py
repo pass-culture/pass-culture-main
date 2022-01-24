@@ -11,6 +11,7 @@ from pcapi.core.mails.transactional.bookings.booking_soon_to_be_expired_to_benef
     send_soon_to_be_expired_individual_bookings_recap_email_to_beneficiary,
 )
 from pcapi.core.mails.transactional.bookings.booking_soon_to_be_expired_to_beneficiary import _filter_books_bookings
+from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.offers.factories import ProductFactory
 from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
@@ -133,12 +134,10 @@ class SendinblueSendSoonToBeExpiredBookingsEmailToBeneficiaryTest:
 
         # then
         assert len(mails_testing.outbox) == 2  # test number of emails sent
-        assert mails_testing.outbox[0].sent_data["template"] == {
-            "id_prod": 144,
-            "id_not_prod": 42,
-            "tags": ["jeunes_reservation_bientot_expiree"],
-            "use_priority_queue": False,
-        }
+        assert (
+            mails_testing.outbox[0].sent_data["template"]
+            == TransactionalEmail.BOOKING_SOON_TO_BE_EXPIRED_TO_BENEFICIARY.value.__dict__
+        )
         assert mails_testing.outbox[0].sent_data["params"] == {
             "FIRSTNAME": user.firstName,
             "BOOKINGS": [
@@ -152,12 +151,10 @@ class SendinblueSendSoonToBeExpiredBookingsEmailToBeneficiaryTest:
         }
         assert mails_testing.outbox[0].sent_data["To"] == "isasimov@example.com"
 
-        assert mails_testing.outbox[1].sent_data["template"] == {
-            "id_prod": 144,
-            "id_not_prod": 42,
-            "tags": ["jeunes_reservation_bientot_expiree"],
-            "use_priority_queue": False,
-        }
+        assert (
+            mails_testing.outbox[1].sent_data["template"]
+            == TransactionalEmail.BOOKING_SOON_TO_BE_EXPIRED_TO_BENEFICIARY.value.__dict__
+        )
         assert mails_testing.outbox[1].sent_data["params"] == {
             "FIRSTNAME": user.firstName,
             "BOOKINGS": [

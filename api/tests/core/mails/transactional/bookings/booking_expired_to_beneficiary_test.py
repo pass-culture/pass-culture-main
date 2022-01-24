@@ -14,7 +14,7 @@ from pcapi.core.mails.transactional.bookings.booking_expired_to_beneficiary impo
 from pcapi.core.mails.transactional.bookings.booking_expired_to_beneficiary import (
     send_expired_bookings_to_beneficiary_email,
 )
-from pcapi.core.mails.transactional.sendinblue_template_ids import Template
+from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.offers.factories import ProductFactory
 from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
@@ -31,6 +31,10 @@ class SendExpiredBookingsEmailToBeneficiarySendinblueTest:
         send_expired_bookings_to_beneficiary_email(amnesiac_user, [expired_today_book_booking])
 
         assert len(mails_testing.outbox) == 1
+        assert (
+            mails_testing.outbox[0].sent_data["template"]
+            == TransactionalEmail.EXPIRED_BOOKING_TO_BENEFICIARY.value.__dict__
+        )
         assert mails_testing.outbox[0].sent_data["params"]["WITHDRAWAL_PERIOD"] == 10
 
     @override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=True)
@@ -45,6 +49,10 @@ class SendExpiredBookingsEmailToBeneficiarySendinblueTest:
         send_expired_bookings_to_beneficiary_email(amnesiac_user, [expired_today_cd_booking, expired_today_dvd_booking])
 
         assert len(mails_testing.outbox) == 1
+        assert (
+            mails_testing.outbox[0].sent_data["template"]
+            == TransactionalEmail.EXPIRED_BOOKING_TO_BENEFICIARY.value.__dict__
+        )
         assert mails_testing.outbox[0].sent_data["params"]["WITHDRAWAL_PERIOD"] == 30
 
     @override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=True)
@@ -93,9 +101,7 @@ class SendExpiredBookingsEmailToBeneficiarySendinblueTest:
             amnesiac_user, [expired_today_dvd_booking, expired_today_cd_booking], 30
         )
 
-        assert email_data.template == Template(
-            id_prod=145, id_not_prod=34, tags=["jeunes_resa_expiree"], use_priority_queue=False
-        )
+        assert email_data.template == TransactionalEmail.EXPIRED_BOOKING_TO_BENEFICIARY.value
         assert email_data.params == {
             "FIRSTNAME": "Dory",
             "BOOKINGS": [

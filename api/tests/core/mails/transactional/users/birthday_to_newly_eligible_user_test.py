@@ -4,6 +4,7 @@ from dateutil.relativedelta import relativedelta
 import pytest
 
 import pcapi.core.mails.testing as mails_testing
+from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.mails.transactional.users.birthday_to_newly_eligible_user import (
     send_birthday_age_18_email_to_newly_eligible_user,
 )
@@ -46,9 +47,7 @@ class SendinblueSendNewlyEligibleUserEmailTest:
 
         # then
         assert len(mails_testing.outbox) == 1  # test number of emails sent
-        assert mails_testing.outbox[0].sent_data["template"] == {
-            "id_prod": 78,
-            "id_not_prod": 32,
-            "tags": ["anniversaire_18_ans"],
-            "use_priority_queue": False,
-        }
+        assert (
+            mails_testing.outbox[0].sent_data["template"]
+            == TransactionalEmail.BIRTHDAY_AGE_18_TO_NEWLY_ELIGIBLE_USER.value.__dict__
+        )
