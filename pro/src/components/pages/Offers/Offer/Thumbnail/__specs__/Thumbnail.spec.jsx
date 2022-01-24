@@ -256,7 +256,7 @@ describe('thumbnail edition', () => {
 
           // Then
           await expect(
-            screen.findByText('Largeur minimale de l’image : 400 px', {
+            screen.findByText('Hauteur minimale de l’image : 400 px', {
               selector: 'strong',
             })
           ).resolves.toBeInTheDocument()
