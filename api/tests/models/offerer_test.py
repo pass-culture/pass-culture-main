@@ -1,8 +1,8 @@
 import pytest
 
+from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.core.users import factories as users_factories
-from pcapi.model_creators.generic_creators import create_bank_information
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_user_offerer
 from pcapi.model_creators.generic_creators import create_venue
@@ -54,8 +54,7 @@ class OffererBankInformationTest:
     def test_bic_property_returns_bank_information_bic_when_offerer_has_bank_information(self, app):
         # Given
         offerer = create_offerer(siren="123456789")
-        bank_information = create_bank_information(bic="BDFEFR2LCCB", offerer=offerer)
-        repository.save(bank_information)
+        offers_factories.BankInformationFactory(bic="BDFEFR2LCCB", offerer=offerer)
 
         # When
         bic = offerer.bic
@@ -79,8 +78,7 @@ class OffererBankInformationTest:
     def test_iban_property_returns_bank_information_iban_when_offerer_has_bank_information(self, app):
         # Given
         offerer = create_offerer(siren="123456789")
-        bank_information = create_bank_information(iban="FR7630007000111234567890144", offerer=offerer)
-        repository.save(bank_information)
+        offers_factories.BankInformationFactory(iban="FR7630007000111234567890144", offerer=offerer)
 
         # When
         iban = offerer.iban
@@ -104,10 +102,9 @@ class OffererBankInformationTest:
     def test_demarchesSimplifieesApplicationId_returns_id_if_status_is_draft(self, app):
         # Given
         offerer = create_offerer(siren="123456789")
-        bank_information = create_bank_information(
-            application_id=12345, offerer=offerer, status=BankInformationStatus.DRAFT, iban=None, bic=None
+        offers_factories.BankInformationFactory(
+            applicationId=12345, offerer=offerer, status=BankInformationStatus.DRAFT, iban=None, bic=None
         )
-        repository.save(bank_information)
 
         # When
         field = offerer.demarchesSimplifieesApplicationId
@@ -119,10 +116,9 @@ class OffererBankInformationTest:
     def test_demarchesSimplifieesApplicationId_returns_none_if_status_is_rejected(self, app):
         # Given
         offerer = create_offerer(siren="123456789")
-        bank_information = create_bank_information(
+        offers_factories.BankInformationFactory(
             offerer=offerer, status=BankInformationStatus.REJECTED, iban=None, bic=None
         )
-        repository.save(bank_information)
 
         # When
         field = offerer.demarchesSimplifieesApplicationId

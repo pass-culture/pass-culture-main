@@ -3,11 +3,11 @@ from unittest.mock import patch
 
 import pytest
 
+from pcapi.core.offers import factories as offers_factories
 from pcapi.domain.bank_information import CannotRegisterBankInformation
 from pcapi.infrastructure.repository.bank_informations.bank_informations_sql_repository import (
     BankInformationsSQLRepository,
 )
-from pcapi.model_creators.generic_creators import create_bank_information
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.bank_information import BankInformation
@@ -216,12 +216,11 @@ class SaveOffererBankInformationsTest:
             application_id = "8"
             offerer = create_offerer(siren="793875030")
             new_offerer = create_offerer(siren="793875019")
-            bank_information = create_bank_information(
-                application_id=8,
+            bank_information = offers_factories.BankInformationFactory(
+                applicationId=8,
                 bic="QSDFGH8Z555",
                 iban="NL36INGB2682297498",
                 offerer=offerer,
-                date_modified=datetime(2018, 1, 1),
             )
             repository.save(offerer, new_offerer, bank_information)
             mock_application_details.return_value = offerer_demarche_simplifiee_application_detail_response(
@@ -249,13 +248,12 @@ class SaveOffererBankInformationsTest:
             # Given
             application_id = "8"
             offerer = create_offerer(siren="793875030")
-            bank_information = create_bank_information(
-                application_id=8,
+            bank_information = offers_factories.BankInformationFactory(
+                applicationId=8,
                 bic="QSDFGH8Z555",
                 iban="NL36INGB2682297498",
                 offerer=offerer,
                 status=BankInformationStatus.ACCEPTED,
-                date_modified=datetime(2018, 1, 1),
             )
             repository.save(offerer, bank_information)
             mock_application_details.return_value = offerer_demarche_simplifiee_application_detail_response(
@@ -285,19 +283,17 @@ class SaveOffererBankInformationsTest:
             application_id = "8"
             offerer = create_offerer(siren="793875030")
             other_offerer = create_offerer(siren="793875019")
-            bank_information = create_bank_information(
-                application_id=8,
+            bank_information = offers_factories.BankInformationFactory(
+                applicationId=8,
                 bic="QSDFGH8Z555",
                 iban="NL36INGB2682297498",
                 offerer=offerer,
-                date_modified=datetime(2018, 1, 1),
             )
-            other_bank_information = create_bank_information(
-                application_id=79,
+            other_bank_information = offers_factories.BankInformationFactory(
+                applicationId=79,
                 bic="QSDFGH8Z555",
                 iban="NL36INGB2682297498",
                 offerer=other_offerer,
-                date_modified=datetime(2018, 1, 1),
             )
             repository.save(offerer, other_offerer, bank_information, other_bank_information)
             mock_application_details.return_value = offerer_demarche_simplifiee_application_detail_response(
@@ -327,12 +323,11 @@ class SaveOffererBankInformationsTest:
             # Given
             application_id = "8"
             offerer = create_offerer(siren="793875030")
-            bank_information = create_bank_information(
-                application_id=79,
+            bank_information = offers_factories.BankInformationFactory(
+                applicationId=79,
                 bic="QSDFGH8Z555",
                 iban="NL36INGB2682297498",
                 offerer=offerer,
-                date_modified=datetime(2018, 1, 1),
             )
             repository.save(offerer, bank_information)
             mock_application_details.return_value = offerer_demarche_simplifiee_application_detail_response(
@@ -362,12 +357,11 @@ class SaveOffererBankInformationsTest:
             # Given
             application_id = "8"
             offerer = create_offerer(siren="793875030")
-            bank_information = create_bank_information(
-                application_id=79,
+            bank_information = offers_factories.BankInformationFactory(
+                applicationId=79,
                 bic=None,
                 iban=None,
                 offerer=offerer,
-                date_modified=datetime(2018, 1, 1),
                 status=BankInformationStatus.REJECTED,
             )
             repository.save(offerer, bank_information)
@@ -391,12 +385,11 @@ class SaveOffererBankInformationsTest:
             # Given
             application_id = "8"
             offerer = create_offerer(siren="793875030")
-            bank_information = create_bank_information(
-                application_id=79,
+            bank_information = offers_factories.BankInformationFactory(
+                applicationId=79,
                 bic="QSDFGH8Z555",
                 iban="NL36INGB2682297498",
                 offerer=offerer,
-                date_modified=datetime(2018, 1, 1),
                 status=BankInformationStatus.ACCEPTED,
             )
             repository.save(offerer, bank_information)
@@ -423,12 +416,12 @@ class SaveOffererBankInformationsTest:
             # Given
             application_id = "8"
             offerer = create_offerer(siren="793875030")
-            bank_information = create_bank_information(
-                application_id=79,
+            bank_information = offers_factories.BankInformationFactory(
+                applicationId=79,
                 bic="QSDFGH8Z555",
                 iban="NL36INGB2682297498",
                 offerer=offerer,
-                date_modified=datetime(2020, 2, 2),
+                dateModified=datetime(2020, 2, 2),
             )
             repository.save(offerer, bank_information)
             mock_application_details.return_value = offerer_demarche_simplifiee_application_detail_response(

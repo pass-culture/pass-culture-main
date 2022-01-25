@@ -15,37 +15,12 @@ from pcapi.core.providers.models import VenueProvider
 from pcapi.core.users.models import Favorite
 from pcapi.core.users.models import User
 from pcapi.domain.price_rule import PriceRule
-from pcapi.models.bank_information import BankInformation
-from pcapi.models.bank_information import BankInformationStatus
 from pcapi.models.criterion import Criterion
 from pcapi.models.payment import Payment
 from pcapi.models.payment_message import PaymentMessage
 from pcapi.models.payment_status import PaymentStatus
 from pcapi.models.payment_status import TransactionStatus
 from pcapi.models.user_offerer import UserOfferer
-
-
-def create_bank_information(
-    application_id: int = 1,
-    bic: str = "QSDFGH8Z555",
-    date_modified: datetime = None,
-    iban: str = "FR7630006000011234567890189",
-    idx: int = None,
-    offerer: Offerer = None,
-    venue: Venue = None,
-    status: BankInformationStatus = BankInformationStatus.ACCEPTED,
-) -> BankInformation:
-    bank_information = BankInformation()
-    bank_information.applicationId = application_id
-    bank_information.bic = bic
-    bank_information.dateModified = date_modified
-    bank_information.iban = iban
-    bank_information.id = idx
-    bank_information.offerer = offerer
-    bank_information.venue = venue
-    bank_information.status = status
-
-    return bank_information
 
 
 def create_criterion(description: str = None, name: str = "best offer", score_delta: int = 1) -> Criterion:
