@@ -1,10 +1,10 @@
 import './Offers.scss'
 import { captureException } from '@sentry/react'
 import React, { useEffect } from 'react'
-import { connectHits } from 'react-instantsearch-core'
-import type { HitsProvided } from 'react-instantsearch-core'
+import type { StateResultsProvided } from 'react-instantsearch-core'
+import { connectStateResults } from 'react-instantsearch-core'
 import { Stats } from 'react-instantsearch-dom'
-import { useQueries } from 'react-query'
+import { useIsFetching, useQueries } from 'react-query'
 
 import { Spinner } from 'app/components/Layout/Spinner/Spinner'
 import * as pcapi from 'repository/pcapi/pcapi'
@@ -18,23 +18,26 @@ import { OfferLegacy } from './OfferLegacy'
 const offerIsBookable = (offer: OfferType): boolean =>
   !offer.isSoldOut && !offer.isExpired
 
-interface OffersComponentProps extends HitsProvided<ResultType> {
+interface OffersComponentProps extends StateResultsProvided<ResultType> {
   userRole: Role
   setIsLoading: (isLoading: boolean) => void
+  isLoading: boolean
 }
 
 export const OffersComponent = ({
   userRole,
   setIsLoading,
-  hits,
+  isLoading,
+  searchResults,
+  isSearchStalled,
 }: OffersComponentProps): JSX.Element => {
   const offersThumbById = {}
-  hits.forEach(hit => {
+  searchResults?.hits.forEach(hit => {
     offersThumbById[hit.objectID] = hit.offer.thumbUrl
   })
 
   const queries = useQueries(
-    hits.map(hit => ({
+    searchResults?.hits?.map(hit => ({
       queryKey: ['offer', hit.objectID],
       queryFn: async () => {
         try {
@@ -48,13 +51,17 @@ export const OffersComponent = ({
     }))
   )
 
-  useEffect(() => {
-    if (queries.every(query => !query.isLoading)) {
-      setIsLoading(false)
-    }
-  }, [queries, setIsLoading])
+  const queryCount = useIsFetching(['offer'])
 
-  if (queries.some(query => query.isLoading)) {
+  useEffect(() => {
+    if (queryCount === 0) {
+      setIsLoading(false)
+    } else {
+      setIsLoading(true)
+    }
+  }, [queryCount, setIsLoading])
+
+  if (isLoading) {
     return (
       <div className="offers-loader">
         <Spinner message="Recherche en cours" />
@@ -66,7 +73,7 @@ export const OffersComponent = ({
     .map(({ data }) => data as OfferType | undefined)
     .filter(offer => typeof offer !== 'undefined') as OfferType[]
 
-  if (hits.length === 0 || offers.length === 0) {
+  if (searchResults?.hits.length === 0 || offers.length === 0) {
     return <NoResultsPage />
   }
 
@@ -105,6 +112,4 @@ export const OffersComponent = ({
   )
 }
 
-export const Offers = connectHits<OffersComponentProps, ResultType>(
-  OffersComponent
-)
+export const Offers = connectStateResults<OffersComponentProps>(OffersComponent)

@@ -20,8 +20,8 @@
   }
 
   &:disabled {
-    background-color: $primary-disabled;
-    border: rem(3px) solid $primary-disabled;
+    outline: none;
+    background-color: $primary-dark;
     cursor: not-allowed;
   }
 

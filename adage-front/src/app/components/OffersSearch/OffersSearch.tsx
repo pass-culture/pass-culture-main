@@ -113,7 +113,11 @@ export const OffersSearch = ({
           venueFilter={venueFilter}
         />
         <div className="search-results">
-          <Offers setIsLoading={setIsLoading} userRole={userRole} />
+          <Offers
+            isLoading={isLoading}
+            setIsLoading={setIsLoading}
+            userRole={userRole}
+          />
         </div>
         <Pagination />
       </InstantSearch>
