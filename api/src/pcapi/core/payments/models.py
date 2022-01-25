@@ -169,6 +169,14 @@ class Deposit(PcObject, Model):
 
     recredits = relationship("Recredit", order_by="Recredit.dateCreated.desc()")
 
+    __table_args__ = (
+        sa.UniqueConstraint(
+            "userId",
+            "type",
+            name="unique_type_per_user",
+        ),
+    )
+
     @property
     def specific_caps(self):
         from . import conf
