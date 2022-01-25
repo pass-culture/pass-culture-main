@@ -1,0 +1,29 @@
+.venue-image-edit {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: rem(8px);
+
+  &-form {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: rem(24px);
+  }
+
+  &-header {
+    @include title3;
+  }
+
+  &-right {
+    min-width: fit-content;
+    max-width: rem(400px);
+    text-align: center;
+  }
+
+  &-footer {
+    display: flex;
+    justify-content: flex-end;
+  }
+}
