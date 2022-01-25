@@ -55,7 +55,7 @@ class EditModelTest:
         )
         venue_provider = VenueProviderFactory(provider=old_provider, venue=venue)
 
-        existing_stock = StockFactory(quantity=10, offer__venue=venue, offer__idAtProviders="1")
+        existing_stock = StockFactory(quantity=10, offer__venue=venue, offer__idAtProvider="1")
         BookingFactory(stock=existing_stock)
 
         mock_siret_can_be_synchronized.return_value = True

@@ -464,7 +464,7 @@ class UpdateObjectsTest:
             name="Test event",
             subcategoryId=subcategories.SEANCE_CINE.id,
             durationMinutes=60,
-            idAtProviders="TW92aWU6Mzc4MzI=%77567146400110-VO",
+            idAtProvider="TW92aWU6Mzc4MzI=%77567146400110-VO",
             venue=venue,
         )
 
@@ -474,7 +474,7 @@ class UpdateObjectsTest:
             name="Test event",
             subcategoryId=subcategories.SEANCE_CINE.id,
             durationMinutes=60,
-            idAtProviders="TW92aWU6Mzc4MzI=%77567146400110-VF",
+            idAtProvider="TW92aWU6Mzc4MzI=%77567146400110-VF",
             venue=venue,
         )
 

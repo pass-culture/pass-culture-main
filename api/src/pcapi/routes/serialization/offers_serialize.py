@@ -546,7 +546,7 @@ class GetOfferResponseModel(BaseModel):
     fieldsUpdated: list[str]
     hasBookingLimitDatetimesPassed: bool
     id: str
-    idAtProviders: Optional[str]
+    idAtProvider: Optional[str]
     isActive: bool
     isBookable: bool
     isDigital: bool

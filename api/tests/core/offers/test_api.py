@@ -1209,7 +1209,7 @@ class DeleteStockTest:
 
     def test_can_delete_if_stock_from_allocine(self):
         provider = offerers_factories.AllocineProviderFactory(localClass="AllocineStocks")
-        offer = offer_factories.OfferFactory(lastProvider=provider, idAtProviders="1")
+        offer = offer_factories.OfferFactory(lastProvider=provider, idAtProvider="1")
         stock = offer_factories.StockFactory(offer=offer)
 
         api.delete_stock(stock)
@@ -1219,7 +1219,7 @@ class DeleteStockTest:
 
     def test_cannot_delete_if_stock_from_titelive(self):
         provider = offerers_factories.AllocineProviderFactory(localClass="TiteLiveStocks")
-        offer = offer_factories.OfferFactory(lastProvider=provider, idAtProviders="1")
+        offer = offer_factories.OfferFactory(lastProvider=provider, idAtProvider="1")
         stock = offer_factories.StockFactory(offer=offer)
 
         with pytest.raises(api_errors.ApiErrors) as error:
@@ -1757,25 +1757,19 @@ class BatchUpdateOffersTest:
         assert offer_models.Offer.query.get(offer3.id).isActive
 
 
-class UpdateOfferAndStockIdAtProvidersTest:
-    def test_update_offer_and_stock_id_at_providers(self):
+class UpdateStockIdAtProvidersTest:
+    def test_update_and_stock_id_at_providers(self):
         # Given
         current_siret = "88888888888888"
         venue = offer_factories.VenueFactory(siret=current_siret)
-        offer = offer_factories.OfferFactory(venue=venue, idAtProviders="1111111111111@22222222222222")
-        offer_already_migrated = offer_factories.OfferFactory(venue=venue, idAtProviders="1111111111112@22222222222222")
-        offer_factories.OfferFactory(venue=venue, idAtProviders="1111111111112@88888888888888")
-        other_venue_offer = offer_factories.OfferFactory(venue=venue, idAtProviders="3333333333333@12222222222222")
+        offer = offer_factories.OfferFactory(venue=venue, idAtProvider="1111111111111")
         stock = offer_factories.StockFactory(offer=offer, idAtProviders="1111111111111@22222222222222")
 
         # When
-        api.update_offer_and_stock_id_at_providers(venue, "22222222222222")
+        api.update_stock_id_at_providers(venue, "22222222222222")
 
         # Then
-        assert offer.idAtProviders == "1111111111111@88888888888888"
-        assert offer_already_migrated.idAtProviders == "1111111111112@22222222222222"
         assert stock.idAtProviders == "1111111111111@88888888888888"
-        assert other_venue_offer.idAtProviders == "3333333333333@12222222222222"
 
 
 class OfferExpenseDomainsTest:
@@ -2293,11 +2287,11 @@ class ComputeOfferValidationScoreTest:
     @override_features(OFFER_VALIDATION_MOCK_COMPUTATION=False)
     def test_offer_validation_with_id_at_providers_is_none(self):
         offer = offer_factories.OfferFactory(name="test offer", description=None)
-        assert offer.idAtProviders is None
+        assert offer.idAtProvider is None
         offer_factories.StockFactory(offer=offer, price=15)
         validation_item_1 = offer_validation.OfferValidationItem(
             model=offer,
-            attribute="idAtProviders",
+            attribute="idAtProvider",
             type=["None"],
             condition={"operator": "==", "comparated": None},
         )
@@ -2311,7 +2305,7 @@ class ComputeOfferValidationScoreTest:
     @override_features(OFFER_VALIDATION_MOCK_COMPUTATION=False)
     def test_offer_validation_with_contains_exact_word(self):
         offer = offer_factories.OfferFactory(name="test offer", description=None)
-        assert offer.idAtProviders is None
+        assert offer.idAtProvider is None
         offer_factories.StockFactory(offer=offer, price=15)
         validation_item_1 = offer_validation.OfferValidationItem(
             model=offer,

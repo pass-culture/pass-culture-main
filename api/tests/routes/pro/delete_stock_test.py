@@ -42,7 +42,7 @@ class Returns400Test:
     def when_stock_is_on_an_offer_from_titelive_provider(self, app, db_session):
         # given
         provider = offerers_factories.AllocineProviderFactory(localClass="TiteLiveThings")
-        offer = offers_factories.OfferFactory(lastProvider=provider, idAtProviders="1")
+        offer = offers_factories.OfferFactory(lastProvider=provider, idAtProvider="1")
         stock = offers_factories.StockFactory(offer=offer)
 
         user = users_factories.AdminFactory()

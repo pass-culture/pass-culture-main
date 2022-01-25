@@ -122,7 +122,7 @@ def _build_stock_details_from_body(raw_stocks: List[UpdateVenueStockBodyModel], 
     for stock in raw_stocks:
         stock_details[stock.ref] = {
             "products_provider_reference": stock.ref,
-            "offers_provider_reference": f"{stock.ref}",
+            "offers_provider_reference": stock.ref,
             "stocks_provider_reference": f"{stock.ref}@{str(venue_id)}",
             "available_quantity": stock.available,
             "price": stock.price,

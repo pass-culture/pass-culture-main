@@ -140,7 +140,7 @@ class Returns200Test:
             "fieldsUpdated": [],
             "hasBookingLimitDatetimesPassed": False,
             "id": humanize(stock.offer.id),
-            "idAtProviders": None,
+            "idAtProvider": None,
             "isActive": True,
             "audioDisabilityCompliant": False,
             "mentalDisabilityCompliant": True,

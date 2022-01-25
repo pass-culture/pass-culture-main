@@ -25,13 +25,13 @@ class Returns200Test:
         offers_factories.OfferFactory(
             venue=venue_provider.venue,
             lastProviderId=venue_provider.provider.id,
-            idAtProviders="testIdAtProviders1",
+            idAtProvider="testIdAtProvider1",
             isActive=True,
         )
         offers_factories.OfferFactory(
             venue=venue_provider.venue,
             lastProviderId=venue_provider.provider.id,
-            idAtProviders="testIdAtProviders2",
+            idAtProvider="testIdAtProvider2",
             isActive=False,
         )
 

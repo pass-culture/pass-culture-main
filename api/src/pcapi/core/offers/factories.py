@@ -132,7 +132,7 @@ class OfferFactory(BaseFactory):
 
     @classmethod
     def _create(cls, model_class, *args, **kwargs):  # type: ignore [no-untyped-def]
-        # Graciously provide the required idAtProviders if lastProvider is given.
+        # Graciously provide the required idAtProvider if lastProvider is given.
         if kwargs.get("lastProvider") and not kwargs.get("idAtProvider"):
             kwargs["idAtProvider"] = uuid.uuid4()
 

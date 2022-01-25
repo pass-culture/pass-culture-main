@@ -742,34 +742,12 @@ def create_mediation(
         return mediation
 
 
-def update_offer_and_stock_id_at_providers(venue: Venue, old_siret: str) -> None:
+def update_stock_id_at_providers(venue: Venue, old_siret: str) -> None:
     current_siret = venue.siret
 
-    offers = Offer.query.filter(Offer.venueId == venue.id).filter(Offer.idAtProviders.endswith(old_siret)).all()
     stocks = (
         Stock.query.join(Offer).filter(Offer.venueId == venue.id).filter(Stock.idAtProviders.endswith(old_siret)).all()
     )
-
-    offer_ids_already_migrated = []
-    offers_to_update = []
-
-    for offer in offers:
-        new_id_at_providers = offer.idAtProviders.replace(old_siret, current_siret)
-        if db.session.query(
-            Offer.query.filter_by(venueId=venue.id, idAtProviders=new_id_at_providers).exists()
-        ).scalar():
-            offer_ids_already_migrated.append(offer.id)
-            continue
-        offer.idAtProviders = new_id_at_providers
-        offers_to_update.append(offer)
-
-    logger.warning(
-        "The following offers are already migrated from old siret to new siret: %s",
-        offer_ids_already_migrated,
-        extra={"venueId": venue.id, "current_siret": venue.siret, "old_siret": old_siret},
-    )
-
-    repository.save(*offers_to_update)
 
     stock_ids_already_migrated = []
     stocks_to_update = []

@@ -66,7 +66,7 @@ def save_allocine_sandbox() -> None:
         venue,
         event_subcategory_id=subcategories.SEANCE_CINE.id,
         last_provider_id=provider.id,
-        id_at_providers="TW92aWU6MjQ4MTAy%34007977100028-VF",
+        id_at_provider="TW92aWU6MjQ4MTAy%34007977100028-VF",
         last_provider=provider,
     )
 

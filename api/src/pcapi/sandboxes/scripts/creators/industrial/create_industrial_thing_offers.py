@@ -16,7 +16,7 @@ def create_industrial_thing_offers(thing_products_by_name, offerers_by_name, ven
 
     thing_offers_by_name = {}
 
-    id_at_providers = 1234
+    id_at_provider = 1234
     thing_index = 0
     offer_index = 0
     thing_items = list(thing_products_by_name.items())
@@ -52,10 +52,10 @@ def create_industrial_thing_offers(thing_products_by_name, offerers_by_name, ven
                 product=thing_product,
                 thing_subcategory_id=thing_product.subcategoryId,
                 is_active=is_active,
-                id_at_providers=str(id_at_providers),
+                id_at_provider=str(id_at_provider),
             )
             offer_index += 1
-            id_at_providers += 1
+            id_at_provider += 1
 
         thing_index += THINGS_PER_OFFERER
 
