@@ -316,7 +316,7 @@ class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin):
 
     rankingWeight = sa.Column(sa.Integer, nullable=True)
 
-    # This field will replace the idAtProviders coming from ProvidableMixin
+    # This field replaces the idAtProviders coming from ProvidableMixin
     idAtProvider = sa.Column(
         sa.Text,
         sa.CheckConstraint(
@@ -335,8 +335,6 @@ class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin):
     dateModifiedAtLastProvider = sa.Column(sa.DateTime, nullable=True, default=datetime.utcnow)
 
     fieldsUpdated = sa.Column(sa.ARRAY(sa.String(100)), nullable=False, default=[], server_default="{}")
-
-    idAtProviders = sa.orm.synonym("idAtProvider")
 
     # FIXME: We shoud be able to remove the index on `venueId`, since this composite index
     #  can be used by PostgreSQL when filtering on the `venueId` column only.

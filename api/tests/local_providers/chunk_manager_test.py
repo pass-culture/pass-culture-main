@@ -22,7 +22,7 @@ class SaveChunksTest:
         product = create_product_with_thing_subcategory()
         repository.save(venue, product)
 
-        offer = create_offer_with_thing_product(venue, product=product, id_at_providers="1%12345678912345")
+        offer = create_offer_with_thing_product(venue, product=product, id_at_provider="1%12345678912345")
         offer.venueId = venue.id
         chunk_to_insert = {"1|Offer": offer}
         db.session.expunge(offer)
@@ -43,7 +43,7 @@ class SaveChunksTest:
         product = create_product_with_thing_subcategory()
         repository.save(venue, product)
 
-        offer = create_offer_with_thing_product(venue, product=product, id_at_providers="1%12345678912345")
+        offer = create_offer_with_thing_product(venue, product=product, id_at_provider="1%12345678912345")
         offer.venueId = venue.id
         offer_id = db.session.execute(Sequence("offer_id_seq"))
         offer.id = offer_id
@@ -73,7 +73,7 @@ class SaveChunksTest:
         offerer = create_offerer()
         venue = create_venue(offerer)
         product = create_product_with_thing_subcategory()
-        offer = create_offer_with_thing_product(venue, product=product, id_at_providers="1%12345678912345")
+        offer = create_offer_with_thing_product(venue, product=product, id_at_provider="1%12345678912345")
         repository.save(venue, product, offer)
 
         db.session.refresh(offer)
@@ -97,8 +97,8 @@ class SaveChunksTest:
         offerer = create_offerer()
         venue = create_venue(offerer)
         product = create_product_with_thing_subcategory()
-        offer1 = create_offer_with_thing_product(venue, product=product, id_at_providers="1%12345678912345")
-        offer2 = create_offer_with_thing_product(venue, product=product, id_at_providers="2%12345678912345")
+        offer1 = create_offer_with_thing_product(venue, product=product, id_at_provider="1%12345678912345")
+        offer2 = create_offer_with_thing_product(venue, product=product, id_at_provider="2%12345678912345")
         stock = create_stock(offer=offer1)
         repository.save(venue, product, offer1, offer2, stock)
 

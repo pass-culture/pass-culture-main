@@ -21,7 +21,7 @@ def test_accepts_request(app):
     offer_to_update = offers_factories.OfferFactory(
         product__idAtProviders="123456789",
         product__subcategoryId="LIVRE_PAPIER",
-        idAtProviders="123456789",
+        idAtProvider="123456789",
         venue=venue,
     )
     ApiKeyFactory(offerer=offerer)
@@ -56,7 +56,7 @@ def test_accepts_request_with_price(price, expected_price, app):
     offer_to_update = offers_factories.OfferFactory(
         product__idAtProviders="123456789",
         product__subcategoryId="LIVRE_PAPIER",
-        idAtProviders="123456789",
+        idAtProvider="123456789",
         product__extraData={"prix_livre": expected_price},
         venue=venue,
     )

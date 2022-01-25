@@ -79,7 +79,7 @@ class SynchronizeVenueProviderTest:
             offer__venue=venue,
             offer__product=existing_product,
             lastProviderId=old_provider.id,
-            offer__idAtProviders=existing_product.idAtProviders,
+            offer__idAtProvider=existing_product.idAtProviders,
             idAtProviders=stock_id_at_providers,
         )
         bookings_factories.BookingFactory(stock=existing_stock)

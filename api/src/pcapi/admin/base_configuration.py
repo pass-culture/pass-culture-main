@@ -88,7 +88,6 @@ class BaseCustomAdminView(BaseAdminMixin, BaseView):
 class AdminIndexView(AdminIndexBaseView):
     @expose("/")
     def index(self):
-        print(f"yoenv {settings.ENV}")
         if not current_user.is_authenticated:
             return redirect(url_for(".login_view"))
         return super().index()

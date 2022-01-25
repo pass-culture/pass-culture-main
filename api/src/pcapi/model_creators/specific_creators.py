@@ -26,7 +26,7 @@ def create_offer_with_event_product(
     duration_minutes: Optional[int] = 60,
     event_name: str = "Test event",
     event_subcategory_id: Optional[str] = subcategories.SPECTACLE_REPRESENTATION.id,
-    id_at_providers: str = None,
+    id_at_provider: str = None,
     idx: int = None,
     is_active: bool = True,
     is_duo: bool = False,
@@ -64,8 +64,7 @@ def create_offer_with_event_product(
     offer.id = idx
     offer.lastProviderId = last_provider_id
     offer.lastProvider = last_provider
-    offer.idAtProviders = id_at_providers
-    offer.idAtProvider = id_at_providers
+    offer.idAtProvider = id_at_provider
     offer.isDuo = is_duo
     offer.validation = validation
     offer.withdrawalDetails = withdrawal_details
@@ -92,7 +91,7 @@ def create_offer_with_thing_product(
     booking_email: Optional[str] = "booking@example.net",
     date_created: datetime = datetime.utcnow(),
     description: Optional[str] = None,
-    id_at_providers: str = None,
+    id_at_provider: str = None,
     idx: int = None,
     product_idx: int = None,
     is_active: bool = True,
@@ -162,10 +161,9 @@ def create_offer_with_thing_product(
     if extra_data:
         offer.extraData = extra_data
 
-    if id_at_providers:
-        offer.idAtProviders = id_at_providers
+    if id_at_provider:
+        offer.idAtProvider = id_at_provider
     elif venue is not None:
-        offer.idAtProviders = "%s@%s" % (offer.product.idAtProviders, venue.siret or venue.id)
         offer.idAtProvider = "%s" % offer.product.idAtProviders
 
     return offer
