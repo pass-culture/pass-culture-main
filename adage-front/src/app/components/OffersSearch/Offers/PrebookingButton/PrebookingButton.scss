@@ -1,6 +1,10 @@
 @import 'sass-rem';
 @import 'styles';
 
+.prebooking-button-booking-limit {
+  margin-top: rem(10px);
+}
+
 .prebooking-button-container {
   display: flex;
   flex-direction: column;
