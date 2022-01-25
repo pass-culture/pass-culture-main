@@ -330,7 +330,7 @@ class DepositGrantFactory(BaseFactory):
         model = payments_models.Deposit
 
     dateCreated = LazyAttribute(lambda _: datetime.utcnow())
-    user = factory.SubFactory(BeneficiaryGrant18Factory)
+    user = factory.SubFactory(UserFactory)  # BeneficiaryGrant18Factory is already creating a deposit
     source = "public"
 
     @classmethod
