@@ -86,13 +86,14 @@ class SendinblueEmailOfferLinkIosUserTest:
 
         # Then
         assert len(mails_testing.outbox) == 1  # test number of emails sent
-        assert mails_testing.outbox[0].sent_data == {
-            "To": "fabien+test@example.net",
-            "params": {
-                "FIRSTNAME": user.firstName,
-                "OFFER_NAME": offer.name,
-                "OFFER_WEBAPP_LINK": f"https://webapp-v2.example.com/offre/{offer.id}",
-                "VENUE_NAME": offer.venue.name,
-            },
-            "template": {"id_not_prod": 45, "id_prod": 476, "tags": ["redirect_ios"], "use_priority_queue": True},
+        assert (
+            mails_testing.outbox[0].sent_data["template"]
+            == TransactionalEmail.OFFER_WEBAPP_LINK_TO_IOS_USER.value.__dict__
+        )
+        assert mails_testing.outbox[0].sent_data["To"] == "fabien+test@example.net"
+        assert mails_testing.outbox[0].sent_data["params"] == {
+            "FIRSTNAME": user.firstName,
+            "OFFER_NAME": offer.name,
+            "OFFER_WEBAPP_LINK": f"https://webapp-v2.example.com/offre/{offer.id}",
+            "VENUE_NAME": offer.venue.name,
         }
