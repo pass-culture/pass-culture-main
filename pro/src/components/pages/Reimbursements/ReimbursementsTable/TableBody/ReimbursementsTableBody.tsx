@@ -27,7 +27,7 @@ const ReimbursementsTableBody = ({ invoices }: ITableBody): JSX.Element => {
               {invoice.businessUnitName}
             </td>
             <td>{invoice.reference}</td>
-            <td className={styles['amount']}>{-invoice.amount}€</td>
+            <td className={styles['amount']}>{invoice.amount}€</td>
             <td className={styles['invoice']}>
               <a
                 className="bi-link tertiary-link"
