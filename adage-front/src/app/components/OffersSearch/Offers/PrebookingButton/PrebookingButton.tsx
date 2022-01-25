@@ -6,6 +6,7 @@ import {
   Notification,
   NotificationComponent,
 } from 'app/components/Layout/Notification/Notification'
+import { Button } from 'app/ui-kit'
 import { ReactComponent as HourGlassIcon } from 'assets/hourglass.svg'
 import { preBookStock } from 'repository/pcapi/pcapi'
 import { StockType } from 'utils/types'
@@ -24,7 +25,6 @@ const PrebookingButton = ({
   canPrebookOffers: boolean
 }): JSX.Element => {
   const [hasPrebookedOffer, setHasPrebookedOffer] = useState(false)
-  const [isButtonDisabled, setIsButtonDisabled] = useState(false)
   const [notification, setNotification] = useState<Notification | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
 
@@ -37,7 +37,6 @@ const PrebookingButton = ({
   }
 
   const preBookCurrentStock = useCallback(async () => {
-    setIsButtonDisabled(true)
     return preBookStock(stock.id)
       .then(() => {
         setHasPrebookedOffer(true)
@@ -61,14 +60,13 @@ const PrebookingButton = ({
             </div>
           ) : (
             <>
-              <button
+              <Button
                 className="prebooking-button"
-                disabled={isButtonDisabled}
+                label="Pré-réserver"
                 onClick={handleSearchButtonClick}
                 type="button"
-              >
-                Pré-réserver
-              </button>
+              />
+
               {stock.bookingLimitDatetime && (
                 <span className="prebooking-button-booking-limit">
                   avant le :{' '}
