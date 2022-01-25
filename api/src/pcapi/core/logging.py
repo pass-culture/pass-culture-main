@@ -192,6 +192,8 @@ def _silence_noisy_loggers():
     logging.getLogger("xmlschema").setLevel(logging.WARNING)
     logging.getLogger("saml2").setLevel(logging.WARNING)
     logging.getLogger("transitions").setLevel(logging.ERROR)
+    # fontTools is used by weasyprint
+    logging.getLogger("fontTools.subset").setLevel(logging.WARNING)
 
     # FIXME (dbaty, 2021-03-17): these log levels are historical.
     # Perhaps we should set them to WARNING instead?
