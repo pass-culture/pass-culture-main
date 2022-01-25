@@ -5,9 +5,9 @@ import logging
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.categories import subcategories
 from pcapi.core.offerers.models import Venue
+from pcapi.core.offers import factories as offers_factories
 import pcapi.core.payments.api as payments_api
 from pcapi.core.users import factories as users_factories
-from pcapi.model_creators.generic_creators import create_bank_information
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_stock
 from pcapi.model_creators.generic_creators import create_venue
@@ -46,13 +46,13 @@ def save_offerer_with_iban():
     venue_with_siret = create_venue(offerer=offerer_with_iban, siret="18004602100026", is_virtual=False)
     venue_without_siret = create_venue(offerer=offerer_with_iban, siret=None, is_virtual=False, comment="pas de siret")
     venue_online = create_venue(offerer=offerer_with_iban, siret=None, is_virtual=True)
-    bank_information = create_bank_information(
+    offers_factories.BankInformationFactory(
         offerer=offerer_with_iban,
         bic="TRPUFRP1",
         iban="FR7610071750000000100420866",
-        application_id=1,
+        applicationId=1,
     )
-    repository.save(bank_information, venue_online, venue_with_siret, venue_without_siret)
+    repository.save(venue_online, venue_with_siret, venue_without_siret)
     logger.info("created 1 offerer with iban and 1 virtual venue, 1 venue with siret and 1 venue without siret")
     return venue_online, venue_with_siret, venue_without_siret
 
@@ -63,13 +63,13 @@ def save_offerer_without_iban():
     venue_with_siret_without_iban = create_venue(offerer=offerer_without_iban, siret="21340032800802", is_virtual=False)
     venue_online = create_venue(offerer=offerer_without_iban, siret=None, is_virtual=True)
 
-    bank_information = create_bank_information(
+    offers_factories.BankInformationFactory(
         venue=venue_with_siret_with_iban,
         bic="BDFEFRPPCCT",
         iban="FR733000100206C343000000066",
         application_id=2,
     )
-    repository.save(bank_information, venue_online, venue_with_siret_with_iban, venue_with_siret_without_iban)
+    repository.save(venue_online, venue_with_siret_with_iban, venue_with_siret_without_iban)
     logger.info(
         "created 1 offerer without iban and 1 virtual venue, 1 venue with siret with iban and 1 venue with siret without iban"
     )

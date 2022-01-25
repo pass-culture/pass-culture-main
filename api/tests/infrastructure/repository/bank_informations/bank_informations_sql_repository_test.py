@@ -2,12 +2,12 @@ from datetime import datetime
 
 import pytest
 
+from pcapi.core.offers import factories as offer_factories
 from pcapi.domain.bank_informations.bank_informations import BankInformations
 from pcapi.infrastructure.repository.bank_informations import bank_informations_domain_converter
 from pcapi.infrastructure.repository.bank_informations.bank_informations_sql_repository import (
     BankInformationsSQLRepository,
 )
-from pcapi.model_creators.generic_creators import create_bank_information
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_venue
 from pcapi.models.api_errors import ApiErrors
@@ -24,8 +24,7 @@ class BankInformationsSQLRepositoryTest:
     def test_returns_bank_informations_when_offerer_has_bank_informations(self, app):
         # given
         offerer = create_offerer()
-        bank_informations = create_bank_information(offerer=offerer)
-        repository.save(bank_informations)
+        bank_informations = offer_factories.BankInformationFactory(offerer=offerer)
 
         expected_bank_informations = bank_informations_domain_converter.to_domain(bank_informations)
 
@@ -43,8 +42,7 @@ class BankInformationsSQLRepositoryTest:
     def test_returns_none_when_offerer_has_no_bank_informations(self, app):
         # given
         offerer = create_offerer()
-        bank_informations = create_bank_information(offerer=offerer)
-        repository.save(bank_informations)
+        bank_informations = offer_factories.BankInformationFactory(offerer=offerer)
 
         # when
         bank_informations = self.bank_informations_sql_repository.find_by_offerer(offerer_id=0)
@@ -57,8 +55,7 @@ class BankInformationsSQLRepositoryTest:
         # given
         offerer = create_offerer()
         venue = create_venue(offerer=offerer)
-        bank_informations = create_bank_information(venue=venue)
-        repository.save(bank_informations)
+        bank_informations = offer_factories.BankInformationFactory(venue=venue)
 
         expected_bank_informations = bank_informations_domain_converter.to_domain(bank_informations)
 
@@ -76,8 +73,7 @@ class BankInformationsSQLRepositoryTest:
         # given
         offerer = create_offerer()
         venue = create_venue(offerer=offerer)
-        bank_informations = create_bank_information(venue=venue)
-        repository.save(bank_informations)
+        bank_informations = offer_factories.BankInformationFactory(venue=venue)
 
         # when
         bank_informations = self.bank_informations_sql_repository.find_by_venue(venue_id=0)
@@ -89,8 +85,7 @@ class BankInformationsSQLRepositoryTest:
     def test_returns_bank_informations_when_there_is_bank_informations_associated_with_this_application_id(self, app):
         # given
         offerer = create_offerer()
-        bank_informations = create_bank_information(offerer=offerer, application_id=2)
-        repository.save(bank_informations)
+        bank_informations = offer_factories.BankInformationFactory(offerer=offerer, applicationId=2)
 
         expected_bank_informations = bank_informations_domain_converter.to_domain(bank_informations)
 
@@ -108,8 +103,7 @@ class BankInformationsSQLRepositoryTest:
     def test_returns_none_when_there_is_no_bank_informations_associated_with_this_application_id(self, app):
         # given
         offerer = create_offerer()
-        bank_informations = create_bank_information(offerer=offerer, application_id=2)
-        repository.save(bank_informations)
+        bank_informations = offer_factories.BankInformationFactory(offerer=offerer, applicationId=2)
 
         # when
         bank_informations = self.bank_informations_sql_repository.get_by_application(application_id=1)
@@ -170,8 +164,7 @@ class BankInformationsSQLRepositoryTest:
     ):
         # given
         offerer = create_offerer()
-        bank_informations = create_bank_information(offerer=offerer)
-        repository.save(bank_informations)
+        offer_factories.BankInformationFactory(offerer=offerer)
         bank_informations_to_save = BankInformations(offerer_id=offerer.id, status="ACCEPTED", application_id=8)
 
         # when
@@ -188,10 +181,9 @@ class BankInformationsSQLRepositoryTest:
     def test_should_update_bank_informations_when_bank_informations_already_exist_for_offerer(self, app):
         # given
         offerer = create_offerer()
-        bank_informations_sql = create_bank_information(
-            offerer=offerer, application_id=9, status=BankInformationStatus.DRAFT, iban=None, bic=None
+        offer_factories.BankInformationFactory(
+            offerer=offerer, applicationId=9, status=BankInformationStatus.DRAFT, iban=None, bic=None
         )
-        repository.save(bank_informations_sql)
 
         bank_informations_to_save = BankInformations(
             status=BankInformationStatus.ACCEPTED,
@@ -244,10 +236,9 @@ class BankInformationsSQLRepositoryTest:
     def test_should_update_bank_informations_when_bank_informations_already_exist_for_application(self, app):
         # given
         offerer = create_offerer()
-        bank_informations_sql = create_bank_information(
-            offerer=offerer, application_id=9, status=BankInformationStatus.DRAFT, iban=None, bic=None
+        offer_factories.BankInformationFactory(
+            offerer=offerer, applicationId=9, status=BankInformationStatus.DRAFT, iban=None, bic=None
         )
-        repository.save(bank_informations_sql)
 
         bank_informations_to_save = BankInformations(
             status=BankInformationStatus.ACCEPTED,
@@ -303,10 +294,9 @@ class BankInformationsSQLRepositoryTest:
         # given
         offerer = create_offerer()
         venue = create_venue(offerer=offerer)
-        bank_informations_sql = create_bank_information(
-            venue=venue, application_id=9, status=BankInformationStatus.DRAFT, iban=None, bic=None
+        offer_factories.BankInformationFactory(
+            venue=venue, applicationId=9, status=BankInformationStatus.DRAFT, iban=None, bic=None
         )
-        repository.save(bank_informations_sql)
 
         bank_informations_to_save = BankInformations(
             status=BankInformationStatus.ACCEPTED,

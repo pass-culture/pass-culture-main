@@ -10,6 +10,7 @@ import pcapi.core.offerers.models as offerers_models
 from pcapi.core.testing import BaseFactory
 import pcapi.core.users.factories as users_factories
 from pcapi.models.bank_information import BankInformation
+from pcapi.models.bank_information import BankInformationStatus
 from pcapi.models.criterion import Criterion
 from pcapi.models.offer_criterion import OfferCriterion
 from pcapi.models.product import Product
@@ -261,8 +262,7 @@ class BankInformationFactory(BaseFactory):
     iban = factory.LazyAttributeSequence(
         lambda o, n: schwifty.IBAN.generate("FR", bank_code="10010", account_code=f"{n:010}").compact
     )
-    applicationId = factory.Sequence(int)
-    status = "ACCEPTED"
+    status = BankInformationStatus.ACCEPTED
 
 
 class OfferReportFactory(BaseFactory):

@@ -4,7 +4,6 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers.repository import check_if_siren_already_exists
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.users import factories as users_factories
-from pcapi.model_creators.generic_creators import create_bank_information
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_user_offerer
 from pcapi.repository import repository
@@ -191,11 +190,11 @@ def create_industrial_offerers_with_pro_users():
 
         # create every OFFERERS_WITH_IBAN_REMOVE_MODULO an offerer with no iban
         if location_index % OFFERERS_WITH_IBAN_REMOVE_MODULO:
-            create_bank_information(
+            offers_factories.BankInformationFactory(
                 bic=bic_prefix + str(bic_suffix),
                 iban=iban_prefix,
                 offerer=offerer,
-                application_id=application_id_prefix + str(location_index),
+                applicationId=application_id_prefix + str(location_index),
             )
 
         offerers_by_name[offerer_name] = offerer

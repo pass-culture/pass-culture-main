@@ -1,7 +1,7 @@
 from unittest.mock import patch
 
+from pcapi.core.offers import factories as offers_factories
 from pcapi.core.users import factories as users_factories
-from pcapi.model_creators.generic_creators import create_bank_information
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_stock
 from pcapi.model_creators.generic_creators import create_venue
@@ -34,7 +34,7 @@ def test_should_not_return_errors_when_valid_address():
 
 def test_should_return_errors_when_invalid_bank_information():
     # Given
-    bank_information = create_bank_information(bic="1234", iban="1234")
+    bank_information = offers_factories.BankInformationFactory(bic="1234", iban="1234")
 
     # When
     api_errors = validate(bank_information)
@@ -48,7 +48,7 @@ def test_should_return_errors_when_invalid_bank_information():
 
 def test_should_not_return_errors_when_valid_bank_information():
     # Given
-    bank_information = create_bank_information(bic="AGFBFRCC", iban="FR7014508000301971798194B82")
+    bank_information = offers_factories.BankInformationFactory(bic="AGFBFRCC", iban="FR7014508000301971798194B82")
 
     # When
     api_errors = validate(bank_information)
