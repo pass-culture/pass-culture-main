@@ -1,6 +1,6 @@
 import pytest
 
-from pcapi.model_creators.generic_creators import create_bank_information
+from pcapi.core.offers import factories as offers_factories
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.specific_creators import create_offer_with_event_product
@@ -322,8 +322,7 @@ class VenueBankInformationTest:
         # Given
         offerer = create_offerer(siren="123456789")
         venue = create_venue(offerer, siret="12345678912345")
-        bank_information = create_bank_information(bic="BDFEFR2LCCB", venue=venue)
-        repository.save(bank_information)
+        offers_factories.BankInformationFactory(bic="BDFEFR2LCCB", venue=venue)
 
         # When
         bic = venue.bic
@@ -349,8 +348,7 @@ class VenueBankInformationTest:
         # Given
         offerer = create_offerer(siren="123456789")
         venue = create_venue(offerer, siret="12345678912345")
-        bank_information = create_bank_information(iban="FR7630007000111234567890144", venue=venue)
-        repository.save(bank_information)
+        offers_factories.BankInformationFactory(iban="FR7630007000111234567890144", venue=venue)
 
         # When
         iban = venue.iban
@@ -376,10 +374,9 @@ class VenueBankInformationTest:
         # Given
         offerer = create_offerer(siren="123456789")
         venue = create_venue(offerer, siret="12345678912345")
-        bank_information = create_bank_information(
-            application_id=12345, venue=venue, status=BankInformationStatus.DRAFT, iban=None, bic=None
+        offers_factories.BankInformationFactory(
+            applicationId=12345, venue=venue, status=BankInformationStatus.DRAFT, iban=None, bic=None
         )
-        repository.save(bank_information)
 
         # When
         field = venue.demarchesSimplifieesApplicationId
@@ -392,10 +389,7 @@ class VenueBankInformationTest:
         # Given
         offerer = create_offerer(siren="123456789")
         venue = create_venue(offerer, siret="12345678912345")
-        bank_information = create_bank_information(
-            venue=venue, status=BankInformationStatus.REJECTED, iban=None, bic=None
-        )
-        repository.save(bank_information)
+        offers_factories.BankInformationFactory(venue=venue, status=BankInformationStatus.REJECTED, iban=None, bic=None)
 
         # When
         field = venue.demarchesSimplifieesApplicationId

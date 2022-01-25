@@ -5,7 +5,7 @@ import pytest
 
 import pcapi.core.finance.models as finance_models
 from pcapi.core.offerers.factories import OffererFactory
-from pcapi.core.offers.factories import VenueFactory
+from pcapi.core.offers import factories as offers_factories
 from pcapi.domain.bank_information import CannotRegisterBankInformation
 from pcapi.domain.demarches_simplifiees import ApplicationDetail
 from pcapi.infrastructure.repository.bank_informations.bank_informations_sql_repository import (
@@ -14,7 +14,6 @@ from pcapi.infrastructure.repository.bank_informations.bank_informations_sql_rep
 from pcapi.infrastructure.repository.venue.venue_with_basic_information.venue_with_basic_information_sql_repository import (
     VenueWithBasicInformationSQLRepository,
 )
-from pcapi.model_creators.generic_creators import create_bank_information
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_venue
 from pcapi.models.api_errors import ApiErrors
@@ -77,7 +76,7 @@ class SaveVenueBankInformationsTest:
         @pytest.mark.usefixtures("db_session")
         def test_raises_an_error_if_more_than_one_venue_found(self):
             offerer = OffererFactory()
-            VenueFactory.build_batch(2, managingOfferer=offerer, name="venuedemo")
+            offers_factories.VenueFactory.build_batch(2, managingOfferer=offerer, name="venuedemo")
             application_details = ApplicationDetail(
                 siren="999999999",
                 status=BankInformationStatus.ACCEPTED,
@@ -668,12 +667,11 @@ class SaveVenueBankInformationsTest:
             venue = create_venue(offerer, siret="79387503012345")
             new_offerer = create_offerer(siren="123456789")
             new_venue = create_venue(new_offerer, siret="12345678912345")
-            bank_information = create_bank_information(
-                application_id=8,
+            bank_information = offers_factories.BankInformationFactory(
+                applicationId=8,
                 bic="QSDFGH8Z555",
                 iban="NL36INGB2682297498",
                 venue=venue,
-                date_modified=datetime(2012, 1, 1),
             )
             repository.save(new_venue, bank_information)
             mock_application_details.return_value = venue_demarche_simplifiee_application_detail_response_with_siret(
@@ -698,13 +696,12 @@ class SaveVenueBankInformationsTest:
             application_id = "8"
             offerer = create_offerer(siren="793875030")
             venue = create_venue(offerer, siret="79387503012345")
-            bank_information = create_bank_information(
-                application_id=8,
+            bank_information = offers_factories.BankInformationFactory(
+                applicationId=8,
                 bic="QSDFGH8Z555",
                 iban="NL36INGB2682297498",
                 venue=venue,
                 status=BankInformationStatus.ACCEPTED,
-                date_modified=datetime(2012, 1, 1),
             )
             repository.save(offerer, bank_information)
             mock_application_details.return_value = venue_demarche_simplifiee_application_detail_response_with_siret(
@@ -730,21 +727,18 @@ class SaveVenueBankInformationsTest:
             venue = create_venue(offerer, siret="79387503012345")
             other_offerer = create_offerer(siren="793875019")
             other_venue = create_venue(other_offerer, siret="79387501912345")
-            bank_information = create_bank_information(
-                application_id=8,
+            offers_factories.BankInformationFactory(
+                applicationId=8,
                 bic="QSDFGH8Z555",
                 iban="NL36INGB2682297498",
                 venue=venue,
-                date_modified=datetime(2012, 1, 1),
             )
-            other_bank_information = create_bank_information(
-                application_id=79,
+            offers_factories.BankInformationFactory(
+                applicationId=79,
                 bic="QSDFGH8Z555",
                 iban="NL36INGB2682297498",
                 venue=other_venue,
-                date_modified=datetime(2012, 1, 1),
             )
-            repository.save(bank_information, other_bank_information)
             mock_application_details.return_value = venue_demarche_simplifiee_application_detail_response_with_siret(
                 siret="79387501912345", bic="QSDFGH8Z555", iban="NL36INGB2682297498", idx=8
             )
@@ -775,14 +769,13 @@ class SaveVenueBankInformationsTest:
             application_id = "8"
             offerer = create_offerer(siren="793875030")
             venue = create_venue(offerer, siret="79387503012345")
-            bank_information = create_bank_information(
-                application_id=79,
+            bank_information = offers_factories.BankInformationFactory(
+                applicationId=79,
                 bic="QSDFGH8Z555",
                 iban="NL36INGB2682297498",
                 venue=venue,
-                date_modified=datetime(2018, 1, 1),
+                dateModified=datetime(2018, 1, 1),
             )
-            repository.save(bank_information)
             mock_application_details.return_value = venue_demarche_simplifiee_application_detail_response_with_siret(
                 siret="79387503012345", bic="SOGEFRPP", iban="FR7630007000111234567890144", idx=8
             )
@@ -810,15 +803,13 @@ class SaveVenueBankInformationsTest:
             application_id = "8"
             offerer = create_offerer(siren="793875030")
             venue = create_venue(offerer, siret="79387503012345")
-            bank_information = create_bank_information(
-                application_id=79,
+            bank_information = offers_factories.BankInformationFactory(
+                applicationId=79,
                 bic=None,
                 iban=None,
                 venue=venue,
-                date_modified=datetime(2018, 1, 1),
                 status=BankInformationStatus.REJECTED,
             )
-            repository.save(bank_information)
             mock_application_details.return_value = venue_demarche_simplifiee_application_detail_response_with_siret(
                 siret="79387503012345", bic="SOGEFRPP", iban="FR7630007000111234567890144", idx=8, state="initiated"
             )
@@ -840,15 +831,13 @@ class SaveVenueBankInformationsTest:
             application_id = "8"
             offerer = create_offerer(siren="793875030")
             venue = create_venue(offerer, siret="79387503012345")
-            bank_information = create_bank_information(
-                application_id=79,
+            bank_information = offers_factories.BankInformationFactory(
+                applicationId=79,
                 bic="QSDFGH8Z555",
                 iban="NL36INGB2682297498",
                 venue=venue,
-                date_modified=datetime(2018, 1, 1),
                 status=BankInformationStatus.ACCEPTED,
             )
-            repository.save(bank_information)
             mock_application_details.return_value = venue_demarche_simplifiee_application_detail_response_with_siret(
                 siret="79387503012345", bic="SOGEFRPP", iban="FR7630007000111234567890144", idx=8, state="initiated"
             )
@@ -873,14 +862,13 @@ class SaveVenueBankInformationsTest:
             application_id = "8"
             offerer = create_offerer(siren="793875030")
             venue = create_venue(offerer, siret="79387503012345")
-            bank_information = create_bank_information(
-                application_id=79,
+            bank_information = offers_factories.BankInformationFactory(
+                applicationId=79,
                 bic="QSDFGH8Z555",
                 iban="NL36INGB2682297498",
                 venue=venue,
-                date_modified=datetime(2021, 1, 1),
+                dateModified=datetime(2021, 1, 1),
             )
-            repository.save(bank_information)
             mock_application_details.return_value = venue_demarche_simplifiee_application_detail_response_with_siret(
                 siret="79387503012345", bic="SOGEFRPP", iban="FR7630007000111234567890144", idx=8
             )
