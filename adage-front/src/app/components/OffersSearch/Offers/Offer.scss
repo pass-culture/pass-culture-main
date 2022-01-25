@@ -1,4 +1,5 @@
 @import 'sass-rem';
+@import 'styles';
 
 .offer {
   display: flex;
@@ -11,6 +12,9 @@
     width: rem(64px);
     background-color: #7b1e82;
     border-radius: rem(8px) 0 0 rem(8px);
+    fill: $white;
+    padding: rem(8px);
+    box-sizing: border-box;
   }
 
   &-container {
