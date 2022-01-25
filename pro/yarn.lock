@@ -4388,6 +4388,13 @@
   dependencies:
     "@types/react" "*"
 
+"@types/react-avatar-editor@^10.3.6":
+  version "10.3.6"
+  resolved "https://registry.yarnpkg.com/@types/react-avatar-editor/-/react-avatar-editor-10.3.6.tgz#f902a91b336eac7e3d141ec931eeae9a082e8125"
+  integrity sha512-2r9+WYriqXIyjOTxy/DSiCUhr2TBiYD4Gzbyych1WUEwdPboNj0JRz9B5868TwiGgKD61jdWYyKy/OutHs7L6A==
+  dependencies:
+    "@types/react" "*"
+
 "@types/react-datepicker@^4.3.2":
   version "4.3.2"
   resolved "https://registry.yarnpkg.com/@types/react-datepicker/-/react-datepicker-4.3.2.tgz#e071b9f5fbc6f183a66f6d6dab7c9f2f21b01d40"
