@@ -53,7 +53,7 @@ class VenueFactory(BaseFactory):
     publicName = factory.SelfAttribute("name")
     siret = factory.LazyAttributeSequence(lambda o, n: f"{o.managingOfferer.siren}{n:05}")
     isVirtual = False
-    venueTypeCode = offerers_models.VenueTypeCode.OTHER
+    venueTypeCode = offerers_models.VenueTypeCode.OTHER  # type: ignore[attr-defined]
     venueType = factory.SubFactory(
         "pcapi.core.offerers.factories.VenueTypeFactory", label=factory.SelfAttribute("..venueTypeCode.value")
     )
@@ -76,11 +76,11 @@ class VirtualVenueFactory(VenueFactory):
     postalCode = None
     city = None
     siret = None
-    audioDisabilityCompliant = None
-    mentalDisabilityCompliant = None
-    motorDisabilityCompliant = None
-    visualDisabilityCompliant = None
-    venueTypeCode = offerers_models.VenueTypeCode.DIGITAL
+    audioDisabilityCompliant = False
+    mentalDisabilityCompliant = False
+    motorDisabilityCompliant = False
+    visualDisabilityCompliant = False
+    venueTypeCode = offerers_models.VenueTypeCode.DIGITAL  # type: ignore[attr-defined]
 
 
 class ProductFactory(BaseFactory):
@@ -92,7 +92,7 @@ class ProductFactory(BaseFactory):
     description = factory.Sequence("A passionate description of product {}".format)
 
     @classmethod
-    def _create(cls, model_class, *args, **kwargs):
+    def _create(cls, model_class, *args, **kwargs):  # type: ignore [no-untyped-def]
         # Graciously provide the required idAtProviders if lastProvider is given.
         if kwargs.get("lastProvider") and not kwargs.get("idAtProviders"):
             kwargs["idAtProviders"] = uuid.uuid4()
@@ -130,7 +130,7 @@ class OfferFactory(BaseFactory):
     visualDisabilityCompliant = False
 
     @classmethod
-    def _create(cls, model_class, *args, **kwargs):
+    def _create(cls, model_class, *args, **kwargs):  # type: ignore [no-untyped-def]
         # Graciously provide the required idAtProviders if lastProvider is given.
         if kwargs.get("lastProvider") and not kwargs.get("idAtProviders"):
             kwargs["idAtProviders"] = uuid.uuid4()
@@ -214,7 +214,7 @@ class StockWithActivationCodesFactory(StockFactory):
     offer = factory.SubFactory(DigitalOfferFactory)
 
     @factory.post_generation
-    def activationCodes(self, create, extracted, **kwargs):
+    def activationCodes(self, create, extracted, **kwargs) -> None:  # type: ignore [no-untyped-def]
         if extracted:
             for code in extracted:
                 ActivationCodeFactory(stockId=self.id, code=code)

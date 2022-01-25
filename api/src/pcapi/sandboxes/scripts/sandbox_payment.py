@@ -1,11 +1,13 @@
 from datetime import datetime
 from datetime import timedelta
 import logging
+import typing
 
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.categories import subcategories
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers import factories as offers_factories
+from pcapi.core.offers import models as offers_models
 import pcapi.core.payments.api as payments_api
 from pcapi.core.users import factories as users_factories
 from pcapi.model_creators.generic_creators import create_offerer
@@ -25,7 +27,7 @@ now = datetime.utcnow()
 three_days = timedelta(days=3)
 
 
-def save_users_with_deposits():
+def save_users_with_deposits() -> typing.Tuple[users_factories.UserFactory, ...]:
     user1 = users_factories.BeneficiaryGrant18Factory(email="user1@test.com")
     user2 = users_factories.BeneficiaryGrant18Factory(email="user2@test.com")
     user3 = users_factories.BeneficiaryGrant18Factory(email="user3@test.com")
@@ -41,7 +43,7 @@ def save_users_with_deposits():
     return user1, user2, user3, user4, user5
 
 
-def save_offerer_with_iban():
+def save_offerer_with_iban() -> typing.Tuple[Venue, ...]:
     offerer_with_iban = create_offerer(siren="180046021", name="Philarmonie")
     venue_with_siret = create_venue(offerer=offerer_with_iban, siret="18004602100026", is_virtual=False)
     venue_without_siret = create_venue(offerer=offerer_with_iban, siret=None, is_virtual=False, comment="pas de siret")
@@ -57,7 +59,7 @@ def save_offerer_with_iban():
     return venue_online, venue_with_siret, venue_without_siret
 
 
-def save_offerer_without_iban():
+def save_offerer_without_iban() -> typing.Tuple[Venue, ...]:
     offerer_without_iban = create_offerer(siren="213400328", name="Béziers")
     venue_with_siret_with_iban = create_venue(offerer=offerer_without_iban, siret="21340032800018", is_virtual=False)
     venue_with_siret_without_iban = create_venue(offerer=offerer_without_iban, siret="21340032800802", is_virtual=False)
@@ -76,7 +78,7 @@ def save_offerer_without_iban():
     return venue_online, venue_with_siret_with_iban, venue_with_siret_without_iban
 
 
-def save_free_event_offer_with_stocks(venue: Venue):
+def save_free_event_offer_with_stocks(venue: Venue) -> typing.Tuple[offers_models.Stock, ...]:
     free_event_offer = create_offer_with_event_product(
         venue,
         event_name="Free event",
@@ -91,7 +93,7 @@ def save_free_event_offer_with_stocks(venue: Venue):
     return past_free_event_stock, future_free_event_stock
 
 
-def save_non_reimbursable_thing_offer(venue: Venue):
+def save_non_reimbursable_thing_offer(venue: Venue) -> offers_models.Stock:
     paid_non_reimbursable_offer = create_offer_with_thing_product(
         venue,
         thing_name="Concert en ligne",
@@ -104,7 +106,7 @@ def save_non_reimbursable_thing_offer(venue: Venue):
     return non_reimbursable_stock
 
 
-def save_reimbursable_thing_offer(venue: Venue):
+def save_reimbursable_thing_offer(venue: Venue) -> offers_models.Stock:
     paid_reimbursable_offer = create_offer_with_thing_product(
         venue, thing_name="Roman cool", thing_subcategory_id=subcategories.LIVRE_PAPIER.id
     )
@@ -114,7 +116,7 @@ def save_reimbursable_thing_offer(venue: Venue):
     return reimbursable_stock
 
 
-def save_paid_online_book_offer(venue: Venue):
+def save_paid_online_book_offer(venue: Venue) -> offers_models.Stock:
     paid_reimbursable_offer = create_offer_with_thing_product(
         venue, thing_name="Roman cool", thing_subcategory_id=subcategories.LIVRE_PAPIER.id, url="https://mycoolbook.fr"
     )
@@ -124,7 +126,7 @@ def save_paid_online_book_offer(venue: Venue):
     return reimbursable_stock
 
 
-def save_paid_reimbursable_event_offer(venue: Venue):
+def save_paid_reimbursable_event_offer(venue: Venue) -> typing.Tuple[offers_models.Stock, ...]:
     paid_reimbursable_event_offer = create_offer_with_event_product(
         venue,
         event_name="Paid event",
@@ -139,7 +141,7 @@ def save_paid_reimbursable_event_offer(venue: Venue):
     return past_event_stock, future_event_stock
 
 
-def save_sandbox():
+def save_sandbox() -> None:
     user1, user2, user3, user4, user5 = save_users_with_deposits()
     (
         venue_online_of_offerer_with_iban,

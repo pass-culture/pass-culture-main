@@ -39,7 +39,7 @@ class Returns200Test:
             "comment": venue.comment,
             "dateCreated": format_into_utc_date(venue.dateCreated),
             "dateModifiedAtLastProvider": format_into_utc_date(venue.dateModifiedAtLastProvider),
-            "demarchesSimplifieesApplicationId": str(venue.demarchesSimplifieesApplicationId),
+            "demarchesSimplifieesApplicationId": venue.demarchesSimplifieesApplicationId,
             "departementCode": venue.departementCode,
             "description": venue.description,
             "fieldsUpdated": venue.fieldsUpdated,
