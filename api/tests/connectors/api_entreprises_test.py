@@ -51,9 +51,7 @@ class GetByOffererTest:
         get_by_offerer(offerer)
 
         # Then
-        requests_get.assert_called_once_with(
-            "https://entreprise.data.gouv.fr/api/sirene/v3/unites_legales/732075312", verify=False
-        )
+        requests_get.assert_called_once_with("https://entreprise.data.gouv.fr/api/sirene/v3/unites_legales/732075312")
 
     @patch("pcapi.connectors.api_entreprises.requests.get")
     def test_returns_unite_legale_informations_with_etablissement_siege(self, requests_get):
