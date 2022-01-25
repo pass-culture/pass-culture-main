@@ -1,33 +1,33 @@
 import cn from 'classnames'
 import React from 'react'
-import './Button.scss'
 
-interface IButton {
-  onClick: () => void
-  className?: string
+import './Button.scss'
+import { ReactComponent as SpinnerIcon } from 'assets/loader.svg'
+
+interface IButton extends React.HTMLProps<HTMLButtonElement> {
   label?: string
-  disabled?: boolean
   variant?: 'primary' | 'secondary'
+  isLoading?: boolean
 }
 
 const Button = ({
   className,
-  onClick,
   label,
-  disabled = false,
   variant = 'primary',
+  isLoading,
+  ...props
 }: IButton): JSX.Element => {
   return (
     <button
       className={cn('button', className, {
         'button-primary': variant === 'primary',
         'button-secondary': variant === 'secondary',
+        'button-is-loading': isLoading,
       })}
-      disabled={disabled}
-      onClick={onClick}
+      {...props}
       type="button"
     >
-      {label}
+      {isLoading ? <SpinnerIcon className="button-spinner" /> : label}
     </button>
   )
 }
