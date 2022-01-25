@@ -28,12 +28,20 @@ const PrebookingButton = ({
   const [notification, setNotification] = useState<Notification | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
 
-  const preBookCurrentStock = useCallback(() => {
+  const handleSearchButtonClick = () => {
+    setIsModalOpen(true)
+  }
+
+  const closeModal = () => {
+    setIsModalOpen(false)
+  }
+
+  const preBookCurrentStock = useCallback(async () => {
     setIsButtonDisabled(true)
     return preBookStock(stock.id)
       .then(() => {
         setHasPrebookedOffer(true)
-        setIsModalOpen(true)
+        closeModal()
       })
       .catch(error =>
         setNotification(
@@ -41,10 +49,6 @@ const PrebookingButton = ({
         )
       )
   }, [stock.id])
-
-  const closeModal = () => {
-    setIsModalOpen(false)
-  }
 
   return (
     <>
@@ -60,7 +64,7 @@ const PrebookingButton = ({
               <button
                 className="prebooking-button"
                 disabled={isButtonDisabled}
-                onClick={preBookCurrentStock}
+                onClick={handleSearchButtonClick}
                 type="button"
               >
                 Pré-réserver
@@ -76,7 +80,11 @@ const PrebookingButton = ({
         </div>
       )}
       {notification && <NotificationComponent notification={notification} />}
-      <PrebookingModal closeModal={closeModal} isOpen={isModalOpen} />
+      <PrebookingModal
+        closeModal={closeModal}
+        isOpen={isModalOpen}
+        preBookCurrentStock={preBookCurrentStock}
+      />
     </>
   )
 }
