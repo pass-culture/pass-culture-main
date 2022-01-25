@@ -1,9 +1,10 @@
-import React, { FunctionComponent } from 'react'
+import React, { useCallback, useState, FunctionComponent } from 'react'
 
 import { imageConstraints } from 'new_components/ConstraintCheck/imageConstraints'
 import DialogBox from 'new_components/DialogBox'
 
 import { ImportFromComputer } from '../ImportFromComputer/ImportFromComputer'
+import { VenueImageEdit } from '../VenueImageEdit/VenueImageEdit'
 
 import { IMAGE_TYPES, MAX_IMAGE_SIZE, MIN_IMAGE_WIDTH } from './constants'
 
@@ -20,17 +21,37 @@ const constraints = [
 
 export const VenueImageUploaderModal: FunctionComponent<Props> = ({
   onDismiss,
-}) => (
-  <DialogBox
-    hasCloseButton
-    labelledBy="Ajouter une image"
-    onDismiss={onDismiss}
-  >
-    <ImportFromComputer
-      constraints={constraints}
-      imageTypes={IMAGE_TYPES}
-      onSetImage={alert}
-      orientation="landscape"
-    />
-  </DialogBox>
-)
+}) => {
+  const [image, setImage] = useState<File>()
+
+  const onSetImage = useCallback(
+    file => {
+      return setImage(file)
+    },
+    [setImage]
+  )
+
+  return (
+    <DialogBox
+      hasCloseButton
+      labelledBy="Ajouter une image"
+      onDismiss={onDismiss}
+    >
+      {!image ? (
+        <ImportFromComputer
+          constraints={constraints}
+          imageTypes={IMAGE_TYPES}
+          onSetImage={onSetImage}
+          orientation="landscape"
+        />
+      ) : (
+        <VenueImageEdit
+          image={image}
+          onSetImage={() =>
+            alert('Cette fonctionnalité sera disponible avec PC-13087')
+          }
+        />
+      )}
+    </DialogBox>
+  )
+}
