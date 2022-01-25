@@ -162,7 +162,7 @@ class AllocineStocks(LocalProvider):
 
         movie_version = (
             ORIGINAL_VERSION_SUFFIX
-            if _is_original_version_offer(allocine_offer.idAtProviders)
+            if _is_original_version_offer(allocine_offer.idAtProvider)
             else FRENCH_VERSION_SUFFIX
         )
 
@@ -335,8 +335,8 @@ def _has_french_version_product(movies_showtimes: list[dict]) -> bool:
     return LOCAL_VERSION in movies or DUBBED_VERSION in movies
 
 
-def _is_original_version_offer(id_at_providers: str) -> bool:
-    return id_at_providers[-3:] == f"-{ORIGINAL_VERSION_SUFFIX}"
+def _is_original_version_offer(id_at_provider: str) -> bool:
+    return id_at_provider[-3:] == f"-{ORIGINAL_VERSION_SUFFIX}"
 
 
 def _build_movie_uuid(movie_information: dict, venue: Venue) -> str:

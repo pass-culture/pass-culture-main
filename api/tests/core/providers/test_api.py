@@ -47,7 +47,7 @@ def create_product(isbn, **kwargs):
 
 
 def create_offer(isbn, venue: Venue):
-    return factories.OfferFactory(product=create_product(isbn), idAtProviders=isbn, venue=venue)
+    return factories.OfferFactory(product=create_product(isbn), idAtProvider=isbn, venue=venue)
 
 
 def create_stock(isbn, siret, venue: Venue, **kwargs):
@@ -56,7 +56,7 @@ def create_stock(isbn, siret, venue: Venue, **kwargs):
 
 @pytest.mark.usefixtures("db_session")
 def test_reset_stock_quantity():
-    offer = OfferFactory(idAtProviders="1")
+    offer = OfferFactory(idAtProvider="1")
     venue = offer.venue
     stock1_no_bookings = StockFactory(offer=offer, quantity=10)
     stock2_only_cancelled_bookings = StockFactory(offer=offer, quantity=10)
@@ -82,14 +82,14 @@ def test_update_last_provider_id():
     provider1 = offerers_factories.ProviderFactory()
     provider2 = offerers_factories.ProviderFactory()
     venue = VenueFactory()
-    offer1_synced = OfferFactory(venue=venue, idAtProviders=1, lastProvider=provider1)
-    offer2_manual = OfferFactory(venue=venue, idAtProviders=None)
-    offer3_other_venue = OfferFactory(idAtProviders=2, lastProvider=provider1)
+    offer1_synced = OfferFactory(venue=venue, idAtProvider=1, lastProvider=provider1)
+    offer2_manual = OfferFactory(venue=venue, idAtProvider=None)
+    offer3_other_venue = OfferFactory(idAtProvider=2, lastProvider=provider1)
 
     api.update_last_provider_id(venue, provider2.id)
 
     assert offer1_synced.lastProvider == provider2
-    assert offer2_manual.idAtProviders is None
+    assert offer2_manual.idAtProvider is None
     assert offer3_other_venue.lastProvider == provider1
 
 
@@ -100,7 +100,7 @@ def test_change_venue_provider():
     provider = offerers_factories.APIProviderFactory()
     venue_provider = offerers_factories.VenueProviderFactory(provider=provider)
     venue = venue_provider.venue
-    stock = StockFactory(quantity=10, offer__venue=venue, offer__idAtProviders="1")
+    stock = StockFactory(quantity=10, offer__venue=venue, offer__idAtProvider="1")
     BookingFactory(stock=stock)
     new_provider = offerers_factories.APIProviderFactory(apiUrl=api_url)
 

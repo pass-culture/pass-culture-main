@@ -62,7 +62,7 @@ def create_venue_provider(
 def reset_stock_quantity(venue: Venue) -> None:
     """Reset all stock quantity with the number of non-cancelled bookings."""
     logger.info("Resetting all stock quantity for changed sync", extra={"venue": venue.id})
-    stocks = Stock.query.filter(Stock.offerId == Offer.id, Offer.venue == venue, Offer.idAtProviders.isnot(None))
+    stocks = Stock.query.filter(Stock.offerId == Offer.id, Offer.venue == venue, Offer.idAtProvider.isnot(None))
     stocks.update({"quantity": Stock.dnBookedQuantity}, synchronize_session=False)
     db.session.commit()
 
@@ -70,7 +70,7 @@ def reset_stock_quantity(venue: Venue) -> None:
 def update_last_provider_id(venue: Venue, provider_id: int) -> None:
     """Update all offers' lastProviderId with the new provider_id."""
     logger.info("Updating offer.last_provider_id for changed sync", extra={"venue": venue.id, "provider": provider_id})
-    offers = Offer.query.filter(Offer.venue == venue, Offer.idAtProviders.isnot(None))
+    offers = Offer.query.filter(Offer.venue == venue, Offer.idAtProvider.isnot(None))
     offers.update({"lastProviderId": provider_id}, synchronize_session=False)
     db.session.commit()
 
@@ -193,7 +193,7 @@ def synchronize_stocks(
         venue,
         provider_id,
     )
-    new_offers_references = [new_offer.idAtProviders for new_offer in new_offers]
+    new_offers_references = [new_offer.idAtProvider for new_offer in new_offers]
 
     db.session.bulk_save_objects(new_offers)
 
@@ -363,7 +363,6 @@ def _build_new_offer(
         bookingEmail=venue.bookingEmail,
         description=product.description,
         extraData=product.extraData,
-        idAtProviders=id_at_providers,
         idAtProvider=id_at_provider,
         lastProviderId=provider_id,
         name=product.name,

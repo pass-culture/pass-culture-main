@@ -20,7 +20,7 @@ from pcapi.core import search
 from pcapi.core.bookings.exceptions import CannotDeleteVenueWithBookingsException
 from pcapi.core.offerers.api import VENUE_ALGOLIA_INDEXED_FIELDS
 from pcapi.core.offerers.models import Venue
-from pcapi.core.offers.api import update_offer_and_stock_id_at_providers
+from pcapi.core.offers.api import update_stock_id_at_providers
 from pcapi.core.users.external import update_external_pro
 from pcapi.models import db
 from pcapi.scripts.offerer.delete_cascade_venue_by_id import delete_cascade_venue_by_id
@@ -142,7 +142,7 @@ class VenueView(BaseAdminView):
         search.async_index_venue_ids([venue.id])
 
         if has_siret_changed and old_siret:
-            update_offer_and_stock_id_at_providers(venue, old_siret)
+            update_stock_id_at_providers(venue, old_siret)
 
         if has_indexed_attribute_changed:
             search.async_index_offers_of_venue_ids([venue.id])

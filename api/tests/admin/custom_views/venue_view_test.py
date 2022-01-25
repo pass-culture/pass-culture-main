@@ -22,10 +22,9 @@ class VenueViewTest:
     def test_update_venue_siret(self, mocked_async_index_offers_of_venue_ids, mocked_validate_csrf_token, app):
         AdminFactory(email="user@example.com")
         venue = VenueFactory(siret="22222222222222")
-        old_id_at_providers = "11111@22222222222222"
-        stock = StockFactory(
-            offer__venue=venue, idAtProviders=old_id_at_providers, offer__idAtProviders=old_id_at_providers
-        )
+        id_at_provider = "11111"
+        old_id_at_providers = f"{id_at_provider}@{venue.siret}"
+        stock = StockFactory(offer__venue=venue, idAtProviders=old_id_at_providers, offer__idAtProvider=id_at_provider)
 
         data = dict(
             name=venue.name,
@@ -46,11 +45,9 @@ class VenueViewTest:
 
         venue_edited = Venue.query.get(venue.id)
         stock_edited = Stock.query.get(stock.id)
-        offer_edited = Offer.query.get(stock.offer.id)
 
         assert venue_edited.siret == "88888888888888"
         assert stock_edited.idAtProviders == "11111@88888888888888"
-        assert offer_edited.idAtProviders == "11111@88888888888888"
 
         mocked_async_index_offers_of_venue_ids.assert_not_called()
 
@@ -60,7 +57,7 @@ class VenueViewTest:
         AdminFactory(email="user@example.com")
         venue = VenueFactory(siret="22222222222222")
         id_at_providers = "id_at_provider_ne_contenant_pas_le_siret"
-        stock = StockFactory(offer__venue=venue, idAtProviders=id_at_providers, offer__idAtProviders=id_at_providers)
+        stock = StockFactory(offer__venue=venue, idAtProviders=id_at_providers, offer__idAtProvider=id_at_providers)
 
         data = dict(
             name=venue.name,
@@ -85,7 +82,7 @@ class VenueViewTest:
 
         assert venue_edited.siret == "88888888888888"
         assert stock.idAtProviders == "id_at_provider_ne_contenant_pas_le_siret"
-        assert offer.idAtProviders == "id_at_provider_ne_contenant_pas_le_siret"
+        assert offer.idAtProvider == "id_at_provider_ne_contenant_pas_le_siret"
 
     @clean_database
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
