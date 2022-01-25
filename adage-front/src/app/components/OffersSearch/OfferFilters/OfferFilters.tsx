@@ -6,8 +6,7 @@ import { getEducationalCategoriesOptionsAdapter } from 'app/adapters/getEducatio
 import { Option } from 'app/types'
 import { VenueFilterType } from 'utils/types'
 
-import MultiSelectAutocomplete from '../../../ui-kit/MultiSelectAutoComplete'
-import SearchButton from '../../../ui-kit/SearchButton'
+import { Button, MultiSelectAutocomplete } from '../../../ui-kit'
 
 import { departmentOptions } from './departmentOptions'
 import OfferFiltersTags from './OfferFiltersTags'
@@ -119,7 +118,7 @@ export const OfferFilters = ({
       />
       <div className="offer-filters-button-container">
         <div className="offer-filters-button-separator" />
-        <SearchButton
+        <Button
           disabled={isLoading}
           label="Lancer la recherche"
           onClick={() => {
