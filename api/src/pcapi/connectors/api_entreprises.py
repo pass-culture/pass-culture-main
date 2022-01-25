@@ -16,9 +16,13 @@ class ApiEntrepriseException(Exception):
 
 
 def get_by_offerer(offerer: "Offerer") -> dict:
-    response = requests.get(
-        f"https://entreprise.data.gouv.fr/api/sirene/v3/unites_legales/{offerer.siren}", verify=False
-    )
+    try:
+        response = requests.get(
+            f"https://entreprise.data.gouv.fr/api/sirene/v3/unites_legales/{offerer.siren}", verify=False
+        )
+    except (requests.ConnectionError, requests.HTTPError, requests.Timeout) as exc:
+        logger.exception("Failed to get data from entreprise.data.gouv.fr", extra={"offerer": offerer.id})
+        raise ApiEntrepriseException("Error getting API entreprise DATA for SIREN : {}".format(offerer.siren)) from exc
 
     if response.status_code != 200:
         raise ApiEntrepriseException("Error getting API entreprise DATA for SIREN : {}".format(offerer.siren))
