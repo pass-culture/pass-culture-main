@@ -8,6 +8,14 @@
   font-weight: 700;
   font-size: rem(15px);
 
+  &-is-loading {
+    padding: rem(6px) rem(24px);
+  }
+
+  &-spinner {
+    height: rem(24px);
+  }
+
   &-secondary {
     color: $primary;
     background-color: $white;
@@ -18,11 +26,19 @@
       color: $white;
       border-color: $primary-dark;
     }
+
+    .button-spinner {
+      fill: $primary;
+    }
   }
 
   &-primary {
     color: $white;
     background-color: $primary;
+
+    .button-spinner {
+      fill: $white;
+    }
 
     &:focus,
     &:hover {
@@ -39,5 +55,28 @@
     background-color: $primary-disabled;
     border: rem(3px) solid $primary-disabled;
     cursor: not-allowed;
+  }
+}
+
+.button-spinner {
+  @media screen and (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+
+  animation: rotation 3s infinite linear;
+
+  .content::after {
+    content: attr(data-dots);
+    position: absolute;
+  }
+
+  @keyframes rotation {
+    from {
+      transform: rotate(0deg);
+    }
+
+    to {
+      transform: rotate(359deg);
+    }
   }
 }
