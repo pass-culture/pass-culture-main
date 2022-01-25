@@ -95,6 +95,7 @@ class FeatureToggle(enum.Enum):
     INCLUDE_LEGACY_PAYMENTS_FOR_REIMBURSEMENTS = (
         "Inclure les anciens modèles de données pour le téléchargement des remboursements "
     )
+    ENABLE_PRO_ACCOUNT_CREATION = "Permettre l'inscription des comptes professionels"
 
     def is_active(self) -> bool:
         if flask.has_request_context():
