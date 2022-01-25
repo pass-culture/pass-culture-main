@@ -1,8 +1,8 @@
 import cn from 'classnames'
 import React from 'react'
-import './SearchButton.scss'
+import './Button.scss'
 
-interface ISearchButton {
+interface IButton {
   onClick: () => void
   className?: string
   label?: string
@@ -10,18 +10,18 @@ interface ISearchButton {
   variant?: 'primary' | 'secondary'
 }
 
-const SearchButton = ({
+const Button = ({
   className,
   onClick,
   label,
   disabled = false,
   variant = 'primary',
-}: ISearchButton): JSX.Element => {
+}: IButton): JSX.Element => {
   return (
     <button
-      className={cn('search-button', className, {
-        'search-button-primary': variant === 'primary',
-        'search-button-secondary': variant === 'secondary',
+      className={cn('button', className, {
+        'button-primary': variant === 'primary',
+        'button-secondary': variant === 'secondary',
       })}
       disabled={disabled}
       onClick={onClick}
@@ -32,4 +32,4 @@ const SearchButton = ({
   )
 }
 
-export default SearchButton
+export default Button
