@@ -34,7 +34,7 @@ class AdageHttpClient(AdageClient):
 
     def notify_offer_or_stock_edition(self, data: EducationalBookingEdition) -> AdageApiResult:
         api_url = f"{self.base_url}/v1/prereservation-edit"
-        api_response = requests.put(
+        api_response = requests.post(
             api_url,
             headers={self.header_key: self.api_key, "Content-Type": "application/json"},
             data=data.json(),
