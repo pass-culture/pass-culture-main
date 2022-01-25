@@ -1,4 +1,4 @@
-@import "styles";
+@import 'styles';
 @import 'sass-rem';
 
 .search-button {
@@ -7,12 +7,28 @@
   padding: rem(10px) rem(24px);
   font-weight: 700;
   font-size: rem(15px);
-  color: $white;
-  background-color: $primary;
 
-  &:focus {
-    outline: none;
-    background-color: $primary-dark;
+  &-secondary {
+    color: $primary;
+    background-color: $white;
+    border: rem(2px) solid $primary;
+
+    &:focus,
+    &:hover {
+      color: $white;
+      border-color: $primary-dark;
+    }
+  }
+
+  &-primary {
+    color: $white;
+    background-color: $primary;
+
+    &:focus,
+    &:hover {
+      outline: none;
+      background-color: $primary-dark;
+    }
   }
 
   &:hover {
@@ -24,5 +40,4 @@
     border: rem(3px) solid $primary-disabled;
     cursor: not-allowed;
   }
-
 }
