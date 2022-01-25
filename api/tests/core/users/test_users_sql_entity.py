@@ -11,6 +11,7 @@ import sqlalchemy.exc
 import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.payments import api as payments_api
+from pcapi.core.payments.models import DepositType
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as user_models
 from pcapi.model_creators.generic_creators import create_offerer
@@ -143,10 +144,10 @@ class SQLFunctionsTest:
 
         assert db.session.query(func.get_wallet_balance(user.id, False)).first()[0] == 0
 
-    def test_wallet_balance_multiple_deposit(self):
-        user = users_factories.BeneficiaryGrant18Factory()
-        users_factories.DepositGrantFactory(user=user)
-        users_factories.DepositGrantFactory(user=user)
+    def test_wallet_balance_multiple_deposits(self):
+        user = users_factories.UserFactory()
+        users_factories.DepositGrantFactory(user=user, type=DepositType.GRANT_15_17)
+        users_factories.DepositGrantFactory(user=user, type=DepositType.GRANT_18)
 
         with pytest.raises((psycog2_errors.CardinalityViolation, sqlalchemy.exc.ProgrammingError)) as exc:
             # pylint: disable=expression-not-assigned

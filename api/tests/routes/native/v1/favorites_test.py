@@ -173,7 +173,7 @@ class GetTest:
             tomorow = today + timedelta(days=1)
             user, test_client = utils.create_user_and_test_client(app)
             user.add_beneficiary_role()
-            user.deposits = [users_factories.DepositGrantFactory()]
+            users_factories.DepositGrantFactory(user=user)
             offerer = offers_factories.OffererFactory()
             venue = offers_factories.VenueFactory(managingOfferer=offerer)
 
