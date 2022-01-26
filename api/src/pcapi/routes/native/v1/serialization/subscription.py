@@ -1,8 +1,11 @@
 from typing import Optional
 
+from pydantic import validator
+
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription import profile_options
 from pcapi.core.users import models as users_models
+from pcapi.serialization.utils import is_latin
 from pcapi.serialization.utils import to_camel
 
 from . import BaseModel
@@ -31,6 +34,12 @@ class ProfileUpdateRequest(BaseModel):
 
     class Config:
         alias_generator = to_camel
+
+    @validator("first_name", "last_name", "address", "city")
+    def string_must_contain_latin_characters(cls, v):  # pylint: disable=no-self-argument
+        if not is_latin(v):
+            raise ValueError("Les champs textuels doivent contenir des caractères latins")
+        return v
 
 
 class SchoolTypeResponseModel(BaseModel):
