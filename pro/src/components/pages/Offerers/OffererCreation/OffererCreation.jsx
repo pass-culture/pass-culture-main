@@ -16,6 +16,7 @@ import Titles from 'components/layout/Titles/Titles'
 import { bindAddressAndDesignationFromSiren } from 'repository/siren/bindSirenFieldToDesignation'
 
 import OffererCreationForm from './OffererCreationForm/OffererCreationForm'
+import OffererCreationUnavailable from './OffererCreationUnavailable/OffererCreationUnavailable'
 
 /**
  * @debt standard "Annaëlle: Composant de classe à migrer en fonctionnel"
@@ -50,6 +51,7 @@ class OffererCreation extends PureComponent {
   }
 
   render() {
+    const { isEntrepriseApiDisabled } = this.props
     return (
       <div className="offerer-page">
         <NavLink className="back-button has-text-primary" to="/accueil">
@@ -58,13 +60,16 @@ class OffererCreation extends PureComponent {
         </NavLink>
         <PageTitle title="Créer une structure" />
         <Titles title="Structure" />
-
-        <Form
-          backTo="/accueil"
-          component={OffererCreationForm}
-          decorators={this.createDecorators()}
-          onSubmit={this.handleSubmit}
-        />
+        {isEntrepriseApiDisabled ? (
+          <OffererCreationUnavailable />
+        ) : (
+          <Form
+            backTo="/accueil"
+            component={OffererCreationForm}
+            decorators={this.createDecorators()}
+            onSubmit={this.handleSubmit}
+          />
+        )}
       </div>
     )
   }
@@ -72,6 +77,7 @@ class OffererCreation extends PureComponent {
 
 OffererCreation.propTypes = {
   createNewOfferer: PropTypes.func.isRequired,
+  isEntrepriseApiDisabled: PropTypes.bool.isRequired,
   redirectAfterSubmit: PropTypes.func.isRequired,
   showNotification: PropTypes.func.isRequired,
   trackCreateOfferer: PropTypes.func.isRequired,
