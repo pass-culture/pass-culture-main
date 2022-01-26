@@ -320,8 +320,6 @@ def update_educational_offer(
         updated_fields,
     )
 
-    return offer
-
 
 def batch_update_offers(query, update_fields):
     offer_ids_tuples = query.filter(Offer.validation == OfferValidationStatus.APPROVED).with_entities(Offer.id)
