@@ -24,6 +24,7 @@ class FraudCheckType(enum.Enum):
     USER_PROFILING = "user_profiling"
     DMS = "dms"
     INTERNAL_REVIEW = "internal_review"
+    PHONE_VALIDATION = "phone_validation"
     EDUCONNECT = "educonnect"
     UBBLE = "ubble"
     HONOR_STATEMENT = "honor_statement"
@@ -259,7 +260,7 @@ class InternalReviewSource(enum.Enum):
     DOCUMENT_VALIDATION_ERROR = "document_validation_error"
 
 
-class InternalReviewFraudData(pydantic.BaseModel):
+class PhoneValidationFraudData(pydantic.BaseModel):
     source: InternalReviewSource
     message: str
     phone_number: typing.Optional[str]
@@ -269,7 +270,8 @@ FRAUD_CHECK_MAPPING = {
     FraudCheckType.DMS: DMSContent,
     FraudCheckType.USER_PROFILING: UserProfilingFraudData,
     FraudCheckType.JOUVE: JouveContent,
-    FraudCheckType.INTERNAL_REVIEW: InternalReviewFraudData,
+    FraudCheckType.INTERNAL_REVIEW: PhoneValidationFraudData,
+    FraudCheckType.PHONE_VALIDATION: PhoneValidationFraudData,
     FraudCheckType.EDUCONNECT: EduconnectContent,
     FraudCheckType.UBBLE: ubble_fraud_models.UbbleContent,
 }
