@@ -15,6 +15,7 @@ class Returns200Test:
         assert response.json == {
             "venues": [
                 {
+                    "id": venue.id,
                     "name": venue.name,
                     "address": venue.address,
                     "latitude": float(venue.latitude),
