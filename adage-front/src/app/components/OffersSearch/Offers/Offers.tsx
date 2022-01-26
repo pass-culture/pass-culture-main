@@ -1,8 +1,8 @@
 import './Offers.scss'
 import { captureException } from '@sentry/react'
 import React, { useEffect } from 'react'
-import { connectHits } from 'react-instantsearch-core'
 import type { HitsProvided } from 'react-instantsearch-core'
+import { connectHits } from 'react-instantsearch-core'
 import { Stats } from 'react-instantsearch-dom'
 import { useQueries } from 'react-query'
 
