@@ -1,20 +1,26 @@
 .image-editor {
   display: flex;
   flex-direction: column;
-  margin-bottom: rem(16px);
+  align-items: center;
+
+  &-label {
+    padding-top: rem(16px);
+  }
 
   &-scale {
-    align-items: center;
     display: flex;
-    justify-content: space-evenly;
+    gap: rem(8px);
+    align-items: center;
+    padding-top: rem(8px);
+    padding-bottom: rem(24px);
 
-    span {
+    &-label {
       @include caption;
 
       color: $grey-dark;
     }
 
-    input {
+    &-input {
       width: rem(350px);
     }
 
