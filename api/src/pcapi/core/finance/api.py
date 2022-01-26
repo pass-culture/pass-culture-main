@@ -890,10 +890,12 @@ def _generate_invoice(business_unit_id: int, cashflow_ids: list[int]):
     db.session.bulk_save_objects(invoice_lines)
     cf_links = [models.InvoiceCashflow(invoiceId=invoice.id, cashflowId=cashflow.id) for cashflow in cashflows]
     db.session.bulk_save_objects(cf_links)
+    # Cashflow.status: UNDER_REVIEW -> ACCEPTED
     models.Cashflow.query.filter(models.Cashflow.id.in_(cashflow_ids)).update(
         {"status": models.CashflowStatus.ACCEPTED},
         synchronize_session=False,
     )
+    # Pricing.status: PROCESSED -> INVOICED
     # SQLAlchemy ORM cannot call `update()` if a query has been JOINed.
     db.session.execute(
         """
@@ -905,6 +907,25 @@ def _generate_invoice(business_unit_id: int, cashflow_ids: list[int]):
           AND cashflow_pricing."cashflowId" IN :cashflow_ids
         """,
         {"status": models.PricingStatus.INVOICED.value, "cashflow_ids": tuple(cashflow_ids)},
+    )
+    # Booking.status: USED -> REIMBURSED
+    db.session.execute(
+        """
+        UPDATE booking
+        SET
+          status = :status,
+          "reimbursementDate" = :reimbursement_date
+        FROM pricing, cashflow_pricing
+        WHERE
+          booking.id = pricing."bookingId"
+          AND pricing.id = cashflow_pricing."pricingId"
+          AND cashflow_pricing."cashflowId" IN :cashflow_ids
+        """,
+        {
+            "status": bookings_models.BookingStatus.REIMBURSED.value,
+            "cashflow_ids": tuple(cashflow_ids),
+            "reimbursement_date": datetime.datetime.utcnow(),
+        },
     )
     db.session.commit()
     return invoice

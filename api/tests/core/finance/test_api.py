@@ -805,6 +805,7 @@ class GenerateInvoiceTest:
         + 1  # insert invoice_cashflows
         + 1  # update Cashflow.status
         + 1  # update Pricing.status
+        + 1  # update Booking.status
         + 1  # commit
     )
 
@@ -1014,6 +1015,8 @@ class GenerateInvoiceTest:
         assert cashflow_statuses == {models.CashflowStatus.ACCEPTED}
         pricing_statuses = get_statuses(models.Pricing)
         assert pricing_statuses == {models.PricingStatus.INVOICED}
+        booking_statuses = get_statuses(bookings_models.Booking)
+        assert booking_statuses == {bookings_models.BookingStatus.REIMBURSED}
 
 
 class GenerateInvoiceHtmlTest:
