@@ -571,6 +571,19 @@ def test_generate_payments_file():
         standardRule="",
         customRule=payments_factories.CustomReimbursementRuleFactory(amount=6),
     )
+    # pricing for an underage individual booking
+    underage_user = users_factories.UnderageBeneficiaryFactory()
+    pricing4 = factories.PricingFactory(
+        amount=-600,  # rate = 50 %
+        booking__amount=12,
+        booking__individualBooking__user=underage_user,
+        booking__dateUsed=used_date,
+        booking__stock__offer__name="Une histoire plutôt bien",
+        booking__stock__offer__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
+        booking__stock__offer__venue=offer_venue2,
+        standardRule="",
+        customRule=payments_factories.CustomReimbursementRuleFactory(amount=6),
+    )
     cutoff = datetime.datetime.utcnow()
     batch_id = api.generate_cashflows(cutoff)
 
@@ -583,7 +596,7 @@ def test_generate_payments_file():
             csv_textfile = io.TextIOWrapper(csv_bytefile)
             reader = csv.DictReader(csv_textfile, quoting=csv.QUOTE_NONNUMERIC)
             rows = list(reader)
-    assert len(rows) == 3
+    assert len(rows) == 4
     assert rows[0] == {
         "Identifiant de la BU": human_ids.humanize(venue1.id),
         "SIRET de la BU": "123456 test",
@@ -629,6 +642,22 @@ def test_generate_payments_file():
         "Type de réservation": "PC",
         "Date de validation": "2020-01-02 00:00:00",
         "Identifiant de la valorisation": pricing3.id,
+        "Taux de remboursement": 0.50,
+        "Montant remboursé à l'offreur": 6,
+    }
+    assert rows[3] == {
+        "Identifiant de la BU": human_ids.humanize(business_unit_venue2.id),
+        "SIRET de la BU": "22222222233333",
+        "Libellé de la BU": "BU du Gigantesque Cubitus",
+        "Identifiant du lieu": human_ids.humanize(offer_venue2.id),
+        "Libellé du lieu": "Le Gigantesque Cubitus",
+        "Identifiant de l'offre": pricing4.booking.stock.offerId,
+        "Nom de l'offre": "Une histoire plutôt bien",
+        "Sous-catégorie de l'offre": "SUPPORT_PHYSIQUE_FILM",
+        "Prix de la réservation": 12,
+        "Type de réservation": "EACI",
+        "Date de validation": "2020-01-02 00:00:00",
+        "Identifiant de la valorisation": pricing4.id,
         "Taux de remboursement": 0.50,
         "Montant remboursé à l'offreur": 6,
     }
