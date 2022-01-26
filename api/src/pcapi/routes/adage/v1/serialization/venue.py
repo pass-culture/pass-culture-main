@@ -13,6 +13,7 @@ class VenueModel(BaseModel):
     siret: str
     publicName: Optional[str]
     description: Optional[str]
+    id: int
 
     class Config:
         orm_mode = True
