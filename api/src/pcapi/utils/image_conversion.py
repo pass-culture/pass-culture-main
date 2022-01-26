@@ -7,10 +7,12 @@ from the PIL library:
 """
 from dataclasses import dataclass
 import io
+from typing import Optional
 
 import PIL
 from PIL import Image
 from PIL import ImageOps
+from pydantic import confloat
 
 
 MAX_THUMB_WIDTH = 750

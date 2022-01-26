@@ -151,6 +151,7 @@ def upsert_venue_banner(venue_id: str) -> None:
         content=venue_banner.content,
         content_type=venue_banner.content_type,
         file_name=venue_banner.file_name,
+        crop_params=venue_banner.crop_params,
     )
 
 
