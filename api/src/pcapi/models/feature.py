@@ -56,6 +56,7 @@ class FeatureToggle(enum.Enum):
     ENABLE_NATIVE_ID_CHECK_VERBOSE_DEBUGGING = (
         "Active le mode debug Firebase pour l'Id Check intégrée à l'application native"
     )
+    ENABLE_NEW_BOOKING_FILTERS = "Active les nouveaux filtres sur les statuts pour la page de réservations"
     ENABLE_NEW_VENUE_PAGES = "Utiliser la nouvelle version des pages d'edition et de creation de lieux"
     ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS = (
         "Utiliser Sendinblue pour envoyer les emails transactionnels (Ceux qui ont été migrés)"
@@ -133,6 +134,7 @@ FEATURES_DISABLED_BY_DEFAULT = (
     FeatureToggle.ENABLE_ID_CHECK_RETENTION,
     FeatureToggle.ENABLE_ISBN_REQUIRED_IN_LIVRE_EDITION_OFFER_CREATION,
     FeatureToggle.ENABLE_NATIVE_ID_CHECK_VERBOSE_DEBUGGING,
+    FeatureToggle.ENABLE_NEW_BOOKING_FILTERS,
     FeatureToggle.ENABLE_NEW_VENUE_PAGES,
     FeatureToggle.ENABLE_PRO_BOOKINGS_V2,
     FeatureToggle.ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS,
