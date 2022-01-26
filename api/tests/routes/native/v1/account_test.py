@@ -920,8 +920,9 @@ class SendPhoneValidationCodeTest:
         # check that a fraud check has been created
         fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(
             userId=user.id,
-            type=fraud_models.FraudCheckType.INTERNAL_REVIEW,
+            type=fraud_models.FraudCheckType.PHONE_VALIDATION,
             thirdPartyId=f"PC-{user.id}",
+            status=fraud_models.FraudCheckStatus.KO,
         ).one_or_none()
 
         assert fraud_check is not None
@@ -1020,8 +1021,9 @@ class SendPhoneValidationCodeTest:
         # check that a fraud check has been created
         fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(
             userId=user.id,
-            type=fraud_models.FraudCheckType.INTERNAL_REVIEW,
+            type=fraud_models.FraudCheckType.PHONE_VALIDATION,
             thirdPartyId=f"PC-{user.id}",
+            status=fraud_models.FraudCheckStatus.KO,
         ).one_or_none()
 
         assert fraud_check is not None
@@ -1110,8 +1112,9 @@ class SendPhoneValidationCodeTest:
         # check that a fraud check has been created
         fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(
             userId=user.id,
-            type=fraud_models.FraudCheckType.INTERNAL_REVIEW,
+            type=fraud_models.FraudCheckType.PHONE_VALIDATION,
             thirdPartyId=f"PC-{user.id}",
+            status=fraud_models.FraudCheckStatus.KO,
         ).one_or_none()
 
         assert fraud_check is not None
@@ -1200,7 +1203,7 @@ class ValidatePhoneNumberTest:
         # check that a fraud check has been created
         fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(
             userId=user.id,
-            type=fraud_models.FraudCheckType.INTERNAL_REVIEW,
+            type=fraud_models.FraudCheckType.PHONE_VALIDATION,
             thirdPartyId=f"PC-{user.id}",
         ).one_or_none()
 
