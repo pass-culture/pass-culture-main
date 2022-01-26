@@ -36,6 +36,8 @@ from pcapi.routes.serialization.offerers_serialize import CreateOffererQueryMode
 from pcapi.routes.serialization.venues_serialize import PostVenueBodyModel
 from pcapi.utils import crypto
 from pcapi.utils.human_ids import dehumanize
+from pcapi.utils.image_conversion import CropParams
+from pcapi.utils.image_conversion import standardize_image
 
 from . import validation
 from .exceptions import ApiKeyCountMaxReached
@@ -296,10 +298,18 @@ def validate_offerer(token: str) -> None:
         )
 
 
-def save_venue_banner(user: User, venue: Venue, content: bytes, content_type: str, file_name: str) -> None:
+def save_venue_banner(
+    user: User,
+    venue: Venue,
+    content: bytes,
+    content_type: str,
+    file_name: str,
+    crop_params: Optional[CropParams] = None,
+) -> None:
     bucket_name = settings.THUMBS_FOLDER_NAME
     object_id = f"venue_{venue.id}_banner"
 
+    content = standardize_image(content, crop_params)
     object_storage.store_public_object(
         folder=bucket_name,
         object_id=object_id,

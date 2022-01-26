@@ -233,21 +233,22 @@ def test_create_venue_malformed(app, client, data, key):
 @pytest.mark.usefixtures("db_session")
 class VenueBannerTest:
     @patch("pcapi.core.object_storage.backends.local.LocalBackend.local_dir")
-    def test_upload_image(self, mock_local_dir, app, client):
+    def test_upload_image(self, mock_local_dir, client):
         """
         Check that the image upload works for a legit file (size and type):
             * API returns a 204 status code
-            * the file has been saved to disk
+            * the file has been saved to disk (and resized/cropped before that)
             * venue's banner information have been updated
         """
         user_offerer = offers_factories.UserOffererFactory()
         venue = offers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
 
-        image_content = (IMAGES_DIR / "mouette_landscape.jpg").read_bytes()
-        file = {"banner": (io.BytesIO(image_content), "jerome_le_banner.jpg")}
+        image_content = (IMAGES_DIR / "mouette_full_size.jpg").read_bytes()
+        file = {"banner": (io.BytesIO(image_content), "upsert_banner.jpg")}
 
         client = client.with_session_auth(email=user_offerer.user.email)
         url = f"/venues/{humanize(venue.id)}/banner"
+        url += "?x_crop_percent=0.8&y_crop_percent=0.7&height_crop_percent=0.6"
 
         with tempfile.TemporaryDirectory() as tmpdirname:
             with override_settings(OBJECT_STORAGE_URL=tmpdirname):
@@ -259,10 +260,11 @@ class VenueBannerTest:
 
                 venue = Venue.query.get(venue.id)
                 with open(venue.bannerUrl, mode="rb") as f:
-                    assert f.read() == image_content
+                    # test that image size has been reduced
+                    assert len(f.read()) < len(image_content)
 
                 assert venue.bannerMeta == {
                     "content_type": "jpeg",
-                    "file_name": "jerome_le_banner.jpg",
+                    "file_name": "upsert_banner.jpg",
                     "author_id": user_offerer.user.id,
                 }
