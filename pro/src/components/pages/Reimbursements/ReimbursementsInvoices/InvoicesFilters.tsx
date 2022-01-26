@@ -1,5 +1,4 @@
-import isEqual from 'lodash.isequal'
-import React, { Dispatch, SetStateAction, useCallback } from 'react'
+import React, { Dispatch, SetStateAction, useCallback, useState } from 'react'
 
 import PeriodSelector from 'components/layout/inputs/PeriodSelector/PeriodSelector'
 import Select from 'components/layout/inputs/Select'
@@ -49,7 +48,10 @@ const InvoicesFilters = ({
     periodEnd: selectedPeriodEnd,
   } = filters
 
+  const [areFiltersDefault, setAreFiltersDefault] = useState(true)
+
   function resetFilters() {
+    setAreFiltersDefault(true)
     setFilters(initialFilters)
   }
 
@@ -60,6 +62,7 @@ const InvoicesFilters = ({
         ...prevFilters,
         businessUnit: businessUnitId,
       }))
+      setAreFiltersDefault(false)
     },
     [setFilters]
   )
@@ -70,6 +73,7 @@ const InvoicesFilters = ({
         ...prevFilters,
         periodStart: startDate,
       }))
+      setAreFiltersDefault(false)
     },
     [setFilters]
   )
@@ -80,6 +84,7 @@ const InvoicesFilters = ({
         ...prevFilters,
         periodEnd: endDate,
       }))
+      setAreFiltersDefault(false)
     },
     [setFilters]
   )
@@ -90,7 +95,7 @@ const InvoicesFilters = ({
         <h2 className="header-title">{headerTitle}</h2>
         <button
           className="tertiary-button reset-filters"
-          disabled={isEqual(filters, initialFilters)}
+          disabled={areFiltersDefault}
           onClick={resetFilters}
           type="button"
         >
