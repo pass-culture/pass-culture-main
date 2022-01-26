@@ -3,14 +3,11 @@ from unittest.mock import patch
 import pytest
 
 from pcapi.core.bookings import factories as bookings_factories
-from pcapi.core.categories import subcategories
 import pcapi.core.mails.testing as mails_testing
-from pcapi.core.offers.factories import OffererFactory
 from pcapi.core.offers.factories import UserOffererFactory
 import pcapi.core.users.factories as users_factories
 from pcapi.domain.user_emails import send_activation_email
 from pcapi.domain.user_emails import send_admin_user_validation_email
-from pcapi.domain.user_emails import send_expired_individual_bookings_recap_email_to_offerer
 from pcapi.domain.user_emails import send_individual_booking_confirmation_email_to_offerer
 from pcapi.domain.user_emails import send_offerer_bookings_recap_email_after_offerer_cancellation
 from pcapi.domain.user_emails import send_offerer_driven_cancellation_email_to_offerer
@@ -143,49 +140,6 @@ class SendActivationEmailTest:
         # then
         assert len(mails_testing.outbox) == 1
         assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 994771
-
-
-class SendExpiredBookingsRecapEmailToOffererTest:
-    def test_should_send_email_to_offerer_when_expired_bookings_cancelled(self, app):
-        offerer = OffererFactory()
-        expired_today_dvd_booking = bookings_factories.IndividualBookingFactory(
-            stock__offer__bookingEmail="offerer.booking@example.com"
-        )
-        expired_today_cd_booking = bookings_factories.IndividualBookingFactory(
-            stock__offer__bookingEmail="offerer.booking@example.com"
-        )
-
-        send_expired_individual_bookings_recap_email_to_offerer(
-            offerer, [expired_today_cd_booking, expired_today_dvd_booking]
-        )
-        assert len(mails_testing.outbox) == 1
-        assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 3095184
-        assert mails_testing.outbox[0].sent_data["Vars"]
-
-    def test_should_send_two_emails_to_offerer_when_expired_books_bookings_and_other_bookings_cancelled(self):
-        offerer = OffererFactory()
-        expired_today_dvd_booking = bookings_factories.IndividualBookingFactory(
-            stock__offer__name="Intouchables",
-            stock__offer__bookingEmail="offerer.booking@example.com",
-            stock__offer__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
-        )
-        expired_today_book_booking = bookings_factories.IndividualBookingFactory(
-            stock__offer__name="Les misérables",
-            stock__offer__bookingEmail="offerer.booking@example.com",
-            stock__offer__subcategoryId=subcategories.LIVRE_PAPIER.id,
-        )
-
-        send_expired_individual_bookings_recap_email_to_offerer(
-            offerer, [expired_today_dvd_booking, expired_today_book_booking]
-        )
-
-        assert len(mails_testing.outbox) == 2
-        assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 3095184
-        assert mails_testing.outbox[0].sent_data["Vars"]["withdrawal_period"] == 10
-        assert mails_testing.outbox[0].sent_data["Vars"]["bookings"][0]["offer_name"] == "Les misérables"
-        assert mails_testing.outbox[1].sent_data["Mj-TemplateID"] == 3095184
-        assert mails_testing.outbox[1].sent_data["Vars"]["withdrawal_period"] == 30
-        assert mails_testing.outbox[1].sent_data["Vars"]["bookings"][0]["offer_name"] == "Intouchables"
 
 
 class SendWithdrawalTermsToNewlyValidatedOffererTest:

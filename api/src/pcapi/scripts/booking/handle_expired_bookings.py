@@ -15,10 +15,10 @@ import pcapi.core.bookings.repository as bookings_repository
 from pcapi.core.mails.transactional.bookings.booking_expired_to_beneficiary import (
     send_expired_bookings_to_beneficiary_email,
 )
+from pcapi.core.mails.transactional.pro.booking_expiration_to_pro import send_bookings_expiration_to_pro_email
 from pcapi.core.mails.transactional.sendinblue_template_ids import SendinblueTransactionalEmailData
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.users.models import User
-from pcapi.domain.user_emails import send_expired_individual_bookings_recap_email_to_offerer
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
 
@@ -185,7 +185,7 @@ def notify_offerers_of_expired_individual_bookings(expired_on: datetime.date = N
     notified_offerers = []
 
     for offerer, individual_bookings in expired_individual_bookings_grouped_by_offerer.items():
-        send_expired_individual_bookings_recap_email_to_offerer(
+        send_bookings_expiration_to_pro_email(
             offerer,
             [individual_booking.booking for individual_booking in individual_bookings],
         )

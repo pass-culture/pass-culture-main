@@ -335,7 +335,7 @@ class NotifyUsersOfExpiredBookingsTest:
 
 
 class NotifyOfferersOfExpiredBookingsTest:
-    @mock.patch("pcapi.scripts.booking.handle_expired_bookings.send_expired_individual_bookings_recap_email_to_offerer")
+    @mock.patch("pcapi.scripts.booking.handle_expired_bookings.send_bookings_expiration_to_pro_email")
     def test_should_notify_of_todays_expired_individual_bookings(self, mocked_send_email_recap, app) -> None:
         now = datetime.utcnow()
         yesterday = now - timedelta(days=1)
@@ -373,7 +373,7 @@ class NotifyOfferersOfExpiredBookingsTest:
             [expired_today_cd_booking.individualBooking.booking],
         )
 
-    @mock.patch("pcapi.scripts.booking.handle_expired_bookings.send_expired_individual_bookings_recap_email_to_offerer")
+    @mock.patch("pcapi.scripts.booking.handle_expired_bookings.send_bookings_expiration_to_pro_email")
     def test_should_not_notify_of_todays_expired_educational_bookings(self, mocked_send_email_recap, app) -> None:
         # Given
         now = datetime.utcnow()
