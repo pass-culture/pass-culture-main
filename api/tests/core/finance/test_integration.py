@@ -27,5 +27,7 @@ def test_integration():
     assert pricing.status == models.PricingStatus.PROCESSED
 
     api._generate_invoice(pricing.businessUnitId, [cashflow.id])
+    db.session.refresh(cashflow)
+    assert cashflow.status == models.CashflowStatus.ACCEPTED
     db.session.refresh(pricing)
     assert pricing.status == models.PricingStatus.INVOICED

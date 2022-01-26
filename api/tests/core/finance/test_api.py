@@ -771,6 +771,7 @@ class GenerateInvoiceTest:
         + 1  # insert invoice lines
         + 1  # select cashflows
         + 1  # insert invoice_cashflows
+        + 1  # update Cashflow.status
         + 1  # update Pricing.status
         + 1  # commit
     )
@@ -967,6 +968,20 @@ class GenerateInvoiceTest:
         assert line6.reimbursed_amount == -18.8 * 100
         assert line6.rate == Decimal("0.9400")
         assert line6.label == "Montant remboursé"
+
+    def test_update_statuses(self):
+        booking = bookings_factories.UsedBookingFactory()
+        business_unit_id = booking.venue.businessUnitId
+        api.price_booking(booking)
+        api.generate_cashflows(datetime.datetime.utcnow())
+        cashflow_ids = {cf.id for cf in models.Cashflow.query.all()}
+        api._generate_invoice(business_unit_id, cashflow_ids)
+
+        get_statuses = lambda model: {s for s, in model.query.with_entities(getattr(model, "status"))}
+        cashflow_statuses = get_statuses(models.Cashflow)
+        assert cashflow_statuses == {models.CashflowStatus.ACCEPTED}
+        pricing_statuses = get_statuses(models.Pricing)
+        assert pricing_statuses == {models.PricingStatus.INVOICED}
 
 
 class GenerateInvoiceHtmlTest:
