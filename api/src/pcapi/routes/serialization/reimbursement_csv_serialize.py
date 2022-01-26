@@ -88,10 +88,13 @@ class ReimbursementDetails:
                 rate = ""
         else:  # using Pricing.standardRule or Pricing.customRule
             rule = finance_api._find_reimbursement_rule(payment_info.rule_name or payment_info.rule_id)
-            rate = decimal.Decimal(rule.rate * 100).quantize(decimal.Decimal("0.01"))
-            if rate == int(rate):  # omit decimals if round number
-                rate = int(rate)
-            rate = format_number_as_french(rate) + " %"
+            if rule.rate:
+                rate = decimal.Decimal(rule.rate * 100).quantize(decimal.Decimal("0.01"))
+                if rate == int(rate):  # omit decimals if round number
+                    rate = int(rate)
+                rate = format_number_as_french(rate) + " %"
+            else:
+                rate = ""
         self.reimbursement_rate = rate
         if using_legacy_models:
             self.reimbursed_amount = format_number_as_french(payment_info.amount)
