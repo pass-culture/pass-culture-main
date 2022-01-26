@@ -68,10 +68,13 @@ const ImageEditor = forwardRef<AvatarEditor, ImageEditorProps>(
           scale={Number(scale)}
           width={canvasWidth}
         />
-        <label htmlFor="scale">Zoom</label>
+        <label className={style['image-editor-label']} htmlFor="scale">
+          Zoom
+        </label>
         <label className={style['image-editor-scale']} htmlFor="scale">
-          <span>min</span>
+          <span className={style['image-editor-scale-label']}>min</span>
           <input
+            className={style['image-editor-scale-input']}
             id="scale"
             max="4"
             min="1"
@@ -80,7 +83,7 @@ const ImageEditor = forwardRef<AvatarEditor, ImageEditorProps>(
             type="range"
             value={scale}
           />
-          <span>max</span>
+          <span className={style['image-editor-scale-label']}>max</span>
         </label>
       </div>
     )
