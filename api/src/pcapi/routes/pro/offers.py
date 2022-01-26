@@ -126,6 +126,13 @@ def create_educational_offer(
 ) -> offers_serialize.OfferResponseIdModel:
     try:
         offer = offers_api.create_educational_offer(offer_data=body, user=current_user)
+
+        # FIXME (cgaunet, 2022-01-26): This log is to investigate a bug causing extraData to be json_typeof 'null'
+        if offer.extraData is None:
+            logger.error(
+                "Offer extraData is None after create_educational_offer call",
+                extra={"offer_id": offer.id, "offer_name": offer.name, "payload": body.json()},
+            )
     except CulturalPartnerNotFoundException:
         logger.info(
             "Could not create offer: This offerer has not been found in Adage", extra={"offerer_id": body.offerer_id}
@@ -220,6 +227,13 @@ def edit_educational_offer(
 
         offers_api.update_educational_offer(offer, body.dict(exclude_unset=True))
         offer = offers_repository.get_educational_offer_by_id(dehumanize(offer_id))
+
+        # FIXME (cgaunet, 2022-01-26): This log is to investigate a bug causing extraData to be json_typeof 'null'
+        if offer.extraData is None:
+            logger.error(
+                "Offer extraData is None after edit_educational_offer call",
+                extra={"offer_id": offer.id, "offer_name": offer.name, "payload": body.json()},
+            )
 
         return offers_serialize.GetOfferResponseModel.from_orm(offer)
 
