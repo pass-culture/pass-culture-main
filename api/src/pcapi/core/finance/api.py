@@ -663,6 +663,8 @@ def _generate_payments_file(batch_id: int) -> pathlib.Path:
         .join(offers_models.Stock.offer)
         .join(offers_models.Offer.venue.of_type(OfferVenue))
         .join(bookings_models.Booking.offerer)
+        .outerjoin(bookings_models.Booking.individualBooking)
+        .outerjoin(bookings_models.IndividualBooking.deposit)
         .filter(models.Cashflow.batchId == batch_id)
         .distinct(models.Pricing.id)
         .order_by(models.Pricing.id)
@@ -683,6 +685,7 @@ def _generate_payments_file(batch_id: int) -> pathlib.Path:
             bookings_models.Booking.educationalBookingId.label("educational_booking_id"),
             bookings_models.Booking.individualBookingId.label("individual_booking_id"),
             bookings_models.Booking.dateUsed.label("booking_used_date"),
+            payments_models.Deposit.type.label("deposit_type"),
             models.Pricing.id.label("pricing_id"),
             models.Pricing.amount.label("pricing_amount"),
         )
@@ -704,7 +707,9 @@ def _generate_payments_file(batch_id: int) -> pathlib.Path:
 def _payment_details_row_formatter(sql_row):
     if sql_row.educational_booking_id is not None:
         booking_type = "EACC"
-    elif sql_row.individual_booking_id is not None:
+    elif sql_row.deposit_type == payments_models.DepositType.GRANT_15_17:
+        booking_type = "EACI"
+    elif sql_row.deposit_type == payments_models.DepositType.GRANT_18:
         booking_type = "PC"
     else:
         raise ValueError("Unknown booking type (not educational nor individual)")
