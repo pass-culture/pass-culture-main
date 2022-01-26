@@ -110,8 +110,6 @@ class Booking(PcObject, Model):
 
     amount = Column(Numeric(10, 2), nullable=False)
 
-    isCancelled = Column(Boolean, nullable=False, server_default=expression.false(), default=False)
-
     cancellationDate = Column(DateTime, nullable=True)
 
     isUsed = Column(Boolean, nullable=False, default=False, server_default=expression.false())
