@@ -68,6 +68,31 @@ class StocksResponseModel(BaseModel):
         json_encoders = {datetime: format_into_utc_date}
 
 
+class StockEditionResponseModel(BaseModel):
+    beginningDatetime: datetime
+    bookingLimitDatetime: datetime
+    id: str
+    price: float
+    numberOfTickets: Optional[int]
+    isEducationalStockEditable: bool
+    educationalPriceDetail: Optional[str]
+
+    _humanize_id = humanize_field("id")
+
+    @classmethod
+    def from_orm(cls, stock: Stock):  # type: ignore
+        stock.isEducationalStockEditable = False
+        if stock.offer.isEducational:
+            stock.isEducationalStockEditable = all(
+                booking.status in (BookingStatus.PENDING, BookingStatus.CANCELLED) for booking in stock.bookings
+            )
+        return super().from_orm(stock)
+
+    class Config:
+        json_encoders = {datetime: format_into_utc_date}
+        orm_mode = True
+
+
 class StockCreationBodyModel(BaseModel):
     activation_codes: Optional[list[str]]
     activation_codes_expiration_datetime: Optional[datetime]

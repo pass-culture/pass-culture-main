@@ -562,7 +562,7 @@ def create_educational_stock(stock_data: EducationalStockCreationBodyModel, user
     return stock
 
 
-def edit_educational_stock(stock: Stock, stock_data: dict) -> None:
+def edit_educational_stock(stock: Stock, stock_data: dict) -> Stock:
     beginning = stock_data.get("beginningDatetime")
     booking_limit_datetime = stock_data.get("bookingLimitDatetime")
 
@@ -611,6 +611,9 @@ def edit_educational_stock(stock: Stock, stock_data: dict) -> None:
         stock.offerId,
         list(stock_data.keys()),
     )
+
+    db.session.refresh(stock)
+    return stock
 
 
 def _extract_updatable_fields_from_stock_data(

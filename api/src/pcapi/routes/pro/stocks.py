@@ -18,7 +18,7 @@ from pcapi.core.offers.models import Stock
 from pcapi.core.offers.repository import get_stocks_for_offer
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.apis import private_api
-from pcapi.routes.serialization import offers_serialize
+from pcapi.routes.serialization import stock_serialize
 from pcapi.routes.serialization.stock_serialize import EducationalStockCreationBodyModel
 from pcapi.routes.serialization.stock_serialize import EducationalStockEditionBodyModel
 from pcapi.routes.serialization.stock_serialize import StockIdResponseModel
@@ -157,7 +157,7 @@ def create_educational_stock(body: EducationalStockCreationBodyModel) -> StockId
 @spectree_serialize(on_success_status=200, on_error_statuses=[400, 401, 404, 422])
 def edit_educational_stock(
     stock_id: str, body: EducationalStockEditionBodyModel
-) -> offers_serialize.GetOfferResponseModel:
+) -> stock_serialize.StockEditionResponseModel:
     try:
         stock = offers_repository.get_non_deleted_stock_by_id(dehumanize(stock_id))
         offerer = pcapi.core.offerers.repository.get_by_offer_id(stock.offerId)
@@ -168,10 +168,9 @@ def edit_educational_stock(
     check_user_has_access_to_offerer(current_user, offerer.id)
 
     try:
-        offers_api.edit_educational_stock(stock, body.dict(exclude_unset=True))
-        offer = offers_repository.get_offer_by_id(stock.offerId)
+        stock = offers_api.edit_educational_stock(stock, body.dict(exclude_unset=True))
 
-        return offers_serialize.GetOfferResponseModel.from_orm(offer)
+        return stock_serialize.StockEditionResponseModel.from_orm(stock)
     except educational_exceptions.OfferIsNotEducational:
         raise ApiErrors(
             {"educationalStock": ["L'offre associée au stock n'est pas une offre éducationnelle"]}, status_code=422
