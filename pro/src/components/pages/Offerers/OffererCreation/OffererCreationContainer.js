@@ -11,6 +11,7 @@ import { compose } from 'redux'
 import { requestData } from 'redux-saga-data'
 
 import withTracking from 'components/hocs/withTracking'
+import { isFeatureActive } from 'store/features/selectors'
 import { showNotification } from 'store/reducers/notificationReducer'
 import { selectCurrentUser } from 'store/selectors/data/usersSelectors'
 
@@ -19,6 +20,7 @@ import OffererCreation from './OffererCreation'
 export function mapStateToProps(state) {
   return {
     currentUser: selectCurrentUser(state),
+    isEntrepriseApiDisabled: isFeatureActive(state, 'DISABLE_ENTERPRISE_API'),
   }
 }
 
