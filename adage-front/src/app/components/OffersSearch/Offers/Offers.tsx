@@ -8,12 +8,10 @@ import { useQueries } from 'react-query'
 
 import { Spinner } from 'app/components/Layout/Spinner/Spinner'
 import * as pcapi from 'repository/pcapi/pcapi'
-import { isNewOfferDesignEnabled } from 'utils/isNewOfferDesignEnabled'
 import { OfferType, ResultType, Role } from 'utils/types'
 
 import { NoResultsPage } from './NoResultsPage/NoResultsPage'
 import { Offer } from './Offer'
-import { OfferLegacy } from './OfferLegacy'
 
 const offerIsBookable = (offer: OfferType): boolean =>
   !offer.isSoldOut && !offer.isExpired
@@ -84,20 +82,11 @@ export const OffersComponent = ({
       <ul className="offers">
         {offers.map(offer => (
           <div key={offer.id}>
-            {isNewOfferDesignEnabled() ? (
-              <Offer
-                canPrebookOffers={userRole == Role.redactor}
-                key={offer.id}
-                offer={offer}
-              />
-            ) : (
-              <OfferLegacy
-                canPrebookOffers={userRole == Role.redactor}
-                key={offer.id}
-                offer={offer}
-                thumbUrl={offersThumbById[offer.id]}
-              />
-            )}
+            <Offer
+              canPrebookOffers={userRole == Role.redactor}
+              key={offer.id}
+              offer={offer}
+            />
           </div>
         ))}
       </ul>
