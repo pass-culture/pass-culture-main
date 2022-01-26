@@ -1,5 +1,6 @@
 import isEqual from 'lodash/isEqual'
 import React, { useEffect, useState } from 'react'
+import type { SearchBoxProvided } from 'react-instantsearch-core'
 
 import { getEducationalCategoriesOptionsAdapter } from 'app/adapters/getEducationalCategoriesOptionsAdapter'
 import { Option } from 'app/types'
@@ -13,13 +14,7 @@ import OfferFiltersTags from './OfferFiltersTags'
 import './OfferFilters.scss'
 import { studentsOptions } from './studentsOptions'
 
-export const OfferFilters = ({
-  className,
-  handleSearchButtonClick,
-  venueFilter,
-  removeVenueFilter,
-  isLoading,
-}: {
+interface OfferFiltersProps {
   className?: string
   handleSearchButtonClick: (
     departments: Option[],
@@ -29,7 +24,19 @@ export const OfferFilters = ({
   venueFilter: VenueFilterType | null
   removeVenueFilter: () => void
   isLoading: boolean
-}): JSX.Element => {
+  query: string
+  refine: SearchBoxProvided['refine']
+}
+
+export const OfferFilters = ({
+  className,
+  handleSearchButtonClick,
+  venueFilter,
+  removeVenueFilter,
+  isLoading,
+  refine,
+  query,
+}: OfferFiltersProps): JSX.Element => {
   const [departments, setDepartments] = useState<Option[]>([])
   const [categories, setCategories] = useState<Option<string[]>[]>([])
   const [students, setStudents] = useState<Option[]>([])
@@ -115,9 +122,10 @@ export const OfferFilters = ({
         <SearchButton
           disabled={isLoading}
           label="Lancer la recherche"
-          onClick={() =>
+          onClick={() => {
             handleSearchButtonClick(departments, categories, students)
-          }
+            refine(query)
+          }}
         />
       </div>
     </div>

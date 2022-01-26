@@ -1,38 +1,30 @@
 import './SearchBox.scss'
 import React, { useCallback } from 'react'
-import { connectSearchBox } from 'react-instantsearch-core'
 
 import { ReactComponent as MagnifyingGlassIcon } from 'assets/magnifying-glass.svg'
 export const SearchBoxComponent = ({
-  currentRefinement,
-  refine,
+  query,
+  setQuery,
 }: {
-  currentRefinement: string
-  refine: (e: string) => void
+  query: string
+  setQuery: (query: string) => void
 }): React.ReactElement => {
   const onSubmit = useCallback(event => {
     event.preventDefault()
   }, [])
-
-  const onChange = useCallback(
-    event => {
-      refine(event.currentTarget.value)
-    },
-    [refine]
-  )
 
   return (
     <form className="search-wrapper" onSubmit={onSubmit}>
       <MagnifyingGlassIcon className="search-icon" />
       <input
         className="search-box"
-        onChange={onChange}
+        onChange={e => setQuery(e.target.value)}
         placeholder="Nom de l'offre, du lieu ou de la catégorie (films, visites, conférences, spectacles, cours, musique)"
         type="search"
-        value={currentRefinement}
+        value={query}
       />
     </form>
   )
 }
 
-export const SearchBox = connectSearchBox(SearchBoxComponent)
+export const SearchBox = SearchBoxComponent
