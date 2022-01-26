@@ -16,7 +16,7 @@ def test_get_invoices(client):
     invoice1 = finance_factories.InvoiceFactory(businessUnit=business_unit1, date=dt1)
     business_unit2 = finance_factories.BusinessUnitFactory()
     dt2 = dt1 + datetime.timedelta(days=15)
-    invoice2 = finance_factories.InvoiceFactory(businessUnit=business_unit2, date=dt2, amount=1234)
+    invoice2 = finance_factories.InvoiceFactory(businessUnit=business_unit2, date=dt2, amount=-1234)
     venue1 = offerers_factories.VenueFactory(businessUnit=business_unit1)
     offerer = venue1.managingOfferer
     _venue2 = offerers_factories.VenueFactory(

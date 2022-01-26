@@ -31,8 +31,9 @@ table.reimbursement-table {
     }
 
     th:nth-child(4) {
-      justify-content: flex-end;
+      cursor: default;
       margin-left: rem(20px);
+      text-align: right;
     }
   }
 

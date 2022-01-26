@@ -43,7 +43,7 @@ const ReimbursementsInvoices = ({
     {
       title: 'Montant remboursé',
       sortBy: 'amount',
-      selfDirection: 'default',
+      selfDirection: 'None',
     },
   ]
 
@@ -118,7 +118,7 @@ const ReimbursementsInvoices = ({
         setFilters={setFilters}
       >
         <button
-          className="primary-button"
+          className="primary-button search-button"
           disabled={shouldDisableButton}
           onClick={() => loadInvoices()}
           type="button"
