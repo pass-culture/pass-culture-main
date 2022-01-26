@@ -87,7 +87,7 @@ class ReimbursementDetails:
             else:
                 rate = ""
         else:  # using Pricing.standardRule or Pricing.customRule
-            rule = finance_api._find_reimbursement_rule(payment_info.rule_name or payment_info.rule_id)
+            rule = finance_api.find_reimbursement_rule(payment_info.rule_name or payment_info.rule_id)
             if rule.rate:
                 rate = decimal.Decimal(rule.rate * 100).quantize(decimal.Decimal("0.01"))
                 if rate == int(rate):  # omit decimals if round number

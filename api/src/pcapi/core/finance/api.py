@@ -761,7 +761,7 @@ def edit_business_unit(business_unit: models.BusinessUnit, siret: str) -> None:
     db.session.commit()
 
 
-def _find_reimbursement_rule(rule_reference: [str, int]) -> payments_models.ReimbursementRule:
+def find_reimbursement_rule(rule_reference: [str, int]) -> payments_models.ReimbursementRule:
     # regular rule description
     if isinstance(rule_reference, str):
         for regular_rule in reimbursement.REGULAR_RULES:
@@ -820,7 +820,7 @@ def _generate_invoice(business_unit_id: int, cashflow_ids: list[int]):
     flat_pricings = list(itertools.chain.from_iterable(cashflows_pricings))
     for pricing in flat_pricings:
         rule_reference = pricing.standardRule or pricing.customRuleId
-        rule = _find_reimbursement_rule(rule_reference)
+        rule = find_reimbursement_rule(rule_reference)
         if isinstance(rule, payments_models.CustomReimbursementRule):
             pricings_by_custom_rule[rule].append(pricing)
         else:
