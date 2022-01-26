@@ -800,6 +800,39 @@ def _make_invoice_line(invoice: models.Invoice, group: conf.RuleGroups, pricings
     return invoice_line, reimbursed_amount
 
 
+def generate_invoices():
+    """Generate (and store) all invoices."""
+    rows = (
+        db.session.query(
+            models.Cashflow.businessUnitId.label("business_unit_id"),
+            sqla_func.array_agg(models.Cashflow.id).label("cashflow_ids"),
+        )
+        .filter(models.Cashflow.status == models.CashflowStatus.UNDER_REVIEW)
+        .outerjoin(
+            models.InvoiceCashflow,
+            models.InvoiceCashflow.cashflowId == models.Cashflow.id,
+        )
+        # There should not be any invoice linked to a cashflow that is
+        # UNDER_REVIEW, but having a safety belt here is almost free.
+        .filter(models.InvoiceCashflow.invoiceId.is_(None))
+        .group_by(models.Cashflow.businessUnitId)
+    )
+
+    for row in rows:
+        try:
+            with transaction():
+                generate_and_store_invoice(row.business_unit_id, row.cashflow_ids)
+        except Exception as exc:  # pylint: disable=broad-except
+            logger.exception(
+                "Could not generate invoice",
+                extra={
+                    "business_unit": row.business_unit_id,
+                    "cashflow_ids": row.cashflow_ids,
+                    "exc": str(exc),
+                },
+            )
+
+
 def generate_and_store_invoice(business_unit_id: int, cashflow_ids: list[int]):
     invoice = _generate_invoice(business_unit_id=business_unit_id, cashflow_ids=cashflow_ids)
     invoice_html = _generate_invoice_html(invoice=invoice)
