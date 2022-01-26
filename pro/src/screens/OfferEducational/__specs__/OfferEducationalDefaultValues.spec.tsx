@@ -117,9 +117,9 @@ describe('screens | OfferEducational', () => {
     ) as HTMLInputElement
     expect(notificationsCheckbox.checked).toBe(false)
 
-    const notificationEmailInput = screen.getByLabelText(
+    const notificationEmailInput = screen.queryByLabelText(
       NOTIFICATIONS_EMAIL_LABEL
     ) as HTMLInputElement
-    expect(notificationEmailInput).toHaveValue('')
+    expect(notificationEmailInput).not.toBeInTheDocument()
   })
 })
