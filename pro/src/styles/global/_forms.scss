@@ -106,7 +106,7 @@
   }
 
   &::placeholder {
-    color: $grey-dark;
+    font-weight: 400;
   }
 }
 
@@ -200,7 +200,7 @@
 
       .field-checkbox,
       .field-checkboxes {
-        input[type="checkbox"] {
+        input[type='checkbox'] {
           opacity: 1;
         }
       }
@@ -275,9 +275,9 @@
   }
 }
 
-.input[type="email"],
-.input[type="text"],
-.input[type="url"] {
+.input[type='email'],
+.input[type='text'],
+.input[type='url'] {
   @include body();
 
   align-items: center;
