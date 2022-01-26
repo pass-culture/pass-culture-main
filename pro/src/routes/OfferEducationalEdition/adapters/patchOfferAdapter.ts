@@ -38,7 +38,7 @@ const patchOfferAdapter: PostOfferAdapter = async ({
       offerId,
       payload
     )) as Offer
-    const isBooked = updatedOffer?.stocks[0]?.bookingsQuantity > 0
+    const isBooked = updatedOffer.stocks[0]?.bookingsQuantity > 0
 
     return {
       isOk: true,

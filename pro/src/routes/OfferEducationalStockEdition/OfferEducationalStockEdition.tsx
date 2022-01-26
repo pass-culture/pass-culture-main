@@ -40,18 +40,23 @@ const OfferEducationalStockEdition = (): JSX.Element => {
 
     const stockId = stock.id
 
-    const { isOk, message } = await patchEducationalStockAdapter({
+    const stockResponse = await patchEducationalStockAdapter({
       offer,
       stockId,
       values,
       initialValues,
     })
 
-    if (!isOk) {
-      return notify.error(message)
+    if (!stockResponse.isOk) {
+      return notify.error(stockResponse.message)
     }
 
-    notify.success(message)
+    notify.success(stockResponse.message)
+    const initialValuesFromStock = extractInitialStockValues(
+      stockResponse.payload,
+      offer
+    )
+    setInitialValues(initialValuesFromStock)
   }
 
   const setIsOfferActive = async (isActive: boolean) => {
