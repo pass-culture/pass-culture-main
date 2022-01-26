@@ -351,6 +351,9 @@ def notify_educational_redactor_on_educational_offer_or_stock_edit(
     offer_id: str,
     updated_fields: list[str],
 ) -> None:
+    if len(updated_fields) == 0:
+        return
+
     active_educational_bookings = educational_repository.find_active_educational_booking_by_offer_id(offer_id)
     if active_educational_bookings is None:
         return
