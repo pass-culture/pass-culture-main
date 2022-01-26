@@ -22,6 +22,7 @@ from pcapi.core.fraud import factories as fraud_factories
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.fraud.ubble import models as ubble_fraud_models
 import pcapi.core.mails.testing as mails_testing
+import pcapi.core.subscription.api as subscription_api
 import pcapi.core.subscription.factories as subscription_factories
 import pcapi.core.subscription.messages as subscription_messages
 import pcapi.core.subscription.models as subscription_models
@@ -1033,6 +1034,11 @@ class SendPhoneValidationCodeTest:
         assert content["source"] == fraud_models.InternalReviewSource.PHONE_ALREADY_EXISTS.value
         assert content["message"] == f"Le numéro est déjà utilisé par l'utilisateur {orig_user.id}"
         assert content["phone_number"] == "+33102030405"
+
+        assert (
+            subscription_api.get_phone_validation_subscription_item(user, EligibilityType.AGE18).status
+            == subscription_models.SubscriptionItemStatus.KO
+        )
 
     @override_settings(BLACKLISTED_SMS_RECIPIENTS={"+33607080900"})
     def test_update_phone_number_with_blocked_phone_number(self, client, app):

@@ -204,18 +204,17 @@ def get_phone_validation_subscription_item(
     if eligibility != users_models.EligibilityType.AGE18:
         status = models.SubscriptionItemStatus.NOT_APPLICABLE
     else:
-        if not user.phoneValidationStatus:
-            if FeatureToggle.ENABLE_PHONE_VALIDATION.is_active():
-                if _is_eligibility_activable(user, eligibility):
-                    status = models.SubscriptionItemStatus.TODO
-                else:
-                    status = models.SubscriptionItemStatus.VOID
-            else:
-                status = models.SubscriptionItemStatus.NOT_ENABLED
-        elif user.is_phone_validated:
+        if user.is_phone_validated:
             status = models.SubscriptionItemStatus.OK
         else:
-            status = models.SubscriptionItemStatus.KO
+            if fraud_repository.has_failed_phone_validation(user):
+                status = models.SubscriptionItemStatus.KO
+            elif not FeatureToggle.ENABLE_PHONE_VALIDATION.is_active():
+                status = models.SubscriptionItemStatus.NOT_ENABLED
+            elif _is_eligibility_activable(user, eligibility):
+                status = models.SubscriptionItemStatus.TODO
+            else:
+                status = models.SubscriptionItemStatus.VOID
 
     return models.SubscriptionItem(type=models.SubscriptionStep.PHONE_VALIDATION, status=status)
 
