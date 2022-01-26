@@ -9,6 +9,7 @@ import { Form } from 'react-final-form'
 
 import OffererCreation from '../OffererCreation'
 import OffererCreationForm from '../OffererCreationForm/OffererCreationForm'
+import OffererCreationUnavailable from '../OffererCreationUnavailable/OffererCreationUnavailable'
 
 describe('src | components | OffererCreation', () => {
   let props
@@ -16,6 +17,7 @@ describe('src | components | OffererCreation', () => {
   beforeEach(() => {
     props = {
       createNewOfferer: jest.fn(),
+      isEntrepriseApiDisabled: false,
       showNotification: jest.fn(),
       trackCreateOfferer: jest.fn(),
       redirectAfterSubmit: jest.fn(),
@@ -44,6 +46,13 @@ describe('src | components | OffererCreation', () => {
   })
 
   describe('render', () => {
+    it('should render a OffererCreationUnavailable component when pro offerer creation is disabled', () => {
+      props.isEntrepriseApiDisabled = true
+      const wrapper = shallow(<OffererCreation {...props} />)
+
+      expect(wrapper.find(OffererCreationUnavailable)).toHaveLength(1)
+    })
+
     it('should render a OffererCreation component with default props', () => {
       // when
       const wrapper = shallow(<OffererCreation {...props} />)

@@ -1,6 +1,6 @@
 import React, { FunctionComponent } from 'react'
 
-import { ReactComponent as UnavailableIcon } from '../assets/ico-unavailable-gradient.svg'
+import { ReactComponent as UnavailableIcon } from 'icons/ico-unavailable-gradient.svg'
 
 import styles from './SignupUnavailable.module.scss'
 
