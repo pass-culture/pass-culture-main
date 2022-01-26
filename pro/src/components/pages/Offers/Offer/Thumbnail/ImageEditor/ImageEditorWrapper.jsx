@@ -6,6 +6,13 @@
 import PropTypes from 'prop-types'
 import React, { useCallback, useRef } from 'react'
 
+import {
+  CANVAS_HEIGHT,
+  CANVAS_WIDTH,
+  CROP_BORDER_COLOR,
+  CROP_BORDER_HEIGHT,
+  CROP_BORDER_WIDTH,
+} from 'components/pages/Offers/Offer/Thumbnail/_constants'
 import ImageEditor from 'components/pages/Offers/Offer/Thumbnail/ImageEditor/ImageEditor'
 
 const ImageEditorWrapper = ({
@@ -34,7 +41,15 @@ const ImageEditorWrapper = ({
   return (
     <>
       <div className="tnd-subtitle">Recadrer votre image</div>
-      <ImageEditor image={thumbnail} ref={editorRef} />
+      <ImageEditor
+        canvasHeight={CANVAS_HEIGHT}
+        canvasWidth={CANVAS_WIDTH}
+        cropBorderColor={CROP_BORDER_COLOR}
+        cropBorderHeight={CROP_BORDER_HEIGHT}
+        cropBorderWidth={CROP_BORDER_WIDTH}
+        image={thumbnail}
+        ref={editorRef}
+      />
       <div className="tnd-actions">
         <button
           className="secondary-button"
