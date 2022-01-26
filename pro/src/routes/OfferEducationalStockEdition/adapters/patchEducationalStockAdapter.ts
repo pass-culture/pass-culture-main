@@ -7,6 +7,8 @@ import {
 } from 'core/OfferEducational'
 import * as pcapi from 'repository/pcapi/pcapi'
 
+import { StockResponse } from '../types'
+
 type Params = {
   offer: GetStockOfferSuccessPayload
   stockId: string
@@ -14,15 +16,15 @@ type Params = {
   initialValues: OfferEducationalStockFormValues
 }
 
-type PatchEducationalStockAdapter = Adapter<Params, null, null>
+type PatchEducationalStockAdapter = Adapter<Params, StockResponse, null>
 
-const BAD_REQUEST_FAILING_RESPONSE = {
+const BAD_REQUEST_FAILING_RESPONSE: AdapterFailure<null> = {
   isOk: false,
   message: 'Une ou plusieurs erreurs sont présentes dans le formulaire',
   payload: null,
 }
 
-const UNKNOWN_FAILING_RESPONSE = {
+const UNKNOWN_FAILING_RESPONSE: AdapterFailure<null> = {
   isOk: false,
   message: 'Une erreur est survenue lors de la mise à jour de votre stock.',
   payload: null,
@@ -40,11 +42,14 @@ const patchEducationalStockAdapter: PatchEducationalStockAdapter = async ({
     initialValues
   )
   try {
-    await pcapi.editEducationalStock(stockId, patchStockPayload)
+    const stock = (await pcapi.editEducationalStock(
+      stockId,
+      patchStockPayload
+    )) as StockResponse
     return {
       isOk: true,
       message: 'Le détail de votre stock a bien été modifié.',
-      payload: null,
+      payload: stock,
     }
   } catch (error) {
     if (hasStatusCode(error) && error.status === 400) {
