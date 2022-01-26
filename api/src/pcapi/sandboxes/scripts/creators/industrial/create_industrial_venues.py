@@ -87,6 +87,7 @@ def create_industrial_venues(offerers_by_name: dict, venue_types: list[VenueType
                 venueTypeId=venue_type.id,
                 venueTypeCode=venue_type_code,
                 isPermanent=True,
+                businessUnit__name=offerer.name,
             )
             VenueProviderFactory(venue=venue)
 
@@ -102,10 +103,12 @@ def create_industrial_venues(offerers_by_name: dict, venue_types: list[VenueType
 
         virtual_venue_name = "{} (Offre numérique)"
         venue_by_name[virtual_venue_name] = VirtualVenueFactory(
-            managingOfferer=offerer, name=virtual_venue_name.format(venue_name)
+            managingOfferer=offerer, name=virtual_venue_name.format(venue_name), businessUnit__name=offerer.name
         )
 
-    venue_synchronized_with_allocine = VenueFactory(name="Lieu synchro allociné", siret="87654321")
+    venue_synchronized_with_allocine = VenueFactory(
+        name="Lieu synchro allociné", siret="87654321", businessUnit__name="Business Unit du Lieu synchro allociné"
+    )
     allocine_provider = AllocineProviderFactory(isActive=True)
     pivot = AllocinePivotFactory(siret=venue_synchronized_with_allocine.siret)
     venue_provider = AllocineVenueProviderFactory(
