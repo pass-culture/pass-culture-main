@@ -3,7 +3,6 @@ import logging
 import typing
 
 from pcapi.core import mails
-from pcapi.core.bookings import constants as booking_constants
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.bookings.models import IndividualBooking
@@ -23,7 +22,6 @@ from pcapi.emails.beneficiary_offer_cancellation import (
     retrieve_offerer_booking_recap_email_data_after_user_cancellation,
 )
 from pcapi.emails.beneficiary_pre_subscription_rejected import make_dms_wrong_values_data
-from pcapi.emails.beneficiary_soon_to_be_expired_bookings import filter_books_bookings
 from pcapi.emails.new_offerer_validated_withdrawal_terms import (
     retrieve_data_for_new_offerer_validated_withdrawal_terms_email,
 )
@@ -31,7 +29,6 @@ from pcapi.emails.offerer_booking_recap import retrieve_data_for_offerer_booking
 from pcapi.emails.offerer_bookings_recap_after_deleting_stock import (
     retrieve_offerer_bookings_recap_email_data_after_offerer_cancellation,
 )
-from pcapi.emails.offerer_expired_bookings import build_expired_bookings_recap_email_data_for_offerer
 from pcapi.utils.mailing import make_admin_user_validation_email
 from pcapi.utils.mailing import make_offerer_driven_cancellation_email_for_offerer
 from pcapi.utils.mailing import make_pro_user_validation_email
@@ -85,28 +82,6 @@ def send_booking_cancellation_emails_to_user_and_offerer(
     if reason == BookingCancellationReasons.FRAUD:
         return send_user_driven_cancellation_email_to_offerer(booking)
     return True
-
-
-def send_expired_individual_bookings_recap_email_to_offerer(offerer: Offerer, bookings: list[Booking]) -> bool:
-    offerer_booking_email = bookings[0].stock.offer.bookingEmail
-    if not offerer_booking_email:
-        return True
-
-    success = True
-    books_bookings, other_bookings = filter_books_bookings(bookings)
-    if books_bookings:
-        books_bookings_data = build_expired_bookings_recap_email_data_for_offerer(
-            offerer, books_bookings, booking_constants.BOOKS_BOOKINGS_AUTO_EXPIRY_DELAY.days
-        )
-        success &= mails.send(recipients=[offerer_booking_email], data=books_bookings_data)
-
-    if other_bookings:
-        other_bookings_data = build_expired_bookings_recap_email_data_for_offerer(
-            offerer, other_bookings, booking_constants.BOOKINGS_AUTO_EXPIRY_DELAY.days
-        )
-        success &= mails.send(recipients=[offerer_booking_email], data=other_bookings_data)
-
-    return success
 
 
 def send_pro_user_validation_email(user: User) -> bool:

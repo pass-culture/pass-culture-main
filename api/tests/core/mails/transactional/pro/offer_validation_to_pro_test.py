@@ -127,6 +127,7 @@ class SendinblueSendOfferValidationTest:
 
         # Then
         assert len(mails_testing.outbox) == 1  # test number of emails sent
+        assert mails_testing.outbox[0].sent_data["template"] == TransactionalEmail.OFFER_APPROVAL_TO_PRO.value.__dict__
         assert mails_testing.outbox[0].sent_data["To"] == "jules.verne@example.com"
         assert mails_testing.outbox[0].sent_data["params"] == {
             "OFFER_NAME": offer.name,
@@ -163,6 +164,7 @@ class SendinblueSendOfferValidationTest:
 
         # Then
         assert len(mails_testing.outbox) == 1  # test number of emails sent
+        assert mails_testing.outbox[0].sent_data["template"] == TransactionalEmail.OFFER_REJECTION_TO_PRO.value.__dict__
         assert mails_testing.outbox[0].sent_data["To"] == "jules.verne@example.com"
         assert mails_testing.outbox[0].sent_data["params"] == {
             "OFFER_NAME": offer.name,
