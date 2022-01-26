@@ -21,6 +21,7 @@ from pcapi.serialization.utils import string_to_boolean_field
 from pcapi.serialization.utils import to_camel
 from pcapi.utils import phone_number as phone_number_utils
 from pcapi.utils.date import format_into_utc_date
+from pcapi.utils.image_conversion import CropParam
 
 
 MAX_LONGITUDE = 180
@@ -273,6 +274,12 @@ class VenueBannerContentModel(BaseModel):
     content_type: pydantic.constr(strip_whitespace=True, to_lower=True, max_length=16)  # type: ignore
     file_name: pydantic.constr(strip_whitespace=True, to_lower=True, min_length=5, max_length=256)  # type: ignore
 
+    # cropping parameters must be a % (between 0 and 1) of the original
+    # bottom right corner and the original height
+    x_crop_percent: CropParam  # type: ignore
+    y_crop_percent: CropParam  # type: ignore
+    height_crop_percent: CropParam  # type: ignore
+
     class Config:
         extra = pydantic.Extra.forbid
         anystr_strip_whitespace = True
@@ -306,6 +313,9 @@ class VenueBannerContentModel(BaseModel):
         return VenueBannerContentModel(
             content=file.read(VENUE_BANNER_MAX_SIZE),
             file_name=file.filename,
+            x_crop_percent=request.args.get("x_crop_percent"),
+            y_crop_percent=request.args.get("y_crop_percent"),
+            height_crop_percent=request.args.get("height_crop_percent"),
         )
 
     @classmethod
@@ -324,3 +334,9 @@ class VenueBannerContentModel(BaseModel):
             raise ValueError(f"Image trop grande, max: {VENUE_BANNER_MAX_SIZE / 1_000}Ko")
 
         return request
+
+    @property
+    def crop_params(self):
+        if {self.x_crop_percent, self.y_crop_percent, self.height_crop_percent} == {None}:
+            return None
+        return (self.x_crop_percent, self.y_crop_percent, self.height_crop_percent)
