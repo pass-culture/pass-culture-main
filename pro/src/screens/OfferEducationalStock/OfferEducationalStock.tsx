@@ -42,7 +42,7 @@ const OfferEducationalStock = ({
 }: IOfferEducationalStockProps): JSX.Element => {
   const offerIsDisbaled = isOfferDisabled(offer.status)
 
-  const { setValues, ...formik } = useFormik({
+  const { resetForm, ...formik } = useFormik({
     initialValues,
     onSubmit: values => onSubmit(offer, values),
     validationSchema: validationSchema,
@@ -56,8 +56,8 @@ const OfferEducationalStock = ({
   useEffect(() => {
     // update formik values with initial values when initial values
     // are updated after stock update
-    setValues(initialValues)
-  }, [initialValues, setValues])
+    resetForm({ values: initialValues })
+  }, [initialValues, resetForm])
 
   return (
     <>
@@ -70,7 +70,7 @@ const OfferEducationalStock = ({
           setIsOfferActive={setIsOfferActive}
         />
       )}
-      <FormikProvider value={{ ...formik, setValues }}>
+      <FormikProvider value={{ ...formik, resetForm }}>
         <form onSubmit={formik.handleSubmit}>
           <FormLayout>
             <FormLayout.Section title="Date et prix">
