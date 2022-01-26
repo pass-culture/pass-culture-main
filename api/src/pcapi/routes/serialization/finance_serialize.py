@@ -4,6 +4,7 @@ from typing import Optional
 from pydantic import BaseModel
 
 import pcapi.core.finance.models as finance_models
+import pcapi.core.finance.utils as finance_utils
 import pcapi.serialization.utils as serialization_utils
 
 
@@ -67,7 +68,7 @@ class InvoiceResponseModel(BaseModel):
     def from_orm(cls, invoice: finance_models.Invoice):
         invoice.businessUnitName = invoice.businessUnit.name
         res = super().from_orm(invoice)
-        res.amount /= 100
+        res.amount = -finance_utils.to_euros(res.amount)
         return res
 
 
