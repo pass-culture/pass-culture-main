@@ -1,5 +1,6 @@
 from datetime import datetime
 
+from freezegun import freeze_time
 import pytest
 
 import pcapi.core.bookings.factories as bookings_factories
@@ -12,6 +13,7 @@ import pcapi.core.users.factories as users_factories
 from pcapi.routes.adage.v1.serialization.prebooking import EducationalBookingEdition
 from pcapi.routes.adage.v1.serialization.prebooking import serialize_educational_booking
 from pcapi.routes.serialization import serialize
+from pcapi.utils.date import format_into_utc_date
 from pcapi.utils.human_ids import humanize
 
 
@@ -19,6 +21,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 
 class Returns200Test:
+    @freeze_time("2019-01-01T12:00:00Z")
     @override_settings(ADAGE_API_URL="https://adage_base_url")
     def test_patch_educational_offer(self, client):
         # Given
@@ -28,7 +31,9 @@ class Returns200Test:
             isEducational=True,
             subcategoryId="CINE_PLEIN_AIR",
         )
-        booking = bookings_factories.EducationalBookingFactory(stock__offer=offer)
+        booking = bookings_factories.EducationalBookingFactory(
+            stock__offer=offer, stock__beginningDatetime=datetime(2020, 1, 1)
+        )
         offers_factories.UserOffererFactory(
             user__email="user@example.com",
             offerer=offer.venue.managingOfferer,
@@ -47,8 +52,145 @@ class Returns200Test:
 
         # Then
         assert response.status_code == 200
+        product = offer.product
+        venue = offer.venue
+        offerer = venue.managingOfferer
+        stock = offer.stocks[0]
+
         assert response.json == {
+            "activeMediation": None,
+            "ageMax": None,
+            "ageMin": None,
+            "audioDisabilityCompliant": False,
+            "bookingEmail": None,
+            "conditions": None,
+            "dateCreated": format_into_utc_date(offer.dateCreated),
+            "dateModifiedAtLastProvider": format_into_utc_date(offer.dateModifiedAtLastProvider),
+            "dateRange": [
+                format_into_utc_date(stock.beginningDatetime),
+                format_into_utc_date(stock.beginningDatetime),
+            ],
+            "description": offer.description,
+            "durationMinutes": None,
+            "externalTicketOfficeUrl": None,
+            "extraData": {"contactEmail": "toto@example.com", "contactPhone": "0600000000"},
+            "fieldsUpdated": [],
+            "hasBookingLimitDatetimesPassed": False,
             "id": humanize(offer.id),
+            "idAtProviders": None,
+            "isActive": True,
+            "isBookable": True,
+            "isDigital": False,
+            "isDuo": False,
+            "isEditable": True,
+            "isEducational": True,
+            "isEvent": True,
+            "isNational": False,
+            "isThing": False,
+            "lastProvider": None,
+            "lastProviderId": None,
+            "mediaUrls": [],
+            "mediations": [],
+            "mentalDisabilityCompliant": True,
+            "motorDisabilityCompliant": False,
+            "name": "New name",
+            "nonHumanizedId": offer.id,
+            "product": {
+                "ageMax": None,
+                "ageMin": None,
+                "conditions": None,
+                "dateModifiedAtLastProvider": format_into_utc_date(product.dateModifiedAtLastProvider),
+                "description": product.description,
+                "durationMinutes": None,
+                "extraData": None,
+                "fieldsUpdated": [],
+                "id": humanize(product.id),
+                "idAtProviders": None,
+                "isGcuCompatible": True,
+                "isNational": False,
+                "lastProviderId": None,
+                "mediaUrls": [],
+                "name": product.name,
+                "owningOffererId": None,
+                "thumbCount": 0,
+                "url": None,
+            },
+            "productId": humanize(product.id),
+            "status": "ACTIVE",
+            "stocks": [
+                {
+                    "beginningDatetime": "2020-01-01T00:00:00Z",
+                    "bookingLimitDatetime": format_into_utc_date(stock.bookingLimitDatetime),
+                    "bookingsQuantity": 1,
+                    "cancellationLimitDate": "2019-01-03T12:00:00Z",
+                    "dateCreated": format_into_utc_date(stock.dateCreated),
+                    "dateModified": format_into_utc_date(stock.dateModified),
+                    "dateModifiedAtLastProvider": format_into_utc_date(stock.dateModifiedAtLastProvider),
+                    "fieldsUpdated": [],
+                    "hasActivationCode": False,
+                    "id": humanize(stock.id),
+                    "idAtProviders": None,
+                    "isBookable": True,
+                    "isEventDeletable": True,
+                    "isEventExpired": False,
+                    "isSoftDeleted": False,
+                    "lastProviderId": None,
+                    "offerId": humanize(offer.id),
+                    "price": stock.price,
+                    "quantity": stock.quantity,
+                    "remainingQuantity": stock.quantity - 1,
+                }
+            ],
+            "subcategoryId": "CONCERT",
+            "thumbUrl": None,
+            "url": None,
+            "venue": {
+                "address": "1 boulevard Poissonnière",
+                "audioDisabilityCompliant": False,
+                "bookingEmail": None,
+                "city": "Paris",
+                "comment": None,
+                "dateCreated": format_into_utc_date(venue.dateCreated),
+                "dateModifiedAtLastProvider": format_into_utc_date(venue.dateModifiedAtLastProvider),
+                "departementCode": "75",
+                "fieldsUpdated": [],
+                "id": humanize(venue.id),
+                "idAtProviders": None,
+                "isValidated": True,
+                "isVirtual": False,
+                "lastProviderId": None,
+                "latitude": 48.87004,
+                "longitude": 2.3785,
+                "managingOfferer": {
+                    "address": "1 boulevard Poissonnière",
+                    "city": "Paris",
+                    "dateCreated": format_into_utc_date(offerer.dateCreated),
+                    "dateModifiedAtLastProvider": format_into_utc_date(offerer.dateModifiedAtLastProvider),
+                    "fieldsUpdated": [],
+                    "id": humanize(offerer.id),
+                    "idAtProviders": None,
+                    "isActive": True,
+                    "isValidated": True,
+                    "lastProviderId": None,
+                    "name": offerer.name,
+                    "postalCode": "75000",
+                    "siren": offerer.siren,
+                    "thumbCount": 0,
+                },
+                "managingOffererId": humanize(offerer.id),
+                "mentalDisabilityCompliant": False,
+                "motorDisabilityCompliant": False,
+                "name": venue.name,
+                "postalCode": "75000",
+                "publicName": venue.publicName,
+                "siret": venue.siret,
+                "thumbCount": 0,
+                "venueLabelId": None,
+                "visualDisabilityCompliant": False,
+            },
+            "venueId": humanize(venue.id),
+            "visualDisabilityCompliant": False,
+            "withdrawalDetails": None,
         }
         updated_offer = Offer.query.get(offer.id)
         assert updated_offer.name == "New name"
