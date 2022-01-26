@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { useParams } from 'react-router'
 
 import { withTracking } from 'components/hocs'
@@ -45,19 +45,20 @@ const OfferEducationalEdition = ({
   const notify = useNotification()
 
   const editOffer = async (offer: IOfferEducationalFormValues) => {
-    const { isOk, message } = await patchOfferAdapter({
+    const offerResponse = await patchOfferAdapter({
       offerId,
       offer,
       initialValues,
     })
 
-    if (!isOk) {
-      return notify.error(message)
+    if (!offerResponse.isOk) {
+      return notify.error(offerResponse.message)
     }
 
     tracking.trackEvent({ action: 'modifyOffer', name: offerId })
 
-    notify.success(message)
+    notify.success(offerResponse.message)
+    loadData(offerResponse)
   }
 
   const setIsOfferActive = async (isActive: boolean) => {
@@ -85,75 +86,75 @@ const OfferEducationalEdition = ({
     setIsReady(false)
   }
 
-  useEffect(() => {
-    if (!isReady) {
-      const loadData = async () => {
-        const offerResponse = await getOfferAdapter(offerId)
-
-        if (!offerResponse.isOk) {
-          return notify.error(offerResponse.message)
-        }
-
-        const offer = offerResponse.payload
-        setOffer(offer)
-        const offererId = offer.venue.managingOffererId
-
-        const results = await Promise.all([
-          getCategoriesAdapter(null),
-          getOfferersAdapter(offererId),
-        ])
-
-        if (results.some(res => !res.isOk)) {
-          notify.error(results?.find(res => !res.isOk)?.message)
-        }
-
-        const [categories, offerers] = results
-
-        const offerSubcategory =
-          categories.payload.educationalSubCategories.find(
-            ({ id }) => offer.subcategoryId === id
-          )
-
-        const offerCategory = offerSubcategory
-          ? categories.payload.educationalCategories.find(
-              ({ id }) => offerSubcategory.categoryId === id
-            )
-          : undefined
-
-        const userOfferers = offerers.payload.filter(offerer =>
-          offerer.managedVenues.map(venue => venue.id).includes(offer.venueId)
-        )
-
-        const initialValuesFromOffer = computeInitialValuesFromOffer(
-          offer,
-          offerCategory?.id ?? '',
-          offerSubcategory?.id ?? ''
-        )
-
-        setScreenProps({
-          educationalCategories: categories.payload.educationalCategories,
-          educationalSubCategories: categories.payload.educationalSubCategories,
-          userOfferers,
-        })
-
-        setInitialValues(values =>
-          setInitialFormValues(
-            {
-              ...values,
-              ...initialValuesFromOffer,
-            },
-            userOfferers,
-            userOfferers[0].id,
-            offer.venueId
-          )
-        )
-
-        setIsReady(true)
+  const loadData = useCallback(
+    async (offerResponse: AdapterFailure<null> | AdapterSuccess<Offer>) => {
+      if (!offerResponse.isOk) {
+        return notify.error(offerResponse.message)
       }
 
-      loadData()
+      const offer = offerResponse.payload
+      setOffer(offer)
+      const offererId = offer.venue.managingOffererId
+
+      const results = await Promise.all([
+        getCategoriesAdapter(null),
+        getOfferersAdapter(offererId),
+      ])
+
+      if (results.some(res => !res.isOk)) {
+        notify.error(results?.find(res => !res.isOk)?.message)
+      }
+
+      const [categories, offerers] = results
+
+      const offerSubcategory = categories.payload.educationalSubCategories.find(
+        ({ id }) => offer.subcategoryId === id
+      )
+
+      const offerCategory = offerSubcategory
+        ? categories.payload.educationalCategories.find(
+            ({ id }) => offerSubcategory.categoryId === id
+          )
+        : undefined
+
+      const userOfferers = offerers.payload.filter(offerer =>
+        offerer.managedVenues.map(venue => venue.id).includes(offer.venueId)
+      )
+
+      const initialValuesFromOffer = computeInitialValuesFromOffer(
+        offer,
+        offerCategory?.id ?? '',
+        offerSubcategory?.id ?? ''
+      )
+
+      setScreenProps({
+        educationalCategories: categories.payload.educationalCategories,
+        educationalSubCategories: categories.payload.educationalSubCategories,
+        userOfferers,
+      })
+
+      setInitialValues(values =>
+        setInitialFormValues(
+          {
+            ...values,
+            ...initialValuesFromOffer,
+          },
+          userOfferers,
+          userOfferers[0].id,
+          offer.venueId
+        )
+      )
+
+      setIsReady(true)
+    },
+    [notify]
+  )
+
+  useEffect(() => {
+    if (!isReady) {
+      getOfferAdapter(offerId).then(offerResponse => loadData(offerResponse))
     }
-  }, [isReady, offerId, notify])
+  }, [isReady, offerId, loadData])
 
   return (
     <OfferEducationalLayout
