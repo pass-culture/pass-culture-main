@@ -10,11 +10,11 @@ import { Role, VenueFilterType } from 'utils/types'
 import { App } from '../App'
 
 import {
-  queryResetFiltersButton,
-  findStudentsFilter,
+  findCategoriesFilter,
   findDepartmentFilter,
   findLaunchSearchButton,
-  findCategoriesFilter,
+  findStudentsFilter,
+  queryResetFiltersButton,
   queryTag,
 } from './__test_utils__/elements'
 
@@ -336,18 +336,6 @@ describe('app', () => {
       expect(queryTag('59 - Nord')).not.toBeInTheDocument()
       expect(queryTag('Collège - 4e')).not.toBeInTheDocument()
       expect(queryTag('Cinéma')).not.toBeInTheDocument()
-    })
-
-    it('should disable Lancer La Recherche button when app is fetching offers', async () => {
-      // Given
-      render(<App />)
-      const launchSearchButton = await findLaunchSearchButton()
-
-      // When
-      userEvent.click(launchSearchButton)
-
-      // Then
-      await waitFor(() => expect(launchSearchButton).toBeDisabled())
     })
   })
 
