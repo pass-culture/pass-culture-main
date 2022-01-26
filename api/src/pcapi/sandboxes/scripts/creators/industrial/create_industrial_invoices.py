@@ -1,0 +1,113 @@
+from collections import defaultdict
+import datetime
+import logging
+
+import pcapi.core.bookings.factories as bookings_factories
+from pcapi.core.categories import subcategories
+from pcapi.core.finance import api as finance_api
+from pcapi.core.finance import factories as finance_factories
+from pcapi.core.finance import models as finance_models
+import pcapi.core.offerers.factories as offerers_factories
+import pcapi.core.offers.factories as offers_factories
+import pcapi.core.payments.factories as payments_factories
+import pcapi.core.users.factories as users_factories
+
+
+logger = logging.getLogger(__name__)
+
+
+def create_industrial_invoices():
+    logger.info("create_industrial_invoices")
+
+    batch_id = finance_api.generate_cashflows(cutoff=datetime.datetime.utcnow())
+    cashflows_created = finance_models.Cashflow.query.filter(finance_models.Cashflow.batchId == batch_id).count()
+    logger.info("Created %s Cashflows", cashflows_created)
+
+    processed_pricings = (
+        finance_models.Pricing.query.filter(finance_models.Pricing.status == finance_models.PricingStatus.PROCESSED)
+        .with_entities(finance_models.Pricing.id, finance_models.Pricing.businessUnitId)
+        .all()
+    )
+
+    pricings_by_bu = defaultdict(list)
+    for pricing_id, business_unit_id in processed_pricings:
+        pricings_by_bu[business_unit_id].append(pricing_id)
+
+    for business_unit_id, pricing_ids in pricings_by_bu.items():
+        cashflows = (
+            finance_models.Cashflow.query.join(finance_models.CashflowPricing)
+            .join(finance_models.Pricing)
+            .filter(finance_models.Cashflow.batchId == batch_id)
+            .filter(finance_models.Pricing.id.in_(pricing_ids))
+            .with_entities(finance_models.Cashflow.id)
+            .all()
+        )
+        finance_api.generate_and_store_invoice(
+            business_unit_id=business_unit_id,
+            cashflow_ids=[cf[0] for cf in cashflows],
+        )
+
+    logger.info("Created %s Invoices", finance_models.Invoice.query.count())
+
+
+def create_specific_invoice():
+    logger.info("create_specific_invoice")
+    bank_info = offers_factories.BankInformationFactory()
+    business_unit = finance_factories.BusinessUnitFactory(
+        name="0 - Point de remboursement avec justificatif copieux",
+        bankAccount=bank_info,
+    )
+    offerer = offerers_factories.OffererFactory(name="0 - Structure avec justificatif copieux")
+    pro = users_factories.ProFactory(email="pctest.pro.justificatif.copieux@example.com")
+    offers_factories.UserOffererFactory(offerer=offerer, user=pro)
+    venue = offers_factories.VenueFactory(
+        name="0 - Lieu avec justificatif copieux",
+        siret=business_unit.siret,
+        businessUnit=business_unit,
+        managingOfferer=offerer,
+    )
+    thing_offer1 = offers_factories.ThingOfferFactory(venue=venue)
+    thing_offer2 = offers_factories.ThingOfferFactory(venue=venue)
+    book_offer1 = offers_factories.OfferFactory(venue=venue, subcategoryId=subcategories.LIVRE_PAPIER.id)
+    book_offer2 = offers_factories.OfferFactory(venue=venue, subcategoryId=subcategories.LIVRE_PAPIER.id)
+    digital_offer1 = offers_factories.DigitalOfferFactory(venue=venue)
+    digital_offer2 = offers_factories.DigitalOfferFactory(venue=venue)
+    custom_rule_offer1 = offers_factories.ThingOfferFactory(venue=venue)
+    payments_factories.CustomReimbursementRuleFactory(rate=0.94, offer=custom_rule_offer1)
+    custom_rule_offer2 = offers_factories.ThingOfferFactory(venue=venue)
+    payments_factories.CustomReimbursementRuleFactory(amount=22, offer=custom_rule_offer2)
+
+    stocks = [
+        offers_factories.StockFactory(offer=thing_offer1, price=30),
+        offers_factories.StockFactory(offer=book_offer1, price=20),
+        offers_factories.StockFactory(offer=thing_offer2, price=19_950),
+        offers_factories.StockFactory(offer=thing_offer2, price=80),
+        offers_factories.StockFactory(offer=book_offer2, price=40),
+        offers_factories.StockFactory(offer=digital_offer1, price=27),
+        offers_factories.StockFactory(offer=digital_offer2, price=31),
+        offers_factories.StockFactory(offer=custom_rule_offer1, price=20),
+        offers_factories.StockFactory(offer=custom_rule_offer2, price=23),
+    ]
+
+    bookings = []
+    for stock in stocks:
+        booking = bookings_factories.IndividualBookingFactory(stock=stock)
+        bookings.append(booking)
+    for booking in bookings[:3]:
+        finance_api.price_booking(booking)
+    finance_api.generate_cashflows(cutoff=datetime.datetime.utcnow())
+    for booking in bookings[3:]:
+        finance_api.price_booking(booking)
+    finance_api.generate_cashflows(cutoff=datetime.datetime.utcnow())
+    cashflows = (
+        finance_models.Cashflow.query.join(finance_models.Cashflow.pricings)
+        .filter(finance_models.Pricing.businessUnitId == business_unit.id)
+        .all()
+    )
+    cashflow_ids = [c.id for c in cashflows]
+
+    finance_api.generate_and_store_invoice(
+        business_unit_id=business_unit.id,
+        cashflow_ids=cashflow_ids,
+    )
+    logger.info("Created specific Invoice")

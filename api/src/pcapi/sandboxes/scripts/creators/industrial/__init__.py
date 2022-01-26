@@ -17,6 +17,7 @@ from pcapi.sandboxes.scripts.creators.industrial.create_industrial_event_occurre
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_event_offers import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_event_products import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_event_stocks import *
+from pcapi.sandboxes.scripts.creators.industrial.create_industrial_invoices import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_mediations import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_offer_validation_config import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_offerers_with_pro_users import *
@@ -85,6 +86,9 @@ def save_industrial_sandbox() -> None:
             repository.save(user.deposit)
 
     create_industrial_payments()
+
+    create_industrial_invoices()
+    create_specific_invoice()
 
     create_industrial_pro_users_api_keys(offerers_by_name)
 

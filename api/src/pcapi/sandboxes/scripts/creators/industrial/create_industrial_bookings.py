@@ -6,6 +6,7 @@ from random import choice
 from pcapi.core.bookings.factories import IndividualBookingFactory
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.categories import subcategories
+from pcapi.core.finance import api as finance_api
 from pcapi.core.users.api import get_domains_credit
 from pcapi.core.users.models import User
 from pcapi.repository import repository
@@ -51,8 +52,9 @@ def create_industrial_bookings(offers_by_name, users_by_name):
             )
 
     repository.save(*bookings_by_name.values())
-
     logger.info("created %d bookings", len(bookings_by_name))
+
+    finance_api.price_bookings()
 
 
 def _create_bookings_for_other_beneficiaries(
