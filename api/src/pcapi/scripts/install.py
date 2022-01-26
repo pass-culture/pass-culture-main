@@ -13,6 +13,7 @@ def install_commands(app: flask.Flask) -> None:
         "pcapi.scripts.force_19yo_dms_import",
         "pcapi.scripts.full_extract_offers",
         "pcapi.scripts.full_index_offers",
+        "pcapi.scripts.generate_invoices",
         "pcapi.scripts.install_data",
         "pcapi.scripts.offerer.commands",
         "pcapi.scripts.payment.add_custom_offer_reimbursement_rule",

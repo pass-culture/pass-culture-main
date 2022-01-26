@@ -762,6 +762,38 @@ def invoice_test_data():
     return business_unit, stocks
 
 
+class GenerateInvoicesTest:
+    # Mock slow functions that we are not interested in.
+    @mock.patch("pcapi.core.finance.api._generate_invoice_html")
+    @mock.patch("pcapi.core.finance.api._store_invoice_pdf")
+    def test_basics(self, _mocked1, _mocked2):
+        booking1 = bookings_factories.UsedIndividualBookingFactory()
+        booking2 = bookings_factories.UsedIndividualBookingFactory()
+        booking3 = bookings_factories.UsedIndividualBookingFactory(stock=booking1.stock)
+        booking4 = bookings_factories.UsedIndividualBookingFactory()
+        # Cashflows for booking1 and booking2 will be UNDER_REVIEW.
+        api.price_booking(booking1)
+        api.price_booking(booking2)
+        api.generate_cashflows_and_payment_files(datetime.datetime.utcnow())
+
+        # Another cashflow for booking3 that has the same business
+        # Unit as booking2.
+        api.price_booking(booking3)
+        api.generate_cashflows_and_payment_files(datetime.datetime.utcnow())
+
+        # Cashflow for booking4 will still be PENDING. No invoice
+        # should be generated.
+        api.price_booking(booking4)
+        api.generate_cashflows(datetime.datetime.utcnow())
+
+        api.generate_invoices()
+
+        invoices = models.Invoice.query.all()
+        assert len(invoices) == 2
+        invoiced_bookings = {inv.cashflows[0].pricings[0].booking for inv in invoices}
+        assert invoiced_bookings == {booking1, booking2}
+
+
 class GenerateInvoiceTest:
     EXPECTED_NUM_QUERIES = (
         1  # select cashflows, pricings, pricing_lines, and custom_reimbursement_rules
