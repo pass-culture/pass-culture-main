@@ -998,19 +998,16 @@ class GenerateInvoiceHtmlTest:
             expected_invoice_html = f.read()
         # We need to replace Cashflow IDs and dates that were used when generating the expected html
         expected_invoice_html = expected_invoice_html.replace(
-            '<td class="cashflow_id">144</td>', f'<td class="cashflow_id">{cashflow_ids[0]}</td>'
+            '<td class="cashflow_id">1</td>', f'<td class="cashflow_id">{cashflow_ids[0]}</td>'
         )
         expected_invoice_html = expected_invoice_html.replace(
-            '<td class="cashflow_id">145</td>', f'<td class="cashflow_id">{cashflow_ids[1]}</td>'
+            '<td class="cashflow_id">2</td>', f'<td class="cashflow_id">{cashflow_ids[1]}</td>'
         )
         expected_invoice_html = expected_invoice_html.replace(
-            '<td class="cashflow_creation_date">21/12/2021</td>',
+            '<td class="cashflow_creation_date">27/01/2022</td>',
             f'<td class="cashflow_creation_date">{cashflows[0].creationDate.strftime("%d/%m/%Y")}</td>',
         )
-        expected_invoice_html = expected_invoice_html.replace(
-            '<h2 class="invoice_info">Relevé n°F220000001 du 21/12/2021</h2>',
-            f'<h2 class="invoice_info">Relevé n°{invoice.reference} du {invoice.date.strftime("%d/%m/%Y")}</h2>',
-        )
+
         assert expected_invoice_html == invoice_html
 
 
