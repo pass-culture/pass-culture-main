@@ -32,9 +32,14 @@ const FormNotifications = (): JSX.Element => {
           value=""
         />
       </FormLayout.Row>
-      <FormLayout.Row>
-        <TextInput label={NOTIFICATIONS_EMAIL_LABEL} name="notificationEmail" />
-      </FormLayout.Row>
+      {values.notifications && (
+        <FormLayout.Row>
+          <TextInput
+            label={NOTIFICATIONS_EMAIL_LABEL}
+            name="notificationEmail"
+          />
+        </FormLayout.Row>
+      )}
     </FormLayout.Section>
   )
 }
