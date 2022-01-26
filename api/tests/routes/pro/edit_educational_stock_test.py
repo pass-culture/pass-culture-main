@@ -266,6 +266,28 @@ class Return200Test:
         assert adage_api_testing.adage_requests[0]["sent_data"] == expected_payload
         assert adage_api_testing.adage_requests[0]["url"] == "https://adage_base_url/v1/prereservation-edit"
 
+    @override_settings(ADAGE_API_URL="https://adage_base_url")
+    def test_edit_educational_stock_does_not_send_notification_when_no_modification(self, client):
+        # Given
+        stock = offer_factories.EducationalEventStockFactory(
+            beginningDatetime=datetime(2021, 12, 18),
+            price=1200,
+            numberOfTickets=32,
+            bookingLimitDatetime=datetime(2021, 12, 1),
+            educationalPriceDetail="Détail du prix",
+        )
+        booking_factories.PendingEducationalBookingFactory(stock=stock)
+        offer_factories.UserOffererFactory(user__email="user@example.com", offerer=stock.offer.venue.managingOfferer)
+
+        # When
+        stock_edition_payload = {}
+
+        client.with_session_auth("user@example.com")
+        client.patch(f"/stocks/educational/{humanize(stock.id)}", json=stock_edition_payload)
+
+        # Then
+        assert len(adage_api_testing.adage_requests) == 0
+
 
 @freeze_time("2020-11-17 15:00:00")
 class Return403Test:
