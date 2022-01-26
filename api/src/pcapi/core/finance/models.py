@@ -186,6 +186,13 @@ class Cashflow(Model):
     creationDate = sqla.Column(sqla.DateTime, nullable=False, server_default=sqla.func.now())
     status = sqla.Column(db_utils.MagicEnum(CashflowStatus), index=True, nullable=False)
 
+    # FIXME (dbaty, 2022-01-26): set NOT NULL constraint once the
+    # table has been populated.
+    businessUnitId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("business_unit.id"), index=True, nullable=True)
+    businessUnit = sqla_orm.relationship("BusinessUnit", foreign_keys=[businessUnitId])
+    # We denormalize `BusinessUnit.bankAccountId` here because it may
+    # change. Here we want to store the bank account that was used at
+    # the time the cashflow was created.
     bankAccountId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("bank_information.id"), index=True, nullable=False)
     bankAccount = sqla_orm.relationship("BankInformation", foreign_keys=[bankAccountId])
 

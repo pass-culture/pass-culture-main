@@ -473,6 +473,7 @@ def generate_cashflows(cutoff: datetime.datetime) -> int:
                     continue
                 cashflow = models.Cashflow(
                     batchId=batch_id,
+                    businessUnitId=business_unit_id,
                     bankAccountId=bank_account_id,
                     status=models.CashflowStatus.PENDING,
                     amount=total,
