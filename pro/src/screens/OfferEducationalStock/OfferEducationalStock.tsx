@@ -1,5 +1,5 @@
 import { useFormik, FormikProvider } from 'formik'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Link } from 'react-router-dom'
 
 /* @debt standard "Gautier: Do not load internal page dependencies"*/
@@ -42,7 +42,7 @@ const OfferEducationalStock = ({
 }: IOfferEducationalStockProps): JSX.Element => {
   const offerIsDisbaled = isOfferDisabled(offer.status)
 
-  const formik = useFormik({
+  const { setValues, ...formik } = useFormik({
     initialValues,
     onSubmit: values => onSubmit(offer, values),
     validationSchema: validationSchema,
@@ -52,6 +52,12 @@ const OfferEducationalStock = ({
     (mode === Mode.EDITION || mode === Mode.READ_ONLY) &&
     setIsOfferActive &&
     cancelActiveBookings
+
+  useEffect(() => {
+    // update formik values with initial values when initial values
+    // are updated after stock update
+    setValues(initialValues)
+  }, [initialValues, setValues])
 
   return (
     <>
@@ -64,7 +70,7 @@ const OfferEducationalStock = ({
           setIsOfferActive={setIsOfferActive}
         />
       )}
-      <FormikProvider value={formik}>
+      <FormikProvider value={{ ...formik, setValues }}>
         <form onSubmit={formik.handleSubmit}>
           <FormLayout>
             <FormLayout.Section title="Date et prix">
