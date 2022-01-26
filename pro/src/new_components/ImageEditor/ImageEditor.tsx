@@ -2,6 +2,7 @@ import React, { forwardRef, useCallback, useState } from 'react'
 import AvatarEditor from 'react-avatar-editor'
 
 import CanvasTools from './canvas'
+import style from './ImageEditor.module.scss'
 
 export type ImageEditorProps = {
   image: string | File
@@ -53,24 +54,22 @@ const ImageEditor = forwardRef<AvatarEditor, ImageEditorProps>(
     }, [])
 
     return (
-      <>
-        <div className="tnr-canvas">
-          <AvatarEditor
-            border={[cropBorderWidth, cropBorderHeight]}
-            color={[0, 0, 0, 0.4]}
-            height={canvasHeight}
-            image={image}
-            onImageChange={drawCropBorder}
-            onImageReady={drawCropBorder}
-            onMouseMove={drawCropBorder}
-            onMouseUp={drawCropBorder}
-            ref={ref}
-            scale={Number(scale)}
-            width={canvasWidth}
-          />
-        </div>
+      <div className={style['image-editor']}>
+        <AvatarEditor
+          border={[cropBorderWidth, cropBorderHeight]}
+          color={[0, 0, 0, 0.4]}
+          height={canvasHeight}
+          image={image}
+          onImageChange={drawCropBorder}
+          onImageReady={drawCropBorder}
+          onMouseMove={drawCropBorder}
+          onMouseUp={drawCropBorder}
+          ref={ref}
+          scale={Number(scale)}
+          width={canvasWidth}
+        />
         <label htmlFor="scale">Zoom</label>
-        <div className="tnr-scale">
+        <label className={style['image-editor-scale']} htmlFor="scale">
           <span>min</span>
           <input
             id="scale"
@@ -82,8 +81,8 @@ const ImageEditor = forwardRef<AvatarEditor, ImageEditorProps>(
             value={scale}
           />
           <span>max</span>
-        </div>
-      </>
+        </label>
+      </div>
     )
   }
 )
