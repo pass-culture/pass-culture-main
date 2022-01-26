@@ -19,13 +19,13 @@ interface SearchAndFiltersProps extends SearchBoxProvided {
   venueFilter: VenueFilterType | null
 }
 
-const SearchAndFiltersComponent = ({
+export const SearchAndFiltersComponent = ({
   handleSearchButtonClick,
   isLoading,
   removeVenueFilter,
   venueFilter,
   refine,
-}: SearchAndFiltersProps) => {
+}: SearchAndFiltersProps): JSX.Element => {
   const [query, setQuery] = useState('')
 
   return (
