@@ -212,15 +212,16 @@ def patch_offer(offer_id: str, body: offers_serialize.PatchOfferBodyModel) -> of
 @spectree_serialize(response_model=offers_serialize.OfferResponseIdModel)  # type: ignore
 def edit_educational_offer(
     offer_id: str, body: offers_serialize.PatchEducationalOfferBodyModel
-) -> offers_serialize.OfferResponseIdModel:
+) -> offers_serialize.GetOfferResponseModel:
     try:
         offer = offers_repository.get_educational_offer_by_id(dehumanize(offer_id))
 
         check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
 
-        offer = offers_api.update_educational_offer(offer, body.dict(exclude_unset=True))
+        offers_api.update_educational_offer(offer, body.dict(exclude_unset=True))
+        offer = offers_repository.get_educational_offer_by_id(dehumanize(offer_id))
 
-        return offers_serialize.OfferResponseIdModel.from_orm(offer)
+        return offers_serialize.GetOfferResponseModel.from_orm(offer)
 
     except orm_exc.NoResultFound:
         raise ApiErrors({"offerId": "no educational offer has been found with this id"}, 404)
