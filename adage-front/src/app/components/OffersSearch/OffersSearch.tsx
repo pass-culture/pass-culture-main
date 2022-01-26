@@ -14,10 +14,9 @@ import {
 } from 'utils/config'
 import { Role, VenueFilterType } from 'utils/types'
 
-import { OfferFilters } from './OfferFilters/OfferFilters'
 import { Offers } from './Offers/Offers'
 import Pagination from './Offers/Pagination'
-import { SearchBox } from './SearchBox'
+import OffersSearchBarAndFilters from './OffersSearchBarAndFilters'
 
 const searchClient = algoliasearch(ALGOLIA_APP_ID, ALGOLIA_API_KEY)
 
@@ -104,9 +103,7 @@ export const OffersSearch = ({
           facetFilters={facetFilters}
           hitsPerPage={8}
         />
-        <SearchBox />
-        <OfferFilters
-          className="search-filters"
+        <OffersSearchBarAndFilters
           handleSearchButtonClick={handleSearchButtonClick}
           isLoading={isLoading}
           removeVenueFilter={removeVenueFilter}
