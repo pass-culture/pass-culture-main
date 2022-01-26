@@ -6,22 +6,30 @@
 import React, { forwardRef, useCallback, useState } from 'react'
 import AvatarEditor from 'react-avatar-editor'
 
-import {
-  CANVAS_HEIGHT,
-  CANVAS_WIDTH,
-  CROP_BORDER_COLOR,
-  CROP_BORDER_HEIGHT,
-  CROP_BORDER_WIDTH,
-} from 'components/pages/Offers/Offer/Thumbnail/_constants'
-import CanvasTools from 'components/pages/Offers/Offer/Thumbnail/ImageEditor/canvas'
+import CanvasTools from './canvas'
 
 export type ImageEditorProps = {
   image: string | File
+  canvasHeight: number
+  canvasWidth: number
+  cropBorderColor: string
+  cropBorderHeight: number
+  cropBorderWidth: number
   children?: never
 }
 
 const ImageEditor = forwardRef<AvatarEditor, ImageEditorProps>(
-  ({ image }, ref) => {
+  (
+    {
+      image,
+      canvasHeight,
+      canvasWidth,
+      cropBorderColor,
+      cropBorderHeight,
+      cropBorderWidth,
+    },
+    ref
+  ) => {
     const [scale, setScale] = useState(1)
 
     const drawCropBorder = useCallback(() => {
@@ -30,15 +38,21 @@ const ImageEditor = forwardRef<AvatarEditor, ImageEditorProps>(
       const canvasTools = new CanvasTools(ctx)
       canvasTools.drawArea({
         width: 0,
-        color: CROP_BORDER_COLOR,
+        color: cropBorderColor,
         coordinates: [
-          CROP_BORDER_WIDTH,
-          CROP_BORDER_HEIGHT,
-          CANVAS_WIDTH,
-          CANVAS_HEIGHT,
+          cropBorderWidth,
+          cropBorderHeight,
+          canvasWidth,
+          canvasHeight,
         ],
       })
-    }, [])
+    }, [
+      cropBorderColor,
+      cropBorderWidth,
+      cropBorderHeight,
+      canvasWidth,
+      canvasHeight,
+    ])
     const onScaleChange = useCallback(event => {
       setScale(event.target.value)
     }, [])
@@ -47,9 +61,9 @@ const ImageEditor = forwardRef<AvatarEditor, ImageEditorProps>(
       <>
         <div className="tnr-canvas">
           <AvatarEditor
-            border={[CROP_BORDER_WIDTH, CROP_BORDER_HEIGHT]}
+            border={[cropBorderWidth, cropBorderHeight]}
             color={[0, 0, 0, 0.4]}
-            height={CANVAS_HEIGHT}
+            height={canvasHeight}
             image={image}
             onImageChange={drawCropBorder}
             onImageReady={drawCropBorder}
@@ -57,7 +71,7 @@ const ImageEditor = forwardRef<AvatarEditor, ImageEditorProps>(
             onMouseUp={drawCropBorder}
             ref={ref}
             scale={Number(scale)}
-            width={CANVAS_WIDTH}
+            width={canvasWidth}
           />
         </div>
         <label htmlFor="scale">Zoom</label>
