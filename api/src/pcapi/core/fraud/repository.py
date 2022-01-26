@@ -1,6 +1,7 @@
 from typing import Optional
 
 from pcapi.core.users import models as users_models
+from pcapi.models import db
 
 from . import models
 
@@ -25,3 +26,13 @@ def get_identity_fraud_checks(
         models.BeneficiaryFraudCheck.type.in_(models.IDENTITY_CHECK_TYPES),
         models.BeneficiaryFraudCheck.eligibilityType == eligibilityType,
     ).all()
+
+
+def has_failed_phone_validation(user) -> bool:
+    return db.session.query(
+        models.BeneficiaryFraudCheck.query.filter(
+            models.BeneficiaryFraudCheck.userId == user.id,
+            models.BeneficiaryFraudCheck.status == models.FraudCheckStatus.KO,
+            models.BeneficiaryFraudCheck.type == models.FraudCheckType.PHONE_VALIDATION,
+        ).exists()
+    ).scalar()

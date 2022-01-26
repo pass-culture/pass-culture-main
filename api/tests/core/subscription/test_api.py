@@ -895,3 +895,36 @@ class HasPassedAllChecksToBecomeBeneficiaryTest:
         )
         result = subscription_api.has_passed_all_checks_to_become_beneficiary(user)
         assert not result
+
+
+@pytest.mark.usefixtures("db_session")
+class SubscriptionItemTest:
+    AGE18_ELIGIBLE_BIRTH_DATE = datetime.now() - relativedelta(years=18, months=4)
+
+    def test_phone_validation_item(self):
+        user = users_factories.UserFactory(
+            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
+            dateOfBirth=self.AGE18_ELIGIBLE_BIRTH_DATE,
+        )
+        assert (
+            subscription_api.get_phone_validation_subscription_item(user, users_models.EligibilityType.AGE18).status
+            == subscription_models.SubscriptionItemStatus.OK
+        )
+
+    def test_phone_validation_item_todo(self):
+        user = users_factories.UserFactory(dateOfBirth=self.AGE18_ELIGIBLE_BIRTH_DATE)
+        assert (
+            subscription_api.get_phone_validation_subscription_item(user, users_models.EligibilityType.AGE18).status
+            == subscription_models.SubscriptionItemStatus.TODO
+        )
+
+    def test_phone_validation_item_ko(self):
+        user = users_factories.UserFactory(dateOfBirth=self.AGE18_ELIGIBLE_BIRTH_DATE)
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user, status=fraud_models.FraudCheckStatus.KO, type=fraud_models.FraudCheckType.PHONE_VALIDATION
+        )
+
+        assert (
+            subscription_api.get_phone_validation_subscription_item(user, users_models.EligibilityType.AGE18).status
+            == subscription_models.SubscriptionItemStatus.KO
+        )
