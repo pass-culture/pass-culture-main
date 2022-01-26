@@ -1,5 +1,5 @@
 import { useFormik, FormikProvider } from 'formik'
-import React from 'react'
+import React, { useEffect } from 'react'
 
 import {
   GetIsOffererEligibleToEducationalOffer,
@@ -49,7 +49,7 @@ const OfferEducational = ({
   isOfferBooked = false,
   isOfferActive = false,
 }: IOfferEducationalProps): JSX.Element => {
-  const formik = useFormik({
+  const { resetForm, ...formik } = useFormik({
     initialValues,
     onSubmit,
     validationSchema,
@@ -59,6 +59,12 @@ const OfferEducational = ({
     (mode === Mode.EDITION || mode === Mode.READ_ONLY) &&
     setIsOfferActive &&
     cancelActiveBookings
+
+  useEffect(() => {
+    // update formik values with initial values when initial values
+    // are updated after offer update
+    resetForm({ values: initialValues })
+  }, [initialValues, resetForm])
 
   return (
     <>
@@ -71,7 +77,7 @@ const OfferEducational = ({
           setIsOfferActive={setIsOfferActive}
         />
       )}
-      <FormikProvider value={formik}>
+      <FormikProvider value={{ ...formik, resetForm }}>
         <form onSubmit={formik.handleSubmit}>
           <OfferEducationalForm
             educationalCategories={educationalCategories}
