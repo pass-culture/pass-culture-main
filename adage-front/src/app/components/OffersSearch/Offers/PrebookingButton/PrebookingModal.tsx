@@ -63,7 +63,7 @@ const PrebookingModal = ({
           className="prebooking-modal-button"
           label="Fermer"
           onClick={closeModal}
-          variant="primary"
+          variant="secondary"
         />
         <Button
           className="prebooking-modal-button"
