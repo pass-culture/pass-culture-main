@@ -104,11 +104,9 @@ class TransactionalEmail(Enum):
 
     # PRO EMAIL
     ACCOUNT_CREATED_TO_PRO = TemplatePro(id_prod=0000, id_not_prod=0000, tags=["validation_email_invitation_pro"])
-    BOOKING_CANCELLATION_BY_BENEFICIARY_TO_PRO = TemplatePro(
-        id_prod=0000, id_not_prod=0000, tags=["pro_annulation_offre"]
-    )
+    BOOKING_CANCELLATION_BY_BENEFICIARY_TO_PRO = TemplatePro(id_prod=379, id_not_prod=51, tags=["pro_annulation_offre"])
     BOOKING_CANCELLATION_CONFIRMATION_BY_PRO = TemplatePro(
-        id_prod=0000, id_not_prod=0000, tags=["pro_annulation_rerservation"]
+        id_prod=0, id_not_prod=0, tags=["pro_annulation_rerservation"]
     )
     BOOKING_EXPIRATION_TO_PRO = TemplatePro(id_prod=380, id_not_prod=50, tags=["pro_reservation_expiree_30j"])
     EAC_BOOKING_DAY_TO_PRO = TemplatePro(id_prod=0000, id_not_prod=0000, tags=[""])

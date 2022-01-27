@@ -4,23 +4,13 @@ import typing
 
 from pcapi.core import mails
 from pcapi.core.bookings.models import Booking
-from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.bookings.models import IndividualBooking
-from pcapi.core.mails.transactional.bookings.booking_cancellation_by_beneficiary import (
-    send_booking_cancellation_by_beneficiary_email,
-)
-from pcapi.core.mails.transactional.bookings.booking_cancellation_by_pro_to_beneficiary import (
-    send_booking_cancellation_by_pro_to_beneficiary_email,
-)
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.repository import find_new_offerer_user_email
 from pcapi.core.users import api as users_api
 from pcapi.core.users.models import Token
 from pcapi.core.users.models import User
 from pcapi.emails import beneficiary_activation
-from pcapi.emails.beneficiary_offer_cancellation import (
-    retrieve_offerer_booking_recap_email_data_after_user_cancellation,
-)
 from pcapi.emails.beneficiary_pre_subscription_rejected import make_dms_wrong_values_data
 from pcapi.emails.new_offerer_validated_withdrawal_terms import (
     retrieve_data_for_new_offerer_validated_withdrawal_terms_email,
@@ -30,7 +20,6 @@ from pcapi.emails.offerer_bookings_recap_after_deleting_stock import (
     retrieve_offerer_bookings_recap_email_data_after_offerer_cancellation,
 )
 from pcapi.utils.mailing import make_admin_user_validation_email
-from pcapi.utils.mailing import make_offerer_driven_cancellation_email_for_offerer
 from pcapi.utils.mailing import make_pro_user_validation_email
 
 
@@ -45,43 +34,12 @@ def send_individual_booking_confirmation_email_to_offerer(individual_booking: In
     return mails.send(recipients=[offerer_booking_email], data=data)
 
 
-def send_user_driven_cancellation_email_to_offerer(booking: Booking) -> bool:
-    offerer_booking_email = booking.stock.offer.bookingEmail
-    if not offerer_booking_email:
-        return True
-    data = retrieve_offerer_booking_recap_email_data_after_user_cancellation(booking)
-    return mails.send(recipients=[offerer_booking_email], data=data)
-
-
-def send_offerer_driven_cancellation_email_to_offerer(booking: Booking) -> bool:
-    offerer_booking_email = booking.stock.offer.bookingEmail
-    if not offerer_booking_email:
-        return True
-    email = make_offerer_driven_cancellation_email_for_offerer(booking)
-    return mails.send(recipients=[offerer_booking_email], data=email)
-
-
 def send_offerer_bookings_recap_email_after_offerer_cancellation(bookings: list[Booking]) -> bool:
     offerer_booking_email = bookings[0].stock.offer.bookingEmail
     if not offerer_booking_email:
         return True
     data = retrieve_offerer_bookings_recap_email_data_after_offerer_cancellation(bookings)
     return mails.send(recipients=[offerer_booking_email], data=data)
-
-
-def send_booking_cancellation_emails_to_user_and_offerer(
-    booking: Booking,
-    reason: BookingCancellationReasons,
-) -> bool:
-    if reason == BookingCancellationReasons.BENEFICIARY and booking.individualBooking is not None:
-        send_booking_cancellation_by_beneficiary_email(booking.individualBooking)
-        return send_user_driven_cancellation_email_to_offerer(booking)
-    if reason == BookingCancellationReasons.OFFERER:
-        send_booking_cancellation_by_pro_to_beneficiary_email(booking)
-        return send_offerer_driven_cancellation_email_to_offerer(booking)
-    if reason == BookingCancellationReasons.FRAUD:
-        return send_user_driven_cancellation_email_to_offerer(booking)
-    return True
 
 
 def send_pro_user_validation_email(user: User) -> bool:

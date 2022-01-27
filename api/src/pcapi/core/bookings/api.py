@@ -23,6 +23,12 @@ from pcapi.core.educational.models import EducationalBookingStatus
 import pcapi.core.finance.api as finance_api
 import pcapi.core.finance.models as finance_models
 import pcapi.core.finance.repository as finance_repository
+from pcapi.core.mails.transactional.bookings.booking_cancellation import (
+    send_booking_cancellation_emails_to_user_and_offerer,
+)
+from pcapi.core.mails.transactional.bookings.booking_cancellation_by_beneficiary_to_pro import (
+    send_booking_cancellation_by_beneficiary_to_pro_email,
+)
 from pcapi.core.mails.transactional.bookings.booking_confirmation_to_beneficiary import (
     send_individual_booking_confirmation_email_to_beneficiary,
 )
@@ -245,7 +251,7 @@ def cancel_booking_for_fraud(booking: Booking) -> None:
     _cancel_booking(booking, BookingCancellationReasons.FRAUD)
     logger.info("Cancelled booking for fraud reason", extra={"booking": booking.id})
 
-    if not user_emails.send_booking_cancellation_emails_to_user_and_offerer(booking, booking.cancellationReason):
+    if not send_booking_cancellation_emails_to_user_and_offerer(booking, booking.cancellationReason):
         logger.warning(
             "Could not send booking cancellation emails to offerer",
             extra={"booking": booking.id},
@@ -257,7 +263,7 @@ def cancel_booking_on_user_requested_account_suspension(booking: Booking) -> Non
     _cancel_booking(booking, BookingCancellationReasons.BENEFICIARY)
     logger.info("Cancelled booking on user-requested account suspension", extra={"booking": booking.id})
 
-    if not user_emails.send_booking_cancellation_emails_to_user_and_offerer(booking, booking.cancellationReason):
+    if not send_booking_cancellation_emails_to_user_and_offerer(booking, booking.cancellationReason):
         logger.warning(
             "Could not send booking= cancellation emails to offerer and beneficiary",
             extra={"booking": booking.id},
@@ -316,7 +322,7 @@ def mark_as_cancelled(booking: Booking) -> None:
         raise exceptions.BookingAlreadyRefunded("la réservation a déjà été remboursée")
 
     _cancel_booking(booking, BookingCancellationReasons.BENEFICIARY)
-    user_emails.send_user_driven_cancellation_email_to_offerer(booking)
+    send_booking_cancellation_by_beneficiary_to_pro_email(booking)
 
 
 def mark_as_unused(booking: Booking) -> None:

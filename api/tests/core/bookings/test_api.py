@@ -21,6 +21,7 @@ from pcapi.core.educational.models import EducationalBookingStatus
 import pcapi.core.finance.factories as finance_factories
 import pcapi.core.finance.models as finance_models
 import pcapi.core.mails.testing as mails_testing
+from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offers_models
 import pcapi.core.payments.factories as payments_factories
@@ -408,7 +409,9 @@ class CancelByBeneficiaryTest:
         email_data1 = mails_testing.outbox[0].sent_data
         assert email_data1["Mj-TemplateID"] == 1091464  # to beneficiary
         email_data2 = mails_testing.outbox[1].sent_data
-        assert email_data2["MJ-TemplateID"] == 780015  # to offerer
+        assert (
+            email_data2["template"] == TransactionalEmail.BOOKING_CANCELLATION_BY_BENEFICIARY_TO_PRO.value.__dict__
+        )  # to offerer
 
     def test_cancel_booking_twice(self):
         booking = booking_factories.IndividualBookingFactory()
