@@ -5,7 +5,6 @@ from pcapi.core.educational import models as educational_models
 from pcapi.core.finance import models as finance_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
-from pcapi.core.reference import models as reference_models
 from pcapi.repository.clean_database import clean_all_database
 from pcapi.sandboxes.scripts.creators.industrial import save_industrial_sandbox
 
@@ -25,7 +24,6 @@ class SaveIndustrialSandboxTest:
         assert 311 <= bookings_models.Booking.query.count() <= 315
         assert 191 <= bookings_models.IndividualBooking.query.count() <= 195
         assert 118 <= educational_models.EducationalBooking.query.count() <= 122
-        assert reference_models.ReferenceScheme.query.count() == 5
         assert finance_models.Invoice.query.count() == 6
         assert finance_models.Cashflow.query.count() == 7
         assert (

@@ -1,4 +1,3 @@
-from collections import defaultdict
 import datetime
 import logging
 
@@ -20,34 +19,11 @@ logger = logging.getLogger(__name__)
 def create_industrial_invoices():
     logger.info("create_industrial_invoices")
 
-    batch_id = finance_api.generate_cashflows(cutoff=datetime.datetime.utcnow())
-    cashflows_created = finance_models.Cashflow.query.filter(finance_models.Cashflow.batchId == batch_id).count()
+    finance_api.generate_cashflows_and_payment_files(cutoff=datetime.datetime.utcnow())
+    cashflows_created = finance_models.Cashflow.query.count()
     logger.info("Created %s Cashflows", cashflows_created)
 
-    processed_pricings = (
-        finance_models.Pricing.query.filter(finance_models.Pricing.status == finance_models.PricingStatus.PROCESSED)
-        .with_entities(finance_models.Pricing.id, finance_models.Pricing.businessUnitId)
-        .all()
-    )
-
-    pricings_by_bu = defaultdict(list)
-    for pricing_id, business_unit_id in processed_pricings:
-        pricings_by_bu[business_unit_id].append(pricing_id)
-
-    for business_unit_id, pricing_ids in pricings_by_bu.items():
-        cashflows = (
-            finance_models.Cashflow.query.join(finance_models.CashflowPricing)
-            .join(finance_models.Pricing)
-            .filter(finance_models.Cashflow.batchId == batch_id)
-            .filter(finance_models.Pricing.id.in_(pricing_ids))
-            .with_entities(finance_models.Cashflow.id)
-            .all()
-        )
-        finance_api.generate_and_store_invoice(
-            business_unit_id=business_unit_id,
-            cashflow_ids=[cf[0] for cf in cashflows],
-        )
-
+    finance_api.generate_invoices()
     logger.info("Created %s Invoices", finance_models.Invoice.query.count())
 
 
@@ -113,10 +89,10 @@ def create_specific_invoice():
         bookings.append(booking)
     for booking in bookings[:3]:
         finance_api.price_booking(booking)
-    finance_api.generate_cashflows(cutoff=datetime.datetime.utcnow())
+    finance_api.generate_cashflows_and_payment_files(cutoff=datetime.datetime.utcnow())
     for booking in bookings[3:]:
         finance_api.price_booking(booking)
-    finance_api.generate_cashflows(cutoff=datetime.datetime.utcnow())
+    finance_api.generate_cashflows_and_payment_files(cutoff=datetime.datetime.utcnow())
     cashflows = (
         finance_models.Cashflow.query.join(finance_models.Cashflow.pricings)
         .filter(finance_models.Pricing.businessUnitId == business_unit.id)
