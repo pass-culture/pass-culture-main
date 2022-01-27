@@ -2673,9 +2673,9 @@ class GetCsvReportTest:
 
         # Then
         expected_type = {
-            booking_1.stock.offer.name: "offre scolaire",
+            booking_1.stock.offer.name: "offre collective",
             booking_2.stock.offer.name: "offre grand public",
-            booking_3.stock.offer.name: "offre scolaire",
+            booking_3.stock.offer.name: "offre collective",
             booking_4.stock.offer.name: "offre grand public",
         }
 
