@@ -3,13 +3,12 @@ from typing import Optional
 
 from pcapi.core.bookings.api import compute_cancellation_limit_date
 from pcapi.core.bookings.models import BookingStatus
-from pcapi.domain.booking_recap.booking_recap import BookingRecapLegacy
+from pcapi.domain.booking_recap.booking_recap import BookingRecap
 
 
 def create_domain_booking_recap(
     offer_identifier: int = 1,
     offer_name: str = "Le livre de la jungle",
-    offerer_name: str = "Libraire de Caen",
     offer_isbn: Optional[str] = None,
     beneficiary_lastname: str = "Sans Nom",
     beneficiary_firstname: str = "Mowgli",
@@ -32,15 +31,11 @@ def create_domain_booking_recap(
     redactor_lastname=None,
     redactor_firstname=None,
     redactor_email=None,
-    venue_identifier: int = 1,
-    venue_name="Librairie Kléber",
-    venue_is_virtual=False,
     event_beginning_datetime: Optional[datetime] = None,
-) -> BookingRecapLegacy:
-    return BookingRecapLegacy(
+) -> BookingRecap:
+    return BookingRecap(
         offer_identifier=offer_identifier,
         offer_name=offer_name,
-        offerer_name=offerer_name,
         offer_isbn=offer_isbn,
         beneficiary_lastname=beneficiary_lastname,
         beneficiary_firstname=beneficiary_firstname,
@@ -55,7 +50,7 @@ def create_domain_booking_recap(
         booking_is_cancelled=booking_is_cancelled,
         booking_is_reimbursed=booking_is_reimbursed,
         booking_is_confirmed=booking_is_confirmed,
-        booking_status=booking_status,
+        booking_raw_status=booking_status,
         booking_confirmation_date=booking_confirmation_date,
         payment_date=payment_date,
         cancellation_date=cancellation_date,
@@ -64,8 +59,5 @@ def create_domain_booking_recap(
         redactor_lastname=redactor_lastname,
         redactor_firstname=redactor_firstname,
         redactor_email=redactor_email,
-        venue_identifier=venue_identifier,
-        venue_name=venue_name,
-        venue_is_virtual=venue_is_virtual,
         event_beginning_datetime=event_beginning_datetime,
     )
