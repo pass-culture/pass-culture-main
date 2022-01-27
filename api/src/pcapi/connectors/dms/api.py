@@ -109,3 +109,27 @@ class DMSGraphQLClient:
         query = self.build_query("pro/get_banking_info_v2")
         variables = {"dossierNumber": dossier_id}
         return self.execute_query(query, variables=variables)
+
+    def update_checkbox_annotation(self, dossier_id: str, instructeur_id: str, annotation_id: str, value: bool) -> Any:
+        query = self.build_query("update_checkbox_annotation")
+        variables = {
+            "input": {
+                "dossierId": dossier_id,
+                "instructeurId": instructeur_id,
+                "annotationId": annotation_id,
+                "value": value,
+            }
+        }
+        return self.execute_query(query, variables=variables)
+
+    def update_text_annotation(self, dossier_id: str, instructeur_id: str, annotation_id: str, value: str) -> Any:
+        query = self.build_query("update_text_annotation")
+        variables = {
+            "input": {
+                "dossierId": dossier_id,
+                "instructeurId": instructeur_id,
+                "annotationId": annotation_id,
+                "value": value,
+            }
+        }
+        return self.execute_query(query, variables=variables)
