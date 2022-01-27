@@ -11,6 +11,7 @@ import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.payments.factories as payments_factories
 import pcapi.core.users.factories as users_factories
+from pcapi.models import db
 
 
 logger = logging.getLogger(__name__)
@@ -80,7 +81,6 @@ def create_specific_invoice():
     stocks = [
         offers_factories.StockFactory(offer=thing_offer1, price=30),
         offers_factories.StockFactory(offer=book_offer1, price=20),
-        offers_factories.StockFactory(offer=thing_offer2, price=19_950),
         offers_factories.StockFactory(offer=thing_offer2, price=80),
         offers_factories.StockFactory(offer=book_offer2, price=40),
         offers_factories.StockFactory(offer=digital_offer1, price=27),
@@ -88,10 +88,28 @@ def create_specific_invoice():
         offers_factories.StockFactory(offer=custom_rule_offer1, price=20),
         offers_factories.StockFactory(offer=custom_rule_offer2, price=23),
     ]
+    # This is a quick way to have a Venue reach the revenue threshold to reach the next ReimbursementRule,
+    # without generating 60+ Bookings in bulk
+    special_stock = offers_factories.StockFactory(offer=thing_offer2, price=19_950)
+    special_user = users_factories.BeneficiaryGrant18Factory(
+        firstName="This User has voluntarily a large deposit",
+        deposit__source="create_specific_invoice() in industrial sandbox",
+    )
+    special_user.deposit.amount = 20000
+    db.session.add(special_user)
+    db.session.commit()
 
-    bookings = []
+    bookings = [
+        bookings_factories.UsedIndividualBookingFactory(
+            stock=special_stock,
+            individualBooking__user=special_user,
+        ),
+    ]
     for stock in stocks:
-        booking = bookings_factories.IndividualBookingFactory(stock=stock)
+        booking = bookings_factories.UsedIndividualBookingFactory(
+            stock=stock,
+            user__deposit__source="create_specific_invoice() in industrial sandbox",
+        )
         bookings.append(booking)
     for booking in bookings[:3]:
         finance_api.price_booking(booking)
