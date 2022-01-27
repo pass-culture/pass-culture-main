@@ -188,3 +188,19 @@ def is_user_allowed_to_perform_ubble_check(
         return False
 
     return True
+
+
+def get_pending_identity_check(user: users_models.User) -> typing.Optional[fraud_models.BeneficiaryFraudCheck]:
+    started_fraud_check = (
+        fraud_models.BeneficiaryFraudCheck.query.filter(
+            fraud_models.BeneficiaryFraudCheck.user == user,
+            fraud_models.BeneficiaryFraudCheck.status.in_(
+                [fraud_models.FraudCheckStatus.STARTED, fraud_models.FraudCheckStatus.PENDING]
+            ),
+            fraud_models.BeneficiaryFraudCheck.type == fraud_models.FraudCheckType.UBBLE,
+            fraud_models.BeneficiaryFraudCheck.eligibilityType == user.eligibility,
+        )
+        .order_by(fraud_models.BeneficiaryFraudCheck.id.desc())
+        .first()
+    )
+    return started_fraud_check

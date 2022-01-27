@@ -337,7 +337,7 @@ def start_identification_session(
             status_code=400,
         )
 
-    fraud_check = fraud_api.get_pending_identity_check(user)
+    fraud_check = ubble_fraud_api.get_pending_identity_check(user)
     if fraud_check:
         if ubble_subscription_api.is_ubble_workflow_restartable(fraud_check):
             return serializers.IdentificationSessionResponse(
