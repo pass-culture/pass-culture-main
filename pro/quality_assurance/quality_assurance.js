@@ -55,7 +55,7 @@ test('captures d’écran de toutes les pages du site', async () => {
       'https://pass.culture.fr/wp-content/uploads/2020/11/N_PASS_CULTURE_HD.png'
     )
     .click(Selector('.thumbnail-dialog .tnf-url-button'))
-    .takeScreenshot(optionsOfScreenshot('thumbnail-credit'))
+    .takeScreenshot(optionsOfScreenshot('image-credit-input'))
     .click(Selector('.thumbnail-dialog .tnd-actions .primary-button'))
     .takeScreenshot(optionsOfScreenshot('thumbnail-image-editor'))
     .click(Selector('.thumbnail-dialog .tnd-actions .primary-button'))
