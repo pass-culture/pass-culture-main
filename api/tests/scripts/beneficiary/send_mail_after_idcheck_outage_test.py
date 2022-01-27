@@ -15,10 +15,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 class SendMailAfterIdcheckOutageTest:
     @freeze_time("2018-01-01 01:00:00")
     def test_get_eligible_users_created_between(self, app):
-        ELIGIBLE_CONDTIONS = {
-            "dateCreated": datetime.now(),
-            "isBeneficiary": False,
-        }
+        ELIGIBLE_CONDTIONS = {"dateCreated": datetime.now(), "roles": []}
         # 19 yo
         factories.UserFactory(dateOfBirth=datetime(1999, 1, 1), **ELIGIBLE_CONDTIONS)
         user_just_18_in_eligible_area = factories.UserFactory(dateOfBirth=datetime(2000, 1, 1), **ELIGIBLE_CONDTIONS)
