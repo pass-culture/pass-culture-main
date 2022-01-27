@@ -10,9 +10,7 @@ from pcapi.domain.user_emails import send_activation_email
 from pcapi.domain.user_emails import send_admin_user_validation_email
 from pcapi.domain.user_emails import send_individual_booking_confirmation_email_to_offerer
 from pcapi.domain.user_emails import send_offerer_bookings_recap_email_after_offerer_cancellation
-from pcapi.domain.user_emails import send_offerer_driven_cancellation_email_to_offerer
 from pcapi.domain.user_emails import send_pro_user_validation_email
-from pcapi.domain.user_emails import send_user_driven_cancellation_email_to_offerer
 from pcapi.domain.user_emails import send_withdrawal_terms_to_newly_validated_offerer
 
 
@@ -31,41 +29,6 @@ pytestmark = pytest.mark.usefixtures("db_session")
 #   Mailjet (e.g. make_beneficiary_booking_cancellation_email_data)
 # - check the recipients
 # - ... and that's all.
-
-
-class SendOffererDrivenCancellationEmailToOffererTest:
-    @patch(
-        "pcapi.domain.user_emails.make_offerer_driven_cancellation_email_for_offerer", return_value={"Html-part": ""}
-    )
-    def test_should_send_cancellation_by_offerer_email_to_offerer(
-        self, make_offerer_driven_cancellation_email_for_offerer
-    ):
-        # Given
-        booking = bookings_factories.BookingFactory(
-            stock__offer__bookingEmail="offer@example.com",
-        )
-
-        # When
-        send_offerer_driven_cancellation_email_to_offerer(booking)
-
-        # Then
-        make_offerer_driven_cancellation_email_for_offerer.assert_called_once_with(booking)
-        assert len(mails_testing.outbox) == 1  # test number of emails sent
-        assert mails_testing.outbox[0].sent_data["To"] == "offer@example.com"
-
-
-class SendBeneficiaryUserDrivenCancellationEmailToOffererTest:
-    def test_should_send_booking_cancellation_email_to_offerer(self):
-        # Given
-        booking = bookings_factories.IndividualBookingFactory(stock__offer__bookingEmail="booking@example.com")
-
-        # When
-        send_user_driven_cancellation_email_to_offerer(booking)
-
-        # Then
-        assert len(mails_testing.outbox) == 1  # test number of emails sent
-        assert mails_testing.outbox[0].sent_data["To"] == "booking@example.com"
-        assert mails_testing.outbox[0].sent_data["MJ-TemplateID"] == 780015
 
 
 class SendBookingConfirmationEmailToOffererTest:

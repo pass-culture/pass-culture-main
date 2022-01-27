@@ -1,7 +1,9 @@
 import logging
 
 from pcapi.core.bookings.models import Booking
-from pcapi.domain.user_emails import send_booking_cancellation_emails_to_user_and_offerer
+from pcapi.core.mails.transactional.bookings.booking_cancellation import (
+    send_booking_cancellation_emails_to_user_and_offerer,
+)
 from pcapi.workers import worker
 from pcapi.workers.decorators import job
 

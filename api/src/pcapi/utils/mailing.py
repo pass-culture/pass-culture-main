@@ -9,7 +9,6 @@ from flask import render_template
 from pcapi import settings
 from pcapi.connectors import api_entreprises
 from pcapi.core.bookings.models import Booking
-from pcapi.core.bookings.repository import find_ongoing_bookings_by_stock
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
@@ -17,7 +16,6 @@ from pcapi.core.offers.utils import offer_app_link
 from pcapi.core.users.models import User
 from pcapi.domain.postal_code.postal_code import PostalCode
 from pcapi.models.user_offerer import UserOfferer
-from pcapi.utils.date import format_datetime
 from pcapi.utils.date import utc_datetime_to_department_timezone
 from pcapi.utils.human_ids import humanize
 
@@ -92,38 +90,6 @@ def make_validation_email_object(
     return {
         "FromName": "pass Culture",
         "Subject": "%s - inscription / rattachement PRO à valider : %s" % (offerer_departement_code, offerer.name),
-        "Html-part": email_html,
-    }
-
-
-def make_offerer_driven_cancellation_email_for_offerer(booking: Booking) -> dict:
-    stock_name = booking.stock.offer.name
-    venue = booking.venue
-    user_name = booking.userName
-    user_email = booking.email
-    email_subject = "Confirmation de votre annulation de réservation pour {}, proposé par {}".format(
-        stock_name, venue.name
-    )
-    ongoing_stock_bookings = find_ongoing_bookings_by_stock(booking.stock.id)
-    stock_date_time = None
-    booking_is_on_event = booking.stock.beginningDatetime is not None
-    if booking_is_on_event:
-        date_in_tz = get_event_datetime(booking.stock)
-        stock_date_time = format_datetime(date_in_tz)
-    email_html = render_template(
-        "mails/offerer_recap_email_after_offerer_cancellation.html",
-        booking_is_on_event=booking_is_on_event,
-        user_name=user_name,
-        user_email=user_email,
-        stock_date_time=stock_date_time,
-        number_of_bookings=len(ongoing_stock_bookings),
-        stock_bookings=ongoing_stock_bookings,
-        stock_name=stock_name,
-        venue=venue,
-    )
-    return {
-        "FromName": "pass Culture",
-        "Subject": email_subject,
         "Html-part": email_html,
     }
 
