@@ -15,6 +15,10 @@ BEAUX_ARTS = Category(
     id="BEAUX_ARTS",
     pro_label="Beaux-arts",
 )
+CARTE_JEUNES = Category(
+    id="CARTE_JEUNES",
+    pro_label="Carte jeunes",
+)
 CINEMA = Category(
     id="CINEMA",
     pro_label="Cinéma",
@@ -72,6 +76,7 @@ TECHNIQUE = Category(
 
 ALL_CATEGORIES = (
     BEAUX_ARTS,
+    CARTE_JEUNES,
     CINEMA,
     CONFERENCE_RENCONTRE,
     FILM,
