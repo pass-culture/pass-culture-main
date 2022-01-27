@@ -74,7 +74,7 @@ class BeneficiaryValidationViewTest:
     @override_features(BENEFICIARY_VALIDATION_AFTER_FRAUD_CHECKS=True)
     @override_features(IS_HONOR_STATEMENT_MANDATORY_TO_ACTIVATE_BENEFICIARY=True)
     def test_validation_view_validate_user_from_jouve_data_staging(self, client):
-        user = users_factories.UserFactory(isBeneficiary=False, dateOfBirth=AGE18_ELIGIBLE_BIRTH_DATE)
+        user = users_factories.UserFactory(dateOfBirth=AGE18_ELIGIBLE_BIRTH_DATE)
 
         content = fraud_factories.JouveContentFactory(birthDateTxt=f"{AGE18_ELIGIBLE_BIRTH_DATE:%d/%m/%Y}")
         check = fraud_factories.BeneficiaryFraudCheckFactory(
