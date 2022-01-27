@@ -4,12 +4,12 @@
 .button {
   border-style: none;
   border-radius: rem(24px);
-  padding: rem(10px) rem(24px);
+  padding: rem(8px) rem(24px);
   font-weight: 700;
   font-size: rem(15px);
 
   &-is-loading {
-    padding: rem(6px) rem(24px);
+    padding: rem(4px) rem(24px);
   }
 
   &-spinner {
@@ -24,7 +24,6 @@
     &:focus,
     &:hover {
       color: $white;
-      border-color: $primary-dark;
     }
 
     .button-spinner {
@@ -35,16 +34,18 @@
   &-primary {
     color: $white;
     background-color: $primary;
+    border: rem(2px) solid $primary;
 
     .button-spinner {
       fill: $white;
     }
+  }
 
-    &:focus,
-    &:hover {
-      outline: none;
-      background-color: $primary-dark;
-    }
+  &:focus,
+  &:hover {
+    outline: none;
+    background-color: $primary-dark;
+    border-color: $primary-dark;
   }
 
   &:hover {
