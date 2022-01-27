@@ -44,7 +44,7 @@ export const Offer = ({
   const [displayDetails, setDisplayDetails] = useState(false)
 
   return (
-    <li className="offer">
+    <li className="offer" data-testid="offer-listitem">
       <div className="offer-image-placeholder" data-testid="thumb-placeholder">
         <Logo />
       </div>
