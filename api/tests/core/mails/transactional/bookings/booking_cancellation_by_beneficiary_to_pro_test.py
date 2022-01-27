@@ -1,11 +1,9 @@
 from datetime import datetime
 from datetime import timedelta
-from decimal import Decimal
 from unittest.mock import patch
 
 import pytest
 
-from pcapi.core.bookings import factories as bookings_factories
 import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.mails.transactional.bookings.booking_cancellation_by_beneficiary_to_pro import (

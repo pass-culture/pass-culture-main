@@ -6,21 +6,20 @@ from operator import attrgetter
 from sqlalchemy.orm import Query
 
 from pcapi import settings
-from pcapi.core import mails
 from pcapi.core.bookings.api import recompute_dnBookedQuantity
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.bookings.models import BookingStatus
 import pcapi.core.bookings.repository as bookings_repository
-from pcapi.core.mails.transactional.bookings.booking_expired_to_beneficiary import (
+from pcapi.core.mails.transactional.bookings.booking_cancellation_by_institution import (
+    send_education_booking_cancellation_by_institution_email,
+)
+from pcapi.core.mails.transactional.bookings.booking_expiration_to_beneficiary import (
     send_expired_bookings_to_beneficiary_email,
 )
-from pcapi.core.mails.transactional.pro.booking_expiration_to_pro import send_bookings_expiration_to_pro_email
-from pcapi.core.mails.transactional.sendinblue_template_ids import SendinblueTransactionalEmailData
-from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
+from pcapi.core.mails.transactional.bookings.booking_expiration_to_pro import send_bookings_expiration_to_pro_email
 from pcapi.core.users.models import User
 from pcapi.models import db
-from pcapi.models.feature import FeatureToggle
 
 
 logger = logging.getLogger(__name__)
@@ -206,20 +205,7 @@ def notify_offerers_of_expired_educational_bookings() -> None:
     expired_educational_bookings = bookings_repository.find_expired_educational_bookings()
 
     for educational_booking in expired_educational_bookings:
-        booking = educational_booking.booking
-        booking_email = booking.stock.offer.bookingEmail
-        if booking_email:
-            stock = booking.stock
-            if FeatureToggle.ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS.is_active():
-                data = SendinblueTransactionalEmailData(
-                    template=TransactionalEmail.EDUCATIONAL_BOOKING_CANCELLATION_BY_INSTITUTION.value,
-                    params={
-                        "OFFER_NAME": stock.offer.name,
-                        "EVENT_BEGINNING_DATETIME": stock.beginningDatetime.strftime("%d/%m/%Y à %H:%M"),
-                        "EDUCATIONAL_REDACTOR_EMAIL": educational_booking.educationalRedactor.email,
-                    },
-                )
-                mails.send(recipients=[booking_email], data=data)
+        send_education_booking_cancellation_by_institution_email(educational_booking)
 
     logger.info(
         "[notify_offerers_of_expired_educational_bookings] %d Offerers have been notified",

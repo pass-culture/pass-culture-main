@@ -70,27 +70,3 @@ def make_offerer_driven_cancellation_email_for_offerer(booking: Booking) -> dict
         "Subject": email_subject,
         "Html-part": email_html,
     }
-
-    # ongoing_stock_bookings = find_ongoing_bookings_by_stock(booking.stock.id)
-    # stock_date_time = None
-    # booking_is_on_event = booking.stock.beginningDatetime is not None
-    # if booking_is_on_event:
-    #     date_in_tz = get_event_datetime(booking.stock)
-    #     stock_date_time = format_datetime(date_in_tz)
-
-    # email_html = render_template(
-    #     "mails/offerer_recap_email_after_offerer_cancellation.html",
-    #     booking_is_on_event=booking_is_on_event,
-    #     user_name=booking.userName,
-    #     user_email=booking.email,
-    #     stock_date_time=stock_date_time,
-    #     number_of_bookings=len(ongoing_stock_bookings),
-    #     stock_bookings=ongoing_stock_bookings,
-    #     stock_name=booking.stock.offer.name,
-    #     venue=booking.venue,
-    # )
-    # return {
-    #     "FromName": "pass Culture",
-    #     "Subject": f"Confirmation de votre annulation de réservation pour {booking.stock.offer.name}, proposé par {booking.venue.name}",
-    #     "Html-part": email_html,
-    # }

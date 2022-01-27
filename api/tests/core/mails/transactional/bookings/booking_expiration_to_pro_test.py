@@ -1,11 +1,9 @@
-from unittest.mock import patch
-
 import pytest
 
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.categories import subcategories
 import pcapi.core.mails.testing as mails_testing
-from pcapi.core.mails.transactional.pro.booking_expiration_to_pro import send_bookings_expiration_to_pro_email
+from pcapi.core.mails.transactional.bookings.booking_expiration_to_pro import send_bookings_expiration_to_pro_email
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.offers.factories import OffererFactory
 
