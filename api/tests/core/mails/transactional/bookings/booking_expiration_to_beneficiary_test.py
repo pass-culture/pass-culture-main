@@ -8,10 +8,10 @@ from pcapi.core.bookings.factories import IndividualBookingFactory
 from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.categories import subcategories
 import pcapi.core.mails.testing as mails_testing
-from pcapi.core.mails.transactional.bookings.booking_expired_to_beneficiary import (
+from pcapi.core.mails.transactional.bookings.booking_expiration_to_beneficiary import (
     get_expired_bookings_to_beneficiary_data,
 )
-from pcapi.core.mails.transactional.bookings.booking_expired_to_beneficiary import (
+from pcapi.core.mails.transactional.bookings.booking_expiration_to_beneficiary import (
     send_expired_bookings_to_beneficiary_email,
 )
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail

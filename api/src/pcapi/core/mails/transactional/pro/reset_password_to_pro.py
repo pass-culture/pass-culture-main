@@ -34,25 +34,28 @@ def send_reset_password_to_pro_email(user: User) -> bool:
 
 
 def get_reset_password_link_to_admin_email_data(created_user: User, reset_password_link: str) -> dict:
-    if not FeatureToggle.ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS.is_active():
-        return {
-            "Subject": "Création d'un compte pro",
-            "Html-part": (
-                "<div><div>Bonjour,</div>"
-                f"<div>Vous venez de créer le compte de {created_user.firstName} {created_user.lastName}.</div>"
-                f"<div>Le lien de création de mot de passe est <a href='{reset_password_link}'>{reset_password_link}</a></div>"
-            ),
-        }
     return {
-        "subject": "Création d'un compte pro",
-        "htmlContent": (
-            "<html><head></head><body>"
+        "Subject": "Création d'un compte pro",
+        "Html-part": (
             "<div><div>Bonjour,</div>"
             f"<div>Vous venez de créer le compte de {created_user.firstName} {created_user.lastName}.</div>"
             f"<div>Le lien de création de mot de passe est <a href='{reset_password_link}'>{reset_password_link}</a></div>"
-            "</body></html>"
         ),
     }
+
+
+# FIXME (tgabin, 2022-01-31): below is sendinblue format to send transactional email without template
+# The branching mailjet/sendinblue need to be upgraded to take in charge the dictionnary below
+# return {
+#     "subject": "Création d'un compte pro",
+#     "htmlContent": (
+#         "<html><head></head><body>"
+#         "<div><div>Bonjour,</div>"
+#         f"<div>Vous venez de créer le compte de {created_user.firstName} {created_user.lastName}.</div>"
+#         f"<div>Le lien de création de mot de passe est <a href='{reset_password_link}'>{reset_password_link}</a></div>"
+#         "</body></html>"
+#     ),
+# }
 
 
 def send_reset_password_link_to_admin_email(created_user: User, admin_email: User, reset_password_link: str) -> bool:
