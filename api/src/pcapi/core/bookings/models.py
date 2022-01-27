@@ -275,6 +275,14 @@ class Booking(PcObject, Model):
     def isConfirmed(cls):  # pylint: disable=no-self-argument # type: ignore[no-redef]
         return and_(cls.cancellationLimitDate.isnot(None), cls.cancellationLimitDate <= datetime.utcnow())
 
+    @hybrid_property
+    def is_used_or_reimbursed(self) -> bool:
+        return self.status in [BookingStatus.USED, BookingStatus.REIMBURSED]
+
+    @is_used_or_reimbursed.expression
+    def is_used_or_reimbursed(cls) -> bool:  # pylint: disable=no-self-argument
+        return cls.status.in_([BookingStatus.USED, BookingStatus.REIMBURSED])
+
     @property
     def firstName(self) -> Optional[str]:
         if self.individualBooking is not None:
