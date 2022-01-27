@@ -4,11 +4,23 @@
  */
 
 import PropTypes from 'prop-types'
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useState, FunctionComponent } from 'react'
 
 import TextInput from 'components/layout/inputs/TextInput/TextInput'
 
-const Credit = ({ credit, setCredit, setStep, step }) => {
+interface Props {
+  credit: string
+  setCredit: (credit: string) => void
+  setStep: (step: number) => void
+  step: number
+}
+
+const Credit: FunctionComponent<Props> = ({
+  credit,
+  setCredit,
+  setStep,
+  step,
+}) => {
   const [inputCredit, setInputCredit] = useState(credit)
 
   const updateCredit = useCallback(event => {
