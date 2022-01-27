@@ -200,7 +200,6 @@ class User(PcObject, Model, NeedsValidationMixin):
         server_default=expression.false(),
         default=False,
     )
-    isBeneficiary = sa.Column(sa.Boolean, nullable=False, server_default=expression.false())
     isEmailValidated = sa.Column(sa.Boolean, nullable=True, server_default=expression.false())
     lastConnectionDate = sa.Column(sa.DateTime, nullable=True)
     lastName = sa.Column(sa.String(128), nullable=True)
