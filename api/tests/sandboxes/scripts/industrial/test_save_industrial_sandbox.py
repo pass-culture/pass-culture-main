@@ -17,17 +17,17 @@ class SaveIndustrialSandboxTest:
 
         save_industrial_sandbox()
 
-        assert offerers_models.Offerer.query.count() == 19
-        assert offerers_models.Venue.query.count() == 28
-        assert finance_models.BusinessUnit.query.count() == 28
-        assert offers_models.Offer.query.count() == 182
-        assert offers_models.Stock.query.count() == 182
-        assert 302 <= bookings_models.Booking.query.count() <= 306
-        assert 182 <= bookings_models.IndividualBooking.query.count() <= 186
+        assert offerers_models.Offerer.query.count() == 20
+        assert offerers_models.Venue.query.count() == 29
+        assert finance_models.BusinessUnit.query.count() == 29
+        assert offers_models.Offer.query.count() == 190
+        assert offers_models.Stock.query.count() == 191
+        assert 311 <= bookings_models.Booking.query.count() <= 315
+        assert 191 <= bookings_models.IndividualBooking.query.count() <= 195
         assert 118 <= educational_models.EducationalBooking.query.count() <= 122
-        assert reference_models.ReferenceScheme.query.count() == 2
-        assert finance_models.Invoice.query.count() == 5
-        assert finance_models.Cashflow.query.count() == 5
+        assert reference_models.ReferenceScheme.query.count() == 5
+        assert finance_models.Invoice.query.count() == 6
+        assert finance_models.Cashflow.query.count() == 7
         assert (
             finance_models.Pricing.query.filter(
                 finance_models.Pricing.status != finance_models.PricingStatus.INVOICED
