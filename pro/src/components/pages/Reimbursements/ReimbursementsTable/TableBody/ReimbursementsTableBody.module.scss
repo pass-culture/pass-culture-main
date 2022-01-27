@@ -15,5 +15,11 @@ tbody.reimbursement-body {
   .invoice {
     text-align: right;
     width: rem(220px);
+
+    svg {
+        height: unset;
+        width: unset;
+        margin-right: rem(8px);
+    }
   }
 }
