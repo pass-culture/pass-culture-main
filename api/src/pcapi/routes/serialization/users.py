@@ -96,7 +96,6 @@ class SharedLoginUserResponseModel(BaseModel):
     hasSeenProTutorials: Optional[bool]
     id: str
     isAdmin: bool
-    isBeneficiary: bool
     isEmailValidated: bool
     lastConnectionDate: Optional[datetime]
     lastName: Optional[str]
@@ -119,7 +118,6 @@ class SharedLoginUserResponseModel(BaseModel):
     @classmethod
     def from_orm(cls, user):
         result = super().from_orm(user)
-        result.isBeneficiary = user.is_beneficiary
         return result
 
 
@@ -159,9 +157,3 @@ class SharedCurrentUserResponseModel(BaseModel):
         json_encoders = {datetime: format_into_utc_date}
         alias_generator = to_camel
         orm_mode = True
-
-    @classmethod
-    def from_orm(cls, user):
-        result = super().from_orm(user)
-        result.isBeneficiary = user.is_beneficiary
-        return result

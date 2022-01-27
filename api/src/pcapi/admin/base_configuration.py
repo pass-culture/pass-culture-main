@@ -123,7 +123,6 @@ class AdminIndexView(AdminIndexBaseView):
                     email=google_user["email"],
                     publicName=google_user["name"],
                     isEmailValidated=True,
-                    isBeneficiary=False,
                     isActive=True,
                     isAdmin=True,
                 )

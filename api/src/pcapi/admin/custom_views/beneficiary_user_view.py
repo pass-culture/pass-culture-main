@@ -160,7 +160,6 @@ class BeneficiaryUserView(ResendValidationEmailMixin, SuspensionMixin, BaseAdmin
         "ineHash",
         "isActive",
         "isAdmin",
-        "isBeneficiary",
         "isEmailValidated",
         "lastConnectionDate",
         "lastName",
