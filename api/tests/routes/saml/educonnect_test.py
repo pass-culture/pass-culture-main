@@ -153,6 +153,44 @@ class EduconnectTest:
         assert user.ineHash == ine_hash
 
     @patch("pcapi.connectors.beneficiaries.educonnect.educonnect_connector.get_saml_client")
+    @override_features(ENABLE_INE_WHITELIST_FILTER=False)
+    def test_connexion_date_missing(self, mock_get_educonnect_saml_client, client, caplog, app):
+        # set user_id in redis as if /saml/educonnect/login was called
+        user = users_factories.UserFactory(email=self.email)
+        app.redis_client.set(f"{self.request_id_key_prefix}{self.request_id}", user.id)
+
+        mock_saml_client = MagicMock()
+        mock_saml_response = MagicMock()
+        mock_get_educonnect_saml_client.return_value = mock_saml_client
+        mock_saml_client.parse_authn_request_response.return_value = mock_saml_response
+        mock_saml_response.get_identity.return_value = {
+            "givenName": ["Max"],
+            "sn": ["SENS"],
+            "urn:oid:1.3.6.1.4.1.20326.10.999.1.5": ["https://educonnect.education.gouv.fr/Logout"],
+            "urn:oid:1.3.6.1.4.1.20326.10.999.1.7": ["eleve1d"],
+            "urn:oid:1.3.6.1.4.1.20326.10.999.1.57": [
+                "e6759833fb379e0340322889f2a367a5a5150f1533f80dfe963d21e43e33f7164b76cc802766cdd33c6645e1abfd1875"
+            ],
+            "urn:oid:1.3.6.1.4.1.20326.10.999.1.67": ["2006-08-18"],
+            "urn:oid:1.3.6.1.4.1.20326.10.999.1.72": ["school_uai"],
+            "urn:oid:1.3.6.1.4.1.20326.10.999.1.73": ["2212"],
+            "urn:oid:1.3.6.1.4.1.20326.10.999.1.64": ["ine_hash"],
+        }
+        mock_saml_response.in_response_to = self.request_id
+
+        response = client.post("/saml/acs", form={"SAMLResponse": "encrypted_data"})
+
+        assert response.status_code == 302
+        assert (
+            response.location
+            == "https://webapp-v2.example.com/educonnect/validation?firstName=Max&lastName=SENS&dateOfBirth=2006-08-18&logoutUrl=https%3A%2F%2Feduconnect.education.gouv.fr%2FLogout"
+        )
+
+        assert fraud_models.BeneficiaryFraudCheck.query.filter_by(
+            user=user, type=fraud_models.FraudCheckType.EDUCONNECT, status=fraud_models.FraudCheckStatus.OK
+        ).one()
+
+    @patch("pcapi.connectors.beneficiaries.educonnect.educonnect_connector.get_saml_client")
     def test_birth_date_missing(self, mock_get_educonnect_saml_client, client, caplog, app):
         user = users_factories.UserFactory(email=self.email)
         app.redis_client.set(f"{self.request_id_key_prefix}{self.request_id}", user.id)

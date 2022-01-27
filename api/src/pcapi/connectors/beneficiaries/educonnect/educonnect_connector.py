@@ -1,6 +1,7 @@
 from datetime import datetime
 import logging
 from os import path
+from typing import Optional
 
 from flask import current_app as app
 from saml2 import BINDING_HTTP_POST
@@ -114,7 +115,7 @@ def get_educonnect_user(saml_response: str) -> models.EduconnectUser:
     try:
         return models.EduconnectUser(
             birth_date=datetime.strptime(educonnect_identity[_get_field_oid("67")][0], "%Y-%m-%d").date(),
-            connection_datetime=datetime.strptime(educonnect_identity[_get_field_oid("6")][0], "%Y-%m-%d %H:%M:%S.%f"),
+            connection_datetime=_get_connexion_datetime(educonnect_identity),
             educonnect_id=educonnect_identity[_get_field_oid("57")][0],
             first_name=educonnect_identity["givenName"][0],
             ine_hash=educonnect_identity[_get_field_oid("64")][0],
@@ -152,4 +153,12 @@ def _get_mocked_user_for_performance_tests(user_id: str) -> models.EduconnectUse
         ine_hash=f"inehash_perf-test_{user.id}",
         last_name=f"lastname_perf-test_{user.id}",
         saml_request_id=mocked_saml_request_id,
+    )
+
+
+def _get_connexion_datetime(educonnect_identity: dict) -> Optional[datetime]:
+    return (
+        datetime.strptime(educonnect_identity[_get_field_oid("6")][0], "%Y-%m-%d %H:%M:%S.%f")
+        if _get_field_oid("6") in educonnect_identity
+        else None
     )

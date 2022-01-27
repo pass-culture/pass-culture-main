@@ -6,7 +6,7 @@ from typing import Optional
 @dataclass
 class EduconnectUser:
     birth_date: datetime.date
-    connection_datetime: datetime.datetime
+    connection_datetime: Optional[datetime.datetime]
     educonnect_id: str
     first_name: str
     ine_hash: str
