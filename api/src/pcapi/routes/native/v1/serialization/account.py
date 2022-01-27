@@ -293,15 +293,13 @@ class UserProfileResponse(BaseModel):
         user.isEligibleForBeneficiaryUpgrade = users_api.is_eligible_for_beneficiary_upgrade(user, user.eligibility)
         user.eligibility_end_datetime = users_api.get_eligibility_end_datetime(user.dateOfBirth)
         user.eligibility_start_datetime = users_api.get_eligibility_start_datetime(user.dateOfBirth)
-        result = super().from_orm(user)
-        result.subscriptionMessage = cls._get_subscription_message(user)
+        user.isBeneficiary = user.is_beneficiary
+        user.subscriptionMessage = cls._get_subscription_message(user)
 
         if not (FeatureToggle.ENABLE_CULTURAL_SURVEY.is_active() and user.is_beneficiary):
-            result.needsToFillCulturalSurvey = False
+            user.needsToFillCulturalSurvey = False
 
-        # FIXME: (Lixxday) Remove after isBeneficiary column has been deleted
-        result.isBeneficiary = user.is_beneficiary
-        return result
+        return super().from_orm(user)
 
 
 class UserProfileUpdateRequest(BaseModel):
