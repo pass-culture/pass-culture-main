@@ -23,6 +23,7 @@ class SearchGroups(Enum):
     SPECTACLE = "Spectacles"
     INSTRUMENT = "Instruments de musique"
     MATERIEL = "Beaux-Arts"
+    CARTE_JEUNES = "Carte jeunes"
     NONE = None
 
 
@@ -39,6 +40,7 @@ class HomepageLabels(Enum):
     SPECTACLE = "Spectacles"
     INSTRUMENT = "Musique"
     MATERIEL = "Beaux-Arts"
+    CARTE_JEUNES = "Carte jeunes"
     NONE = None
 
 
