@@ -6,7 +6,7 @@
 import PropTypes from 'prop-types'
 import React, { useCallback, useState, FunctionComponent } from 'react'
 
-import TextInput from 'components/layout/inputs/TextInput/TextInput'
+import { CreditInput } from 'new_components/CreditInput/CreditInput'
 
 interface Props {
   credit: string
@@ -23,10 +23,6 @@ const Credit: FunctionComponent<Props> = ({
 }) => {
   const [inputCredit, setInputCredit] = useState(credit)
 
-  const updateCredit = useCallback(event => {
-    setInputCredit(event.target.value)
-  }, [])
-
   const previousStep = useCallback(() => {
     setStep(step - 1)
   }, [setStep, step])
@@ -40,18 +36,7 @@ const Credit: FunctionComponent<Props> = ({
     <>
       <div className="tnd-subtitle">Crédit image et droits d’utilisation</div>
 
-      <TextInput
-        countCharacters
-        label="Crédit image"
-        maxLength={255}
-        name="thumbnail-credit"
-        onChange={updateCredit}
-        placeholder="Photographe..."
-        required={false}
-        subLabel="Optionnel"
-        type="text"
-        value={inputCredit}
-      />
+      <CreditInput credit={inputCredit} updateCredit={setInputCredit} />
 
       <div className="tnc-explanations">
         En utilisant ce contenu, je certifie que je suis propriétaire ou que je
