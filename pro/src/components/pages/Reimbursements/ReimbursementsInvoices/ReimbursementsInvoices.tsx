@@ -7,6 +7,7 @@ import Spinner from '../../../layout/Spinner'
 import ReimbursementsTable from '../ReimbursementsTable'
 
 import InvoicesFilters from './InvoicesFilters'
+import InvoicesNoResult from './InvoicesNoResult'
 
 type businessUnitsOptionsType = [
   {
@@ -64,6 +65,8 @@ const ReimbursementsInvoices = ({
   const [invoices, setInvoices] = useState([])
   const [isLoading, setIsLoading] = useState(true)
   const [hasError, setHasError] = useState(false)
+  const [areFiltersDefault, setAreFiltersDefault] = useState(true)
+
   const isCalledOnceRef = useRef(false)
 
   const {
@@ -107,6 +110,7 @@ const ReimbursementsInvoices = ({
   return (
     <>
       <InvoicesFilters
+        areFiltersDefault={areFiltersDefault}
         defaultSelectDisplayName="Tous les points de remboursement"
         defaultSelectId="all"
         filters={filters}
@@ -115,6 +119,7 @@ const ReimbursementsInvoices = ({
         selectLabel="Point de remboursement"
         selectName="businessUnit"
         selectableOptions={businessUnitsOptions}
+        setAreFiltersDefault={setAreFiltersDefault}
         setFilters={setFilters}
       >
         <button
@@ -128,7 +133,14 @@ const ReimbursementsInvoices = ({
       </InvoicesFilters>
       {isLoading && <Spinner />}
       {hasError && 'Une erreur est survenue, veuillez réessayer plus tard.'}
-      {!hasError && invoices.length === 0 && 'Pas de résultats'}
+      {!hasError && invoices.length === 0 && (
+        <InvoicesNoResult
+          areFiltersDefault={areFiltersDefault}
+          initialFilters={INITIAL_FILTERS}
+          setAreFiltersDefault={setAreFiltersDefault}
+          setFilters={setFilters}
+        />
+      )}
       {invoices.length > 0 && (
         <ReimbursementsTable columns={columns} invoices={invoices} />
       )}
