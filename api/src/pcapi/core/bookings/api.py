@@ -107,6 +107,7 @@ def book_offer(
             token=generate_booking_token(),
             venueId=stock.offer.venueId,
             offererId=stock.offer.venue.managingOffererId,
+            status=BookingStatus.CONFIRMED,
         )
 
         booking.dateCreated = datetime.datetime.utcnow()
@@ -134,7 +135,7 @@ def book_offer(
             "offer": stock.offerId,
             "stock": stock.id,
             "booking": booking.id,
-            "used": booking.isUsed,
+            "used": booking.is_used_or_reimbursed,
         },
     )
 
@@ -439,7 +440,7 @@ def auto_mark_as_used_after_event() -> None:
     # fmt: off
     bookings = (
         Booking.query
-            .filter(Booking.isUsed.is_(False), Booking.status != BookingStatus.CANCELLED)
+            .filter(Booking.status.in_((BookingStatus.CONFIRMED, BookingStatus.PENDING)))
             .filter(Stock.id == Booking.stockId)
             .filter(Stock.beginningDatetime < threshold)
     )
@@ -456,12 +457,12 @@ def auto_mark_as_used_after_event() -> None:
     )
     # fmt: on
     n_individual_updated = individual_bookings.update(
-        {"isUsed": True, "status": BookingStatus.USED, "dateUsed": now}, synchronize_session=False
+        {"status": BookingStatus.USED, "dateUsed": now}, synchronize_session=False
     )
     db.session.commit()
 
     n_educational_updated = educational_bookings.update(
-        {"isUsed": True, "status": BookingStatus.USED, "dateUsed": now}, synchronize_session=False
+        {"status": BookingStatus.USED, "dateUsed": now}, synchronize_session=False
     )
     db.session.commit()
 
