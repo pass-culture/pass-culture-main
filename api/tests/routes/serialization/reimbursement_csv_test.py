@@ -127,7 +127,7 @@ class ReimbursementDetailsTest:
         assert raw_csv[13] == f"{int(payment.reimbursementRate * 100)}%"
         assert raw_csv[14] == "21,00"
         assert raw_csv[15] == "Remboursement envoyé"
-        assert raw_csv[16] == "offre scolaire"
+        assert raw_csv[16] == "offre collective"
 
         # new pricing+cashflow data
         row = ReimbursementDetails(payments_info[0]).as_csv_row()
@@ -146,7 +146,7 @@ class ReimbursementDetailsTest:
         assert row[13] == f"{int(payment.reimbursementRate * 100)} %"
         assert row[14] == "21,00"
         assert row[15] == "Remboursement envoyé"
-        assert row[16] == "offre scolaire"
+        assert row[16] == "offre collective"
 
     def test_reimbursement_details_with_custom_rule_as_csv(self):
         # given
