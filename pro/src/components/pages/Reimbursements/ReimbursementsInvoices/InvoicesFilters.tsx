@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction, useCallback, useState } from 'react'
+import React, { Dispatch, SetStateAction, useCallback } from 'react'
 
 import PeriodSelector from 'components/layout/inputs/PeriodSelector/PeriodSelector'
 import Select from 'components/layout/inputs/Select'
@@ -18,6 +18,7 @@ type filtersType = {
 }
 
 interface IReimbursementsSectionHeaderProps {
+  areFiltersDefault: boolean
   children: React.ReactNode | React.ReactNode[]
   defaultSelectDisplayName: string
   defaultSelectId: string
@@ -26,20 +27,23 @@ interface IReimbursementsSectionHeaderProps {
   initialFilters: filtersType
   selectLabel: string
   selectName: string
-  setFilters: Dispatch<SetStateAction<filtersType>>
   selectableOptions: selectableOptionsType
+  setAreFiltersDefault: Dispatch<SetStateAction<boolean>>
+  setFilters: Dispatch<SetStateAction<filtersType>>
 }
 
 const InvoicesFilters = ({
+  areFiltersDefault,
   children,
   defaultSelectDisplayName,
   defaultSelectId,
+  filters,
   headerTitle,
   initialFilters,
   selectLabel,
   selectName,
   selectableOptions,
-  filters,
+  setAreFiltersDefault,
   setFilters,
 }: IReimbursementsSectionHeaderProps): JSX.Element => {
   const {
@@ -47,8 +51,6 @@ const InvoicesFilters = ({
     periodStart: selectedPeriodStart,
     periodEnd: selectedPeriodEnd,
   } = filters
-
-  const [areFiltersDefault, setAreFiltersDefault] = useState(true)
 
   function resetFilters() {
     setAreFiltersDefault(true)
@@ -64,7 +66,7 @@ const InvoicesFilters = ({
       }))
       setAreFiltersDefault(false)
     },
-    [setFilters]
+    [setAreFiltersDefault, setFilters]
   )
 
   const setStartDateFilter = useCallback(
@@ -75,7 +77,7 @@ const InvoicesFilters = ({
       }))
       setAreFiltersDefault(false)
     },
-    [setFilters]
+    [setAreFiltersDefault, setFilters]
   )
 
   const setEndDateFilter = useCallback(
@@ -86,7 +88,7 @@ const InvoicesFilters = ({
       }))
       setAreFiltersDefault(false)
     },
-    [setFilters]
+    [setAreFiltersDefault, setFilters]
   )
 
   return (
