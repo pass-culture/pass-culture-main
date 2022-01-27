@@ -431,6 +431,8 @@ describe('src | components | Desk', () => {
     expect(bannerMessage).toBeInTheDocument()
     expect(
       screen.getByText('En savoir plus', { selector: 'a' }).getAttribute('href')
-    ).toBe('https://passculture.zendesk.com/hc/fr/articles/4413389597329')
+    ).toBe(
+      'https://aide.passculture.app/hc/fr/articles/4416062183569--Acteurs-Culturels-Modalités-de-retrait-et-CGU'
+    )
   })
 })
