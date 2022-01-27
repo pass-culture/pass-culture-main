@@ -190,8 +190,8 @@ describe('offers', () => {
     )
 
     // Then
-    const listItemsInOffer = await screen.findAllByRole('listitem')
-    expect(listItemsInOffer).toHaveLength(4)
+    const listItemsInOffer = await screen.findAllByTestId('offer-listitem')
+    expect(listItemsInOffer).toHaveLength(2)
     expect(screen.getByText(offerInParis.name)).toBeInTheDocument()
     expect(screen.getByText(offerInCayenne.name)).toBeInTheDocument()
     expect(screen.getByText('2 résultats')).toBeInTheDocument()
@@ -236,7 +236,7 @@ describe('offers', () => {
     // Then
     const otherOfferName = await screen.findByText(otherOffer.name)
     expect(otherOfferName).toBeInTheDocument()
-    expect(screen.getAllByRole('listitem')).toHaveLength(2)
+    expect(screen.getAllByTestId('offer-listitem')).toHaveLength(1)
     expect(screen.queryByText(offerInParis.name)).not.toBeInTheDocument()
     expect(screen.queryByText(offerInCayenne.name)).not.toBeInTheDocument()
     expect(screen.getByText('2 résultats')).toBeInTheDocument()
@@ -283,7 +283,7 @@ describe('offers', () => {
     // Then
     const otherOfferName = await screen.findByText(otherOffer.name)
     expect(otherOfferName).toBeInTheDocument()
-    expect(screen.getAllByRole('listitem')).toHaveLength(2)
+    expect(screen.getAllByTestId('offer-listitem')).toHaveLength(1)
 
     await expect(async () => {
       await waitFor(() =>
@@ -337,8 +337,8 @@ describe('offers', () => {
     )
 
     // Then
-    const listItemsInOffer = await screen.findAllByRole('listitem')
-    expect(listItemsInOffer).toHaveLength(2)
+    const listItemsInOffer = await screen.findAllByTestId('offer-listitem')
+    expect(listItemsInOffer).toHaveLength(1)
     expect(screen.getByText(offerInCayenne.name)).toBeInTheDocument()
   })
 
@@ -361,8 +361,8 @@ describe('offers', () => {
     )
 
     // Then
-    const listItemsInOffer = await screen.findAllByRole('listitem')
-    expect(listItemsInOffer).toHaveLength(2)
+    const listItemsInOffer = await screen.findAllByTestId('offer-listitem')
+    expect(listItemsInOffer).toHaveLength(1)
     expect(screen.getByText(offerInCayenne.name)).toBeInTheDocument()
   })
 
@@ -383,7 +383,7 @@ describe('offers', () => {
         'Aucun résultat trouvé pour cette recherche.'
       )
       expect(errorMessage).toBeInTheDocument()
-      const listItemsInOffer = screen.queryAllByRole('listitem')
+      const listItemsInOffer = screen.queryAllByTestId('offer-listitem')
       expect(listItemsInOffer).toHaveLength(0)
     })
 
@@ -411,7 +411,7 @@ describe('offers', () => {
         'Aucun résultat trouvé pour cette recherche.'
       )
       expect(errorMessage).toBeInTheDocument()
-      const listItemsInOffer = screen.queryAllByRole('listitem')
+      const listItemsInOffer = screen.queryAllByTestId('offer-listitem')
       expect(listItemsInOffer).toHaveLength(0)
     })
 
@@ -437,7 +437,7 @@ describe('offers', () => {
         'Aucun résultat trouvé pour cette recherche.'
       )
       expect(errorMessage).toBeInTheDocument()
-      const listItemsInOffer = screen.queryAllByRole('listitem')
+      const listItemsInOffer = screen.queryAllByTestId('offer-listitem')
       expect(listItemsInOffer).toHaveLength(0)
     })
   })

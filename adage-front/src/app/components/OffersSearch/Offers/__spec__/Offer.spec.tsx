@@ -1,9 +1,11 @@
-import { render, screen, within } from '@testing-library/react'
+import { render, screen, waitFor, within } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import React from 'react'
+import type { Hit } from 'react-instantsearch-core'
 import { QueryCache, QueryClient, QueryClientProvider } from 'react-query'
 
 import * as pcapi from 'repository/pcapi/pcapi'
-import { OfferType, ResultType, Role } from 'utils/types'
+import { ADRESS_TYPE, OfferType, ResultType, Role } from 'utils/types'
 
 import { OffersComponent as Offers } from '../Offers'
 
@@ -26,7 +28,7 @@ const wrapper = ({ children }) => (
 
 const mockedPcapi = pcapi as jest.Mocked<typeof pcapi>
 
-const searchFakeResult: ResultType = {
+const searchFakeResult: Hit<ResultType> = {
   objectID: '479',
   offer: {
     dates: [new Date('2021-09-29T13:54:30+00:00').valueOf()],
@@ -37,6 +39,7 @@ const searchFakeResult: ResultType = {
     name: 'Le Petit Rintintin 25',
     publicName: 'Le Petit Rintintin 25',
   },
+  _highlightResult: {},
 }
 
 describe('offer', () => {
@@ -54,8 +57,10 @@ describe('offer', () => {
         {
           id: 825,
           beginningDatetime: new Date('2022-09-16T00:00:00Z'),
+          bookingLimitDatetime: new Date('2022-09-16T00:00:00Z'),
           isBookable: true,
           price: 140000,
+          numberOfTickets: 10,
         },
       ],
       venue: {
@@ -64,13 +69,28 @@ describe('offer', () => {
         name: 'Le Petit Rintintin 33',
         postalCode: '75000',
         publicName: 'Le Petit Rintintin 33',
+        managingOfferer: {
+          name: 'Le Petit Rintintin Management',
+        },
         coordinates: {
           latitude: 48.87004,
           longitude: 2.3785,
         },
       },
+      extraData: {
+        offerVenue: {
+          venueId: 'VENUE_ID',
+          otherAddress: '',
+          addressType: ADRESS_TYPE.OFFERER_VENUE,
+        },
+        students: ['Collège - 4e', 'Collège - 3e'],
+      },
       isSoldOut: false,
       isExpired: false,
+      audioDisabilityCompliant: false,
+      visualDisabilityCompliant: false,
+      mentalDisabilityCompliant: true,
+      motorDisabilityCompliant: true,
     }
 
     offerInCayenne = {
@@ -82,8 +102,10 @@ describe('offer', () => {
         {
           id: 825,
           beginningDatetime: new Date('2021-09-25T22:00:00Z'),
+          bookingLimitDatetime: new Date('2021-09-25T22:00:00Z'),
           isBookable: true,
           price: 80000,
+          educationalPriceDetail: 'Le détail de mon prix',
         },
       ],
       venue: {
@@ -92,18 +114,33 @@ describe('offer', () => {
         name: 'Le Petit Rintintin 33',
         postalCode: '97300',
         publicName: 'Le Petit Rintintin 33',
+        managingOfferer: {
+          name: 'Le Petit Rintintin Management',
+        },
         coordinates: {
           latitude: 48.87004,
           longitude: 2.3785,
         },
       },
+      extraData: {
+        offerVenue: {
+          venueId: '',
+          otherAddress: 'A la mairie',
+          addressType: ADRESS_TYPE.OTHER,
+        },
+        students: ['Collège - 4e'],
+      },
       isSoldOut: false,
       isExpired: false,
+      audioDisabilityCompliant: false,
+      visualDisabilityCompliant: false,
+      mentalDisabilityCompliant: true,
+      motorDisabilityCompliant: true,
     }
   })
 
-  describe('when offer has one stock', () => {
-    it('should show offer informations, including one stock with the Europe/Paris timezone date when venue is located in Paris', async () => {
+  describe('offer item', () => {
+    it('should not show all information at first', async () => {
       // Given
       mockedPcapi.getOffer.mockResolvedValue(offerInParis)
 
@@ -122,14 +159,34 @@ describe('offer', () => {
       // Then
       const offerName = await screen.findByText(offerInParis.name)
       expect(offerName).toBeInTheDocument()
-      const listItemsInOffer = screen.getAllByRole('listitem')
-      const stockList = within(listItemsInOffer[0]).getAllByRole('listitem')
-      expect(stockList).toHaveLength(1)
-      const stockInformation = screen.getByText('16/09/2022 02:00, 1 400,00 €')
-      expect(stockInformation).toBeInTheDocument()
+      const listItemsInOffer = screen.getAllByTestId('offer-listitem')
+      const summaryList = within(listItemsInOffer[0]).getAllByRole('list')
+      expect(summaryList).toHaveLength(2)
+
+      // First summary line
+      expect(within(summaryList[0]).getByText('Cinéma')).toBeInTheDocument()
+      expect(
+        within(summaryList[0]).getByText('16/09/2022 à 02:00')
+      ).toBeInTheDocument()
+      expect(
+        within(summaryList[0]).getByText('75000, Paris')
+      ).toBeInTheDocument()
+      // second summary line
+      expect(
+        within(summaryList[1]).getByText('Jusqu’à 10 places')
+      ).toBeInTheDocument()
+      expect(within(summaryList[1]).getByText('1 400,00 €')).toBeInTheDocument()
+      expect(
+        within(summaryList[1]).getByText('Multi niveaux')
+      ).toBeInTheDocument()
+
+      // Info that are in offer details component
+      expect(
+        screen.queryByText('Moteur', { exact: false })
+      ).not.toBeInTheDocument()
     })
 
-    it('should show offer informations, including one stock with the America/Cayenne timezone date when venue is located in Cayenne', async () => {
+    it('should show all offer informations if user click on "en savoir plus"', async () => {
       // Given
       mockedPcapi.getOffer.mockResolvedValue(offerInCayenne)
 
@@ -145,139 +202,50 @@ describe('offer', () => {
         }
       )
 
-      // Then
-      const stockInformation = await screen.findByText(
-        '25/09/2021 19:00, 800,00 €'
-      )
-      expect(stockInformation).toBeInTheDocument()
-    })
-  })
+      const offerName = await screen.findByText(offerInCayenne.name)
+      expect(offerName).toBeInTheDocument()
+      const listItemsInOffer = screen.getAllByTestId('offer-listitem')
+      const summaryList = within(listItemsInOffer[0]).getAllByRole('list')
+      expect(summaryList).toHaveLength(2)
 
-  describe('when offer has two stocks', () => {
-    beforeEach(() => {
-      offerInParis.stocks.push({
-        id: 826,
-        beginningDatetime: new Date('2021-10-16T00:00:00Z'),
-        isBookable: true,
-        price: 60000,
+      // First summary line
+      expect(within(summaryList[0]).getByText('Cinéma')).toBeInTheDocument()
+      expect(
+        within(summaryList[0]).getByText('25/09/2021 à 19:00')
+      ).toBeInTheDocument()
+      expect(
+        within(summaryList[0]).getByText('A la mairie')
+      ).toBeInTheDocument()
+      // second summary line
+      expect(
+        within(summaryList[1]).queryByText('Jusqu’à', { exact: false })
+      ).not.toBeInTheDocument()
+      expect(within(summaryList[1]).getByText('800,00 €')).toBeInTheDocument()
+      expect(
+        within(summaryList[1]).getByText('Collège - 4e')
+      ).toBeInTheDocument()
+
+      const seeMoreButton = await screen.findByRole('button', {
+        name: 'en savoir plus',
       })
+      userEvent.click(seeMoreButton)
+
+      await waitFor(() => {
+        expect(screen.queryByText('Le détail de mon prix')).toBeInTheDocument()
+      })
+
+      // Info that are in offer details component
+      expect(screen.queryByText('Le détail de mon prix')).toBeInTheDocument()
+      expect(screen.queryByText('Moteur', { exact: false })).toBeInTheDocument()
+      expect(
+        screen.queryByText('Psychique ou cognitif', { exact: false })
+      ).toBeInTheDocument()
+      expect(
+        screen.queryByText('Auditif', { exact: false })
+      ).not.toBeInTheDocument()
+      expect(
+        screen.queryByText('Visuel', { exact: false })
+      ).not.toBeInTheDocument()
     })
-
-    it('should show offer informations, including two line corresponding to both stocks correctly formatted', async () => {
-      // Given
-      mockedPcapi.getOffer.mockResolvedValue(offerInParis)
-
-      // When
-      render(
-        <Offers
-          hits={[searchFakeResult]}
-          setIsLoading={() => jest.fn()}
-          userRole={Role.redactor}
-        />,
-        {
-          wrapper,
-        }
-      )
-
-      // Then
-      const listItemsInOffer = await screen.findAllByRole('listitem')
-      const stockList = within(listItemsInOffer[0]).getAllByRole('listitem')
-      expect(stockList).toHaveLength(2)
-      const firstStockInformation = screen.getByText(
-        '16/09/2022 02:00, 1 400,00 €'
-      )
-      expect(firstStockInformation).toBeInTheDocument()
-      const secondStockInformation = screen.getByText(
-        '16/10/2021 02:00, 600,00 €'
-      )
-      expect(secondStockInformation).toBeInTheDocument()
-    })
-
-    it('should show only one stock information when the other one is not bookable', async () => {
-      // Given
-      offerInParis.stocks[1].isBookable = false
-      mockedPcapi.getOffer.mockResolvedValue(offerInParis)
-
-      // When
-      render(
-        <Offers
-          hits={[searchFakeResult]}
-          setIsLoading={() => jest.fn()}
-          userRole={Role.redactor}
-        />,
-        {
-          wrapper,
-        }
-      )
-
-      // Then
-      const listItemsInOffer = await screen.findAllByRole('listitem')
-      const stockList = within(listItemsInOffer[0]).getAllByRole('listitem')
-      expect(stockList).toHaveLength(1)
-      const stockInformation = screen.getByText('16/09/2022 02:00, 1 400,00 €')
-      expect(stockInformation).toBeInTheDocument()
-    })
-  })
-
-  it('should show offer thumb when it exists', async () => {
-    // Given
-    mockedPcapi.getOffer.mockResolvedValue(offerInParis)
-
-    // When
-    render(
-      <Offers
-        hits={[searchFakeResult]}
-        setIsLoading={() => jest.fn()}
-        userRole={Role.redactor}
-      />,
-      {
-        wrapper,
-      }
-    )
-
-    // Then
-    const offerThumb = await screen.findByRole('img')
-    expect(offerThumb).toHaveAttribute(
-      'src',
-      expect.stringContaining(searchFakeResult.offer.thumbUrl as string)
-    )
-  })
-
-  it.each`
-    name                 | thumbUrl
-    ${'is null'}         | ${null}
-    ${'is empty string'} | ${''}
-    ${'is undefined'}    | ${undefined}
-  `('should show thumb placeholder when thumb $name', async ({ thumbUrl }) => {
-    // Given
-    mockedPcapi.getOffer.mockResolvedValue(offerInParis)
-    const searchResult: ResultType = {
-      objectID: '479',
-      offer: {
-        dates: [new Date('2021-09-29T13:54:30+00:00').valueOf()],
-        name: 'Une chouette à la mer',
-        thumbUrl,
-      },
-      venue: {
-        name: 'Le Petit Rintintin 25',
-        publicName: 'Le Petit Rintintin 25',
-      },
-    }
-
-    // When
-    render(
-      <Offers
-        hits={[searchResult]}
-        setIsLoading={() => jest.fn()}
-        userRole={Role.redactor}
-      />,
-      {
-        wrapper,
-      }
-    )
-
-    // Then
-    const thumbPlaceholder = await screen.findByTestId('thumb-placeholder')
-    expect(thumbPlaceholder).toBeInTheDocument()
   })
 })
