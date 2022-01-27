@@ -4,7 +4,6 @@ import pathlib
 import secrets
 import typing
 from typing import Optional
-from typing import Union
 
 from pcapi import settings
 from pcapi.connectors.api_adage import AdageException
@@ -308,16 +307,15 @@ def can_offerer_create_educational_offer(offerer_id: str) -> bool:
         raise exception
 
 
-def get_educational_offerers(offerer_id: Union[None, str], current_user: User) -> list[Offerer]:
+def get_educational_offerers(offerer_id: Optional[str], current_user: User) -> list[Offerer]:
     if current_user.isAdmin and offerer_id is None:
         logger.info("Admin user must provide offerer_id as a query parameter")
         raise MissingOffererIdQueryParameter
 
     if offerer_id and current_user.isAdmin:
-        offerer = Offerer.query.filter(
+        offerers = Offerer.query.filter(
             Offerer.validationToken.is_(None), Offerer.isActive.is_(True), Offerer.id == dehumanize(offerer_id)
-        ).first()
-        offerers = [offerer]
+        ).all()
 
     else:
         filters = {"validated": True, "validated_for_user": True, "is_active": True}
