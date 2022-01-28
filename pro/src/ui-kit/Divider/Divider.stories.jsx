@@ -1,7 +1,3 @@
-/*
- * @debt directory "Gaël: this file should be migrated within the new directory structure"
- */
-
 import React from 'react'
 
 import Divider from './Divider'
@@ -13,7 +9,7 @@ export default {
 
 const Template = args => (
   <div>
-    <p>First text</p>
+    <p>Second text</p>
     <Divider {...args} />
     <p>Second text</p>
   </div>
