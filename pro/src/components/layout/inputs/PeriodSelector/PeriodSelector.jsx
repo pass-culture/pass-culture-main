@@ -28,7 +28,7 @@ const PeriodSelector = ({
   return (
     <div className="period-filter">
       <div className="period-filter-label">
-        {label}
+        {label && label}
         <div className={`period-filter-inputs ${isDisabled ? 'disabled' : ''}`}>
           <div
             className="period-filter-begin-picker"
@@ -93,6 +93,7 @@ const PeriodSelector = ({
 
 PeriodSelector.defaultProps = {
   isDisabled: false,
+  label: undefined,
   maxDateEnding: undefined,
   minDateBeginning: undefined,
   periodBeginningDate: undefined,
@@ -103,7 +104,7 @@ PeriodSelector.propTypes = {
   changePeriodBeginningDateValue: PropTypes.func.isRequired,
   changePeriodEndingDateValue: PropTypes.func.isRequired,
   isDisabled: PropTypes.bool,
-  label: PropTypes.string.isRequired,
+  label: PropTypes.string,
   maxDateEnding: PropTypes.instanceOf(Date),
   minDateBeginning: PropTypes.instanceOf(Date),
   periodBeginningDate: PropTypes.instanceOf(Date),

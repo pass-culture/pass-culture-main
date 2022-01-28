@@ -18,8 +18,8 @@ import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
 
 import NotificationContainer from 'components/layout/Notification/NotificationContainer'
-import { BOOKING_STATUS } from 'components/pages/Bookings/BookingsRecapTable/CellsFormatter/utils/bookingStatusConverter'
 import { DEFAULT_PRE_FILTERS } from 'components/pages/Bookings/PreFilters/_constants'
+import { BOOKING_STATUS } from 'core/Bookings'
 import {
   getVenuesForOfferer,
   loadFilteredBookingsRecap,
@@ -371,6 +371,7 @@ describe('components | BookingsRecap | Pro user', () => {
     expect(pcapi.getFilteredBookingsCSV).toHaveBeenCalledWith({
       bookingPeriodBeginningDate: DEFAULT_PRE_FILTERS.bookingBeginningDate,
       bookingPeriodEndingDate: DEFAULT_PRE_FILTERS.bookingEndingDate,
+      bookingStatusFilter: DEFAULT_PRE_FILTERS.bookingStatusFilter,
       eventDate: 'all',
       page: 1,
       venueId: 'all',

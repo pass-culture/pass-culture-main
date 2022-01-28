@@ -48,10 +48,12 @@ const Select = ({
   subLabel,
 }) => (
   <div className="input-select">
-    <label className="labels" htmlFor={name}>
-      {label}
-      {subLabel && <span className="it-sub-label">{subLabel}</span>}
-    </label>
+    {label && (
+      <label className="labels" htmlFor={name}>
+        {label}
+        {subLabel && <span className="it-sub-label">{subLabel}</span>}
+      </label>
+    )}
     <select
       className={`${error ? 'error' : ''}`}
       disabled={isDisabled}
@@ -79,6 +81,7 @@ Select.defaultProps = {
   defaultOption: null,
   error: null,
   isDisabled: false,
+  label: undefined,
   required: false,
   subLabel: '',
 }
@@ -91,7 +94,7 @@ Select.propTypes = {
   error: PropTypes.string,
   handleSelection: PropTypes.func.isRequired,
   isDisabled: PropTypes.bool,
-  label: PropTypes.string.isRequired,
+  label: PropTypes.string,
   name: PropTypes.string.isRequired,
   options: PropTypes.arrayOf(
     PropTypes.shape({
