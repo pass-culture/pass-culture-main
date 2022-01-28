@@ -433,6 +433,12 @@ def generate_cashflows(cutoff: datetime.datetime) -> int:
     filters = (
         models.Pricing.status == models.PricingStatus.VALIDATED,
         models.Pricing.valueDate < cutoff,
+        # Even if a booking is marked as used prematurely, we should
+        # wait for the event to happen.
+        sqla.or_(
+            offers_models.Stock.beginningDatetime.is_(None),
+            offers_models.Stock.beginningDatetime < cutoff,
+        ),
         # We should not have any validated pricing with a cashflow,
         # this is a safety belt.
         models.CashflowPricing.pricingId.is_(None),
@@ -452,6 +458,8 @@ def generate_cashflows(cutoff: datetime.datetime) -> int:
             models.BusinessUnit.bankAccountId.isnot(None),
             *filters,
         )
+        .join(models.Pricing.booking)
+        .join(offers_models.Stock)
         .join(models.Pricing.businessUnit)
         .outerjoin(models.CashflowPricing)
         .with_entities(models.Pricing.businessUnitId, models.BusinessUnit.bankAccountId)
@@ -461,9 +469,14 @@ def generate_cashflows(cutoff: datetime.datetime) -> int:
         logger.info("Generating cashflow", extra={"business_unit": business_unit_id})
         try:
             with transaction():
-                pricings = models.Pricing.query.outerjoin(models.CashflowPricing).filter(
-                    models.Pricing.businessUnitId == business_unit_id,
-                    *filters,
+                pricings = (
+                    models.Pricing.query.join(models.Pricing.booking)
+                    .join(offers_models.Stock)
+                    .outerjoin(models.CashflowPricing)
+                    .filter(
+                        models.Pricing.businessUnitId == business_unit_id,
+                        *filters,
+                    )
                 )
                 total = pricings.with_entities(sqla.func.sum(models.Pricing.amount)).scalar()
                 if not total:

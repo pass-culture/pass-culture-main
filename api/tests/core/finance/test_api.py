@@ -365,6 +365,7 @@ class PriceBookingsTest:
 
 class GenerateCashflowsTest:
     def test_basics(self):
+        now = datetime.datetime.utcnow()
         business_unit1 = factories.BusinessUnitFactory(siret="85331845900023")
         pricing11 = factories.PricingFactory(
             status=models.PricingStatus.VALIDATED,
@@ -378,12 +379,20 @@ class GenerateCashflowsTest:
         )
         pricing2 = factories.PricingFactory(
             status=models.PricingStatus.VALIDATED,
+            booking__stock__beginningDatetime=now - datetime.timedelta(days=1),
             amount=-3000,
         )
-        pricing_no_bank_account = factories.PricingFactory(booking__stock__offer__venue__businessUnit__bankAccount=None)
+        pricing_future_event = factories.PricingFactory(
+            status=models.PricingStatus.VALIDATED,
+            booking__stock__beginningDatetime=now + datetime.timedelta(days=1),
+        )
+        pricing_no_bank_account = factories.PricingFactory(
+            status=models.PricingStatus.VALIDATED,
+            booking__stock__offer__venue__businessUnit__bankAccount=None,
+        )
         pricing_pending = factories.PricingFactory(status=models.PricingStatus.PENDING)
         cutoff = datetime.datetime.utcnow()
-        pricing_after_cutoff = factories.PricingFactory()
+        pricing_after_cutoff = factories.PricingFactory(status=models.PricingStatus.VALIDATED)
 
         batch_id = api.generate_cashflows(cutoff)
 
@@ -400,6 +409,7 @@ class GenerateCashflowsTest:
         assert pricing11.cashflows[0].bankAccount == business_unit1.bankAccount
         assert pricing2.cashflows[0].amount == -3000
 
+        assert not pricing_future_event.cashflows
         assert not pricing_no_bank_account.cashflows
         assert not pricing_pending.cashflows
         assert not pricing_after_cutoff.cashflows
