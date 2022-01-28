@@ -163,7 +163,7 @@ class Returns200Test:
             "prebookings": [
                 {
                     "accessibility": "Non accessible",
-                    "address": venue.address,
+                    "address": f"{venue.address}, {venue.postalCode} {venue.city}",
                     "beginningDatetime": format_into_utc_date(stock.beginningDatetime),
                     "cancellationDate": None,
                     "cancellationLimitDate": format_into_utc_date(booking.cancellationLimitDate),

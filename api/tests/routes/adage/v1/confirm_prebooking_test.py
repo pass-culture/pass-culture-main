@@ -63,7 +63,7 @@ class Returns200Test:
         educational_booking = booking.educationalBooking
 
         assert response.json == {
-            "address": venue.address,
+            "address": f"{venue.address}, {venue.postalCode} {venue.city}",
             "accessibility": "Non accessible",
             "beginningDatetime": format_into_utc_date(stock.beginningDatetime),
             "cancellationDate": None,
