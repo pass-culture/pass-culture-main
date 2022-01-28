@@ -6,8 +6,6 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import { Link } from 'react-router-dom'
 
-import useOfferEditionURL from 'components/hooks/useFeatureFlaggedOfferEditionURL'
-import useOfferStockEditionURL from 'components/hooks/useFeatureFlaggedOfferStockEditionURL'
 import Icon from 'components/layout/Icon'
 import Thumb from 'components/layout/Thumb'
 import { isOfferDisabled } from 'components/pages/Offers/domain/isOfferDisabled'
@@ -17,6 +15,9 @@ import { computeVenueDisplayName } from 'repository/venuesService'
 import { Tag } from 'ui-kit'
 import { pluralize } from 'utils/pluralize'
 import { formatLocalTimeDateString } from 'utils/timezone'
+
+import useOfferEditionURL from '../../../../hooks/useOfferEditionURL'
+import useOfferStockEditionURL from '../../../../hooks/useOfferStockEditionURL'
 
 const OfferItem = ({ disabled, offer, isSelected, selectOffer }) => {
   const { venue, stocks, id, isEducational } = offer

@@ -15,7 +15,6 @@ import React, {
 import { Link } from 'react-router-dom'
 import { v4 as generateRandomUuid } from 'uuid'
 
-import useOfferEditionURL from 'components/hooks/useFeatureFlaggedOfferEditionURL'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import { isOfferDisabled } from 'components/pages/Offers/domain/isOfferDisabled'
 import OfferStatusBanner from 'components/pages/Offers/Offer/OfferDetails/OfferStatusBanner/OfferStatusBanner'
@@ -31,6 +30,7 @@ import { ReactComponent as AddStockSvg } from 'icons/ico-plus.svg'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { SubmitButton } from 'ui-kit'
 
+import useOfferEditionURL from '../../../../hooks/useOfferEditionURL'
 import { queryParamsFromOfferer } from '../../utils/queryParamsFromOfferer'
 
 const EMPTY_STRING_VALUE = ''
