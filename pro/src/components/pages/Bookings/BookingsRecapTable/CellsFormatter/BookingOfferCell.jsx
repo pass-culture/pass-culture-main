@@ -6,7 +6,7 @@ import { format } from 'date-fns-tz'
 import PropTypes from 'prop-types'
 import React from 'react'
 
-import useFeatureFlagedOfferEditionURL from 'components/hooks/useFeatureFlaggedOfferEditionURL'
+import useOfferEditionURL from 'components/hooks/useFeatureFlaggedOfferEditionURL'
 import { Tag } from 'ui-kit'
 
 import {
@@ -15,7 +15,7 @@ import {
 } from '../../../../../utils/date'
 
 const BookingOfferCell = ({ offer }) => {
-  const editionUrl = useFeatureFlagedOfferEditionURL(
+  const editionUrl = useOfferEditionURL(
     offer.offer_is_educational,
     offer.offer_identifier
   )

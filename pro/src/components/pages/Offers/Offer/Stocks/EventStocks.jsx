@@ -15,7 +15,7 @@ import React, {
 import { Link } from 'react-router-dom'
 import { v4 as generateRandomUuid } from 'uuid'
 
-import useFeatureFlagedOfferEditionURL from 'components/hooks/useFeatureFlaggedOfferEditionURL'
+import useOfferEditionURL from 'components/hooks/useFeatureFlaggedOfferEditionURL'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import { isOfferDisabled } from 'components/pages/Offers/domain/isOfferDisabled'
 import OfferStatusBanner from 'components/pages/Offers/Offer/OfferDetails/OfferStatusBanner/OfferStatusBanner'
@@ -51,10 +51,7 @@ const EventStocks = ({
   const isOfferSynchronized = Boolean(offer.lastProvider)
   const [formErrors, setFormErrors] = useState({})
   const isOfferDraft = offer.status === OFFER_STATUS_DRAFT
-  const editionOfferLink = useFeatureFlagedOfferEditionURL(
-    offer.isEducational,
-    offer.id
-  )
+  const editionOfferLink = useOfferEditionURL(offer.isEducational, offer.id)
 
   const loadStocks = useCallback(
     (keepCreationStocks = false) => {

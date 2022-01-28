@@ -1,6 +1,6 @@
 import React from 'react'
 
-import useFeatureFlagedOfferEditionURL from 'components/hooks/useFeatureFlaggedOfferEditionURL'
+import useOfferEditionURL from 'components/hooks/useFeatureFlaggedOfferEditionURL'
 import useFeatureFlagedOfferStockEditionURL from 'components/hooks/useFeatureFlaggedOfferStockEditionURL'
 import Breadcrumb, {
   BreadcrumbStyle,
@@ -27,10 +27,7 @@ const OfferBreadcrumb = ({
   isOfferEducational = false,
   className,
 }: IOfferBreadcrumb): JSX.Element => {
-  const offerEditionUrl = useFeatureFlagedOfferEditionURL(
-    isOfferEducational,
-    offerId
-  )
+  const offerEditionUrl = useOfferEditionURL(isOfferEducational, offerId)
   const stockEditionUrl = useFeatureFlagedOfferStockEditionURL(
     isOfferEducational,
     offerId

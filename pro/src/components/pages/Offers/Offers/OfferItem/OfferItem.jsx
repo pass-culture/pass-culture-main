@@ -6,7 +6,7 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import { Link } from 'react-router-dom'
 
-import useFeatureFlagedOfferEditionURL from 'components/hooks/useFeatureFlaggedOfferEditionURL'
+import useOfferEditionURL from 'components/hooks/useFeatureFlaggedOfferEditionURL'
 import useFeatureFlagedOfferStockEditionURL from 'components/hooks/useFeatureFlaggedOfferStockEditionURL'
 import Icon from 'components/layout/Icon'
 import Thumb from 'components/layout/Thumb'
@@ -21,7 +21,7 @@ import { formatLocalTimeDateString } from 'utils/timezone'
 const OfferItem = ({ disabled, offer, isSelected, selectOffer }) => {
   const { venue, stocks, id, isEducational } = offer
 
-  const editionOfferLink = useFeatureFlagedOfferEditionURL(isEducational, id)
+  const editionOfferLink = useOfferEditionURL(isEducational, id)
   const editionStockLink = useFeatureFlagedOfferStockEditionURL(
     isEducational,
     id
