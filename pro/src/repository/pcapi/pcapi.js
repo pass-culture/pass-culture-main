@@ -329,6 +329,7 @@ export const buildBookingsRecapQuery = ({
   eventDate = DEFAULT_PRE_FILTERS.offerEventDate,
   bookingPeriodBeginningDate = DEFAULT_PRE_FILTERS.bookingBeginningDate,
   bookingPeriodEndingDate = DEFAULT_PRE_FILTERS.bookingEndingDate,
+  bookingStatusFilter = DEFAULT_PRE_FILTERS.bookingStatusFilter,
   page,
 }) => {
   const params = { page }
@@ -347,6 +348,8 @@ export const buildBookingsRecapQuery = ({
     bookingPeriodEndingDate,
     FORMAT_ISO_DATE_ONLY
   )
+
+  params.bookingStatusFilter = bookingStatusFilter
 
   return stringify(params)
 }

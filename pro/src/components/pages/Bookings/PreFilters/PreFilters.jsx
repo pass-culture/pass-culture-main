@@ -11,6 +11,7 @@ import * as pcapi from 'repository/pcapi/pcapi'
 import { formatAndOrderVenues } from 'repository/venuesService'
 
 import FilterByBookingPeriod from './FilterByBookingPeriod'
+import FilterByBookingStatusPeriod from './FilterByBookingStatusPeriod'
 import FilterByEventDate from './FilterByEventDate.jsx'
 import FilterByVenue from './FilterByVenue'
 
@@ -19,6 +20,7 @@ const PreFilters = ({
   applyPreFilters,
   downloadBookingsCSV,
   hasResult,
+  isBookingFiltersActive,
   isTableLoading,
   isDownloadingCSV,
   wereBookingsRequested,
@@ -54,7 +56,6 @@ const PreFilters = ({
   const requestFilteredBookings = useCallback(
     event => {
       event.preventDefault()
-
       applyPreFilters(selectedPreFilters)
     },
     [applyPreFilters, selectedPreFilters]
@@ -68,6 +69,7 @@ const PreFilters = ({
     eventDate: selectedPreFilters.offerEventDate,
     bookingPeriodBeginningDate: selectedPreFilters.bookingBeginningDate,
     bookingPeriodEndingDate: selectedPreFilters.bookingEndingDate,
+    bookingStatusFilter: selectedPreFilters.bookingStatusFilter,
   }
 
   return (
@@ -80,22 +82,38 @@ const PreFilters = ({
         onSubmit={requestFilteredBookings}
       >
         <div className="pre-filters">
-          <FilterByVenue
-            selectedVenueId={selectedPreFilters.offerVenueId}
-            updateFilters={updateSelectedFilters}
-            venuesFormattedAndOrdered={venues}
-          />
-          <FilterByEventDate
-            selectedOfferDate={selectedPreFilters.offerEventDate}
-            updateFilters={updateSelectedFilters}
-          />
-          <FilterByBookingPeriod
-            selectedBookingBeginningDate={
-              selectedPreFilters.bookingBeginningDate
-            }
-            selectedBookingEndingDate={selectedPreFilters.bookingEndingDate}
-            updateFilters={updateSelectedFilters}
-          />
+          <div className="pre-filters-row">
+            <FilterByVenue
+              selectedVenueId={selectedPreFilters.offerVenueId}
+              updateFilters={updateSelectedFilters}
+              venuesFormattedAndOrdered={venues}
+            />
+            <FilterByEventDate
+              selectedOfferDate={selectedPreFilters.offerEventDate}
+              updateFilters={updateSelectedFilters}
+            />
+            {!isBookingFiltersActive && (
+              <FilterByBookingPeriod
+                selectedBookingBeginningDate={
+                  selectedPreFilters.bookingBeginningDate
+                }
+                selectedBookingEndingDate={selectedPreFilters.bookingEndingDate}
+                updateFilters={updateSelectedFilters}
+              />
+            )}
+          </div>
+          {isBookingFiltersActive && (
+            <div className="pre-filters-row">
+              <FilterByBookingStatusPeriod
+                selectedBookingBeginningDate={
+                  selectedPreFilters.bookingBeginningDate
+                }
+                selectedBookingEndingDate={selectedPreFilters.bookingEndingDate}
+                selectedBookingFilter={selectedPreFilters.bookingStatusFilter}
+                updateFilters={updateSelectedFilters}
+              />
+            </div>
+          )}
         </div>
         <div className="button-group">
           <span className="button-group-separator" />
@@ -144,6 +162,7 @@ PreFilters.propTypes = {
   applyPreFilters: PropTypes.func.isRequired,
   downloadBookingsCSV: PropTypes.func.isRequired,
   hasResult: PropTypes.bool.isRequired,
+  isBookingFiltersActive: PropTypes.bool.isRequired,
   isDownloadingCSV: PropTypes.bool.isRequired,
   isTableLoading: PropTypes.bool.isRequired,
   wereBookingsRequested: PropTypes.bool.isRequired,

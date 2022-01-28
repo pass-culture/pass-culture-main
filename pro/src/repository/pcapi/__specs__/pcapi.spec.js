@@ -372,7 +372,7 @@ describe('pcapi', () => {
 
       // Then
       expect(client.getPlainText).toHaveBeenCalledWith(
-        '/bookings/csv?page=1&bookingPeriodBeginningDate=2020-08-13&bookingPeriodEndingDate=2020-09-12'
+        '/bookings/csv?page=1&bookingPeriodBeginningDate=2020-08-13&bookingPeriodEndingDate=2020-09-12&bookingStatusFilter=booked'
       )
     })
 
@@ -384,6 +384,7 @@ describe('pcapi', () => {
         page: 2,
         bookingPeriodBeginningDate: new Date(2020, 6, 8),
         bookingPeriodEndingDate: new Date(2020, 8, 4),
+        bookingStatusFilter: 'validated',
       }
 
       // When
@@ -391,7 +392,7 @@ describe('pcapi', () => {
 
       // Then
       expect(client.getPlainText).toHaveBeenCalledWith(
-        '/bookings/csv?page=2&venueId=AA&eventDate=2020-09-13T00%3A00%3A00Z&bookingPeriodBeginningDate=2020-07-08&bookingPeriodEndingDate=2020-09-04'
+        '/bookings/csv?page=2&venueId=AA&eventDate=2020-09-13T00%3A00%3A00Z&bookingPeriodBeginningDate=2020-07-08&bookingPeriodEndingDate=2020-09-04&bookingStatusFilter=validated'
       )
     })
   })
@@ -427,7 +428,7 @@ describe('pcapi', () => {
 
       // Then
       expect(client.get).toHaveBeenCalledWith(
-        '/bookings/pro?page=1&bookingPeriodBeginningDate=2020-08-13&bookingPeriodEndingDate=2020-09-12'
+        '/bookings/pro?page=1&bookingPeriodBeginningDate=2020-08-13&bookingPeriodEndingDate=2020-09-12&bookingStatusFilter=booked'
       )
     })
 
@@ -444,7 +445,7 @@ describe('pcapi', () => {
 
       // Then
       expect(client.get).toHaveBeenCalledWith(
-        '/bookings/pro?page=1&bookingPeriodBeginningDate=2020-08-13&bookingPeriodEndingDate=2020-09-12'
+        '/bookings/pro?page=1&bookingPeriodBeginningDate=2020-08-13&bookingPeriodEndingDate=2020-09-12&bookingStatusFilter=booked'
       )
     })
 
@@ -456,6 +457,7 @@ describe('pcapi', () => {
         page: 2,
         bookingPeriodBeginningDate: new Date(2020, 6, 8),
         bookingPeriodEndingDate: new Date(2020, 8, 4),
+        bookingStatusFilter: 'validated',
       }
 
       // When
@@ -463,7 +465,7 @@ describe('pcapi', () => {
 
       // Then
       expect(client.get).toHaveBeenCalledWith(
-        '/bookings/pro?page=2&venueId=AA&eventDate=2020-09-13T00%3A00%3A00Z&bookingPeriodBeginningDate=2020-07-08&bookingPeriodEndingDate=2020-09-04'
+        '/bookings/pro?page=2&venueId=AA&eventDate=2020-09-13T00%3A00%3A00Z&bookingPeriodBeginningDate=2020-07-08&bookingPeriodEndingDate=2020-09-04&bookingStatusFilter=validated'
       )
     })
 
@@ -474,13 +476,14 @@ describe('pcapi', () => {
         eventDate: new Date(2020, 8, 13),
         page: 2,
       }
+      console.log(filters)
 
       // When
       await loadFilteredBookingsRecap(filters)
 
       // Then
       expect(client.get).toHaveBeenCalledWith(
-        '/bookings/pro?page=2&venueId=AA&eventDate=2020-09-13T00%3A00%3A00Z&bookingPeriodBeginningDate=2020-08-13&bookingPeriodEndingDate=2020-09-12'
+        '/bookings/pro?page=2&venueId=AA&eventDate=2020-09-13T00%3A00%3A00Z&bookingPeriodBeginningDate=2020-08-13&bookingPeriodEndingDate=2020-09-12&bookingStatusFilter=booked'
       )
     })
   })

@@ -6,9 +6,11 @@
   }
 
   .pre-filters {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: rem(30px);
+    .pre-filters-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: rem(30px);
+    }
 
     .pf-offer-date {
       .field-date {
