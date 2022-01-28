@@ -1,0 +1,14 @@
+#!/bin/bash
+
+echo -e "Checking commit message format"
+MSG_FILE=$1
+if cz -n cz_customize check --commit-msg-file $MSG_FILE ; then
+    echo "Commit message correctly formated"
+else
+    echo -e "\nWrong commit format. Commit should look like this:"
+    cz schema
+    echo -e "\nValid example:"
+    cz example
+    echo -e "\nUse \e[32mcz commit\e[0m to make sure your commit message is correct (You may need to install commitizen first)"
+    exit 1
+fi
