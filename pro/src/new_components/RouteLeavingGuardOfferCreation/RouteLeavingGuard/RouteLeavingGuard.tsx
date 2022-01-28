@@ -3,7 +3,10 @@ import { Redirect } from 'react-router'
 import { Prompt } from 'react-router-dom'
 
 import DialogBox from 'new_components/DialogBox/DialogBox'
+import { Button } from 'ui-kit'
+import { ButtonVariant } from 'ui-kit/Button/types'
 
+import styles from './RouteLeavingGuard.module.scss'
 export interface IRouteLeavingGuardProps {
   children: ReactNode | ReactNode[]
   extraClassNames?: string
@@ -52,26 +55,27 @@ const RouteLeavingGuard = ({
       {isModalVisible && (
         <DialogBox
           extraClassNames={extraClassNames}
-          hasCloseButton
+          hasCloseButton={false}
           labelledBy={labelledBy}
           onDismiss={closeModal}
         >
           {children}
-          <div className="action-buttons">
-            <button
-              className="secondary-button"
+          <div className={styles['action-buttons']}>
+            <Button
+              className={styles['action-button']}
               onClick={closeModal}
               type="button"
+              variant={ButtonVariant.SECONDARY}
             >
               Annuler
-            </button>
-            <button
-              className="primary-button"
+            </Button>
+            <Button
+              className={styles['action-button']}
               onClick={handleConfirmNavigationClick}
               type="button"
             >
               Quitter
-            </button>
+            </Button>
           </div>
         </DialogBox>
       )}
