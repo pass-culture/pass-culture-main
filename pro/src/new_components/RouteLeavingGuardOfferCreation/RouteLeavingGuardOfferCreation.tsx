@@ -1,9 +1,8 @@
 import React, { useCallback } from 'react'
 import { useLocation } from 'react-router'
 
-import RouteLeavingGuard from 'components/layout/RouteLeavingGuard/RouteLeavingGuard'
-
 import { ReactComponent as InfoIcon } from './assets/info.svg'
+import RouteLeavingGuard from './RouteLeavingGuard'
 
 import './RouteLeavingGuardOfferCreation.scss'
 
