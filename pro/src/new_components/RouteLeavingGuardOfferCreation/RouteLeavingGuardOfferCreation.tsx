@@ -1,10 +1,11 @@
 import React, { useCallback } from 'react'
 import { useLocation } from 'react-router'
 
+import { Title } from 'ui-kit'
+
 import { ReactComponent as InfoIcon } from './assets/info.svg'
 import RouteLeavingGuard from './RouteLeavingGuard'
-
-import './RouteLeavingGuardOfferCreation.scss'
+import styles from './RouteLeavingGuardOfferCreation.module.scss'
 
 const RouteLeavingGuardOfferCreation = ({
   when,
@@ -50,14 +51,14 @@ const RouteLeavingGuardOfferCreation = ({
   )
   return (
     <RouteLeavingGuard
-      extraClassNames="exit-offer-creation-dialog"
+      extraClassNames={styles['exit-offer-creation-dialog']}
       labelledBy="LEAVING_OFFER_CREATION_LABEL_ID"
       shouldBlockNavigation={shouldBlockNavigation}
       when={when}
     >
       <>
-        <InfoIcon />
-        <p>Voulez-vous quitter la création d’offre ?</p>
+        <InfoIcon className={styles['route-leaving-guard-icon']} />
+        <Title level={3}>Voulez-vous quitter la création d’offre ?</Title>
         <p>
           Votre offre ne sera pas sauvegardée et toutes les informations seront
           perdues.
