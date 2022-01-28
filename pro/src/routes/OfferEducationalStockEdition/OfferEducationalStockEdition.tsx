@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useHistory, useParams } from 'react-router-dom'
 
 import useNotification from 'components/hooks/useNotification'
 import Spinner from 'components/layout/Spinner'
@@ -22,6 +22,8 @@ import { StockResponse } from './types'
 import { extractInitialStockValues } from './utils/extractInitialStockValues'
 
 const OfferEducationalStockEdition = (): JSX.Element => {
+  const history = useHistory()
+
   const [initialValues, setInitialValues] =
     useState<OfferEducationalStockFormValues>(DEFAULT_EAC_STOCK_FORM_VALUES)
   const [offer, setOffer] = useState<GetStockOfferSuccessPayload | null>(null)
@@ -94,6 +96,11 @@ const OfferEducationalStockEdition = (): JSX.Element => {
         if (!offerResponse.isOk) {
           return notify.error(offerResponse.message)
         }
+
+        if (!offerResponse.payload.isEducational) {
+          return history.push(`/offres/${offerId}/stocks`)
+        }
+
         if (!stockResponse.isOk) {
           return notify.error(stockResponse.message)
         }
@@ -108,7 +115,7 @@ const OfferEducationalStockEdition = (): JSX.Element => {
       }
       loadStockAndOffer()
     }
-  }, [offerId, isReady, notify])
+  }, [offerId, isReady, notify, history])
 
   return (
     <OfferEducationalLayout
