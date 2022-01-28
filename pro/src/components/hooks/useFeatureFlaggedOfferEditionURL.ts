@@ -1,18 +1,10 @@
-import useActiveFeature from 'components/hooks/useActiveFeature'
-
-/* TODO : delete this file and all hooks instances when FF is done */
-
-const useFeatureFlagedOfferEditionURL = (
+const useOfferEditionURL = (
   isOfferEducational: boolean,
   offerId: string
 ): string => {
-  const isFeatureActive = useActiveFeature(
-    'ENABLE_NEW_EDUCATIONAL_OFFER_CREATION_FORM'
-  )
-
-  return isOfferEducational && isFeatureActive
+  return isOfferEducational
     ? `/offre/${offerId}/scolaire/edition`
     : `/offres/${offerId}/edition`
 }
 
-export default useFeatureFlagedOfferEditionURL
+export default useOfferEditionURL
