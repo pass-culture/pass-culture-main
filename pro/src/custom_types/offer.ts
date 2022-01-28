@@ -36,6 +36,7 @@ export type Offer = {
   }
   stocks: Stock[]
   isActive: boolean
+  isEducational: boolean
   audioDisabilityCompliant: boolean
   mentalDisabilityCompliant: boolean
   motorDisabilityCompliant: boolean
