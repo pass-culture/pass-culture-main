@@ -453,8 +453,10 @@ elif [[ "$CMD" == "install-hooks" ]]; then
   RUN='cd $ROOT_PATH;
     ln -s -f ../../api/hooks/pre-push .git/hooks/pre-push;
     ln -s -f ../../api/hooks/pre-commit .git/hooks/pre-commit;
+    ln -s -f ../../api/hooks/commit-msg .git/hooks/commit-msg;
     chmod +x .git/hooks/pre-push;
-    chmod +x .git/hooks/pre-commit;'
+    chmod +x .git/hooks/pre-commit;
+    chmod +x .git/hooks/commit-msg;'
 
 # Create symlink to use "pc" command (admin rights may be needed)
 elif [[ "$CMD" == "symlink" ]]; then
