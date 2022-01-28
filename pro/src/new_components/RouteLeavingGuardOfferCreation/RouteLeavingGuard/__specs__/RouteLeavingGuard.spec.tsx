@@ -5,11 +5,14 @@
 import '@testing-library/jest-dom'
 import { render, screen, fireEvent, act } from '@testing-library/react'
 import { createBrowserHistory } from 'history'
+import type { History } from 'history'
 import React from 'react'
 import { Route, Router, Switch } from 'react-router'
 import { Link } from 'react-router-dom'
 
-import RouteLeavingGuard from '../RouteLeavingGuard'
+import RouteLeavingGuard, {
+  IRouteLeavingGuardProps,
+} from '../RouteLeavingGuard'
 
 const MiniAppTest = () => (
   <div>
@@ -30,9 +33,12 @@ const MiniAppTest = () => (
   </div>
 )
 
-const renderRouteLeavingGuard = async (props, history) => {
-  await act(async () => {
-    await render(
+const renderRouteLeavingGuard = async (
+  props: IRouteLeavingGuardProps,
+  history: History<unknown>
+) => {
+  act(() => {
+    render(
       <Router history={history}>
         <MiniAppTest />
         <RouteLeavingGuard {...props}>{props.children}</RouteLeavingGuard>
@@ -41,9 +47,9 @@ const renderRouteLeavingGuard = async (props, history) => {
   })
 }
 
-describe('src | components | layout | RouteLeavingGuard', () => {
-  let props
-  let history = createBrowserHistory()
+describe('new_components | RouteLeavingGuardOfferCreation | RouteLeavingGuard', () => {
+  let props: IRouteLeavingGuardProps
+  const history = createBrowserHistory()
 
   beforeEach(() => {
     history.push('/')
@@ -51,6 +57,7 @@ describe('src | components | layout | RouteLeavingGuard', () => {
       shouldBlockNavigation: () => true,
       when: true,
       children: 'Voulez-vous quitter la page actuelle ?',
+      labelledBy: 'LEAVING_OFFER_CREATION_LABEL_ID',
     }
   })
 
@@ -75,7 +82,7 @@ describe('src | components | layout | RouteLeavingGuard', () => {
     //When
     await renderRouteLeavingGuard(props, history)
     const aboutPageLink = screen.getByText('About')
-    await fireEvent.click(aboutPageLink)
+    fireEvent.click(aboutPageLink)
 
     //Then
     expect(
@@ -90,9 +97,9 @@ describe('src | components | layout | RouteLeavingGuard', () => {
 
     // When
     const aboutPageLink = screen.getByText('About')
-    await fireEvent.click(aboutPageLink)
+    fireEvent.click(aboutPageLink)
     const confirmRedirectionButton = screen.getByText('Quitter')
-    await fireEvent.click(confirmRedirectionButton)
+    fireEvent.click(confirmRedirectionButton)
 
     // Then
     expect(screen.queryByText('Home page')).not.toBeInTheDocument()
@@ -104,9 +111,9 @@ describe('src | components | layout | RouteLeavingGuard', () => {
     await renderRouteLeavingGuard(props, history)
     // When
     const aboutPageLink = screen.getByText('About')
-    await fireEvent.click(aboutPageLink)
+    fireEvent.click(aboutPageLink)
     const cancelRedirectionButton = screen.getByText('Annuler')
-    await fireEvent.click(cancelRedirectionButton)
+    fireEvent.click(cancelRedirectionButton)
 
     // Then
     expect(screen.queryByText('Home page')).toBeInTheDocument()
@@ -125,7 +132,7 @@ describe('src | components | layout | RouteLeavingGuard', () => {
     // When
     await renderRouteLeavingGuard(props, history)
     const contactPageLink = screen.getByText('Contact')
-    await fireEvent.click(contactPageLink)
+    fireEvent.click(contactPageLink)
 
     // Then
     expect(screen.queryByText('Home page')).not.toBeInTheDocument()
@@ -133,7 +140,7 @@ describe('src | components | layout | RouteLeavingGuard', () => {
 
     // When
     const aboutPageLink = screen.getByText('About')
-    await fireEvent.click(aboutPageLink)
+    fireEvent.click(aboutPageLink)
 
     // Then
     expect(

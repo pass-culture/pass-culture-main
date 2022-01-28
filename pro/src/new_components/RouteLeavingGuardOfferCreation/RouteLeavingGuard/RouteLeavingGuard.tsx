@@ -1,26 +1,27 @@
-/*
- * @debt directory "Gaël: this file should be migrated within the new directory structure"
- */
-
-import PropTypes from 'prop-types'
-import React, { useCallback, useState, useRef } from 'react'
+import React, { useCallback, useState, ReactNode } from 'react'
 import { Redirect } from 'react-router'
 import { Prompt } from 'react-router-dom'
 
 import DialogBox from 'new_components/DialogBox/DialogBox'
 
+export interface IRouteLeavingGuardProps {
+  children: ReactNode | ReactNode[]
+  extraClassNames?: string
+  labelledBy: string
+  shouldBlockNavigation: (location: Location) => boolean
+  when: boolean
+}
+
 const RouteLeavingGuard = ({
   children,
-  extraClassNames,
+  extraClassNames = '',
   labelledBy,
   shouldBlockNavigation,
   when,
-}) => {
+}: IRouteLeavingGuardProps): JSX.Element => {
   const [isModalVisible, setIsModalVisible] = useState(false)
   const [lastLocation, setLastLocation] = useState('')
   const [isConfirmedNavigation, setIsConfirmedNavigation] = useState(false)
-
-  const confirmQuitButton = useRef()
 
   const closeModal = useCallback(() => {
     setIsModalVisible(false)
@@ -51,9 +52,9 @@ const RouteLeavingGuard = ({
       {isModalVisible && (
         <DialogBox
           extraClassNames={extraClassNames}
+          hasCloseButton
           labelledBy={labelledBy}
           onDismiss={closeModal}
-          ref={confirmQuitButton}
         >
           {children}
           <div className="action-buttons">
@@ -67,7 +68,6 @@ const RouteLeavingGuard = ({
             <button
               className="primary-button"
               onClick={handleConfirmNavigationClick}
-              ref={confirmQuitButton}
               type="button"
             >
               Quitter
@@ -77,18 +77,6 @@ const RouteLeavingGuard = ({
       )}
     </>
   )
-}
-
-RouteLeavingGuard.defaultProps = {
-  extraClassNames: '',
-}
-
-RouteLeavingGuard.propTypes = {
-  children: PropTypes.node.isRequired,
-  extraClassNames: PropTypes.string,
-  labelledBy: PropTypes.string.isRequired,
-  shouldBlockNavigation: PropTypes.func.isRequired,
-  when: PropTypes.bool.isRequired,
 }
 
 export default RouteLeavingGuard
