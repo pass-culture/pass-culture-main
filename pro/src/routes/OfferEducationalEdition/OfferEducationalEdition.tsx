@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react'
-import { useParams } from 'react-router'
+import { useHistory, useParams } from 'react-router'
 
 import { withTracking } from 'components/hocs'
 import useNotification from 'components/hooks/useNotification'
@@ -35,6 +35,7 @@ const OfferEducationalEdition = ({
   tracking: { trackEvent: (props: { action: string; name: string }) => void }
 }): JSX.Element => {
   const { offerId } = useParams<{ offerId: string }>()
+  const history = useHistory()
 
   const [isReady, setIsReady] = useState<boolean>(false)
   const [screenProps, setScreenProps] = useState<AsyncScreenProps | null>(null)
@@ -152,9 +153,14 @@ const OfferEducationalEdition = ({
 
   useEffect(() => {
     if (!isReady) {
-      getOfferAdapter(offerId).then(offerResponse => loadData(offerResponse))
+      getOfferAdapter(offerId).then(offerResponse => {
+        if (offerResponse.isOk && !offerResponse.payload.isEducational) {
+          return history.push(`/offres/${offerId}/edition`)
+        }
+        loadData(offerResponse)
+      })
     }
-  }, [isReady, offerId, loadData])
+  }, [isReady, offerId, loadData, history])
 
   return (
     <OfferEducationalLayout
