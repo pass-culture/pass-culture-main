@@ -23,6 +23,7 @@ export const VenueImageUploaderModal: FunctionComponent<Props> = ({
   onDismiss,
 }) => {
   const [image, setImage] = useState<File>()
+  const [credit, setCredit] = useState('')
 
   const onSetImage = useCallback(
     file => {
@@ -46,7 +47,9 @@ export const VenueImageUploaderModal: FunctionComponent<Props> = ({
         />
       ) : (
         <VenueImageEdit
+          credit={credit}
           image={image}
+          onSetCredit={setCredit}
           onSetImage={() =>
             alert('Cette fonctionnalité sera disponible avec PC-13087')
           }
