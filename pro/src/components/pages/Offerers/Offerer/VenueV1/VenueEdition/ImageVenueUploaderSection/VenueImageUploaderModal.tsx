@@ -47,6 +47,7 @@ export const VenueImageUploaderModal: FunctionComponent<Props> = ({
         />
       ) : (
         <VenueImageEdit
+          closeModal={onDismiss}
           credit={credit}
           image={image}
           onSetCredit={setCredit}

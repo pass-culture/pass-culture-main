@@ -20,9 +20,11 @@ type Props = {
   credit: string
   onSetCredit: (credit: string) => void
   children?: never
+  closeModal: () => void
 }
 
 export const VenueImageEdit: FunctionComponent<Props> = ({
+  closeModal,
   image,
   onSetImage,
   credit,
@@ -57,7 +59,11 @@ export const VenueImageEdit: FunctionComponent<Props> = ({
       </form>
       <Divider />
       <footer className={style['venue-image-edit-footer']}>
-        <Button Icon={CloseIcon} variant={ButtonVariant.TERNARY}>
+        <Button
+          Icon={CloseIcon}
+          onClick={closeModal}
+          variant={ButtonVariant.TERNARY}
+        >
           Annuler
         </Button>
         <Button onClick={handleNext}>Suivant</Button>
