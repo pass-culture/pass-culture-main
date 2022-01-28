@@ -85,7 +85,12 @@ class BookingRecap:
         return object.__new__(cls)
 
     def _get_booking_token(self) -> Optional[str]:
-        if not self.event_beginning_datetime and not self.booking_is_used and not self.booking_is_cancelled:
+        if (
+            not self.event_beginning_datetime
+            and not self.booking_is_used
+            and not self.booking_is_cancelled
+            or self.booking_is_educational
+        ):
             return None
         return self._booking_token
 
