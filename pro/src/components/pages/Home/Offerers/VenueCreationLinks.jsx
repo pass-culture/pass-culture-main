@@ -7,7 +7,6 @@ import React from 'react'
 import { useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
 
-import useFeatureFlagedOfferCreationURL from 'components/hooks/useFeatureFlagedOfferCreationURL'
 import { isAPISireneAvailable } from 'store/features/selectors'
 import { UNAVAILABLE_ERROR_PAGE } from 'utils/routes'
 
@@ -22,8 +21,6 @@ const VenueCreationLinks = ({
     ? `/structures/${offererId}/lieux/creation`
     : UNAVAILABLE_ERROR_PAGE
 
-  const offerCreationLink = useFeatureFlagedOfferCreationURL()
-
   const renderLinks = ({ insideCard }) => (
     <div className="actions-container">
       <Link
@@ -35,7 +32,7 @@ const VenueCreationLinks = ({
 
       <Link
         className="secondary-link"
-        to={`${offerCreationLink}?structure=${offererId}`}
+        to={`/offre/creation?structure=${offererId}`}
       >
         Créer une offre
       </Link>
