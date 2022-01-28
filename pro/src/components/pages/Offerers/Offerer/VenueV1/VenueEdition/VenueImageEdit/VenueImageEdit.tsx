@@ -1,8 +1,10 @@
 import React, { FunctionComponent, useCallback } from 'react'
 
+import { ReactComponent as CloseIcon } from 'icons/ico-clear.svg'
 import { CreditInput } from 'new_components/CreditInput/CreditInput'
 import ImageEditor from 'new_components/ImageEditor/ImageEditor'
 import { Button, Divider } from 'ui-kit'
+import { ButtonVariant } from 'ui-kit/Button/types'
 
 import style from './VenueImageEdit.module.scss'
 
@@ -55,6 +57,9 @@ export const VenueImageEdit: FunctionComponent<Props> = ({
       </form>
       <Divider />
       <footer className={style['venue-image-edit-footer']}>
+        <Button Icon={CloseIcon} variant={ButtonVariant.TERNARY}>
+          Annuler
+        </Button>
         <Button onClick={handleNext}>Suivant</Button>
       </footer>
     </section>
