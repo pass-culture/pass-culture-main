@@ -89,6 +89,7 @@ class ReimbursementDetailsTest:
         booking = bookings_factories.UsedEducationalBookingFactory(
             amount=10.5,
             quantity=2,
+            stock__beginningDatetime=datetime.utcnow(),
             stock__offer__venue__businessUnit__bankAccount__iban="CF13QSDFGH456789",
         )
         payment = payments_factories.PaymentFactory(
@@ -278,7 +279,10 @@ def test_find_all_offerer_reimbursement_details():
     venue2 = offers_factories.VenueFactory(managingOfferer=offerer)
     booking1 = bookings_factories.UsedBookingFactory(stock__offer__venue=venue1)
     booking2 = bookings_factories.UsedBookingFactory(stock__offer__venue=venue2)
-    booking3 = bookings_factories.UsedEducationalBookingFactory(stock__offer__venue=venue2)
+    booking3 = bookings_factories.UsedEducationalBookingFactory(
+        stock__beginningDatetime=datetime.utcnow(),
+        stock__offer__venue=venue2,
+    )
     label = ("pass Culture Pro - remboursement 1ère quinzaine 07-2019",)
     payment_1 = payments_factories.PaymentFactory(booking=booking1, transactionLabel=label)
     payment_2 = payments_factories.PaymentFactory(booking=booking2, transactionLabel=label)
