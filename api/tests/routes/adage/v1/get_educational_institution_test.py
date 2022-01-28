@@ -68,7 +68,7 @@ class Returns200Test:
             "isFinal": True,
             "prebookings": [
                 {
-                    "address": venue.address,
+                    "address": f"{venue.address}, {venue.postalCode} {venue.city}",
                     "accessibility": "Non accessible",
                     "beginningDatetime": format_into_utc_date(stock.beginningDatetime),
                     "cancellationDate": None,
