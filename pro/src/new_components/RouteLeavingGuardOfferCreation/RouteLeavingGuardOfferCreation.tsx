@@ -1,18 +1,17 @@
-/*
- * @debt directory "Gaël: this file should be migrated within the new directory structure"
- */
-
-import PropTypes from 'prop-types'
 import React, { useCallback } from 'react'
 import { useLocation } from 'react-router'
 
 import RouteLeavingGuard from 'components/layout/RouteLeavingGuard/RouteLeavingGuard'
 
-import { ReactComponent as IllusError } from './assets/illus-erreur.svg'
+import { ReactComponent as InfoIcon } from './assets/info.svg'
 
 import './RouteLeavingGuardOfferCreation.scss'
 
-const RouteLeavingGuardOfferCreation = ({ when }) => {
+const RouteLeavingGuardOfferCreation = ({
+  when,
+}: {
+  when: boolean
+}): JSX.Element => {
   const location = useLocation()
 
   const shouldBlockNavigation = useCallback(
@@ -58,19 +57,15 @@ const RouteLeavingGuardOfferCreation = ({ when }) => {
       when={when}
     >
       <>
-        <IllusError />
+        <InfoIcon />
         <p>Voulez-vous quitter la création d’offre ?</p>
         <p>
           Votre offre ne sera pas sauvegardée et toutes les informations seront
-          perdues
+          perdues.
         </p>
       </>
     </RouteLeavingGuard>
   )
-}
-
-RouteLeavingGuardOfferCreation.propTypes = {
-  when: PropTypes.bool.isRequired,
 }
 
 export default RouteLeavingGuardOfferCreation
