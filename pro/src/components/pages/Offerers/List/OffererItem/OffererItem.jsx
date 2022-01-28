@@ -6,7 +6,6 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import { Link } from 'react-router-dom'
 
-import useFeatureFlagedOfferCreationURL from 'components/hooks/useFeatureFlagedOfferCreationURL'
 import Icon from 'components/layout/Icon'
 import { ReactComponent as AddOfferSvg } from 'icons/ico-plus.svg'
 import { pluralize } from 'utils/pluralize'
@@ -21,12 +20,11 @@ const OffererItem = ({
   const { id, name, nOffers } = offerer || {}
   const detailsPath = `/accueil?structure=${id}`
 
-  const offerCreationLink = useFeatureFlagedOfferCreationURL()
-  let createOfferLink = `${offerCreationLink}?structure=${id}`
+  let createOfferLink = `/offre/creation?structure=${id}`
   const canCreateOnlyVirtualOffer = venues.length === 1 && venues[0].isVirtual
 
   if (venues.length === 1) {
-    createOfferLink = `${offerCreationLink}?structure=${id}&lieu=${venues[0].id}`
+    createOfferLink = `/offre/creation?structure=${id}&lieu=${venues[0].id}`
   }
 
   const venueCreationUrl = isVenueCreationAvailable

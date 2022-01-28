@@ -12,7 +12,6 @@ import { getCanSubmit, parseSubmitErrors } from 'react-final-form-utils'
 import { Link, NavLink } from 'react-router-dom'
 
 import useActiveFeature from 'components/hooks/useActiveFeature'
-import useFeatureFlagedOfferCreationURL from 'components/hooks/useFeatureFlagedOfferCreationURL'
 import Icon from 'components/layout/Icon'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Titles from 'components/layout/Titles/Titles'
@@ -311,11 +310,10 @@ const VenueEdition = ({
 
   const pageTitle = readOnly ? 'Détails de votre lieu' : 'Modifier votre lieu'
 
-  const offerCreationLink = useFeatureFlagedOfferCreationURL()
   const actionLink = !!initialId && (
     <Link
       className="primary-button with-icon"
-      to={`${offerCreationLink}?lieu=${initialId}&structure=${offererId}`}
+      to={`/offre/creation?lieu=${initialId}&structure=${offererId}`}
     >
       <AddOfferSvg />
       <span>Créer une offre</span>

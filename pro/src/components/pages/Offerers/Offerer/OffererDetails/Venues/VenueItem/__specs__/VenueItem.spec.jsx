@@ -87,7 +87,7 @@ describe('src | components | pages | OffererCreation | VenueItem', () => {
         // then
         expect(navLink.text()).toBe(' Créer une offre')
         expect(navLink.at(0).prop('to')).toBe(
-          '/offres/creation?lieu=AAA&structure=ABC'
+          '/offre/creation?lieu=AAA&structure=ABC'
         )
       })
     })

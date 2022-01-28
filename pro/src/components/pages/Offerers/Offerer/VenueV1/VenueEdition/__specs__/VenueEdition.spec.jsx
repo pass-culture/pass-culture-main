@@ -712,7 +712,7 @@ describe('test page : VenueEdition', () => {
         // then
         // todo: check location url or add a text in a fake offer creation route and test that it's displayed
         expect(`${history.location.pathname}${history.location.search}`).toBe(
-          '/offres/creation?lieu=CM&structure=APEQ'
+          '/offre/creation?lieu=CM&structure=APEQ'
         )
       })
     })

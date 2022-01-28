@@ -9,7 +9,6 @@ import React, { useCallback, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
 
-import useFeatureFlagedOfferCreationURL from 'components/hooks/useFeatureFlagedOfferCreationURL'
 import ActionsBarPortal from 'components/layout/ActionsBarPortal/ActionsBarPortal'
 import Icon from 'components/layout/Icon'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
@@ -307,11 +306,9 @@ const Offers = ({ currentUser, getOfferer, query }) => {
   const userHasNoOffers =
     !isLoading && !hasOffers && !hasSearchFilters(savedSearchFilters)
 
-  const offerCreationLink = useFeatureFlagedOfferCreationURL()
-
   const actionLink =
     userHasNoOffers || isAdmin ? null : (
-      <Link className="primary-button with-icon" to={offerCreationLink}>
+      <Link className="primary-button with-icon" to="/offre/creation">
         <AddOfferSvg />
         Créer une offre
       </Link>

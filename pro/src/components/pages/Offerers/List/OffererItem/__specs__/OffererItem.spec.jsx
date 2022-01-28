@@ -136,7 +136,7 @@ describe('src | components | pages | Offerers | OffererItem | OffererItem', () =
           // then
           expect(navLink.text()).toBe('Nouvelle offre numérique')
           expect(navLink.prop('to')).toBe(
-            '/offres/creation?structure=AE&lieu=DY'
+            '/offre/creation?structure=AE&lieu=DY'
           )
         })
       })
@@ -167,7 +167,7 @@ describe('src | components | pages | Offerers | OffererItem | OffererItem', () =
 
           // then
           expect(navLink.text()).toBe('Nouvelle offre')
-          expect(navLink.prop('to')).toBe('/offres/creation?structure=AE')
+          expect(navLink.prop('to')).toBe('/offre/creation?structure=AE')
         })
       })
     })
