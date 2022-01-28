@@ -32,6 +32,7 @@ const Template: Story<{ mode: Mode }> = args => (
       isActive: true,
       isBooked: true,
       managingOffererId: 'AA',
+      isEducational: true,
     }}
     onSubmit={action('onSubmit')}
     setIsOfferActive={() => null}
