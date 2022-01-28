@@ -11,6 +11,7 @@ const TextInput = ({
   countCharacters,
   disabled,
   error,
+  extraClassName,
   inputRef,
   label,
   longDescription,
@@ -24,7 +25,7 @@ const TextInput = ({
   type,
   value,
 }) => (
-  <label className="input-text">
+  <label className={`input-text ${extraClassName}`}>
     <div className="labels">
       {label}
       {subLabel && <span className="it-sub-label">{subLabel}</span>}
@@ -57,6 +58,7 @@ TextInput.defaultProps = {
   countCharacters: false,
   disabled: false,
   error: null,
+  extraClassName: '',
   inputRef: null,
   longDescription: null,
   maxLength: null,
@@ -73,6 +75,7 @@ TextInput.propTypes = {
   countCharacters: PropTypes.bool,
   disabled: PropTypes.bool,
   error: PropTypes.oneOfType([PropTypes.string, PropTypes.shape()]),
+  extraClassName: PropTypes.string,
   inputRef: PropTypes.oneOfType([PropTypes.func, PropTypes.shape()]),
   label: PropTypes.string.isRequired,
   longDescription: PropTypes.string,
