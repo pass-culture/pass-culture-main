@@ -1,0 +1,13 @@
+.action-buttons {
+  display: flex;
+  justify-content: center;
+  margin: rem(30px) auto 0;
+
+  .action-button {
+    padding: 0 rem(44px);
+
+    &:not(:last-of-type) {
+      margin-right: rem(24px);
+    }
+  }
+}
