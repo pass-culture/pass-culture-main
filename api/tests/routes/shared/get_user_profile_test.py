@@ -56,7 +56,6 @@ class Returns200Test:
             "id": humanize(user.id),
             "idPieceNumber": None,
             "isAdmin": False,
-            "isBeneficiary": True,
             "isEmailValidated": True,
             "lastConnectionDate": None,
             "lastName": "Smisse",
