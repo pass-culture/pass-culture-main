@@ -194,7 +194,7 @@ def _get_educational_offer_contact(offer: offers_models.Offer) -> Contact:
 
 
 def _get_educational_offer_address(offer: offers_models.Offer) -> str:
-    default_address = offer.venue.address
+    default_address = f"{offer.venue.address}, {offer.venue.postalCode} {offer.venue.city}"
     if offer.extraData is None or offer.extraData.get("offerVenue", None) is None:
         return default_address
 
