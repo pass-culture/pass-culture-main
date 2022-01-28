@@ -1,5 +1,6 @@
 import React, { FunctionComponent, useCallback } from 'react'
 
+import { CreditInput } from 'new_components/CreditInput/CreditInput'
 import ImageEditor from 'new_components/ImageEditor/ImageEditor'
 import { Button, Divider } from 'ui-kit'
 
@@ -14,12 +15,16 @@ const CROP_BORDER_COLOR = '#fff'
 type Props = {
   image: File
   onSetImage: () => void
+  credit: string
+  onSetCredit: (credit: string) => void
   children?: never
 }
 
 export const VenueImageEdit: FunctionComponent<Props> = ({
   image,
   onSetImage,
+  credit,
+  onSetCredit,
 }) => {
   const handleNext = useCallback(() => onSetImage(), [onSetImage])
 
@@ -41,6 +46,11 @@ export const VenueImageEdit: FunctionComponent<Props> = ({
           cropBorderHeight={CROP_BORDER_HEIGHT}
           cropBorderWidth={CROP_BORDER_WIDTH}
           image={image}
+        />
+        <CreditInput
+          credit={credit}
+          extraClassName={style['venue-image-edit-credit']}
+          updateCredit={onSetCredit}
         />
       </form>
       <Divider />
