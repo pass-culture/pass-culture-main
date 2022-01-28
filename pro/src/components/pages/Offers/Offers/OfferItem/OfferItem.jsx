@@ -7,7 +7,7 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 
 import useOfferEditionURL from 'components/hooks/useFeatureFlaggedOfferEditionURL'
-import useFeatureFlagedOfferStockEditionURL from 'components/hooks/useFeatureFlaggedOfferStockEditionURL'
+import useOfferStockEditionURL from 'components/hooks/useFeatureFlaggedOfferStockEditionURL'
 import Icon from 'components/layout/Icon'
 import Thumb from 'components/layout/Thumb'
 import { isOfferDisabled } from 'components/pages/Offers/domain/isOfferDisabled'
@@ -22,10 +22,7 @@ const OfferItem = ({ disabled, offer, isSelected, selectOffer }) => {
   const { venue, stocks, id, isEducational } = offer
 
   const editionOfferLink = useOfferEditionURL(isEducational, id)
-  const editionStockLink = useFeatureFlagedOfferStockEditionURL(
-    isEducational,
-    id
-  )
+  const editionStockLink = useOfferStockEditionURL(isEducational, id)
 
   function handleOnChangeSelected() {
     selectOffer(offer.id, !isSelected)
