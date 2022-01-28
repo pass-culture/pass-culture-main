@@ -5,6 +5,7 @@
 import * as PropTypes from 'prop-types'
 import React, { useCallback, useEffect, useState, useMemo } from 'react'
 
+import useActiveFeature from 'components/hooks/useActiveFeature'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Spinner from 'components/layout/Spinner'
 import Titles from 'components/layout/Titles/Titles'
@@ -21,6 +22,7 @@ const MAX_LOADED_PAGES = 5
 
 const BookingsRecap = ({ location, showNotification }) => {
   const [appliedPreFilters, setAppliedPreFilters] = useState({
+    bookingStatusFilter: DEFAULT_PRE_FILTERS.bookingStatusFilter,
     bookingBeginningDate: DEFAULT_PRE_FILTERS.bookingBeginningDate,
     bookingEndingDate: DEFAULT_PRE_FILTERS.bookingEndingDate,
     offerEventDate: DEFAULT_PRE_FILTERS.offerEventDate,
@@ -30,6 +32,7 @@ const BookingsRecap = ({ location, showNotification }) => {
   const [isDownloadingCSV, setIsDownloadingCSV] = useState(false)
   const [isTableLoading, setIsTableLoading] = useState(false)
   const [wereBookingsRequested, setWereBookingsRequested] = useState(false)
+  const isBookingFiltersActive = useActiveFeature('ENABLE_NEW_BOOKING_FILTERS')
 
   const loadBookingsRecap = useCallback(
     async preFilters => {
@@ -44,8 +47,8 @@ const BookingsRecap = ({ location, showNotification }) => {
         eventDate: preFilters.offerEventDate,
         bookingPeriodBeginningDate: preFilters.bookingBeginningDate,
         bookingPeriodEndingDate: preFilters.bookingEndingDate,
+        bookingStatusFilter: preFilters.bookingStatusFilter,
       }
-
       let filteredBookingsResponse
       try {
         filteredBookingsResponse = await pcapi.loadFilteredBookingsRecap(
@@ -107,6 +110,7 @@ const BookingsRecap = ({ location, showNotification }) => {
       loadBookingsRecap({
         bookingBeginningDate: DEFAULT_PRE_FILTERS.bookingBeginningDate,
         bookingEndingDate: DEFAULT_PRE_FILTERS.bookingEndingDate,
+        bookingStatusFilter: DEFAULT_PRE_FILTERS.bookingStatusFilter,
         offerEventDate: DEFAULT_PRE_FILTERS.offerEventDate,
         offerVenueId:
           location.state?.venueId || DEFAULT_PRE_FILTERS.offerVenueId,
@@ -121,9 +125,12 @@ const BookingsRecap = ({ location, showNotification }) => {
         DEFAULT_PRE_FILTERS.bookingBeginningDate ||
       appliedPreFilters.bookingEndingDate !==
         DEFAULT_PRE_FILTERS.bookingEndingDate ||
+      appliedPreFilters.bookingStatusFilter !==
+        DEFAULT_PRE_FILTERS.bookingStatusFilter ||
       appliedPreFilters.offerEventDate !== DEFAULT_PRE_FILTERS.offerEventDate
     )
   }, [
+    appliedPreFilters.bookingStatusFilter,
     appliedPreFilters.bookingBeginningDate,
     appliedPreFilters.bookingEndingDate,
     appliedPreFilters.offerEventDate,
@@ -154,6 +161,7 @@ const BookingsRecap = ({ location, showNotification }) => {
         applyPreFilters={loadBookingsRecap}
         downloadBookingsCSV={downloadBookingsCSV}
         hasResult={bookingsRecap.length > 0}
+        isBookingFiltersActive={isBookingFiltersActive}
         isDownloadingCSV={isDownloadingCSV}
         isTableLoading={isTableLoading}
         wereBookingsRequested={wereBookingsRequested}
@@ -162,6 +170,7 @@ const BookingsRecap = ({ location, showNotification }) => {
         bookingsRecap.length > 0 ? (
           <BookingsRecapTable
             bookingsRecap={bookingsRecap}
+            isBookingFiltersActive={isBookingFiltersActive}
             isLoading={isTableLoading}
             locationState={location.state}
           />

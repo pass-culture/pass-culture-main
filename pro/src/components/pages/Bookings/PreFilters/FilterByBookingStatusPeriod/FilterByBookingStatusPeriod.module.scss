@@ -1,0 +1,15 @@
+.satus-period-filter {
+  display: flex;
+  select,
+  :global(.period-filter-inputs) {
+    margin-top: 0px !important;
+  }
+  :global(.input-select > select) {
+    border-right: none;
+    border-radius: rem(20px) rem(0px) rem(0px) rem(20px);
+  }
+  :global(.period-filter .field-date-begin) {
+    border-left: none;
+    border-radius: 0px;
+  }
+}
