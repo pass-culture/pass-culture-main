@@ -97,6 +97,7 @@ class FeatureToggle(enum.Enum):
         "Inclure les anciens modèles de données pour le téléchargement des remboursements "
     )
     ENABLE_PRO_ACCOUNT_CREATION = "Permettre l'inscription des comptes professionels"
+    DISABLE_ENTERPRISE_API = "Désactiver les appels à l'API entreprise"
 
     def is_active(self) -> bool:
         if flask.has_request_context():
