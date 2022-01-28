@@ -8,6 +8,7 @@ import ReimbursementsTable from '../ReimbursementsTable'
 
 import InvoicesFilters from './InvoicesFilters'
 import InvoicesNoResult from './InvoicesNoResult'
+import InvoicesServerError from './InvoicesServerError'
 
 type businessUnitsOptionsType = [
   {
@@ -132,7 +133,7 @@ const ReimbursementsInvoices = ({
         </button>
       </InvoicesFilters>
       {isLoading && <Spinner />}
-      {hasError && 'Une erreur est survenue, veuillez réessayer plus tard.'}
+      {hasError && <InvoicesServerError />}
       {!hasError && invoices.length === 0 && (
         <InvoicesNoResult
           areFiltersDefault={areFiltersDefault}
