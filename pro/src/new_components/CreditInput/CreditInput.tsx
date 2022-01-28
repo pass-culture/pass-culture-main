@@ -5,11 +5,13 @@ import TextInput from 'components/layout/inputs/TextInput/TextInput'
 export interface CreditInputProps {
   credit: string
   updateCredit: (credit: string) => void
+  extraClassName?: string
 }
 
 export const CreditInput: FunctionComponent<CreditInputProps> = ({
   credit,
   updateCredit,
+  extraClassName = '',
 }) => {
   const onCreditChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -22,6 +24,7 @@ export const CreditInput: FunctionComponent<CreditInputProps> = ({
   return (
     <TextInput
       countCharacters
+      extraClassName={extraClassName}
       label="Crédit image"
       maxLength={255}
       name="image-credit-input"
