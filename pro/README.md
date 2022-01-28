@@ -54,35 +54,46 @@ Vous trouverez une documentation générale ainsi que des liens vers les différ
 
 [Standards de code et d'architecture](./src/README.md)
 
+
 ## Dette technique
 
-Nous utilisons un outil nommé Tyrion afin de visualiser et de suivre l'évolution de notre dette technique.
-Tyrion se base sur les commentaires de code pour produire des rapports de dette technique.
-Nous invitons les développeurs à ajouter des commentaires à leur guise pour marquer les parties du code qui leur semble complexe, peu compréhensible, déprécié etc...
+Nous utilisons une petite librairie faite sur-mesure pour monitorer la dette technique. 
 
-### la syntaxe pour ajouter un commentaire de dette :
+voir la documentation ici : https://github.com/gael-boyenval/debt-collector
+
+4 commandes pré-établies sont à disposition : 
 
 ```
-/*
-* @debt <label> "<author-name> : mon commentaire"
-*/
+yarn debt:check:changed
+yarn debt:check:all
+yarn debt:compare
+yarn debt:walk
 ```
 
-les labels sont les suivants :
+### 1) yarn debt:check:changed
 
-- **directory** : quand le fichier en question ne suit pas [les standards de notre architecture](./src/README.md)
-- **bugRisk** : quand le code représente un risque de bug
-- **securityRisk** : quand le code représente un risque de securité
-- **complexity** : quand un fichiers ou une partie du code est trop compliqué à comprendre ou trop long
-- **standard** : quand le code ne suit pas nos standards de code
-- **testWarning** : quand le test (ou fichier de test) génère des warning (proptypes, act, unhandled promise etc...)
-- **testInitialize** : quand le fichier de test n'a pas de fonction d'initialisation (banc de test)
-- **rtl** : quand le fichier de test doit être migré de enzyme vers react-testing-library
-- **deprecated** : quand un bout de code fait usage d'une fonctionalité ou outil à dé-commissioner
-- **duplicated** : quand un bout de code est dupliqué, ou que plusieurs éléments devraient être regroupé en un seul
+Produit un rapport pour chaque fichiers modifiés depuis master
+Il est nécéssaire d'avoir master à jour.
 
+### 2) yarn debt:check:all
 
-### lancer tyrion :
+Produit un rapport pour l'ensemble des fichiers.
 
-`dept:report` : génère un rapport de la dette actuelle
-`dept:tendency` : génère un rapport sur l'évolution de la dette durant les 100 derniers commits
+### 3) yarn debt:compare
+
+Produit un rapport comparant master à la branche courante en détaillant les fichiers pour lesquels la dette à augmenté, baissé ou stagné.
+
+### 4) yarn debt:walk
+
+Vérifie chaque tag de release, et produit un rapport html complet avec un historique, et divers options de filtrage.
+
+### options
+
+De nombreuse options de filtrages sont disponible en ligne de commande. 
+référez-vous à la [documentation](https://github.com/gael-boyenval/debt-collector) de l'outil pour cela, ou à l'aide du CLI : 
+
+```
+yarn debt-collector check --help
+yarn debt-collector compare --help
+yarn debt-collector walk --help
+```

@@ -1,3 +1,4 @@
+#! /usr/bin/env node
 import fs from 'fs'
 
 import glob from 'glob'
@@ -12,7 +13,9 @@ const filteredEslintOutput = eslintOutput
   .filter(fileOutput => fileOutput.errorCount + fileOutput.warningCount > 0)
   .map(fileOutput => {
     const rules = fileOutput.messages.map(message =>
-      message.ruleId.startsWith('testing-library/') ? 'testing-library' : message.ruleId
+      message.ruleId.startsWith('testing-library/')
+        ? 'testing-library'
+        : message.ruleId
     )
 
     return {
@@ -24,7 +27,6 @@ const filteredEslintOutput = eslintOutput
     }
   })
 
-
 const insertComments = [
   {
     match: "from 'react-final-form'",
@@ -32,7 +34,8 @@ const insertComments = [
   },
   {
     match: "from 'components/layout/form",
-    comment: 'deprecated "Gaël: deprecated usage of react-final-form custom fields"',
+    comment:
+      'deprecated "Gaël: deprecated usage of react-final-form custom fields"',
   },
   {
     match: "from 'redux-saga",
@@ -40,7 +43,8 @@ const insertComments = [
   },
   {
     match: 'import { withRouter }',
-    comment: 'standard "Gaël: prefer hooks for routers (https://reactrouter.com/web/api/Hooks)"',
+    comment:
+      'standard "Gaël: prefer hooks for routers (https://reactrouter.com/web/api/Hooks)"',
   },
   {
     match: 'import { connect }',
@@ -57,19 +61,23 @@ const insertComments = [
   },
   {
     match: 'extends Component',
-    comment: 'standard "Gaël: migration from classes components to function components"',
+    comment:
+      'standard "Gaël: migration from classes components to function components"',
   },
   {
     match: 'extends React.Component',
-    comment: 'standard "Gaël: migration from classes components to function components"',
+    comment:
+      'standard "Gaël: migration from classes components to function components"',
   },
   {
     match: 'extends PureComponent',
-    comment: 'standard "Gaël: migration from classes components to function components"',
+    comment:
+      'standard "Gaël: migration from classes components to function components"',
   },
   {
     match: 'extends React.PureComponent',
-    comment: 'standard "Gaël: migration from classes components to function components"',
+    comment:
+      'standard "Gaël: migration from classes components to function components"',
   },
   {
     match: 'await act(',
@@ -118,9 +126,10 @@ glob('./src/**/*.{js,jsx,scss}', {}, (er, files) => {
       }
     }
 
-
     if (isPathTooDeep(file)) {
-      comments.push('complexity "Gaël: file nested too deep in directory structure"')
+      comments.push(
+        'complexity "Gaël: file nested too deep in directory structure"'
+      )
     }
 
     if (
@@ -133,7 +142,9 @@ glob('./src/**/*.{js,jsx,scss}', {}, (er, files) => {
     }
 
     if (minimatch(file, './src/components/pages/Styleguide/**/*.jsx')) {
-      comments.push('directory "Gaël: this file should be migrated within storybook"')
+      comments.push(
+        'directory "Gaël: this file should be migrated within storybook"'
+      )
     }
 
     if (
