@@ -139,7 +139,6 @@ class SharedCurrentUserResponseModel(BaseModel):
     id: str
     idPieceNumber: Optional[str]
     isAdmin: bool
-    isBeneficiary: bool
     isEmailValidated: bool
     lastConnectionDate: Optional[datetime]
     lastName: Optional[str]
