@@ -13,32 +13,45 @@ class OfferScript(Offer):
     idAtProvidersToMigrate = sa.Column("idAtProviders", sa.Text, nullable=True)
 
 
-def _get_isbn_from_idAtProviders(idAtProvider: str) -> str:
+def _get_isbn_from_id_at_providers(idAtProvider: str) -> str:
     return idAtProvider.split("@")[0]
 
 
-def migrate_id_at_providers() -> None:
-    OFFER_BY_PAGE = 1000
-
-    pagination = (
-        OfferScript.query.filter(OfferScript.idAtProvidersToMigrate.isnot(None))
-        .filter(OfferScript.idAtProvider.is_(None))
+def migrate_id_at_providers(offer_per_page: int = 1000) -> int:
+    has_items_to_process = True
+    total_count_to_update = (
+        OfferScript.query.filter(
+            sa.not_(sa.or_(OfferScript.lastProviderId.is_(None), OfferScript.idAtProvider.isnot(None)))
+        )
         .with_entities(OfferScript.id, OfferScript.idAtProvidersToMigrate, OfferScript.idAtProvider)
-        .paginate(per_page=OFFER_BY_PAGE)
+        .count()
     )
 
-    has_items_to_process = True
+    local_total_count = total_count_to_update
 
     while has_items_to_process:
-        offers = pagination.items
 
-        offer_count = len(offers)
-        logger.info("Start migration of idAtProviders to idAtProvider", extra={"offer_count": offer_count})
+        offers = (
+            OfferScript.query.filter(
+                sa.not_(sa.or_(OfferScript.lastProviderId.is_(None), OfferScript.idAtProvider.isnot(None)))
+            )
+            .with_entities(OfferScript.id, OfferScript.idAtProvidersToMigrate, OfferScript.idAtProvider)
+            .limit(offer_per_page)
+        )
+
+        current_offers_count = offers.count()
+        if current_offers_count == 0:
+            logger.info(
+                "End of migration of idAtProviders to idAtProvider", extra={"offer_count": current_offers_count}
+            )
+            break
+
+        logger.info("Start migration of idAtProviders to idAtProvider", extra={"offer_count": current_offers_count})
 
         mapping = []
 
         for offer in offers:
-            isbn = _get_isbn_from_idAtProviders(offer[1])
+            isbn = _get_isbn_from_id_at_providers(offer[1])
 
             mapping.append(
                 {
@@ -47,19 +60,14 @@ def migrate_id_at_providers() -> None:
                 }
             )
 
+        local_total_count = local_total_count - current_offers_count
+
         logger.info(
             "Saving %s offers",
-            offer_count,
-            extra={
-                "page": pagination.page,
-                "total_page": pagination.pages,
-            },
+            current_offers_count,
+            extra={"nb_left_to_update": local_total_count},
         )
         db.session.bulk_update_mappings(OfferScript, mapping)
+        db.session.commit()
 
-        if pagination.has_next:
-            pagination = pagination.next()
-        else:
-            break
-
-    db.session.commit()
+    return total_count_to_update
