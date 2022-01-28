@@ -31,8 +31,10 @@
     "testcafe-chromium": "testcafe --assertion-timeout 5000 --selector-timeout 15000 -S -s testcafe_screenshots 'chromium:headless'",
     "storybook": "start-storybook -s ./public -p 6006",
     "build-storybook": "build-storybook -o docs-build -s ./src/stories/assets",
-    "dept:report": "tyrion -p .",
-    "dept:tendency": "tyrion --evolution 100 -p ."
+    "debt:check:changed": "debt-collector check -c ./.debt-collector/config.js -s master",
+    "debt:check:all": "debt-collector check -c ./.debt-collector/config.js",
+    "debt:compare": "debt-collector compare -c ./.debt-collector/config.js --revision master",
+    "debt:walk": "debt-collector walk -c ./.debt-collector/config.js -n 10"
   },
   "lint-staged": {
     "./public/**/*.svg": "svgo",
@@ -138,6 +140,7 @@
     "count-lines-in-file": "^1.1.0",
     "coveralls": "^3.1.0",
     "css-loader": "^5.2.6",
+    "debt-collector": "gael-boyenval/debt-collector#v1.0.1-alpha",
     "dotenv": "^8.2.0",
     "dotenv-expand": "^5.1.0",
     "enzyme": "^3.11.0",
@@ -198,7 +201,6 @@
     "testcafe": "^1.9.4",
     "ts-pnp": "^1.2.0",
     "typescript-plugin-css-modules": "^3.4.0",
-    "tyrionl": "^1.5.2",
     "url-loader": "^4.1.1",
     "webpack": "^4.44.2",
     "webpack-dev-server": "^3.11.2",
