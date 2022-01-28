@@ -853,44 +853,6 @@ describe('offerDetails - Edition', () => {
       expect(screen.getByLabelText('Aucune')).toBeDisabled()
     })
 
-    it('should disable all offer options input when offer is educational', async () => {
-      // Given
-      const editedOffer = {
-        id: 'ABC12',
-        nonHumanizedId: 111,
-        subcategoryId: 'ID',
-        name: 'My edited offer',
-        description: 'Offer description',
-        venue: editedOfferVenue,
-        venueId: editedOfferVenue.id,
-        withdrawalDetails: 'Offer withdrawal details',
-        bookingEmail: 'booking@example.net',
-        status: 'ACTIVE',
-        isEducational: true,
-      }
-      pcapi.loadOffer.mockResolvedValue(editedOffer)
-      const eventCategoryResponse = {
-        ...categories,
-        subcategories: [
-          {
-            ...categories.subcategories[0],
-            isEvent: true,
-          },
-        ],
-      }
-      pcapi.loadCategories.mockResolvedValue(eventCategoryResponse)
-
-      // When
-      await renderOffers(props, store)
-
-      // Then
-      const isDuoOption = await getOfferInputForField('isDuo')
-      expect(isDuoOption).toBeDisabled()
-      const isEducationalOption = await getOfferInputForField('isEducational')
-      expect(isEducationalOption).toBeDisabled()
-      expect(screen.getByLabelText('Aucune')).toBeDisabled()
-    })
-
     it("should display venue's publicName instead of name if exists", async () => {
       // Given
       editedOfferVenue.publicName = 'Le publicName du lieu'

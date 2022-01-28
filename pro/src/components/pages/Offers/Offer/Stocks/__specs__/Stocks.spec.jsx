@@ -1425,36 +1425,6 @@ describe('stocks page', () => {
               ).not.toBeInTheDocument()
             })
 
-            it('should not display price error when the price is above 300 euros and offer is educational', async () => {
-              // Given
-              const educationalOffer = {
-                ...eventOffer,
-                isEducational: true,
-              }
-              pcapi.loadOffer.mockResolvedValue(educationalOffer)
-              await renderOffers(props, store)
-              fireEvent.change(screen.getByLabelText('Prix'), {
-                target: { value: '301' },
-              })
-
-              // When
-              fireEvent.click(screen.getByText('Enregistrer'))
-
-              // Then
-              expect(
-                queryByTextTrimHtml(
-                  screen,
-                  'Le prix d’une offre ne peut excéder 300 euros. Pour plus d’infos, merci de consulter nos Conditions Générales d’Utilisation'
-                )
-              ).not.toBeInTheDocument()
-
-              expect(
-                screen.queryByText(
-                  'Une ou plusieurs erreurs sont présentes dans le formulaire.'
-                )
-              ).not.toBeInTheDocument()
-            })
-
             it('should be able to edit stock when remaining quantity is unlimited and there is existing bookings', async () => {
               // Given
               const eventStock = {
@@ -2064,36 +2034,6 @@ describe('stocks page', () => {
             ).toBeInTheDocument()
           })
 
-          it('should not display price error when the price is above 300 euros and offer is educational', async () => {
-            // Given
-            const educationalOffer = {
-              ...thingOffer,
-              isEducational: true,
-            }
-            pcapi.loadOffer.mockResolvedValue(educationalOffer)
-            await renderOffers(props, store)
-            fireEvent.change(screen.getByLabelText('Prix'), {
-              target: { value: '301' },
-            })
-
-            // When
-            fireEvent.click(screen.getByText('Enregistrer'))
-
-            // Then
-            expect(
-              queryByTextTrimHtml(
-                screen,
-                'Le prix d’une offre ne peut excéder 300 euros. Pour plus d’infos, merci de consulter nos Conditions Générales d’Utilisation'
-              )
-            ).not.toBeInTheDocument()
-
-            expect(
-              screen.queryByText(
-                'Une ou plusieurs erreurs sont présentes dans le formulaire.'
-              )
-            ).not.toBeInTheDocument()
-          })
-
           it('should display error message on api error', async () => {
             // Given
             pcapi.bulkCreateOrEditStock.mockRejectedValueOnce({
@@ -2570,46 +2510,6 @@ describe('stocks page', () => {
         ).not.toBeInTheDocument()
       })
 
-      it('should not display price error when the price is above 300 euros and offer is educational', async () => {
-        // Given
-        const educationalOffer = {
-          ...noStockOffer,
-          isEvent: true,
-          isEducational: true,
-        }
-        pcapi.loadOffer.mockResolvedValue(educationalOffer)
-        await renderOffers(props, store)
-        fireEvent.click(screen.getByText('Ajouter une date'))
-
-        fireEvent.click(screen.getByLabelText('Date de l’événement'))
-        fireEvent.click(screen.getByText('24'))
-
-        fireEvent.click(screen.getByLabelText('Heure de l’événement'))
-        fireEvent.click(screen.getByText('20:00'))
-
-        // When
-        fireEvent.change(screen.getByLabelText('Prix'), {
-          target: { value: '301' },
-        })
-        await act(async () => {
-          fireEvent.click(screen.getByText('Enregistrer'))
-        })
-
-        // Then
-        expect(
-          queryByTextTrimHtml(
-            screen,
-            'Le prix d’une offre ne peut excéder 300 euros. Pour plus d’infos, merci de consulter nos Conditions Générales d’Utilisation'
-          )
-        ).not.toBeInTheDocument()
-
-        expect(
-          screen.queryByText(
-            'Une ou plusieurs erreurs sont présentes dans le formulaire.'
-          )
-        ).not.toBeInTheDocument()
-      })
-
       it('should display error message on api error', async () => {
         // Given
         pcapi.bulkCreateOrEditStock.mockRejectedValueOnce({
@@ -2912,37 +2812,6 @@ describe('stocks page', () => {
             'Le prix d’une offre ne peut excéder 300 euros. Pour plus d’infos, merci de consulter nos Conditions Générales d’Utilisation'
           )
         ).toBeInTheDocument()
-      })
-
-      it('should not display price error when the price is above 300 euros and offer is educational', async () => {
-        // Given
-        const educationalOffer = {
-          ...noStockOffer,
-          isEducational: true,
-        }
-        pcapi.loadOffer.mockResolvedValue(educationalOffer)
-        await renderOffers(props, store)
-        fireEvent.click(screen.getByText('Ajouter un stock'))
-        fireEvent.change(screen.getByLabelText('Prix'), {
-          target: { value: '301' },
-        })
-
-        // When
-        fireEvent.click(screen.getByText('Enregistrer'))
-
-        // Then
-        expect(
-          queryByTextTrimHtml(
-            screen,
-            'Le prix d’une offre ne peut excéder 300 euros. Pour plus d’infos, merci de consulter nos Conditions Générales d’Utilisation'
-          )
-        ).not.toBeInTheDocument()
-
-        expect(
-          screen.queryByText(
-            'Une ou plusieurs erreurs sont présentes dans le formulaire.'
-          )
-        ).not.toBeInTheDocument()
       })
 
       it('should display error message on api error', async () => {
