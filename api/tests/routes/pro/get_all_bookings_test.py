@@ -118,6 +118,7 @@ class Returns200Test:
             "lastname": "Moustaki",
             "phonenumber": None,
         }
+        assert response.json["bookings_recap"][0]["booking_token"] is None
 
     def when_user_is_linked_to_a_valid_offerer(self, app):
         booking = bookings_factories.UsedIndividualBookingFactory(
