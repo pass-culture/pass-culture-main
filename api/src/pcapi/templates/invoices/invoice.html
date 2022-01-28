@@ -186,7 +186,9 @@
 <h1>Justificatif de remboursement</h1>
 <div class="custumerInfo">
     <p><b>Nom :</b> {{ invoice.businessUnit.name }}</p>
-    <p><b>Adresse :</b> {{ invoice.businessUnit.address }}</p>
+{% if venue is not none %}
+    <p><b>Adresse :</b> {{ venue.address }} - {{ venue.postalCode}} {{ venue.city }}</p>
+{% endif %}
     <p><b>SIRET :</b> {{ invoice.businessUnit.siret }}</p>
 </div>
 <h3>
@@ -263,7 +265,7 @@
         <td>Virement {{ cashflow.bankAccount.iban }}</td>
         <td class="cashflow_id">{{ cashflow.id }}</td>
         <td class="cashflow_creation_date">{{ cashflow.creationDate.strftime("%d/%m/%Y") }}</td>
-        <td>{{ cashflow.amount|fr_currency }}</td>
+        <td>{{ cashflow.amount|fr_currency }} €</td>
         <td> {{ invoice.businessUnit.name }}</td>
     </tr>
 {% endfor %}

@@ -44,6 +44,7 @@ import sqlalchemy.sql.functions as sqla_func
 from pcapi import settings
 import pcapi.core.bookings.models as bookings_models
 from pcapi.core.object_storage import store_public_object
+from pcapi.core.offerers import repository as offerers_repository
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.models as offers_models
 import pcapi.core.payments.models as payments_models
@@ -974,9 +975,12 @@ def _generate_invoice_html(invoice) -> str:
         )
         groups.append(invoice_group)
 
+    venue = offerers_repository.find_venue_by_siret(invoice.businessUnit.siret)
+
     context = dict(
         invoice=invoice,
         groups=groups,
+        venue=venue,
         total_used_bookings_amount=total_used_bookings_amount,
         total_contribution_amount=total_contribution_amount,
         total_reimbursed_amount=total_reimbursed_amount,
