@@ -28,6 +28,10 @@ Le repo `main` contient les 5 projets suivants :
   - [GPG Suite](https://gpgtools.org/) (MacOS)
   - `sudo apt install gpg` (Linux)
 
+- [Commitizen](https://commitizen-tools.github.io/commitizen/#installation) (CLI pour écrire des commits au bon format)
+
+  - `pip install -U commitizen`
+
 - Pour MacOS spécifiquement
   - CoreUtils: `brew install coreutils`
 
@@ -58,7 +62,6 @@ manières de lancer le backend.
 
 - `pc start-backend`
 - `pc sandbox -n industrial` (pour peupler la DB)
-
 
 #### pro
 
@@ -215,7 +218,6 @@ Pré-requis : installer [jq](https://stedolan.github.io/jq/download/)
 3. Tests de la version déployée en `staging`
 4. Déploiement du tag en `production`
 5. Déploiement du tag en `integration`
-
 
 Une fois le tag posé, on vérifie que les tests sont bien en succès, puis on lance le déploiement avec la commande
 
