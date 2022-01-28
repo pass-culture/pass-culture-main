@@ -30,6 +30,8 @@
 
   &-footer {
     display: flex;
-    justify-content: flex-end;
+    justify-content: space-between;
+    padding-left: rem(6px);
+    padding-right: rem(12px);
   }
 }
