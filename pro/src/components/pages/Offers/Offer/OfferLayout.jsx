@@ -4,7 +4,7 @@
 
 import PropTypes from 'prop-types'
 import React, { useCallback, useEffect, useState } from 'react'
-import { Route, Switch } from 'react-router-dom'
+import { Route, Switch, useHistory } from 'react-router-dom'
 
 import Titles from 'components/layout/Titles/Titles'
 import ConfirmationContainer from 'components/pages/Offers/Offer/Confirmation/ConfirmationContainer'
@@ -25,12 +25,15 @@ const mapPathToStep = {
 }
 
 const OfferLayout = ({ location, match }) => {
+  const history = useHistory()
+
   const [offer, setOffer] = useState(null)
   const [isCreatingOffer, setIsCreatingOffer] = useState(true)
 
   const loadOffer = useCallback(
     async (offerId, creationMode = false) => {
       const existingOffer = await pcapi.loadOffer(offerId)
+
       setOffer(existingOffer)
       setIsCreatingOffer(
         creationMode || existingOffer.status === OFFER_STATUS_DRAFT
@@ -38,6 +41,9 @@ const OfferLayout = ({ location, match }) => {
     },
     [setOffer]
   )
+
+  const stepName = location.pathname.match(/[a-z]+$/)
+  const activeStep = stepName ? mapPathToStep[stepName[0]] : null
 
   const reloadOffer = useCallback(
     async (creationMode = false) =>
@@ -51,9 +57,6 @@ const OfferLayout = ({ location, match }) => {
     }
     match.params.offerId && loadOfferFromQueryParam()
   }, [loadOffer, match.params.offerId])
-
-  const stepName = location.pathname.match(/[a-z]+$/)
-  const activeStep = stepName ? mapPathToStep[stepName[0]] : null
 
   let pageTitle = 'Nouvelle offre'
 
@@ -69,6 +72,14 @@ const OfferLayout = ({ location, match }) => {
     !isCreatingOffer && !location.pathname.includes('/confirmation') ? (
       <OfferHeader offer={offer} reloadOffer={reloadOffer} />
     ) : null
+
+  if (offer?.isEducational) {
+    history.push(
+      `/offre/${match.params.offerId}/scolaire/${
+        activeStep === 'stocks' ? 'stocks/edition' : 'edition'
+      }`
+    )
+  }
 
   return (
     <div className="offer-page">
