@@ -4,13 +4,15 @@ name: Ping data team on slack
 
 on:
   pull_request:
+    types: [closed]
     paths:
       - 'api/src/pcapi/alembic/versions/**'
+      - 'api/src/pcapi/alembic/run_migrations.py'
 
 jobs:
   send-message:
     runs-on: ubuntu-latest
-
+    if: github.event.pull_request.merged == true
     steps:
       - uses: actions/checkout@v2
 
@@ -19,4 +21,4 @@ jobs:
         env:
           SLACK_WEBHOOK_DB_CHANGE: ${{ secrets.SLACK_WEBHOOK_DB_CHANGE }}
         run: |
-          curl -X POST -H 'Content-type: application/json' --data '{"text":"Nouvelle PR avec une migration db -> ${{ github.event.pull_request.html_url }}"}'  "$SLACK_WEBHOOK_DB_CHANGE"
+          curl -X POST -H 'Content-type: application/json' --data '{"text":"Nouvelle PR avec une migration db ou une colonne en cours de suppression -> ${{ github.event.pull_request.html_url }}"}'  "$SLACK_WEBHOOK_DB_CHANGE"
