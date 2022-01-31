@@ -104,7 +104,7 @@ describe('offer', () => {
           beginningDatetime: new Date('2021-09-25T22:00:00Z'),
           bookingLimitDatetime: new Date('2021-09-25T22:00:00Z'),
           isBookable: true,
-          price: 80000,
+          price: 0,
           educationalPriceDetail: 'Le détail de mon prix',
         },
       ],
@@ -220,7 +220,7 @@ describe('offer', () => {
       expect(
         within(summaryList[1]).queryByText('Jusqu’à', { exact: false })
       ).not.toBeInTheDocument()
-      expect(within(summaryList[1]).getByText('800,00 €')).toBeInTheDocument()
+      expect(within(summaryList[1]).getByText('Gratuit')).toBeInTheDocument()
       expect(
         within(summaryList[1]).getByText('Collège - 4e')
       ).toBeInTheDocument()

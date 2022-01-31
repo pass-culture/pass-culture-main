@@ -58,10 +58,13 @@ const OfferSummary = ({ offer }: { offer: OfferType }): JSX.Element => {
       : extraData.students[0]
     : ''
 
-  const formattedPrice = new Intl.NumberFormat('fr-FR', {
-    style: 'currency',
-    currency: 'EUR',
-  }).format(price / 100)
+  const formattedPrice =
+    price > 0
+      ? new Intl.NumberFormat('fr-FR', {
+          style: 'currency',
+          currency: 'EUR',
+        }).format(price / 100)
+      : 'Gratuit'
 
   return (
     <div>
