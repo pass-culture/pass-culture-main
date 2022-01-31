@@ -301,6 +301,7 @@ class FraudReasonCode(enum.Enum):
     INVALID_ID_PIECE_NUMBER = "invalid_id_piece_number"
     NOT_ELIGIBLE = "not_eligible"
     PHONE_NOT_VALIDATED = "phone_not_validated"
+    REFUSED_BY_OPERATOR = "refused_by_operator"
 
 
 # FIXME: ce status fait un peu doublon avec FraudStatus
@@ -313,6 +314,7 @@ class FraudCheckStatus(enum.Enum):
     SUSPICIOUS = "suspiscious"
     PENDING = "pending"
     CANCELED = "canceled"
+    ERROR = "error"
 
 
 class BeneficiaryFraudCheck(PcObject, Model):
