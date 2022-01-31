@@ -35,18 +35,13 @@ const noDisabilityCompliantCheckbox =
 const thumbnailButton = Selector('.of-placeholder')
 const submitButton = Selector('.actions-section .primary-button')
 const navBrandLogoItem = Selector('.nav-brand .logo')
-const exitOfferCreationMessage = Selector(
-  '.exit-offer-creation-dialog p'
-).withText('Voulez-vous quitter la création d’offre ?')
-const exitOfferCreationDialogConfirmButton = Selector(
-  '.exit-offer-creation-dialog .primary-button'
+const exitOfferCreationMessage = Selector('h3').withText(
+  'Voulez-vous quitter la création d’offre ?'
 )
-const exitOfferCreationDialogCancelButton = Selector(
-  '.exit-offer-creation-dialog .secondary-button'
-)
-const exitOfferCreationDialogQuestion = Selector(
-  '.exit-offer-creation-dialog p'
-).withText('Voulez-vous quitter la création d’offre ?')
+const exitOfferCreationDialogConfirmButton =
+  Selector('button').withExactText('Quitter')
+const exitOfferCreationDialogCancelButton =
+  Selector('button').withExactText('Annuler')
 
 fixture('En étant sur la page des offres,')
 
@@ -241,7 +236,7 @@ test("Je suis empêché de quitter la création d'offre sans confirmation", asyn
     .expect(getPathname())
     .match(/\/offres\/([A-Z0-9]+)\/stocks$/)
     .click(navBrandLogoItem())
-    .expect(exitOfferCreationDialogQuestion.exists)
+    .expect(exitOfferCreationMessage.exists)
     .ok()
     .click(exitOfferCreationDialogCancelButton)
     .expect(getPathname())
@@ -268,7 +263,7 @@ test("Je peux quitter la création d'offre avec confirmation", async t => {
     .click(venueOption.withText(venue.name))
     .click(noDisabilityCompliantCheckbox)
     .click(navBrandLogoItem)
-    .expect(exitOfferCreationDialogQuestion.exists)
+    .expect(exitOfferCreationMessage.exists)
     .ok()
     .click(exitOfferCreationDialogConfirmButton)
     .expect(getPathname())
