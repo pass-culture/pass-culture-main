@@ -93,6 +93,10 @@
     align-items: center;
     display: flex;
     flex-direction: column;
+
+    &.admin-view {
+      margin-top: rem(32px);
+    }
   }
 
   .no-refunds-title {
@@ -109,5 +113,12 @@
     button {
       margin: rem(8px) 0;
     }
+  }
+
+  .admin-view-description {
+    color: $grey-dark;
+    margin-top: rem(18px);
+    text-align: center;
+    width: 52%;
   }
 }
