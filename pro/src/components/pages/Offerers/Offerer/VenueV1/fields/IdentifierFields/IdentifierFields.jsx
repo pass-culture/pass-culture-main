@@ -107,6 +107,7 @@ class IdentifierFields extends PureComponent {
       initialSiret,
       isCreatedEntity,
       isDirtyFieldBookingEmail,
+      isEntrepriseApiDisabled,
       readOnly,
       venueIsVirtual,
       venueLabels,
@@ -151,7 +152,11 @@ class IdentifierFields extends PureComponent {
                 readOnly
               )}
               type="siret"
-              validate={initialSiret ? undefined : siretValidate}
+              validate={
+                initialSiret || isEntrepriseApiDisabled
+                  ? undefined
+                  : siretValidate
+              }
             />
           )}
           <TextField
@@ -313,6 +318,7 @@ IdentifierFields.propTypes = {
   initialSiret: PropTypes.string,
   isCreatedEntity: PropTypes.bool,
   isDirtyFieldBookingEmail: PropTypes.bool,
+  isEntrepriseApiDisabled: PropTypes.bool.isRequired,
   readOnly: PropTypes.bool,
   venueIsVirtual: PropTypes.bool,
   venueLabelId: PropTypes.string,

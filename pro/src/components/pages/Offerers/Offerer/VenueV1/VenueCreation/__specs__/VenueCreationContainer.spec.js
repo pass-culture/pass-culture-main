@@ -67,6 +67,7 @@ describe('src | components | pages | VenueContainer | mapStateToProps', () => {
       expect(result).toStrictEqual({
         currentUser: currentUser,
         isBankInformationWithSiretActive: false,
+        isEntrepriseApiDisabled: false,
         offerer: { id: 1 },
         formInitialValues: {
           bookingEmail: 'john.doe@email.com',
