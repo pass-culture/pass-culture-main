@@ -21,6 +21,7 @@ from pcapi.core.bookings.api import cancel_bookings_from_stock_by_offerer
 from pcapi.core.bookings.api import mark_as_unused
 from pcapi.core.bookings.api import update_cancellation_limit_dates
 from pcapi.core.bookings.models import Booking
+from pcapi.core.bookings.models import BookingStatus
 import pcapi.core.bookings.repository as bookings_repository
 from pcapi.core.categories import subcategories
 from pcapi.core.categories.conf import can_create_from_isbn
@@ -653,7 +654,7 @@ def _update_educational_booking_cancellation_limit_date(
 
 def _invalidate_bookings(bookings: list[Booking]) -> list[Booking]:
     for booking in bookings:
-        if booking.isUsed:
+        if booking.status is BookingStatus.USED:
             mark_as_unused(booking)
     return bookings
 
