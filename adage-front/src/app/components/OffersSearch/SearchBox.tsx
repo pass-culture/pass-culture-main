@@ -1,17 +1,25 @@
 import './SearchBox.scss'
 import React, { useCallback } from 'react'
+import type { SearchBoxProvided } from 'react-instantsearch-core'
 
 import { ReactComponent as MagnifyingGlassIcon } from 'assets/magnifying-glass.svg'
+
 export const SearchBoxComponent = ({
   query,
   setQuery,
+  refine,
 }: {
   query: string
   setQuery: (query: string) => void
+  refine: SearchBoxProvided['refine']
 }): React.ReactElement => {
-  const onSubmit = useCallback(event => {
-    event.preventDefault()
-  }, [])
+  const onSubmit = useCallback(
+    event => {
+      event.preventDefault()
+      refine(query)
+    },
+    [query, refine]
+  )
 
   return (
     <form className="search-wrapper" onSubmit={onSubmit}>
