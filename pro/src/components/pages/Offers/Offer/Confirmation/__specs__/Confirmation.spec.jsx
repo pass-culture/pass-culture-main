@@ -57,9 +57,10 @@ describe('confirmation page', () => {
       screen.getByText('Offre en cours de validation', { selector: 'h2' })
     ).toBeInTheDocument()
     expect(
-      screen.getByText(
-        'Votre offre est en cours de validation par l’équipe pass Culture, nous vérifions actuellement son éligibilité. Cette vérification pourra prendre jusqu’à 72h. Vous recevrez un email de confirmation une fois votre offre validée et disponible à la réservation.',
-        { selector: 'p' }
+      screen.queryByText(content =>
+        content.startsWith(
+          'Votre offre est en cours de validation par l’équipe pass Culture'
+        )
       )
     ).toBeInTheDocument()
     expect(
