@@ -421,6 +421,7 @@ def _edit_stock(
     return stock
 
 
+# FIXME (cgaunet, 2022-01-31): Cut and rename the methods because it does not only notify beneficiaries.
 def _notify_beneficiaries_upon_stock_edit(stock: Stock):
     bookings = bookings_repository.find_not_cancelled_bookings_by_stock(stock)
     if bookings:
