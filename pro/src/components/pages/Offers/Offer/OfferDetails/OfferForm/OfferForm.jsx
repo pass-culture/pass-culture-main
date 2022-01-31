@@ -32,9 +32,9 @@ import { doesUserPreferReducedMotion } from 'utils/windowMatchMedia'
 
 import {
   BASE_OFFER_FIELDS,
+  CAN_CREATE_FROM_ISBN_SUBCATEGORIES,
   DEFAULT_FORM_VALUES,
   EXTRA_DATA_FIELDS,
-  CAN_CREATE_FROM_ISBN_SUBCATEGORIES,
   MANDATORY_FIELDS,
   NOT_REIMBURSED,
   PLATFORM,
@@ -58,7 +58,6 @@ const getOfferConditionalFields = ({
   isUserAdmin = null,
   receiveNotificationEmails = null,
   venue = null,
-  isNewOfferFormActivated = false,
 }) => {
   let offerConditionalFields = []
 
@@ -70,7 +69,7 @@ const getOfferConditionalFields = ({
     offerConditionalFields.push('isDuo')
   }
 
-  if (offerSubCategory?.canBeEducational && !isNewOfferFormActivated) {
+  if (offerSubCategory?.canBeEducational) {
     offerConditionalFields.push('isEducational')
   }
 
@@ -135,9 +134,6 @@ const OfferForm = ({
 
   const isIsbnRequiredInLivreEditionEnabled = useActiveFeature(
     'ENABLE_ISBN_REQUIRED_IN_LIVRE_EDITION_OFFER_CREATION'
-  )
-  const isNewOfferFormActivated = useActiveFeature(
-    'ENABLE_NEW_EDUCATIONAL_OFFER_CREATION_FORM'
   )
 
   const [mandatoryFields, setMandatoryFields] = useState([...MANDATORY_FIELDS])
@@ -254,7 +250,6 @@ const OfferForm = ({
         isUserAdmin,
         receiveNotificationEmails,
         venue,
-        isNewOfferFormActivated,
       })
       let offerSubCategoryConditionalFields = offerSubCategory
         ? offerSubCategory.conditionalFields
@@ -267,13 +262,7 @@ const OfferForm = ({
       ]
       setOfferFormFields(newFormFields)
     },
-    [
-      offerSubCategory,
-      isUserAdmin,
-      receiveNotificationEmails,
-      venue,
-      isNewOfferFormActivated,
-    ]
+    [offerSubCategory, isUserAdmin, receiveNotificationEmails, venue]
   )
 
   useEffect(
