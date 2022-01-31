@@ -1054,7 +1054,7 @@ class GenerateInvoiceHtmlTest:
             '<td class="cashflow_id">2</td>', f'<td class="cashflow_id">{cashflow_ids[1]}</td>'
         )
         expected_invoice_html = expected_invoice_html.replace(
-            '<td class="cashflow_creation_date">27/01/2022</td>',
+            '<td class="cashflow_creation_date">21/12/2021</td>',
             f'<td class="cashflow_creation_date">{cashflows[0].creationDate.strftime("%d/%m/%Y")}</td>',
         )
 
