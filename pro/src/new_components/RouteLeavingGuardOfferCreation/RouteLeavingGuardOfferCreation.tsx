@@ -8,17 +8,25 @@ import RouteLeavingGuard from './RouteLeavingGuard'
 import styles from './RouteLeavingGuardOfferCreation.module.scss'
 
 const RouteLeavingGuardOfferCreation = ({
-  when,
+  when = true,
+  isCollectiveFlow = false,
 }: {
-  when: boolean
+  when?: boolean
+  isCollectiveFlow?: boolean
 }): JSX.Element => {
   const location = useLocation()
 
   const shouldBlockNavigation = useCallback(
     nextLocation => {
-      const offerCreationPath = '/offres/creation'
-      const stocksPathRegex = /\/offres\/([A-Z0-9]+)\/stocks/g
-      const confirmationPathRegex = /\/offres\/([A-Z0-9]+)\/confirmation/g
+      const offerCreationPath = isCollectiveFlow
+        ? '/offre/creation/scolaire'
+        : '/offres/creation'
+      const stocksPathRegex = isCollectiveFlow
+        ? /\/offre\/([A-Z0-9]+)\/scolaire\/stocks/g
+        : /\/offres\/([A-Z0-9]+)\/stocks/g
+      const confirmationPathRegex = isCollectiveFlow
+        ? /\/offre\/([A-Z0-9]+)\/scolaire\/confirmation/g
+        : /\/offres\/([A-Z0-9]+)\/confirmation/g
 
       if (
         (location.pathname.match(stocksPathRegex) &&
@@ -47,7 +55,7 @@ const RouteLeavingGuardOfferCreation = ({
       }
       return true
     },
-    [location]
+    [location, isCollectiveFlow]
   )
   return (
     <RouteLeavingGuard
