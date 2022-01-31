@@ -4,8 +4,6 @@ from typing import Optional
 from pcapi.models import db
 
 
-# deprecated
-# TODO (jsdupuis) remove before removing Offer.idAtProviders property
 VENUE_IDS_WITH_DUPLICATES_SQL = """
 -- Two rows with the same venueId and the same id given by the provider
 -- (isbn in the query) are duplicates.
@@ -18,19 +16,17 @@ FROM (
 
         -- extract isbn from idAtProviders in order to perform
         -- a group by
-        SELECT "id", "venueId", "idAtProvider"
+        SELECT "id", "venueId", split_part("idAtProviders", '@', 1) isbn
         FROM offer
-        WHERE "idAtProvider" is not null
+        WHERE "idAtProviders" is not null
 
     ) offer
-    GROUP BY "venueId", "idAtProvider"
-    HAVING count("idAtProvider") > 1
+    GROUP BY "venueId", "isbn"
+    HAVING count("isbn") > 1
 
 ) sub
 """
 
-# deprecated
-# TODO (jsdupuis) remove before removing Offer.idAtProviders property
 UPDATE_VENUE_DUPLICATES_SQL = """
 UPDATE offer
 SET
@@ -74,8 +70,6 @@ WHERE
 RETURNING id
 """
 
-# deprecated
-# TODO (jsdupuis) remove before removing Offer.idAtProviders property
 COUNT_DUPLICATES_SQL = """
 SELECT count(*)
 FROM (
@@ -94,28 +88,21 @@ FROM (
 ) main
 """
 
-# deprecated
-# TODO (jsdupuis) remove before removing Offer.idAtProviders property
+
 def get_venue_ids_with_duplicates() -> set[int]:
     res = db.session.execute(VENUE_IDS_WITH_DUPLICATES_SQL)
     return {row.venueId for row in res}
 
 
-# deprecated
-# TODO (jsdupuis) remove before removing Offer.idAtProviders property
 def count_duplicate_offers() -> int:
     return db.session.execute(COUNT_DUPLICATES_SQL).scalar()
 
 
-# deprecated
-# TODO (jsdupuis) remove before removing Offer.idAtProviders property
 def handle_venue_duplicates(venue_id: int) -> set[int]:
     res = db.session.execute(UPDATE_VENUE_DUPLICATES_SQL, {"venue_id": venue_id})
     return {row[0] for row in res}
 
 
-# deprecated
-# TODO (jsdupuis) remove before removing Offer.idAtProviders property
 def handle_offer_duplicates(path: Optional[str]) -> set[int]:
     """
     Update offer rows that are duplicates.
