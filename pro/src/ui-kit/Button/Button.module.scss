@@ -13,7 +13,7 @@
   &:focus {
     outline: none;
   }
-  
+
   &:hover {
     cursor: pointer;
   }
@@ -38,7 +38,6 @@
     &:focus {
       background-color: $primary-dark;
       border-color: $primary-dark;
-      
     }
 
     &:disabled {
@@ -46,8 +45,7 @@
       border-color: $primary-disabled;
     }
   }
-  
-  
+
   &-secondary {
     color: $primary;
     background-color: $white;
@@ -56,7 +54,8 @@
     &:hover,
     &:focus {
       color: $white;
-      background-color: $primary;
+      background-color: $primary-dark;
+      border-color: $primary-dark;
     }
 
     &:disabled {
@@ -65,7 +64,7 @@
       color: $primary-disabled;
     }
   }
-  
+
   &-ternary {
     color: $black;
     background-color: transparent;
