@@ -49,5 +49,18 @@
     margin-top: 1rem;
     overflow: hidden;
     width: 100%;
+
+    /* the default z-indexes are set to:
+     * -  400 for leaflet-pane
+     * -  800 for leaflet-control
+     * - 1000 for leaflet-top and leaflet-bottom
+     * which are random values, interfering with modals
+     */
+    .leaflet-pane,
+    .leaflet-top,
+    .leaflet-bottom,
+    .leaflet-control {
+      z-index: 0;
+    }
   }
 }
