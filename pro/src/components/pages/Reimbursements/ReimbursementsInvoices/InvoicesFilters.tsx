@@ -23,6 +23,7 @@ interface IReimbursementsSectionHeaderProps {
   defaultSelectDisplayName: string
   defaultSelectId: string
   filters: filtersType
+  hasNoInvoicesYet: boolean
   headerTitle: string
   initialFilters: filtersType
   selectLabel: string
@@ -38,6 +39,7 @@ const InvoicesFilters = ({
   defaultSelectDisplayName,
   defaultSelectId,
   filters,
+  hasNoInvoicesYet,
   headerTitle,
   initialFilters,
   selectLabel,
@@ -112,6 +114,7 @@ const InvoicesFilters = ({
             id: defaultSelectId,
           }}
           handleSelection={setBusinessUnitFilter}
+          isDisabled={hasNoInvoicesYet}
           label={selectLabel}
           name={selectName}
           options={selectableOptions}
@@ -120,7 +123,7 @@ const InvoicesFilters = ({
         <PeriodSelector
           changePeriodBeginningDateValue={setStartDateFilter}
           changePeriodEndingDateValue={setEndDateFilter}
-          isDisabled={false}
+          isDisabled={hasNoInvoicesYet}
           label="Période"
           maxDateEnding={getToday()}
           periodBeginningDate={selectedPeriodStart}

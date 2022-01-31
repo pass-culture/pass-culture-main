@@ -10,6 +10,7 @@ import InvoicesAdminMustFilter from './InvoicesAdminMustFilter'
 import InvoicesFilters from './InvoicesFilters'
 import InvoicesNoResult from './InvoicesNoResult'
 import InvoicesServerError from './InvoicesServerError'
+import NoInvoicesYet from './NoInvoicesYet'
 
 type businessUnitsOptionsType = [
   {
@@ -80,7 +81,23 @@ const ReimbursementsInvoices = ({
   const isPeriodFilterSelected = selectedPeriodStart && selectedPeriodEnd
   const requireBUFilterForAdmin =
     isCurrentUserAdmin && selectedBusinessUnit === ALL_BUSINESS_UNITS_OPTION_ID
-  const shouldDisableButton = !isPeriodFilterSelected || requireBUFilterForAdmin
+
+  const hasNoSearchResult =
+    !hasError && invoices.length === 0 && hasSearchedOnce
+
+  const shouldDisplayAdminInfo =
+    !hasError && isCurrentUserAdmin && !hasSearchedOnce
+
+  const hasNoInvoicesYetForNonAdmin =
+    !hasError &&
+    !isCurrentUserAdmin &&
+    invoices.length === 0 &&
+    !hasSearchedOnce
+
+  const shouldDisableButton =
+    !isPeriodFilterSelected ||
+    requireBUFilterForAdmin ||
+    hasNoInvoicesYetForNonAdmin
 
   const loadInvoices = useCallback(() => {
     const invoicesFilters = {
@@ -108,12 +125,6 @@ const ReimbursementsInvoices = ({
     }
   }, [loadInvoices])
 
-  const shouldDisplayNoSearchResult =
-    !hasError && invoices.length === 0 && hasSearchedOnce
-
-  const shouldDisplayAdminInfo =
-    !hasError && isCurrentUserAdmin && !hasSearchedOnce
-
   return (
     <>
       <InvoicesFilters
@@ -121,6 +132,7 @@ const ReimbursementsInvoices = ({
         defaultSelectDisplayName="Tous les points de remboursement"
         defaultSelectId="all"
         filters={filters}
+        hasNoInvoicesYet={hasNoInvoicesYetForNonAdmin}
         headerTitle="Affichage des justificatifs de remboursement"
         initialFilters={INITIAL_FILTERS}
         selectLabel="Point de remboursement"
@@ -143,7 +155,8 @@ const ReimbursementsInvoices = ({
       </InvoicesFilters>
       {isLoading && <Spinner />}
       {hasError && <InvoicesServerError />}
-      {shouldDisplayNoSearchResult && (
+      {hasNoInvoicesYetForNonAdmin && <NoInvoicesYet />}
+      {hasNoSearchResult && (
         <InvoicesNoResult
           areFiltersDefault={areFiltersDefault}
           initialFilters={INITIAL_FILTERS}
