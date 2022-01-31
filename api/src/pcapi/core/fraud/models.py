@@ -291,6 +291,7 @@ class FraudReasonCode(enum.Enum):
     EMAIL_NOT_VALIDATED = "email_not_validated"
     ELIGIBILITY_CHANGED = "eligibility_changed"
     EMPTY_ID_PIECE_NUMBER = "empty_id_piece_number"
+    ERROR_IN_DATA = "error_in_data"
     ID_CHECK_DATA_MATCH = "id_check_data_match"
     ID_CHECK_EXPIRED = "id_check_expired"
     ID_CHECK_INVALID = "id_check_invalid"

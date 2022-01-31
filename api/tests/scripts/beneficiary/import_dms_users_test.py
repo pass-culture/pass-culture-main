@@ -100,7 +100,8 @@ class RunTest:
         mocked_parse_beneficiary_information,
         get_applications_with_details,
     ):
-        get_applications_with_details.return_value = [make_graphql_application(123, "closed")]
+        user = users_factories.UserFactory()
+        get_applications_with_details.return_value = [make_graphql_application(123, "closed", email=user.email)]
         mocked_parse_beneficiary_information.side_effect = [Exception()]
 
         # when
@@ -734,11 +735,12 @@ class RunIntegrationTest:
 
     @patch.object(api_dms.DMSGraphQLClient, "get_applications_with_details")
     def test_dms_application_value_error(self, get_applications_with_details):
+        user = users_factories.UserFactory()
         get_applications_with_details.return_value = [
             make_graphql_application(
                 application_id=123,
                 state="closed",
-                email="fake@example.com",
+                email=user.email,
                 postal_code="Strasbourg",
                 id_piece_number="121314",
             )
@@ -752,6 +754,16 @@ class RunIntegrationTest:
             beneficiary_import.statuses[0].detail
             == "Erreur dans les données soumises dans le dossier DMS : 'id_piece_number' (121314),'postal_code' (Strasbourg)"
         )
+
+        fraud_check = user.beneficiaryFraudChecks[0]
+        assert fraud_check.status == fraud_models.FraudCheckStatus.ERROR
+        assert fraud_check.thirdPartyId == "123"
+        assert (
+            fraud_check.reason
+            == "Erreur dans les données soumises dans le dossier DMS : 'id_piece_number' (121314),'postal_code' (Strasbourg)"
+        )
+        assert fraud_check.reasonCodes == [fraud_models.FraudReasonCode.ERROR_IN_DATA]
+
         assert len(mails_testing.outbox) == 1
         assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 3124925
 
@@ -773,6 +785,16 @@ class RunIntegrationTest:
             == "Erreur dans les données soumises dans le dossier DMS : 'id_piece_number' (121314),'postal_code' (Strasbourg)"
         )
         assert beneficiary_import.beneficiary == user
+
+        fraud_check = user.beneficiaryFraudChecks[0]
+        assert fraud_check.status == fraud_models.FraudCheckStatus.ERROR
+        assert fraud_check.thirdPartyId == "1"
+        assert (
+            fraud_check.reason
+            == "Erreur dans les données soumises dans le dossier DMS : 'id_piece_number' (121314),'postal_code' (Strasbourg)"
+        )
+        assert fraud_check.reasonCodes == [fraud_models.FraudReasonCode.ERROR_IN_DATA]
+
         assert len(mails_testing.outbox) == 1
         assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 3124925
 
@@ -786,6 +808,7 @@ class GraphQLSourceProcessApplicationTest:
         information = import_dms_users.parse_beneficiary_information_graphql(application_details, 123123)
         # fixture
         import_dms_users.process_application(
+            user,
             123123,
             4234,
             information,
