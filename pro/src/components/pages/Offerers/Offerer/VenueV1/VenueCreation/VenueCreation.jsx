@@ -104,6 +104,7 @@ class VenueCreation extends PureComponent {
       venueLabels,
       offerer,
       isBankInformationWithSiretActive,
+      isEntrepriseApiDisabled,
     } = this.props
     const { isRequestPending } = this.state
     const readOnly = false
@@ -125,6 +126,7 @@ class VenueCreation extends PureComponent {
           fieldReadOnlyBecauseFrozenFormSiret={siretValidOnCreation}
           formSiret={formSiret}
           isCreatedEntity
+          isEntrepriseApiDisabled={isEntrepriseApiDisabled}
           readOnly={readOnly}
           venueLabels={venueLabels}
           venueTypes={venueTypes}
@@ -181,14 +183,17 @@ class VenueCreation extends PureComponent {
         params: { offererId },
       },
       offerer,
+      isEntrepriseApiDisabled,
     } = this.props
 
     const decorators = [
       autoFillNoDisabilityCompliantDecorator,
       bindGetSuggestionsToLatitude,
       bindGetSuggestionsToLongitude,
-      bindGetSiretInformationToSiret,
     ]
+    if (!isEntrepriseApiDisabled) {
+      decorators.push(bindGetSiretInformationToSiret)
+    }
 
     const showForm = typeof offerer !== 'undefined'
 
@@ -227,6 +232,7 @@ VenueCreation.propTypes = {
   handleSubmitRequestSuccess: PropTypes.func.isRequired,
   history: PropTypes.shape().isRequired,
   isBankInformationWithSiretActive: PropTypes.bool.isRequired,
+  isEntrepriseApiDisabled: PropTypes.bool.isRequired,
   match: PropTypes.shape().isRequired,
   offerer: PropTypes.shape().isRequired,
   trackCreateVenue: PropTypes.func.isRequired,

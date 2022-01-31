@@ -49,6 +49,7 @@ export const mapStateToProps = (state, ownProps) => {
       state,
       'ENFORCE_BANK_INFORMATION_WITH_SIRET'
     ),
+    isEntrepriseApiDisabled: isFeatureActive(state, 'DISABLE_ENTERPRISE_API'),
   }
 }
 
