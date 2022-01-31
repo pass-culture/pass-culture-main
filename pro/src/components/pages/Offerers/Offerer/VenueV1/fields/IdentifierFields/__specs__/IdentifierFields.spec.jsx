@@ -18,6 +18,7 @@ import TextField from 'components/layout/form/fields/TextField'
 import VenueLabel from '../../../ValueObjects/VenueLabel'
 import VenueType from '../../../ValueObjects/VenueType'
 import IdentifierFields from '../IdentifierFields'
+import siretValidate from '../validators/siretValidate'
 
 describe('src | components | pages | Venue | fields | IdentifierFields', () => {
   let props
@@ -113,6 +114,7 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
         // given
         const props = {
           isCreatedEntity: true,
+          isEntrepriseApiDisabled: false,
           isModifiedEntity: true,
           readOnly: true,
           venueTypes: [],
@@ -137,6 +139,28 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
         expect(siretField.prop('label')).toBe(
           'SIRET du lieu qui accueille vos offres (si applicable) : '
         )
+      })
+
+      it('proper siret validate is returned when initialSiret is null and Entreprise Api not disabled', () => {
+        props.isEntrepriseApiDisabled = false
+        props.initialSiret = null
+        // when
+        const wrapper = shallow(<IdentifierFields {...props} />)
+
+        // then
+        const siretField = wrapper.find(TextField).at(0)
+        expect(siretField.prop('validate')).toBe(siretValidate)
+      })
+
+      it('proper siret validate is null when Entreprise Api is disabled', () => {
+        props.isEntrepriseApiDisabled = true
+        props.initialSiret = null
+        // when
+        const wrapper = shallow(<IdentifierFields {...props} />)
+
+        // then
+        const siretField = wrapper.find(TextField).at(0)
+        expect(siretField.prop('validate')).toBeNull()
       })
 
       it('proper siret label is returned when isCreatedEntity is false', () => {
