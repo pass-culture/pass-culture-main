@@ -581,7 +581,7 @@ def mark_fraud_check_failed(
     user: users_models.User,
     application_id: str,
     source_data: typing.Union[models.DMSContent, ubble_fraud_models.UbbleContent],
-    reasons: list[models.FraudItem],
+    reasons: list[models.FraudReasonCode],
 ) -> models.BeneficiaryFraudCheck:
     source_type = models.FRAUD_CONTENT_MAPPING[type(source_data)]
     fraud_check = models.BeneficiaryFraudCheck.query.filter(
