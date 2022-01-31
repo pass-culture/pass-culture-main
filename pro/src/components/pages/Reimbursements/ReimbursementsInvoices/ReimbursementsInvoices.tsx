@@ -6,6 +6,7 @@ import { getToday } from 'utils/date'
 import Spinner from '../../../layout/Spinner'
 import ReimbursementsTable from '../ReimbursementsTable'
 
+import InvoicesAdminMustFilter from './InvoicesAdminMustFilter'
 import InvoicesFilters from './InvoicesFilters'
 import InvoicesNoResult from './InvoicesNoResult'
 import InvoicesServerError from './InvoicesServerError'
@@ -67,7 +68,7 @@ const ReimbursementsInvoices = ({
   const [isLoading, setIsLoading] = useState(true)
   const [hasError, setHasError] = useState(false)
   const [areFiltersDefault, setAreFiltersDefault] = useState(true)
-
+  const [hasSearchedOnce, setHasSearchedOnce] = useState(false)
   const isCalledOnceRef = useRef(false)
 
   const {
@@ -77,10 +78,9 @@ const ReimbursementsInvoices = ({
   } = filters
 
   const isPeriodFilterSelected = selectedPeriodStart && selectedPeriodEnd
-  const requireVenueFilterForAdmin =
+  const requireBUFilterForAdmin =
     isCurrentUserAdmin && selectedBusinessUnit === ALL_BUSINESS_UNITS_OPTION_ID
-  const shouldDisableButton =
-    !isPeriodFilterSelected || requireVenueFilterForAdmin
+  const shouldDisableButton = !isPeriodFilterSelected || requireBUFilterForAdmin
 
   const loadInvoices = useCallback(() => {
     const invoicesFilters = {
@@ -108,6 +108,12 @@ const ReimbursementsInvoices = ({
     }
   }, [loadInvoices])
 
+  const shouldDisplayNoSearchResult =
+    !hasError && invoices.length === 0 && hasSearchedOnce
+
+  const shouldDisplayAdminInfo =
+    !hasError && isCurrentUserAdmin && !hasSearchedOnce
+
   return (
     <>
       <InvoicesFilters
@@ -126,7 +132,10 @@ const ReimbursementsInvoices = ({
         <button
           className="primary-button search-button"
           disabled={shouldDisableButton}
-          onClick={() => loadInvoices()}
+          onClick={() => {
+            setHasSearchedOnce(true)
+            loadInvoices()
+          }}
           type="button"
         >
           Lancer la recherche
@@ -134,7 +143,7 @@ const ReimbursementsInvoices = ({
       </InvoicesFilters>
       {isLoading && <Spinner />}
       {hasError && <InvoicesServerError />}
-      {!hasError && invoices.length === 0 && (
+      {shouldDisplayNoSearchResult && (
         <InvoicesNoResult
           areFiltersDefault={areFiltersDefault}
           initialFilters={INITIAL_FILTERS}
@@ -142,6 +151,7 @@ const ReimbursementsInvoices = ({
           setFilters={setFilters}
         />
       )}
+      {shouldDisplayAdminInfo && <InvoicesAdminMustFilter />}
       {invoices.length > 0 && (
         <ReimbursementsTable columns={columns} invoices={invoices} />
       )}
