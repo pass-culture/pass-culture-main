@@ -164,7 +164,6 @@ const routes = [
   {
     component: OfferType,
     exact: true,
-    featureName: 'ENABLE_NEW_EDUCATIONAL_OFFER_CREATION_FORM',
     path: '/offre/creation',
     title: 'Selection du type d’offre',
   },
@@ -177,7 +176,6 @@ const routes = [
   {
     component: OfferEducationalCreation,
     exact: true,
-    featureName: 'ENABLE_NEW_EDUCATIONAL_OFFER_CREATION_FORM',
     path: '/offre/creation/scolaire',
     title: 'Offre Scolaire',
   },
@@ -190,28 +188,24 @@ const routes = [
   {
     component: OfferEducationalStockCreation,
     exact: true,
-    featureName: 'ENABLE_NEW_EDUCATIONAL_OFFER_CREATION_FORM',
     path: '/offre/:offerId([A-Z0-9]+)/scolaire/stocks',
     title: 'Stock lié à une offre Scolaire',
   },
   {
     component: OfferEducationalConfirmation,
     exact: true,
-    featureName: 'ENABLE_NEW_EDUCATIONAL_OFFER_CREATION_FORM',
     path: '/offre/:offerId([A-Z0-9]+)/scolaire/confirmation',
     title: 'Page de confirmation de création d’offre',
   },
   {
     component: OfferEducationalEdition,
     exact: true,
-    featureName: 'ENABLE_NEW_EDUCATIONAL_OFFER_CREATION_FORM',
     path: '/offre/:offerId([A-Z0-9]+)/scolaire/edition',
     title: 'Edition d’une offre scolaire',
   },
   {
     component: OfferEducationalStockEdition,
     exact: true,
-    featureName: 'ENABLE_NEW_EDUCATIONAL_OFFER_CREATION_FORM',
     path: '/offre/:offerId([A-Z0-9]+)/scolaire/stocks/edition',
     title: 'Edition d’un stock d’une offre scolaire',
   },
