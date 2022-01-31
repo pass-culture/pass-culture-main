@@ -22,7 +22,7 @@ def get_by_offerer(offerer: "Offerer") -> dict:
 
     try:
         response = requests.get(f"https://entreprise.data.gouv.fr/api/sirene/v3/unites_legales/{offerer.siren}")
-    except (requests.ConnectionError, requests.HTTPError, requests.Timeout) as exc:
+    except (requests.exceptions.ConnectionError, requests.exceptions.HTTPError, requests.exceptions.Timeout) as exc:
         logger.exception("Failed to get data from entreprise.data.gouv.fr", extra={"siren": offerer.siren})
         raise ApiEntrepriseException("Error getting API entreprise DATA for SIREN : {}".format(offerer.siren)) from exc
 
@@ -42,7 +42,7 @@ def get_by_siret(siret: str) -> dict:
 
     try:
         response = requests.get(f"https://entreprise.data.gouv.fr/api/sirene/v3/etablissements/{siret}")
-    except (requests.ConnectionError, requests.HTTPError, requests.Timeout) as exc:
+    except (requests.exceptions.ConnectionError, requests.exceptions.HTTPError, requests.exceptions.Timeout) as exc:
         logger.exception("Failed to get data from entreprise.data.gouv.fr", extra={"siret": siret})
         raise ApiEntrepriseException("Error getting API entreprise DATA for SIRET : {}".format(siret)) from exc
 
