@@ -12,6 +12,7 @@ from pcapi.core.bookings.models import IndividualBooking
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
 from pcapi.core.offers.utils import offer_app_link
+from pcapi.utils.urls import booking_app_link
 
 
 logger = logging.getLogger(__name__)
@@ -105,4 +106,5 @@ def get_soon_expiring_bookings_with_offers_notification_data(booking: Booking) -
         group_id=GroupId.SOON_EXPIRING_BOOKINGS.value,
         user_ids=[booking.userId],
         message=TransactionalNotificationMessage(title="Tu n'as pas récupéré ta réservation", body=body),
+        extra={"deeplink": booking_app_link(booking)},
     )

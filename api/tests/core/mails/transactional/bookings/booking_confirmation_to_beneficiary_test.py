@@ -110,7 +110,7 @@ def get_expected_base_mailjet_email_data(booking, mediation, **overrides):
             "digital_offer_url": "",
             "offer_withdrawal_details": "",
             "expiration_delay": "",
-            "booking_link": f"https://webapp-v2.example.com/reservations/{booking.id}/details",
+            "booking_link": f"https://webapp-v2.example.com/reservation/{booking.id}/details",
         },
     }
     email_data["Vars"].update(overrides)
@@ -466,7 +466,7 @@ def get_expected_base_sendinblue_email_data(booking, mediation, **overrides):
             "DIGITAL_OFFER_URL": None,
             "OFFER_WITHDRAWAL_DETAILS": None,
             "EXPIRATION_DELAY": None,
-            "BOOKING_LINK": f"https://webapp-v2.example.com/reservations/{booking.id}/details",
+            "BOOKING_LINK": f"https://webapp-v2.example.com/reservation/{booking.id}/details",
         },
     )
     email_data.params.update(overrides)
@@ -530,7 +530,7 @@ def test_should_return_thing_specific_data_for_email_when_offer_is_a_thing_sendi
         OFFER_NAME="Super bien culturel",
         CAN_EXPIRE=True,
         EXPIRATION_DELAY=30,
-        BOOKING_LINK=f"https://webapp-v2.example.com/reservations/{booking.id}/details",
+        BOOKING_LINK=f"https://webapp-v2.example.com/reservation/{booking.id}/details",
     )
     assert email_data == expected
 
