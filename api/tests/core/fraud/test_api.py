@@ -681,7 +681,7 @@ class FraudCheckLifeCycleTest:
             fraud_models.FraudCheckType.UBBLE,
         ],
     )
-    def test_mark_fraud_check_failed(self, check_type):
+    def test_update_or_create_fraud_check_failed(self, check_type):
         user = users_factories.UserFactory()
         application_id = str(uuid.uuid4())
 
@@ -691,7 +691,7 @@ class FraudCheckLifeCycleTest:
             status=fraud_models.FraudCheckStatus.PENDING,
             thirdPartyId=application_id,
         )
-        fraud_api.mark_fraud_check_failed(
+        fraud_api.update_or_create_fraud_check_failed(
             user,
             application_id,
             fraud_check.source_data(),
@@ -716,14 +716,14 @@ class FraudCheckLifeCycleTest:
             (fraud_models.FraudCheckType.UBBLE, users_models.EligibilityType.AGE18),
         ],
     )
-    def test_mark_fraud_check_failed_unexistant_previous_check(self, check_type, eligibility_type):
+    def test_update_or_create_fraud_check_failed_unexistant_previous_check(self, check_type, eligibility_type):
         user = users_factories.UserFactory()
         application_id = str(uuid.uuid4())
 
         factory_class = fraud_factories.FRAUD_CHECK_TYPE_MODEL_ASSOCIATION[check_type]
         source_data = factory_class()
 
-        fraud_api.mark_fraud_check_failed(
+        fraud_api.update_or_create_fraud_check_failed(
             user,
             application_id,
             source_data,
