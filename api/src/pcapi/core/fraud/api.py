@@ -577,7 +577,7 @@ def start_fraud_check(
     return fraud_check
 
 
-def mark_fraud_check_failed(
+def update_or_create_fraud_check_failed(
     user: users_models.User,
     application_id: str,
     source_data: typing.Union[models.DMSContent, ubble_fraud_models.UbbleContent],
