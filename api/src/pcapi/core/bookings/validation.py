@@ -97,7 +97,7 @@ def check_expenses_limits(user: User, requested_amount: Decimal, offer: Offer) -
 def check_beneficiary_can_cancel_booking(user: User, booking: Booking) -> None:
     if booking.individualBooking is None or booking.individualBooking.userId != user.id:
         raise exceptions.BookingDoesntExist()
-    if booking.isUsed:
+    if booking.is_used_or_reimbursed:
         raise exceptions.BookingIsAlreadyUsed()
     if booking.isConfirmed:
         raise exceptions.CannotCancelConfirmedBooking(
@@ -112,7 +112,7 @@ def check_booking_can_be_cancelled(booking: Booking) -> None:
         gone = api_errors.ResourceGoneError()
         gone.add_error("global", "Cette contremarque a déjà été annulée")
         raise gone
-    if booking.isUsed or booking.status == BookingStatus.USED:
+    if booking.is_used_or_reimbursed:
         forbidden = api_errors.ForbiddenError()
         forbidden.add_error("global", "Impossible d'annuler une réservation consommée")
         raise forbidden
@@ -130,7 +130,7 @@ def check_is_usable(booking: Booking) -> None:
         forbidden.add_error("payment", "Cette réservation a été remboursée")
         raise forbidden
 
-    if booking.isUsed or booking.status is BookingStatus.USED:
+    if booking.status is BookingStatus.USED:
         gone = api_errors.ResourceGoneError()
         gone.add_error("booking", "Cette réservation a déjà été validée")
         raise gone
@@ -198,7 +198,7 @@ def check_can_be_mark_as_unused(booking: Booking) -> None:
         gone.add_error("payment", "Le remboursement est en cours de traitement")
         raise gone
 
-    if not booking.isUsed:
+    if booking.status is not BookingStatus.USED:
         gone = api_errors.ResourceGoneError()
         gone.add_error("booking", "Cette réservation n'a pas encore été validée")
         raise gone
