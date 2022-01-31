@@ -15,4 +15,4 @@ def generate_firebase_dynamic_link(path: str, params: Optional[dict]) -> str:
 
 
 def booking_app_link(booking: Booking) -> str:
-    return f"{settings.WEBAPP_V2_URL}/reservations/{booking.id}/details"
+    return f"{settings.WEBAPP_V2_URL}/reservation/{booking.id}/details"
