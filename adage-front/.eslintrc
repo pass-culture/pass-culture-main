@@ -28,7 +28,7 @@
   ],
   "rules": {
     "@typescript-eslint/no-explicit-any": "off",
-    "indent": ["warn", 2, {"ignoredNodes": ["JSXElement", "JSXElement *"],  "offsetTernaryExpressions": true, "SwitchCase": 1 }],
+    "indent": "off",
     "import/order": ["warn", {
       "groups": ["builtin", "external", "internal", "parent", "sibling", "index"],
       "newlines-between": "always",
