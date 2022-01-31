@@ -279,7 +279,7 @@ def _create_response_to_get_booking_by_token(booking: Booking) -> dict:
         "bookingId": humanize(booking.id),
         "date": date,
         "email": booking.email,
-        "isUsed": booking.isUsed,
+        "isUsed": booking.is_used_or_reimbursed,
         "offerName": offer_name,
         "userName": booking.userName,
         "venueDepartementCode": venue_departement_code,

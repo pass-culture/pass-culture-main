@@ -77,7 +77,7 @@ def get_booking_response(booking: Booking) -> GetBookingResponse:
         ),
         email=booking.email,
         formula=formula,
-        isUsed=booking.isUsed,
+        isUsed=booking.is_used_or_reimbursed,
         offerId=booking.stock.offer.id,
         publicOfferId=humanize(booking.stock.offer.id),
         offerName=booking.stock.offer.product.name,

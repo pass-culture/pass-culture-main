@@ -175,11 +175,15 @@ def is_ended_booking(booking: Booking) -> bool:
         and booking.activationCode
         and FeatureToggle.AUTO_ACTIVATE_DIGITAL_BOOKINGS.is_active()
     ):
-        # consider digital bookings as special: isUsed should be true anyway so
+        # consider digital bookings as special: is_used should be true anyway so
         # let's use displayAsEnded
         return booking.displayAsEnded
 
-    return not booking.stock.offer.isPermanent if booking.isUsed else booking.status == BookingStatus.CANCELLED
+    return (
+        not booking.stock.offer.isPermanent
+        if booking.is_used_or_reimbursed
+        else booking.status == BookingStatus.CANCELLED
+    )
 
 
 @blueprint.native_v1.route("/bookings/<int:booking_id>/cancel", methods=["POST"])
