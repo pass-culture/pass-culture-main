@@ -41,6 +41,12 @@ const PrebookingButton = ({
       .then(() => {
         setHasPrebookedOffer(true)
         closeModal()
+        setNotification(
+          new Notification(
+            NotificationType.success,
+            'Votre préréservation a été effectuée avec succès.'
+          )
+        )
       })
       .catch(error =>
         setNotification(
