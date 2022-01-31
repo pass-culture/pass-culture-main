@@ -583,10 +583,8 @@ def update_or_create_fraud_check_failed(
     source_data: typing.Union[models.DMSContent, ubble_fraud_models.UbbleContent],
     reasons: list[models.FraudReasonCode],
 ) -> models.BeneficiaryFraudCheck:
-    source_type = models.FRAUD_CONTENT_MAPPING[type(source_data)]
     fraud_check = models.BeneficiaryFraudCheck.query.filter(
         models.BeneficiaryFraudCheck.user == user,
-        models.BeneficiaryFraudCheck.type == source_type,
         models.BeneficiaryFraudCheck.thirdPartyId == application_id,
         ~models.BeneficiaryFraudCheck.status.in_([models.FraudCheckStatus.OK, models.FraudCheckStatus.KO]),
     ).one_or_none()
@@ -594,15 +592,35 @@ def update_or_create_fraud_check_failed(
     if not fraud_check:
         fraud_check = models.BeneficiaryFraudCheck(
             user=user,
-            type=source_type,
+            type=models.FRAUD_CONTENT_MAPPING[type(source_data)],
             thirdPartyId=application_id,
             resultContent=source_data.dict(),
-            status=models.FraudCheckStatus.PENDING,
+            status=models.FraudCheckStatus.KO,
             eligibilityType=source_data.get_eligibility_type(),
         )
 
     fraud_check.status = models.FraudCheckStatus.KO
     fraud_check.reasonCodes = reasons
+    repository.save(fraud_check)
+    return fraud_check
+
+
+def create_dms_fraud_check_error(
+    user: users_models.User,
+    application_id: int,
+    reason_codes: list[models.FraudReasonCode],
+    error_details: str,
+):
+    fraud_check = models.BeneficiaryFraudCheck(
+        user=user,
+        type=models.FraudCheckType.DMS,
+        thirdPartyId=str(application_id),
+        resultContent=None,
+        eligibilityType=None,
+        status=models.FraudCheckStatus.ERROR,
+        reasonCodes=reason_codes,
+        reason=error_details,
+    )
     repository.save(fraud_check)
     return fraud_check
 

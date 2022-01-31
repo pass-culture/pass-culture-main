@@ -47,24 +47,30 @@ def run(procedure_id: int) -> None:
         application_id = application_details["number"]
         if application_id in existing_applications_ids:
             continue
+        try:
+            user_email = application_details["usager"]["email"]
+        except KeyError:
+            process_user_parsing_error(application_id, procedure_id)
+            continue
+
+        user = find_user_by_email(user_email)
+        if user is None:
+            process_user_not_found_error(user_email, application_id, procedure_id)
+            continue
 
         try:
             information: fraud_models.IdCheckContent = parse_beneficiary_information_graphql(
                 application_details, procedure_id
             )
         except DMSParsingError as exc:
-            process_parsing_error(exc, procedure_id, application_id)
+            process_parsing_error(exc, user, procedure_id, application_id)
             continue
 
         except Exception as exc:  # pylint: disable=broad-except
-            process_parsing_exception(exc, procedure_id, application_id)
+            process_parsing_exception(exc, user, procedure_id, application_id)
             continue
 
-        process_application(
-            procedure_id,
-            application_id,
-            information,
-        )
+        process_application(user, procedure_id, application_id, information)
 
     logger.info(
         "[BATCH][REMOTE IMPORT BENEFICIARIES] End import from Démarches Simplifiées - Procedure %s", procedure_id
@@ -94,7 +100,9 @@ def notify_parsing_exception(parsing_error: DMSParsingError, application_techid:
         )
 
 
-def process_parsing_exception(exception: Exception, procedure_id: int, application_id: int) -> None:
+def process_parsing_exception(
+    exception: Exception, user: users_models.User, procedure_id: int, application_id: int
+) -> None:
     logger.info(
         "[BATCH][REMOTE IMPORT BENEFICIARIES] Application %s in procedure %s had errors and was ignored: %s",
         application_id,
@@ -102,65 +110,127 @@ def process_parsing_exception(exception: Exception, procedure_id: int, applicati
         exception,
         exc_info=True,
     )
-    error = f"Le dossier {application_id} contient des erreurs et a été ignoré - Procedure {procedure_id}"
+    error_details = f"Le dossier {application_id} contient des erreurs et a été ignoré - Procedure {procedure_id}"
+    # Create fraud check for observability
+    fraud_api.create_dms_fraud_check_error(
+        user,
+        application_id,
+        reason_codes=[fraud_models.FraudReasonCode.REFUSED_BY_OPERATOR],
+        error_details=error_details,
+    )
+
+    # TODO: remove when the fraud check is the only object used to check for DMS applications
     save_beneficiary_import_with_status(
         ImportStatus.ERROR,
         application_id,
         source=BeneficiaryImportSources.demarches_simplifiees,
         source_id=procedure_id,
-        detail=error,
+        detail=error_details,
         eligibility_type=None,
     )
 
 
-def process_parsing_error(exception: DMSParsingError, procedure_id: int, application_id: int) -> None:
+def process_parsing_error(
+    exception: DMSParsingError, user: users_models.User, procedure_id: int, application_id: int
+) -> None:
     logger.info(
         "[BATCH][REMOTE IMPORT BENEFICIARIES] Invalid values (%r) detected in Application %s in procedure %s",
         exception.errors,
         application_id,
         procedure_id,
     )
-    user = find_user_by_email(exception.user_email)
     user_emails.send_dms_wrong_values_emails(
         exception.user_email, exception.errors.get("postal_code"), exception.errors.get("id_piece_number")
     )
-    if user:
-        subscription_messages.on_dms_application_parsing_errors(user, list(exception.errors.keys()))
     errors = ",".join([f"'{key}' ({value})" for key, value in sorted(exception.errors.items())])
-    error_detail = f"Erreur dans les données soumises dans le dossier DMS : {errors}"
+    error_details = f"Erreur dans les données soumises dans le dossier DMS : {errors}"
+    subscription_messages.on_dms_application_parsing_errors(user, list(exception.errors.keys()))
+    # Create fraud check for observability, and to avoid reimporting the same application
+    fraud_api.create_dms_fraud_check_error(
+        user,
+        application_id,
+        reason_codes=[fraud_models.FraudReasonCode.ERROR_IN_DATA],
+        error_details=error_details,
+    )
+
+    # TODO: remove this line when the fraud check is the only object used for DMS applications
+    save_beneficiary_import_with_status(
+        ImportStatus.ERROR,
+        application_id,
+        source=BeneficiaryImportSources.demarches_simplifiees,
+        source_id=procedure_id,
+        detail=error_details,
+        user=user,
+        eligibility_type=None,
+    )
+
+
+def process_user_parsing_error(application_id: int, procedure_id: int) -> None:
+    logger.info(
+        "[BATCH][REMOTE IMPORT BENEFICIARIES] Application %s in procedure %s has no user and was ignored",
+        application_id,
+        procedure_id,
+    )
+    error_details = (
+        f"Erreur lors de l'analyse des données du dossier {application_id}. "
+        f"Impossible de récupérer l'email de l'utilisateur - Procedure {procedure_id}"
+    )
+    # TODO: Create fraud check for observability.
+    # Else find a way to remove the application from DMS.
+
+    # TODO: remove this line when the fraud check is the only object used for DMS applications
     # keep a compatibility with BeneficiaryImport table
     save_beneficiary_import_with_status(
         ImportStatus.ERROR,
         application_id,
         source=BeneficiaryImportSources.demarches_simplifiees,
         source_id=procedure_id,
-        detail=error_detail,
-        user=user,
+        detail=error_details,
+        eligibility_type=None,
+    )
+
+
+def process_user_not_found_error(email: str, application_id: int, procedure_id: int) -> None:
+    logger.info(
+        "[BATCH][REMOTE IMPORT BENEFICIARIES] Application %s in procedure %s has no user and was ignored",
+        application_id,
+        procedure_id,
+    )
+    # TODO: Create fraud check and find a way to remove the application from DMS.
+
+    # TODO: remove when the fraud check is the only object used for DMS applications
+    save_beneficiary_import_with_status(
+        ImportStatus.ERROR,
+        application_id,
+        source=BeneficiaryImportSources.demarches_simplifiees,
+        source_id=procedure_id,
+        detail=f"Aucun utilisateur trouvé pour l'email {email}",
         eligibility_type=None,
     )
 
 
 def process_application(
+    user: users_models.User,
     procedure_id: int,
     application_id: int,
     information: fraud_models.DMSContent,
 ) -> None:
-    user = find_user_by_email(information.email)
-    if not user:
-        save_beneficiary_import_with_status(
-            ImportStatus.ERROR,
-            application_id,
-            source=BeneficiaryImportSources.demarches_simplifiees,
-            source_id=procedure_id,
-            detail=f"Aucun utilisateur trouvé pour l'email {information.email}",
-            eligibility_type=information.get_eligibility_type(),
-        )
-        return
     try:
         fraud_check = fraud_api.on_dms_fraud_result(user, information)
     except fraud_exceptions.BeneficiaryFraudResultCannotBeDowngraded:
         logger.warning("Trying to downgrade a BeneficiaryFraudResult status already OK", extra={"user_id": user.id})
-        _process_rejection(information, procedure_id, "Compte existant avec cet email", user)
+        reason = "Compte existant avec cet email"
+        fraud_models.BeneficiaryFraudCheck(
+            user=user,
+            type=fraud_models.FraudCheckType.DMS,
+            thirdPartyId=information.application_id,
+            resultContent=information,
+            status=fraud_models.FraudCheckStatus.ERROR,
+            reason=reason,
+            reasonCodes=[fraud_models.FraudReasonCode.ALREADY_BENEFICIARY],
+            eligibilityType=None,
+        )
+        _process_rejection(information, procedure_id, reason, user)
 
     except Exception as exc:  # pylint: disable=broad-except
         logger.exception("Error on dms fraud check result: %s", exc)
@@ -300,6 +370,7 @@ def parse_beneficiary_information_graphql(application_detail: dict, procedure_id
 def _process_rejection(
     information: fraud_models.DMSContent, procedure_id: int, reason: str, user: users_models.User = None
 ) -> None:
+    # TODO: remove when we use fraud checks
     save_beneficiary_import_with_status(
         ImportStatus.REJECTED,
         information.application_id,
