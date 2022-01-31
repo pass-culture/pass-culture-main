@@ -3,6 +3,7 @@ import logging
 import typing
 
 from pcapi.core.mails.transactional.sendinblue_template_ids import SendinblueTransactionalEmailData
+from pcapi.core.mails.transactional.sendinblue_template_ids import SendinblueTransactionalWithoutTemplateEmailData
 
 
 logger = logging.getLogger(__name__)
@@ -24,6 +25,9 @@ class LoggerBackend(BaseBackend):
         if isinstance(data, SendinblueTransactionalEmailData):
             data = asdict(data)
             mail_server = "Sendinblue"
+        elif isinstance(data, SendinblueTransactionalWithoutTemplateEmailData):
+            data = asdict(data)
+            mail_server = "Sendinblue with no template"
         else:
             mail_server = "Mailjet"
         recipients = ", ".join(recipients)

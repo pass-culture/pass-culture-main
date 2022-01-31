@@ -16,6 +16,9 @@ class SendTransactionalEmailRequest(BaseModel):
     template_id: int
     tags: Optional[list[str]]
     sender: dict
+    subject: str = None
+    html_content: str = None
+    attachment: Optional[dict] = None
 
 
 class UpdateProAttributesRequest(BaseModel):
