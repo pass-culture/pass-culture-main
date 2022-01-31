@@ -15,6 +15,7 @@ import {
 } from 'core/OfferEducational'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 import OfferEducationalLayout from 'new_components/OfferEducationalLayout'
+import RouteLeavingGuardOfferCreation from 'new_components/RouteLeavingGuardOfferCreation'
 import OfferEducationalScreen from 'screens/OfferEducational'
 import { IOfferEducationalProps } from 'screens/OfferEducational/OfferEducational'
 
@@ -89,16 +90,19 @@ const OfferEducationalCreation = (): JSX.Element => {
       title="Créer une nouvelle offre scolaire"
     >
       {isReady && screenProps ? (
-        <OfferEducationalScreen
-          {...screenProps}
-          getIsOffererEligibleToEducationalOfferAdapter={
-            getIsOffererEligibleToEducationalOfferAdapter
-          }
-          initialValues={initialValues}
-          mode={Mode.CREATION}
-          notify={notify}
-          onSubmit={createOffer}
-        />
+        <>
+          <OfferEducationalScreen
+            {...screenProps}
+            getIsOffererEligibleToEducationalOfferAdapter={
+              getIsOffererEligibleToEducationalOfferAdapter
+            }
+            initialValues={initialValues}
+            mode={Mode.CREATION}
+            notify={notify}
+            onSubmit={createOffer}
+          />
+          <RouteLeavingGuardOfferCreation isCollectiveFlow />
+        </>
       ) : (
         <Spinner />
       )}
