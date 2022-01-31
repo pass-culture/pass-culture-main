@@ -1,11 +1,9 @@
-from datetime import date
 from typing import Iterable
 from typing import Union
 
-from requests import Response
-
 from pcapi import settings
 from pcapi.core.mails.transactional.sendinblue_template_ids import SendinblueTransactionalEmailData
+from pcapi.core.mails.transactional.sendinblue_template_ids import SendinblueTransactionalWithoutTemplateEmailData
 from pcapi.models.feature import FeatureToggle
 from pcapi.utils.module_loading import import_string
 
@@ -22,14 +20,16 @@ def get_email_backend(send_with_sendinblue: bool) -> str:
 def send(
     *,
     recipients: Iterable[str],
-    data: Union[dict, SendinblueTransactionalEmailData],
+    data: Union[dict, SendinblueTransactionalEmailData, SendinblueTransactionalWithoutTemplateEmailData],
 ) -> bool:
     """Try to send an e-mail and return whether it was successful."""
     if isinstance(recipients, str):
         if settings.IS_RUNNING_TESTS:
             raise ValueError("Recipients should be a sequence, not a single string.")
         recipients = [recipients]
-    send_with_sendinblue = isinstance(data, SendinblueTransactionalEmailData)
+    send_with_sendinblue = isinstance(
+        data, (SendinblueTransactionalEmailData, SendinblueTransactionalWithoutTemplateEmailData)
+    )
     backend = import_string(get_email_backend(send_with_sendinblue))
     result = backend().send_mail(recipients=recipients, data=data)
     _save_email(result)
