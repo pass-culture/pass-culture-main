@@ -95,7 +95,10 @@ const OfferLayout = ({ location, match }) => {
       <div className="offer-content">
         <Switch>
           <Route exact path="/offres/creation">
-            <OfferDetails offer={offer} />
+            {/* FIXME (cgaunet, 2022-01-31) This is a quick win to fix a flaky E2E test */}
+            {/* There is a concurrency run between the RouteLeavingGuardOfferCreation and the reloadOffer call */}
+            {/* in OfferDetails as the offer is loaded in the stock edition page */}
+            <OfferDetails offer={offer} reloadOffer={reloadOffer} />
           </Route>
           <Route exact path={`${match.url}/edition`}>
             <OfferDetails offer={offer} reloadOffer={reloadOffer} />
