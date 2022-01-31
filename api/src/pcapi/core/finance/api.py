@@ -181,7 +181,9 @@ def price_booking(booking: bookings_models.Booking) -> models.Pricing:
 
         # Perhaps the booking has been marked as unused since we
         # fetched it before we acquired the lock.
-        if not booking.isUsed:
+        # If the status is REIMBURSED, it means the booking is
+        # already priced.
+        if booking.status is not bookings_models.BookingStatus.USED:
             return None
 
         business_unit = booking.venue.businessUnit
