@@ -1,6 +1,7 @@
 import logging
 
 from pcapi.connectors.dms import api as api_dms
+from pcapi.core.fraud import api as fraud_api
 from pcapi.core.fraud.dms import api as fraud_dms_api
 import pcapi.core.fraud.models as fraud_models
 from pcapi.core.subscription import messages as subscription_messages
@@ -44,7 +45,9 @@ def handle_dms_state(
         logger.info("DMS Application accepted. User will be validated in the cron job.", extra=logs_extra)
 
     elif state == api_dms.GraphQLApplicationStates.refused:
-        current_fraud_check.status = fraud_models.FraudCheckStatus.KO
+        fraud_api.update_or_create_fraud_check_failed(
+            user, application_id, current_fraud_check.source_data(), [fraud_models.FraudReasonCode.REFUSED_BY_OPERATOR]
+        )
         subscription_messages.on_dms_application_refused(user)
 
         logger.info("DMS Application refused.", extra=logs_extra)

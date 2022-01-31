@@ -165,6 +165,9 @@ class DmsWebhookApplicationTest:
     @patch.object(api_dms.DMSGraphQLClient, "execute_query")
     def test_dms_request_refused_application(self, execute_query, client):
         user = users_factories.UserFactory()
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user, type=fraud_models.FraudCheckType.DMS, thirdPartyId="6044787"
+        )
         execute_query.return_value = make_single_application(12, state="closed", email=user.email)
 
         form_data = {
@@ -189,6 +192,7 @@ class DmsWebhookApplicationTest:
             user.subscriptionMessages[0].userMessage
             == "Ton dossier déposé sur le site Démarches-Simplifiées a été rejeté. Tu n’es malheureusement pas éligible au pass culture."
         )
+        assert fraud_check.reasonCodes == [fraud_models.FraudReasonCode.REFUSED_BY_OPERATOR]
 
     @patch.object(api_dms.DMSGraphQLClient, "execute_query")
     @patch.object(api_dms.DMSGraphQLClient, "send_user_message")
