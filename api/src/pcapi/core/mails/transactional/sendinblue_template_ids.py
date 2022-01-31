@@ -1,5 +1,6 @@
 import dataclasses
 from enum import Enum
+from typing import Optional
 
 from pcapi import settings
 
@@ -138,3 +139,17 @@ class TransactionalEmail(Enum):
 class SendinblueTransactionalEmailData:
     template: Template
     params: dict = dataclasses.field(default_factory=dict)
+
+
+@dataclasses.dataclass
+class SendinblueTransactionalAttachment:
+    content: str
+    name: str
+
+
+@dataclasses.dataclass
+class SendinblueTransactionalWithoutTemplateEmailData:
+    subject: str
+    html_content: str
+    sender: SendinblueTransactionalSender = SendinblueTransactionalSender.SUPPORT_PRO
+    attachment: Optional[SendinblueTransactionalAttachment] = None

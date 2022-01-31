@@ -3,10 +3,8 @@ from unittest.mock import patch
 import pytest
 
 from pcapi.core.mails import testing as mails_testing
-
-# FIXME (tgabin, 2022-01-31): test to add after refactoring the branching between mailjet/sendinblue
-# from pcapi.core.mails.transactional.pro.reset_password_to_pro import send_reset_password_link_to_admin_email
 from pcapi.core.mails.transactional.pro.reset_password_to_pro import get_reset_password_to_pro_email_data
+from pcapi.core.mails.transactional.pro.reset_password_to_pro import send_reset_password_link_to_admin_email
 from pcapi.core.mails.transactional.pro.reset_password_to_pro import send_reset_password_to_pro_email
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.testing import override_features
@@ -81,22 +79,22 @@ class SendinblueProResetPasswordEmailDataTest:
         assert mails_testing.outbox[0].sent_data["To"] == "pro@example.com"
         assert "LIEN_NOUVEAU_MDP" in mails_testing.outbox[0].sent_data["params"]
 
-    # FIXME (tgabin, 2022-01-31): test to add after refactoring the branching between mailjet/sendinblue
-    # @override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=True)
-    # def test_email_sent_to_admin(
-    #     self,
-    # ):
-    #     # given
-    #     user = users_factories.ProFactory(email="pro@example.com")
-    #     users_factories.ResetPasswordToken(user=user, value="ABCDEFG")
-    #     reset_password_link = "http://exemple.com/reset/?ABCDG"
+    @override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=True)
+    def test_email_sent_to_admin(
+        self,
+    ):
+        # given
+        user = users_factories.ProFactory(email="pro@example.com")
+        users_factories.ResetPasswordToken(user=user, value="ABCDEFG")
+        reset_password_link = "http://exemple.com/reset/?ABCDEFG"
 
-    #     # when
-    #     send_reset_password_link_to_admin_email(user, user.email, reset_password_link)
+        # when
+        send_reset_password_link_to_admin_email(user, user.email, reset_password_link)
 
-    #     # then
-    #     assert len(mails_testing.outbox) == 1  # test number of emails sent
-    #     assert mails_testing.outbox[0].sent_data["To"] == "pro@example.com"
-    #     assert reset_password_link in mails_testing.outbox[0].sent_data["htmlContent"]
-    #     assert "subject" in mails_testing.outbox[0].sent_data
-    #     assert "htmlContent" in mails_testing.outbox[0].sent_data
+        # then
+        assert len(mails_testing.outbox) == 1  # test number of emails sent
+        assert mails_testing.outbox[0].sent_data["To"] == "pro@example.com"
+
+        assert reset_password_link in mails_testing.outbox[0].sent_data["html_content"]
+        assert "subject" in mails_testing.outbox[0].sent_data
+        assert "html_content" in mails_testing.outbox[0].sent_data

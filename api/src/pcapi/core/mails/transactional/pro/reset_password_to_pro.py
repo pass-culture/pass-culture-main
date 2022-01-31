@@ -2,6 +2,7 @@ from typing import Union
 
 from pcapi.core import mails
 from pcapi.core.mails.transactional.sendinblue_template_ids import SendinblueTransactionalEmailData
+from pcapi.core.mails.transactional.sendinblue_template_ids import SendinblueTransactionalWithoutTemplateEmailData
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.users.api import create_reset_password_token
 from pcapi.core.users.models import Token
@@ -33,29 +34,19 @@ def send_reset_password_to_pro_email(user: User) -> bool:
     return mails.send(recipients=[user.email], data=data)
 
 
-def get_reset_password_link_to_admin_email_data(created_user: User, reset_password_link: str) -> dict:
-    return {
-        "Subject": "Création d'un compte pro",
-        "Html-part": (
+def get_reset_password_link_to_admin_email_data(
+    created_user: User, reset_password_link: str
+) -> SendinblueTransactionalWithoutTemplateEmailData:
+
+    return SendinblueTransactionalWithoutTemplateEmailData(
+        subject="Création d'un compte pro",
+        html_content=(
+            "<html><head></head><body>"
             "<div><div>Bonjour,</div>"
             f"<div>Vous venez de créer le compte de {created_user.firstName} {created_user.lastName}.</div>"
             f"<div>Le lien de création de mot de passe est <a href='{reset_password_link}'>{reset_password_link}</a></div>"
         ),
-    }
-
-
-# FIXME (tgabin, 2022-01-31): below is sendinblue format to send transactional email without template
-# The branching mailjet/sendinblue need to be upgraded to take in charge the dictionnary below
-# return {
-#     "subject": "Création d'un compte pro",
-#     "htmlContent": (
-#         "<html><head></head><body>"
-#         "<div><div>Bonjour,</div>"
-#         f"<div>Vous venez de créer le compte de {created_user.firstName} {created_user.lastName}.</div>"
-#         f"<div>Le lien de création de mot de passe est <a href='{reset_password_link}'>{reset_password_link}</a></div>"
-#         "</body></html>"
-#     ),
-# }
+    )
 
 
 def send_reset_password_link_to_admin_email(created_user: User, admin_email: User, reset_password_link: str) -> bool:
