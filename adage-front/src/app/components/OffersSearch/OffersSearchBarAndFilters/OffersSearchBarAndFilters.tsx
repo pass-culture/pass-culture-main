@@ -30,7 +30,7 @@ export const SearchAndFiltersComponent = ({
 
   return (
     <>
-      <SearchBox query={query} setQuery={setQuery} />
+      <SearchBox query={query} refine={refine} setQuery={setQuery} />
       <OfferFilters
         className="search-filters"
         handleSearchButtonClick={handleSearchButtonClick}
