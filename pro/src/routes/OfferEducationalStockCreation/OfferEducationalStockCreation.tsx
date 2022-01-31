@@ -13,6 +13,7 @@ import {
 } from 'core/OfferEducational'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 import OfferEducationalLayout from 'new_components/OfferEducationalLayout'
+import RouteLeavingGuardOfferCreation from 'new_components/RouteLeavingGuardOfferCreation'
 import OfferEducationalStockScreen from 'screens/OfferEducationalStock'
 
 import postEducationalStockAdapter from './adapters/postEducationalStock'
@@ -63,12 +64,15 @@ const OfferEducationalStockCreation = (): JSX.Element => {
       title="Créer une nouvelle offre scolaire"
     >
       {offer && isReady ? (
-        <OfferEducationalStockScreen
-          initialValues={DEFAULT_EAC_STOCK_FORM_VALUES}
-          mode={Mode.CREATION}
-          offer={offer}
-          onSubmit={handleSubmitStock}
-        />
+        <>
+          <OfferEducationalStockScreen
+            initialValues={DEFAULT_EAC_STOCK_FORM_VALUES}
+            mode={Mode.CREATION}
+            offer={offer}
+            onSubmit={handleSubmitStock}
+          />
+          <RouteLeavingGuardOfferCreation isCollectiveFlow />
+        </>
       ) : (
         <Spinner />
       )}
