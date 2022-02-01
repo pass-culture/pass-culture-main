@@ -200,7 +200,7 @@ const routes = [
   {
     component: OfferEducationalEdition,
     exact: true,
-    path: '/offre/:offerId([A-Z0-9]+)/scolaire/edition',
+    path: '/offre/:offerId([A-Z0-9]+)/collectif/edition',
     title: 'Edition d’une offre scolaire',
   },
   {
