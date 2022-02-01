@@ -26,7 +26,7 @@ class GCPBackend(BaseBackend):
         try:
             bucket = self.get_gcp_storage_client_bucket()
             gcp_cloud_blob = bucket.blob(storage_path)
-            gcp_cloud_blob.upload_from_string(blob)
+            gcp_cloud_blob.upload_from_string(blob, content_type=content_type)
         except Exception as exc:
             logger.exception("An error has occured while trying to upload file on GCP bucket: %s", exc)
             raise exc
