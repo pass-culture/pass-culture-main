@@ -25,7 +25,7 @@ const RouteLeavingGuardOfferCreation = ({
         ? /\/offre\/([A-Z0-9]+)\/collectif\/stocks/g
         : /\/offre\/([A-Z0-9]+)\/individuel\/stocks/g
       const confirmationPathRegex = isCollectiveFlow
-        ? /\/offre\/([A-Z0-9]+)\/scolaire\/confirmation/g
+        ? /\/offre\/([A-Z0-9]+)\/collectif\/confirmation/g
         : /\/offres\/([A-Z0-9]+)\/confirmation/g
 
       if (

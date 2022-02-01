@@ -37,7 +37,7 @@ const OfferEducationalStockCreation = (): JSX.Element => {
     if (!isOk) {
       return notify.error(message)
     }
-    history.push(`/offre/${offer.id}/scolaire/confirmation`)
+    history.push(`/offre/${offer.id}/collectif/confirmation`)
   }
 
   useEffect(() => {
