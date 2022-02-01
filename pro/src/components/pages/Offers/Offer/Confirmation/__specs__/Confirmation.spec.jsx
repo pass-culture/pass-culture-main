@@ -83,7 +83,7 @@ describe('confirmation page', () => {
     // When
     await renderOffer({
       pathname: [
-        `/offres/${offer.id}/edition`,
+        `/offre/${offer.id}/individuel/edition`,
         `/offre/${offer.id}/individuel/confirmation`,
       ],
     })
