@@ -77,6 +77,7 @@ commands:
           event: fail
           channel: << parameters.channel >>
           template: << parameters.template >>
+
   skip_unchanged:
     parameters:
       except_branches:
@@ -771,17 +772,20 @@ jobs:
           docker_layer_caching: true
       - authenticate-gcp:
           gcp-key-name: GCP_INFRA_KEY
+      - authenticate_gcp_docker_registry:
+          registry-region: GCP_REGION
       - export_app_version
-      - run: gcloud beta auth configure-docker ${GCP_REGION}-docker.pkg.dev
-      - run: |
-          source ${BASH_ENV}
-          docker build ~/pass-culture-db-operations \
-            -f ~/pass-culture-db-operations/Dockerfile \
-            --build-arg BASE_PCAPI_TAG=${APP_VERSION} \
-            -t ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_TOOLS_REGISTRY_NAME}/db-ops:${APP_VERSION} \
-            -t ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_TOOLS_REGISTRY_NAME}/db-ops:latest
-          docker push ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_TOOLS_REGISTRY_NAME}/db-ops:${APP_VERSION}
-          docker push ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_TOOLS_REGISTRY_NAME}/db-ops:latest
+      - run:
+          name: Build & push db-ops image
+          command: |
+            source ${BASH_ENV}
+            docker build ./infra/docker-images/db-ops \
+              -f ./infra/docker-images/db-ops/Dockerfile \
+              --build-arg BASE_PCAPI_TAG=${APP_VERSION} \
+              -t ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_TOOLS_REGISTRY_NAME}/db-ops:${APP_VERSION} \
+              -t ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_TOOLS_REGISTRY_NAME}/db-ops:latest
+            docker push ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_TOOLS_REGISTRY_NAME}/db-ops:${APP_VERSION}
+            docker push ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_TOOLS_REGISTRY_NAME}/db-ops:latest
 
   deploy-dbops:
     executor: helm
