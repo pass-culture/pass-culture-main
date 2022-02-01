@@ -36,9 +36,6 @@ def get_venue(venue_id: str) -> GetVenueResponseModel:
     venue = load_or_404(Venue, venue_id)
     check_user_has_access_to_offerer(current_user, venue.managingOffererId)
 
-    # pydantic expects an enum key in order to build it, and therefore
-    # does not work when passing directly an enum instance.
-    venue.venueTypeCode = venue.venueTypeCode.name if venue.venueTypeCode else None
     return GetVenueResponseModel.from_orm(venue)
 
 
@@ -129,9 +126,6 @@ def edit_venue(venue_id: str, body: EditVenueBodyModel) -> GetVenueResponseModel
     if body.bookingEmail and body.isEmailAppliedOnAllOffers:
         update_all_venue_offers_email_job.delay(venue, body.bookingEmail)
 
-    # pydantic expects an enum key in order to build it, and therefore
-    # does not work when passing directly an enum instance.
-    venue.venueTypeCode = venue.venueTypeCode.name if venue.venueTypeCode else None
     return GetVenueResponseModel.from_orm(venue)
 
 

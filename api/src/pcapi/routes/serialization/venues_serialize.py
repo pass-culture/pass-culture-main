@@ -198,6 +198,13 @@ class GetVenueResponseModel(BaseModel):
         orm_mode = True
         json_encoders = {datetime: format_into_utc_date}
 
+    @classmethod
+    def from_orm(cls, venue: offerers_models.Venue) -> "GetVenueResponseModel":
+        # pydantic expects an enum key in order to build it, and therefore
+        # does not work when passing directly an enum instance.
+        venue.venueTypeCode = venue.venueTypeCode.name if venue.venueTypeCode else None
+        return super().from_orm(venue)
+
 
 class EditVenueBodyModel(BaseModel):
     name: Optional[str]
