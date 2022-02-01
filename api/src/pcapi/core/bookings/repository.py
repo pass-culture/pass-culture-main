@@ -41,6 +41,7 @@ from pcapi.core.offers.models import Stock
 from pcapi.core.offers.serialize import serialize_offer_type_educational_or_individual
 from pcapi.core.users.models import User
 from pcapi.core.users.utils import sanitize_email
+from pcapi.domain.booking_recap import utils as booking_recap_utils
 from pcapi.domain.booking_recap.booking_recap import BookingRecap
 from pcapi.domain.booking_recap.bookings_recap_paginated import BookingsRecapPaginated
 from pcapi.domain.postal_code.postal_code import PostalCode
@@ -668,19 +669,6 @@ def _get_booking_status(status: BookingStatus, is_confirmed: bool) -> str:
     return BOOKING_STATUS_LABELS[status]
 
 
-# TODO: merge this with BookingRecap._get_booking_token
-def _get_booking_token(
-    booking_token: str, booking_status: BookingStatus, event_beginning_datetime: Optional[datetime]
-) -> Optional[str]:
-    if not event_beginning_datetime and booking_status not in [
-        BookingStatus.REIMBURSED,
-        BookingStatus.CANCELLED,
-        BookingStatus.USED,
-    ]:
-        return None
-    return booking_token
-
-
 def _serialize_csv_report(query: Query) -> str:
     output = StringIO()
     writer = csv.writer(output, dialect=csv.excel, delimiter=";", quoting=csv.QUOTE_NONNUMERIC)
@@ -714,7 +702,9 @@ def _serialize_csv_report(query: Query) -> str:
                 booking.beneficiaryPhoneNumber,
                 _serialize_date_with_timezone(booking.bookedAt, booking),
                 _serialize_date_with_timezone(booking.usedAt, booking),
-                _get_booking_token(booking.token, booking.status, booking.stockBeginningDatetime),
+                booking_recap_utils.get_booking_token(
+                    booking.token, booking.status, booking.offerIsEducational, booking.stockBeginningDatetime
+                ),
                 booking.amount,
                 _get_booking_status(booking.status, booking.isConfirmed),
                 _serialize_date_with_timezone(booking.reimbursedAt, booking),
