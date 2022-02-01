@@ -188,7 +188,7 @@ const routes = [
   {
     component: OfferEducationalStockCreation,
     exact: true,
-    path: '/offre/:offerId([A-Z0-9]+)/scolaire/stocks',
+    path: '/offre/:offerId([A-Z0-9]+)/collectif/stocks',
     title: 'Stock lié à une offre Scolaire',
   },
   {
