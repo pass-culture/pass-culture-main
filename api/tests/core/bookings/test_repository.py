@@ -963,6 +963,29 @@ class FindByProUserTest:
             tz.gettz("Europe/Paris")
         )
 
+    def test_should_return_token_as_none_when_educational_booking(self, app: fixture):
+        # Given
+        pro = users_factories.ProFactory()
+        offerer = offers_factories.OffererFactory()
+        offers_factories.UserOffererFactory(user=pro, offerer=offerer)
+        venue = offers_factories.VenueFactory(managingOfferer=offerer)
+
+        bookings_factories.EducationalBookingFactory(
+            stock__offer__venue=venue,
+        )
+
+        # When
+        beginning_period = datetime.fromisoformat("2021-10-15")
+        ending_period = datetime.fromisoformat("2022-02-15")
+        bookings_recap_paginated = booking_repository.find_by_pro_user(
+            user=pro, booking_period=(beginning_period, ending_period)
+        )
+
+        # Then
+        assert len(bookings_recap_paginated.bookings_recap) == 1
+        expected_booking_recap = bookings_recap_paginated.bookings_recap[0]
+        assert expected_booking_recap.booking_token == None
+
 
 class GetCsvReportTest:
     def test_should_return_only_expected_booking_attributes(self, app: fixture):
@@ -1742,6 +1765,47 @@ class GetCsvReportTest:
         for data_dict in data_dicts:
             offer_name = data_dict["Nom de l’offre"]
             assert data_dict["Type d'offre"] == expected_type[offer_name]
+
+    def test_should_not_return_token_for_educational_bookings(self, app: fixture):
+        # Given
+        pro = users_factories.ProFactory()
+        offerer = offers_factories.OffererFactory()
+        offers_factories.UserOffererFactory(user=pro, offerer=offerer)
+        venue = offers_factories.VenueFactory(managingOfferer=offerer)
+
+        bookings_factories.EducationalBookingFactory(
+            stock__offer__venue=venue,
+        )
+
+        # When
+        beginning_period = datetime.fromisoformat("2021-10-15")
+        ending_period = datetime.fromisoformat("2022-02-15")
+        bookings_csv = booking_repository.get_csv_report(
+            user=pro,
+            booking_period=(beginning_period, ending_period),
+        )
+
+        # Then
+        headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
+        assert headers == [
+            "Lieu",
+            "Nom de l’offre",
+            "Date de l'évènement",
+            "ISBN",
+            "Nom et prénom du bénéficiaire",
+            "Email du bénéficiaire",
+            "Téléphone du bénéficiaire",
+            "Date et heure de réservation",
+            "Date et heure de validation",
+            "Contremarque",
+            "Prix de la réservation",
+            "Statut de la contremarque",
+            "Date et heure de remboursement",
+            "Type d'offre",
+        ]
+        assert len(data) == 1
+        data_dict = dict(zip(headers, data[0]))
+        assert data_dict["Contremarque"] == ""
 
     class BookingStatusInCsvReportTest:
         @freeze_time("2021-12-15 09:00:00")

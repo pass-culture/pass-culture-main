@@ -175,9 +175,7 @@ class BookingRecapTest:
 
         def test_should_return_token_when_offer_is_thing_and_booking_is_used_and_not_cancelled(self):
             # Given
-            booking_recap = create_domain_booking_recap(
-                booking_token="ABCDE", booking_is_used=True, booking_is_cancelled=False
-            )
+            booking_recap = create_domain_booking_recap(booking_token="ABCDE", booking_status=BookingStatus.USED)
 
             # When
             booking_recap_token = booking_recap.booking_token
@@ -187,21 +185,7 @@ class BookingRecapTest:
 
         def test_should_return_token_when_offer_is_thing_and_booking_is_not_used_and_is_cancelled(self):
             # Given
-            booking_recap = create_domain_booking_recap(
-                booking_token="ABCDE", booking_is_used=False, booking_is_cancelled=True
-            )
-
-            # When
-            booking_recap_token = booking_recap.booking_token
-
-            # Then
-            assert booking_recap_token == "ABCDE"
-
-        def test_should_return_token_when_offer_is_thing_and_booking_is_used_and_cancelled(self):
-            # Given
-            booking_recap = create_domain_booking_recap(
-                booking_token="ABCDE", booking_is_used=True, booking_is_cancelled=True
-            )
+            booking_recap = create_domain_booking_recap(booking_token="ABCDE", booking_status=BookingStatus.CANCELLED)
 
             # When
             booking_recap_token = booking_recap.booking_token
