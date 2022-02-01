@@ -14,7 +14,10 @@ logger = logging.getLogger(__name__)
 DEFAULT_FILEPATH = ""
 
 
-def update_educational_institutions_deposits(filename: str, path: str = DEFAULT_FILEPATH) -> None:
+# Ex: educational_year_beginning = 2021 if educational year is 2021/2022
+def update_educational_institutions_deposits(
+    filename: str, path: str = DEFAULT_FILEPATH, educational_year_beginning: int = None
+) -> None:
     if path is not None and path != DEFAULT_FILEPATH and not path.endswith("/"):
         path += "/"
 
@@ -24,18 +27,20 @@ def update_educational_institutions_deposits(filename: str, path: str = DEFAULT_
         if not headers or "UAICode" not in headers or "depositAmount" not in headers:
             print("\033[91mERROR: UAICode or depositAmount missing in CSV headers\033[0m")
             return
-        _process_educational_csv(csv_rows)
+        _process_educational_csv(csv_rows, educational_year_beginning)
     return
 
 
-def _process_educational_csv(educational_institutions_rows: Iterable[dict]) -> None:
-    currentYear = datetime.now().year
+def _process_educational_csv(
+    educational_institutions_rows: Iterable[dict], educational_year_beginning: int = None
+) -> None:
+    current_year = educational_year_beginning if educational_year_beginning is not None else datetime.now().year
     try:
-        educational_year = educational_repository.get_educational_year_beginning_at_given_year(currentYear)
+        educational_year = educational_repository.get_educational_year_beginning_at_given_year(current_year)
     except exceptions.EducationalYearNotFound:
         print("\033[91mERROR: script has ceased execution")
         print(
-            "Please add educational years in database as no educational year has been found beginning at current year\033[0m"
+            f"Please add educational years in database as no educational year has been found beginning at year {current_year}\033[0m"
         )
         return
 
