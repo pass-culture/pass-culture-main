@@ -30,7 +30,9 @@ services:
       - db_nw
 
   flask:
-    image: passcultureapp/api-flask:latest
+    build:
+      context: ./api
+      target: api-flask
     working_dir: /opt/services/flaskapp/src
     container_name: pc-flask
     command: ["./start-api-when-database-is-ready.sh"]

@@ -6,13 +6,13 @@ function start_backend {
         echo "This script requires docker-compose 1.24 or greater"
         exit 1
     fi
-    RUN='cd $ROOT_PATH && docker-compose -f "$ROOT_PATH"/docker-compose-app.yml pull flask && docker-compose -f "$ROOT_PATH"/docker-compose-app.yml up'
+    RUN='cd $ROOT_PATH && docker-compose -f "$ROOT_PATH"/docker-compose-app.yml build && docker-compose -f "$ROOT_PATH"/docker-compose-app.yml up'
 }
 
 function restart_backend {
     RUN='sudo rm -rf "$ROOT_PATH"/api/static/object_store_data;
     docker-compose -f "$ROOT_PATH"/docker-compose-app.yml down --volumes;
-    cd "$ROOT_PATH" && docker-compose -f "$ROOT_PATH"/docker-compose-app.yml pull && docker-compose -f "$ROOT_PATH"/docker-compose-app.yml up --force-recreate'
+    cd "$ROOT_PATH" && docker-compose -f "$ROOT_PATH"/docker-compose-app.yml build && docker-compose -f "$ROOT_PATH"/docker-compose-app.yml up --force-recreate'
 }
 
 function rebuild_backend {

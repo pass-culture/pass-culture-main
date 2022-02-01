@@ -2,7 +2,9 @@ version: "3.7"
 
 services:
   flask-metabase:
-    image: passcultureapp/api-flask:latest
+    build:
+      context: ./api
+      target: api-flask
     container_name: pc-flask-metabase
     command: >
       bash -c "set -x;
