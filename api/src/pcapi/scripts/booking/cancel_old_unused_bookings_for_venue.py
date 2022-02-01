@@ -40,8 +40,7 @@ def cancel_old_unused_bookings_for_venue(humanized_venue_id: str, reason: Bookin
 
 def _get_old_unused_bookings_from_venue_id(venue_id: int, limit_date: DateTime) -> list[Booking]:
     return Booking.query.filter(
-        Booking.status != BookingStatus.CANCELLED,
-        ~Booking.isUsed,
+        Booking.status.in_((BookingStatus.PENDING, BookingStatus.CONFIRMED)),
         Booking.dateCreated < limit_date,
         Booking.venueId == venue_id,
     ).all()
