@@ -59,7 +59,6 @@ class BookingFactory(BaseFactory):
 
 class UsedBookingFactory(BookingFactory):
     status = models.BookingStatus.USED
-    isUsed = True
     dateUsed = factory.LazyFunction(datetime.datetime.utcnow)
 
 
@@ -80,7 +79,6 @@ class UsedEducationalBookingFactory(BookingFactory):
     educationalBooking = factory.SubFactory(UsedEducationalBookingSubFactory)
     stock = factory.SubFactory(offers_factories.EducationalEventStockFactory)
     status = models.BookingStatus.USED
-    isUsed = True
     dateUsed = factory.LazyFunction(datetime.datetime.utcnow)
     userId = None
     user = None
