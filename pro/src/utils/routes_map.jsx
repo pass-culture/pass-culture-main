@@ -176,7 +176,7 @@ const routes = [
   {
     component: OfferEducationalCreation,
     exact: true,
-    path: '/offre/creation/scolaire',
+    path: '/offre/creation/collectif',
     title: 'Offre Scolaire',
   },
   {
