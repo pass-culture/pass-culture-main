@@ -1029,6 +1029,50 @@ class GenerateInvoiceTest:
         assert booking_statuses == {bookings_models.BookingStatus.REIMBURSED}
 
 
+class PrepareInvoiceContextTest:
+    def test_context(self, invoice_data):
+        business_unit, stocks = invoice_data
+        bookings = []
+        for stock in stocks:
+            booking = bookings_factories.UsedBookingFactory(stock=stock)
+            bookings.append(booking)
+        for booking in bookings[:3]:
+            api.price_booking(booking)
+        api.generate_cashflows(cutoff=datetime.datetime.utcnow())
+        for booking in bookings[3:]:
+            api.price_booking(booking)
+        api.generate_cashflows(cutoff=datetime.datetime.utcnow())
+        cashflows = (
+            models.Cashflow.query.join(models.Cashflow.pricings)
+            .filter(models.Pricing.businessUnitId == business_unit.id)
+            .all()
+        )
+        cashflow_ids = [c.id for c in cashflows]
+        invoice = api._generate_invoice(business_unit_id=business_unit.id, cashflow_ids=cashflow_ids)
+        context = api._prepare_invoice_context(invoice)
+        general, books, not_reimbursed, custom = tuple(g for g in context["groups"])
+        assert general.used_bookings_subtotal == 2006000
+        assert general.contribution_subtotal == 400
+        assert general.reimbursed_amount_subtotal == -2005600
+
+        assert books.used_bookings_subtotal == 6000
+        assert books.contribution_subtotal == 200
+        assert books.reimbursed_amount_subtotal == -5800
+
+        assert not_reimbursed.used_bookings_subtotal == 5800
+        assert not_reimbursed.contribution_subtotal == 5800
+        assert not_reimbursed.reimbursed_amount_subtotal == 0
+
+        assert custom.used_bookings_subtotal == 4300
+        assert custom.contribution_subtotal == 220
+        assert custom.reimbursed_amount_subtotal == -4080
+
+        assert context["invoice"] == invoice
+        assert context["total_used_bookings_amount"] == 2022100
+        assert context["total_contribution_amount"] == 6620
+        assert context["total_reimbursed_amount"] == -2015480
+
+
 class GenerateInvoiceHtmlTest:
     TEST_FILES_PATH = pathlib.Path(tests.__path__[0]) / "files"
 
