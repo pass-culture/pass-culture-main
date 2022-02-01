@@ -66,7 +66,7 @@ describe('offerLayout', () => {
           params: { offerId: 'AB' },
         },
         location: {
-          pathname: '/offres/AB/edition',
+          pathname: '/offre/AB/individuel/edition',
         },
       }
       pcapi.loadOffer.mockResolvedValue(editedOffer)

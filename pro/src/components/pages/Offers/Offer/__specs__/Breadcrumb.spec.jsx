@@ -59,7 +59,7 @@ describe('offer step', () => {
       loadFakeApiCategories()
 
       // When
-      await renderOffer({ pathname: `/offres/${offer.id}/edition` })
+      await renderOffer({ pathname: `/offre/${offer.id}/individuel/edition` })
 
       // Then
       const detailTab = await screen.findByText("Détails de l'offre", {

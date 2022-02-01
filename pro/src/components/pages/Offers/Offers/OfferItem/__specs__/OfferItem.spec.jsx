@@ -116,7 +116,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
           const links = screen.getAllByRole('link')
           expect(links[links.length - 1]).toHaveAttribute(
             'href',
-            `/offres/${eventOffer.id}/edition`
+            `/offre/${eventOffer.id}/individuel/edition`
           )
         })
 
@@ -130,7 +130,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
           const links = screen.getAllByRole('link')
           expect(links[links.length - 1]).not.toHaveAttribute(
             'href',
-            `/offres/${eventOffer.id}/edition`
+            `/offre/${eventOffer.id}/individuel/edition`
           )
         })
       })
@@ -146,7 +146,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
         expect(offerTitle).toBeInTheDocument()
         expect(offerTitle).toHaveAttribute(
           'href',
-          `/offres/${props.offer.id}/edition`
+          `/offre/${props.offer.id}/individuel/edition`
         )
         expect(offerTitle).toHaveAttribute(
           'title',

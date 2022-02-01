@@ -4,7 +4,7 @@ const useOfferEditionURL = (
 ): string => {
   return isOfferEducational
     ? `/offre/${offerId}/collectif/edition`
-    : `/offres/${offerId}/edition`
+    : `/offre/${offerId}/individuel/edition`
 }
 
 export default useOfferEditionURL

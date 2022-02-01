@@ -253,7 +253,10 @@ describe('stocks page', () => {
         name: 'Annuler et quitter',
       })
       expect(cancelLink).toBeInTheDocument()
-      expect(cancelLink).toHaveAttribute('href', '/offres/AG3A/edition')
+      expect(cancelLink).toHaveAttribute(
+        'href',
+        '/offre/AG3A/individuel/edition'
+      )
     })
 
     describe('when offer is being created (DRAFT status)', () => {
