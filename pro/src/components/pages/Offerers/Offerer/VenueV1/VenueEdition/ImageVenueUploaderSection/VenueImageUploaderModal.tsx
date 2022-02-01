@@ -1,10 +1,12 @@
 import React, { useCallback, useState, FunctionComponent } from 'react'
+import { CroppedRect } from 'react-avatar-editor'
 
 import { imageConstraints } from 'new_components/ConstraintCheck/imageConstraints'
 import DialogBox from 'new_components/DialogBox'
 
 import { ImportFromComputer } from '../ImportFromComputer/ImportFromComputer'
 import { VenueImageEdit } from '../VenueImageEdit/VenueImageEdit'
+import { VenueImagePreview } from '../VenueImagePreview/VenueImagePreview'
 
 import { IMAGE_TYPES, MAX_IMAGE_SIZE, MIN_IMAGE_WIDTH } from './constants'
 
@@ -24,12 +26,22 @@ export const VenueImageUploaderModal: FunctionComponent<Props> = ({
 }) => {
   const [image, setImage] = useState<File>()
   const [credit, setCredit] = useState('')
+  const [croppingRect, setCroppingRect] = useState<CroppedRect>()
+  const [editedImage, setEditedImage] = useState('')
 
   const onSetImage = useCallback(
     file => {
       return setImage(file)
     },
     [setImage]
+  )
+
+  const onEditedImageSave = useCallback(
+    (dataUrl, croppedRect) => {
+      setEditedImage(dataUrl)
+      setCroppingRect(croppedRect)
+    },
+    [setEditedImage, setCroppingRect]
   )
 
   return (
@@ -45,16 +57,16 @@ export const VenueImageUploaderModal: FunctionComponent<Props> = ({
           onSetImage={onSetImage}
           orientation="landscape"
         />
-      ) : (
+      ) : !croppingRect || !editedImage ? (
         <VenueImageEdit
           closeModal={onDismiss}
           credit={credit}
           image={image}
+          onEditedImageSave={onEditedImageSave}
           onSetCredit={setCredit}
-          onSetImage={() =>
-            alert('Cette fonctionnalité sera disponible avec PC-13087')
-          }
         />
+      ) : (
+        <VenueImagePreview preview={editedImage} />
       )}
     </DialogBox>
   )

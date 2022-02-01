@@ -1,0 +1,41 @@
+.home-screen-shell {
+  left: rem(26px);
+  position: absolute;
+  top: rem(34px);
+  height: 515px;
+}
+
+.preview-on-home-screen {
+  background-color: $white;
+  border-radius: rem(5px);
+  left: rem(42px);
+  position: absolute;
+  top: rem(186px);
+  height: 228px;
+}
+
+.offer-screen-shell {
+  left: rem(26px);
+  top: rem(270px);
+  position: absolute;
+  height: 280px;
+}
+
+.blurred-preview-on-offer-screen {
+  background-color: $white;
+  filter: blur(2px);
+  left: rem(27px);
+  position: absolute;
+  top: rem(35px);
+  height: 435px;
+  width: 290px;
+}
+
+.preview-on-offer-screen {
+  background-color: $white;
+  border-radius: rem(5px);
+  left: rem(91px);
+  position: absolute;
+  top: rem(97px);
+  height: 247px;
+}

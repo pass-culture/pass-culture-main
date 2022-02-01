@@ -11,7 +11,7 @@ import Advices from 'components/pages/Offers/Offer/Thumbnail/Advices/Advices'
 import Credit from 'components/pages/Offers/Offer/Thumbnail/Credit/Credit'
 import ImageEditorWrapper from 'components/pages/Offers/Offer/Thumbnail/ImageEditor/ImageEditorWrapper'
 import ImportFromComputer from 'components/pages/Offers/Offer/Thumbnail/ImportFromComputer/ImportFromComputer'
-import Preview from 'components/pages/Offers/Offer/Thumbnail/Preview/Preview'
+import OfferPreview from 'components/pages/Offers/Offer/Thumbnail/Preview/OfferPreview'
 import DialogBox from 'new_components/DialogBox/DialogBox'
 
 const ThumbnailDialog = ({
@@ -116,7 +116,11 @@ const ThumbnailDialog = ({
           />
         )}
         {step === PREVIEW_STEP && (
-          <Preview preview={editedThumbnail} setStep={setStep} step={step} />
+          <OfferPreview
+            preview={editedThumbnail}
+            setStep={setStep}
+            step={step}
+          />
         )}
       </>
     </DialogBox>
