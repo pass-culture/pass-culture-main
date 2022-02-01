@@ -509,7 +509,7 @@ class CheckOffererCanCancelBookingTest:
 @pytest.mark.usefixtures("db_session")
 class CheckCanBeMarkAsUnusedTest:
     def test_should_raise_resource_gone_error_if_not_used(self, app):
-        booking = factories.IndividualBookingFactory(isUsed=False)
+        booking = factories.IndividualBookingFactory()
         with pytest.raises(api_errors.ResourceGoneError) as exc:
             validation.check_can_be_mark_as_unused(booking)
         assert exc.value.errors["booking"] == ["Cette réservation n'a pas encore été validée"]

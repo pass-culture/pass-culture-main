@@ -117,7 +117,6 @@ class Returns403Test:
         assert response.status_code == 403
         assert response.json["global"] == ["Impossible d'annuler une réservation consommée"]
         booking = Booking.query.first()
-        assert booking.isUsed
         assert booking.status is BookingStatus.USED
         assert push_testing.requests == []
 

@@ -5,6 +5,7 @@ import pytest
 
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.bookings.models import Booking
+from pcapi.core.bookings.models import BookingStatus
 from pcapi.scripts.cancel_bookings_during_quarantine import cancel_booking_status_for_events_happening_during_quarantine
 
 
@@ -16,19 +17,19 @@ def test_should_update_booking_if_happening_during_quarantine():
     cancel_booking_status_for_events_happening_during_quarantine()
 
     booking = Booking.query.one()
-    assert not booking.isUsed
+    assert booking.status is not BookingStatus.USED
     assert booking.dateUsed is None
 
 
 @pytest.mark.usefixtures("db_session")
 def test_should_not_update_booking_if_happened_before_quarantine():
     long_ago = datetime(2018, 1, 1)
-    bookings_factories.UsedBookingFactory(dateUsed=long_ago, stock__beginningDatetime=long_ago)
+    bookings_factories.UsedIndividualBookingFactory(dateUsed=long_ago, stock__beginningDatetime=long_ago)
 
     cancel_booking_status_for_events_happening_during_quarantine()
 
     booking = Booking.query.one()
-    assert booking.isUsed
+    assert booking.status is BookingStatus.USED
     assert booking.dateUsed is not None
 
 
@@ -45,5 +46,4 @@ def test_should_not_update_booking_if_happened_before_quarantine():
 #     cancel_booking_status_for_events_happening_during_quarantine()
 
 #     booking = Booking.query.one()
-#     assert booking.isUsed
 #     assert booking.dateUsed is not None

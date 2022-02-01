@@ -19,7 +19,6 @@ def test_should_update_booking_when_valid_token_is_given_and_no_payment_associat
 
     # Then
     booking = Booking.query.first()
-    assert not booking.isUsed
     assert booking.status is not BookingStatus.USED
     assert booking.dateUsed is None
 
@@ -37,6 +36,5 @@ def test_should_do_nothing_when_valid_token_is_given_but_the_booking_is_linked_t
 
     # Then
     booking = Booking.query.first()
-    assert booking.isUsed
     assert booking.status is BookingStatus.USED
     assert booking.dateUsed == initial_date_used

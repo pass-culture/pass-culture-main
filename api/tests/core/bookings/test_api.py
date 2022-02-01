@@ -142,8 +142,7 @@ class BookOfferTest:
         assert booking.amount == 10
         assert booking.stock == stock
         assert len(booking.token) == 6
-        assert not booking.isUsed
-        assert booking.status not in [BookingStatus.CANCELLED, BookingStatus.USED]
+        assert booking.status is BookingStatus.CONFIRMED
         assert booking.cancellationLimitDate is None
         assert stock.dnBookedQuantity == 6
 
@@ -200,7 +199,6 @@ class BookOfferTest:
 
         booking = api.book_offer(beneficiary=beneficiary, stock_id=stock.id, quantity=1)
 
-        assert booking.isUsed
         assert booking.status is BookingStatus.USED
 
     @override_features(AUTO_ACTIVATE_DIGITAL_BOOKINGS=True, ENABLE_ACTIVATION_CODES=True)
@@ -211,7 +209,6 @@ class BookOfferTest:
 
         booking = api.book_offer(beneficiary=beneficiary, stock_id=stock.id, quantity=1)
 
-        assert not booking.isUsed
         assert booking.status is not BookingStatus.USED
 
     def test_create_event_booking(self):
@@ -237,8 +234,7 @@ class BookOfferTest:
         assert booking.stock == stock
         assert stock.dnBookedQuantity == 6
         assert len(booking.token) == 6
-        assert not booking.isUsed
-        assert booking.status not in [BookingStatus.CANCELLED, BookingStatus.USED]
+        assert booking.status is BookingStatus.CONFIRMED
         assert booking.cancellationLimitDate == two_days_after_booking
 
     def test_book_stock_with_unlimited_quantity(self):
@@ -536,7 +532,6 @@ class CancelByOffererTest:
         booking = booking_factories.UsedIndividualBookingFactory()
         with pytest.raises(api_errors.ForbiddenError):
             api.cancel_booking_by_offerer(booking)
-        assert booking.isUsed
         assert booking.status is BookingStatus.USED
         assert not booking.cancellationReason
 
@@ -556,7 +551,7 @@ class CancelByOffererTest:
 
         assert models.Booking.query.filter().count() == 4
         assert models.Booking.query.filter(models.Booking.status == BookingStatus.CANCELLED).count() == 3
-        assert models.Booking.query.filter(models.Booking.isUsed == True).count() == 1
+        assert models.Booking.query.filter(models.Booking.is_used_or_reimbursed.is_(True)).count() == 1
         assert booking_1.status is BookingStatus.CANCELLED
         assert booking_1.cancellationReason == BookingCancellationReasons.OFFERER
         assert booking_2.status is BookingStatus.CANCELLED
@@ -586,7 +581,6 @@ class MarkAsUsedTest:
     def test_mark_as_used(self):
         booking = booking_factories.IndividualBookingFactory()
         api.mark_as_used(booking)
-        assert booking.isUsed
         assert booking.status is BookingStatus.USED
         assert len(push_testing.requests) == 2
 
@@ -594,7 +588,6 @@ class MarkAsUsedTest:
     def test_mark_as_used_with_uncancel(self):
         booking = booking_factories.CancelledIndividualBookingFactory()
         api.mark_as_used_with_uncancelling(booking)
-        assert booking.isUsed
         assert booking.status is BookingStatus.USED
         assert booking.dateUsed == datetime.utcnow()
         assert not booking.cancellationReason
@@ -604,7 +597,6 @@ class MarkAsUsedTest:
             stock__beginningDatetime=datetime.now() + timedelta(days=1)
         )
         api.mark_as_used(booking)
-        assert booking.isUsed
         assert booking.status is BookingStatus.USED
 
     def test_raise_if_already_used(self):
@@ -616,7 +608,6 @@ class MarkAsUsedTest:
         booking = booking_factories.CancelledIndividualBookingFactory()
         with pytest.raises(api_errors.ResourceGoneError):
             api.mark_as_used(booking)
-        assert not booking.isUsed
         assert booking.status is not BookingStatus.USED
 
     def test_raise_if_already_reimbursed(self):
@@ -631,7 +622,6 @@ class MarkAsUsedTest:
         )
         with pytest.raises(api_errors.ForbiddenError):
             api.mark_as_used(booking)
-        assert not booking.isUsed
         assert booking.status is not BookingStatus.USED
 
 
@@ -640,7 +630,6 @@ class MarkAsUnusedTest:
     def test_mark_as_unused(self):
         booking = booking_factories.UsedIndividualBookingFactory()
         api.mark_as_unused(booking)
-        assert not booking.isUsed
         assert booking.status is not BookingStatus.USED
         assert len(push_testing.requests) == 2
 
@@ -649,14 +638,12 @@ class MarkAsUnusedTest:
         offer = offers_factories.OfferFactory(product=offers_factories.DigitalProductFactory())
         booking = booking_factories.UsedIndividualBookingFactory(stock__offer=offer)
         api.mark_as_unused(booking)
-        assert not booking.isUsed
         assert booking.status is not BookingStatus.USED
 
     def test_raise_if_not_yet_used(self):
-        booking = booking_factories.IndividualBookingFactory(isUsed=False)
+        booking = booking_factories.IndividualBookingFactory()
         with pytest.raises(api_errors.ResourceGoneError):
             api.mark_as_unused(booking)
-        assert not booking.isUsed  # unchanged
         assert booking.status is not BookingStatus.USED
 
     def test_raise_if_has_reimbursement(self):
@@ -664,7 +651,6 @@ class MarkAsUnusedTest:
         finance_factories.PricingFactory(booking=booking, status=finance_models.PricingStatus.PROCESSED)
         with pytest.raises(api_errors.ResourceGoneError):
             api.mark_as_unused(booking)
-        assert booking.isUsed  # unchanged
         assert booking.status is BookingStatus.USED
 
     def test_raise_if_has_reimbursement_legacy_payment(self):
@@ -672,7 +658,6 @@ class MarkAsUnusedTest:
         payments_factories.PaymentFactory(booking=booking)
         with pytest.raises(api_errors.ResourceGoneError):
             api.mark_as_unused(booking)
-        assert booking.isUsed  # unchanged
         assert booking.status is BookingStatus.USED
 
     @override_features(AUTO_ACTIVATE_DIGITAL_BOOKINGS=True)
@@ -685,7 +670,6 @@ class MarkAsUnusedTest:
         )
         with pytest.raises(api_errors.ForbiddenError):
             api.mark_as_unused(booking)
-        assert booking.isUsed
         assert booking.status is BookingStatus.USED
 
 
@@ -827,7 +811,6 @@ class AutoMarkAsUsedAfterEventTest:
         api.auto_mark_as_used_after_event()
 
         booking = Booking.query.first()
-        assert not booking.isUsed
         assert booking.status is not BookingStatus.USED
         assert not booking.dateUsed
 
@@ -839,7 +822,6 @@ class AutoMarkAsUsedAfterEventTest:
         api.auto_mark_as_used_after_event()
 
         booking = Booking.query.first()
-        assert booking.isUsed
         assert booking.status is BookingStatus.USED
         assert booking.dateUsed == datetime(2021, 1, 1)
 
@@ -851,7 +833,6 @@ class AutoMarkAsUsedAfterEventTest:
         api.auto_mark_as_used_after_event()
 
         booking = Booking.query.first()
-        assert not booking.isUsed
         assert booking.status is not BookingStatus.USED
         assert booking.dateUsed is None
 
@@ -864,7 +845,7 @@ class AutoMarkAsUsedAfterEventTest:
         api.auto_mark_as_used_after_event()
 
         booking = Booking.query.first()
-        assert booking.isUsed
+        assert booking.status is BookingStatus.USED
         assert booking.dateUsed == initial_date_used
 
     @freeze_time("2021-01-01")
@@ -887,8 +868,7 @@ class AutoMarkAsUsedAfterEventTest:
         api.auto_mark_as_used_after_event()
 
         validated_educational_booking = Booking.query.first()
-        assert validated_educational_booking.isUsed
-        assert validated_educational_booking.status == BookingStatus.USED
+        assert validated_educational_booking.status is BookingStatus.USED
 
     def test_does_not_update_educational_booking_if_not_used_and_refused_by_principal(self):
         event_date = datetime.now() - timedelta(days=3)
@@ -900,7 +880,6 @@ class AutoMarkAsUsedAfterEventTest:
         api.auto_mark_as_used_after_event()
 
         validated_educational_booking = Booking.query.first()
-        assert not validated_educational_booking.isUsed
         assert validated_educational_booking.status is not BookingStatus.USED
 
     def test_update_educational_booking_if_not_used_and_not_validated_by_principal_yet(self):
@@ -913,7 +892,6 @@ class AutoMarkAsUsedAfterEventTest:
         api.auto_mark_as_used_after_event()
 
         non_validated_by_ce_educational_booking = Booking.query.first()
-        assert non_validated_by_ce_educational_booking.isUsed
         assert non_validated_by_ce_educational_booking.status is BookingStatus.USED
 
     @pytest.mark.usefixtures("db_session")

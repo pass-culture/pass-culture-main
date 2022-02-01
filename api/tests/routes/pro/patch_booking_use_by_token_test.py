@@ -31,8 +31,7 @@ class Returns204Test:
 
             assert response.status_code == 204
             booking = Booking.query.one()
-            assert booking.isUsed
-            assert booking.status == BookingStatus.USED
+            assert booking.status is BookingStatus.USED
 
     class WithBasicAuthTest:
         def test_when_user_is_logged_in_and_regular_offer(self, client):
@@ -45,8 +44,7 @@ class Returns204Test:
 
             assert response.status_code == 204
             booking = Booking.query.one()
-            assert booking.isUsed
-            assert booking.status == BookingStatus.USED
+            assert booking.status is BookingStatus.USED
 
         def test_when_user_is_logged_in_expect_booking_with_token_in_lower_case_to_be_used(self, client):
             booking = bookings_factories.BookingFactory(token="ABCDEF")
@@ -58,8 +56,7 @@ class Returns204Test:
 
             assert response.status_code == 204
             booking = Booking.query.one()
-            assert booking.isUsed
-            assert booking.status == BookingStatus.USED
+            assert booking.status is BookingStatus.USED
 
         def test_when_user_is_logged_in_and_offer_is_educational_validated_by_institution(self, client):
             # Given
@@ -78,8 +75,7 @@ class Returns204Test:
             # Then
             assert response.status_code == 204
             booking = Booking.query.one()
-            assert booking.isUsed
-            assert booking.status == BookingStatus.USED
+            assert booking.status is BookingStatus.USED
 
 
 class Returns401Test:
@@ -127,7 +123,6 @@ class Returns403Test:
                 "Vous n’avez pas les droits suffisants pour valider cette contremarque car cette réservation n'a pas été faite sur une de vos offres, ou que votre rattachement à la structure est encore en cours de validation"
             ]
             booking = Booking.query.get(booking.id)
-            assert not booking.isUsed
             assert booking.status is not BookingStatus.USED
 
         def test_when_user_is_logged_in_and_offer_is_educational_but_not_validated_by_institution_yet(self, client):
@@ -151,7 +146,6 @@ class Returns403Test:
                 == "Cette réservation pour une offre éducationnelle n'est pas encore validée par le chef d'établissement"
             )
             booking = Booking.query.get(booking.id)
-            assert not booking.isUsed
             assert booking.status is not BookingStatus.USED
 
         def test_when_user_is_logged_in_and_offer_is_educational_but_has_been_refused_by_institution(self, client):
@@ -175,7 +169,6 @@ class Returns403Test:
                 == "Cette réservation pour une offre éducationnelle a été refusée par le chef d'établissement"
             )
             booking = Booking.query.get(booking.id)
-            assert booking.isUsed is False
             assert booking.status is not BookingStatus.USED
 
 
@@ -206,7 +199,6 @@ class Returns410Test:
         assert response.status_code == 410
         assert response.json["booking"] == ["Cette réservation a été annulée"]
         booking = Booking.query.get(booking.id)
-        assert not booking.isUsed
         assert booking.status is not BookingStatus.USED
 
     def test_when_user_is_logged_in_and_booking_has_been_cancelled_already(self, client):
@@ -222,5 +214,4 @@ class Returns410Test:
         assert response.status_code == 410
         assert response.json["booking"] == ["Cette réservation a été annulée"]
         booking = Booking.query.get(booking.id)
-        assert not booking.isUsed
         assert booking.status is not BookingStatus.USED
