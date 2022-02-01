@@ -48,7 +48,7 @@ const OfferEducationalCreation = (): JSX.Element => {
       return notify.error(message)
     }
 
-    history.push(`/offre/${payload.offerId}/scolaire/stocks`)
+    history.push(`/offre/${payload.offerId}/collectif/stocks`)
   }
 
   useEffect(() => {
