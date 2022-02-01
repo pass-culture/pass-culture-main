@@ -62,7 +62,7 @@ class IsAccessibleTest:
     @patch("flask_login.utils._get_user")
     def test_access_is_forbidden_for_non_admin_users(self, get_user):
         # given
-        get_user.return_value = users_factories.UserFactory.build(isAdmin=False)
+        get_user.return_value = users_factories.UserFactory.build()
 
         # when
         view = DummyAdminView(Booking, fake_db_session)

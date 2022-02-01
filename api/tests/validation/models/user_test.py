@@ -125,9 +125,8 @@ class EmailTest:
 class AdminTest:
     def test_should_return_error_message_when_admin_user_is_beneficiary(self, app):
         # Given
-        user = users_factories.UserFactory(
-            isAdmin=True,
-            roles=[user_models.UserRole.BENEFICIARY],
+        user = users_factories.UserFactory.build(
+            roles=[user_models.UserRole.BENEFICIARY, user_models.UserRole.ADMIN],
         )
         api_errors = ApiErrors()
 

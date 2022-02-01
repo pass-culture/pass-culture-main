@@ -14,7 +14,7 @@
 {% endblock %}
 
 {% block body %}
-    {% if current_user.is_authenticated and current_user.isAdmin %}
+    {% if current_user.is_authenticated and current_user.has_admin_role %}
         <div class="alert alert-info" role="alert">
             Bonjour <strong>{{ current_user.publicName }}</strong>, bienvenue dans le back office du pass Culture !
         </div>

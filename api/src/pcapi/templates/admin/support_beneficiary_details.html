@@ -59,7 +59,7 @@
       Soumettre une revue manuelle
     </button>
     {% endif %}
-    {% if current_user.isAdmin %}
+    {% if current_user.has_admin_role %}
     <button name="submit" form="validate_form_button" type="submit" class="btn btn-primary">Valider le n° de
       téléphone</button>
     {# avoid putting the button inside the form to get the buttons aligned on the same grid #}

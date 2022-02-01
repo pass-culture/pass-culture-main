@@ -58,7 +58,6 @@ class PartnerUserViewTest:
         view.on_model_change(Form(), model=user, is_created=False)
 
         # then
-        assert user.isAdmin == False
         assert not user.has_admin_role
 
     def test_a_partner_should_not_need_to_fill_cultural_survey(self, app, db_session):

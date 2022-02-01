@@ -116,7 +116,7 @@ class PartnerUserView(ResendValidationEmailMixin, SuspensionMixin, BaseAdminView
             User.query.outerjoin(UserOfferer)
             .filter(UserOfferer.userId.is_(None))
             .filter(User.is_beneficiary.is_(False))
-            .filter(User.isAdmin.is_(False))
+            .filter(User.has_admin_role.is_(False))
         )
 
     def get_count_query(self) -> query:
@@ -126,5 +126,5 @@ class PartnerUserView(ResendValidationEmailMixin, SuspensionMixin, BaseAdminView
             .outerjoin(UserOfferer)
             .filter(UserOfferer.userId.is_(None))
             .filter(User.is_beneficiary.is_(False))
-            .filter(User.isAdmin.is_(False))
+            .filter(User.has_admin_role.is_(False))
         )

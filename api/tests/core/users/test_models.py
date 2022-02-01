@@ -55,13 +55,6 @@ class UserTest:
             assert user_models.User.query.filter(user_models.User.has_beneficiary_role.is_(False)).all() == []
             assert user_models.User.query.filter(user_models.User.has_beneficiary_role.is_(True)).all() == [user]
 
-        def test_has_admin_role_with_legacy_property(self):
-            user = users_factories.UserFactory(isAdmin=True, roles=[])
-
-            assert user.has_admin_role
-            assert user_models.User.query.filter(user_models.User.has_admin_role.is_(False)).all() == []
-            assert user_models.User.query.filter(user_models.User.has_admin_role.is_(True)).all() == [user]
-
         def test_has_beneficiary_role_with_legacy_property(self):
             user = users_factories.UserFactory(roles=[user_models.UserRole.BENEFICIARY])
 
@@ -89,7 +82,6 @@ class UserTest:
             user.add_admin_role()
 
             assert user.has_admin_role
-            assert user.isAdmin
 
         def test_add_admin_role_only_once(self):
             user = users_factories.UserFactory.build()
@@ -150,33 +142,12 @@ class UserTest:
                 assert user.has_beneficiary_role
                 assert not user.has_admin_role
 
-        def test_cannot_add_beneficiary_role_to_an_admin_with_legacy_property(self):
-            user = users_factories.UserFactory.build(isAdmin=True, roles=[])
-
-            with pytest.raises(InvalidUserRoleException):
-                user.add_beneficiary_role()
-
-                assert not user.has_beneficiary_role
-                assert user.has_admin_role
-                assert user.isAdmin
-
-        def test_cannot_add_admin_role_to_a_beneficiary_with_legacy_property(self):
-            user = users_factories.UserFactory.build(roles=[user_models.UserRole.BENEFICIARY])
-
-            with pytest.raises(InvalidUserRoleException):
-                user.add_admin_role()
-
-                assert user.has_beneficiary_role
-                assert not user.has_admin_role
-                assert not user.isAdmin
-
         def test_remove_admin_role(self):
             user = users_factories.AdminFactory.build()
 
             user.remove_admin_role()
 
             assert not user.has_admin_role
-            assert not user.isAdmin
 
         def test_remove_admin_role_when_user_is_not_admin(self):
             user = users_factories.BeneficiaryGrant18Factory.build()
@@ -185,7 +156,6 @@ class UserTest:
 
             assert user.has_beneficiary_role
             assert not user.has_admin_role
-            assert not user.isAdmin
 
         def test_remove_beneficiary_role(self):
             user = users_factories.BeneficiaryGrant18Factory.build()

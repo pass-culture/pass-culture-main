@@ -247,10 +247,9 @@ class User(PcObject, Model, NeedsValidationMixin):
             raise InvalidUserRoleException("User can't have both ADMIN and BENEFICIARY role")
 
         self._add_role(UserRole.ADMIN)
-        self.isAdmin = True
 
     def add_beneficiary_role(self) -> None:
-        if self.isAdmin:
+        if self.has_admin_role:  # pylint: disable=using-constant-test
             raise InvalidUserRoleException("User can't have both ADMIN and BENEFICIARY role")
         self._add_role(UserRole.BENEFICIARY)
 
@@ -258,7 +257,7 @@ class User(PcObject, Model, NeedsValidationMixin):
         self._add_role(UserRole.PRO)
 
     def add_underage_beneficiary_role(self) -> None:
-        if self.isAdmin:
+        if self.has_admin_role:  # pylint: disable=using-constant-test
             raise InvalidUserRoleException("User can't have both ADMIN and BENEFICIARY role")
         self._add_role(UserRole.UNDERAGE_BENEFICIARY)
 
@@ -275,7 +274,7 @@ class User(PcObject, Model, NeedsValidationMixin):
         # FIXME (dbaty, 2021-11-26): consider moving to a function in `core.users.api`?
         from pcapi.models.user_offerer import UserOfferer
 
-        if self.isAdmin:
+        if self.has_admin_role:  # pylint: disable=using-constant-test
             return True
         return db.session.query(
             UserOfferer.query.filter(
@@ -301,7 +300,7 @@ class User(PcObject, Model, NeedsValidationMixin):
     def is_super_admin(self) -> bool:
         if settings.IS_PROD:
             return self.email in settings.SUPER_ADMIN_EMAIL_ADDRESSES
-        return self.isAdmin
+        return self.has_admin_role
 
     def populate_from_dict(self, data):
         super().populate_from_dict(data)
@@ -309,7 +308,6 @@ class User(PcObject, Model, NeedsValidationMixin):
             self.setPassword(data["password"])
 
     def remove_admin_role(self) -> None:
-        self.isAdmin = False
         if self.has_admin_role:  # pylint: disable=using-constant-test
             self.roles.remove(UserRole.ADMIN)
 
@@ -422,11 +420,11 @@ class User(PcObject, Model, NeedsValidationMixin):
 
     @hybrid_property
     def has_admin_role(self) -> bool:
-        return UserRole.ADMIN in self.roles or self.isAdmin if self.roles else self.isAdmin
+        return UserRole.ADMIN in self.roles if self.roles else False
 
     @has_admin_role.expression
     def has_admin_role(cls) -> bool:  # pylint: disable=no-self-argument
-        return expression.or_(cls.roles.contains([UserRole.ADMIN]), cls.isAdmin.is_(True))
+        return cls.roles.contains([UserRole.ADMIN])
 
     @hybrid_property
     def has_beneficiary_role(self) -> bool:
