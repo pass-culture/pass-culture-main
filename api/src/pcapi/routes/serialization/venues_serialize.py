@@ -11,6 +11,7 @@ import pydantic
 from pydantic import BaseModel
 from pydantic import root_validator
 from pydantic import validator
+from typing_extensions import TypedDict
 
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers.validation import VENUE_BANNER_MAX_SIZE
@@ -151,6 +152,11 @@ class GetVenueManagingOffererResponseModel(BaseModel):
         json_encoders = {datetime: format_into_utc_date}
 
 
+class BannerMetaModel(TypedDict):
+    file_name: str
+    content_type: str
+
+
 class GetVenueResponseModel(BaseModel):
     address: Optional[str]
     bic: Optional[str]
@@ -189,6 +195,8 @@ class GetVenueResponseModel(BaseModel):
     contact: Optional[VenueContactModel]
     businessUnitId: Optional[int]
     businessUnit: Optional[BusinessUnitResponseModel]
+    bannerUrl: Optional[str]
+    bannerMeta: Optional[BannerMetaModel]
 
     _humanize_id = humanize_field("id")
     _humanize_managing_offerer_id = humanize_field("managingOffererId")

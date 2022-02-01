@@ -81,6 +81,8 @@ class Returns200Test:
             "venueTypeCode": venue.venueTypeCode.name if venue.venueTypeCode else None,
             "visualDisabilityCompliant": venue.visualDisabilityCompliant,
             "withdrawalDetails": None,
+            "bannerUrl": None,
+            "bannerMeta": None,
         }
 
         # when
