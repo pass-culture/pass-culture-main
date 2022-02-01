@@ -6,9 +6,7 @@
 import * as PropTypes from 'prop-types'
 import React, { useCallback } from 'react'
 
-import homeShell from 'components/pages/Offers/Offer/Thumbnail/assets/home-shell.png'
-import { ReactComponent as MobileShell } from 'components/pages/Offers/Offer/Thumbnail/assets/mobile-shell.svg'
-import offerShell from 'components/pages/Offers/Offer/Thumbnail/assets/offer-shell.png'
+import { ImagePreview } from 'new_components/ImagePreview/ImagePreview'
 
 const Preview = ({ preview, setStep, step }) => {
   const previousStep = useCallback(() => {
@@ -24,36 +22,7 @@ const Preview = ({ preview, setStep, step }) => {
       <div className="tnd-subtitle">
         Prévisualisation de votre image dans l’application pass Culture
       </div>
-      <div className="tnp-previews">
-        <div className="tnp-previews-wrapper">
-          <MobileShell />
-          <img alt="" className="tnp-shell" height="515" src={homeShell} />
-          <img alt="" className="tnp-home-preview" height="228" src={preview} />
-          <div>Page d’accueil</div>
-        </div>
-        <div className="tnp-previews-wrapper">
-          <MobileShell />
-          <img
-            alt=""
-            className="tnp-blur-offer-preview"
-            height="435"
-            src={preview}
-          />
-          <img
-            alt=""
-            className="tnp-shell right"
-            height="280"
-            src={offerShell}
-          />
-          <img
-            alt=""
-            className="tnp-offer-preview"
-            height="247"
-            src={preview}
-          />
-          <div>Détails de l’offre</div>
-        </div>
-      </div>
+      <ImagePreview preview={preview} />
       <div className="tnd-actions">
         <button
           className="secondary-button"
