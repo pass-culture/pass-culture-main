@@ -19,7 +19,6 @@ from sqlalchemy import and_
 from sqlalchemy import event
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import relationship
-from sqlalchemy.sql import expression
 
 from pcapi.core.bookings import exceptions
 from pcapi.core.bookings.constants import BOOKINGS_AUTO_EXPIRY_DELAY
@@ -114,8 +113,6 @@ class Booking(PcObject, Model):
 
     cancellationDate = Column(DateTime, nullable=True)
 
-    isUsed = Column(Boolean, nullable=False, default=False, server_default=expression.false())
-
     displayAsEnded = Column(Boolean, nullable=True)
 
     cancellationLimitDate = Column(DateTime, nullable=True)
@@ -161,23 +158,21 @@ class Booking(PcObject, Model):
     )
 
     def mark_as_used(self) -> None:
-        if self.status is BookingStatus.USED or self.isUsed:
+        if self.is_used_or_reimbursed:  # pylint: disable=using-constant-test
             raise exceptions.BookingHasAlreadyBeenUsed()
         if self.status is BookingStatus.CANCELLED:
             raise exceptions.BookingIsCancelled()
-        self.isUsed = True
         self.dateUsed = datetime.utcnow()
         self.status = BookingStatus.USED
 
     def mark_as_unused_set_confirmed(self) -> None:
-        self.isUsed = False
         self.dateUsed = None
         self.status = BookingStatus.CONFIRMED
 
     def cancel_booking(self) -> None:
         if self.status is BookingStatus.CANCELLED:
             raise exceptions.BookingIsAlreadyCancelled()
-        if self.status is BookingStatus.USED or self.isUsed:
+        if self.is_used_or_reimbursed:  # pylint: disable=using-constant-test
             raise exceptions.BookingIsAlreadyUsed()
         self.status = BookingStatus.CANCELLED
         self.cancellationDate = datetime.utcnow()
@@ -190,7 +185,6 @@ class Booking(PcObject, Model):
         self.cancellationDate = None
         self.cancellationReason = None
         self.status = BookingStatus.USED
-        self.isUsed = True
         self.dateUsed = datetime.utcnow()
 
     def mark_as_confirmed(self) -> None:
@@ -204,7 +198,7 @@ class Booking(PcObject, Model):
 
     @property
     def expirationDate(self) -> Optional[datetime]:
-        if self.status == BookingStatus.CANCELLED or self.isUsed:
+        if self.status == BookingStatus.CANCELLED or self.is_used_or_reimbursed:
             return None
         if not self.stock.offer.canExpire:
             return None
@@ -263,7 +257,7 @@ class Booking(PcObject, Model):
             if self.isEventExpired or self.status == BookingStatus.CANCELLED:
                 return None
             return api.generate_qr_code(self.token)
-        if self.isUsed or self.status == BookingStatus.CANCELLED:
+        if self.is_used_or_reimbursed or self.status == BookingStatus.CANCELLED:
             return None
         return api.generate_qr_code(self.token)
 

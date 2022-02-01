@@ -109,7 +109,6 @@ def _create_bookings_for_other_beneficiaries(
 
             bookings_by_name[booking_name] = IndividualBookingFactory(
                 individualBooking__user=user,
-                isUsed=is_used,
                 status=BookingStatus.USED if is_used else BookingStatus.CONFIRMED,
                 stock=stock,
                 dateUsed=datetime.now() - timedelta(days=2) if is_used else None,
@@ -160,7 +159,6 @@ def _create_has_booked_some_bookings(bookings_by_name, offers_by_name, user, use
 
         booking = IndividualBookingFactory(
             individualBooking__user=user,
-            isUsed=is_used,
             status=BookingStatus.USED if is_used else BookingStatus.CONFIRMED,
             stock=stock,
             dateUsed=datetime.now() - timedelta(days=2) if is_used else None,
