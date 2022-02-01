@@ -41,7 +41,6 @@ def find_all_offerers_payments(
             PaymentStatus.status == TransactionStatus.SENT,
             payment_date.between(*reimbursement_period, symmetric=True),
             Booking.offererId.in_(offerer_ids),
-            Booking.is_used_or_reimbursed,
             (Booking.venueId == venue_id) if venue_id else (Booking.venueId is not None),
         )
         .join(Offerer)
