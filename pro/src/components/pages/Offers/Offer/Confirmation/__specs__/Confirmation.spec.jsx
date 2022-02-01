@@ -22,7 +22,9 @@ describe('confirmation page', () => {
     loadFakeApiOffer(offer)
 
     // When
-    await renderOffer({ pathname: `/offres/${offer.id}/confirmation` })
+    await renderOffer({
+      pathname: `/offre/${offer.id}/individuel/confirmation`,
+    })
 
     // Then
     expect(screen.queryByText('active')).not.toBeInTheDocument()
@@ -49,7 +51,9 @@ describe('confirmation page', () => {
     loadFakeApiOffer(offer)
 
     // When
-    await renderOffer({ pathname: `/offres/${offer.id}/confirmation` })
+    await renderOffer({
+      pathname: `/offre/${offer.id}/individuel/confirmation`,
+    })
 
     // Then
     expect(screen.queryByText('active')).not.toBeInTheDocument()
@@ -79,7 +83,7 @@ describe('confirmation page', () => {
     await renderOffer({
       pathname: [
         `/offres/${offer.id}/edition`,
-        `/offres/${offer.id}/confirmation`,
+        `/offre/${offer.id}/individuel/confirmation`,
       ],
     })
 
@@ -94,7 +98,7 @@ describe('confirmation page', () => {
 
     // When
     await renderOffer({
-      pathname: [`/offres/${offer.id}/confirmation`],
+      pathname: [`/offre/${offer.id}/individuel/confirmation`],
       search: '?structure=OFFERER1&lieu=VENUE1',
     })
 

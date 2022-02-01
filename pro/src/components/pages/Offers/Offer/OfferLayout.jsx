@@ -110,7 +110,7 @@ const OfferLayout = ({ location, match }) => {
               reloadOffer={reloadOffer}
             />
           </Route>
-          <Route exact path={`${match.url}/confirmation`}>
+          <Route exact path={`${match.url}/individuel/confirmation`}>
             <ConfirmationContainer
               isCreatingOffer={isCreatingOffer}
               location={location}

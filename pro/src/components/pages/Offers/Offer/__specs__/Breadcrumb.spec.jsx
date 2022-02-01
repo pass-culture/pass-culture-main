@@ -145,7 +145,9 @@ describe('confirmation step', () => {
       loadFakeApiOffer(offer)
 
       // When
-      await renderOffer({ pathname: `/offres/${offer.id}/confirmation` })
+      await renderOffer({
+        pathname: `/offre/${offer.id}/individuel/confirmation`,
+      })
 
       // Then
       const detailTab = await screen.findByText("Détails de l'offre")
