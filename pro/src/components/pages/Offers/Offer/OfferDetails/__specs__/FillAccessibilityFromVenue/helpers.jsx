@@ -43,7 +43,7 @@ const renderOffer = async (props, store, pathname, queryParams = null) => {
       >
         <Route
           path={[
-            '/offres/creation',
+            '/offre/creation/individuel',
             '/offres/:offerId([A-Z0-9]+)',
             '/offres/:offerId([A-Z0-9]+)/edition',
           ]}
@@ -79,7 +79,7 @@ const renderOfferCreation = async ({
   const rtlRenderReturn = await renderOffer(
     props,
     store,
-    '/offres/creation',
+    '/offre/creation/individuel',
     queryParams
   )
   setOfferValues({ categoryId: subCategory.categoryId })
