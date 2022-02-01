@@ -12,7 +12,9 @@ services:
       service: redis
 
   worker:
-    image: passcultureapp/api-flask:latest
+    build:
+      context: ./api
+      target: api-flask
     working_dir: /opt/services/flaskapp/src
     container_name: pc-worker
     command: >
@@ -33,7 +35,9 @@ services:
       - redis
 
   worker_low:
-    image: passcultureapp/api-flask:latest
+    build:
+      context: ./api
+      target: api-flask
     working_dir: /opt/services/flaskapp/src
     container_name: pc-worker-low
     command: >

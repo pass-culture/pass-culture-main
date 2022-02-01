@@ -971,36 +971,6 @@ jobs:
           command: gcloud container clusters get-credentials --region ${GCP_REGION} ${GKE_CLUSTER_NAME}
       - run: kubectl get deploy -n <<parameters.helm_environment>> -o name | xargs  -L 1 kubectl rollout restart -n <<parameters.helm_environment>>
 
-  build-container:
-    machine:
-      image: ubuntu-2004:202101-01
-    steps:
-      - checkout
-      - restore_cache:
-          name: Restore requirements and Dockerfile checksum
-          keys:
-            # By using only cache prefix, we load the most recent checksum
-            - pass-culture-api-checksums-
-      - run:
-          name: Build and push docker image if requirements and/or Dockerfile have changed
-          command: |
-            md5sum --status -c requirements.md5  &&  md5sum --status -c dockerfile-print.md5|| (
-            docker build ./api -f ./api/Dockerfile --target api-flask -t passcultureapp/api-flask:latest;
-            docker login -u passcultureapp -p $DOCKERHUB_PASSWORD;
-            docker push passcultureapp/api-flask:latest
-            )
-      - run:
-          name: Generate requirements print
-          command: md5sum ./api/requirements.txt > requirements.md5
-      - run:
-          name: Generate Dockerfile print
-          command: md5sum ./api/Dockerfile > dockerfile-print.md5
-      - save_cache:
-          key: pass-culture-api-checksums-{{ .Revision }}
-          paths:
-            - requirements.md5
-            - dockerfile-print.md5
-
 ###################
 #  WORKFLOWS
 ###################
@@ -1124,13 +1094,6 @@ workflows:
             - GCP
             - GCP_EHP
           app_version: ${CIRCLE_SHA1}
-      - build-container:
-          filters:
-            branches:
-              only:
-                - master
-          requires:
-            - build-and-push-image
       - deploy-pcapi:
           filters:
             branches:
