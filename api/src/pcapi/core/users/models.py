@@ -187,19 +187,6 @@ class User(PcObject, Model, NeedsValidationMixin):
     # use DeactivableMixin. We'll need to add a migration that adds a
     # NOT NULL constraint.
     isActive = sa.Column(sa.Boolean, nullable=True, server_default=expression.true(), default=True)
-    isAdmin = sa.Column(
-        sa.Boolean,
-        sa.CheckConstraint(
-            (
-                f'NOT (({ UserRole.BENEFICIARY }=ANY("roles") OR { UserRole.UNDERAGE_BENEFICIARY }=ANY("roles")) '
-                f'AND { UserRole.ADMIN }=ANY("roles"))'
-            ),
-            name="check_admin_is_not_beneficiary",
-        ),
-        nullable=False,
-        server_default=expression.false(),
-        default=False,
-    )
     isEmailValidated = sa.Column(sa.Boolean, nullable=True, server_default=expression.false())
     lastConnectionDate = sa.Column(sa.DateTime, nullable=True)
     lastName = sa.Column(sa.String(128), nullable=True)

@@ -117,6 +117,7 @@ class SharedLoginUserResponseModel(BaseModel):
 
     @classmethod
     def from_orm(cls, user):
+        user.isAdmin = user.has_admin_role
         result = super().from_orm(user)
         return result
 
@@ -156,3 +157,9 @@ class SharedCurrentUserResponseModel(BaseModel):
         json_encoders = {datetime: format_into_utc_date}
         alias_generator = to_camel
         orm_mode = True
+
+    @classmethod
+    def from_orm(cls, user):
+        user.isAdmin = user.has_admin_role
+        result = super().from_orm(user)
+        return result
