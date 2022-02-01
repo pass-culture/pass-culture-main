@@ -33,7 +33,7 @@ describe('offer step', () => {
       getFakeApiVenuesForOfferer(venue)
 
       // When
-      await renderOffer({ pathname: '/offres/creation' })
+      await renderOffer({ pathname: '/offre/creation/individuel' })
 
       // Then
       const detailTab = await screen.findByText("Détails de l'offre")

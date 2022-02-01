@@ -170,7 +170,7 @@ const routes = [
   {
     component: OfferLayoutContainer,
     exact: false,
-    path: ['/offres/creation', '/offres/:offerId([A-Z0-9]+)'],
+    path: ['/offre/creation/individuel', '/offres/:offerId([A-Z0-9]+)'],
     title: 'Offre',
   },
   {

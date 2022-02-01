@@ -21,7 +21,7 @@ const OfferType = (): JSX.Element => {
   const getNextPageHref = () => {
     if (offerType === INDIVIDUAL_OR_DUO) {
       return history.push({
-        pathname: '/offres/creation',
+        pathname: '/offre/creation/individuel',
         search: location.search,
       })
     }
