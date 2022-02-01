@@ -341,7 +341,7 @@ Booking.trig_ddl = f"""
         WHERE
             individual_booking."depositId" = deposit_id
             AND NOT booking.status = '{BookingStatus.CANCELLED.value}'
-            AND (NOT only_used_bookings OR booking."isUsed" = TRUE);
+            AND (NOT only_used_bookings OR booking.status in ('USED', 'REIMBURSED'));
         RETURN
             deposit_amount - sum_bookings;
         END;
@@ -411,7 +411,7 @@ Booking.trig_ddl = f"""
     DROP TRIGGER IF EXISTS booking_update ON booking;
     CREATE CONSTRAINT TRIGGER booking_update
     AFTER INSERT
-    OR UPDATE OF quantity, amount, status, "isUsed", "userId"
+    OR UPDATE OF quantity, amount, status, "userId"
     ON booking
     FOR EACH ROW EXECUTE PROCEDURE check_booking()
     """
