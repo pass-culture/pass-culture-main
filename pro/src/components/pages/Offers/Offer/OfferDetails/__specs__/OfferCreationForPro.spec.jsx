@@ -58,9 +58,13 @@ const renderOffers = async (props, store, queryParams = null) => {
   const rtlRenderReturn = render(
     <Provider store={store}>
       <MemoryRouter
-        initialEntries={[{ pathname: '/offres/creation', search: queryParams }]}
+        initialEntries={[
+          { pathname: '/offre/creation/individuel', search: queryParams },
+        ]}
       >
-        <Route path={['/offres/creation', '/offres/:offerId([A-Z0-9]+)']}>
+        <Route
+          path={['/offre/creation/individuel', '/offres/:offerId([A-Z0-9]+)']}
+        >
           <>
             <OfferLayoutContainer {...props} />
             <NotificationContainer />

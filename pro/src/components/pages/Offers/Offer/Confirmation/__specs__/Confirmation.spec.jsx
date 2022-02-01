@@ -40,7 +40,7 @@ describe('confirmation page', () => {
     ).toHaveAttribute('href', `http://localhost/offre/${offer.nonHumanizedId}`)
     expect(
       screen.getByText('Créer une nouvelle offre', { selector: 'a' })
-    ).toHaveAttribute('href', '/offres/creation')
+    ).toHaveAttribute('href', '/offre/creation/individuel')
   })
 
   it('should display the rights information when offer is pending', async () => {
@@ -67,7 +67,7 @@ describe('confirmation page', () => {
     ).toHaveAttribute('href', `http://localhost/offre/${offer.nonHumanizedId}`)
     expect(
       screen.getByText('Créer une nouvelle offre', { selector: 'a' })
-    ).toHaveAttribute('href', '/offres/creation')
+    ).toHaveAttribute('href', '/offre/creation/individuel')
   })
 
   it('should redirect to offer edition when the offer is not a draft', async () => {
@@ -101,6 +101,9 @@ describe('confirmation page', () => {
     // Then
     expect(
       screen.getByText('Créer une nouvelle offre', { selector: 'a' })
-    ).toHaveAttribute('href', '/offres/creation?structure=OFFERER1&lieu=VENUE1')
+    ).toHaveAttribute(
+      'href',
+      '/offre/creation/individuel?structure=OFFERER1&lieu=VENUE1'
+    )
   })
 })

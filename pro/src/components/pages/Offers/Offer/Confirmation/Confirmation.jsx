@@ -64,7 +64,7 @@ const Confirmation = ({ isCreatingOffer, location, offer, setOffer }) => {
         <Link
           className="primary-link"
           onClick={resetOffer}
-          to={`/offres/creation${queryString}`}
+          to={`/offre/creation/individuel${queryString}`}
         >
           Créer une nouvelle offre
         </Link>

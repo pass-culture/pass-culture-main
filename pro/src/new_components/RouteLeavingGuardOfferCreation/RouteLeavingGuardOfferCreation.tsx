@@ -20,7 +20,7 @@ const RouteLeavingGuardOfferCreation = ({
     nextLocation => {
       const offerCreationPath = isCollectiveFlow
         ? '/offre/creation/collectif'
-        : '/offres/creation'
+        : '/offre/creation/individuel'
       const stocksPathRegex = isCollectiveFlow
         ? /\/offre\/([A-Z0-9]+)\/scolaire\/stocks/g
         : /\/offres\/([A-Z0-9]+)\/stocks/g
