@@ -87,7 +87,7 @@ describe('stocks step', () => {
       loadFakeApiStocks([])
 
       // When
-      await renderOffer({ pathname: `/offres/${offer.id}/stocks` })
+      await renderOffer({ pathname: `/offre/${offer.id}/individuel/stocks` })
 
       // Then
       const detailTab = await screen.findByText("Détails de l'offre")
@@ -118,7 +118,7 @@ describe('stocks step', () => {
       loadFakeApiStocks([stock])
 
       // When
-      await renderOffer({ pathname: `/offres/${offer.id}/stocks` })
+      await renderOffer({ pathname: `/offre/${offer.id}/individuel/stocks` })
 
       // Then
       const detailTab = await screen.findByText("Détails de l'offre", {

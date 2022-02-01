@@ -103,7 +103,7 @@ const OfferLayout = ({ location, match }) => {
           <Route exact path={`${match.url}/edition`}>
             <OfferDetails offer={offer} reloadOffer={reloadOffer} />
           </Route>
-          <Route exact path={`${match.url}/stocks`}>
+          <Route exact path={`${match.url}/individuel/stocks`}>
             <StocksContainer
               location={location}
               offer={offer}
