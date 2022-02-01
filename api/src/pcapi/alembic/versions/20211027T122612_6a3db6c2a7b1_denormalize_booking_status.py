@@ -3,17 +3,12 @@
 from alembic import op
 import sqlalchemy as sa
 
-from pcapi.models import feature
-
 
 # revision identifiers, used by Alembic.
 revision = "6a3db6c2a7b1"
 down_revision = "3908af1a50e5"
 branch_labels = None
 depends_on = None
-
-
-FLAG = feature.FeatureToggle.IMPROVE_BOOKINGS_PERF
 
 
 def upgrade() -> None:
