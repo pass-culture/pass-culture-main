@@ -11,6 +11,7 @@ const defaultProps = {
   onSetImage: jest.fn(),
   closeModal: mockCloseModal,
   credit: '',
+  onEditedImageSave: jest.fn(),
   onSetCredit: jest.fn(),
 }
 

@@ -2,9 +2,6 @@ import { Story } from '@storybook/react'
 import React from 'react'
 
 import ImageEditor, { ImageEditorProps } from './ImageEditor'
-// it works but TypeScript doesn't like it, bruno don't know why
-// eslint-disable-next-line
-// @ts-ignore:
 import sampleImage from './sample-image.jpg'
 
 export default {
