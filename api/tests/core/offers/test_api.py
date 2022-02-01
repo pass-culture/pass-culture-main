@@ -181,7 +181,7 @@ class UpsertStocksTest:
 
         # Then
         updated_booking = Booking.query.get(booking.id)
-        assert updated_booking.isUsed is False
+        assert updated_booking.status is not BookingStatus.USED
         assert updated_booking.dateUsed is None
         assert updated_booking.cancellationLimitDate == booking.cancellationLimitDate
 
@@ -209,7 +209,7 @@ class UpsertStocksTest:
 
         # Then
         updated_booking = Booking.query.get(booking.id)
-        assert updated_booking.isUsed is True
+        assert updated_booking.status is BookingStatus.USED
         assert updated_booking.dateUsed == date_used_in_48_hours
 
     def test_does_not_allow_edition_of_stock_of_another_offer_than_given(self):

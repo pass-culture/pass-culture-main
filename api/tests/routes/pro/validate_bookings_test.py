@@ -30,8 +30,8 @@ class Returns204Test:  # No Content
 
         assert response.status_code == 204
         booking = bookings_models.Booking.query.one()
-        assert booking.isUsed
         assert booking.dateUsed is not None
+        assert booking.status is bookings_models.BookingStatus.USED
 
     def when_header_is_not_standard_but_request_is_valid(self, client):
         booking = bookings_factories.IndividualBookingFactory(token="ABCDEF")
@@ -44,7 +44,7 @@ class Returns204Test:  # No Content
 
         assert response.status_code == 204
         booking = bookings_models.Booking.query.one()
-        assert booking.isUsed
+        assert booking.status is bookings_models.BookingStatus.USED
 
     # FIXME: what is the purpose of this test? Are we testing that
     # Flask knows how to URL-decode parameters?
@@ -63,7 +63,6 @@ class Returns204Test:  # No Content
 
         assert response.status_code == 204
         booking = bookings_models.Booking.query.one()
-        assert booking.isUsed
         assert booking.status is bookings_models.BookingStatus.USED
 
 
@@ -86,7 +85,7 @@ class Returns403Test:
         assert response.json["global"] == [
             "Vous n'avez pas les droits d'accès suffisant pour accéder à cette information."
         ]
-        assert not Booking.query.get(booking.id).isUsed
+        assert Booking.query.get(booking.id).status is not bookings_models.BookingStatus.USED
 
     @mock.patch("pcapi.core.bookings.validation.check_is_usable")
     @pytest.mark.usefixtures("db_session")
@@ -123,7 +122,7 @@ class Returns404Test:
 
         # Then
         assert response.status_code == 404
-        assert not Booking.query.get(booking.id).isUsed
+        assert Booking.query.get(booking.id).status is not bookings_models.BookingStatus.USED
 
     @pytest.mark.usefixtures("db_session")
     def when_booking_user_email_with_special_character_not_url_encoded(self, client):
@@ -158,7 +157,7 @@ class Returns404Test:
 
         # Then
         assert response.status_code == 404
-        assert not Booking.query.get(booking_id).isUsed
+        assert Booking.query.get(booking_id).status is not bookings_models.BookingStatus.USED
 
 
 class Returns410Test:
@@ -175,4 +174,4 @@ class Returns410Test:
         # Then
         assert response.status_code == 410
         assert response.json["booking"] == ["Cette réservation a été annulée"]
-        assert not Booking.query.get(booking.id).isUsed
+        assert Booking.query.get(booking.id).status is not bookings_models.BookingStatus.USED
