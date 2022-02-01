@@ -3,6 +3,7 @@ from enum import Enum
 from typing import Optional
 
 from pcapi.core.bookings import models as bookings_models
+from pcapi.domain.booking_recap import utils
 from pcapi.domain.booking_recap.booking_recap_history import BookingRecapCancelledHistory
 from pcapi.domain.booking_recap.booking_recap_history import BookingRecapConfirmedHistory
 from pcapi.domain.booking_recap.booking_recap_history import BookingRecapHistory
@@ -85,14 +86,9 @@ class BookingRecap:
         return object.__new__(cls)
 
     def _get_booking_token(self) -> Optional[str]:
-        if (
-            not self.event_beginning_datetime
-            and not self.booking_is_used
-            and not self.booking_is_cancelled
-            or self.booking_is_educational
-        ):
-            return None
-        return self._booking_token
+        return utils.get_booking_token(
+            self._booking_token, self.booking_raw_status, self.booking_is_educational, self.event_beginning_datetime
+        )
 
     def _set_booking_token(self, booking_token: str) -> None:
         self._booking_token = booking_token
