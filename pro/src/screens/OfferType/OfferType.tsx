@@ -27,7 +27,7 @@ const OfferType = (): JSX.Element => {
     }
 
     return history.push({
-      pathname: '/offre/creation/scolaire',
+      pathname: '/offre/creation/collectif',
       search: location.search,
     })
   }
