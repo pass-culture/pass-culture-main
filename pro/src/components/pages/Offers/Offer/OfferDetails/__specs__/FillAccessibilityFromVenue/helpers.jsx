@@ -45,7 +45,7 @@ const renderOffer = async (props, store, pathname, queryParams = null) => {
           path={[
             '/offre/creation/individuel',
             '/offres/:offerId([A-Z0-9]+)',
-            '/offres/:offerId([A-Z0-9]+)/edition',
+            '/offre/:offerId([A-Z0-9]+)/individuel/edition',
           ]}
         >
           <>
@@ -97,7 +97,7 @@ const renderOfferEdition = async ({ props, store, offerId }) => {
   const rtlRenderReturn = await renderOffer(
     props,
     store,
-    `/offres/${offerId}/edition`
+    `/offre/${offerId}/individuel/edition`
   )
   await sidebarDisplayed()
   return rtlRenderReturn

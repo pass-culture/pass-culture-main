@@ -155,7 +155,7 @@ const OfferEducationalEdition = ({
     if (!isReady) {
       getOfferAdapter(offerId).then(offerResponse => {
         if (offerResponse.isOk && !offerResponse.payload.isEducational) {
-          return history.push(`/offres/${offerId}/edition`)
+          return history.push(`/offre/${offerId}/individuel/edition`)
         }
         loadData(offerResponse)
       })

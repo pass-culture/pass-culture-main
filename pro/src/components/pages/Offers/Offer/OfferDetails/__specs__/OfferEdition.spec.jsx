@@ -63,7 +63,10 @@ const renderOffers = async (props, store, queryParams = '') => {
       <Provider store={store}>
         <MemoryRouter
           initialEntries={[
-            { pathname: '/offres/ABC12/edition', search: queryParams },
+            {
+              pathname: '/offre/ABC12/individuel/edition',
+              search: queryParams,
+            },
           ]}
         >
           <Route path="/offres/:offerId([A-Z0-9]+)/">
