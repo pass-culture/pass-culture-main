@@ -48,7 +48,7 @@ def test_reject_beneficiary(app):
 def test_forbid_some_attributes(app):
     pro = users_factories.ProFactory()
     # It's tedious to test all attributes. We focus on the most sensitive ones.
-    forbidden_attributes = {"isAdmin": True, "dateCreated": "2018-08-01 12:00:00", "roles": ["BENEFICIARY"]}
+    forbidden_attributes = {"dateCreated": "2018-08-01 12:00:00", "roles": ["BENEFICIARY"]}
 
     client = TestClient(app.test_client()).with_session_auth(email=pro.email)
 

@@ -63,7 +63,6 @@ class UserFactory(BaseFactory):
     lastName = "Neige"
     publicName = "Jean Neige"
     isEmailValidated = True
-    isAdmin = False
     roles = []
     hasSeenProTutorials = True
     subscriptionState = models.SubscriptionState.account_created
@@ -97,7 +96,6 @@ class AdminFactory(BaseFactory):
     lastName = "Columbo"
     publicName = "Frank Columbo"
     isEmailValidated = True
-    isAdmin = True
     roles = [users_models.UserRole.ADMIN]
     hasSeenProTutorials = True
 
@@ -134,7 +132,6 @@ class BeneficiaryGrant18Factory(BaseFactory):
     lastName = "Doux"
     hasCompletedIdCheck = False
     isEmailValidated = True
-    isAdmin = False
     roles = [users_models.UserRole.BENEFICIARY]
     hasSeenProTutorials = True
     subscriptionState = users_models.SubscriptionState.beneficiary_18
@@ -262,7 +259,6 @@ class ProFactory(BaseFactory):
     lastName = "Coty"
     publicName = "René Coty"
     isEmailValidated = True
-    isAdmin = False
     roles = [users_models.UserRole.PRO]
     hasSeenProTutorials = True
 

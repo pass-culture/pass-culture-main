@@ -11,6 +11,7 @@ from pcapi.core.offers.factories import StockFactory
 from pcapi.core.offers.factories import VenueFactory
 from pcapi.core.providers.models import VenueProvider
 from pcapi.core.users.factories import AdminFactory
+from pcapi.core.users.factories import UserFactory
 
 from tests.conftest import clean_database
 
@@ -23,11 +24,10 @@ class VenueProviderViewTest:
         # Then
         assert not view.is_accessible()
 
-    @patch("pcapi.admin.base_configuration.current_user")
-    def test_prevent_access_missing_venue_access(self, current_user, app, db_session):
+    def test_prevent_access_missing_venue_access(self, client, app, db_session):
         # Given
-        current_user.is_authenticated = True
-        current_user.isAdmin = False
+        UserFactory(email="user@example.com")
+        client.with_session_auth("user@example.com")
 
         # When
         view = VenueProviderView(VenueProvider, db_session)

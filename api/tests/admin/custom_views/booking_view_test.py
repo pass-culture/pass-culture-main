@@ -109,7 +109,7 @@ class BookingViewTest:
         assert booking.status == BookingStatus.CANCELLED
 
     def test_can_not_cancel_refunded_booking(self, app):
-        users_factories.UserFactory(email="admin@example.com", isAdmin=True)
+        users_factories.AdminFactory(email="admin@example.com")
         booking = bookings_factories.UsedIndividualBookingFactory()
         payments_factories.PaymentFactory(booking=booking)
 
@@ -128,7 +128,7 @@ class BookingViewTest:
         assert not booking.status == BookingStatus.CANCELLED
 
     def test_cant_cancel_cancelled_booking(self, app):
-        users_factories.UserFactory(email="admin@example.com", isAdmin=True)
+        users_factories.AdminFactory(email="admin@example.com")
         booking = bookings_factories.CancelledIndividualBookingFactory()
 
         client = TestClient(app.test_client()).with_session_auth("admin@example.com")

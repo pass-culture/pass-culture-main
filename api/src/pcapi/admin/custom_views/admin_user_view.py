@@ -82,12 +82,12 @@ class AdminUserView(SuspensionMixin, BaseAdminView):
     def get_query(self) -> query:
         from pcapi.core.users.models import User
 
-        return User.query.filter(User.isAdmin.is_(True)).from_self()
+        return User.query.filter(User.has_admin_role.is_(True)).from_self()
 
     def get_count_query(self) -> query:
         from pcapi.core.users.models import User
 
-        return self.session.query(func.count(distinct(User.id))).select_from(User).filter(User.isAdmin.is_(True))
+        return self.session.query(func.count(distinct(User.id))).select_from(User).filter(User.has_admin_role.is_(True))
 
     def on_model_change(self, form: Form, model, is_created: bool) -> None:
         model.publicName = f"{model.firstName} {model.lastName}"

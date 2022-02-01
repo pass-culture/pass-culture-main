@@ -207,7 +207,7 @@ class SuspendAccountTest:
 
         assert user.suspensionReason == str(reason)
         assert not user.isActive
-        assert not user.isAdmin
+        assert not user.has_admin_role
         assert not user.has_admin_role
         assert not UserSession.query.filter_by(userId=user.id).first()
         assert actor.isActive
@@ -583,7 +583,7 @@ class CreateProUserTest:
         pro_user = create_pro_user(pro_user_creation_body)
 
         assert pro_user.email == "prouser@example.com"
-        assert not pro_user.isAdmin
+        assert not pro_user.has_admin_role
         assert not pro_user.needsToFillCulturalSurvey
         assert not pro_user.has_pro_role
         assert not pro_user.has_admin_role
@@ -599,7 +599,7 @@ class CreateProUserTest:
         pro_user = create_pro_user(pro_user_creation_body)
 
         assert pro_user.email == "prouser@example.com"
-        assert not pro_user.isAdmin
+        assert not pro_user.has_admin_role
         assert not pro_user.needsToFillCulturalSurvey
         assert not pro_user.has_pro_role
         assert not pro_user.has_admin_role
@@ -646,7 +646,7 @@ class BeneficiaryInformationUpdateTest:
         assert beneficiary.address == "11 Rue du Test"
         assert beneficiary.dateOfBirth == datetime(2000, 5, 1, 0, 0)
         assert not beneficiary.has_beneficiary_role
-        assert not beneficiary.isAdmin
+        assert not beneficiary.has_admin_role
         assert beneficiary.password is not None
         assert beneficiary.activity == "Lycéen"
         assert beneficiary.civility == "Mme"

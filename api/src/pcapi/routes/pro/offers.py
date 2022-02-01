@@ -38,7 +38,7 @@ from pcapi.utils.rest import load_or_404
 def list_offers(query: offers_serialize.ListOffersQueryModel) -> offers_serialize.ListOffersResponseModel:
     paginated_offers = offers_api.list_offers_for_pro_user(
         user_id=current_user.id,
-        user_is_admin=current_user.isAdmin,
+        user_is_admin=current_user.has_admin_role,
         category_id=query.categoryId,
         offerer_id=query.offerer_id,
         venue_id=query.venue_id,
@@ -188,7 +188,7 @@ def patch_all_offers_active_status(
 ) -> offers_serialize.PatchAllOffersActiveStatusResponseModel:
     filters = {
         "user_id": current_user.id,
-        "is_user_admin": current_user.isAdmin,
+        "is_user_admin": current_user.has_admin_role,
         "offerer_id": body.offerer_id,
         "status": body.status,
         "venue_id": body.venue_id,

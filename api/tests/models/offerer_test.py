@@ -164,7 +164,7 @@ class AppendUserHasAccessAttributeTest:
         offerer = create_offerer()
 
         # When
-        offerer.append_user_has_access_attribute(user_id=current_user.id, is_admin=current_user.isAdmin)
+        offerer.append_user_has_access_attribute(user_id=current_user.id, is_admin=current_user.has_admin_role)
 
         # Then
         assert hasattr(offerer, "userHasAccess")
@@ -175,7 +175,7 @@ class AppendUserHasAccessAttributeTest:
         offerer = create_offerer()
 
         # When
-        offerer.append_user_has_access_attribute(user_id=current_user.id, is_admin=current_user.isAdmin)
+        offerer.append_user_has_access_attribute(user_id=current_user.id, is_admin=current_user.has_admin_role)
 
         # Then
         assert offerer.userHasAccess is False
@@ -189,7 +189,7 @@ class AppendUserHasAccessAttributeTest:
         repository.save(user_offerer)
 
         # When
-        offerer.append_user_has_access_attribute(user_id=current_user.id, is_admin=current_user.isAdmin)
+        offerer.append_user_has_access_attribute(user_id=current_user.id, is_admin=current_user.has_admin_role)
 
         # Then
         assert offerer.userHasAccess is True
@@ -203,7 +203,7 @@ class AppendUserHasAccessAttributeTest:
         repository.save(user_offerer)
 
         # When
-        offerer.append_user_has_access_attribute(user_id=current_user.id, is_admin=current_user.isAdmin)
+        offerer.append_user_has_access_attribute(user_id=current_user.id, is_admin=current_user.has_admin_role)
 
         # Then
         assert offerer.userHasAccess is False
@@ -218,7 +218,7 @@ class AppendUserHasAccessAttributeTest:
         repository.save(user_offerer)
 
         # When
-        offerer.append_user_has_access_attribute(user_id=current_user.id, is_admin=current_user.isAdmin)
+        offerer.append_user_has_access_attribute(user_id=current_user.id, is_admin=current_user.has_admin_role)
 
         # Then
         assert offerer.userHasAccess is False
@@ -233,7 +233,7 @@ class AppendUserHasAccessAttributeTest:
         repository.save(user_offerer)
 
         # When
-        offerer.append_user_has_access_attribute(user_id=current_user.id, is_admin=current_user.isAdmin)
+        offerer.append_user_has_access_attribute(user_id=current_user.id, is_admin=current_user.has_admin_role)
 
         # Then
         assert offerer.userHasAccess is True

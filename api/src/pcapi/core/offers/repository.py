@@ -91,7 +91,7 @@ def get_capped_offers_for_filters(
 
 def get_offers_by_ids(user: User, offer_ids: list[int]) -> Query:
     query = Offer.query
-    if not user.isAdmin:
+    if not user.has_admin_role:
         query = query.join(Venue, Offerer, UserOfferer).filter(
             and_(UserOfferer.userId == user.id, UserOfferer.validationToken.is_(None))
         )

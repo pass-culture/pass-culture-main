@@ -30,7 +30,7 @@ def get_all_venue_types() -> list[models.VenueType]:
 def get_all_offerers_for_user(user: User, filters: dict) -> list[models.Offerer]:
     query = models.Offerer.query.filter(models.Offerer.isActive.is_(True))
 
-    if not user.isAdmin:
+    if not user.has_admin_role:
         query = query.join(UserOfferer, UserOfferer.offererId == models.Offerer.id).filter(
             UserOfferer.userId == user.id
         )
