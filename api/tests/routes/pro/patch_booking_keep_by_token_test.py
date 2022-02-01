@@ -27,7 +27,6 @@ class Returns204Test:
 
             assert response.status_code == 204
             booking = Booking.query.one()
-            assert not booking.isUsed
             assert booking.status is not BookingStatus.USED
             assert booking.dateUsed is None
 
@@ -41,7 +40,6 @@ class Returns204Test:
 
             assert response.status_code == 204
             booking = Booking.query.one()
-            assert not booking.isUsed
             assert booking.status is not BookingStatus.USED
             assert booking.dateUsed is None
 
@@ -54,7 +52,6 @@ class Returns204Test:
 
             assert response.status_code == 204
             booking = Booking.query.one()
-            assert not booking.isUsed
             assert booking.status is not BookingStatus.USED
             assert booking.dateUsed is None
 
@@ -68,7 +65,6 @@ class Returns204Test:
 
             assert response.status_code == 204
             booking = Booking.query.one()
-            assert not booking.isUsed
             assert booking.status is not BookingStatus.USED
             assert booking.dateUsed is None
 
@@ -117,7 +113,7 @@ class Returns403Test:
         @pytest.mark.usefixtures("db_session")
         def test_when_user_is_not_attached_to_linked_offerer(self, client):
             # Given
-            booking = bookings_factories.BookingFactory()
+            booking = bookings_factories.IndividualBookingFactory()
             another_pro_user = offers_factories.UserOffererFactory().user
 
             # When
@@ -129,7 +125,7 @@ class Returns403Test:
             assert response.json["user"] == [
                 "Vous n’avez pas les droits suffisants pour valider cette contremarque car cette réservation n'a pas été faite sur une de vos offres, ou que votre rattachement à la structure est encore en cours de validation"
             ]
-            assert not booking.isUsed
+            assert booking.status is not BookingStatus.USED
 
 
 class Returns404Test:
@@ -151,7 +147,7 @@ class Returns410Test:
     @pytest.mark.usefixtures("db_session")
     def test_when_booking_has_not_been_used_yet(self, client):
         # Given
-        booking = bookings_factories.BookingFactory()
+        booking = bookings_factories.IndividualBookingFactory()
         pro_user = offers_factories.UserOffererFactory(offerer=booking.offerer).user
 
         # When
@@ -161,7 +157,7 @@ class Returns410Test:
         # Then
         assert response.status_code == 410
         assert response.json["booking"] == ["Cette réservation n'a pas encore été validée"]
-        assert not booking.isUsed
+        assert booking.status is not BookingStatus.USED
 
     @pytest.mark.usefixtures("db_session")
     def test_when_user_is_logged_in_and_booking_payment_exists(self, client):
@@ -176,7 +172,7 @@ class Returns410Test:
         # Then
         assert response.status_code == 410
         assert response.json["payment"] == ["Le remboursement est en cours de traitement"]
-        assert booking.isUsed
+        assert booking.status is BookingStatus.USED
 
     @pytest.mark.usefixtures("db_session")
     def test_when_user_is_logged_in_and_booking_has_been_cancelled_already(self, client):
@@ -192,5 +188,4 @@ class Returns410Test:
         booking = Booking.query.get(booking.id)
         assert response.status_code == 410
         assert response.json["booking"] == ["Cette réservation a été annulée"]
-        assert not booking.isUsed
         assert booking.status is BookingStatus.CANCELLED

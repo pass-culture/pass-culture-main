@@ -100,7 +100,7 @@ class WalletBalanceTest:
     def test_real_balance_with_only_used_bookings(self):
         # given
         user = users_factories.BeneficiaryGrant18Factory(deposit__version=1)
-        bookings_factories.IndividualBookingFactory(individualBooking__user=user, isUsed=False, quantity=1, amount=30)
+        bookings_factories.IndividualBookingFactory(individualBooking__user=user, quantity=1, amount=30)
 
         # then
         assert user.wallet_balance == 500 - 30
@@ -131,8 +131,8 @@ class SQLFunctionsTest:
 
         payments_api.create_deposit(user, "test")
 
-        bookings_factories.IndividualBookingFactory(individualBooking__user=user, isUsed=True, amount=10)
-        bookings_factories.IndividualBookingFactory(individualBooking__user=user, isUsed=False, amount=1)
+        bookings_factories.UsedIndividualBookingFactory(individualBooking__user=user, amount=10)
+        bookings_factories.IndividualBookingFactory(individualBooking__user=user, amount=1)
 
         assert db.session.query(func.get_wallet_balance(user.id, False)).first()[0] == Decimal(289)
         assert db.session.query(func.get_wallet_balance(user.id, True)).first()[0] == Decimal(290)
@@ -166,8 +166,8 @@ class SQLFunctionsTest:
     def test_deposit_balance(self):
         deposit = users_factories.DepositGrantFactory()
 
-        bookings_factories.IndividualBookingFactory(individualBooking__attached_deposit=deposit, isUsed=True, amount=10)
-        bookings_factories.IndividualBookingFactory(individualBooking__attached_deposit=deposit, isUsed=False, amount=1)
+        bookings_factories.UsedIndividualBookingFactory(individualBooking__attached_deposit=deposit, amount=10)
+        bookings_factories.IndividualBookingFactory(individualBooking__attached_deposit=deposit, amount=1)
 
         assert db.session.query(func.get_deposit_balance(deposit.id, False)).first()[0] == 289
         assert db.session.query(func.get_deposit_balance(deposit.id, True)).first()[0] == 290

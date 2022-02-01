@@ -79,7 +79,6 @@ class CancelBookingsOfEventsFromFileTest:
         assert saved_booking.status is BookingStatus.CANCELLED
         assert saved_booking.cancellationReason == BookingCancellationReasons.OFFERER
         assert saved_booking.cancellationDate is not None
-        assert saved_booking.isUsed is False
         assert saved_booking.status is not BookingStatus.USED
         assert saved_booking.dateUsed is None
 

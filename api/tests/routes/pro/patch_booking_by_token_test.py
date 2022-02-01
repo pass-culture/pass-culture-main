@@ -24,7 +24,6 @@ class Returns204Test:
 
             assert response.status_code == 204
             booking = Booking.query.one()
-            assert booking.isUsed
             assert booking.status is BookingStatus.USED
 
     class WhenUserIsLoggedInTest:
@@ -38,7 +37,6 @@ class Returns204Test:
 
             assert response.status_code == 204
             booking = Booking.query.one()
-            assert booking.isUsed
             assert booking.status is BookingStatus.USED
 
         def expect_booking_with_token_in_lower_case_to_be_used(self, client):
@@ -51,7 +49,6 @@ class Returns204Test:
 
             assert response.status_code == 204
             booking = Booking.query.one()
-            assert booking.isUsed
             assert booking.status is BookingStatus.USED
 
         # FIXME: what is the purpose of this test? Are we testing that
@@ -70,7 +67,6 @@ class Returns204Test:
 
             assert response.status_code == 204
             booking = Booking.query.one()
-            assert booking.isUsed
             assert booking.status is BookingStatus.USED
 
 
@@ -137,7 +133,6 @@ class Returns403Test:  # Forbidden
         assert response.json["global"] == [
             "Vous n'avez pas les droits d'accès suffisant pour accéder à cette information."
         ]
-        assert not booking.isUsed
         assert booking.status is not BookingStatus.USED
 
 
@@ -171,7 +166,7 @@ class Returns404Test:
 
             # Then
             assert response.status_code == 404
-            assert Booking.query.get(booking.id).isUsed is False
+            assert Booking.query.get(booking.id).status is not BookingStatus.USED
 
         def when_email_has_special_characters_but_is_not_url_encoded(self, client):
             # Given
@@ -198,7 +193,7 @@ class Returns404Test:
 
             # Then
             assert response.status_code == 404
-            assert Booking.query.get(booking.id).isUsed is False
+            assert Booking.query.get(booking.id).status is not BookingStatus.USED
 
 
 @pytest.mark.usefixtures("db_session")
@@ -215,4 +210,4 @@ class Returns410Test:
         # Then
         assert response.status_code == 410
         assert response.json["booking"] == ["Cette réservation a été annulée"]
-        assert Booking.query.get(booking.id).isUsed is False
+        assert Booking.query.get(booking.id).status is not BookingStatus.USED
