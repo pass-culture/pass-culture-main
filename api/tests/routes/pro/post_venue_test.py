@@ -236,9 +236,10 @@ class VenueBannerTest:
     def test_upload_image(self, mock_local_dir, client):
         """
         Check that the image upload works for a legit file (size and type):
-            * API returns a 204 status code
+            * API returns a 201 status code
             * the file has been saved to disk (and resized/cropped before that)
             * venue's banner information have been updated
+            * venue's banner information are sent back to the client
         """
         user_offerer = offers_factories.UserOffererFactory()
         venue = offers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
@@ -256,7 +257,13 @@ class VenueBannerTest:
                 mock_local_dir.return_value = pathlib.Path(tmpdirname) / settings.THUMBS_FOLDER_NAME
 
                 response = client.post(url, files=file)
-                assert response.status_code == 204
+                assert response.status_code == 201
+
+                assert response.json["bannerUrl"]
+                assert response.json["bannerMeta"] == {
+                    "content_type": "jpeg",
+                    "file_name": "upsert_banner.jpg",
+                }
 
                 venue = Venue.query.get(venue.id)
                 with open(venue.bannerUrl, mode="rb") as f:
@@ -264,7 +271,7 @@ class VenueBannerTest:
                     assert len(f.read()) < len(image_content)
 
                 assert venue.bannerMeta == {
+                    "author_id": user_offerer.user.id,
                     "content_type": "jpeg",
                     "file_name": "upsert_banner.jpg",
-                    "author_id": user_offerer.user.id,
                 }
