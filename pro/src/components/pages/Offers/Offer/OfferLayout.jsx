@@ -75,7 +75,7 @@ const OfferLayout = ({ location, match }) => {
 
   if (offer?.isEducational) {
     history.push(
-      `/offre/${match.params.offerId}/scolaire/${
+      `/offre/${match.params.offerId}/collectif/${
         activeStep === 'stocks' ? 'stocks/edition' : 'edition'
       }`
     )

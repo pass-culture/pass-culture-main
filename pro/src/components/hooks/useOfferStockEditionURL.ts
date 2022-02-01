@@ -3,8 +3,8 @@ const useOfferStockEditionURL = (
   offerId: string
 ): string => {
   return isOfferEducational
-    ? `/offre/${offerId}/scolaire/stocks/edition`
-    : `/offres/${offerId}/stocks`
+    ? `/offre/${offerId}/collectif/stocks/edition`
+    : `/offre/${offerId}/individuel/stocks`
 }
 
 export default useOfferStockEditionURL

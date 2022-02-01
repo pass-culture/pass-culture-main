@@ -98,7 +98,7 @@ const OfferEducationalStockEdition = (): JSX.Element => {
         }
 
         if (!offerResponse.payload.isEducational) {
-          return history.push(`/offres/${offerId}/stocks`)
+          return history.push(`/offre/${offerId}/individuel/stocks`)
         }
 
         if (!stockResponse.isOk) {
