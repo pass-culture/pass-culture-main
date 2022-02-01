@@ -945,7 +945,7 @@ def _generate_invoice(business_unit_id: int, cashflow_ids: list[int]):
     return invoice
 
 
-def _generate_invoice_html(invoice) -> str:
+def _prepare_invoice_context(invoice: models.Invoice) -> dict:
     invoice_lines = sorted(invoice.lines, key=lambda k: (k.group["position"], -k.rate))
     total_used_bookings_amount = 0
     total_contribution_amount = 0
@@ -962,7 +962,7 @@ def _generate_invoice_html(invoice) -> str:
         total_contribution_amount += contribution_subtotal
         reimbursed_amount_subtotal = sum(line.reimbursed_amount for line in lines)
         total_reimbursed_amount += reimbursed_amount_subtotal
-        used_bookings_subtotal = contribution_subtotal + reimbursed_amount_subtotal
+        used_bookings_subtotal = sum(line.bookings_amount for line in lines)
         total_used_bookings_amount += used_bookings_subtotal
 
         invoice_group = models.InvoiceLineGroup(
@@ -976,8 +976,7 @@ def _generate_invoice_html(invoice) -> str:
         groups.append(invoice_group)
 
     venue = offerers_repository.find_venue_by_siret(invoice.businessUnit.siret)
-
-    context = dict(
+    return dict(
         invoice=invoice,
         groups=groups,
         venue=venue,
@@ -986,6 +985,9 @@ def _generate_invoice_html(invoice) -> str:
         total_reimbursed_amount=total_reimbursed_amount,
     )
 
+
+def _generate_invoice_html(invoice: models.Invoice) -> str:
+    context = _prepare_invoice_context(invoice)
     return render_template("invoices/invoice.html", **context)
 
 

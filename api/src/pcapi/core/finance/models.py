@@ -287,8 +287,9 @@ class InvoiceLine(Model):
     )
 
     @property
-    def get_bookings_amount(self):
-        return self.reimbursed_amount - self.contribution_amount
+    def bookings_amount(self):
+        """returns the (positive) raw amount of the used Bookings priced in this line"""
+        return self.contribution_amount - self.reimbursed_amount
 
     @property
     def contribution_rate(self):
