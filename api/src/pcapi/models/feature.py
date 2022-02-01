@@ -73,7 +73,6 @@ class FeatureToggle(enum.Enum):
     )
     ID_CHECK_ADDRESS_AUTOCOMPLETION = "Autocomplétion de l'adresse lors du parcours IDCheck"
     IS_HONOR_STATEMENT_MANDATORY_TO_ACTIVATE_BENEFICIARY = "Vérifier que l'utilisateur a bien rempli l'étape de confirmation sur l'honneur avant d'activer son compte bénéficiaire"  # TODO (vionnex) remove after v164 is forced on native app
-    IMPROVE_BOOKINGS_PERF = "Améliore les performances pour la page pro des réservations"
     OFFER_VALIDATION_MOCK_COMPUTATION = "Active le calcul automatique de validation d'offre depuis le nom de l'offre"
     PRICE_BOOKINGS = "Active la valorisation des réservations"
     PRO_ENABLE_UPLOAD_VENUE_IMAGE = "Active la fonctionnalité d'upload des images des lieux permanents"
