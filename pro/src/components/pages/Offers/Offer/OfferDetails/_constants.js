@@ -60,7 +60,6 @@ export const EDITED_OFFER_READ_ONLY_FIELDS = [
   'showType',
   'showSubType',
   'venueId',
-  'isEducational',
 ]
 export const EXTRA_DATA_FIELDS = [
   'author',

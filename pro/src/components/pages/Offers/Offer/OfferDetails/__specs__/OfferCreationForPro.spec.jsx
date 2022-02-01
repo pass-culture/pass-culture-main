@@ -1482,61 +1482,6 @@ describe('offerDetails - Creation - pro user', () => {
         })
       })
 
-      describe('when offer can be educational', () => {
-        it('should display a radio input "Offre collective" unchecked by default', async () => {
-          // Given
-          await renderOffers(props, store)
-
-          // When
-          await setOfferValues({ categoryId: 'PRATIQUE_ART' })
-          await setOfferValues({ subcategoryId: 'ABO_PRATIQUE_ART' })
-
-          // Then
-          const educationalInput = await getOfferInputForField('isEducational')
-          expect(educationalInput).toBeInTheDocument()
-          expect(educationalInput).not.toBeChecked()
-          const noTypeInput = screen.getByLabelText('Aucune')
-          expect(noTypeInput).toBeInTheDocument()
-          expect(noTypeInput).toBeChecked()
-        })
-
-        it('should display a radio input "Offre duo" checked by default when subcategory can be duo', async () => {
-          // Given
-          await renderOffers(props, store)
-
-          // When
-          await setOfferValues({ categoryId: 'MUSIQUE_LIVE' })
-          await setOfferValues({ subcategoryId: 'CONCERT' })
-
-          // Then
-          const duoInput = await getOfferInputForField('isDuo')
-          expect(duoInput).toBeInTheDocument()
-          expect(duoInput).toBeChecked()
-          const educationalInput = await getOfferInputForField('isEducational')
-          expect(educationalInput).toBeInTheDocument()
-          expect(educationalInput).not.toBeChecked()
-          const noTypeInput = screen.getByLabelText('Aucune')
-          expect(noTypeInput).toBeInTheDocument()
-          expect(noTypeInput).not.toBeChecked()
-        })
-
-        it('should not display a radio input "Offre duo" when subcategory cannot be duo', async () => {
-          // Given
-          await renderOffers(props, store)
-
-          // When
-          await setOfferValues({ categoryId: 'MUSIQUE_LIVE' })
-          await setOfferValues({ subcategoryId: 'CINE_VENTE_DISTANCE' })
-
-          // Then
-          const duoInput = screen.queryByLabelText(
-            'Accepter les réservations "duo"',
-            { exact: false }
-          )
-          expect(duoInput).not.toBeInTheDocument()
-        })
-      })
-
       describe('when offer type is thing type and venue is not virtual', () => {
         it('should remind withdrawal modalities in "Informations pratiques" section', async () => {
           // Given
@@ -1633,7 +1578,6 @@ describe('offerDetails - Creation - pro user', () => {
         venueId: venues[0].id,
         durationMinutes: '1:30',
         isDuo: false,
-        isEducational: true,
         audioDisabilityCompliant: true,
         mentalDisabilityCompliant: true,
         motorDisabilityCompliant: true,
