@@ -141,7 +141,9 @@ const OfferDetails = ({
             queryString += `&lieu=${formInitialValues.current.venueId}`
           }
 
-          history.push(`/offres/${createdOfferId}/stocks${queryString}`)
+          history.push(
+            `/offre/${createdOfferId}/individuel/stocks${queryString}`
+          )
           return Promise.resolve()
         }
       } catch (error) {

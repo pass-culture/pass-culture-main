@@ -103,7 +103,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
         expect(screen.queryByText('Stocks')).toBeInTheDocument()
         expect(screen.queryByText('Stocks')).toHaveAttribute(
           'href',
-          `/offres/${eventOffer.id}/stocks`
+          `/offre/${eventOffer.id}/individuel/stocks`
         )
       })
 
