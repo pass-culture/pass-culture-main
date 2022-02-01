@@ -784,7 +784,6 @@ describe('offerDetails - Edition', () => {
       // Edition read only fields
       const disabledFields = [
         'categoryId',
-        'isEducational',
         'musicSubType',
         'musicType',
         'offererId',
@@ -826,31 +825,6 @@ describe('offerDetails - Edition', () => {
         expect(input).toBeEnabled()
       })
       expect(screen.getByLabelText('Aucune')).toBeEnabled()
-    })
-
-    it('should disable no offer options input when offer cannot be duo and can be educational', async () => {
-      // Given
-      const editedOffer = {
-        id: 'ABC12',
-        nonHumanizedId: 111,
-        subcategoryId: 'ID2',
-        name: 'My edited offer',
-        description: 'Offer description',
-        venue: editedOfferVenue,
-        venueId: editedOfferVenue.id,
-        withdrawalDetails: 'Offer withdrawal details',
-        bookingEmail: 'booking@example.net',
-        status: 'ACTIVE',
-      }
-      pcapi.loadOffer.mockResolvedValue(editedOffer)
-
-      // When
-      await renderOffers(props, store)
-
-      // Then
-      const isEducationalOption = await getOfferInputForField('isEducational')
-      expect(isEducationalOption).toBeDisabled()
-      expect(screen.getByLabelText('Aucune')).toBeDisabled()
     })
 
     it("should display venue's publicName instead of name if exists", async () => {
@@ -1020,7 +994,6 @@ describe('offerDetails - Edition', () => {
           'durationMinutes',
           'isbn',
           'isDuo',
-          'isEducational',
           'name',
           'performer',
           'stageDirector',
@@ -1125,8 +1098,6 @@ describe('offerDetails - Edition', () => {
         // Then
         const isDuoInput = await getOfferInputForField('isDuo')
         expect(isDuoInput).toBeEnabled()
-        const isEducationalInput = await getOfferInputForField('isEducational')
-        expect(isEducationalInput).toBeDisabled()
         expect(screen.getByLabelText('Aucune')).toBeEnabled()
       })
     })
