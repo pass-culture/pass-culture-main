@@ -260,7 +260,7 @@ class BeneficiaryUserViewTest:
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     def test_beneficiary_user_edition_does_not_send_email(self, mocked_validate_csrf_token, mocked_flask_flash, app):
         users_factories.AdminFactory(email="user@example.com")
-        user_to_edit = users_factories.BeneficiaryGrant18Factory(email="not_yet_edited@email.com", isAdmin=False)
+        user_to_edit = users_factories.BeneficiaryGrant18Factory(email="not_yet_edited@email.com")
 
         data = dict(
             email="edited@email.com",

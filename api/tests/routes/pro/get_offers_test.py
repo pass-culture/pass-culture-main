@@ -120,7 +120,7 @@ class Returns200Test:
         assert response.status_code == 200
         mocked_list_offers.assert_called_once_with(
             user_id=pro.id,
-            user_is_admin=pro.isAdmin,
+            user_is_admin=pro.has_admin_role,
             offerer_id=None,
             venue_id=venue.id,
             category_id=None,
@@ -145,7 +145,7 @@ class Returns200Test:
         assert response.status_code == 200
         mocked_list_offers.assert_called_once_with(
             user_id=pro.id,
-            user_is_admin=pro.isAdmin,
+            user_is_admin=pro.has_admin_role,
             offerer_id=None,
             venue_id=None,
             category_id=None,
@@ -175,7 +175,7 @@ class Returns200Test:
         assert response.status_code == 200
         mocked_list_offers.assert_called_once_with(
             user_id=pro.id,
-            user_is_admin=pro.isAdmin,
+            user_is_admin=pro.has_admin_role,
             offerer_id=offerer.id,
             venue_id=None,
             category_id=None,
@@ -200,7 +200,7 @@ class Returns200Test:
         assert response.status_code == 200
         mocked_list_offers.assert_called_once_with(
             user_id=pro.id,
-            user_is_admin=pro.isAdmin,
+            user_is_admin=pro.has_admin_role,
             offerer_id=None,
             venue_id=None,
             category_id=None,
@@ -229,7 +229,7 @@ class Returns200Test:
         assert response.status_code == 200
         mocked_list_offers.assert_called_once_with(
             user_id=pro.id,
-            user_is_admin=pro.isAdmin,
+            user_is_admin=pro.has_admin_role,
             offerer_id=None,
             venue_id=None,
             category_id=None,
@@ -258,7 +258,7 @@ class Returns200Test:
         assert response.status_code == 200
         mocked_list_offers.assert_called_once_with(
             user_id=pro.id,
-            user_is_admin=pro.isAdmin,
+            user_is_admin=pro.has_admin_role,
             offerer_id=None,
             venue_id=None,
             category_id=None,
@@ -283,7 +283,7 @@ class Returns200Test:
         assert response.status_code == 200
         mocked_list_offers.assert_called_once_with(
             user_id=pro.id,
-            user_is_admin=pro.isAdmin,
+            user_is_admin=pro.has_admin_role,
             offerer_id=None,
             venue_id=None,
             category_id="LIVRE",

@@ -45,7 +45,7 @@ class Returns204Test:
         assert user.departementCode == "92"
         assert user.email == "toto_pro@example.com"
         assert user.firstName == "Toto"
-        assert user.isAdmin is False
+        assert not user.has_admin_role
         assert user.lastName == "Pro"
         assert user.phoneNumber == "0102030405"
         assert user.postalCode == "92000"

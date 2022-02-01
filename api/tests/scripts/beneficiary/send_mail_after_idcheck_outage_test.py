@@ -25,7 +25,7 @@ class SendMailAfterIdcheckOutageTest:
             dateCreated=datetime.now(),
         )
         # Admin
-        factories.AdminFactory(dateOfBirth=datetime(2000, 1, 1), **ELIGIBLE_CONDTIONS)
+        factories.AdminFactory(dateOfBirth=datetime(2000, 1, 1), dateCreated=datetime.now())
         # Pro
         pro_user = factories.ProFactory(dateOfBirth=datetime(2000, 1, 1), **ELIGIBLE_CONDTIONS)
         offers_factories.UserOffererFactory(user=pro_user)

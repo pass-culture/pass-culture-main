@@ -232,7 +232,7 @@ class JouveAccessTest:
     """Specific tests to ensure JOUVE does not access anything else"""
 
     def test_access_index(self, client):
-        user = users_factories.UserFactory(isAdmin=False, roles=[users_models.UserRole.JOUVE])
+        user = users_factories.UserFactory(roles=[users_models.UserRole.JOUVE])
         client.with_session_auth(user.email)
         response = client.get("/pc/back-office/")
         assert response.status_code == 200
@@ -246,7 +246,7 @@ class JouveAccessTest:
         ],
     )
     def test_access_forbidden_views(self, client, url):
-        user = users_factories.UserFactory(isAdmin=False, roles=[users_models.UserRole.JOUVE])
+        user = users_factories.UserFactory(roles=[users_models.UserRole.JOUVE])
         client.with_session_auth(user.email)
         response = client.get(url)
         assert response.status_code == 302
@@ -259,7 +259,7 @@ class ValidatePhoneNumberTest:
         user = users_factories.UserFactory(
             phoneValidationStatus=users_models.PhoneValidationStatusType.BLOCKED_TOO_MANY_CODE_SENDINGS,
         )
-        jouve_admin = users_factories.UserFactory(isAdmin=False, roles=[users_models.UserRole.JOUVE])
+        jouve_admin = users_factories.UserFactory(roles=[users_models.UserRole.JOUVE])
         client.with_session_auth(jouve_admin.email)
 
         response = client.get("/pc/back-office/support_beneficiary/?id={user.id}")

@@ -45,6 +45,5 @@ class ReadFileTest:
         assert len(jean.deposits) == 1
 
         admin = User.query.filter_by(email="admin@example.com").one()
-        assert admin.isAdmin
         assert admin.has_admin_role
         assert not admin.has_beneficiary_role

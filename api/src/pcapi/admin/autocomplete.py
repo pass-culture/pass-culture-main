@@ -25,7 +25,7 @@ class Select2Response(pydantic.BaseModel):
 @spectree_serialize(response_model=Select2Response)
 def offerers(query: Select2Query) -> Select2Response:
     """Autocomplete offerers on name or SIREN."""
-    if not (current_user.is_authenticated and current_user.isAdmin):
+    if not (current_user.is_authenticated and current_user.has_admin_role):
         raise Forbidden()
     query = (
         offerers_models.Offerer.query.filter(

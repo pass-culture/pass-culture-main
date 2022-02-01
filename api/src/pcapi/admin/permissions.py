@@ -14,7 +14,7 @@ def _get_permission_mapping():
 
 
 def has_permission(user: users_models.User, permission: str):
-    if not user.isAdmin:  # safety belt, do not remove
+    if not user.has_admin_role:  # safety belt, do not remove
         return False
     # Yes, we calculate the mapping on every call. It's fine:
     # - it's fast;

@@ -24,7 +24,7 @@ class PaginatedOffererSQLRepositoryTest:
         # When
         paginated_offerers = PaginatedOfferersSQLRepository().with_status_and_keywords(
             user_id=pro.id,
-            user_is_admin=pro.isAdmin,
+            user_is_admin=pro.has_admin_role,
             is_filtered_by_offerer_status=False,
             only_validated_offerers=None,
             pagination_limit=10,
@@ -53,7 +53,7 @@ class PaginatedOffererSQLRepositoryTest:
         # When
         paginated_offerers = PaginatedOfferersSQLRepository().with_status_and_keywords(
             user_id=pro.id,
-            user_is_admin=pro.isAdmin,
+            user_is_admin=pro.has_admin_role,
             is_filtered_by_offerer_status=False,
             only_validated_offerers=None,
             pagination_limit=10,
@@ -81,7 +81,7 @@ class PaginatedOffererSQLRepositoryTest:
         # When
         paginated_offerers = PaginatedOfferersSQLRepository().with_status_and_keywords(
             user_id=pro.id,
-            user_is_admin=pro.isAdmin,
+            user_is_admin=pro.has_admin_role,
             is_filtered_by_offerer_status=False,
             only_validated_offerers=None,
             pagination_limit=10,
@@ -107,7 +107,7 @@ class PaginatedOffererSQLRepositoryTest:
         # When
         paginated_offerers = PaginatedOfferersSQLRepository().with_status_and_keywords(
             user_id=pro.id,
-            user_is_admin=pro.isAdmin,
+            user_is_admin=pro.has_admin_role,
             is_filtered_by_offerer_status=False,
             only_validated_offerers=None,
             pagination_limit=10,
@@ -133,7 +133,7 @@ class PaginatedOffererSQLRepositoryTest:
         # When
         paginated_offerers = PaginatedOfferersSQLRepository().with_status_and_keywords(
             user_id=pro.id,
-            user_is_admin=pro.isAdmin,
+            user_is_admin=pro.has_admin_role,
             is_filtered_by_offerer_status=True,
             only_validated_offerers=True,
             pagination_limit=10,

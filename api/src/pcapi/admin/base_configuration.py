@@ -43,7 +43,7 @@ class BaseAdminMixin:
         return form_class(get_form_data(), obj=obj)
 
     def is_accessible(self) -> bool:
-        authorized = current_user.is_authenticated and current_user.isAdmin
+        authorized = current_user.is_authenticated and current_user.has_admin_role
         if not authorized:
             logger.warning("[ADMIN] Tentative d'accès non autorisé à l'interface d'administration par %s", current_user)
 
@@ -124,7 +124,7 @@ class AdminIndexView(AdminIndexBaseView):
                     publicName=google_user["name"],
                     isEmailValidated=True,
                     isActive=True,
-                    isAdmin=True,
+                    roles=[users_models.UserRole.ADMIN],
                 )
                 # generate a random password as the user won't login to anything else.
                 db_user.setPassword(secrets.token_urlsafe(20))

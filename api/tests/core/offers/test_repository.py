@@ -46,7 +46,7 @@ class GetCappedOffersForFiltersTest:
         # When
         offers = get_capped_offers_for_filters(
             user_id=user_offerer.user.id,
-            user_is_admin=user_offerer.user.isAdmin,
+            user_is_admin=user_offerer.user.has_admin_role,
             offers_limit=requested_max_offers_count,
         )
 
@@ -66,7 +66,7 @@ class GetCappedOffersForFiltersTest:
         repository.save(user_offerer, offer1, offer2)
 
         # When
-        offers = get_capped_offers_for_filters(user_id=user.id, user_is_admin=user.isAdmin, offers_limit=10)
+        offers = get_capped_offers_for_filters(user_id=user.id, user_is_admin=user.has_admin_role, offers_limit=10)
 
         # Then
         assert offers.offers[0].id > offers.offers[1].id
@@ -83,7 +83,7 @@ class GetCappedOffersForFiltersTest:
 
         # when
         offers = get_capped_offers_for_filters(
-            user_id=user_offerer.user.id, user_is_admin=user_offerer.user.isAdmin, offers_limit=10
+            user_id=user_offerer.user.id, user_is_admin=user_offerer.user.has_admin_role, offers_limit=10
         )
 
         # then
@@ -102,7 +102,7 @@ class GetCappedOffersForFiltersTest:
 
         offers = get_capped_offers_for_filters(
             user_id=user_offerer.user.id,
-            user_is_admin=user_offerer.user.isAdmin,
+            user_is_admin=user_offerer.user.has_admin_role,
             offers_limit=10,
             category_id=categories.FILM.id,
         )
@@ -130,7 +130,7 @@ class GetCappedOffersForFiltersTest:
 
         # When
         offers = get_capped_offers_for_filters(
-            user_id=pro_user.id, user_is_admin=pro_user.isAdmin, offers_limit=10, creation_mode="manual"
+            user_id=pro_user.id, user_is_admin=pro_user.has_admin_role, offers_limit=10, creation_mode="manual"
         )
 
         # then
@@ -154,7 +154,7 @@ class GetCappedOffersForFiltersTest:
 
         # When
         offers = get_capped_offers_for_filters(
-            user_id=pro_user.id, user_is_admin=pro_user.isAdmin, offers_limit=10, creation_mode="imported"
+            user_id=pro_user.id, user_is_admin=pro_user.has_admin_role, offers_limit=10, creation_mode="imported"
         )
 
         # then
@@ -172,7 +172,10 @@ class GetCappedOffersForFiltersTest:
 
         # When
         offers = get_capped_offers_for_filters(
-            user_id=pro.id, user_is_admin=pro.isAdmin, offers_limit=10, period_beginning_date="2020-01-01T00:00:00"
+            user_id=pro.id,
+            user_is_admin=pro.has_admin_role,
+            offers_limit=10,
+            period_beginning_date="2020-01-01T00:00:00",
         )
 
         # then
@@ -198,7 +201,7 @@ class GetCappedOffersForFiltersTest:
         # When
         offers = get_capped_offers_for_filters(
             user_id=admin.id,
-            user_is_admin=admin.isAdmin,
+            user_is_admin=admin.has_admin_role,
             offers_limit=10,
             period_beginning_date=period_beginning_date,
             period_ending_date=period_ending_date,
@@ -221,7 +224,7 @@ class GetCappedOffersForFiltersTest:
             # when
             offers = get_capped_offers_for_filters(
                 user_id=admin.id,
-                user_is_admin=admin.isAdmin,
+                user_is_admin=admin.has_admin_role,
                 offers_limit=10,
                 venue_id=offer_for_requested_venue.venue.id,
             )
@@ -247,7 +250,7 @@ class GetCappedOffersForFiltersTest:
             # when
             offers = get_capped_offers_for_filters(
                 user_id=admin.id,
-                user_is_admin=admin.isAdmin,
+                user_is_admin=admin.has_admin_role,
                 offers_limit=10,
                 venue_id=offer_for_requested_venue.venue.id,
             )
@@ -268,7 +271,7 @@ class GetCappedOffersForFiltersTest:
             # When
             offers = get_capped_offers_for_filters(
                 user_id=admin.id,
-                user_is_admin=admin.isAdmin,
+                user_is_admin=admin.has_admin_role,
                 offers_limit=10,
                 offerer_id=offer_for_requested_offerer.venue.managingOffererId,
             )
@@ -295,7 +298,7 @@ class GetCappedOffersForFiltersTest:
             # When
             offers = get_capped_offers_for_filters(
                 user_id=admin.id,
-                user_is_admin=admin.isAdmin,
+                user_is_admin=admin.has_admin_role,
                 offers_limit=10,
                 offerer_id=offer_for_requested_offerer.venue.managingOffererId,
             )
@@ -317,7 +320,7 @@ class GetCappedOffersForFiltersTest:
             # when
             offers = get_capped_offers_for_filters(
                 user_id=pro.id,
-                user_is_admin=pro.isAdmin,
+                user_is_admin=pro.has_admin_role,
                 offers_limit=10,
                 venue_id=offer_for_requested_venue.venue.id,
             )
@@ -343,7 +346,7 @@ class GetCappedOffersForFiltersTest:
             # when
             offers = get_capped_offers_for_filters(
                 user_id=pro.id,
-                user_is_admin=pro.isAdmin,
+                user_is_admin=pro.has_admin_role,
                 offers_limit=10,
                 venue_id=offer_for_requested_venue.venue.id,
             )
@@ -364,7 +367,7 @@ class GetCappedOffersForFiltersTest:
             # When
             offers = get_capped_offers_for_filters(
                 user_id=pro.id,
-                user_is_admin=pro.isAdmin,
+                user_is_admin=pro.has_admin_role,
                 offers_limit=10,
                 offerer_id=offer_for_requested_offerer.venue.managingOffererId,
             )
@@ -391,7 +394,7 @@ class GetCappedOffersForFiltersTest:
             # When
             offers = get_capped_offers_for_filters(
                 user_id=pro.id,
-                user_is_admin=pro.isAdmin,
+                user_is_admin=pro.has_admin_role,
                 offers_limit=10,
                 offerer_id=offer_for_requested_offerer.venue.managingOffererId,
             )
@@ -413,7 +416,7 @@ class GetCappedOffersForFiltersTest:
             # when
             offers = get_capped_offers_for_filters(
                 user_id=user_offerer.user.id,
-                user_is_admin=user_offerer.user.isAdmin,
+                user_is_admin=user_offerer.user.has_admin_role,
                 offers_limit=10,
                 name_keywords_or_isbn="ocs",
             )
@@ -439,7 +442,7 @@ class GetCappedOffersForFiltersTest:
             # when
             offers = get_capped_offers_for_filters(
                 user_id=user_offerer.user.id,
-                user_is_admin=user_offerer.user.isAdmin,
+                user_is_admin=user_offerer.user.has_admin_role,
                 offers_limit=10,
                 name_keywords_or_isbn="seras-tu",
             )
@@ -465,7 +468,7 @@ class GetCappedOffersForFiltersTest:
             # when
             offers = get_capped_offers_for_filters(
                 user_id=user_offerer.user.id,
-                user_is_admin=user_offerer.user.isAdmin,
+                user_is_admin=user_offerer.user.has_admin_role,
                 offers_limit=10,
                 name_keywords_or_isbn="mon océan",
             )
@@ -486,7 +489,7 @@ class GetCappedOffersForFiltersTest:
             # when
             offers = get_capped_offers_for_filters(
                 user_id=user_offerer.user.id,
-                user_is_admin=user_offerer.user.isAdmin,
+                user_is_admin=user_offerer.user.has_admin_role,
                 offers_limit=10,
                 name_keywords_or_isbn="ocean",
             )
@@ -513,7 +516,7 @@ class GetCappedOffersForFiltersTest:
             # when
             offers = get_capped_offers_for_filters(
                 user_id=user_offerer.user.id,
-                user_is_admin=user_offerer.user.isAdmin,
+                user_is_admin=user_offerer.user.has_admin_role,
                 offers_limit=10,
                 name_keywords_or_isbn="1234567891234",
             )
@@ -737,7 +740,7 @@ class GetCappedOffersForFiltersTest:
 
             # when
             offers = get_capped_offers_for_filters(
-                user_id=self.pro.id, user_is_admin=self.pro.isAdmin, offers_limit=5, status="ACTIVE"
+                user_id=self.pro.id, user_is_admin=self.pro.has_admin_role, offers_limit=5, status="ACTIVE"
             )
 
             # then
@@ -771,7 +774,7 @@ class GetCappedOffersForFiltersTest:
 
             # when
             offers = get_capped_offers_for_filters(
-                user_id=self.pro.id, user_is_admin=self.pro.isAdmin, offers_limit=5, status="INACTIVE"
+                user_id=self.pro.id, user_is_admin=self.pro.has_admin_role, offers_limit=5, status="INACTIVE"
             )
 
             # then
@@ -805,7 +808,7 @@ class GetCappedOffersForFiltersTest:
 
             # when
             offers = get_capped_offers_for_filters(
-                user_id=self.pro.id, user_is_admin=self.pro.isAdmin, offers_limit=10, status="SOLD_OUT"
+                user_id=self.pro.id, user_is_admin=self.pro.has_admin_role, offers_limit=10, status="SOLD_OUT"
             )
 
             # then
@@ -838,7 +841,7 @@ class GetCappedOffersForFiltersTest:
 
             # when
             offers = get_capped_offers_for_filters(
-                user_id=self.pro.id, user_is_admin=self.pro.isAdmin, offers_limit=10, status="SOLD_OUT"
+                user_id=self.pro.id, user_is_admin=self.pro.has_admin_role, offers_limit=10, status="SOLD_OUT"
             )
 
             # then
@@ -853,7 +856,7 @@ class GetCappedOffersForFiltersTest:
 
             # when
             offers = get_capped_offers_for_filters(
-                user_id=self.pro.id, user_is_admin=self.pro.isAdmin, offers_limit=5, status="SOLD_OUT"
+                user_id=self.pro.id, user_is_admin=self.pro.has_admin_role, offers_limit=5, status="SOLD_OUT"
             )
 
             # then
@@ -867,7 +870,7 @@ class GetCappedOffersForFiltersTest:
 
             # when
             offers = get_capped_offers_for_filters(
-                user_id=self.pro.id, user_is_admin=self.pro.isAdmin, offers_limit=5, status="SOLD_OUT"
+                user_id=self.pro.id, user_is_admin=self.pro.has_admin_role, offers_limit=5, status="SOLD_OUT"
             )
 
             # then
@@ -881,7 +884,7 @@ class GetCappedOffersForFiltersTest:
 
             # when
             offers = get_capped_offers_for_filters(
-                user_id=self.pro.id, user_is_admin=self.pro.isAdmin, offers_limit=5, status="SOLD_OUT"
+                user_id=self.pro.id, user_is_admin=self.pro.has_admin_role, offers_limit=5, status="SOLD_OUT"
             )
 
             # then
@@ -895,7 +898,7 @@ class GetCappedOffersForFiltersTest:
 
             # when
             offers = get_capped_offers_for_filters(
-                user_id=self.pro.id, user_is_admin=self.pro.isAdmin, offers_limit=5, status="EXPIRED"
+                user_id=self.pro.id, user_is_admin=self.pro.has_admin_role, offers_limit=5, status="EXPIRED"
             )
 
             # then
@@ -982,7 +985,7 @@ class GetCappedOffersForFiltersTest:
             # when
             offers = get_capped_offers_for_filters(
                 user_id=self.pro.id,
-                user_is_admin=self.pro.isAdmin,
+                user_is_admin=self.pro.has_admin_role,
                 offers_limit=5,
                 status="SOLD_OUT",
                 venue_id=self.other_venue.id,
@@ -1012,7 +1015,7 @@ class GetCappedOffersForFiltersTest:
             # when
             offers = get_capped_offers_for_filters(
                 user_id=self.pro.id,
-                user_is_admin=self.pro.isAdmin,
+                user_is_admin=self.pro.has_admin_role,
                 offers_limit=5,
                 status="ACTIVE",
                 period_beginning_date=utc_datetime_to_department_timezone(in_six_days_beginning, "75").isoformat(),

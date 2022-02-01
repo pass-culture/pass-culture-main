@@ -308,11 +308,11 @@ def can_offerer_create_educational_offer(offerer_id: str) -> bool:
 
 
 def get_educational_offerers(offerer_id: Optional[str], current_user: User) -> list[Offerer]:
-    if current_user.isAdmin and offerer_id is None:
+    if current_user.has_admin_role and offerer_id is None:
         logger.info("Admin user must provide offerer_id as a query parameter")
         raise MissingOffererIdQueryParameter
 
-    if offerer_id and current_user.isAdmin:
+    if offerer_id and current_user.has_admin_role:
         offerers = Offerer.query.filter(
             Offerer.validationToken.is_(None), Offerer.isActive.is_(True), Offerer.id == dehumanize(offerer_id)
         ).all()

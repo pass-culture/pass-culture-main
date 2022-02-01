@@ -64,7 +64,7 @@ def get_offerers(query: GetOffererListQueryModel) -> GetOfferersListResponseMode
 
     paginated_offerers = PaginatedOfferersSQLRepository().with_status_and_keywords(
         user_id=current_user.id,
-        user_is_admin=current_user.isAdmin,
+        user_is_admin=current_user.has_admin_role,
         is_filtered_by_offerer_status=is_filtered_by_offerer_status,
         only_validated_offerers=only_validated_offerers,
         keywords=keywords,

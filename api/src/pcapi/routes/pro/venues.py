@@ -48,7 +48,7 @@ def get_venue(venue_id: str) -> GetVenueResponseModel:
 def get_venues(query: VenueListQueryModel) -> GetVenueListResponseModel:
     venue_list = offerers_repository.get_filtered_venues(
         pro_user_id=current_user.id,
-        user_is_admin=current_user.isAdmin,
+        user_is_admin=current_user.has_admin_role,
         active_offerers_only=query.active_offerers_only,
         offerer_id=query.offerer_id,
         validated_offerer=query.validated,

@@ -44,7 +44,7 @@ def _delete_users_and_favorites(user_ids: set) -> None:
 
 
 def _suspend_users(user_ids: set, admin_email_used: str) -> None:
-    admin = User.query.filter_by(email=admin_email_used, isAdmin=True).one()
+    admin = User.query.filter_by(email=admin_email_used, has_admin_role=True).one()
     for user_id in user_ids:
         user = User.query.get(user_id)
         suspend_account(user, constants.SuspensionReason.UPON_USER_REQUEST, admin)

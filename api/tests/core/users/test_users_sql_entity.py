@@ -25,9 +25,7 @@ from pcapi.repository import repository
 @pytest.mark.usefixtures("db_session")
 def test_cannot_create_admin_that_can_book(app):
     # Given
-    user = users_factories.UserFactory.build(
-        roles=[user_models.UserRole.BENEFICIARY, user_models.UserRole.ADMIN], isAdmin=True
-    )
+    user = users_factories.UserFactory.build(roles=[user_models.UserRole.BENEFICIARY, user_models.UserRole.ADMIN])
 
     # When
     with pytest.raises(ApiErrors):
