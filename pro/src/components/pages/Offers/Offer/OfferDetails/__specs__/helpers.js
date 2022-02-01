@@ -18,7 +18,6 @@ export const fieldLabels = {
   externalTicketOfficeUrl: { label: /URL de redirection externe/, exact: true },
   isbn: { label: 'ISBN', exact: false },
   isDuo: { label: 'Accepter les réservations "duo"', exact: false },
-  isEducational: { label: 'Offre collective EAC', exact: false },
   audioDisabilityCompliant: { label: 'Auditif', exact: true },
   mentalDisabilityCompliant: { label: 'Psychique ou cognitif', exact: true },
   motorDisabilityCompliant: { label: 'Moteur', exact: true },
@@ -67,7 +66,7 @@ export const setOfferValues = values => {
     'visualDisabilityCompliant',
     'receiveNotificationEmails',
   ]
-  const offerTypeRadio = ['isDuo', 'isEducational']
+  const offerTypeRadio = ['isDuo']
 
   const setFormValueForField = (field, value) => {
     let input

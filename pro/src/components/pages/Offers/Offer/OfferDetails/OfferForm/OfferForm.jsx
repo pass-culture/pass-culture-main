@@ -69,10 +69,6 @@ const getOfferConditionalFields = ({
     offerConditionalFields.push('isDuo')
   }
 
-  if (offerSubCategory?.canBeEducational) {
-    offerConditionalFields.push('isEducational')
-  }
-
   if (offerSubCategory?.conditionalFields.includes('musicType')) {
     offerConditionalFields.push('musicSubType')
   }
@@ -993,11 +989,8 @@ const OfferForm = ({
 
             <OfferOptions
               canOfferBeDuo={offerFormFields.includes('isDuo')}
-              canOfferBeEducational={offerFormFields.includes('isEducational')}
               isDuo={formValues.isDuo}
               isDuoDisabled={readOnlyFields.includes('isDuo')}
-              isEducational={formValues.isEducational}
-              isEducationalDisabled={readOnlyFields.includes('isEducational')}
               updateForm={handleFormUpdate}
             />
 
