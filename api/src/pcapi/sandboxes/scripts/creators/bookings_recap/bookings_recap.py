@@ -96,11 +96,10 @@ def save_bookings_recap_sandbox():
     offer1_venue4 = ThingOfferFactory(product=product1_venue4, venue=venue4_virtual)
     stock_1_offer1_venue4 = ThingStockFactory(offer=offer1_venue4, quantity=70, price=10.99)
 
-    IndividualBookingFactory(
+    UsedIndividualBookingFactory(
         individualBooking__user=beneficiary1,
         stock=stock_1_offer1_venue1,
         dateCreated=datetime(2020, 3, 18, 14, 56, 12, 0),
-        isUsed=True,
         dateUsed=datetime(2020, 3, 22, 17, 00, 10, 0),
         quantity=2,
     )
@@ -111,11 +110,10 @@ def save_bookings_recap_sandbox():
         dateCreated=datetime(2020, 4, 22, 9, 17, 12, 0),
     )
 
-    IndividualBookingFactory(
+    UsedIndividualBookingFactory(
         individualBooking__user=beneficiary2,
         stock=stock_1_offer1_venue1,
         dateCreated=datetime(2020, 3, 18, 12, 18, 12, 0),
-        isUsed=True,
         dateUsed=datetime(2020, 5, 2),
         quantity=2,
     )
@@ -126,11 +124,10 @@ def save_bookings_recap_sandbox():
         dateCreated=datetime(2020, 4, 12, 14, 31, 12, 0),
     )
 
-    booking1_beneficiary3 = IndividualBookingFactory(
+    booking1_beneficiary3 = UsedIndividualBookingFactory(
         individualBooking__user=beneficiary3,
         stock=stock_2_offer2_venue1,
         dateCreated=datetime(2020, 1, 4, 19, 31, 12, 0),
-        isUsed=True,
         dateUsed=datetime(2020, 1, 4, 23, 00, 10, 0),
         quantity=2,
     )

@@ -32,7 +32,7 @@ def _check_bookings(bookings):
         return True
     stock_can_be_deleted = True
     for booking in bookings:
-        if booking.isUsed:
+        if booking.status is BookingStatus.USED:
             print("KO: f{booking} is used")
             stock_can_be_deleted = False
         if finance_repository.has_reimbursement(booking):

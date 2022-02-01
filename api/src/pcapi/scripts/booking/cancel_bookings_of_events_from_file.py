@@ -5,6 +5,7 @@ from typing import Iterable
 from pcapi.core.bookings import api as bookings_api
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
+from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
 from pcapi.models.api_errors import ApiErrors
@@ -53,7 +54,7 @@ def _cancel_bookings_of_offers_from_rows(csv_rows: Iterable, reason: BookingCanc
         )
 
         for booking in bookings_to_cancel:
-            if booking.isUsed:
+            if booking.status is BookingStatus.USED:
                 bookings_api.mark_as_unused(booking)
             bookings_api._cancel_booking(booking, reason)
 
