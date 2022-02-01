@@ -166,7 +166,9 @@ const ThingStocks = ({
               queryString += `&lieu=${queryParams.lieu}`
             }
 
-            history.push(`/offres/${offer.id}/confirmation${queryString}`)
+            history.push(
+              `/offre/${offer.id}/individuel/confirmation${queryString}`
+            )
           } else {
             loadStocks()
             reloadOffer()
