@@ -394,6 +394,7 @@ class CancelByBeneficiaryTest:
         queries += 1  # select individual_booking
         queries += 1  # select user
         queries += 2  # insert email ; release savepoint
+        queries += 7  # update_external_pro (sendinblue)
 
         individual_booking = booking.individualBooking
         user = individual_booking.user

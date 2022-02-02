@@ -1,6 +1,7 @@
 import pytest
 
 import pcapi.core.offers.factories as offers_factories
+from pcapi.core.users import testing as sendinblue_testing
 from pcapi.models.user_offerer import UserOfferer
 
 
@@ -22,6 +23,8 @@ class Returns202Test:
         user_offerer = UserOfferer.query.filter_by(id=user_offerer.id).first()
 
         assert user_offerer.isValidated
+
+        assert len(sendinblue_testing.sendinblue_requests) == 1
 
 
 class Returns404Test:

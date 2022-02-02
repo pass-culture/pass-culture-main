@@ -56,6 +56,10 @@ def find_user_by_email(email: str) -> Optional[User]:
     return _find_user_by_email_query(email).one_or_none()
 
 
+def find_pro_user_by_email(email: str) -> Optional[User]:
+    return _find_user_by_email_query(email).filter(User.has_pro_role.is_(True)).one_or_none()
+
+
 def get_user_with_valid_token(
     token_value: str, token_types: list[models.TokenType], use_token: bool = True
 ) -> Optional[User]:

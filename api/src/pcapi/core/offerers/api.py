@@ -22,6 +22,7 @@ from pcapi.core.offerers.repository import find_offerer_by_validation_token
 from pcapi.core.offerers.repository import find_siren_by_offerer_id
 from pcapi.core.offerers.repository import find_user_offerer_by_validation_token
 from pcapi.core.offerers.repository import get_all_offerers_for_user
+from pcapi.core.users.external import update_external_pro
 from pcapi.core.users.models import User
 from pcapi.core.users.repository import get_users_with_validated_attachment_by_offerer
 from pcapi.domain.admin_emails import maybe_send_offerer_validation_email
@@ -84,6 +85,8 @@ def update_venue(
                 extra={"venue_id": venue.id, "business_unit_id": business_unit_id},
             )
 
+    old_booking_email = venue.bookingEmail if modifications.get("bookingEmail") else None
+
     venue.populate_from_dict(modifications)
 
     repository.save(venue)
@@ -92,6 +95,11 @@ def update_venue(
     indexing_modifications_fields = set(modifications.keys()) & set(VENUE_ALGOLIA_INDEXED_FIELDS)
     if indexing_modifications_fields or contact_data:
         search.async_index_offers_of_venue_ids([venue.id])
+
+    # Former booking email address shall no longer receive emails about data related to this venue.
+    # If booking email was only in this object, this will clear all columns here and it will never be updated later.
+    update_external_pro(old_booking_email)
+    update_external_pro(venue.bookingEmail)
 
     return venue
 
@@ -145,6 +153,9 @@ def create_venue(venue_data: PostVenueBodyModel) -> Venue:
     repository.save(venue)
 
     search.async_index_venue_ids([venue.id])
+
+    update_external_pro(venue.bookingEmail)
+
     return venue
 
 
@@ -229,6 +240,8 @@ def create_offerer(user: User, offerer_informations: CreateOffererQueryModel):
 
     _send_to_pc_admin_offerer_to_validate_email(offerer, user_offerer)
 
+    update_external_pro(user.email)
+
     return user_offerer
 
 
@@ -248,6 +261,8 @@ def validate_offerer_attachment(token: str) -> None:
     user_offerer.validationToken = None
     user_offerer.user.add_pro_role()
     repository.save(user_offerer)
+
+    update_external_pro(user_offerer.user.email)
 
     if not send_attachment_validation_email_to_pro_offerer(user_offerer):
         logger.warning(
@@ -270,6 +285,9 @@ def validate_offerer(token: str) -> None:
 
     repository.save(offerer, *applicants)
     search.async_index_offers_of_venue_ids([venue.id for venue in managed_venues])
+
+    for applicant in applicants:
+        update_external_pro(applicant.email)
 
     if not send_validation_confirmation_email_to_pro(offerer):
         logger.warning(

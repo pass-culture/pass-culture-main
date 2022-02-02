@@ -1,8 +1,11 @@
 from flask import flash
+from wtforms import Form
 
 from pcapi.admin.base_configuration import BaseAdminView
 from pcapi.core.bookings.exceptions import CannotDeleteOffererWithBookingsException
 from pcapi.core.offerers.models import Offerer
+from pcapi.core.users.external import update_external_pro
+from pcapi.repository import user_offerer_queries
 from pcapi.scripts.offerer.delete_cascade_offerer_by_id import delete_cascade_offerer_by_id
 
 
@@ -16,9 +19,25 @@ class OffererView(BaseAdminView):
     form_columns = ["name", "siren", "city", "postalCode", "address"]
 
     def delete_model(self, offerer: Offerer) -> bool:
+        # Get users to update before association info is deleted
+        users_offerer = user_offerer_queries.find_all_by_offerer_id(offerer.id)
+
         try:
             delete_cascade_offerer_by_id(offerer.id)
-            return True
         except CannotDeleteOffererWithBookingsException:
             flash("Impossible d'effacer une structure juridique pour lequel il existe des reservations.", "error")
-        return False
+            return False
+
+        for user_offerer in users_offerer:
+            update_external_pro(user_offerer.user.email)
+
+        return True
+
+    def update_model(self, form: Form, offerer: Offerer) -> bool:
+        result = super().update_model(form, offerer)
+
+        if result:
+            for user_offerer in user_offerer_queries.find_all_by_offerer_id(offerer.id):
+                update_external_pro(user_offerer.user.email)
+
+        return result

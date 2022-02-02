@@ -1,10 +1,13 @@
 from dataclasses import InitVar
 from dataclasses import asdict
 from dataclasses import dataclass
+from datetime import datetime
+import hashlib
 import json
 import logging
 from typing import Optional
 
+from dateutil.relativedelta import relativedelta
 from google.api_core import retry
 from google.api_core.exceptions import AlreadyExists
 from google.cloud import tasks_v2
@@ -41,12 +44,22 @@ class CloudTaskHttpRequest:
             self.body = json.dumps(json_param).encode()
 
 
-def enqueue_task(queue: str, http_request: CloudTaskHttpRequest) -> Optional[str]:
+def enqueue_task(
+    queue: str, http_request: CloudTaskHttpRequest, task_id: str = None, schedule_time: datetime = None
+) -> Optional[str]:
 
     client = get_client()
     parent = client.queue_path(settings.GCP_PROJECT, settings.GCP_REGION_CLOUD_TASK, queue)
 
     task_request = {"http_request": asdict(http_request)}
+
+    # task_id must be used for de-duplication:
+    # https://cloud.google.com/tasks/docs/reference/rest/v2/projects.locations.queues.tasks/create
+    if task_id:
+        task_request["name"] = client.task_path(settings.GCP_PROJECT, settings.GCP_REGION_CLOUD_TASK, queue, task_id)
+
+    if schedule_time:
+        task_request["schedule_time"] = schedule_time.isoformat()
 
     try:
         response = client.create_task(
@@ -75,7 +88,7 @@ def enqueue_task(queue: str, http_request: CloudTaskHttpRequest) -> Optional[str
     return task_id
 
 
-def enqueue_internal_task(queue, path, payload):
+def enqueue_internal_task(queue, path, payload, deduplicate: bool = False, delayed_seconds: int = 0):
     url = settings.API_URL + CLOUD_TASK_SUBPATH + path
 
     if settings.IS_DEV:
@@ -89,7 +102,13 @@ def enqueue_internal_task(queue, path, payload):
         json=payload,
     )
 
-    return enqueue_task(queue, http_request)
+    # According to Google Cloud Tasks documentation, "Using hashed strings for the task id or for the prefix of the task
+    # id is recommended".
+    task_id = hashlib.sha1(json.dumps(payload, sort_keys=True).encode()).hexdigest() if deduplicate else None
+
+    schedule_time = datetime.now() + relativedelta(seconds=delayed_seconds) if delayed_seconds else None
+
+    return enqueue_task(queue, http_request, task_id=task_id, schedule_time=schedule_time)
 
 
 def _call_internal_api_endpoint(queue, url, payload):

@@ -2,6 +2,9 @@ import markupsafe
 
 from pcapi import settings
 from pcapi.admin.base_configuration import BaseAdminView
+from pcapi.core.users.external import update_external_pro
+from pcapi.models.user_offerer import UserOfferer
+from pcapi.repository.user_offerer_queries import find_one_or_none_by_id
 from pcapi.utils import human_ids
 
 
@@ -59,3 +62,14 @@ class UserOffererView(BaseAdminView):
     column_formatters = {
         "offerer.name": format_offerer_name,
     }
+
+    def delete_model(self, user_offerer: UserOfferer) -> bool:
+        # user_offerer.user is not available in this call, get email before deletion
+        user_offerer_with_join = find_one_or_none_by_id(user_offerer.id)
+
+        result = super().delete_model(user_offerer)
+
+        if result and user_offerer_with_join:
+            update_external_pro(user_offerer_with_join.user.email)
+
+        return result

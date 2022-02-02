@@ -6,6 +6,7 @@ import sqlalchemy.orm as sqla_orm
 from sqlalchemy.orm import Query
 
 from pcapi.core.offers.models import Offer
+from pcapi.core.offers.models import OfferStatus
 from pcapi.core.users.models import User
 from pcapi.domain.ts_vector import create_filter_matching_all_keywords_in_any_model
 from pcapi.domain.ts_vector import create_get_filter_matching_ts_query_in_any_model
@@ -129,6 +130,10 @@ def find_virtual_venue_by_offerer_id(offerer_id: int) -> Optional[models.Venue]:
     return models.Venue.query.filter_by(managingOffererId=offerer_id, isVirtual=True).first()
 
 
+def find_venues_by_booking_email(email: str) -> list[models.Venue]:
+    return models.Venue.query.filter_by(bookingEmail=email).all()
+
+
 def has_physical_venue_without_draft_or_accepted_bank_information(offerer_id: int) -> bool:
     return db.session.query(
         models.Venue.query.outerjoin(BankInformation)
@@ -198,3 +203,17 @@ def find_siren_by_offerer_id(offerer_id) -> str:
         return siren
 
     raise exceptions.CannotFindOffererSiren
+
+
+def venues_have_offers(*venues: models.Venue) -> bool:
+    """At least one venue which has email as bookingEmail has at least one active offer"""
+    return db.session.query(
+        Offer.query.filter(
+            Offer.venueId.in_([venue.id for venue in venues]), Offer.status == OfferStatus.ACTIVE.name
+        ).exists()
+    ).scalar()
+
+
+def count_venues(*offerers: models.Offerer) -> bool:
+    """Number of venues managed by all offerers to which the user account with given email is attached"""
+    return models.Venue.query.filter(models.Venue.managingOffererId.in_([offerer.id for offerer in offerers])).count()

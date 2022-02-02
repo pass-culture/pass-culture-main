@@ -125,7 +125,7 @@ class OfferValidationViewTest:
         # Given
         users_factories.AdminFactory(email="admin@example.com")
 
-        venue = VenueFactory()
+        venue = VenueFactory(bookingEmail=None)
         offerer = venue.managingOfferer
         pro_user = users_factories.ProFactory(email="pro@example.com")
         offers_factories.UserOffererFactory(user=pro_user, offerer=offerer)

@@ -30,6 +30,7 @@ from pcapi.core.mails.transactional.users.email_address_change_confirmation impo
 import pcapi.core.payments.api as payment_api
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.users import utils as users_utils
+from pcapi.core.users.external import update_external_pro
 from pcapi.core.users.external import update_external_user
 from pcapi.core.users.models import Credit
 from pcapi.core.users.models import DomainsCredit
@@ -435,11 +436,14 @@ def update_user_info(
     phone_number=UNCHANGED,
     public_name=UNCHANGED,
 ):
+    old_email = None
+
     if cultural_survey_filled_date is not UNCHANGED:
         user.culturalSurveyFilledDate = cultural_survey_filled_date
     if cultural_survey_id is not UNCHANGED:
         user.culturalSurveyId = cultural_survey_id
     if email is not UNCHANGED:
+        old_email = user.email
         user.email = users_utils.sanitize_email(email)
     if first_name is not UNCHANGED:
         user.firstName = first_name
@@ -454,6 +458,11 @@ def update_user_info(
     if public_name is not UNCHANGED:
         user.publicName = public_name
     repository.save(user)
+
+    # TODO(prouzet) even for young users, we should probbaly remove contact with former email from sendinblue lists
+    if old_email and user.has_pro_role:
+        update_external_pro(old_email)
+    update_external_user(user)
 
 
 def get_domains_credit(user: User, user_bookings: list[bookings_models.Booking] = None) -> Optional[DomainsCredit]:
@@ -547,6 +556,8 @@ def create_pro_user_and_offerer(pro_user: ProUserCreationBodyModel) -> User:
             "Could not send validation email when creating pro user",
             extra={"user": new_pro_user.id},
         )
+
+    update_external_pro(new_pro_user.email)
 
     return new_pro_user
 
