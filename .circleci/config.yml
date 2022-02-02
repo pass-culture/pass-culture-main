@@ -412,6 +412,45 @@ jobs:
             - notify-slack:
                 channel: shérif
 
+  type-checking-adage-front:
+    docker:
+      - image: cimg/node:14.17
+    working_directory: ~/pass-culture
+    steps:
+      - checkout
+      - skip_unchanged:
+          paths: adage-front
+      - unless:
+          condition:
+            equal: ["master", << pipeline.git.branch >>]
+          steps:
+            - restore_cache:
+                name: Restore Yarn Package Cache
+                key: << pipeline.parameters.adage-front_cache_key >>
+      - run:
+          name: Install dependencies
+          working_directory: adage-front
+          command: yarn install
+      - unless:
+          condition:
+            equal: ["master", << pipeline.git.branch >>]
+          steps:
+            - save_cache:
+                name: Save Yarn Package Cache
+                key: << pipeline.parameters.adage-front_cache_key >>
+                paths:
+                  - ~/.cache/yarn
+      - run:
+          name: Running type checking
+          working_directory: adage-front
+          command: yarn tsc -b
+      - when:
+          condition:
+            equal: ["master", << pipeline.git.branch >>]
+          steps:
+            - notify-slack:
+                channel: shérif
+
   quality-adage-front:
     docker:
       - image: cimg/node:14.17
@@ -937,6 +976,14 @@ workflows:
                 - integration
           context: Slack
       - quality-pro:
+          filters:
+            branches:
+              ignore:
+                - production
+                - staging
+                - integration
+          context: Slack
+      - type-checking-adage-front:
           filters:
             branches:
               ignore:
