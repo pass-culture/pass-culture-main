@@ -1,7 +1,7 @@
 import React, { FunctionComponent } from 'react'
 
-import homeShell from 'components/pages/Offers/Offer/Thumbnail/assets/home-shell.png'
 import { ReactComponent as MobileShell } from 'components/pages/Offers/Offer/Thumbnail/assets/mobile-shell.svg'
+import homeShell from 'components/pages/Offers/Offer/Thumbnail/assets/offer-home-shell.png'
 import offerShell from 'components/pages/Offers/Offer/Thumbnail/assets/offer-shell.png'
 
 interface Props {
