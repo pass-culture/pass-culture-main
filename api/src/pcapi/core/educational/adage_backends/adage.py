@@ -63,3 +63,20 @@ class AdageHttpClient(AdageClient):
             raise AdageException("Error getting Adage API", api_response.status_code, api_response.text)
 
         return parse_obj_as(list[AdageVenue], api_response.json())
+
+    def notify_booking_cancellation_by_offerer(self, data: EducationalBookingResponse) -> AdageApiResult:
+        api_url = f"{self.base_url}/v1/prereservation-annule"
+        api_response = requests.post(
+            api_url,
+            headers={self.header_key: self.api_key, "Content-Type": "application/json"},
+            data=data.json(),
+        )
+
+        if api_response.status_code != 201:
+            raise AdageException(
+                "Error posting booking cancellation by offerer notification to Adage API.",
+                api_response.status_code,
+                api_response.text,
+            )
+
+        return AdageApiResult(sent_data=data.dict(), response=dict(api_response.json()), success=True)

@@ -17,3 +17,7 @@ class AdageSpyClient(AdageClient):
 
     def get_adage_offerer(self, siren: str) -> list[AdageVenue]:
         raise Exception("Do not use the spy for this method, mock the get request instead")
+
+    def notify_booking_cancellation_by_offerer(self, data: EducationalBookingResponse) -> AdageApiResult:
+        testing.adage_requests.append({"url": f"{self.base_url}/v1/prereservation-annule", "sent_data": data})
+        return AdageApiResult(sent_data=data.dict(), response={"status_code": 201}, success=True)
