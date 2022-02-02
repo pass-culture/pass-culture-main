@@ -62,7 +62,7 @@ describe('offerLayout', () => {
       }
       props = {
         match: {
-          url: '/offres/AB',
+          url: '/offre/AB',
           params: { offerId: 'AB' },
         },
         location: {
@@ -211,7 +211,7 @@ describe('offerLayout', () => {
           params: {},
         },
         location: {
-          pathname: '/offres/AB/creation',
+          pathname: '/offre/AB/creation',
         },
       }
     })

@@ -69,7 +69,7 @@ const renderOffers = async (props, store, queryParams = '') => {
             },
           ]}
         >
-          <Route path="/offres/:offerId([A-Z0-9]+)/">
+          <Route path="/offre/:offerId([A-Z0-9]+)/individuel">
             <>
               <OfferLayoutContainer {...props} />
               <NotificationContainer />
