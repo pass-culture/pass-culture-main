@@ -26,6 +26,7 @@ interface IReimbursementsSectionHeaderProps {
   hasNoInvoicesYet: boolean
   headerTitle: string
   initialFilters: filtersType
+  loadInvoices: (shouldReset: boolean) => void
   selectLabel: string
   selectName: string
   selectableOptions: selectableOptionsType
@@ -42,6 +43,7 @@ const InvoicesFilters = ({
   hasNoInvoicesYet,
   headerTitle,
   initialFilters,
+  loadInvoices,
   selectLabel,
   selectName,
   selectableOptions,
@@ -57,6 +59,7 @@ const InvoicesFilters = ({
   function resetFilters() {
     setAreFiltersDefault(true)
     setFilters(initialFilters)
+    loadInvoices(true)
   }
 
   const setBusinessUnitFilter = useCallback(
