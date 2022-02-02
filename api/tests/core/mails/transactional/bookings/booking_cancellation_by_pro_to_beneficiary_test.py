@@ -55,41 +55,6 @@ class MailjetRetrieveDataToWarnUserAfterProBookingCancellationTest:
         }
 
     @override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=False)
-    def test_should_return_redactor_first_name_when_booking_is_educational(self):
-        # Given
-        stock = offers_factories.EventStockFactory(
-            beginningDatetime=datetime(2019, 7, 20, 12, 0, 0, tzinfo=timezone.utc)
-        )
-        booking = bookings_factories.EducationalBookingFactory(
-            stock=stock,
-            educationalBooking__educationalRedactor__firstName="Georgio",
-            educationalBooking__educationalRedactor__lastName="Di georgio",
-        )
-
-        # When
-        mailjet_data = get_booking_cancellation_by_pro_to_beneficiary_email_data(booking)
-
-        # Then
-        assert mailjet_data == {
-            "MJ-TemplateID": 3192295,
-            "MJ-TemplateLanguage": True,
-            "Vars": {
-                "event_date": "samedi 20 juillet 2019",
-                "event_hour": "14h",
-                "is_event": 1,
-                "is_free_offer": 0,
-                "is_online": 0,
-                "is_thing": 0,
-                "offer_name": booking.stock.offer.name,
-                "offer_price": "10.00",
-                "offerer_name": booking.offerer.name,
-                "user_first_name": "Georgio",
-                "user_last_name": "Di georgio",
-                "venue_name": booking.venue.name,
-            },
-        }
-
-    @override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=False)
     def test_should_return_thing_data_when_booking_is_on_a_thing(self):
         # Given
         stock = offers_factories.ThingStockFactory()
@@ -294,38 +259,6 @@ class SendinblueRetrieveDataToWarnUserAfterProBookingCancellationTest:
             "OFFERER_NAME": booking.offerer.name,
             "USER_FIRST_NAME": "Georges",
             "USER_LAST_NAME": "Moustiquos",
-            "VENUE_NAME": booking.venue.name,
-        }
-
-    @override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=True)
-    def test_should_return_redactor_first_name_when_booking_is_educational(self):
-        # Given
-        stock = offers_factories.EventStockFactory(
-            beginningDatetime=datetime(2019, 7, 20, 12, 0, 0, tzinfo=timezone.utc)
-        )
-        booking = bookings_factories.EducationalBookingFactory(
-            stock=stock,
-            educationalBooking__educationalRedactor__firstName="Georgio",
-            educationalBooking__educationalRedactor__lastName="Di georgio",
-        )
-
-        # When
-        email_data = get_booking_cancellation_by_pro_to_beneficiary_email_data(booking)
-
-        # Then
-        assert email_data.template == Template(id_prod=475, id_not_prod=44, tags=["profs_annulation_offreur"])
-        assert email_data.params == {
-            "EVENT_DATE": "samedi 20 juillet 2019",
-            "EVENT_HOUR": "14h",
-            "IS_EVENT": True,
-            "IS_FREE_OFFER": False,
-            "IS_ONLINE": False,
-            "IS_THING": False,
-            "OFFER_NAME": booking.stock.offer.name,
-            "OFFER_PRICE": 10.00,
-            "OFFERER_NAME": booking.offerer.name,
-            "USER_FIRST_NAME": "Georgio",
-            "USER_LAST_NAME": "Di georgio",
             "VENUE_NAME": booking.venue.name,
         }
 
