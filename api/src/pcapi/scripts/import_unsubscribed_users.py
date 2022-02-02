@@ -4,7 +4,7 @@ from pcapi.core.users.external.sendinblue import import_contacts_in_sendinblue
 from pcapi.core.users.models import User
 from pcapi.flask_app import app
 from pcapi.repository import repository
-from pcapi.scripts.batch_update_users_attributes import format_sendinblue_users
+from pcapi.scripts.external_users.batch_update_users_attributes import format_sendinblue_users
 
 
 def _get_emails() -> list[str]:
