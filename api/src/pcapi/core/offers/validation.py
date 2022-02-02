@@ -11,6 +11,7 @@ from PIL import Image
 from pcapi import settings
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingStatus
+import pcapi.core.finance.repository as finance_repository
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
 from pcapi.core.users.models import User
@@ -121,7 +122,11 @@ def check_stock_price(price: float, offer: Offer) -> None:
             "Le prix d’une offre ne peut excéder 300 euros.",
         )
         raise api_errors
-    if offer.custom_reimbursement_rules:
+    if finance_repository.has_active_or_future_custom_reimbursement_rule(offer):
+        # We obviously look for active rules, but also future ones: if
+        # a reimbursement rule has been negotiated that will enter in
+        # effect tomorrow, we don't want to let the offerer change its
+        # price today.
         error = (
             "Vous ne pouvez pas modifier le prix ou créer un stock pour cette offre, "
             "car elle bénéficie d'un montant de remboursement spécifique."
