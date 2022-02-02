@@ -6,7 +6,6 @@
 import { connect } from 'react-redux'
 import { compose } from 'redux'
 
-import { withQueryRouter } from 'components/hocs/with-query-router/withQueryRouter'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { showNotification } from 'store/reducers/notificationReducer'
 import { selectCurrentUser } from 'store/selectors/data/usersSelectors'
@@ -30,7 +29,4 @@ export const mapDispatchToProps = dispatch => ({
     ),
 })
 
-export default compose(
-  withQueryRouter(),
-  connect(mapStateToProps, mapDispatchToProps)
-)(Offers)
+export default compose(connect(mapStateToProps, mapDispatchToProps))(Offers)
