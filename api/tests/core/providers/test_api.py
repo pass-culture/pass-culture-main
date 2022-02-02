@@ -257,6 +257,7 @@ class SynchronizeStocksTest:
         )
 
         # Then
+        assert len(new_offers) == 1
         new_offer = new_offers[0]
         assert new_offer.bookingEmail == "booking_email"
         assert new_offer.description == "product_desc"
