@@ -14,6 +14,12 @@ def validate_generic(model: Model) -> ApiErrors:
     columns = model.__class__.__table__.columns._data
 
     for key in columns.keys():
+        # TODO (ASK, JSONB): dirty patch to allow extraData, specs and content properties
+        #  to work properly during the JSONB migration
+        #  remove it when JSONB migration is done
+        if key in ("jsonData", "specsNew", "contentNew"):
+            continue
+
         column = columns[key]
         value = getattr(model, key)
 
