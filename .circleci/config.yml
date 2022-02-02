@@ -534,14 +534,13 @@ jobs:
                 channel: shérif
 
   quality-pro:
-    machine:
-      image: ubuntu-2004:202101-01
+    docker:
+      - image: cimg/node:14.17
     working_directory: ~/pass-culture
     steps:
       - checkout
       - skip_unchanged:
           paths: pro
-      - run: ./install_lib_ci.sh
       - unless:
           condition:
             equal: ["master", << pipeline.git.branch >>]
@@ -552,11 +551,7 @@ jobs:
       - run:
           name: Install dependencies
           working_directory: pro
-          command: |
-            export NVM_DIR="/opt/circleci/.nvm"
-            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-            nvm install
-            yarn install
+          command: yarn install
       - unless:
           condition:
             equal: ["master", << pipeline.git.branch >>]
@@ -569,11 +564,7 @@ jobs:
       - run:
           name: Running linter
           working_directory: pro
-          command: |
-            export NVM_DIR="/opt/circleci/.nvm"
-            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-            nvm install
-            yarn lint:js
+          command: yarn lint:js
       - when:
           condition:
             equal: ["master", << pipeline.git.branch >>]
@@ -582,21 +573,17 @@ jobs:
                 channel: shérif
 
   tests-pro-unit-tests:
-    machine:
-      image: ubuntu-2004:202101-01
+    docker:
+      - image: cimg/node:14.17
     working_directory: ~/pass-culture
     steps:
       - checkout
       - skip_unchanged:
           paths: pro
-      - run: ./install_lib_ci.sh
       - run:
           name: Run Unit Test PRO
           command: |
-            export NVM_DIR="/opt/circleci/.nvm"
-            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
             cd pro
-            nvm install
             yarn install
             yarn test:unit
       - when:
@@ -607,8 +594,8 @@ jobs:
                 channel: shérif
 
   tests-pro-e2e-tests:
-    machine:
-      image: ubuntu-2004:202101-01
+    docker:
+      - image: cimg/node:14.17
     working_directory: ~/pass-culture
     steps:
       - checkout
@@ -626,10 +613,7 @@ jobs:
       - run:
           name: Run Frontend PRO
           command: |
-            export NVM_DIR="/opt/circleci/.nvm"
-            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
             cd pro
-            nvm install
             yarn install
             yarn start
           background: true
@@ -642,10 +626,7 @@ jobs:
       - run:
           name: Running functional tests PRO
           command: |
-            export NVM_DIR="/opt/circleci/.nvm"
-            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
             cd pro
-            nvm install
             dockerize -wait http://localhost:3001 -timeout 5m -wait-retry-interval 5s
             yarn test:cafe
       - store_artifacts:
