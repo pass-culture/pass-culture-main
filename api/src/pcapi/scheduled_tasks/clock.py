@@ -234,8 +234,8 @@ def pc_users_one_year_with_pass_automation() -> None:
     users_one_year_with_pass_automation()
 
 
-@log_cron_with_transaction
 @cron_context
+@log_cron_with_transaction
 def pc_notify_users_bookings_not_retrieved() -> None:
     """
     Find soon expiring bookings that will expire in exactly N days and
