@@ -3,6 +3,7 @@ import logging
 from pcapi import settings
 from pcapi.connectors.dms import api as api_dms
 from pcapi.core.users import models as users_models
+from pcapi.models import db
 from pcapi.models.beneficiary_import import BeneficiaryImport
 from pcapi.models.beneficiary_import_status import BeneficiaryImportStatus
 from pcapi.models.beneficiary_import_status import ImportStatus
@@ -38,6 +39,8 @@ def archive_applications(procedure_id: int, dry_run: bool = True) -> None:
                 bi.beneficiaryId,
             )
             archived_applications += 1
+        # remove object from SQLAlchemy session's cache and release read locks
+        db.session.rollback()
     logger.info(
         "script ran : total applications : %d to archive applications : %d", total_applications, archived_applications
     )
