@@ -22,6 +22,7 @@ from pcapi.core.educational.models import EducationalBooking
 from pcapi.core.educational.models import EducationalBookingStatus
 import pcapi.core.finance.api as finance_api
 import pcapi.core.finance.models as finance_models
+import pcapi.core.finance.repository as finance_repository
 from pcapi.core.mails.transactional.bookings.booking_confirmation_to_beneficiary import (
     send_individual_booking_confirmation_email_to_beneficiary,
 )
@@ -311,7 +312,7 @@ def mark_as_cancelled(booking: Booking) -> None:
     if booking.status == BookingStatus.CANCELLED:
         raise exceptions.BookingAlreadyCancelled("la réservation a déjà été annulée")
 
-    if booking.payments:
+    if finance_repository.has_reimbursement(booking):
         raise exceptions.BookingAlreadyRefunded("la réservation a déjà été remboursée")
 
     _cancel_booking(booking, BookingCancellationReasons.BENEFICIARY)

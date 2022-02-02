@@ -13,6 +13,7 @@ from pcapi.admin.base_configuration import BaseCustomAdminView
 from pcapi.core.bookings import models as booking_models
 import pcapi.core.bookings.api as bookings_api
 from pcapi.core.educational.models import EducationalBooking
+import pcapi.core.finance.repository as finance_repository
 from pcapi.core.offers.models import Stock
 from pcapi.domain.client_exceptions import ClientError
 from pcapi.models.api_errors import ApiErrors
@@ -72,7 +73,7 @@ class BookingView(BaseCustomAdminView):
                     and booking.status != booking_models.BookingStatus.CANCELLED
                 ):
                     flash("Vous ne pouvez pas annuler une réservation associée à une offre collective")
-                elif not booking.payments:
+                elif not finance_repository.has_reimbursement(booking):
                     cancel_form = CancelForm(booking_id=booking.id)
         elif "id" in request.args:
             booking = (
