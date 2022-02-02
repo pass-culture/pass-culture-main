@@ -4,11 +4,14 @@
  */
 
 import '@testing-library/jest-dom'
+import { parse } from 'querystring'
+
 import { fireEvent, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { createMemoryHistory } from 'history'
 import React from 'react'
 import { Provider } from 'react-redux'
-import { MemoryRouter } from 'react-router'
+import { MemoryRouter, Router } from 'react-router'
 
 import {
   ALL_OFFERERS,
@@ -31,14 +34,22 @@ import { configureTestStore } from 'store/testUtils'
 import { offerFactory } from 'utils/apiFactories'
 import { queryByTextTrimHtml, renderWithStyles } from 'utils/testHelpers'
 
-const renderOffers = (props, store) => {
-  return render(
-    <Provider store={store}>
-      <MemoryRouter>
-        <Offers {...props} />
-      </MemoryRouter>
-    </Provider>
-  )
+import { computeOffersUrl } from '../../utils/computeOffersUrl'
+
+const renderOffers = (props, store, filters = DEFAULT_SEARCH_FILTERS) => {
+  const history = createMemoryHistory()
+  const route = computeOffersUrl(filters)
+  history.push(route)
+  return {
+    ...render(
+      <Provider store={store}>
+        <Router history={history}>
+          <Offers {...props} />
+        </Router>
+      </Provider>
+    ),
+    history,
+  }
 }
 
 const categoriesAndSubcategories = {
@@ -68,8 +79,6 @@ jest.mock('utils/date', () => ({
 }))
 
 describe('src | components | pages | Offers | Offers', () => {
-  let change
-  let parse
   let props
   let currentUser
   let store
@@ -90,8 +99,6 @@ describe('src | components | pages | Offers | Offers', () => {
   let offersRecap
 
   beforeEach(() => {
-    change = jest.fn()
-    parse = jest.fn().mockReturnValue({})
     currentUser = {
       id: 'EY',
       isAdmin: false,
@@ -109,10 +116,6 @@ describe('src | components | pages | Offers | Offers', () => {
 
     props = {
       currentUser,
-      query: {
-        change,
-        parse,
-      },
       getOfferer: jest.fn().mockResolvedValue({}),
     }
     fetchAllVenuesByProUser.mockResolvedValue(proVenues)
@@ -288,12 +291,10 @@ describe('src | components | pages | Offers | Offers', () => {
         const expectedSelectOptions = [
           { id: [proVenues[0].id], value: proVenues[0].name },
         ]
-        jest
-          .spyOn(props.query, 'parse')
-          .mockReturnValue({ lieu: proVenues[0].id })
+        const filters = { lieu: proVenues[0].id }
 
         // When
-        await renderOffers(props, store)
+        await renderOffers(props, store, filters)
 
         // Then
         let venueSelect = screen.getByDisplayValue(
@@ -315,12 +316,10 @@ describe('src | components | pages | Offers | Offers', () => {
 
       it('should render creation mode filter with given creation mode selected', async () => {
         // Given
-        jest
-          .spyOn(props.query, 'parse')
-          .mockReturnValue({ creation: 'importee' })
+        const filters = { creation: 'importee' }
 
         // When
-        renderOffers(props, store)
+        renderOffers(props, store, filters)
 
         // Then
         expect(screen.getByDisplayValue('Importée')).toBeInTheDocument()
@@ -512,8 +511,8 @@ describe('src | components | pages | Offers | Offers', () => {
 
           it('should disable status filters when no venue filter is selected, even if one venue filter is currently applied', async () => {
             // Given
-            props.query.parse.mockReturnValueOnce({ lieu: 'JI' })
-            renderOffers(props, store)
+            const filters = { lieu: 'JI' }
+            renderOffers(props, store, filters)
 
             // When
             fireEvent.change(await screen.findByDisplayValue('Ma venue'), {
@@ -530,11 +529,11 @@ describe('src | components | pages | Offers | Offers', () => {
           it('should reset and disable status filter when venue filter is deselected', async () => {
             // Given
             const { id: venueId, name: venueName } = proVenues[0]
-            props.query.parse.mockReturnValueOnce({
+            const filters = {
               lieu: venueId,
               statut: 'inactive',
-            })
-            await renderOffers(props, store)
+            }
+            await renderOffers(props, store, filters)
             fireEvent.change(screen.getByDisplayValue(venueName), {
               target: { value: ALL_VENUES },
             })
@@ -562,12 +561,12 @@ describe('src | components | pages | Offers | Offers', () => {
           it('should not reset or disable status filter when venue filter is deselected while offerer filter is applied', async () => {
             // Given
             const { id: venueId, name: venueName } = proVenues[0]
-            props.query.parse.mockReturnValueOnce({
+            const filters = {
               lieu: venueId,
               statut: 'inactive',
               structure: 'EF',
-            })
-            await renderOffers(props, store)
+            }
+            await renderOffers(props, store, filters)
             fireEvent.change(screen.getByDisplayValue(venueName), {
               target: { value: ALL_VENUES },
             })
@@ -596,11 +595,11 @@ describe('src | components | pages | Offers | Offers', () => {
             // Given
             const offerer = { name: 'La structure', id: 'EF' }
             props.getOfferer.mockResolvedValueOnce(offerer)
-            props.query.parse.mockReturnValueOnce({
+            const filters = {
               structure: offerer.id,
               statut: 'inactive',
-            })
-            await renderOffers(props, store)
+            }
+            await renderOffers(props, store, filters)
 
             // When
             await fireEvent.click(
@@ -629,12 +628,12 @@ describe('src | components | pages | Offers | Offers', () => {
             const { id: venueId } = proVenues[0]
             const offerer = { name: 'La structure', id: 'EF' }
             props.getOfferer.mockResolvedValueOnce(offerer)
-            props.query.parse.mockReturnValueOnce({
+            const filters = {
               lieu: venueId,
               statut: 'inactive',
               structure: offerer.id,
-            })
-            await renderOffers(props, store)
+            }
+            await renderOffers(props, store, filters)
 
             // When
             await fireEvent.click(
@@ -680,10 +679,10 @@ describe('src | components | pages | Offers | Offers', () => {
 
           it('should enable status filters when venue filter is applied', async () => {
             // Given
-            props.query.parse.mockReturnValueOnce({ lieu: 'IJ' })
+            const filters = { lieu: 'IJ' }
 
             // When
-            renderOffers(props, store)
+            renderOffers(props, store, filters)
 
             // Then
             const statusFiltersIcon = await screen.findByAltText(
@@ -694,10 +693,10 @@ describe('src | components | pages | Offers | Offers', () => {
 
           it('should enable status filters when offerer filter is applied', async () => {
             // Given
-            props.query.parse.mockReturnValueOnce({ structure: 'A4' })
+            const filters = { structure: 'A4' }
 
             // When
-            renderOffers(props, store)
+            renderOffers(props, store, filters)
 
             // Then
             const statusFiltersIcon = await screen.findByAltText(
@@ -721,8 +720,8 @@ describe('src | components | pages | Offers | Offers', () => {
 
           it('should not disable select all checkbox when no venue filter is selected but one is currently applied', async () => {
             // Given
-            props.query.parse.mockReturnValueOnce({ lieu: 'JI' })
-            renderOffers(props, store)
+            const filters = { lieu: 'JI' }
+            renderOffers(props, store, filters)
 
             // When
             fireEvent.change(await screen.findByDisplayValue('Ma venue'), {
@@ -755,10 +754,10 @@ describe('src | components | pages | Offers | Offers', () => {
 
           it('should enable select all checkbox when venue filter is applied', async () => {
             // Given
-            props.query.parse.mockReturnValueOnce({ lieu: 'IJ' })
+            const filters = { lieu: 'IJ' }
 
             // When
-            renderOffers(props, store)
+            renderOffers(props, store, filters)
 
             // Then
             const selectAllOffersCheckbox = await screen.findByLabelText(
@@ -769,10 +768,9 @@ describe('src | components | pages | Offers | Offers', () => {
 
           it('should enable select all checkbox when offerer filter is applied', async () => {
             // Given
-            props.query.parse.mockReturnValueOnce({ structure: 'A4' })
-
+            const filters = { structure: 'A4' }
             // When
-            renderOffers(props, store)
+            renderOffers(props, store, filters)
 
             // Then
             const selectAllOffersCheckbox = await screen.findByLabelText(
@@ -1085,31 +1083,23 @@ describe('src | components | pages | Offers | Offers', () => {
       // Given
       offersRecap = Array.from({ length: 11 }, offerFactory)
       pcapi.loadFilteredOffers.mockResolvedValueOnce(offersRecap)
-      renderOffers(props, store)
+      const { history } = renderOffers(props, store)
       const nextPageIcon = await screen.findByAltText(
         'Aller à la page suivante'
       )
 
       // When
       fireEvent.click(nextPageIcon)
-
+      const urlSearchParams = parse(history.location.search.substring(1))
       // Then
-      expect(props.query.change).toHaveBeenLastCalledWith({
-        categorie: null,
-        creation: null,
-        lieu: null,
-        'nom-ou-isbn': null,
-        page: 2,
-        'periode-evenement-debut': null,
-        'periode-evenement-fin': null,
-        statut: null,
-        structure: null,
+      expect(urlSearchParams).toMatchObject({
+        page: '2',
       })
     })
 
     it('should have offer name value when name search value is not an empty string', async () => {
       // Given
-      await renderOffers(props, store)
+      const { history } = await renderOffers(props, store)
 
       // When
       fireEvent.change(
@@ -1119,18 +1109,11 @@ describe('src | components | pages | Offers | Offers', () => {
         }
       )
       await fireEvent.click(screen.getByText('Lancer la recherche'))
+      const urlSearchParams = parse(history.location.search.substring(1))
 
       // Then
-      expect(props.query.change).toHaveBeenCalledWith({
-        categorie: null,
-        creation: null,
-        lieu: null,
+      expect(urlSearchParams).toMatchObject({
         'nom-ou-isbn': 'AnyWord',
-        page: null,
-        'periode-evenement-debut': null,
-        'periode-evenement-fin': null,
-        statut: null,
-        structure: null,
       })
     })
 
@@ -1160,7 +1143,7 @@ describe('src | components | pages | Offers | Offers', () => {
 
     it('should have offer name value be removed when name search value is an empty string', async () => {
       // Given
-      await renderOffers(props, store)
+      const { history } = await renderOffers(props, store)
 
       // When
       fireEvent.change(
@@ -1170,24 +1153,15 @@ describe('src | components | pages | Offers | Offers', () => {
         }
       )
       await fireEvent.click(screen.getByText('Lancer la recherche'))
+      const urlSearchParams = parse(history.location.search.substring(1))
 
       // Then
-      expect(props.query.change).toHaveBeenCalledWith({
-        categorie: null,
-        creation: null,
-        lieu: null,
-        'nom-ou-isbn': null,
-        page: null,
-        'periode-evenement-debut': null,
-        'periode-evenement-fin': null,
-        statut: null,
-        structure: null,
-      })
+      expect(urlSearchParams).toMatchObject({})
     })
 
     it('should have venue value when user filters by venue', async () => {
       // Given
-      await renderOffers(props, store)
+      const { history } = await renderOffers(props, store)
       const firstVenueOption = await screen.findByRole('option', {
         name: proVenues[0].name,
       })
@@ -1196,18 +1170,11 @@ describe('src | components | pages | Offers | Offers', () => {
       // When
       userEvent.selectOptions(venueSelect, firstVenueOption)
       await fireEvent.click(screen.getByText('Lancer la recherche'))
+      const urlSearchParams = parse(history.location.search.substring(1))
 
       // Then
-      expect(props.query.change).toHaveBeenCalledWith({
+      expect(urlSearchParams).toMatchObject({
         lieu: proVenues[0].id,
-        categorie: null,
-        creation: null,
-        'nom-ou-isbn': null,
-        page: null,
-        'periode-evenement-debut': null,
-        'periode-evenement-fin': null,
-        statut: null,
-        structure: null,
       })
     })
 
@@ -1224,7 +1191,7 @@ describe('src | components | pages | Offers | Offers', () => {
         ],
       })
 
-      await renderOffers(props, store)
+      const { history } = await renderOffers(props, store)
       const firstTypeOption = await screen.findByRole('option', {
         name: 'My test value',
       })
@@ -1238,18 +1205,11 @@ describe('src | components | pages | Offers | Offers', () => {
       // When
       userEvent.selectOptions(typeSelect, firstTypeOption)
       await fireEvent.click(screen.getByText('Lancer la recherche'))
+      const urlSearchParams = parse(history.location.search.substring(1))
 
       // Then
-      expect(props.query.change).toHaveBeenCalledWith({
+      expect(urlSearchParams).toMatchObject({
         categorie: 'test_id_1',
-        creation: null,
-        lieu: null,
-        'nom-ou-isbn': null,
-        page: null,
-        'periode-evenement-debut': null,
-        'periode-evenement-fin': null,
-        statut: null,
-        structure: null,
       })
     })
 
@@ -1258,7 +1218,7 @@ describe('src | components | pages | Offers | Offers', () => {
       props.offers = [
         { id: 'KE', availabilityMessage: 'Pas de stock', status: 'ACTIVE' },
       ]
-      renderOffers(props, store)
+      const { history } = renderOffers(props, store)
       fireEvent.click(
         await screen.findByAltText('Afficher ou masquer le filtre par statut')
       )
@@ -1266,18 +1226,11 @@ describe('src | components | pages | Offers | Offers', () => {
 
       // When
       await fireEvent.click(screen.getByText('Appliquer'))
+      const urlSearchParams = parse(history.location.search.substring(1))
 
       // Then
-      expect(props.query.change).toHaveBeenLastCalledWith({
+      expect(urlSearchParams).toMatchObject({
         statut: 'epuisee',
-        categorie: null,
-        creation: null,
-        lieu: null,
-        'nom-ou-isbn': null,
-        page: null,
-        'periode-evenement-debut': null,
-        'periode-evenement-fin': null,
-        structure: null,
       })
     })
 
@@ -1286,7 +1239,7 @@ describe('src | components | pages | Offers | Offers', () => {
       props.offers = [
         { id: 'KE', availabilityMessage: 'Pas de stock', status: 'ACTIVE' },
       ]
-      await renderOffers(props, store)
+      const { history } = await renderOffers(props, store)
       fireEvent.click(
         await screen.findByAltText('Afficher ou masquer le filtre par statut')
       )
@@ -1294,28 +1247,19 @@ describe('src | components | pages | Offers | Offers', () => {
 
       // When
       fireEvent.click(screen.getByText('Appliquer'))
+      const urlSearchParams = parse(history.location.search.substring(1))
 
       // Then
-      expect(props.query.change).toHaveBeenLastCalledWith({
-        categorie: null,
-        creation: null,
-        lieu: null,
-        'nom-ou-isbn': null,
-        page: null,
-        'periode-evenement-debut': null,
-        'periode-evenement-fin': null,
-        statut: null,
-        structure: null,
-      })
+      expect(urlSearchParams).toMatchObject({})
     })
 
     it('should have offerer filter when user filters by offerer', async () => {
       // Given
-      props.query.parse.mockReturnValueOnce({ structure: 'A4' })
+      const filters = { structure: 'A4' }
       props.getOfferer.mockResolvedValueOnce({ name: 'La structure' })
 
       // When
-      renderOffers(props, store)
+      renderOffers(props, store, filters)
 
       // Then
       const offererFilter = await screen.findByText('La structure')
@@ -1324,9 +1268,9 @@ describe('src | components | pages | Offers | Offers', () => {
 
     it('should have offerer value be removed when user removes offerer filter', async () => {
       // Given
-      props.query.parse.mockReturnValueOnce({ structure: 'A4' })
+      const filters = { structure: 'A4' }
       props.getOfferer.mockResolvedValueOnce({ name: 'La structure' })
-      await renderOffers(props, store)
+      await renderOffers(props, store, filters)
 
       // When
       await fireEvent.click(
@@ -1339,31 +1283,24 @@ describe('src | components | pages | Offers | Offers', () => {
 
     it('should have creation mode value when user filters by creation mode', async () => {
       // Given
-      renderOffers(props, store)
+      const { history } = renderOffers(props, store)
 
       // When
       fireEvent.change(screen.getByDisplayValue('Tous les modes'), {
         target: { value: 'manual' },
       })
       await fireEvent.click(screen.getByText('Lancer la recherche'))
+      const urlSearchParams = parse(history.location.search.substring(1))
 
       // Then
-      expect(props.query.change).toHaveBeenLastCalledWith({
+      expect(urlSearchParams).toMatchObject({
         creation: 'manuelle',
-        categorie: null,
-        lieu: null,
-        'nom-ou-isbn': null,
-        page: null,
-        'periode-evenement-debut': null,
-        'periode-evenement-fin': null,
-        statut: null,
-        structure: null,
       })
     })
 
     it('should have creation mode value be removed when user ask for all creation modes', async () => {
       // Given
-      renderOffers(props, store)
+      const { history } = renderOffers(props, store)
       const searchButton = screen.getByText('Lancer la recherche')
       fireEvent.change(screen.getByDisplayValue('Tous les modes'), {
         target: { value: 'manual' },
@@ -1375,19 +1312,10 @@ describe('src | components | pages | Offers | Offers', () => {
         target: { value: DEFAULT_CREATION_MODE.id },
       })
       await fireEvent.click(searchButton)
+      const urlSearchParams = parse(history.location.search.substring(1))
 
       // Then
-      expect(props.query.change).toHaveBeenLastCalledWith({
-        categorie: null,
-        creation: null,
-        lieu: null,
-        'nom-ou-isbn': null,
-        page: null,
-        'periode-evenement-debut': null,
-        'periode-evenement-fin': null,
-        statut: null,
-        structure: null,
-      })
+      expect(urlSearchParams).toMatchObject({})
     })
   })
 
@@ -1434,10 +1362,11 @@ describe('src | components | pages | Offers | Offers', () => {
 
     it('should not be able to click on previous arrow when being on the first page', async () => {
       // Given
-      props.query.parse.mockReturnValue({ page: DEFAULT_PAGE })
+      const filters = { page: DEFAULT_PAGE }
+      const route = computeOffersUrl(filters)
 
       // When
-      renderOffers(props, store)
+      renderOffers(props, store, route)
 
       // Then
       const previousIcon = await screen.findByAltText(
