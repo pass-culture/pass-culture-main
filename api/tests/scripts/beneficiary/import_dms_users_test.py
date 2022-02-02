@@ -12,6 +12,7 @@ from pcapi.connectors.dms import api as api_dms
 import pcapi.core.fraud.factories as fraud_factories
 import pcapi.core.fraud.models as fraud_models
 import pcapi.core.mails.testing as mails_testing
+from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.payments.models import Deposit
 from pcapi.core.payments.models import DepositType
 import pcapi.core.subscription.api as subscription_api
@@ -753,7 +754,10 @@ class RunIntegrationTest:
             == "Erreur dans les données soumises dans le dossier DMS : 'id_piece_number' (121314),'postal_code' (Strasbourg)"
         )
         assert len(mails_testing.outbox) == 1
-        assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 3124925
+        assert (
+            mails_testing.outbox[0].sent_data["template"]
+            == TransactionalEmail.PRE_SUBSCRIPTION_DMS_ERROR_TO_BENEFICIARY.value.__dict__
+        )
 
     @patch.object(api_dms.DMSGraphQLClient, "get_applications_with_details")
     def test_dms_application_value_error_known_user(self, get_applications_with_details):
@@ -774,7 +778,10 @@ class RunIntegrationTest:
         )
         assert beneficiary_import.beneficiary == user
         assert len(mails_testing.outbox) == 1
-        assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 3124925
+        assert (
+            mails_testing.outbox[0].sent_data["template"]
+            == TransactionalEmail.PRE_SUBSCRIPTION_DMS_ERROR_TO_BENEFICIARY.value.__dict__
+        )
 
 
 @pytest.mark.usefixtures("db_session")
@@ -831,7 +838,10 @@ class GraphQLSourceProcessApplicationTest:
         )
 
         assert len(mails_testing.outbox) == 1
-        assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 3124925
+        assert (
+            mails_testing.outbox[0].sent_data["template"]
+            == TransactionalEmail.PRE_SUBSCRIPTION_DMS_ERROR_TO_BENEFICIARY.value.__dict__
+        )
         assert len(user.subscriptionMessages) == 1
         assert user.subscriptionMessages[0]
         assert (

@@ -8,11 +8,13 @@ from pcapi.connectors.dms import api as api_dms
 import pcapi.core.fraud.api as fraud_api
 import pcapi.core.fraud.exceptions as fraud_exceptions
 import pcapi.core.fraud.models as fraud_models
+from pcapi.core.mails.transactional.users.pre_subscription_dms_error import (
+    send_pre_subscription_from_dms_error_email_to_beneficiary,
+)
 import pcapi.core.subscription.api as subscription_api
 import pcapi.core.subscription.messages as subscription_messages
 import pcapi.core.users.models as users_models
 from pcapi.core.users.repository import find_user_by_email
-from pcapi.domain import user_emails
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.beneficiary_import import BeneficiaryImportSources
 from pcapi.models.beneficiary_import_status import ImportStatus
@@ -121,7 +123,7 @@ def process_parsing_error(exception: DMSParsingError, procedure_id: int, applica
         procedure_id,
     )
     user = find_user_by_email(exception.user_email)
-    user_emails.send_dms_wrong_values_emails(
+    send_pre_subscription_from_dms_error_email_to_beneficiary(
         exception.user_email, exception.errors.get("postal_code"), exception.errors.get("id_piece_number")
     )
     if user:
