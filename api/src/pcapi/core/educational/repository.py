@@ -12,6 +12,7 @@ from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational.exceptions import EducationalDepositNotFound
 from pcapi.core.educational.exceptions import EducationalYearNotFound
+from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
 
@@ -164,4 +165,31 @@ def find_active_educational_booking_by_offer_id(offer_id: int) -> Optional[educa
         .options(joinedload(educational_models.EducationalBooking.educationalInstitution, innerjoin=True))
         .options(joinedload(educational_models.EducationalBooking.educationalRedactor, innerjoin=True))
         .one_or_none()
+    )
+
+
+def get_bookings_for_educational_year(educational_year_id: str) -> list[educational_models.EducationalBooking]:
+    return (
+        educational_models.EducationalBooking.query.filter(
+            educational_models.EducationalBooking.educationalYearId == educational_year_id
+        )
+        .options(
+            joinedload(educational_models.EducationalBooking.educationalRedactor, innerjoin=True).load_only(
+                educational_models.EducationalRedactor.email
+            )
+        )
+        .options(
+            joinedload(educational_models.EducationalBooking.booking, innerjoin=True)
+            .load_only(Booking.amount, Booking.stockId, Booking.status, Booking.quantity)
+            .joinedload(Booking.stock, innerjoin=True)
+            .load_only(Stock.beginningDatetime, Stock.offerId)
+            .joinedload(Stock.offer, innerjoin=True)
+            .load_only(Offer.name)
+            .joinedload(Offer.venue, innerjoin=True)
+            .load_only(offerers_models.Venue.managingOffererId, offerers_models.Venue.departementCode)
+            .joinedload(offerers_models.Venue.managingOfferer, innerjoin=True)
+            .load_only(offerers_models.Offerer.postalCode)
+        )
+        .options(joinedload(educational_models.EducationalBooking.educationalInstitution, innerjoin=True))
+        .all()
     )
