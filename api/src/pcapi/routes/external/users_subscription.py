@@ -3,6 +3,7 @@ import logging
 from pcapi import settings
 from pcapi.connectors.dms import api as dms_connector_api
 from pcapi.core import logging as core_logging
+from pcapi.core.fraud import api as fraud_api
 from pcapi.core.fraud.ubble import api as ubble_fraud_api
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import exceptions as subscription_exceptions
@@ -87,7 +88,10 @@ def dms_webhook_update_application_status(form: dms_validation.DMSWebhookRequest
         )
         return
 
-    if application.get_eligibility_type() is None:
+    eligibility_type = fraud_api.decide_eligibility(
+        user, application.get_registration_datetime(), application.get_birth_date()
+    )
+    if eligibility_type is None:
         logger.info(
             "Birthdate of DMS application %d shows that user is not eligible",
             form.dossier_id,
@@ -109,7 +113,7 @@ def dms_webhook_update_application_status(form: dms_validation.DMSWebhookRequest
             form.dossier_id,
             form.procedure_id,
             BeneficiaryImportSources.demarches_simplifiees,
-            eligibility_type=application.get_eligibility_type(),
+            eligibility_type=eligibility_type,
             details="Webhook status update",
             status=import_status,
         )

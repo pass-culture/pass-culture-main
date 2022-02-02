@@ -1,6 +1,7 @@
 import logging
 from typing import Optional
 
+import pcapi.core.fraud.api as fraud_api
 import pcapi.core.fraud.models as fraud_models
 import pcapi.core.users.models as users_models
 import pcapi.repository as pcapi_repository
@@ -30,13 +31,16 @@ def create_fraud_check(
     source_data: fraud_models.DMSContent,
 ) -> fraud_models.BeneficiaryFraudCheck:
     application_id = str(source_data.application_id)
+    eligibility_type = fraud_api.decide_eligibility(
+        user, source_data.get_registration_datetime(), source_data.get_birth_date()
+    )
     fraud_check = fraud_models.BeneficiaryFraudCheck(
         user=user,
         type=fraud_models.FraudCheckType.DMS,
         thirdPartyId=application_id,
         resultContent=source_data.dict(),
         status=fraud_models.FraudCheckStatus.STARTED,
-        eligibilityType=source_data.get_eligibility_type(),
+        eligibilityType=eligibility_type,
     )
     pcapi_repository.repository.save(fraud_check)
     return fraud_check
