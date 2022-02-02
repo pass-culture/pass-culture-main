@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import * as pcapi from 'repository/pcapi/pcapi'
 import { getToday } from 'utils/date'
@@ -52,17 +52,20 @@ const ReimbursementsInvoices = ({
   ]
 
   const ALL_BUSINESS_UNITS_OPTION_ID = 'all'
-  const today = getToday()
-  const oneMonthAgo = new Date(
-    today.getFullYear(),
-    today.getMonth() - 1,
-    today.getDate()
-  )
-  const INITIAL_FILTERS = {
-    businessUnit: ALL_BUSINESS_UNITS_OPTION_ID,
-    periodStart: oneMonthAgo,
-    periodEnd: today,
-  }
+
+  const INITIAL_FILTERS = useMemo(() => {
+    const today = getToday()
+    const oneMonthAgo = new Date(
+      today.getFullYear(),
+      today.getMonth() - 1,
+      today.getDate()
+    )
+    return {
+      businessUnit: ALL_BUSINESS_UNITS_OPTION_ID,
+      periodStart: oneMonthAgo,
+      periodEnd: today,
+    }
+  }, [])
 
   const [filters, setFilters] = useState(INITIAL_FILTERS)
   const [invoices, setInvoices] = useState([])
@@ -99,24 +102,35 @@ const ReimbursementsInvoices = ({
     requireBUFilterForAdmin ||
     hasNoInvoicesYetForNonAdmin
 
-  const loadInvoices = useCallback(() => {
-    const invoicesFilters = {
-      businessUnitId: filters.businessUnit,
-      periodBeginningDate: filters.periodStart,
-      periodEndingDate: filters.periodEnd,
-    }
-    pcapi
-      .getInvoices(invoicesFilters)
-      .then(invoices => {
-        setInvoices(invoices)
-        setIsLoading(false)
-        setHasError(false)
-      })
-      .catch(() => {
-        setIsLoading(false)
-        setHasError(true)
-      })
-  }, [filters.businessUnit, filters.periodEnd, filters.periodStart])
+  const loadInvoices = useCallback(
+    (shouldReset?: boolean) => {
+      if (shouldReset) {
+        setHasSearchedOnce(false)
+      }
+      const invoicesFilters = {
+        businessUnitId: filters.businessUnit,
+        periodBeginningDate: filters.periodStart,
+        periodEndingDate: filters.periodEnd,
+      }
+      pcapi
+        .getInvoices(shouldReset ? INITIAL_FILTERS : invoicesFilters)
+        .then(invoices => {
+          setInvoices(invoices)
+          setIsLoading(false)
+          setHasError(false)
+        })
+        .catch(() => {
+          setIsLoading(false)
+          setHasError(true)
+        })
+    },
+    [
+      INITIAL_FILTERS,
+      filters.businessUnit,
+      filters.periodEnd,
+      filters.periodStart,
+    ]
+  )
 
   useEffect(() => {
     if (!isCalledOnceRef.current) {
@@ -135,6 +149,7 @@ const ReimbursementsInvoices = ({
         hasNoInvoicesYet={hasNoInvoicesYetForNonAdmin}
         headerTitle="Affichage des justificatifs de remboursement"
         initialFilters={INITIAL_FILTERS}
+        loadInvoices={loadInvoices}
         selectLabel="Point de remboursement"
         selectName="businessUnit"
         selectableOptions={businessUnitsOptions}
@@ -160,6 +175,7 @@ const ReimbursementsInvoices = ({
         <InvoicesNoResult
           areFiltersDefault={areFiltersDefault}
           initialFilters={INITIAL_FILTERS}
+          loadInvoices={loadInvoices}
           setAreFiltersDefault={setAreFiltersDefault}
           setFilters={setFilters}
         />
