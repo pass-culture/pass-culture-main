@@ -766,7 +766,7 @@ class CommonSubscritpionTest:
             eligibilityType=users_models.EligibilityType.AGE18,
         )
         assert (
-            subscription_api.handle_eligibility_difference_between_declaration_and_identity_provider(fraud_check)
+            subscription_api.handle_eligibility_difference_between_declaration_and_identity_provider(user, fraud_check)
             == fraud_check
         )
 
@@ -780,7 +780,7 @@ class CommonSubscritpionTest:
             resultContent=fraud_factories.UbbleContentFactory(),  # default age is 18
         )
         assert (
-            subscription_api.handle_eligibility_difference_between_declaration_and_identity_provider(fraud_check)
+            subscription_api.handle_eligibility_difference_between_declaration_and_identity_provider(user, fraud_check)
             != fraud_check
         )
 
@@ -805,7 +805,7 @@ class CommonSubscritpionTest:
             resultContent=fraud_factories.UbbleContentFactory(birth_date=None),  # default age is 18
         )
         assert (
-            subscription_api.handle_eligibility_difference_between_declaration_and_identity_provider(fraud_check)
+            subscription_api.handle_eligibility_difference_between_declaration_and_identity_provider(user, fraud_check)
             == fraud_check
         )
 
