@@ -28,7 +28,7 @@ def get_booking_cancellation_by_pro_to_beneficiary_email_data(
 
     if not FeatureToggle.ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS.is_active():
         return {
-            "MJ-TemplateID": 1116690 if booking.individualBooking is not None else 3192295,
+            "MJ-TemplateID": 1116690,
             "MJ-TemplateLanguage": True,
             "Vars": {
                 "event_date": event_date if event_date else "",
@@ -47,9 +47,7 @@ def get_booking_cancellation_by_pro_to_beneficiary_email_data(
         }
 
     return SendinblueTransactionalEmailData(
-        template=TransactionalEmail.BOOKING_CANCELLATION_BY_PRO_TO_BENEFICIARY.value
-        if booking.individualBooking is not None
-        else TransactionalEmail.BOOKING_CANCELLATION_BY_PRO_TO_TEACHER.value,
+        template=TransactionalEmail.BOOKING_CANCELLATION_BY_PRO_TO_BENEFICIARY.value,
         params={
             "EVENT_DATE": event_date,
             "EVENT_HOUR": event_hour,
