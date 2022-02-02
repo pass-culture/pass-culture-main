@@ -17,3 +17,6 @@ class AdageClient:
 
     def get_adage_offerer(self, siren: str) -> list[AdageVenue]:
         raise NotImplementedError()
+
+    def notify_booking_cancellation_by_offerer(self, data: EducationalBookingResponse) -> AdageApiResult:
+        raise NotImplementedError()

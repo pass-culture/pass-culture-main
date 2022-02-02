@@ -22,3 +22,9 @@ def get_adage_offerer(siren: str) -> list[AdageVenue]:
     backend = import_string(settings.ADAGE_BACKEND)
     result = backend().get_adage_offerer(siren=siren)
     return result
+
+
+def notify_booking_cancellation_by_offerer(data: EducationalBookingResponse) -> AdageApiResult:
+    backend = import_string(settings.ADAGE_BACKEND)
+    result = backend().notify_booking_cancellation_by_offerer(data=data)
+    return result

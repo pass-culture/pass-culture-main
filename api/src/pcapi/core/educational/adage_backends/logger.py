@@ -27,3 +27,9 @@ class AdageLoggerClient(AdageClient):
             return [AdageVenue.parse_obj({"siret": "95046949400021"})]
 
         raise CulturalPartnerNotFoundException("Requested siren is not a known cultural partner for Adage")
+
+    def notify_booking_cancellation_by_offerer(self, data: EducationalBookingResponse) -> AdageApiResult:
+        logger.info(
+            "Adage has been notified at %s, with payload: %s", f"{self.base_url}/v1/prereservation-annule", data
+        )
+        return AdageApiResult(sent_data=data.dict(), response={"status_code": 201}, success=True)
