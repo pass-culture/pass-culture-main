@@ -47,7 +47,7 @@ describe('bookings offer cell', () => {
       expect(isbn).toBeInTheDocument()
       const title = screen.getByText('La Guitare pour les nuls')
       const title_link = title.closest('a')
-      expect(title_link.href).toContain('offres/A0')
+      expect(title_link.href).toContain('offre/A0')
       expect(title_link.target).toContain('_blank')
     })
 
@@ -69,7 +69,7 @@ describe('bookings offer cell', () => {
       // Then
       const offer_name = screen.getByText('Guitare acoustique')
       const offer_name_link = offer_name.closest('a')
-      expect(offer_name_link.href).toContain('offres/A1')
+      expect(offer_name_link.href).toContain('offre/A1')
       expect(offer_name_link.target).toContain('_blank')
     })
 
@@ -93,7 +93,7 @@ describe('bookings offer cell', () => {
       expect(screen.getByText('12/05/2020 11:03')).toBeInTheDocument()
       const offer_name = screen.getByText('La danse des poireaux')
       const offer_name_link = offer_name.closest('a')
-      expect(offer_name_link.href).toContain('offres/A2')
+      expect(offer_name_link.href).toContain('offre/A2')
       expect(offer_name_link.target).toContain('_blank')
     })
 

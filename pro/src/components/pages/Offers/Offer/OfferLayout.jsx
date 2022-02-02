@@ -100,17 +100,17 @@ const OfferLayout = ({ location, match }) => {
             {/* in OfferDetails as the offer is loaded in the stock edition page */}
             <OfferDetails offer={offer} reloadOffer={reloadOffer} />
           </Route>
-          <Route exact path={`${match.url}/individuel/edition`}>
+          <Route exact path={`${match.url}/edition`}>
             <OfferDetails offer={offer} reloadOffer={reloadOffer} />
           </Route>
-          <Route exact path={`${match.url}/individuel/stocks`}>
+          <Route exact path={`${match.url}/stocks`}>
             <StocksContainer
               location={location}
               offer={offer}
               reloadOffer={reloadOffer}
             />
           </Route>
-          <Route exact path={`${match.url}/individuel/confirmation`}>
+          <Route exact path={`${match.url}/confirmation`}>
             <ConfirmationContainer
               isCreatingOffer={isCreatingOffer}
               location={location}

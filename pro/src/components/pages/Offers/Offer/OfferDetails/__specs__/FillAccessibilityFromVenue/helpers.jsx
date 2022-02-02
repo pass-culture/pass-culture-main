@@ -44,7 +44,7 @@ const renderOffer = async (props, store, pathname, queryParams = null) => {
         <Route
           path={[
             '/offre/creation/individuel',
-            '/offres/:offerId([A-Z0-9]+)',
+            '/offre/:offerId([A-Z0-9]+)/individuel',
             '/offre/:offerId([A-Z0-9]+)/individuel/edition',
           ]}
         >
