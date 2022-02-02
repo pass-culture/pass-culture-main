@@ -5,9 +5,9 @@
  */
 
 import PropTypes from 'prop-types'
-import React, { useCallback, useEffect, useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import { Link } from 'react-router-dom'
+import React, { useCallback, useEffect, useState, useMemo } from 'react'
+import { useDispatch } from 'react-redux'
+import { Link, useLocation, useHistory } from 'react-router-dom'
 
 import ActionsBarPortal from 'components/layout/ActionsBarPortal/ActionsBarPortal'
 import Icon from 'components/layout/Icon'
@@ -20,11 +20,13 @@ import { ReactComponent as AddOfferSvg } from 'icons/ico-plus.svg'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { savePageNumber, saveSearchFilters } from 'store/offers/actions'
 import { Banner } from 'ui-kit'
+import { parse } from 'utils/query-string'
 import {
-  mapApiToBrowser,
   mapBrowserToApi,
   translateQueryParamsToApiParams,
 } from 'utils/translate'
+
+import { computeOffersUrl } from '../utils/computeOffersUrl'
 
 import {
   DEFAULT_PAGE,
@@ -40,42 +42,79 @@ import OffersTableBody from './OffersTableBody/OffersTableBody'
 import OffersTableHead from './OffersTableHead/OffersTableHead'
 import SearchFilters from './SearchFilters/SearchFilters'
 
-const Offers = ({ currentUser, getOfferer, query }) => {
+function useSearchFilters() {
+  const { search } = useLocation()
+
+  const urlPageNumber = useMemo(() => {
+    const queryParams = parse(search)
+    return Number(queryParams['page']) || DEFAULT_PAGE
+  }, [search])
+
+  const urlSearchFilters = useMemo(() => {
+    const queryParams = parse(search)
+
+    let translatedFilters = {}
+
+    const fieldsWithTranslatedValues = ['statut', 'creation']
+    fieldsWithTranslatedValues.forEach(field => {
+      if (queryParams[field]) {
+        const translatedValue = mapBrowserToApi[queryParams[field]]
+        translatedFilters[field] = translatedValue
+      }
+    })
+    const translatedQuery = translateQueryParamsToApiParams({
+      ...queryParams,
+      ...translatedFilters,
+    })
+
+    const urlFilters = {
+      ...DEFAULT_SEARCH_FILTERS,
+      ...translatedQuery,
+    }
+    return urlFilters
+  }, [search])
+
+  return { urlSearchFilters, urlPageNumber }
+}
+
+const Offers = ({ currentUser, getOfferer }) => {
   const dispatch = useDispatch()
+  const history = useHistory()
+  const { urlSearchFilters, urlPageNumber } = useSearchFilters()
 
   useEffect(() => {
-    const searchFiltersInUri = translateQueryParamsToApiParams(query.parse())
     dispatch(
       saveSearchFilters({
         nameOrIsbn:
-          searchFiltersInUri.nameOrIsbn || DEFAULT_SEARCH_FILTERS.nameOrIsbn,
+          urlSearchFilters.nameOrIsbn || DEFAULT_SEARCH_FILTERS.nameOrIsbn,
         offererId:
-          searchFiltersInUri.offererId || DEFAULT_SEARCH_FILTERS.offererId,
-        venueId: searchFiltersInUri.venueId || DEFAULT_SEARCH_FILTERS.venueId,
+          urlSearchFilters.offererId || DEFAULT_SEARCH_FILTERS.offererId,
+        venueId: urlSearchFilters.venueId || DEFAULT_SEARCH_FILTERS.venueId,
         categoryId:
-          searchFiltersInUri.categoryId || DEFAULT_SEARCH_FILTERS.categoryId,
-        status: searchFiltersInUri.status
-          ? mapBrowserToApi[searchFiltersInUri.status]
+          urlSearchFilters.categoryId || DEFAULT_SEARCH_FILTERS.categoryId,
+        status: urlSearchFilters.status
+          ? urlSearchFilters.status
           : DEFAULT_SEARCH_FILTERS.status,
-        creationMode: searchFiltersInUri.creationMode
-          ? mapBrowserToApi[searchFiltersInUri.creationMode]
+        creationMode: urlSearchFilters.creationMode
+          ? urlSearchFilters.creationMode
           : DEFAULT_SEARCH_FILTERS.creationMode,
         periodBeginningDate:
-          searchFiltersInUri.periodBeginningDate ||
+          urlSearchFilters.periodBeginningDate ||
           DEFAULT_SEARCH_FILTERS.periodBeginningDate,
         periodEndingDate:
-          searchFiltersInUri.periodEndingDate ||
+          urlSearchFilters.periodEndingDate ||
           DEFAULT_SEARCH_FILTERS.periodEndingDate,
       })
     )
-    dispatch(savePageNumber(Number(searchFiltersInUri.page) || DEFAULT_PAGE))
-  }, [dispatch, query])
+    dispatch(savePageNumber(urlPageNumber))
+  }, [dispatch, urlPageNumber, urlSearchFilters])
   const [isLoading, setIsLoading] = useState(true)
   const [offersCount, setOffersCount] = useState(0)
   const [currentPageNumber, setCurrentPageNumber] = useState(DEFAULT_PAGE)
   const [pageCount, setPageCount] = useState(null)
   const [searchFilters, setSearchFilters] = useState({
     ...DEFAULT_SEARCH_FILTERS,
+    ...urlSearchFilters,
   })
   const [offerer, setOfferer] = useState(null)
   const [isStatusFiltersVisible, setIsStatusFiltersVisible] = useState(false)
@@ -83,38 +122,43 @@ const Offers = ({ currentUser, getOfferer, query }) => {
 
   const [offers, setOffers] = useState([])
   const [selectedOfferIds, setSelectedOfferIds] = useState([])
-  const savedSearchFilters = useSelector(state => state.offers.searchFilters)
-  const savedPageNumber = useSelector(state => state.offers.pageNumber)
   const currentPageOffersSubset = offers.slice(
     (currentPageNumber - 1) * NUMBER_OF_OFFERS_PER_PAGE,
     currentPageNumber * NUMBER_OF_OFFERS_PER_PAGE
   )
+  const [isRefreshingOffers, setIsRefreshingOffers] = useState(true)
 
   useEffect(() => {
-    setSearchFilters({ ...savedSearchFilters })
-  }, [savedSearchFilters])
+    setCurrentPageNumber(urlPageNumber)
+  }, [urlPageNumber])
 
-  useEffect(() => {
-    setCurrentPageNumber(savedPageNumber)
-  }, [savedPageNumber])
+  const setUrlFilters = useCallback(
+    (filters, isRefreshing = true) => {
+      setIsRefreshingOffers(isRefreshing)
+      const newUrl = computeOffersUrl(filters, filters.page)
+
+      history.push(newUrl)
+    },
+    [history]
+  )
 
   useEffect(() => {
     if (
-      savedSearchFilters.offererId &&
-      savedSearchFilters.offererId !== DEFAULT_SEARCH_FILTERS.offererId
+      urlSearchFilters.offererId &&
+      urlSearchFilters.offererId !== DEFAULT_SEARCH_FILTERS.offererId
     ) {
-      getOfferer(savedSearchFilters.offererId).then(offerer =>
+      getOfferer(urlSearchFilters.offererId).then(offerer =>
         setOfferer(offerer)
       )
     }
-  }, [getOfferer, savedSearchFilters.offererId])
+  }, [getOfferer, urlSearchFilters.offererId])
 
   useEffect(() => {
     if (currentUser.isAdmin) {
       const isVenueFilterSelected =
         searchFilters.venueId !== DEFAULT_SEARCH_FILTERS.venueId
       const isOffererFilterApplied =
-        savedSearchFilters.offererId !== DEFAULT_SEARCH_FILTERS.offererId
+        urlSearchFilters.offererId !== DEFAULT_SEARCH_FILTERS.offererId
       const isFilterByVenueOrOfferer =
         isVenueFilterSelected || isOffererFilterApplied
 
@@ -125,44 +169,15 @@ const Offers = ({ currentUser, getOfferer, query }) => {
         }))
       }
     }
-  }, [currentUser.isAdmin, savedSearchFilters.offererId, searchFilters.venueId])
-
-  useEffect(
-    function updateUrlMatchingState() {
-      let queryParams = Object.keys(savedSearchFilters).reduce(
-        (params, field) => {
-          const translatedFilterName = mapApiToBrowser[field]
-          const isFilterSet =
-            savedSearchFilters[field] !== DEFAULT_SEARCH_FILTERS[field]
-          return {
-            ...params,
-            [translatedFilterName]: isFilterSet
-              ? savedSearchFilters[field]
-              : null,
-          }
-        },
-        {}
-      )
-
-      const fieldsWithTranslatedValues = ['statut', 'creation']
-      fieldsWithTranslatedValues.forEach(field => {
-        if (queryParams[field]) {
-          const translatedValue = mapApiToBrowser[queryParams[field]]
-          queryParams[field] = translatedValue
-        }
-      })
-
-      queryParams.page =
-        savedPageNumber !== DEFAULT_PAGE ? savedPageNumber : null
-
-      query.change(queryParams)
-    },
-    [query, savedSearchFilters, savedPageNumber]
-  )
+  }, [currentUser.isAdmin, urlSearchFilters.offererId, searchFilters.venueId])
 
   const loadAndUpdateOffers = useCallback(filters => {
+    const apiFilters = {
+      ...DEFAULT_SEARCH_FILTERS,
+      ...filters,
+    }
     pcapi
-      .loadFilteredOffers({ ...filters })
+      .loadFilteredOffers(apiFilters)
       .then(offers => {
         const offersCount = offers.length
         setIsLoading(false)
@@ -175,26 +190,57 @@ const Offers = ({ currentUser, getOfferer, query }) => {
       .catch(() => setIsLoading(false))
   }, [])
 
-  useEffect(() => {
-    Object.keys(savedSearchFilters).length > 0 &&
-      loadAndUpdateOffers(savedSearchFilters)
-  }, [loadAndUpdateOffers, savedSearchFilters])
-
+  const refreshOffers = useCallback(
+    () => loadAndUpdateOffers(urlSearchFilters),
+    [loadAndUpdateOffers, urlSearchFilters]
+  )
+  const hasDifferentFiltersFromLastSearch = useCallback(
+    (searchFilters, filterNames = Object.keys(searchFilters)) => {
+      const lastSearchFilters = {
+        ...DEFAULT_SEARCH_FILTERS,
+        ...urlSearchFilters,
+      }
+      return filterNames
+        .map(
+          filterName =>
+            searchFilters[filterName] !== lastSearchFilters[filterName]
+        )
+        .includes(true)
+    },
+    [urlSearchFilters]
+  )
   const applyFilters = useCallback(() => {
     setIsLoading(true)
     setIsStatusFiltersVisible(false)
-    dispatch(savePageNumber(DEFAULT_PAGE))
-    dispatch(
-      saveSearchFilters({
-        ...searchFilters,
-      })
-    )
-  }, [dispatch, searchFilters])
+
+    if (!hasDifferentFiltersFromLastSearch(searchFilters)) {
+      refreshOffers()
+    }
+    setUrlFilters(searchFilters)
+  }, [
+    hasDifferentFiltersFromLastSearch,
+    refreshOffers,
+    searchFilters,
+    setUrlFilters,
+  ])
+
+  useEffect(() => {
+    if (isRefreshingOffers) {
+      setSearchFilters(urlSearchFilters)
+      loadAndUpdateOffers(urlSearchFilters)
+    }
+  }, [
+    isRefreshingOffers,
+    loadAndUpdateOffers,
+    setSearchFilters,
+    urlSearchFilters,
+  ])
 
   const removeOfferer = useCallback(() => {
     setIsLoading(true)
     setOfferer(null)
     const updatedFilters = {
+      ...searchFilters,
       offererId: DEFAULT_SEARCH_FILTERS.offererId,
     }
     if (
@@ -203,13 +249,8 @@ const Offers = ({ currentUser, getOfferer, query }) => {
     ) {
       updatedFilters.status = DEFAULT_SEARCH_FILTERS.status
     }
-    dispatch(saveSearchFilters({ ...updatedFilters }))
-  }, [dispatch, searchFilters.status, searchFilters.venueId])
-
-  const refreshOffers = useCallback(
-    () => loadAndUpdateOffers(savedSearchFilters),
-    [loadAndUpdateOffers, savedSearchFilters]
-  )
+    setUrlFilters(updatedFilters)
+  }, [setUrlFilters, searchFilters])
 
   const hasSearchFilters = useCallback(
     (searchFilters, filterNames = Object.keys(searchFilters)) => {
@@ -242,20 +283,14 @@ const Offers = ({ currentUser, getOfferer, query }) => {
   }, [])
 
   const onPreviousPageClick = useCallback(() => {
-    setCurrentPageNumber(currentPageNumber => {
-      const newPageNumber = currentPageNumber - 1
-      dispatch(savePageNumber(newPageNumber))
-      return newPageNumber
-    })
-  }, [dispatch])
+    const newPageNumber = currentPageNumber - 1
+    setUrlFilters({ ...urlSearchFilters, ...{ page: newPageNumber } }, false)
+  }, [currentPageNumber, setUrlFilters, urlSearchFilters])
 
   const onNextPageClick = useCallback(() => {
-    setCurrentPageNumber(currentPageNumber => {
-      const newPageNumber = currentPageNumber + 1
-      dispatch(savePageNumber(newPageNumber))
-      return newPageNumber
-    })
-  }, [dispatch])
+    const newPageNumber = currentPageNumber + 1
+    setUrlFilters({ ...urlSearchFilters, ...{ page: newPageNumber } }, false)
+  }, [currentPageNumber, setUrlFilters, urlSearchFilters])
 
   const selectOffer = useCallback((offerId, selected) => {
     setSelectedOfferIds(currentSelectedIds => {
@@ -293,18 +328,13 @@ const Offers = ({ currentUser, getOfferer, query }) => {
   const resetFilters = useCallback(() => {
     setIsLoading(true)
     setOfferer(null)
-    dispatch(
-      saveSearchFilters({
-        ...DEFAULT_SEARCH_FILTERS,
-      })
-    )
-    dispatch(savePageNumber(DEFAULT_PAGE))
-  }, [dispatch])
+    setSearchFilters({ ...DEFAULT_SEARCH_FILTERS })
+  }, [setSearchFilters])
 
   const { isAdmin } = currentUser || {}
   const hasOffers = currentPageOffersSubset.length > 0
   const userHasNoOffers =
-    !isLoading && !hasOffers && !hasSearchFilters(savedSearchFilters)
+    !isLoading && !hasOffers && !hasSearchFilters(searchFilters)
 
   const actionLink =
     userHasNoOffers || isAdmin ? null : (
@@ -339,7 +369,7 @@ const Offers = ({ currentUser, getOfferer, query }) => {
       ) : (
         <>
           <h3 className="op-title">Rechercher une offre</h3>
-          {hasSearchFilters(savedSearchFilters) ? (
+          {hasSearchFilters(searchFilters) ? (
             <Link
               className="reset-filters-link"
               onClick={resetFilters}
@@ -423,7 +453,7 @@ const Offers = ({ currentUser, getOfferer, query }) => {
                     </button>
                   </div>
                 )}
-                {!hasOffers && hasSearchFilters(savedSearchFilters) && (
+                {!hasOffers && hasSearchFilters(urlSearchFilters) && (
                   <NoResults resetFilters={resetFilters} />
                 )}
               </>
@@ -438,10 +468,6 @@ const Offers = ({ currentUser, getOfferer, query }) => {
 Offers.propTypes = {
   currentUser: PropTypes.shape().isRequired,
   getOfferer: PropTypes.func.isRequired,
-  query: PropTypes.shape({
-    change: PropTypes.func.isRequired,
-    parse: PropTypes.func.isRequired,
-  }).isRequired,
 }
 
 export default Offers

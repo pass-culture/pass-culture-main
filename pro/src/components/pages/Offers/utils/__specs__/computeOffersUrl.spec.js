@@ -19,7 +19,7 @@ describe('src | components | pages | Offer | utils | computeOffersUrl', () => {
       offererId: 'AY',
       venueId: 'EQ',
       categoryId: 'CINEMA',
-      status: 'all',
+      status: 'ACTIVE',
       creationMode: 'manual',
       periodBeginningDate: '2020-11-30T00:00:00+01:00',
       periodEndingDate: '2021-01-07T23:59:59+01:00',
@@ -31,7 +31,7 @@ describe('src | components | pages | Offer | utils | computeOffersUrl', () => {
 
     // then
     expect(value).toBe(
-      '/offres?nom=test&structure=AY&lieu=EQ&categorie=CINEMA&statut=all&creation=manuelle&periode-evenement-debut=2020-11-30T00%3A00%3A00%2B01%3A00&periode-evenement-fin=2021-01-07T23%3A59%3A59%2B01%3A00&page=1'
+      '/offres?nom=test&structure=AY&lieu=EQ&categorie=CINEMA&statut=active&creation=manuelle&periode-evenement-debut=2020-11-30T00%3A00%3A00%2B01%3A00&periode-evenement-fin=2021-01-07T23%3A59%3A59%2B01%3A00&page=1'
     )
   })
 })
