@@ -6,12 +6,14 @@ from typing import Union
 
 from psycopg2.errorcodes import CHECK_VIOLATION
 from psycopg2.errorcodes import UNIQUE_VIOLATION
+from pydantic import ValidationError
 from sqlalchemy import exc
 from sqlalchemy.orm import joinedload
 import yaml
 from yaml.scanner import ScannerError
 
 from pcapi import settings
+from pcapi.connectors.api_adage import AdageException
 from pcapi.connectors.thumb_storage import create_thumb
 from pcapi.connectors.thumb_storage import remove_thumb
 from pcapi.core import search
@@ -24,6 +26,7 @@ from pcapi.core.categories import subcategories
 from pcapi.core.categories.conf import can_create_from_isbn
 from pcapi.core.educational import api as educational_api
 from pcapi.core.educational import exceptions as educational_exceptions
+import pcapi.core.educational.adage_backends as adage_client
 from pcapi.core.educational.utils import compute_educational_booking_cancellation_limit_date
 from pcapi.core.mails.transactional.bookings.booking_cancellation_by_pro_to_beneficiary import (
     send_booking_cancellation_by_pro_to_beneficiary_email,
@@ -68,6 +71,7 @@ from pcapi.models.product import Product
 from pcapi.repository import offer_queries
 from pcapi.repository import repository
 from pcapi.repository import transaction
+from pcapi.routes.adage.v1.serialization.prebooking import serialize_educational_booking
 from pcapi.routes.serialization.offers_serialize import CompletedEducationalOfferModel
 from pcapi.routes.serialization.offers_serialize import PostEducationalOfferBodyModel
 from pcapi.routes.serialization.offers_serialize import PostOfferBodyModel
@@ -1024,10 +1028,26 @@ def cancel_educational_offer_booking(offer: Offer) -> None:
         extra={"stock": stock.id, "bookings": [b.id for b in cancelled_bookings]},
     )
     for booking in cancelled_bookings:
-        if not send_booking_cancellation_by_pro_to_beneficiary_email(booking):
-            logger.warning(
-                "Could not notify beneficiary about deletion of stock",
-                extra={"stock": stock.id, "booking": booking.id},
+        try:
+            adage_client.notify_booking_cancellation_by_offerer(
+                data=serialize_educational_booking(booking.educationalBooking)
+            )
+        except AdageException as adage_error:
+            logger.error(
+                "%s Could not notify adage of educational booking cancellation by offerer. Educational institution won't be notified.",
+                adage_error.message,
+                extra={
+                    "bookingId": booking.id,
+                    "adage status code": adage_error.status_code,
+                    "adage response text": adage_error.response_text,
+                },
+            )
+        except ValidationError:
+            logger.exception(
+                "Could not notify adage of prebooking, hence send confirmation email to educational institution, as educationalBooking serialization failed.",
+                extra={
+                    "bookingId": booking.id,
+                },
             )
     if not user_emails.send_offerer_bookings_recap_email_after_offerer_cancellation(cancelled_bookings):
         logger.warning(
