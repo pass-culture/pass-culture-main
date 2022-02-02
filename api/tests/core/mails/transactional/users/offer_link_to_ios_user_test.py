@@ -1,5 +1,6 @@
 import pytest
 
+from pcapi import settings
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.mails.transactional.users.offer_link_to_ios_user import get_offer_link_to_ios_user_email_data
@@ -26,7 +27,7 @@ class MailjetEmailOfferLinkIosUserTest:
             "MJ-TemplateLanguage": True,
             "Vars": {
                 "offer_name": offer.name,
-                "offer_webapp_link": f"https://webapp-v2.example.com/offre/{offer.id}",
+                "offer_webapp_link": f"{settings.WEBAPP_V2_REDIRECT_URL}/offre/{offer.id}",
                 "user_first_name": user.firstName,
                 "venue_name": offer.venue.name,
             },
@@ -50,7 +51,7 @@ class MailjetEmailOfferLinkIosUserTest:
             "Vars": {
                 "env": "-development",
                 "offer_name": offer.name,
-                "offer_webapp_link": f"https://webapp-v2.example.com/offre/{offer.id}",
+                "offer_webapp_link": f"{settings.WEBAPP_V2_REDIRECT_URL}/offre/{offer.id}",
                 "user_first_name": user.firstName,
                 "venue_name": offer.venue.name,
             },
@@ -72,7 +73,7 @@ class SendinblueEmailOfferLinkIosUserTest:
         assert data.params == {
             "FIRSTNAME": user.firstName,
             "OFFER_NAME": offer.name,
-            "OFFER_WEBAPP_LINK": f"https://webapp-v2.example.com/offre/{offer.id}",
+            "OFFER_WEBAPP_LINK": f"{settings.WEBAPP_V2_REDIRECT_URL}/offre/{offer.id}",
             "VENUE_NAME": offer.venue.name,
         }
 
@@ -94,6 +95,6 @@ class SendinblueEmailOfferLinkIosUserTest:
         assert mails_testing.outbox[0].sent_data["params"] == {
             "FIRSTNAME": user.firstName,
             "OFFER_NAME": offer.name,
-            "OFFER_WEBAPP_LINK": f"https://webapp-v2.example.com/offre/{offer.id}",
+            "OFFER_WEBAPP_LINK": f"{settings.WEBAPP_V2_REDIRECT_URL}/offre/{offer.id}",
             "VENUE_NAME": offer.venue.name,
         }
