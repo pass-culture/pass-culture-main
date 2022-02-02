@@ -1,4 +1,3 @@
-import json
 import logging
 from typing import Union
 
@@ -133,11 +132,17 @@ def ratelimit_handler(error: Exception) -> tuple[dict, int]:
 
 @app.errorhandler(DatabaseError)
 def database_error_handler(error: DatabaseError) -> tuple[dict, int]:
-    logger.error(
-        "Database error %s with the following query.\n\n🚨🚨🚨🚨🚨 BEFORE COPYING THE QUERY MAKE SURE THERE IS NO SQL INJECTION 🚨🚨🚨🚨🚨🚨\n\n%s;",
-        error.__class__.__name__,
-        error.statement % format_sql_statement_params(error.params) if error.statement is not None else None,
+    logger.info(
+        "Database error with the following query on method=%s url=%s. 🚨🚨🚨🚨🚨 BEFORE COPYING THE QUERY MAKE SURE THERE IS NO SQL INJECTION 🚨🚨🚨🚨🚨🚨",
+        request.method,
+        request.url,
+        extra={
+            "sql_query": error.statement % format_sql_statement_params(error.params)
+            if error.statement is not None
+            else None
+        },
     )
+    logger.exception("Unexpected database error on method=%s url=%s: %s", request.method, request.url, error)
     errors = ApiErrors()
     errors.add_error("global", "Il semble que nous ayons des problèmes techniques :(" + " On répare ça au plus vite.")
     return jsonify(errors.errors), 500
