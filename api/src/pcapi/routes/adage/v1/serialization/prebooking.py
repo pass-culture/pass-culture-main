@@ -4,7 +4,6 @@ from typing import Union
 
 from pydantic import BaseModel
 from pydantic.fields import Field
-from sqlalchemy.orm import joinedload
 
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.educational.models import EducationalBooking
@@ -224,9 +223,3 @@ def _get_educational_offer_accessibility(offer: offers_models.Offer) -> str:
         disability_compliance.append("Visuel")
 
     return ", ".join(disability_compliance) or "Non accessible"
-
-
-def get_bookings_for_educational_year(educational_year_id: str) -> list[EducationalBooking]:
-    return EducationalBooking.query.filter(EducationalBooking.educationalYearId == educational_year_id).options(
-        joinedload(EducationalBooking.educationalRedactor)
-    )
