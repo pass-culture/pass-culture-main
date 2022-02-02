@@ -13,7 +13,11 @@ logger = logging.getLogger(__name__)
 
 target_metadata = db.metadata
 
-IGNORED_COLUMNS_BY_TABLE = {"booking": ("isUsed", "isCancelled")}
+IGNORED_COLUMNS_BY_TABLE = {
+    "booking": ("isUsed", "isCancelled"),
+    "user": ("isBeneficiary", "isAdmin"),
+    "offer": ("idAtProviders",),
+}
 IGNORED_TABLES = ("transaction", "activity")
 
 
