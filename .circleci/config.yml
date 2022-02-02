@@ -411,7 +411,7 @@ jobs:
           steps:
             - notify-slack:
                 channel: shérif
-  
+
   quality-adage-front:
     docker:
       - image: cimg/node:14.17
@@ -487,6 +487,45 @@ jobs:
           working_directory: adage-front
           command: |
             yarn test:unit
+      - when:
+          condition:
+            equal: ["master", << pipeline.git.branch >>]
+          steps:
+            - notify-slack:
+                channel: shérif
+
+  type-checking-pro:
+    docker:
+      - image: cimg/node:14.17
+    working_directory: ~/pass-culture
+    steps:
+      - checkout
+      - skip_unchanged:
+          paths: pro
+      - unless:
+          condition:
+            equal: ["master", << pipeline.git.branch >>]
+          steps:
+            - restore_cache:
+                name: Restore Yarn Package Cache
+                key: << pipeline.parameters.pro_cache_key >>
+      - run:
+          name: Install dependencies
+          working_directory: pro
+          command: yarn install
+      - unless:
+          condition:
+            equal: ["master", << pipeline.git.branch >>]
+          steps:
+            - save_cache:
+                name: Save Yarn Package Cache
+                key: << pipeline.parameters.pro_cache_key >>
+                paths:
+                  - ~/.cache/yarn
+      - run:
+          name: Running type checking
+          working_directory: pro
+          command: yarn tsc -b
       - when:
           condition:
             equal: ["master", << pipeline.git.branch >>]
@@ -875,10 +914,10 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-            name: Restore requirements and Dockerfile checksum
-            keys:
-              # By using only cache prefix, we load the most recent checksum
-              - pass-culture-api-checksums-
+          name: Restore requirements and Dockerfile checksum
+          keys:
+            # By using only cache prefix, we load the most recent checksum
+            - pass-culture-api-checksums-
       - run:
           name: Build and push docker image if requirements and/or Dockerfile have changed
           command: |
@@ -908,6 +947,14 @@ workflows:
   commit:
     jobs:
       - tests-script-pc
+      - type-checking-pro:
+          filters:
+            branches:
+              ignore:
+                - production
+                - staging
+                - integration
+          context: Slack
       - quality-pro:
           filters:
             branches:
@@ -978,6 +1025,8 @@ workflows:
                 - staging
                 - integration
           context: Slack
+          requires:
+            - type-checking-pro
       - tests-pro-e2e-tests:
           filters:
             branches:
@@ -986,6 +1035,8 @@ workflows:
                 - staging
                 - integration
           context: Slack
+          requires:
+            - type-checking-pro
       - build-and-push-image:
           filters:
             branches:
