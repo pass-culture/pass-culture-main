@@ -118,7 +118,7 @@ export const navigateToOfferAs = (user, offer, userRole) => async t => {
   const searchInput = Selector('#offre')
   const submitButton = Selector('button[type="submit"]')
   const offerAnchor = Selector(
-    `a[href^="/offres/${offer.id}/edition"]`
+    `a[href^="/offre/${offer.id}/individuel/edition"]`
   ).withText(offer.name)
 
   if (!userRole) {
@@ -139,7 +139,7 @@ export const navigateToStocksAs = (user, offer, userRole) => async t => {
   const searchInput = Selector('#offre')
   const submitButton = Selector('button[type="submit"]')
   const stocksAnchor = Selector(
-    `a[href^="/offres/${offer.id}/stocks"]`
+    `a[href^="/offre/${offer.id}/individuel/stocks"]`
   ).withText('Stocks')
 
   if (!userRole) {
