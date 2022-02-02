@@ -8,6 +8,7 @@ import sqlalchemy
 
 from pcapi.core.users import constants
 from pcapi.core.users import models as users_models
+from pcapi.core.users import repository as users_repository
 from pcapi.core.users import utils as users_utils
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
@@ -656,3 +657,36 @@ def has_performed_honor_statement(user: users_models.User, eligibility_type: use
         and fraud_check.status == models.FraudCheckStatus.OK
         for fraud_check in fraud_checks
     )
+
+
+# use this for asynchronous identity check methods (DMS, ubble, admin review)
+def decide_eligibility(
+    user: users_models.User, registration_datetime: datetime.datetime, birth_date: datetime.datetime
+) -> typing.Optional[users_models.EligibilityType]:
+    from pcapi.core.users import api as users_api
+
+    if registration_datetime is None or birth_date is None:
+        return None
+
+    user_age_today = users_utils.get_age_from_birth_date(birth_date)
+    eligibility_at_registration = users_api.get_eligibility_at_date(birth_date, registration_datetime)
+
+    eligibility_today = users_api.get_eligibility_at_date(birth_date, datetime.datetime.now())
+
+    if eligibility_at_registration is None and eligibility_today is None and user_age_today == 19:
+        earliest_identity_check_date = users_repository.get_earliest_identity_check_date_of_eligibility(
+            user,
+            users_models.EligibilityType.AGE18,
+        )
+        if earliest_identity_check_date:
+            return users_api.get_eligibility_at_date(birth_date, earliest_identity_check_date)
+
+    # When a user turns 18, his underage credit expires.
+    # If he turned 18 between registration and today, we consider the application as coming from a 18 years old user
+    if (
+        eligibility_today == users_models.EligibilityType.AGE18
+        and eligibility_at_registration == users_models.EligibilityType.UNDERAGE
+    ):
+        return users_models.EligibilityType.AGE18
+
+    return eligibility_at_registration
