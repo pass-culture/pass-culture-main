@@ -75,7 +75,7 @@ def on_dms_fraud_result(
     dms_content: models.DMSContent,
 ) -> models.BeneficiaryFraudCheck:
 
-    eligibility_type = dms_content.get_eligibility_type()
+    eligibility_type = decide_eligibility(user, dms_content.get_registration_datetime(), dms_content.get_birth_date())
     fraud_check = dms_api.get_fraud_check(user, str(dms_content.application_id))
     if not fraud_check:
         logger.warning("DMS fraud check from user %d not previously created", user.id)
@@ -92,6 +92,7 @@ def on_dms_fraud_result(
         if fraud_check.eligibilityType != eligibility_type:
             logger.info("User changed his eligibility in DMS application", extra={"user_id": user.id})
             fraud_check.eligibilityType = eligibility_type
+
     on_identity_fraud_check_result(user, fraud_check)
     repository.save(fraud_check)
 
@@ -174,7 +175,6 @@ def on_identity_fraud_check_result(
     content_first_name = content.get_first_name()
     content_last_name = content.get_last_name()
     content_birth_date = content.get_birth_date()
-    content_eligibility_type = content.get_eligibility_type()
 
     # Check for duplicate only when Id Check returns identity details
     if content_first_name and content_last_name and content_birth_date:
@@ -188,9 +188,9 @@ def on_identity_fraud_check_result(
         )
 
     if content_birth_date:
-        fraud_items.append(_check_user_eligibility(user, content_eligibility_type))
+        fraud_items.append(_check_user_eligibility(user, beneficiary_fraud_check.eligibilityType))
 
-    fraud_items.append(_check_user_has_no_active_deposit(user, content_eligibility_type))
+    fraud_items.append(_check_user_has_no_active_deposit(user, beneficiary_fraud_check.eligibilityType))
     fraud_items.append(_check_user_email_is_validated(user))
 
     return validate_frauds(fraud_items, beneficiary_fraud_check)
@@ -560,7 +560,6 @@ def start_fraud_check(
     application_id: str,
     source_data: typing.Union[models.DMSContent, ubble_fraud_models.UbbleContent],
 ) -> models.BeneficiaryFraudCheck:
-
     source_type = models.FRAUD_CONTENT_MAPPING[type(source_data)]
 
     fraud_check = models.BeneficiaryFraudCheck.query.filter(
@@ -572,13 +571,14 @@ def start_fraud_check(
     if fraud_check:
         raise exceptions.ApplicationValidationAlreadyStarted()
 
+    eligibility_type = decide_eligibility(user, source_data.get_registration_datetime(), source_data.get_birth_date())
     fraud_check = models.BeneficiaryFraudCheck(
         user=user,
         type=source_type,
         thirdPartyId=application_id,
         resultContent=source_data.dict(),
         status=models.FraudCheckStatus.PENDING,
-        eligibilityType=source_data.get_eligibility_type(),
+        eligibilityType=eligibility_type,
     )
 
     repository.save(fraud_check)
@@ -598,6 +598,7 @@ def update_or_create_fraud_check_failed(
         ~models.BeneficiaryFraudCheck.status.in_([models.FraudCheckStatus.OK, models.FraudCheckStatus.KO]),
     ).one_or_none()
 
+    eligibility_type = decide_eligibility(user, source_data.get_registration_datetime(), source_data.get_birth_date())
     if not fraud_check:
         fraud_check = models.BeneficiaryFraudCheck(
             user=user,
@@ -605,7 +606,7 @@ def update_or_create_fraud_check_failed(
             thirdPartyId=thirdPartyId,
             resultContent=source_data.dict(),
             status=models.FraudCheckStatus.KO,
-            eligibilityType=source_data.get_eligibility_type(),
+            eligibilityType=eligibility_type,
         )
 
     fraud_check.status = models.FraudCheckStatus.KO

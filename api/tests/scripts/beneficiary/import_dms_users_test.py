@@ -34,7 +34,7 @@ from tests.scripts.beneficiary.fixture import make_new_stranger_application
 
 NOW = datetime.utcnow()
 
-AGE18_ELIGIBLE_BIRTH_DATE = dateOfBirth = datetime.utcnow() - relativedelta(years=ELIGIBILITY_AGE_18)
+AGE18_ELIGIBLE_BIRTH_DATE = datetime.utcnow() - relativedelta(years=ELIGIBILITY_AGE_18)
 
 
 @pytest.mark.usefixtures("db_session")
@@ -832,6 +832,88 @@ class GraphQLSourceProcessApplicationTest:
         )
         assert statement_fraud_check.status == fraud_models.FraudCheckStatus.OK
         assert statement_fraud_check.reason == "honor statement contained in DMS application"
+
+    def test_process_application_user_registered_at_18(self):
+        user = users_factories.UserFactory(
+            dateOfBirth=AGE18_ELIGIBLE_BIRTH_DATE,
+            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user, type=fraud_models.FraudCheckType.USER_PROFILING, status=fraud_models.FraudCheckStatus.OK
+        )
+
+        application_id = 123123
+        application_details = make_graphql_application(application_id, "closed", email=user.email)
+        information = dms_connector_api.parse_beneficiary_information_graphql(application_details, 123123)
+        # fixture
+        dms_api.process_application(
+            user,
+            123123,
+            4234,
+            information,
+        )
+        assert len(user.beneficiaryFraudChecks) == 3  # user profiling, DMS, honor statement
+        assert user.roles == [users_models.UserRole.BENEFICIARY]
+
+    def test_process_application_user_registered_at_18_dms_at_19(self):
+        user = users_factories.UserFactory(
+            dateOfBirth=datetime.utcnow() - relativedelta(years=19, months=4),
+            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.USER_PROFILING,
+            status=fraud_models.FraudCheckStatus.OK,
+            dateCreated=datetime.utcnow() - relativedelta(years=1, months=2),
+            eligibilityType=users_models.EligibilityType.AGE18,
+        )
+
+        application_id = 123123
+        application_details = make_graphql_application(
+            application_id,
+            "closed",
+            email=user.email,
+            birth_date=user.dateOfBirth,
+            construction_datetime=datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S+02:00"),
+        )
+        information = dms_connector_api.parse_beneficiary_information_graphql(application_details, 123123)
+        # fixture
+        dms_api.process_application(
+            user,
+            123123,
+            4234,
+            information,
+        )
+        assert len(user.beneficiaryFraudChecks) == 3  # user profiling, DMS, honor statement
+        assert user.roles == [users_models.UserRole.BENEFICIARY]
+
+    def test_process_application_user_not_eligible(self):
+        user = users_factories.UserFactory(
+            dateOfBirth=datetime.utcnow() - relativedelta(years=19, months=4),
+            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
+        )
+
+        application_id = 123123
+        application_details = make_graphql_application(
+            application_id,
+            "closed",
+            email=user.email,
+            birth_date=user.dateOfBirth,
+            construction_datetime=datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S+02:00"),
+        )
+        information = dms_connector_api.parse_beneficiary_information_graphql(application_details, 123123)
+        # fixture
+        dms_api.process_application(
+            user,
+            123123,
+            4234,
+            information,
+        )
+        assert len(user.beneficiaryFraudChecks) == 1
+        dms_fraud_check = user.beneficiaryFraudChecks[0]
+        assert dms_fraud_check.status == fraud_models.FraudCheckStatus.KO
+        assert fraud_models.FraudReasonCode.NOT_ELIGIBLE in dms_fraud_check.reasonCodes
+        assert user.roles == []
 
     @patch.object(dms_connector_api.DMSGraphQLClient, "get_applications_with_details")
     def test_dms_application_value_error(self, get_applications_with_details):

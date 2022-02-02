@@ -279,6 +279,7 @@ def make_graphql_application(
     birth_date: Optional[datetime.datetime] = datetime.datetime(2004, 1, 1),
     full_graphql_response: bool = False,
     has_next_page: bool = False,
+    construction_datetime: str = "2020-05-13T09:09:46+02:00",
 ) -> dict:
     data = {
         "id": "".join(random.choice(string.ascii_uppercase + string.digits) for _ in range(20)),
@@ -286,7 +287,7 @@ def make_graphql_application(
         "archived": False,
         "state": state,
         "dateDerniereModification": "2020-05-13T10:41:23+02:00",
-        "datePassageEnConstruction": "2020-05-13T09:09:46+02:00",
+        "datePassageEnConstruction": construction_datetime,
         "datePassageEnInstruction": "2020-05-13T10:37:31+02:00",
         "dateTraitement": "2020-05-13T10:41:21+02:00",
         "motivation": "",
