@@ -21,7 +21,7 @@ test("Je peux créer un stock pour un événement en passant par la page de l'of
     'get_existing_pro_validated_user_with_validated_offerer_with_iban_validated_user_offerer_with_event_offer_with_no_stock'
   )
   const stocksAnchor = Selector(
-    `a[href^="/offres/${offer.id}/stocks"]`
+    `a[href^="/offre/${offer.id}/individuel/stocks"]`
   ).withText('Stock et prix')
 
   const dateInput = Selector('.react-datepicker-wrapper').nth(0)
