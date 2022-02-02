@@ -5,6 +5,7 @@ from pcapi.connectors import api_entreprises
 from pcapi.core.finance.models import BusinessUnit
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers.models import Offerer
+from pcapi.core.users.external import update_external_pro
 from pcapi.domain.bank_information import CannotRegisterBankInformation
 from pcapi.domain.bank_information import check_new_bank_information_has_a_more_advanced_status
 from pcapi.domain.bank_information import check_new_bank_information_older_than_saved_one
@@ -89,6 +90,8 @@ class SaveVenueBankInformations:
             business_unit.bankAccountId = updated_bank_information.id
             repository.save(business_unit)
             offerers_api.set_business_unit_to_venue_id(business_unit.id, venue.identifier)
+
+        update_external_pro(venue.bookingEmail)
 
         return bank_information
 

@@ -16,3 +16,8 @@ class SendTransactionalEmailRequest(BaseModel):
     template_id: int
     tags: Optional[list[str]]
     sender: dict
+
+
+class UpdateProAttributesRequest(BaseModel):
+    email: str
+    time_id: str  # see comment in update_pro_attributes_task

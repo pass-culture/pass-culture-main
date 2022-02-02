@@ -11,6 +11,7 @@ from pcapi.core.offerers.models import VenueType
 from pcapi.core.offerers.repository import find_offerer_by_siren
 from pcapi.core.users.api import create_pro_user
 from pcapi.core.users.api import create_reset_password_token
+from pcapi.core.users.external import update_external_pro
 from pcapi.core.users.repository import find_user_by_email
 from pcapi.domain.password import random_password
 from pcapi.models.api_errors import ApiErrors
@@ -119,8 +120,11 @@ def import_new_offerer_from_csv(row: dict) -> None:
         except ApiErrors:
             logger.warning("Unable to save this venue %s - %s", row[""], row["Company ID"])
 
+        update_external_pro(venue.bookingEmail)
     else:
         logger.warning("Unable to import this venue %s - %s", row[""], row["Company ID"])
+
+    update_external_pro(pro.email)
 
 
 def import_from_csv_file(csv_file_path: str) -> None:

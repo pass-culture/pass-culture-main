@@ -1,10 +1,11 @@
 from datetime import datetime
 from decimal import Decimal
 
+from pcapi.core.offerers.models import VenueTypeCode
+from pcapi.core.users.external.models import ProAttributes
 from pcapi.core.users.external.models import UserAttributes
 from pcapi.core.users.models import Credit
 from pcapi.core.users.models import DomainsCredit
-from pcapi.core.users.models import UserRole
 
 
 common_user_attributes = UserAttributes(
@@ -38,4 +39,29 @@ common_user_attributes = UserAttributes(
     products_use_date={"product_brut_x_use": datetime(2021, 5, 6)},
     user_id=1,
     roles=["BENEFICIARY"],
+)
+
+
+common_pro_attributes = ProAttributes(
+    is_pro=True,
+    is_user_email=True,
+    is_booking_email=True,
+    offerer_name=["Offerer Name 1", "Offerer Name 2"],
+    user_id=2,
+    first_name="First name",
+    last_name="Last name",
+    marketing_email_subscription=True,
+    user_is_attached=False,
+    user_is_creator=True,
+    venue_count=2,
+    venue_name=["Venue Name 1", "Venue Name 2"],
+    venue_type=[VenueTypeCode.BOOKSTORE.name, VenueTypeCode.MOVIE.name],
+    venue_label=["Venue Label"],
+    departement_code=["04,06"],
+    dms_application_submitted=False,
+    dms_application_approved=True,
+    isVirtual=False,
+    isPermanent=True,
+    has_offers=True,
+    has_bookings=True,
 )

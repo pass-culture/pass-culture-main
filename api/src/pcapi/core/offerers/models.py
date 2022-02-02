@@ -185,6 +185,8 @@ class Venue(PcObject, Model, HasThumbMixin, HasAddressMixin, ProvidableMixin, Ne
 
     venueLabelId = Column(Integer, ForeignKey("venue_label.id"), nullable=True)
 
+    venueLabel = relationship("VenueLabel", foreign_keys=[venueLabelId])
+
     dateCreated = Column(DateTime, nullable=False, default=datetime.utcnow)
 
     withdrawalDetails = Column(Text, nullable=True)
@@ -241,6 +243,14 @@ class Venue(PcObject, Model, HasThumbMixin, HasAddressMixin, ProvidableMixin, Ne
             return None
 
         return self.bankInformation.applicationId
+
+    @property
+    def demarchesSimplifieesIsDraft(self):
+        return self.bankInformation and self.bankInformation.status == BankInformationStatus.DRAFT
+
+    @property
+    def demarchesSimplifieesIsAccepted(self):
+        return self.bankInformation and self.bankInformation.status == BankInformationStatus.ACCEPTED
 
     @property
     def nOffers(self) -> int:

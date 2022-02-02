@@ -13,12 +13,16 @@ from pcapi.core.users.external.sendinblue import add_contacts_to_list
 from pcapi.core.users.external.sendinblue import build_file_body
 from pcapi.core.users.external.sendinblue import format_user_attributes
 from pcapi.core.users.external.sendinblue import import_contacts_in_sendinblue
+from pcapi.core.users.external.sendinblue import make_update_request
+from pcapi.tasks.serialization.sendinblue_tasks import UpdateSendinblueContactRequest
 
+from . import common_pro_attributes
 from . import common_user_attributes
 
 
 # Do not use this identifier with production account when running skipped tests
 SENDINBLUE_AUTOMATION_TEST_CONTACT_LIST_ID = 18
+SENDINBLUE_PRO_TESTING_CONTACT_LIST_ID = 12
 
 pytestmark = pytest.mark.usefixtures("db_session")
 
@@ -55,6 +59,69 @@ class FormatUserAttributesTest:
             "POSTAL_CODE": None,
             "PRODUCT_BRUT_X_USE_DATE": datetime(2021, 5, 6),
             "USER_ID": 1,
+            "DMS_APPLICATION_SUBMITTED": None,
+            "DMS_APPLICATION_APPROVED": None,
+            "HAS_BOOKINGS": None,
+            "HAS_OFFERS": None,
+            "IS_BOOKING_EMAIL": None,
+            "IS_PERMANENT": None,
+            "IS_USER_EMAIL": None,
+            "IS_VIRTUAL": None,
+            "OFFERER_NAME": None,
+            "USER_IS_ATTACHED": None,
+            "USER_IS_CREATOR": None,
+            "VENUE_COUNT": None,
+            "VENUE_LABEL": None,
+            "VENUE_NAME": None,
+            "VENUE_TYPE": None,
+        }
+
+    def test_format_pro_attributes(self):
+        formatted_attributes = format_user_attributes(common_pro_attributes)
+
+        assert formatted_attributes == {
+            "BOOKED_OFFER_CATEGORIES": None,
+            "BOOKED_OFFER_SUBCATEGORIES": None,
+            "BOOKING_COUNT": None,
+            "DATE_CREATED": None,
+            "DATE_OF_BIRTH": None,
+            "DEPARTMENT_CODE": "04,06",
+            "DEPOSIT_ACTIVATION_DATE": None,
+            "DEPOSIT_EXPIRATION_DATE": None,
+            "ELIGIBILITY": None,
+            "FIRSTNAME": "First name",
+            "HAS_COMPLETED_ID_CHECK": None,
+            "INITIAL_CREDIT": None,
+            "CREDIT": None,
+            "IS_BENEFICIARY": None,
+            "IS_BENEFICIARY_18": None,
+            "IS_ELIGIBLE": None,
+            "IS_EMAIL_VALIDATED": None,
+            "IS_PRO": True,
+            "IS_UNDERAGE_BENEFICIARY": None,
+            "LAST_BOOKING_DATE": None,
+            "LAST_FAVORITE_CREATION_DATE": None,
+            "LAST_VISIT_DATE": None,
+            "LASTNAME": "Last name",
+            "MARKETING_EMAIL_SUBSCRIPTION": True,
+            "POSTAL_CODE": None,
+            "PRODUCT_BRUT_X_USE_DATE": None,
+            "USER_ID": 2,
+            "DMS_APPLICATION_SUBMITTED": False,
+            "DMS_APPLICATION_APPROVED": True,
+            "HAS_BOOKINGS": True,
+            "HAS_OFFERS": True,
+            "IS_BOOKING_EMAIL": True,
+            "IS_PERMANENT": True,
+            "IS_USER_EMAIL": True,
+            "IS_VIRTUAL": False,
+            "OFFERER_NAME": "Offerer Name 1,Offerer Name 2",
+            "USER_IS_ATTACHED": False,
+            "USER_IS_CREATOR": True,
+            "VENUE_COUNT": 2,
+            "VENUE_LABEL": "Venue Label",
+            "VENUE_NAME": "Venue Name 1,Venue Name 2",
+            "VENUE_TYPE": "BOOKSTORE,MOVIE",
         }
 
 
@@ -81,10 +148,10 @@ class BulkImportUsersDataTest:
             ),
         ]
 
-        self.expected_header = "BOOKED_OFFER_CATEGORIES;BOOKED_OFFER_SUBCATEGORIES;BOOKING_COUNT;CREDIT;DATE_CREATED;DATE_OF_BIRTH;DEPARTMENT_CODE;DEPOSIT_ACTIVATION_DATE;DEPOSIT_EXPIRATION_DATE;ELIGIBILITY;FIRSTNAME;HAS_COMPLETED_ID_CHECK;INITIAL_CREDIT;IS_BENEFICIARY;IS_BENEFICIARY_18;IS_ELIGIBLE;IS_EMAIL_VALIDATED;IS_PRO;IS_UNDERAGE_BENEFICIARY;LASTNAME;LAST_BOOKING_DATE;LAST_FAVORITE_CREATION_DATE;LAST_VISIT_DATE;MARKETING_EMAIL_SUBSCRIPTION;POSTAL_CODE;PRODUCT_BRUT_X_USE_DATE;USER_ID;EMAIL"
-        self.eren_expected_file_body = "CINEMA,LIVRE;ABO_LIVRE_NUMERIQUE,CARTE_CINE_ILLIMITE,CINE_PLEIN_AIR;4;480.00;06-02-2021;06-05-2003;12;;;age-18;First name;Yes;500;Yes;Yes;Yes;Yes;No;No;Last name;06-05-2021;;;Yes;;06-05-2021;1;eren.yeager@shinganshina.paradis"
-        self.mikasa_expected_file_body = "CINEMA,LIVRE;ABO_LIVRE_NUMERIQUE,CARTE_CINE_ILLIMITE,CINE_PLEIN_AIR;4;480.00;06-02-2021;06-05-2003;12;;;age-18;First name;Yes;500;Yes;Yes;Yes;Yes;Yes;No;Last name;06-05-2021;;;Yes;;06-05-2021;2;mikasa.ackerman@shinganshina.paradis"
-        self.armin_expected_file_body = "CINEMA,LIVRE;ABO_LIVRE_NUMERIQUE,CARTE_CINE_ILLIMITE,CINE_PLEIN_AIR;4;480.00;06-02-2021;06-05-2003;12;;;age-18;First name;Yes;500;Yes;Yes;Yes;Yes;No;No;Last name;06-05-2021;;;Yes;;06-05-2021;3;armin.arlert@shinganshina.paradis"
+        self.expected_header = "BOOKED_OFFER_CATEGORIES;BOOKED_OFFER_SUBCATEGORIES;BOOKING_COUNT;CREDIT;DATE_CREATED;DATE_OF_BIRTH;DEPARTMENT_CODE;DEPOSIT_ACTIVATION_DATE;DEPOSIT_EXPIRATION_DATE;DMS_APPLICATION_APPROVED;DMS_APPLICATION_SUBMITTED;ELIGIBILITY;FIRSTNAME;HAS_BOOKINGS;HAS_COMPLETED_ID_CHECK;HAS_OFFERS;INITIAL_CREDIT;IS_BENEFICIARY;IS_BENEFICIARY_18;IS_BOOKING_EMAIL;IS_ELIGIBLE;IS_EMAIL_VALIDATED;IS_PERMANENT;IS_PRO;IS_UNDERAGE_BENEFICIARY;IS_USER_EMAIL;IS_VIRTUAL;LASTNAME;LAST_BOOKING_DATE;LAST_FAVORITE_CREATION_DATE;LAST_VISIT_DATE;MARKETING_EMAIL_SUBSCRIPTION;OFFERER_NAME;POSTAL_CODE;PRODUCT_BRUT_X_USE_DATE;USER_ID;USER_IS_ATTACHED;USER_IS_CREATOR;VENUE_COUNT;VENUE_LABEL;VENUE_NAME;VENUE_TYPE;EMAIL"
+        self.eren_expected_file_body = "CINEMA,LIVRE;ABO_LIVRE_NUMERIQUE,CARTE_CINE_ILLIMITE,CINE_PLEIN_AIR;4;480.00;06-02-2021;06-05-2003;12;;;;;age-18;First name;;Yes;;500;Yes;Yes;;Yes;Yes;;No;No;;;Last name;06-05-2021;;;Yes;;;06-05-2021;1;;;;;;;eren.yeager@shinganshina.paradis"
+        self.mikasa_expected_file_body = "CINEMA,LIVRE;ABO_LIVRE_NUMERIQUE,CARTE_CINE_ILLIMITE,CINE_PLEIN_AIR;4;480.00;06-02-2021;06-05-2003;12;;;;;age-18;First name;;Yes;;500;Yes;Yes;;Yes;Yes;;Yes;No;;;Last name;06-05-2021;;;Yes;;;06-05-2021;2;;;;;;;mikasa.ackerman@shinganshina.paradis"
+        self.armin_expected_file_body = "CINEMA,LIVRE;ABO_LIVRE_NUMERIQUE,CARTE_CINE_ILLIMITE,CINE_PLEIN_AIR;4;480.00;06-02-2021;06-05-2003;12;;;;;age-18;First name;;Yes;;500;Yes;Yes;;Yes;Yes;;No;No;;;Last name;06-05-2021;;;Yes;;;06-05-2021;3;;;;;;;armin.arlert@shinganshina.paradis"
 
     def test_build_file_body(self):
         expected = (
@@ -193,3 +260,17 @@ class BulkImportUsersDataTest:
         # 500k contacts: several import requests
         # Use with caution, test may take 10, 20, 25 minutes...
         self._test_add_many_contacts_to_list_without_mock(500000, "500k")
+
+    @pytest.mark.skip(reason="For dev and debug only - this test sends data to sendinblue")
+    def test_update_pro_contact_without_mock(self):
+        # This test helps to check data received in Sendinblue dashboard manually.
+        # Note that SENDINBLUE_API_KEY must be filled in settings and code under IS_RUNNING_TESTS and IS_DEV must be
+        # temporarily disabled in make_update_request to really send data to Sendinblue test account.
+        assert make_update_request(
+            UpdateSendinblueContactRequest(
+                email=f"test.pro.{datetime.now().strftime('%y%m%d.%H%M')}@example.net",
+                attributes=format_user_attributes(common_pro_attributes),
+                contact_list_ids=[SENDINBLUE_PRO_TESTING_CONTACT_LIST_ID],
+                emailBlacklisted=False,
+            )
+        )

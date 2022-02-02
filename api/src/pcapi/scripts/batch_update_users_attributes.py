@@ -8,6 +8,7 @@ from typing import Generator
 
 from pcapi.core.users.external import batch
 from pcapi.core.users.external import get_user_attributes
+from pcapi.core.users.external import get_user_or_pro_attributes
 from pcapi.core.users.external import sendinblue
 from pcapi.core.users.external.sendinblue import SendinblueUserUpdateData
 from pcapi.core.users.external.sendinblue import import_contacts_in_sendinblue
@@ -51,7 +52,7 @@ def format_batch_users(users: list[User]) -> list[UserUpdateData]:
 def format_sendinblue_users(users: list[User]) -> list[SendinblueUserUpdateData]:
     res = []
     for user in users:
-        attributes = sendinblue.format_user_attributes(get_user_attributes(user))
+        attributes = sendinblue.format_user_attributes(get_user_or_pro_attributes(user))
         res.append(SendinblueUserUpdateData(email=user.email, attributes=attributes))
     print(f"{len(res)} users formatted for sendinblue...")
     return res

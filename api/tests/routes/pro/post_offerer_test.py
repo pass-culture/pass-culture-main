@@ -8,6 +8,7 @@ from pcapi.core.offerers.factories import VirtualVenueTypeFactory
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offers.factories import OffererFactory
 from pcapi.core.offers.factories import UserOffererFactory
+from pcapi.core.users import testing as sendinblue_testing
 from pcapi.core.users.factories import AdminFactory
 from pcapi.core.users.factories import ProFactory
 from pcapi.models.user_offerer import UserOfferer
@@ -50,6 +51,7 @@ class Returns201Test:
         assert response.json["name"] == "Test Offerer"
         virtual_venues = list(filter(lambda v: v["isVirtual"], response.json["managedVenues"]))
         assert len(virtual_venues) == 1
+        assert len(sendinblue_testing.sendinblue_requests) == 1
 
     @patch("pcapi.connectors.api_entreprises.requests.get")
     @pytest.mark.usefixtures("db_session")
@@ -70,6 +72,7 @@ class Returns201Test:
         assert response.status_code == 201
         assert response.json["siren"] == "418166096"
         assert response.json["name"] == "Test Offerer"
+        assert len(sendinblue_testing.sendinblue_requests) == 1
 
     @patch("pcapi.connectors.api_entreprises.requests.get")
     @pytest.mark.usefixtures("db_session")

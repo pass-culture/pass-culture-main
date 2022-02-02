@@ -736,3 +736,12 @@ def get_soon_expiring_bookings(expiration_days_delta: int) -> typing.Generator[B
         expiration_date = booking.expirationDate
         if expiration_date and expiration_date.date() == date.today() + delta:
             yield booking
+
+
+def venues_have_bookings(*venues: Venue) -> bool:
+    """At least one venue which has email as bookingEmail has at least one non-canceled booking"""
+    return db.session.query(
+        Booking.query.filter(
+            Booking.venueId.in_([venue.id for venue in venues]), Booking.status != BookingStatus.CANCELLED
+        ).exists()
+    ).scalar()

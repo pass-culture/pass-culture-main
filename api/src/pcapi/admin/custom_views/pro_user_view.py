@@ -16,6 +16,7 @@ from wtforms.validators import ValidationError
 from pcapi.admin.base_configuration import BaseAdminView
 from pcapi.core.mails.transactional.pro.reset_password_to_pro import send_reset_password_link_to_admin_email
 from pcapi.core.users.constants import RESET_PASSWORD_TOKEN_LIFE_TIME_EXTENDED
+from pcapi.core.users.external import update_external_pro
 from pcapi.core.users.models import User
 from pcapi.core.users.utils import sanitize_email
 from pcapi.models.user_offerer import UserOfferer
@@ -180,6 +181,8 @@ class ProUserView(SuspensionMixin, BaseAdminView):
             if current_user:
                 send_reset_password_link_to_admin_email(model, current_user.email, reset_password_link)
         super().after_model_change(form, model, is_created)
+
+        update_external_pro(model.email)
 
     def get_query(self) -> query:
         return User.query.join(UserOfferer).distinct(User.id).from_self()
