@@ -2,15 +2,20 @@ import pytest
 
 from pcapi.core.bookings import factories as booking_factories
 from pcapi.core.bookings.models import BookingStatus
+import pcapi.core.educational.testing as adage_api_testing
 from pcapi.core.offerers import factories as offerer_factories
 from pcapi.core.offers import factories as offer_factories
+from pcapi.core.testing import override_settings
 from pcapi.core.users import factories as user_factories
+from pcapi.routes.adage.v1.serialization.prebooking import serialize_educational_booking
 from pcapi.utils.human_ids import humanize
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
+@override_settings(ADAGE_API_URL="https://adage_base_url")
+@override_settings(ADAGE_API_KEY="adage-api-key")
 class Returns204Test:
     def test_cancel_pending_booking(self, client):
         user = user_factories.UserFactory()
@@ -28,6 +33,11 @@ class Returns204Test:
         assert response.status_code == 204
         assert educational_booking.status == BookingStatus.CANCELLED
 
+        expected_payload = serialize_educational_booking(educational_booking.educationalBooking)
+        assert len(adage_api_testing.adage_requests) == 1
+        assert adage_api_testing.adage_requests[0]["sent_data"] == expected_payload
+        assert adage_api_testing.adage_requests[0]["url"] == "https://adage_base_url/v1/prereservation-annule"
+
     def test_cancel_confirmed_booking(self, client):
         user = user_factories.AdminFactory()
         educational_booking = booking_factories.EducationalBookingFactory()
@@ -39,8 +49,17 @@ class Returns204Test:
         assert response.status_code == 204
         assert educational_booking.status == BookingStatus.CANCELLED
 
+        expected_payload = serialize_educational_booking(educational_booking.educationalBooking)
+        assert len(adage_api_testing.adage_requests) == 1
+        assert adage_api_testing.adage_requests[0]["sent_data"] == expected_payload
+        assert adage_api_testing.adage_requests[0]["url"] == "https://adage_base_url/v1/prereservation-annule"
 
+
+@override_settings(ADAGE_API_URL="https://adage_base_url")
+@override_settings(ADAGE_API_KEY="adage-api-key")
 class Returns404Test:
+    @override_settings(ADAGE_API_URL="https://adage_base_url")
+    @override_settings(ADAGE_API_KEY="adage-api-key")
     def test_no_educational_offer_found(self, client):
         user = user_factories.AdminFactory()
         offer = offer_factories.OfferFactory()
@@ -54,7 +73,10 @@ class Returns404Test:
             "code": "NO_EDUCATIONAL_OFFER_FOUND",
             "message": "No educational offer has been found with this id",
         }
+        assert len(adage_api_testing.adage_requests) == 0
 
+    @override_settings(ADAGE_API_URL="https://adage_base_url")
+    @override_settings(ADAGE_API_KEY="adage-api-key")
     def test_no_active_stock_found(self, client):
         user = user_factories.AdminFactory()
         stock = offer_factories.EducationalEventStockFactory(isSoftDeleted=True)
@@ -68,8 +90,11 @@ class Returns404Test:
             "code": "NO_ACTIVE_STOCK_FOUND",
             "message": "No active stock has been found with this id",
         }
+        assert len(adage_api_testing.adage_requests) == 0
 
 
+@override_settings(ADAGE_API_URL="https://adage_base_url")
+@override_settings(ADAGE_API_KEY="adage-api-key")
 class Returns403Test:
     def test_user_does_not_have_access_to_offerer(self, client):
         user = user_factories.UserFactory()
@@ -86,8 +111,11 @@ class Returns403Test:
         assert response.json == {
             "global": ["Vous n'avez pas les droits d'accès suffisant pour accéder à cette information."]
         }
+        assert len(adage_api_testing.adage_requests) == 0
 
 
+@override_settings(ADAGE_API_URL="https://adage_base_url")
+@override_settings(ADAGE_API_KEY="adage-api-key")
 class Returns400Test:
     def test_offer_has_multiple_active_stocks(self, client):
         user = user_factories.AdminFactory()
@@ -106,6 +134,7 @@ class Returns400Test:
             "code": "MULTIPLE_STOCKS",
             "message": "This educational offer has multiple active stocks",
         }
+        assert len(adage_api_testing.adage_requests) == 0
 
     def test_offer_has_no_booking_to_cancel(self, client):
         user = user_factories.AdminFactory()
@@ -117,6 +146,7 @@ class Returns400Test:
 
         assert response.status_code == 400
         assert response.json == {"code": "NO_BOOKING", "message": "This educational offer has no booking to cancel"}
+        assert len(adage_api_testing.adage_requests) == 0
 
     def test_offer_has_no_booking_to_cancel_because_used(self, client):
         user = user_factories.AdminFactory()
@@ -128,3 +158,4 @@ class Returns400Test:
 
         assert response.status_code == 400
         assert response.json == {"code": "NO_BOOKING", "message": "This educational offer has no booking to cancel"}
+        assert len(adage_api_testing.adage_requests) == 0
