@@ -46,7 +46,7 @@ USER_PROFILING_FRAUD_CHECK_STATUS_RISK_MAPPING = {
 def on_educonnect_result(
     user: users_models.User, educonnect_content: models.EduconnectContent
 ) -> models.BeneficiaryFraudCheck:
-    eligibility_type = educonnect_content.get_eligibility_type()
+    eligibility_type = educonnect_content.get_eligibility_type_at_registration()
 
     fraud_check = models.BeneficiaryFraudCheck.query.filter(
         models.BeneficiaryFraudCheck.user == user,
