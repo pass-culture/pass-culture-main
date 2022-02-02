@@ -470,10 +470,13 @@ def on_successful_application(
 
 # TODO (Lixxday): use a proper BeneficiaryFraudCHeck History model to track these kind of updates
 def handle_eligibility_difference_between_declaration_and_identity_provider(
+    user: users_models.User,
     fraud_check: fraud_models.BeneficiaryFraudCheck,
 ) -> fraud_models.BeneficiaryFraudCheck:
     declared_eligibility = fraud_check.eligibilityType
-    id_provider_detected_eligibility = fraud_check.source_data().get_eligibility_type()
+    id_provider_detected_eligibility = fraud_api.decide_eligibility(
+        user, fraud_check.source_data().get_registration_datetime(), fraud_check.source_data().get_birth_date()
+    )
 
     if declared_eligibility == id_provider_detected_eligibility or id_provider_detected_eligibility is None:
         return fraud_check

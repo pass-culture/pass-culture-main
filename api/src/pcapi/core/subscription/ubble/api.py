@@ -41,7 +41,7 @@ def update_ubble_workflow(
     elif status == ubble_fraud_models.UbbleIdentificationStatus.PROCESSED:
         try:
             fraud_check = subscription_api.handle_eligibility_difference_between_declaration_and_identity_provider(
-                fraud_check
+                user, fraud_check
             )
             ubble_fraud_api.on_ubble_result(fraud_check)
 
@@ -60,7 +60,7 @@ def update_ubble_workflow(
                     user=user,
                     source=BeneficiaryImportSources.ubble,
                     source_data=fraud_check.source_data(),
-                    eligibility_type=fraud_check.source_data().get_eligibility_type(),
+                    eligibility_type=fraud_check.eligibilityType,
                     third_party_id=fraud_check.thirdPartyId,
                     source_id=None,
                 )
