@@ -147,7 +147,7 @@ class Returns200Test:
             "venue": {
                 "address": "1 boulevard Poissonnière",
                 "audioDisabilityCompliant": False,
-                "bookingEmail": None,
+                "bookingEmail": offer.venue.bookingEmail,
                 "city": "Paris",
                 "comment": None,
                 "dateCreated": format_into_utc_date(venue.dateCreated),

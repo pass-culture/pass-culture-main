@@ -21,6 +21,7 @@ from pcapi.core.bookings.exceptions import CannotDeleteVenueWithBookingsExceptio
 from pcapi.core.offerers.api import VENUE_ALGOLIA_INDEXED_FIELDS
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers.api import update_offer_and_stock_id_at_providers
+from pcapi.core.users.external import update_external_pro
 from pcapi.models import db
 from pcapi.scripts.offerer.delete_cascade_venue_by_id import delete_cascade_venue_by_id
 
@@ -145,6 +146,8 @@ class VenueView(BaseAdminView):
 
         if has_indexed_attribute_changed:
             search.async_index_offers_of_venue_ids([venue.id])
+
+        update_external_pro(venue.bookingEmail)
 
         return True
 

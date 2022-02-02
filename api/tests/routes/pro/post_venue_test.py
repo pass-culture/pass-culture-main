@@ -11,6 +11,7 @@ import pcapi.core.offerers.models as offerers_models
 from pcapi.core.offerers.models import Venue
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.testing import override_settings
+from pcapi.core.users import testing as sendinblue_testing
 from pcapi.core.users.factories import ProFactory
 from pcapi.utils.human_ids import dehumanize
 from pcapi.utils.human_ids import humanize
@@ -84,6 +85,8 @@ def test_should_register_new_venue(client):
     assert not venue.contact.phone_number
     assert not venue.contact.social_medias
 
+    assert len(sendinblue_testing.sendinblue_requests) == 1
+
 
 @pytest.mark.usefixtures("db_session")
 def test_should_register_new_venue_with_a_business_unit(app):
@@ -105,6 +108,8 @@ def test_should_register_new_venue_with_a_business_unit(app):
     venue = Venue.query.filter_by(id=dehumanize(idx)).one()
     assert venue.businessUnitId == venue_data["businessUnitId"]
 
+    assert len(sendinblue_testing.sendinblue_requests) == 1
+
 
 @pytest.mark.usefixtures("db_session")
 def test_should_return_401_when_business_unit_not_exist(app):
@@ -120,6 +125,8 @@ def test_should_return_401_when_business_unit_not_exist(app):
     # then
     assert response.status_code == 400
     assert response.json["businessUnitId"] == ["Ce point de facturation n'existe pas."]
+
+    assert len(sendinblue_testing.sendinblue_requests) == 0
 
 
 @pytest.mark.usefixtures("db_session")

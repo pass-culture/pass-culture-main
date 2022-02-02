@@ -67,6 +67,7 @@ class VenueFactory(BaseFactory):
         siret=factory.LazyAttribute(lambda bu: bu.factory_parent.siret),
     )
     contact = factory.RelatedFactory("pcapi.core.offerers.factories.VenueContactFactory", factory_related_name="venue")
+    bookingEmail = factory.Sequence("venue{}@example.net".format)
 
 
 class VirtualVenueFactory(VenueFactory):

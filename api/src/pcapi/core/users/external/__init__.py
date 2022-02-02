@@ -1,17 +1,27 @@
+from datetime import datetime
 from typing import List
+from typing import Optional
 from typing import Tuple
+from typing import Union
 
 from sqlalchemy.orm import joinedload
 
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.bookings.models import IndividualBooking
+from pcapi.core.bookings.repository import venues_have_bookings
+from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import Venue
+from pcapi.core.offerers.repository import count_venues
+from pcapi.core.offerers.repository import find_venues_by_booking_email
+from pcapi.core.offerers.repository import venues_have_offers
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
+from pcapi.core.users.external.models import ProAttributes
 from pcapi.core.users.external.models import UserAttributes
 from pcapi.core.users.models import Favorite
 from pcapi.core.users.models import User
+from pcapi.core.users.repository import find_pro_user_by_email
 from pcapi.models import db
 from pcapi.models.user_offerer import UserOfferer
 
@@ -24,14 +34,104 @@ TRACKED_PRODUCT_IDS = {3084625: "brut_x"}
 
 
 def update_external_user(user: User, skip_batch: bool = False, skip_sendinblue: bool = False) -> None:
-    user_attributes = get_user_attributes(user)
+    if user.has_pro_role:
+        update_external_pro(user.email)
+    else:
+        user_attributes = get_user_attributes(user)
 
-    update_batch = user.has_enabled_push_notifications()
-    if not skip_batch and update_batch:
-        update_batch_user(user.id, user_attributes)
+        update_batch = user.has_enabled_push_notifications()
+        if not skip_batch and update_batch:
+            update_batch_user(user.id, user_attributes)
 
-    if not skip_sendinblue:
-        update_sendinblue_user(user.email, user_attributes)
+        if not skip_sendinblue:
+            update_sendinblue_user(user.email, user_attributes)
+
+
+def update_external_pro(email: Optional[str]) -> None:
+    # Call this function instead of update_external_user in actions which are only available for pro
+    # ex. updating a venue, in which bookingEmail is not a User parameter
+    from pcapi.tasks.sendinblue_tasks import update_pro_attributes_task
+    from pcapi.tasks.serialization.sendinblue_tasks import UpdateProAttributesRequest
+
+    if email:
+        now = datetime.now()
+        update_pro_attributes_task.delay(
+            UpdateProAttributesRequest(email=email, time_id=f"{now.hour}:{now.minute // 15}")
+        )
+
+
+def get_user_or_pro_attributes(user: User) -> Union[UserAttributes, ProAttributes]:
+    if user.has_pro_role:
+        return get_pro_attributes(user.email)
+
+    return get_user_attributes(user)
+
+
+def get_pro_attributes(email: str) -> ProAttributes:
+    user = find_pro_user_by_email(email)
+    venues = find_venues_by_booking_email(email)
+
+    # Offerer name attribute is the list of all offerers either managed by the user account (associated in user_offerer)
+    # or the parent offerer of the venue which bookingEmail is the requested email address.
+    offerer_name = []
+    attributes = {}
+
+    if user:
+        if user.offerers:
+            offerer_name += [offerer.name for offerer in user.offerers]
+
+        # A pro user is considered as:
+        # - a creator if he is the lowest id of user_offerer association for any offerer,
+        # - an attached user otherwise, for any offerer he is attached to.
+        # This assumption may be wrong because association with creator may have been removed, but there is no other way
+        # to get that information
+        user_is_creator = False
+        user_is_attached = False
+        if user and user.offerers:
+            offerer_ids = [offerer.id for offerer in user.offerers]
+            user_offerers = UserOfferer.query.filter(Offerer.id.in_(offerer_ids)).all()
+            for offerer_id in offerer_ids:
+                if min([(uo.id, uo.userId) for uo in user_offerers if uo.offererId == offerer_id])[1] == user.id:
+                    user_is_creator = True
+                else:
+                    user_is_attached = True
+
+        attributes.update(
+            {
+                "user_id": user.id,
+                "first_name": user.firstName,
+                "last_name": user.lastName,
+                "marketing_email_subscription": user.get_notification_subscriptions().marketing_email,
+                "user_is_attached": user_is_attached,
+                "user_is_creator": user_is_creator,
+                "venue_count": count_venues(*user.offerers),
+            }
+        )
+
+    if venues:
+        offerer_name += [venue.managingOfferer.name for venue in venues if venue.managingOfferer]
+        attributes.update(
+            {
+                "venue_name": {venue.publicName or venue.name for venue in venues},
+                "venue_type": {venue.venueTypeCode.name for venue in venues if venue.venueTypeCode},
+                "venue_label": {venue.venueLabel.label for venue in venues if venue.venueLabelId},
+                "departement_code": {venue.departementCode for venue in venues if venue.departementCode},
+                "dms_application_submitted": any(venue.demarchesSimplifieesIsDraft for venue in venues),
+                "dms_application_approved": all(venue.demarchesSimplifieesIsAccepted for venue in venues),
+                "isVirtual": any(venue.isVirtual for venue in venues),
+                "isPermanent": any(venue.isPermanent for venue in venues),
+                "has_offers": venues_have_offers(*venues),
+                "has_bookings": venues_have_bookings(*venues),
+            }
+        )
+
+    return ProAttributes(
+        is_pro=True,
+        is_user_email=bool(user),
+        is_booking_email=bool(venues),
+        offerer_name=set(offerer_name),
+        **attributes,
+    )
 
 
 def get_user_attributes(user: User) -> UserAttributes:

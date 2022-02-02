@@ -1,6 +1,7 @@
 from pydantic import ValidationError
 import pytest
 
+from pcapi.core.users import testing as sendinblue_testing
 import pcapi.core.users.factories as users_factories
 from pcapi.core.users.models import User
 from pcapi.routes.serialization.users import PatchProUserBodyModel
@@ -10,7 +11,7 @@ from tests.conftest import TestClient
 
 @pytest.mark.usefixtures("db_session")
 def test_patch_user(app):
-    pro = users_factories.ProFactory()
+    pro = users_factories.ProFactory(email="ma.librairie@example.com")
     data = {"firstName": "John", "lastName": "Doe", "email": "new@example.com", "phoneNumber": "09 99 99 99 99"}
 
     client = TestClient(app.test_client()).with_session_auth(email=pro.email)
@@ -22,6 +23,13 @@ def test_patch_user(app):
     assert pro.lastName == "Doe"
     assert pro.email == "new@example.com"
     assert pro.phoneNumber == "0999999999"
+
+    assert len(sendinblue_testing.sendinblue_requests) == 2
+    assert {req.get("email") for req in sendinblue_testing.sendinblue_requests} == {
+        "ma.librairie@example.com",
+        "new@example.com",
+    }
+    assert len(sendinblue_testing.sendinblue_requests) == 2
 
 
 @pytest.mark.usefixtures("db_session")

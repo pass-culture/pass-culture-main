@@ -35,6 +35,7 @@ from pcapi.core.mails.transactional.bookings.booking_confirmation_to_beneficiary
 from pcapi.core.offers import repository as offers_repository
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
+from pcapi.core.users.external import update_external_pro
 from pcapi.core.users.external import update_external_user
 from pcapi.core.users.models import User
 from pcapi.domain import user_emails
@@ -148,6 +149,7 @@ def book_offer(
     search.async_index_offer_ids([stock.offerId])
 
     update_external_user(individual_booking.user)
+    update_external_pro(stock.offer.venue.bookingEmail)
 
     return individual_booking.booking
 
@@ -181,7 +183,7 @@ def _cancel_booking(booking: Booking, reason: BookingCancellationReasons) -> Non
 
     if booking.individualBooking is not None:
         update_external_user(booking.individualBooking.user)
-
+        update_external_pro(booking.venue.bookingEmail)
     search.async_index_offer_ids([booking.stock.offerId])
 
 
@@ -204,9 +206,15 @@ def _cancel_bookings_from_stock(stock: Stock, reason: BookingCancellationReasons
                 deleted_bookings.append(booking)
         repository.save(*deleted_bookings)
 
+    pro_emails = set()
+
     for booking in deleted_bookings:
         if booking.individualBooking is not None:
             update_external_user(booking.individualBooking.user)
+            pro_emails.add(booking.venue.bookingEmail)
+
+    for pro_email in pro_emails:
+        update_external_pro(pro_email)
 
     return deleted_bookings
 
@@ -335,6 +343,7 @@ def mark_as_unused(booking: Booking) -> None:
 
     if booking.individualBookingId is not None:
         update_external_user(booking.individualBooking.user)
+        update_external_pro(booking.venue.bookingEmail)
 
 
 def get_qr_code_data(booking_token: str) -> str:

@@ -5,6 +5,8 @@ from itertools import islice
 import json
 import logging
 from time import sleep
+from typing import Any
+from typing import Callable
 from typing import Iterable
 from typing import Optional
 from typing import Union
@@ -19,8 +21,10 @@ from sib_api_v3_sdk.rest import ApiException as SendinblueApiException
 
 from pcapi import settings
 from pcapi.core.users import testing
+from pcapi.core.users.external import ProAttributes
 from pcapi.core.users.external import UserAttributes
 from pcapi.core.users.models import UserRole
+from pcapi.models.api_errors import ApiErrors
 from pcapi.tasks.sendinblue_tasks import update_contact_attributes_task
 from pcapi.tasks.serialization.sendinblue_tasks import UpdateSendinblueContactRequest
 
@@ -44,87 +48,137 @@ class SendinblueAttributes(Enum):
     DEPARTMENT_CODE = "DEPARTMENT_CODE"
     DEPOSIT_ACTIVATION_DATE = "DEPOSIT_ACTIVATION_DATE"
     DEPOSIT_EXPIRATION_DATE = "DEPOSIT_EXPIRATION_DATE"
+    DMS_APPLICATION_APPROVED = "DMS_APPLICATION_APPROVED"
+    DMS_APPLICATION_SUBMITTED = "DMS_APPLICATION_SUBMITTED"
     ELIGIBILITY = "ELIGIBILITY"
     FIRSTNAME = "FIRSTNAME"
+    HAS_BOOKINGS = "HAS_BOOKINGS"
     HAS_COMPLETED_ID_CHECK = "HAS_COMPLETED_ID_CHECK"
+    HAS_OFFERS = "HAS_OFFERS"
     INITIAL_CREDIT = "INITIAL_CREDIT"
     IS_BENEFICIARY = "IS_BENEFICIARY"
     IS_BENEFICIARY_18 = "IS_BENEFICIARY_18"
+    IS_BOOKING_EMAIL = "IS_BOOKING_EMAIL"
     IS_ELIGIBLE = "IS_ELIGIBLE"
     IS_EMAIL_VALIDATED = "IS_EMAIL_VALIDATED"
+    IS_PERMANENT = "IS_PERMANENT"
     IS_PRO = "IS_PRO"
     IS_UNDERAGE_BENEFICIARY = "IS_UNDERAGE_BENEFICIARY"
+    IS_USER_EMAIL = "IS_USER_EMAIL"
+    IS_VIRTUAL = "IS_VIRTUAL"
     LAST_BOOKING_DATE = "LAST_BOOKING_DATE"
     LAST_FAVORITE_CREATION_DATE = "LAST_FAVORITE_CREATION_DATE"
     LAST_VISIT_DATE = "LAST_VISIT_DATE"
     LASTNAME = "LASTNAME"
     MARKETING_EMAIL_SUBSCRIPTION = "MARKETING_EMAIL_SUBSCRIPTION"
+    OFFERER_NAME = "OFFERER_NAME"
     POSTAL_CODE = "POSTAL_CODE"
     PRODUCT_BRUT_X_USE_DATE = "PRODUCT_BRUT_X_USE_DATE"
     USER_ID = "USER_ID"
+    USER_IS_ATTACHED = "USER_IS_ATTACHED"
+    USER_IS_CREATOR = "USER_IS_CREATOR"
+    VENUE_COUNT = "VENUE_COUNT"
+    VENUE_LABEL = "VENUE_LABEL"
+    VENUE_NAME = "VENUE_NAME"
+    VENUE_TYPE = "VENUE_TYPE"
 
     @classmethod
     def list(cls):  # type: ignore [no-untyped-def]
         return list(map(lambda c: c.value, cls))
 
 
-def update_contact_attributes(user_email: str, user_attributes: UserAttributes) -> None:
-    formatted_attributes = format_user_attributes(user_attributes)
+def update_contact_attributes(
+    user_email: str, attributes: Union[UserAttributes, ProAttributes], asynchronous: bool = True
+) -> None:
+    formatted_attributes = format_user_attributes(attributes)
 
     contact_list_ids = (
-        [settings.SENDINBLUE_PRO_CONTACT_LIST_ID]
-        if user_attributes.is_pro
-        else [settings.SENDINBLUE_YOUNG_CONTACT_LIST_ID]
+        [settings.SENDINBLUE_PRO_CONTACT_LIST_ID] if attributes.is_pro else [settings.SENDINBLUE_YOUNG_CONTACT_LIST_ID]
     )
 
-    update_contact_attributes_task.delay(
-        UpdateSendinblueContactRequest(
-            email=user_email,
-            attributes=formatted_attributes,
-            contact_list_ids=contact_list_ids,
-            emailBlacklisted=not user_attributes.marketing_email_subscription,
-        )
+    contact_request = UpdateSendinblueContactRequest(
+        email=user_email,
+        attributes=formatted_attributes,
+        contact_list_ids=contact_list_ids,
+        emailBlacklisted=(attributes.marketing_email_subscription is not False),  # attribute may be None
     )
 
+    if asynchronous:
+        update_contact_attributes_task.delay(contact_request)
+    else:
+        if not make_update_request(contact_request):
+            raise ApiErrors()
 
-def format_list(raw_list: list[str]) -> str:
+
+def format_list(raw_list: Iterable[str]) -> str:
     return ",".join(raw_list)
 
 
-def format_user_attributes(user_attributes: UserAttributes) -> dict:
+def format_list_or_str(raw_value: Union[str, Iterable[str]]) -> str:
+    if isinstance(raw_value, str):
+        return raw_value
+    return format_list(raw_value)
+
+
+def _get_attr(attributes: Union[UserAttributes, ProAttributes], name: str, func: Callable[[Any], Any] = None) -> Any:
+    value = getattr(attributes, name, None)
+    if value is not None and func is not None:
+        value = func(value)
+    return value
+
+
+def format_user_attributes(attributes: Union[UserAttributes, ProAttributes]) -> dict:
     return {
-        SendinblueAttributes.BOOKED_OFFER_CATEGORIES.value: format_list(user_attributes.booking_categories),
-        SendinblueAttributes.BOOKED_OFFER_SUBCATEGORIES.value: format_list(user_attributes.booking_subcategories),
-        SendinblueAttributes.BOOKING_COUNT.value: user_attributes.booking_count,
-        SendinblueAttributes.CREDIT.value: user_attributes.domains_credit.all.remaining
-        if user_attributes.domains_credit
-        else None,
-        SendinblueAttributes.DATE_CREATED.value: user_attributes.date_created,
-        SendinblueAttributes.DATE_OF_BIRTH.value: user_attributes.date_of_birth,
-        SendinblueAttributes.DEPARTMENT_CODE.value: user_attributes.departement_code,
-        SendinblueAttributes.DEPOSIT_ACTIVATION_DATE.value: user_attributes.deposit_activation_date,
-        SendinblueAttributes.DEPOSIT_EXPIRATION_DATE.value: user_attributes.deposit_expiration_date,
-        SendinblueAttributes.ELIGIBILITY.value: user_attributes.eligibility,
-        SendinblueAttributes.FIRSTNAME.value: user_attributes.first_name,
-        SendinblueAttributes.HAS_COMPLETED_ID_CHECK.value: user_attributes.has_completed_id_check,
-        SendinblueAttributes.INITIAL_CREDIT.value: user_attributes.domains_credit.all.initial
-        if user_attributes.domains_credit
-        else None,
-        SendinblueAttributes.IS_BENEFICIARY.value: user_attributes.is_beneficiary,
-        SendinblueAttributes.IS_BENEFICIARY_18.value: UserRole.BENEFICIARY.value in user_attributes.roles,
-        SendinblueAttributes.IS_ELIGIBLE.value: user_attributes.is_eligible,
-        SendinblueAttributes.IS_EMAIL_VALIDATED.value: user_attributes.is_email_validated,
-        SendinblueAttributes.IS_PRO.value: user_attributes.is_pro,
-        SendinblueAttributes.IS_UNDERAGE_BENEFICIARY.value: UserRole.UNDERAGE_BENEFICIARY.value
-        in user_attributes.roles,
-        SendinblueAttributes.LAST_BOOKING_DATE.value: user_attributes.last_booking_date,
-        SendinblueAttributes.LAST_FAVORITE_CREATION_DATE.value: user_attributes.last_favorite_creation_date,
-        SendinblueAttributes.LAST_VISIT_DATE.value: user_attributes.last_visit_date,
-        SendinblueAttributes.LASTNAME.value: user_attributes.last_name,
-        SendinblueAttributes.MARKETING_EMAIL_SUBSCRIPTION.value: user_attributes.marketing_email_subscription,
-        SendinblueAttributes.POSTAL_CODE.value: user_attributes.postal_code,
-        SendinblueAttributes.PRODUCT_BRUT_X_USE_DATE.value: user_attributes.products_use_date.get("product_brut_x_use"),
-        SendinblueAttributes.USER_ID.value: user_attributes.user_id,
+        SendinblueAttributes.BOOKED_OFFER_CATEGORIES.value: _get_attr(attributes, "booking_categories", format_list),
+        SendinblueAttributes.BOOKED_OFFER_SUBCATEGORIES.value: _get_attr(
+            attributes, "booking_subcategories", format_list
+        ),
+        SendinblueAttributes.BOOKING_COUNT.value: _get_attr(attributes, "booking_count"),
+        SendinblueAttributes.CREDIT.value: _get_attr(attributes, "domains_credit", lambda v: v.all.remaining),
+        SendinblueAttributes.DATE_CREATED.value: _get_attr(attributes, "date_created"),
+        SendinblueAttributes.DATE_OF_BIRTH.value: _get_attr(attributes, "date_of_birth"),
+        SendinblueAttributes.DEPARTMENT_CODE.value: _get_attr(attributes, "departement_code", format_list_or_str),
+        SendinblueAttributes.DEPOSIT_ACTIVATION_DATE.value: _get_attr(attributes, "deposit_activation_date"),
+        SendinblueAttributes.DEPOSIT_EXPIRATION_DATE.value: _get_attr(attributes, "deposit_expiration_date"),
+        SendinblueAttributes.DMS_APPLICATION_APPROVED.value: _get_attr(attributes, "dms_application_approved"),
+        SendinblueAttributes.DMS_APPLICATION_SUBMITTED.value: _get_attr(attributes, "dms_application_submitted"),
+        SendinblueAttributes.ELIGIBILITY.value: _get_attr(attributes, "eligibility"),
+        SendinblueAttributes.FIRSTNAME.value: _get_attr(attributes, "first_name"),
+        SendinblueAttributes.HAS_BOOKINGS.value: _get_attr(attributes, "has_bookings"),
+        SendinblueAttributes.HAS_COMPLETED_ID_CHECK.value: _get_attr(attributes, "has_completed_id_check"),
+        SendinblueAttributes.HAS_OFFERS.value: _get_attr(attributes, "has_offers"),
+        SendinblueAttributes.INITIAL_CREDIT.value: _get_attr(attributes, "domains_credit", lambda v: v.all.initial),
+        SendinblueAttributes.IS_BENEFICIARY.value: _get_attr(attributes, "is_beneficiary"),
+        SendinblueAttributes.IS_BENEFICIARY_18.value: _get_attr(
+            attributes, "roles", lambda v: UserRole.BENEFICIARY.value in v
+        ),
+        SendinblueAttributes.IS_BOOKING_EMAIL.value: _get_attr(attributes, "is_booking_email"),
+        SendinblueAttributes.IS_ELIGIBLE.value: _get_attr(attributes, "is_eligible"),
+        SendinblueAttributes.IS_EMAIL_VALIDATED.value: _get_attr(attributes, "is_email_validated"),
+        SendinblueAttributes.IS_PERMANENT.value: _get_attr(attributes, "isPermanent"),
+        SendinblueAttributes.IS_PRO.value: _get_attr(attributes, "is_pro"),
+        SendinblueAttributes.IS_UNDERAGE_BENEFICIARY.value: _get_attr(
+            attributes, "roles", lambda v: UserRole.UNDERAGE_BENEFICIARY.value in v
+        ),
+        SendinblueAttributes.IS_USER_EMAIL.value: _get_attr(attributes, "is_user_email"),
+        SendinblueAttributes.IS_VIRTUAL.value: _get_attr(attributes, "isVirtual"),
+        SendinblueAttributes.LAST_BOOKING_DATE.value: _get_attr(attributes, "last_booking_date"),
+        SendinblueAttributes.LAST_FAVORITE_CREATION_DATE.value: _get_attr(attributes, "last_favorite_creation_date"),
+        SendinblueAttributes.LAST_VISIT_DATE.value: _get_attr(attributes, "last_visit_date"),
+        SendinblueAttributes.LASTNAME.value: _get_attr(attributes, "last_name"),
+        SendinblueAttributes.MARKETING_EMAIL_SUBSCRIPTION.value: _get_attr(attributes, "marketing_email_subscription"),
+        SendinblueAttributes.OFFERER_NAME.value: _get_attr(attributes, "offerer_name", format_list),
+        SendinblueAttributes.POSTAL_CODE.value: _get_attr(attributes, "postal_code"),
+        SendinblueAttributes.PRODUCT_BRUT_X_USE_DATE.value: _get_attr(
+            attributes, "products_use_date", lambda v: v.get("product_brut_x_use")
+        ),
+        SendinblueAttributes.USER_ID.value: _get_attr(attributes, "user_id"),
+        SendinblueAttributes.USER_IS_ATTACHED.value: _get_attr(attributes, "user_is_attached"),
+        SendinblueAttributes.USER_IS_CREATOR.value: _get_attr(attributes, "user_is_creator"),
+        SendinblueAttributes.VENUE_COUNT.value: _get_attr(attributes, "venue_count"),
+        SendinblueAttributes.VENUE_LABEL.value: _get_attr(attributes, "venue_label", format_list),
+        SendinblueAttributes.VENUE_NAME.value: _get_attr(attributes, "venue_name", format_list),
+        SendinblueAttributes.VENUE_TYPE.value: _get_attr(attributes, "venue_type", format_list),
     }
 
 

@@ -56,6 +56,7 @@ from pcapi.core.offers.validation import check_offer_not_duo_and_educational
 from pcapi.core.offers.validation import check_offer_subcategory_is_valid
 from pcapi.core.offers.validation import check_validation_config_parameters
 from pcapi.core.payments import conf as deposit_conf
+from pcapi.core.users.external import update_external_pro
 from pcapi.core.users.models import ExpenseDomain
 from pcapi.core.users.models import User
 from pcapi.domain import admin_emails
@@ -150,6 +151,8 @@ def create_offer(
 
     repository.save(offer)
     logger.info("Offer has been created", extra={"offer": offer.id, "venue": venue.id, "product": offer.productId})
+
+    update_external_pro(venue.bookingEmail)
 
     return offer
 
