@@ -35,7 +35,7 @@ const renderOffers = async (props, store, queryParams = null) => {
             { pathname: '/offre/creation/individuel', search: queryParams },
           ]}
         >
-          <Route path="/offres/">
+          <Route path="/offre/">
             <>
               <OfferLayoutContainer {...props} />
               <NotificationContainer />

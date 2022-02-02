@@ -11,7 +11,7 @@ import { closeNotification } from 'store/reducers/notificationReducer'
 
 const handleOnClick = dispatch => () => dispatch(closeNotification())
 const NotificationMessage = ({ venueId, offererId, dispatch }) => {
-  const createOfferPathname = `/offres/${CREATION}?lieu=${venueId}&structure=${offererId}`
+  const createOfferPathname = `/offre/${CREATION}?lieu=${venueId}&structure=${offererId}`
   return (
     <p>
       {'Lieu créé. Vous pouvez maintenant y '}
