@@ -49,8 +49,10 @@ class SendExpiredBookingsRecapEmailToOffererTest:
         )
         assert mails_testing.outbox[0].sent_data["params"]["WITHDRAWAL_PERIOD"] == 10
         assert mails_testing.outbox[0].sent_data["params"]["BOOKINGS"][0]["offer_name"] == "Les misérables"
+        assert len(mails_testing.outbox[0].sent_data["params"]["BOOKINGS"]) == 1
         assert (
             mails_testing.outbox[1].sent_data["template"] == TransactionalEmail.BOOKING_EXPIRATION_TO_PRO.value.__dict__
         )
         assert mails_testing.outbox[1].sent_data["params"]["WITHDRAWAL_PERIOD"] == 30
         assert mails_testing.outbox[1].sent_data["params"]["BOOKINGS"][0]["offer_name"] == "Intouchables"
+        assert len(mails_testing.outbox[1].sent_data["params"]["BOOKINGS"]) == 1
