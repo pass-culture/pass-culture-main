@@ -7,6 +7,7 @@ from pcapi.core.finance import factories
 from pcapi.core.finance import models
 from pcapi.core.finance import repository
 import pcapi.core.offerers.factories as offerers_factories
+import pcapi.core.payments.factories as payments_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.models import db
 from pcapi.models.bank_information import BankInformationStatus
@@ -193,3 +194,26 @@ def test_has_reimbursement():
     db.session.add(pricing)
     db.session.commit()
     assert repository.has_reimbursement(booking)
+
+
+class HasActiveOrFutureCustomRemibursementRuleTest:
+    def test_active_rule(self):
+        now = datetime.datetime.utcnow()
+        timespan = (now - datetime.timedelta(days=1), now + datetime.timedelta(days=1))
+        rule = payments_factories.CustomReimbursementRuleFactory(timespan=timespan)
+        offer = rule.offer
+        assert repository.has_active_or_future_custom_reimbursement_rule(offer)
+
+    def test_future_rule(self):
+        now = datetime.datetime.utcnow()
+        timespan = (now + datetime.timedelta(days=1), None)
+        rule = payments_factories.CustomReimbursementRuleFactory(timespan=timespan)
+        offer = rule.offer
+        assert repository.has_active_or_future_custom_reimbursement_rule(offer)
+
+    def test_past_rule(self):
+        now = datetime.datetime.utcnow()
+        timespan = (now - datetime.timedelta(days=2), now - datetime.timedelta(days=1))
+        rule = payments_factories.CustomReimbursementRuleFactory(timespan=timespan)
+        offer = rule.offer
+        assert not repository.has_active_or_future_custom_reimbursement_rule(offer)

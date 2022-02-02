@@ -4,6 +4,8 @@ import pytz
 
 import pcapi.core.bookings.models as bookings_models
 import pcapi.core.offerers.models as offerers_models
+import pcapi.core.offers.models as offers_models
+import pcapi.core.payments.models as payments_models
 import pcapi.core.payments.utils as payments_utils
 import pcapi.core.users.models as users_models
 from pcapi.models import db
@@ -95,3 +97,21 @@ def has_reimbursement(booking: bookings_models.Booking) -> bool:
         ),
     )
     return db.session.query(paid_pricings.exists()).scalar()
+
+
+def has_active_or_future_custom_reimbursement_rule(offer: offers_models.Offer) -> bool:
+    """Return whether the offer is linked to a custom reimbursement rule
+    that is either active or future (but not past).
+
+    Only reimbursement rules that are linked to this *specific* offer
+    are looked at (because these rules define an *amount*). Rules that
+    apply to subcategories of an offerer are ignored (because they
+    define a *rate*).
+    """
+    now = datetime.datetime.utcnow()
+    timespan = payments_models.CustomReimbursementRule._make_timespan(start=now, end=None)
+    query = payments_models.CustomReimbursementRule.query.filter(
+        payments_models.CustomReimbursementRule.offerId == offer.id,
+        payments_models.CustomReimbursementRule.timespan.overlaps(timespan),
+    ).exists()
+    return db.session.query(query).scalar()
