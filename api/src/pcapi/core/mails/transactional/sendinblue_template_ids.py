@@ -48,7 +48,6 @@ class TransactionalEmail(Enum):
     BOOKING_CANCELLATION_BY_PRO_TO_BENEFICIARY = Template(
         id_prod=225, id_not_prod=37, tags=["jeunes_offre_annulee_pros"]
     )
-    BOOKING_CANCELLATION_BY_PRO_TO_TEACHER = Template(id_prod=475, id_not_prod=44, tags=["profs_annulation_offreur"])
     BOOKING_CONFIRMATION_BY_BENEFICIARY = Template(id_prod=219, id_not_prod=29, tags=["jeunes_reservation_confirmee"])
     BOOKING_POSTPONED_BY_PRO_TO_BENEFICIARY = Template(id_prod=224, id_not_prod=36, tags=["jeunes_offre_reportee_pro"])
     BOOKING_SOON_TO_BE_EXPIRED_TO_BENEFICIARY = Template(
