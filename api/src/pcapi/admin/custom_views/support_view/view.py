@@ -208,7 +208,12 @@ class BeneficiaryView(base_configuration.BaseAdminView):
         )
         if review.review == fraud_models.FraudReviewStatus.OK.value:
             users_api.update_user_information_from_external_source(user, fraud_api.get_source_data(user))
-            eligibility = fraud_api.get_source_data(user).get_eligibility_type()
+            source_data = fraud_api.get_source_data(user)
+            eligibility = fraud_api.decide_eligibility(
+                user,
+                registration_datetime=source_data.get_registration_datetime(),
+                birth_date=source_data.get_birth_date(),
+            )
 
             if eligibility is None:
                 flask.flash("La date de naissance du dossier indique que l'utilisateur n'est pas éligible", "error")
