@@ -9,10 +9,10 @@ from pcapi.core.users.factories import BeneficiaryGrant18Factory
 from pcapi.core.users.factories import UserFactory
 from pcapi.core.users.models import UserRole
 import pcapi.notifications.push.testing as push_testing
-from pcapi.scripts.batch_update_users_attributes import format_batch_users
-from pcapi.scripts.batch_update_users_attributes import format_sendinblue_users
-from pcapi.scripts.batch_update_users_attributes import get_users_chunks
-from pcapi.scripts.batch_update_users_attributes import run
+from pcapi.scripts.external_users.batch_update_users_attributes import format_batch_users
+from pcapi.scripts.external_users.batch_update_users_attributes import format_sendinblue_users
+from pcapi.scripts.external_users.batch_update_users_attributes import get_users_chunks
+from pcapi.scripts.external_users.batch_update_users_attributes import run
 
 
 @pytest.mark.usefixtures("db_session")
