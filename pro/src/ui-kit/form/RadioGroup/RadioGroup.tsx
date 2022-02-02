@@ -31,6 +31,7 @@ const RadioGroup = ({
       error={meta.touched && !!meta.error ? meta.error : undefined}
       hideFooter
       legend={legend}
+      name={`radio-group-${name}`}
     >
       {group.map(item => (
         <div className={styles['radio-group-item']} key={item.label}>
