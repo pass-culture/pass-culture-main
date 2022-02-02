@@ -24,6 +24,18 @@ const mapPathToStep = {
   confirmation: OfferBreadcrumbStep.CONFIRMATION,
 }
 
+const getActiveStepFromLocation = location => {
+  let urlMatch = location.pathname.match(/[a-z]+$/)
+  let stepName = urlMatch && urlMatch[0]
+  // handle creation urls since the above code only works for edition urls
+  if (stepName === 'individuel') {
+    urlMatch = location.pathname.match(/[a-z]+\/individuel$/)
+    stepName = urlMatch && urlMatch[0].split('/individuel')[0]
+  }
+
+  return stepName ? mapPathToStep[stepName] : null
+}
+
 const OfferLayout = ({ location, match }) => {
   const history = useHistory()
 
@@ -42,8 +54,7 @@ const OfferLayout = ({ location, match }) => {
     [setOffer]
   )
 
-  const stepName = location.pathname.match(/[a-z]+$/)
-  const activeStep = stepName ? mapPathToStep[stepName[0]] : null
+  const activeStep = getActiveStepFromLocation(location)
 
   const reloadOffer = useCallback(
     async (creationMode = false) =>
