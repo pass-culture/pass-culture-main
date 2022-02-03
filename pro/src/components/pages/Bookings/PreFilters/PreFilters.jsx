@@ -7,6 +7,7 @@ import isEqual from 'lodash.isequal'
 import PropTypes from 'prop-types'
 import React, { useCallback, useEffect, useState } from 'react'
 
+import FilterByOfferType from 'new_components/FilterByOfferType'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { formatAndOrderVenues } from 'repository/venuesService'
 
@@ -70,6 +71,7 @@ const PreFilters = ({
     bookingPeriodBeginningDate: selectedPreFilters.bookingBeginningDate,
     bookingPeriodEndingDate: selectedPreFilters.bookingEndingDate,
     bookingStatusFilter: selectedPreFilters.bookingStatusFilter,
+    offerType: selectedPreFilters.offerType,
   }
 
   return (
@@ -83,25 +85,33 @@ const PreFilters = ({
       >
         <div className="pre-filters">
           <div className="pre-filters-row">
-            <FilterByVenue
-              selectedVenueId={selectedPreFilters.offerVenueId}
-              updateFilters={updateSelectedFilters}
-              venuesFormattedAndOrdered={venues}
-            />
+            <div className="pre-filters-venue">
+              <FilterByVenue
+                selectedVenueId={selectedPreFilters.offerVenueId}
+                updateFilters={updateSelectedFilters}
+                venuesFormattedAndOrdered={venues}
+              />
+            </div>
+            <div className="pre-filters-offer-type">
+              <FilterByOfferType
+                selectedOfferType={selectedPreFilters.offerType}
+                updateFilters={updateSelectedFilters}
+              />
+            </div>
             <FilterByEventDate
               selectedOfferDate={selectedPreFilters.offerEventDate}
               updateFilters={updateSelectedFilters}
             />
-            {!isBookingFiltersActive && (
-              <FilterByBookingPeriod
-                selectedBookingBeginningDate={
-                  selectedPreFilters.bookingBeginningDate
-                }
-                selectedBookingEndingDate={selectedPreFilters.bookingEndingDate}
-                updateFilters={updateSelectedFilters}
-              />
-            )}
           </div>
+          {!isBookingFiltersActive && (
+            <FilterByBookingPeriod
+              selectedBookingBeginningDate={
+                selectedPreFilters.bookingBeginningDate
+              }
+              selectedBookingEndingDate={selectedPreFilters.bookingEndingDate}
+              updateFilters={updateSelectedFilters}
+            />
+          )}
           {isBookingFiltersActive && (
             <div className="pre-filters-row">
               <FilterByBookingStatusPeriod

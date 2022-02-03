@@ -330,12 +330,16 @@ export const buildBookingsRecapQuery = ({
   bookingPeriodBeginningDate = DEFAULT_PRE_FILTERS.bookingBeginningDate,
   bookingPeriodEndingDate = DEFAULT_PRE_FILTERS.bookingEndingDate,
   bookingStatusFilter = DEFAULT_PRE_FILTERS.bookingStatusFilter,
+  offerType = DEFAULT_PRE_FILTERS.offerType,
   page,
 }) => {
   const params = { page }
 
   if (venueId !== DEFAULT_PRE_FILTERS.offerVenueId) {
     params.venueId = venueId
+  }
+  if (offerType !== DEFAULT_PRE_FILTERS.offerType) {
+    params.offerType = offerType
   }
   if (eventDate !== DEFAULT_PRE_FILTERS.offerEventDate) {
     params.eventDate = formatBrowserTimezonedDateAsUTC(eventDate)

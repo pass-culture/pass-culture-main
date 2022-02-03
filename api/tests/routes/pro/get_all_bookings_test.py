@@ -42,6 +42,7 @@ class GetAllBookingsTest:
             booking_period=BOOKING_PERIOD,
             event_date=None,
             venue_id=None,
+            offer_type=None,
             page=3,
         )
 
@@ -55,6 +56,7 @@ class GetAllBookingsTest:
             booking_period=BOOKING_PERIOD,
             event_date=None,
             venue_id=None,
+            offer_type=None,
             page=1,
         )
 
@@ -76,6 +78,7 @@ class GetAllBookingsTest:
             booking_period=BOOKING_PERIOD,
             event_date=None,
             venue_id=venue.id,
+            offer_type=None,
             page=1,
         )
 

@@ -88,6 +88,7 @@ def get_bookings_pro(query: ListBookingsQueryModel) -> ListBookingsResponseModel
     venue_id = query.venue_id
     event_date = query.event_date
     booking_period = (query.booking_period_beginning_date, query.booking_period_ending_date)
+    offer_type = query.offer_type
 
     # FIXME: rewrite this route. The repository function should return
     # a bare SQLAlchemy query, and the route should handle the
@@ -98,6 +99,7 @@ def get_bookings_pro(query: ListBookingsQueryModel) -> ListBookingsResponseModel
         booking_period=booking_period,
         event_date=event_date,
         venue_id=venue_id,
+        offer_type=offer_type,
         page=int(page),
     )
 
@@ -124,12 +126,14 @@ def get_bookings_csv(query: ListBookingsQueryModel) -> bytes:
     venue_id = query.venue_id
     event_date = query.event_date
     booking_period = (query.booking_period_beginning_date, query.booking_period_ending_date)
+    offer_type = query.offer_type
 
     bookings = booking_repository.get_csv_report(
         user=current_user._get_current_object(),  # for tests to succeed, because current_user is actually a LocalProxy
         booking_period=booking_period,
         event_date=event_date,
         venue_id=venue_id,
+        offer_type=offer_type,
     )
 
     return bookings.encode("utf-8-sig")
