@@ -94,6 +94,9 @@ class FeatureToggle(enum.Enum):
     )
     ENABLE_PRO_ACCOUNT_CREATION = "Permettre l'inscription des comptes professionels"
     DISABLE_ENTERPRISE_API = "Désactiver les appels à l'API entreprise"
+    ENABLE_EAC_SHOWCASE_OFFER = (
+        "Permet de créer des offres collectives sans date ni prix depuis le formulaire de création d’offres collectives"
+    )
 
     def is_active(self) -> bool:
         if flask.has_request_context():
@@ -146,6 +149,7 @@ FEATURES_DISABLED_BY_DEFAULT = (
     FeatureToggle.USER_PROFILING_FRAUD_CHECK,
     FeatureToggle.SHOW_INVOICES_ON_PRO_PORTAL,
     FeatureToggle.DISABLE_ENTERPRISE_API,
+    FeatureToggle.ENABLE_EAC_SHOWCASE_OFFER,
 )
 
 if not settings.IS_DEV:
