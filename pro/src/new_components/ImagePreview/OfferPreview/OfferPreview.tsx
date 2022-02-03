@@ -15,19 +15,12 @@ export const OfferPreview: FunctionComponent<Props> = ({ previewImageURI }) => (
     <img
       alt=""
       className={style['image-preview-blur-offer-preview']}
-      height="435"
       src={previewImageURI}
     />
-    <img
-      alt=""
-      className={style['image-preview-shell']}
-      height="280"
-      src={offerShell}
-    />
+    <img alt="" className={style['image-preview-shell']} src={offerShell} />
     <img
       alt=""
       className={style['image-preview-offer-preview']}
-      height="247"
       src={previewImageURI}
     />
     <div>Détails de l’offre</div>
