@@ -3,7 +3,6 @@ import logging
 
 from pcapi.connectors.beneficiaries.educonnect import models as educonnect_models
 from pcapi.core.fraud import api as fraud_api
-from pcapi.core.fraud import exceptions as fraud_exceptions
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import messages as subscription_messages
@@ -34,9 +33,6 @@ def handle_educonnect_authentication(
 
     try:
         fraud_check = fraud_api.on_educonnect_result(user, educonnect_content)
-    except fraud_exceptions.BeneficiaryFraudResultCannotBeDowngraded:
-        logger.exception("Trying to downgrade FraudResult after eduonnect response", extra={"user_id": user.id})
-        raise exceptions.EduconnectSubscriptionException()
     except Exception:
         logger.exception("Error on educonnect result", extra={"user_id": user.id})
         raise exceptions.EduconnectSubscriptionException()

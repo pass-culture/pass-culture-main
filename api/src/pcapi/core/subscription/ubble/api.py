@@ -5,7 +5,6 @@ import flask
 
 from pcapi import settings
 from pcapi.connectors.beneficiaries import ubble
-from pcapi.core.fraud import exceptions as fraud_exceptions
 import pcapi.core.fraud.models as fraud_models
 from pcapi.core.fraud.ubble import api as ubble_fraud_api
 import pcapi.core.fraud.ubble.models as ubble_fraud_models
@@ -45,11 +44,6 @@ def update_ubble_workflow(
                 fraud_check
             )
             ubble_fraud_api.on_ubble_result(fraud_check)
-
-        except fraud_exceptions.BeneficiaryFraudResultCannotBeDowngraded:
-            logger.warning(
-                "Trying to downgrade a beneficiary that already has been considered OK", extra={"user_id": user.id}
-            )
 
         except Exception:  # pylint: disable=broad-except
             logger.exception("Error on Ubble fraud check result: %s", extra={"user_id": user.id})
