@@ -3,11 +3,10 @@ import { CroppedRect } from 'react-avatar-editor'
 
 import { imageConstraints } from 'new_components/ConstraintCheck/imageConstraints'
 import DialogBox from 'new_components/DialogBox'
-import { ImagePreview } from 'new_components/ImagePreview/ImagePreview'
-import { ImagePreviewMode } from 'new_components/ImagePreview/types'
 
 import { ImportFromComputer } from '../ImportFromComputer/ImportFromComputer'
 import { VenueImageEdit } from '../VenueImageEdit/VenueImageEdit'
+import { VenueImagePreview } from '../VenueImagePreview/VenueImagePreview'
 
 import { IMAGE_TYPES, MAX_IMAGE_SIZE, MIN_IMAGE_WIDTH } from './constants'
 
@@ -60,7 +59,7 @@ export const VenueImageUploaderModal: FunctionComponent<Props> = ({
           setEditedImage={setEditedImage}
         />
       ) : (
-        <ImagePreview mode={ImagePreviewMode.VENUE} preview={editedImage} />
+        <VenueImagePreview preview={editedImage} />
       )}
     </DialogBox>
   )
