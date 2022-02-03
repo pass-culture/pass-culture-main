@@ -53,6 +53,7 @@ class TransactionalEmail(Enum):
     BOOKING_SOON_TO_BE_EXPIRED_TO_BENEFICIARY = Template(
         id_prod=144, id_not_prod=42, tags=["jeunes_reservation_bientot_expiree"]
     )
+    DELETE_ACCOUNT_CONFIRMATION_TO_USER = Template(id_prod=511, id_not_prod=54, tags=["supression"])
     EDUCATIONAL_BOOKING_CANCELLATION_BY_INSTITUTION = Template(
         id_prod=406, id_not_prod=41, tags=["eac_annulationoffre"]
     )
