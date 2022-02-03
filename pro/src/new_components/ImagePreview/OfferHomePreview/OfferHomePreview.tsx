@@ -1,7 +1,7 @@
 import React, { FunctionComponent } from 'react'
 
-import { ReactComponent as MobileShell } from 'components/pages/Offers/Offer/Thumbnail/assets/mobile-shell.svg'
-import homeShell from 'components/pages/Offers/Offer/Thumbnail/assets/offer-home-shell.png'
+import { ReactComponent as MobileShell } from '../assets/mobile-shell.svg'
+import homeShell from '../assets/offer-home-shell.png'
 
 import style from './OfferHomePreview.module.scss'
 
