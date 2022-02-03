@@ -49,6 +49,7 @@ from pcapi.models import db
 from pcapi.models.api_errors import ResourceNotFoundError
 from pcapi.models.payment import Payment
 from pcapi.models.user_offerer import UserOfferer
+from pcapi.routes.serialization.bookings_recap_serialize import OfferType
 from pcapi.utils.date import get_department_timezone
 from pcapi.utils.token import random_token
 
@@ -104,16 +105,14 @@ def find_by_pro_user(
     booking_period: tuple[date, date],
     event_date: Optional[datetime] = None,
     venue_id: Optional[int] = None,
+    offer_type: Optional[OfferType] = None,
     page: int = 1,
     per_page_limit: int = 1000,
 ) -> BookingsRecapPaginated:
-    total_bookings_recap = _get_filtered_bookings_count(user, booking_period, event_date, venue_id)
+    total_bookings_recap = _get_filtered_bookings_count(user, booking_period, event_date, venue_id, offer_type)
 
     bookings_query = _get_filtered_booking_pro(
-        pro_user=user,
-        period=booking_period,
-        event_date=event_date,
-        venue_id=venue_id,
+        pro_user=user, period=booking_period, event_date=event_date, venue_id=venue_id, offer_type=offer_type
     )
     bookings_query = _duplicate_booking_when_quantity_is_two(bookings_query)
     bookings_page = (
@@ -428,13 +427,14 @@ def get_bookings_from_deposit(deposit_id: int) -> list[Booking]:
 
 
 def get_csv_report(
-    user: User, booking_period: tuple[date, date], event_date: Optional[datetime] = None, venue_id: Optional[int] = None
+    user: User,
+    booking_period: tuple[date, date],
+    event_date: Optional[datetime] = None,
+    venue_id: Optional[int] = None,
+    offer_type: Optional[OfferType] = None,
 ) -> str:
     bookings_query = _get_filtered_booking_report(
-        pro_user=user,
-        period=booking_period,
-        event_date=event_date,
-        venue_id=venue_id,
+        pro_user=user, period=booking_period, event_date=event_date, venue_id=venue_id, offer_type=offer_type
     )
     bookings_query = _duplicate_booking_when_quantity_is_two(bookings_query)
     return _serialize_csv_report(bookings_query)
@@ -449,6 +449,7 @@ def _get_filtered_bookings_query(
     period: tuple[date, date],
     event_date: Optional[date] = None,
     venue_id: Optional[int] = None,
+    offer_type: Optional[OfferType] = None,
     extra_joins: Optional[Iterable[Column]] = None,
 ) -> Query:
     extra_joins = extra_joins or tuple()
@@ -475,6 +476,12 @@ def _get_filtered_bookings_query(
     if event_date:
         bookings_query = bookings_query.filter(_field_to_venue_timezone(Stock.beginningDatetime) == event_date)
 
+    if offer_type is not None:
+        if offer_type == OfferType.INDIVIDUAL_OR_DUO:
+            bookings_query = bookings_query.filter(Booking.individualBookingId != None)
+        else:
+            bookings_query = bookings_query.filter(Booking.educationalBookingId != None)
+
     return bookings_query
 
 
@@ -483,9 +490,10 @@ def _get_filtered_bookings_count(
     period: tuple[date, date],
     event_date: Optional[date] = None,
     venue_id: Optional[int] = None,
+    offer_type: Optional[OfferType] = None,
 ) -> int:
     bookings = (
-        _get_filtered_bookings_query(pro_user, period, event_date, venue_id)
+        _get_filtered_bookings_query(pro_user, period, event_date, venue_id, offer_type)
         .with_entities(Booking.id, Booking.quantity)
         .distinct(Booking.id)
     ).cte()
@@ -496,7 +504,11 @@ def _get_filtered_bookings_count(
 
 
 def _get_filtered_booking_report(
-    pro_user: User, period: tuple[date, date], event_date: Optional[datetime] = None, venue_id: Optional[int] = None
+    pro_user: User,
+    period: tuple[date, date],
+    event_date: Optional[datetime] = None,
+    venue_id: Optional[int] = None,
+    offer_type: Optional[OfferType] = None,
 ) -> str:
     bookings_query = (
         _get_filtered_bookings_query(
@@ -504,6 +516,7 @@ def _get_filtered_booking_report(
             period,
             event_date,
             venue_id,
+            offer_type,
             extra_joins=(Stock.offer, Booking.user),
         )
         .with_entities(
@@ -541,7 +554,11 @@ def _get_filtered_booking_report(
 
 
 def _get_filtered_booking_pro(
-    pro_user: User, period: tuple[date, date], event_date: Optional[datetime] = None, venue_id: Optional[int] = None
+    pro_user: User,
+    period: tuple[date, date],
+    event_date: Optional[datetime] = None,
+    venue_id: Optional[int] = None,
+    offer_type: Optional[OfferType] = None,
 ) -> Query:
     bookings_query = (
         _get_filtered_bookings_query(
@@ -549,6 +566,7 @@ def _get_filtered_booking_pro(
             period,
             event_date,
             venue_id,
+            offer_type,
             extra_joins=(
                 Stock.offer,
                 Booking.individualBooking,
@@ -689,6 +707,7 @@ def _serialize_csv_report(query: Query) -> str:
         )
     )
     for booking in query.yield_per(1000):
+        print(booking)
         writer.writerow(
             (
                 booking.venueName,

@@ -4,6 +4,7 @@ import { BOOKING_STATUS } from 'core/Bookings'
 import { getToday } from 'utils/date'
 
 export const ALL_VENUES = 'all'
+export const ALL_OFFER_TYPE = 'all'
 export const ALL_DATES = 'all'
 export const EMPTY_FILTER_VALUE = ''
 export const DEFAULT_BOOKING_PERIOD = 30
@@ -13,6 +14,7 @@ export const DEFAULT_PRE_FILTERS = {
   bookingStatusFilter: BOOKING_STATUS.BOOKED,
   offerEventDate: ALL_DATES,
   offerVenueId: ALL_VENUES,
+  offerType: ALL_OFFER_TYPE,
 }
 export const ALL_VENUES_OPTION = {
   displayName: 'Tous les lieux',
@@ -25,3 +27,7 @@ const BOOOKING_STATUS_OPTIONS = [
 ]
 export const [DEFAULT_BOOKING_FILTER, ...BOOOKING_STATUS_FILTER] =
   BOOOKING_STATUS_OPTIONS
+export const ALL_OFFER_TYPE_OPTION = {
+  displayName: 'Toutes les offres',
+  id: ALL_OFFER_TYPE,
+}

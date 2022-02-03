@@ -4,6 +4,10 @@
     height: rem(40px);
     width: rem(1px);
   }
+  
+  .period-filter {
+    margin-bottom: rem(30px);
+  }
 
   .pre-filters {
     .pre-filters-row {
@@ -25,7 +29,7 @@
         height: rem(40px);
         margin-top: rem(16px);
         padding: 0 1px;
-        width: rem(233px);
+        width: rem(173px);
 
         &:focus-within {
           border-color: $primary;
@@ -76,11 +80,19 @@
     }
 
     .input-select {
-      width: rem(233px);
-
       select {
         margin-top: rem(16px);
       }
+    }
+
+    .pre-filters-venue {
+      width: rem(397px);
+      margin-right: rem(24px);
+    }
+
+    .pre-filters-offer-type {
+      margin-right: rem(24px);
+
     }
   }
 

@@ -373,6 +373,7 @@ describe('components | BookingsRecap | Pro user', () => {
       bookingPeriodEndingDate: DEFAULT_PRE_FILTERS.bookingEndingDate,
       bookingStatusFilter: DEFAULT_PRE_FILTERS.bookingStatusFilter,
       eventDate: 'all',
+      offerType: 'all',
       page: 1,
       venueId: 'all',
     })
