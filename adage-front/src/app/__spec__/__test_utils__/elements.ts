@@ -5,6 +5,11 @@ export const queryResetFiltersButton = (): HTMLElement | null =>
     name: 'Réinitialiser les filtres',
   })
 
+export const findResetAllFiltersButton = (): Promise<HTMLElement> =>
+  screen.findByRole('button', {
+    name: 'Réinitialiser tous les filtres',
+  })
+
 export const findDepartmentFilter = (): Promise<HTMLElement> =>
   screen.findByLabelText('Département')
 

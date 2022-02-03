@@ -1,9 +1,9 @@
 import './AppLayout.scss'
 import * as React from 'react'
 
+import { OffersInstantSearch } from 'app/components/OffersInstantSearch/OffersInstantSearch'
+import { ReactComponent as Logo } from 'assets/logo-with-text.svg'
 import { Role, VenueFilterType } from 'utils/types'
-
-import { OffersSearch } from './components/OffersSearch/OffersSearch'
 
 export const AppLayout = ({
   userRole,
@@ -13,12 +13,18 @@ export const AppLayout = ({
   userRole: Role
   removeVenueFilter: () => void
   venueFilter: VenueFilterType | null
-}): JSX.Element => (
-  <main className="app-layout">
-    <OffersSearch
-      removeVenueFilter={removeVenueFilter}
-      userRole={userRole}
-      venueFilter={venueFilter}
-    />
-  </main>
-)
+}): JSX.Element => {
+  return (
+    <main className="app-layout">
+      <div className="offers-search-header">
+        <h2 className="offers-search-title">Rechercher une offre</h2>
+        <Logo className="app-logo" />
+      </div>
+      <OffersInstantSearch
+        removeVenueFilter={removeVenueFilter}
+        userRole={userRole}
+        venueFilter={venueFilter}
+      />
+    </main>
+  )
+}
