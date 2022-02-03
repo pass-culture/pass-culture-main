@@ -2,13 +2,19 @@ import enum
 import logging
 import os
 import pathlib
+import re
 from typing import Any
 
+from dateutil import parser as date_parser
 import gql
 from gql.transport.requests import RequestsHTTPTransport
 
 from pcapi import settings
+from pcapi.core.fraud import api as fraud_api
+from pcapi.core.fraud import models as fraud_models
+from pcapi.core.subscription import exceptions as subscription_exceptions
 from pcapi.utils import requests
+from pcapi.utils.date import FrenchParserInfo
 
 
 logger = logging.getLogger(__name__)
@@ -109,3 +115,71 @@ class DMSGraphQLClient:
         query = self.build_query("pro/get_banking_info_v2")
         variables = {"dossierNumber": dossier_id}
         return self.execute_query(query, variables=variables)
+
+
+def parse_beneficiary_information_graphql(application_detail: dict, procedure_id: int) -> fraud_models.DMSContent:
+    email = application_detail["usager"]["email"]
+
+    information = {
+        "last_name": application_detail["demandeur"]["nom"],
+        "first_name": application_detail["demandeur"]["prenom"],
+        "civility": application_detail["demandeur"]["civilite"],
+        "email": email,
+        "application_id": application_detail["number"],
+        "procedure_id": procedure_id,
+        "registration_datetime": application_detail[
+            "datePassageEnConstruction"
+        ],  # parse with format  "2021-09-15T15:19:20+02:00"
+    }
+    parsing_errors = {}
+
+    for field in application_detail["champs"]:
+        label = field["label"]
+        value = field["stringValue"]
+
+        if "Veuillez indiquer votre département" in label:
+            information["department"] = re.search("^[0-9]{2,3}|[2BbAa]{2}", value).group(0)
+        if label in ("Quelle est votre date de naissance", "Quelle est ta date de naissance ?"):
+            try:
+                information["birth_date"] = date_parser.parse(value, FrenchParserInfo())
+            except Exception:  # pylint: disable=broad-except
+                parsing_errors["birth_date"] = value
+
+        if label in (
+            "Quel est votre numéro de téléphone",
+            "Quel est ton numéro de téléphone ?",
+        ):
+            information["phone"] = value.replace(" ", "")
+        if label in (
+            "Quel est le code postal de votre commune de résidence ?",
+            "Quel est le code postal de votre commune de résidence ? (ex : 25370)",
+            "Quel est le code postal de ta commune de résidence ? (ex : 25370)",
+            "Quel est le code postal de ta commune de résidence ?",
+        ):
+            space_free = str(value).strip().replace(" ", "")
+            try:
+                information["postal_code"] = re.search("^[0-9]{5}", space_free).group(0)
+            except Exception:  # pylint: disable=broad-except
+                parsing_errors["postal_code"] = value
+
+        if label in ("Veuillez indiquer votre statut", "Merci d'indiquer ton statut", "Merci d' indiquer ton statut"):
+            information["activity"] = value
+        if label in (
+            "Quelle est votre adresse de résidence",
+            "Quelle est ton adresse de résidence",
+            "Quelle est ton adresse de résidence ?",
+        ):
+            information["address"] = value
+        if label in (
+            "Quel est le numéro de la pièce que vous venez de saisir ?",
+            "Quel est le numéro de la pièce que tu viens de saisir ?",
+        ):
+            value = value.strip()
+            if not fraud_api.validate_id_piece_number_format_fraud_item(value):
+                parsing_errors["id_piece_number"] = value
+            else:
+                information["id_piece_number"] = value
+
+    if parsing_errors:
+        raise subscription_exceptions.DMSParsingError(email, parsing_errors, "Error validating")
+    return fraud_models.DMSContent(**information)
