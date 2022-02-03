@@ -10,6 +10,9 @@ from pcapi.connectors.api_adage import AdageException
 from pcapi.connectors.api_adage import CulturalPartnerNotFoundException
 from pcapi.core.categories import categories
 from pcapi.core.categories import subcategories
+from pcapi.core.educational import exceptions as educational_exceptions
+from pcapi.core.offerers import exceptions as offerers_exceptions
+from pcapi.core.offerers.repository import get_by_offer_id
 from pcapi.core.offers import exceptions
 import pcapi.core.offers.api as offers_api
 from pcapi.core.offers.models import Offer
@@ -20,6 +23,7 @@ from pcapi.repository.offer_queries import get_offer_by_id
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import offers_serialize
 from pcapi.routes.serialization.offers_recap_serialize import serialize_offers_recap_paginated
+from pcapi.routes.serialization.stock_serialize import StockIdResponseModel
 from pcapi.routes.serialization.thumbnails_serialize import CreateThumbnailBodyModel
 from pcapi.routes.serialization.thumbnails_serialize import CreateThumbnailResponseModel
 from pcapi.serialization.decorator import spectree_serialize
@@ -307,3 +311,27 @@ def cancel_educational_offer_booking(offer_id: str) -> None:
     except exceptions.NoBookingToCancel:
         raise ApiErrors({"code": "NO_BOOKING", "message": "This educational offer has no booking to cancel"}, 400)
     return
+
+
+@private_api.route("/offers/educational/<offer_id>/shadow-stock", methods=["POST"])
+@login_required
+@spectree_serialize(on_success_status=201, on_error_statuses=[400, 403, 404])
+def create_shadow_stock_for_educational_showcase_offer(
+    offer_id: str, body: offers_serialize.PostEducationalOfferShadowStockBodyModel
+) -> None:
+    offer_id = dehumanize(offer_id)
+    try:
+        offerer = get_by_offer_id(offer_id)
+    except offerers_exceptions.CannotFindOffererForOfferId:
+        raise ApiErrors({"offerer": ["Aucune structure trouvée à partir de cette offre"]}, status_code=404)
+    check_user_has_access_to_offerer(current_user, offerer.id)
+
+    try:
+        stock = offers_api.create_educational_shadow_stock_and_set_offer_showcase(body, current_user, offer_id)
+    except educational_exceptions.EducationalStockAlreadyExists:
+        raise ApiErrors(
+            {"code": "EDUCATIONAL_STOCK_ALREADY_EXISTS"},
+            status_code=400,
+        )
+
+    return StockIdResponseModel.from_orm(stock)
