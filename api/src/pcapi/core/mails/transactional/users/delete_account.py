@@ -4,15 +4,15 @@ from pcapi.core.mails.transactional.sendinblue_template_ids import Transactional
 from pcapi.core.users.models import User
 
 
-def get_delete_account_confirmation_email_data(user: User) -> SendinblueTransactionalEmailData:
+def get_user_request_to_delete_account_email_data(user: User) -> SendinblueTransactionalEmailData:
     return SendinblueTransactionalEmailData(
-        template=TransactionalEmail.DELETE_ACCOUNT_CONFIRMATION_TO_USER.value,
+        template=TransactionalEmail.USER_REQUEST_DELETE_ACCOUNT_RECEPTION.value,
         params={
             "FIRSTNAME": user.firstName,
         },
     )
 
 
-def send_delete_account_confirmation_email_to_user(user: User) -> bool:
-    data = get_delete_account_confirmation_email_data(user)
+def send_user_request_to_delete_account_reception_email(user: User) -> bool:
+    data = get_user_request_to_delete_account_email_data(user)
     return mails.send(recipients=[user.email], data=data)

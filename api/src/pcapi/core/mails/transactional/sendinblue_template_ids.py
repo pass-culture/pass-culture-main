@@ -53,7 +53,6 @@ class TransactionalEmail(Enum):
     BOOKING_SOON_TO_BE_EXPIRED_TO_BENEFICIARY = Template(
         id_prod=144, id_not_prod=42, tags=["jeunes_reservation_bientot_expiree"]
     )
-    DELETE_ACCOUNT_CONFIRMATION_TO_USER = Template(id_prod=511, id_not_prod=54, tags=["supression"])
     EDUCATIONAL_BOOKING_CANCELLATION_BY_INSTITUTION = Template(
         id_prod=406, id_not_prod=41, tags=["eac_annulationoffre"]
     )
@@ -100,6 +99,9 @@ class TransactionalEmail(Enum):
         id_not_prod=38,
         tags=["jeunes_document_illisible"],
         use_priority_queue=True,
+    )
+    USER_REQUEST_DELETE_ACCOUNT_RECEPTION = Template(
+        id_prod=511, id_not_prod=54, tags=["reception_demande_suppression_compte_jeune"]
     )
 
     # PRO EMAIL

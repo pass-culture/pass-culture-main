@@ -12,6 +12,7 @@ from pcapi.connectors.beneficiaries import exceptions as beneficiaries_exception
 from pcapi.core.fraud import api as fraud_api
 from pcapi.core.fraud.ubble import api as ubble_fraud_api
 from pcapi.core.logging import get_or_set_correlation_id
+from pcapi.core.mails.transactional.users.delete_account import send_user_request_to_delete_account_reception_email
 from pcapi.core.subscription.ubble import api as ubble_subscription_api
 from pcapi.core.users import api
 from pcapi.core.users import constants
@@ -266,6 +267,7 @@ def validate_phone_number(user: User, body: serializers.ValidatePhoneNumberReque
 @authenticated_user_required
 def suspend_account(user: User) -> None:
     api.suspend_account(user, constants.SuspensionReason.UPON_USER_REQUEST, actor=user)
+    send_user_request_to_delete_account_reception_email(user)
 
 
 @blueprint.native_v1.route("/user_profiling", methods=["POST"])
