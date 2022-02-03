@@ -45,7 +45,7 @@ const Confirmation = ({ isCreatingOffer, location, offer, setOffer }) => {
           <p className="oc-details">
             Votre offre est en cours de validation par l’équipe pass Culture,
             nous vérifions actuellement son éligibilité.
-            <b>Cette vérification pourra prendre jusqu’à 72h.</b> Vous recevrez
+            <b> Cette vérification pourra prendre jusqu’à 72h.</b> Vous recevrez
             un email de confirmation une fois votre offre validée et disponible
             à la réservation.
           </p>
