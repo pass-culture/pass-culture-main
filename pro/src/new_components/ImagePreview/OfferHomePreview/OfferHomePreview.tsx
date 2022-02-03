@@ -14,16 +14,10 @@ export const OfferHomePreview: FunctionComponent<Props> = ({
 }) => (
   <div className="image-preview-previews-wrapper">
     <MobileShell />
-    <img
-      alt=""
-      className={style['image-preview-shell']}
-      height="515"
-      src={homeShell}
-    />
+    <img alt="" className={style['image-preview-shell']} src={homeShell} />
     <img
       alt=""
       className={style['image-preview-home-preview']}
-      height="228"
       src={previewImageURI}
     />
     <div>Page d’accueil</div>
