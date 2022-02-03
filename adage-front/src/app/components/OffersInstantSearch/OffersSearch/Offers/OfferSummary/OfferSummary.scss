@@ -1,0 +1,24 @@
+@import "../../../../../../../node_modules/sass-rem/index";
+
+.offer-summary {
+  display: flex;
+  margin-bottom: rem(8px);
+  padding: 0;
+
+  &:last-child {
+    margin-bottom: rem(22px);
+  }
+
+  &-item {
+    display: flex;
+    align-items: center;
+
+    &:not(:last-of-type) {
+      margin-right: rem(20px);
+    }
+
+    &-icon {
+      margin-right: rem(10px);
+    }
+  }
+}

@@ -1,5 +1,5 @@
 import cn from 'classnames'
-import React from 'react'
+import React, { FunctionComponent, SVGProps } from 'react'
 
 import './Button.scss'
 import { ReactComponent as SpinnerIcon } from 'assets/loader.svg'
@@ -8,9 +8,17 @@ interface IButton extends React.HTMLProps<HTMLButtonElement> {
   label?: string
   variant?: 'primary' | 'secondary'
   isLoading?: boolean
+  Icon?: FunctionComponent<
+    SVGProps<SVGSVGElement> & {
+      title?: string | undefined
+    }
+  >
+  classNameIcon?: string
 }
 
 const Button = ({
+  Icon,
+  classNameIcon,
   className,
   label,
   variant = 'primary',
@@ -27,6 +35,7 @@ const Button = ({
       {...props}
       type="button"
     >
+      {Icon && <Icon className={classNameIcon} />}
       {isLoading ? <SpinnerIcon className="button-spinner" /> : label}
     </button>
   )
