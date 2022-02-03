@@ -1,0 +1,26 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: rem(12px);
+}
+
+.header {
+  @include title3;
+}
+
+.subtitle {
+  color: $grey-dark;
+  margin-bottom: rem(24px);
+}
+
+.actions {
+  display: flex;
+  justify-content: center;
+  margin-top: rem(12px);
+
+  button {
+    margin: 0 rem(12px);
+    width: rem(220px);
+  }
+}
