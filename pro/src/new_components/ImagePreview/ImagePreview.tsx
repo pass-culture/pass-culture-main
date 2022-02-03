@@ -1,8 +1,7 @@
 import React, { FunctionComponent } from 'react'
 
-import { ReactComponent as MobileShell } from 'components/pages/Offers/Offer/Thumbnail/assets/mobile-shell.svg'
-import homeShell from 'components/pages/Offers/Offer/Thumbnail/assets/offer-home-shell.png'
-import offerShell from 'components/pages/Offers/Offer/Thumbnail/assets/offer-shell.png'
+import { OfferHomePreview } from './OfferHomePreview/OfferHomePreview'
+import { OfferPreview } from './OfferPreview/OfferPreview'
 
 interface Props {
   preview: string
@@ -10,43 +9,7 @@ interface Props {
 
 export const ImagePreview: FunctionComponent<Props> = ({ preview }) => (
   <div className="image-preview-previews">
-    <div className="image-preview-previews-wrapper">
-      <MobileShell />
-      <img
-        alt=""
-        className="image-preview-shell"
-        height="515"
-        src={homeShell}
-      />
-      <img
-        alt=""
-        className="image-preview-home-preview"
-        height="228"
-        src={preview}
-      />
-      <div>Page d’accueil</div>
-    </div>
-    <div className="image-preview-previews-wrapper">
-      <MobileShell />
-      <img
-        alt=""
-        className="image-preview-blur-offer-preview"
-        height="435"
-        src={preview}
-      />
-      <img
-        alt=""
-        className="image-preview-shell right"
-        height="280"
-        src={offerShell}
-      />
-      <img
-        alt=""
-        className="image-preview-offer-preview"
-        height="247"
-        src={preview}
-      />
-      <div>Détails de l’offre</div>
-    </div>
+    <OfferHomePreview previewImageURI={preview} />
+    <OfferPreview previewImageURI={preview} />
   </div>
 )
