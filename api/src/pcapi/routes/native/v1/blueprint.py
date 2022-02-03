@@ -1,9 +1,10 @@
 from flask import Blueprint
 from flask_cors.extension import CORS
+from spectree import SecurityScheme
+from spectree import SpecTree
 
 from pcapi import settings
 from pcapi.routes.native import utils
-from pcapi.serialization.spec_tree import ExtendedSpecTree
 from pcapi.serialization.utils import before_handler
 
 
@@ -18,13 +19,10 @@ CORS(
 
 JWT_AUTH = "JWTAuth"
 
-security_schemes = {
-    JWT_AUTH: {
-        "type": "http",
-        "scheme": "bearer",
-        "bearerFormat": "JWT",
-    }
-}
+SECURITY_SCHEMES = [
+    SecurityScheme(name=JWT_AUTH, data={"type": "http", "scheme": "bearer", "bearerFormat": "JWT"}),
+]
 
-api = ExtendedSpecTree("flask", MODE="strict", before=before_handler, PATH="/", security_schemes=security_schemes)
+
+api = SpecTree("flask", MODE="strict", before=before_handler, PATH="/", security_schemes=SECURITY_SCHEMES)
 api.register(native_v1)
