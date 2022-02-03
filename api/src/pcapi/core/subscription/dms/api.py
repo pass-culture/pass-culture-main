@@ -253,40 +253,41 @@ def process_application(
         fraud_check = fraud_api.on_dms_fraud_result(user, information)
     except Exception as exc:  # pylint: disable=broad-except
         logger.exception("Error on dms fraud check result: %s", exc)
+        return
 
-    else:
-        if fraud_check.status != fraud_models.FraudCheckStatus.OK:
-            handle_validation_errors(user, fraud_check.reasonCodes, information, procedure_id)
-            subscription_api.update_user_birth_date(user, information.get_birth_date())
-            return
+    if fraud_check.status != fraud_models.FraudCheckStatus.OK:
+        handle_validation_errors(user, fraud_check.reasonCodes, information, procedure_id)
+        subscription_api.update_user_birth_date(user, information.get_birth_date())
+        return
 
-        try:
-            eligibility_type = information.get_eligibility_type()
+    try:
+        eligibility_type = information.get_eligibility_type()
 
-            fraud_api.create_honor_statement_fraud_check(
-                user, "honor statement contained in DMS application", eligibility_type
-            )
-            subscription_api.on_successful_application(
-                user=user,
-                source_data=information,
-                eligibility_type=eligibility_type,
-                application_id=application_id,
-                source_id=procedure_id,
-                source=BeneficiaryImportSources.demarches_simplifiees,
-            )
-        except ApiErrors as api_errors:
-            logger.warning(
-                "[BATCH][REMOTE IMPORT BENEFICIARIES] Could not save application %s, because of error: %s - Procedure %s",
-                application_id,
-                api_errors,
-                procedure_id,
-            )
-        else:
-            logger.info(
-                "[BATCH][REMOTE IMPORT BENEFICIARIES] Successfully created user for application %s - Procedure %s",
-                information.application_id,
-                procedure_id,
-            )
+        fraud_api.create_honor_statement_fraud_check(
+            user, "honor statement contained in DMS application", eligibility_type
+        )
+        subscription_api.on_successful_application(
+            user=user,
+            source_data=information,
+            eligibility_type=eligibility_type,
+            application_id=application_id,
+            source_id=procedure_id,
+            source=BeneficiaryImportSources.demarches_simplifiees,
+        )
+    except ApiErrors as api_errors:
+        logger.warning(
+            "[BATCH][REMOTE IMPORT BENEFICIARIES] Could not save application %s, because of error: %s - Procedure %s",
+            application_id,
+            api_errors,
+            procedure_id,
+        )
+        return
+
+    logger.info(
+        "[BATCH][REMOTE IMPORT BENEFICIARIES] Successfully created user for application %s - Procedure %s",
+        information.application_id,
+        procedure_id,
+    )
 
 
 def handle_validation_errors(
