@@ -853,8 +853,8 @@ class GenerateInvoiceTest:
         assert len(invoice.lines) == 1
         line = invoice.lines[0]
         assert line.group == {"label": "Barème général", "position": 1}
-        assert line.contribution_amount == 0
-        assert line.reimbursed_amount == -40 * 100
+        assert line.contributionAmount == 0
+        assert line.reimbursedAmount == -40 * 100
         assert line.rate == 1
         assert line.label == "Montant remboursé"
 
@@ -888,14 +888,14 @@ class GenerateInvoiceTest:
 
         line_rate_1 = invoice_lines[0]
         assert line_rate_1.group == {"label": "Barème général", "position": 1}
-        assert line_rate_1.contribution_amount == 0
-        assert line_rate_1.reimbursed_amount == -19_850 * 100
+        assert line_rate_1.contributionAmount == 0
+        assert line_rate_1.reimbursedAmount == -19_850 * 100
         assert line_rate_1.rate == 1
         assert line_rate_1.label == "Montant remboursé"
         line_rate_0_95 = invoice_lines[1]
         assert line_rate_0_95.group == {"label": "Barème général", "position": 1}
-        assert line_rate_0_95.contribution_amount == 8 * 100
-        assert line_rate_0_95.reimbursed_amount == -152 * 100
+        assert line_rate_0_95.contributionAmount == 8 * 100
+        assert line_rate_0_95.reimbursedAmount == -152 * 100
         assert line_rate_0_95.rate == Decimal("0.95")
         assert line_rate_0_95.label == "Montant remboursé"
 
@@ -926,8 +926,8 @@ class GenerateInvoiceTest:
         assert len(invoice.lines) == 1
         line = invoice.lines[0]
         assert line.group == {"label": "Barème dérogatoire", "position": 4}
-        assert line.contribution_amount == 200
-        assert line.reimbursed_amount == -4400
+        assert line.contributionAmount == 200
+        assert line.reimbursedAmount == -4400
         assert line.rate == Decimal("0.9565")
         assert line.label == "Montant remboursé"
 
@@ -965,50 +965,50 @@ class GenerateInvoiceTest:
 
         line0 = invoice_lines[0]
         assert line0.group == {"label": "Barème général", "position": 1}
-        assert line0.contribution_amount == 0
-        assert line0.reimbursed_amount == -19_980 * 100  # 19_950 + 30
+        assert line0.contributionAmount == 0
+        assert line0.reimbursedAmount == -19_980 * 100  # 19_950 + 30
         assert line0.rate == Decimal("1.0000")
         assert line0.label == "Montant remboursé"
 
         line1 = invoice_lines[1]
         assert line1.group == {"label": "Barème général", "position": 1}
-        assert line1.contribution_amount == 4 * 100
-        assert line1.reimbursed_amount == -76 * 100
+        assert line1.contributionAmount == 4 * 100
+        assert line1.reimbursedAmount == -76 * 100
         assert line1.rate == Decimal("0.9500")
         assert line1.label == "Montant remboursé"
 
         line2 = invoice_lines[2]
         assert line2.group == {"label": "Barème livres", "position": 2}
-        assert line2.contribution_amount == 0
-        assert line2.reimbursed_amount == -20 * 100
+        assert line2.contributionAmount == 0
+        assert line2.reimbursedAmount == -20 * 100
         assert line2.rate == Decimal("1.0000")
         assert line2.label == "Montant remboursé"
 
         line3 = invoice_lines[3]
         assert line3.group == {"label": "Barème livres", "position": 2}
-        assert line3.contribution_amount == 2 * 100
-        assert line3.reimbursed_amount == -38 * 100
+        assert line3.contributionAmount == 2 * 100
+        assert line3.reimbursedAmount == -38 * 100
         assert line3.rate == Decimal("0.9500")
         assert line3.label == "Montant remboursé"
 
         line4 = invoice_lines[4]
         assert line4.group == {"label": "Barème non remboursé", "position": 3}
-        assert line4.contribution_amount == 58 * 100
-        assert line4.reimbursed_amount == 0
+        assert line4.contributionAmount == 58 * 100
+        assert line4.reimbursedAmount == 0
         assert line4.rate == Decimal("0.0000")
         assert line4.label == "Montant remboursé"
 
         line5 = invoice_lines[5]
         assert line5.group == {"label": "Barème dérogatoire", "position": 4}
-        assert line5.contribution_amount == 100
-        assert line5.reimbursed_amount == -22 * 100
+        assert line5.contributionAmount == 100
+        assert line5.reimbursedAmount == -22 * 100
         assert line5.rate == Decimal("0.9565")
         assert line5.label == "Montant remboursé"
 
         line6 = invoice_lines[6]
         assert line6.group == {"label": "Barème dérogatoire", "position": 4}
-        assert line6.contribution_amount == 1.2 * 100
-        assert line6.reimbursed_amount == -18.8 * 100
+        assert line6.contributionAmount == 1.2 * 100
+        assert line6.reimbursedAmount == -18.8 * 100
         assert line6.rate == Decimal("0.9400")
         assert line6.label == "Montant remboursé"
 
