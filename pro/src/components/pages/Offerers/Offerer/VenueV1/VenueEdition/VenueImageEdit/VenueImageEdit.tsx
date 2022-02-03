@@ -1,4 +1,5 @@
-import React, { FunctionComponent, useCallback } from 'react'
+import React, { FunctionComponent, useCallback, useRef } from 'react'
+import AvatarEditor, { CroppedRect } from 'react-avatar-editor'
 
 import { ReactComponent as CloseIcon } from 'icons/ico-clear.svg'
 import { CreditInput } from 'new_components/CreditInput/CreditInput'
@@ -16,21 +17,32 @@ const CROP_BORDER_COLOR = '#fff'
 
 type Props = {
   image: File
-  onSetImage: () => void
   credit: string
   onSetCredit: (credit: string) => void
   children?: never
   closeModal: () => void
+  setCroppingRect: (croppedRect: CroppedRect) => void
+  setEditedImage: (dataUrl: string) => void
 }
 
 export const VenueImageEdit: FunctionComponent<Props> = ({
   closeModal,
   image,
-  onSetImage,
   credit,
   onSetCredit,
+  setCroppingRect,
+  setEditedImage,
 }) => {
-  const handleNext = useCallback(() => onSetImage(), [onSetImage])
+  const editorRef = useRef<AvatarEditor>(null)
+
+  const handleNext = useCallback(() => {
+    if (editorRef.current) {
+      const canvas = editorRef.current.getImage()
+      const croppingRect = editorRef.current.getCroppingRect()
+      setCroppingRect(croppingRect)
+      setEditedImage(canvas.toDataURL())
+    }
+  }, [setCroppingRect, setEditedImage])
 
   return (
     <section className={style['venue-image-edit']}>
@@ -50,6 +62,7 @@ export const VenueImageEdit: FunctionComponent<Props> = ({
           cropBorderHeight={CROP_BORDER_HEIGHT}
           cropBorderWidth={CROP_BORDER_WIDTH}
           image={image}
+          ref={editorRef}
         />
         <CreditInput
           credit={credit}

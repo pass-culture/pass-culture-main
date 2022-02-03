@@ -1,7 +1,10 @@
 import React, { useCallback, useState, FunctionComponent } from 'react'
+import { CroppedRect } from 'react-avatar-editor'
 
 import { imageConstraints } from 'new_components/ConstraintCheck/imageConstraints'
 import DialogBox from 'new_components/DialogBox'
+import { ImagePreview } from 'new_components/ImagePreview/ImagePreview'
+import { ImagePreviewMode } from 'new_components/ImagePreview/types'
 
 import { ImportFromComputer } from '../ImportFromComputer/ImportFromComputer'
 import { VenueImageEdit } from '../VenueImageEdit/VenueImageEdit'
@@ -24,6 +27,8 @@ export const VenueImageUploaderModal: FunctionComponent<Props> = ({
 }) => {
   const [image, setImage] = useState<File>()
   const [credit, setCredit] = useState('')
+  const [croppingRect, setCroppingRect] = useState<CroppedRect>()
+  const [editedImage, setEditedImage] = useState('')
 
   const onSetImage = useCallback(
     file => {
@@ -51,9 +56,8 @@ export const VenueImageUploaderModal: FunctionComponent<Props> = ({
           credit={credit}
           image={image}
           onSetCredit={setCredit}
-          onSetImage={() =>
-            alert('Cette fonctionnalité sera disponible avec PC-13087')
-          }
+          setCroppingRect={setCroppingRect}
+          setEditedImage={setEditedImage}
         />
       )}
     </DialogBox>
