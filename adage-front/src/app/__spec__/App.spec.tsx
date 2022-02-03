@@ -1,4 +1,10 @@
-import { render, screen, waitFor, within } from '@testing-library/react'
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 import { Configure } from 'react-instantsearch-dom'
@@ -13,10 +19,14 @@ import {
   findCategoriesFilter,
   findDepartmentFilter,
   findLaunchSearchButton,
+  findResetAllFiltersButton,
   findStudentsFilter,
   queryResetFiltersButton,
   queryTag,
 } from './__test_utils__/elements'
+
+export const placeholder =
+  "Nom de l'offre, du lieu ou de la catégorie (films, visites, conférences, spectacles, cours, musique)"
 
 jest.mock('utils/config', () => ({
   ALGOLIA_APP_ID: 'algolia-app-id',
@@ -28,6 +38,13 @@ jest.mock('react-instantsearch-dom', () => {
   return {
     ...jest.requireActual('react-instantsearch-dom'),
     Configure: jest.fn(() => <div />),
+  }
+})
+
+jest.mock('react-instantsearch-core', () => {
+  return {
+    ...jest.requireActual('react-instantsearch-core'),
+    refine: jest.fn(),
   }
 })
 
@@ -195,7 +212,7 @@ describe('app', () => {
       userEvent.click(launchSearchButton)
 
       // Then
-      await waitFor(() => expect(Configure).toHaveBeenCalledTimes(5))
+      await waitFor(() => expect(Configure).toHaveBeenCalledTimes(4))
       const searchConfigurationFirstCall = (Configure as jest.Mock).mock
         .calls[2][0]
       expect(searchConfigurationFirstCall.facetFilters).toStrictEqual([
@@ -232,7 +249,7 @@ describe('app', () => {
       userEvent.click(launchSearchButton)
 
       // Then
-      await waitFor(() => expect(Configure).toHaveBeenCalledTimes(5))
+      await waitFor(() => expect(Configure).toHaveBeenCalledTimes(3))
       const searchConfigurationFirstCall = (Configure as jest.Mock).mock
         .calls[1][0]
       expect(searchConfigurationFirstCall.facetFilters).toStrictEqual([
@@ -240,7 +257,7 @@ describe('app', () => {
         ['venue.departmentCode:01'],
       ])
       const searchConfigurationSecondCall = (Configure as jest.Mock).mock
-        .calls[3][0]
+        .calls[2][0]
       expect(searchConfigurationSecondCall.facetFilters).toStrictEqual([
         'offer.isEducational:true',
         ['venue.departmentCode:01', 'venue.departmentCode:59'],
@@ -281,7 +298,7 @@ describe('app', () => {
       userEvent.click(launchSearchButton)
 
       // Then
-      await waitFor(() => expect(Configure).toHaveBeenCalledTimes(7))
+      await waitFor(() => expect(Configure).toHaveBeenCalledTimes(4))
       const searchConfigurationFirstCall = (Configure as jest.Mock).mock
         .calls[1][0]
       expect(searchConfigurationFirstCall.facetFilters).toStrictEqual([
@@ -290,14 +307,14 @@ describe('app', () => {
         ['offer.students:Collège - 4e'],
       ])
       const searchConfigurationSecondCall = (Configure as jest.Mock).mock
-        .calls[4][0]
+        .calls[2][0]
       expect(searchConfigurationSecondCall.facetFilters).toStrictEqual([
         'offer.isEducational:true',
         ['venue.departmentCode:59'],
         ['offer.students:Collège - 4e'],
       ])
       const searchConfigurationThirdCall = (Configure as jest.Mock).mock
-        .calls[6][0]
+        .calls[3][0]
       expect(searchConfigurationThirdCall.facetFilters).toStrictEqual([
         'offer.isEducational:true',
       ])
@@ -305,6 +322,27 @@ describe('app', () => {
       expect(queryTag('01 - Ain')).not.toBeInTheDocument()
       expect(queryTag('59 - Nord')).not.toBeInTheDocument()
       expect(queryTag('Collège - 4e')).not.toBeInTheDocument()
+    })
+
+    it('should remove filter when clicking on delete button', async () => {
+      // Given
+      render(<App />)
+
+      // When
+      const departmentFilter = await findDepartmentFilter()
+      await selectEvent.select(departmentFilter, '01 - Ain')
+
+      const filterTag = screen.getByText('01 - Ain', { selector: 'div' })
+      expect(filterTag).toBeInTheDocument()
+
+      const closeIcon = filterTag.lastChild
+
+      await waitFor(() => fireEvent.click(closeIcon as ChildNode))
+
+      // Then
+      expect(
+        screen.queryByText('01 - Ain', { selector: 'div' })
+      ).not.toBeInTheDocument()
     })
 
     it('should reset filters', async () => {
@@ -328,20 +366,9 @@ describe('app', () => {
       userEvent.click(launchSearchButton)
 
       // Then
-      await waitFor(() => expect(Configure).toHaveBeenCalledTimes(5))
-      const searchConfigurationFirstCall = (Configure as jest.Mock).mock
-        .calls[1][0]
-      expect(searchConfigurationFirstCall.facetFilters).toStrictEqual([
-        'offer.isEducational:true',
-        ['venue.departmentCode:01', 'venue.departmentCode:59'],
-        [
-          'offer.subcategoryId:CINE_PLEIN_AIR',
-          'offer.subcategoryId:EVENEMENT_CINE',
-        ],
-        ['offer.students:Collège - 4e'],
-      ])
+      await waitFor(() => expect(Configure).toHaveBeenCalledTimes(3))
       const searchConfigurationLastCall = (Configure as jest.Mock).mock
-        .calls[4][0]
+        .calls[2][0]
       expect(searchConfigurationLastCall.facetFilters).toStrictEqual([
         'offer.isEducational:true',
       ])
@@ -349,6 +376,37 @@ describe('app', () => {
       expect(queryTag('59 - Nord')).not.toBeInTheDocument()
       expect(queryTag('Collège - 4e')).not.toBeInTheDocument()
       expect(queryTag('Cinéma')).not.toBeInTheDocument()
+    })
+
+    it('should reset all filters and launch search when no result and click on button', async () => {
+      // Given
+      render(<App />)
+
+      const textInput = await screen.findByPlaceholderText(placeholder)
+      const departmentFilter = await findDepartmentFilter()
+      const launchSearchButton = await findLaunchSearchButton()
+
+      // When
+      userEvent.type(textInput, 'a')
+      await selectEvent.select(departmentFilter, '01 - Ain')
+      userEvent.click(launchSearchButton)
+
+      const resetAllFiltersButton = await findResetAllFiltersButton()
+      userEvent.click(resetAllFiltersButton)
+
+      // Then
+      await waitFor(() => expect(Configure).toHaveBeenCalledTimes(3))
+      const searchConfigurationFirstCall = (Configure as jest.Mock).mock
+        .calls[1][0]
+      expect(searchConfigurationFirstCall.facetFilters).toStrictEqual([
+        'offer.isEducational:true',
+        ['venue.departmentCode:01'],
+      ])
+      const searchConfigurationLastCall = (Configure as jest.Mock).mock
+        .calls[2][0]
+      expect(searchConfigurationLastCall.facetFilters).toStrictEqual([
+        'offer.isEducational:true',
+      ])
     })
   })
 
