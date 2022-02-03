@@ -856,7 +856,7 @@ export const loadFakeApiCategories = () => {
         isDigitalDeposit: true,
         isPhysicalDeposit: false,
         reimbursementRule: 'NOT_REIMBURSED',
-        isSelectable: true,
+        isSelectable: false,
       },
       {
         id: 'FESTIVAL_MUSIQUE',

@@ -925,6 +925,7 @@ CAPTATION_MUSIQUE = Subcategory(
     is_digital_deposit=True,
     is_physical_deposit=False,
     reimbursement_rule=ReimbursementRuleChoices.NOT_REIMBURSED.value,
+    is_selectable=False,
 )
 
 # endregion
