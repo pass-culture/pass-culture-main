@@ -609,3 +609,16 @@ class ImageBodyModel(BaseModel):
 class CategoriesResponseModel(BaseModel):
     categories: list[CategoryResponseModel]
     subcategories: list[SubcategoryResponseModel]
+
+
+class PostEducationalOfferShadowStockBodyModel(BaseModel):
+    educational_price_detail: Optional[str]
+
+    @validator("educational_price_detail")
+    def validate_price_detail(cls, educational_price_detail):  # pylint: disable=no-self-argument
+        if len(educational_price_detail) > 1000:
+            raise ValueError("Le détail du prix ne doit pas excéder 1000 caractères.")
+        return educational_price_detail
+
+    class Config:
+        alias_generator = to_camel
