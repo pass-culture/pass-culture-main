@@ -1,0 +1,24 @@
+.image-preview-shell {
+  left: rem(26px);
+  top: rem(214px);
+  position: absolute;
+  height: 335px;
+}
+
+.image-preview-blur-venue-preview {
+  background-color: $white;
+  filter: blur(2px);
+  left: rem(27px);
+  position: absolute;
+  top: rem(35px);
+  height: 191px;
+}
+
+.image-preview-venue-preview {
+  background-color: $white;
+  border-radius: rem(5px);
+  left: rem(38px);
+  position: absolute;
+  top: rem(110px);
+  height: 176px;
+}
