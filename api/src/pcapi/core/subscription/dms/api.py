@@ -4,7 +4,6 @@ from pcapi import settings
 from pcapi.connectors.dms import api as dms_connector_api
 from pcapi.core.fraud import api as fraud_api
 from pcapi.core.fraud.dms import api as fraud_dms_api
-import pcapi.core.fraud.exceptions as fraud_exceptions
 import pcapi.core.fraud.models as fraud_models
 from pcapi.core.subscription import exceptions as subscription_exceptions
 from pcapi.core.subscription import messages as subscription_messages
@@ -252,21 +251,6 @@ def process_application(
 ) -> None:
     try:
         fraud_check = fraud_api.on_dms_fraud_result(user, information)
-    except fraud_exceptions.BeneficiaryFraudResultCannotBeDowngraded:
-        logger.warning("Trying to downgrade a BeneficiaryFraudResult status already OK", extra={"user_id": user.id})
-        reason = "Compte existant avec cet email"
-        fraud_models.BeneficiaryFraudCheck(
-            user=user,
-            type=fraud_models.FraudCheckType.DMS,
-            thirdPartyId=information.application_id,
-            resultContent=information,
-            status=fraud_models.FraudCheckStatus.ERROR,
-            reason=reason,
-            reasonCodes=[fraud_models.FraudReasonCode.ALREADY_BENEFICIARY],
-            eligibilityType=None,
-        )
-        _process_rejection(information, procedure_id, reason, user)
-
     except Exception as exc:  # pylint: disable=broad-except
         logger.exception("Error on dms fraud check result: %s", exc)
 
