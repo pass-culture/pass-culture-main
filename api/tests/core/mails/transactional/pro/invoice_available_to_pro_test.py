@@ -18,7 +18,7 @@ class SendinblueProAvailableInvoiceEmailDataTest:
         # Given
         business_unit = factories.BusinessUnitFactory()
         # This date is to test the edge case where the payment has been made the previous century.
-        invoice = factories.InvoiceFactory(businessUnit=business_unit, date=datetime(2000, 1, 3))
+        invoice = factories.InvoiceFactory(businessUnit=business_unit, date=datetime(2000, 1, 3), amount=-1000)
         offerers_factories.VenueFactory(businessUnit=business_unit)
 
         # When
@@ -26,12 +26,12 @@ class SendinblueProAvailableInvoiceEmailDataTest:
 
         # Then
         assert email_data.template == TransactionalEmail.INVOICE_AVAILABLE_TO_PRO.value
-        assert email_data.params == {"date_max": "31/12/1999", "date_min": "15/12/1999", "montant": 1000}
+        assert email_data.params == {"date_max": "31/12/1999", "date_min": "16/12/1999", "montant": 10}
 
     def test_send_emails_available_invoice_to_pro_user(self):
         # given
         business_unit = factories.BusinessUnitFactory()
-        invoice = factories.InvoiceFactory(businessUnit=business_unit, date=datetime(2022, 1, 25))
+        invoice = factories.InvoiceFactory(businessUnit=business_unit, date=datetime(2022, 1, 25), amount=-1000)
         venue = offerers_factories.VenueFactory(
             businessUnit=business_unit, bookingEmail="pro@example.com", siret=business_unit.siret
         )
@@ -48,5 +48,5 @@ class SendinblueProAvailableInvoiceEmailDataTest:
         assert mails_testing.outbox[0].sent_data["params"] == {
             "date_max": "15/01/2022",
             "date_min": "01/01/2022",
-            "montant": 1000,
+            "montant": 10,
         }
