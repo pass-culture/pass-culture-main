@@ -127,7 +127,7 @@ class EducationalOfferExtraDataOfferVenueBodyModel(BaseModel):
         extra = "forbid"
 
 
-class EducationalOfferExtraDataBodyModel(BaseModel):
+class PostEducationalOfferExtraDataBodyModel(BaseModel):
     students: list[str]
     offer_venue: EducationalOfferExtraDataOfferVenueBodyModel
     contact_email: str
@@ -150,7 +150,7 @@ class PostEducationalOfferBodyModel(BaseModel):
     mental_disability_compliant: bool = False
     motor_disability_compliant: bool = False
     visual_disability_compliant: bool = False
-    extra_data: EducationalOfferExtraDataBodyModel
+    extra_data: PostEducationalOfferExtraDataBodyModel
 
     @validator("name", pre=True)
     def validate_name(cls, name, values):  # pylint: disable=no-self-argument
@@ -162,7 +162,15 @@ class PostEducationalOfferBodyModel(BaseModel):
         extra = "forbid"
 
 
-class CompletedEducationalOfferModel(PostEducationalOfferBodyModel):
+class EducationalOfferExtraDataBodyModel(PostEducationalOfferExtraDataBodyModel):
+    is_showcase: bool = False
+
+
+class EducationalOfferBodyModel(PostEducationalOfferBodyModel):
+    extra_data: EducationalOfferExtraDataBodyModel
+
+
+class CompletedEducationalOfferModel(EducationalOfferBodyModel):
     is_duo: bool = False
     is_educational: bool = True
     external_ticket_office_url: Optional[str] = None
