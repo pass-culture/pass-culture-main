@@ -2,14 +2,11 @@ import React, { FunctionComponent } from 'react'
 
 import { ReactComponent as MobileShell } from '../assets/mobile-shell.svg'
 import homeShell from '../assets/offer-home-shell.png'
+import { ImagePreviewScreenProps } from '../types'
 
 import style from './OfferHomePreview.module.scss'
 
-interface Props {
-  previewImageURI: string
-}
-
-export const OfferHomePreview: FunctionComponent<Props> = ({
+export const OfferHomePreview: FunctionComponent<ImagePreviewScreenProps> = ({
   previewImageURI,
 }) => (
   <div className="image-preview-previews-wrapper">
