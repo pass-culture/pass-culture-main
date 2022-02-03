@@ -1,8 +1,8 @@
 from flask import Blueprint
 from flask_cors import CORS
+from spectree import SpecTree
 
 from pcapi import settings
-from pcapi.serialization.spec_tree import ExtendedSpecTree
 from pcapi.serialization.utils import before_handler
 
 
@@ -16,6 +16,6 @@ CORS(
     supports_credentials=True,
 )
 
-api = ExtendedSpecTree("flask", MODE="strict", before=before_handler, version=1)
+api = SpecTree("flask", MODE="strict", before=before_handler, version=1)
 # This will register all routes from the 2 Blueprints in this file
 api.register(public_api)

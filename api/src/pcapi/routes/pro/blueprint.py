@@ -1,8 +1,9 @@
 from flask import Blueprint
 from flask_cors import CORS
+from spectree import SecurityScheme
+from spectree import SpecTree
 
 from pcapi import settings
-from pcapi.serialization.spec_tree import ExtendedSpecTree
 from pcapi.serialization.utils import before_handler
 
 
@@ -32,33 +33,33 @@ CORS(
 
 API_KEY_AUTH = "ApiKeyAuth"
 
-security_schemes = {
-    API_KEY_AUTH: {
-        "type": "http",
-        "scheme": "bearer",
-        "description": "Api key issued by passculture",
-    }
-}
+
+SECURITY_SCHEMES = [
+    SecurityScheme(
+        name=API_KEY_AUTH, data={"type": "http", "scheme": "bearer", "description": "Api key issued by passculture"}
+    ),
+]
 
 
-api_v2 = ExtendedSpecTree(
+api_v2 = SpecTree(
     "flask",
     title="pass Culture pro public API v2",
     MODE="strict",
     before=before_handler,
     PATH="/",
-    security_schemes=security_schemes,
+    security_schemes=SECURITY_SCHEMES,
     version=2,
 )
 api_v2.register(pro_public_api_v2)
 
-api = ExtendedSpecTree(
+
+api = SpecTree(
     "flask",
     title="pass Culture pro private API",
     MODE="strict",
     before=before_handler,
     PATH="pro",
-    security_schemes=security_schemes,
+    security_schemes=SECURITY_SCHEMES,
     version=1,
 )
 api.register(pro_private_api)
