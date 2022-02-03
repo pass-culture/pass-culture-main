@@ -84,11 +84,13 @@ def on_dms_fraud_result(
             thirdPartyId=str(dms_content.application_id),
             resultContent=dms_content.dict(),
             eligibilityType=eligibility_type,
+            status=models.FraudCheckStatus.PENDING,
         )
-
-    if fraud_check.eligibilityType != eligibility_type:
-        logger.info("User changed his eligibility in DMS application", extra={"user_id": user.id})
-        fraud_check.eligibilityType = eligibility_type
+    else:
+        fraud_check.resultContent = dms_content.dict()
+        if fraud_check.eligibilityType != eligibility_type:
+            logger.info("User changed his eligibility in DMS application", extra={"user_id": user.id})
+            fraud_check.eligibilityType = eligibility_type
     on_identity_fraud_check_result(user, fraud_check)
     repository.save(fraud_check)
 
