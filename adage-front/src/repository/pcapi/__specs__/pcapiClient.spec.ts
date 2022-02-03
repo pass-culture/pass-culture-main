@@ -5,13 +5,22 @@ import { API_URL, URL_FOR_MAINTENANCE } from 'utils/config'
 
 Reflect.deleteProperty(global.window, 'location')
 const token = 'JWT-token'
-window.location = new URL(`https://www.example.com?token=${token}`)
 const setHrefSpy = jest.fn()
-Object.defineProperty(window.location, 'href', {
-  set: setHrefSpy,
-})
 
 describe('pcapiClient', () => {
+  beforeAll(() => {
+    global.window = Object.create(window)
+    Object.defineProperty(window, 'location', {
+      value: {
+        search: `?token=${token}`,
+      },
+    })
+
+    Object.defineProperty(window.location, 'href', {
+      set: setHrefSpy,
+    })
+  })
+
   beforeEach(() => {
     fetch.mockResponse(JSON.stringify({}), { status: 200 })
   })
