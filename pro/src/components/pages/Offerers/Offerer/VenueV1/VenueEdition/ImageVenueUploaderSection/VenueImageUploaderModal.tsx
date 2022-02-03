@@ -50,7 +50,7 @@ export const VenueImageUploaderModal: FunctionComponent<Props> = ({
           onSetImage={onSetImage}
           orientation="landscape"
         />
-      ) : (
+      ) : !croppingRect || !editedImage ? (
         <VenueImageEdit
           closeModal={onDismiss}
           credit={credit}
@@ -59,6 +59,8 @@ export const VenueImageUploaderModal: FunctionComponent<Props> = ({
           setCroppingRect={setCroppingRect}
           setEditedImage={setEditedImage}
         />
+      ) : (
+        <ImagePreview mode={ImagePreviewMode.VENUE} preview={editedImage} />
       )}
     </DialogBox>
   )
