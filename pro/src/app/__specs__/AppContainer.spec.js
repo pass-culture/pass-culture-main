@@ -7,6 +7,9 @@ describe('src | AppContainer', () => {
       data: {
         users: [],
       },
+      user: {
+        initialized: false,
+      },
       features: {
         list: [],
         initialized: false,

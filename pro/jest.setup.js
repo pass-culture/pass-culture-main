@@ -6,8 +6,6 @@ import 'babel-polyfill'
 configure({ adapter: new Adapter() })
 
 global.fetch = fetch
-jest.spyOn(global, 'scrollTo').mockImplementation()
-
 const originalGetComputedStyle = window.getComputedStyle
 
 // required for setting 0 values and to avoid warnings like "NAN is not a number" within jest tests
@@ -32,6 +30,10 @@ const getComputedStyle = (...args) => {
 
 Object.defineProperty(window, 'getComputedStyle', {
   value: getComputedStyle,
+})
+
+Object.defineProperty(window, 'scrollTo', {
+  value: () => null,
 })
 
 fetch.mockResponse(req => {

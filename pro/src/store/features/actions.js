@@ -1,4 +1,4 @@
-export const SET_IS_INITIALIZED = 'SET_IS_INITIALIZED'
+export const SET_IS_INITIALIZED = 'SET_FEATURE_IS_INITIALIZED'
 export const SET_FEATURES = 'SET_FEATURES'
 
 export const setIsInitialized = () => ({
