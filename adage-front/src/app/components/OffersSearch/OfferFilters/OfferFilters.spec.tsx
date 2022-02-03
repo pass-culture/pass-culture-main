@@ -17,7 +17,7 @@ describe('offerFilters', () => {
 
     beforeEach(() => {
       Reflect.deleteProperty(global.window, 'location')
-      window.location = new URL('https://www.example.com')
+      window.location.href = 'https://www.example.com'
 
       venue = {
         id: 1436,
@@ -31,7 +31,16 @@ describe('offerFilters', () => {
       venue = null
 
       // When
-      render(<OfferFilters removeVenueFilter={jest.fn()} venueFilter={venue} />)
+      render(
+        <OfferFilters
+          handleSearchButtonClick={jest.fn()}
+          isLoading={false}
+          query=""
+          refine={jest.fn()}
+          removeVenueFilter={jest.fn()}
+          venueFilter={venue}
+        />
+      )
 
       // Then
       expect(
@@ -44,7 +53,16 @@ describe('offerFilters', () => {
 
     it('should show venue tag with venue public name when venue filter is applied', async () => {
       // When
-      render(<OfferFilters removeVenueFilter={jest.fn()} venueFilter={venue} />)
+      render(
+        <OfferFilters
+          handleSearchButtonClick={jest.fn()}
+          isLoading={false}
+          query=""
+          refine={jest.fn()}
+          removeVenueFilter={jest.fn()}
+          venueFilter={venue}
+        />
+      )
 
       // Then
       expect(
@@ -61,7 +79,16 @@ describe('offerFilters', () => {
       venue.publicName = undefined
 
       // When
-      render(<OfferFilters removeVenueFilter={jest.fn()} venueFilter={venue} />)
+      render(
+        <OfferFilters
+          handleSearchButtonClick={jest.fn()}
+          isLoading={false}
+          query=""
+          refine={jest.fn()}
+          removeVenueFilter={jest.fn()}
+          venueFilter={venue}
+        />
+      )
 
       // Then
       expect(screen.getByText(`Lieu : ${venue.name}`)).toBeInTheDocument()
@@ -72,7 +99,16 @@ describe('offerFilters', () => {
 
     it('should show filter tags when at least one filter is selected', async () => {
       // When
-      render(<OfferFilters removeVenueFilter={jest.fn()} venueFilter={venue} />)
+      render(
+        <OfferFilters
+          handleSearchButtonClick={jest.fn()}
+          isLoading={false}
+          query=""
+          refine={jest.fn()}
+          removeVenueFilter={jest.fn()}
+          venueFilter={venue}
+        />
+      )
 
       // Then
       const departmentFilter = screen.getByLabelText('Département', {
@@ -92,6 +128,10 @@ describe('offerFilters', () => {
       const removeVenueFilter = jest.fn()
       render(
         <OfferFilters
+          handleSearchButtonClick={jest.fn()}
+          isLoading={false}
+          query=""
+          refine={jest.fn()}
           removeVenueFilter={removeVenueFilter}
           venueFilter={venue}
         />
@@ -120,6 +160,10 @@ describe('offerFilters', () => {
       const removeVenueFilter = jest.fn()
       render(
         <OfferFilters
+          handleSearchButtonClick={jest.fn()}
+          isLoading={false}
+          query=""
+          refine={jest.fn()}
           removeVenueFilter={removeVenueFilter}
           venueFilter={venue}
         />

@@ -5,7 +5,7 @@ import { API_URL, URL_FOR_MAINTENANCE } from 'utils/config'
 
 Reflect.deleteProperty(global.window, 'location')
 const token = 'JWT-token'
-window.location = new URL(`https://www.example.com?token=${token}`)
+window.location.href = `https://www.example.com?token=${token}`
 const setHrefSpy = jest.fn()
 Object.defineProperty(window.location, 'href', {
   set: setHrefSpy,

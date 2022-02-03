@@ -71,7 +71,7 @@ describe('app', () => {
 
     beforeEach(() => {
       Reflect.deleteProperty(global.window, 'location')
-      window.location = new URL('https://www.example.com')
+      window.location.href = 'https://www.example.com'
 
       venue = {
         id: 1436,
@@ -92,7 +92,7 @@ describe('app', () => {
         selector: 'h2',
       })
       expect(contentTitle).toBeInTheDocument()
-      const searchConfiguration = Configure.mock.calls[0][0]
+      const searchConfiguration = (Configure as jest.Mock).mock.calls[0][0]
       expect(searchConfiguration.facetFilters).toStrictEqual([
         'offer.isEducational:true',
       ])
@@ -110,7 +110,7 @@ describe('app', () => {
       // Given
       const siret = '123456789'
       Reflect.deleteProperty(global.window, 'location')
-      window.location = new URL(`https://www.example.com?siret=${siret}`)
+      window.location.href = `https://www.example.com?siret=${siret}`
 
       // When
       render(<App />)
@@ -121,7 +121,7 @@ describe('app', () => {
       })
       expect(contentTitle).toBeInTheDocument()
       expect(Configure).toHaveBeenCalledTimes(2)
-      const searchConfiguration = Configure.mock.calls[1][0]
+      const searchConfiguration = (Configure as jest.Mock).mock.calls[1][0]
       expect(searchConfiguration.facetFilters).toStrictEqual([
         'offer.isEducational:true',
         `venue.id:${venue.id}`,
@@ -138,7 +138,7 @@ describe('app', () => {
       const siret = '123456789'
       venue.publicName = undefined
       Reflect.deleteProperty(global.window, 'location')
-      window.location = new URL(`https://www.example.com?siret=${siret}`)
+      window.location.href = `https://www.example.com?siret=${siret}`
 
       // When
       render(<App />)
@@ -153,7 +153,7 @@ describe('app', () => {
       // Given
       const siret = '123456789'
       Reflect.deleteProperty(global.window, 'location')
-      window.location = new URL(`https://www.example.com?siret=${siret}`)
+      window.location.href = `https://www.example.com?siret=${siret}`
       mockedPcapi.getVenueBySiret.mockRejectedValue('Unrecognized SIRET')
 
       // When
@@ -164,7 +164,7 @@ describe('app', () => {
         selector: 'h2',
       })
       expect(contentTitle).toBeInTheDocument()
-      const searchConfiguration = Configure.mock.calls[0][0]
+      const searchConfiguration = (Configure as jest.Mock).mock.calls[0][0]
       expect(searchConfiguration.facetFilters).toStrictEqual([
         'offer.isEducational:true',
       ])
@@ -180,7 +180,7 @@ describe('app', () => {
       // Given
       const siret = '123456789'
       Reflect.deleteProperty(global.window, 'location')
-      window.location = new URL(`https://www.example.com?siret=${siret}`)
+      window.location.href = `https://www.example.com?siret=${siret}`
       render(<App />)
 
       const venueFilter = await screen.findByText(`Lieu : ${venue?.publicName}`)
@@ -193,13 +193,15 @@ describe('app', () => {
 
       // Then
       await waitFor(() => expect(Configure).toHaveBeenCalledTimes(5))
-      const searchConfigurationFirstCall = Configure.mock.calls[2][0]
+      const searchConfigurationFirstCall = (Configure as jest.Mock).mock
+        .calls[2][0]
       expect(searchConfigurationFirstCall.facetFilters).toStrictEqual([
         'offer.isEducational:true',
         `venue.id:${venue.id}`,
       ])
 
-      const searchConfigurationLastCall = Configure.mock.calls[3][0]
+      const searchConfigurationLastCall = (Configure as jest.Mock).mock
+        .calls[3][0]
       expect(searchConfigurationLastCall.facetFilters).toStrictEqual([
         'offer.isEducational:true',
       ])
@@ -227,12 +229,14 @@ describe('app', () => {
 
       // Then
       await waitFor(() => expect(Configure).toHaveBeenCalledTimes(5))
-      const searchConfigurationFirstCall = Configure.mock.calls[1][0]
+      const searchConfigurationFirstCall = (Configure as jest.Mock).mock
+        .calls[1][0]
       expect(searchConfigurationFirstCall.facetFilters).toStrictEqual([
         'offer.isEducational:true',
         ['venue.departmentCode:01'],
       ])
-      const searchConfigurationSecondCall = Configure.mock.calls[3][0]
+      const searchConfigurationSecondCall = (Configure as jest.Mock).mock
+        .calls[3][0]
       expect(searchConfigurationSecondCall.facetFilters).toStrictEqual([
         'offer.isEducational:true',
         ['venue.departmentCode:01', 'venue.departmentCode:59'],
@@ -274,19 +278,22 @@ describe('app', () => {
 
       // Then
       await waitFor(() => expect(Configure).toHaveBeenCalledTimes(7))
-      const searchConfigurationFirstCall = Configure.mock.calls[1][0]
+      const searchConfigurationFirstCall = (Configure as jest.Mock).mock
+        .calls[1][0]
       expect(searchConfigurationFirstCall.facetFilters).toStrictEqual([
         'offer.isEducational:true',
         ['venue.departmentCode:01', 'venue.departmentCode:59'],
         ['offer.students:Collège - 4e'],
       ])
-      const searchConfigurationSecondCall = Configure.mock.calls[4][0]
+      const searchConfigurationSecondCall = (Configure as jest.Mock).mock
+        .calls[4][0]
       expect(searchConfigurationSecondCall.facetFilters).toStrictEqual([
         'offer.isEducational:true',
         ['venue.departmentCode:59'],
         ['offer.students:Collège - 4e'],
       ])
-      const searchConfigurationThirdCall = Configure.mock.calls[6][0]
+      const searchConfigurationThirdCall = (Configure as jest.Mock).mock
+        .calls[6][0]
       expect(searchConfigurationThirdCall.facetFilters).toStrictEqual([
         'offer.isEducational:true',
       ])
@@ -318,7 +325,8 @@ describe('app', () => {
 
       // Then
       await waitFor(() => expect(Configure).toHaveBeenCalledTimes(5))
-      const searchConfigurationFirstCall = Configure.mock.calls[1][0]
+      const searchConfigurationFirstCall = (Configure as jest.Mock).mock
+        .calls[1][0]
       expect(searchConfigurationFirstCall.facetFilters).toStrictEqual([
         'offer.isEducational:true',
         ['venue.departmentCode:01', 'venue.departmentCode:59'],
@@ -328,7 +336,8 @@ describe('app', () => {
         ],
         ['offer.students:Collège - 4e'],
       ])
-      const searchConfigurationLastCall = Configure.mock.calls[4][0]
+      const searchConfigurationLastCall = (Configure as jest.Mock).mock
+        .calls[4][0]
       expect(searchConfigurationLastCall.facetFilters).toStrictEqual([
         'offer.isEducational:true',
       ])
