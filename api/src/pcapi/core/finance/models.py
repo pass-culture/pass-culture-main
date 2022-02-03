@@ -279,8 +279,8 @@ class InvoiceLine(Model):
     label = sqla.Column(sqla.Text, nullable=False)
     # a group is a dict of label and position, as defined in ..conf.InvoiceLineGroup
     group = sqla.Column(sqla_psql.JSONB, nullable=False)
-    contribution_amount = sqla.Column(sqla.Integer, nullable=False)
-    reimbursed_amount = sqla.Column(sqla.Integer, nullable=False)
+    contributionAmount = sqla.Column(sqla.Integer, nullable=False)
+    reimbursedAmount = sqla.Column(sqla.Integer, nullable=False)
     rate = sqla.Column(
         sqla.Numeric(5, 4, asdecimal=True),
         nullable=False,
@@ -289,7 +289,7 @@ class InvoiceLine(Model):
     @property
     def bookings_amount(self):
         """returns the (positive) raw amount of the used Bookings priced in this line"""
-        return self.contribution_amount - self.reimbursed_amount
+        return self.contributionAmount - self.reimbursedAmount
 
     @property
     def contribution_rate(self):
