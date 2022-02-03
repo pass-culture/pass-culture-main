@@ -162,6 +162,8 @@ class Booking(PcObject, Model):
             raise exceptions.BookingHasAlreadyBeenUsed()
         if self.status is BookingStatus.CANCELLED:
             raise exceptions.BookingIsCancelled()
+        if self.status is BookingStatus.PENDING:
+            raise exceptions.BookingNotConfirmed()
         self.dateUsed = datetime.utcnow()
         self.status = BookingStatus.USED
 
