@@ -3,6 +3,7 @@ from typing import Optional
 from flask import request
 from flask_login import current_user
 from flask_login import login_required
+from spectree import Response as SpectreeResponse
 
 import pcapi.core.bookings.api as bookings_api
 from pcapi.core.bookings.models import Booking
@@ -35,10 +36,10 @@ from . import blueprint
 
 
 BASE_CODE_DESCRIPTIONS = {
-    "HTTP_401": "Authentification nécessaire",
-    "HTTP_403": "Vous n'avez pas les droits nécessaires pour voir cette contremarque",
-    "HTTP_404": "La contremarque n'existe pas",
-    "HTTP_410": "La contremarque n'est plus valide car elle a déjà été validée ou a été annulée",
+    "HTTP_401": (None, "Authentification nécessaire"),
+    "HTTP_403": (None, "Vous n'avez pas les droits nécessaires pour voir cette contremarque"),
+    "HTTP_404": (None, "La contremarque n'existe pas"),
+    "HTTP_410": (None, "La contremarque n'est plus valide car elle a déjà été validée ou a été annulée"),
 }
 
 # TODO (gvanneste, 2021-10-19) : retravailler cette fonction, notamment check_user_is_logged_in_or_email_is_provided
@@ -144,9 +145,15 @@ def get_bookings_csv(query: ListBookingsQueryModel) -> bytes:
 @basic_auth_rate_limiter()
 @spectree_serialize(
     api=blueprint.api_v2,
-    response_model=GetBookingResponse,
     tags=["API Contremarque"],
-    code_descriptions=BASE_CODE_DESCRIPTIONS | {"HTTP_200": "La contremarque existe et n’est pas validée"},
+    resp=SpectreeResponse(
+        **(
+            BASE_CODE_DESCRIPTIONS
+            | {
+                "HTTP_200": (GetBookingResponse, "La contremarque existe et n’est pas validée"),
+            }
+        )
+    ),
 )
 @login_or_api_key_required
 def get_booking_by_token_v2(token: str) -> GetBookingResponse:
@@ -180,7 +187,14 @@ def get_booking_by_token_v2(token: str) -> GetBookingResponse:
     api=blueprint.api_v2,
     tags=["API Contremarque"],
     on_success_status=204,
-    code_descriptions=BASE_CODE_DESCRIPTIONS | {"HTTP_204": "La contremarque a bien été validée"},
+    resp=SpectreeResponse(
+        **(
+            BASE_CODE_DESCRIPTIONS
+            | {
+                "HTTP_204": (None, "La contremarque a bien été validée"),
+            }
+        )
+    ),
 )
 @login_or_api_key_required
 def patch_booking_use_by_token(token: str) -> None:
@@ -211,12 +225,19 @@ def patch_booking_use_by_token(token: str) -> None:
     api=blueprint.api_v2,
     tags=["API Contremarque"],
     on_success_status=204,
-    code_descriptions=BASE_CODE_DESCRIPTIONS
-    | {
-        "HTTP_204": "La contremarque a été annulée avec succès",
-        "HTTP_403": "Vous n'avez pas les droits nécessaires pour annuler cette contremarque ou la réservation a déjà été validée",
-        "HTTP_410": "La contremarque a déjà été annulée",
-    },
+    resp=SpectreeResponse(
+        **(
+            BASE_CODE_DESCRIPTIONS
+            | {
+                "HTTP_204": (None, "La contremarque a été annulée avec succès"),
+                "HTTP_403": (
+                    None,
+                    "Vous n'avez pas les droits nécessaires pour annuler cette contremarque ou la réservation a déjà été validée",
+                ),
+                "HTTP_410": (None, "La contremarque a déjà été annulée"),
+            }
+        )
+    ),
 )
 def patch_cancel_booking_by_token(token: str) -> None:
     # in French, to be used by Swagger for the API documentation
@@ -248,11 +269,18 @@ def patch_cancel_booking_by_token(token: str) -> None:
     api=blueprint.api_v2,
     tags=["API Contremarque"],
     on_success_status=204,
-    code_descriptions=BASE_CODE_DESCRIPTIONS
-    | {
-        "HTTP_204": "L'annulation de la validation de la contremarque a bien été effectuée",
-        "HTTP_410": "La requête est refusée car la contremarque n'a pas encore été validée, a été annulée, ou son remboursement a été initié",
-    },
+    resp=SpectreeResponse(
+        **(
+            BASE_CODE_DESCRIPTIONS
+            | {
+                "HTTP_204": (None, "L'annulation de la validation de la contremarque a bien été effectuée"),
+                "HTTP_410": (
+                    None,
+                    "La requête est refusée car la contremarque n'a pas encore été validée, a été annulée, ou son remboursement a été initié",
+                ),
+            }
+        )
+    ),
 )
 def patch_booking_keep_by_token(token: str) -> None:
     # in French, to be used by Swagger for the API documentation
