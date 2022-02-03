@@ -1,10 +1,11 @@
 import logging
 
 from pcapi import settings
-from pcapi.connectors.dms import api as api_dms
+from pcapi.connectors.dms import api as dms_connector_api
 from pcapi.core import logging as core_logging
 from pcapi.core.fraud.ubble import api as ubble_fraud_api
 from pcapi.core.subscription import api as subscription_api
+from pcapi.core.subscription import exceptions as subscription_exceptions
 from pcapi.core.subscription import messages as subscription_messages
 from pcapi.core.subscription.dms import api as dms_subscription_api
 from pcapi.core.subscription.ubble import api as ubble_subscription_api
@@ -13,7 +14,6 @@ from pcapi.models.beneficiary_import import BeneficiaryImportSources
 from pcapi.models.beneficiary_import_status import ImportStatus
 from pcapi.repository import repository
 from pcapi.routes.apis import public_api
-from pcapi.scripts.beneficiary import import_dms_users
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.validation.routes import dms as dms_validation
 from pcapi.validation.routes import ubble as ubble_validation
@@ -22,13 +22,13 @@ from pcapi.validation.routes import ubble as ubble_validation
 logger = logging.getLogger(__name__)
 
 DMS_APPLICATION_MAP = {
-    api_dms.GraphQLApplicationStates.draft: ImportStatus.DRAFT,
-    api_dms.GraphQLApplicationStates.on_going: ImportStatus.ONGOING,
-    # api_dms.GraphQLApplicationStates.accepted: ImportStatus what to do with it ?
+    dms_connector_api.GraphQLApplicationStates.draft: ImportStatus.DRAFT,
+    dms_connector_api.GraphQLApplicationStates.on_going: ImportStatus.ONGOING,
+    # dms_connector_api.GraphQLApplicationStates.accepted: ImportStatus what to do with it ?
     # for now it will be done in the import_dms_users script
     # later we might want to run the user validation and then archive the application
-    api_dms.GraphQLApplicationStates.refused: ImportStatus.REJECTED,
-    api_dms.GraphQLApplicationStates.without_continuation: ImportStatus.WITHOUT_CONTINUATION,
+    dms_connector_api.GraphQLApplicationStates.refused: ImportStatus.REJECTED,
+    dms_connector_api.GraphQLApplicationStates.without_continuation: ImportStatus.WITHOUT_CONTINUATION,
 }
 
 
@@ -36,7 +36,7 @@ DMS_APPLICATION_MAP = {
 @dms_validation.require_dms_token
 @spectree_serialize(on_success_status=204, json_format=False)
 def dms_webhook_update_application_status(form: dms_validation.DMSWebhookRequest) -> None:
-    client = api_dms.DMSGraphQLClient()
+    client = dms_connector_api.DMSGraphQLClient()
     raw_data = client.get_single_application_details(form.dossier_id)
     # todo(bcalvez) Use new IdcheckBackend to correctly convert this data
     user_email = raw_data["dossier"]["usager"]["email"]
@@ -50,7 +50,7 @@ def dms_webhook_update_application_status(form: dms_validation.DMSWebhookRequest
 
     user = find_user_by_email(user_email)
     if not user:
-        if form.state == api_dms.GraphQLApplicationStates.draft:
+        if form.state == dms_connector_api.GraphQLApplicationStates.draft:
             client.send_user_message(
                 raw_data["dossier"]["id"],
                 settings.DMS_INSTRUCTOR_ID,
@@ -66,19 +66,19 @@ def dms_webhook_update_application_status(form: dms_validation.DMSWebhookRequest
         )
         return
     try:
-        application = import_dms_users.parse_beneficiary_information_graphql(raw_data["dossier"], form.procedure_id)
+        application = dms_connector_api.parse_beneficiary_information_graphql(raw_data["dossier"], form.procedure_id)
         core_logging.log_for_supervision(
             logger=logger,
             log_level=logging.INFO,
             log_message="Successfully parsed DMS application",
             extra=log_extra_data,
         )
-    except import_dms_users.DMSParsingError as parsing_error:
+    except subscription_exceptions.DMSParsingError as parsing_error:
         subscription_messages.on_dms_application_parsing_errors_but_updatables_values(
             user, list(parsing_error.errors.keys())
         )
-        if form.state == api_dms.GraphQLApplicationStates.draft:
-            import_dms_users.notify_parsing_exception(parsing_error.errors, raw_data["dossier"]["id"], client)
+        if form.state == dms_connector_api.GraphQLApplicationStates.draft:
+            dms_subscription_api.notify_parsing_exception(parsing_error.errors, raw_data["dossier"]["id"], client)
 
         logger.info(
             "Cannot parse DMS application %s in webhook. Errors will be handled in the import_dms_users cron",
@@ -94,7 +94,7 @@ def dms_webhook_update_application_status(form: dms_validation.DMSWebhookRequest
             extra=log_extra_data,
         )
         subscription_messages.on_dms_application_parsing_errors_but_updatables_values(user, ["birth_date"])
-        if form.state == api_dms.GraphQLApplicationStates.draft:
+        if form.state == dms_connector_api.GraphQLApplicationStates.draft:
             client.send_user_message(
                 raw_data["dossier"]["id"],
                 settings.DMS_INSTRUCTOR_ID,

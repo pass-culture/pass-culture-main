@@ -8,13 +8,14 @@ from dateutil.relativedelta import relativedelta
 import freezegun
 import pytest
 
-from pcapi.connectors.dms import api as api_dms
+from pcapi.connectors.dms import api as dms_connector_api
 import pcapi.core.fraud.factories as fraud_factories
 import pcapi.core.fraud.models as fraud_models
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.payments.models import Deposit
 from pcapi.core.payments.models import DepositType
 import pcapi.core.subscription.api as subscription_api
+from pcapi.core.subscription.dms import api as dms_api
 import pcapi.core.subscription.models as subscription_models
 from pcapi.core.testing import override_features
 from pcapi.core.users import api as users_api
@@ -25,7 +26,6 @@ from pcapi.models.beneficiary_import import BeneficiaryImport
 from pcapi.models.beneficiary_import import BeneficiaryImportSources
 from pcapi.models.beneficiary_import_status import ImportStatus
 import pcapi.notifications.push.testing as push_testing
-from pcapi.scripts.beneficiary import import_dms_users
 
 from tests.scripts.beneficiary.fixture import make_graphql_application
 from tests.scripts.beneficiary.fixture import make_new_application
@@ -39,7 +39,7 @@ AGE18_ELIGIBLE_BIRTH_DATE = dateOfBirth = datetime.utcnow() - relativedelta(year
 
 @pytest.mark.usefixtures("db_session")
 class RunTest:
-    @patch.object(api_dms.DMSGraphQLClient, "get_applications_with_details")
+    @patch.object(dms_connector_api.DMSGraphQLClient, "get_applications_with_details")
     @patch("pcapi.core.subscription.api.on_successful_application")
     def test_should_retrieve_applications_from_new_procedure_id(
         self,
@@ -52,11 +52,11 @@ class RunTest:
             make_graphql_application(789, "closed", email="email3@example.com", id_piece_number="123123123"),
         ]
 
-        import_dms_users.run(procedure_id=6712558)
+        dms_api.import_dms_users(procedure_id=6712558)
         assert get_applications_with_details.call_count == 1
-        get_applications_with_details.assert_called_with(6712558, api_dms.GraphQLApplicationStates.accepted)
+        get_applications_with_details.assert_called_with(6712558, dms_connector_api.GraphQLApplicationStates.accepted)
 
-    @patch.object(api_dms.DMSGraphQLClient, "get_applications_with_details")
+    @patch.object(dms_connector_api.DMSGraphQLClient, "get_applications_with_details")
     @patch("pcapi.core.subscription.api.on_successful_application")
     def test_all_applications_are_processed_once(
         self,
@@ -90,11 +90,11 @@ class RunTest:
             ),
         ]
 
-        import_dms_users.run(procedure_id=6712558)
+        dms_api.import_dms_users(procedure_id=6712558)
         assert on_sucessful_application.call_count == 3
 
-    @patch.object(api_dms.DMSGraphQLClient, "get_applications_with_details")
-    @patch("pcapi.scripts.beneficiary.import_dms_users.parse_beneficiary_information_graphql")
+    @patch.object(dms_connector_api.DMSGraphQLClient, "get_applications_with_details")
+    @patch("pcapi.connectors.dms.api.parse_beneficiary_information_graphql")
     def test_an_error_status_is_saved_when_an_application_is_not_parsable(
         self,
         mocked_parse_beneficiary_information,
@@ -105,7 +105,7 @@ class RunTest:
         mocked_parse_beneficiary_information.side_effect = [Exception()]
 
         # when
-        import_dms_users.run(procedure_id=6712558)
+        dms_api.import_dms_users(procedure_id=6712558)
 
         # then
         beneficiary_import = BeneficiaryImport.query.first()
@@ -113,7 +113,7 @@ class RunTest:
         assert beneficiary_import.applicationId == 123
         assert beneficiary_import.detail == "Le dossier 123 contient des erreurs et a été ignoré - Procedure 6712558"
 
-    @patch.object(api_dms.DMSGraphQLClient, "get_applications_with_details")
+    @patch.object(dms_connector_api.DMSGraphQLClient, "get_applications_with_details")
     @patch("pcapi.core.subscription.api.on_successful_application")
     def test_application_with_known_application_id_are_not_processed(
         self,
@@ -130,12 +130,12 @@ class RunTest:
         get_applications_with_details.return_value = [make_graphql_application(123, "closed")]
 
         # when
-        import_dms_users.run(procedure_id=6712558)
+        dms_api.import_dms_users(procedure_id=6712558)
 
         # then
         on_sucessful_application.assert_not_called()
 
-    @patch.object(api_dms.DMSGraphQLClient, "get_applications_with_details")
+    @patch.object(dms_connector_api.DMSGraphQLClient, "get_applications_with_details")
     @patch("pcapi.core.subscription.api.on_successful_application")
     def test_application_with_known_email_and_already_beneficiary_are_saved_as_rejected(
         self, on_sucessful_application, get_applications_with_details
@@ -147,7 +147,7 @@ class RunTest:
         ]
         initial_beneficiary_import_id = user.beneficiaryImports[0].id
 
-        import_dms_users.run(procedure_id=6712558)
+        dms_api.import_dms_users(procedure_id=6712558)
 
         beneficiary_import = BeneficiaryImport.query.filter(
             BeneficiaryImport.id != initial_beneficiary_import_id
@@ -160,7 +160,7 @@ class RunTest:
         on_sucessful_application.assert_not_called()
 
     @override_features(FORCE_PHONE_VALIDATION=False)
-    @patch.object(api_dms.DMSGraphQLClient, "get_applications_with_details")
+    @patch.object(dms_connector_api.DMSGraphQLClient, "get_applications_with_details")
     @patch("pcapi.core.subscription.api.on_successful_application")
     def test_beneficiary_is_created_with_procedure_id(self, on_sucessful_application, get_applications_with_details):
         # given
@@ -171,7 +171,7 @@ class RunTest:
             )
         ]
 
-        import_dms_users.run(procedure_id=6712558)
+        dms_api.import_dms_users(procedure_id=6712558)
 
         on_sucessful_application.assert_called_with(
             user=applicant,
@@ -205,7 +205,7 @@ class ParseBeneficiaryInformationTest:
     )
     def test_handles_department_code(self, department_code, expected_code):
         application_detail = make_graphql_application(1, "closed", department_code=department_code)
-        information = import_dms_users.parse_beneficiary_information_graphql(application_detail, procedure_id=201201)
+        information = dms_connector_api.parse_beneficiary_information_graphql(application_detail, procedure_id=201201)
         assert information.department == expected_code
 
     @pytest.mark.parametrize(
@@ -218,7 +218,7 @@ class ParseBeneficiaryInformationTest:
     )
     def test_handles_postal_codes(self, postal_code, expected_code):
         application_detail = make_graphql_application(1, "closed", postal_code=postal_code)
-        information = import_dms_users.parse_beneficiary_information_graphql(application_detail, procedure_id=201201)
+        information = dms_connector_api.parse_beneficiary_information_graphql(application_detail, procedure_id=201201)
         assert information.postal_code == expected_code
 
     def test_handles_civility_parsing(self):
@@ -226,7 +226,7 @@ class ParseBeneficiaryInformationTest:
         application_detail = make_graphql_application(1, "closed", civility="M.")
 
         # when
-        information = import_dms_users.parse_beneficiary_information_graphql(application_detail, procedure_id=201201)
+        information = dms_connector_api.parse_beneficiary_information_graphql(application_detail, procedure_id=201201)
 
         # then
         assert information.civility == "M."
@@ -234,20 +234,20 @@ class ParseBeneficiaryInformationTest:
     @pytest.mark.parametrize("activity", ["Étudiant", None])
     def test_handles_activity(self, activity):
         application_detail = make_graphql_application(1, "closed", activity=activity)
-        information = import_dms_users.parse_beneficiary_information_graphql(application_detail, procedure_id=201201)
+        information = dms_connector_api.parse_beneficiary_information_graphql(application_detail, procedure_id=201201)
         assert information.activity == activity
 
     @pytest.mark.parametrize("possible_value", ["0123456789", " 0123456789", "0123456789 ", " 0123456789 "])
     def test_beneficiary_information_id_piece_number_with_spaces_graphql(self, possible_value):
         application_detail = make_graphql_application(1, "closed", id_piece_number=possible_value)
-        information = import_dms_users.parse_beneficiary_information_graphql(application_detail, procedure_id=123123)
+        information = dms_connector_api.parse_beneficiary_information_graphql(application_detail, procedure_id=123123)
 
         assert information.id_piece_number == "0123456789"
 
-    @patch.object(api_dms.DMSGraphQLClient, "get_applications_with_details")
+    @patch.object(dms_connector_api.DMSGraphQLClient, "get_applications_with_details")
     def test_new_procedure(self, get_applications_with_details):
         raw_data = make_new_application()
-        content = import_dms_users.parse_beneficiary_information_graphql(raw_data, 32)
+        content = dms_connector_api.parse_beneficiary_information_graphql(raw_data, 32)
         assert content.last_name == "VALGEAN"
         assert content.first_name == "Jean"
         assert content.civility == "M"
@@ -262,10 +262,10 @@ class ParseBeneficiaryInformationTest:
         assert content.address == "32 rue des sapins gris 21350 l'îsle à dent"
         assert content.id_piece_number == "F9GFAL123"
 
-    @patch.object(api_dms.DMSGraphQLClient, "get_applications_with_details")
+    @patch.object(dms_connector_api.DMSGraphQLClient, "get_applications_with_details")
     def test_new_procedure_for_stranger_residents(self, get_applications_with_details):
         raw_data = make_new_stranger_application()
-        content = import_dms_users.parse_beneficiary_information_graphql(raw_data, 32)
+        content = dms_connector_api.parse_beneficiary_information_graphql(raw_data, 32)
         assert content.last_name == "VALGEAN"
         assert content.first_name == "Jean"
         assert content.civility == "M"
@@ -285,7 +285,7 @@ class ParsingErrorsTest:
     def test_beneficiary_information_postalcode_error(self):
         application_detail = make_graphql_application(1, "closed", postal_code="Strasbourg")
         with pytest.raises(ValueError) as exc_info:
-            import_dms_users.parse_beneficiary_information_graphql(application_detail, procedure_id=123123)
+            dms_connector_api.parse_beneficiary_information_graphql(application_detail, procedure_id=123123)
 
         assert exc_info.value.errors["postal_code"] == "Strasbourg"
 
@@ -294,7 +294,7 @@ class ParsingErrorsTest:
         application_detail = make_graphql_application(1, "closed", id_piece_number=possible_value)
 
         with pytest.raises(ValueError) as exc_info:
-            import_dms_users.parse_beneficiary_information_graphql(application_detail, procedure_id=123123)
+            dms_connector_api.parse_beneficiary_information_graphql(application_detail, procedure_id=123123)
 
         assert exc_info.value.errors["id_piece_number"] == possible_value
 
@@ -305,7 +305,7 @@ class RunIntegrationTest:
     BENEFICIARY_BIRTH_DATE = date.today() - timedelta(days=6752)  # ~18.5 years
 
     @override_features(FORCE_PHONE_VALIDATION=False)
-    @patch.object(api_dms.DMSGraphQLClient, "get_applications_with_details")
+    @patch.object(dms_connector_api.DMSGraphQLClient, "get_applications_with_details")
     def test_import_user(self, get_applications_with_details):
         user = users_factories.UserFactory(
             firstName="john",
@@ -317,7 +317,7 @@ class RunIntegrationTest:
         get_applications_with_details.return_value = [
             make_graphql_application(application_id=123, state="closed", email=user.email)
         ]
-        import_dms_users.run(procedure_id=6712558)
+        dms_api.import_dms_users(procedure_id=6712558)
 
         assert users_models.User.query.count() == 1
         user = users_models.User.query.first()
@@ -335,7 +335,7 @@ class RunIntegrationTest:
         assert beneficiary_import.currentStatus == ImportStatus.CREATED
         assert len(push_testing.requests) == 2
 
-    @patch.object(api_dms.DMSGraphQLClient, "get_applications_with_details")
+    @patch.object(dms_connector_api.DMSGraphQLClient, "get_applications_with_details")
     def test_import_exunderage_beneficiary(self, get_applications_with_details):
         with freezegun.freeze_time(datetime.utcnow() - relativedelta(years=2, month=1)):
             user = users_factories.UnderageBeneficiaryFactory(
@@ -355,7 +355,7 @@ class RunIntegrationTest:
         details = make_graphql_application(application_id=123, state="closed", email=user.email)
         details["datePassageEnConstruction"] = datetime.now().isoformat()
         get_applications_with_details.return_value = [details]
-        import_dms_users.run(procedure_id=6712558)
+        dms_api.import_dms_users(procedure_id=6712558)
 
         assert users_models.User.query.count() == 1
         user = users_models.User.query.first()
@@ -366,14 +366,14 @@ class RunIntegrationTest:
         assert age_18_deposit.amount == 300
         assert BeneficiaryImport.query.count() == 2
 
-    @patch.object(api_dms.DMSGraphQLClient, "get_applications_with_details")
+    @patch.object(dms_connector_api.DMSGraphQLClient, "get_applications_with_details")
     def test_import_user_requires_pre_creation(self, get_applications_with_details):
         # when
         get_applications_with_details.return_value = [
             make_graphql_application(application_id=123, state="closed", email="nonexistant@example.com")
         ]
 
-        import_dms_users.run(procedure_id=6712558)
+        dms_api.import_dms_users(procedure_id=6712558)
         beneficiary_import = BeneficiaryImport.query.first()
         assert beneficiary_import.source == "demarches_simplifiees"
         assert beneficiary_import.applicationId == 123
@@ -381,7 +381,7 @@ class RunIntegrationTest:
         assert beneficiary_import.statuses[-1].detail == "Aucun utilisateur trouvé pour l'email nonexistant@example.com"
 
     @override_features(FORCE_PHONE_VALIDATION=True)
-    @patch.object(api_dms.DMSGraphQLClient, "get_applications_with_details")
+    @patch.object(dms_connector_api.DMSGraphQLClient, "get_applications_with_details")
     def test_phone_not_validated_create_beneficiary_with_phone_to_validate(self, get_applications_with_details):
         """
         Test that an imported user without a validated phone number, and the
@@ -401,7 +401,7 @@ class RunIntegrationTest:
             make_graphql_application(application_id=123, state="closed", email=user.email)
         ]
         # when
-        import_dms_users.run(procedure_id=6712558)
+        dms_api.import_dms_users(procedure_id=6712558)
 
         # then
         assert users_models.User.query.count() == 1
@@ -433,7 +433,7 @@ class RunIntegrationTest:
         )
 
     @override_features(FORCE_PHONE_VALIDATION=True)
-    @patch.object(api_dms.DMSGraphQLClient, "get_applications_with_details")
+    @patch.object(dms_connector_api.DMSGraphQLClient, "get_applications_with_details")
     def test_import_user_requires_userprofiling(self, get_applications_with_details):
         date_of_birth = self.BENEFICIARY_BIRTH_DATE.strftime("%Y-%m-%dT%H:%M:%S")
 
@@ -449,7 +449,7 @@ class RunIntegrationTest:
             make_graphql_application(application_id=123, state="closed", email=user.email)
         ]
         # when
-        import_dms_users.run(procedure_id=6712558)
+        dms_api.import_dms_users(procedure_id=6712558)
 
         # then
         assert users_models.User.query.count() == 1
@@ -478,7 +478,7 @@ class RunIntegrationTest:
         assert not user.deposit
         assert subscription_api.get_next_subscription_step(user) == subscription_models.SubscriptionStep.USER_PROFILING
 
-    @patch.object(api_dms.DMSGraphQLClient, "get_applications_with_details")
+    @patch.object(dms_connector_api.DMSGraphQLClient, "get_applications_with_details")
     def test_import_makes_user_beneficiary(self, get_applications_with_details):
         """
         Test that an existing user with its phone number validated can become
@@ -505,7 +505,7 @@ class RunIntegrationTest:
             make_graphql_application(application_id=123, state="closed", email=user.email)
         ]
 
-        import_dms_users.run(procedure_id=6712558)
+        dms_api.import_dms_users(procedure_id=6712558)
 
         assert users_models.User.query.count() == 1
         user = users_models.User.query.first()
@@ -546,7 +546,7 @@ class RunIntegrationTest:
 
         assert len(push_testing.requests) == 2
 
-    @patch.object(api_dms.DMSGraphQLClient, "get_applications_with_details")
+    @patch.object(dms_connector_api.DMSGraphQLClient, "get_applications_with_details")
     def test_import_makes_user_beneficiary_after_19_birthday(self, get_applications_with_details):
         date_of_birth = (datetime.now() - relativedelta(years=19)).strftime("%Y-%m-%dT%H:%M:%S")
 
@@ -567,7 +567,7 @@ class RunIntegrationTest:
         get_applications_with_details.return_value = [
             make_graphql_application(application_id=123, state="closed", email=user.email)
         ]
-        import_dms_users.run(procedure_id=6712558)
+        dms_api.import_dms_users(procedure_id=6712558)
 
         user = users_models.User.query.one()
 
@@ -575,7 +575,7 @@ class RunIntegrationTest:
 
     @override_features(FORCE_PHONE_VALIDATION=False)
     @freezegun.freeze_time("2021-10-30 09:00:00")
-    @patch.object(api_dms.DMSGraphQLClient, "get_applications_with_details")
+    @patch.object(dms_connector_api.DMSGraphQLClient, "get_applications_with_details")
     def test_import_duplicated_user(self, get_applications_with_details):
         existing_user = users_factories.BeneficiaryGrant18Factory(
             firstName="John",
@@ -601,7 +601,7 @@ class RunIntegrationTest:
                 application_id=123, state="closed", email=user.email, birth_date=self.BENEFICIARY_BIRTH_DATE
             )
         ]
-        import_dms_users.run(procedure_id=6712558)
+        dms_api.import_dms_users(procedure_id=6712558)
 
         assert users_models.User.query.count() == 2
 
@@ -626,7 +626,7 @@ class RunIntegrationTest:
 
     @override_features(FORCE_PHONE_VALIDATION=False)
     @freezegun.freeze_time("2021-10-30 09:00:00")
-    @patch.object(api_dms.DMSGraphQLClient, "get_applications_with_details")
+    @patch.object(dms_connector_api.DMSGraphQLClient, "get_applications_with_details")
     def test_import_with_existing_user_with_the_same_id_number(self, get_applications_with_details, mocker):
         beneficiary = users_factories.BeneficiaryGrant18Factory(idPieceNumber="1234123412")
         applicant = users_factories.UserFactory(
@@ -646,7 +646,7 @@ class RunIntegrationTest:
         ]
 
         process_mock = mocker.patch("pcapi.core.subscription.api.on_successful_application")
-        import_dms_users.run(procedure_id=6712558)
+        dms_api.import_dms_users(procedure_id=6712558)
 
         assert process_mock.call_count == 0
         assert users_models.User.query.count() == 2
@@ -681,7 +681,7 @@ class RunIntegrationTest:
         assert sub_msg.callToActionIcon == subscription_models.CallToActionIcon.EMAIL
 
     @override_features(FORCE_PHONE_VALIDATION=False)
-    @patch.object(api_dms.DMSGraphQLClient, "get_applications_with_details")
+    @patch.object(dms_connector_api.DMSGraphQLClient, "get_applications_with_details")
     def test_import_native_app_user(self, get_applications_with_details):
         # given
         user = users_api.create_account(
@@ -706,7 +706,7 @@ class RunIntegrationTest:
                 email=user.email,
             )
         ]
-        import_dms_users.run(procedure_id=6712558)
+        dms_api.import_dms_users(procedure_id=6712558)
 
         # then
         assert users_models.User.query.count() == 1
@@ -733,7 +733,7 @@ class RunIntegrationTest:
         assert len(push_testing.requests) == 2
         assert push_testing.requests[0]["attribute_values"]["u.is_beneficiary"]
 
-    @patch.object(api_dms.DMSGraphQLClient, "get_applications_with_details")
+    @patch.object(dms_connector_api.DMSGraphQLClient, "get_applications_with_details")
     def test_dms_application_value_error(self, get_applications_with_details):
         user = users_factories.UserFactory()
         get_applications_with_details.return_value = [
@@ -745,7 +745,7 @@ class RunIntegrationTest:
                 id_piece_number="121314",
             )
         ]
-        import_dms_users.run(procedure_id=6712558)
+        dms_api.import_dms_users(procedure_id=6712558)
 
         beneficiary_import = BeneficiaryImport.query.first()
         assert beneficiary_import.currentStatus == ImportStatus.ERROR
@@ -767,7 +767,7 @@ class RunIntegrationTest:
         assert len(mails_testing.outbox) == 1
         assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 3124925
 
-    @patch.object(api_dms.DMSGraphQLClient, "get_applications_with_details")
+    @patch.object(dms_connector_api.DMSGraphQLClient, "get_applications_with_details")
     def test_dms_application_value_error_known_user(self, get_applications_with_details):
         user = users_factories.UserFactory()
         get_applications_with_details.return_value = [
@@ -775,7 +775,7 @@ class RunIntegrationTest:
                 application_id=1, state="closed", postal_code="Strasbourg", id_piece_number="121314", email=user.email
             )
         ]
-        import_dms_users.run(procedure_id=6712558)
+        dms_api.import_dms_users(procedure_id=6712558)
 
         beneficiary_import = BeneficiaryImport.query.first()
         assert beneficiary_import.currentStatus == ImportStatus.ERROR
@@ -805,9 +805,9 @@ class GraphQLSourceProcessApplicationTest:
         user = users_factories.UserFactory(dateOfBirth=AGE18_ELIGIBLE_BIRTH_DATE)
         application_id = 123123
         application_details = make_graphql_application(application_id, "closed", email=user.email)
-        information = import_dms_users.parse_beneficiary_information_graphql(application_details, 123123)
+        information = dms_connector_api.parse_beneficiary_information_graphql(application_details, 123123)
         # fixture
-        import_dms_users.process_application(
+        dms_api.process_application(
             user,
             123123,
             4234,
@@ -833,7 +833,7 @@ class GraphQLSourceProcessApplicationTest:
         assert statement_fraud_check.status == fraud_models.FraudCheckStatus.OK
         assert statement_fraud_check.reason == "honor statement contained in DMS application"
 
-    @patch.object(api_dms.DMSGraphQLClient, "get_applications_with_details")
+    @patch.object(dms_connector_api.DMSGraphQLClient, "get_applications_with_details")
     def test_dms_application_value_error(self, get_applications_with_details):
         user = users_factories.UserFactory()
         get_applications_with_details.return_value = [
@@ -842,7 +842,7 @@ class GraphQLSourceProcessApplicationTest:
             )
         ]
 
-        import_dms_users.run(procedure_id=6712558)
+        dms_api.import_dms_users(procedure_id=6712558)
 
         beneficiary_import = BeneficiaryImport.query.first()
         assert beneficiary_import.currentStatus == ImportStatus.ERROR
@@ -863,7 +863,7 @@ class GraphQLSourceProcessApplicationTest:
         )
         assert user.subscriptionMessages[0].popOverIcon == subscription_models.PopOverIcon.WARNING
 
-    @patch.object(api_dms.DMSGraphQLClient, "get_applications_with_details")
+    @patch.object(dms_connector_api.DMSGraphQLClient, "get_applications_with_details")
     def test_avoid_reimporting_already_imported_user(self, get_applications_with_details):
         procedure_id = 42
         user = users_factories.UserFactory(
@@ -889,7 +889,7 @@ class GraphQLSourceProcessApplicationTest:
             ),
         ]
 
-        import_dms_users.run(procedure_id=procedure_id)
+        dms_api.import_dms_users(procedure_id=procedure_id)
 
         imports = BeneficiaryImport.query.all()
         assert len(imports) == 2
