@@ -43,6 +43,7 @@ import sqlalchemy.sql.functions as sqla_func
 
 from pcapi import settings
 import pcapi.core.bookings.models as bookings_models
+from pcapi.core.mails.transactional.pro.invoice_available_to_pro import send_invoice_available_to_pro_email
 from pcapi.core.object_storage import store_public_object
 from pcapi.core.offerers import repository as offerers_repository
 import pcapi.core.offerers.models as offerers_models
@@ -851,6 +852,7 @@ def generate_and_store_invoice(business_unit_id: int, cashflow_ids: list[int]):
     invoice = _generate_invoice(business_unit_id=business_unit_id, cashflow_ids=cashflow_ids)
     invoice_html = _generate_invoice_html(invoice=invoice)
     _store_invoice_pdf(invoice_storage_id=invoice.storage_object_id, invoice_html=invoice_html)
+    send_invoice_available_to_pro_email(invoice)
 
 
 def _generate_invoice(business_unit_id: int, cashflow_ids: list[int]):
