@@ -18,9 +18,10 @@ export const App = props => {
     isMaintenanceActivated,
     loadFeatures,
     location,
+    isUserInitialized,
   } = props
 
-  const [isBusy, setIsBusy] = useState(false)
+  const [isReady, setIsReady] = useState(false)
   const currentPathname = window.location.pathname
 
   useEffect(() => {
@@ -30,34 +31,39 @@ export const App = props => {
   }, [isFeaturesInitialized, loadFeatures])
 
   useEffect(() => {
-    const publicRouteList = [...routes, ...routesWithMain].filter(
-      route => route.meta && route.meta.public
-    )
-    const isPublicRoute = !!publicRouteList.find(route =>
-      matchPath(currentPathname, route)
-    )
+    if (!isUserInitialized && !currentUser) {
+      getCurrentUser()
+    }
 
-    if (!currentUser) {
-      setIsBusy(true)
-      getCurrentUser({
-        handleSuccess: () => {
-          setIsBusy(false)
-        },
-        handleFail: () => {
-          if (!isPublicRoute) {
-            const fromUrl = encodeURIComponent(
-              `${location.pathname}${location.search}`
-            )
-            history.push(`/connexion?de=${fromUrl}`)
-          }
-          setIsBusy(false)
-        },
-      })
+    if (isUserInitialized && !currentUser) {
+      const publicRouteList = [...routes, ...routesWithMain].filter(
+        route => route.meta && route.meta.public
+      )
+      const isPublicRoute = !!publicRouteList.find(route =>
+        matchPath(currentPathname, route)
+      )
+
+      if (!isPublicRoute) {
+        const fromUrl = encodeURIComponent(
+          `${location.pathname}${location.search}`
+        )
+        history.push(`/connexion?de=${fromUrl}`)
+      }
+      setIsReady(true)
     }
-    if (currentUser) {
+
+    if (isUserInitialized && currentUser) {
       setUser({ id: currentUser.pk })
+      setIsReady(true)
     }
-  }, [currentUser, currentPathname, getCurrentUser, history, location])
+  }, [
+    currentUser,
+    currentPathname,
+    getCurrentUser,
+    history,
+    location,
+    isUserInitialized,
+  ])
 
   useEffect(() => {
     window.scrollTo(0, 0)
@@ -67,7 +73,7 @@ export const App = props => {
     return <RedirectToMaintenance />
   }
 
-  if (isBusy) {
+  if (!isReady) {
     return (
       <main className="spinner-container">
         <Spinner />
@@ -86,5 +92,6 @@ App.propTypes = {
   getCurrentUser: PropTypes.func.isRequired,
   isFeaturesInitialized: PropTypes.bool.isRequired,
   isMaintenanceActivated: PropTypes.bool.isRequired,
+  isUserInitialized: PropTypes.bool.isRequired,
   loadFeatures: PropTypes.func.isRequired,
 }
