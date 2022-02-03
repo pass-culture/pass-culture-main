@@ -967,14 +967,14 @@ workflows:
   commit:
     jobs:
       - tests-script-pc
-      - type-checking-pro:
-          filters:
-            branches:
-              ignore:
-                - production
-                - staging
-                - integration
-          context: Slack
+      # - type-checking-pro:
+      #     filters:
+      #       branches:
+      #         ignore:
+      #           - production
+      #           - staging
+      #           - integration
+      #     context: Slack
       - quality-pro:
           filters:
             branches:
@@ -983,14 +983,14 @@ workflows:
                 - staging
                 - integration
           context: Slack
-      - type-checking-adage-front:
-          filters:
-            branches:
-              ignore:
-                - production
-                - staging
-                - integration
-          context: Slack
+      # - type-checking-adage-front:
+      #     filters:
+      #       branches:
+      #         ignore:
+      #           - production
+      #           - staging
+      #           - integration
+      #     context: Slack
       - quality-adage-front:
           filters:
             branches:
@@ -1053,8 +1053,8 @@ workflows:
                 - staging
                 - integration
           context: Slack
-          requires:
-            - type-checking-pro
+          # requires:
+          #   - type-checking-pro
       - tests-pro-e2e-tests:
           filters:
             branches:
@@ -1063,8 +1063,8 @@ workflows:
                 - staging
                 - integration
           context: Slack
-          requires:
-            - type-checking-pro
+          # requires:
+          #   - type-checking-pro
       - build-and-push-image:
           filters:
             branches:
