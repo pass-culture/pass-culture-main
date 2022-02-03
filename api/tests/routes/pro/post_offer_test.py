@@ -210,6 +210,7 @@ class Returns200Test:
             "contactEmail": "toto@toto.com",
             "contactPhone": "0600000000",
             "offerVenue": {"addressType": "other", "otherAddress": "", "venueId": ""},
+            "isShowcase": False,
         }
 
 
