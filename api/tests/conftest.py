@@ -60,7 +60,7 @@ def app_fixture():
     #   - pytest tests/admin/custom_views/offer_view_test.py
     #   - pytest tests/core/fraud/test_api.py
     # Leave an XXX note about why we need that.
-    app.teardown_request_funcs[None].remove(flask_app.remove_db_session)
+    # app.teardown_request_funcs[None].remove(flask_app.remove_db_session)
 
     with app.app_context():
         app.config["TESTING"] = True
