@@ -17,6 +17,7 @@ from pcapi.core.finance import api
 from pcapi.core.finance import exceptions
 from pcapi.core.finance import factories
 from pcapi.core.finance import models
+from pcapi.core.mails import testing as mails_testing
 from pcapi.core.object_storage.testing import recursive_listdir
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
@@ -742,6 +743,7 @@ class EditBusinessUnitTest:
 def invoice_test_data():
     venue = offers_factories.VenueFactory(
         siret="85331845900023",
+        bookingEmail="pro@example.com",
         businessUnit__name="SARL LIBRAIRIE BOOKING",
         businessUnit__bankAccount__iban="FR2710010000000000000000064",
     )
@@ -1177,3 +1179,5 @@ class GenerateAndStoreInvoiceTest:
         cashflow_ids = [c.id for c in cashflows]
 
         api.generate_and_store_invoice(business_unit_id=business_unit.id, cashflow_ids=cashflow_ids)  # does not raise
+
+        assert len(mails_testing.outbox) == 1  # test number of emails sent
