@@ -11,14 +11,13 @@ from flask import Response
 from flask import make_response
 from flask import request
 import pydantic
+from spectree import Response as SpectreeResponse
 from spectree.spec import SpecTree
 from werkzeug.exceptions import BadRequest
 
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.apis import api as default_api
 from pcapi.routes.serialization import BaseModel
-
-from .spec_tree import ExtendedResponse as SpectreeResponse
 
 
 logger = logging.getLogger(__name__)
@@ -72,7 +71,7 @@ def spectree_serialize(
     api: SpecTree = default_api,
     json_format: bool = True,
     response_headers: Optional[dict[str, str]] = None,
-    code_descriptions: Optional[dict] = None,
+    resp: Optional[SpectreeResponse] = None,
 ) -> Callable[[Any], Any]:
     """A decorator that serialize/deserialize and validate input/output
 
@@ -89,15 +88,14 @@ def spectree_serialize(
         api: [description]. Defaults to default_api.
         json_format: JSON format response if true, else text format response. Defaults to True.
         response_headers: a dict of headers to be added to the response. defaults to {}.
-        code_descriptions (dict): specific descriptions shown in swagger (ex: { "HTTP_419": "I'm a coffee pot" })
+        resp: a Spectree.Response explicitely listing the possible responses.
 
     Returns:
         Callable[[Any], Any]: [description]
     """
 
-    on_error_statuses: list = on_error_statuses or []
-    code_descriptions: dict = code_descriptions or {}
-    response_headers: dict = response_headers or {}
+    on_error_statuses = on_error_statuses or []
+    response_headers = response_headers or {}
     on_empty_status = on_empty_status or on_success_status
 
     def decorate_validation(route: Callable[..., Any]) -> Callable[[Any], Any]:
@@ -108,16 +106,14 @@ def spectree_serialize(
         if 403 not in on_error_statuses:
             on_error_statuses.append(403)
 
-        response_codes = (
-            set([f"HTTP_{on_success_status}"])
-            | set(f"HTTP_{on_error_status}" for on_error_status in on_error_statuses)
-            | set(code_descriptions.keys())
-        )
+        response_codes = {f"HTTP_{on_success_status}": response_model} | {
+            f"HTTP_{on_error_status}": None for on_error_status in on_error_statuses
+        }
 
-        spectree_response = SpectreeResponse(*response_codes, code_descriptions=code_descriptions)
-
-        if response_model:
-            spectree_response.code_models[f"HTTP_{on_success_status}"] = response_model
+        if resp:
+            spectree_response = resp
+        else:
+            spectree_response = SpectreeResponse(**response_codes)
 
         security = deepcopy(getattr(route, "requires_authentication", None))
 
@@ -153,7 +149,6 @@ def spectree_serialize(
                 try:
                     kwargs["form"] = form_in_kwargs(**form)
                 except pydantic.ValidationError as validation_errors:
-                    error = ApiErrors()
                     error_dict = {}
                     for errors in validation_errors.errors():
                         error_dict[errors["loc"][0]] = errors["msg"]
