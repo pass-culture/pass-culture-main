@@ -76,6 +76,7 @@ from pcapi.repository import transaction
 from pcapi.routes.adage.v1.serialization.prebooking import serialize_educational_booking
 from pcapi.routes.serialization.offers_serialize import CompletedEducationalOfferModel
 from pcapi.routes.serialization.offers_serialize import PostEducationalOfferBodyModel
+from pcapi.routes.serialization.offers_serialize import PostEducationalOfferShadowStockBodyModel
 from pcapi.routes.serialization.offers_serialize import PostOfferBodyModel
 from pcapi.routes.serialization.stock_serialize import EducationalStockCreationBodyModel
 from pcapi.routes.serialization.stock_serialize import StockCreationBodyModel
@@ -1059,3 +1060,48 @@ def cancel_educational_offer_booking(offer: Offer) -> None:
             "Could not notify offerer about deletion of stock",
             extra={"stock": stock.id},
         )
+
+
+def create_educational_shadow_stock_and_set_offer_showcase(
+    stock_data: PostEducationalOfferShadowStockBodyModel, user: User, offer_id: str
+) -> Stock:
+    # When creating a showcase offer we need to create a shadow stock.
+    # We prefill the stock information with false data.
+    # This code will disappear when the new collective offer model is implemented
+    beginning = datetime.datetime(2030, 1, 1)
+    booking_limit_datetime = datetime.datetime(2030, 1, 1)
+    total_price = 1
+    number_of_tickets = 1
+    educational_price_detail = stock_data.educational_price_detail
+
+    offer = Offer.query.filter_by(id=offer_id).options(joinedload(Offer.stocks)).one()
+    if len(offer.activeStocks) > 0:
+        raise educational_exceptions.EducationalStockAlreadyExists()
+
+    if not offer.isEducational:
+        raise educational_exceptions.OfferIsNotEducational(offer_id)
+    validation.check_validation_status(offer)
+
+    stock = Stock(
+        offer=offer,
+        beginningDatetime=beginning,
+        bookingLimitDatetime=booking_limit_datetime,
+        price=total_price,
+        numberOfTickets=number_of_tickets,
+        educationalPriceDetail=educational_price_detail,
+        quantity=1,
+    )
+    repository.save(stock)
+    logger.info("Educational shadow stock has been created", extra={"offer": offer_id})
+
+    extra_data = copy.deepcopy(offer.extraData)
+    extra_data["isShowcase"] = True
+    offer.extraData = extra_data
+    repository.save(offer)
+
+    if offer.validation == OfferValidationStatus.DRAFT:
+        _update_offer_fraud_information(offer, user)
+
+    search.async_index_offer_ids([offer.id])
+
+    return stock
