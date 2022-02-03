@@ -1,3 +1,4 @@
+from copy import deepcopy
 from functools import wraps
 import logging
 from typing import Any
@@ -118,6 +119,8 @@ def spectree_serialize(
         if response_model:
             spectree_response.code_models[f"HTTP_{on_success_status}"] = response_model
 
+        security = deepcopy(getattr(route, "requires_authentication", None))
+
         @wraps(route)
         @api.validate(
             query=query_in_kwargs,
@@ -128,6 +131,7 @@ def spectree_serialize(
             before=before,
             after=after,
             json=body_in_kwargs,
+            security=security,
         )
         def sync_validate(*args: dict, **kwargs: dict) -> Response:
             try:
