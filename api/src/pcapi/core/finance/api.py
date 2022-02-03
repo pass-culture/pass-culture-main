@@ -807,8 +807,8 @@ def _make_invoice_line(invoice: models.Invoice, group: conf.RuleGroups, pricings
     invoice_line = models.InvoiceLine(
         label="Montant remboursé",
         group=group.value,
-        contribution_amount=contribution_amount,
-        reimbursed_amount=reimbursed_amount,
+        contributionAmount=contribution_amount,
+        reimbursedAmount=reimbursed_amount,
         rate=rate,
     )
     return invoice_line, reimbursed_amount
@@ -958,9 +958,9 @@ def _prepare_invoice_context(invoice: models.Invoice) -> dict:
     for _group_label, group_and_lines in invoice_groups.items():
         group = group_and_lines[0]
         lines = group_and_lines[1]
-        contribution_subtotal = sum(line.contribution_amount for line in lines)
+        contribution_subtotal = sum(line.contributionAmount for line in lines)
         total_contribution_amount += contribution_subtotal
-        reimbursed_amount_subtotal = sum(line.reimbursed_amount for line in lines)
+        reimbursed_amount_subtotal = sum(line.reimbursedAmount for line in lines)
         total_reimbursed_amount += reimbursed_amount_subtotal
         used_bookings_subtotal = sum(line.bookings_amount for line in lines)
         total_used_bookings_amount += used_bookings_subtotal
