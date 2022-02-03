@@ -209,8 +209,8 @@ def process_user_parsing_error(application_id: int, procedure_id: int) -> None:
         f"Erreur lors de l'analyse des données du dossier {application_id}. "
         f"Impossible de récupérer l'email de l'utilisateur - Procedure {procedure_id}"
     )
-    # TODO: Create fraud check for observability.
-    # Else find a way to remove the application from DMS.
+    # TODO: Create an Orphan fraud check, that may be reconciled with a user later, with the application_id
+    # This is detailed in https://passculture.atlassian.net/browse/PC-12976
 
     # TODO: remove this line when the fraud check is the only object used for DMS applications
     # keep a compatibility with BeneficiaryImport table
