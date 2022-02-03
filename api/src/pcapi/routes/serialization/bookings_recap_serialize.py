@@ -1,5 +1,6 @@
 from datetime import date
 from datetime import datetime
+from enum import Enum
 from typing import Any
 from typing import Optional
 
@@ -17,6 +18,11 @@ from pcapi.serialization.utils import dehumanize_field
 from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_timezoned_date
 from pcapi.utils.human_ids import humanize
+
+
+class OfferType(Enum):
+    INDIVIDUAL_OR_DUO = "INDIVIDUAL_OR_DUO"
+    EDUCATIONAL = "EDUCATIONAL"
 
 
 def serialize_bookings_recap_paginated(bookings_recap_paginated: BookingsRecapPaginated) -> dict[str, Any]:
@@ -112,6 +118,7 @@ class ListBookingsQueryModel(BaseModel):
     event_date: Optional[datetime]
     booking_period_beginning_date: date
     booking_period_ending_date: date
+    offer_type: Optional[OfferType]
 
     _dehumanize_venue_id = dehumanize_field("venue_id")
 

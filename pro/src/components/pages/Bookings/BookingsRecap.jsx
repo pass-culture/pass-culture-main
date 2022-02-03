@@ -27,6 +27,7 @@ const BookingsRecap = ({ location, showNotification }) => {
     bookingEndingDate: DEFAULT_PRE_FILTERS.bookingEndingDate,
     offerEventDate: DEFAULT_PRE_FILTERS.offerEventDate,
     offerVenueId: location.state?.venueId || DEFAULT_PRE_FILTERS.offerVenueId,
+    offerType: DEFAULT_PRE_FILTERS.offerType,
   })
   const [bookingsRecap, setBookingsRecap] = useState([])
   const [isDownloadingCSV, setIsDownloadingCSV] = useState(false)
@@ -48,6 +49,7 @@ const BookingsRecap = ({ location, showNotification }) => {
         bookingPeriodBeginningDate: preFilters.bookingBeginningDate,
         bookingPeriodEndingDate: preFilters.bookingEndingDate,
         bookingStatusFilter: preFilters.bookingStatusFilter,
+        offerType: preFilters.offerType,
       }
       let filteredBookingsResponse
       try {

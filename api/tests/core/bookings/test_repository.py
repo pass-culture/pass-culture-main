@@ -23,6 +23,7 @@ import pcapi.core.users.factories as users_factories
 from pcapi.domain.booking_recap import booking_recap_history
 from pcapi.models import db
 from pcapi.models.api_errors import ResourceNotFoundError
+from pcapi.routes.serialization.bookings_recap_serialize import OfferType
 from pcapi.utils.date import utc_datetime_to_department_timezone
 
 
@@ -986,6 +987,42 @@ class FindByProUserTest:
         expected_booking_recap = bookings_recap_paginated.bookings_recap[0]
         assert expected_booking_recap.booking_token == None
 
+    def test_should_return_only_bookings_for_requested_offer_type(self, app: fixture):
+        # Given
+        user_offerer = offers_factories.UserOffererFactory()
+        bookings_factories.IndividualBookingFactory(
+            dateCreated=default_booking_date,
+            stock__offer__venue__managingOfferer=user_offerer.offerer,
+        )
+        bookings_factories.EducationalBookingFactory(
+            stock__offer__venue__managingOfferer=user_offerer.offerer,
+        )
+
+        # When
+        individual_bookings_recap_paginated = booking_repository.find_by_pro_user(
+            user=user_offerer.user,
+            booking_period=(one_year_before_booking, one_year_after_booking),
+            offer_type=OfferType.INDIVIDUAL_OR_DUO,
+        )
+        educational_bookings_recap_paginated = booking_repository.find_by_pro_user(
+            user=user_offerer.user,
+            booking_period=(one_year_before_booking, one_year_after_booking),
+            offer_type=OfferType.EDUCATIONAL,
+        )
+        all_bookings_recap_paginated = booking_repository.find_by_pro_user(
+            user=user_offerer.user,
+            booking_period=(one_year_before_booking, one_year_after_booking),
+        )
+
+        # Then
+        assert len(individual_bookings_recap_paginated.bookings_recap) == 1
+        individual_resulting_booking_recap = individual_bookings_recap_paginated.bookings_recap[0]
+        assert individual_resulting_booking_recap.booking_is_educational == False
+        assert len(educational_bookings_recap_paginated.bookings_recap) == 1
+        educational_resulting_booking_recap = educational_bookings_recap_paginated.bookings_recap[0]
+        assert educational_resulting_booking_recap.booking_is_educational == True
+        assert len(all_bookings_recap_paginated.bookings_recap) == 2
+
 
 class GetCsvReportTest:
     def test_should_return_only_expected_booking_attributes(self, app: fixture):
@@ -1806,6 +1843,45 @@ class GetCsvReportTest:
         assert len(data) == 1
         data_dict = dict(zip(headers, data[0]))
         assert data_dict["Contremarque"] == ""
+
+    def test_should_return_only_bookings_for_requested_offer_type(self, app: fixture):
+        # Given
+        user_offerer = offers_factories.UserOffererFactory()
+        bookings_factories.IndividualBookingFactory(
+            dateCreated=default_booking_date,
+            stock__offer__venue__managingOfferer=user_offerer.offerer,
+        )
+        bookings_factories.EducationalBookingFactory(
+            stock__offer__venue__managingOfferer=user_offerer.offerer,
+        )
+
+        # When
+        individual_bookings_csv = booking_repository.get_csv_report(
+            user=user_offerer.user,
+            booking_period=(one_year_before_booking, one_year_after_booking),
+            offer_type=OfferType.INDIVIDUAL_OR_DUO,
+        )
+        educational_bookings_csv = booking_repository.get_csv_report(
+            user=user_offerer.user,
+            booking_period=(one_year_before_booking, one_year_after_booking),
+            offer_type=OfferType.EDUCATIONAL,
+        )
+        all_bookings_csv = booking_repository.get_csv_report(
+            user=user_offerer.user,
+            booking_period=(one_year_before_booking, one_year_after_booking),
+        )
+
+        # Then
+        headers, *individual_bookings_data = csv.reader(StringIO(individual_bookings_csv), delimiter=";")
+        assert len(individual_bookings_data) == 1
+        individual_bookings_data_dict = dict(zip(headers, individual_bookings_data[0]))
+        assert individual_bookings_data_dict["Type d'offre"] == "offre grand public"
+        headers, *educational_bookings_data = csv.reader(StringIO(educational_bookings_csv), delimiter=";")
+        assert len(educational_bookings_data) == 1
+        educational_bookings_data_dict = dict(zip(headers, educational_bookings_data[0]))
+        assert educational_bookings_data_dict["Type d'offre"] == "offre collective"
+        headers, *all_bookings_data = csv.reader(StringIO(all_bookings_csv), delimiter=";")
+        assert len(all_bookings_data) == 2
 
     class BookingStatusInCsvReportTest:
         @freeze_time("2021-12-15 09:00:00")
