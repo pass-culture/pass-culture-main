@@ -286,6 +286,10 @@ export const updateUserInformations = body => {
   return client.patch('/users/current', body)
 }
 
+export const getUserInformations = () => {
+  return client.get('/users/current')
+}
+
 //
 // set password
 //

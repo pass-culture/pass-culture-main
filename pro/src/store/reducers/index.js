@@ -4,6 +4,7 @@ import { appReducer } from 'store/app/reducer'
 import { featuresReducer } from 'store/features/reducer'
 import { offersReducer } from 'store/offers/reducer'
 import { tracker } from 'store/reducers/tracker'
+import { userReducer } from 'store/user/reducer'
 
 import bookingSummary from './bookingSummary/bookingSummary'
 import data from './data'
@@ -17,10 +18,11 @@ const rootReducer = combineReducers({
   data,
   errors,
   features: featuresReducer,
+  maintenance: maintenanceReducer,
   offers: offersReducer,
   notification: notificationReducer,
   tracker,
-  maintenance: maintenanceReducer,
+  user: userReducer,
 })
 
 export default rootReducer

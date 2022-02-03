@@ -21,10 +21,7 @@ const renderApp = async props => {
   })
 }
 
-const getCurrentUser = ({ handleSuccess }) => {
-  handleSuccess()
-}
-
+const getCurrentUser = jest.fn()
 const loadFeatures = jest.fn()
 
 jest.mock('@sentry/browser', () => ({
@@ -45,7 +42,8 @@ describe('src | App', () => {
 
   beforeEach(() => {
     props = {
-      featuresInitialized: false,
+      isFeaturesInitialized: false,
+      isUserInitialized: false,
       getCurrentUser,
       isFeaturesInitialized: false,
       isMaintenanceActivated: false,
@@ -55,7 +53,11 @@ describe('src | App', () => {
 
   it('should render App and children components when isMaintenanceActivated is false', async () => {
     // When
-    await renderApp(props)
+    await renderApp({
+      ...props,
+      isUserInitialized: true,
+      currentUser: { id: 'id' },
+    })
 
     // Then
     expect(screen.getByText('Sub component')).toBeInTheDocument()
@@ -63,7 +65,12 @@ describe('src | App', () => {
 
   it('should render a Redirect component when isMaintenanceActivated is true', async () => {
     // When
-    await renderApp({ ...props, isMaintenanceActivated: true })
+    await renderApp({
+      ...props,
+      isMaintenanceActivated: true,
+      isUserInitialized: true,
+      currentUser: { id: 'id' },
+    })
 
     expect(setHrefSpy).toHaveBeenCalledWith(URL_FOR_MAINTENANCE)
   })
@@ -73,6 +80,7 @@ describe('src | App', () => {
     await renderApp({
       ...props,
       currentUser: { pk: 'pk_key' },
+      isUserInitialized: true,
       isMaintenanceActivated: true,
     })
 

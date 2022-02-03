@@ -14,10 +14,8 @@ import Header from './Header'
 
 export const mapStateToProps = state => {
   const user = selectCurrentUser(state)
-  const { isAdmin: isUserAdmin } = user
-
   return {
-    isUserAdmin,
+    isUserAdmin: user && user.isAdmin,
     isStyleguideActive: STYLEGUIDE_ACTIVE,
   }
 }
