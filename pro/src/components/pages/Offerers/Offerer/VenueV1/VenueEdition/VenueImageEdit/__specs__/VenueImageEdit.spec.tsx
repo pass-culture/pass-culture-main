@@ -10,6 +10,8 @@ const defaultProps = {
   }),
   onSetImage: jest.fn(),
   closeModal: mockCloseModal,
+  credit: '',
+  onSetCredit: jest.fn(),
 }
 
 describe('venue image edit', () => {
