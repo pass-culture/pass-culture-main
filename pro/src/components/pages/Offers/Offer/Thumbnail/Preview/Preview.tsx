@@ -3,12 +3,17 @@
  * @debt directory "Gaël: this file should be migrated within the new directory structure"
  */
 
-import * as PropTypes from 'prop-types'
-import React, { useCallback } from 'react'
+import React, { FunctionComponent, useCallback } from 'react'
 
 import { OfferPreviews } from './OfferPreviews/OfferPreviews'
 
-const Preview = ({ preview, setStep, step }) => {
+interface Props {
+  preview: string
+  setStep: (step: number) => void
+  step: number
+}
+
+const Preview: FunctionComponent<Props> = ({ preview, setStep, step }) => {
   const previousStep = useCallback(() => {
     setStep(step - 1)
   }, [setStep, step])
@@ -43,12 +48,6 @@ const Preview = ({ preview, setStep, step }) => {
       </div>
     </>
   )
-}
-
-Preview.propTypes = {
-  preview: PropTypes.string.isRequired,
-  setStep: PropTypes.func.isRequired,
-  step: PropTypes.number.isRequired,
 }
 
 export default Preview
