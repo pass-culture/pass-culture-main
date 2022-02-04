@@ -1,8 +1,3 @@
-/*
- * @debt complexity "Gaël: file nested too deep in directory structure"
- * @debt directory "Gaël: this file should be migrated within the new directory structure"
- */
-
 import React from 'react'
 
 const ActivationCodesUploadInformationDescription = () => {

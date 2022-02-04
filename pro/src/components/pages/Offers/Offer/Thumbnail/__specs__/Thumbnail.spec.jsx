@@ -1,9 +1,3 @@
-/*
- * @debt complexity "Gaël: file over 300 lines"
- * @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
- * @debt complexity "Gaël: file nested too deep in directory structure"
- */
-
 import '@testing-library/jest-dom'
 import { fireEvent, screen, waitFor } from '@testing-library/react'
 

@@ -1,7 +1,3 @@
-/*
- * @debt rtl "Gaël: migration from enzyme to RTL"
- */
-
 import { mount, shallow } from 'enzyme'
 import { createBrowserHistory } from 'history'
 import React from 'react'

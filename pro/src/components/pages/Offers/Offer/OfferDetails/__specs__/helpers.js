@@ -1,8 +1,3 @@
-/*
- * @debt rtl "Gaël: this file contains eslint error(s) based on eslint-testing-library plugin"
- * @debt complexity "Gaël: file nested too deep in directory structure"
- */
-
 import { fireEvent } from '@testing-library/dom'
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'

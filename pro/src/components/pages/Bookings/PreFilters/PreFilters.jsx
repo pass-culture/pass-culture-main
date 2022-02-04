@@ -1,7 +1,3 @@
-/*
- * @debt directory "Gaël: this file should be migrated within the new directory structure"
- */
-
 import classNames from 'classnames'
 import isEqual from 'lodash.isequal'
 import PropTypes from 'prop-types'

@@ -1,12 +1,3 @@
-/*
- * @debt complexity "Gaël: file over 300 lines"
- * @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
- * @debt complexity "Gaël: file nested too deep in directory structure"
- * @debt deprecated "Gaël: deprecated usage of react-final-form"
- * @debt deprecated "Gaël: deprecated usage of react-final-form custom fields"
- * @debt rtl "Gaël: migration from enzyme to RTL"
- */
-
 import '@testing-library/jest-dom'
 import { shallow } from 'enzyme'
 import React from 'react'

@@ -1,12 +1,3 @@
-/*
- * @debt complexity "Gaël: file over 300 lines"
- * @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
- * @debt directory "Gaël: this file should be migrated within the new directory structure"
- * @debt standard "Gaël: prefer hooks for routers (https://reactrouter.com/web/api/Hooks)"
- * @debt deprecated "Gaël: deprecated usage of withQueryRouter"
- * @debt standard "Gaël: migration from classes components to function components"
- */
-
 import invert from 'lodash.invert'
 import uniq from 'lodash.uniq'
 import PropTypes from 'prop-types'

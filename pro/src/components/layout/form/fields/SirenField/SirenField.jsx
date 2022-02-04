@@ -1,8 +1,3 @@
-/*
- * @debt directory "Gaël: this file should be migrated within the new directory structure"
- * @debt deprecated "Gaël: deprecated usage of react-final-form"
- */
-
 import React from 'react'
 import { Field } from 'react-final-form'
 import { composeValidators, removeWhitespaces } from 'react-final-form-utils'

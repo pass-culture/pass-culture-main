@@ -1,8 +1,3 @@
-/*
- * @debt deprecated "Gaël: deprecated usage of withQueryRouter"
- * @debt rtl "Gaël: migration from enzyme to RTL"
- */
-
 /* eslint-disable */
 import { mount, shallow } from 'enzyme'
 import { createBrowserHistory } from 'history'

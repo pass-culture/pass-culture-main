@@ -1,8 +1,3 @@
-/*
- * @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
- * @debt rtl "Gaël: this file contains eslint error(s) based on eslint-testing-library plugin"
- */
-
 import '@testing-library/jest-dom'
 import { fireEvent } from '@testing-library/dom'
 import { render, screen } from '@testing-library/react'

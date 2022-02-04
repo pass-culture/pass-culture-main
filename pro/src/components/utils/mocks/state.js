@@ -1,7 +1,3 @@
-/*
- * @debt complexity "Gaël: file over 300 lines"
- */
-
 const state = {
   data: {
     bookings: [],

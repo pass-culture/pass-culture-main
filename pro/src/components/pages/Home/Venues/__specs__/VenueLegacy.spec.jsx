@@ -1,7 +1,3 @@
-/*
- * @debt rtl "Gaël: bad use of act in testing library"
- */
-
 import '@testing-library/jest-dom'
 import { act, render, screen, within, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'

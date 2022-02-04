@@ -1,7 +1,3 @@
-/*
- * @debt deprecated "Gaël: deprecated usage of react-final-form custom fields"
- */
-
 import { removeWhitespaces } from 'react-final-form-utils'
 
 import formatSiren from 'components/layout/form/fields/SirenField/formatSiren'

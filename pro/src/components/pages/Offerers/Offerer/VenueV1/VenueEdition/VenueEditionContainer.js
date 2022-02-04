@@ -1,11 +1,3 @@
-/*
- * @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
- * @debt complexity "Gaël: file nested too deep in directory structure"
- * @debt deprecated "Gaël: deprecated usage of redux-saga-data"
- * @debt standard "Gaël: prefer useSelector hook vs connect for redux (https://react-redux.js.org/api/hooks)"
- * @debt deprecated "Gaël: deprecated usage of withQueryRouter"
- */
-
 import { connect } from 'react-redux'
 import { compose } from 'redux'
 import { requestData } from 'redux-saga-data'

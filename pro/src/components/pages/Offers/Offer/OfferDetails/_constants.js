@@ -1,7 +1,3 @@
-/*
- * @debt complexity "Gaël: file nested too deep in directory structure"
- */
-
 export const TEXT_INPUT_DEFAULT_VALUE = ''
 const SELECT_DEFAULT_VALUE = ''
 

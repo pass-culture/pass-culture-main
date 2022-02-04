@@ -1,8 +1,3 @@
-/*
- * @debt directory "Gaël: this file should be migrated within the new directory structure"
- * @debt standard "Gaël: prefer useSelector hook vs connect for redux (https://react-redux.js.org/api/hooks)"
- */
-
 import { connect } from 'react-redux'
 
 import TutorialDialog from 'components/layout/Tutorial/TutorialDialog'

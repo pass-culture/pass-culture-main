@@ -1,9 +1,3 @@
-/*
- * @debt complexity "Gaël: file over 300 lines"
- * @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
- * @debt rtl "Gaël: bad use of act in testing library"
- */
-
 import '@testing-library/jest-dom'
 import {
   fireEvent,
