@@ -39,4 +39,9 @@ export const validationSchema = yup.object().shape({
         )
     )
     .nullable(),
+  priceDetail: yup.string().nullable().max(1000),
 })
+
+export const showcaseOfferValidationSchema = yup
+  .object()
+  .shape({ priceDetail: yup.string().nullable().max(1000) })
