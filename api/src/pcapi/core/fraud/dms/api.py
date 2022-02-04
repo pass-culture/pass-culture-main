@@ -11,14 +11,14 @@ logger = logging.getLogger(__name__)
 
 def get_fraud_check(
     user: users_models.User,
-    application_id: str,
+    application_id: int,
 ) -> Optional[fraud_models.BeneficiaryFraudCheck]:
     # replace with one_or_one once the data are cleaned up
     return (
         fraud_models.BeneficiaryFraudCheck.query.filter(
             fraud_models.BeneficiaryFraudCheck.user == user,
             fraud_models.BeneficiaryFraudCheck.type == fraud_models.FraudCheckType.DMS,
-            fraud_models.BeneficiaryFraudCheck.thirdPartyId == application_id,
+            fraud_models.BeneficiaryFraudCheck.thirdPartyId == str(application_id),
         )
         .order_by(fraud_models.BeneficiaryFraudCheck.id.desc())
         .first()

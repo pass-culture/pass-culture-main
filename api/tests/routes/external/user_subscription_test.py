@@ -51,8 +51,8 @@ class DmsWebhookApplicationTest:
         user = users_factories.UserFactory()
         execute_query.return_value = make_single_application(12, state="closed", email=user.email)
         form_data = {
-            "procedure_id": "48860",
-            "dossier_id": "6044787",
+            "procedure_id": 48860,
+            "dossier_id": 6044787,
             "state": "accepte",
             "updated_at": "2021-09-30 17:55:58 +0200",
         }
@@ -78,8 +78,8 @@ class DmsWebhookApplicationTest:
         user = users_factories.UserFactory(hasCompletedIdCheck=False)
         execute_query.return_value = make_single_application(12, state="closed", email=user.email)
         form_data = {
-            "procedure_id": "48860",
-            "dossier_id": "6044787",
+            "procedure_id": 48860,
+            "dossier_id": 6044787,
             "state": dms_status.value,
             "updated_at": "2021-09-30 17:55:58 +0200",
         }
@@ -111,8 +111,8 @@ class DmsWebhookApplicationTest:
         execute_query.return_value = make_single_application(12, state="closed", email=user.email)
 
         form_data = {
-            "procedure_id": "48860",
-            "dossier_id": "6044787",
+            "procedure_id": 48860,
+            "dossier_id": 6044787,
             "state": api_dms.GraphQLApplicationStates.draft.value,
             "updated_at": "2021-09-30 17:55:58 +0200",
         }
@@ -140,8 +140,8 @@ class DmsWebhookApplicationTest:
         execute_query.return_value = make_single_application(12, state="closed", email=user.email)
 
         form_data = {
-            "procedure_id": "48860",
-            "dossier_id": "6044787",
+            "procedure_id": 48860,
+            "dossier_id": 6044787,
             "state": api_dms.GraphQLApplicationStates.on_going.value,
             "updated_at": "2021-09-30 17:55:58 +0200",
         }
@@ -171,8 +171,8 @@ class DmsWebhookApplicationTest:
         execute_query.return_value = make_single_application(12, state="closed", email=user.email)
 
         form_data = {
-            "procedure_id": "48860",
-            "dossier_id": "6044787",
+            "procedure_id": 48860,
+            "dossier_id": 6044787,
             "state": api_dms.GraphQLApplicationStates.refused.value,
             "updated_at": "2021-09-30 17:55:58 +0200",
         }
@@ -199,8 +199,8 @@ class DmsWebhookApplicationTest:
     def test_dms_double_parsing_error(self, send_user_message, execute_query, client):
         user = users_factories.UserFactory()
         form_data = {
-            "procedure_id": "48860",
-            "dossier_id": "6044787",
+            "procedure_id": 48860,
+            "dossier_id": 6044787,
             "state": api_dms.GraphQLApplicationStates.draft.value,
             "updated_at": "2021-09-30 17:55:58 +0200",
         }
@@ -236,8 +236,8 @@ class DmsWebhookApplicationTest:
             12, state=api_dms.GraphQLApplicationStates.draft.value, email="user@example.com"
         )
         form_data = {
-            "procedure_id": "48860",
-            "dossier_id": "6044787",
+            "procedure_id": 48860,
+            "dossier_id": 6044787,
             "state": api_dms.GraphQLApplicationStates.draft.value,
             "updated_at": "2021-09-30 17:55:58 +0200",
         }
@@ -263,8 +263,8 @@ class DmsWebhookApplicationTest:
             id_piece_number="error_identity_piece_number",
         )
         form_data = {
-            "procedure_id": "48860",
-            "dossier_id": "6044787",
+            "procedure_id": 48860,
+            "dossier_id": 6044787,
             "state": api_dms.GraphQLApplicationStates.draft.value,
             "updated_at": "2021-09-30 17:55:58 +0200",
         }
@@ -293,8 +293,8 @@ class DmsWebhookApplicationTest:
             12, state=api_dms.GraphQLApplicationStates.draft.value, email=user.email, postal_code="error_postal_code"
         )
         form_data = {
-            "procedure_id": "48860",
-            "dossier_id": "6044787",
+            "procedure_id": 48860,
+            "dossier_id": 6044787,
             "state": api_dms.GraphQLApplicationStates.draft.value,
             "updated_at": "2021-09-30 17:55:58 +0200",
         }
@@ -328,8 +328,8 @@ class DmsWebhookApplicationTest:
         execute_query.return_value = return_value
 
         form_data = {
-            "procedure_id": "48860",
-            "dossier_id": "6044787",
+            "procedure_id": 48860,
+            "dossier_id": 6044787,
             "state": api_dms.GraphQLApplicationStates.draft.value,
             "updated_at": "2021-09-30 17:55:58 +0200",
         }
@@ -369,8 +369,8 @@ class DmsWebhookApplicationTest:
         execute_query.return_value = make_single_application(12, state=graphql_app_state, email=user.email)
 
         form_data = {
-            "procedure_id": "48860",
-            "dossier_id": "6044787",
+            "procedure_id": 48860,
+            "dossier_id": 6044787,
             "state": graphql_app_state,
             "updated_at": "2021-09-30 17:55:58 +0200",
         }
