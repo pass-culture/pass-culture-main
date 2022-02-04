@@ -106,8 +106,8 @@ def dms_webhook_update_application_status(form: dms_validation.DMSWebhookRequest
     if import_status:
         subscription_api.attach_beneficiary_import_details(
             user,
-            int(form.dossier_id),
-            int(form.procedure_id),
+            form.dossier_id,
+            form.procedure_id,
             BeneficiaryImportSources.demarches_simplifiees,
             eligibility_type=application.get_eligibility_type(),
             details="Webhook status update",

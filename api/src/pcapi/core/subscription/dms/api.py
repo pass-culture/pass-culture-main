@@ -14,16 +14,12 @@ logger = logging.getLogger(__name__)
 def handle_dms_state(
     user: users_models.User,
     application: fraud_models.DMSContent,
-    procedure_id: str,
-    application_id: str,
+    procedure_id: int,
+    application_id: int,
     state: api_dms.GraphQLApplicationStates,
 ) -> None:
 
-    logs_extra = {
-        "application_id": application_id,
-        "procedure_id": procedure_id,
-        "user_email": user.email,
-    }
+    logs_extra = {"application_id": application_id, "procedure_id": procedure_id, "user_email": user.email}
 
     current_fraud_check = fraud_dms_api.get_fraud_check(user, application_id)
     if current_fraud_check is None:
