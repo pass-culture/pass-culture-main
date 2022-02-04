@@ -1,6 +1,7 @@
 import merge from 'lodash.merge'
 
 import configureStore from 'store'
+import { initialState as appInitialState } from 'store/app/reducer'
 import { initialState as featuresInitialState } from 'store/features/reducer'
 import { initialState as offersInitialState } from 'store/offers/reducer'
 import { initialState as bookingSummaryInitialState } from 'store/reducers/bookingSummary/bookingSummary'
@@ -11,6 +12,7 @@ import { initialState as notificationInitialState } from 'store/reducers/notific
 
 export const configureTestStore = overrideData => {
   const initialData = {
+    app: appInitialState,
     bookingSummary: bookingSummaryInitialState,
     data: dataInitialState,
     features: { ...featuresInitialState, initialized: true },
