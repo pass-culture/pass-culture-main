@@ -68,7 +68,7 @@ teardown(){
     [[ "${lines[0]}" =~ .*$expected_output.* ]]
 }
 
-@test "Tag command tag all submodule and main repo" {
+@test "Tag command tag main repo" {
     # Given
     index=0
     expected_output='New version tagged : 0.0.0'
@@ -85,14 +85,12 @@ teardown(){
     mock_set_output "${mock_git}" "add package.json" 5
     # call with param: git commit -m "🚀 $TAG_VERSION"
     mock_set_output "${mock_git}" "git commit -m 🚀 TAG_VERSION" 6
-    # call with param: git push origin master
-    mock_set_output "${mock_git}" "git push origin master" 7
     # call with param: git tag "$TAG_VERSION"
-    mock_set_output "${mock_git}" "tag-version main" 8
+    mock_set_output "${mock_git}" "tag-version main" 7
     # call with param: git push origin "$TAG_VERSION"
-    mock_set_output "${mock_git}" "push tag main" 9
+    mock_set_output "${mock_git}" "push tag main" 8
     # call with param: git checkout "$current_branch"
-    mock_set_output "${mock_git}" "git checkout current-branch" 10
+    mock_set_output "${mock_git}" "git checkout current-branch" 9
 
     # Mock yarn
     # call with param: yarn version --new-version "$TAG_NAME"
@@ -111,7 +109,7 @@ teardown(){
     # Then
     echo "Number of calls: $(mock_get_call_num ${mock_git})"
     echo "Number of calls: $(mock_get_call_num ${mock_yarn})"
-    [[ "$(mock_get_call_num ${mock_git})" -eq 10 ]]
+    [[ "$(mock_get_call_num ${mock_git})" -eq 9 ]]
     [[ "$(mock_get_call_num ${mock_yarn})" -eq 2 ]]
 
     # Allow to follow last steps
