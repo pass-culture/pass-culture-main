@@ -236,27 +236,6 @@ describe('thumbnail edition', () => {
           ).resolves.toBeInTheDocument()
         })
 
-        it('should not import an image whose height is below minimum', async () => {
-          // Given
-          renderThumbnail()
-          const file = createImageFile({ height: 200 })
-
-          // When
-          fireEvent.change(
-            screen.getByLabelText('Importer une image depuis l’ordinateur'),
-            {
-              target: { files: [file] },
-            }
-          )
-
-          // Then
-          await expect(
-            screen.findByText('Hauteur minimale de l’image : 400 px', {
-              selector: 'strong',
-            })
-          ).resolves.toBeInTheDocument()
-        })
-
         it('should not import an image whose width is below minimum', async () => {
           // Given
           renderThumbnail()
