@@ -3,6 +3,8 @@ import React, { useEffect } from 'react'
 import { Link } from 'react-router-dom'
 
 /* @debt standard "Gautier: Do not load internal page dependencies"*/
+import * as yup from 'yup'
+
 import { computeOffersUrl } from 'components/pages/Offers/utils/computeOffersUrl'
 import {
   Mode,
@@ -19,7 +21,10 @@ import FormStock from './FormStock'
 import styles from './OfferEducationalStock.module.scss'
 import ShowcaseBannerInfo from './ShowcaseBannerInfo'
 import { isOfferDisabled } from './utils'
-import { validationSchema } from './validationSchema'
+import {
+  validationSchema,
+  showcaseOfferValidationSchema,
+} from './validationSchema'
 
 const showcaseOfferRadios = [
   {
@@ -61,7 +66,12 @@ const OfferEducationalStock = ({
   const { resetForm, ...formik } = useFormik({
     initialValues,
     onSubmit: values => onSubmit(offer, values),
-    validationSchema: validationSchema,
+    validationSchema: yup.lazy((values: OfferEducationalStockFormValues) => {
+      const isShowcase =
+        values.educationalOfferType === EducationalOfferType.SHOWCASE
+
+      return isShowcase ? showcaseOfferValidationSchema : validationSchema
+    }),
   })
 
   const shouldShowOfferActions =
