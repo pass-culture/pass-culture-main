@@ -11,10 +11,6 @@
     }
   }
 
-  /*
-  * @debt duplicated "Gaël : duplicated styles for reset filters (in ...pages/Offers/Offers.scss), + we already have a tertiary-button class that is very close... we should create a component for this and standardise a behavior"
-  */
-
   .reset-filters {
     @include body-important();
 
