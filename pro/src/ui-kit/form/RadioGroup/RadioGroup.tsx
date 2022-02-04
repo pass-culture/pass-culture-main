@@ -9,7 +9,7 @@ import styles from './RadioGroup.module.scss'
 
 interface IRadioGroupProps {
   name: string
-  legend: string
+  legend?: string
   group: {
     label: string
     value: string

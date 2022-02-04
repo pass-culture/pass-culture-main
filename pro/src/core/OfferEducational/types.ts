@@ -119,6 +119,7 @@ export type OfferEducationalStockFormValues = {
   totalPrice: number | ''
   bookingLimitDatetime: Date | null
   priceDetail: string
+  educationalOfferType: EducationalOfferType
 }
 
 export type StockPayload = {
@@ -137,4 +138,9 @@ export type GetStockOfferSuccessPayload = {
   venueDepartmentCode: string
   managingOffererId: string
   isEducational: boolean
+}
+
+export enum EducationalOfferType {
+  SHOWCASE = 'SHOWCASE',
+  CLASSIC = 'CLASSIC',
 }

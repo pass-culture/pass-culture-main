@@ -2,6 +2,7 @@ import {
   IOfferEducationalFormValues,
   ADRESS_TYPE,
   OfferEducationalStockFormValues,
+  EducationalOfferType,
 } from './types'
 
 export const DEFAULT_EAC_FORM_VALUES: IOfferEducationalFormValues = {
@@ -56,4 +57,5 @@ export const DEFAULT_EAC_STOCK_FORM_VALUES: OfferEducationalStockFormValues = {
   totalPrice: '',
   bookingLimitDatetime: null,
   priceDetail: '',
+  educationalOfferType: EducationalOfferType.CLASSIC,
 }
