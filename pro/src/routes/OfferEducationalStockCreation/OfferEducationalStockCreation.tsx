@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useHistory } from 'react-router'
 import { useParams } from 'react-router-dom'
 
+import useActiveFeature from 'components/hooks/useActiveFeature'
 import useNotification from 'components/hooks/useNotification'
 import Spinner from 'components/layout/Spinner'
 import {
@@ -24,6 +25,7 @@ const OfferEducationalStockCreation = (): JSX.Element => {
   const { offerId } = useParams<{ offerId: string }>()
   const notify = useNotification()
   const history = useHistory()
+  const isShowcaseFeatureEnabled = useActiveFeature('ENABLE_EAC_SHOWCASE_OFFER')
 
   const handleSubmitStock = async (
     offer: GetStockOfferSuccessPayload,
@@ -67,6 +69,7 @@ const OfferEducationalStockCreation = (): JSX.Element => {
         <>
           <OfferEducationalStockScreen
             initialValues={DEFAULT_EAC_STOCK_FORM_VALUES}
+            isShowcaseFeatureEnabled={isShowcaseFeatureEnabled}
             mode={Mode.CREATION}
             offer={offer}
             onSubmit={handleSubmitStock}

@@ -7,7 +7,7 @@ import styles from './FieldSetLayout.module.scss'
 
 interface IFieldSetLayoutProps {
   children: React.ReactNode
-  legend: string
+  legend?: string
   className?: string
   error?: string
   name: string
@@ -23,7 +23,9 @@ const FieldSetLayout = ({
   hideFooter = false,
 }: IFieldSetLayoutProps): JSX.Element => (
   <fieldset className={cn(styles['fieldset-layout'], className)}>
-    <legend className={styles['fieldset-layout-legend']}>{legend}</legend>
+    {legend && (
+      <legend className={styles['fieldset-layout-legend']}>{legend}</legend>
+    )}
 
     <div>{children}</div>
 
