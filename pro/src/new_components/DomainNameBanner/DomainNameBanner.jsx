@@ -1,17 +1,42 @@
-import PropTypes from 'prop-types'
-import React from 'react'
+import React, { useCallback, useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { useHistory, useLocation } from 'react-router-dom'
 
+import { setDisplayDomainBanner } from 'store/app/actions'
 import { Banner } from 'ui-kit'
+import { parse, stringify } from 'utils/query-string'
 
-export const DomainNameBanner = ({ handleOnClick }) => {
-  const isOnVenuePage = window.location.href.indexOf('lieux') > -1
+export const DomainNameBanner = () => {
+  const dispatch = useDispatch()
+  const history = useHistory()
+  const location = useLocation()
+  const queryParams = parse(location.search)
+  const shouldDisplayBanner = useSelector(
+    state => state.app.displayDomainBanner
+  )
+
+  useEffect(() => {
+    if (!shouldDisplayBanner && queryParams['redirect']) {
+      dispatch(setDisplayDomainBanner(true))
+    }
+  }, [dispatch, queryParams, shouldDisplayBanner])
+
+  const closeBanner = useCallback(() => {
+    delete queryParams['redirect']
+    history.replace({ search: stringify(queryParams) })
+
+    dispatch(setDisplayDomainBanner(false))
+  }, [dispatch, history, queryParams])
+
+  if (!shouldDisplayBanner) {
+    return null
+  }
+
   return (
     <Banner
-      className={
-        isOnVenuePage ? 'venue-domain-name-banner' : 'domain-name-banner'
-      }
+      className="domain-name-banner"
       closable
-      handleOnClick={handleOnClick}
+      handleOnClick={closeBanner}
       linkTitle={"Consulter les Conditions Générales d'Utilisation"}
       type="attention"
     >
@@ -20,8 +45,4 @@ export const DomainNameBanner = ({ handleOnClick }) => {
       <strong>https://passculture.pro</strong>
     </Banner>
   )
-}
-
-DomainNameBanner.propTypes = {
-  handleOnClick: PropTypes.func.isRequired,
 }

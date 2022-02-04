@@ -1,6 +1,6 @@
 import classnames from 'classnames'
 import PropTypes from 'prop-types'
-import React, { useCallback, useEffect, useState } from 'react'
+import React from 'react'
 import { NavLink } from 'react-router-dom'
 import ReactTooltip from 'react-tooltip'
 
@@ -12,7 +12,6 @@ import DomainNameBanner from 'new_components/DomainNameBanner'
 
 const AppLayout = props => {
   const { children, layoutConfig } = props
-  const [shouldDisplayBanner, setShouldDisplayBanner] = useState(false)
 
   const defaultConfig = {
     backTo: null,
@@ -24,16 +23,6 @@ const AppLayout = props => {
     ...defaultConfig,
     ...layoutConfig,
   }
-
-  useEffect(() => {
-    if (window.location.search.includes('redirect=true')) {
-      setShouldDisplayBanner(true)
-    }
-  }, [])
-
-  const closeBanner = useCallback(() => {
-    setShouldDisplayBanner(false)
-  }, [])
 
   return (
     <>
@@ -62,9 +51,7 @@ const AppLayout = props => {
                 'with-padding': backTo,
               })}
             >
-              {shouldDisplayBanner && (
-                <DomainNameBanner handleOnClick={closeBanner} />
-              )}
+              <DomainNameBanner />
               {backTo && (
                 <NavLink
                   className="back-button has-text-primary"
