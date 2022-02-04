@@ -5,6 +5,7 @@ from pydantic import validator
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription import profile_options
 from pcapi.core.users import models as users_models
+from pcapi.serialization.utils import has_latin_or_numeric_chars
 from pcapi.serialization.utils import is_latin
 from pcapi.serialization.utils import to_camel
 
@@ -39,6 +40,13 @@ class ProfileUpdateRequest(BaseModel):
     def string_must_contain_latin_characters(cls, v):  # pylint: disable=no-self-argument
         if not is_latin(v):
             raise ValueError("Les champs textuels doivent contenir des caractères latins")
+        return v
+
+    @validator("address")
+    def address_must_be_valid(cls, v):  # pylint: disable=no-self-argument
+        if not has_latin_or_numeric_chars(v):
+            raise ValueError("L'adresse doit contenir des caractères alphanumériques")
+
         return v
 
 
