@@ -17,6 +17,7 @@ import { RadioGroup, SubmitButton, Banner, TextArea } from 'ui-kit'
 import { DETAILS_PRICE_LABEL } from './constants/labels'
 import FormStock from './FormStock'
 import styles from './OfferEducationalStock.module.scss'
+import ShowcaseBannerInfo from './ShowcaseBannerInfo'
 import { isOfferDisabled } from './utils'
 import { validationSchema } from './validationSchema'
 
@@ -112,7 +113,9 @@ const OfferEducationalStock = ({
                   />
                 </FormLayout.Row>
               )}
-              {!displayElementsForShowcaseOption && (
+              {displayElementsForShowcaseOption ? (
+                <ShowcaseBannerInfo />
+              ) : (
                 <>
                   <p className={styles['description-text']}>
                     Indiquez le prix total de l’événement et le nombre de
