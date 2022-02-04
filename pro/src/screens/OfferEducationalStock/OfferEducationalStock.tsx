@@ -92,7 +92,7 @@ const OfferEducationalStock = ({
       )}
       <FormikProvider value={{ ...formik, resetForm }}>
         <form onSubmit={formik.handleSubmit}>
-          <FormLayout>
+          <FormLayout className={styles['offer-educational-stock-form-layout']}>
             <FormLayout.Section title="Date et prix">
               {!displayElementsForShowcaseOption && (
                 <Banner
@@ -106,15 +106,23 @@ const OfferEducationalStock = ({
                 </Banner>
               )}
               {isShowcaseFeatureEnabled && (
-                <FormLayout.Row>
-                  <RadioGroup
-                    group={showcaseOfferRadios}
-                    name="educationalOfferType"
-                  />
-                </FormLayout.Row>
+                <>
+                  <FormLayout.Row>
+                    <RadioGroup
+                      group={showcaseOfferRadios}
+                      name="educationalOfferType"
+                    />
+                  </FormLayout.Row>
+                  {!displayElementsForShowcaseOption && (
+                    <div className={styles['separator']} />
+                  )}
+                </>
               )}
               {displayElementsForShowcaseOption ? (
-                <ShowcaseBannerInfo />
+                <>
+                  <ShowcaseBannerInfo />
+                  <div className={styles['separator']} />
+                </>
               ) : (
                 <>
                   <p className={styles['description-text']}>
