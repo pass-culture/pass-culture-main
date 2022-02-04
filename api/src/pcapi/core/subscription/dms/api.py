@@ -25,16 +25,12 @@ logger = logging.getLogger(__name__)
 def handle_dms_state(
     user: users_models.User,
     application: fraud_models.DMSContent,
-    procedure_id: str,
-    application_id: str,
+    procedure_id: int,
+    application_id: int,
     state: dms_connector_api.GraphQLApplicationStates,
 ) -> None:
 
-    logs_extra = {
-        "application_id": application_id,
-        "procedure_id": procedure_id,
-        "user_email": user.email,
-    }
+    logs_extra = {"application_id": application_id, "procedure_id": procedure_id, "user_email": user.email}
 
     current_fraud_check = fraud_dms_api.get_fraud_check(user, application_id)
     if current_fraud_check is None:
@@ -56,7 +52,10 @@ def handle_dms_state(
 
     elif state == dms_connector_api.GraphQLApplicationStates.refused:
         fraud_api.update_or_create_fraud_check_failed(
-            user, application_id, current_fraud_check.source_data(), [fraud_models.FraudReasonCode.REFUSED_BY_OPERATOR]
+            user,
+            str(application_id),
+            current_fraud_check.source_data(),
+            [fraud_models.FraudReasonCode.REFUSED_BY_OPERATOR],
         )
         subscription_messages.on_dms_application_refused(user)
 

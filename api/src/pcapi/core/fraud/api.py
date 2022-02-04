@@ -587,13 +587,13 @@ def start_fraud_check(
 
 def update_or_create_fraud_check_failed(
     user: users_models.User,
-    application_id: str,
+    thirdPartyId: str,
     source_data: typing.Union[models.DMSContent, ubble_fraud_models.UbbleContent],
     reasons: list[models.FraudReasonCode],
 ) -> models.BeneficiaryFraudCheck:
     fraud_check = models.BeneficiaryFraudCheck.query.filter(
         models.BeneficiaryFraudCheck.user == user,
-        models.BeneficiaryFraudCheck.thirdPartyId == application_id,
+        models.BeneficiaryFraudCheck.thirdPartyId == thirdPartyId,
         ~models.BeneficiaryFraudCheck.status.in_([models.FraudCheckStatus.OK, models.FraudCheckStatus.KO]),
     ).one_or_none()
 
@@ -601,7 +601,7 @@ def update_or_create_fraud_check_failed(
         fraud_check = models.BeneficiaryFraudCheck(
             user=user,
             type=models.FRAUD_CONTENT_MAPPING[type(source_data)],
-            thirdPartyId=application_id,
+            thirdPartyId=thirdPartyId,
             resultContent=source_data.dict(),
             status=models.FraudCheckStatus.KO,
             eligibilityType=source_data.get_eligibility_type(),
