@@ -132,6 +132,58 @@ class BeneficiaryValidationViewTest:
         assert user.idPieceNumber == dms_content.id_piece_number
 
     @override_features(BENEFICIARY_VALIDATION_AFTER_FRAUD_CHECKS=True)
+    @override_features(IS_HONOR_STATEMENT_MANDATORY_TO_ACTIVATE_BENEFICIARY=True)
+    def test_validation_view_validate_user_from_educonnect(self, client):
+        user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=15, months=2))
+        check = fraud_factories.BeneficiaryFraudCheckFactory(user=user, type=fraud_models.FraudCheckType.EDUCONNECT)
+        admin = users_factories.AdminFactory()
+        client.with_session_auth(admin.email)
+
+        response = client.post(
+            f"/pc/back-office/support_beneficiary/validate/beneficiary/{user.id}",
+            form={"user_id": user.id, "reason": "User is granted", "review": "OK"},
+        )
+        assert response.status_code == 302
+
+        review = fraud_models.BeneficiaryFraudReview.query.filter_by(user=user, author=admin).one()
+        assert review.review == fraud_models.FraudReviewStatus.OK
+        assert review.reason == "User is granted"
+        user = users_models.User.query.get(user.id)
+        assert user.has_underage_beneficiary_role
+        assert len(user.deposits) == 1
+
+        educonnect_content = fraud_models.EduconnectContent(**check.resultContent)
+        assert user.firstName == educonnect_content.get_first_name()
+        assert user.lastName == educonnect_content.get_last_name()
+        assert user.idPieceNumber == educonnect_content.get_id_piece_number()
+
+    @override_features(BENEFICIARY_VALIDATION_AFTER_FRAUD_CHECKS=True)
+    @override_features(IS_HONOR_STATEMENT_MANDATORY_TO_ACTIVATE_BENEFICIARY=True)
+    def test_validation_view_validate_user_from_ubble(self, client):
+        user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=18, months=2))
+        check = fraud_factories.BeneficiaryFraudCheckFactory(user=user, type=fraud_models.FraudCheckType.UBBLE)
+        admin = users_factories.AdminFactory()
+        client.with_session_auth(admin.email)
+
+        response = client.post(
+            f"/pc/back-office/support_beneficiary/validate/beneficiary/{user.id}",
+            form={"user_id": user.id, "reason": "User is granted", "review": "OK"},
+        )
+        assert response.status_code == 302
+
+        review = fraud_models.BeneficiaryFraudReview.query.filter_by(user=user, author=admin).one()
+        assert review.review == fraud_models.FraudReviewStatus.OK
+        assert review.reason == "User is granted"
+        user = users_models.User.query.get(user.id)
+        assert user.has_beneficiary_role
+        assert len(user.deposits) == 1
+
+        ubble_content = fraud_models.ubble_fraud_models.UbbleContent(**check.resultContent)
+        assert user.firstName == ubble_content.get_first_name()
+        assert user.lastName == ubble_content.get_last_name()
+        assert user.idPieceNumber == ubble_content.get_id_piece_number()
+
+    @override_features(BENEFICIARY_VALIDATION_AFTER_FRAUD_CHECKS=True)
     def test_validation_view_validate_user_wrong_args(self, client):
         user = users_factories.UserFactory()
         admin = users_factories.AdminFactory()
