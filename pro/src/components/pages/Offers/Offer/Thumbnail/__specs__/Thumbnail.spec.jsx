@@ -73,11 +73,6 @@ describe('thumbnail edition', () => {
           })
         ).toBeInTheDocument()
         expect(
-          screen.getByText('Proportions de l’image : 2/3 (portrait)', {
-            selector: 'li',
-          })
-        ).toBeInTheDocument()
-        expect(
           screen.getByText('Largeur minimale de l’image : 400 px', {
             selector: 'li',
           })
