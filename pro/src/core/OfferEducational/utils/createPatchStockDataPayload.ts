@@ -78,7 +78,7 @@ const serializer = {
 }
 
 const valuesIsOfferEducationalStockFormValuesForSerializer = (
-  values: OfferEducationalStockFormValues
+  values: Omit<OfferEducationalStockFormValues, 'educationalOfferType'>
 ): values is OfferEducationalStockFormValuesForSerializer => {
   return (
     values.eventDate !== null &&
@@ -88,6 +88,22 @@ const valuesIsOfferEducationalStockFormValuesForSerializer = (
   )
 }
 
+const getValuesWithoutEducationalOfferTypeAttribute = (
+  values: OfferEducationalStockFormValues
+): Omit<OfferEducationalStockFormValues, 'educationalOfferType'> => {
+  return (
+    Object.keys(values) as (keyof OfferEducationalStockFormValues)[]
+  ).reduce((result, valueKey) => {
+    if (valueKey === 'educationalOfferType') {
+      return result
+    }
+    return {
+      ...result,
+      [valueKey]: values[valueKey],
+    }
+  }, {} as Omit<OfferEducationalStockFormValues, 'educationalOfferType'>)
+}
+
 export const createPatchStockDataPayload = (
   values: OfferEducationalStockFormValues,
   departmentCode: string,
@@ -95,14 +111,27 @@ export const createPatchStockDataPayload = (
 ): Partial<StockPayload> => {
   let changedValues: Partial<StockPayload> = {}
 
-  const stockKeys = Object.keys(
-    initialValues
-  ) as (keyof OfferEducationalStockFormValues)[]
+  const valuesWithoutEducationalOfferType =
+    getValuesWithoutEducationalOfferTypeAttribute(values)
 
-  if (valuesIsOfferEducationalStockFormValuesForSerializer(values)) {
+  const stockKeys = Object.keys(initialValues).filter(
+    key => key === 'educationalOfferType'
+  ) as (keyof Omit<OfferEducationalStockFormValues, 'educationalOfferType'>)[]
+
+  if (
+    valuesIsOfferEducationalStockFormValuesForSerializer(
+      valuesWithoutEducationalOfferType
+    )
+  ) {
     stockKeys.forEach(key => {
-      if (!isEqual(values[key], initialValues[key])) {
-        changedValues = serializer[key](values, changedValues, departmentCode)
+      if (
+        !isEqual(valuesWithoutEducationalOfferType[key], initialValues[key])
+      ) {
+        changedValues = serializer[key](
+          valuesWithoutEducationalOfferType,
+          changedValues,
+          departmentCode
+        )
       }
     })
   }

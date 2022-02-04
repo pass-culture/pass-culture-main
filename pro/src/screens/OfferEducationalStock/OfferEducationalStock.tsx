@@ -1,7 +1,6 @@
 import { useFormik, FormikProvider } from 'formik'
 import React, { useEffect } from 'react'
 import { Link } from 'react-router-dom'
-
 /* @debt standard "Gautier: Do not load internal page dependencies"*/
 import * as yup from 'yup'
 
@@ -49,7 +48,7 @@ export interface IOfferEducationalStockProps {
   mode: Mode
   cancelActiveBookings?: () => void
   setIsOfferActive?: (isActive: boolean) => void
-  isShowcaseFeatureEnabled: boolean
+  isShowcaseFeatureEnabled?: boolean
 }
 
 const OfferEducationalStock = ({
@@ -59,7 +58,7 @@ const OfferEducationalStock = ({
   mode,
   cancelActiveBookings,
   setIsOfferActive,
-  isShowcaseFeatureEnabled,
+  isShowcaseFeatureEnabled = false,
 }: IOfferEducationalStockProps): JSX.Element => {
   const offerIsDisbaled = isOfferDisabled(offer.status)
 
