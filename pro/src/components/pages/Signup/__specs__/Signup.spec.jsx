@@ -1,7 +1,3 @@
-/*
- * @debt rtl "Gaël: migration from enzyme to RTL"
- */
-
 import { mount } from 'enzyme'
 import React from 'react'
 import { Provider } from 'react-redux'

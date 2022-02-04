@@ -1,7 +1,3 @@
-/*
- * @debt directory "Gaël: this file should be migrated within the new directory structure"
- */
-
 import PropTypes from 'prop-types'
 import React, { Fragment } from 'react'
 

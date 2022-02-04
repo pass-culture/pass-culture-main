@@ -1,7 +1,3 @@
-/*
- * @debt deprecated "Gaël: deprecated usage of redux-saga-data"
- */
-
 import { createDataReducer } from 'redux-saga-data'
 
 const GET_DESK_BOOKINGS = 'GET_DESK_BOOKINGS'

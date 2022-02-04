@@ -1,9 +1,3 @@
-/*
- * @debt deprecated "Gaël: deprecated usage of redux-saga-data"
- * @debt standard "Gaël: prefer hooks for routers (https://reactrouter.com/web/api/Hooks)"
- * @debt standard "Gaël: prefer useSelector hook vs connect for redux (https://react-redux.js.org/api/hooks)"
- */
-
 import { removeWhitespaces } from 'react-final-form-utils'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router'

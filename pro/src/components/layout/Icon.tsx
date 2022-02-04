@@ -1,6 +1,3 @@
-/*
- * @debt directory "Gaël: this file should be migrated within the new directory structure"
- */
 import React, { ImgHTMLAttributes } from 'react'
 
 import { ROOT_PATH } from 'utils/config'

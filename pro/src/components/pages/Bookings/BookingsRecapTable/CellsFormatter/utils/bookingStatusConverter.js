@@ -1,7 +1,3 @@
-/*
- * @debt complexity "Gaël: file nested too deep in directory structure"
- */
-
 import { BOOKING_STATUS } from 'core/Bookings'
 import { FORMAT_DD_MM_YYYY, FORMAT_DD_MM_YYYY_HH_mm } from 'utils/date'
 

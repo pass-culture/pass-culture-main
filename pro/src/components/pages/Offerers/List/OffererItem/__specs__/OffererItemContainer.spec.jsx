@@ -1,7 +1,3 @@
-/*
- * @debt complexity "Gaël: file nested too deep in directory structure"
- */
-
 import state from 'components/utils/mocks/state'
 
 import { mapStateToProps } from '../OffererItemContainer'

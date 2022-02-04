@@ -1,8 +1,3 @@
-/*
- * @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
- * @debt rtl "Gaël: migration from enzyme to RTL"
- */
-
 import { shallow, mount } from 'enzyme'
 import React from 'react'
 import { Provider } from 'react-redux'

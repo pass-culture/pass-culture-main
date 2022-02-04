@@ -1,9 +1,3 @@
-/*
- * @debt complexity "Gaël: file nested too deep in directory structure"
- * @debt deprecated "Gaël: deprecated usage of react-final-form custom fields"
- * @debt rtl "Gaël: migration from enzyme to RTL"
- */
-
 import { shallow } from 'enzyme'
 
 import FieldErrors from 'components/layout/form/FieldErrors'

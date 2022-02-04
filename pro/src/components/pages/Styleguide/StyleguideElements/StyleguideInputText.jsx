@@ -1,8 +1,3 @@
-/*
- * @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
- * @debt directory "Gaël: this file should be migrated within storybook"
- */
-
 import React from 'react'
 
 import TextInput from 'components/layout/inputs/TextInput/TextInput'

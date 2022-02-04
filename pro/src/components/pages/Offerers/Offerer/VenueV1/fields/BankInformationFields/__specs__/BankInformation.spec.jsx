@@ -1,10 +1,3 @@
-/*
- * @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
- * @debt rtl "Gaël: this file contains eslint error(s) based on eslint-testing-library plugin"
- * @debt complexity "Gaël: file nested too deep in directory structure"
- * @debt rtl "Gaël: bad use of act in testing library"
- */
-
 import '@testing-library/jest-dom'
 import { act, render, screen } from '@testing-library/react'
 import React from 'react'

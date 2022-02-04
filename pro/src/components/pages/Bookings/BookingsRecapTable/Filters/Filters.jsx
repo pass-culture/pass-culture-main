@@ -1,8 +1,3 @@
-/*
- * @debt directory "Gaël: this file should be migrated within the new directory structure"
- * @debt standard "Gaël: migration from classes components to function components"
- */
-
 import debounce from 'lodash.debounce'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'

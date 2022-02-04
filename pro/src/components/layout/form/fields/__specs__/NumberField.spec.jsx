@@ -1,8 +1,3 @@
-/*
- * @debt deprecated "Gaël: deprecated usage of react-final-form"
- * @debt rtl "Gaël: migration from enzyme to RTL"
- */
-
 /* eslint-disable react/jsx-no-bind */
 import { mount } from 'enzyme'
 import React from 'react'

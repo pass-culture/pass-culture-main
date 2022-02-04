@@ -1,9 +1,3 @@
-/*
- * @debt directory "Gaël: this file should be migrated within the new directory structure"
- * @debt deprecated "Gaël: deprecated usage of redux-saga-data"
- * @debt standard "Gaël: migration from classes components to function components"
- */
-
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import { Redirect } from 'react-router-dom'
