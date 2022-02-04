@@ -13,7 +13,7 @@ interface Props {
   step: number
 }
 
-const Preview: FunctionComponent<Props> = ({ preview, setStep, step }) => {
+const OfferPreview: FunctionComponent<Props> = ({ preview, setStep, step }) => {
   const previousStep = useCallback(() => {
     setStep(step - 1)
   }, [setStep, step])
@@ -50,4 +50,4 @@ const Preview: FunctionComponent<Props> = ({ preview, setStep, step }) => {
   )
 }
 
-export default Preview
+export default OfferPreview
