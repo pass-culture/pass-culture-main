@@ -7,6 +7,7 @@ import useNotification from 'components/hooks/useNotification'
 import Spinner from 'components/layout/Spinner'
 import {
   DEFAULT_EAC_STOCK_FORM_VALUES,
+  EducationalOfferType,
   getStockOfferAdapter,
   GetStockOfferSuccessPayload,
   Mode,
@@ -17,6 +18,7 @@ import OfferEducationalLayout from 'new_components/OfferEducationalLayout'
 import RouteLeavingGuardOfferCreation from 'new_components/RouteLeavingGuardOfferCreation'
 import OfferEducationalStockScreen from 'screens/OfferEducationalStock'
 
+import postEducationalShadowStockAdapter from './adapters/postEducationalShadowStock'
 import postEducationalStockAdapter from './adapters/postEducationalStock'
 
 const OfferEducationalStockCreation = (): JSX.Element => {
@@ -31,10 +33,24 @@ const OfferEducationalStockCreation = (): JSX.Element => {
     offer: GetStockOfferSuccessPayload,
     values: OfferEducationalStockFormValues
   ) => {
-    const { isOk, message } = await postEducationalStockAdapter({
-      offer,
-      values,
-    })
+    let isOk: boolean
+    let message: string | null
+
+    if (values.educationalOfferType === EducationalOfferType.SHOWCASE) {
+      const response = await postEducationalShadowStockAdapter({
+        offerId: offer.id,
+        values,
+      })
+      isOk = response.isOk
+      message = response.message
+    } else {
+      const response = await postEducationalStockAdapter({
+        offer,
+        values,
+      })
+      isOk = response.isOk
+      message = response.message
+    }
 
     if (!isOk) {
       return notify.error(message)

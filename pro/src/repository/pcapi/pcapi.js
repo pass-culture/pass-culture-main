@@ -241,6 +241,9 @@ export const createEducationalStock = stock => {
   return client.post(`/stocks/educational`, stock)
 }
 
+export const createEducationalShadowStock = (offerId, stock) =>
+  client.post(`/offers/educational/${offerId}/shadow-stock`, stock)
+
 export const editEducationalStock = (stockId, stock) => {
   return client.patch(`/stocks/educational/${stockId}`, stock)
 }
