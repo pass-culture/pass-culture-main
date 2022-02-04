@@ -57,18 +57,6 @@ export const imageConstraints = {
       asyncValidator: isOfPoorQuality,
     }
   },
-  height: (minHeight: number): Constraint => {
-    const isOfPoorQuality: FileChecker = async file => {
-      const imageBitmap = await getImageBitmap(file)
-      return imageBitmap !== null && imageBitmap.height >= minHeight
-    }
-
-    return {
-      id: 'height',
-      description: `Hauteur minimale de l’image : ${minHeight} px`,
-      asyncValidator: isOfPoorQuality,
-    }
-  },
 }
 
 export const getValidatorErrors = async (

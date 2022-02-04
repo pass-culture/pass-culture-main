@@ -113,26 +113,6 @@ describe('image constraints', () => {
       expect(isValid).toBe(false)
     })
   })
-
-  describe('height', () => {
-    it("accepts image when it's taller that minimum", async () => {
-      const file = createImageFile({ height: 300 })
-      const constraint = imageConstraints.height(300)
-
-      const isValid = await constraint.asyncValidator(file)
-
-      expect(isValid).toBe(true)
-    })
-
-    it("refuses image when it's smaller than minimum", async () => {
-      const file = createImageFile({ height: 200 })
-      const constraint = imageConstraints.height(300)
-
-      const isValid = await constraint.asyncValidator(file)
-
-      expect(isValid).toBe(false)
-    })
-  })
 })
 
 describe('getValidatorErrors', () => {
@@ -140,7 +120,6 @@ describe('getValidatorErrors', () => {
     const constraints = [
       imageConstraints.formats(['image/png']),
       imageConstraints.width(300),
-      imageConstraints.height(300),
     ]
     const file = createImageFile({
       type: 'image/png',
@@ -150,6 +129,6 @@ describe('getValidatorErrors', () => {
 
     const failedConstraints = await getValidatorErrors(constraints, file)
 
-    expect(failedConstraints).toStrictEqual(['width', 'height'])
+    expect(failedConstraints).toStrictEqual(['width'])
   })
 })

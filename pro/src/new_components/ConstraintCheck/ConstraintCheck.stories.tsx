@@ -18,7 +18,6 @@ Default.args = {
   constraints: [
     imageConstraints.formats(['image/png', 'image/jpeg']),
     imageConstraints.size(2_000_000),
-    imageConstraints.height(400),
     imageConstraints.width(300),
   ],
   failingConstraints: [],
@@ -29,7 +28,6 @@ Failing.args = {
   constraints: [
     imageConstraints.formats(['image/png', 'image/jpeg']),
     imageConstraints.size(2_000_000),
-    imageConstraints.height(400),
     imageConstraints.width(300),
   ],
   failingConstraints: ['size', 'width'],
