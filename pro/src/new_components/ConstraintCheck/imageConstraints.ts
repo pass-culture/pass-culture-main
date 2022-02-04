@@ -45,24 +45,6 @@ export const imageConstraints = {
       asyncValidator: isTooBig,
     }
   },
-  portrait: (): Constraint => {
-    const isOfBadProportions: FileChecker = async () => true
-
-    return {
-      id: 'portrait',
-      description: 'Proportions de l’image : 2/3 (portrait)',
-      asyncValidator: isOfBadProportions,
-    }
-  },
-  landscape: (): Constraint => {
-    const isOfBadProportions: FileChecker = async () => true
-
-    return {
-      id: 'landscape',
-      description: 'Proportions de l’image : 3/2 (paysage)',
-      asyncValidator: isOfBadProportions,
-    }
-  },
   width: (minWidth: number): Constraint => {
     const isOfPoorQuality: FileChecker = async file => {
       const imageBitmap = await getImageBitmap(file)

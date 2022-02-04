@@ -19,7 +19,6 @@ import { ImportFromComputerInput } from 'new_components/ImportFromComputerInput/
 import { PreferredOrientation } from 'new_components/PreferredOrientation/PreferredOrientation'
 
 const constraints = [
-  imageConstraints.portrait(),
   imageConstraints.formats(IMAGE_TYPE),
   imageConstraints.size(MAX_IMAGE_SIZE),
   imageConstraints.width(MIN_IMAGE_WIDTH),
