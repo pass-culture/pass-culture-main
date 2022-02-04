@@ -12,8 +12,9 @@ import {
 } from 'core/OfferEducational'
 import FormLayout from 'new_components/FormLayout'
 import OfferEducationalActions from 'new_components/OfferEducationalActions'
-import { RadioGroup, SubmitButton, Banner } from 'ui-kit'
+import { RadioGroup, SubmitButton, Banner, TextArea } from 'ui-kit'
 
+import { DETAILS_PRICE_LABEL } from './constants/labels'
 import FormStock from './FormStock'
 import styles from './OfferEducationalStock.module.scss'
 import { isOfferDisabled } from './utils'
@@ -73,6 +74,10 @@ const OfferEducationalStock = ({
     resetForm({ values: initialValues })
   }, [initialValues, resetForm])
 
+  const displayElementsForShowcaseOption =
+    isShowcaseFeatureEnabled &&
+    formik.values.educationalOfferType === EducationalOfferType.SHOWCASE
+
   return (
     <>
       {shouldShowOfferActions && (
@@ -88,14 +93,17 @@ const OfferEducationalStock = ({
         <form onSubmit={formik.handleSubmit}>
           <FormLayout>
             <FormLayout.Section title="Date et prix">
-              <Banner
-                href="https://passculture.zendesk.com/hc/fr/articles/4412973958673--Acteurs-culturels-Comment-modifier-une-offre-collective-pr%C3%A9-r%C3%A9serv%C3%A9e-"
-                linkTitle="Consultez l’article “Comment modifier ou annuler une offre collective pré-réservée/réservée”"
-                type="notification-info"
-              >
-                Vous pourrez modifier ces informations en fonction de vos
-                échanges avec l'établissement scolaire.
-              </Banner>
+              {!displayElementsForShowcaseOption && (
+                <Banner
+                  className={styles['offer-educational-stock-banner']}
+                  href="https://passculture.zendesk.com/hc/fr/articles/4412973958673--Acteurs-culturels-Comment-modifier-une-offre-collective-pr%C3%A9-r%C3%A9serv%C3%A9e-"
+                  linkTitle="Consultez l’article “Comment modifier ou annuler une offre collective pré-réservée/réservée”"
+                  type="notification-info"
+                >
+                  Vous pourrez modifier ces informations en fonction de vos
+                  échanges avec l'établissement scolaire.
+                </Banner>
+              )}
               {isShowcaseFeatureEnabled && (
                 <FormLayout.Row>
                   <RadioGroup
@@ -104,16 +112,32 @@ const OfferEducationalStock = ({
                   />
                 </FormLayout.Row>
               )}
-              <p className={styles['description-text']}>
-                Indiquez le prix total de l’événement et le nombre de personnes
-                qui y participeront.
-                <br />
-                <span className={styles['description-text-italic']}>
-                  (Exemple : j’accueille 30 élèves à 5€ la place, le prix total
-                  de mon offre s'élève à 150€)
-                </span>
-              </p>
-              <FormStock mode={mode} />
+              {!displayElementsForShowcaseOption && (
+                <>
+                  <p className={styles['description-text']}>
+                    Indiquez le prix total de l’événement et le nombre de
+                    personnes qui y participeront.
+                    <br />
+                    <span className={styles['description-text-italic']}>
+                      (Exemple : j’accueille 30 élèves à 5€ la place, le prix
+                      total de mon offre s'élève à 150€)
+                    </span>
+                  </p>
+                  <FormStock mode={mode} />
+                </>
+              )}
+              <FormLayout.Row>
+                <TextArea
+                  className={styles['price-details']}
+                  countCharacters
+                  disabled={mode === Mode.READ_ONLY}
+                  isOptional
+                  label={DETAILS_PRICE_LABEL}
+                  maxLength={1000}
+                  name="priceDetail"
+                  placeholder="Détaillez ici ce que comprend votre prix total"
+                />
+              </FormLayout.Row>
             </FormLayout.Section>
             <FormLayout.Actions>
               <Link className="secondary-link" to={computeOffersUrl({})}>
