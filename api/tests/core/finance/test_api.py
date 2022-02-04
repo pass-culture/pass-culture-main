@@ -704,6 +704,76 @@ def test_generate_wallets_file():
     }
 
 
+@clean_temporary_files
+def test_genererate_invoice_file():
+    business_unit1 = factories.BusinessUnitFactory(siret="12345678900")
+    offers_factories.VenueFactory(businessUnit=business_unit1)
+    pc_line1 = factories.PricingLineFactory()
+    pc_line2 = factories.PricingLineFactory(amount=150000, category=models.PricingLineCategory.OFFERER_CONTRIBUTION)
+    pricing = factories.PricingFactory(
+        status=models.PricingStatus.VALIDATED, businessUnit=business_unit1, amount=-1000, lines=[pc_line1, pc_line2]
+    )
+    pricing1 = factories.PricingFactory(
+        status=models.PricingStatus.VALIDATED,
+        businessUnit=business_unit1,
+        amount=-1000,
+    )
+    cashFlow = factories.CashflowFactory(
+        bankAccount=business_unit1.bankAccount,
+        pricings=[pricing, pricing1],
+        status=models.CashflowStatus.ACCEPTED,
+        batchId=1,
+        amount=-1000,
+    )
+    invoice = factories.InvoiceFactory(businessUnit=business_unit1, cashflows=[cashFlow], reference="displayed Invoice")
+
+    # The file should contains only cashflow from the current batch of invoice generation.
+    # This second invoice should not appear.
+    business_unit2 = factories.BusinessUnitFactory(siret="12345673900")
+    offers_factories.VenueFactory(businessUnit=business_unit2)
+    pc_line3 = factories.PricingLineFactory()
+    pricing2 = factories.PricingFactory(
+        status=models.PricingStatus.VALIDATED, businessUnit=business_unit2, amount=-1000, lines=[pc_line3]
+    )
+    cashFlow2 = factories.CashflowFactory(
+        bankAccount=business_unit2.bankAccount,
+        pricings=[pricing2],
+        status=models.CashflowStatus.ACCEPTED,
+        batchId=1,
+        amount=-1000,
+    )
+    factories.InvoiceFactory(
+        businessUnit=business_unit2,
+        cashflows=[cashFlow2],
+        reference="not displayed",
+        date=datetime.datetime(2022, 1, 1),
+    )
+
+    path = api.generate_invoice_file()
+
+    reader = csv.DictReader(path.open(), quoting=csv.QUOTE_NONNUMERIC)
+    rows = list(reader)
+    assert len(rows) == 2
+    assert rows[0] == {
+        "Identifiant de la BU": human_ids.humanize(invoice.businessUnit.venues[0].id),
+        "Date du justificatif": datetime.date.today().isoformat(),
+        "Référence du justificatif": invoice.reference,
+        "Identifiant valorisation": pricing.id,
+        "Identifiant ticket de facturation": pc_line1.id,
+        "type de ticket de facturation": pc_line1.category.value,
+        "montant du ticket de facturation": abs(pc_line1.amount),
+    }
+    assert rows[1] == {
+        "Identifiant de la BU": human_ids.humanize(invoice.businessUnit.venues[0].id),
+        "Date du justificatif": datetime.date.today().isoformat(),
+        "Référence du justificatif": invoice.reference,
+        "Identifiant valorisation": pricing.id,
+        "Identifiant ticket de facturation": pc_line2.id,
+        "type de ticket de facturation": pc_line2.category.value,
+        "montant du ticket de facturation": abs(pc_line2.amount),
+    }
+
+
 class EditBusinessUnitTest:
     def test_edit_siret(self):
         venue = offerers_factories.VenueFactory(
