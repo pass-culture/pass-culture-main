@@ -36,7 +36,13 @@ class ProfileUpdateRequest(BaseModel):
     class Config:
         alias_generator = to_camel
 
-    @validator("first_name", "last_name", "address", "city")
+    @validator("first_name", "last_name", "address", "city", "postal_code")
+    def mandatory_string_fields_cannot_be_empty(cls, v):  # pylint: disable=no-self-argument
+        if not v:
+            raise ValueError("This field cannot be empty")
+        return v
+
+    @validator("first_name", "last_name", "city")
     def string_must_contain_latin_characters(cls, v):  # pylint: disable=no-self-argument
         if not is_latin(v):
             raise ValueError("Les champs textuels doivent contenir des caractères latins")
