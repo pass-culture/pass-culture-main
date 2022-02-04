@@ -8,10 +8,10 @@ import { configureTestStore } from 'store/testUtils'
 
 import AppLayout from '../AppLayout'
 
-const renderApp = async (props, store) => {
+const renderApp = async (props, store, url = '/') => {
   render(
     <Provider store={store}>
-      <MemoryRouter>
+      <MemoryRouter initialEntries={[url]}>
         <AppLayout {...props}>
           <p>Sub component</p>
         </AppLayout>
@@ -46,13 +46,8 @@ describe('src | AppLayout', () => {
   })
 
   it('should render domain name banner when coming from old domain name', async () => {
-    // Given
-    const location = new URL('https://www.example.com?redirect=true')
-    delete window.location
-    window.location = location
-
     // When
-    renderApp(props, store)
+    renderApp(props, store, '/?redirect=true')
 
     // Then
     await waitFor(() =>
