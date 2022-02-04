@@ -1,7 +1,6 @@
 import React, { FunctionComponent } from 'react'
 
-import { ImagePreview } from 'new_components/ImagePreview/ImagePreview'
-import { ImagePreviewsWrapper } from 'new_components/ImagePreview/ImagePreviewsWrapper'
+import { ImagePreviewsWrapper, ImagePreview } from 'new_components/ImagePreview'
 
 import homeShell from '../assets/venue-home-shell.png'
 import venueShell from '../assets/venue-shell.png'
