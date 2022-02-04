@@ -1,9 +1,3 @@
-/*
- * @debt complexity "Gaël: file nested too deep in directory structure"
- * @debt deprecated "Gaël: deprecated usage of react-final-form"
- * @debt rtl "Gaël: migration from enzyme to RTL"
- */
-
 /* eslint-disable react/jsx-no-bind */
 import { mount } from 'enzyme'
 import React, { Fragment } from 'react'

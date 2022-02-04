@@ -1,8 +1,3 @@
-/*
- * @debt standard "Gaël: prefer hooks for routers (https://reactrouter.com/web/api/Hooks)"
- * @debt standard "Gaël: prefer useSelector hook vs connect for redux (https://react-redux.js.org/api/hooks)"
- */
-
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import { compose } from 'redux'

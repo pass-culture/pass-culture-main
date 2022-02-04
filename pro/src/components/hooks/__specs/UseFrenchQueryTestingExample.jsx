@@ -1,7 +1,3 @@
-/*
- * @debt directory "Gaël: this file should be migrated within the new directory structure"
- */
-
 import React, { Fragment, useEffect, useState } from 'react'
 
 import useFrenchQuery from 'components/hooks/useFrenchQuery'

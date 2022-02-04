@@ -1,7 +1,3 @@
-/*
- * @debt deprecated "Gaël: deprecated usage of react-final-form"
- */
-
 import '@testing-library/jest-dom'
 import { fireEvent } from '@testing-library/dom'
 import { render, screen } from '@testing-library/react'

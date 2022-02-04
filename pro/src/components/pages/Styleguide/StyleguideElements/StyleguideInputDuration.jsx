@@ -1,7 +1,3 @@
-/*
- * @debt directory "Gaël: this file should be migrated within storybook"
- */
-
 import React from 'react'
 
 import DurationInput from 'components/layout/inputs/DurationInput/DurationInput'

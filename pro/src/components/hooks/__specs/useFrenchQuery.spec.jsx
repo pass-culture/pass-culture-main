@@ -1,7 +1,3 @@
-/*
- * @debt directory "Gaël: this file should be migrated within the new directory structure"
- */
-
 import '@testing-library/jest-dom'
 import { fireEvent, render, screen } from '@testing-library/react'
 import React from 'react'

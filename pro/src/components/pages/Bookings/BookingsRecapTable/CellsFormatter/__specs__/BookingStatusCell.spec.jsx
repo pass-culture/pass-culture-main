@@ -1,8 +1,3 @@
-/*
- * @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
- * @debt complexity "Gaël: file nested too deep in directory structure"
- */
-
 import '@testing-library/jest-dom'
 import { render, screen } from '@testing-library/react'
 import React from 'react'

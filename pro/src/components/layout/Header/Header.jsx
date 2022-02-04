@@ -1,8 +1,3 @@
-/*
- * @debt directory "Gaël: this file should be migrated within the new directory structure"
- * @debt deprecated "Gaël: deprecated usage of redux-saga-data"
- */
-
 import PropTypes from 'prop-types'
 import React, { useCallback } from 'react'
 import { useDispatch } from 'react-redux'

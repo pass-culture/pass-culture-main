@@ -1,7 +1,3 @@
-/*
- * @debt complexity "Gaël: file nested too deep in directory structure"
- */
-
 import { getRequestErrorStringFromErrors } from '../getRequestErrorStringFromErrors'
 
 describe('getRequestErrorStringFromErrors', () => {

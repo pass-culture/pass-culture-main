@@ -1,10 +1,3 @@
-/*
- * @debt directory "Gaël: this file should be migrated within the new directory structure"
- * @debt deprecated "Gaël: deprecated usage of redux-saga-data"
- * @debt standard "Gaël: prefer useSelector hook vs connect for redux (https://react-redux.js.org/api/hooks)"
- * @debt deprecated "Gaël: deprecated usage of withQueryRouter"
- */
-
 import { connect } from 'react-redux'
 import { compose } from 'redux'
 import { assignData, requestData } from 'redux-saga-data'

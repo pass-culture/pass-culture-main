@@ -1,7 +1,3 @@
-/*
- * @debt complexity "Gaël: file nested too deep in directory structure"
- */
-
 import '@testing-library/jest-dom'
 import { fireEvent, screen, waitFor } from '@testing-library/react'
 

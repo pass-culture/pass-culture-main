@@ -1,10 +1,3 @@
-/*
- * @debt complexity "Gaël: file over 300 lines"
- * @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
- * @debt complexity "Gaël: file nested too deep in directory structure"
- * @debt rtl "Gaël: migration from enzyme to RTL"
- */
-
 /* eslint-disable react/prop-types */
 import { mount } from 'enzyme'
 import React from 'react'

@@ -1,7 +1,3 @@
-/*
- * @debt complexity "Gaël: file nested too deep in directory structure"
- */
-
 const creation_authorized_input_field = [
   'address',
   'bic',

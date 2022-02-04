@@ -1,8 +1,3 @@
-/*
- * @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
- * @debt directory "Gaël: this file should be migrated within the new directory structure"
- */
-
 import React, { useCallback, useEffect, useState } from 'react'
 import { useHistory } from 'react-router-dom'
 
