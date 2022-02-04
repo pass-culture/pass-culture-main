@@ -11,7 +11,6 @@ from pcapi.core.users import api as users_api
 from pcapi.core.users.models import Token
 from pcapi.core.users.models import User
 from pcapi.emails import beneficiary_activation
-from pcapi.emails.beneficiary_pre_subscription_rejected import make_dms_wrong_values_data
 from pcapi.emails.new_offerer_validated_withdrawal_terms import (
     retrieve_data_for_new_offerer_validated_withdrawal_terms_email,
 )
@@ -68,10 +67,3 @@ def send_withdrawal_terms_to_newly_validated_offerer(offerer: Offerer) -> bool:
 def send_dms_application_emails(users: typing.Iterable[User]) -> bool:
     data = beneficiary_activation.get_dms_application_data()
     return mails.send(recipients=[user.email for user in users], data=data)
-
-
-def send_dms_wrong_values_emails(
-    user_email: str, postal_code: typing.Optional[str], id_piece_number: typing.Optional[str]
-) -> bool:
-    data = make_dms_wrong_values_data(postal_code, id_piece_number)
-    return mails.send(recipients=[user_email], data=data)
