@@ -36,6 +36,14 @@ export const VenueImageUploaderModal: FunctionComponent<Props> = ({
     [setImage]
   )
 
+  const onEditedImageSave = useCallback(
+    (dataUrl, croppedRect) => {
+      setEditedImage(dataUrl)
+      setCroppingRect(croppedRect)
+    },
+    [setEditedImage, setCroppingRect]
+  )
+
   return (
     <DialogBox
       hasCloseButton
@@ -54,9 +62,8 @@ export const VenueImageUploaderModal: FunctionComponent<Props> = ({
           closeModal={onDismiss}
           credit={credit}
           image={image}
+          onEditedImageSave={onEditedImageSave}
           onSetCredit={setCredit}
-          setCroppingRect={setCroppingRect}
-          setEditedImage={setEditedImage}
         />
       ) : (
         <VenueImagePreview preview={editedImage} />

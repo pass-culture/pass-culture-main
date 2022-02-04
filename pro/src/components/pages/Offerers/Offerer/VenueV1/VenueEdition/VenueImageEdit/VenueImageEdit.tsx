@@ -21,8 +21,7 @@ type Props = {
   onSetCredit: (credit: string) => void
   children?: never
   closeModal: () => void
-  setCroppingRect: (croppedRect: CroppedRect) => void
-  setEditedImage: (dataUrl: string) => void
+  onEditedImageSave: (dataUrl: string, croppedRect: CroppedRect) => void
 }
 
 export const VenueImageEdit: FunctionComponent<Props> = ({
@@ -30,8 +29,7 @@ export const VenueImageEdit: FunctionComponent<Props> = ({
   image,
   credit,
   onSetCredit,
-  setCroppingRect,
-  setEditedImage,
+  onEditedImageSave,
 }) => {
   const editorRef = useRef<AvatarEditor>(null)
 
@@ -39,10 +37,9 @@ export const VenueImageEdit: FunctionComponent<Props> = ({
     if (editorRef.current) {
       const canvas = editorRef.current.getImage()
       const croppingRect = editorRef.current.getCroppingRect()
-      setCroppingRect(croppingRect)
-      setEditedImage(canvas.toDataURL())
+      onEditedImageSave(canvas.toDataURL(), croppingRect)
     }
-  }, [setCroppingRect, setEditedImage])
+  }, [onEditedImageSave])
 
   return (
     <section className={style['venue-image-edit']}>
