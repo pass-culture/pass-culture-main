@@ -8,16 +8,28 @@ import {
   Mode,
   OfferEducationalStockFormValues,
   GetStockOfferSuccessPayload,
+  EducationalOfferType,
 } from 'core/OfferEducational'
 import FormLayout from 'new_components/FormLayout'
 import OfferEducationalActions from 'new_components/OfferEducationalActions'
-import { SubmitButton } from 'ui-kit'
-import { Banner } from 'ui-kit'
+import { RadioGroup, SubmitButton, Banner } from 'ui-kit'
 
 import FormStock from './FormStock'
 import styles from './OfferEducationalStock.module.scss'
 import { isOfferDisabled } from './utils'
 import { validationSchema } from './validationSchema'
+
+const showcaseOfferRadios = [
+  {
+    label: 'Je connais la date et le prix de mon offre',
+    value: EducationalOfferType.CLASSIC,
+  },
+  {
+    label:
+      'Je préfère être contacté(e) par un enseignant avant de définir la date et le prix de l’offre',
+    value: EducationalOfferType.SHOWCASE,
+  },
+]
 
 export interface IOfferEducationalStockProps {
   isEditable?: boolean
@@ -30,6 +42,7 @@ export interface IOfferEducationalStockProps {
   mode: Mode
   cancelActiveBookings?: () => void
   setIsOfferActive?: (isActive: boolean) => void
+  isShowcaseFeatureEnabled: boolean
 }
 
 const OfferEducationalStock = ({
@@ -39,6 +52,7 @@ const OfferEducationalStock = ({
   mode,
   cancelActiveBookings,
   setIsOfferActive,
+  isShowcaseFeatureEnabled,
 }: IOfferEducationalStockProps): JSX.Element => {
   const offerIsDisbaled = isOfferDisabled(offer.status)
 
@@ -82,6 +96,14 @@ const OfferEducationalStock = ({
                 Vous pourrez modifier ces informations en fonction de vos
                 échanges avec l'établissement scolaire.
               </Banner>
+              {isShowcaseFeatureEnabled && (
+                <FormLayout.Row>
+                  <RadioGroup
+                    group={showcaseOfferRadios}
+                    name="educationalOfferType"
+                  />
+                </FormLayout.Row>
+              )}
               <p className={styles['description-text']}>
                 Indiquez le prix total de l’événement et le nombre de personnes
                 qui y participeront.
