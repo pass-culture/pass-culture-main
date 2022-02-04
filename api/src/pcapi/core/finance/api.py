@@ -38,11 +38,14 @@ import zipfile
 from flask import render_template
 import pytz
 import sqlalchemy as sqla
+from sqlalchemy import Date
+from sqlalchemy import cast
 import sqlalchemy.orm as sqla_orm
 import sqlalchemy.sql.functions as sqla_func
 
 from pcapi import settings
 import pcapi.core.bookings.models as bookings_models
+from pcapi.core.finance import models
 from pcapi.core.mails.transactional.pro.invoice_available_to_pro import send_invoice_available_to_pro_email
 from pcapi.core.object_storage import store_public_object
 from pcapi.core.offerers import repository as offerers_repository
@@ -850,6 +853,49 @@ def generate_invoices():
                     "exc": str(exc),
                 },
             )
+    generate_invoice_file()
+
+
+def generate_invoice_file() -> pathlib.Path:
+    header = [
+        "Identifiant de la BU",
+        "Date du justificatif",
+        "Référence du justificatif",
+        "Identifiant valorisation",
+        "Identifiant ticket de facturation",
+        "type de ticket de facturation",
+        "montant du ticket de facturation",
+    ]
+    query = (
+        db.session.query(
+            models.Invoice,
+            models.Pricing.id.label("pricing_id"),
+            models.PricingLine.id.label("pricing_line_id"),
+            models.PricingLine.category.label("pricing_line_category"),
+            models.PricingLine.amount.label("pricing_line_amount"),
+        )
+        .join(models.Invoice.cashflows)
+        .join(models.Cashflow.pricings)
+        .join(models.Pricing.lines)
+        .filter(cast(models.Invoice.date, Date) == datetime.date.today())
+        .order_by(models.Invoice.id, models.Pricing.id, models.PricingLine.id)
+    )
+
+    row_formatter = lambda row: (
+        human_ids.humanize(row.Invoice.businessUnit.venues[0].id),
+        row.Invoice.date.date().isoformat(),
+        row.Invoice.reference,
+        row.pricing_id,
+        row.pricing_line_id,
+        row.pricing_line_category.value,
+        abs(row.pricing_line_amount),
+    )
+    return _write_csv(
+        "invoices",
+        header,
+        rows=query,
+        row_formatter=row_formatter,
+    )
 
 
 def generate_and_store_invoice(business_unit_id: int, cashflow_ids: list[int]):

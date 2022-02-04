@@ -1,3 +1,4 @@
+import datetime
 import secrets
 
 import factory
@@ -66,3 +67,12 @@ class InvoiceFactory(BaseFactory):
 class CashflowBatchFactory(BaseFactory):
     class Meta:
         model = models.CashflowBatch
+
+    cutoff = factory.LazyFunction(datetime.datetime.utcnow)
+
+
+class CashflowFactory(BaseFactory):
+    class Meta:
+        model = models.Cashflow
+
+    batch = factory.SubFactory(CashflowBatchFactory)
