@@ -9,7 +9,6 @@ import React, { useCallback } from 'react'
 import {
   IMAGE_TYPE,
   MAX_IMAGE_SIZE,
-  MIN_IMAGE_HEIGHT,
   MIN_IMAGE_WIDTH,
 } from 'components/pages/Offers/Offer/Thumbnail/_constants'
 import { ConstraintCheck } from 'new_components/ConstraintCheck/ConstraintCheck'
@@ -22,7 +21,6 @@ const constraints = [
   imageConstraints.formats(IMAGE_TYPE),
   imageConstraints.size(MAX_IMAGE_SIZE),
   imageConstraints.width(MIN_IMAGE_WIDTH),
-  imageConstraints.height(MIN_IMAGE_HEIGHT),
 ]
 
 const ImportFromComputer = ({ setStep, setThumbnail, step }) => {
