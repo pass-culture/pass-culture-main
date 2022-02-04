@@ -94,28 +94,6 @@ describe('image constraints', () => {
     })
   })
 
-  describe('portrait', () => {
-    it('accepts any file because we resize it after', async () => {
-      const file = createImageFile()
-      const constraint = imageConstraints.portrait()
-
-      const isValid = await constraint.asyncValidator(file)
-
-      expect(isValid).toBe(true)
-    })
-  })
-
-  describe('landscape', () => {
-    it('accepts any file because we resize it after', async () => {
-      const file = createImageFile()
-      const constraint = imageConstraints.landscape()
-
-      const isValid = await constraint.asyncValidator(file)
-
-      expect(isValid).toBe(true)
-    })
-  })
-
   describe('width', () => {
     it("accepts image when it's larger that minimum", async () => {
       const file = createImageFile({ width: 300 })

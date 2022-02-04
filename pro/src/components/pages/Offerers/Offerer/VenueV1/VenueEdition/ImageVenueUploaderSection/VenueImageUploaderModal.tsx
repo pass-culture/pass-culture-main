@@ -13,7 +13,6 @@ type Props = {
 }
 
 const constraints = [
-  imageConstraints.landscape(),
   imageConstraints.formats(IMAGE_TYPES),
   imageConstraints.size(MAX_IMAGE_SIZE),
   imageConstraints.width(MIN_IMAGE_WIDTH),
