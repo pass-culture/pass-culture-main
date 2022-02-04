@@ -6,8 +6,7 @@
 import * as PropTypes from 'prop-types'
 import React, { useCallback } from 'react'
 
-import { ImagePreview } from 'new_components/ImagePreview/ImagePreview'
-import { ImagePreviewMode } from 'new_components/ImagePreview/types'
+import { OfferPreviews } from './OfferPreviews/OfferPreviews'
 
 const Preview = ({ preview, setStep, step }) => {
   const previousStep = useCallback(() => {
@@ -23,7 +22,7 @@ const Preview = ({ preview, setStep, step }) => {
       <div className="tnd-subtitle">
         Prévisualisation de votre image dans l’application pass Culture
       </div>
-      <ImagePreview mode={ImagePreviewMode.OFFER} preview={preview} />
+      <OfferPreviews previewImageURI={preview} />
       <div className="tnd-actions">
         <button
           className="secondary-button"
