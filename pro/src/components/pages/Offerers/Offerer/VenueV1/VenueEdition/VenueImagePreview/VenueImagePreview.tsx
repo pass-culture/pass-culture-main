@@ -1,3 +1,4 @@
+import cn from 'classnames'
 import React, { FunctionComponent } from 'react'
 
 import style from './VenueImagePreview.module.scss'
@@ -18,7 +19,7 @@ export const VenueImagePreview: FunctionComponent<Props> = ({ preview }) => (
     <VenuePreviews preview={preview} />
     <div className={style['actions']}>
       <button
-        className="secondary-button"
+        className={cn('secondary-button', style['button'])}
         onClick={() => alert('Pas encore dispo : il faut attendre PC-13201')}
         title="Retour"
         type="button"
@@ -26,7 +27,7 @@ export const VenueImagePreview: FunctionComponent<Props> = ({ preview }) => (
         Retour
       </button>
       <button
-        className="primary-button"
+        className={cn('primary-button', style['button'])}
         onClick={() => alert('Pas encore dispo : il faut attendre PC-13201')}
         title="Suivant"
         type="button"
