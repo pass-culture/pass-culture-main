@@ -519,6 +519,35 @@ class UpdateProfileTest:
         assert response.status_code == 400
 
     @override_features(ENABLE_UBBLE=True)
+    def test_update_profile_empty_field(self, client):
+        user = users_factories.UserFactory(
+            address=None,
+            city=None,
+            postalCode=None,
+            activity=None,
+            firstName=None,
+            lastName=None,
+            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
+            phoneNumber="+33609080706",
+            dateOfBirth=datetime.date.today() - relativedelta(years=18, months=6),
+        )
+
+        profile_data = {
+            "firstName": " ",
+            "lastName": "Doe",
+            "address": "1 rue des rues",
+            "city": "Uneville",
+            "postalCode": "77000",
+            "activityId": "HIGH_SCHOOL_STUDENT",
+            "schoolTypeId": "PUBLIC_HIGH_SCHOOL",
+        }
+
+        client.with_token(user.email)
+        response = client.post("/native/v1/subscription/profile", profile_data)
+
+        assert response.status_code == 400
+
+    @override_features(ENABLE_UBBLE=True)
     def test_update_profile_valid_character(self, client):
         user = users_factories.UserFactory(
             address=None,
