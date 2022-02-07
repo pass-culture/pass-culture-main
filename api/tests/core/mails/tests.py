@@ -7,8 +7,8 @@ import requests_mock
 
 from pcapi.core import mails
 import pcapi.core.mails.backends.mailjet
-from pcapi.core.mails.models import Email
-from pcapi.core.mails.models import EmailStatus
+from pcapi.core.mails.models.models import Email
+from pcapi.core.mails.models.models import EmailStatus
 from pcapi.core.testing import override_settings
 
 

@@ -20,7 +20,7 @@ from pcapi.core.finance.models import PricingLog
 from pcapi.core.fraud.models import BeneficiaryFraudCheck
 from pcapi.core.fraud.models import BeneficiaryFraudResult
 from pcapi.core.fraud.models import BeneficiaryFraudReview
-from pcapi.core.mails.models import Email
+from pcapi.core.mails.models.models import Email
 from pcapi.core.offerers.models import ApiKey
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import Venue

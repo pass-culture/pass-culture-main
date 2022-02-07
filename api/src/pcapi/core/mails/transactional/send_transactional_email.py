@@ -14,6 +14,13 @@ def send_transactional_email(payload: SendTransactionalEmailRequest) -> bool:
     to = [{"email": email} for email in payload.recipients]
     sender = payload.sender
 
+    extra = {
+        "template_id": payload.template_id,
+        "subject": payload.subject,
+        "sender": payload.sender,
+        "recipients": payload.recipients,
+    }
+
     send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(to=to, sender=sender, reply_to=sender)
 
     # Can send email with: to, sender, template_id, tags, params
@@ -34,6 +41,9 @@ def send_transactional_email(payload: SendTransactionalEmailRequest) -> bool:
             send_smtp_email.attachment = [
                 {"content": attachment.content, "name": attachment.name} for attachment in payload.attachment
             ]
+    else:
+        logger.exception("Unvalid payload in send_transactional_email", extra=extra)
+        return False
 
     try:
         configuration = sib_api_v3_sdk.Configuration()
@@ -43,23 +53,9 @@ def send_transactional_email(payload: SendTransactionalEmailRequest) -> bool:
         return True
     except ApiException as e:
         logger.exception(  # pylint: disable=logging-fstring-interpolation
-            f"Exception when calling SMTPApi->send_transac_email with status={e.status}",
-            extra={
-                "template_id": payload.template_id,
-                "subject": payload.subject,
-                "sender": payload.sender,
-                "recipients": payload.recipients,
-            },
+            f"Exception when calling SMTPApi->send_transac_email with status={e.status}", extra=extra
         )
         return False
     except Exception as e:  # pylint: disable=broad-except
-        logger.exception(
-            "Unknown exception occurred when calling SMTPApi->send_transac_email",
-            extra={
-                "template_id": payload.template_id,
-                "subject": payload.subject,
-                "sender": payload.sender,
-                "recipients": payload.recipients,
-            },
-        )
+        logger.exception("Unknown exception occurred when calling SMTPApi->send_transac_email", extra=extra)
         return False

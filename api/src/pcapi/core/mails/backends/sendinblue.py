@@ -4,9 +4,9 @@ import typing
 from typing import Iterable
 
 from pcapi import settings
-from pcapi.core.mails.models import MailResult
-from pcapi.core.mails.transactional.sendinblue_template_ids import SendinblueTransactionalEmailData
-from pcapi.core.mails.transactional.sendinblue_template_ids import SendinblueTransactionalWithoutTemplateEmailData
+from pcapi.core.mails.models.models import MailResult
+from pcapi.core.mails.models.sendinblue_models import SendinblueTransactionalEmailData
+from pcapi.core.mails.models.sendinblue_models import SendinblueTransactionalWithoutTemplateEmailData
 from pcapi.tasks.sendinblue_tasks import send_transactional_email_primary_task
 from pcapi.tasks.sendinblue_tasks import send_transactional_email_secondary_task
 from pcapi.tasks.serialization.sendinblue_tasks import SendTransactionalEmailRequest

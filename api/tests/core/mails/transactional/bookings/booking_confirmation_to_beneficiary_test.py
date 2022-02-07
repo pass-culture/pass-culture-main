@@ -7,6 +7,7 @@ import pytest
 from pcapi.core.bookings.factories import IndividualBookingFactory
 from pcapi.core.bookings.factories import UsedIndividualBookingFactory
 from pcapi.core.categories import subcategories
+from pcapi.core.mails.models.sendinblue_models import SendinblueTransactionalEmailData
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.mails.transactional.bookings.booking_confirmation_to_beneficiary import (
     get_booking_confirmation_to_beneficiary_email_data,
@@ -14,7 +15,6 @@ from pcapi.core.mails.transactional.bookings.booking_confirmation_to_beneficiary
 from pcapi.core.mails.transactional.bookings.booking_confirmation_to_beneficiary import (
     send_individual_booking_confirmation_email_to_beneficiary,
 )
-from pcapi.core.mails.transactional.sendinblue_template_ids import SendinblueTransactionalEmailData
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.testing import override_features

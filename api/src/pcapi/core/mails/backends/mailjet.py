@@ -5,7 +5,7 @@ import mailjet_rest
 
 from pcapi import settings
 
-from ..models import MailResult
+from ..models.models import MailResult
 from .base import BaseBackend
 
 

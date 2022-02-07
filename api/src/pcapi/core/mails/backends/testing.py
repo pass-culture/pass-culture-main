@@ -2,10 +2,10 @@ from dataclasses import asdict
 from typing import Iterable
 from typing import Union
 
-from pcapi.core.mails.transactional.sendinblue_template_ids import SendinblueTransactionalEmailData
+from pcapi.core.mails.models.sendinblue_models import SendinblueTransactionalEmailData
 
 from .. import testing
-from ..models import MailResult
+from ..models.models import MailResult
 from .base import BaseBackend
 
 
