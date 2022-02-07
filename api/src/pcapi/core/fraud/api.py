@@ -17,6 +17,7 @@ from pcapi.repository.user_queries import matching
 
 from . import exceptions
 from . import models
+from .common import models as common_models
 from .dms import api as dms_api
 from .ubble import api as ubble_api
 from .ubble import models as ubble_fraud_models
@@ -74,8 +75,7 @@ def on_dms_fraud_result(
     user: users_models.User,
     dms_content: models.DMSContent,
 ) -> models.BeneficiaryFraudCheck:
-
-    eligibility_type = decide_eligibility(user, dms_content.get_registration_datetime(), dms_content.get_birth_date())
+    eligibility_type = decide_eligibility(user, dms_content)
     fraud_check = dms_api.get_fraud_check(user, str(dms_content.application_id))
     if not fraud_check:
         logger.warning("DMS fraud check from user %d not previously created", user.id)
@@ -571,7 +571,7 @@ def start_fraud_check(
     if fraud_check:
         raise exceptions.ApplicationValidationAlreadyStarted()
 
-    eligibility_type = decide_eligibility(user, source_data.get_registration_datetime(), source_data.get_birth_date())
+    eligibility_type = decide_eligibility(user, source_data)
     fraud_check = models.BeneficiaryFraudCheck(
         user=user,
         type=source_type,
@@ -598,7 +598,7 @@ def update_or_create_fraud_check_failed(
         ~models.BeneficiaryFraudCheck.status.in_([models.FraudCheckStatus.OK, models.FraudCheckStatus.KO]),
     ).one_or_none()
 
-    eligibility_type = decide_eligibility(user, source_data.get_registration_datetime(), source_data.get_birth_date())
+    eligibility_type = decide_eligibility(user, source_data)
     if not fraud_check:
         fraud_check = models.BeneficiaryFraudCheck(
             user=user,
@@ -662,9 +662,12 @@ def has_performed_honor_statement(user: users_models.User, eligibility_type: use
 
 # use this for asynchronous identity check methods (DMS, ubble, admin review)
 def decide_eligibility(
-    user: users_models.User, registration_datetime: datetime.datetime, birth_date: datetime.datetime
+    user: users_models.User, identity_content: common_models.IdentityCheckContent
 ) -> typing.Optional[users_models.EligibilityType]:
     from pcapi.core.users import api as users_api
+
+    registration_datetime = identity_content.get_registration_datetime()
+    birth_date = identity_content.get_birth_date()
 
     if registration_datetime is None or birth_date is None:
         return None
