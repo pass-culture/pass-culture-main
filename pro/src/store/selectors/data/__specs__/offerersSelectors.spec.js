@@ -64,7 +64,6 @@ describe('src | selectors | data | offerersSelectors', () => {
         dateModifiedAtLastProvider: '2019-05-06T09:13:08.458343Z',
         iban: 'FR7630001007941234567890185',
         id: '4Q',
-        idAtProviders: null,
         isActive: true,
         isValidated: true,
         lastProviderId: null,
