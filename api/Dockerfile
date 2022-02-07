@@ -25,6 +25,7 @@ RUN apt-get update \
 		libglib2.0-0 \
 		libpango-1.0-0 \
 		libpangoft2-1.0-0 \
+		libpq5 \
 		libxmlsec1-openssl \
 		xmlsec1
 
