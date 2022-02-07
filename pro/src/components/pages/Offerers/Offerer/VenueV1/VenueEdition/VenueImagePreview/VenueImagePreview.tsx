@@ -32,7 +32,7 @@ export const VenueImagePreview: FunctionComponent<Props> = ({ preview }) => (
         title="Suivant"
         type="button"
       >
-        Valider
+        Enregistrer
       </button>
     </div>
   </div>
