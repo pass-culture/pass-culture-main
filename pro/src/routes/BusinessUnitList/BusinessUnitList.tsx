@@ -59,7 +59,6 @@ interface IAPIOfferer {
   hasMissingBankInformation: boolean
   iban: string | null
   id: string
-  idAtProviders: string | null
   isValidated: boolean
   lastProviderId: string | null
   managedVenues: IAPIVenue[]

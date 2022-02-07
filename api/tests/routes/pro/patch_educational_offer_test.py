@@ -77,7 +77,6 @@ class Returns200Test:
             "fieldsUpdated": [],
             "hasBookingLimitDatetimesPassed": False,
             "id": humanize(offer.id),
-            "idAtProvider": None,
             "isActive": True,
             "isBookable": True,
             "isDigital": False,
