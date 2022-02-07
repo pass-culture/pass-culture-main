@@ -4,6 +4,7 @@ from datetime import timezone
 import pytest
 
 import pcapi.core.bookings.factories as bookings_factories
+from pcapi.core.mails.models.sendinblue_models import Template
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.mails.transactional.bookings.booking_cancellation_by_pro_to_beneficiary import (
     get_booking_cancellation_by_pro_to_beneficiary_email_data,
@@ -11,7 +12,6 @@ from pcapi.core.mails.transactional.bookings.booking_cancellation_by_pro_to_bene
 from pcapi.core.mails.transactional.bookings.booking_cancellation_by_pro_to_beneficiary import (
     send_booking_cancellation_by_pro_to_beneficiary_email,
 )
-from pcapi.core.mails.transactional.sendinblue_template_ids import Template
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.testing import override_features

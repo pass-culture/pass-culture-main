@@ -2,13 +2,12 @@ from dataclasses import asdict
 import logging
 import typing
 
-from pcapi.core.mails.transactional.sendinblue_template_ids import SendinblueTransactionalEmailData
-from pcapi.core.mails.transactional.sendinblue_template_ids import SendinblueTransactionalWithoutTemplateEmailData
+from pcapi.core.mails.models.sendinblue_models import SendinblueTransactionalEmailData
+from pcapi.core.mails.models.sendinblue_models import SendinblueTransactionalWithoutTemplateEmailData
 
 
 logger = logging.getLogger(__name__)
-
-from ..models import MailResult
+from ..models.models import MailResult
 from .base import BaseBackend
 
 

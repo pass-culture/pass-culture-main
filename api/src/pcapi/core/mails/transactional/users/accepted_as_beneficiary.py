@@ -2,7 +2,7 @@ from typing import Optional
 from typing import Union
 
 from pcapi.core import mails
-from pcapi.core.mails.transactional.sendinblue_template_ids import SendinblueTransactionalEmailData
+from pcapi.core.mails.models.sendinblue_models import SendinblueTransactionalEmailData
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.users.models import User
 from pcapi.core.users.models import UserRole

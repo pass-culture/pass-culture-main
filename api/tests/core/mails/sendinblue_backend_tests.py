@@ -3,8 +3,8 @@ from unittest.mock import patch
 import pytest
 
 # from pcapi.core.mails.backends import sendinblue
-from pcapi.core.mails.transactional.sendinblue_template_ids import SendinblueTransactionalEmailData
-from pcapi.core.mails.transactional.sendinblue_template_ids import Template
+from pcapi.core.mails.models.sendinblue_models import SendinblueTransactionalEmailData
+from pcapi.core.mails.models.sendinblue_models import Template
 from pcapi.tasks.serialization.sendinblue_tasks import SendTransactionalEmailRequest
 from pcapi.utils.module_loading import import_string
 
