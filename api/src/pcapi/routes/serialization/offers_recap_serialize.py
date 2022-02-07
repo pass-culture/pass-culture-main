@@ -28,6 +28,7 @@ def _serialize_offer_paginated(offer: OfferRecap) -> dict:
         "venue": _serialize_venue(offer.venue),
         "venueId": humanize(offer.venue.id),
         "status": offer.status,
+        "isShowcase": offer.is_showcase,
     }
 
 
