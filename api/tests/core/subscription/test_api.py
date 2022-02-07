@@ -141,7 +141,7 @@ class EduconnectFlowTest:
         )
 
         profile_data = {
-            "activity": "Lycéen",
+            "activityId": "HIGH_SCHOOL_STUDENT",
             "schoolTypeId": "PUBLIC_HIGH_SCHOOL",
             "address": "1 rue des rues",
             "city": "Uneville",
@@ -151,6 +151,8 @@ class EduconnectFlowTest:
         }
 
         response = client.post("/native/v1/subscription/profile", profile_data)
+
+        assert response.status_code == 204
 
         assert user.city == "Uneville"
         assert subscription_api.has_completed_profile(user)
