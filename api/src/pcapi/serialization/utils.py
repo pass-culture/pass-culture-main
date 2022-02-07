@@ -128,7 +128,7 @@ def string_to_boolean_field(field_name: str) -> classmethod:
 
 def is_latin(s: str) -> bool:
     for char in s:
-        if char in (" ", "-", "'", ".", ","):
+        if char in (" ", "-", ".", ",", "'", "’"):
             continue
         if not "LATIN" in unicodedata.name(char):
             return False
