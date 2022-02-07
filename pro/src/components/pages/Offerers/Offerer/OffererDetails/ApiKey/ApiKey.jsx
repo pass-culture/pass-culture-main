@@ -25,7 +25,7 @@ const ApiKey = ({
   savedApiKeys,
   maxAllowedApiKeys,
   offererId,
-  loadOffererById,
+  reloadOfferer,
 }) => {
   const [newlyGeneratedKeys, setNewGeneratedKeys] = useState([])
   const [isGeneratingKey, setIsGeneratingKey] = useState(false)
@@ -57,12 +57,12 @@ const ApiKey = ({
   const confirmApiKeyDeletion = useCallback(async () => {
     try {
       await deleteOffererApiKey(apiKeyToDelete)
-      loadOffererById(offererId)
+      reloadOfferer(offererId)
     } catch (e) {
       notification.error("Une erreur s'est produite, veuillez réessayer")
     }
     setApiKeyToDelete(null)
-  }, [apiKeyToDelete, loadOffererById, notification, offererId])
+  }, [apiKeyToDelete, notification, offererId, reloadOfferer])
 
   const copyKey = apiKeyToCopy => async () => {
     try {
@@ -196,9 +196,9 @@ const ApiKey = ({
   )
 }
 ApiKey.propTypes = {
-  loadOffererById: PropTypes.func.isRequired,
   maxAllowedApiKeys: PropTypes.number.isRequired,
   offererId: PropTypes.string.isRequired,
+  reloadOfferer: PropTypes.func.isRequired,
   savedApiKeys: PropTypes.arrayOf(PropTypes.string).isRequired,
 }
 
