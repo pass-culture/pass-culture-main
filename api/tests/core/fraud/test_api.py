@@ -722,7 +722,7 @@ class DecideEligibilityTest:
             user=user, type=fraud_models.FraudCheckType.DMS, resultContent=dms_content
         )
 
-        result = fraud_api.decide_eligibility(user, dms_content.registration_datetime, birth_date)
+        result = fraud_api.decide_eligibility(user, dms_content)
         assert result == users_models.EligibilityType.AGE18
 
     @freeze_time("2020-01-02")
@@ -737,7 +737,7 @@ class DecideEligibilityTest:
             user=user, type=fraud_models.FraudCheckType.DMS, resultContent=dms_content
         )
 
-        result = fraud_api.decide_eligibility(user, dms_content.registration_datetime, birth_date)
+        result = fraud_api.decide_eligibility(user, dms_content)
         assert result == None
 
     @freeze_time("2020-01-02")
@@ -757,7 +757,7 @@ class DecideEligibilityTest:
             user=user, type=fraud_models.FraudCheckType.DMS, resultContent=dms_content
         )
 
-        result = fraud_api.decide_eligibility(user, dms_content.registration_datetime, birth_date)
+        result = fraud_api.decide_eligibility(user, dms_content)
         assert result == None
 
     @freeze_time("2020-01-02")
@@ -777,7 +777,7 @@ class DecideEligibilityTest:
             user=user, type=fraud_models.FraudCheckType.DMS, resultContent=dms_content
         )
 
-        result = fraud_api.decide_eligibility(user, dms_content.registration_datetime, birth_date)
+        result = fraud_api.decide_eligibility(user, dms_content)
         assert result == users_models.EligibilityType.AGE18
 
     @freeze_time("2020-01-02")
@@ -791,5 +791,5 @@ class DecideEligibilityTest:
             user=user, type=fraud_models.FraudCheckType.DMS, resultContent=dms_content
         )
 
-        result = fraud_api.decide_eligibility(user, dms_content.registration_datetime, birth_date)
+        result = fraud_api.decide_eligibility(user, dms_content)
         assert result == users_models.EligibilityType.AGE18

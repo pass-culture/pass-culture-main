@@ -260,9 +260,7 @@ def process_application(
         return
 
     try:
-        eligibility_type = fraud_api.decide_eligibility(
-            user, information.get_registration_datetime(), information.get_birth_date()
-        )
+        eligibility_type = fraud_api.decide_eligibility(user, information)
 
         fraud_api.create_honor_statement_fraud_check(
             user, "honor statement contained in DMS application", eligibility_type
@@ -307,9 +305,7 @@ def handle_validation_errors(
         if item == fraud_models.FraudReasonCode.DUPLICATE_ID_PIECE_NUMBER:
             subscription_messages.on_duplicate_user(user)
 
-    eligibility_type = fraud_api.decide_eligibility(
-        user, information.get_registration_datetime(), information.get_birth_date()
-    )
+    eligibility_type = fraud_api.decide_eligibility(user, information)
     # keeps the creation of a beneficiaryImport to avoid reprocess the same application
     # forever, it's mandatory to make get_already_processed_applications_ids work
     save_beneficiary_import_with_status(
@@ -326,9 +322,7 @@ def handle_validation_errors(
 def _process_rejection(
     information: fraud_models.DMSContent, procedure_id: int, reason: str, user: users_models.User = None
 ) -> None:
-    eligibility_type = fraud_api.decide_eligibility(
-        user, information.get_registration_datetime(), information.get_birth_date()
-    )
+    eligibility_type = fraud_api.decide_eligibility(user, information)
 
     # TODO: remove when we use fraud checks
     save_beneficiary_import_with_status(
