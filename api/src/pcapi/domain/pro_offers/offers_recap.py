@@ -59,6 +59,7 @@ class OfferRecap:
         venue_departement_code: Optional[str],
         stocks: list[dict],
         status: str,
+        is_showcase: bool,
     ):
         self.id = id
         self.has_booking_limit_datetimes_passed = has_booking_limit_datetimes_passed
@@ -90,6 +91,7 @@ class OfferRecap:
             for stock in stocks
         ]
         self.status = status
+        self.is_showcase = is_showcase
 
 
 class OffersRecap:

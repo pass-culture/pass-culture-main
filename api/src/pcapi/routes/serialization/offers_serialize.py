@@ -12,6 +12,7 @@ from pcapi.core.bookings.api import compute_cancellation_limit_date
 from pcapi.core.categories.conf import can_create_from_isbn
 from pcapi.core.categories.subcategories import SubcategoryIdEnum
 from pcapi.core.offers import repository as offers_repository
+from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import OfferStatus
 from pcapi.core.offers.models import Stock
 from pcapi.models.feature import FeatureToggle
@@ -327,6 +328,7 @@ class ListOffersOfferResponseModel(BaseModel):
     venue: ListOffersVenueResponseModel
     status: str
     venueId: str
+    isShowcase: Optional[bool]
 
 
 class ListOffersResponseModel(BaseModel):
