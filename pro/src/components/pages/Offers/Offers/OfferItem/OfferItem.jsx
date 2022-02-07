@@ -20,7 +20,7 @@ import { formatLocalTimeDateString } from 'utils/timezone'
 import useOfferStockEditionURL from '../../../../hooks/useOfferStockEditionURL'
 
 const OfferItem = ({ disabled, offer, isSelected, selectOffer }) => {
-  const { venue, stocks, id, isEducational } = offer
+  const { venue, stocks, id, isEducational, isShowcase } = offer
 
   const editionOfferLink = useOfferEditionURL(isEducational, id)
   const editionStockLink = useOfferStockEditionURL(isEducational, id)
@@ -55,6 +55,9 @@ const OfferItem = ({ disabled, offer, isSelected, selectOffer }) => {
     offer.status !== OFFER_STATUS_SOLD_OUT
 
   const getDateInformations = () => {
+    if (isShowcase) {
+      return 'Date et prix à définir'
+    }
     return stockSize === 1
       ? formatLocalTimeDateString(
           stocks[0].beginningDatetime,
@@ -180,6 +183,7 @@ OfferItem.propTypes = {
     isEvent: PropTypes.bool,
     productIsbn: PropTypes.string,
     isEducational: PropTypes.bool,
+    isShowcase: PropTypes.bool,
   }).isRequired,
   selectOffer: PropTypes.func.isRequired,
 }
