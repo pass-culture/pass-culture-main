@@ -39,12 +39,6 @@ def next_subscription_step(
 @spectree_serialize(on_success_status=204, api=blueprint.api)
 @authenticated_user_required
 def update_profile(user: users_models.User, body: serializers.ProfileUpdateRequest) -> None:
-    # TODO: Corentin: remove this when we send ids in the request body
-    if body.activity_id is not None:
-        activity = users_models.ActivityEnum[body.activity_id.value].value
-    else:
-        activity = body.activity.value
-
     subscription_api.update_user_profile(
         user,
         first_name=body.first_name,
@@ -52,7 +46,7 @@ def update_profile(user: users_models.User, body: serializers.ProfileUpdateReque
         address=body.address,
         city=body.city,
         postal_code=body.postal_code,
-        activity=activity,
+        activity=users_models.ActivityEnum[body.activity_id.value].value,
         school_type=users_models.SchoolTypeEnum[body.school_type_id.value] if body.school_type_id is not None else None,
     )
 
