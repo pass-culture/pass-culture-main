@@ -94,13 +94,6 @@ class LostPassword extends PureComponent {
     this.setState({ emailValue: event.target.value })
   }
 
-  handleToggleHidden = event => {
-    event.preventDefault()
-    this.setState(previousState => ({
-      isPasswordHidden: !previousState.isPasswordHidden,
-    }))
-  }
-
   isResetPasswordRequestSubmitDisabled = () => {
     const { emailValue } = this.state
 
