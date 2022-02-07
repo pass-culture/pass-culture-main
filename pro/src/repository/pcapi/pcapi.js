@@ -132,6 +132,10 @@ const createRequestBody = searchFilters => {
   return body
 }
 
+//
+// offerers
+//
+
 export const getAllOfferersNames = () => {
   return client.get('/offerers/names').then(response => response.offerersNames)
 }

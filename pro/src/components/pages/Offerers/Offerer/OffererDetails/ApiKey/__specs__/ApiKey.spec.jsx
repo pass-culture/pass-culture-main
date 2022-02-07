@@ -1,14 +1,12 @@
 /*
  * @debt rtl "Gaël: this file contains eslint error(s) based on eslint-testing-library plugin"
  * @debt complexity "Gaël: file nested too deep in directory structure"
- * @debt deprecated "Gaël: deprecated usage of redux-saga-data"
  */
 
 import '@testing-library/jest-dom'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import React from 'react'
 import { Provider } from 'react-redux'
-import * as reduxSagaData from 'redux-saga-data'
 
 import * as pcapi from 'repository/pcapi/pcapi'
 import * as notificationReducer from 'store/reducers/notificationReducer'
@@ -17,14 +15,14 @@ import {
   failToGenerateOffererApiKey,
   generateFakeOffererApiKey,
 } from 'utils/fakeApi'
-import { offererNormalizer } from 'utils/normalizers'
 
-import ApiKey from '../ApiKeyContainer'
+import ApiKey from '../ApiKey'
 
 const store = configureTestStore()
 const defaultProps = {
   maxAllowedApiKeys: 5,
   savedApiKeys: ['key-prefix1'],
+  reloadOfferer: jest.fn(),
 }
 
 Object.assign(navigator, {
@@ -39,6 +37,7 @@ const renderApiKey = async (props = defaultProps) => {
       <ApiKey
         maxAllowedApiKeys={props.maxAllowedApiKeys}
         offererId="AE"
+        reloadOfferer={props.reloadOfferer}
         savedApiKeys={props.savedApiKeys}
       />
     </Provider>
@@ -136,7 +135,6 @@ describe('src | Offerer | ApiKey', () => {
     const deleteSpy = jest
       .spyOn(pcapi, 'deleteOffererApiKey')
       .mockReturnValue(null)
-    const requestDataSpy = jest.spyOn(reduxSagaData, 'requestData')
     fireEvent.click(screen.getByText('supprimer'))
 
     // when
@@ -145,7 +143,7 @@ describe('src | Offerer | ApiKey', () => {
     // then
     expect(deleteSpy).not.toHaveBeenCalled()
     await waitFor(() => {
-      expect(requestDataSpy).not.toHaveBeenCalledWith()
+      expect(defaultProps.reloadOfferer).not.toHaveBeenCalledWith()
     })
   })
 
@@ -154,7 +152,6 @@ describe('src | Offerer | ApiKey', () => {
     const deleteSpy = jest
       .spyOn(pcapi, 'deleteOffererApiKey')
       .mockReturnValue(null)
-    const requestDataSpy = jest.spyOn(reduxSagaData, 'requestData')
     fireEvent.click(screen.getByText('supprimer'))
 
     // when
@@ -165,10 +162,7 @@ describe('src | Offerer | ApiKey', () => {
     // then
     expect(deleteSpy).toHaveBeenCalledWith('key-prefix1')
     await waitFor(() => {
-      expect(requestDataSpy).toHaveBeenCalledWith({
-        apiPath: '/offerers/AE',
-        normalizer: offererNormalizer,
-      })
+      expect(defaultProps.reloadOfferer).toHaveBeenCalledWith('AE')
     })
   })
 })
