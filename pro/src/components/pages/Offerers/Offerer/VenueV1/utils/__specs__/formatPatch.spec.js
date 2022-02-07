@@ -19,7 +19,6 @@ describe('formatPatch', () => {
         departementCode: '93',
         iban: 'FR7630001007941234567890185',
         id: 'ARRA',
-        idAtProviders: null,
         isValidated: true,
         isVirtual: false,
         lastProviderId: null,
@@ -31,7 +30,6 @@ describe('formatPatch', () => {
         publicName: 'Cinéma de la fin des fins',
         postalCode: '93600',
         siret: '22222222911111',
-        venueProvidersIds: [],
       }
 
       // when
@@ -73,7 +71,6 @@ describe('formatPatch', () => {
         departementCode: '93',
         iban: 'FR7630001007941234567890185',
         id: 'ARRA',
-        idAtProviders: null,
         isValidated: true,
         isVirtual: false,
         lastProviderId: null,
@@ -85,7 +82,6 @@ describe('formatPatch', () => {
         publicName: 'Cinéma de la fin publique',
         postalCode: '93600',
         siret: '22222222911111',
-        venueProvidersIds: [],
       }
 
       // when

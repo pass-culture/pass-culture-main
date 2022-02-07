@@ -25,7 +25,6 @@ type IAPIOfferer = {
   fieldsUpdated: []
   iban: string
   id: string
-  idAtProviders: null
   isActive: boolean
   isValidated: boolean
   lastProviderId: string | null
@@ -46,7 +45,6 @@ type IAPIOfferer = {
     fieldsUpdated: []
     iban: string
     id: string
-    idAtProviders: string | null
     isPermanent: true
     isVirtual: boolean
     lastProviderId: null

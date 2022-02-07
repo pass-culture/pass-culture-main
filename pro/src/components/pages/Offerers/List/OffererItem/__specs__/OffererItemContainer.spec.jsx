@@ -33,7 +33,6 @@ describe('src | components | pages | Offerers | OffererItem | OffererItemContain
             dateModifiedAtLastProvider: '2019-03-07T10:40:03.234016Z',
             departementCode: null,
             id: 'DA',
-            idAtProviders: null,
             isValidated: true,
             isVirtual: true,
             lastProviderId: null,
