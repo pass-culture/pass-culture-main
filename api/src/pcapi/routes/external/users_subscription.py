@@ -88,9 +88,7 @@ def dms_webhook_update_application_status(form: dms_validation.DMSWebhookRequest
         )
         return
 
-    eligibility_type = fraud_api.decide_eligibility(
-        user, application.get_registration_datetime(), application.get_birth_date()
-    )
+    eligibility_type = fraud_api.decide_eligibility(user, application)
     if eligibility_type is None:
         logger.info(
             "Birthdate of DMS application %d shows that user is not eligible",

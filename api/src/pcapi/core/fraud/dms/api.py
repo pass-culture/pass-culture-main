@@ -31,9 +31,7 @@ def create_fraud_check(
     source_data: fraud_models.DMSContent,
 ) -> fraud_models.BeneficiaryFraudCheck:
     application_id = str(source_data.application_id)
-    eligibility_type = fraud_api.decide_eligibility(
-        user, source_data.get_registration_datetime(), source_data.get_birth_date()
-    )
+    eligibility_type = fraud_api.decide_eligibility(user, source_data)
     fraud_check = fraud_models.BeneficiaryFraudCheck(
         user=user,
         type=fraud_models.FraudCheckType.DMS,
