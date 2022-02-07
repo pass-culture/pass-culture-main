@@ -80,6 +80,7 @@ def should_return_serialized_offers_with_relevant_informations():
                 "publicName": "Petite librairie",
             },
             "venueId": humanize(venue_id),
+            "isShowcase": False,
         }
     ]
     assert result == expected_serialized_offer

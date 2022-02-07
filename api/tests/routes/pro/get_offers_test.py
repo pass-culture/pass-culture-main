@@ -74,6 +74,7 @@ class Returns200Test:
                     "publicName": "My public name",
                 },
                 "venueId": humanize(requested_venue.id),
+                "isShowcase": None,
             }
         ]
 
