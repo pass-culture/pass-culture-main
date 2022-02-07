@@ -3,7 +3,7 @@
  */
 
 import PropTypes from 'prop-types'
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState, useCallback } from 'react'
 import { NavLink } from 'react-router-dom'
 
 import useActiveFeature from 'components/hooks/useActiveFeature'
@@ -14,7 +14,7 @@ import Titles from 'components/layout/Titles/Titles'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { HTTP_STATUS } from 'repository/pcapi/pcapiClient'
 
-import ApiKey from './ApiKey/ApiKeyContainer'
+import ApiKey from './ApiKey/ApiKey'
 import BankInformation from './BankInformation/BankInformation'
 import { Offerer } from './Offerer'
 import VenuesContainer from './Venues/VenuesContainer'
@@ -36,29 +36,45 @@ const OffererDetails = ({ offererId }) => {
     )
   }, [offerer, businessUnitList, isBankInformationWithSiretActive])
 
-  useEffect(() => {
-    async function loadOfferer(offererId) {
+  const resetOfferer = useCallback(id => {
+    setOfferer({ id: id, managedVenues: [] })
+    setBusinessUnitList([])
+    setPhysicalVenues([])
+  }, [])
+
+  const loadOfferer = useCallback(
+    async id => {
       try {
-        const receivedOfferer = await pcapi.getOfferer(offererId)
+        const receivedOfferer = await pcapi.getOfferer(id)
         setOfferer(new Offerer(receivedOfferer))
         setPhysicalVenues(
           receivedOfferer.managedVenues.filter(venue => !venue.isVirtual)
         )
+      } catch (error) {
+        if (error.status === HTTP_STATUS.FORBIDDEN) {
+          resetOfferer(id)
+        }
+      }
+    },
+    [resetOfferer]
+  )
 
-        const receivedBusinessUnitList = await pcapi.getBusinessUnits(offererId)
+  useEffect(() => {
+    async function initializeOfferer(id) {
+      try {
+        await loadOfferer(id)
+        const receivedBusinessUnitList = await pcapi.getBusinessUnits(id)
         setBusinessUnitList(receivedBusinessUnitList)
       } catch (error) {
         if (error.status === HTTP_STATUS.FORBIDDEN) {
-          setOfferer({ id: offererId, managedVenues: [] })
-          setBusinessUnitList([])
-          setPhysicalVenues([])
+          resetOfferer(id)
         }
       }
       setIsLoading(false)
     }
 
-    offererId && loadOfferer(offererId)
-  }, [offererId])
+    offererId && initializeOfferer(offererId)
+  }, [offererId, loadOfferer, resetOfferer])
 
   if (isLoading) {
     return (
@@ -111,6 +127,7 @@ const OffererDetails = ({ offererId }) => {
       <ApiKey
         maxAllowedApiKeys={offerer.apiKey.maxAllowed}
         offererId={offerer.id}
+        reloadOfferer={loadOfferer}
         savedApiKeys={offerer.apiKey.savedApiKeys}
       />
       <VenuesContainer offererId={offerer.id} venues={physicalVenues} />
