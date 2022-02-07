@@ -56,7 +56,7 @@ const PrebookingModal = ({
         <br />
         <br />
         <b>2)</b> Votre chef d’établissement pourra alors{' '}
-        <b>approuver la préréservation</b>.
+        <b>confirmer la préréservation</b>.
       </p>
       <div className="prebooking-modal-buttons">
         <Button
