@@ -1,8 +1,8 @@
 from typing import Union
 
 from pcapi.core import mails
-from pcapi.core.mails.transactional.sendinblue_template_ids import SendinblueTransactionalEmailData
-from pcapi.core.mails.transactional.sendinblue_template_ids import SendinblueTransactionalWithoutTemplateEmailData
+from pcapi.core.mails.models.sendinblue_models import SendinblueTransactionalEmailData
+from pcapi.core.mails.models.sendinblue_models import SendinblueTransactionalWithoutTemplateEmailData
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.users.api import create_reset_password_token
 from pcapi.core.users.models import Token

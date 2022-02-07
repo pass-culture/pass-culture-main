@@ -2,16 +2,17 @@ from typing import Iterable
 from typing import Union
 
 from pcapi import settings
-from pcapi.core.mails.transactional.sendinblue_template_ids import SendinblueTransactionalEmailData
+from pcapi.core.mails.models.sendinblue_models import SendinblueTransactionalEmailData
+from pcapi.core.mails.models.sendinblue_models import SendinblueTransactionalWithoutTemplateEmailData
 
-from ..models import MailResult
+from ..models.models import MailResult
 
 
 class BaseBackend:
     def send_mail(
         self,
         recipients: Iterable[str],
-        data: Union[SendinblueTransactionalEmailData, dict],
+        data: Union[SendinblueTransactionalEmailData, SendinblueTransactionalWithoutTemplateEmailData, dict],
     ) -> MailResult:
         if isinstance(data, dict):  # for mailjet
             data.setdefault("FromEmail", settings.SUPPORT_EMAIL_ADDRESS)

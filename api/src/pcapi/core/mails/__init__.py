@@ -2,12 +2,12 @@ from typing import Iterable
 from typing import Union
 
 from pcapi import settings
-from pcapi.core.mails.transactional.sendinblue_template_ids import SendinblueTransactionalEmailData
-from pcapi.core.mails.transactional.sendinblue_template_ids import SendinblueTransactionalWithoutTemplateEmailData
+from pcapi.core.mails.models.sendinblue_models import SendinblueTransactionalEmailData
+from pcapi.core.mails.models.sendinblue_models import SendinblueTransactionalWithoutTemplateEmailData
 from pcapi.models.feature import FeatureToggle
 from pcapi.utils.module_loading import import_string
 
-from . import models
+from .models import models
 
 
 # TODO: CorentinN - remove this when all transactional emails use Sendinblue
