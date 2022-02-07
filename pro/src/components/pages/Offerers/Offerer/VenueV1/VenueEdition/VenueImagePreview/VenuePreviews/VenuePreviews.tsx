@@ -24,7 +24,7 @@ export const VenuePreviews: FunctionComponent<Props> = ({ preview }) => (
         alt=""
         className={homeStyle['image-preview-home-preview']}
         src={preview}
-      />{' '}
+      />
     </ImagePreview>
     <ImagePreview title="Page Lieu">
       <img
