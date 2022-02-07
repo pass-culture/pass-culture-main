@@ -38,6 +38,7 @@ class ProfileUpdateRequest(BaseModel):
 
     @validator("first_name", "last_name", "address", "city", "postal_code")
     def mandatory_string_fields_cannot_be_empty(cls, v):  # pylint: disable=no-self-argument
+        v = v.strip()
         if not v:
             raise ValueError("This field cannot be empty")
         return v
