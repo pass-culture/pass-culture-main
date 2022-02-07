@@ -11,6 +11,7 @@ from dateutil.relativedelta import relativedelta
 from google.api_core import retry
 from google.api_core.exceptions import AlreadyExists
 from google.cloud import tasks_v2
+from google.protobuf import timestamp_pb2
 import requests
 
 from pcapi import settings
@@ -59,7 +60,9 @@ def enqueue_task(
         task_request["name"] = client.task_path(settings.GCP_PROJECT, settings.GCP_REGION_CLOUD_TASK, queue, task_id)
 
     if schedule_time:
-        task_request["schedule_time"] = schedule_time.isoformat()
+        timestamp = timestamp_pb2.Timestamp()
+        timestamp.FromDatetime(schedule_time)
+        task_request["schedule_time"] = timestamp
 
     try:
         response = client.create_task(
