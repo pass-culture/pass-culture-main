@@ -13,6 +13,7 @@ class UtilsUnitTest:
             ("Verona", True),
             ("Charles-Apollon", True),
             ("John O'Wick", True),
+            ("John O’Wick", True),
             ("Martin king, Jr.", True),
             ("მარიამ", False),
             ("aé", True),
