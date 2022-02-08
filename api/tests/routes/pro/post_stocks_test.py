@@ -348,6 +348,37 @@ class Returns400Test:
         assert response.status_code == 400
         assert response.json["global"] == ["Impossible de créer des codes d'activation sur une offre non-numérique"]
 
+    @pytest.mark.parametrize("price_str", [float("NaN"), float("inf"), float("-inf")])
+    def test_create_one_stock_with_invalid_prices(self, price_str, app):
+        # Given
+        offer = offers_factories.ThingOfferFactory()
+        offers_factories.UserOffererFactory(
+            user__email="user@example.com",
+            offerer=offer.venue.managingOfferer,
+        )
+
+        # When
+        stock_data = {
+            "offerId": humanize(offer.id),
+            "stocks": [{"price": float(price_str)}],
+        }
+
+        response = (
+            TestClient(app.test_client()).with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
+        )
+
+        # Then
+        assert response.status_code == 400
+
+        response_dict = response.json
+        assert response_dict == {
+            "stocks.0.id": ["Ce champ est obligatoire"],
+            "stocks.0.price": [
+                "La valeur n'est pas un nombre décimal valide",
+                "La valeur n'est pas un nombre décimal valide",
+            ],
+        }
+
 
 @pytest.mark.usefixtures("db_session")
 class Returns403Test:
