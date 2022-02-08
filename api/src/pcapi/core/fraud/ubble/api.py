@@ -161,17 +161,7 @@ def is_user_allowed_to_perform_ubble_check(
         fraud_models.BeneficiaryFraudCheck.eligibilityType == eligibility_type,
     ).all()
 
-    filtered_fraud_checks: fraud_models.BeneficiaryFraudCheck = [
-        fraud_check
-        for fraud_check in fraud_checks
-        if fraud_check.source_data().status
-        not in [
-            ubble_fraud_models.UbbleIdentificationStatus.INITIATED,
-            ubble_fraud_models.UbbleIdentificationStatus.UNINITIATED,
-        ]
-    ]
-
-    for fraud_check in filtered_fraud_checks:
+    for fraud_check in fraud_checks:
         if not fraud_check.reasonCodes:
             # Pending, OK... or any error in which reason code is missing
             return False
@@ -184,19 +174,17 @@ def is_user_allowed_to_perform_ubble_check(
             ):
                 return False
 
-    if len(filtered_fraud_checks) >= MAX_UBBLE_RETRIES:
+    if len(fraud_checks) >= MAX_UBBLE_RETRIES:
         return False
 
     return True
 
 
-def get_pending_identity_check(user: users_models.User) -> typing.Optional[fraud_models.BeneficiaryFraudCheck]:
+def get_started_identity_check(user: users_models.User) -> typing.Optional[fraud_models.BeneficiaryFraudCheck]:
     started_fraud_check = (
         fraud_models.BeneficiaryFraudCheck.query.filter(
             fraud_models.BeneficiaryFraudCheck.user == user,
-            fraud_models.BeneficiaryFraudCheck.status.in_(
-                [fraud_models.FraudCheckStatus.STARTED, fraud_models.FraudCheckStatus.PENDING]
-            ),
+            fraud_models.BeneficiaryFraudCheck.status == fraud_models.FraudCheckStatus.STARTED,
             fraud_models.BeneficiaryFraudCheck.type == fraud_models.FraudCheckType.UBBLE,
             fraud_models.BeneficiaryFraudCheck.eligibilityType == user.eligibility,
         )

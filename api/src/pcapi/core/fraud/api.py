@@ -507,8 +507,6 @@ def has_user_pending_identity_check(user: users_models.User) -> bool:
             models.BeneficiaryFraudCheck.status == models.FraudCheckStatus.PENDING,
             models.BeneficiaryFraudCheck.type.in_(models.IDENTITY_CHECK_TYPES),
             models.BeneficiaryFraudCheck.eligibilityType == user.eligibility,
-            models.BeneficiaryFraudCheck.resultContent["status"]
-            != models.ubble_fraud_models.UbbleIdentificationStatus.INITIATED,
         ).exists()
     ).scalar()
 
