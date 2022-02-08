@@ -3,6 +3,7 @@ import logging
 from pcapi import settings
 from pcapi.connectors.dms import api as dms_connector_api
 from pcapi.core.fraud import api as fraud_api
+from pcapi.core.fraud import repository as fraud_repository
 from pcapi.core.fraud.dms import api as fraud_dms_api
 import pcapi.core.fraud.models as fraud_models
 from pcapi.core.mails.transactional.users.pre_subscription_dms_error import (
@@ -210,8 +211,8 @@ def process_user_parsing_error(application_id: int, procedure_id: int) -> None:
         f"Erreur lors de l'analyse des données du dossier {application_id}. "
         f"Impossible de récupérer l'email de l'utilisateur - Procedure {procedure_id}"
     )
-    # TODO: Create an Orphan fraud check, that may be reconciled with a user later, with the application_id
-    # This is detailed in https://passculture.atlassian.net/browse/PC-12976
+
+    fraud_repository.create_orphan_dms_application(application_id=application_id, procedure_id=procedure_id)
 
     # TODO: remove this line when the fraud check is the only object used for DMS applications
     # keep a compatibility with BeneficiaryImport table
@@ -232,6 +233,9 @@ def process_user_not_found_error(email: str, application_id: int, procedure_id: 
         procedure_id,
     )
     # TODO: Create fraud check and find a way to remove the application from DMS.
+    fraud_repository.create_orphan_dms_application(
+        application_id=application_id, procedure_id=procedure_id, email=email
+    )
 
     # TODO: remove when the fraud check is the only object used for DMS applications
     save_beneficiary_import_with_status(
