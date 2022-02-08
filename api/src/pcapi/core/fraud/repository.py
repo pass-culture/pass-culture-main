@@ -36,3 +36,14 @@ def has_failed_phone_validation(user) -> bool:
             models.BeneficiaryFraudCheck.type == models.FraudCheckType.PHONE_VALIDATION,
         ).exists()
     ).scalar()
+
+
+def create_orphan_dms_application(
+    application_id: int, procedure_id: int, email: str = ""
+) -> models.OrphanDmsApplication:
+    orphan_dms_application = models.OrphanDmsApplication(
+        application_id=application_id, process_id=procedure_id, email=email
+    )
+    db.session.add(orphan_dms_application)
+    db.session.commit()
+    return orphan_dms_application
