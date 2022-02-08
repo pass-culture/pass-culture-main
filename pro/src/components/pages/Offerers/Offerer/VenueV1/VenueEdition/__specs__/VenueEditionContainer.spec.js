@@ -8,11 +8,7 @@ import { venueNormalizer } from 'utils/normalizers'
 
 import VenueLabel from '../../ValueObjects/VenueLabel'
 import VenueType from '../../ValueObjects/VenueType'
-import {
-  mapDispatchToProps,
-  mapStateToProps,
-  mergeProps,
-} from '../VenueEditionContainer'
+import { mapDispatchToProps, mapStateToProps } from '../VenueEditionContainer'
 
 window.scroll = () => {}
 
@@ -470,49 +466,6 @@ describe('src | components | pages | VenueContainer | mapDispatchToProps', () =>
         },
         type: 'SHOW_NOTIFICATION',
       })
-    })
-  })
-})
-
-describe('src | components | pages | VenueContainer | mergeProps', () => {
-  it('should spread stateProps, dispatchProps and ownProps into mergedProps', () => {
-    // given
-    const stateProps = {}
-    const dispatchProps = {
-      handleInitialRequest: () => {},
-    }
-    const ownProps = {
-      match: {
-        params: {},
-      },
-    }
-
-    // when
-    const mergedProps = mergeProps(stateProps, dispatchProps, ownProps)
-
-    // then
-    expect(mergedProps).toStrictEqual({
-      match: ownProps.match,
-      handleInitialRequest: expect.any(Function),
-      trackModifyVenue: expect.any(Function),
-    })
-  })
-
-  it('should map a tracking event for updating a venue', () => {
-    // given
-    const stateProps = {}
-    const ownProps = {
-      tracking: {
-        trackEvent: jest.fn(),
-      },
-    }
-    // when
-    mergeProps(stateProps, {}, ownProps).trackModifyVenue('RTgfd67')
-
-    // then
-    expect(ownProps.tracking.trackEvent).toHaveBeenCalledWith({
-      action: 'modifyVenue',
-      name: 'RTgfd67',
     })
   })
 })

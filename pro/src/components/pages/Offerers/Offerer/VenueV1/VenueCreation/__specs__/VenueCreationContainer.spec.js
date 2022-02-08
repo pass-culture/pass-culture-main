@@ -312,26 +312,6 @@ describe('src | components | pages | VenueContainer | mergeProps', () => {
     expect(mergedProps).toStrictEqual({
       match: ownProps.match,
       handleInitialRequest: expect.any(Function),
-      trackCreateVenue: expect.any(Function),
-    })
-  })
-
-  it('should map a tracking event for creating a venue', () => {
-    // given
-    const stateProps = {}
-    const ownProps = {
-      tracking: {
-        trackEvent: jest.fn(),
-      },
-    }
-
-    // when
-    mergeProps(stateProps, {}, ownProps).trackCreateVenue('RTgfd67')
-
-    // then
-    expect(ownProps.tracking.trackEvent).toHaveBeenCalledWith({
-      action: 'createVenue',
-      name: 'RTgfd67',
     })
   })
 })

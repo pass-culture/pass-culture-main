@@ -167,11 +167,9 @@ class Desk extends Component {
 
     validateBooking(token)
       .then(() => {
-        const { trackValidateBookingSuccess } = this.props
         this.setState({
           message: 'Contremarque validée !',
         })
-        trackValidateBookingSuccess(token)
         this.resetToken()
       })
       .catch(error => {
@@ -334,7 +332,6 @@ class Desk extends Component {
 Desk.propTypes = {
   getBooking: PropTypes.func.isRequired,
   invalidateBooking: PropTypes.func.isRequired,
-  trackValidateBookingSuccess: PropTypes.func.isRequired,
   validateBooking: PropTypes.func.isRequired,
 }
 
