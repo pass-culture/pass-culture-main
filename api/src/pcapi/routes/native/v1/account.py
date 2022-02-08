@@ -339,7 +339,7 @@ def start_identification_session(
             status_code=400,
         )
 
-    fraud_check = ubble_fraud_api.get_started_identity_check(user)
+    fraud_check = ubble_fraud_api.get_restartable_identity_checks(user)
     if fraud_check:
         return serializers.IdentificationSessionResponse(identificationUrl=fraud_check.source_data().identification_url)
 
