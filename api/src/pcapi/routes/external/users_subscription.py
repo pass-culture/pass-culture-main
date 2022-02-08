@@ -41,11 +41,13 @@ DMS_APPLICATION_MAP = {
 def dms_webhook_update_application_status(form: dms_validation.DMSWebhookRequest) -> None:
     client = dms_connector_api.DMSGraphQLClient()
     raw_data = client.get_single_application_details(form.dossier_id)
-    # todo(bcalvez) Use new IdcheckBackend to correctly convert this data
+
     user_email = raw_data["dossier"]["usager"]["email"]
+    application_id = raw_data["dossier"]["number"]
+    dossier_id = raw_data["dossier"]["id"]
 
     log_extra_data = {
-        "application_id": raw_data["dossier"]["number"],
+        "application_id": application_id,
         "dossier_id": form.dossier_id,
         "procedure_id": form.procedure_id,
         "user_email": user_email,
@@ -55,16 +57,16 @@ def dms_webhook_update_application_status(form: dms_validation.DMSWebhookRequest
     if not user:
         if form.state == dms_connector_api.GraphQLApplicationStates.draft:
             client.send_user_message(
-                raw_data["dossier"]["id"],
+                dossier_id,
                 settings.DMS_INSTRUCTOR_ID,
                 subscription_messages.DMS_ERROR_MESSAGE_USER_NOT_FOUND,
             )
 
         logger.info(
             "User not found for application %s procedure %s email %s",
-            raw_data["dossier"]["number"],
+            application_id,
             form.procedure_id,
-            raw_data["dossier"]["usager"]["email"],
+            user_email,
             extra=log_extra_data,
         )
         return
@@ -81,7 +83,7 @@ def dms_webhook_update_application_status(form: dms_validation.DMSWebhookRequest
             user, list(parsing_error.errors.keys())
         )
         if form.state == dms_connector_api.GraphQLApplicationStates.draft:
-            dms_subscription_api.notify_parsing_exception(parsing_error.errors, raw_data["dossier"]["id"], client)
+            dms_subscription_api.notify_parsing_exception(parsing_error.errors, dossier_id, client)
 
         logger.info(
             "Cannot parse DMS application %s in webhook. Errors will be handled in the import_dms_users cron",
@@ -100,7 +102,7 @@ def dms_webhook_update_application_status(form: dms_validation.DMSWebhookRequest
         subscription_messages.on_dms_application_parsing_errors_but_updatables_values(user, ["birth_date"])
         if form.state == dms_connector_api.GraphQLApplicationStates.draft:
             client.send_user_message(
-                raw_data["dossier"]["id"],
+                dossier_id,
                 settings.DMS_INSTRUCTOR_ID,
                 subscription_messages.DMS_ERROR_MESSSAGE_BIRTH_DATE,
             )
