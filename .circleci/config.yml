@@ -142,7 +142,9 @@ commands:
       version_file:
         type: string
     steps:
-      - run: echo "export CHART_VERSION=$(cat << parameters.version_file >> | tr -d '[:space:]')" >> $BASH_ENV
+      - run:
+          name: Export Chart Version
+          command: echo "export CHART_VERSION=$(cat <<parameters.version_file>> | grep "chartVersion" | awk -F':' '{print $2}' | tr -d '[:space:]')" >> $BASH_ENV
 
   deploy-helm-chart:
     description: Deploy Crons and worker via helm to Kubernetes Cluster
@@ -769,7 +771,7 @@ jobs:
       - authenticate_gcp:
           gcp-key-name: GCP_METIER_KEY
       - export_chart_version:
-          version_file: ~/pass-culture-deployment/helm/db-ops/chart_version.txt
+          version_file: ~/pass-culture-deployment/helm/db-ops/values.${DBOPS_ENV}.yaml
       - run:
           name: Get GKE cluster credentials
           command: gcloud container clusters get-credentials --region ${GCP_REGION} ${GKE_CLUSTER_NAME}
@@ -813,7 +815,7 @@ jobs:
           gcp-key-name: GCP_METIER_KEY
       - export_app_version
       - export_chart_version:
-          version_file: ~/pass-culture-deployment/helm/pcapi/chart_version.txt
+          version_file: ~/pass-culture-deployment/helm/pcapi/values.<<parameters.helm_environment>>.yaml
       - run:
           name: Get GKE cluster credentials
           command: gcloud container clusters get-credentials --region ${GCP_REGION} ${GKE_CLUSTER_NAME}
