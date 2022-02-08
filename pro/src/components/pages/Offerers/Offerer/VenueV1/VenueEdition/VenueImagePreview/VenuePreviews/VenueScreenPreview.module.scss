@@ -1,6 +1,5 @@
 .image-preview-shell {
-  left: rem(26px);
-  top: rem(214px);
+  top: rem(180px);
   position: absolute;
   height: 335px;
 }
@@ -8,17 +7,17 @@
 .image-preview-blur-venue-preview {
   background-color: $white;
   filter: blur(2px);
-  left: rem(27px);
+  left: rem(1px);
   position: absolute;
-  top: rem(35px);
+  top: rem(1px);
   height: 191px;
 }
 
 .image-preview-venue-preview {
   background-color: $white;
   border-radius: rem(5px);
-  left: rem(38px);
+  left: rem(12px);
   position: absolute;
-  top: rem(110px);
+  top: rem(76px);
   height: 176px;
 }

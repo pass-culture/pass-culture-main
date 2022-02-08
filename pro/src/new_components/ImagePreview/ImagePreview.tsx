@@ -12,7 +12,7 @@ export const ImagePreview: FunctionComponent<ImagePreviewScreenProps> = ({
 }) => (
   <figure className="image-preview-previews-wrapper">
     <MobileShell />
-    {children}
+    <div className="image-preview-screen">{children}</div>
     <figcaption>{title}</figcaption>
   </figure>
 )

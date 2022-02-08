@@ -1,6 +1,5 @@
 .image-preview-shell {
-  left: rem(26px);
-  top: rem(270px);
+  top: rem(236px);
   position: absolute;
   height: 280px;
 }
@@ -8,17 +7,17 @@
 .image-preview-blur-offer-preview {
   background-color: $white;
   filter: blur(2px);
-  left: rem(27px);
+  left: rem(1px);
   position: absolute;
-  top: rem(35px);
+  top: rem(1px);
   height: 435px;
 }
 
 .image-preview-offer-preview {
   background-color: $white;
   border-radius: rem(5px);
-  left: rem(91px);
+  left: rem(65px);
   position: absolute;
-  top: rem(97px);
+  top: rem(63px);
   height: 247px;
 }
