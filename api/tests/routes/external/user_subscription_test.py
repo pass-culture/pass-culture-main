@@ -3,6 +3,7 @@ import json
 import logging
 import time
 import typing
+from unittest import mock
 from unittest.mock import patch
 import uuid
 
@@ -481,6 +482,25 @@ class UbbleWebhookTest:
 
         assert response.status_code == 403
         assert response.json == {"signature": ["Invalid signature"]}
+
+    def test_exception_during_workflow_update(self, client):
+        current_identification_state = test_factories.IdentificationState.INITIATED
+        notified_identification_state = test_factories.IdentificationState.PROCESSING
+        payload, _, _ = self._init_test(current_identification_state, notified_identification_state)
+        signature = self._get_signature(payload)
+
+        with mock.patch(
+            "pcapi.routes.external.users_subscription.ubble_webhook_update_application_status"
+        ) as update_mock:
+            update_mock.return_value = Exception
+            response = client.post(
+                "/webhooks/ubble/application_status",
+                headers={"Ubble-Signature": signature},
+                raw_json=payload,
+            )
+
+        assert response.status_code == 500
+        assert response.json == {"msg": "an error occured during workflow update"}
 
     def test_fraud_check_initiated(self, client, ubble_mocker):
         current_identification_state = test_factories.IdentificationState.NEW
