@@ -11,10 +11,9 @@ from pcapi.core.offerers.models import Venue
 from pcapi.routes.native.utils import convert_to_cent
 from pcapi.routes.native.v1.serialization.common_models import Coordinates
 from pcapi.routes.native.v1.serialization.offers import OfferImageResponse
+from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_utc_date
-
-from . import BaseModel
 
 
 class BookOfferRequest(BaseModel):

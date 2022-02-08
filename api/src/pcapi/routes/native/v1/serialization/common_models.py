@@ -1,7 +1,7 @@
 from decimal import Decimal
 from typing import Optional
 
-from . import BaseModel
+from pcapi.routes.serialization import BaseModel
 
 
 class Coordinates(BaseModel):

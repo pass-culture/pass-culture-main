@@ -39,10 +39,9 @@ from pcapi.core.users.utils import decode_jwt_token
 from pcapi.core.users.utils import sanitize_email
 from pcapi.models.feature import FeatureToggle
 from pcapi.routes.native.utils import convert_to_cent
+from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_utc_date
-
-from . import BaseModel
 
 
 class AccountRequest(BaseModel):
