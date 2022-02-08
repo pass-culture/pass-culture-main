@@ -121,15 +121,6 @@ describe('thumbnail edition', () => {
         )
         expect(shutterstockLink).toHaveAttribute('rel', 'noopener noreferrer')
         expect(shutterstockLink).toHaveAttribute('target', '_blank')
-        expect(screen.getByText('Gabarits')).toBeInTheDocument()
-        expect(
-          screen.getByRole('link', { name: 'Gabarit Photoshop (.psd, 116 Ko)' })
-        ).toBeInTheDocument()
-        expect(
-          screen.getByRole('link', {
-            name: 'Gabarit Illustrator (.eps, 836 Ko)',
-          })
-        ).toBeInTheDocument()
       })
 
       describe('and is selecting and image', () => {
