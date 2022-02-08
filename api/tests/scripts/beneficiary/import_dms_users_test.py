@@ -23,8 +23,6 @@ from pcapi.core.users import api as users_api
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.core.users.constants import ELIGIBILITY_AGE_18
-from pcapi.models.beneficiary_import import BeneficiaryImport
-from pcapi.models.beneficiary_import import BeneficiaryImportSources
 from pcapi.models.beneficiary_import_status import ImportStatus
 import pcapi.notifications.push.testing as push_testing
 
@@ -109,10 +107,11 @@ class RunTest:
         dms_api.import_dms_users(procedure_id=6712558)
 
         # then
-        beneficiary_import = BeneficiaryImport.query.first()
-        assert beneficiary_import.currentStatus == ImportStatus.ERROR
-        assert beneficiary_import.applicationId == 123
-        assert beneficiary_import.detail == "Le dossier 123 contient des erreurs et a été ignoré - Procedure 6712558"
+        dms_fraud_check = fraud_models.BeneficiaryFraudCheck.query.first()
+        assert dms_fraud_check.userId == user.id
+        assert dms_fraud_check.thirdPartyId == "123"
+        assert dms_fraud_check.status == fraud_models.FraudCheckStatus.ERROR
+        assert dms_fraud_check.reason == "Le dossier 123 contient des erreurs et a été ignoré - Procedure 6712558"
 
     @patch.object(dms_connector_api.DMSGraphQLClient, "get_applications_with_details")
     @patch("pcapi.core.subscription.api.on_successful_application")
@@ -146,18 +145,21 @@ class RunTest:
         get_applications_with_details.return_value = [
             make_graphql_application(123, "closed", email="john.doe@example.com")
         ]
-        initial_beneficiary_import_id = user.beneficiaryImports[0].id
 
         dms_api.import_dms_users(procedure_id=6712558)
 
-        beneficiary_import = BeneficiaryImport.query.filter(
-            BeneficiaryImport.id != initial_beneficiary_import_id
-        ).first()
-        details = {status.detail for status in beneficiary_import.statuses}
-        assert beneficiary_import.currentStatus == ImportStatus.REJECTED
-        assert beneficiary_import.applicationId == 123
-        assert details == {"Compte existant avec cet email", "Voir les details dans la page support"}
-        assert beneficiary_import.beneficiary == user
+        fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter(
+            fraud_models.BeneficiaryFraudCheck.type == fraud_models.FraudCheckType.DMS
+        ).one()
+        assert fraud_check.userId == user.id
+        assert fraud_check.thirdPartyId == "123"
+        assert fraud_check.status == fraud_models.FraudCheckStatus.KO
+        assert fraud_check.reason == (
+            "L’utilisateur est déjà bénéfiaire du pass AGE18 ; "
+            "L’utilisateur est déjà bénéfiaire, avec un portefeuille non expiré. "
+            "Il ne peut pas prétendre au pass culture 18 ans"
+        )
+
         on_sucessful_application.assert_not_called()
 
     @override_features(FORCE_PHONE_VALIDATION=False)
@@ -192,10 +194,6 @@ class RunTest:
                 registration_datetime=datetime(2020, 5, 13, 9, 9, 46, tzinfo=timezone(timedelta(seconds=7200))),
                 id_piece_number="123123121",
             ),
-            eligibility_type=users_models.EligibilityType.AGE18,
-            application_id=123,
-            source_id=6712558,
-            source=BeneficiaryImportSources.demarches_simplifiees,
         )
 
 
@@ -327,13 +325,11 @@ class RunIntegrationTest:
         assert user.address == "3 La Bigotais 22800 Saint-Donan"
         assert user.phoneNumber == "0123456789"
 
-        assert BeneficiaryImport.query.count() == 1
-
-        beneficiary_import = BeneficiaryImport.query.first()
-        assert beneficiary_import.source == "demarches_simplifiees"
-        assert beneficiary_import.applicationId == 123
-        assert beneficiary_import.beneficiary == user
-        assert beneficiary_import.currentStatus == ImportStatus.CREATED
+        fraud_check = fraud_models.BeneficiaryFraudCheck.query.first()
+        assert fraud_check.userId == user.id
+        assert fraud_check.thirdPartyId == "123"
+        assert fraud_check.type == fraud_models.FraudCheckType.DMS
+        assert fraud_check.status == fraud_models.FraudCheckStatus.OK
         assert len(push_testing.requests) == 2
 
     @patch.object(dms_connector_api.DMSGraphQLClient, "get_applications_with_details")
@@ -365,21 +361,26 @@ class RunIntegrationTest:
         age_18_deposit = next(deposit for deposit in deposits if deposit.type == DepositType.GRANT_18)
         assert len(deposits) == 2
         assert age_18_deposit.amount == 300
-        assert BeneficiaryImport.query.count() == 2
+
+        fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter(
+            fraud_models.BeneficiaryFraudCheck.type == fraud_models.FraudCheckType.DMS
+        ).one()
+        assert fraud_check.userId == user.id
+        assert fraud_check.thirdPartyId == "123"
+        assert fraud_check.status == fraud_models.FraudCheckStatus.OK
 
     @patch.object(dms_connector_api.DMSGraphQLClient, "get_applications_with_details")
-    def test_import_user_requires_pre_creation(self, get_applications_with_details):
+    def test_import_with_no_user_found(self, get_applications_with_details):
         # when
         get_applications_with_details.return_value = [
             make_graphql_application(application_id=123, state="closed", email="nonexistant@example.com")
         ]
 
         dms_api.import_dms_users(procedure_id=6712558)
-        beneficiary_import = BeneficiaryImport.query.first()
-        assert beneficiary_import.source == "demarches_simplifiees"
-        assert beneficiary_import.applicationId == 123
-        assert beneficiary_import.currentStatus == ImportStatus.ERROR
-        assert beneficiary_import.statuses[-1].detail == "Aucun utilisateur trouvé pour l'email nonexistant@example.com"
+        dms_application = fraud_models.OrphanDmsApplication.query.first()
+        assert dms_application.application_id == 123
+        assert dms_application.process_id == 6712558
+        assert dms_application.email == "nonexistant@example.com"
 
     @override_features(FORCE_PHONE_VALIDATION=True)
     @patch.object(dms_connector_api.DMSGraphQLClient, "get_applications_with_details")
@@ -418,13 +419,6 @@ class RunIntegrationTest:
             user=user, type=fraud_models.FraudCheckType.DMS, status=fraud_models.FraudCheckStatus.OK
         ).one_or_none()
         assert dms_check
-        assert BeneficiaryImport.query.count() == 1
-
-        beneficiary_import = BeneficiaryImport.query.first()
-        assert beneficiary_import.source == "demarches_simplifiees"
-        assert beneficiary_import.applicationId == 123
-        assert beneficiary_import.beneficiary == user
-        assert beneficiary_import.currentStatus == ImportStatus.CREATED
         assert len(push_testing.requests) == 2
 
         assert not user.is_beneficiary
@@ -466,13 +460,7 @@ class RunIntegrationTest:
             user=user, type=fraud_models.FraudCheckType.DMS, status=fraud_models.FraudCheckStatus.OK
         ).one_or_none()
         assert dms_check
-        assert BeneficiaryImport.query.count() == 1
 
-        beneficiary_import = BeneficiaryImport.query.first()
-        assert beneficiary_import.source == "demarches_simplifiees"
-        assert beneficiary_import.applicationId == 123
-        assert beneficiary_import.beneficiary == user
-        assert beneficiary_import.currentStatus == ImportStatus.CREATED
         assert len(push_testing.requests) == 2
 
         assert not user.is_beneficiary
@@ -536,15 +524,6 @@ class RunIntegrationTest:
             if fraud_check.type == fraud_models.FraudCheckType.HONOR_STATEMENT
         )
 
-        assert BeneficiaryImport.query.count() == 1
-        beneficiary_import = BeneficiaryImport.query.first()
-
-        assert beneficiary_import.source == "demarches_simplifiees"
-        assert beneficiary_import.applicationId == 123
-        assert beneficiary_import.beneficiary == user
-        assert beneficiary_import.currentStatus == ImportStatus.CREATED
-        assert len(push_testing.requests) == 2
-
         assert len(push_testing.requests) == 2
 
     @patch.object(dms_connector_api.DMSGraphQLClient, "get_applications_with_details")
@@ -606,7 +585,6 @@ class RunIntegrationTest:
 
         assert users_models.User.query.count() == 2
 
-        assert BeneficiaryImport.query.filter_by(beneficiary=user).count() == 1
         user = users_models.User.query.get(user.id)
         assert len(user.beneficiaryFraudChecks) == 1
         fraud_check = user.beneficiaryFraudChecks[0]
@@ -614,10 +592,6 @@ class RunIntegrationTest:
         assert fraud_models.FraudReasonCode.DUPLICATE_USER in fraud_check.reasonCodes
         assert fraud_check.status == fraud_models.FraudCheckStatus.SUSPICIOUS
 
-        beneficiary_import = BeneficiaryImport.query.filter(BeneficiaryImport.beneficiary != existing_user).first()
-        assert beneficiary_import.source == "demarches_simplifiees"
-        assert beneficiary_import.applicationId == 123
-        assert beneficiary_import.currentStatus == ImportStatus.REJECTED
         sub_msg = user.subscriptionMessages[0]
         assert (
             sub_msg.userMessage
@@ -663,16 +637,6 @@ class RunIntegrationTest:
         fraud_content = fraud_models.DMSContent(**fraud_check.resultContent)
         assert fraud_content.birth_date == applicant.dateOfBirth.date()
         assert fraud_content.address == "3 La Bigotais 22800 Saint-Donan"
-
-        assert len(applicant.beneficiaryImports) == 1
-        beneficiary_import = applicant.beneficiaryImports[0]
-        assert len(beneficiary_import.statuses) == 1
-        beneficiary_import_status = beneficiary_import.statuses[0]
-        assert beneficiary_import.source == "demarches_simplifiees"
-        assert beneficiary_import.applicationId == 123
-        assert beneficiary_import.beneficiary == applicant
-        assert beneficiary_import.currentStatus == ImportStatus.REJECTED
-        assert beneficiary_import_status.beneficiaryImportId == beneficiary_import.id
 
         sub_msg = applicant.subscriptionMessages[0]
         assert (
@@ -720,14 +684,6 @@ class RunIntegrationTest:
         # during the import process
         assert user.phoneNumber == "0607080900"
 
-        assert BeneficiaryImport.query.count() == 1
-
-        beneficiary_import = BeneficiaryImport.query.first()
-        assert beneficiary_import.source == "demarches_simplifiees"
-        assert beneficiary_import.applicationId == 123
-        assert beneficiary_import.beneficiary == user
-        assert beneficiary_import.currentStatus == ImportStatus.CREATED
-
         assert len(mails_testing.outbox) == 1
         assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 2016025
 
@@ -747,14 +703,6 @@ class RunIntegrationTest:
             )
         ]
         dms_api.import_dms_users(procedure_id=6712558)
-
-        beneficiary_import = BeneficiaryImport.query.first()
-        assert beneficiary_import.currentStatus == ImportStatus.ERROR
-        assert beneficiary_import.sourceId == 6712558
-        assert (
-            beneficiary_import.statuses[0].detail
-            == "Erreur dans les données soumises dans le dossier DMS : 'id_piece_number' (121314),'postal_code' (Strasbourg)"
-        )
 
         fraud_check = user.beneficiaryFraudChecks[0]
         assert fraud_check.status == fraud_models.FraudCheckStatus.ERROR
@@ -780,15 +728,6 @@ class RunIntegrationTest:
             )
         ]
         dms_api.import_dms_users(procedure_id=6712558)
-
-        beneficiary_import = BeneficiaryImport.query.first()
-        assert beneficiary_import.currentStatus == ImportStatus.ERROR
-        assert beneficiary_import.sourceId == 6712558
-        assert (
-            beneficiary_import.statuses[0].detail
-            == "Erreur dans les données soumises dans le dossier DMS : 'id_piece_number' (121314),'postal_code' (Strasbourg)"
-        )
-        assert beneficiary_import.beneficiary == user
 
         fraud_check = user.beneficiaryFraudChecks[0]
         assert fraud_check.status == fraud_models.FraudCheckStatus.ERROR
@@ -820,10 +759,7 @@ class GraphQLSourceProcessApplicationTest:
             4234,
             information,
         )
-        assert BeneficiaryImport.query.count() == 1
-        import_status = BeneficiaryImport.query.one_or_none()
-        assert import_status.currentStatus == ImportStatus.CREATED
-        assert import_status.beneficiary == user
+
         assert len(user.beneficiaryFraudChecks) == 2
         dms_fraud_check = next(
             fraud_check
@@ -933,14 +869,15 @@ class GraphQLSourceProcessApplicationTest:
 
         dms_api.import_dms_users(procedure_id=6712558)
 
-        beneficiary_import = BeneficiaryImport.query.first()
-        assert beneficiary_import.currentStatus == ImportStatus.ERROR
-        assert beneficiary_import.sourceId == 6712558
-        assert beneficiary_import.beneficiary == user
+        dms_fraud_check = fraud_models.BeneficiaryFraudCheck.query.first()
+        assert dms_fraud_check.userId == user.id
+        assert dms_fraud_check.status == fraud_models.FraudCheckStatus.ERROR
+        assert dms_fraud_check.thirdPartyId == "1"
         assert (
-            beneficiary_import.statuses[0].detail
+            dms_fraud_check.reason
             == "Erreur dans les données soumises dans le dossier DMS : 'id_piece_number' (121314),'postal_code' (Strasbourg)"
         )
+        assert dms_fraud_check.reasonCodes == [fraud_models.FraudReasonCode.ERROR_IN_DATA]
 
         assert len(mails_testing.outbox) == 1
         assert (
@@ -968,10 +905,7 @@ class GraphQLSourceProcessApplicationTest:
             status=fraud_models.FraudCheckStatus.OK,
             eligibilityType=users_models.EligibilityType.AGE18,
         )
-        already_imported_user = users_factories.BeneficiaryGrant18Factory(beneficiaryImports=[])
-        users_factories.BeneficiaryImportFactory(
-            beneficiary=already_imported_user, applicationId=2, sourceId=procedure_id
-        )
+        already_imported_user = users_factories.BeneficiaryGrant18Factory()
         get_applications_with_details.return_value = [
             make_graphql_application(application_id=1, state="closed", email=user.email),
             make_graphql_application(
@@ -983,8 +917,16 @@ class GraphQLSourceProcessApplicationTest:
 
         dms_api.import_dms_users(procedure_id=procedure_id)
 
-        imports = BeneficiaryImport.query.all()
-        assert len(imports) == 2
+        fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter(
+            fraud_models.BeneficiaryFraudCheck.userId == already_imported_user.id,
+            fraud_models.BeneficiaryFraudCheck.type == fraud_models.FraudCheckType.DMS,
+        ).first()
+        assert fraud_check.status == fraud_models.FraudCheckStatus.KO
+        assert (
+            "L’utilisateur est déjà bénéfiaire du pass AGE18 ; "
+            "L’utilisateur est déjà bénéfiaire, avec un portefeuille non expiré. Il ne peut pas prétendre au pass culture 18 ans"
+        ) in fraud_check.reason
+
         assert len(mails_testing.outbox) == 1
         sent_email = mails_testing.outbox[0]
         assert sent_email.sent_data["To"] == user.email
