@@ -74,8 +74,6 @@ describe('contact form enable in venue creation form', () => {
           readOnly: false,
         }),
       },
-      trackCreateVenue: jest.fn(),
-      trackModifyVenue: jest.fn(),
       venueTypes: [],
       venueLabels: [],
     }

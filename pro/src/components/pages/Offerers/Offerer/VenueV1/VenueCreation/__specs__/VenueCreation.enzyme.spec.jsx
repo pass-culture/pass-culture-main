@@ -55,8 +55,6 @@ describe('src | components | pages | Venue', () => {
           readOnly: false,
         }),
       },
-      trackCreateVenue: jest.fn(),
-      trackModifyVenue: jest.fn(),
       venueTypes: [],
       venueLabels: [],
     }
@@ -260,28 +258,6 @@ describe('src | components | pages | Venue', () => {
           )
         })
       })
-    })
-  })
-
-  describe('event tracking', () => {
-    it('should track venue creation', () => {
-      // given
-      const state = {}
-      const action = {
-        payload: {
-          datum: {
-            id: 'Ty5645dgfd',
-          },
-        },
-      }
-      const wrapper = shallow(<VenueCreation {...props} />)
-      const formResolver = jest.fn()
-
-      // when
-      wrapper.instance().handleFormSuccess(formResolver)(state, action)
-
-      // then
-      expect(props.trackCreateVenue).toHaveBeenCalledWith('Ty5645dgfd')
     })
   })
 })

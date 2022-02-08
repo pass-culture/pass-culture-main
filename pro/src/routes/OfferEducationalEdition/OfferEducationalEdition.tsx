@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { useHistory, useParams } from 'react-router'
 
-import { withTracking } from 'components/hocs'
 import useNotification from 'components/hooks/useNotification'
 import Spinner from 'components/layout/Spinner'
 import {
@@ -29,11 +28,7 @@ type AsyncScreenProps = Pick<
   'educationalCategories' | 'educationalSubCategories' | 'userOfferers'
 >
 
-const OfferEducationalEdition = ({
-  tracking,
-}: {
-  tracking: { trackEvent: (props: { action: string; name: string }) => void }
-}): JSX.Element => {
+const OfferEducationalEdition = (): JSX.Element => {
   const { offerId } = useParams<{ offerId: string }>()
   const history = useHistory()
 
@@ -55,8 +50,6 @@ const OfferEducationalEdition = ({
     if (!offerResponse.isOk) {
       return notify.error(offerResponse.message)
     }
-
-    tracking.trackEvent({ action: 'modifyOffer', name: offerId })
 
     notify.success(offerResponse.message)
     loadData(offerResponse)
@@ -188,4 +181,4 @@ const OfferEducationalEdition = ({
   )
 }
 
-export default withTracking('Offer')(OfferEducationalEdition)
+export default OfferEducationalEdition
