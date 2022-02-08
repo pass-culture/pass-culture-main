@@ -4,6 +4,7 @@ from pcapi import settings
 from pcapi.connectors.dms import api as dms_connector_api
 from pcapi.core import logging as core_logging
 from pcapi.core.fraud import api as fraud_api
+from pcapi.core.fraud import repository as fraud_repository
 from pcapi.core.fraud.ubble import api as ubble_fraud_api
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import exceptions as subscription_exceptions
@@ -55,6 +56,11 @@ def dms_webhook_update_application_status(form: dms_validation.DMSWebhookRequest
 
     user = find_user_by_email(user_email)
     if not user:
+        fraud_repository.create_orphan_dms_application(
+            application_id=application_id, procedure_id=form.procedure_id, email=user_email
+        )
+
+        # TODO: Handle this error differently, when we accept applications from DMS before user creation
         if form.state == dms_connector_api.GraphQLApplicationStates.draft:
             client.send_user_message(
                 dossier_id,
