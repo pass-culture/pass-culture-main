@@ -1751,32 +1751,6 @@ class IdentificationSessionTest:
         assert response.status_code == 400
         assert len(user.beneficiaryFraudChecks) == 2
 
-    def test_allow_rerun_identification_from_pending(self, client, ubble_mock):
-        user = users_factories.UserFactory(dateOfBirth=datetime.now() - relativedelta(years=18, days=5))
-        client.with_token(user.email)
-
-        expected_url = "https://id.ubble.ai/ef055567-3794-4ca5-afad-dce60fe0f227"
-
-        ubble_content = fraud_factories.UbbleContentFactory(
-            status=ubble_fraud_models.UbbleIdentificationStatus.INITIATED,
-            identification_url=expected_url,
-        )
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            type=fraud_models.FraudCheckType.UBBLE,
-            status=fraud_models.FraudCheckStatus.PENDING,
-            user=user,
-            resultContent=ubble_content,
-        )
-        response = client.post("/native/v1/ubble_identification", json={"redirectUrl": "http://example.com/deeplink"})
-
-        assert response.status_code == 200
-        assert len(user.beneficiaryFraudChecks) == 1
-        assert ubble_mock.call_count == 0
-
-        check = user.beneficiaryFraudChecks[0]
-        assert check.type == fraud_models.FraudCheckType.UBBLE
-        assert response.json["identificationUrl"] == expected_url
-
     def test_allow_rerun_identification_from_started(self, client, ubble_mock):
         user = users_factories.UserFactory(dateOfBirth=datetime.now() - relativedelta(years=18, days=5))
         client.with_token(user.email)
