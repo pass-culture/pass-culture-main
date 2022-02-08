@@ -525,19 +525,8 @@ class OnSuccessfulDMSApplicationTest:
             user=applicant, type=fraud_models.FraudCheckType.USER_PROFILING, status=fraud_models.FraudCheckStatus.OK
         )
 
-        check = fraud_factories.BeneficiaryFraudCheckFactory(
-            user=applicant, type=fraud_models.FraudCheckType.HONOR_STATEMENT, status=fraud_models.FraudCheckStatus.OK
-        )
         # when
-
-        subscription_api.on_successful_application(
-            user=applicant,
-            source=BeneficiaryImportSources.demarches_simplifiees,
-            source_data=information,
-            eligibility_type=check.eligibilityType,
-            application_id=123,
-            source_id=123456,
-        )
+        subscription_api.on_successful_application(user=applicant, source_data=information)
 
         # then
         first = users_models.User.query.first()
@@ -574,19 +563,8 @@ class OnSuccessfulDMSApplicationTest:
         fraud_factories.BeneficiaryFraudCheckFactory(
             user=applicant, type=fraud_models.FraudCheckType.DMS, status=fraud_models.FraudCheckStatus.OK
         )
-        check = fraud_factories.BeneficiaryFraudCheckFactory(
-            user=applicant, type=fraud_models.FraudCheckType.HONOR_STATEMENT, status=fraud_models.FraudCheckStatus.OK
-        )
         # when
-
-        subscription_api.on_successful_application(
-            user=applicant,
-            source=BeneficiaryImportSources.demarches_simplifiees,
-            source_data=information,
-            eligibility_type=check.eligibilityType,
-            application_id=123,
-            source_id=123456,
-        )
+        subscription_api.on_successful_application(user=applicant, source_data=information)
 
         # then
         first = users_models.User.query.first()
@@ -609,14 +587,7 @@ class OnSuccessfulDMSApplicationTest:
 
         # when
         with pytest.raises(api_errors.ApiErrors):
-            subscription_api.on_successful_application(
-                user=applicant,
-                source=BeneficiaryImportSources.demarches_simplifiees,
-                source_data=information,
-                eligibility_type=users_models.EligibilityType.AGE18,
-                application_id=123,
-                source_id=123456,
-            )
+            subscription_api.on_successful_application(user=applicant, source_data=information)
 
         # then
         send_activation_email.assert_not_called()
@@ -666,14 +637,7 @@ class OnSuccessfulDMSApplicationTest:
 
         with freeze_time("2020-03-01"):
             # the DMS application is confirmed after the user turns 18
-            subscription_api.on_successful_application(
-                user=applicant,
-                source=BeneficiaryImportSources.demarches_simplifiees,
-                source_data=information,
-                eligibility_type=users_models.EligibilityType.AGE18,
-                application_id=123,
-                source_id=123456,
-            )
+            subscription_api.on_successful_application(user=applicant, source_data=information)
         assert applicant.has_beneficiary_role
 
     def test_activate_beneficiary_when_confirmation_happens_after_18_birthday_requires_phone_validation(self):
@@ -713,14 +677,7 @@ class OnSuccessfulDMSApplicationTest:
 
         with freeze_time("2020-03-01"):
             # the DMS application is confirmed after the user turns 18
-            subscription_api.on_successful_application(
-                user=applicant,
-                source=BeneficiaryImportSources.demarches_simplifiees,
-                source_data=information,
-                eligibility_type=users_models.EligibilityType.AGE18,
-                application_id=123,
-                source_id=123456,
-            )
+            subscription_api.on_successful_application(user=applicant, source_data=information)
 
         # TODO: requires 19yo fixes : PC-12560
         assert applicant.has_beneficiary_role is False

@@ -12,7 +12,6 @@ from pcapi.core.mails.transactional.users import subscription_document_error
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import messages as subscription_messages
 from pcapi.core.users import models as users_models
-from pcapi.models.beneficiary_import import BeneficiaryImportSources
 import pcapi.repository as pcapi_repository
 
 
@@ -56,14 +55,7 @@ def update_ubble_workflow(
                 return
 
             try:
-                subscription_api.on_successful_application(
-                    user=user,
-                    source=BeneficiaryImportSources.ubble,
-                    source_data=fraud_check.source_data(),
-                    eligibility_type=fraud_check.eligibilityType,
-                    third_party_id=fraud_check.thirdPartyId,
-                    source_id=None,
-                )
+                subscription_api.on_successful_application(user=user, source_data=fraud_check.source_data())
 
             except Exception as err:  # pylint: disable=broad-except
                 logger.warning(

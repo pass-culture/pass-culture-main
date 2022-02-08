@@ -1,16 +1,12 @@
 import logging
-from typing import Optional
 
 from sqlalchemy import Integer
 from sqlalchemy.orm import load_only
 
 from pcapi.core.fraud import models as fraud_models
-from pcapi.core.users import models as users_models
 from pcapi.models.beneficiary_import import BeneficiaryImport
-from pcapi.models.beneficiary_import import BeneficiaryImportSources
 from pcapi.models.beneficiary_import import BeneficiaryImportStatus
 from pcapi.models.beneficiary_import_status import ImportStatus
-from pcapi.repository import repository
 
 
 logger = logging.getLogger(__name__)
@@ -63,32 +59,3 @@ def get_already_processed_applications_ids_from_fraud_checks(procedure_id: int) 
     }
 
     return fraud_check_ids | orphans_ids
-
-
-def save_beneficiary_import_with_status(
-    status: ImportStatus,
-    application_id: int,
-    source_id: int,
-    source: BeneficiaryImportSources,
-    eligibility_type: Optional[users_models.EligibilityType],
-    detail: str = None,
-    user: users_models.User = None,
-) -> BeneficiaryImport:
-    # FIXME (dbaty, 2021-04-22): see comment above about the non-uniqueness of application_id
-    existing_beneficiary_import = BeneficiaryImport.query.filter_by(applicationId=application_id).first()
-
-    beneficiary_import = existing_beneficiary_import or BeneficiaryImport()
-    if not beneficiary_import.beneficiary:
-        beneficiary_import.beneficiary = user
-
-    beneficiary_import.applicationId = application_id
-    beneficiary_import.sourceId = source_id
-    beneficiary_import.source = source.value
-
-    if eligibility_type is not None:
-        beneficiary_import.eligibilityType = eligibility_type
-    beneficiary_import.setStatus(status=status, detail=detail, author=None)
-
-    repository.save(beneficiary_import)
-
-    return beneficiary_import
