@@ -182,6 +182,11 @@ class BeneficiaryFraudCheckFactory(testing.BaseFactory):
         return super()._create(model_class, *args, **kwargs)
 
 
+class OrphanDmsFraudCheckFactory(testing.BaseFactory):
+    class Meta:
+        model = models.OrphanDmsApplication
+
+
 class BeneficiaryFraudResultFactory(testing.BaseFactory):
     class Meta:
         model = models.BeneficiaryFraudResult
