@@ -351,8 +351,8 @@ def _generate_form_field_error(error_text_singular: str, error_text_plural: str,
 
 def on_dms_application_parsing_errors_but_updatables_values(user: users_models.User, error_fields: list[str]) -> None:
     user_message = _generate_form_field_error(
-        "Il semblerait que ‘{formatted_error_fields}’ soit erroné. Tu peux te rendre sur le site Démarche-simplifiées pour le rectifier.",
-        "Il semblerait que ‘{formatted_error_fields}’ soient erronés. Tu peux te rendre sur le site Démarche-simplifiées pour les rectifier.",
+        "Il semblerait que le champ ‘{formatted_error_fields}’ soit erroné. Tu peux te rendre sur le site Démarche-simplifiées pour le rectifier.",
+        "Il semblerait que les champs ‘{formatted_error_fields}’ soient erronés. Tu peux te rendre sur le site Démarche-simplifiées pour les rectifier.",
         error_fields,
     )
     message = models.SubscriptionMessage(
