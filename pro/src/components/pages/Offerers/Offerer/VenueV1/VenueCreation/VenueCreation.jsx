@@ -63,7 +63,6 @@ class VenueCreation extends PureComponent {
       match: {
         params: { offererId },
       },
-      trackCreateVenue,
     } = this.props
 
     const nextState = { isRequestPending: false }
@@ -73,11 +72,8 @@ class VenueCreation extends PureComponent {
       formResolver()
     })
 
-    const createdVenueId = action.payload.datum.id
-
     const next = `/accueil?structure=${offererId}`
     history.push(next)
-    trackCreateVenue(createdVenueId)
   }
 
   handleOnFormSubmit = formValues => {
@@ -235,7 +231,6 @@ VenueCreation.propTypes = {
   isEntrepriseApiDisabled: PropTypes.bool.isRequired,
   match: PropTypes.shape().isRequired,
   offerer: PropTypes.shape().isRequired,
-  trackCreateVenue: PropTypes.func.isRequired,
   venueLabels: PropTypes.arrayOf(PropTypes.instanceOf(VenueLabel)).isRequired,
   venueTypes: PropTypes.arrayOf(PropTypes.instanceOf(VenueType)).isRequired,
 }

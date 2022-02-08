@@ -7,7 +7,6 @@ import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
 import { compose } from 'redux'
 
-import { withTracking } from 'components/hocs'
 import {
   selectCurrentUser,
   selectIsUserAdmin,
@@ -20,22 +19,4 @@ const mapStateToProps = state => ({
   userEmail: selectCurrentUser(state).email,
 })
 
-export const mergeProps = (stateProps, dispatchProps, ownProps) => {
-  return {
-    ...stateProps,
-    ...dispatchProps,
-    ...ownProps,
-    trackCreateOffer: offerId => {
-      ownProps.tracking.trackEvent({ action: 'createOffer', name: offerId })
-    },
-    trackEditOffer: offerId => {
-      ownProps.tracking.trackEvent({ action: 'modifyOffer', name: offerId })
-    },
-  }
-}
-
-export default compose(
-  withTracking('Offer'),
-  withRouter,
-  connect(mapStateToProps, null, mergeProps)
-)(OfferDetails)
+export default compose(withRouter, connect(mapStateToProps))(OfferDetails)

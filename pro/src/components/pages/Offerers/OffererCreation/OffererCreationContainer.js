@@ -10,7 +10,6 @@ import { withRouter } from 'react-router'
 import { compose } from 'redux'
 import { requestData } from 'redux-saga-data'
 
-import withTracking from 'components/hocs/withTracking'
 import { isFeatureActive } from 'store/features/selectors'
 import { showNotification } from 'store/reducers/notificationReducer'
 import { selectCurrentUser } from 'store/selectors/data/usersSelectors'
@@ -52,12 +51,6 @@ export const mergeProps = (stateProps, dispatchProps, ownProps) => {
     ...stateProps,
     ...dispatchProps,
     ...ownProps,
-    trackCreateOfferer: createdOffererId => {
-      ownProps.tracking.trackEvent({
-        action: 'createOfferer',
-        name: createdOffererId,
-      })
-    },
     redirectAfterSubmit: createdOffererId => {
       ownProps.history.replace(`/accueil?structure=${createdOffererId}`)
     },
@@ -66,6 +59,5 @@ export const mergeProps = (stateProps, dispatchProps, ownProps) => {
 
 export default compose(
   withRouter,
-  withTracking('Offerer'),
   connect(mapStateToProps, mapDispatchToProps, mergeProps)
 )(OffererCreation)

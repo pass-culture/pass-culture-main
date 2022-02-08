@@ -30,8 +30,6 @@ const OfferDetails = ({
   location,
   offer,
   reloadOffer,
-  trackCreateOffer,
-  trackEditOffer,
   userEmail,
 }) => {
   const dispatch = useDispatch()
@@ -121,14 +119,12 @@ const OfferDetails = ({
       try {
         if (offer) {
           await pcapi.updateOffer(offer.id, offerValues)
-          trackEditOffer(offer.id)
           notification.success('Votre offre a bien été modifiée')
           reloadOffer()
           setFormErrors({})
         } else {
           const response = await pcapi.createOffer(offerValues)
           const createdOfferId = response.id
-          trackCreateOffer(createdOfferId)
           await postThumbnail(createdOfferId, thumbnailInfo)
 
           let queryString = ''
@@ -174,8 +170,6 @@ const OfferDetails = ({
       notification,
       showErrorNotification,
       thumbnailInfo,
-      trackEditOffer,
-      trackCreateOffer,
     ]
   )
 
@@ -262,8 +256,6 @@ OfferDetails.propTypes = {
   location: PropTypes.shape().isRequired,
   offer: PropTypes.shape(),
   reloadOffer: PropTypes.func,
-  trackCreateOffer: PropTypes.func.isRequired,
-  trackEditOffer: PropTypes.func.isRequired,
   userEmail: PropTypes.string.isRequired,
 }
 

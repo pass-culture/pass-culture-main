@@ -29,8 +29,6 @@ describe('src | components | pages | Offers | ActionsBar', () => {
       toggleSelectAllCheckboxes: jest.fn(),
       showSuccessNotification: jest.fn(),
       showPendingNotification: jest.fn(),
-      trackActivateOffers: jest.fn(),
-      trackDeactivateOffers: jest.fn(),
       searchFilters: {
         name: 'keyword',
         venueId: 'E3',
@@ -110,10 +108,6 @@ describe('src | components | pages | Offers | ActionsBar', () => {
         expect(props.refreshOffers).toHaveBeenCalledWith({
           shouldTriggerSpinner: false,
         })
-        expect(props.trackActivateOffers).toHaveBeenCalledWith([
-          'testId1',
-          'testId2',
-        ])
       })
     })
 
@@ -171,10 +165,6 @@ describe('src | components | pages | Offers | ActionsBar', () => {
         expect(props.refreshOffers).toHaveBeenCalledWith({
           shouldTriggerSpinner: false,
         })
-        expect(props.trackDeactivateOffers).toHaveBeenCalledWith([
-          'testId1',
-          'testId2',
-        ])
       })
     })
 

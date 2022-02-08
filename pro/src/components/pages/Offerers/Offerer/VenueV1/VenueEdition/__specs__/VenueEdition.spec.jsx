@@ -137,7 +137,6 @@ describe('test page : VenueEdition', () => {
           readOnly: false,
         }),
       },
-      trackModifyVenue: jest.fn(),
       venueTypes: [],
       venueLabels: [],
     }
@@ -420,7 +419,6 @@ describe('test page : VenueEdition', () => {
 
       await waitFor(() => {
         expect(props.query.changeToReadOnly).toHaveBeenCalledWith(null)
-        expect(props.trackModifyVenue).toHaveBeenCalledWith(props.venue.id)
       })
     })
 

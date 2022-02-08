@@ -4,7 +4,7 @@
 
 import * as pcapi from 'repository/pcapi/pcapi'
 
-import { mapDispatchToProps, mergeProps } from '../DeskContainer'
+import { mapDispatchToProps } from '../DeskContainer'
 
 jest.mock('repository/pcapi/pcapi', () => ({
   getBooking: jest.fn().mockImplementation(() => Promise.resolve()),
@@ -44,53 +44,5 @@ describe('src | DeskContainer', () => {
 
     // then
     expect(pcapi.invalidateBooking).toHaveBeenCalledWith('ABCDEF')
-  })
-
-  describe('mergeProps', () => {
-    it('should spread stateProps, dispatchProps and ownProps into mergedProps', () => {
-      // given
-      const stateProps = {}
-      const dispatchProps = {
-        getBooking: () => {},
-      }
-      const ownProps = {
-        match: {
-          params: {},
-        },
-      }
-
-      // when
-      const mergedProps = mergeProps(stateProps, dispatchProps, ownProps)
-
-      // then
-      expect(mergedProps).toStrictEqual({
-        getBooking: expect.any(Function),
-        trackValidateBookingSuccess: expect.any(Function),
-      })
-    })
-
-    it('should map a tracking event for validate a booking', () => {
-      // given
-      const stateProps = {
-        offer: {
-          id: 'B4',
-        },
-      }
-      const ownProps = {
-        tracking: {
-          trackEvent: jest.fn(),
-        },
-      }
-      // when
-      mergeProps(stateProps, {}, ownProps).trackValidateBookingSuccess(
-        'RTgfd67'
-      )
-
-      // then
-      expect(ownProps.tracking.trackEvent).toHaveBeenCalledWith({
-        action: 'validateBooking',
-        name: 'RTgfd67',
-      })
-    })
   })
 })

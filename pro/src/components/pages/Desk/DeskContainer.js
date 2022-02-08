@@ -5,7 +5,6 @@
 import { connect } from 'react-redux'
 import { compose } from 'redux'
 
-import { withTracking } from 'components/hocs'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { selectCurrentUser } from 'store/selectors/data/usersSelectors'
 
@@ -31,15 +30,4 @@ export const mapDispatchToProps = dispatch => ({
   invalidateBooking: code => pcapi.invalidateBooking(code),
 })
 
-export const mergeProps = (stateProps, dispatchProps, ownProps) => ({
-  ...stateProps,
-  ...dispatchProps,
-  trackValidateBookingSuccess: code => {
-    ownProps.tracking.trackEvent({ action: 'validateBooking', name: code })
-  },
-})
-
-export default compose(
-  withTracking('Desk'),
-  connect(mapStateToProps, mapDispatchToProps, mergeProps)
-)(Desk)
+export default compose(connect(mapStateToProps, mapDispatchToProps))(Desk)

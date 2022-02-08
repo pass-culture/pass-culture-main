@@ -19,30 +19,8 @@ describe('src | components | OffererCreation', () => {
       createNewOfferer: jest.fn(),
       isEntrepriseApiDisabled: false,
       showNotification: jest.fn(),
-      trackCreateOfferer: jest.fn(),
       redirectAfterSubmit: jest.fn(),
     }
-  })
-
-  describe('event tracking', () => {
-    it('should track offerer creation', () => {
-      // given
-      const state = {}
-      const action = {
-        payload: {
-          datum: {
-            id: 'Ty5645dgfd',
-          },
-        },
-      }
-      const wrapper = shallow(<OffererCreation {...props} />)
-
-      // when
-      wrapper.instance().onHandleSuccess(state, action)
-
-      // then
-      expect(props.trackCreateOfferer).toHaveBeenCalledWith('Ty5645dgfd')
-    })
   })
 
   describe('render', () => {
