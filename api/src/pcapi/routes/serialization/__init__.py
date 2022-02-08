@@ -1,6 +1,6 @@
-from decimal import Decimal
 from math import isfinite
 
+# pylint: disable=wrong-pydantic-base-model-import
 from pydantic import BaseModel as PydanticBaseModel
 from pydantic import errors
 from pydantic import validator
