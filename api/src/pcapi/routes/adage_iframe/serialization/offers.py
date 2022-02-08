@@ -3,12 +3,12 @@ import logging
 from typing import Any
 from typing import Optional
 
-from pydantic import BaseModel
 from pydantic.class_validators import validator
 
 from pcapi.core.offers.models import Offer
 from pcapi.routes.native.utils import convert_to_cent
 from pcapi.routes.native.v1.serialization.common_models import Coordinates
+from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_utc_date
 

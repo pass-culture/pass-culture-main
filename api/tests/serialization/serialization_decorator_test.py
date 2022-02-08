@@ -3,10 +3,10 @@ from unittest.mock import Mock
 from unittest.mock import patch
 
 from flask.blueprints import Blueprint
-from pydantic import BaseModel
 import pytest
 
 from pcapi.models import api_errors
+from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.decorator import spectree_serialize
 
 

@@ -3,8 +3,6 @@ from enum import Enum
 import logging
 from typing import Optional
 
-from pydantic import BaseModel
-
 from pcapi.core.bookings import exceptions
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingStatus
@@ -12,6 +10,7 @@ from pcapi.core.bookings.models import IndividualBooking
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
 from pcapi.core.offers.utils import offer_app_link
+from pcapi.routes.serialization import BaseModel
 from pcapi.utils.urls import booking_app_link
 
 
