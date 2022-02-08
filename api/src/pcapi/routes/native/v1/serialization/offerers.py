@@ -1,9 +1,8 @@
 import typing
 
 from pcapi.core.offerers import models as offerers_models
+from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import venues_serialize
-
-from . import BaseModel
 
 
 class VenueAccessibilityModel(BaseModel):
