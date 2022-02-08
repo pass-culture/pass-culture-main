@@ -362,6 +362,15 @@ class BeneficiaryFraudCheck(PcObject, Model):
         return f"dossier {self.type} [{self.thirdPartyId}]"
 
 
+class OrphanDmsApplication(PcObject, Model):
+    # This model is used to store fraud checks that were not associated with a user.
+    # This is mainly used for the DMS fraud check, when the user is not yet created, or in case of a failure.
+
+    email = sqlalchemy.Column(sqlalchemy.Text, nullable=True, index=True)
+    application_id = sqlalchemy.Column(sqlalchemy.BigInteger, primary_key=True)
+    process_id = sqlalchemy.Column(sqlalchemy.BigInteger)
+
+
 class BeneficiaryFraudResult(PcObject, Model):
     __tablename__ = "beneficiary_fraud_result"
 
