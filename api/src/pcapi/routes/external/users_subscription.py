@@ -9,6 +9,7 @@ from pcapi.core.subscription import messages as subscription_messages
 from pcapi.core.subscription.dms import api as dms_subscription_api
 from pcapi.core.subscription.ubble import api as ubble_subscription_api
 from pcapi.core.users.repository import find_user_by_email
+from pcapi.models.api_errors import ApiErrors
 from pcapi.models.beneficiary_import import BeneficiaryImportSources
 from pcapi.models.beneficiary_import_status import ImportStatus
 from pcapi.repository import repository
@@ -20,6 +21,7 @@ from pcapi.validation.routes import ubble as ubble_validation
 
 
 logger = logging.getLogger(__name__)
+
 
 DMS_APPLICATION_MAP = {
     api_dms.GraphQLApplicationStates.draft: ImportStatus.DRAFT,
@@ -137,6 +139,15 @@ def ubble_webhook_update_application_status(
     if not fraud_check:
         raise ValueError(f"no Ubble fraud check found with identification_id {body.identification_id}")
 
-    ubble_subscription_api.update_ubble_workflow(fraud_check, body.status)
-
-    return ubble_validation.WebhookDummyReponse()
+    try:
+        ubble_subscription_api.update_ubble_workflow(fraud_check, body.status)
+    except Exception as err:
+        logger.warning(
+            "Could not update Ubble workflow %s for user #%s",
+            body.identification_id,
+            fraud_check.userId,
+            extra={"exception": err},
+        )
+        raise ApiErrors({"msg": "an error occured during workflow update"}, status_code=500)
+    else:
+        return ubble_validation.WebhookDummyReponse()
