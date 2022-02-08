@@ -9,7 +9,6 @@ from pcapi.core.subscription import api as subscription_api
 from pcapi.core.users import models as users_models
 from pcapi.core.users import utils as users_utils
 from pcapi.models import db
-from pcapi.models.beneficiary_import import BeneficiaryImportSources
 
 
 blueprint = Blueprint(__name__, __name__)
@@ -71,22 +70,13 @@ def force_19yo_dms_import(dry_run: bool = True) -> None:
         if fraud_check.reasonCodes:
             fraud_check.reasonCodes.clear()
         eligibility_type = users_models.EligibilityType.AGE18
-        content = fraud_check.source_data()
         fraud_api.create_honor_statement_fraud_check(
             user, "honor statement contained in DMS application", eligibility_type
         )
         fraud_items = fraud_api.dms_fraud_checks(user, fraud_check)
         if all(fraud_item.status == fraud_models.FraudStatus.OK for fraud_item in fraud_items):
             try:
-                subscription_api.on_successful_application(
-                    user,
-                    fraud_check.source_data(),
-                    BeneficiaryImportSources.demarches_simplifiees,
-                    eligibility_type,
-                    application_id=content.application_id,
-                    source_id=content.procedure_id,
-                    third_party_id=fraud_check.thirdPartyId,
-                )
+                subscription_api.on_successful_application(user, fraud_check.source_data())
             except Exception:  # pylint: disable=broad-except
                 logger.warning("Cannot activate user %d", user.id, exc_info=True)
                 continue

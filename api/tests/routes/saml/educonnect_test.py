@@ -16,8 +16,6 @@ from pcapi.core.testing import override_features
 from pcapi.core.testing import override_settings
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as user_models
-from pcapi.models.beneficiary_import import BeneficiaryImport
-from pcapi.models.beneficiary_import_status import ImportStatus
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -145,8 +143,6 @@ class EduconnectTest:
             "student_level": "2212",
         }
         assert has_passed_educonnect(user)
-        beneficiary_import = BeneficiaryImport.query.filter_by(beneficiaryId=user.id).one_or_none()
-        assert beneficiary_import.currentStatus == ImportStatus.CREATED
         assert user.firstName == "Max"
         assert user.lastName == "SENS"
         assert user.dateOfBirth == datetime.datetime(2006, 8, 18, 0, 0)
@@ -315,7 +311,6 @@ class EduconnectTest:
 
         assert response.status_code == 302
 
-        assert not BeneficiaryImport.query.filter_by(beneficiary=user).first()
         assert response.location == (
             "https://webapp-v2.example.com/educonnect/erreur?code=UserAgeNotValid&logoutUrl=https%3A%2F%2Feduconnect.education.gouv.fr%2FLogout"
         )
