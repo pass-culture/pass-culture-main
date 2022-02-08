@@ -2,7 +2,6 @@ from datetime import datetime
 from typing import Optional
 from typing import Union
 
-from pydantic import BaseModel
 from pydantic import Field
 from pydantic import condecimal
 from pydantic import validator
@@ -11,6 +10,7 @@ from pydantic.types import NonNegativeInt
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.offers.models import ActivationCode
 from pcapi.core.offers.models import Stock
+from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.utils import dehumanize_field
 from pcapi.serialization.utils import humanize_field
 from pcapi.serialization.utils import to_camel

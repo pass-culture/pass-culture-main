@@ -1,7 +1,6 @@
 from datetime import datetime
 
-from pydantic import BaseModel
-
+from pcapi.routes.serialization import BaseModel
 from pcapi.utils.date import format_into_utc_date
 
 

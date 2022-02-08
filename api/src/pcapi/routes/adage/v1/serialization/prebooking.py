@@ -2,7 +2,6 @@ from datetime import datetime
 from typing import Optional
 from typing import Union
 
-from pydantic import BaseModel
 from pydantic.fields import Field
 
 from pcapi.core.bookings.models import BookingStatus
@@ -12,6 +11,7 @@ from pcapi.core.offers import models as offers_models
 from pcapi.core.offers.utils import offer_app_link
 from pcapi.routes.adage.v1.serialization.config import AdageBaseResponseModel
 from pcapi.routes.native.v1.serialization.common_models import Coordinates
+from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.utils import to_camel
 
 

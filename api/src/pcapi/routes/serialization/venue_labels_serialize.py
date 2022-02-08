@@ -1,5 +1,4 @@
-from pydantic import BaseModel
-
+from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.utils import humanize_field
 
 

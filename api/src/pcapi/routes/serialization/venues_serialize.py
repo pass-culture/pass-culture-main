@@ -8,13 +8,13 @@ from typing import Union
 
 from PIL import Image
 import pydantic
-from pydantic import BaseModel
 from pydantic import root_validator
 from pydantic import validator
 from typing_extensions import TypedDict
 
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers.validation import VENUE_BANNER_MAX_SIZE
+from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization.finance_serialize import BusinessUnitResponseModel
 from pcapi.serialization.utils import dehumanize_field
 from pcapi.serialization.utils import humanize_field

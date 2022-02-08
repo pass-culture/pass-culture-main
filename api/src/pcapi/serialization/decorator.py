@@ -10,12 +10,12 @@ from flask import Response
 from flask import make_response
 from flask import request
 import pydantic
-from pydantic import BaseModel
 from spectree.spec import SpecTree
 from werkzeug.exceptions import BadRequest
 
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.apis import api as default_api
+from pcapi.routes.serialization import BaseModel
 
 from .spec_tree import ExtendedResponse as SpectreeResponse
 

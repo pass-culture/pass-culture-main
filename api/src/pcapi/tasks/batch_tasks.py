@@ -2,8 +2,6 @@
 
 import logging
 
-from pydantic import BaseModel
-
 from pcapi import settings
 from pcapi.models.api_errors import ApiErrors
 from pcapi.notifications.push import delete_user_attributes
@@ -11,6 +9,7 @@ from pcapi.notifications.push import send_transactional_notification
 from pcapi.notifications.push import update_user_attributes
 from pcapi.notifications.push.backends.batch import BatchAPI
 from pcapi.notifications.push.transactional_notifications import TransactionalNotificationData
+from pcapi.routes.serialization import BaseModel
 from pcapi.tasks.decorator import task
 
 

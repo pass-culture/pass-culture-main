@@ -1,6 +1,6 @@
 from typing import Optional
 
-from pydantic import BaseModel
+from pcapi.routes.serialization import BaseModel
 
 
 class VenueModel(BaseModel):

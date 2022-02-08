@@ -2,10 +2,10 @@ import enum
 import logging
 from typing import Optional
 
-from pydantic import BaseModel
 from pydantic import ValidationError
 
 from pcapi.core.educational.exceptions import MissingRequiredRedactorInformation
+from pcapi.routes.serialization import BaseModel
 
 
 logger = logging.getLogger(__name__)
