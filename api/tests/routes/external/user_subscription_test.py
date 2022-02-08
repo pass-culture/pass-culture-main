@@ -625,8 +625,6 @@ class UbbleWebhookTest:
 
         assert fraud_check.user.has_beneficiary_role
         assert len(fraud_check.user.deposits) == 1
-        assert len(fraud_check.user.beneficiaryImports) == 1
-        assert fraud_check.user.beneficiaryImports[0].source == BeneficiaryImportSources.ubble.value
 
         assert len(mails_testing.outbox) == 1
         assert mails_testing.outbox[0].sent_data["To"] == fraud_check.user.email

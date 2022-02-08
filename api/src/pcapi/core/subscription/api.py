@@ -443,11 +443,6 @@ def activate_beneficiary_if_no_missing_step(user: users_models.User) -> None:
 def on_successful_application(
     user: users_models.User,
     source_data: common_fraud_models.IdentityCheckContent,
-    source: BeneficiaryImportSources,
-    eligibility_type: users_models.EligibilityType,
-    application_id: typing.Optional[int] = None,
-    source_id: typing.Optional[int] = None,
-    third_party_id: typing.Optional[str] = None,
 ) -> None:
     users_api.update_user_information_from_external_source(user, source_data)
 
@@ -455,15 +450,6 @@ def on_successful_application(
     user.hasCompletedIdCheck = True
 
     pcapi_repository.repository.save(user)
-
-    create_successfull_beneficiary_import(
-        user=user,
-        source=source,
-        source_id=source_id,
-        application_id=application_id,
-        eligibility_type=eligibility_type,
-        third_party_id=third_party_id,
-    )
 
     activate_beneficiary_if_no_missing_step(user)
 

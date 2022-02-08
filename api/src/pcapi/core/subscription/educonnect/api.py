@@ -9,7 +9,6 @@ from pcapi.core.subscription import messages as subscription_messages
 from pcapi.core.users import api as users_api
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import models as users_models
-from pcapi.models.beneficiary_import import BeneficiaryImportSources
 
 from . import exceptions
 
@@ -39,14 +38,7 @@ def handle_educonnect_authentication(
 
     if fraud_check.status == fraud_models.FraudCheckStatus.OK:
         try:
-            subscription_api.on_successful_application(
-                user=user,
-                source=BeneficiaryImportSources.educonnect,
-                source_data=fraud_check.source_data(),
-                eligibility_type=fraud_check.source_data().get_eligibility_type_at_registration(),
-                third_party_id=fraud_check.thirdPartyId,
-                source_id=None,
-            )
+            subscription_api.on_successful_application(user=user, source_data=fraud_check.source_data())
         except Exception:
             logger.exception("Error while creating BeneficiaryImport from Educonnect", extra={"user_id": user.id})
             raise exceptions.EduconnectSubscriptionException()

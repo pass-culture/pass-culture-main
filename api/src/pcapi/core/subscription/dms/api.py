@@ -15,11 +15,8 @@ import pcapi.core.subscription.api as subscription_api
 import pcapi.core.users.models as users_models
 from pcapi.core.users.repository import find_user_by_email
 from pcapi.models.api_errors import ApiErrors
-from pcapi.models.beneficiary_import import BeneficiaryImportSources
-from pcapi.models.beneficiary_import_status import ImportStatus
 import pcapi.repository as pcapi_repository
 from pcapi.repository.beneficiary_import_queries import get_already_processed_applications_ids
-from pcapi.repository.beneficiary_import_queries import save_beneficiary_import_with_status
 
 
 logger = logging.getLogger(__name__)
@@ -155,16 +152,6 @@ def process_parsing_exception(
         error_details=error_details,
     )
 
-    # TODO: remove when the fraud check is the only object used to check for DMS applications
-    save_beneficiary_import_with_status(
-        ImportStatus.ERROR,
-        application_id,
-        source=BeneficiaryImportSources.demarches_simplifiees,
-        source_id=procedure_id,
-        detail=error_details,
-        eligibility_type=None,
-    )
-
 
 def process_parsing_error(
     exception: subscription_exceptions.DMSParsingError, user: users_models.User, procedure_id: int, application_id: int
@@ -189,17 +176,6 @@ def process_parsing_error(
         error_details=error_details,
     )
 
-    # TODO: remove this line when the fraud check is the only object used for DMS applications
-    save_beneficiary_import_with_status(
-        ImportStatus.ERROR,
-        application_id,
-        source=BeneficiaryImportSources.demarches_simplifiees,
-        source_id=procedure_id,
-        detail=error_details,
-        user=user,
-        eligibility_type=None,
-    )
-
 
 def process_user_parsing_error(application_id: int, procedure_id: int) -> None:
     logger.info(
@@ -207,23 +183,7 @@ def process_user_parsing_error(application_id: int, procedure_id: int) -> None:
         application_id,
         procedure_id,
     )
-    error_details = (
-        f"Erreur lors de l'analyse des données du dossier {application_id}. "
-        f"Impossible de récupérer l'email de l'utilisateur - Procedure {procedure_id}"
-    )
-
     fraud_repository.create_orphan_dms_application(application_id=application_id, procedure_id=procedure_id)
-
-    # TODO: remove this line when the fraud check is the only object used for DMS applications
-    # keep a compatibility with BeneficiaryImport table
-    save_beneficiary_import_with_status(
-        ImportStatus.ERROR,
-        application_id,
-        source=BeneficiaryImportSources.demarches_simplifiees,
-        source_id=procedure_id,
-        detail=error_details,
-        eligibility_type=None,
-    )
 
 
 def process_user_not_found_error(email: str, application_id: int, procedure_id: int) -> None:
@@ -232,19 +192,8 @@ def process_user_not_found_error(email: str, application_id: int, procedure_id: 
         application_id,
         procedure_id,
     )
-    # TODO: Create fraud check and find a way to remove the application from DMS.
     fraud_repository.create_orphan_dms_application(
         application_id=application_id, procedure_id=procedure_id, email=email
-    )
-
-    # TODO: remove when the fraud check is the only object used for DMS applications
-    save_beneficiary_import_with_status(
-        ImportStatus.ERROR,
-        application_id,
-        source=BeneficiaryImportSources.demarches_simplifiees,
-        source_id=procedure_id,
-        detail=f"Aucun utilisateur trouvé pour l'email {email}",
-        eligibility_type=None,
     )
 
 
@@ -271,14 +220,7 @@ def process_application(
         fraud_api.create_honor_statement_fraud_check(
             user, "honor statement contained in DMS application", eligibility_type
         )
-        subscription_api.on_successful_application(
-            user=user,
-            source_data=information,
-            eligibility_type=eligibility_type,
-            application_id=application_id,
-            source_id=procedure_id,
-            source=BeneficiaryImportSources.demarches_simplifiees,
-        )
+        subscription_api.on_successful_application(user=user, source_data=information)
     except ApiErrors as api_errors:
         logger.warning(
             "[BATCH][REMOTE IMPORT BENEFICIARIES] Could not save application %s, because of error: %s - Procedure %s",
@@ -311,35 +253,10 @@ def handle_validation_errors(
         if item == fraud_models.FraudReasonCode.DUPLICATE_ID_PIECE_NUMBER:
             subscription_messages.on_duplicate_user(user)
 
-    eligibility_type = fraud_api.decide_eligibility(user, information)
-    # keeps the creation of a beneficiaryImport to avoid reprocess the same application
-    # forever, it's mandatory to make get_already_processed_applications_ids work
-    save_beneficiary_import_with_status(
-        ImportStatus.REJECTED,
-        application_id=information.application_id,
-        source=BeneficiaryImportSources.demarches_simplifiees,
-        source_id=procedure_id,
-        user=user,
-        detail="Voir les details dans la page support",
-        eligibility_type=eligibility_type,
-    )
-
 
 def _process_rejection(
     information: fraud_models.DMSContent, procedure_id: int, reason: str, user: users_models.User = None
 ) -> None:
-    eligibility_type = fraud_api.decide_eligibility(user, information)
-
-    # TODO: remove when we use fraud checks
-    save_beneficiary_import_with_status(
-        ImportStatus.REJECTED,
-        information.application_id,
-        source=BeneficiaryImportSources.demarches_simplifiees,
-        source_id=procedure_id,
-        detail=reason,
-        user=user,
-        eligibility_type=eligibility_type,
-    )
     logger.warning(
         "[BATCH][REMOTE IMPORT BENEFICIARIES] Rejected application %s because of '%s' - Procedure %s",
         information.application_id,
