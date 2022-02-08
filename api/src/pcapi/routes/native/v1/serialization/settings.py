@@ -1,8 +1,7 @@
 from pcapi.core.payments import conf as payments_conf
 from pcapi.routes.native.utils import convert_to_cent
+from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.utils import to_camel
-
-from . import BaseModel
 
 
 class DepositAmountsByAge(BaseModel):
