@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pcapi.routes.serialization import BaseModel
 
 
 class VenueTypeResponseModel(BaseModel):

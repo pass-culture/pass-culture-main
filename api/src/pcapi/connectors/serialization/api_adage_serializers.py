@@ -1,5 +1,6 @@
-from pydantic import BaseModel
 from pydantic import Field
+
+from pcapi.routes.serialization import BaseModel
 
 
 class EducationalInstitutionModel(BaseModel):

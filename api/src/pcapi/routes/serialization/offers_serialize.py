@@ -4,7 +4,6 @@ from typing import Any
 from typing import Optional
 from typing import Union
 
-from pydantic import BaseModel
 from pydantic import Field
 from pydantic import HttpUrl
 from pydantic import validator
@@ -16,6 +15,7 @@ from pcapi.core.offers import repository as offers_repository
 from pcapi.core.offers.models import OfferStatus
 from pcapi.core.offers.models import Stock
 from pcapi.models.feature import FeatureToggle
+from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.utils import dehumanize_field
 from pcapi.serialization.utils import dehumanize_list_field
 from pcapi.serialization.utils import humanize_field

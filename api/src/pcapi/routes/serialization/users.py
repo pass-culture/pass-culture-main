@@ -2,12 +2,12 @@ from datetime import datetime
 import typing
 from typing import Optional
 
-from pydantic import BaseModel
 from pydantic import EmailStr
 from pydantic.class_validators import validator
 
 from pcapi.core.users import models as user_models
 from pcapi.domain.password import check_password_strength
+from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.utils import humanize_field
 from pcapi.serialization.utils import to_camel
 from pcapi.serialization.utils import validate_not_empty_string_when_provided

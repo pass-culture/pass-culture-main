@@ -2,13 +2,12 @@ from datetime import datetime
 from typing import Dict
 from typing import Optional
 
-from pydantic import BaseModel
-
 from pcapi import settings
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.repository import get_api_key_prefixes
 from pcapi.core.offerers.repository import has_digital_venue_with_at_least_one_offer
 from pcapi.core.offerers.repository import has_physical_venue_without_draft_or_accepted_bank_information
+from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization.venues_serialize import VenueStatsResponseModel
 from pcapi.serialization.utils import humanize_field
 from pcapi.utils.date import format_into_utc_date

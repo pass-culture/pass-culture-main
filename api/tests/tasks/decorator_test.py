@@ -4,12 +4,12 @@ from unittest.mock import call
 from unittest.mock import patch
 
 from google.cloud import tasks_v2
-from pydantic import BaseModel
 import pytest
 
 from pcapi import settings
 from pcapi.core.testing import override_settings
 from pcapi.models.api_errors import ApiErrors
+from pcapi.routes.serialization import BaseModel
 from pcapi.tasks.decorator import task
 
 from tests.conftest import TestClient

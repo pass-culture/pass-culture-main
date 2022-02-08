@@ -3,10 +3,10 @@ import logging
 from pathlib import Path
 from typing import Optional
 
-from pydantic import BaseModel
 from pydantic import Field
 
 from pcapi.models.api_errors import ApiErrors
+from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.utils import dehumanize_field
 from pcapi.serialization.utils import humanize_field
 from pcapi.serialization.utils import to_camel

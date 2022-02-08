@@ -1,10 +1,9 @@
 import datetime
 from typing import Optional
 
-from pydantic import BaseModel
-
 import pcapi.core.finance.models as finance_models
 import pcapi.core.finance.utils as finance_utils
+from pcapi.routes.serialization import BaseModel
 import pcapi.serialization.utils as serialization_utils
 
 
