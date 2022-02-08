@@ -180,7 +180,7 @@ def is_user_allowed_to_perform_ubble_check(
     return True
 
 
-def get_started_identity_check(user: users_models.User) -> typing.Optional[fraud_models.BeneficiaryFraudCheck]:
+def get_restartable_identity_checks(user: users_models.User) -> typing.Optional[fraud_models.BeneficiaryFraudCheck]:
     started_fraud_check = (
         fraud_models.BeneficiaryFraudCheck.query.filter(
             fraud_models.BeneficiaryFraudCheck.user == user,
