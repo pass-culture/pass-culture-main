@@ -6,15 +6,12 @@ from pcapi.core import logging as core_logging
 from pcapi.core.fraud import api as fraud_api
 from pcapi.core.fraud import repository as fraud_repository
 from pcapi.core.fraud.ubble import api as ubble_fraud_api
-from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import exceptions as subscription_exceptions
 from pcapi.core.subscription import messages as subscription_messages
 from pcapi.core.subscription.dms import api as dms_subscription_api
 from pcapi.core.subscription.ubble import api as ubble_subscription_api
 from pcapi.core.users.repository import find_user_by_email
 from pcapi.models.api_errors import ApiErrors
-from pcapi.models.beneficiary_import import BeneficiaryImportSources
-from pcapi.models.beneficiary_import_status import ImportStatus
 from pcapi.repository import repository
 from pcapi.routes.apis import public_api
 from pcapi.serialization.decorator import spectree_serialize
@@ -23,17 +20,6 @@ from pcapi.validation.routes import ubble as ubble_validation
 
 
 logger = logging.getLogger(__name__)
-
-
-DMS_APPLICATION_MAP = {
-    dms_connector_api.GraphQLApplicationStates.draft: ImportStatus.DRAFT,
-    dms_connector_api.GraphQLApplicationStates.on_going: ImportStatus.ONGOING,
-    # dms_connector_api.GraphQLApplicationStates.accepted: ImportStatus what to do with it ?
-    # for now it will be done in the import_dms_users script
-    # later we might want to run the user validation and then archive the application
-    dms_connector_api.GraphQLApplicationStates.refused: ImportStatus.REJECTED,
-    dms_connector_api.GraphQLApplicationStates.without_continuation: ImportStatus.WITHOUT_CONTINUATION,
-}
 
 
 @public_api.route("/webhooks/dms/application_status", methods=["POST"])
@@ -113,18 +99,6 @@ def dms_webhook_update_application_status(form: dms_validation.DMSWebhookRequest
                 subscription_messages.DMS_ERROR_MESSSAGE_BIRTH_DATE,
             )
         return
-
-    import_status = DMS_APPLICATION_MAP.get(form.state)
-    if import_status:
-        subscription_api.attach_beneficiary_import_details(
-            user,
-            form.dossier_id,
-            form.procedure_id,
-            BeneficiaryImportSources.demarches_simplifiees,
-            eligibility_type=eligibility_type,
-            details="Webhook status update",
-            status=import_status,
-        )
 
     dms_subscription_api.handle_dms_state(user, application, form.procedure_id, form.dossier_id, form.state)
 
