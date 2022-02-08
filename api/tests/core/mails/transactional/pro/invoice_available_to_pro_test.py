@@ -26,7 +26,6 @@ class SendinblueProAvailableInvoiceEmailDataTest:
 
         # Then
         assert email_data.template == TransactionalEmail.INVOICE_AVAILABLE_TO_PRO.value
-        assert email_data.params == {"date_max": "31/12/1999", "date_min": "16/12/1999", "montant": 10}
 
     def test_send_emails_available_invoice_to_pro_user(self):
         # given
@@ -46,7 +45,5 @@ class SendinblueProAvailableInvoiceEmailDataTest:
         )
         assert mails_testing.outbox[0].sent_data["To"] == "pro@example.com"
         assert mails_testing.outbox[0].sent_data["params"] == {
-            "date_max": "15/01/2022",
-            "date_min": "01/01/2022",
             "montant": 10,
         }
