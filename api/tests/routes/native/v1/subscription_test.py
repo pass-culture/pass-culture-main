@@ -64,7 +64,7 @@ class NextStepTest:
         "fraud_check_status,reason_code,ubble_status,next_step,pending_idcheck",
         [
             (
-                fraud_models.FraudCheckStatus.PENDING,
+                fraud_models.FraudCheckStatus.STARTED,
                 None,
                 ubble_fraud_models.UbbleIdentificationStatus.INITIATED,
                 "identity-check",
@@ -105,9 +105,6 @@ class NextStepTest:
                 "identity-check",  # User can retry
                 False,
             ),
-            (None, None, ubble_fraud_models.UbbleIdentificationStatus.INITIATED, "identity-check", False),
-            (None, None, ubble_fraud_models.UbbleIdentificationStatus.PROCESSING, "honor-statement", False),
-            (None, None, ubble_fraud_models.UbbleIdentificationStatus.PROCESSED, "honor-statement", False),
         ],
     )
     @override_features(ENABLE_UBBLE=True)
@@ -422,7 +419,7 @@ class NextStepTest:
             type=fraud_models.FraudCheckType.UBBLE,
             user=user,
             resultContent=ubble_content,
-            status=fraud_models.FraudCheckStatus.PENDING,
+            status=fraud_models.FraudCheckStatus.STARTED,
         )
         client.with_token(user.email)
         response = client.get("/native/v1/subscription/next_step")
