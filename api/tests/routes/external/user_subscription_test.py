@@ -25,9 +25,6 @@ from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.models import db
-from pcapi.models.beneficiary_import import BeneficiaryImport
-from pcapi.models.beneficiary_import import BeneficiaryImportSources
-from pcapi.models.beneficiary_import_status import ImportStatus
 from pcapi.repository import repository
 from pcapi.validation.routes import ubble as ubble_routes
 
@@ -68,16 +65,16 @@ class DmsWebhookApplicationTest:
 
     @patch.object(api_dms.DMSGraphQLClient, "execute_query")
     @pytest.mark.parametrize(
-        "dms_status,import_status",
+        "dms_status,fraud_check_status",
         [
-            (api_dms.GraphQLApplicationStates.draft, ImportStatus.DRAFT),
-            (api_dms.GraphQLApplicationStates.on_going, ImportStatus.ONGOING),
-            (api_dms.GraphQLApplicationStates.refused, ImportStatus.REJECTED),
+            (api_dms.GraphQLApplicationStates.draft, fraud_models.FraudCheckStatus.STARTED),
+            (api_dms.GraphQLApplicationStates.on_going, fraud_models.FraudCheckStatus.PENDING),
+            (api_dms.GraphQLApplicationStates.refused, fraud_models.FraudCheckStatus.KO),
         ],
     )
-    def test_dms_request_with_existing_user(self, execute_query, dms_status, import_status, client):
+    def test_dms_request_with_existing_user(self, execute_query, dms_status, fraud_check_status, client):
         user = users_factories.UserFactory(hasCompletedIdCheck=False)
-        execute_query.return_value = make_single_application(12, state="closed", email=user.email)
+        execute_query.return_value = make_single_application(6044787, state="closed", email=user.email)
         form_data = {
             "procedure_id": 48860,
             "dossier_id": 6044787,
@@ -93,15 +90,10 @@ class DmsWebhookApplicationTest:
         assert response.status_code == 204
         assert execute_query.call_count == 1
 
-        beneficiary_import = BeneficiaryImport.query.one()
-        assert beneficiary_import.source == BeneficiaryImportSources.demarches_simplifiees.value
-        assert beneficiary_import.beneficiary == user
-        assert len(beneficiary_import.statuses) == 1
-
-        status = beneficiary_import.statuses[0]
-        assert status.detail == "Webhook status update"
-        assert status.status == import_status
-        assert status.author == None
+        fraud_check = fraud_models.BeneficiaryFraudCheck.query.first()
+        assert fraud_check.type == fraud_models.FraudCheckType.DMS
+        assert fraud_check.userId == user.id
+        assert fraud_check.status == fraud_check_status
 
         assert user.hasCompletedIdCheck
 
@@ -226,7 +218,7 @@ class DmsWebhookApplicationTest:
         assert user.subscriptionMessages[0].popOverIcon == subscription_models.PopOverIcon.WARNING
         assert (
             user.subscriptionMessages[0].userMessage
-            == "Il semblerait que ‘ta pièce d'identité, ton code postal’ soient erronés. Tu peux te rendre sur le site Démarche-simplifiées pour les rectifier."
+            == "Il semblerait que les champs ‘ta pièce d'identité, ton code postal’ soient erronés. Tu peux te rendre sur le site Démarche-simplifiées pour les rectifier."
         )
 
     @patch.object(api_dms.DMSGraphQLClient, "execute_query")
@@ -283,7 +275,7 @@ class DmsWebhookApplicationTest:
         assert user.subscriptionMessages[0].popOverIcon == subscription_models.PopOverIcon.WARNING
         assert (
             user.subscriptionMessages[0].userMessage
-            == "Il semblerait que ‘ta pièce d'identité’ soit erroné. Tu peux te rendre sur le site Démarche-simplifiées pour le rectifier."
+            == "Il semblerait que le champ ‘ta pièce d'identité’ soit erroné. Tu peux te rendre sur le site Démarche-simplifiées pour le rectifier."
         )
 
     @patch.object(api_dms.DMSGraphQLClient, "execute_query")
@@ -313,7 +305,7 @@ class DmsWebhookApplicationTest:
         assert user.subscriptionMessages[0].popOverIcon == subscription_models.PopOverIcon.WARNING
         assert (
             user.subscriptionMessages[0].userMessage
-            == "Il semblerait que ‘ton code postal’ soit erroné. Tu peux te rendre sur le site Démarche-simplifiées pour le rectifier."
+            == "Il semblerait que le champ ‘ton code postal’ soit erroné. Tu peux te rendre sur le site Démarche-simplifiées pour le rectifier."
         )
 
     @patch.object(api_dms.DMSGraphQLClient, "execute_query")
@@ -348,7 +340,7 @@ class DmsWebhookApplicationTest:
         assert user.subscriptionMessages[0].popOverIcon == subscription_models.PopOverIcon.WARNING
         assert (
             user.subscriptionMessages[0].userMessage
-            == "Il semblerait que ‘ta date de naissance’ soit erroné. Tu peux te rendre sur le site Démarche-simplifiées pour le rectifier."
+            == "Il semblerait que le champ ‘ta date de naissance’ soit erroné. Tu peux te rendre sur le site Démarche-simplifiées pour le rectifier."
         )
 
     @patch.object(api_dms.DMSGraphQLClient, "execute_query")
