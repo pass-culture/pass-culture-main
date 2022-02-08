@@ -9,9 +9,7 @@ import React, { useCallback, useEffect, useRef } from 'react'
 import { NBSP } from 'components/pages/Offers/Offer/Thumbnail/_constants'
 import { ReactComponent as ArrowDown } from 'components/pages/Offers/Offer/Thumbnail/assets/arrow-down.svg'
 import { ReactComponent as ArrowUp } from 'components/pages/Offers/Offer/Thumbnail/assets/arrow-up.svg'
-import { ReactComponent as Download } from 'components/pages/Offers/Offer/Thumbnail/assets/download.svg'
 import { ReactComponent as ExternalSite } from 'components/pages/Offers/Offer/Thumbnail/assets/external-site.svg'
-import { ASSETS_URL } from 'utils/config'
 
 const Advices = ({ hidden, setHidden }) => {
   const toggle = useCallback(() => {
@@ -77,29 +75,6 @@ const Advices = ({ hidden, setHidden }) => {
               <ExternalSite />
               Shutterstock
               <span className="tna-links-help">{`${NBSP}(nouvel onglet)`}</span>
-            </a>
-          </li>
-        </ul>
-        <p className="tna-title">Gabarits</p>
-        <ul className="tna-links tna-download-links">
-          <li>
-            <a
-              className="tertiary-link"
-              href={`${ASSETS_URL}/PassCulture-image-template-20210205.psd`}
-            >
-              <Download />
-              Gabarit Photoshop
-              <span className="tna-links-help">{`${NBSP}(.psd, 116 Ko)`}</span>
-            </a>
-          </li>
-          <li>
-            <a
-              className="tertiary-link"
-              href={`${ASSETS_URL}/PassCulture-image-template-20210205.eps`}
-            >
-              <Download />
-              Gabarit Illustrator
-              <span className="tna-links-help">{`${NBSP}(.eps, 836 Ko)`}</span>
             </a>
           </li>
         </ul>
