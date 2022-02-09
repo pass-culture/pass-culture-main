@@ -7,10 +7,8 @@ import pcapi.core.mails.testing as mails_testing
 from pcapi.core.offers.factories import UserOffererFactory
 import pcapi.core.users.factories as users_factories
 from pcapi.domain.user_emails import send_activation_email
-from pcapi.domain.user_emails import send_admin_user_validation_email
 from pcapi.domain.user_emails import send_individual_booking_confirmation_email_to_offerer
 from pcapi.domain.user_emails import send_offerer_bookings_recap_email_after_offerer_cancellation
-from pcapi.domain.user_emails import send_pro_user_validation_email
 from pcapi.domain.user_emails import send_withdrawal_terms_to_newly_validated_offerer
 
 
@@ -62,34 +60,6 @@ class SendOffererBookingsRecapEmailAfterOffererCancellationTest:
         retrieve_offerer_bookings_recap_email_data_after_offerer_cancellation.assert_called_once_with([booking])
         assert len(mails_testing.outbox) == 1  # test number of emails sent
         assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 1116333
-
-
-class SendProUserValidationEmailTest:
-    def test_sends_email_to_pro_user(self):
-        # Given
-        user = users_factories.ProFactory()
-        user.generate_validation_token()
-
-        # When
-        send_pro_user_validation_email(user)
-
-        # Then
-        assert len(mails_testing.outbox) == 1  # test number of emails sent
-        assert mails_testing.outbox[0].sent_data["To"] == user.email
-
-
-class SendAdminUserValidationEmailTest:
-    def test_send_mail_to_admin_user(self):
-        # Given
-        user = users_factories.AdminFactory()
-        token = users_factories.ResetPasswordToken(user=user)
-
-        # When
-        send_admin_user_validation_email(user, token)
-
-        # Then
-        assert len(mails_testing.outbox) == 1  # test number of emails sent
-        assert mails_testing.outbox[0].sent_data["To"] == user.email
 
 
 class SendActivationEmailTest:

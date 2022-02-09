@@ -26,6 +26,7 @@ from pcapi.core.fraud.common import models as common_fraud_models
 import pcapi.core.fraud.models as fraud_models
 import pcapi.core.fraud.ubble.models as ubble_fraud_models
 from pcapi.core.mails.transactional import users as user_emails
+from pcapi.core.mails.transactional.pro.email_validation import send_email_validation_to_pro_email
 from pcapi.core.mails.transactional.users.email_address_change_confirmation import send_email_confirmation_email
 import pcapi.core.payments.api as payment_api
 from pcapi.core.subscription import api as subscription_api
@@ -44,7 +45,6 @@ from pcapi.core.users.models import UserEmailHistory
 from pcapi.core.users.models import VOID_PUBLIC_NAME
 from pcapi.core.users.repository import does_validated_phone_exist
 from pcapi.core.users.repository import find_user_by_email
-from pcapi.domain import user_emails as old_user_emails
 from pcapi.domain.password import random_hashed_password
 from pcapi.domain.postal_code.postal_code import PostalCode
 from pcapi.models import db
@@ -551,7 +551,7 @@ def create_pro_user_and_offerer(pro_user: ProUserCreationBodyModel) -> User:
 
     repository.save(*objects_to_save)
 
-    if not old_user_emails.send_pro_user_validation_email(new_pro_user):
+    if not send_email_validation_to_pro_email(new_pro_user):
         logger.warning(
             "Could not send validation email when creating pro user",
             extra={"user": new_pro_user.id},
