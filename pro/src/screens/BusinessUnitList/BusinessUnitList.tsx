@@ -72,7 +72,7 @@ const BusinessUnitList = ({
 
       <Banner
         className={styles['business-unit-info-banner']}
-        href="https://aide.passculture.app/fr/articles/5830361-comment-rattacher-mes-points-de-remboursement-et-mes-coordonnees-bancaires-a-un-siret-de-reference"
+        href="https://aide.passculture.app/hc/fr/articles/4413973462929--Acteurs-Culturels-Comment-rattacher-mes-points-de-remboursement-et-mes-coordonn%C3%A9es-bancaires-%C3%A0-un-SIRET-de-r%C3%A9f%C3%A9rence-"
         linkTitle="En savoir plus sur les points de remboursements"
         type="notification-info"
       >
