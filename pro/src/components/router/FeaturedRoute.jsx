@@ -10,16 +10,16 @@ import { Route } from 'react-router-dom'
 import useActiveFeature from 'components/hooks/useActiveFeature'
 import Spinner from 'components/layout/Spinner'
 import NotMatch from 'components/pages/Errors/NotFound/NotFound'
-import { featuresInitialized } from 'store/features/selectors'
+import { selectFeaturesInitialized } from 'store/features/selectors'
 
 const FeaturedRoute = props => {
   const { children, featureName, ...routeProps } = props
   const { path } = routeProps
 
-  const featuresAreInitialized = useSelector(featuresInitialized)
+  const isFeaturesInitialized = useSelector(selectFeaturesInitialized)
   const isActive = useActiveFeature(featureName)
 
-  if (!featuresAreInitialized) {
+  if (!isFeaturesInitialized) {
     return (
       <main className="spinner-container">
         <Spinner />
