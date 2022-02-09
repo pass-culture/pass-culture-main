@@ -1,19 +1,23 @@
-import PropTypes from 'prop-types'
-import React, { useCallback, useEffect, useRef } from 'react'
+import React, { FunctionComponent, useCallback, useEffect, useRef } from 'react'
 
 import { NBSP } from 'components/pages/Offers/Offer/Thumbnail/_constants'
 import { ReactComponent as ArrowDown } from 'components/pages/Offers/Offer/Thumbnail/assets/arrow-down.svg'
 import { ReactComponent as ArrowUp } from 'components/pages/Offers/Offer/Thumbnail/assets/arrow-up.svg'
 import { ReactComponent as ExternalSite } from 'components/pages/Offers/Offer/Thumbnail/assets/external-site.svg'
 
-const Advices = ({ hidden, setHidden }) => {
+interface Props {
+  hidden: boolean
+  setHidden: (hidden: boolean) => void
+}
+
+const Advices: FunctionComponent<Props> = ({ hidden, setHidden }) => {
   const toggle = useCallback(() => {
     setHidden(!hidden)
   }, [hidden, setHidden])
 
-  const defaultTargetedButton = useRef(null)
+  const defaultTargetedButton = useRef<HTMLButtonElement>(null)
   useEffect(() => {
-    defaultTargetedButton.current.focus()
+    defaultTargetedButton.current?.focus()
   }, [])
 
   return (
@@ -76,11 +80,6 @@ const Advices = ({ hidden, setHidden }) => {
       </div>
     </div>
   )
-}
-
-Advices.propTypes = {
-  hidden: PropTypes.bool.isRequired,
-  setHidden: PropTypes.func.isRequired,
 }
 
 export default Advices
