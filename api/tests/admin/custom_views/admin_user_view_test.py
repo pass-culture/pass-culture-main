@@ -1,8 +1,10 @@
+from dataclasses import asdict
 from datetime import datetime
 from datetime import timedelta
 from unittest.mock import patch
 
 import pcapi.core.mails.testing as mails_testing
+from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.testing import override_settings
 import pcapi.core.users.constants as users_constants
 import pcapi.core.users.factories as users_factories
@@ -73,19 +75,10 @@ class AdminUserViewTest:
         assert user_created.tokens[0].type == TokenType.RESET_PASSWORD
 
         assert len(mails_testing.outbox) == 1
-        assert mails_testing.outbox[0].sent_data == {
-            "FromEmail": "support@example.com",
-            "FromName": "pass Culture admin",
-            "Subject": "[pass Culture admin] Validation de votre adresse email pour le pass Culture",
-            "MJ-TemplateID": 1660341,
-            "MJ-TemplateLanguage": True,
-            "To": "new-admin@example.com",
-            "Vars": {
-                "lien_validation_mail": "http://localhost:3001/creation-de-mot-de-passe/"
-                + user_created.tokens[0].value,
-                "env": "-development",
-            },
+        assert mails_testing.outbox[0].sent_data["params"] == {
+            "EMAIL_VALIDATION_LINK": "http://localhost:3001/creation-de-mot-de-passe/" + user_created.tokens[0].value
         }
+        assert mails_testing.outbox[0].sent_data["template"] == asdict(TransactionalEmail.EMAIL_VALIDATION_TO_PRO.value)
 
     @override_settings(IS_PROD=True, SUPER_ADMIN_EMAIL_ADDRESSES="")
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")

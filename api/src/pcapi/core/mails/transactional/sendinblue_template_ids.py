@@ -77,7 +77,7 @@ class TransactionalEmail(Enum):
     )
 
     # PRO EMAIL
-    ACCOUNT_CREATED_TO_PRO = TemplatePro(id_prod=0000, id_not_prod=0000, tags=["validation_email_invitation_pro"])
+    EMAIL_VALIDATION_TO_PRO = TemplatePro(id_prod=361, id_not_prod=56, tags=["validation_email_invitation_pro"])
     BOOKING_CANCELLATION_BY_BENEFICIARY_TO_PRO = TemplatePro(id_prod=379, id_not_prod=51, tags=["pro_annulation_offre"])
     BOOKING_CANCELLATION_CONFIRMATION_BY_PRO = TemplatePro(
         id_prod=0, id_not_prod=0, tags=["pro_annulation_rerservation"]
