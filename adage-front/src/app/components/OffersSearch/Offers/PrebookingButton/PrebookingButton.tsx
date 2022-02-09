@@ -68,7 +68,7 @@ const PrebookingButton = ({
             <>
               <Button
                 className="prebooking-button"
-                label="Pré-réserver"
+                label="Préréserver"
                 onClick={handleSearchButtonClick}
                 type="button"
               />
