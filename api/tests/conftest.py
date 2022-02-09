@@ -42,7 +42,7 @@ from tests.serialization.serialization_decorator_test import test_blueprint
 def run_migrations():
     alembic_cfg = Config("alembic.ini")
     alembic_cfg.set_main_option("sqlalchemy.url", settings.DATABASE_URL)
-    command.upgrade(alembic_cfg, "head")
+    command.upgrade(alembic_cfg, "heads")
 
 
 def pytest_configure(config):
