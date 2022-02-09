@@ -85,7 +85,6 @@
     "react-router-dom": "^5.2.0",
     "react-table": "^7.5.2",
     "react-tooltip": "^4.2.18",
-    "react-tracking": "^8.1.0",
     "redux": "^4.0.5",
     "redux-persist": "^6.0.0",
     "redux-saga": "^1.1.3",
