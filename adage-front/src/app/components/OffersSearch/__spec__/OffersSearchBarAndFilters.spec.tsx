@@ -5,8 +5,7 @@ import React from 'react'
 import { findLaunchSearchButton } from '../../../__spec__/__test_utils__/elements'
 import { SearchAndFiltersComponent } from '../OffersSearchBarAndFilters/OffersSearchBarAndFilters'
 
-const placeholder =
-  "Nom de l'offre, du lieu ou de la catégorie (films, visites, conférences, spectacles, cours, musique)"
+const placeholder = 'Nom de l’offre ou du partenaire culturel'
 
 const renderSearchAndFiltersComponent = props => {
   render(<SearchAndFiltersComponent {...props} />)
