@@ -12,7 +12,7 @@ export const App = props => {
   const {
     children,
     currentUser,
-    featuresAreInitialized,
+    isFeaturesInitialized,
     getCurrentUser,
     history,
     isMaintenanceActivated,
@@ -24,10 +24,10 @@ export const App = props => {
   const currentPathname = window.location.pathname
 
   useEffect(() => {
-    if (!featuresAreInitialized) {
+    if (!isFeaturesInitialized) {
       loadFeatures()
     }
-  }, [featuresAreInitialized, loadFeatures])
+  }, [isFeaturesInitialized, loadFeatures])
 
   useEffect(() => {
     const publicRouteList = [...routes, ...routesWithMain].filter(
@@ -83,8 +83,8 @@ App.propTypes = {
     PropTypes.arrayOf(PropTypes.shape()),
     PropTypes.shape(),
   ]).isRequired,
-  featuresAreInitialized: PropTypes.bool.isRequired,
   getCurrentUser: PropTypes.func.isRequired,
+  isFeaturesInitialized: PropTypes.bool.isRequired,
   isMaintenanceActivated: PropTypes.bool.isRequired,
   loadFeatures: PropTypes.func.isRequired,
 }

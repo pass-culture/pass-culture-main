@@ -44,10 +44,10 @@ describe('src | App', () => {
   let props
 
   beforeEach(() => {
-    // props = {}
     props = {
       featuresInitialized: false,
       getCurrentUser,
+      isFeaturesInitialized: false,
       isMaintenanceActivated: false,
       loadFeatures,
     }

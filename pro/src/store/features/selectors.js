@@ -15,7 +15,7 @@ export const isFeatureActive = (state, featureName) => {
   }
 }
 
-export const featuresInitialized = state => state.features.initialized
+export const selectFeaturesInitialized = state => state.features.initialized
 
 export const isAPISireneAvailable = state =>
   isFeatureActive(state, 'API_SIRENE_AVAILABLE')
