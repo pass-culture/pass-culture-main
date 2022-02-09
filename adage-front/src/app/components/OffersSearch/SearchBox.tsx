@@ -27,7 +27,7 @@ export const SearchBoxComponent = ({
       <input
         className="search-box"
         onChange={e => setQuery(e.target.value)}
-        placeholder="Nom de l'offre, du lieu ou de la catégorie (films, visites, conférences, spectacles, cours, musique)"
+        placeholder="Nom de l’offre ou du partenaire culturel"
         type="search"
         value={query}
       />
