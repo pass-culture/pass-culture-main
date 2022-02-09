@@ -1,4 +1,5 @@
 import logging
+from typing import Dict
 from typing import Optional
 
 from alembic import context
@@ -13,10 +14,8 @@ logger = logging.getLogger(__name__)
 
 target_metadata = db.metadata
 
-IGNORED_COLUMNS_BY_TABLE = {
-    "booking": ("isUsed"),
-    "user": ("isBeneficiary", "isAdmin"),
-}
+# List of columns to ignore keyed by table e.g {"user":  ("isAdmin", "isBeneficiary")}
+IGNORED_COLUMNS_BY_TABLE: Dict[str, tuple] = {}
 IGNORED_TABLES = ("transaction", "activity")
 
 
