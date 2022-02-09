@@ -103,28 +103,28 @@ const OfferEducationalStock = ({
         <form onSubmit={formik.handleSubmit}>
           <FormLayout className={styles['offer-educational-stock-form-layout']}>
             <FormLayout.Section title="Date et prix">
-              {!displayElementsForShowcaseOption && (
-                <Banner
-                  className={styles['offer-educational-stock-banner']}
-                  href="https://passculture.zendesk.com/hc/fr/articles/4412973958673--Acteurs-culturels-Comment-modifier-une-offre-collective-pr%C3%A9-r%C3%A9serv%C3%A9e-"
-                  linkTitle="Consultez l’article “Comment modifier ou annuler une offre collective pré-réservée/réservée”"
-                  type="notification-info"
-                >
-                  Vous pourrez modifier ces informations en fonction de vos
-                  échanges avec l'établissement scolaire.
-                </Banner>
-              )}
               {isShowcaseFeatureEnabled && (
+                <FormLayout.Row>
+                  <RadioGroup
+                    group={showcaseOfferRadios}
+                    name="educationalOfferType"
+                  />
+                </FormLayout.Row>
+              )}
+              {!displayElementsForShowcaseOption && (
                 <>
-                  <FormLayout.Row>
-                    <RadioGroup
-                      group={showcaseOfferRadios}
-                      name="educationalOfferType"
-                    />
-                  </FormLayout.Row>
                   {!displayElementsForShowcaseOption && (
                     <div className={styles['separator']} />
                   )}
+                  <Banner
+                    className={styles['offer-educational-stock-banner']}
+                    href="https://passculture.zendesk.com/hc/fr/articles/4412973958673--Acteurs-culturels-Comment-modifier-une-offre-collective-pr%C3%A9-r%C3%A9serv%C3%A9e-"
+                    linkTitle="Consultez l’article “Comment modifier ou annuler une offre collective pré-réservée/réservée”"
+                    type="notification-info"
+                  >
+                    Vous pourrez modifier ces informations en fonction de vos
+                    échanges avec l'établissement scolaire.
+                  </Banner>
                 </>
               )}
               {displayElementsForShowcaseOption ? (
