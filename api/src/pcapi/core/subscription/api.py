@@ -18,9 +18,6 @@ from pcapi.core.users import utils as users_utils
 from pcapi.domain import user_emails as old_user_emails
 from pcapi.domain.postal_code.postal_code import PostalCode
 from pcapi.models import db
-from pcapi.models.beneficiary_import import BeneficiaryImport
-from pcapi.models.beneficiary_import import BeneficiaryImportSources
-from pcapi.models.beneficiary_import_status import ImportStatus
 from pcapi.models.feature import FeatureToggle
 import pcapi.repository as pcapi_repository
 from pcapi.workers import apps_flyer_job
@@ -32,74 +29,8 @@ from . import models
 logger = logging.getLogger(__name__)
 
 
-def attach_beneficiary_import_details(
-    beneficiary: users_models.User,
-    application_id: int,
-    source_id: int,
-    source: BeneficiaryImportSources,
-    eligibility_type: typing.Optional[users_models.EligibilityType],
-    details: typing.Optional[str] = None,
-    status: ImportStatus = ImportStatus.CREATED,
-) -> None:
-    beneficiary_import = BeneficiaryImport.query.filter_by(
-        applicationId=application_id,
-        sourceId=source_id,
-        source=source.value,
-        beneficiary=beneficiary,
-        eligibilityType=eligibility_type,
-    ).one_or_none()
-    if not beneficiary_import:
-        beneficiary_import = BeneficiaryImport(
-            applicationId=application_id,
-            sourceId=source_id,
-            source=source.value,
-            beneficiary=beneficiary,
-            eligibilityType=eligibility_type,
-        )
-
-    beneficiary_import.setStatus(status=status, detail=details)
-    beneficiary_import.beneficiary = beneficiary
-
-    pcapi_repository.repository.save(beneficiary_import)
-
-
 def get_latest_subscription_message(user: users_models.User) -> typing.Optional[models.SubscriptionMessage]:
     return models.SubscriptionMessage.query.filter_by(user=user).order_by(models.SubscriptionMessage.id.desc()).first()
-
-
-def create_successfull_beneficiary_import(
-    user: users_models.User,
-    source: BeneficiaryImportSources,
-    source_id: typing.Optional[int] = None,
-    application_id: typing.Optional[int] = None,
-    eligibility_type: typing.Optional[users_models.EligibilityType] = None,
-    third_party_id: typing.Optional[str] = None,
-) -> None:
-    if application_id:
-        beneficiary_import_filter = BeneficiaryImport.applicationId == application_id
-    elif third_party_id:
-        beneficiary_import_filter = BeneficiaryImport.thirdPartyId == third_party_id
-    else:
-        raise ValueError(
-            "create_successfull_beneficiary_import need need a non-None value for application_id or third_party_id"
-        )
-    existing_beneficiary_import = BeneficiaryImport.query.filter(beneficiary_import_filter).first()
-
-    beneficiary_import = existing_beneficiary_import or BeneficiaryImport()
-    if not beneficiary_import.beneficiary:
-        beneficiary_import.beneficiary = user
-    if eligibility_type is not None:
-        beneficiary_import.eligibilityType = eligibility_type
-
-    beneficiary_import.applicationId = application_id
-    beneficiary_import.sourceId = source_id
-    beneficiary_import.source = source.value
-    beneficiary_import.setStatus(status=ImportStatus.CREATED, author=None)
-    beneficiary_import.thirdPartyId = third_party_id
-
-    pcapi_repository.repository.save(beneficiary_import)
-
-    return beneficiary_import
 
 
 def activate_beneficiary(
