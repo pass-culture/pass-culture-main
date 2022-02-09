@@ -514,7 +514,8 @@ def _get_filtered_booking_report(
             Offer.isEducational.label("offerIsEducational"),
             Stock.beginningDatetime.label("stockBeginningDatetime"),
             Stock.offerId,
-            Offer.extraData["isbn"].label("isbn"),
+            # TODO (ASK, JSONB): remove pylint disable when JSONB  migration is done
+            Offer.extraData["isbn"].label("isbn"),  # pylint: disable=unsubscriptable-object
             User.firstName.label("beneficiaryFirstName"),
             User.lastName.label("beneficiaryLastName"),
             User.email.label("beneficiaryEmail"),
@@ -575,7 +576,8 @@ def _get_filtered_booking_pro(
             EducationalRedactor.email.label("redactorEmail"),
             Offer.name.label("offerName"),
             Offer.id.label("offerId"),
-            Offer.extraData["isbn"].label("offerIsbn"),
+            # TODO (ASK, JSONB): remove pylint disable when JSONB  migration is done
+            Offer.extraData["isbn"].label("offerIsbn"),  # pylint: disable=unsubscriptable-object
             User.firstName.label("beneficiaryFirstname"),
             User.lastName.label("beneficiaryLastname"),
             User.email.label("beneficiaryEmail"),

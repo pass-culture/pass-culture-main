@@ -12,7 +12,10 @@ def process_batch(isbns: list[str], is_synchronization_compatible: bool) -> None
     logger.info(
         "Bulk-update products isSynchronizationCompatible=%s", is_synchronization_compatible, extra={"isbns": isbns}
     )
+    # TODO (ASK, JSONB): remove pylint disable when JSONB  migration is done
+    # pylint: disable=unsubscriptable-object
     products = Product.query.filter(Product.extraData["isbn"].astext.in_(isbns))
+    # pylint: enable=unsubscriptable-object
     updated_products_count = products.update(
         {"isSynchronizationCompatible": is_synchronization_compatible}, synchronize_session=False
     )
