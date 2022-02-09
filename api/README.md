@@ -135,7 +135,8 @@ Si la base de données n'a pas été initialisée, vous devez suivre les étapes
   ```shell
   source venv/bin/activate
   flask install_postgres_extensions
-  alembic upgrade head
+  alembic upgrade pre@head
+  alembic upgrade post@head
   ```
 
 Vous pouvez maintenant lancer l'application Flask

@@ -21,7 +21,8 @@ echo >&2 -e "\n\033[0;32mPostgres is up - Install app\n"
 flask install_postgres_extensions
 
 echo >&2 -e "\n\033[0;32mPostgres is up - Running migration\n"
-alembic upgrade head
+alembic upgrade pre@head
+alembic upgrade post@head
 
 echo >&2 -e "\n\033[0;32mMigrations have run - Installing feature flags\n"
 flask install_data
