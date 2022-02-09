@@ -1,5 +1,6 @@
-import React, { FunctionComponent } from 'react'
+import React, { FunctionComponent, useState } from 'react'
 
+import Advices from 'new_components/Advices/Advices'
 import { ConstraintCheck } from 'new_components/ConstraintCheck/ConstraintCheck'
 import { Constraint } from 'new_components/ConstraintCheck/imageConstraints'
 import { useCheckAndSetImage } from 'new_components/ConstraintCheck/useCheckAndSetImage'
@@ -22,6 +23,7 @@ export const ImportFromComputer: FunctionComponent<ImportFromComputerProps> = ({
   orientation,
   onSetImage,
 }) => {
+  const [hidden, setHidden] = useState(true)
   const { errors, checkAndSetImage } = useCheckAndSetImage({
     constraints,
     onSetImage,
@@ -45,6 +47,8 @@ export const ImportFromComputer: FunctionComponent<ImportFromComputerProps> = ({
           constraints={constraints}
           failingConstraints={errors}
         />
+        <hr className="tnd-hr" />
+        <Advices hidden={hidden} setHidden={setHidden} />
       </form>
     </section>
   )
