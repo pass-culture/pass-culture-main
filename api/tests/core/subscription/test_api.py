@@ -19,107 +19,7 @@ from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.core.users import utils as users_utils
 from pcapi.models import api_errors
-from pcapi.models.beneficiary_import import BeneficiaryImport
-from pcapi.models.beneficiary_import import BeneficiaryImportSources
-from pcapi.models.beneficiary_import_status import ImportStatus
 import pcapi.notifications.push.testing as push_testing
-
-
-@pytest.mark.usefixtures("db_session")
-@pytest.mark.parametrize(
-    "import_status",
-    [
-        ImportStatus.DRAFT,
-        ImportStatus.ONGOING,
-        ImportStatus.REJECTED,
-    ],
-)
-class AttachBenerificaryImportDetailsTest:
-    def test_user_application(self, import_status):
-        user = users_factories.UserFactory()
-        subscription_api.attach_beneficiary_import_details(
-            user,
-            42,
-            21,
-            BeneficiaryImportSources.demarches_simplifiees,
-            users_models.EligibilityType.AGE18,
-            "random_details",
-            import_status,
-        )
-
-        beneficiary_import = BeneficiaryImport.query.one()
-        assert beneficiary_import.source == BeneficiaryImportSources.demarches_simplifiees.value
-        assert beneficiary_import.beneficiary == user
-        assert len(beneficiary_import.statuses) == 1
-
-        status = beneficiary_import.statuses[0]
-        assert status.detail == "random_details"
-        assert status.status == import_status
-        assert status.author == None
-
-    def test_user_already_have_jouve_applications(self, import_status):
-        user = users_factories.UserFactory()
-        users_factories.BeneficiaryImportFactory(beneficiary=user, source=BeneficiaryImportSources.jouve.value)
-
-        subscription_api.attach_beneficiary_import_details(
-            user,
-            42,
-            21,
-            BeneficiaryImportSources.demarches_simplifiees,
-            users_models.EligibilityType.AGE18,
-            "random_details",
-            import_status,
-        )
-
-        beneficiary_import = BeneficiaryImport.query.all()
-        assert len(beneficiary_import) == 2
-
-    def test_user_application_already_have_dms_statuses(self, import_status):
-        user = users_factories.UserFactory(dateOfBirth=datetime.now() - relativedelta(years=18))
-        application_id = 42
-        procedure_id = 21
-        beneficiary_import = users_factories.BeneficiaryImportFactory(
-            beneficiary=user,
-            source=BeneficiaryImportSources.demarches_simplifiees.value,
-            applicationId=application_id,
-            sourceId=procedure_id,
-        )
-        users_factories.BeneficiaryImportStatusFactory(beneficiaryImport=beneficiary_import)
-
-        subscription_api.attach_beneficiary_import_details(
-            user,
-            application_id,
-            procedure_id,
-            BeneficiaryImportSources.demarches_simplifiees,
-            users_models.EligibilityType.AGE18,
-            "random details",
-            import_status,
-        )
-        beneficiary_import = BeneficiaryImport.query.filter(BeneficiaryImport.beneficiaryId == user.id).one()
-        assert len(beneficiary_import.statuses) == 2
-
-    def test_user_application_already_have_another_dms_application(self, import_status):
-        user = users_factories.UserFactory()
-        application_id = 42
-        procedure_id = 21
-        beneficiary_import = users_factories.BeneficiaryImportFactory(
-            beneficiary=user,
-            source=BeneficiaryImportSources.demarches_simplifiees.value,
-            applicationId=143,
-            sourceId=procedure_id,
-        )
-        users_factories.BeneficiaryImportStatusFactory(beneficiaryImport=beneficiary_import)
-
-        subscription_api.attach_beneficiary_import_details(
-            user,
-            application_id,
-            procedure_id,
-            BeneficiaryImportSources.demarches_simplifiees,
-            users_models.EligibilityType.AGE18,
-            "random details",
-            import_status,
-        )
-        assert BeneficiaryImport.query.count() == 2
 
 
 @pytest.mark.usefixtures("db_session")
@@ -192,9 +92,6 @@ class EduconnectFlowTest:
             == "https://webapp-v2.example.com/educonnect/validation?firstName=Max&lastName=SENS&dateOfBirth=2006-08-18&logoutUrl=https%3A%2F%2Feduconnect.education.gouv.fr%2FLogout"
         )
 
-        beneficiary_import = BeneficiaryImport.query.filter_by(beneficiaryId=user.id).one_or_none()
-        assert beneficiary_import is not None
-        assert beneficiary_import.currentStatus == ImportStatus.CREATED
         assert user.firstName == "Max"
         assert user.lastName == "SENS"
         assert user.dateOfBirth == datetime(2006, 8, 18, 0, 0)
