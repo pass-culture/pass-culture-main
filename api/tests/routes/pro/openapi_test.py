@@ -1,0 +1,297 @@
+def test_public_api(client, app):
+    response = client.get("/v2/openapi.json")
+    assert response.status_code == 200
+    assert response.json == {
+        "components": {
+            "schemas": {
+                "224227e.GetBookingResponse.BookingFormula": {
+                    "description": "An enumeration.",
+                    "enum": ["PLACE", "ABO", ""],
+                    "title": "BookingFormula",
+                },
+                "224227e.GetBookingResponse.BookingOfferType": {
+                    "description": "An enumeration.",
+                    "enum": ["BIEN", "EVENEMENT"],
+                    "title": "BookingOfferType",
+                },
+                "6a07bef.ValidationError": {
+                    "description": "Model " "of a " "validation " "error " "response.",
+                    "items": {"$ref": "#/components/schemas/6a07bef.ValidationError.ValidationErrorElement"},
+                    "title": "ValidationError",
+                    "type": "array",
+                },
+                "6a07bef.ValidationError.ValidationErrorElement": {
+                    "description": "Model " "of " "a " "validation " "error " "response " "element.",
+                    "properties": {
+                        "ctx": {"title": "Error " "context", "type": "object"},
+                        "loc": {"items": {"type": "string"}, "title": "Missing " "field " "name", "type": "array"},
+                        "msg": {"title": "Error " "message", "type": "string"},
+                        "type": {"title": "Error " "type", "type": "string"},
+                    },
+                    "required": ["loc", "msg", "type"],
+                    "title": "ValidationErrorElement",
+                    "type": "object",
+                },
+                "224227e.GetBookingResponse": {
+                    "properties": {
+                        "bookingId": {"title": "Bookingid", "type": "string"},
+                        "dateOfBirth": {"title": "Dateofbirth", "type": "string"},
+                        "datetime": {"title": "Datetime", "type": "string"},
+                        "ean13": {"nullable": True, "title": "Ean13", "type": "string"},
+                        "email": {"title": "Email", "type": "string"},
+                        "formula": {"$ref": "#/components/schemas/224227e.GetBookingResponse.BookingFormula"},
+                        "isUsed": {"title": "Isused", "type": "boolean"},
+                        "offerId": {"title": "Offerid", "type": "integer"},
+                        "offerName": {"title": "Offername", "type": "string"},
+                        "offerType": {"$ref": "#/components/schemas/224227e.GetBookingResponse.BookingOfferType"},
+                        "phoneNumber": {"title": "Phonenumber", "type": "string"},
+                        "price": {"title": "Price", "type": "number"},
+                        "publicOfferId": {"title": "Publicofferid", "type": "string"},
+                        "quantity": {"title": "Quantity", "type": "integer"},
+                        "theater": {"title": "Theater", "type": "object"},
+                        "userName": {"title": "Username", "type": "string"},
+                        "venueAddress": {"nullable": True, "title": "Venueaddress", "type": "string"},
+                        "venueDepartmentCode": {"nullable": True, "title": "Venuedepartmentcode", "type": "string"},
+                        "venueName": {"title": "Venuename", "type": "string"},
+                    },
+                    "required": [
+                        "bookingId",
+                        "dateOfBirth",
+                        "datetime",
+                        "email",
+                        "formula",
+                        "isUsed",
+                        "offerId",
+                        "publicOfferId",
+                        "offerName",
+                        "offerType",
+                        "phoneNumber",
+                        "price",
+                        "quantity",
+                        "theater",
+                        "userName",
+                        "venueName",
+                    ],
+                    "title": "GetBookingResponse",
+                    "type": "object",
+                },
+                "afb85da.UpdateVenueStocksBodyModel.UpdateVenueStockBodyModel": {
+                    "description": "Available stock quantity for a book",
+                    "properties": {
+                        "available": {"minimum": 0, "title": "Available", "type": "integer"},
+                        "price": {
+                            "description": "(Optionnel) Prix en Euros avec 2 décimales possibles",
+                            "title": "Price",
+                            "nullable": True,
+                            "type": "number",
+                        },
+                        "ref": {"description": "Format: EAN13", "title": "ISBN", "type": "string"},
+                    },
+                    "required": ["ref", "available"],
+                    "title": "Stock",
+                    "type": "object",
+                },
+                "afb85da.UpdateVenueStocksBodyModel": {
+                    "properties": {
+                        "stocks": {
+                            "items": {
+                                "$ref": "#/components/schemas/afb85da.UpdateVenueStocksBodyModel.UpdateVenueStockBodyModel"
+                            },
+                            "title": "Stocks",
+                            "type": "array",
+                        }
+                    },
+                    "required": ["stocks"],
+                    "title": "Venue's stocks update body",
+                    "type": "object",
+                },
+            },
+            "securitySchemes": {
+                "ApiKeyAuth": {"description": "Api key issued by passculture", "scheme": "bearer", "type": "http"},
+                "SessionAuth": {
+                    "in": "cookie",
+                    "name": "session",
+                    "type": "apiKey",
+                },
+            },
+        },
+        "info": {"title": "pass Culture pro public API v2", "version": "2"},
+        "openapi": "3.0.3",
+        "paths": {
+            "/v2/bookings/cancel/token/{token}": {
+                "patch": {
+                    "description": "Bien que, dans le cas d’un événement, l\u2019utilisateur ne peut plus annuler sa réservation 72h avant le début de ce dernier, cette API permet d\u2019annuler la réservation d\u2019un utilisateur si elle n\u2019a pas encore été validé.",
+                    "operationId": "patch_/v2/bookings/cancel/token/{token}",
+                    "parameters": [
+                        {
+                            "description": "",
+                            "in": "path",
+                            "name": "token",
+                            "required": True,
+                            "schema": {"type": "string"},
+                        }
+                    ],
+                    "responses": {
+                        "204": {"description": "La contremarque a été annulée avec succès"},
+                        "401": {"description": "Authentification nécessaire"},
+                        "403": {
+                            "description": "Vous n'avez pas les droits nécessaires pour annuler cette contremarque ou la réservation a déjà été validée"
+                        },
+                        "404": {"description": "La contremarque n'existe pas"},
+                        "410": {"description": "La contremarque a déjà été annulée"},
+                        "422": {
+                            "description": "Unprocessable Entity",
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/6a07bef.ValidationError"}}
+                            },
+                        },
+                    },
+                    "summary": "Annulation d'une réservation.",
+                    "tags": ["API Contremarque"],
+                }
+            },
+            "/v2/bookings/keep/token/{token}": {
+                "patch": {
+                    "description": "",
+                    "operationId": "patch_/v2/bookings/keep/token/{token}",
+                    "parameters": [
+                        {
+                            "description": "",
+                            "in": "path",
+                            "name": "token",
+                            "required": True,
+                            "schema": {"type": "string"},
+                        }
+                    ],
+                    "responses": {
+                        "204": {"description": "L'annulation de la validation de la contremarque a bien été effectuée"},
+                        "401": {"description": "Authentification nécessaire"},
+                        "403": {"description": "Vous n'avez pas les droits nécessaires pour voir cette contremarque"},
+                        "404": {"description": "La contremarque n'existe pas"},
+                        "410": {
+                            "description": "La requête est refusée car la contremarque n'a pas encore été validée, a été annulée, ou son remboursement a été initié"
+                        },
+                        "422": {
+                            "description": "Unprocessable Entity",
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/6a07bef.ValidationError"}}
+                            },
+                        },
+                    },
+                    "summary": "Annulation de la validation d'une réservation.",
+                    "tags": ["API Contremarque"],
+                }
+            },
+            "/v2/bookings/token/{token}": {
+                "get": {
+                    "description": "Le code \u201ccontremarque\u201d ou \"token\" est une cha\u00eene de caractères permettant d\u2019identifier la réservation et qui sert de preuve de réservation. Ce code unique est généré pour chaque réservation d'un utilisateur sur l'application et lui est transmis à cette occasion.",
+                    "operationId": "get_/v2/bookings/token/{token}",
+                    "parameters": [
+                        {
+                            "description": "",
+                            "in": "path",
+                            "name": "token",
+                            "required": True,
+                            "schema": {"type": "string"},
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "content": {
+                                "application/json": {
+                                    "schema": {"$ref": "#/components/schemas/224227e.GetBookingResponse"}
+                                }
+                            },
+                            "description": "La contremarque existe et n\u2019est pas validée",
+                        },
+                        "401": {"description": "Authentification nécessaire"},
+                        "403": {"description": "Vous n'avez pas les droits nécessaires pour voir cette contremarque"},
+                        "404": {"description": "La contremarque n'existe pas"},
+                        "410": {
+                            "description": "La contremarque n'est plus valide car elle a déjà été validée ou a été annulée"
+                        },
+                        "422": {
+                            "description": "Unprocessable Entity",
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/6a07bef.ValidationError"}}
+                            },
+                        },
+                    },
+                    "security": [{"ApiKeyAuth": []}, {"SessionAuth": []}],
+                    "summary": "Consultation d'une réservation.",
+                    "tags": ["API Contremarque"],
+                }
+            },
+            "/v2/bookings/use/token/{token}": {
+                "patch": {
+                    "description": "Pour confirmer que la réservation a bien été utilisée par le jeune.",
+                    "operationId": "patch_/v2/bookings/use/token/{token}",
+                    "parameters": [
+                        {
+                            "description": "",
+                            "in": "path",
+                            "name": "token",
+                            "required": True,
+                            "schema": {"type": "string"},
+                        }
+                    ],
+                    "responses": {
+                        "204": {"description": "La contremarque a bien été validée"},
+                        "401": {"description": "Authentification nécessaire"},
+                        "403": {"description": "Vous n'avez pas les droits nécessaires pour voir cette contremarque"},
+                        "404": {"description": "La contremarque n'existe pas"},
+                        "410": {
+                            "description": "La contremarque n'est plus valide car elle a déjà été validée ou a été annulée"
+                        },
+                        "422": {
+                            "description": "Unprocessable Entity",
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/6a07bef.ValidationError"}}
+                            },
+                        },
+                    },
+                    "security": [{"ApiKeyAuth": []}, {"SessionAuth": []}],
+                    "summary": "Validation d'une réservation.",
+                    "tags": ["API Contremarque"],
+                }
+            },
+            "/v2/venue/{venue_id}/stocks": {
+                "post": {
+                    "description": """Seuls les livres, préalablement présents dans le catalogue du pass Culture seront pris en compte, tous les autres stocks seront filtrés. Les stocks sont référencés par leur isbn au format EAN13. Le champ "available" représente la quantité de stocks disponible en librairie. Le champ "price" (optionnel) correspond au prix en euros. Le paramètre {venue_id} correspond à un lieu qui doit être attaché à la structure à laquelle la clé d'API utilisée est reliée.""",
+                    "operationId": "post_/v2/venue/{venue_id}/stocks",
+                    "parameters": [
+                        {
+                            "description": "",
+                            "in": "path",
+                            "name": "venue_id",
+                            "required": True,
+                            "schema": {"format": "int32", "type": "integer"},
+                        }
+                    ],
+                    "requestBody": {
+                        "content": {
+                            "application/json": {
+                                "schema": {"$ref": "#/components/schemas/afb85da.UpdateVenueStocksBodyModel"}
+                            }
+                        }
+                    },
+                    "responses": {
+                        "204": {"description": "No Content"},
+                        "401": {"description": "Unauthorized"},
+                        "403": {"description": "Forbidden"},
+                        "404": {"description": "Not Found"},
+                        "422": {
+                            "description": "Unprocessable Entity",
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/6a07bef.ValidationError"}}
+                            },
+                        },
+                    },
+                    "summary": "Mise à jour des stocks d'un lieu enregistré auprès du pass Culture.",
+                    "tags": ["API Stocks"],
+                }
+            },
+        },
+        "security": [],
+        "tags": [{"name": "API Contremarque"}, {"name": "API Stocks"}],
+    }
