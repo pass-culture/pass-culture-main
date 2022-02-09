@@ -1,21 +1,24 @@
 import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
-import { isFeatureActive, featuresInitialized } from 'store/features/selectors'
+import {
+  isFeatureActive,
+  selectFeaturesInitialized,
+} from 'store/features/selectors'
 import { loadFeatures } from 'store/features/thunks'
 
 const useActiveFeature = featureName => {
   const isActive = useSelector(state => isFeatureActive(state, featureName))
-  const featuresAreInitialized = useSelector(state =>
-    featuresInitialized(state)
+  const isFeaturesInitialized = useSelector(state =>
+    selectFeaturesInitialized(state)
   )
 
   const dispatch = useDispatch()
   useEffect(() => {
-    if (!featuresAreInitialized) {
+    if (!isFeaturesInitialized) {
       dispatch(loadFeatures())
     }
-  }, [dispatch, featuresAreInitialized])
+  }, [dispatch, isFeaturesInitialized])
 
   return isActive
 }

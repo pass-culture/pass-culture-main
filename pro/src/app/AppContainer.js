@@ -9,7 +9,7 @@ import { withRouter } from 'react-router'
 import { compose } from 'redux'
 import { requestData } from 'redux-saga-data'
 
-import { featuresInitialized } from 'store/features/selectors'
+import { selectFeaturesInitialized } from 'store/features/selectors'
 import { loadFeatures } from 'store/features/thunks'
 import {
   selectCurrentUser,
@@ -23,7 +23,7 @@ export function mapStateToProps(state) {
   return {
     currentUser: selectCurrentUser(state),
     isMaintenanceActivated: maintenanceSelector(state),
-    featuresAreInitialized: featuresInitialized(state),
+    isFeaturesInitialized: selectFeaturesInitialized(state),
   }
 }
 
