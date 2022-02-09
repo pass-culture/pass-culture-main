@@ -325,10 +325,11 @@ class RunIntegrationTest:
         assert user.address == "3 La Bigotais 22800 Saint-Donan"
         assert user.phoneNumber == "0123456789"
 
-        fraud_check = fraud_models.BeneficiaryFraudCheck.query.first()
+        fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter(
+            fraud_models.BeneficiaryFraudCheck.type == fraud_models.FraudCheckType.DMS
+        ).one()
         assert fraud_check.userId == user.id
         assert fraud_check.thirdPartyId == "123"
-        assert fraud_check.type == fraud_models.FraudCheckType.DMS
         assert fraud_check.status == fraud_models.FraudCheckStatus.OK
         assert len(push_testing.requests) == 2
 
