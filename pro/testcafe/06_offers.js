@@ -311,10 +311,11 @@ test("Je suis redirigé sur la page de choix du type d'offre si je clique sur re
     .click(subcategoryOption.withText('Support physique (DVD, Blu-ray...)'))
     .typeText(nameInput, 'Rencontre avec Franck Lepage')
 
+  // RouteLeavingGuard take time to block navigation.
   await goBack()
+  await t.wait(200)
 
   await t
-    .wait(200) // RouteLeavingGuard take time to block navigation.
     .expect(exitOfferCreationMessage.exists)
     .ok()
     .click(exitOfferCreationDialogConfirmButton)
@@ -342,10 +343,11 @@ test("Je suis redirigé sur la liste des offres si je clique sur retour à parti
     .expect(getPathname())
     .match(/\/offre\/([A-Z0-9]+)\/individuel\/stocks$/)
 
+  // RouteLeavingGuard take time to block navigation.
   await goBack()
+  await t.wait(200)
 
   await t
-    .wait(200) // RouteLeavingGuard take time to block navigation.
     .expect(exitOfferCreationMessage.exists)
     .ok()
     .click(exitOfferCreationDialogConfirmButton)
@@ -386,7 +388,9 @@ test("Je suis redirigé sur la liste des offres si je clique sur retour à parti
     .expect(getPathname())
     .match(/\/offre\/([A-Z0-9]+)\/individuel\/confirmation$/)
 
+  // RouteLeavingGuard take time to block navigation.
   await goBack()
+  await t.wait(200)
 
   await t.expect(getPathname()).eql('/offres')
 })
@@ -428,8 +432,10 @@ test('Je suis redirigé sur la liste des offres si je clique sur retour à parti
 
   await goBack()
 
+  // RouteLeavingGuard take time to block navigation.
+  await t.wait(200)
+
   await t
-    .wait(200) // RouteLeavingGuard take time to block navigation.
     .expect(exitOfferCreationMessage.exists)
     .ok()
     .click(exitOfferCreationDialogConfirmButton)
