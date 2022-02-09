@@ -379,6 +379,7 @@ elif [[ "$CMD" == "tag" ]]; then
     git commit -m "🚀 $TAG_VERSION" -n
     git tag -a "$TAG_VERSION" -m "🚀 $TAG_VERSION"
     git push origin "$TAG_VERSION"
+    alembic revision -m "post tag $TAG_VERSION" --head=pre@head --depends-on=post@head
 
     echo "New version tagged : $TAG_NAME"
 
