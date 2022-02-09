@@ -6,7 +6,6 @@
 ## [SCREENS](./screens/README.md)
 ## [ROUTES](./routes/README.md)
 ## [REPOSITORY](./repository/README.md)
-## [MATOMO](./components/matomo/README.md)
 ## [HOCS](./components/hocs/README.md) (DEPRECATED : utiliser les hooks)
 ## [LAYOUT](./components/layout/README.md) (DEPRECATED : à migrer au sein de components et ui-kit)
 ## [PAGES](./components/pages/README.md) (DEPRECATED : à migrer dans screens et routes)
