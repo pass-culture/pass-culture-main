@@ -40,7 +40,7 @@ def handle_educonnect_authentication(
         try:
             subscription_api.on_successful_application(user=user, source_data=fraud_check.source_data())
         except Exception:
-            logger.exception("Error while creating BeneficiaryImport from Educonnect", extra={"user_id": user.id})
+            logger.exception("Error while activating user from Educonnect", extra={"user_id": user.id})
             raise exceptions.EduconnectSubscriptionException()
     else:
         _add_error_subscription_messages(user, fraud_check.reasonCodes, educonnect_user)
