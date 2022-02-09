@@ -229,6 +229,7 @@ test("Je suis empêché de quitter la création d'offre sans confirmation", asyn
     .click(venueOption.withText(venue.name))
     .click(noDisabilityCompliantCheckbox)
     .click(navBrandLogoItem)
+    .wait(200) // RouteLeavingGuard take time to block navigation.
     .expect(exitOfferCreationMessage.exists)
     .ok()
     .click(exitOfferCreationDialogCancelButton)
@@ -236,6 +237,7 @@ test("Je suis empêché de quitter la création d'offre sans confirmation", asyn
     .expect(getPathname())
     .match(/\/offre\/([A-Z0-9]+)\/individuel\/stocks$/)
     .click(navBrandLogoItem())
+    .wait(200) // RouteLeavingGuard take time to block navigation.
     .expect(exitOfferCreationMessage.exists)
     .ok()
     .click(exitOfferCreationDialogCancelButton)
@@ -263,6 +265,7 @@ test("Je peux quitter la création d'offre avec confirmation", async t => {
     .click(venueOption.withText(venue.name))
     .click(noDisabilityCompliantCheckbox)
     .click(navBrandLogoItem)
+    .wait(200) // RouteLeavingGuard take time to block navigation.
     .expect(exitOfferCreationMessage.exists)
     .ok()
     .click(exitOfferCreationDialogConfirmButton)
@@ -311,6 +314,7 @@ test("Je suis redirigé sur la page de choix du type d'offre si je clique sur re
   await goBack()
 
   await t
+    .wait(200) // RouteLeavingGuard take time to block navigation.
     .expect(exitOfferCreationMessage.exists)
     .ok()
     .click(exitOfferCreationDialogConfirmButton)
@@ -341,6 +345,7 @@ test("Je suis redirigé sur la liste des offres si je clique sur retour à parti
   await goBack()
 
   await t
+    .wait(200) // RouteLeavingGuard take time to block navigation.
     .expect(exitOfferCreationMessage.exists)
     .ok()
     .click(exitOfferCreationDialogConfirmButton)
@@ -424,6 +429,7 @@ test('Je suis redirigé sur la liste des offres si je clique sur retour à parti
   await goBack()
 
   await t
+    .wait(200) // RouteLeavingGuard take time to block navigation.
     .expect(exitOfferCreationMessage.exists)
     .ok()
     .click(exitOfferCreationDialogConfirmButton)
