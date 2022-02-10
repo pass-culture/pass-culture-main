@@ -3,6 +3,7 @@ import { CroppedRect } from 'react-avatar-editor'
 
 import { imageConstraints } from 'new_components/ConstraintCheck/imageConstraints'
 import DialogBox from 'new_components/DialogBox'
+import { postImageToVenue } from 'repository/pcapi/pcapi'
 
 import { ImportFromComputer } from '../ImportFromComputer/ImportFromComputer'
 import { VenueImageEdit } from '../VenueImageEdit/VenueImageEdit'
@@ -11,6 +12,7 @@ import { VenueImagePreview } from '../VenueImagePreview/VenueImagePreview'
 import { IMAGE_TYPES, MAX_IMAGE_SIZE, MIN_IMAGE_WIDTH } from './constants'
 
 type Props = {
+  venueId: string
   onDismiss: () => void
 }
 
@@ -21,12 +23,14 @@ const constraints = [
 ]
 
 export const VenueImageUploaderModal: FunctionComponent<Props> = ({
+  venueId,
   onDismiss,
 }) => {
   const [image, setImage] = useState<File>()
   const [credit, setCredit] = useState('')
   const [croppingRect, setCroppingRect] = useState<CroppedRect>()
   const [editedImage, setEditedImage] = useState('')
+  const [isUploading, setIsUploading] = useState(false)
 
   const onSetImage = useCallback(
     file => {
@@ -42,6 +46,25 @@ export const VenueImageUploaderModal: FunctionComponent<Props> = ({
     },
     [setEditedImage, setCroppingRect]
   )
+
+  const navigateFromPreviewToEdit = useCallback(() => {
+    setEditedImage('')
+  }, [])
+
+  const onUploadImage = useCallback(async () => {
+    if (typeof croppingRect === 'undefined') return
+
+    setIsUploading(true)
+    await postImageToVenue({
+      venueId,
+      banner: image,
+      xCropPercent: croppingRect.x,
+      yCropPercent: croppingRect.y,
+      heightCropPercent: croppingRect.height,
+    })
+    setIsUploading(false)
+    onDismiss()
+  }, [venueId, image, croppingRect, onDismiss])
 
   return (
     <DialogBox
@@ -65,7 +88,12 @@ export const VenueImageUploaderModal: FunctionComponent<Props> = ({
           onSetCredit={setCredit}
         />
       ) : (
-        <VenueImagePreview preview={editedImage} />
+        <VenueImagePreview
+          isUploading={isUploading}
+          onGoBack={navigateFromPreviewToEdit}
+          onUploadImage={onUploadImage}
+          preview={editedImage}
+        />
       )}
     </DialogBox>
   )
