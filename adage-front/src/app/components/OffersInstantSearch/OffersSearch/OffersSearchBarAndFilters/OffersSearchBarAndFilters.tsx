@@ -11,7 +11,7 @@ import { SearchBox } from '../SearchBox'
 interface SearchAndFiltersProps {
   query: string
   setQuery: React.Dispatch<React.SetStateAction<string>>
-  handleSearchButtonClick: (filters: Filters) => void
+  handleLaunchSearch: (filters: Filters) => void
   isLoading: boolean
   removeVenueFilter: () => void
   venueFilter: VenueFilterType | null
@@ -25,7 +25,7 @@ const SearchAndFiltersComponent = ({
   currentFilters,
   query,
   setQuery,
-  handleSearchButtonClick,
+  handleLaunchSearch,
   isLoading,
   removeVenueFilter,
   venueFilter,
@@ -38,10 +38,8 @@ const SearchAndFiltersComponent = ({
         className="search-filters"
         currentFilters={currentFilters}
         dispatchCurrentFilters={dispatchCurrentFilters}
-        handleSearchButtonClick={handleSearchButtonClick}
+        handleLaunchSearch={handleLaunchSearch}
         isLoading={isLoading}
-        query={query}
-        refine={refine}
         removeVenueFilter={removeVenueFilter}
         venueFilter={venueFilter}
       />

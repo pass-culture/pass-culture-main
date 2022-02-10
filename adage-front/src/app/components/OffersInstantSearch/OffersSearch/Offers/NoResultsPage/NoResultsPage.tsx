@@ -17,7 +17,9 @@ export const NoResultsPage = ({
   return (
     <div className="no-results">
       <MagnifyingGlassIcon className="no-results-icon" />
-      <p>Aucun résultat trouvé pour cette recherche.</p>
+      <p className="no-results-text">
+        Aucun résultat trouvé pour cette recherche.
+      </p>
       {(query || facetFilters.length > 1) && ( // la longueur de facetFilters doit être > 1 car il y aura toujours [offer.isEducational:true] dans les facetFilters
         <Button
           Icon={ResetIcon}
