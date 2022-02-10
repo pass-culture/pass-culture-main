@@ -7,10 +7,10 @@ import { placeholder } from 'app/__spec__/App.spec'
 import { INITIAL_FACET_FILTERS } from 'app/constants'
 import { Role } from 'utils/types'
 
-import { OffersSearchComponent } from '../OffersSearch'
+import { OffersSearch } from '../OffersSearch'
 
 const renderOffersSearchComponent = props => {
-  render(<OffersSearchComponent {...props} />)
+  render(<OffersSearch {...props} />)
 }
 
 describe('offersSearch component', () => {

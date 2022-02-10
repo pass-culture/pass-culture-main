@@ -1,19 +1,18 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import React from 'react'
 
+import { VenueFilterType } from '../../../../../utils/types'
 import {
   findLaunchSearchButton,
   queryResetFiltersButton,
-} from 'app/__spec__/__test_utils__/elements'
-import { placeholder } from 'app/__spec__/App.spec'
-import SearchAndFiltersComponent from 'app/components/OffersInstantSearch/OffersSearch/OffersSearchBarAndFilters/OffersSearchBarAndFilters'
-import { VenueFilterType } from 'utils/types'
+} from '../../../../__spec__/__test_utils__/elements'
+import { OfferFilters } from '../OfferFilters/OfferFilters'
 
-const renderSearchAndFiltersComponent = props => {
-  render(<SearchAndFiltersComponent {...props} />)
+const renderOfferFilters = props => {
+  render(<OfferFilters {...props} />)
 }
 
-describe('searchAndFiltersComponent', () => {
+describe('offerFilters component', () => {
   let props
   let venue: VenueFilterType | null = {
     id: 1436,
@@ -23,34 +22,22 @@ describe('searchAndFiltersComponent', () => {
 
   beforeEach(() => {
     props = {
-      query: '',
-      currentRefinement: '',
-      handleSearchButtonClick: jest.fn(),
-      isLoading: false,
-      isSearchStalled: false,
-      refine: jest.fn(),
-      setQuery: jest.fn(),
-      removeVenueFilter: jest.fn(),
+      dispatchCurrentFilters: jest.fn(),
+      currentFilters: {
+        departments: [],
+        categories: [],
+        students: [],
+      },
+      handleLaunchSearch: jest.fn(),
       venueFilter: null,
-      currentFilters: { departments: [], categories: [], students: [] },
+      removeVenueFilter: jest.fn(),
+      isLoading: false,
     }
-  })
-
-  it('should have correct placeholder', async () => {
-    // Given
-
-    // When
-    renderSearchAndFiltersComponent(props)
-
-    // Then
-    await waitFor(() =>
-      expect(screen.getByPlaceholderText(placeholder)).toBeInTheDocument()
-    )
   })
 
   it('should show no tags when no filter and no venue filter are selected', async () => {
     // When
-    renderSearchAndFiltersComponent({ ...props, venueFilter: null })
+    renderOfferFilters(props)
 
     // Then
     const launchSearchButton = await findLaunchSearchButton()
@@ -65,7 +52,7 @@ describe('searchAndFiltersComponent', () => {
 
   it('should show venue tag with venue public name when venue filter is applied', async () => {
     // When
-    renderSearchAndFiltersComponent({ ...props, venueFilter: venue })
+    renderOfferFilters({ ...props, venueFilter: venue })
 
     // Then
     await waitFor(() =>
@@ -82,7 +69,7 @@ describe('searchAndFiltersComponent', () => {
     venue.publicName = undefined
 
     // When
-    renderSearchAndFiltersComponent({ ...props, venueFilter: venue })
+    renderOfferFilters({ ...props, venueFilter: venue })
 
     // Then
     await waitFor(() =>
@@ -93,7 +80,7 @@ describe('searchAndFiltersComponent', () => {
 
   it('should show filter tags when at least one filter is selected', async () => {
     // When
-    renderSearchAndFiltersComponent({
+    renderOfferFilters({
       ...props,
       currentFilters: {
         departments: ['venue.departmentCode:01'],

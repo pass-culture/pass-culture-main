@@ -21,9 +21,10 @@ import { Role, VenueFilterType } from 'utils/types'
 import { populateFacetFilters } from '../utils'
 
 import { filtersReducer } from './filtersReducer'
+import { OfferFilters } from './OfferFilters/OfferFilters'
 import { Offers } from './Offers/Offers'
 import Pagination from './Offers/Pagination'
-import OffersSearchBarAndFilters from './OffersSearchBarAndFilters'
+import { SearchBox } from './SearchBox'
 
 interface SearchProps extends SearchBoxProvided {
   userRole: Role
@@ -33,7 +34,7 @@ interface SearchProps extends SearchBoxProvided {
   facetFilters: Facets
 }
 
-export const OffersSearchComponent = ({
+const OffersSearchComponent = ({
   userRole,
   removeVenueFilter,
   venueFilter,
@@ -69,15 +70,14 @@ export const OffersSearchComponent = ({
 
   return (
     <>
-      <OffersSearchBarAndFilters
+      <SearchBox query={query} refine={refine} setQuery={setQuery} />
+      <OfferFilters
+        className="search-filters"
         currentFilters={currentFilters}
         dispatchCurrentFilters={dispatchCurrentFilters}
         handleLaunchSearch={handleLaunchSearch}
         isLoading={isLoading}
-        query={query}
-        refine={refine}
         removeVenueFilter={removeVenueFilter}
-        setQuery={setQuery}
         venueFilter={venueFilter}
       />
       <div className="search-results">
