@@ -47,7 +47,7 @@ export const ImportFromComputer: FunctionComponent<ImportFromComputerProps> = ({
           constraints={constraints}
           failingConstraints={errors}
         />
-        <hr className="tnd-hr" />
+        <hr className={style['import-from-computer-hr']} />
         <Advices hidden={hidden} setHidden={setHidden} />
       </form>
     </section>
