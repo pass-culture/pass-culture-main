@@ -1,9 +1,8 @@
-import isEqual from 'lodash/isEqual'
 import React, { useCallback, useEffect, useState } from 'react'
 import type { SearchBoxProvided } from 'react-instantsearch-core'
 
 import { getEducationalCategoriesOptionsAdapter } from 'app/adapters/getEducationalCategoriesOptionsAdapter'
-import { FilterField, Filters, Option } from 'app/types'
+import { Filters, Option } from 'app/types'
 import { Button, MultiSelectAutocomplete } from 'app/ui-kit'
 import { VenueFilterType } from 'utils/types'
 
@@ -40,40 +39,6 @@ export const OfferFilters = ({
   const [categoriesOptions, setCategoriesOptions] = useState<
     Option<string[]>[]
   >([])
-
-  const handleRemoveFilter = useCallback(
-    (filterValue: string | string[], filter: FilterField) => {
-      if (filter === FilterField.DEPARTMENTS) {
-        dispatchCurrentFilters({
-          type: 'POPULATE_DEPARTMENTS_FILTER',
-          value: {
-            departments: currentFilters.departments?.filter(
-              department => department.value !== filterValue
-            ),
-          },
-        })
-      } else if (filter === FilterField.STUDENTS) {
-        dispatchCurrentFilters({
-          type: 'POPULATE_STUDENTS_FILTER',
-          value: {
-            students: currentFilters.students?.filter(
-              student => student.value !== filterValue
-            ),
-          },
-        })
-      } else {
-        dispatchCurrentFilters({
-          type: 'POPULATE_CATEGORIES_FILTER',
-          value: {
-            categories: currentFilters.categories?.filter(
-              category => !isEqual(category.value, filterValue)
-            ),
-          },
-        })
-      }
-    },
-    [dispatchCurrentFilters]
-  )
 
   const handleResetFilters = useCallback(() => {
     removeVenueFilter()
@@ -144,7 +109,7 @@ export const OfferFilters = ({
       <OfferFiltersTags
         categories={currentFilters.categories}
         departments={currentFilters.departments}
-        handleRemoveFilter={handleRemoveFilter}
+        dispatchCurrentFilters={dispatchCurrentFilters}
         handleResetFilters={handleResetFilters}
         removeVenueFilter={removeVenueFilter}
         students={currentFilters.students}

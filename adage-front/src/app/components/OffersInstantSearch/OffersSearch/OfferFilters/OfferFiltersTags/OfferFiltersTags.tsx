@@ -1,17 +1,18 @@
 import React from 'react'
 
-import { FilterField, Option } from 'app/types'
+import { Option } from 'app/types'
 import { Tag } from 'app/ui-kit'
 import { ReactComponent as ResetIcon } from 'assets/reset.svg'
 import { VenueFilterType } from 'utils/types'
 
 import './OfferFiltersTags.scss'
+import { FiltersReducerAction } from '../../filtersReducer'
 
 export const OfferFiltersTags = ({
   venueFilter,
   removeVenueFilter,
   departments,
-  handleRemoveFilter,
+  dispatchCurrentFilters,
   handleResetFilters,
   students,
   categories,
@@ -19,10 +20,7 @@ export const OfferFiltersTags = ({
   venueFilter: VenueFilterType | null
   removeVenueFilter: () => void
   departments: Option[]
-  handleRemoveFilter: (
-    filterValue: string | string[],
-    filter: FilterField
-  ) => void
+  dispatchCurrentFilters: React.Dispatch<FiltersReducerAction>
   handleResetFilters: () => void
   students: Option[]
   categories: Option<string[]>[]
@@ -33,6 +31,31 @@ export const OfferFiltersTags = ({
       students.length > 0 ||
       categories.length > 0
   )
+
+  const handleRemoveDepartmentFilter = (
+    departmentToBeRemoved: Option
+  ): void => {
+    dispatchCurrentFilters({
+      type: 'REMOVE_DEPARTMENTS_FILTER',
+      value: { departments: [departmentToBeRemoved] },
+    })
+  }
+
+  const handleRemoveCategoriesFilter = (
+    categoryToBeRemoved: Option<string[]>
+  ): void => {
+    dispatchCurrentFilters({
+      type: 'REMOVE_CATEGORIES_FILTER',
+      value: { categories: [categoryToBeRemoved] },
+    })
+  }
+
+  const handleRemoveStudentsFilter = (studentToBeRemoved: Option): void => {
+    dispatchCurrentFilters({
+      type: 'REMOVE_CATEGORIES_FILTER',
+      value: { students: [studentToBeRemoved] },
+    })
+  }
 
   return (
     <div className="offer-filters-tags-container">
@@ -48,27 +71,21 @@ export const OfferFiltersTags = ({
           <Tag
             key={department.value}
             label={department.label}
-            onClick={() =>
-              handleRemoveFilter(department.value, FilterField.DEPARTMENTS)
-            }
+            onClick={() => handleRemoveDepartmentFilter(department)}
           />
         ))}
         {categories.map(category => (
           <Tag
             key={category.value.join(',')}
             label={category.label}
-            onClick={() =>
-              handleRemoveFilter(category.value, FilterField.CATEGORIES)
-            }
+            onClick={() => handleRemoveCategoriesFilter(category)}
           />
         ))}
         {students.map(student => (
           <Tag
             key={student.value}
             label={student.label}
-            onClick={() =>
-              handleRemoveFilter(student.value, FilterField.STUDENTS)
-            }
+            onClick={() => handleRemoveStudentsFilter(student)}
           />
         ))}
       </div>
