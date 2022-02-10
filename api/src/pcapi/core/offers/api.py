@@ -1092,3 +1092,28 @@ def create_educational_shadow_stock_and_set_offer_showcase(
     search.async_index_offer_ids([offer.id])
 
     return stock
+
+
+def transform_shadow_stock_into_educational_stock(
+    stock_id: str, stock_data: EducationalStockCreationBodyModel, user: User
+) -> Stock:
+    offer = offers_repository.get_educational_offer_by_id((stock_data.offer_id))
+
+    if offer.extraData.get("isShowcase") is not True:
+        raise educational_exceptions.OfferIsNotShowcase()
+
+    shadow_stock = offers_repository.get_non_deleted_stock_by_id(stock_id)
+    validation.check_stock_is_deletable(shadow_stock)
+    shadow_stock.isSoftDeleted = True
+    db.session.add(shadow_stock)
+
+    stock = create_educational_stock(stock_data, user)
+    # commit the changes on shadow_stock once the new stock is created
+    db.session.commit()
+
+    extra_data = copy.deepcopy(offer.extraData)
+    extra_data["isShowcase"] = False
+    offer.extraData = extra_data
+    repository.save(offer)
+
+    return stock
