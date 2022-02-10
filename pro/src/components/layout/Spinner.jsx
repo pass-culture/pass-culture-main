@@ -1,50 +1,31 @@
 import PropTypes from 'prop-types'
-import React, { PureComponent } from 'react'
+import React, { useEffect, useState } from 'react'
 
 import Icon from './Icon'
 
-/**
- * @debt standard "Annaëlle: Composant de classe à migrer en fonctionnel"
- */
-class Spinner extends PureComponent {
-  constructor(props) {
-    super(props)
-    this.state = {
-      nbDots: 3,
-    }
-  }
+const Spinner = ({ message }) => {
+  const [nbDots, setNbDots] = useState(3)
+  const [timer, setTimer] = useState(null)
 
-  componentDidMount() {
-    this.startDots()
-  }
-
-  componentWillUnmount() {
-    window.clearInterval(this.timer)
-  }
-
-  startDots = () => {
-    if (this.timer) window.clearInterval(this.timer)
-    this.timer = window.setInterval(() => {
-      const { nbDots } = this.state
-      this.setState({
-        nbDots: (nbDots % 3) + 1,
-      })
+  useEffect(() => {
+    if (timer) window.clearInterval(timer)
+    const newTimer = window.setInterval(() => {
+      setNbDots(oldVal => (oldVal % 3) + 1)
     }, 500)
-  }
+    setTimer(newTimer)
+    return () => {
+      window.clearInterval(newTimer)
+    }
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
-  render() {
-    const { nbDots } = this.state
-    const { message } = this.props
-
-    return (
-      <div className="loading-spinner" data-testid="spinner">
-        <Icon svg="loader-pc" />
-        <div className="content" data-dots={Array(nbDots).fill('.').join('')}>
-          {message}
-        </div>
+  return (
+    <div className="loading-spinner" data-testid="spinner">
+      <Icon svg="loader-pc" />
+      <div className="content" data-dots={Array(nbDots).fill('.').join('')}>
+        {message}
       </div>
-    )
-  }
+    </div>
+  )
 }
 
 Spinner.defaultProps = {
