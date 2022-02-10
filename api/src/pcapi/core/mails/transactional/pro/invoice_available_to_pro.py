@@ -2,7 +2,7 @@ from typing import Union
 
 from pcapi.core import mails
 import pcapi.core.finance.utils as finance_utils
-from pcapi.core.mails.transactional.sendinblue_template_ids import SendinblueTransactionalEmailData
+from pcapi.core.mails.models.sendinblue_models import SendinblueTransactionalEmailData
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.offerers import repository as offerers_repository
 
