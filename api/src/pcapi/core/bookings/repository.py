@@ -30,6 +30,7 @@ from pcapi.core.bookings import constants
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.bookings.models import BookingStatus
+from pcapi.core.bookings.models import BookingStatusFilter
 from pcapi.core.bookings.models import IndividualBooking
 from pcapi.core.categories import subcategories
 from pcapi.core.educational.models import EducationalBooking
@@ -64,6 +65,12 @@ BOOKING_STATUS_LABELS = {
     BookingStatus.USED: "validé",
     BookingStatus.REIMBURSED: "remboursé",
     "confirmed": "confirmé",
+}
+
+BOOKING_DATE_STATUS_MAPPING = {
+    BookingStatusFilter.BOOKED: Booking.dateCreated,
+    BookingStatusFilter.VALIDATED: Booking.dateUsed,
+    BookingStatusFilter.REIMBURSED: Booking.reimbursementDate,
 }
 
 
@@ -103,16 +110,29 @@ def find_by(token: str, email: str = None, offer_id: int = None) -> Booking:
 def find_by_pro_user(
     user: User,
     booking_period: tuple[date, date],
+    status_filter: BookingStatusFilter = BookingStatusFilter.BOOKED,
     event_date: Optional[datetime] = None,
     venue_id: Optional[int] = None,
     offer_type: Optional[OfferType] = None,
     page: int = 1,
     per_page_limit: int = 1000,
 ) -> BookingsRecapPaginated:
-    total_bookings_recap = _get_filtered_bookings_count(user, booking_period, event_date, venue_id, offer_type)
+    total_bookings_recap = _get_filtered_bookings_count(
+        user,
+        booking_period,
+        status_filter=status_filter,
+        event_date=event_date,
+        venue_id=venue_id,
+        offer_type=offer_type,
+    )
 
     bookings_query = _get_filtered_booking_pro(
-        pro_user=user, period=booking_period, event_date=event_date, venue_id=venue_id, offer_type=offer_type
+        pro_user=user,
+        period=booking_period,
+        status_filter=status_filter,
+        event_date=event_date,
+        venue_id=venue_id,
+        offer_type=offer_type,
     )
     bookings_query = _duplicate_booking_when_quantity_is_two(bookings_query)
     bookings_page = (
@@ -443,6 +463,7 @@ def _field_to_venue_timezone(field: InstrumentedAttribute) -> cast:
 def _get_filtered_bookings_query(
     pro_user: User,
     period: tuple[date, date],
+    status_filter: BookingStatusFilter,
     event_date: Optional[date] = None,
     venue_id: Optional[int] = None,
     offer_type: Optional[OfferType] = None,
@@ -462,8 +483,14 @@ def _get_filtered_bookings_query(
     if not pro_user.has_admin_role:
         bookings_query = bookings_query.filter(UserOfferer.user == pro_user)
 
+    period_attribut_filter = (
+        BOOKING_DATE_STATUS_MAPPING[status_filter]
+        if status_filter
+        else BOOKING_DATE_STATUS_MAPPING[BookingStatusFilter.BOOKED]
+    )
+
     bookings_query = bookings_query.filter(UserOfferer.validationToken.is_(None)).filter(
-        _field_to_venue_timezone(Booking.dateCreated).between(*period, symmetric=True)
+        _field_to_venue_timezone(period_attribut_filter).between(*period, symmetric=True)
     )
 
     if venue_id is not None:
@@ -484,12 +511,13 @@ def _get_filtered_bookings_query(
 def _get_filtered_bookings_count(
     pro_user: User,
     period: tuple[date, date],
+    status_filter: BookingStatusFilter,
     event_date: Optional[date] = None,
     venue_id: Optional[int] = None,
     offer_type: Optional[OfferType] = None,
 ) -> int:
     bookings = (
-        _get_filtered_bookings_query(pro_user, period, event_date, venue_id, offer_type)
+        _get_filtered_bookings_query(pro_user, period, status_filter, event_date, venue_id, offer_type)
         .with_entities(Booking.id, Booking.quantity)
         .distinct(Booking.id)
     ).cte()
@@ -553,6 +581,7 @@ def _get_filtered_booking_report(
 def _get_filtered_booking_pro(
     pro_user: User,
     period: tuple[date, date],
+    status_filter: BookingStatusFilter,
     event_date: Optional[datetime] = None,
     venue_id: Optional[int] = None,
     offer_type: Optional[OfferType] = None,
@@ -561,6 +590,7 @@ def _get_filtered_booking_pro(
         _get_filtered_bookings_query(
             pro_user,
             period,
+            status_filter,
             event_date,
             venue_id,
             offer_type,

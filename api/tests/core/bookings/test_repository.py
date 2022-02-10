@@ -13,6 +13,7 @@ from pytest import fixture
 
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.bookings.models import BookingStatus
+from pcapi.core.bookings.models import BookingStatusFilter
 import pcapi.core.bookings.repository as booking_repository
 from pcapi.core.bookings.repository import get_bookings_from_deposit
 from pcapi.core.categories import subcategories
@@ -337,6 +338,77 @@ class FindByProUserTest:
         assert expected_booking_recap.booking_status_history.booking_date == booking_date.astimezone(
             tz.gettz("Europe/Paris")
         )
+
+    def test_should_return_only_validated_bookings_for_requested_period(self, app: fixture):
+        pro = users_factories.ProFactory()
+        offerer = offers_factories.OffererFactory()
+        offers_factories.UserOffererFactory(user=pro, offerer=offerer)
+        venue = offers_factories.VenueFactory(managingOfferer=offerer)
+        offer = offers_factories.ThingOfferFactory(venue=venue)
+        stock = offers_factories.ThingStockFactory(offer=offer, price=0)
+
+        booking_date = datetime(2020, 1, 1, 10, 0, 0)
+
+        bookings_factories.UsedIndividualBookingFactory(
+            stock=stock, quantity=1, dateCreated=booking_date, dateUsed=(booking_date + timedelta(days=1))
+        )
+        used_booking_1 = bookings_factories.EducationalBookingFactory(
+            stock=stock, dateCreated=booking_date, dateUsed=(booking_date + timedelta(days=3))
+        )
+        used_booking_2 = bookings_factories.UsedIndividualBookingFactory(
+            stock=stock, quantity=1, dateCreated=booking_date, dateUsed=(booking_date + timedelta(days=4))
+        )
+        bookings_factories.UsedIndividualBookingFactory(
+            stock=stock, quantity=1, dateCreated=booking_date, dateUsed=(booking_date + timedelta(days=8))
+        )
+
+        bookings_recap_paginated = booking_repository.find_by_pro_user(
+            user=pro,
+            booking_period=((booking_date + timedelta(2)), (booking_date + timedelta(5))),
+            status_filter=BookingStatusFilter.VALIDATED,
+        )
+
+        assert len(bookings_recap_paginated.bookings_recap) == 2
+        assert bookings_recap_paginated.bookings_recap[0]._booking_token in [used_booking_1.token, used_booking_2.token]
+        assert bookings_recap_paginated.bookings_recap[1]._booking_token in [used_booking_1.token, used_booking_2.token]
+
+    def test_should_return_only_reimbursed_bookings_for_requested_period(self, app: fixture):
+        pro = users_factories.ProFactory()
+        offerer = offers_factories.OffererFactory()
+        offers_factories.UserOffererFactory(user=pro, offerer=offerer)
+        venue = offers_factories.VenueFactory(managingOfferer=offerer)
+        stock = offers_factories.ThingStockFactory(offer__venue=venue, price=10)
+
+        booking_date = datetime(2020, 1, 1, 10, 0, 0)
+
+        bookings_factories.UsedIndividualBookingFactory(
+            stock=stock, quantity=1, dateCreated=booking_date, reimbursementDate=(booking_date + timedelta(days=1))
+        )
+        reimbursed_booking_1 = bookings_factories.UsedIndividualBookingFactory(
+            stock=stock, quantity=1, dateCreated=booking_date, reimbursementDate=(booking_date + timedelta(days=2))
+        )
+        reimbursed_booking_2 = bookings_factories.EducationalBookingFactory(
+            stock=stock, quantity=1, dateCreated=booking_date, reimbursementDate=(booking_date + timedelta(days=3))
+        )
+        bookings_factories.UsedIndividualBookingFactory(
+            stock=stock, quantity=1, dateCreated=booking_date, reimbursementDate=(booking_date + timedelta(days=4))
+        )
+
+        bookings_recap_paginated = booking_repository.find_by_pro_user(
+            user=pro,
+            booking_period=((booking_date + timedelta(1)), (booking_date + timedelta(3))),
+            status_filter=BookingStatusFilter.REIMBURSED,
+        )
+
+        assert len(bookings_recap_paginated.bookings_recap) == 2
+        assert bookings_recap_paginated.bookings_recap[0]._booking_token in [
+            reimbursed_booking_1.token,
+            reimbursed_booking_2.token,
+        ]
+        assert bookings_recap_paginated.bookings_recap[1]._booking_token in [
+            reimbursed_booking_1.token,
+            reimbursed_booking_2.token,
+        ]
 
     def test_should_return_booking_as_duo_when_quantity_is_two(self, app: fixture):
         # Given
