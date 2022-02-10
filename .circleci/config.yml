@@ -63,6 +63,7 @@ executors:
 ###################
 
 commands:
+
   notify-slack:
     description: Send notification to Slack
     parameters:
@@ -117,14 +118,14 @@ commands:
                 exit 0;
             fi
             circleci step halt;
+
   authenticate_gcp:
     description: Authenticate to a GCP project
     parameters:
       gcp-key-name:
         type: env_var_name
     steps:
-      - run: echo ${<< parameters.gcp-key-name >>} > ${HOME}/gcp-key.json
-      - run: gcloud auth activate-service-account --key-file ${HOME}/gcp-key.json
+      - run: echo ${<< parameters.gcp-key-name >>} | gcloud auth activate-service-account --key-file=-
       - run: gcloud --quiet config set project ${GCP_PROJECT}
 
   export_app_version:
