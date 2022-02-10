@@ -26,6 +26,13 @@ class ImportStatus(enum.Enum):
 
 
 class BeneficiaryImportStatus(PcObject, Model):
+    """
+    THIS MODEL IS DEPRECATED - DO NOT USE
+
+    We keep it defined here to keep historical data in the database.
+    When this data is either transferred to the new model or deleted, we can remove this model.
+    """
+
     def __repr__(self):
         author = self.author.publicName if self.author else "import automatisé"
         updated_at = datetime.strftime(self.date, "%d/%m/%Y")
