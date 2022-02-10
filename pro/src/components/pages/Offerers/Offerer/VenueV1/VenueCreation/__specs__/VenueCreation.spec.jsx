@@ -1,10 +1,9 @@
 import '@testing-library/jest-dom'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { createBrowserHistory } from 'history'
 import React from 'react'
 import { Provider } from 'react-redux'
-import { Router } from 'react-router-dom'
+import { MemoryRouter } from 'react-router-dom'
 
 import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
@@ -17,14 +16,11 @@ jest.mock('repository/pcapi/pcapi', () => ({
 
 const renderVenueCreation = ({ props, storeOverrides = {} }) => {
   const store = configureTestStore(storeOverrides)
-  const history = createBrowserHistory()
-  history.push(`/structures/AE/lieux/TR?modification`)
-
   return render(
     <Provider store={store}>
-      <Router history={history}>
+      <MemoryRouter>
         <VenueCreationContainer {...props} />
-      </Router>
+      </MemoryRouter>
     </Provider>
   )
 }
@@ -41,6 +37,13 @@ describe('contact form enable in venue creation form', () => {
   }
 
   beforeEach(() => {
+    const offerer = {
+      id: 'BQ',
+      name: 'Maison du chocolat',
+    }
+    const venueTypes = []
+    const venueLabels = []
+
     push = jest.fn()
     props = {
       formInitialValues: {
@@ -52,20 +55,21 @@ describe('contact form enable in venue creation form', () => {
         },
         push: push,
       },
-      handleInitialRequest: jest.fn(),
+      handleInitialRequest: jest.fn().mockResolvedValue({
+        offerer,
+        venueTypes,
+        venueLabels,
+      }),
       handleSubmitRequest: jest.fn(),
-      handleSubmitRequestSuccess: jest.fn(),
-      handleSubmitRequestFail: jest.fn(),
+      handleSubmitSuccessNotification: jest.fn(),
+      handleSubmitFailNotification: jest.fn(),
       match: {
         params: {
           offererId: 'APEQ',
           venueId: 'AQYQ',
         },
       },
-      offerer: {
-        id: 'BQ',
-        name: 'Maison du chocolat',
-      },
+
       query: {
         changeToReadOnly: jest.fn(),
         context: jest.fn().mockReturnValue({

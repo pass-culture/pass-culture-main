@@ -1,16 +1,13 @@
+import React from 'react'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
-import { requestData } from 'redux-saga-data'
 
 import { withQueryRouter } from 'components/hocs/with-query-router/withQueryRouter'
-import { CREATION } from 'components/hocs/withFrenchQueryRouter'
+import * as pcapi from 'repository/pcapi/pcapi'
 import { isFeatureActive } from 'store/features/selectors'
 import { showNotification } from 'store/reducers/notificationReducer'
 import { selectOffererById } from 'store/selectors/data/offerersSelectors'
 import { selectCurrentUser } from 'store/selectors/data/usersSelectors'
-import { selectVenueLabels } from 'store/selectors/data/venueLabelsSelectors'
-import { selectVenueTypes } from 'store/selectors/data/venueTypesSelectors'
-import { offererNormalizer, venueNormalizer } from 'utils/normalizers'
 
 import NotificationMessage from '../Notification'
 import { formatVenuePayload } from '../utils/formatVenuePayload'
@@ -29,8 +26,6 @@ export const mapStateToProps = (state, ownProps) => {
   const currentUser = selectCurrentUser(state)
   return {
     currentUser: currentUser,
-    venueTypes: selectVenueTypes(state).map(type => new VenueType(type)),
-    venueLabels: selectVenueLabels(state).map(label => new VenueLabel(label)),
     formInitialValues: {
       managingOffererId: offererId,
       bookingEmail: currentUser.email,
@@ -47,56 +42,43 @@ export const mapStateToProps = (state, ownProps) => {
 export const mapDispatchToProps = (dispatch, ownProps) => {
   const {
     match: {
-      params: { offererId, venueId },
+      params: { offererId },
     },
   } = ownProps
 
   return {
-    handleInitialRequest: () => {
-      dispatch(
-        requestData({
-          apiPath: `/offerers/${offererId}`,
-          handleSuccess: () => {
-            if (!venueId || venueId === CREATION) {
-              return
-            }
-            dispatch(
-              requestData({
-                apiPath: `/venues/${venueId}`,
-                normalizer: venueNormalizer,
-              })
-            )
-          },
-          normalizer: offererNormalizer,
-        })
-      )
-      dispatch(requestData({ apiPath: `/userOfferers/${offererId}` }))
-      dispatch(requestData({ apiPath: `/venue-types` }))
-      dispatch(requestData({ apiPath: `/venue-labels` }))
+    handleInitialRequest: async () => {
+      const offererRequest = pcapi.getOfferer(offererId)
+      const venueTypesRequest = pcapi.getVenueTypes().then(venueTypes => {
+        return venueTypes.map(type => new VenueType(type))
+      })
+      const venueLabelsRequest = pcapi.getVenueLabels().then(labels => {
+        return labels.map(label => new VenueLabel(label))
+      })
+      const [offerer, venueTypes, venueLabels] = await Promise.all([
+        offererRequest,
+        venueTypesRequest,
+        venueLabelsRequest,
+      ])
+      return {
+        offerer,
+        venueTypes,
+        venueLabels,
+      }
     },
 
-    handleSubmitRequest: ({ formValues, handleFail, handleSuccess }) => {
-      const apiPath = '/venues/'
-
+    handleSubmitRequest: async ({ formValues, handleFail, handleSuccess }) => {
       const body = formatVenuePayload(formValues, true)
 
-      dispatch(
-        requestData({
-          apiPath,
-          body,
-          handleFail,
-          handleSuccess,
-          method: 'POST',
-          normalizer: venueNormalizer,
-        })
-      )
+      try {
+        const response = await pcapi.createVenue(body)
+        handleSuccess(response)
+      } catch (responseError) {
+        handleFail(responseError)
+      }
     },
 
-    handleSubmitRequestFail: (state, action) => {
-      const {
-        payload: { errors },
-      } = action
-
+    handleSubmitFailNotification: errors => {
       let text = 'Une ou plusieurs erreurs sont présentes dans le formulaire.'
       if (errors.global) {
         text = `${text} ${errors.global[0]}`
@@ -110,25 +92,15 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
       )
     },
 
-    handleSubmitRequestSuccess: (state, action) => {
-      const {
-        config: { method },
-        payload: { datum },
-      } = action
-
-      const informationsDisplayed = {
-        venueId: datum.id,
+    handleSubmitSuccessNotification: payload => {
+      const notificationMessageProps = {
+        venueId: payload.id,
         offererId,
-        dispatch,
-      }
-      let notificationMessage = 'Lieu créé avec succès !'
-      if (method == 'POST') {
-        notificationMessage = NotificationMessage(informationsDisplayed)
       }
 
       dispatch(
         showNotification({
-          text: notificationMessage,
+          text: <NotificationMessage {...notificationMessageProps} />,
           type: 'success',
         })
       )

@@ -33,6 +33,7 @@ describe('src | components | pages | Venue | controls | ReturnOrSubmitControl', 
   it('should display a button with the right props when not read-only mode, is not request pending, can submit, and is in creation mode', () => {
     // given
     props.readOnly = false
+    props.isRequestPending = false
 
     // when
     const wrapper = shallow(<ReturnOrSubmitControl {...props} />)

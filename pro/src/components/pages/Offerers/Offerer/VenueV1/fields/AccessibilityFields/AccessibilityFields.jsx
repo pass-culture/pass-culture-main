@@ -172,13 +172,15 @@ const AccessibilityFields = ({ formValues, readOnly, venue }) => {
 }
 
 AccessibilityFields.defaultProps = {
+  formValues: null,
   readOnly: false,
+  venue: null,
 }
 
 AccessibilityFields.propTypes = {
-  formValues: PropTypes.shape().isRequired,
+  formValues: PropTypes.shape(),
   readOnly: PropTypes.bool,
-  venue: PropTypes.shape().isRequired,
+  venue: PropTypes.shape(),
 }
 
 export default AccessibilityFields
