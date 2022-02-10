@@ -856,7 +856,7 @@ def generate_invoices():
     generate_invoice_file()
 
 
-def generate_invoice_file() -> pathlib.Path:
+def generate_invoice_file(invoice_date: datetime.date = datetime.date.today()) -> pathlib.Path:
     header = [
         "Identifiant de la BU",
         "Date du justificatif",
@@ -877,7 +877,7 @@ def generate_invoice_file() -> pathlib.Path:
         .join(models.Invoice.cashflows)
         .join(models.Cashflow.pricings)
         .join(models.Pricing.lines)
-        .filter(cast(models.Invoice.date, Date) == datetime.date.today())
+        .filter(cast(models.Invoice.date, Date) == invoice_date)
         .order_by(models.Invoice.id, models.Pricing.id, models.PricingLine.id)
     )
 
