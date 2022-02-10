@@ -3,8 +3,6 @@
  */
 
 import { applyMiddleware, compose, createStore } from 'redux'
-import { persistReducer, persistStore } from 'redux-persist'
-import storage from 'redux-persist/lib/storage' // defaults to localStorage for web and AsyncStorage for react-native
 import createSagaMiddleware from 'redux-saga'
 import thunk from 'redux-thunk'
 
@@ -27,25 +25,15 @@ const buildStoreEnhancer = (middlewares = []) => {
 const configureStore = (initialState = {}) => {
   const sagaMiddleware = createSagaMiddleware()
 
-  const persist = {
-    key: 'pro-passculture',
-    storage,
-    whitelist: ['tracker'],
-  }
-
-  const persistedReducer = persistReducer(persist, rootReducer)
-
   const store = createStore(
-    persistedReducer,
+    rootReducer,
     initialState,
     buildStoreEnhancer([thunk, sagaMiddleware])
   )
 
-  const persistor = persistStore(store)
-
   sagaMiddleware.run(rootSaga)
 
-  return { persistor, store }
+  return { store }
 }
 
 export default configureStore

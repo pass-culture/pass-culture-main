@@ -822,7 +822,6 @@ const state = {
     },
   },
   notification: null,
-  tracker: {},
   offers: {
     list: [
       {
