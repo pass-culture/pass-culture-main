@@ -15,6 +15,9 @@ __all__ = ("as_dict", "serialize")
 class BaseModel(PydanticBaseModel):
     @validator("*")
     def do_not_allow_nan(cls, v, field):  # pylint: disable=no-self-argument
+        if field.allow_none and v is None:
+            return v
+
         if field.outer_type_ is float and not isfinite(v):
             raise errors.DecimalIsNotFiniteError()
         return v
