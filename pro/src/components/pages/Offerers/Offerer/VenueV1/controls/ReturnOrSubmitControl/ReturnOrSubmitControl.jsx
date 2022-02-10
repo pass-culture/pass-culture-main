@@ -25,7 +25,7 @@ const ReturnOrSubmitControl = ({
             className={classnames('primary-button', {
               'is-loading': isRequestPending,
             })}
-            disabled={!canSubmit}
+            disabled={!canSubmit || isRequestPending}
             type="submit"
           >
             {isCreatedEntity ? 'Créer' : 'Valider'}

@@ -170,6 +170,10 @@ export const getOfferer = offererId => {
   return client.get(`/offerers/${offererId}`)
 }
 
+export const getUserOfferers = offererId => {
+  return client.get(`/userOfferers/${offererId}`)
+}
+
 export const canOffererCreateEducationalOffer = offererId =>
   client.get(`/offerers/${offererId}/eac-eligibility`)
 
@@ -200,7 +204,13 @@ export const getVenuesForOfferer = ({
 
 export const getVenue = venueId => client.get(`/venues/${venueId}`)
 
+export const createVenue = venue => client.post(`/venues`, venue)
+
 export const getVenueStats = venueId => client.get(`/venues/${venueId}/stats`)
+
+export const getVenueTypes = () => client.get(`/venue-types`)
+
+export const getVenueLabels = () => client.get(`/venue-labels`)
 
 export const getOffererWithVenueStats = offererId =>
   client.get(`/offerers/${offererId}/stats`)
