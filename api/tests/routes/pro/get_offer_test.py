@@ -19,7 +19,7 @@ class Returns200Test:
     def test_access_by_beneficiary(self, app):
         # Given
         beneficiary = users_factories.BeneficiaryGrant18Factory()
-        offer = offers_factories.ThingOfferFactory()
+        offer = offers_factories.ThingOfferFactory(venue__latitude=None, venue__longitude=None)
 
         # When
         client = TestClient(app.test_client()).with_session_auth(email=beneficiary.email)
