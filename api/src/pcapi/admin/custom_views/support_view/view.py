@@ -25,6 +25,7 @@ import pcapi.core.subscription.exceptions as subscription_exceptions
 import pcapi.core.users.api as users_api
 import pcapi.core.users.models as users_models
 from pcapi.models import db
+from pcapi.models.beneficiary_import import BeneficiaryImportSources
 from pcapi.models.feature import FeatureToggle
 
 
@@ -163,6 +164,23 @@ class BeneficiaryView(base_configuration.BaseAdminView):
         else:
             template = self.details_template
 
+        # We display the BeneficiaryImport section if the necessary data is not available in the user's fraud checks
+        # This is the case for older applications that don't have the fraud checks data.
+        #
+        # TODO: Remove this logic when all the applications have the fraud checks data.
+        has_id_check_fraud_checks_with_status = any(
+            fraud_check
+            for fraud_check in user.beneficiaryFraudChecks
+            if fraud_check.type in fraud_models.IDENTITY_CHECK_TYPES and fraud_check.status is not None
+        )
+        user_beneficiary_imports_sources = [beneficiary_import.source for beneficiary_import in user.beneficiaryImports]
+        has_jouve_or_dms_beneficiary_import = (
+            BeneficiaryImportSources.demarches_simplifiees.value in user_beneficiary_imports_sources
+            or BeneficiaryImportSources.jouve.value in user_beneficiary_imports_sources
+        )
+        display_beneficiary_imports = has_jouve_or_dms_beneficiary_import and not has_id_check_fraud_checks_with_status
+        # End of logic to choose if we display the BeneficiaryImport details or not
+
         return self.render(
             template,
             model=user,
@@ -173,6 +191,7 @@ class BeneficiaryView(base_configuration.BaseAdminView):
             enum_update_request_value=users_models.EmailHistoryEventTypeEnum.UPDATE_REQUEST.value,
             subscription_items=support_api.get_subscription_items_by_eligibility(user),
             next_subscription_step=subscription_api.get_next_subscription_step(user),
+            display_beneficiary_imports=display_beneficiary_imports,
         )
 
     @flask_admin.expose(
