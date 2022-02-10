@@ -63,6 +63,7 @@ executors:
 ###################
 
 commands:
+
   notify-slack:
     description: Send notification to Slack
     parameters:
@@ -117,15 +118,18 @@ commands:
                 exit 0;
             fi
             circleci step halt;
-  authenticate_gcp:
+
+  authenticate-gcp:
     description: Authenticate to a GCP project
     parameters:
       gcp-key-name:
         type: env_var_name
     steps:
-      - run: echo ${<< parameters.gcp-key-name >>} > ${HOME}/gcp-key.json
-      - run: gcloud auth activate-service-account --key-file ${HOME}/gcp-key.json
-      - run: gcloud --quiet config set project ${GCP_PROJECT}
+      - run:
+          name: Authenticate to GCP
+          command: |
+            echo ${<< parameters.gcp-key-name >>} | gcloud auth activate-service-account --key-file=-
+            gcloud --quiet config set project ${GCP_PROJECT}
 
   export_app_version:
     description: Export APP version number as environment variable
@@ -718,7 +722,7 @@ jobs:
       - setup_remote_docker:
           version: 19.03.13
           docker_layer_caching: true
-      - authenticate_gcp:
+      - authenticate-gcp:
           gcp-key-name: GCP_INFRA_KEY
       - export_app_version
       - run: |
@@ -744,7 +748,7 @@ jobs:
       - setup_remote_docker:
           version: 19.03.13
           docker_layer_caching: true
-      - authenticate_gcp:
+      - authenticate-gcp:
           gcp-key-name: GCP_INFRA_KEY
       - export_app_version
       - run: gcloud beta auth configure-docker ${GCP_REGION}-docker.pkg.dev
@@ -768,7 +772,7 @@ jobs:
     steps:
       - checkout
       - clone-pass-culture-deployment-repo
-      - authenticate_gcp:
+      - authenticate-gcp:
           gcp-key-name: GCP_METIER_KEY
       - export_chart_version:
           version_file: ~/pass-culture-deployment/helm/db-ops/values.${DBOPS_ENV}.yaml
@@ -811,7 +815,7 @@ jobs:
     steps:
       - checkout
       - clone-pass-culture-deployment-repo
-      - authenticate_gcp:
+      - authenticate-gcp:
           gcp-key-name: GCP_METIER_KEY
       - export_app_version
       - export_chart_version:
@@ -855,7 +859,7 @@ jobs:
         default: ${CIRCLE_BRANCH}
     steps:
       - checkout
-      - authenticate_gcp:
+      - authenticate-gcp:
           gcp-key-name: GCP_METIER_KEY
       - build-frontend-app:
           node_env: <<parameters.app_environment>>
@@ -891,7 +895,7 @@ jobs:
         default: ${CIRCLE_BRANCH}
     steps:
       - checkout
-      - authenticate_gcp:
+      - authenticate-gcp:
           gcp-key-name: GCP_METIER_KEY
       - build-frontend-app:
           node_env: <<parameters.app_environment>>
@@ -939,7 +943,7 @@ jobs:
         type: string
         default: ${CIRCLE_BRANCH}
     steps:
-      - authenticate_gcp:
+      - authenticate-gcp:
           gcp-key-name: GCP_METIER_KEY
       - run:
           name: Get GKE cluster credentials
