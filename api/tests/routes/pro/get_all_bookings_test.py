@@ -40,6 +40,7 @@ class GetAllBookingsTest:
         find_by_pro_user.assert_called_once_with(
             user=pro,
             booking_period=BOOKING_PERIOD,
+            status_filter=bookings_models.BookingStatusFilter.BOOKED,
             event_date=None,
             venue_id=None,
             offer_type=None,
@@ -56,6 +57,7 @@ class GetAllBookingsTest:
         find_by_pro_user.assert_called_once_with(
             user=pro,
             booking_period=BOOKING_PERIOD,
+            status_filter=bookings_models.BookingStatusFilter.BOOKED,
             event_date=None,
             venue_id=None,
             offer_type=None,
@@ -78,6 +80,7 @@ class GetAllBookingsTest:
         find_by_pro_user.assert_called_once_with(
             user=pro,
             booking_period=BOOKING_PERIOD,
+            status_filter=bookings_models.BookingStatusFilter.BOOKED,
             event_date=None,
             venue_id=venue.id,
             offer_type=None,
