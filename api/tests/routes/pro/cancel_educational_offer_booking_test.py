@@ -150,7 +150,8 @@ class Returns400Test:
 
     def test_offer_has_no_booking_to_cancel_because_used(self, client):
         user = user_factories.AdminFactory()
-        educational_booking = booking_factories.UsedEducationalBookingFactory()
+        stock = offer_factories.EducationalThingStockFactory()
+        educational_booking = booking_factories.UsedEducationalBookingFactory(stock=stock)
         offer_id = humanize(educational_booking.stock.offer.id)
 
         client = client.with_session_auth(user.email)
