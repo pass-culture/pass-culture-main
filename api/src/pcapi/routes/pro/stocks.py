@@ -152,6 +152,25 @@ def create_educational_stock(body: EducationalStockCreationBodyModel) -> StockId
     return StockIdResponseModel.from_orm(stock)
 
 
+@private_api.route("/stocks/shadow-to-educational/<stock_id>", methods=["PATCH"])
+@login_required
+@spectree_serialize(on_success_status=201, response_model=StockIdResponseModel)
+def transform_shadow_stock_into_educational_stock(
+    stock_id: str, body: EducationalStockCreationBodyModel
+) -> StockIdResponseModel:
+    try:
+        offerer = pcapi.core.offerers.repository.get_by_offer_id(body.offer_id)
+    except offerers_exceptions.CannotFindOffererForOfferId:
+        raise ApiErrors({"offerer": ["Aucune structure trouvée à partir de cette offre"]}, status_code=404)
+    check_user_has_access_to_offerer(current_user, offerer.id)
+
+    try:
+        stock = offers_api.transform_shadow_stock_into_educational_stock(dehumanize(stock_id), body, current_user)
+    except educational_exceptions.OfferIsNotShowcase:
+        raise ApiErrors({"code": "OFFER_IS_NOT_SHOWCASE"}, status_code=400)
+    return StockIdResponseModel.from_orm(stock)
+
+
 @private_api.route("/stocks/educational/<stock_id>", methods=["PATCH"])
 @login_required
 @spectree_serialize(on_success_status=200, on_error_statuses=[400, 401, 404, 422])

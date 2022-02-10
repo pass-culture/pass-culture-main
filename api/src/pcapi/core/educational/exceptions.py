@@ -70,3 +70,7 @@ class MissingRequiredRedactorInformation(Exception):
 
 class EducationalStockAlreadyExists(Exception):
     pass
+
+
+class OfferIsNotShowcase(Exception):
+    pass
