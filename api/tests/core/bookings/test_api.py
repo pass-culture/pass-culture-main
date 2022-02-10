@@ -380,17 +380,20 @@ class CancelByBeneficiaryTest:
         queries += 1  # select booking
         queries += 3  # update stock ; update booking ; release savepoint
         queries += 8  # (update batch attributes): select booking ; individualBooking ; user ; user_offerer ; user.bookings ;  favorites ; deposit ; stock
-        queries += 1  # select booking
-        queries += 1  # select offer
-        queries += 1  # select FeatureFlag Sendinblue isActive or not
+        queries += 1  # select venue by id
+        queries += 2  # select user by email, select venue by same booking email
+        queries += 1  # select offerer by id
+        queries += 1  # select bank_information by venue.id
+        queries += 1  # select exists offer
+        queries += 1  # select exists booking
+        queries += 1  # select stock
+        queries += 1  # select booking, offer
+        queries += 1  # select FF sendinblue is active
         queries += 2  # insert email ; release savepoint
         queries += 3  # (TODO: optimize) select booking ; stock ; offer
-        queries += 1  # select bookings of same stock with users joinedloaded to avoid N+1 requests
-        queries += 2  # select venue ; offerer
-        queries += 1  # select individual_booking
+        queries += 2  # select venue ; individual_booking
         queries += 1  # select user
         queries += 2  # insert email ; release savepoint
-        queries += 7  # update_external_pro (sendinblue)
 
         individual_booking = booking.individualBooking
         user = individual_booking.user
