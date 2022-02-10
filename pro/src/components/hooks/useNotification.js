@@ -1,7 +1,10 @@
 import { useCallback, useMemo } from 'react'
 import { useDispatch } from 'react-redux'
 
-import { showNotification } from 'store/reducers/notificationReducer'
+import {
+  closeNotification,
+  showNotification,
+} from 'store/reducers/notificationReducer'
 
 const useNotification = () => {
   const dispatch = useDispatch()
@@ -16,6 +19,10 @@ const useNotification = () => {
     },
     [dispatch]
   )
+  const dispatchCloseNotification = useCallback(
+    () => dispatch(closeNotification()),
+    [dispatch]
+  )
 
   return useMemo(
     () => ({
@@ -23,8 +30,9 @@ const useNotification = () => {
       error: msg => dispatchNotification(msg, 'error'),
       pending: msg => dispatchNotification(msg, 'pending'),
       information: msg => dispatchNotification(msg, 'information'),
+      close: () => dispatchCloseNotification(),
     }),
-    [dispatchNotification]
+    [dispatchCloseNotification, dispatchNotification]
   )
 }
 
