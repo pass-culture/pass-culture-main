@@ -161,23 +161,9 @@ def is_user_allowed_to_perform_ubble_check(
         fraud_models.BeneficiaryFraudCheck.eligibilityType == eligibility_type,
     ).all()
 
-    for fraud_check in fraud_checks:
-        if not fraud_check.reasonCodes:
-            # Pending, OK... or any error in which reason code is missing
-            return False
-        for reason_code in fraud_check.reasonCodes:
-            if reason_code not in (
-                # Reasons which allow user to retry ubble identification:
-                fraud_models.FraudReasonCode.ID_CHECK_NOT_SUPPORTED,
-                fraud_models.FraudReasonCode.ID_CHECK_EXPIRED,
-                fraud_models.FraudReasonCode.ID_CHECK_UNPROCESSABLE,
-            ):
-                return False
+    status = get_ubble_subscription_item_status(user, eligibility, fraud_checks)
 
-    if len(fraud_checks) >= MAX_UBBLE_RETRIES:
-        return False
-
-    return True
+    return status == SubscriptionItemStatus.TODO
 
 
 def get_restartable_identity_checks(user: users_models.User) -> typing.Optional[fraud_models.BeneficiaryFraudCheck]:

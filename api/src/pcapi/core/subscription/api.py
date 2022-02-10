@@ -10,6 +10,7 @@ import pcapi.core.fraud.repository as fraud_repository
 from pcapi.core.fraud.ubble import api as ubble_fraud_api
 from pcapi.core.mails.transactional.users import accepted_as_beneficiary
 from pcapi.core.payments import api as payments_api
+from pcapi.core.subscription.ubble.constants import MAX_UBBLE_RETRIES
 from pcapi.core.users import api as users_api
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import external as users_external
@@ -258,25 +259,110 @@ def get_profile_completion_subscription_item(
     return models.SubscriptionItem(type=models.SubscriptionStep.PROFILE_COMPLETION, status=status)
 
 
+# class FraudCheckStatus(enum.Enum):
+#     KO = "ko"
+#     OK = "ok"
+#     STARTED = "started"
+#     SUSPICIOUS = "suspiscious"
+#     PENDING = "pending"
+#     CANCELED = "canceled"
+#     ERROR = "error"
+
+# à mettre dans educo/api
+def get_educonnect_subscription_item_status(
+    user: users_models.User,
+    eligibility: typing.Optional[users_models.EligibilityType],
+    educonnect_fraud_checks: list[fraud_models.BeneficiaryFraudCheck],
+) -> models.SubscriptionItemStatus:
+    """
+    The user can restart educonnect even if he has failed it becoz its free for passQ
+    """
+
+    if any(check.status == fraud_models.FraudCheckStatus.OK for check in educonnect_fraud_checks):
+        return models.SubscriptionItemStatus.OK
+    if _is_eligibility_activable(user, eligibility):
+        return models.SubscriptionItemStatus.TODO
+    else:
+        return models.SubscriptionItemStatus.VOID
+
+
+RESTARTABLE_FRAUD_CHECK_STATUS = (
+    # Reasons which allow user to retry ubble identification:
+    fraud_models.FraudReasonCode.ID_CHECK_NOT_SUPPORTED,
+    fraud_models.FraudReasonCode.ID_CHECK_EXPIRED,
+    fraud_models.FraudReasonCode.ID_CHECK_UNPROCESSABLE,
+)
+
+# à mettre dans subscription/ubble/api
+# contenu de is_user_allowed_to_perform_ubble_check
+def get_ubble_subscription_item_status(
+    user: users_models.User,
+    eligibility: typing.Optional[users_models.EligibilityType],
+    ubble_fraud_checks: list[fraud_models.BeneficiaryFraudCheck],
+) -> models.SubscriptionItemStatus:
+    for fraud_check in ubble_fraud_checks:
+        if fraud_check.status in (fraud_models.FraudCheckStatus.CANCELED, fraud_models.FraudCheckStatus.STARTED):
+            # Let user continue the started identification session
+            continue
+        if fraud_check.status == fraud_models.FraudCheckStatus.OK:
+            return models.SubscriptionItemStatus.OK
+        if fraud_check.status == fraud_models.FraudCheckStatus.PENDING:
+            return models.SubscriptionItemStatus.PENDING
+        elif fraud_check.status in (fraud_models.FraudCheckStatus.OK, fraud_models.FraudCheckStatus.SUSPICIOUS):
+            candidate_status = (
+                models.SubscriptionItemStatus.KO
+                if fraud_check.status == fraud_models.FraudCheckStatus.KO
+                else models.SubscriptionItemStatus.SUSPICIOUS
+            )
+            if not fraud_check.reasonCodes:
+                return candidate_status
+            for reason_code in fraud_check.reasonCodes:
+                if reason_code not in RESTARTABLE_FRAUD_CHECK_STATUS:
+                    return candidate_status
+    if (
+        len(
+            [
+                check
+                for check in ubble_fraud_checks
+                if check.status not in (fraud_models.FraudCheckStatus.CANCELLED, fraud_models.FraudCheckStatus.STARTED)
+            ]
+        )
+        >= MAX_UBBLE_RETRIES
+    ):
+        return models.SubscriptionItemStatus.KO
+
+    if _is_eligibility_activable(user, eligibility):
+        return models.SubscriptionItemStatus.TODO
+    else:
+        return models.SubscriptionItemStatus.VOID
+
+
 def get_identity_check_subscription_item(
     user: users_models.User, eligibility: typing.Optional[users_models.EligibilityType]
 ) -> models.SubscriptionItem:
     identity_fraud_checks = fraud_repository.get_identity_fraud_checks(user, eligibility)
+    statuses = [
+        get_educonnect_subscription_item_status(
+            user,
+            eligibility,
+            [check for check in identity_fraud_checks if check.type == fraud_models.FraudCheckType.UBBLE],
+        ),
+        get_ubble_subscription_item_status(
+            user,
+            eligibility,
+            [check for check in identity_fraud_checks if check.type == fraud_models.FraudCheckType.UBBLE],
+        ),
+    ]
 
-    if any(check.status == fraud_models.FraudCheckStatus.OK for check in identity_fraud_checks):
+    if any(status == models.SubscriptionItemStatus.OK for status in statuses):
         status = models.SubscriptionItemStatus.OK
-    elif any(check.status == fraud_models.FraudCheckStatus.PENDING for check in identity_fraud_checks):
-        # TODO(consider ubble checks status STARTED as TODO when the status STARTED is introduced)
+    elif any(status == models.SubscriptionItemStatus.PENDING for status in statuses):
         status = models.SubscriptionItemStatus.PENDING
-    elif any(check.status == fraud_models.FraudCheckStatus.SUSPICIOUS for check in identity_fraud_checks):
-        status = models.SubscriptionItemStatus.SUSPICIOUS
-    elif any(check.status == fraud_models.FraudCheckStatus.KO for check in identity_fraud_checks):
-        status = models.SubscriptionItemStatus.KO
+
+    if _is_eligibility_activable(user, eligibility):
+        status = models.SubscriptionItemStatus.TODO
     else:
-        if _is_eligibility_activable(user, eligibility):
-            status = models.SubscriptionItemStatus.TODO
-        else:
-            status = models.SubscriptionItemStatus.VOID
+        status = models.SubscriptionItemStatus.VOID
 
     return models.SubscriptionItem(type=models.SubscriptionStep.IDENTITY_CHECK, status=status)
 
