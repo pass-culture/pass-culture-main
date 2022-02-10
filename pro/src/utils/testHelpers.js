@@ -10,9 +10,12 @@ export const queryCallbacks = {
   // basic screen.queryByText would not match
   queryByTextWithChildren: (searchString, leafOnly = true) => {
     return (_content, node) => {
-      const hasText = node =>
-        node.textContent === searchString ||
-        node.textContent.match(searchString)
+      const hasText = node => {
+        const normalizedText = node.textContent.replace(/\s/g, ' ')
+        return (
+          normalizedText === searchString || normalizedText.match(searchString)
+        )
+      }
       const nodeHasText = hasText(node)
 
       // Parent node also have 'searchString' as textContent.
