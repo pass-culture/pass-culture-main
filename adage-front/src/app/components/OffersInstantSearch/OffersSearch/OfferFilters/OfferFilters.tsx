@@ -1,5 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react'
-import type { SearchBoxProvided } from 'react-instantsearch-core'
+import React, { useEffect, useState } from 'react'
 
 import { getEducationalCategoriesOptionsAdapter } from 'app/adapters/getEducationalCategoriesOptionsAdapter'
 import { Filters, Option } from 'app/types'
@@ -15,12 +14,10 @@ import { studentsOptions } from './studentsOptions'
 
 interface OfferFiltersProps {
   className?: string
-  handleSearchButtonClick: (filters: Filters) => void
+  handleLaunchSearch: (filters: Filters) => void
   venueFilter: VenueFilterType | null
   removeVenueFilter: () => void
   isLoading: boolean
-  query: string
-  refine: SearchBoxProvided['refine']
   dispatchCurrentFilters: React.Dispatch<FiltersReducerAction>
   currentFilters: Filters
 }
@@ -29,24 +26,22 @@ export const OfferFilters = ({
   className,
   dispatchCurrentFilters,
   currentFilters,
-  handleSearchButtonClick,
+  handleLaunchSearch,
   venueFilter,
   removeVenueFilter,
   isLoading,
-  refine,
-  query,
 }: OfferFiltersProps): JSX.Element => {
   const [categoriesOptions, setCategoriesOptions] = useState<
     Option<string[]>[]
   >([])
 
-  const handleResetFilters = useCallback(() => {
+  const handleResetFilters = () => {
     removeVenueFilter()
     dispatchCurrentFilters({
       type: 'RESET_CURRENT_FILTERS',
       value: {},
     })
-  }, [dispatchCurrentFilters, removeVenueFilter])
+  }
 
   useEffect(() => {
     const loadSubCategoriesOptions = async () => {
@@ -121,8 +116,7 @@ export const OfferFilters = ({
           disabled={isLoading}
           label="Lancer la recherche"
           onClick={() => {
-            handleSearchButtonClick(currentFilters)
-            refine(query)
+            handleLaunchSearch(currentFilters)
           }}
         />
       </div>

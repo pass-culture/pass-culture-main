@@ -41,25 +41,6 @@
     }
   }
 
-  &-reset {
-  margin-left: rem(8px);
-  display: flex;
-  align-items: center;
-  font-size: rem(12px);
-  font-weight: 600;
-  min-width: rem(146px);
-  padding: rem(4px) 0;
-  background-color: transparent;
-  border: unset;
-  cursor: pointer;
-
-    &-icon {
-      width: rem(16px);
-      height: rem(16px);
-      margin-right: rem(4px);
-    }
-  }
-
   &:focus,
   &:hover {
     outline: none;

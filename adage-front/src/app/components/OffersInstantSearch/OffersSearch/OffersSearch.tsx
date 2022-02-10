@@ -3,7 +3,6 @@ import * as React from 'react'
 import {
   Dispatch,
   SetStateAction,
-  useCallback,
   useEffect,
   useReducer,
   useState,
@@ -49,18 +48,18 @@ export const OffersSearchComponent = ({
     INITIAL_FILTERS
   )
 
-  const handleSearchButtonClick = (filters: Filters): void => {
+  const handleLaunchSearch = (filters: Filters): void => {
     setIsLoading(true)
     setFacetFilters(populateFacetFilters({ ...filters, venueFilter }))
+    refine(query)
   }
 
-  const handleResetFiltersAndLaunchSearch = useCallback(() => {
+  const handleResetFiltersAndLaunchSearch = () => {
     setQuery(INITIAL_QUERY)
     removeVenueFilter()
     dispatchCurrentFilters({ type: 'RESET_CURRENT_FILTERS', value: {} })
-    setFacetFilters([...INITIAL_FACET_FILTERS])
-    refine(INITIAL_QUERY)
-  }, [refine, removeVenueFilter, setFacetFilters])
+    handleLaunchSearch({ departments: [], categories: [], students: [] })
+  }
 
   useEffect(() => {
     if (venueFilter?.id) {
@@ -73,7 +72,7 @@ export const OffersSearchComponent = ({
       <OffersSearchBarAndFilters
         currentFilters={currentFilters}
         dispatchCurrentFilters={dispatchCurrentFilters}
-        handleSearchButtonClick={handleSearchButtonClick}
+        handleLaunchSearch={handleLaunchSearch}
         isLoading={isLoading}
         query={query}
         refine={refine}
