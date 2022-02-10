@@ -1,26 +1,29 @@
 import PropTypes from 'prop-types'
-import React from 'react'
+import React, { useCallback } from 'react'
 import { Link } from 'react-router-dom'
 
-import { CREATION } from 'components/hocs/withFrenchQueryRouter'
-import { closeNotification } from 'store/reducers/notificationReducer'
+import useNotification from 'components/hooks/useNotification'
 
-const handleOnClick = dispatch => () => dispatch(closeNotification())
-const NotificationMessage = ({ venueId, offererId, dispatch }) => {
-  const createOfferPathname = `/offre/${CREATION}?lieu=${venueId}&structure=${offererId}`
+const NotificationMessage = ({ venueId, offererId }) => {
+  const notification = useNotification()
+  const closeNotification = useCallback(
+    () => notification.close(),
+    [notification]
+  )
+
+  const createOfferPathname = `/offre/creation?lieu=${venueId}&structure=${offererId}`
   return (
     <p>
-      {'Lieu créé. Vous pouvez maintenant y '}
-      <Link onClick={handleOnClick(dispatch)} to={createOfferPathname}>
+      Lieu créé. Vous pouvez maintenant y&nbsp;
+      <Link onClick={closeNotification} to={createOfferPathname}>
         créer une offre
       </Link>
-      {', ou en importer automatiquement. '}
+      , ou en importer automatiquement.
     </p>
   )
 }
 
 NotificationMessage.propTypes = {
-  dispatch: PropTypes.func.isRequired,
   offererId: PropTypes.string.isRequired,
   venueId: PropTypes.string.isRequired,
 }
