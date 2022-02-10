@@ -1,5 +1,5 @@
 import React from 'react'
-import { SearchBoxProvided } from 'react-instantsearch-core'
+import type { SearchBoxProvided } from 'react-instantsearch-core'
 
 import { Filters } from 'app/types'
 import { VenueFilterType } from 'utils/types'

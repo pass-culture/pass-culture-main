@@ -20,6 +20,30 @@ export const filtersReducer = (
         categories: action.value.categories ?? [],
         students: action.value.students ?? [],
       }
+    case 'REMOVE_DEPARTMENTS_FILTER': {
+      const departmentValuesToBeRemoved =
+        action.value.departments?.map(department => department.value) || []
+      const newDepartments = state.departments?.filter(
+        department => !departmentValuesToBeRemoved.includes(department.value)
+      )
+      return { ...state, departments: newDepartments }
+    }
+    case 'REMOVE_CATEGORIES_FILTER': {
+      const categoryValuesToBeRemoved =
+        action.value.categories?.map(category => category.value) || []
+      const newCategories = state.categories?.filter(
+        category => !categoryValuesToBeRemoved.includes(category.value)
+      )
+      return { ...state, categories: newCategories }
+    }
+    case 'REMOVE_STUDENTS_FILTER': {
+      const studentValuesToBeRemoved =
+        action.value.students?.map(student => student.value) || []
+      const newStudents = state.students?.filter(
+        student => !studentValuesToBeRemoved.includes(student.value)
+      )
+      return { ...state, students: newStudents }
+    }
     case 'POPULATE_DEPARTMENTS_FILTER':
       return { ...state, departments: action.value.departments ?? [] }
     case 'POPULATE_CATEGORIES_FILTER':

@@ -66,7 +66,7 @@ export const OffersSearchComponent = ({
     if (venueFilter?.id) {
       setFacetFilters([...INITIAL_FACET_FILTERS, `venue.id:${venueFilter.id}`])
     }
-  }, [venueFilter])
+  }, [setFacetFilters, venueFilter])
 
   return (
     <>

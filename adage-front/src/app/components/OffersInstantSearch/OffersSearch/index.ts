@@ -1,1 +1,1 @@
-export { default } from './OffersSearch'
+export { OffersSearch } from './OffersSearch'
