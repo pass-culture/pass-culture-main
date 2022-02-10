@@ -182,7 +182,7 @@ const VenueEdition = ({
             />
           )}
           {!!shouldDisplayImageVenueUploaderSection && (
-            <ImageVenueUploaderSection />
+            <ImageVenueUploaderSection venueId={venue.id} />
           )}
           {isBankInformationWithSiretActive ? (
             // FIXME

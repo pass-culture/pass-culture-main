@@ -205,6 +205,28 @@ export const getVenueStats = venueId => client.get(`/venues/${venueId}/stats`)
 export const getOffererWithVenueStats = offererId =>
   client.get(`/offerers/${offererId}/stats`)
 
+export const postImageToVenue = async ({
+  venueId,
+  banner,
+  xCropPercent,
+  yCropPercent,
+  heightCropPercent,
+}) => {
+  const body = new FormData()
+  body.append('banner', banner)
+
+  const queryParams = stringify({
+    x_crop_percent: xCropPercent,
+    y_crop_percent: yCropPercent,
+    height_crop_percent: heightCropPercent,
+  })
+
+  return await client.postWithFormData(
+    `/venues/${venueId}/banner?${queryParams}`,
+    body
+  )
+}
+
 //
 // types
 //

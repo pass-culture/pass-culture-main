@@ -8,10 +8,13 @@ import styles from './ImageVenueUploaderSection.module.scss'
 import { VenueImageUploaderModal } from './VenueImageUploaderModal'
 
 type Props = {
+  venueId: string
   children?: never
 }
 
-export const ImageVenueUploaderSection: FunctionComponent<Props> = () => {
+export const ImageVenueUploaderSection: FunctionComponent<Props> = ({
+  venueId,
+}) => {
   const { visible, showModal, hideModal } = useModal()
 
   return (
@@ -31,7 +34,9 @@ export const ImageVenueUploaderSection: FunctionComponent<Props> = () => {
         Elle permettra au public de mieux identifier votre lieu.
       </p>
       <ImageUploadButton onClick={showModal} />
-      {!!visible && <VenueImageUploaderModal onDismiss={hideModal} />}
+      {!!visible && (
+        <VenueImageUploaderModal onDismiss={hideModal} venueId={venueId} />
+      )}
     </section>
   )
 }
