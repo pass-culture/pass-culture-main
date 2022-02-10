@@ -26,6 +26,13 @@ class BeneficiaryImportSources(Enum):
 
 
 class BeneficiaryImport(PcObject, Model):
+    """
+    THIS MODEL IS DEPRECATED - DO NOT USE
+
+    We keep it defined here to keep historical data in the database.
+    When this data is either transferred to the new model or deleted, we can remove this model.
+    """
+
     applicationId = sa.Column(sa.BigInteger, nullable=True)
 
     beneficiaryId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=True)
