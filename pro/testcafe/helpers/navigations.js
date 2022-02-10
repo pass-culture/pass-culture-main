@@ -44,7 +44,7 @@ export const navigateToOffererAs = (user, offerer, userRole) => async t => {
 
 export const navigateAfterVenueSubmit = creationOrModification => async t => {
   const notificationSuccess = Selector('.notification.is-success').withText(
-    'Lieu créé. Vous pouvez maintenant y créer une offre, ou en importer automatiquement.'
+    'Lieu créé. Vous pouvez maintenant y\u00a0créer une offre, ou en importer automatiquement.'
   )
   const submitButton = Selector('button[type="submit"]')
 

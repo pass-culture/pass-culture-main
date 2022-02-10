@@ -1,9 +1,24 @@
-import { mount } from 'enzyme'
-import { createBrowserHistory } from 'history'
+import '@testing-library/jest-dom'
+import { render, screen } from '@testing-library/react'
 import React from 'react'
-import { Router } from 'react-router-dom'
+import { Provider } from 'react-redux'
+import { MemoryRouter } from 'react-router-dom'
+
+import { configureTestStore } from 'store/testUtils'
+import { queryByTextTrimHtml } from 'utils/testHelpers'
 
 import NotificationMessage from '../Notification'
+
+const renderNotificationMessage = ({ props, storeOverrides = {} }) => {
+  const store = configureTestStore(storeOverrides)
+  return render(
+    <Provider store={store}>
+      <MemoryRouter>
+        <NotificationMessage {...props} />
+      </MemoryRouter>
+    </Provider>
+  )
+}
 
 describe('src | components | pages | Venue | Notification', () => {
   const props = {
@@ -13,22 +28,16 @@ describe('src | components | pages | Venue | Notification', () => {
   }
 
   it('should display a succes messsage when venue is created', () => {
-    // given
-    const history = createBrowserHistory()
-
-    // when
-    const wrapper = mount(
-      <Router history={history}>
-        <NotificationMessage {...props} />
-      </Router>
-    )
-    const textMessage = wrapper.find('p')
-    const link = textMessage.find({ children: 'créer une offre' }).at(1)
-
-    // then
-    expect(textMessage.text()).toBe(
-      'Lieu créé. Vous pouvez maintenant y créer une offre, ou en importer automatiquement. '
-    )
-    expect(link.prop('href')).toBe('/offre/creation?lieu=TY&structure=FT')
+    const { debug } = renderNotificationMessage({ props })
+    debug()
+    expect(
+      queryByTextTrimHtml(
+        screen,
+        'Lieu créé. Vous pouvez maintenant y créer une offre, ou en importer automatiquement.'
+      )
+    ).toBeInTheDocument()
+    expect(
+      screen.getByText('créer une offre', { selector: 'a' })
+    ).toHaveAttribute('href', '/offre/creation?lieu=TY&structure=FT')
   })
 })
