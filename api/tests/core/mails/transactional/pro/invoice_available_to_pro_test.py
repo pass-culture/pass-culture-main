@@ -45,5 +45,5 @@ class SendinblueProAvailableInvoiceEmailDataTest:
         )
         assert mails_testing.outbox[0].sent_data["To"] == "pro@example.com"
         assert mails_testing.outbox[0].sent_data["params"] == {
-            "montant": 10,
+            "MONTANT_REMBOURSEMENT": 10,
         }
