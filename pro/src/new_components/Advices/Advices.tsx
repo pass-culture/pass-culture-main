@@ -8,6 +8,7 @@ import { ReactComponent as ExternalSite } from 'components/pages/Offers/Offer/Th
 interface Props {
   hidden: boolean
   setHidden: (hidden: boolean) => void
+  children?: never
 }
 
 const Advices: FunctionComponent<Props> = ({ hidden, setHidden }) => {
