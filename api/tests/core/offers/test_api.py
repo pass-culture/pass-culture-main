@@ -1191,16 +1191,17 @@ class DeleteStockTest:
         assert booking2.status == BookingStatus.CANCELLED  # unchanged
         assert booking2.cancellationReason == BookingCancellationReasons.BENEFICIARY
         booking3 = Booking.query.get(booking3.id)
-        assert booking3.status != BookingStatus.CANCELLED  # unchanged
-        assert booking3.cancellationReason is None
+        assert booking3.status == BookingStatus.CANCELLED  # cancel used booking for event offer
+        assert booking3.cancellationReason == BookingCancellationReasons.OFFERER
 
-        assert len(mails_testing.outbox) == 2
+        assert len(mails_testing.outbox) == 3
+        print(mails_testing.outbox)
         assert mails_testing.outbox[0].sent_data["To"] == "beneficiary@example.com"
-        assert mails_testing.outbox[1].sent_data["To"] == "offerer@example.com"
+        assert mails_testing.outbox[2].sent_data["To"] == "offerer@example.com"
 
         assert push_testing.requests[-1] == {
             "group_id": "Cancel_booking",
-            "user_ids": [booking1.individualBooking.userId],
+            "user_ids": [booking1.individualBooking.userId, booking3.individualBooking.userId],
             "message": {
                 "body": f"""Ta réservation "{stock.offer.name}" a été annulée par l'offreur.""",
                 "title": "Réservation annulée",

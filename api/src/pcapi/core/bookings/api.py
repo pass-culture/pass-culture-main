@@ -155,13 +155,14 @@ def book_offer(
     return individual_booking.booking
 
 
-def _cancel_booking(booking: Booking, reason: BookingCancellationReasons) -> None:
+def _cancel_booking(booking: Booking, reason: BookingCancellationReasons, cancel_even_if_used: bool = False) -> bool:
     """Cancel booking and update a user's credit information on Batch"""
     with transaction():
         stock = offers_repository.get_and_lock_stock(stock_id=booking.stockId)
         db.session.refresh(booking)
+        old_status = booking.status
         try:
-            booking.cancel_booking()
+            booking.cancel_booking(cancel_even_if_used)
         except (BookingIsAlreadyUsed, BookingIsAlreadyCancelled) as e:
             logger.info(
                 str(e),
@@ -170,7 +171,9 @@ def _cancel_booking(booking: Booking, reason: BookingCancellationReasons) -> Non
                     "reason": str(reason),
                 },
             )
-            return
+            return False
+        if old_status is BookingStatus.USED:
+            finance_api.cancel_pricing(booking, finance_models.PricingLogReason.MARK_AS_UNUSED)
         booking.cancellationReason = reason
         stock.dnBookedQuantity -= booking.quantity
         repository.save(booking, stock)
@@ -186,6 +189,7 @@ def _cancel_booking(booking: Booking, reason: BookingCancellationReasons) -> Non
         update_external_user(booking.individualBooking.user)
         update_external_pro(booking.venue.bookingEmail)
     search.async_index_offer_ids([booking.stock.offerId])
+    return True
 
 
 def _cancel_bookings_from_stock(stock: Stock, reason: BookingCancellationReasons) -> list[Booking]:
@@ -194,28 +198,9 @@ def _cancel_bookings_from_stock(stock: Stock, reason: BookingCancellationReasons
     Note that this will not reindex the stock.offer in Algolia
     """
     deleted_bookings: list[Booking] = []
-    with transaction():
-        stock = offers_repository.get_and_lock_stock(stock_id=stock.id)
-        for booking in stock.bookings:
-            try:
-                booking.cancel_booking()
-            except (BookingIsAlreadyUsed, BookingIsAlreadyCancelled) as e:
-                logger.info(str(e), extra={"booking": booking.id, "reason": str(reason)})
-            else:
-                booking.cancellationReason = reason
-                stock.dnBookedQuantity -= booking.quantity
-                deleted_bookings.append(booking)
-        repository.save(*deleted_bookings)
-
-    pro_emails = set()
-
-    for booking in deleted_bookings:
-        if booking.individualBooking is not None:
-            update_external_user(booking.individualBooking.user)
-            pro_emails.add(booking.venue.bookingEmail)
-
-    for pro_email in pro_emails:
-        update_external_pro(pro_email)
+    for booking in stock.bookings:
+        if _cancel_booking(booking, reason, cancel_even_if_used=stock.offer.isEvent):
+            deleted_bookings.append(booking)
 
     return deleted_bookings
 
