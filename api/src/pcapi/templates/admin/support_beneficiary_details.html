@@ -279,56 +279,6 @@
 </div>
 
 <div class="section">
-  <h3>Beneficiary Imports</h3>
-  <div class="row">
-    {% for import in model.beneficiaryImports %}
-    <div class="col-lg-4">
-
-      <table class="table">
-        <tr>
-          <th scope="row">Auteur</th>
-          <td>{{ import.author|default("Aucun") }}</td>
-        </tr>
-
-        <tr>
-          <th scope="row">Application ID</th>
-          <td>{{ import.applicationId }}</td>
-        </tr>
-        <tr>
-          <th scope="row">Source ID</th>
-          <td>{{ import.sourceId }}</td>
-        </tr>
-        <tr>
-          <th scope="row">Source</th>
-          <td>{{ import.source }}</td>
-        </tr>
-        <tr>
-          <th scope="row">Etat</th>
-          <td>{{ import.currentStatus.value }}</td>
-        </tr>
-        <tr>
-          <th scope="row">Historique</th>
-          <td>
-            <ul>
-              {% for status in import.statuses %}
-              <li>{{ status.status.value }} - {{ status.detail }} - {% if status.date %}le {{ status.date.strftime('le
-                %d/%m/%Y à %H:%M:%S') }} {% endif %}
-              </li>
-              {% endfor %}
-            </ul>
-          </td>
-        </tr>
-      </table>
-    </div>
-    {% else %}
-    <div class="card card-body">
-      Aucun résultat d'import de bénéficiaire
-    </div>
-    {% endfor %}
-  </div>
-</div>
-
-<div class="section">
   <h3>Vérification des données utilisateurs</h3>
   <div class="row">
     {% for check in model.beneficiaryFraudChecks %}
@@ -383,5 +333,56 @@
     </div>
     {% endfor %}
   </div>
-  {% endblock %}
 </div>
+
+  <h1>{{has_dms_fraud_check}}</h1>
+
+{% if display_beneficiary_imports%}
+<div class="section">
+  <h3>Beneficiary Imports -- Deprécié</h3>
+  <p>Catgorie dépréciée au profit des "Vérification des données utilisateurs" ci-dessus</p>
+  <div class="row">
+    {% for import in model.beneficiaryImports %}
+    <div class="col-lg-4">
+
+      <table class="table">
+        <tr>
+          <th scope="row">Auteur</th>
+          <td>{{ import.author|default("Aucun") }}</td>
+        </tr>
+
+        <tr>
+          <th scope="row">Application ID</th>
+          <td>{{ import.applicationId }}</td>
+        </tr>
+        <tr>
+          <th scope="row">Source ID</th>
+          <td>{{ import.sourceId }}</td>
+        </tr>
+        <tr>
+          <th scope="row">Source</th>
+          <td>{{ import.source }}</td>
+        </tr>
+        <tr>
+          <th scope="row">Etat</th>
+          <td>{{ import.currentStatus.value }}</td>
+        </tr>
+        <tr>
+          <th scope="row">Historique</th>
+          <td>
+            <ul>
+              {% for status in import.statuses %}
+              <li>{{ status.status.value }} - {{ status.detail }} - {% if status.date %}le {{ status.date.strftime('le
+                %d/%m/%Y à %H:%M:%S') }} {% endif %}
+              </li>
+              {% endfor %}
+            </ul>
+          </td>
+        </tr>
+      </table>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+{% endblock %}
