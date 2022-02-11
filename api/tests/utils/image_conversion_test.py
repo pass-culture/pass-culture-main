@@ -2,10 +2,14 @@ import io
 import pathlib
 
 import PIL
+import pytest
 
+from pcapi.utils.image_conversion import IMAGE_RATIO_LANDSCAPE_DEFAULT
+from pcapi.utils.image_conversion import IMAGE_RATIO_PORTRAIT_DEFAULT
 from pcapi.utils.image_conversion import _crop_image
 from pcapi.utils.image_conversion import _resize_image
 from pcapi.utils.image_conversion import _transpose_image
+from pcapi.utils.image_conversion import standardize_image
 
 import tests
 
@@ -27,7 +31,9 @@ class ImageConversionTest:
         expected_image = PIL.Image.open(io.BytesIO(expected_image_as_bytes)).convert("RGB")
 
         # when
-        cropped_image = _crop_image(crop_origin_x, crop_origin_y, crop_rect_height, raw_image)
+        cropped_image = _crop_image(
+            crop_origin_x, crop_origin_y, crop_rect_height, raw_image, ratio=IMAGE_RATIO_PORTRAIT_DEFAULT
+        )
 
         # then
         difference = PIL.ImageChops.difference(cropped_image, expected_image)
@@ -55,8 +61,24 @@ class ImageConversionTest:
         expected_image = PIL.Image.open(io.BytesIO(image_as_bytes)).convert("RGB")
 
         # when
-        resized_image = _resize_image(expected_image)
+        resized_image = _resize_image(expected_image, ratio=IMAGE_RATIO_PORTRAIT_DEFAULT)
 
         # then
         difference = PIL.ImageChops.difference(resized_image, expected_image)
         assert difference.getbbox() is None
+
+    def test_image_ratio_portrait(self):
+        image_as_bytes = (IMAGES_DIR / "mouette_full_size.jpg").read_bytes()
+
+        standardized_image = standardize_image(image_as_bytes, ratio=IMAGE_RATIO_PORTRAIT_DEFAULT)
+
+        result_image = PIL.Image.open(io.BytesIO(standardized_image)).convert("RGB")
+        assert (result_image.width / result_image.height) == pytest.approx(IMAGE_RATIO_PORTRAIT_DEFAULT, 0.01)
+
+    def test_image_ratio_landscape(self):
+        image_as_bytes = (IMAGES_DIR / "mouette_full_size.jpg").read_bytes()
+
+        standardized_image = standardize_image(image_as_bytes, ratio=IMAGE_RATIO_LANDSCAPE_DEFAULT)
+
+        result_image = PIL.Image.open(io.BytesIO(standardized_image)).convert("RGB")
+        assert (result_image.width / result_image.height) == pytest.approx(IMAGE_RATIO_LANDSCAPE_DEFAULT, 0.01)
