@@ -145,12 +145,6 @@ def check_is_usable(booking: Booking) -> None:
             reason = "Cette réservation pour une offre éducationnelle a été refusée par le chef d'établissement"
             raise api_errors.ForbiddenError(errors={"educationalBooking": reason})
 
-        if booking.educationalBooking.status is not EducationalBookingStatus.USED_BY_INSTITUTE:
-            reason = (
-                "Cette réservation pour une offre éducationnelle n'est pas encore validée par le chef d'établissement"
-            )
-            raise api_errors.ForbiddenError(errors={"educationalBooking": reason})
-
     is_booking_for_event_and_not_confirmed = booking.stock.beginningDatetime and not booking.isConfirmed
     if is_booking_for_event_and_not_confirmed:
         forbidden = api_errors.ForbiddenError()

@@ -175,27 +175,6 @@ def confirm_educational_booking(educational_booking_id: int) -> EducationalBooki
     return educational_booking
 
 
-def mark_educational_booking_as_used_by_institute(educational_booking_id: int) -> EducationalBooking:
-    educational_booking = educational_repository.find_educational_booking_by_id(educational_booking_id)
-    if educational_booking is None:
-        raise exceptions.EducationalBookingNotFound()
-
-    if educational_booking.status == EducationalBookingStatus.USED_BY_INSTITUTE:
-        return educational_booking
-
-    try:
-        educational_booking.mark_as_used_by_institute()
-    except exceptions.EducationalBookingNotConfirmedYet as exception:
-        logger.error(
-            "User from adage trying to mark unconfirmed educational booking",
-            extra={"educational_booking_id": educational_booking_id},
-        )
-        raise exception
-    repository.save(educational_booking)
-
-    return educational_booking
-
-
 def refuse_educational_booking(educational_booking_id: int) -> EducationalBooking:
     educational_booking = educational_repository.find_educational_booking_by_id(educational_booking_id)
 

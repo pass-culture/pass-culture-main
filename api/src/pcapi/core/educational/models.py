@@ -24,7 +24,6 @@ from pcapi.models.pc_object import PcObject
 
 class EducationalBookingStatus(enum.Enum):
     REFUSED = "REFUSED"
-    USED_BY_INSTITUTE = "USED_BY_INSTITUTE"
 
 
 class EducationalInstitution(PcObject, Model):
@@ -152,19 +151,8 @@ class EducationalBooking(PcObject, Model):
     def has_confirmation_limit_date_passed(self) -> bool:
         return bool(self.confirmationLimitDate and self.confirmationLimitDate <= datetime.utcnow())
 
-    def mark_as_used_by_institute(self) -> None:
-        from pcapi.core.bookings.models import BookingStatus
-
-        if self.booking.status != BookingStatus.CONFIRMED:
-            raise exceptions.EducationalBookingNotConfirmedYet()
-
-        self.status = EducationalBookingStatus.USED_BY_INSTITUTE
-
     def mark_as_refused(self) -> None:
         from pcapi.core.bookings import models as bookings_models
-
-        if self.status == EducationalBookingStatus.USED_BY_INSTITUTE:
-            raise exceptions.EducationalBookingNotRefusable()
 
         if (
             self.booking.status != bookings_models.BookingStatus.PENDING
