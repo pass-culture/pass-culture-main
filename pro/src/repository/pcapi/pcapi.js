@@ -278,6 +278,9 @@ export const cancelEducationalBooking = offerId => {
   return client.patch(`/offers/${offerId}/cancel_booking`)
 }
 
+export const transformShadowStockIntoEducationalStock = (stockId, stock) =>
+  client.patch(`/stocks/shadow-to-educational/${stockId}`, stock)
+
 //
 // thumbnail
 //
