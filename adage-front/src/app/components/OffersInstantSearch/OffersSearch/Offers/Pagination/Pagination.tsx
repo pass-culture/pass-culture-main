@@ -12,7 +12,7 @@ interface IPagination {
   refine: (page: number) => void
   createURL: (page: number) => string
 }
-const Pagination = ({
+const CustomPagination = ({
   currentRefinement,
   nbPages,
   refine,
@@ -62,6 +62,4 @@ const Pagination = ({
   )
 }
 
-const CustomPagination = connectPagination(Pagination)
-
-export default CustomPagination
+export const Pagination = connectPagination(CustomPagination)

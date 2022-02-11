@@ -3,14 +3,26 @@ import userEvent from '@testing-library/user-event'
 import React from 'react'
 
 import { findLaunchSearchButton } from 'app/__spec__/__test_utils__/elements'
-import { placeholder } from 'app/__spec__/App.spec'
 import { INITIAL_FACET_FILTERS } from 'app/constants'
 import { Role } from 'utils/types'
 
-import { OffersSearch } from '../OffersSearch'
+import { OffersSearchComponent } from '../OffersSearch'
+import { placeholder } from '../SearchBox'
+
+jest.mock('../Offers/Offers', () => {
+  return {
+    Offers: jest.fn(() => <div />),
+  }
+})
+
+jest.mock('../Offers/Pagination/Pagination', () => {
+  return {
+    Pagination: jest.fn(() => <div />),
+  }
+})
 
 const renderOffersSearchComponent = props => {
-  render(<OffersSearch {...props} />)
+  render(<OffersSearchComponent {...props} />)
 }
 
 describe('offersSearch component', () => {
@@ -34,10 +46,10 @@ describe('offersSearch component', () => {
 
     // When
     const textInput = screen.getByPlaceholderText(placeholder)
-    userEvent.type(textInput, 'a')
+    userEvent.type(textInput, 'Paris')
     launchSearchButton.click()
 
     // Then
-    expect(props.refine).toHaveBeenCalledWith('a')
+    expect(props.refine).toHaveBeenCalledWith('Paris')
   })
 })

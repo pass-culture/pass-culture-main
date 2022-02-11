@@ -4,6 +4,8 @@ import type { SearchBoxProvided } from 'react-instantsearch-core'
 
 import { ReactComponent as MagnifyingGlassIcon } from 'assets/magnifying-glass.svg'
 
+import { placeholder } from './constants'
+
 export const SearchBoxComponent = ({
   query,
   setQuery,
@@ -27,7 +29,7 @@ export const SearchBoxComponent = ({
       <input
         className="search-box"
         onChange={e => setQuery(e.target.value)}
-        placeholder="Nom de l’offre ou du partenaire culturel"
+        placeholder={placeholder}
         type="search"
         value={query}
       />
