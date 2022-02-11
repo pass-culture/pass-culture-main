@@ -318,6 +318,7 @@ class AlgoliaBackend(base.SearchBackend):
             "twitter": social_medias.get("twitter"),
             "instagram": social_medias.get("instagram"),
             "snapchat": social_medias.get("snapchat"),
+            "tags": [criterion.name for criterion in venue.criteria],
             "_geoloc": position(venue),
         }
 

@@ -551,5 +551,6 @@ def test_serialize_venue():
         "instagram": None,
         "snapchat": None,
         "twitter": "https://twitter.com/my.venue",
+        "tags": [],
         "_geoloc": {"lng": float(venue.longitude), "lat": float(venue.latitude)},
     }
