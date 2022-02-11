@@ -94,7 +94,12 @@ def import_dms_users(procedure_id: int) -> None:
             continue
         try:
             user_email = application_details["usager"]["email"]
-        except KeyError:
+        except KeyError as e:
+            logger.error(
+                "[BATCH][REMOTE IMPORT BENEFICIARIES] Could not parse user email: %s",
+                e,
+                extra={"application_id": application_id, "procedure_id": procedure_id},
+            )
             _process_user_parsing_error(application_id, procedure_id)
             continue
 
