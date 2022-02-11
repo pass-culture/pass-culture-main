@@ -2,9 +2,9 @@ import pytest
 
 from pcapi.core.fraud import factories as fraud_factories
 from pcapi.core.fraud import models as fraud_models
+from pcapi.core.subscription.dms.api import get_already_processed_applications_ids
 from pcapi.core.users import factories as users_factories
 from pcapi.models.beneficiary_import_status import ImportStatus
-from pcapi.repository.beneficiary_import_queries import get_already_processed_applications_ids
 
 
 @pytest.mark.usefixtures("db_session")
