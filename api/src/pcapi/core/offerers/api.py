@@ -37,6 +37,7 @@ from pcapi.routes.serialization.venues_serialize import PostVenueBodyModel
 from pcapi.utils import crypto
 from pcapi.utils.human_ids import dehumanize
 from pcapi.utils.image_conversion import CropParams
+from pcapi.utils.image_conversion import IMAGE_RATIO_LANDSCAPE_DEFAULT
 from pcapi.utils.image_conversion import standardize_image
 
 from . import validation
@@ -309,7 +310,7 @@ def save_venue_banner(
     bucket_name = settings.THUMBS_FOLDER_NAME
     object_id = f"venue_{venue.id}_banner"
 
-    content = standardize_image(content, crop_params)
+    content = standardize_image(content, ratio=IMAGE_RATIO_LANDSCAPE_DEFAULT, crop_params=crop_params)
     object_storage.store_public_object(
         folder=bucket_name,
         object_id=object_id,

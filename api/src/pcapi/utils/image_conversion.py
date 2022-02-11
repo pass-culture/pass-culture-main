@@ -18,7 +18,9 @@ from pydantic import confloat
 MAX_THUMB_WIDTH = 750
 CONVERSION_QUALITY = 90
 DO_NOT_CROP = (0, 0, 1)
-IMAGE_RATIO_V2 = 6 / 9
+
+IMAGE_RATIO_PORTRAIT_DEFAULT = 6 / 9
+IMAGE_RATIO_LANDSCAPE_DEFAULT = 3 / 2
 
 
 CropParam = confloat(ge=0.0, le=1.0)
@@ -31,7 +33,7 @@ class Coordinates:
     y: float
 
 
-def standardize_image(image: bytes, crop_params: Optional[CropParams] = None) -> bytes:
+def standardize_image(image: bytes, ratio: float, crop_params: Optional[CropParams] = None) -> bytes:
     """
     Standardization steps are:
         * transpose image
@@ -68,8 +70,8 @@ def standardize_image(image: bytes, crop_params: Optional[CropParams] = None) ->
     transposed_image = transposed_image.convert("RGB")
 
     x_crop_percent, y_crop_percent, height_crop_percent = crop_params
-    cropped_image = _crop_image(x_crop_percent, y_crop_percent, height_crop_percent, transposed_image)
-    resized_image = _resize_image(cropped_image)
+    cropped_image = _crop_image(x_crop_percent, y_crop_percent, height_crop_percent, transposed_image, ratio)
+    resized_image = _resize_image(cropped_image, ratio)
     standard_image = _convert_to_jpeg(resized_image)
     return standard_image
 
@@ -79,7 +81,7 @@ def _transpose_image(raw_image):
 
 
 def _crop_image(
-    x_crop_percent: CropParam, y_crop_percent: CropParam, height_crop_percent: CropParam, image: Image
+    x_crop_percent: CropParam, y_crop_percent: CropParam, height_crop_percent: CropParam, image: Image, ratio: float
 ) -> Image:
     """
     x_crop_percent and y_crop_percent will be used to compute new top left
@@ -97,7 +99,7 @@ def _crop_image(
     top_left_corner = Coordinates(x=width * x_crop_percent, y=height * y_crop_percent)
 
     updated_height = height * height_crop_percent
-    updated_width_from_ratio = updated_height * IMAGE_RATIO_V2
+    updated_width_from_ratio = updated_height * ratio
 
     bottom_right_corner = Coordinates(
         x=min(top_left_corner.x + updated_width_from_ratio, width), y=min(top_left_corner.y + updated_height, height)
@@ -108,11 +110,11 @@ def _crop_image(
     return cropped_img
 
 
-def _resize_image(image: Image) -> Image:
+def _resize_image(image: Image, ratio: float) -> Image:
     if image.size[0] <= MAX_THUMB_WIDTH:
         return image
 
-    height_to_width_ratio = 1 / IMAGE_RATIO_V2
+    height_to_width_ratio = 1 / ratio
     new_height = int(MAX_THUMB_WIDTH * height_to_width_ratio)
     resized_image = image.resize([MAX_THUMB_WIDTH, new_height])
 
