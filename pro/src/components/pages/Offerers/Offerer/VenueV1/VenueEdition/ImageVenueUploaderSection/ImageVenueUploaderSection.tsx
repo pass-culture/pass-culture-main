@@ -3,17 +3,20 @@ import React, { FunctionComponent } from 'react'
 import { useModal } from 'hooks/useModal'
 
 import { ImageUploadButton } from '../ImageUploadButton/ImageUploadButton'
+import { VenueImage } from '../VenueImage/VenueImage'
 
 import styles from './ImageVenueUploaderSection.module.scss'
 import { VenueImageUploaderModal } from './VenueImageUploaderModal'
 
 type Props = {
   venueId: string
+  venueImage: string | null
   children?: never
 }
 
 export const ImageVenueUploaderSection: FunctionComponent<Props> = ({
   venueId,
+  venueImage,
 }) => {
   const { visible, showModal, hideModal } = useModal()
 
@@ -33,7 +36,11 @@ export const ImageVenueUploaderSection: FunctionComponent<Props> = ({
         <br />
         Elle permettra au public de mieux identifier votre lieu.
       </p>
-      <ImageUploadButton onClick={showModal} />
+      {venueImage ? (
+        <VenueImage url={venueImage} />
+      ) : (
+        <ImageUploadButton onClick={showModal} />
+      )}
       {!!visible && (
         <VenueImageUploaderModal onDismiss={hideModal} venueId={venueId} />
       )}
