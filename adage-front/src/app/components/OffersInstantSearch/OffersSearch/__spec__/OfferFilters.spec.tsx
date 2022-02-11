@@ -83,7 +83,7 @@ describe('offerFilters component', () => {
     renderOfferFilters({
       ...props,
       currentFilters: {
-        departments: ['venue.departmentCode:01'],
+        departments: [{ value: '01', label: '01 - Ain' }],
         categories: [],
         students: [],
       },

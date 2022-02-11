@@ -14,6 +14,7 @@ import * as pcapi from 'repository/pcapi/pcapi'
 import { Role, VenueFilterType } from 'utils/types'
 
 import { App } from '../App'
+import { placeholder } from '../components/OffersInstantSearch/OffersSearch/SearchBox'
 
 import {
   findCategoriesFilter,
@@ -25,9 +26,6 @@ import {
   queryTag,
 } from './__test_utils__/elements'
 
-export const placeholder =
-  "Nom de l'offre, du lieu ou de la catégorie (films, visites, conférences, spectacles, cours, musique)"
-
 jest.mock('utils/config', () => ({
   ALGOLIA_APP_ID: 'algolia-app-id',
   ALGOLIA_API_KEY: 'algolia-api-key',
@@ -38,13 +36,6 @@ jest.mock('react-instantsearch-dom', () => {
   return {
     ...jest.requireActual('react-instantsearch-dom'),
     Configure: jest.fn(() => <div />),
-  }
-})
-
-jest.mock('react-instantsearch-core', () => {
-  return {
-    ...jest.requireActual('react-instantsearch-core'),
-    refine: jest.fn(),
   }
 })
 
