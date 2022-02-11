@@ -39,7 +39,6 @@ export const OfferFilters = ({
     removeVenueFilter()
     dispatchCurrentFilters({
       type: 'RESET_CURRENT_FILTERS',
-      value: {},
     })
   }
 
@@ -68,7 +67,7 @@ export const OfferFilters = ({
           onChange={departments =>
             dispatchCurrentFilters({
               type: 'POPULATE_DEPARTMENTS_FILTER',
-              value: { departments },
+              departmentFilters: departments,
             })
           }
           options={departmentOptions}
@@ -81,7 +80,7 @@ export const OfferFilters = ({
           onChange={categories =>
             dispatchCurrentFilters({
               type: 'POPULATE_CATEGORIES_FILTER',
-              value: { categories },
+              categoryFilters: categories,
             })
           }
           options={categoriesOptions}
@@ -94,7 +93,7 @@ export const OfferFilters = ({
           onChange={students =>
             dispatchCurrentFilters({
               type: 'POPULATE_STUDENTS_FILTER',
-              value: { students },
+              studentFilters: students,
             })
           }
           options={studentsOptions}
