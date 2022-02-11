@@ -58,7 +58,7 @@ export const OffersSearchComponent = ({
   const handleResetFiltersAndLaunchSearch = () => {
     setQuery(INITIAL_QUERY)
     removeVenueFilter()
-    dispatchCurrentFilters({ type: 'RESET_CURRENT_FILTERS', value: {} })
+    dispatchCurrentFilters({ type: 'RESET_CURRENT_FILTERS' })
     handleLaunchSearch({ departments: [], categories: [], students: [] })
   }
 

@@ -1,13 +1,57 @@
 import { Filters, Option } from 'app/types'
 
-export type FiltersReducerAction = {
-  type: string
-  value: {
-    departments?: Option[]
-    categories?: Option<string[]>[]
-    students?: Option[]
+type PopulateAllFiltersAction = {
+  type: 'POPULATE_ALL_FILTERS'
+  allFilters: {
+    departments: Option[]
+    categories: Option<string[]>[]
+    students: Option[]
   }
 }
+
+type ResetCurrentFiltersAction = {
+  type: 'RESET_CURRENT_FILTERS'
+}
+
+type PopulateDepartmentsFilterAction = {
+  type: 'POPULATE_DEPARTMENTS_FILTER'
+  departmentFilters: Option[]
+}
+
+type PopulateCategoriesFilterAction = {
+  type: 'POPULATE_CATEGORIES_FILTER'
+  categoryFilters: Option<string[]>[]
+}
+
+type PopulateStudentsFilterAction = {
+  type: 'POPULATE_STUDENTS_FILTER'
+  studentFilters: Option[]
+}
+
+type RemoveDepartmentFilterAction = {
+  type: 'REMOVE_ONE_DEPARTMENT_FILTER'
+  departmentFilter: Option
+}
+
+type RemoveCategoryFilterAction = {
+  type: 'REMOVE_ONE_CATEGORY_FILTER'
+  categoryFilter: Option<string[]>
+}
+
+type RemoveStudentFilterAction = {
+  type: 'REMOVE_ONE_STUDENT_FILTER'
+  studentFilter: Option
+}
+
+export type FiltersReducerAction =
+  | PopulateAllFiltersAction
+  | ResetCurrentFiltersAction
+  | PopulateDepartmentsFilterAction
+  | PopulateCategoriesFilterAction
+  | PopulateStudentsFilterAction
+  | RemoveDepartmentFilterAction
+  | RemoveCategoryFilterAction
+  | RemoveStudentFilterAction
 
 export const filtersReducer = (
   state: Filters,
@@ -16,43 +60,34 @@ export const filtersReducer = (
   switch (action.type) {
     case 'POPULATE_ALL_FILTERS':
       return {
-        departments: action.value.departments ?? [],
-        categories: action.value.categories ?? [],
-        students: action.value.students ?? [],
+        departments: action.allFilters.departments,
+        categories: action.allFilters.categories,
+        students: action.allFilters.students,
       }
     case 'REMOVE_ONE_DEPARTMENT_FILTER': {
-      const departmentValueToBeRemoved = action.value.departments
-        ? action.value.departments[0].value
-        : null
       const newDepartments = state.departments?.filter(
-        department => department.value !== departmentValueToBeRemoved
+        department => department.value !== action.departmentFilter.value
       )
       return { ...state, departments: newDepartments }
     }
     case 'REMOVE_ONE_CATEGORY_FILTER': {
-      const categoryValueToBeRemoved = action.value.categories
-        ? action.value.categories[0].value
-        : null
       const newCategories = state.categories?.filter(
-        category => category.value !== categoryValueToBeRemoved
+        category => category.value !== action.categoryFilter.value
       )
       return { ...state, categories: newCategories }
     }
     case 'REMOVE_ONE_STUDENT_FILTER': {
-      const studentValueToBeRemoved = action.value.students
-        ? action.value.students[0].value
-        : null
       const newStudents = state.students?.filter(
-        student => student.value !== studentValueToBeRemoved
+        student => student.value !== action.studentFilter.value
       )
       return { ...state, students: newStudents }
     }
     case 'POPULATE_DEPARTMENTS_FILTER':
-      return { ...state, departments: action.value.departments ?? [] }
+      return { ...state, departments: action.departmentFilters }
     case 'POPULATE_CATEGORIES_FILTER':
-      return { ...state, categories: action.value.categories ?? [] }
+      return { ...state, categories: action.categoryFilters }
     case 'POPULATE_STUDENTS_FILTER':
-      return { ...state, students: action.value.students ?? [] }
+      return { ...state, students: action.studentFilters }
     case 'RESET_CURRENT_FILTERS':
       return { departments: [], categories: [], students: [] }
     default:
