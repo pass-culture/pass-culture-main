@@ -69,6 +69,10 @@ def handle_dms_state(
 
         logger.info("DMS Application refused.", extra=logs_extra)
 
+    elif state == dms_connector_api.GraphQLApplicationStates.without_continuation:
+        current_fraud_check.status = fraud_models.FraudCheckStatus.CANCELED
+        logger.info("DMS Application without continuation.", extra=logs_extra)
+
     pcapi_repository.repository.save(current_fraud_check)
 
 
