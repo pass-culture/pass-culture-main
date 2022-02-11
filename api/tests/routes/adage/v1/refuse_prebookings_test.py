@@ -8,7 +8,6 @@ from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.educational.factories import EducationalRedactorFactory
-from pcapi.core.educational.models import EducationalBookingStatus
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.offers.factories import EventStockFactory
@@ -136,7 +135,7 @@ class Returns200Test:
 class Returns400Test:
     def test_returns_error_when_not_refusable(self, app) -> None:
         booking = EducationalBookingFactory(
-            educationalBooking__status=EducationalBookingStatus.USED_BY_INSTITUTE,
+            status=BookingStatus.USED,
         )
 
         client = TestClient(app.test_client()).with_eac_token()

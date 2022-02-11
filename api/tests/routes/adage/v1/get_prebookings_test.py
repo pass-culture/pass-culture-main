@@ -1,6 +1,7 @@
 import pytest
 
 from pcapi.core.bookings.factories import EducationalBookingFactory
+from pcapi.core.bookings.factories import PendingEducationalBookingFactory
 from pcapi.core.educational.factories import EducationalInstitutionFactory
 from pcapi.core.educational.factories import EducationalRedactorFactory
 from pcapi.core.educational.factories import EducationalYearFactory
@@ -128,30 +129,26 @@ class Returns200Test:
         )
         educationalYear = EducationalYearFactory()
         educationalInstitution = EducationalInstitutionFactory()
-        booking = EducationalBookingFactory(
+        EducationalBookingFactory(
             educationalBooking__educationalRedactor=redactor,
             educationalBooking__educationalYear=educationalYear,
             educationalBooking__educationalInstitution=educationalInstitution,
-            educationalBooking__status="USED_BY_INSTITUTE",
             status="CONFIRMED",
         )
-        EducationalBookingFactory(
+        PendingEducationalBookingFactory(
             educationalBooking__educationalRedactor=another_redactor,
             educationalBooking__educationalYear=educationalYear,
             educationalBooking__educationalInstitution=educationalInstitution,
-            educationalBooking__status="USED_BY_INSTITUTE",
-            status="CONFIRMED",
         )
-        EducationalBookingFactory(
+        booking = PendingEducationalBookingFactory(
             educationalBooking__educationalRedactorId=redactor,
             educationalBooking__educationalYear=educationalYear,
             educationalBooking__educationalInstitution=educationalInstitution,
-            status="PENDING",
         )
 
         client = TestClient(app.test_client()).with_eac_token()
         response = client.get(
-            f"/adage/v1/years/{booking.educationalBooking.educationalYear.adageId}/educational_institution/{booking.educationalBooking.educationalInstitution.institutionId}/prebookings?status=USED_BY_INSTITUTE&redactorEmail={redactor.email}"
+            f"/adage/v1/years/{booking.educationalBooking.educationalYear.adageId}/educational_institution/{booking.educationalBooking.educationalInstitution.institutionId}/prebookings?status=PENDING&redactorEmail={redactor.email}"
         )
 
         assert response.status_code == 200
@@ -200,7 +197,7 @@ class Returns200Test:
                     },
                     "UAICode": educational_booking.educationalInstitution.institutionId,
                     "yearId": int(educational_booking.educationalYearId),
-                    "status": "USED_BY_INSTITUTE",
+                    "status": "PENDING",
                     "subcategoryLabel": "Séance de cinéma",
                     "venueTimezone": venue.timezone,
                     "totalAmount": booking.total_amount,

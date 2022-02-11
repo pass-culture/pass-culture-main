@@ -58,12 +58,11 @@ class Returns204Test:
             booking = Booking.query.one()
             assert booking.status is BookingStatus.USED
 
-        def test_when_user_is_logged_in_and_offer_is_educational_validated_by_institution(self, client):
+        def test_when_user_is_logged_in_and_offer_is_educational(self, client):
             # Given
             booking = bookings_factories.EducationalBookingFactory(
                 token="ABCDEF",
                 dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=3),
-                educationalBooking__status=EducationalBookingStatus.USED_BY_INSTITUTE,
             )
             pro_user = users_factories.ProFactory(email="pro@example.com")
             offers_factories.UserOffererFactory(user=pro_user, offerer=booking.offerer)
@@ -122,29 +121,6 @@ class Returns403Test:
             assert response.json["user"] == [
                 "Vous n’avez pas les droits suffisants pour valider cette contremarque car cette réservation n'a pas été faite sur une de vos offres, ou que votre rattachement à la structure est encore en cours de validation"
             ]
-            booking = Booking.query.get(booking.id)
-            assert booking.status is not BookingStatus.USED
-
-        def test_when_user_is_logged_in_and_offer_is_educational_but_not_validated_by_institution_yet(self, client):
-            # Given
-            booking = bookings_factories.EducationalBookingFactory(
-                token="ABCDEF",
-                dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=3),
-                educationalBooking__status=None,
-            )
-            pro_user = users_factories.ProFactory(email="pro@example.com")
-            offers_factories.UserOffererFactory(user=pro_user, offerer=booking.offerer)
-
-            # When
-            url = f"/v2/bookings/use/token/{booking.token}"
-            response = client.with_session_auth("pro@example.com").patch(url)
-
-            # Then
-            assert response.status_code == 403
-            assert (
-                response.json["educationalBooking"]
-                == "Cette réservation pour une offre éducationnelle n'est pas encore validée par le chef d'établissement"
-            )
             booking = Booking.query.get(booking.id)
             assert booking.status is not BookingStatus.USED
 

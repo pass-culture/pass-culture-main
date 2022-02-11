@@ -5,7 +5,6 @@ import pytest
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingStatus
-from pcapi.core.educational.models import EducationalBookingStatus
 import pcapi.core.payments.factories as payments_factories
 import pcapi.core.users.factories as users_factories
 
@@ -87,7 +86,6 @@ class BookingViewTest:
         booking = Booking.query.get(booking.id)
         assert booking.status is not BookingStatus.CANCELLED
         assert booking.status is BookingStatus.USED
-        assert booking.educationalBooking.status is EducationalBookingStatus.USED_BY_INSTITUTE
 
     def test_cancel_booking(self, app, client):
         admin = users_factories.AdminFactory()
