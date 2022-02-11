@@ -1,11 +1,13 @@
 import datetime
 import logging
+import typing
 
 from pcapi.connectors.beneficiaries.educonnect import models as educonnect_models
 from pcapi.core.fraud import api as fraud_api
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import messages as subscription_messages
+from pcapi.core.subscription import models as subscription_models
 from pcapi.core.users import api as users_api
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import models as users_models
@@ -92,3 +94,23 @@ def _add_error_subscription_messages(
             "Tu ne fais pas partie de la phase de test. Encore un peu de patience, on se donne rendez-vous en janvier."
         )
         subscription_messages.add_error_message(user, message)
+
+
+def get_educonnect_subscription_item_status(
+    user: users_models.User,
+    eligibility: typing.Optional[users_models.EligibilityType],
+    educonnect_fraud_checks: list[fraud_models.BeneficiaryFraudCheck],
+) -> subscription_models.SubscriptionItemStatus:
+    """
+    An educonnect failure is always retryable, as long as the user is eligible for UNDERAGE grant
+    """
+    if any(check.status == fraud_models.FraudCheckStatus.OK for check in educonnect_fraud_checks):
+        return subscription_models.SubscriptionItemStatus.OK
+
+    if (
+        subscription_api.is_eligibility_activable(user, eligibility)
+        and user.eligibility == users_models.EligibilityType.UNDERAGE
+    ):
+        return subscription_models.SubscriptionItemStatus.TODO
+
+    return subscription_models.SubscriptionItemStatus.VOID

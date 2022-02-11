@@ -189,7 +189,7 @@ def get_ubble_subscription_item_status(  # pylint: disable=too-many-return-state
     if len(filled_ubble_checks) >= ubble_constants.MAX_UBBLE_RETRIES:
         return subscription_models.SubscriptionItemStatus.KO
 
-    if subscription_api._is_eligibility_activable(user, eligibility):
+    if subscription_api.is_eligibility_activable(user, eligibility):
         return subscription_models.SubscriptionItemStatus.TODO
 
     return subscription_models.SubscriptionItemStatus.VOID
