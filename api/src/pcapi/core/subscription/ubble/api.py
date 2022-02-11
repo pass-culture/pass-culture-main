@@ -7,10 +7,12 @@ from pcapi import settings
 from pcapi.connectors.beneficiaries import ubble
 import pcapi.core.fraud.models as fraud_models
 from pcapi.core.fraud.ubble import api as ubble_fraud_api
+from pcapi.core.fraud.ubble import constants as ubble_constants
 import pcapi.core.fraud.ubble.models as ubble_fraud_models
 from pcapi.core.mails.transactional.users import subscription_document_error
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import messages as subscription_messages
+from pcapi.core.subscription import models as subscription_models
 from pcapi.core.users import models as users_models
 import pcapi.repository as pcapi_repository
 
@@ -142,3 +144,58 @@ def handle_validation_errors(
 
     else:
         subscription_messages.on_ubble_journey_cannot_continue(user)
+
+
+def get_ubble_subscription_item_status(  # pylint: disable=too-many-return-statements
+    user: users_models.User,
+    eligibility: typing.Optional[users_models.EligibilityType],
+    ubble_fraud_checks: list[fraud_models.BeneficiaryFraudCheck],
+) -> subscription_models.SubscriptionItemStatus:
+    """
+    Look for Ubble identifications already filled (the user finished Ubble funnel and we were notified by Ubble).
+    The Ubble status is considered, by order of priority:
+     - OK if any status is OK
+     - KO if any status is KO and its reason is not among the restartable reasons
+     - SUSPICIOUS if any status is SUSPICIOUS and its reason is not among the restartable reasons
+     - PENDING if any status is PENDING
+     - KO if the user has performed more than MAX_UBBLE_RETRIES
+     - TODO if the user is eligible for a beneficiary upgrade
+     - VOID otherwise
+    """
+    filled_ubble_checks = [
+        check
+        for check in ubble_fraud_checks
+        if check.status not in (fraud_models.FraudCheckStatus.CANCELED, fraud_models.FraudCheckStatus.STARTED)
+    ]
+
+    if any(check.status == fraud_models.FraudCheckStatus.OK for check in filled_ubble_checks):
+        return subscription_models.SubscriptionItemStatus.OK
+
+    if any(
+        check.status == fraud_models.FraudCheckStatus.KO and not _is_retryable_check(check)
+        for check in filled_ubble_checks
+    ):
+        return subscription_models.SubscriptionItemStatus.KO
+
+    if any(
+        check.status == fraud_models.FraudCheckStatus.SUSPICIOUS and not _is_retryable_check(check)
+        for check in filled_ubble_checks
+    ):
+        return subscription_models.SubscriptionItemStatus.SUSPICIOUS
+
+    if any(check.status == fraud_models.FraudCheckStatus.PENDING for check in filled_ubble_checks):
+        return subscription_models.SubscriptionItemStatus.PENDING
+
+    if len(filled_ubble_checks) >= ubble_constants.MAX_UBBLE_RETRIES:
+        return subscription_models.SubscriptionItemStatus.KO
+
+    if subscription_api._is_eligibility_activable(user, eligibility):
+        return subscription_models.SubscriptionItemStatus.TODO
+
+    return subscription_models.SubscriptionItemStatus.VOID
+
+
+def _is_retryable_check(ubble_check: fraud_models.BeneficiaryFraudCheck) -> bool:
+    return ubble_check.reasonCodes and all(
+        code in ubble_constants.RESTARTABLE_FRAUD_CHECK_REASON_CODES for code in ubble_check.reasonCodes
+    )
