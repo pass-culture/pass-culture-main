@@ -4,8 +4,9 @@
   justify-content: center;
   align-items: center;
   gap: 16px;
-  width: 260px;
-  height: 176px;
+  $height: rem(176px);
+  width: ($height * 3) / 2;
+  height: $height;
   border: 1px solid $grey-medium;
   background-color: $grey-light;
   color: $black;
