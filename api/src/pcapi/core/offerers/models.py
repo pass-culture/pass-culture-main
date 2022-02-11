@@ -215,6 +215,10 @@ class Venue(PcObject, Model, HasThumbMixin, HasAddressMixin, ProvidableMixin, Ne
 
     thumb_path_component = "venues"
 
+    criteria = sa.orm.relationship(
+        "Criterion", backref=db.backref("venue_criteria", lazy="dynamic"), secondary="venue_criterion"
+    )
+
     @property
     def is_eligible_for_search(self) -> bool:
         return self.isPermanent and self.managingOfferer.isActive and self.venueTypeCode != VenueTypeCode.ADMINISTRATIVE
@@ -357,6 +361,16 @@ class VenueContact(PcObject, Model):
         if field not in type(self).__table__.columns:
             raise ValueError(f"Unknown field {field} for model {type(self)}")
         return getattr(self, field) != value
+
+
+class VenueCriterion(PcObject, Model):
+    venueId = Column(BigInteger, ForeignKey("venue.id"), index=True, nullable=False)
+
+    venue = relationship("Venue", foreign_keys=[venueId])
+
+    criterionId = Column(BigInteger, ForeignKey("criterion.id"), nullable=False, index=True)
+
+    criterion = relationship("Criterion", foreign_keys=[criterionId])
 
 
 @listens_for(Venue, "before_insert")
