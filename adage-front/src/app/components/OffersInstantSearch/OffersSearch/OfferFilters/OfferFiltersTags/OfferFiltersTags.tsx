@@ -36,7 +36,7 @@ export const OfferFiltersTags = ({
     departmentToBeRemoved: Option
   ): void => {
     dispatchCurrentFilters({
-      type: 'REMOVE_DEPARTMENTS_FILTER',
+      type: 'REMOVE_ONE_DEPARTMENT_FILTER',
       value: { departments: [departmentToBeRemoved] },
     })
   }
@@ -45,14 +45,14 @@ export const OfferFiltersTags = ({
     categoryToBeRemoved: Option<string[]>
   ): void => {
     dispatchCurrentFilters({
-      type: 'REMOVE_CATEGORIES_FILTER',
+      type: 'REMOVE_ONE_CATEGORY_FILTER',
       value: { categories: [categoryToBeRemoved] },
     })
   }
 
   const handleRemoveStudentsFilter = (studentToBeRemoved: Option): void => {
     dispatchCurrentFilters({
-      type: 'REMOVE_CATEGORIES_FILTER',
+      type: 'REMOVE_ONE_CATEGORY_FILTER',
       value: { students: [studentToBeRemoved] },
     })
   }
