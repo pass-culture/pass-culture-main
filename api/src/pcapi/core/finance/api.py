@@ -788,7 +788,7 @@ def find_reimbursement_rule(rule_reference: [str, int]) -> payments_models.Reimb
     return payments_models.CustomReimbursementRule.query.get(rule_reference)
 
 
-def _make_invoice_line(invoice: models.Invoice, group: conf.RuleGroups, pricings: list):
+def _make_invoice_line(group: conf.RuleGroups, pricings: list, line_rate: decimal.Decimal = None):
     reimbursed_amount = 0
     flat_lines = list(itertools.chain.from_iterable(pricing.lines for pricing in pricings))
     # positive
@@ -804,8 +804,10 @@ def _make_invoice_line(invoice: models.Invoice, group: conf.RuleGroups, pricings
     )
 
     reimbursed_amount += offerer_revenue + contribution_amount + passculture_commission
-
-    rate = decimal.Decimal(reimbursed_amount / offerer_revenue).quantize(decimal.Decimal("0.0001"))
+    # A rate is calculated for this line if we are using a CustomRule with an amount instead of a rate
+    rate = line_rate or (decimal.Decimal(reimbursed_amount) / decimal.Decimal(offerer_revenue)).quantize(
+        decimal.Decimal("0.0001")
+    )
     invoice_line = models.InvoiceLine(
         label="Montant remboursé",
         group=group.value,
@@ -882,13 +884,13 @@ def _generate_invoice(business_unit_id: int, cashflow_ids: list[int]):
         for pricing, rate in pricings_and_rates:
             rates[rate].append(pricing)
         for rate, pricings in rates.items():
-            invoice_line, reimbursed_amount = _make_invoice_line(invoice, rule_group, pricings)
-            assert invoice_line.rate == rate
+            invoice_line, reimbursed_amount = _make_invoice_line(rule_group, pricings, rate)
             invoice_lines.append(invoice_line)
             total_reimbursed_amount += reimbursed_amount
 
     for custom_rule, pricings in pricings_by_custom_rule.items():
-        invoice_line, reimbursed_amount = _make_invoice_line(invoice, custom_rule.group, pricings)
+        # An InvoiceLine rate will be calculated for a CustomRule with a set reimbursed amount
+        invoice_line, reimbursed_amount = _make_invoice_line(custom_rule.group, pricings, custom_rule.rate)
         invoice_lines.append(invoice_line)
         total_reimbursed_amount += reimbursed_amount
 
