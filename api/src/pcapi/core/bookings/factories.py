@@ -5,7 +5,6 @@ import factory
 from pcapi.core.educational.factories import EducationalBookingFactory as EducationalBookingSubFactory
 from pcapi.core.educational.factories import PendingEducationalBookingFactory as PendingEducationalBookingSubFactory
 from pcapi.core.educational.factories import RefusedEducationalBookingFactory as RefusedEducationalBookingSubFactory
-from pcapi.core.educational.factories import UsedEducationalBookingFactory as UsedEducationalBookingSubFactory
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.testing import BaseFactory
 import pcapi.core.users.factories as users_factories
@@ -76,7 +75,7 @@ class EducationalBookingFactory(BookingFactory):
 
 
 class UsedEducationalBookingFactory(BookingFactory):
-    educationalBooking = factory.SubFactory(UsedEducationalBookingSubFactory)
+    educationalBooking = factory.SubFactory(EducationalBookingSubFactory)
     stock = factory.SubFactory(offers_factories.EducationalEventStockFactory)
     status = models.BookingStatus.USED
     dateUsed = factory.LazyFunction(datetime.datetime.utcnow)

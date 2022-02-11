@@ -72,7 +72,7 @@ class Returns200Test:
             "venueName": "Le Petit Rintintin",
         }
 
-    def test_when_user_has_rights_and_booking_is_educational_validated_by_principal(self, client):
+    def test_when_user_has_rights_and_booking_is_educational(self, client):
         # Given
         redactor = educational_factories.EducationalRedactorFactory(
             civility="M.",
@@ -83,7 +83,6 @@ class Returns200Test:
         validated_eac_booking = bookings_factories.EducationalBookingFactory(
             dateCreated=datetime.utcnow() - timedelta(days=5),
             educationalBooking__educationalRedactor=redactor,
-            educationalBooking__status=EducationalBookingStatus.USED_BY_INSTITUTE,
         )
         pro_user = users_factories.ProFactory()
         offers_factories.UserOffererFactory(user=pro_user, offerer=validated_eac_booking.offerer)
@@ -214,33 +213,6 @@ class Returns403Test:
         # Then
         assert response.status_code == 403
         assert response.json["payment"] == ["Cette réservation a été remboursée"]
-
-    def test_when_booking_is_educational_and_not_validated_by_principal_yet(self, client):
-        # Given
-        redactor = educational_factories.EducationalRedactorFactory(
-            civility="M.",
-            firstName="Jean",
-            lastName="Doudou",
-            email="jean.doux@example.com",
-        )
-        not_validated_eac_booking = bookings_factories.EducationalBookingFactory(
-            dateCreated=datetime.utcnow() - timedelta(days=5),
-            educationalBooking__educationalRedactor=redactor,
-            educationalBooking__status=None,
-        )
-        pro_user = users_factories.ProFactory()
-        offers_factories.UserOffererFactory(user=pro_user, offerer=not_validated_eac_booking.offerer)
-        url = f"/v2/bookings/token/{not_validated_eac_booking.token}"
-
-        # When
-        response = client.with_basic_auth(pro_user.email).get(url)
-
-        # Then
-        assert response.status_code == 403
-        assert (
-            response.json["educationalBooking"]
-            == "Cette réservation pour une offre éducationnelle n'est pas encore validée par le chef d'établissement"
-        )
 
     def test_when_booking_is_educational_and_refused_by_principal(self, client):
         # Given

@@ -861,11 +861,10 @@ class AutoMarkAsUsedAfterEventTest:
         booking = Booking.query.first()
         assert booking.status is BookingStatus.CANCELLED
 
-    def test_update_educational_booking_if_not_used_and_validated_by_principal(self):
+    def test_update_educational_booking_if_not_used(self):
         event_date = datetime.now() - timedelta(days=3)
         booking_factories.EducationalBookingFactory(
             stock__beginningDatetime=event_date,
-            educationalBooking__status=EducationalBookingStatus.USED_BY_INSTITUTE,
         )
 
         api.auto_mark_as_used_after_event()

@@ -92,28 +92,6 @@ def refuse_pre_booking(educational_booking_id: int) -> prebooking_serialization.
     return prebooking_serialization.serialize_educational_booking(educational_booking)
 
 
-@blueprint.adage_v1.route("/prebookings/<int:educational_booking_id>/mark_as_used", methods=["POST"])
-@spectree_serialize(
-    api=blueprint.api,
-    response_model=prebooking_serialization.EducationalBookingResponse,
-    on_error_statuses=[404, 422],
-    tags=("change bookings",),
-)
-@adage_api_key_required
-def mark_booking_as_used(educational_booking_id: int) -> prebooking_serialization.EducationalBookingResponse:
-    """Mark a booking used by the educational institute
-
-    Can only work if booking is in CONFIRMED status"""
-    try:
-        educational_booking = api.mark_educational_booking_as_used_by_institute(educational_booking_id)
-    except exceptions.EducationalBookingNotFound:
-        raise ApiErrors({"code": constants.EDUCATIONAL_BOOKING_NOT_FOUND}, status_code=404)
-    except exceptions.EducationalBookingNotConfirmedYet:
-        raise ApiErrors({"code": "EDUCATIONAL_BOOKING_NOT_CONFIRMED_YET"}, status_code=422)
-
-    return prebooking_serialization.serialize_educational_booking(educational_booking)
-
-
 @blueprint.adage_v1.route("/years/<string:educational_year_id>/prebookings", methods=["GET"])
 @spectree_serialize(
     api=blueprint.api,

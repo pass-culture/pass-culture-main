@@ -24,7 +24,6 @@ from pcapi.core.bookings import exceptions
 from pcapi.core.bookings.constants import BOOKINGS_AUTO_EXPIRY_DELAY
 from pcapi.core.bookings.constants import BOOKS_BOOKINGS_AUTO_EXPIRY_DELAY
 from pcapi.core.categories import subcategories
-from pcapi.core.educational.models import EducationalBookingStatus
 from pcapi.models import Model
 from pcapi.models.pc_object import PcObject
 from pcapi.utils.human_ids import humanize
@@ -182,8 +181,6 @@ class Booking(PcObject, Model):
     def uncancel_booking_set_used(self) -> None:
         if not (self.status is BookingStatus.CANCELLED):
             raise exceptions.BookingIsNotCancelledCannotBeUncancelled()
-        if self.educationalBookingId is not None:
-            self.educationalBooking.status = EducationalBookingStatus.USED_BY_INSTITUTE
         self.cancellationDate = None
         self.cancellationReason = None
         self.status = BookingStatus.USED
