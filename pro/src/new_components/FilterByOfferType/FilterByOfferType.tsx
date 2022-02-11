@@ -27,8 +27,8 @@ const FilterByOfferType = ({
   }
 
   const offerTypeOptions = [
-    { id: INDIVIDUAL_OR_DUO, displayName: 'individuelles' },
-    { id: EDUCATIONAL, displayName: 'collectives' },
+    { id: INDIVIDUAL_OR_DUO, displayName: 'Individuelles' },
+    { id: EDUCATIONAL, displayName: 'Collectives' },
   ]
 
   return (
