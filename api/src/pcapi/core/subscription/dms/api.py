@@ -83,12 +83,12 @@ def import_dms_users(procedure_id: int) -> None:
         try:
             user_email = application_details["usager"]["email"]
         except KeyError:
-            process_user_parsing_error(application_id, procedure_id)
+            _process_user_parsing_error(application_id, procedure_id)
             continue
 
         user = find_user_by_email(user_email)
         if user is None:
-            process_user_not_found_error(user_email, application_id, procedure_id)
+            _process_user_not_found_error(user_email, application_id, procedure_id)
             continue
 
         try:
@@ -96,7 +96,7 @@ def import_dms_users(procedure_id: int) -> None:
                 application_details, procedure_id
             )
         except subscription_exceptions.DMSParsingError as exc:
-            process_parsing_error(exc, user, procedure_id, application_id)
+            _process_parsing_error(exc, user, procedure_id, application_id)
             continue
 
         except Exception as exc:  # pylint: disable=broad-except
@@ -153,7 +153,7 @@ def process_parsing_exception(
     )
 
 
-def process_parsing_error(
+def _process_parsing_error(
     exception: subscription_exceptions.DMSParsingError, user: users_models.User, procedure_id: int, application_id: int
 ) -> None:
     logger.info(
@@ -177,7 +177,7 @@ def process_parsing_error(
     )
 
 
-def process_user_parsing_error(application_id: int, procedure_id: int) -> None:
+def _process_user_parsing_error(application_id: int, procedure_id: int) -> None:
     logger.info(
         "[BATCH][REMOTE IMPORT BENEFICIARIES] Application %s in procedure %s has no user and was ignored",
         application_id,
@@ -186,7 +186,7 @@ def process_user_parsing_error(application_id: int, procedure_id: int) -> None:
     fraud_repository.create_orphan_dms_application(application_id=application_id, procedure_id=procedure_id)
 
 
-def process_user_not_found_error(email: str, application_id: int, procedure_id: int) -> None:
+def _process_user_not_found_error(email: str, application_id: int, procedure_id: int) -> None:
     logger.info(
         "[BATCH][REMOTE IMPORT BENEFICIARIES] Application %s in procedure %s has no user and was ignored",
         application_id,
