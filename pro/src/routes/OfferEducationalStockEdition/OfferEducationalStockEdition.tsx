@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react'
 import { useHistory, useParams } from 'react-router-dom'
 
+import useActiveFeature from 'components/hooks/useActiveFeature'
 import useNotification from 'components/hooks/useNotification'
 import Spinner from 'components/layout/Spinner'
 import {
   cancelActiveBookingsAdapter,
   DEFAULT_EAC_STOCK_FORM_VALUES,
+  EducationalOfferType,
   getStockOfferAdapter,
   GetStockOfferSuccessPayload,
   Mode,
@@ -23,6 +25,7 @@ import { extractInitialStockValues } from './utils/extractInitialStockValues'
 
 const OfferEducationalStockEdition = (): JSX.Element => {
   const history = useHistory()
+  const isShowcaseFeatureEnabled = useActiveFeature('ENABLE_EAC_SHOWCASE_OFFER')
 
   const [initialValues, setInitialValues] =
     useState<OfferEducationalStockFormValues>(DEFAULT_EAC_STOCK_FORM_VALUES)
@@ -106,10 +109,17 @@ const OfferEducationalStockEdition = (): JSX.Element => {
         }
         setOffer(offerResponse.payload)
         setStock(stockResponse.payload.stock)
-        const initialValuesFromStock = extractInitialStockValues(
-          stockResponse.payload.stock,
-          offerResponse.payload
-        )
+        const initialValuesFromStock = offerResponse.payload.isShowcase
+          ? {
+              ...DEFAULT_EAC_STOCK_FORM_VALUES,
+              priceDetail:
+                stockResponse.payload.stock?.educationalPriceDetail ?? '',
+              educationalOfferType: EducationalOfferType.SHOWCASE,
+            }
+          : extractInitialStockValues(
+              stockResponse.payload.stock,
+              offerResponse.payload
+            )
         setInitialValues(initialValuesFromStock)
         setIsReady(true)
       }
@@ -128,6 +138,7 @@ const OfferEducationalStockEdition = (): JSX.Element => {
         <OfferEducationalStockScreen
           cancelActiveBookings={cancelActiveBookings}
           initialValues={initialValues}
+          isShowcaseFeatureEnabled={isShowcaseFeatureEnabled}
           mode={
             stock?.isEducationalStockEditable ? Mode.EDITION : Mode.READ_ONLY
           }

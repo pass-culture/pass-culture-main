@@ -11,5 +11,6 @@ export const offerFactory = (
   venueDepartmentCode: '75',
   managingOffererId: 'OFFERER_ID',
   isEducational: true,
+  isShowcase: false,
   ...offerExtend,
 })
