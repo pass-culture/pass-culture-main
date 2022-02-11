@@ -14,6 +14,7 @@ import { IMAGE_TYPES, MAX_IMAGE_SIZE, MIN_IMAGE_WIDTH } from './constants'
 type Props = {
   venueId: string
   onDismiss: () => void
+  reloadImage: (url: string) => void
   children?: never
 }
 
@@ -26,6 +27,7 @@ const constraints = [
 export const VenueImageUploaderModal: FunctionComponent<Props> = ({
   venueId,
   onDismiss,
+  reloadImage,
 }) => {
   const [image, setImage] = useState<File>()
   const [credit, setCredit] = useState('')
@@ -56,16 +58,17 @@ export const VenueImageUploaderModal: FunctionComponent<Props> = ({
     if (typeof croppingRect === 'undefined') return
 
     setIsUploading(true)
-    await postImageToVenue({
+    const { bannerUrl } = await postImageToVenue({
       venueId,
       banner: image,
       xCropPercent: croppingRect.x,
       yCropPercent: croppingRect.y,
       heightCropPercent: croppingRect.height,
     })
+    reloadImage(bannerUrl)
     setIsUploading(false)
     onDismiss()
-  }, [venueId, image, croppingRect, onDismiss])
+  }, [venueId, image, croppingRect, reloadImage, onDismiss])
 
   return (
     <DialogBox

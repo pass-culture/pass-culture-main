@@ -1,4 +1,4 @@
-import React, { FunctionComponent } from 'react'
+import React, { useCallback, useState, FunctionComponent } from 'react'
 
 import { useModal } from 'hooks/useModal'
 
@@ -20,6 +20,13 @@ export const ImageVenueUploaderSection: FunctionComponent<Props> = ({
 }) => {
   const { visible, showModal, hideModal } = useModal()
 
+  const [imageUniqueURL, setImageUniqueURL] = useState(venueImage)
+  const reloadImage = useCallback((url: string) => {
+    // URL is always the same for a venue
+    // we have to reload the same URL when uploading a new one
+    setImageUniqueURL(`${url}?${Math.random()}`)
+  }, [])
+
   return (
     <section
       className={
@@ -36,13 +43,17 @@ export const ImageVenueUploaderSection: FunctionComponent<Props> = ({
         <br />
         Elle permettra au public de mieux identifier votre lieu.
       </p>
-      {venueImage ? (
-        <VenueImage url={venueImage} />
+      {imageUniqueURL ? (
+        <VenueImage url={imageUniqueURL} />
       ) : (
         <ImageUploadButton onClick={showModal} />
       )}
       {!!visible && (
-        <VenueImageUploaderModal onDismiss={hideModal} venueId={venueId} />
+        <VenueImageUploaderModal
+          onDismiss={hideModal}
+          reloadImage={reloadImage}
+          venueId={venueId}
+        />
       )}
     </section>
   )
