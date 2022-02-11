@@ -20,27 +20,30 @@ export const filtersReducer = (
         categories: action.value.categories ?? [],
         students: action.value.students ?? [],
       }
-    case 'REMOVE_DEPARTMENTS_FILTER': {
-      const departmentValuesToBeRemoved =
-        action.value.departments?.map(department => department.value) || []
+    case 'REMOVE_ONE_DEPARTMENT_FILTER': {
+      const departmentValueToBeRemoved = action.value.departments
+        ? action.value.departments[0].value
+        : null
       const newDepartments = state.departments?.filter(
-        department => !departmentValuesToBeRemoved.includes(department.value)
+        department => department.value !== departmentValueToBeRemoved
       )
       return { ...state, departments: newDepartments }
     }
-    case 'REMOVE_CATEGORIES_FILTER': {
-      const categoryValuesToBeRemoved =
-        action.value.categories?.map(category => category.value) || []
+    case 'REMOVE_ONE_CATEGORY_FILTER': {
+      const categoryValueToBeRemoved = action.value.categories
+        ? action.value.categories[0].value
+        : null
       const newCategories = state.categories?.filter(
-        category => !categoryValuesToBeRemoved.includes(category.value)
+        category => category.value !== categoryValueToBeRemoved
       )
       return { ...state, categories: newCategories }
     }
-    case 'REMOVE_STUDENTS_FILTER': {
-      const studentValuesToBeRemoved =
-        action.value.students?.map(student => student.value) || []
+    case 'REMOVE_ONE_STUDENT_FILTER': {
+      const studentValueToBeRemoved = action.value.students
+        ? action.value.students[0].value
+        : null
       const newStudents = state.students?.filter(
-        student => !studentValuesToBeRemoved.includes(student.value)
+        student => student.value !== studentValueToBeRemoved
       )
       return { ...state, students: newStudents }
     }
