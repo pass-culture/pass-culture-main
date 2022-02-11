@@ -6,6 +6,7 @@ import { Constraint } from 'new_components/ConstraintCheck/imageConstraints'
 import { useCheckAndSetImage } from 'new_components/ConstraintCheck/useCheckAndSetImage'
 import { ImportFromComputerInput } from 'new_components/ImportFromComputerInput/ImportFromComputerInput'
 import { PreferredOrientation } from 'new_components/PreferredOrientation/PreferredOrientation'
+import { Divider } from 'ui-kit'
 
 import style from './ImportFromComputer.module.scss'
 
@@ -47,7 +48,10 @@ export const ImportFromComputer: FunctionComponent<ImportFromComputerProps> = ({
           constraints={constraints}
           failingConstraints={errors}
         />
-        <hr className={style['import-from-computer-hr']} />
+        <Divider
+          className={style['import-from-computer-horizontal-rule']}
+          size="large"
+        />
         <Advices hidden={hidden} setHidden={setHidden} />
       </form>
     </section>
