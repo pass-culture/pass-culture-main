@@ -764,7 +764,7 @@ def invoice_test_data():
         offers_factories.StockFactory(offer=thing_offer1, price=30),
         offers_factories.StockFactory(offer=book_offer1, price=20),
         offers_factories.StockFactory(offer=thing_offer2, price=19_950),
-        offers_factories.StockFactory(offer=thing_offer2, price=80),
+        offers_factories.StockFactory(offer=thing_offer2, price=81.3),
         offers_factories.StockFactory(offer=book_offer2, price=40),
         offers_factories.StockFactory(offer=digital_offer1, price=27),
         offers_factories.StockFactory(offer=digital_offer2, price=31),
@@ -958,7 +958,7 @@ class GenerateInvoiceTest:
         assert len(invoice.cashflows) == 2
         assert invoice.reference == "F220000001"
         assert invoice.businessUnit == business_unit
-        assert invoice.amount == -20_154.8 * 100
+        assert invoice.amount == -20_156_04
         # général 100%, général 95%, livre 100%, livre 95%, pas remboursé, custom 1, custom 2
         assert len(invoice.lines) == 7
 
@@ -974,8 +974,8 @@ class GenerateInvoiceTest:
 
         line1 = invoice_lines[1]
         assert line1.group == {"label": "Barème général", "position": 1}
-        assert line1.contributionAmount == 4 * 100
-        assert line1.reimbursedAmount == -76 * 100
+        assert line1.contributionAmount == 406
+        assert line1.reimbursedAmount == -7724
         assert line1.rate == Decimal("0.9500")
         assert line1.label == "Montant remboursé"
 
@@ -1009,8 +1009,8 @@ class GenerateInvoiceTest:
 
         line6 = invoice_lines[6]
         assert line6.group == {"label": "Barème dérogatoire", "position": 4}
-        assert line6.contributionAmount == 1.2 * 100
-        assert line6.reimbursedAmount == -18.8 * 100
+        assert line6.contributionAmount == 120
+        assert line6.reimbursedAmount == -1880
         assert line6.rate == Decimal("0.9400")
         assert line6.label == "Montant remboursé"
 
@@ -1053,9 +1053,9 @@ class PrepareInvoiceContextTest:
         invoice = api._generate_invoice(business_unit_id=business_unit.id, cashflow_ids=cashflow_ids)
         context = api._prepare_invoice_context(invoice)
         general, books, not_reimbursed, custom = tuple(g for g in context["groups"])
-        assert general.used_bookings_subtotal == 2006000
-        assert general.contribution_subtotal == 400
-        assert general.reimbursed_amount_subtotal == -2005600
+        assert general.used_bookings_subtotal == 2006130
+        assert general.contribution_subtotal == 406
+        assert general.reimbursed_amount_subtotal == -2005724
 
         assert books.used_bookings_subtotal == 6000
         assert books.contribution_subtotal == 200
@@ -1070,9 +1070,9 @@ class PrepareInvoiceContextTest:
         assert custom.reimbursed_amount_subtotal == -4080
 
         assert context["invoice"] == invoice
-        assert context["total_used_bookings_amount"] == 2022100
-        assert context["total_contribution_amount"] == 6620
-        assert context["total_reimbursed_amount"] == -2015480
+        assert context["total_used_bookings_amount"] == 2022230
+        assert context["total_contribution_amount"] == 6626
+        assert context["total_reimbursed_amount"] == -2015604
 
 
 class GenerateInvoiceHtmlTest:
