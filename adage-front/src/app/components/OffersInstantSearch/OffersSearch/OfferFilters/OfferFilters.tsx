@@ -14,7 +14,7 @@ import { studentsOptions } from './studentsOptions'
 
 interface OfferFiltersProps {
   className?: string
-  handleLaunchSearch: (filters: Filters) => void
+  handleLaunchSearchButton: (filters: Filters) => void
   venueFilter: VenueFilterType | null
   removeVenueFilter: () => void
   isLoading: boolean
@@ -26,7 +26,7 @@ export const OfferFilters = ({
   className,
   dispatchCurrentFilters,
   currentFilters,
-  handleLaunchSearch,
+  handleLaunchSearchButton,
   venueFilter,
   removeVenueFilter,
   isLoading,
@@ -115,7 +115,7 @@ export const OfferFilters = ({
           disabled={isLoading}
           label="Lancer la recherche"
           onClick={() => {
-            handleLaunchSearch(currentFilters)
+            handleLaunchSearchButton(currentFilters)
           }}
         />
       </div>

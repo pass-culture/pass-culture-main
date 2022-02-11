@@ -49,17 +49,19 @@ export const OffersSearchComponent = ({
     INITIAL_FILTERS
   )
 
-  const handleLaunchSearch = (filters: Filters): void => {
+  const handleLaunchSearchButton = (filters: Filters): void => {
     setIsLoading(true)
     setFacetFilters(populateFacetFilters({ ...filters, venueFilter }))
     refine(query)
   }
 
   const handleResetFiltersAndLaunchSearch = () => {
+    setIsLoading(true)
     setQuery(INITIAL_QUERY)
     removeVenueFilter()
     dispatchCurrentFilters({ type: 'RESET_CURRENT_FILTERS' })
-    handleLaunchSearch({ departments: [], categories: [], students: [] })
+    setFacetFilters([...INITIAL_FACET_FILTERS])
+    refine(query)
   }
 
   useEffect(() => {
@@ -75,7 +77,7 @@ export const OffersSearchComponent = ({
         className="search-filters"
         currentFilters={currentFilters}
         dispatchCurrentFilters={dispatchCurrentFilters}
-        handleLaunchSearch={handleLaunchSearch}
+        handleLaunchSearchButton={handleLaunchSearchButton}
         isLoading={isLoading}
         removeVenueFilter={removeVenueFilter}
         venueFilter={venueFilter}
