@@ -7,9 +7,8 @@
   &-header {
     @include title3;
   }
-  &-hr {
-    background: $grey-medium;
-    height: rem(1px);
+
+  &-horizontal-rule {
     width: 100%;
   }
 }
