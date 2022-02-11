@@ -5,12 +5,15 @@ from flask import redirect
 from flask import request
 from flask import url_for
 from flask_admin.actions import action
+from flask_admin.babel import lazy_gettext
 from flask_admin.base import expose
+from flask_admin.contrib.sqla import filters as fa_filters
+from flask_admin.contrib.sqla import tools
 from flask_admin.helpers import get_redirect_target
 from markupsafe import Markup
 from markupsafe import escape
+from sqlalchemy.orm import Query
 from sqlalchemy.orm import joinedload
-from sqlalchemy.orm import query
 from wtforms import Form
 from wtforms.fields.core import BooleanField
 from wtforms.fields.simple import HiddenField
@@ -18,11 +21,13 @@ from wtforms.fields.simple import HiddenField
 from pcapi.admin.base_configuration import BaseAdminView
 from pcapi.core import search
 from pcapi.core.bookings.exceptions import CannotDeleteVenueWithBookingsException
+from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers.api import VENUE_ALGOLIA_INDEXED_FIELDS
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers.api import update_stock_id_at_providers
 from pcapi.core.users.external import update_external_pro
 from pcapi.models import db
+from pcapi.models.criterion import Criterion
 from pcapi.scripts.offerer.delete_cascade_venue_by_id import delete_cascade_venue_by_id
 
 
@@ -45,6 +50,22 @@ class VenueChangeForm(Form):
     )
 
 
+class VenueCriteriaFilter(fa_filters.BaseSQLAFilter):
+    """
+    Filter venues based on tag (criterion) name.
+    """
+
+    def apply(self, query: Query, value: str, alias=None) -> Query:
+        parsed_value = tools.parse_like_term(value)
+        return query.join(offerers_models.VenueCriterion).join(Criterion).filter(Criterion.name.ilike(parsed_value))
+
+    def operation(self):
+        return lazy_gettext("contains")
+
+    def clean(self, value: str) -> str:
+        return value.strip()
+
+
 class VenueView(BaseAdminView):
     list_template = "admin/bulk_edit_components/custom_list_with_modal.html"
     can_edit = True
@@ -56,6 +77,7 @@ class VenueView(BaseAdminView):
         "city",
         "postalCode",
         "address",
+        "criteria",
         "offres",
         "publicName",
         "latitude",
@@ -71,6 +93,7 @@ class VenueView(BaseAdminView):
         "city": "Ville",
         "postalCode": "Code postal",
         "address": "Adresse",
+        "criteria": "Tag",
         "publicName": "Nom d'usage",
         "latitude": "Latitude",
         "longitude": "Longitude",
@@ -80,7 +103,14 @@ class VenueView(BaseAdminView):
         "dateCreated": "Date de création",
     }
     column_searchable_list = ["name", "siret", "publicName"]
-    column_filters = ["postalCode", "city", "publicName", "id", "managingOfferer.name"]
+    column_filters = [
+        "postalCode",
+        "city",
+        "publicName",
+        "id",
+        "managingOfferer.name",
+        VenueCriteriaFilter(Venue.id, "Tag"),
+    ]
     form_columns = [
         "name",
         "siret",
@@ -91,20 +121,22 @@ class VenueView(BaseAdminView):
         "latitude",
         "longitude",
         "isPermanent",
+        "criteria",
     ]
 
-    def get_query(self) -> query:
+    def get_query(self) -> Query:
         return (
             self._extend_query(super().get_query())
             .options(joinedload(Venue.managingOfferer))
             .options(joinedload(Venue.venueProviders))
+            .options(joinedload(Venue.criteria))
         )
 
-    def get_count_query(self) -> query:
+    def get_count_query(self) -> Query:
         return self._extend_query(super().get_count_query())
 
     @staticmethod
-    def _extend_query(query_to_override: query) -> query:
+    def _extend_query(query_to_override: Query) -> Query:
         venue_id = request.args.get("id")
 
         if venue_id:
