@@ -20,6 +20,7 @@ import OfferEducationalStockScreen from 'screens/OfferEducationalStock'
 
 import { getEducationalStockAdapter } from './adapters/getEducationalStockAdapter'
 import patchEducationalStockAdapter from './adapters/patchEducationalStockAdapter'
+import patchShadowStockIntoEducationalStockAdapter from './adapters/patchShadowStockIntoEducationalStockAdapter'
 import { StockResponse } from './types'
 import { extractInitialStockValues } from './utils/extractInitialStockValues'
 
@@ -45,7 +46,15 @@ const OfferEducationalStockEdition = (): JSX.Element => {
 
     const stockId = stock.id
 
-    const stockResponse = await patchEducationalStockAdapter({
+    const shouldCallTransformShadowStockIntoEducationalStockAdapter =
+      isShowcaseFeatureEnabled &&
+      offer.isShowcase &&
+      values.educationalOfferType === EducationalOfferType.CLASSIC
+    const adapter = shouldCallTransformShadowStockIntoEducationalStockAdapter
+      ? patchShadowStockIntoEducationalStockAdapter
+      : patchEducationalStockAdapter
+
+    const stockResponse = await adapter({
       offer,
       stockId,
       values,
