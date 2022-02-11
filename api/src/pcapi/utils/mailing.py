@@ -13,7 +13,6 @@ from pcapi.core.offerers.models import Offerer
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
 from pcapi.core.offers.utils import offer_app_link
-from pcapi.core.users.models import User
 from pcapi.domain.postal_code.postal_code import PostalCode
 from pcapi.models.user_offerer import UserOfferer
 from pcapi.utils.date import utc_datetime_to_department_timezone
@@ -249,31 +248,6 @@ def get_event_datetime(stock: Stock) -> datetime:
         date_in_tz = stock.beginningDatetime
 
     return date_in_tz
-
-
-def make_pro_user_validation_email(user: User) -> dict:
-    return {
-        "FromName": "pass Culture pro",
-        "Subject": "[pass Culture pro] Validation de votre adresse email pour le pass Culture",
-        "MJ-TemplateID": 1660341,
-        "MJ-TemplateLanguage": True,
-        "Vars": {
-            "nom_structure": user.publicName,
-            "lien_validation_mail": f"{settings.PRO_URL}/inscription/validation/{user.validationToken}",
-        },
-    }
-
-
-def make_admin_user_validation_email(user: User, token: str) -> dict:
-    return {
-        "FromName": "pass Culture admin",
-        "Subject": "[pass Culture admin] Validation de votre adresse email pour le pass Culture",
-        "MJ-TemplateID": 1660341,
-        "MJ-TemplateLanguage": True,
-        "Vars": {
-            "lien_validation_mail": f"{settings.PRO_URL}/creation-de-mot-de-passe/{token}",
-        },
-    }
 
 
 def make_suspended_fraudulent_beneficiary_by_ids_notification_email(
