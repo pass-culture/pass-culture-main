@@ -54,6 +54,7 @@ const DatePicker = ({
         dateFormat="dd/MM/yyyy"
         disabled={disabled}
         dropdownMode="scroll"
+        id={name}
         locale="fr"
         maxDate={maxDateTime}
         minDate={minDateTime}
