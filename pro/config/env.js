@@ -79,7 +79,6 @@ function getClientEnvironment(publicUrl) {
         ENV_WORDING: process.env.ENV_WORDING,
         NAME: name,
         VERSION: version,
-        MATOMO_SERVER_URL: process.env.MATOMO_SERVER_URL,
         SENTRY_SAMPLE_RATE: process.env.SENTRY_SAMPLE_RATE,
         SENTRY_SERVER_URL: process.env.SENTRY_SERVER_URL,
         URL_FOR_MAINTENANCE: process.env.URL_FOR_MAINTENANCE,
