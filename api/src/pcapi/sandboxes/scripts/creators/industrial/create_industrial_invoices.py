@@ -57,7 +57,7 @@ def create_specific_invoice():
     stocks = [
         offers_factories.StockFactory(offer=thing_offer1, price=30),
         offers_factories.StockFactory(offer=book_offer1, price=20),
-        offers_factories.StockFactory(offer=thing_offer2, price=80),
+        offers_factories.StockFactory(offer=thing_offer2, price=81.3),
         offers_factories.StockFactory(offer=book_offer2, price=40),
         offers_factories.StockFactory(offer=digital_offer1, price=27),
         offers_factories.StockFactory(offer=digital_offer2, price=31),
