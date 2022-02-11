@@ -11,6 +11,7 @@ from pcapi.core.mails.transactional.users.pre_subscription_dms_error import (
 )
 from pcapi.core.subscription import exceptions as subscription_exceptions
 from pcapi.core.subscription import messages as subscription_messages
+from pcapi.core.subscription import repository as subscription_repository
 import pcapi.core.subscription.api as subscription_api
 import pcapi.core.users.models as users_models
 from pcapi.core.users.repository import find_user_by_email
@@ -183,7 +184,7 @@ def _process_user_parsing_error(application_id: int, procedure_id: int) -> None:
         application_id,
         procedure_id,
     )
-    fraud_repository.create_orphan_dms_application(application_id=application_id, procedure_id=procedure_id)
+    subscription_repository.create_orphan_dms_application(application_id=application_id, procedure_id=procedure_id)
 
 
 def _process_user_not_found_error(email: str, application_id: int, procedure_id: int) -> None:
@@ -192,7 +193,7 @@ def _process_user_not_found_error(email: str, application_id: int, procedure_id:
         application_id,
         procedure_id,
     )
-    fraud_repository.create_orphan_dms_application(
+    subscription_repository.create_orphan_dms_application(
         application_id=application_id, procedure_id=procedure_id, email=email
     )
 
