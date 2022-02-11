@@ -272,3 +272,96 @@ class UbbleWorkflowTest:
 
         db.session.refresh(user)
         assert user.dateOfBirth == datetime.datetime(year=2002, month=5, day=6)
+
+
+@pytest.mark.usefixtures("db_session")
+@freezegun.freeze_time("2022-11-02")
+class UbbleSubscriptionItemStatusTest:
+    def test_not_eligible_without_check(self):
+        user = users_factories.UserFactory(dateOfBirth=datetime.datetime(year=2002, month=1, day=1))
+
+        status = ubble_subscription_api.get_ubble_subscription_item_status(user, users_models.EligibilityType.AGE18, [])
+
+        assert status == subscription_models.SubscriptionItemStatus.VOID
+
+    def test_eligible_without_check(self):
+        user = users_factories.UserFactory(dateOfBirth=datetime.datetime(year=2004, month=1, day=1))
+
+        status = ubble_subscription_api.get_ubble_subscription_item_status(user, users_models.EligibilityType.AGE18, [])
+
+        assert status == subscription_models.SubscriptionItemStatus.TODO
+
+    def test_not_eligible_with_checks(self):
+        user = users_factories.UserFactory(dateOfBirth=datetime.datetime(year=2002, month=1, day=1))
+        check = fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            status=fraud_models.FraudCheckStatus.SUSPICIOUS,
+            type=fraud_models.FraudCheckType.UBBLE,
+            eligibilityType=users_models.EligibilityType.AGE18,
+        )
+
+        status = ubble_subscription_api.get_ubble_subscription_item_status(
+            user, users_models.EligibilityType.AGE18, [check]
+        )
+
+        assert status == subscription_models.SubscriptionItemStatus.SUSPICIOUS
+
+    def test_checks_ko_and_ok(self):
+        user = users_factories.UserFactory(dateOfBirth=datetime.datetime(year=2004, month=1, day=1))
+        ko_check = fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            status=fraud_models.FraudCheckStatus.KO,
+            type=fraud_models.FraudCheckType.UBBLE,
+            eligibilityType=users_models.EligibilityType.AGE18,
+        )
+        ok_check = fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            status=fraud_models.FraudCheckStatus.OK,
+            type=fraud_models.FraudCheckType.UBBLE,
+            eligibilityType=users_models.EligibilityType.AGE18,
+        )
+
+        status = ubble_subscription_api.get_ubble_subscription_item_status(
+            user, users_models.EligibilityType.AGE18, [ko_check, ok_check]
+        )
+
+        assert status == subscription_models.SubscriptionItemStatus.OK
+
+    def test_checks_ko_retryable(self):
+        user = users_factories.UserFactory(dateOfBirth=datetime.datetime(year=2004, month=1, day=1))
+        ko_check = fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            status=fraud_models.FraudCheckStatus.KO,
+            type=fraud_models.FraudCheckType.UBBLE,
+            reasonCodes=[fraud_models.FraudReasonCode.ID_CHECK_EXPIRED],
+            eligibilityType=users_models.EligibilityType.AGE18,
+        )
+        canceled_check = fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            status=fraud_models.FraudCheckStatus.CANCELED,
+            type=fraud_models.FraudCheckType.UBBLE,
+            eligibilityType=users_models.EligibilityType.AGE18,
+        )
+
+        status = ubble_subscription_api.get_ubble_subscription_item_status(
+            user, users_models.EligibilityType.AGE18, [ko_check, canceled_check]
+        )
+
+        assert status == subscription_models.SubscriptionItemStatus.TODO
+
+    def test_checks_ko_retryable_too_many(self):
+        user = users_factories.UserFactory(dateOfBirth=datetime.datetime(year=2004, month=1, day=1))
+        ko_checks = fraud_factories.BeneficiaryFraudCheckFactory.create_batch(
+            3,
+            user=user,
+            status=fraud_models.FraudCheckStatus.KO,
+            type=fraud_models.FraudCheckType.UBBLE,
+            reasonCodes=[fraud_models.FraudReasonCode.ID_CHECK_EXPIRED],
+            eligibilityType=users_models.EligibilityType.AGE18,
+        )
+
+        status = ubble_subscription_api.get_ubble_subscription_item_status(
+            user, users_models.EligibilityType.AGE18, ko_checks
+        )
+
+        assert status == subscription_models.SubscriptionItemStatus.KO

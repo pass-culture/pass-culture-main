@@ -6,7 +6,8 @@ from pcapi import settings
 from pcapi.core.fraud import api as fraud_api
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.fraud.ubble import models as ubble_fraud_models
-from pcapi.core.subscription.ubble.constants import MAX_UBBLE_RETRIES
+from pcapi.core.subscription.models import SubscriptionItemStatus
+from pcapi.core.subscription.ubble.api import get_ubble_subscription_item_status
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import models as users_models
 from pcapi.core.users import utils as users_utils
@@ -142,42 +143,19 @@ def does_match_ubble_test_email(email: str) -> typing.Optional[re.Match]:
 def is_user_allowed_to_perform_ubble_check(
     user: users_models.User, eligibility_type: typing.Optional[users_models.EligibilityType]
 ) -> bool:
-    """
-    Look for Ubble identifications already performed successfully or started, processed or not, but not aborted.
-    Starting a new Ubble identification is disallowed when:
-     - an identification has been processed successfully with result 'ok' or 'ko'
-     - an identification is still processing (waiting for result before potential retry)
-     - the user has reached the maximum number of retries allowed after 'suspicious'.
-    """
     # Ubble check must be performed for an eligible credit
     if not eligibility_type:
         return False
 
     fraud_checks = fraud_models.BeneficiaryFraudCheck.query.filter(
         fraud_models.BeneficiaryFraudCheck.user == user,
-        fraud_models.BeneficiaryFraudCheck.status.is_distinct_from(fraud_models.FraudCheckStatus.CANCELED),
-        fraud_models.BeneficiaryFraudCheck.status.is_distinct_from(fraud_models.FraudCheckStatus.STARTED),
         fraud_models.BeneficiaryFraudCheck.type == fraud_models.FraudCheckType.UBBLE,
         fraud_models.BeneficiaryFraudCheck.eligibilityType == eligibility_type,
     ).all()
 
-    for fraud_check in fraud_checks:
-        if not fraud_check.reasonCodes:
-            # Pending, OK... or any error in which reason code is missing
-            return False
-        for reason_code in fraud_check.reasonCodes:
-            if reason_code not in (
-                # Reasons which allow user to retry ubble identification:
-                fraud_models.FraudReasonCode.ID_CHECK_NOT_SUPPORTED,
-                fraud_models.FraudReasonCode.ID_CHECK_EXPIRED,
-                fraud_models.FraudReasonCode.ID_CHECK_UNPROCESSABLE,
-            ):
-                return False
+    status = get_ubble_subscription_item_status(user, eligibility_type, fraud_checks)
 
-    if len(fraud_checks) >= MAX_UBBLE_RETRIES:
-        return False
-
-    return True
+    return status == SubscriptionItemStatus.TODO
 
 
 def get_restartable_identity_checks(user: users_models.User) -> typing.Optional[fraud_models.BeneficiaryFraudCheck]:
