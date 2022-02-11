@@ -663,6 +663,8 @@ jobs:
   tests-pro-e2e-tests:
     machine:
       image: ubuntu-2004:202101-01
+      docker_layer_caching: true
+    resource_class: large
     working_directory: ~/pass-culture
     steps:
       - checkout
@@ -690,8 +692,8 @@ jobs:
       - run:
           name: Running Sandbox
           command: |
-            dockerize -wait http://localhost/health/api -timeout 5m -wait-retry-interval 5s
-            dockerize -wait http://localhost/health/database -timeout 5m -wait-retry-interval 5s
+            dockerize -wait http://localhost/health/api -timeout 10m -wait-retry-interval 5s
+            dockerize -wait http://localhost/health/database -timeout 10m -wait-retry-interval 5s
             pc sandbox --name=testcafe
       - run:
           name: Running functional tests PRO
