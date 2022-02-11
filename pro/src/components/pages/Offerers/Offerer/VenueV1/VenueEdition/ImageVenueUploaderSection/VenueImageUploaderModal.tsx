@@ -14,6 +14,7 @@ import { IMAGE_TYPES, MAX_IMAGE_SIZE, MIN_IMAGE_WIDTH } from './constants'
 type Props = {
   venueId: string
   onDismiss: () => void
+  children?: never
 }
 
 const constraints = [
