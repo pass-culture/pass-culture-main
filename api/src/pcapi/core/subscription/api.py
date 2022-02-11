@@ -10,6 +10,9 @@ import pcapi.core.fraud.repository as fraud_repository
 from pcapi.core.fraud.ubble import api as ubble_fraud_api
 from pcapi.core.mails.transactional.users import accepted_as_beneficiary
 from pcapi.core.payments import api as payments_api
+from pcapi.core.subscription.dms import api as dms_subscription_api
+from pcapi.core.subscription.educonnect import api as educonnect_subscription_api
+from pcapi.core.subscription.ubble import api as ubble_subscription_api
 from pcapi.core.users import api as users_api
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import external as users_external
@@ -109,7 +112,7 @@ def needs_to_perform_identity_check(user: users_models.User) -> bool:
     )
 
 
-def _is_eligibility_activable(
+def is_eligibility_activable(
     user: users_models.User, eligibility: typing.Optional[users_models.EligibilityType]
 ) -> bool:
     return user.eligibility == eligibility and users_api.is_eligible_for_beneficiary_upgrade(user, eligibility)
@@ -121,7 +124,7 @@ def get_email_validation_subscription_item(
     if user.isEmailValidated:
         status = models.SubscriptionItemStatus.OK
     else:
-        if _is_eligibility_activable(user, eligibility):
+        if is_eligibility_activable(user, eligibility):
             status = models.SubscriptionItemStatus.TODO
         else:
             status = models.SubscriptionItemStatus.VOID
@@ -142,7 +145,7 @@ def get_phone_validation_subscription_item(
                 status = models.SubscriptionItemStatus.KO
             elif not FeatureToggle.ENABLE_PHONE_VALIDATION.is_active():
                 status = models.SubscriptionItemStatus.NOT_ENABLED
-            elif _is_eligibility_activable(user, eligibility):
+            elif is_eligibility_activable(user, eligibility):
                 status = models.SubscriptionItemStatus.TODO
             else:
                 status = models.SubscriptionItemStatus.VOID
@@ -168,7 +171,7 @@ def get_user_profiling_subscription_item(
                 logger.exception("Unexpected UserProfiling status %s", user_profiling.status)
                 status = models.SubscriptionItemStatus.KO
 
-        elif _is_eligibility_activable(user, eligibility):
+        elif is_eligibility_activable(user, eligibility):
             status = models.SubscriptionItemStatus.TODO
         else:
             status = models.SubscriptionItemStatus.VOID
@@ -181,7 +184,7 @@ def get_profile_completion_subscription_item(
 ) -> models.SubscriptionItem:
     if has_completed_profile(user):
         status = models.SubscriptionItemStatus.OK
-    elif _is_eligibility_activable(user, eligibility):
+    elif is_eligibility_activable(user, eligibility):
         status = models.SubscriptionItemStatus.TODO
     else:
         status = models.SubscriptionItemStatus.VOID
@@ -189,26 +192,51 @@ def get_profile_completion_subscription_item(
     return models.SubscriptionItem(type=models.SubscriptionStep.PROFILE_COMPLETION, status=status)
 
 
+def get_identity_check_subscription_status(  # pylint: disable=too-many-return-statements
+    user: users_models.User, eligibility: typing.Optional[users_models.EligibilityType]
+) -> models.SubscriptionItem:
+    """
+    eligibility may be the current user.eligibility or a specific eligibility.
+    The result relies on the FraudChecks made with the 3 current identity providers (DMS, Ubble and Educonnect)
+    and with the legacy provider (Jouve)
+    """
+    if eligibility is None:
+        return models.SubscriptionItemStatus.VOID
+
+    identity_fraud_checks = fraud_repository.get_identity_fraud_checks(user, eligibility)
+
+    dms_checks = [check for check in identity_fraud_checks if check.type == fraud_models.FraudCheckType.DMS]
+    educonnect_checks = [
+        check for check in identity_fraud_checks if check.type == fraud_models.FraudCheckType.EDUCONNECT
+    ]
+    ubble_checks = [check for check in identity_fraud_checks if check.type == fraud_models.FraudCheckType.UBBLE]
+    jouve_checks = [check for check in identity_fraud_checks if check.type == fraud_models.FraudCheckType.JOUVE]
+
+    statuses = [
+        dms_subscription_api.get_dms_subscription_item_status(user, eligibility, dms_checks),
+        educonnect_subscription_api.get_educonnect_subscription_item_status(user, eligibility, educonnect_checks),
+        ubble_subscription_api.get_ubble_subscription_item_status(user, eligibility, ubble_checks),
+        _get_jouve_subscription_item_status(user, eligibility, jouve_checks),
+    ]
+
+    if any(status == models.SubscriptionItemStatus.OK for status in statuses):
+        return models.SubscriptionItemStatus.OK
+    if any(status == models.SubscriptionItemStatus.PENDING for status in statuses):
+        return models.SubscriptionItemStatus.PENDING
+    if any(status == models.SubscriptionItemStatus.KO for status in statuses):
+        return models.SubscriptionItemStatus.KO
+    if any(status == models.SubscriptionItemStatus.SUSPICIOUS for status in statuses):
+        return models.SubscriptionItemStatus.SUSPICIOUS
+    if any(status == models.SubscriptionItemStatus.TODO for status in statuses):
+        return models.SubscriptionItemStatus.TODO
+
+    return models.SubscriptionItemStatus.VOID
+
+
 def get_identity_check_subscription_item(
     user: users_models.User, eligibility: typing.Optional[users_models.EligibilityType]
 ) -> models.SubscriptionItem:
-    identity_fraud_checks = fraud_repository.get_identity_fraud_checks(user, eligibility)
-
-    if any(check.status == fraud_models.FraudCheckStatus.OK for check in identity_fraud_checks):
-        status = models.SubscriptionItemStatus.OK
-    elif any(check.status == fraud_models.FraudCheckStatus.PENDING for check in identity_fraud_checks):
-        # TODO(consider ubble checks status STARTED as TODO when the status STARTED is introduced)
-        status = models.SubscriptionItemStatus.PENDING
-    elif any(check.status == fraud_models.FraudCheckStatus.SUSPICIOUS for check in identity_fraud_checks):
-        status = models.SubscriptionItemStatus.SUSPICIOUS
-    elif any(check.status == fraud_models.FraudCheckStatus.KO for check in identity_fraud_checks):
-        status = models.SubscriptionItemStatus.KO
-    else:
-        if _is_eligibility_activable(user, eligibility):
-            status = models.SubscriptionItemStatus.TODO
-        else:
-            status = models.SubscriptionItemStatus.VOID
-
+    status = get_identity_check_subscription_status(user, eligibility)
     return models.SubscriptionItem(type=models.SubscriptionStep.IDENTITY_CHECK, status=status)
 
 
@@ -218,7 +246,7 @@ def get_honor_statement_subscription_item(
     if fraud_api.has_performed_honor_statement(user, eligibility):
         status = models.SubscriptionItemStatus.OK
     else:
-        if _is_eligibility_activable(user, eligibility):
+        if is_eligibility_activable(user, eligibility):
             status = models.SubscriptionItemStatus.TODO
         else:
             status = models.SubscriptionItemStatus.VOID
@@ -465,3 +493,23 @@ def has_passed_all_checks_to_become_beneficiary(user: users_models.User) -> bool
             return False
 
     return True
+
+
+def _get_jouve_subscription_item_status(
+    user: users_models.User,
+    eligibility: typing.Optional[users_models.EligibilityType],
+    jouve_fraud_checks: list[fraud_models.BeneficiaryFraudCheck],
+) -> models.SubscriptionItemStatus:
+    if any(check.status == fraud_models.FraudCheckStatus.OK for check in jouve_fraud_checks):
+        return models.SubscriptionItemStatus.OK
+    if any(check.status == fraud_models.FraudCheckStatus.KO for check in jouve_fraud_checks):
+        return models.SubscriptionItemStatus.KO
+    if any(check.status == fraud_models.FraudCheckStatus.SUSPICIOUS for check in jouve_fraud_checks):
+        return models.SubscriptionItemStatus.SUSPICIOUS
+    if any(check.status == fraud_models.FraudCheckStatus.PENDING for check in jouve_fraud_checks):
+        return models.SubscriptionItemStatus.PENDING
+
+    if is_eligibility_activable(user, eligibility):
+        return models.SubscriptionItemStatus.TODO
+
+    return models.SubscriptionItemStatus.VOID

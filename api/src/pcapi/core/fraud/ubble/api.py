@@ -7,7 +7,6 @@ from pcapi.core.fraud import api as fraud_api
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.fraud.ubble import models as ubble_fraud_models
 from pcapi.core.subscription.models import SubscriptionItemStatus
-from pcapi.core.subscription.ubble.api import get_ubble_subscription_item_status
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import models as users_models
 from pcapi.core.users import utils as users_utils
@@ -143,6 +142,8 @@ def does_match_ubble_test_email(email: str) -> typing.Optional[re.Match]:
 def is_user_allowed_to_perform_ubble_check(
     user: users_models.User, eligibility_type: typing.Optional[users_models.EligibilityType]
 ) -> bool:
+    from pcapi.core.subscription.ubble import api as ubble_subscription_api
+
     # Ubble check must be performed for an eligible credit
     if not eligibility_type:
         return False
@@ -153,7 +154,7 @@ def is_user_allowed_to_perform_ubble_check(
         fraud_models.BeneficiaryFraudCheck.eligibilityType == eligibility_type,
     ).all()
 
-    status = get_ubble_subscription_item_status(user, eligibility_type, fraud_checks)
+    status = ubble_subscription_api.get_ubble_subscription_item_status(user, eligibility_type, fraud_checks)
 
     return status == SubscriptionItemStatus.TODO
 

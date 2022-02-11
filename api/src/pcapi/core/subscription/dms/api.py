@@ -1,4 +1,5 @@
 import logging
+import typing
 
 from sqlalchemy import Integer
 from sqlalchemy.orm import load_only
@@ -13,6 +14,7 @@ from pcapi.core.mails.transactional.users.pre_subscription_dms_error import (
 )
 from pcapi.core.subscription import exceptions as subscription_exceptions
 from pcapi.core.subscription import messages as subscription_messages
+from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription import repository as subscription_repository
 import pcapi.core.subscription.api as subscription_api
 import pcapi.core.users.models as users_models
@@ -329,3 +331,26 @@ def get_already_processed_applications_ids_from_fraud_checks(procedure_id: int) 
     }
 
     return fraud_check_ids | orphans_ids
+
+
+def get_dms_subscription_item_status(
+    user: users_models.User,
+    eligibility: typing.Optional[users_models.EligibilityType],
+    dms_fraud_checks: list[fraud_models.BeneficiaryFraudCheck],
+) -> subscription_models.SubscriptionItemStatus:
+    if any(check.status == fraud_models.FraudCheckStatus.OK for check in dms_fraud_checks):
+        return subscription_models.SubscriptionItemStatus.OK
+    if any(
+        check.status in (fraud_models.FraudCheckStatus.STARTED, fraud_models.FraudCheckStatus.PENDING)
+        for check in dms_fraud_checks
+    ):
+        return subscription_models.SubscriptionItemStatus.PENDING
+    if any(check.status == fraud_models.FraudCheckStatus.KO for check in dms_fraud_checks):
+        return subscription_models.SubscriptionItemStatus.KO
+    if any(check.status == fraud_models.FraudCheckStatus.SUSPICIOUS for check in dms_fraud_checks):
+        return subscription_models.SubscriptionItemStatus.SUSPICIOUS
+
+    if subscription_api.is_eligibility_activable(user, eligibility):
+        return subscription_models.SubscriptionItemStatus.TODO
+
+    return subscription_models.SubscriptionItemStatus.VOID
