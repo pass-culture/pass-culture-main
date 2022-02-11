@@ -337,6 +337,8 @@ describe('app', () => {
     })
 
     it('should reset filters', async () => {
+      const siret = '123456789'
+      window.location.search = `?siret=${siret}`
       render(<App />)
 
       const departmentFilter = await findDepartmentFilter()
@@ -357,9 +359,9 @@ describe('app', () => {
       userEvent.click(launchSearchButton)
 
       // Then
-      await waitFor(() => expect(Configure).toHaveBeenCalledTimes(3))
+      await waitFor(() => expect(Configure).toHaveBeenCalledTimes(5))
       const searchConfigurationLastCall = (Configure as jest.Mock).mock
-        .calls[2][0]
+        .calls[4][0]
       expect(searchConfigurationLastCall.facetFilters).toStrictEqual([
         'offer.isEducational:true',
       ])
@@ -367,10 +369,13 @@ describe('app', () => {
       expect(queryTag('59 - Nord')).not.toBeInTheDocument()
       expect(queryTag('Collège - 4e')).not.toBeInTheDocument()
       expect(queryTag('Cinéma')).not.toBeInTheDocument()
+      expect(queryTag(`Lieu : ${venue?.publicName}`)).not.toBeInTheDocument()
     })
 
     it('should reset all filters and launch search when no result and click on button', async () => {
       // Given
+      const siret = '123456789'
+      window.location.search = `?siret=${siret}`
       render(<App />)
 
       const textInput = await screen.findByPlaceholderText(placeholder)
@@ -386,15 +391,16 @@ describe('app', () => {
       userEvent.click(resetAllFiltersButton)
 
       // Then
-      await waitFor(() => expect(Configure).toHaveBeenCalledTimes(3))
+      await waitFor(() => expect(Configure).toHaveBeenCalledTimes(4))
       const searchConfigurationFirstCall = (Configure as jest.Mock).mock
-        .calls[1][0]
+        .calls[2][0]
       expect(searchConfigurationFirstCall.facetFilters).toStrictEqual([
         'offer.isEducational:true',
         ['venue.departmentCode:01'],
+        'venue.id:1436',
       ])
       const searchConfigurationLastCall = (Configure as jest.Mock).mock
-        .calls[2][0]
+        .calls[3][0]
       expect(searchConfigurationLastCall.facetFilters).toStrictEqual([
         'offer.isEducational:true',
       ])
