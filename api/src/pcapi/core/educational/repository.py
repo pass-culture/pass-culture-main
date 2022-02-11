@@ -110,8 +110,9 @@ def find_educational_bookings_for_adage(
 ) -> list[educational_models.EducationalBooking]:
 
     educational_bookings_base_query = (
-        educational_models.EducationalBooking.query.options(
-            joinedload(educational_models.EducationalBooking.booking, innerjoin=True)
+        educational_models.EducationalBooking.query.join(educational_models.EducationalBooking.booking)
+        .options(
+            contains_eager(educational_models.EducationalBooking.booking)
             .joinedload(Booking.stock, innerjoin=True)
             .joinedload(Stock.offer, innerjoin=True)
             .options(
