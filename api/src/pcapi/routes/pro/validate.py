@@ -1,5 +1,6 @@
 import logging
 
+from pcapi.core.mails.transactional.pro.welcome_to_pro import send_welcome_to_pro_email
 from pcapi.core.offerers import api
 from pcapi.core.offerers.exceptions import ValidationTokenNotFoundError
 from pcapi.domain.admin_emails import maybe_send_offerer_validation_email
@@ -54,6 +55,12 @@ def validate_user(token) -> None:
     user_to_validate.validationToken = None
     user_to_validate.isEmailValidated = True
     repository.save(user_to_validate)
+
+    if not send_welcome_to_pro_email(user_to_validate):
+        logger.warning(
+            "Could not send welcome email when pro user is valid",
+            extra={"user": user_to_validate.id},
+        )
 
     user_offerer = user_offerer_queries.find_one_or_none_by_user_id(user_to_validate.id)
 

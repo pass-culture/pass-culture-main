@@ -101,4 +101,4 @@ class TransactionalEmail(Enum):
     )
     REFUND_TO_PRO = TemplatePro(id_prod=0000, id_not_prod=0000, tags=[""])
     RESET_PASSWORD_TO_PRO = TemplatePro(id_prod=364, id_not_prod=47, tags=["pro_reinit_mdp"])
-    WELCOME_TO_PRO = TemplatePro(id_prod=0000, id_not_prod=0000, tags=["pro-bienvenue-sur-le-pass"])
+    WELCOME_TO_PRO = TemplatePro(id_prod=481, id_not_prod=57, tags=["pro-bienvenue-pass"])
