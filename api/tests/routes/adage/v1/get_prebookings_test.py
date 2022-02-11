@@ -141,7 +141,7 @@ class Returns200Test:
             educationalBooking__educationalInstitution=educationalInstitution,
         )
         booking = PendingEducationalBookingFactory(
-            educationalBooking__educationalRedactorId=redactor,
+            educationalBooking__educationalRedactor=redactor,
             educationalBooking__educationalYear=educationalYear,
             educationalBooking__educationalInstitution=educationalInstitution,
         )
