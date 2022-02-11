@@ -33,6 +33,7 @@ export type Offer = {
       otherAddress: string
       addressType: ADRESS_TYPE
     }
+    isShowcase?: boolean
   }
   stocks: Stock[]
   isActive: boolean
