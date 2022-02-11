@@ -84,8 +84,12 @@ const OfferEducationalStock = ({
     resetForm({ values: initialValues })
   }, [initialValues, resetForm])
 
-  const displayElementsForShowcaseOption =
+  const shouldDisplayShowcaseScreen =
     isShowcaseFeatureEnabled &&
+    (mode == Mode.CREATION || (mode == Mode.EDITION && offer.isShowcase))
+
+  const displayElementsForShowcaseOption =
+    shouldDisplayShowcaseScreen &&
     formik.values.educationalOfferType === EducationalOfferType.SHOWCASE
 
   return (
@@ -103,7 +107,7 @@ const OfferEducationalStock = ({
         <form onSubmit={formik.handleSubmit}>
           <FormLayout className={styles['offer-educational-stock-form-layout']}>
             <FormLayout.Section title="Date et prix">
-              {isShowcaseFeatureEnabled && (
+              {shouldDisplayShowcaseScreen && (
                 <FormLayout.Row>
                   <RadioGroup
                     group={showcaseOfferRadios}
