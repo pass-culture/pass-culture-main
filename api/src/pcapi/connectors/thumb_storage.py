@@ -1,6 +1,7 @@
 from pcapi import settings
 from pcapi.core import object_storage
 from pcapi.models import Model
+from pcapi.utils.image_conversion import IMAGE_RATIO_PORTRAIT_DEFAULT
 from pcapi.utils.image_conversion import standardize_image
 
 
@@ -10,7 +11,7 @@ def create_thumb(
     image_index: int,
     crop_params: tuple = None,
 ) -> None:
-    image_as_bytes = standardize_image(image_as_bytes, crop_params)
+    image_as_bytes = standardize_image(image_as_bytes, ratio=IMAGE_RATIO_PORTRAIT_DEFAULT, crop_params=crop_params)
 
     object_storage.store_public_object(
         folder=settings.THUMBS_FOLDER_NAME,
