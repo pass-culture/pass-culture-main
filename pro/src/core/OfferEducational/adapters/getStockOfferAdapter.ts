@@ -34,6 +34,7 @@ export const getStockOfferAdapter: GetOfferAdapter = async offerId => {
         venueDepartmentCode: offer.venue.departementCode,
         isBooked,
         isEducational: offer.isEducational,
+        isShowcase: Boolean(offer.extraData?.isShowcase),
       },
     }
   } catch (error) {
