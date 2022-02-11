@@ -23,8 +23,8 @@ import { populateFacetFilters } from '../utils'
 import { filtersReducer } from './filtersReducer'
 import { OfferFilters } from './OfferFilters/OfferFilters'
 import { Offers } from './Offers/Offers'
-import Pagination from './Offers/Pagination'
-import { SearchBox } from './SearchBox'
+import { Pagination } from './Offers/Pagination'
+import { SearchBox } from './SearchBox/SearchBox'
 
 interface SearchProps extends SearchBoxProvided {
   userRole: Role
@@ -34,7 +34,7 @@ interface SearchProps extends SearchBoxProvided {
   facetFilters: Facets
 }
 
-const OffersSearchComponent = ({
+export const OffersSearchComponent = ({
   userRole,
   removeVenueFilter,
   venueFilter,
