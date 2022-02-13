@@ -528,16 +528,6 @@ def has_user_performed_identity_check(user: users_models.User) -> bool:
     )
 
 
-def has_passed_educonnect(user: users_models.User) -> bool:
-    return db.session.query(
-        models.BeneficiaryFraudCheck.query.filter(
-            models.BeneficiaryFraudCheck.user == user,
-            models.BeneficiaryFraudCheck.status == models.FraudCheckStatus.OK,
-            models.BeneficiaryFraudCheck.type == models.FraudCheckType.EDUCONNECT,
-        ).exists()
-    ).scalar()
-
-
 def is_risky_user_profile(user: users_models.User) -> bool:
     # No need to filter on eligibilityType ; profiling is performed only for AGE18 users.
     user_profiling = (
