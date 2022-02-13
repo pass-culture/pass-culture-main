@@ -116,7 +116,7 @@ def test_format_sendinblue_user():
         "ELIGIBILITY": user.eligibility,
         "FIRSTNAME": "Jeanne",
         "HAS_BOOKINGS": None,
-        "HAS_COMPLETED_ID_CHECK": False,
+        "HAS_COMPLETED_ID_CHECK": True,
         "HAS_OFFERS": None,
         "INITIAL_CREDIT": Decimal("500.00"),
         "IS_BENEFICIARY": True,

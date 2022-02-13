@@ -135,6 +135,7 @@ def get_pro_attributes(email: str) -> ProAttributes:
 
 
 def get_user_attributes(user: User) -> UserAttributes:
+    from pcapi.core.fraud import api as fraud_api
     from pcapi.core.users.api import get_domains_credit
 
     is_pro_user = user.has_pro_role or db.session.query(UserOfferer.query.filter_by(userId=user.id).exists()).scalar()
@@ -157,7 +158,7 @@ def get_user_attributes(user: User) -> UserAttributes:
         domains_credit=domains_credit,
         eligibility=user.eligibility,
         first_name=user.firstName,
-        has_completed_id_check=user.hasCompletedIdCheck,
+        has_completed_id_check=fraud_api.has_user_performed_identity_check(user),
         user_id=user.id,
         is_beneficiary=user.is_beneficiary,
         is_eligible=user.is_eligible,
