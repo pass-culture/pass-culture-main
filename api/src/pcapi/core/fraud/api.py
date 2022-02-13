@@ -6,6 +6,8 @@ import typing
 import pydantic
 import sqlalchemy
 
+from pcapi.core.subscription import api as subscription_api
+from pcapi.core.subscription import models as subscription_models
 from pcapi.core.users import constants
 from pcapi.core.users import models as users_models
 from pcapi.core.users import repository as users_repository
@@ -512,14 +514,18 @@ def has_user_pending_identity_check(user: users_models.User) -> bool:
 
 
 def has_user_performed_identity_check(user: users_models.User) -> bool:
-    return db.session.query(
-        models.BeneficiaryFraudCheck.query.filter(
-            models.BeneficiaryFraudCheck.user == user,
-            models.BeneficiaryFraudCheck.status.is_distinct_from(models.FraudCheckStatus.CANCELED),
-            models.BeneficiaryFraudCheck.status.is_distinct_from(models.FraudCheckStatus.STARTED),
-            models.BeneficiaryFraudCheck.type.in_(models.IDENTITY_CHECK_TYPES),
-        ).exists()
-    ).scalar()
+    from pcapi.core.users import api as users_api
+
+    if user.is_beneficiary and not users_api.is_eligible_for_beneficiary_upgrade(user, user.eligibility):
+        return True
+
+    status = subscription_api.get_identity_check_subscription_status(
+        user, user.eligibility or users_models.EligibilityType.AGE18
+    )
+    return status not in (
+        subscription_models.SubscriptionItemStatus.TODO,
+        subscription_models.SubscriptionItemStatus.VOID,
+    )
 
 
 def has_passed_educonnect(user: users_models.User) -> bool:
