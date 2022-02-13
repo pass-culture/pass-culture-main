@@ -134,25 +134,30 @@ class NextSubscriptionStepTest:
 
     @override_features(ENABLE_EDUCONNECT_AUTHENTICATION=True)
     def test_next_subscription_step_underage_honor_statement(self):
-        user = users_factories.UserFactory(
-            dateOfBirth=self.fifteen_years_ago,
-            city="Zanzibar",
-            hasCompletedIdCheck=True,
+        user = users_factories.UserFactory(dateOfBirth=self.fifteen_years_ago, city="Zanzibar")
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.EDUCONNECT,
+            status=fraud_models.FraudCheckStatus.OK,
+            eligibilityType=users_models.EligibilityType.UNDERAGE,
         )
+
         assert subscription_api.get_next_subscription_step(user) == subscription_models.SubscriptionStep.HONOR_STATEMENT
 
     @override_features(ENABLE_EDUCONNECT_AUTHENTICATION=True)
     def test_next_subscription_step_underage_finished(self):
-        user = users_factories.UserFactory(
-            dateOfBirth=self.fifteen_years_ago,
-            city="Zanzibar",
-            hasCompletedIdCheck=True,
-        )
+        user = users_factories.UserFactory(dateOfBirth=self.fifteen_years_ago, city="Zanzibar")
         fraud_factories.BeneficiaryFraudCheckFactory(
             type=fraud_models.FraudCheckType.HONOR_STATEMENT,
             resultContent=None,
             user=user,
             status=fraud_models.FraudCheckStatus.OK,
+            eligibilityType=users_models.EligibilityType.UNDERAGE,
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.UBBLE,
+            status=fraud_models.FraudCheckStatus.PENDING,
             eligibilityType=users_models.EligibilityType.UNDERAGE,
         )
         assert subscription_api.get_next_subscription_step(user) == None
@@ -193,7 +198,6 @@ class NextSubscriptionStepTest:
             subscription_api.get_next_subscription_step(user) == subscription_models.SubscriptionStep.PROFILE_COMPLETION
         )
 
-    @override_features(ENABLE_UBBLE=True)
     def test_next_subscription_step_identity_check(self):
         user = users_factories.UserFactory(
             dateOfBirth=self.eighteen_years_ago,
@@ -204,6 +208,12 @@ class NextSubscriptionStepTest:
         fraud_factories.BeneficiaryFraudCheckFactory(
             type=fraud_models.FraudCheckType.USER_PROFILING, resultContent=content, user=user
         )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.UBBLE,
+            status=fraud_models.FraudCheckStatus.STARTED,
+            eligibilityType=users_models.EligibilityType.AGE18,
+        )
 
         assert subscription_api.get_next_subscription_step(user) == subscription_models.SubscriptionStep.IDENTITY_CHECK
 
@@ -212,11 +222,16 @@ class NextSubscriptionStepTest:
             dateOfBirth=self.eighteen_years_ago,
             phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
             city="Zanzibar",
-            hasCompletedIdCheck=True,
         )
         content = fraud_factories.UserProfilingFraudDataFactory(risk_rating="trusted")
         fraud_factories.BeneficiaryFraudCheckFactory(
             type=fraud_models.FraudCheckType.USER_PROFILING, resultContent=content, user=user
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.UBBLE,
+            status=fraud_models.FraudCheckStatus.PENDING,
+            eligibilityType=users_models.EligibilityType.AGE18,
         )
 
         assert subscription_api.get_next_subscription_step(user) == subscription_models.SubscriptionStep.HONOR_STATEMENT
@@ -226,11 +241,16 @@ class NextSubscriptionStepTest:
             dateOfBirth=self.eighteen_years_ago,
             phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
             address="3 rue du quai",
-            hasCompletedIdCheck=True,
         )
         content = fraud_factories.UserProfilingFraudDataFactory(risk_rating="trusted")
         fraud_factories.BeneficiaryFraudCheckFactory(
             type=fraud_models.FraudCheckType.USER_PROFILING, resultContent=content, user=user
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.UBBLE,
+            status=fraud_models.FraudCheckStatus.PENDING,
+            eligibilityType=users_models.EligibilityType.AGE18,
         )
         fraud_factories.BeneficiaryFraudCheckFactory(
             type=fraud_models.FraudCheckType.HONOR_STATEMENT,
@@ -892,3 +912,61 @@ class IdentityCheckSubscriptionStatusTest:
         status = subscription_api.get_identity_check_subscription_status(user, users_models.EligibilityType.AGE18)
 
         assert status == subscription_models.SubscriptionItemStatus.OK
+
+
+@pytest.mark.usefixtures("db_session")
+class NeedsToPerformeIdentityCheckTest:
+    AGE16_ELIGIBLE_BIRTH_DATE = datetime.now() - relativedelta(years=16, months=4)
+    AGE18_ELIGIBLE_BIRTH_DATE = datetime.now() - relativedelta(years=18, months=4)
+    AGE20_ELIGIBLE_BIRTH_DATE = datetime.now() - relativedelta(years=20, months=4)
+
+    def test_not_eligible(self):
+        user = users_factories.UserFactory(dateOfBirth=self.AGE20_ELIGIBLE_BIRTH_DATE)
+
+        assert not subscription_api._needs_to_perform_identity_check(user)
+
+    def test_ex_underage_eligible(self):
+        user = users_factories.UserFactory(
+            dateOfBirth=self.AGE18_ELIGIBLE_BIRTH_DATE, roles=[users_models.UserRole.UNDERAGE_BENEFICIARY]
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            eligibilityType=users_models.EligibilityType.UNDERAGE,
+            type=fraud_models.FraudCheckType.UBBLE,
+            status=fraud_models.FraudCheckStatus.OK,
+        )
+
+        assert subscription_api._needs_to_perform_identity_check(user)
+
+    def test_ubble_started(self):
+        user = users_factories.UserFactory(dateOfBirth=self.AGE18_ELIGIBLE_BIRTH_DATE)
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            eligibilityType=users_models.EligibilityType.UNDERAGE,
+            type=fraud_models.FraudCheckType.UBBLE,
+            status=fraud_models.FraudCheckStatus.STARTED,
+        )
+
+        assert subscription_api._needs_to_perform_identity_check(user)
+
+    def test_dms_started(self):
+        user = users_factories.UserFactory(dateOfBirth=self.AGE16_ELIGIBLE_BIRTH_DATE)
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            eligibilityType=users_models.EligibilityType.UNDERAGE,
+            type=fraud_models.FraudCheckType.DMS,
+            status=fraud_models.FraudCheckStatus.STARTED,
+        )
+
+        assert not subscription_api._needs_to_perform_identity_check(user)
+
+    def test_educonnect_ok(self):
+        user = users_factories.UserFactory(dateOfBirth=self.AGE16_ELIGIBLE_BIRTH_DATE)
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            eligibilityType=users_models.EligibilityType.UNDERAGE,
+            type=fraud_models.FraudCheckType.EDUCONNECT,
+            status=fraud_models.FraudCheckStatus.OK,
+        )
+
+        assert not subscription_api._needs_to_perform_identity_check(user)

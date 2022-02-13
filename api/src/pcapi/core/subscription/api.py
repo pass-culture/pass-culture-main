@@ -7,7 +7,6 @@ import pcapi.core.fraud.api as fraud_api
 from pcapi.core.fraud.common import models as common_fraud_models
 import pcapi.core.fraud.models as fraud_models
 import pcapi.core.fraud.repository as fraud_repository
-from pcapi.core.fraud.ubble import api as ubble_fraud_api
 from pcapi.core.mails.transactional.users import accepted_as_beneficiary
 from pcapi.core.payments import api as payments_api
 from pcapi.core.subscription.dms import api as dms_subscription_api
@@ -98,18 +97,6 @@ def _send_beneficiary_activation_email(user: users_models.User, has_activated_ac
 def has_completed_profile(user: users_models.User) -> bool:
     # TODO(add a check on user.activity once the field is mandatory in subscription/profile_completion route)
     return user.city is not None
-
-
-def needs_to_perform_identity_check(user: users_models.User) -> bool:
-    # TODO (viconnex) refacto this method to base result on fraud_checks made
-    return (
-        not user.hasCompletedIdCheck
-        and not (
-            not ubble_fraud_api.is_user_allowed_to_perform_ubble_check(user, user.eligibility)
-            and FeatureToggle.ENABLE_UBBLE.is_active()
-        )
-        and not (fraud_api.has_passed_educonnect(user) and user.eligibility == users_models.EligibilityType.UNDERAGE)
-    )
 
 
 def is_eligibility_activable(
@@ -278,7 +265,7 @@ def get_next_subscription_step(user: users_models.User) -> typing.Optional[model
     if not has_completed_profile(user):
         return models.SubscriptionStep.PROFILE_COMPLETION
 
-    if needs_to_perform_identity_check(user):
+    if _needs_to_perform_identity_check(user):
         if not get_allowed_identity_check_methods(user):
             return models.SubscriptionStep.MAINTENANCE
         return models.SubscriptionStep.IDENTITY_CHECK
@@ -287,6 +274,10 @@ def get_next_subscription_step(user: users_models.User) -> typing.Optional[model
         return models.SubscriptionStep.HONOR_STATEMENT
 
     return None
+
+
+def _needs_to_perform_identity_check(user) -> bool:
+    return get_identity_check_subscription_status(user, user.eligibility) == models.SubscriptionItemStatus.TODO
 
 
 def update_user_profile(
