@@ -10,8 +10,9 @@ import freezegun
 import pytest
 
 from pcapi.core.fraud import factories as fraud_factories
-from pcapi.core.fraud.api import has_passed_educonnect
 import pcapi.core.fraud.models as fraud_models
+from pcapi.core.subscription import api as subscription_api
+from pcapi.core.subscription import models as subscription_status
 from pcapi.core.testing import override_features
 from pcapi.core.testing import override_settings
 from pcapi.core.users import factories as users_factories
@@ -142,7 +143,10 @@ class EduconnectTest:
             "school_uai": "school_uai",
             "student_level": "2212",
         }
-        assert has_passed_educonnect(user)
+        assert (
+            subscription_api.get_identity_check_subscription_status(user, user_models.EligibilityType.UNDERAGE)
+            == subscription_status.SubscriptionItemStatus.OK
+        )
         assert user.firstName == "Max"
         assert user.lastName == "SENS"
         assert user.dateOfBirth == datetime.datetime(2006, 8, 18, 0, 0)
