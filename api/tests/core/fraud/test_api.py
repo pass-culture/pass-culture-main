@@ -459,6 +459,14 @@ class EduconnectFraudTest:
 
 @pytest.mark.usefixtures("db_session")
 class HasUserPerformedIdentityCheckTest:
+    def test_has_not_performed(self):
+        user = users_factories.UserFactory(dateOfBirth=datetime.datetime.now() - relativedelta(years=18, months=1))
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user, type=fraud_models.FraudCheckType.JOUVE, eligibilityType=users_models.EligibilityType.UNDERAGE
+        )
+
+        assert not fraud_api.has_user_performed_identity_check(user)
+
     @pytest.mark.parametrize(
         "age, eligibility_type",
         [
@@ -487,7 +495,7 @@ class HasUserPerformedIdentityCheckTest:
             type=fraud_models.FraudCheckType.UBBLE, user=user, eligibilityType=users_models.EligibilityType.UNDERAGE
         )
 
-        assert fraud_api.has_user_performed_identity_check(user)
+        assert not fraud_api.has_user_performed_identity_check(user)
         assert ubble_fraud_api.is_user_allowed_to_perform_ubble_check(user, user.eligibility)
 
     def test_has_user_performed_identity_check_without_identity_fraud_check(self):
@@ -519,7 +527,7 @@ class HasUserPerformedIdentityCheckTest:
         )
 
         # Suspicous => Retry allowed
-        assert fraud_api.has_user_performed_identity_check(user)
+        assert not fraud_api.has_user_performed_identity_check(user)
         assert ubble_fraud_api.is_user_allowed_to_perform_ubble_check(user, user.eligibility)
 
     def test_has_user_performed_identity_check_ubble_suspicious_x3(self):
@@ -549,6 +557,21 @@ class HasUserPerformedIdentityCheckTest:
         # Retry not allowed
         assert fraud_api.has_user_performed_identity_check(user)
         assert not ubble_fraud_api.is_user_allowed_to_perform_ubble_check(user, user.eligibility)
+
+    def test_user_beneficiary(self):
+        user = users_factories.UserFactory(
+            dateOfBirth=datetime.datetime.now() - relativedelta(years=20, months=1),
+            roles=[users_models.UserRole.BENEFICIARY],
+        )
+        assert fraud_api.has_user_performed_identity_check(user)
+
+    def test_user_not_eligible_anymore_but_has_performed(self):
+        user = users_factories.UserFactory(dateOfBirth=datetime.datetime.now() - relativedelta(years=20, months=1))
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user, type=fraud_models.FraudCheckType.JOUVE, eligibilityType=users_models.EligibilityType.AGE18
+        )
+
+        assert fraud_api.has_user_performed_identity_check(user)
 
 
 @pytest.mark.usefixtures("db_session")
