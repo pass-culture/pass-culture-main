@@ -7,8 +7,8 @@ from pcapi.core.users import factories as users_factories
 from pcapi.models.beneficiary_import_status import ImportStatus
 
 
-@pytest.mark.usefixtures("db_session")
 class GetAlreadyProcessedApplicationIdTest:
+    @pytest.mark.usefixtures("db_session")
     def test_already_processed_application_ids(self):
         procedure_id = 123
 
@@ -58,6 +58,7 @@ class GetAlreadyProcessedApplicationIdTest:
         assert created.beneficiaryImport.applicationId in application_ids
         assert duplicate.beneficiaryImport.applicationId in application_ids
 
+    @pytest.mark.usefixtures("db_session")
     def test_already_processed_application_ids_right_procedure(self):
         created = users_factories.BeneficiaryImportStatusFactory(
             beneficiaryImport__sourceId=123,
