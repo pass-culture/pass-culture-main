@@ -30,7 +30,6 @@ from pcapi.core.users import api as users_api
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users.models import ActivityEnum
 from pcapi.core.users.models import EligibilityType
-from pcapi.core.users.models import ExpenseDomain
 from pcapi.core.users.models import User
 from pcapi.core.users.models import UserRole
 from pcapi.core.users.models import VOID_FIRST_NAME
@@ -71,18 +70,6 @@ class CulturalSurveyRequest(BaseModel):
 
     class Config:
         alias_generator = to_camel
-
-
-class Expense(BaseModel):
-    domain: ExpenseDomain
-    current: int
-    limit: int
-
-    _convert_current = validator("current", pre=True, allow_reuse=True)(convert_to_cent)
-    _convert_limit = validator("limit", pre=True, allow_reuse=True)(convert_to_cent)
-
-    class Config:
-        orm_mode = True
 
 
 class NotificationSubscriptions(BaseModel):
