@@ -98,14 +98,6 @@ class EducationalOfferStockBookedAndBookingNotPending(Exception):
         super().__init__()
 
 
-class CannotModifiedPastEventStock(Exception):
-    pass
-
-
-class CannotUpdateStockRelatedToNonApprovedOffer(Exception):
-    pass
-
-
 class BookingLimitDatetimeTooLate(Exception):
     pass
 
