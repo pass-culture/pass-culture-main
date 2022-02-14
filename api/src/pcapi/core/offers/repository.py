@@ -365,12 +365,6 @@ def delete_past_draft_offers() -> None:
     db.session.commit()
 
 
-def check_activation_is_bookable(activation_code: ActivationCode) -> bool:
-    return not activation_code.bookingId and (
-        not activation_code.expirationDate or activation_code.expirationDate > datetime.utcnow()
-    )
-
-
 def get_available_activation_code(stock: Stock) -> Optional[ActivationCode]:
     return ActivationCode.query.filter(
         ActivationCode.stockId == stock.id,
