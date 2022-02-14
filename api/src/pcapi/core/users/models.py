@@ -86,10 +86,6 @@ class EligibilityType(enum.Enum):
     AGE18 = "age-18"
 
 
-class EligibilityCheckMethods(enum.Enum):
-    EDUCONNECT = "educonnect"
-
-
 @dataclass
 class NotificationSubscriptions:
     marketing_push: bool = True

@@ -1,13 +1,9 @@
-from datetime import datetime
-from datetime import timedelta
-
 import pytest
 
 import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.repository import repository
-from pcapi.repository.user_queries import beneficiary_by_civility_query
 from pcapi.repository.user_queries import find_pro_users_by_email_provider
 from pcapi.repository.user_queries import get_all_users_wallet_balances
 
@@ -92,38 +88,3 @@ class FindProUsersByEmailProviderTest:
 
         assert len(users) == 1
         assert users[0] == pro_user_with_matching_email
-
-
-@pytest.mark.usefixtures("db_session")
-class BeneficiaryByCivilityQueryTest:
-    def test_exclude_oneself(self, app):
-        # given
-        email = "john@example.com"
-        john = users_factories.BeneficiaryGrant18Factory(email=email, firstName="john", lastName="doe")
-
-        # when
-        user_found = beneficiary_by_civility_query("john", "doe", john.dateOfBirth).all()
-        user_not_found = beneficiary_by_civility_query(
-            "john", "doe", john.dateOfBirth, exclude_email=email
-        ).one_or_none()
-
-        # then
-        assert len(user_found) == 1
-        assert user_found[0].email == email
-        assert user_not_found is None
-
-    def test_exclude_interval(self):
-        users_factories.BeneficiaryGrant18Factory(
-            firstName="john", lastName="doe", dateCreated=datetime.now() - timedelta(days=50)
-        )
-        john = users_factories.BeneficiaryGrant18Factory(
-            firstName="john", lastName="doe", dateCreated=datetime.now() - timedelta(days=30)
-        )
-
-        users_found = beneficiary_by_civility_query("john", "doe", interval=timedelta(days=40)).all()
-
-        assert len(users_found) == 1
-        assert users_found[0] == john
-
-        users_found = beneficiary_by_civility_query("john", "doe", interval=timedelta(days=60)).all()
-        assert len(users_found) == 2

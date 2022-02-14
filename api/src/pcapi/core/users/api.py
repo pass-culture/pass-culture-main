@@ -9,13 +9,11 @@ import logging
 import secrets
 import typing
 from typing import Optional
-from typing import Tuple
 from typing import Union
 
 from dateutil.relativedelta import relativedelta
 from flask import current_app as app
 from flask_jwt_extended import create_access_token
-from google.cloud.storage.blob import Blob
 from redis import Redis
 
 from pcapi import settings
@@ -737,36 +735,6 @@ def check_phone_number_not_used(phone_number: str) -> None:
 def check_sms_sending_is_allowed(user: User) -> None:
     if not is_SMS_sending_allowed(app.redis_client, user):
         raise exceptions.SMSSendingLimitReached()
-
-
-def validate_token(userId: int, token_value: str) -> Token:
-    token = Token.query.filter(
-        Token.userId == userId, Token.value == token_value, Token.type == TokenType.ID_CHECK
-    ).one_or_none()
-
-    if not token:
-        raise exceptions.NotValidCode()
-
-    if token.expirationDate and token.expirationDate < datetime.now() or token.isUsed:
-        raise exceptions.ExpiredCode()
-
-    return token
-
-
-def _get_identity_document_informations(image_storage_path: str) -> Tuple[str, bytes]:
-    image_blob: Blob = users_utils.get_object(image_storage_path)
-    if not image_blob:
-        # This means the image cannot be downloaded.
-        # It either has been treated or there is a network problem
-        logger.warning("No image_blob to download at storage path: %s", image_storage_path)
-        raise exceptions.IdentityDocumentVerificationException()
-    email = image_blob.metadata.get("email", "").strip()
-    if email == "":
-        logger.error("No email in image metadata at storage path: %s", image_storage_path)
-        raise exceptions.MissingEmailInMetadataException()
-    image = image_blob.download_as_bytes()
-
-    return (email, image)
 
 
 @contextmanager
