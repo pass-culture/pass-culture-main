@@ -23,6 +23,7 @@ def install_commands(app: flask.Flask) -> None:
         "pcapi.scripts.provider.check_provider_api",
         "pcapi.scripts.sandbox",
         "pcapi.scripts.update_providables",
+        "pcapi.utils.human_ids",
         "pcapi.workers.worker",
     )
 
