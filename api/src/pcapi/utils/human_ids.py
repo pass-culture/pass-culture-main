@@ -1,8 +1,10 @@
-""" human_ids """
 from base64 import b32decode
 from base64 import b32encode
 import binascii
 from typing import Optional
+
+import click
+from flask import Blueprint
 
 
 # This library creates IDs for use in our URLs,
@@ -10,6 +12,9 @@ from typing import Optional
 # length and being usable by humans
 # We use base32, but replace O and I, which can be mistaken for 0 and 1
 # by 8 and 9
+
+
+blueprint = Blueprint(__name__, __name__)
 
 
 class NonDehumanizableId(Exception):
@@ -47,3 +52,19 @@ def int_to_bytes(x: int) -> bytes:
 
 def int_from_bytes(xbytes: bytes) -> int:
     return int.from_bytes(xbytes, "big")
+
+
+@blueprint.cli.command("humanize")
+@click.argument("int_ids", nargs=-1, required=True, type=int)
+def command_humanize(int_ids: tuple[int]):
+    """Print humanized version of the requested identifier(s)."""
+    for int_id in int_ids:
+        print(humanize(int_id))
+
+
+@blueprint.cli.command("dehumanize")
+@click.argument("human_ids", nargs=-1, required=True, type=str)
+def command_dehumanize(human_ids: tuple[str]):
+    """Print integer value of the requested humanized identifier(s)."""
+    for human_id in human_ids:
+        print(dehumanize(human_id))
