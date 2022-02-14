@@ -60,15 +60,21 @@ const OfferEducationalStockEdition = (): JSX.Element => {
       values,
       initialValues,
     })
+    const offerResponse = await getStockOfferAdapter(offerId)
+    setOffer(offerResponse.payload)
 
     if (!stockResponse.isOk) {
       return notify.error(stockResponse.message)
     }
 
+    if (!offerResponse.isOk) {
+      return notify.error(offerResponse.message)
+    }
+
     notify.success(stockResponse.message)
     const initialValuesFromStock = extractInitialStockValues(
       stockResponse.payload,
-      offer
+      offerResponse.payload
     )
     setInitialValues(initialValuesFromStock)
   }
