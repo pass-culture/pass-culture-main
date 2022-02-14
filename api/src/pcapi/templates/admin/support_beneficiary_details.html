@@ -113,10 +113,10 @@
         <th scope="row">Compte actif</th>
         <td>{{ model.isActive|yesno }}</td>
       </tr>
-      {% if model.suspensionReason %}
+      {% if model.suspension_reason %}
       <tr>
         <th scope="row">L'utilisateur est suspendu</th>
-        <td>{{ model.suspensionReason }}</td>
+        <td>{{ model.suspension_reason|suspension_reason_format }}</td>
       </tr>
       {% endif %}
       <tr>
@@ -169,7 +169,7 @@
     <table class="table">
       <tr>
         <th scope="row">Auteur</th>
-        <td>{{ model.beneficiaryFraudReview.author.firstName }}{{ model.beneficiaryFraudReview.author.lastName }}</td>
+        <td>{{ model.beneficiaryFraudReview.author.firstName }} {{ model.beneficiaryFraudReview.author.lastName }}</td>
       </tr>
 
       <tr>
@@ -190,6 +190,44 @@
   </div>
   {% endif %}
 </div>
+
+{% if model.suspension_history|length > 0 %}
+<div class="section">
+  <h3>Historique des suspensions de compte</h3>
+  <table class="table table-striped table-hover">
+    <thead>
+      <tr>
+        <th scope="col">Événement</th>
+        <th scope="col">Date</th>
+        <th scope="col">Auteur</th>
+        <th scope="col">Explication</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for suspension_event in model.suspension_history %}
+      <tr>
+        <td>{{ suspension_event.eventType|suspension_event_format }}</td>
+        <td>
+          {% if suspension_event.eventDate %}
+            {{ suspension_event.eventDate.strftime('le %d/%m/%Y à %H:%M:%S') }}
+          {% else %}
+            -
+          {% endif %}
+        </td>
+        <td>
+          {% if suspension_event.actorUser %}
+            {{ suspension_event.actorUser.firstName }} {{ suspension_event.actorUser.lastName }}
+          {% else %}
+            -
+          {% endif %}
+        </td>
+        <td>{{ suspension_event.reasonCode|suspension_reason_format }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endif %}
 
 <div class="section">
   <h3>Historique des changements d'adresse email</h3>

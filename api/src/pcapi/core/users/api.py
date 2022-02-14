@@ -309,10 +309,16 @@ def suspend_account(user: User, reason: constants.SuspensionReason, actor: User)
     import pcapi.core.bookings.api as bookings_api  # avoid import loop
 
     user.isActive = False
-    user.suspensionReason = str(reason)
+    user_suspension = models.UserSuspension(
+        user=user,
+        eventType=models.SuspensionEventType.SUSPENDED,
+        actorUser=actor,
+        reasonCode=reason,
+    )
     user.remove_admin_role()
     user.setPassword(secrets.token_urlsafe(30))
     repository.save(user)
+    repository.save(user_suspension)
 
     sessions = UserSession.query.filter_by(userId=user.id)
     repository.delete(*sessions)
@@ -354,8 +360,14 @@ def suspend_account(user: User, reason: constants.SuspensionReason, actor: User)
 
 def unsuspend_account(user: User, actor: User) -> None:
     user.isActive = True
-    user.suspensionReason = ""
+    user.suspensionReason = ""  # TODO(prouzet) Remove when suspensionReason data in prod is migrated to user_suspension
+    user_suspension = models.UserSuspension(
+        user=user,
+        eventType=models.SuspensionEventType.UNSUSPENDED,
+        actorUser=actor,
+    )
     repository.save(user)
+    repository.save(user_suspension)
 
     logger.info(
         "Account has been unsuspended",
@@ -368,8 +380,18 @@ def unsuspend_account(user: User, actor: User) -> None:
 
 def bulk_unsuspend_account(user_ids: list[int], actor: User) -> None:
     User.query.filter(User.id.in_(user_ids)).update(
-        values={"isActive": True, "suspensionReason": ""}, synchronize_session=False
+        # TODO(prouzet) Remove suspensionReason param when suspensionReason data in prod is migrated to user_suspension
+        values={"isActive": True, "suspensionReason": ""},
+        synchronize_session=False,
     )
+    for user_id in user_ids:
+        db.session.add(
+            models.UserSuspension(
+                userId=user_id,
+                eventType=models.SuspensionEventType.UNSUSPENDED,
+                actorUser=actor,
+            )
+        )
     db.session.commit()
 
     logger.info(

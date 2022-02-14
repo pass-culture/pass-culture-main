@@ -21,6 +21,8 @@ from sqlalchemy.sql.functions import func
 
 from pcapi import settings
 from pcapi.core.users import utils as users_utils
+from pcapi.core.users.constants import SuspensionEventType
+from pcapi.core.users.constants import SuspensionReason
 from pcapi.core.users.exceptions import InvalidUserRoleException
 from pcapi.models import Model
 from pcapi.models import db
@@ -213,6 +215,7 @@ class User(PcObject, Model, NeedsValidationMixin):
     subscriptionState = sa.Column(sa.Enum(SubscriptionState, create_constraint=False), nullable=True)
     # FIXME (dbaty, 2020-12-14): once v114 has been deployed, populate
     # existing rows with the empty string and add NOT NULL constraint.
+    # TODO(prouzet) Remove when suspensionReason data in prod is migrated to user_suspension
     suspensionReason = sa.Column(sa.Text, nullable=True, default="")
 
     def _add_role(self, role: UserRole) -> None:
@@ -386,6 +389,34 @@ class User(PcObject, Model, NeedsValidationMixin):
     @property
     def wallet_is_activated(self):
         return len(self.deposits) > 0
+
+    @property
+    def suspension_reason(self) -> Optional[str]:
+        """
+        Reason for the active suspension.
+        suspension_history is sorted by ascending date so the last item is the most recent (see UserSuspension).
+        """
+        if not self.isActive:
+            if self.suspension_history and self.suspension_history[-1].eventType == SuspensionEventType.SUSPENDED:
+                return self.suspension_history[-1].reasonCode
+            # TODO(prouzet) Remove when suspensionReason data in prod is migrated to user_suspension
+            if self.suspensionReason:
+                return SuspensionReason(self.suspensionReason)
+        return None
+
+    @property
+    def suspension_date(self) -> Optional[datetime]:
+        """
+        Date and time when the inactive account was suspended for the last time.
+        suspension_history is sorted by ascending date so the last item is the most recent (see UserSuspension).
+        """
+        if (
+            not self.isActive
+            and self.suspension_history
+            and self.suspension_history[-1].eventType == SuspensionEventType.SUSPENDED
+        ):
+            return self.suspension_history[-1].eventDate
+        return None
 
     @hybrid_property
     def is_beneficiary(self):
@@ -598,3 +629,31 @@ class UserEmailHistory(PcObject, Model):
     @newEmail.expression
     def newEmail(cls):  # pylint: disable=no-self-argument # type: ignore[no-redef]
         return func.concat(cls.newUserEmail, "@", cls.newDomainEmail)
+
+
+class UserSuspension(PcObject, Model):
+    __tablename__ = "user_suspension"
+
+    id = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
+
+    userId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id", ondelete="CASCADE"), index=True, nullable=False)
+    user = orm.relationship(
+        "User",
+        foreign_keys=[userId],
+        backref=orm.backref(
+            "suspension_history", order_by="UserSuspension.eventDate.asc().nullsfirst()", passive_deletes=True
+        ),
+    )
+
+    eventType = sa.Column(sa.Enum(SuspensionEventType), nullable=False)
+
+    # nullable because of old suspensions without date migrated here; but mandatory for new actions
+    eventDate = sa.Column(sa.DateTime, nullable=True, server_default=sa.func.now())
+
+    # Super-admin or the user himself who initiated the suspension event on user account
+    # nullable because of old suspensions without author migrated here; but mandatory for new actions
+    actorUserId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id", ondelete="SET NULL"), nullable=True)
+    actorUser = orm.relationship("User", foreign_keys=[actorUserId])
+
+    # Reason is filled in only when suspended but could be useful also when unsuspended for support traceability
+    reasonCode = sa.Column(sa.Enum(SuspensionReason), nullable=True)

@@ -94,10 +94,11 @@ class ProUserView(SuspensionMixin, BaseAdminView):
         validationToken="Jeton de validation d'adresse email",
         has_beneficiary_role="Bénéficiaire 18 ans ?",
         has_underage_beneficiary_role="Bénéficiaire 15-17 ?",
+        suspension_history="Historique de suspension",
     )
     column_searchable_list = ["id", "publicName", "email", "firstName", "lastName"]
     column_filters = ["postalCode", "has_beneficiary_role", "has_underage_beneficiary_role", "isEmailValidated"]
-    column_details_list = ["comment"]
+    column_details_list = ["suspension_history", "comment"]
 
     form_create_rules = (
         rules.Header("Utilisateur créé :"),

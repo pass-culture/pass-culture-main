@@ -1316,17 +1316,38 @@ class ValidatePhoneNumberTest:
         assert int(app.redis_client.get(f"phone_validation_attempts_user_{user.id}")) == 1
 
 
-def test_suspend_account(client, app):
-    booking = booking_factories.IndividualBookingFactory()
-    user = booking.individualBooking.user
+class SuspendAccountTest:
+    def test_suspend_account(self, client, app):
+        booking = booking_factories.IndividualBookingFactory()
+        user = booking.individualBooking.user
 
-    client.with_token(email=user.email)
-    response = client.post("/native/v1/account/suspend")
+        client.with_token(email=user.email)
+        response = client.post("/native/v1/account/suspend")
 
-    assert response.status_code == 204
-    assert booking.status == BookingStatus.CANCELLED
-    assert not user.isActive
-    assert user.suspensionReason == SuspensionReason.UPON_USER_REQUEST.value
+        assert response.status_code == 204
+        assert booking.status == BookingStatus.CANCELLED
+        db.session.refresh(user)
+        assert not user.isActive
+        assert user.suspension_reason == SuspensionReason.UPON_USER_REQUEST
+        assert user.suspension_date
+        assert len(user.suspension_history) == 1
+        assert user.suspension_history[0].userId == user.id
+        assert user.suspension_history[0].actorUserId == user.id
+
+    def test_suspend_suspended_account(self, client, app):
+        # Ensure that a beneficiary user can't change the reason for being suspended
+        user = users_factories.BeneficiaryGrant18Factory(isActive=False)
+        user_suspension = users_factories.UserSuspensionFactory(user=user)
+
+        client.with_token(email=user.email)
+        response = client.post("/native/v1/account/suspend")
+
+        # Any API call is forbidden for suspended user
+        assert response.status_code == 403
+        db.session.refresh(user)
+        assert not user.isActive
+        assert user.suspension_reason == user_suspension.reasonCode
+        assert len(user.suspension_history) == 1
 
 
 class ProfilingFraudScoreTest:

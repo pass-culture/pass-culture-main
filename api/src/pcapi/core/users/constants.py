@@ -82,6 +82,20 @@ SUSPENSION_REASON_CHOICES = (
 
 assert set(_t[0] for _t in SUSPENSION_REASON_CHOICES) == set(SuspensionReason)
 
+
+class SuspensionEventType(Enum):
+    SUSPENDED = "SUSPENDED"
+    UNSUSPENDED = "UNSUSPENDED"
+
+
+SUSPENSION_EVENT_TYPE_CHOICES = (
+    (SuspensionEventType.SUSPENDED, "Suspendu"),
+    (SuspensionEventType.UNSUSPENDED, "Réactivé"),
+)
+
+assert set(_t[0] for _t in SUSPENSION_EVENT_TYPE_CHOICES) == set(SuspensionEventType)
+
+
 PHONE_PREFIX_BY_DEPARTEMENT_CODE = {
     "971": "590",  # Guadeloupe
     "972": "596",  # Martinique
