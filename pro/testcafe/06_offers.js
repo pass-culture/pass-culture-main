@@ -323,7 +323,9 @@ test("Je suis redirigé sur la page de choix du type d'offre si je clique sur re
     .eql('/offre/creation')
 })
 
-test("Je suis redirigé sur la liste des offres si je clique sur retour à partir de la page des stock au moment de la création d'offre", async t => {
+// skip this test until flakiness is fixed
+// eslint-disable-next-line jest/no-disabled-tests
+test.skip("Je suis redirigé sur la liste des offres si je clique sur retour à partir de la page des stock au moment de la création d'offre", async t => {
   const { user } = await fetchSandbox(
     'pro_07_offer',
     'get_existing_pro_validated_user_with_validated_offerer_validated_user_offerer_with_physical_venue'
@@ -395,7 +397,9 @@ test("Je suis redirigé sur la liste des offres si je clique sur retour à parti
   await t.expect(getPathname()).eql('/offres')
 })
 
-test('Je suis redirigé sur la liste des offres si je clique sur retour à partir de la page de création quand je viens de la confirmation', async t => {
+// skip this test until flakiness is fixed
+// eslint-disable-next-line jest/no-disabled-tests
+test.skip('Je suis redirigé sur la liste des offres si je clique sur retour à partir de la page de création quand je viens de la confirmation', async t => {
   const { user } = await fetchSandbox(
     'pro_07_offer',
     'get_existing_pro_validated_user_with_validated_offerer_validated_user_offerer_with_physical_venue'
