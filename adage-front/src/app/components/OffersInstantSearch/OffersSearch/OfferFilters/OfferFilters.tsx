@@ -58,7 +58,7 @@ export const OfferFilters = ({
 
   return (
     <div className={className}>
-      <span className="offer-filters-title">Filter par :</span>
+      <span className="offer-filters-title">Filtrer par :</span>
       <div className="offer-filters-row">
         <MultiSelectAutocomplete
           className="offer-filters-filter"
