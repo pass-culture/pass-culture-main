@@ -1,3 +1,4 @@
+from dataclasses import asdict
 from datetime import datetime
 from datetime import timezone
 
@@ -5,11 +6,13 @@ import pytest
 
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.categories import subcategories
+import pcapi.core.mails.testing as mails_testing
+from pcapi.core.mails.transactional.bookings.new_booking_to_pro import get_new_booking_to_pro_email_data
+from pcapi.core.mails.transactional.bookings.new_booking_to_pro import send_user_new_booking_to_pro_email
+from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.factories import ActivationCodeFactory
 from pcapi.core.testing import override_features
-from pcapi.emails.offerer_booking_recap import retrieve_data_for_offerer_booking_recap_email
-from pcapi.utils.human_ids import humanize
 
 
 def make_booking(**kwargs):
@@ -35,38 +38,27 @@ def make_booking(**kwargs):
 
 
 def get_expected_base_email_data(booking, **overrides):
-    offer_id = humanize(booking.stock.offer.id)
-    email_data = {
-        "MJ-TemplateID": 3095147,
-        "MJ-TemplateLanguage": True,
-        "Headers": {
-            "Reply-To": "john@example.com",
-        },
-        "Vars": {
-            "nom_offre": "Super événement",
-            "nom_lieu": "Lieu de l'offreur",
-            "prix": "10.00 €",
-            "date": "06-Nov-2019",
-            "heure": "15h59",
-            "quantity": 1,
-            "user_firstName": "John",
-            "user_lastName": "Doe",
-            "user_email": "john@example.com",
-            "user_phoneNumber": "",
-            "is_event": 1,
-            "can_expire": 0,
-            "expiration_delay": 30,
-            "is_booking_autovalidated": 0,
-            "contremarque": "ABC123",
-            "ISBN": "",
-            "lien_offre_pcpro": f"http://localhost:3001/offre/{offer_id}/individuel/edition",
-            "offer_type": "SPECTACLE_REPRESENTATION",
-            "departement": "75",
-            "must_use_token_for_payment": 1,
-        },
+    email_data_params = {
+        "OFFER_NAME": "Super événement",
+        "VENUE_NAME": "Lieu de l'offreur",
+        "PRICE": "10.00 €",
+        "EVENT_DATE": "06-Nov-2019",
+        "EVENT_HOUR": "15h59",
+        "QUANTITY": 1,
+        "USER_FIRSTNAME": "John",
+        "USER_LASTNAME": "Doe",
+        "USER_EMAIL": "john@example.com",
+        "USER_PHONENUMBER": "",
+        "IS_EVENT": True,
+        "CAN_EXPIRE": False,
+        "IS_BOOKING_AUTOVALIDATED": False,
+        "COUNTERMARK": "ABC123",
+        "ISBN": "",
+        "OFFER_SUBCATEGORY": "SPECTACLE_REPRESENTATION",
+        "MUST_USE_TOKEN_FOR_PAYMENT": True,
     }
-    email_data["Vars"].update(overrides)
-    return email_data
+    email_data_params.update(overrides)
+    return email_data_params
 
 
 class OffererBookingRecapTest:
@@ -74,10 +66,10 @@ class OffererBookingRecapTest:
     def test_with_event(self):
         booking = make_booking()
 
-        email_data = retrieve_data_for_offerer_booking_recap_email(booking.individualBooking)
+        email_data = get_new_booking_to_pro_email_data(booking.individualBooking)
 
         expected = get_expected_base_email_data(booking)
-        assert email_data == expected
+        assert email_data.params == expected
 
     @pytest.mark.usefixtures("db_session")
     def test_with_book(self):
@@ -88,20 +80,18 @@ class OffererBookingRecapTest:
             stock__offer__product__subcategoryId=subcategories.LIVRE_PAPIER.id,
         )
 
-        email_data = retrieve_data_for_offerer_booking_recap_email(booking.individualBooking)
+        email_data = get_new_booking_to_pro_email_data(booking.individualBooking)
 
         expected = get_expected_base_email_data(
             booking,
-            date="",
-            departement="75",
-            heure="",
-            is_event=0,
-            nom_offre="Le récit de voyage",
-            offer_type="book",
-            can_expire=1,
-            expiration_delay=10,
+            EVENT_DATE="",
+            EVENT_HOUR="",
+            IS_EVENT=False,
+            OFFER_NAME="Le récit de voyage",
+            OFFER_SUBCATEGORY="book",
+            CAN_EXPIRE=True,
         )
-        assert email_data == expected
+        assert email_data.params == expected
 
     @override_features(AUTO_ACTIVATE_DIGITAL_BOOKINGS=True)
     @pytest.mark.usefixtures("db_session")
@@ -119,19 +109,18 @@ class OffererBookingRecapTest:
             stock__offer__venue__siret=None,
         )
 
-        email_data = retrieve_data_for_offerer_booking_recap_email(booking.individualBooking)
+        email_data = get_new_booking_to_pro_email_data(booking.individualBooking)
 
         expected = get_expected_base_email_data(
             booking,
-            date="",
-            departement="numérique",
-            heure="",
-            is_event=0,
-            nom_offre="Le récit de voyage",
-            offer_type="SUPPORT_PHYSIQUE_FILM",
-            can_expire=1,
+            EVENT_DATE="",
+            EVENT_HOUR="",
+            IS_EVENT=False,
+            OFFER_NAME="Le récit de voyage",
+            OFFER_SUBCATEGORY="SUPPORT_PHYSIQUE_FILM",
+            CAN_EXPIRE=True,
         )
-        assert email_data == expected
+        assert email_data.params == expected
 
     @pytest.mark.usefixtures("db_session")
     def test_with_book_with_missing_isbn(self):
@@ -148,21 +137,19 @@ class OffererBookingRecapTest:
             stock__offer__venue__siret=None,
         )
 
-        email_data = retrieve_data_for_offerer_booking_recap_email(booking.individualBooking)
+        email_data = get_new_booking_to_pro_email_data(booking.individualBooking)
 
         expected = get_expected_base_email_data(
             booking,
-            date="",
-            departement="numérique",
-            heure="",
-            is_event=0,
-            nom_offre="Le récit de voyage",
-            offer_type="book",
+            EVENT_DATE="",
+            EVENT_HOUR="",
+            IS_EVENT=False,
+            OFFER_NAME="Le récit de voyage",
+            OFFER_SUBCATEGORY="book",
             ISBN="",
-            can_expire=1,
-            expiration_delay=10,
+            CAN_EXPIRE=True,
         )
-        assert email_data == expected
+        assert email_data.params == expected
 
     @pytest.mark.usefixtures("db_session")
     def test_a_digital_booking_expires_after_30_days(self):
@@ -176,22 +163,22 @@ class OffererBookingRecapTest:
         )
 
         # When
-        email_data = retrieve_data_for_offerer_booking_recap_email(booking.individualBooking)
+        email_data = get_new_booking_to_pro_email_data(booking.individualBooking)
 
         # Then
         expected = get_expected_base_email_data(
             booking,
-            date="",
-            heure="",
-            is_event=0,
-            prix="Gratuit",
-            nom_offre="Super offre numérique",
-            offer_type="VOD",
-            quantity=10,
-            can_expire=0,
-            must_use_token_for_payment=0,
+            EVENT_DATE="",
+            EVENT_HOUR="",
+            IS_EVENT=False,
+            PRICE="Gratuit",
+            OFFER_NAME="Super offre numérique",
+            OFFER_SUBCATEGORY="VOD",
+            QUANTITY=10,
+            CAN_EXPIRE=False,
+            MUST_USE_TOKEN_FOR_PAYMENT=False,
         )
-        assert email_data == expected
+        assert email_data.params == expected
 
     @pytest.mark.usefixtures("db_session")
     def test_when_use_token_for_payment(self):
@@ -201,11 +188,11 @@ class OffererBookingRecapTest:
         )
 
         # When
-        email_data = retrieve_data_for_offerer_booking_recap_email(booking.individualBooking)
+        email_data = get_new_booking_to_pro_email_data(booking.individualBooking)
 
         # Then
-        expected = get_expected_base_email_data(booking, must_use_token_for_payment=1)
-        assert email_data == expected
+        expected = get_expected_base_email_data(booking, MUST_USE_TOKEN_FOR_PAYMENT=True)
+        assert email_data.params == expected
 
     @pytest.mark.usefixtures("db_session")
     def test_no_need_when_price_is_free(self):
@@ -215,11 +202,11 @@ class OffererBookingRecapTest:
         )
 
         # When
-        email_data = retrieve_data_for_offerer_booking_recap_email(booking.individualBooking)
+        email_data = get_new_booking_to_pro_email_data(booking.individualBooking)
 
         # Then
-        expected = get_expected_base_email_data(booking, prix="Gratuit", must_use_token_for_payment=0)
-        assert email_data == expected
+        expected = get_expected_base_email_data(booking, PRICE="Gratuit", MUST_USE_TOKEN_FOR_PAYMENT=False)
+        assert email_data.params == expected
 
     @pytest.mark.usefixtures("db_session")
     def test_no_need_when_using_activation_code(self):
@@ -228,11 +215,11 @@ class OffererBookingRecapTest:
         ActivationCodeFactory(stock=booking.stock, booking=booking, code="code_toto")
 
         # When
-        email_data = retrieve_data_for_offerer_booking_recap_email(booking.individualBooking)
+        email_data = get_new_booking_to_pro_email_data(booking.individualBooking)
 
         # Then
-        expected = get_expected_base_email_data(booking, must_use_token_for_payment=0)
-        assert email_data == expected
+        expected = get_expected_base_email_data(booking, MUST_USE_TOKEN_FOR_PAYMENT=False)
+        assert email_data.params == expected
 
     @override_features(AUTO_ACTIVATE_DIGITAL_BOOKINGS=True)
     @pytest.mark.usefixtures("db_session")
@@ -255,20 +242,20 @@ class OffererBookingRecapTest:
         )
 
         # When
-        email_data = retrieve_data_for_offerer_booking_recap_email(booking.individualBooking)
+        email_data = get_new_booking_to_pro_email_data(booking.individualBooking)
 
         # Then
         expected = get_expected_base_email_data(
             booking,
-            date="",
-            heure="",
-            is_event=0,
-            is_booking_autovalidated=1,
-            must_use_token_for_payment=0,
-            offer_type="VOD",
-            contremarque=booking.token,
+            EVENT_DATE="",
+            EVENT_HOUR="",
+            IS_EVENT=False,
+            IS_BOOKING_AUTOVALIDATED=True,
+            MUST_USE_TOKEN_FOR_PAYMENT=False,
+            OFFER_SUBCATEGORY="VOD",
+            COUNTERMARK=booking.token,
         )
-        assert email_data == expected
+        assert email_data.params == expected
 
     @override_features(AUTO_ACTIVATE_DIGITAL_BOOKINGS=True)
     @pytest.mark.usefixtures("db_session")
@@ -291,33 +278,33 @@ class OffererBookingRecapTest:
         )
 
         # When
-        email_data = retrieve_data_for_offerer_booking_recap_email(booking.individualBooking)
+        email_data = get_new_booking_to_pro_email_data(booking.individualBooking)
 
         # Then
         expected = get_expected_base_email_data(
             booking,
-            date="",
-            heure="",
-            prix="10.00 €",
-            is_event=0,
-            nom_offre="Super offre numérique",
-            offer_type="VOD",
-            quantity=1,
-            can_expire=0,
-            is_booking_autovalidated=1,
-            must_use_token_for_payment=0,
-            contremarque=booking.token,
+            EVENT_DATE="",
+            EVENT_HOUR="",
+            PRICE="10.00 €",
+            IS_EVENT=False,
+            OFFER_NAME="Super offre numérique",
+            OFFER_SUBCATEGORY="VOD",
+            QUANTITY=1,
+            CAN_EXPIRE=False,
+            IS_BOOKING_AUTOVALIDATED=True,
+            MUST_USE_TOKEN_FOR_PAYMENT=False,
+            COUNTERMARK=booking.token,
         )
-        assert email_data == expected
+        assert email_data.params == expected
 
     @pytest.mark.usefixtures("db_session")
     def test_should_not_truncate_price(self):
         booking = make_booking(stock__price=5.86)
 
-        email_data = retrieve_data_for_offerer_booking_recap_email(booking.individualBooking)
+        email_data = get_new_booking_to_pro_email_data(booking.individualBooking)
 
-        expected = get_expected_base_email_data(booking, prix="5.86 €")
-        assert email_data == expected
+        expected = get_expected_base_email_data(booking, PRICE="5.86 €")
+        assert email_data.params == expected
 
     @pytest.mark.usefixtures("db_session")
     def test_should_use_venue_public_name_when_available(self):
@@ -326,31 +313,32 @@ class OffererBookingRecapTest:
             stock__offer__venue__publicName="Public name",
         )
 
-        email_data = retrieve_data_for_offerer_booking_recap_email(booking.individualBooking)
+        email_data = get_new_booking_to_pro_email_data(booking.individualBooking)
 
-        expected = get_expected_base_email_data(booking, nom_lieu="Public name")
-        assert email_data == expected
+        expected = get_expected_base_email_data(booking, VENUE_NAME="Public name")
+        assert email_data.params == expected
 
     @pytest.mark.usefixtures("db_session")
-    def test_should_add_user_phone_number_to_vars(self):
+    def test_should_add_user_phone_number_to_params(self):
         # given
         booking = make_booking(individualBooking__user__phoneNumber="0123456789")
 
         # when
-        email_data = retrieve_data_for_offerer_booking_recap_email(booking.individualBooking)
+        email_data = get_new_booking_to_pro_email_data(booking.individualBooking)
 
         # then
-        template_vars = email_data["Vars"]
-        assert template_vars["user_phoneNumber"] == "0123456789"
+        assert email_data.params["USER_PHONENUMBER"] == "0123456789"
 
+
+class SendNewBookingEmailToProTest:
     @pytest.mark.usefixtures("db_session")
-    def test_should_add_reply_to_header_with_beneficiary_email(self):
-        # given
-        booking = make_booking(individualBooking__user__email="beneficiary@example.com")
+    def test_send_to_offerer(self):
+        booking = bookings_factories.IndividualBookingFactory(
+            stock__offer__bookingEmail="booking.email@example.com",
+        )
 
-        # when
-        email_data = retrieve_data_for_offerer_booking_recap_email(booking.individualBooking)
+        send_user_new_booking_to_pro_email(booking.individualBooking)
 
-        # then
-        template_headers = email_data["Headers"]
-        assert template_headers["Reply-To"] == "beneficiary@example.com"
+        assert len(mails_testing.outbox) == 1  # test number of emails sent
+        assert mails_testing.outbox[0].sent_data["To"] == "booking.email@example.com"
+        assert mails_testing.outbox[0].sent_data["template"] == asdict(TransactionalEmail.NEW_BOOKING_TO_PRO.value)
