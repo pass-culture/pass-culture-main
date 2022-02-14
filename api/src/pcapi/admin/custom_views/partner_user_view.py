@@ -63,11 +63,12 @@ class PartnerUserView(ResendValidationEmailMixin, SuspensionMixin, BaseAdminView
         phoneNumber="Numéro de téléphone",
         postalCode="Code postal",
         isEmailValidated="Email validé ?",
+        suspension_history="Historique de suspension",
     )
 
     column_searchable_list = ["id", "publicName", "email", "firstName", "lastName"]
     column_filters = ["isEmailValidated"]
-    column_details_list = ["comment"]
+    column_details_list = ["suspension_history", "comment"]
 
     @property
     def form_columns(self):

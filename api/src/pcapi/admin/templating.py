@@ -6,6 +6,7 @@ from markupsafe import Markup
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.users import models as users_models
+import pcapi.core.users.constants as users_constants
 
 
 logger = logging.getLogger(__name__)
@@ -74,3 +75,12 @@ def eligibility_format(eligibility_type: users_models.EligibilityType) -> str:
         css_class="info" if eligibility_type else "void",
         text=text,
     )
+
+
+def suspension_event_format(event_type: users_constants.SuspensionEventType) -> str:
+    return Markup("<span>{text}</span>").format(text=dict(users_constants.SUSPENSION_EVENT_TYPE_CHOICES)[event_type])
+
+
+def suspension_reason_format(suspension_reason: typing.Optional[users_constants.SuspensionReason]) -> str:
+    text = dict(users_constants.SUSPENSION_REASON_CHOICES)[suspension_reason] if suspension_reason else ""
+    return Markup("<span>{text}</span>").format(text=text)

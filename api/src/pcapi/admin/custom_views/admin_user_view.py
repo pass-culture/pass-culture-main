@@ -55,10 +55,11 @@ class AdminUserView(SuspensionMixin, BaseAdminView):
         has_underage_beneficiary_role="Bénéficiaire 15-17 ?",
         isEmailValidated="Email validé ?",
         publicName="Nom d'utilisateur",
+        suspension_history="Historique de suspension",
     )
     column_searchable_list = ["id", "publicName", "email", "firstName", "lastName"]
     column_filters = ["email", "isEmailValidated"]
-    column_details_list = ["comment"]
+    column_details_list = ["suspension_history", "comment"]
 
     @property
     def form_columns(self):
