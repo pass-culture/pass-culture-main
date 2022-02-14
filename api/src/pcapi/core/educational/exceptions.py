@@ -44,10 +44,6 @@ class EducationalBookingNotFound(Exception):
     pass
 
 
-class EducationalBookingNotConfirmedYet(Exception):
-    pass
-
-
 class EducationalBookingNotRefusable(Exception):
     pass
 
