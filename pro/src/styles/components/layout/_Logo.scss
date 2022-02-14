@@ -21,41 +21,9 @@ a.logo {
     cursor: inherit;
 
     img {
-      height: rem(239px);
+      height: auto;
       max-height: none;
-      padding: 0 rem(32px);
-      width: rem(456px);
-    }
-  }
-
-  .logo-subtitle {
-    @include title4();
-
-    color: $white;
-    margin-top: rem(27px);
-  }
-
-  .logo-subtitle-highlighted {
-    @include body-important();
-
-    color: $secondary;
-    margin: 0 rem(1px);
-    padding: rem(1px) rem(4px);
-    position: relative;
-    z-index: 10;
-
-    &::after {
-      background-color: $white;
-      border-radius: 2px;
-      content: '';
-      height: rem(22px);
-      left: 0;
-      padding: rem(1px) 0;
-      position: absolute;
-      top: 0;
-      transform: rotate(-1deg);
-      width: rem(141px);
-      z-index: -1;
+      margin-left: rem(55px);
     }
   }
 }
