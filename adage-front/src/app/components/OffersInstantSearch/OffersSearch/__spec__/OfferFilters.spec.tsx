@@ -1,11 +1,12 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import React from 'react'
 
-import { VenueFilterType } from '../../../../../utils/types'
 import {
   findLaunchSearchButton,
   queryResetFiltersButton,
-} from '../../../../__spec__/__test_utils__/elements'
+} from 'app/__spec__/__test_utils__/elements'
+import { VenueFilterType } from 'utils/types'
+
 import { OfferFilters } from '../OfferFilters/OfferFilters'
 
 const renderOfferFilters = props => {
