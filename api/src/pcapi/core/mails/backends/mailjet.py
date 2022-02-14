@@ -33,7 +33,15 @@ class MailjetBackend(BaseBackend):
     def __init__(self):
         super().__init__()
         auth = (settings.MAILJET_API_KEY, settings.MAILJET_API_SECRET)
-        self.mailjet_client = mailjet_rest.Client(auth=auth, version="v3")
+        self.mailjet_client = mailjet_rest.Client(
+            auth=auth,
+            version="v3",
+            # The mailjet_rest package used `api.eu.mailjet.com` until
+            # version 1.3.3, but the SSL certificate expires on
+            # 2022-02-20, leading us to think that we should use
+            # another domain instead.
+            api_url="https://api.mailjet.com/",
+        )
 
     def _send(self, recipients: Iterable[str], data: dict) -> MailResult:
         data["To"] = ", ".join(recipients)

@@ -47,7 +47,7 @@ class SendTest:
         expected = copy.deepcopy(self.expected_sent_data)
         expected["MJ-TemplateErrorReporting"] = "dev@example.com"
         with requests_mock.Mocker() as mock:
-            posted = mock.post("https://api.eu.mailjet.com/v3/send")
+            posted = mock.post("https://api.mailjet.com/v3/send")
             successful = mails.send(recipients=self.recipients, data=self.data)
             assert posted.last_request.json() == expected
         assert successful
@@ -74,7 +74,7 @@ class MailjetBackendTest:
     def test_send_mail(self):
         backend = self._get_backend()
         with requests_mock.Mocker() as mock:
-            posted = mock.post("https://api.eu.mailjet.com/v3/send")
+            posted = mock.post("https://api.mailjet.com/v3/send")
             result = backend.send_mail(recipients=self.recipients, data=self.data)
 
         assert posted.last_request.json() == self.expected_sent_data
@@ -83,7 +83,7 @@ class MailjetBackendTest:
     def test_send_mail_with_error_response(self):
         backend = self._get_backend()
         with requests_mock.Mocker() as mock:
-            posted = mock.post("https://api.eu.mailjet.com/v3/send", status_code=400)
+            posted = mock.post("https://api.mailjet.com/v3/send", status_code=400)
             result = backend.send_mail(recipients=self.recipients, data=self.data)
 
         assert posted.last_request.json() == self.expected_sent_data
@@ -92,7 +92,7 @@ class MailjetBackendTest:
     def test_send_mail_with_timeout(self):
         backend = self._get_backend()
         with requests_mock.Mocker() as mock:
-            mock.post("https://api.eu.mailjet.com/v3/send", exc=requests.exceptions.ConnectTimeout)
+            mock.post("https://api.mailjet.com/v3/send", exc=requests.exceptions.ConnectTimeout)
             result = backend.send_mail(recipients=self.recipients, data=self.data)
         assert not result.successful
 
@@ -100,7 +100,7 @@ class MailjetBackendTest:
     def test_use_our_requests_wrapper_that_logs(self, mocked_logger):
         backend = self._get_backend()
         with requests_mock.Mocker() as mock:
-            posted = mock.post("https://api.eu.mailjet.com/v3/send")
+            posted = mock.post("https://api.mailjet.com/v3/send")
             backend.send_mail(recipients=self.recipients, data=self.data)
 
         assert posted.last_request.json() == self.expected_sent_data
@@ -123,7 +123,7 @@ class ToDevMailjetBackendTest:
     def test_send_mail_overrides_recipients(self):
         backend = self._get_backend()
         with requests_mock.Mocker() as mock:
-            posted = mock.post("https://api.eu.mailjet.com/v3/send")
+            posted = mock.post("https://api.mailjet.com/v3/send")
             result = backend.send_mail(recipients=self.recipients, data=self.data)
 
         expected = copy.deepcopy(self.expected_sent_data)
@@ -135,7 +135,7 @@ class ToDevMailjetBackendTest:
     def test_send_mail_if_any_recipient_is_whitelisted(self):
         backend = self._get_backend()
         with requests_mock.Mocker() as mock:
-            posted = mock.post("https://api.eu.mailjet.com/v3/send")
+            posted = mock.post("https://api.mailjet.com/v3/send")
             result = backend.send_mail(recipients=self.recipients, data=self.data)
 
         assert posted.last_request.json() == self.expected_sent_data
@@ -147,7 +147,7 @@ class ToDevMailjetBackendTest:
         data["Html-part"] = "<div>some HTML...<div>"
 
         with requests_mock.Mocker() as mock:
-            posted = mock.post("https://api.eu.mailjet.com/v3/send")
+            posted = mock.post("https://api.mailjet.com/v3/send")
             result = backend.send_mail(recipients=self.recipients, data=data)
 
         expected = copy.deepcopy(self.expected_sent_data)
