@@ -3,14 +3,15 @@ import { useParams } from 'react-router'
 
 import useNotification from 'components/hooks/useNotification'
 import Spinner from 'components/layout/Spinner'
-import { getStockOfferAdapter } from 'core/OfferEducational'
-import { OfferStatus } from 'custom_types/offer'
+import {
+  getStockOfferAdapter,
+  GetStockOfferSuccessPayload,
+} from 'core/OfferEducational'
 import OfferEducationalConfirmationScreen from 'screens/OfferEducationalConfirmation'
 
 const OfferEducationalConfirmation = (): JSX.Element => {
   const { offerId } = useParams<{ offerId: string }>()
-  const [offerStatus, setOfferStatus] = useState<undefined | OfferStatus>()
-  const [offererId, setOffererId] = useState<string>()
+  const [offer, setOffer] = useState<GetStockOfferSuccessPayload>()
   const notify = useNotification()
 
   useEffect(() => {
@@ -21,21 +22,21 @@ const OfferEducationalConfirmation = (): JSX.Element => {
         return notify.error(offerResponse.message)
       }
 
-      setOfferStatus(offerResponse.payload.status)
-      setOffererId(offerResponse.payload.managingOffererId)
+      setOffer(offerResponse.payload)
     }
 
     loadOffer()
   }, [offerId, notify])
 
-  if (!offerStatus) {
+  if (!offer) {
     return <Spinner />
   }
 
   return (
     <OfferEducationalConfirmationScreen
-      offerStatus={offerStatus}
-      offererId={offererId}
+      isShowcase={offer?.isShowcase}
+      offerStatus={offer?.status}
+      offererId={offer?.managingOffererId}
     />
   )
 }
