@@ -229,7 +229,6 @@ test("Je suis empêché de quitter la création d'offre sans confirmation", asyn
     .click(venueOption.withText(venue.name))
     .click(noDisabilityCompliantCheckbox)
     .click(navBrandLogoItem)
-    .wait(200) // RouteLeavingGuard take time to block navigation.
     .expect(exitOfferCreationMessage.exists)
     .ok()
     .click(exitOfferCreationDialogCancelButton)
@@ -237,7 +236,6 @@ test("Je suis empêché de quitter la création d'offre sans confirmation", asyn
     .expect(getPathname())
     .match(/\/offre\/([A-Z0-9]+)\/individuel\/stocks$/)
     .click(navBrandLogoItem())
-    .wait(200) // RouteLeavingGuard take time to block navigation.
     .expect(exitOfferCreationMessage.exists)
     .ok()
     .click(exitOfferCreationDialogCancelButton)
@@ -265,7 +263,6 @@ test("Je peux quitter la création d'offre avec confirmation", async t => {
     .click(venueOption.withText(venue.name))
     .click(noDisabilityCompliantCheckbox)
     .click(navBrandLogoItem)
-    .wait(200) // RouteLeavingGuard take time to block navigation.
     .expect(exitOfferCreationMessage.exists)
     .ok()
     .click(exitOfferCreationDialogConfirmButton)
@@ -311,9 +308,7 @@ test("Je suis redirigé sur la page de choix du type d'offre si je clique sur re
     .click(subcategoryOption.withText('Support physique (DVD, Blu-ray...)'))
     .typeText(nameInput, 'Rencontre avec Franck Lepage')
 
-  // RouteLeavingGuard take time to block navigation.
   await goBack()
-  await t.wait(200)
 
   await t
     .expect(exitOfferCreationMessage.exists)
@@ -345,9 +340,7 @@ test.skip("Je suis redirigé sur la liste des offres si je clique sur retour à 
     .expect(getPathname())
     .match(/\/offre\/([A-Z0-9]+)\/individuel\/stocks$/)
 
-  // RouteLeavingGuard take time to block navigation.
   await goBack()
-  await t.wait(200)
 
   await t
     .expect(exitOfferCreationMessage.exists)
@@ -390,9 +383,7 @@ test("Je suis redirigé sur la liste des offres si je clique sur retour à parti
     .expect(getPathname())
     .match(/\/offre\/([A-Z0-9]+)\/individuel\/confirmation$/)
 
-  // RouteLeavingGuard take time to block navigation.
   await goBack()
-  await t.wait(200)
 
   await t.expect(getPathname()).eql('/offres')
 })
@@ -435,9 +426,6 @@ test.skip('Je suis redirigé sur la liste des offres si je clique sur retour à 
     .match(/\/offre\/creation\/individuel$/)
 
   await goBack()
-
-  // RouteLeavingGuard take time to block navigation.
-  await t.wait(200)
 
   await t
     .expect(exitOfferCreationMessage.exists)
