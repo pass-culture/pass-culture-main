@@ -510,13 +510,6 @@ class ExpenseDomain(enum.Enum):
 
 
 @dataclass
-class Expense:
-    domain: ExpenseDomain
-    current: Decimal
-    limit: Decimal
-
-
-@dataclass
 class Credit:
     initial: Decimal
     remaining: Decimal
