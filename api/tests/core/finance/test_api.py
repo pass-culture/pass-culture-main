@@ -750,9 +750,11 @@ def test_genererate_invoice_file():
     )
 
     path = api.generate_invoice_file()
-
-    reader = csv.DictReader(path.open(), quoting=csv.QUOTE_NONNUMERIC)
-    rows = list(reader)
+    with zipfile.ZipFile(path) as zfile:
+        with zfile.open("invoices.csv") as csv_bytefile:
+            csv_textfile = io.TextIOWrapper(csv_bytefile)
+            reader = csv.DictReader(csv_textfile, quoting=csv.QUOTE_NONNUMERIC)
+            rows = list(reader)
     assert len(rows) == 2
     assert rows[0] == {
         "Identifiant de la BU": human_ids.humanize(invoice.businessUnit.venues[0].id),
