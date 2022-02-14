@@ -101,37 +101,6 @@ def on_dms_fraud_result(
     return fraud_check
 
 
-def admin_update_identity_fraud_check_result(
-    user: users_models.User, id_piece_number: str
-) -> typing.Union[models.BeneficiaryFraudCheck, None]:
-    # Do not filter on eligibilityType here, a manual action validates the last one, either 15-17 or 18
-    fraud_check = (
-        models.BeneficiaryFraudCheck.query.filter(
-            models.BeneficiaryFraudCheck.userId == user.id,
-            models.BeneficiaryFraudCheck.type.in_(
-                [
-                    models.FraudCheckType.JOUVE,
-                    models.FraudCheckType.DMS,
-                ]
-            ),
-        )
-        .order_by(models.BeneficiaryFraudCheck.dateCreated.desc())
-        .first()
-    )
-    if not fraud_check:
-        return None
-    content = fraud_check.source_data()
-    if fraud_check.type == models.FraudCheckType.JOUVE:
-        content.bodyPieceNumber = id_piece_number
-        content.bodyPieceNumberCtrl = "OK"
-        content.bodyPieceNumberLevel = 100
-    if fraud_check.type == models.FraudCheckType.DMS:
-        content.id_piece_number = id_piece_number
-    fraud_check.resultContent = content.dict()
-    repository.save(fraud_check)
-    return fraud_check
-
-
 def educonnect_fraud_checks(
     user: users_models.User, beneficiary_fraud_check: models.BeneficiaryFraudCheck
 ) -> list[models.FraudItem]:

@@ -207,18 +207,6 @@ class DMSFraudCheckTest:
 
         assert fraud_check.eligibilityType == users_models.EligibilityType.AGE18
 
-    def test_admin_update_identity_fraud_check_result(self):
-        user = users_factories.UserFactory()
-
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            type=fraud_models.FraudCheckType.DMS,
-            user=user,
-        )
-
-        fraud_check = fraud_api.admin_update_identity_fraud_check_result(user, "id-piece-number")
-        content = fraud_check.source_data()
-        assert content.id_piece_number == "id-piece-number"
-
 
 @pytest.mark.usefixtures("db_session")
 class EduconnectFraudTest:
