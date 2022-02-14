@@ -1210,6 +1210,103 @@ class GetCsvReportTest:
         assert data_dict["Statut de la contremarque"] == booking_repository.BOOKING_STATUS_LABELS[booking.status]
         assert data_dict["Date et heure de remboursement"] == ""
 
+    def test_should_return_only_validated_bookings_for_requested_period(self, app: fixture):
+        pro = users_factories.ProFactory()
+        offerer = offers_factories.OffererFactory()
+        offers_factories.UserOffererFactory(user=pro, offerer=offerer)
+        venue = offers_factories.VenueFactory(managingOfferer=offerer)
+
+        booking_date = datetime(2020, 1, 1, 10, 0, 0)
+
+        bookings_factories.UsedIndividualBookingFactory(
+            stock__offer__venue=venue,
+            quantity=1,
+            dateCreated=booking_date,
+            dateUsed=(booking_date + timedelta(days=1)),
+            stock__offer__name="Harry Potter Vol 1",
+        )
+        bo = bookings_factories.EducationalBookingFactory(
+            stock__offer__venue=venue,
+            dateCreated=booking_date,
+            dateUsed=(booking_date + timedelta(days=3)),
+            stock__offer__name="Harry Potter Vol 2",
+        )
+        bookings_factories.UsedIndividualBookingFactory(
+            stock__offer__venue=venue,
+            quantity=1,
+            dateCreated=booking_date,
+            dateUsed=(booking_date + timedelta(days=4)),
+            stock__offer__name="Harry Potter Vol 3",
+        )
+        bookings_factories.UsedIndividualBookingFactory(
+            stock__offer__venue=venue,
+            quantity=1,
+            dateCreated=booking_date,
+            dateUsed=(booking_date + timedelta(days=8)),
+            stock__offer__name="Harry Potter Vol 4",
+        )
+        print(bo.stock.offer.product.name)
+        bookings_csv = booking_repository.get_csv_report(
+            user=pro,
+            booking_period=((booking_date + timedelta(2)), (booking_date + timedelta(5))),
+            status_filter=BookingStatusFilter.VALIDATED,
+        )
+
+        _, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
+        assert len(data) == 2
+        # Check bookings offer name
+        assert data[0][1] in ["Harry Potter Vol 2", "Harry Potter Vol 3"]
+        assert data[1][1] in ["Harry Potter Vol 2", "Harry Potter Vol 3"]
+
+    def test_should_return_only_reimbursed_bookings_for_requested_period(self, app: fixture):
+        pro = users_factories.ProFactory()
+        offerer = offers_factories.OffererFactory()
+        offers_factories.UserOffererFactory(user=pro, offerer=offerer)
+        venue = offers_factories.VenueFactory(managingOfferer=offerer)
+
+        booking_date = datetime(2020, 1, 1, 10, 0, 0)
+
+        bookings_factories.UsedIndividualBookingFactory(
+            stock__offer__venue=venue,
+            quantity=1,
+            dateCreated=booking_date,
+            reimbursementDate=(booking_date + timedelta(days=1)),
+            stock__offer__name="Harry Potter Vol 1",
+        )
+        bookings_factories.UsedIndividualBookingFactory(
+            stock__offer__venue=venue,
+            quantity=1,
+            dateCreated=booking_date,
+            reimbursementDate=(booking_date + timedelta(days=2)),
+            stock__offer__name="Harry Potter Vol 2",
+        )
+        bookings_factories.EducationalBookingFactory(
+            stock__offer__venue=venue,
+            quantity=1,
+            dateCreated=booking_date,
+            reimbursementDate=(booking_date + timedelta(days=3)),
+            stock__offer__name="Harry Potter Vol 3",
+        )
+        bookings_factories.UsedIndividualBookingFactory(
+            stock__offer__venue=venue,
+            quantity=1,
+            dateCreated=booking_date,
+            reimbursementDate=(booking_date + timedelta(days=4)),
+            stock__offer__name="Harry Potter Vol 4",
+        )
+
+        bookings_csv = booking_repository.get_csv_report(
+            user=pro,
+            booking_period=((booking_date + timedelta(1)), (booking_date + timedelta(3))),
+            status_filter=BookingStatusFilter.REIMBURSED,
+        )
+
+        _, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
+        assert len(data) == 2
+        # Check bookings offer name
+        assert data[0][1] in ["Harry Potter Vol 2", "Harry Potter Vol 3"]
+        assert data[1][1] in ["Harry Potter Vol 2", "Harry Potter Vol 3"]
+
     def test_should_return_booking_as_duo_when_quantity_is_two(self, app: fixture):
         # Given
         beneficiary = users_factories.BeneficiaryGrant18Factory(
