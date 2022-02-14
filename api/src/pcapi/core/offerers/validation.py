@@ -23,14 +23,6 @@ def check_existing_business_unit(business_unit_id: int, offerer: Offerer):
         raise ApiErrors(errors={"businessUnitId": ["Ce point de facturation n'est pas un choix valide pour ce lieu."]})
 
 
-def check_existing_venue(venue: Venue):
-    if not venue:
-        errors = ApiErrors()
-        errors.status_code = 404
-        errors.add_error("venue", "Ce lieu n'existe pas")
-        raise errors
-
-
 def validate_coordinates(raw_latitude, raw_longitude):
     api_errors = ApiErrors()
 
