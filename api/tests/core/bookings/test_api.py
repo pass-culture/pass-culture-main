@@ -1,3 +1,4 @@
+from dataclasses import asdict
 from datetime import datetime
 from datetime import timedelta
 from unittest import mock
@@ -150,7 +151,7 @@ class BookOfferTest:
 
         assert len(mails_testing.outbox) == 2
         email_data1 = mails_testing.outbox[0].sent_data
-        assert email_data1["MJ-TemplateID"] == 3095147  # to offerer
+        assert email_data1["template"] == asdict(TransactionalEmail.NEW_BOOKING_TO_PRO.value)  # to offerer
         email_data2 = mails_testing.outbox[1].sent_data
         assert email_data2["MJ-TemplateID"] == 3094927  # to beneficiary
 

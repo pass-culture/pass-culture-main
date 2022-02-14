@@ -32,13 +32,13 @@ from pcapi.core.mails.transactional.bookings.booking_cancellation_by_beneficiary
 from pcapi.core.mails.transactional.bookings.booking_confirmation_to_beneficiary import (
     send_individual_booking_confirmation_email_to_beneficiary,
 )
+from pcapi.core.mails.transactional.bookings.new_booking_to_pro import send_user_new_booking_to_pro_email
 from pcapi.core.offers import repository as offers_repository
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
 from pcapi.core.users.external import update_external_pro
 from pcapi.core.users.external import update_external_user
 from pcapi.core.users.models import User
-from pcapi.domain import user_emails
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.models.payment import Payment
@@ -139,7 +139,7 @@ def book_offer(
         },
     )
 
-    if not user_emails.send_individual_booking_confirmation_email_to_offerer(individual_booking):
+    if not send_user_new_booking_to_pro_email(individual_booking):
         logger.warning(
             "Could not send booking confirmation email to offerer",
             extra={"booking": booking.id},
