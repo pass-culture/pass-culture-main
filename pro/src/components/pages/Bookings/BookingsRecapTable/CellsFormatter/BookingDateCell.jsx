@@ -2,7 +2,7 @@
  * @debt directory "Gaël: this file should be migrated within the new directory structure"
  */
 
-import { format } from 'date-fns'
+import { format } from 'date-fns-tz'
 import PropTypes from 'prop-types'
 import React from 'react'
 
