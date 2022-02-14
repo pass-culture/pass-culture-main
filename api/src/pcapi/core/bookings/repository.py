@@ -445,12 +445,18 @@ def get_bookings_from_deposit(deposit_id: int) -> list[Booking]:
 def get_csv_report(
     user: User,
     booking_period: tuple[date, date],
+    status_filter: BookingStatusFilter = BookingStatusFilter.BOOKED,
     event_date: Optional[datetime] = None,
     venue_id: Optional[int] = None,
     offer_type: Optional[OfferType] = None,
 ) -> str:
     bookings_query = _get_filtered_booking_report(
-        pro_user=user, period=booking_period, event_date=event_date, venue_id=venue_id, offer_type=offer_type
+        pro_user=user,
+        period=booking_period,
+        status_filter=status_filter,
+        event_date=event_date,
+        venue_id=venue_id,
+        offer_type=offer_type,
     )
     bookings_query = _duplicate_booking_when_quantity_is_two(bookings_query)
     return _serialize_csv_report(bookings_query)
@@ -530,6 +536,7 @@ def _get_filtered_bookings_count(
 def _get_filtered_booking_report(
     pro_user: User,
     period: tuple[date, date],
+    status_filter: BookingStatusFilter,
     event_date: Optional[datetime] = None,
     venue_id: Optional[int] = None,
     offer_type: Optional[OfferType] = None,
@@ -538,6 +545,7 @@ def _get_filtered_booking_report(
         _get_filtered_bookings_query(
             pro_user,
             period,
+            status_filter,
             event_date,
             venue_id,
             offer_type,
