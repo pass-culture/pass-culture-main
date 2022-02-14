@@ -1,61 +1,28 @@
 # Package `models`
 
-Les modules de ce package contiennent principalement des classes qui implémentent le modèle de données relationnel du
-backend pass Culture. Ces classes peuvent représenter :
+## Feature Flags
 
-- des tables SQL (héritage depuis `PcOject` et `Model`) ;
-- des colonnes de tables SQL (on parle alors de classe `*Mixin`).
+Les Feature Flags (ou Feature Toggle) permettent de désactiver / activer une fonctionnalité depuis l'admin (ex: [admin staging](https://backend.staging.passculture.team/pc/back-office/feature/)) sans avoir besoin de déployer de code.
 
-Ce système repose entièrement sur l'ORM SQL `Alchemy`.
+### Installer un nouveau Feature Flag
 
-## Do
+1. **Ajouter** une ligne dans l'enum `FeatureToggle`
 
-Les modifications apportées au modèle de données doivent impérativement et systématiquement être scriptées dans une
-migration de schéma relationnel avec `Alembic`. Les deux modifications (classes d'ORM et migration `Alembic`)
-doivent être mergée simultanément dans la branche master.
-Il est impératif d'être ISO entre une classe ORM et la révision `Alembic` car la production ne joue que les révisions
-`Alembic` et ne s'occupe pas des `Model`.
-Il est important de savoir qu'une clé étrangère n'est pas un index par défaut en `Postgres`, il faut donc
-le rajouter en fonction de votre contexte.
+Le flag sera ajouté dans la table `Feature` lors du déploiement, via la méthode `install_feature_flags`
 
-Donc quand on a :
+2. Configurer la **valeur par défaut** (ou initiale) du flag.
 
-```python
-criterionId = Column(BigInteger,
-    ForeignKey('criterion.id'),
-    index=True)
-```
+Si la valeur initiale est `True`, ne rien faire.
 
-Il faut dans la révision `Alembic` :
+Si la valeur initiale est `False`, ajouter une ligne dans le tuple `FEATURES_DISABLED_BY_DEFAULT`.
 
-```python
-ALTER TABLE ONLY offer_criterion ADD CONSTRAINT "offer_criterion_criterionId_fkey" FOREIGN KEY ("criterionId") REFERENCES criterion(id);
-CREATE INDEX "idx_offer_criterion_criterionId" ON offer_criterion ("criterionId");
-```
+3. ⚠️ Dans le cas d'utilisation _ajout d'une fonctionnalité activée une fois que les développements sont finis_, **créer un ticket** pour supprimer le feature flag, ou a mininima pour modifier sa valeur initiale, une fois le chantier fini. En effet, cela peut avoir un impact sur :
 
-## Testing
+- la qualité des tests : c'est la valeur par défaut qui est utilisée (sauf si `@override_features` est utilisé)
+- les bugs sur l'environnement `testing` : les données sont périodiquement regénérées et les Feature Flag sont alors réinitialisés avec leur valeur par défaut.
 
-Les classes présentes dans ce package ne sont pas testables puisque composées, dans leur forme la plus simple, uniquement
-de déclaration de champs. Toutefois, si on souhaite leur donner des comportements ou de la logique (e.g. via des méthodes
-d'instance ou des _properties_) il est possible de les tester unitairement.
+### Supprimer un Feature Flag
 
-Par exemple :
-
-```python
-def test_date_range_matches_the_occurrence_if_only_one_occurrence():
-    # given
-    offer = Offer()
-    offer.product = Product()
-    offer.eventOccurrences = [
-        create_event_occurrence(offer, beginning_datetime=two_days_ago)
-    ]
-
-    # then
-    assert offer.dateRange == DateTimes(two_days_ago, five_days_from_now)
-```
-
-## Pour en savoir plus
-
-- https://fr.wikipedia.org/wiki/Mapping_objet-relationnel
-- https://www.sqlalchemy.org/features.html
-- https://alembic.sqlalchemy.org/en/latest/index.html
+1. Enlever toute utilisation du flag
+2. Enlever la ligne de FeatureToggle
+3. Ajouter une [action post-mep](https://www.notion.so/passcultureapp/Manip-faire-pour-les-MES-MEP-MEI-1e3c8bc00b224ca18852be1d717c52e5) pour enlever le Flag de la db (`delete from feature where name='xxx'`) après le prochain déploiement.
