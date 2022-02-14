@@ -6,10 +6,6 @@ from pcapi.core.mails.transactional.sendinblue_template_ids import Transactional
 from pcapi.models.feature import FeatureToggle
 
 
-class DocumentValidationUnknownError(Exception):
-    pass
-
-
 def send_subscription_document_error_email(email: str, code: str) -> bool:
     data = get_subscription_document_error_email_data(code)
     return mails.send(recipients=[email], data=data)
