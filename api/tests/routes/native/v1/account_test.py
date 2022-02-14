@@ -197,19 +197,7 @@ class AccountTest:
         response = client.get("/native/v1/me")
         assert response.status_code == 200
 
-        subscription_messages.on_idcheck_invalid_age(user)
-        response = client.get("/native/v1/me")
-        assert response.status_code == 200
-
-        subscription_messages.on_idcheck_invalid_document(user)
-        response = client.get("/native/v1/me")
-        assert response.status_code == 200
-
         subscription_messages.on_idcheck_invalid_document_date(user)
-        response = client.get("/native/v1/me")
-        assert response.status_code == 200
-
-        subscription_messages.on_idcheck_unread_mrz(user)
         response = client.get("/native/v1/me")
         assert response.status_code == 200
 

@@ -88,14 +88,6 @@ class UserDoesNotExist(Exception):
     pass
 
 
-class IdentityDocumentUploadException(Exception):
-    pass
-
-
-class CloudTaskCreationException(Exception):
-    pass
-
-
 class MissingEmailInMetadataException(Exception):
     pass
 

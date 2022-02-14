@@ -88,16 +88,6 @@ DMS_ERROR_MESSSAGE_BIRTH_DATE = """Bonjour,
                         L'équipe du pass Culture"""
 
 
-def create_message_jouve_manual_review(user: users_models.User, application_id: int) -> None:
-    today = datetime.date.today()
-    message = models.SubscriptionMessage(
-        user=user,
-        userMessage=f"Nous avons reçu ton dossier le {today:%d/%m/%Y} et son analyse est en cours. Cela peut prendre jusqu'à 5 jours.",
-        popOverIcon=models.PopOverIcon.CLOCK,
-    )
-    repository.save(message)
-
-
 def on_review_pending(user: users_models.User) -> None:
     message = models.SubscriptionMessage(
         user=user,
@@ -132,30 +122,6 @@ def on_redirect_to_dms_from_idcheck(user: users_models.User) -> None:
     message = models.SubscriptionMessage(
         user=user,
         userMessage=f"Nous n'arrivons pas à lire ton document. Consulte l'e-mail envoyé le {today:%d/%m/%Y} pour plus d'informations.",
-        callToActionTitle="Consulter mes e-mails",
-        callToActionLink=INBOX_URL,
-        callToActionIcon=models.CallToActionIcon.EMAIL,
-    )
-    repository.save(message)
-
-
-def on_idcheck_invalid_age(user: users_models.User) -> None:
-    today = datetime.date.today()
-    message = models.SubscriptionMessage(
-        user=user,
-        userMessage=f"Ton dossier a été refusé : ton document indique que tu n’as pas 18 ans. Consulte l’e-mail envoyé le {today:%d/%m/%Y} pour plus d’informations.",
-        callToActionTitle="Consulter mes e-mails",
-        callToActionLink=INBOX_URL,
-        callToActionIcon=models.CallToActionIcon.EMAIL,
-    )
-    repository.save(message)
-
-
-def on_idcheck_invalid_document(user: users_models.User) -> None:
-    today = datetime.date.today()
-    message = models.SubscriptionMessage(
-        user=user,
-        userMessage=f"Ton dossier a été refusé : le document transmis est invalide. Consulte l’e-mail envoyé le {today:%d/%m/%Y} pour plus d’informations.",
         callToActionTitle="Consulter mes e-mails",
         callToActionLink=INBOX_URL,
         callToActionIcon=models.CallToActionIcon.EMAIL,
@@ -236,18 +202,6 @@ def on_idcheck_unread_document_with_retry(user: users_models.User) -> None:
         callToActionTitle="Réessayer la vérification de mon identité",
         callToActionLink=REDIRECT_TO_IDENTIFICATION,
         callToActionIcon=models.CallToActionIcon.RETRY,
-    )
-    repository.save(message)
-
-
-def on_idcheck_unread_mrz(user: users_models.User) -> None:
-    today = datetime.date.today()
-    message = models.SubscriptionMessage(
-        user=user,
-        userMessage=f"Nous n'arrivons pas à traiter ton document. Consulte l'e-mail envoyé le {today:%d/%m/%Y} pour plus d'informations.",
-        callToActionTitle="Consulter mes e-mails",
-        callToActionLink=INBOX_URL,
-        callToActionIcon=models.CallToActionIcon.EMAIL,
     )
     repository.save(message)
 
