@@ -253,20 +253,6 @@ class FindByTest:
             assert resource_not_found_error.value.errors["global"] == ["Cette contremarque n'a pas été trouvée"]
 
 
-class FindAllNotUsedAndNotCancelledTest:
-    def test_find_not_used_and_not_cancelled(self):
-        # Given
-        booking = bookings_factories.IndividualBookingFactory()
-        bookings_factories.CancelledIndividualBookingFactory()
-        bookings_factories.UsedIndividualBookingFactory()
-
-        # When
-        bookings = booking_repository.find_not_used_and_not_cancelled()
-
-        # Then
-        assert bookings == [booking]
-
-
 class FindByTokenTest:
     def test_should_return_a_booking_when_valid_token_is_given(self, app: fixture):
         # Given
