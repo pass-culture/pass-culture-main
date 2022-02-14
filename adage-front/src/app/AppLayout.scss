@@ -5,8 +5,42 @@ main.app-layout {
   flex-direction: column;
   grid-column-start: col-main;
   grid-row-start: row-main;
+}
 
-  h1 {
-    font-size: rem(24px);
+.app-layout-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: rem(24px) 0 rem(32px);
+
+  .app-logo {
+    width: rem(120px);
+  }
+
+  &-right {
+    .app-layout-header-title {
+      margin: 0;
+      font-size: rem(20px);
+      font-weight: 700;
+    }
+  }
+
+  &-right {
+    display: flex;
+    align-items: center;
+  }
+}
+
+.app-layout-header-help-link {
+  display: flex;
+  align-items: center;
+  color: inherit;
+  text-decoration: none;
+  margin-left: rem(24px);
+  font-weight: 600;
+  font-size: rem(12px);
+
+  &-icon {
+    margin-right: rem(4px);
   }
 }
