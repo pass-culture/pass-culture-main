@@ -4,7 +4,3 @@ class FraudException(Exception):
 
 class UserAlreadyBeneficiary(FraudException):
     pass
-
-
-class InvalidContentTypeException(FraudException):
-    pass
