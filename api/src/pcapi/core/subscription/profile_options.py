@@ -21,9 +21,6 @@ class SchoolType:
 SCHOOL_TYPE_ID_ENUM = enum.Enum(
     "SchoolTypesIdEnum", {school_type.name: school_type.name for school_type in users_models.SchoolTypeEnum}
 )
-SCHOOL_TYPE_LABEL_ENUM = enum.Enum(
-    "SchoolTypesLabelEnum", {school_type.name: school_type.value for school_type in users_models.SchoolTypeEnum}
-)
 
 
 @dataclasses.dataclass()
@@ -113,4 +110,3 @@ ALL_ACTIVITIES = [
 ]
 
 ACTIVITY_ID_ENUM = enum.Enum("ActivityIdEnum", {activity.id: activity.id for activity in ALL_ACTIVITIES})
-ACTIVITY_LABEL_ENUM = enum.Enum("ActivityLabelEnum", {activity.label: activity.label for activity in ALL_ACTIVITIES})
