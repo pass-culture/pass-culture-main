@@ -6,10 +6,6 @@ class InvalidEligibilityTypeException(SubscriptionException):
     pass
 
 
-class BeneficiaryFraudResultMissing(SubscriptionException):
-    pass
-
-
 class BeneficiaryFraudCheckMissingException(SubscriptionException):
     pass
 
