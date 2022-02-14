@@ -6,6 +6,7 @@
     "plugin:jsx-a11y/strict",
     "plugin:import/errors",
     "plugin:jest/all",
+    "plugin:pass-culture/recommended",
     "plugin:react-hooks/recommended",
     "plugin:prettier/recommended"
   ],

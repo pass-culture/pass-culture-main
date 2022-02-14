@@ -13,7 +13,8 @@
     "lint:js:fix": "yarn lint:js --fix",
     "lint:scss": "stylelint '**/*.scss'",
     "lint:scss:fix": "yarn lint:scss --fix",
-    "test:unit": "jest"
+    "test:unit": "jest",
+    "test:eslint": "jest eslint-plugin-pass-culture/tests"
   },
   "lint-staged": {
     "./public/**/*.svg": "svgo",
@@ -99,6 +100,7 @@
     "eslint-plugin-jest": "^24.4.0",
     "eslint-plugin-jsx-a11y": "^6.3.1",
     "eslint-plugin-only-warn": "^1.0.2",
+    "eslint-plugin-pass-culture": "./eslint-plugin-pass-culture",
     "eslint-plugin-prettier": "^3.4.0",
     "eslint-plugin-react": "^7.24.0",
     "eslint-plugin-react-hooks": "^4.2.0",
