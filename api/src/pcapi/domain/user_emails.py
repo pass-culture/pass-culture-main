@@ -3,7 +3,6 @@ import logging
 import typing
 
 from pcapi.core import mails
-from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import IndividualBooking
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.repository import find_new_offerer_user_email
@@ -14,9 +13,6 @@ from pcapi.emails.new_offerer_validated_withdrawal_terms import (
     retrieve_data_for_new_offerer_validated_withdrawal_terms_email,
 )
 from pcapi.emails.offerer_booking_recap import retrieve_data_for_offerer_booking_recap_email
-from pcapi.emails.offerer_bookings_recap_after_deleting_stock import (
-    retrieve_offerer_bookings_recap_email_data_after_offerer_cancellation,
-)
 
 
 logger = logging.getLogger(__name__)
@@ -27,14 +23,6 @@ def send_individual_booking_confirmation_email_to_offerer(individual_booking: In
     if not offerer_booking_email:
         return True
     data = retrieve_data_for_offerer_booking_recap_email(individual_booking)
-    return mails.send(recipients=[offerer_booking_email], data=data)
-
-
-def send_offerer_bookings_recap_email_after_offerer_cancellation(bookings: list[Booking]) -> bool:
-    offerer_booking_email = bookings[0].stock.offer.bookingEmail
-    if not offerer_booking_email:
-        return True
-    data = retrieve_offerer_bookings_recap_email_data_after_offerer_cancellation(bookings)
     return mails.send(recipients=[offerer_booking_email], data=data)
 
 
