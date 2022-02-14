@@ -181,10 +181,6 @@ def token_exists(token: str) -> bool:
     return db.session.query(Booking.query.filter_by(token=token.upper()).exists()).scalar()
 
 
-def find_not_used_and_not_cancelled() -> list[Booking]:
-    return Booking.query.filter(Booking.status.in_((BookingStatus.PENDING, BookingStatus.CONFIRMED))).all()
-
-
 def find_used_by_token(token: str) -> Booking:
     return Booking.query.filter(
         Booking.token == token.upper(),
