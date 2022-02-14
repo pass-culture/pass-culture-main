@@ -100,45 +100,6 @@ class BookingThumbUrlTest:
         assert booking.thumbUrl is None
 
 
-class BookingQrCodeTest:
-    def test_event_return_qr_code_if_event_is_not_expired_nor_cancelled(self):
-        booking = factories.BookingFactory(
-            stock__offer__product__subcategoryId=subcategories.SEANCE_CINE.id,
-        )
-        assert isinstance(booking.qrCode, str)
-
-    def test_event_return_none_if_event_is_expired(self):
-        booking = factories.BookingFactory(
-            stock__offer__subcategoryId=subcategories.SEANCE_CINE.id,
-            stock__beginningDatetime=datetime.now() - timedelta(days=1),
-        )
-        assert booking.qrCode is None
-
-    def test_event_return_none_if_booking_is_cancelled(self):
-        booking = factories.CancelledBookingFactory(
-            stock__offer__subcategoryId=subcategories.SEANCE_CINE.id,
-        )
-        assert booking.qrCode is None
-
-    def test_thing_return_qr_code_if_not_used_nor_cancelled(self):
-        booking = factories.BookingFactory(
-            stock__offer__subcategoryId=subcategories.JEU_SUPPORT_PHYSIQUE.id,
-        )
-        assert isinstance(booking.qrCode, str)
-
-    def test_thing_return_none_if_booking_is_used(self):
-        booking = factories.UsedBookingFactory(
-            stock__offer__subcategoryId=subcategories.JEU_SUPPORT_PHYSIQUE.id,
-        )
-        assert booking.qrCode is None
-
-    def test_thing_return_none_if_booking_is_cancelled(self):
-        booking = factories.CancelledBookingFactory(
-            stock__offer__subcategoryId=subcategories.JEU_SUPPORT_PHYSIQUE.id,
-        )
-        assert booking.qrCode is None
-
-
 class BookingIsConfirmedPropertyTest:
     def test_booking_is_confirmed_when_cancellation_limit_date_is_in_the_past(self):
         yesterday = datetime.utcnow() - timedelta(days=1)

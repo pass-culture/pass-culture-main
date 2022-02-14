@@ -58,7 +58,6 @@ pytest-mock==3.3.1
 pytest-dotenv==0.5.2
 python-dotenv==0.14.0
 python-swiftclient==3.10.1
-qrcode==6.1
 requests==2.26.0
 # FIXME (dbaty, 2021-04-28): as of version 1.9 [1], requests_mock
 # quotes URLs passed to Mocker. If we send a request on a URL that is

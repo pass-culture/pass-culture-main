@@ -677,49 +677,6 @@ class MarkAsUnusedTest:
         assert booking.status is BookingStatus.USED
 
 
-class GenerateQrCodeTest:
-    @mock.patch("qrcode.QRCode")
-    def test_correct_technical_parameters(self, build_qr_code):
-        api.generate_qr_code("TOKEN")
-        build_qr_code.assert_called_once_with(
-            version=2,
-            error_correction=3,
-            box_size=5,
-            border=1,
-        )
-
-    @mock.patch("qrcode.QRCode.make_image")
-    def test_should_build_qr_code_with_correct_image_parameters(self, build_qr_code_image_parameters):
-        api.generate_qr_code(booking_token="ABCDE")
-        build_qr_code_image_parameters.assert_called_once_with(
-            back_color="white",
-            fill_color="black",
-        )
-
-    @mock.patch("qrcode.QRCode.add_data")
-    def test_include_product_isbn_if_provided(self, build_qr_code_booking_info):
-        api.generate_qr_code("ABCDE")
-        build_qr_code_booking_info.assert_called_once_with("PASSCULTURE:v3;TOKEN:ABCDE")
-
-    def test_generated_qr_code(self):
-        qr_code = api.generate_qr_code("ABCDE")
-        assert isinstance(qr_code, str)
-        assert qr_code == (
-            "data:image/png;base64,"
-            "iVBORw0KGgoAAAANSUhEUgAAAJsAAACbAQAAAABdGtQhAAABrUlEQVR4nL1XQW7bMB"
-            "CcFQVQN6ovoD9isf1XE8mhgT6rUvoR6gf0jQRoTw/OpU3QS7zdC4E5zGAXw+FSiHe1"
-            "d+8x4LNgFRGp3WXZq8iyi0j"
-            "/ac6PwUAmHP1TcMwAyUVJiNLDxvwj1a84o8r4AM5/gJcF9jQ+lvOP6u/H8UsDAs96Q"
-            "h2EDZB92QvH77DMOkIoAFAmF1OZXEwATFLpyJKkfQG83fbmSTadjriRCYHNY3LNk1m"
-            "nIxTJhmSG58aYEBiVhOCYuLpIu7pIwFFHiDcXyZsjMbnFF6GeUAO3PCcyz6moua5+y"
-            "4YDANTO9X4ISq7rsI0nAX0Pu+J6sC+P4PyoClzzXDGzwJEFmHVGhwlmw+TkgJABCLX"
-            "eI+AUAJhkf45nDLgoJUORbJJdXYNlNrQ3p3NhOxx9DfUZhoV+QfmVtcwQGJNdAQBuA"
-            "YJW1pEky+RIMhuWSWl0b++RcPGYXExFLetKIBNXmGSZDdWy7r4FQfL1cJHxKsNxPGt"
-            "uQccRHoHNl1ele/QGvmJO9iQxDdPDOP8GhQ11zsAQ2O92dToRdHcdt2xSAWY918n/+"
-            "k38Bmlp+NQ0I934AAAAAElFTkSuQmCC"
-        )
-
-
 @pytest.mark.parametrize(
     "booking_date",
     [datetime(2020, 7, 14, 15, 30), datetime(2020, 10, 25, 1, 45), datetime.now()],
