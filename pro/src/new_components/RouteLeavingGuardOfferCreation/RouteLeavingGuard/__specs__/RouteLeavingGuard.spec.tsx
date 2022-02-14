@@ -53,8 +53,9 @@ describe('new_components | RouteLeavingGuardOfferCreation | RouteLeavingGuard', 
 
   beforeEach(() => {
     history.push('/')
+    const shouldBlockReturnValue = { redirectPath: '', shouldBlock: true }
     props = {
-      shouldBlockNavigation: () => true,
+      shouldBlockNavigation: () => shouldBlockReturnValue,
       when: true,
       children: 'Voulez-vous quitter la page actuelle ?',
       labelledBy: 'LEAVING_OFFER_CREATION_LABEL_ID',
@@ -124,9 +125,9 @@ describe('new_components | RouteLeavingGuardOfferCreation | RouteLeavingGuard', 
     // Given
     props.shouldBlockNavigation = nextLocation => {
       if (nextLocation.pathname === '/about') {
-        return true
+        return { redirectPath: '', shouldBlock: true }
       }
-      return false
+      return { redirectPath: '', shouldBlock: false }
     }
 
     // When
