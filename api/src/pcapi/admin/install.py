@@ -254,3 +254,5 @@ def install_admin_template_filters(app: Flask) -> None:
     app.jinja_env.filters["subscription_status_format"] = templating.subscription_status_format
     app.jinja_env.filters["fraud_check_status_format"] = templating.fraud_check_status_format
     app.jinja_env.filters["eligibility_format"] = templating.eligibility_format
+    app.jinja_env.filters["suspension_event_format"] = templating.suspension_event_format
+    app.jinja_env.filters["suspension_reason_format"] = templating.suspension_reason_format

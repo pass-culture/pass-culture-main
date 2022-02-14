@@ -172,6 +172,7 @@ class BeneficiaryUserView(ResendValidationEmailMixin, SuspensionMixin, BaseAdmin
         "roles",
         "subscriptionState",
         "suspensionReason",
+        "suspension_history",
     ]
 
     column_labels = dict(
@@ -195,6 +196,7 @@ class BeneficiaryUserView(ResendValidationEmailMixin, SuspensionMixin, BaseAdmin
         physical_remaining="Crédit physique restant",
         postalCode="Code postal",
         publicName="Nom d'utilisateur",
+        suspension_history="Historique de suspension",
         total_remaining="Crédit global restant",
         total_initial="Crédit initial",
     )
@@ -290,6 +292,7 @@ class BeneficiaryUserView(ResendValidationEmailMixin, SuspensionMixin, BaseAdmin
             User.query.filter(User.has_pro_role.is_(False))
             .filter(User.is_beneficiary.is_(True))
             .options(joinedload(User.deposits))
+            .options(joinedload(User.suspension_history))
         )
 
     def get_count_query(self) -> query:

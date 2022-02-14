@@ -44,11 +44,10 @@ def _action_links(view, context, model, name):
     else:
         url = url_for(".unsuspend_user_view")
         text = "Réactiver…"
-        if model.suspensionReason:
-            text += "({})".format(
-                dict(users_constants.SUSPENSION_REASON_CHOICES)[
-                    users_constants.SuspensionReason(model.suspensionReason)
-                ]
+        if model.suspension_reason:
+            text += "({}{})".format(
+                model.suspension_date.strftime("%d/%m/%Y ") if model.suspension_date else "",
+                dict(users_constants.SUSPENSION_REASON_CHOICES)[model.suspension_reason],
             )
 
     return Markup('<a href="{url}?user_id={model_id}">{text}</a>').format(
@@ -56,6 +55,38 @@ def _action_links(view, context, model, name):
         model_id=model.id,
         text=text,
     )
+
+
+def beneficiary_suspension_history_formatter(view, context, model, name) -> Markup:
+    """
+    Bullet list of suspension events which affected any user account (beneficiary, pro, admin).
+    Formatting must take old suspensions into account (migrated from user table, without date and author).
+    """
+    suspension_history = model.suspension_history
+    html = Markup("<ul>")
+
+    for suspension_event in suspension_history:
+        author_text = (
+            f"par {suspension_event.actorUser.firstName} {suspension_event.actorUser.lastName}"
+            if suspension_event.actorUser
+            else ""
+        )
+
+        reason_text = (
+            " : " + dict(users_constants.SUSPENSION_REASON_CHOICES)[suspension_event.reasonCode]
+            if suspension_event.reasonCode
+            else ""
+        )
+
+        html += Markup("<li>{} {} {} {}</li>").format(
+            dict(users_constants.SUSPENSION_EVENT_TYPE_CHOICES)[suspension_event.eventType],
+            suspension_event.eventDate.strftime("le %d/%m/%Y à %H:%M:%S") if suspension_event.eventDate else "",
+            author_text,
+            reason_text,
+        )
+
+    html += Markup("</ul>")
+    return html
 
 
 class SuspensionMixin:
@@ -66,7 +97,7 @@ class SuspensionMixin:
     @property
     def column_formatters(self):
         formatters = super().column_formatters
-        formatters.update(actions=_action_links)
+        formatters.update(suspension_history=beneficiary_suspension_history_formatter, actions=_action_links)
         return formatters
 
     @property

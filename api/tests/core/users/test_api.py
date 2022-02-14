@@ -2,6 +2,7 @@ from datetime import date
 from datetime import datetime
 from datetime import timedelta
 from decimal import Decimal
+from typing import Optional
 from unittest.mock import patch
 
 from dateutil.relativedelta import relativedelta
@@ -34,6 +35,7 @@ from pcapi.core.users.api import get_domains_credit
 from pcapi.core.users.api import get_eligibility_at_date
 from pcapi.core.users.api import get_eligibility_start_datetime
 from pcapi.core.users.api import set_pro_tuto_as_seen
+from pcapi.core.users.constants import SuspensionEventType
 from pcapi.core.users.factories import UserFactory
 from pcapi.core.users.models import Credit
 from pcapi.core.users.models import DomainsCredit
@@ -42,6 +44,7 @@ from pcapi.core.users.models import EmailHistoryEventTypeEnum
 from pcapi.core.users.models import Token
 from pcapi.core.users.models import TokenType
 from pcapi.core.users.models import User
+from pcapi.core.users.models import UserSuspension
 from pcapi.core.users.repository import get_user_with_valid_token
 from pcapi.core.users.utils import encode_jwt_payload
 from pcapi.model_creators.generic_creators import create_offerer
@@ -196,6 +199,30 @@ class DeleteUserTokenTest:
         assert Token.query.one_or_none() == other_token
 
 
+def _datetime_within_last_5sec(when: datetime) -> bool:
+    return datetime.now() - relativedelta(seconds=5) < when < datetime.now()
+
+
+def _assert_user_suspension_history(
+    user: User,
+    event_type: users_constants.SuspensionEventType,
+    reason: Optional[users_constants.SuspensionReason],
+    actor: User,
+    expected_history_length: int = 1,
+):
+    assert len(user.suspension_history) == expected_history_length
+    # suspension_history is sorted by ascending date, check the most recent event
+    last_suspension_event = user.suspension_history[-1]
+    assert last_suspension_event.userId == user.id
+    assert last_suspension_event.actorUserId == actor.id
+    assert last_suspension_event.eventType == event_type
+    assert _datetime_within_last_5sec(last_suspension_event.eventDate)
+    if reason:
+        assert last_suspension_event.reasonCode == reason
+    else:
+        assert not last_suspension_event.reasonCode
+
+
 class SuspendAccountTest:
     def test_suspend_admin(self):
         user = users_factories.AdminFactory()
@@ -205,12 +232,15 @@ class SuspendAccountTest:
 
         users_api.suspend_account(user, reason, actor)
 
-        assert user.suspensionReason == str(reason)
+        assert user.suspension_reason == reason
+        assert _datetime_within_last_5sec(user.suspension_date)
         assert not user.isActive
         assert not user.has_admin_role
         assert not user.has_admin_role
         assert not UserSession.query.filter_by(userId=user.id).first()
         assert actor.isActive
+
+        _assert_user_suspension_history(user, SuspensionEventType.SUSPENDED, reason, actor)
 
     def test_suspend_beneficiary(self):
         user = users_factories.BeneficiaryGrant18Factory()
@@ -221,57 +251,90 @@ class SuspendAccountTest:
         )
         used_booking = bookings_factories.UsedIndividualBookingFactory(individualBooking__user=user)
         actor = users_factories.AdminFactory()
+        reason = users_constants.SuspensionReason.FRAUD_SUSPICION
 
-        users_api.suspend_account(user, users_constants.SuspensionReason.FRAUD_SUSPICION, actor)
+        users_api.suspend_account(user, reason, actor)
 
         assert not user.isActive
+        assert user.suspension_reason == reason
+        assert _datetime_within_last_5sec(user.suspension_date)
+
         assert cancellable_booking.status is BookingStatus.CANCELLED
         assert confirmed_booking.status is BookingStatus.CANCELLED
         assert used_booking.status is BookingStatus.USED
+
+        _assert_user_suspension_history(user, SuspensionEventType.SUSPENDED, reason, actor)
 
     def test_suspend_pro(self):
         booking = bookings_factories.IndividualBookingFactory()
         pro = offers_factories.UserOffererFactory(offerer=booking.offerer).user
         actor = users_factories.AdminFactory()
+        reason = users_constants.SuspensionReason.FRAUD_SUSPICION
 
-        users_api.suspend_account(pro, users_constants.SuspensionReason.FRAUD_SUSPICION, actor)
+        users_api.suspend_account(pro, reason, actor)
 
         assert not pro.isActive
         assert booking.status is BookingStatus.CANCELLED
+
+        _assert_user_suspension_history(pro, SuspensionEventType.SUSPENDED, reason, actor)
 
     def test_suspend_pro_with_other_offerer_users(self):
         booking = bookings_factories.IndividualBookingFactory()
         pro = offers_factories.UserOffererFactory(offerer=booking.offerer).user
         offers_factories.UserOffererFactory(offerer=booking.offerer)
         actor = users_factories.AdminFactory()
+        reason = users_constants.SuspensionReason.FRAUD_SUSPICION
 
-        users_api.suspend_account(pro, users_constants.SuspensionReason.FRAUD_SUSPICION, actor)
+        users_api.suspend_account(pro, reason, actor)
 
         assert not pro.isActive
         assert booking.status is not BookingStatus.CANCELLED
 
+        _assert_user_suspension_history(pro, SuspensionEventType.SUSPENDED, reason, actor)
+
 
 class UnsuspendAccountTest:
     def test_unsuspend_account(self):
-        user = users_factories.UserFactory(isActive=False, suspensionReason="User not cool")
-        actor = users_factories.AdminFactory()
+        suspension = users_factories.UserSuspensionFactory()
+        user = suspension.user
 
-        users_api.unsuspend_account(user, actor)
+        users_api.unsuspend_account(user, suspension.actorUser)
 
         assert not user.suspensionReason
+        assert not user.suspension_reason
+        assert not user.suspension_date
         assert user.isActive
 
+        _assert_user_suspension_history(
+            user, SuspensionEventType.UNSUSPENDED, None, suspension.actorUser, expected_history_length=2
+        )
+
     def test_bulk_unsuspend_account(self):
-        user1 = users_factories.UserFactory(isActive=False, suspensionReason="User not cool")
-        user2 = users_factories.UserFactory(isActive=False, suspensionReason="User not cool")
-        user3 = users_factories.UserFactory(isActive=False, suspensionReason="User not cool")
         actor = users_factories.AdminFactory()
+        suspension1 = users_factories.UserSuspensionFactory(actorUser=actor)
+        suspension2 = users_factories.UserSuspensionFactory(actorUser=actor)
+        suspension3 = users_factories.UserSuspensionFactory(actorUser=actor)
 
-        users_api.bulk_unsuspend_account([user1.id, user2.id, user3.id], actor)
+        users_api.bulk_unsuspend_account([suspension1.user.id, suspension2.user.id, suspension3.user.id], actor)
 
-        for user in [user1, user2, user3]:
-            assert not user.suspensionReason
+        for user in [suspension1.user, suspension2.user, suspension3.user]:
+            assert not user.suspension_reason
+            assert not user.suspension_date
             assert user.isActive
+
+        user_suspensions = UserSuspension.query.order_by(UserSuspension.id.asc()).all()
+        assert len(user_suspensions) == 6
+
+        user_unsuspensions = user_suspensions[3:]
+        assert {event.userId for event in user_unsuspensions} == {
+            suspension1.user.id,
+            suspension2.user.id,
+            suspension3.user.id,
+        }
+        for event in user_unsuspensions:
+            assert event.actorUserId == actor.id
+            assert event.eventType == SuspensionEventType.UNSUSPENDED
+            assert _datetime_within_last_5sec(event.eventDate)
 
 
 @pytest.mark.usefixtures("db_session")
