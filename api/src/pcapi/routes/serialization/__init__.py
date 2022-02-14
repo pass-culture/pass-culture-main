@@ -1,7 +1,12 @@
 from math import isfinite
 
-# pylint: disable=wrong-pydantic-base-model-import
-from pydantic import BaseModel as PydanticBaseModel
+
+# fmt: off
+# isort: off
+from pydantic import BaseModel as PydanticBaseModel  # pylint: disable=wrong-pydantic-base-model-import
+# isort: on
+# fmt: on
+
 from pydantic import errors
 from pydantic import validator
 
