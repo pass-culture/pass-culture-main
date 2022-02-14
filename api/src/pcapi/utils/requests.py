@@ -88,5 +88,4 @@ class Session(_SessionMixin, requests.Session):
         unsafe_adapter = HTTPAdapter(max_retries=unsafe_retry_strategy)
         self.mount("https://www.demarches-simplifiees.fr", safe_adapter)
         self.mount("https://api.mailjet.com", unsafe_adapter)
-        self.mount("https://api.eu.mailjet.com", unsafe_adapter)
         self.mount("https://api.batch.com", unsafe_adapter)
