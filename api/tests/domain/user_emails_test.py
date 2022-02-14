@@ -8,7 +8,6 @@ from pcapi.core.offers.factories import UserOffererFactory
 import pcapi.core.users.factories as users_factories
 from pcapi.domain.user_emails import send_activation_email
 from pcapi.domain.user_emails import send_individual_booking_confirmation_email_to_offerer
-from pcapi.domain.user_emails import send_offerer_bookings_recap_email_after_offerer_cancellation
 from pcapi.domain.user_emails import send_withdrawal_terms_to_newly_validated_offerer
 
 
@@ -40,26 +39,6 @@ class SendBookingConfirmationEmailToOffererTest:
         assert len(mails_testing.outbox) == 1  # test number of emails sent
         assert mails_testing.outbox[0].sent_data["To"] == "booking.email@example.com"
         assert mails_testing.outbox[0].sent_data["MJ-TemplateID"] == 3095147
-
-
-class SendOffererBookingsRecapEmailAfterOffererCancellationTest:
-    @patch(
-        "pcapi.domain.user_emails.retrieve_offerer_bookings_recap_email_data_after_offerer_cancellation",
-        return_value={"Mj-TemplateID": 1116333},
-    )
-    def test_sends_to_offerer_administration(
-        self, retrieve_offerer_bookings_recap_email_data_after_offerer_cancellation
-    ):
-        # Given
-        booking = bookings_factories.IndividualBookingFactory(stock__offer__bookingEmail="offerer@example.com")
-
-        # When
-        send_offerer_bookings_recap_email_after_offerer_cancellation([booking])
-
-        # Then
-        retrieve_offerer_bookings_recap_email_data_after_offerer_cancellation.assert_called_once_with([booking])
-        assert len(mails_testing.outbox) == 1  # test number of emails sent
-        assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 1116333
 
 
 class SendActivationEmailTest:

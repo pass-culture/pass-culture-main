@@ -32,6 +32,9 @@ from pcapi.core.educational.utils import compute_educational_booking_cancellatio
 from pcapi.core.mails.transactional.bookings.booking_cancellation_by_pro_to_beneficiary import (
     send_booking_cancellation_by_pro_to_beneficiary_email,
 )
+from pcapi.core.mails.transactional.bookings.booking_cancellation_confirmation_by_pro import (
+    send_booking_cancellation_confirmation_by_pro_email,
+)
 from pcapi.core.mails.transactional.bookings.booking_postponed_by_pro_to_beneficiary import (
     send_batch_booking_postponement_email_to_users,
 )
@@ -62,7 +65,6 @@ from pcapi.core.users.models import ExpenseDomain
 from pcapi.core.users.models import User
 from pcapi.domain import admin_emails
 from pcapi.domain import offer_report_emails
-from pcapi.domain import user_emails
 from pcapi.domain.pro_offers.offers_recap import OffersRecap
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
@@ -680,7 +682,7 @@ def delete_stock(stock: Stock) -> None:
                     "Could not notify beneficiary about deletion of stock",
                     extra={"stock": stock.id, "booking": booking.id},
                 )
-        if not user_emails.send_offerer_bookings_recap_email_after_offerer_cancellation(cancelled_bookings):
+        if not send_booking_cancellation_confirmation_by_pro_email(cancelled_bookings):
             logger.warning(
                 "Could not notify offerer about deletion of stock",
                 extra={"stock": stock.id},
@@ -1042,7 +1044,7 @@ def cancel_educational_offer_booking(offer: Offer) -> None:
                     "bookingId": booking.id,
                 },
             )
-    if not user_emails.send_offerer_bookings_recap_email_after_offerer_cancellation(cancelled_bookings):
+    if not send_booking_cancellation_confirmation_by_pro_email(cancelled_bookings):
         logger.warning(
             "Could not notify offerer about deletion of stock",
             extra={"stock": stock.id},
