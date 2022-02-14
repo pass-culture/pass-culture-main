@@ -7,7 +7,6 @@ import pcapi.core.mails.testing as mails_testing
 from pcapi.core.offers.factories import UserOffererFactory
 import pcapi.core.users.factories as users_factories
 from pcapi.domain.user_emails import send_activation_email
-from pcapi.domain.user_emails import send_individual_booking_confirmation_email_to_offerer
 from pcapi.domain.user_emails import send_offerer_bookings_recap_email_after_offerer_cancellation
 from pcapi.domain.user_emails import send_withdrawal_terms_to_newly_validated_offerer
 
@@ -27,19 +26,6 @@ pytestmark = pytest.mark.usefixtures("db_session")
 #   Mailjet (e.g. make_beneficiary_booking_cancellation_email_data)
 # - check the recipients
 # - ... and that's all.
-
-
-class SendBookingConfirmationEmailToOffererTest:
-    def test_send_to_offerer(self):
-        booking = bookings_factories.IndividualBookingFactory(
-            stock__offer__bookingEmail="booking.email@example.com",
-        )
-
-        send_individual_booking_confirmation_email_to_offerer(booking.individualBooking)
-
-        assert len(mails_testing.outbox) == 1  # test number of emails sent
-        assert mails_testing.outbox[0].sent_data["To"] == "booking.email@example.com"
-        assert mails_testing.outbox[0].sent_data["MJ-TemplateID"] == 3095147
 
 
 class SendOffererBookingsRecapEmailAfterOffererCancellationTest:
