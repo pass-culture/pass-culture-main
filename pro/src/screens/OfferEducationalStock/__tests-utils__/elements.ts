@@ -17,7 +17,7 @@ export const elements = {
 
   queryShowcaseOfferRadio: (): HTMLInputElement | null =>
     screen.queryByLabelText(
-      'Je préfère être contacté(e) par un enseignant avant de définir la date et le prix de l’offre'
+      'Je préfère être contacté par un enseignant avant de définir la date et le prix de l’offre'
     ) as HTMLInputElement | null,
 
   queryPriceDetailsTextarea: (): HTMLTextAreaElement | null =>
