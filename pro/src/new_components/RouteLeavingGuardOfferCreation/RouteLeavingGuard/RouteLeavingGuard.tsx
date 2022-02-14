@@ -1,5 +1,5 @@
 import React, { useCallback, useState, ReactNode } from 'react'
-import { Redirect } from 'react-router'
+import { Redirect, useHistory } from 'react-router'
 import { Prompt } from 'react-router-dom'
 
 import DialogBox from 'new_components/DialogBox/DialogBox'
@@ -7,11 +7,18 @@ import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
 import styles from './RouteLeavingGuard.module.scss'
+
+export interface IShouldBlockNavigationReturnValue {
+  redirectPath?: string | null
+  shouldBlock: boolean
+}
 export interface IRouteLeavingGuardProps {
   children: ReactNode | ReactNode[]
   extraClassNames?: string
   labelledBy: string
-  shouldBlockNavigation: (location: Location) => boolean
+  shouldBlockNavigation: (
+    location: Location
+  ) => IShouldBlockNavigationReturnValue
   when: boolean
 }
 
@@ -25,6 +32,7 @@ const RouteLeavingGuard = ({
   const [isModalVisible, setIsModalVisible] = useState(false)
   const [lastLocation, setLastLocation] = useState('')
   const [isConfirmedNavigation, setIsConfirmedNavigation] = useState(false)
+  const history = useHistory()
 
   const closeModal = useCallback(() => {
     setIsModalVisible(false)
@@ -32,14 +40,20 @@ const RouteLeavingGuard = ({
 
   const handleBlockedNavigation = useCallback(
     nextLocation => {
-      if (!isConfirmedNavigation && shouldBlockNavigation(nextLocation)) {
+      const { redirectPath, shouldBlock } = shouldBlockNavigation(nextLocation)
+      setLastLocation(redirectPath ? redirectPath : nextLocation)
+      if (!isConfirmedNavigation && shouldBlock) {
         setIsModalVisible(true)
-        setLastLocation(nextLocation)
         return false
       }
+      if (redirectPath) {
+        history.push({ pathname: redirectPath })
+        return false
+      }
+
       return true
     },
-    [isConfirmedNavigation, shouldBlockNavigation]
+    [isConfirmedNavigation, history, shouldBlockNavigation]
   )
 
   const handleConfirmNavigationClick = useCallback(() => {

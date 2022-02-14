@@ -5,9 +5,9 @@
  */
 
 import PropTypes from 'prop-types'
-import React, { useCallback, useEffect, useState, useMemo } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
-import { Link, useLocation, useHistory } from 'react-router-dom'
+import { Link, useHistory } from 'react-router-dom'
 
 import ActionsBarPortal from 'components/layout/ActionsBarPortal/ActionsBarPortal'
 import Icon from 'components/layout/Icon'
@@ -20,11 +20,6 @@ import { ReactComponent as AddOfferSvg } from 'icons/ico-plus.svg'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { savePageNumber, saveSearchFilters } from 'store/offers/actions'
 import { Banner } from 'ui-kit'
-import { parse } from 'utils/query-string'
-import {
-  mapBrowserToApi,
-  translateQueryParamsToApiParams,
-} from 'utils/translate'
 
 import { computeOffersUrl } from '../utils/computeOffersUrl'
 
@@ -41,48 +36,15 @@ import NoResults from './NoResults/NoResults'
 import OffersTableBody from './OffersTableBody/OffersTableBody'
 import OffersTableHead from './OffersTableHead/OffersTableHead'
 import SearchFilters from './SearchFilters/SearchFilters'
-
-function useSearchFilters() {
-  const { search } = useLocation()
-
-  const urlPageNumber = useMemo(() => {
-    const queryParams = parse(search)
-    return Number(queryParams['page']) || DEFAULT_PAGE
-  }, [search])
-
-  const urlSearchFilters = useMemo(() => {
-    const queryParams = parse(search)
-
-    let translatedFilters = {}
-
-    const fieldsWithTranslatedValues = ['statut', 'creation']
-    fieldsWithTranslatedValues.forEach(field => {
-      if (queryParams[field]) {
-        const translatedValue = mapBrowserToApi[queryParams[field]]
-        translatedFilters[field] = translatedValue
-      }
-    })
-    const translatedQuery = translateQueryParamsToApiParams({
-      ...queryParams,
-      ...translatedFilters,
-    })
-
-    const urlFilters = {
-      ...DEFAULT_SEARCH_FILTERS,
-      ...translatedQuery,
-    }
-    return urlFilters
-  }, [search])
-
-  return { urlSearchFilters, urlPageNumber }
-}
+import useQuerySearchFilters from './useQuerySearchFilters'
 
 const Offers = ({ currentUser, getOfferer }) => {
   const dispatch = useDispatch()
   const history = useHistory()
-  const { urlSearchFilters, urlPageNumber } = useSearchFilters()
+  const [urlSearchFilters, urlPageNumber] = useQuerySearchFilters()
 
   useEffect(() => {
+    setCurrentPageNumber(urlPageNumber)
     dispatch(
       saveSearchFilters({
         nameOrIsbn:
@@ -128,11 +90,7 @@ const Offers = ({ currentUser, getOfferer }) => {
   )
   const [isRefreshingOffers, setIsRefreshingOffers] = useState(true)
 
-  useEffect(() => {
-    setCurrentPageNumber(urlPageNumber)
-  }, [urlPageNumber])
-
-  const setUrlFilters = useCallback(
+  const applyUrlFiltersAndRedirect = useCallback(
     (filters, isRefreshing = true) => {
       setIsRefreshingOffers(isRefreshing)
       const newUrl = computeOffersUrl(filters, filters.page)
@@ -216,12 +174,12 @@ const Offers = ({ currentUser, getOfferer }) => {
     if (!hasDifferentFiltersFromLastSearch(searchFilters)) {
       refreshOffers()
     }
-    setUrlFilters(searchFilters)
+    applyUrlFiltersAndRedirect(searchFilters)
   }, [
     hasDifferentFiltersFromLastSearch,
     refreshOffers,
     searchFilters,
-    setUrlFilters,
+    applyUrlFiltersAndRedirect,
   ])
 
   useEffect(() => {
@@ -249,8 +207,8 @@ const Offers = ({ currentUser, getOfferer }) => {
     ) {
       updatedFilters.status = DEFAULT_SEARCH_FILTERS.status
     }
-    setUrlFilters(updatedFilters)
-  }, [setUrlFilters, searchFilters])
+    applyUrlFiltersAndRedirect(updatedFilters)
+  }, [applyUrlFiltersAndRedirect, searchFilters])
 
   const hasSearchFilters = useCallback(
     (searchFilters, filterNames = Object.keys(searchFilters)) => {
@@ -284,13 +242,19 @@ const Offers = ({ currentUser, getOfferer }) => {
 
   const onPreviousPageClick = useCallback(() => {
     const newPageNumber = currentPageNumber - 1
-    setUrlFilters({ ...urlSearchFilters, ...{ page: newPageNumber } }, false)
-  }, [currentPageNumber, setUrlFilters, urlSearchFilters])
+    applyUrlFiltersAndRedirect(
+      { ...urlSearchFilters, ...{ page: newPageNumber } },
+      false
+    )
+  }, [currentPageNumber, applyUrlFiltersAndRedirect, urlSearchFilters])
 
   const onNextPageClick = useCallback(() => {
     const newPageNumber = currentPageNumber + 1
-    setUrlFilters({ ...urlSearchFilters, ...{ page: newPageNumber } }, false)
-  }, [currentPageNumber, setUrlFilters, urlSearchFilters])
+    applyUrlFiltersAndRedirect(
+      { ...urlSearchFilters, ...{ page: newPageNumber } },
+      false
+    )
+  }, [currentPageNumber, applyUrlFiltersAndRedirect, urlSearchFilters])
 
   const selectOffer = useCallback((offerId, selected) => {
     setSelectedOfferIds(currentSelectedIds => {

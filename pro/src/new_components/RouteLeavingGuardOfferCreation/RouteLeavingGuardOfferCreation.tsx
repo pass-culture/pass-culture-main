@@ -5,6 +5,7 @@ import { Title } from 'ui-kit'
 
 import { ReactComponent as InfoIcon } from './assets/info.svg'
 import RouteLeavingGuard from './RouteLeavingGuard'
+import { IShouldBlockNavigationReturnValue } from './RouteLeavingGuard/RouteLeavingGuard'
 import styles from './RouteLeavingGuardOfferCreation.module.scss'
 
 const RouteLeavingGuardOfferCreation = ({
@@ -17,7 +18,8 @@ const RouteLeavingGuardOfferCreation = ({
   const location = useLocation()
 
   const shouldBlockNavigation = useCallback(
-    nextLocation => {
+    (nextLocation: Location): IShouldBlockNavigationReturnValue => {
+      let redirectPath = null
       const offerCreationPath = isCollectiveFlow
         ? '/offre/creation/collectif'
         : '/offre/creation/individuel'
@@ -34,16 +36,14 @@ const RouteLeavingGuardOfferCreation = ({
         (location.pathname.match(offerCreationPath) &&
           nextLocation.pathname.match(confirmationPathRegex))
       ) {
-        nextLocation.pathname = '/offres'
-        nextLocation.search = ''
-        return true
+        redirectPath = '/offres'
+        return { redirectPath, shouldBlock: true }
       }
       if (location.pathname.match(confirmationPathRegex)) {
         if (nextLocation.pathname.match(stocksPathRegex)) {
-          nextLocation.pathname = '/offres'
-          nextLocation.search = ''
+          redirectPath = '/offres'
         }
-        return false
+        return { redirectPath, shouldBlock: false }
       }
       if (
         nextLocation.pathname.match(stocksPathRegex) ||
@@ -51,9 +51,9 @@ const RouteLeavingGuardOfferCreation = ({
         (location.pathname.startsWith(offerCreationPath) &&
           nextLocation.pathname.startsWith(offerCreationPath))
       ) {
-        return false
+        return { shouldBlock: false }
       }
-      return true
+      return { shouldBlock: true }
     },
     [location, isCollectiveFlow]
   )
