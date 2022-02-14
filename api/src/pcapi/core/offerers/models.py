@@ -114,10 +114,6 @@ class BaseVenueTypeCode(enum.Enum):
         except KeyError:
             raise ValueError(f"{v}: invalide")
 
-    @classmethod
-    def from_label(cls, label: str) -> "BaseVenueTypeCode":
-        return {code.value: code.name for code in cls}[label]
-
 
 VenueTypeCode = enum.Enum("VenueTypeCode", VENUE_TYPE_CODE_MAPPING, type=BaseVenueTypeCode)
 VenueTypeCodeKey = enum.Enum(
@@ -310,11 +306,6 @@ class Venue(PcObject, Model, HasThumbMixin, HasAddressMixin, ProvidableMixin, Ne
         if field not in type(self).__table__.columns:
             raise ValueError(f"Unknown field {field} for model {type(self)}")
         return getattr(self, field) != value
-
-    def fill_venue_type_code_from_label(self) -> None:
-        if not self.venueType:
-            return
-        self.venueTypeCode = VenueTypeCode.from_label(self.venueType.label)
 
 
 class VenueLabel(PcObject, Model):

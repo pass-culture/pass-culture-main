@@ -15,7 +15,6 @@ from pcapi.core.offerers.repository import find_siren_by_offerer_id
 from pcapi.core.offerers.repository import find_user_offerer_by_validation_token
 from pcapi.core.offerers.repository import get_all_offerers_for_user
 from pcapi.core.offerers.repository import get_all_venue_labels
-from pcapi.core.offerers.repository import get_all_venue_types
 from pcapi.core.offerers.repository import get_offerers_by_date_validated
 from pcapi.core.offerers.repository import has_digital_venue_with_at_least_one_offer
 from pcapi.core.offerers.repository import has_physical_venue_without_draft_or_accepted_bank_information
@@ -33,19 +32,6 @@ class GetAllVenueLabelsTest:
         label2 = offerers_factories.VenueLabelFactory()
 
         assert set(get_all_venue_labels()) == {label1, label2}
-
-
-class GetAllVenueTypesTest:
-    def test_get_all_venue_types(self):
-        # Given
-        type_1 = offerers_factories.VenueTypeFactory()
-        type_2 = offerers_factories.VenueTypeFactory()
-
-        # When
-        venue_types = get_all_venue_types()
-
-        # Then
-        assert set(venue_types) == {type_1, type_2}
 
 
 class GetAllOfferersForUserTest:
