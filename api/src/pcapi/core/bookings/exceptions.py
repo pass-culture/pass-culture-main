@@ -3,10 +3,6 @@ from decimal import Decimal
 from pcapi.domain.client_exceptions import ClientError
 
 
-class InvalidStatusChangeException(Exception):
-    pass
-
-
 class OfferIsAlreadyBooked(ClientError):
     def __init__(self) -> None:
         super().__init__("offerId", "Cette offre a déja été reservée par l'utilisateur")
