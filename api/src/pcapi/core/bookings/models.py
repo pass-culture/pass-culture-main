@@ -247,19 +247,6 @@ class Booking(PcObject, Model):
     def mediation(self) -> Optional["Mediation"]:
         return self.stock.offer.activeMediation
 
-    @property
-    def qrCode(self) -> Optional[str]:
-        from . import api  # avoid import loop
-
-        offer = self.stock.offer
-        if offer.isEvent:
-            if self.isEventExpired or self.status == BookingStatus.CANCELLED:
-                return None
-            return api.generate_qr_code(self.token)
-        if self.is_used_or_reimbursed or self.status == BookingStatus.CANCELLED:
-            return None
-        return api.generate_qr_code(self.token)
-
     @hybrid_property
     def isConfirmed(self):
         return self.cancellationLimitDate is not None and self.cancellationLimitDate <= datetime.utcnow()

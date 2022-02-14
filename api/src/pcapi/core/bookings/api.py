@@ -1,15 +1,10 @@
-import base64
 import datetime
-import io
 import itertools
 import logging
 from operator import or_
 import typing
 
-from PIL import Image
 import pytz
-import qrcode
-import qrcode.image.svg
 
 from pcapi.core import search
 from pcapi.core.bookings import constants
@@ -56,9 +51,6 @@ from .exceptions import BookingIsAlreadyUsed
 logger = logging.getLogger(__name__)
 
 QR_CODE_PASS_CULTURE_VERSION = "v3"
-QR_CODE_VERSION = 2
-QR_CODE_BOX_SIZE = 5
-QR_CODE_BOX_BORDER = 1
 
 
 def book_offer(
@@ -349,27 +341,6 @@ def mark_as_unused(booking: Booking) -> None:
 
 def get_qr_code_data(booking_token: str) -> str:
     return f"PASSCULTURE:{QR_CODE_PASS_CULTURE_VERSION};TOKEN:{booking_token}"
-
-
-def generate_qr_code(booking_token: str) -> str:
-    qr = qrcode.QRCode(
-        version=QR_CODE_VERSION,
-        error_correction=qrcode.constants.ERROR_CORRECT_Q,
-        box_size=QR_CODE_BOX_SIZE,
-        border=QR_CODE_BOX_BORDER,
-    )
-
-    qr.add_data(get_qr_code_data(booking_token=booking_token))
-
-    image = qr.make_image(fill_color="black", back_color="white")
-    return _convert_image_to_base64(image)
-
-
-def _convert_image_to_base64(image: Image) -> str:
-    image_as_bytes = io.BytesIO()
-    image.save(image_as_bytes)
-    image_as_base64 = base64.b64encode(image_as_bytes.getvalue())
-    return f'data:image/png;base64,{str(image_as_base64, encoding="utf-8")}'
 
 
 def compute_cancellation_limit_date(
