@@ -254,9 +254,6 @@ class User(PcObject, Model, NeedsValidationMixin):
     def checkPassword(self, passwordToCheck):
         return crypto.check_password(passwordToCheck, self.password)
 
-    def get_id(self):
-        return str(self.id)
-
     def get_notification_subscriptions(self) -> NotificationSubscriptions:
         return NotificationSubscriptions(**self.notificationSubscriptions or {})
 
@@ -278,14 +275,20 @@ class User(PcObject, Model, NeedsValidationMixin):
         subscriptions = self.get_notification_subscriptions()
         return subscriptions.marketing_push
 
-    def is_authenticated(self) -> bool:
+    @property
+    def is_authenticated(self) -> bool:  # required by flask-login
         return True
 
-    def is_active(self) -> bool:
-        return True
+    @property
+    def is_active(self) -> bool:  # required by flask-login
+        return self.isActive
 
-    def is_anonymous(self) -> bool:
+    @property
+    def is_anonymous(self) -> bool:  # required by flask-login
         return False
+
+    def get_id(self):  # required by flask-login
+        return str(self.id)
 
     def is_super_admin(self) -> bool:
         if settings.IS_PROD:
