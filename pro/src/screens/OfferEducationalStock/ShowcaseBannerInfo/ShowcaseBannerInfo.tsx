@@ -16,7 +16,8 @@ const ShowcaseBannerInfo = (): JSX.Element => (
       3) Après un accord mutuel, vous pourrez revenir éditer cette offre et y
       ajouter les éléments de date et prix
       <br />
-      4) Ensuite, cette offre pourra être préservable par l’enseignant
+      4) Une fois l'offre complétée elle sera préréservable sur ADAGE par
+      l'enseignant
     </p>
   </div>
 )
