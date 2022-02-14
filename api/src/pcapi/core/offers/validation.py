@@ -68,13 +68,6 @@ VALUE_VALIDATION_CONFIG = {
 }
 
 
-def check_user_can_create_activation_event(user: User) -> None:
-    if not user.has_admin_role:
-        error = ForbiddenError()
-        error.add_error("type", "Seuls les administrateurs du pass Culture peuvent créer des offres d'activation")
-        raise error
-
-
 def check_offer_existing_stocks_are_editable(offer: Offer) -> None:
     check_validation_status(offer)
     if not offer.isEditable:
