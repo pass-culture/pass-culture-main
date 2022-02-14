@@ -32,12 +32,14 @@ CORS(
 
 
 API_KEY_AUTH = "ApiKeyAuth"
+COOKIE_AUTH = "SessionAuth"
 
 
 SECURITY_SCHEMES = [
     SecurityScheme(
         name=API_KEY_AUTH, data={"type": "http", "scheme": "bearer", "description": "Api key issued by passculture"}
     ),
+    SecurityScheme(name=COOKIE_AUTH, data={"type": "apiKey", "in": "cookie", "name": "session"}),
 ]
 
 
