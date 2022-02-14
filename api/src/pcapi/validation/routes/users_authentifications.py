@@ -17,6 +17,7 @@ from pcapi.core.users.models import User
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.api_errors import UnauthorizedError
 from pcapi.routes.pro.blueprint import API_KEY_AUTH
+from pcapi.routes.pro.blueprint import COOKIE_AUTH
 from pcapi.serialization.spec_tree import add_security_scheme
 
 
@@ -31,6 +32,9 @@ def check_user_is_logged_in_or_email_is_provided(user: User, email: Optional[str
 
 
 def login_or_api_key_required(function: Callable) -> Callable:
+    add_security_scheme(function, API_KEY_AUTH)
+    add_security_scheme(function, COOKIE_AUTH)
+
     @wraps(function)
     def wrapper(*args, **kwds):  # type: ignore[no-untyped-def]
         _fill_current_api_key()
