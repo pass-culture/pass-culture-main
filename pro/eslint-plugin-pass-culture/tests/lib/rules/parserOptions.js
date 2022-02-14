@@ -3,4 +3,5 @@ module.exports = {
   ecmaFeatures: {
     jsx: true,
   },
+  sourceType: 'module',
 }
