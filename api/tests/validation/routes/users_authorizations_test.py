@@ -2,6 +2,7 @@ from flask_login import AnonymousUserMixin
 import pytest
 
 from pcapi.core.offerers.models import ApiKey
+from pcapi.core.offers import factories as offers_factories
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users.models import User
 from pcapi.model_creators.generic_creators import create_offerer
@@ -15,71 +16,37 @@ from pcapi.validation.routes.users_authorizations import check_user_can_validate
 
 class CheckUserCanValidateBookingTest:
     @pytest.mark.usefixtures("db_session")
-    def test_check_user_can_validate_bookings_returns_true_when_user_is_authenticated_and_has_editor_rights_on_booking(
-        self, app
-    ):
-        # Given
-        user = users_factories.UserFactory()
-        offerer = create_offerer()
-        user_offerer = create_user_offerer(user, offerer, None)
-        repository.save(offerer, user_offerer)
+    def test_check_user_offerer_can_validate_bookings(self):
+        user_offerer = offers_factories.UserOffererFactory()
+        user = user_offerer.user
+        offerer = user_offerer.offerer
+        assert check_user_can_validate_bookings(user, offerer.id)
 
-        # When
-        result = check_user_can_validate_bookings(user, offerer.id)
-
-        # Then
-        assert result is True
-
-    def test_check_user_can_validate_bookings_returns_false_when_user_is_not_logged_in(self, app):
-        # Given
-        user = AnonymousUserMixin()
-
-        # When
-        result = check_user_can_validate_bookings(user, None)
-
-        # Then
+    def test_check_anonymous_user_cannot_validate_bookings(self):
+        anonymous = AnonymousUserMixin()
+        result = check_user_can_validate_bookings(anonymous, offerer_id=1)
         assert result is False
 
-    def test_check_user_can_validate_bookings_raise_api_error_when_user_is_authenticated_and_does_not_have_editor_rights_on_booking(
-        self, app
-    ):
-        # Given
+    def test_check_non_offerer_raise_error(self):
         user = User()
-        user.is_authenticated = True
-
-        # When
         with pytest.raises(ApiErrors) as errors:
             check_user_can_validate_bookings(user, None)
-
-        # Then
         assert errors.value.errors["global"] == ["Cette contremarque n'a pas été trouvée"]
 
 
 class CheckUserCanValidateBookingV2Test:
     @pytest.mark.usefixtures("db_session")
-    def test_does_not_raise_error_when_user_has_editor_rights_on_booking(self, app):
-        # Given
-        user = users_factories.UserFactory()
-        offerer = create_offerer()
-        user_offerer = create_user_offerer(user, offerer, None)
-
-        repository.save(offerer, user_offerer)
-
-        # Then the following should not raise
+    def test_ok_if_user_offerer(self):
+        user_offerer = offers_factories.UserOffererFactory()
+        user = user_offerer.user
+        offerer = user_offerer.offerer
+        # The following call should not raise.
         check_user_can_validate_bookings_v2(user, offerer.id)
 
-    def test_check_user_can_validate_v2_bookings_raise_api_error_when_user_is_authenticated_but_does_not_have_editor_rights_on_booking(
-        self, app
-    ):
-        # Given
+    def test_error_if_non_offerer(self):
         user = User()
-        user.is_authenticated = True
-
-        # When
         with pytest.raises(ApiErrors) as errors:
             check_user_can_validate_bookings_v2(user, None)
-
-        # Then
         assert errors.value.errors["user"] == [
             "Vous n’avez pas les droits suffisants pour valider cette contremarque car cette réservation n'a pas été faite sur une de vos offres, ou que votre rattachement à la structure est encore en cours de validation"
         ]
