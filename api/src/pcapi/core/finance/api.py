@@ -895,6 +895,7 @@ def generate_invoice_file(invoice_date: datetime.date = datetime.date.today()) -
         header,
         rows=query,
         row_formatter=row_formatter,
+        compress=True,
     )
 
 
