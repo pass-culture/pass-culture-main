@@ -12,6 +12,7 @@ import styles from './OfferEducationalConfirmation.module.scss'
 interface IOfferEducationalConfirmationProps {
   offererId?: string | null
   offerStatus?: OfferStatus
+  isShowcase?: boolean
 }
 
 const activeOffer = {
@@ -28,14 +29,34 @@ const pendingOffer = {
   Icon: PendingIcon,
 }
 
+const showcaseOffer = {
+  title: 'Offre en cours de validation !',
+  description:
+    'Votre offre est désormais disponible sur ADAGE (L’Application Dédiée À la Généralisation de l’Éducation artistique et culturelle) et visible par les enseignants et chefs d’établissement de l’Éducation nationale. Vous aurez la possibilité de revenir éditer votre offre et compléter les éléments de date(s) et prix.',
+  Icon: ValidateIcon,
+}
+
+const mapOfferStatusToData = (status?: OfferStatus, isShowcase?: boolean) => {
+  if (status === OfferStatus.OFFER_STATUS_PENDING) {
+    return pendingOffer
+  }
+
+  if (isShowcase) {
+    return showcaseOffer
+  }
+
+  return activeOffer
+}
+
 const OfferEducationalConfirmation = ({
   offererId,
   offerStatus,
+  isShowcase,
 }: IOfferEducationalConfirmationProps): JSX.Element => {
-  const { title, description, Icon } =
-    offerStatus === OfferStatus.OFFER_STATUS_PENDING
-      ? pendingOffer
-      : activeOffer
+  const { title, description, Icon } = mapOfferStatusToData(
+    offerStatus,
+    isShowcase
+  )
 
   return (
     <div className={styles['confirmation']}>
