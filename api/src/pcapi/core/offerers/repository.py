@@ -24,10 +24,6 @@ def get_all_venue_labels() -> list[models.VenueLabel]:
     return models.VenueLabel.query.all()
 
 
-def get_all_venue_types() -> list[models.VenueType]:
-    return models.VenueType.query.all()
-
-
 def get_all_offerers_for_user(user: User, filters: dict) -> list[models.Offerer]:
     query = models.Offerer.query.filter(models.Offerer.isActive.is_(True))
 
