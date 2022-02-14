@@ -32,7 +32,7 @@ const showcaseOfferRadios = [
   },
   {
     label:
-      'Je préfère être contacté(e) par un enseignant avant de définir la date et le prix de l’offre',
+      'Je préfère être contacté par un enseignant avant de définir la date et le prix de l’offre',
     value: EducationalOfferType.SHOWCASE,
   },
 ]
@@ -159,7 +159,7 @@ const OfferEducationalStock = ({
                   label={DETAILS_PRICE_LABEL}
                   maxLength={1000}
                   name="priceDetail"
-                  placeholder="Détaillez ici ce que comprend votre prix total"
+                  placeholder="Détaillez ici des informations complémentaires"
                 />
               </FormLayout.Row>
             </FormLayout.Section>
