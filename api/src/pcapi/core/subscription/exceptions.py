@@ -14,10 +14,6 @@ class BeneficiaryFraudCheckMissingException(SubscriptionException):
     pass
 
 
-class BeneficiaryFraudCheckEligibilityTypeMismatchException(SubscriptionException):
-    pass
-
-
 class CannotUpgradeBeneficiaryRole(SubscriptionException):
     pass
 
