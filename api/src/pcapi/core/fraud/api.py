@@ -17,7 +17,6 @@ from pcapi.models.feature import FeatureToggle
 from pcapi.repository import repository
 from pcapi.repository.user_queries import matching
 
-from . import exceptions
 from . import models
 from .common import models as common_models
 from .dms import api as dms_api
@@ -516,37 +515,6 @@ def is_risky_user_profile(user: users_models.User) -> bool:
         return True
 
     return False
-
-
-def start_fraud_check(
-    user: users_models.User,
-    application_id: str,
-    source_data: typing.Union[models.DMSContent, ubble_fraud_models.UbbleContent],
-) -> models.BeneficiaryFraudCheck:
-    source_type = models.FRAUD_CONTENT_MAPPING[type(source_data)]
-
-    fraud_check = models.BeneficiaryFraudCheck.query.filter(
-        models.BeneficiaryFraudCheck.user == user,
-        models.BeneficiaryFraudCheck.type == source_type,
-        models.BeneficiaryFraudCheck.thirdPartyId == application_id,
-    ).one_or_none()
-
-    if fraud_check:
-        raise exceptions.ApplicationValidationAlreadyStarted()
-
-    eligibility_type = decide_eligibility(user, source_data)
-    fraud_check = models.BeneficiaryFraudCheck(
-        user=user,
-        type=source_type,
-        thirdPartyId=application_id,
-        resultContent=source_data.dict(),
-        status=models.FraudCheckStatus.PENDING,
-        eligibilityType=eligibility_type,
-    )
-
-    repository.save(fraud_check)
-
-    return fraud_check
 
 
 def update_or_create_fraud_check_failed(

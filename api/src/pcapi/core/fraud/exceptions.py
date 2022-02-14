@@ -28,7 +28,3 @@ class NotWhitelistedINE(FraudException):
 
 class InvalidContentTypeException(FraudException):
     pass
-
-
-class ApplicationValidationAlreadyStarted(FraudException):
-    pass
