@@ -12,7 +12,7 @@ import { ROOT_PATH } from 'utils/config'
 const Logo = ({ className, noLink, signPage, isUserAdmin }) => {
   let src = `${ROOT_PATH}/icons/brand-logo-pro-small-pro.png`
   if (signPage) {
-    src = `${ROOT_PATH}/icons/logo-group-splash@2x.png`
+    src = `${ROOT_PATH}/icons/logo-pass-culture-white.svg`
   }
 
   const extraProps = {}
@@ -26,12 +26,6 @@ const Logo = ({ className, noLink, signPage, isUserAdmin }) => {
       {...extraProps}
     >
       <img alt="Logo" src={src} />
-      {signPage && (
-        <div className="logo-subtitle">
-          {'L’espace pass Culture des '}
-          <span className="logo-subtitle-highlighted">acteurs culturels</span>
-        </div>
-      )}
     </NavLink>
   )
 }
