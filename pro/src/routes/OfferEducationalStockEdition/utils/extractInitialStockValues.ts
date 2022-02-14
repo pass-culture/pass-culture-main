@@ -35,7 +35,8 @@ export const extractInitialStockValues = (
       DEFAULT_EAC_STOCK_FORM_VALUES.bookingLimitDatetime,
     priceDetail:
       stock.educationalPriceDetail ?? DEFAULT_EAC_STOCK_FORM_VALUES.priceDetail,
-    // TODO: change this when developing PC-13161 (editing a showcase offer)
-    educationalOfferType: EducationalOfferType.CLASSIC,
+    educationalOfferType: offer.isShowcase
+      ? EducationalOfferType.SHOWCASE
+      : EducationalOfferType.CLASSIC,
   }
 }
