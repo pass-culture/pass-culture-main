@@ -145,3 +145,10 @@ export enum EducationalOfferType {
   SHOWCASE = 'SHOWCASE',
   CLASSIC = 'CLASSIC',
 }
+
+export type DeepPartialEducationalOfferModelPayload = Omit<
+  Partial<EducationalOfferModelPayload>,
+  'extraData'
+> & {
+  extraData?: Partial<EducationalOfferModelPayload['extraData']>
+}

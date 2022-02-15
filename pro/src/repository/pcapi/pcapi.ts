@@ -8,7 +8,11 @@ import {
   DEFAULT_SEARCH_FILTERS,
 } from 'components/pages/Offers/Offers/_constants'
 import { DEFAULT_INVOICES_FILTERS } from 'components/pages/Reimbursements/_constants'
-import { Feature } from 'custom_types'
+import {
+  DeepPartialEducationalOfferModelPayload,
+  EducationalOfferModelPayload,
+} from 'core/OfferEducational'
+import { Feature, Offer } from 'custom_types'
 import { client } from 'repository/pcapi/pcapiClient'
 import {
   FORMAT_ISO_DATE_ONLY,
@@ -23,23 +27,33 @@ export const loadFeatures = async (): Promise<Feature[]> => {
 //
 // offers
 //
-export const loadOffer = async offerId => {
+export const loadOffer = async (offerId: string): Promise<Offer> => {
   return client.get(`/offers/${offerId}`)
 }
 
-export const createOffer = offer => {
+// TODO: type offer payload
+// eslint-disable-next-line
+export const createOffer = (offer: Record<string, any>): Promise<{ id: string }> => {
   return client.post(`/offers`, offer)
 }
 
-export const createEducationalOffer = offer =>
-  client.post('/offers/educational', offer)
+export const createEducationalOffer = (
+  offer: EducationalOfferModelPayload
+): Promise<{ id: string }> => client.post('/offers/educational', offer)
 
-export const updateOffer = (offerId, offer) => {
+export const updateOffer = (
+  offerId: string,
+  // TODO: type offer payload
+  // eslint-disable-next-line
+  offer: Record<string, any>
+): Promise<{ id: string }> => {
   return client.patch(`/offers/${offerId}`, offer)
 }
 
-export const updateEducationalOffer = (offerId, offer) =>
-  client.patch(`/offers/educational/${offerId}`, offer)
+export const updateEducationalOffer = (
+  offerId: string,
+  offer: DeepPartialEducationalOfferModelPayload
+): Promise<Offer> => client.patch(`/offers/educational/${offerId}`, offer)
 
 export const loadFilteredOffers = async ({
   nameOrIsbn = DEFAULT_SEARCH_FILTERS.nameOrIsbn,
@@ -50,7 +64,16 @@ export const loadFilteredOffers = async ({
   periodEndingDate = DEFAULT_SEARCH_FILTERS.periodEndingDate,
   status = DEFAULT_SEARCH_FILTERS.status,
   creationMode = DEFAULT_SEARCH_FILTERS.creationMode,
-}) => {
+}: {
+  nameOrIsbn?: string
+  offererId?: string
+  venueId?: string
+  categoryId?: string
+  periodBeginningDate?: string
+  periodEndingDate?: string
+  status?: string
+  creationMode?: string
+}): Promise<Offer[]> => {
   const body = createRequestBody({
     nameOrIsbn,
     offererId,
@@ -67,9 +90,9 @@ export const loadFilteredOffers = async ({
 }
 
 export const updateOffersActiveStatus = (
-  areAllOffersSelected,
+  areAllOffersSelected: boolean,
   {
-    name = DEFAULT_SEARCH_FILTERS.name,
+    name = undefined,
     offererId = DEFAULT_SEARCH_FILTERS.offererId,
     venueId = DEFAULT_SEARCH_FILTERS.venueId,
     categoryId = DEFAULT_SEARCH_FILTERS.categoryId,
@@ -79,8 +102,19 @@ export const updateOffersActiveStatus = (
     isActive,
     periodBeginningDate = DEFAULT_SEARCH_FILTERS.periodBeginningDate,
     periodEndingDate = DEFAULT_SEARCH_FILTERS.periodEndingDate,
+  }: {
+    name?: string
+    offererId?: string
+    venueId?: string
+    categoryId?: string
+    status?: string
+    creationMode?: string
+    ids?: string[]
+    isActive?: boolean
+    periodBeginningDate?: string
+    periodEndingDate?: string
   }
-) => {
+): Promise<void> => {
   const formattedBody = createRequestBody({
     name,
     offererId,
@@ -102,11 +136,14 @@ export const updateOffersActiveStatus = (
   return client.patch('/offers/active-status', { ids, isActive })
 }
 
-const createRequestBody = searchFilters => {
-  const body = {}
+const createRequestBody = (
+  searchFilters: Record<string, string | undefined>
+) => {
+  const body = {} as Record<string, string | undefined>
   Object.keys(DEFAULT_SEARCH_FILTERS).forEach(field => {
     if (
       searchFilters[field] &&
+      // @ts-expect-error field may not be a key of DEFAULT_SEARCH_FILTERS
       searchFilters[field] !== DEFAULT_SEARCH_FILTERS[field]
     ) {
       body[field] = searchFilters[field]
