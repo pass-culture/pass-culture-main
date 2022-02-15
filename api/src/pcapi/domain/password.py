@@ -33,18 +33,6 @@ def check_password_validity(new_password: str, new_confirmation_password: str, o
         raise api_errors
 
 
-def validate_new_password_request(request):
-    if "token" not in request.get_json():
-        errors = ApiErrors()
-        errors.add_error("token", "Votre lien de changement de mot de passe est invalide.")
-        raise errors
-
-    if "newPassword" not in request.get_json():
-        errors = ApiErrors()
-        errors.add_error("newPassword", "Vous devez renseigner un nouveau mot de passe.")
-        raise errors
-
-
 def check_password_strength(key: str, password: str) -> None:
     api_errors = ApiErrors()
     _ensure_new_password_is_strong_enough(key, password, api_errors)
