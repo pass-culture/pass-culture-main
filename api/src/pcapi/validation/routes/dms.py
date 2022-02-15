@@ -5,8 +5,6 @@ from typing import Callable
 
 import flask
 import pydantic
-import wtforms
-import wtforms.validators
 
 from pcapi import settings
 from pcapi.connectors.dms import api as api_dms
@@ -44,20 +42,6 @@ def require_dms_token(route_function: Callable[..., Any]):
         return route_function(*args, **kwargs)
 
     return validate_dms_token
-
-
-class DmsWebhookApplicationForm(wtforms.Form):
-    procedure_id = wtforms.IntegerField(validators=[wtforms.validators.InputRequired()])
-    dossier_id = wtforms.IntegerField(validators=[wtforms.validators.InputRequired()])
-    state = wtforms.SelectField(
-        choices=list(api_dms.GraphQLApplicationStates),
-        validators=[
-            wtforms.validators.InputRequired(),
-            wtforms.validators.AnyOf(values=list(api_dms.GraphQLApplicationStates)),
-        ],
-        coerce=coerce_for_enum(api_dms.GraphQLApplicationStates),
-    )
-    updated_at = wtforms.DateTimeField(validators=[wtforms.validators.InputRequired()], format="%Y-%m-%d %H:%M:%S %z")
 
 
 class BankInformationDmsFormModel(pydantic.BaseModel):
