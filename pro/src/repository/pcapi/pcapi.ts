@@ -15,6 +15,8 @@ import {
 } from 'core/OfferEducational'
 import {
   EducationalOfferer,
+  Booking,
+  BookingsRecap,
   Feature,
   Offer,
   Offerer,
@@ -477,8 +479,16 @@ export const buildBookingsRecapQuery = ({
   bookingStatusFilter = DEFAULT_PRE_FILTERS.bookingStatusFilter,
   offerType = DEFAULT_PRE_FILTERS.offerType,
   page,
-}) => {
-  const params = { page }
+}: {
+  venueId?: string
+  eventDate?: string
+  bookingPeriodBeginningDate?: Date
+  bookingPeriodEndingDate?: Date
+  bookingStatusFilter?: string
+  offerType?: string
+  page: string
+}): string => {
+  const params: Record<string, string> = { page }
 
   if (venueId !== DEFAULT_PRE_FILTERS.offerVenueId) {
     params.venueId = venueId
@@ -503,12 +513,28 @@ export const buildBookingsRecapQuery = ({
   return stringify(params)
 }
 
-export const loadFilteredBookingsRecap = async filters => {
+export const loadFilteredBookingsRecap = async (filters: {
+  venueId?: string
+  eventDate?: string
+  bookingPeriodBeginningDate?: Date
+  bookingPeriodEndingDate?: Date
+  bookingStatusFilter?: string
+  offerType?: string
+  page: string
+}): Promise<BookingsRecap> => {
   const queryParams = buildBookingsRecapQuery(filters)
   return client.get(`/bookings/pro?${queryParams}`)
 }
 
-export const getFilteredBookingsCSV = async filters => {
+export const getFilteredBookingsCSV = async (filters: {
+  venueId?: string
+  eventDate?: string
+  bookingPeriodBeginningDate?: Date
+  bookingPeriodEndingDate?: Date
+  bookingStatusFilter?: string
+  offerType?: string
+  page: string
+}): Promise<string> => {
   const queryParams = buildBookingsRecapQuery(filters)
   return client.getPlainText(`/bookings/csv?${queryParams}`)
 }
@@ -517,15 +543,15 @@ export const getFilteredBookingsCSV = async filters => {
 // Booking
 //
 
-export const getBooking = code => {
+export const getBooking = (code: string): Promise<Booking> => {
   return client.get(`/v2/bookings/token/${code}`)
 }
 
-export const validateBooking = code => {
+export const validateBooking = (code: string): Promise<void> => {
   return client.patch(`/v2/bookings/use/token/${code}`)
 }
 
-export const invalidateBooking = code => {
+export const invalidateBooking = (code: string): Promise<void> => {
   return client.patch(`/v2/bookings/keep/token/${code}`)
 }
 
