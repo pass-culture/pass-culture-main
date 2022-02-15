@@ -17,6 +17,7 @@ import {
   EducationalOfferer,
   Booking,
   BookingsRecap,
+  BusinessUnit,
   Feature,
   Offer,
   Offerer,
@@ -559,13 +560,18 @@ export const invalidateBooking = (code: string): Promise<void> => {
 // Business Unit
 //
 
-export const getBusinessUnits = offererId => {
+export const getBusinessUnits = (
+  offererId: string
+): Promise<BusinessUnit[]> => {
   const queryParams = offererId ? `?offererId=${offererId}` : ''
 
   return client.get(`/finance/business-units${queryParams}`)
 }
 
-export const editBusinessUnit = (businessUnitId, siret) => {
+export const editBusinessUnit = (
+  businessUnitId: string,
+  siret: string
+): Promise<void> => {
   return client.patch(`/finance/business-units/${businessUnitId}`, {
     siret: siret,
   })
