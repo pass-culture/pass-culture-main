@@ -78,7 +78,7 @@ from pcapi.repository import transaction
 from pcapi.routes.adage.v1.serialization.prebooking import serialize_educational_booking
 from pcapi.routes.serialization.offers_serialize import CompletedEducationalOfferModel
 from pcapi.routes.serialization.offers_serialize import PostEducationalOfferBodyModel
-from pcapi.routes.serialization.offers_serialize import PostEducationalOfferShadowStockBodyModel
+from pcapi.routes.serialization.offers_serialize import EducationalOfferShadowStockBodyModel
 from pcapi.routes.serialization.offers_serialize import PostOfferBodyModel
 from pcapi.routes.serialization.stock_serialize import EducationalStockCreationBodyModel
 from pcapi.routes.serialization.stock_serialize import StockCreationBodyModel
@@ -1052,7 +1052,7 @@ def cancel_educational_offer_booking(offer: Offer) -> None:
 
 
 def create_educational_shadow_stock_and_set_offer_showcase(
-    stock_data: PostEducationalOfferShadowStockBodyModel, user: User, offer_id: str
+    stock_data: EducationalOfferShadowStockBodyModel, user: User, offer_id: str
 ) -> Stock:
     # When creating a showcase offer we need to create a shadow stock.
     # We prefill the stock information with false data.
