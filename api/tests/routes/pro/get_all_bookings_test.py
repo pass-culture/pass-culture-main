@@ -33,7 +33,7 @@ class GetAllBookingsTest:
         response = (
             TestClient(app.test_client())
             .with_session_auth(pro.email)
-            .get(f"/bookings/pro?{BOOKING_PERIOD_PARAMS}&page=3")
+            .get(f"/bookings/pro?{BOOKING_PERIOD_PARAMS}&bookingStatusFilter=booked&page=3")
         )
 
         assert response.status_code == 200
@@ -50,7 +50,9 @@ class GetAllBookingsTest:
     @patch("pcapi.core.bookings.repository.find_by_pro_user")
     def test_call_repository_with_page_1(self, find_by_pro_user, app):
         pro = users_factories.ProFactory()
-        TestClient(app.test_client()).with_session_auth(pro.email).get(f"/bookings/pro?{BOOKING_PERIOD_PARAMS}")
+        TestClient(app.test_client()).with_session_auth(pro.email).get(
+            f"/bookings/pro?{BOOKING_PERIOD_PARAMS}&bookingStatusFilter=booked"
+        )
         find_by_pro_user.assert_called_once_with(
             user=pro,
             booking_period=BOOKING_PERIOD,
@@ -69,7 +71,7 @@ class GetAllBookingsTest:
 
         # When
         TestClient(app.test_client()).with_session_auth(pro.email).get(
-            f"/bookings/pro?{BOOKING_PERIOD_PARAMS}&venueId={humanize(venue.id)}"
+            f"/bookings/pro?{BOOKING_PERIOD_PARAMS}&bookingStatusFilter=booked&venueId={humanize(venue.id)}"
         )
 
         # Then
@@ -94,7 +96,7 @@ class Returns200Test:
         )
 
         client = TestClient(app.test_client()).with_session_auth(admin.email)
-        response = client.get(f"/bookings/pro?{BOOKING_PERIOD_PARAMS}")
+        response = client.get(f"/bookings/pro?{BOOKING_PERIOD_PARAMS}&bookingStatusFilter=booked")
 
         assert response.status_code == 200
         assert len(response.json["bookings_recap"]) == 1
@@ -111,7 +113,7 @@ class Returns200Test:
         )
 
         client = TestClient(app.test_client()).with_session_auth(admin.email)
-        response = client.get(f"/bookings/pro?{BOOKING_PERIOD_PARAMS}")
+        response = client.get(f"/bookings/pro?{BOOKING_PERIOD_PARAMS}&bookingStatusFilter=booked")
 
         assert response.status_code == 200
         assert response.json["bookings_recap"][0]["stock"]["offer_is_educational"] is True
@@ -138,7 +140,7 @@ class Returns200Test:
 
         client = TestClient(app.test_client()).with_session_auth(pro_user.email)
         with assert_num_queries(testing.AUTHENTICATION_QUERIES + 2):
-            response = client.get(f"/bookings/pro?{BOOKING_PERIOD_PARAMS}")
+            response = client.get(f"/bookings/pro?{BOOKING_PERIOD_PARAMS}&bookingStatusFilter=booked")
 
         expected_bookings_recap = [
             {
@@ -196,7 +198,9 @@ class Returns200Test:
 
         client = TestClient(app.test_client()).with_session_auth(pro_user.email)
         with assert_num_queries(testing.AUTHENTICATION_QUERIES + 2):
-            response = client.get(f"/bookings/pro?{BOOKING_PERIOD_PARAMS}&eventDate={requested_date_iso_format}")
+            response = client.get(
+                f"/bookings/pro?{BOOKING_PERIOD_PARAMS}&bookingStatusFilter=booked&eventDate={requested_date_iso_format}"
+            )
 
         assert response.status_code == 200
         assert len(response.json["bookings_recap"]) == 1
@@ -217,7 +221,7 @@ class Returns200Test:
         client = TestClient(app.test_client()).with_session_auth(pro_user.email)
         with assert_num_queries(testing.AUTHENTICATION_QUERIES + 2):
             response = client.get(
-                "/bookings/pro?bookingPeriodBeginningDate=%s&bookingPeriodEndingDate=%s"
+                "/bookings/pro?bookingPeriodBeginningDate=%s&bookingPeriodEndingDate=%s&bookingStatusFilter=booked"
                 % (booking_period_beginning_date_iso, booking_period_ending_date_iso)
             )
 
@@ -239,7 +243,9 @@ class Returns200Test:
         pro_user = users_factories.ProFactory(email="pro@example.com")
         offers_factories.UserOffererFactory(user=pro_user, offerer=booking.offerer)
 
-        response = client.with_session_auth(pro_user.email).get(f"/bookings/pro?{BOOKING_PERIOD_PARAMS}")
+        response = client.with_session_auth(pro_user.email).get(
+            f"/bookings/pro?{BOOKING_PERIOD_PARAMS}&bookingStatusFilter=booked"
+        )
 
         expected_bookings_recap_status_history = [
             {
@@ -260,7 +266,9 @@ class Returns200Test:
         pro_user = users_factories.ProFactory(email="pro@example.com")
         offers_factories.UserOffererFactory(user=pro_user, offerer=booking.offerer)
 
-        response = client.with_session_auth(pro_user.email).get(f"/bookings/pro?{BOOKING_PERIOD_PARAMS}")
+        response = client.with_session_auth(pro_user.email).get(
+            f"/bookings/pro?{BOOKING_PERIOD_PARAMS}&bookingStatusFilter=booked"
+        )
 
         expected_bookings_recap = [
             {
