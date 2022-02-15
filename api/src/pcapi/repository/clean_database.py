@@ -42,6 +42,7 @@ from pcapi.core.providers.models import VenueProvider
 from pcapi.core.users.models import Favorite
 from pcapi.core.users.models import Token
 from pcapi.core.users.models import User
+from pcapi.core.users.models import UserSuspension
 from pcapi.local_providers.install import install_local_providers
 from pcapi.models import db
 from pcapi.models.bank_information import BankInformation
@@ -109,6 +110,7 @@ def clean_all_database(*args, **kwargs):
     BeneficiaryFraudReview.query.delete()
     Token.query.delete()
     OfferValidationConfig.query.delete()
+    UserSuspension.query.delete()
     User.query.delete()
     UserSession.query.delete()
     Email.query.delete()
