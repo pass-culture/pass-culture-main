@@ -154,6 +154,25 @@ class EducationalEventOfferFactory(OfferFactory):
     isEducational = True
 
 
+class EducationalEventShadowOfferFactory(EducationalEventOfferFactory):
+    extraData = {
+        "students": [
+            "CAP - 1re ann\u00e9e",
+            "CAP - 2e ann\u00e9e",
+            "Lyc\u00e9e - Seconde",
+            "Lyc\u00e9e - Premi\u00e8re",
+        ],
+        "offerVenue": {
+            "addressType": "other",
+            "otherAddress": "1 rue des polissons, Paris 75017",
+            "venueId": "",
+        },
+        "contactEmail": "miss.rond@point.com",
+        "contactPhone": "01010100101",
+        "isShowcase": True,
+    }
+
+
 class EducationalThingOfferFactory(OfferFactory):
     product = factory.SubFactory(ThingProductFactory)
     isEducational = True
@@ -206,6 +225,16 @@ class EducationalEventStockFactory(StockFactory):
     beginningDatetime = factory.LazyFunction(lambda: datetime.datetime.now() + datetime.timedelta(days=5))
     bookingLimitDatetime = factory.LazyAttribute(lambda stock: stock.beginningDatetime - datetime.timedelta(minutes=60))
     numberOfTickets = 30
+    educationalPriceDetail = (
+        "Le prix inclus l'accès à la séance et un atelier une fois la séance terminée. 1000 caractères max."
+    )
+
+
+class EducationalEventShadowStockFactory(StockFactory):
+    offer = factory.SubFactory(EducationalEventShadowOfferFactory)
+    beginningDatetime = datetime.datetime(2030, 1, 1)
+    bookingLimitDatetime = datetime.datetime(2030, 1, 1)
+    numberOfTickets = 1
     educationalPriceDetail = (
         "Le prix inclus l'accès à la séance et un atelier une fois la séance terminée. 1000 caractères max."
     )
