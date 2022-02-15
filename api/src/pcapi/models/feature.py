@@ -97,6 +97,7 @@ class FeatureToggle(enum.Enum):
     ENABLE_EAC_SHOWCASE_OFFER = (
         "Permet de créer des offres collectives sans date ni prix depuis le formulaire de création d’offres collectives"
     )
+    ENABLE_IOS_OFFERS_LINK_WITH_REDIRECTION = "Active l'utilisation du lien avec redirection pour les offres (nécessaires pour contourner des restrictions d'iOS)"
 
     def is_active(self) -> bool:
         if flask.has_request_context():
@@ -150,6 +151,7 @@ FEATURES_DISABLED_BY_DEFAULT = (
     FeatureToggle.SHOW_INVOICES_ON_PRO_PORTAL,
     FeatureToggle.DISABLE_ENTERPRISE_API,
     FeatureToggle.ENABLE_EAC_SHOWCASE_OFFER,
+    FeatureToggle.ENABLE_IOS_OFFERS_LINK_WITH_REDIRECTION,
 )
 
 if not settings.IS_DEV:
