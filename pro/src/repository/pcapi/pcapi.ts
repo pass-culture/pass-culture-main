@@ -301,16 +301,12 @@ export const postImageToVenue = async ({
 }
 
 //
-// types
-//
-export const loadTypes = () => {
-  return client.get('/types')
-}
-
-//
 // categories
 //
-export const loadCategories = () => {
+export const loadCategories = async (): Promise<{
+  categories: Category[]
+  subcategories: SubCategory[]
+}> => {
   return client.get('/offers/categories')
 }
 
