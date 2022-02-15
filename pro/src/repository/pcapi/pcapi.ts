@@ -375,24 +375,23 @@ export const editShadowStock = (stockId, stock) =>
 //
 // thumbnail
 //
-export const validateDistantImage = url => {
-  return client.post('/offers/thumbnail-url-validation', { url: url })
-}
-
 export const postThumbnail = (
-  offerId,
-  credit,
-  thumb,
-  thumbUrl,
-  x,
-  y,
-  height
-) => {
+  offerId: string,
+  credit: string,
+  thumb: string,
+  thumbUrl: string,
+  x?: number,
+  y?: number,
+  height?: number
+): Promise<{ id: string }> => {
   const body = new FormData()
   body.append('offerId', offerId)
   body.append('credit', credit)
+  // @ts-expect-error x is optionnal and should not be set on body if not available
   body.append('croppingRectX', x)
+  // @ts-expect-error y is optionnal and should not be set on body if not available
   body.append('croppingRectY', y)
+  // @ts-expect-error height is optionnal and should not be set on body if not available
   body.append('croppingRectHeight', height)
   body.append('thumb', thumb)
   body.append('thumbUrl', thumbUrl)

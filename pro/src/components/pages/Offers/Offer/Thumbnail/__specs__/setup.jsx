@@ -13,11 +13,6 @@ import {
 } from 'components/pages/Offers/Offer/Thumbnail/_constants'
 import ThumbnailDialog from 'components/pages/Offers/Offer/Thumbnail/ThumbnailDialog'
 
-jest.mock('repository/pcapi/pcapi', () => ({
-  ...jest.requireActual('repository/pcapi/pcapi'),
-  validateDistantImage: jest.fn(),
-}))
-
 export const createFile = ({
   name = 'example.json',
   type = 'application/json',

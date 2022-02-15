@@ -29,7 +29,6 @@ import {
   postThumbnail,
   setHasSeenTutos,
   updateOffersActiveStatus,
-  validateDistantImage,
 } from '../pcapi'
 
 jest.mock('repository/pcapi/pcapiClient', () => ({
@@ -222,24 +221,6 @@ describe('pcapi', () => {
 
       // Then
       expect(client.get).toHaveBeenCalledWith('/users/signout')
-    })
-  })
-
-  describe('validateDistantImage', () => {
-    it('should call the api correct POST route with url as a body param', () => {
-      // given
-      const url = 'http://ma-mauvaise-url'
-
-      // when
-      validateDistantImage(url)
-
-      // then
-      expect(client.post).toHaveBeenCalledWith(
-        `/offers/thumbnail-url-validation`,
-        {
-          url: url,
-        }
-      )
     })
   })
 
