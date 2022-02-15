@@ -4,7 +4,7 @@ import random
 import string
 from typing import Optional
 
-from pcapi.utils.date import format_birth_date
+import babel.dates
 
 
 APPLICATION_DETAIL_STANDARD_RESPONSE = {
@@ -309,7 +309,7 @@ def make_graphql_application(
             {
                 "id": "Q2hhbXAtNTgyMjIw",
                 "label": "Quelle est votre date de naissance",
-                "stringValue": format_birth_date(birth_date),
+                "stringValue": babel.dates.format_date(birth_date, format="long", locale="fr"),
             },
             {"id": "Q2hhbXAtNzE4MjIy", "label": "Pièces justificatives acceptées", "stringValue": ""},
             {

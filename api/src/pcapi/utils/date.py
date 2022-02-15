@@ -89,10 +89,6 @@ def format_datetime(date_time: datetime) -> str:
     return babel_format_datetime(date_time, format="long", locale="fr")[:-9]
 
 
-def format_birth_date(_date: date) -> str:
-    return format_date(_date, format="long", locale="fr")
-
-
 def get_postal_code_timezone(postal_code: str) -> str:
     return get_department_timezone(PostalCode(postal_code).get_departement_code())
 
