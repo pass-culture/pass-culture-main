@@ -1,5 +1,7 @@
 from unittest.mock import patch
 
+import pytest
+
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.users import factories as users_factories
 from pcapi.model_creators.generic_creators import create_offerer
@@ -8,6 +10,10 @@ from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.specific_creators import create_offer_with_thing_product
 from pcapi.model_creators.specific_creators import create_product_with_thing_subcategory
 from pcapi.validation.models.entity_validator import validate
+
+
+# TODO(xordoquy): use Factory.build() instead of DB here
+pytestmark = pytest.mark.usefixtures("db_session")
 
 
 def test_should_return_errors_when_invalid_address():
