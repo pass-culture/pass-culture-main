@@ -24,6 +24,8 @@ export const AppLayout = ({
             className="app-layout-header-help-link"
             download
             href={`${document.referrer}adage/index/docGet/doc/PARCOURS_REDACTEUR`}
+            rel="noreferrer"
+            target="_blank"
           >
             <Info className="app-layout-header-help-link-icon" /> Aide
           </a>
