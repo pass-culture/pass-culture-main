@@ -611,7 +611,7 @@ class CategoriesResponseModel(BaseModel):
     subcategories: list[SubcategoryResponseModel]
 
 
-class PostEducationalOfferShadowStockBodyModel(BaseModel):
+class EducationalOfferShadowStockBodyModel(BaseModel):
     educational_price_detail: Optional[str]
 
     @validator("educational_price_detail")
