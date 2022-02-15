@@ -94,20 +94,3 @@ SUSPENSION_EVENT_TYPE_CHOICES = (
 )
 
 assert set(_t[0] for _t in SUSPENSION_EVENT_TYPE_CHOICES) == set(SuspensionEventType)
-
-
-PHONE_PREFIX_BY_DEPARTEMENT_CODE = {
-    "971": "590",  # Guadeloupe
-    "972": "596",  # Martinique
-    "973": "594",  # Guyane
-    "974": "262",  # Réunion
-    "975": "509",  # Saint-Pierre-et-Miquelon
-    "976": "262",  # Mayotte
-    "977": "590",  # Saint-Barthélémy
-    "978": "590",  # Saint-Martin
-    "986": "681",  # Wallis-et-Futuna
-    "987": "689",  # Tahiti
-    "988": "687",  # Nouvelle-Calédonie
-}
-
-METROPOLE_PHONE_PREFIX = "33"
