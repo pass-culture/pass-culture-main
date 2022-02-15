@@ -317,7 +317,7 @@ def cancel_educational_offer_booking(offer_id: str) -> None:
 @login_required
 @spectree_serialize(on_success_status=201, on_error_statuses=[400, 403, 404])
 def create_shadow_stock_for_educational_showcase_offer(
-    offer_id: str, body: offers_serialize.PostEducationalOfferShadowStockBodyModel
+    offer_id: str, body: offers_serialize.EducationalOfferShadowStockBodyModel
 ) -> None:
     offer_id = dehumanize(offer_id)
     try:
