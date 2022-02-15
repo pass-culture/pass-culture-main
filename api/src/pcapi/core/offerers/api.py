@@ -1,6 +1,6 @@
 from datetime import datetime
 import logging
-import pathlib
+import os
 import secrets
 import typing
 from typing import Optional
@@ -318,7 +318,9 @@ def save_venue_banner(
         content_type=f"image/{content_type.lower()}",
     )
 
-    venue.bannerUrl = str(pathlib.Path(settings.OBJECT_STORAGE_URL, bucket_name, object_id))
+    # TODO: use create_thumb and use venue.thumbsUrl
+    # TODO: rm this temporary quickfix
+    venue.bannerUrl = os.path.join(settings.OBJECT_STORAGE_URL, bucket_name, object_id)
     venue.bannerMeta = {"content_type": content_type, "file_name": file_name, "author_id": user.id}
 
     repository.save(venue)
