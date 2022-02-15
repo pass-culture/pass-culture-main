@@ -8,6 +8,7 @@ import {
   DEFAULT_SEARCH_FILTERS,
 } from 'components/pages/Offers/Offers/_constants'
 import { DEFAULT_INVOICES_FILTERS } from 'components/pages/Reimbursements/_constants'
+import { Feature } from 'custom_types'
 import { client } from 'repository/pcapi/pcapiClient'
 import {
   FORMAT_ISO_DATE_ONLY,
@@ -15,7 +16,7 @@ import {
 } from 'utils/date'
 import { stringify } from 'utils/query-string'
 
-export const loadFeatures = async () => {
+export const loadFeatures = async (): Promise<Feature[]> => {
   return client.get('/features')
 }
 
