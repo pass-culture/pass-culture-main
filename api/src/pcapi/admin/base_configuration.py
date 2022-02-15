@@ -12,10 +12,12 @@ from flask_admin.helpers import get_form_data
 from flask_login import current_user
 from flask_login import login_user
 from flask_login import logout_user
+from werkzeug.exceptions import Forbidden
 from werkzeug.utils import redirect
 
 from pcapi import settings
 from pcapi.core.users import models as users_models
+from pcapi.core.users import repository as users_repository
 from pcapi.flask_app import oauth
 from pcapi.models import db
 
@@ -112,7 +114,9 @@ class AdminIndexView(AdminIndexBaseView):
         token = oauth.google.authorize_access_token()
         google_user = oauth.google.parse_id_token(token)
         google_email = google_user["email"]
-        db_user = users_models.User.query.filter_by(email=google_email).one_or_none()
+        db_user = users_repository.find_user_by_email(google_email)
+        if db_user and not db_user.isActive:
+            return Forbidden()
 
         if not db_user:
             if settings.IS_TESTING or settings.IS_DEV:
