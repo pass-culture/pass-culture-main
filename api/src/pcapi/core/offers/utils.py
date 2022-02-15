@@ -4,6 +4,7 @@ import pytz
 
 from pcapi import settings
 from pcapi.core.offers.models import Offer
+from pcapi.models.feature import FeatureToggle
 
 
 def offer_app_link(offer: Offer) -> str:
@@ -12,7 +13,9 @@ def offer_app_link(offer: Offer) -> str:
 
 
 def offer_app_redirect_link(offer: Offer) -> str:
-    return f"{settings.WEBAPP_V2_REDIRECT_URL}/offre/{offer.id}"
+    if FeatureToggle.ENABLE_IOS_OFFERS_LINK_WITH_REDIRECTION.is_active():
+        return f"{settings.WEBAPP_V2_REDIRECT_URL}/offre/{offer.id}"
+    return offer_app_link(offer)
 
 
 def as_utc_without_timezone(d: datetime) -> datetime:
