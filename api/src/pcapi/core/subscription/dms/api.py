@@ -234,10 +234,8 @@ def process_application(
         return
 
     try:
-        eligibility_type = fraud_api.decide_eligibility(user, information)
-
         fraud_api.create_honor_statement_fraud_check(
-            user, "honor statement contained in DMS application", eligibility_type
+            user, "honor statement contained in DMS application", fraud_check.eligibilityType
         )
         subscription_api.on_successful_application(user=user, source_data=information)
     except ApiErrors as api_errors:
