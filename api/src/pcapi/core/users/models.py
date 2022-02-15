@@ -385,10 +385,6 @@ class User(PcObject, Model, NeedsValidationMixin):
         return max(0, balance)
 
     @property
-    def wallet_is_activated(self):
-        return len(self.deposits) > 0
-
-    @property
     def suspension_reason(self) -> Optional[str]:
         """
         Reason for the active suspension.
