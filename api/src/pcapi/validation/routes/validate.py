@@ -1,4 +1,3 @@
-from pcapi.models.api_errors import ApiErrors
 from pcapi.models.api_errors import ResourceNotFoundError
 
 
@@ -7,10 +6,3 @@ def check_valid_token_for_user_validation(user_to_validate):
         errors = ResourceNotFoundError()
         errors.add_error("global", "Ce lien est invalide")
         raise errors
-
-
-def check_validation_request(token):
-    if token is None:
-        error = ApiErrors()
-        error.add_error("token", "Vous devez fournir un jeton de validation")
-        raise error
