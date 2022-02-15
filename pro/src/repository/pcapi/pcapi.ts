@@ -12,7 +12,7 @@ import {
   DeepPartialEducationalOfferModelPayload,
   EducationalOfferModelPayload,
 } from 'core/OfferEducational'
-import { Feature, Offer } from 'custom_types'
+import { Feature, Offer, Offerer, OffererName } from 'custom_types'
 import { client } from 'repository/pcapi/pcapiClient'
 import {
   FORMAT_ISO_DATE_ONLY,
@@ -174,48 +174,55 @@ const createRequestBody = (
 // offerers
 //
 
-export const getAllOfferersNames = () => {
+export const getAllOfferersNames = async (): Promise<OffererName[]> => {
   return client.get('/offerers/names').then(response => response.offerersNames)
 }
 
-export const generateOffererApiKey = async offererId => {
+export const generateOffererApiKey = async (
+  offererId: string
+): Promise<string> => {
   return client
     .post(`/offerers/${offererId}/api_keys`, {})
     .then(response => response.apiKey)
 }
 
-export const deleteOffererApiKey = async apiKey => {
+export const deleteOffererApiKey = async (apiKey: string): Promise<void> => {
   return client.delete(`/offerers/api_keys/${apiKey}`)
 }
 
-export const getUserValidatedOfferersNames = () => {
+export const getUserValidatedOfferersNames = async (): Promise<
+  OffererName[]
+> => {
   return client
     .get('/offerers/names?validated_for_user=true')
     .then(response => response.offerersNames)
 }
 
-export const getValidatedOfferersNames = () => {
+export const getValidatedOfferersNames = (): Promise<OffererName[]> => {
   return client
     .get('/offerers/names?validated=true')
     .then(response => response.offerersNames)
 }
 
-export const getOfferers = () => {
+export const getOfferers = (): Promise<Offerer[]> => {
   return client.get('/offerers')
 }
 
-export const getValidatedOfferers = () => {
+export const getValidatedOfferers = (): Promise<Offerer[]> => {
   return client.get('/offerers?validated=true')
 }
 
-export const getOfferer = offererId => {
+export const getOfferer = (offererId: string): Promise<Offerer> => {
   return client.get(`/offerers/${offererId}`)
 }
 
-export const canOffererCreateEducationalOffer = offererId =>
-  client.get(`/offerers/${offererId}/eac-eligibility`)
+export const canOffererCreateEducationalOffer = (
+  offererId: string
+): Promise<void> => client.get(`/offerers/${offererId}/eac-eligibility`)
 
-export const getEducationalOfferers = offererId => {
+export const getEducationalOfferers = (
+  offererId: string
+): Promise<{ educationalOfferers: Offerer[] }> => {
   const queryParams = `${offererId ? `?offerer_id=${offererId}` : ''}`
   return client.get(`/offerers/educational${queryParams}`)
 }
