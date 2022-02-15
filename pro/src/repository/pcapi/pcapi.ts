@@ -11,6 +11,7 @@ import { DEFAULT_INVOICES_FILTERS } from 'components/pages/Reimbursements/_const
 import {
   DeepPartialEducationalOfferModelPayload,
   EducationalOfferModelPayload,
+  StockPayload,
 } from 'core/OfferEducational'
 import {
   EducationalOfferer,
@@ -19,6 +20,7 @@ import {
   Offerer,
   OffererListItem,
   OffererName,
+  Stock,
   Venue,
   VenueListItem,
   VenueStats,
@@ -313,37 +315,58 @@ export const loadCategories = async (): Promise<{
 //
 // stocks
 //
-export const loadStocks = offerId => {
+export const loadStocks = async (
+  offerId: string
+): Promise<{ stocks: Stock[] }> => {
   return client.get(`/offers/${offerId}/stocks`)
 }
 
-export const bulkCreateOrEditStock = (offerId, stocks) => {
+export const bulkCreateOrEditStock = async (
+  offerId: string,
+  stocks: {
+    id: string
+    price: number
+    quantity: number
+    beginningDatetime: Date
+  }[]
+): Promise<{ stockIds: { id: string }[] }> => {
   return client.post(`/stocks/bulk`, {
     offerId,
     stocks,
   })
 }
 
-export const deleteStock = stockId => {
+export const deleteStock = async (stockId: string): Promise<{ id: string }> => {
   return client.delete(`/stocks/${stockId}`)
 }
 
-export const createEducationalStock = stock => {
+export const createEducationalStock = (
+  stock: StockPayload & { offerId: string }
+): Promise<{ id: string }> => {
   return client.post(`/stocks/educational`, stock)
 }
 
-export const createEducationalShadowStock = (offerId, stock) =>
+export const createEducationalShadowStock = (
+  offerId: string,
+  stock: { educationalPriceDetail?: string }
+): Promise<{ id: string }> =>
   client.post(`/offers/educational/${offerId}/shadow-stock`, stock)
 
-export const editEducationalStock = (stockId, stock) => {
+export const editEducationalStock = (
+  stockId: string,
+  stock: Partial<StockPayload>
+): Promise<Stock> => {
   return client.patch(`/stocks/educational/${stockId}`, stock)
 }
 
-export const cancelEducationalBooking = offerId => {
+export const cancelEducationalBooking = (offerId: string): Promise<void> => {
   return client.patch(`/offers/${offerId}/cancel_booking`)
 }
 
-export const transformShadowStockIntoEducationalStock = (stockId, stock) =>
+export const transformShadowStockIntoEducationalStock = (
+  stockId: string,
+  stock: StockPayload & { offerId: string }
+): Promise<Stock> =>
   client.patch(`/stocks/shadow-to-educational/${stockId}`, stock)
 
 export const editShadowStock = (stockId, stock) =>

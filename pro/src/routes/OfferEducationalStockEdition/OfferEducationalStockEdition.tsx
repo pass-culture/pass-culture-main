@@ -14,6 +14,7 @@ import {
   OfferEducationalStockFormValues,
   patchIsOfferActiveAdapter,
 } from 'core/OfferEducational'
+import { Stock } from 'custom_types'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 import OfferEducationalLayout from 'new_components/OfferEducationalLayout'
 import OfferEducationalStockScreen from 'screens/OfferEducationalStock'
@@ -22,7 +23,6 @@ import { getEducationalStockAdapter } from './adapters/getEducationalStockAdapte
 import patchEducationalStockAdapter from './adapters/patchEducationalStockAdapter'
 import patchShadowStockAdapter from './adapters/patchShadowStockAdapter'
 import patchShadowStockIntoEducationalStockAdapter from './adapters/patchShadowStockIntoEducationalStockAdapter'
-import { StockResponse } from './types'
 import { extractInitialStockValues } from './utils/extractInitialStockValues'
 
 const getAdapter = (
@@ -46,7 +46,7 @@ const OfferEducationalStockEdition = (): JSX.Element => {
   const [initialValues, setInitialValues] =
     useState<OfferEducationalStockFormValues>(DEFAULT_EAC_STOCK_FORM_VALUES)
   const [offer, setOffer] = useState<GetStockOfferSuccessPayload | null>(null)
-  const [stock, setStock] = useState<StockResponse | null>(null)
+  const [stock, setStock] = useState<Stock | null>(null)
   const [isReady, setIsReady] = useState<boolean>(false)
   const { offerId } = useParams<{ offerId: string }>()
   const notify = useNotification()

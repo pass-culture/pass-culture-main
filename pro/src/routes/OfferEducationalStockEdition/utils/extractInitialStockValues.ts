@@ -4,12 +4,11 @@ import {
   GetStockOfferSuccessPayload,
   EducationalOfferType,
 } from 'core/OfferEducational'
+import { Stock } from 'custom_types'
 import { getLocalDepartementDateTimeFromUtc } from 'utils/timezone'
 
-import { StockResponse } from '../types'
-
 export const extractInitialStockValues = (
-  stock: StockResponse | null,
+  stock: Stock | null,
   offer: GetStockOfferSuccessPayload
 ): OfferEducationalStockFormValues => {
   if (!stock) {

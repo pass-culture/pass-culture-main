@@ -1,9 +1,8 @@
+import { Stock } from 'custom_types'
 import * as pcapi from 'repository/pcapi/pcapi'
 
-import { StockResponse } from '../types'
-
 type IPayloadSuccess = {
-  stock: StockResponse | null
+  stock: Stock | null
 }
 type IPayloadFailure = { stock: null }
 type GetEducationalStockAdapter = Adapter<
@@ -22,7 +21,7 @@ export const getEducationalStockAdapter: GetEducationalStockAdapter =
   async offerId => {
     try {
       const { stocks } = (await pcapi.loadStocks(offerId)) as {
-        stocks: StockResponse[]
+        stocks: Stock[]
       }
       return {
         isOk: true,

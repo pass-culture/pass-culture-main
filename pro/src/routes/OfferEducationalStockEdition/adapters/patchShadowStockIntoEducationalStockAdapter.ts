@@ -5,9 +5,8 @@ import {
   OfferEducationalStockFormValues,
   StockPayload,
 } from 'core/OfferEducational'
+import { Stock } from 'custom_types'
 import * as pcapi from 'repository/pcapi/pcapi'
-
-import { StockResponse } from '../types'
 
 type Params = {
   offer: GetStockOfferSuccessPayload
@@ -15,11 +14,7 @@ type Params = {
   values: OfferEducationalStockFormValues
 }
 
-type PatchShadowStockIntoEducationalStockAdapter = Adapter<
-  Params,
-  StockResponse,
-  null
->
+type PatchShadowStockIntoEducationalStockAdapter = Adapter<Params, Stock, null>
 
 const BAD_REQUEST_FAILING_RESPONSE: AdapterFailure<null> = {
   isOk: false,
@@ -42,10 +37,10 @@ const patchShadowStockIntoEducationalStockAdapter: PatchShadowStockIntoEducation
     )
 
     try {
-      const stock = (await pcapi.transformShadowStockIntoEducationalStock(
+      const stock = await pcapi.transformShadowStockIntoEducationalStock(
         stockId,
         { ...patchStockPayload, offerId: offer.id }
-      )) as StockResponse
+      )
       return {
         isOk: true,
         message: 'Le détail de votre stock a bien été modifié.',
