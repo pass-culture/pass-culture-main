@@ -1,7 +1,12 @@
+import pytest
+
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.mails.transactional.users.subscription_document_error import send_subscription_document_error_email
 from pcapi.core.testing import override_features
+
+
+pytestmark = pytest.mark.usefixtures("db_session")
 
 
 class MailjetSubscriptionErrorEmailTest:

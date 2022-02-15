@@ -73,6 +73,7 @@ class GetAlreadyProcessedApplicationIdTest:
         assert created.beneficiaryImport.applicationId in application_ids
         assert another_procedure.beneficiaryImport.applicationId not in application_ids
 
+    @pytest.mark.usefixtures("db_session")
     def test_already_processed_application_ids_with_fraud_checks(self):
         # Regular application
         content = fraud_factories.DMSContentFactory(application_id=8888, procedure_id=123)
@@ -98,6 +99,7 @@ class GetAlreadyProcessedApplicationIdTest:
         application_ids = get_already_processed_applications_ids(123)
         assert application_ids == {8888, 9999}
 
+    @pytest.mark.usefixtures("db_session")
     def test_already_processed_application_ids_with_all_fraud_checks_status(self):
         content = fraud_factories.DMSContentFactory(application_id=1111, procedure_id=123)
         fraud_factories.BeneficiaryFraudCheckFactory(

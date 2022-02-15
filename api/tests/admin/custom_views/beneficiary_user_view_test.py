@@ -127,6 +127,7 @@ class BeneficiaryUserViewTest:
 
         assert push_testing.requests[0]["attribute_values"]["u.credit"] == 30000
 
+    @clean_database
     def test_the_deposit_version_is_specified(self, app, db_session):
         # Given
         beneficiary_view = BeneficiaryUserView(User, db_session)
@@ -151,6 +152,7 @@ class BeneficiaryUserViewTest:
         # Then
         assert user.deposit_version == 2
 
+    @clean_database
     @testing.override_settings(IS_PROD=True, SUPER_ADMIN_EMAIL_ADDRESSES=["admin@example.com"])
     def test_form_has_no_deposit_field_for_production(self, app, db_session):
         # We need an authenticated user to initialize the admin class
@@ -165,6 +167,7 @@ class BeneficiaryUserViewTest:
         assert hasattr(form, "phoneNumber")
         assert not hasattr(form, "depositVersion")
 
+    @clean_database
     @testing.override_settings(IS_PROD=True, SUPER_ADMIN_EMAIL_ADDRESSES=[])
     def test_beneficiary_user_creation_is_restricted_in_prod(self, app, db_session):
         users_factories.AdminFactory(email="user@example.com")

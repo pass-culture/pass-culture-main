@@ -58,6 +58,7 @@ def test_maybe_send_offerer_validation_email_does_not_send_email_if_all_validate
     assert not mails_testing.outbox
 
 
+@pytest.mark.usefixtures("db_session")
 def test_send_payment_details_email_sends_email_to_pass_culture(app):
     # Given
     csv = '"header A","header B","header C","header D"\n"part A","part B","part C","part D"\n'
@@ -71,6 +72,7 @@ def test_send_payment_details_email_sends_email_to_pass_culture(app):
     assert mails_testing.outbox[0].sent_data["To"] == "comptable1@culture.fr, comptable2@culture.fr"
 
 
+@pytest.mark.usefixtures("db_session")
 def test_send_wallet_balances_email_sends_email_to_recipients(app):
     # Given
     csv = '"header A","header B","header C","header D"\n"part A","part B","part C","part D"\n'
@@ -84,6 +86,7 @@ def test_send_wallet_balances_email_sends_email_to_recipients(app):
     assert mails_testing.outbox[0].sent_data["To"] == "comptable1@culture.fr, comptable2@culture.fr"
 
 
+@pytest.mark.usefixtures("db_session")
 def test_send_payments_report_email_sends_email_to_recipients(app):
     # Given
     not_processable_csv = '"header A","header B","header C","header D"\n"part A","part B","part C","part D"\n'
