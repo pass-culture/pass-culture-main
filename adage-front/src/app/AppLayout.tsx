@@ -2,7 +2,7 @@ import './AppLayout.scss'
 import * as React from 'react'
 
 import { OffersInstantSearch } from 'app/components/OffersInstantSearch/OffersInstantSearch'
-import { ReactComponent as Info } from 'assets/info.svg'
+import { ReactComponent as Download } from 'assets/download.svg'
 import { ReactComponent as Logo } from 'assets/logo-with-text.svg'
 import { Role, VenueFilterType } from 'utils/types'
 
@@ -27,7 +27,8 @@ export const AppLayout = ({
             rel="noreferrer"
             target="_blank"
           >
-            <Info className="app-layout-header-help-link-icon" /> Aide
+            <Download className="app-layout-header-help-link-icon" />
+            Télécharger l’aide
           </a>
         </div>
         <Logo className="app-logo" />
