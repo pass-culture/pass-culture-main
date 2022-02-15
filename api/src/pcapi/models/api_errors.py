@@ -25,10 +25,6 @@ class ApiErrors(Exception):
         if not "@" in value:
             self.add_error(field, "L’e-mail doit contenir un @.")
 
-    def maybe_raise(self) -> None:
-        if len(self.errors) > 0:
-            raise self
-
     def __str__(self) -> str:
         if self.errors:
             return json.dumps(self.errors, indent=2)

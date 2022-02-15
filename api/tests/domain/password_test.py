@@ -20,7 +20,7 @@ class RandomPasswordTest:
 
         # Then
         _ensure_new_password_is_strong_enough("password", password, errors)
-        errors.maybe_raise()
+        assert len(errors.errors) == 0
 
 
 class CheckPasswordValidityTest:
