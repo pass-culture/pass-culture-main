@@ -9,7 +9,6 @@ from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.bookings.models import IndividualBooking
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
-from pcapi.core.offers.utils import offer_app_redirect_link
 from pcapi.routes.serialization import BaseModel
 from pcapi.utils.urls import booking_app_link
 
@@ -81,10 +80,9 @@ def get_offer_notification_data(user_id: int, offer: Offer) -> TransactionalNoti
         group_id=GroupId.OFFER_LINK.value,
         user_ids=[user_id],
         message=TransactionalNotificationMessage(
-            title=f"{offer.name}",
-            body="Pour réserver, c'est par ici !",
+            title=f"Ta réservation pour {offer.name}",
+            body="Pour confirmer ta réservation, clique sur le lien que tu as reçu par mail :envelope_with_arrow:",
         ),
-        extra={"deeplink": offer_app_redirect_link(offer)},
     )
 
 

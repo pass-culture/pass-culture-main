@@ -322,7 +322,6 @@ class SendOfferLinkNotificationTest:
         assert notification["user_ids"] == [user.id]
 
         assert offer.name in notification["message"]["title"]
-        assert "deeplink" in notification
 
     def test_send_offer_link_notification_not_found(self, app):
         """Test that no push notification is sent when offer is not found"""
