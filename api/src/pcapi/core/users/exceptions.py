@@ -14,10 +14,6 @@ class UserAlreadyExistsException(Exception):
     pass
 
 
-class NotEligible(Exception):
-    pass
-
-
 class UnderAgeUserException(Exception):
     pass
 
