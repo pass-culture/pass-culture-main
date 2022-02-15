@@ -88,7 +88,9 @@ def install_views(admin: Admin, session: Session) -> None:
             endpoint="offer_for_venue",
         )
     )
-    admin.add_view(CriteriaView(Criterion, session, name="Tags des offres", category=Category.OFFRES_STRUCTURES_LIEUX))
+    admin.add_view(
+        CriteriaView(Criterion, session, name="Tags des offres et des lieux", category=Category.OFFRES_STRUCTURES_LIEUX)
+    )
     admin.add_view(
         OffererView(offerers_models.Offerer, session, name="Structures", category=Category.OFFRES_STRUCTURES_LIEUX)
     )
