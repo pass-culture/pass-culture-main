@@ -58,6 +58,7 @@ from pcapi.core.offers.validation import KEY_VALIDATION_CONFIG
 from pcapi.core.offers.validation import check_offer_is_eligible_for_educational
 from pcapi.core.offers.validation import check_offer_not_duo_and_educational
 from pcapi.core.offers.validation import check_offer_subcategory_is_valid
+from pcapi.core.offers.validation import check_shadow_stock_is_editable
 from pcapi.core.offers.validation import check_validation_config_parameters
 from pcapi.core.payments import conf as deposit_conf
 from pcapi.core.users.external import update_external_pro
@@ -77,8 +78,8 @@ from pcapi.repository import repository
 from pcapi.repository import transaction
 from pcapi.routes.adage.v1.serialization.prebooking import serialize_educational_booking
 from pcapi.routes.serialization.offers_serialize import CompletedEducationalOfferModel
-from pcapi.routes.serialization.offers_serialize import PostEducationalOfferBodyModel
 from pcapi.routes.serialization.offers_serialize import EducationalOfferShadowStockBodyModel
+from pcapi.routes.serialization.offers_serialize import PostEducationalOfferBodyModel
 from pcapi.routes.serialization.offers_serialize import PostOfferBodyModel
 from pcapi.routes.serialization.stock_serialize import EducationalStockCreationBodyModel
 from pcapi.routes.serialization.stock_serialize import StockCreationBodyModel
@@ -1117,5 +1118,28 @@ def transform_shadow_stock_into_educational_stock(
     extra_data["isShowcase"] = False
     offer.extraData = extra_data
     repository.save(offer)
+
+    return stock
+
+
+def edit_shadow_stock(stock: Stock, stock_data: dict) -> Stock:
+    if not stock.offer.isEducational:
+        raise educational_exceptions.OfferIsNotEducational(stock.offerId)
+
+    if stock.offer.extraData.get("isShowcase") is not True:
+        raise educational_exceptions.OfferIsNotShowcase()
+
+    check_shadow_stock_is_editable(stock)
+
+    with transaction():
+        stock = offers_repository.get_and_lock_stock(stock.id)
+        if stock_data.get("educational_price_detail") is not None:
+            stock.educationalPriceDetail = stock_data["educational_price_detail"]
+        db.session.add(stock)
+        db.session.commit()
+
+    logger.info("Stock has been updated", extra={"stock": stock.id})
+
+    search.async_index_offer_ids([stock.offerId])
 
     return stock

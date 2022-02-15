@@ -192,6 +192,10 @@ def check_event_expiration(stock):
         raise api_errors
 
 
+def check_shadow_stock_is_editable(stock: Stock) -> None:
+    check_validation_status(stock.offer)
+
+
 def check_educational_stock_is_editable(stock: Stock) -> None:
     check_validation_status(stock.offer)
     check_event_expiration(stock)
