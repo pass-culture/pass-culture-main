@@ -21,6 +21,8 @@ import {
   OffererListItem,
   OffererName,
   Stock,
+  User,
+  UserInfo,
   Venue,
   VenueListItem,
   VenueStats,
@@ -402,20 +404,28 @@ export const postThumbnail = (
 //
 // user
 //
-export const signout = () => client.get('/users/signout')
+export const signout = (): Promise<void> => client.get('/users/signout')
 
-export const updateUserInformations = body => {
+export const updateUserInformations = (body: {
+  firstName?: string
+  lastName?: string
+  email: string
+  phoneNumber?: string
+}): Promise<UserInfo> => {
   return client.patch('/users/current', body)
 }
 
-export const getUserInformations = () => {
+export const getUserInformations = (): Promise<User> => {
   return client.get('/users/current')
 }
 
 //
 // set password
 //
-export const setPassword = (token, newPassword) => {
+export const setPassword = (
+  token: string,
+  newPassword: string
+): Promise<void> => {
   return client.post('/users/new-password', { token, newPassword })
 }
 
