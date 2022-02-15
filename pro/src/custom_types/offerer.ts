@@ -1,5 +1,3 @@
-import { Venue } from './venue'
-
 export type OffererName = {
   id: string
   name: string
@@ -26,5 +24,27 @@ export type Offerer = {
   lastProviderId?: string
   nOffers: number
   thumbCount: number
-  managedVenues: Venue[]
+  managedVenues: ManagedVenue[]
+}
+
+type ManagedVenue = {
+  address?: string
+  bookingEmail?: string
+  businessUnitId?: number
+  city?: string
+  comment?: string
+  departementCode?: string
+  id: string
+  isValidated: boolean
+  isVirtual: boolean
+  managingOffererId: string
+  name: string
+  postalCode?: string
+  publicName?: string
+  venueLabelId?: string
+  withdrawalDetails?: string
+  audioDisabilityCompliant?: boolean
+  mentalDisabilityCompliant?: boolean
+  motorDisabilityCompliant?: boolean
+  visualDisabilityCompliant?: boolean
 }

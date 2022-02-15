@@ -12,7 +12,15 @@ import {
   DeepPartialEducationalOfferModelPayload,
   EducationalOfferModelPayload,
 } from 'core/OfferEducational'
-import { Feature, Offer, Offerer, OffererName } from 'custom_types'
+import {
+  Feature,
+  Offer,
+  Offerer,
+  OffererName,
+  Venue,
+  VenueListItem,
+  VenueStats,
+} from 'custom_types'
 import { client } from 'repository/pcapi/pcapiClient'
 import {
   FORMAT_ISO_DATE_ONLY,
@@ -230,11 +238,18 @@ export const getEducationalOfferers = (
 //
 // venues
 //
-export const getVenuesForOfferer = ({
-  offererId = null,
+export const getVenuesForOfferer = async ({
+  offererId,
   activeOfferersOnly = false,
-} = {}) => {
-  const request = {}
+}: {
+  offererId?: string
+  activeOfferersOnly?: boolean
+} = {}): Promise<VenueListItem[]> => {
+  const request = {} as {
+    offererId: string
+    validatedForUser: boolean
+    activeOfferersOnly: boolean
+  }
   if (offererId) {
     if (offererId !== ALL_OFFERERS) request.offererId = offererId
   } else {
@@ -247,12 +262,11 @@ export const getVenuesForOfferer = ({
   return client.get(url).then(response => response.venues)
 }
 
-export const getVenue = venueId => client.get(`/venues/${venueId}`)
+export const getVenue = (venueId: string): Promise<Venue> =>
+  client.get(`/venues/${venueId}`)
 
-export const getVenueStats = venueId => client.get(`/venues/${venueId}/stats`)
-
-export const getOffererWithVenueStats = offererId =>
-  client.get(`/offerers/${offererId}/stats`)
+export const getVenueStats = (venueId: string): Promise<VenueStats> =>
+  client.get(`/venues/${venueId}/stats`)
 
 export const postImageToVenue = async ({
   venueId,
@@ -260,9 +274,17 @@ export const postImageToVenue = async ({
   xCropPercent,
   yCropPercent,
   heightCropPercent,
-}) => {
+}: {
+  venueId: string
+  banner: File | undefined
+  xCropPercent: number
+  yCropPercent: number
+  heightCropPercent: number
+}): Promise<Venue> => {
   const body = new FormData()
-  body.append('banner', banner)
+  if (banner) {
+    body.append('banner', banner)
+  }
 
   const queryParams = stringify({
     x_crop_percent: xCropPercent,

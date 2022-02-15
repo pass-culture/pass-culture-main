@@ -106,25 +106,22 @@ const BusinessUnitList = (): JSX.Element => {
     }
 
     async function loadVenues(offererId: string) {
-      const venuesForOffererResponse: IAPIVenue[] =
-        await pcapi.getVenuesForOfferer({
-          offererId,
-        })
+      const venuesForOffererResponse = await pcapi.getVenuesForOfferer({
+        offererId,
+      })
       const serializedVenueList: IBusinessUnitVenue[] =
-        venuesForOffererResponse.map(
-          (apiVenue: IAPIVenue): IBusinessUnitVenue => {
-            return {
-              id: apiVenue.id,
-              name: apiVenue.name,
-              publicName: apiVenue.publicName,
-              siret: apiVenue.siret,
-              businessUnitId: apiVenue.businessUnitId,
-              managingOffererId: apiVenue.managingOffererId,
-              isBusinessUnitMainVenue: apiVenue.isBusinessUnitMainVenue,
-              isVirtual: apiVenue.isVirtual,
-            }
+        venuesForOffererResponse.map((apiVenue): IBusinessUnitVenue => {
+          return {
+            id: apiVenue.id,
+            name: apiVenue.name,
+            publicName: apiVenue.publicName,
+            siret: apiVenue.siret,
+            businessUnitId: apiVenue.businessUnitId,
+            managingOffererId: apiVenue.managingOffererId,
+            isBusinessUnitMainVenue: apiVenue.isBusinessUnitMainVenue,
+            isVirtual: apiVenue.isVirtual,
           }
-        )
+        })
 
       setVenues(serializedVenueList)
     }
