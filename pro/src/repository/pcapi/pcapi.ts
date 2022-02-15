@@ -19,6 +19,7 @@ import {
   BookingsRecap,
   BusinessUnit,
   Feature,
+  Invoice,
   Offer,
   Offerer,
   OffererListItem,
@@ -585,8 +586,12 @@ const buildInvoicesQuery = ({
   businessUnitId = DEFAULT_INVOICES_FILTERS.businessUnitId,
   periodBeginningDate = DEFAULT_INVOICES_FILTERS.periodBeginningDate,
   periodEndingDate = DEFAULT_INVOICES_FILTERS.periodEndingDate,
+}: {
+  businessUnitId?: string
+  periodBeginningDate?: Date
+  periodEndingDate?: Date
 }) => {
-  const params = {}
+  const params = {} as Record<string, string>
   if (businessUnitId !== DEFAULT_INVOICES_FILTERS.businessUnitId) {
     params.businessUnitId = businessUnitId
   }
@@ -608,7 +613,11 @@ const buildInvoicesQuery = ({
   return stringify(params)
 }
 
-export const getInvoices = async params => {
+export const getInvoices = async (params: {
+  businessUnitId?: string
+  periodBeginningDate?: Date
+  periodEndingDate?: Date
+}): Promise<Invoice[]> => {
   const queryParams = buildInvoicesQuery(params)
   return client.get(`/finance/invoices?${queryParams}`)
 }

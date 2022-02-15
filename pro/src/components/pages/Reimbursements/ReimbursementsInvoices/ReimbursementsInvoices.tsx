@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
+import { Invoice } from 'custom_types'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { getToday } from 'utils/date'
 
@@ -68,7 +69,7 @@ const ReimbursementsInvoices = ({
   }, [])
 
   const [filters, setFilters] = useState(INITIAL_FILTERS)
-  const [invoices, setInvoices] = useState([])
+  const [invoices, setInvoices] = useState<Invoice[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [hasError, setHasError] = useState(false)
   const [areFiltersDefault, setAreFiltersDefault] = useState(true)
@@ -113,6 +114,7 @@ const ReimbursementsInvoices = ({
         periodEndingDate: filters.periodEnd,
       }
       pcapi
+        // @ts-expect-error periodStart and periodEnd does not match with InvoiceListQueryModel
         .getInvoices(shouldReset ? INITIAL_FILTERS : invoicesFilters)
         .then(invoices => {
           setInvoices(invoices)

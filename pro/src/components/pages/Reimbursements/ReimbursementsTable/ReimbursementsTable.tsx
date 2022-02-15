@@ -1,16 +1,10 @@
 import React, { useCallback, useEffect, useState } from 'react'
 
+import { Invoice } from 'custom_types'
+
 import styles from './ReimbursementsTable.module.scss'
 import ReimbursementsTableBody from './TableBody/ReimbursementsTableBody'
 import ReimbursementsTableHead from './TableHead/ReimbursementsTableHead'
-
-type Invoice = {
-  date: string
-  businessUnitName: string
-  reference: string
-  amount: string
-  url: string
-}
 
 type Column = {
   title: string
