@@ -20,9 +20,24 @@ import OfferEducationalStockScreen from 'screens/OfferEducationalStock'
 
 import { getEducationalStockAdapter } from './adapters/getEducationalStockAdapter'
 import patchEducationalStockAdapter from './adapters/patchEducationalStockAdapter'
+import patchShadowStockAdapter from './adapters/patchShadowStockAdapter'
 import patchShadowStockIntoEducationalStockAdapter from './adapters/patchShadowStockIntoEducationalStockAdapter'
 import { StockResponse } from './types'
 import { extractInitialStockValues } from './utils/extractInitialStockValues'
+
+const getAdapter = (
+  isShowcaseFeatureEnabled: boolean,
+  offer: GetStockOfferSuccessPayload,
+  educationalOfferType: EducationalOfferType
+) => {
+  if (isShowcaseFeatureEnabled && offer.isShowcase) {
+    return educationalOfferType === EducationalOfferType.CLASSIC
+      ? patchShadowStockIntoEducationalStockAdapter
+      : patchShadowStockAdapter
+  }
+
+  return patchEducationalStockAdapter
+}
 
 const OfferEducationalStockEdition = (): JSX.Element => {
   const history = useHistory()
@@ -46,13 +61,11 @@ const OfferEducationalStockEdition = (): JSX.Element => {
 
     const stockId = stock.id
 
-    const shouldCallTransformShadowStockIntoEducationalStockAdapter =
-      isShowcaseFeatureEnabled &&
-      offer.isShowcase &&
-      values.educationalOfferType === EducationalOfferType.CLASSIC
-    const adapter = shouldCallTransformShadowStockIntoEducationalStockAdapter
-      ? patchShadowStockIntoEducationalStockAdapter
-      : patchEducationalStockAdapter
+    const adapter = getAdapter(
+      isShowcaseFeatureEnabled,
+      offer,
+      values.educationalOfferType
+    )
 
     const stockResponse = await adapter({
       offer,
@@ -72,10 +85,13 @@ const OfferEducationalStockEdition = (): JSX.Element => {
     }
 
     notify.success(stockResponse.message)
-    const initialValuesFromStock = extractInitialStockValues(
-      stockResponse.payload,
-      offerResponse.payload
-    )
+    const initialValuesFromStock = offerResponse.payload.isShowcase
+      ? {
+          ...DEFAULT_EAC_STOCK_FORM_VALUES,
+          priceDetail: stockResponse.payload.educationalPriceDetail ?? '',
+          educationalOfferType: EducationalOfferType.SHOWCASE,
+        }
+      : extractInitialStockValues(stockResponse.payload, offerResponse.payload)
     setInitialValues(initialValuesFromStock)
   }
 
