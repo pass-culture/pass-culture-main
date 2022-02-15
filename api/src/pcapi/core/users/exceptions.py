@@ -56,10 +56,6 @@ class UserPhoneNumberAlreadyValidated(PhoneVerificationException):
     pass
 
 
-class UserWithoutPhoneNumberException(PhoneVerificationException):
-    pass
-
-
 class UserAlreadyBeneficiary(PhoneVerificationException):
     pass
 

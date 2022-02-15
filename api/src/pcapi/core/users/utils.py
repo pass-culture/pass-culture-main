@@ -11,10 +11,6 @@ from google.cloud.storage.bucket import Bucket
 import jwt
 
 from pcapi import settings
-from pcapi.core.users.constants import METROPOLE_PHONE_PREFIX
-from pcapi.core.users.constants import PHONE_PREFIX_BY_DEPARTEMENT_CODE
-from pcapi.core.users.exceptions import UserWithoutPhoneNumberException
-from pcapi.domain.postal_code.postal_code import PostalCode
 
 
 logger = logging.getLogger(__name__)
@@ -49,28 +45,6 @@ def decode_jwt_token_rs256(jwt_token: str) -> dict:
 
 def sanitize_email(email: str) -> str:
     return email.strip().lower()
-
-
-def build_internationalized_phone_number(user, phone_number: str) -> str:
-    country_code = PHONE_PREFIX_BY_DEPARTEMENT_CODE.get(user.departementCode, METROPOLE_PHONE_PREFIX)
-    return country_code + phone_number[1:]
-
-
-def format_phone_number_with_country_code(user) -> str:
-    if not user.phoneNumber:
-        raise UserWithoutPhoneNumberException()
-
-    if not user.postalCode or (
-        PostalCode(user.postalCode)._is_overseas_departement()
-        and user.departementCode not in PHONE_PREFIX_BY_DEPARTEMENT_CODE
-    ):
-        logger.warning(
-            "Unknown phone prefix for user %s",
-            user,
-            extra={"departementCode": user.departementCode, "postalCode": user.postalCode},
-        )
-
-    return build_internationalized_phone_number(user, user.phoneNumber)
 
 
 def get_encrypted_gcp_storage_client_bucket() -> Bucket:

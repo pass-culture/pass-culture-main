@@ -4,12 +4,10 @@ import jwt
 import pytest
 
 from pcapi import settings
-from pcapi.core.users.factories import UserFactory
 from pcapi.core.users.utils import ALGORITHM_HS_256
 from pcapi.core.users.utils import ALGORITHM_RS_256
 from pcapi.core.users.utils import decode_jwt_token_rs256
 from pcapi.core.users.utils import encode_jwt_payload
-from pcapi.core.users.utils import format_phone_number_with_country_code
 
 from tests.routes.adage_iframe import INVALID_RSA_PRIVATE_KEY_PATH
 from tests.routes.adage_iframe import VALID_RSA_PRIVATE_KEY_PATH
@@ -56,16 +54,3 @@ class DecodeJWTPayloadRS256Test:
             decode_jwt_token_rs256(corrupted_token)
 
         assert "Signature verification failed" in str(error.value)
-
-
-@pytest.mark.usefixtures("db_session")
-class FormatPhoneNumberTest:
-    def test_format_phone_number(self):
-        user = UserFactory(phoneNumber="0602030405")
-
-        assert format_phone_number_with_country_code(user) == "33602030405"
-
-    def test_format_phone_number_guyana(self):
-        user = UserFactory(phoneNumber="0602030405", postalCode="97304", departementCode="973")
-
-        assert format_phone_number_with_country_code(user) == "594602030405"
