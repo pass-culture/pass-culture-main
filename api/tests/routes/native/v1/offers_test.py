@@ -4,6 +4,7 @@ from datetime import timedelta
 from freezegun import freeze_time
 import pytest
 
+from pcapi import settings
 from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.categories import subcategories
 import pcapi.core.mails.testing as mails_testing
@@ -17,6 +18,7 @@ from pcapi.core.offers.factories import ThingStockFactory
 from pcapi.core.offers.models import OfferReport
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.testing import override_features
+from pcapi.core.users import factories as users_factories
 from pcapi.core.users.factories import UserFactory
 import pcapi.notifications.push.testing as notifications_testing
 
@@ -245,44 +247,32 @@ class OffersTest:
 
 class SendOfferWebAppLinkTest:
     @override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=False)
-    def test_mailjet_send_offer_webapp_link_by_email(self, app):
-        offer_id = OfferFactory().id
-        user, test_client = create_user_and_test_client(app)
-
-        # expected queries:
-        #   * get User
-        #   * find Offer
-        #   * get FF ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS.isactive
-        #   * save email to DB (testing backend)
-        #   * release savepoint after saving email
-        with assert_num_queries(5):
-            response = test_client.post(f"/native/v1/send_offer_webapp_link_by_email/{offer_id}")
-            assert response.status_code == 204
-
-        assert len(mails_testing.outbox) == 1
-
-        mail = mails_testing.outbox[0]
-        assert mail.sent_data["To"] == user.email
+    def test_mailjet_send_offer_webapp_link_by_email(self, client):
+        """
+        Test that email can be sent with MJ and that the link does not
+        use the redirection domain (not activated by default)
+        """
+        mail = self.send_request(client)
+        assert mail.sent_data["Vars"]["offer_webapp_link"].startswith(settings.WEBAPP_V2_URL)
 
     @override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=True)
-    def test_sendinblue_send_offer_webapp_link_by_email(self, app):
-        offer_id = OfferFactory().id
-        user, test_client = create_user_and_test_client(app)
+    def test_sendinblue_send_offer_webapp_link_by_email(self, client):
+        """
+        Test that email can be sent with SiB and that the link does not
+        use the redirection domain (not activated by default)
+        """
+        mail = self.send_request(client)
+        assert mail.sent_data["params"]["OFFER_WEBAPP_LINK"].startswith(settings.WEBAPP_V2_URL)
 
-        # expected queries:
-        #   * get User
-        #   * find Offer
-        #   * get FF ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS.isactive
-        #   * save email to DB (testing backend)
-        #   * release savepoint after saving email
-        with assert_num_queries(5):
-            response = test_client.post(f"/native/v1/send_offer_webapp_link_by_email/{offer_id}")
-            assert response.status_code == 204
-
-        assert len(mails_testing.outbox) == 1
-
-        mail = mails_testing.outbox[0]
-        assert mail.sent_data["To"] == user.email
+    @override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=True)
+    @override_features(ENABLE_IOS_OFFERS_LINK_WITH_REDIRECTION=True)
+    def test_send_offer_webapp_link_by_email_with_redirection_link(self, client):
+        """
+        Test that the redirection domain is used, once the FF has been
+        activated.
+        """
+        mail = self.send_request(client)
+        assert mail.sent_data["params"]["OFFER_WEBAPP_LINK"].startswith(settings.WEBAPP_V2_REDIRECT_URL)
 
     def test_send_offer_webapp_link_by_email_not_found(self, app):
         _, test_client = create_user_and_test_client(app)
@@ -294,6 +284,29 @@ class SendOfferWebAppLinkTest:
             response = test_client.post("/native/v1/send_offer_webapp_link_by_email/98765432123456789")
             assert response.status_code == 404
         assert not mails_testing.outbox
+
+    def send_request(self, client):
+        offer_id = OfferFactory().id
+        user = users_factories.BeneficiaryGrant18Factory()
+        test_client = client.with_token(user.email)
+
+        # expected queries:
+        #   * get User
+        #   * find Offer
+        #   * get FF ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS.isactive
+        #   * get FF ENABLE_IOS_OFFERS_LINK_WITH_REDIRECTION.isactive
+        #   * save email to DB (testing backend)
+        #   * release savepoint after saving email
+        with assert_num_queries(6):
+            response = test_client.post(f"/native/v1/send_offer_webapp_link_by_email/{offer_id}")
+            assert response.status_code == 204
+
+        assert len(mails_testing.outbox) == 1
+
+        mail = mails_testing.outbox[0]
+        assert mail.sent_data["To"] == user.email
+
+        return mail
 
 
 class SendOfferLinkNotificationTest:
