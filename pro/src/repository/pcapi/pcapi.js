@@ -326,12 +326,19 @@ export const getUserInformations = () => {
 }
 
 //
-// set password
+// password
 //
 export const setPassword = (token, newPassword) => {
   return client.post('/users/new-password', { token, newPassword })
 }
 
+export const resetPassword = (token, email) => {
+  return client.post('/users/reset-password', { token, email })
+}
+
+export const submitResetPassword = (newPassword, token) => {
+  return client.post('/users/new-password', { newPassword, token })
+}
 //
 // tutos
 //

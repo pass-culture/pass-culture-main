@@ -1,12 +1,11 @@
 /*
- * @debt deprecated "Gaël: deprecated usage of redux-saga-data"
  * @debt standard "Gaël: prefer useSelector hook vs connect for redux (https://react-redux.js.org/api/hooks)"
  */
 
 import { connect } from 'react-redux'
 import { compose } from 'redux'
-import { requestData } from 'redux-saga-data'
 
+import * as pcapi from 'repository/pcapi/pcapi'
 import { showNotification } from 'store/reducers/notificationReducer'
 import { selectCurrentUser } from 'store/selectors/data/usersSelectors'
 import { searchSelector } from 'store/selectors/search'
@@ -41,39 +40,24 @@ export const mapDispatchToProps = dispatch => ({
   submitResetPasswordRequest: (emailValue, success, fail) => {
     if (!IS_DEV) {
       getReCaptchaToken('resetPassword').then(token =>
-        dispatch(
-          requestData({
-            apiPath: '/users/reset-password',
-            body: { email: emailValue, token: token },
-            handleFail: fail,
-            handleSuccess: success,
-            method: 'POST',
-          })
-        )
+        pcapi
+          .resetPassword(token, emailValue)
+          .then(() => success())
+          .catch(() => fail())
       )
     } else {
-      dispatch(
-        requestData({
-          apiPath: '/users/reset-password',
-          body: { email: emailValue, token: 'test_token' },
-          handleFail: fail,
-          handleSuccess: success,
-          method: 'POST',
-        })
-      )
+      pcapi
+        .resetPassword('test_token', emailValue)
+        .then(() => success())
+        .catch(() => fail())
     }
   },
 
   submitResetPassword: (newPassword, token, success, fail) => {
-    dispatch(
-      requestData({
-        apiPath: '/users/new-password',
-        body: { newPassword, token },
-        handleFail: fail,
-        handleSuccess: success,
-        method: 'POST',
-      })
-    )
+    pcapi
+      .submitResetPassword(newPassword, token)
+      .then(() => success())
+      .catch(() => fail())
   },
 })
 
