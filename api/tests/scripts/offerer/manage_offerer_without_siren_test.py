@@ -48,7 +48,7 @@ def test_manage_offerer_without_siren():
     # Then
     assert offerer_without_venue.isActive == False
     assert offerer_without_offer.isActive == False
-    # # one venue was deleted
+    # one venue was deleted
     assert Venue.query.count() == 2
     assert offerer_with_all_bookings_reimbursed.isActive == False
     assert offerer_with_booking_not_reimbursed.isActive == True
