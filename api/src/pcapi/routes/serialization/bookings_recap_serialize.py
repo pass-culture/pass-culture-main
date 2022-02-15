@@ -4,6 +4,7 @@ from enum import Enum
 from typing import Any
 from typing import Optional
 
+from pcapi.core.bookings.models import BookingStatusFilter
 from pcapi.domain.booking_recap.booking_recap import BookingRecap
 from pcapi.domain.booking_recap.booking_recap import BookingRecapStatus
 from pcapi.domain.booking_recap.booking_recap_history import BookingRecapCancelledHistory
@@ -116,6 +117,7 @@ class ListBookingsQueryModel(BaseModel):
     page: int = 1
     venue_id: Optional[int]
     event_date: Optional[datetime]
+    booking_status_filter: BookingStatusFilter
     booking_period_beginning_date: date
     booking_period_ending_date: date
     offer_type: Optional[OfferType]
