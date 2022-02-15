@@ -50,6 +50,12 @@ class BookingStatus(enum.Enum):
     REIMBURSED = "REIMBURSED"
 
 
+class BookingStatusFilter(enum.Enum):
+    BOOKED = "booked"
+    VALIDATED = "validated"
+    REIMBURSED = "reimbursed"
+
+
 class IndividualBooking(PcObject, Model):
     __tablename__ = "individual_booking"
 
