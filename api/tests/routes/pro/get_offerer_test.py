@@ -66,6 +66,7 @@ class Returns200Test:
             "hasMissingBankInformation": True,
             "id": humanize(offerer.id),
             "idAtProviders": offerer.idAtProviders,
+            "isActive": offerer.isActive,
             "isValidated": offerer.isValidated,
             "lastProviderId": offerer.lastProviderId,
             "managedVenues": [
