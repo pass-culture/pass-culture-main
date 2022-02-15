@@ -20,11 +20,14 @@ import {
   Offerer,
   OffererListItem,
   OffererName,
+  Provider,
   Stock,
   User,
   UserInfo,
   Venue,
   VenueListItem,
+  VenueProvider,
+  VenueProviderPayload,
   VenueStats,
 } from 'custom_types'
 import { client } from 'repository/pcapi/pcapiClient'
@@ -432,26 +435,32 @@ export const setPassword = (
 //
 // tutos
 //
-export const setHasSeenTutos = () => {
+export const setHasSeenTutos = (): Promise<void> => {
   return client.patch(`/users/tuto-seen`)
 }
 
 //
 // Providers
 //
-export const createVenueProvider = async venueProvider => {
+export const createVenueProvider = async (
+  venueProvider: VenueProviderPayload
+): Promise<VenueProvider> => {
   return client.post('/venueProviders', venueProvider)
 }
 
-export const editVenueProvider = async venueProvider => {
+export const editVenueProvider = async (
+  venueProvider: VenueProviderPayload
+): Promise<VenueProvider> => {
   return client.put('/venueProviders', venueProvider)
 }
 
-export const loadProviders = async venueId => {
+export const loadProviders = async (venueId: string): Promise<Provider[]> => {
   return client.get(`/providers/${venueId}`)
 }
 
-export const loadVenueProviders = async venueId => {
+export const loadVenueProviders = async (
+  venueId: string
+): Promise<VenueProvider[]> => {
   return client
     .get(`/venueProviders?venueId=${venueId}`)
     .then(response => response.venue_providers)
