@@ -42,13 +42,6 @@ def build_pc_webapp_reset_password_link(token_value: str) -> str:
     return f"{settings.WEBAPP_V2_URL}/mot-de-passe-perdu?token={token_value}"
 
 
-def extract_users_information_from_bookings(bookings: list[Booking]) -> list[dict]:
-    users_keys = ("firstName", "lastName", "email", "contremarque")
-    users_properties = [[booking.firstName, booking.lastName, booking.email, booking.token] for booking in bookings]
-
-    return [dict(zip(users_keys, user_property)) for user_property in users_properties]
-
-
 def format_booking_date_for_email(booking: Booking) -> str:
     if booking.stock.offer.isEvent:
         date_in_tz = get_event_datetime(booking.stock)
