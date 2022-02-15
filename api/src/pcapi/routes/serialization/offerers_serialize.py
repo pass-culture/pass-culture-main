@@ -62,6 +62,7 @@ class GetOffererResponseModel(BaseModel):
     id: str
     idAtProviders: Optional[str]
     isValidated: bool
+    isActive: bool
     lastProviderId: Optional[str]
     managedVenues: list[GetOffererVenueResponseModel]
     name: str
