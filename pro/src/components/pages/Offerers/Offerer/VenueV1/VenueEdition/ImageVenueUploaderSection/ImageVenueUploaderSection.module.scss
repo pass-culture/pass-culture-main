@@ -3,4 +3,21 @@
     color: $grey-dark;
     margin: rem(16px) 0;
   }
+
+  &-image-container {
+    display: flex;
+  }
+
+  &-icon-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: space-evenly;
+    margin-left: rem(32px);
+  }
+
+  &-icon {
+    margin-right: rem(8px);
+    width: 20px;
+  }
 }

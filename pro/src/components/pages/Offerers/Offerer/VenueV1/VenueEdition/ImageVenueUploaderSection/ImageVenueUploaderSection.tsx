@@ -1,6 +1,9 @@
 import React, { useCallback, useState, FunctionComponent } from 'react'
 
+import Icon from 'components/layout/Icon'
 import { useModal } from 'hooks/useModal'
+import { Button } from 'ui-kit'
+import { ButtonVariant } from 'ui-kit/Button/types'
 
 import { ImageUploadButton } from '../ImageUploadButton/ImageUploadButton'
 import { VenueImage } from '../VenueImage/VenueImage'
@@ -44,7 +47,34 @@ export const ImageVenueUploaderSection: FunctionComponent<Props> = ({
         Elle permettra au public de mieux identifier votre lieu.
       </p>
       {imageUniqueURL ? (
-        <VenueImage url={imageUniqueURL} />
+        <div className={styles['image-venue-uploader-section-image-container']}>
+          <VenueImage url={imageUniqueURL} />
+          <div
+            className={styles['image-venue-uploader-section-icon-container']}
+          >
+            <Button variant={ButtonVariant.TERNARY}>
+              <Icon
+                className={styles['image-venue-uploader-section-icon']}
+                svg="ico-pen-black"
+              />
+              Modifier
+            </Button>
+            <Button variant={ButtonVariant.TERNARY}>
+              <Icon
+                className={styles['image-venue-uploader-section-icon']}
+                svg="ico-eye-open-filled"
+              />
+              Prévisualiser
+            </Button>
+            <Button variant={ButtonVariant.TERNARY}>
+              <Icon
+                className={styles['image-venue-uploader-section-icon']}
+                svg="ico-trash-filled"
+              />
+              Supprimer
+            </Button>
+          </div>
+        </div>
       ) : (
         <ImageUploadButton onClick={showModal} />
       )}
