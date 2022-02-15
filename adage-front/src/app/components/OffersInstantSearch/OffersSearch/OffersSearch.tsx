@@ -61,7 +61,7 @@ export const OffersSearchComponent = ({
     removeVenueFilter()
     dispatchCurrentFilters({ type: 'RESET_CURRENT_FILTERS' })
     setFacetFilters([...INITIAL_FACET_FILTERS])
-    refine(query)
+    refine(INITIAL_QUERY)
   }
 
   useEffect(() => {
