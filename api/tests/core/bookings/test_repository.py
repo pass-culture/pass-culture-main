@@ -977,7 +977,7 @@ class FindByProUserTest:
 
         # When
         beginning_period = datetime.fromisoformat("2021-10-15")
-        ending_period = datetime.fromisoformat("2022-02-15")
+        ending_period = datetime.fromisoformat("2032-02-15")
         bookings_recap_paginated = booking_repository.find_by_pro_user(
             user=pro, booking_period=(beginning_period, ending_period)
         )
@@ -1782,7 +1782,7 @@ class GetCsvReportTest:
 
         # When
         beginning_period = datetime.fromisoformat("2021-10-15")
-        ending_period = datetime.fromisoformat("2022-02-15")
+        ending_period = datetime.fromisoformat("2032-02-15")
         bookings_csv = booking_repository.get_csv_report(
             user=pro,
             booking_period=(beginning_period, ending_period),
@@ -1816,7 +1816,7 @@ class GetCsvReportTest:
 
         # When
         beginning_period = datetime.fromisoformat("2021-10-15")
-        ending_period = datetime.fromisoformat("2022-02-15")
+        ending_period = datetime.fromisoformat("2032-02-15")
         bookings_csv = booking_repository.get_csv_report(
             user=pro,
             booking_period=(beginning_period, ending_period),
@@ -1905,7 +1905,7 @@ class GetCsvReportTest:
 
             # When
             beginning_period = datetime.fromisoformat("2021-10-15")
-            ending_period = datetime.fromisoformat("2022-02-15")
+            ending_period = datetime.fromisoformat("2032-02-15")
             bookings_csv = booking_repository.get_csv_report(
                 user=pro,
                 booking_period=(beginning_period, ending_period),
@@ -1947,7 +1947,7 @@ class GetCsvReportTest:
 
             # When
             beginning_period = datetime.fromisoformat("2021-10-15")
-            ending_period = datetime.fromisoformat("2022-02-15")
+            ending_period = datetime.fromisoformat("2032-02-15")
             bookings_csv = booking_repository.get_csv_report(
                 user=pro,
                 booking_period=(beginning_period, ending_period),
@@ -1990,7 +1990,7 @@ class GetCsvReportTest:
 
             # When
             beginning_period = datetime.fromisoformat("2021-10-15")
-            ending_period = datetime.fromisoformat("2022-02-15")
+            ending_period = datetime.fromisoformat("2032-02-15")
             bookings_csv = booking_repository.get_csv_report(
                 user=pro,
                 booking_period=(beginning_period, ending_period),
@@ -2035,7 +2035,7 @@ class GetCsvReportTest:
 
             # When
             beginning_period = datetime.fromisoformat("2021-10-15")
-            ending_period = datetime.fromisoformat("2022-02-15")
+            ending_period = datetime.fromisoformat("2032-02-15")
             bookings_csv = booking_repository.get_csv_report(
                 user=pro,
                 booking_period=(beginning_period, ending_period),
@@ -2082,7 +2082,7 @@ class GetCsvReportTest:
 
             # When
             beginning_period = datetime.fromisoformat("2021-10-15")
-            ending_period = datetime.fromisoformat("2022-02-15")
+            ending_period = datetime.fromisoformat("2032-02-15")
             bookings_csv = booking_repository.get_csv_report(
                 user=pro,
                 booking_period=(beginning_period, ending_period),
@@ -2142,7 +2142,7 @@ class GetCsvReportTest:
 
             # When
             beginning_period = datetime.fromisoformat("2021-10-15")
-            ending_period = datetime.fromisoformat("2022-02-15")
+            ending_period = datetime.fromisoformat("2032-02-15")
             bookings_csv = booking_repository.get_csv_report(
                 user=pro,
                 booking_period=(beginning_period, ending_period),
