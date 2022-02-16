@@ -93,6 +93,7 @@ class TransactionalEmail(Enum):
     FRAUD_PREVENTION_TO_PRO = TemplatePro(id_prod=0000, id_not_prod=0000, tags=[""])
     INVOICE_AVAILABLE_TO_PRO = TemplatePro(id_prod=405, id_not_prod=61, tags=["remboursement_justificatif"])
     NEW_BOOKING_TO_PRO = TemplatePro(id_prod=376, id_not_prod=59, tags=["pro_nouvelle_reservation"])
+    NEW_OFFERER_VALIDATION = TemplatePro(id_prod=489, id_not_prod=58, tags=["pro_validation_structure"])
     OFFER_APPROVAL_TO_PRO = TemplatePro(
         id_prod=349, id_not_prod=49, tags=["pro_validation_offre"], sender=SendinblueTransactionalSender.COMPLIANCE
     )
