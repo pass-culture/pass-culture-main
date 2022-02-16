@@ -1,4 +1,5 @@
 import Slider from '@mui/material/Slider'
+import { ThemeProvider, createTheme } from '@mui/material/styles'
 import React, { forwardRef, useCallback, useState } from 'react'
 import AvatarEditor from 'react-avatar-editor'
 
@@ -28,6 +29,15 @@ const ImageEditor = forwardRef<AvatarEditor, ImageEditorProps>(
     ref
   ) => {
     const [scale, setScale] = useState(1)
+    const theme = createTheme({
+      palette: {
+        primary: {
+          main: '#eb0055',
+          dark: '#eb0055',
+          light: '#eb0055',
+        },
+      },
+    })
 
     const drawCropBorder = useCallback(() => {
       const canvas = document.querySelector('canvas')
@@ -75,15 +85,17 @@ const ImageEditor = forwardRef<AvatarEditor, ImageEditorProps>(
         <label className={style['image-editor-scale']} htmlFor="scale">
           <span className={style['image-editor-scale-label']}>min</span>
           <span className={style['image-editor-scale-input']}>
-            <Slider
-              componentsProps={{ thumb: {} }}
-              max={4}
-              min={1}
-              onChange={onScaleChange}
-              size="medium"
-              step={0.01}
-              value={scale}
-            />
+            <ThemeProvider theme={theme}>
+              <Slider
+                componentsProps={{ thumb: {} }}
+                max={4}
+                min={1}
+                onChange={onScaleChange}
+                size="medium"
+                step={0.01}
+                value={scale}
+              />
+            </ThemeProvider>
           </span>
           <span className={style['image-editor-scale-label']}>max</span>
         </label>
