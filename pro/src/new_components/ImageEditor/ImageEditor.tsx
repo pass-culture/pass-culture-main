@@ -1,3 +1,4 @@
+import Slider from '@mui/material/Slider'
 import React, { forwardRef, useCallback, useState } from 'react'
 import AvatarEditor from 'react-avatar-editor'
 
@@ -73,16 +74,17 @@ const ImageEditor = forwardRef<AvatarEditor, ImageEditorProps>(
         </label>
         <label className={style['image-editor-scale']} htmlFor="scale">
           <span className={style['image-editor-scale-label']}>min</span>
-          <input
-            className={style['image-editor-scale-input']}
-            id="scale"
-            max="4"
-            min="1"
-            onChange={onScaleChange}
-            step="0.01"
-            type="range"
-            value={scale}
-          />
+          <span className={style['image-editor-scale-input']}>
+            <Slider
+              componentsProps={{ thumb: {} }}
+              max={4}
+              min={1}
+              onChange={onScaleChange}
+              size="medium"
+              step={0.01}
+              value={scale}
+            />
+          </span>
           <span className={style['image-editor-scale-label']}>max</span>
         </label>
       </div>
