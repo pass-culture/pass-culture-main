@@ -134,7 +134,6 @@ class SharedCurrentUserResponseModel(BaseModel):
     email: str
     externalIds: Optional[typing.Dict]
     firstName: Optional[str]
-    hasCompletedIdCheck: Optional[bool]
     hasPhysicalVenues: Optional[bool]
     hasSeenProTutorials: Optional[bool]
     id: str

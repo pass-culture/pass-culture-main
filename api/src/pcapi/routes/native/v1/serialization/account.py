@@ -213,7 +213,6 @@ class UserProfileResponse(BaseModel):
     eligibility_start_datetime: Optional[datetime.datetime]
     email: str
     firstName: Optional[str]
-    hasCompletedIdCheck: Optional[bool]
     id: int
     isBeneficiary: bool
     isEligibleForBeneficiaryUpgrade: bool

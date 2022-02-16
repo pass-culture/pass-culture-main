@@ -71,8 +71,6 @@ def activate_beneficiary(
         ),
     )
 
-    user.hasCompletedIdCheck = False
-
     db.session.add_all((user, deposit))
     db.session.commit()
     logger.info("Activated beneficiary and created deposit", extra={"user": user.id, "source": deposit_source})
@@ -243,7 +241,6 @@ def get_honor_statement_subscription_item(
 
 # pylint: disable=too-many-return-statements
 def get_next_subscription_step(user: users_models.User) -> typing.Optional[models.SubscriptionStep]:
-    # TODO(viconnex): use SubscriptionItems when user.hasCompletedIdCheck is removed and STARTED status is used in ubble workflow
     if not user.isEmailValidated:
         return models.SubscriptionStep.EMAIL_VALIDATION
 
@@ -395,9 +392,6 @@ def on_successful_application(
     source_data: common_fraud_models.IdentityCheckContent,
 ) -> None:
     users_api.update_user_information_from_external_source(user, source_data)
-
-    # TODO (viconnex) remove when we also look for DMS files to know if the user has completed id check
-    user.hasCompletedIdCheck = True
 
     pcapi_repository.repository.save(user)
 

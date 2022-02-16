@@ -132,7 +132,6 @@ class AccountTest:
             "isBeneficiary": True,
             "isEligibleForBeneficiaryUpgrade": False,
             "roles": ["BENEFICIARY"],
-            "hasCompletedIdCheck": False,
             "pseudo": "jdo",
             "recreditAmountToShow": None,
             "showEligibleCard": False,
@@ -1160,7 +1159,6 @@ class ValidatePhoneNumberTest:
     def test_validate_phone_number_and_become_beneficiary(self, client, app):
         user = users_factories.UserFactory(
             phoneNumber="+33607080900",
-            hasCompletedIdCheck=True,
             subscriptionState=users_models.SubscriptionState.email_validated,
         )
 
