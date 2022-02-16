@@ -38,6 +38,7 @@
 
         &.disabled {
           background-image: url(/icons/ico-calendar-disabled.svg);
+          border: none;
           box-shadow: none;
         }
       }

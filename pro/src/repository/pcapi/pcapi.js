@@ -414,6 +414,10 @@ export const loadFilteredBookingsRecap = async filters => {
   return client.get(`/bookings/pro?${queryParams}`)
 }
 
+export const getUserHasBookings = async () => {
+  return client.get(`/bookings/pro/userHasBookings`)
+}
+
 export const getFilteredBookingsCSV = async filters => {
   const queryParams = buildBookingsRecapQuery(filters)
   return client.getPlainText(`/bookings/csv?${queryParams}`)

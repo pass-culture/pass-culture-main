@@ -9,7 +9,11 @@ import { getToday } from 'utils/date'
 
 registerLocale('fr', fr)
 
-const FilterByEventDate = ({ updateFilters, selectedOfferDate }) => {
+const FilterByEventDate = ({
+  isDisabled,
+  updateFilters,
+  selectedOfferDate,
+}) => {
   function handleOfferDateChange(offerEventDate) {
     updateFilters({
       offerEventDate: offerEventDate
@@ -26,8 +30,13 @@ const FilterByEventDate = ({ updateFilters, selectedOfferDate }) => {
       <div className="pf-offer-date-picker">
         <DatePicker
           className="pf-offer-date-input"
-          customInput={<InputWithCalendar customClass="field-date-only" />}
+          customInput={
+            <InputWithCalendar
+              customClass={`field-date-only${isDisabled ? ' disabled' : ''}`}
+            />
+          }
           dateFormat="dd/MM/yyyy"
+          disabled={isDisabled}
           dropdownMode="select"
           id="select-filter-date"
           locale="fr"
@@ -48,8 +57,11 @@ const FilterByEventDate = ({ updateFilters, selectedOfferDate }) => {
     </div>
   )
 }
-
+FilterByEventDate.defaultProps = {
+  isDisabled: false,
+}
 FilterByEventDate.propTypes = {
+  isDisabled: PropTypes.bool,
   selectedOfferDate: PropTypes.oneOfType([PropTypes.shape(), PropTypes.string])
     .isRequired,
   updateFilters: PropTypes.func.isRequired,

@@ -18,10 +18,12 @@ interface IPreFiltersProp {
 }
 
 interface IFilterByStatusProps {
+  isDisabled: boolean
   updateFilters: (filters: Partial<IPreFiltersProp>) => void
   selectedStatusId: string
 }
 const FilterByStatus = ({
+  isDisabled = false,
   updateFilters,
   selectedStatusId,
 }: IFilterByStatusProps): JSX.Element => {
@@ -35,6 +37,7 @@ const FilterByStatus = ({
     <Select
       defaultOption={DEFAULT_BOOKING_FILTER}
       handleSelection={handleStatusFilterSelection}
+      isDisabled={isDisabled}
       name="statusFilter"
       options={BOOOKING_STATUS_FILTER}
       selectedValue={selectedStatusId}
@@ -43,6 +46,7 @@ const FilterByStatus = ({
 }
 
 FilterByStatus.propTypes = {
+  isDisabled: PropTypes.bool,
   selectedStatusId: PropTypes.string.isRequired,
   updateFilters: PropTypes.func.isRequired,
 }
