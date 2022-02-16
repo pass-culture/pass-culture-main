@@ -178,7 +178,6 @@ class User(PcObject, Model, NeedsValidationMixin):
     externalIds = sa.Column(postgresql.json.JSONB, nullable=True, default={}, server_default="{}")
     extraData = sa.Column(MutableDict.as_mutable(postgresql.json.JSONB), nullable=True, default={}, server_default="{}")
     firstName = sa.Column(sa.String(128), nullable=True)
-    hasCompletedIdCheck = sa.Column(sa.Boolean, nullable=True)
     hasSeenTutorials = sa.Column(sa.Boolean, nullable=True)
     hasSeenProTutorials = sa.Column(sa.Boolean, nullable=False, server_default=expression.false())
     idPieceNumber = sa.Column(sa.String, nullable=True, unique=True)
