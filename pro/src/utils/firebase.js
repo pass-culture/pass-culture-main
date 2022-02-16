@@ -7,6 +7,9 @@ const CLICK_CREATE_ACCOUNT = 'createAccount'
 const CLICK_ALREADY_ACCOUNT = 'alreadyHasAccount'
 const CLICK_FAQ = 'hasClickedFaq'
 const CLICK_HELP_CENTER = 'hasClickedHelpCenter'
+const CLICK_CONSULT_CGU = 'consultCGU'
+const CLICK_PERSONAL_DATA = 'consultPersonalData'
+const CLICK_CONSULT_SUPPORT = 'hasClickedConsultSupport'
 
 const firebaseConfig = {
   apiKey: process.env.FIRBASE_API_KEY,
@@ -32,4 +35,8 @@ export const analytics = {
   logClickFaq: page => logEvent(CLICK_FAQ, { page: page }),
   logClickHelpCenter: page => logEvent(CLICK_HELP_CENTER, { page: page }),
   logClickAlreayAccount: () => logEvent(CLICK_ALREADY_ACCOUNT),
+  logClickConsultCgu: page => logEvent(CLICK_CONSULT_CGU, { page: page }),
+  logClickPersonalData: page => logEvent(CLICK_PERSONAL_DATA, { page: page }),
+  logClickConsultSupport: page =>
+    logEvent(CLICK_CONSULT_SUPPORT, { page: page }),
 }

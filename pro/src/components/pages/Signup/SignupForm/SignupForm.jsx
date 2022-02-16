@@ -238,6 +238,7 @@ class SignupForm extends PureComponent {
                 </label>
                 <LegalInfos
                   className="sign-up-infos-before-signup"
+                  pathname={location.pathname}
                   title="Créer mon compte"
                 />
                 <div className="buttons-field">

@@ -5,14 +5,17 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 
+import { analytics } from 'utils/firebase'
+
 import Icon from '../Icon'
 
-export const LegalInfos = ({ title, className }) => (
+export const LegalInfos = ({ title, className, pathname }) => (
   <div className={`legal-infos ${className}`}>
     <span>{`En cliquant sur ${title}, vous acceptez nos `}</span>
     <a
       className="quaternary-link"
       href="https://pass.culture.fr/cgu-professionnels/"
+      onClick={() => analytics.logClickConsultCgu(pathname)}
       rel="noopener noreferrer"
       target="_blank"
     >
@@ -23,6 +26,7 @@ export const LegalInfos = ({ title, className }) => (
     <a
       className="quaternary-link"
       href="https://pass.culture.fr/donnees-personnelles/"
+      onClick={() => analytics.logClickPersonalData(pathname)}
       rel="noopener noreferrer"
       target="_blank"
     >
@@ -37,6 +41,7 @@ export const LegalInfos = ({ title, className }) => (
     <a
       className="quaternary-link"
       href="mailto:support-pro@passculture.app"
+      onClick={() => analytics.logClickConsultSupport(pathname)}
       rel="noopener noreferrer"
       target="_blank"
     >
@@ -49,4 +54,5 @@ export const LegalInfos = ({ title, className }) => (
 LegalInfos.propTypes = {
   className: PropTypes.string.isRequired,
   title: PropTypes.string.isRequired,
+  pathname: PropTypes.string.isRequired,
 }

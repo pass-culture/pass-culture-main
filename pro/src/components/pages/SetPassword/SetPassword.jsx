@@ -130,6 +130,7 @@ export const SetPassword = props => {
                       </label>
                       <LegalInfos
                         className="set-password-legal-infos"
+                        pathname={location.pathname}
                         title="Envoyer"
                       />
 
