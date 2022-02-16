@@ -371,7 +371,7 @@ class AccountCreationTest:
         data = {
             "email": "John.doe@example.com",
             "password": "Aazflrifaoi6@",
-            "birthdate": (datetime.utcnow() - relativedelta(year=15)).date(),
+            "birthdate": (datetime.utcnow() - relativedelta(years=15)).date(),
             "notifications": True,
             "token": "gnagna",
             "marketingEmailSubscription": True,
