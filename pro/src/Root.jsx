@@ -4,6 +4,7 @@ import { BrowserRouter, Route, Switch } from 'react-router-dom'
 
 import AppContainer from 'app/AppContainer'
 import AppLayout from 'app/AppLayout'
+import FirebaseContainer from 'components/firebase/FirebaseContainer'
 import NotFound from 'components/pages/Errors/NotFound/NotFound'
 import FeaturedRoute from 'components/router/FeaturedRoute'
 import configureStore from 'store'
@@ -15,6 +16,7 @@ const Root = () => {
   return (
     <Provider store={store}>
       <BrowserRouter>
+        <FirebaseContainer />
         <AppContainer>
           <Switch>
             {routes.map(route => {

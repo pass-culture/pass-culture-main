@@ -2,6 +2,7 @@ import { getAnalytics } from 'firebase/analytics'
 import { logEvent as analyticsLogEvent } from 'firebase/analytics'
 import { initializeApp } from 'firebase/app'
 
+const PAGE_VIEW = 'page_view'
 
 const firebaseConfig = {
   apiKey: process.env.FIRBASE_API_KEY,
@@ -18,4 +19,8 @@ const analyticsProvider = getAnalytics(app)
 
 const logEvent = (event, params = {}) => {
   analyticsLogEvent(analyticsProvider, event, params)
+}
+
+export const analytics = {
+  logPageView: page => logEvent(PAGE_VIEW, { from: page }),
 }
