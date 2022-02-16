@@ -23,7 +23,6 @@ import pcapi.core.mails.testing as mails_testing
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import messages as subscription_messages
 from pcapi.core.subscription import models as subscription_models
-from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.models import db
@@ -699,7 +698,6 @@ class UbbleWebhookTest:
             content.identification_url == f"{settings.UBBLE_API_URL}/identifications/{str(content.identification_id)}"
         )
 
-    @override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=True)
     def test_fraud_check_unprocessable(self, client, ubble_mocker, mocker):
         current_identification_state = test_factories.IdentificationState.PROCESSING
         notified_identification_state = test_factories.IdentificationState.UNPROCESSABLE
@@ -1200,7 +1198,6 @@ class UbbleWebhookTest:
         assert len(mails_testing.outbox) == 0
         assert not user.has_beneficiary_role
 
-    @override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=True)
     def test_decision_reference_data_check_failed(self, client, ubble_mocker):
         user, ubble_fraud_check, request_data = self._init_decision_test()
 
@@ -1274,7 +1271,6 @@ class UbbleWebhookTest:
         "ref_data_check_score",
         [ubble_fraud_models.UbbleScore.VALID.value, ubble_fraud_models.UbbleScore.UNDECIDABLE.value],
     )
-    @override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=True)
     def test_decision_document_not_supported(self, client, ubble_mocker, ref_data_check_score):
         user, ubble_fraud_check, request_data = self._init_decision_test()
 
@@ -1348,7 +1344,6 @@ class UbbleWebhookTest:
         "ref_data_check_score",
         [ubble_fraud_models.UbbleScore.VALID.value, ubble_fraud_models.UbbleScore.UNDECIDABLE.value],
     )
-    @override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=True)
     def test_decision_document_expired(self, client, ubble_mocker, ref_data_check_score, doc_supported):
         user, ubble_fraud_check, request_data = self._init_decision_test()
 
@@ -1425,7 +1420,6 @@ class UbbleWebhookTest:
         "ref_data_check_score",
         [ubble_fraud_models.UbbleScore.VALID.value, ubble_fraud_models.UbbleScore.UNDECIDABLE.value],
     )
-    @override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=True)
     def test_decision_invalid_for_another_reason(
         self, client, ubble_mocker, ref_data_check_score, doc_supported, expiry_score
     ):
@@ -1516,7 +1510,6 @@ class UbbleWebhookTest:
             ubble_fraud_models.UbbleScore.UNDECIDABLE.value,
         ],
     )
-    @override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=True)
     def test_decision_unprocessable(self, client, ubble_mocker, ref_data_check_score, doc_supported, expiry_score):
         user, ubble_fraud_check, request_data = self._init_decision_test()
 

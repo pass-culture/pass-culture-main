@@ -4,15 +4,13 @@ from typing import Union
 from pcapi import settings
 from pcapi.core.mails.models.sendinblue_models import SendinblueTransactionalEmailData
 from pcapi.core.mails.models.sendinblue_models import SendinblueTransactionalWithoutTemplateEmailData
-from pcapi.models.feature import FeatureToggle
 from pcapi.utils.module_loading import import_string
 
 from .models import models
 
 
-# TODO: CorentinN - remove this when all transactional emails use Sendinblue
 def get_email_backend(send_with_sendinblue: bool) -> str:
-    if send_with_sendinblue and FeatureToggle.ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS.is_active():
+    if send_with_sendinblue:
         return settings.EMAIL_BACKEND
     return settings.MAILJET_EMAIL_BACKEND
 

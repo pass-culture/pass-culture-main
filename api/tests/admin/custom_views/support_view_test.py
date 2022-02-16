@@ -1,3 +1,4 @@
+import dataclasses
 from datetime import datetime
 import logging
 
@@ -10,6 +11,7 @@ from pcapi.admin.custom_views.support_view.api import get_beneficiary_activation
 import pcapi.core.fraud.factories as fraud_factories
 import pcapi.core.fraud.models as fraud_models
 import pcapi.core.mails.testing as mails_testing
+from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.testing import override_features
 from pcapi.core.testing import override_settings
@@ -99,7 +101,9 @@ class BeneficiaryValidationViewTest:
         user = users_models.User.query.get(user.id)
         assert user.has_beneficiary_role is True
         assert len(user.deposits) == 1
-        assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 2016025
+        assert mails_testing.outbox[0].sent_data["template"] == dataclasses.asdict(
+            TransactionalEmail.ACCEPTED_AS_BENEFICIARY.value
+        )
 
         jouve_content = fraud_models.JouveContent(**check.resultContent)
         assert user.firstName == jouve_content.firstName

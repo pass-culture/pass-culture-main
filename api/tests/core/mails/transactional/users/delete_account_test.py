@@ -6,7 +6,6 @@ import pcapi.core.mails.testing as mails_testing
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.mails.transactional.users.delete_account import get_user_request_to_delete_account_email_data
 from pcapi.core.mails.transactional.users.delete_account import send_user_request_to_delete_account_reception_email
-from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
 
 
@@ -14,7 +13,6 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 
 class UserRequestDeleteAccountReceptionEmailTest:
-    @override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=True)
     def test_get_email_metadata(self):
         # Given
         user = users_factories.UserFactory.build(email="fabien+test@example.net", firstName="Fabien")
@@ -26,7 +24,6 @@ class UserRequestDeleteAccountReceptionEmailTest:
         assert data.template == TransactionalEmail.USER_REQUEST_DELETE_ACCOUNT_RECEPTION.value
         assert data.params["FIRSTNAME"] == "Fabien"
 
-    @override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=True)
     def test_send_correct_mail(self):
         # Given
         user = users_factories.UserFactory.build(email="fabien+test@example.net", firstName="Fabien")

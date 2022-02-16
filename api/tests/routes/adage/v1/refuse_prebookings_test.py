@@ -13,7 +13,6 @@ from pcapi.core.mails.transactional.sendinblue_template_ids import Transactional
 from pcapi.core.offers.factories import EventStockFactory
 from pcapi.core.offers.models import Stock
 from pcapi.core.offers.utils import offer_app_link
-from pcapi.core.testing import override_features
 from pcapi.utils.date import format_into_utc_date
 
 from tests.conftest import TestClient
@@ -22,7 +21,6 @@ from tests.conftest import TestClient
 @pytest.mark.usefixtures("db_session")
 class Returns200Test:
     @freeze_time("2022-11-17 15:00:00")
-    @override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=True)
     def test_refuse_educational_booking(
         self,
         app,

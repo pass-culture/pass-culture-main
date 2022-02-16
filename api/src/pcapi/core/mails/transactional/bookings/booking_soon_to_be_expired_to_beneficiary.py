@@ -1,6 +1,5 @@
 from typing import List
 from typing import Tuple
-from typing import Union
 
 from pcapi.core import mails
 from pcapi.core.bookings import constants as booking_constants
@@ -9,7 +8,6 @@ from pcapi.core.categories import subcategories
 from pcapi.core.mails.models.sendinblue_models import SendinblueTransactionalEmailData
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.users.models import User
-from pcapi.models.feature import FeatureToggle
 
 
 def _extract_bookings_information_from_bookings_list(bookings: list[Booking]) -> list[dict]:
@@ -40,18 +38,7 @@ def _filter_books_bookings(bookings: list[Booking]) -> Tuple[List[Booking], List
 
 def build_soon_to_be_expired_bookings_recap_email_data_for_beneficiary(
     beneficiary: User, bookings: list[Booking], days_before_cancel: int, days_from_booking: int
-) -> Union[dict, SendinblueTransactionalEmailData]:
-    if not FeatureToggle.ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS.is_active():
-        return {
-            "Mj-TemplateID": 3095065,
-            "Mj-TemplateLanguage": True,
-            "Vars": {
-                "user_firstName": beneficiary.firstName,
-                "bookings": _extract_bookings_information_from_bookings_list(bookings),
-                "days_before_cancel": days_before_cancel,
-                "days_from_booking": days_from_booking,
-            },
-        }
+) -> SendinblueTransactionalEmailData:
     return SendinblueTransactionalEmailData(
         template=TransactionalEmail.BOOKING_SOON_TO_BE_EXPIRED_TO_BENEFICIARY.value,
         params={

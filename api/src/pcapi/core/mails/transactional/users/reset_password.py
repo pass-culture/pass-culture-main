@@ -1,12 +1,9 @@
-from typing import Union
-
 from pcapi.core import mails
 from pcapi.core.mails.models.sendinblue_models import SendinblueTransactionalEmailData
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.users import api as users_api
 from pcapi.core.users.models import Token
 from pcapi.core.users.models import User
-from pcapi.models.feature import FeatureToggle
 from pcapi.utils.urls import generate_firebase_dynamic_link
 
 
@@ -18,7 +15,7 @@ def get_reset_password_user_email_data(user: User, token: Token) -> dict:
     }
 
 
-def get_reset_password_native_app_email_data(user: User, token: Token) -> Union[dict, SendinblueTransactionalEmailData]:
+def get_reset_password_native_app_email_data(user: User, token: Token) -> SendinblueTransactionalEmailData:
     reset_password_link = generate_firebase_dynamic_link(
         path="mot-de-passe-perdu",
         params={
@@ -27,14 +24,6 @@ def get_reset_password_native_app_email_data(user: User, token: Token) -> Union[
             "email": user.email,
         },
     )
-
-    if not FeatureToggle.ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS.is_active():
-        return {
-            "MJ-TemplateID": 1838526,
-            "MJ-TemplateLanguage": True,
-            "Mj-trackclick": 1,
-            "Vars": {"native_app_link": reset_password_link},
-        }
 
     return SendinblueTransactionalEmailData(
         template=TransactionalEmail.NEW_PASSWORD_REQUEST.value, params={"NATIVE_APP_LINK": reset_password_link}

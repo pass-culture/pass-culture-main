@@ -1,22 +1,10 @@
-from typing import Union
-
 from pcapi.core import mails
 from pcapi.core.mails.models.sendinblue_models import SendinblueTransactionalEmailData
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.users.models import User
-from pcapi.models.feature import FeatureToggle
 
 
-def get_information_email_change_data(first_name: str) -> Union[dict, SendinblueTransactionalEmailData]:
-    if not FeatureToggle.ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS.is_active():
-        return {
-            "MJ-TemplateID": 2066067,
-            "MJ-TemplateLanguage": True,
-            "Vars": {
-                "beneficiary_name": first_name,
-            },
-        }
-
+def get_information_email_change_data(first_name: str) -> SendinblueTransactionalEmailData:
     return SendinblueTransactionalEmailData(
         template=TransactionalEmail.EMAIL_CHANGE_REQUEST.value,
         params={
@@ -30,19 +18,7 @@ def send_information_email_change_email(user: User) -> bool:
     return mails.send(recipients=[user.email], data=data)
 
 
-def get_confirmation_email_change_data(
-    first_name: str, confirmation_link: str
-) -> Union[dict, SendinblueTransactionalEmailData]:
-    if not FeatureToggle.ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS.is_active():
-        return {
-            "MJ-TemplateID": 2066065,
-            "MJ-TemplateLanguage": True,
-            "Vars": {
-                "beneficiary_name": first_name,
-                "confirmation_link": confirmation_link,
-            },
-        }
-
+def get_confirmation_email_change_data(first_name: str, confirmation_link: str) -> SendinblueTransactionalEmailData:
     return SendinblueTransactionalEmailData(
         template=TransactionalEmail.EMAIL_CHANGE_CONFIRMATION.value,
         params={"FIRSTNAME": first_name, "CONFIRMATION_LINK": confirmation_link},

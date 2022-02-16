@@ -1,3 +1,4 @@
+import dataclasses
 from datetime import datetime
 from datetime import timedelta
 from decimal import Decimal
@@ -22,6 +23,7 @@ from pcapi.core.fraud import factories as fraud_factories
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.fraud.ubble import models as ubble_fraud_models
 import pcapi.core.mails.testing as mails_testing
+from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 import pcapi.core.subscription.api as subscription_api
 import pcapi.core.subscription.factories as subscription_factories
 import pcapi.core.subscription.messages as subscription_messages
@@ -301,7 +303,9 @@ class AccountCreationTest:
         assert user.isEmailValidated is False
         mocked_check_recaptcha_token_is_valid.assert_called()
         assert len(mails_testing.outbox) == 1
-        assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 2015423
+        assert mails_testing.outbox[0].sent_data["template"] == dataclasses.asdict(
+            TransactionalEmail.EMAIL_CONFIRMATION.value
+        )
         assert len(push_testing.requests) == 2
         assert len(users_testing.sendinblue_requests) == 1
 
@@ -326,7 +330,9 @@ class AccountCreationTest:
         response = client.post("/native/v1/account", json=data)
         assert response.status_code == 204, response.json
         assert len(mails_testing.outbox) == 1
-        assert mails_testing.outbox[0].sent_data["MJ-TemplateID"] == 1838526
+        assert mails_testing.outbox[0].sent_data["template"] == dataclasses.asdict(
+            TransactionalEmail.NEW_PASSWORD_REQUEST.value
+        )
         assert push_testing.requests == []
 
     @patch("pcapi.connectors.api_recaptcha.check_recaptcha_token_is_valid")
@@ -349,7 +355,9 @@ class AccountCreationTest:
         response = client.post("/native/v1/account", json=data)
         assert response.status_code == 204, response.json
         assert len(mails_testing.outbox) == 1
-        assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 2015423
+        assert mails_testing.outbox[0].sent_data["template"] == dataclasses.asdict(
+            TransactionalEmail.EMAIL_CONFIRMATION.value
+        )
         assert len(push_testing.requests) == 2
         subscriber.checkPassword(data["password"])
 
@@ -490,7 +498,7 @@ class UpdateUserEmailTest:
         # dynamic link meaning that the real url needs to be extracted
         # from it.
         activation_email = mails_testing.outbox[-1]
-        confirmation_link = urlparse(activation_email.sent_data["Vars"]["confirmation_link"])
+        confirmation_link = urlparse(activation_email.sent_data["params"]["CONFIRMATION_LINK"])
         base_url = parse_qs(confirmation_link.query)["link"][0]
         base_url_params = parse_qs(urlparse(base_url).query)
 
@@ -798,7 +806,9 @@ class ResendEmailValidationTest:
 
         assert response.status_code == 204
         assert len(mails_testing.outbox) == 1
-        assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 2015423
+        assert mails_testing.outbox[0].sent_data["template"] == dataclasses.asdict(
+            TransactionalEmail.EMAIL_CONFIRMATION.value
+        )
 
     def test_for_already_validated_email_does_sent_passsword_reset(self, client, app):
         user = users_factories.UserFactory(isEmailValidated=True)
@@ -807,7 +817,9 @@ class ResendEmailValidationTest:
 
         assert response.status_code == 204
         assert len(mails_testing.outbox) == 1
-        assert mails_testing.outbox[0].sent_data["MJ-TemplateID"] == 1838526
+        assert mails_testing.outbox[0].sent_data["template"] == dataclasses.asdict(
+            TransactionalEmail.NEW_PASSWORD_REQUEST.value
+        )
 
     def test_for_unknown_mail_does_nothing(self, client, app):
         response = client.post("/native/v1/resend_email_validation", json={"email": "aijfioern@mlks.com"})
