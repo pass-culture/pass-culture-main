@@ -81,7 +81,7 @@ transitions
 tzlocal<3.0.0
 # Pin weasyprint to keep new versions from changing how our PDF files look.
 weasyprint==54.0
-Werkzeug==1.0.1
+Werkzeug==2.0.3
 wheel==0.35.1
 WTForms==2.3.3
 WTForms-SQLAlchemy==0.2

@@ -39,7 +39,7 @@ def get_or_set_correlation_id():
     try:
         return flask.g.correlation_id
     except AttributeError:
-        flask.g.correlation_id = uuid.uuid4().hex
+        flask.g.correlation_id = uuid.uuid4().hex  # pylint: disable=assigning-non-slot
         return flask.g.correlation_id
 
 

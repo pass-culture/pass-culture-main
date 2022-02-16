@@ -58,7 +58,7 @@ def before_request() -> None:
             }
         )
     sentry_sdk.set_tag("correlation-id", get_or_set_correlation_id())
-    g.request_start = time.perf_counter()
+    g.request_start = time.perf_counter()  # pylint: disable=assigning-non-slot
 
 
 @app.after_request
