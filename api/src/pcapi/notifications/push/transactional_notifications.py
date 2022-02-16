@@ -81,7 +81,7 @@ def get_offer_notification_data(user_id: int, offer: Offer) -> TransactionalNoti
         user_ids=[user_id],
         message=TransactionalNotificationMessage(
             title=f"Ta réservation pour {offer.name}",
-            body="Pour confirmer ta réservation, clique sur le lien que tu as reçu par mail :envelope_with_arrow:",
+            body="Pour la confirmer, clique sur le lien que tu as reçu par mail :envelope_with_arrow:",
         ),
     )
 
