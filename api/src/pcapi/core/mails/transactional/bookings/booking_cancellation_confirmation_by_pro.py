@@ -29,16 +29,8 @@ def get_booking_cancellation_confirmation_by_pro_email_data(
             "EVENT_HOUR": event_hour,
             "QUANTITY": quantity,
             "RESERVATIONS_NUMBER": len(bookings),
-            "USERS": _extract_users_information_from_bookings_list(bookings),
         },
     )
-
-
-def _extract_users_information_from_bookings_list(bookings: list[Booking]) -> list[dict]:
-    users_keys = ("FIRSTNAME", "LASTNAME", "EMAIL", "COUNTERMARK")
-    users_properties = [[booking.firstName, booking.lastName, booking.email, booking.token] for booking in bookings]
-
-    return [dict(zip(users_keys, user_property)) for user_property in users_properties]
 
 
 def send_booking_cancellation_confirmation_by_pro_email(bookings: list[Booking]) -> bool:
