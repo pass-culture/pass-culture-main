@@ -10,6 +10,7 @@ import { VenueImageEdit } from '../VenueImageEdit/VenueImageEdit'
 import { VenueImagePreview } from '../VenueImagePreview/VenueImagePreview'
 
 import { IMAGE_TYPES, MAX_IMAGE_SIZE, MIN_IMAGE_WIDTH } from './constants'
+import { getDataURLFromImageURL } from './utils'
 
 type Props = {
   venueId: string
@@ -58,11 +59,17 @@ export const VenueImageUploaderModal: FunctionComponent<Props> = ({
 
   const onUploadImage = useCallback(async () => {
     if (typeof croppingRect === 'undefined') return
+    if (typeof image === 'undefined') return
+
+    // the request needs the dataURL of the image,
+    // so we need to retrieve it if we only have the URL
+    const imageDataURL =
+      typeof image === 'string' ? await getDataURLFromImageURL(image) : image
 
     setIsUploading(true)
     const { bannerUrl } = await postImageToVenue({
       venueId,
-      banner: image,
+      banner: imageDataURL,
       xCropPercent: croppingRect.x,
       yCropPercent: croppingRect.y,
       heightCropPercent: croppingRect.height,
