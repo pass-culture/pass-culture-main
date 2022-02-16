@@ -1,6 +1,6 @@
 import React from 'react'
 import { Provider } from 'react-redux'
-import { BrowserRouter, Route, Switch } from 'react-router-dom'
+import { BrowserRouter, Route, Switch, Redirect } from 'react-router-dom'
 
 import AppContainer from 'app/AppContainer'
 import AppLayout from 'app/AppLayout'
@@ -17,6 +17,14 @@ const Root = () => {
       <BrowserRouter>
         <AppContainer>
           <Switch>
+            <Redirect
+              from="/offres/:offerId([A-Z0-9]+)/edition"
+              to="/offre/:offerId([A-Z0-9]+)/individuel/edition"
+            />
+            <Redirect
+              from="/offre/:offerId([A-Z0-9]+)/scolaire/edition"
+              to="/offre/:offerId([A-Z0-9]+)/collectif/edition"
+            />
             {routes.map(route => {
               return (
                 <FeaturedRoute
