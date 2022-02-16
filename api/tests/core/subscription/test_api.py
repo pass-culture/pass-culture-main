@@ -56,7 +56,6 @@ class EduconnectFlowTest:
 
         assert user.city == "Uneville"
         assert subscription_api.has_completed_profile(user)
-        assert not user.hasCompletedIdCheck
 
         # Get educonnect login form with saml protocol
         response = client.get("/saml/educonnect/login")
