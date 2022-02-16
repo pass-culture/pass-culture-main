@@ -12,7 +12,6 @@ from pcapi.core.mails.transactional.bookings.new_booking_to_pro import send_user
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.factories import ActivationCodeFactory
-from pcapi.core.testing import override_features
 
 
 def make_booking(**kwargs):
@@ -93,7 +92,6 @@ class OffererBookingRecapTest:
         )
         assert email_data.params == expected
 
-    @override_features(AUTO_ACTIVATE_DIGITAL_BOOKINGS=True)
     @pytest.mark.usefixtures("db_session")
     def test_non_digital_bookings_can_expire_after_30_days(self):
         booking = make_booking(
@@ -221,7 +219,6 @@ class OffererBookingRecapTest:
         expected = get_expected_base_email_data(booking, MUST_USE_TOKEN_FOR_PAYMENT=False)
         assert email_data.params == expected
 
-    @override_features(AUTO_ACTIVATE_DIGITAL_BOOKINGS=True)
     @pytest.mark.usefixtures("db_session")
     def test_no_need_when_booking_is_autovalidated(self):
         # Given
@@ -257,7 +254,6 @@ class OffererBookingRecapTest:
         )
         assert email_data.params == expected
 
-    @override_features(AUTO_ACTIVATE_DIGITAL_BOOKINGS=True)
     @pytest.mark.usefixtures("db_session")
     def test_a_digital_booking_with_activation_code_is_automatically_used(self):
         # Given

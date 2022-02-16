@@ -10,7 +10,6 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 class SettingsTest:
     @override_features(
-        AUTO_ACTIVATE_DIGITAL_BOOKINGS=False,
         DISPLAY_DMS_REDIRECTION=True,
         ENABLE_ID_CHECK_RETENTION=False,
         ENABLE_NATIVE_APP_RECAPTCHA=True,
@@ -23,7 +22,7 @@ class SettingsTest:
         assert response.status_code == 200
         assert response.json == {
             "accountCreationMinimumAge": 15,
-            "autoActivateDigitalBookings": False,
+            "autoActivateDigitalBookings": True,
             "depositAmountsByAge": {"age_15": 2000, "age_16": 3000, "age_17": 3000, "age_18": 30000},
             "displayDmsRedirection": True,
             "enableIdCheckRetention": False,
@@ -38,7 +37,6 @@ class SettingsTest:
         }
 
     @override_features(
-        AUTO_ACTIVATE_DIGITAL_BOOKINGS=True,
         DISPLAY_DMS_REDIRECTION=False,
         ENABLE_ID_CHECK_RETENTION=True,
         ENABLE_NATIVE_APP_RECAPTCHA=False,

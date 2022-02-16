@@ -36,7 +36,6 @@ const ThingStocks = ({
   showSuccessNotification,
   showHtmlErrorNotification,
   reloadOffer,
-  autoActivateDigitalBookings,
   areActivationCodesEnabled,
 }) => {
   const offerId = offer.id
@@ -215,12 +214,11 @@ const ThingStocks = ({
       <h3 className="section-title">Stock et prix</h3>
 
       <div className="cancellation-information">
-        {(!offer.isDigital || !autoActivateDigitalBookings) &&
+        {!offer.isDigital &&
           `Les utilisateurs ont ${
             offer.subcategoryId === LIVRE_PAPIER_SUBCATEGORY_ID ? '10' : '30'
           } jours pour faire valider leur contremarque. Passé ce délai, la réservation est automatiquement annulée et l’offre remise en vente.`}
         {offer.isDigital &&
-          autoActivateDigitalBookings &&
           'Les utilisateurs ont 30 jours pour annuler leurs réservations d’offres numériques. Dans le cas d’offres avec codes d’activation, les utilisateurs ne peuvent pas annuler leurs réservations d’offres numériques. Toute réservation est définitive et sera immédiatement validée.'}
       </div>
       {areActivationCodesEnabled && offer.isDigital && (
@@ -313,7 +311,6 @@ const ThingStocks = ({
 
 ThingStocks.propTypes = {
   areActivationCodesEnabled: PropTypes.bool.isRequired,
-  autoActivateDigitalBookings: PropTypes.bool.isRequired,
   history: PropTypes.shape().isRequired,
   location: PropTypes.shape().isRequired,
   offer: PropTypes.shape().isRequired,

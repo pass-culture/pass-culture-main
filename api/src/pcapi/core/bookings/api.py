@@ -112,9 +112,7 @@ def book_offer(
 
         if is_activation_code_applicable(stock):
             booking.activationCode = offers_repository.get_available_activation_code(stock)
-
-            if FeatureToggle.AUTO_ACTIVATE_DIGITAL_BOOKINGS.is_active():
-                booking.mark_as_used()
+            booking.mark_as_used()
 
         individual_booking = IndividualBooking(
             booking=booking,

@@ -3,7 +3,6 @@ from pcapi.core.bookings.models import IndividualBooking
 from pcapi.core.mails.models.sendinblue_models import EmailInfo
 from pcapi.core.mails.models.sendinblue_models import SendinblueTransactionalEmailData
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
-from pcapi.models.feature import FeatureToggle
 from pcapi.utils.mailing import format_booking_date_for_email
 from pcapi.utils.mailing import format_booking_hours_for_email
 
@@ -29,11 +28,7 @@ def get_new_booking_to_pro_email_data(
         isbn = ""
         offer_subcategory = offer.subcategoryId
 
-    if (
-        booking.stock.canHaveActivationCodes
-        and booking.activationCode
-        and FeatureToggle.AUTO_ACTIVATE_DIGITAL_BOOKINGS.is_active()
-    ):
+    if booking.stock.canHaveActivationCodes and booking.activationCode:
         can_expire = False
         is_booking_autovalidated = True
     else:

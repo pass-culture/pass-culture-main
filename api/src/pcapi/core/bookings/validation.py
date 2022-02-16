@@ -15,7 +15,6 @@ from pcapi.core.users.api import get_domains_credit
 from pcapi.core.users.models import User
 from pcapi.models import api_errors
 from pcapi.models import db
-from pcapi.models.feature import FeatureToggle
 from pcapi.utils.date import utc_datetime_to_department_timezone
 
 from ..educational.models import EducationalBookingStatus
@@ -173,11 +172,7 @@ def check_is_usable(booking: Booking) -> None:
 
 # FIXME: should not raise exceptions from `api_errors` (see above for details).
 def check_can_be_mark_as_unused(booking: Booking) -> None:
-    if (
-        booking.stock.canHaveActivationCodes
-        and booking.activationCode
-        and FeatureToggle.AUTO_ACTIVATE_DIGITAL_BOOKINGS.is_active()
-    ):
+    if booking.stock.canHaveActivationCodes and booking.activationCode:
         forbidden = api_errors.ForbiddenError()
         forbidden.add_error("booking", "Cette réservation ne peut pas être marquée comme inutilisée")
         raise forbidden
