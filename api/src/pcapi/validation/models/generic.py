@@ -17,7 +17,7 @@ def validate_generic(model: Model) -> ApiErrors:
         # TODO (ASK, JSONB): dirty patch to allow extraData, specs and content properties
         #  to work properly during the JSONB migration
         #  remove it when JSONB migration is done
-        if key in ("jsonData", "specsNew", "contentNew"):
+        if key in ("jsonData", "specsOld", "contentOld"):
             continue
 
         column = columns[key]
