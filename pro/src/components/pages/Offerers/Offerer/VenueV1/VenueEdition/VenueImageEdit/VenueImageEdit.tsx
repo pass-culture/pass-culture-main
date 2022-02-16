@@ -16,7 +16,7 @@ const CROP_BORDER_WIDTH = 100
 const CROP_BORDER_COLOR = '#fff'
 
 type Props = {
-  image: File
+  image: string | File
   credit: string
   onSetCredit: (credit: string) => void
   children?: never
