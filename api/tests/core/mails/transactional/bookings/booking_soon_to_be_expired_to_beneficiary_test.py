@@ -13,7 +13,6 @@ from pcapi.core.mails.transactional.bookings.booking_soon_to_be_expired_to_benef
 from pcapi.core.mails.transactional.bookings.booking_soon_to_be_expired_to_beneficiary import _filter_books_bookings
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.offers.factories import ProductFactory
-from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
 
 
@@ -52,51 +51,7 @@ class FilterBooksBookingsTest:
         assert other_bookings == [other_booking]
 
 
-class MailjetSendSoonToBeExpiredBookingsEmailToBeneficiaryTest:
-    @override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=False)
-    def test_should_send_two_emails_to_beneficiary_when_they_book_and_other_things_have_soon_to_be_expired_bookings(
-        self,
-    ):
-        # given
-        now = datetime.utcnow()
-        user = users_factories.BeneficiaryGrant18Factory(email="isasimov@example.com")
-        created_5_days_ago = now - timedelta(days=5)
-        created_23_days_ago = now - timedelta(days=23)
-
-        book = ProductFactory(subcategoryId=subcategories.LIVRE_PAPIER.id)
-        soon_to_be_expired_book_booking = booking_factories.IndividualBookingFactory(
-            stock__offer__product=book,
-            dateCreated=created_5_days_ago,
-            user=user,
-        )
-
-        cd = ProductFactory(subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE.id)
-        soon_to_be_expired_cd_booking = booking_factories.IndividualBookingFactory(
-            stock__offer__product=cd,
-            dateCreated=created_23_days_ago,
-            user=user,
-        )
-
-        dvd = ProductFactory(subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id)
-        soon_to_be_expired_dvd_booking = booking_factories.IndividualBookingFactory(
-            stock__offer__product=dvd,
-            dateCreated=created_23_days_ago,
-            user=user,
-        )
-
-        # when
-        send_soon_to_be_expired_individual_bookings_recap_email_to_beneficiary(
-            user, [soon_to_be_expired_book_booking, soon_to_be_expired_cd_booking, soon_to_be_expired_dvd_booking]
-        )
-
-        # # then
-        assert len(mails_testing.outbox) == 2  # test number of emails sent
-        assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 3095065
-        assert mails_testing.outbox[1].sent_data["Mj-TemplateID"] == 3095065
-
-
 class SendinblueSendSoonToBeExpiredBookingsEmailToBeneficiaryTest:
-    @override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=True)
     def test_should_send_two_emails_to_beneficiary_when_they_have_soon_to_be_expired_bookings(
         self,
     ):

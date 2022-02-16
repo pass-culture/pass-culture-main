@@ -1,3 +1,4 @@
+import dataclasses
 from datetime import date
 from datetime import datetime
 from datetime import timedelta
@@ -686,7 +687,9 @@ class RunIntegrationTest:
         assert user.phoneNumber == "0607080900"
 
         assert len(mails_testing.outbox) == 1
-        assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 2016025
+        assert mails_testing.outbox[0].sent_data["template"] == dataclasses.asdict(
+            TransactionalEmail.ACCEPTED_AS_BENEFICIARY.value
+        )
 
         assert len(push_testing.requests) == 2
         assert push_testing.requests[0]["attribute_values"]["u.is_beneficiary"]
@@ -929,6 +932,7 @@ class GraphQLSourceProcessApplicationTest:
         ) in fraud_check.reason
 
         assert len(mails_testing.outbox) == 1
-        sent_email = mails_testing.outbox[0]
-        assert sent_email.sent_data["To"] == user.email
-        assert sent_email.sent_data["Mj-campaign"] == "confirmation-credit"
+        assert mails_testing.outbox[0].sent_data["To"] == user.email
+        assert mails_testing.outbox[0].sent_data["template"] == dataclasses.asdict(
+            TransactionalEmail.ACCEPTED_AS_BENEFICIARY.value
+        )

@@ -128,7 +128,7 @@ def test_request_reset_password_with_recaptcha_ok(
     assert saved_token.type.value == "reset-password"
 
     assert len(mails_testing.outbox) == 1
-    assert mails_testing.outbox[0].sent_data["Vars"]["native_app_link"]
+    assert mails_testing.outbox[0].sent_data["params"]["NATIVE_APP_LINK"]
 
 
 def test_request_reset_password_for_existing_email(client):
@@ -146,7 +146,7 @@ def test_request_reset_password_for_existing_email(client):
     saved_token = Token.query.filter_by(user=user).first()
     assert saved_token.type.value == "reset-password"
     assert len(mails_testing.outbox) == 1
-    assert mails_testing.outbox[0].sent_data["Vars"]["native_app_link"]
+    assert mails_testing.outbox[0].sent_data["params"]["NATIVE_APP_LINK"]
 
 
 @patch("pcapi.core.mails.transactional.users.send_reset_password_email_to_native_app_user")

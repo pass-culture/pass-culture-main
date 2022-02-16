@@ -14,189 +14,10 @@ from pcapi.core.mails.transactional.bookings.booking_cancellation_by_pro_to_bene
 )
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 import pcapi.core.offers.factories as offers_factories
-from pcapi.core.testing import override_features
-
-
-@pytest.mark.usefixtures("db_session")
-class MailjetRetrieveDataToWarnUserAfterProBookingCancellationTest:
-    @override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=False)
-    def test_should_return_event_data_when_booking_is_on_an_event(self):
-        # Given
-        stock = offers_factories.EventStockFactory(
-            beginningDatetime=datetime(2019, 7, 20, 12, 0, 0, tzinfo=timezone.utc)
-        )
-        booking = bookings_factories.IndividualBookingFactory(
-            stock=stock,
-            individualBooking__user__firstName="Georges",
-            individualBooking__user__lastName="Moustiquos",
-        )
-
-        # When
-        mailjet_data = get_booking_cancellation_by_pro_to_beneficiary_email_data(booking)
-
-        # Then
-        assert mailjet_data == {
-            "MJ-TemplateID": 1116690,
-            "MJ-TemplateLanguage": True,
-            "Vars": {
-                "event_date": "samedi 20 juillet 2019",
-                "event_hour": "14h",
-                "is_event": 1,
-                "is_free_offer": 0,
-                "is_online": 0,
-                "is_thing": 0,
-                "offer_name": booking.stock.offer.name,
-                "offer_price": "10.00",
-                "offerer_name": booking.offerer.name,
-                "user_first_name": "Georges",
-                "user_last_name": "Moustiquos",
-                "venue_name": booking.venue.name,
-            },
-        }
-
-    @override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=False)
-    def test_should_return_thing_data_when_booking_is_on_a_thing(self):
-        # Given
-        stock = offers_factories.ThingStockFactory()
-        booking = bookings_factories.IndividualBookingFactory(
-            stock=stock,
-            individualBooking__user__firstName="Georges",
-            individualBooking__user__lastName="Doux",
-        )
-
-        # When
-        mailjet_data = get_booking_cancellation_by_pro_to_beneficiary_email_data(booking)
-
-        # Then
-        assert mailjet_data == {
-            "MJ-TemplateID": 1116690,
-            "MJ-TemplateLanguage": True,
-            "Vars": {
-                "event_date": "",
-                "event_hour": "",
-                "is_event": 0,
-                "is_free_offer": 0,
-                "is_online": 0,
-                "is_thing": 1,
-                "offer_name": booking.stock.offer.name,
-                "offer_price": "10.00",
-                "offerer_name": booking.offerer.name,
-                "user_first_name": "Georges",
-                "user_last_name": "Doux",
-                "venue_name": booking.venue.name,
-            },
-        }
-
-    @override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=False)
-    def test_should_return_thing_data_when_booking_is_on_an_online_offer(self):
-        # Given
-        stock = offers_factories.ThingStockFactory(offer__product=offers_factories.DigitalProductFactory())
-        booking = bookings_factories.IndividualBookingFactory(
-            stock=stock,
-            individualBooking__user__firstName="Georges",
-            individualBooking__user__lastName="Georges",
-        )
-
-        # When
-        mailjet_data = get_booking_cancellation_by_pro_to_beneficiary_email_data(booking)
-
-        # Then
-        assert mailjet_data == {
-            "MJ-TemplateID": 1116690,
-            "MJ-TemplateLanguage": True,
-            "Vars": {
-                "event_date": "",
-                "event_hour": "",
-                "is_event": 0,
-                "is_free_offer": 0,
-                "is_online": 1,
-                "is_thing": 0,
-                "offer_name": booking.stock.offer.name,
-                "offer_price": "10.00",
-                "offerer_name": booking.offerer.name,
-                "user_first_name": "Georges",
-                "user_last_name": "Georges",
-                "venue_name": booking.venue.name,
-            },
-        }
-
-    @override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=False)
-    def test_should_not_display_the_price_when_booking_is_on_a_free_offer(self):
-        # Given
-        booking = bookings_factories.IndividualBookingFactory(
-            stock__price=0,
-            individualBooking__user__firstName="Georges",
-        )
-
-        # When
-        mailjet_data = get_booking_cancellation_by_pro_to_beneficiary_email_data(booking)
-
-        # Then
-        assert mailjet_data["Vars"]["is_free_offer"] == 1
-        assert mailjet_data["Vars"]["offer_price"] == "0.00"
-
-    @override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=False)
-    def test_should_display_the_price_multiplied_by_quantity_when_it_is_a_duo_offer(self):
-        # Given
-        booking = bookings_factories.IndividualBookingFactory(
-            amount=10,
-            quantity=2,
-            individualBooking__user__firstName="Georges",
-        )
-
-        # When
-        mailjet_data = get_booking_cancellation_by_pro_to_beneficiary_email_data(booking)
-
-        # Then
-        assert mailjet_data["Vars"]["is_free_offer"] == 0
-        assert mailjet_data["Vars"]["offer_price"] == "20.00"
-
-
-@pytest.mark.usefixtures("db_session")
-class MailjetSendWarningToBeneficiaryAfterProBookingCancellationTest:
-    @override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=False)
-    def test_should_sends_email_to_beneficiary_when_pro_cancels_booking(self):
-        # Given
-        booking = bookings_factories.IndividualBookingFactory(
-            individualBooking__user__email="user@example.com",
-            user__firstName="Jeanne",
-        )
-
-        # When
-        send_booking_cancellation_by_pro_to_beneficiary_email(booking)
-
-        # Then
-        assert mails_testing.outbox[0].sent_data == {
-            "FromEmail": "support@example.com",
-            "MJ-TemplateID": 1116690,
-            "MJ-TemplateLanguage": True,
-            "To": "user@example.com",
-            "Vars": {
-                "event_date": "",
-                "event_hour": "",
-                "is_event": 0,
-                "is_free_offer": 0,
-                "is_thing": 1,
-                "is_online": 0,
-                "offer_name": booking.stock.offer.name,
-                "offer_price": "10.00",
-                "offerer_name": booking.offerer.name,
-                "user_first_name": "Jeanne",
-                "user_last_name": "Doux",
-                "venue_name": booking.venue.name,
-                "env": "-development",
-            },
-        }
-
-
-##############################
-# SENDINBLUE TESTS BELOW
-##############################
 
 
 @pytest.mark.usefixtures("db_session")
 class SendinblueSendWarningToBeneficiaryAfterProBookingCancellationTest:
-    @override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=True)
     def test_should_sends_email_to_beneficiary_when_pro_cancels_booking(self):
         # Given
         booking = bookings_factories.IndividualBookingFactory(
@@ -231,7 +52,6 @@ class SendinblueSendWarningToBeneficiaryAfterProBookingCancellationTest:
 
 @pytest.mark.usefixtures("db_session")
 class SendinblueRetrieveDataToWarnUserAfterProBookingCancellationTest:
-    @override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=True)
     def test_should_return_event_data_when_booking_is_on_an_event(self):
         # Given
         stock = offers_factories.EventStockFactory(
@@ -262,7 +82,6 @@ class SendinblueRetrieveDataToWarnUserAfterProBookingCancellationTest:
             "VENUE_NAME": booking.venue.name,
         }
 
-    @override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=True)
     def test_should_return_thing_data_when_booking_is_on_a_thing(self):
         # Given
         stock = offers_factories.ThingStockFactory()
@@ -292,7 +111,6 @@ class SendinblueRetrieveDataToWarnUserAfterProBookingCancellationTest:
             "VENUE_NAME": booking.venue.name,
         }
 
-    @override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=True)
     def test_should_return_thing_data_when_booking_is_on_an_online_offer(self):
         # Given
         stock = offers_factories.ThingStockFactory(offer__product=offers_factories.DigitalProductFactory())
@@ -321,7 +139,6 @@ class SendinblueRetrieveDataToWarnUserAfterProBookingCancellationTest:
             "VENUE_NAME": booking.venue.name,
         }
 
-    @override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=True)
     def test_should_not_display_the_price_when_booking_is_on_a_free_offer(self):
         # Given
         booking = bookings_factories.IndividualBookingFactory(
@@ -336,7 +153,6 @@ class SendinblueRetrieveDataToWarnUserAfterProBookingCancellationTest:
         assert sendiblue_data.params["IS_FREE_OFFER"] == True
         assert sendiblue_data.params["OFFER_PRICE"] == 0.00
 
-    @override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=True)
     def test_should_display_the_price_multiplied_by_quantity_when_it_is_a_duo_offer(self):
         # Given
         booking = bookings_factories.IndividualBookingFactory(

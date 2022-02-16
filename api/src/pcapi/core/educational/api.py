@@ -28,7 +28,6 @@ from pcapi.core.offers import repository as offers_repository
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
 from pcapi.models import db
-from pcapi.models.feature import FeatureToggle
 from pcapi.repository import repository
 from pcapi.repository import transaction
 from pcapi.routes.adage.v1.serialization.prebooking import EducationalBookingEdition
@@ -218,16 +217,15 @@ def refuse_educational_booking(educational_booking_id: int) -> EducationalBookin
 
     booking_email = booking.stock.offer.bookingEmail
     if booking_email:
-        if FeatureToggle.ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS.is_active():
-            data = SendinblueTransactionalEmailData(
-                template=TransactionalEmail.EDUCATIONAL_BOOKING_CANCELLATION_BY_INSTITUTION.value,
-                params={
-                    "OFFER_NAME": stock.offer.name,
-                    "EVENT_BEGINNING_DATETIME": stock.beginningDatetime.strftime("%d/%m/%Y à %H:%M"),
-                    "EDUCATIONAL_REDACTOR_EMAIL": educational_booking.educationalRedactor.email,
-                },
-            )
-            mails.send(recipients=[booking_email], data=data)
+        data = SendinblueTransactionalEmailData(
+            template=TransactionalEmail.EDUCATIONAL_BOOKING_CANCELLATION_BY_INSTITUTION.value,
+            params={
+                "OFFER_NAME": stock.offer.name,
+                "EVENT_BEGINNING_DATETIME": stock.beginningDatetime.strftime("%d/%m/%Y à %H:%M"),
+                "EDUCATIONAL_REDACTOR_EMAIL": educational_booking.educationalRedactor.email,
+            },
+        )
+        mails.send(recipients=[booking_email], data=data)
 
     search.async_index_offer_ids([stock.offerId])
 

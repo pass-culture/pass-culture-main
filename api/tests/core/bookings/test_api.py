@@ -1,4 +1,4 @@
-from dataclasses import asdict
+import dataclasses
 from datetime import datetime
 from datetime import timedelta
 from unittest import mock
@@ -151,9 +151,11 @@ class BookOfferTest:
 
         assert len(mails_testing.outbox) == 2
         email_data1 = mails_testing.outbox[0].sent_data
-        assert email_data1["template"] == asdict(TransactionalEmail.NEW_BOOKING_TO_PRO.value)  # to offerer
+        assert email_data1["template"] == dataclasses.asdict(TransactionalEmail.NEW_BOOKING_TO_PRO.value)  # to offerer
         email_data2 = mails_testing.outbox[1].sent_data
-        assert email_data2["MJ-TemplateID"] == 3094927  # to beneficiary
+        assert email_data2["template"] == dataclasses.asdict(
+            TransactionalEmail.BOOKING_CONFIRMATION_BY_BENEFICIARY.value
+        )  # to beneficiary
 
     def test_free_offer_booking_by_ex_beneficiary(self):
         with freeze_time(datetime.utcnow() - relativedelta(years=2, months=5)):
@@ -372,7 +374,6 @@ class BookOfferTest:
 
 @pytest.mark.usefixtures("db_session")
 class CancelByBeneficiaryTest:
-    @override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=False)
     def test_cancel_booking(self):
         stock = offers_factories.StockFactory(offer__bookingEmail="offerer@example.com")
         booking = booking_factories.IndividualBookingFactory.create_batch(20, stock=stock)[0]
@@ -389,7 +390,6 @@ class CancelByBeneficiaryTest:
         queries += 1  # select exists booking
         queries += 1  # select stock
         queries += 1  # select booking, offer
-        queries += 1  # select FF sendinblue is active
         queries += 2  # insert email ; release savepoint
         queries += 3  # (TODO: optimize) select booking ; stock ; offer
         queries += 2  # select venue ; individual_booking
@@ -408,10 +408,12 @@ class CancelByBeneficiaryTest:
         assert booking.cancellationReason == BookingCancellationReasons.BENEFICIARY
         assert len(mails_testing.outbox) == 2
         email_data1 = mails_testing.outbox[0].sent_data
-        assert email_data1["Mj-TemplateID"] == 1091464  # to beneficiary
+        assert email_data1["template"] == dataclasses.asdict(
+            TransactionalEmail.BOOKING_CANCELLATION_BY_BENEFICIARY.value
+        )  # to beneficiary
         email_data2 = mails_testing.outbox[1].sent_data
-        assert (
-            email_data2["template"] == TransactionalEmail.BOOKING_CANCELLATION_BY_BENEFICIARY_TO_PRO.value.__dict__
+        assert email_data2["template"] == dataclasses.asdict(
+            TransactionalEmail.BOOKING_CANCELLATION_BY_BENEFICIARY_TO_PRO.value
         )  # to offerer
 
     def test_cancel_booking_twice(self):

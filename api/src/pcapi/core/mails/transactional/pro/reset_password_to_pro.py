@@ -1,5 +1,3 @@
-from typing import Union
-
 from pcapi.core import mails
 from pcapi.core.mails.models.sendinblue_models import SendinblueTransactionalEmailData
 from pcapi.core.mails.models.sendinblue_models import SendinblueTransactionalWithoutTemplateEmailData
@@ -7,18 +5,11 @@ from pcapi.core.mails.transactional.sendinblue_template_ids import Transactional
 from pcapi.core.users.api import create_reset_password_token
 from pcapi.core.users.models import Token
 from pcapi.core.users.models import User
-from pcapi.models.feature import FeatureToggle
 from pcapi.utils.mailing import build_pc_pro_reset_password_link
 
 
-def get_reset_password_to_pro_email_data(user: User, token: Token) -> Union[dict, SendinblueTransactionalEmailData]:
+def get_reset_password_to_pro_email_data(user: User, token: Token) -> SendinblueTransactionalEmailData:
     reinit_password_url = build_pc_pro_reset_password_link(token.value)
-    if not FeatureToggle.ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS.is_active():
-        return {
-            "MJ-TemplateID": 779295,
-            "MJ-TemplateLanguage": True,
-            "Vars": {"lien_nouveau_mdp": reinit_password_url},
-        }
 
     return SendinblueTransactionalEmailData(
         template=TransactionalEmail.RESET_PASSWORD_TO_PRO.value,

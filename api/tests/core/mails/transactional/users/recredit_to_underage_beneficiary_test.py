@@ -8,7 +8,6 @@ from pcapi.core.mails.transactional.users.recredit_to_underage_beneficiary impor
 from pcapi.core.mails.transactional.users.recredit_to_underage_beneficiary import (
     send_recredit_email_to_underage_beneficiary,
 )
-from pcapi.core.testing import override_features
 from pcapi.core.users.api import get_domains_credit
 import pcapi.core.users.factories as users_factories
 
@@ -17,7 +16,6 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 
 class SendinblueSendNewlyEligibleUserEmailTest:
-    @override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=True)
     def test_send_recredit_email_to_underage_beneficiary(self):
         # given
         user = users_factories.UnderageBeneficiaryFactory()
@@ -33,7 +31,6 @@ class SendinblueSendNewlyEligibleUserEmailTest:
             == TransactionalEmail.RECREDIT_TO_UNDERAGE_BENEFICIARY.value.__dict__
         )
 
-    @override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=True)
     def test_return_correct_recredit_email_to_underage_beneficiary_email_data(
         self,
     ):

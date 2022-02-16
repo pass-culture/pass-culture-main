@@ -302,8 +302,8 @@ class NotifyUsersOfExpiredBookingsTest:
 
         outbox = mails_testing.outbox
         email_recaps = {
-            (outbox[0].sent_data["To"], outbox[0].sent_data["Vars"]["bookings"][0]["offer_name"]),
-            (outbox[1].sent_data["To"], outbox[1].sent_data["Vars"]["bookings"][0]["offer_name"]),
+            (outbox[0].sent_data["To"], outbox[0].sent_data["params"]["BOOKINGS"][0]["offer_name"]),
+            (outbox[1].sent_data["To"], outbox[1].sent_data["params"]["BOOKINGS"][0]["offer_name"]),
         }
 
         dvd_user_email = expired_today_dvd_booking.individualBooking.user.email

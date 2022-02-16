@@ -58,9 +58,6 @@ class FeatureToggle(enum.Enum):
     )
     ENABLE_NEW_BOOKING_FILTERS = "Active les nouveaux filtres sur les statuts pour la page de réservations"
     ENABLE_NEW_VENUE_PAGES = "Utiliser la nouvelle version des pages d'edition et de creation de lieux"
-    ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS = (
-        "Utiliser Sendinblue pour envoyer les emails transactionnels (Ceux qui ont été migrés)"
-    )
     ENABLE_UNDERAGE_GENERALISATION = "Active la généralisation du pass Culture 15-17"
     ENABLE_PHONE_VALIDATION = "Active la validation du numéro de téléphone"  # TODO (viconnex) remove when FORCE_PHONE_VALIDATION is released in production
     ENABLE_PRO_BOOKINGS_V2 = "Activer l'affichage de la page booking avec la nouvelle architecture."
@@ -138,7 +135,6 @@ FEATURES_DISABLED_BY_DEFAULT = (
     FeatureToggle.ENABLE_NEW_BOOKING_FILTERS,
     FeatureToggle.ENABLE_NEW_VENUE_PAGES,
     FeatureToggle.ENABLE_PRO_BOOKINGS_V2,
-    FeatureToggle.ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS,
     FeatureToggle.ENABLE_UBBLE_SUBSCRIPTION_LIMITATION,
     FeatureToggle.ENABLE_UNDERAGE_GENERALISATION,
     FeatureToggle.ENFORCE_BANK_INFORMATION_WITH_SIRET,
