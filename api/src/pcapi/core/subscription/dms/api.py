@@ -148,6 +148,12 @@ def notify_parsing_exception(parsing_error: subscription_exceptions.DMSParsingEr
             settings.DMS_INSTRUCTOR_ID,
             subscription_messages.DMS_ERROR_MESSAGE_ERROR_ID_PIECE,
         )
+    elif "first_name" in parsing_error or "last_name" in parsing_error:
+        client.send_user_message(
+            application_techid,
+            settings.DMS_INSTRUCTOR_ID,
+            subscription_messages.DMS_NAME_INVALID_ERROR_MESSAGE,
+        )
 
 
 def process_parsing_exception(
