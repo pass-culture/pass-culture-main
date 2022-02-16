@@ -295,6 +295,70 @@ class DmsWebhookApplicationTest:
 
     @patch.object(api_dms.DMSGraphQLClient, "execute_query")
     @patch.object(api_dms.DMSGraphQLClient, "send_user_message")
+    def test_dms_first_name_error(self, send_user_message, execute_query, client):
+        user = users_factories.UserFactory()
+        execute_query.return_value = make_single_application(
+            12, state=api_dms.GraphQLApplicationStates.draft.value, email=user.email, first_name="first_n@me_error"
+        )
+        form_data = {
+            "procedure_id": 48860,
+            "dossier_id": 6044787,
+            "state": api_dms.GraphQLApplicationStates.draft.value,
+            "updated_at": "2021-09-30 17:55:58 +0200",
+        }
+        response = client.post(
+            f"/webhooks/dms/application_status?token={settings.DMS_WEBHOOK_TOKEN}",
+            form=form_data,
+            headers={"Content-Type": "application/x-www-form-urlencoded"},
+        )
+
+        assert response.status_code == 204
+        assert execute_query.call_count == 1
+        assert send_user_message.call_count == 1
+        assert send_user_message.call_args[0][2] == subscription_messages.DMS_NAME_INVALID_ERROR_MESSAGE
+        assert len(user.subscriptionMessages) == 1
+        assert user.subscriptionMessages[0].popOverIcon == subscription_models.PopOverIcon.WARNING
+        assert (
+            user.subscriptionMessages[0].userMessage
+            == "Il semblerait que le champ ‘ton prénom’ soit erroné. Tu peux te rendre sur le site Démarche-simplifiées pour le rectifier."
+        )
+
+    @patch.object(api_dms.DMSGraphQLClient, "execute_query")
+    @patch.object(api_dms.DMSGraphQLClient, "send_user_message")
+    def test_dms_full_name_error(self, send_user_message, execute_query, client):
+        user = users_factories.UserFactory()
+        execute_query.return_value = make_single_application(
+            12,
+            state=api_dms.GraphQLApplicationStates.draft.value,
+            email=user.email,
+            first_name="first_n@me_error",
+            last_name="l@st_n@me_error",
+        )
+        form_data = {
+            "procedure_id": 48860,
+            "dossier_id": 6044787,
+            "state": api_dms.GraphQLApplicationStates.draft.value,
+            "updated_at": "2021-09-30 17:55:58 +0200",
+        }
+        response = client.post(
+            f"/webhooks/dms/application_status?token={settings.DMS_WEBHOOK_TOKEN}",
+            form=form_data,
+            headers={"Content-Type": "application/x-www-form-urlencoded"},
+        )
+
+        assert response.status_code == 204
+        assert execute_query.call_count == 1
+        assert send_user_message.call_count == 1
+        assert send_user_message.call_args[0][2] == subscription_messages.DMS_NAME_INVALID_ERROR_MESSAGE
+        assert len(user.subscriptionMessages) == 1
+        assert user.subscriptionMessages[0].popOverIcon == subscription_models.PopOverIcon.WARNING
+        assert (
+            user.subscriptionMessages[0].userMessage
+            == "Il semblerait que les champs ‘ton prénom, ton nom’ soient erronés. Tu peux te rendre sur le site Démarche-simplifiées pour les rectifier."
+        )
+
+    @patch.object(api_dms.DMSGraphQLClient, "execute_query")
+    @patch.object(api_dms.DMSGraphQLClient, "send_user_message")
     def test_dms_postal_code_error(self, send_user_message, execute_query, client):
         user = users_factories.UserFactory()
         execute_query.return_value = make_single_application(

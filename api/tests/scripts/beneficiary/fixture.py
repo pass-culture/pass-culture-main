@@ -222,7 +222,7 @@ APPLICATION_DETAIL_STANDARD_RESPONSE = {
     }
 }
 
-
+# TODO yorickeando: code mort
 def make_new_beneficiary_application_details(
     application_id: int,
     state: str,
@@ -280,6 +280,8 @@ def make_graphql_application(
     full_graphql_response: bool = False,
     has_next_page: bool = False,
     construction_datetime: str = "2020-05-13T09:09:46+02:00",
+    first_name: str = "John",
+    last_name: str = "Doe",
 ) -> dict:
     data = {
         "id": "".join(random.choice(string.ascii_uppercase + string.digits) for _ in range(20)),
@@ -374,7 +376,7 @@ def make_graphql_application(
         ],
         "annotations": [],
         "usager": {"email": email},
-        "demandeur": {"civilite": civility, "nom": "Doe", "prenom": "John", "dateDeNaissance": None},
+        "demandeur": {"civilite": civility, "nom": last_name, "prenom": first_name, "dateDeNaissance": None},
     }
     if full_graphql_response:
         enveloppe = {
