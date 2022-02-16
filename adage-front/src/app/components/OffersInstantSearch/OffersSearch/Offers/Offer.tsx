@@ -45,7 +45,12 @@ export const Offer = ({
 
   return (
     <li className="offer" data-testid="offer-listitem">
-      <div className="offer-image-placeholder" data-testid="thumb-placeholder">
+      <div
+        className={cn('offer-image-placeholder', {
+          'offer-image-placeholder-showcase': offer?.extraData?.isShowcase,
+        })}
+        data-testid="thumb-placeholder"
+      >
         <Logo />
       </div>
       <div className="offer-container">
