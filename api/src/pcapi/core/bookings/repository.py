@@ -115,10 +115,7 @@ def find_by_pro_user(
         pro_user=user, period=booking_period, event_date=event_date, venue_id=venue_id, offer_type=offer_type
     )
     bookings_page = (
-        bookings_query.order_by(text('"bookedAt" DESC'), Booking.id)
-        .offset((page - 1) * per_page_limit)
-        .limit(per_page_limit)
-        .all()
+        bookings_query.order_by(text('"bookedAt" DESC')).offset((page - 1) * per_page_limit).limit(per_page_limit).all()
     )
 
     return _paginated_bookings_sql_entities_to_bookings_recap(
@@ -605,7 +602,7 @@ def _get_filtered_booking_pro(
             Venue.departementCode.label("venueDepartmentCode"),
             Offerer.postalCode.label("offererPostalCode"),
         )
-        .distinct(text('"bookedAt"'), Booking.id)
+        .distinct(Booking.id)
     )
 
     return bookings_query
@@ -706,6 +703,7 @@ def _serialize_csv_report(query: Query) -> str:
         )
     )
     for booking in query.yield_per(1000):
+        print(booking)
         writer.writerow(
             (
                 booking.venueName,
