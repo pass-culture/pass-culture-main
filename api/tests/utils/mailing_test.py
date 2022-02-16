@@ -96,7 +96,7 @@ class BuildPcProOfferLinkTest:
         pc_pro_url = build_pc_pro_offer_link(offer)
 
         # Then
-        assert pc_pro_url == f"http://pcpro.com/offres/{offer_id}/edition"
+        assert pc_pro_url == f"http://pcpro.com/offre/{offer_id}/individuel/edition"
 
 
 @pytest.mark.usefixtures("db_session")

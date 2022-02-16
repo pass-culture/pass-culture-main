@@ -131,7 +131,7 @@ class ConfirmEducationalBookingTest:
             "MJ-TemplateLanguage": True,
             "To": "test@email.com",
             "Vars": {
-                "lien_offre_pcpro": f"http://localhost:3001/offres/{humanize(offer.id)}/edition",
+                "lien_offre_pcpro": f"http://localhost:3001/offre/{humanize(offer.id)}/collectif/edition",
                 "nom_offre": offer.name,
                 "nom_lieu": offer.venue.name,
                 "date": "15-May-2021",
@@ -318,7 +318,7 @@ class BookEducationalOfferTest:
             "To": "test@email.com",
             "Vars": {
                 "departement": "75",
-                "lien_offre_pcpro": f"http://localhost:3001/offres/{humanize(offer.id)}/edition",
+                "lien_offre_pcpro": f"http://localhost:3001/offre/{humanize(offer.id)}/collectif/edition",
                 "nom_offre": offer.name,
                 "nom_lieu": offer.venue.name,
                 "date": "15-May-2021",

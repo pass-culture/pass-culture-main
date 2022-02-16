@@ -57,6 +57,7 @@ from pcapi.models.offer_criterion import OfferCriterion
 from pcapi.repository import repository
 from pcapi.settings import IS_PROD
 from pcapi.utils.human_ids import humanize
+from pcapi.utils.mailing import build_pc_pro_offer_link
 from pcapi.workers.push_notification_job import send_cancel_booking_notification
 
 
@@ -338,8 +339,8 @@ class OfferForVenueSubview(OfferView):
         return venue.name
 
 
-def _pro_offer_url(offer_id: int) -> str:
-    return f"{settings.PRO_URL}/offres/{humanize(offer_id)}/edition"
+def _pro_offer_url(offer: Offer) -> str:
+    return build_pc_pro_offer_link(offer)
 
 
 def _metabase_offer_url(offer_id: int) -> str:
@@ -359,7 +360,7 @@ def _offerer_url(offerer_id: int) -> str:
 
 
 def _pro_offer_link(view, context, model, name) -> Markup:
-    url = _pro_offer_url(model.id)
+    url = _pro_offer_url(model)
     return Markup('<a href="{}" target="_blank" rel="noopener noreferrer">Offre PC</a>').format(escape(url))
 
 
@@ -571,7 +572,7 @@ class ValidationView(BaseAdminView):
             "cancel_link_url": url_for("/validation.index_view"),
             "legal_category_code": legal_category_code,
             "legal_category_label": legal_category_label,
-            "pc_offer_url": _pro_offer_url(offer.id),
+            "pc_offer_url": _pro_offer_url(offer),
             "metabase_offer_url": _metabase_offer_url(offer.id) if IS_PROD else None,
             "offer_name": offer.name,
             "offer_score": compute_offer_validation_score(validation_items),

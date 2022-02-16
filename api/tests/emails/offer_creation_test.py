@@ -43,7 +43,7 @@ class MakeOfferCreationNotificationEmailTest:
         pro_offer_link = str(parsed_email.find("p", {"id": "pro_offer_link"}))
         assert (
             f"Lien vers l'offre dans le portail PRO :"
-            f" http://localhost:3001/offres/{humanize(offer.id)}/edition" in pro_offer_link
+            f" http://localhost:3001/offre/{humanize(offer.id)}/individuel/edition" in pro_offer_link
         )
 
         offer_is_duo = str(parsed_email.find("p", {"id": "offer_is_duo"}))
@@ -107,7 +107,7 @@ class MakeOfferRejectionNotificationEmailTest:
         pro_offer_link = str(parsed_email.find("p", {"id": "pro_offer_link"}))
         assert (
             f"Lien vers l'offre dans le portail PRO :"
-            f" http://localhost:3001/offres/{humanize(offer.id)}/edition" in pro_offer_link
+            f" http://localhost:3001/offre/{humanize(offer.id)}/individuel/edition" in pro_offer_link
         )
 
         offer_is_duo = str(parsed_email.find("p", {"id": "offer_is_duo"}))
