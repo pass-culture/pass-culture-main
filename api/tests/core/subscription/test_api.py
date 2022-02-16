@@ -678,10 +678,20 @@ class CommonSubscritpionTest:
             eligibilityType=users_models.EligibilityType.UNDERAGE,
             resultContent=fraud_factories.UbbleContentFactory(birth_date=None),  # default age is 18
         )
-        assert (
-            subscription_api.handle_eligibility_difference_between_declaration_and_identity_provider(user, fraud_check)
-            == fraud_check
+
+        subscription_api.handle_eligibility_difference_between_declaration_and_identity_provider(user, fraud_check)
+
+        user_fraud_checks = sorted(
+            fraud_models.BeneficiaryFraudCheck.query.filter_by(user=user).all(), key=lambda x: x.id
         )
+
+        assert len(user_fraud_checks) == 2
+        assert user_fraud_checks[0].eligibilityType == users_models.EligibilityType.UNDERAGE
+        assert user_fraud_checks[0].reason == "Eligibility type changed by the identity provider"
+        assert user_fraud_checks[0].status == fraud_models.FraudCheckStatus.CANCELED
+
+        assert user_fraud_checks[1].eligibilityType is None
+        assert user_fraud_checks[1].status == fraud_models.FraudCheckStatus.PENDING
 
 
 @pytest.mark.usefixtures("db_session")

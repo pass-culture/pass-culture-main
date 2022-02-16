@@ -412,7 +412,7 @@ def handle_eligibility_difference_between_declaration_and_identity_provider(
     declared_eligibility = fraud_check.eligibilityType
     id_provider_detected_eligibility = fraud_api.decide_eligibility(user, fraud_check.source_data())
 
-    if declared_eligibility == id_provider_detected_eligibility or id_provider_detected_eligibility is None:
+    if declared_eligibility == id_provider_detected_eligibility:
         return fraud_check
 
     # Update fraud check by creating a new one with the correct eligibility

@@ -184,7 +184,7 @@ class UbbleWorkflowTest:
     @freezegun.freeze_time("2020-05-05")
     def test_ubble_workflow_with_eligibility_change_18_19(self, ubble_mocker):
         # User set his birth date as if 18 years old
-        user = users_factories.UserFactory(dateOfBirth=datetime.datetime(year=2003, month=5, day=4))
+        user = users_factories.UserFactory(dateOfBirth=datetime.datetime(year=2002, month=5, day=4))
         fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
             type=fraud_models.FraudCheckType.UBBLE,
             status=fraud_models.FraudCheckStatus.PENDING,
@@ -211,13 +211,21 @@ class UbbleWorkflowTest:
             ubble_subscription_api.update_ubble_workflow(fraud_check, ubble_response.data.attributes.status)
 
         fraud_checks = user.beneficiaryFraudChecks
-        assert len(fraud_checks) == 1
+        assert len(fraud_checks) == 2
 
         assert fraud_checks[0].type == fraud_models.FraudCheckType.UBBLE
-        assert fraud_checks[0].status == fraud_models.FraudCheckStatus.KO
+        assert fraud_checks[0].status == fraud_models.FraudCheckStatus.CANCELED
         assert fraud_checks[0].eligibilityType == users_models.EligibilityType.AGE18
-        assert fraud_checks[0].thirdPartyId == ubble_identification
-        assert fraud_models.FraudReasonCode.AGE_TOO_OLD in fraud_checks[0].reasonCodes
+        assert fraud_checks[0].thirdPartyId == f"deprecated-{ubble_identification}"
+
+        assert fraud_checks[1].type == fraud_models.FraudCheckType.UBBLE
+        assert fraud_checks[1].status == fraud_models.FraudCheckStatus.KO
+        assert fraud_checks[1].eligibilityType is None
+        assert fraud_checks[1].thirdPartyId == ubble_identification
+        assert fraud_models.FraudReasonCode.AGE_TOO_OLD in fraud_checks[1].reasonCodes
+
+        assert user.age == 19
+        assert not ubble_fraud_api.is_user_allowed_to_perform_ubble_check(user, user.eligibility)
 
     def test_ubble_workflow_updates_user_when_processed(self, ubble_mocker):
         user = users_factories.UserFactory(dateOfBirth=datetime.datetime(year=2002, month=5, day=6))
