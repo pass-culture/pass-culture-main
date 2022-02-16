@@ -4,6 +4,29 @@ Ce package sert à configurer la librairie `flask-admin`.
 On trouvera dans le module `base_configuration` la classe `BaseAdminView` qui centralise la configuration commune à toutes
 nos vues d'administration ainsi que le contrôle d'accès.
 
+## Afficher la page Flask Admin en local
+
+1. Récupérer les 2 variables suivantes sur la Console Google
+
+- [pcapi-testing_google_client_id](https://console.cloud.google.com/security/secret-manager/secret/pcapi-testing_google_client_id/versions?project=passculture-metier-ehp)
+- [pcapi-testing_google_client_secret](https://console.cloud.google.com/security/secret-manager/secret/pcapi-testing_google_client_secret/versions?project=passculture-metier-ehp)
+
+On peut aussi se connecter au pod testing
+
+```
+pc -e testing python
+print(pcapi.settings.GOOGLE_CLIENT_SECRET, pcapi.settings.GOOGLE_CLIENT_ID)
+```
+
+2. Overrider les valeurs de ces variables dans le `.env.local` ou `.env.local.secret` du projet.
+
+```
+GOOGLE_CLIENT_id=client-id
+GOOGLE_CLIENT_SECRET=client-secret
+```
+
+3. Se rendre sur `http://localhost/pc/back-office` et se connecter avec l'OAuth Google.
+
 ## Do
 
 Si le besoin est de rajouter une nouvelle vue d'aministration, il faudra créer une nouvelle classe qui hérite de `BaseAdminView`
