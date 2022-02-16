@@ -63,9 +63,8 @@ class Product(PcObject, Model, ExtraDataMixin, HasThumbMixin, ProvidableMixin):
 
     thumb_path_component = "products"
 
-    # TODO (ASK, JSONB): remove this index and uncomment "product_isbn_idx" one when JSONB migration is done
-    Index("product_expr_idx", ExtraDataMixin._extraData["isbn"].astext)
-    # Index("product_isbn_idx", ExtraDataMixin._jsonData["isbn"].astext)
+    # TODO (ASK, JSONB): change _jsonData for extraData when JSONB migration is done
+    Index("product_isbn_idx", ExtraDataMixin._jsonData["isbn"].astext)
 
     @property
     def subcategory(self) -> subcategories.Subcategory:

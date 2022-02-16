@@ -25,8 +25,8 @@ class EmailStatus(enum.Enum):
 
 
 class Email(PcObject, Model):
-    _content = Column("content", JSON, nullable=False)
-    _contentNew = Column("contentNew", JSONB)  # TODO (ASK, JSONB): set this none nullable when JSONB migration is done
+    _content = Column("content", JSONB, nullable=False)
+    _contentOld = Column("contentOld", JSON)  # TODO (ASK, JSONB): remove this field when JSONB migration is done
     status = Column(Enum(EmailStatus), nullable=False, index=True)
 
     datetime = Column(DateTime, nullable=False, default=datetime.utcnow)
@@ -38,4 +38,4 @@ class Email(PcObject, Model):
     @content.setter
     def content(self, value):
         self._content = value
-        self._contentNew = value
+        self._contentOld = value
