@@ -92,7 +92,6 @@ const ImageEditor = forwardRef<AvatarEditor, ImageEditorProps>(
                 max={4}
                 min={1}
                 onChange={onScaleChange}
-                size="medium"
                 step={0.01}
                 value={scale}
               />
