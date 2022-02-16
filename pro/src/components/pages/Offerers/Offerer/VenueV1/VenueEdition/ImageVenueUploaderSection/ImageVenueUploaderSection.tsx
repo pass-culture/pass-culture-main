@@ -59,7 +59,8 @@ export const ImageVenueUploaderSection: FunctionComponent<Props> = ({
               />
               Modifier
             </Button>
-            <Button variant={ButtonVariant.TERNARY}>
+            {/* TODO: use commented code in PC-13302 and PC-13019 */}
+            {/* <Button variant={ButtonVariant.TERNARY}>
               <Icon
                 className={styles['image-venue-uploader-section-icon']}
                 svg="ico-eye-open-filled"
@@ -72,7 +73,7 @@ export const ImageVenueUploaderSection: FunctionComponent<Props> = ({
                 svg="ico-trash-filled"
               />
               Supprimer
-            </Button>
+            </Button> */}
           </div>
         </div>
       ) : (
