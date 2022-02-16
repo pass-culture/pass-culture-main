@@ -24,6 +24,10 @@ ruleTester.run('use-date-fns-tz', rule, {
       code: "import * as date from 'date-fns-tz'",
       parserOptions,
     },
+    {
+      code: "format(date, dateFormat, { timeZone: 'UTC' })",
+      parserOptions,
+    },
   ],
   invalid: [
     {
@@ -58,6 +62,24 @@ ruleTester.run('use-date-fns-tz', rule, {
       errors: [
         {
           messageId: 'useDateFnsTzFormat',
+        },
+      ],
+      parserOptions,
+    },
+    {
+      code: 'format(date, dateFormat)',
+      errors: [
+        {
+          messageId: 'useTimezoneOption',
+        },
+      ],
+      parserOptions,
+    },
+    {
+      code: 'format(date, dateFormat, { locale: enGB })',
+      errors: [
+        {
+          messageId: 'useTimezoneOption',
         },
       ],
       parserOptions,
