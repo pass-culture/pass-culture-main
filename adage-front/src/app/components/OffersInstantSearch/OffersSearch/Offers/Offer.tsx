@@ -58,6 +58,7 @@ export const Offer = ({
           canPrebookOffers={canPrebookOffers}
           className="offer-prebooking-button"
           stock={offer.stocks[0]}
+          venue={offer.venue}
         />
         <div className="offer-header">
           <h2 className="offer-header-title">{offer.name}</h2>

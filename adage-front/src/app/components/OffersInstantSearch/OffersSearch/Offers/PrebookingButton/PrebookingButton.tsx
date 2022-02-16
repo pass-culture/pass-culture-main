@@ -1,4 +1,3 @@
-import { format } from 'date-fns-tz'
 import React, { useCallback, useState } from 'react'
 
 import {
@@ -9,9 +8,11 @@ import {
 import { Button } from 'app/ui-kit'
 import { ReactComponent as HourGlassIcon } from 'assets/hourglass.svg'
 import { preBookStock } from 'repository/pcapi/pcapi'
-import { StockType } from 'utils/types'
+import { getLocalDepartmentDatetimeFromPostalCode } from 'utils/date'
+import { StockType, VenueType } from 'utils/types'
 
 import './PrebookingButton.scss'
+
 import PrebookingModal from './PrebookingModal'
 import { getErrorMessage } from './utils'
 
@@ -19,10 +20,12 @@ const PrebookingButton = ({
   className,
   stock,
   canPrebookOffers,
+  venue,
 }: {
   className?: string
   stock: StockType
   canPrebookOffers: boolean
+  venue: VenueType
 }): JSX.Element => {
   const [hasPrebookedOffer, setHasPrebookedOffer] = useState(false)
   const [notification, setNotification] = useState<Notification | null>(null)
@@ -76,7 +79,11 @@ const PrebookingButton = ({
               {stock.bookingLimitDatetime && (
                 <span className="prebooking-button-booking-limit">
                   avant le :{' '}
-                  {format(new Date(stock.bookingLimitDatetime), 'dd/MM/yyyy')}
+                  {getLocalDepartmentDatetimeFromPostalCode(
+                    stock.bookingLimitDatetime,
+                    venue.postalCode,
+                    'dd/MM/yyyy'
+                  )}
                 </span>
               )}
             </>
