@@ -87,6 +87,21 @@ DMS_ERROR_MESSSAGE_BIRTH_DATE = """Bonjour,
 
                         L'équipe du pass Culture"""
 
+DMS_NAME_INVALID_ERROR_MESSAGE = """Bonjour,
+
+                            Nous avons bien reçu ton dossier !
+                            Cependant, ton dossier ne peut pas être traité pour la raison suivante :
+                            Les champs "Nom" et / ou "Prénom" ont été renseignés au mauvais format.
+
+                            Pour que ton dossier soit traité, tu dois les modifier en faisant bien attention à remplir correctement toutes les informations. Pour avoir plus d'informations sur les étapes de ton inscription sur Démarches Simplifiées, nous t'invitons à consulter les articles suivants :
+
+                            Jeune de 18 ans : <a href="https://aide.passculture.app/hc/fr/articles/4411991957521--Jeunes-Comment-remplir-le-formulaire-sur-D%C3%A9marches-Simplifi%C3%A9es-">https://aide.passculture.app/hc/fr/articles/4411991957521--Jeunes-Comment-remplir-le-formulaire-sur-Démarches-Simplifiées</a>
+                            Jeune de 15 à 17 ans : <a href="https://aide.passculture.app/hc/fr/articles/4404373671324--Jeunes-15-17-ans-Comment-remplir-le-formulaire-sur-D%C3%A9marches-Simplifi%C3%A9es-">https://aide.passculture.app/hc/fr/articles/4404373671324--Jeunes-15-17-ans-Comment-remplir-le-formulaire-sur-Démarches-Simplifiées-</a>
+
+                            Nous te souhaitons une belle journée,
+
+                            L'équipe du pass Culture"""
+
 
 def on_review_pending(user: users_models.User) -> None:
     message = models.SubscriptionMessage(
@@ -291,6 +306,8 @@ def _generate_form_field_error(error_text_singular: str, error_text_plural: str,
         "id_piece_number": "ta pièce d'identité",
         "postal_code": "ton code postal",
         "birth_date": "ta date de naissance",
+        "first_name": "ton prénom",
+        "last_name": "ton nom",
     }
 
     user_message = error_text_singular.format(
