@@ -514,10 +514,10 @@ class ValidateOffererTest:
         called_args, _ = mocked_async_index_offers_of_venue_ids.call_args
         assert set(called_args[0]) == {venue_1.id, venue_2.id}
 
-    @patch("pcapi.core.offerers.api.send_validation_confirmation_email_to_pro", return_value=True)
+    @patch("pcapi.core.offerers.api.send_new_offerer_validation_email_to_pro", return_value=True)
     @patch("pcapi.core.search.async_index_offers_of_venue_ids")
     def test_send_validation_confirmation_email(
-        self, mocked_async_index_offers_of_venue_ids, mocked_send_validation_confirmation_email_to_pro
+        self, mocked_async_index_offers_of_venue_ids, mocked_send_new_offerer_validation_email_to_pro
     ):
         # Given
         applicant = users_factories.UserFactory()
@@ -527,7 +527,7 @@ class ValidateOffererTest:
         offerers_api.validate_offerer(user_offerer.offerer.validationToken)
 
         # Then
-        mocked_send_validation_confirmation_email_to_pro.assert_called_once_with(user_offerer.offerer)
+        mocked_send_new_offerer_validation_email_to_pro.assert_called_once_with(user_offerer.offerer)
 
     @patch("pcapi.core.search.async_index_offers_of_venue_ids")
     def test_do_not_validate_attachment_if_token_does_not_exist(self, mocked_async_index_offers_of_venue_ids):
