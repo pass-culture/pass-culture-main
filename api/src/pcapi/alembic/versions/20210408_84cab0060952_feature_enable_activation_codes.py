@@ -1,13 +1,7 @@
-"""Add ENABLE_ACTIVATION_CODES feature flag
+"""Add ENABLE_ACTIVATION_CODES feature flag"""
 
-Revision ID: 84cab0060952
-Revises: 5e52ca521f36
-Create Date: 2021-04-08 09:12:50.617498
-
-"""
-
-from pcapi.models import feature
-
+# This migration is now a no-op, since the ENABLE_ACTIVATION_CODES
+# feature flag has been removed.
 
 # revision identifiers, used by Alembic.
 revision = "84cab0060952"
@@ -16,12 +10,9 @@ branch_labels = None
 depends_on = None
 
 
-FLAG = feature.FeatureToggle.ENABLE_ACTIVATION_CODES
-
-
 def upgrade():
-    feature.add_feature_to_database(FLAG)
+    pass
 
 
 def downgrade():
-    feature.remove_feature_from_database(FLAG)
+    pass

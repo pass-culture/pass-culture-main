@@ -6,7 +6,6 @@ import DateInput from 'components/layout/inputs/DateInput/DateInput'
 import TimeInput from 'components/layout/inputs/TimeInput/TimeInput'
 import { isAllocineProvider } from 'components/pages/Offers/domain/localProvider'
 import DeleteStockDialogContainer from 'components/pages/Offers/Offer/Stocks/DeleteStockDialog/DeleteStockDialogContainer'
-import { ReactComponent as DeleteStockIcon } from 'components/pages/Offers/Offer/Stocks/StockItem/assets/delete-stock.svg'
 import {
   getMaximumBookingLimitDatetime as getMaximumBookingLimitDatetimeFromExpirationDatetime,
   hasStockBeenUpdated,
@@ -22,7 +21,6 @@ const noOperation = () => {}
 const StockItem = ({
   departmentCode,
   errors,
-  isActivationCodesEnabled,
   isDigital,
   isEvent,
   isNewStock,
@@ -314,33 +312,20 @@ const StockItem = ({
       <td>{!isNewStock && remainingQuantityValue}</td>
       <td>{!isNewStock && initialStock.bookingsQuantity}</td>
       <td className="action-column">
-        {isActivationCodesEnabled ? (
-          <StockItemOptionsMenu
-            canAddActivationCodes={isDigital}
-            deleteButtonTitle={computeStockDeleteButtonTitle()}
-            deleteStock={
-              isNewStock ? removeNewStockLine : askDeletionConfirmation
-            }
-            disableDeleteButton={
-              isOfferDisabled || !isStockDeletable || isDeleting
-            }
-            hasActivationCodes={hasActivationCodes}
-            isNewStock={isNewStock}
-            isOfferDisabled={isOfferDisabled}
-            setIsActivationCodesDialogOpen={setIsActivationCodesDialogOpen}
-          />
-        ) : (
-          <button
-            className="tertiary-button"
-            data-testid="stock-delete-button"
-            disabled={isOfferDisabled || !isStockDeletable || isDeleting}
-            onClick={isNewStock ? removeNewStockLine : askDeletionConfirmation}
-            title={computeStockDeleteButtonTitle()}
-            type="button"
-          >
-            <DeleteStockIcon alt="Supprimer le stock" />
-          </button>
-        )}
+        <StockItemOptionsMenu
+          canAddActivationCodes={isDigital}
+          deleteButtonTitle={computeStockDeleteButtonTitle()}
+          deleteStock={
+            isNewStock ? removeNewStockLine : askDeletionConfirmation
+          }
+          disableDeleteButton={
+            isOfferDisabled || !isStockDeletable || isDeleting
+          }
+          hasActivationCodes={hasActivationCodes}
+          isNewStock={isNewStock}
+          isOfferDisabled={isOfferDisabled}
+          setIsActivationCodesDialogOpen={setIsActivationCodesDialogOpen}
+        />
         {isDeleting && (
           <DeleteStockDialogContainer
             isEvent={isEvent}
@@ -373,7 +358,6 @@ const StockItem = ({
 StockItem.defaultProps = {
   departmentCode: '',
   errors: {},
-  isActivationCodesEnabled: false,
   isDigital: false,
   isDisabled: false,
   isNewStock: false,
@@ -398,7 +382,6 @@ StockItem.propTypes = {
     quantity: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     updated: PropTypes.bool,
   }).isRequired,
-  isActivationCodesEnabled: PropTypes.bool,
   isDigital: PropTypes.bool,
   isDisabled: PropTypes.bool,
   isEvent: PropTypes.bool.isRequired,

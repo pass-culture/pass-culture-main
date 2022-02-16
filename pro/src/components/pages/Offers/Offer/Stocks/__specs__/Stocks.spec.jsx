@@ -62,14 +62,6 @@ describe('stocks page', () => {
         users: [{ publicName: 'François', isAdmin: false }],
       },
       user: { initialized: true },
-      features: {
-        list: [
-          {
-            nameKey: 'ENABLE_ACTIVATION_CODES',
-            isActive: true,
-          },
-        ],
-      },
     })
     props = {}
 

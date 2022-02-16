@@ -19,7 +19,7 @@ import {
   validateCreatedStock,
   validateUpdatedStock,
 } from 'components/pages/Offers/Offer/Stocks/StockItem/domain'
-import StockItemContainer from 'components/pages/Offers/Offer/Stocks/StockItem/StockItemContainer'
+import StockItem from 'components/pages/Offers/Offer/Stocks/StockItem/StockItem'
 import { OFFER_STATUS_DRAFT } from 'components/pages/Offers/Offers/_constants'
 import { ReactComponent as AddStockSvg } from 'icons/ico-plus.svg'
 import * as pcapi from 'repository/pcapi/pcapi'
@@ -290,7 +290,7 @@ const EventStocks = ({
             </thead>
             <tbody>
               {stocksInCreation.map(stockInCreation => (
-                <StockItemContainer
+                <StockItem
                   departmentCode={offer.venue.departementCode}
                   errors={formErrors[stockInCreation.key]}
                   initialStock={stockInCreation}
@@ -305,7 +305,7 @@ const EventStocks = ({
               ))}
 
               {existingStocks.map(stock => (
-                <StockItemContainer
+                <StockItem
                   departmentCode={offer.venue.departementCode}
                   errors={formErrors[stock.key]}
                   initialStock={stock}
