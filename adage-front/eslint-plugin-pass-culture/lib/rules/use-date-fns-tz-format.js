@@ -19,6 +19,17 @@ const isImportAll = listOfSpecifiers => {
   return !!foundAllSpecifier
 }
 
+const isTimezoneInFormat = node => {
+  const argumentsList = node.expression?.arguments
+  const optionsArgument = argumentsList?.find(
+    arg => arg.type === 'ObjectExpression'
+  )
+  const foundTimezoneInOptions = optionsArgument?.properties.find(
+    property => property.key.name === 'timeZone'
+  )
+  return !!foundTimezoneInOptions
+}
+
 module.exports = {
   meta: {
     docs: {
@@ -27,9 +38,11 @@ module.exports = {
     },
     messages: {
       useDateFnsTzFormat:
-        'Please use the format function from date-fns-tz library instead of the one from date-fns. Please consider timezone in datetime formatting.',
+        'Please use the format function from date-fns-tz library instead of the one from date-fns. Please consider timezone of venue in datetime formatting.',
       importIndividualFunctions:
         'Please import individual function from date-fns library. If format function is needed, please import it from date-fns-tz and take timezone into account.',
+      useTimezoneOption:
+        'Please use timezone option in format arguments. As offers dates are sent as UTC from the backend, you need to take TZ into account.',
     },
   },
   create: context => ({
@@ -51,6 +64,17 @@ module.exports = {
         context.report({
           node,
           messageId: 'importIndividualFunctions',
+        })
+      }
+    },
+    ExpressionStatement: node => {
+      if (
+        node.expression?.callee?.name === 'format' &&
+        !isTimezoneInFormat(node)
+      ) {
+        context.report({
+          node,
+          messageId: 'useTimezoneOption',
         })
       }
     },
