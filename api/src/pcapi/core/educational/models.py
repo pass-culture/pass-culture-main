@@ -26,6 +26,13 @@ class EducationalBookingStatus(enum.Enum):
     REFUSED = "REFUSED"
 
 
+class Ministry(enum.Enum):
+    EDUCATION_NATIONALE = "MENjs"
+    MER = "MMe"
+    AGRICULTURE = "MAg"
+    ARMEES = "MAr"
+
+
 class EducationalInstitution(PcObject, Model):
     __tablename__ = "educational_institution"
 
@@ -70,6 +77,11 @@ class EducationalDeposit(PcObject, Model):
     dateCreated: datetime = Column(DateTime, nullable=False, default=datetime.utcnow, server_default=func.now())
 
     isFinal: bool = Column(Boolean, nullable=False, default=True)
+
+    ministry = Column(
+        Enum(Ministry),
+        nullable=True,
+    )
 
     def get_amount(self) -> Decimal:
         return round(self.amount * Decimal(self.TEMPORARY_FUND_AVAILABLE_RATIO), 2) if not self.isFinal else self.amount
