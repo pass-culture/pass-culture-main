@@ -11,11 +11,13 @@ interface IOfferType {
 }
 
 interface IFilterByOfferTypeProps {
+  isDisabled: boolean
   selectedOfferType: string
   updateFilters: (value: IOfferType) => void
 }
 
 const FilterByOfferType = ({
+  isDisabled = false,
   updateFilters,
   selectedOfferType,
 }: IFilterByOfferTypeProps): JSX.Element => {
@@ -35,6 +37,7 @@ const FilterByOfferType = ({
     <Select
       defaultOption={ALL_OFFER_TYPE_OPTION}
       handleSelection={handleOfferTypeSelection}
+      isDisabled={isDisabled}
       label="Type d’offres"
       name="offerType"
       options={offerTypeOptions}

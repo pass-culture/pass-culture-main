@@ -16,6 +16,7 @@ from pcapi.routes.serialization.bookings_recap_serialize import PatchBookingByTo
 from pcapi.routes.serialization.bookings_recap_serialize import _serialize_booking_recap
 from pcapi.routes.serialization.bookings_serialize import GetBookingResponse
 from pcapi.routes.serialization.bookings_serialize import LegacyBookingResponse
+from pcapi.routes.serialization.bookings_serialize import UserHasBookingResponse
 from pcapi.routes.serialization.bookings_serialize import get_booking_response
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils.human_ids import dehumanize
@@ -114,6 +115,14 @@ def get_bookings_pro(query: ListBookingsQueryModel) -> ListBookingsResponseModel
         pages=bookings_recap_paginated.pages,
         total=bookings_recap_paginated.total,
     )
+
+
+@blueprint.pro_private_api.route("/bookings/pro/userHasBookings", methods=["GET"])
+@login_required
+@spectree_serialize(response_model=UserHasBookingResponse)
+def get_user_has_bookings() -> UserHasBookingResponse:
+    user = current_user._get_current_object()
+    return UserHasBookingResponse(hasBookings=booking_repository.user_has_bookings(user))
 
 
 @blueprint.pro_private_api.route("/bookings/csv", methods=["GET"])

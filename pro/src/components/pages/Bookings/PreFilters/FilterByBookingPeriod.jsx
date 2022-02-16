@@ -7,6 +7,7 @@ import { DEFAULT_BOOKING_PERIOD } from 'components/pages/Bookings/PreFilters/_co
 import { getToday } from 'utils/date'
 
 const FilterByBookingPeriod = ({
+  isDisabled,
   updateFilters,
   selectedBookingBeginningDate,
   selectedBookingEndingDate,
@@ -31,6 +32,7 @@ const FilterByBookingPeriod = ({
     <PeriodSelector
       changePeriodBeginningDateValue={handleBookingBeginningDateChange}
       changePeriodEndingDateValue={handleBookingEndingDateChange}
+      isDisabled={isDisabled}
       label="Période de réservation"
       maxDateEnding={getToday()}
       periodBeginningDate={selectedBookingBeginningDate || undefined}
@@ -40,7 +42,11 @@ const FilterByBookingPeriod = ({
   )
 }
 
+FilterByBookingPeriod.defaultProps = {
+  isDisabled: false,
+}
 FilterByBookingPeriod.propTypes = {
+  isDisabled: PropTypes.bool,
   selectedBookingBeginningDate: PropTypes.oneOfType([
     PropTypes.shape(),
     PropTypes.string,
