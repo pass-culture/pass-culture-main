@@ -16,6 +16,7 @@ from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository import repository
 from pcapi.repository.user_queries import matching
+from pcapi.serialization.utils import is_latin
 
 from . import models
 from .common import models as common_models
@@ -289,6 +290,11 @@ def _check_user_eligibility(
     return models.FraudItem(
         status=models.FraudStatus.OK, detail="L'utilisateur est éligible à un nouveau statut bénéficiaire"
     )
+
+
+def is_subscription_name_valid(name: str) -> bool:
+    stripped_name = name.strip()
+    return bool(is_latin(name) and stripped_name)
 
 
 def _check_user_email_is_validated(user: users_models.User) -> models.FraudItem:
