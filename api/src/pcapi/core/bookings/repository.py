@@ -114,6 +114,7 @@ def find_by_pro_user(
     bookings_query = _get_filtered_booking_pro(
         pro_user=user, period=booking_period, event_date=event_date, venue_id=venue_id, offer_type=offer_type
     )
+    bookings_query = _duplicate_booking_when_quantity_is_two(bookings_query)
     bookings_page = (
         bookings_query.order_by(text('"bookedAt" DESC')).offset((page - 1) * per_page_limit).limit(per_page_limit).all()
     )
@@ -435,6 +436,7 @@ def get_csv_report(
     bookings_query = _get_filtered_booking_report(
         pro_user=user, period=booking_period, event_date=event_date, venue_id=venue_id, offer_type=offer_type
     )
+    bookings_query = _duplicate_booking_when_quantity_is_two(bookings_query)
     return _serialize_csv_report(bookings_query)
 
 
@@ -606,6 +608,10 @@ def _get_filtered_booking_pro(
     )
 
     return bookings_query
+
+
+def _duplicate_booking_when_quantity_is_two(bookings_recap_query: Query) -> Query:
+    return bookings_recap_query.union_all(bookings_recap_query.filter(Booking.quantity == 2))
 
 
 def _serialize_booking_recap(booking: AbstractKeyedTuple) -> BookingRecap:
