@@ -51,7 +51,6 @@ class BookingCancellationConfirmationByProEmailData:
             "EVENT_HOUR": "12h20",
             "QUANTITY": 2,
             "RESERVATIONS_NUMBER": 1,
-            "USERS": [{"COUNTERMARK": "12345", "EMAIL": "john@example.com", "FIRSTNAME": "John", "LASTNAME": "Doe"}],
         }
 
     def test_should_return_email_data_when_multiple_bookings_and_offer_is_a_thing(self):
@@ -99,10 +98,6 @@ class BookingCancellationConfirmationByProEmailData:
             "EVENT_HOUR": "",
             "QUANTITY": 7,
             "RESERVATIONS_NUMBER": 2,
-            "USERS": [
-                {"COUNTERMARK": "12346", "EMAIL": "john@example.com", "FIRSTNAME": "John", "LASTNAME": "Doe"},
-                {"COUNTERMARK": "12345", "EMAIL": "bond@example.com", "FIRSTNAME": "James", "LASTNAME": "Bond"},
-            ],
         }
 
 
