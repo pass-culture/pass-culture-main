@@ -1,5 +1,6 @@
 import Slider from '@mui/material/Slider'
 import { ThemeProvider, createTheme } from '@mui/material/styles'
+import { styled } from '@mui/material/styles'
 import React, { forwardRef, useCallback, useState } from 'react'
 import AvatarEditor from 'react-avatar-editor'
 
@@ -86,7 +87,7 @@ const ImageEditor = forwardRef<AvatarEditor, ImageEditorProps>(
           <span className={style['image-editor-scale-label']}>min</span>
           <span className={style['image-editor-scale-input']}>
             <ThemeProvider theme={theme}>
-              <Slider
+              <CustomSlider
                 componentsProps={{ thumb: {} }}
                 max={4}
                 min={1}
@@ -103,6 +104,12 @@ const ImageEditor = forwardRef<AvatarEditor, ImageEditorProps>(
     )
   }
 )
+const CustomSlider = styled(Slider)(() => ({
+  '& .MuiSlider-thumb': {
+    height: 16,
+    width: 16,
+  },
+}))
 ImageEditor.displayName = 'ImageEditor'
 
 export default ImageEditor
