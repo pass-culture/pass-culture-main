@@ -392,7 +392,7 @@ def _compute_score(view, context, model, name) -> float:
         current_config = request._cached_offer_validation_config
     except AttributeError:
         current_config = offers_repository.get_current_offer_validation_config()
-        request._cached_offer_validation_config = current_config
+        request._cached_offer_validation_config = current_config  # pylint: disable=assigning-non-slot
     validation_items = parse_offer_validation_config(model, current_config)[1]
     return compute_offer_validation_score(validation_items)
 
