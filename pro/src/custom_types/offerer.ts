@@ -4,6 +4,31 @@ export type OffererName = {
 }
 
 export type Offerer = {
+  address?: string
+  apiKey: {
+    maxAllowed: number
+    prefixes: string[]
+  }
+  bic?: string
+  city: string
+  dateCreated: Date
+  dateModifiedAtLastProvider?: Date
+  demarchesSimplifieesApplicationId?: string
+  fieldsUpdated: string[]
+  hasDigitalVenueAtLeastOneOffer: boolean
+  hasMissingBankInformation: boolean
+  iban?: string
+  id: string
+  idAtProviders?: string
+  isValidated: boolean
+  lastProviderId?: string
+  managedVenues: ManagedVenue[]
+  name: string
+  postalCode: string
+  siren?: string
+}
+
+export type OffererListItem = {
   id: string
   postalCode: string
   dateCreated: Date
@@ -27,24 +52,33 @@ export type Offerer = {
   managedVenues: ManagedVenue[]
 }
 
-type ManagedVenue = {
-  address?: string
-  bookingEmail?: string
-  businessUnitId?: number
-  city?: string
-  comment?: string
-  departementCode?: string
+export type EducationalOfferer = {
   id: string
-  isValidated: boolean
+  name: string
+  managedVenues: EducationalManagedVenue[]
+}
+
+type EducationalManagedVenue = {
+  address?: string
+  city?: string
+  id: string
   isVirtual: boolean
-  managingOffererId: string
+  publicName?: string
   name: string
   postalCode?: string
-  publicName?: string
-  venueLabelId?: string
-  withdrawalDetails?: string
   audioDisabilityCompliant?: boolean
   mentalDisabilityCompliant?: boolean
   motorDisabilityCompliant?: boolean
   visualDisabilityCompliant?: boolean
+}
+
+type ManagedVenue = EducationalManagedVenue & {
+  bookingEmail?: string
+  businessUnitId?: number
+  comment?: string
+  departementCode?: string
+  isValidated: boolean
+  managingOffererId: string
+  venueLabelId?: string
+  withdrawalDetails?: string
 }

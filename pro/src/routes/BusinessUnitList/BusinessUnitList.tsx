@@ -18,55 +18,6 @@ interface IAPIBusinessUnitListItem {
   siret: string | null
 }
 
-interface IAPIVenue {
-  address: string | null
-  bookingEmail: string | null
-  businessUnitId: number | null
-  city: string | null
-  comment: string | null
-  departementCode: string | null
-  id: string
-  isValidated: boolean
-  isVirtual: boolean
-  managingOffererId: string
-  name: string
-  postalCode: string | null
-  publicName: string
-  venueLabelId: string | null
-  venueTypeCode: string | null
-  withdrawalDetails: string | null
-  audioDisabilityCompliant: boolean
-  mentalDisabilityCompliant: boolean
-  motorDisabilityCompliant: boolean
-  visualDisabilityCompliant: boolean
-  siret: string | null
-  isBusinessUnitMainVenue: boolean | null
-}
-
-interface IAPIOfferer {
-  address: string | null
-  apiKey: {
-    maxAllowed: number
-    prefixes: string[]
-  }
-  bic: string | null
-  city: string | null
-  dateCreated: string | null
-  dateModifiedAtLastProvider: string | null
-  demarchesSimplifieesApplicationId: string | null
-  fieldsUpdated: []
-  hasDigitalVenueAtLeastOneOffer: boolean
-  hasMissingBankInformation: boolean
-  iban: string | null
-  id: string
-  isValidated: boolean
-  lastProviderId: string | null
-  managedVenues: IAPIVenue[]
-  name: string
-  postalCode: string | null
-  siren: string
-}
-
 const BusinessUnitList = (): JSX.Element => {
   const [offerer, setOfferer] = useState<IOfferer | null>(null)
   const [businessUnitList, setBusinessUnitList] = useState<
@@ -78,7 +29,7 @@ const BusinessUnitList = (): JSX.Element => {
 
   useEffect(() => {
     async function loadOfferer(offererId: string) {
-      const offererResponse: IAPIOfferer = await pcapi.getOfferer(offererId)
+      const offererResponse = await pcapi.getOfferer(offererId)
       setOfferer({
         id: offererResponse.id,
         name: offererResponse.name,

@@ -13,9 +13,11 @@ import {
   EducationalOfferModelPayload,
 } from 'core/OfferEducational'
 import {
+  EducationalOfferer,
   Feature,
   Offer,
   Offerer,
+  OffererListItem,
   OffererName,
   Venue,
   VenueListItem,
@@ -212,11 +214,11 @@ export const getValidatedOfferersNames = (): Promise<OffererName[]> => {
     .then(response => response.offerersNames)
 }
 
-export const getOfferers = (): Promise<Offerer[]> => {
+export const getOfferers = (): Promise<OffererListItem[]> => {
   return client.get('/offerers')
 }
 
-export const getValidatedOfferers = (): Promise<Offerer[]> => {
+export const getValidatedOfferers = (): Promise<OffererListItem[]> => {
   return client.get('/offerers?validated=true')
 }
 
@@ -230,7 +232,7 @@ export const canOffererCreateEducationalOffer = (
 
 export const getEducationalOfferers = (
   offererId: string
-): Promise<{ educationalOfferers: Offerer[] }> => {
+): Promise<{ educationalOfferers: EducationalOfferer[] }> => {
   const queryParams = `${offererId ? `?offerer_id=${offererId}` : ''}`
   return client.get(`/offerers/educational${queryParams}`)
 }
