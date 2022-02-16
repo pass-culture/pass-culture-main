@@ -13,7 +13,7 @@ import {
   validateCreatedStock,
   validateUpdatedStock,
 } from 'components/pages/Offers/Offer/Stocks/StockItem/domain'
-import StockItemContainer from 'components/pages/Offers/Offer/Stocks/StockItem/StockItemContainer'
+import StockItem from 'components/pages/Offers/Offer/Stocks/StockItem/StockItem'
 import {
   LIVRE_PAPIER_SUBCATEGORY_ID,
   OFFER_STATUS_DRAFT,
@@ -36,7 +36,6 @@ const ThingStocks = ({
   showSuccessNotification,
   showHtmlErrorNotification,
   reloadOffer,
-  areActivationCodesEnabled,
 }) => {
   const offerId = offer.id
   const [isLoading, setIsLoading] = useState(true)
@@ -221,7 +220,7 @@ const ThingStocks = ({
         {offer.isDigital &&
           'Les utilisateurs ont 30 jours pour annuler leurs réservations d’offres numériques. Dans le cas d’offres avec codes d’activation, les utilisateurs ne peuvent pas annuler leurs réservations d’offres numériques. Toute réservation est définitive et sera immédiatement validée.'}
       </div>
-      {areActivationCodesEnabled && offer.isDigital && (
+      {offer.isDigital && (
         <div className="activation-codes-information">
           Pour ajouter des codes d’activation, veuillez passer par le menu ···
           et choisir l’option correspondante.
@@ -256,7 +255,7 @@ const ThingStocks = ({
           </thead>
           <tbody>
             {inCreateMode ? (
-              <StockItemContainer
+              <StockItem
                 departmentCode={offer.venue.departementCode}
                 errors={formErrors}
                 initialStock={stock}
@@ -269,7 +268,7 @@ const ThingStocks = ({
                 removeStockInCreation={removeStockInCreation}
               />
             ) : (
-              <StockItemContainer
+              <StockItem
                 departmentCode={offer.venue.departementCode}
                 errors={formErrors}
                 initialStock={stock}
@@ -310,7 +309,6 @@ const ThingStocks = ({
 }
 
 ThingStocks.propTypes = {
-  areActivationCodesEnabled: PropTypes.bool.isRequired,
   history: PropTypes.shape().isRequired,
   location: PropTypes.shape().isRequired,
   offer: PropTypes.shape().isRequired,

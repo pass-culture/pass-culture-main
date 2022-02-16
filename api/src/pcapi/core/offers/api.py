@@ -1017,9 +1017,7 @@ def unindex_expired_offers(process_all_expired: bool = False) -> None:
 
 def is_activation_code_applicable(stock: Stock) -> bool:
     return (
-        stock.canHaveActivationCodes
-        and FeatureToggle.ENABLE_ACTIVATION_CODES.is_active()
-        and db.session.query(ActivationCode.query.filter_by(stock=stock).exists()).scalar()
+        stock.canHaveActivationCodes and db.session.query(ActivationCode.query.filter_by(stock=stock).exists()).scalar()
     )
 
 

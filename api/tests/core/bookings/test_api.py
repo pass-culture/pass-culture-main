@@ -197,7 +197,6 @@ class BookOfferTest:
         expected_categories = ["CINEMA", "FILM"]
         assert sorted(data["attribute_values"]["ut.booking_categories"]) == expected_categories
 
-    @override_features(ENABLE_ACTIVATION_CODES=True)
     def test_booking_on_digital_offer_with_activation_stock(self):
         offer = offers_factories.OfferFactory(product=offers_factories.DigitalProductFactory())
         stock = offers_factories.StockWithActivationCodesFactory(price=10, dnBookedQuantity=3, offer=offer)
@@ -207,7 +206,6 @@ class BookOfferTest:
 
         assert booking.status is BookingStatus.USED
 
-    @override_features(ENABLE_ACTIVATION_CODES=True)
     def test_booking_on_digital_offer_without_activation_stock(self):
         offer = offers_factories.OfferFactory(product=offers_factories.DigitalProductFactory())
         stock = offers_factories.StockFactory(price=10, dnBookedQuantity=5, offer=offer)
@@ -310,7 +308,6 @@ class BookOfferTest:
             )
 
     class WhenBookingWithActivationCodeTest:
-        @override_features(ENABLE_ACTIVATION_CODES=True)
         def test_book_offer_with_first_activation_code_available(self):
             # Given
             beneficiary = users_factories.BeneficiaryGrant18Factory()
@@ -323,7 +320,6 @@ class BookOfferTest:
             # Then
             assert booking.activationCode == first_activation_code
 
-        @override_features(ENABLE_ACTIVATION_CODES=True)
         def test_ignore_activation_that_is_already_used_for_booking(self):
             # Given
             beneficiary = users_factories.BeneficiaryGrant18Factory()
@@ -339,7 +335,6 @@ class BookOfferTest:
             # Then
             assert booking.activationCode.code == "code-bha45k15fuz"
 
-        @override_features(ENABLE_ACTIVATION_CODES=True)
         def test_raise_when_no_activation_code_available(self):
             # Given
             beneficiary = users_factories.BeneficiaryGrant18Factory()
@@ -357,7 +352,6 @@ class BookOfferTest:
                 "noActivationCodeAvailable": ["Ce stock ne contient plus de code d'activation disponible."]
             }
 
-        @override_features(ENABLE_ACTIVATION_CODES=True)
         def test_raise_when_activation_codes_are_expired(self):
             # Given
             beneficiary = users_factories.BeneficiaryGrant18Factory()
