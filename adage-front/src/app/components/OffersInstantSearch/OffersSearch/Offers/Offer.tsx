@@ -6,6 +6,7 @@ import { ReactComponent as ChevronIcon } from 'assets/chevron.svg'
 import { ReactComponent as Logo } from 'assets/logo-without-text.svg'
 import { OfferType, VenueType } from 'utils/types'
 
+import ContactButton from './ContactButton'
 import OfferDetails from './OfferDetails/OfferDetails'
 import OfferSummary from './OfferSummary/OfferSummary'
 import PrebookingButton from './PrebookingButton/PrebookingButton'
@@ -42,6 +43,7 @@ export const Offer = ({
   offer: OfferType
 }): JSX.Element => {
   const [displayDetails, setDisplayDetails] = useState(false)
+  const offerIsShowcase = Boolean(offer?.extraData?.isShowcase)
 
   return (
     <li className="offer" data-testid="offer-listitem">
@@ -54,11 +56,19 @@ export const Offer = ({
         <Logo />
       </div>
       <div className="offer-container">
-        <PrebookingButton
-          canPrebookOffers={canPrebookOffers}
-          className="offer-prebooking-button"
-          stock={offer.stocks[0]}
-        />
+        {offerIsShowcase ? (
+          <ContactButton
+            className="offer-prebooking-button"
+            contactEmail={offer.extraData?.contactEmail}
+            contactPhone={offer.extraData?.contactPhone}
+          />
+        ) : (
+          <PrebookingButton
+            canPrebookOffers={canPrebookOffers}
+            className="offer-prebooking-button"
+            stock={offer.stocks[0]}
+          />
+        )}
         <div className="offer-header">
           <h2 className="offer-header-title">{offer.name}</h2>
           <p className="offer-venue-name">
