@@ -608,12 +608,6 @@ describe('stocks page', () => {
           data: {
             users: [{ publicName: 'François', isAdmin: false }],
           },
-          features: {
-            list: [
-              { isActive: true, nameKey: 'AUTO_ACTIVATE_DIGITAL_BOOKINGS' },
-              { isActive: true, nameKey: 'ENABLE_ACTIVATION_CODES' },
-            ],
-          },
         })
 
         // when
@@ -622,17 +616,6 @@ describe('stocks page', () => {
         // then
         const informationMessage = screen.getByText(
           'Les utilisateurs ont 30 jours pour annuler leurs réservations d’offres numériques. Dans le cas d’offres avec codes d’activation, les utilisateurs ne peuvent pas annuler leurs réservations d’offres numériques. Toute réservation est définitive et sera immédiatement validée.'
-        )
-        expect(informationMessage).toBeInTheDocument()
-      })
-
-      it('should display an information message regarding booking cancellation (when no feature toggling)', async () => {
-        // when
-        await renderOffers(props, store)
-
-        // then
-        const informationMessage = screen.getByText(
-          'Les utilisateurs ont 30 jours pour faire valider leur contremarque. Passé ce délai, la réservation est automatiquement annulée et l’offre remise en vente.'
         )
         expect(informationMessage).toBeInTheDocument()
       })

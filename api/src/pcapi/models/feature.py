@@ -27,9 +27,6 @@ class FeatureToggle(enum.Enum):
         "Autoriser les utilisateurs de moins de 15 à 17 ans à suivre le parcours d inscription ID Check"
     )
     API_SIRENE_AVAILABLE = "Active les fonctionnalitées liées à l'API Sirene"
-    AUTO_ACTIVATE_DIGITAL_BOOKINGS = (
-        "Activer (marquer comme utilisée) les réservations dès leur création pour les offres digitales"
-    )
     BENEFICIARY_VALIDATION_AFTER_FRAUD_CHECKS = "Active la validation d'un bénéficiaire via les contrôles de sécurité"
     DISPLAY_DMS_REDIRECTION = "Affiche une redirection vers DMS si ID Check est KO"
     ENABLE_ACTIVATION_CODES = "Permet la création de codes d'activation"

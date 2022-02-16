@@ -16,7 +16,6 @@ from pcapi.core.offers.factories import MediationFactory
 from pcapi.core.offers.factories import StockFactory
 from pcapi.core.offers.factories import StockWithActivationCodesFactory
 from pcapi.core.testing import assert_num_queries
-from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
 from pcapi.models import db
 from pcapi.utils.human_ids import humanize
@@ -101,7 +100,6 @@ class GetBookingsTest:
     identifier = "pascal.ture@example.com"
 
     @freeze_time("2021-03-12")
-    @override_features(AUTO_ACTIVATE_DIGITAL_BOOKINGS=True)
     def test_get_bookings(self, app):
         OFFER_URL = "https://demo.pass/some/path?token={token}&email={email}&offerId={offerId}"
         user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
@@ -166,9 +164,8 @@ class GetBookingsTest:
 
         # 1: get the user
         # 1: get the bookings
-        # 1: get AUTO_ACTIVATE_DIGITAL_BOOKINGS feature
         # 1: rollback
-        with assert_num_queries(4):
+        with assert_num_queries(3):
             response = test_client.get("/native/v1/bookings")
 
         assert response.status_code == 200
@@ -308,7 +305,6 @@ class ToggleBookingVisibilityTest:
         db.session.refresh(booking)
         assert not booking.displayAsEnded
 
-    @override_features(AUTO_ACTIVATE_DIGITAL_BOOKINGS=True)
     def test_integration_toggle_visibility(self, app):
         user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
         access_token = create_access_token(identity=self.identifier)

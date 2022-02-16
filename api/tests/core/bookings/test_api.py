@@ -197,7 +197,7 @@ class BookOfferTest:
         expected_categories = ["CINEMA", "FILM"]
         assert sorted(data["attribute_values"]["ut.booking_categories"]) == expected_categories
 
-    @override_features(AUTO_ACTIVATE_DIGITAL_BOOKINGS=True, ENABLE_ACTIVATION_CODES=True)
+    @override_features(ENABLE_ACTIVATION_CODES=True)
     def test_booking_on_digital_offer_with_activation_stock(self):
         offer = offers_factories.OfferFactory(product=offers_factories.DigitalProductFactory())
         stock = offers_factories.StockWithActivationCodesFactory(price=10, dnBookedQuantity=3, offer=offer)
@@ -207,7 +207,7 @@ class BookOfferTest:
 
         assert booking.status is BookingStatus.USED
 
-    @override_features(AUTO_ACTIVATE_DIGITAL_BOOKINGS=True, ENABLE_ACTIVATION_CODES=True)
+    @override_features(ENABLE_ACTIVATION_CODES=True)
     def test_booking_on_digital_offer_without_activation_stock(self):
         offer = offers_factories.OfferFactory(product=offers_factories.DigitalProductFactory())
         stock = offers_factories.StockFactory(price=10, dnBookedQuantity=5, offer=offer)
@@ -642,7 +642,6 @@ class MarkAsUnusedTest:
         assert booking.status is not BookingStatus.USED
         assert len(push_testing.requests) == 2
 
-    @override_features(AUTO_ACTIVATE_DIGITAL_BOOKINGS=True)
     def test_mark_as_unused_digital_offer(self):
         offer = offers_factories.OfferFactory(product=offers_factories.DigitalProductFactory())
         booking = booking_factories.UsedIndividualBookingFactory(stock__offer=offer)
@@ -669,7 +668,6 @@ class MarkAsUnusedTest:
             api.mark_as_unused(booking)
         assert booking.status is BookingStatus.USED
 
-    @override_features(AUTO_ACTIVATE_DIGITAL_BOOKINGS=True)
     def test_raise_if_booking_was_automatically_used_for_digital_offer_with_activation_code(self):
         offer = offers_factories.OfferFactory(product=offers_factories.DigitalProductFactory())
         digital_stock = offers_factories.StockWithActivationCodesFactory()

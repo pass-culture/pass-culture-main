@@ -22,7 +22,6 @@ def _get_features(*requested_features: FeatureToggle):
 def get_settings() -> serializers.SettingsResponse:
 
     features = _get_features(
-        FeatureToggle.AUTO_ACTIVATE_DIGITAL_BOOKINGS,
         FeatureToggle.DISPLAY_DMS_REDIRECTION,
         FeatureToggle.ENABLE_ID_CHECK_RETENTION,
         FeatureToggle.ENABLE_NATIVE_APP_RECAPTCHA,
@@ -33,7 +32,9 @@ def get_settings() -> serializers.SettingsResponse:
 
     return serializers.SettingsResponse(
         account_creation_minimum_age=constants.ACCOUNT_CREATION_MINIMUM_AGE,
-        auto_activate_digital_bookings=features[FeatureToggle.AUTO_ACTIVATE_DIGITAL_BOOKINGS],
+        # FIXME (ahello, 2022-02-16): remove `auto_activate_digital_bookings`
+        # once all alive versions of the app works without this setting.
+        auto_activate_digital_bookings=True,
         display_dms_redirection=features[FeatureToggle.DISPLAY_DMS_REDIRECTION],
         enable_id_check_retention=features[FeatureToggle.ENABLE_ID_CHECK_RETENTION],
         # TODO: lixxday: remove after the next forced app release (forced release > 1.176.0)
