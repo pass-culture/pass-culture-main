@@ -21,12 +21,20 @@ const comonConfig = {
   globals: {
     fixture: 'readonly',
   },
+  ignorePatterns: ['src/api/gen/*'],
   rules: {
     indent: 'off',
     'import/order': [
       'warn',
       {
-        groups: ['builtin', 'external', 'internal', 'parent', 'sibling', 'index'],
+        groups: [
+          'builtin',
+          'external',
+          'internal',
+          'parent',
+          'sibling',
+          'index',
+        ],
         'newlines-between': 'always',
         alphabetize: { order: 'asc', caseInsensitive: true },
       },
@@ -48,7 +56,10 @@ const comonConfig = {
       },
     ],
     'react/jsx-no-literals': 'off',
-    'react/jsx-curly-brace-presence': [2, { props: 'never', children: 'never' }],
+    'react/jsx-curly-brace-presence': [
+      2,
+      { props: 'never', children: 'never' },
+    ],
     'react/jsx-filename-extension': [1, { extensions: ['.jsx', '.tsx'] }],
     'react/jsx-fragments': 'off',
     'react/jsx-indent-props': [2, 2],
@@ -105,7 +116,10 @@ const comonConfig = {
     {
       files: ['**/*.ts?(x)'],
       plugins: ['@typescript-eslint/eslint-plugin'],
-      extends: ['plugin:@typescript-eslint/recommended', 'plugin:prettier/recommended'],
+      extends: [
+        'plugin:@typescript-eslint/recommended',
+        'plugin:prettier/recommended',
+      ],
       rules: {
         'react/prop-types': 'off',
         'react/require-default-props': 'off',
