@@ -13,6 +13,7 @@ from pcapi import settings
 from pcapi.core.fraud import api as fraud_api
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.subscription import exceptions as subscription_exceptions
+from pcapi.serialization.utils import is_latin
 from pcapi.utils import requests
 from pcapi.utils.date import FrenchParserInfo
 
@@ -117,6 +118,11 @@ class DMSGraphQLClient:
         return self.execute_query(query, variables=variables)
 
 
+def is_subscription_name_valid(name: str) -> bool:
+    stripped_name = name.strip()
+    return bool(is_latin(name) and stripped_name)
+
+
 def parse_beneficiary_information_graphql(application_detail: dict, procedure_id: int) -> fraud_models.DMSContent:
     email = application_detail["usager"]["email"]
 
@@ -132,6 +138,12 @@ def parse_beneficiary_information_graphql(application_detail: dict, procedure_id
         ],  # parse with format  "2021-09-15T15:19:20+02:00"
     }
     parsing_errors = {}
+
+    if not is_subscription_name_valid(information["first_name"]):
+        parsing_errors["first_name"] = information["first_name"]
+
+    if not is_subscription_name_valid(information["last_name"]):
+        parsing_errors["last_name"] = information["last_name"]
 
     for field in application_detail["champs"]:
         label = field["label"]
