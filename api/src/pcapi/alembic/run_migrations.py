@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 target_metadata = db.metadata
 
 # List of columns to ignore keyed by table e.g {"user":  ("isAdmin", "isBeneficiary")}
-IGNORED_COLUMNS_BY_TABLE: Dict[str, tuple] = {}
+IGNORED_COLUMNS_BY_TABLE: Dict[str, tuple] = {"user": ("hasCompletedIdCheck")}
 IGNORED_TABLES = ("transaction", "activity")
 
 
