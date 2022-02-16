@@ -11,7 +11,7 @@ class ExtraDataMixin:
 
     @hybrid_property
     def extraData(self):
-        return self._extraData
+        return self._jsonData
 
     @extraData.setter
     def extraData(self, value):
