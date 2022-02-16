@@ -1015,12 +1015,6 @@ def unindex_expired_offers(process_all_expired: bool = False) -> None:
         page += 1
 
 
-def is_activation_code_applicable(stock: Stock) -> bool:
-    return (
-        stock.canHaveActivationCodes and db.session.query(ActivationCode.query.filter_by(stock=stock).exists()).scalar()
-    )
-
-
 def report_offer(user: User, offer: Offer, reason: str, custom_reason: Optional[str]) -> None:
     try:
         # transaction() handles the commit/rollback operations

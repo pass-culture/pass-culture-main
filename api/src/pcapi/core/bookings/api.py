@@ -34,8 +34,7 @@ from pcapi.core.mails.transactional.bookings.booking_confirmation_to_beneficiary
 )
 from pcapi.core.mails.transactional.bookings.new_booking_to_pro import send_user_new_booking_to_pro_email
 from pcapi.core.offers import repository as offers_repository
-from pcapi.core.offers.models import Offer
-from pcapi.core.offers.models import Stock
+import pcapi.core.offers.models as offers_models
 from pcapi.core.users.external import update_external_pro
 from pcapi.core.users.external import update_external_user
 from pcapi.core.users.models import User
@@ -80,9 +79,11 @@ def book_offer(
         total_amount = quantity * stock.price
         validation.check_expenses_limits(beneficiary, total_amount, stock.offer)
 
-        from pcapi.core.offers.api import is_activation_code_applicable  # To avoid import loops
-
-        if is_activation_code_applicable(stock):
+        is_activation_code_applicable = (
+            stock.canHaveActivationCodes
+            and db.session.query(offers_models.ActivationCode.query.filter_by(stock=stock).exists()).scalar()
+        )
+        if is_activation_code_applicable:
             validation.check_activation_code_available(stock)
 
         # FIXME (dbaty, 2020-10-20): if we directly set relations (for
@@ -110,7 +111,7 @@ def book_offer(
         booking.dateCreated = datetime.datetime.utcnow()
         booking.cancellationLimitDate = compute_cancellation_limit_date(stock.beginningDatetime, booking.dateCreated)
 
-        if is_activation_code_applicable(stock):
+        if is_activation_code_applicable:
             booking.activationCode = offers_repository.get_available_activation_code(stock)
             booking.mark_as_used()
 
@@ -239,7 +240,7 @@ def _cancel_collective_booking(
     return True
 
 
-def _cancel_bookings_from_stock(stock: Stock, reason: BookingCancellationReasons) -> list[Booking]:
+def _cancel_bookings_from_stock(stock: offers_models.Stock, reason: BookingCancellationReasons) -> list[Booking]:
     """
     Cancel multiple bookings and update the users' credit information on Batch.
     Note that this will not reindex the stock.offer in Algolia
@@ -289,7 +290,7 @@ def cancel_booking_by_offerer(booking: Booking) -> None:
     send_cancel_booking_notification.delay([booking.id])
 
 
-def cancel_bookings_from_stock_by_offerer(stock: Stock) -> list[Booking]:
+def cancel_bookings_from_stock_by_offerer(stock: offers_models.Stock) -> list[Booking]:
     cancelled_bookings = _cancel_bookings_from_stock(stock, BookingCancellationReasons.OFFERER)
     search.async_index_offer_ids([stock.offerId])
     return cancelled_bookings
@@ -307,7 +308,7 @@ def cancel_collective_booking_from_stock_by_offerer(
     return cancelled_booking
 
 
-def cancel_bookings_from_rejected_offer(offer: Offer) -> list[Booking]:
+def cancel_bookings_from_rejected_offer(offer: offers_models.Offer) -> list[Booking]:
     cancelled_bookings = []
     for stock in offer.stocks:
         cancelled_bookings.extend(_cancel_bookings_from_stock(stock, BookingCancellationReasons.FRAUD))
@@ -487,9 +488,9 @@ def auto_mark_as_used_after_event() -> None:
     threshold = now - constants.AUTO_USE_AFTER_EVENT_TIME_DELAY
     # fmt: off
     bookings_subquery = (
-        Booking.query.join(Stock).outerjoin(EducationalBooking)
+        Booking.query.join(offers_models.Stock).outerjoin(EducationalBooking)
             .filter(Booking.status.in_((BookingStatus.CONFIRMED, BookingStatus.PENDING)))
-            .filter(Stock.beginningDatetime < threshold)
+            .filter(offers_models.Stock.beginningDatetime < threshold)
             .with_entities(Booking.id)
             .subquery()
     )
