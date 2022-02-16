@@ -20,7 +20,10 @@ from pcapi.utils.human_ids import humanize
 
 
 def build_pc_pro_offer_link(offer: Offer) -> str:
-    return f"{settings.PRO_URL}/offres/{humanize(offer.id)}/edition"
+    if offer.isEducational:
+        return f"{settings.PRO_URL}/offre/{humanize(offer.id)}/collectif/edition"
+
+    return f"{settings.PRO_URL}/offre/{humanize(offer.id)}/individuel/edition"
 
 
 def build_pc_pro_offerer_link(offerer: Offerer) -> str:
@@ -199,7 +202,7 @@ def make_wallet_balances_email(csv: str) -> dict:
 def make_offer_creation_notification_email(offer: Offer) -> dict:
     author = offer.author or offer.venue.managingOfferer.UserOfferers[0].user
     venue = offer.venue
-    pro_link_to_offer = f"{settings.PRO_URL}/offres/{humanize(offer.id)}/edition"
+    pro_link_to_offer = build_pc_pro_offer_link(offer)
     pro_venue_link = f"{settings.PRO_URL}/structures/{humanize(venue.managingOffererId)}/lieux/{humanize(venue.id)}"
     webapp_link_to_offer = offer_app_link(offer)
     html = render_template(
@@ -221,7 +224,7 @@ def make_offer_creation_notification_email(offer: Offer) -> dict:
 
 def make_offer_rejection_notification_email(offer: Offer) -> dict:
     author = offer.author or offer.venue.managingOfferer.UserOfferers[0].user
-    pro_link_to_offer = f"{settings.PRO_URL}/offres/{humanize(offer.id)}/edition"
+    pro_link_to_offer = build_pc_pro_offer_link(offer)
     venue = offer.venue
     pro_venue_link = f"{settings.PRO_URL}/structures/{humanize(venue.managingOffererId)}/lieux/{humanize(venue.id)}"
     html = render_template(
