@@ -477,7 +477,6 @@ class UpdateProfileTest:
         assert user.activity == "Lycéen"
         assert user.schoolType == users_models.SchoolTypeEnum.PUBLIC_HIGH_SCHOOL
         assert user.phoneNumber == "+33609080706"
-        assert not user.hasCompletedIdCheck
 
         assert len(push_testing.requests) == 2
         notification = push_testing.requests[0]

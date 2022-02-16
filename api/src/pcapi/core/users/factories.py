@@ -130,7 +130,6 @@ class BeneficiaryGrant18Factory(BaseFactory):
     )
     firstName = "Jeanne"
     lastName = "Doux"
-    hasCompletedIdCheck = False
     isEmailValidated = True
     roles = [users_models.UserRole.BENEFICIARY]
     hasSeenProTutorials = True

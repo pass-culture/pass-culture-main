@@ -11,7 +11,6 @@ from pcapi.core.subscription.dms import api as dms_subscription_api
 from pcapi.core.subscription.ubble import api as ubble_subscription_api
 from pcapi.core.users.repository import find_user_by_email
 from pcapi.models.api_errors import ApiErrors
-from pcapi.repository import repository
 from pcapi.routes.apis import public_api
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.validation.routes import dms as dms_validation
@@ -96,10 +95,6 @@ def dms_webhook_update_application_status(form: dms_validation.DMSWebhookRequest
         return
 
     dms_subscription_api.handle_dms_state(user, application, form.procedure_id, form.dossier_id, form.state)
-
-    if not user.hasCompletedIdCheck:
-        user.hasCompletedIdCheck = True
-        repository.save(user)
 
 
 @public_api.route("/webhooks/ubble/application_status", methods=["POST"])

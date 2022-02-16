@@ -14,11 +14,13 @@ import pytest
 from pcapi import settings
 from pcapi.connectors.dms import api as api_dms
 from pcapi.core import testing
+from pcapi.core.fraud import api as fraud_api
 from pcapi.core.fraud import factories as fraud_factories
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.fraud.ubble import api as ubble_fraud_api
 from pcapi.core.fraud.ubble import models as ubble_fraud_models
 import pcapi.core.mails.testing as mails_testing
+from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import messages as subscription_messages
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.testing import override_features
@@ -73,7 +75,7 @@ class DmsWebhookApplicationTest:
         ],
     )
     def test_dms_request_with_existing_user(self, execute_query, dms_status, fraud_check_status, client):
-        user = users_factories.UserFactory(hasCompletedIdCheck=False)
+        user = users_factories.UserFactory()
         execute_query.return_value = make_single_application(6044787, state="closed", email=user.email)
         form_data = {
             "procedure_id": 48860,
@@ -95,7 +97,7 @@ class DmsWebhookApplicationTest:
         assert fraud_check.userId == user.id
         assert fraud_check.status == fraud_check_status
 
-        assert user.hasCompletedIdCheck
+        assert fraud_api.has_user_performed_identity_check(user)
 
     @freezegun.freeze_time("2021-10-30 09:00:00")
     @patch.object(api_dms.DMSGraphQLClient, "execute_query")
@@ -399,7 +401,10 @@ class UbbleWebhookTest:
         return f"ts={timestamp},v1={token}"
 
     def _init_test(self, current_identification_state, notified_identification_state):
-        user = users_factories.UserFactory(phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED)
+        user = users_factories.UserFactory(
+            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
+            dateOfBirth=datetime.datetime.now() - relativedelta.relativedelta(years=18),
+        )
         fraud_factories.BeneficiaryFraudCheckFactory(
             user=user,
             type=fraud_models.FraudCheckType.USER_PROFILING,
@@ -577,7 +582,10 @@ class UbbleWebhookTest:
         assert fraud_check.status is fraud_models.FraudCheckStatus.PENDING
         assert fraud_check.type == fraud_models.FraudCheckType.UBBLE
         assert fraud_check.thirdPartyId == ubble_identification_response.data.attributes.identification_id
-        assert fraud_check.user.hasCompletedIdCheck is True
+        assert (
+            subscription_api.get_identity_check_subscription_status(fraud_check.user, fraud_check.user.eligibility)
+            == subscription_models.SubscriptionItemStatus.PENDING
+        )
         content = ubble_fraud_models.UbbleContent(**fraud_check.resultContent)
         document = list(filter(lambda included: included.type == "documents", ubble_identification_response.included))[
             0
