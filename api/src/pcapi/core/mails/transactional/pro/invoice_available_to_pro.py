@@ -11,7 +11,7 @@ def get_invoice_available_to_pro_email_data(invoice) -> Union[dict, SendinblueTr
     return SendinblueTransactionalEmailData(
         template=TransactionalEmail.INVOICE_AVAILABLE_TO_PRO.value,
         params={
-            "MONTANT_REMBOURSEMENT": -finance_utils.to_euros(invoice.amount),
+            "MONTANT_REMBOURSEMENT": str(-finance_utils.to_euros(invoice.amount)),
         },
     )
 
