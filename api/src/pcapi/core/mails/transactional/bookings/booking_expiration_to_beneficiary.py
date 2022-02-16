@@ -1,6 +1,5 @@
 from typing import List
 from typing import Tuple
-from typing import Union
 
 from pcapi.core import mails
 from pcapi.core.bookings import constants as booking_constants
@@ -9,23 +8,11 @@ from pcapi.core.categories import subcategories
 from pcapi.core.mails.models.sendinblue_models import SendinblueTransactionalEmailData
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.users.models import User
-from pcapi.models.feature import FeatureToggle
 
 
 def get_expired_bookings_to_beneficiary_data(
     beneficiary: User, bookings: list[Booking], withdrawal_period: int
-) -> Union[dict, SendinblueTransactionalEmailData]:
-    if not FeatureToggle.ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS.is_active():
-        return {
-            "Mj-TemplateID": 3095107,
-            "Mj-TemplateLanguage": True,
-            "Vars": {
-                "user_firstName": beneficiary.firstName,
-                "bookings": _extract_bookings_information_from_bookings_list(bookings),
-                "withdrawal_period": withdrawal_period,
-            },
-        }
-
+) -> SendinblueTransactionalEmailData:
     return SendinblueTransactionalEmailData(
         template=TransactionalEmail.EXPIRED_BOOKING_TO_BENEFICIARY.value,
         params={

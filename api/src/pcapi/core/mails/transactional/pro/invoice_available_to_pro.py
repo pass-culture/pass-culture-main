@@ -1,5 +1,3 @@
-from typing import Union
-
 from pcapi.core import mails
 import pcapi.core.finance.utils as finance_utils
 from pcapi.core.mails.models.sendinblue_models import SendinblueTransactionalEmailData
@@ -7,7 +5,7 @@ from pcapi.core.mails.transactional.sendinblue_template_ids import Transactional
 from pcapi.core.offerers import repository as offerers_repository
 
 
-def get_invoice_available_to_pro_email_data(invoice) -> Union[dict, SendinblueTransactionalEmailData]:
+def get_invoice_available_to_pro_email_data(invoice) -> SendinblueTransactionalEmailData:
     return SendinblueTransactionalEmailData(
         template=TransactionalEmail.INVOICE_AVAILABLE_TO_PRO.value,
         params={

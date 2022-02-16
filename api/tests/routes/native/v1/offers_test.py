@@ -246,16 +246,6 @@ class OffersTest:
 
 
 class SendOfferWebAppLinkTest:
-    @override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=False)
-    def test_mailjet_send_offer_webapp_link_by_email(self, client):
-        """
-        Test that email can be sent with MJ and that the link does not
-        use the redirection domain (not activated by default)
-        """
-        mail = self.send_request(client)
-        assert mail.sent_data["Vars"]["offer_webapp_link"].startswith(settings.WEBAPP_V2_URL)
-
-    @override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=True)
     def test_sendinblue_send_offer_webapp_link_by_email(self, client):
         """
         Test that email can be sent with SiB and that the link does not
@@ -264,7 +254,6 @@ class SendOfferWebAppLinkTest:
         mail = self.send_request(client)
         assert mail.sent_data["params"]["OFFER_WEBAPP_LINK"].startswith(settings.WEBAPP_V2_URL)
 
-    @override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=True)
     @override_features(ENABLE_IOS_OFFERS_LINK_WITH_REDIRECTION=True)
     def test_send_offer_webapp_link_by_email_with_redirection_link(self, client):
         """
@@ -293,11 +282,10 @@ class SendOfferWebAppLinkTest:
         # expected queries:
         #   * get User
         #   * find Offer
-        #   * get FF ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS.isactive
         #   * get FF ENABLE_IOS_OFFERS_LINK_WITH_REDIRECTION.isactive
         #   * save email to DB (testing backend)
         #   * release savepoint after saving email
-        with assert_num_queries(6):
+        with assert_num_queries(5):
             response = test_client.post(f"/native/v1/send_offer_webapp_link_by_email/{offer_id}")
             assert response.status_code == 204
 

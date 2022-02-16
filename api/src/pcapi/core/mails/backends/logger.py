@@ -19,7 +19,9 @@ class LoggerBackend(BaseBackend):
     """
 
     def _send(
-        self, recipients: typing.Iterable[str], data: typing.Union[dict, SendinblueTransactionalEmailData]
+        self,
+        recipients: typing.Iterable[str],
+        data: typing.Union[dict, SendinblueTransactionalEmailData, SendinblueTransactionalWithoutTemplateEmailData],
     ) -> MailResult:
         if isinstance(data, SendinblueTransactionalEmailData):
             data = asdict(data)

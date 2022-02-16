@@ -1,3 +1,4 @@
+import dataclasses
 from datetime import datetime
 from unittest.mock import MagicMock
 from unittest.mock import patch
@@ -11,6 +12,7 @@ from pcapi import settings
 from pcapi.core.fraud import factories as fraud_factories
 from pcapi.core.fraud import models as fraud_models
 import pcapi.core.mails.testing as mails_testing
+from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.testing import override_features
@@ -490,7 +492,9 @@ class OnSuccessfulDMSApplicationTest:
         assert first.activity == "Étudiant"
         assert first.has_beneficiary_role
         assert len(push_testing.requests) == 2
-        assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 2016025
+        assert mails_testing.outbox[0].sent_data["template"] == dataclasses.asdict(
+            TransactionalEmail.ACCEPTED_AS_BENEFICIARY.value
+        )
 
     @patch("pcapi.repository.repository")
     @patch("pcapi.domain.user_emails.send_activation_email")

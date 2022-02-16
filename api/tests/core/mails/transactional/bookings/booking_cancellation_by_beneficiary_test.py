@@ -15,120 +15,11 @@ from pcapi.core.mails.transactional.bookings.booking_cancellation_by_beneficiary
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.offers.factories import EventStockFactory
 from pcapi.core.offers.factories import ThingStockFactory
-from pcapi.core.testing import override_features
 from pcapi.core.users.factories import BeneficiaryGrant18Factory
 
 
 @pytest.mark.usefixtures("db_session")
-class SendMailjetBeneficiaryBookingCancellationEmailTest:
-    @override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=False)
-    def test_should_called_send_email_with_valid_data(self):
-        # given
-        booking = booking_factories.IndividualBookingFactory()
-
-        # when
-        send_booking_cancellation_by_beneficiary_email(booking.individualBooking)
-
-        # then
-        assert len(mails_testing.outbox) == 1  # test number of emails sent
-        assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 1091464
-
-
-@pytest.mark.usefixtures("db_session")
-class MakeBeneficiaryBookingCancellationEmailMailjetDataTest:
-    @override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=False)
-    def test_should_return_thing_data_when_booking_is_a_thing(self):
-        # Given
-        booking = booking_factories.CancelledIndividualBookingFactory(
-            individualBooking__user=BeneficiaryGrant18Factory(email="fabien@example.com", firstName="Fabien"),
-            stock=ThingStockFactory(
-                price=10.2,
-                beginningDatetime=datetime.now() - timedelta(days=1),
-                offer__name="Test thing name",
-                offer__id=123456,
-            ),
-        )
-
-        # When
-        email_data = get_booking_cancellation_by_beneficiary_email_data(booking.individualBooking)
-
-        # Then
-        assert email_data == {
-            "Mj-TemplateID": 1091464,
-            "Mj-TemplateLanguage": True,
-            "Vars": {
-                "can_book_again": 1,
-                "event_date": "",
-                "event_hour": "",
-                "is_event": 0,
-                "is_free_offer": 0,
-                "offer_id": "AHREA",
-                "offer_name": "Test thing name",
-                "offer_price": "10.20",
-                "user_first_name": "Fabien",
-            },
-        }
-
-    @freeze_time("2019-11-26 18:29:20.891028")
-    @override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=False)
-    def test_should_return_event_data_when_booking_is_an_event(self):
-        # Given
-        booking = booking_factories.CancelledIndividualBookingFactory(
-            individualBooking__user=BeneficiaryGrant18Factory(email="fabien@example.com", firstName="Fabien"),
-            stock=EventStockFactory(
-                price=10.2,
-                beginningDatetime=datetime.utcnow(),
-                offer__name="Test event name",
-                offer__id=123456,
-            ),
-        )
-
-        # When
-        email_data = get_booking_cancellation_by_beneficiary_email_data(booking.individualBooking)
-
-        # Then
-        assert email_data == {
-            "Mj-TemplateID": 1091464,
-            "Mj-TemplateLanguage": True,
-            "Vars": {
-                "can_book_again": 1,
-                "event_date": "26 novembre 2019",
-                "event_hour": "19h29",
-                "is_event": 1,
-                "is_free_offer": 0,
-                "offer_id": "AHREA",
-                "offer_name": "Test event name",
-                "offer_price": "10.20",
-                "user_first_name": "Fabien",
-            },
-        }
-
-    @override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=False)
-    def test_should_return_is_free_offer_when_offer_price_equals_to_zero(self):
-        # Given
-        booking = booking_factories.CancelledIndividualBookingFactory(stock__price=0)
-
-        # When
-        email_data = get_booking_cancellation_by_beneficiary_email_data(booking.individualBooking)
-
-        # Then
-        assert email_data["Vars"]["is_free_offer"] == 1
-
-    @override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=False)
-    def test_should_return_the_price_multiplied_by_quantity_when_it_is_a_duo_offer(self):
-        # Given
-        booking = booking_factories.CancelledIndividualBookingFactory(quantity=2, stock__price=10)
-
-        # When
-        email_data = get_booking_cancellation_by_beneficiary_email_data(booking.individualBooking)
-
-        # Then
-        assert email_data["Vars"]["offer_price"] == "20.00"
-
-
-@pytest.mark.usefixtures("db_session")
 class SendSendiblueBeneficiaryBookingCancellationEmailTest:
-    @override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=True)
     def test_should_called_send_email_with_valid_data(self):
         # given
         booking = booking_factories.IndividualBookingFactory()
@@ -159,7 +50,6 @@ class SendSendiblueBeneficiaryBookingCancellationEmailTest:
 
 @pytest.mark.usefixtures("db_session")
 class MakeBeneficiaryBookingCancellationEmailSendinblueDataTest:
-    @override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=True)
     def test_should_return_thing_data_when_booking_is_a_thing(self):
         # Given
         booking = booking_factories.CancelledIndividualBookingFactory(
@@ -189,7 +79,6 @@ class MakeBeneficiaryBookingCancellationEmailSendinblueDataTest:
         }
 
     @freeze_time("2019-11-26 18:29:20.891028")
-    @override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=True)
     def test_should_return_event_data_when_booking_is_an_event(self):
         # Given
         booking = booking_factories.CancelledIndividualBookingFactory(
@@ -218,7 +107,6 @@ class MakeBeneficiaryBookingCancellationEmailSendinblueDataTest:
             "OFFER_LINK": "https://webapp-v2.example.com/offre/123456",
         }
 
-    @override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=True)
     def test_should_return_is_free_offer_when_offer_price_equals_to_zero(self):
         # Given
         booking = booking_factories.CancelledIndividualBookingFactory(stock__price=0)
@@ -229,7 +117,6 @@ class MakeBeneficiaryBookingCancellationEmailSendinblueDataTest:
         # Then
         assert email_data.params["IS_FREE_OFFER"] is True
 
-    @override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=True)
     def test_should_return_the_price_multiplied_by_quantity_when_it_is_a_duo_offer(self):
         # Given
         booking = booking_factories.CancelledIndividualBookingFactory(quantity=2, stock__price=10)

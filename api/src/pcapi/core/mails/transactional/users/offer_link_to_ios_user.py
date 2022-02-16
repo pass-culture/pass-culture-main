@@ -1,27 +1,12 @@
-from typing import Union
-
 from pcapi.core import mails
 from pcapi.core.mails.models.sendinblue_models import SendinblueTransactionalEmailData
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.utils import offer_app_redirect_link
 from pcapi.core.users.models import User
-from pcapi.models.feature import FeatureToggle
 
 
-def get_offer_link_to_ios_user_email_data(user: User, offer: Offer) -> Union[dict, SendinblueTransactionalEmailData]:
-    if not FeatureToggle.ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS.is_active():
-        return {
-            "MJ-TemplateID": 2826195,
-            "MJ-TemplateLanguage": True,
-            "Vars": {
-                "offer_webapp_link": offer_app_redirect_link(offer),
-                "user_first_name": user.firstName,
-                "offer_name": offer.name,
-                "venue_name": offer.venue.name,
-            },
-        }
-
+def get_offer_link_to_ios_user_email_data(user: User, offer: Offer) -> SendinblueTransactionalEmailData:
     return SendinblueTransactionalEmailData(
         template=TransactionalEmail.OFFER_WEBAPP_LINK_TO_IOS_USER.value,
         params={
