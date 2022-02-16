@@ -14,6 +14,7 @@ import {
   INITIAL_VIRTUAL_VENUE,
 } from 'components/pages/Home/Offerers/_constants'
 import { VenueList } from 'components/pages/Home/Venues/VenueList'
+import SoftDeletedOffererWarning from 'new_components/SoftDeletedOffererWarning'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { HTTP_STATUS } from 'repository/pcapi/pcapiClient'
 
@@ -116,6 +117,7 @@ const Offerers = () => {
     )
   }
 
+  const isOffererSoftDeleted = selectedOfferer && !selectedOfferer.isActive
   const userHasOfferers = offererOptions.length > 0
   return (
     <>
@@ -130,21 +132,24 @@ const Offerers = () => {
             selectedOfferer={selectedOfferer}
           />
 
-          <VenueList
-            physicalVenues={physicalVenues}
-            selectedOffererId={selectedOfferer.id}
-            virtualVenue={
-              selectedOfferer.hasDigitalVenueAtLeastOneOffer
-                ? virtualVenue
-                : null
-            }
-          />
+          {!isOffererSoftDeleted && (
+            <VenueList
+              physicalVenues={physicalVenues}
+              selectedOffererId={selectedOfferer.id}
+              virtualVenue={
+                selectedOfferer.hasDigitalVenueAtLeastOneOffer
+                  ? virtualVenue
+                  : null
+              }
+            />
+          )}
         </>
       )}
+      {isOffererSoftDeleted && <SoftDeletedOffererWarning />}
 
       {!userHasOfferers && <OffererCreationLinks />}
 
-      {isUserOffererValidated && (
+      {isUserOffererValidated && !isOffererSoftDeleted && (
         <VenueCreationLinks
           hasPhysicalVenue={physicalVenues.length > 0}
           hasVirtualOffers={
