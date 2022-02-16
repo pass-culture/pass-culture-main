@@ -40,7 +40,13 @@ const getLocalBeginningDatetime = (
 
 const OfferSummary = ({ offer }: { offer: OfferType }): JSX.Element => {
   const { subcategoryLabel, stocks, venue, extraData } = offer
-  const { beginningDatetime, numberOfTickets, price } = stocks[0]
+  const { beginningDatetime, numberOfTickets, price } = extraData?.isShowcase
+    ? {
+        beginningDatetime: undefined,
+        numberOfTickets: undefined,
+        price: undefined,
+      }
+    : stocks[0]
 
   let offerVenue = `${venue.postalCode}, ${venue.city}`
 
@@ -58,13 +64,20 @@ const OfferSummary = ({ offer }: { offer: OfferType }): JSX.Element => {
       : extraData.students[0]
     : ''
 
-  const formattedPrice =
-    price > 0
+  const getFormattedPrice = (price?: number) => {
+    if (price === undefined || price === null) {
+      return undefined
+    }
+
+    return price > 0
       ? new Intl.NumberFormat('fr-FR', {
           style: 'currency',
           currency: 'EUR',
         }).format(price / 100)
       : 'Gratuit'
+  }
+
+  const formattedPrice = getFormattedPrice(price)
 
   return (
     <div>
@@ -73,10 +86,12 @@ const OfferSummary = ({ offer }: { offer: OfferType }): JSX.Element => {
           <SubcategoryIcon className="offer-summary-item-icon" />
           {subcategoryLabel}
         </li>
-        <li className="offer-summary-item">
-          <DateIcon className="offer-summary-item-icon" />
-          {getLocalBeginningDatetime(beginningDatetime, venue.postalCode)}
-        </li>
+        {beginningDatetime && (
+          <li className="offer-summary-item">
+            <DateIcon className="offer-summary-item-icon" />
+            {getLocalBeginningDatetime(beginningDatetime, venue.postalCode)}
+          </li>
+        )}
         <li className="offer-summary-item">
           <LocationIcon className="offer-summary-item-icon" />
           {offerVenue}
@@ -89,10 +104,12 @@ const OfferSummary = ({ offer }: { offer: OfferType }): JSX.Element => {
             Jusqu’à {numberOfTickets} places
           </li>
         )}
-        <li className="offer-summary-item">
-          <EuroIcon className="offer-summary-item-icon" />
-          {formattedPrice}
-        </li>
+        {formattedPrice && (
+          <li className="offer-summary-item">
+            <EuroIcon className="offer-summary-item-icon" />
+            {formattedPrice}
+          </li>
+        )}
         {students && (
           <li className="offer-summary-item">
             <BuildingIcon className="offer-summary-item-icon" />
