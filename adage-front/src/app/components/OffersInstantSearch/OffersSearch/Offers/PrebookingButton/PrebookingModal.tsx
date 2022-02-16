@@ -1,8 +1,6 @@
-import React, { useState } from 'react'
-import Modal from 'react-modal'
+import React from 'react'
 
-import Button from 'app/ui-kit/Button'
-import { ReactComponent as Logo } from 'assets/logo-without-text.svg'
+import { ModalLayout } from 'app/ui-kit'
 
 interface IPrebookingModal {
   closeModal: () => void
@@ -14,33 +12,13 @@ const PrebookingModal = ({
   isOpen,
   preBookCurrentStock,
 }: IPrebookingModal): JSX.Element => {
-  const [isLoading, setIsLoading] = useState(false)
-
-  const handlePrebookCurrentStock = async () => {
-    setIsLoading(true)
-    await preBookCurrentStock()
-    setIsLoading(false)
-  }
-
   return (
-    <Modal
+    <ModalLayout
+      action={preBookCurrentStock}
+      actionLabel="Préréserver"
+      closeModal={closeModal}
       isOpen={isOpen}
-      style={{
-        content: {
-          width: '452px',
-          height: 'fit-content',
-          margin: 'auto',
-          padding: '48px 48px 24px',
-          boxSizing: 'border-box',
-          fontSize: '15px',
-          borderRadius: '10px',
-        },
-        overlay: {
-          backgroundColor: 'rgba(0, 0, 0, 0.4)',
-        },
-      }}
     >
-      <Logo className="prebooking-modal-logo" />
       <h3 className="prebooking-modal-title">
         Êtes-vous sûr de vouloir préréserver ?
       </h3>
@@ -58,21 +36,7 @@ const PrebookingModal = ({
         <b>2)</b> Votre chef d’établissement pourra alors{' '}
         <b>confirmer la préréservation</b>.
       </p>
-      <div className="prebooking-modal-buttons">
-        <Button
-          className="prebooking-modal-button"
-          label="Fermer"
-          onClick={closeModal}
-          variant="secondary"
-        />
-        <Button
-          className="prebooking-modal-button"
-          isLoading={isLoading}
-          label="Préréserver"
-          onClick={handlePrebookCurrentStock}
-        />
-      </div>
-    </Modal>
+    </ModalLayout>
   )
 }
 

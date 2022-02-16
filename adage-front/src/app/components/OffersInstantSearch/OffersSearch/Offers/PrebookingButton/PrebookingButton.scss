@@ -26,14 +26,6 @@
 }
 
 .prebooking-modal {
-  &-logo {
-    width: rem(48px);
-    fill: $primary;
-    display: block;
-    margin: auto;
-    margin-bottom: rem(16px);
-  }
-
   &-title {
     margin: 0 0 rem(24px);
     font-size: rem(20px);
@@ -41,24 +33,5 @@
 
   &-text {
     margin: 0;
-  }
-
-  &-buttons {
-    display: flex;
-    align-items: center;
-    margin-top: rem(32px);
-    justify-content: center;
-  }
-
-  &-button {
-    width: rem(140px);
-
-    &:not(:last-of-type) {
-      margin-right: rem(24px);
-    }
-  }
-
-  &-link {
-    color: inherit;
   }
 }
