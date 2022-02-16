@@ -6,37 +6,9 @@ import { ReactComponent as EuroIcon } from 'assets/euro.svg'
 import { ReactComponent as LocationIcon } from 'assets/location.svg'
 import { ReactComponent as SubcategoryIcon } from 'assets/subcategory.svg'
 import { ReactComponent as UserIcon } from 'assets/user.svg'
-import { toISOStringWithoutMilliseconds } from 'utils/date'
-import { formatLocalTimeDateString } from 'utils/timezone'
+import { getLocalDepartmentDatetimeFromPostalCode } from 'utils/date'
 import { ADRESS_TYPE, OfferType } from 'utils/types'
-
 import './OfferSummary.scss'
-
-const extractDepartmentCode = (venuePostalCode: string): string => {
-  const departmentNumberBase: number = parseInt(venuePostalCode.slice(0, 2))
-  if (departmentNumberBase > 95) {
-    return venuePostalCode.slice(0, 3)
-  } else {
-    return venuePostalCode.slice(0, 2)
-  }
-}
-
-const getLocalBeginningDatetime = (
-  beginningDatetime: Date,
-  venuePostalCode: string
-): string => {
-  const departmentCode = extractDepartmentCode(venuePostalCode)
-  const stockBeginningDate = new Date(beginningDatetime)
-  const stockBeginningDateISOString =
-    toISOStringWithoutMilliseconds(stockBeginningDate)
-  const stockLocalBeginningDate = formatLocalTimeDateString(
-    stockBeginningDateISOString,
-    departmentCode,
-    'dd/MM/yyyy à HH:mm'
-  )
-
-  return stockLocalBeginningDate
-}
 
 const OfferSummary = ({ offer }: { offer: OfferType }): JSX.Element => {
   const { subcategoryLabel, stocks, venue, extraData } = offer
@@ -89,7 +61,11 @@ const OfferSummary = ({ offer }: { offer: OfferType }): JSX.Element => {
         {beginningDatetime && (
           <li className="offer-summary-item">
             <DateIcon className="offer-summary-item-icon" />
-            {getLocalBeginningDatetime(beginningDatetime, venue.postalCode)}
+            {getLocalDepartmentDatetimeFromPostalCode(
+              beginningDatetime,
+              venue.postalCode,
+              'dd/MM/yyyy à HH:mm'
+            )}
           </li>
         )}
         <li className="offer-summary-item">
