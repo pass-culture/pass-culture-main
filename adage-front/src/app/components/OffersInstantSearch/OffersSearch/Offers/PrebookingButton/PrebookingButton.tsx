@@ -8,7 +8,7 @@ import {
 import { Button } from 'app/ui-kit'
 import { ReactComponent as HourGlassIcon } from 'assets/hourglass.svg'
 import { preBookStock } from 'repository/pcapi/pcapi'
-import { getLocalDepartmentDatetimeFromPostalCode } from 'utils/date'
+import { formatDatetimeToPostalCodeTimezone } from 'utils/date'
 import { StockType, VenueType } from 'utils/types'
 
 import './PrebookingButton.scss'
@@ -79,7 +79,7 @@ const PrebookingButton = ({
               {stock.bookingLimitDatetime && (
                 <span className="prebooking-button-booking-limit">
                   avant le :{' '}
-                  {getLocalDepartmentDatetimeFromPostalCode(
+                  {formatDatetimeToPostalCodeTimezone(
                     stock.bookingLimitDatetime,
                     venue.postalCode,
                     'dd/MM/yyyy'

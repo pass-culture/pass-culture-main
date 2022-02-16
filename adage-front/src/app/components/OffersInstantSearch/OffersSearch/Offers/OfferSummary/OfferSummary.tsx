@@ -6,7 +6,7 @@ import { ReactComponent as EuroIcon } from 'assets/euro.svg'
 import { ReactComponent as LocationIcon } from 'assets/location.svg'
 import { ReactComponent as SubcategoryIcon } from 'assets/subcategory.svg'
 import { ReactComponent as UserIcon } from 'assets/user.svg'
-import { getLocalDepartmentDatetimeFromPostalCode } from 'utils/date'
+import { formatDatetimeToPostalCodeTimezone } from 'utils/date'
 import { ADRESS_TYPE, OfferType } from 'utils/types'
 import './OfferSummary.scss'
 
@@ -61,7 +61,7 @@ const OfferSummary = ({ offer }: { offer: OfferType }): JSX.Element => {
         {beginningDatetime && (
           <li className="offer-summary-item">
             <DateIcon className="offer-summary-item-icon" />
-            {getLocalDepartmentDatetimeFromPostalCode(
+            {formatDatetimeToPostalCodeTimezone(
               beginningDatetime,
               venue.postalCode,
               'dd/MM/yyyy à HH:mm'

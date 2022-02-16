@@ -38,7 +38,7 @@ const extractDepartmentCode = (venuePostalCode: string): string => {
   }
 }
 
-export const getLocalDepartmentDatetimeFromPostalCode = (
+export const formatDatetimeToPostalCodeTimezone = (
   datetime: Date,
   venuePostalCode: string,
   dateFormat: string
