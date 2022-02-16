@@ -373,7 +373,7 @@ class FindByProUserTest:
         )
 
         # Then
-        assert len(bookings_recap_paginated.bookings_recap) == 1
+        assert len(bookings_recap_paginated.bookings_recap) == 2
         expected_booking_recap = bookings_recap_paginated.bookings_recap[0]
         assert expected_booking_recap.booking_is_duo is True
 
@@ -656,6 +656,34 @@ class FindByProUserTest:
         assert bookings_recap_paginated.page == 1
         assert bookings_recap_paginated.pages == 1
         assert bookings_recap_paginated.total == 1
+
+    def test_should_return_two_booking_recap_items_when_quantity_booked_is_two(self, app: fixture):
+        # Given
+        beneficiary = users_factories.BeneficiaryGrant18Factory()
+        pro = users_factories.ProFactory()
+        offerer = offers_factories.OffererFactory(postalCode="97300")
+        offers_factories.UserOffererFactory(user=pro, offerer=offerer)
+
+        venue = offers_factories.VenueFactory(managingOfferer=offerer)
+        offer = offers_factories.EventOfferFactory(venue=venue, isDuo=True)
+        stock = offers_factories.EventStockFactory(offer=offer, price=0, beginningDatetime=datetime.utcnow())
+        today = datetime.utcnow()
+        booking = bookings_factories.IndividualBookingFactory(
+            user=beneficiary, stock=stock, dateCreated=today, token="FGHI", quantity=2
+        )
+
+        # When
+        bookings_recap_paginated = booking_repository.find_by_pro_user(
+            user=pro, booking_period=(one_year_before_booking, one_year_after_booking), page=1, per_page_limit=4
+        )
+
+        # Then
+        assert len(bookings_recap_paginated.bookings_recap) == 2
+        assert bookings_recap_paginated.bookings_recap[0].booking_token == booking.token
+        assert bookings_recap_paginated.bookings_recap[1].booking_token == booking.token
+        assert bookings_recap_paginated.page == 1
+        assert bookings_recap_paginated.pages == 1
+        assert bookings_recap_paginated.total == 2
 
     def test_should_return_booking_date_with_offerer_timezone_when_venue_is_digital(self, app: fixture):
         # Given
@@ -1146,7 +1174,7 @@ class GetCsvReportTest:
 
         # Then
         _, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
-        assert len(data) == 1
+        assert len(data) == 2
 
     def test_should_not_duplicate_bookings_when_user_is_admin_and_bookings_offerer_has_multiple_user(
         self, app: fixture
@@ -1167,7 +1195,7 @@ class GetCsvReportTest:
 
         # Then
         _, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
-        assert len(data) == 1
+        assert len(data) == 2
 
     def test_should_return_event_booking_when_booking_is_on_an_event(self, app: fixture):
         # Given
