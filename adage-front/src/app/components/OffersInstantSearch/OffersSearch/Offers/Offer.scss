@@ -15,6 +15,10 @@
     fill: $white;
     padding: rem(8px);
     box-sizing: border-box;
+
+    &-showcase {
+      background-color: $purple;
+    }
   }
 
   &-container {

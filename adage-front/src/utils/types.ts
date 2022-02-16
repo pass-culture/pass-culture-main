@@ -42,6 +42,7 @@ export interface OfferType {
       venueId: string
     }
     students?: string[]
+    isShowcase?: boolean
   }
 }
 
