@@ -27,6 +27,7 @@ import pcapi.core.payments.exceptions as payments_exceptions
 import pcapi.core.payments.utils as payments_utils
 from pcapi.utils import human_ids
 import pcapi.utils.date as date_utils
+from pcapi.utils.mailing import build_pc_pro_offer_link
 
 
 def _get_subcategory_choices():
@@ -113,8 +114,7 @@ def format_amount(view, context, model, name):
 def format_offer(view, context, model, name):
     if not model.offer:
         return ""
-    humanized_id = human_ids.humanize(model.offerId)
-    url = f"{settings.PRO_URL}/offres/{humanized_id}/edition"
+    url = build_pc_pro_offer_link(model.offer)
     return markupsafe.Markup('<a href="{url}">{offer.name} ({offer.id})</a>').format(
         url=url,
         offer=model.offer,
