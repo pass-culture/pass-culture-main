@@ -13,6 +13,7 @@ import TextInputWithIcon from 'components/layout/inputs/TextInputWithIcon/TextIn
 import Logo from 'components/layout/Logo'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import { redirectLoggedUser } from 'components/router/helpers'
+import { analytics } from 'utils/firebase'
 
 import { UNAVAILABLE_ERROR_PAGE } from '../../../utils/routes'
 
@@ -140,7 +141,11 @@ class Signin extends PureComponent {
                 </Link>
               </div>
               <div className="field buttons-field">
-                <Link className="secondary-link" to={accountCreationUrl}>
+                <Link
+                  className="secondary-link"
+                  onClick={() => analytics.logClickCreateAccount()}
+                  to={accountCreationUrl}
+                >
                   Créer un compte
                 </Link>
                 <button
