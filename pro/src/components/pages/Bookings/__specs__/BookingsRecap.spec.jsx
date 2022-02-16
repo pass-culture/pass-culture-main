@@ -16,6 +16,7 @@ import { DEFAULT_PRE_FILTERS } from 'components/pages/Bookings/PreFilters/_const
 import { BOOKING_STATUS } from 'core/Bookings'
 import {
   getVenuesForOfferer,
+  getUserHasBookings,
   loadFilteredBookingsRecap,
 } from 'repository/pcapi/pcapi'
 import * as pcapi from 'repository/pcapi/pcapi'
@@ -28,6 +29,8 @@ import BookingsRecapContainer from '../BookingsRecapContainer'
 jest.mock('repository/pcapi/pcapi', () => ({
   getVenuesForOfferer: jest.fn(),
   getFilteredBookingsCSV: jest.fn(),
+  getUserInformations: jest.fn(),
+  getUserHasBookings: jest.fn(),
   loadFilteredBookingsRecap: jest.fn(),
 }))
 
@@ -52,11 +55,12 @@ const renderBookingsRecap = async (
       </MemoryRouter>
     </Provider>
   )
-
+  const { hasBoookings } = getUserHasBookings()
   const displayBookingsButton = screen.getByRole('button', { name: 'Afficher' })
   const downloadBookingsCsvButton = screen.getByRole('button', {
     name: 'Télécharger',
   })
+
   const submitFilters = async () => {
     fireEvent.click(displayBookingsButton)
     await waitFor(() => expect(displayBookingsButton).not.toBeDisabled())
@@ -68,7 +72,12 @@ const renderBookingsRecap = async (
   }
 
   if (waitDomReady || waitDomReady === undefined) {
-    await waitFor(() => expect(displayBookingsButton).not.toBeDisabled())
+    if (hasBoookings) {
+      await waitFor(() => expect(displayBookingsButton).not.toBeDisabled())
+    } else {
+      const loadingMessage = await screen.queryByText('Chargement en cours ...')
+      await waitFor(() => expect(loadingMessage).not.toBeInTheDocument())
+    }
   }
 
   return {
@@ -82,6 +91,7 @@ describe('components | BookingsRecap | Pro user', () => {
   let props
   let store
   let venue
+  let user
 
   beforeEach(() => {
     let emptyBookingsRecapPage = {
@@ -96,15 +106,21 @@ describe('components | BookingsRecap | Pro user', () => {
         state: null,
       },
     }
+
+    user = {
+      publicName: 'René',
+      isAdmin: false,
+      email: 'rené@example.com',
+    }
     store = configureTestStore({
       data: {
-        users: [
-          { publicName: 'René', isAdmin: false, email: 'rené@example.com' },
-        ],
+        users: [user],
       },
     })
+    pcapi.getUserInformations.mockResolvedValue(user)
     venue = venueFactory()
     getVenuesForOfferer.mockResolvedValue([venue])
+    getUserHasBookings.mockResolvedValue({ hasBookings: true })
   })
 
   afterEach(() => {
@@ -745,5 +761,26 @@ describe('components | BookingsRecap | Pro user', () => {
       'Vos filtres ont été modifiés. Veuillez cliquer sur « Afficher » pour actualiser votre recherche.'
     )
     expect(informationalMessage).not.toBeInTheDocument()
+  })
+
+  it('should display no booking screen when user does not have any booking yet', async () => {
+    //Given
+    getUserHasBookings.mockResolvedValue({ hasBookings: false })
+    await renderBookingsRecap(props, store)
+
+    //Then
+    const displayBookingsButton = screen.getByRole('button', {
+      name: 'Afficher',
+    })
+    const downloadBookingsCsvButton = screen.getByRole('button', {
+      name: 'Télécharger',
+    })
+    const informationMessage = screen.queryByText(
+      'Vous n’avez aucune réservation pour le moment'
+    )
+
+    expect(displayBookingsButton).toBeDisabled()
+    expect(downloadBookingsCsvButton).toBeDisabled()
+    expect(informationMessage).toBeInTheDocument()
   })
 })

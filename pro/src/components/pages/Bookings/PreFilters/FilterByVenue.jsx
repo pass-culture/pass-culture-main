@@ -6,6 +6,7 @@ import Select from 'components/layout/inputs/Select'
 import { ALL_VENUES_OPTION } from './_constants'
 
 const FilterByVenue = ({
+  isDisabled,
   updateFilters,
   selectedVenueId,
   venuesFormattedAndOrdered,
@@ -24,6 +25,7 @@ const FilterByVenue = ({
     <Select
       defaultOption={ALL_VENUES_OPTION}
       handleSelection={handleVenueSelection}
+      isDisabled={isDisabled}
       label="Lieu"
       name="lieu"
       options={venueOptions}
@@ -31,8 +33,11 @@ const FilterByVenue = ({
     />
   )
 }
-
+FilterByVenue.defaultProps = {
+  isDisabled: false,
+}
 FilterByVenue.propTypes = {
+  isDisabled: PropTypes.bool,
   selectedVenueId: PropTypes.string.isRequired,
   updateFilters: PropTypes.func.isRequired,
   venuesFormattedAndOrdered: PropTypes.arrayOf(

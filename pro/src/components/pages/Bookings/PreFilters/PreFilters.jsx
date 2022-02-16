@@ -18,6 +18,7 @@ const PreFilters = ({
   downloadBookingsCSV,
   hasResult,
   isBookingFiltersActive,
+  isFiltersDisabled,
   isTableLoading,
   isDownloadingCSV,
   wereBookingsRequested,
@@ -83,6 +84,7 @@ const PreFilters = ({
           <div className="pre-filters-row">
             <div className="pre-filters-venue">
               <FilterByVenue
+                isDisabled={isFiltersDisabled}
                 selectedVenueId={selectedPreFilters.offerVenueId}
                 updateFilters={updateSelectedFilters}
                 venuesFormattedAndOrdered={venues}
@@ -90,17 +92,20 @@ const PreFilters = ({
             </div>
             <div className="pre-filters-offer-type">
               <FilterByOfferType
+                isDisabled={isFiltersDisabled}
                 selectedOfferType={selectedPreFilters.offerType}
                 updateFilters={updateSelectedFilters}
               />
             </div>
             <FilterByEventDate
+              isDisabled={isFiltersDisabled}
               selectedOfferDate={selectedPreFilters.offerEventDate}
               updateFilters={updateSelectedFilters}
             />
           </div>
           {!isBookingFiltersActive && (
             <FilterByBookingPeriod
+              isDisabled={isFiltersDisabled}
               selectedBookingBeginningDate={
                 selectedPreFilters.bookingBeginningDate
               }
@@ -111,6 +116,7 @@ const PreFilters = ({
           {isBookingFiltersActive && (
             <div className="pre-filters-row">
               <FilterByBookingStatusPeriod
+                isDisabled={isFiltersDisabled}
                 selectedBookingBeginningDate={
                   selectedPreFilters.bookingBeginningDate
                 }
@@ -126,7 +132,7 @@ const PreFilters = ({
           <div className="button-group-buttons">
             <button
               className="primary-button"
-              disabled={isDownloadingCSV || isLocalLoading}
+              disabled={isDownloadingCSV || isLocalLoading || isFiltersDisabled}
               onClick={() => downloadBookingsCSV(downloadBookingsFilters)}
               type="button"
             >
@@ -134,7 +140,7 @@ const PreFilters = ({
             </button>
             <button
               className="secondary-button"
-              disabled={isTableLoading || isLocalLoading}
+              disabled={isTableLoading || isLocalLoading || isFiltersDisabled}
               type="submit"
             >
               Afficher
@@ -170,6 +176,7 @@ PreFilters.propTypes = {
   hasResult: PropTypes.bool.isRequired,
   isBookingFiltersActive: PropTypes.bool.isRequired,
   isDownloadingCSV: PropTypes.bool.isRequired,
+  isFiltersDisabled: PropTypes.bool.isRequired,
   isTableLoading: PropTypes.bool.isRequired,
   wereBookingsRequested: PropTypes.bool.isRequired,
 }

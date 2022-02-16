@@ -54,6 +54,10 @@ class GetBookingResponse(BaseModel):
     venueName: str
 
 
+class UserHasBookingResponse(BaseModel):
+    hasBookings: bool
+
+
 def get_booking_response(booking: Booking) -> GetBookingResponse:
     if booking.stock.offer.subcategoryId == subcategories.SEANCE_CINE.id:
         formula = BookingFormula.PLACE

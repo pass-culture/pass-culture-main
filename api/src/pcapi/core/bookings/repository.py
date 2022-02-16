@@ -775,3 +775,8 @@ def venues_have_bookings(*venues: Venue) -> bool:
             Booking.venueId.in_([venue.id for venue in venues]), Booking.status != BookingStatus.CANCELLED
         ).exists()
     ).scalar()
+
+
+def user_has_bookings(user: User) -> bool:
+    bookings_query = Booking.query.join(Booking.offerer).join(Offerer.UserOfferers)
+    return db.session.query(bookings_query.filter(UserOfferer.userId == user.id).exists()).scalar()

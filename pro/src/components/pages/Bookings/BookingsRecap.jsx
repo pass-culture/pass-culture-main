@@ -2,6 +2,7 @@ import * as PropTypes from 'prop-types'
 import React, { useCallback, useEffect, useState, useMemo } from 'react'
 
 import useActiveFeature from 'components/hooks/useActiveFeature'
+import useCurrentUser from 'components/hooks/useCurrentUser'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Spinner from 'components/layout/Spinner'
 import Titles from 'components/layout/Titles/Titles'
@@ -10,6 +11,7 @@ import * as pcapi from 'repository/pcapi/pcapi'
 import BookingsRecapTable from './BookingsRecapTable/BookingsRecapTable'
 import ChoosePreFiltersMessage from './ChoosePreFiltersMessage/ChoosePreFiltersMessage'
 import { downloadCSVFile } from './downloadCSVBookings'
+import NoBookingMessage from './NoBookingMessage'
 import NoBookingsForPreFiltersMessage from './NoBookingsForPreFiltersMessage/NoBookingsForPreFiltersMessage'
 import { DEFAULT_PRE_FILTERS } from './PreFilters/_constants'
 import PreFilters from './PreFilters/PreFilters'
@@ -25,11 +27,13 @@ const BookingsRecap = ({ location, showNotification }) => {
     offerVenueId: location.state?.venueId || DEFAULT_PRE_FILTERS.offerVenueId,
     offerType: DEFAULT_PRE_FILTERS.offerType,
   })
+  const { currentUser: user } = useCurrentUser()
   const [bookingsRecap, setBookingsRecap] = useState([])
   const [isDownloadingCSV, setIsDownloadingCSV] = useState(false)
   const [isTableLoading, setIsTableLoading] = useState(false)
   const [wereBookingsRequested, setWereBookingsRequested] = useState(false)
   const isBookingFiltersActive = useActiveFeature('ENABLE_NEW_BOOKING_FILTERS')
+  const [hasBooking, setHasBooking] = useState(true)
 
   const loadBookingsRecap = useCallback(
     async preFilters => {
@@ -86,6 +90,16 @@ const BookingsRecap = ({ location, showNotification }) => {
     },
     [showNotification]
   )
+
+  const checkUserHasBookings = useCallback(async () => {
+    if (!user.isAdmin) {
+      const { hasBookings } = await pcapi.getUserHasBookings()
+      setHasBooking(hasBookings)
+    }
+  }, [user.isAdmin, setHasBooking])
+  useEffect(() => {
+    checkUserHasBookings()
+  }, [checkUserHasBookings])
 
   const downloadBookingsCSV = useCallback(
     async filters => {
@@ -161,6 +175,7 @@ const BookingsRecap = ({ location, showNotification }) => {
         hasResult={bookingsRecap.length > 0}
         isBookingFiltersActive={isBookingFiltersActive}
         isDownloadingCSV={isDownloadingCSV}
+        isFiltersDisabled={!hasBooking}
         isTableLoading={isTableLoading}
         wereBookingsRequested={wereBookingsRequested}
       />
@@ -177,8 +192,10 @@ const BookingsRecap = ({ location, showNotification }) => {
         ) : (
           <NoBookingsForPreFiltersMessage resetPreFilters={resetPreFilters} />
         )
-      ) : (
+      ) : hasBooking ? (
         <ChoosePreFiltersMessage />
+      ) : (
+        <NoBookingMessage />
       )}
     </div>
   )

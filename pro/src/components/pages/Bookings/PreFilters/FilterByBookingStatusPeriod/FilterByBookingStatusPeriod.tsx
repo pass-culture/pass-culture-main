@@ -20,6 +20,7 @@ interface IPreFiltersProp {
   offerVenueId: string
 }
 interface IFilterByBookingStatusPeriodProps {
+  isDisabled: boolean
   selectedBookingBeginningDate: Date
   selectedBookingEndingDate: Date
   selectedBookingFilter: string
@@ -27,6 +28,7 @@ interface IFilterByBookingStatusPeriodProps {
 }
 
 const FilterByBookingStatusPeriod = ({
+  isDisabled = false,
   selectedBookingBeginningDate,
   selectedBookingEndingDate,
   selectedBookingFilter,
@@ -51,6 +53,7 @@ const FilterByBookingStatusPeriod = ({
   return (
     <div className={styles['satus-period-filter']}>
       <FilterByStatus
+        isDisabled={isDisabled}
         selectedStatusId={selectedBookingFilter}
         updateFilters={updateFilters}
       />
@@ -58,6 +61,7 @@ const FilterByBookingStatusPeriod = ({
       <PeriodSelector
         changePeriodBeginningDateValue={handleBookingBeginningDateChange}
         changePeriodEndingDateValue={handleBookingEndingDateChange}
+        isDisabled={isDisabled}
         maxDateEnding={getToday()}
         periodBeginningDate={selectedBookingBeginningDate || undefined}
         periodEndingDate={selectedBookingEndingDate}
