@@ -28,10 +28,6 @@ class PricingStatus(enum.Enum):
     CANCELLED = "cancelled"
     VALIDATED = "validated"
     REJECTED = "rejected"
-    # FIXME (dbaty, 2021-01-18): a "paid" status has been deployed on
-    # prod (through a hotfix). Once rows have been updated to use
-    # "processed" instead, we can remove this enum value.
-    PAID = "paid"
     PROCESSED = "processed"  # has an associated cashflow
     INVOICED = "invoiced"  # has an associated invoice (whose cashflows are "accepted")
 

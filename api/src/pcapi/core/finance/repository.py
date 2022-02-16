@@ -92,9 +92,7 @@ def has_reimbursement(booking: bookings_models.Booking) -> bool:
         return True
     paid_pricings = models.Pricing.query.filter(
         models.Pricing.bookingId == booking.id,
-        models.Pricing.status.in_(
-            (models.PricingStatus.PAID, models.PricingStatus.PROCESSED, models.PricingStatus.INVOICED)
-        ),
+        models.Pricing.status.in_((models.PricingStatus.PROCESSED, models.PricingStatus.INVOICED)),
     )
     return db.session.query(paid_pricings.exists()).scalar()
 
