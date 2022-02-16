@@ -52,7 +52,7 @@ export const ImageVenueUploaderSection: FunctionComponent<Props> = ({
           <div
             className={styles['image-venue-uploader-section-icon-container']}
           >
-            <Button variant={ButtonVariant.TERNARY}>
+            <Button onClick={showModal} variant={ButtonVariant.TERNARY}>
               <Icon
                 className={styles['image-venue-uploader-section-icon']}
                 svg="ico-pen-black"
@@ -80,6 +80,7 @@ export const ImageVenueUploaderSection: FunctionComponent<Props> = ({
       )}
       {!!visible && (
         <VenueImageUploaderModal
+          defaultImage={imageUniqueURL || undefined}
           onDismiss={hideModal}
           reloadImage={reloadImage}
           venueId={venueId}

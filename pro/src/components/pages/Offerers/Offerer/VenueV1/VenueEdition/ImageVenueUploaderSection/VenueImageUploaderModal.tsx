@@ -15,6 +15,7 @@ type Props = {
   venueId: string
   onDismiss: () => void
   reloadImage: (url: string) => void
+  defaultImage?: string
   children?: never
 }
 
@@ -28,8 +29,9 @@ export const VenueImageUploaderModal: FunctionComponent<Props> = ({
   venueId,
   onDismiss,
   reloadImage,
+  defaultImage,
 }) => {
-  const [image, setImage] = useState<File>()
+  const [image, setImage] = useState<string | undefined>(defaultImage)
   const [credit, setCredit] = useState('')
   const [croppingRect, setCroppingRect] = useState<CroppedRect>()
   const [editedImage, setEditedImage] = useState('')
