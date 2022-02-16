@@ -88,7 +88,6 @@ const ImageEditor = forwardRef<AvatarEditor, ImageEditorProps>(
           <span className={style['image-editor-scale-input']}>
             <ThemeProvider theme={theme}>
               <CustomSlider
-                componentsProps={{ thumb: {} }}
                 max={4}
                 min={1}
                 onChange={onScaleChange}
