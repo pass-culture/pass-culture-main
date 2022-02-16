@@ -34,7 +34,7 @@ class MailjetSendOfferValidationTest:
             "Vars": {
                 "offer_name": "Ma petite offre",
                 "venue_name": "Mon stade",
-                "pc_pro_offer_link": f"{PRO_URL}/offres/{humanize(offer.id)}/edition",
+                "pc_pro_offer_link": f"{PRO_URL}/offre/{humanize(offer.id)}/individuel/edition",
             },
         }
 
@@ -73,7 +73,7 @@ class MailjetSendOfferValidationTest:
             "Vars": {
                 "offer_name": "Ma petite offre",
                 "venue_name": "Mon stade",
-                "pc_pro_offer_link": f"{PRO_URL}/offres/{humanize(offer.id)}/edition",
+                "pc_pro_offer_link": f"{PRO_URL}/offre/{humanize(offer.id)}/individuel/edition",
             },
         }
 
@@ -111,7 +111,7 @@ class SendinblueSendOfferValidationTest:
         assert new_offer_validation_email.params == {
             "OFFER_NAME": "Ma petite offre",
             "VENUE_NAME": "Mon stade",
-            "PC_PRO_OFFER_LINK": f"{PRO_URL}/offres/{humanize(offer.id)}/edition",
+            "PC_PRO_OFFER_LINK": f"{PRO_URL}/offre/{humanize(offer.id)}/individuel/edition",
         }
 
     @override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=True)
@@ -131,7 +131,7 @@ class SendinblueSendOfferValidationTest:
         assert mails_testing.outbox[0].sent_data["To"] == "jules.verne@example.com"
         assert mails_testing.outbox[0].sent_data["params"] == {
             "OFFER_NAME": offer.name,
-            "PC_PRO_OFFER_LINK": f"{PRO_URL}/offres/{humanize(offer.id)}/edition",
+            "PC_PRO_OFFER_LINK": f"{PRO_URL}/offre/{humanize(offer.id)}/individuel/edition",
             "VENUE_NAME": venue.name,
         }
 
@@ -148,7 +148,7 @@ class SendinblueSendOfferValidationTest:
         assert new_offer_validation_email.params == {
             "OFFER_NAME": "Ma petite offre",
             "VENUE_NAME": "Mon stade",
-            "PC_PRO_OFFER_LINK": f"{PRO_URL}/offres/{humanize(offer.id)}/edition",
+            "PC_PRO_OFFER_LINK": f"{PRO_URL}/offre/{humanize(offer.id)}/individuel/edition",
         }
 
     @override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=True)
@@ -168,6 +168,6 @@ class SendinblueSendOfferValidationTest:
         assert mails_testing.outbox[0].sent_data["To"] == "jules.verne@example.com"
         assert mails_testing.outbox[0].sent_data["params"] == {
             "OFFER_NAME": offer.name,
-            "PC_PRO_OFFER_LINK": f"{PRO_URL}/offres/{humanize(offer.id)}/edition",
+            "PC_PRO_OFFER_LINK": f"{PRO_URL}/offre/{humanize(offer.id)}/individuel/edition",
             "VENUE_NAME": venue.name,
         }

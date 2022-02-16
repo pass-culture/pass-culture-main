@@ -59,7 +59,7 @@ def get_expected_base_email_data(booking, **overrides):
             "is_booking_autovalidated": 0,
             "contremarque": "ABC123",
             "ISBN": "",
-            "lien_offre_pcpro": f"http://localhost:3001/offres/{offer_id}/edition",
+            "lien_offre_pcpro": f"http://localhost:3001/offre/{offer_id}/individuel/edition",
             "offer_type": "SPECTACLE_REPRESENTATION",
             "departement": "75",
             "must_use_token_for_payment": 1,
