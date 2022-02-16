@@ -395,7 +395,7 @@ class FindByProUserTest:
         )
 
         # Then
-        assert len(bookings_recap_paginated.bookings_recap) == 1
+        assert len(bookings_recap_paginated.bookings_recap) == 2
         expected_booking_recap = bookings_recap_paginated.bookings_recap[0]
         assert expected_booking_recap.booking_is_duo is True
 
