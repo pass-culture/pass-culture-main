@@ -35,7 +35,7 @@ const FilterByOfferType = ({
     <Select
       defaultOption={ALL_OFFER_TYPE_OPTION}
       handleSelection={handleOfferTypeSelection}
-      label="Type d'offre"
+      label="Type d’offres"
       name="offerType"
       options={offerTypeOptions}
       selectedValue={selectedOfferType}
