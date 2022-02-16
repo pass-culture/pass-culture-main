@@ -1,0 +1,30 @@
+.soft-deleted-offerer-warning {
+  border: rem(1px) solid $grey-medium;
+  border-radius: rem(8px);
+  box-shadow: 0 rem(2px) rem(6px) 0 rgba($black, 0.15);
+  overflow: hidden;
+  margin-top: rem(16px);
+
+  .soft-deleted-offerer-warning-inner {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    min-height: rem(205px);
+    border-left: rem(8px) solid $grey-medium;
+    height: 100%;
+    padding: rem(16px) rem(16px) rem(24px);
+    width: 100%;
+
+    p {
+      color: $black;
+      text-align: center;
+    }
+
+    div {
+      a:first-child {
+        margin-right: rem(16px);
+      }
+    }
+  }
+}
