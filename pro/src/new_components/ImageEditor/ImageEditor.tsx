@@ -58,6 +58,7 @@ const ImageEditor = forwardRef<AvatarEditor, ImageEditorProps>(
         <AvatarEditor
           border={[cropBorderWidth, cropBorderHeight]}
           color={[0, 0, 0, 0.4]}
+          crossOrigin="anonymous"
           height={canvasHeight}
           image={image}
           onImageChange={drawCropBorder}
