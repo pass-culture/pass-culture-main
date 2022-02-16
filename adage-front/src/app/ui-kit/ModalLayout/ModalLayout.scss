@@ -1,0 +1,31 @@
+@import 'sass-rem';
+@import 'styles';
+
+.modal {
+  &-logo {
+    width: rem(48px);
+    fill: $primary;
+    display: block;
+    margin: auto;
+    margin-bottom: rem(16px);
+  }
+
+  &-buttons {
+    display: flex;
+    align-items: center;
+    margin-top: rem(32px);
+    justify-content: center;
+  }
+
+  &-button {
+    width: rem(140px);
+
+    &:not(:last-of-type) {
+      margin-right: rem(24px);
+    }
+  }
+
+  &-link {
+    color: inherit;
+  }
+}
