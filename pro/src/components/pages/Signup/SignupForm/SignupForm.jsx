@@ -18,6 +18,7 @@ import TextInput from 'components/layout/inputs/TextInput/TextInput'
 import { LegalInfos } from 'components/layout/LegalInfos/LegalInfos'
 import { redirectLoggedUser } from 'components/router/helpers'
 import bindAddressAndDesignationFromSiren from 'repository/siren/bindSirenFieldToDesignation'
+import { analytics } from 'utils/firebase'
 
 import SirenField from './SirenField/SirenField'
 
@@ -151,6 +152,9 @@ class SignupForm extends PureComponent {
             <a
               className="tertiary-link"
               href="https://docs.passculture.app/le-pass-culture-en-quelques-mots"
+              onClick={() =>
+                analytics.logClickFaq(this.props.location.pathname)
+              }
               rel="noopener noreferrer"
               target="_blank"
             >
@@ -160,6 +164,9 @@ class SignupForm extends PureComponent {
             <a
               className="tertiary-link"
               href="https://passculture.zendesk.com/hc/fr/articles/4411999179665"
+              onClick={() =>
+                analytics.logClickHelpCenter(this.props.location.pathname)
+              }
               rel="noopener noreferrer"
               target="_blank"
             >
@@ -234,7 +241,11 @@ class SignupForm extends PureComponent {
                   title="Créer mon compte"
                 />
                 <div className="buttons-field">
-                  <Link className="secondary-link" to="/connexion">
+                  <Link
+                    className="secondary-link"
+                    onClick={() => analytics.logClickAlreayAccount()}
+                    to="/connexion"
+                  >
                     J’ai déjà un compte
                   </Link>
                   <button
