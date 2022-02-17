@@ -381,6 +381,8 @@ class DmsWebhookApplicationTest:
         assert user.beneficiaryFraudChecks[0].type == fraud_models.FraudCheckType.DMS
         assert user.beneficiaryFraudChecks[0].eligibilityType == users_models.EligibilityType.AGE18
 
+        assert fraud_api.has_user_performed_identity_check(user)
+
 
 @pytest.mark.usefixtures("db_session")
 class UbbleWebhookTest:
