@@ -34,14 +34,11 @@ class Returns200Test:
     def test_get_offer(self, client):
         # Given
         offer = offer_factories.EducationalEventOfferFactory(name="offer name", description="offer description")
-        stock1 = offer_factories.EducationalEventStockFactory(
-            beginningDatetime=datetime(2021, 5, 15),
-            offer=offer,
+        offer_factories.EducationalEventStockFactory(
+            beginningDatetime=datetime(2021, 5, 15), offer=offer, isSoftDeleted=True
         )
         stock2 = offer_factories.EducationalEventStockFactory(
-            beginningDatetime=datetime(2021, 5, 16),
-            offer=offer,
-            price=200,
+            beginningDatetime=datetime(2021, 5, 16), offer=offer, price=200, isSoftDeleted=False
         )
 
         adage_jwt_fake_valid_token = _create_adage_valid_token_with_email(email="toto@mail.com", uai="12890AI")
@@ -62,15 +59,6 @@ class Returns200Test:
             "isSoldOut": False,
             "name": "offer name",
             "stocks": [
-                {
-                    "beginningDatetime": "2021-05-15T00:00:00Z",
-                    "bookingLimitDatetime": "2021-05-14T23:00:00Z",
-                    "id": stock1.id,
-                    "isBookable": True,
-                    "price": 1000,
-                    "educationalPriceDetail": "Le prix inclus l'accès à la séance et un atelier une fois la séance terminée. 1000 caractères max.",
-                    "numberOfTickets": 30,
-                },
                 {
                     "beginningDatetime": "2021-05-16T00:00:00Z",
                     "bookingLimitDatetime": "2021-05-15T23:00:00Z",
