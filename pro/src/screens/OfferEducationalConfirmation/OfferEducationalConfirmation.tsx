@@ -30,7 +30,7 @@ const pendingOffer = {
 }
 
 const showcaseOffer = {
-  title: 'Offre en cours de validation !',
+  title: 'Offre créée avec succès !',
   description:
     'Votre offre est désormais disponible sur ADAGE (L’Application Dédiée À la Généralisation de l’Éducation artistique et culturelle) et visible par les enseignants et chefs d’établissement de l’Éducation nationale. Vous aurez la possibilité de revenir éditer votre offre et compléter les éléments de date(s) et prix.',
   Icon: ValidateIcon,
