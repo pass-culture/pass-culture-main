@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { useHistory, useParams } from 'react-router'
 
+import useActiveFeature from 'components/hooks/useActiveFeature'
 import useNotification from 'components/hooks/useNotification'
 import Spinner from 'components/layout/Spinner'
 import {
@@ -31,6 +32,7 @@ type AsyncScreenProps = Pick<
 const OfferEducationalEdition = (): JSX.Element => {
   const { offerId } = useParams<{ offerId: string }>()
   const history = useHistory()
+  const isShowcaseFeatureEnabled = useActiveFeature('ENABLE_EAC_SHOWCASE_OFFER')
 
   const [isReady, setIsReady] = useState<boolean>(false)
   const [screenProps, setScreenProps] = useState<AsyncScreenProps | null>(null)
@@ -169,6 +171,7 @@ const OfferEducationalEdition = (): JSX.Element => {
           initialValues={initialValues}
           isOfferActive={offer?.isActive}
           isOfferBooked={offer?.isBooked}
+          isShowcaseFeatureEnabled={isShowcaseFeatureEnabled}
           mode={Mode.EDITION}
           notify={notify}
           onSubmit={editOffer}
