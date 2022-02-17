@@ -31,7 +31,7 @@ from pcapi.domain.pro_emails import send_validation_confirmation_email_to_pro
 from pcapi.models import db
 from pcapi.models.user_offerer import UserOfferer
 from pcapi.repository import repository
-from pcapi.routes.serialization import venues_serialize
+from pcapi.routes.serialization import base as serialize_base
 from pcapi.routes.serialization.offerers_serialize import CreateOffererQueryModel
 from pcapi.routes.serialization.venues_serialize import PostVenueBodyModel
 from pcapi.utils import crypto
@@ -65,7 +65,7 @@ def create_digital_venue(offerer: Offerer) -> Venue:
 
 def update_venue(
     venue: Venue,
-    contact_data: venues_serialize.VenueContactModel = None,
+    contact_data: serialize_base.VenueContactModel = None,
     **attrs: typing.Any,
 ) -> Venue:
     validation.validate_coordinates(attrs.get("latitude"), attrs.get("longitude"))
@@ -118,7 +118,7 @@ def delete_business_unit(business_unit: finance_models.BusinessUnit) -> None:
     logger.info("Set BusinessUnit.status as DELETED", extra={"business_unit_id": business_unit.id})
 
 
-def upsert_venue_contact(venue: Venue, contact_data: venues_serialize.VenueContactModel) -> Venue:
+def upsert_venue_contact(venue: Venue, contact_data: serialize_base.VenueContactModel) -> Venue:
     """
     Create and attach a VenueContact to a Venue if it has none.
     Update (replace) an existing VenueContact otherwise.
