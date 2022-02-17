@@ -133,7 +133,6 @@ class GetVenueResponseModel(base.BaseVenueResponse):
     managingOffererId: str
 
     bannerMeta: Optional[BannerMetaModel]
-    bannerUrl: Optional[str]
     bic: Optional[str]
     bookingEmail: Optional[str]
     businessUnitId: Optional[int]

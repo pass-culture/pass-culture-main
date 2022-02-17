@@ -39,6 +39,7 @@ class VenuesTest:
                 "motorDisability": venue.motorDisabilityCompliant,
                 "visualDisability": venue.visualDisabilityCompliant,
             },
+            "bannerUrl": venue.bannerUrl,
         }
 
     def test_get_non_permanent_venue(self, client):
