@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useHistory, useLocation } from 'react-router'
 
+import useActiveFeature from 'components/hooks/useActiveFeature'
 import useNotification from 'components/hooks/useNotification'
 import Spinner from 'components/layout/Spinner'
 // @debt deprecated "Mathilde: should not import utility from legacy page"
@@ -30,6 +31,7 @@ type AsyncScreenProps = Pick<
 const OfferEducationalCreation = (): JSX.Element => {
   const history = useHistory()
   const location = useLocation()
+  const isShowcaseFeatureEnabled = useActiveFeature('ENABLE_EAC_SHOWCASE_OFFER')
 
   const [isReady, setIsReady] = useState<boolean>(false)
   const [screenProps, setScreenProps] = useState<AsyncScreenProps | null>(null)
@@ -95,6 +97,7 @@ const OfferEducationalCreation = (): JSX.Element => {
             {...screenProps}
             getIsOffererEligible={getIsOffererEligibleAdapter}
             initialValues={initialValues}
+            isShowcaseFeatureEnabled={isShowcaseFeatureEnabled}
             mode={Mode.CREATION}
             notify={notify}
             onSubmit={createOffer}

@@ -29,6 +29,7 @@ type IOfferEducationalFormProps = Omit<
   'onSubmit' | 'initialValues' | 'isEdition'
 > & {
   mode: Mode
+  isShowcaseFeatureEnabled: boolean
 }
 
 const OfferEducationalForm = ({
@@ -38,6 +39,7 @@ const OfferEducationalForm = ({
   getIsOffererEligible,
   notify,
   mode,
+  isShowcaseFeatureEnabled,
 }: IOfferEducationalFormProps): JSX.Element => {
   const [venuesOptions, setVenuesOptions] = useState<SelectOptions>([])
   const [currentOfferer, setCurrentOfferer] = useState<IUserOfferer | null>(
@@ -103,10 +105,14 @@ const OfferEducationalForm = ({
         className={styles['educational-form-banner']}
         type="notification-info"
       >
-        Une offre à destination d’un groupe scolaire correspond à{' '}
-        <b>une date</b>, <b>une heure</b> et <b>un prix</b>
-        <br />
-        <br />
+        {!isShowcaseFeatureEnabled && (
+          <>
+            Une offre à destination d’un groupe scolaire correspond à{' '}
+            <b>une date</b>, <b>une heure</b> et <b>un prix</b>
+            <br />
+            <br />
+          </>
+        )}
         Pour proposer plusieurs dates, heures ou prix, il vous sera nécessaire
         de <b>créer plusieurs offres</b>
       </Banner>
