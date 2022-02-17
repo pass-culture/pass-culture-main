@@ -30,12 +30,9 @@ import pcapi.repository as pcapi_repository
 logger = logging.getLogger(__name__)
 
 
-logger = logging.getLogger(__name__)
-
-
 def handle_dms_state(
     user: users_models.User,
-    application: fraud_models.DMSContent,
+    result_content: fraud_models.DMSContent,
     procedure_id: int,
     application_id: int,
     state: dms_connector_api.GraphQLApplicationStates,
@@ -46,7 +43,7 @@ def handle_dms_state(
     current_fraud_check = fraud_dms_api.get_fraud_check(user, application_id)
     if current_fraud_check is None:
         # create a fraud_check whatever the status is because we may have missed a webhook event
-        current_fraud_check = fraud_dms_api.create_fraud_check(user, application)
+        current_fraud_check = fraud_dms_api.create_fraud_check(user, result_content)
         user.submit_user_identity()
 
     if state == dms_connector_api.GraphQLApplicationStates.draft:
