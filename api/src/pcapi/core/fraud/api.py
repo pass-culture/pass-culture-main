@@ -21,7 +21,6 @@ from . import models
 from .common import models as common_models
 from .dms import api as dms_api
 from .ubble import api as ubble_api
-from .ubble import models as ubble_fraud_models
 
 
 logger = logging.getLogger(__name__)
@@ -515,35 +514,6 @@ def is_risky_user_profile(user: users_models.User) -> bool:
         return True
 
     return False
-
-
-def update_or_create_fraud_check_failed(
-    user: users_models.User,
-    thirdPartyId: str,
-    source_data: typing.Union[models.DMSContent, ubble_fraud_models.UbbleContent],
-    reasons: list[models.FraudReasonCode],
-) -> models.BeneficiaryFraudCheck:
-    fraud_check = models.BeneficiaryFraudCheck.query.filter(
-        models.BeneficiaryFraudCheck.user == user,
-        models.BeneficiaryFraudCheck.thirdPartyId == thirdPartyId,
-        ~models.BeneficiaryFraudCheck.status.in_([models.FraudCheckStatus.OK, models.FraudCheckStatus.KO]),
-    ).one_or_none()
-
-    eligibility_type = decide_eligibility(user, source_data)
-    if not fraud_check:
-        fraud_check = models.BeneficiaryFraudCheck(
-            user=user,
-            type=models.FRAUD_CONTENT_MAPPING[type(source_data)],
-            thirdPartyId=thirdPartyId,
-            resultContent=source_data.dict(),
-            status=models.FraudCheckStatus.KO,
-            eligibilityType=eligibility_type,
-        )
-
-    fraud_check.status = models.FraudCheckStatus.KO
-    fraud_check.reasonCodes = reasons
-    repository.save(fraud_check)
-    return fraud_check
 
 
 def create_dms_fraud_check_error(
