@@ -45,6 +45,7 @@ class BaseVenueResponse(BaseModel):
     name: str
 
     address: typing.Optional[str]
+    bannerUrl: typing.Optional[str]
     contact: typing.Optional[VenueContactModel]
     city: typing.Optional[str]
     description: typing.Optional[VenueDescription]  # type: ignore
