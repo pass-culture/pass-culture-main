@@ -19,7 +19,7 @@ coveralls==2.1.2
 debugpy
 factory-boy
 Flask==1.1.*
-Flask-Admin==1.5.8
+Flask-Admin==1.6.0
 Flask-Cors==3.0.9
 Flask-JWT-Extended==4.0.0
 Flask-Limiter==1.4
