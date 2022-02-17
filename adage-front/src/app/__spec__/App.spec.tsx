@@ -42,6 +42,7 @@ jest.mock('react-instantsearch-dom', () => {
 jest.mock('repository/pcapi/pcapi', () => ({
   authenticate: jest.fn(),
   getVenueBySiret: jest.fn(),
+  getVenueById: jest.fn(),
   getEducationalCategories: jest.fn().mockResolvedValue({
     categories: [
       { id: 'CINEMA', proLabel: 'Cinéma' },
@@ -95,9 +96,10 @@ describe('app', () => {
 
       mockedPcapi.authenticate.mockResolvedValue(Role.redactor)
       mockedPcapi.getVenueBySiret.mockResolvedValue(venue)
+      mockedPcapi.getVenueById.mockResolvedValue(venue)
     })
 
-    it('should show search offers input with no filter on venue when no siret is provided', async () => {
+    it('should show search offers input with no filter on venue when no siret or venueId is provided', async () => {
       // When
       render(<App />)
 
@@ -151,6 +153,47 @@ describe('app', () => {
       const siret = '123456789'
       venue.publicName = undefined
       window.location.search = `?siret=${siret}`
+
+      // When
+      render(<App />)
+
+      // Then
+      const venueFilter = await screen.findByText(`Lieu : ${venue.name}`)
+      expect(venueFilter).toBeInTheDocument()
+      expect(queryResetFiltersButton()).toBeInTheDocument()
+    })
+
+    it('should show search offers input with filter on venue public name when venueId is provided and public name exists', async () => {
+      // Given
+      const venueId = '123456789'
+      window.location.search = `?venue=${venueId}`
+
+      // When
+      render(<App />)
+
+      // Then
+      const contentTitle = await screen.findByText('Rechercher une offre', {
+        selector: 'h2',
+      })
+      expect(contentTitle).toBeInTheDocument()
+      expect(Configure).toHaveBeenCalledTimes(2)
+      const searchConfiguration = (Configure as jest.Mock).mock.calls[1][0]
+      expect(searchConfiguration.facetFilters).toStrictEqual([
+        'offer.isEducational:true',
+        `venue.id:${venue.id}`,
+      ])
+
+      expect(queryTag(`Lieu : ${venue?.publicName}`)).toBeInTheDocument()
+      expect(queryResetFiltersButton()).toBeInTheDocument()
+
+      expect(mockedPcapi.getVenueById).toHaveBeenCalledWith(venueId)
+    })
+
+    it('should show venue filter on venue name when venueId is provided and public name does not exist', async () => {
+      // Given
+      const venueId = '123456789'
+      venue.publicName = undefined
+      window.location.search = `?venue=${venueId}`
 
       // When
       render(<App />)
