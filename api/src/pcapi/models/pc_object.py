@@ -58,24 +58,24 @@ class PcObject:
 
     def populate_from_dict(self, data: dict, skipped_keys: Iterable[str] = ()):
         self._check_not_soft_deleted()
-        columns = self.__class__.__table__.columns._data
-        keys_to_populate = self._get_keys_to_populate(columns, data, skipped_keys)
+        columns = self.__mapper__.column_attrs
+        keys_to_populate = self._get_keys_to_populate(columns.keys(), data, skipped_keys)
 
         for key in keys_to_populate:
             column = columns[key]
             value = _dehumanize_if_needed(column, data.get(key))
             if isinstance(value, str):
-                if isinstance(column.type, Integer):
+                if isinstance(column.expression.type, Integer):
                     self._try_to_set_attribute_with_decimal_value(column, key, value, "integer")
-                elif isinstance(column.type, (Float, Numeric)):
+                elif isinstance(column.expression.type, (Float, Numeric)):
                     self._try_to_set_attribute_with_decimal_value(column, key, value, "float")
-                elif isinstance(column.type, String):
+                elif isinstance(column.expression.type, String):
                     setattr(self, key, value.strip() if value else value)
-                elif isinstance(column.type, DateTime):
+                elif isinstance(column.expression.type, DateTime):
                     self._try_to_set_attribute_with_deserialized_datetime(column, key, value)
-                elif isinstance(column.type, UUID):
+                elif isinstance(column.expression.type, UUID):
                     self._try_to_set_attribute_with_uuid(column, key, value)
-            elif not isinstance(value, datetime) and isinstance(column.type, DateTime):
+            elif not isinstance(value, datetime) and isinstance(column.expression.type, DateTime):
                 self._try_to_set_attribute_with_deserialized_datetime(column, key, value)
             else:
                 setattr(self, key, value)
@@ -170,7 +170,7 @@ class PcObject:
             setattr(self, key, datetime_value)
         except TypeError:
             error = DateTimeCastError()
-            error.add_error(col.name, "Invalid value for %s (datetime): %r" % (key, value))
+            error.add_error(col.expression.name, "Invalid value for %s (datetime): %r" % (key, value))
             raise error
 
     def _try_to_set_attribute_with_uuid(self, col, key, value):
@@ -179,7 +179,7 @@ class PcObject:
             setattr(self, key, value)
         except ValueError:
             error = UuidCastError()
-            error.add_error(col.name, "Invalid value for %s (uuid): %r" % (key, value))
+            error.add_error(col.expression.name, "Invalid value for %s (uuid): %r" % (key, value))
             raise error
 
     def _try_to_set_attribute_with_decimal_value(self, col, key, value, expected_format):
@@ -187,7 +187,7 @@ class PcObject:
             setattr(self, key, Decimal(value))
         except InvalidOperation:
             error = DecimalCastError()
-            error.add_error(col.name, "Invalid value for {} ({}): '{}'".format(key, expected_format, value))
+            error.add_error(col.expression.name, "Invalid value for {} ({}): '{}'".format(key, expected_format, value))
             raise error
 
     def _check_not_soft_deleted(self):
@@ -220,5 +220,5 @@ def _is_human_id_column(column: Column) -> bool:
         return None
     column_name = column.key
     is_column_primary_key_or_foreign_key = column_name == "id" or column_name.endswith("Id")
-    is_column_a_number = isinstance(column.type, (Integer, BigInteger))
+    is_column_a_number = isinstance(column.expression.type, (Integer, BigInteger))
     return is_column_primary_key_or_foreign_key and is_column_a_number
