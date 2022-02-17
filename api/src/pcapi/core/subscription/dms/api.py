@@ -20,7 +20,6 @@ from pcapi.core.subscription import repository as subscription_repository
 import pcapi.core.subscription.api as subscription_api
 import pcapi.core.users.models as users_models
 from pcapi.core.users.repository import find_user_by_email
-from pcapi.models.api_errors import ApiErrors
 from pcapi.models.beneficiary_import import BeneficiaryImport
 from pcapi.models.beneficiary_import import BeneficiaryImportStatus
 from pcapi.models.beneficiary_import_status import ImportStatus
@@ -232,17 +231,17 @@ def process_application(
             user, "honor statement contained in DMS application", fraud_check.eligibilityType
         )
         subscription_api.on_successful_application(user=user, source_data=result_content)
-    except ApiErrors as api_errors:
+    except Exception as exception:  # pylint: disable=broad-except
         logger.warning(
             "[BATCH][REMOTE IMPORT BENEFICIARIES] Could not save application %s, because of error: %s - Procedure %s",
             result_content.application_id,
-            api_errors,
+            exception,
             result_content.procedure_id,
         )
         return
 
     logger.info(
-        "[BATCH][REMOTE IMPORT BENEFICIARIES] Successfully created user for application %s - Procedure %s",
+        "[BATCH][REMOTE IMPORT BENEFICIARIES] Successfully imported DMS application %s - Procedure %s",
         result_content.application_id,
         result_content.procedure_id,
     )
