@@ -270,9 +270,9 @@ def clock() -> None:
 
     scheduler.add_job(pc_import_dms_users_beneficiaries_from_old_dms, "cron", day="*", hour="20", minute="50")
 
-    scheduler.add_job(pc_import_beneficiaries_from_dms_v3, "cron", hour="*")
+    scheduler.add_job(pc_import_beneficiaries_from_dms_v3, "cron", day="*", hour="6")
 
-    scheduler.add_job(pc_import_beneficiaries_from_dms_v4, "cron", hour="*", minute="20")
+    scheduler.add_job(pc_import_beneficiaries_from_dms_v4, "cron", day="*", hour="6", minute="20")
 
     scheduler.add_job(update_booking_used, "cron", day="*", hour="0")
 
