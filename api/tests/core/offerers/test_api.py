@@ -15,7 +15,7 @@ import pcapi.core.offers.factories as offers_factories
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
 from pcapi.models import api_errors
-from pcapi.routes.serialization import venues_serialize
+from pcapi.routes.serialization import base as serialize_base
 from pcapi.routes.serialization.offerers_serialize import CreateOffererQueryModel
 
 
@@ -187,7 +187,7 @@ class EditVenueTest:
             "city": venue.city,
             "motorDisabilityCompliant": venue.motorDisabilityCompliant,
         }
-        contact_data = venues_serialize.VenueContactModel(
+        contact_data = serialize_base.VenueContactModel(
             email=venue.contact.email,
             phone_number=venue.contact.phone_number,
             social_medias=venue.contact.social_medias,
@@ -204,7 +204,7 @@ class EditVenueTest:
         )
         venue = offers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
 
-        contact_data = venues_serialize.VenueContactModel(email="other.contact@venue.com", phone_number="0788888888")
+        contact_data = serialize_base.VenueContactModel(email="other.contact@venue.com", phone_number="0788888888")
 
         offerers_api.update_venue(venue, contact_data)
 
@@ -258,7 +258,7 @@ class EditVenueContactTest:
             user__email="user.pro@test.com",
         )
         venue = offers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
-        contact_data = venues_serialize.VenueContactModel(
+        contact_data = serialize_base.VenueContactModel(
             email="contact@venue.com",
             phone_number="+33766778899",
             social_medias={"instagram": "https://instagram.com/@venue"},
@@ -277,7 +277,7 @@ class EditVenueContactTest:
         )
         venue = offers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
 
-        contact_data = venues_serialize.VenueContactModel(
+        contact_data = serialize_base.VenueContactModel(
             email="other.contact@venue.com", socialMedias={"instagram": "https://instagram.com/@venue"}
         )
 
