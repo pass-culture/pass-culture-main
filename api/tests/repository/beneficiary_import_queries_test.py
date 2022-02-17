@@ -151,7 +151,13 @@ class GetAlreadyProcessedApplicationIdTest:
             type=fraud_models.FraudCheckType.DMS,
             status=fraud_models.FraudCheckStatus.ERROR,
         )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            thirdPartyId=8888,
+            resultContent=None,
+            type=fraud_models.FraudCheckType.DMS,
+            status=fraud_models.FraudCheckStatus.ERROR,
+        )
 
         application_ids = get_already_processed_applications_ids(123)
 
-        assert application_ids == {1111, 2222, 4444, 6666, 7777}
+        assert application_ids == {1111, 2222, 4444, 6666, 7777, 8888}
