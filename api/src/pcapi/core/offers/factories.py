@@ -129,6 +129,7 @@ class OfferFactory(BaseFactory):
     mentalDisabilityCompliant = False
     motorDisabilityCompliant = False
     visualDisabilityCompliant = False
+    isEducational = False
 
     @classmethod
     def _create(cls, model_class, *args, **kwargs):  # type: ignore [no-untyped-def]

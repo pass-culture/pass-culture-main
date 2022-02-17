@@ -11,10 +11,15 @@ from pcapi.utils.mailing import make_offer_rejection_notification_email
 
 @pytest.mark.usefixtures("db_session")
 class MakeOfferCreationNotificationEmailTest:
-    def test_with_physical_offer(self):
+    @pytest.mark.parametrize(
+        "isEducationalOffer",
+        [True, False],
+    )
+    def test_with_physical_offer(self, isEducationalOffer):
         author = users_factories.ProFactory()
         offer = offers_factories.ThingOfferFactory(
             author=author,
+            isEducational=isEducationalOffer,
             product__name="Le vent se lève",
             venue__city="Montreuil",
             venue__postalCode="93100",
@@ -27,7 +32,6 @@ class MakeOfferCreationNotificationEmailTest:
 
         # Then
         assert email["FromName"] == "pass Culture"
-        assert email["Subject"] == "[Création d’offre - 93] Le vent se lève"
 
         parsed_email = BeautifulSoup(email["Html-part"], "html.parser")
 
@@ -41,13 +45,21 @@ class MakeOfferCreationNotificationEmailTest:
         assert f"Lien vers l'offre dans la Webapp :" f" {settings.WEBAPP_V2_URL}/offre/{offer.id}" in webapp_offer_link
 
         pro_offer_link = str(parsed_email.find("p", {"id": "pro_offer_link"}))
+        pro_offer_type = "individuel" if offer.isEducational == False else "collectif"
         assert (
             f"Lien vers l'offre dans le portail PRO :"
-            f" http://localhost:3001/offre/{humanize(offer.id)}/individuel/edition" in pro_offer_link
+            f" http://localhost:3001/offre/{humanize(offer.id)}/{pro_offer_type}/edition" in pro_offer_link
         )
-
         offer_is_duo = str(parsed_email.find("p", {"id": "offer_is_duo"}))
         assert "Offre duo : False" in offer_is_duo
+
+        offer_is_eac = str(parsed_email.find("p", {"id": "offer_is_educational"}))
+        if offer.isEducational == True:
+            assert "Offre EAC : True" in offer_is_eac
+            assert email["Subject"] == "[Création d’offre EAC - 93] Le vent se lève"
+        else:
+            assert email["Subject"] == "[Création d’offre - 93] Le vent se lève"
+            assert "Offre EAC : False" in offer_is_eac
 
         venue_details = str(parsed_email.find("p", {"id": "venue_details"}))
         assert (
@@ -78,10 +90,15 @@ class MakeOfferCreationNotificationEmailTest:
 
 @pytest.mark.usefixtures("db_session")
 class MakeOfferRejectionNotificationEmailTest:
-    def test_with_physical_offer(self):
+    @pytest.mark.parametrize(
+        "isEducationalOffer",
+        [True, False],
+    )
+    def test_with_physical_offer(self, isEducationalOffer):
         author = users_factories.ProFactory(firstName=None)
         offer = offers_factories.ThingOfferFactory(
             author=author,
+            isEducational=isEducationalOffer,
             product__name="Le vent se lève",
             venue__city="Montreuil",
             venue__postalCode="93100",
@@ -94,7 +111,6 @@ class MakeOfferRejectionNotificationEmailTest:
 
         # Then
         assert email["FromName"] == "pass Culture"
-        assert email["Subject"] == "[Création d’offre : refus - 93] Le vent se lève"
 
         parsed_email = BeautifulSoup(email["Html-part"], "html.parser")
 
@@ -105,13 +121,22 @@ class MakeOfferRejectionNotificationEmailTest:
         assert "Vient d'être créée par : Cinéma de Montreuil" in offerer_html
 
         pro_offer_link = str(parsed_email.find("p", {"id": "pro_offer_link"}))
+        pro_offer_type = "individuel" if offer.isEducational == False else "collectif"
         assert (
             f"Lien vers l'offre dans le portail PRO :"
-            f" http://localhost:3001/offre/{humanize(offer.id)}/individuel/edition" in pro_offer_link
+            f" http://localhost:3001/offre/{humanize(offer.id)}/{pro_offer_type}/edition" in pro_offer_link
         )
 
         offer_is_duo = str(parsed_email.find("p", {"id": "offer_is_duo"}))
         assert "Offre duo : False" in offer_is_duo
+
+        offer_is_eac = str(parsed_email.find("p", {"id": "offer_is_educational"}))
+        if offer.isEducational == True:
+            assert "Offre EAC : True" in offer_is_eac
+            assert email["Subject"] == "[Création d’offre EAC : refus - 93] Le vent se lève"
+        else:
+            assert email["Subject"] == "[Création d’offre : refus - 93] Le vent se lève"
+            assert "Offre EAC : False" in offer_is_eac
 
         venue_details = str(parsed_email.find("p", {"id": "venue_details"}))
         assert (
