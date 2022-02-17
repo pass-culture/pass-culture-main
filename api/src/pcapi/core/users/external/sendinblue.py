@@ -100,7 +100,7 @@ def update_contact_attributes(
         email=user_email,
         attributes=formatted_attributes,
         contact_list_ids=contact_list_ids,
-        emailBlacklisted=(attributes.marketing_email_subscription is not False),  # attribute may be None
+        emailBlacklisted=(not attributes.marketing_email_subscription),  # attribute may be None
     )
 
     if asynchronous:
