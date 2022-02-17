@@ -117,7 +117,7 @@ const OfferEducationalStock = ({
               )}
               {!displayElementsForShowcaseOption && (
                 <>
-                  {!displayElementsForShowcaseOption && (
+                  {shouldDisplayShowcaseScreen && (
                     <div className={styles['separator']} />
                   )}
                   <Banner
