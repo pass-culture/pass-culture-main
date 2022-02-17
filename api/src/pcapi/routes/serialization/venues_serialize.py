@@ -15,49 +15,18 @@ from typing_extensions import TypedDict
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers.validation import VENUE_BANNER_MAX_SIZE
 from pcapi.routes.serialization import BaseModel
+from pcapi.routes.serialization import base
 from pcapi.routes.serialization.finance_serialize import BusinessUnitResponseModel
 from pcapi.serialization.utils import dehumanize_field
 from pcapi.serialization.utils import humanize_field
 from pcapi.serialization.utils import string_to_boolean_field
 from pcapi.serialization.utils import to_camel
-from pcapi.utils import phone_number as phone_number_utils
 from pcapi.utils.date import format_into_utc_date
 from pcapi.utils.image_conversion import CropParam
 
 
 MAX_LONGITUDE = 180
 MAX_LATITUDE = 90
-
-
-SocialMedia = typing.Literal["facebook", "instagram", "snapchat", "twitter"]
-SocialMedias = dict[SocialMedia, pydantic.HttpUrl]  # type: ignore
-
-
-class VenueContactModel(BaseModel):
-    class Config:
-        alias_generator = to_camel
-        allow_population_by_field_name = True
-        orm_mode = True
-        anystr_strip_whitespace = True
-        extra = pydantic.Extra.forbid
-
-    email: Optional[pydantic.EmailStr]
-    website: Optional[pydantic.HttpUrl]
-    phone_number: Optional[str]
-    social_medias: Optional[SocialMedias]
-
-    @validator("phone_number")
-    def validate_phone_number(cls, phone_number: str) -> str:  # pylint: disable=no-self-argument
-        if phone_number is None:
-            return phone_number
-
-        try:
-            return phone_number_utils.ParsedPhoneNumber(phone_number, "FR").phone_number
-        except Exception:
-            raise ValueError(f"numéro de téléphone invalide: {phone_number}")
-
-
-VenueDescription = pydantic.constr(max_length=1000, strip_whitespace=True)
 
 
 class PostVenueBodyModel(BaseModel):
@@ -75,12 +44,12 @@ class PostVenueBodyModel(BaseModel):
     venueLabelId: Optional[str]
     venueTypeCode: str
     withdrawalDetails: Optional[str]
-    description: Optional[VenueDescription]  # type: ignore
+    description: Optional[base.VenueDescription]  # type: ignore
     audioDisabilityCompliant: Optional[bool]
     mentalDisabilityCompliant: Optional[bool]
     motorDisabilityCompliant: Optional[bool]
     visualDisabilityCompliant: Optional[bool]
-    contact: Optional[VenueContactModel]
+    contact: Optional[base.VenueContactModel]
     businessUnitId: Optional[int]
 
     class Config:
@@ -157,46 +126,35 @@ class BannerMetaModel(TypedDict):
     content_type: str
 
 
-class GetVenueResponseModel(BaseModel):
-    address: Optional[str]
+class GetVenueResponseModel(base.BaseVenueResponse):
+    id: str
+    dateCreated: datetime
+    isValidated: bool
+    managingOffererId: str
+
+    bannerMeta: Optional[BannerMetaModel]
+    bannerUrl: Optional[str]
     bic: Optional[str]
     bookingEmail: Optional[str]
-    city: Optional[str]
+    businessUnitId: Optional[int]
+    businessUnit: Optional[BusinessUnitResponseModel]
     comment: Optional[str]
-    dateCreated: datetime
     dateModifiedAtLastProvider: Optional[datetime]
     demarchesSimplifieesApplicationId: Optional[str]
     departementCode: Optional[str]
     fieldsUpdated: list[str]
     iban: Optional[str]
-    id: str
     idAtProviders: Optional[str]
     isBusinessUnitMainVenue: Optional[bool]
-    isPermanent: Optional[bool]
-    isValidated: bool
-    isVirtual: bool
     lastProviderId: Optional[str]
-    latitude: Optional[float]
-    longitude: Optional[float]
     managingOfferer: GetVenueManagingOffererResponseModel
-    managingOffererId: str
-    name: str
-    postalCode: Optional[str]
-    publicName: Optional[str]
     siret: Optional[str]
     venueLabelId: Optional[str]
     venueTypeCode: Optional[offerers_models.VenueTypeCode]
-    withdrawalDetails: Optional[str]
-    description: Optional[VenueDescription]  # type: ignore
     audioDisabilityCompliant: Optional[bool]
     mentalDisabilityCompliant: Optional[bool]
     motorDisabilityCompliant: Optional[bool]
     visualDisabilityCompliant: Optional[bool]
-    contact: Optional[VenueContactModel]
-    businessUnitId: Optional[int]
-    businessUnit: Optional[BusinessUnitResponseModel]
-    bannerUrl: Optional[str]
-    bannerMeta: Optional[BannerMetaModel]
 
     _humanize_id = humanize_field("id")
     _humanize_managing_offerer_id = humanize_field("managingOffererId")
@@ -231,12 +189,12 @@ class EditVenueBodyModel(BaseModel):
     isAccessibilityAppliedOnAllOffers: Optional[bool]
     isWithdrawalAppliedOnAllOffers: Optional[bool]
     isEmailAppliedOnAllOffers: Optional[bool]
-    description: Optional[VenueDescription]  # type: ignore
+    description: Optional[base.VenueDescription]  # type: ignore
     audioDisabilityCompliant: Optional[bool]
     mentalDisabilityCompliant: Optional[bool]
     motorDisabilityCompliant: Optional[bool]
     visualDisabilityCompliant: Optional[bool]
-    contact: Optional[VenueContactModel]
+    contact: Optional[base.VenueContactModel]
     businessUnitId: Optional[int]
 
     _dehumanize_venue_label_id = dehumanize_field("venueLabelId")

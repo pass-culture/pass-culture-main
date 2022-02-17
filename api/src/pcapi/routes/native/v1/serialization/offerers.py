@@ -2,7 +2,7 @@ import typing
 
 from pcapi.core.offerers import models as offerers_models
 from pcapi.routes.serialization import BaseModel
-from pcapi.routes.serialization import venues_serialize
+from pcapi.routes.serialization import base
 
 
 class VenueAccessibilityModel(BaseModel):
@@ -12,19 +12,7 @@ class VenueAccessibilityModel(BaseModel):
     visualDisability: typing.Optional[bool]
 
 
-class VenueResponse(BaseModel):
+class VenueResponse(base.BaseVenueResponse):
     id: int
-    name: str
-    latitude: typing.Optional[float]
-    longitude: typing.Optional[float]
-    city: typing.Optional[str]
-    publicName: typing.Optional[str]
-    isVirtual: bool
-    isPermanent: typing.Optional[bool]
-    withdrawalDetails: typing.Optional[str]
-    address: typing.Optional[str]
-    postalCode: typing.Optional[str]
-    venueTypeCode: typing.Optional[offerers_models.VenueTypeCodeKey]
-    description: typing.Optional[venues_serialize.VenueDescription]  # type: ignore
-    contact: typing.Optional[venues_serialize.VenueContactModel]
     accessibility: VenueAccessibilityModel
+    venueTypeCode: typing.Optional[offerers_models.VenueTypeCodeKey]
