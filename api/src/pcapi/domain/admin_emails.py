@@ -1,5 +1,6 @@
 from pcapi import settings
 from pcapi.core import mails
+from pcapi.core.categories import subcategories
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import OfferValidationStatus
@@ -49,6 +50,27 @@ def send_payments_report_emails(
     return mails.send(recipients=recipients, data=email)
 
 
+def _check_offer_subcategory_before_send(offer: Offer) -> bool:
+    return offer.subcategoryId in (
+        subcategories.ABO_JEU_VIDEO.id,
+        subcategories.ABO_LIVRE_NUMERIQUE.id,
+        subcategories.ACHAT_INSTRUMENT.id,
+        subcategories.AUTRE_SUPPORT_NUMERIQUE.id,
+        subcategories.BON_ACHAT_INSTRUMENT.id,
+        subcategories.LIVRE_AUDIO_PHYSIQUE.id,
+        subcategories.LIVRE_NUMERIQUE.id,
+        subcategories.LIVRE_PAPIER.id,
+        subcategories.LOCATION_INSTRUMENT.id,
+        subcategories.MATERIEL_ART_CREATIF.id,
+        subcategories.PARTITION.id,
+        subcategories.SUPPORT_PHYSIQUE_FILM.id,
+        subcategories.SUPPORT_PHYSIQUE_MUSIQUE.id,
+        subcategories.TELECHARGEMENT_LIVRE_AUDIO.id,
+        subcategories.TELECHARGEMENT_MUSIQUE.id,
+        subcategories.VOD.id,
+    )
+
+
 def send_offer_creation_notification_to_administration(offer: Offer) -> bool:
     email = make_offer_creation_notification_email(offer)
     return mails.send(recipients=[settings.ADMINISTRATION_EMAIL_ADDRESS], data=email)
@@ -63,7 +85,8 @@ def send_offer_validation_notification_to_administration(
     validation_status: OfferValidationStatus, offer: Offer
 ) -> bool:
     if validation_status is OfferValidationStatus.APPROVED:
-        return send_offer_creation_notification_to_administration(offer)
+        if _check_offer_subcategory_before_send(offer) == True:
+            return send_offer_creation_notification_to_administration(offer)
     if validation_status is OfferValidationStatus.REJECTED:
         return send_offer_rejection_notification_to_administration(offer)
     return True
