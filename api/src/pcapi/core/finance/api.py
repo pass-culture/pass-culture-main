@@ -866,9 +866,11 @@ def generate_invoice_file(invoice_date: datetime.date = datetime.date.today()) -
         "type de ticket de facturation",
         "montant du ticket de facturation",
     ]
+    BusinessUnitVenue = sqla_orm.aliased(offerers_models.Venue)
     query = (
         db.session.query(
             models.Invoice,
+            BusinessUnitVenue.id.label("business_unit_venue_id"),
             models.Pricing.id.label("pricing_id"),
             models.PricingLine.id.label("pricing_line_id"),
             models.PricingLine.category.label("pricing_line_category"),
@@ -877,12 +879,17 @@ def generate_invoice_file(invoice_date: datetime.date = datetime.date.today()) -
         .join(models.Invoice.cashflows)
         .join(models.Cashflow.pricings)
         .join(models.Pricing.lines)
+        .join(models.Invoice.businessUnit)
+        .join(
+            BusinessUnitVenue,
+            models.BusinessUnit.siret == BusinessUnitVenue.siret,
+        )
         .filter(cast(models.Invoice.date, Date) == invoice_date)
         .order_by(models.Invoice.id, models.Pricing.id, models.PricingLine.id)
     )
 
     row_formatter = lambda row: (
-        human_ids.humanize(row.Invoice.businessUnit.venues[0].id),
+        human_ids.humanize(row.business_unit_venue_id),
         row.Invoice.date.date().isoformat(),
         row.Invoice.reference,
         row.pricing_id,

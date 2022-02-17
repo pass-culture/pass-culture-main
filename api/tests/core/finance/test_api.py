@@ -706,8 +706,10 @@ def test_generate_wallets_file():
 
 @clean_temporary_files
 def test_genererate_invoice_file():
-    business_unit1 = factories.BusinessUnitFactory(siret="12345678900")
-    offers_factories.VenueFactory(businessUnit=business_unit1)
+    first_siret = "12345678900"
+    business_unit1 = factories.BusinessUnitFactory(siret=first_siret)
+    venue1 = offers_factories.VenueFactory(businessUnit=business_unit1, siret=first_siret)
+
     pc_line1 = factories.PricingLineFactory()
     pc_line2 = factories.PricingLineFactory(amount=150000, category=models.PricingLineCategory.OFFERER_CONTRIBUTION)
     pricing = factories.PricingFactory(
@@ -729,8 +731,10 @@ def test_genererate_invoice_file():
 
     # The file should contains only cashflow from the current batch of invoice generation.
     # This second invoice should not appear.
-    business_unit2 = factories.BusinessUnitFactory(siret="12345673900")
-    offers_factories.VenueFactory(businessUnit=business_unit2)
+    second_siret = "12345673900"
+    business_unit2 = factories.BusinessUnitFactory(siret=second_siret)
+    offers_factories.VenueFactory(businessUnit=business_unit2, siret=second_siret)
+
     pc_line3 = factories.PricingLineFactory()
     pricing2 = factories.PricingFactory(
         status=models.PricingStatus.VALIDATED, businessUnit=business_unit2, amount=-1000, lines=[pc_line3]
@@ -757,7 +761,7 @@ def test_genererate_invoice_file():
             rows = list(reader)
     assert len(rows) == 2
     assert rows[0] == {
-        "Identifiant de la BU": human_ids.humanize(invoice.businessUnit.venues[0].id),
+        "Identifiant de la BU": human_ids.humanize(venue1.id),
         "Date du justificatif": datetime.date.today().isoformat(),
         "Référence du justificatif": invoice.reference,
         "Identifiant valorisation": pricing.id,
@@ -766,7 +770,7 @@ def test_genererate_invoice_file():
         "montant du ticket de facturation": abs(pc_line1.amount),
     }
     assert rows[1] == {
-        "Identifiant de la BU": human_ids.humanize(invoice.businessUnit.venues[0].id),
+        "Identifiant de la BU": human_ids.humanize(venue1.id),
         "Date du justificatif": datetime.date.today().isoformat(),
         "Référence du justificatif": invoice.reference,
         "Identifiant valorisation": pricing.id,
