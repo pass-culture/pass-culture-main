@@ -62,12 +62,9 @@ def handle_dms_state(
         logger.info("DMS Application accepted. User will be validated in the cron job.", extra=logs_extra)
 
     elif state == dms_connector_api.GraphQLApplicationStates.refused:
-        fraud_api.update_or_create_fraud_check_failed(
-            user,
-            str(application_id),
-            current_fraud_check.source_data(),
-            [fraud_models.FraudReasonCode.REFUSED_BY_OPERATOR],
-        )
+        current_fraud_check.status = fraud_models.FraudCheckStatus.KO
+        current_fraud_check.reasonCodes = [fraud_models.FraudReasonCode.REFUSED_BY_OPERATOR]
+
         subscription_messages.on_dms_application_refused(user)
 
         logger.info("DMS Application refused.", extra=logs_extra)
