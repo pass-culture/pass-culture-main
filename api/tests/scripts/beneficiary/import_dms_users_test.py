@@ -720,6 +720,11 @@ class RunIntegrationTest:
             == TransactionalEmail.PRE_SUBSCRIPTION_DMS_ERROR_TO_BENEFICIARY.value.__dict__
         )
 
+        # A second import should ignore the already processed application
+        user_fraud_check_number = len(user.beneficiaryFraudChecks)
+        dms_api.import_dms_users(procedure_id=6712558)
+        assert len(user.beneficiaryFraudChecks) == user_fraud_check_number
+
     @patch.object(dms_connector_api.DMSGraphQLClient, "get_applications_with_details")
     def test_dms_application_value_error_known_user(self, get_applications_with_details):
         user = users_factories.UserFactory()

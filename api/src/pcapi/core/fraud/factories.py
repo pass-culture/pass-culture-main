@@ -178,7 +178,7 @@ class BeneficiaryFraudCheckFactory(testing.BaseFactory):
         if factory_class and isinstance(kwargs.get("resultContent"), factory_class._meta.get_model_class()):
             content = kwargs["resultContent"].dict(by_alias=True)
 
-        kwargs["resultContent"] = content
+        kwargs["resultContent"] = content or None
         return super()._create(model_class, *args, **kwargs)
 
 
