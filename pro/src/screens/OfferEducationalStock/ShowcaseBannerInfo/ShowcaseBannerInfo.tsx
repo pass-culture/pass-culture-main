@@ -8,7 +8,7 @@ const ShowcaseBannerInfo = (): JSX.Element => (
     <br />
     <br />
     <p>
-      1) À sa création, votre offre sera visible sur Adage
+      1) À sa création, votre offre sera visible sur ADAGE
       <br />
       2) L’enseignant pourra vous contacter et vous discuterez ensemble des
       détails de l'offre
