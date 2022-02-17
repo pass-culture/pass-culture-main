@@ -38,7 +38,7 @@ itsdangerous==1.1.0
 Jinja2==2.11.3
 lxml
 mailjet-rest==1.3.3
-MarkupSafe==1.1.1
+MarkupSafe==2.0.1
 mypy==0.812
 notion-client==0.4.0
 pgcli==2.2.0
