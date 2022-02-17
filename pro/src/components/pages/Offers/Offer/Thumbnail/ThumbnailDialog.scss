@@ -10,7 +10,7 @@
 .tnd-actions {
   display: flex;
   justify-content: center;
-  margin-top: rem(40px);
+  margin-top: rem(24px);
 
   button {
     margin: 0 rem(12px);
@@ -21,10 +21,13 @@
 .tnd-subtitle {
   color: $grey-dark;
   margin-bottom: rem(24px);
+  line-height: 1em;
 }
 
 .tnd-header {
   @include title3;
+  margin-bottom: rem(16px);
+  line-height: 1em;
 }
 
 .tnd-hr {
