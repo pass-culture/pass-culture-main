@@ -1,5 +1,6 @@
 import click
-from flask import Blueprint
+
+from pcapi.utils.blueprint import Blueprint
 
 from .unstack_batch_cloud_task_queue import unstack_batch_queue
 

@@ -1,9 +1,8 @@
 import logging
 
-from flask import Blueprint
-
 from pcapi.install_database_extensions import install_database_extensions
 from pcapi.models.feature import install_feature_flags
+from pcapi.utils.blueprint import Blueprint
 
 
 blueprint = Blueprint(__name__, __name__)

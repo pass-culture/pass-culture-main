@@ -4,7 +4,6 @@ from typing import Any
 from typing import Type
 
 import click
-from flask import Blueprint
 import redis
 from rq import Connection
 from rq import Queue
@@ -14,6 +13,7 @@ import sentry_sdk
 
 from pcapi import settings
 from pcapi.models import db
+from pcapi.utils.blueprint import Blueprint
 from pcapi.utils.health_checker import check_database_connection
 from pcapi.workers.logger import job_extra_description
 

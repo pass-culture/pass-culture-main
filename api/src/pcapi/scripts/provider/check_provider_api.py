@@ -2,10 +2,10 @@ from datetime import datetime
 import time
 
 import click
-from flask import Blueprint
 
 from pcapi.infrastructure.repository.stock_provider.provider_api import ProviderAPI
 from pcapi.local_providers.provider_api import synchronize_provider_api
+from pcapi.utils.blueprint import Blueprint
 
 
 blueprint = Blueprint(__name__, __name__)

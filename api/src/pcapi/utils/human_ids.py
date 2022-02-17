@@ -4,7 +4,8 @@ import binascii
 from typing import Optional
 
 import click
-from flask import Blueprint
+
+from pcapi.utils.blueprint import Blueprint
 
 
 # This library creates IDs for use in our URLs,

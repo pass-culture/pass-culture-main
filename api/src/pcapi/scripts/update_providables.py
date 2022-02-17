@@ -2,12 +2,12 @@ import logging
 from time import time
 
 import click
-from flask import Blueprint
 
 from pcapi.local_providers.provider_manager import synchronize_data_for_provider
 from pcapi.local_providers.provider_manager import synchronize_venue_provider
 from pcapi.local_providers.provider_manager import synchronize_venue_providers_for_provider
 from pcapi.repository.venue_provider_queries import get_venue_provider_by_id
+from pcapi.utils.blueprint import Blueprint
 
 
 blueprint = Blueprint(__name__, __name__)
