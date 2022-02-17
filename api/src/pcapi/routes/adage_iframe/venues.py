@@ -23,3 +23,16 @@ def get_venue_by_siret(authenticated_information: AuthenticatedInformation, sire
         raise ApiErrors({"siret": "Aucun lieu n'existe pour ce siret"}, status_code=404)
 
     return VenueResponse.from_orm(venue)
+
+
+@blueprint.adage_iframe.route("/venues/<int:venue_id>", methods=["GET"])
+@spectree_serialize(api=blueprint.api, response_model=VenueResponse)
+@adage_jwt_required
+def get_venue_by_id(authenticated_information: AuthenticatedInformation, venue_id: int) -> VenueResponse:
+    venue = offerers_repository.find_venue_by_id(venue_id)
+
+    if venue is None:
+        logger.info("Venue does not exists for given venue_id", extra={"venue_id": venue_id})
+        raise ApiErrors({"venue_id": "Aucun lieu n'existe pour ce venue_id"}, status_code=404)
+
+    return VenueResponse.from_orm(venue)
