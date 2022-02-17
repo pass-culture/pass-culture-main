@@ -2,6 +2,7 @@ import PropTypes from 'prop-types'
 import React, { useCallback, useEffect, useState } from 'react'
 import { Route, Switch, useHistory } from 'react-router-dom'
 
+import { api } from 'api/api'
 import Titles from 'components/layout/Titles/Titles'
 import ConfirmationContainer from 'components/pages/Offers/Offer/Confirmation/ConfirmationContainer'
 import { OfferHeader } from 'components/pages/Offers/Offer/OfferStatus/OfferHeader'
@@ -9,7 +10,6 @@ import StocksContainer from 'components/pages/Offers/Offer/Stocks/StocksContaine
 import { OFFER_STATUS_DRAFT } from 'components/pages/Offers/Offers/_constants'
 import Breadcrumb, { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 import RouteLeavingGuardOfferCreation from 'new_components/RouteLeavingGuardOfferCreation'
-import * as pcapi from 'repository/pcapi/pcapi'
 
 import OfferDetails from './OfferDetails'
 
@@ -40,7 +40,7 @@ const OfferLayout = ({ location, match }) => {
 
   const loadOffer = useCallback(
     async (offerId, creationMode = false) => {
-      const existingOffer = await pcapi.loadOffer(offerId)
+      const existingOffer = await api.getOffersGetOffer(offerId)
 
       setOffer(existingOffer)
       setIsCreatingOffer(
