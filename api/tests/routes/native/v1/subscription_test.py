@@ -434,7 +434,7 @@ class NextStepTest:
 
 class UpdateProfileTest:
     @override_features(ENABLE_UBBLE=True)
-    def test_update_profile(self, client):
+    def test_fulfill_profile(self, client):
         """
         Test that valid request:
             * updates the user's profile information;
@@ -486,7 +486,7 @@ class UpdateProfileTest:
         assert notification["attribute_values"]["u.postal_code"] == "77000"
 
     @override_features(ENABLE_UBBLE=True)
-    def test_update_profile_invalid_character(self, client):
+    def test_fulfill_profile_invalid_character(self, client):
         user = users_factories.UserFactory(
             address=None,
             city=None,
@@ -515,7 +515,7 @@ class UpdateProfileTest:
         assert response.status_code == 400
 
     @override_features(ENABLE_UBBLE=True)
-    def test_update_profile_empty_field(self, client):
+    def test_fulfill_profile_empty_field(self, client):
         user = users_factories.UserFactory(
             address=None,
             city=None,
@@ -544,7 +544,7 @@ class UpdateProfileTest:
         assert response.status_code == 400
 
     @override_features(ENABLE_UBBLE=True)
-    def test_update_profile_valid_character(self, client):
+    def test_fulfill_profile_valid_character(self, client):
         user = users_factories.UserFactory(
             address=None,
             city=None,

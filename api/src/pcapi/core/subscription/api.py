@@ -277,7 +277,7 @@ def _needs_to_perform_identity_check(user) -> bool:
     return get_identity_check_subscription_status(user, user.eligibility) == models.SubscriptionItemStatus.TODO
 
 
-def update_user_profile(
+def complete_profile(
     user: users_models.User,
     address: typing.Optional[str],
     city: str,

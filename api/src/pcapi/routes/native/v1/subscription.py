@@ -38,8 +38,8 @@ def next_subscription_step(
 @blueprint.native_v1.route("/subscription/profile", methods=["POST"])
 @spectree_serialize(on_success_status=204, api=blueprint.api)
 @authenticated_user_required
-def update_profile(user: users_models.User, body: serializers.ProfileUpdateRequest) -> None:
-    subscription_api.update_user_profile(
+def complete_profile(user: users_models.User, body: serializers.ProfileUpdateRequest) -> None:
+    subscription_api.complete_profile(
         user,
         first_name=body.first_name,
         last_name=body.last_name,
