@@ -308,8 +308,7 @@ class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ValidationMixin, 
     #  can be used by PostgreSQL when filtering on the `venueId` column only.
     sa.Index("venueId_idAtProvider_index", venueId, idAtProvider, unique=True)
 
-    # TODO (ASK, JSONB): change _jsonData for extraData when JSONB migration is done
-    sa.Index("offer_isbn_idx", ExtraDataMixin._jsonData["isbn"].astext)
+    sa.Index("offer_isbn_idx", ExtraDataMixin.extraData["isbn"].astext)
 
     @sa.ext.declarative.declared_attr
     def lastProviderId(cls):  # pylint: disable=no-self-argument
@@ -516,19 +515,7 @@ class OfferValidationConfig(PcObject, Model):
 
     user = sa.orm.relationship("User", foreign_keys=[userId], backref="offer_validation_configs")
 
-    _specs = sa.Column("specs", sa.dialects.postgresql.JSONB, nullable=False)
-    _specsNew = sa.Column(
-        "specsOld", sa.dialects.postgresql.JSON
-    )  # TODO (ASK, JSONB): remove this field when JSONB migration is done
-
-    @sa.ext.hybrid.hybrid_property
-    def specs(self):
-        return self._specs
-
-    @specs.setter
-    def specs(self, value):
-        self._specs = value
-        self._specsOld = value
+    specs = sa.Column("specs", sa.dialects.postgresql.JSONB, nullable=False)
 
 
 @dataclass

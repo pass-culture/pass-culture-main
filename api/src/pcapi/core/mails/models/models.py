@@ -5,9 +5,7 @@ import enum
 from sqlalchemy import Column
 from sqlalchemy import DateTime
 from sqlalchemy import Enum
-from sqlalchemy import JSON
 from sqlalchemy.dialects.postgresql import JSONB
-from sqlalchemy.ext.hybrid import hybrid_property
 
 from pcapi.models import Model
 from pcapi.models.pc_object import PcObject
@@ -25,17 +23,7 @@ class EmailStatus(enum.Enum):
 
 
 class Email(PcObject, Model):
-    _content = Column("content", JSONB, nullable=False)
-    _contentOld = Column("contentOld", JSON)  # TODO (ASK, JSONB): remove this field when JSONB migration is done
+    content = Column("content", JSONB, nullable=False)
     status = Column(Enum(EmailStatus), nullable=False, index=True)
 
     datetime = Column(DateTime, nullable=False, default=datetime.utcnow)
-
-    @hybrid_property
-    def content(self):
-        return self._content
-
-    @content.setter
-    def content(self, value):
-        self._content = value
-        self._contentOld = value
