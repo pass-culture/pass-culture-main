@@ -799,14 +799,11 @@ def add_criteria_to_offers(criteria: list[Criterion], isbn: Optional[str] = None
         return False
 
     query = Product.query
-    # TODO (ASK, JSONB): remove pylint disable when JSONB  migration is done
-    # pylint: disable=unsubscriptable-object
     if isbn:
         isbn = isbn.replace("-", "").replace(" ", "")
         query = query.filter(Product.extraData["isbn"].astext == isbn)
     if visa:
         query = query.filter(Product.extraData["visa"].astext == visa)
-    # pylint: enable=unsubscriptable-object
 
     products = query.all()
     if not products:
@@ -835,10 +832,7 @@ def add_criteria_to_offers(criteria: list[Criterion], isbn: Optional[str] = None
 
 
 def deactivate_inappropriate_products(isbn: str) -> bool:
-    # TODO (ASK, JSONB): remove pylint disable when JSONB  migration is done
-    # pylint: disable=unsubscriptable-object
     products = Product.query.filter(Product.extraData["isbn"].astext == isbn).all()
-    # pylint: enable=unsubscriptable-object
     if not products:
         return False
 
@@ -928,10 +922,7 @@ def import_offer_validation_config(config_as_yaml: str, user: User = None) -> Of
 
 
 def _load_product_by_isbn_and_check_is_gcu_compatible_or_raise_error(isbn: str) -> Product:
-    # TODO (ASK, JSONB): remove pylint disable when JSONB  migration is done
-    # pylint: disable=unsubscriptable-object
     product = Product.query.filter(Product.extraData["isbn"].astext == isbn).first()
-    # pylint: enable=unsubscriptable-object
     if product is None or not product.isGcuCompatible:
         errors = ApiErrors()
         errors.add_error(
