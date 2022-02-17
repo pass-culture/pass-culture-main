@@ -3,6 +3,7 @@ from unittest.mock import patch
 
 import pytest
 
+from pcapi.core.categories import subcategories
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.offers.factories import OfferFactory
 from pcapi.core.offers.factories import OffererFactory
@@ -142,17 +143,25 @@ class SendOfferNotificationToAdministrationTest:
         assert mails_testing.outbox[0].sent_data["To"] == "administration@example.com"
         assert mails_testing.outbox[0].sent_data["Subject"] == "[Création d’offre : refus - 75] Test Book"
 
-    def test_send_approval_notification(self, app):
+    def test_send_approval_notification_failure(self):
         author = users_factories.UserFactory(email="author@email.com")
-        offer = OfferFactory(name="Test Book", author=author)
+        offer = OfferFactory(name="Test Visit", author=author, subcategoryId=subcategories.VISITE_GUIDEE.id)
 
         # When
         send_offer_validation_notification_to_administration(OfferValidationStatus.APPROVED, offer)
 
-        # Then
+        assert len(mails_testing.outbox) == 0
+
+    def test_send_approval_notification_success(self):
+        author = users_factories.UserFactory(email="author@email.com")
+        offer = OfferFactory(name="Test Film", author=author, subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id)
+
+        # When
+        send_offer_validation_notification_to_administration(OfferValidationStatus.APPROVED, offer)
+
         assert len(mails_testing.outbox) == 1
         assert mails_testing.outbox[0].sent_data["To"] == "administration@example.com"
-        assert mails_testing.outbox[0].sent_data["Subject"] == "[Création d’offre - 75] Test Book"
+        assert mails_testing.outbox[0].sent_data["Subject"] == "[Création d’offre - 75] Test Film"
 
 
 @pytest.mark.usefixtures("db_session")
