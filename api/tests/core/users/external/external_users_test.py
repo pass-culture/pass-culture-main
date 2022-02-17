@@ -34,7 +34,10 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 
 def test_update_external_user():
-    user = BeneficiaryGrant18Factory()
+    user = BeneficiaryGrant18Factory(
+        email="jeanne@example.com",
+        notificationSubscriptions={"marketing_push": True, "marketing_email": False},
+    )
     IndividualBookingFactory(individualBooking__user=user)
 
     n_query_get_user = 1
@@ -50,6 +53,22 @@ def test_update_external_user():
 
     assert len(batch_testing.requests) == 2
     assert len(sendinblue_testing.sendinblue_requests) == 1
+    assert sendinblue_testing.sendinblue_requests[0].get("email") == "jeanne@example.com"
+    assert sendinblue_testing.sendinblue_requests[0].get("emailBlacklisted") == True
+
+
+def test_email_should_not_be_blacklisted_in_sendinblue_by_default():
+    user = BeneficiaryGrant18Factory(
+        email="jeanne@example.com",
+        notificationSubscriptions={},
+    )
+    IndividualBookingFactory(individualBooking__user=user)
+
+    update_external_user(user)
+
+    assert len(sendinblue_testing.sendinblue_requests) == 1
+    assert sendinblue_testing.sendinblue_requests[0].get("email") == "jeanne@example.com"
+    assert sendinblue_testing.sendinblue_requests[0].get("emailBlacklisted") == False
 
 
 def test_update_external_pro_user():
