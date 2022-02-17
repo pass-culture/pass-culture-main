@@ -8,7 +8,7 @@ class UtilsUnitTest:
     @pytest.mark.parametrize(
         "test_input,expected",
         [
-            ("", True),
+            ("", False),
             ("a", True),
             ("Verona", True),
             ("Charles-Apollon", True),
