@@ -106,7 +106,7 @@ def import_dms_users(procedure_id: int) -> None:
             continue
 
         try:
-            information: fraud_models.IdCheckContent = dms_connector_api.parse_beneficiary_information_graphql(
+            result_content: fraud_models.IdCheckContent = dms_connector_api.parse_beneficiary_information_graphql(
                 application_details, procedure_id
             )
         except subscription_exceptions.DMSParsingError as exc:
@@ -117,7 +117,7 @@ def import_dms_users(procedure_id: int) -> None:
             process_parsing_exception(exc, user, procedure_id, application_id)
             continue
 
-        process_application(user, procedure_id, application_id, information)
+        process_application(user, result_content)
 
     logger.info(
         "[BATCH][REMOTE IMPORT BENEFICIARIES] End import from Démarches Simplifiées - Procedure %s", procedure_id
@@ -213,39 +213,37 @@ def _process_user_not_found_error(email: str, application_id: int, procedure_id:
 
 def process_application(
     user: users_models.User,
-    procedure_id: int,
-    application_id: int,
-    information: fraud_models.DMSContent,
+    result_content: fraud_models.DMSContent,
 ) -> None:
     try:
-        fraud_check = fraud_api.on_dms_fraud_result(user, information)
+        fraud_check = fraud_api.on_dms_fraud_result(user, result_content)
     except Exception as exc:  # pylint: disable=broad-except
         logger.exception("Error on dms fraud check result: %s", exc)
         return
 
     if fraud_check.status != fraud_models.FraudCheckStatus.OK:
-        handle_validation_errors(user, fraud_check.reasonCodes, information, procedure_id)
-        subscription_api.update_user_birth_date(user, information.get_birth_date())
+        handle_validation_errors(user, fraud_check.reasonCodes, result_content, result_content.procedure_id)
+        subscription_api.update_user_birth_date(user, result_content.get_birth_date())
         return
 
     try:
         fraud_api.create_honor_statement_fraud_check(
             user, "honor statement contained in DMS application", fraud_check.eligibilityType
         )
-        subscription_api.on_successful_application(user=user, source_data=information)
+        subscription_api.on_successful_application(user=user, source_data=result_content)
     except ApiErrors as api_errors:
         logger.warning(
             "[BATCH][REMOTE IMPORT BENEFICIARIES] Could not save application %s, because of error: %s - Procedure %s",
-            application_id,
+            result_content.application_id,
             api_errors,
-            procedure_id,
+            result_content.procedure_id,
         )
         return
 
     logger.info(
         "[BATCH][REMOTE IMPORT BENEFICIARIES] Successfully created user for application %s - Procedure %s",
-        information.application_id,
-        procedure_id,
+        result_content.application_id,
+        result_content.procedure_id,
     )
 
 
