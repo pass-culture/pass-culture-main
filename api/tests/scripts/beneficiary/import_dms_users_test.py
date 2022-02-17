@@ -764,8 +764,6 @@ class GraphQLSourceProcessApplicationTest:
         # fixture
         dms_api.process_application(
             user,
-            123123,
-            4234,
             information,
         )
 
@@ -800,8 +798,6 @@ class GraphQLSourceProcessApplicationTest:
         # fixture
         dms_api.process_application(
             user,
-            123123,
-            4234,
             information,
         )
         assert len(user.beneficiaryFraudChecks) == 3  # user profiling, DMS, honor statement
@@ -832,8 +828,6 @@ class GraphQLSourceProcessApplicationTest:
         # fixture
         dms_api.process_application(
             user,
-            123123,
-            4234,
             information,
         )
         assert len(user.beneficiaryFraudChecks) == 3  # user profiling, DMS, honor statement
@@ -857,8 +851,6 @@ class GraphQLSourceProcessApplicationTest:
         # fixture
         dms_api.process_application(
             user,
-            123123,
-            4234,
             information,
         )
         assert len(user.beneficiaryFraudChecks) == 1
