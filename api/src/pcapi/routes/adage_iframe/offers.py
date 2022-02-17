@@ -1,5 +1,6 @@
 import logging
 
+from sqlalchemy.orm import contains_eager
 from sqlalchemy.orm import joinedload
 
 from pcapi.core.educational import api as educational_api
@@ -20,7 +21,10 @@ logger = logging.getLogger(__name__)
 @spectree_serialize(response_model=serializers.OfferResponse, api=blueprint.api, on_error_statuses=[404])
 def get_offer(authenticated_information: AuthenticatedInformation, offer_id: int) -> serializers.OfferResponse:
     offer = (
-        offers_models.Offer.query.options(joinedload(offers_models.Offer.stocks))
+        offers_models.Offer.query.filter(offers_models.Offer.id == offer_id)
+        .join(offers_models.Stock)
+        .filter(offers_models.Stock.isSoftDeleted.is_(False))
+        .options(contains_eager(offers_models.Offer.stocks))
         .options(
             joinedload(offers_models.Offer.venue)
             .joinedload(offerers_models.Venue.managingOfferer)
@@ -30,7 +34,6 @@ def get_offer(authenticated_information: AuthenticatedInformation, offer_id: int
                 offerers_models.Offerer.isActive,
             )
         )
-        .filter(offers_models.Offer.id == offer_id)
         .first_or_404()
     )
 
