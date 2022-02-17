@@ -2,11 +2,11 @@
   background: $grey-light;
   display: flex;
   justify-content: center;
-  padding: rem(32px);
+  padding: rem(16px) 0;
 
   svg {
     height: rem(600px);
-    margin-bottom: rem(16px);
+    margin-bottom: rem(12px);
   }
 
   & > div {
@@ -21,6 +21,10 @@
   margin: 0 rem(60px);
   position: relative;
   align-items: center;
+
+  figcaption {
+    @include caption();
+  }
 }
 
 .image-preview-screen {
