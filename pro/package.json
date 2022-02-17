@@ -33,7 +33,7 @@
     "build-storybook": "build-storybook -o docs-build -s ./src/stories/assets",
     "debt:check:changed": "debt-collector check -c ./.debt-collector/config.js -s master",
     "debt:check:all": "debt-collector check -c ./.debt-collector/config.js",
-    "debt:compare": "debt-collector compare -c ./.debt-collector/config.js --revision master",
+    "debt:compare": "debt-collector compare -c ./.debt-collector/config.js --revision master --output-html",
     "debt:walk": "debt-collector walk -c ./.debt-collector/config.js -n 10"
   },
   "lint-staged": {
@@ -140,7 +140,7 @@
     "count-lines-in-file": "^1.1.0",
     "coveralls": "^3.1.0",
     "css-loader": "^5.2.6",
-    "debt-collector": "gael-boyenval/debt-collector#v1.0.1-alpha",
+    "debt-collector": "gael-boyenval/debt-collector#v1.1.6-alpha",
     "dotenv": "^8.2.0",
     "dotenv-expand": "^5.1.0",
     "enzyme": "^3.11.0",
