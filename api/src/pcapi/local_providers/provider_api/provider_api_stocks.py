@@ -23,6 +23,7 @@ def synchronize_stocks() -> None:
         .filter(provider_alias.apiUrl.isnot(None))
         .filter(provider_alias.isActive.is_(True))
         .filter(VenueProvider.isActive.is_(True))
+        .order_by(VenueProvider.lastSyncDate.asc().nullsfirst())
         .all()
     )
 
