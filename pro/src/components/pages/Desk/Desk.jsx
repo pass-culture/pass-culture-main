@@ -14,6 +14,8 @@ import ConfirmDialog from 'new_components/ConfirmDialog'
 import { Banner } from 'ui-kit'
 import { formatLocalTimeDateString } from 'utils/timezone'
 
+import { ReactComponent as DuoSvg } from '../../../icons/ico-duo.svg'
+
 class Desk extends Component {
   constructor(props) {
     super(props)
@@ -254,10 +256,18 @@ class Desk extends Component {
                   {this.formattedBookingDate(booking)}
                 </div>
               </div>
-              <div>
-                <div className="desk-label">{'Prix : '}</div>
-                <div className="desk-value">{`${booking.price} €`}</div>
-              </div>
+              {booking.quantity === 2 ? (
+                <div>
+                  <div className="desk-label">{'Prix : '}</div>
+                  <div className="desk-value">{`${booking.price * 2} €`}</div>
+                  <DuoSvg title="Réservation DUO" />
+                </div>
+              ) : (
+                <div>
+                  <div className="desk-label">{'Prix : '}</div>
+                  <div className="desk-value">{`${booking.price} €`}</div>
+                </div>
+              )}
               {booking.ean13 !== null && (
                 <div>
                   <div className="desk-label">{'ISBN : '}</div>
