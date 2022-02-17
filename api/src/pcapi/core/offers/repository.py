@@ -252,7 +252,7 @@ def get_offers_map_by_venue_reference(id_at_provider_list: list[str], venue_id: 
 def get_stocks_by_id_at_providers(id_at_providers: list[str]) -> dict:
     stocks = (
         Stock.query.filter(Stock.idAtProviders.in_(id_at_providers))
-        .outerjoin(Booking, and_(Stock.id == Booking.stockId, Booking.status != BookingStatus.CANCELLED))
+        .outerjoin(Booking, and_(Stock.id == Booking.stockId, Booking.is_used_or_reimbursed.is_(True)))
         .group_by(Stock.id)
         .with_entities(
             Stock.id,
@@ -266,7 +266,7 @@ def get_stocks_by_id_at_providers(id_at_providers: list[str]) -> dict:
     return {
         id_at_providers: {
             "id": id,
-            "booking_quantity": booking_quantity,
+            "retrieved_bookings_quantity": booking_quantity,
             "quantity": quantity,
             "price": price,
         }

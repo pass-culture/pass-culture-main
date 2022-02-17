@@ -5,7 +5,7 @@ from freezegun.api import freeze_time
 import pytest
 import requests_mock
 
-from pcapi.core.bookings.factories import BookingFactory
+import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.categories import subcategories
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offerers.models import Venue
@@ -103,8 +103,8 @@ class ProviderAPICronTest:
         create_product(ISBNs[8], isSynchronizationCompatible=False, product_price="7.08")
 
         stock_with_booking = create_stock(ISBNs[5], siret, venue, quantity=20, product_price="18.01")
-        BookingFactory(stock=stock_with_booking)
-        BookingFactory(stock=stock_with_booking, quantity=2)
+        bookings_factories.BookingFactory(stock=stock_with_booking)
+        bookings_factories.UsedBookingFactory(stock=stock_with_booking, quantity=2)
 
         # When
         with requests_mock.Mocker() as request_mock:
@@ -143,9 +143,9 @@ class ProviderAPICronTest:
         second_created_offer = Offer.query.filter_by(idAtProvider=ISBNs[4]).one()
         assert second_created_offer.stocks[0].quantity == 17
 
-        # Test existing bookings are added to quantity
-        assert stock_with_booking.quantity == 17 + 1 + 2
+        # Test only used bookings are added to quantity
         assert stock_with_booking.rawProviderQuantity == 17
+        assert stock_with_booking.quantity == 17 + 2
 
         # Test fill stock attributes
         assert created_stock.price == Decimal("30")

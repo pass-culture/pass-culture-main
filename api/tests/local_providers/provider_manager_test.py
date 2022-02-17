@@ -82,7 +82,7 @@ class SynchronizeVenueProviderTest:
             offer__idAtProvider=existing_product.idAtProviders,
             idAtProviders=stock_id_at_providers,
         )
-        bookings_factories.BookingFactory(stock=existing_stock)
+        bookings_factories.UsedBookingFactory(stock=existing_stock)
 
         product_to_synchronized = offers_factories.ProductFactory(
             idAtProviders="1234",
@@ -105,7 +105,7 @@ class SynchronizeVenueProviderTest:
 
         # Check that previously synchronized stock have been updated.
         assert existing_stock.offer.lastProviderId == provider.id
-        assert existing_stock.quantity == 12 + existing_stock.dnBookedQuantity
+        assert existing_stock.quantity == 12 + 1
 
         # Check that offers and stocks have been created.
         created_offer = Offer.query.filter_by(product=product_to_synchronized).one()

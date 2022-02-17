@@ -97,11 +97,20 @@ class Stock(PcObject, Model, ProvidableMixin, SoftDeletableMixin):
     # TODO(fseguin, 2021-03-25): replace unlimited by None (also in the front-end)
     @sa.ext.hybrid.hybrid_property
     def remainingQuantity(self):
-        return "unlimited" if self.quantity is None else self.quantity - self.dnBookedQuantity
+        if self.quantity is None:
+            return "unlimited"
+        # Synchronized stocks may have a `quantity` that is lower than
+        # the number of bookings. In that case, return 0 (instead of a
+        # negative number) to avoid display bugs.
+        return max(0, self.quantity - self.dnBookedQuantity)
 
     @remainingQuantity.expression
     def remainingQuantity(cls):  # pylint: disable=no-self-argument
-        return sa.case([(cls.quantity.is_(None), None)], else_=(cls.quantity - cls.dnBookedQuantity))
+        return sa.case(
+            [(cls.quantity.is_(None), None)],
+            # See note in method above about `greatest()`.
+            else_=(sa.func.greatest(0, cls.quantity - cls.dnBookedQuantity)),
+        )
 
     @sa.ext.hybrid.hybrid_property
     def isEventExpired(self):
@@ -167,6 +176,11 @@ Stock.trig_ddl = """
     BEGIN
       IF
        NOT NEW.quantity IS NULL
+       -- We allow synchronized stocks to have a negative remaining quantity
+       -- because items that have been booked through us could be sold
+       -- by the library at the same time. In that case, we want to allow
+       -- the update of `Stock.quantity` to reflect the reality.
+       AND NEW.lastProviderId IS NULL
        AND
         (
          (
