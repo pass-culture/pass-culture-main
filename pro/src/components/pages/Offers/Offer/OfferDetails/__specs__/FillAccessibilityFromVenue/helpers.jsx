@@ -4,6 +4,7 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter, Route } from 'react-router'
 
+import { api } from 'api/api'
 import NotificationContainer from 'components/layout/Notification/NotificationContainer'
 import OfferLayoutContainer from 'components/pages/Offers/Offer/OfferLayoutContainer'
 import * as pcapi from 'repository/pcapi/pcapi'
@@ -32,7 +33,6 @@ jest.mock('repository/pcapi/pcapi', () => ({
   getVenue: jest.fn(),
   getVenuesForOfferer: jest.fn(),
   loadCategories: jest.fn(),
-  loadOffer: jest.fn(),
 }))
 
 const renderOffer = async (props, store, pathname, queryParams = null) => {
@@ -144,7 +144,7 @@ export const initialize = async ({
 
   let rtlRenderReturn
   if (offer) {
-    pcapi.loadOffer.mockResolvedValue(offer)
+    jest.spyOn(api, 'getOffersGetOffer').mockResolvedValue(offer)
     pcapi.getVenue.mockReturnValue(offer.venue)
     rtlRenderReturn = await renderOfferEdition({
       props: {},
