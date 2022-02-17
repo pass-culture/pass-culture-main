@@ -17,7 +17,7 @@ export const getOffer = async (
 export const getVenueBySiret = async (
   siret: string
 ): Promise<VenueFilterType> => {
-  return client.get(`/adage-iframe/venues/${siret}`)
+  return client.get(`/adage-iframe/venues/siret/${siret}`)
 }
 
 export const preBookStock = async (stockId: number): Promise<number> => {
