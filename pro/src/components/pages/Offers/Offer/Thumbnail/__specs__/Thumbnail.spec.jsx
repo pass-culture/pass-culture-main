@@ -328,7 +328,7 @@ describe('thumbnail edition', () => {
 
         // Then
         expect(screen.getByText('Recadrer votre image')).toBeInTheDocument()
-        expect(screen.getByLabelText('Zoom')).toBeInTheDocument()
+        expect(screen.getByText('Zoom')).toBeInTheDocument()
         expect(screen.getByRole('slider')).toBeInTheDocument()
         expect(screen.getByText('min')).toBeInTheDocument()
         expect(screen.getByText('max')).toBeInTheDocument()
