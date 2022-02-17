@@ -7,7 +7,6 @@ import time
 from typing import Iterable
 
 import click
-from flask import Blueprint
 import pytz
 from sqlalchemy.orm import joinedload
 
@@ -15,6 +14,7 @@ import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.models as offers_models
 from pcapi.core.search.backends import algolia
 from pcapi.core.users import utils
+from pcapi.utils.blueprint import Blueprint
 
 
 # FIXME (apibrac, 2022-01-12): remove this file once the extract is done

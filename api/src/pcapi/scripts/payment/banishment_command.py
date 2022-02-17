@@ -1,9 +1,9 @@
 import logging
 
 import click
-from flask import Blueprint
 
 from pcapi.scripts.payment.banishment import do_ban_payments
+from pcapi.utils.blueprint import Blueprint
 
 
 blueprint = Blueprint(__name__, __name__)

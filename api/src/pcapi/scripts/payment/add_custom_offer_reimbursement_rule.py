@@ -2,13 +2,13 @@ import datetime
 import decimal
 
 import click
-from flask import Blueprint
 import sqlalchemy.orm as sqla_orm
 
 import pcapi.core.offers.models as offers_models
 import pcapi.core.payments.api as payments_api
 import pcapi.core.payments.utils as payments_utils
 from pcapi.utils import human_ids
+from pcapi.utils.blueprint import Blueprint
 import pcapi.utils.date as date_utils
 
 

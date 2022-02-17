@@ -1,5 +1,4 @@
 from apscheduler.schedulers.blocking import BlockingScheduler
-from flask import Blueprint
 from sentry_sdk import set_tag
 
 from pcapi import settings
@@ -8,6 +7,7 @@ import pcapi.core.offers.api as offers_api
 from pcapi.scheduled_tasks import utils
 from pcapi.scheduled_tasks.decorators import cron_context
 from pcapi.scheduled_tasks.decorators import log_cron_with_transaction
+from pcapi.utils.blueprint import Blueprint
 
 
 blueprint = Blueprint(__name__, __name__)

@@ -1,8 +1,8 @@
 import click
-from flask import Blueprint
 
 import pcapi.core.payments.utils as payments_utils
 from pcapi.scripts.payment.batch import generate_and_send_payments
+from pcapi.utils.blueprint import Blueprint
 
 
 blueprint = Blueprint(__name__, __name__)

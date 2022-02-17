@@ -1,7 +1,6 @@
 import logging
 
 import click
-from flask import Blueprint
 
 from pcapi.core.fraud import api as fraud_api
 from pcapi.core.fraud import models as fraud_models
@@ -9,6 +8,7 @@ from pcapi.core.subscription import api as subscription_api
 from pcapi.core.users import models as users_models
 from pcapi.core.users import utils as users_utils
 from pcapi.models import db
+from pcapi.utils.blueprint import Blueprint
 
 
 blueprint = Blueprint(__name__, __name__)
