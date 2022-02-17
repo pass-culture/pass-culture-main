@@ -1,4 +1,3 @@
-import dataclasses
 from datetime import date
 from datetime import datetime
 from datetime import timedelta
@@ -687,9 +686,7 @@ class RunIntegrationTest:
         assert user.phoneNumber == "0607080900"
 
         assert len(mails_testing.outbox) == 1
-        assert mails_testing.outbox[0].sent_data["template"] == dataclasses.asdict(
-            TransactionalEmail.ACCEPTED_AS_BENEFICIARY.value
-        )
+        assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 2016025
 
         assert len(push_testing.requests) == 2
         assert push_testing.requests[0]["attribute_values"]["u.is_beneficiary"]
@@ -722,11 +719,6 @@ class RunIntegrationTest:
             mails_testing.outbox[0].sent_data["template"]
             == TransactionalEmail.PRE_SUBSCRIPTION_DMS_ERROR_TO_BENEFICIARY.value.__dict__
         )
-
-        # A second import should ignore the already processed application
-        user_fraud_check_number = len(user.beneficiaryFraudChecks)
-        dms_api.import_dms_users(procedure_id=6712558)
-        assert len(user.beneficiaryFraudChecks) == user_fraud_check_number
 
     @patch.object(dms_connector_api.DMSGraphQLClient, "get_applications_with_details")
     def test_dms_application_value_error_known_user(self, get_applications_with_details):
@@ -937,7 +929,6 @@ class GraphQLSourceProcessApplicationTest:
         ) in fraud_check.reason
 
         assert len(mails_testing.outbox) == 1
-        assert mails_testing.outbox[0].sent_data["To"] == user.email
-        assert mails_testing.outbox[0].sent_data["template"] == dataclasses.asdict(
-            TransactionalEmail.ACCEPTED_AS_BENEFICIARY.value
-        )
+        sent_email = mails_testing.outbox[0]
+        assert sent_email.sent_data["To"] == user.email
+        assert sent_email.sent_data["Mj-campaign"] == "confirmation-credit"
