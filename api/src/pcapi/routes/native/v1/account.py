@@ -13,6 +13,7 @@ from pcapi.core.fraud import api as fraud_api
 from pcapi.core.fraud.ubble import api as ubble_fraud_api
 from pcapi.core.logging import get_or_set_correlation_id
 from pcapi.core.mails.transactional.users.delete_account import send_user_request_to_delete_account_reception_email
+from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription.ubble import api as ubble_subscription_api
 from pcapi.core.users import api
 from pcapi.core.users import constants
@@ -307,6 +308,7 @@ def profiling_fraud_score(user: User, body: serializers.UserProfilingFraudReques
             extra={"sessionId": body.sessionId},
         )
         fraud_api.on_user_profiling_result(user, profiling_infos)
+        subscription_api.activate_beneficiary_if_no_missing_step(user, False)
 
 
 @blueprint.native_v1.route("/user_profiling/session_id", methods=["GET"])
