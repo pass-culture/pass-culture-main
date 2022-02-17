@@ -12,10 +12,7 @@ logger = logging.getLogger(__name__)
 
 def process_batch(isbns: list[str], is_compatible: bool) -> None:
     logger.info("Bulk-update products isGcuCompatible=%s", is_compatible, extra={"isbns": isbns})
-    # TODO (ASK, JSONB): remove pylint disable when JSONB  migration is done
-    # pylint: disable=unsubscriptable-object
     products = Product.query.filter(Product.extraData["isbn"].astext.in_(isbns))
-    # pylint: enable=unsubscriptable-object
     updated_products_count = products.update({"isGcuCompatible": is_compatible}, synchronize_session=False)
     offer_ids = []
     updated_offers_count = 0

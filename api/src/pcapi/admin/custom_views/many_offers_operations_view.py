@@ -124,8 +124,6 @@ class ManyOffersOperationsView(BaseCustomAdminView):
             flash("Veuillez renseigner un ISBN ou un visa d'exploitation", "error")
             return redirect(url_for(".search"))
 
-        # TODO (ASK, JSONB): remove pylint disable when JSONB  migration is done
-        # pylint: disable=unsubscriptable-object
         if isbn:
             products = (
                 Product.query.filter(Product.extraData["isbn"].astext == isbn)
@@ -139,7 +137,6 @@ class ManyOffersOperationsView(BaseCustomAdminView):
                 .options(joinedload(Product.offers).joinedload(Offer.criteria))
                 .all()
             )
-        # pylint: enable=unsubscriptable-object
 
         if not products:
             flash("Aucun livre n'a été trouvé avec cet ISBN ou ce visa d'exploitation", "error")

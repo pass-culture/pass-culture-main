@@ -147,12 +147,9 @@ class OfferView(BaseAdminView):
         "validation",
         "lastValidationDate",
         "isEducational",
-        # TODO (ASK, JSONB): remove pylint disable when JSONB  migration is done
-        # pylint: disable=unsubscriptable-object
         ExtraDataFilterEqual(column=Offer.extraData["isbn"], name="ISBN"),
         ExtraDataFilterEqual(column=Offer.extraData["visa"], name="Visa d'exploitation"),
         ExtraDataFilterEqual(column=Offer.extraData["theater"]["allocine_movie_id"], name="Identifiant Allociné"),
-        # pylint: enable=unsubscriptable-object
     ]
     form_columns = ["criteria", "rankingWeight"]
     simple_list_pager = True
