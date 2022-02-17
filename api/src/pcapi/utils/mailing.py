@@ -208,10 +208,11 @@ def make_offer_creation_notification_email(offer: Offer) -> dict:
         pro_venue_link=pro_venue_link,
     )
     location_information = offer.venue.departementCode or "numérique"
+    is_educational_offer_label = "EAC " if offer.isEducational else ""
     return {
         "Html-part": html,
         "FromName": "pass Culture",
-        "Subject": f"[Création d’offre - {location_information}] {offer.name}",
+        "Subject": f"[Création d’offre {is_educational_offer_label}- {location_information}] {offer.name}",
     }
 
 
@@ -229,10 +230,12 @@ def make_offer_rejection_notification_email(offer: Offer) -> dict:
         pro_venue_link=pro_venue_link,
     )
     location_information = offer.venue.departementCode or "numérique"
+    is_educational_offer_label = "EAC " if offer.isEducational else ""
+
     return {
         "Html-part": html,
         "FromName": "pass Culture",
-        "Subject": f"[Création d’offre : refus - {location_information}] {offer.name}",
+        "Subject": f"[Création d’offre {is_educational_offer_label}: refus - {location_information}] {offer.name}",
     }
 
 
