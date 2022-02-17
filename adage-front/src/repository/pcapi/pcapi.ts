@@ -20,6 +20,12 @@ export const getVenueBySiret = async (
   return client.get(`/adage-iframe/venues/siret/${siret}`)
 }
 
+export const getVenueById = async (
+  venueId: string
+): Promise<VenueFilterType> => {
+  return client.get(`/adage-iframe/venues/${venueId}`)
+}
+
 export const preBookStock = async (stockId: number): Promise<number> => {
   return client.post('/adage-iframe/bookings', { stockId })
 }

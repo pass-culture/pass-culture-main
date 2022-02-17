@@ -41,9 +41,24 @@ export const App = (): JSX.Element => {
       .then(() => {
         const params = new URLSearchParams(window.location.search)
         const siret = params.get('siret')
+        const venueId = params.get('venue')
         if (siret) {
           return pcapi
             .getVenueBySiret(siret)
+            .then(venueFilter => setVenueFilter(venueFilter))
+            .catch(() =>
+              setNotification(
+                new Notification(
+                  NotificationType.error,
+                  'Lieu inconnu. Tous les résultats sont affichés.'
+                )
+              )
+            )
+        }
+
+        if (venueId) {
+          return pcapi
+            .getVenueById(venueId)
             .then(venueFilter => setVenueFilter(venueFilter))
             .catch(() =>
               setNotification(
