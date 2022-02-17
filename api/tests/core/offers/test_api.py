@@ -1,3 +1,4 @@
+import copy
 from datetime import datetime
 from datetime import timedelta
 import os
@@ -1169,7 +1170,8 @@ class DeleteStockTest:
         mocked_async_index_offer_ids.assert_called_once_with([stock.offerId])
 
     def test_delete_stock_cancel_bookings_and_send_emails(self):
-        stock = offer_factories.EventStockFactory(offer__bookingEmail="offerer@example.com")
+        offerer_email = "offerer@example.com"
+        stock = offer_factories.EventStockFactory(offer__bookingEmail=offerer_email)
         booking1 = bookings_factories.IndividualBookingFactory(
             stock=stock,
             individualBooking__user__email="beneficiary@example.com",
@@ -1195,13 +1197,17 @@ class DeleteStockTest:
         assert booking3.cancellationReason == BookingCancellationReasons.OFFERER
 
         assert len(mails_testing.outbox) == 3
-        print(mails_testing.outbox)
-        assert mails_testing.outbox[0].sent_data["To"] == "beneficiary@example.com"
-        assert mails_testing.outbox[2].sent_data["To"] == "offerer@example.com"
+        assert {outbox.sent_data["To"] for outbox in mails_testing.outbox} == {
+            booking1.email,
+            booking3.email,
+            offerer_email,
+        }
 
-        assert push_testing.requests[-1] == {
+        last_request = copy.deepcopy(push_testing.requests[-1])
+        last_request["user_ids"] = set(last_request["user_ids"])
+        assert last_request == {
             "group_id": "Cancel_booking",
-            "user_ids": [booking1.individualBooking.userId, booking3.individualBooking.userId],
+            "user_ids": {booking1.individualBooking.userId, booking3.individualBooking.userId},
             "message": {
                 "body": f"""Ta réservation "{stock.offer.name}" a été annulée par l'offreur.""",
                 "title": "Réservation annulée",
