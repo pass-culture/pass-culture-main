@@ -3,9 +3,8 @@ import {
   OfferEducationalStockFormValues,
   StockPayload,
 } from 'core/OfferEducational'
+import { Stock } from 'custom_types'
 import * as pcapi from 'repository/pcapi/pcapi'
-
-import { StockResponse } from '../types'
 
 type Params = {
   stockId: string
@@ -13,7 +12,7 @@ type Params = {
   initialValues: OfferEducationalStockFormValues
 }
 
-type PatchShadowStockAdapter = Adapter<Params, StockResponse, null>
+type PatchShadowStockAdapter = Adapter<Params, Stock, null>
 
 const BAD_REQUEST_FAILING_RESPONSE: AdapterFailure<null> = {
   isOk: false,
@@ -40,10 +39,7 @@ const patchShadowStockAdapter: PatchShadowStockAdapter = async ({
       : {}
 
   try {
-    const stock = (await pcapi.editShadowStock(
-      stockId,
-      patchStockPayload
-    )) as StockResponse
+    const stock = await pcapi.editShadowStock(stockId, patchStockPayload)
     return {
       isOk: true,
       message: 'Le détail de votre stock a bien été modifié.',

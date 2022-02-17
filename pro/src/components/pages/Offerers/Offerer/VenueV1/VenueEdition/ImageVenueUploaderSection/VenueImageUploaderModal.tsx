@@ -65,7 +65,9 @@ export const VenueImageUploaderModal: FunctionComponent<Props> = ({
       yCropPercent: croppingRect.y,
       heightCropPercent: croppingRect.height,
     })
-    reloadImage(bannerUrl)
+    if (bannerUrl) {
+      reloadImage(bannerUrl)
+    }
     setIsUploading(false)
     onDismiss()
   }, [venueId, image, croppingRect, reloadImage, onDismiss])

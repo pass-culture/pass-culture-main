@@ -378,8 +378,10 @@ export const transformShadowStockIntoEducationalStock = (
 ): Promise<Stock> =>
   client.patch(`/stocks/shadow-to-educational/${stockId}`, stock)
 
-export const editShadowStock = (stockId, stock) =>
-  client.patch(`/stocks/shadow/${stockId}`, stock)
+export const editShadowStock = (
+  stockId: string,
+  stock: { educationalPriceDetail?: string }
+): Promise<Stock> => client.patch(`/stocks/shadow/${stockId}`, stock)
 
 //
 // thumbnail
