@@ -56,7 +56,8 @@ def handle_dms_state(
         logger.info("DMS Application created.", extra=logs_extra)
 
     elif state == dms_connector_api.GraphQLApplicationStates.accepted:
-        logger.info("DMS Application accepted. User will be validated in the cron job.", extra=logs_extra)
+        process_application(user, result_content)
+        return
 
     elif state == dms_connector_api.GraphQLApplicationStates.refused:
         current_fraud_check.status = fraud_models.FraudCheckStatus.KO
