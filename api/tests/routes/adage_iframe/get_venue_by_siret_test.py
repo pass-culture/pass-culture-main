@@ -31,7 +31,7 @@ class Returns200Test:
         test_client.auth_header = {"Authorization": f"Bearer {valid_encoded_token}"}
 
         # When
-        response = test_client.get(f"/adage-iframe/venues/{requested_venue.siret}")
+        response = test_client.get(f"/adage-iframe/venues/siret/{requested_venue.siret}")
 
         # Then
         assert response.status_code == 200
@@ -51,7 +51,7 @@ class Returns200Test:
         test_client.auth_header = {"Authorization": f"Bearer {valid_encoded_token}"}
 
         # When
-        response = test_client.get(f"/adage-iframe/venues/{requested_venue.siret}")
+        response = test_client.get(f"/adage-iframe/venues/siret/{requested_venue.siret}")
 
         # Then
         assert response.status_code == 200
@@ -81,7 +81,7 @@ class ReturnsErrorTest:
         test_client.auth_header = {"Authorization": f"Bearer {valid_encoded_token}"}
 
         # When
-        response = test_client.get("/adage-iframe/venues/123456789")
+        response = test_client.get("/adage-iframe/venues/siret/123456789")
 
         # Then
         assert response.status_code == 404

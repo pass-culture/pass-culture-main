@@ -12,7 +12,7 @@ from pcapi.serialization.decorator import spectree_serialize
 logger = logging.getLogger(__name__)
 
 
-@blueprint.adage_iframe.route("/venues/<siret>", methods=["GET"])
+@blueprint.adage_iframe.route("/venues/siret/<siret>", methods=["GET"])
 @spectree_serialize(api=blueprint.api, response_model=VenueResponse)
 @adage_jwt_required
 def get_venue_by_siret(authenticated_information: AuthenticatedInformation, siret: str) -> VenueResponse:
