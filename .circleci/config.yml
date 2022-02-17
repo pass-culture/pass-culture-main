@@ -783,8 +783,8 @@ jobs:
           name: Build & push db-ops image
           command: |
             source ${BASH_ENV}
-            docker build ./infra/docker-images/db-ops \
-              -f ./infra/docker-images/db-ops/Dockerfile \
+            docker build ~/pass-culture-db-operations \
+              -f ~/pass-culture-db-operations/Dockerfile \
               --build-arg BASE_PCAPI_TAG=${APP_VERSION} \
               -t ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_TOOLS_REGISTRY_NAME}/db-ops:${APP_VERSION} \
               -t ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_TOOLS_REGISTRY_NAME}/db-ops:latest
