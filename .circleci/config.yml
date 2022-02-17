@@ -987,169 +987,169 @@ workflows:
     jobs:
       - tests-script-pc
       - type-checking-pro:
-          filters:
-            branches:
-              ignore:
-                - production
-                - staging
-                - integration
-          context: Slack
+         filters:
+           branches:
+             ignore:
+               - production
+               - staging
+               - integration
+         context: Slack
       - quality-pro:
-          filters:
-            branches:
-              ignore:
-                - production
-                - staging
-                - integration
-          context: Slack
+         filters:
+           branches:
+             ignore:
+               - production
+               - staging
+               - integration
+         context: Slack
       - type-checking-adage-front:
-          filters:
-            branches:
-              ignore:
-                - production
-                - staging
-                - integration
-          context: Slack
+         filters:
+           branches:
+             ignore:
+               - production
+               - staging
+               - integration
+         context: Slack
       - quality-adage-front:
-          filters:
-            branches:
-              ignore:
-                - production
-                - staging
-                - integration
-          context: Slack
+         filters:
+           branches:
+             ignore:
+               - production
+               - staging
+               - integration
+         context: Slack
       - quality-api:
-          filters:
-            branches:
-              ignore:
-                - production
-                - staging
-                - integration
-          context: Slack
+         filters:
+           branches:
+             ignore:
+               - production
+               - staging
+               - integration
+         context: Slack
       - tests-api:
-          name: "Run core tests after commit"
-          pytest_extra_args: "tests/core"
-          filters:
-            branches:
-              ignore:
-                - production
-                - staging
-                - integration
-          context: Slack
+         name: "Run core tests after commit"
+         pytest_extra_args: "tests/core"
+         filters:
+           branches:
+             ignore:
+               - production
+               - staging
+               - integration
+         context: Slack
       - tests-api:
-          name: "Run routes tests after commit"
-          pytest_extra_args: "tests/routes"
-          filters:
-            branches:
-              ignore:
-                - production
-                - staging
-                - integration
-          context: Slack
+         name: "Run routes tests after commit"
+         pytest_extra_args: "tests/routes"
+         filters:
+           branches:
+             ignore:
+               - production
+               - staging
+               - integration
+         context: Slack
       - tests-api:
-          name: "Run other tests after commit"
-          pytest_extra_args: "tests --ignore=tests/core --ignore=tests/routes"
-          filters:
-            branches:
-              ignore:
-                - production
-                - staging
-                - integration
-          context: Slack
+         name: "Run other tests after commit"
+         pytest_extra_args: "tests --ignore=tests/core --ignore=tests/routes"
+         filters:
+           branches:
+             ignore:
+               - production
+               - staging
+               - integration
+         context: Slack
       - tests-adage-front:
-          filters:
-            branches:
-              ignore:
-                - production
-                - staging
-                - integration
-          context: Slack
-          requires:
-            - type-checking-adage-front
+         filters:
+           branches:
+             ignore:
+               - production
+               - staging
+               - integration
+         context: Slack
+         requires:
+           - type-checking-adage-front
       - tests-pro-unit-tests:
-          filters:
-            branches:
-              ignore:
-                - production
-                - staging
-                - integration
-          context: Slack
-          requires:
-            - type-checking-pro
+         filters:
+           branches:
+             ignore:
+               - production
+               - staging
+               - integration
+         context: Slack
+         requires:
+           - type-checking-pro
       - tests-pro-e2e-tests:
-          filters:
-            branches:
-              ignore:
-                - production
-                - staging
-                - integration
-          context: Slack
-          requires:
-            - type-checking-pro
+         filters:
+           branches:
+             ignore:
+               - production
+               - staging
+               - integration
+         context: Slack
+         requires:
+           - type-checking-pro
       - build-and-push-image:
-          filters:
-            branches:
-              only:
-                - master
-          requires:
-            - "Run core tests after commit"
-            - "Run routes tests after commit"
-            - "Run other tests after commit"
-            - quality-api
-          context:
-            - GCP
-            - GCP_EHP
-          app_version: ${CIRCLE_SHA1}
+         filters:
+           branches:
+             only:
+               - master
+         requires:
+           - "Run core tests after commit"
+           - "Run routes tests after commit"
+           - "Run other tests after commit"
+           - quality-api
+         context:
+           - GCP
+           - GCP_EHP
+         app_version: ${CIRCLE_SHA1}
       - deploy-pcapi:
-          filters:
-            branches:
-              only:
-                - master
-          requires:
-            - build-and-push-image
-          context:
-            - GCP
-            - GCP_EHP
-          helm_environment: testing
-          app_version: ${CIRCLE_SHA1}
+         filters:
+           branches:
+             only:
+               - master
+         requires:
+           - build-and-push-image
+         context:
+           - GCP
+           - GCP_EHP
+         helm_environment: testing
+         app_version: ${CIRCLE_SHA1}
       - restart-pcapi:
-          filters:
-            branches:
-              only:
-                - master
-          requires:
-            - deploy-pcapi
-          context:
-            - GCP
-            - GCP_EHP
-          helm_environment: testing
+         filters:
+           branches:
+             only:
+               - master
+         requires:
+           - deploy-pcapi
+         context:
+           - GCP
+           - GCP_EHP
+         helm_environment: testing
       - deploy-pro:
-          filters:
-            branches:
-              only:
-                - master
-          requires:
-            - quality-pro
-            - tests-pro-unit-tests
-            - tests-pro-e2e-tests
-            - restart-pcapi
-          context:
-            - GCP
-            - GCP_EHP
-          app_environment: testing
+         filters:
+           branches:
+             only:
+               - master
+         requires:
+           - quality-pro
+           - tests-pro-unit-tests
+           - tests-pro-e2e-tests
+           - restart-pcapi
+         context:
+           - GCP
+           - GCP_EHP
+         app_environment: testing
       - deploy-adage-front:
-          filters:
-            branches:
-              only:
-                - master
-          requires:
-            - quality-adage-front
-            - tests-adage-front
-            - restart-pcapi
-          context:
-            - GCP
-            - GCP_EHP
-          app_environment: testing
+         filters:
+           branches:
+             only:
+               - master
+         requires:
+           - quality-adage-front
+           - tests-adage-front
+           - restart-pcapi
+         context:
+           - GCP
+           - GCP_EHP
+         app_environment: testing
   gcp-ehp:
     jobs:
       - build-and-push-image:

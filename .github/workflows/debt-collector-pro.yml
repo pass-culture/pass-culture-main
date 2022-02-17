@@ -1,0 +1,48 @@
+on:
+  pull_request:
+    branches:
+      - master
+jobs:
+  create-debt-report:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v2.3.4
+        with:
+          persist-credentials: false
+      - name: check changes
+        uses: dorny/paths-filter@v2
+        id: changes
+        with:
+          filters: |
+            src:
+              - 'pro/**'      
+      - uses: actions/setup-node@v2
+        if: steps.changes.outputs.src == 'true'
+        with:
+          node-version: '14'
+      - name: Install and Build 🔧
+        if: steps.changes.outputs.src == 'true'
+        run: |
+          cd pro
+          yarn install
+      - name: Run debt tool 🔧
+        if: steps.changes.outputs.src == 'true'
+        run: |
+          cd pro
+          git fetch origin master:master
+          yarn debt:compare
+      - uses: actions/github-script@v5
+        if: steps.changes.outputs.src == 'true'
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            const fs = require('fs')
+            const path = require('path')
+            const data = fs.readFileSync(path.resolve(process.cwd(), './pro/node_modules/.cache/debt-collector/report.html'), 'utf8')
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: data
+            })
