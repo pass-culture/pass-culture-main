@@ -1,9 +1,8 @@
 from pprint import pprint
 import traceback
 
-from flask import Blueprint
-
 from pcapi.repository.clean_database import clean_all_database
+from pcapi.utils.blueprint import Blueprint
 
 
 blueprint = Blueprint(__name__, __name__)

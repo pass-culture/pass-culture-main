@@ -2,9 +2,9 @@ import datetime
 import logging
 
 import click
-from flask import Blueprint
 
 import pcapi.core.finance.api as finance_api
+from pcapi.utils.blueprint import Blueprint
 
 
 logger = logging.getLogger(__name__)

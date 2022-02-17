@@ -4,13 +4,13 @@ import statistics
 import time
 
 import click
-from flask import Blueprint
 import pytz
 from sqlalchemy.orm import joinedload
 
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.models as offers_models
 from pcapi.core.search.backends import algolia
+from pcapi.utils.blueprint import Blueprint
 
 
 BATCH_SIZE = 1_000

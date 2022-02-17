@@ -2,7 +2,6 @@ import datetime
 import logging
 
 from apscheduler.schedulers.blocking import BlockingScheduler
-from flask import Blueprint
 from sentry_sdk import set_tag
 
 from pcapi import settings
@@ -46,6 +45,7 @@ from pcapi.scripts.booking.handle_expired_bookings import handle_expired_booking
 from pcapi.scripts.booking.notify_soon_to_be_expired_bookings import notify_soon_to_be_expired_individual_bookings
 from pcapi.scripts.payment.user_recredit import recredit_underage_users
 from pcapi.tasks import batch_tasks
+from pcapi.utils.blueprint import Blueprint
 from pcapi.workers.push_notification_job import send_tomorrow_stock_notification
 
 

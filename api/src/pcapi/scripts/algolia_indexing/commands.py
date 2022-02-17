@@ -1,9 +1,9 @@
 import click
-from flask import Blueprint
 
 from pcapi.core import search
 import pcapi.core.offers.api as offers_api
 from pcapi.scripts.algolia_indexing.indexing import batch_indexing_offers_in_algolia_from_database
+from pcapi.utils.blueprint import Blueprint
 
 
 blueprint = Blueprint(__name__, __name__)

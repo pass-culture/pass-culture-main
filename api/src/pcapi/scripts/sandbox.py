@@ -2,12 +2,12 @@ from pprint import pprint
 import traceback
 
 import click
-from flask import Blueprint
 
 from pcapi.sandboxes.scripts.save_sandbox import save_sandbox
 from pcapi.sandboxes.scripts.testcafe_helpers import print_all_testcafe_helpers
 from pcapi.sandboxes.scripts.testcafe_helpers import print_testcafe_helper
 from pcapi.sandboxes.scripts.testcafe_helpers import print_testcafe_helpers
+from pcapi.utils.blueprint import Blueprint
 
 
 blueprint = Blueprint(__name__, __name__)
