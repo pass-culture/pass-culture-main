@@ -141,10 +141,7 @@ def get_offers_by_filters(
         # 1. it's unlikely that a book will contain its ISBN in its name
         # 2. we need to migrate Offer.extraData to JSONB in order to use `union`
         query = query.filter(Offer.name.ilike(search)).union_all(
-            # TODO (ASK, JSONB): remove pylint disable when JSONB  migration is done
-            # pylint: disable=unsubscriptable-object
             query.filter(Offer.extraData["isbn"].astext == name_keywords_or_isbn)
-            # pylint: enable=unsubscriptable-object
         )
     if status is not None:
         query = _filter_by_status(query, status)
