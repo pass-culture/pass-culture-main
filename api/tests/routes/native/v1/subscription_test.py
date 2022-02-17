@@ -469,6 +469,7 @@ class UpdateProfileTest:
         assert response.status_code == 204
 
         user = users_models.User.query.get(user.id)
+        assert not user.is_beneficiary
         assert user.firstName == "John"
         assert user.lastName == "Doe"
         assert user.address == "1 rue des rues"
@@ -571,6 +572,65 @@ class UpdateProfileTest:
         response = client.post("/native/v1/subscription/profile", profile_data)
 
         assert response.status_code == 204
+
+    @override_features(ENABLE_UBBLE=True)
+    def test_fulfill_profile_activation(self, client):
+        user = users_factories.UserFactory(
+            address=None,
+            city=None,
+            postalCode=None,
+            activity=None,
+            firstName="Alexandra",
+            lastName="Stan",
+            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
+            phoneNumber="+33609080706",
+            dateOfBirth=datetime.date.today() - relativedelta(years=18, months=6),
+        )
+
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            status=fraud_models.FraudCheckStatus.OK,
+            type=fraud_models.FraudCheckType.DMS,
+            eligibilityType=users_models.EligibilityType.AGE18,
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.HONOR_STATEMENT,
+            status=fraud_models.FraudCheckStatus.OK,
+            eligibilityType=users_models.EligibilityType.AGE18,
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.USER_PROFILING,
+            status=fraud_models.FraudCheckStatus.OK,
+            eligibilityType=users_models.EligibilityType.AGE18,
+        )
+
+        profile_data = {
+            "firstName": "John",
+            "lastName": "Doe",
+            "address": "1 rue des rues",
+            "city": "Uneville",
+            "postalCode": "77000",
+            "activityId": "HIGH_SCHOOL_STUDENT",
+            "schoolTypeId": "PUBLIC_HIGH_SCHOOL",
+        }
+
+        client.with_token(user.email)
+        response = client.post("/native/v1/subscription/profile", profile_data)
+
+        assert response.status_code == 204
+
+        user = users_models.User.query.get(user.id)
+        assert user.firstName == "Alexandra"
+        assert user.lastName == "Stan"
+        assert user.has_beneficiary_role
+
+        assert len(push_testing.requests) == 2
+        notification = push_testing.requests[0]
+        assert notification["user_id"] == user.id
+        assert notification["attribute_values"]["u.is_beneficiary"]
+        assert notification["attribute_values"]["u.postal_code"] == "77000"
 
 
 class ProfileOptionsTypeTest:

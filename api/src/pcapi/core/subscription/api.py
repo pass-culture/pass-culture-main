@@ -305,7 +305,7 @@ def complete_profile(
     with pcapi_repository.transaction():
         users_models.User.query.filter(users_models.User.id == user.id).update(update_payload)
 
-    users_api.update_external_user(user)
+    activate_beneficiary_if_no_missing_step(user)
 
     logger.info("User completed profile step", extra={"user": user.id})
 
