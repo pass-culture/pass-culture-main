@@ -2,11 +2,13 @@ import React, { useCallback, useState, FunctionComponent } from 'react'
 
 import Icon from 'components/layout/Icon'
 import { useModal } from 'hooks/useModal'
+import DialogBox from 'new_components/DialogBox'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
 import { ImageUploadButton } from '../ImageUploadButton/ImageUploadButton'
 import { VenueImage } from '../VenueImage/VenueImage'
+import { VenueImagePreview } from '../VenueImagePreview/VenueImagePreview'
 
 import styles from './ImageVenueUploaderSection.module.scss'
 import { VenueImageDeleteModal } from './VenueImageDeleteModal'
@@ -31,6 +33,11 @@ export const ImageVenueUploaderSection: FunctionComponent<Props> = ({
     visible: isDeleteModalVisible,
     showModal: showDeleteModal,
     hideModal: hideDeleteModal,
+  } = useModal()
+  const {
+    visible: isPreviewModalVisible,
+    showModal: showPreviewModal,
+    hideModal: hidePreviewModal,
   } = useModal()
 
   const [imageUniqueURL, setImageUniqueURL] = useState(venueImage)
@@ -69,14 +76,13 @@ export const ImageVenueUploaderSection: FunctionComponent<Props> = ({
               />
               Modifier
             </Button>
-            {/* TODO: use commented code in PC-13302 and PC-13019 */}
-            {/* <Button variant={ButtonVariant.TERNARY}>
+            <Button onClick={showPreviewModal} variant={ButtonVariant.TERNARY}>
               <Icon
                 className={styles['image-venue-uploader-section-icon']}
                 svg="ico-eye-open-filled"
               />
               Prévisualiser
-            </Button> */}
+            </Button>
             <Button onClick={showDeleteModal} variant={ButtonVariant.TERNARY}>
               <Icon
                 className={styles['image-venue-uploader-section-icon']}
@@ -99,6 +105,15 @@ export const ImageVenueUploaderSection: FunctionComponent<Props> = ({
       )}
       {!!isDeleteModalVisible && (
         <VenueImageDeleteModal onDismiss={hideDeleteModal} />
+      )}
+      {isPreviewModalVisible && venueImage && (
+        <DialogBox
+          hasCloseButton
+          labelledBy="Image du lieu"
+          onDismiss={hidePreviewModal}
+        >
+          <VenueImagePreview preview={venueImage} />
+        </DialogBox>
       )}
     </section>
   )

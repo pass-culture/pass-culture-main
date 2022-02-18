@@ -6,17 +6,27 @@ import { SubmitButton } from 'ui-kit'
 import style from './VenueImagePreview.module.scss'
 import { VenuePreviews } from './VenuePreviews/VenuePreviews'
 
-interface Props {
-  preview: string
+type PropsWithActions = {
+  withActions: true
+  isUploading: boolean
   onGoBack: () => void
   onUploadImage: () => void
+}
+type PropsWithoutActions = {
+  withActions?: false
+  isUploading?: never
+  onGoBack?: never
+  onUploadImage?: never
+}
+type Props = (PropsWithActions | PropsWithoutActions) & {
+  preview: string
   children?: never
-  isUploading: boolean
 }
 
 export const VenueImagePreview: FunctionComponent<Props> = ({
-  isUploading,
   preview,
+  withActions,
+  isUploading,
   onGoBack,
   onUploadImage,
 }) => (
@@ -28,21 +38,23 @@ export const VenueImagePreview: FunctionComponent<Props> = ({
       Prévisualisation de votre image dans l’application pass Culture
     </div>
     <VenuePreviews preview={preview} />
-    <div className={style['actions']}>
-      <button
-        className={cn('secondary-button', style['button'])}
-        onClick={onGoBack}
-        title="Retour"
-        type="button"
-      >
-        Retour
-      </button>
-      <SubmitButton
-        className={style['button']}
-        disabled={false}
-        isLoading={isUploading}
-        onClick={onUploadImage}
-      />
-    </div>
+    {withActions && (
+      <div className={style['actions']}>
+        <button
+          className={cn('secondary-button', style['button'])}
+          onClick={onGoBack}
+          title="Retour"
+          type="button"
+        >
+          Retour
+        </button>
+        <SubmitButton
+          className={style['button']}
+          disabled={false}
+          isLoading={!!isUploading}
+          onClick={onUploadImage}
+        />
+      </div>
+    )}
   </div>
 )
