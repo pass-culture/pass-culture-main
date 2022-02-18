@@ -319,6 +319,7 @@ class AlgoliaBackend(base.SearchBackend):
             "instagram": social_medias.get("instagram"),
             "snapchat": social_medias.get("snapchat"),
             "tags": [criterion.name for criterion in venue.criteria],
+            "bannerUrl": venue.bannerUrl,
             "_geoloc": position(venue),
         }
 
