@@ -49,23 +49,14 @@ def on_educonnect_result(
 ) -> models.BeneficiaryFraudCheck:
     eligibility_type = educonnect_content.get_eligibility_type_at_registration()
 
-    fraud_check = models.BeneficiaryFraudCheck.query.filter(
-        models.BeneficiaryFraudCheck.user == user,
-        models.BeneficiaryFraudCheck.type == models.FraudCheckType.EDUCONNECT,
-        models.BeneficiaryFraudCheck.eligibilityType == eligibility_type,
-    ).one_or_none()
+    fraud_check = models.BeneficiaryFraudCheck(
+        user=user,
+        type=models.FraudCheckType.EDUCONNECT,
+        thirdPartyId=str(educonnect_content.educonnect_id),
+        resultContent=educonnect_content.dict(),
+        eligibilityType=eligibility_type,
+    )
 
-    if fraud_check:
-        fraud_check.thirdPartyId = str(educonnect_content.educonnect_id)
-        fraud_check.resultContent = educonnect_content.dict()
-    else:
-        fraud_check = models.BeneficiaryFraudCheck(
-            user=user,
-            type=models.FraudCheckType.EDUCONNECT,
-            thirdPartyId=str(educonnect_content.educonnect_id),
-            resultContent=educonnect_content.dict(),
-            eligibilityType=eligibility_type,
-        )
     on_identity_fraud_check_result(user, fraud_check)
     repository.save(fraud_check)
     return fraud_check
