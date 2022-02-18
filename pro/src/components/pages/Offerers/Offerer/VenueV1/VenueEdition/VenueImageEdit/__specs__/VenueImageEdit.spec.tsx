@@ -3,13 +3,13 @@ import React from 'react'
 
 import { VenueImageEdit } from '../VenueImageEdit'
 
-const mockCloseModal = jest.fn()
+const mockReplaceImage = jest.fn()
 const defaultProps = {
   image: new File([], 'toto.png', {
     type: 'image/png',
   }),
   onSetImage: jest.fn(),
-  closeModal: mockCloseModal,
+  onReplaceImage: mockReplaceImage,
   credit: '',
   onEditedImageSave: jest.fn(),
   onSetCredit: jest.fn(),
@@ -18,7 +18,7 @@ const defaultProps = {
 describe('venue image edit', () => {
   it('closes the modal on cancel button click', () => {
     const { getByText } = render(<VenueImageEdit {...defaultProps} />)
-    fireEvent.click(getByText('Annuler'))
-    expect(mockCloseModal).toHaveBeenCalledTimes(1)
+    fireEvent.click(getByText("Remplacer l'image"))
+    expect(mockReplaceImage).toHaveBeenCalledTimes(1)
   })
 })
