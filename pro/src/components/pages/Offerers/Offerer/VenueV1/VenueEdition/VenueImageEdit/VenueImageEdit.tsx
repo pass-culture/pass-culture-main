@@ -20,12 +20,12 @@ type Props = {
   credit: string
   onSetCredit: (credit: string) => void
   children?: never
-  closeModal: () => void
+  onReplaceImage: () => void
   onEditedImageSave: (dataUrl: string, croppedRect: CroppedRect) => void
 }
 
 export const VenueImageEdit: FunctionComponent<Props> = ({
-  closeModal,
+  onReplaceImage,
   image,
   credit,
   onSetCredit,
@@ -71,10 +71,10 @@ export const VenueImageEdit: FunctionComponent<Props> = ({
       <footer className={style['venue-image-edit-footer']}>
         <Button
           Icon={CloseIcon}
-          onClick={closeModal}
+          onClick={onReplaceImage}
           variant={ButtonVariant.TERNARY}
         >
-          Annuler
+          Remplacer l'image
         </Button>
         <Button onClick={handleNext}>Suivant</Button>
       </footer>
