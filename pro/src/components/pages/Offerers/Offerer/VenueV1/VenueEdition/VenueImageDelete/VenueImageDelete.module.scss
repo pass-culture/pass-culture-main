@@ -1,0 +1,34 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: rem(32px);
+}
+
+.icon {
+  height: rem(80px);
+  width: rem(80px);
+}
+
+.header {
+  @include title3;
+}
+
+.spacer {
+  height: rem(32px);
+}
+
+.subtitle {
+  color: $grey-dark;
+  //margin-bottom: rem(24px);
+}
+
+.actions {
+  display: flex;
+  justify-content: center;
+
+  .button {
+    margin: 0 rem(12px);
+    width: rem(192px);
+  }
+}
