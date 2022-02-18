@@ -439,7 +439,7 @@ class ValidateOffererAttachmentTest:
         # Then
         assert applicant.has_pro_role
 
-    @patch("pcapi.core.offerers.api.send_attachment_validation_email_to_pro_offerer", return_value=True)
+    @patch("pcapi.core.offerers.api.send_offerer_attachment_validation_email_to_pro", return_value=True)
     def test_send_validation_confirmation_email(self, mocked_send_validation_confirmation_email_to_pro):
         # Given
         applicant = users_factories.UserFactory()
