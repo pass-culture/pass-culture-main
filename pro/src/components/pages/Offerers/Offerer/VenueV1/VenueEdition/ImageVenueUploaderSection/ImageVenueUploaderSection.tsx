@@ -9,6 +9,7 @@ import { ImageUploadButton } from '../ImageUploadButton/ImageUploadButton'
 import { VenueImage } from '../VenueImage/VenueImage'
 
 import styles from './ImageVenueUploaderSection.module.scss'
+import { VenueImageDeleteModal } from './VenueImageDeleteModal'
 import { VenueImageUploaderModal } from './VenueImageUploaderModal'
 
 type Props = {
@@ -21,7 +22,16 @@ export const ImageVenueUploaderSection: FunctionComponent<Props> = ({
   venueId,
   venueImage,
 }) => {
-  const { visible, showModal, hideModal } = useModal()
+  const {
+    visible: isUploaderModalVisible,
+    showModal: showUploaderModal,
+    hideModal: hideUploaderModal,
+  } = useModal()
+  const {
+    visible: isDeleteModalVisible,
+    showModal: showDeleteModal,
+    hideModal: hideDeleteModal,
+  } = useModal()
 
   const [imageUniqueURL, setImageUniqueURL] = useState(venueImage)
   const reloadImage = useCallback((url: string) => {
@@ -52,7 +62,7 @@ export const ImageVenueUploaderSection: FunctionComponent<Props> = ({
           <div
             className={styles['image-venue-uploader-section-icon-container']}
           >
-            <Button onClick={showModal} variant={ButtonVariant.TERNARY}>
+            <Button onClick={showUploaderModal} variant={ButtonVariant.TERNARY}>
               <Icon
                 className={styles['image-venue-uploader-section-icon']}
                 svg="ico-pen-black"
@@ -66,26 +76,29 @@ export const ImageVenueUploaderSection: FunctionComponent<Props> = ({
                 svg="ico-eye-open-filled"
               />
               Prévisualiser
-            </Button>
-            <Button variant={ButtonVariant.TERNARY}>
+            </Button> */}
+            <Button onClick={showDeleteModal} variant={ButtonVariant.TERNARY}>
               <Icon
                 className={styles['image-venue-uploader-section-icon']}
                 svg="ico-trash-filled"
               />
               Supprimer
-            </Button> */}
+            </Button>
           </div>
         </div>
       ) : (
-        <ImageUploadButton onClick={showModal} />
+        <ImageUploadButton onClick={showUploaderModal} />
       )}
-      {!!visible && (
+      {!!isUploaderModalVisible && (
         <VenueImageUploaderModal
           defaultImage={imageUniqueURL || undefined}
-          onDismiss={hideModal}
+          onDismiss={hideUploaderModal}
           reloadImage={reloadImage}
           venueId={venueId}
         />
+      )}
+      {!!isDeleteModalVisible && (
+        <VenueImageDeleteModal onDismiss={hideDeleteModal} />
       )}
     </section>
   )
