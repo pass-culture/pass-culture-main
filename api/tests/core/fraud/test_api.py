@@ -235,6 +235,7 @@ class EduconnectFraudTest:
         assert fraud_check.userId == user.id
         assert fraud_check.type == fraud_models.FraudCheckType.EDUCONNECT
         assert fraud_check.eligibilityType == users_models.EligibilityType.UNDERAGE
+        assert fraud_check.status == fraud_models.FraudCheckStatus.OK
         assert fraud_check.source_data().__dict__ == {
             "educonnect_id": "id-1",
             "first_name": "Lucy",
@@ -246,7 +247,7 @@ class EduconnectFraudTest:
             "student_level": "2212",
         }
 
-        # If the user logs in again with another educonnect account, update the fraud check
+        # If the user logs in again with another educonnect account, create another fraud check
         fraud_factories.IneHashWhitelistFactory(ine_hash="0000")
         fraud_api.on_educonnect_result(
             user,
@@ -262,10 +263,14 @@ class EduconnectFraudTest:
             ),
         )
 
-        fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(
-            user=user,
-            type=fraud_models.FraudCheckType.EDUCONNECT,
-        ).one_or_none()
+        fraud_check = (
+            fraud_models.BeneficiaryFraudCheck.query.filter_by(
+                user=user,
+                type=fraud_models.FraudCheckType.EDUCONNECT,
+            )
+            .filter(fraud_models.BeneficiaryFraudCheck.id != fraud_check.id)
+            .first()
+        )
         assert fraud_check.userId == user.id
         assert fraud_check.type == fraud_models.FraudCheckType.EDUCONNECT
         assert fraud_check.eligibilityType == users_models.EligibilityType.UNDERAGE
