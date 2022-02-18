@@ -148,6 +148,9 @@ def on_identity_fraud_check_result(
             )
         )
 
+    if content_first_name and content_last_name:
+        fraud_items.append(_check_user_names_valid(content_first_name, content_last_name))
+
     if content_birth_date:
         fraud_items.append(_check_user_eligibility(user, beneficiary_fraud_check.eligibilityType))
 
@@ -292,9 +295,34 @@ def _check_user_eligibility(
     )
 
 
-def is_subscription_name_valid(name: str) -> bool:
+def is_subscription_name_valid(name: typing.Optional[str]) -> bool:
+    if not name:
+        return False
     stripped_name = name.strip()
     return bool(is_latin(name) and stripped_name)
+
+
+def _check_user_names_valid(first_name: typing.Optional[str], last_name: typing.Optional[str]):
+    incorrect_fields = None
+    is_valid_first_name = is_subscription_name_valid(first_name)
+    is_valid_last_name = is_subscription_name_valid(last_name)
+
+    if not is_valid_first_name and not is_valid_last_name:
+        incorrect_fields = "un prénom et un nom de famille"
+    elif not is_valid_first_name:
+        incorrect_fields = "un prénom"
+    elif not is_valid_last_name:
+        incorrect_fields = "un nom de famille"
+
+    if incorrect_fields:
+        return models.FraudItem(
+            status=models.FraudStatus.KO,
+            detail=f"L'utilisateur a {incorrect_fields} avec des caractères invalides",
+            reason_code=models.FraudReasonCode.NAME_INCORRECT,
+        )
+    return models.FraudItem(
+        status=models.FraudStatus.OK, detail="L'utilisateur a un nom et prénom avec des caractères valides"
+    )
 
 
 def _check_user_email_is_validated(user: users_models.User) -> models.FraudItem:
