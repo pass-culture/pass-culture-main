@@ -1,7 +1,7 @@
 import React, { FunctionComponent, useCallback, useRef } from 'react'
 import AvatarEditor, { CroppedRect } from 'react-avatar-editor'
 
-import { ReactComponent as CloseIcon } from 'icons/ico-clear.svg'
+import { ReactComponent as DownloadIcon } from 'icons/ico-download-filled.svg'
 import { CreditInput } from 'new_components/CreditInput/CreditInput'
 import ImageEditor from 'new_components/ImageEditor/ImageEditor'
 import { Button, Divider } from 'ui-kit'
@@ -70,7 +70,7 @@ export const VenueImageEdit: FunctionComponent<Props> = ({
       <Divider />
       <footer className={style['venue-image-edit-footer']}>
         <Button
-          Icon={CloseIcon}
+          Icon={DownloadIcon}
           onClick={onReplaceImage}
           variant={ButtonVariant.TERNARY}
         >
