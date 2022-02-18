@@ -1,11 +1,8 @@
 import io
 import pathlib
-import tempfile
-from unittest.mock import patch
 
 import pytest
 
-from pcapi import settings
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offerers.models as offerers_models
 from pcapi.core.offerers.models import Venue
@@ -232,8 +229,7 @@ def test_create_venue_malformed(app, client, data, key):
 
 @pytest.mark.usefixtures("db_session")
 class VenueBannerTest:
-    @patch("pcapi.core.object_storage.backends.local.LocalBackend.local_dir")
-    def test_upload_image(self, mock_local_dir, client):
+    def test_upload_image(self, client, tmpdir):
         """
         Check that the image upload works for a legit file (size and type):
             * API returns a 201 status code
@@ -249,29 +245,21 @@ class VenueBannerTest:
 
         client = client.with_session_auth(email=user_offerer.user.email)
         url = f"/venues/{humanize(venue.id)}/banner"
-        url += "?x_crop_percent=0.8&y_crop_percent=0.7&height_crop_percent=0.6"
+        url += "?x_crop_percent=0.8&y_crop_percent=0.7&height_crop_percent=0.6&image_credit=none"
 
-        with tempfile.TemporaryDirectory() as tmpdirname:
-            with override_settings(OBJECT_STORAGE_URL=tmpdirname):
-                settings.OBJECT_STORAGE_URL = tmpdirname
-                mock_local_dir.return_value = pathlib.Path(tmpdirname) / settings.THUMBS_FOLDER_NAME
+        # Override storage url otherwise it would be, well, an URL
+        # (like http://localhost) and make some checks more difficult.
+        # Override local storage and use a temporary directory instead.
+        with override_settings(OBJECT_STORAGE_URL=tmpdir.dirname, LOCAL_STORAGE_DIR=pathlib.Path(tmpdir.dirname)):
+            response = client.post(url, files=file)
+            assert response.status_code == 201
 
-                response = client.post(url, files=file)
-                assert response.status_code == 201
+            assert response.json["bannerUrl"]
+            assert response.json["bannerMeta"] == {"image_credit": "none"}
 
-                assert response.json["bannerUrl"]
-                assert response.json["bannerMeta"] == {
-                    "content_type": "jpeg",
-                    "file_name": "upsert_banner.jpg",
-                }
+            venue = Venue.query.get(venue.id)
+            with open(venue.bannerUrl, mode="rb") as f:
+                # test that image size has been reduced
+                assert len(f.read()) < len(image_content)
 
-                venue = Venue.query.get(venue.id)
-                with open(venue.bannerUrl, mode="rb") as f:
-                    # test that image size has been reduced
-                    assert len(f.read()) < len(image_content)
-
-                assert venue.bannerMeta == {
-                    "author_id": user_offerer.user.id,
-                    "content_type": "jpeg",
-                    "file_name": "upsert_banner.jpg",
-                }
+            assert venue.bannerMeta == {"author_id": user_offerer.user.id, "image_credit": "none"}

@@ -50,6 +50,7 @@ from pcapi.utils.date import CUSTOM_TIMEZONES
 from pcapi.utils.date import METROPOLE_TIMEZONE
 from pcapi.utils.date import get_department_timezone
 from pcapi.utils.date import get_postal_code_timezone
+from pcapi.utils.human_ids import humanize
 
 
 CONSTRAINT_CHECK_IS_VIRTUAL_XOR_HAS_ADDRESS = """
@@ -276,6 +277,14 @@ class Venue(PcObject, Model, HasThumbMixin, HasAddressMixin, ProvidableMixin, Ne
         if self.businessUnit and self.businessUnit.siret:
             return self.siret == self.businessUnit.siret
         return False
+
+    @property
+    def thumbUrl(self):
+        """
+        Override to discard the thumbCount column: not used by Venues
+        which have at most one banner (thumb).
+        """
+        return "{}/{}/{}".format(self.thumb_base_url, self.thumb_path_component, humanize(self.id))
 
     @hybrid_property
     def timezone(self) -> str:
