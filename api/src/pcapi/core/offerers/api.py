@@ -12,6 +12,9 @@ from pcapi.core import object_storage
 from pcapi.core import search
 import pcapi.core.finance.models as finance_models
 from pcapi.core.mails.transactional.pro.new_offerer_validation import send_new_offerer_validation_email_to_pro
+from pcapi.core.mails.transactional.pro.offerer_attachment_validation import (
+    send_offerer_attachment_validation_email_to_pro,
+)
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers.exceptions import MissingOffererIdQueryParameter
 from pcapi.core.offerers.models import ApiKey
@@ -27,7 +30,6 @@ from pcapi.core.users.external import update_external_pro
 from pcapi.core.users.models import User
 from pcapi.core.users.repository import get_users_with_validated_attachment_by_offerer
 from pcapi.domain.admin_emails import maybe_send_offerer_validation_email
-from pcapi.domain.pro_emails import send_attachment_validation_email_to_pro_offerer
 from pcapi.models import db
 from pcapi.models.user_offerer import UserOfferer
 from pcapi.repository import repository
@@ -267,7 +269,7 @@ def validate_offerer_attachment(token: str) -> None:
 
     update_external_pro(user_offerer.user.email)
 
-    if not send_attachment_validation_email_to_pro_offerer(user_offerer):
+    if not send_offerer_attachment_validation_email_to_pro(user_offerer):
         logger.warning(
             "Could not send attachment validation email to offerer",
             extra={"user_offerer": user_offerer.id},

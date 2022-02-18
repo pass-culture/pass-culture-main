@@ -37,7 +37,6 @@ class TransactionalEmail(Enum):
     EMAIL_DUPLICATE_BENEFICIARY_PRE_SUBCRIPTION_REJECTED = Template(
         id_prod=80, id_not_prod=19, tags=["jeunes_compte_refuse_doublon"], use_priority_queue=True
     )
-
     EXPIRED_BOOKING_TO_BENEFICIARY = Template(id_prod=145, id_not_prod=34, tags=["jeunes_resa_expiree"])
     FRAUD_SUSPICION = Template(id_prod=82, id_not_prod=24, tags=["jeunes_compte_en_cours_d_analyse"])
     NEW_PASSWORD_REQUEST = Template(id_prod=141, id_not_prod=26, tags=["jeunes_nouveau_mdp"], use_priority_queue=True)
@@ -100,6 +99,7 @@ class TransactionalEmail(Enum):
     OFFER_REJECTION_TO_PRO = TemplatePro(
         id_prod=375, id_not_prod=48, tags=["pro_offre_refusee"], sender=SendinblueTransactionalSender.COMPLIANCE
     )
+    OFFERER_ATTACHMENT_VALIDATION = TemplatePro(id_prod=488, id_not_prod=62, tags=["pro_rattachement_structure_valide"])
     REFUND_TO_PRO = TemplatePro(id_prod=0000, id_not_prod=0000, tags=[""])
     RESET_PASSWORD_TO_PRO = TemplatePro(id_prod=364, id_not_prod=47, tags=["pro_reinit_mdp"])
     WELCOME_TO_PRO = TemplatePro(id_prod=481, id_not_prod=57, tags=["pro-bienvenue-pass"])
