@@ -83,6 +83,10 @@ class CustomReimbursementRule(ReimbursementRule, Model):
     # rate is between 0 and 1 (included), or NULL if `amount` is set.
     rate = sa.Column(sa.Numeric(5, 4), nullable=True)
 
+    # timespan is an interval during which this rule is applicable
+    # (see `is_active()` below). The lower bound is inclusive and
+    # required. The upper bound is exclusive and optional. If there is
+    # no upper bound, it means that the rule is still applicable.
     timespan = sa.Column(postgresql.TSRANGE)
 
     __table_args__ = (
@@ -91,6 +95,7 @@ class CustomReimbursementRule(ReimbursementRule, Model):
         # A rule has an amount or a rate, never both.
         sa.CheckConstraint("num_nonnulls(amount, rate) = 1"),
         # A timespan must have a lower bound. Upper bound is optional.
+        # Overlapping rules are rejected by `validation._check_reimbursement_rule_conflicts()`.
         sa.CheckConstraint("lower(timespan) IS NOT NULL"),
         sa.CheckConstraint("rate IS NULL OR (rate BETWEEN 0 AND 1)"),
     )
