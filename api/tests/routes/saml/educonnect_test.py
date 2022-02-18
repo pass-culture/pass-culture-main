@@ -83,6 +83,14 @@ class EduconnectTest:
         user = users_factories.UserFactory(email=self.email)
         app.redis_client.set(f"{self.request_id_key_prefix}{self.request_id}", user.id)
 
+        # even if the user has failed educonnect
+        already_done_check = fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.EDUCONNECT,
+            status=fraud_models.FraudCheckStatus.KO,
+            eligibilityType=user_models.EligibilityType.UNDERAGE,
+        )
+
         mock_saml_client = MagicMock()
         mock_saml_response = MagicMock()
         mock_get_educonnect_saml_client.return_value = mock_saml_client
@@ -129,9 +137,11 @@ class EduconnectTest:
             "user_id": user.id,
         }
 
-        fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(
-            user=user, type=fraud_models.FraudCheckType.EDUCONNECT
-        ).one()
+        fraud_check = (
+            fraud_models.BeneficiaryFraudCheck.query.filter_by(user=user, type=fraud_models.FraudCheckType.EDUCONNECT)
+            .filter(fraud_models.BeneficiaryFraudCheck.id != already_done_check.id)
+            .one()
+        )
 
         assert fraud_check.resultContent == {
             "birth_date": "2006-08-18",
