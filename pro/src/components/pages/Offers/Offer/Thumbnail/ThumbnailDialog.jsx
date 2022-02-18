@@ -6,7 +6,10 @@
 import PropTypes from 'prop-types'
 import React, { useCallback, useEffect, useState } from 'react'
 
-import { IMPORT_TAB_ID } from 'components/pages/Offers/Offer/Thumbnail/_constants'
+import {
+  IMPORT_TAB_ID,
+  NBSP,
+} from 'components/pages/Offers/Offer/Thumbnail/_constants'
 import Credit from 'components/pages/Offers/Offer/Thumbnail/Credit/Credit'
 import ImageEditorWrapper from 'components/pages/Offers/Offer/Thumbnail/ImageEditor/ImageEditorWrapper'
 import ImportFromComputer from 'components/pages/Offers/Offer/Thumbnail/ImportFromComputer/ImportFromComputer'
@@ -72,6 +75,8 @@ const ThumbnailDialog = ({
     thumbnail,
   ])
 
+  const advicesDescription = `Pour maximiser vos chances de réservations, choisissez avec soin l’image qui accompagne votre offre. Les ressources suivantes sont à votre disposition${NBSP}:`
+
   return (
     <DialogBox
       extraClassNames={
@@ -95,7 +100,11 @@ const ThumbnailDialog = ({
               step={step}
             />
             <hr className="tnd-hr" />
-            <Advices hidden={hidden} setHidden={setHidden} />
+            <Advices
+              hidden={hidden}
+              setHidden={setHidden}
+              teaserText={advicesDescription}
+            />
           </>
         )}
         {step === CREDIT_STEP && (

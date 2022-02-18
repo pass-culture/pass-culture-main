@@ -8,10 +8,15 @@ import { ReactComponent as ExternalSite } from 'components/pages/Offers/Offer/Th
 interface Props {
   hidden: boolean
   setHidden: (hidden: boolean) => void
+  teaserText: string
   children?: never
 }
 
-const Advices: FunctionComponent<Props> = ({ hidden, setHidden }) => {
+const Advices: FunctionComponent<Props> = ({
+  teaserText,
+  hidden,
+  setHidden,
+}) => {
   const toggle = useCallback(() => {
     setHidden(!hidden)
   }, [hidden, setHidden])
@@ -34,11 +39,7 @@ const Advices: FunctionComponent<Props> = ({ hidden, setHidden }) => {
         {hidden ? <ArrowDown /> : <ArrowUp />}
       </button>
       <div aria-hidden={hidden} className={hidden ? 'tna-hidden' : ''}>
-        <p className="tna-teaser">
-          Pour maximiser vos chances de réservations, choisissez avec soin
-          l’image qui accompagne votre offre. Les ressources suivantes sont à
-          votre disposition :
-        </p>
+        <p className="tna-teaser">{teaserText}</p>
         <p className="tna-title">Banques d’images libres de droits</p>
         <ul className="tna-links">
           <li>
