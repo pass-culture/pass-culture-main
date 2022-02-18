@@ -1,14 +1,13 @@
 from datetime import datetime
 import logging
-import os
 import secrets
 import typing
 from typing import Optional
 
 from pcapi import settings
+from pcapi.connectors import thumb_storage as storage
 from pcapi.connectors.api_adage import AdageException
 from pcapi.connectors.api_adage import CulturalPartnerNotFoundException
-from pcapi.core import object_storage
 from pcapi.core import search
 import pcapi.core.finance.models as finance_models
 from pcapi.core.mails.transactional.pro.new_offerer_validation import send_new_offerer_validation_email_to_pro
@@ -38,7 +37,6 @@ from pcapi.utils import crypto
 from pcapi.utils.human_ids import dehumanize
 from pcapi.utils.image_conversion import CropParams
 from pcapi.utils.image_conversion import IMAGE_RATIO_LANDSCAPE_DEFAULT
-from pcapi.utils.image_conversion import standardize_image
 
 from . import validation
 from .exceptions import ApiKeyCountMaxReached
@@ -303,25 +301,19 @@ def save_venue_banner(
     user: User,
     venue: Venue,
     content: bytes,
-    content_type: str,
-    file_name: str,
+    image_credit: str,
     crop_params: Optional[CropParams] = None,
 ) -> None:
-    bucket_name = settings.THUMBS_FOLDER_NAME
-    object_id = f"venue_{venue.id}_banner"
-
-    content = standardize_image(content, ratio=IMAGE_RATIO_LANDSCAPE_DEFAULT, crop_params=crop_params)
-    object_storage.store_public_object(
-        folder=bucket_name,
-        object_id=object_id,
-        blob=content,
-        content_type=f"image/{content_type.lower()}",
+    storage.create_thumb(
+        model_with_thumb=venue,
+        image_as_bytes=content,
+        image_index=0,
+        crop_params=crop_params,
+        ratio=IMAGE_RATIO_LANDSCAPE_DEFAULT,
     )
 
-    # TODO: use create_thumb and use venue.thumbsUrl
-    # TODO: rm this temporary quickfix
-    venue.bannerUrl = os.path.join(settings.OBJECT_STORAGE_URL, bucket_name, object_id)
-    venue.bannerMeta = {"content_type": content_type, "file_name": file_name, "author_id": user.id}
+    venue.bannerUrl = venue.thumbUrl
+    venue.bannerMeta = {"image_credit": image_credit, "author_id": user.id}
 
     repository.save(venue)
 

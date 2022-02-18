@@ -23,6 +23,7 @@ from pcapi.serialization.utils import string_to_boolean_field
 from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_utc_date
 from pcapi.utils.image_conversion import CropParam
+from pcapi.utils.image_conversion import CropParams
 
 
 MAX_LONGITUDE = 180
@@ -122,8 +123,7 @@ class GetVenueManagingOffererResponseModel(BaseModel):
 
 
 class BannerMetaModel(TypedDict):
-    file_name: str
-    content_type: str
+    image_credit: Optional[str]
 
 
 class GetVenueResponseModel(base.BaseVenueResponse):
@@ -243,8 +243,7 @@ class VenueListQueryModel(BaseModel):
 
 class VenueBannerContentModel(BaseModel):
     content: pydantic.conbytes(min_length=2, max_length=VENUE_BANNER_MAX_SIZE)  # type: ignore
-    content_type: pydantic.constr(strip_whitespace=True, to_lower=True, max_length=16)  # type: ignore
-    file_name: pydantic.constr(strip_whitespace=True, to_lower=True, min_length=5, max_length=256)  # type: ignore
+    image_credit: Optional[pydantic.constr(strip_whitespace=True, min_length=1, max_length=255)]  # type: ignore
 
     # cropping parameters must be a % (between 0 and 1) of the original
     # bottom right corner and the original height
@@ -270,9 +269,9 @@ class VenueBannerContentModel(BaseModel):
             raise ValueError("Format de l'image invalide")
 
         legit_image_types = {"jpg", "jpeg", "png"}
-        values["content_type"] = image.format.lower()
+        content_type = image.format.lower()
 
-        if not values["content_type"] in legit_image_types:
+        if content_type not in legit_image_types:
             raise ValueError("Format de l'image invalide")
 
         return values
@@ -284,7 +283,7 @@ class VenueBannerContentModel(BaseModel):
         file = request.files["banner"]
         return VenueBannerContentModel(
             content=file.read(VENUE_BANNER_MAX_SIZE),
-            file_name=file.filename,
+            image_credit=request.args.get("image_credit"),
             x_crop_percent=request.args.get("x_crop_percent"),
             y_crop_percent=request.args.get("y_crop_percent"),
             height_crop_percent=request.args.get("height_crop_percent"),
@@ -308,7 +307,7 @@ class VenueBannerContentModel(BaseModel):
         return request
 
     @property
-    def crop_params(self):
+    def crop_params(self) -> Optional[CropParams]:
         if {self.x_crop_percent, self.y_crop_percent, self.height_crop_percent} == {None}:
             return None
         return (self.x_crop_percent, self.y_crop_percent, self.height_crop_percent)

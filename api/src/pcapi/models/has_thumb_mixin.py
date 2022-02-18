@@ -26,8 +26,11 @@ class HasThumbMixin:
         return f"{self.thumb_path_component}/{humanize(self.id)}{suffix}"
 
     @property
+    def thumb_base_url(self):
+        return settings.OBJECT_STORAGE_URL + "/thumbs"
+
+    @property
     def thumbUrl(self):
         if self.thumbCount == 0:
             return None
-        thumb_url = settings.OBJECT_STORAGE_URL + "/thumbs"
-        return "{}/{}/{}".format(thumb_url, self.thumb_path_component, humanize(self.id))
+        return "{}/{}/{}".format(self.thumb_base_url, self.thumb_path_component, humanize(self.id))
