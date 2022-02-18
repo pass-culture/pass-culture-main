@@ -175,7 +175,7 @@ class Booking(PcObject, Model):
             raise exceptions.BookingIsAlreadyCancelled()
         if self.status is BookingStatus.REIMBURSED:
             raise exceptions.BookingIsAlreadyUsed()
-        if self.status is BookingStatus.USED and not cancel_even_if_used:  # pylint: disable=using-constant-test
+        if self.status is BookingStatus.USED and not cancel_even_if_used:
             raise exceptions.BookingIsAlreadyUsed()
         self.status = BookingStatus.CANCELLED
         self.cancellationDate = datetime.utcnow()
