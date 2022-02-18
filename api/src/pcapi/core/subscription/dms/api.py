@@ -162,7 +162,7 @@ def process_parsing_exception(
     fraud_api.create_dms_fraud_check_error(
         user,
         application_id,
-        reason_codes=[fraud_models.FraudReasonCode.REFUSED_BY_OPERATOR],
+        reason_codes=[fraud_models.FraudReasonCode.ERROR_IN_DATA],
         error_details=error_details,
     )
 
