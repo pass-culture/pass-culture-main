@@ -10,8 +10,9 @@ def create_thumb(
     image_as_bytes: bytes,
     image_index: int,
     crop_params: tuple = None,
+    ratio: float = IMAGE_RATIO_PORTRAIT_DEFAULT,
 ) -> None:
-    image_as_bytes = standardize_image(image_as_bytes, ratio=IMAGE_RATIO_PORTRAIT_DEFAULT, crop_params=crop_params)
+    image_as_bytes = standardize_image(image_as_bytes, ratio=ratio, crop_params=crop_params)
 
     object_storage.store_public_object(
         folder=settings.THUMBS_FOLDER_NAME,
