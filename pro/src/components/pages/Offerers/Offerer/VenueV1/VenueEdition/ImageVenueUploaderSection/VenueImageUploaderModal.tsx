@@ -110,6 +110,7 @@ export const VenueImageUploaderModal: FunctionComponent<Props> = ({
           onGoBack={navigateFromPreviewToEdit}
           onUploadImage={onUploadImage}
           preview={editedImage}
+          withActions
         />
       )}
     </DialogBox>
