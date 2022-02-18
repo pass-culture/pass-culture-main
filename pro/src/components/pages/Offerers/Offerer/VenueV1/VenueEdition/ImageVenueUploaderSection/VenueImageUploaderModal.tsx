@@ -57,6 +57,10 @@ export const VenueImageUploaderModal: FunctionComponent<Props> = ({
     setEditedImage('')
   }, [])
 
+  const onReplaceImage = useCallback(() => {
+    setImage(undefined)
+  }, [setImage])
+
   const onUploadImage = useCallback(async () => {
     if (typeof croppingRect === 'undefined') return
     if (typeof image === 'undefined') return
@@ -94,10 +98,10 @@ export const VenueImageUploaderModal: FunctionComponent<Props> = ({
         />
       ) : !croppingRect || !editedImage ? (
         <VenueImageEdit
-          closeModal={onDismiss}
           credit={credit}
           image={image}
           onEditedImageSave={onEditedImageSave}
+          onReplaceImage={onReplaceImage}
           onSetCredit={setCredit}
         />
       ) : (
