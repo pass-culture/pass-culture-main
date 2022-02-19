@@ -232,13 +232,10 @@ class override_features(TestContextDecorator):
 
     Usage:
 
-        with override_features(QR_CODE=False):
+        with override_features(ENABLE_FROBULATION=False):
             call_some_function()
 
-        @override_features(
-            ENABLE_FROBULATION=True,
-            QR_CODE=False,
-        )
+        @override_features(ENABLE_FROBULATION=True)
         def test_something():
             pass  # [...]
     """

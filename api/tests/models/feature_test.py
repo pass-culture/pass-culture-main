@@ -26,33 +26,33 @@ FEATURES_DISABLED_BY_DEFAULT_TEST = [TestingFeatureToggle.ENABLE_LANDING]
 class FeatureToggleTest:
     def test_is_active_returns_true_when_feature_is_active(self):
         # Given
-        feature = Feature.query.filter_by(name=FeatureToggle.QR_CODE.name).first()
+        feature = Feature.query.filter_by(name=FeatureToggle.SYNCHRONIZE_ALLOCINE.name).first()
         feature.isActive = True
         repository.save(feature)
 
         # When / Then
-        assert FeatureToggle.QR_CODE.is_active()
+        assert FeatureToggle.SYNCHRONIZE_ALLOCINE.is_active()
 
     def test_is_active_returns_false_when_feature_is_inactive(self):
         # Given
-        feature = Feature.query.filter_by(name=FeatureToggle.QR_CODE.name).first()
+        feature = Feature.query.filter_by(name=FeatureToggle.SYNCHRONIZE_ALLOCINE.name).first()
         feature.isActive = False
         repository.save(feature)
         # When / Then
-        assert not FeatureToggle.QR_CODE.is_active()
+        assert not FeatureToggle.SYNCHRONIZE_ALLOCINE.is_active()
 
     def test_is_active_query_count_inside_request_context(self):
-        feature = Feature.query.filter_by(name=FeatureToggle.QR_CODE.name).first()
+        feature = Feature.query.filter_by(name=FeatureToggle.SYNCHRONIZE_ALLOCINE.name).first()
         feature.isActive = True
         repository.save(feature)
 
         with assert_num_queries(1):
-            FeatureToggle.QR_CODE.is_active()
-            FeatureToggle.QR_CODE.is_active()
-            FeatureToggle.QR_CODE.is_active()
+            FeatureToggle.SYNCHRONIZE_ALLOCINE.is_active()
+            FeatureToggle.SYNCHRONIZE_ALLOCINE.is_active()
+            FeatureToggle.SYNCHRONIZE_ALLOCINE.is_active()
 
     def test_is_active_query_count_outside_request_context(self, app):
-        feature = Feature.query.filter_by(name=FeatureToggle.QR_CODE.name).first()
+        feature = Feature.query.filter_by(name=FeatureToggle.SYNCHRONIZE_ALLOCINE.name).first()
         feature.isActive = True
         repository.save(feature)
         context = flask._request_ctx_stack.pop()
@@ -60,9 +60,9 @@ class FeatureToggleTest:
         # we don't cache yet outside the scope of a request so it'll be 3 DB queries
         try:
             with assert_num_queries(3):
-                FeatureToggle.QR_CODE.is_active()
-                FeatureToggle.QR_CODE.is_active()
-                FeatureToggle.QR_CODE.is_active()
+                FeatureToggle.SYNCHRONIZE_ALLOCINE.is_active()
+                FeatureToggle.SYNCHRONIZE_ALLOCINE.is_active()
+                FeatureToggle.SYNCHRONIZE_ALLOCINE.is_active()
 
         finally:
             flask._request_ctx_stack.push(context)
