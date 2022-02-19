@@ -31,7 +31,6 @@ class FeatureToggle(enum.Enum):
     AUTO_ACTIVATE_DIGITAL_BOOKINGS = (
         "Activer (marquer comme utilisée) les réservations dès leur création pour les offres digitales"
     )
-    BENEFICIARIES_IMPORT = "Permettre limport des comptes jeunes depuis DMS"
     BENEFICIARY_VALIDATION_AFTER_FRAUD_CHECKS = "Active la validation d'un bénéficiaire via les contrôles de sécurité"
     DISPLAY_DMS_REDIRECTION = "Affiche une redirection vers DMS si ID Check est KO"
     ENABLE_ACTIVATION_CODES = "Permet la création de codes d'activation"
