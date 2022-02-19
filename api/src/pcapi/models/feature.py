@@ -73,9 +73,6 @@ class FeatureToggle(enum.Enum):
     PRICE_BOOKINGS = "Active la valorisation des réservations"
     PRO_ENABLE_UPLOAD_VENUE_IMAGE = "Active la fonctionnalité d'upload des images des lieux permanents"
     SYNCHRONIZE_ALLOCINE = "Permettre la synchronisation journalière avec Allociné"
-    SYNCHRONIZE_BANK_INFORMATION = (
-        "Permettre la synchronisation journalière avec DMS pour récupérer les informations bancaires des acteurs"
-    )
     SYNCHRONIZE_TITELIVE_PRODUCTS = "Permettre limport journalier du référentiel des livres"
     SYNCHRONIZE_TITELIVE_PRODUCTS_DESCRIPTION = "Permettre limport journalier des résumés des livres"
     SYNCHRONIZE_TITELIVE_PRODUCTS_THUMBS = "Permettre limport journalier des couvertures de livres"
