@@ -5,6 +5,10 @@
   gap: rem(32px);
 }
 
+.spacer {
+  height: rem(32px);
+}
+
 .icon {
   height: rem(80px);
   width: rem(80px);
@@ -12,10 +16,6 @@
 
 .header {
   @include title3;
-}
-
-.spacer {
-  height: rem(32px);
 }
 
 .subtitle {
