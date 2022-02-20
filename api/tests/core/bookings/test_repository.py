@@ -2382,37 +2382,6 @@ class FindSoonToBeExpiredBookingsTest:
         ]
 
 
-class GetActiveBookingsQuantityForOffererTest:
-    def test_return_active_bookings_by_venues_for_offerer(self):
-        # Given
-        beneficiary = users_factories.BeneficiaryGrant18Factory()
-        offerer = offers_factories.OffererFactory()
-
-        venue_1 = offers_factories.VenueFactory(managingOfferer=offerer)
-        offer_1 = offers_factories.ThingOfferFactory(venue=venue_1)
-        stock_1 = offers_factories.ThingStockFactory(offer=offer_1)
-        bookings_factories.IndividualBookingFactory(individualBooking__user=beneficiary, stock=stock_1)
-        bookings_factories.IndividualBookingFactory(individualBooking__user=beneficiary, stock=stock_1)
-        bookings_factories.UsedIndividualBookingFactory(individualBooking__user=beneficiary, stock=stock_1)
-
-        venue_2 = offers_factories.VenueFactory(managingOfferer=offerer)
-        offer_2 = offers_factories.ThingOfferFactory(venue=venue_2)
-        stock_2 = offers_factories.ThingStockFactory(offer=offer_2)
-        bookings_factories.IndividualBookingFactory(individualBooking__user=beneficiary, stock=stock_2)
-        bookings_factories.IndividualBookingFactory(individualBooking__user=beneficiary, stock=stock_2)
-        bookings_factories.CancelledIndividualBookingFactory(individualBooking__user=beneficiary, stock=stock_2)
-        yesterday = datetime.utcnow() - timedelta(days=1)
-        bookings_factories.IndividualBookingFactory(
-            user=beneficiary, stock=stock_2, cancellation_limit_date=yesterday, quantity=2
-        )
-
-        # When
-        active_bookings_by_venue = booking_repository.get_active_bookings_quantity_for_offerer(offerer.id)
-
-        # Then
-        assert active_bookings_by_venue == {venue_1.id: 2, venue_2.id: 2}
-
-
 class GetLegacyActiveBookingsQuantityForVenueTest:
     def test_return_bookings_quantity_for_venue(self):
         # Given
@@ -2465,37 +2434,6 @@ class GetLegacyActiveBookingsQuantityForVenueTest:
 
         # Then
         assert active_bookings_quantity == 1
-
-
-class GetValidatedBookingsQuantityForOffererTest:
-    def test_return_validated_bookings_by_venues_for_offerer(self):
-        # Given
-        beneficiary = users_factories.BeneficiaryGrant18Factory()
-        offerer = offers_factories.OffererFactory()
-
-        venue_1 = offers_factories.VenueFactory(managingOfferer=offerer)
-        offer_1 = offers_factories.ThingOfferFactory(venue=venue_1)
-        stock_1 = offers_factories.ThingStockFactory(offer=offer_1, price=0)
-        bookings_factories.UsedIndividualBookingFactory(individualBooking__user=beneficiary, stock=stock_1)
-        bookings_factories.CancelledIndividualBookingFactory(individualBooking__user=beneficiary, stock=stock_1)
-        bookings_factories.IndividualBookingFactory(individualBooking__user=beneficiary, stock=stock_1)
-
-        venue_2 = offers_factories.VenueFactory(managingOfferer=offerer)
-        offer_2 = offers_factories.ThingOfferFactory(venue=venue_2)
-        stock_2 = offers_factories.ThingStockFactory(offer=offer_2, price=0)
-        bookings_factories.IndividualBookingFactory(individualBooking__user=beneficiary, stock=stock_2)
-        yesterday = datetime.utcnow() - timedelta(days=1)
-        bookings_factories.IndividualBookingFactory(
-            user=beneficiary, stock=stock_2, cancellation_limit_date=yesterday, quantity=2
-        )
-
-        # When
-        validated_bookings_quantity_by_venue = booking_repository.get_validated_bookings_quantity_for_offerer(
-            offerer.id
-        )
-
-        # Then
-        assert validated_bookings_quantity_by_venue == {venue_1.id: 1, venue_2.id: 2}
 
 
 class GetLegacyValidatedBookingsQuantityForVenueTest:

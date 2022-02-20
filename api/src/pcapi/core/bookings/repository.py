@@ -353,19 +353,6 @@ def find_expired_educational_bookings() -> list[EducationalBooking]:
     )
 
 
-def get_active_bookings_quantity_for_offerer(offerer_id: int) -> dict:
-    return dict(
-        Booking.query.filter(
-            offerer_id == Booking.offererId,
-            Booking.status.in_((BookingStatus.PENDING, BookingStatus.CONFIRMED)),
-            Booking.isConfirmed.is_(False),
-        )
-        .with_entities(Booking.venueId, coalesce(func.sum(Booking.quantity), 0))
-        .group_by(Booking.venueId)
-        .all()
-    )
-
-
 def get_legacy_active_bookings_quantity_for_venue(venue_id: int) -> int:
     # Stock.dnBookedQuantity cannot be used here because we exclude used/confirmed bookings.
     return (
@@ -376,16 +363,6 @@ def get_legacy_active_bookings_quantity_for_venue(venue_id: int) -> int:
         )
         .with_entities(coalesce(func.sum(Booking.quantity), 0))
         .one()[0]
-    )
-
-
-def get_validated_bookings_quantity_for_offerer(offerer_id: int) -> dict:
-    return dict(
-        Booking.query.filter(Booking.status != BookingStatus.CANCELLED, offerer_id == Booking.offererId)
-        .filter(or_(Booking.is_used_or_reimbursed.is_(True), Booking.isConfirmed.is_(True)))
-        .with_entities(Booking.venueId, coalesce(func.sum(Booking.quantity), 0))
-        .group_by(Booking.venueId)
-        .all()
     )
 
 

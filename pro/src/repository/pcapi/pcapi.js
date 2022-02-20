@@ -207,9 +207,6 @@ export const getVenueTypes = () => client.get(`/venue-types`)
 
 export const getVenueLabels = () => client.get(`/venue-labels`)
 
-export const getOffererWithVenueStats = offererId =>
-  client.get(`/offerers/${offererId}/stats`)
-
 export const postImageToVenue = async ({
   venueId,
   banner,

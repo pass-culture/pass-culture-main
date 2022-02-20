@@ -7,8 +7,6 @@ from sqlalchemy.orm import exc as orm_exc
 
 from pcapi.connectors.api_adage import AdageException
 from pcapi.connectors.api_adage import CulturalPartnerNotFoundException
-from pcapi.core.bookings.repository import get_active_bookings_quantity_for_offerer
-from pcapi.core.bookings.repository import get_validated_bookings_quantity_for_offerer
 from pcapi.core.offerers import api
 from pcapi.core.offerers.exceptions import ApiKeyCountMaxReached
 from pcapi.core.offerers.exceptions import ApiKeyDeletionDenied
@@ -16,8 +14,6 @@ from pcapi.core.offerers.exceptions import ApiKeyPrefixGenerationError
 from pcapi.core.offerers.exceptions import MissingOffererIdQueryParameter
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.repository import get_all_offerers_for_user
-from pcapi.core.offers.repository import get_active_offers_count_for_venue
-from pcapi.core.offers.repository import get_sold_out_offers_count_for_venue
 from pcapi.infrastructure.repository.pro_offerers.paginated_offerers_sql_repository import (
     PaginatedOfferersSQLRepository,
 )
@@ -35,7 +31,6 @@ from pcapi.routes.serialization.offerers_serialize import GetOffererResponseMode
 from pcapi.routes.serialization.offerers_serialize import GetOfferersListResponseModel
 from pcapi.routes.serialization.offerers_serialize import GetOfferersNamesQueryModel
 from pcapi.routes.serialization.offerers_serialize import GetOfferersNamesResponseModel
-from pcapi.routes.serialization.venues_serialize import VenueStatsResponseModel
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils.human_ids import dehumanize
 from pcapi.utils.rest import check_user_has_access_to_offerer
@@ -112,31 +107,6 @@ def get_offerer(offerer_id: str) -> GetOffererResponseModel:
     offerer = load_or_404(Offerer, offerer_id)
 
     return GetOffererResponseModel.from_orm(offerer)
-
-
-@private_api.route("/offerers/<humanized_offerer_id>/stats", methods=["GET"])
-@login_required
-@spectree_serialize(on_success_status=200, response_model=GetOffererResponseModel)
-def get_venues_by_offerer_with_stats(humanized_offerer_id: str) -> GetOffererResponseModel:
-    check_user_has_access_to_offerer(current_user, dehumanize(humanized_offerer_id))
-    offerer = load_or_404(Offerer, humanized_offerer_id)
-
-    venue_stats_by_ids = {}
-    active_bookings_quantity_by_venue = get_active_bookings_quantity_for_offerer(offerer.id)
-    validated_bookings_quantity_by_venue = get_validated_bookings_quantity_for_offerer(offerer.id)
-
-    for managedVenue in offerer.managedVenues:
-        active_offers_count = get_active_offers_count_for_venue(managedVenue.id)
-        sold_out_offers_count = get_sold_out_offers_count_for_venue(managedVenue.id)
-
-        venue_stats_by_ids[managedVenue.id] = VenueStatsResponseModel(
-            activeBookingsQuantity=active_bookings_quantity_by_venue.get(managedVenue.id, 0),
-            validatedBookingsQuantity=validated_bookings_quantity_by_venue.get(managedVenue.id, 0),
-            activeOffersCount=active_offers_count,
-            soldOutOffersCount=sold_out_offers_count,
-        )
-
-    return GetOffererResponseModel.from_orm(offerer, venue_stats_by_ids)
 
 
 @private_api.route("/offerers/<offerer_id>/api_keys", methods=["POST"])
