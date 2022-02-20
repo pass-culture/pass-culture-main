@@ -12,9 +12,6 @@ type Props = {
 export const VenueImageDeleteModal: FunctionComponent<Props> = ({
   onDismiss,
 }) => {
-  // the request needs the dataURL of the image,
-  // so we need to retrieve it if we only have the URL
-
   return (
     <DialogBox
       hasCloseButton
