@@ -36,8 +36,11 @@ def less_or_equal(a: object, b: object, *args) -> bool:
 
 
 def contains(a, b) -> bool:
+    """Checks if the list b contains the element a"""
     if not a:
         return False
+    if not isinstance(b, list):
+        raise TypeError(f"{b} is not a list")
     return (
         any(sanitize_str(element) in sanitize_str(a) for element in b)
         if "__contains__" in dir(b)

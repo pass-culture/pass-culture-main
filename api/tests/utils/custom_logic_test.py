@@ -1,3 +1,5 @@
+import pytest
+
 from pcapi.utils.custom_logic import OPERATIONS
 
 
@@ -139,6 +141,15 @@ def test_contains_return_false():
     b = ["hello", "world"]
     result = OPERATIONS["contains"](a, b)
     assert not result
+
+
+def test_raise_if_contains_comparated_is_not_a_list():
+    a = "An innocent offer"
+    b = "regret"
+
+    with pytest.raises(TypeError) as exc:
+        OPERATIONS["contains"](a, b)
+        assert str(exc.value) == "regret is not a list"
 
 
 def test_contains_exact_return_true():

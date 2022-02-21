@@ -304,7 +304,10 @@ def check_validation_config_parameters(config_as_dict: dict, valid_keys: list) -
     for key, value in config_as_dict.items():
         if key not in valid_keys:
             raise KeyError(f"Wrong key: {key}")
-
+        if key == "condition" and value["operator"] == "contains" and not isinstance(value["comparated"], list):
+            raise TypeError(
+                f"The `comparated` argument `{value['comparated']}` for the `contains` operator is not a list"
+            )
         if isinstance(value, list) and key in KEY_VALIDATION_CONFIG:
             for item in value:
                 check_validation_config_parameters(item, KEY_VALIDATION_CONFIG[key])
