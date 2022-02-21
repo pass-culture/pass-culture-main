@@ -1,9 +1,9 @@
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import { Redirect } from 'react-router-dom'
-import { requestData } from 'redux-saga-data'
 
 import { redirectLoggedUser } from 'components/router/helpers'
+import * as pcapi from 'repository/pcapi/pcapi'
 import { campaignTracker } from 'tracking/mediaCampaignsTracking'
 
 /**
@@ -20,42 +20,32 @@ class SignupValidation extends PureComponent {
     campaignTracker.signUpValidation()
 
     const {
-      dispatch,
       match: {
         params: { token },
       },
     } = this.props
 
-    dispatch(this.buildRequestData(token))
+    this.buildRequestData(token)
   }
 
-  buildRequestData = token => {
-    return requestData({
-      apiPath: `/validate/user/${token}`,
-      method: 'PATCH',
-      handleSuccess: this.notifySuccess(),
-      handleFail: this.notifyFailure(),
-    })
+  buildRequestData = async token => {
+    await pcapi
+      .validateUser(token)
+      .then(() => this.notifySuccess())
+      .catch(payload => this.notifyFailure(payload))
   }
 
-  notifyFailure = () => {
-    return (state, action) => {
-      const {
-        payload: { errors },
-      } = action
-
-      const { notifyError } = this.props
-      notifyError(errors.global)
-    }
+  notifyFailure = payload => {
+    const { errors } = payload
+    const { notifyError } = this.props
+    notifyError(errors.global)
   }
 
   notifySuccess = () => {
-    return () => {
-      const { notifySuccess } = this.props
-      notifySuccess(
-        'Votre compte a été créé. Vous pouvez vous connecter avec les identifiants que vous avez choisis.'
-      )
-    }
+    const { notifySuccess } = this.props
+    notifySuccess(
+      'Votre compte a été créé. Vous pouvez vous connecter avec les identifiants que vous avez choisis.'
+    )
   }
 
   render() {
@@ -69,7 +59,6 @@ SignupValidation.defaultProps = {
 
 SignupValidation.propTypes = {
   currentUser: PropTypes.shape(),
-  dispatch: PropTypes.func.isRequired,
   history: PropTypes.func.isRequired,
   location: PropTypes.shape().isRequired,
   match: PropTypes.shape({

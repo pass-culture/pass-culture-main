@@ -3,22 +3,24 @@ import { createBrowserHistory } from 'history'
 import React from 'react'
 import { Redirect, Router } from 'react-router-dom'
 
+import * as pcapi from 'repository/pcapi/pcapi'
 import { campaignTracker } from 'tracking/mediaCampaignsTracking'
 
 import SignupValidation from '../SignupValidation'
 
+jest.mock('repository/pcapi/pcapi', () => ({
+  validateUser: jest.fn(),
+}))
+
 describe('src | components | pages | Signup | validation', () => {
   let history
-  let dispatch
   let props
 
   beforeEach(() => {
     history = createBrowserHistory()
-    dispatch = jest.fn()
     const notifyError = jest.fn()
     const notifySuccess = jest.fn()
     props = {
-      dispatch,
       match: {
         params: {
           token: 'AAA',
@@ -54,15 +56,7 @@ describe('src | components | pages | Signup | validation', () => {
     )
 
     // then
-    expect(dispatch.mock.calls[0][0]).toStrictEqual({
-      config: {
-        apiPath: '/validate/user/AAA',
-        handleFail: expect.any(Function),
-        handleSuccess: expect.any(Function),
-        method: 'PATCH',
-      },
-      type: 'REQUEST_DATA_PATCH_/VALIDATE/USER/AAA',
-    })
+    expect(pcapi.validateUser).toHaveBeenCalledWith(props.match.params.token)
   })
 
   it('should call media campaign tracker on mount only', () => {
@@ -87,10 +81,9 @@ describe('src | components | pages | Signup | validation', () => {
     it('should display a notification with success message', () => {
       // given
       const wrapper = shallow(<SignupValidation {...props} />)
-      const notifySuccess = wrapper.instance().notifySuccess()
 
       // when
-      notifySuccess()
+      wrapper.instance().notifySuccess()
 
       // then
       expect(props.notifySuccess).toHaveBeenCalledWith(
@@ -103,18 +96,14 @@ describe('src | components | pages | Signup | validation', () => {
     it('should display a notification with error message', () => {
       // given
       const wrapper = shallow(<SignupValidation {...props} />)
-      const notifyFailure = wrapper.instance().notifyFailure()
-      const state = {}
-      const action = {
-        payload: {
-          errors: {
-            global: ['error1', 'error2'],
-          },
+      const payload = {
+        errors: {
+          global: ['error1', 'error2'],
         },
       }
 
       // when
-      notifyFailure(state, action)
+      wrapper.instance().notifyFailure(payload)
 
       // then
       expect(props.notifyError).toHaveBeenCalledWith(['error1', 'error2'])

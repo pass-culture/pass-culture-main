@@ -329,6 +329,8 @@ export const getUserInformations = () => {
   return client.get('/users/current')
 }
 
+export const validateUser = token => client.patch(`/validate/user/${token}`)
+
 //
 // password
 //
