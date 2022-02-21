@@ -198,18 +198,15 @@ describe('src | components | pages | Signin | Signin', () => {
 
     describe('when login failed', () => {
       it('should display an error message', () => {
-        const action = {
-          payload: {
-            errors: {
-              password: 'erreur',
-            },
+        const payload = {
+          errors: {
+            password: 'erreur',
           },
         }
-        const state = {}
         const wrapper = shallow(<Signin {...props} />)
 
         // when
-        wrapper.instance().onHandleFail(state, action)
+        wrapper.instance().onHandleFail(payload)
 
         // then
         expect(props.showErrorNotification).toHaveBeenCalledWith(
@@ -220,19 +217,16 @@ describe('src | components | pages | Signin | Signin', () => {
 
     describe('when login rate limit exceeded', () => {
       it('should display an error message', () => {
-        const action = {
-          payload: {
-            errors: {
-              global: 'Trop de tentatives',
-            },
-            status: 429,
+        const payload = {
+          errors: {
+            global: 'Trop de tentatives',
           },
+          status: 429,
         }
-        const state = {}
         const wrapper = shallow(<Signin {...props} />)
 
         // when
-        wrapper.instance().onHandleFail(state, action)
+        wrapper.instance().onHandleFail(payload)
 
         // then
         expect(props.showErrorNotification).toHaveBeenCalledWith(

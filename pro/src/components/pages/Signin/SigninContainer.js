@@ -1,11 +1,11 @@
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import { compose } from 'redux'
-import { requestData } from 'redux-saga-data'
 
 import { isAPISireneAvailable } from 'store/features/selectors'
 import { showNotification } from 'store/reducers/notificationReducer'
 import { selectCurrentUser } from 'store/selectors/data/usersSelectors'
+import { signin } from 'store/user/thunks'
 
 import Signin from './Signin'
 
@@ -25,15 +25,7 @@ export const mapDispatchToProps = dispatch => ({
       })
     ),
   submit: (emailValue, passwordValue, success, fail) => {
-    dispatch(
-      requestData({
-        apiPath: '/users/signin',
-        body: { identifier: emailValue, password: passwordValue },
-        handleFail: fail,
-        handleSuccess: success,
-        method: 'POST',
-      })
-    )
+    dispatch(signin(emailValue, passwordValue, success, fail))
   },
 })
 

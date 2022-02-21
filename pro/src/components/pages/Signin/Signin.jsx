@@ -32,11 +32,13 @@ class Signin extends PureComponent {
     redirectLoggedUser(history, location, currentUser)
   }
 
-  onHandleFail = (state, action) => {
+  onHandleFail = payload => {
     const { showErrorNotification } = this.props
-    if (action.payload.errors.password || action.payload.errors.identifier) {
+    const { errors, status } = payload
+    const { password, identifier } = errors
+    if (password || identifier) {
       showErrorNotification('Identifiant ou mot de passe incorrect.')
-    } else if (action.payload.status === 429) {
+    } else if (status === 429) {
       showErrorNotification(
         'Nombre de tentatives de connexion dépassé. Veuillez réessayer dans 1 minute.'
       )
