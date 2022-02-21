@@ -5,16 +5,31 @@ import {
   findLaunchSearchButton,
   queryResetFiltersButton,
 } from 'app/__spec__/__test_utils__/elements'
+import { AlgoliaQueryContextProvider } from 'app/providers/AlgoliaQueryContextProvider'
+import {
+  filtersContextInitialValues,
+  FiltersContextProvider,
+  FiltersContextType,
+} from 'app/providers/FiltersContextProvider'
 import { VenueFilterType } from 'utils/types'
 
-import { OfferFilters } from '../OfferFilters/OfferFilters'
+import { OfferFilters, OfferFiltersProps } from '../OfferFilters/OfferFilters'
 
-const renderOfferFilters = props => {
-  render(<OfferFilters {...props} />)
+const renderOfferFilters = (
+  props: OfferFiltersProps,
+  filterContextProviderValue: FiltersContextType = filtersContextInitialValues
+) => {
+  render(
+    <FiltersContextProvider values={filterContextProviderValue}>
+      <AlgoliaQueryContextProvider>
+        <OfferFilters {...props} />
+      </AlgoliaQueryContextProvider>
+    </FiltersContextProvider>
+  )
 }
 
 describe('offerFilters component', () => {
-  let props
+  let props: OfferFiltersProps
   let venue: VenueFilterType | null = {
     id: 1436,
     name: 'Librairie de Paris',
@@ -23,13 +38,7 @@ describe('offerFilters component', () => {
 
   beforeEach(() => {
     props = {
-      dispatchCurrentFilters: jest.fn(),
-      currentFilters: {
-        departments: [],
-        categories: [],
-        students: [],
-      },
-      handleLaunchSearch: jest.fn(),
+      handleLaunchSearchButton: jest.fn(),
       venueFilter: null,
       removeVenueFilter: jest.fn(),
       isLoading: false,
@@ -81,8 +90,8 @@ describe('offerFilters component', () => {
 
   it('should show filter tags when at least one filter is selected', async () => {
     // When
-    renderOfferFilters({
-      ...props,
+    renderOfferFilters(props, {
+      ...filtersContextInitialValues,
       currentFilters: {
         departments: [{ value: '01', label: '01 - Ain' }],
         categories: [],

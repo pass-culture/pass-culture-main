@@ -12,7 +12,7 @@ import OfferFiltersTags from './OfferFiltersTags'
 import './OfferFilters.scss'
 import { studentsOptions } from './studentsOptions'
 
-interface OfferFiltersProps {
+export interface OfferFiltersProps {
   className?: string
   handleLaunchSearchButton: (filters: Filters) => void
   venueFilter: VenueFilterType | null

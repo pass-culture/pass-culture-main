@@ -4,8 +4,16 @@ import React from 'react'
 import type { Hit } from 'react-instantsearch-core'
 import { QueryCache, QueryClient, QueryClientProvider } from 'react-query'
 
-import { OffersComponent as Offers } from 'app/components/OffersInstantSearch/OffersSearch/Offers/Offers'
-import { INITIAL_FACET_FILTERS } from 'app/constants'
+import {
+  OffersComponent as Offers,
+  OffersComponentProps,
+} from 'app/components/OffersInstantSearch/OffersSearch/Offers/Offers'
+import { AlgoliaQueryContextProvider } from 'app/providers/AlgoliaQueryContextProvider'
+import {
+  filtersContextInitialValues,
+  FiltersContextProvider,
+  FiltersContextType,
+} from 'app/providers/FiltersContextProvider'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { ADRESS_TYPE, OfferType, ResultType, Role } from 'utils/types'
 
@@ -42,10 +50,23 @@ const searchFakeResult: Hit<ResultType> = {
   _highlightResult: {},
 }
 
+const renderOffers = (
+  props: OffersComponentProps,
+  filterContextProviderValue: FiltersContextType = filtersContextInitialValues
+) =>
+  render(
+    <FiltersContextProvider values={filterContextProviderValue}>
+      <AlgoliaQueryContextProvider>
+        <Offers {...props} />
+      </AlgoliaQueryContextProvider>
+    </FiltersContextProvider>,
+    { wrapper }
+  )
+
 describe('offer', () => {
   let offerInParis: OfferType
   let offerInCayenne: OfferType
-  let offersProps
+  let offersProps: OffersComponentProps
 
   beforeEach(() => {
     queryCache.clear()
@@ -140,12 +161,10 @@ describe('offer', () => {
     }
 
     offersProps = {
-      facetFilters: INITIAL_FACET_FILTERS,
-      handleNoResultResetFilters: jest.fn(),
       hits: [searchFakeResult],
-      query: '',
       setIsLoading: jest.fn(),
       userRole: Role.redactor,
+      handleResetFiltersAndLaunchSearch: jest.fn(),
     }
   })
 
@@ -155,9 +174,7 @@ describe('offer', () => {
       mockedPcapi.getOffer.mockResolvedValue(offerInParis)
 
       // When
-      render(<Offers {...offersProps} />, {
-        wrapper,
-      })
+      renderOffers(offersProps)
 
       // Then
       const offerName = await screen.findByText(offerInParis.name)
@@ -194,9 +211,7 @@ describe('offer', () => {
       mockedPcapi.getOffer.mockResolvedValue(offerInCayenne)
 
       // When
-      render(<Offers {...offersProps} />, {
-        wrapper,
-      })
+      renderOffers(offersProps)
 
       const offerName = await screen.findByText(offerInCayenne.name)
       expect(offerName).toBeInTheDocument()

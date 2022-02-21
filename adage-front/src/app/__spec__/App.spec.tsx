@@ -10,6 +10,13 @@ import React from 'react'
 import { Configure } from 'react-instantsearch-dom'
 import selectEvent from 'react-select-event'
 
+import {
+  filtersContextInitialValues,
+  FiltersContextProvider,
+  FiltersContextType,
+  FacetFiltersContextProvider,
+  AlgoliaQueryContextProvider,
+} from 'app/providers'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { Role, VenueFilterType } from 'utils/types'
 
@@ -74,6 +81,20 @@ jest.mock('repository/pcapi/pcapi', () => ({
 }))
 const mockedPcapi = pcapi as jest.Mocked<typeof pcapi>
 
+const renderApp = (
+  filterContextProviderValue: FiltersContextType = filtersContextInitialValues
+) => {
+  render(
+    <FiltersContextProvider values={filterContextProviderValue}>
+      <AlgoliaQueryContextProvider>
+        <FacetFiltersContextProvider>
+          <App />
+        </FacetFiltersContextProvider>
+      </AlgoliaQueryContextProvider>
+    </FiltersContextProvider>
+  )
+}
+
 describe('app', () => {
   describe('when is authenticated', () => {
     let venue: VenueFilterType
@@ -101,7 +122,7 @@ describe('app', () => {
 
     it('should show search offers input with no filter on venue when no siret or venueId is provided', async () => {
       // When
-      render(<App />)
+      renderApp()
 
       // Then
       const contentTitle = await screen.findByText('Rechercher une offre', {
@@ -128,7 +149,7 @@ describe('app', () => {
       window.location.search = `?siret=${siret}`
 
       // When
-      render(<App />)
+      renderApp()
 
       // Then
       const contentTitle = await screen.findByText('Rechercher une offre', {
@@ -155,7 +176,7 @@ describe('app', () => {
       window.location.search = `?siret=${siret}`
 
       // When
-      render(<App />)
+      renderApp()
 
       // Then
       const venueFilter = await screen.findByText(`Lieu : ${venue.name}`)
@@ -169,7 +190,7 @@ describe('app', () => {
       window.location.search = `?venue=${venueId}`
 
       // When
-      render(<App />)
+      renderApp()
 
       // Then
       const contentTitle = await screen.findByText('Rechercher une offre', {
@@ -196,7 +217,7 @@ describe('app', () => {
       window.location.search = `?venue=${venueId}`
 
       // When
-      render(<App />)
+      renderApp()
 
       // Then
       const venueFilter = await screen.findByText(`Lieu : ${venue.name}`)
@@ -211,7 +232,7 @@ describe('app', () => {
       mockedPcapi.getVenueBySiret.mockRejectedValue('Unrecognized SIRET')
 
       // When
-      render(<App />)
+      renderApp()
 
       // Then
       const contentTitle = await screen.findByText('Rechercher une offre', {
@@ -235,7 +256,7 @@ describe('app', () => {
       const siret = '123456789'
       window.location.search = `?siret=${siret}`
 
-      render(<App />)
+      renderApp()
 
       const venueFilter = await screen.findByText(`Lieu : ${venue?.publicName}`)
       const removeFilterButton = within(venueFilter).getByRole('button')
@@ -266,7 +287,7 @@ describe('app', () => {
     it('should send selected filters to Algolia', async () => {
       window.location.search = ''
       // Given
-      render(<App />)
+      renderApp()
 
       const departmentFilter = await findDepartmentFilter()
       const studentsFilter = await findStudentsFilter()
@@ -313,7 +334,7 @@ describe('app', () => {
 
     it('should remove deselected departments and students from filters sent to Algolia', async () => {
       // Given
-      render(<App />)
+      renderApp()
 
       const departmentFilter = await findDepartmentFilter()
       const studentsFilter = await findStudentsFilter()
@@ -360,7 +381,7 @@ describe('app', () => {
 
     it('should remove filter when clicking on delete button', async () => {
       // Given
-      render(<App />)
+      renderApp()
 
       // When
       const departmentFilter = await findDepartmentFilter()
@@ -382,7 +403,7 @@ describe('app', () => {
     it('should reset filters', async () => {
       const siret = '123456789'
       window.location.search = `?siret=${siret}`
-      render(<App />)
+      renderApp()
 
       const departmentFilter = await findDepartmentFilter()
       const studentsFilter = await findStudentsFilter()
@@ -419,7 +440,7 @@ describe('app', () => {
       // Given
       const siret = '123456789'
       window.location.search = `?siret=${siret}`
-      render(<App />)
+      renderApp()
 
       const textInput = await screen.findByPlaceholderText(placeholder)
       const departmentFilter = await findDepartmentFilter()
@@ -457,7 +478,7 @@ describe('app', () => {
 
     it('should show error page', async () => {
       // When
-      render(<App />)
+      renderApp()
 
       // Then
       const contentTitle = await screen.findByText(
