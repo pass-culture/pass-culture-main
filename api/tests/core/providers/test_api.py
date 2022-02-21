@@ -4,8 +4,7 @@ from unittest import mock
 from freezegun.api import freeze_time
 import pytest
 
-from pcapi.core.bookings.factories import BookingFactory
-from pcapi.core.bookings.factories import CancelledBookingFactory
+import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.categories import subcategories
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offerers.models import Venue
@@ -60,10 +59,10 @@ def test_reset_stock_quantity():
     venue = offer.venue
     stock1_no_bookings = StockFactory(offer=offer, quantity=10)
     stock2_only_cancelled_bookings = StockFactory(offer=offer, quantity=10)
-    CancelledBookingFactory(stock=stock2_only_cancelled_bookings)
+    bookings_factories.CancelledBookingFactory(stock=stock2_only_cancelled_bookings)
     stock3_mix_of_bookings = StockFactory(offer=offer, quantity=10)
-    BookingFactory(stock=stock3_mix_of_bookings)
-    CancelledBookingFactory(stock=stock3_mix_of_bookings)
+    bookings_factories.BookingFactory(stock=stock3_mix_of_bookings)
+    bookings_factories.CancelledBookingFactory(stock=stock3_mix_of_bookings)
     manually_added_offer = OfferFactory(venue=venue)
     stock4_manually_added = StockFactory(offer=manually_added_offer, quantity=10)
     stock5_other_venue = StockFactory(quantity=10)
@@ -101,7 +100,7 @@ def test_change_venue_provider():
     venue_provider = offerers_factories.VenueProviderFactory(provider=provider)
     venue = venue_provider.venue
     stock = StockFactory(quantity=10, offer__venue=venue, offer__idAtProvider="1")
-    BookingFactory(stock=stock)
+    bookings_factories.BookingFactory(stock=stock)
     new_provider = offerers_factories.APIProviderFactory(apiUrl=api_url)
 
     api.change_venue_provider(venue_provider, new_provider.id)
@@ -150,8 +149,8 @@ class SynchronizeStocksTest:
         create_product(spec[7]["ref"], isSynchronizationCompatible=False)
 
         stock_with_booking = create_stock(spec[5]["ref"], siret, venue, quantity=20)
-        BookingFactory(stock=stock_with_booking)
-        BookingFactory(stock=stock_with_booking, quantity=2)
+        bookings_factories.BookingFactory(stock=stock_with_booking)
+        bookings_factories.UsedBookingFactory(stock=stock_with_booking, quantity=2)
 
         # When
         api.synchronize_stocks(stock_details, venue, provider_id=provider.id)
@@ -180,9 +179,9 @@ class SynchronizeStocksTest:
         second_created_offer = Offer.query.filter_by(idAtProvider=spec[4]["ref"]).one()
         assert second_created_offer.stocks[0].quantity == 17
 
-        # Test existing bookings are added to quantity
-        assert stock_with_booking.quantity == 17 + 1 + 2
+        # Test only used bookings are added to quantity
         assert stock_with_booking.rawProviderQuantity == 17
+        assert stock_with_booking.quantity == 17 + 2
 
         # Test fill stock attributes
         assert created_stock.price == Decimal("12.00")
@@ -308,8 +307,8 @@ class SynchronizeStocksTest:
         ]
 
         stocks_by_provider_reference = {
-            "stock_ref1": {"id": 1, "booking_quantity": 3, "price": 18.0, "quantity": 2},
-            "stock_ref4": {"id": 2, "booking_quantity": 3, "price": 18.0, "quantity": 2},
+            "stock_ref1": {"id": 1, "retrieved_bookings_quantity": 3, "price": 18.0, "quantity": 2},
+            "stock_ref4": {"id": 2, "retrieved_bookings_quantity": 3, "price": 18.0, "quantity": 2},
         }
         offers_by_provider_reference = {"offer_ref1": 123, "offer_ref2": 134, "offer_ref4": 123}
         products_by_provider_reference = {
@@ -359,11 +358,11 @@ class SynchronizeStocksTest:
     @pytest.mark.parametrize(
         "new_quantity,new_price,existing_stock,expected_result",
         [
-            (1, 18.01, {"price": 18.02, "quantity": 4, "booking_quantity": 2}, True),
-            (2, 18.01, {"price": 18.01, "quantity": 1, "booking_quantity": 1}, True),
-            (0, 18.01, {"price": 18.01, "quantity": 2, "booking_quantity": 1}, True),
-            (3, 18.01, {"price": 18.01, "quantity": 2, "booking_quantity": 1}, False),
-            (2, 18.01, {"price": 18.01, "quantity": 3, "booking_quantity": 1}, False),
+            (1, 18.01, {"price": 18.02, "quantity": 4, "retrieved_bookings_quantity": 2}, True),
+            (2, 18.01, {"price": 18.01, "quantity": 1, "retrieved_bookings_quantity": 1}, True),
+            (0, 18.01, {"price": 18.01, "quantity": 2, "retrieved_bookings_quantity": 1}, True),
+            (3, 18.01, {"price": 18.01, "quantity": 2, "retrieved_bookings_quantity": 1}, False),
+            (2, 18.01, {"price": 18.01, "quantity": 3, "retrieved_bookings_quantity": 1}, False),
         ],
     )
     def should_reindex_offers(self, new_quantity, new_price, existing_stock, expected_result):

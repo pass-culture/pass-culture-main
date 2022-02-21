@@ -169,8 +169,10 @@ const StockItem = ({
   }, [changeActivationCodesExpirationDatetime])
 
   const totalQuantityValue = totalQuantity !== null ? totalQuantity : ''
-  const computedRemainingQuantity =
+  const computedRemainingQuantity = Math.max(
+    0,
     totalQuantityValue - initialStock.bookingsQuantity
+  )
   const remainingQuantityValue =
     totalQuantityValue !== '' ? computedRemainingQuantity : 'Illimité'
   const isEventStockEditable =

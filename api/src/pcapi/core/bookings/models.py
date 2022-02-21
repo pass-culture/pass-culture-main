@@ -354,7 +354,12 @@ Booking.trig_ddl = f"""
         lastStockUpdate date := (SELECT "dateModified" FROM stock WHERE id=NEW."stockId");
         deposit_id bigint := (SELECT individual_booking."depositId" FROM booking LEFT JOIN individual_booking ON individual_booking.id = booking."individualBookingId" WHERE booking.id=NEW.id);
     BEGIN
-    IF EXISTS (SELECT "quantity" FROM stock WHERE id=NEW."stockId" AND "quantity" IS NOT NULL)
+
+    -- We allow synchronized stocks to have a negative remaining quantity
+    -- because items that have been booked through us could be sold
+    -- by the library at the same time. In that case, we want to allow
+    -- changing the status of the booking.
+    IF EXISTS (SELECT "quantity" FROM stock WHERE id=NEW."stockId" AND "quantity" IS NOT NULL AND "lastProviderId" IS NULL)
         AND (
             (SELECT "quantity" FROM stock WHERE id=NEW."stockId")
             <

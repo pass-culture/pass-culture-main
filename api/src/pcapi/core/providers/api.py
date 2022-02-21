@@ -291,7 +291,7 @@ def _get_stocks_to_upsert(
             update_stock_mapping.append(
                 {
                     "id": stock["id"],
-                    "quantity": stock_detail.available_quantity + stock["booking_quantity"],
+                    "quantity": stock_detail.available_quantity + stock["retrieved_bookings_quantity"],
                     "rawProviderQuantity": stock_detail.available_quantity,
                     "price": book_price,
                     "lastProviderId": provider_id,
@@ -377,7 +377,7 @@ def _should_reindex_offer(new_quantity: int, new_price: float, existing_stock: d
         # Existing stock could be None (i.e. infinite) if the offerer manually overrides
         # the quantity of this synchronized stock.
         existing_stock["quantity"] is not None
-        and existing_stock["quantity"] <= existing_stock["booking_quantity"]
+        and existing_stock["quantity"] <= existing_stock["retrieved_bookings_quantity"]
     )
     is_new_quantity_stock_empty = new_quantity == 0
 
