@@ -1,6 +1,7 @@
 import copy
 import datetime
 import logging
+from typing import List
 from typing import Optional
 from typing import Union
 
@@ -37,6 +38,9 @@ from pcapi.core.mails.transactional.bookings.booking_cancellation_confirmation_b
 )
 from pcapi.core.mails.transactional.bookings.booking_postponed_by_pro_to_beneficiary import (
     send_batch_booking_postponement_email_to_users,
+)
+from pcapi.core.mails.transactional.pro.event_offer_postponed_confirmation_to_pro import (
+    send_event_offer_postponement_confirmation_email_to_pro,
 )
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers.models import Venue
@@ -421,9 +425,16 @@ def _edit_stock(
     return stock
 
 
-# FIXME (cgaunet, 2022-01-31): Cut and rename the methods because it does not only notify beneficiaries.
-def _notify_beneficiaries_upon_stock_edit(stock: Stock):
-    bookings = bookings_repository.find_not_cancelled_bookings_by_stock(stock)
+def _notify_pro_upon_stock_edit_for_event_offer(stock: Stock, bookings: List[Booking]):
+    if stock.offer.isEvent:
+        if not send_event_offer_postponement_confirmation_email_to_pro(stock, len(bookings)):
+            logger.warning(
+                "Could not notify pro about update of stock concerning an event offer",
+                extra={"stock": stock.id},
+            )
+
+
+def _notify_beneficiaries_upon_stock_edit(stock: Stock, bookings: List[Booking]):
     if bookings:
         bookings = update_cancellation_limit_dates(bookings, stock.beginningDatetime)
         date_in_two_days = datetime.datetime.utcnow() + datetime.timedelta(days=2)
@@ -513,7 +524,9 @@ def upsert_stocks(
     for stock in edited_stocks:
         previous_beginning = edited_stocks_previous_beginnings[stock.id]
         if stock.beginningDatetime != previous_beginning and not stock.offer.isEducational:
-            _notify_beneficiaries_upon_stock_edit(stock)
+            bookings = bookings_repository.find_not_cancelled_bookings_by_stock(stock)
+            _notify_pro_upon_stock_edit_for_event_offer(stock, bookings)
+            _notify_beneficiaries_upon_stock_edit(stock, bookings)
     search.async_index_offer_ids([offer.id])
 
     return stocks

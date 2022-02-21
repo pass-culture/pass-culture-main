@@ -1,4 +1,5 @@
 import copy
+import dataclasses
 from datetime import datetime
 from datetime import timedelta
 import os
@@ -16,6 +17,7 @@ from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.categories import subcategories
 from pcapi.core.educational import exceptions as educational_exceptions
 import pcapi.core.mails.testing as mails_testing
+from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.offers import api
 from pcapi.core.offers import exceptions as offer_exceptions
 from pcapi.core.offers import factories as offer_factories
@@ -119,11 +121,10 @@ class UpsertStocksTest:
         assert approved_offer.validation == offer_models.OfferValidationStatus.APPROVED
         assert approved_offer.isActive
 
-    @mock.patch("pcapi.core.offers.api.send_batch_booking_postponement_email_to_users")
-    def test_sends_email_if_beginning_date_changes_on_edition(self, mocked_send_email):
+    def test_sends_email_if_beginning_date_changes_on_edition(self):
         # Given
         user = users_factories.ProFactory()
-        offer = offer_factories.EventOfferFactory()
+        offer = offer_factories.EventOfferFactory(bookingEmail="offer@bookingemail.fr")
         existing_stock = offer_factories.StockFactory(offer=offer, price=10)
         beginning = datetime.now() + timedelta(days=10)
         edited_stock_data = stock_serialize.StockEditionBodyModel(
@@ -132,7 +133,10 @@ class UpsertStocksTest:
             bookingLimitDatetime=existing_stock.bookingLimitDatetime,
             price=2,
         )
-        booking = bookings_factories.BookingFactory(stock=existing_stock)
+
+        bookings_factories.IndividualBookingFactory(
+            stock=existing_stock, individualBooking__user__email="beneficiary@bookingEmail.fr"
+        )
         bookings_factories.CancelledBookingFactory(stock=existing_stock)
 
         # When
@@ -141,8 +145,16 @@ class UpsertStocksTest:
         # Then
         stock = offer_models.Stock.query.one()
         assert stock.beginningDatetime == beginning
-        notified_bookings = mocked_send_email.call_args_list[0][0][0]
-        assert notified_bookings == [booking]
+
+        assert len(mails_testing.outbox) == 2
+        assert mails_testing.outbox[0].sent_data["template"] == dataclasses.asdict(
+            TransactionalEmail.EVENT_OFFER_POSTPONED_CONFIRMATION_TO_PRO.value
+        )
+        assert mails_testing.outbox[0].sent_data["To"] == "offer@bookingemail.fr"
+        assert mails_testing.outbox[1].sent_data["template"] == dataclasses.asdict(
+            TransactionalEmail.BOOKING_POSTPONED_BY_PRO_TO_BENEFICIARY.value
+        )
+        assert mails_testing.outbox[1].sent_data["To"] == "beneficiary@bookingEmail.fr"
 
     @mock.patch("pcapi.core.offers.api.update_cancellation_limit_dates")
     def should_update_bookings_cancellation_limit_date_if_report_of_event(self, mock_update_cancellation_limit_dates):
@@ -151,7 +163,7 @@ class UpsertStocksTest:
         now = datetime.now()
         event_in_4_days = now + timedelta(days=4)
         event_reported_in_10_days = now + timedelta(days=10)
-        offer = offer_factories.EventOfferFactory()
+        offer = offer_factories.EventOfferFactory(bookingEmail="test@bookingEmail.fr")
         existing_stock = offer_factories.StockFactory(offer=offer, beginningDatetime=event_in_4_days)
         booking = bookings_factories.BookingFactory(stock=existing_stock, dateCreated=now)
         edited_stock_data = stock_serialize.StockEditionBodyModel(
@@ -174,7 +186,7 @@ class UpsertStocksTest:
         booking_made_3_days_ago = now - timedelta(days=3)
         event_in_4_days = now + timedelta(days=4)
         event_reported_in_10_days = now + timedelta(days=10)
-        offer = offer_factories.EventOfferFactory()
+        offer = offer_factories.EventOfferFactory(bookingEmail="test@bookingEmail.fr")
         existing_stock = offer_factories.StockFactory(offer=offer, beginningDatetime=event_in_4_days)
         booking = bookings_factories.UsedIndividualBookingFactory(
             stock=existing_stock, dateCreated=booking_made_3_days_ago
@@ -202,7 +214,7 @@ class UpsertStocksTest:
         date_used_in_48_hours = datetime.now() + timedelta(days=2)
         event_in_3_days = now + timedelta(days=3)
         event_reported_in_less_48_hours = now + timedelta(days=1)
-        offer = offer_factories.EventOfferFactory()
+        offer = offer_factories.EventOfferFactory(bookingEmail="test@bookingEmail.fr")
         existing_stock = offer_factories.StockFactory(offer=offer, beginningDatetime=event_in_3_days)
         booking = bookings_factories.UsedIndividualBookingFactory(
             stock=existing_stock, dateCreated=now, dateUsed=date_used_in_48_hours
@@ -321,7 +333,7 @@ class UpsertStocksTest:
     def test_allow_price_above_300_euros_on_edition_for_individual_event_offers(self):
         # Given
         user = users_factories.ProFactory()
-        existing_stock = offer_factories.EventStockFactory(price=10)
+        existing_stock = offer_factories.EventStockFactory(price=10, offer__bookingEmail="test@bookingEmail.fr")
         now = datetime.now()
         edited_stock_data = stock_serialize.StockEditionBodyModel(
             id=existing_stock.id, price=301, beginningDatetime=now, bookingLimitDatetime=now
