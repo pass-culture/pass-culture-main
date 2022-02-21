@@ -743,3 +743,24 @@ class OfferViewTest:
 
         assert response.status_code == 200
         assert offer.validation == OfferValidationStatus.APPROVED
+
+    @clean_database
+    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("pcapi.core.search.reindex_offer_ids")
+    def test_reindex_when_tags_updated(
+        self,
+        mocked_reindex_offer_ids,
+        mocked_validate_csrf_token,
+        client,
+    ):
+        offer = offers_factories.EventStockFactory().offer
+        tag = offers_factories.CriterionFactory()
+        data = {"criteria": [tag.id], "validation": OfferValidationStatus.APPROVED.value}
+
+        admin = users_factories.AdminFactory(email="admin@example.com")
+        client = client.with_session_auth(admin.email)
+
+        response = client.post(f"/pc/back-office/offer/edit/?id={offer.id}", form=data)
+
+        assert response.status_code == 302
+        mocked_reindex_offer_ids.assert_called_once_with([offer.id])
