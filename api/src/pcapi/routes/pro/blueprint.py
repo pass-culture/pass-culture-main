@@ -1,9 +1,9 @@
 from flask import Blueprint
 from flask_cors import CORS
 from spectree import SecurityScheme
-from spectree import SpecTree
 
 from pcapi import settings
+from pcapi.serialization.spec_tree import ExtendedSpecTree
 from pcapi.serialization.utils import before_handler
 
 
@@ -43,25 +43,27 @@ SECURITY_SCHEMES = [
 ]
 
 
-api_v2 = SpecTree(
+api_v2 = ExtendedSpecTree(
     "flask",
     title="pass Culture pro public API v2",
     MODE="strict",
     before=before_handler,
     PATH="/",
     security_schemes=SECURITY_SCHEMES,
+    humanize_operation_id=True,
     version=2,
 )
 api_v2.register(pro_public_api_v2)
 
 
-api = SpecTree(
+api = ExtendedSpecTree(
     "flask",
     title="pass Culture pro private API",
     MODE="strict",
     before=before_handler,
     PATH="pro",
     security_schemes=SECURITY_SCHEMES,
+    humanize_operation_id=True,
     version=1,
 )
 api.register(pro_private_api)
