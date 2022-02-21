@@ -1,5 +1,4 @@
 from pcapi import settings
-from pcapi.notifications.push.transactional_notifications import TransactionalNotificationData
 from pcapi.utils.module_loading import import_string
 
 
