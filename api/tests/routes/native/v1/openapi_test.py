@@ -856,6 +856,7 @@ def test_public_api(client, app):
                     "properties": {
                         "accessibility": {"$ref": "#/components/schemas/357aaa5.VenueResponse.VenueAccessibilityModel"},
                         "address": {"nullable": True, "title": "Address", "type": "string"},
+                        "bannerUrl": {"nullable": True, "title": "Bannerurl", "type": "string"},
                         "city": {"nullable": True, "title": "City", "type": "string"},
                         "contact": {
                             "anyOf": [{"$ref": "#/components/schemas/357aaa5.VenueResponse.VenueContactModel"}],
@@ -877,7 +878,7 @@ def test_public_api(client, app):
                         },
                         "withdrawalDetails": {"nullable": True, "title": "Withdrawaldetails", "type": "string"},
                     },
-                    "required": ["id", "name", "isVirtual", "accessibility"],
+                    "required": ["isVirtual", "name", "id", "accessibility"],
                     "title": "VenueResponse",
                     "type": "object",
                 },
@@ -1468,7 +1469,6 @@ def test_public_api(client, app):
                         },
                         "email": {"title": "Email", "type": "string"},
                         "firstName": {"nullable": True, "title": "Firstname", "type": "string"},
-                        "hasCompletedIdCheck": {"nullable": True, "title": "Hascompletedidcheck", "type": "boolean"},
                         "id": {"title": "Id", "type": "integer"},
                         "isBeneficiary": {"title": "Isbeneficiary", "type": "boolean"},
                         "isEligibleForBeneficiaryUpgrade": {
@@ -2811,7 +2811,7 @@ def test_public_api(client, app):
                         },
                     },
                     "security": [{"JWTAuth": []}],
-                    "summary": "update_profile <POST>",
+                    "summary": "complete_profile <POST>",
                     "tags": [],
                 }
             },
