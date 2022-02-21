@@ -17,22 +17,41 @@ interface IOfferEducationalConfirmationProps {
 
 const activeOffer = {
   title: 'Offre créée avec succès !',
-  description:
-    "Votre offre est désormais disponible sur ADAGE (L'Application Dédiée À la Généralisation de l’Éducation artistique et culturelle) et visible par les enseignants et chefs d’établissement de l’Éducation nationale.",
+  description: (
+    <>
+      Votre offre est désormais disponible sur <b>ADAGE</b> (L'Application
+      Dédiée À la Généralisation de l’Éducation artistique et culturelle) et
+      visible par les enseignants et chefs d’établissement de l’Éducation
+      nationale.
+    </>
+  ),
   Icon: ValidateIcon,
 }
 
 const pendingOffer = {
   title: 'Offre en cours de validation !',
-  description:
-    'Votre offre est en cours de validation par l’équipe pass Culture, nous vérifions actuellement son éligibilité. Cette vérification pourra prendre jusqu’à 72h.',
+  description: (
+    <>
+      Votre offre est en cours de validation par l’équipe pass Culture, nous
+      vérifions actuellement son éligibilité. Cette vérification pourra prendre
+      jusqu’à 72h.
+    </>
+  ),
   Icon: PendingIcon,
 }
 
 const showcaseOffer = {
   title: 'Offre créée avec succès !',
-  description:
-    'Votre offre est désormais disponible sur ADAGE (L’Application Dédiée À la Généralisation de l’Éducation artistique et culturelle) et visible par les enseignants et chefs d’établissement de l’Éducation nationale. Vous aurez la possibilité de revenir éditer votre offre et compléter les éléments de date(s) et prix.',
+  description: (
+    <>
+      Votre offre est désormais disponible sur <b>ADAGE</b> (L’Application
+      Dédiée À la Généralisation de l’Éducation artistique et culturelle) et
+      visible par les enseignants et chefs d’établissement de l’Éducation
+      nationale. Vous aurez la possibilité de revenir <b>éditer</b> votre offre
+      et
+      <b> compléter</b> les éléments de date(s) et prix.
+    </>
+  ),
   Icon: ValidateIcon,
 }
 
