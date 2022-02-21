@@ -23,6 +23,7 @@ import requests.exceptions as exceptions
 
 logger = logging.getLogger(__name__)
 
+# See also `SENDINBLUE_REQUEST_TIMEOUT` in `pcapi.core.monkeypatches`
 REQUEST_TIMEOUT_IN_SECOND = 10
 
 
