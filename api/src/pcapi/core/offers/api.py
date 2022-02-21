@@ -99,11 +99,6 @@ logger = logging.getLogger(__name__)
 
 OFFERS_RECAP_LIMIT = 501
 UNCHANGED = object()
-VALIDATION_KEYWORDS_MAPPING = {
-    "APPROVED": OfferValidationStatus.APPROVED,
-    "PENDING": OfferValidationStatus.PENDING,
-    "REJECTED": OfferValidationStatus.REJECTED,
-}
 
 
 def list_offers_for_pro_user(
@@ -861,12 +856,6 @@ def deactivate_inappropriate_products(isbn: str) -> bool:
 
 
 def set_offer_status_based_on_fraud_criteria(offer: Offer) -> OfferValidationStatus:
-    # TODO (rchaffal) to delete after implementation is completed
-    if not settings.IS_PROD and FeatureToggle.OFFER_VALIDATION_MOCK_COMPUTATION.is_active():
-        for keyword, validation_status in VALIDATION_KEYWORDS_MAPPING.items():
-            if keyword in offer.name:
-                return validation_status
-
     current_config = offers_repository.get_current_offer_validation_config()
     if not current_config:
         return OfferValidationStatus.APPROVED
