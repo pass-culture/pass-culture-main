@@ -1,5 +1,6 @@
 import React, { useContext } from 'react'
 
+import { AlgoliaQueryContext } from 'app/providers'
 import { FiltersContext } from 'app/providers/FiltersContextProvider'
 import { Option } from 'app/types'
 import { Tag } from 'app/ui-kit'
@@ -21,9 +22,11 @@ export const OfferFiltersTags = ({
     currentFilters: { categories, students, departments },
     dispatchCurrentFilters,
   } = useContext(FiltersContext)
+  const { queryTag, removeQuery } = useContext(AlgoliaQueryContext)
 
   const hasActiveFilters = Boolean(
-    venueFilter?.id ||
+    queryTag ||
+      venueFilter?.id ||
       departments.length > 0 ||
       students.length > 0 ||
       categories.length > 0
@@ -54,9 +57,16 @@ export const OfferFiltersTags = ({
     })
   }
 
+  const handleRemoveQueryFilter = (): void => {
+    removeQuery()
+  }
+
   return (
     <div className="offer-filters-tags-container">
       <div className="offer-filters-tags">
+        {queryTag ? (
+          <Tag label={queryTag} onClick={handleRemoveQueryFilter} />
+        ) : null}
         {venueFilter?.id ? (
           <Tag
             key={venueFilter.id}

@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react'
 
 import { getEducationalCategoriesOptionsAdapter } from 'app/adapters/getEducationalCategoriesOptionsAdapter'
+import { AlgoliaQueryContext } from 'app/providers'
 import { FiltersContext } from 'app/providers/FiltersContextProvider'
 import { Filters, Option } from 'app/types'
 import { Button, MultiSelectAutocomplete } from 'app/ui-kit'
@@ -30,9 +31,11 @@ export const OfferFilters = ({
     Option<string[]>[]
   >([])
   const { dispatchCurrentFilters, currentFilters } = useContext(FiltersContext)
+  const { removeQuery } = useContext(AlgoliaQueryContext)
 
   const handleResetFilters = () => {
     removeVenueFilter()
+    removeQuery()
     dispatchCurrentFilters({
       type: 'RESET_CURRENT_FILTERS',
     })
