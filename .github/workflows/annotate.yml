@@ -44,4 +44,4 @@ jobs:
       - name: Push release candidate to jira issue
         env:
           JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
-        run: jira edit ${{ steps.get_jira_key.outputs.issue }} --override customfield_10043=${{ steps.get_release_version.outputs.value }} --noedit
+        run: '[[ ! -z "${{ steps.get_jira_key.outputs.issue }}" ]] && jira edit ${{ steps.get_jira_key.outputs.issue }} --override customfield_10043=${{ steps.get_release_version.outputs.value }} --noedit || exit 0'
