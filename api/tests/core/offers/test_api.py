@@ -1925,7 +1925,8 @@ class ComputeOfferValidationTest:
                  attribute: "name"
                  condition:
                     operator: "contains"
-                    comparated: "suspicious"
+                    comparated: 
+                      - "suspicious"
         """
         api.import_offer_validation_config(example_yaml)
         assert api.set_offer_status_based_on_fraud_criteria(offer) == offer_models.OfferValidationStatus.PENDING
@@ -2046,6 +2047,25 @@ class ImportOfferValidationConfigTest:
         assert "namme" in str(error.value)
 
     @override_features(OFFER_VALIDATION_MOCK_COMPUTATION=False)
+    def test_raise_if_contains_comparated_not_a_list(self):
+        config_yaml = """
+            minimum_score: 0.6
+            rules:
+                - name: "nom de l'offre"
+                  factor: 0
+                  conditions:
+                    - model: "Offer"
+                      attribute: "name"
+                      condition:
+                        operator: "contains"
+                        comparated: "danger"
+            """
+
+        with pytest.raises(TypeError) as exc:
+            api.import_offer_validation_config(config_yaml)
+
+        assert str(exc.value) == "The `comparated` argument `danger` for the `contains` operator is not a list"
+
     def test_is_saved(self):
         config_yaml = """
         minimum_score: 0.6
