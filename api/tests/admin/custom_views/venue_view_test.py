@@ -5,6 +5,7 @@ import pytest
 from pcapi.admin.custom_views.venue_view import _get_venue_provider_link
 from pcapi.core.offerers.factories import VenueProviderFactory
 from pcapi.core.offerers.models import Venue
+from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers.factories import StockFactory
 from pcapi.core.offers.factories import VenueFactory
 from pcapi.core.offers.models import Offer
@@ -169,6 +170,44 @@ class VenueViewTest:
         assert venue.isPermanent
 
         mocked_async_index_venue_ids.assert_called_once_with([venue.id])
+        mocked_async_index_offers_of_venue_ids.assert_not_called()
+
+    @clean_database
+    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("pcapi.core.search.async_index_offers_of_venue_ids")
+    @patch("pcapi.core.search.async_index_venue_ids")
+    @patch("pcapi.core.search.reindex_venue_ids")
+    def test_reindex_when_tags_updated(
+        self,
+        mocked_reindex_venue_ids,
+        mocked_async_index_venue_ids,
+        mocked_async_index_offers_of_venue_ids,
+        mocked_validate_csrf_token,
+        client,
+    ):
+        admin = AdminFactory(email="user@example.com")
+        venue = VenueFactory(isPermanent=True)
+        tag = offers_factories.CriterionFactory()
+        data = {
+            "criteria": [tag.id],
+            "name": venue.name,
+            "siret": venue.siret,
+            "city": venue.city,
+            "postalCode": venue.postalCode,
+            "address": venue.address,
+            "publicName": venue.publicName,
+            "latitude": venue.latitude,
+            "longitude": venue.longitude,
+            "isPermanent": True,
+        }
+
+        client = client.with_session_auth(admin.email)
+        response = client.post(f"/pc/back-office/venue/edit/?id={venue.id}", form=data)
+
+        assert response.status_code == 302
+
+        mocked_reindex_venue_ids.assert_called_once_with([venue.id])
+        mocked_async_index_venue_ids.assert_not_called()
         mocked_async_index_offers_of_venue_ids.assert_not_called()
 
 
