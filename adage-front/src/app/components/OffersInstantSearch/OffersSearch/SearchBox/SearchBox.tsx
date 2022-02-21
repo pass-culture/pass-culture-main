@@ -1,20 +1,19 @@
 import './SearchBox.scss'
-import React, { useCallback } from 'react'
+import React, { useCallback, useContext } from 'react'
 import type { SearchBoxProvided } from 'react-instantsearch-core'
 
+import { AlgoliaQueryContext } from 'app/providers/AlgoliaQueryContextProvider'
 import { ReactComponent as MagnifyingGlassIcon } from 'assets/magnifying-glass.svg'
 
 import { placeholder } from './constants'
 
 export const SearchBoxComponent = ({
-  query,
-  setQuery,
   refine,
 }: {
-  query: string
-  setQuery: (query: string) => void
   refine: SearchBoxProvided['refine']
 }): React.ReactElement => {
+  const { query, setQuery } = useContext(AlgoliaQueryContext)
+
   const onSubmit = useCallback(
     event => {
       event.preventDefault()

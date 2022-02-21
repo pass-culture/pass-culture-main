@@ -7,7 +7,6 @@ import { Stats } from 'react-instantsearch-dom'
 import { useQueries } from 'react-query'
 
 import { Spinner } from 'app/components/Layout/Spinner/Spinner'
-import { Facets } from 'app/types'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { OfferType, ResultType, Role } from 'utils/types'
 
@@ -21,16 +20,12 @@ interface OffersComponentProps extends HitsProvided<ResultType> {
   userRole: Role
   setIsLoading: (isLoading: boolean) => void
   handleResetFiltersAndLaunchSearch: () => void
-  facetFilters: Facets
-  query: string
 }
 
 export const OffersComponent = ({
   userRole,
   setIsLoading,
   handleResetFiltersAndLaunchSearch,
-  facetFilters,
-  query,
   hits,
 }: OffersComponentProps): JSX.Element => {
   const offersThumbById = {}
@@ -74,9 +69,7 @@ export const OffersComponent = ({
   if (hits.length === 0 || offers.length === 0) {
     return (
       <NoResultsPage
-        facetFilters={facetFilters}
         handleResetFiltersAndLaunchSearch={handleResetFiltersAndLaunchSearch}
-        query={query}
       />
     )
   }

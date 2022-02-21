@@ -1,30 +1,27 @@
-import React from 'react'
+import React, { useContext } from 'react'
 
+import { FiltersContext } from 'app/providers/FiltersContextProvider'
 import { Option } from 'app/types'
 import { Tag } from 'app/ui-kit'
 import { ReactComponent as ResetIcon } from 'assets/reset.svg'
 import { VenueFilterType } from 'utils/types'
 
 import './OfferFiltersTags.scss'
-import { FiltersReducerAction } from '../../filtersReducer'
 
 export const OfferFiltersTags = ({
   venueFilter,
   removeVenueFilter,
-  departments,
-  dispatchCurrentFilters,
   handleResetFilters,
-  students,
-  categories,
 }: {
   venueFilter: VenueFilterType | null
   removeVenueFilter: () => void
-  departments: Option[]
-  dispatchCurrentFilters: React.Dispatch<FiltersReducerAction>
   handleResetFilters: () => void
-  students: Option[]
-  categories: Option<string[]>[]
 }): JSX.Element => {
+  const {
+    currentFilters: { categories, students, departments },
+    dispatchCurrentFilters,
+  } = useContext(FiltersContext)
+
   const hasActiveFilters = Boolean(
     venueFilter?.id ||
       departments.length > 0 ||
