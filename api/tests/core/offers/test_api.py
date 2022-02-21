@@ -40,6 +40,21 @@ pytestmark = pytest.mark.usefixtures("db_session")
 IMAGES_DIR = pathlib.Path(tests.__path__[0]) / "files"
 
 
+SIMPLE_OFFER_VALIDATION_CONFIG = """
+        minimum_score: 0.6
+        rules:
+            - name: "check offer name"
+              factor: 0
+              conditions:
+               - model: "Offer"
+                 attribute: "name"
+                 condition:
+                    operator: "contains"
+                    comparated: 
+                      - "suspicious"
+        """
+
+
 class UpsertStocksTest:
     @mock.patch("pcapi.core.search.async_index_offer_ids")
     def test_upsert_multiple_stocks(self, mocked_async_index_offer_ids):
@@ -67,23 +82,20 @@ class UpsertStocksTest:
 
     @freeze_time("2020-11-17 15:00:00")
     def test_upsert_stocks_triggers_draft_offer_validation(self):
+        api.import_offer_validation_config(SIMPLE_OFFER_VALIDATION_CONFIG)
         # Given draft offers and new stock data
         user = users_factories.ProFactory()
         draft_approvable_offer = offer_factories.OfferFactory(
             name="a great offer", validation=offer_models.OfferValidationStatus.DRAFT
         )
         draft_suspicious_offer = offer_factories.OfferFactory(
-            name="An PENDING offer", validation=offer_models.OfferValidationStatus.DRAFT
-        )
-        draft_fraudulent_offer = offer_factories.OfferFactory(
-            name="A REJECTED offer", validation=offer_models.OfferValidationStatus.DRAFT
+            name="A suspicious offer", validation=offer_models.OfferValidationStatus.DRAFT
         )
         created_stock_data = stock_serialize.StockCreationBodyModel(price=10, quantity=7)
 
         # When stocks are upserted
         api.upsert_stocks(offer_id=draft_approvable_offer.id, stock_data_list=[created_stock_data], user=user)
         api.upsert_stocks(offer_id=draft_suspicious_offer.id, stock_data_list=[created_stock_data], user=user)
-        api.upsert_stocks(offer_id=draft_fraudulent_offer.id, stock_data_list=[created_stock_data], user=user)
 
         # Then validations statuses are correctly computed
         assert draft_approvable_offer.validation == offer_models.OfferValidationStatus.APPROVED
@@ -92,9 +104,6 @@ class UpsertStocksTest:
         assert draft_suspicious_offer.validation == offer_models.OfferValidationStatus.PENDING
         assert not draft_suspicious_offer.isActive
         assert draft_suspicious_offer.lastValidationDate == datetime(2020, 11, 17, 15, 0)
-        assert draft_fraudulent_offer.validation == offer_models.OfferValidationStatus.REJECTED
-        assert not draft_fraudulent_offer.isActive
-        assert draft_fraudulent_offer.lastValidationDate == datetime(2020, 11, 17, 15, 0)
 
     def test_upsert_stocks_does_not_trigger_approved_offer_validation(self):
         # Given offers with stock and new stock data
@@ -706,15 +715,13 @@ class CreateEducationalOfferStocksTest:
 
     def test_create_stock_triggers_draft_offer_validation(self):
         # Given
+        api.import_offer_validation_config(SIMPLE_OFFER_VALIDATION_CONFIG)
         user_pro = users_factories.ProFactory()
         draft_approvable_offer = offer_factories.EducationalEventOfferFactory(
             name="a great offer", validation=offer_models.OfferValidationStatus.DRAFT
         )
         draft_suspicious_offer = offer_factories.EducationalEventOfferFactory(
-            name="A PENDING offer", validation=offer_models.OfferValidationStatus.DRAFT
-        )
-        draft_fraudulent_offer = offer_factories.EducationalEventOfferFactory(
-            name="A REJECTED offer", validation=offer_models.OfferValidationStatus.DRAFT
+            name="a suspicious offer", validation=offer_models.OfferValidationStatus.DRAFT
         )
         common_created_stock_data = {
             "beginningDatetime": dateutil.parser.parse("2022-01-17T22:00:00Z"),
@@ -728,14 +735,10 @@ class CreateEducationalOfferStocksTest:
         created_stock_data_suspicious = stock_serialize.EducationalStockCreationBodyModel(
             offerId=draft_suspicious_offer.id, **common_created_stock_data
         )
-        created_stock_data_fraudulent = stock_serialize.EducationalStockCreationBodyModel(
-            offerId=draft_fraudulent_offer.id, **common_created_stock_data
-        )
 
         # When
         api.create_educational_stock(stock_data=created_stock_data_approvable, user=user_pro)
         api.create_educational_stock(stock_data=created_stock_data_suspicious, user=user_pro)
-        api.create_educational_stock(stock_data=created_stock_data_fraudulent, user=user_pro)
 
         # Then
         assert draft_approvable_offer.validation == offer_models.OfferValidationStatus.APPROVED
@@ -744,9 +747,6 @@ class CreateEducationalOfferStocksTest:
         assert draft_suspicious_offer.validation == offer_models.OfferValidationStatus.PENDING
         assert not draft_suspicious_offer.isActive
         assert draft_suspicious_offer.lastValidationDate == datetime(2020, 11, 17, 15, 0)
-        assert draft_fraudulent_offer.validation == offer_models.OfferValidationStatus.REJECTED
-        assert not draft_fraudulent_offer.isActive
-        assert draft_fraudulent_offer.lastValidationDate == datetime(2020, 11, 17, 15, 0)
 
     def test_create_stock_for_non_approved_offer_fails(self):
         # Given
@@ -1895,40 +1895,15 @@ class DeactivateInappropriateProductTest:
 
 
 class ComputeOfferValidationTest:
-    def test_matching_keyword(self):
-        offer = offer_models.Offer(name="An offer PENDING validation")
-
-        assert api.set_offer_status_based_on_fraud_criteria(offer) == offer_models.OfferValidationStatus.PENDING
-
-    def test_not_matching_keyword(self):
-        offer = offer_models.Offer(name="An offer pending validation")
+    def test_approve_if_no_offer_validation_config(self):
+        offer = offer_models.Offer(name="Maybe we should reject this offer")
 
         assert api.set_offer_status_based_on_fraud_criteria(offer) == offer_models.OfferValidationStatus.APPROVED
 
-    @override_features(OFFER_VALIDATION_MOCK_COMPUTATION=False)
-    def test_deactivated_check(self):
-        offer = offer_models.Offer(name="An offer PENDING validation")
-
-        assert api.set_offer_status_based_on_fraud_criteria(offer) == offer_models.OfferValidationStatus.APPROVED
-
-    @override_features(OFFER_VALIDATION_MOCK_COMPUTATION=False)
     def test_matching_keyword_in_name(self):
         offer = offer_factories.OfferFactory(name="A suspicious offer")
         offer_factories.StockFactory(price=10, offer=offer)
-        example_yaml = """
-        minimum_score: 0.6
-        rules:
-            - name: "check offer name"
-              factor: 0
-              conditions:
-               - model: "Offer"
-                 attribute: "name"
-                 condition:
-                    operator: "contains"
-                    comparated: 
-                      - "suspicious"
-        """
-        api.import_offer_validation_config(example_yaml)
+        api.import_offer_validation_config(SIMPLE_OFFER_VALIDATION_CONFIG)
         assert api.set_offer_status_based_on_fraud_criteria(offer) == offer_models.OfferValidationStatus.PENDING
 
 
@@ -1969,7 +1944,6 @@ class UpdateOfferValidationStatusTest:
 
 
 class ImportOfferValidationConfigTest:
-    @override_features(OFFER_VALIDATION_MOCK_COMPUTATION=False)
     def test_raise_a_WrongFormatInFraudConfigurationFile_error_for_key_error(self):
         config_yaml = """
         minimum_score: 0.6
@@ -1995,7 +1969,6 @@ class ImportOfferValidationConfigTest:
             api.import_offer_validation_config(config_yaml)
         assert str(error.value) == "\"'Wrong key: WRONG_KEY'\""
 
-    @override_features(OFFER_VALIDATION_MOCK_COMPUTATION=False)
     def test_raise_a_WrongFormatInFraudConfigurationFile_error_for_wrong_type(self):
         config_yaml = """
             minimum_score: 0.6
@@ -2021,7 +1994,6 @@ class ImportOfferValidationConfigTest:
             api.import_offer_validation_config(config_yaml)
         assert "0" in str(error.value)
 
-    @override_features(OFFER_VALIDATION_MOCK_COMPUTATION=False)
     def test_raise_a_WrongFormatInFraudConfigurationFile_error_for_wrong_leaf_value(self):
         config_yaml = """
             minimum_score: 0.6
@@ -2046,7 +2018,6 @@ class ImportOfferValidationConfigTest:
             api.import_offer_validation_config(config_yaml)
         assert "namme" in str(error.value)
 
-    @override_features(OFFER_VALIDATION_MOCK_COMPUTATION=False)
     def test_raise_if_contains_comparated_not_a_list(self):
         config_yaml = """
             minimum_score: 0.6
@@ -2097,7 +2068,6 @@ class ImportOfferValidationConfigTest:
 
 
 class ParseOfferValidationConfigTest:
-    @override_features(OFFER_VALIDATION_MOCK_COMPUTATION=False)
     def test_parse_offer_validation_config(self):
         offer = offer_factories.OfferFactory(name="REJECTED")
         config_yaml = """
@@ -2127,7 +2097,6 @@ class ParseOfferValidationConfigTest:
 
 
 class ComputeOfferValidationScoreTest:
-    @override_features(OFFER_VALIDATION_MOCK_COMPUTATION=False)
     def test_offer_validation_with_one_item_config_with_in(self):
         offer = offer_factories.OfferFactory(name="REJECTED")
         validation_item = offer_validation.OfferValidationItem(
@@ -2141,7 +2110,6 @@ class ComputeOfferValidationScoreTest:
 
         assert score == 0.2
 
-    @override_features(OFFER_VALIDATION_MOCK_COMPUTATION=False)
     def test_offer_validation_with_one_item_config_with_greater_than(self):
         offer = offer_factories.OfferFactory(name="REJECTED")
         offer_factories.StockFactory(offer=offer, price=12)
@@ -2170,7 +2138,6 @@ class ComputeOfferValidationScoreTest:
 
         assert score == 0.2
 
-    @override_features(OFFER_VALIDATION_MOCK_COMPUTATION=False)
     def test_offer_validation_with_one_item_config_with_greater_or_equal_than(self):
         offer = offer_factories.OfferFactory(name="REJECTED")
         offer_factories.StockFactory(offer=offer, price=12)
@@ -2199,7 +2166,6 @@ class ComputeOfferValidationScoreTest:
 
         assert score == 0.2
 
-    @override_features(OFFER_VALIDATION_MOCK_COMPUTATION=False)
     def test_offer_validation_with_one_item_config_with_equal(self):
         offer = offer_factories.OfferFactory(name="test offer")
         offer_factories.StockFactory(offer=offer, price=15)
@@ -2215,7 +2181,6 @@ class ComputeOfferValidationScoreTest:
         score = offer_validation.compute_offer_validation_score([validation_rule])
         assert score == 0.3
 
-    @override_features(OFFER_VALIDATION_MOCK_COMPUTATION=False)
     def test_offer_validation_with_one_item_config_with_not_in(self):
         offer = offer_factories.OfferFactory(name="rejected")
         validation_item = offer_validation.OfferValidationItem(
@@ -2230,7 +2195,6 @@ class ComputeOfferValidationScoreTest:
         score = offer_validation.compute_offer_validation_score([validation_rule])
         assert score == 0.3
 
-    @override_features(OFFER_VALIDATION_MOCK_COMPUTATION=False)
     def test_offer_validation_with_multiple_item_config(self):
         offer = offer_factories.OfferFactory(name="test offer")
         offer_factories.StockFactory(offer=offer, price=15)
@@ -2253,7 +2217,6 @@ class ComputeOfferValidationScoreTest:
         score = offer_validation.compute_offer_validation_score([validation_rule_1, validation_rule_2])
         assert score == 0.06
 
-    @override_features(OFFER_VALIDATION_MOCK_COMPUTATION=False)
     def test_offer_validation_rule_with_multiple_conditions(self):
         offer = offer_factories.OfferFactory(name="Livre")
         offer_factories.StockFactory(offer=offer, price=75)
@@ -2274,7 +2237,6 @@ class ComputeOfferValidationScoreTest:
         score = offer_validation.compute_offer_validation_score([validation_rule])
         assert score == 0.5
 
-    @override_features(OFFER_VALIDATION_MOCK_COMPUTATION=False)
     def test_offer_validation_with_emails_blacklist(self):
 
         venue = offer_factories.VenueFactory(siret="12345678912345", bookingEmail="fake@yopmail.com")
@@ -2294,7 +2256,6 @@ class ComputeOfferValidationScoreTest:
         score = offer_validation.compute_offer_validation_score([validation_rule])
         assert score == 0.3
 
-    @override_features(OFFER_VALIDATION_MOCK_COMPUTATION=False)
     def test_offer_validation_with_description_rule_and_offer_without_description(self):
         offer = offer_factories.OfferFactory(name="test offer", description=None)
         offer_factories.StockFactory(offer=offer, price=15)
@@ -2311,7 +2272,6 @@ class ComputeOfferValidationScoreTest:
         score = offer_validation.compute_offer_validation_score([validation_rule])
         assert score == 1
 
-    @override_features(OFFER_VALIDATION_MOCK_COMPUTATION=False)
     def test_offer_validation_with_id_at_providers_is_none(self):
         offer = offer_factories.OfferFactory(name="test offer", description=None)
         assert offer.idAtProvider is None
@@ -2329,7 +2289,6 @@ class ComputeOfferValidationScoreTest:
         score = offer_validation.compute_offer_validation_score([validation_rule])
         assert score == 0.3
 
-    @override_features(OFFER_VALIDATION_MOCK_COMPUTATION=False)
     def test_offer_validation_with_contains_exact_word(self):
         offer = offer_factories.OfferFactory(name="test offer", description=None)
         assert offer.idAtProvider is None
