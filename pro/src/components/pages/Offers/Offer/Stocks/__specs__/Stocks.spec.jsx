@@ -1576,12 +1576,12 @@ describe('stocks page', () => {
             expect(
               queryByTextTrimHtml(
                 screen,
-                'Ce stock ne sera plus disponible à la réservation et entraînera l’annulation des réservations en cours !'
+                'Ce stock ne sera plus disponible à la réservation et entraînera l’annulation des réservations en cours et validées !'
               )
             ).toBeInTheDocument()
             expect(
               screen.getByText(
-                'entraînera l’annulation des réservations en cours !',
+                'entraînera l’annulation des réservations en cours et validées !',
                 {
                   selector: 'strong',
                 }
