@@ -9,11 +9,23 @@ from tests.conftest import TestClient
 
 
 class Returns200Test:
+    # if bannerMeta is not None, the response should only serialize some
+    # fields, others should be ignored.
+    @pytest.mark.parametrize(
+        "banner_meta_in,banner_meta_out",
+        [
+            ({"image_credit": "someone"}, {"image_credit": "someone"}),
+            ({"random": "content", "should": "be_ignored"}, {}),
+            (None, None),
+        ],
+    )
     @pytest.mark.usefixtures("db_session")
-    def when_user_has_rights_on_managing_offerer(self, client):
+    def when_user_has_rights_on_managing_offerer(self, client, banner_meta_in, banner_meta_out):
         # given
         user_offerer = offers_factories.UserOffererFactory(user__email="user.pro@test.com")
-        venue = offers_factories.VenueFactory(name="L'encre et la plume", managingOfferer=user_offerer.offerer)
+        venue = offers_factories.VenueFactory(
+            name="L'encre et la plume", managingOfferer=user_offerer.offerer, bannerMeta=banner_meta_in
+        )
         bank_information = offers_factories.BankInformationFactory(venue=venue)
 
         expected_serialized_venue = {
@@ -82,7 +94,7 @@ class Returns200Test:
             "visualDisabilityCompliant": venue.visualDisabilityCompliant,
             "withdrawalDetails": None,
             "bannerUrl": venue.bannerUrl,
-            "bannerMeta": venue.bannerMeta,
+            "bannerMeta": banner_meta_out,
         }
 
         # when
