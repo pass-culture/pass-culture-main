@@ -86,6 +86,9 @@ class TransactionalEmail(Enum):
     EAC_NEW_BOOKING_TO_PRO = TemplatePro(id_prod=0000, id_not_prod=0000, tags=["pro_nouvelle_reservation_eac"])
     EAC_NEW_PREBOOKING_TO_PRO = TemplatePro(id_prod=0000, id_not_prod=0000, tags=["pro_nouvelle_prereservation_eac"])
     EAC_SATISFACTION_STUDY_TO_PRO = TemplatePro(id_prod=0000, id_not_prod=0000, tags=[""])
+    EVENT_OFFER_POSTPONED_CONFIRMATION_TO_PRO = TemplatePro(
+        id_prod=519, id_not_prod=63, tags=["pro_offre_evenement_reportee"]
+    )
     EXCEEDING_20K_REVENUE_TO_PRO = TemplatePro(id_prod=0000, id_not_prod=0000, tags=["pro_depassement_20k"])
     FIRST_BOOKING_TO_PRO = TemplatePro(id_prod=0000, id_not_prod=0000, tags=[""])
     FIRST_OFFER_CREATED_BY_PRO = TemplatePro(id_prod=0000, id_not_prod=0000, tags=[""])
