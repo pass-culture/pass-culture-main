@@ -1,5 +1,7 @@
 import { screen } from '@testing-library/react'
 
+import { placeholder } from 'app/components/OffersInstantSearch/OffersSearch/SearchBox/constants'
+
 export const queryResetFiltersButton = (): HTMLElement | null =>
   screen.queryByRole('button', {
     name: 'Réinitialiser les filtres',
@@ -25,3 +27,6 @@ export const findLaunchSearchButton = (): Promise<HTMLElement> =>
   })
 export const queryTag = (tagName: string): HTMLElement | null =>
   screen.queryByText(tagName, { selector: 'div' })
+
+export const findSearchBox = (): Promise<HTMLElement> =>
+  screen.findByPlaceholderText(placeholder)

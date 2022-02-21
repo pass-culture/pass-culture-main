@@ -5,23 +5,26 @@ import {
   findLaunchSearchButton,
   queryResetFiltersButton,
 } from 'app/__spec__/__test_utils__/elements'
-import { AlgoliaQueryContextProvider } from 'app/providers/AlgoliaQueryContextProvider'
 import {
+  AlgoliaQueryContextProvider,
+  AlgoliaQueryContextType,
+  alogliaQueryContextInitialValues,
   filtersContextInitialValues,
   FiltersContextProvider,
   FiltersContextType,
-} from 'app/providers/FiltersContextProvider'
+} from 'app/providers'
 import { VenueFilterType } from 'utils/types'
 
 import { OfferFilters, OfferFiltersProps } from '../OfferFilters/OfferFilters'
 
 const renderOfferFilters = (
   props: OfferFiltersProps,
-  filterContextProviderValue: FiltersContextType = filtersContextInitialValues
+  filterContextProviderValue: FiltersContextType = filtersContextInitialValues,
+  algoliaQueryContextProviderValue: AlgoliaQueryContextType = alogliaQueryContextInitialValues
 ) => {
   render(
     <FiltersContextProvider values={filterContextProviderValue}>
-      <AlgoliaQueryContextProvider>
+      <AlgoliaQueryContextProvider values={algoliaQueryContextProviderValue}>
         <OfferFilters {...props} />
       </AlgoliaQueryContextProvider>
     </FiltersContextProvider>
@@ -90,17 +93,21 @@ describe('offerFilters component', () => {
 
   it('should show filter tags when at least one filter is selected', async () => {
     // When
-    renderOfferFilters(props, {
-      ...filtersContextInitialValues,
-      currentFilters: {
-        departments: [{ value: '01', label: '01 - Ain' }],
-        categories: [],
-        students: [],
+    renderOfferFilters(
+      props,
+      {
+        ...filtersContextInitialValues,
+        currentFilters: {
+          departments: [{ value: '01', label: '01 - Ain' }],
+          categories: [],
+          students: [],
+        },
       },
-    })
+      { ...alogliaQueryContextInitialValues, query: 'Blablabla' }
+    )
 
     // Then
-    const resetFiltersButton = await queryResetFiltersButton()
+    const resetFiltersButton = queryResetFiltersButton()
     await waitFor(() => expect(resetFiltersButton).toBeInTheDocument())
   })
 })

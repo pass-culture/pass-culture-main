@@ -11,9 +11,7 @@ import { Configure } from 'react-instantsearch-dom'
 import selectEvent from 'react-select-event'
 
 import {
-  filtersContextInitialValues,
   FiltersContextProvider,
-  FiltersContextType,
   FacetFiltersContextProvider,
   AlgoliaQueryContextProvider,
 } from 'app/providers'
@@ -21,13 +19,13 @@ import * as pcapi from 'repository/pcapi/pcapi'
 import { Role, VenueFilterType } from 'utils/types'
 
 import { App } from '../App'
-import { placeholder } from '../components/OffersInstantSearch/OffersSearch/SearchBox'
 
 import {
   findCategoriesFilter,
   findDepartmentFilter,
   findLaunchSearchButton,
   findResetAllFiltersButton,
+  findSearchBox,
   findStudentsFilter,
   queryResetFiltersButton,
   queryTag,
@@ -81,11 +79,9 @@ jest.mock('repository/pcapi/pcapi', () => ({
 }))
 const mockedPcapi = pcapi as jest.Mocked<typeof pcapi>
 
-const renderApp = (
-  filterContextProviderValue: FiltersContextType = filtersContextInitialValues
-) => {
+const renderApp = () => {
   render(
-    <FiltersContextProvider values={filterContextProviderValue}>
+    <FiltersContextProvider>
       <AlgoliaQueryContextProvider>
         <FacetFiltersContextProvider>
           <App />
@@ -436,13 +432,30 @@ describe('app', () => {
       expect(queryTag(`Lieu : ${venue?.publicName}`)).not.toBeInTheDocument()
     })
 
+    it('should display tag with query after clicking on search button', async () => {
+      renderApp()
+      const textInput = await findSearchBox()
+      const launchSearchButton = await findLaunchSearchButton()
+
+      userEvent.type(textInput, 'blabla')
+
+      expect(queryTag('blabla')).not.toBeInTheDocument()
+
+      userEvent.click(launchSearchButton)
+
+      const resetFiltersButton = queryResetFiltersButton() as HTMLElement
+
+      expect(queryTag('blabla')).toBeInTheDocument()
+      expect(resetFiltersButton).toBeInTheDocument()
+    })
+
     it('should reset all filters and launch search when no result and click on button', async () => {
       // Given
       const siret = '123456789'
       window.location.search = `?siret=${siret}`
       renderApp()
 
-      const textInput = await screen.findByPlaceholderText(placeholder)
+      const textInput = await findSearchBox()
       const departmentFilter = await findDepartmentFilter()
       const launchSearchButton = await findLaunchSearchButton()
 
@@ -450,6 +463,9 @@ describe('app', () => {
       userEvent.type(textInput, 'a')
       await selectEvent.select(departmentFilter, '01 - Ain')
       userEvent.click(launchSearchButton)
+
+      expect(queryTag('a')).toBeInTheDocument()
+      expect(queryTag('01 - Ain')).toBeInTheDocument()
 
       const resetAllFiltersButton = await findResetAllFiltersButton()
       userEvent.click(resetAllFiltersButton)
@@ -468,6 +484,8 @@ describe('app', () => {
       expect(searchConfigurationLastCall.facetFilters).toStrictEqual([
         'offer.isEducational:true',
       ])
+      expect(queryTag('a')).not.toBeInTheDocument()
+      expect(queryTag('01 - Ain')).not.toBeInTheDocument()
     })
   })
 
