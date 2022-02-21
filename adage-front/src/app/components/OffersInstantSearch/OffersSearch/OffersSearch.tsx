@@ -17,7 +17,7 @@ import { Offers } from './Offers/Offers'
 import { Pagination } from './Offers/Pagination'
 import { SearchBox } from './SearchBox/SearchBox'
 
-interface SearchProps extends SearchBoxProvided {
+export interface SearchProps extends SearchBoxProvided {
   userRole: Role
   removeVenueFilter: () => void
   venueFilter: VenueFilterType | null

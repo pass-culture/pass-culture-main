@@ -3,8 +3,19 @@ import React from 'react'
 import type { Hit } from 'react-instantsearch-core'
 import { QueryCache, QueryClient, QueryClientProvider } from 'react-query'
 
-import { OffersComponent as Offers } from 'app/components/OffersInstantSearch/OffersSearch/Offers/Offers'
+import {
+  OffersComponent as Offers,
+  OffersComponentProps,
+} from 'app/components/OffersInstantSearch/OffersSearch/Offers/Offers'
 import { INITIAL_FACET_FILTERS } from 'app/constants'
+import {
+  AlgoliaQueryContextProvider,
+  AlgoliaQueryContextType,
+  alogliaQueryContextInitialValues,
+  facetFiltersContextInitialValues,
+  FacetFiltersContextProvider,
+  FacetFiltersContextType,
+} from 'app/providers'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { OfferType, ResultType, Role } from 'utils/types'
 
@@ -56,11 +67,28 @@ const searchFakeResults: Hit<ResultType>[] = [
   },
 ]
 
+const renderOffers = (
+  props: OffersComponentProps,
+  algoliaQueryContextValue: AlgoliaQueryContextType = alogliaQueryContextInitialValues,
+  facetFiltersContextValue: FacetFiltersContextType = facetFiltersContextInitialValues
+) => {
+  return render(
+    <AlgoliaQueryContextProvider values={algoliaQueryContextValue}>
+      <FacetFiltersContextProvider values={facetFiltersContextValue}>
+        <Offers {...props} />
+      </FacetFiltersContextProvider>
+    </AlgoliaQueryContextProvider>,
+    {
+      wrapper,
+    }
+  )
+}
+
 describe('offers', () => {
   let offerInParis: OfferType
   let offerInCayenne: OfferType
   let otherOffer: OfferType
-  let offersProps
+  let offersProps: OffersComponentProps
 
   beforeEach(() => {
     queryCache.clear()
@@ -173,10 +201,8 @@ describe('offers', () => {
     }
 
     offersProps = {
-      facetFilters: INITIAL_FACET_FILTERS,
-      handleNoResultResetFilters: jest.fn(),
+      handleResetFiltersAndLaunchSearch: jest.fn(),
       hits: searchFakeResults,
-      query: '',
       setIsLoading: jest.fn(),
       userRole: Role.redactor,
     }
@@ -188,9 +214,7 @@ describe('offers', () => {
     mockedPcapi.getOffer.mockResolvedValueOnce(offerInCayenne)
 
     // When
-    render(<Offers {...offersProps} />, {
-      wrapper,
-    })
+    renderOffers(offersProps)
 
     // Then
     const listItemsInOffer = await screen.findAllByTestId('offer-listitem')
@@ -204,7 +228,7 @@ describe('offers', () => {
     // Given
     mockedPcapi.getOffer.mockResolvedValueOnce(offerInParis)
     mockedPcapi.getOffer.mockResolvedValueOnce(offerInCayenne)
-    const { rerender } = render(<Offers {...offersProps} />, { wrapper })
+    const { rerender } = renderOffers(offersProps)
     mockedPcapi.getOffer.mockResolvedValueOnce(otherOffer)
     const otherSearchResult: Hit<ResultType> = {
       objectID: '481',
@@ -239,7 +263,7 @@ describe('offers', () => {
       new Promise(resolve => setTimeout(() => resolve(offerInParis), 500))
     )
     mockedPcapi.getOffer.mockResolvedValueOnce(offerInCayenne)
-    const { rerender } = render(<Offers {...offersProps} />, { wrapper })
+    const { rerender } = renderOffers(offersProps)
     mockedPcapi.getOffer.mockResolvedValueOnce(otherOffer)
     const otherSearchResult: Hit<ResultType> = {
       objectID: '481',
@@ -279,9 +303,7 @@ describe('offers', () => {
     mockedPcapi.getOffer.mockResolvedValueOnce(offerInCayenne)
 
     // When
-    render(<Offers {...offersProps} />, {
-      wrapper,
-    })
+    renderOffers(offersProps)
 
     // Then
     const loader = await screen.findByText('Recherche en cours')
@@ -297,9 +319,7 @@ describe('offers', () => {
     mockedPcapi.getOffer.mockResolvedValueOnce(offerInCayenne)
 
     // When
-    render(<Offers {...offersProps} />, {
-      wrapper,
-    })
+    renderOffers(offersProps)
 
     // Then
     const listItemsInOffer = await screen.findAllByTestId('offer-listitem')
@@ -314,9 +334,7 @@ describe('offers', () => {
     mockedPcapi.getOffer.mockResolvedValueOnce(offerInCayenne)
 
     // When
-    render(<Offers {...offersProps} />, {
-      wrapper,
-    })
+    renderOffers(offersProps)
 
     // Then
     const listItemsInOffer = await screen.findAllByTestId('offer-listitem')
@@ -328,7 +346,7 @@ describe('offers', () => {
     it('when there are no results', async () => {
       // When
       offersProps.hits = []
-      render(<Offers {...offersProps} />, { wrapper })
+      renderOffers(offersProps)
 
       // Then
       const errorMessage = await screen.findByText(
@@ -347,9 +365,7 @@ describe('offers', () => {
       mockedPcapi.getOffer.mockResolvedValueOnce(offerInCayenne)
 
       // When
-      render(<Offers {...offersProps} />, {
-        wrapper,
-      })
+      renderOffers(offersProps)
 
       // Then
       const errorMessage = await screen.findByText(
@@ -366,9 +382,7 @@ describe('offers', () => {
       mockedPcapi.getOffer.mockRejectedValue('Offre inconnue')
 
       // When
-      render(<Offers {...offersProps} />, {
-        wrapper,
-      })
+      renderOffers(offersProps)
 
       // Then
       const errorMessage = await screen.findByText(
@@ -378,14 +392,15 @@ describe('offers', () => {
       const listItemsInOffer = screen.queryAllByTestId('offer-listitem')
       expect(listItemsInOffer).toHaveLength(0)
     })
+
     it('should display a "Réinitialiser les filtres" button when no result query is not empty', async () => {
       // Given
       mockedPcapi.getOffer.mockRejectedValue('')
-      offersProps.query = 'Paris'
 
       // When
-      render(<Offers {...offersProps} />, {
-        wrapper,
+      renderOffers(offersProps, {
+        ...alogliaQueryContextInitialValues,
+        query: 'Paris',
       })
 
       // Then
@@ -398,14 +413,11 @@ describe('offers', () => {
     it('should display a "Réinitialiser les filtres" button when no result and at least one filter is set', async () => {
       // Given
       mockedPcapi.getOffer.mockRejectedValue('')
-      offersProps.facetFilters = [
-        'offer.isEducational:true',
-        ['venue.departmentCode:59'],
-      ]
 
       // When
-      render(<Offers {...offersProps} />, {
-        wrapper,
+      renderOffers(offersProps, undefined, {
+        ...facetFiltersContextInitialValues,
+        facetFilters: ['offer.isEducational:true', ['venue.departmentCode:59']],
       })
 
       // Then
@@ -418,11 +430,11 @@ describe('offers', () => {
     it('should not display a "Réinitialiser les filtres" button when there is no query and no filters', async () => {
       // Given
       mockedPcapi.getOffer.mockRejectedValue('')
-      offersProps.facetFilters = ['offer.isEducational:true']
 
       // When
-      render(<Offers {...offersProps} />, {
-        wrapper,
+      renderOffers(offersProps, undefined, {
+        ...facetFiltersContextInitialValues,
+        facetFilters: ['offer.isEducational:true'],
       })
 
       // Then
