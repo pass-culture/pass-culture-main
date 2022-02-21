@@ -254,8 +254,10 @@ class Desk extends Component {
               {booking.quantity === 2 ? (
                 <div>
                   <div className="desk-label">{'Prix : '}</div>
-                  <div className="desk-value">{`${booking.price * 2} €`}</div>
-                  <DuoSvg title="Réservation DUO" />
+                  <div className="desk-value duo-price">
+                    {`${booking.price * 2} €`}
+                    <DuoSvg title="Réservation DUO" />
+                  </div>
                 </div>
               ) : (
                 <div>

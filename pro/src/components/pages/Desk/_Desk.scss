@@ -40,6 +40,17 @@
     text-align: left;
   }
 
+  .duo-price {
+    position: relative;
+    svg {
+      position: absolute;
+      top: rem(-6px);
+      margin-left: rem(5px);
+      height: rem(30px);
+      width: rem(30px);
+    }
+  }
+
   .desk-button {
     background-image: linear-gradient(to left, $primary 10%, transparent 0%);
     background-position: center;
