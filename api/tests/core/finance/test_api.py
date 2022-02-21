@@ -159,12 +159,12 @@ class PriceBookingTest:
         pricing = api.price_booking(booking)
         assert pricing is None
 
-    def test_price_booking_checks_bank_information(self):
+    def test_price_booking_ignores_missing_bank_information(self):
         booking = bookings_factories.UsedBookingFactory(
             stock__offer__venue__businessUnit__bankAccount__status=BankInformationStatus.DRAFT,
         )
         pricing = api.price_booking(booking)
-        assert pricing is None
+        assert pricing
 
     def test_num_queries(self):
         booking = bookings_factories.UsedBookingFactory()
@@ -371,13 +371,13 @@ class PriceBookingsTest:
         assert not booking1.pricings
         assert len(booking2.pricings) == 1
 
-    def test_no_pricing_without_accepted_bank_info(self):
+    def test_price_even_without_accepted_bank_info(self):
         booking = bookings_factories.UsedBookingFactory(
             dateUsed=self.few_minutes_ago,
             stock__offer__venue__businessUnit__bankAccount__status=BankInformationStatus.DRAFT,
         )
         api.price_bookings(min_date=self.few_minutes_ago)
-        assert len(booking.pricings) == 0
+        assert len(booking.pricings) == 1
 
 
 class GenerateCashflowsTest:
@@ -450,6 +450,25 @@ class GenerateCashflowsTest:
         )
         cutoff = datetime.datetime.utcnow()
         api.generate_cashflows(cutoff)
+        assert models.Cashflow.query.count() == 0
+
+    def test_no_cashflow_if_no_accepted_bank_information(self):
+        business_unit1 = factories.BusinessUnitFactory(bankAccount__status=BankInformationStatus.DRAFT)
+        factories.PricingFactory(
+            status=models.PricingStatus.VALIDATED,
+            businessUnit=business_unit1,
+            amount=-1000,
+        )
+        business_unit2 = factories.BusinessUnitFactory(bankAccount=None)
+        factories.PricingFactory(
+            status=models.PricingStatus.VALIDATED,
+            businessUnit=business_unit2,
+            amount=-2000,
+        )
+
+        cutoff = datetime.datetime.utcnow()
+        api.generate_cashflows(cutoff)
+
         assert models.Cashflow.query.count() == 0
 
     def test_assert_num_queries(self):
