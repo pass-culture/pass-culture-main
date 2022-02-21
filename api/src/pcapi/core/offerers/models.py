@@ -364,11 +364,11 @@ class VenueContact(PcObject, Model):
 
 
 class VenueCriterion(PcObject, Model):
-    venueId = Column(BigInteger, ForeignKey("venue.id"), index=True, nullable=False)
+    venueId = Column(BigInteger, ForeignKey("venue.id", ondelete="CASCADE"), index=True, nullable=False)
 
     venue = relationship("Venue", foreign_keys=[venueId])
 
-    criterionId = Column(BigInteger, ForeignKey("criterion.id"), nullable=False, index=True)
+    criterionId = Column(BigInteger, ForeignKey("criterion.id", ondelete="CASCADE"), nullable=False, index=True)
 
     criterion = relationship("Criterion", foreign_keys=[criterionId])
 
