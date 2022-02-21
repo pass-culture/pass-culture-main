@@ -43,7 +43,9 @@ const DeleteStockDialog = ({
       <h1 id={DIALOG_LABEL_ID}>Voulez-vous supprimer ce stock ?</h1>
       <p>
         {'Ce stock ne sera plus disponible à la réservation et '}
-        <strong>entraînera l’annulation des réservations en cours !</strong>
+        <strong>
+          entraînera l’annulation des réservations en cours et validées !
+        </strong>
       </p>
       <p>
         L’ensemble des utilisateurs concernés sera automatiquement averti par
