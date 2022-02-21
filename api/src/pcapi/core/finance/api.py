@@ -102,8 +102,6 @@ def price_bookings(min_date: datetime.datetime = MIN_DATE_TO_PRICE):
         # once BusinessUnit.siret is set as NOT NULLable.
         .filter(models.BusinessUnit.siret.isnot(None))
         .filter(models.BusinessUnit.status == models.BusinessUnitStatus.ACTIVE)
-        .join(models.BusinessUnit.bankAccount)
-        .filter(BankInformation.status == BankInformationStatus.ACCEPTED)
         .order_by(bookings_models.Booking.dateUsed, bookings_models.Booking.id)
         .options(
             sqla_orm.load_only(bookings_models.Booking.id),
@@ -173,9 +171,9 @@ def price_booking(booking: bookings_models.Booking) -> models.Pricing:
         booking = (
             bookings_models.Booking.query.filter_by(id=booking.id)
             .options(
-                sqla_orm.joinedload(bookings_models.Booking.venue, innerjoin=True)
-                .joinedload(offerers_models.Venue.businessUnit, innerjoin=True)
-                .joinedload(models.BusinessUnit.bankAccount, innerjoin=True),
+                sqla_orm.joinedload(bookings_models.Booking.venue, innerjoin=True).joinedload(
+                    offerers_models.Venue.businessUnit, innerjoin=True
+                ),
                 sqla_orm.joinedload(bookings_models.Booking.stock, innerjoin=True).joinedload(
                     offers_models.Stock.offer, innerjoin=True
                 ),
@@ -196,8 +194,6 @@ def price_booking(booking: bookings_models.Booking) -> models.Pricing:
         if not business_unit.siret:
             return None
         if business_unit.status != models.BusinessUnitStatus.ACTIVE:
-            return None
-        if business_unit.bankAccount.status != BankInformationStatus.ACCEPTED:
             return None
 
         # Pricing the same booking twice is not allowed (and would be
@@ -449,6 +445,9 @@ def generate_cashflows(cutoff: datetime.datetime) -> int:
         # We should not have any validated pricing with a cashflow,
         # this is a safety belt.
         models.CashflowPricing.pricingId.is_(None),
+        # Bookings can now be priced even if BankInformation is not ACCEPTED,
+        # but to generate cashflows we definitely need it.
+        BankInformation.status == BankInformationStatus.ACCEPTED,
     )
 
     def _mark_as_processed(pricings):
@@ -466,8 +465,9 @@ def generate_cashflows(cutoff: datetime.datetime) -> int:
             *filters,
         )
         .join(models.Pricing.booking)
-        .join(offers_models.Stock)
+        .join(bookings_models.Booking.stock)
         .join(models.Pricing.businessUnit)
+        .join(models.BusinessUnit.bankAccount)
         .outerjoin(models.CashflowPricing)
         .with_entities(models.Pricing.businessUnitId, models.BusinessUnit.bankAccountId)
         .distinct()
@@ -477,8 +477,10 @@ def generate_cashflows(cutoff: datetime.datetime) -> int:
         try:
             with transaction():
                 pricings = (
-                    models.Pricing.query.join(models.Pricing.booking)
-                    .join(offers_models.Stock)
+                    models.Pricing.query.join(models.BusinessUnit)
+                    .join(models.BusinessUnit.bankAccount)
+                    .join(models.Pricing.booking)
+                    .join(bookings_models.Booking.stock)
                     .outerjoin(models.CashflowPricing)
                     .filter(
                         models.Pricing.businessUnitId == business_unit_id,
