@@ -1,19 +1,20 @@
 import './NoResultsPage.scss'
-import React from 'react'
+import React, { useContext } from 'react'
 
+import { FacetFiltersContext } from 'app/providers'
+import { AlgoliaQueryContext } from 'app/providers/AlgoliaQueryContextProvider'
 import { Button } from 'app/ui-kit'
 import { ReactComponent as MagnifyingGlassIcon } from 'assets/magnifying-glass-no-result.svg'
 import { ReactComponent as ResetIcon } from 'assets/reset.svg'
 
 export const NoResultsPage = ({
   handleResetFiltersAndLaunchSearch,
-  query,
-  facetFilters,
 }: {
   handleResetFiltersAndLaunchSearch: () => void
-  query: string
-  facetFilters
 }): JSX.Element => {
+  const { facetFilters } = useContext(FacetFiltersContext)
+  const { query } = useContext(AlgoliaQueryContext)
+
   return (
     <div className="no-results">
       <MagnifyingGlassIcon className="no-results-icon" />

@@ -5,6 +5,11 @@ import * as ReactDOM from 'react-dom'
 import './index.scss'
 
 import {
+  AlgoliaQueryContextProvider,
+  FiltersContextProvider,
+  FacetFiltersContextProvider,
+} from 'app/providers'
+import {
   ENVIRONMENT_NAME,
   SENTRY_SERVER_URL,
   SENTRY_SAMPLE_RATE,
@@ -27,7 +32,13 @@ if (SENTRY_SERVER_URL) {
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <FiltersContextProvider>
+      <AlgoliaQueryContextProvider>
+        <FacetFiltersContextProvider>
+          <App />
+        </FacetFiltersContextProvider>
+      </AlgoliaQueryContextProvider>
+    </FiltersContextProvider>
   </React.StrictMode>,
   document.getElementById('root')
 )

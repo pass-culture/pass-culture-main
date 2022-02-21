@@ -1,9 +1,8 @@
 import algoliasearch from 'algoliasearch/lite'
-import React, { useState } from 'react'
+import React, { useContext } from 'react'
 import { Configure, InstantSearch } from 'react-instantsearch-dom'
 
-import { INITIAL_FACET_FILTERS } from 'app/constants'
-import { Facets } from 'app/types'
+import { FacetFiltersContext } from 'app/providers'
 import {
   ALGOLIA_API_KEY,
   ALGOLIA_APP_ID,
@@ -32,9 +31,7 @@ export const OffersInstantSearch = ({
   removeVenueFilter: () => void
   venueFilter: VenueFilterType | null
 }): JSX.Element => {
-  const [facetFilters, setFacetFilters] = useState<Facets>([
-    ...INITIAL_FACET_FILTERS,
-  ])
+  const { facetFilters } = useContext(FacetFiltersContext)
 
   return (
     <InstantSearch indexName={ALGOLIA_OFFERS_INDEX} searchClient={searchClient}>
@@ -45,9 +42,7 @@ export const OffersInstantSearch = ({
         hitsPerPage={8}
       />
       <OffersSearch
-        facetFilters={facetFilters}
         removeVenueFilter={removeVenueFilter}
-        setFacetFilters={setFacetFilters}
         userRole={userRole}
         venueFilter={venueFilter}
       />
