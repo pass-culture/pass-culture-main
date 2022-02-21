@@ -1,11 +1,10 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 
 import { getEducationalCategoriesOptionsAdapter } from 'app/adapters/getEducationalCategoriesOptionsAdapter'
+import { FiltersContext } from 'app/providers/FiltersContextProvider'
 import { Filters, Option } from 'app/types'
 import { Button, MultiSelectAutocomplete } from 'app/ui-kit'
 import { VenueFilterType } from 'utils/types'
-
-import { FiltersReducerAction } from '../filtersReducer'
 
 import { departmentOptions } from './departmentOptions'
 import OfferFiltersTags from './OfferFiltersTags'
@@ -18,14 +17,10 @@ interface OfferFiltersProps {
   venueFilter: VenueFilterType | null
   removeVenueFilter: () => void
   isLoading: boolean
-  dispatchCurrentFilters: React.Dispatch<FiltersReducerAction>
-  currentFilters: Filters
 }
 
 export const OfferFilters = ({
   className,
-  dispatchCurrentFilters,
-  currentFilters,
   handleLaunchSearchButton,
   venueFilter,
   removeVenueFilter,
@@ -34,6 +29,7 @@ export const OfferFilters = ({
   const [categoriesOptions, setCategoriesOptions] = useState<
     Option<string[]>[]
   >([])
+  const { dispatchCurrentFilters, currentFilters } = useContext(FiltersContext)
 
   const handleResetFilters = () => {
     removeVenueFilter()
@@ -101,12 +97,8 @@ export const OfferFilters = ({
         />
       </div>
       <OfferFiltersTags
-        categories={currentFilters.categories}
-        departments={currentFilters.departments}
-        dispatchCurrentFilters={dispatchCurrentFilters}
         handleResetFilters={handleResetFilters}
         removeVenueFilter={removeVenueFilter}
-        students={currentFilters.students}
         venueFilter={venueFilter}
       />
       <div className="offer-filters-button-container">
