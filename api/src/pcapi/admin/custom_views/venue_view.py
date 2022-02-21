@@ -163,20 +163,32 @@ class VenueView(BaseAdminView):
         has_siret_changed = new_venue_form.siret.data != venue.siret
         old_siret = venue.siret
 
-        has_indexed_attribute_changed = any(
-            (
-                hasattr(new_venue_form, field) and getattr(new_venue_form, field).data != getattr(venue, field)
-                for field in VENUE_ALGOLIA_INDEXED_FIELDS
-            )
-        )
+        changed_attributes = {
+            field
+            for field in VENUE_ALGOLIA_INDEXED_FIELDS
+            if hasattr(new_venue_form, field) and getattr(new_venue_form, field).data != getattr(venue, field)
+        }
 
         super().update_model(new_venue_form, venue)
-        search.async_index_venue_ids([venue.id])
+
+        # Immediately index venue if tags (criteria) are involved:
+        # tags are used by other tools (eg. building playlists for the
+        # home page) and waiting N minutes for the next indexing
+        # cron tasks is painful.
+        if "criteria" in changed_attributes:
+            search.reindex_venue_ids([venue.id])
+
+            # remove criteria to avoid an unnecessary call to
+            # async_index_offers_of_venue_ids: no need to update the
+            # offers if the only change is the venue's tags.
+            changed_attributes.remove("criteria")
+        else:
+            search.async_index_venue_ids([venue.id])
 
         if has_siret_changed and old_siret:
             update_stock_id_at_providers(venue, old_siret)
 
-        if has_indexed_attribute_changed:
+        if changed_attributes:
             search.async_index_offers_of_venue_ids([venue.id])
 
         update_external_pro(venue.bookingEmail)

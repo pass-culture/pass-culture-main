@@ -266,6 +266,26 @@ class OfferView(BaseAdminView):
             ):
                 raise ValidationError("Le statut de validation ne peut pas être changé vers DRAFT ou PENDING")
 
+    def update_model(self, form: wtforms.Form, offer: Offer) -> bool:
+        """
+        Immediately index offer if tags are updated: tags are used by
+        other tools (eg. building playlists for the home page) and
+        waiting N minutes for the next indexing cron tasks is painful.
+        """
+        try:
+            form_tags = form.criteria.data
+        except AttributeError:
+            tags_updated = False
+        else:
+            tags_updated = form_tags != offer.criteria
+
+        res = super().update_model(form, offer)
+
+        if tags_updated:
+            search.reindex_offer_ids([offer.id])
+
+        return res
+
     def after_model_change(self, form: wtforms.Form, offer: Offer, is_created: bool = False) -> None:
         if hasattr(form, "validation"):
             previous_validation = form._fields["validation"].object_data

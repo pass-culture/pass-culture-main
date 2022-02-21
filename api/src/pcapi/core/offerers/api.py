@@ -50,7 +50,7 @@ from .exceptions import ValidationTokenNotFoundError
 logger = logging.getLogger(__name__)
 
 UNCHANGED = object()
-VENUE_ALGOLIA_INDEXED_FIELDS = ["name", "publicName", "postalCode", "city", "latitude", "longitude"]
+VENUE_ALGOLIA_INDEXED_FIELDS = ["name", "publicName", "postalCode", "city", "latitude", "longitude", "criteria"]
 API_KEY_SEPARATOR = "_"
 
 
