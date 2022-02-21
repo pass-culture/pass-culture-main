@@ -7,7 +7,6 @@ import {
   OffersComponent as Offers,
   OffersComponentProps,
 } from 'app/components/OffersInstantSearch/OffersSearch/Offers/Offers'
-import { INITIAL_FACET_FILTERS } from 'app/constants'
 import {
   AlgoliaQueryContextProvider,
   AlgoliaQueryContextType,
