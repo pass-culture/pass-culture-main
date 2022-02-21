@@ -2,11 +2,13 @@ import createDecorator from 'final-form-calculate'
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import { Form } from 'react-final-form'
+import { removeWhitespaces } from 'react-final-form-utils'
 import { NavLink } from 'react-router-dom'
 
 import Icon from 'components/layout/Icon'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Titles from 'components/layout/Titles/Titles'
+import * as pcapi from 'repository/pcapi/pcapi'
 import { bindAddressAndDesignationFromSiren } from 'repository/siren/bindSirenFieldToDesignation'
 
 import OffererCreationForm from './OffererCreationForm/OffererCreationForm'
@@ -16,16 +18,24 @@ import OffererCreationUnavailable from './OffererCreationUnavailable/OffererCrea
  * @debt standard "Annaëlle: Composant de classe à migrer en fonctionnel"
  */
 class OffererCreation extends PureComponent {
-  handleSubmit = values => {
-    const { createNewOfferer } = this.props
-    createNewOfferer(values, this.onHandleFail, this.onHandleSuccess)
+  handleSubmit = async offerer => {
+    const { siren } = offerer
+    await pcapi
+      .createOfferer({
+        ...offerer,
+        siren: removeWhitespaces(siren),
+      })
+      .then(offerer => {
+        this.onHandleSuccess(offerer)
+      })
+      .catch(() => {
+        this.onHandleFail()
+      })
   }
 
-  onHandleSuccess = (_, action) => {
+  onHandleSuccess = offerer => {
     const { redirectAfterSubmit } = this.props
-    const { payload } = action
-    const createdOffererId = payload.datum.id
-
+    const createdOffererId = offerer.id
     redirectAfterSubmit(createdOffererId)
   }
 
@@ -69,7 +79,6 @@ class OffererCreation extends PureComponent {
 }
 
 OffererCreation.propTypes = {
-  createNewOfferer: PropTypes.func.isRequired,
   isEntrepriseApiDisabled: PropTypes.bool.isRequired,
   redirectAfterSubmit: PropTypes.func.isRequired,
   showNotification: PropTypes.func.isRequired,

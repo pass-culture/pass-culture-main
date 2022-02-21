@@ -182,6 +182,8 @@ export const getEducationalOfferers = offererId => {
   return client.get(`/offerers/educational${queryParams}`)
 }
 
+export const createOfferer = offerer => client.post(`/offerers`, offerer)
+
 //
 // venues
 //

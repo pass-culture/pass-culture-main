@@ -33,7 +33,6 @@ describe('src | components | pages | Offerer | OfferCreation | OffererCreationCo
 
       // then
       expect(functions).toStrictEqual({
-        createNewOfferer: expect.any(Function),
         showNotification: expect.any(Function),
       })
     })
@@ -66,42 +65,6 @@ describe('src | components | pages | Offerer | OfferCreation | OffererCreationCo
             type: 'success',
           },
           type: 'SHOW_NOTIFICATION',
-        })
-      })
-    })
-
-    describe('createNewOfferer', () => {
-      it('should dispatch', () => {
-        // Given
-        const ownProps = {
-          currentUser: {
-            id: 'TY56er',
-          },
-          match: {
-            params: {
-              offererId: 'AGH',
-            },
-          },
-        }
-        const { createNewOfferer } = mapDispatchToProps(dispatch, ownProps)
-        const payload = {
-          key: 'value',
-          siren: '123 456 789',
-        }
-
-        // When
-        createNewOfferer(payload)
-
-        expect(dispatch).toHaveBeenCalledWith({
-          config: {
-            apiPath: '/offerers',
-            method: 'POST',
-            body: {
-              key: 'value',
-              siren: '123456789',
-            },
-          },
-          type: 'REQUEST_DATA_POST_/OFFERERS',
         })
       })
     })

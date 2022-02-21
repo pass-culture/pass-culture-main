@@ -11,7 +11,6 @@ describe('src | components | OffererCreation', () => {
 
   beforeEach(() => {
     props = {
-      createNewOfferer: jest.fn(),
       isEntrepriseApiDisabled: false,
       showNotification: jest.fn(),
       redirectAfterSubmit: jest.fn(),
