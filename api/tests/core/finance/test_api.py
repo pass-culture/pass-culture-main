@@ -26,6 +26,7 @@ from pcapi.core.testing import assert_num_queries
 from pcapi.core.testing import clean_temporary_files
 from pcapi.core.testing import override_settings
 import pcapi.core.users.factories as users_factories
+from pcapi.models.bank_information import BankInformationStatus
 from pcapi.utils import human_ids
 
 import tests
@@ -155,6 +156,13 @@ class PriceBookingTest:
 
     def test_price_booking_checks_business_unit(self):
         booking = bookings_factories.UsedBookingFactory(stock__offer__venue__businessUnit__siret=None)
+        pricing = api.price_booking(booking)
+        assert pricing is None
+
+    def test_price_booking_checks_bank_information(self):
+        booking = bookings_factories.UsedBookingFactory(
+            stock__offer__venue__businessUnit__bankAccount__status=BankInformationStatus.DRAFT,
+        )
         pricing = api.price_booking(booking)
         assert pricing is None
 
@@ -362,6 +370,14 @@ class PriceBookingsTest:
 
         assert not booking1.pricings
         assert len(booking2.pricings) == 1
+
+    def test_no_pricing_without_accepted_bank_info(self):
+        booking = bookings_factories.UsedBookingFactory(
+            dateUsed=self.few_minutes_ago,
+            stock__offer__venue__businessUnit__bankAccount__status=BankInformationStatus.DRAFT,
+        )
+        api.price_bookings(min_date=self.few_minutes_ago)
+        assert len(booking.pricings) == 0
 
 
 class GenerateCashflowsTest:
