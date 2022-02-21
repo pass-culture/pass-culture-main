@@ -33,17 +33,18 @@ export const OffersSearchComponent = ({
 
   const { dispatchCurrentFilters } = useContext(FiltersContext)
   const { setFacetFilters } = useContext(FacetFiltersContext)
-  const { query, setQuery } = useContext(AlgoliaQueryContext)
+  const { query, removeQuery, setQueryTag } = useContext(AlgoliaQueryContext)
 
   const handleLaunchSearchButton = (filters: Filters): void => {
     setIsLoading(true)
     setFacetFilters(populateFacetFilters({ ...filters, venueFilter }))
+    setQueryTag(query)
     refine(query)
   }
 
   const handleResetFiltersAndLaunchSearch = () => {
     setIsLoading(true)
-    setQuery(INITIAL_QUERY)
+    removeQuery()
     removeVenueFilter()
     dispatchCurrentFilters({ type: 'RESET_CURRENT_FILTERS' })
     setFacetFilters([...INITIAL_FACET_FILTERS])

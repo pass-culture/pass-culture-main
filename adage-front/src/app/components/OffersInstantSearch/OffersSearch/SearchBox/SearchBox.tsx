@@ -12,14 +12,15 @@ export const SearchBoxComponent = ({
 }: {
   refine: SearchBoxProvided['refine']
 }): React.ReactElement => {
-  const { query, setQuery } = useContext(AlgoliaQueryContext)
+  const { query, setQuery, setQueryTag } = useContext(AlgoliaQueryContext)
 
   const onSubmit = useCallback(
     event => {
       event.preventDefault()
+      setQueryTag(query)
       refine(query)
     },
-    [query, refine]
+    [query, refine, setQueryTag]
   )
 
   return (
