@@ -122,7 +122,7 @@ class GetVenueManagingOffererResponseModel(BaseModel):
         json_encoders = {datetime: format_into_utc_date}
 
 
-class BannerMetaModel(TypedDict):
+class BannerMetaModel(TypedDict, total=False):
     image_credit: Optional[str]
 
 
