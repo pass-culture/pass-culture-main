@@ -7,9 +7,11 @@ import requests_mock
 
 from pcapi.core import mails
 import pcapi.core.mails.backends.mailjet
+from pcapi.core.mails.models import sendinblue_models
 from pcapi.core.mails.models.models import Email
 from pcapi.core.mails.models.models import EmailStatus
 from pcapi.core.testing import override_settings
+from pcapi.tasks.serialization import sendinblue_tasks
 
 
 @pytest.mark.usefixtures("db_session")
@@ -156,3 +158,51 @@ class ToDevMailjetBackendTest:
         assert posted_json["Html-part"].endswith("<div>some HTML...<div>")
         assert "would have been sent to real1@example.com, real2@example.com" in posted_json["Html-part"]
         assert result.successful
+
+
+class SendinblueBackendTest:
+
+    recipients = ["lucy.ellingson@example.com", "avery.kelly@example.com"]
+    mock_template = sendinblue_models.Template(
+        id_prod=1, id_not_prod=10, tags=["this_is_such_a_great_tag", "it_would_be_a_pity_if_anything_happened_to_it"]
+    )
+    params = {"Name": "Lucy", "City": "Kennet", "OtherCharacteristics": "Awsomeness"}
+    data = sendinblue_models.SendinblueTransactionalEmailData(template=mock_template, params=params)
+
+    expected_sent_data = sendinblue_tasks.SendTransactionalEmailRequest(
+        recipients=recipients,
+        params=params,
+        template_id=data.template.id,
+        tags=data.template.tags,
+        sender={"email": "sender@example.come", "name": "Joe Sender"},
+    )
+
+    def _get_backend(self):
+        return pcapi.core.mails.backends.sendinblue.SendinblueBackend()
+
+    @patch("pcapi.core.mails.backends.sendinblue.send_transactional_email_secondary_task.delay")
+    def test_send_mail(self, mock_send_transactional_email_secondary_task):
+        backend = self._get_backend()
+        result = backend.send_mail(recipients=self.recipients, data=self.data)
+
+        assert mock_send_transactional_email_secondary_task.call_count == 1
+        task_param = mock_send_transactional_email_secondary_task.call_args[0][0]
+        assert list(task_param.recipients) == list(self.expected_sent_data.recipients)
+        assert task_param.params == self.expected_sent_data.params
+        assert task_param.template_id == self.expected_sent_data.template_id
+        assert task_param.tags == self.expected_sent_data.tags
+        assert result.successful
+
+
+class ToDevSendinblueBackendTest(SendinblueBackendTest):
+
+    expected_sent_data = sendinblue_tasks.SendTransactionalEmailRequest(
+        recipients=["dev@example.com"],
+        params=SendinblueBackendTest.params,
+        template_id=SendinblueBackendTest.data.template.id,
+        tags=SendinblueBackendTest.data.template.tags,
+        sender={"email": "sender@example.come", "name": "Joe Sender"},
+    )
+
+    def _get_backend(self):
+        return pcapi.core.mails.backends.sendinblue.ToDevSendinblueBackend()
