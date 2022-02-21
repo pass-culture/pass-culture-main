@@ -41,8 +41,6 @@ from pcapi.utils.mailing import format_booking_hours_for_email
 
 logger = logging.getLogger(__name__)
 
-EAC_DEFAULT_BOOKED_QUANTITY = 1
-
 
 def _create_redactor(redactor_informations: AuthenticatedInformation) -> EducationalRedactor:
     redactor = EducationalRedactor(
@@ -83,6 +81,7 @@ def book_educational_offer(redactor_informations: RedactorInformation, stock_id:
             educationalBooking=educational_booking,
             stockId=stock.id,
             amount=stock.price,
+            quantity=1,
             token=bookings_repository.generate_booking_token(),
             venueId=stock.offer.venueId,
             offererId=stock.offer.venue.managingOffererId,
@@ -93,7 +92,7 @@ def book_educational_offer(redactor_informations: RedactorInformation, stock_id:
         booking.cancellationLimitDate = compute_educational_booking_cancellation_limit_date(
             stock.beginningDatetime, booking.dateCreated
         )
-        stock.dnBookedQuantity += EAC_DEFAULT_BOOKED_QUANTITY
+        stock.dnBookedQuantity += booking.quantity
 
         repository.save(booking)
 
