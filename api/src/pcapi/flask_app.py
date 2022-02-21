@@ -19,6 +19,7 @@ from werkzeug.middleware.profiler import ProfilerMiddleware
 from werkzeug.middleware.proxy_fix import ProxyFix
 
 from pcapi import settings
+from pcapi.core import monkeypatches
 from pcapi.core.finance import utils as finance_utils
 from pcapi.core.logging import get_or_set_correlation_id
 from pcapi.core.logging import install_logging
@@ -29,6 +30,8 @@ from pcapi.utils.json_encoder import EnumJSONEncoder
 from pcapi.utils.rate_limiting import rate_limiter
 from pcapi.utils.sentry import init_sentry_sdk
 
+
+monkeypatches.install_monkey_patches()
 
 logger = logging.getLogger(__name__)
 
