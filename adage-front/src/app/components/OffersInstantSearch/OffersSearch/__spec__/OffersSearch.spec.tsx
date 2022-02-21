@@ -3,10 +3,15 @@ import userEvent from '@testing-library/user-event'
 import React from 'react'
 
 import { findLaunchSearchButton } from 'app/__spec__/__test_utils__/elements'
-import { INITIAL_FACET_FILTERS } from 'app/constants'
+import { AlgoliaQueryContextProvider } from 'app/providers/AlgoliaQueryContextProvider'
+import {
+  filtersContextInitialValues,
+  FiltersContextProvider,
+  FiltersContextType,
+} from 'app/providers/FiltersContextProvider'
 import { Role } from 'utils/types'
 
-import { OffersSearchComponent } from '../OffersSearch'
+import { OffersSearchComponent, SearchProps } from '../OffersSearch'
 import { placeholder } from '../SearchBox'
 
 jest.mock('../Offers/Offers', () => {
@@ -21,21 +26,30 @@ jest.mock('../Offers/Pagination/Pagination', () => {
   }
 })
 
-const renderOffersSearchComponent = props => {
-  render(<OffersSearchComponent {...props} />)
+const renderOffersSearchComponent = (
+  props: SearchProps,
+  filterContextProviderValue: FiltersContextType = filtersContextInitialValues
+) => {
+  render(
+    <FiltersContextProvider values={filterContextProviderValue}>
+      <AlgoliaQueryContextProvider>
+        <OffersSearchComponent {...props} />
+      </AlgoliaQueryContextProvider>
+    </FiltersContextProvider>
+  )
 }
 
 describe('offersSearch component', () => {
-  let props
+  let props: SearchProps
 
   beforeEach(() => {
     props = {
       userRole: Role.redactor,
       removeVenueFilter: jest.fn(),
       venueFilter: null,
-      setFacetFilters: jest.fn(),
-      facetFilters: [...INITIAL_FACET_FILTERS],
       refine: jest.fn(),
+      currentRefinement: '',
+      isSearchStalled: false,
     }
   })
 

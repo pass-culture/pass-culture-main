@@ -16,7 +16,7 @@ import { Offer } from './Offer'
 const offerIsBookable = (offer: OfferType): boolean =>
   !offer.isSoldOut && !offer.isExpired
 
-interface OffersComponentProps extends HitsProvided<ResultType> {
+export interface OffersComponentProps extends HitsProvided<ResultType> {
   userRole: Role
   setIsLoading: (isLoading: boolean) => void
   handleResetFiltersAndLaunchSearch: () => void
