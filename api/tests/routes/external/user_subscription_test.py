@@ -345,27 +345,16 @@ class DmsWebhookApplicationTest:
         )
 
     @patch.object(api_dms.DMSGraphQLClient, "execute_query")
-    @pytest.mark.parametrize(
-        "subscription_state",
-        [
-            users_models.SubscriptionState.user_profiling_validated,
-            users_models.SubscriptionState.phone_validated,
-        ],
-    )
-    @pytest.mark.parametrize(
-        "graphql_app_state",
-        [
-            api_dms.GraphQLApplicationStates.on_going.value,
-        ],
-    )
-    def test_dms_accepted_application_by_operator(self, execute_query, client, subscription_state, graphql_app_state):
-        user = users_factories.UserFactory(subscriptionState=subscription_state)
-        execute_query.return_value = make_single_application(12, state=graphql_app_state, email=user.email)
+    def test_dms_application_on_going(self, execute_query, client):
+        user = users_factories.UserFactory()
+        execute_query.return_value = make_single_application(
+            12, state=api_dms.GraphQLApplicationStates.on_going.value, email=user.email
+        )
 
         form_data = {
             "procedure_id": 48860,
             "dossier_id": 6044787,
-            "state": graphql_app_state,
+            "state": api_dms.GraphQLApplicationStates.on_going.value,
             "updated_at": "2021-09-30 17:55:58 +0200",
         }
 
@@ -376,7 +365,6 @@ class DmsWebhookApplicationTest:
         )
         assert response.status_code == 204
 
-        assert user.subscriptionState == users_models.SubscriptionState.identity_check_pending
         assert user.beneficiaryFraudChecks[0].status == fraud_models.FraudCheckStatus.PENDING
         assert user.beneficiaryFraudChecks[0].type == fraud_models.FraudCheckType.DMS
         assert user.beneficiaryFraudChecks[0].eligibilityType == users_models.EligibilityType.AGE18
