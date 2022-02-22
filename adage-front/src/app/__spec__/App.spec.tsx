@@ -1,14 +1,7 @@
-import {
-  fireEvent,
-  render,
-  screen,
-  waitFor,
-  within,
-} from '@testing-library/react'
+import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 import { Configure } from 'react-instantsearch-dom'
-import selectEvent from 'react-select-event'
 
 import {
   FiltersContextProvider,
@@ -21,11 +14,7 @@ import { Role, VenueFilterType } from 'utils/types'
 import { App } from '../App'
 
 import {
-  findCategoriesFilter,
-  findDepartmentFilter,
   findLaunchSearchButton,
-  findSearchBox,
-  findStudentsFilter,
   queryResetFiltersButton,
   queryTag,
 } from './__test_utils__/elements'
@@ -277,139 +266,6 @@ describe('app', () => {
       ])
       expect(queryTag(`Lieu : ${venue?.publicName}`)).not.toBeInTheDocument()
       expect(queryResetFiltersButton()).not.toBeInTheDocument()
-    })
-
-    it('should send selected filters to Algolia', async () => {
-      window.location.search = ''
-      // Given
-      renderApp()
-
-      const departmentFilter = await findDepartmentFilter()
-      const studentsFilter = await findStudentsFilter()
-      const categoriesFilter = await findCategoriesFilter()
-      const launchSearchButton = await findLaunchSearchButton()
-
-      // When
-      await selectEvent.select(departmentFilter, '01 - Ain')
-      userEvent.click(launchSearchButton)
-      await selectEvent.select(departmentFilter, '59 - Nord')
-      await selectEvent.select(studentsFilter, 'Collège - 4e')
-      await selectEvent.select(categoriesFilter, 'Cinéma')
-      await selectEvent.select(categoriesFilter, 'Musée')
-      userEvent.click(launchSearchButton)
-
-      // Then
-      await waitFor(() => expect(Configure).toHaveBeenCalledTimes(3))
-      const searchConfigurationFirstCall = (Configure as jest.Mock).mock
-        .calls[1][0]
-      expect(searchConfigurationFirstCall.facetFilters).toStrictEqual([
-        'offer.isEducational:true',
-        ['venue.departmentCode:01'],
-      ])
-      const searchConfigurationSecondCall = (Configure as jest.Mock).mock
-        .calls[2][0]
-      expect(searchConfigurationSecondCall.facetFilters).toStrictEqual([
-        'offer.isEducational:true',
-        ['venue.departmentCode:01', 'venue.departmentCode:59'],
-        [
-          'offer.subcategoryId:CINE_PLEIN_AIR',
-          'offer.subcategoryId:EVENEMENT_CINE',
-          'offer.subcategoryId:VISITE_GUIDEE',
-          'offer.subcategoryId:VISITE',
-        ],
-        ['offer.students:Collège - 4e'],
-      ])
-
-      expect(queryTag('01 - Ain')).toBeInTheDocument()
-      expect(queryTag('59 - Nord')).toBeInTheDocument()
-      expect(queryTag('Collège - 4e')).toBeInTheDocument()
-      expect(queryTag('Cinéma')).toBeInTheDocument()
-      expect(queryTag('Musée')).toBeInTheDocument()
-    })
-
-    it('should remove deselected departments and students from filters sent to Algolia', async () => {
-      // Given
-      renderApp()
-
-      const departmentFilter = await findDepartmentFilter()
-      const studentsFilter = await findStudentsFilter()
-      const launchSearchButton = await findLaunchSearchButton()
-
-      await selectEvent.select(departmentFilter, '01 - Ain')
-      await selectEvent.select(departmentFilter, '59 - Nord')
-      await selectEvent.select(studentsFilter, 'Collège - 4e')
-
-      // When
-      userEvent.click(launchSearchButton)
-      await selectEvent.select(departmentFilter, '01 - Ain')
-      userEvent.click(launchSearchButton)
-      await selectEvent.select(departmentFilter, '59 - Nord')
-      await selectEvent.select(studentsFilter, 'Collège - 4e')
-      userEvent.click(launchSearchButton)
-
-      // Then
-      await waitFor(() => expect(Configure).toHaveBeenCalledTimes(4))
-      const searchConfigurationFirstCall = (Configure as jest.Mock).mock
-        .calls[1][0]
-      expect(searchConfigurationFirstCall.facetFilters).toStrictEqual([
-        'offer.isEducational:true',
-        ['venue.departmentCode:01', 'venue.departmentCode:59'],
-        ['offer.students:Collège - 4e'],
-      ])
-      const searchConfigurationSecondCall = (Configure as jest.Mock).mock
-        .calls[2][0]
-      expect(searchConfigurationSecondCall.facetFilters).toStrictEqual([
-        'offer.isEducational:true',
-        ['venue.departmentCode:59'],
-        ['offer.students:Collège - 4e'],
-      ])
-      const searchConfigurationThirdCall = (Configure as jest.Mock).mock
-        .calls[3][0]
-      expect(searchConfigurationThirdCall.facetFilters).toStrictEqual([
-        'offer.isEducational:true',
-      ])
-
-      expect(queryTag('01 - Ain')).not.toBeInTheDocument()
-      expect(queryTag('59 - Nord')).not.toBeInTheDocument()
-      expect(queryTag('Collège - 4e')).not.toBeInTheDocument()
-    })
-
-    it('should remove filter when clicking on delete button', async () => {
-      // Given
-      renderApp()
-
-      // When
-      const departmentFilter = await findDepartmentFilter()
-      await selectEvent.select(departmentFilter, '01 - Ain')
-
-      const filterTag = screen.getByText('01 - Ain', { selector: 'div' })
-      expect(filterTag).toBeInTheDocument()
-
-      const closeIcon = filterTag.lastChild
-
-      await waitFor(() => fireEvent.click(closeIcon as ChildNode))
-
-      // Then
-      expect(
-        screen.queryByText('01 - Ain', { selector: 'div' })
-      ).not.toBeInTheDocument()
-    })
-
-    it('should display tag with query after clicking on search button', async () => {
-      renderApp()
-      const textInput = await findSearchBox()
-      const launchSearchButton = await findLaunchSearchButton()
-
-      userEvent.type(textInput, 'blabla')
-
-      expect(queryTag('blabla')).not.toBeInTheDocument()
-
-      userEvent.click(launchSearchButton)
-
-      const resetFiltersButton = queryResetFiltersButton() as HTMLElement
-
-      expect(queryTag('blabla')).toBeInTheDocument()
-      expect(resetFiltersButton).toBeInTheDocument()
     })
   })
 
