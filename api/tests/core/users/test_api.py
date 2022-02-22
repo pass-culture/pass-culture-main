@@ -300,7 +300,6 @@ class UnsuspendAccountTest:
 
         users_api.unsuspend_account(user, suspension.actorUser)
 
-        assert not user.suspensionReason
         assert not user.suspension_reason
         assert not user.suspension_date
         assert user.isActive

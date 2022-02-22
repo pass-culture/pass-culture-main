@@ -208,10 +208,6 @@ class User(PcObject, Model, NeedsValidationMixin):
     )
     schoolType = sa.Column(sa.Enum(SchoolTypeEnum, create_constraint=False), nullable=True)
     subscriptionState = sa.Column(sa.Enum(SubscriptionState, create_constraint=False), nullable=True)
-    # FIXME (dbaty, 2020-12-14): once v114 has been deployed, populate
-    # existing rows with the empty string and add NOT NULL constraint.
-    # TODO(prouzet) Remove when suspensionReason data in prod is migrated to user_suspension
-    suspensionReason = sa.Column(sa.Text, nullable=True, default="")
 
     def _add_role(self, role: UserRole) -> None:
         if self.roles is None:
@@ -390,12 +386,12 @@ class User(PcObject, Model, NeedsValidationMixin):
         Reason for the active suspension.
         suspension_history is sorted by ascending date so the last item is the most recent (see UserSuspension).
         """
-        if not self.isActive:
-            if self.suspension_history and self.suspension_history[-1].eventType == SuspensionEventType.SUSPENDED:
-                return self.suspension_history[-1].reasonCode
-            # TODO(prouzet) Remove when suspensionReason data in prod is migrated to user_suspension
-            if self.suspensionReason:
-                return SuspensionReason(self.suspensionReason)
+        if (
+            not self.isActive
+            and self.suspension_history
+            and self.suspension_history[-1].eventType == SuspensionEventType.SUSPENDED
+        ):
+            return self.suspension_history[-1].reasonCode
         return None
 
     @property
