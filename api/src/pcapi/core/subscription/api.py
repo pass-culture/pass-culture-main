@@ -471,6 +471,10 @@ def has_passed_all_checks_to_become_beneficiary(user: users_models.User) -> bool
     if subscription_item.status in (models.SubscriptionItemStatus.TODO, models.SubscriptionItemStatus.KO):
         return False
 
+    profile_completion = get_profile_completion_subscription_item(user, fraud_check.eligibilityType)
+    if profile_completion.status != models.SubscriptionItemStatus.OK:
+        return False
+
     if not fraud_api.has_performed_honor_statement(user, fraud_check.eligibilityType):
         if not FeatureToggle.IS_HONOR_STATEMENT_MANDATORY_TO_ACTIVATE_BENEFICIARY.is_active():
             logger.warning("The honor statement has not been performed or recorded", extra={"user_id": user.id})
