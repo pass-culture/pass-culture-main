@@ -115,7 +115,7 @@ export const createPatchStockDataPayload = (
     getValuesWithoutEducationalOfferTypeAttribute(values)
 
   const stockKeys = Object.keys(initialValues).filter(
-    key => key === 'educationalOfferType'
+    key => key !== 'educationalOfferType'
   ) as (keyof Omit<OfferEducationalStockFormValues, 'educationalOfferType'>)[]
 
   if (
