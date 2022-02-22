@@ -5,7 +5,6 @@ USER_INCLUDES = [
     "-hasSeenTutorials",
     "-isActive",
     "-password",
-    "-suspensionReason",
     "-validationToken",
     "hasPhysicalVenues",
 ]
