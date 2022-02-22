@@ -40,7 +40,14 @@ const ContactButton = ({
           contact avec votre partenaire culturel :
         </p>
         <ul className="contact-modal-list">
-          <li>{contactEmail}</li>
+          <li>
+            <a
+              className="contact-modal-list-item-link"
+              href={`mailto:${contactEmail}`}
+            >
+              {contactEmail}
+            </a>
+          </li>
           <li>{contactPhone}</li>
         </ul>
       </ModalLayout>

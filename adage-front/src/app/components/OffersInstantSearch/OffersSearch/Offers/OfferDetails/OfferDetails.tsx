@@ -92,7 +92,16 @@ const OfferDetails = ({ offer }: { offer: OfferType }): JSX.Element => {
       {displayContactSection && (
         <OfferSection title="Contact">
           <ul className="offer-details-list">
-            {contactEmail && <li>{contactEmail}</li>}
+            {contactEmail && (
+              <li>
+                <a
+                  className="offer-details-list-item-link"
+                  href={`mailto:${contactEmail}`}
+                >
+                  {contactEmail}
+                </a>
+              </li>
+            )}
             {contactPhone && <li>{contactPhone}</li>}
           </ul>
         </OfferSection>
