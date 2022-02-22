@@ -897,8 +897,12 @@ jobs:
       - push-to-bucket:
           build_path: ./pro/build/
           bucket_name: ${GCP_PROJECT}-<<parameters.app_environment>>-pro
-      - invalidate-cache:
-          url_map_name: <<parameters.app_environment>>-pro-url-map
+      - when:
+          condition:
+            equal: ["production", <<parameters.app_environment>>]
+          steps:
+            - invalidate-cache:
+                url_map_name: <<parameters.app_environment>>-pro-url-map
       - unless:
           condition:
             equal: ["testing", <<parameters.app_environment>>]
@@ -933,8 +937,12 @@ jobs:
       - push-to-bucket:
           build_path: ./adage-front/build/
           bucket_name: ${GCP_PROJECT}-<<parameters.app_environment>>-adage
-      - invalidate-cache:
-          url_map_name: <<parameters.app_environment>>-adage-url-map
+      - when:
+          condition:
+            equal: ["production", <<parameters.app_environment>>]
+          steps:
+            - invalidate-cache:
+                url_map_name: <<parameters.app_environment>>-pro-url-map
       - unless:
           condition:
             equal: ["testing", <<parameters.app_environment>>]
