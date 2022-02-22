@@ -29,7 +29,6 @@ from pcapi.core.testing import override_settings
 from pcapi.routes.adage.v1.serialization.prebooking import serialize_educational_booking
 from pcapi.routes.adage_iframe.serialization.adage_authentication import AuthenticatedInformation
 from pcapi.routes.adage_iframe.serialization.adage_authentication import RedactorInformation
-from pcapi.utils.human_ids import humanize
 
 from tests.conftest import clean_database
 
@@ -101,7 +100,9 @@ class ConfirmEducationalBookingTest:
         educational_redactor = educational_factories.EducationalRedactorFactory(
             email="professeur@example.com", firstName="Georges", lastName="Moustaki"
         )
-        educational_institution = educational_factories.EducationalInstitutionFactory()
+        educational_institution = educational_factories.EducationalInstitutionFactory(
+            name="Lycée du pass", city="Paris", postalCode="75018"
+        )
         educational_year = educational_factories.EducationalYearFactory(adageId="1")
         educational_factories.EducationalDepositFactory(
             educationalInstitution=educational_institution,
@@ -127,25 +128,21 @@ class ConfirmEducationalBookingTest:
         assert len(mails_testing.outbox) == 1
         sent_data = mails_testing.outbox[0].sent_data
         offer = booking.stock.offer
-        assert sent_data == {
-            "FromEmail": "support@example.com",
-            "MJ-TemplateID": 3174413,
-            "MJ-TemplateLanguage": True,
-            "To": "test@email.com",
-            "Vars": {
-                "lien_offre_pcpro": f"http://localhost:3001/offre/{humanize(offer.id)}/collectif/edition",
-                "nom_offre": offer.name,
-                "nom_lieu": offer.venue.name,
-                "date": "15-May-2021",
-                "env": "-development",
-                "heure": "2h",
-                "quantity": 20,
-                "prix": "20.00",
-                "user_firstName": "Georges",
-                "user_lastName": "Moustaki",
-                "user_email": "professeur@example.com",
-                "is_event": 1,
-            },
+        assert sent_data["To"] == "test@email.com"
+        assert sent_data["template"] == asdict(TransactionalEmail.EAC_NEW_BOOKING_TO_PRO.value)
+        assert sent_data["params"] == {
+            "OFFER_NAME": offer.name,
+            "VENUE_NAME": offer.venue.name,
+            "EVENT_DATE": "15-May-2021",
+            "EVENT_HOUR": "2h",
+            "QUANTITY": 20,
+            "REDACTOR_FIRSTNAME": "Georges",
+            "REDACTOR_LASTNAME": "Moustaki",
+            "REDACTOR_EMAIL": "professeur@example.com",
+            "EDUCATIONAL_INSTITUTION_NAME": "Lycée du pass",
+            "EDUCATIONAL_INSTITUTION_CITY": "Paris",
+            "EDUCATIONAL_INSTITUTION_POSTAL_CODE": "75018",
+            "IS_EVENT": True,
         }
 
     def test_raises_if_no_educational_booking(self):

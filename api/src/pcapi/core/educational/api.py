@@ -27,12 +27,11 @@ from pcapi.core.educational.models import EducationalYear
 from pcapi.core.educational.models import Ministry
 from pcapi.core.educational.utils import compute_educational_booking_cancellation_limit_date
 from pcapi.core.mails.models.sendinblue_models import SendinblueTransactionalEmailData
+from pcapi.core.mails.transactional.educational.eac_new_booking_to_pro import send_eac_new_booking_email_to_pro
 from pcapi.core.mails.transactional.educational.eac_new_prebooking_to_pro import send_eac_new_prebooking_email_to_pro
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import repository as offers_repository
-from pcapi.core.offers.models import Offer
-from pcapi.core.offers.models import Stock
 from pcapi.models import db
 from pcapi.repository import repository
 from pcapi.repository import transaction
@@ -40,9 +39,6 @@ from pcapi.routes.adage.v1.serialization.prebooking import EducationalBookingEdi
 from pcapi.routes.adage.v1.serialization.prebooking import serialize_educational_booking
 from pcapi.routes.adage_iframe.serialization.adage_authentication import AuthenticatedInformation
 from pcapi.routes.adage_iframe.serialization.adage_authentication import RedactorInformation
-from pcapi.utils.mailing import build_pc_pro_offer_link
-from pcapi.utils.mailing import format_booking_date_for_email
-from pcapi.utils.mailing import format_booking_hours_for_email
 
 
 logger = logging.getLogger(__name__)
@@ -221,8 +217,11 @@ def confirm_educational_booking(educational_booking_id: int) -> EducationalBooki
         },
     )
 
-    if booking.stock.offer.bookingEmail:
-        mails.send(recipients=[booking.stock.offer.bookingEmail], data=_build_booking_confirmation_mail_data(booking))
+    if not send_eac_new_booking_email_to_pro(booking):
+        logger.warning(
+            "Could not send new booking confirmation email to offerer",
+            extra={"booking": booking.id},
+        )
 
     return educational_booking
 
@@ -324,31 +323,6 @@ def create_educational_deposit(
 def get_venues_by_siret(siret: str) -> list[offerers_models.Venue]:
     venue = offerers_models.Venue.query.filter_by(siret=siret).one()
     return [venue]
-
-
-def _build_booking_confirmation_mail_data(booking: bookings_models.Booking) -> dict:
-    stock: Stock = booking.stock
-    offer: Offer = stock.offer
-    educational_booking: EducationalBooking = booking.educationalBooking
-    offer_link = build_pc_pro_offer_link(offer)
-
-    return {
-        "MJ-TemplateID": 3174413,
-        "MJ-TemplateLanguage": True,
-        "Vars": {
-            "lien_offre_pcpro": offer_link,
-            "nom_offre": offer.name,
-            "nom_lieu": offer.venue.name,
-            "date": format_booking_date_for_email(booking),
-            "heure": format_booking_hours_for_email(booking),
-            "quantity": booking.quantity,
-            "prix": str(booking.amount) if booking.amount > 0 else "Gratuit",
-            "user_firstName": educational_booking.educationalRedactor.firstName,
-            "user_lastName": educational_booking.educationalRedactor.lastName,
-            "user_email": educational_booking.educationalRedactor.email,
-            "is_event": int(offer.isEvent),
-        },
-    }
 
 
 def get_educational_categories() -> dict:
