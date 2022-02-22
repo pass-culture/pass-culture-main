@@ -23,14 +23,12 @@ export const FiltersContext = createContext<FiltersContextType>(
 
 export const FiltersContextProvider = ({
   children,
-  values,
 }: {
   children: ReactNode | ReactNode[]
-  values?: FiltersContextType
 }): JSX.Element => {
   const [currentFilters, dispatchCurrentFilters] = useReducer(
     filtersReducer,
-    values?.currentFilters || INITIAL_FILTERS
+    INITIAL_FILTERS
   )
 
   const value = useMemo(

@@ -24,13 +24,11 @@ export const AlgoliaQueryContext = createContext<AlgoliaQueryContextType>(
 
 export const AlgoliaQueryContextProvider = ({
   children,
-  values,
 }: {
   children: ReactNode | ReactNode[]
-  values?: AlgoliaQueryContextType
 }): JSX.Element => {
-  const [query, setQuery] = useState(values?.query || INITIAL_QUERY)
-  const [queryTag, setQueryTag] = useState(values?.queryTag || INITIAL_QUERY)
+  const [query, setQuery] = useState(INITIAL_QUERY)
+  const [queryTag, setQueryTag] = useState(INITIAL_QUERY)
 
   const removeQuery = () => {
     setQuery(INITIAL_QUERY)
