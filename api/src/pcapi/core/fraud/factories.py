@@ -213,3 +213,12 @@ class IneHashWhitelistFactory(testing.BaseFactory):
 
 
 ### END ###
+
+
+class OrphanDmsApplicationFactory(testing.BaseFactory):
+    class Meta:
+        model = models.OrphanDmsApplication
+
+    email = factory.Sequence("jean.neige{}@example.com".format)
+    application_id = factory.Sequence(lambda n: n)
+    process_id = factory.Sequence(lambda n: n)
