@@ -292,10 +292,9 @@ describe('offerDetails - Edition', () => {
         await renderOffers({}, store)
 
         // Then
-        const previewLink = await screen.findByText(
-          'Prévisualiser dans l’app',
-          { selector: 'a' }
-        )
+        const previewLink = await screen.findByText('Visualiser dans l’app', {
+          selector: 'a',
+        })
         expect(previewLink).toBeInTheDocument()
         const expectedWebappUri = `offre/${editedOffer.nonHumanizedId}`
         expect(previewLink).toHaveAttribute(
@@ -312,10 +311,9 @@ describe('offerDetails - Edition', () => {
         await renderOffers({}, store)
 
         // Then
-        const previewLink = await screen.findByText(
-          'Prévisualiser dans l’app',
-          { selector: 'a' }
-        )
+        const previewLink = await screen.findByText('Visualiser dans l’app', {
+          selector: 'a',
+        })
         expect(previewLink).toBeInTheDocument()
         const expectedWebappUri = `offre/`
         expect(previewLink).toHaveAttribute(
