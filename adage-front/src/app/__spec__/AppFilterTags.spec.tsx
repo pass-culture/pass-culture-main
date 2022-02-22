@@ -108,7 +108,7 @@ describe('app', () => {
     mockedPcapi.getVenueById.mockResolvedValue(venue)
   })
 
-  it('should send selected filters to Algolia', async () => {
+  it('should display filter tags and send selected filters to Algolia', async () => {
     window.location.search = ''
     // Given
     renderApp()
