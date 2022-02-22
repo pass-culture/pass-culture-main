@@ -131,6 +131,7 @@ class GetVenueResponseModel(base.BaseVenueResponse):
     dateCreated: datetime
     isValidated: bool
     managingOffererId: str
+    nonHumanizedId: int
 
     bannerMeta: Optional[BannerMetaModel]
     bic: Optional[str]
@@ -168,6 +169,7 @@ class GetVenueResponseModel(base.BaseVenueResponse):
         # pydantic expects an enum key in order to build it, and therefore
         # does not work when passing directly an enum instance.
         venue.venueTypeCode = venue.venueTypeCode.name if venue.venueTypeCode else None
+        venue.nonHumanizedId = venue.id
         return super().from_orm(venue)
 
 
