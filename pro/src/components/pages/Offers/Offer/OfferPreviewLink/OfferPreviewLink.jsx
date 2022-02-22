@@ -29,7 +29,7 @@ const OfferPreviewLink = ({ nonHumanizedId }) => {
       rel="noopener noreferrer"
       target="_blank"
     >
-      Prévisualiser dans l’app
+      Visualiser dans l’app
     </a>
   )
 }
