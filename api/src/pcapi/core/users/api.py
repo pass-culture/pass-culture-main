@@ -358,7 +358,6 @@ def suspend_account(user: User, reason: constants.SuspensionReason, actor: User)
 
 def unsuspend_account(user: User, actor: User) -> None:
     user.isActive = True
-    user.suspensionReason = ""  # TODO(prouzet) Remove when suspensionReason data in prod is migrated to user_suspension
     user_suspension = models.UserSuspension(
         user=user,
         eventType=models.SuspensionEventType.UNSUSPENDED,
@@ -378,8 +377,7 @@ def unsuspend_account(user: User, actor: User) -> None:
 
 def bulk_unsuspend_account(user_ids: list[int], actor: User) -> None:
     User.query.filter(User.id.in_(user_ids)).update(
-        # TODO(prouzet) Remove suspensionReason param when suspensionReason data in prod is migrated to user_suspension
-        values={"isActive": True, "suspensionReason": ""},
+        values={"isActive": True},
         synchronize_session=False,
     )
     for user_id in user_ids:
