@@ -7,6 +7,7 @@ from pcapi.core.testing import BaseFactory
 
 from . import models
 from .models import EducationalBookingStatus
+from .models import Ministry
 
 
 ADAGE_STARTING_EDUCATIONAL_YEAR = 2014
@@ -56,6 +57,7 @@ class EducationalDepositFactory(BaseFactory):
     educationalYear = factory.SubFactory(EducationalYearFactory)
     amount = 3000
     isFinal = True
+    ministry = Ministry.EDUCATION_NATIONALE.name
 
 
 class EducationalRedactorFactory(BaseFactory):
