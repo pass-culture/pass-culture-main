@@ -10,12 +10,12 @@ import pcapi.core.users.factories as users_factories
 from pcapi.tasks.serialization.sendinblue_tasks import SendTransactionalEmailRequest
 
 
-class BeneficiaryTransactionalEmailsTest:
+class TransactionalEmailWithTemplateTest:
     @patch(
         "pcapi.core.mails.transactional.send_transactional_email.sib_api_v3_sdk.api.TransactionalEmailsApi.send_transac_email",
         side_effect=ApiException(),
     )
-    def test_send_transactional_email_expect_api_error(self, caplog):
+    def test_send_transactional_email_with_template_id_expect_api_error(self, caplog):
         payload = SendTransactionalEmailRequest(recipients=[], params={}, template_id=1, tags=[], sender={})
         assert not send_transactional_email(payload)
         assert caplog.messages[0].startswith("Exception when calling SMTPApi->send_transac_email:")
@@ -23,7 +23,7 @@ class BeneficiaryTransactionalEmailsTest:
     @patch(
         "pcapi.core.mails.transactional.send_transactional_email.sib_api_v3_sdk.api.TransactionalEmailsApi.send_transac_email"
     )
-    def test_send_transactional_email_success(self, mock_send_transac_email):
+    def test_send_transactional_email_with_template_id_success(self, mock_send_transac_email):
         payload = SendTransactionalEmailRequest(
             sender={"email": "support@example.com", "name": "pass Culture"},
             recipients=["avery.kelly@woobmail.com"],
@@ -45,7 +45,7 @@ class BeneficiaryTransactionalEmailsTest:
     @patch(
         "pcapi.core.mails.transactional.send_transactional_email.sib_api_v3_sdk.api.TransactionalEmailsApi.send_transac_email"
     )
-    def test_send_transactional_email_success_empty_params(self, mock_send_transac_email):
+    def test_send_transactional_email_with_template_id_success_empty_params(self, mock_send_transac_email):
         payload = SendTransactionalEmailRequest(
             sender={"email": "support@example.com", "name": "pass Culture"},
             recipients=["avery.kelly@woobmail.com"],
@@ -71,3 +71,59 @@ class BeneficiaryTransactionalEmailsTest:
         token = users_factories.EmailValidationToken.build(user=user)
         send_email_confirmation_email(user, token=token)
         mock_send_transactional_email_task.assert_called_once()
+
+
+class TransactionalEmailWithoutTemplateTest:
+    @patch(
+        "pcapi.core.mails.transactional.send_transactional_email.sib_api_v3_sdk.api.TransactionalEmailsApi.send_transac_email",
+        side_effect=ApiException(),
+    )
+    def test_send_transactional_email_expect_api_error(self, caplog):
+        payload = SendTransactionalEmailRequest(recipients=[], sender={}, subject="", html_content="", attachment={})
+        assert not send_transactional_email(payload)
+        assert caplog.messages[0].startswith("Exception when calling SMTPApi->send_transac_email:")
+
+    @patch(
+        "pcapi.core.mails.transactional.send_transactional_email.sib_api_v3_sdk.api.TransactionalEmailsApi.send_transac_email"
+    )
+    def test_send_transactional_email_success(self, mock_send_transac_email):
+        payload = SendTransactionalEmailRequest(
+            sender={"email": "support@example.com", "name": "pass Culture"},
+            recipients=["avery.kelly@woobmail.com"],
+            subject="Bienvenue au pass Culture",
+            html_content="Bonjour",
+        )
+        send_transactional_email(payload)
+
+        mock_send_transac_email.assert_called_once()
+        assert mock_send_transac_email.call_args[0][0].sender == {
+            "email": "support@example.com",
+            "name": "pass Culture",
+        }
+        assert mock_send_transac_email.call_args[0][0].subject == "Bienvenue au pass Culture"
+        assert mock_send_transac_email.call_args[0][0].html_content == "Bonjour"
+        assert mock_send_transac_email.call_args[0][0].to == [{"email": "avery.kelly@woobmail.com"}]
+        assert mock_send_transac_email.call_args[0][0].tags is None
+
+    @patch(
+        "pcapi.core.mails.transactional.send_transactional_email.sib_api_v3_sdk.api.TransactionalEmailsApi.send_transac_email"
+    )
+    def test_send_transactional_email_success_empty_attachement(self, mock_send_transac_email):
+        payload = SendTransactionalEmailRequest(
+            sender={"email": "support@example.com", "name": "pass Culture"},
+            recipients=["avery.kelly@woobmail.com"],
+            subject="Bienvenue au pass Culture",
+            html_content="Bonjour",
+            attachment=None,
+        )
+        send_transactional_email(payload)
+
+        mock_send_transac_email.assert_called_once()
+        assert mock_send_transac_email.call_args[0][0].sender == {
+            "email": "support@example.com",
+            "name": "pass Culture",
+        }
+        assert mock_send_transac_email.call_args[0][0].subject == "Bienvenue au pass Culture"
+        assert mock_send_transac_email.call_args[0][0].html_content == "Bonjour"
+        assert mock_send_transac_email.call_args[0][0].to == [{"email": "avery.kelly@woobmail.com"}]
+        assert mock_send_transac_email.call_args[0][0].attachment is None

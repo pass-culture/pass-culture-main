@@ -12,12 +12,12 @@ class UpdateSendinblueContactRequest(BaseModel):
 
 class SendTransactionalEmailRequest(BaseModel):
     recipients: list[str]
-    params: dict
-    template_id: int
-    tags: Optional[list[str]]
+    params: Optional[dict] = None
+    template_id: Optional[int] = None
+    tags: Optional[list[str]] = None
     sender: dict
-    subject: str = None
-    html_content: str = None
+    subject: Optional[str] = None
+    html_content: Optional[str] = None
     attachment: Optional[dict] = None
 
 
