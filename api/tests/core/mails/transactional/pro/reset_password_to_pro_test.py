@@ -58,5 +58,10 @@ class SendinblueProResetPasswordEmailDataTest:
         assert mails_testing.outbox[0].sent_data["To"] == "pro@example.com"
 
         assert reset_password_link in mails_testing.outbox[0].sent_data["html_content"]
-        assert "subject" in mails_testing.outbox[0].sent_data
-        assert "html_content" in mails_testing.outbox[0].sent_data
+        assert mails_testing.outbox[0].sent_data["subject"] == "Création d'un compte pro"
+        assert (
+            mails_testing.outbox[0].sent_data["html_content"]
+            == "<html><head></head><body><div><div>Bonjour,</div><div>Vous venez de créer le compte de René Coty."
+            "</div><div>Le lien de création de mot de passe est <a href='http://exemple.com/reset/?ABCDEFG'>"
+            "http://exemple.com/reset/?ABCDEFG</a></div>"
+        )
