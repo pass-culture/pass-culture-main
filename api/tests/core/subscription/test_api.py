@@ -758,8 +758,10 @@ class HasPassedAllChecksToBecomeBeneficiaryTest:
         fraud_factories.BeneficiaryFraudCheckFactory(
             user=user, type=fraud_models.FraudCheckType.DMS, status=fraud_models.FraudCheckStatus.OK
         )
-        result = subscription_api.has_passed_all_checks_to_become_beneficiary(user)
-        assert not result
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user, type=fraud_models.FraudCheckType.HONOR_STATEMENT, status=fraud_models.FraudCheckStatus.OK
+        )
+        assert not subscription_api.has_passed_all_checks_to_become_beneficiary(user)
 
     def test_missing_profile_after_dms_application(self):
         user = self.eligible_user(validate_phone=True, city=None)
