@@ -1,3 +1,4 @@
+from dataclasses import asdict
 import datetime
 from decimal import Decimal
 from unittest import mock
@@ -21,6 +22,7 @@ from pcapi.core.educational.models import EducationalBookingStatus
 from pcapi.core.educational.models import EducationalRedactor
 import pcapi.core.educational.testing as adage_api_testing
 import pcapi.core.mails.testing as mails_testing
+from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.testing import override_settings
@@ -281,7 +283,9 @@ class BookEducationalOfferTest:
             beginningDatetime=datetime.datetime(2021, 5, 15),
             offer__bookingEmail="test@email.com",
         )
-        educational_institution = educational_factories.EducationalInstitutionFactory()
+        educational_institution = educational_factories.EducationalInstitutionFactory(
+            name="lycée du Pass", city="Paris", postalCode="75018"
+        )
         educational_factories.EducationalYearFactory(
             beginningDate=datetime.datetime(2020, 9, 1), expirationDate=datetime.datetime(2021, 8, 31)
         )
@@ -311,26 +315,23 @@ class BookEducationalOfferTest:
         assert len(mails_testing.outbox) == 1
         sent_data = mails_testing.outbox[0].sent_data
         offer = stock.offer
-        assert sent_data == {
-            "FromEmail": "support@example.com",
-            "MJ-TemplateID": 3174424,
-            "MJ-TemplateLanguage": True,
-            "To": "test@email.com",
-            "Vars": {
-                "departement": "75",
-                "lien_offre_pcpro": f"http://localhost:3001/offre/{humanize(offer.id)}/collectif/edition",
-                "nom_offre": offer.name,
-                "nom_lieu": offer.venue.name,
-                "date": "15-May-2021",
-                "env": "-development",
-                "heure": "2h",
-                "quantity": 1,
-                "prix": "10.00",
-                "user_firstName": "Georges",
-                "user_lastName": "Moustaki",
-                "user_email": "professeur@example.com",
-                "is_event": 1,
-            },
+
+        assert sent_data["template"] == asdict(TransactionalEmail.EAC_NEW_PREBOOKING_TO_PRO.value)
+
+        assert sent_data["params"] == {
+            "OFFER_NAME": offer.name,
+            "VENUE_NAME": offer.venue.name,
+            "EVENT_DATE": "15-May-2021",
+            "EVENT_HOUR": "2h",
+            "QUANTITY": 1,
+            "PRICE": "10.00",
+            "REDACTOR_FIRSTNAME": "Georges",
+            "REDACTOR_LASTNAME": "Moustaki",
+            "REDACTOR_EMAIL": "professeur@example.com",
+            "EDUCATIONAL_INSTITUTION_CITY": "Paris",
+            "EDUCATIONAL_INSTITUTION_POSTAL_CODE": "75018",
+            "EDUCATIONAL_INSTITUTION_NAME": "lycée du Pass",
+            "IS_EVENT": True,
         }
 
     @override_settings(ADAGE_API_URL="https://adage_base_url")
