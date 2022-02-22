@@ -1,8 +1,11 @@
+import logging
+
 from flask_jwt_extended import create_refresh_token
 from flask_jwt_extended import get_jwt_identity
 from flask_jwt_extended import jwt_required
 
 from pcapi.connectors import api_recaptcha
+from pcapi.core.subscription.dms import api as dms_subscription_api
 from pcapi.core.users import api as users_api
 from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import repository as users_repo
@@ -26,6 +29,9 @@ from pcapi.utils.rate_limiting import ip_rate_limiter
 
 from . import blueprint
 from .serialization import authentication
+
+
+logger = logging.getLogger(__name__)
 
 
 @blueprint.native_v1.route("/signin", methods=["POST"])
@@ -132,6 +138,11 @@ def validate_email(body: ValidateEmailRequest) -> ValidateEmailResponse:
     user.isEmailValidated = True
     repository.save(user)
     users_api.update_external_user(user)
+
+    try:
+        dms_subscription_api.try_dms_orphan_adoption(user)
+    except Exception:  # pylint: disable=broad-except
+        logger.exception("An unexpected error occurred while trying to link dms orphan to user")
 
     response = ValidateEmailResponse(
         access_token=users_api.create_user_access_token(user),

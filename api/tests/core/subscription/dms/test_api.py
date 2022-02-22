@@ -1,14 +1,18 @@
 import datetime
+from unittest.mock import patch
 
 import freezegun
 import pytest
 
+from pcapi.connectors.dms import api as api_dms
 from pcapi.core.fraud import factories as fraud_factories
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription.dms import api as dms_subscription_api
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
+
+from tests.scripts.beneficiary.fixture import make_single_application
 
 
 @pytest.mark.usefixtures("db_session")
@@ -72,3 +76,28 @@ class DMSSubscriptionItemStatusTest:
         )
 
         assert status == subscription_models.SubscriptionItemStatus.PENDING
+
+
+@pytest.mark.usefixtures("db_session")
+@freezegun.freeze_time("2022-11-02")
+class DMSOrphanSubsriptionTest:
+    @patch.object(api_dms.DMSGraphQLClient, "execute_query")
+    def test_dms_orphan_corresponding_user(self, execute_query):
+        application_id = 1234
+        procedure_id = 4321
+        email = "dms_orphan@example.com"
+
+        user = users_factories.UserFactory(email=email)
+        fraud_factories.OrphanDmsApplicationFactory(email=email, application_id=application_id, process_id=procedure_id)
+
+        execute_query.return_value = make_single_application(
+            application_id, api_dms.GraphQLApplicationStates.draft, email=email
+        )
+
+        dms_subscription_api.try_dms_orphan_adoption(user)
+
+        fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(userId=user.id).first()
+        assert fraud_check is not None
+
+        dms_orphan = fraud_models.OrphanDmsApplication.query.filter_by(email=user.email).first()
+        assert dms_orphan is None

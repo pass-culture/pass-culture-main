@@ -7,15 +7,20 @@ from flask_jwt_extended.utils import create_refresh_token
 from freezegun import freeze_time
 import pytest
 
+from pcapi.connectors.dms import api as api_dms
+from pcapi.core.fraud import factories as fraud_factories
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import testing as sendinblue_testing
+import pcapi.core.users.api as users_api
 from pcapi.core.users.models import Token
 from pcapi.core.users.models import TokenType
 from pcapi.models import db
 import pcapi.notifications.push.testing as bash_testing
 from pcapi.utils import crypto
+
+from tests.scripts.beneficiary.fixture import make_single_application
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -355,6 +360,30 @@ def test_validate_email_when_not_eligible(client):
     client.auth_header = {"Authorization": f"Bearer {refresh_token}"}
     refresh_response = client.post("/native/v1/refresh_access_token", json={})
     assert refresh_response.status_code == 200
+
+
+@patch.object(api_dms.DMSGraphQLClient, "execute_query")
+def test_validate_email_dms_orphan(execute_query, client):
+    application_id = 1234
+    email = "dms_orphan@example.com"
+
+    user = users_factories.UserFactory(isEmailValidated=False, dateOfBirth=datetime(2000, 7, 1), email=email)
+    token = users_factories.TokenFactory(userId=user.id, type=TokenType.EMAIL_VALIDATION)
+
+    assert not user.isEmailValidated
+
+    fraud_factories.OrphanDmsApplicationFactory(email=email, application_id=application_id)
+
+    execute_query.return_value = make_single_application(
+        application_id, api_dms.GraphQLApplicationStates.accepted, email=email
+    )
+    response = client.post("/native/v1/validate_email", json={"email_validation_token": token.value})
+
+    assert user.isEmailValidated
+    assert response.status_code == 200
+
+    fraud_check = users_api.get_activable_identity_fraud_check(user)
+    assert fraud_check is not None
 
 
 @freeze_time("2020-03-15")
