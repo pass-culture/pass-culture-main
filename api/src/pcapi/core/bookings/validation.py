@@ -137,7 +137,7 @@ def check_is_usable(booking: Booking) -> None:
 
     if booking.status is BookingStatus.CANCELLED:
         gone = api_errors.ResourceGoneError()
-        gone.add_error("booking", "Cette réservation a été annulée")
+        gone.add_error("booking_cancelled", "Cette réservation a été annulée")
         raise gone
 
     if booking.educationalBookingId is not None:

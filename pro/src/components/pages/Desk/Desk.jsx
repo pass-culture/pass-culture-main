@@ -28,6 +28,7 @@ class Desk extends Component {
     this.TOKEN_MAX_LENGTH = 6
     this.VALID_TOKEN_SYNTAX = /[^a-z0-9]/i
     this.BOOKING_ALREADY_USED = 410
+    this.BOOKING_IS_CANCELLED = 'booking_cancelled'
     this.tokenInputRef = React.createRef()
   }
 
@@ -100,8 +101,14 @@ class Desk extends Component {
             this.setState({
               level: '',
               isUsedToken: true,
+              isDisabledButton: false,
               message: errorMessage,
             })
+            if (error.errors[this.BOOKING_IS_CANCELLED]) {
+              this.setState({
+                isDisabledButton: true,
+              })
+            }
           } else {
             this.setState({
               level: 'error',
@@ -278,6 +285,7 @@ class Desk extends Component {
             {isUsedToken && (
               <button
                 className="secondary-button"
+                disabled={isDisabledButton}
                 onClick={this.openDeskConfirmDialog}
                 type="button"
               >
