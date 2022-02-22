@@ -712,18 +712,6 @@ jobs:
             - notify-slack:
                 channel: shérif
 
-  tests-perf:
-    working_directory: ~
-    docker:
-      - image: passcultureapp/artillery:0.6
-    steps:
-      - checkout
-      - run: sed -i 's/$/'$USER_PASSWORD_PERF_ENV'/' /root/project/infra/artillery/user_list
-      - run: artillery run /root/project/infra/artillery/scenario.yml -o /tmp/artillery-report.json
-      - run: python3 scripts/analyze_report.py /tmp/artillery-report.json
-      - store_artifacts:
-          path: /tmp/artillery-report.json
-
   build-and-push-image:
     executor: gcp-sdk
     parameters:
