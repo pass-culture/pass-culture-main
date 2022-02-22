@@ -1,5 +1,6 @@
 import dataclasses
 from datetime import datetime
+import typing
 from unittest.mock import MagicMock
 from unittest.mock import patch
 
@@ -691,10 +692,10 @@ class CommonSubscritpionTest:
 class HasPassedAllChecksToBecomeBeneficiaryTest:
     AGE18_ELIGIBLE_BIRTH_DATE = datetime.now() - relativedelta(years=18, months=4)
 
-    def eligible_user(self, validate_phone: bool):
+    def eligible_user(self, validate_phone: bool, city: typing.Optional[str] = "Quito"):
         phone_validation_status = users_models.PhoneValidationStatusType.VALIDATED if validate_phone else None
         return users_factories.UserFactory(
-            dateOfBirth=self.AGE18_ELIGIBLE_BIRTH_DATE, phoneValidationStatus=phone_validation_status
+            dateOfBirth=self.AGE18_ELIGIBLE_BIRTH_DATE, phoneValidationStatus=phone_validation_status, city=city
         )
 
     def test_no_missing_step(self):
@@ -759,6 +760,20 @@ class HasPassedAllChecksToBecomeBeneficiaryTest:
         )
         result = subscription_api.has_passed_all_checks_to_become_beneficiary(user)
         assert not result
+
+    def test_missing_profile_after_dms_application(self):
+        user = self.eligible_user(validate_phone=True, city=None)
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user, type=fraud_models.FraudCheckType.DMS, status=fraud_models.FraudCheckStatus.OK
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user, type=fraud_models.FraudCheckType.USER_PROFILING, status=fraud_models.FraudCheckStatus.OK
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user, type=fraud_models.FraudCheckType.HONOR_STATEMENT, status=fraud_models.FraudCheckStatus.OK
+        )
+
+        assert not subscription_api.has_passed_all_checks_to_become_beneficiary(user)
 
 
 @pytest.mark.usefixtures("db_session")

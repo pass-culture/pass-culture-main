@@ -20,7 +20,6 @@ import pcapi.core.subscription.api as subscription_api
 from pcapi.core.subscription.dms import api as dms_api
 import pcapi.core.subscription.models as subscription_models
 from pcapi.core.testing import override_features
-from pcapi.core.users import api as users_api
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.core.users.constants import ELIGIBILITY_AGE_18
@@ -432,15 +431,11 @@ class RunIntegrationTest:
     @override_features(FORCE_PHONE_VALIDATION=True)
     @patch.object(dms_connector_api.DMSGraphQLClient, "get_applications_with_details")
     def test_import_user_requires_userprofiling(self, get_applications_with_details):
-        date_of_birth = self.BENEFICIARY_BIRTH_DATE.strftime("%Y-%m-%dT%H:%M:%S")
-
-        # Create a user that has validated its email and phone number, meaning it
-        # should become beneficiary.
         user = users_factories.UserFactory(
             email=self.EMAIL,
-            isEmailValidated=True,
-            dateOfBirth=date_of_birth,
+            dateOfBirth=self.BENEFICIARY_BIRTH_DATE,
             phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
+            city="Quito",
         )
         get_applications_with_details.return_value = [
             make_graphql_application(application_id=123, state="closed", email=user.email)
@@ -650,15 +645,7 @@ class RunIntegrationTest:
     @override_features(FORCE_PHONE_VALIDATION=False)
     @patch.object(dms_connector_api.DMSGraphQLClient, "get_applications_with_details")
     def test_import_native_app_user(self, get_applications_with_details):
-        # given
-        user = users_api.create_account(
-            email=self.EMAIL,
-            password="aBc123@567",
-            birthdate=self.BENEFICIARY_BIRTH_DATE,
-            is_email_validated=True,
-            send_activation_mail=False,
-            phone_number="0607080900",
-        )
+        user = users_factories.UserFactory(email=self.EMAIL, dateOfBirth=self.BENEFICIARY_BIRTH_DATE, city="Quito")
         fraud_factories.BeneficiaryFraudCheckFactory(
             user=user,
             type=fraud_models.FraudCheckType.USER_PROFILING,
@@ -681,10 +668,6 @@ class RunIntegrationTest:
         user = users_models.User.query.first()
         assert user.firstName == "John"
         assert user.postalCode == "67200"
-
-        # Since the User already exists, the phone number should not be updated
-        # during the import process
-        assert user.phoneNumber == "0607080900"
 
         assert len(mails_testing.outbox) == 1
         assert mails_testing.outbox[0].sent_data["template"] == dataclasses.asdict(
