@@ -4,23 +4,23 @@ def test_public_api(client, app):
     assert response.json == {
         "components": {
             "schemas": {
-                "224227e.GetBookingResponse.BookingFormula": {
+                "BookingFormula": {
                     "description": "An enumeration.",
                     "enum": ["PLACE", "ABO", ""],
                     "title": "BookingFormula",
                 },
-                "224227e.GetBookingResponse.BookingOfferType": {
+                "BookingOfferType": {
                     "description": "An enumeration.",
                     "enum": ["BIEN", "EVENEMENT"],
                     "title": "BookingOfferType",
                 },
-                "6a07bef.ValidationError": {
+                "ValidationError": {
                     "description": "Model " "of a " "validation " "error " "response.",
-                    "items": {"$ref": "#/components/schemas/6a07bef.ValidationError.ValidationErrorElement"},
+                    "items": {"$ref": "#/components/schemas/ValidationErrorElement"},
                     "title": "ValidationError",
                     "type": "array",
                 },
-                "6a07bef.ValidationError.ValidationErrorElement": {
+                "ValidationErrorElement": {
                     "description": "Model " "of " "a " "validation " "error " "response " "element.",
                     "properties": {
                         "ctx": {"title": "Error " "context", "type": "object"},
@@ -32,18 +32,18 @@ def test_public_api(client, app):
                     "title": "ValidationErrorElement",
                     "type": "object",
                 },
-                "224227e.GetBookingResponse": {
+                "GetBookingResponse": {
                     "properties": {
                         "bookingId": {"title": "Bookingid", "type": "string"},
                         "dateOfBirth": {"title": "Dateofbirth", "type": "string"},
                         "datetime": {"title": "Datetime", "type": "string"},
                         "ean13": {"nullable": True, "title": "Ean13", "type": "string"},
                         "email": {"title": "Email", "type": "string"},
-                        "formula": {"$ref": "#/components/schemas/224227e.GetBookingResponse.BookingFormula"},
+                        "formula": {"$ref": "#/components/schemas/BookingFormula"},
                         "isUsed": {"title": "Isused", "type": "boolean"},
                         "offerId": {"title": "Offerid", "type": "integer"},
                         "offerName": {"title": "Offername", "type": "string"},
-                        "offerType": {"$ref": "#/components/schemas/224227e.GetBookingResponse.BookingOfferType"},
+                        "offerType": {"$ref": "#/components/schemas/BookingOfferType"},
                         "phoneNumber": {"title": "Phonenumber", "type": "string"},
                         "price": {"title": "Price", "type": "number"},
                         "publicOfferId": {"title": "Publicofferid", "type": "string"},
@@ -75,7 +75,7 @@ def test_public_api(client, app):
                     "title": "GetBookingResponse",
                     "type": "object",
                 },
-                "afb85da.UpdateVenueStocksBodyModel.UpdateVenueStockBodyModel": {
+                "UpdateVenueStockBodyModel": {
                     "description": "Available stock quantity for a book",
                     "properties": {
                         "available": {"minimum": 0, "title": "Available", "type": "integer"},
@@ -91,12 +91,10 @@ def test_public_api(client, app):
                     "title": "Stock",
                     "type": "object",
                 },
-                "afb85da.UpdateVenueStocksBodyModel": {
+                "UpdateVenueStocksBodyModel": {
                     "properties": {
                         "stocks": {
-                            "items": {
-                                "$ref": "#/components/schemas/afb85da.UpdateVenueStocksBodyModel.UpdateVenueStockBodyModel"
-                            },
+                            "items": {"$ref": "#/components/schemas/UpdateVenueStockBodyModel"},
                             "title": "Stocks",
                             "type": "array",
                         }
@@ -142,7 +140,7 @@ def test_public_api(client, app):
                         "422": {
                             "description": "Unprocessable Entity",
                             "content": {
-                                "application/json": {"schema": {"$ref": "#/components/schemas/6a07bef.ValidationError"}}
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
                             },
                         },
                     },
@@ -174,7 +172,7 @@ def test_public_api(client, app):
                         "422": {
                             "description": "Unprocessable Entity",
                             "content": {
-                                "application/json": {"schema": {"$ref": "#/components/schemas/6a07bef.ValidationError"}}
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
                             },
                         },
                     },
@@ -198,9 +196,7 @@ def test_public_api(client, app):
                     "responses": {
                         "200": {
                             "content": {
-                                "application/json": {
-                                    "schema": {"$ref": "#/components/schemas/224227e.GetBookingResponse"}
-                                }
+                                "application/json": {"schema": {"$ref": "#/components/schemas/GetBookingResponse"}}
                             },
                             "description": "La contremarque existe et n\u2019est pas validée",
                         },
@@ -213,7 +209,7 @@ def test_public_api(client, app):
                         "422": {
                             "description": "Unprocessable Entity",
                             "content": {
-                                "application/json": {"schema": {"$ref": "#/components/schemas/6a07bef.ValidationError"}}
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
                             },
                         },
                     },
@@ -246,7 +242,7 @@ def test_public_api(client, app):
                         "422": {
                             "description": "Unprocessable Entity",
                             "content": {
-                                "application/json": {"schema": {"$ref": "#/components/schemas/6a07bef.ValidationError"}}
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
                             },
                         },
                     },
@@ -270,9 +266,7 @@ def test_public_api(client, app):
                     ],
                     "requestBody": {
                         "content": {
-                            "application/json": {
-                                "schema": {"$ref": "#/components/schemas/afb85da.UpdateVenueStocksBodyModel"}
-                            }
+                            "application/json": {"schema": {"$ref": "#/components/schemas/UpdateVenueStocksBodyModel"}}
                         }
                     },
                     "responses": {
@@ -283,7 +277,7 @@ def test_public_api(client, app):
                         "422": {
                             "description": "Unprocessable Entity",
                             "content": {
-                                "application/json": {"schema": {"$ref": "#/components/schemas/6a07bef.ValidationError"}}
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
                             },
                         },
                     },

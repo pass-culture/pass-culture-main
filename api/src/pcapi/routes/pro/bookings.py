@@ -3,7 +3,6 @@ from typing import Optional
 from flask import request
 from flask_login import current_user
 from flask_login import login_required
-from spectree import Response as SpectreeResponse
 
 import pcapi.core.bookings.api as bookings_api
 from pcapi.core.bookings.models import Booking
@@ -18,6 +17,7 @@ from pcapi.routes.serialization.bookings_serialize import GetBookingResponse
 from pcapi.routes.serialization.bookings_serialize import LegacyBookingResponse
 from pcapi.routes.serialization.bookings_serialize import get_booking_response
 from pcapi.serialization.decorator import spectree_serialize
+from pcapi.serialization.spec_tree import ExtendResponse as SpectreeResponse
 from pcapi.utils.human_ids import dehumanize
 from pcapi.utils.human_ids import humanize
 from pcapi.utils.rate_limiting import basic_auth_rate_limiter

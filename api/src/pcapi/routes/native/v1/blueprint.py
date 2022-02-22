@@ -1,10 +1,10 @@
 from flask import Blueprint
 from flask_cors.extension import CORS
 from spectree import SecurityScheme
-from spectree import SpecTree
 
 from pcapi import settings
 from pcapi.routes.native import utils
+from pcapi.serialization.spec_tree import ExtendedSpecTree
 from pcapi.serialization.utils import before_handler
 
 
@@ -24,5 +24,5 @@ SECURITY_SCHEMES = [
 ]
 
 
-api = SpecTree("flask", MODE="strict", before=before_handler, PATH="/", security_schemes=SECURITY_SCHEMES)
+api = ExtendedSpecTree("flask", MODE="strict", before=before_handler, PATH="/", security_schemes=SECURITY_SCHEMES)
 api.register(native_v1)
