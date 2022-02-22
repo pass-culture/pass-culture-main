@@ -7,6 +7,7 @@ from sqlalchemy.orm import load_only
 
 from pcapi import settings
 from pcapi.connectors.dms import api as dms_connector_api
+from pcapi.core import logging as core_logging
 from pcapi.core.fraud import api as fraud_api
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.fraud.dms import api as fraud_dms_api
@@ -35,7 +36,7 @@ def handle_dms_state(
     procedure_id: int,
     application_id: int,
     state: dms_connector_api.GraphQLApplicationStates,
-) -> None:
+) -> fraud_models.BeneficiaryFraudCheck:
 
     logs_extra = {"application_id": application_id, "procedure_id": procedure_id, "user_email": user.email}
 
@@ -57,7 +58,7 @@ def handle_dms_state(
 
     elif state == dms_connector_api.GraphQLApplicationStates.accepted:
         process_application(user, result_content)
-        return
+        return current_fraud_check
 
     elif state == dms_connector_api.GraphQLApplicationStates.refused:
         current_fraud_check.status = fraud_models.FraudCheckStatus.KO
@@ -72,6 +73,7 @@ def handle_dms_state(
         logger.info("DMS Application without continuation.", extra=logs_extra)
 
     pcapi_repository.repository.save(current_fraud_check)
+    return current_fraud_check
 
 
 def import_dms_users(procedure_id: int) -> None:
@@ -350,3 +352,80 @@ def get_dms_subscription_item_status(
         return subscription_models.SubscriptionItemStatus.TODO
 
     return subscription_models.SubscriptionItemStatus.VOID
+
+
+def try_dms_orphan_adoption(user: users_models.User):
+    dms_orphan = fraud_models.OrphanDmsApplication.query.filter_by(email=user.email).first()
+    if not dms_orphan:
+        return
+
+    fraud_check = parse_and_handle_dms_application(dms_orphan.application_id, dms_orphan.process_id)
+    if fraud_check is not None:
+        pcapi_repository.repository.delete(dms_orphan)
+
+
+def parse_and_handle_dms_application(
+    application_id, procedure_id
+) -> typing.Optional[fraud_models.BeneficiaryFraudCheck]:
+    client = dms_connector_api.DMSGraphQLClient()
+    raw_data = client.get_single_application_details(application_id)
+
+    user_email = raw_data["dossier"]["usager"]["email"]
+    dossier_id = raw_data["dossier"]["id"]
+
+    log_extra_data = {
+        "application_id": application_id,
+        "dossier_id": dossier_id,
+        "procedure_id": procedure_id,
+        "user_email": user_email,
+    }
+
+    try:
+        state = dms_connector_api.GraphQLApplicationStates(raw_data["dossier"]["state"])
+    except ValueError:
+        logger.exception(
+            "Unknown GraphQLApplicationState for application %s procedure %s email %s",
+            application_id,
+            procedure_id,
+            user_email,
+            extra=log_extra_data,
+        )
+        return None
+
+    user = find_user_by_email(user_email)
+    if not user:
+        # TODO: Handle this error differently, when we accept applications from DMS before user creation
+        if state == dms_connector_api.GraphQLApplicationStates.draft:
+            client.send_user_message(
+                dossier_id,
+                settings.DMS_INSTRUCTOR_ID,
+                subscription_messages.DMS_ERROR_MESSAGE_USER_NOT_FOUND,
+            )
+
+        logger.info(
+            "User not found for application %s procedure %s email %s",
+            application_id,
+            procedure_id,
+            user_email,
+            extra=log_extra_data,
+        )
+        return None
+    try:
+        application = dms_connector_api.parse_beneficiary_information_graphql(raw_data["dossier"], procedure_id)
+        core_logging.log_for_supervision(
+            logger=logger,
+            log_level=logging.INFO,
+            log_message="Successfully parsed DMS application",
+            extra=log_extra_data,
+        )
+    except subscription_exceptions.DMSParsingError as parsing_error:
+        subscription_messages.on_dms_application_parsing_errors_but_updatables_values(
+            user, list(parsing_error.errors.keys())
+        )
+        if state == dms_connector_api.GraphQLApplicationStates.draft:
+            notify_parsing_exception(parsing_error.errors, dossier_id, client)
+
+        fraud_dms_api.on_dms_parsing_error(user, application_id, parsing_error, extra_data=log_extra_data)
+        return None
+
+    return handle_dms_state(user, application, procedure_id, application_id, state)
