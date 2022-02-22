@@ -173,5 +173,5 @@ class Returns410Test:
 
         # Then
         assert response.status_code == 410
-        assert response.json["booking"] == ["Cette réservation a été annulée"]
+        assert response.json["booking_cancelled"] == ["Cette réservation a été annulée"]
         assert Booking.query.get(booking.id).status is not bookings_models.BookingStatus.USED
