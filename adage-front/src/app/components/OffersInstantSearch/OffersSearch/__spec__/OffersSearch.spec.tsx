@@ -3,12 +3,10 @@ import userEvent from '@testing-library/user-event'
 import React from 'react'
 
 import { findLaunchSearchButton } from 'app/__spec__/__test_utils__/elements'
-import { AlgoliaQueryContextProvider } from 'app/providers/AlgoliaQueryContextProvider'
 import {
-  filtersContextInitialValues,
+  AlgoliaQueryContextProvider,
   FiltersContextProvider,
-  FiltersContextType,
-} from 'app/providers/FiltersContextProvider'
+} from 'app/providers'
 import { Role } from 'utils/types'
 
 import { OffersSearchComponent, SearchProps } from '../OffersSearch'
@@ -26,12 +24,9 @@ jest.mock('../Offers/Pagination/Pagination', () => {
   }
 })
 
-const renderOffersSearchComponent = (
-  props: SearchProps,
-  filterContextProviderValue: FiltersContextType = filtersContextInitialValues
-) => {
+const renderOffersSearchComponent = (props: SearchProps) => {
   render(
-    <FiltersContextProvider values={filterContextProviderValue}>
+    <FiltersContextProvider>
       <AlgoliaQueryContextProvider>
         <OffersSearchComponent {...props} />
       </AlgoliaQueryContextProvider>

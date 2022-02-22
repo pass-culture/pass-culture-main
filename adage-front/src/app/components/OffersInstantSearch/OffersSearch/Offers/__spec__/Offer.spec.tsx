@@ -8,12 +8,10 @@ import {
   OffersComponent as Offers,
   OffersComponentProps,
 } from 'app/components/OffersInstantSearch/OffersSearch/Offers/Offers'
-import { AlgoliaQueryContextProvider } from 'app/providers/AlgoliaQueryContextProvider'
 import {
-  filtersContextInitialValues,
   FiltersContextProvider,
-  FiltersContextType,
-} from 'app/providers/FiltersContextProvider'
+  AlgoliaQueryContextProvider,
+} from 'app/providers'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { ADRESS_TYPE, OfferType, ResultType, Role } from 'utils/types'
 
@@ -50,12 +48,9 @@ const searchFakeResult: Hit<ResultType> = {
   _highlightResult: {},
 }
 
-const renderOffers = (
-  props: OffersComponentProps,
-  filterContextProviderValue: FiltersContextType = filtersContextInitialValues
-) =>
+const renderOffers = (props: OffersComponentProps) =>
   render(
-    <FiltersContextProvider values={filterContextProviderValue}>
+    <FiltersContextProvider>
       <AlgoliaQueryContextProvider>
         <Offers {...props} />
       </AlgoliaQueryContextProvider>

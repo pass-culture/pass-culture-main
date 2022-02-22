@@ -48,6 +48,7 @@ jest.mock('repository/pcapi/pcapi', () => ({
   authenticate: jest.fn(),
   getVenueBySiret: jest.fn(),
   getVenueById: jest.fn(),
+  getOffer: jest.fn(),
   getEducationalCategories: jest.fn().mockResolvedValue({
     categories: [
       { id: 'CINEMA', proLabel: 'Cinéma' },
@@ -486,6 +487,53 @@ describe('app', () => {
       ])
       expect(queryTag('a')).not.toBeInTheDocument()
       expect(queryTag('01 - Ain')).not.toBeInTheDocument()
+    })
+
+    it('should display a "Réinitialiser les filtres" button when no result query is not empty', async () => {
+      // Given
+      mockedPcapi.getOffer.mockRejectedValue('')
+      renderApp()
+      const searchBox = await findSearchBox()
+      const launchSearchButton = await findLaunchSearchButton()
+
+      userEvent.type(searchBox, 'Paris')
+      userEvent.click(launchSearchButton)
+
+      // Then
+      const resetFiltersNoResultButton = await screen.findByRole('button', {
+        name: 'Réinitialiser tous les filtres',
+      })
+      expect(resetFiltersNoResultButton).toBeInTheDocument()
+    })
+
+    it('should display a "Réinitialiser les filtres" button when no result and at least one filter is set', async () => {
+      // Given
+      mockedPcapi.getOffer.mockRejectedValue('')
+      renderApp()
+
+      // When
+      const departmentFilter = await findDepartmentFilter()
+      await selectEvent.select(departmentFilter, '01 - Ain')
+      const launchSearchButton = await findLaunchSearchButton()
+      userEvent.click(launchSearchButton)
+
+      // Then
+      const resetFiltersNoResultButton = await screen.findByRole('button', {
+        name: 'Réinitialiser tous les filtres',
+      })
+      expect(resetFiltersNoResultButton).toBeInTheDocument()
+    })
+
+    it('should not display a "Réinitialiser les filtres" button when there is no query and no filters', async () => {
+      // Given
+      mockedPcapi.getOffer.mockRejectedValue('')
+      renderApp()
+
+      // Then
+      const resetFiltersNoResultButton = screen.queryByRole('button', {
+        name: 'Réinitialiser tous les filtres',
+      })
+      expect(resetFiltersNoResultButton).not.toBeInTheDocument()
     })
   })
 

@@ -19,14 +19,12 @@ export const FacetFiltersContext = createContext<FacetFiltersContextType>(
 
 export const FacetFiltersContextProvider = ({
   children,
-  values,
 }: {
   children: ReactNode | ReactNode[]
-  values?: FacetFiltersContextType
 }): JSX.Element => {
-  const [facetFilters, setFacetFilters] = useState<Facets>(
-    values?.facetFilters || [...INITIAL_FACET_FILTERS]
-  )
+  const [facetFilters, setFacetFilters] = useState<Facets>([
+    ...INITIAL_FACET_FILTERS,
+  ])
 
   const value = useMemo(
     () => ({

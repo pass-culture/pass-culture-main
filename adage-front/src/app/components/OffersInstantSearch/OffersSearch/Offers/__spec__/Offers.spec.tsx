@@ -3,17 +3,14 @@ import React from 'react'
 import type { Hit } from 'react-instantsearch-core'
 import { QueryCache, QueryClient, QueryClientProvider } from 'react-query'
 
+import {} from 'app/__spec__/__test_utils__/elements'
 import {
   OffersComponent as Offers,
   OffersComponentProps,
 } from 'app/components/OffersInstantSearch/OffersSearch/Offers/Offers'
 import {
   AlgoliaQueryContextProvider,
-  AlgoliaQueryContextType,
-  alogliaQueryContextInitialValues,
-  facetFiltersContextInitialValues,
   FacetFiltersContextProvider,
-  FacetFiltersContextType,
 } from 'app/providers'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { OfferType, ResultType, Role } from 'utils/types'
@@ -66,14 +63,10 @@ const searchFakeResults: Hit<ResultType>[] = [
   },
 ]
 
-const renderOffers = (
-  props: OffersComponentProps,
-  algoliaQueryContextValue: AlgoliaQueryContextType = alogliaQueryContextInitialValues,
-  facetFiltersContextValue: FacetFiltersContextType = facetFiltersContextInitialValues
-) => {
+const renderOffers = (props: OffersComponentProps) => {
   return render(
-    <AlgoliaQueryContextProvider values={algoliaQueryContextValue}>
-      <FacetFiltersContextProvider values={facetFiltersContextValue}>
+    <AlgoliaQueryContextProvider>
+      <FacetFiltersContextProvider>
         <Offers {...props} />
       </FacetFiltersContextProvider>
     </AlgoliaQueryContextProvider>,
@@ -390,57 +383,6 @@ describe('offers', () => {
       expect(errorMessage).toBeInTheDocument()
       const listItemsInOffer = screen.queryAllByTestId('offer-listitem')
       expect(listItemsInOffer).toHaveLength(0)
-    })
-
-    it('should display a "Réinitialiser les filtres" button when no result query is not empty', async () => {
-      // Given
-      mockedPcapi.getOffer.mockRejectedValue('')
-
-      // When
-      renderOffers(offersProps, {
-        ...alogliaQueryContextInitialValues,
-        query: 'Paris',
-      })
-
-      // Then
-      const resetFiltersNoResultButton = await screen.findByRole('button', {
-        name: 'Réinitialiser tous les filtres',
-      })
-      expect(resetFiltersNoResultButton).toBeInTheDocument()
-    })
-
-    it('should display a "Réinitialiser les filtres" button when no result and at least one filter is set', async () => {
-      // Given
-      mockedPcapi.getOffer.mockRejectedValue('')
-
-      // When
-      renderOffers(offersProps, undefined, {
-        ...facetFiltersContextInitialValues,
-        facetFilters: ['offer.isEducational:true', ['venue.departmentCode:59']],
-      })
-
-      // Then
-      const resetFiltersNoResultButton = await screen.findByRole('button', {
-        name: 'Réinitialiser tous les filtres',
-      })
-      expect(resetFiltersNoResultButton).toBeInTheDocument()
-    })
-
-    it('should not display a "Réinitialiser les filtres" button when there is no query and no filters', async () => {
-      // Given
-      mockedPcapi.getOffer.mockRejectedValue('')
-
-      // When
-      renderOffers(offersProps, undefined, {
-        ...facetFiltersContextInitialValues,
-        facetFilters: ['offer.isEducational:true'],
-      })
-
-      // Then
-      const resetFiltersNoResultButton = await screen.queryByRole('button', {
-        name: 'Réinitialiser tous les filtres',
-      })
-      expect(resetFiltersNoResultButton).not.toBeInTheDocument()
     })
   })
 })
