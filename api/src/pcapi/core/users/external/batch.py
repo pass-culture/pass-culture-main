@@ -25,18 +25,18 @@ def update_user_attributes(user_id: int, user_attributes: UserAttributes) -> Non
 
 def format_user_attributes(user_attributes: UserAttributes) -> dict:
     attributes = {
-        "u.credit": int(user_attributes.domains_credit.all.remaining * 100) if user_attributes.domains_credit else None,
-        "u.departement_code": user_attributes.departement_code,
-        "date(u.date_of_birth)": _format_date(user_attributes.date_of_birth),
-        "u.postal_code": user_attributes.postal_code,
         "date(u.date_created)": _format_date(user_attributes.date_created),
-        "u.marketing_push_subscription": user_attributes.marketing_push_subscription,
-        "u.first_name": user_attributes.first_name,
-        "u.last_name": user_attributes.last_name,
-        "u.has_completed_id_check": user_attributes.has_completed_id_check,
-        "u.is_beneficiary": user_attributes.is_beneficiary,
+        "date(u.date_of_birth)": _format_date(user_attributes.date_of_birth),
         "date(u.deposit_expiration_date)": _format_date(user_attributes.deposit_expiration_date),
         "date(u.last_booking_date)": _format_date(user_attributes.last_booking_date),
+        "u.credit": int(user_attributes.domains_credit.all.remaining * 100) if user_attributes.domains_credit else None,
+        "u.departement_code": user_attributes.departement_code,
+        "u.first_name": user_attributes.first_name,
+        "u.has_completed_id_check": user_attributes.has_completed_id_check,
+        "u.is_beneficiary": user_attributes.is_beneficiary,
+        "u.last_name": user_attributes.last_name,
+        "u.marketing_push_subscription": user_attributes.marketing_push_subscription,
+        "u.postal_code": user_attributes.postal_code,
         "ut.roles": user_attributes.roles if user_attributes.roles else None,
     }
 
