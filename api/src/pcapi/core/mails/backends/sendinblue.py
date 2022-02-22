@@ -30,6 +30,9 @@ class SendinblueBackend(BaseBackend):
                 params=data.params,
                 tags=data.template.tags,
                 sender=asdict(data.template.sender.value),
+                subject=None,
+                html_content=None,
+                attachment=None,
             )
             if data.template.use_priority_queue:
                 send_transactional_email_primary_task.delay(payload)
@@ -43,6 +46,9 @@ class SendinblueBackend(BaseBackend):
                 subject=data.subject,
                 html_content=data.html_content,
                 attachment=data.attachment,
+                template_id=None,
+                params=None,
+                tags=None,
             )
             send_transactional_email_secondary_task.delay(payload)
 
