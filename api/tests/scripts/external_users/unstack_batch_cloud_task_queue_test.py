@@ -33,7 +33,7 @@ def test_run_task_batch(mock_get_client, mock_update_users_attributes, users_cou
     users = BeneficiaryGrant18Factory.create_batch(users_count)
     mock_get_client.return_value.list_tasks.return_value = [MockTask(f"task_{user.id}", user.id) for user in users]
 
-    tasks, deleted_tasks = unstack_batch_queue("some_queue_name", chunk_size)
+    tasks, deleted_tasks = unstack_batch_queue("some_queue_name", chunk_size, sleep_time=0)
 
     assert len(tasks) == len(deleted_tasks)
     assert len(tasks) == len(users)
