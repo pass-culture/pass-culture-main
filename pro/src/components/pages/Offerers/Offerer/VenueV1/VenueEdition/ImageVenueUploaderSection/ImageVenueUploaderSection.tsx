@@ -106,13 +106,13 @@ export const ImageVenueUploaderSection: FunctionComponent<Props> = ({
       {!!isDeleteModalVisible && (
         <VenueImageDeleteModal onDismiss={hideDeleteModal} />
       )}
-      {isPreviewModalVisible && venueImage && (
+      {isPreviewModalVisible && imageUniqueURL && (
         <DialogBox
           hasCloseButton
           labelledBy="Image du lieu"
           onDismiss={hidePreviewModal}
         >
-          <VenueImagePreview preview={venueImage} />
+          <VenueImagePreview preview={imageUniqueURL} />
         </DialogBox>
       )}
     </section>
