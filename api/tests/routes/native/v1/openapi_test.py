@@ -4,7 +4,7 @@ def test_public_api(client, app):
     assert response.json == {
         "components": {
             "schemas": {
-                "1739669.BookOfferRequest": {
+                "BookOfferRequest": {
                     "properties": {
                         "quantity": {"title": "Quantity", "type": "integer"},
                         "stockId": {"title": "Stockid", "type": "integer"},
@@ -13,27 +13,27 @@ def test_public_api(client, app):
                     "title": "BookOfferRequest",
                     "type": "object",
                 },
-                "1739669.BookOfferResponse": {
+                "BookOfferResponse": {
                     "properties": {"bookingId": {"title": "Bookingid", "type": "integer"}},
                     "required": ["bookingId"],
                     "title": "BookOfferResponse",
                     "type": "object",
                 },
-                "1739669.BookingDisplayStatusRequest": {
+                "BookingDisplayStatusRequest": {
                     "properties": {"ended": {"title": "Ended", "type": "boolean"}},
                     "required": ["ended"],
                     "title": "BookingDisplayStatusRequest",
                     "type": "object",
                 },
-                "1739669.BookingsResponse": {
+                "BookingsResponse": {
                     "properties": {
                         "ended_bookings": {
-                            "items": {"$ref": "#/components/schemas/1739669.BookingsResponse.BookingReponse"},
+                            "items": {"$ref": "#/components/schemas/BookingReponse"},
                             "title": "Ended Bookings",
                             "type": "array",
                         },
                         "ongoing_bookings": {
-                            "items": {"$ref": "#/components/schemas/1739669.BookingsResponse.BookingReponse"},
+                            "items": {"$ref": "#/components/schemas/BookingReponse"},
                             "title": "Ongoing Bookings",
                             "type": "array",
                         },
@@ -42,7 +42,7 @@ def test_public_api(client, app):
                     "title": "BookingsResponse",
                     "type": "object",
                 },
-                "1739669.BookingsResponse.BookingActivationCodeResponse": {
+                "BookingActivationCodeResponse": {
                     "properties": {
                         "code": {"title": "Code", "type": "string"},
                         "expirationDate": {
@@ -56,47 +56,45 @@ def test_public_api(client, app):
                     "title": "BookingActivationCodeResponse",
                     "type": "object",
                 },
-                "1739669.BookingsResponse.BookingCancellationReasons": {
+                "BookingCancellationReasons": {
                     "description": "An enumeration.",
                     "enum": ["OFFERER", "BENEFICIARY", "EXPIRED", "FRAUD", "REFUSED_BY_INSTITUTE"],
                     "title": "BookingCancellationReasons",
                 },
-                "1739669.BookingsResponse.BookingOfferExtraData": {
+                "BookingOfferExtraData": {
                     "properties": {"isbn": {"nullable": True, "title": "Isbn", "type": "string"}},
                     "title": "BookingOfferExtraData",
                     "type": "object",
                 },
-                "1739669.BookingsResponse.BookingOfferResponse": {
+                "BookingOfferResponse": {
                     "properties": {
                         "extraData": {
-                            "anyOf": [{"$ref": "#/components/schemas/1739669.BookingsResponse.BookingOfferExtraData"}],
+                            "anyOf": [{"$ref": "#/components/schemas/BookingOfferExtraData"}],
                             "nullable": True,
                             "title": "BookingOfferExtraData",
                         },
                         "id": {"title": "Id", "type": "integer"},
                         "image": {
-                            "anyOf": [{"$ref": "#/components/schemas/1739669.BookingsResponse.OfferImageResponse"}],
+                            "anyOf": [{"$ref": "#/components/schemas/OfferImageResponse"}],
                             "nullable": True,
                             "title": "OfferImageResponse",
                         },
                         "isDigital": {"title": "Isdigital", "type": "boolean"},
                         "isPermanent": {"title": "Ispermanent", "type": "boolean"},
                         "name": {"title": "Name", "type": "string"},
-                        "subcategoryId": {"$ref": "#/components/schemas/1739669.BookingsResponse.SubcategoryIdEnum"},
+                        "subcategoryId": {"$ref": "#/components/schemas/SubcategoryIdEnum"},
                         "url": {"nullable": True, "title": "Url", "type": "string"},
-                        "venue": {"$ref": "#/components/schemas/1739669.BookingsResponse.BookingVenueResponse"},
+                        "venue": {"$ref": "#/components/schemas/BookingVenueResponse"},
                         "withdrawalDetails": {"nullable": True, "title": "Withdrawaldetails", "type": "string"},
                     },
                     "required": ["id", "name", "isDigital", "isPermanent", "subcategoryId", "venue"],
                     "title": "BookingOfferResponse",
                     "type": "object",
                 },
-                "1739669.BookingsResponse.BookingReponse": {
+                "BookingReponse": {
                     "properties": {
                         "activationCode": {
-                            "anyOf": [
-                                {"$ref": "#/components/schemas/1739669.BookingsResponse.BookingActivationCodeResponse"}
-                            ],
+                            "anyOf": [{"$ref": "#/components/schemas/BookingActivationCodeResponse"}],
                             "nullable": True,
                             "title": "BookingActivationCodeResponse",
                         },
@@ -107,9 +105,7 @@ def test_public_api(client, app):
                             "type": "string",
                         },
                         "cancellationReason": {
-                            "anyOf": [
-                                {"$ref": "#/components/schemas/1739669.BookingsResponse.BookingCancellationReasons"}
-                            ],
+                            "anyOf": [{"$ref": "#/components/schemas/BookingCancellationReasons"}],
                             "nullable": True,
                         },
                         "completedUrl": {"nullable": True, "title": "Completedurl", "type": "string"},
@@ -129,7 +125,7 @@ def test_public_api(client, app):
                         "id": {"title": "Id", "type": "integer"},
                         "qrCodeData": {"nullable": True, "title": "Qrcodedata", "type": "string"},
                         "quantity": {"title": "Quantity", "type": "integer"},
-                        "stock": {"$ref": "#/components/schemas/1739669.BookingsResponse.BookingStockResponse"},
+                        "stock": {"$ref": "#/components/schemas/BookingStockResponse"},
                         "token": {"title": "Token", "type": "string"},
                         "totalAmount": {"title": "Totalamount", "type": "integer"},
                     },
@@ -137,7 +133,7 @@ def test_public_api(client, app):
                     "title": "BookingReponse",
                     "type": "object",
                 },
-                "1739669.BookingsResponse.BookingStockResponse": {
+                "BookingStockResponse": {
                     "properties": {
                         "beginningDatetime": {
                             "format": "date-time",
@@ -146,17 +142,17 @@ def test_public_api(client, app):
                             "type": "string",
                         },
                         "id": {"title": "Id", "type": "integer"},
-                        "offer": {"$ref": "#/components/schemas/1739669.BookingsResponse.BookingOfferResponse"},
+                        "offer": {"$ref": "#/components/schemas/BookingOfferResponse"},
                     },
                     "required": ["id", "offer"],
                     "title": "BookingStockResponse",
                     "type": "object",
                 },
-                "1739669.BookingsResponse.BookingVenueResponse": {
+                "BookingVenueResponse": {
                     "properties": {
                         "address": {"nullable": True, "title": "Address", "type": "string"},
                         "city": {"nullable": True, "title": "City", "type": "string"},
-                        "coordinates": {"$ref": "#/components/schemas/1739669.BookingsResponse.Coordinates"},
+                        "coordinates": {"$ref": "#/components/schemas/Coordinates"},
                         "id": {"title": "Id", "type": "integer"},
                         "name": {"title": "Name", "type": "string"},
                         "postalCode": {"nullable": True, "title": "Postalcode", "type": "string"},
@@ -166,107 +162,12 @@ def test_public_api(client, app):
                     "title": "BookingVenueResponse",
                     "type": "object",
                 },
-                "1739669.BookingsResponse.Coordinates": {
-                    "properties": {
-                        "latitude": {"nullable": True, "title": "Latitude", "type": "number"},
-                        "longitude": {"nullable": True, "title": "Longitude", "type": "number"},
-                    },
-                    "title": "Coordinates",
-                    "type": "object",
-                },
-                "1739669.BookingsResponse.OfferImageResponse": {
-                    "properties": {
-                        "credit": {"nullable": True, "title": "Credit", "type": "string"},
-                        "url": {"title": "Url", "type": "string"},
-                    },
-                    "required": ["url"],
-                    "title": "OfferImageResponse",
-                    "type": "object",
-                },
-                "1739669.BookingsResponse.SubcategoryIdEnum": {
-                    "description": "An enumeration.",
-                    "enum": [
-                        "ABO_BIBLIOTHEQUE",
-                        "ABO_CONCERT",
-                        "ABO_JEU_VIDEO",
-                        "ABO_LIVRE_NUMERIQUE",
-                        "ABO_LUDOTHEQUE",
-                        "ABO_MEDIATHEQUE",
-                        "ABO_MUSEE",
-                        "ABO_PLATEFORME_MUSIQUE",
-                        "ABO_PLATEFORME_VIDEO",
-                        "ABO_PRATIQUE_ART",
-                        "ABO_PRESSE_EN_LIGNE",
-                        "ABO_SPECTACLE",
-                        "ACHAT_INSTRUMENT",
-                        "ACTIVATION_EVENT",
-                        "ACTIVATION_THING",
-                        "APP_CULTURELLE",
-                        "ATELIER_PRATIQUE_ART",
-                        "AUTRE_SUPPORT_NUMERIQUE",
-                        "BON_ACHAT_INSTRUMENT",
-                        "CAPTATION_MUSIQUE",
-                        "CARTE_CINE_ILLIMITE",
-                        "CARTE_CINE_MULTISEANCES",
-                        "CARTE_JEUNES",
-                        "CARTE_MUSEE",
-                        "CINE_PLEIN_AIR",
-                        "CINE_VENTE_DISTANCE",
-                        "CONCERT",
-                        "CONCOURS",
-                        "CONFERENCE",
-                        "DECOUVERTE_METIERS",
-                        "ESCAPE_GAME",
-                        "EVENEMENT_CINE",
-                        "EVENEMENT_JEU",
-                        "EVENEMENT_MUSIQUE",
-                        "EVENEMENT_PATRIMOINE",
-                        "FESTIVAL_CINE",
-                        "FESTIVAL_LIVRE",
-                        "FESTIVAL_MUSIQUE",
-                        "FESTIVAL_SPECTACLE",
-                        "JEU_EN_LIGNE",
-                        "JEU_SUPPORT_PHYSIQUE",
-                        "LIVESTREAM_EVENEMENT",
-                        "LIVESTREAM_MUSIQUE",
-                        "LIVESTREAM_PRATIQUE_ARTISTIQUE",
-                        "LIVRE_AUDIO_PHYSIQUE",
-                        "LIVRE_NUMERIQUE",
-                        "LIVRE_PAPIER",
-                        "LOCATION_INSTRUMENT",
-                        "MATERIEL_ART_CREATIF",
-                        "MUSEE_VENTE_DISTANCE",
-                        "OEUVRE_ART",
-                        "PARTITION",
-                        "PLATEFORME_PRATIQUE_ARTISTIQUE",
-                        "PRATIQUE_ART_VENTE_DISTANCE",
-                        "PODCAST",
-                        "RENCONTRE_EN_LIGNE",
-                        "RENCONTRE_JEU",
-                        "RENCONTRE",
-                        "SALON",
-                        "SEANCE_CINE",
-                        "SEANCE_ESSAI_PRATIQUE_ART",
-                        "SPECTACLE_ENREGISTRE",
-                        "SPECTACLE_REPRESENTATION",
-                        "SPECTACLE_VENTE_DISTANCE",
-                        "SUPPORT_PHYSIQUE_FILM",
-                        "SUPPORT_PHYSIQUE_MUSIQUE",
-                        "TELECHARGEMENT_LIVRE_AUDIO",
-                        "TELECHARGEMENT_MUSIQUE",
-                        "VISITE_GUIDEE",
-                        "VISITE_VIRTUELLE",
-                        "VISITE",
-                        "VOD",
-                    ],
-                    "title": "SubcategoryIdEnum",
-                },
-                "24e874d.SettingsResponse": {
+                "SettingsResponse": {
                     "properties": {
                         "accountCreationMinimumAge": {"title": "Accountcreationminimumage", "type": "integer"},
                         "autoActivateDigitalBookings": {"title": "Autoactivatedigitalbookings", "type": "boolean"},
                         "depositAmountsByAge": {
-                            "allOf": [{"$ref": "#/components/schemas/24e874d.SettingsResponse.DepositAmountsByAge"}],
+                            "allOf": [{"$ref": "#/components/schemas/DepositAmountsByAge"}],
                             "default": {"age_15": 2000, "age_16": 3000, "age_17": 3000, "age_18": 30000},
                             "title": "Depositamountsbyage",
                         },
@@ -301,7 +202,7 @@ def test_public_api(client, app):
                     "title": "SettingsResponse",
                     "type": "object",
                 },
-                "24e874d.SettingsResponse.DepositAmountsByAge": {
+                "DepositAmountsByAge": {
                     "properties": {
                         "age_15": {"default": 2000, "title": "Age 15", "type": "integer"},
                         "age_16": {"default": 3000, "title": "Age 16", "type": "integer"},
@@ -311,12 +212,10 @@ def test_public_api(client, app):
                     "title": "DepositAmountsByAge",
                     "type": "object",
                 },
-                "2f4e8f8.OfferReportReasons": {
+                "OfferReportReasons": {
                     "properties": {
                         "reasons": {
-                            "additionalProperties": {
-                                "$ref": "#/components/schemas/2f4e8f8.OfferReportReasons.ReasonMeta"
-                            },
+                            "additionalProperties": {"$ref": "#/components/schemas/ReasonMeta"},
                             "title": "Reasons",
                             "type": "object",
                         }
@@ -325,7 +224,7 @@ def test_public_api(client, app):
                     "title": "OfferReportReasons",
                     "type": "object",
                 },
-                "2f4e8f8.OfferReportReasons.ReasonMeta": {
+                "ReasonMeta": {
                     "properties": {
                         "description": {"title": "Description", "type": "string"},
                         "title": {"title": "Title", "type": "string"},
@@ -334,7 +233,7 @@ def test_public_api(client, app):
                     "title": "ReasonMeta",
                     "type": "object",
                 },
-                "2f4e8f8.OfferReportRequest": {
+                "OfferReportRequest": {
                     "properties": {
                         "customReason": {"nullable": True, "title": "Customreason", "type": "string"},
                         "reason": {"title": "Reason", "type": "string"},
@@ -343,14 +242,12 @@ def test_public_api(client, app):
                     "title": "OfferReportRequest",
                     "type": "object",
                 },
-                "2f4e8f8.OfferResponse": {
+                "OfferResponse": {
                     "properties": {
-                        "accessibility": {
-                            "$ref": "#/components/schemas/2f4e8f8.OfferResponse.OfferAccessibilityResponse"
-                        },
+                        "accessibility": {"$ref": "#/components/schemas/OfferAccessibilityResponse"},
                         "description": {"nullable": True, "title": "Description", "type": "string"},
                         "expenseDomains": {
-                            "items": {"$ref": "#/components/schemas/2f4e8f8.OfferResponse.ExpenseDomain"},
+                            "items": {"$ref": "#/components/schemas/ExpenseDomain"},
                             "type": "array",
                         },
                         "externalTicketOfficeUrl": {
@@ -359,13 +256,13 @@ def test_public_api(client, app):
                             "type": "string",
                         },
                         "extraData": {
-                            "anyOf": [{"$ref": "#/components/schemas/2f4e8f8.OfferResponse.OfferExtraData"}],
+                            "anyOf": [{"$ref": "#/components/schemas/OfferExtraData"}],
                             "nullable": True,
                             "title": "OfferExtraData",
                         },
                         "id": {"title": "Id", "type": "integer"},
                         "image": {
-                            "anyOf": [{"$ref": "#/components/schemas/2f4e8f8.OfferResponse.OfferImageResponse"}],
+                            "anyOf": [{"$ref": "#/components/schemas/OfferImageResponse"}],
                             "nullable": True,
                             "title": "OfferImageResponse",
                         },
@@ -378,12 +275,12 @@ def test_public_api(client, app):
                         "isSoldOut": {"title": "Issoldout", "type": "boolean"},
                         "name": {"title": "Name", "type": "string"},
                         "stocks": {
-                            "items": {"$ref": "#/components/schemas/2f4e8f8.OfferResponse.OfferStockResponse"},
+                            "items": {"$ref": "#/components/schemas/OfferStockResponse"},
                             "title": "Stocks",
                             "type": "array",
                         },
-                        "subcategoryId": {"$ref": "#/components/schemas/2f4e8f8.OfferResponse.SubcategoryIdEnum"},
-                        "venue": {"$ref": "#/components/schemas/2f4e8f8.OfferResponse.OfferVenueResponse"},
+                        "subcategoryId": {"$ref": "#/components/schemas/SubcategoryIdEnum"},
+                        "venue": {"$ref": "#/components/schemas/OfferVenueResponse"},
                         "withdrawalDetails": {"nullable": True, "title": "Withdrawaldetails", "type": "string"},
                     },
                     "required": [
@@ -405,20 +302,7 @@ def test_public_api(client, app):
                     "title": "OfferResponse",
                     "type": "object",
                 },
-                "2f4e8f8.OfferResponse.Coordinates": {
-                    "properties": {
-                        "latitude": {"nullable": True, "title": "Latitude", "type": "number"},
-                        "longitude": {"nullable": True, "title": "Longitude", "type": "number"},
-                    },
-                    "title": "Coordinates",
-                    "type": "object",
-                },
-                "2f4e8f8.OfferResponse.ExpenseDomain": {
-                    "description": "An enumeration.",
-                    "enum": ["all", "digital", "physical"],
-                    "title": "ExpenseDomain",
-                },
-                "2f4e8f8.OfferResponse.OfferAccessibilityResponse": {
+                "OfferAccessibilityResponse": {
                     "properties": {
                         "audioDisability": {"nullable": True, "title": "Audiodisability", "type": "boolean"},
                         "mentalDisability": {"nullable": True, "title": "Mentaldisability", "type": "boolean"},
@@ -428,7 +312,7 @@ def test_public_api(client, app):
                     "title": "OfferAccessibilityResponse",
                     "type": "object",
                 },
-                "2f4e8f8.OfferResponse.OfferExtraData": {
+                "OfferExtraData": {
                     "properties": {
                         "author": {"nullable": True, "title": "Author", "type": "string"},
                         "durationMinutes": {"nullable": True, "title": "Durationminutes", "type": "integer"},
@@ -445,7 +329,7 @@ def test_public_api(client, app):
                     "title": "OfferExtraData",
                     "type": "object",
                 },
-                "2f4e8f8.OfferResponse.OfferImageResponse": {
+                "OfferImageResponse": {
                     "properties": {
                         "credit": {"nullable": True, "title": "Credit", "type": "string"},
                         "url": {"title": "Url", "type": "string"},
@@ -454,13 +338,13 @@ def test_public_api(client, app):
                     "title": "OfferImageResponse",
                     "type": "object",
                 },
-                "2f4e8f8.OfferResponse.OfferOffererResponse": {
+                "OfferOffererResponse": {
                     "properties": {"name": {"title": "Name", "type": "string"}},
                     "required": ["name"],
                     "title": "OfferOffererResponse",
                     "type": "object",
                 },
-                "2f4e8f8.OfferResponse.OfferStockActivationCodeResponse": {
+                "OfferStockActivationCodeResponse": {
                     "properties": {
                         "expirationDate": {
                             "format": "date-time",
@@ -472,12 +356,10 @@ def test_public_api(client, app):
                     "title": "OfferStockActivationCodeResponse",
                     "type": "object",
                 },
-                "2f4e8f8.OfferResponse.OfferStockResponse": {
+                "OfferStockResponse": {
                     "properties": {
                         "activationCode": {
-                            "anyOf": [
-                                {"$ref": "#/components/schemas/2f4e8f8.OfferResponse.OfferStockActivationCodeResponse"}
-                            ],
+                            "anyOf": [{"$ref": "#/components/schemas/OfferStockActivationCodeResponse"}],
                             "nullable": True,
                             "title": "OfferStockActivationCodeResponse",
                         },
@@ -510,15 +392,15 @@ def test_public_api(client, app):
                     "title": "OfferStockResponse",
                     "type": "object",
                 },
-                "2f4e8f8.OfferResponse.OfferVenueResponse": {
+                "OfferVenueResponse": {
                     "properties": {
                         "address": {"nullable": True, "title": "Address", "type": "string"},
                         "city": {"nullable": True, "title": "City", "type": "string"},
-                        "coordinates": {"$ref": "#/components/schemas/2f4e8f8.OfferResponse.Coordinates"},
+                        "coordinates": {"$ref": "#/components/schemas/Coordinates"},
                         "id": {"title": "Id", "type": "integer"},
                         "isPermanent": {"title": "Ispermanent", "type": "boolean"},
                         "name": {"title": "Name", "type": "string"},
-                        "offerer": {"$ref": "#/components/schemas/2f4e8f8.OfferResponse.OfferOffererResponse"},
+                        "offerer": {"$ref": "#/components/schemas/OfferOffererResponse"},
                         "postalCode": {"nullable": True, "title": "Postalcode", "type": "string"},
                         "publicName": {"nullable": True, "title": "Publicname", "type": "string"},
                     },
@@ -526,104 +408,20 @@ def test_public_api(client, app):
                     "title": "OfferVenueResponse",
                     "type": "object",
                 },
-                "2f4e8f8.OfferResponse.SubcategoryIdEnum": {
-                    "description": "An enumeration.",
-                    "enum": [
-                        "ABO_BIBLIOTHEQUE",
-                        "ABO_CONCERT",
-                        "ABO_JEU_VIDEO",
-                        "ABO_LIVRE_NUMERIQUE",
-                        "ABO_LUDOTHEQUE",
-                        "ABO_MEDIATHEQUE",
-                        "ABO_MUSEE",
-                        "ABO_PLATEFORME_MUSIQUE",
-                        "ABO_PLATEFORME_VIDEO",
-                        "ABO_PRATIQUE_ART",
-                        "ABO_PRESSE_EN_LIGNE",
-                        "ABO_SPECTACLE",
-                        "ACHAT_INSTRUMENT",
-                        "ACTIVATION_EVENT",
-                        "ACTIVATION_THING",
-                        "APP_CULTURELLE",
-                        "ATELIER_PRATIQUE_ART",
-                        "AUTRE_SUPPORT_NUMERIQUE",
-                        "BON_ACHAT_INSTRUMENT",
-                        "CAPTATION_MUSIQUE",
-                        "CARTE_CINE_ILLIMITE",
-                        "CARTE_CINE_MULTISEANCES",
-                        "CARTE_JEUNES",
-                        "CARTE_MUSEE",
-                        "CINE_PLEIN_AIR",
-                        "CINE_VENTE_DISTANCE",
-                        "CONCERT",
-                        "CONCOURS",
-                        "CONFERENCE",
-                        "DECOUVERTE_METIERS",
-                        "ESCAPE_GAME",
-                        "EVENEMENT_CINE",
-                        "EVENEMENT_JEU",
-                        "EVENEMENT_MUSIQUE",
-                        "EVENEMENT_PATRIMOINE",
-                        "FESTIVAL_CINE",
-                        "FESTIVAL_LIVRE",
-                        "FESTIVAL_MUSIQUE",
-                        "FESTIVAL_SPECTACLE",
-                        "JEU_EN_LIGNE",
-                        "JEU_SUPPORT_PHYSIQUE",
-                        "LIVESTREAM_EVENEMENT",
-                        "LIVESTREAM_MUSIQUE",
-                        "LIVESTREAM_PRATIQUE_ARTISTIQUE",
-                        "LIVRE_AUDIO_PHYSIQUE",
-                        "LIVRE_NUMERIQUE",
-                        "LIVRE_PAPIER",
-                        "LOCATION_INSTRUMENT",
-                        "MATERIEL_ART_CREATIF",
-                        "MUSEE_VENTE_DISTANCE",
-                        "OEUVRE_ART",
-                        "PARTITION",
-                        "PLATEFORME_PRATIQUE_ARTISTIQUE",
-                        "PRATIQUE_ART_VENTE_DISTANCE",
-                        "PODCAST",
-                        "RENCONTRE_EN_LIGNE",
-                        "RENCONTRE_JEU",
-                        "RENCONTRE",
-                        "SALON",
-                        "SEANCE_CINE",
-                        "SEANCE_ESSAI_PRATIQUE_ART",
-                        "SPECTACLE_ENREGISTRE",
-                        "SPECTACLE_REPRESENTATION",
-                        "SPECTACLE_VENTE_DISTANCE",
-                        "SUPPORT_PHYSIQUE_FILM",
-                        "SUPPORT_PHYSIQUE_MUSIQUE",
-                        "TELECHARGEMENT_LIVRE_AUDIO",
-                        "TELECHARGEMENT_MUSIQUE",
-                        "VISITE_GUIDEE",
-                        "VISITE_VIRTUELLE",
-                        "VISITE",
-                        "VOD",
-                    ],
-                    "title": "SubcategoryIdEnum",
-                },
-                "2f4e8f8.SubcategoriesResponseModel": {
+                "SubcategoriesResponseModel": {
                     "properties": {
                         "homepageLabels": {
-                            "items": {
-                                "$ref": "#/components/schemas/2f4e8f8.SubcategoriesResponseModel.HomepageLabelResponseModel"
-                            },
+                            "items": {"$ref": "#/components/schemas/HomepageLabelResponseModel"},
                             "title": "Homepagelabels",
                             "type": "array",
                         },
                         "searchGroups": {
-                            "items": {
-                                "$ref": "#/components/schemas/2f4e8f8.SubcategoriesResponseModel.SearchGroupResponseModel"
-                            },
+                            "items": {"$ref": "#/components/schemas/SearchGroupResponseModel"},
                             "title": "Searchgroups",
                             "type": "array",
                         },
                         "subcategories": {
-                            "items": {
-                                "$ref": "#/components/schemas/2f4e8f8.SubcategoriesResponseModel.SubcategoryResponseModel"
-                            },
+                            "items": {"$ref": "#/components/schemas/SubcategoryResponseModel"},
                             "title": "Subcategories",
                             "type": "array",
                         },
@@ -632,7 +430,7 @@ def test_public_api(client, app):
                     "title": "SubcategoriesResponseModel",
                     "type": "object",
                 },
-                "2f4e8f8.SubcategoriesResponseModel.CategoryIdEnum": {
+                "CategoryIdEnum": {
                     "description": "An enumeration.",
                     "enum": [
                         "BEAUX_ARTS",
@@ -653,23 +451,21 @@ def test_public_api(client, app):
                     ],
                     "title": "CategoryIdEnum",
                 },
-                "2f4e8f8.SubcategoriesResponseModel.HomepageLabelResponseModel": {
+                "HomepageLabelResponseModel": {
                     "properties": {
-                        "name": {
-                            "$ref": "#/components/schemas/2f4e8f8.SubcategoriesResponseModel._HomepageLabelNameEnum"
-                        },
+                        "name": {"$ref": "#/components/schemas/_HomepageLabelNameEnum"},
                         "value": {"nullable": True, "title": "Value", "type": "string"},
                     },
                     "required": ["name"],
                     "title": "HomepageLabelResponseModel",
                     "type": "object",
                 },
-                "2f4e8f8.SubcategoriesResponseModel.OnlineOfflinePlatformChoicesEnum": {
+                "OnlineOfflinePlatformChoicesEnum": {
                     "description": "An enumeration.",
                     "enum": ["OFFLINE", "ONLINE", "ONLINE_OR_OFFLINE"],
                     "title": "OnlineOfflinePlatformChoicesEnum",
                 },
-                "2f4e8f8.SubcategoriesResponseModel.SearchGroupNameEnum": {
+                "SearchGroupNameEnum": {
                     "description": "An enumeration.",
                     "enum": [
                         "FILM",
@@ -689,16 +485,16 @@ def test_public_api(client, app):
                     ],
                     "title": "SearchGroupNameEnum",
                 },
-                "2f4e8f8.SubcategoriesResponseModel.SearchGroupResponseModel": {
+                "SearchGroupResponseModel": {
                     "properties": {
-                        "name": {"$ref": "#/components/schemas/2f4e8f8.SubcategoriesResponseModel.SearchGroupNameEnum"},
+                        "name": {"$ref": "#/components/schemas/SearchGroupNameEnum"},
                         "value": {"nullable": True, "title": "Value", "type": "string"},
                     },
                     "required": ["name"],
                     "title": "SearchGroupResponseModel",
                     "type": "object",
                 },
-                "2f4e8f8.SubcategoriesResponseModel.SubcategoryIdEnum": {
+                "SubcategoryIdEnum": {
                     "description": "An enumeration.",
                     "enum": [
                         "ABO_BIBLIOTHEQUE",
@@ -776,23 +572,15 @@ def test_public_api(client, app):
                     ],
                     "title": "SubcategoryIdEnum",
                 },
-                "2f4e8f8.SubcategoriesResponseModel.SubcategoryResponseModel": {
+                "SubcategoryResponseModel": {
                     "properties": {
                         "appLabel": {"title": "Applabel", "type": "string"},
-                        "categoryId": {
-                            "$ref": "#/components/schemas/2f4e8f8.SubcategoriesResponseModel.CategoryIdEnum"
-                        },
-                        "homepageLabelName": {
-                            "$ref": "#/components/schemas/2f4e8f8.SubcategoriesResponseModel._HomepageLabelNameEnum"
-                        },
-                        "id": {"$ref": "#/components/schemas/2f4e8f8.SubcategoriesResponseModel.SubcategoryIdEnum"},
+                        "categoryId": {"$ref": "#/components/schemas/CategoryIdEnum"},
+                        "homepageLabelName": {"$ref": "#/components/schemas/_HomepageLabelNameEnum"},
+                        "id": {"$ref": "#/components/schemas/SubcategoryIdEnum"},
                         "isEvent": {"title": "Isevent", "type": "boolean"},
-                        "onlineOfflinePlatform": {
-                            "$ref": "#/components/schemas/2f4e8f8.SubcategoriesResponseModel.OnlineOfflinePlatformChoicesEnum"
-                        },
-                        "searchGroupName": {
-                            "$ref": "#/components/schemas/2f4e8f8.SubcategoriesResponseModel.SearchGroupNameEnum"
-                        },
+                        "onlineOfflinePlatform": {"$ref": "#/components/schemas/OnlineOfflinePlatformChoicesEnum"},
+                        "searchGroupName": {"$ref": "#/components/schemas/SearchGroupNameEnum"},
                     },
                     "required": [
                         "id",
@@ -806,7 +594,7 @@ def test_public_api(client, app):
                     "title": "SubcategoryResponseModel",
                     "type": "object",
                 },
-                "2f4e8f8.SubcategoriesResponseModel._HomepageLabelNameEnum": {
+                "_HomepageLabelNameEnum": {
                     "description": "An enumeration.",
                     "enum": [
                         "FILM",
@@ -825,10 +613,10 @@ def test_public_api(client, app):
                     ],
                     "title": "(HomepageLabelNameEnum",
                 },
-                "2f4e8f8.UserReportedOffersResponse": {
+                "UserReportedOffersResponse": {
                     "properties": {
                         "reportedOffers": {
-                            "items": {"$ref": "#/components/schemas/2f4e8f8.UserReportedOffersResponse.ReportedOffer"},
+                            "items": {"$ref": "#/components/schemas/ReportedOffer"},
                             "title": "Reportedoffers",
                             "type": "array",
                         }
@@ -837,29 +625,29 @@ def test_public_api(client, app):
                     "title": "UserReportedOffersResponse",
                     "type": "object",
                 },
-                "2f4e8f8.UserReportedOffersResponse.Reason": {
+                "Reason": {
                     "description": "Describe possible reason codes to used when reporting an offer.\n\nThe whole meta part is only consumed by the api client, it has no meaning\ninside the whole API code.\n\nNote: when adding a new enum symbol, do not forget to update the meta\nmethod.",
                     "enum": ["IMPROPER", "PRICE_TOO_HIGH", "INAPPROPRIATE", "OTHER"],
                     "title": "Reason",
                 },
-                "2f4e8f8.UserReportedOffersResponse.ReportedOffer": {
+                "ReportedOffer": {
                     "properties": {
                         "offerId": {"title": "Offerid", "type": "integer"},
-                        "reason": {"$ref": "#/components/schemas/2f4e8f8.UserReportedOffersResponse.Reason"},
+                        "reason": {"$ref": "#/components/schemas/Reason"},
                         "reportedAt": {"format": "date-time", "title": "Reportedat", "type": "string"},
                     },
                     "required": ["offerId", "reportedAt", "reason"],
                     "title": "ReportedOffer",
                     "type": "object",
                 },
-                "357aaa5.VenueResponse": {
+                "VenueResponse": {
                     "properties": {
-                        "accessibility": {"$ref": "#/components/schemas/357aaa5.VenueResponse.VenueAccessibilityModel"},
+                        "accessibility": {"$ref": "#/components/schemas/VenueAccessibilityModel"},
                         "address": {"nullable": True, "title": "Address", "type": "string"},
                         "bannerUrl": {"nullable": True, "title": "Bannerurl", "type": "string"},
                         "city": {"nullable": True, "title": "City", "type": "string"},
                         "contact": {
-                            "anyOf": [{"$ref": "#/components/schemas/357aaa5.VenueResponse.VenueContactModel"}],
+                            "anyOf": [{"$ref": "#/components/schemas/VenueContactModel"}],
                             "nullable": True,
                             "title": "VenueContactModel",
                         },
@@ -873,7 +661,7 @@ def test_public_api(client, app):
                         "postalCode": {"nullable": True, "title": "Postalcode", "type": "string"},
                         "publicName": {"nullable": True, "title": "Publicname", "type": "string"},
                         "venueTypeCode": {
-                            "anyOf": [{"$ref": "#/components/schemas/357aaa5.VenueResponse.VenueTypeCodeKey"}],
+                            "anyOf": [{"$ref": "#/components/schemas/VenueTypeCodeKey"}],
                             "nullable": True,
                         },
                         "withdrawalDetails": {"nullable": True, "title": "Withdrawaldetails", "type": "string"},
@@ -882,7 +670,7 @@ def test_public_api(client, app):
                     "title": "VenueResponse",
                     "type": "object",
                 },
-                "357aaa5.VenueResponse.VenueAccessibilityModel": {
+                "VenueAccessibilityModel": {
                     "properties": {
                         "audioDisability": {"nullable": True, "title": "Audiodisability", "type": "boolean"},
                         "mentalDisability": {"nullable": True, "title": "Mentaldisability", "type": "boolean"},
@@ -892,7 +680,7 @@ def test_public_api(client, app):
                     "title": "VenueAccessibilityModel",
                     "type": "object",
                 },
-                "357aaa5.VenueResponse.VenueContactModel": {
+                "VenueContactModel": {
                     "additionalProperties": False,
                     "properties": {
                         "email": {"format": "email", "nullable": True, "title": "Email", "type": "string"},
@@ -920,7 +708,7 @@ def test_public_api(client, app):
                     "title": "VenueContactModel",
                     "type": "object",
                 },
-                "357aaa5.VenueResponse.VenueTypeCodeKey": {
+                "VenueTypeCodeKey": {
                     "description": "An enumeration.",
                     "enum": [
                         "VISUAL_ARTS",
@@ -945,13 +733,13 @@ def test_public_api(client, app):
                     ],
                     "title": "VenueTypeCodeKey",
                 },
-                "6a07bef.ValidationError": {
+                "ValidationError": {
                     "description": "Model of a validation error response.",
-                    "items": {"$ref": "#/components/schemas/6a07bef.ValidationError.ValidationErrorElement"},
+                    "items": {"$ref": "#/components/schemas/ValidationErrorElement"},
                     "title": "ValidationError",
                     "type": "array",
                 },
-                "6a07bef.ValidationError.ValidationErrorElement": {
+                "ValidationErrorElement": {
                     "description": "Model of a validation error response element.",
                     "properties": {
                         "ctx": {"title": "Error context", "type": "object"},
@@ -963,7 +751,7 @@ def test_public_api(client, app):
                     "title": "ValidationErrorElement",
                     "type": "object",
                 },
-                "6a26fd8.ChangePasswordRequest": {
+                "ChangePasswordRequest": {
                     "properties": {
                         "currentPassword": {"title": "Currentpassword", "type": "string"},
                         "newPassword": {"title": "Newpassword", "type": "string"},
@@ -972,13 +760,13 @@ def test_public_api(client, app):
                     "title": "ChangePasswordRequest",
                     "type": "object",
                 },
-                "6a26fd8.RefreshResponse": {
+                "RefreshResponse": {
                     "properties": {"accessToken": {"title": "Accesstoken", "type": "string"}},
                     "required": ["accessToken"],
                     "title": "RefreshResponse",
                     "type": "object",
                 },
-                "6a26fd8.RequestPasswordResetRequest": {
+                "RequestPasswordResetRequest": {
                     "properties": {
                         "email": {"title": "Email", "type": "string"},
                         "token": {"nullable": True, "title": "Token", "type": "string"},
@@ -987,7 +775,7 @@ def test_public_api(client, app):
                     "title": "RequestPasswordResetRequest",
                     "type": "object",
                 },
-                "6a26fd8.ResetPasswordRequest": {
+                "ResetPasswordRequest": {
                     "properties": {
                         "newPassword": {"title": "Newpassword", "type": "string"},
                         "resetPasswordToken": {"title": "Resetpasswordtoken", "type": "string"},
@@ -996,7 +784,7 @@ def test_public_api(client, app):
                     "title": "ResetPasswordRequest",
                     "type": "object",
                 },
-                "6a26fd8.SigninRequest": {
+                "SigninRequest": {
                     "properties": {
                         "identifier": {"title": "Identifier", "type": "string"},
                         "password": {"title": "Password", "type": "string"},
@@ -1005,7 +793,7 @@ def test_public_api(client, app):
                     "title": "SigninRequest",
                     "type": "object",
                 },
-                "6a26fd8.SigninResponse": {
+                "SigninResponse": {
                     "properties": {
                         "accessToken": {"title": "Accesstoken", "type": "string"},
                         "refreshToken": {"title": "Refreshtoken", "type": "string"},
@@ -1014,13 +802,13 @@ def test_public_api(client, app):
                     "title": "SigninResponse",
                     "type": "object",
                 },
-                "6a26fd8.ValidateEmailRequest": {
+                "ValidateEmailRequest": {
                     "properties": {"emailValidationToken": {"title": "Emailvalidationtoken", "type": "string"}},
                     "required": ["emailValidationToken"],
                     "title": "ValidateEmailRequest",
                     "type": "object",
                 },
-                "6a26fd8.ValidateEmailResponse": {
+                "ValidateEmailResponse": {
                     "properties": {
                         "accessToken": {"title": "Accesstoken", "type": "string"},
                         "refreshToken": {"title": "Refreshtoken", "type": "string"},
@@ -1029,167 +817,31 @@ def test_public_api(client, app):
                     "title": "ValidateEmailResponse",
                     "type": "object",
                 },
-                "e27ef6e.FavoriteRequest": {
+                "FavoriteRequest": {
                     "properties": {"offerId": {"title": "Offerid", "type": "integer"}},
                     "required": ["offerId"],
                     "title": "FavoriteRequest",
                     "type": "object",
                 },
-                "e27ef6e.FavoriteResponse": {
+                "FavoriteResponse": {
                     "properties": {
                         "id": {"title": "Id", "type": "integer"},
-                        "offer": {"$ref": "#/components/schemas/e27ef6e.FavoriteResponse.FavoriteOfferResponse"},
+                        "offer": {"$ref": "#/components/schemas/FavoriteOfferResponse"},
                     },
                     "required": ["id", "offer"],
                     "title": "FavoriteResponse",
                     "type": "object",
                 },
-                "e27ef6e.FavoriteResponse.Coordinates": {
-                    "properties": {
-                        "latitude": {"nullable": True, "title": "Latitude", "type": "number"},
-                        "longitude": {"nullable": True, "title": "Longitude", "type": "number"},
-                    },
-                    "title": "Coordinates",
-                    "type": "object",
-                },
-                "e27ef6e.FavoriteResponse.ExpenseDomain": {
-                    "description": "An enumeration.",
-                    "enum": ["all", "digital", "physical"],
-                    "title": "ExpenseDomain",
-                },
-                "e27ef6e.FavoriteResponse.FavoriteMediationResponse": {
-                    "properties": {
-                        "credit": {"nullable": True, "title": "Credit", "type": "string"},
-                        "url": {"title": "Url", "type": "string"},
-                    },
-                    "required": ["url"],
-                    "title": "FavoriteMediationResponse",
-                    "type": "object",
-                },
-                "e27ef6e.FavoriteResponse.FavoriteOfferResponse": {
-                    "properties": {
-                        "coordinates": {"$ref": "#/components/schemas/e27ef6e.FavoriteResponse.Coordinates"},
-                        "date": {"format": "date-time", "nullable": True, "title": "Date", "type": "string"},
-                        "expenseDomains": {
-                            "items": {"$ref": "#/components/schemas/e27ef6e.FavoriteResponse.ExpenseDomain"},
-                            "type": "array",
-                        },
-                        "externalTicketOfficeUrl": {
-                            "nullable": True,
-                            "title": "Externalticketofficeurl",
-                            "type": "string",
-                        },
-                        "id": {"title": "Id", "type": "integer"},
-                        "image": {
-                            "anyOf": [
-                                {"$ref": "#/components/schemas/e27ef6e.FavoriteResponse.FavoriteMediationResponse"}
-                            ],
-                            "nullable": True,
-                            "title": "FavoriteMediationResponse",
-                        },
-                        "isExpired": {"default": False, "title": "Isexpired", "type": "boolean"},
-                        "isReleased": {"title": "Isreleased", "type": "boolean"},
-                        "isSoldOut": {"default": False, "title": "Issoldout", "type": "boolean"},
-                        "name": {"title": "Name", "type": "string"},
-                        "price": {"nullable": True, "title": "Price", "type": "integer"},
-                        "startDate": {"format": "date-time", "nullable": True, "title": "Startdate", "type": "string"},
-                        "startPrice": {"nullable": True, "title": "Startprice", "type": "integer"},
-                        "subcategoryId": {"$ref": "#/components/schemas/e27ef6e.FavoriteResponse.SubcategoryIdEnum"},
-                    },
-                    "required": ["id", "name", "subcategoryId", "coordinates", "expenseDomains", "isReleased"],
-                    "title": "FavoriteOfferResponse",
-                    "type": "object",
-                },
-                "e27ef6e.FavoriteResponse.SubcategoryIdEnum": {
-                    "description": "An enumeration.",
-                    "enum": [
-                        "ABO_BIBLIOTHEQUE",
-                        "ABO_CONCERT",
-                        "ABO_JEU_VIDEO",
-                        "ABO_LIVRE_NUMERIQUE",
-                        "ABO_LUDOTHEQUE",
-                        "ABO_MEDIATHEQUE",
-                        "ABO_MUSEE",
-                        "ABO_PLATEFORME_MUSIQUE",
-                        "ABO_PLATEFORME_VIDEO",
-                        "ABO_PRATIQUE_ART",
-                        "ABO_PRESSE_EN_LIGNE",
-                        "ABO_SPECTACLE",
-                        "ACHAT_INSTRUMENT",
-                        "ACTIVATION_EVENT",
-                        "ACTIVATION_THING",
-                        "APP_CULTURELLE",
-                        "ATELIER_PRATIQUE_ART",
-                        "AUTRE_SUPPORT_NUMERIQUE",
-                        "BON_ACHAT_INSTRUMENT",
-                        "CAPTATION_MUSIQUE",
-                        "CARTE_CINE_ILLIMITE",
-                        "CARTE_CINE_MULTISEANCES",
-                        "CARTE_JEUNES",
-                        "CARTE_MUSEE",
-                        "CINE_PLEIN_AIR",
-                        "CINE_VENTE_DISTANCE",
-                        "CONCERT",
-                        "CONCOURS",
-                        "CONFERENCE",
-                        "DECOUVERTE_METIERS",
-                        "ESCAPE_GAME",
-                        "EVENEMENT_CINE",
-                        "EVENEMENT_JEU",
-                        "EVENEMENT_MUSIQUE",
-                        "EVENEMENT_PATRIMOINE",
-                        "FESTIVAL_CINE",
-                        "FESTIVAL_LIVRE",
-                        "FESTIVAL_MUSIQUE",
-                        "FESTIVAL_SPECTACLE",
-                        "JEU_EN_LIGNE",
-                        "JEU_SUPPORT_PHYSIQUE",
-                        "LIVESTREAM_EVENEMENT",
-                        "LIVESTREAM_MUSIQUE",
-                        "LIVESTREAM_PRATIQUE_ARTISTIQUE",
-                        "LIVRE_AUDIO_PHYSIQUE",
-                        "LIVRE_NUMERIQUE",
-                        "LIVRE_PAPIER",
-                        "LOCATION_INSTRUMENT",
-                        "MATERIEL_ART_CREATIF",
-                        "MUSEE_VENTE_DISTANCE",
-                        "OEUVRE_ART",
-                        "PARTITION",
-                        "PLATEFORME_PRATIQUE_ARTISTIQUE",
-                        "PRATIQUE_ART_VENTE_DISTANCE",
-                        "PODCAST",
-                        "RENCONTRE_EN_LIGNE",
-                        "RENCONTRE_JEU",
-                        "RENCONTRE",
-                        "SALON",
-                        "SEANCE_CINE",
-                        "SEANCE_ESSAI_PRATIQUE_ART",
-                        "SPECTACLE_ENREGISTRE",
-                        "SPECTACLE_REPRESENTATION",
-                        "SPECTACLE_VENTE_DISTANCE",
-                        "SUPPORT_PHYSIQUE_FILM",
-                        "SUPPORT_PHYSIQUE_MUSIQUE",
-                        "TELECHARGEMENT_LIVRE_AUDIO",
-                        "TELECHARGEMENT_MUSIQUE",
-                        "VISITE_GUIDEE",
-                        "VISITE_VIRTUELLE",
-                        "VISITE",
-                        "VOD",
-                    ],
-                    "title": "SubcategoryIdEnum",
-                },
-                "e27ef6e.FavoritesCountResponse": {
+                "FavoritesCountResponse": {
                     "properties": {"count": {"title": "Count", "type": "integer"}},
                     "required": ["count"],
                     "title": "FavoritesCountResponse",
                     "type": "object",
                 },
-                "e27ef6e.PaginatedFavoritesResponse": {
+                "PaginatedFavoritesResponse": {
                     "properties": {
                         "favorites": {
-                            "items": {
-                                "$ref": "#/components/schemas/e27ef6e.PaginatedFavoritesResponse.FavoriteResponse"
-                            },
+                            "items": {"$ref": "#/components/schemas/FavoriteResponse"},
                             "title": "Favorites",
                             "type": "array",
                         },
@@ -1200,7 +852,7 @@ def test_public_api(client, app):
                     "title": "PaginatedFavoritesResponse",
                     "type": "object",
                 },
-                "e27ef6e.PaginatedFavoritesResponse.Coordinates": {
+                "Coordinates": {
                     "properties": {
                         "latitude": {"nullable": True, "title": "Latitude", "type": "number"},
                         "longitude": {"nullable": True, "title": "Longitude", "type": "number"},
@@ -1208,12 +860,12 @@ def test_public_api(client, app):
                     "title": "Coordinates",
                     "type": "object",
                 },
-                "e27ef6e.PaginatedFavoritesResponse.ExpenseDomain": {
+                "ExpenseDomain": {
                     "description": "An enumeration.",
                     "enum": ["all", "digital", "physical"],
                     "title": "ExpenseDomain",
                 },
-                "e27ef6e.PaginatedFavoritesResponse.FavoriteMediationResponse": {
+                "FavoriteMediationResponse": {
                     "properties": {
                         "credit": {"nullable": True, "title": "Credit", "type": "string"},
                         "url": {"title": "Url", "type": "string"},
@@ -1222,12 +874,12 @@ def test_public_api(client, app):
                     "title": "FavoriteMediationResponse",
                     "type": "object",
                 },
-                "e27ef6e.PaginatedFavoritesResponse.FavoriteOfferResponse": {
+                "FavoriteOfferResponse": {
                     "properties": {
-                        "coordinates": {"$ref": "#/components/schemas/e27ef6e.PaginatedFavoritesResponse.Coordinates"},
+                        "coordinates": {"$ref": "#/components/schemas/Coordinates"},
                         "date": {"format": "date-time", "nullable": True, "title": "Date", "type": "string"},
                         "expenseDomains": {
-                            "items": {"$ref": "#/components/schemas/e27ef6e.PaginatedFavoritesResponse.ExpenseDomain"},
+                            "items": {"$ref": "#/components/schemas/ExpenseDomain"},
                             "type": "array",
                         },
                         "externalTicketOfficeUrl": {
@@ -1237,11 +889,7 @@ def test_public_api(client, app):
                         },
                         "id": {"title": "Id", "type": "integer"},
                         "image": {
-                            "anyOf": [
-                                {
-                                    "$ref": "#/components/schemas/e27ef6e.PaginatedFavoritesResponse.FavoriteMediationResponse"
-                                }
-                            ],
+                            "anyOf": [{"$ref": "#/components/schemas/FavoriteMediationResponse"}],
                             "nullable": True,
                             "title": "FavoriteMediationResponse",
                         },
@@ -1252,104 +900,13 @@ def test_public_api(client, app):
                         "price": {"nullable": True, "title": "Price", "type": "integer"},
                         "startDate": {"format": "date-time", "nullable": True, "title": "Startdate", "type": "string"},
                         "startPrice": {"nullable": True, "title": "Startprice", "type": "integer"},
-                        "subcategoryId": {
-                            "$ref": "#/components/schemas/e27ef6e.PaginatedFavoritesResponse.SubcategoryIdEnum"
-                        },
+                        "subcategoryId": {"$ref": "#/components/schemas/SubcategoryIdEnum"},
                     },
                     "required": ["id", "name", "subcategoryId", "coordinates", "expenseDomains", "isReleased"],
                     "title": "FavoriteOfferResponse",
                     "type": "object",
                 },
-                "e27ef6e.PaginatedFavoritesResponse.FavoriteResponse": {
-                    "properties": {
-                        "id": {"title": "Id", "type": "integer"},
-                        "offer": {
-                            "$ref": "#/components/schemas/e27ef6e.PaginatedFavoritesResponse.FavoriteOfferResponse"
-                        },
-                    },
-                    "required": ["id", "offer"],
-                    "title": "FavoriteResponse",
-                    "type": "object",
-                },
-                "e27ef6e.PaginatedFavoritesResponse.SubcategoryIdEnum": {
-                    "description": "An enumeration.",
-                    "enum": [
-                        "ABO_BIBLIOTHEQUE",
-                        "ABO_CONCERT",
-                        "ABO_JEU_VIDEO",
-                        "ABO_LIVRE_NUMERIQUE",
-                        "ABO_LUDOTHEQUE",
-                        "ABO_MEDIATHEQUE",
-                        "ABO_MUSEE",
-                        "ABO_PLATEFORME_MUSIQUE",
-                        "ABO_PLATEFORME_VIDEO",
-                        "ABO_PRATIQUE_ART",
-                        "ABO_PRESSE_EN_LIGNE",
-                        "ABO_SPECTACLE",
-                        "ACHAT_INSTRUMENT",
-                        "ACTIVATION_EVENT",
-                        "ACTIVATION_THING",
-                        "APP_CULTURELLE",
-                        "ATELIER_PRATIQUE_ART",
-                        "AUTRE_SUPPORT_NUMERIQUE",
-                        "BON_ACHAT_INSTRUMENT",
-                        "CAPTATION_MUSIQUE",
-                        "CARTE_CINE_ILLIMITE",
-                        "CARTE_CINE_MULTISEANCES",
-                        "CARTE_JEUNES",
-                        "CARTE_MUSEE",
-                        "CINE_PLEIN_AIR",
-                        "CINE_VENTE_DISTANCE",
-                        "CONCERT",
-                        "CONCOURS",
-                        "CONFERENCE",
-                        "DECOUVERTE_METIERS",
-                        "ESCAPE_GAME",
-                        "EVENEMENT_CINE",
-                        "EVENEMENT_JEU",
-                        "EVENEMENT_MUSIQUE",
-                        "EVENEMENT_PATRIMOINE",
-                        "FESTIVAL_CINE",
-                        "FESTIVAL_LIVRE",
-                        "FESTIVAL_MUSIQUE",
-                        "FESTIVAL_SPECTACLE",
-                        "JEU_EN_LIGNE",
-                        "JEU_SUPPORT_PHYSIQUE",
-                        "LIVESTREAM_EVENEMENT",
-                        "LIVESTREAM_MUSIQUE",
-                        "LIVESTREAM_PRATIQUE_ARTISTIQUE",
-                        "LIVRE_AUDIO_PHYSIQUE",
-                        "LIVRE_NUMERIQUE",
-                        "LIVRE_PAPIER",
-                        "LOCATION_INSTRUMENT",
-                        "MATERIEL_ART_CREATIF",
-                        "MUSEE_VENTE_DISTANCE",
-                        "OEUVRE_ART",
-                        "PARTITION",
-                        "PLATEFORME_PRATIQUE_ARTISTIQUE",
-                        "PRATIQUE_ART_VENTE_DISTANCE",
-                        "PODCAST",
-                        "RENCONTRE_EN_LIGNE",
-                        "RENCONTRE_JEU",
-                        "RENCONTRE",
-                        "SALON",
-                        "SEANCE_CINE",
-                        "SEANCE_ESSAI_PRATIQUE_ART",
-                        "SPECTACLE_ENREGISTRE",
-                        "SPECTACLE_REPRESENTATION",
-                        "SPECTACLE_VENTE_DISTANCE",
-                        "SUPPORT_PHYSIQUE_FILM",
-                        "SUPPORT_PHYSIQUE_MUSIQUE",
-                        "TELECHARGEMENT_LIVRE_AUDIO",
-                        "TELECHARGEMENT_MUSIQUE",
-                        "VISITE_GUIDEE",
-                        "VISITE_VIRTUELLE",
-                        "VISITE",
-                        "VOD",
-                    ],
-                    "title": "SubcategoryIdEnum",
-                },
-                "ef602d1.AccountRequest": {
+                "AccountRequest": {
                     "properties": {
                         "appsFlyerPlatform": {"nullable": True, "title": "Appsflyerplatform", "type": "string"},
                         "appsFlyerUserId": {"nullable": True, "title": "Appsflyeruserid", "type": "string"},
@@ -1368,13 +925,13 @@ def test_public_api(client, app):
                     "title": "AccountRequest",
                     "type": "object",
                 },
-                "ef602d1.ChangeBeneficiaryEmailBody": {
+                "ChangeBeneficiaryEmailBody": {
                     "properties": {"token": {"title": "Token", "type": "string"}},
                     "required": ["token"],
                     "title": "ChangeBeneficiaryEmailBody",
                     "type": "object",
                 },
-                "ef602d1.CulturalSurveyRequest": {
+                "CulturalSurveyRequest": {
                     "properties": {
                         "culturalSurveyId": {
                             "format": "uuid",
@@ -1388,37 +945,37 @@ def test_public_api(client, app):
                     "title": "CulturalSurveyRequest",
                     "type": "object",
                 },
-                "ef602d1.IdentificationSessionRequest": {
+                "IdentificationSessionRequest": {
                     "properties": {"redirectUrl": {"title": "Redirecturl", "type": "string"}},
                     "required": ["redirectUrl"],
                     "title": "IdentificationSessionRequest",
                     "type": "object",
                 },
-                "ef602d1.IdentificationSessionResponse": {
+                "IdentificationSessionResponse": {
                     "properties": {"identificationUrl": {"title": "Identificationurl", "type": "string"}},
                     "required": ["identificationUrl"],
                     "title": "IdentificationSessionResponse",
                     "type": "object",
                 },
-                "ef602d1.ResendEmailValidationRequest": {
+                "ResendEmailValidationRequest": {
                     "properties": {"email": {"title": "Email", "type": "string"}},
                     "required": ["email"],
                     "title": "ResendEmailValidationRequest",
                     "type": "object",
                 },
-                "ef602d1.SendPhoneValidationRequest": {
+                "SendPhoneValidationRequest": {
                     "properties": {"phoneNumber": {"nullable": True, "title": "Phonenumber", "type": "string"}},
                     "title": "SendPhoneValidationRequest",
                     "type": "object",
                 },
-                "ef602d1.UpdateEmailTokenExpiration": {
+                "UpdateEmailTokenExpiration": {
                     "properties": {
                         "expiration": {"format": "date-time", "nullable": True, "title": "Expiration", "type": "string"}
                     },
                     "title": "UpdateEmailTokenExpiration",
                     "type": "object",
                 },
-                "ef602d1.UserProfileEmailUpdate": {
+                "UserProfileEmailUpdate": {
                     "properties": {
                         "email": {"format": "email", "title": "Email", "type": "string"},
                         "password": {"minLength": 8, "title": "Password", "type": "string"},
@@ -1427,7 +984,7 @@ def test_public_api(client, app):
                     "title": "UserProfileEmailUpdate",
                     "type": "object",
                 },
-                "ef602d1.UserProfileResponse": {
+                "UserProfileResponse": {
                     "properties": {
                         "bookedOffers": {
                             "additionalProperties": {"type": "integer"},
@@ -1442,17 +999,17 @@ def test_public_api(client, app):
                             "type": "string",
                         },
                         "depositType": {
-                            "anyOf": [{"$ref": "#/components/schemas/ef602d1.UserProfileResponse.DepositType"}],
+                            "anyOf": [{"$ref": "#/components/schemas/DepositType"}],
                             "nullable": True,
                         },
                         "depositVersion": {"nullable": True, "title": "Depositversion", "type": "integer"},
                         "domainsCredit": {
-                            "anyOf": [{"$ref": "#/components/schemas/ef602d1.UserProfileResponse.DomainsCredit"}],
+                            "anyOf": [{"$ref": "#/components/schemas/DomainsCredit"}],
                             "nullable": True,
                             "title": "DomainsCredit",
                         },
                         "eligibility": {
-                            "anyOf": [{"$ref": "#/components/schemas/ef602d1.UserProfileResponse.EligibilityType"}],
+                            "anyOf": [{"$ref": "#/components/schemas/EligibilityType"}],
                             "nullable": True,
                         },
                         "eligibilityEndDatetime": {
@@ -1481,18 +1038,16 @@ def test_public_api(client, app):
                         "pseudo": {"nullable": True, "title": "Pseudo", "type": "string"},
                         "recreditAmountToShow": {"nullable": True, "title": "Recreditamounttoshow", "type": "integer"},
                         "roles": {
-                            "items": {"$ref": "#/components/schemas/ef602d1.UserProfileResponse.UserRole"},
+                            "items": {"$ref": "#/components/schemas/UserRole"},
                             "type": "array",
                         },
                         "showEligibleCard": {"title": "Showeligiblecard", "type": "boolean"},
                         "subscriptionMessage": {
-                            "anyOf": [{"$ref": "#/components/schemas/ef602d1.UserProfileResponse.SubscriptionMessage"}],
+                            "anyOf": [{"$ref": "#/components/schemas/SubscriptionMessage"}],
                             "nullable": True,
                             "title": "SubscriptionMessage",
                         },
-                        "subscriptions": {
-                            "$ref": "#/components/schemas/ef602d1.UserProfileResponse.NotificationSubscriptions"
-                        },
+                        "subscriptions": {"$ref": "#/components/schemas/NotificationSubscriptions"},
                     },
                     "required": [
                         "bookedOffers",
@@ -1508,15 +1063,15 @@ def test_public_api(client, app):
                     "title": "UserProfileResponse",
                     "type": "object",
                 },
-                "ef602d1.UserProfileResponse.CallToActionIcon": {
+                "CallToActionIcon": {
                     "description": "An enumeration.",
                     "enum": ["EMAIL", "RETRY", "EXTERNAL"],
                     "title": "CallToActionIcon",
                 },
-                "ef602d1.UserProfileResponse.CallToActionMessage": {
+                "CallToActionMessage": {
                     "properties": {
                         "callToActionIcon": {
-                            "anyOf": [{"$ref": "#/components/schemas/ef602d1.UserProfileResponse.CallToActionIcon"}],
+                            "anyOf": [{"$ref": "#/components/schemas/CallToActionIcon"}],
                             "nullable": True,
                         },
                         "callToActionLink": {"nullable": True, "title": "Calltoactionlink", "type": "string"},
@@ -1525,7 +1080,7 @@ def test_public_api(client, app):
                     "title": "CallToActionMessage",
                     "type": "object",
                 },
-                "ef602d1.UserProfileResponse.Credit": {
+                "Credit": {
                     "properties": {
                         "initial": {"title": "Initial", "type": "integer"},
                         "remaining": {"title": "Remaining", "type": "integer"},
@@ -1534,21 +1089,21 @@ def test_public_api(client, app):
                     "title": "Credit",
                     "type": "object",
                 },
-                "ef602d1.UserProfileResponse.DepositType": {
+                "DepositType": {
                     "description": "An enumeration.",
                     "enum": ["GRANT_15_17", "GRANT_18"],
                     "title": "DepositType",
                 },
-                "ef602d1.UserProfileResponse.DomainsCredit": {
+                "DomainsCredit": {
                     "properties": {
-                        "all": {"$ref": "#/components/schemas/ef602d1.UserProfileResponse.Credit"},
+                        "all": {"$ref": "#/components/schemas/Credit"},
                         "digital": {
-                            "anyOf": [{"$ref": "#/components/schemas/ef602d1.UserProfileResponse.Credit"}],
+                            "anyOf": [{"$ref": "#/components/schemas/Credit"}],
                             "nullable": True,
                             "title": "Credit",
                         },
                         "physical": {
-                            "anyOf": [{"$ref": "#/components/schemas/ef602d1.UserProfileResponse.Credit"}],
+                            "anyOf": [{"$ref": "#/components/schemas/Credit"}],
                             "nullable": True,
                             "title": "Credit",
                         },
@@ -1557,34 +1112,25 @@ def test_public_api(client, app):
                     "title": "DomainsCredit",
                     "type": "object",
                 },
-                "ef602d1.UserProfileResponse.EligibilityType": {
+                "EligibilityType": {
                     "description": "An enumeration.",
                     "enum": ["underage", "age-18"],
                     "title": "EligibilityType",
                 },
-                "ef602d1.UserProfileResponse.NotificationSubscriptions": {
-                    "properties": {
-                        "marketingEmail": {"title": "Marketingemail", "type": "boolean"},
-                        "marketingPush": {"title": "Marketingpush", "type": "boolean"},
-                    },
-                    "required": ["marketingEmail", "marketingPush"],
-                    "title": "NotificationSubscriptions",
-                    "type": "object",
-                },
-                "ef602d1.UserProfileResponse.PopOverIcon": {
+                "PopOverIcon": {
                     "description": "An enumeration.",
                     "enum": ["INFO", "ERROR", "WARNING", "CLOCK", "FILE", "MAGNIFYING_GLASS"],
                     "title": "PopOverIcon",
                 },
-                "ef602d1.UserProfileResponse.SubscriptionMessage": {
+                "SubscriptionMessage": {
                     "properties": {
                         "callToAction": {
-                            "anyOf": [{"$ref": "#/components/schemas/ef602d1.UserProfileResponse.CallToActionMessage"}],
+                            "anyOf": [{"$ref": "#/components/schemas/CallToActionMessage"}],
                             "nullable": True,
                             "title": "CallToActionMessage",
                         },
                         "popOverIcon": {
-                            "anyOf": [{"$ref": "#/components/schemas/ef602d1.UserProfileResponse.PopOverIcon"}],
+                            "anyOf": [{"$ref": "#/components/schemas/PopOverIcon"}],
                             "nullable": True,
                         },
                         "updatedAt": {"format": "date-time", "title": "Updatedat", "type": "string"},
@@ -1594,19 +1140,15 @@ def test_public_api(client, app):
                     "title": "SubscriptionMessage",
                     "type": "object",
                 },
-                "ef602d1.UserProfileResponse.UserRole": {
+                "UserRole": {
                     "description": "An enumeration.",
                     "enum": ["ADMIN", "BENEFICIARY", "PRO", "JOUVE", "UNDERAGE_BENEFICIARY"],
                     "title": "UserRole",
                 },
-                "ef602d1.UserProfileUpdateRequest": {
+                "UserProfileUpdateRequest": {
                     "properties": {
                         "subscriptions": {
-                            "anyOf": [
-                                {
-                                    "$ref": "#/components/schemas/ef602d1.UserProfileUpdateRequest.NotificationSubscriptions"
-                                }
-                            ],
+                            "anyOf": [{"$ref": "#/components/schemas/NotificationSubscriptions"}],
                             "nullable": True,
                             "title": "NotificationSubscriptions",
                         }
@@ -1614,7 +1156,7 @@ def test_public_api(client, app):
                     "title": "UserProfileUpdateRequest",
                     "type": "object",
                 },
-                "ef602d1.UserProfileUpdateRequest.NotificationSubscriptions": {
+                "NotificationSubscriptions": {
                     "properties": {
                         "marketingEmail": {"title": "Marketingemail", "type": "boolean"},
                         "marketingPush": {"title": "Marketingpush", "type": "boolean"},
@@ -1623,10 +1165,10 @@ def test_public_api(client, app):
                     "title": "NotificationSubscriptions",
                     "type": "object",
                 },
-                "ef602d1.UserProfilingFraudRequest": {
+                "UserProfilingFraudRequest": {
                     "properties": {
                         "agentType": {
-                            "anyOf": [{"$ref": "#/components/schemas/ef602d1.UserProfilingFraudRequest.AgentType"}],
+                            "anyOf": [{"$ref": "#/components/schemas/AgentType"}],
                             "nullable": True,
                         },
                         "sessionId": {"nullable": True, "title": "Sessionid", "type": "string"},
@@ -1635,44 +1177,36 @@ def test_public_api(client, app):
                     "title": "UserProfilingFraudRequest",
                     "type": "object",
                 },
-                "ef602d1.UserProfilingFraudRequest.AgentType": {
+                "AgentType": {
                     "description": "An enumeration.",
                     "enum": ["browser_computer", "browser_mobile", "agent_mobile"],
                     "title": "AgentType",
                 },
-                "ef602d1.UserProfilingSessionIdResponse": {
+                "UserProfilingSessionIdResponse": {
                     "properties": {"sessionId": {"title": "Sessionid", "type": "string"}},
                     "required": ["sessionId"],
                     "title": "UserProfilingSessionIdResponse",
                     "type": "object",
                 },
-                "ef602d1.ValidatePhoneNumberRequest": {
+                "ValidatePhoneNumberRequest": {
                     "properties": {"code": {"title": "Code", "type": "string"}},
                     "required": ["code"],
                     "title": "ValidatePhoneNumberRequest",
                     "type": "object",
                 },
-                "fb22939.NextSubscriptionStepResponse": {
+                "NextSubscriptionStepResponse": {
                     "properties": {
                         "allowedIdentityCheckMethods": {
-                            "items": {
-                                "$ref": "#/components/schemas/fb22939.NextSubscriptionStepResponse.IdentityCheckMethod"
-                            },
+                            "items": {"$ref": "#/components/schemas/IdentityCheckMethod"},
                             "type": "array",
                         },
                         "hasIdentityCheckPending": {"title": "Hasidentitycheckpending", "type": "boolean"},
                         "maintenancePageType": {
-                            "anyOf": [
-                                {
-                                    "$ref": "#/components/schemas/fb22939.NextSubscriptionStepResponse.MaintenancePageType"
-                                }
-                            ],
+                            "anyOf": [{"$ref": "#/components/schemas/MaintenancePageType"}],
                             "nullable": True,
                         },
                         "nextSubscriptionStep": {
-                            "anyOf": [
-                                {"$ref": "#/components/schemas/fb22939.NextSubscriptionStepResponse.SubscriptionStep"}
-                            ],
+                            "anyOf": [{"$ref": "#/components/schemas/SubscriptionStep"}],
                             "nullable": True,
                         },
                     },
@@ -1680,17 +1214,17 @@ def test_public_api(client, app):
                     "title": "NextSubscriptionStepResponse",
                     "type": "object",
                 },
-                "fb22939.NextSubscriptionStepResponse.IdentityCheckMethod": {
+                "IdentityCheckMethod": {
                     "description": "An enumeration.",
                     "enum": ["educonnect", "ubble"],
                     "title": "IdentityCheckMethod",
                 },
-                "fb22939.NextSubscriptionStepResponse.MaintenancePageType": {
+                "MaintenancePageType": {
                     "description": "An enumeration.",
                     "enum": ["with-dms", "without-dms"],
                     "title": "MaintenancePageType",
                 },
-                "fb22939.NextSubscriptionStepResponse.SubscriptionStep": {
+                "SubscriptionStep": {
                     "description": "An enumeration.",
                     "enum": [
                         "email-validation",
@@ -1703,19 +1237,15 @@ def test_public_api(client, app):
                     ],
                     "title": "SubscriptionStep",
                 },
-                "fb22939.ProfileOptionsResponse": {
+                "ProfileOptionsResponse": {
                     "properties": {
                         "activities": {
-                            "items": {
-                                "$ref": "#/components/schemas/fb22939.ProfileOptionsResponse.ActivityResponseModel"
-                            },
+                            "items": {"$ref": "#/components/schemas/ActivityResponseModel"},
                             "title": "Activities",
                             "type": "array",
                         },
                         "school_types": {
-                            "items": {
-                                "$ref": "#/components/schemas/fb22939.ProfileOptionsResponse.SchoolTypeResponseModel"
-                            },
+                            "items": {"$ref": "#/components/schemas/SchoolTypeResponseModel"},
                             "title": "School Types",
                             "type": "array",
                         },
@@ -1724,69 +1254,39 @@ def test_public_api(client, app):
                     "title": "ProfileOptionsResponse",
                     "type": "object",
                 },
-                "fb22939.ProfileOptionsResponse.ActivityIdEnum": {
-                    "description": "An enumeration.",
-                    "enum": [
-                        "MIDDLE_SCHOOL_STUDENT",
-                        "HIGH_SCHOOL_STUDENT",
-                        "STUDENT",
-                        "EMPLOYEE",
-                        "APPRENTICE",
-                        "APPRENTICE_STUDENT",
-                        "VOLUNTEER",
-                        "INACTIVE",
-                        "UNEMPLOYED",
-                    ],
-                    "title": "ActivityIdEnum",
-                },
-                "fb22939.ProfileOptionsResponse.ActivityResponseModel": {
+                "ActivityResponseModel": {
                     "properties": {
                         "associatedSchoolTypesIds": {
-                            "items": {"$ref": "#/components/schemas/fb22939.ProfileOptionsResponse.SchoolTypesIdEnum"},
+                            "items": {"$ref": "#/components/schemas/SchoolTypesIdEnum"},
                             "nullable": True,
                             "type": "array",
                         },
                         "description": {"nullable": True, "title": "Description", "type": "string"},
-                        "id": {"$ref": "#/components/schemas/fb22939.ProfileOptionsResponse.ActivityIdEnum"},
+                        "id": {"$ref": "#/components/schemas/ActivityIdEnum"},
                         "label": {"title": "Label", "type": "string"},
                     },
                     "required": ["id", "label"],
                     "title": "ActivityResponseModel",
                     "type": "object",
                 },
-                "fb22939.ProfileOptionsResponse.SchoolTypeResponseModel": {
+                "SchoolTypeResponseModel": {
                     "properties": {
                         "description": {"nullable": True, "title": "Description", "type": "string"},
-                        "id": {"$ref": "#/components/schemas/fb22939.ProfileOptionsResponse.SchoolTypesIdEnum"},
+                        "id": {"$ref": "#/components/schemas/SchoolTypesIdEnum"},
                         "label": {"title": "Label", "type": "string"},
                     },
                     "required": ["id", "label"],
                     "title": "SchoolTypeResponseModel",
                     "type": "object",
                 },
-                "fb22939.ProfileOptionsResponse.SchoolTypesIdEnum": {
-                    "description": "An enumeration.",
-                    "enum": [
-                        "AGRICULTURAL_HIGH_SCHOOL",
-                        "APPRENTICE_FORMATION_CENTER",
-                        "MILITARY_HIGH_SCHOOL",
-                        "HOME_OR_REMOTE_SCHOOLING",
-                        "NAVAL_HIGH_SCHOOL",
-                        "PRIVATE_HIGH_SCHOOL",
-                        "PRIVATE_SECONDARY_SCHOOL",
-                        "PUBLIC_HIGH_SCHOOL",
-                        "PUBLIC_SECONDARY_SCHOOL",
-                    ],
-                    "title": "SchoolTypesIdEnum",
-                },
-                "fb22939.ProfileUpdateRequest": {
+                "ProfileUpdateRequest": {
                     "properties": {
                         "activity": {
-                            "anyOf": [{"$ref": "#/components/schemas/fb22939.ProfileUpdateRequest.ActivityEnum"}],
+                            "anyOf": [{"$ref": "#/components/schemas/ActivityEnum"}],
                             "nullable": True,
                         },
                         "activityId": {
-                            "anyOf": [{"$ref": "#/components/schemas/fb22939.ProfileUpdateRequest.ActivityIdEnum"}],
+                            "anyOf": [{"$ref": "#/components/schemas/ActivityIdEnum"}],
                             "nullable": True,
                         },
                         "address": {"nullable": True, "title": "Address", "type": "string"},
@@ -1795,7 +1295,7 @@ def test_public_api(client, app):
                         "lastName": {"title": "Lastname", "type": "string"},
                         "postalCode": {"title": "Postalcode", "type": "string"},
                         "schoolTypeId": {
-                            "anyOf": [{"$ref": "#/components/schemas/fb22939.ProfileUpdateRequest.SchoolTypesIdEnum"}],
+                            "anyOf": [{"$ref": "#/components/schemas/SchoolTypesIdEnum"}],
                             "nullable": True,
                         },
                     },
@@ -1803,7 +1303,7 @@ def test_public_api(client, app):
                     "title": "ProfileUpdateRequest",
                     "type": "object",
                 },
-                "fb22939.ProfileUpdateRequest.ActivityEnum": {
+                "ActivityEnum": {
                     "description": "An enumeration.",
                     "enum": [
                         "Coll\u00e9gien",
@@ -1818,7 +1318,7 @@ def test_public_api(client, app):
                     ],
                     "title": "ActivityEnum",
                 },
-                "fb22939.ProfileUpdateRequest.ActivityIdEnum": {
+                "ActivityIdEnum": {
                     "description": "An enumeration.",
                     "enum": [
                         "MIDDLE_SCHOOL_STUDENT",
@@ -1833,7 +1333,7 @@ def test_public_api(client, app):
                     ],
                     "title": "ActivityIdEnum",
                 },
-                "fb22939.ProfileUpdateRequest.SchoolTypesIdEnum": {
+                "SchoolTypesIdEnum": {
                     "description": "An enumeration.",
                     "enum": [
                         "AGRICULTURAL_HIGH_SCHOOL",
@@ -1860,9 +1360,7 @@ def test_public_api(client, app):
                     "operationId": "post_/native/v1/account",
                     "parameters": [],
                     "requestBody": {
-                        "content": {
-                            "application/json": {"schema": {"$ref": "#/components/schemas/ef602d1.AccountRequest"}}
-                        }
+                        "content": {"application/json": {"schema": {"$ref": "#/components/schemas/AccountRequest"}}}
                     },
                     "responses": {
                         "204": {"description": "No Content"},
@@ -1870,7 +1368,7 @@ def test_public_api(client, app):
                         "403": {"description": "Forbidden"},
                         "422": {
                             "content": {
-                                "application/json": {"schema": {"$ref": "#/components/schemas/6a07bef.ValidationError"}}
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
                             },
                             "description": "Unprocessable Entity",
                         },
@@ -1889,7 +1387,7 @@ def test_public_api(client, app):
                         "403": {"description": "Forbidden"},
                         "422": {
                             "content": {
-                                "application/json": {"schema": {"$ref": "#/components/schemas/6a07bef.ValidationError"}}
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
                             },
                             "description": "Unprocessable Entity",
                         },
@@ -1907,16 +1405,14 @@ def test_public_api(client, app):
                     "responses": {
                         "200": {
                             "content": {
-                                "application/json": {
-                                    "schema": {"$ref": "#/components/schemas/1739669.BookingsResponse"}
-                                }
+                                "application/json": {"schema": {"$ref": "#/components/schemas/BookingsResponse"}}
                             },
                             "description": "OK",
                         },
                         "403": {"description": "Forbidden"},
                         "422": {
                             "content": {
-                                "application/json": {"schema": {"$ref": "#/components/schemas/6a07bef.ValidationError"}}
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
                             },
                             "description": "Unprocessable Entity",
                         },
@@ -1930,16 +1426,12 @@ def test_public_api(client, app):
                     "operationId": "post_/native/v1/bookings",
                     "parameters": [],
                     "requestBody": {
-                        "content": {
-                            "application/json": {"schema": {"$ref": "#/components/schemas/1739669.BookOfferRequest"}}
-                        }
+                        "content": {"application/json": {"schema": {"$ref": "#/components/schemas/BookOfferRequest"}}}
                     },
                     "responses": {
                         "200": {
                             "content": {
-                                "application/json": {
-                                    "schema": {"$ref": "#/components/schemas/1739669.BookOfferResponse"}
-                                }
+                                "application/json": {"schema": {"$ref": "#/components/schemas/BookOfferResponse"}}
                             },
                             "description": "OK",
                         },
@@ -1947,7 +1439,7 @@ def test_public_api(client, app):
                         "403": {"description": "Forbidden"},
                         "422": {
                             "content": {
-                                "application/json": {"schema": {"$ref": "#/components/schemas/6a07bef.ValidationError"}}
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
                             },
                             "description": "Unprocessable Entity",
                         },
@@ -1977,7 +1469,7 @@ def test_public_api(client, app):
                         "404": {"description": "Not Found"},
                         "422": {
                             "content": {
-                                "application/json": {"schema": {"$ref": "#/components/schemas/6a07bef.ValidationError"}}
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
                             },
                             "description": "Unprocessable Entity",
                         },
@@ -2002,9 +1494,7 @@ def test_public_api(client, app):
                     ],
                     "requestBody": {
                         "content": {
-                            "application/json": {
-                                "schema": {"$ref": "#/components/schemas/1739669.BookingDisplayStatusRequest"}
-                            }
+                            "application/json": {"schema": {"$ref": "#/components/schemas/BookingDisplayStatusRequest"}}
                         }
                     },
                     "responses": {
@@ -2013,7 +1503,7 @@ def test_public_api(client, app):
                         "403": {"description": "Forbidden"},
                         "422": {
                             "content": {
-                                "application/json": {"schema": {"$ref": "#/components/schemas/6a07bef.ValidationError"}}
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
                             },
                             "description": "Unprocessable Entity",
                         },
@@ -2030,9 +1520,7 @@ def test_public_api(client, app):
                     "parameters": [],
                     "requestBody": {
                         "content": {
-                            "application/json": {
-                                "schema": {"$ref": "#/components/schemas/6a26fd8.ChangePasswordRequest"}
-                            }
+                            "application/json": {"schema": {"$ref": "#/components/schemas/ChangePasswordRequest"}}
                         }
                     },
                     "responses": {
@@ -2041,7 +1529,7 @@ def test_public_api(client, app):
                         "403": {"description": "Forbidden"},
                         "422": {
                             "content": {
-                                "application/json": {"schema": {"$ref": "#/components/schemas/6a07bef.ValidationError"}}
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
                             },
                             "description": "Unprocessable Entity",
                         },
@@ -2059,16 +1547,14 @@ def test_public_api(client, app):
                     "responses": {
                         "200": {
                             "content": {
-                                "application/json": {
-                                    "schema": {"$ref": "#/components/schemas/ef602d1.UserProfileResponse"}
-                                }
+                                "application/json": {"schema": {"$ref": "#/components/schemas/UserProfileResponse"}}
                             },
                             "description": "OK",
                         },
                         "403": {"description": "Forbidden"},
                         "422": {
                             "content": {
-                                "application/json": {"schema": {"$ref": "#/components/schemas/6a07bef.ValidationError"}}
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
                             },
                             "description": "Unprocessable Entity",
                         },
@@ -2085,9 +1571,7 @@ def test_public_api(client, app):
                     "parameters": [],
                     "requestBody": {
                         "content": {
-                            "application/json": {
-                                "schema": {"$ref": "#/components/schemas/ef602d1.CulturalSurveyRequest"}
-                            }
+                            "application/json": {"schema": {"$ref": "#/components/schemas/CulturalSurveyRequest"}}
                         }
                     },
                     "responses": {
@@ -2096,7 +1580,7 @@ def test_public_api(client, app):
                         "403": {"description": "Forbidden"},
                         "422": {
                             "content": {
-                                "application/json": {"schema": {"$ref": "#/components/schemas/6a07bef.ValidationError"}}
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
                             },
                             "description": "Unprocessable Entity",
                         },
@@ -2115,7 +1599,7 @@ def test_public_api(client, app):
                         "200": {
                             "content": {
                                 "application/json": {
-                                    "schema": {"$ref": "#/components/schemas/e27ef6e.PaginatedFavoritesResponse"}
+                                    "schema": {"$ref": "#/components/schemas/PaginatedFavoritesResponse"}
                                 }
                             },
                             "description": "OK",
@@ -2123,7 +1607,7 @@ def test_public_api(client, app):
                         "403": {"description": "Forbidden"},
                         "422": {
                             "content": {
-                                "application/json": {"schema": {"$ref": "#/components/schemas/6a07bef.ValidationError"}}
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
                             },
                             "description": "Unprocessable Entity",
                         },
@@ -2137,16 +1621,12 @@ def test_public_api(client, app):
                     "operationId": "post_/native/v1/me/favorites",
                     "parameters": [],
                     "requestBody": {
-                        "content": {
-                            "application/json": {"schema": {"$ref": "#/components/schemas/e27ef6e.FavoriteRequest"}}
-                        }
+                        "content": {"application/json": {"schema": {"$ref": "#/components/schemas/FavoriteRequest"}}}
                     },
                     "responses": {
                         "200": {
                             "content": {
-                                "application/json": {
-                                    "schema": {"$ref": "#/components/schemas/e27ef6e.FavoriteResponse"}
-                                }
+                                "application/json": {"schema": {"$ref": "#/components/schemas/FavoriteResponse"}}
                             },
                             "description": "OK",
                         },
@@ -2154,7 +1634,7 @@ def test_public_api(client, app):
                         "403": {"description": "Forbidden"},
                         "422": {
                             "content": {
-                                "application/json": {"schema": {"$ref": "#/components/schemas/6a07bef.ValidationError"}}
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
                             },
                             "description": "Unprocessable Entity",
                         },
@@ -2172,16 +1652,14 @@ def test_public_api(client, app):
                     "responses": {
                         "200": {
                             "content": {
-                                "application/json": {
-                                    "schema": {"$ref": "#/components/schemas/e27ef6e.FavoritesCountResponse"}
-                                }
+                                "application/json": {"schema": {"$ref": "#/components/schemas/FavoritesCountResponse"}}
                             },
                             "description": "OK",
                         },
                         "403": {"description": "Forbidden"},
                         "422": {
                             "content": {
-                                "application/json": {"schema": {"$ref": "#/components/schemas/6a07bef.ValidationError"}}
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
                             },
                             "description": "Unprocessable Entity",
                         },
@@ -2209,7 +1687,7 @@ def test_public_api(client, app):
                         "403": {"description": "Forbidden"},
                         "422": {
                             "content": {
-                                "application/json": {"schema": {"$ref": "#/components/schemas/6a07bef.ValidationError"}}
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
                             },
                             "description": "Unprocessable Entity",
                         },
@@ -2227,16 +1705,14 @@ def test_public_api(client, app):
                     "responses": {
                         "200": {
                             "content": {
-                                "application/json": {
-                                    "schema": {"$ref": "#/components/schemas/2f4e8f8.OfferReportReasons"}
-                                }
+                                "application/json": {"schema": {"$ref": "#/components/schemas/OfferReportReasons"}}
                             },
                             "description": "OK",
                         },
                         "403": {"description": "Forbidden"},
                         "422": {
                             "content": {
-                                "application/json": {"schema": {"$ref": "#/components/schemas/6a07bef.ValidationError"}}
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
                             },
                             "description": "Unprocessable Entity",
                         },
@@ -2261,16 +1737,14 @@ def test_public_api(client, app):
                     ],
                     "responses": {
                         "200": {
-                            "content": {
-                                "application/json": {"schema": {"$ref": "#/components/schemas/2f4e8f8.OfferResponse"}}
-                            },
+                            "content": {"application/json": {"schema": {"$ref": "#/components/schemas/OfferResponse"}}},
                             "description": "OK",
                         },
                         "403": {"description": "Forbidden"},
                         "404": {"description": "Not Found"},
                         "422": {
                             "content": {
-                                "application/json": {"schema": {"$ref": "#/components/schemas/6a07bef.ValidationError"}}
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
                             },
                             "description": "Unprocessable Entity",
                         },
@@ -2293,16 +1767,14 @@ def test_public_api(client, app):
                         }
                     ],
                     "requestBody": {
-                        "content": {
-                            "application/json": {"schema": {"$ref": "#/components/schemas/2f4e8f8.OfferReportRequest"}}
-                        }
+                        "content": {"application/json": {"schema": {"$ref": "#/components/schemas/OfferReportRequest"}}}
                     },
                     "responses": {
                         "204": {"description": "No Content"},
                         "403": {"description": "Forbidden"},
                         "422": {
                             "content": {
-                                "application/json": {"schema": {"$ref": "#/components/schemas/6a07bef.ValidationError"}}
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
                             },
                             "description": "Unprocessable Entity",
                         },
@@ -2321,7 +1793,7 @@ def test_public_api(client, app):
                         "200": {
                             "content": {
                                 "application/json": {
-                                    "schema": {"$ref": "#/components/schemas/2f4e8f8.UserReportedOffersResponse"}
+                                    "schema": {"$ref": "#/components/schemas/UserReportedOffersResponse"}
                                 }
                             },
                             "description": "OK",
@@ -2329,7 +1801,7 @@ def test_public_api(client, app):
                         "403": {"description": "Forbidden"},
                         "422": {
                             "content": {
-                                "application/json": {"schema": {"$ref": "#/components/schemas/6a07bef.ValidationError"}}
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
                             },
                             "description": "Unprocessable Entity",
                         },
@@ -2346,24 +1818,20 @@ def test_public_api(client, app):
                     "parameters": [],
                     "requestBody": {
                         "content": {
-                            "application/json": {
-                                "schema": {"$ref": "#/components/schemas/ef602d1.UserProfileUpdateRequest"}
-                            }
+                            "application/json": {"schema": {"$ref": "#/components/schemas/UserProfileUpdateRequest"}}
                         }
                     },
                     "responses": {
                         "200": {
                             "content": {
-                                "application/json": {
-                                    "schema": {"$ref": "#/components/schemas/ef602d1.UserProfileResponse"}
-                                }
+                                "application/json": {"schema": {"$ref": "#/components/schemas/UserProfileResponse"}}
                             },
                             "description": "OK",
                         },
                         "403": {"description": "Forbidden"},
                         "422": {
                             "content": {
-                                "application/json": {"schema": {"$ref": "#/components/schemas/6a07bef.ValidationError"}}
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
                             },
                             "description": "Unprocessable Entity",
                         },
@@ -2382,7 +1850,7 @@ def test_public_api(client, app):
                         "200": {
                             "content": {
                                 "application/json": {
-                                    "schema": {"$ref": "#/components/schemas/ef602d1.UpdateEmailTokenExpiration"}
+                                    "schema": {"$ref": "#/components/schemas/UpdateEmailTokenExpiration"}
                                 }
                             },
                             "description": "OK",
@@ -2390,7 +1858,7 @@ def test_public_api(client, app):
                         "403": {"description": "Forbidden"},
                         "422": {
                             "content": {
-                                "application/json": {"schema": {"$ref": "#/components/schemas/6a07bef.ValidationError"}}
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
                             },
                             "description": "Unprocessable Entity",
                         },
@@ -2407,9 +1875,7 @@ def test_public_api(client, app):
                     "parameters": [],
                     "requestBody": {
                         "content": {
-                            "application/json": {
-                                "schema": {"$ref": "#/components/schemas/ef602d1.UserProfileEmailUpdate"}
-                            }
+                            "application/json": {"schema": {"$ref": "#/components/schemas/UserProfileEmailUpdate"}}
                         }
                     },
                     "responses": {
@@ -2417,7 +1883,7 @@ def test_public_api(client, app):
                         "403": {"description": "Forbidden"},
                         "422": {
                             "content": {
-                                "application/json": {"schema": {"$ref": "#/components/schemas/6a07bef.ValidationError"}}
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
                             },
                             "description": "Unprocessable Entity",
                         },
@@ -2434,9 +1900,7 @@ def test_public_api(client, app):
                     "parameters": [],
                     "requestBody": {
                         "content": {
-                            "application/json": {
-                                "schema": {"$ref": "#/components/schemas/ef602d1.ChangeBeneficiaryEmailBody"}
-                            }
+                            "application/json": {"schema": {"$ref": "#/components/schemas/ChangeBeneficiaryEmailBody"}}
                         }
                     },
                     "responses": {
@@ -2444,7 +1908,7 @@ def test_public_api(client, app):
                         "403": {"description": "Forbidden"},
                         "422": {
                             "content": {
-                                "application/json": {"schema": {"$ref": "#/components/schemas/6a07bef.ValidationError"}}
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
                             },
                             "description": "Unprocessable Entity",
                         },
@@ -2461,14 +1925,14 @@ def test_public_api(client, app):
                     "responses": {
                         "200": {
                             "content": {
-                                "application/json": {"schema": {"$ref": "#/components/schemas/6a26fd8.RefreshResponse"}}
+                                "application/json": {"schema": {"$ref": "#/components/schemas/RefreshResponse"}}
                             },
                             "description": "OK",
                         },
                         "403": {"description": "Forbidden"},
                         "422": {
                             "content": {
-                                "application/json": {"schema": {"$ref": "#/components/schemas/6a07bef.ValidationError"}}
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
                             },
                             "description": "Unprocessable Entity",
                         },
@@ -2484,9 +1948,7 @@ def test_public_api(client, app):
                     "parameters": [],
                     "requestBody": {
                         "content": {
-                            "application/json": {
-                                "schema": {"$ref": "#/components/schemas/6a26fd8.RequestPasswordResetRequest"}
-                            }
+                            "application/json": {"schema": {"$ref": "#/components/schemas/RequestPasswordResetRequest"}}
                         }
                     },
                     "responses": {
@@ -2495,7 +1957,7 @@ def test_public_api(client, app):
                         "403": {"description": "Forbidden"},
                         "422": {
                             "content": {
-                                "application/json": {"schema": {"$ref": "#/components/schemas/6a07bef.ValidationError"}}
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
                             },
                             "description": "Unprocessable Entity",
                         },
@@ -2512,7 +1974,7 @@ def test_public_api(client, app):
                     "requestBody": {
                         "content": {
                             "application/json": {
-                                "schema": {"$ref": "#/components/schemas/ef602d1.ResendEmailValidationRequest"}
+                                "schema": {"$ref": "#/components/schemas/ResendEmailValidationRequest"}
                             }
                         }
                     },
@@ -2521,7 +1983,7 @@ def test_public_api(client, app):
                         "403": {"description": "Forbidden"},
                         "422": {
                             "content": {
-                                "application/json": {"schema": {"$ref": "#/components/schemas/6a07bef.ValidationError"}}
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
                             },
                             "description": "Unprocessable Entity",
                         },
@@ -2537,9 +1999,7 @@ def test_public_api(client, app):
                     "parameters": [],
                     "requestBody": {
                         "content": {
-                            "application/json": {
-                                "schema": {"$ref": "#/components/schemas/6a26fd8.ResetPasswordRequest"}
-                            }
+                            "application/json": {"schema": {"$ref": "#/components/schemas/ResetPasswordRequest"}}
                         }
                     },
                     "responses": {
@@ -2548,7 +2008,7 @@ def test_public_api(client, app):
                         "403": {"description": "Forbidden"},
                         "422": {
                             "content": {
-                                "application/json": {"schema": {"$ref": "#/components/schemas/6a07bef.ValidationError"}}
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
                             },
                             "description": "Unprocessable Entity",
                         },
@@ -2567,7 +2027,7 @@ def test_public_api(client, app):
                         "403": {"description": "Forbidden"},
                         "422": {
                             "content": {
-                                "application/json": {"schema": {"$ref": "#/components/schemas/6a07bef.ValidationError"}}
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
                             },
                             "description": "Unprocessable Entity",
                         },
@@ -2595,7 +2055,7 @@ def test_public_api(client, app):
                         "403": {"description": "Forbidden"},
                         "422": {
                             "content": {
-                                "application/json": {"schema": {"$ref": "#/components/schemas/6a07bef.ValidationError"}}
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
                             },
                             "description": "Unprocessable Entity",
                         },
@@ -2623,7 +2083,7 @@ def test_public_api(client, app):
                         "403": {"description": "Forbidden"},
                         "422": {
                             "content": {
-                                "application/json": {"schema": {"$ref": "#/components/schemas/6a07bef.ValidationError"}}
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
                             },
                             "description": "Unprocessable Entity",
                         },
@@ -2640,9 +2100,7 @@ def test_public_api(client, app):
                     "parameters": [],
                     "requestBody": {
                         "content": {
-                            "application/json": {
-                                "schema": {"$ref": "#/components/schemas/ef602d1.SendPhoneValidationRequest"}
-                            }
+                            "application/json": {"schema": {"$ref": "#/components/schemas/SendPhoneValidationRequest"}}
                         }
                     },
                     "responses": {
@@ -2650,7 +2108,7 @@ def test_public_api(client, app):
                         "403": {"description": "Forbidden"},
                         "422": {
                             "content": {
-                                "application/json": {"schema": {"$ref": "#/components/schemas/6a07bef.ValidationError"}}
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
                             },
                             "description": "Unprocessable Entity",
                         },
@@ -2668,16 +2126,14 @@ def test_public_api(client, app):
                     "responses": {
                         "200": {
                             "content": {
-                                "application/json": {
-                                    "schema": {"$ref": "#/components/schemas/24e874d.SettingsResponse"}
-                                }
+                                "application/json": {"schema": {"$ref": "#/components/schemas/SettingsResponse"}}
                             },
                             "description": "OK",
                         },
                         "403": {"description": "Forbidden"},
                         "422": {
                             "content": {
-                                "application/json": {"schema": {"$ref": "#/components/schemas/6a07bef.ValidationError"}}
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
                             },
                             "description": "Unprocessable Entity",
                         },
@@ -2692,21 +2148,19 @@ def test_public_api(client, app):
                     "operationId": "post_/native/v1/signin",
                     "parameters": [],
                     "requestBody": {
-                        "content": {
-                            "application/json": {"schema": {"$ref": "#/components/schemas/6a26fd8.SigninRequest"}}
-                        }
+                        "content": {"application/json": {"schema": {"$ref": "#/components/schemas/SigninRequest"}}}
                     },
                     "responses": {
                         "200": {
                             "content": {
-                                "application/json": {"schema": {"$ref": "#/components/schemas/6a26fd8.SigninResponse"}}
+                                "application/json": {"schema": {"$ref": "#/components/schemas/SigninResponse"}}
                             },
                             "description": "OK",
                         },
                         "403": {"description": "Forbidden"},
                         "422": {
                             "content": {
-                                "application/json": {"schema": {"$ref": "#/components/schemas/6a07bef.ValidationError"}}
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
                             },
                             "description": "Unprocessable Entity",
                         },
@@ -2724,7 +2178,7 @@ def test_public_api(client, app):
                         "200": {
                             "content": {
                                 "application/json": {
-                                    "schema": {"$ref": "#/components/schemas/2f4e8f8.SubcategoriesResponseModel"}
+                                    "schema": {"$ref": "#/components/schemas/SubcategoriesResponseModel"}
                                 }
                             },
                             "description": "OK",
@@ -2732,7 +2186,7 @@ def test_public_api(client, app):
                         "403": {"description": "Forbidden"},
                         "422": {
                             "content": {
-                                "application/json": {"schema": {"$ref": "#/components/schemas/6a07bef.ValidationError"}}
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
                             },
                             "description": "Unprocessable Entity",
                         },
@@ -2751,7 +2205,7 @@ def test_public_api(client, app):
                         "403": {"description": "Forbidden"},
                         "422": {
                             "content": {
-                                "application/json": {"schema": {"$ref": "#/components/schemas/6a07bef.ValidationError"}}
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
                             },
                             "description": "Unprocessable Entity",
                         },
@@ -2770,7 +2224,7 @@ def test_public_api(client, app):
                         "200": {
                             "content": {
                                 "application/json": {
-                                    "schema": {"$ref": "#/components/schemas/fb22939.NextSubscriptionStepResponse"}
+                                    "schema": {"$ref": "#/components/schemas/NextSubscriptionStepResponse"}
                                 }
                             },
                             "description": "OK",
@@ -2778,7 +2232,7 @@ def test_public_api(client, app):
                         "403": {"description": "Forbidden"},
                         "422": {
                             "content": {
-                                "application/json": {"schema": {"$ref": "#/components/schemas/6a07bef.ValidationError"}}
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
                             },
                             "description": "Unprocessable Entity",
                         },
@@ -2795,9 +2249,7 @@ def test_public_api(client, app):
                     "parameters": [],
                     "requestBody": {
                         "content": {
-                            "application/json": {
-                                "schema": {"$ref": "#/components/schemas/fb22939.ProfileUpdateRequest"}
-                            }
+                            "application/json": {"schema": {"$ref": "#/components/schemas/ProfileUpdateRequest"}}
                         }
                     },
                     "responses": {
@@ -2805,7 +2257,7 @@ def test_public_api(client, app):
                         "403": {"description": "Forbidden"},
                         "422": {
                             "content": {
-                                "application/json": {"schema": {"$ref": "#/components/schemas/6a07bef.ValidationError"}}
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
                             },
                             "description": "Unprocessable Entity",
                         },
@@ -2823,16 +2275,14 @@ def test_public_api(client, app):
                     "responses": {
                         "200": {
                             "content": {
-                                "application/json": {
-                                    "schema": {"$ref": "#/components/schemas/fb22939.ProfileOptionsResponse"}
-                                }
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ProfileOptionsResponse"}}
                             },
                             "description": "OK",
                         },
                         "403": {"description": "Forbidden"},
                         "422": {
                             "content": {
-                                "application/json": {"schema": {"$ref": "#/components/schemas/6a07bef.ValidationError"}}
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
                             },
                             "description": "Unprocessable Entity",
                         },
@@ -2849,7 +2299,7 @@ def test_public_api(client, app):
                     "requestBody": {
                         "content": {
                             "application/json": {
-                                "schema": {"$ref": "#/components/schemas/ef602d1.IdentificationSessionRequest"}
+                                "schema": {"$ref": "#/components/schemas/IdentificationSessionRequest"}
                             }
                         }
                     },
@@ -2857,7 +2307,7 @@ def test_public_api(client, app):
                         "200": {
                             "content": {
                                 "application/json": {
-                                    "schema": {"$ref": "#/components/schemas/ef602d1.IdentificationSessionResponse"}
+                                    "schema": {"$ref": "#/components/schemas/IdentificationSessionResponse"}
                                 }
                             },
                             "description": "OK",
@@ -2865,7 +2315,7 @@ def test_public_api(client, app):
                         "403": {"description": "Forbidden"},
                         "422": {
                             "content": {
-                                "application/json": {"schema": {"$ref": "#/components/schemas/6a07bef.ValidationError"}}
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
                             },
                             "description": "Unprocessable Entity",
                         },
@@ -2882,9 +2332,7 @@ def test_public_api(client, app):
                     "parameters": [],
                     "requestBody": {
                         "content": {
-                            "application/json": {
-                                "schema": {"$ref": "#/components/schemas/ef602d1.UserProfilingFraudRequest"}
-                            }
+                            "application/json": {"schema": {"$ref": "#/components/schemas/UserProfilingFraudRequest"}}
                         }
                     },
                     "responses": {
@@ -2892,7 +2340,7 @@ def test_public_api(client, app):
                         "403": {"description": "Forbidden"},
                         "422": {
                             "content": {
-                                "application/json": {"schema": {"$ref": "#/components/schemas/6a07bef.ValidationError"}}
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
                             },
                             "description": "Unprocessable Entity",
                         },
@@ -2911,7 +2359,7 @@ def test_public_api(client, app):
                         "200": {
                             "content": {
                                 "application/json": {
-                                    "schema": {"$ref": "#/components/schemas/ef602d1.UserProfilingSessionIdResponse"}
+                                    "schema": {"$ref": "#/components/schemas/UserProfilingSessionIdResponse"}
                                 }
                             },
                             "description": "OK",
@@ -2919,7 +2367,7 @@ def test_public_api(client, app):
                         "403": {"description": "Forbidden"},
                         "422": {
                             "content": {
-                                "application/json": {"schema": {"$ref": "#/components/schemas/6a07bef.ValidationError"}}
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
                             },
                             "description": "Unprocessable Entity",
                         },
@@ -2936,24 +2384,20 @@ def test_public_api(client, app):
                     "parameters": [],
                     "requestBody": {
                         "content": {
-                            "application/json": {
-                                "schema": {"$ref": "#/components/schemas/6a26fd8.ValidateEmailRequest"}
-                            }
+                            "application/json": {"schema": {"$ref": "#/components/schemas/ValidateEmailRequest"}}
                         }
                     },
                     "responses": {
                         "200": {
                             "content": {
-                                "application/json": {
-                                    "schema": {"$ref": "#/components/schemas/6a26fd8.ValidateEmailResponse"}
-                                }
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidateEmailResponse"}}
                             },
                             "description": "OK",
                         },
                         "403": {"description": "Forbidden"},
                         "422": {
                             "content": {
-                                "application/json": {"schema": {"$ref": "#/components/schemas/6a07bef.ValidationError"}}
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
                             },
                             "description": "Unprocessable Entity",
                         },
@@ -2969,9 +2413,7 @@ def test_public_api(client, app):
                     "parameters": [],
                     "requestBody": {
                         "content": {
-                            "application/json": {
-                                "schema": {"$ref": "#/components/schemas/ef602d1.ValidatePhoneNumberRequest"}
-                            }
+                            "application/json": {"schema": {"$ref": "#/components/schemas/ValidatePhoneNumberRequest"}}
                         }
                     },
                     "responses": {
@@ -2979,7 +2421,7 @@ def test_public_api(client, app):
                         "403": {"description": "Forbidden"},
                         "422": {
                             "content": {
-                                "application/json": {"schema": {"$ref": "#/components/schemas/6a07bef.ValidationError"}}
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
                             },
                             "description": "Unprocessable Entity",
                         },
@@ -3004,16 +2446,14 @@ def test_public_api(client, app):
                     ],
                     "responses": {
                         "200": {
-                            "content": {
-                                "application/json": {"schema": {"$ref": "#/components/schemas/357aaa5.VenueResponse"}}
-                            },
+                            "content": {"application/json": {"schema": {"$ref": "#/components/schemas/VenueResponse"}}},
                             "description": "OK",
                         },
                         "403": {"description": "Forbidden"},
                         "404": {"description": "Not Found"},
                         "422": {
                             "content": {
-                                "application/json": {"schema": {"$ref": "#/components/schemas/6a07bef.ValidationError"}}
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
                             },
                             "description": "Unprocessable Entity",
                         },
