@@ -22,7 +22,7 @@ class ImportEducationalInstitutionTest:
 
         # When
         import_educational_institutions_and_deposits(
-            "institutions_and_deposits.csv", "tests/scripts/educational/fixtures"
+            "institutions_and_deposits.csv", "EDUCATION_NATIONALE", "tests/scripts/educational/fixtures"
         )
 
         # Then
@@ -48,7 +48,7 @@ class ImportEducationalInstitutionTest:
         )
 
         # When
-        _process_educational_csv([{"UAICode": "3790032L", "depositAmount": 3000}])
+        _process_educational_csv([{"UAICode": "3790032L", "depositAmount": 3000}], "EDUCATION_NATIONALE")
 
         # Then it does not update educational deposit or create one if it exists for current year
         educational_deposit = models.EducationalDeposit.query.filter(
@@ -76,7 +76,7 @@ class ImportEducationalInstitutionTest:
         )
 
         # When
-        _process_educational_csv([{"UAICode": "4790032L", "depositAmount": 5000}])
+        _process_educational_csv([{"UAICode": "4790032L", "depositAmount": 5000}], "EDUCATION_NATIONALE")
 
         # Then it creates educational deposit for current year even if it exists for another year
         educational_deposit = models.EducationalDeposit.query.filter(
@@ -89,7 +89,7 @@ class ImportEducationalInstitutionTest:
     def test_stop_execution_when_no_educational_year_found(self):
         # When
         import_educational_institutions_and_deposits(
-            "institutions_and_deposits.csv", "tests/scripts/educational/fixtures"
+            "institutions_and_deposits.csv", "EDUCATION_NATIONALE", "tests/scripts/educational/fixtures"
         )
 
         # Then
@@ -102,7 +102,9 @@ class ImportEducationalInstitutionTest:
     @freeze_time("2020-11-17 15:00:00")
     def test_stop_execution_when_csv_is_invalid(self):
         # When
-        import_educational_institutions_and_deposits("invalid.csv", "tests/scripts/educational/fixtures")
+        import_educational_institutions_and_deposits(
+            "invalid.csv", "EDUCATION_NATIONALE", "tests/scripts/educational/fixtures"
+        )
 
         # Then
         educational_institutions = models.EducationalInstitution.query.all()

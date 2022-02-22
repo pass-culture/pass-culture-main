@@ -20,6 +20,7 @@ from pcapi.core.educational.models import EducationalBookingStatus
 from pcapi.core.educational.models import EducationalDeposit
 from pcapi.core.educational.models import EducationalInstitution
 from pcapi.core.educational.models import EducationalRedactor
+from pcapi.core.educational.models import Ministry
 from pcapi.core.educational.utils import compute_educational_booking_cancellation_limit_date
 from pcapi.core.mails.models.sendinblue_models import SendinblueTransactionalEmailData
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
@@ -239,9 +240,7 @@ def create_educational_institution(institution_id: str) -> EducationalInstitutio
 
 
 def create_educational_deposit(
-    educational_year_id: str,
-    educational_institution_id: int,
-    deposit_amount: int,
+    educational_year_id: str, educational_institution_id: int, deposit_amount: int, ministry: Ministry
 ) -> EducationalDeposit:
     educational_deposit = EducationalDeposit(
         educationalYearId=educational_year_id,
@@ -249,6 +248,7 @@ def create_educational_deposit(
         amount=decimal.Decimal(deposit_amount),
         isFinal=False,
         dateCreated=datetime.utcnow(),
+        ministry=ministry,
     )
     repository.save(educational_deposit)
 

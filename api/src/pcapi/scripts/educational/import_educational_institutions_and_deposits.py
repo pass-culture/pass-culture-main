@@ -6,6 +6,7 @@ from typing import Iterable
 from pcapi.core.educational import api
 from pcapi.core.educational import exceptions
 from pcapi.core.educational import repository as educational_repository
+from pcapi.core.educational.models import Ministry
 
 
 logger = logging.getLogger(__name__)
@@ -13,7 +14,9 @@ logger = logging.getLogger(__name__)
 DEFAULT_FILEPATH = ""
 
 
-def import_educational_institutions_and_deposits(filename: str, path: str = DEFAULT_FILEPATH) -> None:
+def import_educational_institutions_and_deposits(
+    filename: str, ministry: Ministry, path: str = DEFAULT_FILEPATH
+) -> None:
     if path is not None and path != DEFAULT_FILEPATH and not path.endswith("/"):
         path += "/"
 
@@ -23,11 +26,11 @@ def import_educational_institutions_and_deposits(filename: str, path: str = DEFA
         if not headers or "UAICode" not in headers or "depositAmount" not in headers:
             print("\033[91mERROR: UAICode or depositAmount missing in CSV headers\033[0m")
             return
-        _process_educational_csv(csv_rows)
+        _process_educational_csv(csv_rows, ministry)
     return
 
 
-def _process_educational_csv(educational_institutions_rows: Iterable[dict]) -> None:
+def _process_educational_csv(educational_institutions_rows: Iterable[dict], ministry: Ministry) -> None:
     currentYear = datetime.now().year
     try:
         educational_year = educational_repository.get_educational_year_beginning_at_given_year(currentYear)
@@ -54,9 +57,8 @@ def _process_educational_csv(educational_institutions_rows: Iterable[dict]) -> N
                 f"\033[93mWARNING: deposit for educational institution with id {educational_institution.institutionId} already exists\033[0m"
             )
             continue
-
         educational_deposit = api.create_educational_deposit(
-            educational_year.adageId, educational_institution.id, deposit_amount
+            educational_year.adageId, educational_institution.id, deposit_amount, ministry
         )
         logger.info(
             "Educational deposit has been created",
@@ -66,5 +68,6 @@ def _process_educational_csv(educational_institutions_rows: Iterable[dict]) -> N
                 "amount": str(educational_deposit.amount),
                 "uai_code": institution_id,
                 "year_id": educational_year.id,
+                "ministry": ministry,
             },
         )
