@@ -366,7 +366,7 @@ class CheckIsUsableTest:
         booking = factories.CancelledIndividualBookingFactory()
         with pytest.raises(api_errors.ResourceGoneError) as exc:
             validation.check_is_usable(booking)
-        assert exc.value.errors["booking"] == ["Cette réservation a été annulée"]
+        assert exc.value.errors["booking_cancelled"] == ["Cette réservation a été annulée"]
 
     def should_raises_forbidden_error_if_payement_exists(self, app):
         booking = factories.UsedIndividualBookingFactory()
