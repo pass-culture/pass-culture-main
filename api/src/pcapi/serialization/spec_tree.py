@@ -16,7 +16,9 @@ def get_model_key(model):
 
 def get_model_schema(model):
     assert issubclass(model, BaseModel)
-    return model.schema(ref_template="#/components/schemas/{{model}}")
+    return model.schema(
+        ref_template=f"#/components/schemas/{{model}}"  # pylint: disable=f-string-without-interpolation
+    )
 
 
 def add_security_scheme(route_function: Callable, auth_key: str, scopes: Optional[list[str]] = None) -> None:

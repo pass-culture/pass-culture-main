@@ -11,13 +11,13 @@ from flask import Response
 from flask import make_response
 from flask import request
 import pydantic
-from spectree.spec import SpecTree
 from werkzeug.exceptions import BadRequest
 
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.apis import api as default_api
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.spec_tree import ExtendResponse as SpectreeResponse
+from pcapi.serialization.spec_tree import ExtendedSpecTree
 
 
 logger = logging.getLogger(__name__)
@@ -68,7 +68,7 @@ def spectree_serialize(
     on_success_status: int = 200,
     on_empty_status: Optional[int] = None,
     on_error_statuses: Optional[list[int]] = None,
-    api: SpecTree = default_api,
+    api: ExtendedSpecTree = default_api,
     json_format: bool = True,
     response_headers: Optional[dict[str, str]] = None,
     resp: Optional[SpectreeResponse] = None,
