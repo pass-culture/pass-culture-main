@@ -1,30 +1,24 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import React from 'react'
+import selectEvent from 'react-select-event'
 
 import {
+  findDepartmentFilter,
   findLaunchSearchButton,
   queryResetFiltersButton,
 } from 'app/__spec__/__test_utils__/elements'
 import {
   AlgoliaQueryContextProvider,
-  AlgoliaQueryContextType,
-  alogliaQueryContextInitialValues,
-  filtersContextInitialValues,
   FiltersContextProvider,
-  FiltersContextType,
 } from 'app/providers'
 import { VenueFilterType } from 'utils/types'
 
 import { OfferFilters, OfferFiltersProps } from '../OfferFilters/OfferFilters'
 
-const renderOfferFilters = (
-  props: OfferFiltersProps,
-  filterContextProviderValue: FiltersContextType = filtersContextInitialValues,
-  algoliaQueryContextProviderValue: AlgoliaQueryContextType = alogliaQueryContextInitialValues
-) => {
+const renderOfferFilters = (props: OfferFiltersProps) => {
   render(
-    <FiltersContextProvider values={filterContextProviderValue}>
-      <AlgoliaQueryContextProvider values={algoliaQueryContextProviderValue}>
+    <FiltersContextProvider>
+      <AlgoliaQueryContextProvider>
         <OfferFilters {...props} />
       </AlgoliaQueryContextProvider>
     </FiltersContextProvider>
@@ -93,18 +87,9 @@ describe('offerFilters component', () => {
 
   it('should show filter tags when at least one filter is selected', async () => {
     // When
-    renderOfferFilters(
-      props,
-      {
-        ...filtersContextInitialValues,
-        currentFilters: {
-          departments: [{ value: '01', label: '01 - Ain' }],
-          categories: [],
-          students: [],
-        },
-      },
-      { ...alogliaQueryContextInitialValues, query: 'Blablabla' }
-    )
+    renderOfferFilters(props)
+    const departmentFilter = await findDepartmentFilter()
+    await selectEvent.select(departmentFilter, '01 - Ain')
 
     // Then
     const resetFiltersButton = queryResetFiltersButton()
