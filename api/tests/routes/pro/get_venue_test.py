@@ -95,6 +95,7 @@ class Returns200Test:
             "withdrawalDetails": None,
             "bannerUrl": venue.bannerUrl,
             "bannerMeta": banner_meta_out,
+            "nonHumanizedId": venue.id,
         }
 
         # when
