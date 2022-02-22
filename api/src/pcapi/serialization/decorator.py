@@ -11,13 +11,13 @@ from flask import Response
 from flask import make_response
 from flask import request
 import pydantic
-from spectree import Response as SpectreeResponse
 from spectree.spec import SpecTree
 from werkzeug.exceptions import BadRequest
 
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.apis import api as default_api
 from pcapi.routes.serialization import BaseModel
+from pcapi.serialization.spec_tree import ExtendResponse as SpectreeResponse
 
 
 logger = logging.getLogger(__name__)
