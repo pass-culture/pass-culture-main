@@ -18,7 +18,6 @@ where:
   exit 0
 fi
 
-
 # =============================================
 # Get script parameters
 # =============================================
@@ -71,10 +70,10 @@ NO_COLOR='\033[0m'
 
 PRG="$BASH_SOURCE"
 
-while [ -h "$PRG" ] ; do
+while [ -h "$PRG" ]; do
   ls=$(ls -ld "$PRG")
   link=$(expr "$ls" : '.*-> \(.*\)$')
-  if expr "$link" : '/.*' > /dev/null; then
+  if expr "$link" : '/.*' >/dev/null; then
     PRG="$link"
   else
     PRG=$(dirname "$PRG")"/$link"
@@ -83,17 +82,17 @@ done
 
 UNAME_OUT="$(uname -s)"
 case "${UNAME_OUT}" in
-    Linux*)     MACHINE=Linux;;
-    Darwin*)    MACHINE=Mac;;
-    CYGWIN*)    MACHINE=Cygwin;;
-    MINGW*)     MACHINE=MinGw;;
-    *)          MACHINE="UNKNOWN:${UNAME_OUT}"
+Linux*) MACHINE=Linux ;;
+Darwin*) MACHINE=Mac ;;
+CYGWIN*) MACHINE=Cygwin ;;
+MINGW*) MACHINE=MinGw ;;
+*) MACHINE="UNKNOWN:${UNAME_OUT}" ;;
 esac
 
 ROOT_PATH=$(realpath "$(dirname "$PRG")")
 INFRA_SCRIPTS_PATH="$ROOT_PATH"/infra/pc_scripts/
 
-function confirm {
+function confirm() {
   read -p "$1 (y/n) : " -n 1 -r
   echo
   if [[ ! $REPLY =~ ^[Yy]$ ]]; then
@@ -101,25 +100,25 @@ function confirm {
   fi
 }
 
-function ensure_remote {
+function ensure_remote() {
   if [[ "$ENV" == "development" ]]; then
     echo "$1"
     exit 3
   fi
 }
 
-function echo_error {
+function echo_error() {
   echo -e "${RED}""$1""${NO_COLOR}"
 }
 
-function echo_warning {
+function echo_warning() {
   echo -e "${ORANGE}""$1""${NO_COLOR}"
 }
 
 current_branch=$(git symbolic-ref -q HEAD)
 current_branch=${current_branch##refs/heads/}
 
-function update_deploy_branches {
+function update_deploy_branches() {
   git fetch --tags
   git checkout master
   git reset --hard origin/master || exit_error_restoring_branch
@@ -131,7 +130,7 @@ function update_deploy_branches {
   git reset --hard origin/production || exit_error_restoring_branch
 }
 
-function tag_frontend_component {
+function tag_frontend_component() {
   component="$1"
   tag_name="$2"
   tag_version="v$tag_name"
@@ -140,24 +139,24 @@ function tag_frontend_component {
   git add package.json
 }
 
-function open_build_status_page {
+function open_build_status_page() {
   cd "$ROOT_PATH"
   env_to_deploy="$1"
   commit_to_deploy="$2"
   source scripts/open_build_status_page.sh "$env_to_deploy" "$commit_to_deploy"
 }
 
-function exit_error_restoring_branch {
+function exit_error_restoring_branch() {
   git checkout "$current_branch"
   exit 1
 }
 
-function exit_success_restoring_branch {
+function exit_success_restoring_branch() {
   git checkout "$current_branch"
   exit 0
 }
 
-function pod_console {
+function pod_console() {
   kubectl get pod -n $ENV | grep pcapi-console | awk '{print $1}'
 }
 
@@ -177,18 +176,18 @@ elif [[ "$CMD" == "bash" ]]; then
     RUN='docker exec -it pc-flask bash'
   else
     if [ "$FILE_TO_UPLOAD" == 'none' ]; then
-    kubectl -n $ENV exec -it $(pod_console)  -- bash
+      kubectl -n $ENV exec -it $(pod_console) -- bash
     else
-    kubectl cp -n $ENV "$FILE_TO_UPLOAD" $(pod_console):"$FILE_TO_UPLOAD" && \
-    kubectl -n $ENV exec -it $(pod_console)  -- bash
+      kubectl cp -n $ENV "$FILE_TO_UPLOAD" $(pod_console):"$FILE_TO_UPLOAD" &&
+        kubectl -n $ENV exec -it $(pod_console) -- bash
     fi
     exit
   fi
 
 # Create diff output between schema in an environment & local
 elif [[ "$CMD" == "diff-schema" ]]; then
-  docker exec pc-postgres pg_dump -d pass_culture -U pass_culture -s > /tmp/pc_schema_local
-  kubectl -n $ENV exec -it $(pod_console) -- bash -c 'pg_dump "$DATABASE_URL" -s' > /tmp/pc_schema_$ENV
+  docker exec pc-postgres pg_dump -d pass_culture -U pass_culture -s >/tmp/pc_schema_local
+  kubectl -n $ENV exec -it $(pod_console) -- bash -c 'pg_dump "$DATABASE_URL" -s' >/tmp/pc_schema_$ENV
   diff /tmp/pc_schema_$ENV /tmp/pc_schema_local
   exit
 
@@ -205,7 +204,7 @@ elif [[ "$CMD" == "rebuild-backend" ]]; then
 
 # Execute request from specified file
 elif [[ "$CMD" == "psql-file" ]]; then
-  COLUMNS=${COLUMNS:-''};
+  COLUMNS=${COLUMNS:-''}
   RUN='docker exec -t pc-postgres bash -c "COLUMNS=\"'$COLUMNS'\" psql -U pass_culture pass_culture -f $1"'
 
 # Restart API after removing the database and files
@@ -288,7 +287,7 @@ elif [[ "$CMD" == "test-backend-provider" ]]; then
 
 # Run functional tests for pro application
 # Need to run start-backend & start-frontend
-elif  [[ "$CMD" == "test-cafe-pro" ]]; then
+elif [[ "$CMD" == "test-cafe-pro" ]]; then
   APP_PATH="$ROOT_PATH"/pro
   if [[ $# == 0 ]]; then
     if [[ "$MACHINE" == "Mac" ]]; then
@@ -312,7 +311,6 @@ elif [[ "$CMD" == "start-metabase" ]]; then
 elif [[ "$CMD" == "restart-metabase" ]]; then
   source "$INFRA_SCRIPTS_PATH"/start-metabase.sh
   restart_metabase
-
 
 # =============================================
 # Deploy commands
@@ -343,7 +341,7 @@ elif [[ "$CMD" == "tag" ]]; then
 
     # TAG API
     cd "$ROOT_PATH"/api
-    echo "$TAG_VERSION" > version.txt
+    echo "$TAG_VERSION" >version.txt
     git add version.txt
 
     # TAG PRO
@@ -368,11 +366,11 @@ elif [[ "$CMD" == "tag" ]]; then
 elif [[ "$CMD" == "deploy" ]]; then
   ensure_remote "Deploy cannot be run on the local environment. Use (for example) \"pc -e staging -t X.Y.Z "$CMD"\"."
 
-  if [[ ! "$ENV" == 'production' ]] \
-  && [[ ! "$ENV" == 'staging' ]] \
-  && [[ ! "$ENV" == 'integration' ]]; then
-     echo_error "Can only deploy in staging, integration and production"
-     exit 1
+  if [[ ! "$ENV" == 'production' ]] &&
+    [[ ! "$ENV" == 'staging' ]] &&
+    [[ ! "$ENV" == 'integration' ]]; then
+    echo_error "Can only deploy in staging, integration and production"
+    exit 1
   fi
 
   if [[ "$TAG_NAME" == 'not-set' ]]; then
@@ -419,10 +417,10 @@ elif [[ "$CMD" == "deploy" ]]; then
 
 # Install new local environment
 elif [[ "$CMD" == "install" ]]; then
-  cd $ROOT_PATH;
-  git checkout master;
-  cd $ROOT_PATH/pro && yarn;
-  cd $ROOT_PATH/adage-front && yarn;
+  cd $ROOT_PATH
+  git checkout master
+  cd $ROOT_PATH/pro && yarn
+  cd $ROOT_PATH/adage-front && yarn
   pc install-hooks
   exit_success_restoring_branch
 
@@ -456,42 +454,42 @@ elif [[ "$CMD" == "access-db-logs" ]]; then
 
 # Connect to Postgresql database in command line using psql
 elif [[ "$CMD" == "psql" ]]; then
-  COLUMNS=${COLUMNS:-''};
+  COLUMNS=${COLUMNS:-''}
   if [[ "$ENV" == "development" ]]; then
     RUN='docker exec -it pc-postgres bash -c "COLUMNS=\"'$COLUMNS'\" psql -U pass_culture pass_culture $*"'
   else
-    kubectl -n $ENV exec -it $(pod_console)  -- bash -c 'psql "$DATABASE_URL"'
+    kubectl -n $ENV exec -it $(pod_console) -- bash -c 'psql "$DATABASE_URL"'
     exit
   fi
 
 # Connect to Postgresql test database in command line using psql
 elif [[ "$CMD" == "psql-test" ]]; then
-  COLUMNS=${COLUMNS:-''};
+  COLUMNS=${COLUMNS:-''}
   if [[ "$ENV" == "development" ]]; then
     RUN='docker exec -it pc-postgres-pytest bash -c "COLUMNS=\"'$COLUMNS'\" psql -U pytest pass_culture $*"'
   else
-      echo "Only available in development environment"
+    echo "Only available in development environment"
     exit
   fi
 
 # Connect to Postgresql database in command line using pgcli
 elif [[ "$CMD" == "pgcli" ]]; then
-  COLUMNS=${COLUMNS:-''};
+  COLUMNS=${COLUMNS:-''}
   if [[ "$ENV" == "development" ]]; then
     source "$ROOT_PATH"/env_file
     RUN='docker exec -it pc-flask bash -c "pgcli $DATABASE_URL"'
   else
-    kubectl -n $ENV exec -it $(pod_console)  -- bash -c 'pgcli "$DATABASE_URL"'
+    kubectl -n $ENV exec -it $(pod_console) -- bash -c 'pgcli "$DATABASE_URL"'
     exit
   fi
 
-
 # Open a python prompt in the specified environment
 elif [[ "$CMD" == "python" ]]; then
-    COLUMNS=${COLUMNS:-''};
-    if [[ "$ENV" == "development" ]]; then
-        RUN='docker exec -it pc-flask bash -c "cd /opt/services/flaskapp/src/ && flask shell '"$*"'"'
-    else if [ "$FILE_TO_UPLOAD" == 'none' ]; then
+  COLUMNS=${COLUMNS:-''}
+  if [[ "$ENV" == "development" ]]; then
+    RUN='docker exec -it pc-flask bash -c "cd /opt/services/flaskapp/src/ && flask shell '"$*"'"'
+  else
+    if [ "$FILE_TO_UPLOAD" == 'none' ]; then
       kubectl -n $ENV exec -it $(pod_console) -- flask shell
     else
       kubectl cp -n $ENV "$FILE_TO_UPLOAD" $(pod_console):"$FILE_TO_UPLOAD"
@@ -504,8 +502,6 @@ elif [[ "$CMD" == "python" ]]; then
 elif [[ "$CMD" == "db_restore_infos" ]]; then
   source "$INFRA_SCRIPTS_PATH"/get_restore_infos.sh
   get_restore_infos
-
-
 
 # =============================================
 # Python Scripts commands
