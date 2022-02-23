@@ -1,8 +1,12 @@
 from wtforms.fields.core import StringField
 from wtforms.form import Form
 from wtforms.validators import DataRequired
+from wtforms.validators import Regexp
 
 from pcapi.admin.base_configuration import BaseAdminView
+
+
+CRITERION_NAME_REGEX = r"^[^\s]+$"
 
 
 class CriteriaView(BaseAdminView):
@@ -23,5 +27,11 @@ class CriteriaView(BaseAdminView):
 
     def get_create_form(self) -> Form:
         form = self.scaffold_form()
-        form.name = StringField("Nom", [DataRequired()])
+        form.name = StringField(
+            "Nom",
+            [
+                DataRequired(),
+                Regexp(CRITERION_NAME_REGEX, message="Le nom ne doit contenir aucun caractère d'espacement"),
+            ],
+        )
         return form
