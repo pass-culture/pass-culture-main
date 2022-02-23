@@ -1,10 +1,15 @@
 import logging
+import typing
 from typing import Optional
 
+from pcapi import settings
+from pcapi.connectors.dms.api import DMSGraphQLClient
 import pcapi.core.fraud.api as fraud_api
 import pcapi.core.fraud.models as fraud_models
+from pcapi.core.subscription import messages as subscription_messages
+import pcapi.core.subscription.exceptions as subscription_exceptions
 import pcapi.core.users.models as users_models
-import pcapi.repository as pcapi_repository
+from pcapi.repository import repository
 
 
 logger = logging.getLogger(__name__)
@@ -51,3 +56,43 @@ def get_or_create_fraud_check(
         return create_fraud_check(user, application_id, result_content)
     return fraud_check
 
+
+def on_dms_parsing_error(
+    user: users_models.User,
+    application_id: int,
+    parsing_error: subscription_exceptions.DMSParsingError,
+    extra_data: Optional[dict] = None,
+) -> None:
+    fraud_check = get_or_create_fraud_check(user, application_id)
+    fraud_check.reason = (
+        "Erreur lors de la récupération de l'application DMS: "
+        f"les champs {list(parsing_error.errors.keys())} sont erronés"
+    )
+    fraud_check.reasonCodes = [fraud_models.FraudReasonCode.ERROR_IN_DATA]
+    repository.save(fraud_check)
+
+    logger.info(
+        "Cannot parse DMS application %s in webhook. Errors will be handled in the import_dms_users cron",
+        application_id,
+        extra=extra_data,
+    )
+
+
+def on_dms_eligibility_error(
+    user: users_models.User,
+    fraud_check: fraud_models.BeneficiaryFraudCheck,
+    extra_data: Optional[dict] = None,
+) -> None:
+    dms_client = DMSGraphQLClient()
+    logger.info(
+        "Birthdate of DMS application %d shows that user is not eligible",
+        fraud_check.thirdPartyId,
+        extra=extra_data,
+    )
+    subscription_messages.on_dms_application_parsing_errors_but_updatables_values(user, ["birth_date"])
+    dms_client.send_user_message(
+        fraud_check.thirdPartyId, settings.DMS_INSTRUCTOR_ID, subscription_messages.DMS_ERROR_MESSSAGE_BIRTH_DATE
+    )
+    fraud_check.reason = "La date de naissance de l'utilisateur ne correspond pas à un âge autorisé"
+    fraud_check.reasonCodes = [fraud_models.FraudReasonCode.AGE_NOT_VALID]
+    repository.save(fraud_check)

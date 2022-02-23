@@ -3,7 +3,7 @@ import logging
 from pcapi import settings
 from pcapi.connectors.dms import api as dms_connector_api
 from pcapi.core import logging as core_logging
-from pcapi.core.fraud import api as fraud_api
+from pcapi.core.fraud.dms import api as dms_api
 from pcapi.core.fraud.ubble import api as ubble_fraud_api
 from pcapi.core.subscription import exceptions as subscription_exceptions
 from pcapi.core.subscription import messages as subscription_messages
@@ -71,27 +71,7 @@ def dms_webhook_update_application_status(form: dms_validation.DMSWebhookRequest
         if form.state == dms_connector_api.GraphQLApplicationStates.draft:
             dms_subscription_api.notify_parsing_exception(parsing_error.errors, dossier_id, client)
 
-        logger.info(
-            "Cannot parse DMS application %s in webhook. Errors will be handled in the import_dms_users cron",
-            form.dossier_id,
-            extra=log_extra_data,
-        )
-        return
-
-    eligibility_type = fraud_api.decide_eligibility(user, application)
-    if eligibility_type is None:
-        logger.info(
-            "Birthdate of DMS application %d shows that user is not eligible",
-            form.dossier_id,
-            extra=log_extra_data,
-        )
-        subscription_messages.on_dms_application_parsing_errors_but_updatables_values(user, ["birth_date"])
-        if form.state == dms_connector_api.GraphQLApplicationStates.draft:
-            client.send_user_message(
-                dossier_id,
-                settings.DMS_INSTRUCTOR_ID,
-                subscription_messages.DMS_ERROR_MESSSAGE_BIRTH_DATE,
-            )
+        dms_api.on_dms_parsing_error(user, application_id, parsing_error, extra_data=log_extra_data)
         return
 
     dms_subscription_api.handle_dms_state(user, application, form.procedure_id, form.dossier_id, form.state)

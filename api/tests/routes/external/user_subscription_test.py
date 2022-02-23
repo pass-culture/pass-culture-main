@@ -222,6 +222,14 @@ class DmsWebhookApplicationTest:
             == "Il semblerait que les champs ‘ta pièce d'identité, ton code postal’ soient erronés. Tu peux te rendre sur le site Démarche-simplifiées pour les rectifier."
         )
 
+        fraud_check = user.beneficiaryFraudChecks[0]
+        assert fraud_check.type == fraud_models.FraudCheckType.DMS
+        assert fraud_check.status == fraud_models.FraudCheckStatus.STARTED
+        assert (
+            fraud_check.reason
+            == "Erreur lors de la récupération de l'application DMS: les champs ['id_piece_number', 'postal_code'] sont erronés"
+        )
+
     @patch.object(api_dms.DMSGraphQLClient, "execute_query")
     @patch.object(api_dms.DMSGraphQLClient, "send_user_message")
     def test_dms_request_with_unexisting_user(self, send_user_message, execute_query, client):
@@ -343,6 +351,11 @@ class DmsWebhookApplicationTest:
             user.subscriptionMessages[0].userMessage
             == "Il semblerait que le champ ‘ta date de naissance’ soit erroné. Tu peux te rendre sur le site Démarche-simplifiées pour le rectifier."
         )
+
+        fraud_check = user.beneficiaryFraudChecks[0]
+        assert fraud_check.type == fraud_models.FraudCheckType.DMS
+        assert fraud_check.status == fraud_models.FraudCheckStatus.STARTED
+        assert fraud_check.reason == "La date de naissance de l'utilisateur ne correspond pas à un âge autorisé"
 
     @patch.object(api_dms.DMSGraphQLClient, "execute_query")
     def test_dms_application_on_going(self, execute_query, client):

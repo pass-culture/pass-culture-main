@@ -42,7 +42,12 @@ def handle_dms_state(
     current_fraud_check = fraud_dms_api.get_or_create_fraud_check(user, application_id, result_content)
 
     if state == dms_connector_api.GraphQLApplicationStates.draft:
-        subscription_messages.on_dms_application_received(user)
+        eligibility_type = current_fraud_check.eligibilityType
+        if eligibility_type is None:
+            fraud_dms_api.on_dms_eligibility_error(user, current_fraud_check, extra_data=logs_extra)
+        else:
+            subscription_messages.on_dms_application_received(user)
+        current_fraud_check.status = fraud_models.FraudCheckStatus.STARTED
         logger.info("DMS Application started.", extra=logs_extra)
 
     elif state == dms_connector_api.GraphQLApplicationStates.on_going:
