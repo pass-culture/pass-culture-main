@@ -145,7 +145,7 @@ class SendOfferNotificationToAdministrationTest:
 
     def test_send_approval_notification_failure(self):
         author = users_factories.UserFactory(email="author@email.com")
-        offer = OfferFactory(name="Test Visit", author=author, subcategoryId=subcategories.VISITE_GUIDEE.id)
+        offer = OfferFactory(name="Test Film", author=author, subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id)
 
         # When
         send_offer_validation_notification_to_administration(OfferValidationStatus.APPROVED, offer)
@@ -154,14 +154,14 @@ class SendOfferNotificationToAdministrationTest:
 
     def test_send_approval_notification_success(self):
         author = users_factories.UserFactory(email="author@email.com")
-        offer = OfferFactory(name="Test Film", author=author, subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id)
+        offer = OfferFactory(name="Test Visit", author=author, subcategoryId=subcategories.VISITE_GUIDEE.id)
 
         # When
         send_offer_validation_notification_to_administration(OfferValidationStatus.APPROVED, offer)
 
         assert len(mails_testing.outbox) == 1
         assert mails_testing.outbox[0].sent_data["To"] == "administration@example.com"
-        assert mails_testing.outbox[0].sent_data["Subject"] == "[Création d’offre - 75] Test Film"
+        assert mails_testing.outbox[0].sent_data["Subject"] == "[Création d’offre - 75] Test Visit"
 
 
 @pytest.mark.usefixtures("db_session")
