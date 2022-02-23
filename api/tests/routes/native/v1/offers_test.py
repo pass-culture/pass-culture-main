@@ -63,7 +63,7 @@ class OffersTest:
         expiredStock = EventStockFactory(
             offer=offer, price=45.68, beginningDatetime=datetime.utcnow() - timedelta(days=1)
         )
-        exhaustedStock = EventStockFactory(offer=offer, price=12.34, quantity=1)
+        exhaustedStock = EventStockFactory(offer=offer, price=89.00, quantity=1)
 
         BookingFactory(stock=bookableStock)
         BookingFactory(stock=exhaustedStock)
@@ -74,7 +74,7 @@ class OffersTest:
 
         assert response.status_code == 200
         response_content = response.json
-        response_content["stocks"].sort(key=lambda stock: stock["id"])
+        response_content["stocks"].sort(key=lambda stock: stock["price"])
         assert response.json == {
             "id": offer.id,
             "accessibility": {
@@ -110,7 +110,7 @@ class OffersTest:
                 },
                 {
                     "id": exhaustedStock.id,
-                    "price": 1234,
+                    "price": 8900,
                     "beginningDatetime": "2020-01-06T00:00:00Z",
                     "bookingLimitDatetime": "2020-01-05T23:00:00Z",
                     "cancellationLimitDatetime": "2020-01-03T00:00:00Z",
