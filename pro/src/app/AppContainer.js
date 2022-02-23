@@ -4,17 +4,12 @@ import { compose } from 'redux'
 
 import { selectFeaturesInitialized } from 'store/features/selectors'
 import { loadFeatures } from 'store/features/thunks'
-import { selectCurrentUser } from 'store/selectors/data/usersSelectors'
 import { maintenanceSelector } from 'store/selectors/maintenanceSelector'
-import { selectUserInitialized } from 'store/user/selectors'
-import { loadUser } from 'store/user/thunks'
 
 import { App } from './App'
 
 export function mapStateToProps(state) {
   return {
-    currentUser: selectCurrentUser(state),
-    isUserInitialized: selectUserInitialized(state),
     isMaintenanceActivated: maintenanceSelector(state),
     isFeaturesInitialized: selectFeaturesInitialized(state),
   }
@@ -22,9 +17,6 @@ export function mapStateToProps(state) {
 
 export function mapDispatchToProps(dispatch) {
   return {
-    getCurrentUser: () => {
-      dispatch(loadUser())
-    },
     loadFeatures: () => {
       dispatch(loadFeatures())
     },

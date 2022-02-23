@@ -1,20 +1,40 @@
 import { setUser } from '@sentry/browser'
 import '@testing-library/jest-dom'
-import { act, render, screen } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import React from 'react'
+import { Provider } from 'react-redux'
 
+import * as pcapi from 'repository/pcapi/pcapi'
+import { configureTestStore } from 'store/testUtils'
 import { URL_FOR_MAINTENANCE } from 'utils/config'
 
 import { App } from '../App'
 
-const renderApp = async props => {
-  await act(async () => {
-    await render(
+jest.mock('repository/pcapi/pcapi', () => ({
+  getUserInformations: jest.fn(),
+}))
+
+const renderApp = async ({ props, store, waitDomReady = true }) => {
+  const rtlReturns = render(
+    <Provider store={store}>
       <App {...props}>
         <p>Sub component</p>
       </App>
-    )
-  })
+    </Provider>
+  )
+  if (waitDomReady) {
+    // const spinner = await screen.getByText('Sub component', { exact: false })
+    // await waitFor(() => {
+    //   expect(spinner).not.toBeInTheDocument()
+    // })
+    await screen.findByText('Sub component')
+  }
+
+  // await waitFor(() => {
+  //   expect(screen.getByText('Chargement en cours', { exact: false })).not.toBeInTheDocument()
+  // })
+
+  return Promise.resolve(rtlReturns)
 }
 
 const getCurrentUser = jest.fn()
@@ -35,57 +55,51 @@ Object.defineProperty(window.location, 'href', {
 
 describe('src | App', () => {
   let props
+  let store
+  let user
 
   beforeEach(() => {
+    user = {
+      id: 'user_id',
+      publicName: 'François',
+      isAdmin: false,
+    }
+    store = configureTestStore({
+      data: { users: [{ ...user }] },
+      user: { initialized: true },
+    })
     props = {
       getCurrentUser,
       isFeaturesInitialized: false,
       isMaintenanceActivated: false,
-      isUserInitialized: false,
       loadFeatures,
     }
+    pcapi.getUserInformations.mockResolvedValue(user)
   })
 
   it('should render App and children components when isMaintenanceActivated is false', async () => {
     // When
-    await renderApp({
-      ...props,
-      isUserInitialized: true,
-      currentUser: { id: 'id' },
-    })
+    await renderApp({ props, store })
 
     // Then
     expect(screen.getByText('Sub component')).toBeInTheDocument()
+    expect(setUser).toHaveBeenCalledWith({ id: user.id })
   })
 
   it('should render a Redirect component when isMaintenanceActivated is true', async () => {
     // When
-    await renderApp({
+    props = {
       ...props,
       isMaintenanceActivated: true,
-      isUserInitialized: true,
-      currentUser: { id: 'id' },
-    })
+    }
+    await renderApp({ props, store, waitDomReady: false })
 
     expect(setHrefSpy).toHaveBeenCalledWith(URL_FOR_MAINTENANCE)
   })
 
-  it('should call Sentry setUser if current user is given', async () => {
-    // When
-    await renderApp({
-      ...props,
-      currentUser: { pk: 'pk_key' },
-      isUserInitialized: true,
-      isMaintenanceActivated: true,
-    })
-
-    // Then
-    expect(setUser).toHaveBeenCalledWith({ id: 'pk_key' })
-  })
-
   it('should load features', async () => {
     // When
-    await renderApp(props)
+    await renderApp({ props, store })
 
     // Then
     expect(loadFeatures).toHaveBeenCalledWith()
