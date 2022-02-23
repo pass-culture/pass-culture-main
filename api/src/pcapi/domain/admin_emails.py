@@ -51,7 +51,7 @@ def send_payments_report_emails(
 
 
 def _check_offer_subcategory_before_send(offer: Offer) -> bool:
-    return offer.subcategoryId in (
+    return offer.subcategoryId not in (
         subcategories.ABO_JEU_VIDEO.id,
         subcategories.ABO_LIVRE_NUMERIQUE.id,
         subcategories.ACHAT_INSTRUMENT.id,
