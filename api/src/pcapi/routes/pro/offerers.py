@@ -50,23 +50,10 @@ logger = logging.getLogger(__name__)
 @spectree_serialize(on_error_statuses=[400], response_model=GetOfferersListResponseModel)
 def get_offerers(query: GetOffererListQueryModel) -> GetOfferersListResponseModel:
     keywords = query.keywords
-    only_validated_offerers = query.validated
-
-    is_filtered_by_offerer_status = only_validated_offerers is not None
-
-    if is_filtered_by_offerer_status:
-        if only_validated_offerers.lower() not in ("true", "false"):
-            errors = ApiErrors()
-            errors.add_error("validated", "Le paramètre 'validated' doit être 'true' ou 'false'")
-            raise errors
-
-        only_validated_offerers = only_validated_offerers.lower() == "true"
 
     paginated_offerers = PaginatedOfferersSQLRepository().with_status_and_keywords(
         user_id=current_user.id,
         user_is_admin=current_user.has_admin_role,
-        is_filtered_by_offerer_status=is_filtered_by_offerer_status,
-        only_validated_offerers=only_validated_offerers,
         keywords=keywords,
         pagination_limit=query.paginate,
         page=query.page,

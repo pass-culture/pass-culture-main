@@ -2,8 +2,6 @@ import pytest
 
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.users import factories as users_factories
-from pcapi.model_creators.generic_creators import create_offerer
-from pcapi.model_creators.generic_creators import create_user_offerer
 from pcapi.repository import repository
 from pcapi.utils.human_ids import dehumanize
 
@@ -110,154 +108,6 @@ class Returns200Test:
         assert len(response.json) == 3
 
     @pytest.mark.usefixtures("db_session")
-    def when_user_is_admin_and_param_validated_is_false_and_returns_all_info_of_all_offerers(self, client):
-        # given
-        offerer1 = create_offerer(siren="123456781", name="offreur A", validation_token="F1TVYSGV")
-        offerer2 = create_offerer(siren="123456782", name="offreur B")
-        offers_factories.BankInformationFactory(offerer=offerer1)
-        offers_factories.BankInformationFactory(offerer=offerer2)
-
-        user = users_factories.AdminFactory(offerers=[offerer1, offerer2])
-
-        # when
-        response = client.with_session_auth(user.email).get("/offerers?validated=false")
-
-        # then
-        assert response.status_code == 200
-        assert len(response.json) == 1
-        offerer_response = response.json[0]
-        assert offerer_response["name"] == "offreur A"
-        assert set(offerer_response.keys()) == {
-            "address",
-            "bic",
-            "city",
-            "dateCreated",
-            "dateModifiedAtLastProvider",
-            "demarchesSimplifieesApplicationId",
-            "fieldsUpdated",
-            "iban",
-            "id",
-            "idAtProviders",
-            "isActive",
-            "isValidated",
-            "dateValidated",
-            "lastProviderId",
-            "managedVenues",
-            "nOffers",
-            "name",
-            "postalCode",
-            "siren",
-            "thumbCount",
-            "userHasAccess",
-        }
-
-    @pytest.mark.usefixtures("db_session")
-    def when_user_is_admin_and_param_validated_is_true_and_returns_only_validated_offerer(self, client):
-        # given
-        offerer1 = create_offerer(siren="123456781", name="offreur C", validation_token=None)
-        offerer2 = create_offerer(siren="123456782", name="offreur A", validation_token="AFYDAA")
-        offers_factories.BankInformationFactory(applicationId=1, offerer=offerer1)
-        offers_factories.BankInformationFactory(applicationId=2, offerer=offerer2)
-
-        user = users_factories.AdminFactory(offerers=[offerer1, offerer2])
-
-        # when
-        response = client.with_session_auth(user.email).get("/offerers?validated=true")
-
-        # then
-        assert response.status_code == 200
-        assert len(response.json) == 1
-        offerer_response = response.json[0]
-        assert offerer_response["name"] == "offreur C"
-
-    @pytest.mark.usefixtures("db_session")
-    def when_param_validated_is_false_and_returns_only_not_validated_offerers(self, client):
-        # given
-        pro = users_factories.ProFactory()
-        offerer1 = offers_factories.OffererFactory(siren="123456781", name="offreur C", validationToken=None)
-        offerer2 = offers_factories.OffererFactory(siren="123456782", name="offreur A", validationToken="AZE123")
-        offerer3 = offers_factories.OffererFactory(siren="123456783", name="offreur B", validationToken=None)
-        user_offerer1 = offers_factories.UserOffererFactory(user=pro, offerer=offerer1)
-        user_offerer2 = offers_factories.UserOffererFactory(user=pro, offerer=offerer2)
-        user_offerer3 = offers_factories.UserOffererFactory(user=pro, offerer=offerer3)
-        repository.save(user_offerer1, user_offerer2, user_offerer3)
-
-        # when
-        response = client.with_session_auth(pro.email).get("/offerers?validated=false")
-
-        # then
-        assert response.status_code == 200
-        assert len(response.json) == 1
-
-    @pytest.mark.usefixtures("db_session")
-    def when_param_validated_is_true_and_returns_only_validated_offerers(self, client):
-        # given
-        pro = users_factories.ProFactory()
-        offerer1 = offers_factories.OffererFactory(siren="123456781", name="offreur C", validationToken=None)
-        offerer2 = offers_factories.OffererFactory(siren="123456782", name="offreur A", validationToken="AZE123")
-        offerer3 = offers_factories.OffererFactory(siren="123456783", name="offreur B", validationToken=None)
-        user_offerer1 = offers_factories.UserOffererFactory(user=pro, offerer=offerer1)
-        user_offerer2 = offers_factories.UserOffererFactory(user=pro, offerer=offerer2)
-        user_offerer3 = offers_factories.UserOffererFactory(user=pro, offerer=offerer3)
-        repository.save(user_offerer1, user_offerer2, user_offerer3)
-
-        # when
-        response = client.with_session_auth(pro.email).get("/offerers?validated=true")
-
-        # then
-        assert response.status_code == 200
-        assert len(response.json) == 2
-        assert response.json[0]["name"] == "offreur B"
-        assert response.json[1]["name"] == "offreur C"
-
-    @pytest.mark.usefixtures("db_session")
-    def when_param_validated_is_true_returns_all_info_of_validated_offerers(self, client):
-        # given
-        pro = users_factories.ProFactory()
-        offerer1 = create_offerer(siren="123456781", name="offreur C", validation_token=None)
-        offerer2 = create_offerer(siren="123456782", name="offreur A", validation_token="AZE123")
-        offerer3 = create_offerer(siren="123456783", name="offreur B", validation_token=None)
-        user_offerer1 = create_user_offerer(pro, offerer1)
-        user_offerer2 = create_user_offerer(pro, offerer2)
-        user_offerer3 = create_user_offerer(pro, offerer3)
-        offers_factories.BankInformationFactory(offerer=offerer1)
-        offers_factories.BankInformationFactory(offerer=offerer2)
-        offers_factories.BankInformationFactory(offerer=offerer3)
-        repository.save(user_offerer1, user_offerer2, user_offerer3)
-
-        # when
-        response = client.with_session_auth(pro.email).get("/offerers?validated=true")
-
-        # then
-        assert response.status_code == 200
-        assert len(response.json) == 2
-        assert set(response.json[0].keys()) == set(
-            [
-                "address",
-                "bic",
-                "city",
-                "dateCreated",
-                "dateModifiedAtLastProvider",
-                "dateValidated",
-                "demarchesSimplifieesApplicationId",
-                "fieldsUpdated",
-                "iban",
-                "id",
-                "idAtProviders",
-                "isActive",
-                "isValidated",
-                "lastProviderId",
-                "managedVenues",
-                "nOffers",
-                "name",
-                "postalCode",
-                "siren",
-                "thumbCount",
-                "userHasAccess",
-            ]
-        )
-
-    @pytest.mark.usefixtures("db_session")
     def when_no_bank_information_for_offerer(self, client):
         # given
         pro = users_factories.ProFactory()
@@ -266,7 +116,7 @@ class Returns200Test:
         repository.save(user_offerer1)
 
         # when
-        response = client.with_session_auth(pro.email).get("/offerers?validated=true")
+        response = client.with_session_auth(pro.email).get("/offerers")
 
         # then
         assert response.status_code == 200
@@ -327,22 +177,3 @@ class Returns200Test:
         assert response.status_code == 200
         assert len(response.json) == 1
         assert response.json[0]["name"] == active_offerer.name
-
-
-class Returns400Test:
-    @pytest.mark.usefixtures("db_session")
-    def when_param_validated_is_not_true_nor_false(self, client):
-        # given
-        offerer1 = offers_factories.OffererFactory(siren="123456781", name="offreur C")
-        offerer2 = offers_factories.OffererFactory(siren="123456782", name="offreur A")
-        offerer3 = offers_factories.OffererFactory(siren="123456783", name="offreur B")
-        repository.save(offerer1, offerer3, offerer2)
-
-        user = users_factories.AdminFactory(offerers=[offerer1, offerer2])
-
-        # when
-        response = client.with_session_auth(user.email).get("/offerers?validated=blabla")
-
-        # then
-        assert response.status_code == 400
-        assert response.json["validated"] == ["Le paramètre 'validated' doit être 'true' ou 'false'"]

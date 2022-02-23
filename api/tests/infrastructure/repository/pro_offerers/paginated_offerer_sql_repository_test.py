@@ -25,8 +25,6 @@ class PaginatedOffererSQLRepositoryTest:
         paginated_offerers = PaginatedOfferersSQLRepository().with_status_and_keywords(
             user_id=pro.id,
             user_is_admin=pro.has_admin_role,
-            is_filtered_by_offerer_status=False,
-            only_validated_offerers=None,
             pagination_limit=10,
             keywords=None,
             page=0,
@@ -54,8 +52,6 @@ class PaginatedOffererSQLRepositoryTest:
         paginated_offerers = PaginatedOfferersSQLRepository().with_status_and_keywords(
             user_id=pro.id,
             user_is_admin=pro.has_admin_role,
-            is_filtered_by_offerer_status=False,
-            only_validated_offerers=None,
             pagination_limit=10,
             keywords="Cinema",
             page=0,
@@ -82,8 +78,6 @@ class PaginatedOffererSQLRepositoryTest:
         paginated_offerers = PaginatedOfferersSQLRepository().with_status_and_keywords(
             user_id=pro.id,
             user_is_admin=pro.has_admin_role,
-            is_filtered_by_offerer_status=False,
-            only_validated_offerers=None,
             pagination_limit=10,
             keywords="jardins",
             page=0,
@@ -108,8 +102,6 @@ class PaginatedOffererSQLRepositoryTest:
         paginated_offerers = PaginatedOfferersSQLRepository().with_status_and_keywords(
             user_id=pro.id,
             user_is_admin=pro.has_admin_role,
-            is_filtered_by_offerer_status=False,
-            only_validated_offerers=None,
             pagination_limit=10,
             keywords=None,
             page=0,
@@ -119,30 +111,3 @@ class PaginatedOffererSQLRepositoryTest:
         assert isinstance(paginated_offerers, PaginatedOfferers)
         assert paginated_offerers.total == 1
         assert len(paginated_offerers.offerers) == 1
-
-    @pytest.mark.usefixtures("db_session")
-    def should_filter_out_non_validated_offerers(self, app):
-        # Given
-        pro = users_factories.ProFactory()
-        offerer1 = create_offerer(validation_token="RTYUIO")
-        offerer2 = create_offerer(siren="987654310")
-        user_offerer1 = create_user_offerer(user=pro, offerer=offerer1)
-        user_offerer2 = create_user_offerer(user=pro, offerer=offerer2)
-        repository.save(user_offerer1, user_offerer2)
-
-        # When
-        paginated_offerers = PaginatedOfferersSQLRepository().with_status_and_keywords(
-            user_id=pro.id,
-            user_is_admin=pro.has_admin_role,
-            is_filtered_by_offerer_status=True,
-            only_validated_offerers=True,
-            pagination_limit=10,
-            keywords=None,
-            page=0,
-        )
-
-        # Then
-        assert isinstance(paginated_offerers, PaginatedOfferers)
-        assert paginated_offerers.total == 1
-        assert len(paginated_offerers.offerers) == 1
-        assert paginated_offerers.offerers[0].id == offerer2.id
