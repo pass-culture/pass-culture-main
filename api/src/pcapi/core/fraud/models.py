@@ -354,6 +354,8 @@ class BeneficiaryFraudCheck(PcObject, Model):
     def source_data(self) -> typing.Union[common_models.IdentityCheckContent, UserProfilingFraudData]:
         if self.type not in FRAUD_CHECK_MAPPING:
             raise NotImplementedError(f"Cannot unserialize type {self.type}")
+        if self.resultContent is None:
+            raise ValueError("No source data associated with this fraud check")
         return FRAUD_CHECK_MAPPING[self.type](**self.resultContent)
 
     def get_detailed_source(self) -> str:
