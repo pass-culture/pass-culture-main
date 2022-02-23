@@ -168,10 +168,10 @@ class CollectiveStock(PcObject, Model):  # type: ignore[valid-type]
     collectiveOfferId = sa.Column(sa.BigInteger, sa.ForeignKey("collective_offer.id"), index=True, nullable=False)
 
     collectiveOffer = sa.orm.relationship(
-        "CollectiveOffer", foreign_keys=[collectiveOfferId], userlist=False, back_populates="collectiveStocks"
+        "CollectiveOffer", foreign_keys=[collectiveOfferId], uselist=False, back_populates="collectiveStock"
     )
 
-    collectiveBookings = relationship("CollectiveBooking", back_populate="collectiveStock")
+    collectiveBookings = relationship("CollectiveBooking", back_populates="collectiveStock")
 
     price = sa.Column(
         sa.Numeric(10, 2), sa.CheckConstraint("price >= 0", name="check_price_is_not_negative"), nullable=False
@@ -385,7 +385,7 @@ class CollectiveBooking(PcObject, Model):  # type: ignore[valid-type]
     collectiveStockId = sa.Column(sa.BigInteger, sa.ForeignKey("collective_stock.id"), index=True, nullable=False)
 
     collectiveStock = relationship(
-        "CollectiveStock", foreign_keys=[collectiveStockId], back_populate="collectiveBookings"
+        "CollectiveStock", foreign_keys=[collectiveStockId], back_populates="collectiveBookings"
     )
 
     venueId = sa.Column(sa.BigInteger, sa.ForeignKey("venue.id"), index=True, nullable=False)
