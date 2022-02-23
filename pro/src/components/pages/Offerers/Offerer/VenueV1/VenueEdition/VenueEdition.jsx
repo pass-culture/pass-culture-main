@@ -25,8 +25,6 @@ import bindGetSuggestionsToLongitude from '../fields/LocationFields/decorators/b
 import LocationFields from '../fields/LocationFields/LocationFields'
 import { FRANCE_POSITION } from '../fields/LocationFields/utils/positions'
 import WithdrawalDetailsFields from '../fields/WithdrawalDetailsFields/WithdrawalDetailsFields'
-import VenueLabel from '../ValueObjects/VenueLabel'
-import VenueType from '../ValueObjects/VenueType'
 
 import DeleteBusinessUnitConfirmationDialog from './DeleteBusinessUnitConfirmationDialog/DeleteBusinessUnitConfirmationDialog'
 import { ImageVenueUploaderSection } from './ImageVenueUploaderSection/ImageVenueUploaderSection'
@@ -41,14 +39,15 @@ const VenueEdition = ({
   match: {
     params: { offererId, venueId },
   },
-  offerer,
   query,
-  venue,
-  venueLabels,
-  venueTypes,
 }) => {
   const [isRequestPending, setIsRequestPending] = useState(false)
   const [showConfirmationDialog, setShowConfirmationDialog] = useState(false)
+  const [isReady, setIsReady] = useState(false)
+  const [offerer, setOfferer] = useState(null)
+  const [venue, setVenue] = useState(null)
+  const [venueTypes, setVenueTypes] = useState(null)
+  const [venueLabels, setVenueLabels] = useState(null)
   const deleteBusinessUnitConfirmed = useRef(false)
 
   const isBankInformationWithSiretActive = useActiveFeature(
@@ -58,8 +57,21 @@ const VenueEdition = ({
   const shouldDisplayImageVenueUploaderSection =
     useActiveFeature('PRO_ENABLE_UPLOAD_VENUE_IMAGE') && venue?.isPermanent
 
-  // TODO check that it's execute only once when initialize
-  useEffect(() => handleInitialRequest(), [handleInitialRequest])
+  useEffect(() => {
+    function loadInitialData() {
+      handleInitialRequest().then(
+        ({ offerer, venue, venueTypes, venueLabels }) => {
+          setOfferer(offerer)
+          setVenue(venue)
+          setVenueTypes(venueTypes)
+          setVenueLabels(venueLabels)
+          setIsReady(true)
+        }
+      )
+    }
+
+    loadInitialData()
+  }, [handleInitialRequest])
 
   const pageNotFoundRedirect = () => history.push('/404')
 
@@ -349,14 +361,9 @@ const VenueEdition = ({
         title="Lieu"
       />
       {venue && !initialIsVirtual && <VenueProvidersManager venue={venue} />}
-      {venue && offerer && renderForm()}
+      {venue && offerer && isReady && renderForm()}
     </div>
   )
-}
-
-VenueEdition.defaultProps = {
-  offerer: null,
-  venue: null,
 }
 
 VenueEdition.propTypes = {
@@ -366,11 +373,7 @@ VenueEdition.propTypes = {
   handleSubmitRequestSuccess: PropTypes.func.isRequired,
   history: PropTypes.shape().isRequired,
   match: PropTypes.shape().isRequired,
-  offerer: PropTypes.shape(),
   query: PropTypes.shape().isRequired,
-  venue: PropTypes.shape(),
-  venueLabels: PropTypes.arrayOf(PropTypes.instanceOf(VenueLabel)).isRequired,
-  venueTypes: PropTypes.arrayOf(PropTypes.instanceOf(VenueType)).isRequired,
 }
 
 export default VenueEdition

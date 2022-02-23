@@ -17,6 +17,7 @@ import * as pcapi from 'repository/pcapi/pcapi'
 import * as usersSelectors from 'store/selectors/data/usersSelectors'
 import { configureTestStore } from 'store/testUtils'
 
+import VenueType from '../../ValueObjects/VenueType'
 import VenueEditon from '../VenueEdition'
 
 import { getContactInputs } from './helpers'
@@ -30,6 +31,8 @@ jest.mock('repository/pcapi/pcapi', () => ({
   getBusinessUnits: jest.fn().mockResolvedValue([]),
   loadProviders: jest.fn().mockResolvedValue([]),
   loadVenueProviders: jest.fn().mockResolvedValue([]),
+  getOfferer: jest.fn().mockResolvedValue([]),
+  getVenue: jest.fn().mockResolvedValue([]),
 }))
 
 jest.mock('utils/config', () => ({
@@ -46,13 +49,16 @@ const renderVenueEdition = async ({
   const history = createBrowserHistory()
   history.push(url)
 
-  const rtlRenderReturn = render(
-    <Provider store={store}>
-      <Router history={history}>
-        <VenueEditon {...props} />
-      </Router>
-    </Provider>
-  )
+  let rtlRenderReturn
+  await act(async () => {
+    rtlRenderReturn = await render(
+      <Provider store={store}>
+        <Router history={history}>
+          <VenueEditon {...props} />
+        </Router>
+      </Provider>
+    )
+  })
 
   screen.queryByText('Importation d’offres')
   waitFormRender && (await screen.findByTestId('venue-edition-form'))
@@ -72,50 +78,69 @@ describe('test page : VenueEdition', () => {
   let push
   let props
 
+  const defaultVenue = {
+    noDisabilityCompliant: false,
+    isAccessibilityAppliedOnAllOffers: true,
+    audioDisabilityCompliant: true,
+    mentalDisabilityCompliant: true,
+    motorDisabilityCompliant: true,
+    visualDisabilityCompliant: true,
+    address: '1 boulevard Poissonnière',
+    bookingEmail: 'fake@example.com',
+    city: 'Paris',
+    dateCreated: '2021-09-13T14:59:21.661969Z',
+    dateModifiedAtLastProvider: '2021-09-13T14:59:21.661955Z',
+    departementCode: '75',
+    id: 'AQ',
+    isBusinessUnitMainVenue: false,
+    isValidated: true,
+    isVirtual: false,
+    isPermanent: true,
+    latitude: 48.91683,
+    longitude: 2.43884,
+    managingOffererId: 'AM',
+    nOffers: 7,
+    name: 'Maison de la Brique',
+    postalCode: '75000',
+    publicName: 'Maison de la Brique',
+    siret: '22222222311111',
+    venueTypeCode: 'DE',
+    businessUnit: { id: 20 },
+    businessUnitId: 20,
+    contact: {
+      email: 'contact@venue.com',
+      website: 'https://my@website.com',
+      phoneNumber: '+33102030405',
+    },
+  }
+  let venue = { ...defaultVenue }
+  let offerer = {
+    id: 'BQ',
+    name: 'Maison du chocolat',
+  }
+  const venueTypes = [
+    new VenueType({
+      id: 'VISUAL_ARTS',
+      label: 'Arts visuels, arts plastiques et galeries',
+    }),
+  ]
+  const venueLabels = []
+
   beforeEach(() => {
     push = jest.fn()
     props = {
-      venue: {
-        noDisabilityCompliant: false,
-        isAccessibilityAppliedOnAllOffers: true,
-        audioDisabilityCompliant: true,
-        mentalDisabilityCompliant: true,
-        motorDisabilityCompliant: true,
-        visualDisabilityCompliant: true,
-        address: '1 boulevard Poissonnière',
-        bookingEmail: 'fake@example.com',
-        city: 'Paris',
-        dateCreated: '2021-09-13T14:59:21.661969Z',
-        dateModifiedAtLastProvider: '2021-09-13T14:59:21.661955Z',
-        departementCode: '75',
-        id: 'AQ',
-        isBusinessUnitMainVenue: false,
-        isValidated: true,
-        isVirtual: false,
-        isPermanent: true,
-        latitude: 48.91683,
-        longitude: 2.43884,
-        managingOffererId: 'AM',
-        nOffers: 7,
-        name: 'Maison de la Brique',
-        postalCode: '75000',
-        publicName: 'Maison de la Brique',
-        siret: '22222222311111',
-        venueTypeCode: 'DE',
-        businessUnit: { id: 20 },
-        contact: {
-          email: '',
-          phoneNumber: '',
-          website: '',
-        },
-      },
       history: {
         location: {
           pathname: '/fake',
         },
         push: push,
       },
-      handleInitialRequest: jest.fn(),
+      handleInitialRequest: jest.fn().mockResolvedValue({
+        offerer,
+        venue,
+        venueTypes,
+        venueLabels,
+      }),
       handleSubmitRequest: jest.fn(),
       handleSubmitRequestSuccess: jest.fn(),
       handleSubmitRequestFail: jest.fn(),
@@ -125,10 +150,6 @@ describe('test page : VenueEdition', () => {
           venueId: 'AQYQ',
         },
       },
-      offerer: {
-        id: 'BQ',
-        name: 'Maison du chocolat',
-      },
       query: {
         changeToReadOnly: jest.fn(),
         context: jest.fn().mockReturnValue({
@@ -137,10 +158,10 @@ describe('test page : VenueEdition', () => {
           readOnly: false,
         }),
       },
-      venueTypes: [],
-      venueLabels: [],
     }
 
+    pcapi.getOfferer.mockResolvedValue(offerer)
+    pcapi.getVenue.mockResolvedValue(venue)
     pcapi.loadProviders.mockResolvedValue([
       {
         id: 'providerId',
@@ -148,6 +169,10 @@ describe('test page : VenueEdition', () => {
       },
     ])
     pcapi.getBusinessUnits.mockResolvedValue([{}])
+  })
+
+  afterEach(() => {
+    venue = { ...defaultVenue }
   })
 
   describe('render', () => {
@@ -166,7 +191,7 @@ describe('test page : VenueEdition', () => {
 
     it('should not render a Form when venue is virtual', async () => {
       // given
-      props.venue.isVirtual = true
+      venue.isVirtual = true
 
       // when
       await renderVenueEdition({ props, waitFormRender: false })
@@ -183,8 +208,8 @@ describe('test page : VenueEdition', () => {
 
     it('should render readonly form when venue is virtual and feature flag active', async () => {
       // given
-      props.venue.isVirtual = true
-      props.venue.businessUnit = null
+      venue.isVirtual = true
+      venue.businessUnit = null
       const storeOverrides = {
         features: {
           list: [
@@ -240,17 +265,6 @@ describe('test page : VenueEdition', () => {
     })
 
     it('should display contact fields', async () => {
-      props = {
-        ...props,
-        venue: {
-          ...props.venue,
-          contact: {
-            email: 'contact@venue.com',
-            website: 'https://my@website.com',
-            phoneNumber: '+33102030405',
-          },
-        },
-      }
       await renderVenueEdition({ props })
       const { contactPhoneNumber, contactMail, contactUrl } =
         await getContactInputs()
@@ -263,23 +277,12 @@ describe('test page : VenueEdition', () => {
       expect(contactMail).toBeEnabled()
       expect(contactUrl).toBeEnabled()
 
-      expect(contactUrl).toHaveValue(props.venue.contact.website)
-      expect(contactPhoneNumber).toHaveValue(props.venue.contact.phoneNumber)
-      expect(contactMail).toHaveValue(props.venue.contact.email)
+      expect(contactUrl).toHaveValue(venue.contact.website)
+      expect(contactPhoneNumber).toHaveValue(venue.contact.phoneNumber)
+      expect(contactMail).toHaveValue(venue.contact.email)
     })
 
     it('should be able to edit contact fields', async () => {
-      props = {
-        ...props,
-        venue: {
-          ...props.venue,
-          contact: {
-            email: 'contact@venue.com',
-            website: 'https://my@website.com',
-            phoneNumber: '+33102030405',
-          },
-        },
-      }
       await renderVenueEdition({ props })
       const {
         contactPhoneNumber,
@@ -301,7 +304,7 @@ describe('test page : VenueEdition', () => {
       screen.getByText('Valider').click()
 
       const expectedRequestParams = {
-        ...props.venue,
+        ...venue,
         contact: {
           email: contactInfos.email,
           phoneNumber: contactInfos.phoneNumber,
@@ -335,15 +338,7 @@ describe('test page : VenueEdition', () => {
         .spyOn(usersSelectors, 'selectCurrentUser')
         .mockReturnValue({ currentUser: 'fakeUser', publicName: 'fakeName' })
 
-      props = {
-        ...props,
-        venue: {
-          ...props.venue,
-          publicName: 'fake public name',
-          id: 'AQ',
-          siret: null,
-        },
-      }
+      venue.siret = null
 
       await renderVenueEdition({ props })
       const addressInput = screen.getByLabelText('Numéro et voie :', {
@@ -366,14 +361,6 @@ describe('test page : VenueEdition', () => {
         .spyOn(usersSelectors, 'selectCurrentUser')
         .mockReturnValue({ currentUser: 'fakeUser', publicName: 'fakeName' })
 
-      props = {
-        ...props,
-        venue: {
-          ...props.venue,
-          publicName: 'fake public name',
-          siret: '12345678901234',
-        },
-      }
       const getApplyEmailBookingOnAllOffersLabel = () =>
         screen.queryByText(
           'Utiliser cet email pour me notifier des réservations de toutes les offres déjà postées dans ce lieu.',
@@ -452,15 +439,6 @@ describe('test page : VenueEdition', () => {
 
       it('should be able to edit bank information', async () => {
         // Given
-        props = {
-          ...props,
-          venue: {
-            ...props.venue,
-            businessUnitId: 20,
-            businessUnit: { id: 20 },
-          },
-        }
-
         await renderVenueEdition({ props, storeOverrides })
 
         // When
@@ -477,7 +455,7 @@ describe('test page : VenueEdition', () => {
 
         // Then
         const expectedRequestParams = {
-          ...props.venue,
+          ...venue,
           businessUnitId: '21',
         }
 
@@ -488,7 +466,7 @@ describe('test page : VenueEdition', () => {
 
       it('should display confirmation dialog when edit business unit main venue', async () => {
         // Given
-        props.venue.isBusinessUnitMainVenue = true
+        venue.isBusinessUnitMainVenue = true
 
         await renderVenueEdition({ props, storeOverrides })
 
@@ -518,7 +496,7 @@ describe('test page : VenueEdition', () => {
 
       it('should not submit data when cancel edition of business unit main venue', async () => {
         // Given
-        props.venue.isBusinessUnitMainVenue = true
+        venue.isBusinessUnitMainVenue = true
 
         await renderVenueEdition({ props, storeOverrides })
 
@@ -547,17 +525,8 @@ describe('test page : VenueEdition', () => {
 
       it('should not display confirmation dialog when edit business unit not main venue', async () => {
         // Given
-        await renderVenueEdition({
-          props: {
-            ...props,
-            venue: {
-              ...props.venue,
-              businessUnitId: null,
-              businessUnit: null,
-            },
-          },
-          storeOverrides,
-        })
+        venue.isBusinessUnitMainVenue = false
+        await renderVenueEdition({ props, storeOverrides })
 
         const bankSelect = await screen.findByLabelText(
           'Coordonnées bancaires pour vos remboursements :'
@@ -606,16 +575,9 @@ describe('test page : VenueEdition', () => {
       })
 
       it('hides when venue is not permanent', async () => {
-        await renderVenueEdition({
-          props: {
-            ...props,
-            venue: {
-              ...props.venue,
-              isPermanent: false,
-            },
-          },
-          storeOverrides,
-        })
+        venue.isPermanent = false
+
+        await renderVenueEdition({ props, storeOverrides })
 
         expect(
           screen.queryByTestId('image-venue-uploader-section')
@@ -623,6 +585,8 @@ describe('test page : VenueEdition', () => {
       })
 
       it('displays when feature flag is enabled and venue is permanent', async () => {
+        venue.isPermanent = true
+
         await renderVenueEdition({ props, storeOverrides })
 
         expect(
@@ -642,18 +606,6 @@ describe('test page : VenueEdition', () => {
     })
 
     it('should display disabled contact fields', async () => {
-      props = {
-        ...props,
-        venue: {
-          ...props.venue,
-          contact: {
-            email: 'contact@venue.com',
-            website: 'https://my@website.com',
-            phoneNumber: '+33102030405',
-          },
-        },
-      }
-
       await renderVenueEdition({ props })
       const { contactPhoneNumber, contactMail, contactUrl } =
         await getContactInputs()
@@ -666,9 +618,9 @@ describe('test page : VenueEdition', () => {
       expect(contactMail).toBeDisabled()
       expect(contactUrl).toBeDisabled()
 
-      expect(contactUrl).toHaveValue(props.venue.contact.website)
-      expect(contactPhoneNumber).toHaveValue(props.venue.contact.phoneNumber)
-      expect(contactMail).toHaveValue(props.venue.contact.email)
+      expect(contactUrl).toHaveValue(venue.contact.website)
+      expect(contactPhoneNumber).toHaveValue(venue.contact.phoneNumber)
+      expect(contactMail).toHaveValue(venue.contact.email)
     })
 
     it('should render component with correct state values', async () => {
@@ -692,11 +644,7 @@ describe('test page : VenueEdition', () => {
           .spyOn(usersSelectors, 'selectCurrentUser')
           .mockReturnValue({ currentUser: 'fakeUser' })
 
-        props.venue = {
-          ...props.venue,
-          publicName: 'fake public name',
-          id: 'CM',
-        }
+        venue.id = 'CM'
 
         const { history } = await renderVenueEdition({
           props,

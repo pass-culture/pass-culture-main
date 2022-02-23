@@ -206,6 +206,9 @@ export const getVenue = venueId => client.get(`/venues/${venueId}`)
 
 export const createVenue = venue => client.post(`/venues`, venue)
 
+export const editVenue = (venueId, body) =>
+  client.patch(`/venues/${venueId}`, body)
+
 export const getVenueStats = venueId => client.get(`/venues/${venueId}/stats`)
 
 export const getVenueTypes = () => client.get(`/venue-types`)
