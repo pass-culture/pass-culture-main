@@ -140,3 +140,21 @@ class BookingViewTest:
 
         booking = Booking.query.get(booking.id)
         assert booking.status == BookingStatus.CANCELLED
+
+    def test_cancel_used_booking_without_payment(self, app):
+        users_factories.AdminFactory(email="admin@example.com")
+        booking = bookings_factories.UsedIndividualBookingFactory()
+
+        client = TestClient(app.test_client()).with_session_auth("admin@example.com")
+        route = f"/pc/back-office/bookings/cancel/{booking.id}"
+        response = client.post(route, form={})
+
+        assert response.status_code == 302
+        assert response.location == f"http://localhost/pc/back-office/bookings/?id={booking.id}"
+
+        response = client.get(response.location)
+        content = response.data.decode(response.charset)
+        assert "La réservation a été marquée comme annulée" in content
+
+        booking = Booking.query.get(booking.id)
+        assert booking.status == BookingStatus.CANCELLED
