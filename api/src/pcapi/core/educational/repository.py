@@ -83,6 +83,10 @@ def find_educational_institution_by_uai_code(uai_code: str) -> Optional[educatio
     return educational_models.EducationalInstitution.query.filter_by(institutionId=uai_code).one_or_none()
 
 
+def find_all_educational_institution() -> list[educational_models.EducationalInstitution]:
+    return educational_models.EducationalInstitution.query.all()
+
+
 def find_educational_deposit_by_institution_id_and_year(
     educational_institution_id: int,
     educational_year_id: str,

@@ -239,6 +239,19 @@ def create_educational_institution(institution_id: str) -> EducationalInstitutio
     return educational_institution
 
 
+def update_educational_institution_data(
+    institution_id: str, institution_data: dict[str, str]
+) -> EducationalInstitution:
+    educational_institution = EducationalInstitution.query.filter_by(institutionId=institution_id).one()
+    educational_institution.name = institution_data["name"]
+    educational_institution.city = institution_data["city"]
+    educational_institution.postalCode = institution_data["postalCode"]
+    educational_institution.email = institution_data["email"]
+    educational_institution.phoneNumber = institution_data["phoneNumber"]
+
+    return educational_institution
+
+
 def create_educational_deposit(
     educational_year_id: str, educational_institution_id: int, deposit_amount: int, ministry: Ministry
 ) -> EducationalDeposit:
