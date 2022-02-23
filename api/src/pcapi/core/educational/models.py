@@ -97,7 +97,7 @@ class CollectiveOffer(PcObject, ValidationMixin, AccessibilityMixin, StatusMixin
         server_default="{}",
     )
 
-    collectiveStocks = relationship("CollectiveStock", back_populates="collectiveOffer")
+    collectiveStock = relationship("CollectiveStock", back_populates="collectiveOffer")
 
     contactEmail = sa.Column(sa.String(120), nullable=False)
 
@@ -107,36 +107,23 @@ class CollectiveOffer(PcObject, ValidationMixin, AccessibilityMixin, StatusMixin
 
     @sa.ext.hybrid.hybrid_property
     def isSoldOut(self):
-        # todo redefinir
-        for stock in self.stocks:
-            if (
-                not stock.isSoftDeleted
-                and (stock.beginningDatetime is None or stock.beginningDatetime > datetime.utcnow())
-                and (stock.remainingQuantity == "unlimited" or stock.remainingQuantity > 0)
-            ):
-                return False
-        return True
+        return self.collectiveStock.isSoldOut
 
     @isSoldOut.expression  # type: ignore[no-redef]
     def isSoldOut(cls):  # pylint: disable=no-self-argument
-        # TODO redefine
-        return (
-            ~sa.exists()
-            .where(CollectiveStock.offerId == cls.id)
-            .where(CollectiveStock.isSoftDeleted.is_(False))
+        return sa.exists(
+            sa.select(CollectiveStock)
+            .join(CollectiveBooking, CollectiveBooking.collectiveStockId == CollectiveStock.id)
             .where(
-                sa.or_(CollectiveStock.beginningDatetime > sa.func.now(), CollectiveStock.beginningDatetime.is_(None))
+                sa.and_(
+                    CollectiveStock.collectiveOfferId == cls.id, CollectiveBooking.status != BookingStatus.CANCELLED
+                )
             )
-            .where(sa.or_(CollectiveStock.remainingQuantity.is_(None), CollectiveStock.remainingQuantity > 0))
         )
 
     @property
     def isBookable(self) -> bool:
-        # TODO redifinir
-        for stock in self.stocks:
-            if stock.isBookable:
-                return True
-        return False
+        return self.collectiveStock.isBookable
 
     @property
     def isReleased(self) -> bool:
@@ -150,18 +137,14 @@ class CollectiveOffer(PcObject, ValidationMixin, AccessibilityMixin, StatusMixin
 
     @sa.ext.hybrid.hybrid_property
     def hasBookingLimitDatetimesPassed(self) -> bool:
-        if self.activeStocks:
-            return all(stock.hasBookingLimitDatetimePassed for stock in self.activeStocks)
-        return False
+        return self.collectiveStock.hasBookingLimitDatetimePassed
 
     @hasBookingLimitDatetimesPassed.expression  # type: ignore[no-redef]
     def hasBookingLimitDatetimesPassed(cls):  # pylint: disable=no-self-argument
-        return sa.and_(
-            sa.exists().where(CollectiveStock.offerId == cls.id).where(CollectiveStock.isSoftDeleted.is_(False)),
-            ~sa.exists()
+        return (
+            sa.exists()
             .where(CollectiveStock.offerId == cls.id)
-            .where(CollectiveStock.isSoftDeleted.is_(False))
-            .where(CollectiveStock.hasBookingLimitDatetimePassed.is_(False)),
+            .where(CollectiveStock.hasBookingLimitDatetimePassed.is_(True))
         )
 
 
@@ -185,8 +168,10 @@ class CollectiveStock(PcObject, Model):  # type: ignore[valid-type]
     collectiveOfferId = sa.Column(sa.BigInteger, sa.ForeignKey("collective_offer.id"), index=True, nullable=False)
 
     collectiveOffer = sa.orm.relationship(
-        "CollectiveOffer", foreign_keys=[collectiveOfferId], back_populates="collectiveStocks"
+        "CollectiveOffer", foreign_keys=[collectiveOfferId], userlist=False, back_populates="collectiveStocks"
     )
+
+    collectiveBookings = relationship("CollectiveBooking", back_populate="collectiveStock")
 
     price = sa.Column(
         sa.Numeric(10, 2), sa.CheckConstraint("price >= 0", name="check_price_is_not_negative"), nullable=False
@@ -200,53 +185,38 @@ class CollectiveStock(PcObject, Model):  # type: ignore[valid-type]
 
     @property
     def isBookable(self) -> bool:
-        return not self.isExpired and self.offer.isReleased and not self.isSoldOut
+        return not self.isExpired and self.collectiveOffer.isReleased and not self.isSoldOut
 
     @sa.ext.hybrid.hybrid_property
     def hasBookingLimitDatetimePassed(self):
-        return bool(self.bookingLimitDatetime and self.bookingLimitDatetime <= datetime.utcnow())
+        return self.bookingLimitDatetime <= datetime.utcnow()
 
     @hasBookingLimitDatetimePassed.expression  # type: ignore[no-redef]
     def hasBookingLimitDatetimePassed(cls):  # pylint: disable=no-self-argument
-        return sa.and_(cls.bookingLimitDatetime != None, cls.bookingLimitDatetime <= sa.func.now())
-
-    @sa.ext.hybrid.hybrid_property
-    def remainingQuantity(self):  # todo rewrite
-        return "unlimited" if self.quantity is None else self.quantity - self.dnBookedQuantity
-
-    @remainingQuantity.expression  # type: ignore[no-redef]
-    def remainingQuantity(cls):  # pylint: disable=no-self-argument
-        return sa.case([(cls.quantity.is_(None), None)], else_=(cls.quantity - cls.dnBookedQuantity))
+        return cls.bookingLimitDatetime <= sa.func.now()
 
     @sa.ext.hybrid.hybrid_property
     def isEventExpired(self):  # todo rewrite
-        return bool(self.beginningDatetime and self.beginningDatetime <= datetime.utcnow())
+        return self.beginningDatetime <= datetime.utcnow()
 
     @isEventExpired.expression  # type: ignore[no-redef]
     def isEventExpired(cls):  # pylint: disable=no-self-argument
-        return sa.and_(cls.beginningDatetime != None, cls.beginningDatetime <= sa.func.now())
+        return cls.beginningDatetime <= sa.func.now()
 
     @property
-    def isExpired(self) -> bool:  # todo rewrite
+    def isExpired(self) -> bool:
         return self.isEventExpired or self.hasBookingLimitDatetimePassed  # type: ignore[return-value]
 
     @property
-    def isEventDeletable(self) -> bool:  # todo rewrite
-        if not self.beginningDatetime:
-            return True
-        limit_date_for_stock_deletion = self.beginningDatetime
-        return limit_date_for_stock_deletion >= datetime.utcnow()
+    def isEventDeletable(self) -> bool:
+        return self.beginningDatetime >= datetime.utcnow()
 
     @property
     def isSoldOut(self) -> bool:
-        # pylint: disable=comparison-with-callable
-        if (
-            not self.isSoftDeleted
-            and (self.beginningDatetime is None or self.beginningDatetime > datetime.utcnow())
-            and (self.remainingQuantity == "unlimited" or self.remainingQuantity > 0)
-        ):
-            return False
-        return True
+        for booking in self.collectiveBookings:
+            if booking.status != BookingStatus.CANCELLED:
+                return True
+        return False
 
 
 class EducationalInstitution(PcObject, Model):  # type: ignore[valid-type]
@@ -414,7 +384,9 @@ class CollectiveBooking(PcObject, Model):  # type: ignore[valid-type]
 
     collectiveStockId = sa.Column(sa.BigInteger, sa.ForeignKey("collective_stock.id"), index=True, nullable=False)
 
-    collectiveStock = relationship("CollectiveStock", foreign_keys=[collectiveStockId], backref="collectiveBookings")
+    collectiveStock = relationship(
+        "CollectiveStock", foreign_keys=[collectiveStockId], back_populate="collectiveBookings"
+    )
 
     venueId = sa.Column(sa.BigInteger, sa.ForeignKey("venue.id"), index=True, nullable=False)
 
@@ -426,7 +398,7 @@ class CollectiveBooking(PcObject, Model):  # type: ignore[valid-type]
 
     cancellationDate = sa.Column(sa.DateTime, nullable=True)
 
-    cancellationLimitDate = sa.Column(sa.DateTime, nullable=True)
+    cancellationLimitDate = sa.Column(sa.DateTime, nullable=False)
 
     cancellationReason = sa.Column(
         "cancellationReason",
@@ -454,7 +426,7 @@ class CollectiveBooking(PcObject, Model):  # type: ignore[valid-type]
     Index("ix_collective_booking_educationalYear_and_institution", educationalYearId, educationalInstitutionId)
 
     confirmationDate: Optional[datetime] = sa.Column(sa.DateTime, nullable=True)
-    confirmationLimitDate = sa.Column(sa.DateTime, nullable=True)
+    confirmationLimitDate = sa.Column(sa.DateTime, nullable=False)
 
     def mark_as_used(self) -> None:
         if self.is_used_or_reimbursed:  # pylint: disable=using-constant-test
@@ -497,11 +469,11 @@ class CollectiveBooking(PcObject, Model):  # type: ignore[valid-type]
 
     @hybrid_property
     def isConfirmed(self):
-        return self.cancellationLimitDate is not None and self.cancellationLimitDate <= datetime.utcnow()
+        return self.cancellationLimitDate <= datetime.utcnow()
 
     @isConfirmed.expression  # type: ignore[no-redef]
     def isConfirmed(cls):  # pylint: disable=no-self-argument
-        return sa.and_(cls.cancellationLimitDate.isnot(None), cls.cancellationLimitDate <= datetime.utcnow())
+        return cls.cancellationLimitDate <= datetime.utcnow()
 
     @hybrid_property
     def is_used_or_reimbursed(self) -> bool:
@@ -513,35 +485,25 @@ class CollectiveBooking(PcObject, Model):  # type: ignore[valid-type]
 
     @property
     def userName(self) -> Optional[str]:
-        if self.individualBooking is not None:
-            return f"{self.individualBooking.user.firstName} {self.individualBooking.user.lastName}"
-
-        if self.educationalBooking is not None:
-            return f"{self.educationalBooking.educationalRedactor.firstName} {self.educationalBooking.educationalRedactor.lastName}"
-
-        return None
+        return f"{self.educationalRedactor.firstName} {self.educationalRedactor.lastName}"
 
     def has_confirmation_limit_date_passed(self) -> bool:
-        return bool(self.confirmationLimitDate and self.confirmationLimitDate <= datetime.utcnow())
+        return self.confirmationLimitDate <= datetime.utcnow()
 
     def mark_as_refused(self) -> None:
-        from pcapi.core.bookings import models as bookings_models
 
-        if (
-            self.booking.status != bookings_models.BookingStatus.PENDING
-            and self.booking.cancellationLimitDate <= datetime.utcnow()
-        ):
+        if self.status != BookingStatus.PENDING and self.cancellationLimitDate <= datetime.utcnow():
             raise exceptions.EducationalBookingNotRefusable()
 
         try:
-            self.booking.cancel_booking()
-            self.booking.cancellationReason = bookings_models.BookingCancellationReasons.REFUSED_BY_INSTITUTE
+            self.cancel_booking()
+            self.cancellationReason = BookingCancellationReasons.REFUSED_BY_INSTITUTE
         except booking_exceptions.BookingIsAlreadyUsed:
             raise exceptions.EducationalBookingNotRefusable()
         except booking_exceptions.BookingIsAlreadyCancelled:
             raise exceptions.EducationalBookingAlreadyCancelled()
 
-        self.status = EducationalBookingStatus.REFUSED
+        self.status = BookingStatus.CANCELLED
 
 
 CollectiveBooking.trig_ddl = f"""
@@ -641,7 +603,7 @@ CollectiveBooking.trig_ddl = f"""
 sa.event.listen(CollectiveBooking.__table__, "after_create", sa.DDL(CollectiveBooking.trig_ddl))
 
 CollectiveBooking.trig_update_cancellationDate_on_isCancelled_ddl = f"""
-    CREATE OR REPLACE FUNCTION save_cancellation_date()
+    CREATE OR REPLACE FUNCTION save_collective_booking_cancellation_date()
     RETURNS TRIGGER AS $$
     BEGIN
         IF NEW.status = '{BookingStatus.CANCELLED.value}' AND OLD."cancellationDate" IS NULL AND NEW."cancellationDate" THEN
@@ -653,12 +615,12 @@ CollectiveBooking.trig_update_cancellationDate_on_isCancelled_ddl = f"""
     END;
     $$ LANGUAGE plpgsql;
 
-    DROP TRIGGER IF EXISTS stock_update_cancellation_date ON booking;
+    DROP TRIGGER IF EXISTS stock_update_collective_booking_cancellation_date ON collective_booking;
 
-    CREATE TRIGGER stock_update_cancellation_date
-    BEFORE INSERT OR UPDATE OF status ON booking
+    CREATE TRIGGER stock_update_collective_booking_cancellation_date
+    BEFORE INSERT OR UPDATE OF status ON collective_booking
     FOR EACH ROW
-    EXECUTE PROCEDURE save_cancellation_date()
+    EXECUTE PROCEDURE save_collective_booking_cancellation_date()
     """
 
 sa.event.listen(
