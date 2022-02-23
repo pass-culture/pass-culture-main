@@ -5,8 +5,8 @@ import pytest
 
 from pcapi.core.offerers.factories import ApiKeyFactory
 from pcapi.core.offerers.factories import DEFAULT_CLEAR_API_KEY
-from pcapi.core.offerers.factories import ProviderFactory
 import pcapi.core.offers.factories as offers_factories
+import pcapi.core.providers.factories as providers_factories
 
 from tests.conftest import TestClient
 
@@ -15,7 +15,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 
 def test_accepts_request(app):
-    ProviderFactory(name="Pass Culture API Stocks", localClass="PCAPIStocks")
+    providers_factories.ProviderFactory(name="Pass Culture API Stocks", localClass="PCAPIStocks")
     offerer = offers_factories.OffererFactory(siren=123456789)
     venue = offers_factories.VenueFactory(managingOfferer=offerer, id=3)
     offer_to_update = offers_factories.OfferFactory(
@@ -50,7 +50,7 @@ def test_accepts_request(app):
     [(None, 10), ("", 0), ("0", 0), (0, 0), (1.23, Decimal("1.23")), ("1.23", Decimal("1.23"))],
 )
 def test_accepts_request_with_price(price, expected_price, app):
-    ProviderFactory(name="Pass Culture API Stocks", localClass="PCAPIStocks")
+    providers_factories.ProviderFactory(name="Pass Culture API Stocks", localClass="PCAPIStocks")
     offerer = offers_factories.OffererFactory(siren=123456789)
     venue = offers_factories.VenueFactory(managingOfferer=offerer)
     offer_to_update = offers_factories.OfferFactory(

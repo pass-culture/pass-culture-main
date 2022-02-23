@@ -2,8 +2,8 @@ from datetime import datetime
 
 import pytest
 
-from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
+import pcapi.core.providers.factories as providers_factories
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.core.users import factories as users_factories
 from pcapi.utils.human_ids import humanize
@@ -17,7 +17,7 @@ class Returns200Test:
         # given
         user = users_factories.ProFactory()
         titelive_things_provider = get_provider_by_local_class("TiteLiveThings")
-        venue_provider = offerers_factories.VenueProviderFactory(
+        venue_provider = providers_factories.VenueProviderFactory(
             venue__name="Librairie Titelive", provider=titelive_things_provider, lastSyncDate=datetime(2021, 8, 16)
         )
 
@@ -51,11 +51,11 @@ class Returns200Test:
         # given
         user = users_factories.ProFactory()
         allocine_stocks_provider = get_provider_by_local_class("AllocineStocks")
-        allocine_venue_provider = offerers_factories.AllocineVenueProviderFactory(
+        allocine_venue_provider = providers_factories.AllocineVenueProviderFactory(
             venue__name="Whatever cinema",
             provider=allocine_stocks_provider,
         )
-        offerers_factories.AllocineVenueProviderPriceRuleFactory(
+        providers_factories.AllocineVenueProviderPriceRuleFactory(
             price=123.2, allocineVenueProvider=allocine_venue_provider
         )
 
@@ -76,7 +76,7 @@ class Returns400Test:
         # given
         user = users_factories.ProFactory()
         titelive_things_provider = get_provider_by_local_class("TiteLiveThings")
-        offerers_factories.VenueProviderFactory(
+        providers_factories.VenueProviderFactory(
             venue__name="Librairie Titelive",
             provider=titelive_things_provider,
         )

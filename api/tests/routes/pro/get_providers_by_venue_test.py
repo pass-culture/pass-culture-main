@@ -1,7 +1,7 @@
 import pytest
 
-from pcapi.core.offerers.factories import ProviderFactory
 from pcapi.core.offers.factories import VenueFactory
+import pcapi.core.providers.factories as providers_factories
 from pcapi.core.providers.factories import AllocinePivotFactory
 from pcapi.core.users.factories import UserFactory
 from pcapi.utils.human_ids import humanize
@@ -14,8 +14,8 @@ def test_venue_has_known_allocine_id(client):
     venue = VenueFactory(siret="12345678912345")
     AllocinePivotFactory(siret="12345678912345")
 
-    allocine_provider = ProviderFactory(localClass="AllocineStocks")
-    other_provider = ProviderFactory(localClass="B provider")
+    allocine_provider = providers_factories.ProviderFactory(localClass="AllocineStocks")
+    other_provider = providers_factories.ProviderFactory(localClass="B provider")
 
     # When
     response = client.with_session_auth(email=user.email).get(f"/providers/{humanize(venue.id)}")
@@ -45,8 +45,8 @@ def test_venue_has_no_allocine_id(client):
     user = UserFactory(email="user@example.com")
     venue = VenueFactory()
 
-    allocine_provider = ProviderFactory(localClass="AllocineStocks")
-    other_provider = ProviderFactory(localClass="B provider")
+    allocine_provider = providers_factories.ProviderFactory(localClass="AllocineStocks")
+    other_provider = providers_factories.ProviderFactory(localClass="B provider")
 
     # When
     response = client.with_session_auth(email=user.email).get(f"/providers/{humanize(venue.id)}")

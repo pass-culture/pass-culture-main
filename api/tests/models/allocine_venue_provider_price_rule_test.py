@@ -1,7 +1,6 @@
 import pytest
 
-from pcapi.core.offerers.factories import AllocineVenueProviderFactory
-from pcapi.core.offerers.factories import AllocineVenueProviderPriceRuleFactory
+from pcapi.core.providers import factories as providers_factories
 from pcapi.core.providers.models import AllocineVenueProviderPriceRule
 from pcapi.domain.price_rule import PriceRule
 from pcapi.models.api_errors import ApiErrors
@@ -12,8 +11,8 @@ class AllocineVenueProviderPriceRuleTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_add_price_rules_to_venue_provider(self, app):
         # Given
-        allocine_venue_provider = AllocineVenueProviderFactory()
-        AllocineVenueProviderPriceRuleFactory(
+        allocine_venue_provider = providers_factories.AllocineVenueProviderFactory()
+        providers_factories.AllocineVenueProviderPriceRuleFactory(
             allocineVenueProvider=allocine_venue_provider, priceRule=PriceRule.default, price=10
         )
 
@@ -23,7 +22,7 @@ class AllocineVenueProviderPriceRuleTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_raise_error_when_price_is_negative(self, app):
         # Given
-        allocine_venue_provider = AllocineVenueProviderFactory()
+        allocine_venue_provider = providers_factories.AllocineVenueProviderFactory()
 
         allocine_venue_provider_price_rule = AllocineVenueProviderPriceRule()
         allocine_venue_provider_price_rule.allocineVenueProvider = allocine_venue_provider
@@ -40,9 +39,9 @@ class AllocineVenueProviderPriceRuleTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_raise_error_when_saving_existing_rule_price(self, app):
         # Given
-        allocine_venue_provider = AllocineVenueProviderFactory()
+        allocine_venue_provider = providers_factories.AllocineVenueProviderFactory()
 
-        AllocineVenueProviderPriceRuleFactory(
+        providers_factories.AllocineVenueProviderPriceRuleFactory(
             allocineVenueProvider=allocine_venue_provider, priceRule=PriceRule.default, price=10
         )
 
@@ -61,7 +60,7 @@ class AllocineVenueProviderPriceRuleTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_raise_error_when_saving_wrong_format_price(self, app):
         # Given
-        allocine_venue_provider = AllocineVenueProviderFactory()
+        allocine_venue_provider = providers_factories.AllocineVenueProviderFactory()
 
         allocine_venue_provider_price_rule = AllocineVenueProviderPriceRule()
         allocine_venue_provider_price_rule.allocineVenueProvider = allocine_venue_provider
@@ -80,7 +79,7 @@ class SaveAllocineVenueProviderPriceRuleTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_not_save_new_venue_provider_price_rule(self, app):
         # Given
-        allocine_venue_provider = AllocineVenueProviderFactory()
+        allocine_venue_provider = providers_factories.AllocineVenueProviderFactory()
 
         venue_provider_price_rule = AllocineVenueProviderPriceRule()
         venue_provider_price_rule.allocineVenueProvider = allocine_venue_provider

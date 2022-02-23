@@ -7,11 +7,11 @@ import requests_mock
 
 from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.categories import subcategories
-import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers import factories
 from pcapi.core.offers.factories import VenueFactory
 from pcapi.core.offers.models import Offer
+import pcapi.core.providers.factories as providers_factories
 from pcapi.core.providers.models import StockDetail
 from pcapi.local_providers.provider_api import synchronize_provider_api
 
@@ -80,9 +80,9 @@ class ProviderAPICronTest:
     @mock.patch("pcapi.core.search.async_index_offer_ids")
     def test_execution(self, mocked_async_index_offer_ids):
         # Given
-        provider = offerers_factories.APIProviderFactory(apiUrl="https://provider_url", authToken="fake_token")
+        provider = providers_factories.APIProviderFactory(apiUrl="https://provider_url", authToken="fake_token")
         venue = VenueFactory(withdrawalDetails="Modalité de retrait")
-        venue_provider = offerers_factories.VenueProviderFactory(
+        venue_provider = providers_factories.VenueProviderFactory(
             isActive=True,
             provider=provider,
             venue=venue,
@@ -195,7 +195,7 @@ class ProviderAPICronTest:
             ]
 
             # When
-            provider = offerers_factories.ProviderFactory()
+            provider = providers_factories.ProviderFactory()
             result = synchronize_provider_api._build_stock_details_from_raw_stocks(raw_stocks, "siret", provider, 11)
 
             # Then
@@ -226,7 +226,7 @@ class ProviderAPICronTest:
             ]
 
             # When
-            provider = offerers_factories.ProviderFactory()
+            provider = providers_factories.ProviderFactory()
             result = synchronize_provider_api._build_stock_details_from_raw_stocks(raw_stocks, "siret", provider, 12)
 
             # Then
@@ -249,7 +249,7 @@ class ProviderAPICronTest:
             ]
 
             # When
-            provider = offerers_factories.ProviderFactory(pricesInCents=True)
+            provider = providers_factories.ProviderFactory(pricesInCents=True)
             result = synchronize_provider_api._build_stock_details_from_raw_stocks(raw_stocks, "siret", provider, 13)
 
             # Then

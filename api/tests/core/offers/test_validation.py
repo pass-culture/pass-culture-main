@@ -3,11 +3,11 @@ import pathlib
 
 import pytest
 
-import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offers import exceptions
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import validation
 from pcapi.core.offers.models import OfferValidationStatus
+import pcapi.core.providers.factories as providers_factories
 from pcapi.models.api_errors import ApiErrors
 
 import tests
@@ -34,13 +34,13 @@ class CheckOfferExistingStocksAreEditableTest:
         ]
 
     def test_allocine_offer(self):
-        provider = offerers_factories.AllocineProviderFactory(localClass="AllocineStocks")
+        provider = providers_factories.AllocineProviderFactory(localClass="AllocineStocks")
         offer = offers_factories.OfferFactory(lastProvider=provider, idAtProvider="1")
 
         validation.check_offer_existing_stocks_are_editable(offer)
 
     def test_non_allocine_provider_offer(self):
-        offerer = offerers_factories.APIProviderFactory()
+        offerer = providers_factories.APIProviderFactory()
         provider_offer = offers_factories.OfferFactory(lastProvider=offerer, idAtProvider="1")
 
         with pytest.raises(ApiErrors) as error:
@@ -145,7 +145,7 @@ class CheckStockCanBeCreatedForOfferTest:
         validation.check_stock_can_be_created_for_offer(offer)
 
     def test_offer_from_provider(self, app):
-        provider = offerers_factories.AllocineProviderFactory()
+        provider = providers_factories.AllocineProviderFactory()
         offer = offers_factories.OfferFactory(lastProvider=provider, idAtProvider="1")
 
         with pytest.raises(ApiErrors) as error:
@@ -173,7 +173,7 @@ class CheckStockIsDeletableTest:
         validation.check_stock_is_deletable(stock)
 
     def test_allocine_offer(self):
-        provider = offerers_factories.AllocineProviderFactory(localClass="AllocineStocks")
+        provider = providers_factories.AllocineProviderFactory(localClass="AllocineStocks")
         offer = offers_factories.OfferFactory(lastProvider=provider, idAtProvider="1")
         stock = offers_factories.StockFactory(offer=offer)
 
@@ -191,7 +191,7 @@ class CheckStockIsDeletableTest:
         ]
 
     def test_offer_from_non_allocine_provider(self):
-        provider = offerers_factories.APIProviderFactory()
+        provider = providers_factories.APIProviderFactory()
         offer = offers_factories.OfferFactory(lastProvider=provider, idAtProvider="1")
         stock = offers_factories.StockFactory(offer=offer)
 
@@ -227,7 +227,7 @@ class CheckStockIsUpdatableTest:
         validation.check_stock_is_updatable(stock)
 
     def test_allocine_offer(self):
-        provider = offerers_factories.AllocineProviderFactory(localClass="AllocineStocks")
+        provider = providers_factories.AllocineProviderFactory(localClass="AllocineStocks")
         offer = offers_factories.OfferFactory(lastProvider=provider, idAtProvider="1")
         stock = offers_factories.StockFactory(offer=offer)
 
@@ -245,7 +245,7 @@ class CheckStockIsUpdatableTest:
         ]
 
     def test_offer_from_non_allocine_provider(self):
-        provider = offerers_factories.APIProviderFactory()
+        provider = providers_factories.APIProviderFactory()
         offer = offers_factories.OfferFactory(lastProvider=provider, idAtProvider="1")
         stock = offers_factories.StockFactory(offer=offer)
 
