@@ -1025,8 +1025,8 @@ workflows:
                - integration
          context: Slack
       - tests-api:
-         name: "Run core tests after commit"
-         pytest_extra_args: "tests/core"
+         name: "Run core tests (except core/users/external)"
+         pytest_extra_args: "tests/core --ignore=tests/core/users/external"
          filters:
            branches:
              ignore:
@@ -1035,7 +1035,17 @@ workflows:
                - integration
          context: Slack
       - tests-api:
-         name: "Run routes tests after commit"
+         name: "Run core/users/external"
+         pytest_extra_args: "tests/core/users/external"
+         filters:
+           branches:
+             ignore:
+               - production
+               - staging
+               - integration
+         context: Slack
+      - tests-api:
+         name: "Run routes tests"
          pytest_extra_args: "tests/routes"
          filters:
            branches:
@@ -1045,7 +1055,7 @@ workflows:
                - integration
          context: Slack
       - tests-api:
-         name: "Run other tests after commit"
+         name: "Run other tests"
          pytest_extra_args: "tests --ignore=tests/core --ignore=tests/routes"
          filters:
            branches:
@@ -1090,9 +1100,10 @@ workflows:
              only:
                - master
          requires:
-           - "Run core tests after commit"
-           - "Run routes tests after commit"
-           - "Run other tests after commit"
+           - "Run core tests (except core/users/external)"
+           - "Run routes tests"
+           - "Run other tests"
+           - "Run core/users/external"
            - quality-api
          context:
            - GCP
