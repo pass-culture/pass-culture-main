@@ -70,7 +70,10 @@ def update_ubble_workflow(
                     fraud_check.thirdPartyId,
                 )
 
-    elif status == ubble_fraud_models.UbbleIdentificationStatus.ABORTED:
+    elif status in (
+        ubble_fraud_models.UbbleIdentificationStatus.ABORTED,
+        ubble_fraud_models.UbbleIdentificationStatus.EXPIRED,
+    ):
         fraud_check.status = fraud_models.FraudCheckStatus.CANCELED
         pcapi_repository.repository.save(fraud_check)
 
