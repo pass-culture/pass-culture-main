@@ -15,7 +15,6 @@ import { setOfferValues } from './helpers'
 jest.mock('repository/pcapi/pcapi', () => ({
   createOffer: jest.fn(),
   getOfferer: jest.fn(),
-  getValidatedOfferersNames: jest.fn(),
   getVenuesForOfferer: jest.fn(),
   getVenue: jest.fn(),
   loadCategories: jest.fn(),

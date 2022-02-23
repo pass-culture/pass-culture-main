@@ -152,12 +152,6 @@ export const getUserValidatedOfferersNames = () => {
     .then(response => response.offerersNames)
 }
 
-export const getValidatedOfferersNames = () => {
-  return client
-    .get('/offerers/names?validated=true')
-    .then(response => response.offerersNames)
-}
-
 export const getOfferers = () => {
   return client.get('/offerers')
 }
