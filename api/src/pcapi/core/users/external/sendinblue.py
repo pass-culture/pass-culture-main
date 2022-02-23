@@ -333,7 +333,8 @@ def _wait_for_process(api_instance: ProcessApi, process_id: int) -> bool:
     # Last status should be 'completed' (exhaustive list of statuses not given in sendinblue API documentation)
     status = "queued"
     while status in ("queued", "in_process") and seconds < 3600:
-        sleep(1)
+        if not settings.IS_RUNNING_TESTS:
+            sleep(1)
         api_response: GetProcess = api_instance.get_process(process_id)
         logger.info("ProcessApi->get_process(%d) returned: %s", process_id, api_response)
         status = api_response.status
