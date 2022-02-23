@@ -1,4 +1,5 @@
 name: Add annotated tag
+concurrency: ${{ github.workflow }}-${{ github.ref }}
 on:
   push:
     branches:
@@ -41,7 +42,21 @@ jobs:
         uses: atlassian/gajira-find-issue-key@master
         with:
           from: commits
-      - name: Push release candidate to jira issue
+      - name: Get jira issue
+        id: get_jira_issue_RC
+        if: ${{ steps.get_jira_key.outputs.issue != null }}
         env:
           JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
-        run: '[[ ! -z "${{ steps.get_jira_key.outputs.issue }}" ]] && jira edit ${{ steps.get_jira_key.outputs.issue }} --override customfield_10043=${{ steps.get_release_version.outputs.value }} --noedit || exit 0'
+        # The jira view command uses .jira.d/templates/view template by default
+        run: echo "::set-output name=RC::$(jira view ${{ steps.get_jira_key.outputs.issue }})"
+      - name: Mark issue as not deployable
+        env:
+          JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+        if: ${{ steps.get_jira_issue_RC.outputs.RC != null }}
+        # The jira edit command uses .jira.d/templates/edit template by default
+        run: jira edit --query='"Release Candidate[Number]" > ${{ steps.get_jira_issue_RC.outputs.RC }}' --override customfield_10044=true --noedit
+      - name: Push release candidate to jira issue
+        if: ${{ steps.get_jira_key.outputs.issue != null }}
+        env:
+          JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+        run: jira edit ${{ steps.get_jira_key.outputs.issue }} --override customfield_10045=${{ steps.get_release_version.outputs.value }} --noedit
