@@ -14,6 +14,7 @@ class UbbleIdentificationStatus(enum.Enum):
     PROCESSING = "processing"  # User has ended the verification flow, identification-url is not usable anymore
     PROCESSED = "processed"  # Identification is completely processed by Ubble
     ABORTED = "aborted"  # User has left the identification, the identification-url is no longer usable (this status is in beta test)
+    EXPIRED = "expired"  # The identification-url has expired and is no longer usable (only uninitiated and initiated identifications can become expired)
 
 
 class UbbleScore(enum.Enum):
