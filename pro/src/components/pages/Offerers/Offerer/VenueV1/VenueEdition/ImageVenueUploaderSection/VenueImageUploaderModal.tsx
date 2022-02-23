@@ -1,6 +1,7 @@
 import React, { useCallback, useState, FunctionComponent } from 'react'
 import { CroppedRect } from 'react-avatar-editor'
 
+import useNotification from 'components/hooks/useNotification'
 import { imageConstraints } from 'new_components/ConstraintCheck/imageConstraints'
 import DialogBox from 'new_components/DialogBox'
 import { postImageToVenue } from 'repository/pcapi/pcapi'
@@ -37,6 +38,7 @@ export const VenueImageUploaderModal: FunctionComponent<Props> = ({
   const [croppingRect, setCroppingRect] = useState<CroppedRect>()
   const [editedImage, setEditedImage] = useState('')
   const [isUploading, setIsUploading] = useState(false)
+  const notification = useNotification()
 
   const onSetImage = useCallback(
     file => {
@@ -81,7 +83,8 @@ export const VenueImageUploaderModal: FunctionComponent<Props> = ({
     reloadImage(bannerUrl)
     setIsUploading(false)
     onDismiss()
-  }, [venueId, image, croppingRect, reloadImage, onDismiss])
+    notification.success('Vos modifications ont bien été prises en compte')
+  }, [venueId, image, croppingRect, reloadImage, onDismiss, notification])
 
   return (
     <DialogBox
