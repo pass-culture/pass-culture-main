@@ -3,13 +3,13 @@ import pytest
 from pcapi.core.bookings.exceptions import CannotDeleteVenueWithBookingsException
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.bookings.models import Booking
-import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import Venue
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import Mediation
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
+import pcapi.core.providers.factories as providers_factories
 from pcapi.core.providers.models import AllocineVenueProvider
 from pcapi.core.providers.models import AllocineVenueProviderPriceRule
 from pcapi.core.providers.models import Provider
@@ -139,8 +139,8 @@ def test_delete_cascade_venue_should_remove_synchronization_to_provider():
     # Given
     venue = offers_factories.VenueFactory()
     venue_to_delete = offers_factories.VenueFactory()
-    offerers_factories.VenueProviderFactory(venue=venue_to_delete)
-    offerers_factories.VenueProviderFactory(venue=venue)
+    providers_factories.VenueProviderFactory(venue=venue_to_delete)
+    providers_factories.VenueProviderFactory(venue=venue)
 
     # When
     delete_cascade_venue_by_id(venue_to_delete.id)
@@ -157,8 +157,8 @@ def test_delete_cascade_venue_should_remove_synchronization_to_allocine_provider
     # Given
     venue = offers_factories.VenueFactory()
     venue_to_delete = offers_factories.VenueFactory()
-    offerers_factories.AllocineVenueProviderPriceRuleFactory(allocineVenueProvider__venue=venue_to_delete)
-    offerers_factories.AllocineVenueProviderPriceRuleFactory(allocineVenueProvider__venue=venue)
+    providers_factories.AllocineVenueProviderPriceRuleFactory(allocineVenueProvider__venue=venue_to_delete)
+    providers_factories.AllocineVenueProviderPriceRuleFactory(allocineVenueProvider__venue=venue)
 
     # When
     delete_cascade_venue_by_id(venue_to_delete.id)

@@ -1,6 +1,6 @@
 import pytest
 
-import pcapi.core.offerers.factories as offerers_factories
+import pcapi.core.providers.factories as providers_factories
 from pcapi.core.providers.models import Provider
 from pcapi.core.providers.repository import get_enabled_providers_for_pro
 from pcapi.core.providers.repository import get_provider_by_local_class
@@ -15,11 +15,11 @@ class GetEnabledProvidersForProTest:
     def test_get_enabled_providers_for_pro(self, app):
         # Given
         Provider.query.delete()  # remove automatically added providers
-        provider1 = offerers_factories.AllocineProviderFactory(localClass="Truc", isActive=True, enabledForPro=True)
-        offerers_factories.APIProviderFactory(name="NotEnabledAPIProvider", isActive=True, enabledForPro=False)
-        offerers_factories.APIProviderFactory(name="InactiveAPIProvider", isActive=False, enabledForPro=True)
-        offerers_factories.APIProviderFactory(name="InactiveAPIProvider2", isActive=False, enabledForPro=False)
-        provider2 = offerers_factories.APIProviderFactory(name="Provider2", isActive=True, enabledForPro=True)
+        provider1 = providers_factories.AllocineProviderFactory(localClass="Truc", isActive=True, enabledForPro=True)
+        providers_factories.APIProviderFactory(name="NotEnabledAPIProvider", isActive=True, enabledForPro=False)
+        providers_factories.APIProviderFactory(name="InactiveAPIProvider", isActive=False, enabledForPro=True)
+        providers_factories.APIProviderFactory(name="InactiveAPIProvider2", isActive=False, enabledForPro=False)
+        provider2 = providers_factories.APIProviderFactory(name="Provider2", isActive=True, enabledForPro=True)
 
         # When
         enabled_providers = get_enabled_providers_for_pro()
@@ -35,10 +35,10 @@ class GetProvidersEnabledForProExcludingSpecificProviderTest:
     def test_should_get_actives_and_enabled_providers_for_pro(self, app):
         # Given
         Provider.query.delete()  # remove automatically added providers
-        offerers_factories.AllocineProviderFactory(name="Provider1", isActive=True, enabledForPro=True)
-        offerers_factories.APIProviderFactory(name="NotEnabledAPIProvider", isActive=True, enabledForPro=False)
-        offerers_factories.APIProviderFactory(name="InactiveAPIProvider", isActive=False, enabledForPro=True)
-        provider = offerers_factories.APIProviderFactory(name="Provider2", isActive=True, enabledForPro=True)
+        providers_factories.AllocineProviderFactory(name="Provider1", isActive=True, enabledForPro=True)
+        providers_factories.APIProviderFactory(name="NotEnabledAPIProvider", isActive=True, enabledForPro=False)
+        providers_factories.APIProviderFactory(name="InactiveAPIProvider", isActive=False, enabledForPro=True)
+        provider = providers_factories.APIProviderFactory(name="Provider2", isActive=True, enabledForPro=True)
 
         # When
         providers = get_providers_enabled_for_pro_excluding_specific_provider("AllocineStocks")

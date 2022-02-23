@@ -2,9 +2,8 @@ from decimal import Decimal
 
 import pytest
 
-from pcapi.core.offerers.factories import AllocineVenueProviderFactory
-from pcapi.core.offerers.factories import AllocineVenueProviderPriceRuleFactory
 from pcapi.core.offers.factories import VenueFactory
+import pcapi.core.providers.factories as providers_factories
 from pcapi.core.providers.models import AllocineVenueProviderPriceRule
 from pcapi.domain.price_rule import PriceRule
 from pcapi.scripts.venue.modify_allocine_price_rule_for_venue import modify_allocine_price_rule_for_venue_by_id
@@ -17,7 +16,7 @@ class ModifyAllocinePriceRuleForVenueTest:
         # Given
         initial_price = Decimal(7.5)
         new_price = Decimal(8)
-        allocine_venue_provider_price_rule = AllocineVenueProviderPriceRuleFactory(
+        allocine_venue_provider_price_rule = providers_factories.AllocineVenueProviderPriceRuleFactory(
             priceRule=PriceRule.default, price=initial_price
         )
         venue = allocine_venue_provider_price_rule.allocineVenueProvider.venue
@@ -33,7 +32,7 @@ class ModifyAllocinePriceRuleForVenueTest:
         # Given
         initial_price = Decimal(7.5)
         new_price = Decimal(8)
-        allocine_venue_provider_price_rule = AllocineVenueProviderPriceRuleFactory(
+        allocine_venue_provider_price_rule = providers_factories.AllocineVenueProviderPriceRuleFactory(
             priceRule=PriceRule.default, price=initial_price
         )
         venue = allocine_venue_provider_price_rule.allocineVenueProvider.venue
@@ -61,7 +60,7 @@ class ModifyAllocinePriceRuleForVenueTest:
         # Given
         new_price = Decimal(8)
         venue = VenueFactory()
-        AllocineVenueProviderFactory(venue=venue)
+        providers_factories.AllocineVenueProviderFactory(venue=venue)
 
         # When
         modify_allocine_price_rule_for_venue_by_siret(venue.siret, new_price)

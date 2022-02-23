@@ -2,13 +2,13 @@ from unittest.mock import patch
 
 from pcapi.admin.custom_views.venue_provider_view import VenueProviderView
 from pcapi.core.bookings.factories import BookingFactory
-from pcapi.core.offerers.factories import AllocineProviderFactory
-from pcapi.core.offerers.factories import AllocineVenueProviderFactory
-from pcapi.core.offerers.factories import AllocineVenueProviderPriceRuleFactory
-from pcapi.core.offerers.factories import ProviderFactory
-from pcapi.core.offerers.factories import VenueProviderFactory
 from pcapi.core.offers.factories import StockFactory
 from pcapi.core.offers.factories import VenueFactory
+from pcapi.core.providers.factories import AllocineProviderFactory
+from pcapi.core.providers.factories import AllocineVenueProviderFactory
+from pcapi.core.providers.factories import AllocineVenueProviderPriceRuleFactory
+from pcapi.core.providers.factories import ProviderFactory
+from pcapi.core.providers.factories import VenueProviderFactory
 from pcapi.core.providers.models import VenueProvider
 from pcapi.core.users.factories import AdminFactory
 from pcapi.core.users.factories import UserFactory

@@ -2,17 +2,13 @@ import logging
 import random
 import re
 
-from pcapi.core.offerers.factories import AllocineProviderFactory
-from pcapi.core.offerers.factories import AllocineVenueProviderFactory
-from pcapi.core.offerers.factories import AllocineVenueProviderPriceRuleFactory
-from pcapi.core.offerers.factories import VenueProviderFactory
 from pcapi.core.offerers.models import VENUE_TYPE_CODE_MAPPING
 from pcapi.core.offerers.models import VenueType
 from pcapi.core.offerers.models import VenueTypeCode
 from pcapi.core.offers.factories import BankInformationFactory
 from pcapi.core.offers.factories import VenueFactory
 from pcapi.core.offers.factories import VirtualVenueFactory
-from pcapi.core.providers.factories import AllocinePivotFactory
+from pcapi.core.providers import factories as providers_factories
 from pcapi.sandboxes.scripts.mocks.venue_mocks import MOCK_NAMES
 
 
@@ -89,7 +85,7 @@ def create_industrial_venues(offerers_by_name: dict, venue_types: list[VenueType
                 isPermanent=True,
                 businessUnit__name=offerer.name,
             )
-            VenueProviderFactory(venue=venue)
+            providers_factories.VenueProviderFactory(venue=venue)
 
             venue_by_name[venue_name] = venue
 
@@ -109,12 +105,12 @@ def create_industrial_venues(offerers_by_name: dict, venue_types: list[VenueType
     venue_synchronized_with_allocine = VenueFactory(
         name="Lieu synchro allociné", siret="87654321", businessUnit__name="Business Unit du Lieu synchro allociné"
     )
-    allocine_provider = AllocineProviderFactory(isActive=True)
-    pivot = AllocinePivotFactory(siret=venue_synchronized_with_allocine.siret)
-    venue_provider = AllocineVenueProviderFactory(
+    allocine_provider = providers_factories.AllocineProviderFactory(isActive=True)
+    pivot = providers_factories.AllocinePivotFactory(siret=venue_synchronized_with_allocine.siret)
+    venue_provider = providers_factories.AllocineVenueProviderFactory(
         venue=venue_synchronized_with_allocine, provider=allocine_provider, venueIdAtOfferProvider=pivot.theaterId
     )
-    AllocineVenueProviderPriceRuleFactory(allocineVenueProvider=venue_provider)
+    providers_factories.AllocineVenueProviderPriceRuleFactory(allocineVenueProvider=venue_provider)
     venue_by_name[venue_synchronized_with_allocine.name] = venue_synchronized_with_allocine
 
     # FIXME (viconnex): understand why these properties are not set with right values in factories

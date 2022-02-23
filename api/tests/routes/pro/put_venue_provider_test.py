@@ -1,8 +1,8 @@
 import pytest
 
-from pcapi.core.offerers import factories as offerers_factories
-from pcapi.core.offers import factories as offer_factories
-from pcapi.core.users import factories as user_factories
+import pcapi.core.offers.factories as offer_factories
+import pcapi.core.providers.factories as providers_factories
+import pcapi.core.users.factories as user_factories
 from pcapi.utils.human_ids import humanize
 
 from tests.conftest import TestClient
@@ -16,14 +16,14 @@ class Returns200Test:
         user = user_offerer.user
         offerer = user_offerer.offerer
         venue = offer_factories.VenueFactory(managingOfferer=offerer)
-        provider = offerers_factories.AllocineProviderFactory()
-        venue_provider = offerers_factories.AllocineVenueProviderFactory(
+        provider = providers_factories.AllocineProviderFactory()
+        venue_provider = providers_factories.AllocineVenueProviderFactory(
             venue=venue,
             provider=provider,
             isDuo=False,
             quantity=42,
         )
-        offerers_factories.AllocineVenueProviderPriceRuleFactory(allocineVenueProvider=venue_provider, price=10)
+        providers_factories.AllocineVenueProviderPriceRuleFactory(allocineVenueProvider=venue_provider, price=10)
 
         updated_venue_provider_data = {
             "providerId": humanize(provider.id),
@@ -55,8 +55,8 @@ class Returns400Test:
         user = user_offerer.user
         offerer = user_offerer.offerer
         venue = offer_factories.VenueFactory(managingOfferer=offerer)
-        provider = offerers_factories.ProviderFactory()
-        offerers_factories.VenueProviderFactory(venue=venue, provider=provider)
+        provider = providers_factories.ProviderFactory()
+        providers_factories.VenueProviderFactory(venue=venue, provider=provider)
 
         updated_venue_provider_data = {
             "providerId": humanize(provider.id),
@@ -93,14 +93,14 @@ class Returns403Test:
         owner_offerer = offer_factories.UserOffererFactory()
         offerer = owner_offerer.offerer
         venue = offer_factories.VenueFactory(managingOfferer=offerer)
-        provider = offerers_factories.AllocineProviderFactory()
-        venue_provider = offerers_factories.AllocineVenueProviderFactory(
+        provider = providers_factories.AllocineProviderFactory()
+        venue_provider = providers_factories.AllocineVenueProviderFactory(
             venue=venue,
             provider=provider,
             isDuo=False,
             quantity=42,
         )
-        offerers_factories.AllocineVenueProviderPriceRuleFactory(allocineVenueProvider=venue_provider, price=10)
+        providers_factories.AllocineVenueProviderPriceRuleFactory(allocineVenueProvider=venue_provider, price=10)
 
         updated_venue_provider_data = {
             "providerId": humanize(provider.id),

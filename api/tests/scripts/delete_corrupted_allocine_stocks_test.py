@@ -1,7 +1,7 @@
 import pytest
 
-from pcapi.core.offerers.factories import ProviderFactory
 from pcapi.core.offers.models import Stock
+import pcapi.core.providers.factories as providers_factories
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_stock
@@ -60,7 +60,7 @@ def test_should_not_delete_stock_from_other_provider_than_allocine(app):
     # Given
     offerer = create_offerer()
     venue = create_venue(offerer)
-    provider = ProviderFactory(localClass="not allociné")
+    provider = providers_factories.ProviderFactory(localClass="not allociné")
     offer = create_offer_with_thing_product(venue)
     stock = create_stock(
         id_at_providers="TW92aWU6MjczNjU5%38986972800011-1",

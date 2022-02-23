@@ -1,7 +1,7 @@
 from pcapi.core.bookings.factories import IndividualBookingFactory
-import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import OfferValidationStatus
+import pcapi.core.providers.factories as providers_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.notifications.push import testing as push_testing
 from pcapi.utils.human_ids import humanize
@@ -41,7 +41,7 @@ class Returns200Test:
 class Returns400Test:
     def when_stock_is_on_an_offer_from_titelive_provider(self, app, db_session):
         # given
-        provider = offerers_factories.AllocineProviderFactory(localClass="TiteLiveThings")
+        provider = providers_factories.AllocineProviderFactory(localClass="TiteLiveThings")
         offer = offers_factories.OfferFactory(lastProvider=provider, idAtProvider="1")
         stock = offers_factories.StockFactory(offer=offer)
 
