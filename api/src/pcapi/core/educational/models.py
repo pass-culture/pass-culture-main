@@ -9,7 +9,6 @@ from sqlalchemy.dialects import postgresql
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.ext.mutable import MutableList
 from sqlalchemy.orm import relationship
-from sqlalchemy.sql import expression
 from sqlalchemy.sql.functions import func
 from sqlalchemy.sql.schema import Index
 from sqlalchemy.sql.sqltypes import Boolean
@@ -64,8 +63,6 @@ class EducationalBookingStatus(enum.Enum):
 
 class CollectiveOffer(PcObject, ValidationMixin, AccessibilityMixin, StatusMixin, Model):  # type: ignore[valid-type]
     __tablename__ = "collective_offer"
-
-    # add 3 mixin validation, status accessibilite
 
     id: int = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
 
@@ -171,8 +168,6 @@ class CollectiveStock(PcObject, Model):  # type: ignore[valid-type]
     id = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
 
     stockId = sa.Column(sa.BigInteger, nullable=True)
-
-    isSoftDeleted = sa.Column(sa.Boolean, nullable=False, default=False, server_default=expression.false())
 
     dateCreated = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow, server_default=sa.func.now())
 

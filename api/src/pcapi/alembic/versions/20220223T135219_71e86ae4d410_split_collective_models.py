@@ -23,7 +23,7 @@ def upgrade():
         sa.Column("lastValidationDate", sa.DateTime(), nullable=True),
         sa.Column(
             "validation",
-            sa.Enum("APPROVED", "DRAFT", "PENDING", "REJECTED", name="offervalidationstatus"),
+            postgresql.ENUM("APPROVED", "DRAFT", "PENDING", "REJECTED", name="validation_status", create_type=False),
             server_default="APPROVED",
             nullable=False,
         ),
@@ -67,7 +67,6 @@ def upgrade():
         "collective_stock",
         sa.Column("id", sa.BigInteger(), autoincrement=True, nullable=False),
         sa.Column("stockId", sa.BigInteger(), nullable=True),
-        sa.Column("isSoftDeleted", sa.Boolean(), server_default=sa.text("false"), nullable=False),
         sa.Column("dateCreated", sa.DateTime(), server_default=sa.text("now()"), nullable=False),
         sa.Column("dateModified", sa.DateTime(), nullable=False),
         sa.Column("beginningDatetime", sa.DateTime(), nullable=False),
@@ -161,7 +160,6 @@ def downgrade():
     op.drop_table("collective_stock")
     op.drop_table("collective_offer")
     # ### end Alembic commands ###
-    sa.Enum(name="offervalidationstatus").drop(op.get_bind(), checkfirst=False)
     sa.Enum(name="studentlevels").drop(op.get_bind(), checkfirst=False)
     sa.Enum(name="bookingcancellationreasons").drop(op.get_bind(), checkfirst=False)
     sa.Enum(name="bookingstatus").drop(op.get_bind(), checkfirst=False)
