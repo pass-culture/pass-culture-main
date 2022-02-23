@@ -39,6 +39,7 @@ const renderHomePage = async () => {
         },
       ],
     },
+    user: { initialized: true },
   })
   return await act(async () => {
     await render(

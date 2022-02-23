@@ -1,8 +1,9 @@
-import { setUser } from '@sentry/browser'
+import { setUser as setSentryUser } from '@sentry/browser'
 import PropTypes from 'prop-types'
 import React, { useEffect, useState } from 'react'
 import { matchPath } from 'react-router'
 
+import useCurrentUser from 'components/hooks/useCurrentUser'
 import Spinner from 'components/layout/Spinner'
 import routes, { routesWithMain } from 'utils/routes_map'
 
@@ -11,17 +12,15 @@ import RedirectToMaintenance from './RedirectToMaintenance'
 export const App = props => {
   const {
     children,
-    currentUser,
     isFeaturesInitialized,
-    getCurrentUser,
     history,
     isMaintenanceActivated,
     loadFeatures,
     location,
-    isUserInitialized,
   } = props
 
   const [isReady, setIsReady] = useState(false)
+  const { isUserInitialized, currentUser } = useCurrentUser()
   const currentPathname = window.location.pathname
 
   useEffect(() => {
@@ -31,10 +30,6 @@ export const App = props => {
   }, [isFeaturesInitialized, loadFeatures])
 
   useEffect(() => {
-    if (!isUserInitialized && !currentUser) {
-      getCurrentUser()
-    }
-
     if (isUserInitialized && !currentUser) {
       const publicRouteList = [...routes, ...routesWithMain].filter(
         route => route.meta && route.meta.public
@@ -53,17 +48,10 @@ export const App = props => {
     }
 
     if (isUserInitialized && currentUser) {
-      setUser({ id: currentUser.pk })
+      setSentryUser({ id: currentUser.id })
       setIsReady(true)
     }
-  }, [
-    currentUser,
-    currentPathname,
-    getCurrentUser,
-    history,
-    location,
-    isUserInitialized,
-  ])
+  }, [currentUser, currentPathname, history, location, isUserInitialized])
 
   useEffect(() => {
     window.scrollTo(0, 0)
@@ -89,9 +77,7 @@ App.propTypes = {
     PropTypes.arrayOf(PropTypes.shape()),
     PropTypes.shape(),
   ]).isRequired,
-  getCurrentUser: PropTypes.func.isRequired,
   isFeaturesInitialized: PropTypes.bool.isRequired,
   isMaintenanceActivated: PropTypes.bool.isRequired,
-  isUserInitialized: PropTypes.bool.isRequired,
   loadFeatures: PropTypes.func.isRequired,
 }

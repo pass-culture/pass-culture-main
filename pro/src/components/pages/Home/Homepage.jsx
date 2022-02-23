@@ -4,7 +4,7 @@ import PageTitle from 'components/layout/PageTitle/PageTitle'
 
 import HomepageBreadcrumb, { STEP_ID_OFFERERS } from './HomepageBreadcrumb'
 import Offerers from './Offerers/Offerers'
-import ProfileAndSupportContainer from './ProfileAndSupport/ProfileAndSupportContainer'
+import { ProfileAndSupport } from './ProfileAndSupport'
 
 const Homepage = () => {
   const profileRef = useRef(null)
@@ -24,7 +24,7 @@ const Homepage = () => {
       </section>
 
       <section className="h-section" ref={profileRef}>
-        <ProfileAndSupportContainer />
+        <ProfileAndSupport />
       </section>
     </div>
   )
