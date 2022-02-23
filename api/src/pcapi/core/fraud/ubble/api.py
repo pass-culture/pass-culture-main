@@ -82,11 +82,7 @@ def _ubble_result_fraud_item(content: ubble_fraud_models.UbbleContent) -> fraud_
         status = fraud_models.FraudStatus.KO
         reason_code = fraud_models.FraudReasonCode.ID_CHECK_BLOCKED_OTHER
 
-    return fraud_models.FraudItem(
-        status=status,
-        detail=detail,
-        reason_code=reason_code,
-    )
+    return fraud_models.FraudItem(status=status, detail=detail, reason_code=reason_code)
 
 
 def ubble_fraud_checks(
