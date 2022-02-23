@@ -5,12 +5,12 @@ import pytest
 import pcapi.core.bookings.constants as bookings_constants
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.categories import subcategories
-import pcapi.core.offerers.factories as providers_factories
 from pcapi.core.offers import factories
 from pcapi.core.offers import models
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.core.offers.models import Stock
+import pcapi.core.providers.factories as providers_factories
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.offer_mixin import OfferStatus
 from pcapi.models.pc_object import DeletedRecordException

@@ -1,6 +1,6 @@
 import pytest
 
-from pcapi.core.offerers.factories import APIProviderFactory
+import pcapi.core.providers.factories as providers_factories
 from pcapi.core.providers.models import VenueProvider
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_provider
@@ -80,7 +80,7 @@ def test_nOffers_with_two_venue_providers_from_different_providers(app):
 @pytest.mark.usefixtures("db_session")
 def test_raise_errors_if_venue_provider_already_exists_with_same_information(app):
     # given
-    provider = APIProviderFactory()
+    provider = providers_factories.APIProviderFactory()
     offerer = create_offerer()
     venue = create_venue(offerer, name="Librairie Titelive", siret="77567146400110")
     venue_provider = create_venue_provider(venue, provider, venue_id_at_offer_provider="775671464")
@@ -114,7 +114,7 @@ def test_should_have_attribute_matching_allocine_when_having_allocine_provider(a
 @pytest.mark.usefixtures("db_session")
 def test_should_not_be_matched_has_allocine_provider_with_other_provider(app):
     # given
-    provider = APIProviderFactory()
+    provider = providers_factories.APIProviderFactory()
     offerer = create_offerer()
     venue = create_venue(offerer)
     venue_provider = create_venue_provider(venue, provider)

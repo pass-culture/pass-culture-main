@@ -16,13 +16,13 @@ from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.categories import subcategories
 from pcapi.core.educational import exceptions as educational_exceptions
 import pcapi.core.mails.testing as mails_testing
-import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offers import api
 from pcapi.core.offers import exceptions as offer_exceptions
 from pcapi.core.offers import factories as offer_factories
 from pcapi.core.offers import models as offer_models
 from pcapi.core.offers import offer_validation
 import pcapi.core.payments.factories as payments_factories
+import pcapi.core.providers.factories as providers_factories
 from pcapi.core.testing import override_features
 from pcapi.core.testing import override_settings
 import pcapi.core.users.factories as users_factories
@@ -534,7 +534,7 @@ class UpsertStocksTest:
         # Given
         user = users_factories.ProFactory()
         offer = offer_factories.ThingOfferFactory(
-            lastProvider=offerers_factories.AllocineProviderFactory(localClass="TiteLiveStocks")
+            lastProvider=providers_factories.AllocineProviderFactory(localClass="TiteLiveStocks")
         )
         created_stock_data = stock_serialize.StockCreationBodyModel(price=10)
 
@@ -549,7 +549,7 @@ class UpsertStocksTest:
         # Given
         user = users_factories.ProFactory()
         offer = offer_factories.EventOfferFactory(
-            lastProvider=offerers_factories.AllocineProviderFactory(localClass="AllocineStocks")
+            lastProvider=providers_factories.AllocineProviderFactory(localClass="AllocineStocks")
         )
         date_in_the_future = datetime.utcnow() + timedelta(days=4)
         existing_stock = offer_factories.StockFactory(offer=offer, price=10, beginningDatetime=date_in_the_future)
@@ -571,7 +571,7 @@ class UpsertStocksTest:
         # Given
         user = users_factories.ProFactory()
         offer = offer_factories.EventOfferFactory(
-            lastProvider=offerers_factories.AllocineProviderFactory(localClass="AllocineStocks")
+            lastProvider=providers_factories.AllocineProviderFactory(localClass="AllocineStocks")
         )
         date_in_the_future = datetime.utcnow() + timedelta(days=4)
         other_date_in_the_future = datetime.utcnow() + timedelta(days=6)
@@ -1215,7 +1215,7 @@ class DeleteStockTest:
         }
 
     def test_can_delete_if_stock_from_allocine(self):
-        provider = offerers_factories.AllocineProviderFactory(localClass="AllocineStocks")
+        provider = providers_factories.AllocineProviderFactory(localClass="AllocineStocks")
         offer = offer_factories.OfferFactory(lastProvider=provider, idAtProvider="1")
         stock = offer_factories.StockFactory(offer=offer)
 
@@ -1225,7 +1225,7 @@ class DeleteStockTest:
         assert stock.isSoftDeleted
 
     def test_cannot_delete_if_stock_from_titelive(self):
-        provider = offerers_factories.AllocineProviderFactory(localClass="TiteLiveStocks")
+        provider = providers_factories.AllocineProviderFactory(localClass="TiteLiveStocks")
         offer = offer_factories.OfferFactory(lastProvider=provider, idAtProvider="1")
         stock = offer_factories.StockFactory(offer=offer)
 
@@ -1629,7 +1629,7 @@ class UpdateOfferTest:
         assert offer_models.Offer.query.one().name == "Old name"
 
     def test_success_on_allocine_offer(self):
-        provider = offerers_factories.AllocineProviderFactory(localClass="AllocineStocks")
+        provider = providers_factories.AllocineProviderFactory(localClass="AllocineStocks")
         offer = offer_factories.OfferFactory(lastProvider=provider, name="Old name")
 
         api.update_offer(offer, name="Old name", isDuo=True)
@@ -1639,7 +1639,7 @@ class UpdateOfferTest:
         assert offer.isDuo
 
     def test_forbidden_on_allocine_offer_on_certain_fields(self):
-        provider = offerers_factories.AllocineProviderFactory(localClass="AllocineStocks")
+        provider = providers_factories.AllocineProviderFactory(localClass="AllocineStocks")
         offer = offer_factories.OfferFactory(lastProvider=provider, name="Old name")
 
         with pytest.raises(api_errors.ApiErrors) as error:
@@ -1651,7 +1651,7 @@ class UpdateOfferTest:
         assert not offer.isDuo
 
     def test_success_on_imported_offer_on_external_ticket_office_url(self):
-        provider = offerers_factories.AllocineProviderFactory()
+        provider = providers_factories.AllocineProviderFactory()
         offer = offer_factories.OfferFactory(
             externalTicketOfficeUrl="http://example.org",
             lastProvider=provider,
@@ -1668,7 +1668,7 @@ class UpdateOfferTest:
         assert offer.externalTicketOfficeUrl == "https://example.com"
 
     def test_success_on_imported_offer_on_accessibility_fields(self):
-        provider = offerers_factories.AllocineProviderFactory()
+        provider = providers_factories.AllocineProviderFactory()
         offer = offer_factories.OfferFactory(
             lastProvider=provider,
             name="Old name",
@@ -1695,7 +1695,7 @@ class UpdateOfferTest:
         assert offer.mentalDisabilityCompliant == False
 
     def test_forbidden_on_imported_offer_on_other_fields(self):
-        provider = offerers_factories.APIProviderFactory()
+        provider = providers_factories.APIProviderFactory()
         offer = offer_factories.OfferFactory(
             lastProvider=provider, name="Old name", isDuo=False, audioDisabilityCompliant=True
         )

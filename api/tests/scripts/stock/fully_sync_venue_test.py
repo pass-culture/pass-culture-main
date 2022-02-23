@@ -3,17 +3,17 @@ import requests_mock
 
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.categories import subcategories
-import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offers_models
+import pcapi.core.providers.factories as providers_factories
 from pcapi.scripts.stock import fully_sync_venue
 
 
 @pytest.mark.usefixtures("db_session")
 def test_fully_sync_venue():
     api_url = "https://example.com/provider/api"
-    provider = offerers_factories.APIProviderFactory(apiUrl=api_url)
-    venue_provider = offerers_factories.VenueProviderFactory(provider=provider)
+    provider = providers_factories.APIProviderFactory(apiUrl=api_url)
+    venue_provider = providers_factories.VenueProviderFactory(provider=provider)
     venue = venue_provider.venue
     stock = offers_factories.StockFactory(quantity=10, offer__venue=venue, offer__idAtProvider="1")
     bookings_factories.BookingFactory(stock=stock)

@@ -7,14 +7,14 @@ from freezegun import freeze_time
 import pytest
 
 from pcapi.core.categories import subcategories
-from pcapi.core.offerers.factories import AllocineVenueProviderFactory
-from pcapi.core.offerers.factories import AllocineVenueProviderPriceRuleFactory
 from pcapi.core.offers.factories import OfferFactory
 from pcapi.core.offers.factories import OffererFactory
 from pcapi.core.offers.factories import ProductFactory
 from pcapi.core.offers.factories import VenueFactory
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
+from pcapi.core.providers.factories import AllocineVenueProviderFactory
+from pcapi.core.providers.factories import AllocineVenueProviderPriceRuleFactory
 from pcapi.local_providers import AllocineStocks
 from pcapi.models.product import Product
 from pcapi.repository import repository

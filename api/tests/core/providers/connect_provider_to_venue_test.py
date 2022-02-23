@@ -3,12 +3,12 @@ from unittest.mock import patch
 
 import pytest
 
-import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offers.factories import VenueFactory
 from pcapi.core.providers.api import connect_venue_to_provider
 from pcapi.core.providers.exceptions import NoSiretSpecified
 from pcapi.core.providers.exceptions import ProviderWithoutApiImplementation
 from pcapi.core.providers.exceptions import VenueSiretNotRegistered
+import pcapi.core.providers.factories as providers_factories
 from pcapi.core.providers.models import VenueProvider
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_provider
@@ -25,7 +25,7 @@ def test_when_venue_id_at_offer_provider_is_given(can_be_synchronized, app):
     # Given
     venue_id_at_offer_provider = "id_for_remote_system"
     venue = VenueFactory(siret="12345678912345")
-    provider = offerers_factories.APIProviderFactory()
+    provider = providers_factories.APIProviderFactory()
 
     # When
     connect_venue_to_provider(venue, provider, venue_id_at_offer_provider)
@@ -44,7 +44,7 @@ def test_when_venue_id_at_offer_provider_is_given(can_be_synchronized, app):
 def test_use_siret_as_default(can_be_synchronized, app):
     # Given
     venue = VenueFactory(siret="12345678912345")
-    provider = offerers_factories.APIProviderFactory()
+    provider = providers_factories.APIProviderFactory()
 
     # When
     connect_venue_to_provider(venue, provider, None)
@@ -69,7 +69,7 @@ class WhenProviderImplementsProviderAPITest:
         offerer = create_offerer()
 
         venue = create_venue(offerer)
-        provider = offerers_factories.APIProviderFactory()
+        provider = providers_factories.APIProviderFactory()
 
         repository.save(venue)
 
@@ -93,7 +93,7 @@ class WhenProviderImplementsProviderAPITest:
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer, siret="12345678912345")
-        provider = offerers_factories.APIProviderFactory(name="FNAC")
+        provider = providers_factories.APIProviderFactory(name="FNAC")
 
         repository.save(venue)
 
@@ -113,7 +113,7 @@ class WhenProviderImplementsProviderAPITest:
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer, siret=None, is_virtual=True)
-        provider = offerers_factories.APIProviderFactory(name="FNAC")
+        provider = providers_factories.APIProviderFactory(name="FNAC")
 
         repository.save(venue)
 

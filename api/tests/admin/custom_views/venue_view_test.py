@@ -3,13 +3,13 @@ from unittest.mock import patch
 import pytest
 
 from pcapi.admin.custom_views.venue_view import _get_venue_provider_link
-from pcapi.core.offerers.factories import VenueProviderFactory
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers.factories import StockFactory
 from pcapi.core.offers.factories import VenueFactory
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
+from pcapi.core.providers import factories as providers_factories
 from pcapi.core.users.factories import AdminFactory
 
 from tests.conftest import TestClient
@@ -226,7 +226,7 @@ class GetVenueProviderLinkTest:
     @pytest.mark.usefixtures("db_session")
     def test_return_link_to_venue_provider(self, app):
         # Given
-        venue_provider = VenueProviderFactory()
+        venue_provider = providers_factories.VenueProviderFactory()
         venue = venue_provider.venue
 
         # When

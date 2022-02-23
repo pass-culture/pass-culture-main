@@ -7,7 +7,6 @@ import pytest
 from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.bookings.factories import CancelledBookingFactory
 from pcapi.core.categories import subcategories
-import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers import factories
 from pcapi.core.offers.factories import OfferFactory
@@ -16,6 +15,7 @@ from pcapi.core.offers.factories import VenueFactory
 from pcapi.core.offers.models import Offer
 from pcapi.core.providers import api
 from pcapi.core.providers.exceptions import ProviderNotFound
+import pcapi.core.providers.factories as providers_factories
 from pcapi.core.providers.models import StockDetail
 from pcapi.core.providers.models import VenueProvider
 from pcapi.local_providers.provider_api import synchronize_provider_api
@@ -79,8 +79,8 @@ def test_reset_stock_quantity():
 
 @pytest.mark.usefixtures("db_session")
 def test_update_last_provider_id():
-    provider1 = offerers_factories.ProviderFactory()
-    provider2 = offerers_factories.ProviderFactory()
+    provider1 = providers_factories.ProviderFactory()
+    provider2 = providers_factories.ProviderFactory()
     venue = VenueFactory()
     offer1_synced = OfferFactory(venue=venue, idAtProvider=1, lastProvider=provider1)
     offer2_manual = OfferFactory(venue=venue, idAtProvider=None)
@@ -97,12 +97,12 @@ def test_update_last_provider_id():
 @mock.patch("pcapi.core.providers.api._siret_can_be_synchronized", lambda *args: True)
 def test_change_venue_provider():
     api_url = "https://example.com/provider/api"
-    provider = offerers_factories.APIProviderFactory()
-    venue_provider = offerers_factories.VenueProviderFactory(provider=provider)
+    provider = providers_factories.APIProviderFactory()
+    venue_provider = providers_factories.VenueProviderFactory(provider=provider)
     venue = venue_provider.venue
     stock = StockFactory(quantity=10, offer__venue=venue, offer__idAtProvider="1")
     BookingFactory(stock=stock)
-    new_provider = offerers_factories.APIProviderFactory(apiUrl=api_url)
+    new_provider = providers_factories.APIProviderFactory(apiUrl=api_url)
 
     api.change_venue_provider(venue_provider, new_provider.id)
 
@@ -131,10 +131,10 @@ class SynchronizeStocksTest:
             {"ref": "3010000108125", "available": 17},
             {"ref": "3010000102735", "available": 1},
         ]
-        offerers_factories.APIProviderFactory(apiUrl="https://provider_url", authToken="fake_token")
+        providers_factories.APIProviderFactory(apiUrl="https://provider_url", authToken="fake_token")
         venue = VenueFactory()
         siret = venue.siret
-        provider = offerers_factories.ProviderFactory()
+        provider = providers_factories.ProviderFactory()
         stock_details = synchronize_provider_api._build_stock_details_from_raw_stocks(spec, siret, provider, venue.id)
 
         stock = create_stock(
@@ -235,7 +235,7 @@ class SynchronizeStocksTest:
 
         existing_offers_by_provider_reference = {"offer_ref1": 1}
         existing_offers_by_venue_reference = {"venue_ref1": 1}
-        provider = offerers_factories.APIProviderFactory(apiUrl="https://provider_url", authToken="fake_token")
+        provider = providers_factories.APIProviderFactory(apiUrl="https://provider_url", authToken="fake_token")
         venue = VenueFactory(bookingEmail="booking_email", withdrawalDetails="My withdrawal details")
         product = Product(
             id=456,

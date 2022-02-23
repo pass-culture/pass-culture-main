@@ -5,7 +5,6 @@ import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.bookings.models import Booking
 import pcapi.core.finance.factories as finance_factories
 from pcapi.core.finance.models import BusinessUnit
-import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offerers.factories import ApiKeyFactory
 from pcapi.core.offerers.models import ApiKey
 from pcapi.core.offerers.models import Offerer
@@ -14,6 +13,7 @@ import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import Mediation
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
+import pcapi.core.providers.factories as providers_factories
 from pcapi.core.providers.models import AllocineVenueProvider
 from pcapi.core.providers.models import AllocineVenueProviderPriceRule
 from pcapi.core.providers.models import Provider
@@ -239,8 +239,8 @@ def test_delete_cascade_offerer_should_remove_criterion_attachment_of_managed_of
 def test_delete_cascade_offerer_should_remove_venue_synchronization_to_provider():
     # Given
     offerer_to_delete = offers_factories.OffererFactory()
-    offerers_factories.VenueProviderFactory(venue__managingOfferer=offerer_to_delete)
-    offerers_factories.VenueProviderFactory()
+    providers_factories.VenueProviderFactory(venue__managingOfferer=offerer_to_delete)
+    providers_factories.VenueProviderFactory()
 
     # When
     delete_cascade_offerer_by_id(offerer_to_delete.id)
@@ -256,10 +256,10 @@ def test_delete_cascade_offerer_should_remove_venue_synchronization_to_provider(
 def test_delete_cascade_offerer_should_remove_venue_synchronization_to_allocine_provider():
     # Given
     offerer_to_delete = offers_factories.OffererFactory()
-    offerers_factories.AllocineVenueProviderPriceRuleFactory(
+    providers_factories.AllocineVenueProviderPriceRuleFactory(
         allocineVenueProvider__venue__managingOfferer=offerer_to_delete
     )
-    offerers_factories.AllocineVenueProviderPriceRuleFactory()
+    providers_factories.AllocineVenueProviderPriceRuleFactory()
 
     # When
     delete_cascade_offerer_by_id(offerer_to_delete.id)
