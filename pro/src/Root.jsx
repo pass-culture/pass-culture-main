@@ -6,6 +6,7 @@ import AppContainer from 'app/AppContainer'
 import AppLayout from 'app/AppLayout'
 import NotFound from 'components/pages/Errors/NotFound/NotFound'
 import FeaturedRoute from 'components/router/FeaturedRoute'
+import NavigationLogger from 'components/router/NavigationLogger'
 import configureStore from 'store'
 import routes, { routesWithMain } from 'utils/routes_map'
 
@@ -15,6 +16,7 @@ const Root = () => {
   return (
     <Provider store={store}>
       <BrowserRouter>
+        <NavigationLogger />
         <AppContainer>
           <Switch>
             <Redirect
