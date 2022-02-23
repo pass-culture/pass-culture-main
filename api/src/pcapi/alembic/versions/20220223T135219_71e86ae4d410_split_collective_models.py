@@ -23,7 +23,7 @@ def upgrade():
         sa.Column("lastValidationDate", sa.DateTime(), nullable=True),
         sa.Column(
             "validation",
-            sa.Enum("APPROVED", "DRAFT", "PENDING", "REJECTED", name="offervalidationstatus"),
+            postgresql.ENUM("APPROVED", "DRAFT", "PENDING", "REJECTED", name="validation_status", create_type=False),
             server_default="APPROVED",
             nullable=False,
         ),
