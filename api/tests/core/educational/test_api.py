@@ -345,7 +345,7 @@ class BookEducationalOfferTest:
         assert sent_data["params"] == {
             "OFFER_NAME": offer.name,
             "VENUE_NAME": offer.venue.name,
-            "EVENT_DATE": "15-May-2021",
+            "EVENT_DATE": "samedi 15 mai 2021",
             "EVENT_HOUR": "2h",
             "QUANTITY": 1,
             "PRICE": "10.00",

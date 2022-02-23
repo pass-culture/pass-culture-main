@@ -77,16 +77,17 @@ class TransactionalEmail(Enum):
     )
 
     # PRO EMAIL
-    EMAIL_VALIDATION_TO_PRO = TemplatePro(id_prod=361, id_not_prod=56, tags=["validation_email_invitation_pro"])
+
     BOOKING_CANCELLATION_BY_BENEFICIARY_TO_PRO = TemplatePro(id_prod=379, id_not_prod=51, tags=["pro_annulation_offre"])
     BOOKING_CANCELLATION_CONFIRMATION_BY_PRO = TemplatePro(
         id_prod=377, id_not_prod=60, tags=["pro_annulation_rerservation"]
     )
     BOOKING_EXPIRATION_TO_PRO = TemplatePro(id_prod=380, id_not_prod=50, tags=["pro_reservation_expiree_30j"])
     EAC_BOOKING_DAY_TO_PRO = TemplatePro(id_prod=0000, id_not_prod=0000, tags=[""])
-    EAC_NEW_PREBOOKING_TO_PRO = TemplatePro(id_prod=429, id_not_prod=68, tags=["pro_nouvelle_prereservation_eac"])
     EAC_NEW_BOOKING_TO_PRO = TemplatePro(id_prod=383, id_not_prod=67, tags=["pro_nouvelle_reservation_eac"])
-    EAC_SATISFACTION_STUDY_TO_PRO = TemplatePro(id_prod=0000, id_not_prod=0000, tags=[""])
+    EAC_NEW_PREBOOKING_TO_PRO = TemplatePro(id_prod=429, id_not_prod=68, tags=["pro_nouvelle_prereservation_eac"])
+    EAC_SATISFACTION_STUDY_TO_PRO = TemplatePro(id_prod=523, id_not_prod=66, tags=["pro_bilan_satisfaction_eac"])
+    EMAIL_VALIDATION_TO_PRO = TemplatePro(id_prod=361, id_not_prod=56, tags=["validation_email_invitation_pro"])
     EVENT_OFFER_POSTPONED_CONFIRMATION_TO_PRO = TemplatePro(
         id_prod=519, id_not_prod=63, tags=["pro_offre_evenement_reportee"]
     )

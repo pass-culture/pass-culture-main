@@ -8,7 +8,11 @@ from pcapi import settings
 from pcapi.core.bookings import exceptions as bookings_exceptions
 import pcapi.core.bookings.api as bookings_api
 import pcapi.core.bookings.repository as bookings_repository
+from pcapi.core.bookings.repository import find_educational_bookings_done_yesterday
 import pcapi.core.finance.api as finance_api
+from pcapi.core.mails.transactional.educational.eac_satisfaction_study_to_pro import (
+    send_eac_satisfaction_study_email_to_pro,
+)
 from pcapi.core.mails.transactional.users.birthday_to_newly_eligible_user import (
     send_birthday_age_18_email_to_newly_eligible_user,
 )
@@ -159,6 +163,13 @@ def pc_check_stock_quantity_consistency() -> None:
 
 @cron_context
 @log_cron_with_transaction
+def pc_send_yesterday_event_offers_notifications() -> None:
+    for educational_booking in find_educational_bookings_done_yesterday():
+        send_eac_satisfaction_study_email_to_pro(educational_booking)
+
+
+@cron_context
+@log_cron_with_transaction
 def pc_send_tomorrow_events_notifications() -> None:
     stock_ids = find_tomorrow_event_stock_ids()
     for stock_id in stock_ids:
@@ -266,6 +277,8 @@ def clock() -> None:
     scheduler.add_job(pc_import_beneficiaries_from_dms_v4, "cron", day="*", hour="6", minute="20")
 
     scheduler.add_job(update_booking_used, "cron", day="*", hour="0")
+
+    scheduler.add_job(pc_send_yesterday_event_offers_notifications, "cron", day="*", hour="4", minute="10")
 
     scheduler.add_job(
         pc_handle_expired_bookings,
