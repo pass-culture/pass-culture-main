@@ -150,6 +150,14 @@ def upsert_venue_banner(venue_id: str) -> GetVenueResponseModel:
     return GetVenueResponseModel.from_orm(venue)
 
 
+@private_api.route("/venues/<venue_id>/banner", methods=["DELETE"])
+@login_required
+@spectree_serialize(on_success_status=204)
+def delete_venue_banner(venue_id: str) -> None:
+    venue = load_or_404(Venue, venue_id)
+    offerers_api.delete_venue_banner(venue)
+
+
 @private_api.route("/venues/<humanized_venue_id>/stats", methods=["GET"])
 @login_required
 @spectree_serialize(on_success_status=200, response_model=VenueStatsResponseModel)
