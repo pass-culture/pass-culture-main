@@ -9,11 +9,11 @@ from ..common.models import IdentityCheckContent
 
 
 class UbbleIdentificationStatus(enum.Enum):
-    UNINITIATED = "uninitiated"
-    INITIATED = "initiated"
-    PROCESSING = "processing"
-    PROCESSED = "processed"
-    ABORTED = "aborted"
+    UNINITIATED = "uninitiated"  # Identification has only been created (user has not started the verification flow)
+    INITIATED = "initiated"  # User has started the verification flow
+    PROCESSING = "processing"  # User has ended the verification flow, identification-url is not usable anymore
+    PROCESSED = "processed"  # Identification is completely processed by Ubble
+    ABORTED = "aborted"  # User has left the identification, the identification-url is no longer usable (this status is in beta test)
 
 
 class UbbleScore(enum.Enum):
