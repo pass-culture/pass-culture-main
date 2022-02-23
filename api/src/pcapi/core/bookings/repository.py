@@ -34,6 +34,7 @@ from pcapi.core.bookings.models import BookingStatusFilter
 from pcapi.core.bookings.models import IndividualBooking
 from pcapi.core.categories import subcategories
 from pcapi.core.educational.models import EducationalBooking
+from pcapi.core.educational.models import EducationalInstitution
 from pcapi.core.educational.models import EducationalRedactor
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import Venue
@@ -753,3 +754,43 @@ def offerer_has_ongoing_bookings(offerer_id: Offerer) -> bool:
             Booking.status.in_((BookingStatus.PENDING, BookingStatus.CONFIRMED)),
         ).exists()
     ).scalar()
+
+
+def find_educational_bookings_done_yesterday() -> list[EducationalBooking]:
+    yesterday = datetime.now() - timedelta(days=1)
+    yesterday_min = datetime.combine(yesterday, time.min)
+    yesterday_max = datetime.combine(yesterday, time.max)
+
+    return (
+        EducationalBooking.query.join(EducationalBooking.booking)
+        .join(Booking.stock)
+        .filter(
+            Stock.beginningDatetime >= yesterday_min,
+            Stock.beginningDatetime <= yesterday_max,
+        )
+        .options(
+            contains_eager(EducationalBooking.booking)
+            .load_only(Booking.stockId)
+            .joinedload(Booking.stock, innerjoin=True)
+            .load_only(Stock.beginningDatetime)
+            .joinedload(Stock.offer, innerjoin=True)
+            .load_only(Offer.name)
+            .joinedload(Offer.venue, innerjoin=True)
+            .load_only(Venue.name, Venue.publicName)
+        )
+        .options(
+            joinedload(EducationalBooking.educationalRedactor, innerjoin=True).load_only(
+                EducationalRedactor.firstName,
+                EducationalRedactor.lastName,
+                EducationalRedactor.email,
+            )
+        )
+        .options(
+            joinedload(EducationalBooking.educationalInstitution, innerjoin=True).load_only(
+                EducationalInstitution.name,
+                EducationalInstitution.city,
+                EducationalInstitution.postalCode,
+            )
+        )
+        .all()
+    )

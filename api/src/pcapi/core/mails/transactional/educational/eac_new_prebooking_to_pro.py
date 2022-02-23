@@ -1,3 +1,5 @@
+from babel.dates import format_date
+
 from pcapi.core import mails
 from pcapi.core.bookings.models import Booking
 from pcapi.core.educational.models import EducationalBooking
@@ -5,8 +7,8 @@ from pcapi.core.mails.models.sendinblue_models import SendinblueTransactionalEma
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
-from pcapi.utils.mailing import format_booking_date_for_email
 from pcapi.utils.mailing import format_booking_hours_for_email
+from pcapi.utils.mailing import get_event_datetime
 
 
 def send_eac_new_prebooking_email_to_pro(stock: Stock, booking: Booking) -> bool:
@@ -26,7 +28,9 @@ def get_eac_new_prebooking_email_data(booking: Booking) -> dict:
         params={
             "OFFER_NAME": offer.name,
             "VENUE_NAME": offer.venue.name,
-            "EVENT_DATE": format_booking_date_for_email(booking),
+            "EVENT_DATE": format_date(
+                get_event_datetime(educational_booking.booking.stock), format="full", locale="fr"
+            ),
             "EVENT_HOUR": format_booking_hours_for_email(booking),
             "QUANTITY": booking.quantity,
             "PRICE": str(booking.amount) if booking.amount > 0 else "Gratuit",
