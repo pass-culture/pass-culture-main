@@ -6,13 +6,13 @@ import sqlalchemy.orm as sqla_orm
 from sqlalchemy.orm import Query
 
 from pcapi.core.offers.models import Offer
-from pcapi.core.offers.models import OfferStatus
 from pcapi.core.users.models import User
 from pcapi.domain.ts_vector import create_filter_matching_all_keywords_in_any_model
 from pcapi.domain.ts_vector import create_get_filter_matching_ts_query_in_any_model
 from pcapi.models import db
 from pcapi.models.bank_information import BankInformation
 from pcapi.models.bank_information import BankInformationStatus
+from pcapi.models.offer_mixin import OfferStatus
 from pcapi.models.user_offerer import UserOfferer
 from pcapi.utils.human_ids import dehumanize
 
