@@ -147,7 +147,12 @@ def book_offer(
     return individual_booking.booking
 
 
-def _cancel_booking(booking: Booking, reason: BookingCancellationReasons, cancel_even_if_used: bool = False) -> bool:
+def _cancel_booking(
+    booking: Booking,
+    reason: BookingCancellationReasons,
+    cancel_even_if_used: bool = False,
+    raise_if_error: bool = False,
+) -> bool:
     """Cancel booking and update a user's credit information on Batch"""
     with transaction():
         stock = offers_repository.get_and_lock_stock(stock_id=booking.stockId)
@@ -156,7 +161,11 @@ def _cancel_booking(booking: Booking, reason: BookingCancellationReasons, cancel
         try:
             booking.cancel_booking(cancel_even_if_used)
         except (BookingIsAlreadyUsed, BookingIsAlreadyCancelled) as e:
+            if raise_if_error:
+                raise
             logger.info(
+                "%s: %s",
+                type(e).__name__,
                 str(e),
                 extra={
                     "booking": booking.id,
@@ -299,7 +308,8 @@ def mark_as_cancelled(booking: Booking) -> None:
     A booking can be cancelled only if it has not been cancelled before and if
     it has not been refunded. Since a payment can be retried, it is safer to
     say that a booking with payment, whatever its status, should be considered
-    refunded.
+    refunded. A used booking without payment can be marked as cancelled by an
+    admin user.
     """
     if booking.status == BookingStatus.CANCELLED:
         raise exceptions.BookingAlreadyCancelled("la réservation a déjà été annulée")
@@ -307,7 +317,7 @@ def mark_as_cancelled(booking: Booking) -> None:
     if finance_repository.has_reimbursement(booking):
         raise exceptions.BookingAlreadyRefunded("la réservation a déjà été remboursée")
 
-    _cancel_booking(booking, BookingCancellationReasons.BENEFICIARY)
+    _cancel_booking(booking, BookingCancellationReasons.BENEFICIARY, cancel_even_if_used=True, raise_if_error=True)
     send_booking_cancellation_by_beneficiary_to_pro_email(booking)
 
 
@@ -431,7 +441,7 @@ def auto_mark_as_used_after_event() -> None:
     )
 
 
-def mark_bookings_as_reimbursed_from_payment_ids(payment_ids: list[int], date: datetime) -> None:
+def mark_bookings_as_reimbursed_from_payment_ids(payment_ids: list[int], date: datetime.datetime) -> None:
     batch_size = 100
     iterator = iter(payment_ids)
     while batch := list(itertools.islice(iterator, batch_size)):

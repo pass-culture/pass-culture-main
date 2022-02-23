@@ -18,6 +18,7 @@
 <div><b>Rédacteur:</b> {{ booking.email }} ({{ booking.educationalBooking.educationalRedactor.id }})</div>
 {% endif %}
 <div><b>Offre :</b> {{ booking.stock.offer.name }}</div>
+<div><b>État :</b> {{ booking.status.value }}</div>
 <div><b>Date d'annulation :</b>
   {% if booking.status.value == 'CANCELLED' %}
     {{ booking.cancellationDate.strftime('%d/%m/%Y %H:%M') }}
@@ -46,7 +47,8 @@
 </p>
 <form action={{ url_for(".cancel", booking_id=booking.id) }} method="POST">
     {{ forms.display_form(cancel_form) }}
-    <input class="btn btn-danger" type="submit" value="Marquer comme annulée">
+    <input class="btn btn-danger" type="submit" value="Marquer comme annulée"{% if booking.status.value == 'USED' %}
+        onclick="return confirm('Êtes-vous sûr de vouloir annuler une réservation validée ?')" {% endif %}>
 </form>
 {% endif %}
 

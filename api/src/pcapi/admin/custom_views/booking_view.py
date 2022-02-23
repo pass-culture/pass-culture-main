@@ -19,6 +19,12 @@ from pcapi.domain.client_exceptions import ClientError
 from pcapi.models.api_errors import ApiErrors
 
 
+def _get_exception_message(exc: Exception) -> str:
+    if isinstance(exc, (ClientError, ApiErrors)):
+        return list(exc.errors.values())[0][0]
+    return str(exc)
+
+
 class SearchForm(SecureForm):
     token = StringField(
         "Code de contremarque",
@@ -106,11 +112,7 @@ class BookingView(BaseCustomAdminView):
         try:
             bookings_api.mark_as_used_with_uncancelling(booking)
         except Exception as exc:  # pylint: disable=broad-except
-            if isinstance(exc, (ClientError, ApiErrors)):
-                err = list(exc.errors.values())[0][0]
-            else:
-                err = str(exc)
-            flash(f"L'opération a échoué : {err}", "error")
+            flash(f"L'opération a échoué : {_get_exception_message(exc)}", "error")
         else:
             flash("La réservation a été dés-annulée et marquée comme utilisée.", "info")
         return redirect(booking_url)
@@ -127,7 +129,7 @@ class BookingView(BaseCustomAdminView):
         try:
             bookings_api.mark_as_cancelled(booking)
         except Exception as exc:  # pylint: disable=broad-except
-            flash(f"L'opération a échoué : {str(exc)}", "error")
+            flash(f"L'opération a échoué : {_get_exception_message(exc)}", "error")
         else:
             flash("La réservation a été marquée comme annulée", "info")
         return redirect(booking_url)
