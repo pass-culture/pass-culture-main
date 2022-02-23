@@ -39,36 +39,26 @@ def update_ubble_workflow(
         pcapi_repository.repository.save(user, fraud_check)
 
     elif status == ubble_fraud_models.UbbleIdentificationStatus.PROCESSED:
+        fraud_check = subscription_api.handle_eligibility_difference_between_declaration_and_identity_provider(
+            user, fraud_check
+        )
         try:
-            fraud_check = subscription_api.handle_eligibility_difference_between_declaration_and_identity_provider(
-                user, fraud_check
-            )
             ubble_fraud_api.on_ubble_result(fraud_check)
 
         except Exception:  # pylint: disable=broad-except
             logger.exception("Error on Ubble fraud check result: %s", extra={"user_id": user.id})
+            return
 
-        else:
-            if fraud_check.status != fraud_models.FraudCheckStatus.OK:
-                can_retry = ubble_fraud_api.is_user_allowed_to_perform_ubble_check(user, fraud_check.eligibilityType)
-                handle_validation_errors(user, fraud_check.reasonCodes, can_retry=can_retry)
-                subscription_api.update_user_birth_date(user, fraud_check.source_data().get_birth_date())
-                return
+        if fraud_check.status != fraud_models.FraudCheckStatus.OK:
+            can_retry = ubble_fraud_api.is_user_allowed_to_perform_ubble_check(user, fraud_check.eligibilityType)
+            handle_validation_errors(user, fraud_check.reasonCodes, can_retry=can_retry)
+            subscription_api.update_user_birth_date(user, fraud_check.source_data().get_birth_date())
+            return
 
-            try:
-                subscription_api.on_successful_application(user=user, source_data=fraud_check.source_data())
-
-            except Exception as err:  # pylint: disable=broad-except
-                logger.warning(
-                    "Could not save application %s, because of error: %s",
-                    fraud_check.thirdPartyId,
-                    err,
-                )
-            else:
-                logger.info(
-                    "Successfully created user for application %s",
-                    fraud_check.thirdPartyId,
-                )
+        try:
+            subscription_api.on_successful_application(user=user, source_data=fraud_check.source_data())
+        except Exception:  # pylint: disable=broad-except
+            logger.exception("Failure after ubble successful result", extra={"user_id"})
 
     elif status in (
         ubble_fraud_models.UbbleIdentificationStatus.ABORTED,

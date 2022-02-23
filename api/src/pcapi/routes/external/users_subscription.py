@@ -115,13 +115,11 @@ def ubble_webhook_update_application_status(
 
     try:
         ubble_subscription_api.update_ubble_workflow(fraud_check, body.status)
-    except Exception as err:
-        logger.warning(
-            "Could not update Ubble workflow %s for user #%s",
-            body.identification_id,
-            fraud_check.userId,
-            extra={"exception": err},
+    except Exception:
+        logger.exception(
+            "Could not update Ubble workflow",
+            extra={"identitfication_id": body.identification_id, "user_id": fraud_check.userId},
         )
         raise ApiErrors({"msg": "an error occured during workflow update"}, status_code=500)
-    else:
-        return ubble_validation.WebhookDummyReponse()
+
+    return ubble_validation.WebhookDummyReponse()
