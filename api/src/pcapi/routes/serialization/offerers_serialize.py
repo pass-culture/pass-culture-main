@@ -197,29 +197,24 @@ class ListUserOfferersResponseModel(BaseModel):
     __root__: list[UserOffererResponseModel]
 
 
+class GetOfferersVenueResponseModel(BaseModel):
+    id: str
+    isVirtual: bool
+    _humanize_id = humanize_field("id")
+
+    class Config:
+        orm_mode = True
+
+
 class GetOfferersResponseModel(BaseModel):
     id: str
-    postalCode: str
-    dateCreated: datetime
     name: str
     # FIXME (mageoffray, 2021-12-27): optional until we populate the database (PC-5693)
     siren: Optional[str]
-    bic: Optional[str]
-    iban: Optional[str]
-    demarchesSimplifieesApplicationId: Optional[str]
-    dateModifiedAtLastProvider: Optional[datetime]
-    fieldsUpdated: list[str]
-    idAtProviders: Optional[str]
-    isActive: bool
-    address: Optional[str]
-    city: str
     isValidated: bool
     userHasAccess: bool
-    dateValidated: Optional[datetime]
-    lastProviderId: Optional[str]
     nOffers: int
-    thumbCount: int
-    managedVenues: list[GetOffererVenueResponseModel]
+    managedVenues: list[GetOfferersVenueResponseModel]
 
     _humanize_id = humanize_field("id")
 

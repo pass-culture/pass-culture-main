@@ -108,23 +108,6 @@ class Returns200Test:
         assert len(response.json["offerers"]) == 3
 
     @pytest.mark.usefixtures("db_session")
-    def when_no_bank_information_for_offerer(self, client):
-        # given
-        pro = users_factories.ProFactory()
-        offerer1 = offers_factories.OffererFactory(siren="123456781", name="offreur C")
-        user_offerer1 = offers_factories.UserOffererFactory(user=pro, offerer=offerer1)
-        repository.save(user_offerer1)
-
-        # when
-        response = client.with_session_auth(pro.email).get("/offerers")
-
-        # then
-        assert response.status_code == 200
-        assert len(response.json["offerers"]) == 1
-        assert response.json["offerers"][0]["bic"] is None
-        assert response.json["offerers"][0]["iban"] is None
-
-    @pytest.mark.usefixtures("db_session")
     def test_returns_metadata(self, client):
         # given
         pro = users_factories.ProFactory(email="user@test.com")
