@@ -1,6 +1,11 @@
+import * as pcapi from 'repository/pcapi/pcapi'
 import { showNotification } from 'store/reducers/notificationReducer'
 
 import { mapDispatchToProps } from '../SignupFormContainer'
+
+jest.mock('repository/pcapi/pcapi', () => ({
+  signup: jest.fn().mockResolvedValue({}),
+}))
 
 describe('src | components | pages | Signup | SignupFormContainer', () => {
   describe('mapDispatchToProps', () => {
@@ -57,17 +62,7 @@ describe('src | components | pages | Signup | SignupFormContainer', () => {
         functions.createNewProUser(payload, onHandleFail, onHandleSuccess)
 
         // then
-        expect(dispatch).toHaveBeenCalledWith({
-          config: {
-            apiPath: '/users/signup/pro',
-            body: expectedFetchPayload,
-            handleFail: onHandleFail,
-            handleSuccess: onHandleSuccess,
-            method: 'POST',
-            name: 'user',
-          },
-          type: 'REQUEST_DATA_POST_/USERS/SIGNUP/PRO',
-        })
+        expect(pcapi.signup).toHaveBeenCalledWith(expectedFetchPayload)
       })
 
       it('should insert publicName value equal to firstName', () => {
@@ -82,20 +77,10 @@ describe('src | components | pages | Signup | SignupFormContainer', () => {
         functions.createNewProUser(payload, jest.fn(), jest.fn())
 
         // then
-        expect(dispatch).toHaveBeenCalledWith({
-          config: {
-            apiPath: '/users/signup/pro',
-            body: {
-              lastName: 'Lastname',
-              firstName: 'Firstname',
-              publicName: 'Firstname',
-            },
-            handleFail: expect.any(Function),
-            handleSuccess: expect.any(Function),
-            method: 'POST',
-            name: 'user',
-          },
-          type: 'REQUEST_DATA_POST_/USERS/SIGNUP/PRO',
+        expect(pcapi.signup).toHaveBeenCalledWith({
+          lastName: 'Lastname',
+          firstName: 'Firstname',
+          publicName: 'Firstname',
         })
       })
 
@@ -110,18 +95,8 @@ describe('src | components | pages | Signup | SignupFormContainer', () => {
         functions.createNewProUser(payload, jest.fn(), jest.fn())
 
         // then
-        expect(dispatch).toHaveBeenCalledWith({
-          config: {
-            apiPath: '/users/signup/pro',
-            body: {
-              siren: '123456789',
-            },
-            handleFail: expect.any(Function),
-            handleSuccess: expect.any(Function),
-            method: 'POST',
-            name: 'user',
-          },
-          type: 'REQUEST_DATA_POST_/USERS/SIGNUP/PRO',
+        expect(pcapi.signup).toHaveBeenCalledWith({
+          siren: '123456789',
         })
       })
     })

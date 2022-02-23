@@ -319,6 +319,8 @@ export const postThumbnail = (
 
 export const signin = user => client.post('/users/signin', user)
 
+export const signup = user => client.post('/users/signup/pro', user)
+
 export const signout = () => client.get('/users/signout')
 
 export const updateUserInformations = body => {
