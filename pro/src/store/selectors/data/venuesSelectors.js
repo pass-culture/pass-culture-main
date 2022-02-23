@@ -1,6 +1,5 @@
 import get from 'lodash.get'
 import createCachedSelector from 're-reselect'
-import { createSelector } from 'reselect'
 
 export const selectVenues = state => get(state, 'data.venues', [])
 
@@ -31,8 +30,3 @@ export const selectVenueById = createCachedSelector(
   (state, venueId) => venueId,
   (venues, venueId) => venues.find(venue => venue.id === venueId)
 )((state, venueId = '') => venueId)
-
-export const selectNonVirtualVenues = createSelector(
-  state => state.data.venues || [],
-  venues => venues.filter(venue => !venue.isVirtual)
-)
