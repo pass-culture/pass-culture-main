@@ -233,6 +233,5 @@ class GetOfferersListResponseModel(BaseModel):
 
 class GetOffererListQueryModel(BaseModel):
     keywords: Optional[str]
-    validated: Optional[str]
     page: Optional[int] = 0
     paginate: Optional[int] = 10

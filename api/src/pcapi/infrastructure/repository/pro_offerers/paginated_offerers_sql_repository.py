@@ -1,7 +1,5 @@
 from typing import Optional
 
-from sqlalchemy import not_
-
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offerers.repository import filter_offerers_with_keywords_string
@@ -16,8 +14,6 @@ class PaginatedOfferersSQLRepository(PaginatedOfferersRepository):
         user_id: int,
         user_is_admin: bool,
         pagination_limit: int,
-        only_validated_offerers: Optional[bool],
-        is_filtered_by_offerer_status: bool,
         page: int = 0,
         keywords: Optional[str] = None,
     ) -> PaginatedOfferers:
@@ -25,12 +21,6 @@ class PaginatedOfferersSQLRepository(PaginatedOfferersRepository):
 
         if not user_is_admin:
             query = query.join(UserOfferer, UserOfferer.offererId == Offerer.id).filter(UserOfferer.userId == user_id)
-
-        if is_filtered_by_offerer_status:
-            if only_validated_offerers:
-                query = query.filter(Offerer.validationToken.is_(None))
-            else:
-                query = query.filter(not_(Offerer.validationToken.is_(None)))
 
         if keywords is not None:
             query = query.join(Venue, Venue.managingOffererId == Offerer.id)

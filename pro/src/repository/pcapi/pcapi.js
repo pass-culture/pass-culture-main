@@ -156,10 +156,6 @@ export const getOfferers = () => {
   return client.get('/offerers')
 }
 
-export const getValidatedOfferers = () => {
-  return client.get('/offerers?validated=true')
-}
-
 export const getOfferer = offererId => {
   return client.get(`/offerers/${offererId}`)
 }

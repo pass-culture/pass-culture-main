@@ -12,8 +12,6 @@ class PaginatedOfferersRepository(ABC):
         user_id: int,
         user_is_admin: bool,
         pagination_limit: int,
-        is_filtered_by_offerer_status: bool,
-        only_validated_offerers: bool,
         page: int = 0,
         keywords: Optional[str] = None,
     ) -> PaginatedOfferers:
