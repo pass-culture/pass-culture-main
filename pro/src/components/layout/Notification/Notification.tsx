@@ -1,5 +1,4 @@
-import PropTypes from 'prop-types'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, FunctionComponent } from 'react'
 
 import {
   NOTIFICATION_SHOW_DURATION,
@@ -10,29 +9,44 @@ import { ReactComponent as InfoIcon } from './assets/notification-information.sv
 import { ReactComponent as SuccessIcon } from './assets/notification-success-white.svg'
 import { ReactComponent as PendingIcon } from './assets/status-pending.svg'
 
-const Notification = ({ hideNotification, notification }) => {
+type Props = {
+  hideNotification: () => void
+  notification: {
+    text: React.ReactNode
+    type: 'error' | 'success' | 'pending' | 'information'
+  }
+  children?: never
+}
+
+const Notification: FunctionComponent<Props> = ({
+  hideNotification,
+  notification,
+}) => {
   const [isVisible, setIsVisible] = useState(false)
   const [isInDom, setIsInDom] = useState(false)
 
   useEffect(() => {
-    let timer
     if (notification.text) {
       setIsVisible(true)
       setIsInDom(true)
-      timer = setTimeout(() => setIsVisible(false), NOTIFICATION_SHOW_DURATION)
+      const timer = setTimeout(
+        () => setIsVisible(false),
+        NOTIFICATION_SHOW_DURATION
+      )
+      return () => clearTimeout(timer)
     }
-    return () => clearTimeout(timer)
+    return () => undefined
   }, [notification.text])
 
   useEffect(() => {
-    let timer
     if (!isVisible && notification.text) {
-      timer = setTimeout(() => {
+      const timer = setTimeout(() => {
         setIsInDom(false)
         hideNotification()
       }, NOTIFICATION_TRANSITION_DURATION)
+      return () => clearTimeout(timer)
     }
-    return () => clearTimeout(timer)
+    return () => undefined
   }, [hideNotification, isVisible, notification.text])
 
   const { text, type } = notification
@@ -59,14 +73,6 @@ const Notification = ({ hideNotification, notification }) => {
   } else {
     return null
   }
-}
-
-Notification.propTypes = {
-  hideNotification: PropTypes.func.isRequired,
-  notification: PropTypes.shape({
-    text: PropTypes.oneOfType([PropTypes.string, PropTypes.shape()]),
-    type: PropTypes.oneOf(['error', 'success', 'pending', 'information']),
-  }).isRequired,
 }
 
 export default Notification
