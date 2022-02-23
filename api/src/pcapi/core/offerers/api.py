@@ -320,6 +320,16 @@ def save_venue_banner(
     repository.save(venue)
 
 
+def delete_venue_banner(venue: Venue) -> None:
+    if venue.bannerUrl:
+        storage.remove_thumb(venue, image_index=0)
+
+    venue.bannerUrl = None
+    venue.bannerMeta = None
+
+    repository.save(venue)
+
+
 def can_offerer_create_educational_offer(offerer_id: str) -> bool:
     import pcapi.core.educational.adage_backends as adage_client
 
