@@ -65,6 +65,7 @@ describe('stocks page', () => {
       data: {
         users: [{ publicName: 'François', isAdmin: false }],
       },
+      user: { initialized: true },
       features: {
         list: [
           {

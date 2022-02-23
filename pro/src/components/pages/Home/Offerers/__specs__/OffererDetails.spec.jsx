@@ -92,7 +92,9 @@ describe('offererDetailsLegacy', () => {
           },
         ],
       },
+      user: { initialized: true },
     })
+
     virtualVenue = {
       id: 'test_venue_id_1',
       isVirtual: true,
@@ -806,6 +808,7 @@ describe('offererDetailsLegacy', () => {
             },
           ],
         },
+        user: { initialized: true },
         features: {
           list: [
             { isActive: true, nameKey: 'ENFORCE_BANK_INFORMATION_WITH_SIRET' },

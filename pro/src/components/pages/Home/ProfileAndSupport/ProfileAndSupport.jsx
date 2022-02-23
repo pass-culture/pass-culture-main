@@ -1,6 +1,6 @@
-import PropTypes from 'prop-types'
 import React, { useState, useCallback } from 'react'
 
+import useCurrentUser from 'components/hooks/useCurrentUser'
 import Icon from 'components/layout/Icon'
 
 import { STEP_PROFILE_HASH } from '../HomepageBreadcrumb'
@@ -53,8 +53,10 @@ export const formatPhoneNumber = phoneNumber => {
   return phoneNumber
 }
 
-const Profile = ({ user }) => {
+const ProfileAndSupport = () => {
   const [isEditingProfile, setIsEditingProfile] = useState(false)
+
+  const { currentUser: user } = useCurrentUser()
 
   const showProfileInfoModal = useCallback(() => setIsEditingProfile(true), [])
 
@@ -119,8 +121,4 @@ const Profile = ({ user }) => {
   )
 }
 
-Profile.propTypes = {
-  user: PropTypes.shape().isRequired,
-}
-
-export default Profile
+export default ProfileAndSupport
