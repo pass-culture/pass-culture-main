@@ -1,12 +1,53 @@
 from unittest.mock import patch
 
+import pytest
+
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
+from pcapi.models.criterion import Criterion
 
 from tests.conftest import clean_database
 
 
 class CriteriaViewTest:
+    @pytest.mark.parametrize("name", ["tag", "tag_with_underscores", "[tag]!"])
+    @clean_database
+    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    def test_create_criterion(self, mocked_validate_csrf_token, client, name):
+        users_factories.AdminFactory(email="admin@example.com")
+
+        api_client = client.with_session_auth("admin@example.com")
+
+        response = api_client.post(
+            "/pc/back-office/criterion/new/",
+            form={"name": name, "description": "My description", "startDateTime": None, "endDateTime": None},
+        )
+
+        assert response.status_code == 302
+        assert Criterion.query.count() == 1
+        criterion = Criterion.query.first()
+        assert criterion.name == name
+        assert criterion.description == "My description"
+
+    @pytest.mark.parametrize(
+        "name", ["tag ", " tag", "t ag", "tag\t", "\ttag", "ta\tg", "\ntag", "t\nag", "\rtag", "tag\r", "t\rag"]
+    )
+    @clean_database
+    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    def test_create_criterion_with_whitespace(self, mocked_validate_csrf_token, client, name):
+        users_factories.AdminFactory(email="admin@example.com")
+
+        api_client = client.with_session_auth("admin@example.com")
+
+        response = api_client.post(
+            "/pc/back-office/criterion/new/",
+            form={"name": name, "description": "My description", "startDateTime": None, "endDateTime": None},
+        )
+
+        assert response.status_code == 200
+        assert "Le nom ne doit contenir aucun caractère d&#39;espacement" in response.data.decode("utf8")
+        assert Criterion.query.count() == 0
+
     @clean_database
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     def test_delete_criterion(self, mocked_validate_csrf_token, client):
