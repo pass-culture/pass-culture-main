@@ -5,15 +5,6 @@ import enum
 from typing import Optional
 
 import sqlalchemy as sa
-from sqlalchemy import BigInteger
-from sqlalchemy import Column
-from sqlalchemy import DDL
-from sqlalchemy import DateTime
-from sqlalchemy import Enum
-from sqlalchemy import ForeignKey
-from sqlalchemy import String
-from sqlalchemy import and_
-from sqlalchemy import event
 from sqlalchemy.dialects import postgresql
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.ext.mutable import MutableList
@@ -76,11 +67,11 @@ class CollectiveOffer(PcObject, ValidationMixin, AccessibilityMixin, StatusMixin
 
     # add 3 mixin validation, status accessibilite
 
-    id: int = sa.Column(BigInteger, primary_key=True, autoincrement=True)
+    id: int = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
 
-    offerId = sa.Column(BigInteger, nullable=True)
+    offerId = sa.Column(sa.BigInteger, nullable=True)
 
-    isActive = sa.Column(Boolean, nullable=False, server_default=sa.sql.expression.true(), default=True)
+    isActive = sa.Column(sa.Boolean, nullable=False, server_default=sa.sql.expression.true(), default=True)
 
     venueId = sa.Column(sa.BigInteger, sa.ForeignKey("venue.id"), nullable=False, index=True)
 
@@ -112,7 +103,7 @@ class CollectiveOffer(PcObject, ValidationMixin, AccessibilityMixin, StatusMixin
 
     contactPhone = sa.Column(sa.String(20), nullable=False)
 
-    offerVenue = Column("jsonData", postgresql.JSONB)
+    offerVenue = sa.Column("jsonData", postgresql.JSONB)
 
     @sa.ext.hybrid.hybrid_property
     def isSoldOut(self):
@@ -179,9 +170,9 @@ class CollectiveStock(PcObject, Model):  # type: ignore[valid-type]
 
     id = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
 
-    stockId = sa.Column(BigInteger, nullable=True)
+    stockId = sa.Column(sa.BigInteger, nullable=True)
 
-    isSoftDeleted = Column(Boolean, nullable=False, default=False, server_default=expression.false())
+    isSoftDeleted = sa.Column(sa.Boolean, nullable=False, default=False, server_default=expression.false())
 
     dateCreated = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow, server_default=sa.func.now())
 
@@ -261,21 +252,21 @@ class CollectiveStock(PcObject, Model):  # type: ignore[valid-type]
 class EducationalInstitution(PcObject, Model):  # type: ignore[valid-type]
     __tablename__ = "educational_institution"
 
-    id: int = Column(BigInteger, primary_key=True, autoincrement=True)
+    id: int = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
 
-    institutionId: str = Column(String(30), nullable=False, unique=True, index=True)
+    institutionId: str = sa.Column(sa.String(30), nullable=False, unique=True, index=True)
 
 
 class EducationalYear(PcObject, Model):  # type: ignore[valid-type]
     __tablename__ = "educational_year"
 
-    id: int = Column(BigInteger, primary_key=True, autoincrement=True)
+    id: int = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
 
-    adageId: str = Column(String(30), unique=True, nullable=False)
+    adageId: str = sa.Column(sa.String(30), unique=True, nullable=False)
 
-    beginningDate: datetime = Column(DateTime, nullable=False)
+    beginningDate: datetime = sa.Column(sa.DateTime, nullable=False)
 
-    expirationDate: datetime = Column(DateTime, nullable=False)
+    expirationDate: datetime = sa.Column(sa.DateTime, nullable=False)
 
 
 class EducationalDeposit(PcObject, Model):  # type: ignore[valid-type]
@@ -283,28 +274,30 @@ class EducationalDeposit(PcObject, Model):  # type: ignore[valid-type]
 
     TEMPORARY_FUND_AVAILABLE_RATIO = 0.8
 
-    id: int = Column(BigInteger, primary_key=True, autoincrement=True)
+    id: int = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
 
-    educationalInstitutionId = Column(BigInteger, ForeignKey("educational_institution.id"), index=True, nullable=False)
+    educationalInstitutionId = sa.Column(
+        sa.BigInteger, sa.ForeignKey("educational_institution.id"), index=True, nullable=False
+    )
 
     educationalInstitution: EducationalInstitution = relationship(
         EducationalInstitution, foreign_keys=[educationalInstitutionId], backref="deposits"
     )
 
-    educationalYearId = Column(String(30), ForeignKey("educational_year.adageId"), index=True, nullable=False)
+    educationalYearId = sa.Column(sa.String(30), sa.ForeignKey("educational_year.adageId"), index=True, nullable=False)
 
     educationalYear: EducationalYear = relationship(
         EducationalYear, foreign_keys=[educationalYearId], backref="deposits"
     )
 
-    amount: Decimal = Column(Numeric(10, 2), nullable=False)
+    amount: Decimal = sa.Column(Numeric(10, 2), nullable=False)
 
-    dateCreated: datetime = Column(DateTime, nullable=False, default=datetime.utcnow, server_default=func.now())
+    dateCreated: datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow, server_default=func.now())
 
-    isFinal: bool = Column(Boolean, nullable=False, default=True)
+    isFinal: bool = sa.Column(Boolean, nullable=False, default=True)
 
-    ministry = Column(
-        Enum(Ministry),
+    ministry = sa.Column(
+        sa.Enum(Ministry),
         nullable=True,
     )
 
@@ -325,15 +318,15 @@ class EducationalRedactor(PcObject, Model):  # type: ignore[valid-type]
 
     __tablename__ = "educational_redactor"
 
-    id: int = Column(BigInteger, primary_key=True, autoincrement=True)
+    id: int = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
 
-    email: str = Column(String(120), nullable=False, unique=True, index=True)
+    email: str = sa.Column(sa.String(120), nullable=False, unique=True, index=True)
 
-    firstName: str = Column(String(128), nullable=True)
+    firstName: str = sa.Column(sa.String(128), nullable=True)
 
-    lastName: str = Column(String(128), nullable=True)
+    lastName: str = sa.Column(sa.String(128), nullable=True)
 
-    civility: str = Column(String(20), nullable=True)
+    civility: str = sa.Column(sa.String(20), nullable=True)
 
     educationalBookings = relationship(
         "EducationalBooking",
@@ -344,26 +337,26 @@ class EducationalRedactor(PcObject, Model):  # type: ignore[valid-type]
 class EducationalBooking(PcObject, Model):  # type: ignore[valid-type]
     __tablename__ = "educational_booking"
 
-    id: int = Column(BigInteger, primary_key=True, autoincrement=True)
+    id: int = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
 
-    educationalInstitutionId = Column(BigInteger, ForeignKey("educational_institution.id"), nullable=False)
+    educationalInstitutionId = sa.Column(sa.BigInteger, sa.ForeignKey("educational_institution.id"), nullable=False)
     educationalInstitution: EducationalInstitution = relationship(
         EducationalInstitution, foreign_keys=[educationalInstitutionId], backref="educationalBookings"
     )
 
-    educationalYearId = Column(String(30), ForeignKey("educational_year.adageId"), nullable=False)
+    educationalYearId = sa.Column(sa.String(30), sa.ForeignKey("educational_year.adageId"), nullable=False)
     educationalYear: EducationalYear = relationship(EducationalYear, foreign_keys=[educationalYearId])
 
     Index("ix_educational_booking_educationalYear_and_institution", educationalYearId, educationalInstitutionId)
 
-    status = Column(
+    status = sa.Column(
         "status",
-        Enum(EducationalBookingStatus),
+        sa.Enum(EducationalBookingStatus),
         nullable=True,
     )
 
-    confirmationDate: Optional[datetime] = Column(DateTime, nullable=True)
-    confirmationLimitDate = Column(DateTime, nullable=True)
+    confirmationDate: Optional[datetime] = sa.Column(sa.DateTime, nullable=True)
+    confirmationLimitDate = sa.Column(sa.DateTime, nullable=True)
 
     booking = relationship(
         "Booking",
@@ -373,9 +366,9 @@ class EducationalBooking(PcObject, Model):  # type: ignore[valid-type]
         innerjoin=True,
     )
 
-    educationalRedactorId = Column(
-        BigInteger,
-        ForeignKey("educational_redactor.id"),
+    educationalRedactorId = sa.Column(
+        sa.BigInteger,
+        sa.ForeignKey("educational_redactor.id"),
         nullable=False,
         index=True,
     )
@@ -410,58 +403,58 @@ class EducationalBooking(PcObject, Model):  # type: ignore[valid-type]
 
 class CollectiveBooking(PcObject, Model):  # type: ignore[valid-type]
     __tablename__ = "collective_booking"
-    id = Column(BigInteger, primary_key=True, autoincrement=True)
+    id = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
 
-    bookingId = sa.Column(BigInteger)
+    bookingId = sa.Column(sa.BigInteger)
 
-    dateCreated = Column(DateTime, nullable=False, default=datetime.utcnow)
+    dateCreated = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow)
     Index("ix_collective_booking_date_created", dateCreated)
 
-    dateUsed = Column(DateTime, nullable=True, index=True)
+    dateUsed = sa.Column(sa.DateTime, nullable=True, index=True)
 
-    collectiveStockId = Column(BigInteger, ForeignKey("collective_stock.id"), index=True, nullable=False)
+    collectiveStockId = sa.Column(sa.BigInteger, sa.ForeignKey("collective_stock.id"), index=True, nullable=False)
 
     collectiveStock = relationship("CollectiveStock", foreign_keys=[collectiveStockId], backref="collectiveBookings")
 
-    venueId = Column(BigInteger, ForeignKey("venue.id"), index=True, nullable=False)
+    venueId = sa.Column(sa.BigInteger, sa.ForeignKey("venue.id"), index=True, nullable=False)
 
     venue = relationship("Venue", foreign_keys=[venueId], backref="collectiveBookings")
 
-    offererId = Column(BigInteger, ForeignKey("offerer.id"), index=True, nullable=False)
+    offererId = sa.Column(sa.BigInteger, sa.ForeignKey("offerer.id"), index=True, nullable=False)
 
     offerer = relationship("Offerer", foreign_keys=[offererId], backref="collectiveBookings")
 
-    cancellationDate = Column(DateTime, nullable=True)
+    cancellationDate = sa.Column(sa.DateTime, nullable=True)
 
-    cancellationLimitDate = Column(DateTime, nullable=True)
+    cancellationLimitDate = sa.Column(sa.DateTime, nullable=True)
 
-    cancellationReason = Column(
+    cancellationReason = sa.Column(
         "cancellationReason",
-        Enum(
+        sa.Enum(
             BookingCancellationReasons,
             values_callable=lambda x: [reason.value for reason in BookingCancellationReasons],
         ),
         nullable=True,
     )
 
-    status = Column("status", Enum(BookingStatus), nullable=False, default=BookingStatus.CONFIRMED)
+    status = sa.Column("status", sa.Enum(BookingStatus), nullable=False, default=BookingStatus.CONFIRMED)
 
     Index("ix_collective_booking_status", status)
 
-    reimbursementDate = Column(DateTime, nullable=True)
+    reimbursementDate = sa.Column(sa.DateTime, nullable=True)
 
-    educationalInstitutionId = Column(BigInteger, ForeignKey("educational_institution.id"), nullable=False)
+    educationalInstitutionId = sa.Column(sa.BigInteger, sa.ForeignKey("educational_institution.id"), nullable=False)
     educationalInstitution: EducationalInstitution = relationship(
         EducationalInstitution, foreign_keys=[educationalInstitutionId], backref="collectiveBookings"
     )
 
-    educationalYearId = Column(String(30), ForeignKey("educational_year.adageId"), nullable=False)
+    educationalYearId = sa.Column(sa.String(30), sa.ForeignKey("educational_year.adageId"), nullable=False)
     educationalYear: EducationalYear = relationship(EducationalYear, foreign_keys=[educationalYearId])
 
     Index("ix_collective_booking_educationalYear_and_institution", educationalYearId, educationalInstitutionId)
 
-    confirmationDate: Optional[datetime] = Column(DateTime, nullable=True)
-    confirmationLimitDate = Column(DateTime, nullable=True)
+    confirmationDate: Optional[datetime] = sa.Column(sa.DateTime, nullable=True)
+    confirmationLimitDate = sa.Column(sa.DateTime, nullable=True)
 
     def mark_as_used(self) -> None:
         if self.is_used_or_reimbursed:  # pylint: disable=using-constant-test
@@ -508,7 +501,7 @@ class CollectiveBooking(PcObject, Model):  # type: ignore[valid-type]
 
     @isConfirmed.expression  # type: ignore[no-redef]
     def isConfirmed(cls):  # pylint: disable=no-self-argument
-        return and_(cls.cancellationLimitDate.isnot(None), cls.cancellationLimitDate <= datetime.utcnow())
+        return sa.and_(cls.cancellationLimitDate.isnot(None), cls.cancellationLimitDate <= datetime.utcnow())
 
     @hybrid_property
     def is_used_or_reimbursed(self) -> bool:
@@ -645,7 +638,7 @@ CollectiveBooking.trig_ddl = f"""
     ON booking
     FOR EACH ROW EXECUTE PROCEDURE check_booking()
     """
-event.listen(CollectiveBooking.__table__, "after_create", DDL(CollectiveBooking.trig_ddl))
+sa.event.listen(CollectiveBooking.__table__, "after_create", sa.DDL(CollectiveBooking.trig_ddl))
 
 CollectiveBooking.trig_update_cancellationDate_on_isCancelled_ddl = f"""
     CREATE OR REPLACE FUNCTION save_cancellation_date()
@@ -668,8 +661,10 @@ CollectiveBooking.trig_update_cancellationDate_on_isCancelled_ddl = f"""
     EXECUTE PROCEDURE save_cancellation_date()
     """
 
-event.listen(
-    CollectiveBooking.__table__, "after_create", DDL(CollectiveBooking.trig_update_cancellationDate_on_isCancelled_ddl)
+sa.event.listen(
+    CollectiveBooking.__table__,
+    "after_create",
+    sa.DDL(CollectiveBooking.trig_update_cancellationDate_on_isCancelled_ddl),
 )
 
 
