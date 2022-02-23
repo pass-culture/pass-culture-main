@@ -46,6 +46,8 @@
     "*.scss": "stylelint --syntax=scss --fix"
   },
   "dependencies": {
+    "@firebase/analytics": "^0.7.5",
+    "@firebase/app": "^0.7.17",
     "@fontsource/barlow": "^4.3.0",
     "@reach/dialog": "^0.15.0",
     "@reach/menu-button": "^0.15.1",
@@ -113,6 +115,7 @@
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.2.7",
     "@testing-library/user-event": "^13.1.9",
+    "@types/history": "^4.7.2",
     "@types/jest": "^26.0.23",
     "@types/lodash.isequal": "^4.5.5",
     "@types/node": "^16.7.10",
