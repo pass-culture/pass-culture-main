@@ -3,8 +3,8 @@ import { removeWhitespaces } from 'react-final-form-utils'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import { compose } from 'redux'
-import { requestData } from 'redux-saga-data'
 
+import * as pcapi from 'repository/pcapi/pcapi'
 import { removeErrors } from 'store/reducers/errors'
 import { showNotification } from 'store/reducers/notificationReducer'
 import { selectCurrentUser } from 'store/selectors/data/usersSelectors'
@@ -23,20 +23,14 @@ export const mapDispatchToProps = (dispatch, ownProps) => ({
     dispatch(removeErrors(STATE_ERROR_NAME))
 
     const { firstName, siren } = payload
-    dispatch(
-      requestData({
-        apiPath: '/users/signup/pro',
-        method: 'POST',
-        body: {
-          ...payload,
-          siren: removeWhitespaces(siren),
-          publicName: firstName,
-        },
-        name: STATE_ERROR_NAME,
-        handleFail: onHandleFail,
-        handleSuccess: onHandleSuccess,
+    pcapi
+      .signup({
+        ...payload,
+        siren: removeWhitespaces(siren),
+        publicName: firstName,
       })
-    )
+      .then(() => onHandleSuccess())
+      .catch(() => onHandleFail())
   },
 
   redirectToConfirmation: () => {
