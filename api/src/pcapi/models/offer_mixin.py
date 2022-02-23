@@ -74,7 +74,7 @@ class ValidationMixin:
     lastValidationDate = sa.Column(sa.DateTime, index=True, nullable=True)
 
     validation = sa.Column(
-        sa.Enum(OfferValidationStatus),
+        sa.Enum(OfferValidationStatus, name="validation_status"),
         nullable=False,
         default=OfferValidationStatus.APPROVED,
         server_default="APPROVED",
