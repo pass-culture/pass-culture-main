@@ -174,6 +174,8 @@ class Venue(PcObject, Model, HasThumbMixin, HasAddressMixin, ProvidableMixin, Ne
         nullable=True,
     )
 
+    collectiveOffers = relationship("CollectiveOffer", back_populates="venue")
+
     venueTypeId = Column(Integer, ForeignKey("venue_type.id"), nullable=True)
 
     venueType = relationship("VenueType", foreign_keys=[venueTypeId])
