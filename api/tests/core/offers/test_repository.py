@@ -11,7 +11,6 @@ import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.factories import ActivationCodeFactory
 from pcapi.core.offers.factories import EventStockFactory
 from pcapi.core.offers.models import Offer
-from pcapi.core.offers.models import OfferStatus
 from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.core.offers.repository import check_stock_consistency
 from pcapi.core.offers.repository import delete_past_draft_offers
@@ -29,6 +28,7 @@ from pcapi.model_creators.generic_creators import create_provider
 from pcapi.model_creators.generic_creators import create_user_offerer
 from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.specific_creators import create_offer_with_thing_product
+from pcapi.models.offer_mixin import OfferStatus
 from pcapi.repository import repository
 from pcapi.utils.date import utc_datetime_to_department_timezone
 
