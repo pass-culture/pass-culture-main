@@ -65,11 +65,13 @@ class UserOffererView(BaseAdminView):
 
     def delete_model(self, user_offerer: UserOfferer) -> bool:
         # user_offerer.user is not available in this call, get email before deletion
+        # joined user is no longer available after delete_model()
         user_offerer_with_join = find_one_or_none_by_id(user_offerer.id)
+        email = user_offerer_with_join.user.email if user_offerer_with_join else None
 
         result = super().delete_model(user_offerer)
 
-        if result and user_offerer_with_join:
-            update_external_pro(user_offerer_with_join.user.email)
+        if result and email:
+            update_external_pro(email)
 
         return result
