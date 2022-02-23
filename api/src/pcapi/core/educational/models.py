@@ -274,6 +274,16 @@ class EducationalInstitution(PcObject, Model):  # type: ignore[valid-type]
 
     institutionId: str = sa.Column(sa.String(30), nullable=False, unique=True, index=True)
 
+    name: str = sa.Column(sa.Text(), nullable=True)
+
+    city: str = sa.Column(sa.Text(), nullable=True)
+
+    postalCode: str = sa.Column(sa.String(10), nullable=True)
+
+    email: str = sa.Column(sa.Text(), nullable=True)
+
+    phoneNumber: str = sa.Column(sa.String(30), nullable=True)
+
 
 class EducationalYear(PcObject, Model):  # type: ignore[valid-type]
     __tablename__ = "educational_year"
