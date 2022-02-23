@@ -28,17 +28,26 @@ def get_fraud_check(
 
 def create_fraud_check(
     user: users_models.User,
-    source_data: fraud_models.DMSContent,
+    application_id: int,
+    source_data: typing.Optional[fraud_models.DMSContent],
 ) -> fraud_models.BeneficiaryFraudCheck:
-    application_id = str(source_data.application_id)
-    eligibility_type = fraud_api.decide_eligibility(user, source_data)
+    eligibility_type = fraud_api.decide_eligibility(user, source_data) if source_data else None
     fraud_check = fraud_models.BeneficiaryFraudCheck(
         user=user,
         type=fraud_models.FraudCheckType.DMS,
-        thirdPartyId=application_id,
-        resultContent=source_data.dict(),
+        thirdPartyId=str(application_id),
+        resultContent=source_data.dict() if source_data else None,
         status=fraud_models.FraudCheckStatus.STARTED,
         eligibilityType=eligibility_type,
     )
-    pcapi_repository.repository.save(fraud_check)
     return fraud_check
+
+
+def get_or_create_fraud_check(
+    user: users_models.User, application_id: int, result_content=None
+) -> fraud_models.BeneficiaryFraudCheck:
+    fraud_check = get_fraud_check(user, application_id)
+    if fraud_check is None:
+        return create_fraud_check(user, application_id, result_content)
+    return fraud_check
+

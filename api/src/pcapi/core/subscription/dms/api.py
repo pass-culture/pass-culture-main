@@ -39,11 +39,7 @@ def handle_dms_state(
 
     logs_extra = {"application_id": application_id, "procedure_id": procedure_id, "user_email": user.email}
 
-    current_fraud_check = fraud_dms_api.get_fraud_check(user, application_id)
-    if current_fraud_check is None:
-        # create a fraud_check whatever the status is because we may have missed a webhook event
-        current_fraud_check = fraud_dms_api.create_fraud_check(user, result_content)
-        user.submit_user_identity()
+    current_fraud_check = fraud_dms_api.get_or_create_fraud_check(user, application_id, result_content)
 
     if state == dms_connector_api.GraphQLApplicationStates.draft:
         subscription_messages.on_dms_application_received(user)
