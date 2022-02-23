@@ -1,14 +1,6 @@
-import typing
-
 from pcapi.core import mails
 from pcapi.core.mails.models.sendinblue_models import SendinblueTransactionalEmailData
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
-from pcapi.core.users.models import User
-
-
-def send_subscription_document_error_email_to_user_list(users: typing.Iterable[User], code: str) -> bool:
-    data = get_subscription_document_error_email_data(code)
-    return mails.send(recipients=[user.email for user in users], data=data)
 
 
 def send_subscription_document_error_email(email: str, code: str) -> bool:

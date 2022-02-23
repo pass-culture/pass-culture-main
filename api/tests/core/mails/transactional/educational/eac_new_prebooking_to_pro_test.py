@@ -54,7 +54,7 @@ def test_sends_email():
     assert sent_data["params"] == {
         "OFFER_NAME": offer.name,
         "VENUE_NAME": offer.venue.name,
-        "EVENT_DATE": "15-May-2021",
+        "EVENT_DATE": "samedi 15 mai 2021",
         "EVENT_HOUR": "2h",
         "PRICE": "20.00",
         "QUANTITY": 10,
@@ -105,7 +105,7 @@ def test_get_email_metadata():
     assert email_data.params == {
         "OFFER_NAME": offer.name,
         "VENUE_NAME": offer.venue.name,
-        "EVENT_DATE": "15-May-2021",
+        "EVENT_DATE": "samedi 15 mai 2021",
         "EVENT_HOUR": "2h",
         "PRICE": "20.00",
         "QUANTITY": 10,
