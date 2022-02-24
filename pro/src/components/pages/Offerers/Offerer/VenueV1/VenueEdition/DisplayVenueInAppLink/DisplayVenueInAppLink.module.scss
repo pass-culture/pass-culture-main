@@ -1,0 +1,12 @@
+.display-venue-link {
+  &-container {
+    @include button();
+    display: inline-flex;
+    color: $primary;
+  }
+
+  &-icon {
+    margin-right: rem(8px);
+    width: 20px;
+  }
+}

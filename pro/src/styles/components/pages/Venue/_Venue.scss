@@ -2,6 +2,12 @@
   position: relative;
   padding-top: rem(50px);
 
+  &-view-venue-cta {
+    position: absolute;
+    top: 0;
+    right: 0;
+  }
+
   .col-66 {
     $size: 65.5%;
 
