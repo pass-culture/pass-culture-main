@@ -5,6 +5,7 @@ import { NavLink, useHistory } from 'react-router-dom'
 import { reinitializeData } from 'redux-saga-data'
 
 import { signout } from 'repository/pcapi/pcapi'
+import { resetIsInitialized } from 'store/user/actions'
 
 import Logo from '../Logo'
 
@@ -22,6 +23,7 @@ const Header = ({ isStyleguideActive, isUserAdmin }) => {
 
   const onSignoutClick = useCallback(() => {
     signout().then(() => {
+      dispatch(resetIsInitialized())
       dispatch(reinitializeData())
       history.push('/connexion')
     })
