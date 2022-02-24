@@ -586,25 +586,6 @@ describe('test page : VenueEdition', () => {
         },
       }
 
-      it('hides when feature flag is disabled', async () => {
-        const storeOverrides = {
-          features: {
-            list: [
-              {
-                isActive: false,
-                nameKey: 'PRO_ENABLE_UPLOAD_VENUE_IMAGE',
-              },
-            ],
-          },
-        }
-
-        await renderVenueEdition({ props, storeOverrides })
-
-        expect(
-          screen.queryByTestId('image-venue-uploader-section')
-        ).not.toBeInTheDocument()
-      })
-
       it('hides when venue is not permanent', async () => {
         await renderVenueEdition({
           props: {

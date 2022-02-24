@@ -55,8 +55,7 @@ const VenueEdition = ({
     'ENFORCE_BANK_INFORMATION_WITH_SIRET'
   )
 
-  const shouldDisplayImageVenueUploaderSection =
-    useActiveFeature('PRO_ENABLE_UPLOAD_VENUE_IMAGE') && venue?.isPermanent
+  const shouldDisplayImageVenueUploaderSection = venue?.isPermanent
 
   // TODO check that it's execute only once when initialize
   useEffect(() => handleInitialRequest(), [handleInitialRequest])
