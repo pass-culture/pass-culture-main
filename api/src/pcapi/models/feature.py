@@ -43,7 +43,6 @@ class FeatureToggle(enum.Enum):
     )
     ENABLE_DUPLICATE_USER_RULE_WITHOUT_BIRTHDATE = "Utiliser la nouvelle règle de détection d'utilisateur en doublon"
     ENABLE_EDUCONNECT_AUTHENTICATION = "Active l'authentification via educonnect sur l'app native"
-    ENABLE_INE_WHITELIST_FILTER = "Active le filtre sur les INE whitelistés"
     ENABLE_ID_CHECK_RETENTION = "Active le mode bassin de retention dans Id Check V2"
     ENABLE_IDCHECK_FRAUD_CONTROLS = "Active les contrôles de sécurité en sortie du process ID Check"
     ENABLE_ISBN_REQUIRED_IN_LIVRE_EDITION_OFFER_CREATION = (

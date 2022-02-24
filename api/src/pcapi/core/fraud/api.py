@@ -98,8 +98,6 @@ def educonnect_fraud_checks(
     fraud_items = []
     fraud_items.append(_underage_user_fraud_item(educonnect_content.get_birth_date()))
     fraud_items.append(_duplicate_ine_hash_fraud_item(educonnect_content.ine_hash, user.id))
-    if FeatureToggle.ENABLE_INE_WHITELIST_FILTER.is_active():
-        fraud_items.append(_whitelisted_ine_fraud_item(educonnect_content.ine_hash))
 
     return fraud_items
 

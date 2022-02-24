@@ -13,7 +13,6 @@ from pcapi.core.fraud import factories as fraud_factories
 import pcapi.core.fraud.models as fraud_models
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import models as subscription_status
-from pcapi.core.testing import override_features
 from pcapi.core.testing import override_settings
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as user_models
@@ -163,7 +162,6 @@ class EduconnectTest:
         assert user.ineHash == ine_hash
 
     @patch("pcapi.connectors.beneficiaries.educonnect.educonnect_connector.get_saml_client")
-    @override_features(ENABLE_INE_WHITELIST_FILTER=False)
     def test_connexion_date_missing(self, mock_get_educonnect_saml_client, client, caplog, app):
         # set user_id in redis as if /saml/educonnect/login was called
         user = users_factories.UserFactory(email=self.email)
@@ -303,39 +301,11 @@ class EduconnectTest:
 
         assert response.status_code == 302
         assert response.location.startswith("https://webapp-v2.example.com/educonnect/validation")
-        assert caplog.messages == [
-            "Fraud suspicion after educonnect authentication with codes: ine_not_whitelisted, duplicate_user"
-        ]
+        assert caplog.messages == ["Fraud suspicion after educonnect authentication with codes: duplicate_user"]
         assert caplog.records[0].extra == {"user_id": user.id}
 
     @patch("pcapi.connectors.beneficiaries.educonnect.educonnect_connector.get_educonnect_user")
-    @override_features(ENABLE_INE_WHITELIST_FILTER=False)
-    @freezegun.freeze_time("2021-12-15")  # during opening
-    def test_16_year_old_but_not_eligible(self, mock_get_educonnect_user, client, app):
-        user, request_id = self.connect_to_educonnect(client, app)
-        user.dateOfBirth = datetime.date(2005, 12, 17)  # birthday during opening and required age
-        educonnect_user = users_factories.EduconnectUserFactory(
-            saml_request_id=request_id,
-            birth_date=datetime.date(2006, 12, 11),  # birthday before opening but required age
-        )
-        mock_get_educonnect_user.return_value = educonnect_user
-
-        response = client.post("/saml/acs", form={"SAMLResponse": "encrypted_data"})
-
-        assert response.status_code == 302
-
-        assert response.location == (
-            "https://webapp-v2.example.com/educonnect/erreur?code=UserAgeNotValid&logoutUrl=https%3A%2F%2Feduconnect.education.gouv.fr%2FLogout"
-        )
-        assert len(user.subscriptionMessages) == 1
-        assert (
-            user.subscriptionMessages[0].userMessage
-            == "La date de naissance de ton dossier Educonnect (11/12/2006) indique que tu n'es pas éligible. Tu seras éligible le 22/12/2021."
-        )
-
-    @patch("pcapi.connectors.beneficiaries.educonnect.educonnect_connector.get_educonnect_user")
     @freezegun.freeze_time("2021-12-21")
-    @override_features(ENABLE_INE_WHITELIST_FILTER=False)
     def test_educonnect_redirects_to_error_page_too_young(self, mock_get_educonnect_user, client, app):
         user, request_id = self.connect_to_educonnect(client, app)
         age = 14
@@ -356,7 +326,6 @@ class EduconnectTest:
         )
 
     @patch("pcapi.connectors.beneficiaries.educonnect.educonnect_connector.get_educonnect_user")
-    @override_features(ENABLE_INE_WHITELIST_FILTER=False)
     @freezegun.freeze_time("2021-12-21")
     def test_educonnect_redirects_to_error_page_18_years_old(self, mock_get_educonnect_user, client, app):
         user, request_id = self.connect_to_educonnect(client, app)
@@ -379,7 +348,6 @@ class EduconnectTest:
 
     @patch("pcapi.connectors.beneficiaries.educonnect.educonnect_connector.get_educonnect_user")
     @freezegun.freeze_time("2021-12-21")
-    @override_features(ENABLE_INE_WHITELIST_FILTER=False)
     def test_educonnect_redirects_to_error_page_too_old(self, mock_get_educonnect_user, client, app):
         user, request_id = self.connect_to_educonnect(client, app)
         age = 20
@@ -400,7 +368,6 @@ class EduconnectTest:
         )
 
     @patch("pcapi.connectors.beneficiaries.educonnect.educonnect_connector.get_educonnect_user")
-    @override_features(ENABLE_INE_WHITELIST_FILTER=False)
     def test_educonnect_connection_synchronizes_data(self, mock_get_educonnect_user, client, app):
         user, request_id = self.connect_to_educonnect(client, app)
         age = 15
@@ -425,40 +392,6 @@ class EduconnectTest:
             datetime.date.today() - relativedelta(years=age, months=1), datetime.time(0, 0)
         )
 
-    @patch("pcapi.connectors.beneficiaries.educonnect.educonnect_connector.get_educonnect_user")
-    def test_educonnect_ine_not_whitelisted(self, mock_get_educonnect_user, client, app):
-        user, request_id = self.connect_to_educonnect(client, app)
-        mock_get_educonnect_user.return_value = users_factories.EduconnectUserFactory(
-            saml_request_id=request_id, ine_hash="identifiantNonWhitlisté"
-        )
-
-        response = client.post("/saml/acs", form={"SAMLResponse": "encrypted_data"})
-
-        assert response.status_code == 302
-        assert response.location == (
-            "https://webapp-v2.example.com/educonnect/erreur?code=UserNotWhitelisted&logoutUrl=https%3A%2F%2Feduconnect.education.gouv.fr%2FLogout"
-        )
-        assert len(user.subscriptionMessages) == 1
-        assert (
-            user.subscriptionMessages[0].userMessage
-            == "Tu ne fais pas partie de la phase de test. Encore un peu de patience, on se donne rendez-vous en janvier."
-        )
-
-    @override_features(ENABLE_INE_WHITELIST_FILTER=False)
-    @patch("pcapi.connectors.beneficiaries.educonnect.educonnect_connector.get_educonnect_user")
-    def test_educonnect_ine_whitelist_filter_off(self, mock_get_educonnect_user, client, app):
-        user, request_id = self.connect_to_educonnect(client, app)
-        mock_get_educonnect_user.return_value = users_factories.EduconnectUserFactory(
-            saml_request_id=request_id, ine_hash="identifiantNonWhitlisté"
-        )
-
-        response = client.post("/saml/acs", form={"SAMLResponse": "encrypted_data"})
-
-        assert response.status_code == 302
-        assert response.location.startswith("https://webapp-v2.example.com/educonnect/validation")
-        assert user.is_beneficiary
-
-    @override_features(ENABLE_INE_WHITELIST_FILTER=False)
     @patch("pcapi.connectors.beneficiaries.educonnect.educonnect_connector.get_educonnect_user")
     def test_educonnect_not_eligible_fails_twice(self, mock_get_educonnect_user, client, app):
         user, request_id = self.connect_to_educonnect(client, app)
@@ -500,7 +433,6 @@ class EduconnectTest:
 
 class PerformanceTest:
     @override_settings(IS_PERFORMANCE_TESTS=True)
-    @override_features(ENABLE_INE_WHITELIST_FILTER=False)
     def test_performance_tests(self, client):
         user = users_factories.UserFactory(dateOfBirth=datetime.date.today() - relativedelta(years=15))
 
