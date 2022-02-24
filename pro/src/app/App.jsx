@@ -61,7 +61,7 @@ export const App = props => {
     return <RedirectToMaintenance />
   }
 
-  if (!isReady) {
+  if (!isReady || !isUserInitialized) {
     return (
       <main className="spinner-container">
         <Spinner />
