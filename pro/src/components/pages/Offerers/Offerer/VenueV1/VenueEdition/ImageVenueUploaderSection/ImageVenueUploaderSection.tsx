@@ -1,5 +1,6 @@
 import React, { useCallback, useState, FunctionComponent } from 'react'
 
+import useActiveFeature from 'components/hooks/useActiveFeature'
 import Icon from 'components/layout/Icon'
 import { useModal } from 'hooks/useModal'
 import DialogBox from 'new_components/DialogBox'
@@ -47,6 +48,11 @@ export const ImageVenueUploaderSection: FunctionComponent<Props> = ({
     setImageUniqueURL(`${url}?${Math.random()}`)
   }, [])
 
+  // @TODO: remove this commit with PC-13132
+  const shouldDisplayImageVenueDeletion = useActiveFeature(
+    'PRO_ENABLE_UPLOAD_VENUE_IMAGE'
+  )
+
   return (
     <section
       className={
@@ -83,13 +89,15 @@ export const ImageVenueUploaderSection: FunctionComponent<Props> = ({
               />
               Prévisualiser
             </Button>
-            <Button onClick={showDeleteModal} variant={ButtonVariant.TERNARY}>
-              <Icon
-                className={styles['image-venue-uploader-section-icon']}
-                svg="ico-trash-filled"
-              />
-              Supprimer
-            </Button>
+            {shouldDisplayImageVenueDeletion && (
+              <Button onClick={showDeleteModal} variant={ButtonVariant.TERNARY}>
+                <Icon
+                  className={styles['image-venue-uploader-section-icon']}
+                  svg="ico-trash-filled"
+                />
+                Supprimer
+              </Button>
+            )}
           </div>
         </div>
       ) : (
