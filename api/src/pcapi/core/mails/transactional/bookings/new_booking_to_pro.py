@@ -1,5 +1,6 @@
 from pcapi.core import mails
 from pcapi.core.bookings.models import IndividualBooking
+from pcapi.core.mails.models.sendinblue_models import EmailInfo
 from pcapi.core.mails.models.sendinblue_models import SendinblueTransactionalEmailData
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.models.feature import FeatureToggle
@@ -40,6 +41,10 @@ def get_new_booking_to_pro_email_data(
         is_booking_autovalidated = False
 
     data = SendinblueTransactionalEmailData(
+        reply_to=EmailInfo(
+            email=individual_booking.user.email,
+            name=f"{individual_booking.user.firstName} {individual_booking.user.lastName}",
+        ),
         template=TransactionalEmail.NEW_BOOKING_TO_PRO.value,
         params={
             "OFFER_NAME": offer.name,

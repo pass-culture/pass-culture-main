@@ -41,6 +41,34 @@ class TransactionalEmailWithTemplateTest:
         assert mock_send_transac_email.call_args[0][0].template_id == TransactionalEmail.EMAIL_CONFIRMATION.value.id
         assert mock_send_transac_email.call_args[0][0].to == [{"email": "avery.kelly@woobmail.com"}]
         assert mock_send_transac_email.call_args[0][0].tags is None
+        assert mock_send_transac_email.call_args[0][0].reply_to == {
+            "email": "support@example.com",
+            "name": "pass Culture",
+        }
+
+    @patch(
+        "pcapi.core.mails.transactional.send_transactional_email.sib_api_v3_sdk.api.TransactionalEmailsApi.send_transac_email"
+    )
+    def test_send_transactional_email_with_reply_to_success(self, mock_send_transac_email):
+        payload = SendTransactionalEmailRequest(
+            sender={"email": "support@example.com", "name": "pass Culture"},
+            recipients=["avery.kelly@woobmail.com"],
+            template_id=TransactionalEmail.EMAIL_CONFIRMATION.value.id,
+            params={"name": "Avery"},
+            reply_to={"email": "reply@example.com", "name": "reply"},
+        )
+        send_transactional_email(payload)
+
+        mock_send_transac_email.assert_called_once()
+        assert mock_send_transac_email.call_args[0][0].sender == {
+            "email": "support@example.com",
+            "name": "pass Culture",
+        }
+        assert mock_send_transac_email.call_args[0][0].params == {"name": "Avery"}
+        assert mock_send_transac_email.call_args[0][0].template_id == TransactionalEmail.EMAIL_CONFIRMATION.value.id
+        assert mock_send_transac_email.call_args[0][0].to == [{"email": "avery.kelly@woobmail.com"}]
+        assert mock_send_transac_email.call_args[0][0].tags is None
+        assert mock_send_transac_email.call_args[0][0].reply_to == {"email": "reply@example.com", "name": "reply"}
 
     @patch(
         "pcapi.core.mails.transactional.send_transactional_email.sib_api_v3_sdk.api.TransactionalEmailsApi.send_transac_email"
@@ -104,6 +132,10 @@ class TransactionalEmailWithoutTemplateTest:
         assert mock_send_transac_email.call_args[0][0].html_content == "Bonjour"
         assert mock_send_transac_email.call_args[0][0].to == [{"email": "avery.kelly@woobmail.com"}]
         assert mock_send_transac_email.call_args[0][0].tags is None
+        assert mock_send_transac_email.call_args[0][0].reply_to == {
+            "email": "support@example.com",
+            "name": "pass Culture",
+        }
 
     @patch(
         "pcapi.core.mails.transactional.send_transactional_email.sib_api_v3_sdk.api.TransactionalEmailsApi.send_transac_email"

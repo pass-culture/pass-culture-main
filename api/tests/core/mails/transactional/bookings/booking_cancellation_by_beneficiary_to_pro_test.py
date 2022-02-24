@@ -1,3 +1,4 @@
+from dataclasses import asdict
 from datetime import datetime
 
 import pytest
@@ -18,7 +19,12 @@ class SendBeneficiaryUserDrivenCancellationEmailToOffererTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_send_booking_cancellation_email_to_offerer(self):
         # Given
-        booking = bookings_factories.IndividualBookingFactory(stock__offer__bookingEmail="booking@example.com")
+        booking = bookings_factories.IndividualBookingFactory(
+            individualBooking__user__email="user@example.com",
+            individualBooking__user__firstName="Guy",
+            individualBooking__user__lastName="G.",
+            stock__offer__bookingEmail="booking@example.com",
+        )
 
         # When
         send_booking_cancellation_by_beneficiary_to_pro_email(booking)
@@ -26,10 +32,10 @@ class SendBeneficiaryUserDrivenCancellationEmailToOffererTest:
         # Then
         assert len(mails_testing.outbox) == 1  # test number of emails sent
         assert mails_testing.outbox[0].sent_data["To"] == "booking@example.com"
-        assert (
-            mails_testing.outbox[0].sent_data["template"]
-            == TransactionalEmail.BOOKING_CANCELLATION_BY_BENEFICIARY_TO_PRO.value.__dict__
+        assert mails_testing.outbox[0].sent_data["template"] == asdict(
+            TransactionalEmail.BOOKING_CANCELLATION_BY_BENEFICIARY_TO_PRO.value
         )
+        assert mails_testing.outbox[0].sent_data["reply_to"] == {"email": "user@example.com", "name": "Guy G."}
 
 
 class MakeOffererBookingRecapEmailAfterUserCancellationTest:

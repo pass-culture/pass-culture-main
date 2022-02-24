@@ -1,5 +1,6 @@
 from pcapi.core import mails
 from pcapi.core.bookings.models import Booking
+from pcapi.core.mails.models.sendinblue_models import EmailInfo
 from pcapi.core.mails.models.sendinblue_models import SendinblueTransactionalEmailData
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.utils.mailing import format_booking_date_for_email
@@ -22,6 +23,7 @@ def get_booking_cancellation_by_beneficiary_to_pro_email_data(booking: Booking) 
             "USER_NAME": f"{booking.firstName} {booking.lastName}",
             "USER_EMAIL": booking.email,
         },
+        reply_to=EmailInfo(email=booking.email, name=f"{booking.firstName} {booking.lastName}"),
     )
 
 
