@@ -23,17 +23,8 @@ const renderApp = async ({ props, store, waitDomReady = true }) => {
     </Provider>
   )
   if (waitDomReady) {
-    // const spinner = await screen.getByText('Sub component', { exact: false })
-    // await waitFor(() => {
-    //   expect(spinner).not.toBeInTheDocument()
-    // })
     await screen.findByText('Sub component')
   }
-
-  // await waitFor(() => {
-  //   expect(screen.getByText('Chargement en cours', { exact: false })).not.toBeInTheDocument()
-  // })
-
   return Promise.resolve(rtlReturns)
 }
 
