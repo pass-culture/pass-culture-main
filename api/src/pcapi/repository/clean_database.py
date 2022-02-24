@@ -23,6 +23,7 @@ from pcapi.core.fraud.models import BeneficiaryFraudReview
 from pcapi.core.mails.models.models import Email
 from pcapi.core.offerers.models import ApiKey
 from pcapi.core.offerers.models import Offerer
+from pcapi.core.offerers.models import OffererTag
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offerers.models import VenueLabel
 from pcapi.core.offerers.models import VenueType
@@ -101,6 +102,7 @@ def clean_all_database(*args, **kwargs):
     UserOfferer.query.delete()
     ApiKey.query.delete()
     Offerer.query.delete()
+    OffererTag.query.delete()
     Recredit.query.delete()
     Deposit.query.delete()
     BeneficiaryImportStatus.query.delete()

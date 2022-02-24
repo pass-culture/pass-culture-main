@@ -1,6 +1,7 @@
 from wtforms.fields.core import StringField
 from wtforms.form import Form
 from wtforms.validators import DataRequired
+from wtforms.validators import Length
 from wtforms.validators import Regexp
 
 from pcapi.admin.base_configuration import BaseAdminView
@@ -32,6 +33,7 @@ class CriteriaView(BaseAdminView):
             [
                 DataRequired(),
                 Regexp(CRITERION_NAME_REGEX, message="Le nom ne doit contenir aucun caractère d'espacement"),
+                Length(max=140, message="Le nom d'un tag ne peut excéder 140 caractères"),
             ],
         )
         return form
