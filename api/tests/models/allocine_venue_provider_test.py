@@ -1,10 +1,10 @@
 import pytest
 
 from pcapi.core.offers.factories import VenueFactory
+from pcapi.core.providers.api import activate_provider
 import pcapi.core.providers.factories as providers_factories
 from pcapi.core.providers.models import AllocineVenueProvider
 from pcapi.core.providers.models import VenueProvider
-from pcapi.model_creators.provider_creators import activate_provider
 
 
 class AllocineVenueProviderTest:
