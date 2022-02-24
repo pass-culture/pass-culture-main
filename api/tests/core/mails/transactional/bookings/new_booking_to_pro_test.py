@@ -334,6 +334,9 @@ class SendNewBookingEmailToProTest:
     @pytest.mark.usefixtures("db_session")
     def test_send_to_offerer(self):
         booking = bookings_factories.IndividualBookingFactory(
+            individualBooking__user__email="user@example.com",
+            individualBooking__user__firstName="Tom",
+            individualBooking__user__lastName="P",
             stock__offer__bookingEmail="booking.email@example.com",
         )
 
@@ -342,3 +345,7 @@ class SendNewBookingEmailToProTest:
         assert len(mails_testing.outbox) == 1  # test number of emails sent
         assert mails_testing.outbox[0].sent_data["To"] == "booking.email@example.com"
         assert mails_testing.outbox[0].sent_data["template"] == asdict(TransactionalEmail.NEW_BOOKING_TO_PRO.value)
+        assert mails_testing.outbox[0].sent_data["reply_to"] == {
+            "email": "user@example.com",
+            "name": "Tom P",
+        }
