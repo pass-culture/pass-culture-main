@@ -79,7 +79,7 @@ export const ImageVenueUploaderSection: FunctionComponent<Props> = ({
             <Button onClick={showPreviewModal} variant={ButtonVariant.TERNARY}>
               <Icon
                 className={styles['image-venue-uploader-section-icon']}
-                svg="ico-eye-open-filled"
+                svg="ico-eye-open-filled-black"
               />
               Prévisualiser
             </Button>

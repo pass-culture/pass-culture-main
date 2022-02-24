@@ -29,6 +29,7 @@ import VenueLabel from '../ValueObjects/VenueLabel'
 import VenueType from '../ValueObjects/VenueType'
 
 import DeleteBusinessUnitConfirmationDialog from './DeleteBusinessUnitConfirmationDialog/DeleteBusinessUnitConfirmationDialog'
+import { DisplayVenueInAppLink } from './DisplayVenueInAppLink'
 import { ImageVenueUploaderSection } from './ImageVenueUploaderSection/ImageVenueUploaderSection'
 import VenueProvidersManager from './VenueProvidersManager'
 
@@ -330,6 +331,12 @@ const VenueEdition = ({
         <Icon svg="ico-back" />
         Accueil
       </NavLink>
+      {venue.isPermanent && (
+        <DisplayVenueInAppLink
+          className="venue-page-view-venue-cta"
+          nonHumanizedId={venue.nonHumanizedId}
+        />
+      )}
       {venue.businessUnit && !venue.businessUnit.siret && (
         <Banner
           className="banner-invalid-bu"

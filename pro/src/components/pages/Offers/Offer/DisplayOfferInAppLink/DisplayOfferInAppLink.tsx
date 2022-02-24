@@ -5,6 +5,7 @@ import { WEBAPP_URL } from 'utils/config'
 
 type Props = {
   nonHumanizedId: number
+  children?: never
 }
 
 export const DisplayOfferInAppLink: FunctionComponent<Props> = ({
