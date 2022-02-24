@@ -32,8 +32,8 @@ const BOOKING_STATUS_DISPLAY_INFORMATIONS = [
   },
   {
     id: BOOKING_STATUS.PENDING,
-    status: 'pré-réservé',
-    label: 'Pré-réservé (scolaire)',
+    status: 'préréservé',
+    label: 'Préréservé (scolaire)',
     historyClassName: 'bs-history-pending',
     statusClassName: 'booking-status-pending',
     dateFormat: FORMAT_DD_MM_YYYY_HH_mm,

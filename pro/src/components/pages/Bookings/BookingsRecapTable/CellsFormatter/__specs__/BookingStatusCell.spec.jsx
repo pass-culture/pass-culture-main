@@ -91,7 +91,7 @@ describe('bookings | bookingsStatusCell', () => {
     renderBookingStatusCell(props)
 
     // Then
-    const title = screen.getByText('pré-réservé', { selector: 'span' })
+    const title = screen.getByText('préréservé', { selector: 'span' })
     expect(title).toBeInTheDocument()
   })
 
