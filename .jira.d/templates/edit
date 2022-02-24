@@ -2,7 +2,7 @@
 update:
   {{if .overrides.customfield_10045 }}
   customfield_10045:
-    - set: "{{ .overrides.customfield_10045 }}"
+    - set: {{ .overrides.customfield_10045 }}
   {{- end -}}
   {{if .overrides.customfield_10044 }}
   customfield_10044:
