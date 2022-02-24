@@ -28,8 +28,8 @@ def dms_webhook_update_application_status(form: dms_validation.DMSWebhookRequest
     raw_data = client.get_single_application_details(form.dossier_id)
 
     user_email = raw_data["dossier"]["usager"]["email"]
-    application_id = raw_data["dossier"]["number"]
-    dossier_id = raw_data["dossier"]["id"]
+    application_id = raw_data["dossier"]["number"]  # This is the id we use in our API to identify DMS applications
+    dossier_id = raw_data["dossier"]["id"]  # This is only used to get data from DMS (not used in our API)
 
     log_extra_data = {
         "application_id": application_id,
@@ -74,7 +74,7 @@ def dms_webhook_update_application_status(form: dms_validation.DMSWebhookRequest
         dms_api.on_dms_parsing_error(user, application_id, parsing_error, extra_data=log_extra_data)
         return
 
-    dms_subscription_api.handle_dms_state(user, application, form.procedure_id, form.dossier_id, form.state)
+    dms_subscription_api.handle_dms_state(user, application, form.procedure_id, application_id, form.state)
 
 
 @public_api.route("/webhooks/ubble/application_status", methods=["POST"])
