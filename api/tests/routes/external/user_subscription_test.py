@@ -159,9 +159,7 @@ class DmsWebhookApplicationTest:
     @patch.object(api_dms.DMSGraphQLClient, "execute_query")
     def test_dms_request_refused_application(self, execute_query, client):
         user = users_factories.UserFactory()
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user, type=fraud_models.FraudCheckType.DMS, thirdPartyId="6044787"
-        )
+        fraud_factories.BeneficiaryFraudCheckFactory(user=user, type=fraud_models.FraudCheckType.DMS, thirdPartyId="12")
         execute_query.return_value = make_single_application(12, state="closed", email=user.email)
 
         form_data = {
@@ -383,6 +381,52 @@ class DmsWebhookApplicationTest:
         assert user.beneficiaryFraudChecks[0].eligibilityType == users_models.EligibilityType.AGE18
 
         assert fraud_api.has_user_performed_identity_check(user)
+
+    @patch.object(api_dms.DMSGraphQLClient, "execute_query")
+    @patch.object(api_dms.DMSGraphQLClient, "send_user_message")
+    def test_dms_parsing_error_then_corrected(self, send_user_message, execute_query, client):
+        user = users_factories.UserFactory()
+        execute_query.return_value = make_single_application(
+            12,
+            state=api_dms.GraphQLApplicationStates.draft.value,
+            email=user.email,
+            id_piece_number="error_identity_piece_number",
+        )
+        form_data = {
+            "procedure_id": 48860,
+            "dossier_id": 6044787,
+            "state": api_dms.GraphQLApplicationStates.on_going.value,
+            "updated_at": "2021-09-30 17:55:58 +0200",
+        }
+
+        # First DMS webhook call: draft with value errors
+        response = client.post(
+            f"/webhooks/dms/application_status?token={settings.DMS_WEBHOOK_TOKEN}",
+            form=form_data,
+            headers={"Content-Type": "application/x-www-form-urlencoded"},
+        )
+        fraud_check = user.beneficiaryFraudChecks[0]
+
+        assert response.status_code == 204
+        assert execute_query.call_count == 1
+        assert fraud_check.type == fraud_models.FraudCheckType.DMS
+        assert fraud_check.status == fraud_models.FraudCheckStatus.STARTED
+        assert fraud_check.reasonCodes == [fraud_models.FraudReasonCode.ERROR_IN_DATA]
+        # assert fraud_check.reason == "Some stuff went wrong"
+
+        # Second DMS webhook call: on_going with no value errors
+        execute_query.return_value = make_single_application(
+            12, state=api_dms.GraphQLApplicationStates.on_going.value, email=user.email
+        )
+        response = client.post(
+            f"/webhooks/dms/application_status?token={settings.DMS_WEBHOOK_TOKEN}",
+            form=form_data,
+            headers={"Content-Type": "application/x-www-form-urlencoded"},
+        )
+        assert response.status_code == 204
+        assert execute_query.call_count == 2
+        assert fraud_check.type == fraud_models.FraudCheckType.DMS
+        assert fraud_check.status == fraud_models.FraudCheckStatus.PENDING
 
 
 @pytest.mark.usefixtures("db_session")
