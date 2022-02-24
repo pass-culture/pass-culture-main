@@ -1,6 +1,5 @@
 """ config """
 import base64
-import datetime
 import json
 from logging import INFO as LOG_LEVEL_INFO
 import os
@@ -352,20 +351,6 @@ PERMISSIONS = base64.b64decode(os.environ.get("PERMISSIONS", "")).decode("utf-8"
 # EMAIL UPDATES
 MAX_EMAIL_UPDATE_ATTEMPTS = int(os.environ.get("MAX_EMAIL_UPDATE_ATTEMPTS", 2))
 EMAIL_UPDATE_ATTEMPTS_TTL = int(os.environ.get("EMAIL_UPDATE_ATTEMPTS_TTL", 24 * 60 * 60 * 7))
-
-# UNDERAGE_GENERALISATION_DATES
-UNDERAGE_BROAD_OPENING_DATETIME = datetime.datetime.strptime(
-    (os.environ.get("UNDERAGE_BROAD_OPENING_DATETIME", "31/01/2022")), "%d/%m/%Y"
-)
-UNDERAGE_EARLY_OPENING_DATETIME = datetime.datetime.strptime(
-    (os.environ.get("UNDERAGE_EARLY_OPENING_DATETIME", "03/01/2022")), "%d/%m/%Y"
-)
-UNDERAGE_16_YO_OPENING_DATETIME = datetime.datetime.strptime(
-    (os.environ.get("UNDERAGE_16_YO_OPENING_DATETIME", "20/01/2022")), "%d/%m/%Y"
-)
-UNDERAGE_17_YO_OPENING_DATETIME = datetime.datetime.strptime(
-    (os.environ.get("UNDERAGE_17_YO_OPENING_DATETIME", "10/01/2022")), "%d/%m/%Y"
-)
 
 
 # SOON EXPIRING BOOKINGS NOTIFICATIONS
