@@ -3,7 +3,6 @@ from datetime import datetime
 from datetime import timedelta
 from decimal import Decimal
 from typing import Optional
-from unittest.mock import patch
 
 from dateutil.relativedelta import relativedelta
 from freezegun import freeze_time
@@ -33,7 +32,6 @@ from pcapi.core.users.api import fulfill_beneficiary_data
 from pcapi.core.users.api import generate_and_save_token
 from pcapi.core.users.api import get_domains_credit
 from pcapi.core.users.api import get_eligibility_at_date
-from pcapi.core.users.api import get_eligibility_start_datetime
 from pcapi.core.users.api import set_pro_tuto_as_seen
 from pcapi.core.users.constants import SuspensionEventType
 from pcapi.core.users.factories import UserFactory
@@ -885,85 +883,7 @@ class UpdateUserLastConnectionDateTest:
         assert len(sendinblue_testing.sendinblue_requests) == 0
 
 
-class EligibilityStartDateTest:
-    @override_settings(
-        UNDERAGE_BROAD_OPENING_DATETIME=datetime(2022, 1, 31),
-        UNDERAGE_EARLY_OPENING_DATETIME=datetime(2022, 1, 3),
-        UNDERAGE_16_YO_OPENING_DATETIME=datetime(2022, 1, 20),
-        UNDERAGE_17_YO_OPENING_DATETIME=datetime(2022, 1, 10),
-    )
-    @patch(
-        "pcapi.core.users.constants.UNDERAGE_OPENING_DATETIMES_BY_AGE",
-        {15: datetime(2022, 1, 31), 16: datetime(2022, 1, 20), 17: datetime(2022, 1, 10)},
-    )
-    @pytest.mark.parametrize(
-        "date_of_birth,expected_date",
-        [
-            (datetime(2007, 6, 6), datetime(2022, 6, 6)),  # 15 years old on 2O22/6/6
-            (datetime(2007, 1, 10), datetime(2022, 1, 31)),  # 15 years old on 2022/1/10
-            (datetime(2007, 1, 1), datetime(2022, 1, 31)),  # 15 years old on 2O22/1/1
-            (datetime(2006, 1, 25), datetime(2022, 1, 3)),  # 16 years old on 2O22/1/25
-            (datetime(2005, 10, 1), datetime(2022, 1, 20)),  # 16 years old on 2O21/10/1
-            (datetime(2005, 1, 8), datetime(2022, 1, 3)),  # 17 years old on 2O22/1/8
-            (datetime(2004, 8, 8), datetime(2022, 1, 10)),  # 17 years old on 2O21/8/8
-            (datetime(2003, 12, 1), datetime(2021, 12, 1)),  # 18 years old on 2021/12/1
-            (datetime(2003, 1, 10), datetime(2021, 1, 10)),  # 19 years old on 2022/1/10
-        ],
-    )
-    def test_eligibility_start_datetime_generalisation(self, date_of_birth, expected_date):
-        assert get_eligibility_start_datetime(date_of_birth) == expected_date
-
-    @override_settings(
-        UNDERAGE_BROAD_OPENING_DATETIME=datetime(2022, 1, 31),
-        UNDERAGE_EARLY_OPENING_DATETIME=datetime(2022, 1, 3),
-        UNDERAGE_16_YO_OPENING_DATETIME=datetime(2022, 1, 20),
-        UNDERAGE_17_YO_OPENING_DATETIME=datetime(2022, 1, 10),
-    )
-    @patch(
-        "pcapi.core.users.constants.UNDERAGE_OPENING_DATETIMES_BY_AGE",
-        {15: datetime(2022, 1, 31), 16: datetime(2022, 1, 20), 17: datetime(2022, 1, 10)},
-    )
-    @freeze_time("2021-01-09")
-    def test_eligibility_start_datetime_during_generalisation(self):
-        assert get_eligibility_start_datetime(datetime(2004, 1, 8)) == datetime(2022, 1, 3)
-
-
 class GetEligibilityTest:
-    @override_settings(
-        UNDERAGE_BROAD_OPENING_DATETIME=datetime(2022, 1, 31),
-        UNDERAGE_EARLY_OPENING_DATETIME=datetime(2022, 1, 3),
-        UNDERAGE_16_YO_OPENING_DATETIME=datetime(2022, 1, 20),
-        UNDERAGE_17_YO_OPENING_DATETIME=datetime(2022, 1, 10),
-    )
-    @patch(
-        "pcapi.core.users.constants.UNDERAGE_OPENING_DATETIMES_BY_AGE",
-        {15: datetime(2022, 1, 31), 16: datetime(2022, 1, 20), 17: datetime(2022, 1, 10)},
-    )
-    @pytest.mark.parametrize(
-        "date_of_birth,specified_date,expected_eligibility",
-        [
-            (None, datetime(2022, 6, 6), None),
-            (datetime(2007, 6, 6), datetime(2022, 6, 6), EligibilityType.UNDERAGE),  # 15 years old on 2O22/6/6 at 15
-            (datetime(2007, 6, 6), datetime(2022, 6, 5), None),  # 15 years old on 2O22/6/6 before 15
-            (datetime(2007, 6, 6), datetime(2025, 6, 6), EligibilityType.AGE18),  # 15 years old on 2O22/6/6 at 18
-            (datetime(2007, 6, 6), datetime(2026, 6, 7), None),  # 15 years old on 2O22/6/6 at 19
-            (datetime(2007, 1, 10), datetime(2022, 1, 11), None),  # 15 years old on 2022/1/10 before opening
-            (
-                datetime(2007, 1, 10),
-                datetime(2022, 1, 31),
-                EligibilityType.UNDERAGE,
-            ),  # 15 years old on 2022/1/10 after opening
-            (datetime(2003, 12, 1), datetime(2021, 12, 1), EligibilityType.AGE18),  # 18 years old on 2021/12/1 at 18
-            (datetime(2003, 12, 1), datetime(2021, 11, 30), None),  # 18 years old on 2021/12/1 at 17
-        ],
-    )
-    def test_eligibility_at_date(self, date_of_birth, specified_date, expected_eligibility):
-        assert get_eligibility_at_date(date_of_birth, specified_date) == expected_eligibility
-
-    def test_eligibility_at_date_testing(self):
-        assert get_eligibility_at_date(datetime(2005, 12, 18), datetime(2021, 12, 13)) == EligibilityType.UNDERAGE
-        assert get_eligibility_at_date(datetime(2005, 12, 18), datetime(2021, 12, 12)) == None
-
     def test_get_eligibility_at_date_timezones_tolerance(self):
         date_of_birth = datetime(2000, 2, 1, 0, 0)
 

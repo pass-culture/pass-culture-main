@@ -1,8 +1,6 @@
 import datetime
 from enum import Enum
 
-from pcapi import settings
-
 
 RESET_PASSWORD_TOKEN_LIFE_TIME = datetime.timedelta(hours=24)
 RESET_PASSWORD_TOKEN_LIFE_TIME_EXTENDED = datetime.timedelta(days=30)
@@ -12,12 +10,6 @@ PHONE_VALIDATION_TOKEN_LIFE_TIME = datetime.timedelta(minutes=10)
 
 ELIGIBILITY_AGE_18 = 18
 ELIGIBILITY_UNDERAGE_RANGE = [15, 16, 17]
-
-UNDERAGE_OPENING_DATETIMES_BY_AGE = {
-    15: settings.UNDERAGE_BROAD_OPENING_DATETIME,
-    16: settings.UNDERAGE_16_YO_OPENING_DATETIME,
-    17: settings.UNDERAGE_17_YO_OPENING_DATETIME,
-}
 
 ACCOUNT_CREATION_MINIMUM_AGE = 15
 

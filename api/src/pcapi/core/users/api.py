@@ -821,27 +821,8 @@ def get_eligibility_start_datetime(date_of_birth: Optional[Union[date, datetime]
 
     date_of_birth = datetime.combine(date_of_birth, time(0, 0))
     fifteenth_birthday = date_of_birth + relativedelta(years=constants.ELIGIBILITY_UNDERAGE_RANGE[0])
-    sixteenth_birthday = date_of_birth + relativedelta(years=constants.ELIGIBILITY_UNDERAGE_RANGE[1])
-    seventeenth_birthday = date_of_birth + relativedelta(years=constants.ELIGIBILITY_UNDERAGE_RANGE[2])
-    eighteenth_birthday = date_of_birth + relativedelta(years=constants.ELIGIBILITY_AGE_18)
 
-    is_recredit_birthday_in_scaling_phase = any(
-        settings.UNDERAGE_EARLY_OPENING_DATETIME <= birthday < settings.UNDERAGE_BROAD_OPENING_DATETIME
-        for birthday in [sixteenth_birthday, seventeenth_birthday, eighteenth_birthday]
-    )
-
-    if is_recredit_birthday_in_scaling_phase:
-        # A scaling phase is planned where users will become eligible after UNDERAGE_OPENING_DATETIMES_BY_AGE
-        # However, as the legal opening day is on january 3rd 2022, if user's birthday happens between these dates, we let it enjoy a credit as soon as possible because otherwise it would not be given
-        return settings.UNDERAGE_EARLY_OPENING_DATETIME
-
-    for age, opening_date_at_age in constants.UNDERAGE_OPENING_DATETIMES_BY_AGE.items():
-        if users_utils.get_age_at_date(date_of_birth, opening_date_at_age) == age:
-            return opening_date_at_age
-
-    first_date_with_fifteen_after_opening = max(fifteenth_birthday, settings.UNDERAGE_BROAD_OPENING_DATETIME)
-
-    return min(first_date_with_fifteen_after_opening, eighteenth_birthday)
+    return fifteenth_birthday
 
 
 def get_eligibility_at_date(
