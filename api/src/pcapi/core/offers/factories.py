@@ -275,7 +275,7 @@ class CriterionFactory(BaseFactory):
     class Meta:
         model = Criterion
 
-    name = factory.Sequence("Criterion {}".format)
+    name = factory.Sequence("Criterion_{}".format)
 
 
 class OfferCriterionFactory(BaseFactory):
@@ -312,3 +312,18 @@ class OfferValidationConfigFactory(BaseFactory):
 
     user = factory.SubFactory(users_factories.UserFactory)
     specs = factory.LazyAttribute(lambda config: {"minimum_score": 0.1, "rules": []})
+
+
+class OffererTagFactory(BaseFactory):
+    class Meta:
+        model = offerers_models.OffererTag
+
+    name = factory.Sequence("OffererTag_{}".format)
+
+
+class OffererTagMappingFactory(BaseFactory):
+    class Meta:
+        model = offerers_models.OffererTagMapping
+
+    offerer = factory.SubFactory(OffererFactory)
+    tag = factory.SubFactory(OffererTagFactory)

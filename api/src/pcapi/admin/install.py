@@ -18,6 +18,7 @@ from pcapi.admin.custom_views.criteria_view import CriteriaView
 from pcapi.admin.custom_views.custom_reimbursement_rule_view import CustomReimbursementRuleView
 from pcapi.admin.custom_views.feature_view import FeatureView
 from pcapi.admin.custom_views.many_offers_operations_view import ManyOffersOperationsView
+from pcapi.admin.custom_views.offerer_tag_view import OffererTagView
 from pcapi.admin.custom_views.offerer_view import OffererView
 from pcapi.admin.custom_views.partner_user_view import PartnerUserView
 from pcapi.admin.custom_views.pro_user_view import ProUserView
@@ -90,6 +91,11 @@ def install_views(admin: Admin, session: Session) -> None:
     )
     admin.add_view(
         CriteriaView(Criterion, session, name="Tags des offres et des lieux", category=Category.OFFRES_STRUCTURES_LIEUX)
+    )
+    admin.add_view(
+        OffererTagView(
+            offerers_models.OffererTag, session, name="Tags des structures", category=Category.OFFRES_STRUCTURES_LIEUX
+        )
     )
     admin.add_view(
         OffererView(offerers_models.Offerer, session, name="Structures", category=Category.OFFRES_STRUCTURES_LIEUX)

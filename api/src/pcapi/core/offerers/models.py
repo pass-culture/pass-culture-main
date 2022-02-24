@@ -15,6 +15,7 @@ from sqlalchemy import Numeric
 from sqlalchemy import String
 from sqlalchemy import TEXT
 from sqlalchemy import Text
+from sqlalchemy import UniqueConstraint
 from sqlalchemy import and_
 from sqlalchemy import case
 from sqlalchemy import cast
@@ -431,6 +432,10 @@ class Offerer(
 
     dateValidated = Column(DateTime, nullable=True, default=None)
 
+    tags = sa.orm.relationship(
+        "OffererTag", backref=db.backref("offerer_tags", lazy="dynamic"), secondary="offerer_tag_mapping"
+    )
+
     thumb_path_component = "offerers"
 
     def grant_access(self, user):
@@ -543,3 +548,37 @@ class ApiKey(PcObject, Model):
 
     def check_secret(self, clear_text: str) -> bool:
         return crypto.check_password(clear_text, self.secret)
+
+
+class OffererTag(PcObject, Model):
+    """
+    Tags on offerers are only used in backoffice, set to help for filtering and analytics in metabase.
+    There is currently no display or impact in mobile and web apps.
+    """
+
+    __tablename__ = "offerer_tag"
+
+    name = Column(String(140), nullable=False, unique=True)
+
+    def __repr__(self):
+        return "%s" % self.name
+
+
+class OffererTagMapping(PcObject, Model):
+    __tablename__ = "offerer_tag_mapping"
+
+    offererId = Column(BigInteger, ForeignKey("offerer.id", ondelete="CASCADE"), index=True, nullable=False)
+
+    offerer = relationship("Offerer", foreign_keys=[offererId])
+
+    tagId = Column(BigInteger, ForeignKey("offerer_tag.id", ondelete="CASCADE"), index=True, nullable=False)
+
+    tag = relationship("OffererTag", foreign_keys=[tagId])
+
+    __table_args__ = (
+        UniqueConstraint(
+            "offererId",
+            "tagId",
+            name="unique_offerer_tag",
+        ),
+    )
