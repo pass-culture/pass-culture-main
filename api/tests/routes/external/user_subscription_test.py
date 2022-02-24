@@ -48,7 +48,9 @@ class DmsWebhookApplicationTest:
     @patch.object(api_dms.DMSGraphQLClient, "execute_query")
     def test_dms_request(self, execute_query, client):
         user = users_factories.UserFactory()
-        execute_query.return_value = make_single_application(12, state="closed", email=user.email)
+        execute_query.return_value = make_single_application(
+            12, state=api_dms.GraphQLApplicationStates.accepted, email=user.email
+        )
         form_data = {
             "procedure_id": 48860,
             "dossier_id": 6044787,
@@ -75,7 +77,7 @@ class DmsWebhookApplicationTest:
     )
     def test_dms_request_with_existing_user(self, execute_query, dms_status, fraud_check_status, client):
         user = users_factories.UserFactory()
-        execute_query.return_value = make_single_application(6044787, state="closed", email=user.email)
+        execute_query.return_value = make_single_application(6044787, state=dms_status.value, email=user.email)
         form_data = {
             "procedure_id": 48860,
             "dossier_id": 6044787,
@@ -102,7 +104,9 @@ class DmsWebhookApplicationTest:
     @patch.object(api_dms.DMSGraphQLClient, "execute_query")
     def test_dms_request_draft_application(self, execute_query, client):
         user = users_factories.UserFactory()
-        execute_query.return_value = make_single_application(12, state="closed", email=user.email)
+        execute_query.return_value = make_single_application(
+            12, state=api_dms.GraphQLApplicationStates.draft, email=user.email
+        )
 
         form_data = {
             "procedure_id": 48860,
@@ -131,7 +135,9 @@ class DmsWebhookApplicationTest:
     @patch.object(api_dms.DMSGraphQLClient, "execute_query")
     def test_dms_request_on_going_application(self, execute_query, client):
         user = users_factories.UserFactory()
-        execute_query.return_value = make_single_application(12, state="closed", email=user.email)
+        execute_query.return_value = make_single_application(
+            12, state=api_dms.GraphQLApplicationStates.on_going, email=user.email
+        )
 
         form_data = {
             "procedure_id": 48860,
@@ -160,11 +166,13 @@ class DmsWebhookApplicationTest:
     def test_dms_request_refused_application(self, execute_query, client):
         user = users_factories.UserFactory()
         fraud_factories.BeneficiaryFraudCheckFactory(user=user, type=fraud_models.FraudCheckType.DMS, thirdPartyId="12")
-        execute_query.return_value = make_single_application(12, state="closed", email=user.email)
+        execute_query.return_value = make_single_application(
+            12, state=api_dms.GraphQLApplicationStates.refused, email=user.email
+        )
 
         form_data = {
             "procedure_id": 48860,
-            "dossier_id": 6044787,
+            "dossier_id": 12,
             "state": api_dms.GraphQLApplicationStates.refused.value,
             "updated_at": "2021-09-30 17:55:58 +0200",
         }
