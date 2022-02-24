@@ -54,8 +54,7 @@ const VenueEdition = ({
     'ENFORCE_BANK_INFORMATION_WITH_SIRET'
   )
 
-  const shouldDisplayImageVenueUploaderSection =
-    useActiveFeature('PRO_ENABLE_UPLOAD_VENUE_IMAGE') && venue?.isPermanent
+  const shouldDisplayImageVenueUploaderSection = venue?.isPermanent
 
   useEffect(() => {
     function loadInitialData() {
