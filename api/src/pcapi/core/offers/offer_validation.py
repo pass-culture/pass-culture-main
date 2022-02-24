@@ -64,4 +64,6 @@ def compute_offer_validation_score(validation_items: list[OfferValidationRuleIte
     score = 1.0
     for validation_item in validation_items:
         score *= validation_item.resolve()
+        if score == 0:
+            break
     return score
