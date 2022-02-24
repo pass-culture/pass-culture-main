@@ -9,7 +9,6 @@ import pcapi.core.fraud.factories as fraud_factories
 import pcapi.core.fraud.models as fraud_models
 from pcapi.core.fraud.ubble import api as ubble_fraud_api
 import pcapi.core.fraud.ubble.models as ubble_fraud_models
-from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
 import pcapi.core.users.models as users_models
 
@@ -324,7 +323,6 @@ class EduconnectFraudTest:
         )
         assert not age_check
 
-    @override_features(ENABLE_NATIVE_EAC_INDIVIDUAL=True)
     def test_duplicates_fraud_checks(self):
         already_existing_user = users_factories.UnderageBeneficiaryFactory(subscription_age=15)
         user = users_factories.UserFactory()
@@ -347,7 +345,6 @@ class EduconnectFraudTest:
         assert f"Duplicat de l'utilisateur {already_existing_user.id}" in invalid_item.detail
         assert invalid_item.status == fraud_models.FraudStatus.SUSPICIOUS
 
-    @override_features(ENABLE_NATIVE_EAC_INDIVIDUAL=True)
     def test_same_user_is_not_duplicate(self):
         underage_user = users_factories.UnderageBeneficiaryFactory(subscription_age=15)
 
@@ -365,7 +362,6 @@ class EduconnectFraudTest:
 
         assert not any(fraud_item.reason_code == fraud_models.FraudReasonCode.DUPLICATE_USER for fraud_item in result)
 
-    @override_features(ENABLE_NATIVE_EAC_INDIVIDUAL=True)
     def test_ine_duplicates_fraud_checks(self):
         fraud_factories.IneHashWhitelistFactory(ine_hash="ylwavk71o3jiwyla83fxk5pcmmu0ws01")
         same_ine_user = users_factories.UnderageBeneficiaryFactory(ineHash="ylwavk71o3jiwyla83fxk5pcmmu0ws01")
@@ -388,7 +384,6 @@ class EduconnectFraudTest:
             == f"L'INE ylwavk71o3jiwyla83fxk5pcmmu0ws01 est déjà pris par l'utilisateur {same_ine_user.id}"
         )
 
-    @override_features(ENABLE_NATIVE_EAC_INDIVIDUAL=True)
     def test_ine_duplicates_fraud_checks_self_ine(self):
         fraud_factories.IneHashWhitelistFactory(ine_hash="ylwavk71o3jiwyla83fxk5pcmmu0ws01")
         user_in_validation = users_factories.UserFactory(ineHash="ylwavk71o3jiwyla83fxk5pcmmu0ws01")
@@ -409,7 +404,6 @@ class EduconnectFraudTest:
         )
         assert duplicate_ine_check is None
 
-    @override_features(ENABLE_NATIVE_EAC_INDIVIDUAL=True)
     def test_ine_whitelisted_fraud_checks_pass(self):
         user = users_factories.UserFactory()
         fraud_factories.IneHashWhitelistFactory(ine_hash="identifiantWhitelisté1")
@@ -430,7 +424,6 @@ class EduconnectFraudTest:
         )
         assert duplicate_ine_check is None
 
-    @override_features(ENABLE_NATIVE_EAC_INDIVIDUAL=True)
     def test_ine_whitelisted_fraud_checks_fail(self):
         user = users_factories.UserFactory()
         fraud_factories.IneHashWhitelistFactory(ine_hash="identifiantWhitelisté1")

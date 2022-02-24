@@ -154,7 +154,6 @@ def test_get_user_attributes_not_beneficiary():
     n_query += 1  # favorite
     n_query += 1  # is pro
     n_query += 1  # deposit
-    n_query += 1  # flags ENABLE_NATIVE_EAC_INDIVIDUAL
     n_query += 1  # fraud checks
 
     with assert_num_queries(n_query):
