@@ -58,9 +58,27 @@ describe('src | components | SirenField', () => {
 
       // when
       const errorMessage = await existsInINSEERegistry(siren)
+      console.log(errorMessage)
 
       // then
       expect(errorMessage).toBe("Ce SIREN n'est pas reconnu")
+    })
+
+    it('should return another error message when API returns a status code >=400 and != 404', async () => {
+      // given
+      const siren = '245474278'
+      fetch.mockResponseOnce(JSON.stringify({ message: 'Gateway timeout' }), {
+        status: 504,
+      })
+
+      // when
+      const errorMessage = await existsInINSEERegistry(siren)
+      console.log(errorMessage)
+
+      // then
+      expect(errorMessage).toBe(
+        'L’Annuaire public des Entreprises est indisponible. Veuillez réessayer plus tard.'
+      )
     })
 
     it('should check once for same SIREN called in INSEE registery', async () => {

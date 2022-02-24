@@ -2,9 +2,8 @@ export const getSirenInformation = async siren => {
   const sirenUrl = `https://entreprise.data.gouv.fr/api/sirene/v3/unites_legales/${siren}`
 
   const response = await fetch(sirenUrl)
-
   if (response.status === 404) return { error: 'SIREN invalide' }
-  if (response.status !== 200) return { error: 'Service indisponible' }
+  if (response.status >= 400) return { error: 'Service indisponible' }
 
   const unitéLégale = await response.json().then(body => body.unite_legale)
 
