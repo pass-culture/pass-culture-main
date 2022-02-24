@@ -241,19 +241,6 @@ def _duplicate_ine_hash_fraud_item(ine_hash: str, excluded_user_id: int) -> mode
     return models.FraudItem(status=models.FraudStatus.OK, detail="L'INE n'est pas déjà pris")
 
 
-def _whitelisted_ine_fraud_item(ine_hash: str) -> models.FraudItem:
-    is_ine_whitelisted = db.session.query(models.IneHashWhitelist.query.filter_by(ine_hash=ine_hash).exists()).scalar()
-
-    if not is_ine_whitelisted:
-        return models.FraudItem(
-            status=models.FraudStatus.SUSPICIOUS,
-            detail=f"L'INE {ine_hash} n'est pas whitelisté",
-            reason_code=models.FraudReasonCode.INE_NOT_WHITELISTED,
-        )
-
-    return models.FraudItem(status=models.FraudStatus.OK, detail="L'INE est whitelisté")
-
-
 def _check_user_has_no_active_deposit(
     user: users_models.User, eligibility: users_models.EligibilityType
 ) -> models.FraudItem:

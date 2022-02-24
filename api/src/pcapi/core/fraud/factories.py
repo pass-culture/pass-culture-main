@@ -206,15 +206,6 @@ class BeneficiaryFraudReviewFactory(testing.BaseFactory):
     reason = factory.Sequence("Fraud validation reason #{0}".format)
 
 
-### TODO: remove after 15-17 test phase ###
-class IneHashWhitelistFactory(testing.BaseFactory):
-    class Meta:
-        model = models.IneHashWhitelist
-
-
-### END ###
-
-
 class OrphanDmsApplicationFactory(testing.BaseFactory):
     class Meta:
         model = models.OrphanDmsApplication

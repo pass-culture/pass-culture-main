@@ -78,7 +78,6 @@ class EduconnectTest:
     def test_on_educonnect_authentication_response(self, mock_get_educonnect_saml_client, client, caplog, app):
         # set user_id in redis as if /saml/educonnect/login was called
         ine_hash = "5ba682c0fc6a05edf07cd8ed0219258f"
-        fraud_factories.IneHashWhitelistFactory(ine_hash=ine_hash)
         user = users_factories.UserFactory(email=self.email)
         app.redis_client.set(f"{self.request_id_key_prefix}{self.request_id}", user.id)
 
