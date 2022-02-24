@@ -31,7 +31,10 @@ const simpleMemoize = fn => {
 export const existsInINSEERegistry = simpleMemoize(async value => {
   value = removeWhitespaces(value)
   const sirenInformation = await getSirenInformation(value)
-  if (sirenInformation.error) return "Ce SIREN n'est pas reconnu"
+  if (sirenInformation.error === 'SIREN invalide')
+    return "Ce SIREN n'est pas reconnu"
+  if (sirenInformation.error === 'Service indisponible')
+    return 'L’Annuaire public des Entreprises est indisponible. Veuillez réessayer plus tard.'
   return undefined
 })
 
