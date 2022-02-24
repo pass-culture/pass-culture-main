@@ -406,18 +406,6 @@ def _venue_link(view, context, model, name) -> Markup:
     return link.format(url=escape(url), name=escape(model.venue.publicName or model.venue.name))
 
 
-def _compute_score(view, context, model, name) -> float:
-    # Cache the current offer validation config on the request.
-    # Otherwise we fetch it for *each* offer that is displayed...
-    try:
-        current_config = request._cached_offer_validation_config
-    except AttributeError:
-        current_config = offers_repository.get_current_offer_validation_config()
-        request._cached_offer_validation_config = current_config  # pylint: disable=assigning-non-slot
-    validation_items = parse_offer_validation_config(model, current_config)[1]
-    return compute_offer_validation_score(validation_items)
-
-
 class OfferValidationForm(SecureForm):
     validation = wtforms.SelectField(
         "validation",
@@ -438,7 +426,6 @@ class ValidationView(BaseAdminView):
         "validation",
         "venue",
         "offerer",
-        "score",
         "offer",
         "offers",
         "dateCreated",
@@ -454,7 +441,6 @@ class ValidationView(BaseAdminView):
         "offerer": "Structure",
         "offer": "Offre",
         "offers": "Offres",
-        "score": "Score",
         "metabase": "Metabase",
         "dateCreated": "Date de création",
         "isEducational": "Offre EAC",
@@ -469,7 +455,6 @@ class ValidationView(BaseAdminView):
     @property
     def column_formatters(self):
         formatters = super().column_formatters
-        formatters.update(score=_compute_score)
         formatters.update(offer=_pro_offer_link)
         formatters.update(offers=_related_offers_link)
         formatters.update(metabase=_metabase_offer_link)
@@ -482,8 +467,6 @@ class ValidationView(BaseAdminView):
             Offer.query.join(Venue)
             .join(Offerer)
             .options(sqla_orm.contains_eager(Offer.venue).contains_eager(Venue.managingOfferer))
-            # Load stocks because our offer validation config may look at them.
-            .options(sqla_orm.joinedload(Offer.stocks))
             .filter(Offerer.validationToken.is_(None))
             .filter(Offer.validation == OfferValidationStatus.PENDING)
         )
