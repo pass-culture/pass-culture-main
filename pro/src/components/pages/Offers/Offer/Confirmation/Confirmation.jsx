@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom'
 import useOfferEditionURL from 'components/hooks/useOfferEditionURL'
 import { ReactComponent as PendingIcon } from 'components/pages/Offers/Offer/Confirmation/assets/pending.svg'
 import { ReactComponent as ValidateIcon } from 'components/pages/Offers/Offer/Confirmation/assets/validate.svg'
-import OfferPreviewLink from 'components/pages/Offers/Offer/OfferPreviewLink/OfferPreviewLink'
+import { DisplayOfferInAppLink } from 'components/pages/Offers/Offer/DisplayOfferInAppLink'
 import { OFFER_STATUS_PENDING } from 'components/pages/Offers/Offers/_constants'
 import { queryParamsFromOfferer } from 'components/pages/Offers/utils/queryParamsFromOfferer'
 
@@ -57,7 +57,7 @@ const Confirmation = ({ isCreatingOffer, location, offer, setOffer }) => {
         </div>
       )}
       <div className="oc-actions">
-        <OfferPreviewLink nonHumanizedId={offer.nonHumanizedId} />
+        <DisplayOfferInAppLink nonHumanizedId={offer.nonHumanizedId} />
         <Link
           className="primary-link"
           onClick={resetOffer}
