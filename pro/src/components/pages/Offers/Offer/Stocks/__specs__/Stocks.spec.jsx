@@ -2152,6 +2152,30 @@ describe('stocks page', () => {
           expect(informationMessage).toHaveAttribute('aria-disabled', 'true')
         })
       })
+
+      it('should warn that pending booking will be canceled on thing offer stock deletion', async () => {
+        // Given
+        await renderOffers(props, store)
+
+        // When
+        userEvent.click(screen.getByTitle('Supprimer le stock'))
+
+        // Then
+        expect(
+          queryByTextTrimHtml(
+            screen,
+            'Ce stock ne sera plus disponible à la réservation et entraînera l’annulation des réservations en cours !'
+          )
+        ).toBeInTheDocument()
+        expect(
+          screen.getByText(
+            'entraînera l’annulation des réservations en cours !',
+            {
+              selector: 'strong',
+            }
+          )
+        ).toBeInTheDocument()
+      })
     })
   })
 

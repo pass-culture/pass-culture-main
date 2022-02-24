@@ -7,6 +7,7 @@ import * as pcapi from 'repository/pcapi/pcapi'
 import { ReactComponent as DeletionIcon } from './assets/deletion.svg'
 
 const DeleteStockDialog = ({
+  isEvent,
   notifyDeletionError,
   notifyDeletionSuccess,
   onDelete,
@@ -44,7 +45,8 @@ const DeleteStockDialog = ({
       <p>
         {'Ce stock ne sera plus disponible à la réservation et '}
         <strong>
-          entraînera l’annulation des réservations en cours et validées !
+          entraînera l’annulation des réservations en cours
+          {isEvent && ' et validées'} !
         </strong>
       </p>
       <p>
@@ -73,6 +75,7 @@ const DeleteStockDialog = ({
 }
 
 DeleteStockDialog.propTypes = {
+  isEvent: PropTypes.bool.isRequired,
   notifyDeletionError: PropTypes.func.isRequired,
   notifyDeletionSuccess: PropTypes.func.isRequired,
   onDelete: PropTypes.func.isRequired,
