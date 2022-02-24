@@ -4,7 +4,6 @@ import { useLocation } from 'react-router-dom'
 
 import CsvDetailViewContainer from 'components/layout/CsvTable/CsvTableContainer'
 import BookingsRecapContainer from 'components/pages/Bookings/BookingsRecapContainer'
-import DeskContainer from 'components/pages/Desk/DeskContainer'
 import Unavailable from 'components/pages/Errors/Unavailable/Unavailable'
 import Homepage from 'components/pages/Home/Homepage'
 import LostPasswordContainer from 'components/pages/LostPassword/LostPasswordContainer'
@@ -18,6 +17,7 @@ import SignIn from 'components/pages/SignIn/SignIn'
 import SignupContainer from 'components/pages/Signup/SignupContainer'
 import SignupValidationContainer from 'components/pages/Signup/SignupValidation/SignupValidationContainer'
 import StyleguideContainer from 'components/pages/Styleguide/StyleguideContainer'
+import Desk from 'routes/Desk'
 import OfferEducationalConfirmation from 'routes/OfferEducationalConfirmation'
 import OfferEducationalCreation from 'routes/OfferEducationalCreation'
 import OfferEducationalEdition from 'routes/OfferEducationalEdition'
@@ -38,12 +38,6 @@ export const routesWithMain = [
     component: RedirectToConnexionComponent,
     exact: true,
     path: '/',
-  },
-  {
-    component: DeskContainer,
-    exact: true,
-    path: '/guichet',
-    title: 'Guichet',
   },
   {
     component: SignupContainer,
@@ -113,6 +107,12 @@ const routes = [
     exact: true,
     path: '/accueil',
     title: 'Accueil',
+  },
+  {
+    component: Desk,
+    exact: true,
+    path: '/guichet',
+    title: 'Guichet',
   },
   {
     component: BookingsRecapContainer,
