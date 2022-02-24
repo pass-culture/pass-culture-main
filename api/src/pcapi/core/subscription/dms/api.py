@@ -371,7 +371,7 @@ def parse_and_handle_dms_application(
     raw_data = client.get_single_application_details(application_id)
 
     user_email = raw_data["dossier"]["usager"]["email"]
-    dossier_id = raw_data["dossier"]["id"]
+    dossier_id = raw_data["dossier"]["id"]  # This is only used to get data from DMS (not used in our API)
 
     log_extra_data = {
         "application_id": application_id,
