@@ -2,11 +2,7 @@
 
 .offer-details {
   white-space: pre-line;
-  &-title {
-    font-size: rem(20px);
-    font-weight: bold;
-    margin: rem(20px) 0;
-  }
+  margin-top: rem(20px);
 
   &-list {
     list-style: none;

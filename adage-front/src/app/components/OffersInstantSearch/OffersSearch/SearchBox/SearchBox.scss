@@ -17,6 +17,9 @@
     padding: rem(12px);
     padding-left: rem(46px);
     transition: none;
+    font-size: rem(15px);
+    font-family: 'Barlow';
+
     &::placeholder {
       font-style: italic;
     }
@@ -41,6 +44,8 @@
   padding: rem(12px);
   padding-left: rem(46px);
   transition: all 0.25s ease-in-out;
+  font-size: rem(15px);
+  font-family: 'Barlow';
 
   &::placeholder {
     font-style: italic;
