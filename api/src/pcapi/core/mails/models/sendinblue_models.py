@@ -6,15 +6,15 @@ from pcapi import settings
 
 
 @dataclasses.dataclass
-class SenderInfo:
+class EmailInfo:
     email: str
     name: str
 
 
 class SendinblueTransactionalSender(Enum):
-    SUPPORT = SenderInfo(settings.SUPPORT_EMAIL_ADDRESS, "pass Culture")
-    SUPPORT_PRO = SenderInfo(settings.SUPPORT_PRO_EMAIL_ADDRESS, "pass Culture")
-    COMPLIANCE = SenderInfo(settings.COMPLIANCE_EMAIL_ADDRESS, "pass Culture")
+    SUPPORT = EmailInfo(settings.SUPPORT_EMAIL_ADDRESS, "pass Culture")
+    SUPPORT_PRO = EmailInfo(settings.SUPPORT_PRO_EMAIL_ADDRESS, "pass Culture")
+    COMPLIANCE = EmailInfo(settings.COMPLIANCE_EMAIL_ADDRESS, "pass Culture")
 
 
 @dataclasses.dataclass
@@ -53,3 +53,4 @@ class TemplatePro(Template):
 class SendinblueTransactionalEmailData:
     template: Template
     params: dict = dataclasses.field(default_factory=dict)
+    reply_to: Optional[EmailInfo] = None

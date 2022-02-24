@@ -30,6 +30,7 @@ class SendinblueBackend(BaseBackend):
                 params=data.params,
                 tags=data.template.tags,
                 sender=asdict(data.template.sender.value),
+                reply_to=asdict(data.reply_to.value) if data.reply_to else None,
                 subject=None,
                 html_content=None,
                 attachment=None,
