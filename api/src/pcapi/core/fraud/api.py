@@ -6,6 +6,7 @@ import typing
 import pydantic
 import sqlalchemy
 
+from pcapi.core.fraud.utils import is_latin
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.users import constants
@@ -16,7 +17,6 @@ from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository import repository
 from pcapi.repository.user_queries import matching
-from pcapi.serialization.utils import is_latin
 
 from . import models
 from .common import models as common_models
@@ -299,7 +299,7 @@ def is_subscription_name_valid(name: typing.Optional[str]) -> bool:
     if not name:
         return False
     stripped_name = name.strip()
-    return bool(is_latin(name) and stripped_name)
+    return is_latin(stripped_name)
 
 
 def _check_user_names_valid(first_name: typing.Optional[str], last_name: typing.Optional[str]):
