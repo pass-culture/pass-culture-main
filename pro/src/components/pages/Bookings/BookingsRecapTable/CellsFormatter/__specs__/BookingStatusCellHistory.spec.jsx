@@ -42,7 +42,7 @@ describe('bookings status history cell', () => {
 
     // Then
     expect(
-      screen.getByText('Pré-réservé (scolaire) : 04/01/2020 20:31')
+      screen.getByText('Préréservé (scolaire) : 04/01/2020 20:31')
     ).toBeInTheDocument()
   })
 

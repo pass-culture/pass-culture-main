@@ -62,7 +62,7 @@ const PrebookingButton = ({
           {hasPrebookedOffer ? (
             <div className="prebooking-tag">
               <HourGlassIcon className="prebooking-tag-icon" />
-              Pré-réservé
+              Préréservé
             </div>
           ) : (
             <>
