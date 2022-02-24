@@ -219,7 +219,7 @@ class AccountTest:
         response = client.get("/native/v1/me")
         assert response.status_code == 200
 
-    @override_features(ENABLE_NATIVE_EAC_INDIVIDUAL=False, ALLOW_IDCHECK_REGISTRATION=False)
+    @override_features(ALLOW_IDCHECK_REGISTRATION=False)
     def test_maintenance_message(self, client):
         """
         Test that when a user has no subscription message and when the

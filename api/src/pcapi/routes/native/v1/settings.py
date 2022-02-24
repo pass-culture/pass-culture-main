@@ -26,7 +26,6 @@ def get_settings() -> serializers.SettingsResponse:
         FeatureToggle.DISPLAY_DMS_REDIRECTION,
         FeatureToggle.ENABLE_ID_CHECK_RETENTION,
         FeatureToggle.ENABLE_NATIVE_APP_RECAPTCHA,
-        FeatureToggle.ENABLE_NATIVE_EAC_INDIVIDUAL,
         FeatureToggle.ENABLE_NATIVE_ID_CHECK_VERBOSE_DEBUGGING,
         FeatureToggle.ENABLE_PHONE_VALIDATION,
         FeatureToggle.ID_CHECK_ADDRESS_AUTOCOMPLETION,
@@ -37,7 +36,8 @@ def get_settings() -> serializers.SettingsResponse:
         auto_activate_digital_bookings=features[FeatureToggle.AUTO_ACTIVATE_DIGITAL_BOOKINGS],
         display_dms_redirection=features[FeatureToggle.DISPLAY_DMS_REDIRECTION],
         enable_id_check_retention=features[FeatureToggle.ENABLE_ID_CHECK_RETENTION],
-        enable_native_eac_individual=features[FeatureToggle.ENABLE_NATIVE_EAC_INDIVIDUAL],
+        # TODO: lixxday: remove after the next forced app release (last forced release: 1.176.0)
+        enable_native_eac_individual=True,
         enable_native_id_check_verbose_debugging=features[FeatureToggle.ENABLE_NATIVE_ID_CHECK_VERBOSE_DEBUGGING],
         enable_phone_validation=features[FeatureToggle.ENABLE_PHONE_VALIDATION],
         # TODO: lixxday: remove after the next forced app release (last forced release: 1.176.0)

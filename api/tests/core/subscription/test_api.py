@@ -283,7 +283,6 @@ class NextSubscriptionStepTest:
             # Public schools -> force EDUCONNECT when possible
             (
                 {
-                    "ENABLE_NATIVE_EAC_INDIVIDUAL": True,
                     "ENABLE_EDUCONNECT_AUTHENTICATION": True,
                     "ALLOW_IDCHECK_UNDERAGE_REGISTRATION": True,
                     "ALLOW_IDCHECK_REGISTRATION_FOR_EDUCONNECT_ELIGIBLE": False,
@@ -294,7 +293,6 @@ class NextSubscriptionStepTest:
             ),
             (
                 {
-                    "ENABLE_NATIVE_EAC_INDIVIDUAL": True,
                     "ENABLE_EDUCONNECT_AUTHENTICATION": True,
                     "ALLOW_IDCHECK_UNDERAGE_REGISTRATION": True,
                     "ALLOW_IDCHECK_REGISTRATION_FOR_EDUCONNECT_ELIGIBLE": False,
@@ -305,7 +303,6 @@ class NextSubscriptionStepTest:
             ),
             (
                 {
-                    "ENABLE_NATIVE_EAC_INDIVIDUAL": True,
                     "ENABLE_EDUCONNECT_AUTHENTICATION": False,
                     "ALLOW_IDCHECK_UNDERAGE_REGISTRATION": True,
                     "ALLOW_IDCHECK_REGISTRATION_FOR_EDUCONNECT_ELIGIBLE": True,
@@ -317,7 +314,6 @@ class NextSubscriptionStepTest:
             ),
             (
                 {
-                    "ENABLE_NATIVE_EAC_INDIVIDUAL": True,
                     "ENABLE_EDUCONNECT_AUTHENTICATION": False,
                     "ALLOW_IDCHECK_UNDERAGE_REGISTRATION": True,
                     "ALLOW_IDCHECK_REGISTRATION_FOR_EDUCONNECT_ELIGIBLE": False,
@@ -329,7 +325,6 @@ class NextSubscriptionStepTest:
             # Other schools
             (
                 {
-                    "ENABLE_NATIVE_EAC_INDIVIDUAL": True,
                     "ENABLE_EDUCONNECT_AUTHENTICATION": True,
                     "ALLOW_IDCHECK_UNDERAGE_REGISTRATION": True,
                     "ENABLE_UBBLE": True,
@@ -340,7 +335,6 @@ class NextSubscriptionStepTest:
             ),
             (
                 {
-                    "ENABLE_NATIVE_EAC_INDIVIDUAL": True,
                     "ENABLE_EDUCONNECT_AUTHENTICATION": True,
                     "ALLOW_IDCHECK_UNDERAGE_REGISTRATION": False,
                     "ENABLE_UBBLE": True,
@@ -351,7 +345,6 @@ class NextSubscriptionStepTest:
             ),
             (
                 {
-                    "ENABLE_NATIVE_EAC_INDIVIDUAL": True,
                     "ENABLE_EDUCONNECT_AUTHENTICATION": False,
                     "ALLOW_IDCHECK_UNDERAGE_REGISTRATION": True,
                     "ENABLE_UBBLE": True,
@@ -362,21 +355,12 @@ class NextSubscriptionStepTest:
             ),
             (
                 {
-                    "ENABLE_NATIVE_EAC_INDIVIDUAL": True,
                     "ENABLE_EDUCONNECT_AUTHENTICATION": True,
                     "ALLOW_IDCHECK_UNDERAGE_REGISTRATION": False,
                 },
                 15,
                 None,
                 [subscription_models.IdentityCheckMethod.EDUCONNECT],
-            ),
-            (
-                {
-                    "ENABLE_NATIVE_EAC_INDIVIDUAL": False,
-                },
-                15,
-                None,
-                [],
             ),
         ],
     )

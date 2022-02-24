@@ -825,9 +825,6 @@ def get_eligibility_start_datetime(date_of_birth: Optional[Union[date, datetime]
     seventeenth_birthday = date_of_birth + relativedelta(years=constants.ELIGIBILITY_UNDERAGE_RANGE[2])
     eighteenth_birthday = date_of_birth + relativedelta(years=constants.ELIGIBILITY_AGE_18)
 
-    if not FeatureToggle.ENABLE_NATIVE_EAC_INDIVIDUAL.is_active():
-        return eighteenth_birthday
-
     is_recredit_birthday_in_scaling_phase = any(
         settings.UNDERAGE_EARLY_OPENING_DATETIME <= birthday < settings.UNDERAGE_BROAD_OPENING_DATETIME
         for birthday in [sixteenth_birthday, seventeenth_birthday, eighteenth_birthday]

@@ -8,7 +8,6 @@ from sqlalchemy import String
 from sqlalchemy import Text
 from sqlalchemy.sql import text
 
-from pcapi import settings
 from pcapi.models import Model
 from pcapi.models import db
 from pcapi.models.deactivable_mixin import DeactivableMixin
@@ -143,9 +142,6 @@ FEATURES_DISABLED_BY_DEFAULT = (
     FeatureToggle.ENABLE_EAC_SHOWCASE_OFFER,
     FeatureToggle.ENABLE_IOS_OFFERS_LINK_WITH_REDIRECTION,
 )
-
-if not settings.IS_DEV:
-    FEATURES_DISABLED_BY_DEFAULT += (FeatureToggle.ENABLE_NATIVE_EAC_INDIVIDUAL,)
 
 
 def add_feature_to_database(feature: FeatureToggle) -> None:
