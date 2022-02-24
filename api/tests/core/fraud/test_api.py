@@ -208,7 +208,6 @@ class DMSFraudCheckTest:
 @pytest.mark.usefixtures("db_session")
 class EduconnectFraudTest:
     def test_on_educonnect_result(self):
-        fraud_factories.IneHashWhitelistFactory(ine_hash="5ba682c0fc6a05edf07cd8ed0219258f")
         birth_date = (datetime.datetime.today() - relativedelta(years=15, days=5)).date()
         registration_date = datetime.datetime.utcnow() - relativedelta(days=3)  # eligible 15-17
         user = users_factories.UserFactory(dateOfBirth=birth_date)
@@ -247,7 +246,6 @@ class EduconnectFraudTest:
         }
 
         # If the user logs in again with another educonnect account, create another fraud check
-        fraud_factories.IneHashWhitelistFactory(ine_hash="0000")
         fraud_api.on_educonnect_result(
             user,
             fraud_models.EduconnectContent(
@@ -363,7 +361,6 @@ class EduconnectFraudTest:
         assert not any(fraud_item.reason_code == fraud_models.FraudReasonCode.DUPLICATE_USER for fraud_item in result)
 
     def test_ine_duplicates_fraud_checks(self):
-        fraud_factories.IneHashWhitelistFactory(ine_hash="ylwavk71o3jiwyla83fxk5pcmmu0ws01")
         same_ine_user = users_factories.UnderageBeneficiaryFactory(ineHash="ylwavk71o3jiwyla83fxk5pcmmu0ws01")
         user_in_validation = users_factories.UserFactory()
         fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
@@ -385,7 +382,6 @@ class EduconnectFraudTest:
         )
 
     def test_ine_duplicates_fraud_checks_self_ine(self):
-        fraud_factories.IneHashWhitelistFactory(ine_hash="ylwavk71o3jiwyla83fxk5pcmmu0ws01")
         user_in_validation = users_factories.UserFactory(ineHash="ylwavk71o3jiwyla83fxk5pcmmu0ws01")
         fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
             type=fraud_models.FraudCheckType.EDUCONNECT,
@@ -403,42 +399,6 @@ class EduconnectFraudTest:
             None,
         )
         assert duplicate_ine_check is None
-
-    def test_ine_whitelisted_fraud_checks_pass(self):
-        user = users_factories.UserFactory()
-        fraud_factories.IneHashWhitelistFactory(ine_hash="identifiantWhitelisté1")
-        fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
-            type=fraud_models.FraudCheckType.EDUCONNECT,
-            resultContent=fraud_factories.EduconnectContentFactory(ine_hash="identifiantWhitelisté1"),
-            user=user,
-        )
-        result = fraud_api.educonnect_fraud_checks(user, fraud_check)
-
-        duplicate_ine_check = next(
-            (
-                fraud_check
-                for fraud_check in result
-                if fraud_check.reason_code == fraud_models.FraudReasonCode.INE_NOT_WHITELISTED
-            ),
-            None,
-        )
-        assert duplicate_ine_check is None
-
-    def test_ine_whitelisted_fraud_checks_fail(self):
-        user = users_factories.UserFactory()
-        fraud_factories.IneHashWhitelistFactory(ine_hash="identifiantWhitelisté1")
-        fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
-            type=fraud_models.FraudCheckType.EDUCONNECT,
-            resultContent=fraud_factories.EduconnectContentFactory(ine_hash="identifiantWhitelisté2"),
-        )
-        result = fraud_api.educonnect_fraud_checks(user, fraud_check)
-
-        duplicate_ine_check = next(
-            fraud_check
-            for fraud_check in result
-            if fraud_check.reason_code == fraud_models.FraudReasonCode.INE_NOT_WHITELISTED
-        )
-        assert duplicate_ine_check.status == fraud_models.FraudStatus.SUSPICIOUS
 
 
 @pytest.mark.usefixtures("db_session")
