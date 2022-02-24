@@ -886,16 +886,6 @@ class UpdateUserLastConnectionDateTest:
 
 
 class EligibilityStartDateTest:
-    @override_features(ENABLE_NATIVE_EAC_INDIVIDUAL=False)
-    @override_features(ENABLE_UNDERAGE_GENERALISATION=False)
-    def test_eligibility_start_datetime_eac_off(self):
-        assert get_eligibility_start_datetime(datetime(2006, 1, 10)) == datetime(2024, 1, 10)
-
-    @override_features(ENABLE_UNDERAGE_GENERALISATION=False)
-    def test_eligibility_start_datetime_generalisation_off(self):
-        assert get_eligibility_start_datetime(datetime(2006, 1, 10)) == datetime(2021, 1, 10)
-
-    @override_features(ENABLE_UNDERAGE_GENERALISATION=True)
     @override_settings(
         UNDERAGE_BROAD_OPENING_DATETIME=datetime(2022, 1, 31),
         UNDERAGE_EARLY_OPENING_DATETIME=datetime(2022, 1, 3),
@@ -923,7 +913,6 @@ class EligibilityStartDateTest:
     def test_eligibility_start_datetime_generalisation(self, date_of_birth, expected_date):
         assert get_eligibility_start_datetime(date_of_birth) == expected_date
 
-    @override_features(ENABLE_UNDERAGE_GENERALISATION=True)
     @override_settings(
         UNDERAGE_BROAD_OPENING_DATETIME=datetime(2022, 1, 31),
         UNDERAGE_EARLY_OPENING_DATETIME=datetime(2022, 1, 3),
@@ -940,7 +929,6 @@ class EligibilityStartDateTest:
 
 
 class GetEligibilityTest:
-    @override_features(ENABLE_UNDERAGE_GENERALISATION=True)
     @override_settings(
         UNDERAGE_BROAD_OPENING_DATETIME=datetime(2022, 1, 31),
         UNDERAGE_EARLY_OPENING_DATETIME=datetime(2022, 1, 3),
@@ -972,29 +960,9 @@ class GetEligibilityTest:
     def test_eligibility_at_date(self, date_of_birth, specified_date, expected_eligibility):
         assert get_eligibility_at_date(date_of_birth, specified_date) == expected_eligibility
 
-    @override_features(ENABLE_UNDERAGE_GENERALISATION=True)
     def test_eligibility_at_date_testing(self):
         assert get_eligibility_at_date(datetime(2005, 12, 18), datetime(2021, 12, 13)) == EligibilityType.UNDERAGE
         assert get_eligibility_at_date(datetime(2005, 12, 18), datetime(2021, 12, 12)) == None
-
-    @override_features(ENABLE_UNDERAGE_GENERALISATION=False)
-    @pytest.mark.parametrize(
-        "date_of_birth,specified_date,expected_eligibility",
-        [
-            (None, datetime(2022, 6, 6), None),
-            (datetime(2007, 6, 6), datetime(2022, 6, 6), EligibilityType.UNDERAGE),  # 15 years old on 2O22/6/6 at 15
-            (datetime(2007, 6, 6), datetime(2022, 6, 5), None),  # 15 years old on 2O22/6/6 before 15
-            (datetime(2007, 6, 6), datetime(2025, 6, 6), EligibilityType.AGE18),  # 15 years old on 2O22/6/6 at 18
-            (datetime(2007, 6, 6), datetime(2026, 6, 7), None),  # 15 years old on 2O22/6/6 at 19
-            (
-                datetime(2003, 12, 1),
-                datetime(2021, 11, 30),
-                EligibilityType.UNDERAGE,
-            ),  # 18 years old on 2021/12/1 at 17
-        ],
-    )
-    def test_eligibility_at_date_generalisation_off(self, date_of_birth, specified_date, expected_eligibility):
-        assert get_eligibility_at_date(date_of_birth, specified_date) == expected_eligibility
 
     def test_get_eligibility_at_date_timezones_tolerance(self):
         date_of_birth = datetime(2000, 2, 1, 0, 0)
