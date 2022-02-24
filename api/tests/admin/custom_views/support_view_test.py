@@ -74,7 +74,6 @@ class BeneficiaryValidationViewTest:
         assert response.headers["Location"] == "http://localhost/pc/back-office/"
 
     @override_features(BENEFICIARY_VALIDATION_AFTER_FRAUD_CHECKS=True)
-    @override_features(IS_HONOR_STATEMENT_MANDATORY_TO_ACTIVATE_BENEFICIARY=True)
     def test_validation_view_validate_user_from_jouve_data_staging(self, client):
         user = users_factories.UserFactory(dateOfBirth=AGE18_ELIGIBLE_BIRTH_DATE)
 
@@ -110,7 +109,6 @@ class BeneficiaryValidationViewTest:
         assert user.lastName == jouve_content.lastName
 
     @override_features(BENEFICIARY_VALIDATION_AFTER_FRAUD_CHECKS=True)
-    @override_features(IS_HONOR_STATEMENT_MANDATORY_TO_ACTIVATE_BENEFICIARY=True)
     def test_validation_view_validate_user_from_dms_data_staging(self, client):
         user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=18, months=2))
         check = fraud_factories.BeneficiaryFraudCheckFactory(user=user, type=fraud_models.FraudCheckType.DMS)
@@ -136,7 +134,6 @@ class BeneficiaryValidationViewTest:
         assert user.idPieceNumber == dms_content.id_piece_number
 
     @override_features(BENEFICIARY_VALIDATION_AFTER_FRAUD_CHECKS=True)
-    @override_features(IS_HONOR_STATEMENT_MANDATORY_TO_ACTIVATE_BENEFICIARY=True)
     def test_validation_view_validate_user_from_educonnect(self, client):
         user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=15, months=2))
         check = fraud_factories.BeneficiaryFraudCheckFactory(user=user, type=fraud_models.FraudCheckType.EDUCONNECT)
@@ -162,7 +159,6 @@ class BeneficiaryValidationViewTest:
         assert user.idPieceNumber == educonnect_content.get_id_piece_number()
 
     @override_features(BENEFICIARY_VALIDATION_AFTER_FRAUD_CHECKS=True)
-    @override_features(IS_HONOR_STATEMENT_MANDATORY_TO_ACTIVATE_BENEFICIARY=True)
     def test_validation_view_validate_user_from_ubble(self, client):
         user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=18, months=2))
         check = fraud_factories.BeneficiaryFraudCheckFactory(user=user, type=fraud_models.FraudCheckType.UBBLE)
