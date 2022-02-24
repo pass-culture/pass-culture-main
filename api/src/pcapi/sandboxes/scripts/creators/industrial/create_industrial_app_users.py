@@ -18,7 +18,6 @@ from pcapi.core.users import factories as users_factories
 from pcapi.core.users.constants import ELIGIBILITY_AGE_18
 from pcapi.core.users.models import TokenType
 from pcapi.models import db
-from pcapi.models.feature import FeatureToggle
 
 
 logger = logging.getLogger(__name__)
@@ -98,10 +97,6 @@ def create_industrial_app_beneficiaries():
 
 
 def create_industrial_app_underage_beneficiaries():
-    if not FeatureToggle.ENABLE_NATIVE_EAC_INDIVIDUAL.is_active():
-        logger.warning("cannot create underage beneficiaries when the flag ENABLE_NATIVE_EAC_INDIVIDUAL OFF")
-        return {}
-
     logger.info("create_industrial_app_underage_beneficiaries")
 
     users_by_name = {}
@@ -243,19 +238,17 @@ def create_industrial_app_general_public_users():
 def create_short_email_beneficiaries() -> dict:
     fake = Faker("fr_FR")
     users = []
-    is_eac_active = FeatureToggle.ENABLE_NATIVE_EAC_INDIVIDUAL.is_active()
 
-    if is_eac_active:
-        for age in [15, 16, 17]:
-            users.append(
-                users_factories.UnderageBeneficiaryFactory(
-                    email=f"bene_{age}@example.com",
-                    subscription_age=age,
-                    firstName=fake.first_name(),
-                    lastName=fake.last_name(),
-                    needsToFillCulturalSurvey=False,
-                )
+    for age in [15, 16, 17]:
+        users.append(
+            users_factories.UnderageBeneficiaryFactory(
+                email=f"bene_{age}@example.com",
+                subscription_age=age,
+                firstName=fake.first_name(),
+                lastName=fake.last_name(),
+                needsToFillCulturalSurvey=False,
             )
+        )
     for age in [15, 16, 17, 18]:
         users.append(
             users_factories.UserFactory(
@@ -279,30 +272,29 @@ def create_short_email_beneficiaries() -> dict:
             needsToFillCulturalSurvey=False,
         )
     )
-    if is_eac_active:
-        with freeze_time(datetime.utcnow() - relativedelta(years=3)):
-            users.append(
-                users_factories.UnderageBeneficiaryFactory(
-                    email="exunderage_18@example.com",
-                    dateOfBirth=datetime.combine(date.today(), time(0, 0)) - relativedelta(years=15, months=5),
-                    subscription_age=15,
-                    firstName=fake.first_name(),
-                    lastName=fake.last_name(),
-                    needsToFillCulturalSurvey=False,
-                )
-            )
-
-            beneficiary_and_exunderage = users_factories.UnderageBeneficiaryFactory(
-                email="bene_18_exunderage@example.com",
+    with freeze_time(datetime.utcnow() - relativedelta(years=3)):
+        users.append(
+            users_factories.UnderageBeneficiaryFactory(
+                email="exunderage_18@example.com",
                 dateOfBirth=datetime.combine(date.today(), time(0, 0)) - relativedelta(years=15, months=5),
                 subscription_age=15,
                 firstName=fake.first_name(),
                 lastName=fake.last_name(),
                 needsToFillCulturalSurvey=False,
             )
-            db.session.execute("ALTER TABLE booking DISABLE TRIGGER booking_update;")
-            bookings_factory.IndividualBookingFactory(individualBooking__user=beneficiary_and_exunderage)
-            db.session.execute("ALTER TABLE booking ENABLE TRIGGER booking_update;")
+        )
+
+        beneficiary_and_exunderage = users_factories.UnderageBeneficiaryFactory(
+            email="bene_18_exunderage@example.com",
+            dateOfBirth=datetime.combine(date.today(), time(0, 0)) - relativedelta(years=15, months=5),
+            subscription_age=15,
+            firstName=fake.first_name(),
+            lastName=fake.last_name(),
+            needsToFillCulturalSurvey=False,
+        )
+        db.session.execute("ALTER TABLE booking DISABLE TRIGGER booking_update;")
+        bookings_factory.IndividualBookingFactory(individualBooking__user=beneficiary_and_exunderage)
+        db.session.execute("ALTER TABLE booking ENABLE TRIGGER booking_update;")
 
         fraud_factories.BeneficiaryFraudCheckFactory(user=beneficiary_and_exunderage)
         fraud_factories.BeneficiaryFraudResultFactory(user=beneficiary_and_exunderage)

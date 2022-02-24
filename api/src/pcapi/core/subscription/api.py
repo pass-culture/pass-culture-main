@@ -326,10 +326,7 @@ def is_identity_check_with_document_method_allowed_for_underage(user: users_mode
 def get_allowed_identity_check_methods(user: users_models.User) -> list[models.IdentityCheckMethod]:
     allowed_methods = []
 
-    if (
-        user.eligibility == users_models.EligibilityType.UNDERAGE
-        and FeatureToggle.ENABLE_NATIVE_EAC_INDIVIDUAL.is_active()
-    ):
+    if user.eligibility == users_models.EligibilityType.UNDERAGE:
         if FeatureToggle.ENABLE_EDUCONNECT_AUTHENTICATION.is_active():
             allowed_methods.append(models.IdentityCheckMethod.EDUCONNECT)
 
