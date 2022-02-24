@@ -1,0 +1,32 @@
+.booking-summary {
+  @include caption();
+
+  margin-bottom: rem(15px);
+
+  > div > div {
+    display: inline-block;
+    width: 50%;
+  }
+}
+
+.desk-label {
+  color: $grey-dark;
+  text-align: right;
+}
+
+.desk-value {
+  color: $black;
+  padding-left: rem(5px);
+  text-align: left;
+}
+
+.duo-price {
+  position: relative;
+  svg {
+    position: absolute;
+    top: rem(-6px);
+    margin-left: rem(5px);
+    height: rem(30px);
+    width: rem(30px);
+  }
+}
