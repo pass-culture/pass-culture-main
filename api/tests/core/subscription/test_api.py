@@ -29,7 +29,7 @@ import pcapi.notifications.push.testing as push_testing
 class EduconnectFlowTest:
     @freeze_time("2021-10-10")
     @patch("pcapi.connectors.beneficiaries.educonnect.educonnect_connector.get_saml_client")
-    @override_features(IS_HONOR_STATEMENT_MANDATORY_TO_ACTIVATE_BENEFICIARY=True, ENABLE_EDUCONNECT_AUTHENTICATION=True)
+    @override_features(ENABLE_EDUCONNECT_AUTHENTICATION=True)
     def test_educonnect_subscription(self, mock_get_educonnect_saml_client, client, app):
         ine_hash = "5ba682c0fc6a05edf07cd8ed0219258f"
         fraud_factories.IneHashWhitelistFactory(ine_hash=ine_hash)
@@ -464,6 +464,9 @@ class OnSuccessfulDMSApplicationTest:
             user=applicant, type=fraud_models.FraudCheckType.USER_PROFILING, status=fraud_models.FraudCheckStatus.OK
         )
         fraud_factories.BeneficiaryFraudCheckFactory(
+            user=applicant, type=fraud_models.FraudCheckType.HONOR_STATEMENT, status=fraud_models.FraudCheckStatus.OK
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
             user=applicant, type=fraud_models.FraudCheckType.DMS, status=fraud_models.FraudCheckStatus.OK
         )
         # when
@@ -724,16 +727,10 @@ class HasPassedAllChecksToBecomeBeneficiaryTest:
         assert subscription_api.has_passed_all_checks_to_become_beneficiary(user) is False
         assert not user.has_beneficiary_role
 
-    @override_features(FORCE_PHONE_VALIDATION=True, IS_HONOR_STATEMENT_MANDATORY_TO_ACTIVATE_BENEFICIARY=True)
+    @override_features(FORCE_PHONE_VALIDATION=True)
     def test_missing_all(self):
         user = self.eligible_user(validate_phone=False)
 
-        assert subscription_api.has_passed_all_checks_to_become_beneficiary(user) is False
-        assert not user.has_beneficiary_role
-
-    @override_features(FORCE_PHONE_VALIDATION=True, IS_HONOR_STATEMENT_MANDATORY_TO_ACTIVATE_BENEFICIARY=False)
-    def test_missing_all_honor_statement_optional(self):
-        user = self.eligible_user(validate_phone=False)
         assert subscription_api.has_passed_all_checks_to_become_beneficiary(user) is False
         assert not user.has_beneficiary_role
 
