@@ -6,7 +6,7 @@ import useNotification from 'components/hooks/useNotification'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Spinner from 'components/layout/Spinner'
 import { isOfferDisabled } from 'components/pages/Offers/domain/isOfferDisabled'
-import OfferPreviewLink from 'components/pages/Offers/Offer/OfferPreviewLink/OfferPreviewLink'
+import { DisplayOfferInAppLink } from 'components/pages/Offers/Offer/DisplayOfferInAppLink'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { loadCategories } from 'store/offers/thunks'
 
@@ -231,7 +231,7 @@ const OfferDetails = ({
               <OfferPreview offerPreviewData={offerPreviewData} />
             </div>
             {offer ? (
-              <OfferPreviewLink nonHumanizedId={offer.nonHumanizedId} />
+              <DisplayOfferInAppLink nonHumanizedId={offer.nonHumanizedId} />
             ) : null}
           </div>
         )}
