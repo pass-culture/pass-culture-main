@@ -27,6 +27,7 @@ import { FRANCE_POSITION } from '../fields/LocationFields/utils/positions'
 import WithdrawalDetailsFields from '../fields/WithdrawalDetailsFields/WithdrawalDetailsFields'
 
 import DeleteBusinessUnitConfirmationDialog from './DeleteBusinessUnitConfirmationDialog/DeleteBusinessUnitConfirmationDialog'
+import { DisplayVenueInAppLink } from './DisplayVenueInAppLink'
 import { ImageVenueUploaderSection } from './ImageVenueUploaderSection/ImageVenueUploaderSection'
 import VenueProvidersManager from './VenueProvidersManager'
 
@@ -341,6 +342,12 @@ const VenueEdition = ({
         <Icon svg="ico-back" />
         Accueil
       </NavLink>
+      {venue.isPermanent && (
+        <DisplayVenueInAppLink
+          className="venue-page-view-venue-cta"
+          nonHumanizedId={venue.nonHumanizedId}
+        />
+      )}
       {venue.businessUnit && !venue.businessUnit.siret && (
         <Banner
           className="banner-invalid-bu"
