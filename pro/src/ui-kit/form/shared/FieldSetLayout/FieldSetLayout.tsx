@@ -12,6 +12,7 @@ interface IFieldSetLayoutProps {
   error?: string
   name: string
   hideFooter?: boolean
+  dataTestId?: string
 }
 
 const FieldSetLayout = ({
@@ -21,8 +22,12 @@ const FieldSetLayout = ({
   error,
   name,
   hideFooter = false,
+  dataTestId,
 }: IFieldSetLayoutProps): JSX.Element => (
-  <fieldset className={cn(styles['fieldset-layout'], className)}>
+  <fieldset
+    className={cn(styles['fieldset-layout'], className)}
+    data-testid={dataTestId}
+  >
     {legend && (
       <legend className={styles['fieldset-layout-legend']}>{legend}</legend>
     )}
