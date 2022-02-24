@@ -165,22 +165,6 @@ class BuildObjectTest:
         assert result["offer"]["artist"] == "MEFA"
 
     @pytest.mark.usefixtures("db_session")
-    def test_distinct_should_return_visa_when_exists(self, app):
-        # Given
-        offerer = create_offerer()
-        venue = create_venue(offerer=offerer)
-        offer = create_offer_with_thing_product(venue=venue)
-        offer.extraData = {"visa": "123456"}
-        stock = create_stock(offer=offer)
-        repository.save(stock)
-
-        # When
-        result = AlgoliaBackend.serialize_offer(offer)
-
-        # Then
-        assert result["distinct"] == offer.extraData["visa"]
-
-    @pytest.mark.usefixtures("db_session")
     def test_distinct_should_return_isbn_when_exists(self, app):
         # Given
         offerer = create_offerer()
