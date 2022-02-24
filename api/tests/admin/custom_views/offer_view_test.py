@@ -472,7 +472,6 @@ class OfferValidationViewTest:
         n_queries = testing.AUTHENTICATION_QUERIES
         n_queries += 1  # count
         n_queries += 1  # select offers
-        n_queries += 1  # select latest offer validation configuration
         with testing.assert_num_queries(n_queries):
             response = client.get("/pc/back-office/validation/")
 
