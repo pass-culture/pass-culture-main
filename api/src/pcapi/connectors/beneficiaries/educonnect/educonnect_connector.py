@@ -1,6 +1,8 @@
 from datetime import datetime
 import logging
 from os import path
+import random
+import string
 from typing import Optional
 
 from flask import current_app as app
@@ -149,9 +151,9 @@ def _get_mocked_user_for_performance_tests(user_id: str) -> models.EduconnectUse
         birth_date=user.dateOfBirth.date(),
         connection_datetime=datetime.now(),
         educonnect_id=f"educonnect-id_perf-test_{user.id}",
-        first_name=f"firstname_perf-test_{user.id}",
+        first_name="".join(random.choice(string.ascii_letters) for _ in range(10)),
         ine_hash=f"inehash_perf-test_{user.id}",
-        last_name=f"lastname_perf-test_{user.id}",
+        last_name="".join(random.choice(string.ascii_letters) for _ in range(10)),
         saml_request_id=mocked_saml_request_id,
     )
 
