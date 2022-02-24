@@ -136,8 +136,12 @@ def on_identity_fraud_check_result(
     content_last_name = content.get_last_name()
     content_birth_date = content.get_birth_date()
 
-    # Check for duplicate only when Id Check returns identity details
-    if content_first_name and content_last_name and content_birth_date:
+    if not (content_first_name and content_last_name and content_birth_date):
+        fraud_items.append(
+            models.FraudItem(status=models.FraudStatus.SUSPICIOUS, reason_code=models.FraudReasonCode.MISSING_DATA)
+        )
+    else:
+        # Check for duplicate only when Id Check returns identity details
         fraud_items.append(
             _duplicate_user_fraud_item(
                 first_name=content_first_name,
@@ -146,8 +150,6 @@ def on_identity_fraud_check_result(
                 excluded_user_id=user.id,
             )
         )
-
-    if content_birth_date:
         fraud_items.append(_check_user_eligibility(user, beneficiary_fraud_check.eligibilityType))
 
     fraud_items.append(_check_user_has_no_active_deposit(user, beneficiary_fraud_check.eligibilityType))

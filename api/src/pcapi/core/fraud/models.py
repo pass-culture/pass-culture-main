@@ -301,6 +301,7 @@ class FraudReasonCode(enum.Enum):
     INE_NOT_WHITELISTED = "ine_not_whitelisted"
     INVALID_ID_PIECE_NUMBER = "invalid_id_piece_number"
     NOT_ELIGIBLE = "not_eligible"
+    MISSING_DATA = "missing_data"
     PHONE_NOT_VALIDATED = "phone_not_validated"
     REFUSED_BY_OPERATOR = "refused_by_operator"
 
