@@ -1,5 +1,8 @@
 import { fireEvent, render } from '@testing-library/react'
 import React from 'react'
+import { Provider } from 'react-redux'
+
+import { configureTestStore } from 'store/testUtils'
 
 import { VenueImageEdit } from '../VenueImageEdit'
 
@@ -17,7 +20,22 @@ const defaultProps = {
 
 describe('venue image edit', () => {
   it('closes the modal on cancel button click', () => {
-    const { getByText } = render(<VenueImageEdit {...defaultProps} />)
+    const storeOverrides = {
+      features: {
+        list: [
+          {
+            isActive: false,
+            nameKey: 'PRO_ENABLE_UPLOAD_VENUE_IMAGE',
+          },
+        ],
+      },
+    }
+    const store = configureTestStore(storeOverrides)
+    const { getByText } = render(
+      <Provider store={store}>
+        <VenueImageEdit {...defaultProps} />
+      </Provider>
+    )
     fireEvent.click(getByText("Remplacer l'image"))
     expect(mockReplaceImage).toHaveBeenCalledTimes(1)
   })
