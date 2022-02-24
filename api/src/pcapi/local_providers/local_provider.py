@@ -55,12 +55,12 @@ class LocalProvider(Iterator):
     ) -> ProvidableInfo:
         if "|" in id_at_providers:
             raise Exception("Invalid character in idAtProviders field")
-        providable_info = ProvidableInfo()
-        providable_info.type = pc_object
-        providable_info.id_at_providers = id_at_providers
-        providable_info.new_id_at_provider = new_id_at_provider
-        providable_info.date_modified_at_provider = date_modified_at_provider
-        return providable_info
+        return ProvidableInfo(
+            type=pc_object,
+            id_at_providers=id_at_providers,
+            new_id_at_provider=new_id_at_provider,
+            date_modified_at_provider=date_modified_at_provider,
+        )
 
     def get_object_thumb(self) -> bytes:
         return bytes()
