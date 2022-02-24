@@ -64,7 +64,6 @@ class FeatureToggle(enum.Enum):
         "Active la génération automatique (via cron) des flux monétaires et fichiers de remboursement"
     )
     ID_CHECK_ADDRESS_AUTOCOMPLETION = "Autocomplétion de l'adresse lors du parcours IDCheck"
-    IS_HONOR_STATEMENT_MANDATORY_TO_ACTIVATE_BENEFICIARY = "Vérifier que l'utilisateur a bien rempli l'étape de confirmation sur l'honneur avant d'activer son compte bénéficiaire"  # TODO (vionnex) remove after v164 is forced on native app
     PRICE_BOOKINGS = "Active la valorisation des réservations"
     PRO_ENABLE_UPLOAD_VENUE_IMAGE = "Active la fonctionnalité d'upload des images des lieux permanents"
     SYNCHRONIZE_ALLOCINE = "Permettre la synchronisation journalière avec Allociné"
@@ -133,7 +132,6 @@ FEATURES_DISABLED_BY_DEFAULT = (
     FeatureToggle.FORCE_PHONE_VALIDATION,
     FeatureToggle.GENERATE_CASHFLOWS_BY_CRON,
     FeatureToggle.ID_CHECK_ADDRESS_AUTOCOMPLETION,
-    FeatureToggle.IS_HONOR_STATEMENT_MANDATORY_TO_ACTIVATE_BENEFICIARY,
     FeatureToggle.PRO_ENABLE_UPLOAD_VENUE_IMAGE,
     FeatureToggle.USER_PROFILING_FRAUD_CHECK,
     FeatureToggle.SHOW_INVOICES_ON_PRO_PORTAL,
