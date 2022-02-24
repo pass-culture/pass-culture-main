@@ -1,7 +1,7 @@
 import pytest
 
-from pcapi.serialization.utils import has_latin_or_numeric_chars
-from pcapi.serialization.utils import is_latin
+from pcapi.core.fraud.utils import has_latin_or_numeric_chars
+from pcapi.core.fraud.utils import is_latin
 
 
 class UtilsUnitTest:

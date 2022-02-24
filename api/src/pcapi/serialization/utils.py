@@ -2,7 +2,6 @@ import re
 from typing import Any
 from typing import Optional
 from typing import Union
-import unicodedata
 
 from flask import Request
 from flask import Response
@@ -125,27 +124,3 @@ def validate_phone_number_format(field_name: str) -> classmethod:
 
 def string_to_boolean_field(field_name: str) -> classmethod:
     return validator(field_name, pre=True, allow_reuse=True)(string_to_boolean)
-
-
-def is_latin(s: str) -> bool:
-    if s == "":
-        return False
-    for char in s:
-        if char in (" ", "-", ".", ",", "'", "’"):
-            continue
-        try:
-            if not "LATIN" in unicodedata.name(char):
-                return False
-        # if unicodedata.name does not recognize char, it raises a ValueError
-        except ValueError:
-            return False
-    return True
-
-
-def has_latin_or_numeric_chars(address: str) -> bool:
-    for char in address:
-        if char == " ":
-            continue
-        if not is_latin(char) and not char.isnumeric():
-            return False
-    return True
