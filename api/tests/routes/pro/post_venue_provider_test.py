@@ -3,12 +3,12 @@ from unittest.mock import patch
 import pytest
 
 from pcapi.core.offers import factories as offer_factories
+from pcapi.core.providers.api import activate_provider
 import pcapi.core.providers.factories as providers_factories
 from pcapi.core.providers.factories import AllocinePivotFactory
 from pcapi.core.providers.models import VenueProvider
 from pcapi.core.users import factories as user_factories
 from pcapi.model_creators.generic_creators import create_venue_provider
-from pcapi.model_creators.provider_creators import activate_provider
 from pcapi.models.api_errors import ApiErrors
 from pcapi.repository import repository
 from pcapi.utils.human_ids import dehumanize

@@ -11,9 +11,9 @@ from pcapi.core.offers.factories import ThingProductFactory
 from pcapi.core.offers.factories import ThingStockFactory
 from pcapi.core.offers.factories import VenueFactory
 from pcapi.core.offers.models import Offer
+from pcapi.core.providers.api import activate_provider
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.local_providers import TiteLiveThings
-from pcapi.model_creators.provider_creators import activate_provider
 from pcapi.model_creators.specific_creators import create_product_with_thing_subcategory
 from pcapi.models.local_provider_event import LocalProviderEvent
 from pcapi.models.local_provider_event import LocalProviderEventType

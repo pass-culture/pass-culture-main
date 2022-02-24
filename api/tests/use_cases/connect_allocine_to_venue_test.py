@@ -1,11 +1,11 @@
 from decimal import Decimal
 
 from pcapi.core.offers.factories import VenueFactory
+from pcapi.core.providers.api import activate_provider
 from pcapi.core.providers.factories import AllocinePivotFactory
 from pcapi.core.providers.models import AllocineVenueProvider
 from pcapi.core.providers.models import AllocineVenueProviderPriceRule
 from pcapi.core.providers.models import VenueProviderCreationPayload
-from pcapi.model_creators.provider_creators import activate_provider
 from pcapi.use_cases.connect_venue_to_allocine import connect_venue_to_allocine
 
 
