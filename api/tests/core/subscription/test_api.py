@@ -32,7 +32,6 @@ class EduconnectFlowTest:
     @override_features(ENABLE_EDUCONNECT_AUTHENTICATION=True)
     def test_educonnect_subscription(self, mock_get_educonnect_saml_client, client, app):
         ine_hash = "5ba682c0fc6a05edf07cd8ed0219258f"
-        fraud_factories.IneHashWhitelistFactory(ine_hash=ine_hash)
         user = users_factories.UserFactory(dateOfBirth=datetime(2004, 1, 1))
         access_token = create_access_token(identity=user.email)
         client.auth_header = {"Authorization": f"Bearer {access_token}"}
