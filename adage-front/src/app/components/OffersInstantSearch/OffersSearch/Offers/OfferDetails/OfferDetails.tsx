@@ -67,7 +67,6 @@ const OfferDetails = ({ offer }: { offer: OfferType }): JSX.Element => {
 
   return (
     <div className="offer-details">
-      <h3 className="offer-details-title">Informations complémentaires</h3>
       {durationString && (
         <OfferSection title="Durée">{durationString}</OfferSection>
       )}
