@@ -1,12 +1,12 @@
 from random import randint
 
 from pcapi.core.categories import subcategories
+from pcapi.core.providers.api import activate_provider
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_user_offerer
 from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.generic_creators import create_venue_provider
-from pcapi.model_creators.provider_creators import activate_provider
 from pcapi.model_creators.specific_creators import create_offer_with_event_product
 from pcapi.repository import repository
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_admin_users import *
