@@ -10,6 +10,11 @@ import {
   TITLE_LABEL,
   DESCRIPTION_LABEL,
   DURATION_LABEL,
+  EVENT_ADDRESS_OFFERER_LABEL,
+  EVENT_ADDRESS_SCHOOL_LABEL,
+  EVENT_ADDRESS_OTHER_LABEL,
+  EVENT_ADDRESS_OFFERER_VENUE_SELECT_LABEL,
+  EVENT_ADDRESS_OTHER_ADDRESS_LABEL,
 } from '../constants/labels'
 
 export const elements = {
@@ -43,4 +48,25 @@ export const elements = {
 
   queryDurationInput: (): QueryFieldResponse<HTMLInputElement> =>
     queryField<HTMLInputElement>(DURATION_LABEL),
+
+  queryOfferVenueRadioButtons: (): {
+    offererVenueRadio: QueryFieldResponse<HTMLInputElement>
+    schoolRadio: QueryFieldResponse<HTMLInputElement>
+    otherRadio: QueryFieldResponse<HTMLInputElement>
+  } => ({
+    offererVenueRadio: queryField<HTMLInputElement>(
+      EVENT_ADDRESS_OFFERER_LABEL
+    ),
+    schoolRadio: queryField<HTMLInputElement>(EVENT_ADDRESS_SCHOOL_LABEL),
+    otherRadio: queryField<HTMLInputElement>(EVENT_ADDRESS_OTHER_LABEL),
+  }),
+
+  queryOfferVenueSelect: (): QueryFieldResponse<HTMLSelectElement> =>
+    queryField<HTMLSelectElement>(EVENT_ADDRESS_OFFERER_VENUE_SELECT_LABEL),
+
+  queryOfferVenueAddressDisplay: (): HTMLElement | null =>
+    screen.queryByText('Venue name', { exact: false, selector: 'p' }),
+
+  queryOfferVenueTextArea: (): QueryFieldResponse<HTMLTextAreaElement> =>
+    queryField<HTMLTextAreaElement>(EVENT_ADDRESS_OTHER_ADDRESS_LABEL),
 }

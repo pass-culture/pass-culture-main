@@ -24,7 +24,7 @@ const RadioButton = ({
 
   return (
     <div className={cn(style['radio-button'], className)}>
-      <BaseRadio {...field} label={label} value={value} />
+      <BaseRadio {...field} id={name} label={label} value={value} />
       {meta.touched && meta.error && (
         <FieldError name={name}>{meta.error}</FieldError>
       )}

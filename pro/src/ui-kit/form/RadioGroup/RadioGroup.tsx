@@ -28,6 +28,7 @@ const RadioGroup = ({
   return (
     <FieldSetLayout
       className={cn(styles['radio-group'], className)}
+      dataTestId={`wrapper-${name}`}
       error={meta.touched && !!meta.error ? meta.error : undefined}
       hideFooter
       legend={legend}
