@@ -343,6 +343,7 @@ const StockItem = ({
         )}
         {isDeleting && (
           <DeleteStockDialogContainer
+            isEvent={isEvent}
             onDelete={onDelete}
             setIsDeleting={setIsDeleting}
             stockId={initialStock.id}
