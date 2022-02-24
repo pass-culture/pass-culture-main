@@ -308,7 +308,6 @@ class EduconnectTest:
         ]
         assert caplog.records[0].extra == {"user_id": user.id}
 
-    @override_features(ENABLE_UNDERAGE_GENERALISATION=True)
     @patch("pcapi.connectors.beneficiaries.educonnect.educonnect_connector.get_educonnect_user")
     @override_features(ENABLE_INE_WHITELIST_FILTER=False)
     @freezegun.freeze_time("2021-12-15")  # during opening
