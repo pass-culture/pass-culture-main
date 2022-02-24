@@ -225,7 +225,7 @@ class DmsWebhookApplicationTest:
         assert user.subscriptionMessages[0].popOverIcon == subscription_models.PopOverIcon.WARNING
         assert (
             user.subscriptionMessages[0].userMessage
-            == "Il semblerait que les champs ‘ta pièce d'identité, ton code postal’ soient erronés. Tu peux te rendre sur le site Démarche-simplifiées pour les rectifier."
+            == "Il semblerait que les champs ‘ta pièce d'identité, ton code postal’ soient erronés. Tu peux te rendre sur le site Démarches-simplifiées pour les rectifier."
         )
 
         fraud_check = user.beneficiaryFraudChecks[0]
@@ -290,7 +290,7 @@ class DmsWebhookApplicationTest:
         assert user.subscriptionMessages[0].popOverIcon == subscription_models.PopOverIcon.WARNING
         assert (
             user.subscriptionMessages[0].userMessage
-            == "Il semblerait que le champ ‘ta pièce d'identité’ soit erroné. Tu peux te rendre sur le site Démarche-simplifiées pour le rectifier."
+            == "Il semblerait que le champ ‘ta pièce d'identité’ soit erroné. Tu peux te rendre sur le site Démarches-simplifiées pour le rectifier."
         )
 
     @patch.object(api_dms.DMSGraphQLClient, "execute_query")
@@ -320,7 +320,7 @@ class DmsWebhookApplicationTest:
         assert user.subscriptionMessages[0].popOverIcon == subscription_models.PopOverIcon.WARNING
         assert (
             user.subscriptionMessages[0].userMessage
-            == "Il semblerait que le champ ‘ton prénom’ soit erroné. Tu peux te rendre sur le site Démarche-simplifiées pour le rectifier."
+            == "Il semblerait que le champ ‘ton prénom’ soit erroné. Tu peux te rendre sur le site Démarches-simplifiées pour le rectifier."
         )
 
     @patch.object(api_dms.DMSGraphQLClient, "execute_query")
@@ -354,7 +354,7 @@ class DmsWebhookApplicationTest:
         assert user.subscriptionMessages[0].popOverIcon == subscription_models.PopOverIcon.WARNING
         assert (
             user.subscriptionMessages[0].userMessage
-            == "Il semblerait que les champs ‘ton prénom, ton nom’ soient erronés. Tu peux te rendre sur le site Démarche-simplifiées pour les rectifier."
+            == "Il semblerait que les champs ‘ton prénom, ton nom’ soient erronés. Tu peux te rendre sur le site Démarches-simplifiées pour les rectifier."
         )
 
     @patch.object(api_dms.DMSGraphQLClient, "execute_query")
@@ -384,7 +384,7 @@ class DmsWebhookApplicationTest:
         assert user.subscriptionMessages[0].popOverIcon == subscription_models.PopOverIcon.WARNING
         assert (
             user.subscriptionMessages[0].userMessage
-            == "Il semblerait que le champ ‘ton code postal’ soit erroné. Tu peux te rendre sur le site Démarche-simplifiées pour le rectifier."
+            == "Il semblerait que le champ ‘ton code postal’ soit erroné. Tu peux te rendre sur le site Démarches-simplifiées pour le rectifier."
         )
 
     @patch.object(api_dms.DMSGraphQLClient, "execute_query")
@@ -419,7 +419,7 @@ class DmsWebhookApplicationTest:
         assert user.subscriptionMessages[0].popOverIcon == subscription_models.PopOverIcon.WARNING
         assert (
             user.subscriptionMessages[0].userMessage
-            == "Il semblerait que le champ ‘ta date de naissance’ soit erroné. Tu peux te rendre sur le site Démarche-simplifiées pour le rectifier."
+            == "Il semblerait que le champ ‘ta date de naissance’ soit erroné. Tu peux te rendre sur le site Démarches-simplifiées pour le rectifier."
         )
 
         fraud_check = user.beneficiaryFraudChecks[0]
