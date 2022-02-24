@@ -1,4 +1,3 @@
-import copy
 import datetime
 import random
 import string
@@ -221,50 +220,6 @@ APPLICATION_DETAIL_STANDARD_RESPONSE = {
         ],
     }
 }
-
-# TODO yorickeando: code mort
-def make_new_beneficiary_application_details(
-    application_id: int,
-    state: str,
-    postal_code: int = 67200,
-    department_code: str = "67 - Bas-Rhin",
-    civility: str = "Mme",
-    activity: str = "Étudiant",
-    id_piece_number: Optional[str] = None,
-    email: Optional[str] = None,
-    birth_date: Optional[datetime.date] = None,
-) -> dict:
-    application = copy.deepcopy(APPLICATION_DETAIL_STANDARD_RESPONSE)
-    application["dossier"]["id"] = application_id
-    application["dossier"]["state"] = state
-    application["dossier"]["individual"]["civilite"] = civility
-    if email:
-        application["dossier"]["email"] = email
-    for field in application["dossier"]["champs"]:
-        if field["type_de_champ"]["libelle"] == "Veuillez indiquer votre département de résidence":
-            field["value"] = department_code
-        if field["type_de_champ"]["libelle"] == "Quel est le code postal de votre commune de résidence ?":
-            field["value"] = postal_code
-        if field["type_de_champ"]["libelle"] == "Veuillez indiquer votre statut":
-            field["value"] = activity
-        if birth_date:
-            if field["type_de_champ"]["libelle"] == "Quelle est votre date de naissance":
-                field["value"] = birth_date.strftime("%Y-%m-%d")
-
-    if id_piece_number:
-        application["dossier"]["champs"].append(
-            {
-                "value": id_piece_number,
-                "type_de_champ": {
-                    "id": 123123,
-                    "libelle": "Quel est le numéro de la pièce que vous venez de saisir ?",
-                    "type_champ": "unknown",
-                    "order_place": 123,
-                    "description": "WIP",
-                },
-            }
-        )
-    return application
 
 
 def make_graphql_application(
