@@ -7,6 +7,7 @@ from typing import Optional
 import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 from sqlalchemy.ext.hybrid import hybrid_property
+from sqlalchemy.ext.mutable import MutableDict
 from sqlalchemy.ext.mutable import MutableList
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql.functions import func
@@ -184,7 +185,7 @@ class CollectiveOfferTemplate(PcObject, ValidationMixin, AccessibilityMixin, Sta
 
     contactPhone = sa.Column(sa.String(20), nullable=False)
 
-    offerVenue = sa.Column("jsonData", postgresql.JSONB)
+    offerVenue = sa.Column(MutableDict.as_mutable(postgresql.json.JSONB))
 
     @property
     def isReleased(self) -> bool:
