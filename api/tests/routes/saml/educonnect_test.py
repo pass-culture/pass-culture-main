@@ -32,7 +32,7 @@ class EduconnectTest:
     default_underage_user_age = 15
 
     def connect_to_educonnect(self, client, app):
-        user = users_factories.UserFactory(email=self.email)
+        user = users_factories.UserFactory(email=self.email, activity="Collégien")
         access_token = create_access_token(identity=self.email)
         client.auth_header = {"Authorization": f"Bearer {access_token}"}
 

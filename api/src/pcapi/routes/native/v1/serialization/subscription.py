@@ -6,7 +6,6 @@ from pcapi.core.fraud.utils import has_latin_or_numeric_chars
 from pcapi.core.fraud.utils import is_latin
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription import profile_options
-from pcapi.core.users import models as users_models
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.utils import to_camel
 
