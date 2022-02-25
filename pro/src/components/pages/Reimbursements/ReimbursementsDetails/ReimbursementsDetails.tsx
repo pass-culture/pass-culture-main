@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react'
 
 import CsvTableButtonContainer from 'components/layout/CsvTableButton/CsvTableButtonContainer'
-import DownloadButtonContainer from 'components/layout/DownloadButton/DownloadButtonContainer'
+import ButtonDownloadCSV from 'new_components/ButtonDownloadCSV'
 import { API_URL } from 'utils/config'
 import {
   FORMAT_ISO_DATE_ONLY,
@@ -116,14 +116,14 @@ const ReimbursementsDetails = ({
         selectableOptions={venuesOptions}
         setFilters={setFilters}
       >
-        <DownloadButtonContainer
+        <ButtonDownloadCSV
           filename="remboursements_pass_culture"
           href={csvUrl}
           isDisabled={shouldDisableButtons}
           mimeType="text/csv"
         >
           Télécharger
-        </DownloadButtonContainer>
+        </ButtonDownloadCSV>
         <CsvTableButtonContainer
           href={csvUrl}
           isDisabled={shouldDisableButtons}
