@@ -75,15 +75,16 @@ class OffersTest:
         assert response.status_code == 200
         response_content = response.json
         response_content["stocks"].sort(key=lambda stock: stock["price"])
-        assert response.json == {
-            "id": offer.id,
-            "accessibility": {
-                "audioDisability": False,
-                "mentalDisability": False,
-                "motorDisability": False,
-                "visualDisability": True,
-            },
-            "stocks": [
+
+        assert response.json["id"] == offer.id
+        assert response.json["accessibility"] == {
+            "audioDisability": False,
+            "mentalDisability": False,
+            "motorDisability": False,
+            "visualDisability": True,
+        }
+        assert sorted(response.json["stocks"], key=lambda stock: stock["id"]) == sorted(
+            [
                 {
                     "id": bookableStock.id,
                     "price": 1234,
@@ -121,48 +122,52 @@ class OffersTest:
                     "activationCode": None,
                 },
             ],
-            "description": "desk cryption",
-            "externalTicketOfficeUrl": "https://url.com",
-            "expenseDomains": ["all"],
-            "extraData": {
-                "author": "mandibule",
-                "isbn": "3838",
-                "durationMinutes": 33,
-                "musicSubType": "Acid Jazz",
-                "musicType": "Jazz",
-                "performer": "interprète",
-                "showSubType": "Carnaval",
-                "showType": "Arts de la rue",
-                "speaker": "intervenant",
-                "stageDirector": "metteur en scène",
-                "visa": "vasi",
-            },
-            "image": {"url": "http://localhost/storage/thumbs/mediations/N4", "credit": "street credit"},
-            "isExpired": False,
-            "isForbiddenToUnderage": False,
-            "isSoldOut": False,
-            "isDuo": True,
-            "isEducational": False,
-            "isDigital": False,
-            "isReleased": True,
-            "name": "l'offre du siècle",
-            "subcategoryId": subcategories.SEANCE_CINE.id,
-            "venue": {
-                "id": offer.venue.id,
-                "address": "1 boulevard Poissonnière",
-                "city": "Paris",
-                "coordinates": {
-                    "latitude": 48.87004,
-                    "longitude": 2.3785,
-                },
-                "name": "il est venu le temps des names",
-                "offerer": {"name": offer.venue.managingOfferer.name},
-                "postalCode": "75000",
-                "publicName": "il est venu le temps des names",
-                "isPermanent": False,
-            },
-            "withdrawalDetails": "modalité de retrait",
+            key=lambda stock: stock["id"],
+        )
+        assert response.json["description"] == "desk cryption"
+        assert response.json["externalTicketOfficeUrl"] == "https://url.com"
+        assert response.json["expenseDomains"] == ["all"]
+        assert response.json["extraData"] == {
+            "author": "mandibule",
+            "isbn": "3838",
+            "durationMinutes": 33,
+            "musicSubType": "Acid Jazz",
+            "musicType": "Jazz",
+            "performer": "interprète",
+            "showSubType": "Carnaval",
+            "showType": "Arts de la rue",
+            "speaker": "intervenant",
+            "stageDirector": "metteur en scène",
+            "visa": "vasi",
         }
+        assert response.json["image"] == {
+            "url": "http://localhost/storage/thumbs/mediations/N4",
+            "credit": "street credit",
+        }
+        assert response.json["isExpired"] == False
+        assert response.json["isForbiddenToUnderage"] == False
+        assert response.json["isSoldOut"] == False
+        assert response.json["isDuo"] == True
+        assert response.json["isEducational"] == False
+        assert response.json["isDigital"] == False
+        assert response.json["isReleased"] == True
+        assert response.json["name"] == "l'offre du siècle"
+        assert response.json["subcategoryId"] == subcategories.SEANCE_CINE.id
+        assert response.json["venue"] == {
+            "id": offer.venue.id,
+            "address": "1 boulevard Poissonnière",
+            "city": "Paris",
+            "coordinates": {
+                "latitude": 48.87004,
+                "longitude": 2.3785,
+            },
+            "name": "il est venu le temps des names",
+            "offerer": {"name": offer.venue.managingOfferer.name},
+            "postalCode": "75000",
+            "publicName": "il est venu le temps des names",
+            "isPermanent": False,
+        }
+        assert response.json["withdrawalDetails"] == "modalité de retrait"
 
     def test_get_thing_offer(self, app):
         product = ProductFactory(thumbCount=1, subcategoryId=subcategories.ABO_MUSEE.id)
