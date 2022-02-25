@@ -172,6 +172,7 @@ def test_update_external_pro_user_attributes(
         if create_virtual
         else {"Juste Libraire", "Plage Culture", "Plage Events"}
     )
+    assert attributes.venue_count == 5 if create_virtual else 4
 
     assert attributes.user_id == pro_user.id
     assert attributes.first_name == pro_user.firstName
@@ -179,7 +180,6 @@ def test_update_external_pro_user_attributes(
     assert attributes.marketing_email_subscription is enable_subscription
     assert attributes.user_is_attached is (attached in ("one", "all"))
     assert attributes.user_is_creator is not (attached == "all")
-    assert attributes.venue_count == 4 if create_virtual else 3
 
     assert (
         attributes.venue_name == {"Cinéma de la plage", "Festival de la mer", "Théâtre de la plage", "Théâtre en ligne"}
@@ -211,6 +211,7 @@ def test_update_external_pro_user_attributes_no_offerer_no_venue():
     assert attributes.is_user_email is True
     assert attributes.is_booking_email is False
     assert attributes.offerer_name == set()
+    assert attributes.venue_count == 0
 
     assert attributes.user_id == user.id
     assert attributes.first_name == user.firstName
@@ -218,7 +219,6 @@ def test_update_external_pro_user_attributes_no_offerer_no_venue():
     assert attributes.marketing_email_subscription is True
     assert attributes.user_is_attached is False
     assert attributes.user_is_creator is False
-    assert attributes.venue_count == 0
 
     assert attributes.venue_name is None
     assert attributes.venue_type is None
@@ -252,6 +252,7 @@ def test_update_external_pro_booking_email_attributes():
     assert attributes.is_user_email is False
     assert attributes.is_booking_email is True
     assert attributes.offerer_name == {offerer.name}
+    assert attributes.venue_count == 1
 
     assert attributes.user_id is None
     assert attributes.first_name is None
@@ -259,7 +260,6 @@ def test_update_external_pro_booking_email_attributes():
     assert attributes.marketing_email_subscription is None
     assert attributes.user_is_attached is None
     assert attributes.user_is_creator is None
-    assert attributes.venue_count is None
 
     assert attributes.venue_name == {venue.name}
     assert attributes.venue_type == {venue.venueTypeCode.name}
