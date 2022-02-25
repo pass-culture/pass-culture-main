@@ -77,6 +77,8 @@ class VirtualVenueFactory(VenueFactory):
     departementCode = None
     postalCode = None
     city = None
+    latitude = None
+    longitude = None
     siret = None
     audioDisabilityCompliant = False
     mentalDisabilityCompliant = False
@@ -186,6 +188,7 @@ class ThingOfferFactory(OfferFactory):
 
 class DigitalOfferFactory(OfferFactory):
     product = factory.SubFactory(DigitalProductFactory)
+    venue = factory.SubFactory(VirtualVenueFactory)
 
 
 class StockFactory(BaseFactory):
