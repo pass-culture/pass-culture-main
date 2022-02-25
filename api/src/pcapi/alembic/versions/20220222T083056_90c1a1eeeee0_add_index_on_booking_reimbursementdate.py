@@ -7,7 +7,7 @@ from pcapi import settings
 
 
 revision = "90c1a1eeeee0"
-down_revision = "ddedcf7e2c67"
+down_revision = "56c6d018551c"
 branch_labels = None
 depends_on = None
 
