@@ -1099,6 +1099,7 @@ workflows:
            branches:
              only:
                - master
+               - pc-13642-variabilize-gunicorn-worker-class
          requires:
            - "Run core tests (except core/users/external)"
            - "Run routes tests"
