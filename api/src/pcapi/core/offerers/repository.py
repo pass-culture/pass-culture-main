@@ -210,6 +210,6 @@ def venues_have_offers(*venues: models.Venue) -> bool:
     ).scalar()
 
 
-def count_venues(*offerers: models.Offerer) -> bool:
-    """Number of venues managed by all offerers to which the user account with given email is attached"""
-    return models.Venue.query.filter(models.Venue.managingOffererId.in_([offerer.id for offerer in offerers])).count()
+def find_venues_by_offerers(*offerers: models.Offerer) -> list[models.Venue]:
+    """Get all venues managed by any offerer given in arguments"""
+    return models.Venue.query.filter(models.Venue.managingOffererId.in_([offerer.id for offerer in offerers])).all()

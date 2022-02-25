@@ -12,8 +12,8 @@ from pcapi.core.bookings.models import IndividualBooking
 from pcapi.core.bookings.repository import venues_have_bookings
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import Venue
-from pcapi.core.offerers.repository import count_venues
 from pcapi.core.offerers.repository import find_venues_by_booking_email
+from pcapi.core.offerers.repository import find_venues_by_offerers
 from pcapi.core.offerers.repository import venues_have_offers
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
@@ -68,14 +68,17 @@ def get_user_or_pro_attributes(user: User) -> Union[UserAttributes, ProAttribute
 
 
 def get_pro_attributes(email: str) -> ProAttributes:
-    user = find_pro_user_by_email(email)
-    venues = find_venues_by_booking_email(email)
-
     # Offerer name attribute is the list of all offerers either managed by the user account (associated in user_offerer)
     # or the parent offerer of the venue which bookingEmail is the requested email address.
     offerer_name = []
+
+    # All venues which are either managed by offerers associated with user account or linked to the current email as
+    # booking email. A venue can be part of both sets, which union is the following set() of ids
+    all_venue_ids: set[int] = set()
+
     attributes = {}
 
+    user = find_pro_user_by_email(email)
     if user:
         if user.offerers:
             offerer_name += [offerer.name for offerer in user.offerers]
@@ -90,6 +93,7 @@ def get_pro_attributes(email: str) -> ProAttributes:
         if user and user.offerers:
             offerer_ids = [offerer.id for offerer in user.offerers]
             user_offerers = UserOfferer.query.filter(Offerer.id.in_(offerer_ids)).all()
+            all_venue_ids.update([venue.id for venue in find_venues_by_offerers(*user.offerers)])
             for offerer_id in offerer_ids:
                 if min([(uo.id, uo.userId) for uo in user_offerers if uo.offererId == offerer_id])[1] == user.id:
                     user_is_creator = True
@@ -104,12 +108,13 @@ def get_pro_attributes(email: str) -> ProAttributes:
                 "marketing_email_subscription": user.get_notification_subscriptions().marketing_email,
                 "user_is_attached": user_is_attached,
                 "user_is_creator": user_is_creator,
-                "venue_count": count_venues(*user.offerers),
             }
         )
 
+    venues = find_venues_by_booking_email(email)
     if venues:
         offerer_name += [venue.managingOfferer.name for venue in venues if venue.managingOfferer]
+        all_venue_ids.update([venue.id for venue in venues])
         attributes.update(
             {
                 "venue_name": {venue.publicName or venue.name for venue in venues},
@@ -130,6 +135,7 @@ def get_pro_attributes(email: str) -> ProAttributes:
         is_user_email=bool(user),
         is_booking_email=bool(venues),
         offerer_name=set(offerer_name),
+        venue_count=len(all_venue_ids),
         **attributes,
     )
 
