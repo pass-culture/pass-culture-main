@@ -58,7 +58,7 @@ def upgrade() -> None:
         sa.Column("bookingEmail", sa.String(length=120), nullable=True),
         sa.Column("contactEmail", sa.String(length=120), nullable=False),
         sa.Column("contactPhone", sa.String(length=20), nullable=False),
-        sa.Column("jsonData", postgresql.JSONB(astext_type=sa.Text()), nullable=True),
+        sa.Column("offerVenue", postgresql.JSONB(astext_type=sa.Text()), nullable=True),
         sa.ForeignKeyConstraint(
             ["venueId"],
             ["venue.id"],
