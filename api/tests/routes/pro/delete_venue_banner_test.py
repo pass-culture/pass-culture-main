@@ -42,3 +42,15 @@ class VenueBannerTest:
 
         response = client.delete("/venues/AZERTYUIOP1234567890/banner")
         assert response.status_code == 404
+
+    @patch("pcapi.core.offerers.api.delete_venue_banner")
+    def test_no_access_rights(self, mock_delete_venue_banner, client):
+        user = offers_factories.UserOffererFactory()
+        venue = offers_factories.VenueFactory()  # user has no rights to do anything with this venue
+
+        client = client.with_session_auth(email=user.user.email)
+
+        response = client.delete(f"/venues/{humanize(venue.id)}/banner")
+        assert response.status_code == 403
+
+        mock_delete_venue_banner.assert_not_called()

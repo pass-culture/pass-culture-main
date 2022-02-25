@@ -155,6 +155,8 @@ def upsert_venue_banner(venue_id: str) -> GetVenueResponseModel:
 @spectree_serialize(on_success_status=204)
 def delete_venue_banner(venue_id: str) -> None:
     venue = load_or_404(Venue, venue_id)
+    check_user_has_access_to_offerer(current_user, venue.managingOffererId)
+
     offerers_api.delete_venue_banner(venue)
 
 
