@@ -1,7 +1,6 @@
 import React, { FunctionComponent, useCallback, useRef } from 'react'
 import AvatarEditor, { CroppedRect } from 'react-avatar-editor'
 
-import useActiveFeature from 'components/hooks/useActiveFeature'
 import { ReactComponent as DownloadIcon } from 'icons/ico-download-filled.svg'
 import { CreditInput } from 'new_components/CreditInput/CreditInput'
 import ImageEditor from 'new_components/ImageEditor/ImageEditor'
@@ -42,11 +41,6 @@ export const VenueImageEdit: FunctionComponent<Props> = ({
     }
   }, [onEditedImageSave])
 
-  // @TODO: remove this commit with PC-13631
-  const shouldDisplayImageVenueCredit = useActiveFeature(
-    'PRO_ENABLE_UPLOAD_VENUE_IMAGE'
-  )
-
   return (
     <section className={style['venue-image-edit']}>
       <form action="#" className={style['venue-image-edit-form']}>
@@ -67,13 +61,11 @@ export const VenueImageEdit: FunctionComponent<Props> = ({
           image={image}
           ref={editorRef}
         />
-        {shouldDisplayImageVenueCredit && (
-          <CreditInput
-            credit={credit}
-            extraClassName={style['venue-image-edit-credit']}
-            updateCredit={onSetCredit}
-          />
-        )}
+        <CreditInput
+          credit={credit}
+          extraClassName={style['venue-image-edit-credit']}
+          updateCredit={onSetCredit}
+        />
       </form>
       <Divider />
       <footer className={style['venue-image-edit-footer']}>
