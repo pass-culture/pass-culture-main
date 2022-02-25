@@ -37,6 +37,34 @@ class NextStepTest:
             "hasIdentityCheckPending": False,
         }
 
+    def test_next_subscription_test_profile_completion(self, client):
+        user = users_factories.UserFactory(
+            dateOfBirth=datetime.datetime.combine(datetime.date.today(), datetime.time(0, 0))
+            - relativedelta(years=18, months=5),
+        )
+
+        user.phoneValidationStatus = users_models.PhoneValidationStatusType.VALIDATED
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.USER_PROFILING,
+            resultContent=fraud_factories.UserProfilingFraudDataFactory(
+                risk_rating=fraud_models.UserProfilingRiskRating.TRUSTED
+            ),
+            eligibilityType=users_models.EligibilityType.AGE18,
+        )
+
+        client.with_token(user.email)
+
+        response = client.get("/native/v1/subscription/next_step")
+
+        assert response.status_code == 200
+        assert response.json == {
+            "nextSubscriptionStep": "profile-completion",
+            "allowedIdentityCheckMethods": ["ubble"],
+            "maintenancePageType": None,
+            "hasIdentityCheckPending": False,
+        }
+
     @override_features(
         ENABLE_EDUCONNECT_AUTHENTICATION=False,
         ALLOW_IDCHECK_UNDERAGE_REGISTRATION=False,
@@ -46,6 +74,7 @@ class NextStepTest:
         user = users_factories.UserFactory(
             dateOfBirth=datetime.datetime.combine(datetime.date.today(), datetime.time(0, 0))
             - relativedelta(years=15, months=5),
+            activity="Collégien",
         )
 
         client.with_token(user.email)
@@ -114,6 +143,7 @@ class NextStepTest:
         user = users_factories.UserFactory(
             dateOfBirth=datetime.datetime.combine(datetime.date.today(), datetime.time(0, 0))
             - relativedelta(years=18, months=5),
+            activity="Étudiant",
         )
 
         client.with_token(user.email)
@@ -188,6 +218,7 @@ class NextStepTest:
             user = users_factories.UserFactory(
                 dateOfBirth=datetime.datetime.combine(datetime.date.today(), datetime.time(0, 0))
                 - relativedelta(years=16, days=5),
+                activity="Employé",
             )
 
             # 15-17: no phone validation, no user profiling
@@ -536,6 +567,34 @@ class UpdateProfileTest:
             "city": "Uneville",
             "postalCode": "77000",
             "activityId": "HIGH_SCHOOL_STUDENT",
+            "schoolTypeId": "PUBLIC_HIGH_SCHOOL",
+        }
+
+        client.with_token(user.email)
+        response = client.post("/native/v1/subscription/profile", profile_data)
+
+        assert response.status_code == 400
+
+    @override_features(ENABLE_UBBLE=True)
+    def test_fulfill_profile_missing_mandatory_field(self, client):
+        user = users_factories.UserFactory(
+            address=None,
+            city=None,
+            postalCode=None,
+            activity=None,
+            firstName=None,
+            lastName=None,
+            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
+            phoneNumber="+33609080706",
+            dateOfBirth=datetime.date.today() - relativedelta(years=18, months=6),
+        )
+
+        profile_data = {
+            "firstName": " ",
+            "lastName": "Doe",
+            "address": "1 rue des rues",
+            "city": "Uneville",
+            "postalCode": "77000",
             "schoolTypeId": "PUBLIC_HIGH_SCHOOL",
         }
 
