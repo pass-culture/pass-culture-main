@@ -1,3 +1,5 @@
+@use 'sass:math';
+
 .image-upload-button {
   display: flex;
   flex-direction: column;
@@ -5,7 +7,7 @@
   align-items: center;
   gap: 16px;
   $height: rem(176px);
-  width: ($height * 3) / 2;
+  width: math.div($height * 3, 2);
   height: $height;
   border: 1px solid $grey-medium;
   background-color: $grey-light;
