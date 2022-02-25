@@ -213,6 +213,7 @@ export const postImageToVenue = async ({
   xCropPercent,
   yCropPercent,
   heightCropPercent,
+  imageCredit,
 }) => {
   const body = new FormData()
   body.append('banner', banner)
@@ -221,6 +222,7 @@ export const postImageToVenue = async ({
     x_crop_percent: xCropPercent,
     y_crop_percent: yCropPercent,
     height_crop_percent: heightCropPercent,
+    image_credit: imageCredit,
   })
 
   return await client.postWithFormData(

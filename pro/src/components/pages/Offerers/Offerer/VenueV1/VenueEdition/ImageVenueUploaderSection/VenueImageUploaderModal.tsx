@@ -79,12 +79,21 @@ export const VenueImageUploaderModal: FunctionComponent<Props> = ({
       xCropPercent: croppingRect.x,
       yCropPercent: croppingRect.y,
       heightCropPercent: croppingRect.height,
+      imageCredit: credit,
     })
     reloadImage(bannerUrl)
     setIsUploading(false)
     onDismiss()
     notification.success('Vos modifications ont bien été prises en compte')
-  }, [venueId, image, croppingRect, reloadImage, onDismiss, notification])
+  }, [
+    venueId,
+    image,
+    croppingRect,
+    reloadImage,
+    onDismiss,
+    notification,
+    credit,
+  ])
 
   return (
     <DialogBox
