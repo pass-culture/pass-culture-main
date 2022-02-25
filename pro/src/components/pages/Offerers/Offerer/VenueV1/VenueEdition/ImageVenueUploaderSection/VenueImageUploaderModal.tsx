@@ -1,4 +1,4 @@
-import React, { useCallback, useState, FunctionComponent } from 'react'
+import React, { useCallback, useState } from 'react'
 import { CroppedRect } from 'react-avatar-editor'
 
 import useNotification from 'components/hooks/useNotification'
@@ -13,12 +13,13 @@ import { VenueImagePreview } from '../VenueImagePreview/VenueImagePreview'
 import { IMAGE_TYPES, MAX_IMAGE_SIZE, MIN_IMAGE_WIDTH } from './constants'
 import { getDataURLFromImageURL } from './utils'
 
-type Props = {
+type ImageVenueUploaderSectionProps = {
   venueId: string
   onDismiss: () => void
   reloadImage: (url: string) => void
+  venueCredit: string
+  setVenueCredit: (credit: string) => void
   defaultImage?: string
-  children?: never
 }
 
 const constraints = [
@@ -27,14 +28,16 @@ const constraints = [
   imageConstraints.width(MIN_IMAGE_WIDTH),
 ]
 
-export const VenueImageUploaderModal: FunctionComponent<Props> = ({
+export const VenueImageUploaderModal = ({
   venueId,
   onDismiss,
   reloadImage,
   defaultImage,
-}) => {
+  venueCredit,
+  setVenueCredit,
+}: ImageVenueUploaderSectionProps): JSX.Element => {
   const [image, setImage] = useState<string | undefined>(defaultImage)
-  const [credit, setCredit] = useState('')
+  const [credit, setCredit] = useState(venueCredit)
   const [croppingRect, setCroppingRect] = useState<CroppedRect>()
   const [editedImage, setEditedImage] = useState('')
   const [isUploading, setIsUploading] = useState(false)
@@ -84,6 +87,7 @@ export const VenueImageUploaderModal: FunctionComponent<Props> = ({
     reloadImage(bannerUrl)
     setIsUploading(false)
     onDismiss()
+    setVenueCredit(credit)
     notification.success('Vos modifications ont bien été prises en compte')
   }, [
     venueId,
@@ -93,6 +97,7 @@ export const VenueImageUploaderModal: FunctionComponent<Props> = ({
     onDismiss,
     notification,
     credit,
+    setVenueCredit,
   ])
 
   return (
