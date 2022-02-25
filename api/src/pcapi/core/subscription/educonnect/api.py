@@ -83,7 +83,7 @@ def _add_error_subscription_messages(
             "Ton compte ÉduConnect est déjà rattaché à un autre compte pass Culture. Vérifie que tu n'as pas déjà créé un compte avec une autre adresse mail.",
         )
 
-    if fraud_models.FraudReasonCode.DUPLICATE_USER in reason_codes:
+    if fraud_models.FraudReasonCode.DUPLICATE_INE in reason_codes:
         subscription_messages.add_error_message(
             user,
             "Ton identificant national INE est déjà rattaché à un autre compte pass Culture. Vérifie que tu n'as pas déjà créé un compte avec une autre adresse mail.",
