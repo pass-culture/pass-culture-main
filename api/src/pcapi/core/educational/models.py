@@ -145,6 +145,58 @@ class CollectiveOffer(PcObject, ValidationMixin, AccessibilityMixin, StatusMixin
         )
 
 
+class CollectiveOfferTemplate(PcObject, ValidationMixin, AccessibilityMixin, StatusMixin, Model):  # type: ignore[valid-type]
+    __tablename__ = "collective_offer_template"
+
+    id: int = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
+
+    offerId = sa.Column(sa.BigInteger, nullable=True)
+
+    isActive = sa.Column(sa.Boolean, nullable=False, server_default=sa.sql.expression.true(), default=True)
+
+    venueId = sa.Column(sa.BigInteger, sa.ForeignKey("venue.id"), nullable=False, index=True)
+
+    venue = sa.orm.relationship("Venue", foreign_keys=[venueId], back_populates="collectiveOfferTemplates")
+
+    name = sa.Column(sa.String(140), nullable=False)
+
+    description = sa.Column(sa.Text, nullable=True)
+
+    durationMinutes = sa.Column(sa.Integer, nullable=True)
+
+    dateCreated = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow)
+
+    subcategoryId = sa.Column(sa.Text, nullable=False, index=True)
+
+    dateUpdated: datetime = sa.Column(sa.DateTime, nullable=True, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    students: list[str] = sa.Column(
+        MutableList.as_mutable(postgresql.ARRAY(sa.Enum(StudentLevels))),
+        nullable=False,
+        server_default="{}",
+    )
+
+    priceDetail = sa.Column(sa.Text, nullable=True)
+
+    bookingEmail = sa.Column(sa.String(120), nullable=True)
+
+    contactEmail = sa.Column(sa.String(120), nullable=False)
+
+    contactPhone = sa.Column(sa.String(20), nullable=False)
+
+    offerVenue = sa.Column("jsonData", postgresql.JSONB)
+
+    @property
+    def isReleased(self) -> bool:
+        return (
+            self.isActive
+            and self.validation == OfferValidationStatus.APPROVED
+            and self.venue.isValidated
+            and self.venue.managingOfferer.isActive
+            and self.venue.managingOfferer.isValidated
+        )
+
+
 class CollectiveStock(PcObject, Model):  # type: ignore[valid-type]
     __tablename__ = "collective_stock"
 
