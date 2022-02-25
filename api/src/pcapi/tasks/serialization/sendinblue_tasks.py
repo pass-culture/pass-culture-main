@@ -19,7 +19,7 @@ class SendTransactionalEmailRequest(BaseModel):
     subject: Optional[str] = None
     html_content: Optional[str] = None
     attachment: Optional[dict] = None
-    reply_to: Optional[dict] = None
+    reply_to: dict
 
 
 class UpdateProAttributesRequest(BaseModel):
