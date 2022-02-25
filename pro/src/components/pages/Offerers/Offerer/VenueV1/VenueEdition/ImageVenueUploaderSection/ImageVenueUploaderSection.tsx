@@ -1,4 +1,4 @@
-import React, { useCallback, useState, FunctionComponent } from 'react'
+import React, { useCallback, useState } from 'react'
 
 import useActiveFeature from 'components/hooks/useActiveFeature'
 import Icon from 'components/layout/Icon'
@@ -15,16 +15,19 @@ import styles from './ImageVenueUploaderSection.module.scss'
 import { VenueImageDeleteModal } from './VenueImageDeleteModal'
 import { VenueImageUploaderModal } from './VenueImageUploaderModal'
 
-type Props = {
+type ImageVenueUploaderSectionProps = {
   venueId: string
   venueImage: string | null
-  children?: never
+  venueCredit: string
+  setVenueCredit: (credit: string) => void
 }
 
-export const ImageVenueUploaderSection: FunctionComponent<Props> = ({
+export const ImageVenueUploaderSection = ({
   venueId,
   venueImage,
-}) => {
+  venueCredit,
+  setVenueCredit,
+}: ImageVenueUploaderSectionProps): JSX.Element => {
   const {
     visible: isUploaderModalVisible,
     showModal: showUploaderModal,
@@ -108,6 +111,8 @@ export const ImageVenueUploaderSection: FunctionComponent<Props> = ({
           defaultImage={imageUniqueURL || undefined}
           onDismiss={hideUploaderModal}
           reloadImage={reloadImage}
+          setVenueCredit={setVenueCredit}
+          venueCredit={venueCredit}
           venueId={venueId}
         />
       )}

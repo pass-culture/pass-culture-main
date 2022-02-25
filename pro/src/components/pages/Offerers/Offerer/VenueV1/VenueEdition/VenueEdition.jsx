@@ -55,6 +55,16 @@ const VenueEdition = ({
     'ENFORCE_BANK_INFORMATION_WITH_SIRET'
   )
 
+  const setVenueCredit = credit => {
+    setVenue({
+      ...venue,
+      bannerMeta: {
+        ...venue.bannerMeta,
+        image_credit: credit,
+      },
+    })
+  }
+
   const shouldDisplayImageVenueUploaderSection = venue?.isPermanent
 
   useEffect(() => {
@@ -184,6 +194,8 @@ const VenueEdition = ({
           )}
           {!!shouldDisplayImageVenueUploaderSection && (
             <ImageVenueUploaderSection
+              setVenueCredit={setVenueCredit}
+              venueCredit={venue.bannerMeta?.image_credit}
               venueId={venue.id}
               venueImage={venue.bannerUrl}
             />
