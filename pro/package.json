@@ -18,6 +18,7 @@
     "lint:js:strict:fix": "yarn lint:js:strict --fix",
     "lint:scss": "stylelint '**/*.scss'",
     "lint:scss:fix": "yarn lint:scss --fix",
+    "prettier:js:changed:fix": "./scripts/lint_diff.sh",
     "qa:diff": "scripts/compare-screenshots.sh",
     "qa:test": "yarn testcafe quality_assurance",
     "start": "node scripts/start.js",
