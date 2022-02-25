@@ -75,7 +75,7 @@ def test_update_external_pro_user():
     user = ProFactory()
 
     n_query_get_user = 1
-    n_query_is_pro = 4
+    n_query_is_pro = 3
 
     with assert_num_queries(n_query_get_user + n_query_is_pro):
         update_external_user(user)
