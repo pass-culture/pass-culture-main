@@ -38,6 +38,13 @@ from pcapi.routes import install_all_routes
 
 from tests.serialization.serialization_decorator_test import test_blueprint
 
+from .pfsa import _engine  # pylint: disable=unused-import
+from .pfsa import _session  # pylint: disable=unused-import
+from .pfsa import _transaction  # pylint: disable=unused-import
+from .pfsa import db_session  # pylint: disable=unused-import
+from .pfsa import pytest_addoption as pfsa_addoption
+from .pfsa import pytest_configure as pfsa_configure
+
 
 def run_migrations():
     alembic_cfg = Config("alembic.ini")
@@ -45,7 +52,12 @@ def run_migrations():
     command.upgrade(alembic_cfg, "heads")
 
 
+def pytest_addoption(parser):
+    pfsa_addoption(parser)
+
+
 def pytest_configure(config):
+    pfsa_configure(config)
     if config.getoption("capture") == "no":
         TestClient.WITH_DOC = True
 
@@ -60,6 +72,7 @@ def app_fixture():
     #   - pytest tests/admin/custom_views/offer_view_test.py
     #   - pytest tests/core/fraud/test_api.py
     # Leave an XXX note about why we need that.
+    # TODO (ASK, SA1.4): vérifier si c'est toujours utile une fois SA1.4 utilisé
     app.teardown_request_funcs[None].remove(flask_app.remove_db_session)
 
     with app.app_context():

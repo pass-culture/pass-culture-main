@@ -24,7 +24,6 @@ from sqlalchemy.orm import joinedload
 from sqlalchemy.orm.attributes import InstrumentedAttribute
 from sqlalchemy.sql.elements import not_
 from sqlalchemy.sql.functions import coalesce
-from sqlalchemy.util._collections import AbstractKeyedTuple
 
 from pcapi.core.bookings import constants
 from pcapi.core.bookings.models import Booking
@@ -647,8 +646,8 @@ def _get_filtered_booking_pro(
 def _duplicate_booking_when_quantity_is_two(bookings_recap_query: Query) -> Query:
     return bookings_recap_query.union_all(bookings_recap_query.filter(Booking.quantity == 2))
 
-
-def _serialize_booking_recap(booking: AbstractKeyedTuple) -> BookingRecap:
+# TODO (ASK, SA1.4): préciser le typehint booking
+def _serialize_booking_recap(booking: object) -> BookingRecap:
     return BookingRecap(
         offer_identifier=booking.offerId,
         offer_name=booking.offerName,
@@ -705,7 +704,8 @@ def _apply_departement_timezone(naive_datetime: datetime, departement_code: str)
     )
 
 
-def _serialize_date_with_timezone(date_without_timezone: datetime, booking: AbstractKeyedTuple) -> datetime:
+# TODO (ASK, SA1.4): préciser le typehint booking
+def _serialize_date_with_timezone(date_without_timezone: datetime, booking: object) -> datetime:
     if booking.venueDepartmentCode:
         return _apply_departement_timezone(
             naive_datetime=date_without_timezone, departement_code=booking.venueDepartmentCode

@@ -1,6 +1,8 @@
-import pytest
-from sqlalchemy import Sequence
+from datetime import datetime
 
+import pytest
+
+from pcapi.core.offers.factories import StockFactory
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
 from pcapi.local_providers.chunk_manager import save_chunks
@@ -45,18 +47,17 @@ class SaveChunksTest:
 
         offer = create_offer_with_thing_product(venue, product=product, id_at_provider="1%12345678912345")
         offer.venueId = venue.id
-        offer_id = db.session.execute(Sequence("offer_id_seq"))
-        offer.id = offer_id
 
-        stock = create_stock(offer=offer)
-        stock.offerId = offer_id
+        stock = StockFactory(
+            dateCreated=datetime.utcnow(),
+            dateModified=datetime.utcnow(),
+            offer=offer,
+        )
 
         chunk_to_insert = {
             "1|Offer": offer,
             "1|Stock": stock,
         }
-        db.session.expunge(offer)
-        db.session.expunge(stock)
 
         chunk_to_update = {}
 

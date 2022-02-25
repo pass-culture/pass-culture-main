@@ -14,18 +14,18 @@ def test_fill_individual_booking_deposit_id(caplog):
     already_filled_bookings = bookings_factories.IndividualBookingFactory.create_batch(3)
     db.session.execute("ALTER TABLE booking DISABLE TRIGGER booking_update;")
     to_update_bookings = bookings_factories.IndividualBookingFactory.create_batch(
-        3, individualBooking__attached_deposit="forced_none"
+        3, individualBooking__deposit=None
     )
     not_updated_booking = bookings_factories.IndividualBookingFactory(
         amount=0,
         dateCreated=(datetime.utcnow() + relativedelta(years=3)),
-        individualBooking__attached_deposit="forced_none",
+        individualBooking__deposit=None,
     )
 
     warning_booking = bookings_factories.IndividualBookingFactory(
         amount=10,
         dateCreated=(datetime.utcnow() + relativedelta(years=3)),
-        individualBooking__attached_deposit="forced_none",
+        individualBooking__deposit=None,
     )
     db.session.execute("ALTER TABLE booking ENABLE TRIGGER booking_update;")
 

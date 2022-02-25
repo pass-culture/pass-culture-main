@@ -34,6 +34,7 @@ class BeneficiaryUserViewTest:
         users_factories.AdminFactory(email="admin@example.com")
         users_factories.BeneficiaryGrant18Factory.create_batch(3)
 
+        # TODO (ASK, SA1.4): utiliser la fixture client
         client = TestClient(app.test_client()).with_session_auth("admin@example.com")
         n_queries = testing.AUTHENTICATION_QUERIES
         n_queries += 1  # select COUNT
@@ -60,6 +61,7 @@ class BeneficiaryUserViewTest:
             csrf_token="token",
         )
 
+        # TODO (ASK, SA1.4): utiliser la fixture client
         client = TestClient(app.test_client()).with_session_auth("admin@example.com")
         response = client.post("/pc/back-office/beneficiary_users/new", form=data)
 
@@ -114,6 +116,7 @@ class BeneficiaryUserViewTest:
             depositVersion="2",
         )
 
+        # TODO (ASK, SA1.4): utiliser la fixture client
         client = TestClient(app.test_client()).with_session_auth("user@example.com")
         response = client.post("/pc/back-office/beneficiary_users/new", form=data)
 
@@ -181,6 +184,7 @@ class BeneficiaryUserViewTest:
             postalCode="93000",
         )
 
+        # TODO (ASK, SA1.4): utiliser la fixture client
         client = TestClient(app.test_client()).with_session_auth("user@example.com")
         response = client.post("/pc/back-office/beneficiary_users/new", form=data)
 
@@ -201,6 +205,7 @@ class BeneficiaryUserViewTest:
         booking = bookings_factories.IndividualBookingFactory()
         beneficiary = booking.individualBooking.user
 
+        # TODO (ASK, SA1.4): utiliser la fixture client
         client = TestClient(app.test_client()).with_session_auth(admin.email)
         url = f"/pc/back-office/beneficiary_users/suspend?user_id={beneficiary.id}"
         data = {
@@ -221,6 +226,7 @@ class BeneficiaryUserViewTest:
         admin = users_factories.AdminFactory(email="admin15@example.com")
         beneficiary = users_factories.BeneficiaryGrant18Factory(email="user15@example.com", isActive=False)
 
+        # TODO (ASK, SA1.4): utiliser la fixture client
         client = TestClient(app.test_client()).with_session_auth(admin.email)
         url = f"/pc/back-office/beneficiary_users/unsuspend?user_id={beneficiary.id}"
         data = {
@@ -238,6 +244,7 @@ class BeneficiaryUserViewTest:
         admin = users_factories.AdminFactory(email="admin@example.com")
         beneficiary = users_factories.BeneficiaryGrant18Factory(email="user@example.com")
 
+        # TODO (ASK, SA1.4): utiliser la fixture client
         client = TestClient(app.test_client()).with_session_auth(admin.email)
         url = f"/pc/back-office/beneficiary_users/suspend?user_id={beneficiary.id}"
         data = {
@@ -274,6 +281,7 @@ class BeneficiaryUserViewTest:
             postalCode="76000",
         )
 
+        # TODO (ASK, SA1.4): utiliser la fixture client
         client = TestClient(app.test_client()).with_session_auth("user@example.com")
         response = client.post(f"/pc/back-office/beneficiary_users/edit/?id={user_to_edit.id}", form=data)
 
@@ -296,6 +304,7 @@ class BeneficiaryUserViewTest:
     ):
         admin = users_factories.AdminFactory(email="admin@example.com")
         beneficiary = users_factories.BeneficiaryGrant18Factory(email="partner@example.com", isEmailValidated=False)
+        # TODO (ASK, SA1.4): utiliser la fixture client
         client = TestClient(app.test_client()).with_session_auth(admin.email)
 
         url = f"/pc/back-office/beneficiary_users/resend-validation-email?user_id={beneficiary.id}"
