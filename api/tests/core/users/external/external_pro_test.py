@@ -21,13 +21,33 @@ from pcapi.models.bank_information import BankInformationStatus
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
-@pytest.mark.parametrize("attached", ["none", "one", "all"])
-@pytest.mark.parametrize("create_offer,create_booking", [(False, False), (True, False), (True, True)])
-@pytest.mark.parametrize("create_dms_accepted", [True, False])
-@pytest.mark.parametrize("create_dms_draft", [True, False])
-@pytest.mark.parametrize("create_permanent", [True, False])
-@pytest.mark.parametrize("create_virtual", [True, False])
-@pytest.mark.parametrize("enable_subscription", [True, False])
+def _build_params(subs, virt, perman, draft, accep, offer, book, attach):
+    return pytest.param(
+        subs,
+        virt,
+        perman,
+        draft,
+        accep,
+        offer,
+        book,
+        attach,
+        id=f"sub:{subs}, vir:{virt}, per:{perman}, dra:{draft}, " f"acc:{accep}, off:{offer}, boo:{book}, att:{attach}",
+    )
+
+
+@pytest.mark.parametrize(
+    "enable_subscription,create_virtual,create_permanent,create_dms_draft,create_dms_accepted,"
+    "create_offer,create_booking,attached",
+    [
+        #             subs, virt, perman, draft, accep, offer, book, attach
+        _build_params(False, False, False, False, False, False, False, "none"),
+        _build_params(True, False, True, True, False, True, False, "one"),
+        _build_params(False, True, False, False, True, True, False, "all"),
+        _build_params(True, True, True, True, True, True, True, "none"),
+        _build_params(False, True, True, False, True, False, False, "one"),
+        _build_params(True, True, True, True, True, True, True, "all"),
+    ],
+)
 def test_update_external_pro_user_attributes(
     enable_subscription,
     create_virtual,
