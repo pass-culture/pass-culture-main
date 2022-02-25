@@ -18,6 +18,7 @@ class SendinblueTasksTest:
                 "template_id": 1,
                 "tags": [],
                 "sender": {"email": "support@example.com", "name": "pass Culture"},
+                "reply_to": {"email": "support@example.com", "name": "pass Culture"},
             },
             headers={AUTHORIZATION_HEADER_KEY: AUTHORIZATION_HEADER_VALUE},
         )
@@ -29,6 +30,10 @@ class SendinblueTasksTest:
         assert mock_send_transac_email.call_args_list[0][0][0].template_id == 1
         assert mock_send_transac_email.call_args_list[0][0][0].to == [{"email": "general-kenobi@coruscant.com"}]
         assert mock_send_transac_email.call_args_list[0][0][0].sender == {
+            "email": "support@example.com",
+            "name": "pass Culture",
+        }
+        assert mock_send_transac_email.call_args_list[0][0][0].reply_to == {
             "email": "support@example.com",
             "name": "pass Culture",
         }
@@ -45,6 +50,7 @@ class SendinblueTasksTest:
                 "template_id": 1,
                 "tags": [],
                 "sender": {"email": "support@example.com", "name": "pass Culture"},
+                "reply_to": {"email": "support@example.com", "name": "pass Culture"},
             },
             headers={AUTHORIZATION_HEADER_KEY: AUTHORIZATION_HEADER_VALUE},
         )
@@ -56,6 +62,10 @@ class SendinblueTasksTest:
         assert mock_send_transac_email.call_args_list[0][0][0].template_id == 1
         assert mock_send_transac_email.call_args_list[0][0][0].to == [{"email": "general-kenobi@coruscant.com"}]
         assert mock_send_transac_email.call_args_list[0][0][0].sender == {
+            "email": "support@example.com",
+            "name": "pass Culture",
+        }
+        assert mock_send_transac_email.call_args_list[0][0][0].reply_to == {
             "email": "support@example.com",
             "name": "pass Culture",
         }
