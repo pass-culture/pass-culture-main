@@ -1160,6 +1160,7 @@ class ValidatePhoneNumberTest:
         user = users_factories.UserFactory(
             phoneNumber="+33607080900",
             subscriptionState=users_models.SubscriptionState.email_validated,
+            activity="Lycéen",
         )
 
         fraud_factories.BeneficiaryFraudCheckFactory(
