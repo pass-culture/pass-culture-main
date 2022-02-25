@@ -36,11 +36,11 @@ def get_settings() -> serializers.SettingsResponse:
         auto_activate_digital_bookings=features[FeatureToggle.AUTO_ACTIVATE_DIGITAL_BOOKINGS],
         display_dms_redirection=features[FeatureToggle.DISPLAY_DMS_REDIRECTION],
         enable_id_check_retention=features[FeatureToggle.ENABLE_ID_CHECK_RETENTION],
-        # TODO: lixxday: remove after the next forced app release (last forced release: 1.176.0)
+        # TODO: lixxday: remove after the next forced app release (forced release > 1.176.0)
         enable_native_eac_individual=True,
         enable_native_id_check_verbose_debugging=features[FeatureToggle.ENABLE_NATIVE_ID_CHECK_VERBOSE_DEBUGGING],
         enable_phone_validation=features[FeatureToggle.ENABLE_PHONE_VALIDATION],
-        # TODO: lixxday: remove after the next forced app release (last forced release: 1.176.0)
+        # TODO: lixxday: remove after the next forced app release (forced release > 1.176.0)
         enable_underage_generalisation=True,
         id_check_address_autocompletion=features[FeatureToggle.ID_CHECK_ADDRESS_AUTOCOMPLETION],
         is_recaptcha_enabled=features[FeatureToggle.ENABLE_NATIVE_APP_RECAPTCHA],

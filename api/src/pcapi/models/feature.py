@@ -48,7 +48,6 @@ class FeatureToggle(enum.Enum):
         "Active le champ isbn obligatoire lors de la création d'offre de type LIVRE_EDITION"
     )
     ENABLE_NATIVE_APP_RECAPTCHA = "Active le reCaptacha sur l'API native"
-    ENABLE_NATIVE_EAC_INDIVIDUAL = "Active l'EAC individuel sur l'app native"
     ENABLE_NATIVE_ID_CHECK_VERSION = "Utilise la version d'ID-Check intégrée à l'application native"
     ENABLE_NATIVE_ID_CHECK_VERBOSE_DEBUGGING = (
         "Active le mode debug Firebase pour l'Id Check intégrée à l'application native"
