@@ -23,9 +23,8 @@ class NextSubscriptionStepResponse(BaseModel):
 
 
 class ProfileUpdateRequest(BaseModel):
-    activity_id: Optional[profile_options.ACTIVITY_ID_ENUM]
-    activity: Optional[users_models.ActivityEnum]  # TODO: CorentinN: remove this field when frontend sends activity_id
-    address: Optional[str]
+    activity_id: profile_options.ACTIVITY_ID_ENUM
+    address: str
     city: str
     first_name: str
     last_name: str

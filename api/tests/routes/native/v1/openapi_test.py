@@ -1281,15 +1281,8 @@ def test_public_api(client, app):
                 },
                 "ProfileUpdateRequest": {
                     "properties": {
-                        "activity": {
-                            "anyOf": [{"$ref": "#/components/schemas/ActivityEnum"}],
-                            "nullable": True,
-                        },
-                        "activityId": {
-                            "anyOf": [{"$ref": "#/components/schemas/ActivityIdEnum"}],
-                            "nullable": True,
-                        },
-                        "address": {"nullable": True, "title": "Address", "type": "string"},
+                        "activityId": {"$ref": "#/components/schemas/ActivityIdEnum"},
+                        "address": {"title": "Address", "type": "string"},
                         "city": {"title": "City", "type": "string"},
                         "firstName": {"title": "Firstname", "type": "string"},
                         "lastName": {"title": "Lastname", "type": "string"},
@@ -1299,24 +1292,9 @@ def test_public_api(client, app):
                             "nullable": True,
                         },
                     },
-                    "required": ["city", "firstName", "lastName", "postalCode"],
+                    "required": ["activityId", "address", "city", "firstName", "lastName", "postalCode"],
                     "title": "ProfileUpdateRequest",
                     "type": "object",
-                },
-                "ActivityEnum": {
-                    "description": "An enumeration.",
-                    "enum": [
-                        "Coll\u00e9gien",
-                        "Lyc\u00e9en",
-                        "\u00c9tudiant",
-                        "Employ\u00e9",
-                        "Apprenti",
-                        "Alternant",
-                        "Volontaire",
-                        "Inactif",
-                        "Ch\u00f4meur",
-                    ],
-                    "title": "ActivityEnum",
                 },
                 "ActivityIdEnum": {
                     "description": "An enumeration.",
