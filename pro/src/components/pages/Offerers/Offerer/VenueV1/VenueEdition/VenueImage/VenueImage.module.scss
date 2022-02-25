@@ -1,6 +1,8 @@
+@use 'sass:math';
+
 .venue-image {
   $height: rem(176px);
-  width: ($height * 3) / 2;
+  width: math.div($height * 3, 2);
   height: $height;
   object-fit: cover;
   border: 1px solid $grey-medium;
