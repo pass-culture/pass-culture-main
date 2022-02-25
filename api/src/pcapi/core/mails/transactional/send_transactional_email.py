@@ -13,13 +13,14 @@ logger = logging.getLogger(__name__)
 def send_transactional_email(payload: SendTransactionalEmailRequest) -> bool:
     to = [{"email": email} for email in payload.recipients]
     sender = payload.sender
-    reply_to = payload.reply_to or sender
+    reply_to = payload.reply_to
 
     extra = {
         "template_id": payload.template_id,
         "subject": payload.subject,
         "sender": payload.sender,
         "recipients": payload.recipients,
+        "reply_to": payload.reply_to,
     }
 
     send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(to=to, sender=sender, reply_to=reply_to)
