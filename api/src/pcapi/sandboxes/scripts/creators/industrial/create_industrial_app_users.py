@@ -298,12 +298,10 @@ def create_short_email_beneficiaries() -> dict:
 
         fraud_factories.BeneficiaryFraudCheckFactory(user=beneficiary_and_exunderage)
         fraud_factories.BeneficiaryFraudResultFactory(user=beneficiary_and_exunderage)
-        beneficiary_import = users_factories.BeneficiaryImportFactory(beneficiary=beneficiary_and_exunderage)
-        users_factories.BeneficiaryImportStatusFactory(beneficiaryImport=beneficiary_import, author=None)
-        users_factories.DepositGrantFactory(user=beneficiary_and_exunderage)
-        beneficiary_and_exunderage.add_beneficiary_role()
-        beneficiary_and_exunderage.remove_underage_beneficiary_role()
-        users.append(beneficiary_and_exunderage)
+    users_factories.DepositGrantFactory(user=beneficiary_and_exunderage)
+    beneficiary_and_exunderage.add_beneficiary_role()
+    beneficiary_and_exunderage.remove_underage_beneficiary_role()
+    users.append(beneficiary_and_exunderage)
 
     with freeze_time(datetime.utcnow() - relativedelta(years=GRANT_18_VALIDITY_IN_YEARS, months=5)):
         users.append(
