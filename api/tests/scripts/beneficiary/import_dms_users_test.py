@@ -378,7 +378,9 @@ class RunIntegrationTest:
         ]
 
         dms_api.import_dms_users(procedure_id=6712558)
-        dms_application = fraud_models.OrphanDmsApplication.query.first()
+        dms_application = fraud_models.OrphanDmsApplication.query.filter(
+            fraud_models.OrphanDmsApplication.application_id == 123
+        ).one()
         assert dms_application.application_id == 123
         assert dms_application.process_id == 6712558
         assert dms_application.email == "nonexistant@example.com"
