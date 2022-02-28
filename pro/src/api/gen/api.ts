@@ -432,7 +432,9 @@ export interface GetOffererVenueResponseModel {
     withdrawalDetails?: string | null;
 }
 
-export interface GetOfferersListResponseModel extends Array<GetOfferersResponseModel> {
+export interface GetOfferersListResponseModel {
+    nbTotalResults: number;
+    offerers: Array<GetOfferersResponseModel>;
 }
 
 export interface GetOfferersNamesQueryModel {
@@ -892,7 +894,7 @@ export interface SendTransactionalEmailRequest {
     htmlContent?: string | null;
     params?: any | null;
     recipients: Array<string>;
-    replyTo?: any | null;
+    replyTo: any;
     sender: any;
     subject?: string | null;
     tags?: Array<string> | null;
