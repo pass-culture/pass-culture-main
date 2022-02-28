@@ -60,28 +60,30 @@ def _extract_useful_content_from_response(
         response, "reference-data-checks"
     )
 
-    score = _get_data_attribute(response, "score")
     comment = _get_data_attribute(response, "comment")
     identification_id = _get_data_attribute(response, "identification-id")
     identification_url = _get_data_attribute(response, "identification-url")
-    status = _get_data_attribute(response, "status")
     registered_at = _get_data_attribute(response, "created-at")
+    score = _get_data_attribute(response, "score")
+    status = _get_data_attribute(response, "status")
 
     content = ubble_fraud_models.UbbleContent(
-        status=status,
         birth_date=getattr(documents, "birth_date", None),
-        first_name=getattr(documents, "first_name", None),
-        last_name=getattr(documents, "last_name", None),
-        document_type=getattr(documents, "document_type", None),
-        id_document_number=getattr(documents, "document_number", None),
-        score=score,
         comment=comment,
-        reference_data_check_score=getattr(reference_data_checks, "score", None),
+        document_type=getattr(documents, "document_type", None),
         expiry_date_score=getattr(document_checks, "expiry_date_score", None),
-        supported=getattr(document_checks, "supported", None),
+        first_name=getattr(documents, "first_name", None),
+        id_document_number=getattr(documents, "document_number", None),
         identification_id=identification_id,
         identification_url=identification_url,
+        gender=getattr(documents, "gender", None),
+        last_name=getattr(documents, "last_name", None),
+        married_name=getattr(documents, "married_name", None),
+        reference_data_check_score=getattr(reference_data_checks, "score", None),
         registration_datetime=registered_at,
+        score=score,
+        status=status,
+        supported=getattr(document_checks, "supported", None),
     )
     return content
 
