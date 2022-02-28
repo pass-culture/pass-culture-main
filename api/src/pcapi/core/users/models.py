@@ -180,6 +180,7 @@ class User(PcObject, Model, NeedsValidationMixin):
     externalIds = sa.Column(postgresql.json.JSONB, nullable=True, default={}, server_default="{}")
     extraData = sa.Column(MutableDict.as_mutable(postgresql.json.JSONB), nullable=True, default={}, server_default="{}")
     firstName = sa.Column(sa.String(128), nullable=True)
+    gender = sa.Column(sa.Enum(GenderEnum, create_constraint=False), nullable=True)
     hasSeenTutorials = sa.Column(sa.Boolean, nullable=True)
     hasSeenProTutorials = sa.Column(sa.Boolean, nullable=False, server_default=expression.false())
     idPieceNumber = sa.Column(sa.String, nullable=True, unique=True)
@@ -193,6 +194,7 @@ class User(PcObject, Model, NeedsValidationMixin):
     isEmailValidated = sa.Column(sa.Boolean, nullable=True, server_default=expression.false())
     lastConnectionDate = sa.Column(sa.DateTime, nullable=True)
     lastName = sa.Column(sa.String(128), nullable=True)
+    married_name = sa.Column(sa.String(128), nullable=True)
     needsToFillCulturalSurvey = sa.Column(sa.Boolean, server_default=expression.true(), default=True)
     notificationSubscriptions = sa.Column(
         MutableDict.as_mutable(postgresql.json.JSONB),
