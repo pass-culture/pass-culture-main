@@ -152,8 +152,20 @@ export const getUserValidatedOfferersNames = () => {
     .then(response => response.offerersNames)
 }
 
-export const getOfferers = () => {
-  return client.get('/offerers')
+export const buildGetOfferersQuery = ({ keywords = [], page = 0 }) => {
+  let apiQueryParams = {}
+  if (keywords.length > 0) {
+    apiQueryParams.keywords = keywords.join(' ')
+  }
+
+  apiQueryParams.page = page
+
+  return `?${stringify(apiQueryParams)}`
+}
+
+export const getOfferers = filters => {
+  const queryParams = buildGetOfferersQuery(filters)
+  return client.get(`/offerers${queryParams}`)
 }
 
 export const getOfferer = offererId => {

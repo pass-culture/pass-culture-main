@@ -1,142 +1,187 @@
-import { shallow } from 'enzyme'
+import '@testing-library/jest-dom'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import React from 'react'
-import { Link } from 'react-router-dom'
+import { Provider } from 'react-redux'
+import { MemoryRouter } from 'react-router'
 
-import Titles from 'components/layout/Titles/Titles'
+import * as pcapi from 'repository/pcapi/pcapi'
+import { configureTestStore } from 'store/testUtils'
 
-import OffererItemContainer from '../OffererItem/OffererItemContainer'
-import PendingOffererItem from '../OffererItem/PendingOffererItem'
 import Offerers from '../Offerers'
+
+const renderOfferers = async (props, store) => {
+  render(
+    <Provider store={store}>
+      <MemoryRouter>
+        <Offerers {...props} />
+      </MemoryRouter>
+    </Provider>
+  )
+}
+
+jest.mock('repository/pcapi/pcapi', () => ({
+  getOfferers: jest.fn(),
+}))
 
 describe('src | components | Offerers', () => {
   let props
+  let offerer
+  let store
 
   beforeEach(() => {
+    offerer = { id: 'AE', siren: '1234567' }
     props = {
       closeNotification: jest.fn(),
       currentUser: {},
       isOffererCreationAvailable: true,
-      loadOfferers: jest.fn(),
       location: {
         search: '',
       },
-      offerers: [{ id: 'AE', siren: '1234567' }],
       query: {
         parse: () => ({ 'mots-cles': null }),
       },
-      resetLoadedOfferers: jest.fn(),
       showNotification: jest.fn(),
     }
+    store = configureTestStore({
+      data: { users: [{ publicName: 'François', isAdmin: false }] },
+    })
+    pcapi.getOfferers.mockResolvedValue({
+      offerers: [offerer],
+      nbTotalResults: 1,
+    })
   })
 
   describe('render', () => {
     describe('subtitle message', () => {
       describe('when the isOffererCreationAvailable feature is activated', () => {
-        it('should display a link to create an offer', () => {
+        it('should display a link to create an offer', async () => {
           // when
-          const wrapper = shallow(<Offerers {...props} />)
-          const links = wrapper.find('a')
+          renderOfferers(props, store)
 
           // then
-          expect(links.at(0).text()).toBe('créer un nouveau lieu')
-          expect(links.at(0).prop('href')).toBe('/structures/AE/lieux/creation')
+          await waitFor(() =>
+            expect(screen.getByText('créer un nouveau lieu')).toHaveAttribute(
+              'href',
+              '/structures/AE/lieux/creation'
+            )
+          )
         })
       })
 
       describe('when the isOffererCreationAvailable feature is disabled', () => {
-        it('should display a link to create an offer', () => {
+        it('should display a link to create an offer', async () => {
           // given
           props.isOffererCreationAvailable = false
 
           // when
-          const wrapper = shallow(<Offerers {...props} />)
-          const links = wrapper.find('a')
+          renderOfferers(props, store)
 
           // then
-          expect(links.at(0).text()).toBe('créer un nouveau lieu')
-          expect(links.at(0).prop('href')).toBe('/erreur/indisponible')
+          await waitFor(() =>
+            expect(screen.getByText('créer un nouveau lieu')).toHaveAttribute(
+              'href',
+              '/erreur/indisponible'
+            )
+          )
         })
       })
     })
 
     describe('should pluralize offerers menu link', () => {
-      it('should display Structure juridique when one offerer', () => {
-        // given
-        props.currentUser = {}
-        props.offerers = [{ id: 'AE' }]
-
+      it('should display Structure juridique when one offerer', async () => {
         // when
-        const wrapper = shallow(<Offerers {...props} />)
-        const titles = wrapper.find('Titles').props()
+        renderOfferers(props, store)
 
         // then
-        expect(titles.title).toBe('Structure juridique')
+        await waitFor(() =>
+          expect(screen.getByText('Structure juridique')).toBeInTheDocument()
+        )
       })
 
-      it('should display Structures juridiques when many offerers', () => {
+      it('should display Structures juridiques when many offerers', async () => {
         // given
-        props.currentUser = {}
-        props.offerers = [{ id: 'AE' }, { id: 'AF' }]
+        pcapi.getOfferers.mockResolvedValue({
+          offerers: [{ id: 'AE' }, { id: 'AF' }],
+          nbTotalResults: 2,
+        })
 
         // when
-        const wrapper = shallow(<Offerers {...props} />)
-        const titles = wrapper.find('Titles').props()
+        renderOfferers(props, store)
 
         // then
-        expect(titles.title).toBe('Structures juridiques')
+        await waitFor(() =>
+          expect(screen.getByText('Structures juridiques')).toBeInTheDocument()
+        )
       })
     })
 
     describe('when leaving page', () => {
-      it('should not close notifcation', () => {
+      it('should not close notifcation', async () => {
         // given
         props = { ...props, closeNotification: jest.fn() }
-        const wrapper = shallow(<Offerers {...props} />)
+        renderOfferers(props, store)
 
         // when
-        wrapper.unmount()
+        fireEvent.click(
+          screen.getByText('créer un nouveau lieu', { selector: 'a' })
+        )
 
         // then
-        expect(props.closeNotification).not.toHaveBeenCalled()
+        await waitFor(() =>
+          expect(props.closeNotification).not.toHaveBeenCalled()
+        )
       })
 
-      it('should not fail on null notifcation', () => {
+      it('should not fail on null notifcation', async () => {
         // given
         props = {
           ...props,
           closeNotification: jest.fn(),
           notification: null,
         }
-        const wrapper = shallow(<Offerers {...props} />)
+        renderOfferers(props, store)
 
         // when
-        wrapper.unmount()
+        fireEvent.click(
+          screen.getByText('créer un nouveau lieu', { selector: 'a' })
+        )
 
         // then
-        expect(props.closeNotification).not.toHaveBeenCalledWith()
+        await waitFor(() =>
+          expect(props.closeNotification).not.toHaveBeenCalled()
+        )
       })
     })
 
     describe('when displaying the list of offerers', () => {
       describe('when the offerer is active and the user has access to it', () => {
-        it('should render an active offerer item in the list for each activated offerer', () => {
+        it('should render an active offerer item in the list for each activated offerer', async () => {
           // given
-          const offerer = { id: 'B2', isValidated: true, userHasAccess: true }
-          props.offerers = [offerer]
+          const offerer = {
+            id: 'B2',
+            isValidated: true,
+            userHasAccess: true,
+            name: 'My Offerer',
+            managedVenues: [],
+          }
+          pcapi.getOfferers.mockResolvedValue({
+            offerers: [offerer],
+            nbTotalResults: 1,
+          })
 
           // when
-          const wrapper = shallow(<Offerers {...props} />)
+          renderOfferers(props, store)
 
           // then
-          const offererItem = wrapper.find(OffererItemContainer)
-          expect(offererItem).toHaveLength(1)
-          expect(offererItem.at(0).prop('offerer')).toStrictEqual(offerer)
+          await waitFor(() =>
+            expect(screen.getByText('My Offerer')).toBeInTheDocument()
+          )
         })
       })
 
       describe('when offerer is not active for the user', () => {
         describe('when the offerer is not active', () => {
-          it('should render a pending offerer item', () => {
+          it('should render a pending offerer item', async () => {
             // given
             const offerer = {
               id: 'B2',
@@ -144,20 +189,25 @@ describe('src | components | Offerers', () => {
               isValidated: false,
               userHasAccess: true,
             }
-            props.offerers = [offerer]
+            pcapi.getOfferers.mockResolvedValue({
+              offerers: [offerer],
+              nbTotalResults: 1,
+            })
 
             // when
-            const wrapper = shallow(<Offerers {...props} />)
+            renderOfferers(props, store)
 
             // then
-            const offererItem = wrapper.find(PendingOffererItem)
-            expect(offererItem).toHaveLength(1)
-            expect(offererItem.at(0).prop('offerer')).toStrictEqual(offerer)
+            await waitFor(() =>
+              expect(
+                screen.getByText('Rattachement en cours de validation')
+              ).toBeInTheDocument()
+            )
           })
         })
 
         describe('when the user does not have access', () => {
-          it('should render a pending offerer item', () => {
+          it('should render a pending offerer item', async () => {
             // given
             const offerer = {
               id: 'B2',
@@ -165,15 +215,20 @@ describe('src | components | Offerers', () => {
               isValidated: true,
               userHasAccess: false,
             }
-            props.offerers = [offerer]
+            pcapi.getOfferers.mockResolvedValue({
+              offerers: [offerer],
+              nbTotalResults: 1,
+            })
 
             // when
-            const wrapper = shallow(<Offerers {...props} />)
+            renderOfferers(props, store)
 
             // then
-            const offererItem = wrapper.find(PendingOffererItem)
-            expect(offererItem).toHaveLength(1)
-            expect(offererItem.at(0).prop('offerer')).toStrictEqual(offerer)
+            await waitFor(() =>
+              expect(
+                screen.getByText('Rattachement en cours de validation')
+              ).toBeInTheDocument()
+            )
           })
         })
       })
@@ -181,31 +236,35 @@ describe('src | components | Offerers', () => {
 
     describe('the link to offerer creation page', () => {
       describe('when api sirene feature is available', () => {
-        it('should display a link to create an offer', () => {
+        it('should display a link to create an offer', async () => {
           // when
-          const wrapper = shallow(<Offerers {...props} />)
-          const pageHeading = wrapper.find(Titles).first().dive()
-
-          const link = pageHeading.find(Link)
+          renderOfferers(props, store)
 
           // then
-          expect(link.prop('to')).toBe('/structures/creation')
+          await waitFor(() =>
+            expect(screen.getByText('Ajouter une structure')).toHaveAttribute(
+              'href',
+              '/structures/creation'
+            )
+          )
         })
       })
 
       describe('when api sirene feature is not available', () => {
-        it('should display a link to unavailable page', () => {
+        it('should display a link to unavailable page', async () => {
           // given
           props.isOffererCreationAvailable = false
 
           // when
-          const wrapper = shallow(<Offerers {...props} />)
-          const pageHeading = wrapper.find(Titles).first().dive()
-
-          const link = pageHeading.find(Link)
+          renderOfferers(props, store)
 
           // then
-          expect(link.prop('to')).toBe('/erreur/indisponible')
+          await waitFor(() =>
+            expect(screen.getByText('Ajouter une structure')).toHaveAttribute(
+              'href',
+              '/erreur/indisponible'
+            )
+          )
         })
       })
     })

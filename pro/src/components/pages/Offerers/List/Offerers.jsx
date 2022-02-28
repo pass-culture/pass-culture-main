@@ -10,7 +10,7 @@ import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Spinner from 'components/layout/Spinner'
 import Titles from 'components/layout/Titles/Titles'
 import { ReactComponent as AddOffererSvg } from 'icons/ico-plus.svg'
-import { selectOfferers } from 'store/selectors/data/offerersSelectors'
+import * as pcapi from 'repository/pcapi/pcapi'
 import { UNAVAILABLE_ERROR_PAGE } from 'utils/routes'
 import { mapApiToBrowser } from 'utils/translate'
 
@@ -29,6 +29,7 @@ class Offerers extends PureComponent {
       hasMore: false,
       isLoading: false,
       keywordsInputValue: '',
+      offerers: [],
     }
   }
 
@@ -58,38 +59,50 @@ class Offerers extends PureComponent {
     this.setState({ keywordsInputValue: event.target.value })
   }
 
-  handleRequestData = () => {
-    const { loadOfferers } = this.props
+  handleGetOfferersSuccess = getOfferersResponse => {
+    const { offerers } = this.state
 
-    const handleSuccess = (state, action) => {
-      const { payload } = action
-      const { headers } = payload
+    // TODO (rlecellier): This should be remove after MEP 177 when route serializer alwayse return a object
+    const isOldApi = Array.isArray(getOfferersResponse)
+    const fetchedOfferers = isOldApi
+      ? getOfferersResponse
+      : getOfferersResponse.offerers
+    const nbTotalResults = isOldApi ? 100 : getOfferersResponse.nbTotalResults
+    const newOfferers = [...offerers, ...fetchedOfferers]
+    this.setState({
+      hasMore: newOfferers.length < nbTotalResults,
+      offerers: newOfferers,
+      isLoading: false,
+    })
+  }
 
-      const nextOfferers = selectOfferers(state)
-      const totalOfferersCount = parseInt(headers['total-data-count'], 10)
-      const currentOfferersCount = nextOfferers.length
+  handleGetOfferersFail = () => {
+    this.setState({
+      hasMore: false,
+      isLoading: false,
+    })
+  }
 
-      this.setState({
-        hasMore: currentOfferersCount < totalOfferersCount,
-        isLoading: false,
-      })
+  handleRequestData = async () => {
+    this.setState({ isLoading: true, hasMore: true })
+    const { query } = this.props
+    const queryParams = query.parse()
+    let searchKeyWords = queryParams['mots-cles'] || []
+
+    const filters = {
+      keywords:
+        typeof searchKeyWords === 'string' ? [searchKeyWords] : searchKeyWords,
+      page: queryParams['page'] || '0',
     }
 
-    const handleFail = () => {
-      this.setState({
-        hasMore: false,
-        isLoading: false,
-      })
-    }
-
-    this.setState(
-      { isLoading: true, hasMore: true },
-      loadOfferers(handleSuccess, handleFail)
-    )
+    await pcapi
+      .getOfferers(filters)
+      .then(this.handleGetOfferersSuccess)
+      .catch(this.handleGetOfferersFail)
   }
 
   handleOnKeywordsSubmit = () => {
-    const { query, resetLoadedOfferers } = this.props
+    const { query } = this.props
     const { keywordsInputValue } = this.state
     const keywords = keywordsInputValue
     const queryParams = query.parse()
@@ -103,7 +116,7 @@ class Offerers extends PureComponent {
     this.forceRenderKey++ // See variable declaration for more information
 
     if (queryParams[mapApiToBrowser.keywords] !== keywords)
-      resetLoadedOfferers()
+      this.setState({ offerers: [] })
   }
 
   renderForm = ({ handleSubmit }) => {
@@ -136,10 +149,9 @@ class Offerers extends PureComponent {
   }
 
   render() {
-    const { offerers, query, isOffererCreationAvailable } = this.props
+    const { query, isOffererCreationAvailable } = this.props
     const queryParams = query.parse()
-    const { hasMore, isLoading } = this.state
-
+    const { hasMore, isLoading, offerers } = this.state
     const sectionTitle =
       offerers.length > 1 ? 'Structures juridiques' : 'Structure juridique'
 
@@ -215,11 +227,8 @@ class Offerers extends PureComponent {
 
 Offerers.propTypes = {
   isOffererCreationAvailable: PropTypes.bool.isRequired,
-  loadOfferers: PropTypes.func.isRequired,
   location: PropTypes.shape().isRequired,
-  offerers: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   query: PropTypes.shape().isRequired,
-  resetLoadedOfferers: PropTypes.func.isRequired,
 }
 
 export default Offerers
