@@ -5,6 +5,8 @@ import typing
 import pydantic
 import pytz
 
+from pcapi.core.users import models as users_models
+
 from ..common.models import IdentityCheckContent
 
 
@@ -29,10 +31,12 @@ class UbbleContent(IdentityCheckContent):
     document_type: typing.Optional[str]
     expiry_date_score: typing.Optional[float]
     first_name: typing.Optional[str]
+    gender: typing.Optional[users_models.GenderEnum]
     id_document_number: typing.Optional[str]
     identification_id: typing.Optional[pydantic.UUID4]
     identification_url: typing.Optional[pydantic.HttpUrl]
     last_name: typing.Optional[str]
+    married_name: typing.Optional[str]
     reference_data_check_score: typing.Optional[float]
     registration_datetime: typing.Optional[datetime.datetime]
     score: typing.Optional[float]
@@ -97,7 +101,9 @@ class UbbleIdentificationDocuments(UbbleIdentificationObject):
     document_number: str = pydantic.Field(None, alias="document-number")
     document_type: str = pydantic.Field(None, alias="document-type")
     first_name: str = pydantic.Field(None, alias="first-name")
+    gender: users_models.GenderEnum = pydantic.Field(None)
     last_name: str = pydantic.Field(None, alias="last-name")
+    married_name: str = pydantic.Field(None, alias="married-name")
 
 
 class UbbleIdentificationDocumentChecks(UbbleIdentificationObject):

@@ -156,6 +156,12 @@ class SchoolTypeEnum(enum.Enum):
     PUBLIC_SECONDARY_SCHOOL = "Collège public"
 
 
+class GenderEnum(enum.Enum):
+    M: str = "M"
+    F: str = "F"
+    NULL: str = "NULL"
+
+
 class User(PcObject, Model, NeedsValidationMixin):
     __tablename__ = "user"
 
