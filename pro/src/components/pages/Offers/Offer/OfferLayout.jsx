@@ -2,7 +2,7 @@ import PropTypes from 'prop-types'
 import React, { useCallback, useEffect, useState } from 'react'
 import { Route, Switch, useHistory } from 'react-router-dom'
 
-import { api } from 'api/api'
+import { apiV1 } from 'api/api'
 import Titles from 'components/layout/Titles/Titles'
 import ConfirmationContainer from 'components/pages/Offers/Offer/Confirmation/ConfirmationContainer'
 import { OfferHeader } from 'components/pages/Offers/Offer/OfferStatus/OfferHeader'
@@ -40,7 +40,7 @@ const OfferLayout = ({ location, match }) => {
 
   const loadOffer = useCallback(
     async (offerId, creationMode = false) => {
-      const existingOffer = await api.getOffersGetOffer(offerId)
+      const existingOffer = await apiV1.getOffersGetOffer(offerId)
 
       setOffer(existingOffer)
       setIsCreatingOffer(

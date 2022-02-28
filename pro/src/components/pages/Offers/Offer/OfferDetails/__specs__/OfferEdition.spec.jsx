@@ -12,7 +12,7 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter, Route } from 'react-router'
 
-import { api } from 'api/api'
+import { apiV1 } from 'api/api'
 import NotificationContainer from 'components/layout/Notification/NotificationContainer'
 import { getProviderInfo } from 'components/pages/Offers/domain/getProviderInfo'
 import OfferLayoutContainer from 'components/pages/Offers/Offer/OfferLayoutContainer'
@@ -182,7 +182,7 @@ describe('offerDetails - Edition', () => {
     props = {
       setShowThumbnailForm: jest.fn(),
     }
-    jest.spyOn(api, 'getOffersGetOffer').mockResolvedValue(editedOffer)
+    jest.spyOn(apiV1, 'getOffersGetOffer').mockResolvedValue(editedOffer)
     pcapi.loadCategories.mockResolvedValue(categories)
     pcapi.getVenue.mockReturnValue(Promise.resolve())
     pcapi.loadStocks.mockReturnValue(Promise.resolve({ stocks: [] }))
@@ -205,7 +205,7 @@ describe('offerDetails - Edition', () => {
             visualDisabilityCompliant: null,
             status: 'ACTIVE',
           }
-          jest.spyOn(api, 'getOffersGetOffer').mockResolvedValue(editedOffer)
+          jest.spyOn(apiV1, 'getOffersGetOffer').mockResolvedValue(editedOffer)
 
           // When
           await renderOffers(props, store)
@@ -438,7 +438,7 @@ describe('offerDetails - Edition', () => {
           // given
           editedOffer.status = 'REJECTED'
           editedOffer.isActive = false
-          jest.spyOn(api, 'getOffersGetOffer').mockResolvedValue(editedOffer)
+          jest.spyOn(apiV1, 'getOffersGetOffer').mockResolvedValue(editedOffer)
           pcapi.loadCategories.mockResolvedValue(
             fullConditionalFieldsCategoryResponse
           )
@@ -469,7 +469,7 @@ describe('offerDetails - Edition', () => {
           // given
           editedOffer.status = 'PENDING'
           editedOffer.isActive = true
-          jest.spyOn(api, 'getOffersGetOffer').mockResolvedValue(editedOffer)
+          jest.spyOn(apiV1, 'getOffersGetOffer').mockResolvedValue(editedOffer)
           pcapi.loadCategories.mockResolvedValue(
             fullConditionalFieldsCategoryResponse
           )
@@ -546,7 +546,7 @@ describe('offerDetails - Edition', () => {
           visa: 'Courtesy of visa',
         },
       }
-      jest.spyOn(api, 'getOffersGetOffer').mockResolvedValue(editedOffer)
+      jest.spyOn(apiV1, 'getOffersGetOffer').mockResolvedValue(editedOffer)
 
       const fullConditionalFieldsCategoryResponse = {
         ...categories,
@@ -743,7 +743,7 @@ describe('offerDetails - Edition', () => {
         bookingEmail: 'booking@example.net',
         status: 'ACTIVE',
       }
-      jest.spyOn(api, 'getOffersGetOffer').mockResolvedValue(editedOffer)
+      jest.spyOn(apiV1, 'getOffersGetOffer').mockResolvedValue(editedOffer)
 
       const fullConditionalFieldsCategoryResponse = {
         ...categories,
@@ -822,7 +822,7 @@ describe('offerDetails - Edition', () => {
     it("should display venue's publicName instead of name if exists", async () => {
       // Given
       editedOfferVenue.publicName = 'Le publicName du lieu'
-      jest.spyOn(api, 'getOffersGetOffer').mockResolvedValue(editedOffer)
+      jest.spyOn(apiV1, 'getOffersGetOffer').mockResolvedValue(editedOffer)
 
       // When
       await renderOffers(props, store)
@@ -854,7 +854,7 @@ describe('offerDetails - Edition', () => {
           },
           status: 'ACTIVE',
         }
-        jest.spyOn(api, 'getOffersGetOffer').mockResolvedValue(editedOffer)
+        jest.spyOn(apiV1, 'getOffersGetOffer').mockResolvedValue(editedOffer)
         const providerInformation = getProviderInfo(
           editedOffer.lastProvider.name
         )
@@ -899,7 +899,7 @@ describe('offerDetails - Edition', () => {
           },
           status: 'ACTIVE',
         }
-        jest.spyOn(api, 'getOffersGetOffer').mockResolvedValue(editedOffer)
+        jest.spyOn(apiV1, 'getOffersGetOffer').mockResolvedValue(editedOffer)
 
         // when
         await renderOffers(props, store)
@@ -943,7 +943,7 @@ describe('offerDetails - Edition', () => {
           },
           status: 'ACTIVE',
         }
-        jest.spyOn(api, 'getOffersGetOffer').mockResolvedValue(editedOffer)
+        jest.spyOn(apiV1, 'getOffersGetOffer').mockResolvedValue(editedOffer)
 
         const fullConditionalFieldsCategoryResponse = {
           ...categories,
@@ -1022,7 +1022,7 @@ describe('offerDetails - Edition', () => {
           },
           status: 'ACTIVE',
         }
-        jest.spyOn(api, 'getOffersGetOffer').mockResolvedValue(editedOffer)
+        jest.spyOn(apiV1, 'getOffersGetOffer').mockResolvedValue(editedOffer)
 
         const nonEducationalCategoryResponse = {
           ...categories,
@@ -1068,7 +1068,7 @@ describe('offerDetails - Edition', () => {
           status: 'ACTIVE',
         }
 
-        jest.spyOn(api, 'getOffersGetOffer').mockResolvedValue(editedOffer)
+        jest.spyOn(apiV1, 'getOffersGetOffer').mockResolvedValue(editedOffer)
 
         const fullConditionalFieldsCategoryResponse = {
           ...categories,
@@ -1114,7 +1114,7 @@ describe('offerDetails - Edition', () => {
           visualDisabilityCompliant: false,
           status: 'ACTIVE',
         }
-        jest.spyOn(api, 'getOffersGetOffer').mockResolvedValue(editedOffer)
+        jest.spyOn(apiV1, 'getOffersGetOffer').mockResolvedValue(editedOffer)
         await renderOffers(props, store)
 
         // when
@@ -1150,7 +1150,7 @@ describe('offerDetails - Edition', () => {
       await setOfferValues({ subcategoryId: editValues.subcategoryId })
       await setOfferValues(editValues)
       const newEditedOffer = { ...editedOffer, ...editValues }
-      jest.spyOn(api, 'getOffersGetOffer').mockResolvedValue(newEditedOffer)
+      jest.spyOn(apiV1, 'getOffersGetOffer').mockResolvedValue(newEditedOffer)
       fireEvent.click(screen.getByText('Enregistrer'))
       fireEvent.click(screen.getByText('Stock et prix'))
       fireEvent.click(await screen.findByText("Détails de l'offre"))
@@ -1208,7 +1208,7 @@ describe('offerDetails - Edition', () => {
         mentalDisabilityCompliant: false,
         status: 'ACTIVE',
       }
-      jest.spyOn(api, 'getOffersGetOffer').mockResolvedValue(editedOffer)
+      jest.spyOn(apiV1, 'getOffersGetOffer').mockResolvedValue(editedOffer)
       await renderOffers(props, store)
 
       // When
@@ -1247,7 +1247,7 @@ describe('offerDetails - Edition', () => {
         mentalDisabilityCompliant: false,
         status: 'ACTIVE',
       }
-      jest.spyOn(api, 'getOffersGetOffer').mockResolvedValue(editedOffer)
+      jest.spyOn(apiV1, 'getOffersGetOffer').mockResolvedValue(editedOffer)
       await renderOffers(props, store)
       const submitButton = screen.getByText('Enregistrer')
 
@@ -1287,7 +1287,7 @@ describe('offerDetails - Edition', () => {
         status: 'ACTIVE',
       }
 
-      jest.spyOn(api, 'getOffersGetOffer').mockResolvedValue(editedOffer)
+      jest.spyOn(apiV1, 'getOffersGetOffer').mockResolvedValue(editedOffer)
 
       const cinema = {
         ...categories,
@@ -1345,7 +1345,7 @@ describe('offerDetails - Edition', () => {
         },
         status: 'ACTIVE',
       }
-      jest.spyOn(api, 'getOffersGetOffer').mockResolvedValue(editedOffer)
+      jest.spyOn(apiV1, 'getOffersGetOffer').mockResolvedValue(editedOffer)
 
       await renderOffers(props, store)
 
@@ -1384,7 +1384,7 @@ describe('offerDetails - Edition', () => {
         mentalDisabilityCompliant: false,
         status: 'ACTIVE',
       }
-      jest.spyOn(api, 'getOffersGetOffer').mockResolvedValue(editedOffer)
+      jest.spyOn(apiV1, 'getOffersGetOffer').mockResolvedValue(editedOffer)
       await renderOffers(props, store)
 
       // When
@@ -1424,7 +1424,7 @@ describe('offerDetails - Edition', () => {
         mentalDisabilityCompliant: false,
         status: 'ACTIVE',
       }
-      jest.spyOn(api, 'getOffersGetOffer').mockResolvedValue(editedOffer)
+      jest.spyOn(apiV1, 'getOffersGetOffer').mockResolvedValue(editedOffer)
 
       const category = {
         ...categories,
@@ -1477,7 +1477,7 @@ describe('offerDetails - Edition', () => {
         visualDisabilityCompliant: false,
         status: 'ACTIVE',
       }
-      jest.spyOn(api, 'getOffersGetOffer').mockResolvedValue(editedOffer)
+      jest.spyOn(apiV1, 'getOffersGetOffer').mockResolvedValue(editedOffer)
       await renderOffers(props, store)
       await setOfferValues({ receiveNotificationEmails: false })
 
@@ -1509,7 +1509,7 @@ describe('offerDetails - Edition', () => {
         bookingEmail: null,
         status: 'ACTIVE',
       }
-      jest.spyOn(api, 'getOffersGetOffer').mockResolvedValue(editedOffer)
+      jest.spyOn(apiV1, 'getOffersGetOffer').mockResolvedValue(editedOffer)
       await renderOffers(props, store)
       await setOfferValues({ receiveNotificationEmails: true })
       fireEvent.change(
@@ -1553,7 +1553,7 @@ describe('offerDetails - Edition', () => {
         },
         status: 'ACTIVE',
       }
-      jest.spyOn(api, 'getOffersGetOffer').mockResolvedValue(editedOffer)
+      jest.spyOn(apiV1, 'getOffersGetOffer').mockResolvedValue(editedOffer)
       pcapi.updateOffer.mockRejectedValue({
         errors: { name: "Ce nom n'est pas valide" },
       })
@@ -1575,7 +1575,7 @@ describe('offerDetails - Edition', () => {
     it('should show a success notification when a thumbnail submitted', async () => {
       // Given
       jest.spyOn(Object, 'values').mockReturnValue(['item'])
-      jest.spyOn(api, 'getOffersGetOffer').mockResolvedValue(editedOffer)
+      jest.spyOn(apiV1, 'getOffersGetOffer').mockResolvedValue(editedOffer)
       pcapi.updateOffer.mockResolvedValue({ id: 'AA' })
       pcapi.postThumbnail.mockResolvedValue({ id: 'BB' })
       await renderOffers(props, store)
@@ -1624,7 +1624,7 @@ describe('offerDetails - Edition', () => {
         extraData: null,
         status: 'ACTIVE',
       }
-      jest.spyOn(api, 'getOffersGetOffer').mockResolvedValue(editedOffer)
+      jest.spyOn(apiV1, 'getOffersGetOffer').mockResolvedValue(editedOffer)
       await renderOffers(props, store)
 
       // When
@@ -1657,7 +1657,7 @@ describe('offerDetails - Edition', () => {
         bookingEmail: null,
         status: 'ACTIVE',
       }
-      jest.spyOn(api, 'getOffersGetOffer').mockResolvedValue(editedOffer)
+      jest.spyOn(apiV1, 'getOffersGetOffer').mockResolvedValue(editedOffer)
 
       // When
       await renderOffers(props, store)

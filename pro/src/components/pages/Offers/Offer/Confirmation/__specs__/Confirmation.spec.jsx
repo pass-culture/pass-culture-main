@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom'
 import { screen } from '@testing-library/react'
 
-import { api } from 'api/api'
+import { apiV1 } from 'api/api'
 import { renderOffer } from 'components/pages/Offers/Offer/__specs__/render'
 import { offerFactory } from 'utils/apiFactories'
 
@@ -15,7 +15,7 @@ describe('confirmation page', () => {
   it('should display the rights information when offer is draft', async () => {
     // Given
     const offer = offerFactory({ name: 'mon offre', status: 'DRAFT' })
-    jest.spyOn(api, 'getOffersGetOffer').mockResolvedValue(offer)
+    jest.spyOn(apiV1, 'getOffersGetOffer').mockResolvedValue(offer)
 
     // When
     await renderOffer({
@@ -44,7 +44,7 @@ describe('confirmation page', () => {
   it('should display the rights information when offer is pending', async () => {
     // Given
     const offer = offerFactory({ name: 'mon offre', status: 'PENDING' })
-    jest.spyOn(api, 'getOffersGetOffer').mockResolvedValue(offer)
+    jest.spyOn(apiV1, 'getOffersGetOffer').mockResolvedValue(offer)
 
     // When
     await renderOffer({
@@ -74,7 +74,7 @@ describe('confirmation page', () => {
   it('should redirect to offer edition when the offer is not a draft', async () => {
     // Given
     const offer = offerFactory({ name: 'mon offre', status: 'ACTIVE' })
-    jest.spyOn(api, 'getOffersGetOffer').mockResolvedValue(offer)
+    jest.spyOn(apiV1, 'getOffersGetOffer').mockResolvedValue(offer)
 
     // When
     await renderOffer({
@@ -91,7 +91,7 @@ describe('confirmation page', () => {
   it('should land to offer edition when you come from an offerer', async () => {
     // Given
     const offer = offerFactory({ name: 'mon offre', status: 'DRAFT' })
-    jest.spyOn(api, 'getOffersGetOffer').mockResolvedValue(offer)
+    jest.spyOn(apiV1, 'getOffersGetOffer').mockResolvedValue(offer)
 
     // When
     await renderOffer({
