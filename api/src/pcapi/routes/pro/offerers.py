@@ -1,6 +1,5 @@
 import logging
 
-from flask.ctx import after_this_request
 from flask_login import current_user
 from flask_login import login_required
 from sqlalchemy.orm import exc as orm_exc
@@ -53,16 +52,11 @@ def get_offerers(query: GetOffererListQueryModel) -> GetOfferersListResponseMode
         pagination_limit=query.paginate,
         page=query.page,
     )
-    offerers_count = paginated_offerers.total
 
-    @after_this_request
-    def add_header(response):
-        nonlocal offerers_count
-        response.headers["Total-Data-Count"] = offerers_count
-        response.headers["Access-Control-Expose-Headers"] = "Total-Data-Count"
-        return response
-
-    return GetOfferersListResponseModel(__root__=paginated_offerers.offerers)
+    return GetOfferersListResponseModel(
+        offerers=paginated_offerers.offerers,
+        nbTotalResults=paginated_offerers.total,
+    )
 
 
 @private_api.route("/offerers/names", methods=["GET"])
