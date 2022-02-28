@@ -4,7 +4,7 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter, Route } from 'react-router'
 
-import { api } from 'api/api'
+import { apiV1 } from 'api/api'
 import NotificationContainer from 'components/layout/Notification/NotificationContainer'
 import OfferLayoutContainer from 'components/pages/Offers/Offer/OfferLayoutContainer'
 import * as pcapi from 'repository/pcapi/pcapi'
@@ -144,7 +144,7 @@ export const initialize = async ({
 
   let rtlRenderReturn
   if (offer) {
-    jest.spyOn(api, 'getOffersGetOffer').mockResolvedValue(offer)
+    jest.spyOn(apiV1, 'getOffersGetOffer').mockResolvedValue(offer)
     pcapi.getVenue.mockReturnValue(offer.venue)
     rtlRenderReturn = await renderOfferEdition({
       props: {},
