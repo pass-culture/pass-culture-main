@@ -3,14 +3,98 @@ import datetime
 from dateutil.relativedelta import relativedelta
 import factory
 
+from pcapi.core.categories.subcategories import COLLECTIVE_SUBCATEGORIES
+from pcapi.core.offerers.factories import OffererFactory
+from pcapi.core.offerers.factories import VenueFactory
 from pcapi.core.testing import BaseFactory
+from pcapi.models.offer_mixin import OfferValidationStatus
 
 from . import models
 from .models import EducationalBookingStatus
 from .models import Ministry
+from .models import StudentLevels
 
 
 ADAGE_STARTING_EDUCATIONAL_YEAR = 2014
+
+
+class CollectiveOfferFactory(BaseFactory):
+    class Meta:
+        model = models.CollectiveOffer
+
+    subcategoryId = factory.Iterator(COLLECTIVE_SUBCATEGORIES, getter=lambda s: s.id)
+    name = factory.Sequence("CollectiveOffer {}".format)
+    description = factory.Sequence("A passionate description of collectiveoffer {}".format)
+    venue = factory.SubFactory(VenueFactory)
+    audioDisabilityCompliant = False
+    mentalDisabilityCompliant = False
+    motorDisabilityCompliant = False
+    visualDisabilityCompliant = False
+    dateCreated = factory.LazyFunction(lambda: datetime.datetime.now() - datetime.timedelta(days=5))
+    students = [StudentLevels.GENERAL2]
+    contactEmail = "collectiveofferfactory+contact@example.com"
+    contactPhone = "+33199006328"
+    offerVenue = {
+        "addressType": "other",
+        "otherAddress": "1 rue des polissons, Paris 75017",
+        "venueId": "",
+    }
+
+    @classmethod
+    def _create(cls, model_class, *args, **kwargs):  # type: ignore [no-untyped-def]
+        if kwargs.get("isActive") is None:
+            kwargs["isActive"] = kwargs.get("validation") not in (
+                OfferValidationStatus.REJECTED,
+                OfferValidationStatus.PENDING,
+            )
+
+        return super()._create(model_class, *args, **kwargs)
+
+
+class CollectiveOfferTemplateFactory(BaseFactory):
+    class Meta:
+        model = models.CollectiveOfferTemplate
+
+    subcategoryId = factory.Iterator(COLLECTIVE_SUBCATEGORIES, getter=lambda s: s.id)
+    name = factory.Sequence("CollectiveOffer {}".format)
+    description = factory.Sequence("A passionate description of collectiveoffer {}".format)
+    venue = factory.SubFactory(VenueFactory)
+    audioDisabilityCompliant = False
+    mentalDisabilityCompliant = False
+    motorDisabilityCompliant = False
+    visualDisabilityCompliant = False
+
+    dateCreated = factory.LazyFunction(lambda: datetime.datetime.now() - datetime.timedelta(days=5))
+    students = [StudentLevels.GENERAL2]
+    contactEmail = "collectiveofferfactory+contact@example.com"
+    contactPhone = "+33199006328"
+    offerVenue = {
+        "addressType": "other",
+        "otherAddress": "1 rue des polissons, Paris 75017",
+        "venueId": "",
+    }
+
+    @classmethod
+    def _create(cls, model_class, *args, **kwargs):  # type: ignore [no-untyped-def]
+        if kwargs.get("isActive") is None:
+            kwargs["isActive"] = kwargs.get("validation") not in (
+                OfferValidationStatus.REJECTED,
+                OfferValidationStatus.PENDING,
+            )
+
+        return super()._create(model_class, *args, **kwargs)
+
+
+class CollectiveStockFactory(BaseFactory):
+    class Meta:
+        model = models.CollectiveStock
+
+    collectiveOffer = factory.SubFactory(CollectiveOfferFactory)
+    beginningDatetime = factory.LazyFunction(lambda: datetime.datetime.now() + datetime.timedelta(days=1))
+    bookingLimitDatetime = factory.LazyAttribute(lambda stock: stock.beginningDatetime - datetime.timedelta(minutes=60))
+    dateCreated = factory.LazyFunction(lambda: datetime.datetime.now() - datetime.timedelta(days=3))
+    dateModified = factory.LazyFunction(lambda: datetime.datetime.now() - datetime.timedelta(days=1))
+    numberOfTickets = 25
 
 
 class EducationalInstitutionFactory(BaseFactory):
@@ -31,6 +115,18 @@ class EducationalYearFactory(BaseFactory):
     expirationDate = factory.Sequence(
         lambda number: datetime.datetime(_get_current_educational_year() + 1, 8, 31) + relativedelta(years=number)
     )
+
+
+class CollectiveBookingFactory(BaseFactory):
+    class Meta:
+        model = models.CollectiveBooking
+
+    dateCreated = factory.LazyFunction(lambda: datetime.datetime.now() - datetime.timedelta(days=2))
+    venue = factory.SubFactory(VenueFactory)
+    offerer = factory.SubFactory(OffererFactory)
+    cancellationLimitDate = factory.LazyFunction(lambda: datetime.datetime.now() - datetime.timedelta(days=1))
+    educationalInstitution = factory.SubFactory(EducationalInstitutionFactory)
+    educationalYear = factory.SubFactory(EducationalYearFactory)
 
 
 def _get_current_educational_year() -> int:
