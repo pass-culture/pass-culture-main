@@ -1,2 +1,2 @@
-# This file is used by annotate.yml github action via go jira cli https://github.com/go-jira/jira
+{{/* This file is used by annotate.yml github action via go jira cli https://github.com/go-jira/jira */ -}}
 {{ .fields.customfield_10045 }}
