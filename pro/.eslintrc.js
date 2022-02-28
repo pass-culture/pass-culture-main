@@ -21,7 +21,7 @@ const comonConfig = {
   globals: {
     fixture: 'readonly',
   },
-  ignorePatterns: ['src/api/gen/*'],
+  ignorePatterns: ['src/api/v1/gen/*', 'src/api/v2/gen/*'],
   rules: {
     indent: 'off',
     'import/order': [
