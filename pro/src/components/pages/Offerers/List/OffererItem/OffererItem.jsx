@@ -7,24 +7,22 @@ import { ReactComponent as AddOfferSvg } from 'icons/ico-plus.svg'
 import { pluralize } from 'utils/pluralize'
 import { UNAVAILABLE_ERROR_PAGE } from 'utils/routes'
 
-const OffererItem = ({
-  offerer,
-  physicalVenues,
-  venues,
-  isVenueCreationAvailable,
-}) => {
-  const { id, name, nOffers } = offerer || {}
-  const detailsPath = `/accueil?structure=${id}`
+const OffererItem = ({ offerer, isVenueCreationAvailable }) => {
+  const { id: offererId, managedVenues: venues, name, nOffers } = offerer || {}
 
-  let createOfferLink = `/offre/creation?structure=${id}`
+  const physicalVenues = venues.filter(venue => !venue.isVirtual)
+
+  const detailsPath = `/accueil?structure=${offererId}`
+
+  let createOfferLink = `/offre/creation?structure=${offererId}`
   const canCreateOnlyVirtualOffer = venues.length === 1 && venues[0].isVirtual
 
   if (venues.length === 1) {
-    createOfferLink = `/offre/creation?structure=${id}&lieu=${venues[0].id}`
+    createOfferLink = `/offre/creation?structure=${offererId}&lieu=${venues[0].id}`
   }
 
   const venueCreationUrl = isVenueCreationAvailable
-    ? `/structures/${id}/lieux/creation`
+    ? `/structures/${offererId}/lieux/creation`
     : UNAVAILABLE_ERROR_PAGE
 
   return (
@@ -45,7 +43,10 @@ const OffererItem = ({
 
           {nOffers && nOffers > 0 ? (
             <li className="count-offers-action">
-              <Link className="has-text-primary" to={`/offres?structure=${id}`}>
+              <Link
+                className="has-text-primary"
+                to={`/offres?structure=${offererId}`}
+              >
                 <Icon svg="ico-offres-r" />
                 {pluralize(nOffers, 'offres')}
               </Link>
@@ -55,7 +56,7 @@ const OffererItem = ({
           )}
 
           <li id="count-venues-action">
-            <Link className="has-text-primary" to={`/structures/${id}/`}>
+            <Link className="has-text-primary" to={`/structures/${offererId}/`}>
               <Icon svg="ico-venue" />
               {pluralize(physicalVenues.length, 'lieux')}
             </Link>
@@ -80,15 +81,11 @@ const OffererItem = ({
 
 OffererItem.defaultProps = {
   offerer: {},
-  physicalVenues: [],
-  venues: [],
 }
 
 OffererItem.propTypes = {
   isVenueCreationAvailable: PropTypes.bool.isRequired,
   offerer: PropTypes.shape(),
-  physicalVenues: PropTypes.arrayOf(PropTypes.shape()),
-  venues: PropTypes.arrayOf(PropTypes.shape()),
 }
 
 export default OffererItem
