@@ -21,7 +21,7 @@ class Returns200Test:
 
         # then
         assert response.status_code == 200
-        offerer_response = response.json[0]
+        offerer_response = response.json["offerers"][0]
         managed_venues_response = offerer_response["managedVenues"][0]
         assert "validationToken" not in managed_venues_response
         assert dehumanize(offerer_response["id"]) == 1
@@ -42,7 +42,7 @@ class Returns200Test:
 
         # then
         assert response.status_code == 200
-        offerers = response.json
+        offerers = response.json["offerers"]
         assert len(offerers) == 3
         names = [offerer["name"] for offerer in offerers]
         assert names == ["offreur A", "offreur B", "offreur C"]
@@ -64,7 +64,7 @@ class Returns200Test:
 
         # then
         assert response.status_code == 200
-        offerers = response.json
+        offerers = response.json["offerers"]
         assert len(offerers) == 3
         names = [offerer["name"] for offerer in offerers]
         assert names == ["offreur A", "offreur B", "offreur C"]
@@ -88,7 +88,7 @@ class Returns200Test:
 
         # then
         assert response.status_code == 200
-        assert len(response.json) == 2
+        assert len(response.json["offerers"]) == 2
 
     @pytest.mark.usefixtures("db_session")
     def when_current_user_is_admin_and_returns_all_offerers(self, client):
@@ -105,7 +105,7 @@ class Returns200Test:
 
         # then
         assert response.status_code == 200
-        assert len(response.json) == 3
+        assert len(response.json["offerers"]) == 3
 
     @pytest.mark.usefixtures("db_session")
     def when_no_bank_information_for_offerer(self, client):
@@ -120,9 +120,9 @@ class Returns200Test:
 
         # then
         assert response.status_code == 200
-        assert len(response.json) == 1
-        assert response.json[0]["bic"] is None
-        assert response.json[0]["iban"] is None
+        assert len(response.json["offerers"]) == 1
+        assert response.json["offerers"][0]["bic"] is None
+        assert response.json["offerers"][0]["iban"] is None
 
     @pytest.mark.usefixtures("db_session")
     def test_returns_metadata(self, client):
@@ -138,7 +138,7 @@ class Returns200Test:
 
         # then
         assert response.status_code == 200
-        assert response.headers["Total-Data-Count"] == "1"
+        assert response.json["nbTotalResults"] == 1
 
     @pytest.mark.usefixtures("db_session")
     def test_returns_proper_data_count_by_counting_distinct_offererss(self, client):
@@ -157,7 +157,7 @@ class Returns200Test:
 
         # then
         assert response.status_code == 200
-        assert response.headers["Total-Data-Count"] == "2"
+        assert response.json["nbTotalResults"] == 2
 
     @pytest.mark.usefixtures("db_session")
     def test_returns_only_active_offerers(self, client):
@@ -175,5 +175,5 @@ class Returns200Test:
 
         # then
         assert response.status_code == 200
-        assert len(response.json) == 1
-        assert response.json[0]["name"] == active_offerer.name
+        assert len(response.json["offerers"]) == 1
+        assert response.json["offerers"][0]["name"] == active_offerer.name
