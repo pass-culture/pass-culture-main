@@ -1575,7 +1575,6 @@ describe('offerDetails - Edition', () => {
     it('should show a success notification when a thumbnail submitted', async () => {
       // Given
       jest.spyOn(Object, 'values').mockReturnValue(['item'])
-      console.log('editedOffer', editedOffer)
       jest.spyOn(api, 'getOffersGetOffer').mockResolvedValue(editedOffer)
       pcapi.updateOffer.mockResolvedValue({ id: 'AA' })
       pcapi.postThumbnail.mockResolvedValue({ id: 'BB' })

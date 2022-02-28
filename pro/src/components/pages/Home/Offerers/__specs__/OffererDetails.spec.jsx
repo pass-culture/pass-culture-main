@@ -407,7 +407,7 @@ describe('offererDetailsLegacy', () => {
         name: 'Afficher',
       })
       fireEvent.click(showButton)
-      console.log(screen.debug())
+
       // Then
       const link = screen.getByRole('link', {
         name: 'Renseigner des coordonnées bancaires',
