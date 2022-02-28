@@ -6,7 +6,6 @@ import { withQueryRouter } from 'components/hocs/with-query-router/withQueryRout
 import * as pcapi from 'repository/pcapi/pcapi'
 import { isFeatureActive } from 'store/features/selectors'
 import { showNotification } from 'store/reducers/notificationReducer'
-import { selectOffererById } from 'store/selectors/data/offerersSelectors'
 import { selectCurrentUser } from 'store/selectors/data/usersSelectors'
 
 import NotificationMessage from '../Notification'
@@ -30,7 +29,6 @@ export const mapStateToProps = (state, ownProps) => {
       managingOffererId: offererId,
       bookingEmail: currentUser.email,
     },
-    offerer: selectOffererById(state, offererId),
     isBankInformationWithSiretActive: isFeatureActive(
       state,
       'ENFORCE_BANK_INFORMATION_WITH_SIRET'
