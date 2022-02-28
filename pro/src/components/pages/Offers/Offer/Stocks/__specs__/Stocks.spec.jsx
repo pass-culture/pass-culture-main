@@ -5,7 +5,7 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter, Route } from 'react-router'
 
-import { api } from 'api/api'
+import { apiV1 } from 'api/api'
 import NotificationContainer from 'components/layout/Notification/NotificationContainer'
 import OfferLayoutContainer from 'components/pages/Offers/Offer/OfferLayoutContainer'
 import * as pcapi from 'repository/pcapi/pcapi'
@@ -95,7 +95,7 @@ describe('stocks page', () => {
       id: stockId,
       isEventDeletable: true,
     }
-    jest.spyOn(api, 'getOffersGetOffer').mockResolvedValue(defaultOffer)
+    jest.spyOn(apiV1, 'getOffersGetOffer').mockResolvedValue(defaultOffer)
     pcapi.loadStocks.mockResolvedValue({ stocks: [] })
     pcapi.deleteStock.mockResolvedValue({ id: stockId })
     pcapi.bulkCreateOrEditStock.mockResolvedValue({})
@@ -171,7 +171,7 @@ describe('stocks page', () => {
         },
       ]
       jest
-        .spyOn(api, 'getOffersGetOffer')
+        .spyOn(apiV1, 'getOffersGetOffer')
         .mockResolvedValue(offerWithMultipleStocks)
       pcapi.loadStocks.mockResolvedValue({ stocks })
 
@@ -228,7 +228,7 @@ describe('stocks page', () => {
         stocks: [],
       }
 
-      jest.spyOn(api, 'getOffersGetOffer').mockResolvedValue(offer)
+      jest.spyOn(apiV1, 'getOffersGetOffer').mockResolvedValue(offer)
       pcapi.loadStocks.mockResolvedValue({
         stocks: [
           {
@@ -259,7 +259,7 @@ describe('stocks page', () => {
           status: 'DRAFT',
         }
 
-        jest.spyOn(api, 'getOffersGetOffer').mockResolvedValue(draftOffer)
+        jest.spyOn(apiV1, 'getOffersGetOffer').mockResolvedValue(draftOffer)
       })
 
       describe('when no stock yet', () => {
@@ -325,7 +325,7 @@ describe('stocks page', () => {
         // given
         offer.status = 'REJECTED'
         offer.isActive = false
-        jest.spyOn(api, 'getOffersGetOffer').mockResolvedValue(offer)
+        jest.spyOn(apiV1, 'getOffersGetOffer').mockResolvedValue(offer)
         pcapi.loadStocks.mockResolvedValue(stocks)
 
         // when
@@ -356,7 +356,7 @@ describe('stocks page', () => {
         // given
         offer.status = 'PENDING'
         offer.isActive = true
-        jest.spyOn(api, 'getOffersGetOffer').mockResolvedValue(offer)
+        jest.spyOn(apiV1, 'getOffersGetOffer').mockResolvedValue(offer)
         pcapi.loadStocks.mockResolvedValue(stocks)
 
         // when
@@ -396,7 +396,7 @@ describe('stocks page', () => {
           isEvent: true,
         }
 
-        jest.spyOn(api, 'getOffersGetOffer').mockResolvedValue(eventOffer)
+        jest.spyOn(apiV1, 'getOffersGetOffer').mockResolvedValue(eventOffer)
         pcapi.loadStocks.mockResolvedValue({ stocks: [eventStock] })
       })
 
@@ -427,7 +427,7 @@ describe('stocks page', () => {
         await renderOffers(props, store)
 
         // then
-        expect(api.getOffersGetOffer).toHaveBeenCalledWith('AG3A')
+        expect(apiV1.getOffersGetOffer).toHaveBeenCalledWith('AG3A')
 
         const columnHeaders = await screen.findAllByRole('columnheader')
         const columnCells = await screen.findAllByRole('cell')
@@ -468,14 +468,14 @@ describe('stocks page', () => {
           ...defaultOffer,
           isEvent: false,
         }
-        jest.spyOn(api, 'getOffersGetOffer').mockResolvedValue(thingOffer)
+        jest.spyOn(apiV1, 'getOffersGetOffer').mockResolvedValue(thingOffer)
         pcapi.loadStocks.mockResolvedValue({ stocks: [{ ...defaultStock }] })
       })
 
       it('should display an information message regarding booking cancellation with 10 days auto expiry when subcategory is LIVRE_PAPIER', async () => {
         // given
         thingOffer.subcategoryId = 'LIVRE_PAPIER'
-        jest.spyOn(api, 'getOffersGetOffer').mockResolvedValue(thingOffer)
+        jest.spyOn(apiV1, 'getOffersGetOffer').mockResolvedValue(thingOffer)
 
         // when
         await renderOffers(props, store)
@@ -526,7 +526,7 @@ describe('stocks page', () => {
         await renderOffers(props, store)
 
         // then
-        expect(api.getOffersGetOffer).toHaveBeenCalledWith('AG3A')
+        expect(apiV1.getOffersGetOffer).toHaveBeenCalledWith('AG3A')
 
         const columnHeaders = await screen.findAllByRole('columnheader')
         const columnCells = await screen.findAllByRole('cell')
@@ -564,7 +564,7 @@ describe('stocks page', () => {
             },
           }
           jest
-            .spyOn(api, 'getOffersGetOffer')
+            .spyOn(apiV1, 'getOffersGetOffer')
             .mockResolvedValue(synchronisedThingOffer)
           pcapi.loadStocks.mockResolvedValue({ stocks: [] })
         })
@@ -599,7 +599,7 @@ describe('stocks page', () => {
           isDigital: true,
           isEvent: false,
         }
-        jest.spyOn(api, 'getOffersGetOffer').mockResolvedValue(digitalOffer)
+        jest.spyOn(apiV1, 'getOffersGetOffer').mockResolvedValue(digitalOffer)
         pcapi.loadStocks.mockResolvedValue({ stocks: [{ ...defaultStock }] })
       })
 
@@ -643,7 +643,7 @@ describe('stocks page', () => {
         // Given
         const stock = stockFactory()
         const offer = offerFactory({ id: 'AG3A', status: 'ACTIVE' })
-        jest.spyOn(api, 'getOffersGetOffer').mockResolvedValue(offer)
+        jest.spyOn(apiV1, 'getOffersGetOffer').mockResolvedValue(offer)
         loadFakeApiStocks([stock])
         bulkFakeApiCreateOrEditStock({ id: stock.id })
         await renderOffers(props, store)
@@ -666,7 +666,7 @@ describe('stocks page', () => {
           isEvent: true,
         }
 
-        jest.spyOn(api, 'getOffersGetOffer').mockResolvedValue(eventOffer)
+        jest.spyOn(apiV1, 'getOffersGetOffer').mockResolvedValue(eventOffer)
         pcapi.loadStocks.mockResolvedValue({ stocks: [] })
         pcapi.bulkCreateOrEditStock.mockResolvedValue({})
 
@@ -698,7 +698,7 @@ describe('stocks page', () => {
         isEvent: true,
       }
 
-      jest.spyOn(api, 'getOffersGetOffer').mockResolvedValue(eventOffer)
+      jest.spyOn(apiV1, 'getOffersGetOffer').mockResolvedValue(eventOffer)
       pcapi.loadStocks.mockResolvedValue({ stocks: [] })
       pcapi.bulkCreateOrEditStock.mockResolvedValue({})
     })
@@ -784,7 +784,7 @@ describe('stocks page', () => {
         status: 'SOLD_OUT',
       }
       jest
-        .spyOn(api, 'getOffersGetOffer')
+        .spyOn(apiV1, 'getOffersGetOffer')
         .mockResolvedValueOnce(initialOffer)
         .mockResolvedValueOnce(updatedOffer)
       pcapi.loadStocks
@@ -813,7 +813,7 @@ describe('stocks page', () => {
       // Given
       const stock = stockFactory()
       const offer = offerFactory({ id: 'AG3A', status: 'ACTIVE' })
-      jest.spyOn(api, 'getOffersGetOffer').mockResolvedValue(offer)
+      jest.spyOn(apiV1, 'getOffersGetOffer').mockResolvedValue(offer)
       loadFakeApiStocks([stock])
       await renderOffers(props, store)
 
@@ -838,7 +838,7 @@ describe('stocks page', () => {
           isEvent: true,
         }
 
-        jest.spyOn(api, 'getOffersGetOffer').mockResolvedValue(eventOffer)
+        jest.spyOn(apiV1, 'getOffersGetOffer').mockResolvedValue(eventOffer)
         pcapi.loadStocks.mockResolvedValue({ stocks: [eventStock] })
       })
 
@@ -875,7 +875,7 @@ describe('stocks page', () => {
             ],
           }
 
-          jest.spyOn(api, 'getOffersGetOffer').mockResolvedValue(eventOffer)
+          jest.spyOn(apiV1, 'getOffersGetOffer').mockResolvedValue(eventOffer)
           await renderOffers(props, store)
 
           // When
@@ -1514,11 +1514,11 @@ describe('stocks page', () => {
                 status: 'ACTIVE',
               }
               jest
-                .spyOn(api, 'getOffersGetOffer')
+                .spyOn(apiV1, 'getOffersGetOffer')
                 .mockResolvedValueOnce(initialOffer)
                 .mockResolvedValueOnce(updatedOffer)
               await renderOffers(props, store)
-              api.getOffersGetOffer.mockClear()
+              apiV1.getOffersGetOffer.mockClear()
 
               // When
               await act(async () => {
@@ -1526,7 +1526,7 @@ describe('stocks page', () => {
               })
 
               // Then
-              expect(api.getOffersGetOffer).toHaveBeenCalledTimes(1)
+              expect(apiV1.getOffersGetOffer).toHaveBeenCalledTimes(1)
             })
 
             it('should update displayed offer status', async () => {
@@ -1541,7 +1541,7 @@ describe('stocks page', () => {
                 status: 'ACTIVE',
               }
               jest
-                .spyOn(api, 'getOffersGetOffer')
+                .spyOn(apiV1, 'getOffersGetOffer')
                 .mockResolvedValueOnce(initialOffer)
                 .mockResolvedValueOnce(updatedOffer)
 
@@ -1656,7 +1656,7 @@ describe('stocks page', () => {
             pcapi.loadStocks
               .mockResolvedValueOnce({ stocks: [initialStock] })
               .mockResolvedValueOnce({ stocks: [] })
-            jest.spyOn(api, 'getOffersGetOffer').mockResolvedValue({
+            jest.spyOn(apiV1, 'getOffersGetOffer').mockResolvedValue({
               ...defaultOffer,
               isEvent: true,
             })
@@ -1749,7 +1749,7 @@ describe('stocks page', () => {
           }
 
           jest
-            .spyOn(api, 'getOffersGetOffer')
+            .spyOn(apiV1, 'getOffersGetOffer')
             .mockResolvedValue(eventOfferFromAllocine)
         })
 
@@ -1782,7 +1782,7 @@ describe('stocks page', () => {
           ...defaultOffer,
           isEvent: false,
         }
-        jest.spyOn(api, 'getOffersGetOffer').mockResolvedValue(thingOffer)
+        jest.spyOn(apiV1, 'getOffersGetOffer').mockResolvedValue(thingOffer)
         pcapi.loadStocks.mockResolvedValue({ stocks: [thingStock] })
       })
 
@@ -2113,7 +2113,7 @@ describe('stocks page', () => {
             },
           }
           jest
-            .spyOn(api, 'getOffersGetOffer')
+            .spyOn(apiV1, 'getOffersGetOffer')
             .mockResolvedValue(synchronisedThingOffer)
         })
 
@@ -2149,7 +2149,7 @@ describe('stocks page', () => {
         it('should disable add activation codes option', async () => {
           // when
           jest
-            .spyOn(api, 'getOffersGetOffer')
+            .spyOn(apiV1, 'getOffersGetOffer')
             .mockResolvedValue({ ...thingOffer, isDigital: true })
           await renderOffers(props, store)
 
@@ -2195,7 +2195,7 @@ describe('stocks page', () => {
         ...defaultOffer,
         status: 'DRAFT',
       }
-      jest.spyOn(api, 'getOffersGetOffer').mockResolvedValueOnce(draftOffer)
+      jest.spyOn(apiV1, 'getOffersGetOffer').mockResolvedValueOnce(draftOffer)
 
       // When
       await renderOffers(props, store)
@@ -2212,7 +2212,7 @@ describe('stocks page', () => {
         status: 'DRAFT',
       }
 
-      jest.spyOn(api, 'getOffersGetOffer').mockResolvedValue(draftOffer)
+      jest.spyOn(apiV1, 'getOffersGetOffer').mockResolvedValue(draftOffer)
       pcapi.bulkCreateOrEditStock.mockResolvedValue({})
 
       await renderOffers(props, store)
@@ -2245,7 +2245,7 @@ describe('stocks page', () => {
         status: 'APPROVED',
       })
       jest
-        .spyOn(api, 'getOffersGetOffer')
+        .spyOn(apiV1, 'getOffersGetOffer')
         .mockResolvedValueOnce(offerDraftStatus)
         .mockResolvedValueOnce(offerApprovedStatus)
       loadFakeApiStocks([])
@@ -2280,7 +2280,7 @@ describe('stocks page', () => {
         status: 'PENDING',
       })
       jest
-        .spyOn(api, 'getOffersGetOffer')
+        .spyOn(apiV1, 'getOffersGetOffer')
         .mockResolvedValueOnce(offerDraftStatus)
         .mockResolvedValueOnce(offerPendingStatus)
       loadFakeApiStocks([])
@@ -2311,7 +2311,7 @@ describe('stocks page', () => {
           stocks: [],
         }
 
-        jest.spyOn(api, 'getOffersGetOffer').mockResolvedValue(noStockOffer)
+        jest.spyOn(apiV1, 'getOffersGetOffer').mockResolvedValue(noStockOffer)
       })
 
       it('should not display remaining stocks and bookings columns when no stocks yet', async () => {
@@ -2645,7 +2645,7 @@ describe('stocks page', () => {
           status: 'APPROVED',
         })
         jest
-          .spyOn(api, 'getOffersGetOffer')
+          .spyOn(apiV1, 'getOffersGetOffer')
           .mockResolvedValueOnce(offerDraftStatus)
           .mockResolvedValueOnce(offerApprovedStatus)
         loadFakeApiStocks([])
@@ -2689,7 +2689,7 @@ describe('stocks page', () => {
           stocks: [],
         }
 
-        jest.spyOn(api, 'getOffersGetOffer').mockResolvedValue(noStockOffer)
+        jest.spyOn(apiV1, 'getOffersGetOffer').mockResolvedValue(noStockOffer)
       })
 
       it('should not display add activation codes option when not digital', async () => {
@@ -2698,7 +2698,7 @@ describe('stocks page', () => {
           ...noStockOffer,
           isDigital: false,
         }
-        jest.spyOn(api, 'getOffersGetOffer').mockResolvedValue(digitalOffer)
+        jest.spyOn(apiV1, 'getOffersGetOffer').mockResolvedValue(digitalOffer)
         await renderOffers(props, store)
 
         // when
@@ -2717,7 +2717,7 @@ describe('stocks page', () => {
           isEvent: false,
           stocks: [],
         }
-        jest.spyOn(api, 'getOffersGetOffer').mockResolvedValue(thingOffer)
+        jest.spyOn(apiV1, 'getOffersGetOffer').mockResolvedValue(thingOffer)
         await renderOffers(props, store)
 
         // when
@@ -2735,7 +2735,7 @@ describe('stocks page', () => {
           isEvent: false,
           stocks: [],
         }
-        jest.spyOn(api, 'getOffersGetOffer').mockResolvedValue(thingOffer)
+        jest.spyOn(apiV1, 'getOffersGetOffer').mockResolvedValue(thingOffer)
         await renderOffers(props, store)
 
         // when
@@ -2944,7 +2944,7 @@ describe('stocks page', () => {
             stocks: [],
           }
 
-          jest.spyOn(api, 'getOffersGetOffer').mockResolvedValue(digitalOffer)
+          jest.spyOn(apiV1, 'getOffersGetOffer').mockResolvedValue(digitalOffer)
         })
         it('should allow the user to add activation codes when offer is digital', async () => {
           // given
@@ -3345,7 +3345,7 @@ describe('stocks page', () => {
             isDigital: true,
           }
 
-          jest.spyOn(api, 'getOffersGetOffer').mockResolvedValue(offer)
+          jest.spyOn(apiV1, 'getOffersGetOffer').mockResolvedValue(offer)
           const createdStock = {
             hasActivationCodes: true,
             activationCodes: ['ABC'],

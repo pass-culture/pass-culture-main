@@ -10,7 +10,7 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
 
-import { api } from 'api/api'
+import { apiV1 } from 'api/api'
 import NotificationContainer from 'components/layout/Notification/NotificationContainer'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
@@ -46,7 +46,7 @@ describe('offerLayout', () => {
       data: { users: [{ publicName: 'François', isAdmin: false }] },
     })
     props = {}
-    jest.spyOn(api, 'getOffersGetOffer')
+    jest.spyOn(apiV1, 'getOffersGetOffer')
   })
 
   describe('render when editing an existing offer', () => {
@@ -65,7 +65,7 @@ describe('offerLayout', () => {
           pathname: '/offre/AB/individuel/edition',
         },
       }
-      api.getOffersGetOffer.mockResolvedValue(editedOffer)
+      apiV1.getOffersGetOffer.mockResolvedValue(editedOffer)
     })
 
     it('should have title "Éditer une offre"', async () => {
@@ -82,7 +82,7 @@ describe('offerLayout', () => {
     it('should allow to activate inactive offer', async () => {
       // Given
       pcapi.updateOffersActiveStatus.mockResolvedValue()
-      api.getOffersGetOffer
+      apiV1.getOffersGetOffer
         .mockResolvedValueOnce({
           ...editedOffer,
           isActive: false,
@@ -113,7 +113,7 @@ describe('offerLayout', () => {
     it('should allow to deactivate active offer', async () => {
       // Given
       pcapi.updateOffersActiveStatus.mockResolvedValue()
-      api.getOffersGetOffer
+      apiV1.getOffersGetOffer
         .mockResolvedValueOnce({
           ...editedOffer,
           isActive: true,
@@ -147,7 +147,7 @@ describe('offerLayout', () => {
 
     it('should not allow to deactivate pending offer', async () => {
       // Given
-      api.getOffersGetOffer.mockResolvedValue({
+      apiV1.getOffersGetOffer.mockResolvedValue({
         ...editedOffer,
         status: 'PENDING',
         isActive: true,
@@ -162,7 +162,7 @@ describe('offerLayout', () => {
 
     it('should not allow to deactivate rejected offer', async () => {
       // Given
-      api.getOffersGetOffer.mockResolvedValue({
+      apiV1.getOffersGetOffer.mockResolvedValue({
         ...editedOffer,
         status: 'REJECTED',
         isActive: false,
@@ -177,7 +177,7 @@ describe('offerLayout', () => {
 
     it('should inform user something went wrong when impossible to toggle offer status', async () => {
       // Given
-      api.getOffersGetOffer.mockResolvedValue({
+      apiV1.getOffersGetOffer.mockResolvedValue({
         ...editedOffer,
         isActive: true,
       })

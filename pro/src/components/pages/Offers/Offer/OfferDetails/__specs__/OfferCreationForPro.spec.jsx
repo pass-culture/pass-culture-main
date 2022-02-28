@@ -11,7 +11,7 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter, Route } from 'react-router'
 
-import { api } from 'api/api'
+import { apiV1 } from 'api/api'
 import NotificationContainer from 'components/layout/Notification/NotificationContainer'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
@@ -1559,7 +1559,7 @@ describe('offerDetails - Creation - pro user', () => {
 
   describe('when submitting form', () => {
     beforeEach(() => {
-      jest.spyOn(api, 'getOffersGetOffer').mockResolvedValue({
+      jest.spyOn(apiV1, 'getOffersGetOffer').mockResolvedValue({
         status: 'DRAFT',
         venue: {
           departementCode: 93,
@@ -1685,7 +1685,7 @@ describe('offerDetails - Creation - pro user', () => {
       }
       pcapi.createOffer.mockResolvedValue(createdOffer)
       await renderOffers(props, store)
-      jest.spyOn(api, 'getOffersGetOffer').mockResolvedValue(createdOffer)
+      jest.spyOn(apiV1, 'getOffersGetOffer').mockResolvedValue(createdOffer)
 
       setOfferValues({ categoryId: 'MUSIQUE_LIVE' })
       setOfferValues({ subcategoryId: offerValues.subcategoryId })
@@ -1966,7 +1966,7 @@ describe('offerDetails - Creation - pro user', () => {
       }
       pcapi.createOffer.mockResolvedValue(createdOffer)
       await renderOffers(props, store)
-      jest.spyOn(api, 'getOffersGetOffer').mockResolvedValue(createdOffer)
+      jest.spyOn(apiV1, 'getOffersGetOffer').mockResolvedValue(createdOffer)
 
       setOfferValues({ categoryId: 'CINEMA' })
       setOfferValues({ subcategoryId: 'CARTE_CINE_MULTISEANCES' })
