@@ -1,9 +1,2 @@
-import { API_URL } from 'utils/config'
-
-import { APIConfiguration, DefaultApi } from './gen'
-
-const configuration: APIConfiguration = {
-  basePath: API_URL,
-}
-
-export const api = new DefaultApi(configuration)
+export { api as apiV1 } from 'api/v1/api'
+export { apiContremarque as apiV2 } from 'api/v2/api'
