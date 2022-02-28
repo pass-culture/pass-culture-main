@@ -228,7 +228,8 @@ class GetOfferersResponseModel(BaseModel):
 
 
 class GetOfferersListResponseModel(BaseModel):
-    __root__: list[GetOfferersResponseModel]
+    offerers: list[GetOfferersResponseModel]
+    nbTotalResults: int
 
 
 class GetOffererListQueryModel(BaseModel):
