@@ -213,22 +213,15 @@ export const postImageToVenue = async ({
   xCropPercent,
   yCropPercent,
   heightCropPercent,
-  imageCredit,
 }) => {
   const body = new FormData()
   body.append('banner', banner)
 
-  const venueImage = {
+  const queryParams = stringify({
     x_crop_percent: xCropPercent,
     y_crop_percent: yCropPercent,
     height_crop_percent: heightCropPercent,
-  }
-
-  if (imageCredit) {
-    venueImage.image_credit = imageCredit
-  }
-
-  const queryParams = stringify(venueImage)
+  })
 
   return await client.postWithFormData(
     `/venues/${venueId}/banner?${queryParams}`,
