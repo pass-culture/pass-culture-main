@@ -1472,6 +1472,10 @@ EVENT_SUBCATEGORIES = {subcategory.id: subcategory for subcategory in ALL_SUBCAT
 ACTIVATION_SUBCATEGORIES = (ACTIVATION_EVENT.id, ACTIVATION_THING.id)
 BOOK_WITH_ISBN = (LIVRE_PAPIER.id, LIVRE_AUDIO_PHYSIQUE.id, LIVRE_NUMERIQUE.id)
 
+COLLECTIVE_SUBCATEGORIES = {
+    subcategory.id: subcategory for subcategory in ALL_SUBCATEGORIES if subcategory.can_be_educational
+}
+
 assert set(subcategory.id for subcategory in ALL_SUBCATEGORIES) == set(
     subcategory.id for subcategory in locals().values() if isinstance(subcategory, Subcategory)
 )
