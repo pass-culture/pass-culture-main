@@ -101,7 +101,7 @@ class CollectiveOffer(PcObject, ValidationMixin, AccessibilityMixin, StatusMixin
 
     contactPhone = sa.Column(sa.String(20), nullable=False)
 
-    offerVenue = sa.Column("jsonData", postgresql.JSONB)
+    offerVenue = sa.Column(MutableDict.as_mutable(postgresql.json.JSONB), nullable=False)
 
     @sa.ext.hybrid.hybrid_property
     def isSoldOut(self):
@@ -185,7 +185,7 @@ class CollectiveOfferTemplate(PcObject, ValidationMixin, AccessibilityMixin, Sta
 
     contactPhone = sa.Column(sa.String(20), nullable=False)
 
-    offerVenue = sa.Column(MutableDict.as_mutable(postgresql.json.JSONB))
+    offerVenue = sa.Column(MutableDict.as_mutable(postgresql.json.JSONB), nullable=False)
 
     @property
     def isReleased(self) -> bool:
@@ -227,7 +227,7 @@ class CollectiveStock(PcObject, Model):  # type: ignore[valid-type]
 
     bookingLimitDatetime = sa.Column(sa.DateTime, nullable=False)
 
-    numberOfTickets = sa.Column(sa.Integer, nullable=True)
+    numberOfTickets = sa.Column(sa.Integer, nullable=False)
 
     priceDetail = sa.Column(sa.Text, nullable=True)
 
