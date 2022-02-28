@@ -78,6 +78,7 @@ class UbbleWorkflowTest:
         user = users_factories.UserFactory()
         fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(type=fraud_models.FraudCheckType.UBBLE, user=user)
         ubble_response = UbbleIdentificationResponseFactory(identification_state=state)
+        assert user.married_name is None
 
         with ubble_mocker(
             fraud_check.thirdPartyId,
@@ -88,6 +89,9 @@ class UbbleWorkflowTest:
         ubble_content = fraud_check.resultContent
         assert ubble_content["status"] == status.value
         assert fraud_check.status == fraud_check_status
+        if fraud_check_status == fraud_models.FraudCheckStatus.OK:
+            assert user.married_name is not None
+            assert user.gender is not None
 
     def test_ubble_workflow_processing_add_inapp_message(self, ubble_mocker):
         user = users_factories.UserFactory()
