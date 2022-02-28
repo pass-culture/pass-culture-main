@@ -19,6 +19,7 @@ import { client } from 'repository/pcapi/pcapiClient'
 import { bookingRecapFactory } from 'utils/apiFactories'
 
 import {
+  buildGetOfferersQuery,
   deleteStock,
   loadFilteredOffers,
   postThumbnail,
@@ -471,7 +472,6 @@ describe('pcapi', () => {
         eventDate: new Date(2020, 8, 13),
         page: 2,
       }
-      console.log(filters)
 
       // When
       await loadFilteredBookingsRecap(filters)
@@ -512,6 +512,38 @@ describe('pcapi', () => {
       expect(client.patch).toHaveBeenCalledWith(
         '/v2/bookings/keep/token/A5DS6Q'
       )
+    })
+  })
+
+  describe('buildGetOfferersQuery', () => {
+    describe('when there is one keyword', () => {
+      it('should create api url with keywords params only', () => {
+        // given
+        const keywords = ['example']
+        const page = '0'
+        const filters = { keywords, page }
+
+        // when
+        const result = buildGetOfferersQuery(filters)
+
+        // then
+        expect(result).toBe('?keywords=example&page=0')
+      })
+    })
+
+    describe('when there is multiple keywords', () => {
+      it('should create api url with keywords params', () => {
+        // given
+        const keywords = ['example', 'keyword']
+        const page = '666'
+        const filters = { keywords, page }
+
+        // when
+        const result = buildGetOfferersQuery(filters)
+
+        // then
+        expect(result).toBe('?keywords=example+keyword&page=666')
+      })
     })
   })
 })
