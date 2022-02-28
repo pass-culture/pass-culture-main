@@ -28,6 +28,16 @@ describe('src | components | pages | Offerers | OffererItem | OffererItem', () =
         name: 'Fake Name',
         nOffers: 0,
         isValidated: true,
+        managedVenues: [
+          {
+            id: 'NV',
+            isVirtual: false,
+          },
+          {
+            id: 'VV',
+            isVirtual: true,
+          },
+        ],
       },
       pagination: {
         apiQuery: {
@@ -41,12 +51,6 @@ describe('src | components | pages | Offerers | OffererItem | OffererItem', () =
       location: {
         search: '',
       },
-      venues: [
-        {
-          isDigital: true,
-        },
-      ],
-      physicalVenues: [{}],
     }
     history = createBrowserHistory()
   })
@@ -55,13 +59,22 @@ describe('src | components | pages | Offerers | OffererItem | OffererItem', () =
     describe('navigate to offerer caret', () => {
       it('should be displayed with right link', () => {
         // given
-        // given
         props.offerer = {
           id: 'AE',
           isValidated: true,
           name: 'Validated Offerer',
           nOffers: 0,
           userHasAccess: true,
+          managedVenues: [
+            {
+              id: 'NV',
+              isVirtual: false,
+            },
+            {
+              id: 'VV',
+              isVirtual: true,
+            },
+          ],
         }
 
         // when
@@ -82,13 +95,6 @@ describe('src | components | pages | Offerers | OffererItem | OffererItem', () =
 
     describe('offerer name', () => {
       it('should be rendered with a link', () => {
-        // given
-        props.venues = [
-          {
-            isVirtual: true,
-          },
-        ]
-
         // when
         const wrapper = mount(
           <Provider store={store}>
@@ -110,7 +116,7 @@ describe('src | components | pages | Offerers | OffererItem | OffererItem', () =
       describe('when offerer has only one virtual venue', () => {
         it('should display a link to create digital offer', () => {
           // given
-          props.venues = [
+          props.offerer.managedVenues = [
             {
               isVirtual: true,
               id: 'DY',
@@ -137,17 +143,6 @@ describe('src | components | pages | Offerers | OffererItem | OffererItem', () =
 
       describe('when offerer has one virtual venue and only one physical venue', () => {
         it('should display a link to create offer', () => {
-          // given
-          props.venues = [
-            {
-              isVirtual: true,
-              id: 'DY',
-            },
-            {
-              isVirtual: false,
-              id: 'HD',
-            },
-          ]
           // when
           const wrapper = mount(
             <Provider store={store}>
@@ -170,16 +165,6 @@ describe('src | components | pages | Offerers | OffererItem | OffererItem', () =
       it('should display total and link to offers page', () => {
         // given
         props.offerer.nOffers = 42
-        props.venues = [
-          {
-            isVirtual: true,
-            id: 'DY',
-          },
-          {
-            isVirtual: false,
-            id: 'HD',
-          },
-        ]
 
         // when
         const wrapper = mount(
@@ -204,16 +189,6 @@ describe('src | components | pages | Offerers | OffererItem | OffererItem', () =
       it('should display 0 offer and no link to offers page when offerer has no offers', () => {
         // given
         props.offerer.nOffers = 0
-        props.venues = [
-          {
-            isVirtual: true,
-            id: 'DY',
-          },
-          {
-            isVirtual: false,
-            id: 'HD',
-          },
-        ]
 
         // when
         const wrapper = mount(
@@ -236,7 +211,7 @@ describe('src | components | pages | Offerers | OffererItem | OffererItem', () =
       it('should display total with a link to offers page', () => {
         // given
         props.offerer.nOffers = 42
-        props.physicalVenues = [
+        props.offerer.managedVenues = [
           {
             isVirtual: false,
             id: 'DY',
@@ -270,7 +245,7 @@ describe('src | components | pages | Offerers | OffererItem | OffererItem', () =
       it('should display 0 venue with a link to offerer page', () => {
         // given
         props.offerer.nOffers = 0
-        props.physicalVenues = []
+        props.offerer.managedVenues = []
 
         // when
         const wrapper = mount(
@@ -297,6 +272,7 @@ describe('src | components | pages | Offerers | OffererItem | OffererItem', () =
           name: 'Fake Name',
           nOffers: 0,
           isValidated: false,
+          managedVenues: [],
         }
 
         // when
@@ -321,6 +297,7 @@ describe('src | components | pages | Offerers | OffererItem | OffererItem', () =
           name: 'Fake Name',
           nOffers: 0,
           isValidated: false,
+          managedVenues: [],
         }
 
         // when
