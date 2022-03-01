@@ -168,7 +168,7 @@ class CollectiveOffer(PcObject, ValidationMixin, AccessibilityMixin, StatusMixin
             "visualDisabilityCompliant",
         ]
         offer_mapping = {x: getattr(offer, x) for x in list_of_common_attributes}
-        students = [StudentLevels(x).name for x in offer.extraData.get("students")]
+        students = [StudentLevels(x).name for x in offer.extraData.get("students", [])]
         return cls(
             **offer_mapping,
             offerId=offer.id,
@@ -309,7 +309,7 @@ class CollectiveOfferTemplate(PcObject, ValidationMixin, AccessibilityMixin, Sta
             "visualDisabilityCompliant",
         ]
         offer_mapping = {x: getattr(offer, x) for x in list_of_common_attributes}
-        students = [StudentLevels(x).name for x in offer.extraData.get("students")]
+        students = [StudentLevels(x).name for x in offer.extraData.get("students", [])]
         return cls(
             **offer_mapping,
             offerId=offer.id,
