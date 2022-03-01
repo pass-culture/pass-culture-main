@@ -74,7 +74,7 @@ class NextStepTest:
         user = users_factories.UserFactory(
             dateOfBirth=datetime.datetime.combine(datetime.date.today(), datetime.time(0, 0))
             - relativedelta(years=15, months=5),
-            activity="Collégien",
+            activity=users_models.ActivityEnum.MIDDLE_SCHOOL_STUDENT.value,
         )
 
         client.with_token(user.email)
