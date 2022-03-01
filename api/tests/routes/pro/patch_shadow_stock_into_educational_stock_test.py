@@ -1,5 +1,7 @@
 import pytest
 
+from pcapi.core.educational import factories as educational_factories
+from pcapi.core.educational import models as educational_models
 from pcapi.core.offers import factories as offer_factories
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
@@ -60,6 +62,110 @@ class Return200Test:
         assert created_stock.educationalPriceDetail == "Détail du prix"
         updated_offer = Offer.query.get(stock.offer.id)
         assert updated_offer.extraData["isShowcase"] == False
+
+    def test_create_collective_offer_and_delete_collective_offer_template(self, app, client):
+        # Given
+        stock = offer_factories.EducationalEventStockFactory(
+            offer__extraData={
+                "students": [
+                    "CAP - 1re ann\u00e9e",
+                    "CAP - 2e ann\u00e9e",
+                ],
+                "offerVenue": {
+                    "addressType": "other",
+                    "otherAddress": "1 rue des polissons, Paris 75017",
+                    "venueId": "",
+                },
+                "contactEmail": "miss.rond@point.com",
+                "contactPhone": "01010100101",
+                "isShowcase": True,
+            },
+        )
+        offer_factories.UserOffererFactory(
+            user__email="user@example.com",
+            offerer=stock.offer.venue.managingOfferer,
+        )
+        initial_collective_offer_template = educational_factories.CollectiveOfferTemplateFactory(
+            offerId=stock.offer.id,
+            students=[educational_models.StudentLevels.CAP1, educational_models.StudentLevels.CAP2],
+        )
+
+        # When
+        stock_payload = {
+            "offerId": humanize(stock.offer.id),
+            "beginningDatetime": "2022-01-17T22:00:00Z",
+            "bookingLimitDatetime": "2021-12-31T20:00:00Z",
+            "totalPrice": 1500,
+            "numberOfTickets": 38,
+            "educationalPriceDetail": "Détail du prix",
+        }
+
+        client.with_session_auth("user@example.com")
+        response = client.patch(f"/stocks/shadow-to-educational/{humanize(stock.id)}", json=stock_payload)
+
+        # Then
+        assert response.status_code == 201
+        deleted_collective_offer_template = educational_models.CollectiveOfferTemplate.query.filter_by(
+            offerId=stock.offer.id
+        ).one_or_none()
+        assert deleted_collective_offer_template is None
+        collective_offer = educational_models.CollectiveOffer.query.filter_by(offerId=stock.offer.id).one()
+        assert collective_offer.offerId == stock.offer.id
+        assert collective_offer.contactEmail == initial_collective_offer_template.contactEmail
+        assert collective_offer.contactPhone == initial_collective_offer_template.contactPhone
+        assert collective_offer.name == initial_collective_offer_template.name
+        assert set(collective_offer.students) == {
+            educational_models.StudentLevels.CAP1,
+            educational_models.StudentLevels.CAP2,
+        }
+
+    def test_create_collective_offer_from_offer_in_case_collective_offer_template_not_found(self, app, client):
+        # Given
+        stock = offer_factories.EducationalEventStockFactory(
+            offer__extraData={
+                "students": [
+                    "CAP - 1re ann\u00e9e",
+                    "CAP - 2e ann\u00e9e",
+                ],
+                "offerVenue": {
+                    "addressType": "other",
+                    "otherAddress": "1 rue des polissons, Paris 75017",
+                    "venueId": "",
+                },
+                "contactEmail": "miss.rond@point.com",
+                "contactPhone": "01010100101",
+                "isShowcase": True,
+            },
+        )
+        offer_factories.UserOffererFactory(
+            user__email="user@example.com",
+            offerer=stock.offer.venue.managingOfferer,
+        )
+
+        # When
+        stock_payload = {
+            "offerId": humanize(stock.offer.id),
+            "beginningDatetime": "2022-01-17T22:00:00Z",
+            "bookingLimitDatetime": "2021-12-31T20:00:00Z",
+            "totalPrice": 1500,
+            "numberOfTickets": 38,
+            "educationalPriceDetail": "Détail du prix",
+        }
+
+        client.with_session_auth("user@example.com")
+        response = client.patch(f"/stocks/shadow-to-educational/{humanize(stock.id)}", json=stock_payload)
+
+        # Then
+        assert response.status_code == 201
+        collective_offer = educational_models.CollectiveOffer.query.filter_by(offerId=stock.offer.id).one()
+        assert collective_offer.offerId == stock.offer.id
+        assert collective_offer.contactEmail == stock.offer.extraData["contactEmail"]
+        assert collective_offer.contactPhone == stock.offer.extraData["contactPhone"]
+        assert collective_offer.name == stock.offer.name
+        assert set(collective_offer.students) == {
+            educational_models.StudentLevels.CAP1,
+            educational_models.StudentLevels.CAP2,
+        }
 
 
 class Return400Test:

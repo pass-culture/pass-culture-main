@@ -1135,11 +1135,39 @@ def create_educational_shadow_stock_and_set_offer_showcase(
     return stock
 
 
-def transform_shadow_stock_into_educational_stock(
+def transform_shadow_stock_and_create_collective_offer(
     stock_id: str, stock_data: EducationalStockCreationBodyModel, user: User
 ) -> Stock:
     offer = offers_repository.get_educational_offer_by_id((stock_data.offer_id))
+    stock = transform_shadow_stock_into_educational_stock(stock_id, stock_data, offer, user)
+    create_collective_offer_and_delete_collective_offer_template(offer)
+    return stock
 
+
+def create_collective_offer_and_delete_collective_offer_template(offer: Offer) -> None:
+    collective_offer_template = educational_models.CollectiveOfferTemplate.query.filter_by(
+        offerId=offer.id
+    ).one_or_none()
+    if collective_offer_template is None:
+        logger.info(
+            "Collective offer template not found. Collective offer will be created from old offer model",
+            extra={"offer": offer.id},
+        )
+        collective_offer = educational_models.CollectiveOffer.create_from_offer(
+            offer,
+        )
+    else:
+        collective_offer = educational_models.CollectiveOffer.create_from_collective_offer_template(
+            collective_offer_template
+        )
+        db.session.delete(collective_offer_template)
+    db.session.add(collective_offer)
+    db.session.commit()
+
+
+def transform_shadow_stock_into_educational_stock(
+    stock_id: str, stock_data: EducationalStockCreationBodyModel, offer: Offer, user: User
+) -> Stock:
     if offer.extraData.get("isShowcase") is not True:
         raise educational_exceptions.OfferIsNotShowcase()
 
