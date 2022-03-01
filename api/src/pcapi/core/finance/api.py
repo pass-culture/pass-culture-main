@@ -39,12 +39,16 @@ from flask import render_template
 import pytz
 import sqlalchemy as sqla
 from sqlalchemy import Date
+from sqlalchemy import and_
 from sqlalchemy import cast
 import sqlalchemy.orm as sqla_orm
 import sqlalchemy.sql.functions as sqla_func
 
 from pcapi import settings
 import pcapi.core.bookings.models as bookings_models
+from pcapi.core.educational.models import EducationalBooking
+from pcapi.core.educational.models import EducationalDeposit
+from pcapi.core.educational.models import EducationalInstitution
 from pcapi.core.finance import models
 from pcapi.core.mails.transactional.pro.invoice_available_to_pro import send_invoice_available_to_pro_email
 from pcapi.core.object_storage import store_public_object
@@ -666,6 +670,7 @@ def _generate_payments_file(batch_id: int) -> pathlib.Path:
         "Identifiant de la valorisation",
         "Taux de remboursement",
         "Montant remboursé à l'offreur",
+        "Ministère",
     ]
     # We join `Venue` twice: once to get the venue that is related to
     # the business unit ; and once to get the venue of the offer. To
@@ -688,6 +693,15 @@ def _generate_payments_file(batch_id: int) -> pathlib.Path:
         .join(bookings_models.Booking.offerer)
         .outerjoin(bookings_models.Booking.individualBooking)
         .outerjoin(bookings_models.IndividualBooking.deposit)
+        .outerjoin(bookings_models.Booking.educationalBooking)
+        .outerjoin(EducationalBooking.educationalInstitution)
+        .outerjoin(
+            EducationalDeposit,
+            and_(
+                EducationalDeposit.educationalYearId == EducationalBooking.educationalYearId,
+                EducationalDeposit.educationalInstitutionId == EducationalInstitution.id,
+            ),
+        )
         .filter(models.Cashflow.batchId == batch_id)
         .distinct(models.Pricing.id)
         .order_by(models.Pricing.id)
@@ -711,6 +725,7 @@ def _generate_payments_file(batch_id: int) -> pathlib.Path:
             payments_models.Deposit.type.label("deposit_type"),
             models.Pricing.id.label("pricing_id"),
             models.Pricing.amount.label("pricing_amount"),
+            EducationalDeposit.ministry.label("ministry"),
         )
         # FIXME (dbaty, 2021-11-30): other functions use `yield_per()`
         # but I am not sure it helps here. We have used
@@ -740,6 +755,8 @@ def _payment_details_row_formatter(sql_row):
     booking_total_amount = sql_row.booking_amount * sql_row.booking_quantity
     reimbursed_amount = utils.to_euros(-sql_row.pricing_amount)
     reimbursement_rate = (reimbursed_amount / booking_total_amount).quantize(decimal.Decimal("0.01"))
+    ministry = sql_row.ministry.name if sql_row.ministry else ""
+
     return (
         human_ids.humanize(sql_row.business_unit_venue_id),
         _clean_for_accounting(sql_row.business_unit_siret),
@@ -755,6 +772,7 @@ def _payment_details_row_formatter(sql_row):
         sql_row.pricing_id,
         reimbursement_rate,
         reimbursed_amount,
+        ministry,
     )
 
 
