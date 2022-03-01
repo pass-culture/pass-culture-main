@@ -959,7 +959,6 @@ jobs:
             VERSION_TO_DEPLOY=$(git describe --contains | sed 's/..$//')
             BOT_MESSAGE="'Version *"$VERSION_TO_DEPLOY"* has been successfully deployed to *"$CIRCLE_BRANCH"* :muscle:'"
             curl -X POST -H 'Content-type: application/json' --data "{'text': $BOT_MESSAGE}" $SLACK_OPS_BOT_URL
-            curl -i -k -XPOST "$GRAFANA_INFLUXDB_URL/write?db=$GRAFANA_DB" --data-binary 'deployments,application=All,environment='"$CIRCLE_BRANCH"',deployed=true version="'"$VERSION_TO_DEPLOY"'"'
 
   restart-pcapi:
     executor: gcp-sdk
