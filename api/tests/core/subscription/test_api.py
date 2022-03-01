@@ -136,7 +136,11 @@ class NextSubscriptionStepTest:
 
     @override_features(ENABLE_EDUCONNECT_AUTHENTICATION=True)
     def test_next_subscription_step_underage_honor_statement(self):
-        user = users_factories.UserFactory(dateOfBirth=self.fifteen_years_ago, city="Zanzibar")
+        user = users_factories.UserFactory(
+            dateOfBirth=self.fifteen_years_ago,
+            city="Zanzibar",
+            activity=users_models.ActivityEnum.MIDDLE_SCHOOL_STUDENT.value,
+        )
         fraud_factories.BeneficiaryFraudCheckFactory(
             user=user,
             type=fraud_models.FraudCheckType.EDUCONNECT,
@@ -148,7 +152,11 @@ class NextSubscriptionStepTest:
 
     @override_features(ENABLE_EDUCONNECT_AUTHENTICATION=True)
     def test_next_subscription_step_underage_finished(self):
-        user = users_factories.UserFactory(dateOfBirth=self.fifteen_years_ago, city="Zanzibar")
+        user = users_factories.UserFactory(
+            dateOfBirth=self.fifteen_years_ago,
+            city="Zanzibar",
+            activity=users_models.ActivityEnum.MIDDLE_SCHOOL_STUDENT.value,
+        )
         fraud_factories.BeneficiaryFraudCheckFactory(
             type=fraud_models.FraudCheckType.HONOR_STATEMENT,
             resultContent=None,
@@ -205,6 +213,7 @@ class NextSubscriptionStepTest:
             dateOfBirth=self.eighteen_years_ago,
             phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
             city="Zanzibar",
+            activity=users_models.ActivityEnum.MIDDLE_SCHOOL_STUDENT.value,
         )
         content = fraud_factories.UserProfilingFraudDataFactory(risk_rating="trusted")
         fraud_factories.BeneficiaryFraudCheckFactory(
@@ -224,6 +233,7 @@ class NextSubscriptionStepTest:
             dateOfBirth=self.eighteen_years_ago,
             phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
             city="Zanzibar",
+            activity=users_models.ActivityEnum.MIDDLE_SCHOOL_STUDENT.value,
         )
         content = fraud_factories.UserProfilingFraudDataFactory(risk_rating="trusted")
         fraud_factories.BeneficiaryFraudCheckFactory(
@@ -243,6 +253,7 @@ class NextSubscriptionStepTest:
             dateOfBirth=self.eighteen_years_ago,
             phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
             address="3 rue du quai",
+            activity=users_models.ActivityEnum.MIDDLE_SCHOOL_STUDENT.value,
         )
         content = fraud_factories.UserProfilingFraudDataFactory(risk_rating="trusted")
         fraud_factories.BeneficiaryFraudCheckFactory(
@@ -385,6 +396,22 @@ class NextSubscriptionStepTest:
         user = users_factories.UserFactory(dateOfBirth=dateOfBirth, schoolType=user_school_type)
         with override_features(**feature_flags):
             assert subscription_api.get_allowed_identity_check_methods(user) == expected_result
+
+    def test_has_completed_profile_names_mandatory(self):
+        user = users_factories.UserFactory(
+            dateOfBirth=self.eighteen_years_ago,
+            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
+            address="3 rue du quai",
+            activity=users_models.ActivityEnum.MIDDLE_SCHOOL_STUDENT.value,
+        )
+        assert subscription_api.has_completed_profile(user)
+
+        user = users_factories.UserFactory(
+            dateOfBirth=self.eighteen_years_ago,
+            firstName=None,
+            lastName=None,
+        )
+        assert not subscription_api.has_completed_profile(user)
 
     @pytest.mark.parametrize(
         "feature_flags,user_age,expected_result",
@@ -695,7 +722,9 @@ class HasPassedAllChecksToBecomeBeneficiaryTest:
     def eligible_user(self, validate_phone: bool, city: typing.Optional[str] = "Quito"):
         phone_validation_status = users_models.PhoneValidationStatusType.VALIDATED if validate_phone else None
         return users_factories.UserFactory(
-            dateOfBirth=self.AGE18_ELIGIBLE_BIRTH_DATE, phoneValidationStatus=phone_validation_status, city=city
+            dateOfBirth=self.AGE18_ELIGIBLE_BIRTH_DATE,
+            phoneValidationStatus=phone_validation_status,
+            city=city,
         )
 
     def test_no_missing_step(self):

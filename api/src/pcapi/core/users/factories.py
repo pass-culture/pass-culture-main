@@ -66,6 +66,7 @@ class UserFactory(BaseFactory):
     roles = []
     hasSeenProTutorials = True
     subscriptionState = models.SubscriptionState.account_created
+    activity = models.ActivityEnum.HIGH_SCHOOL_STUDENT.value
 
     @classmethod
     def _create(cls, model_class, *args, **kwargs):

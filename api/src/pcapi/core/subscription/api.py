@@ -93,8 +93,8 @@ def _send_beneficiary_activation_email(user: users_models.User, has_activated_ac
 
 
 def has_completed_profile(user: users_models.User) -> bool:
-    # TODO(add a check on user.activity once the field is mandatory in subscription/profile_completion route)
-    return user.city is not None
+    mandatory_fields = [user.city, user.activity, user.firstName, user.lastName]
+    return all(elem is not None for elem in mandatory_fields)
 
 
 def is_eligibility_activable(
