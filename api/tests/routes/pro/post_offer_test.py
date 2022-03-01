@@ -2,6 +2,8 @@ import pytest
 import requests_mock
 
 from pcapi.core.categories import subcategories
+from pcapi.core.educational.models import CollectiveOffer
+from pcapi.core.educational.models import StudentLevels
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import Offer
 from pcapi.core.testing import override_settings
@@ -96,7 +98,7 @@ class Returns200Test:
         assert offer.audioDisabilityCompliant == True
         assert offer.mentalDisabilityCompliant == False
 
-    def test_create_valid_educational_offer(self, app):
+    def test_create_valid_collective_offer_in_old_offer_model(self, app):
         # Given
         venue = offers_factories.VenueFactory()
         offerer = venue.managingOfferer
@@ -129,7 +131,7 @@ class Returns200Test:
     @override_settings(ADAGE_API_URL="https://adage-api-url")
     @override_settings(ADAGE_API_KEY="adage-api-key")
     @override_settings(ADAGE_BACKEND="pcapi.core.educational.adage_backends.adage.AdageHttpClient")
-    def test_create_valid_educational_offer_with_new_route(self, app):
+    def test_create_valid_educational_offer_with_new_route_on_old_offer_model(self, app):
         # Given
         venue = offers_factories.VenueFactory()
         offerer = venue.managingOfferer
@@ -212,6 +214,79 @@ class Returns200Test:
             "offerVenue": {"addressType": "other", "otherAddress": "", "venueId": ""},
             "isShowcase": False,
         }
+
+    @override_settings(ADAGE_API_URL="https://adage-api-url")
+    @override_settings(ADAGE_API_KEY="adage-api-key")
+    @override_settings(ADAGE_BACKEND="pcapi.core.educational.adage_backends.adage.AdageHttpClient")
+    def test_create_collective_offer_on_draft_offer_creation(self, app):
+        venue = offers_factories.VenueFactory()
+        offerer = venue.managingOfferer
+        offers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
+
+        data = {
+            "venueId": humanize(venue.id),
+            "offererId": humanize(offerer.id),
+            "name": "A pretty good offer",
+            "subcategoryId": subcategories.SEANCE_CINE.id,
+            "audioDisabilityCompliant": True,
+            "mentalDisabilityCompliant": True,
+            "motorDisabilityCompliant": True,
+            "visualDisabilityCompliant": True,
+            "extraData": {
+                "students": ["Collège - 4e", "CAP - 2e année"],
+                "contactEmail": "toto@toto.com",
+                "contactPhone": "0600000000",
+                "offerVenue": {"addressType": "other", "otherAddress": "", "venueId": ""},
+            },
+        }
+
+        client = TestClient(app.test_client()).with_session_auth("user@example.com")
+        with requests_mock.Mocker() as request_mock:
+            request_mock.get(
+                f"https://adage-api-url/v1/partenaire-culturel/{offerer.siren}",
+                request_headers={
+                    "X-omogen-api-key": "adage-api-key",
+                },
+                status_code=200,
+                json=[
+                    {
+                        "id": "125334",
+                        "siret": "18004623700012",
+                        "regionId": "1",
+                        "academieId": "25",
+                        "statutId": "2",
+                        "labelId": "4",
+                        "typeId": "4",
+                        "communeId": "75101",
+                        "libelle": "Musée du Louvre",
+                        "adresse": "Rue de Rivoli",
+                        "siteWeb": "https://www.louvre.fr/",
+                        "latitude": "48.861863",
+                        "longitude": "2.338081",
+                        "actif": "1",
+                        "dateModification": "2021-09-01 00:00:00",
+                        "statutLibelle": "Établissement public",
+                        "labelLibelle": "Musée de France",
+                        "typeIcone": "museum",
+                        "typeLibelle": "Musée, domaine ou monument",
+                        "communeLibelle": "PARIS  1ER ARRONDISSEMENT",
+                        "domaines": "Architecture|Arts visuels, arts plastiques, arts appliqués|Patrimoine et archéologie|Photographie",
+                    }
+                ],
+            )
+
+            response = client.post("/offers/educational", json=data)
+
+        assert response.status_code == 201
+        offer_id = dehumanize(response.json["id"])
+        collective_offer = CollectiveOffer.query.filter_by(offerId=offer_id).one()
+        assert collective_offer.name == data["name"]
+        assert collective_offer.subcategoryId == data["subcategoryId"]
+        assert collective_offer.venueId == venue.id
+        assert set(collective_offer.students) == {StudentLevels.COLLEGE4, StudentLevels.CAP2}
+        assert collective_offer.contactEmail == data["extraData"]["contactEmail"]
+        assert collective_offer.contactPhone == data["extraData"]["contactPhone"]
+        assert collective_offer.offerVenue == data["extraData"]["offerVenue"]
 
 
 @pytest.mark.usefixtures("db_session")
