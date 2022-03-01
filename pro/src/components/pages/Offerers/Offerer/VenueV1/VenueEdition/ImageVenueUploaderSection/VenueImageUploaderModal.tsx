@@ -13,12 +13,17 @@ import { VenueImagePreview } from '../VenueImagePreview/VenueImagePreview'
 import { IMAGE_TYPES, MAX_IMAGE_SIZE, MIN_IMAGE_WIDTH } from './constants'
 import { getDataURLFromImageURL } from './utils'
 
-type ImageVenueUploaderSectionProps = {
+type VenueImageUploaderModalProps = {
   venueId: string
   onDismiss: () => void
-  reloadImage: (url: string) => void
   venueCredit: string
-  setVenueCredit: (credit: string) => void
+  onImageUpload: ({
+    bannerUrl,
+    credit,
+  }: {
+    bannerUrl: string
+    credit: string
+  }) => void
   defaultImage?: string
 }
 
@@ -31,11 +36,10 @@ const constraints = [
 export const VenueImageUploaderModal = ({
   venueId,
   onDismiss,
-  reloadImage,
   defaultImage,
   venueCredit,
-  setVenueCredit,
-}: ImageVenueUploaderSectionProps): JSX.Element => {
+  onImageUpload,
+}: VenueImageUploaderModalProps): JSX.Element => {
   const [image, setImage] = useState<string | undefined>(defaultImage)
   const [credit, setCredit] = useState(venueCredit)
   const [croppingRect, setCroppingRect] = useState<CroppedRect>()
@@ -66,7 +70,7 @@ export const VenueImageUploaderModal = ({
     setImage(undefined)
   }, [setImage])
 
-  const onUploadImage = useCallback(async () => {
+  const onUpload = useCallback(async () => {
     if (typeof croppingRect === 'undefined') return
     if (typeof image === 'undefined') return
 
@@ -84,20 +88,18 @@ export const VenueImageUploaderModal = ({
       heightCropPercent: croppingRect.height,
       imageCredit: credit,
     })
-    reloadImage(bannerUrl)
+    onImageUpload({ bannerUrl, credit })
     setIsUploading(false)
     onDismiss()
-    setVenueCredit(credit)
     notification.success('Vos modifications ont bien été prises en compte')
   }, [
     venueId,
     image,
     croppingRect,
-    reloadImage,
     onDismiss,
     notification,
     credit,
-    setVenueCredit,
+    onImageUpload,
   ])
 
   return (
@@ -125,7 +127,7 @@ export const VenueImageUploaderModal = ({
         <VenueImagePreview
           isUploading={isUploading}
           onGoBack={navigateFromPreviewToEdit}
-          onUploadImage={onUploadImage}
+          onUploadImage={onUpload}
           preview={editedImage}
           withActions
         />
