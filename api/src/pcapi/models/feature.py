@@ -48,6 +48,9 @@ class FeatureToggle(enum.Enum):
         "Active le champ isbn obligatoire lors de la création d'offre de type LIVRE_EDITION"
     )
     ENABLE_NATIVE_APP_RECAPTCHA = "Active le reCaptacha sur l'API native"
+    ENABLE_NATIVE_CULTURAL_SURVEY = (
+        "Active le Questionnaire des pratiques initiales natif (non TypeForm) sur l'app native et décli web"
+    )
     ENABLE_NATIVE_ID_CHECK_VERSION = "Utilise la version d'ID-Check intégrée à l'application native"
     ENABLE_NATIVE_ID_CHECK_VERBOSE_DEBUGGING = (
         "Active le mode debug Firebase pour l'Id Check intégrée à l'application native"
@@ -123,6 +126,7 @@ FEATURES_DISABLED_BY_DEFAULT = (
     FeatureToggle.ENABLE_EDUCONNECT_AUTHENTICATION,
     FeatureToggle.ENABLE_ID_CHECK_RETENTION,
     FeatureToggle.ENABLE_ISBN_REQUIRED_IN_LIVRE_EDITION_OFFER_CREATION,
+    FeatureToggle.ENABLE_NATIVE_CULTURAL_SURVEY,
     FeatureToggle.ENABLE_NATIVE_ID_CHECK_VERBOSE_DEBUGGING,
     FeatureToggle.ENABLE_NEW_VENUE_PAGES,
     FeatureToggle.ENABLE_PRO_BOOKINGS_V2,
