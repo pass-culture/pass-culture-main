@@ -17,6 +17,7 @@ from sqlalchemy.sql.sqltypes import Numeric
 
 from pcapi.core.bookings import exceptions as booking_exceptions
 from pcapi.core.educational import exceptions
+from pcapi.core.offers.models import Offer
 from pcapi.models import Model
 from pcapi.models.offer_mixin import AccessibilityMixin
 from pcapi.models.offer_mixin import OfferValidationStatus
@@ -143,6 +144,36 @@ class CollectiveOffer(PcObject, ValidationMixin, AccessibilityMixin, StatusMixin
             sa.exists()
             .where(CollectiveStock.offerId == cls.id)
             .where(CollectiveStock.hasBookingLimitDatetimePassed.is_(True))
+        )
+
+    @classmethod
+    def create_from_offer(cls, offer: Offer):
+        list_of_common_attributes = [
+            "isActive",
+            "venue",
+            "name",
+            "description",
+            "durationMinutes",
+            "dateCreated",
+            "subcategoryId",
+            "dateUpdated",
+            "bookingEmail",
+            "lastValidationDate",
+            "validation",
+            "audioDisabilityCompliant",
+            "mentalDisabilityCompliant",
+            "motorDisabilityCompliant",
+            "visualDisabilityCompliant",
+        ]
+        offer_mapping = {x: getattr(offer, x) for x in list_of_common_attributes}
+        students = [StudentLevels(x).name for x in offer.extraData.get("students")]
+        return cls(
+            **offer_mapping,
+            offerId=offer.id,
+            contactEmail=offer.extraData.get("contactEmail"),
+            contactPhone=offer.extraData.get("contactPhone"),
+            offerVenue=offer.extraData.get("offerVenue"),
+            students=students,
         )
 
 
