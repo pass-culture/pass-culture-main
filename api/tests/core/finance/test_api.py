@@ -13,6 +13,10 @@ import sqlalchemy.orm as sqla_orm
 import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.bookings.models as bookings_models
 from pcapi.core.categories import subcategories
+from pcapi.core.educational.factories import EducationalDepositFactory
+from pcapi.core.educational.factories import EducationalInstitutionFactory
+from pcapi.core.educational.factories import EducationalYearFactory
+from pcapi.core.educational.models import Ministry
 from pcapi.core.finance import api
 from pcapi.core.finance import exceptions
 from pcapi.core.finance import factories
@@ -630,6 +634,35 @@ def test_generate_payments_file():
         standardRule="",
         customRule=payments_factories.CustomReimbursementRuleFactory(amount=6),
     )
+    # pricing for educational booking
+    # check that the right deposit is used for csv
+    year1 = EducationalYearFactory()
+    year2 = EducationalYearFactory()
+    year3 = EducationalYearFactory()
+    educational_institution = EducationalInstitutionFactory()
+    EducationalDepositFactory(
+        educationalInstitution=educational_institution, educationalYear=year1, ministry=Ministry.AGRICULTURE.name
+    )
+    deposit2 = EducationalDepositFactory(
+        educationalInstitution=educational_institution,
+        educationalYear=year2,
+        ministry=Ministry.EDUCATION_NATIONALE.name,
+    )
+    EducationalDepositFactory(
+        educationalInstitution=educational_institution, educationalYear=year3, ministry=Ministry.ARMEES.name
+    )
+    pricing5 = factories.EducationalPricingFactory(
+        amount=-600,  # rate = 100 %
+        booking__amount=6,
+        booking__dateUsed=used_date,
+        booking__stock__beginningDatetime=used_date,
+        booking__stock__offer__name="Une histoire plutôt bien",
+        booking__stock__offer__subcategoryId=subcategories.CINE_PLEIN_AIR.id,
+        booking__stock__offer__venue=offer_venue2,
+        booking__educationalBooking__educationalInstitution=deposit2.educationalInstitution,
+        booking__educationalBooking__educationalYear=deposit2.educationalYear,
+    )
+
     cutoff = datetime.datetime.utcnow()
     batch_id = api.generate_cashflows(cutoff)
 
@@ -642,7 +675,8 @@ def test_generate_payments_file():
             csv_textfile = io.TextIOWrapper(csv_bytefile)
             reader = csv.DictReader(csv_textfile, quoting=csv.QUOTE_NONNUMERIC)
             rows = list(reader)
-    assert len(rows) == 4
+
+    assert len(rows) == 5
     assert rows[0] == {
         "Identifiant de la BU": human_ids.humanize(venue1.id),
         "SIRET de la BU": "123456 test",
@@ -658,6 +692,7 @@ def test_generate_payments_file():
         "Identifiant de la valorisation": pricing1.id,
         "Taux de remboursement": 1,
         "Montant remboursé à l'offreur": 10,
+        "Ministère": "",
     }
     assert rows[1] == {
         "Identifiant de la BU": human_ids.humanize(business_unit_venue2.id),
@@ -674,6 +709,7 @@ def test_generate_payments_file():
         "Identifiant de la valorisation": pricing2.id,
         "Taux de remboursement": 0.75,
         "Montant remboursé à l'offreur": 9,
+        "Ministère": "",
     }
     assert rows[2] == {
         "Identifiant de la BU": human_ids.humanize(business_unit_venue2.id),
@@ -690,6 +726,7 @@ def test_generate_payments_file():
         "Identifiant de la valorisation": pricing3.id,
         "Taux de remboursement": 0.50,
         "Montant remboursé à l'offreur": 6,
+        "Ministère": "",
     }
     assert rows[3] == {
         "Identifiant de la BU": human_ids.humanize(business_unit_venue2.id),
@@ -706,6 +743,24 @@ def test_generate_payments_file():
         "Identifiant de la valorisation": pricing4.id,
         "Taux de remboursement": 0.50,
         "Montant remboursé à l'offreur": 6,
+        "Ministère": "",
+    }
+    assert rows[4] == {
+        "Identifiant de la BU": human_ids.humanize(business_unit_venue2.id),
+        "SIRET de la BU": "22222222233333",
+        "Libellé de la BU": "BU du Gigantesque Cubitus",
+        "Identifiant du lieu": human_ids.humanize(offer_venue2.id),
+        "Libellé du lieu": "Le Gigantesque Cubitus",
+        "Identifiant de l'offre": pricing5.booking.stock.offerId,
+        "Nom de l'offre": "Une histoire plutôt bien",
+        "Sous-catégorie de l'offre": "CINE_PLEIN_AIR",
+        "Prix de la réservation": 6,
+        "Type de réservation": "EACC",
+        "Date de validation": "2020-01-02 00:00:00",
+        "Identifiant de la valorisation": pricing5.id,
+        "Taux de remboursement": 1.0,
+        "Montant remboursé à l'offreur": 6,
+        "Ministère": Ministry.EDUCATION_NATIONALE.name,
     }
 
 
