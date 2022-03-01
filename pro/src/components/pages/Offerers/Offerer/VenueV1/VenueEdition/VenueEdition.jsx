@@ -58,9 +58,7 @@ const VenueEdition = ({
   const onImageUpload = ({ bannerUrl, credit }) => {
     setVenue({
       ...venue,
-      // URL is always the same for a venue
-      // we have to reload the same URL when uploading a new one
-      bannerUrl: `${bannerUrl}?${Math.random()}`,
+      bannerUrl,
       bannerMeta: {
         ...venue.bannerMeta,
         image_credit: credit,
