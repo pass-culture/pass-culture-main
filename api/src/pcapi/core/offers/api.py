@@ -28,6 +28,7 @@ from pcapi.core.categories import subcategories
 from pcapi.core.categories.conf import can_create_from_isbn
 from pcapi.core.educational import api as educational_api
 from pcapi.core.educational import exceptions as educational_exceptions
+from pcapi.core.educational import models as educational_models
 import pcapi.core.educational.adage_backends as adage_client
 from pcapi.core.educational.utils import compute_educational_booking_cancellation_limit_date
 from pcapi.core.mails.transactional.bookings.booking_cancellation_by_pro_to_beneficiary import (
@@ -135,7 +136,21 @@ def list_offers_for_pro_user(
 def create_educational_offer(offer_data: PostEducationalOfferBodyModel, user: User) -> Offer:
     offerers_api.can_offerer_create_educational_offer(dehumanize(offer_data.offerer_id))
     completed_data = CompletedEducationalOfferModel(**offer_data.dict(by_alias=True))
-    return create_offer(completed_data, user)
+    offer = create_offer(completed_data, user)
+    create_collective_offer(offer)
+    return offer
+
+
+def create_collective_offer(
+    offer: Offer,
+) -> None:
+    collective_offer = educational_models.CollectiveOffer.create_from_offer(offer)
+    db.session.add(collective_offer)
+    db.session.commit()
+    logger.info(
+        "Collective offer template has been created",
+        extra={"collectiveOfferTemplate": collective_offer.id, "offerId": offer.id},
+    )
 
 
 def create_offer(
