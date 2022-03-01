@@ -241,7 +241,7 @@ class DmsWebhookApplicationTest:
     def test_dms_request_with_unexisting_user(self, send_user_message, execute_query, client):
 
         execute_query.return_value = make_single_application(
-            12, state=api_dms.GraphQLApplicationStates.draft.value, email="user@example.com"
+            6044787, state=api_dms.GraphQLApplicationStates.draft.value, email="user@example.com"
         )
         form_data = {
             "procedure_id": 48860,
@@ -259,6 +259,11 @@ class DmsWebhookApplicationTest:
         assert execute_query.call_count == 1
         assert send_user_message.call_count == 1
         assert send_user_message.call_args[0][2] == subscription_messages.DMS_ERROR_MESSAGE_USER_NOT_FOUND
+
+        orphan_dms_application = fraud_models.OrphanDmsApplication.query.filter(
+            fraud_models.OrphanDmsApplication.email == "user@example.com"
+        ).first()
+        assert orphan_dms_application.application_id == 6044787
 
     @patch.object(api_dms.DMSGraphQLClient, "execute_query")
     @patch.object(api_dms.DMSGraphQLClient, "send_user_message")

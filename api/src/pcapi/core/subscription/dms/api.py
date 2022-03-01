@@ -211,9 +211,10 @@ def _process_user_parsing_error(application_id: int, procedure_id: int) -> None:
 
 def _process_user_not_found_error(email: str, application_id: int, procedure_id: int) -> None:
     logger.info(
-        "[BATCH][REMOTE IMPORT BENEFICIARIES] Application %s in procedure %s has no user and was ignored",
+        "User not found for application %s procedure %s email %s",
         application_id,
         procedure_id,
+        email,
     )
     subscription_repository.create_orphan_dms_application(
         application_id=application_id, procedure_id=procedure_id, email=email
@@ -400,7 +401,7 @@ def parse_and_handle_dms_application(
 
     user = find_user_by_email(user_email)
     if not user:
-        # TODO: Handle this error differently, when we accept applications from DMS before user creation
+        _process_user_not_found_error(user_email, application_id, procedure_id)
         if state == dms_connector_api.GraphQLApplicationStates.draft:
             client.send_user_message(
                 dossier_id,
@@ -408,13 +409,6 @@ def parse_and_handle_dms_application(
                 subscription_messages.DMS_ERROR_MESSAGE_USER_NOT_FOUND,
             )
 
-        logger.info(
-            "User not found for application %s procedure %s email %s",
-            application_id,
-            procedure_id,
-            user_email,
-            extra=log_extra_data,
-        )
         return None
     try:
         application = dms_connector_api.parse_beneficiary_information_graphql(raw_data["dossier"], procedure_id)
