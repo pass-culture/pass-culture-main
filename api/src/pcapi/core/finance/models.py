@@ -247,7 +247,9 @@ class CashflowPricing(Model):
     """
 
     cashflowId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("cashflow.id"), index=True, primary_key=True)
+    cashflow = sqla_orm.relationship("Cashflow", foreign_keys=[cashflowId])
     pricingId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("pricing.id"), index=True, primary_key=True)
+    pricing = sqla_orm.relationship("Pricing", foreign_keys=[pricingId])
 
     __table_args__ = (
         sqla.UniqueConstraint(

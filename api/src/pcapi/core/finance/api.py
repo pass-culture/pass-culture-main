@@ -1058,3 +1058,96 @@ def _store_invoice_pdf(invoice_storage_id: str, invoice_html: str):
     store_public_object(
         folder="invoices", object_id=invoice_storage_id, blob=invoice_pdf, content_type="application/pdf"
     )
+
+
+def merge_cashflow_batches(
+    batches_to_remove: list[models.CashflowBatch],
+    target_batch: models.CashflowBatch,
+):
+    """Merge multiple cashflow batches into a single (existing) one.
+
+    This function is to be used if multiple batches have been wrongly
+    generated (for example because the cutoff of the first batch was
+    wrong). The target batch must hence be the one with the right
+    cutoff.
+    """
+    assert len(batches_to_remove) >= 1
+    assert target_batch not in batches_to_remove
+
+    batch_ids_to_remove = [batch.id for batch in batches_to_remove]
+    business_unit_ids = [
+        id_
+        for id_, in (
+            models.Cashflow.query.filter(models.Cashflow.batchId.in_(batch_ids_to_remove))
+            .with_entities(models.Cashflow.businessUnitId)
+            .distinct()
+        )
+    ]
+    with transaction():
+        initial_sum = (
+            models.Cashflow.query.filter(
+                models.Cashflow.batchId.in_([b.id for b in batches_to_remove + [target_batch]]),
+            )
+            .with_entities(sqla_func.sum(models.Cashflow.amount))
+            .scalar()
+        )
+        for business_unit_id in business_unit_ids:
+            cashflows = models.Cashflow.query.filter(
+                models.Cashflow.businessUnitId == business_unit_id,
+                models.Cashflow.batchId.in_(
+                    batch_ids_to_remove + [target_batch.id],
+                ),
+            ).all()
+            # One cashflow, wrong batch. Just change the batchId.
+            if len(cashflows) == 1:
+                models.Cashflow.query.filter_by(id=cashflows[0].id).update(
+                    {
+                        "batchId": target_batch.id,
+                        "creationDate": target_batch.creationDate,
+                    },
+                    synchronize_session=False,
+                )
+                continue
+
+            # Multiple cashflows, possibly including the target batch.
+            # Update "right" cashflow amount if there is one (or any
+            # cashflow otherwise), delete other cashflows.
+            try:
+                cashflow_to_keep = [cf for cf in cashflows if cf.batchId == target_batch.id][0]
+            except IndexError:
+                cashflow_to_keep = cashflows[0]
+            cashflow_ids_to_remove = [cf.id for cf in cashflows if cf != cashflow_to_keep]
+            sum_to_add = (
+                models.Cashflow.query.filter(models.Cashflow.id.in_(cashflow_ids_to_remove))
+                .with_entities(sqla_func.sum(models.Cashflow.amount))
+                .scalar()
+            )
+            models.CashflowPricing.query.filter(models.CashflowPricing.cashflowId.in_(cashflow_ids_to_remove)).update(
+                {"cashflowId": cashflow_to_keep.id},
+                synchronize_session=False,
+            )
+            models.Cashflow.query.filter_by(id=cashflow_to_keep.id).update(
+                {
+                    "batchId": target_batch.id,
+                    "amount": cashflow_to_keep.amount + sum_to_add,
+                },
+                synchronize_session=False,
+            )
+            models.CashflowLog.query.filter(
+                models.CashflowLog.cashflowId.in_(cashflow_ids_to_remove),
+            ).delete(synchronize_session=False)
+            models.Cashflow.query.filter(
+                models.Cashflow.id.in_(cashflow_ids_to_remove),
+            ).delete(synchronize_session=False)
+        models.CashflowBatch.query.filter(models.CashflowBatch.id.in_(batch_ids_to_remove)).delete(
+            synchronize_session=False,
+        )
+        final_sum = (
+            models.Cashflow.query.filter(
+                models.Cashflow.batchId.in_(batch_ids_to_remove + [target_batch.id]),
+            )
+            .with_entities(sqla_func.sum(models.Cashflow.amount))
+            .scalar()
+        )
+        assert final_sum == initial_sum
+        db.session.commit()
