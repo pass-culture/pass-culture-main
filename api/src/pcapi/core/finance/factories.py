@@ -76,3 +76,13 @@ class CashflowFactory(BaseFactory):
         model = models.Cashflow
 
     batch = factory.SubFactory(CashflowBatchFactory)
+    status = models.CashflowStatus.ACCEPTED
+    bankAccount = factory.SelfAttribute("businessUnit.bankAccount")
+
+
+class CashflowPricingFactory(BaseFactory):
+    class Meta:
+        model = models.CashflowPricing
+
+    cashflow = factory.SubFactory(CashflowFactory)
+    pricing = factory.SubFactory(PricingFactory, businessUnit=factory.SelfAttribute("..cashflow.businessUnit"))
