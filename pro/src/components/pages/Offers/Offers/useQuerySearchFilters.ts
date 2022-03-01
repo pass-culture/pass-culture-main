@@ -37,7 +37,9 @@ const useQuerySearchFilters = (): [IUrlSearchFilters, number] => {
     fieldsWithTranslatedValues.forEach(field => {
       if (queryParams[field]) {
         type mapBrowserToApiKey = keyof typeof mapBrowserToApi
-        const queryParamsKey: mapBrowserToApiKey = queryParams[field]
+        const queryParamsKey: mapBrowserToApiKey = queryParams[
+          field
+        ] as mapBrowserToApiKey
         const translatedValue = mapBrowserToApi[queryParamsKey]
         translatedFilters[field] = translatedValue
       }

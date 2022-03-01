@@ -3,7 +3,7 @@ import React from 'react'
 
 import {
   ImportFromComputerInput,
-  ImportFromComputerInputProps,
+  IImportFromComputerInputProps,
 } from './ImportFromComputerInput'
 
 export default {
@@ -11,7 +11,7 @@ export default {
   component: ImportFromComputerInput,
 }
 
-const Template: Story<ImportFromComputerInputProps> = props => (
+const Template: Story<IImportFromComputerInputProps> = props => (
   <ImportFromComputerInput {...props} />
 )
 

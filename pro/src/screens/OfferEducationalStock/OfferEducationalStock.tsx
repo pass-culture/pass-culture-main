@@ -38,7 +38,6 @@ const showcaseOfferRadios = [
 ]
 
 export interface IOfferEducationalStockProps {
-  isEditable?: boolean
   initialValues: OfferEducationalStockFormValues
   offer: GetStockOfferSuccessPayload
   onSubmit: (

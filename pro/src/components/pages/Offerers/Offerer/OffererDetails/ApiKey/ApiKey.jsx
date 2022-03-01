@@ -21,7 +21,7 @@ const ApiKey = ({
   offererId,
   reloadOfferer,
 }) => {
-  const [newlyGeneratedKeys, setNewGeneratedKeys] = useState([])
+  const [newlyGeneratedKeys, setNewlyGeneratedKeys] = useState([])
   const [isGeneratingKey, setIsGeneratingKey] = useState(false)
   const [apiKeyToDelete, setApiKeyToDelete] = useState(null)
 
@@ -31,7 +31,7 @@ const ApiKey = ({
     try {
       setIsGeneratingKey(true)
       const generatedApiKey = await generateOffererApiKey(offererId)
-      setNewGeneratedKeys(previousKeys => [...previousKeys, generatedApiKey])
+      setNewlyGeneratedKeys(previousKeys => [...previousKeys, generatedApiKey])
       notification.success(
         'Votre clé a bien été générée. Attention elle ne sera affichée que quelques instants !'
       )
