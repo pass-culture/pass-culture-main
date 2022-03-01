@@ -77,7 +77,9 @@ App.propTypes = {
     PropTypes.arrayOf(PropTypes.shape()),
     PropTypes.shape(),
   ]).isRequired,
+  history: PropTypes.shape().isRequired,
   isFeaturesInitialized: PropTypes.bool.isRequired,
   isMaintenanceActivated: PropTypes.bool.isRequired,
   loadFeatures: PropTypes.func.isRequired,
+  location: PropTypes.shape().isRequired,
 }

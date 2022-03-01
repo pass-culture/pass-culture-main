@@ -42,7 +42,7 @@ class LocationViewer extends PureComponent {
     )
   }
 
-  static getDerivedStateFromProps = (newProps, state) => {
+  static getDerivedStateFromProps(newProps, state) {
     const latitude = sanitizeCoordinates(newProps.latitude)
     const longitude = sanitizeCoordinates(newProps.longitude)
 
