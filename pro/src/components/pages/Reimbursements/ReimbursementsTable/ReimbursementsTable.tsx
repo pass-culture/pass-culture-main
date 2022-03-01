@@ -32,7 +32,7 @@ const ReimbursementsTable = ({
   columns,
 }: ITableProps): JSX.Element => {
   const [direction, setDirection] = useState(DEFAULT_DIRECTION)
-  const [selectedColumn, setSelectedTitle] = useState('date')
+  const [selectedColumn, setSelectedColumn] = useState('date')
   const [sortedInvoices, setSortedInvoices] = useState([...invoices])
 
   const changeDirection = (directionToChange: string) =>
@@ -65,7 +65,7 @@ const ReimbursementsTable = ({
           : DEFAULT_DIRECTION
 
       sortBy(newSelectedColumn, newDirection)
-      setSelectedTitle(newSelectedColumn)
+      setSelectedColumn(newSelectedColumn)
       setDirection(newDirection)
     },
     [selectedColumn, direction, sortBy]

@@ -8,7 +8,7 @@ const useAccessibilityUpdates = (): void => {
   const { values, setFieldValue } =
     useFormikContext<IOfferEducationalFormValues>()
 
-  const [prevValue, setPrevValues] = useState<
+  const [prevValue, setPrevValue] = useState<
     IOfferEducationalFormValues['accessibility'] | null
   >(values.accessibility)
 
@@ -32,7 +32,7 @@ const useAccessibilityUpdates = (): void => {
           mental: false,
           none: true,
         }
-        setPrevValues(newValue)
+        setPrevValue(newValue)
         setFieldValue('accessibility', newValue)
       }
 
@@ -41,7 +41,7 @@ const useAccessibilityUpdates = (): void => {
           ...values.accessibility,
           none: false,
         }
-        setPrevValues(newValue)
+        setPrevValue(newValue)
         setFieldValue('accessibility', newValue)
       }
     }

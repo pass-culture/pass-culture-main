@@ -33,6 +33,8 @@ class Filters extends Component {
     })
   }, this.DELAY_BEFORE_APPLYING_FILTERS_IN_MILLISECONDS)
 
+  // This method is called via Ref
+  // eslint-disable-next-line react/no-unused-class-component-methods
   resetAllFilters = () => {
     this.setState(
       {
