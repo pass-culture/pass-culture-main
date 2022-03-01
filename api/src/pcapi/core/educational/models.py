@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import dataclasses
 from datetime import datetime
 from decimal import Decimal
@@ -174,6 +176,35 @@ class CollectiveOffer(PcObject, ValidationMixin, AccessibilityMixin, StatusMixin
             contactPhone=offer.extraData.get("contactPhone"),
             offerVenue=offer.extraData.get("offerVenue"),
             students=students,
+        )
+
+    @classmethod
+    def create_from_collective_offer_template(cls, collective_offer_template: CollectiveOfferTemplate):
+        list_of_common_attributes = [
+            "isActive",
+            "venue",
+            "name",
+            "description",
+            "durationMinutes",
+            "dateCreated",
+            "subcategoryId",
+            "dateUpdated",
+            "bookingEmail",
+            "lastValidationDate",
+            "validation",
+            "audioDisabilityCompliant",
+            "mentalDisabilityCompliant",
+            "motorDisabilityCompliant",
+            "visualDisabilityCompliant",
+            "contactEmail",
+            "contactPhone",
+            "offerVenue",
+            "students",
+        ]
+        offer_mapping = {x: getattr(collective_offer_template, x) for x in list_of_common_attributes}
+        return cls(
+            **offer_mapping,
+            offerId=collective_offer_template.offerId,
         )
 
 
