@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react'
+import React from 'react'
 
 import useActiveFeature from 'components/hooks/useActiveFeature'
 import Icon from 'components/layout/Icon'
@@ -19,14 +19,20 @@ type ImageVenueUploaderSectionProps = {
   venueId: string
   venueImage: string | null
   venueCredit: string
-  setVenueCredit: (credit: string) => void
+  onImageUpload: ({
+    bannerUrl,
+    credit,
+  }: {
+    bannerUrl: string
+    credit: string
+  }) => void
 }
 
 export const ImageVenueUploaderSection = ({
   venueId,
   venueImage,
   venueCredit,
-  setVenueCredit,
+  onImageUpload,
 }: ImageVenueUploaderSectionProps): JSX.Element => {
   const {
     visible: isUploaderModalVisible,
@@ -43,13 +49,6 @@ export const ImageVenueUploaderSection = ({
     showModal: showPreviewModal,
     hideModal: hidePreviewModal,
   } = useModal()
-
-  const [imageUniqueURL, setImageUniqueURL] = useState(venueImage)
-  const reloadImage = useCallback((url: string) => {
-    // URL is always the same for a venue
-    // we have to reload the same URL when uploading a new one
-    setImageUniqueURL(`${url}?${Math.random()}`)
-  }, [])
 
   // @TODO: remove this commit with PC-13132
   const shouldDisplayImageVenueDeletion = useActiveFeature(
@@ -72,9 +71,9 @@ export const ImageVenueUploaderSection = ({
         <br />
         Elle permettra au public de mieux identifier votre lieu.
       </p>
-      {imageUniqueURL ? (
+      {venueImage ? (
         <div className={styles['image-venue-uploader-section-image-container']}>
-          <VenueImage url={imageUniqueURL} />
+          <VenueImage url={venueImage} />
           <div
             className={styles['image-venue-uploader-section-icon-container']}
           >
@@ -108,10 +107,9 @@ export const ImageVenueUploaderSection = ({
       )}
       {!!isUploaderModalVisible && (
         <VenueImageUploaderModal
-          defaultImage={imageUniqueURL || undefined}
+          defaultImage={venueImage || undefined}
           onDismiss={hideUploaderModal}
-          reloadImage={reloadImage}
-          setVenueCredit={setVenueCredit}
+          onImageUpload={onImageUpload}
           venueCredit={venueCredit}
           venueId={venueId}
         />
@@ -119,13 +117,13 @@ export const ImageVenueUploaderSection = ({
       {!!isDeleteModalVisible && (
         <VenueImageDeleteModal onDismiss={hideDeleteModal} />
       )}
-      {isPreviewModalVisible && imageUniqueURL && (
+      {isPreviewModalVisible && venueImage && (
         <DialogBox
           hasCloseButton
           labelledBy="Image du lieu"
           onDismiss={hidePreviewModal}
         >
-          <VenueImagePreview preview={imageUniqueURL} />
+          <VenueImagePreview preview={venueImage} />
         </DialogBox>
       )}
     </section>
