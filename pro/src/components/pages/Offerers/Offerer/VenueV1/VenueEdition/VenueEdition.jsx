@@ -55,9 +55,12 @@ const VenueEdition = ({
     'ENFORCE_BANK_INFORMATION_WITH_SIRET'
   )
 
-  const setVenueCredit = credit => {
+  const onImageUpload = ({ bannerUrl, credit }) => {
     setVenue({
       ...venue,
+      // URL is always the same for a venue
+      // we have to reload the same URL when uploading a new one
+      bannerUrl: `${bannerUrl}?${Math.random()}`,
       bannerMeta: {
         ...venue.bannerMeta,
         image_credit: credit,
@@ -194,7 +197,7 @@ const VenueEdition = ({
           )}
           {!!shouldDisplayImageVenueUploaderSection && (
             <ImageVenueUploaderSection
-              setVenueCredit={setVenueCredit}
+              onImageUpload={onImageUpload}
               venueCredit={venue.bannerMeta?.image_credit}
               venueId={venue.id}
               venueImage={venue.bannerUrl}
