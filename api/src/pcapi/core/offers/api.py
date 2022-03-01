@@ -1060,8 +1060,39 @@ def cancel_educational_offer_booking(offer: Offer) -> None:
         )
 
 
+def create_collective_shadow_offer(stock_data: EducationalOfferShadowStockBodyModel, user: User, offer_id: str):
+    offer = Offer.query.filter_by(id=offer_id).options(joinedload(Offer.stocks)).one()
+    stock = create_educational_shadow_stock_and_set_offer_showcase(stock_data, user, offer)
+    create_collective_offer_template_and_delete_regular_collective_offer(offer, stock)
+    return stock
+
+
+def create_collective_offer_template_and_delete_regular_collective_offer(offer: Offer, stock: Stock) -> None:
+    collective_offer = educational_models.CollectiveOffer.query.filter_by(offerId=offer.id).one_or_none()
+    if collective_offer is None:
+        logger.info(
+            "Collective offer not found. Collective offer template will be created from old offer model",
+            extra={"offer": offer.id},
+        )
+        collective_offer_template = educational_models.CollectiveOfferTemplate.create_from_offer(
+            offer, price_detail=stock.educationalPriceDetail
+        )
+    else:
+        collective_offer_template = educational_models.CollectiveOfferTemplate.create_from_collective_offer(
+            collective_offer, price_detail=stock.educationalPriceDetail
+        )
+        db.session.delete(collective_offer)
+
+    db.session.add(collective_offer_template)
+    db.session.commit()
+    logger.info(
+        "Collective offer template has been created and regular collective offer deleted if applicable",
+        extra={"collectiveOfferTemplate": collective_offer_template.id, "offer": offer.id},
+    )
+
+
 def create_educational_shadow_stock_and_set_offer_showcase(
-    stock_data: EducationalOfferShadowStockBodyModel, user: User, offer_id: str
+    stock_data: EducationalOfferShadowStockBodyModel, user: User, offer: Offer
 ) -> Stock:
     # When creating a showcase offer we need to create a shadow stock.
     # We prefill the stock information with false data.
@@ -1072,12 +1103,11 @@ def create_educational_shadow_stock_and_set_offer_showcase(
     number_of_tickets = 1
     educational_price_detail = stock_data.educational_price_detail
 
-    offer = Offer.query.filter_by(id=offer_id).options(joinedload(Offer.stocks)).one()
     if len(offer.activeStocks) > 0:
         raise educational_exceptions.EducationalStockAlreadyExists()
 
     if not offer.isEducational:
-        raise educational_exceptions.OfferIsNotEducational(offer_id)
+        raise educational_exceptions.OfferIsNotEducational(offer.id)
     validation.check_validation_status(offer)
 
     stock = Stock(
@@ -1090,7 +1120,7 @@ def create_educational_shadow_stock_and_set_offer_showcase(
         quantity=1,
     )
     repository.save(stock)
-    logger.info("Educational shadow stock has been created", extra={"offer": offer_id})
+    logger.info("Educational shadow stock has been created", extra={"offer": offer.id})
 
     extra_data = copy.deepcopy(offer.extraData)
     extra_data["isShowcase"] = True

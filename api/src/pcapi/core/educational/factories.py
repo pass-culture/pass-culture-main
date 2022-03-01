@@ -22,7 +22,7 @@ class CollectiveOfferFactory(BaseFactory):
     class Meta:
         model = models.CollectiveOffer
 
-    subcategoryId = factory.Iterator(COLLECTIVE_SUBCATEGORIES, getter=lambda s: s.id)
+    subcategoryId = factory.Iterator(COLLECTIVE_SUBCATEGORIES)
     name = factory.Sequence("CollectiveOffer {}".format)
     description = factory.Sequence("A passionate description of collectiveoffer {}".format)
     venue = factory.SubFactory(VenueFactory)

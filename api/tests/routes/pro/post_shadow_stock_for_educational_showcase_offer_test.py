@@ -2,6 +2,8 @@ from datetime import datetime
 
 import pytest
 
+from pcapi.core.educational import factories as educational_factories
+from pcapi.core.educational import models as educational_models
 from pcapi.core.offers import factories as offer_factories
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
@@ -20,7 +22,6 @@ class Return200Test:
             user__email="user@example.com",
             offerer=offer.venue.managingOfferer,
         )
-        print("OFFER ID", offer.id)
 
         # When
         stock_payload = {
@@ -43,6 +44,86 @@ class Return200Test:
         assert created_stock.numberOfTickets == 1
         assert created_stock.educationalPriceDetail == "Détail du prix"
         assert updated_offer.extraData["isShowcase"] == True
+
+    def test_create_collective_offer_template_and_delete_collective_offer(self, client):
+        # Given
+        offer = offer_factories.EducationalEventOfferFactory(extraData={"isShowcase": False})
+        collective_offer = educational_factories.CollectiveOfferFactory(
+            offerId=offer.id,
+            students=[educational_models.StudentLevels.COLLEGE4, educational_models.StudentLevels.CAP2],
+        )
+        offer_factories.UserOffererFactory(
+            user__email="user@example.com",
+            offerer=offer.venue.managingOfferer,
+        )
+
+        # When
+        stock_payload = {
+            "educationalPriceDetail": "Détail du prix",
+        }
+
+        client.with_session_auth("user@example.com")
+        response = client.post(f"/offers/educational/{humanize(offer.id)}/shadow-stock", json=stock_payload)
+
+        # Then
+        assert response.status_code == 201
+        collective_offer_deleted = educational_models.CollectiveOffer.query.filter_by(offerId=offer.id).one_or_none()
+        assert collective_offer_deleted is None
+
+        collective_offer_template = educational_models.CollectiveOfferTemplate.query.filter_by(
+            offerId=offer.id
+        ).one_or_none()
+        assert collective_offer_template is not None
+        assert collective_offer_template.name == collective_offer.name
+        assert collective_offer_template.subcategoryId == collective_offer.subcategoryId
+        assert collective_offer_template.venueId == collective_offer.venueId
+        assert set(collective_offer_template.students) == set(collective_offer.students)
+        assert collective_offer_template.contactEmail == collective_offer.contactEmail
+        assert collective_offer_template.contactPhone == collective_offer.contactPhone
+        assert collective_offer_template.offerVenue == collective_offer.offerVenue
+        assert collective_offer_template.priceDetail == stock_payload["educationalPriceDetail"]
+
+    def test_create_collective_offer_template_from_offer_when_collective_offer_not_found(self, client):
+        # Given
+        offer = offer_factories.EducationalEventOfferFactory(
+            extraData={
+                "isShowcase": False,
+                "students": ["Collège - 4e", "CAP - 1re année"],
+                "contactEmail": "toto@example.com",
+                "contactPhone": "0101010101",
+            }
+        )
+        offer_factories.UserOffererFactory(
+            user__email="user@example.com",
+            offerer=offer.venue.managingOfferer,
+        )
+
+        # When
+        stock_payload = {
+            "educationalPriceDetail": "Détail du prix",
+        }
+
+        client.with_session_auth("user@example.com")
+        response = client.post(f"/offers/educational/{humanize(offer.id)}/shadow-stock", json=stock_payload)
+
+        # Then
+        assert response.status_code == 201
+        collective_offer = educational_models.CollectiveOffer.query.filter_by(offerId=offer.id).one_or_none()
+        assert collective_offer is None
+
+        collective_offer_template = educational_models.CollectiveOfferTemplate.query.filter_by(
+            offerId=offer.id
+        ).one_or_none()
+        assert collective_offer_template is not None
+        assert collective_offer_template.name == offer.name
+        assert collective_offer_template.subcategoryId == offer.subcategoryId
+        assert collective_offer_template.venueId == offer.venueId
+        assert set(collective_offer_template.students) == {
+            educational_models.StudentLevels.COLLEGE4,
+            educational_models.StudentLevels.CAP1,
+        }
+        assert collective_offer_template.contactEmail == offer.extraData["contactEmail"]
+        assert collective_offer_template.priceDetail == stock_payload["educationalPriceDetail"]
 
 
 class Return400Test:

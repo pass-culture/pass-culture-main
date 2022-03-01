@@ -327,7 +327,7 @@ def create_shadow_stock_for_educational_showcase_offer(
     check_user_has_access_to_offerer(current_user, offerer.id)
 
     try:
-        stock = offers_api.create_educational_shadow_stock_and_set_offer_showcase(body, current_user, offer_id)
+        stock = offers_api.create_collective_shadow_offer(body, current_user, offer_id)
     except educational_exceptions.EducationalStockAlreadyExists:
         raise ApiErrors(
             {"code": "EDUCATIONAL_STOCK_ALREADY_EXISTS"},
