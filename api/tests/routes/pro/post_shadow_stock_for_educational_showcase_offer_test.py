@@ -17,7 +17,9 @@ pytestmark = pytest.mark.usefixtures("db_session")
 class Return200Test:
     def test_create_valid_shadow_stock_for_educational_offer(self, client):
         # Given
-        offer = offer_factories.EducationalEventOfferFactory(extraData={"isShowcase": False})
+        offer = offer_factories.EducationalEventOfferFactory(
+            extraData={"isShowcase": False, "contactEmail": "toto@example.com", "contactPhone": "0101010101"}
+        )
         offer_factories.UserOffererFactory(
             user__email="user@example.com",
             offerer=offer.venue.managingOfferer,
