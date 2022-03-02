@@ -141,22 +141,3 @@ class Returns200Test:
         # then
         assert response.status_code == 200
         assert response.json["nbTotalResults"] == 2
-
-    @pytest.mark.usefixtures("db_session")
-    def test_returns_only_active_offerers(self, client):
-        # given
-        pro_user = users_factories.ProFactory(email="user@test.com")
-        active_offerer = offers_factories.OffererFactory(name="active_offerer", siren="1", isActive=True)
-        active_user_offerer = offers_factories.UserOffererFactory(user=pro_user, offerer=active_offerer)
-        inactive_offerer = offers_factories.OffererFactory(name="inactive_offerer", siren="2", isActive=False)
-        inactive_user_offerer = offers_factories.UserOffererFactory(user=pro_user, offerer=inactive_offerer)
-        repository.save(active_user_offerer, inactive_user_offerer)
-
-        # when
-        request = client.with_session_auth(email=pro_user.email)
-        response = request.get("/offerers?is_active=true")
-
-        # then
-        assert response.status_code == 200
-        assert len(response.json["offerers"]) == 1
-        assert response.json["offerers"][0]["name"] == active_offerer.name
