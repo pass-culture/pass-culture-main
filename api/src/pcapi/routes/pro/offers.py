@@ -79,16 +79,6 @@ def post_offer(body: offers_serialize.PostOfferBodyModel) -> offers_serialize.Of
     try:
         offer = offers_api.create_offer(offer_data=body, user=current_user)
 
-    except exceptions.OfferCannotBeDuoAndEducational as error:
-        logger.info(
-            "Could not create offer: offer cannot be both 'duo' and 'educational'",
-            extra={"offer_name": body.name, "venue_id": body.venue_id},
-        )
-        raise ApiErrors(
-            error.errors,
-            status_code=400,
-        )
-
     except exceptions.UnknownOfferSubCategory as error:
         logger.info(
             "Could not create offer: selected subcategory is unknown.",
@@ -332,6 +322,11 @@ def create_shadow_stock_for_educational_showcase_offer(
         raise ApiErrors(
             {"code": "EDUCATIONAL_STOCK_ALREADY_EXISTS"},
             status_code=400,
+        )
+    except exceptions.CollectiveOfferNotFound:
+        raise ApiErrors(
+            {"code": "COLLECTIVE_OFFER_NOT_FOUND"},
+            status_code=404,
         )
 
     return StockIdResponseModel.from_orm(stock)

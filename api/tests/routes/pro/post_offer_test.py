@@ -394,27 +394,6 @@ class Returns400Test:
         assert response.status_code == 400
         assert response.json["offer"] == ["Cette catégorie d'offre n'est pas éligible aux offres éducationnelles"]
 
-    def test_fail_when_educational_and_duo(self, app):
-        # Given
-        venue = offers_factories.VenueFactory()
-        offerer = venue.managingOfferer
-        offers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
-
-        # When
-        data = {
-            "venueId": humanize(venue.id),
-            "name": "An unacceptable name",
-            "subcategoryId": "SEANCE_CINE",
-            "isEducational": True,
-            "isDuo": True,
-        }
-        client = TestClient(app.test_client()).with_session_auth("user@example.com")
-        response = client.post("/offers", json=data)
-
-        # Then
-        assert response.status_code == 400
-        assert response.json["offer"] == ["Une offre ne peut être à la fois 'duo' et 'éducationnelle'."]
-
     def test_fail_when_offer_subcategory_is_offline_only_and_venue_is_virtuel(self, app):
         # Given
         venue = offers_factories.VirtualVenueFactory()
