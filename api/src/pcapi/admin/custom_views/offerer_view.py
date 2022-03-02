@@ -44,7 +44,9 @@ class OffererView(BaseAdminView):
 
     def delete_model(self, offerer: Offerer) -> bool:
         # Get users to update before association info is deleted
+        # joined user is no longer available after delete_model()
         users_offerer = user_offerer_queries.find_all_by_offerer_id(offerer.id)
+        emails = [user_offerer.user.email for user_offerer in users_offerer]
 
         try:
             delete_cascade_offerer_by_id(offerer.id)
@@ -52,8 +54,8 @@ class OffererView(BaseAdminView):
             flash("Impossible d'effacer une structure juridique pour laquelle il existe des réservations.", "error")
             return False
 
-        for user_offerer in users_offerer:
-            update_external_pro(user_offerer.user.email)
+        for email in emails:
+            update_external_pro(email)
 
         return True
 
