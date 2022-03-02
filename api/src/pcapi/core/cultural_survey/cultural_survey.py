@@ -257,3 +257,10 @@ ACTIVITES = CulturalSurveyQuestion(
         SANS_ACTIVITES,
     ],
 )
+
+ALL_CULTURAL_SURVEY_QUESTIONS = (
+    SORTIES,
+    FESTIVALS,
+    SPECTACLES,
+    ACTIVITES,
+)
