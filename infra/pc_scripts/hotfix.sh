@@ -3,9 +3,10 @@
 function tag_hotfix {
 
     TAG_VERSION="v$TAG_NAME"
-    BRANCH_NAME="hotfix-$TAG_VERSION"
+    TAG_ITERATION=$(echo $TAG_NAME|sed 's/\..*//')
+    BRANCH_NAME="maint/v$TAG_ITERATION"
 
-    git checkout -b hotfix-$TAG_VERSION
+    git checkout "$BRANCH_NAME"
 
     echo --- Change API version $TAG_VERSION ---
     cd $ROOT_PATH/api
