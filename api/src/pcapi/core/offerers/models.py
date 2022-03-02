@@ -124,7 +124,7 @@ VenueTypeCodeKey = enum.Enum(
 )
 
 
-class Venue(PcObject, Model, HasThumbMixin, HasAddressMixin, ProvidableMixin, NeedsValidationMixin):
+class Venue(PcObject, Model, HasThumbMixin, HasAddressMixin, ProvidableMixin, NeedsValidationMixin, DeactivableMixin):
     __tablename__ = "venue"
 
     id = Column(BigInteger, primary_key=True)

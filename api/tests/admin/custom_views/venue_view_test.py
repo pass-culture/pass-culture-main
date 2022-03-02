@@ -13,6 +13,7 @@ from pcapi.core.offers import models as offers_models
 from pcapi.core.providers import factories as providers_factories
 from pcapi.core.users import testing as sendinblue_testing
 from pcapi.core.users.factories import AdminFactory
+from pcapi.models import db
 
 from tests.conftest import TestClient
 from tests.conftest import clean_database
@@ -44,6 +45,7 @@ class VenueViewTest:
             latitude=venue.latitude,
             longitude=venue.longitude,
             isPermanent=venue.isPermanent,
+            isActive=venue.isActive,
         )
 
         client = TestClient(app.test_client()).with_session_auth("user@example.com")
@@ -56,6 +58,7 @@ class VenueViewTest:
 
         assert venue_edited.siret == "88888888888888"
         assert stock_edited.idAtProviders == "11111@88888888888888"
+        assert venue.isActive
 
         mocked_async_index_offers_of_venue_ids.assert_not_called()
 
@@ -148,6 +151,7 @@ class VenueViewTest:
             latitude=venue.latitude,
             longitude=venue.longitude,
             isPermanent=venue.isPermanent,
+            isActive=venue.isActive,
         )
 
         client = TestClient(app.test_client()).with_session_auth("user@example.com")
@@ -182,6 +186,7 @@ class VenueViewTest:
             latitude=venue.latitude,
             longitude=venue.longitude,
             isPermanent=venue.isPermanent,
+            isActive=venue.isActive,
         )
 
         client = TestClient(app.test_client()).with_session_auth("user@example.com")
@@ -207,6 +212,7 @@ class VenueViewTest:
             latitude="42.01",
             longitude=venue.longitude,
             isPermanent=True,
+            isActive=venue.isActive,
         )
 
         client = TestClient(app.test_client()).with_session_auth("user@example.com")
@@ -240,6 +246,7 @@ class VenueViewTest:
             latitude=venue.latitude,
             longitude=venue.longitude,
             isPermanent=True,
+            isActive=venue.isActive,
         )
 
         client = TestClient(app.test_client()).with_session_auth("user@example.com")
@@ -280,6 +287,7 @@ class VenueViewTest:
             "latitude": venue.latitude,
             "longitude": venue.longitude,
             "isPermanent": True,
+            "isActive": venue.isActive,
         }
 
         client = client.with_session_auth(admin.email)
@@ -290,6 +298,114 @@ class VenueViewTest:
         mocked_reindex_venue_ids.assert_called_once_with([venue.id])
         mocked_async_index_venue_ids.assert_not_called()
         mocked_async_index_offers_of_venue_ids.assert_not_called()
+
+    @pytest.mark.parametrize(
+        "booking_status", [None, BookingStatus.USED, BookingStatus.CANCELLED, BookingStatus.REIMBURSED]
+    )
+    @clean_database
+    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    def test_deactivate_venue(self, mocked_validate_csrf_token, client, booking_status):
+        admin = AdminFactory(email="user@example.com")
+        venue = offers_factories.VenueFactory()
+        user_offerer = offers_factories.UserOffererFactory(offerer=venue.managingOfferer)
+        if booking_status is not None:
+            BookingFactory(stock__offer__venue=venue, status=booking_status)
+
+        api_client = client.with_session_auth(admin.email)
+        response = api_client.post(
+            f"/pc/back-office/venue/edit/?id={venue.id}",
+            form={
+                "name": venue.name,
+                "siret": venue.siret,
+                "city": venue.city,
+                "postalCode": venue.postalCode,
+                "address": venue.address,
+                "publicName": venue.publicName,
+                "latitude": venue.latitude,
+                "longitude": venue.longitude,
+                "isPermanent": venue.isPermanent,
+                # "isActive" is not sent in request when unchecked
+            },
+        )
+
+        assert response.status_code == 302
+
+        db.session.refresh(venue)
+        assert not venue.isActive
+        assert len(sendinblue_testing.sendinblue_requests) == 2
+        assert {req["email"] for req in sendinblue_testing.sendinblue_requests} == {
+            user_offerer.user.email,
+            venue.bookingEmail,
+        }
+
+    @pytest.mark.parametrize("booking_status", [BookingStatus.PENDING, BookingStatus.CONFIRMED])
+    @clean_database
+    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    def test_deactivate_venue_rejected(self, mocked_validate_csrf_token, client, booking_status):
+        admin = AdminFactory(email="user@example.com")
+        venue = offers_factories.VenueFactory()
+        offers_factories.UserOffererFactory(offerer=venue.managingOfferer)
+        BookingFactory(stock__offer__venue=venue, status=booking_status)
+
+        api_client = client.with_session_auth(admin.email)
+        response = api_client.post(
+            f"/pc/back-office/venue/edit/?id={venue.id}",
+            form={
+                "name": venue.name,
+                "siret": venue.siret,
+                "city": venue.city,
+                "postalCode": venue.postalCode,
+                "address": venue.address,
+                "publicName": venue.publicName,
+                "latitude": venue.latitude,
+                "longitude": venue.longitude,
+                "isPermanent": venue.isPermanent,
+                # "isActive" is not sent in request when unchecked
+            },
+        )
+
+        assert response.status_code == 200
+        assert "Impossible de désactiver un lieu pour lequel des réservations sont en cours." in response.data.decode(
+            "utf8"
+        )
+
+        db.session.refresh(venue)
+        assert venue.isActive
+        assert len(sendinblue_testing.sendinblue_requests) == 0
+
+    @clean_database
+    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    def test_reactivate_venue(self, mocked_validate_csrf_token, client):
+        admin = AdminFactory(email="user@example.com")
+        venue = offers_factories.VenueFactory(isActive=False)
+        user_offerer = offers_factories.UserOffererFactory(offerer=venue.managingOfferer)
+
+        api_client = client.with_session_auth(admin.email)
+        response = api_client.post(
+            f"/pc/back-office/venue/edit/?id={venue.id}",
+            form={
+                "name": venue.name,
+                "siret": venue.siret,
+                "city": venue.city,
+                "postalCode": venue.postalCode,
+                "address": venue.address,
+                "publicName": venue.publicName,
+                "latitude": venue.latitude,
+                "longitude": venue.longitude,
+                "isPermanent": venue.isPermanent,
+                "isActive": "y",
+            },
+        )
+
+        assert response.status_code == 302
+
+        db.session.refresh(venue)
+        assert venue.isActive
+        assert len(sendinblue_testing.sendinblue_requests) == 2
+        assert {req["email"] for req in sendinblue_testing.sendinblue_requests} == {
+            user_offerer.user.email,
+            venue.bookingEmail,
+        }
 
     @clean_database
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")

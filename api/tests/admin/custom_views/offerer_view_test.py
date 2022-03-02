@@ -105,6 +105,7 @@ class OffererViewTest:
         db.session.refresh(venue)
 
         assert not offerer.isActive
+        assert not venue.isActive
         assert len(sendinblue_testing.sendinblue_requests) == 2
         assert {req["email"] for req in sendinblue_testing.sendinblue_requests} == {pro_user.email, venue.bookingEmail}
 
@@ -141,6 +142,7 @@ class OffererViewTest:
         db.session.refresh(venue)
 
         assert offerer.isActive
+        assert venue.isActive
         assert len(sendinblue_testing.sendinblue_requests) == 0
 
     @clean_database
@@ -148,7 +150,7 @@ class OffererViewTest:
     def test_reactivate_offerer(self, mocked_validate_csrf_token, client):
         admin = users_factories.AdminFactory(email="user@example.com")
         offerer = offers_factories.OffererFactory(isActive=False)
-        venue = offers_factories.VenueFactory(managingOfferer=offerer)
+        venue = offers_factories.VenueFactory(managingOfferer=offerer, isActive=False)
         pro_user = users_factories.ProFactory()
         offers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
 
@@ -171,6 +173,7 @@ class OffererViewTest:
         db.session.refresh(venue)
 
         assert offerer.isActive
+        assert not venue.isActive  # not reactivated
         assert len(sendinblue_testing.sendinblue_requests) == 2
         assert {req["email"] for req in sendinblue_testing.sendinblue_requests} == {pro_user.email, venue.bookingEmail}
 
