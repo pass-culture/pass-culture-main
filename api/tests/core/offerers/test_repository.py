@@ -37,7 +37,7 @@ class GetAllOfferersForUserTest:
         offerer = offers_factories.OffererFactory()
 
         # When
-        offerers = get_all_offerers_for_user(user=admin, filters={})
+        offerers = get_all_offerers_for_user(user=admin)
 
         # Then
         assert len(offerers) == 1
@@ -50,7 +50,7 @@ class GetAllOfferersForUserTest:
         other_offerer = offers_factories.OffererFactory()
 
         # When
-        offerers = get_all_offerers_for_user(user=pro, filters={})
+        offerers = get_all_offerers_for_user(user=pro)
 
         # Then
         assert len(offerers) == 1
@@ -64,7 +64,7 @@ class GetAllOfferersForUserTest:
         pro_offerer_attachment = offers_factories.UserOffererFactory(user=pro, offerer__validationToken="Token")
 
         # When
-        offerers = get_all_offerers_for_user(user=pro, filters={})
+        offerers = get_all_offerers_for_user(user=pro)
 
         # Then
         assert len(offerers) == 1
@@ -77,7 +77,7 @@ class GetAllOfferersForUserTest:
         unvalidated_pro_offerer_attachment = offers_factories.UserOffererFactory(user=pro, validationToken="Token")
 
         # When
-        offerers = get_all_offerers_for_user(user=pro, filters={})
+        offerers = get_all_offerers_for_user(user=pro)
 
         # Then
         assert len(offerers) == 1
@@ -90,7 +90,7 @@ class GetAllOfferersForUserTest:
         offers_factories.OffererFactory(isActive=False)
 
         # When
-        offerers = get_all_offerers_for_user(user=admin, filters={})
+        offerers = get_all_offerers_for_user(user=admin)
 
         # Then
         assert len(offerers) == 0
@@ -105,12 +105,7 @@ class GetAllOfferersForUserTest:
             )
 
             # When
-            offerers = get_all_offerers_for_user(
-                user=pro,
-                filters={
-                    "validated": None,
-                },
-            )
+            offerers = get_all_offerers_for_user(user=pro)
 
             # Then
             assert len(offerers) == 2
@@ -127,12 +122,7 @@ class GetAllOfferersForUserTest:
             )
 
             # When
-            offerers = get_all_offerers_for_user(
-                user=pro,
-                filters={
-                    "validated": True,
-                },
-            )
+            offerers = get_all_offerers_for_user(user=pro, validated=True)
 
             # Then
             assert len(offerers) == 1
@@ -149,12 +139,7 @@ class GetAllOfferersForUserTest:
             )
 
             # When
-            offerers = get_all_offerers_for_user(
-                user=pro,
-                filters={
-                    "validated": False,
-                },
-            )
+            offerers = get_all_offerers_for_user(user=pro, validated=False)
 
             # Then
             assert len(offerers) == 1
@@ -170,12 +155,7 @@ class GetAllOfferersForUserTest:
             unvalidated_pro_offerer_attachment = offers_factories.UserOffererFactory(user=pro, validationToken="Token")
 
             # When
-            offerers = get_all_offerers_for_user(
-                user=pro,
-                filters={
-                    "validated_for_user": None,
-                },
-            )
+            offerers = get_all_offerers_for_user(user=pro)
 
             # Then
             assert len(offerers) == 2
@@ -190,12 +170,7 @@ class GetAllOfferersForUserTest:
             unvalidated_pro_offerer_attachment = offers_factories.UserOffererFactory(user=pro, validationToken="Token")
 
             # When
-            offerers = get_all_offerers_for_user(
-                user=pro,
-                filters={
-                    "validated_for_user": True,
-                },
-            )
+            offerers = get_all_offerers_for_user(user=pro, validated_for_user=True)
 
             # Then
             assert len(offerers) == 1
@@ -210,12 +185,7 @@ class GetAllOfferersForUserTest:
             unvalidated_pro_offerer_attachment = offers_factories.UserOffererFactory(user=pro, validationToken="Token")
 
             # When
-            offerers = get_all_offerers_for_user(
-                user=pro,
-                filters={
-                    "validated_for_user": False,
-                },
-            )
+            offerers = get_all_offerers_for_user(user=pro, validated_for_user=False)
 
             # Then
             assert len(offerers) == 1
