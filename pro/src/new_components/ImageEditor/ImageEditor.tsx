@@ -1,23 +1,33 @@
 import Slider from '@mui/material/Slider'
 import { ThemeProvider, createTheme } from '@mui/material/styles'
 import { styled } from '@mui/material/styles'
-import React, { forwardRef, useCallback, useState } from 'react'
+import React, {
+  useEffect,
+  useRef,
+  forwardRef,
+  useCallback,
+  useState,
+} from 'react'
 import AvatarEditor from 'react-avatar-editor'
+
+import { useEffectUnmount } from 'hooks'
 
 import CanvasTools from './canvas'
 import style from './ImageEditor.module.scss'
 
-export type ImageEditorProps = {
+export interface IImageEditorProps {
   image: string | File
   canvasHeight: number
   canvasWidth: number
   cropBorderColor: string
   cropBorderHeight: number
   cropBorderWidth: number
+  saveInitialScale?: (scale: number) => void
+  initialScale?: number
   children?: never
 }
 
-const ImageEditor = forwardRef<AvatarEditor, ImageEditorProps>(
+const ImageEditor = forwardRef<AvatarEditor, IImageEditorProps>(
   (
     {
       image,
@@ -26,10 +36,13 @@ const ImageEditor = forwardRef<AvatarEditor, ImageEditorProps>(
       cropBorderColor,
       cropBorderHeight,
       cropBorderWidth,
+      saveInitialScale,
+      initialScale,
     },
     ref
   ) => {
-    const [scale, setScale] = useState(1)
+    const [scale, setScale] = useState(initialScale ? initialScale : 1)
+    const scaleRef = useRef(scale)
     const theme = createTheme({
       palette: {
         primary: {
@@ -39,6 +52,13 @@ const ImageEditor = forwardRef<AvatarEditor, ImageEditorProps>(
         },
       },
     })
+
+    useEffect(() => {
+      scaleRef.current = scale
+    }, [scale])
+    useEffectUnmount(
+      () => saveInitialScale && saveInitialScale(scaleRef.current)
+    )
 
     const drawCropBorder = useCallback(() => {
       const canvas = document.querySelector('canvas')
@@ -61,6 +81,7 @@ const ImageEditor = forwardRef<AvatarEditor, ImageEditorProps>(
       canvasWidth,
       canvasHeight,
     ])
+
     const onScaleChange = useCallback(event => {
       setScale(event.target.value)
     }, [])
