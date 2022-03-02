@@ -1515,33 +1515,6 @@ class CreateOfferTest:
 
         assert offer.isEducational
 
-    def test_cannot_create_educational_offer_when_is_duo(self):
-
-        # Given
-        venue = offer_factories.VenueFactory()
-        offerer = venue.managingOfferer
-        user_offerer = offer_factories.UserOffererFactory(offerer=offerer)
-        user = user_offerer.user
-        data = offers_serialize.PostOfferBodyModel(
-            venueId=humanize(venue.id),
-            name="A pretty good offer",
-            subcategoryId=subcategories.SEANCE_CINE.id,
-            externalTicketOfficeUrl="http://example.net",
-            isEducational=True,
-            isDuo=True,
-            audioDisabilityCompliant=True,
-            mentalDisabilityCompliant=True,
-            motorDisabilityCompliant=True,
-            visualDisabilityCompliant=True,
-        )
-
-        # When
-        with pytest.raises(offer_exceptions.OfferCannotBeDuoAndEducational) as error:
-            api.create_offer(data, user)
-
-        # Then
-        assert error.value.errors["offer"] == ["Une offre ne peut être à la fois 'duo' et 'éducationnelle'."]
-
     def test_cannot_create_educational_offer_when_not_eligible_subcategory(self):
 
         # Given

@@ -20,6 +20,11 @@ class Return200Test:
         offer = offer_factories.EducationalEventOfferFactory(
             extraData={"isShowcase": False, "contactEmail": "toto@example.com", "contactPhone": "0101010101"}
         )
+        educational_factories.CollectiveOfferFactory(
+            contactEmail="toto@example.com",
+            contactPhone="0101010101",
+            offerId=offer.id,
+        )
         offer_factories.UserOffererFactory(
             user__email="user@example.com",
             offerer=offer.venue.managingOfferer,
@@ -83,48 +88,6 @@ class Return200Test:
         assert collective_offer_template.contactEmail == collective_offer.contactEmail
         assert collective_offer_template.contactPhone == collective_offer.contactPhone
         assert collective_offer_template.offerVenue == collective_offer.offerVenue
-        assert collective_offer_template.priceDetail == stock_payload["educationalPriceDetail"]
-
-    def test_create_collective_offer_template_from_offer_when_collective_offer_not_found(self, client):
-        # Given
-        offer = offer_factories.EducationalEventOfferFactory(
-            extraData={
-                "isShowcase": False,
-                "students": ["Collège - 4e", "CAP - 1re année"],
-                "contactEmail": "toto@example.com",
-                "contactPhone": "0101010101",
-            }
-        )
-        offer_factories.UserOffererFactory(
-            user__email="user@example.com",
-            offerer=offer.venue.managingOfferer,
-        )
-
-        # When
-        stock_payload = {
-            "educationalPriceDetail": "Détail du prix",
-        }
-
-        client.with_session_auth("user@example.com")
-        response = client.post(f"/offers/educational/{humanize(offer.id)}/shadow-stock", json=stock_payload)
-
-        # Then
-        assert response.status_code == 201
-        collective_offer = educational_models.CollectiveOffer.query.filter_by(offerId=offer.id).one_or_none()
-        assert collective_offer is None
-
-        collective_offer_template = educational_models.CollectiveOfferTemplate.query.filter_by(
-            offerId=offer.id
-        ).one_or_none()
-        assert collective_offer_template is not None
-        assert collective_offer_template.name == offer.name
-        assert collective_offer_template.subcategoryId == offer.subcategoryId
-        assert collective_offer_template.venueId == offer.venueId
-        assert set(collective_offer_template.students) == {
-            educational_models.StudentLevels.COLLEGE4,
-            educational_models.StudentLevels.CAP1,
-        }
-        assert collective_offer_template.contactEmail == offer.extraData["contactEmail"]
         assert collective_offer_template.priceDetail == stock_payload["educationalPriceDetail"]
 
 
@@ -196,3 +159,32 @@ class Return400Test:
         assert response.status_code == 400
         assert response.json == {"code": "EDUCATIONAL_STOCK_ALREADY_EXISTS"}
         assert updated_offer.extraData["isShowcase"] == False
+
+
+class Return404Test:
+    def test_returns404_when_no_collective_offer_found(self, client):
+        # Given
+        offer = offer_factories.EducationalEventOfferFactory(
+            extraData={
+                "isShowcase": False,
+                "students": ["Collège - 4e", "CAP - 1re année"],
+                "contactEmail": "toto@example.com",
+                "contactPhone": "0101010101",
+            }
+        )
+        offer_factories.UserOffererFactory(
+            user__email="user@example.com",
+            offerer=offer.venue.managingOfferer,
+        )
+
+        # When
+        stock_payload = {
+            "educationalPriceDetail": "Détail du prix",
+        }
+
+        client.with_session_auth("user@example.com")
+        response = client.post(f"/offers/educational/{humanize(offer.id)}/shadow-stock", json=stock_payload)
+
+        # Then
+        assert response.status_code == 404
+        assert response.json == {"code": "COLLECTIVE_OFFER_NOT_FOUND"}
