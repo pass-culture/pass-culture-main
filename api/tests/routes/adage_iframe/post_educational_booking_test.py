@@ -7,6 +7,7 @@ import pytest
 
 from pcapi.core.bookings.models import Booking
 from pcapi.core.educational import factories as educational_factories
+from pcapi.core.educational.models import CollectiveBooking
 from pcapi.core.offers import factories as offer_factories
 
 from tests.conftest import TestClient
@@ -107,6 +108,41 @@ class Returns200Test:
         assert educational_redactor.lastName == None
         assert educational_redactor.email == "new.email@mail.fr"
 
+        assert response.json["bookingId"] == booking.id
+
+    def test_post_educational_booking_and_create_collective_booking(self, app):
+        # Given
+        stock = offer_factories.EducationalEventStockFactory(beginningDatetime=stock_date)
+        collective_stock = educational_factories.CollectiveStockFactory(beginningDatetime=stock_date, stockId=stock.id)
+        educational_institution = educational_factories.EducationalInstitutionFactory()
+        educational_year = educational_factories.EducationalYearFactory(
+            beginningDate=educational_year_dates["start"], expirationDate=educational_year_dates["end"]
+        )
+        educational_redactor = educational_factories.EducationalRedactorFactory(email="professeur@example.com")
+
+        adage_jwt_fake_valid_token = _create_adage_valid_token_with_email(
+            email=educational_redactor.email, uai=educational_institution.institutionId
+        )
+        test_client = TestClient(app.test_client())
+        test_client.auth_header = {"Authorization": f"Bearer {adage_jwt_fake_valid_token}"}
+
+        # When
+        response = test_client.post(
+            "/adage-iframe/bookings",
+            json={
+                "stockId": stock.id,
+            },
+        )
+
+        # Then
+        assert response.status_code == 200
+        booking = Booking.query.filter(Booking.stockId == stock.id).first()
+        collective_booking = CollectiveBooking.query.filter(CollectiveBooking.bookingId == booking.id).first()
+        assert collective_booking is not None
+        assert collective_booking.bookingId is not None
+        assert collective_booking.collectiveStock.id == collective_stock.id
+        assert collective_booking.educationalInstitution.institutionId == educational_institution.institutionId
+        assert collective_booking.educationalYear.adageId == educational_year.adageId
         assert response.json["bookingId"] == booking.id
 
 
