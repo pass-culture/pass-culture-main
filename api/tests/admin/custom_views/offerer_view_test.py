@@ -1,6 +1,8 @@
 from unittest.mock import patch
 
+from pcapi.core.offerers.models import Offerer
 import pcapi.core.offers.factories as offers_factories
+from pcapi.core.users import testing as sendinblue_testing
 import pcapi.core.users.factories as users_factories
 from pcapi.models import db
 
@@ -63,3 +65,20 @@ class OffererViewTest:
         db.session.refresh(offerer)
         assert offerer.name == "Updated offerer"
         assert len(offerer.tags) == 0
+
+    @clean_database
+    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    def test_delete_offerer(self, mocked_validate_csrf_token, client):
+        # Can delete offerer because there is no booking
+        admin = users_factories.AdminFactory(email="user@example.com")
+        venue = offers_factories.VenueFactory()
+        offers_factories.UserOffererFactory(offerer=venue.managingOfferer)
+
+        api_client = client.with_session_auth(admin.email)
+        response = api_client.post(
+            "/pc/back-office/offerer/delete/", form={"id": venue.managingOfferer.id, "url": "/pc/back-office/offerer/"}
+        )
+
+        assert response.status_code == 302
+        assert len(Offerer.query.all()) == 0
+        assert len(sendinblue_testing.sendinblue_requests) == 1
