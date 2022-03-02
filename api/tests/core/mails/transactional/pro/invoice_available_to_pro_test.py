@@ -47,3 +47,28 @@ class SendinblueProAvailableInvoiceEmailDataTest:
         assert mails_testing.outbox[0].sent_data["params"] == {
             "MONTANT_REMBOURSEMENT": 10,
         }
+
+    def test_send_emails_available_invoice_to_pro_user_no_booking_email(self):
+        # given
+        business_unit = factories.BusinessUnitFactory()
+        invoice = factories.InvoiceFactory(businessUnit=business_unit, date=datetime(2022, 1, 25), amount=-1000)
+        venue = offerers_factories.VenueFactory(
+            businessUnit=business_unit, siret=business_unit.siret, bookingEmail=None
+        )
+
+        # when
+        send_invoice_available_to_pro_email(invoice)
+
+        # then
+        assert len(mails_testing.outbox) == 0  # test number of emails sent
+
+    def test_send_emails_available_invoice_to_pro_user_no_venue(self):
+        # given
+        business_unit = factories.BusinessUnitFactory()
+        invoice = factories.InvoiceFactory(businessUnit=business_unit, date=datetime(2022, 1, 25), amount=-1000)
+
+        # when
+        send_invoice_available_to_pro_email(invoice)
+
+        # then
+        assert len(mails_testing.outbox) == 0  # test number of emails sent
