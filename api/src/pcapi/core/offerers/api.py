@@ -359,7 +359,7 @@ def get_educational_offerers(offerer_id: Optional[str], current_user: User) -> l
         ).all()
 
     else:
-        filters = {"validated": True, "validated_for_user": True, "is_active": True}
+        filters = {"validated": True, "validated_for_user": True}
         offerers = get_all_offerers_for_user(
             user=current_user,
             filters=filters,
