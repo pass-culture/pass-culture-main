@@ -16,7 +16,8 @@ def get_invoice_available_to_pro_email_data(invoice) -> SendinblueTransactionalE
 
 def send_invoice_available_to_pro_email(invoice) -> bool:
     data = get_invoice_available_to_pro_email_data(invoice)
-    recipient = offerers_repository.find_venue_by_siret(invoice.businessUnit.siret).bookingEmail
-    if not recipient:
+    venue = offerers_repository.find_venue_by_siret(invoice.businessUnit.siret)
+    if not venue or not venue.bookingEmail:
         return False
+    recipient = venue.bookingEmail
     return mails.send(recipients=[recipient], data=data)
