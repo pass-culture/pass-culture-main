@@ -117,18 +117,6 @@ class EducationalYearFactory(BaseFactory):
     )
 
 
-class CollectiveBookingFactory(BaseFactory):
-    class Meta:
-        model = models.CollectiveBooking
-
-    dateCreated = factory.LazyFunction(lambda: datetime.datetime.now() - datetime.timedelta(days=2))
-    venue = factory.SubFactory(VenueFactory)
-    offerer = factory.SubFactory(OffererFactory)
-    cancellationLimitDate = factory.LazyFunction(lambda: datetime.datetime.now() - datetime.timedelta(days=1))
-    educationalInstitution = factory.SubFactory(EducationalInstitutionFactory)
-    educationalYear = factory.SubFactory(EducationalYearFactory)
-
-
 def _get_current_educational_year() -> int:
     current_date = datetime.datetime.utcnow()
     current_year = current_date.year
@@ -183,3 +171,16 @@ class PendingEducationalBookingFactory(EducationalBookingFactory):
 
 class RefusedEducationalBookingFactory(EducationalBookingFactory):
     status = EducationalBookingStatus.REFUSED
+
+
+class CollectiveBookingFactory(BaseFactory):
+    class Meta:
+        model = models.CollectiveBooking
+
+    dateCreated = factory.LazyFunction(lambda: datetime.datetime.now() - datetime.timedelta(days=2))
+    venue = factory.SubFactory(VenueFactory)
+    offerer = factory.SubFactory(OffererFactory)
+    cancellationLimitDate = factory.LazyFunction(lambda: datetime.datetime.now() - datetime.timedelta(days=1))
+    educationalInstitution = factory.SubFactory(EducationalInstitutionFactory)
+    educationalYear = factory.SubFactory(EducationalYearFactory)
+    educationalRedactor = factory.SubFactory(EducationalRedactorFactory)
