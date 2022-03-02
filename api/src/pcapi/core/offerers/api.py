@@ -363,5 +363,5 @@ def get_educational_offerers(offerer_id: Optional[str], current_user: User) -> l
             user=current_user,
             validated=True,
             validated_for_user=True,
-        )
+        ).all()
     return offerers

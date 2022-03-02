@@ -66,7 +66,7 @@ def test_filter_on_keywords(client):
     offerer3 = offers_factories.OffererFactory(name="not matching")
     pro = users_factories.ProFactory(offerers=[offerer1, offerer2, offerer3])
     # Because of a bug, we need venues, here: see bug explained in
-    # PaginatedOfferersSQLRepository.
+    # `get_all_offerers_for_user()`.
     for offerer in (offerer1, offerer2, offerer3):
         offers_factories.VenueFactory(managingOfferer=offerer)
 
