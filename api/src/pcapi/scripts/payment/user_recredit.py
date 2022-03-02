@@ -4,6 +4,7 @@ import logging
 from dateutil.relativedelta import relativedelta
 from sqlalchemy.orm import joinedload
 
+from pcapi.core.fraud.models import IDENTITY_CHECK_TYPES
 from pcapi.core.mails.transactional.users.recredit_to_underage_beneficiary import (
     send_recredit_email_to_underage_beneficiary,
 )
@@ -20,18 +21,33 @@ logger = logging.getLogger(__name__)
 RECREDIT_BATCH_SIZE = 1000
 
 
-def has_celebrated_their_birthday_since_activation(user: users_models.User) -> bool:
-    return user.deposit_activation_date is not None and user.deposit_activation_date.date() < user.latest_birthday
+def has_celebrated_birthday_since_registration(user: users_models.User) -> bool:
+    user_identity_fraud_check_registration_datetimes = [
+        fraud_check.source_data().get_registration_datetime()
+        for fraud_check in user.beneficiaryFraudChecks
+        if fraud_check.type in IDENTITY_CHECK_TYPES
+    ]
+    if not user_identity_fraud_check_registration_datetimes:
+        return False
+    user_identity_fraud_check_registration_datetimes.sort()
+    first_identity_fraud_check_registration_datetime = user_identity_fraud_check_registration_datetimes[0]
+    return first_identity_fraud_check_registration_datetime.date() < user.latest_birthday
+
+
+def can_be_recredited(user: users_models.User) -> bool:
+    return (
+        user.deposit_activation_date is not None
+        and has_celebrated_birthday_since_registration(user)
+        and not has_been_recredited(user)
+    )
 
 
 def has_been_recredited(user: users_models.User) -> bool:
     if len(user.deposit.recredits) == 0:
         return False
 
-    if user.deposit.recredits[0].recreditType != deposit_conf.RECREDIT_TYPE_AGE_MAPPING[user.age]:
-        return False
-
-    return True
+    sorted_recredits = sorted(user.deposit.recredits, key=lambda recredit: recredit.dateCreated)
+    return sorted_recredits[-1].recreditType == deposit_conf.RECREDIT_TYPE_AGE_MAPPING[user.age]
 
 
 def recredit_underage_users() -> None:
@@ -60,11 +76,7 @@ def recredit_underage_users() -> None:
             .all()
         )
 
-        users_to_recredit = [
-            user
-            for user in users
-            if has_celebrated_their_birthday_since_activation(user) and not has_been_recredited(user)
-        ]
+        users_to_recredit = [user for user in users if can_be_recredited(user)]
         users_and_recredit_amounts = []
         with transaction():
             for user in users_to_recredit:
