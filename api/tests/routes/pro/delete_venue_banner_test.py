@@ -2,6 +2,7 @@ from unittest.mock import patch
 
 import pytest
 
+from pcapi import settings
 import pcapi.core.offers.factories as offers_factories
 from pcapi.utils.human_ids import humanize
 
@@ -13,12 +14,31 @@ class VenueBannerTest:
         user_offerer = offers_factories.UserOffererFactory()
         venue = offers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
 
+        timestamp = "1602720000"
+        expected_thumb_base_path = f"{venue.thumb_path_component}/{humanize(venue.id)}_{timestamp}"
+        venue.bannerUrl = f"{settings.OBJECT_STORAGE_URL}/{expected_thumb_base_path}"
+
         client = client.with_session_auth(email=user_offerer.user.email)
 
         response = client.delete(f"/venues/{humanize(venue.id)}/banner")
         assert response.status_code == 204
 
-        mock_delete_public_object.assert_called_once()
+        mock_delete_public_object.assert_called_once_with("thumbs", expected_thumb_base_path)
+
+    @patch("pcapi.core.object_storage.backends.local.LocalBackend.delete_public_object")
+    def test_delete_banner_legacy_url(self, mock_delete_public_object, client):
+        user_offerer = offers_factories.UserOffererFactory()
+        venue = offers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+
+        expected_thumb_base_path = f"{venue.thumb_path_component}/{humanize(venue.id)}"
+        venue.bannerUrl = f"{settings.OBJECT_STORAGE_URL}/{expected_thumb_base_path}"
+
+        client = client.with_session_auth(email=user_offerer.user.email)
+
+        response = client.delete(f"/venues/{humanize(venue.id)}/banner")
+        assert response.status_code == 204
+
+        mock_delete_public_object.assert_called_once_with("thumbs", expected_thumb_base_path)
 
     @patch("pcapi.core.object_storage.backends.local.LocalBackend.delete_public_object")
     def test_delete_no_banner(self, mock_delete_public_object, client):
