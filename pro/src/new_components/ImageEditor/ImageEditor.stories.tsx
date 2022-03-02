@@ -1,7 +1,7 @@
 import { Story } from '@storybook/react'
 import React from 'react'
 
-import ImageEditor, { ImageEditorProps } from './ImageEditor'
+import ImageEditor, { IImageEditorProps } from './ImageEditor'
 import sampleImage from './sample-image.jpg'
 
 export default {
@@ -9,7 +9,7 @@ export default {
   component: ImageEditor,
 }
 
-const Template: Story<ImageEditorProps> = props => (
+const Template: Story<IImageEditorProps> = props => (
   <>
     <ImageEditor {...props} ref={null} />
     <h1>
@@ -27,4 +27,15 @@ Default.args = {
   cropBorderHeight: 30,
   cropBorderWidth: 40,
   image: sampleImage,
+}
+
+export const WithInitialScale = Template.bind({})
+WithInitialScale.args = {
+  canvasHeight: 300,
+  canvasWidth: 400,
+  cropBorderColor: '#FFF',
+  cropBorderHeight: 30,
+  cropBorderWidth: 40,
+  image: sampleImage,
+  initialScale: 1.5,
 }

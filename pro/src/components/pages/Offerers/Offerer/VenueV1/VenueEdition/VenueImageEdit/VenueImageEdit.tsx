@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useCallback, useRef } from 'react'
+import React, { useCallback, useRef } from 'react'
 import AvatarEditor, { CroppedRect } from 'react-avatar-editor'
 
 import { ReactComponent as DownloadIcon } from 'icons/ico-download-filled.svg'
@@ -15,22 +15,26 @@ const CROP_BORDER_HEIGHT = 40
 const CROP_BORDER_WIDTH = 100
 const CROP_BORDER_COLOR = '#fff'
 
-type Props = {
+interface IVenueImageEditProps {
   image: string | File
   credit: string
   onSetCredit: (credit: string) => void
   children?: never
   onReplaceImage: () => void
+  initialScale?: number
+  saveInitialScale: (scale: number) => void
   onEditedImageSave: (dataUrl: string, croppedRect: CroppedRect) => void
 }
 
-export const VenueImageEdit: FunctionComponent<Props> = ({
+export const VenueImageEdit = ({
   onReplaceImage,
   image,
   credit,
   onSetCredit,
   onEditedImageSave,
-}) => {
+  saveInitialScale,
+  initialScale,
+}: IVenueImageEditProps): JSX.Element => {
   const editorRef = useRef<AvatarEditor>(null)
 
   const handleNext = useCallback(() => {
@@ -59,7 +63,9 @@ export const VenueImageEdit: FunctionComponent<Props> = ({
           cropBorderHeight={CROP_BORDER_HEIGHT}
           cropBorderWidth={CROP_BORDER_WIDTH}
           image={image}
+          initialScale={initialScale}
           ref={editorRef}
+          saveInitialScale={saveInitialScale}
         />
         <CreditInput
           credit={credit}

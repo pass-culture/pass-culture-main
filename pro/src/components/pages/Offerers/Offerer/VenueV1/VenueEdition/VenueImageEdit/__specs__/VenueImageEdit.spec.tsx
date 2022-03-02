@@ -15,6 +15,7 @@ const defaultProps = {
   onReplaceImage: mockReplaceImage,
   credit: '',
   onEditedImageSave: jest.fn(),
+  saveInitialScale: jest.fn(),
   onSetCredit: jest.fn(),
 }
 

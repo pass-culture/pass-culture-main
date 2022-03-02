@@ -13,7 +13,7 @@ import { VenueImagePreview } from '../VenueImagePreview/VenueImagePreview'
 import { IMAGE_TYPES, MAX_IMAGE_SIZE, MIN_IMAGE_WIDTH } from './constants'
 import { getDataURLFromImageURL } from './utils'
 
-type VenueImageUploaderModalProps = {
+interface IVenueImageUploaderModalProps {
   venueId: string
   onDismiss: () => void
   venueCredit: string
@@ -39,12 +39,13 @@ export const VenueImageUploaderModal = ({
   defaultImage,
   venueCredit,
   onImageUpload,
-}: VenueImageUploaderModalProps): JSX.Element => {
+}: IVenueImageUploaderModalProps): JSX.Element => {
   const [image, setImage] = useState<string | undefined>(defaultImage)
   const [credit, setCredit] = useState(venueCredit)
   const [croppingRect, setCroppingRect] = useState<CroppedRect>()
   const [editedImage, setEditedImage] = useState('')
   const [isUploading, setIsUploading] = useState(false)
+  const [editorInitialScale, setEditorInitialScale] = useState(1)
   const notification = useNotification()
 
   const onSetImage = useCallback(
@@ -119,9 +120,11 @@ export const VenueImageUploaderModal = ({
         <VenueImageEdit
           credit={credit}
           image={image}
+          initialScale={editorInitialScale}
           onEditedImageSave={onEditedImageSave}
           onReplaceImage={onReplaceImage}
           onSetCredit={setCredit}
+          saveInitialScale={setEditorInitialScale}
         />
       ) : (
         <VenueImagePreview
