@@ -1,6 +1,7 @@
 import React, { useCallback, useRef } from 'react'
 import AvatarEditor, { CroppedRect } from 'react-avatar-editor'
 
+import useNotification from 'components/hooks/useNotification'
 import { ReactComponent as DownloadIcon } from 'icons/ico-download-filled.svg'
 import { CreditInput } from 'new_components/CreditInput/CreditInput'
 import ImageEditor from 'new_components/ImageEditor/ImageEditor'
@@ -36,14 +37,21 @@ export const VenueImageEdit = ({
   initialScale,
 }: IVenueImageEditProps): JSX.Element => {
   const editorRef = useRef<AvatarEditor>(null)
+  const notification = useNotification()
 
   const handleNext = useCallback(() => {
-    if (editorRef.current) {
-      const canvas = editorRef.current.getImage()
-      const croppingRect = editorRef.current.getCroppingRect()
-      onEditedImageSave(canvas.toDataURL(), croppingRect)
+    try {
+      if (editorRef.current) {
+        const canvas = editorRef.current.getImage()
+        const croppingRect = editorRef.current.getCroppingRect()
+        onEditedImageSave(canvas.toDataURL(), croppingRect)
+      }
+    } catch {
+      notification.error(
+        'Une erreur est survenue. Merci de réessayer plus tard'
+      )
     }
-  }, [onEditedImageSave])
+  }, [onEditedImageSave, notification])
 
   return (
     <section className={style['venue-image-edit']}>

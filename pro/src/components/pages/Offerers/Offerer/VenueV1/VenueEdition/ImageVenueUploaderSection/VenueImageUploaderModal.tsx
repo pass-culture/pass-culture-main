@@ -72,27 +72,34 @@ export const VenueImageUploaderModal = ({
   }, [setImage])
 
   const onUpload = useCallback(async () => {
-    if (typeof croppingRect === 'undefined') return
-    if (typeof image === 'undefined') return
+    try {
+      if (typeof croppingRect === 'undefined') return
+      if (typeof image === 'undefined') return
 
-    // the request needs the dataURL of the image,
-    // so we need to retrieve it if we only have the URL
-    const imageDataURL =
-      typeof image === 'string' ? await getDataURLFromImageURL(image) : image
+      // the request needs the dataURL of the image,
+      // so we need to retrieve it if we only have the URL
+      const imageDataURL =
+        typeof image === 'string' ? await getDataURLFromImageURL(image) : image
 
-    setIsUploading(true)
-    const { bannerUrl } = await postImageToVenue({
-      venueId,
-      banner: imageDataURL,
-      xCropPercent: croppingRect.x,
-      yCropPercent: croppingRect.y,
-      heightCropPercent: croppingRect.height,
-      imageCredit: credit,
-    })
-    onImageUpload({ bannerUrl, credit })
-    setIsUploading(false)
-    onDismiss()
-    notification.success('Vos modifications ont bien été prises en compte')
+      setIsUploading(true)
+      const { bannerUrl } = await postImageToVenue({
+        venueId,
+        banner: imageDataURL,
+        xCropPercent: croppingRect.x,
+        yCropPercent: croppingRect.y,
+        heightCropPercent: croppingRect.height,
+        imageCredit: credit,
+      })
+      onImageUpload({ bannerUrl, credit })
+      setIsUploading(false)
+      onDismiss()
+      notification.success('Vos modifications ont bien été prises en compte')
+    } catch {
+      notification.error(
+        'Une erreur est survenue. Merci de réessayer plus tard'
+      )
+      setIsUploading(false)
+    }
   }, [
     venueId,
     image,
