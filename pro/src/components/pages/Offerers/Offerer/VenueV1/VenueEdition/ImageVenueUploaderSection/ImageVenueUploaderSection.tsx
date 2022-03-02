@@ -1,6 +1,7 @@
-import React from 'react'
+import React, { useCallback } from 'react'
 
 import useActiveFeature from 'components/hooks/useActiveFeature'
+import useNotification from 'components/hooks/useNotification'
 import Icon from 'components/layout/Icon'
 import { useModal } from 'hooks/useModal'
 import DialogBox from 'new_components/DialogBox'
@@ -13,6 +14,7 @@ import { VenueImage } from '../VenueImage/VenueImage'
 import { VenueImagePreview } from '../VenueImagePreview/VenueImagePreview'
 
 import styles from './ImageVenueUploaderSection.module.scss'
+import { getDataURLFromImageURL } from './utils'
 import { VenueImageUploaderModal } from './VenueImageUploaderModal'
 
 type ImageVenueUploaderSectionProps = {
@@ -52,6 +54,24 @@ export const ImageVenueUploaderSection = ({
     'PRO_ENABLE_UPLOAD_VENUE_IMAGE'
   )
 
+  const notification = useNotification()
+
+  const controlImage = useCallback(
+    async showModal => {
+      try {
+        if (typeof venueImage === 'string') {
+          await getDataURLFromImageURL(venueImage)
+          return showModal()
+        }
+      } catch {
+        notification.error(
+          'Une erreur est survenue. Merci de réessayer plus tard'
+        )
+      }
+    },
+    [venueImage, notification]
+  )
+
   return (
     <section
       className={
@@ -74,14 +94,20 @@ export const ImageVenueUploaderSection = ({
           <div
             className={styles['image-venue-uploader-section-icon-container']}
           >
-            <Button onClick={showUploaderModal} variant={ButtonVariant.TERNARY}>
+            <Button
+              onClick={() => controlImage(showUploaderModal)}
+              variant={ButtonVariant.TERNARY}
+            >
               <Icon
                 className={styles['image-venue-uploader-section-icon']}
                 svg="ico-pen-black"
               />
               Modifier
             </Button>
-            <Button onClick={showPreviewModal} variant={ButtonVariant.TERNARY}>
+            <Button
+              onClick={() => controlImage(showPreviewModal)}
+              variant={ButtonVariant.TERNARY}
+            >
               <Icon
                 className={styles['image-venue-uploader-section-icon']}
                 svg="ico-eye-open-filled-black"
