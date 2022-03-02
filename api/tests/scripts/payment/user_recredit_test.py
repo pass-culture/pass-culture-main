@@ -129,43 +129,24 @@ class UserRecreditTest:
         assert has_been_recredited(user) == expected_result
 
     def test_recredit_underage_users(self):
+        # This test aims to check all the possible use cases for recredit_underage_users
+        # We create users with different ages (15, 16, 17) with different stages of activation
+        # Each user that is credited is supposed to have the corresponding fraud_checks.
+        # - We create the fraud_checks manually to override the registration_datetime
+
         with freeze_time("2020-01-01"):
-            deposit_creation_date = datetime.datetime(2019, 7, 31)  # Create deposit before birthday
+            # Create users, with their fraud checks
 
-            user_15 = user_factories.UnderageBeneficiaryFactory(
-                deposit__dateCreated=deposit_creation_date, subscription_age=15
-            )
-            user_16_not_recredited = user_factories.UnderageBeneficiaryFactory(
-                deposit__dateCreated=deposit_creation_date,
-                subscription_age=16,
-            )
-            user_16_already_recredited = user_factories.UnderageBeneficiaryFactory(
-                deposit__dateCreated=deposit_creation_date,
-                subscription_age=16,
-            )
-            user_17_not_recredited = user_factories.UnderageBeneficiaryFactory(
-                deposit__dateCreated=deposit_creation_date,
-                subscription_age=17,
-            )
-            user_17_only_recredited_at_16 = user_factories.UnderageBeneficiaryFactory(
-                deposit__dateCreated=deposit_creation_date,
-                subscription_age=17,
-            )
-            user_17_already_recredited = user_factories.UnderageBeneficiaryFactory(
-                deposit__dateCreated=deposit_creation_date,
-                subscription_age=17,
-            )
-            user_17_already_recredited_twice = user_factories.UnderageBeneficiaryFactory(
-                deposit__dateCreated=deposit_creation_date,
-                subscription_age=17,
-            )
+            # Already beneficiary users
+            user_15 = user_factories.UnderageBeneficiaryFactory(subscription_age=15)
+            user_16_not_recredited = user_factories.UnderageBeneficiaryFactory(subscription_age=16)
+            user_16_already_recredited = user_factories.UnderageBeneficiaryFactory(subscription_age=16)
+            user_17_not_recredited = user_factories.UnderageBeneficiaryFactory(subscription_age=17)
+            user_17_only_recredited_at_16 = user_factories.UnderageBeneficiaryFactory(subscription_age=17)
+            user_17_already_recredited = user_factories.UnderageBeneficiaryFactory(subscription_age=17)
+            user_17_already_recredited_twice = user_factories.UnderageBeneficiaryFactory(subscription_age=17)
 
-            user_17_not_activated = user_factories.UserFactory(dateOfBirth=datetime.datetime(2004, 5, 1))
-            user_17_not_activated.add_underage_beneficiary_role()
-
-            # Create users fraudChecks
-            id_check_application_date = datetime.datetime(2019, 7, 31)  # Application date before birthday
-
+            id_check_application_date = datetime.datetime(2019, 7, 31)  # Asked for credit before birthday
             fraud_factories.BeneficiaryFraudCheckFactory(
                 user=user_15,
                 type=fraud_models.FraudCheckType.EDUCONNECT,
@@ -235,6 +216,11 @@ class UserRecreditTest:
                 ),
             )
 
+            # Not beneficiary user
+            user_17_not_activated = user_factories.UserFactory(dateOfBirth=datetime.datetime(2004, 5, 1))
+            user_17_not_activated.add_underage_beneficiary_role()
+
+            # Create the recredits that already happened
             payments_factories.RecreditFactory(
                 deposit=user_16_already_recredited.deposit, recreditType=payments_models.RecreditType.RECREDIT_16
             )
@@ -257,6 +243,7 @@ class UserRecreditTest:
                 dateCreated=datetime.datetime(2020, 5, 1),
             )
 
+        # Check the initial conditions
         assert payments_models.Recredit.query.count() == 5
 
         assert user_17_not_activated.deposit is None
@@ -277,9 +264,11 @@ class UserRecreditTest:
         assert user_17_already_recredited.recreditAmountToShow is None
         assert user_17_already_recredited_twice.recreditAmountToShow is None
 
+        # Run the task
         with freeze_time("2020, 5, 2"):
             recredit_underage_users()
 
+        # Check the results:
         # Assert we created new Recredits for user_16_not_recredited, user_17_not_recredited and user_17_only_recredited_at_16
         assert payments_models.Recredit.query.count() == 8
         assert user_15.deposit.recredits == []
