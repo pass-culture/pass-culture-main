@@ -520,14 +520,14 @@ describe('pcapi', () => {
       it('should create api url with keywords params only', () => {
         // given
         const keywords = ['example']
-        const page = '0'
+        const page = '7'
         const filters = { keywords, page }
 
         // when
         const result = buildGetOfferersQuery(filters)
 
         // then
-        expect(result).toBe('?keywords=example&page=0')
+        expect(result).toBe('?keywords=example&page=7')
       })
     })
 

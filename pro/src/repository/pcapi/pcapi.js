@@ -152,7 +152,7 @@ export const getUserValidatedOfferersNames = () => {
     .then(response => response.offerersNames)
 }
 
-export const buildGetOfferersQuery = ({ keywords = [], page = 0 }) => {
+export const buildGetOfferersQuery = ({ keywords = [], page = 1 }) => {
   let apiQueryParams = {}
   if (keywords.length > 0) {
     apiQueryParams.keywords = keywords.join(' ')

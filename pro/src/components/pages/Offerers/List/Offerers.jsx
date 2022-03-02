@@ -92,7 +92,7 @@ class Offerers extends PureComponent {
     const filters = {
       keywords:
         typeof searchKeyWords === 'string' ? [searchKeyWords] : searchKeyWords,
-      page: queryParams['page'] || '0',
+      page: queryParams['page'] || '1',
     }
 
     await pcapi
