@@ -1,6 +1,7 @@
 import io
 import pathlib
 
+from freezegun import freeze_time
 import pytest
 
 import pcapi.core.offerers.factories as offerers_factories
@@ -228,6 +229,7 @@ def test_create_venue_malformed(app, client, data, key):
 
 
 @pytest.mark.usefixtures("db_session")
+@freeze_time("2020-10-15 00:00:00")
 class VenueBannerTest:
     def test_upload_image(self, client, tmpdir):
         """
@@ -254,7 +256,9 @@ class VenueBannerTest:
             response = client.post(url, files=file)
             assert response.status_code == 201
 
-            assert response.json["bannerUrl"]
+            assert response.json["bannerUrl"] == str(
+                pathlib.Path(tmpdir.dirname) / "thumbs" / "venues" / f"{humanize(venue.id)}_1602720000"
+            )
             assert response.json["bannerMeta"] == {"image_credit": "none"}
 
             venue = Venue.query.get(venue.id)

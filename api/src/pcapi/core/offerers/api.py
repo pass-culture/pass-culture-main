@@ -306,15 +306,20 @@ def save_venue_banner(
     image_credit: str,
     crop_params: Optional[CropParams] = None,
 ) -> None:
+    """
+    Use a timestamp as index in order to have a unique URL for each
+    upload
+    """
+    banner_timestamp = int(datetime.now().timestamp())
     storage.create_thumb(
         model_with_thumb=venue,
         image_as_bytes=content,
-        image_index=0,
+        image_index=banner_timestamp,
         crop_params=crop_params,
         ratio=IMAGE_RATIO_LANDSCAPE_DEFAULT,
     )
 
-    venue.bannerUrl = venue.thumbUrl
+    venue.bannerUrl = f"{venue.thumbUrl}_{banner_timestamp}"
     venue.bannerMeta = {"image_credit": image_credit, "author_id": user.id}
 
     repository.save(venue)
@@ -322,7 +327,8 @@ def save_venue_banner(
 
 def delete_venue_banner(venue: Venue) -> None:
     if venue.bannerUrl:
-        storage.remove_thumb(venue, image_index=0)
+        timestamp = int(venue.bannerUrl.split("_")[-1]) if "_" in venue.bannerUrl else 0
+        storage.remove_thumb(venue, image_index=timestamp)
 
     venue.bannerUrl = None
     venue.bannerMeta = None
