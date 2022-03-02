@@ -95,6 +95,7 @@ class CollectiveStockFactory(BaseFactory):
     dateCreated = factory.LazyFunction(lambda: datetime.datetime.now() - datetime.timedelta(days=3))
     dateModified = factory.LazyFunction(lambda: datetime.datetime.now() - datetime.timedelta(days=1))
     numberOfTickets = 25
+    price = 100
 
 
 class EducationalInstitutionFactory(BaseFactory):
