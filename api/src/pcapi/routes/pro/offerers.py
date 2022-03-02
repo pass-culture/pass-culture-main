@@ -7,15 +7,13 @@ from sqlalchemy.orm import exc as orm_exc
 from pcapi.connectors.api_adage import AdageException
 from pcapi.connectors.api_adage import CulturalPartnerNotFoundException
 from pcapi.core.offerers import api
+from pcapi.core.offerers import repository
 from pcapi.core.offerers.exceptions import ApiKeyCountMaxReached
 from pcapi.core.offerers.exceptions import ApiKeyDeletionDenied
 from pcapi.core.offerers.exceptions import ApiKeyPrefixGenerationError
 from pcapi.core.offerers.exceptions import MissingOffererIdQueryParameter
-from pcapi.core.offerers.models import Offerer
+import pcapi.core.offerers.models as offerers_models
 from pcapi.core.offerers.repository import get_all_offerers_for_user
-from pcapi.infrastructure.repository.pro_offerers.paginated_offerers_sql_repository import (
-    PaginatedOfferersSQLRepository,
-)
 from pcapi.models.api_errors import ApiErrors
 from pcapi.repository import transaction
 from pcapi.routes.apis import private_api
@@ -47,19 +45,26 @@ logger = logging.getLogger(__name__)
     on_error_statuses=[400], response_model=GetOfferersListResponseModel, api=blueprint.pro_private_schema
 )
 def get_offerers(query: GetOffererListQueryModel) -> GetOfferersListResponseModel:
-    keywords = query.keywords
-
-    paginated_offerers = PaginatedOfferersSQLRepository().with_status_and_keywords(
-        user_id=current_user.id,
-        user_is_admin=current_user.has_admin_role,
-        keywords=keywords,
-        pagination_limit=query.paginate,
-        page=query.page,
+    offerers_query = repository.get_all_offerers_for_user(
+        current_user,
+        keywords=query.keywords,
+    )
+    offerers_query = offerers_query.order_by(offerers_models.Offerer.name)
+    offerers_query = offerers_query.paginate(
+        query.page,
+        per_page=query.paginate,
+        error_out=False,
     )
 
+    offerers = offerers_query.items
+    for offerer in offerers:
+        offerer.append_user_has_access_attribute(
+            user_id=current_user.id,
+            is_admin=current_user.has_admin_role,
+        )
     return GetOfferersListResponseModel(
-        offerers=paginated_offerers.offerers,
-        nbTotalResults=paginated_offerers.total,
+        offerers=offerers,
+        nbTotalResults=offerers_query.total,
     )
 
 
@@ -100,7 +105,7 @@ def list_educational_offerers(query: GetEducationalOfferersQueryModel) -> GetEdu
 @spectree_serialize(response_model=GetOffererResponseModel, api=blueprint.pro_private_schema)
 def get_offerer(offerer_id: str) -> GetOffererResponseModel:
     check_user_has_access_to_offerer(current_user, dehumanize(offerer_id))
-    offerer = load_or_404(Offerer, offerer_id)
+    offerer = load_or_404(offerers_models.Offerer, offerer_id)
 
     return GetOffererResponseModel.from_orm(offerer)
 
@@ -110,7 +115,7 @@ def get_offerer(offerer_id: str) -> GetOffererResponseModel:
 @spectree_serialize(response_model=GenerateOffererApiKeyResponse, api=blueprint.pro_private_schema)
 def generate_api_key_route(offerer_id: str) -> GenerateOffererApiKeyResponse:
     check_user_has_access_to_offerer(current_user, dehumanize(offerer_id))
-    offerer = load_or_404(Offerer, offerer_id)
+    offerer = load_or_404(offerers_models.Offerer, offerer_id)
     try:
         clear_key = api.generate_and_save_api_key(offerer.id)
     except ApiKeyCountMaxReached:

@@ -37,7 +37,7 @@ class GetAllOfferersForUserTest:
         offerer = offers_factories.OffererFactory()
 
         # When
-        offerers = get_all_offerers_for_user(user=admin)
+        offerers = get_all_offerers_for_user(user=admin).all()
 
         # Then
         assert len(offerers) == 1
@@ -50,7 +50,7 @@ class GetAllOfferersForUserTest:
         other_offerer = offers_factories.OffererFactory()
 
         # When
-        offerers = get_all_offerers_for_user(user=pro)
+        offerers = get_all_offerers_for_user(user=pro).all()
 
         # Then
         assert len(offerers) == 1
@@ -64,7 +64,7 @@ class GetAllOfferersForUserTest:
         pro_offerer_attachment = offers_factories.UserOffererFactory(user=pro, offerer__validationToken="Token")
 
         # When
-        offerers = get_all_offerers_for_user(user=pro)
+        offerers = get_all_offerers_for_user(user=pro).all()
 
         # Then
         assert len(offerers) == 1
@@ -77,7 +77,7 @@ class GetAllOfferersForUserTest:
         unvalidated_pro_offerer_attachment = offers_factories.UserOffererFactory(user=pro, validationToken="Token")
 
         # When
-        offerers = get_all_offerers_for_user(user=pro)
+        offerers = get_all_offerers_for_user(user=pro).all()
 
         # Then
         assert len(offerers) == 1
@@ -90,10 +90,36 @@ class GetAllOfferersForUserTest:
         offers_factories.OffererFactory(isActive=False)
 
         # When
-        offerers = get_all_offerers_for_user(user=admin)
+        offerers = get_all_offerers_for_user(user=admin).all()
 
         # Then
         assert len(offerers) == 0
+
+    def test_search_keywords_in_offerer_name(self):
+        offerer1 = offers_factories.OffererFactory(name="cinéma")
+        offerer2 = offers_factories.OffererFactory(name="théâtre")
+        # Because of a bug, we need venues, here: see bug explained in
+        # `get_all_offerers_for_user()`.
+        offers_factories.VenueFactory(managingOfferer=offerer1, name="dummy")
+        offers_factories.VenueFactory(managingOfferer=offerer2, name="dummy")
+        pro = users_factories.ProFactory(offerers=[offerer1, offerer2])
+
+        offerers = get_all_offerers_for_user(user=pro, keywords="cinema").all()
+
+        assert len(offerers) == 1
+        assert offerers == [offerer1]
+
+    def test_search_keywords_in_venue_name(self):
+        offerer1 = offers_factories.OffererFactory(name="dummy")
+        offers_factories.VenueFactory(managingOfferer=offerer1, name="cinéma")
+        offerer2 = offers_factories.OffererFactory(name="dummy")
+        offers_factories.VenueFactory(managingOfferer=offerer2, name="théâtre")
+        pro = users_factories.ProFactory(offerers=[offerer1, offerer2])
+
+        offerers = get_all_offerers_for_user(user=pro, keywords="cinema").all()
+
+        assert len(offerers) == 1
+        assert offerers == [offerer1]
 
     class WithValidatedFilterTest:
         def should_return_all_pro_offerers_when_filter_is_none(self) -> None:
@@ -105,7 +131,7 @@ class GetAllOfferersForUserTest:
             )
 
             # When
-            offerers = get_all_offerers_for_user(user=pro)
+            offerers = get_all_offerers_for_user(user=pro).all()
 
             # Then
             assert len(offerers) == 2
@@ -122,7 +148,7 @@ class GetAllOfferersForUserTest:
             )
 
             # When
-            offerers = get_all_offerers_for_user(user=pro, validated=True)
+            offerers = get_all_offerers_for_user(user=pro, validated=True).all()
 
             # Then
             assert len(offerers) == 1
@@ -139,7 +165,7 @@ class GetAllOfferersForUserTest:
             )
 
             # When
-            offerers = get_all_offerers_for_user(user=pro, validated=False)
+            offerers = get_all_offerers_for_user(user=pro, validated=False).all()
 
             # Then
             assert len(offerers) == 1
@@ -155,7 +181,7 @@ class GetAllOfferersForUserTest:
             unvalidated_pro_offerer_attachment = offers_factories.UserOffererFactory(user=pro, validationToken="Token")
 
             # When
-            offerers = get_all_offerers_for_user(user=pro)
+            offerers = get_all_offerers_for_user(user=pro).all()
 
             # Then
             assert len(offerers) == 2
@@ -170,7 +196,7 @@ class GetAllOfferersForUserTest:
             unvalidated_pro_offerer_attachment = offers_factories.UserOffererFactory(user=pro, validationToken="Token")
 
             # When
-            offerers = get_all_offerers_for_user(user=pro, validated_for_user=True)
+            offerers = get_all_offerers_for_user(user=pro, validated_for_user=True).all()
 
             # Then
             assert len(offerers) == 1
@@ -185,7 +211,7 @@ class GetAllOfferersForUserTest:
             unvalidated_pro_offerer_attachment = offers_factories.UserOffererFactory(user=pro, validationToken="Token")
 
             # When
-            offerers = get_all_offerers_for_user(user=pro, validated_for_user=False)
+            offerers = get_all_offerers_for_user(user=pro, validated_for_user=False).all()
 
             # Then
             assert len(offerers) == 1

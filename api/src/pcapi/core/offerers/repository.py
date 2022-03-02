@@ -27,7 +27,8 @@ def get_all_offerers_for_user(
     user: User,
     validated: bool = None,
     validated_for_user: bool = None,
-) -> list[models.Offerer]:
+    keywords: str = None,
+) -> sqla_orm.Query:
     query = models.Offerer.query.filter(models.Offerer.isActive.is_(True))
 
     if not user.has_admin_role:
@@ -47,7 +48,16 @@ def get_all_offerers_for_user(
         else:
             query = query.filter(UserOfferer.validationToken.isnot(None))
 
-    return query.all()
+    if keywords:
+        # FIXME (dbaty, 2022-03-02): There is a bug here. If an
+        # offerer does not have any venue and the user provided
+        # keywords, the offerer will not be returned even if its name
+        # matches the keywords. We should outerjoin, here.  See
+        # `test_filter_on_keywords()`, too.
+        query = query.join(models.Venue, models.Venue.managingOffererId == models.Offerer.id)
+        query = filter_offerers_with_keywords_string(query, keywords)
+
+    return query
 
 
 def get_filtered_venues(
