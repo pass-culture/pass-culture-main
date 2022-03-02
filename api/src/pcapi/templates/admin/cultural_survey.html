@@ -1,0 +1,43 @@
+{% extends 'admin/base.html' %}
+
+{% block body %}
+<style>
+    .sticky-top {
+        z-index: 0;
+    }
+</style>
+<br>
+<h2>Liste des réponses au questionnaire de pratiques initiales</h2>
+<br>
+<table class="table table-striped table-bordered table-hover">
+    <thead class="thead-dark sticky-top">
+        <tr>
+            {% for column_name in column_names %}
+                {% if column_labels[column_name] %}
+                    <th> {{ column_labels[column_name] }}</th>
+                {% else %}
+                    <th> {{ column_name }}</th>
+                {% endif %}
+            {% endfor %}
+        </tr>
+    </thead>
+    {% for question in questions %}
+        {% for answer in question.answers %}
+        <tr>
+            <td>
+                {{ question.id.value }}
+            </td>
+            {% for column_name in answers_column_names %}
+            <td>
+                {% if column_name == 'sub_question' %}
+                    {{ answer[column_name].value }}
+                {% else %}
+                    {{ answer[column_name] }}
+                {% endif %}
+            </td>
+            {% endfor %}
+        </tr>
+        {% endfor %}
+    {% endfor %}
+</table>
+{% endblock %}
