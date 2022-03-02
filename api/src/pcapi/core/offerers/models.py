@@ -16,7 +16,6 @@ from sqlalchemy import String
 from sqlalchemy import TEXT
 from sqlalchemy import Text
 from sqlalchemy import UniqueConstraint
-from sqlalchemy import and_
 from sqlalchemy import case
 from sqlalchemy import cast
 from sqlalchemy import func
@@ -259,17 +258,6 @@ class Venue(PcObject, Model, HasThumbMixin, HasAddressMixin, ProvidableMixin, Ne
         return self.bankInformation and self.bankInformation.status == BankInformationStatus.ACCEPTED
 
     @property
-    def nOffers(self) -> int:
-        from pcapi.core.offers.models import Offer
-        from pcapi.core.offers.models import OfferValidationStatus
-
-        return (
-            Offer.query.filter(and_(Offer.venueId == self.id, Offer.validation != OfferValidationStatus.DRAFT))
-            .with_entities(Offer.id)
-            .count()
-        )
-
-    @property
     def nApprovedOffers(self) -> int:
         from pcapi.core.offers.models import OfferValidationStatus
 
@@ -483,32 +471,11 @@ class Offerer(
         return self.bankInformation.applicationId
 
     @property
-    def nOffers(self):
-        n_offers = 0
-        for venue in self.managedVenues:
-            n_offers += venue.nOffers
-        return n_offers
-
-    @property
     def nApprovedOffers(self):
         n_approved_offers = 0
         for venue in self.managedVenues:
             n_approved_offers += venue.nApprovedOffers
         return n_approved_offers
-
-    def append_user_has_access_attribute(self, user_id: int, is_admin: bool) -> None:
-        if is_admin:
-            self.userHasAccess = True
-            return
-
-        authorizations = [user_offer.isValidated for user_offer in self.UserOfferers if user_offer.userId == user_id]
-
-        if authorizations:
-            user_has_access_as_editor = authorizations[0]
-        else:
-            user_has_access_as_editor = False
-
-        self.userHasAccess = user_has_access_as_editor
 
     @hybrid_property
     def departementCode(self):

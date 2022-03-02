@@ -15,7 +15,9 @@ def test_access_by_pro(client):
     offerer3 = offers_factories.OffererFactory(name="offreur C")
     inactive = offers_factories.OffererFactory(name="inactive, ignored", isActive=False)
     venue1 = offers_factories.VenueFactory(managingOfferer=offerer2, name="lieu A1")
+    offers_factories.OfferFactory.create_batch(1, venue=venue1)
     venue2 = offers_factories.VenueFactory(managingOfferer=offerer2, name="lieu A2")
+    offers_factories.OfferFactory.create_batch(2, venue=venue2)
     offers_factories.VenueFactory(managingOfferer=offerer1, name="lieu B1")
     pro = users_factories.ProFactory(offerers=[offerer1, offerer2, inactive])
     # Non-validated offerers should be included, too.
@@ -27,13 +29,12 @@ def test_access_by_pro(client):
     n_queries = testing.AUTHENTICATION_QUERIES
     n_queries += 1  # select offerers
     n_queries += 1  # select count of offerers
-    n_queries += 3  # select user offerer for each offerer
-    n_queries += 2  # select venue info for each offerer
-    n_queries += 3  # select count of offers for each venue
+    n_queries += 1  # select count of offers for all venues
     with testing.assert_num_queries(n_queries):
         response = client.get("/offerers")
 
     assert response.status_code == 200
+    assert response.json["nbTotalResults"] == 3
     offerers = response.json["offerers"]
     assert len(offerers) == 3
     names = [o["name"] for o in offerers]
@@ -43,7 +44,9 @@ def test_access_by_pro(client):
     assert offerers[0]["userHasAccess"]
     assert offerers[1]["userHasAccess"]
     assert not offerers[2]["userHasAccess"]
-    assert response.json["nbTotalResults"] == 3
+    assert offerers[0]["nOffers"] == 3
+    assert offerers[1]["nOffers"] == 0
+    assert offerers[2]["nOffers"] == 0
 
 
 def test_access_by_admin(client):

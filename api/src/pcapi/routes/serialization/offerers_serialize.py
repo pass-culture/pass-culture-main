@@ -3,10 +3,11 @@ from typing import Dict
 from typing import Optional
 
 from pcapi import settings
-from pcapi.core.offerers.models import Offerer
+import pcapi.core.offerers.models as offerers_models
 from pcapi.core.offerers.repository import get_api_key_prefixes
 from pcapi.core.offerers.repository import has_digital_venue_with_at_least_one_offer
 from pcapi.core.offerers.repository import has_physical_venue_without_draft_or_accepted_bank_information
+import pcapi.core.users.models as users_models
 from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization.venues_serialize import VenueStatsResponseModel
 from pcapi.serialization.utils import humanize_field
@@ -73,7 +74,7 @@ class GetOffererResponseModel(BaseModel):
     _humanize_id = humanize_field("id")
 
     @classmethod
-    def from_orm(cls, offerer: Offerer, venue_stats_by_ids: Optional[Dict[int, VenueStatsResponseModel]] = None):  # type: ignore
+    def from_orm(cls, offerer: offerers_models.Offerer, venue_stats_by_ids: Optional[Dict[int, VenueStatsResponseModel]] = None):  # type: ignore
         offerer.apiKey = {
             "maxAllowed": settings.MAX_API_KEY_PER_OFFERER,
             "prefixes": get_api_key_prefixes(offerer.id),
@@ -220,6 +221,20 @@ class GetOfferersResponseModel(BaseModel):
 
     class Config:
         orm_mode = True
+
+    @classmethod
+    def from_orm(
+        cls,
+        offerer: offerers_models.Offerer,
+        user: users_models.User,
+        offer_counts: dict[int, int],
+    ):
+        offerer.userHasAccess = user.has_admin_role or any(
+            uo.isValidated for uo in offerer.UserOfferers if uo.userId == user.id
+        )
+        venue_ids = (venue.id for venue in offerer.managedVenues)
+        offerer.nOffers = sum((offer_counts.get(venue_id, 0) for venue_id in venue_ids), 0)
+        return super().from_orm(offerer)
 
 
 class GetOfferersListResponseModel(BaseModel):
