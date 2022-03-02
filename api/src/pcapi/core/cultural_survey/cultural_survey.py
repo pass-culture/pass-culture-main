@@ -10,7 +10,7 @@ class CulturalSurveyAnswer:
     id: str
     title: str
     subtitle: Optional[str] = None
-    sub_question: Optional[CulturalSurveyQuestionEnum] = []
+    sub_question: Optional[CulturalSurveyQuestionEnum] = None
 
 
 @dataclass(frozen=True)
