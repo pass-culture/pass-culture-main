@@ -44,6 +44,11 @@ def check_stock_is_bookable(stock: Stock) -> None:
         raise exceptions.OfferIsNotEvent(stock.offer.id)
 
 
+def check_collective_stock_is_bookable(stock: Stock) -> None:
+    if not stock.isBookable:
+        raise exceptions.StockNotBookable(stock.id)
+
+
 def check_educational_booking_status(educational_booking: EducationalBooking) -> None:
     if educational_booking.status == EducationalBookingStatus.REFUSED:
         raise exceptions.EducationalBookingIsRefused()
