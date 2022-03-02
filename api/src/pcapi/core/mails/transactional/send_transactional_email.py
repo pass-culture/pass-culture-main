@@ -55,7 +55,7 @@ def send_transactional_email(payload: SendTransactionalEmailRequest) -> bool:
         return True
     except ApiException as exception:
         code = "unknown"
-        if exception.body and exception.body.get("code"):
+        if exception.body and not isinstance(exception.body, str) and exception.body.get("code"):
             code = exception.body.get("code")
         logger.exception(  # pylint: disable=logging-fstring-interpolation
             f"Exception when calling send_transac_email with status={exception.status} and code={code}", extra=extra
