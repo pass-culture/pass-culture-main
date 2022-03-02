@@ -15,6 +15,7 @@ from pcapi.admin.custom_views.booking_view import BookingView
 from pcapi.admin.custom_views.category_view import CategoryView
 from pcapi.admin.custom_views.category_view import SubcategoryView
 from pcapi.admin.custom_views.criteria_view import CriteriaView
+from pcapi.admin.custom_views.cultural_survey_view import CulturalSurveyView
 from pcapi.admin.custom_views.custom_reimbursement_rule_view import CustomReimbursementRuleView
 from pcapi.admin.custom_views.feature_view import FeatureView
 from pcapi.admin.custom_views.many_offers_operations_view import ManyOffersOperationsView
@@ -223,6 +224,14 @@ def install_views(admin: Admin, session: Session) -> None:
         CategoryView(
             name="Catégories",
             endpoint="/categories",
+            category=Category.CUSTOM_OPERATIONS,
+        )
+    )
+
+    admin.add_view(
+        CulturalSurveyView(
+            name="Questionnaire de pratiques initiales",
+            endpoint="/cultural_survey_answers",
             category=Category.CUSTOM_OPERATIONS,
         )
     )
