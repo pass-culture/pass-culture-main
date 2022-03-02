@@ -23,7 +23,11 @@ def get_all_venue_labels() -> list[models.VenueLabel]:
     return models.VenueLabel.query.all()
 
 
-def get_all_offerers_for_user(user: User, filters: dict) -> list[models.Offerer]:
+def get_all_offerers_for_user(
+    user: User,
+    validated: bool = None,
+    validated_for_user: bool = None,
+) -> list[models.Offerer]:
     query = models.Offerer.query.filter(models.Offerer.isActive.is_(True))
 
     if not user.has_admin_role:
@@ -31,14 +35,14 @@ def get_all_offerers_for_user(user: User, filters: dict) -> list[models.Offerer]
             UserOfferer.userId == user.id
         )
 
-    if "validated" in filters and filters["validated"] is not None:
-        if filters["validated"] == True:
+    if validated is not None:
+        if validated:
             query = query.filter(models.Offerer.validationToken.is_(None))
         else:
             query = query.filter(models.Offerer.validationToken.isnot(None))
 
-    if "validated_for_user" in filters and filters["validated_for_user"] is not None:
-        if filters["validated_for_user"] == True:
+    if validated_for_user is not None:
+        if validated_for_user:
             query = query.filter(UserOfferer.validationToken.is_(None))
         else:
             query = query.filter(UserOfferer.validationToken.isnot(None))

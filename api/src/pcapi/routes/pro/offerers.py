@@ -69,10 +69,8 @@ def get_offerers(query: GetOffererListQueryModel) -> GetOfferersListResponseMode
 def list_offerers_names(query: GetOfferersNamesQueryModel) -> GetOfferersNamesResponseModel:
     offerers = get_all_offerers_for_user(
         user=current_user,
-        filters={
-            "validated": query.validated,
-            "validated_for_user": query.validated_for_user,
-        },
+        validated=query.validated,
+        validated_for_user=query.validated_for_user,
     )
 
     return GetOfferersNamesResponseModel(
