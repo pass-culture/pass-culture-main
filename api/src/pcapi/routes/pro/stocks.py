@@ -6,6 +6,7 @@ from flask_login import login_required
 from sqlalchemy.orm.exc import MultipleResultsFound as SQLAMultipleResultsFound
 
 from pcapi.core.educational import exceptions as educational_exceptions
+from pcapi.core.educational.api import create_collective_stock
 from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import Venue
@@ -149,6 +150,8 @@ def create_educational_stock(body: EducationalStockCreationBodyModel) -> StockId
             {"code": "EDUCATIONAL_STOCK_ALREADY_EXISTS"},
             status_code=400,
         )
+
+    create_collective_stock(body, current_user, legacy_id=stock.id)
 
     return StockIdResponseModel.from_orm(stock)
 

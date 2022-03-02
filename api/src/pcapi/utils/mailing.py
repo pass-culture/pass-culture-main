@@ -2,6 +2,7 @@ import base64
 from datetime import datetime
 import io
 from pprint import pformat
+from typing import Union
 import zipfile
 
 from flask import render_template
@@ -9,6 +10,7 @@ from flask import render_template
 from pcapi import settings
 from pcapi.connectors import api_entreprises
 from pcapi.core.bookings.models import Booking
+from pcapi.core.educational.models import CollectiveOffer
 from pcapi.core.mails.models.sendinblue_models import SendinblueTransactionalSender
 from pcapi.core.mails.models.sendinblue_models import SendinblueTransactionalWithoutTemplateEmailData
 from pcapi.core.offerers.models import Offerer
@@ -21,8 +23,8 @@ from pcapi.utils.date import utc_datetime_to_department_timezone
 from pcapi.utils.human_ids import humanize
 
 
-def build_pc_pro_offer_link(offer: Offer) -> str:
-    if offer.isEducational:
+def build_pc_pro_offer_link(offer: Union[CollectiveOffer, Offer]) -> str:
+    if isinstance(offer, CollectiveOffer) or (isinstance(offer, Offer) and offer.isEducational):
         return f"{settings.PRO_URL}/offre/{humanize(offer.id)}/collectif/edition"
 
     return f"{settings.PRO_URL}/offre/{humanize(offer.id)}/individuel/edition"
@@ -194,7 +196,7 @@ def make_wallet_balances_email(csv: str) -> dict:
     }
 
 
-def make_offer_creation_notification_email(offer: Offer) -> dict:
+def make_offer_creation_notification_email(offer: Union[Offer, CollectiveOffer]) -> dict:
     author = offer.author or offer.venue.managingOfferer.UserOfferers[0].user
     venue = offer.venue
     pro_link_to_offer = build_pc_pro_offer_link(offer)

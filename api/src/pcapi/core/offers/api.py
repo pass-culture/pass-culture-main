@@ -567,7 +567,7 @@ def upsert_stocks(
     return stocks
 
 
-def _update_offer_fraud_information(offer: Offer, user: User) -> None:
+def _update_offer_fraud_information(offer: Union[educational_models.CollectiveOffer, Offer], user: User) -> None:
     offer.validation = set_offer_status_based_on_fraud_criteria(offer)
     offer.author = user
     offer.lastValidationDate = datetime.datetime.utcnow()
