@@ -3,12 +3,14 @@ from datetime import datetime
 import io
 from pprint import pformat
 import zipfile
+from typing import Union
 
 from flask import render_template
 
 from pcapi import settings
 from pcapi.connectors import api_entreprises
 from pcapi.core.bookings.models import Booking
+from pcapi.core.educational.models import CollectiveOffer
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
@@ -19,8 +21,8 @@ from pcapi.utils.date import utc_datetime_to_department_timezone
 from pcapi.utils.human_ids import humanize
 
 
-def build_pc_pro_offer_link(offer: Offer) -> str:
-    if offer.isEducational:
+def build_pc_pro_offer_link(offer: Union[CollectiveOffer, Offer]) -> str:
+    if isinstance(offer, CollectiveOffer) or (isinstance(offer, Offer) and offer.isEducational):
         return f"{settings.PRO_URL}/offre/{humanize(offer.id)}/collectif/edition"
 
     return f"{settings.PRO_URL}/offre/{humanize(offer.id)}/individuel/edition"
@@ -192,12 +194,13 @@ def make_wallet_balances_email(csv: str) -> dict:
     }
 
 
-def make_offer_creation_notification_email(offer: Offer) -> dict:
+def make_offer_creation_notification_email(offer: Union[Offer, CollectiveOffer]) -> dict:
     author = offer.author or offer.venue.managingOfferer.UserOfferers[0].user
     venue = offer.venue
     pro_link_to_offer = build_pc_pro_offer_link(offer)
     pro_venue_link = f"{settings.PRO_URL}/structures/{humanize(venue.managingOffererId)}/lieux/{humanize(venue.id)}"
     webapp_link_to_offer = offer_app_link(offer)
+    is_educational = offer.isEducational if isinstance(offer, Offer) else True
     html = render_template(
         "mails/offer_creation_notification_email.html",
         offer=offer,
@@ -206,9 +209,10 @@ def make_offer_creation_notification_email(offer: Offer) -> dict:
         pro_link_to_offer=pro_link_to_offer,
         webapp_link_to_offer=webapp_link_to_offer,
         pro_venue_link=pro_venue_link,
+        is_educational=is_educational
     )
     location_information = offer.venue.departementCode or "numérique"
-    is_educational_offer_label = "EAC " if offer.isEducational else ""
+    is_educational_offer_label = "EAC " if is_educational else ""
     return {
         "Html-part": html,
         "FromName": "pass Culture",

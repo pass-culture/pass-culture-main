@@ -28,6 +28,7 @@ from pcapi.core.categories import subcategories
 from pcapi.core.categories.conf import can_create_from_isbn
 from pcapi.core.educational import api as educational_api
 from pcapi.core.educational import exceptions as educational_exceptions
+from pcapi.core.educational import models as educational_models
 import pcapi.core.educational.adage_backends as adage_client
 from pcapi.core.educational.utils import compute_educational_booking_cancellation_limit_date
 from pcapi.core.mails.transactional.bookings.booking_cancellation_by_pro_to_beneficiary import (
@@ -532,7 +533,7 @@ def upsert_stocks(
     return stocks
 
 
-def _update_offer_fraud_information(offer: Offer, user: User) -> None:
+def _update_offer_fraud_information(offer: Union[educational_models.CollectiveOffer, Offer], user: User) -> None:
     offer.validation = set_offer_status_based_on_fraud_criteria(offer)
     offer.author = user
     offer.lastValidationDate = datetime.datetime.utcnow()

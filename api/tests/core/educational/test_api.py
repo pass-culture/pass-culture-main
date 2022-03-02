@@ -2,6 +2,7 @@ import datetime
 from decimal import Decimal
 from unittest import mock
 
+import dateutil
 from freezegun.api import freeze_time
 import pytest
 from sqlalchemy import create_engine
@@ -16,20 +17,44 @@ from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.educational import api as educational_api
 from pcapi.core.educational import exceptions
 from pcapi.core.educational import factories as educational_factories
+from pcapi.core.educational.models import CollectiveStock
 from pcapi.core.educational.models import EducationalBooking
 from pcapi.core.educational.models import EducationalBookingStatus
 from pcapi.core.educational.models import EducationalRedactor
 import pcapi.core.educational.testing as adage_api_testing
 import pcapi.core.mails.testing as mails_testing
+from pcapi.core.offers import api as offers_api
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.testing import override_settings
+from pcapi.models import api_errors
+from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.routes.adage.v1.serialization.prebooking import serialize_educational_booking
 from pcapi.routes.adage_iframe.serialization.adage_authentication import AuthenticatedInformation
 from pcapi.routes.adage_iframe.serialization.adage_authentication import RedactorInformation
 from pcapi.utils.human_ids import humanize
+import pcapi.core.users.factories as users_factories
+from pcapi.routes.serialization import stock_serialize
 
 from tests.conftest import clean_database
+
+
+pytestmark = pytest.mark.usefixtures("db_session")
+SIMPLE_OFFER_VALIDATION_CONFIG = """
+        minimum_score: 0.6
+        rules:
+            - name: "check offer name"
+              factor: 0
+              conditions:
+               - model: "Offer"
+                 attribute: "name"
+                 condition:
+                    operator: "contains"
+                    comparated:
+                      - "suspicious"
+        """
+
+
 
 
 @freeze_time("2020-11-17 15:00:00")
@@ -699,3 +724,153 @@ class RefuseEducationalBookingTest:
         educational_api.refuse_educational_booking(booking.educationalBookingId)
 
         assert stock.dnBookedQuantity == 21
+
+
+
+@freeze_time("2020-11-17 15:00:00")
+class CreateCollectiveOfferStocksTest:
+    @mock.patch("pcapi.core.search.async_index_offer_ids")
+    def should_create_one_stock_on_collective_offer_stock_creation(self, mocked_async_index_offer_ids):
+        # Given
+        user_pro = users_factories.ProFactory()
+        offer = educational_factories.CollectiveOfferFactory()
+        new_stock = stock_serialize.EducationalStockCreationBodyModel(
+            offerId=offer.id,
+            beginningDatetime=dateutil.parser.parse("2021-12-15T20:00:00Z"),
+            bookingLimitDatetime=dateutil.parser.parse("2021-12-05T00:00:00Z"),
+            totalPrice=1200,
+            numberOfTickets=35,
+        )
+
+        # When
+        stock_created = educational_api.create_collective_stock(stock_data=new_stock, user=user_pro)
+
+        # Then
+        stock = CollectiveStock.query.filter_by(id=stock_created.id).one()
+        assert stock.beginningDatetime == datetime.datetime.fromisoformat("2021-12-15T20:00:00")
+        assert stock.bookingLimitDatetime == datetime.datetime.fromisoformat("2021-12-05T00:00:00")
+        assert stock.price == 1200
+        assert stock.numberOfTickets == 35
+        assert stock.stockId == None
+        mocked_async_index_offer_ids.assert_called_once_with([offer.id])
+
+    def should_set_booking_limit_datetime_to_beginning_datetime_when_not_provided(self):
+        # Given
+        user_pro = users_factories.ProFactory()
+        offer = educational_factories.CollectiveOfferFactory()
+        new_stock = stock_serialize.EducationalStockCreationBodyModel(
+            offerId=offer.id,
+            beginningDatetime=dateutil.parser.parse("2021-12-15T20:00:00Z"),
+            totalPrice=1200,
+            numberOfTickets=35,
+        )
+
+        # When
+        stock_created = educational_api.create_collective_stock(stock_data=new_stock, user=user_pro)
+
+        # Then
+        stock = CollectiveStock.query.filter_by(id=stock_created.id).one()
+        assert stock.bookingLimitDatetime == dateutil.parser.parse("2021-12-15T20:00:00")
+
+    def test_create_stock_triggers_draft_offer_validation(self):
+        # Given
+        offers_api.import_offer_validation_config(SIMPLE_OFFER_VALIDATION_CONFIG)
+        user_pro = users_factories.ProFactory()
+        draft_approvable_offer = educational_factories.CollectiveOfferFactory(
+            name="a great offer", validation=OfferValidationStatus.DRAFT
+        )
+        draft_suspicious_offer = educational_factories.CollectiveOfferFactory(
+            name="a suspicious offer", validation=OfferValidationStatus.DRAFT
+        )
+        common_created_stock_data = {
+            "beginningDatetime": dateutil.parser.parse("2022-01-17T22:00:00Z"),
+            "bookingLimitDatetime": dateutil.parser.parse("2021-12-31T20:00:00Z"),
+            "totalPrice": 1500,
+            "numberOfTickets": 38,
+        }
+        created_stock_data_approvable = stock_serialize.EducationalStockCreationBodyModel(
+            offerId=draft_approvable_offer.id, **common_created_stock_data
+        )
+        created_stock_data_suspicious = stock_serialize.EducationalStockCreationBodyModel(
+            offerId=draft_suspicious_offer.id, **common_created_stock_data
+        )
+
+        # When
+        educational_api.create_collective_stock(stock_data=created_stock_data_approvable, user=user_pro)
+        educational_api.create_collective_stock(stock_data=created_stock_data_suspicious, user=user_pro)
+
+        # Then
+        assert draft_approvable_offer.validation == OfferValidationStatus.APPROVED
+        assert draft_approvable_offer.isActive
+        assert draft_approvable_offer.lastValidationDate == datetime.datetime(2020, 11, 17, 15, 0)
+        assert draft_suspicious_offer.validation == OfferValidationStatus.PENDING
+        assert not draft_suspicious_offer.isActive
+        assert draft_suspicious_offer.lastValidationDate == datetime.datetime(2020, 11, 17, 15, 0)
+
+    def test_create_stock_for_non_approved_offer_fails(self):
+        # Given
+        user = users_factories.ProFactory()
+        offer = educational_factories.CollectiveOfferFactory(validation=OfferValidationStatus.PENDING)
+        created_stock_data = stock_serialize.EducationalStockCreationBodyModel(
+            offerId=offer.id,
+            beginningDatetime=dateutil.parser.parse("2022-01-17T22:00:00Z"),
+            bookingLimitDatetime=dateutil.parser.parse("2021-12-31T20:00:00Z"),
+            totalPrice=1500,
+            numberOfTickets=38,
+        )
+
+        # When
+        with pytest.raises(api_errors.ApiErrors) as error:
+            educational_api.create_collective_stock(stock_data=created_stock_data, user=user)
+
+        # Then
+        assert error.value.errors == {
+            "global": ["Les offres refusées ou en attente de validation ne sont pas modifiables"]
+        }
+        assert CollectiveStock.query.count() == 0
+
+    @mock.patch("pcapi.domain.admin_emails.send_offer_creation_notification_to_administration")
+    @mock.patch("pcapi.core.offers.api.set_offer_status_based_on_fraud_criteria")
+    def test_send_email_when_offer_automatically_approved_based_on_fraud_criteria(
+        self, mocked_set_offer_status_based_on_fraud_criteria, mocked_offer_creation_notification_to_admin
+    ):
+        # Given
+        user = users_factories.ProFactory()
+        offer = educational_factories.CollectiveOfferFactory(validation=OfferValidationStatus.DRAFT)
+        created_stock_data = stock_serialize.EducationalStockCreationBodyModel(
+            offerId=offer.id,
+            beginningDatetime=dateutil.parser.parse("2022-01-17T22:00:00Z"),
+            bookingLimitDatetime=dateutil.parser.parse("2021-12-31T20:00:00Z"),
+            totalPrice=1500,
+            numberOfTickets=38,
+        )
+        mocked_set_offer_status_based_on_fraud_criteria.return_value = OfferValidationStatus.APPROVED
+
+        # When
+        educational_api.create_collective_stock(stock_data=created_stock_data, user=user)
+
+        # Then
+        mocked_offer_creation_notification_to_admin.assert_called_once_with(offer)
+
+    @mock.patch("pcapi.domain.admin_emails.send_offer_creation_notification_to_administration")
+    @mock.patch("pcapi.core.offers.api.set_offer_status_based_on_fraud_criteria")
+    def test_not_send_email_when_offer_pass_to_pending_based_on_fraud_criteria(
+        self, mocked_set_offer_status_based_on_fraud_criteria, mocked_offer_creation_notification_to_admin
+    ):
+        # Given
+        user = users_factories.ProFactory()
+        offer = educational_factories.CollectiveOfferFactory(validation=OfferValidationStatus.DRAFT)
+        created_stock_data = stock_serialize.EducationalStockCreationBodyModel(
+            offerId=offer.id,
+            beginningDatetime=dateutil.parser.parse("2022-01-17T22:00:00Z"),
+            bookingLimitDatetime=dateutil.parser.parse("2021-12-31T20:00:00Z"),
+            totalPrice=1500,
+            numberOfTickets=38,
+        )
+        mocked_set_offer_status_based_on_fraud_criteria.return_value = OfferValidationStatus.PENDING
+
+        # When
+        educational_api.create_collective_stock(stock_data=created_stock_data, user=user)
+
+        # Then
+        assert not mocked_offer_creation_notification_to_admin.called

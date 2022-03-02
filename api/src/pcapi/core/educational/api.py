@@ -1,8 +1,10 @@
 from datetime import datetime
 import decimal
 import logging
+from typing import Union
 
 from pydantic.error_wrappers import ValidationError
+from sqlalchemy.orm import joinedload
 
 from pcapi.connectors.api_adage import AdageException
 from pcapi.core import mails
@@ -15,19 +17,24 @@ from pcapi.core.educational import exceptions
 from pcapi.core.educational import repository as educational_repository
 from pcapi.core.educational import validation
 import pcapi.core.educational.adage_backends as adage_client
+from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.core.educational.models import EducationalBooking
 from pcapi.core.educational.models import EducationalBookingStatus
 from pcapi.core.educational.models import EducationalDeposit
 from pcapi.core.educational.models import EducationalInstitution
 from pcapi.core.educational.models import EducationalRedactor
 from pcapi.core.educational.models import Ministry
+from pcapi.core.educational.models import CollectiveOffer
+from pcapi.core.educational.models import CollectiveStock
 from pcapi.core.educational.utils import compute_educational_booking_cancellation_limit_date
 from pcapi.core.mails.models.sendinblue_models import SendinblueTransactionalEmailData
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import repository as offers_repository
+from pcapi.core.offers import validation as offer_validation
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
+from pcapi.core.users.models import User
 from pcapi.models import db
 from pcapi.repository import repository
 from pcapi.repository import transaction
@@ -38,6 +45,8 @@ from pcapi.routes.adage_iframe.serialization.adage_authentication import Redacto
 from pcapi.utils.mailing import build_pc_pro_offer_link
 from pcapi.utils.mailing import format_booking_date_for_email
 from pcapi.utils.mailing import format_booking_hours_for_email
+from pcapi.routes.serialization.stock_serialize import EducationalStockCreationBodyModel
+
 
 
 logger = logging.getLogger(__name__)
@@ -363,3 +372,53 @@ def notify_educational_redactor_on_educational_offer_or_stock_edit(
                 "data": data.dict(),
             },
         )
+
+
+def create_collective_stock(
+    stock_data: EducationalStockCreationBodyModel, user: User, *, legacy_id: Union[int, bool] = False
+) -> Union[CollectiveStock, None]:
+    from pcapi.core.offers.api import _update_offer_fraud_information
+    offer_id = stock_data.offer_id
+    beginning = stock_data.beginning_datetime
+    booking_limit_datetime = stock_data.booking_limit_datetime
+    total_price = stock_data.total_price
+    number_of_tickets = stock_data.number_of_tickets
+    educational_price_detail = stock_data.educational_price_detail
+
+    if legacy_id:  # FIXME remove legacy support layer
+        collective_offer = (
+            CollectiveOffer.query.filter_by(offerId=offer_id)
+            .options(joinedload(CollectiveOffer.collectiveStock))
+            .one_or_none()
+        )
+        if not collective_offer:
+            return None
+    else:
+        collective_offer = (
+            CollectiveOffer.query.filter_by(id=offer_id).options(joinedload(CollectiveOffer.collectiveStock)).one()
+        )
+    if collective_offer.collectiveStock:
+        raise exceptions.CollectiveStockAlreadyExists()
+
+    offer_validation.check_validation_status(collective_offer)
+    if booking_limit_datetime is None:
+        booking_limit_datetime = beginning
+
+    collective_stock = CollectiveStock(
+        collectiveOffer=collective_offer,
+        beginningDatetime=beginning,
+        bookingLimitDatetime=booking_limit_datetime,
+        price=total_price,
+        numberOfTickets=number_of_tickets,
+        priceDetail=educational_price_detail,
+        stockId=legacy_id if legacy_id else None,  # FIXME remove legacy support layer
+    )
+    repository.save(collective_stock)
+    logger.info("Collective stock has been created", extra={"collective_offer": collective_offer.id})
+
+    if collective_offer.validation == OfferValidationStatus.DRAFT:
+        _update_offer_fraud_information(collective_offer, user)  # FIXME doublon avec les offer ?
+
+    if not legacy_id:
+        search.async_index_offer_ids([collective_offer.id])
+    return collective_stock

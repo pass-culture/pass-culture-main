@@ -1,6 +1,9 @@
+from typing import Union
+
 from pcapi import settings
 from pcapi.core import mails
 from pcapi.core.categories import subcategories
+from pcapi.core.educational.models import CollectiveOffer
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import OfferValidationStatus
@@ -71,7 +74,7 @@ def _check_offer_subcategory_before_send(offer: Offer) -> bool:
     )
 
 
-def send_offer_creation_notification_to_administration(offer: Offer) -> bool:
+def send_offer_creation_notification_to_administration(offer: Union[CollectiveOffer, Offer]) -> bool:
     email = make_offer_creation_notification_email(offer)
     return mails.send(recipients=[settings.ADMINISTRATION_EMAIL_ADDRESS], data=email)
 

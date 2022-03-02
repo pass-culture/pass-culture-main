@@ -70,3 +70,6 @@ class EducationalStockAlreadyExists(Exception):
 
 class OfferIsNotShowcase(Exception):
     pass
+
+class CollectiveStockAlreadyExists(Exception):
+    pass
