@@ -361,6 +361,8 @@ class EducationalRedactor(PcObject, Model):  # type: ignore[valid-type]
         back_populates="educationalRedactor",
     )
 
+    collectiveBookings = relationship("CollectiveBooking", back_populates="educationalRedactor")
+
 
 class EducationalBooking(PcObject, Model):  # type: ignore[valid-type]
     __tablename__ = "educational_booking"
@@ -485,6 +487,18 @@ class CollectiveBooking(PcObject, Model):  # type: ignore[valid-type]
 
     confirmationDate: Optional[datetime] = sa.Column(sa.DateTime, nullable=True)
     confirmationLimitDate = sa.Column(sa.DateTime, nullable=False)
+
+    educationalRedactorId = sa.Column(
+        sa.BigInteger,
+        sa.ForeignKey("educational_redactor.id"),
+        nullable=False,
+        index=True,
+    )
+    educationalRedactor: EducationalRedactor = relationship(
+        EducationalRedactor,
+        back_populates="collectiveBookings",
+        uselist=False,
+    )
 
     def mark_as_used(self) -> None:
         if self.is_used_or_reimbursed:  # pylint: disable=using-constant-test
