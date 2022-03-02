@@ -1,143 +1,79 @@
 import pytest
 
+from pcapi.core import testing
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.users import factories as users_factories
-from pcapi.repository import repository
-from pcapi.utils.human_ids import dehumanize
+from pcapi.utils.human_ids import humanize
 
 
-class Returns200Test:
-    @pytest.mark.usefixtures("db_session")
-    def when_logged_in_and_return_an_offerer_with_one_managed_venue(self, client):
-        # given
-        offerer1 = offers_factories.OffererFactory(siren="123456781", name="offreur C", id=1)
-        venue = offers_factories.VenueFactory(managingOfferer=offerer1)
-        repository.save(offerer1, venue)
+pytestmark = pytest.mark.usefixtures("db_session")
 
-        pro = users_factories.ProFactory(offerers=[offerer1])
 
-        # when
-        response = client.with_session_auth(pro.email).get("/offerers")
+def test_access_by_pro(client):
+    offerer1 = offers_factories.OffererFactory(name="offreur B")
+    offerer2 = offers_factories.OffererFactory(name="offreur A")
+    offerer3 = offers_factories.OffererFactory(name="offreur C")
+    inactive = offers_factories.OffererFactory(name="inactive, ignored", isActive=False)
+    venue1 = offers_factories.VenueFactory(managingOfferer=offerer2, name="lieu A1")
+    venue2 = offers_factories.VenueFactory(managingOfferer=offerer2, name="lieu A2")
+    offers_factories.VenueFactory(managingOfferer=offerer1, name="lieu B1")
+    pro = users_factories.ProFactory(offerers=[offerer1, offerer2, inactive])
+    # Non-validated offerers should be included, too.
+    offers_factories.UserOffererFactory(user=pro, offerer=offerer3, validationToken="TOKEN")
+    # Offerer that belongs to another user should not be returned.
+    offers_factories.OffererFactory(name="not returned")
 
-        # then
-        assert response.status_code == 200
-        offerer_response = response.json["offerers"][0]
-        managed_venues_response = offerer_response["managedVenues"][0]
-        assert "validationToken" not in managed_venues_response
-        assert dehumanize(offerer_response["id"]) == 1
+    client = client.with_session_auth(pro.email)
+    n_queries = testing.AUTHENTICATION_QUERIES
+    n_queries += 1  # select offerers
+    n_queries += 1  # select count of offerers
+    n_queries += 3  # select user offerer for each offerer
+    n_queries += 2  # select venue info for each offerer
+    n_queries += 3  # select count of offers for each venue
+    with testing.assert_num_queries(n_queries):
+        response = client.get("/offerers")
 
-    @pytest.mark.usefixtures("db_session")
-    def when_logged_in_and_return_a_list_of_offerers_sorted_alphabetically(self, client):
-        # given
-        offerer1 = offers_factories.OffererFactory(siren="123456781", name="offreur C")
-        offerer2 = offers_factories.OffererFactory(siren="123456782", name="offreur A")
-        offerer3 = offers_factories.OffererFactory(siren="123456783", name="offreur B")
-        repository.save(offerer1, offerer3, offerer2)
+    assert response.status_code == 200
+    offerers = response.json["offerers"]
+    assert len(offerers) == 3
+    names = [o["name"] for o in offerers]
+    assert names == ["offreur A", "offreur B", "offreur C"]
+    venue_ids = [v["id"] for v in offerers[0]["managedVenues"]]
+    assert venue_ids == [humanize(venue1.id), humanize(venue2.id)]
+    assert offerers[0]["userHasAccess"]
+    assert offerers[1]["userHasAccess"]
+    assert not offerers[2]["userHasAccess"]
+    assert response.json["nbTotalResults"] == 3
 
-        pro = users_factories.ProFactory(offerers=[offerer1, offerer2, offerer3])
-        repository.save(pro)
 
-        # when
-        response = client.with_session_auth(pro.email).get("/offerers")
+def test_access_by_admin(client):
+    offers_factories.OffererFactory(name="offreur B")
+    offers_factories.OffererFactory(name="offreur A")
+    offers_factories.OffererFactory(name="offreur C")
+    admin = users_factories.AdminFactory()
 
-        # then
-        assert response.status_code == 200
-        offerers = response.json["offerers"]
-        assert len(offerers) == 3
-        names = [offerer["name"] for offerer in offerers]
-        assert names == ["offreur A", "offreur B", "offreur C"]
+    response = client.with_session_auth(admin.email).get("/offerers")
 
-    @pytest.mark.usefixtures("db_session")
-    def when_logged_in_and_return_a_list_of_offerers_including_non_validated_structures(self, client):
-        # given
-        pro = users_factories.ProFactory()
-        offerer1 = offers_factories.OffererFactory(siren="123456781", name="offreur A")
-        offerer2 = offers_factories.OffererFactory(siren="123456782", name="offreur B")
-        offerer3 = offers_factories.OffererFactory(siren="123456783", name="offreur C")
-        user_offerer1 = offers_factories.UserOffererFactory(user=pro, offerer=offerer1, validationToken=None)
-        user_offerer2 = offers_factories.UserOffererFactory(user=pro, offerer=offerer2, validationToken="AZE123")
-        user_offerer3 = offers_factories.UserOffererFactory(user=pro, offerer=offerer3, validationToken=None)
-        repository.save(user_offerer1, user_offerer2, user_offerer3)
+    assert response.status_code == 200
+    offerers = response.json["offerers"]
+    assert len(offerers) == 3
+    assert all(o["userHasAccess"] for o in offerers)
 
-        # when
-        response = client.with_session_auth(pro.email).get("/offerers")
 
-        # then
-        assert response.status_code == 200
-        offerers = response.json["offerers"]
-        assert len(offerers) == 3
-        names = [offerer["name"] for offerer in offerers]
-        assert names == ["offreur A", "offreur B", "offreur C"]
+def test_filter_on_keywords(client):
+    offerer1 = offers_factories.OffererFactory(name="Cinema")
+    offerer2 = offers_factories.OffererFactory(name="Encore Un Cinema")
+    offerer3 = offers_factories.OffererFactory(name="not matching")
+    pro = users_factories.ProFactory(offerers=[offerer1, offerer2, offerer3])
+    # Because of a bug, we need venues, here: see bug explained in
+    # PaginatedOfferersSQLRepository.
+    for offerer in (offerer1, offerer2, offerer3):
+        offers_factories.VenueFactory(managingOfferer=offerer)
 
-        assert offerers[0]["userHasAccess"] is True
-        assert offerers[1]["userHasAccess"] is False
-        assert offerers[2]["userHasAccess"] is True
+    response = client.with_session_auth(pro.email).get("/offerers?keywords=cinéma")
 
-    @pytest.mark.usefixtures("db_session")
-    def when_current_user_is_not_admin_and_returns_only_offers_managed_by_him(self, client):
-        # given
-        offerer1 = offers_factories.OffererFactory(siren="123456781", name="offreur C")
-        offerer2 = offers_factories.OffererFactory(siren="123456782", name="offreur A")
-        offerer3 = offers_factories.OffererFactory(siren="123456783", name="offreur B")
-        repository.save(offerer1, offerer3, offerer2)
-
-        pro = users_factories.ProFactory(offerers=[offerer1, offerer2])
-
-        # when
-        response = client.with_session_auth(pro.email).get("/offerers")
-
-        # then
-        assert response.status_code == 200
-        assert len(response.json["offerers"]) == 2
-
-    @pytest.mark.usefixtures("db_session")
-    def when_current_user_is_admin_and_returns_all_offerers(self, client):
-        # given
-        offerer1 = offers_factories.OffererFactory(siren="123456781", name="offreur C")
-        offerer2 = offers_factories.OffererFactory(siren="123456782", name="offreur A")
-        offerer3 = offers_factories.OffererFactory(siren="123456783", name="offreur B")
-        repository.save(offerer1, offerer3, offerer2)
-
-        user = users_factories.AdminFactory(offerers=[offerer1, offerer2])
-
-        # when
-        response = client.with_session_auth(user.email).get("/offerers")
-
-        # then
-        assert response.status_code == 200
-        assert len(response.json["offerers"]) == 3
-
-    @pytest.mark.usefixtures("db_session")
-    def test_returns_metadata(self, client):
-        # given
-        pro = users_factories.ProFactory(email="user@test.com")
-        offerer = offers_factories.OffererFactory(name="offreur C")
-        user_offerer = offers_factories.UserOffererFactory(user=pro, offerer=offerer)
-        repository.save(user_offerer)
-        auth_request = client.with_session_auth(email="user@test.com")
-
-        # when
-        response = auth_request.get("/offerers")
-
-        # then
-        assert response.status_code == 200
-        assert response.json["nbTotalResults"] == 1
-
-    @pytest.mark.usefixtures("db_session")
-    def test_returns_proper_data_count_by_counting_distinct_offererss(self, client):
-        # given
-        pro = users_factories.ProFactory(email="user@test.com")
-        offerer1 = offers_factories.OffererFactory(name="offreur", siren="123456789")
-        user_offerer1 = offers_factories.UserOffererFactory(user=pro, offerer=offerer1)
-        offerer2 = offers_factories.OffererFactory(name="offreur 2", siren="123456781")
-        user_offerer2 = offers_factories.UserOffererFactory(user=pro, offerer=offerer2)
-        venue1 = offers_factories.VenueFactory(managingOfferer=offerer1)
-        venue2 = offers_factories.VenueFactory(siret="12345678912346", managingOfferer=offerer1)
-        repository.save(user_offerer1, user_offerer2, venue1, venue2)
-
-        # when
-        response = client.with_session_auth(email="user@test.com").get("/offerers")
-
-        # then
-        assert response.status_code == 200
-        assert response.json["nbTotalResults"] == 2
+    assert response.status_code == 200
+    offerers = response.json["offerers"]
+    assert len(offerers) == 2
+    names = [o["name"] for o in offerers]
+    assert names == ["Cinema", "Encore Un Cinema"]

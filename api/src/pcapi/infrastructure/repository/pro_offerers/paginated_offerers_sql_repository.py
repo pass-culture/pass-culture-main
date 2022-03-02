@@ -23,6 +23,11 @@ class PaginatedOfferersSQLRepository(PaginatedOfferersRepository):
             query = query.join(UserOfferer, UserOfferer.offererId == Offerer.id).filter(UserOfferer.userId == user_id)
 
         if keywords is not None:
+            # FIXME (dbaty, 2022-03-02): There is a bug here. If an
+            # offerer does not have any venue and the user provided
+            # keywords, the offerer will not be returned even if its
+            # name matches the keywords. We should outerjoin, here.
+            # See `test_filter_on_keywords()`, too.
             query = query.join(Venue, Venue.managingOffererId == Offerer.id)
             query = filter_offerers_with_keywords_string(query, keywords)
 
