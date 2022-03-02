@@ -44,14 +44,6 @@ class SubcategoryNotEligibleForEducationalOffer(ClientError):
         )
 
 
-class OfferCannotBeDuoAndEducational(ClientError):
-    def __init__(self):
-        super().__init__(
-            "offer",
-            "Une offre ne peut être à la fois 'duo' et 'éducationnelle'.",
-        )
-
-
 class UnknownOfferSubCategory(ClientError):
     def __init__(self):
         super().__init__(
@@ -115,4 +107,8 @@ class EducationalOfferHasMultipleStocks(Exception):
 
 
 class NoBookingToCancel(Exception):
+    pass
+
+
+class CollectiveOfferNotFound(Exception):
     pass

@@ -166,7 +166,9 @@ def transform_shadow_stock_into_educational_stock(
     check_user_has_access_to_offerer(current_user, offerer.id)
 
     try:
-        stock = offers_api.transform_shadow_stock_and_create_collective_offer(dehumanize(stock_id), body, current_user)
+        stock = offers_api.transform_shadow_stock_into_educational_stock_and_create_collective_offer(
+            dehumanize(stock_id), body, current_user
+        )
     except educational_exceptions.OfferIsNotShowcase:
         raise ApiErrors({"code": "OFFER_IS_NOT_SHOWCASE"}, status_code=400)
     return stock_serialize.StockEditionResponseModel.from_orm(stock)

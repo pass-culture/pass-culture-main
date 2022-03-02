@@ -325,11 +325,6 @@ def check_offer_is_eligible_for_educational(subcategory_id: str, is_educational:
             raise exceptions.SubcategoryNotEligibleForEducationalOffer()
 
 
-def check_offer_not_duo_and_educational(is_duo: bool, is_educational: bool):
-    if is_duo and is_educational:
-        raise exceptions.OfferCannotBeDuoAndEducational()
-
-
 def check_offer_subcategory_is_valid(offer_subcategory_id):
     if offer_subcategory_id not in ALL_SUBCATEGORIES_DICT:
         raise exceptions.UnknownOfferSubCategory()

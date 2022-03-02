@@ -61,7 +61,6 @@ import pcapi.core.offers.repository as offers_repository
 from pcapi.core.offers.utils import as_utc_without_timezone
 from pcapi.core.offers.validation import KEY_VALIDATION_CONFIG
 from pcapi.core.offers.validation import check_offer_is_eligible_for_educational
-from pcapi.core.offers.validation import check_offer_not_duo_and_educational
 from pcapi.core.offers.validation import check_offer_subcategory_is_valid
 from pcapi.core.offers.validation import check_shadow_stock_is_editable
 from pcapi.core.offers.validation import check_validation_config_parameters
@@ -137,19 +136,42 @@ def create_educational_offer(offer_data: PostEducationalOfferBodyModel, user: Us
     offerers_api.can_offerer_create_educational_offer(dehumanize(offer_data.offerer_id))
     completed_data = CompletedEducationalOfferModel(**offer_data.dict(by_alias=True))
     offer = create_offer(completed_data, user)
-    create_collective_offer(offer)
+    create_collective_offer(offer_data, user, offer.id)
     return offer
 
 
 def create_collective_offer(
-    offer: Offer,
+    offer_data: PostEducationalOfferBodyModel,
+    user: User,
+    offer_id: int,
 ) -> None:
-    collective_offer = educational_models.CollectiveOffer.create_from_offer(offer)
+    offerers_api.can_offerer_create_educational_offer(dehumanize(offer_data.offerer_id))
+    venue = load_or_raise_error(Venue, offer_data.venue_id)
+    check_user_has_access_to_offerer(user, offerer_id=venue.managingOffererId)
+    _check_offer_data_is_valid(offer_data, True)
+    collective_offer = educational_models.CollectiveOffer(
+        venueId=venue.id,
+        name=offer_data.name,
+        offerId=offer_id,
+        bookingEmail=offer_data.booking_email,
+        description=offer_data.description,
+        durationMinutes=offer_data.duration_minutes,
+        subcategoryId=offer_data.subcategory_id,
+        students=offer_data.extra_data.students,
+        contactEmail=offer_data.extra_data.contact_email,
+        contactPhone=offer_data.extra_data.contact_phone,
+        offerVenue=offer_data.extra_data.offer_venue.dict(),
+        validation=OfferValidationStatus.DRAFT,
+        audioDisabilityCompliant=offer_data.audio_disability_compliant,
+        mentalDisabilityCompliant=offer_data.mental_disability_compliant,
+        motorDisabilityCompliant=offer_data.motor_disability_compliant,
+        visualDisabilityCompliant=offer_data.visual_disability_compliant,
+    )
     db.session.add(collective_offer)
     db.session.commit()
     logger.info(
         "Collective offer template has been created",
-        extra={"collectiveOfferTemplate": collective_offer.id, "offerId": offer.id},
+        extra={"collectiveOfferTemplate": collective_offer.id, "offerId": offer_id},
     )
 
 
@@ -160,7 +182,7 @@ def create_offer(
     subcategory = subcategories.ALL_SUBCATEGORIES_DICT.get(offer_data.subcategory_id)
     venue = load_or_raise_error(Venue, offer_data.venue_id)
     check_user_has_access_to_offerer(user, offerer_id=venue.managingOffererId)
-    _check_offer_data_is_valid(offer_data)
+    _check_offer_data_is_valid(offer_data, offer_data.is_educational)
     if _is_able_to_create_book_offer_from_isbn(subcategory):
         offer = _initialize_book_offer_from_template(offer_data)
     else:
@@ -240,12 +262,10 @@ def _complete_common_offer_fields(
 
 def _check_offer_data_is_valid(
     offer_data: Union[PostOfferBodyModel, CompletedEducationalOfferModel],
+    offer_is_educational: bool,
 ) -> None:
-    # FIXME(cgaunet, 2021-11-24): remove this check once educational choice is removed
-    # from individual offer creation route
-    check_offer_not_duo_and_educational(offer_data.is_duo, offer_data.is_educational)
-    check_offer_is_eligible_for_educational(offer_data.subcategory_id, offer_data.is_educational)
     check_offer_subcategory_is_valid(offer_data.subcategory_id)
+    check_offer_is_eligible_for_educational(offer_data.subcategory_id, offer_is_educational)
 
 
 def update_offer(
@@ -1063,26 +1083,19 @@ def cancel_educational_offer_booking(offer: Offer) -> None:
 def create_collective_shadow_offer(stock_data: EducationalOfferShadowStockBodyModel, user: User, offer_id: str):
     offer = Offer.query.filter_by(id=offer_id).options(joinedload(Offer.stocks)).one()
     stock = create_educational_shadow_stock_and_set_offer_showcase(stock_data, user, offer)
-    create_collective_offer_template_and_delete_regular_collective_offer(offer, stock)
+    create_collective_offer_template_and_delete_collective_offer(offer, stock)
     return stock
 
 
-def create_collective_offer_template_and_delete_regular_collective_offer(offer: Offer, stock: Stock) -> None:
+def create_collective_offer_template_and_delete_collective_offer(offer: Offer, stock: Stock) -> None:
     collective_offer = educational_models.CollectiveOffer.query.filter_by(offerId=offer.id).one_or_none()
     if collective_offer is None:
-        logger.info(
-            "Collective offer not found. Collective offer template will be created from old offer model",
-            extra={"offer": offer.id},
-        )
-        collective_offer_template = educational_models.CollectiveOfferTemplate.create_from_offer(
-            offer, price_detail=stock.educationalPriceDetail
-        )
-    else:
-        collective_offer_template = educational_models.CollectiveOfferTemplate.create_from_collective_offer(
-            collective_offer, price_detail=stock.educationalPriceDetail
-        )
-        db.session.delete(collective_offer)
+        raise offers_exceptions.CollectiveOfferNotFound()
 
+    collective_offer_template = educational_models.CollectiveOfferTemplate.create_from_collective_offer(
+        collective_offer, price_detail=stock.educationalPriceDetail
+    )
+    db.session.delete(collective_offer)
     db.session.add(collective_offer_template)
     db.session.commit()
     logger.info(
@@ -1135,7 +1148,7 @@ def create_educational_shadow_stock_and_set_offer_showcase(
     return stock
 
 
-def transform_shadow_stock_and_create_collective_offer(
+def transform_shadow_stock_into_educational_stock_and_create_collective_offer(
     stock_id: str, stock_data: EducationalStockCreationBodyModel, user: User
 ) -> Stock:
     offer = offers_repository.get_educational_offer_by_id((stock_data.offer_id))
@@ -1148,7 +1161,9 @@ def create_collective_offer_and_delete_collective_offer_template(offer: Offer) -
     collective_offer_template = educational_models.CollectiveOfferTemplate.query.filter_by(
         offerId=offer.id
     ).one_or_none()
+
     if collective_offer_template is None:
+        # FIXME (cgaunet, 2022-03-02): Raise once migration script has been launched (PC-13427)
         logger.info(
             "Collective offer template not found. Collective offer will be created from old offer model",
             extra={"offer": offer.id},
@@ -1161,6 +1176,7 @@ def create_collective_offer_and_delete_collective_offer_template(offer: Offer) -
             collective_offer_template
         )
         db.session.delete(collective_offer_template)
+
     db.session.add(collective_offer)
     db.session.commit()
 
