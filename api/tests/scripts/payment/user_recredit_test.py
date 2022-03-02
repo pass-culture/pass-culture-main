@@ -4,11 +4,14 @@ from dateutil.relativedelta import relativedelta
 from freezegun import freeze_time
 import pytest
 
+from pcapi.core.fraud import factories as fraud_factories
+from pcapi.core.fraud import models as fraud_models
 from pcapi.core.payments import factories as payments_factories
 from pcapi.core.payments import models as payments_models
 from pcapi.core.users import factories as user_factories
+from pcapi.scripts.payment.user_recredit import can_be_recredited
 from pcapi.scripts.payment.user_recredit import has_been_recredited
-from pcapi.scripts.payment.user_recredit import has_celebrated_their_birthday_since_activation
+from pcapi.scripts.payment.user_recredit import has_celebrated_birthday_since_registration
 from pcapi.scripts.payment.user_recredit import recredit_underage_users
 
 
@@ -16,16 +19,65 @@ from pcapi.scripts.payment.user_recredit import recredit_underage_users
 class UserRecreditTest:
     @freeze_time("2021-07-01")
     @pytest.mark.parametrize(
-        "birth_date,deposit_activation_date,expected_result",
-        [("2006-01-01", "2021-05-01", False), ("2006-01-01", "2020-05-01", True), ("2006-07-01", "2020-05-01", True)],
+        "birth_date,registration_datetime,expected_result",
+        [
+            ("2006-01-01", datetime.datetime(2021, 5, 1), False),
+            ("2006-01-01", datetime.datetime(2020, 5, 1), True),
+            ("2006-07-01", datetime.datetime(2020, 5, 1), True),
+        ],
     )
-    def test_has_celebrated_their_birthday_since_activation(self, birth_date, deposit_activation_date, expected_result):
+    def test_has_celebrated_birthday_since_registration(self, birth_date, registration_datetime, expected_result):
         user = user_factories.BeneficiaryGrant18Factory(
             dateOfBirth=birth_date,
         )
-        payments_models.Deposit.query.delete()
-        user_factories.DepositGrantFactory(user=user, dateCreated=deposit_activation_date)
-        assert has_celebrated_their_birthday_since_activation(user) == expected_result
+        fraud_check_result_content = fraud_factories.UbbleContentFactory(registration_datetime=registration_datetime)
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user, resultContent=fraud_check_result_content, type=fraud_models.FraudCheckType.UBBLE
+        )
+        assert has_celebrated_birthday_since_registration(user) == expected_result
+
+    def test_can_be_recredited(self):
+        with freeze_time("2020-05-02"):
+            user = user_factories.UnderageBeneficiaryFactory(subscription_age=15, dateOfBirth=datetime.date(2005, 5, 1))
+
+            # User turned 15. They are credited a first time
+            content = fraud_factories.UbbleContentFactory(
+                user=user, birth_date="2005-05-01", registration_datetime=datetime.datetime.now()
+            )
+            fraud_factories.BeneficiaryFraudCheckFactory(
+                user=user,
+                type=fraud_models.FraudCheckType.UBBLE,
+                status=fraud_models.FraudCheckStatus.OK,
+                resultContent=content,
+                dateCreated=datetime.datetime(2020, 5, 1),
+            )
+            assert user.deposit.recredits == []
+            assert can_be_recredited(user) is False
+
+        with freeze_time("2021-05-02"):
+            # User turned 16. They can be recredited
+            assert can_be_recredited(user) is True
+
+            recredit_underage_users()
+            assert user.deposit.amount == 50
+            assert user.deposit.recredits[0].recreditType == payments_models.RecreditType.RECREDIT_16
+            assert user.recreditAmountToShow == 30
+            assert can_be_recredited(user) is False
+
+        with freeze_time("2022-05-02"):
+            # User turned 17. They can be recredited
+            assert can_be_recredited(user) is True
+
+            recredit_underage_users()
+            assert user.deposit.amount == 80
+            assert user.deposit.recredits[1].recreditType == payments_models.RecreditType.RECREDIT_17
+            assert user.recreditAmountToShow == 30
+            assert can_be_recredited(user) is False
+
+    def test_can_be_recredited_no_identity_fraud_check(self):
+        user = user_factories.UserFactory(dateOfBirth=datetime.date(2005, 5, 1))
+        with freeze_time("2020-05-02"):
+            assert can_be_recredited(user) is False
 
     @pytest.mark.parametrize(
         "user_age,user_recredits,expected_result",
@@ -79,6 +131,7 @@ class UserRecreditTest:
     def test_recredit_underage_users(self):
         with freeze_time("2020-01-01"):
             deposit_creation_date = datetime.datetime(2019, 7, 31)  # Create deposit before birthday
+
             user_15 = user_factories.UnderageBeneficiaryFactory(
                 deposit__dateCreated=deposit_creation_date, subscription_age=15
             )
@@ -109,6 +162,78 @@ class UserRecreditTest:
 
             user_17_not_activated = user_factories.UserFactory(dateOfBirth=datetime.datetime(2004, 5, 1))
             user_17_not_activated.add_underage_beneficiary_role()
+
+            # Create users fraudChecks
+            id_check_application_date = datetime.datetime(2019, 7, 31)  # Application date before birthday
+
+            fraud_factories.BeneficiaryFraudCheckFactory(
+                user=user_15,
+                type=fraud_models.FraudCheckType.EDUCONNECT,
+                status=fraud_models.FraudCheckStatus.OK,
+                resultContent=fraud_factories.EduconnectContentFactory(
+                    user=user_15, birth_date="2004-08-01", registration_datetime=id_check_application_date
+                ),
+            )
+            fraud_factories.BeneficiaryFraudCheckFactory(
+                user=user_16_not_recredited,
+                type=fraud_models.FraudCheckType.EDUCONNECT,
+                status=fraud_models.FraudCheckStatus.OK,
+                resultContent=fraud_factories.EduconnectContentFactory(
+                    user=user_16_not_recredited,
+                    birth_date="2003-08-01",
+                    registration_datetime=id_check_application_date,
+                ),
+            )
+            fraud_factories.BeneficiaryFraudCheckFactory(
+                user=user_16_already_recredited,
+                type=fraud_models.FraudCheckType.EDUCONNECT,
+                status=fraud_models.FraudCheckStatus.OK,
+                resultContent=fraud_factories.EduconnectContentFactory(
+                    user=user_16_already_recredited,
+                    birth_date="2003-08-01",
+                    registration_datetime=id_check_application_date,
+                ),
+            )
+            fraud_factories.BeneficiaryFraudCheckFactory(
+                user=user_17_not_recredited,
+                type=fraud_models.FraudCheckType.EDUCONNECT,
+                status=fraud_models.FraudCheckStatus.OK,
+                resultContent=fraud_factories.EduconnectContentFactory(
+                    user=user_17_not_recredited,
+                    birth_date="2002-08-01",
+                    registration_datetime=id_check_application_date,
+                ),
+            )
+            fraud_factories.BeneficiaryFraudCheckFactory(
+                user=user_17_only_recredited_at_16,
+                type=fraud_models.FraudCheckType.EDUCONNECT,
+                status=fraud_models.FraudCheckStatus.OK,
+                resultContent=fraud_factories.EduconnectContentFactory(
+                    user=user_17_only_recredited_at_16,
+                    birth_date="2002-08-01",
+                    registration_datetime=id_check_application_date,
+                ),
+            )
+            fraud_factories.BeneficiaryFraudCheckFactory(
+                user=user_17_already_recredited,
+                type=fraud_models.FraudCheckType.EDUCONNECT,
+                status=fraud_models.FraudCheckStatus.OK,
+                resultContent=fraud_factories.EduconnectContentFactory(
+                    user=user_17_already_recredited,
+                    birth_date="2002-08-01",
+                    registration_datetime=id_check_application_date,
+                ),
+            )
+            fraud_factories.BeneficiaryFraudCheckFactory(
+                user=user_17_already_recredited_twice,
+                type=fraud_models.FraudCheckType.EDUCONNECT,
+                status=fraud_models.FraudCheckStatus.OK,
+                resultContent=fraud_factories.EduconnectContentFactory(
+                    user=user_17_already_recredited_twice,
+                    birth_date="2002-08-01",
+                    registration_datetime=id_check_application_date,
+                ),
+            )
 
             payments_factories.RecreditFactory(
                 deposit=user_16_already_recredited.deposit, recreditType=payments_models.RecreditType.RECREDIT_16
