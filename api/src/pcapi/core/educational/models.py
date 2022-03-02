@@ -53,7 +53,7 @@ class Ministry(enum.Enum):
     ARMEES = "MAr"
 
 
-class BookingStatus(enum.Enum):
+class CollectiveBookingStatus(enum.Enum):
     PENDING = "PENDING"
     CONFIRMED = "CONFIRMED"
     USED = "USED"
@@ -117,7 +117,8 @@ class CollectiveOffer(PcObject, ValidationMixin, AccessibilityMixin, StatusMixin
             .join(CollectiveBooking, CollectiveBooking.collectiveStockId == CollectiveStock.id)
             .where(
                 sa.and_(
-                    CollectiveStock.collectiveOfferId == cls.id, CollectiveBooking.status != BookingStatus.CANCELLED
+                    CollectiveStock.collectiveOfferId == cls.id,
+                    CollectiveBooking.status != CollectiveBookingStatus.CANCELLED,
                 )
             )
         )
@@ -385,7 +386,7 @@ class CollectiveStock(PcObject, Model):  # type: ignore[valid-type]
     @property
     def isSoldOut(self) -> bool:
         for booking in self.collectiveBookings:
-            if booking.status != BookingStatus.CANCELLED:
+            if booking.status != CollectiveBookingStatus.CANCELLED:
                 return True
         return False
 
@@ -592,7 +593,9 @@ class CollectiveBooking(PcObject, Model):  # type: ignore[valid-type]
         nullable=True,
     )
 
-    status = sa.Column("status", sa.Enum(BookingStatus), nullable=False, default=BookingStatus.CONFIRMED)
+    status = sa.Column(
+        "status", sa.Enum(CollectiveBookingStatus), nullable=False, default=CollectiveBookingStatus.CONFIRMED
+    )
 
     Index("ix_collective_booking_status", status)
 
@@ -626,40 +629,40 @@ class CollectiveBooking(PcObject, Model):  # type: ignore[valid-type]
     def mark_as_used(self) -> None:
         if self.is_used_or_reimbursed:  # pylint: disable=using-constant-test
             raise booking_exceptions.BookingHasAlreadyBeenUsed()
-        if self.status is BookingStatus.CANCELLED:
+        if self.status is CollectiveBookingStatus.CANCELLED:
             raise booking_exceptions.BookingIsCancelled()
-        if self.status is BookingStatus.PENDING:
+        if self.status is CollectiveBookingStatus.PENDING:
             raise booking_exceptions.BookingNotConfirmed()
         self.dateUsed = datetime.utcnow()
-        self.status = BookingStatus.USED
+        self.status = CollectiveBookingStatus.USED
 
     def mark_as_unused_set_confirmed(self) -> None:
         self.dateUsed = None
-        self.status = BookingStatus.CONFIRMED
+        self.status = CollectiveBookingStatus.CONFIRMED
 
     def cancel_booking(self, cancel_even_if_used: bool = False) -> None:
-        if self.status is BookingStatus.CANCELLED:
+        if self.status is CollectiveBookingStatus.CANCELLED:
             raise booking_exceptions.BookingIsAlreadyCancelled()
-        if self.status is BookingStatus.REIMBURSED:
+        if self.status is CollectiveBookingStatus.REIMBURSED:
             raise booking_exceptions.BookingIsAlreadyUsed()
-        if self.status is BookingStatus.USED and not cancel_even_if_used:
+        if self.status is CollectiveBookingStatus.USED and not cancel_even_if_used:
             raise booking_exceptions.BookingIsAlreadyUsed()
-        self.status = BookingStatus.CANCELLED
+        self.status = CollectiveBookingStatus.CANCELLED
         self.cancellationDate = datetime.utcnow()
 
     def uncancel_booking_set_used(self) -> None:
-        if not (self.status is BookingStatus.CANCELLED):
+        if not (self.status is CollectiveBookingStatus.CANCELLED):
             raise booking_exceptions.BookingIsNotCancelledCannotBeUncancelled()
         self.cancellationDate = None
         self.cancellationReason = None
-        self.status = BookingStatus.USED
+        self.status = CollectiveBookingStatus.USED
         self.dateUsed = datetime.utcnow()
 
     def mark_as_confirmed(self) -> None:
         if self.has_confirmation_limit_date_passed():
             raise booking_exceptions.ConfirmationLimitDateHasPassed()
 
-        self.status = BookingStatus.CONFIRMED
+        self.status = CollectiveBookingStatus.CONFIRMED
         self.confirmationDate = datetime.utcnow()
 
     @hybrid_property
@@ -672,11 +675,11 @@ class CollectiveBooking(PcObject, Model):  # type: ignore[valid-type]
 
     @hybrid_property
     def is_used_or_reimbursed(self) -> bool:
-        return self.status in [BookingStatus.USED, BookingStatus.REIMBURSED]
+        return self.status in [CollectiveBookingStatus.USED, CollectiveBookingStatus.REIMBURSED]
 
     @is_used_or_reimbursed.expression  # type: ignore[no-redef]
     def is_used_or_reimbursed(cls) -> bool:  # pylint: disable=no-self-argument
-        return cls.status.in_([BookingStatus.USED, BookingStatus.REIMBURSED])
+        return cls.status.in_([CollectiveBookingStatus.USED, CollectiveBookingStatus.REIMBURSED])
 
     @property
     def userName(self) -> Optional[str]:
@@ -687,7 +690,7 @@ class CollectiveBooking(PcObject, Model):  # type: ignore[valid-type]
 
     def mark_as_refused(self) -> None:
 
-        if self.status != BookingStatus.PENDING and self.cancellationLimitDate <= datetime.utcnow():
+        if self.status != CollectiveBookingStatus.PENDING and self.cancellationLimitDate <= datetime.utcnow():
             raise exceptions.EducationalBookingNotRefusable()
 
         try:
@@ -698,7 +701,7 @@ class CollectiveBooking(PcObject, Model):  # type: ignore[valid-type]
         except booking_exceptions.BookingIsAlreadyCancelled:
             raise exceptions.EducationalBookingAlreadyCancelled()
 
-        self.status = BookingStatus.CANCELLED
+        self.status = CollectiveBookingStatus.CANCELLED
 
 
 CollectiveBooking.trig_ddl = f"""
@@ -720,7 +723,7 @@ CollectiveBooking.trig_ddl = f"""
             JOIN individual_booking ON (booking."individualBookingId" = individual_booking.id)
         WHERE
             individual_booking."depositId" = deposit_id
-            AND NOT booking.status = '{BookingStatus.CANCELLED.value}'
+            AND NOT booking.status = '{CollectiveBookingStatus.CANCELLED.value}'
             AND (NOT only_used_bookings OR booking.status in ('USED', 'REIMBURSED'));
         RETURN
             deposit_amount - sum_bookings;
@@ -750,7 +753,7 @@ CollectiveBooking.trig_ddl = f"""
         AND (
             (SELECT "quantity" FROM stock WHERE id=NEW."stockId")
             <
-            (SELECT SUM(quantity) FROM booking WHERE "stockId"=NEW."stockId" AND status != '{BookingStatus.CANCELLED.value}')
+            (SELECT SUM(quantity) FROM booking WHERE "stockId"=NEW."stockId" AND status != '{CollectiveBookingStatus.CANCELLED.value}')
             )
         THEN RAISE EXCEPTION 'tooManyBookings'
                     USING HINT = 'Number of bookings cannot exceed "stock.quantity"';
@@ -771,7 +774,7 @@ CollectiveBooking.trig_ddl = f"""
             -- only if we are UNcancelling a booking. (Users with no credits left
             -- should be able to cancel their booking. Also, their booking can
             -- be marked as used or not used.)
-            OR (NEW.status != OLD.status AND OLD.status = '{BookingStatus.CANCELLED.value}' AND NEW.status != '{BookingStatus.CANCELLED.value}')
+            OR (NEW.status != OLD.status AND OLD.status = '{CollectiveBookingStatus.CANCELLED.value}' AND NEW.status != '{CollectiveBookingStatus.CANCELLED.value}')
         )
         )
         AND (
@@ -801,9 +804,9 @@ CollectiveBooking.trig_update_cancellationDate_on_isCancelled_ddl = f"""
     CREATE OR REPLACE FUNCTION save_collective_booking_cancellation_date()
     RETURNS TRIGGER AS $$
     BEGIN
-        IF NEW.status = '{BookingStatus.CANCELLED.value}' AND OLD."cancellationDate" IS NULL AND NEW."cancellationDate" THEN
+        IF NEW.status = '{CollectiveBookingStatus.CANCELLED.value}' AND OLD."cancellationDate" IS NULL AND NEW."cancellationDate" THEN
             NEW."cancellationDate" = NOW();
-        ELSIF NEW.status != '{BookingStatus.CANCELLED.value}' THEN
+        ELSIF NEW.status != '{CollectiveBookingStatus.CANCELLED.value}' THEN
             NEW."cancellationDate" = NULL;
         END IF;
         RETURN NEW;
