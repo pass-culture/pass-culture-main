@@ -14,7 +14,7 @@ import Offers from 'components/pages/Offers/Offers/OffersContainer'
 import ReimbursementsContainer from 'components/pages/Reimbursements/ReimbursementsContainer'
 import SetPasswordContainer from 'components/pages/SetPassword/SetPasswordContainer'
 import SetPasswordConfirmContainer from 'components/pages/SetPasswordConfirm/SetPasswordConfirmContainer'
-import SigninContainer from 'components/pages/Signin/SigninContainer'
+import SignIn from 'components/pages/SignIn/SignIn'
 import SignupContainer from 'components/pages/Signup/SignupContainer'
 import SignupValidationContainer from 'components/pages/Signup/SignupValidation/SignupValidationContainer'
 import StyleguideContainer from 'components/pages/Styleguide/StyleguideContainer'
@@ -38,15 +38,6 @@ export const routesWithMain = [
     component: RedirectToConnexionComponent,
     exact: true,
     path: '/',
-  },
-  {
-    component: SigninContainer,
-    exact: true,
-    path: '/connexion',
-    title: 'Connexion',
-    meta: {
-      public: true,
-    },
   },
   {
     component: DeskContainer,
@@ -147,6 +138,19 @@ const routes = [
     exact: true,
     path: ['/creation-de-mot-de-passe-confirmation'],
     title: 'Confirmation création de mot de passe',
+    meta: {
+      public: true,
+      layoutConfig: {
+        fullscreen: true,
+        pageName: 'sign-in',
+      },
+    },
+  },
+  {
+    component: SignIn,
+    exact: true,
+    path: '/connexion',
+    title: 'Connexion',
     meta: {
       public: true,
       layoutConfig: {
