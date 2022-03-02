@@ -11,6 +11,7 @@ from PIL import Image
 from pcapi import settings
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingStatus
+from pcapi.core.educational.models import CollectiveOffer
 import pcapi.core.finance.repository as finance_repository
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
@@ -232,7 +233,7 @@ def check_image(
         raise exceptions.ImageTooSmall(min_width, min_height)
 
 
-def check_validation_status(offer: Offer) -> None:
+def check_validation_status(offer: Union[CollectiveOffer, Offer]) -> None:
     if offer.validation in (OfferValidationStatus.REJECTED, OfferValidationStatus.PENDING):
         error = ApiErrors()
         error.add_error("global", "Les offres refusées ou en attente de validation ne sont pas modifiables")
