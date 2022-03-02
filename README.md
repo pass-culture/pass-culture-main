@@ -122,13 +122,13 @@ La seule branche devant être _taggée_ de cette façon est `master`. Pour les h
 2. Lancer la commande
 
 ```bash
-pc -t {numéro_de_version} tag
+./pc -t {numéro_de_version} tag
 ```
 
 Par exemple
 
 ```bash
-pc -t 138.0.0 tag
+./pc -t 138.0.0 tag
 ```
 
 Le fichier `version.txt` de l'API est mis à jours ainsi que les `package.json` de Pro et Adage-front. Le tag est
@@ -165,14 +165,16 @@ poussé sur le repository distant. La CI lance alors des pipelines de tests.
 
 Faire un hotfix consiste à créer un nouveau tag à partir du tag précédent avec des commits spécifiques.
 
-1. Vérifier que les commits sont poussés sur `master`, déployés sur testing et validés par les POs
-2. Se placer en local sur le dernier tag. Pour trouver le dernier tag, pull master et lister les tags.
+1. Vérifier que les commits sont poussés sur `master`, déployés sur testing et validés par les POs.
+2. Se placer sur la branche de maintenance de l'itération à corriger:
 
 - `git checkout master && git pull`
-- `git tags -l | grep {numéro d'itération}`
-- `git checkout v{numero_de_version}`
+- `git checkout maint/v{numero_de_version}`
+- `git pull`
 
-3. Butiner les commits désirés
+3. Choix des commits désirés (équipes des devs)
+
+NB: Chaque équipe est responsable du picorage de ses commits (avec l'accord de ses POs).
 
 Exemple :
 
@@ -180,28 +182,29 @@ Exemple :
 > git checkout master && git pull
 already up to date
 
-> git tag -l | grep 162
-v162.0.0
-v162.0.1
-
-> git checkout v162.0.1
-Note: switching to 'v162.0.1'.
-You are in 'detached HEAD' state.
+> git checkout maint/v162
+Note: switching to 'maint/v162'.
 
 > git cherry-pick 3e07b9420e93a2a560b2deec1aed2e983fc842e8
 > git cherry-pick c3eaa9395cfa9bc5b48d78256b9693af56cbc1d0
 ```
 
-4. Lancer la commande de création de tag hot fix :
+4. Lancer la commande de création de tag hot fix (shérif):
+
+> **ATTENTION**: bien vérifier sur la CI que les tests de la branche de maintenance sont bien tous verts (`https://app.circleci.com/pipelines/github/pass-culture/pass-culture-main?branch=maint%2Fv62` par exemple pour la v162)
+
+Trouver le dernier tag posé et poser le nouveau tag en incrémentant la version comme indiqué dans la section["Numéro de version"](#numéro-de-version):
 
 ```bash
-pc -t {numero_de_version_incrémenté} tag-hotfix
+> git tag -l | grep 162
+v162.0.0
+v162.0.1
+
+> ./pc -t {numero_de_version_incrémenté} tag-hotfix
 ```
 
-Une branche `hotfix-{numéro de version}` contenant les commits butinés, et un commit `🚀 numéro de version` (`🚀 v162.0.1` par exemple) sera créée, et poussée sur le repository.
-Une fois les tests de la CI passés, on peut déployer ce tag.
-
-5. Supprimer les branches de hotfix une fois les déploiements réussis.
+Un commit `🚀 numéro de version` (`🚀 v162.0.2` par exemple) sera créé et poussé sur le dépôt.
+Une fois les tests de la CI passés et verts, on peut déployer ce tag.
 
 ### Déployer dans l'environnement Testing
 
@@ -232,6 +235,8 @@ pc -e staging -t 138.0.0 deploy
 ```
 
 A la fin de l'opération, une fenêtre de votre navigateur s'ouvrira sur le pipeline en cours.
+
+> **ATTENTION**: Ne pas oublier les opérations de MES/MEP/MEI de l'itération correspondante listées dans [la page notion](https://www.notion.so/passcultureapp/Manip-faire-pour-les-MES-MEP-MEI-1e3c8bc00b224ca18852be1d717c52e5)
 
 Après avoir livré en production, ne pas oublier de livrer ensuite sur l' environnement **integration**.
 
