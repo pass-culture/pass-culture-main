@@ -3,8 +3,6 @@ import pytest
 from pcapi.core.offers import factories as offers_factories
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_venue
-from pcapi.model_creators.specific_creators import create_offer_with_event_product
-from pcapi.model_creators.specific_creators import create_offer_with_thing_product
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.bank_information import BankInformationStatus
 from pcapi.repository import repository
@@ -271,23 +269,6 @@ def test_venue_should_not_raise_exception_when_no_siret_but_comment(app):
     except ApiErrors:
         # Then
         assert pytest.fail("Should not fail with comment but not virtual nor siret")
-
-
-@pytest.mark.usefixtures("db_session")
-def test_nOffers(app):
-    offerer = create_offerer()
-    venue = create_venue(offerer)
-    offer_1 = create_offer_with_thing_product(venue)
-    offer_2 = create_offer_with_event_product(venue)
-    offer_4 = create_offer_with_event_product(venue)
-    offer_5 = create_offer_with_thing_product(venue)
-    repository.save(offer_1, offer_2, offer_4, offer_5)
-
-    # when
-    n_offers = venue.nOffers
-
-    # then
-    assert n_offers == 4
 
 
 class DepartementCodeTest:

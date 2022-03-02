@@ -1,6 +1,7 @@
+from typing import Iterable
 from typing import Optional
 
-from sqlalchemy import or_
+import sqlalchemy as sqla
 import sqlalchemy.orm as sqla_orm
 from sqlalchemy.orm import Query
 
@@ -12,6 +13,7 @@ from pcapi.models import db
 from pcapi.models.bank_information import BankInformation
 from pcapi.models.bank_information import BankInformationStatus
 from pcapi.models.offer_mixin import OfferStatus
+from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.models.user_offerer import UserOfferer
 from pcapi.utils.human_ids import dehumanize
 
@@ -58,6 +60,24 @@ def get_all_offerers_for_user(
         query = filter_offerers_with_keywords_string(query, keywords)
 
     return query
+
+
+def get_offer_counts_by_venue(venue_ids: Iterable[int]) -> dict[int, int]:
+    """Return a dictionary with the number of non-draft offers for each
+    requested venue.
+
+    Venues that do not have any offers are not included in the
+    returned dictionary.
+    """
+    return dict(
+        Offer.query.filter(
+            Offer.validation != OfferValidationStatus.DRAFT,
+            Offer.venueId.in_(venue_ids),
+        )
+        .with_entities(Offer.venueId, sqla.func.count())
+        .group_by(Offer.venueId)
+        .all()
+    )
 
 
 def get_filtered_venues(
@@ -154,7 +174,7 @@ def has_physical_venue_without_draft_or_accepted_bank_information(offerer_id: in
         .filter(models.Venue.managingOffererId == offerer_id)
         .filter(models.Venue.isVirtual.is_(False))
         .filter(
-            or_(
+            sqla.or_(
                 BankInformation.status.notin_((BankInformationStatus.DRAFT, BankInformationStatus.ACCEPTED)),
                 models.Venue.bankInformation == None,
             )

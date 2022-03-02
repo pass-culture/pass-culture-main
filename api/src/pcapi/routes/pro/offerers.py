@@ -2,7 +2,7 @@ import logging
 
 from flask_login import current_user
 from flask_login import login_required
-from sqlalchemy.orm import exc as orm_exc
+import sqlalchemy.orm as sqla_orm
 
 from pcapi.connectors.api_adage import AdageException
 from pcapi.connectors.api_adage import CulturalPartnerNotFoundException
@@ -15,8 +15,10 @@ from pcapi.core.offerers.exceptions import MissingOffererIdQueryParameter
 import pcapi.core.offerers.models as offerers_models
 from pcapi.core.offerers.repository import get_all_offerers_for_user
 from pcapi.models.api_errors import ApiErrors
+import pcapi.models.user_offerer as user_offerer_models
 from pcapi.repository import transaction
 from pcapi.routes.apis import private_api
+from pcapi.routes.serialization import offerers_serialize
 from pcapi.routes.serialization.offerers_serialize import CreateOffererQueryModel
 from pcapi.routes.serialization.offerers_serialize import GenerateOffererApiKeyResponse
 from pcapi.routes.serialization.offerers_serialize import GetEducationalOffererResponseModel
@@ -49,22 +51,50 @@ def get_offerers(query: GetOffererListQueryModel) -> GetOfferersListResponseMode
         current_user,
         keywords=query.keywords,
     )
+
+    # UserOfferer and Venue may or may not be already JOINed, depending
+    # on the arguments passed to `get_all_offerers_for_user()`.
+    for model, relationship in (
+        (offerers_models.Venue, offerers_models.Offerer.managedVenues),
+        (user_offerer_models.UserOfferer, offerers_models.Offerer.UserOfferers),
+    ):
+        if model in {mapper.entity for mapper in offerers_query._join_entities}:
+            option = sqla_orm.contains_eager(relationship)
+        else:
+            option = sqla_orm.joinedload(relationship)
+        offerers_query = offerers_query.options(option)
+
+    offerers_query = offerers_query.options(
+        sqla_orm.load_only(
+            offerers_models.Offerer.id,
+            offerers_models.Offerer.name,
+            offerers_models.Offerer.siren,
+            offerers_models.Offerer.validationToken,
+        )
+    )
     offerers_query = offerers_query.order_by(offerers_models.Offerer.name)
     offerers_query = offerers_query.paginate(
         query.page,
-        per_page=query.paginate,
         error_out=False,
+        per_page=query.paginate,
     )
 
     offerers = offerers_query.items
-    for offerer in offerers:
-        offerer.append_user_has_access_attribute(
-            user_id=current_user.id,
-            is_admin=current_user.has_admin_role,
-        )
+
+    venue_ids = {venue.id for offerer in offerers for venue in offerer.managedVenues}
+    offer_counts = repository.get_offer_counts_by_venue(venue_ids)
+
     return GetOfferersListResponseModel(
-        offerers=offerers,
+        offerers=[
+            offerers_serialize.GetOfferersResponseModel.from_orm(
+                offerer,
+                current_user,
+                offer_counts,
+            )
+            for offerer in offerers
+        ],
         nbTotalResults=offerers_query.total,
+        user=current_user,
     )
 
 
@@ -133,7 +163,7 @@ def delete_api_key(api_key_prefix: str):
     with transaction():
         try:
             api.delete_api_key_by_user(current_user, api_key_prefix)
-        except orm_exc.NoResultFound:
+        except sqla_orm.exc.NoResultFound:
             raise ApiErrors({"prefix": "not found"}, 404)
         except ApiKeyDeletionDenied:
             raise ApiErrors({"api_key": "deletion forbidden"}, 403)
