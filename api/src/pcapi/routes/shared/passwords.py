@@ -6,8 +6,8 @@ from flask_login import login_required
 from pcapi import settings
 from pcapi.connectors.api_recaptcha import ReCaptchaException
 from pcapi.connectors.api_recaptcha import check_webapp_recaptcha_token
-from pcapi.core.mails.transactional import users as user_emails
-from pcapi.core.mails.transactional.pro.reset_password_to_pro import send_reset_password_to_pro_email
+from pcapi.core.mails.transactional.pro.reset_password_to_pro import send_reset_password_email_to_pro
+from pcapi.core.mails.transactional.users.reset_password import send_reset_password_email_to_user
 from pcapi.core.users import repository as users_repo
 from pcapi.core.users.api import update_password_and_external_user
 from pcapi.core.users.api import update_user_password
@@ -56,9 +56,9 @@ def post_for_password_token(body: ResetPasswordBodyModel) -> None:
         return
 
     if user.is_beneficiary:
-        send_email = user_emails.send_reset_password_email_to_user
+        send_email = send_reset_password_email_to_user
     else:
-        send_email = send_reset_password_to_pro_email
+        send_email = send_reset_password_email_to_pro
 
     if not send_email(user):
         logger.warning("Could not send reset password email", extra={"user": user.id})

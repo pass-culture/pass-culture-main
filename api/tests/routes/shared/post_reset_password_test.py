@@ -110,10 +110,10 @@ class Returns204Test:
         assert (now + timedelta(hours=23)) < user.tokens[0].expirationDate < (now + timedelta(hours=25))
 
     @patch("pcapi.routes.shared.passwords.check_webapp_recaptcha_token", return_value=None)
-    @patch("pcapi.routes.shared.passwords.send_reset_password_to_pro_email")
+    @patch("pcapi.routes.shared.passwords.send_reset_password_email_to_pro")
     def test_should_send_reset_password_email_when_user_is_a_pro(
         self,
-        send_reset_password_to_pro_email_mock,
+        send_reset_password_email_to_pro_mock,
         check_recaptcha_token_is_valid_mock,
         client,
         db_session,
@@ -126,4 +126,4 @@ class Returns204Test:
         client.post("/users/reset-password", json=data)
 
         # then
-        send_reset_password_to_pro_email_mock.assert_called_once_with(pro)
+        send_reset_password_email_to_pro_mock.assert_called_once_with(pro)
