@@ -3,6 +3,7 @@ from unittest.mock import patch
 import pytest
 
 from pcapi.admin.custom_views.venue_view import _get_venue_provider_link
+from pcapi.core.finance import factories as finance_factories
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
@@ -17,9 +18,12 @@ class VenueViewTest:
     @clean_database
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     @patch("pcapi.core.search.async_index_offers_of_venue_ids")
-    def test_update_venue_siret(self, mocked_async_index_offers_of_venue_ids, mocked_validate_csrf_token, app):
+    def test_update_venue_with_siret_not_attributed_to_a_business_unit(
+        self, mocked_async_index_offers_of_venue_ids, mocked_validate_csrf_token, app
+    ):
         AdminFactory(email="user@example.com")
-        venue = offers_factories.VenueFactory(siret="22222222222222")
+        business_unit = finance_factories.BusinessUnitFactory(siret="11111111111111")
+        venue = offers_factories.VenueFactory(siret="22222222222222", businessUnit=business_unit)
         id_at_provider = "11111"
         old_id_at_providers = f"{id_at_provider}@{venue.siret}"
         stock = offers_factories.StockFactory(
@@ -53,9 +57,78 @@ class VenueViewTest:
 
     @clean_database
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("pcapi.core.search.async_index_offers_of_venue_ids")
+    def test_cannot_update_venue_with_new_siret_already_attributed_to_a_business_unit(
+        self, mocked_async_index_offers_of_venue_ids, mocked_validate_csrf_token, app
+    ):
+        AdminFactory(email="user@example.com")
+        finance_factories.BusinessUnitFactory(siret="33333333333333", name="Superstore")
+        venue = offers_factories.VenueFactory(siret="22222222222222")
+
+        data = dict(
+            name=venue.name,
+            siret="33333333333333",
+            city=venue.city,
+            postalCode=venue.postalCode,
+            address=venue.address,
+            publicName=venue.publicName,
+            latitude=venue.latitude,
+            longitude=venue.longitude,
+            isPermanent=venue.isPermanent,
+        )
+        client = TestClient(app.test_client()).with_session_auth("user@example.com")
+        response = client.post(f"/pc/back-office/venue/edit/?id={venue.id}", form=data)
+
+        assert response.status_code == 200
+        content = response.data.decode(response.charset)
+        assert (
+            "Ce SIRET a déjà été attribué au point de remboursement Superstore,"
+            " il ne peut pas être attribué à ce lieu" in content
+        )
+        venue_edited = Venue.query.get(venue.id)
+        assert venue_edited.siret == "22222222222222"
+        mocked_async_index_offers_of_venue_ids.assert_not_called()
+
+    @clean_database
+    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("pcapi.core.search.async_index_offers_of_venue_ids")
+    def test_cannot_update_venue_with_siret_when_it_carries_a_business_unit(
+        self, mocked_async_index_offers_of_venue_ids, mocked_validate_csrf_token, app
+    ):
+        AdminFactory(email="user@example.com")
+        bu = finance_factories.BusinessUnitFactory(siret="22222222222222", name="Superstore")
+        venue = offers_factories.VenueFactory(siret="22222222222222", businessUnit=bu)
+
+        data = dict(
+            name=venue.name,
+            siret="33333333333333",
+            city=venue.city,
+            postalCode=venue.postalCode,
+            address=venue.address,
+            publicName=venue.publicName,
+            latitude=venue.latitude,
+            longitude=venue.longitude,
+            isPermanent=venue.isPermanent,
+        )
+        client = TestClient(app.test_client()).with_session_auth("user@example.com")
+        response = client.post(f"/pc/back-office/venue/edit/?id={venue.id}", form=data)
+
+        assert response.status_code == 200
+        content = response.data.decode(response.charset)
+        assert (
+            "Le SIRET de ce lieu est le SIRET de référence du point de remboursement Superstore, "
+            "il ne peut pas être modifié." in content
+        )
+        venue_edited = Venue.query.get(venue.id)
+        assert venue_edited.siret == "22222222222222"
+        mocked_async_index_offers_of_venue_ids.assert_not_called()
+
+    @clean_database
+    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     def test_update_venue_other_offer_id_at_provider(self, mocked_validate_csrf_token, app):
         AdminFactory(email="user@example.com")
-        venue = offers_factories.VenueFactory(siret="22222222222222")
+        business_unit = finance_factories.BusinessUnitFactory(siret="11111111111111")
+        venue = offers_factories.VenueFactory(siret="22222222222222", businessUnit=business_unit)
         id_at_providers = "id_at_provider_ne_contenant_pas_le_siret"
         stock = offers_factories.StockFactory(
             offer__venue=venue, idAtProviders=id_at_providers, offer__idAtProvider=id_at_providers
@@ -90,7 +163,10 @@ class VenueViewTest:
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     def test_update_venue_without_siret(self, mocked_validate_csrf_token, app):
         AdminFactory(email="user@example.com")
-        venue = offers_factories.VenueFactory(siret=None, comment="comment to allow null siret")
+        business_unit = finance_factories.BusinessUnitFactory(siret="11111111111111")
+        venue = offers_factories.VenueFactory(
+            siret=None, comment="comment to allow null siret", businessUnit=business_unit
+        )
 
         data = dict(
             name=venue.name,
