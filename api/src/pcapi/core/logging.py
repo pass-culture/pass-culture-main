@@ -1,8 +1,10 @@
+import contextlib
 import decimal
 import enum
 import json
 import logging
 import sys
+import time
 import uuid
 
 import flask
@@ -203,6 +205,18 @@ def _silence_noisy_loggers():
 
 def log_for_supervision(logger: logging.Logger, log_level: int, log_message: str, *args, **kwargs) -> None:
     logger.log(log_level, log_message, *args, **kwargs)
+
+
+@contextlib.contextmanager
+def log_elapsed(logger, message, extra=None):
+    """A context manager that logs ``message`` with an additional
+    ``elapsed`` key in "extra" that is the execution time (in seconds)
+    of the block.
+    """
+    start = time.perf_counter()
+    yield
+    elapsed = time.perf_counter() - start
+    logger.info(message, extra=(extra or {}) | {"elapsed": elapsed})
 
 
 # Do NOT use this logger outside of this module. It is used only to
