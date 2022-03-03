@@ -22,7 +22,7 @@ from markupsafe import Markup
 from markupsafe import escape
 from sqlalchemy import func
 import sqlalchemy.orm as sqla_orm
-from sqlalchemy.orm import query
+from sqlalchemy.orm import Query
 from werkzeug import Response
 import wtforms
 from wtforms.fields.core import BooleanField
@@ -311,7 +311,7 @@ class OfferView(BaseAdminView):
 
         search.async_index_offer_ids([offer.id])
 
-    def get_query(self) -> query:
+    def get_query(self) -> Query:
         return self.session.query(self.model).filter(Offer.validation != OfferValidationStatus.DRAFT).from_self()
 
 
@@ -329,13 +329,13 @@ class OfferForVenueSubview(OfferView):
     def is_visible(self) -> bool:
         return False
 
-    def get_query(self) -> query:
+    def get_query(self) -> Query:
         return self._extend_query(super().get_query())
 
-    def get_count_query(self) -> query:
+    def get_count_query(self) -> Query:
         return self._extend_query(super().get_count_query())
 
-    def _extend_query(self, query_to_override: query) -> query:
+    def _extend_query(self, query_to_override: Query) -> Query:
         venue_id = request.args.get("id")
 
         if venue_id is None:
