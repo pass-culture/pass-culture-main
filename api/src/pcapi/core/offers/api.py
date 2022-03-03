@@ -19,6 +19,7 @@ from pcapi.connectors.thumb_storage import create_thumb
 from pcapi.connectors.thumb_storage import remove_thumb
 from pcapi.core import search
 from pcapi.core.bookings.api import cancel_bookings_from_stock_by_offerer
+from pcapi.core.bookings.api import cancel_collective_booking_from_stock_by_offerer
 from pcapi.core.bookings.api import mark_as_unused
 from pcapi.core.bookings.api import update_cancellation_limit_dates
 from pcapi.core.bookings.models import Booking
@@ -30,6 +31,7 @@ from pcapi.core.educational import api as educational_api
 from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import models as educational_models
 import pcapi.core.educational.adage_backends as adage_client
+from pcapi.core.educational.models import CollectiveOffer
 from pcapi.core.educational.utils import compute_educational_booking_cancellation_limit_date
 from pcapi.core.mails.transactional.bookings.booking_cancellation_by_pro_to_beneficiary import (
     send_booking_cancellation_by_pro_to_beneficiary_email,
@@ -80,6 +82,7 @@ from pcapi.models.product import Product
 from pcapi.repository import offer_queries
 from pcapi.repository import repository
 from pcapi.repository import transaction
+from pcapi.routes.adage.v1.serialization.prebooking import serialize_collective_booking
 from pcapi.routes.adage.v1.serialization.prebooking import serialize_educational_booking
 from pcapi.routes.serialization.offers_serialize import CompletedEducationalOfferModel
 from pcapi.routes.serialization.offers_serialize import EducationalOfferShadowStockBodyModel
@@ -1106,6 +1109,61 @@ def create_collective_offer_template_and_delete_collective_offer(offer: Offer, s
         "Collective offer template has been created and regular collective offer deleted if applicable",
         extra={"collectiveOfferTemplate": collective_offer_template.id, "offer": offer.id},
     )
+
+
+def cancel_collective_offer_booking(offer: Offer) -> None:
+    collective_offer = CollectiveOffer.query.filter(CollectiveOffer.offerId == offer.id).first()
+
+    if collective_offer is None:
+        # FIXME (MathildeDuboille - 2022-03-03): raise an error once this code is on production
+        # and all data has been migrated to the new models
+        return
+
+    if collective_offer.collectiveStock is None:
+        # FIXME (MathildeDuboille - 2022-03-03): raise an error once this code is on production
+        # and all data has been migrated to the new models
+        return
+
+    collective_stock = collective_offer.collectiveStock
+
+    # Offer is reindexed in the end of this function
+    cancelled_booking = cancel_collective_booking_from_stock_by_offerer(collective_stock)
+
+    if cancelled_booking is None:
+        # FIXME (MathildeDuboille - 2022-03-03): raise an error once this code is on production
+        # and all data has been migrated to the new models
+        return
+
+    logger.info(
+        "Deleted collective stock and cancelled its collective booking",
+        extra={"stock": collective_stock.id, "collective_booking": cancelled_booking.id},
+    )
+
+    if FeatureToggle.ENABLE_NEW_COLLECTIVE_MODEL.is_active():
+        try:
+            adage_client.notify_booking_cancellation_by_offerer(data=serialize_collective_booking(cancelled_booking))
+        except AdageException as adage_error:
+            logger.error(
+                "%s Could not notify adage of collective booking cancellation by offerer. Educational institution won't be notified.",
+                adage_error.message,
+                extra={
+                    "collectiveBookingId": cancelled_booking.id,
+                    "adage status code": adage_error.status_code,
+                    "adage response text": adage_error.response_text,
+                },
+            )
+        except ValidationError:
+            logger.exception(
+                "Could not notify adage of prebooking, hence send confirmation email to educational institution, as educationalBooking serialization failed.",
+                extra={
+                    "collectiveBookingId": cancelled_booking.id,
+                },
+            )
+        if not send_booking_cancellation_confirmation_by_pro_email([cancelled_booking]):
+            logger.warning(
+                "Could not notify offerer about deletion of stock",
+                extra={"collectiveStock": collective_stock.id},
+            )
 
 
 def create_educational_shadow_stock_and_set_offer_showcase(
