@@ -46,6 +46,8 @@ import sqlalchemy.sql.functions as sqla_func
 from pcapi import settings
 import pcapi.core.bookings.models as bookings_models
 import pcapi.core.educational.models as educational_models
+from pcapi.core.educational.models import CollectiveBooking
+from pcapi.core.finance import models
 from pcapi.core.logging import log_elapsed
 from pcapi.core.mails.transactional.pro.invoice_available_to_pro import send_invoice_available_to_pro_email
 from pcapi.core.object_storage import store_public_object
@@ -374,7 +376,13 @@ def _delete_dependent_pricings(booking: bookings_models.Booking, log_message: st
     )
 
 
-def cancel_pricing(booking: bookings_models.Booking, reason: models.PricingLogReason) -> models.Pricing:
+def cancel_pricing(
+    booking: typing.Union[bookings_models.Booking, CollectiveBooking], reason: models.PricingLogReason
+) -> typing.Optional[models.Pricing]:
+    # FIXME (MathildeDuboille - 2022-03-03): handle collective booking once pricing is adapted to the new model (PC-13426)
+    if isinstance(booking, CollectiveBooking):
+        return None
+
     business_unit_id = booking.venue.businessUnitId
     if not business_unit_id:
         return None

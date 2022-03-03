@@ -5,6 +5,9 @@ from typing import Union
 from pydantic.fields import Field
 
 from pcapi.core.bookings.models import BookingStatus
+from pcapi.core.educational.models import CollectiveBooking
+from pcapi.core.educational.models import CollectiveBookingCancellationReasons
+from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.educational.models import EducationalBooking
 from pcapi.core.educational.models import EducationalBookingStatus
 from pcapi.core.offers import models as offers_models
@@ -166,6 +169,55 @@ def serialize_educational_booking(educational_booking: EducationalBooking) -> Ed
     )
 
 
+def serialize_collective_booking(collective_booking: CollectiveBooking) -> EducationalBookingResponse:
+    stock = collective_booking.collectiveStock
+    offer = stock.collectiveOffer
+    venue = offer.venue
+    return EducationalBookingResponse(
+        accessibility=_get_educational_offer_accessibility(offer),
+        address=_get_educational_offer_address(offer),
+        beginningDatetime=stock.beginningDatetime,
+        cancellationDate=collective_booking.cancellationDate,
+        cancellationLimitDate=collective_booking.cancellationLimitDate,
+        city=venue.city,
+        confirmationDate=collective_booking.confirmationDate,
+        confirmationLimitDate=collective_booking.confirmationLimitDate,
+        contact=_get_educational_offer_contact(offer),
+        coordinates={
+            "latitude": venue.latitude,
+            "longitude": venue.longitude,
+        },
+        creationDate=collective_booking.dateCreated,
+        description=offer.description,
+        durationMinutes=offer.durationMinutes,
+        expirationDate=collective_booking.expirationDate,
+        id=collective_booking.id,
+        isDigital=offer.isDigital,
+        venueName=venue.name,
+        name=offer.name,
+        numberOfTickets=stock.numberOfTickets,
+        participants=offer.extraData.get("students", []) if offer.extraData is not None else [],
+        priceDetail=stock.educationalPriceDetail,
+        postalCode=venue.postalCode,
+        price=stock.price,
+        quantity=1,
+        redactor={
+            "email": collective_booking.educationalRedactor.email,
+            "redactorFirstName": collective_booking.educationalRedactor.firstName,
+            "redactorLastName": collective_booking.educationalRedactor.lastName,
+            "redactorCivility": collective_booking.educationalRedactor.civility,
+        },
+        UAICode=collective_booking.educationalInstitution.institutionId,
+        yearId=collective_booking.educationalYearId,
+        status=get_collective_booking_status(collective_booking),
+        venueTimezone=venue.timezone,
+        subcategoryLabel=offer.subcategory.app_label,
+        totalAmount=stock.price,
+        url=offer_app_link(offer),
+        withdrawalDetails=offer.withdrawalDetails,
+    )
+
+
 def get_educational_booking_status(
     educational_booking: EducationalBooking,
 ) -> Union[EducationalBookingStatus, BookingStatus]:
@@ -180,6 +232,21 @@ def get_educational_booking_status(
         return educational_booking.status.value
 
     return educational_booking.booking.status.value
+
+
+def get_collective_booking_status(
+    collective_booking: CollectiveBooking,
+) -> CollectiveBookingStatus:
+    if (
+        collective_booking.status == CollectiveBookingStatus.USED
+        or collective_booking.status == CollectiveBookingStatus.REIMBURSED
+    ):
+        return CollectiveBookingStatus.USED.value
+
+    if collective_booking.cancellationReason == CollectiveBookingCancellationReasons.REFUSED_BY_INSTITUTE:
+        return "REFUSED"
+
+    return collective_booking.status.value
 
 
 def _get_educational_offer_contact(offer: offers_models.Offer) -> Contact:

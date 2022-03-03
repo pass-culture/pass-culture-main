@@ -110,5 +110,9 @@ class NoBookingToCancel(Exception):
     pass
 
 
+class CollectiveStockNotFound(Exception):
+    pass
+
+
 class CollectiveOfferNotFound(Exception):
     pass
