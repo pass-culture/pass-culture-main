@@ -31,7 +31,6 @@ from operator import attrgetter
 import pathlib
 import secrets
 import tempfile
-import time
 import typing
 import zipfile
 
@@ -50,6 +49,7 @@ from pcapi.core.educational.models import EducationalBooking
 from pcapi.core.educational.models import EducationalDeposit
 from pcapi.core.educational.models import EducationalInstitution
 from pcapi.core.finance import models
+from pcapi.core.logging import log_elapsed
 from pcapi.core.mails.transactional.pro.invoice_available_to_pro import send_invoice_available_to_pro_email
 from pcapi.core.object_storage import store_public_object
 from pcapi.core.offerers import repository as offerers_repository
@@ -123,17 +123,12 @@ def price_bookings(min_date: datetime.datetime = MIN_DATE_TO_PRICE):
         try:
             if booking.venue.businessUnitId in errorred_business_unit_ids:
                 continue
-            start = time.perf_counter()
-            price_booking(booking)
-            elapsed = time.perf_counter() - start
-            logger.info(
-                "Priced booking",
-                extra={
-                    "booking": booking.id,
-                    "business_unit_id": booking.venue.businessUnitId,
-                    "elapsed": elapsed,
-                },
-            )
+            extra = {
+                "booking": booking.id,
+                "business_unit_id": booking.venue.businessUnitId,
+            }
+            with log_elapsed(logger, "Priced booking", extra):
+                price_booking(booking)
         except Exception as exc:  # pylint: disable=broad-except
             errorred_business_unit_ids.add(booking.venue.businessUnitId)
             logger.exception(
