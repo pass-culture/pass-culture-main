@@ -38,6 +38,7 @@ from pcapi.core import search
 from pcapi.core.bookings.api import cancel_bookings_from_rejected_offer
 from pcapi.core.categories import categories
 from pcapi.core.categories import subcategories
+from pcapi.core.criteria import api as criteria_api
 from pcapi.core.mails.transactional.pro.offer_validation_to_pro import send_offer_validation_status_update_email
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import Venue
@@ -198,21 +199,9 @@ class OfferView(BaseAdminView):
             criteria: List[OfferCriterion] = change_form.data["tags"]
             remove_other_tags = change_form.data["remove_other_tags"]
 
-            if remove_other_tags:
-                OfferCriterion.query.filter(OfferCriterion.offerId.in_(offer_ids)).delete(synchronize_session=False)
+            criteria_ids = [crit.id for crit in criteria]
+            criteria_api.OfferUpdate(offer_ids, criteria_ids, replace_tags=remove_other_tags).run()
 
-            offer_criteria: List[OfferCriterion] = []
-            for criterion in criteria:
-                offer_criteria.extend(
-                    OfferCriterion(offerId=offer_id, criterionId=criterion.id)
-                    for offer_id in offer_ids
-                    if OfferCriterion.query.filter(
-                        OfferCriterion.offerId == offer_id, OfferCriterion.criterionId == criterion.id
-                    ).first()
-                    is None
-                )
-
-            db.session.bulk_save_objects(offer_criteria)
             db.session.commit()
 
             # synchronize with external apis that generate playlists based on tags
