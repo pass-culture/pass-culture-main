@@ -11,10 +11,10 @@ const PasswordInput = ({
   onChange,
   value,
 }: IPasswordInputProps): JSX.Element => {
-  const [isPasswordHidden, setPasswordHidden] = useState<boolean>(true)
+  const [isPasswordHidden, setIsPasswordHidden] = useState<boolean>(true)
   const handleToggleHidden = (e: React.MouseEvent<HTMLInputElement>) => {
     e.preventDefault()
-    setPasswordHidden(previousIsPasswordHidden => !previousIsPasswordHidden)
+    setIsPasswordHidden(previousIsPasswordHidden => !previousIsPasswordHidden)
   }
 
   const handleOnChange = (event: React.ChangeEvent<HTMLInputElement>) => {
