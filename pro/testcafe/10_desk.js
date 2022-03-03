@@ -14,7 +14,7 @@ test('je peux valider une contremarque', async t => {
   const pageTitleHeader = Selector('h1')
   const deskLink = Selector('a').withText('Guichet')
   const codeInput = Selector('input[type="text"]')
-  const state = Selector('.desk-message')
+  const deskMessage = Selector('div[data-testid="desk-message"]')
   const registerButton = Selector('button').withText('Valider la contremarque')
 
   await t
@@ -23,9 +23,9 @@ test('je peux valider une contremarque', async t => {
     .expect(pageTitleHeader.innerText)
     .eql('Guichet')
     .typeText(codeInput, booking.token)
-    .expect(state.innerText)
+    .expect(deskMessage.innerText)
     .eql('Coupon vérifié, cliquez sur "Valider" pour enregistrer')
     .click(registerButton)
-    .expect(state.innerText)
+    .expect(deskMessage.innerText)
     .eql('Contremarque validée !')
 })

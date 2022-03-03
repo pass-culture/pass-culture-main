@@ -1,4 +1,4 @@
-import { render } from '@testing-library/react'
+import { render, fireEvent } from '@testing-library/react'
 import omit from 'lodash.omit'
 import sass from 'node-sass'
 import { act } from 'react-dom/test-utils'
@@ -96,3 +96,6 @@ export async function enzymeWaitFor(
 
 export const getNthCallNthArg = (mockedFunction, nthCall, nthArg = 1) =>
   mockedFunction.mock.calls[nthCall - 1][nthArg - 1]
+
+export const clearInputText = input =>
+  fireEvent.change(input, { target: { value: '' } })
