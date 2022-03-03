@@ -35,13 +35,17 @@ from pcapi.utils.human_ids import dehumanize
 from pcapi.utils.rest import check_user_has_access_to_offerer
 from pcapi.utils.rest import load_or_404
 
+from . import blueprint
+
 
 logger = logging.getLogger(__name__)
 
 
 @private_api.route("/offerers", methods=["GET"])
 @login_required
-@spectree_serialize(on_error_statuses=[400], response_model=GetOfferersListResponseModel)
+@spectree_serialize(
+    on_error_statuses=[400], response_model=GetOfferersListResponseModel, api=blueprint.pro_private_schema
+)
 def get_offerers(query: GetOffererListQueryModel) -> GetOfferersListResponseModel:
     keywords = query.keywords
 
@@ -61,7 +65,7 @@ def get_offerers(query: GetOffererListQueryModel) -> GetOfferersListResponseMode
 
 @private_api.route("/offerers/names", methods=["GET"])
 @login_required
-@spectree_serialize(response_model=GetOfferersNamesResponseModel)
+@spectree_serialize(response_model=GetOfferersNamesResponseModel, api=blueprint.pro_private_schema)
 def list_offerers_names(query: GetOfferersNamesQueryModel) -> GetOfferersNamesResponseModel:
     offerers = get_all_offerers_for_user(
         user=current_user,
@@ -78,7 +82,7 @@ def list_offerers_names(query: GetOfferersNamesQueryModel) -> GetOfferersNamesRe
 
 @private_api.route("/offerers/educational", methods=["GET"])
 @login_required
-@spectree_serialize(response_model=GetEducationalOfferersResponseModel)
+@spectree_serialize(response_model=GetEducationalOfferersResponseModel, api=blueprint.pro_private_schema)
 def list_educational_offerers(query: GetEducationalOfferersQueryModel) -> GetEducationalOfferersResponseModel:
     offerer_id = query.offerer_id
 
@@ -95,7 +99,7 @@ def list_educational_offerers(query: GetEducationalOfferersQueryModel) -> GetEdu
 
 @private_api.route("/offerers/<offerer_id>", methods=["GET"])
 @login_required
-@spectree_serialize(response_model=GetOffererResponseModel)
+@spectree_serialize(response_model=GetOffererResponseModel, api=blueprint.pro_private_schema)
 def get_offerer(offerer_id: str) -> GetOffererResponseModel:
     check_user_has_access_to_offerer(current_user, dehumanize(offerer_id))
     offerer = load_or_404(Offerer, offerer_id)
@@ -105,7 +109,7 @@ def get_offerer(offerer_id: str) -> GetOffererResponseModel:
 
 @private_api.route("/offerers/<offerer_id>/api_keys", methods=["POST"])
 @login_required
-@spectree_serialize(response_model=GenerateOffererApiKeyResponse)
+@spectree_serialize(response_model=GenerateOffererApiKeyResponse, api=blueprint.pro_private_schema)
 def generate_api_key_route(offerer_id: str) -> GenerateOffererApiKeyResponse:
     check_user_has_access_to_offerer(current_user, dehumanize(offerer_id))
     offerer = load_or_404(Offerer, offerer_id)
@@ -121,7 +125,7 @@ def generate_api_key_route(offerer_id: str) -> GenerateOffererApiKeyResponse:
 
 @private_api.route("/offerers/api_keys/<api_key_prefix>", methods=["DELETE"])
 @login_required
-@spectree_serialize(on_success_status=204)
+@spectree_serialize(on_success_status=204, api=blueprint.pro_private_schema)
 def delete_api_key(api_key_prefix: str):
     with transaction():
         try:
@@ -134,7 +138,7 @@ def delete_api_key(api_key_prefix: str):
 
 @private_api.route("/offerers", methods=["POST"])
 @login_required
-@spectree_serialize(on_success_status=201, response_model=GetOffererResponseModel)
+@spectree_serialize(on_success_status=201, response_model=GetOffererResponseModel, api=blueprint.pro_private_schema)
 def create_offerer(body: CreateOffererQueryModel) -> GetOffererResponseModel:
     user_offerer = api.create_offerer(current_user, body)
 
@@ -143,7 +147,7 @@ def create_offerer(body: CreateOffererQueryModel) -> GetOffererResponseModel:
 
 @private_api.route("/offerers/<humanized_offerer_id>/eac-eligibility", methods=["GET"])
 @login_required
-@spectree_serialize(on_success_status=204)
+@spectree_serialize(on_success_status=204, api=blueprint.pro_private_schema)
 def can_offerer_create_educational_offer(humanized_offerer_id: str):
     try:
         api.can_offerer_create_educational_offer(dehumanize(humanized_offerer_id))

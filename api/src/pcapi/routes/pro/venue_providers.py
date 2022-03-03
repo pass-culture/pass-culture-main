@@ -21,10 +21,12 @@ from pcapi.serialization.utils import dehumanize_id
 from pcapi.validation.routes.users_authorizations import check_user_can_alter_venue
 from pcapi.workers.venue_provider_job import venue_provider_job
 
+from . import blueprint
+
 
 @private_api.route("/venueProviders", methods=["GET"])
 @login_required
-@spectree_serialize(on_success_status=200, response_model=ListVenueProviderResponse)
+@spectree_serialize(on_success_status=200, response_model=ListVenueProviderResponse, api=blueprint.pro_private_schema)
 def list_venue_providers(query: ListVenueProviderQuery) -> ListVenueProviderResponse:
     venue_provider_list = repository.get_venue_provider_list(query.venue_id)
     for venue_provider in venue_provider_list:
@@ -37,7 +39,7 @@ def list_venue_providers(query: ListVenueProviderQuery) -> ListVenueProviderResp
 
 @private_api.route("/venueProviders", methods=["POST"])
 @login_required
-@spectree_serialize(on_success_status=201, response_model=VenueProviderResponse)
+@spectree_serialize(on_success_status=201, response_model=VenueProviderResponse, api=blueprint.pro_private_schema)
 def create_venue_provider(body: PostVenueProviderBody) -> VenueProviderResponse:
     body.venueIdAtOfferProvider = None
 
@@ -92,7 +94,7 @@ def create_venue_provider(body: PostVenueProviderBody) -> VenueProviderResponse:
 
 @private_api.route("/venueProviders", methods=["PUT"])
 @login_required
-@spectree_serialize(on_success_status=200, response_model=VenueProviderResponse)
+@spectree_serialize(on_success_status=200, response_model=VenueProviderResponse, api=blueprint.pro_private_schema)
 def update_venue_provider(body: PostVenueProviderBody) -> VenueProviderResponse:
     venue_id = dehumanize_id(body.venueId)
     provider_id = dehumanize_id(body.providerId)

@@ -84,7 +84,7 @@ def patch_booking_by_token(token: str, query: PatchBookingByTokenQueryModel) -> 
 
 @blueprint.pro_private_api.route("/bookings/pro", methods=["GET"])
 @login_required
-@spectree_serialize(response_model=ListBookingsResponseModel)
+@spectree_serialize(response_model=ListBookingsResponseModel, api=blueprint.pro_private_schema)
 def get_bookings_pro(query: ListBookingsQueryModel) -> ListBookingsResponseModel:
     page = query.page
     venue_id = query.venue_id

@@ -14,10 +14,12 @@ from pcapi.routes.serialization import finance_serialize
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils.rest import check_user_has_access_to_offerer
 
+from . import blueprint
+
 
 @private_api.route("/finance/invoices", methods=["GET"])
 @login_required
-@spectree_serialize(response_model=finance_serialize.InvoiceListResponseModel)
+@spectree_serialize(response_model=finance_serialize.InvoiceListResponseModel, api=blueprint.pro_private_schema)
 def get_invoices(
     query: finance_serialize.InvoiceListQueryModel,
 ) -> finance_serialize.InvoiceListResponseModel:
@@ -41,7 +43,7 @@ def get_invoices(
 
 @private_api.route("/finance/business-units", methods=["GET"])
 @login_required
-@spectree_serialize(response_model=finance_serialize.BusinessUnitListResponseModel)
+@spectree_serialize(response_model=finance_serialize.BusinessUnitListResponseModel, api=blueprint.pro_private_schema)
 def get_business_units(query: finance_serialize.BusinessUnitListQueryModel) -> None:
     if query.offerer_id:
         check_user_has_access_to_offerer(current_user, query.offerer_id)
@@ -62,7 +64,7 @@ def get_business_units(query: finance_serialize.BusinessUnitListQueryModel) -> N
 
 @private_api.route("/finance/business-units/<int:business_unit_id>", methods=["PATCH"])
 @login_required
-@spectree_serialize(on_success_status=204)
+@spectree_serialize(on_success_status=204, api=blueprint.pro_private_schema)
 def edit_business_unit(business_unit_id: int, body: finance_serialize.BusinessUnitEditionBodyModel) -> None:
     business_unit = finance_models.BusinessUnit.query.filter_by(id=business_unit_id).first_or_404()
     if business_unit.siret:
