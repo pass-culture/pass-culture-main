@@ -1,10 +1,14 @@
 from unittest.mock import patch
 
 import pytest
+from sqlalchemy.exc import IntegrityError
 
+from pcapi.core.offerers.factories import VenueCriterionFactory
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers import factories as offers_factories
+from pcapi.core.offers.factories import CriterionFactory
+from pcapi.core.offers.factories import VenueFactory
 from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.core.users import factories as users_factories
 
@@ -146,3 +150,13 @@ class OffererGrantAccessTest:
 
         # Then
         assert created_user_offerer is None
+
+
+@pytest.mark.usefixtures("db_session")
+class VenueCriterionTest:
+    def test_unique_venue_criterion(self):
+        venue = VenueFactory()
+        criterion = CriterionFactory()
+        VenueCriterionFactory(venue=venue, criterion=criterion)
+        with pytest.raises(IntegrityError):
+            VenueCriterionFactory(venue=venue, criterion=criterion)
