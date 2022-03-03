@@ -2,6 +2,8 @@ import pytest
 
 from pcapi.core.bookings import factories as booking_factories
 from pcapi.core.bookings.models import BookingStatus
+from pcapi.core.educational.factories import CollectiveBookingFactory
+from pcapi.core.educational.models import CollectiveBookingStatus
 import pcapi.core.educational.testing as adage_api_testing
 from pcapi.core.offerers import factories as offerer_factories
 from pcapi.core.offers import factories as offer_factories
@@ -53,6 +55,46 @@ class Returns204Test:
         assert len(adage_api_testing.adage_requests) == 1
         assert adage_api_testing.adage_requests[0]["sent_data"] == expected_payload
         assert adage_api_testing.adage_requests[0]["url"] == "https://adage_base_url/v1/prereservation-annule"
+
+    def test_cancel_collective_booking_if_pending(self, client):
+        user = user_factories.UserFactory()
+        offerer = offerer_factories.OffererFactory()
+        offer_factories.UserOffererFactory(user=user, offerer=offerer)
+
+        booking = booking_factories.PendingEducationalBookingFactory(stock__offer__venue__managingOfferer=offerer)
+        collective_booking = CollectiveBookingFactory(
+            status=CollectiveBookingStatus.PENDING,
+            venue__managingOfferer=offerer,
+            collectiveStock__collectiveOffer__offerId=booking.stock.offer.id,
+        )
+
+        offer_id = humanize(booking.stock.offer.id)
+        client = client.with_session_auth(user.email)
+        response = client.patch(f"/offers/{offer_id}/cancel_booking")
+
+        assert response.status_code == 204
+        assert booking.status == BookingStatus.CANCELLED
+        assert collective_booking.status == CollectiveBookingStatus.CANCELLED
+
+    def test_cancel_collective_booking_if_confirmed(self, client):
+        user = user_factories.UserFactory()
+        offerer = offerer_factories.OffererFactory()
+        offer_factories.UserOffererFactory(user=user, offerer=offerer)
+
+        booking = booking_factories.PendingEducationalBookingFactory(stock__offer__venue__managingOfferer=offerer)
+        collective_booking = CollectiveBookingFactory(
+            status=CollectiveBookingStatus.CONFIRMED,
+            venue__managingOfferer=offerer,
+            collectiveStock__collectiveOffer__offerId=booking.stock.offer.id,
+        )
+
+        offer_id = humanize(booking.stock.offer.id)
+        client = client.with_session_auth(user.email)
+        response = client.patch(f"/offers/{offer_id}/cancel_booking")
+
+        assert response.status_code == 204
+        assert booking.status == BookingStatus.CANCELLED
+        assert collective_booking.status == CollectiveBookingStatus.CANCELLED
 
 
 @override_settings(ADAGE_API_URL="https://adage_base_url")

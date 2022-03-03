@@ -13,6 +13,10 @@ from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.bookings.models import IndividualBooking
 from pcapi.core.bookings.repository import generate_booking_token
+from pcapi.core.educational.models import CollectiveBooking
+from pcapi.core.educational.models import CollectiveBookingCancellationReasons
+from pcapi.core.educational.models import CollectiveBookingStatus
+from pcapi.core.educational.models import CollectiveStock
 from pcapi.core.educational.models import EducationalBooking
 from pcapi.core.educational.models import EducationalBookingStatus
 import pcapi.core.finance.api as finance_api
@@ -193,6 +197,50 @@ def _cancel_booking(
     return True
 
 
+def _cancel_collective_booking(
+    collective_booking: CollectiveBooking,
+    reason: CollectiveBookingCancellationReasons,
+) -> bool:
+    with transaction():
+        collective_stock = offers_repository.get_and_lock_collective_stock(
+            stock_id=collective_booking.collectiveStock.stockId
+        )
+        db.session.refresh(collective_booking)
+        old_status = collective_booking.status
+        try:
+            collective_booking.cancel_booking(cancel_even_if_used=True)
+        except (BookingIsAlreadyUsed, BookingIsAlreadyCancelled) as e:
+            logger.info(
+                "%s: %s",
+                type(e).__name__,
+                str(e),
+                extra={
+                    "collective_booking": collective_booking.id,
+                    "reason": str(reason),
+                },
+            )
+            return False
+
+        if FeatureToggle.ENABLE_NEW_COLLECTIVE_MODEL.is_active():
+            if old_status is CollectiveBookingStatus.USED:
+                # FIXME (MathildeDuboille - 2022-03-03): Fix cancel_pricing to handle collective booking
+                finance_api.cancel_pricing(collective_booking, finance_models.PricingLogReason.MARK_AS_UNUSED)
+
+        collective_booking.cancellationReason = reason
+        repository.save(collective_booking, collective_stock)
+    logger.info(
+        "CollectiveBooking has been cancelled",
+        extra={
+            "collective_booking": collective_booking.id,
+            "reason": str(reason),
+        },
+    )
+
+    # FIXME (MathildeDuboille - 2022-03-03): decomment this once algolia is set up with new models (13428)
+    # search.async_index_offer_ids([collective_booking.stock.offerId])
+    return True
+
+
 def _cancel_bookings_from_stock(stock: Stock, reason: BookingCancellationReasons) -> list[Booking]:
     """
     Cancel multiple bookings and update the users' credit information on Batch.
@@ -204,6 +252,28 @@ def _cancel_bookings_from_stock(stock: Stock, reason: BookingCancellationReasons
             deleted_bookings.append(booking)
 
     return deleted_bookings
+
+
+def _cancel_collective_booking_from_stock(
+    collective_stock: CollectiveStock, reason: CollectiveBookingCancellationReasons
+) -> list[CollectiveBooking]:
+    """
+    Cancel booking.
+    Note that this will not reindex the stock.offer in Algolia
+    """
+    booking_to_cancel: typing.Optional[CollectiveBooking] = next(
+        (
+            collective_booking
+            for collective_booking in collective_stock.collectiveBookings
+            if collective_booking.status not in [CollectiveBookingStatus.CANCELLED, CollectiveBookingStatus.REIMBURSED]
+        ),
+        None,
+    )
+
+    if booking_to_cancel is not None:
+        _cancel_collective_booking(booking_to_cancel, reason)
+
+    return booking_to_cancel
 
 
 def cancel_booking_by_beneficiary(user: User, booking: Booking) -> None:
@@ -225,6 +295,18 @@ def cancel_bookings_from_stock_by_offerer(stock: Stock) -> list[Booking]:
     cancelled_bookings = _cancel_bookings_from_stock(stock, BookingCancellationReasons.OFFERER)
     search.async_index_offer_ids([stock.offerId])
     return cancelled_bookings
+
+
+def cancel_collective_booking_from_stock_by_offerer(
+    collective_stock: CollectiveStock,
+) -> typing.Optional[CollectiveBooking]:
+    cancelled_booking = _cancel_collective_booking_from_stock(
+        collective_stock, CollectiveBookingCancellationReasons.OFFERER
+    )
+
+    # FIXME (MathildeDuboille - 2022-03-03): decomment this once algolia is set up with new models (13428)
+    # search.async_index_offer_ids([collective_stock.offerId])
+    return cancelled_booking
 
 
 def cancel_bookings_from_rejected_offer(offer: Offer) -> list[Booking]:
