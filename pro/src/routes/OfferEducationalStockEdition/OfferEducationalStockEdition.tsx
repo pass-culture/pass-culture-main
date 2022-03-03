@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useHistory, useParams } from 'react-router-dom'
 
-import useActiveFeature from 'components/hooks/useActiveFeature'
 import useNotification from 'components/hooks/useNotification'
 import Spinner from 'components/layout/Spinner'
 import {
@@ -26,11 +25,10 @@ import { StockResponse } from './types'
 import { extractInitialStockValues } from './utils/extractInitialStockValues'
 
 const getAdapter = (
-  isShowcaseFeatureEnabled: boolean,
   offer: GetStockOfferSuccessPayload,
   educationalOfferType: EducationalOfferType
 ) => {
-  if (isShowcaseFeatureEnabled && offer.isShowcase) {
+  if (offer.isShowcase) {
     return educationalOfferType === EducationalOfferType.CLASSIC
       ? patchShadowStockIntoEducationalStockAdapter
       : patchShadowStockAdapter
@@ -41,7 +39,6 @@ const getAdapter = (
 
 const OfferEducationalStockEdition = (): JSX.Element => {
   const history = useHistory()
-  const isShowcaseFeatureEnabled = useActiveFeature('ENABLE_EAC_SHOWCASE_OFFER')
 
   const [initialValues, setInitialValues] =
     useState<OfferEducationalStockFormValues>(DEFAULT_EAC_STOCK_FORM_VALUES)
@@ -61,11 +58,7 @@ const OfferEducationalStockEdition = (): JSX.Element => {
 
     const stockId = stock.id
 
-    const adapter = getAdapter(
-      isShowcaseFeatureEnabled,
-      offer,
-      values.educationalOfferType
-    )
+    const adapter = getAdapter(offer, values.educationalOfferType)
 
     const stockResponse = await adapter({
       offer,
@@ -169,7 +162,6 @@ const OfferEducationalStockEdition = (): JSX.Element => {
         <OfferEducationalStockScreen
           cancelActiveBookings={cancelActiveBookings}
           initialValues={initialValues}
-          isShowcaseFeatureEnabled={isShowcaseFeatureEnabled}
           mode={
             stock?.isEducationalStockEditable ? Mode.EDITION : Mode.READ_ONLY
           }

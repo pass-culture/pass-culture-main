@@ -47,7 +47,6 @@ export interface IOfferEducationalStockProps {
   mode: Mode
   cancelActiveBookings?: () => void
   setIsOfferActive?: (isActive: boolean) => void
-  isShowcaseFeatureEnabled?: boolean
 }
 
 const OfferEducationalStock = ({
@@ -57,7 +56,6 @@ const OfferEducationalStock = ({
   mode,
   cancelActiveBookings,
   setIsOfferActive,
-  isShowcaseFeatureEnabled = false,
 }: IOfferEducationalStockProps): JSX.Element => {
   const offerIsDisbaled = isOfferDisabled(offer.status)
 
@@ -84,8 +82,7 @@ const OfferEducationalStock = ({
   }, [initialValues, resetForm])
 
   const shouldDisplayShowcaseScreen =
-    isShowcaseFeatureEnabled &&
-    (mode == Mode.CREATION || (mode == Mode.EDITION && offer.isShowcase))
+    mode == Mode.CREATION || (mode == Mode.EDITION && offer.isShowcase)
 
   const displayElementsForShowcaseOption =
     shouldDisplayShowcaseScreen &&

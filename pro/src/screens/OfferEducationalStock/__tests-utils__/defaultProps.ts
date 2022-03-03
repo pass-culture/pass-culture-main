@@ -9,5 +9,4 @@ export const defaultProps: IOfferEducationalStockProps = {
   offer: offerFactory({}),
   onSubmit: jest.fn(),
   mode: Mode.CREATION,
-  isShowcaseFeatureEnabled: true,
 }
