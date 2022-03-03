@@ -98,7 +98,7 @@ class CollectiveOffer(PcObject, ValidationMixin, AccessibilityMixin, StatusMixin
         server_default="{}",
     )
 
-    collectiveStock = relationship("CollectiveStock", back_populates="collectiveOffer")
+    collectiveStock = relationship("CollectiveStock", back_populates="collectiveOffer", uselist=False)
 
     contactEmail = sa.Column(sa.String(120), nullable=False)
 
