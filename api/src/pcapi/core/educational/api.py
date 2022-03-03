@@ -149,36 +149,37 @@ def create_collective_booking_with_collective_stock(
     educational_year: EducationalYear,
     redactor: EducationalRedactor,
 ) -> Optional[CollectiveBooking]:
-    collective_stock = offers_repository.get_and_lock_collective_stock(stock_id=stock_id)
+    with transaction():
+        collective_stock = offers_repository.get_and_lock_collective_stock(stock_id=stock_id)
 
-    # TODO: remove this once this code is on production
-    # and all data has been migrated to the new models
-    if not collective_stock:
-        return None
+        # TODO: remove this once this code is on production
+        # and all data has been migrated to the new models
+        if not collective_stock:
+            return None
 
-    validation.check_collective_stock_is_bookable(collective_stock)
+        validation.check_collective_stock_is_bookable(collective_stock)
 
-    collective_booking = CollectiveBooking(
-        collectiveStockId=collective_stock.id,
-        venueId=collective_stock.collectiveOffer.venueId,
-        offererId=collective_stock.collectiveOffer.venue.managingOffererId,
-        status=CollectiveBookingStatus.PENDING,
-        educationalInstitution=educational_institution,
-        educationalYear=educational_year,
-        confirmationLimitDate=collective_stock.bookingLimitDatetime,
-        educationalRedactor=redactor,
-    )
+        collective_booking = CollectiveBooking(
+            collectiveStockId=collective_stock.id,
+            venueId=collective_stock.collectiveOffer.venueId,
+            offererId=collective_stock.collectiveOffer.venue.managingOffererId,
+            status=CollectiveBookingStatus.PENDING,
+            educationalInstitution=educational_institution,
+            educationalYear=educational_year,
+            confirmationLimitDate=collective_stock.bookingLimitDatetime,
+            educationalRedactor=redactor,
+        )
 
-    collective_booking.dateCreated = datetime.utcnow()
-    collective_booking.cancellationLimitDate = compute_educational_booking_cancellation_limit_date(
-        collective_stock.beginningDatetime, collective_booking.dateCreated
-    )
-    collective_booking.bookingId = booking_id
+        collective_booking.dateCreated = datetime.utcnow()
+        collective_booking.cancellationLimitDate = compute_educational_booking_cancellation_limit_date(
+            collective_stock.beginningDatetime, collective_booking.dateCreated
+        )
+        collective_booking.bookingId = booking_id
 
-    db.session.add(collective_booking)
-    db.session.commit()
+        db.session.add(collective_booking)
+        db.session.commit()
 
-    return collective_booking
+        return collective_booking
 
 
 def confirm_educational_booking(educational_booking_id: int) -> EducationalBooking:
