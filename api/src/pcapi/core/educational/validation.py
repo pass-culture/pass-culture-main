@@ -1,9 +1,12 @@
 from decimal import Decimal
 from typing import Optional
+from typing import Union
 
 from pcapi.core.bookings import exceptions as booking_exceptions
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.educational import exceptions
+from pcapi.core.educational.models import CollectiveBooking
+from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.educational.models import EducationalBooking
 from pcapi.core.educational.models import EducationalBookingStatus
 from pcapi.core.educational.models import EducationalDeposit
@@ -57,6 +60,11 @@ def check_educational_booking_status(educational_booking: EducationalBooking) ->
         raise exceptions.BookingIsCancelled()
 
 
-def check_confirmation_limit_date_has_not_passed(educational_booking: EducationalBooking) -> None:
-    if educational_booking.has_confirmation_limit_date_passed():
+def check_collective_booking_status(collective_booking: CollectiveBooking) -> None:
+    if collective_booking.status == CollectiveBookingStatus.CANCELLED:
+        raise exceptions.BookingIsCancelled()
+
+
+def check_confirmation_limit_date_has_not_passed(booking: Union[EducationalBooking, CollectiveBooking]) -> None:
+    if booking.has_confirmation_limit_date_passed():
         raise booking_exceptions.ConfirmationLimitDateHasPassed()
