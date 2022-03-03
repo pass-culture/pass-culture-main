@@ -7,18 +7,18 @@ from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.models.user_offerer import UserOfferer
 from pcapi.utils.mailing import make_offer_creation_notification_email
 from pcapi.utils.mailing import make_offer_rejection_notification_email
+from pcapi.utils.mailing import make_offerer_internal_validation_email
 from pcapi.utils.mailing import make_payment_details_email
 from pcapi.utils.mailing import make_payment_message_email
 from pcapi.utils.mailing import make_payments_report_email
 from pcapi.utils.mailing import make_suspended_fraudulent_beneficiary_by_ids_notification_email
-from pcapi.utils.mailing import make_validation_email_object
 from pcapi.utils.mailing import make_wallet_balances_email
 
 
 def maybe_send_offerer_validation_email(offerer: Offerer, user_offerer: UserOfferer) -> bool:
     if offerer.isValidated and user_offerer.isValidated:
         return True
-    email = make_validation_email_object(offerer, user_offerer)
+    email = make_offerer_internal_validation_email(offerer, user_offerer)
     recipients = [settings.ADMINISTRATION_EMAIL_ADDRESS]
     return mails.send(recipients=recipients, data=email)
 

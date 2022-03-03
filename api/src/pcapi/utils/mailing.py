@@ -61,7 +61,7 @@ def format_booking_hours_for_email(booking: Booking) -> str:
     return ""
 
 
-def make_validation_email_object(
+def make_offerer_internal_validation_email(
     offerer: Offerer, user_offerer: UserOfferer, get_by_siren=api_entreprises.get_by_offerer
 ) -> dict:
     vars_obj_user = vars(user_offerer.user)
@@ -84,11 +84,11 @@ def make_validation_email_object(
         api_url=settings.API_URL,
     )
 
-    return {
-        "FromName": "pass Culture",
-        "Subject": "%s - inscription / rattachement PRO à valider : %s" % (offerer_departement_code, offerer.name),
-        "Html-part": email_html,
-    }
+    return SendinblueTransactionalWithoutTemplateEmailData(
+        subject="%s - inscription / rattachement PRO à valider : %s" % (offerer_departement_code, offerer.name),
+        html_content=email_html,
+        sender=SendinblueTransactionalSender.SUPPORT_PRO,
+    )
 
 
 def make_payment_message_email(xml: str, venues_csv, checksum: bytes) -> dict:

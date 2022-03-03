@@ -6,7 +6,7 @@ import pytest
 from pcapi.core.users import factories as users_factories
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_user_offerer
-from pcapi.utils.mailing import make_validation_email_object
+from pcapi.utils.mailing import make_offerer_internal_validation_email
 
 from tests.utils.mailing_test import get_by_siren_stub
 
@@ -35,10 +35,10 @@ def test_write_object_validation_email(app):
     user_offerer = create_user_offerer(user=user, offerer=offerer, validation_token=validation_token)
 
     # When
-    email = make_validation_email_object(offerer, user_offerer, get_by_siren=get_by_siren_stub)
+    email = make_offerer_internal_validation_email(offerer, user_offerer, get_by_siren=get_by_siren_stub)
 
     # Then
-    html = BeautifulSoup(email["Html-part"], features="html.parser")
+    html = BeautifulSoup(email.html_content, features="html.parser")
     assert html.h1.text == "Inscription ou rattachement PRO à valider"
 
     summary_section = html.select_one("section[data-testId='summary']")
@@ -95,10 +95,10 @@ def test_validation_email_object_does_not_include_validation_link_if_user_offere
     user_offerer = create_user_offerer(pro, offerer)
 
     # When
-    email = make_validation_email_object(offerer, user_offerer, get_by_siren=get_by_siren_stub)
+    email = make_offerer_internal_validation_email(offerer, user_offerer, get_by_siren=get_by_siren_stub)
 
     # Then
-    html = BeautifulSoup(email["Html-part"], features="html.parser")
+    html = BeautifulSoup(email.html_content, features="html.parser")
     assert "Nouveau rattachement :" not in [h2.text for h2 in html.select("section[data-testId='summary'] h2")]
     assert not html.select("section[data-testId='user_offerer'] strong.validation a")
     assert html.select("section[data-testId='user_offerer'] h2")[0].text == "Rattachement :"
@@ -112,10 +112,10 @@ def test_validation_email_object_does_not_include_validation_link_if_offerer_is_
     user_offerer = create_user_offerer(user=pro, offerer=offerer)
 
     # When
-    email = make_validation_email_object(offerer, user_offerer, get_by_siren=get_by_siren_stub)
+    email = make_offerer_internal_validation_email(offerer, user_offerer, get_by_siren=get_by_siren_stub)
 
     # Then
-    html = BeautifulSoup(email["Html-part"], features="html.parser")
+    html = BeautifulSoup(email.html_content, features="html.parser")
     assert "Nouvelle structure :" not in [h2.text for h2 in html.select("section[data-testId='summary'] h2")]
     assert not html.select("section[data-testId='offerer'] strong.validation a")
     assert html.select("section[data-testId='offerer'] h2")[0].text == "Structure :"
@@ -131,9 +131,9 @@ def test_validation_email_should_neither_return_clearTextPassword_nor_totallysaf
     mocked_api_entreprises = get_by_siren_stub
 
     # When
-    email = make_validation_email_object(offerer, user_offerer, get_by_siren=mocked_api_entreprises)
+    email = make_offerer_internal_validation_email(offerer, user_offerer, get_by_siren=mocked_api_entreprises)
 
     # Then
-    email_html_soup = BeautifulSoup(email["Html-part"], features="html.parser")
+    email_html_soup = BeautifulSoup(email.html_content, features="html.parser")
     assert "clearTextPassword" not in str(email_html_soup)
     assert "totallysafepsswd" not in str(email_html_soup)
