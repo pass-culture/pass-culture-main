@@ -235,11 +235,11 @@ def make_offer_rejection_notification_email(offer: Offer) -> dict:
     location_information = offer.venue.departementCode or "numérique"
     is_educational_offer_label = "EAC " if offer.isEducational else ""
 
-    return {
-        "Html-part": html,
-        "FromName": "pass Culture",
-        "Subject": f"[Création d’offre {is_educational_offer_label}: refus - {location_information}] {offer.name}",
-    }
+    return SendinblueTransactionalWithoutTemplateEmailData(
+        subject=f"[Création d’offre {is_educational_offer_label}: refus - {location_information}] {offer.name}",
+        html_content=html,
+        sender=SendinblueTransactionalSender.SUPPORT_PRO,
+    )
 
 
 def get_event_datetime(stock: Stock) -> datetime:
