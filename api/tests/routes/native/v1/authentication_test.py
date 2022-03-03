@@ -133,7 +133,7 @@ def test_request_reset_password_with_recaptcha_ok(
     assert saved_token.type.value == "reset-password"
 
     assert len(mails_testing.outbox) == 1
-    assert mails_testing.outbox[0].sent_data["params"]["NATIVE_APP_LINK"]
+    assert mails_testing.outbox[0].sent_data["params"]["RESET_PASSWORD_LINK"]
 
 
 def test_request_reset_password_for_existing_email(client):
@@ -151,11 +151,11 @@ def test_request_reset_password_for_existing_email(client):
     saved_token = Token.query.filter_by(user=user).first()
     assert saved_token.type.value == "reset-password"
     assert len(mails_testing.outbox) == 1
-    assert mails_testing.outbox[0].sent_data["params"]["NATIVE_APP_LINK"]
+    assert mails_testing.outbox[0].sent_data["params"]["RESET_PASSWORD_LINK"]
 
 
-@patch("pcapi.core.mails.transactional.users.send_reset_password_email_to_native_app_user")
-def test_request_reset_password_for_inactive_account(mock_send_reset_password_email_to_native_app_user, client):
+@patch("pcapi.core.users.api.send_reset_password_email_to_user")
+def test_request_reset_password_for_inactive_account(mock_send_reset_password_email_to_user, client):
     email = "existing_user@example.com"
     data = {"email": email}
     users_factories.UserFactory(email=email, isActive=False)
@@ -163,20 +163,20 @@ def test_request_reset_password_for_inactive_account(mock_send_reset_password_em
     response = client.post("/native/v1/request_password_reset", json=data)
 
     assert response.status_code == 204
-    mock_send_reset_password_email_to_native_app_user.assert_not_called()
+    mock_send_reset_password_email_to_user.assert_not_called()
 
 
-@patch("pcapi.core.mails.transactional.users.send_reset_password_email_to_native_app_user")
-def test_request_reset_password_with_mail_service_exception(mock_send_reset_password_email_to_native_app_user, client):
-    email = "existing_user@example.com"
+@patch("pcapi.core.users.api.send_reset_password_email_to_user")
+def test_request_reset_password_with_mail_service_exception(mock_send_reset_password_email_to_user, client):
+    email = "tt_user@example.com"
     data = {"email": email}
     users_factories.UserFactory(email=email)
 
-    mock_send_reset_password_email_to_native_app_user.return_value = False
+    mock_send_reset_password_email_to_user.return_value = False
 
     response = client.post("/native/v1/request_password_reset", json=data)
 
-    mock_send_reset_password_email_to_native_app_user.assert_called_once()
+    mock_send_reset_password_email_to_user.assert_called_once()
     assert response.status_code == 400
     assert response.json["email"] == ["L'email n'a pas pu être envoyé"]
 

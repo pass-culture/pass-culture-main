@@ -4,8 +4,8 @@ import pytest
 
 from pcapi.core.mails import testing as mails_testing
 from pcapi.core.mails.transactional.pro.reset_password_to_pro import get_reset_password_to_pro_email_data
+from pcapi.core.mails.transactional.pro.reset_password_to_pro import send_reset_password_email_to_pro
 from pcapi.core.mails.transactional.pro.reset_password_to_pro import send_reset_password_link_to_admin_email
-from pcapi.core.mails.transactional.pro.reset_password_to_pro import send_reset_password_to_pro_email
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.users import factories as users_factories
 
@@ -34,7 +34,7 @@ class SendinblueProResetPasswordEmailDataTest:
         user = users_factories.ProFactory(email="pro@example.com")
 
         # when
-        send_reset_password_to_pro_email(user)
+        send_reset_password_email_to_pro(user)
 
         # then
         assert len(mails_testing.outbox) == 1  # test number of emails sent
