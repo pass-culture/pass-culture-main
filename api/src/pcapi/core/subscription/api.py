@@ -17,7 +17,6 @@ from pcapi.core.users import constants as users_constants
 from pcapi.core.users import external as users_external
 from pcapi.core.users import models as users_models
 from pcapi.core.users import utils as users_utils
-from pcapi.domain import user_emails as old_user_emails
 from pcapi.domain.postal_code.postal_code import PostalCode
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
@@ -35,9 +34,7 @@ def get_latest_subscription_message(user: users_models.User) -> typing.Optional[
     return models.SubscriptionMessage.query.filter_by(user=user).order_by(models.SubscriptionMessage.id.desc()).first()
 
 
-def activate_beneficiary(
-    user: users_models.User, deposit_source: str = None, has_activated_account: typing.Optional[bool] = True
-) -> users_models.User:
+def activate_beneficiary(user: users_models.User, deposit_source: str = None) -> users_models.User:
     fraud_check = users_api.get_activable_identity_fraud_check(user)
     if not fraud_check:
         raise exceptions.BeneficiaryFraudCheckMissingException(
@@ -78,18 +75,11 @@ def activate_beneficiary(
     db.session.refresh(user)
 
     users_external.update_external_user(user)
-    _send_beneficiary_activation_email(user, has_activated_account)
+
+    if not accepted_as_beneficiary.send_accepted_as_beneficiary_email(user=user):
+        logger.warning("Could not send accepted as beneficiary email to user", extra={"user": user.id})
 
     return user
-
-
-def _send_beneficiary_activation_email(user: users_models.User, has_activated_account: bool):
-    if not has_activated_account:
-        old_user_emails.send_activation_email(
-            user=user, reset_password_token_life_time=users_constants.RESET_PASSWORD_TOKEN_LIFE_TIME_EXTENDED
-        )
-    else:
-        accepted_as_beneficiary.send_accepted_as_beneficiary_email(user=user)
 
 
 def has_completed_profile(user: users_models.User) -> bool:
