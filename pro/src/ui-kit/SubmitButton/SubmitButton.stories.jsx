@@ -16,3 +16,11 @@ Default.args = {
   isLoading: false,
   disabled: false,
 }
+
+export const Loading = Template.bind({})
+
+Loading.args = {
+  children: 'Envoyer',
+  isLoading: true,
+  disabled: false,
+}
