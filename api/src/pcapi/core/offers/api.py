@@ -1154,6 +1154,7 @@ def transform_shadow_stock_into_educational_stock_and_create_collective_offer(
     offer = offers_repository.get_educational_offer_by_id((stock_data.offer_id))
     stock = transform_shadow_stock_into_educational_stock(stock_id, stock_data, offer, user)
     create_collective_offer_and_delete_collective_offer_template(offer)
+    educational_api.create_collective_stock(stock_data=stock_data, user=user, legacy_id=stock.id)
     return stock
 
 
