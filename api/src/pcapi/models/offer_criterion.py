@@ -1,6 +1,7 @@
 from sqlalchemy import BigInteger
 from sqlalchemy import Column
 from sqlalchemy import ForeignKey
+from sqlalchemy import UniqueConstraint
 from sqlalchemy.orm import relationship
 
 from pcapi.models import Model
@@ -15,3 +16,11 @@ class OfferCriterion(PcObject, Model):
     criterionId = Column(BigInteger, ForeignKey("criterion.id", ondelete="CASCADE"), nullable=False)
 
     criterion = relationship("Criterion", foreign_keys=[criterionId])
+
+    __table_args__ = (
+        UniqueConstraint(
+            "offerId",
+            "criterionId",
+            name="unique_offer_criterion",
+        ),
+    )

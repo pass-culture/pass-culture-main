@@ -377,6 +377,14 @@ class VenueCriterion(PcObject, Model):
 
     criterion = relationship("Criterion", foreign_keys=[criterionId])
 
+    __table_args__ = (
+        UniqueConstraint(
+            "venueId",
+            "criterionId",
+            name="unique_venue_criterion",
+        ),
+    )
+
 
 @listens_for(Venue, "before_insert")
 def before_insert(mapper, connect, self):
