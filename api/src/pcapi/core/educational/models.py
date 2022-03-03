@@ -38,7 +38,7 @@ class StudentLevels(enum.Enum):
     GENERAL0 = "Lycée - Terminale"
 
 
-class BookingCancellationReasons(enum.Enum):
+class CollectiveBookingCancellationReasons(enum.Enum):
     OFFERER = "OFFERER"
     BENEFICIARY = "BENEFICIARY"
     EXPIRED = "EXPIRED"
@@ -592,8 +592,8 @@ class CollectiveBooking(PcObject, Model):  # type: ignore[valid-type]
     cancellationReason = sa.Column(
         "cancellationReason",
         sa.Enum(
-            BookingCancellationReasons,
-            values_callable=lambda x: [reason.value for reason in BookingCancellationReasons],
+            CollectiveBookingCancellationReasons,
+            values_callable=lambda x: [reason.value for reason in CollectiveBookingCancellationReasons],
         ),
         nullable=True,
     )
@@ -700,7 +700,7 @@ class CollectiveBooking(PcObject, Model):  # type: ignore[valid-type]
 
         try:
             self.cancel_booking()
-            self.cancellationReason = BookingCancellationReasons.REFUSED_BY_INSTITUTE
+            self.cancellationReason = CollectiveBookingCancellationReasons.REFUSED_BY_INSTITUTE
         except booking_exceptions.BookingIsAlreadyUsed:
             raise exceptions.EducationalBookingNotRefusable()
         except booking_exceptions.BookingIsAlreadyCancelled:
