@@ -1,6 +1,3 @@
-from datetime import date
-from datetime import datetime
-
 import pytest
 
 from pcapi.core.offerers.exceptions import CannotFindOffererSiren
@@ -15,7 +12,6 @@ from pcapi.core.offerers.repository import find_siren_by_offerer_id
 from pcapi.core.offerers.repository import find_user_offerer_by_validation_token
 from pcapi.core.offerers.repository import get_all_offerers_for_user
 from pcapi.core.offerers.repository import get_all_venue_labels
-from pcapi.core.offerers.repository import get_offerers_by_date_validated
 from pcapi.core.offerers.repository import has_digital_venue_with_at_least_one_offer
 from pcapi.core.offerers.repository import has_physical_venue_without_draft_or_accepted_bank_information
 import pcapi.core.offers.factories as offers_factories
@@ -352,26 +348,6 @@ class FilterOfferersWithKeywordsStringTest:
             offerer_with_both_venues_offer_on_virtual,
             offerer_with_both_venues_offer_on_not_virtual,
         } == set(two_partial_keywords_search)
-
-
-class GetOfferersByDateValidatedTest:
-    def test_get_offerers_by_date_validated(self):
-        offerer1 = offerers_factories.OffererFactory(
-            siren="123456789", validationToken=None, dateValidated=datetime(2021, 6, 7, 15, 49)
-        )
-        offerer2 = offerers_factories.OffererFactory(
-            siren="123456788", validationToken=None, dateValidated=datetime(2021, 6, 7, 23, 59, 59)
-        )
-        offerer3 = offerers_factories.OffererFactory(
-            siren="123456787", validationToken=None, dateValidated=datetime(2021, 6, 8, 00, 00, 00)
-        )
-        offerer4 = offerers_factories.OffererFactory(
-            siren="123456786", validationToken=None, dateValidated=datetime(2021, 6, 6, 11, 49)
-        )
-
-        assert set(get_offerers_by_date_validated(date(2021, 6, 7))) == {offerer1, offerer2}
-        assert get_offerers_by_date_validated(date(2021, 6, 8)) == [offerer3]
-        assert get_offerers_by_date_validated(date(2021, 6, 6)) == [offerer4]
 
 
 class HasVenueWithoutDraftOrAcceptedBankInformationTest:
