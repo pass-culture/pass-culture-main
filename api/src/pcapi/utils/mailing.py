@@ -9,6 +9,8 @@ from flask import render_template
 from pcapi import settings
 from pcapi.connectors import api_entreprises
 from pcapi.core.bookings.models import Booking
+from pcapi.core.mails.models.sendinblue_models import SendinblueTransactionalSender
+from pcapi.core.mails.models.sendinblue_models import SendinblueTransactionalWithoutTemplateEmailData
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
@@ -209,11 +211,12 @@ def make_offer_creation_notification_email(offer: Offer) -> dict:
     )
     location_information = offer.venue.departementCode or "numérique"
     is_educational_offer_label = "EAC " if offer.isEducational else ""
-    return {
-        "Html-part": html,
-        "FromName": "pass Culture",
-        "Subject": f"[Création d’offre {is_educational_offer_label}- {location_information}] {offer.name}",
-    }
+
+    return SendinblueTransactionalWithoutTemplateEmailData(
+        subject=f"[Création d’offre {is_educational_offer_label}- {location_information}] {offer.name}",
+        html_content=html,
+        sender=SendinblueTransactionalSender.SUPPORT_PRO,
+    )
 
 
 def make_offer_rejection_notification_email(offer: Offer) -> dict:

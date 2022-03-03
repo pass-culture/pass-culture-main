@@ -161,7 +161,7 @@ class SendOfferNotificationToAdministrationTest:
 
         assert len(mails_testing.outbox) == 1
         assert mails_testing.outbox[0].sent_data["To"] == "administration@example.com"
-        assert mails_testing.outbox[0].sent_data["Subject"] == "[Création d’offre - 75] Test Visit"
+        assert mails_testing.outbox[0].sent_data["subject"] == "[Création d’offre - 75] Test Visit"
 
 
 @pytest.mark.usefixtures("db_session")
