@@ -4,8 +4,10 @@ import factory
 
 from pcapi.core.offerers import models
 from pcapi.core.offerers.models import ApiKey
+from pcapi.core.offerers.models import VenueCriterion
 from pcapi.core.offerers.models import VenueLabel
 from pcapi.core.offerers.models import VenueType
+from pcapi.core.offers.factories import CriterionFactory
 from pcapi.core.offers.factories import OffererFactory
 from pcapi.core.offers.factories import VenueFactory
 from pcapi.core.testing import BaseFactory
@@ -43,6 +45,14 @@ class VenueContactFactory(BaseFactory):
     website = "https://my@website.com"
     phone_number = "+33102030405"
     social_medias = {"instagram": "http://instagram.com/@venue"}
+
+
+class VenueCriterionFactory(BaseFactory):
+    class Meta:
+        model = VenueCriterion
+
+    venue = factory.SubFactory(VenueFactory)
+    criterion = factory.SubFactory(CriterionFactory)
 
 
 DEFAULT_PREFIX = "development_prefix"
