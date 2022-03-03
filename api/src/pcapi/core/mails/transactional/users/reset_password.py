@@ -7,15 +7,13 @@ from pcapi.core.users.models import User
 from pcapi.utils.urls import generate_firebase_dynamic_link
 
 
-def get_reset_password_user_email_data(user: User, token: Token) -> dict:
-    return {
-        "MJ-TemplateID": 912168,
-        "MJ-TemplateLanguage": True,
-        "Vars": {"prenom_user": user.firstName, "token": token.value},
-    }
+def send_reset_password_email_to_user(user: User) -> bool:
+    token = users_api.create_reset_password_token(user)
+    data = get_reset_password_email_data(user, token)
+    return mails.send(recipients=[user.email], data=data)
 
 
-def get_reset_password_native_app_email_data(user: User, token: Token) -> SendinblueTransactionalEmailData:
+def get_reset_password_email_data(user: User, token: Token) -> SendinblueTransactionalEmailData:
     reset_password_link = generate_firebase_dynamic_link(
         path="mot-de-passe-perdu",
         params={
@@ -26,17 +24,9 @@ def get_reset_password_native_app_email_data(user: User, token: Token) -> Sendin
     )
 
     return SendinblueTransactionalEmailData(
-        template=TransactionalEmail.NEW_PASSWORD_REQUEST.value, params={"NATIVE_APP_LINK": reset_password_link}
+        template=TransactionalEmail.NEW_PASSWORD_REQUEST.value,
+        params={
+            "FIRSTNAME": user.firstName,
+            "RESET_PASSWORD_LINK": reset_password_link,
+        },
     )
-
-
-def send_reset_password_email_to_user(user: User) -> bool:
-    token = users_api.create_reset_password_token(user)
-    data = get_reset_password_user_email_data(user, token)
-    return mails.send(recipients=[user.email], data=data)
-
-
-def send_reset_password_email_to_native_app_user(user: User) -> bool:
-    token = users_api.create_reset_password_token(user)
-    data = get_reset_password_native_app_email_data(user, token)
-    return mails.send(recipients=[user.email], data=data)
