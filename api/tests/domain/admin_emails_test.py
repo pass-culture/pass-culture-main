@@ -141,7 +141,7 @@ class SendOfferNotificationToAdministrationTest:
         # Then
         assert len(mails_testing.outbox) == 1
         assert mails_testing.outbox[0].sent_data["To"] == "administration@example.com"
-        assert mails_testing.outbox[0].sent_data["Subject"] == "[Création d’offre : refus - 75] Test Book"
+        assert mails_testing.outbox[0].sent_data["subject"] == "[Création d’offre : refus - 75] Test Book"
 
     def test_send_approval_notification_failure(self):
         author = users_factories.UserFactory(email="author@email.com")
