@@ -83,6 +83,7 @@ def refuse_pre_booking(educational_booking_id: int) -> prebooking_serialization.
     is not yet used and still refusable."""
     try:
         educational_booking = api.refuse_educational_booking(educational_booking_id)
+        api.refuse_collective_booking(educational_booking_id)
     except exceptions.EducationalBookingNotFound:
         raise ApiErrors({"code": constants.EDUCATIONAL_BOOKING_NOT_FOUND}, status_code=404)
     except exceptions.EducationalBookingNotRefusable:
