@@ -15,7 +15,7 @@ from pcapi.utils.human_ids import humanize
 from pcapi.utils.mailing import build_pc_pro_offer_link
 from pcapi.utils.mailing import format_booking_date_for_email
 from pcapi.utils.mailing import format_booking_hours_for_email
-from pcapi.utils.mailing import make_validation_email_object
+from pcapi.utils.mailing import make_offerer_internal_validation_email
 
 
 def get_by_siren_stub(offerer):
@@ -98,9 +98,9 @@ class MakeValidationEmailObjectTest:
         user_offerer = create_user_offerer(user=user, offerer=offerer)
 
         # When
-        email_object = make_validation_email_object(
+        email_object = make_offerer_internal_validation_email(
             user_offerer=user_offerer, offerer=offerer, get_by_siren=get_by_siren_stub
         )
 
         # Then
-        assert email_object.get("Subject") == "95 - inscription / rattachement PRO à valider : Test Offerer"
+        assert email_object.subject == "95 - inscription / rattachement PRO à valider : Test Offerer"
