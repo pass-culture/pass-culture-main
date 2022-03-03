@@ -982,11 +982,7 @@ workflows:
   version: 2
   commit:
     jobs:
-      - tests-script-pc:
-         filters:
-           branches:
-             ignore:
-               - docs
+      - tests-script-pc
       - type-checking-pro:
          filters:
            branches:
@@ -994,7 +990,6 @@ workflows:
                - production
                - staging
                - integration
-               - docs
          context: Slack
       - quality-pro:
          filters:
@@ -1003,7 +998,6 @@ workflows:
                - production
                - staging
                - integration
-               - docs
          context: Slack
       - type-checking-adage-front:
          filters:
@@ -1012,7 +1006,6 @@ workflows:
                - production
                - staging
                - integration
-               - docs
          context: Slack
       - quality-adage-front:
          filters:
@@ -1021,7 +1014,6 @@ workflows:
                - production
                - staging
                - integration
-               - docs
          context: Slack
       - quality-api:
          filters:
@@ -1030,7 +1022,6 @@ workflows:
                - production
                - staging
                - integration
-               - docs
          context: Slack
       - tests-api:
          name: "Run core tests (except core/users/external)"
@@ -1041,7 +1032,6 @@ workflows:
                - production
                - staging
                - integration
-               - docs
          context: Slack
       - tests-api:
          name: "Run core/users/external"
@@ -1052,7 +1042,6 @@ workflows:
                - production
                - staging
                - integration
-               - docs
          context: Slack
       - tests-api:
          name: "Run routes tests"
@@ -1063,7 +1052,6 @@ workflows:
                - production
                - staging
                - integration
-               - docs
          context: Slack
       - tests-api:
          name: "Run other tests"
@@ -1074,7 +1062,6 @@ workflows:
                - production
                - staging
                - integration
-               - docs
          context: Slack
       - tests-adage-front:
          filters:
@@ -1083,7 +1070,6 @@ workflows:
                - production
                - staging
                - integration
-               - docs
          context: Slack
          requires:
            - type-checking-adage-front
@@ -1094,7 +1080,6 @@ workflows:
                - production
                - staging
                - integration
-               - docs
          context: Slack
          requires:
            - type-checking-pro
@@ -1105,7 +1090,6 @@ workflows:
                - production
                - staging
                - integration
-               - docs
          context: Slack
          requires:
            - type-checking-pro
