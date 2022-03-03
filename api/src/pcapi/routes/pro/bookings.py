@@ -157,7 +157,7 @@ def get_bookings_csv(query: ListBookingsQueryModel) -> bytes:
 @ip_rate_limiter(deduct_when=lambda response: response.status_code == 401)
 @basic_auth_rate_limiter()
 @spectree_serialize(
-    api=blueprint.api_v2,
+    api=blueprint.pro_public_schema_v2,
     tags=["API Contremarque"],
     resp=SpectreeResponse(
         **(
@@ -197,7 +197,7 @@ def get_booking_by_token_v2(token: str) -> GetBookingResponse:
 @ip_rate_limiter(deduct_when=lambda response: response.status_code == 401)
 @basic_auth_rate_limiter()
 @spectree_serialize(
-    api=blueprint.api_v2,
+    api=blueprint.pro_public_schema_v2,
     tags=["API Contremarque"],
     on_success_status=204,
     resp=SpectreeResponse(
@@ -235,7 +235,7 @@ def patch_booking_use_by_token(token: str) -> None:
 @basic_auth_rate_limiter()
 @login_or_api_key_required
 @spectree_serialize(
-    api=blueprint.api_v2,
+    api=blueprint.pro_public_schema_v2,
     tags=["API Contremarque"],
     on_success_status=204,
     resp=SpectreeResponse(
@@ -279,7 +279,7 @@ def patch_cancel_booking_by_token(token: str) -> None:
 @basic_auth_rate_limiter()
 @login_or_api_key_required
 @spectree_serialize(
-    api=blueprint.api_v2,
+    api=blueprint.pro_public_schema_v2,
     tags=["API Contremarque"],
     on_success_status=204,
     resp=SpectreeResponse(
