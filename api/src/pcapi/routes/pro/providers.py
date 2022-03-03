@@ -19,7 +19,7 @@ from . import blueprint
     response_model=ListProviderResponse,
     on_success_status=200,
     on_error_statuses=[401, 404],
-    api=blueprint.api,
+    api=blueprint.pro_private_schema,
 )
 def get_providers_by_venue(venue_id: str) -> ListProviderResponse:
     venue = load_or_404(Venue, venue_id)
