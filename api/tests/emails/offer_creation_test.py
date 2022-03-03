@@ -110,9 +110,9 @@ class MakeOfferRejectionNotificationEmailTest:
         email = make_offer_rejection_notification_email(offer)
 
         # Then
-        assert email["FromName"] == "pass Culture"
+        assert email.sender.value.name == "pass Culture"
 
-        parsed_email = BeautifulSoup(email["Html-part"], "html.parser")
+        parsed_email = BeautifulSoup(email.html_content, "html.parser")
 
         offer_html = str(parsed_email.find("p", {"id": "offer"}))
         assert 'Une nouvelle offre : "Le vent se lève"' in offer_html
@@ -131,11 +131,11 @@ class MakeOfferRejectionNotificationEmailTest:
         assert "Offre duo : False" in offer_is_duo
 
         offer_is_eac = str(parsed_email.find("p", {"id": "offer_is_educational"}))
-        if offer.isEducational == True:
+        if offer.isEducational is True:
             assert "Offre EAC : True" in offer_is_eac
-            assert email["Subject"] == "[Création d’offre EAC : refus - 93] Le vent se lève"
+            assert email.subject == "[Création d’offre EAC : refus - 93] Le vent se lève"
         else:
-            assert email["Subject"] == "[Création d’offre : refus - 93] Le vent se lève"
+            assert email.subject == "[Création d’offre : refus - 93] Le vent se lève"
             assert "Offre EAC : False" in offer_is_eac
 
         venue_details = str(parsed_email.find("p", {"id": "venue_details"}))
@@ -162,4 +162,4 @@ class MakeOfferRejectionNotificationEmailTest:
         email = make_offer_rejection_notification_email(offer)
 
         # Then
-        assert email["Subject"] == "[Création d’offre : refus - numérique] Les lièvres pas malins"
+        assert email.subject == "[Création d’offre : refus - numérique] Les lièvres pas malins"
