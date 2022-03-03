@@ -6,10 +6,12 @@ from pcapi.routes.serialization.venue_labels_serialize import VenueLabelListResp
 from pcapi.routes.serialization.venue_labels_serialize import VenueLabelResponseModel
 from pcapi.serialization.decorator import spectree_serialize
 
+from . import blueprint
+
 
 @private_api.route("/venue-labels", methods=["GET"])
 @login_required
-@spectree_serialize(response_model=VenueLabelListResponseModel)
+@spectree_serialize(response_model=VenueLabelListResponseModel, api=blueprint.pro_private_schema)
 def fetch_venue_labels() -> VenueLabelListResponseModel:
     venue_label_list = [
         VenueLabelResponseModel.from_orm(venue_label) for venue_label in offerers_repository.get_all_venue_labels()

@@ -47,7 +47,7 @@ def validate_new_offerer(token) -> str:
 
 
 @blueprint.pro_private_api.route("/validate/user/<token>", methods=["PATCH"])
-@spectree_serialize(on_success_status=204)
+@spectree_serialize(on_success_status=204, api=blueprint.pro_private_schema)
 def validate_user(token) -> None:
     user_to_validate = user_queries.find_by_validation_token(token)
     check_valid_token_for_user_validation(user_to_validate)
