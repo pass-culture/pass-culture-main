@@ -1,6 +1,5 @@
 from typing import Optional
 
-from flask.helpers import flash
 from flask_admin.contrib.sqla import tools
 from flask_admin.contrib.sqla.filters import BaseSQLAFilter
 from markupsafe import Markup
@@ -23,8 +22,6 @@ import pcapi.core.users.api as users_api
 from pcapi.core.users.external import update_external_user
 from pcapi.core.users.models import User
 from pcapi.core.users.utils import sanitize_email
-from pcapi.domain.user_emails import send_activation_email
-from pcapi.utils.mailing import build_pc_webapp_reset_password_link
 
 
 def filter_email(value: Optional[str]) -> Optional[str]:
@@ -272,12 +269,6 @@ class BeneficiaryUserView(ResendValidationEmailMixin, SuspensionMixin, BaseAdmin
 
     def after_model_change(self, form: Form, model: User, is_created: bool) -> None:
         update_external_user(model)
-        if is_created and not send_activation_email(model):
-            token = users_api.create_reset_password_token(model)
-            flash(
-                f"L'envoi d'email a échoué. Le mot de passe peut être réinitialisé depuis le lien suivant : {build_pc_webapp_reset_password_link(token.value)}",
-                "error",
-            )
         super().after_model_change(form, model, is_created)
 
     def get_one(self, model_id: str) -> query:

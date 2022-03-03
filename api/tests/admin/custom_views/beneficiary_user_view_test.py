@@ -1,5 +1,4 @@
 from datetime import datetime
-from datetime import timedelta
 from unittest.mock import patch
 
 from dateutil.relativedelta import relativedelta
@@ -16,8 +15,6 @@ from pcapi.core.payments.models import Deposit
 from pcapi.core.testing import override_settings
 from pcapi.core.users import testing as sendinblue_testing
 import pcapi.core.users.factories as users_factories
-from pcapi.core.users.models import Token
-from pcapi.core.users.models import TokenType
 from pcapi.core.users.models import User
 import pcapi.notifications.push.testing as push_testing
 
@@ -78,24 +75,7 @@ class BeneficiaryUserViewTest:
         assert user_created.deposit.amount == 500
         assert user_created.has_beneficiary_role
 
-        token = Token.query.filter_by(userId=user_created.id).first()
-        assert token.type == TokenType.RESET_PASSWORD
-        assert token.expirationDate > datetime.now() + timedelta(hours=20)
-
-        assert len(mails_testing.outbox) == 1
-        assert mails_testing.outbox[0].sent_data == {
-            "FromEmail": "support@example.com",
-            "Mj-TemplateID": 994771,
-            "Mj-TemplateLanguage": True,
-            "To": "lama@example.com",
-            "Vars": {
-                "prenom_user": "Serge",
-                "token": user_created.tokens[0].value,
-                "email": "lama%40example.com",
-                "env": "-development",
-            },
-        }
-
+        assert len(mails_testing.outbox) == 0
         assert len(push_testing.requests) == 2
 
     @clean_database
@@ -259,9 +239,8 @@ class BeneficiaryUserViewTest:
         assert _allow_suspension_and_unsuspension(super_admin)
 
     @clean_database
-    @patch("pcapi.admin.custom_views.beneficiary_user_view.flash")
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
-    def test_beneficiary_user_edition_does_not_send_email(self, mocked_validate_csrf_token, mocked_flask_flash, app):
+    def test_beneficiary_user_edition_does_not_send_email(self, mocked_validate_csrf_token, app):
         users_factories.AdminFactory(email="user@example.com")
         user_to_edit = users_factories.BeneficiaryGrant18Factory(email="not_yet_edited@email.com")
 
@@ -283,7 +262,6 @@ class BeneficiaryUserViewTest:
         assert user_edited is not None
         assert len(push_testing.requests) == 2
 
-        mocked_flask_flash.assert_not_called()
         assert not mails_testing.outbox
         assert len(push_testing.requests) == 2
         assert len(sendinblue_testing.sendinblue_requests) == 1
