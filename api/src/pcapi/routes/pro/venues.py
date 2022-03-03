@@ -31,10 +31,12 @@ from pcapi.workers.update_all_venue_offers_accessibility_job import update_all_v
 from pcapi.workers.update_all_venue_offers_email_job import update_all_venue_offers_email_job
 from pcapi.workers.update_all_venue_offers_withdrawal_details_job import update_all_venue_offers_withdrawal_details_job
 
+from . import blueprint
+
 
 @private_api.route("/venues/<venue_id>", methods=["GET"])
 @login_required
-@spectree_serialize(response_model=GetVenueResponseModel)
+@spectree_serialize(response_model=GetVenueResponseModel, api=blueprint.pro_private_schema)
 def get_venue(venue_id: str) -> GetVenueResponseModel:
     venue = load_or_404(Venue, venue_id)
     check_user_has_access_to_offerer(current_user, venue.managingOffererId)
@@ -92,7 +94,7 @@ def post_create_venue(body: PostVenueBodyModel) -> VenueResponseModel:
 
 @private_api.route("/venues/<venue_id>", methods=["PATCH"])
 @login_required
-@spectree_serialize(response_model=GetVenueResponseModel)
+@spectree_serialize(response_model=GetVenueResponseModel, api=blueprint.pro_private_schema)
 def edit_venue(venue_id: str, body: EditVenueBodyModel) -> GetVenueResponseModel:
     venue = load_or_404(Venue, venue_id)
 
@@ -176,7 +178,7 @@ def delete_venue_banner(venue_id: str) -> None:
 
 @private_api.route("/venues/<humanized_venue_id>/stats", methods=["GET"])
 @login_required
-@spectree_serialize(on_success_status=200, response_model=VenueStatsResponseModel)
+@spectree_serialize(on_success_status=200, response_model=VenueStatsResponseModel, api=blueprint.pro_private_schema)
 def get_venue_stats(humanized_venue_id: str) -> VenueStatsResponseModel:
     venue = load_or_404(Venue, humanized_venue_id)
     check_user_has_access_to_offerer(current_user, venue.managingOffererId)

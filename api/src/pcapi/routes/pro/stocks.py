@@ -45,7 +45,7 @@ logger = logging.getLogger(__name__)
 
 @private_api.route("/offers/<offer_id>/stocks", methods=["GET"])
 @login_required
-@spectree_serialize(response_model=StocksResponseModel)
+@spectree_serialize(response_model=StocksResponseModel, api=blueprint.pro_private_schema)
 def get_stocks(offer_id: str) -> StocksResponseModel:
     try:
         offerer = offerers_repository.get_by_offer_id(dehumanize(offer_id))
@@ -60,7 +60,7 @@ def get_stocks(offer_id: str) -> StocksResponseModel:
 
 @private_api.route("/stocks/bulk", methods=["POST"])
 @login_required
-@spectree_serialize(on_success_status=201, response_model=StockIdsResponseModel)
+@spectree_serialize(on_success_status=201, response_model=StockIdsResponseModel, api=blueprint.pro_private_schema)
 def upsert_stocks(body: StocksUpsertBodyModel) -> StockIdsResponseModel:
     try:
         offerer = offerers_repository.get_by_offer_id(body.offer_id)
@@ -76,7 +76,7 @@ def upsert_stocks(body: StocksUpsertBodyModel) -> StockIdsResponseModel:
 
 @private_api.route("/stocks/<stock_id>", methods=["DELETE"])
 @login_required
-@spectree_serialize(response_model=StockIdResponseModel)
+@spectree_serialize(response_model=StockIdResponseModel, api=blueprint.pro_private_schema)
 def delete_stock(stock_id: str) -> StockIdResponseModel:
     # fmt: off
     stock = (
@@ -137,7 +137,7 @@ def _build_stock_details_from_body(raw_stocks: List[UpdateVenueStockBodyModel], 
 
 @private_api.route("/stocks/educational", methods=["POST"])
 @login_required
-@spectree_serialize(on_success_status=201, response_model=StockIdResponseModel)
+@spectree_serialize(on_success_status=201, response_model=StockIdResponseModel, api=blueprint.pro_private_schema)
 def create_educational_stock(body: EducationalStockCreationBodyModel) -> StockIdResponseModel:
     try:
         offerer = offerers_repository.get_by_offer_id(body.offer_id)
@@ -181,7 +181,7 @@ def transform_shadow_stock_into_educational_stock(
 
 @private_api.route("/stocks/educational/<stock_id>", methods=["PATCH"])
 @login_required
-@spectree_serialize(on_success_status=200, on_error_statuses=[400, 401, 404, 422])
+@spectree_serialize(on_success_status=200, on_error_statuses=[400, 401, 404, 422], api=blueprint.pro_private_schema)
 def edit_educational_stock(
     stock_id: str, body: EducationalStockEditionBodyModel
 ) -> stock_serialize.StockEditionResponseModel:
