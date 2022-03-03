@@ -25,6 +25,7 @@ from pcapi.repository import repository
 PROCEDURE_ID_VERSION_MAP = {
     settings.DMS_VENUE_PROCEDURE_ID: 1,
     settings.DMS_VENUE_PROCEDURE_ID_V2: 2,
+    settings.DMS_VENUE_PROCEDURE_ID_V3: 3,
 }
 
 
