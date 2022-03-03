@@ -3,6 +3,7 @@ from typing import Iterable
 from typing import Union
 
 from pcapi.core.mails.models.sendinblue_models import SendinblueTransactionalEmailData
+from pcapi.core.mails.models.sendinblue_models import SendinblueTransactionalWithoutTemplateEmailData
 
 from .. import testing
 from ..models.models import MailResult
@@ -17,7 +18,7 @@ class TestingBackend(BaseBackend):
     def _send(
         self,
         recipients: Iterable[str],
-        data: Union[SendinblueTransactionalEmailData, dict],
+        data: Union[SendinblueTransactionalEmailData, SendinblueTransactionalWithoutTemplateEmailData, dict],
     ) -> MailResult:
         if not isinstance(data, dict):
             data = asdict(data)
@@ -33,7 +34,9 @@ class FailingBackend(BaseBackend):
     def _send(
         self,
         recipients: Iterable[str],
-        data: Union[SendinblueTransactionalEmailData, dict],
+        data: Union[SendinblueTransactionalEmailData, SendinblueTransactionalWithoutTemplateEmailData, dict],
     ) -> MailResult:
+        if not isinstance(data, dict):
+            data = asdict(data)
         data["To"] = ", ".join(recipients)
         return MailResult(sent_data=data, successful=False)

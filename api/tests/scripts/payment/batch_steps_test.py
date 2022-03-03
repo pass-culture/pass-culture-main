@@ -89,7 +89,7 @@ def test_send_transactions_should_send_an_email_with_xml_and_csv_attachments():
 
     # then
     assert len(mails_testing.outbox) == 1
-    assert len(mails_testing.outbox[0].sent_data["Attachments"]) == 2
+    assert len(mails_testing.outbox[0].sent_data["attachment"]) == 2
 
 
 @pytest.mark.usefixtures("db_session")

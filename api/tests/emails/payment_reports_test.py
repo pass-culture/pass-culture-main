@@ -4,6 +4,8 @@ import zipfile
 
 from freezegun import freeze_time
 
+from pcapi.core.mails.models.sendinblue_models import SendinblueTransactionalAttachment
+from pcapi.core.mails.models.sendinblue_models import SendinblueTransactionalSender
 from pcapi.utils.mailing import make_payment_details_email
 from pcapi.utils.mailing import make_payment_message_email
 from pcapi.utils.mailing import make_payments_report_email
@@ -30,24 +32,20 @@ def test_make_payment_message_email(app):
 
     email = make_payment_message_email(xml, csv, checksum)
 
-    assert email["FromName"] == "pass Culture Pro"
-    assert email["Subject"] == "Virements XML pass Culture Pro - 2018-10-15"
-    assert email["Attachments"] == [
-        {
-            "ContentType": "text/xml",
-            "Filename": "message_banque_de_france_20181015.xml",
-            "Content": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48RG9j"
+    assert email.sender == SendinblueTransactionalSender.SUPPORT_PRO
+    assert email.subject == "Virements XML pass Culture Pro - 2018-10-15"
+    assert email.attachment == [
+        SendinblueTransactionalAttachment(
+            name="message_banque_de_france_20181015.xml",
+            content="PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48RG9j"
             "dW1lbnQgeG1sbnM9InVybjppc286c3RkOmlzbzoyMDAyMjp0ZWNoOnhz"
             "ZDpwYWluLjAwMS4wMDEuMDMiPjwvRG9jdW1lbnQ+",
-        },
-        {
-            "ContentType": "text/csv",
-            "Filename": "lieux_20181015.csv",
-            "Content": "c29tZSBjc3Y=",
-        },
+        ),
+        SendinblueTransactionalAttachment(name="lieux_20181015.csv", content="c29tZSBjc3Y="),
     ]
-    assert "message_banque_de_france_20181015.xml" in email["Html-part"]
-    assert "16910c117e4873c51aa3573113bf216a7140ea20203c6826ef1faffc7f4fc882" in email["Html-part"]
+
+    assert "message_banque_de_france_20181015.xml" in email.html_content
+    assert "16910c117e4873c51aa3573113bf216a7140ea20203c6826ef1faffc7f4fc882" in email.html_content
 
 
 @freeze_time("2018-10-15 09:21:34")

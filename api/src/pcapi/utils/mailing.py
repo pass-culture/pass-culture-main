@@ -9,6 +9,9 @@ from flask import render_template
 from pcapi import settings
 from pcapi.connectors import api_entreprises
 from pcapi.core.bookings.models import Booking
+from pcapi.core.mails.models.sendinblue_models import SendinblueTransactionalAttachment
+from pcapi.core.mails.models.sendinblue_models import SendinblueTransactionalSender
+from pcapi.core.mails.models.sendinblue_models import SendinblueTransactionalWithoutTemplateEmailData
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
@@ -89,7 +92,9 @@ def make_validation_email_object(
     }
 
 
-def make_payment_message_email(xml: str, venues_csv, checksum: bytes) -> dict:
+def make_payment_message_email(
+    xml: str, venues_csv, checksum: bytes
+) -> SendinblueTransactionalWithoutTemplateEmailData:
     now = datetime.utcnow()
     encoded_xml = base64.b64encode(xml.encode("utf-8")).decode()
     xml_name = "message_banque_de_france_{}.xml".format(now.strftime("%Y%m%d"))
@@ -97,26 +102,18 @@ def make_payment_message_email(xml: str, venues_csv, checksum: bytes) -> dict:
     csv_name = "lieux_{}.csv".format(now.strftime("%Y%m%d"))
 
     attachments = [
-        {
-            "ContentType": "text/xml",
-            "Filename": xml_name,
-            "Content": encoded_xml,
-        },
-        {
-            "ContentType": "text/csv",
-            "Filename": csv_name,
-            "Content": encoded_csv,
-        },
+        SendinblueTransactionalAttachment(content=encoded_xml, name=xml_name),
+        SendinblueTransactionalAttachment(content=encoded_csv, name=csv_name),
     ]
 
-    return {
-        "FromName": "pass Culture Pro",
-        "Subject": "Virements XML pass Culture Pro - {}".format(datetime.strftime(now, "%Y-%m-%d")),
-        "Attachments": attachments,
-        "Html-part": render_template(
+    return SendinblueTransactionalWithoutTemplateEmailData(
+        subject="Virements XML pass Culture Pro - {}".format(datetime.strftime(now, "%Y-%m-%d")),
+        sender=SendinblueTransactionalSender.SUPPORT_PRO,
+        attachment=attachments,
+        html_content=render_template(
             "mails/payments_xml_email.html", xml_name=xml_name, csv_name=csv_name, xml_hash=checksum.hex()
         ),
-    }
+    )
 
 
 def _get_zipfile_content(content: str, filename: str):

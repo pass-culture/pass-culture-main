@@ -95,9 +95,9 @@ def test_generate_and_send_payments():
 
     # Check "transaction" e-mail
     email = mails_testing.outbox[0]
-    subject = email.sent_data["Subject"].split("-")[0].strip()  # ignore date
+    subject = email.sent_data["subject"].split("-")[0].strip()  # ignore date
     assert subject == "Virements XML pass Culture Pro"
-    xml = base64.b64decode(email.sent_data["Attachments"][0]["Content"]).decode("utf-8")
+    xml = base64.b64decode(email.sent_data["attachment"][0]["content"]).decode("utf-8")
     assert "<NbOfTxs>4</NbOfTxs>" in xml
     assert "<CtrlSum>40.00</CtrlSum>" in xml
     assert xml.count("<EndToEndId>") == 4
