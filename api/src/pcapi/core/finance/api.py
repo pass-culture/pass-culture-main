@@ -858,7 +858,9 @@ def generate_invoices():
     for row in rows:
         try:
             with transaction():
-                generate_and_store_invoice(row.business_unit_id, row.cashflow_ids)
+                extra = {"business_unit_id": row.business_unit_id}
+                with log_elapsed(logger, "Generated and sent invoice", extra):
+                    generate_and_store_invoice(row.business_unit_id, row.cashflow_ids)
         except Exception as exc:  # pylint: disable=broad-except
             logger.exception(
                 "Could not generate invoice",
@@ -922,10 +924,15 @@ def generate_invoice_file(invoice_date: datetime.date = datetime.date.today()) -
 
 
 def generate_and_store_invoice(business_unit_id: int, cashflow_ids: list[int]):
-    invoice = _generate_invoice(business_unit_id=business_unit_id, cashflow_ids=cashflow_ids)
-    invoice_html = _generate_invoice_html(invoice=invoice)
-    _store_invoice_pdf(invoice_storage_id=invoice.storage_object_id, invoice_html=invoice_html)
-    send_invoice_available_to_pro_email(invoice)
+    log_extra = {"business_unit": business_unit_id}
+    with log_elapsed(logger, "Generated invoice model instance", log_extra):
+        invoice = _generate_invoice(business_unit_id=business_unit_id, cashflow_ids=cashflow_ids)
+    with log_elapsed(logger, "Generated invoice HTML", log_extra):
+        invoice_html = _generate_invoice_html(invoice=invoice)
+    with log_elapsed(logger, "Generated invoice PDF", log_extra):
+        _store_invoice_pdf(invoice_storage_id=invoice.storage_object_id, invoice_html=invoice_html)
+    with log_elapsed(logger, "Sent invoice", log_extra):
+        send_invoice_available_to_pro_email(invoice)
 
 
 def _generate_invoice(business_unit_id: int, cashflow_ids: list[int]):
