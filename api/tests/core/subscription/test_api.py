@@ -513,8 +513,7 @@ class OnSuccessfulDMSApplicationTest:
         )
 
     @patch("pcapi.repository.repository")
-    @patch("pcapi.domain.user_emails.send_activation_email")
-    def test_error_is_collected_if_beneficiary_could_not_be_saved(self, send_activation_email, mock_repository):
+    def test_error_is_collected_if_beneficiary_could_not_be_saved(self, mock_repository):
         # given
         information = fraud_factories.DMSContentFactory(application_id=123)
         applicant = users_factories.UserFactory(email=information.email)
@@ -526,7 +525,6 @@ class OnSuccessfulDMSApplicationTest:
             subscription_api.on_successful_application(user=applicant, source_data=information)
 
         # then
-        send_activation_email.assert_not_called()
         assert len(push_testing.requests) == 0
 
     def test_activate_beneficiary_when_confirmation_happens_after_18_birthday(self):
