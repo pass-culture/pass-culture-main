@@ -11,11 +11,37 @@ export interface EmptyResponse {} // eslint-disable-line @typescript-eslint/no-e
 /* tslint:disable-next-line */
 export interface ModelObject {} // eslint-disable-line @typescript-eslint/no-empty-interface
 
+export interface ApiErrorResonseMessages {
+  global?: string[]
+  [key: string]: string[] | undefined
+}
+
+export class ApiError extends Error {
+  name = 'ApiError'
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  content: any
+  statusCode: number
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/explicit-module-boundary-types
+  constructor(
+    statusCode: number,
+    content: ApiErrorResonseMessages,
+    message?: string
+  ) {
+    super(message)
+    this.content = content
+    this.statusCode = statusCode
+  }
+}
+
 export const HTTP_STATUS = {
   NO_CONTENT: 204,
   FORBIDDEN: 403,
   SERVICE_UNAVAILABLE: 503,
   TOO_MANY_REQUESTS: 429,
+  GONE: 410,
+  NOT_FOUND: 404,
 }
 
 /**
@@ -73,29 +99,27 @@ export function isApiError(error: ApiError | unknown): error is ApiError {
   return (error as ApiError).name === 'ApiError'
 }
 
-export class ApiError extends Error {
-  name = 'ApiError'
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  content: any
-  statusCode: number
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/explicit-module-boundary-types
-  constructor(statusCode: number, content: any, message?: string) {
-    super(message)
-    this.content = content
-    this.statusCode = statusCode
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+export function extractApiErrorMessageForKey(
+  error: unknown,
+  errorKey: string
+): string {
+  let errorMessages = ''
+  if (isApiError(error)) {
+    const { content } = error as ApiError
+    if (errorKey in content) {
+      errorMessages = content[errorKey][0]
+    }
   }
+  return errorMessages
 }
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-export function extractApiErrorMessage(error: unknown) {
+export function extractApiGlobalErrorMessage(error: unknown) {
   let message = 'Une erreur est survenue'
-  if (isApiError(error)) {
-    const { content } = error as { content: { code: string; message: string } }
-    if (content && content.code && content.message) {
-      message = content.message
-    }
+  const globalErrorMessages = extractApiErrorMessageForKey(error, 'global')
+  if (globalErrorMessages.length > 0) {
+    message = globalErrorMessages
   }
   return message
 }
