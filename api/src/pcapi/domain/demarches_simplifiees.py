@@ -122,7 +122,7 @@ def get_venue_bank_information_application_details_by_application_id(
             modification_date=datetime.strptime(response_application_details["dossier"]["updated_at"], DATE_ISO_FORMAT),
         )
         return application_details
-    if version == 2:
+    if version in (2, 3):
         client = api_dms.DMSGraphQLClient()
         raw_data = client.get_bic(int(application_id))
         data = parse_raw_bic_data(raw_data)
