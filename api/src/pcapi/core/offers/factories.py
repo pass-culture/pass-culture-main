@@ -289,6 +289,14 @@ class OfferCriterionFactory(BaseFactory):
     criterion = factory.SubFactory(CriterionFactory)
 
 
+class VenueCriterionFactory(BaseFactory):
+    class Meta:
+        model = offerers_models.VenueCriterion
+
+    venue = factory.SubFactory(VenueFactory)
+    criterion = factory.SubFactory(CriterionFactory)
+
+
 class BankInformationFactory(BaseFactory):
     class Meta:
         model = BankInformation
