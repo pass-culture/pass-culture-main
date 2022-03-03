@@ -1,4 +1,5 @@
 import datetime
+import typing
 
 import pytz
 
@@ -39,6 +40,10 @@ def get_business_units_query(
         venue_subquery = venue_subquery.with_entities(offerers_models.Venue.id).subquery()
         query = query.filter(offerers_models.Venue.id.in_(venue_subquery))
     return query
+
+
+def find_business_unit_by_siret(siret: str) -> typing.Optional[models.BusinessUnit]:
+    return models.BusinessUnit.query.filter_by(siret=siret).one_or_none()
 
 
 def get_invoices_query(

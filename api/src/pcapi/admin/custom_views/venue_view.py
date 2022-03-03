@@ -21,6 +21,7 @@ from wtforms.fields.simple import HiddenField
 from pcapi.admin.base_configuration import BaseAdminView
 from pcapi.core import search
 from pcapi.core.bookings.exceptions import CannotDeleteVenueWithBookingsException
+from pcapi.core.finance import repository as finance_repository
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers.api import VENUE_ALGOLIA_INDEXED_FIELDS
 from pcapi.core.offerers.models import Venue
@@ -161,6 +162,25 @@ class VenueView(BaseAdminView):
 
     def update_model(self, new_venue_form: Form, venue: Venue) -> bool:
         has_siret_changed = new_venue_form.siret.data != venue.siret
+        if has_siret_changed:
+            bu_with_same_target_siret = finance_repository.find_business_unit_by_siret(new_venue_form.siret.data)
+            if bu_with_same_target_siret:
+                flash(
+                    f"Ce SIRET a déjà été attribué au point de remboursement {bu_with_same_target_siret.name},"
+                    f" il ne peut pas être attribué à ce lieu.",
+                    "error",
+                )
+                return False
+
+            related_bu = finance_repository.find_business_unit_by_siret(venue.siret)
+            if related_bu:
+                flash(
+                    f"Le SIRET de ce lieu est le SIRET de référence du point de remboursement {related_bu.name},"
+                    f" il ne peut pas être modifié.",
+                    "error",
+                )
+                return False
+
         old_siret = venue.siret
 
         changed_attributes = {
