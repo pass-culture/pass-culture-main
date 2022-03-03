@@ -10,6 +10,7 @@ import pytest
 from pcapi.core.logging import JsonFormatter
 from pcapi.core.logging import get_logged_in_user_id
 from pcapi.core.logging import get_or_set_correlation_id
+from pcapi.core.logging import log_elapsed
 import pcapi.core.users.factories as users_factories
 
 
@@ -112,3 +113,25 @@ class JsonFormatterTest:
         deserialized = json.loads(serialized)
         assert deserialized["message"] == "Frobulated 12 blobs"
         assert deserialized["extra"] == {"unserializable": str({"blobs": obj})}
+
+
+class LogElapsedTest:
+    def test_log(self, caplog):
+        caplog.set_level(logging.INFO)
+
+        logger = logging.getLogger("testing-logger")
+        with log_elapsed(logger, "It worked!"):
+            pass
+        assert "It worked!" in caplog.messages
+
+    def test_no_log_on_exception(self, caplog):
+        caplog.set_level(logging.INFO)
+
+        def raise_exception():
+            raise ValueError()
+
+        logger = logging.getLogger("testing-logger")
+        with pytest.raises(ValueError):
+            with log_elapsed(logger, "It worked!"):
+                raise_exception()
+        assert not caplog.messages
