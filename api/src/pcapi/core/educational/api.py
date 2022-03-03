@@ -216,7 +216,9 @@ def confirm_educational_booking(educational_booking_id: int) -> EducationalBooki
             deposit,
         )
         booking.mark_as_confirmed()
-        repository.save(booking)
+        db.session.add(booking)
+
+        db.session.commit()
 
     logger.info(
         "Head of institution confirmed an educational offer",
@@ -232,6 +234,65 @@ def confirm_educational_booking(educational_booking_id: int) -> EducationalBooki
         )
 
     return educational_booking
+
+
+def confirm_collective_booking(educational_booking_id: int) -> Optional[CollectiveBooking]:
+    educational_booking = educational_repository.find_educational_booking_by_id(educational_booking_id)
+
+    if educational_booking is None:
+        raise exceptions.EducationalBookingNotFound()
+
+    booking: bookings_models.Booking = educational_booking.booking
+    collective_booking = CollectiveBooking.query.filter(CollectiveBooking.bookingId == booking.id).first()
+
+    if collective_booking is None:
+        # FIXME (MathildeDuboille - 2022-03-03): raise an error once all data has been migrated (PC-13427)
+        return CollectiveBooking
+
+    if collective_booking.status == bookings_models.BookingStatus.CONFIRMED:
+        return collective_booking
+
+    validation.check_collective_booking_status(collective_booking)
+    validation.check_confirmation_limit_date_has_not_passed(collective_booking)
+
+    educational_institution_id = collective_booking.educationalInstitutionId
+    educational_year_id = collective_booking.educationalYearId
+    with transaction():
+        # Use of FF is needed while we use the 2 models simultaneously because if an institution
+        # only has 100€ left and educational booking cost 80€ then the institution will have 20€ left
+        # after going through confirm_educational_booking and the collective booking won't be confirmed
+        # --> this will result in an inconsistency between datas
+        if FeatureToggle.ENABLE_NEW_COLLECTIVE_MODEL.is_active():
+            deposit = educational_repository.get_and_lock_educational_deposit(
+                educational_institution_id, educational_year_id
+            )
+            validation.check_institution_fund(
+                educational_institution_id,
+                educational_year_id,
+                collective_booking.collectiveStock.price,
+                deposit,
+            )
+
+        collective_booking.mark_as_confirmed()
+
+        db.session.add(collective_booking)
+        db.session.commit()
+
+    logger.info(
+        "Head of institution confirmed an educational offer",
+        extra={
+            "collectiveBookingId": booking.id,
+        },
+    )
+
+    if FeatureToggle.ENABLE_NEW_COLLECTIVE_MODEL.is_active():
+        if not send_eac_new_booking_email_to_pro(collective_booking):
+            logger.warning(
+                "Could not send new booking confirmation email to offerer",
+                extra={"booking": collective_booking.id},
+            )
+
+    return collective_booking
 
 
 def refuse_educational_booking(educational_booking_id: int) -> EducationalBooking:
