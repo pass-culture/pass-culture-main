@@ -254,18 +254,19 @@ def get_event_datetime(stock: Stock) -> datetime:
 
 def make_suspended_fraudulent_beneficiary_by_ids_notification_email(
     fraudulent_users: dict, nb_cancelled_bookings: int
-) -> dict:
+) -> SendinblueTransactionalWithoutTemplateEmailData:
     html = render_template(
         "mails/suspend_fraudulent_beneficiary_by_ids_notification_email.html",
         fraudulent_users=fraudulent_users,
         nb_cancelled_bookings=nb_cancelled_bookings,
         nb_fraud_users=len(fraudulent_users),
     )
-    return {
-        "Html-part": html,
-        "FromName": "pass Culture",
-        "Subject": "Fraude : suspension des utilisateurs frauduleux par ids",
-    }
+
+    return SendinblueTransactionalWithoutTemplateEmailData(
+        subject="Fraude : suspension des utilisateurs frauduleux par ids",
+        html_content=html,
+        sender=SendinblueTransactionalSender.SUPPORT_PRO,
+    )
 
 
 def _add_template_debugging(message_data: dict) -> None:

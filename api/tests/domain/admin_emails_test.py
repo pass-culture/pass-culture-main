@@ -174,4 +174,4 @@ def test_send_suspended_fraudulent_users_email(app):
 
     assert len(mails_testing.outbox) == 1
     assert mails_testing.outbox[0].sent_data["To"] == "admin@email.com"
-    assert mails_testing.outbox[0].sent_data["Subject"] == "Fraude : suspension des utilisateurs frauduleux par ids"
+    assert mails_testing.outbox[0].sent_data["subject"] == "Fraude : suspension des utilisateurs frauduleux par ids"
