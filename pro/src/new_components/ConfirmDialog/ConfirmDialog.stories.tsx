@@ -19,3 +19,12 @@ Default.args = {
   cancelText: 'cancel',
   children: 'lorem ipsum dolor sit amet',
 }
+
+export const WithLoading = Template.bind({})
+WithLoading.args = {
+  title: 'title',
+  confirmText: 'confirm',
+  cancelText: 'cancel',
+  children: 'lorem ipsum dolor sit amet',
+  isLoading: true,
+}
