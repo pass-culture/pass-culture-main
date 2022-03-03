@@ -9,14 +9,13 @@ export default {
 } as ComponentMeta<typeof ConfirmDialog>
 
 const Template: ComponentStory<typeof ConfirmDialog> = args => (
-  <ConfirmDialog {...args}>
-    <p>lorem ipsum dolor sit amet</p>
-  </ConfirmDialog>
+  <ConfirmDialog {...args} />
 )
 
 export const Default = Template.bind({})
 Default.args = {
   title: 'title',
-  confirmText: 'confirmText',
-  cancelText: 'cancelText',
+  confirmText: 'confirm',
+  cancelText: 'cancel',
+  children: 'lorem ipsum dolor sit amet',
 }
