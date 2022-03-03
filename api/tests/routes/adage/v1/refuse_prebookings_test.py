@@ -7,7 +7,11 @@ from pcapi.core.bookings.factories import EducationalBookingFactory
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.bookings.models import BookingStatus
+from pcapi.core.educational.factories import CollectiveBookingFactory
 from pcapi.core.educational.factories import EducationalRedactorFactory
+from pcapi.core.educational.models import CollectiveBooking
+from pcapi.core.educational.models import CollectiveBookingCancellationReasons
+from pcapi.core.educational.models import CollectiveBookingStatus
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.offers.factories import EventStockFactory
@@ -15,15 +19,13 @@ from pcapi.core.offers.models import Stock
 from pcapi.core.offers.utils import offer_app_link
 from pcapi.utils.date import format_into_utc_date
 
-from tests.conftest import TestClient
-
 
 @pytest.mark.usefixtures("db_session")
+@freeze_time("2022-11-17 15:00:00")
 class Returns200Test:
-    @freeze_time("2022-11-17 15:00:00")
     def test_refuse_educational_booking(
         self,
-        app,
+        client,
     ) -> None:
         redactor = EducationalRedactorFactory(
             civility="M.",
@@ -46,7 +48,7 @@ class Returns200Test:
             dateCreated=datetime(2021, 12, 15, 10, 5, 5),
         )
 
-        client = TestClient(app.test_client()).with_eac_token()
+        client = client.with_eac_token()
         response = client.post(f"/adage/v1/prebookings/{booking.educationalBookingId}/refuse")
 
         assert response.status_code == 200
@@ -128,35 +130,96 @@ class Returns200Test:
 
         assert response.status_code == 200
 
+    def test_refuse_collective_booking(
+        self,
+        client,
+    ) -> None:
+        redactor = EducationalRedactorFactory(
+            civility="M.",
+            firstName="Jean",
+            lastName="Doudou",
+            email="jean.doux@example.com",
+        )
+        stock: Stock = EventStockFactory(
+            quantity=200,
+            dnBookedQuantity=0,
+            offer__bookingEmail="test@mail.com",
+            beginningDatetime=datetime(2020, 1, 1, 12, 53, 00),
+        )
+        booking = EducationalBookingFactory(
+            educationalBooking__educationalRedactor=redactor,
+            status=BookingStatus.CONFIRMED,
+            stock=stock,
+            quantity=20,
+            cancellation_limit_date=datetime(2023, 1, 1),
+            dateCreated=datetime(2021, 12, 15, 10, 5, 5),
+        )
+        collective_booking = CollectiveBookingFactory(
+            status=CollectiveBookingStatus.PENDING, bookingId=booking.id, educationalRedactor=redactor
+        )
+
+        client = client.with_eac_token()
+        response = client.post(f"/adage/v1/prebookings/{booking.educationalBookingId}/refuse")
+
+        refused_collective_booking = CollectiveBooking.query.filter(
+            CollectiveBooking.id == collective_booking.id
+        ).first()
+
+        assert response.status_code == 200
+        assert refused_collective_booking.status == CollectiveBookingStatus.CANCELLED
+        assert (
+            refused_collective_booking.cancellationReason == CollectiveBookingCancellationReasons.REFUSED_BY_INSTITUTE
+        )
+
+    def test_refuse_collective_booking_when_pending(self, client) -> None:
+        booking = EducationalBookingFactory(
+            status=BookingStatus.PENDING,
+            cancellationLimitDate=datetime(2020, 1, 1),
+        )
+        collective_booking = CollectiveBookingFactory(
+            status=CollectiveBookingStatus.PENDING,
+            bookingId=booking.id,
+        )
+
+        client.with_eac_token()
+        response = client.post(f"/adage/v1/prebookings/{booking.educationalBookingId}/refuse")
+
+        refused_collective_booking = CollectiveBooking.query.filter(
+            CollectiveBooking.id == collective_booking.id
+        ).first()
+
+        assert response.status_code == 200
+        assert refused_collective_booking.status == CollectiveBookingStatus.CANCELLED
+
 
 @pytest.mark.usefixtures("db_session")
 class Returns400Test:
-    def test_returns_error_when_not_refusable(self, app) -> None:
+    def test_returns_error_when_not_refusable(self, client) -> None:
         booking = EducationalBookingFactory(
             status=BookingStatus.USED,
         )
 
-        client = TestClient(app.test_client()).with_eac_token()
+        client = client.with_eac_token()
         response = client.post(f"/adage/v1/prebookings/{booking.educationalBookingId}/refuse")
 
         assert response.status_code == 422
 
         assert response.json == {"code": "EDUCATIONAL_BOOKING_NOT_REFUSABLE"}
 
-    def test_returns_error_when_already_cancelled(self, app) -> None:
+    def test_returns_error_when_already_cancelled(self, client) -> None:
         booking = EducationalBookingFactory(
             status=BookingStatus.CANCELLED,
         )
 
-        client = TestClient(app.test_client()).with_eac_token()
+        client = client.with_eac_token()
         response = client.post(f"/adage/v1/prebookings/{booking.educationalBookingId}/refuse")
 
         assert response.status_code == 422
 
         assert response.json == {"code": "EDUCATIONAL_BOOKING_ALREADY_CANCELLED"}
 
-    def test_returns_error_when_no_educational_booking_found(self, app) -> None:
-        client = TestClient(app.test_client()).with_eac_token()
+    def test_returns_error_when_no_educational_booking_found(self, client) -> None:
+        client = client.with_eac_token()
         response = client.post("/adage/v1/prebookings/123/refuse")
 
         assert response.status_code == 404

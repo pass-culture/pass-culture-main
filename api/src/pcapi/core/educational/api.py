@@ -353,6 +353,70 @@ def refuse_educational_booking(educational_booking_id: int) -> EducationalBookin
     return educational_booking
 
 
+def refuse_collective_booking(educational_booking_id: int) -> Optional[CollectiveBooking]:
+    educational_booking = educational_repository.find_educational_booking_by_id(educational_booking_id)
+
+    if educational_booking is None:
+        raise exceptions.EducationalBookingNotFound()
+
+    collective_booking = CollectiveBooking.query.filter(
+        CollectiveBooking.bookingId == educational_booking.booking.id
+    ).first()
+
+    if collective_booking is None:
+        # FIXME (MathildeDuboille - 2022-03-03): raise an error once data has been migrated to the new model
+        return collective_booking
+
+    if collective_booking.status == CollectiveBookingStatus.CANCELLED:
+        return collective_booking
+
+    with transaction():
+        try:
+            collective_booking.mark_as_refused()
+        except (
+            exceptions.EducationalBookingNotRefusable,
+            exceptions.EducationalBookingAlreadyCancelled,
+        ) as exception:
+            logger.error(
+                "User from adage trying to refuse collective booking that cannot be refused",
+                extra={
+                    "collective_booking_id": collective_booking.id,
+                    "exception_type": exception.__class__.__name__,
+                },
+            )
+            raise exception
+
+        repository.save(collective_booking)
+
+    logger.info(
+        "Collective Booking has been cancelled",
+        extra={
+            "booking": collective_booking.id,
+            "reason": str(collective_booking.cancellationReason),
+        },
+    )
+
+    if FeatureToggle.ENABLE_NEW_COLLECTIVE_MODEL.is_active():
+        booking_email = collective_booking.collectiveStock.collectiveOffer.bookingEmail
+        if booking_email:
+            data = SendinblueTransactionalEmailData(
+                template=TransactionalEmail.EDUCATIONAL_BOOKING_CANCELLATION_BY_INSTITUTION.value,
+                params={
+                    "OFFER_NAME": collective_booking.collectiveStock.offer.name,
+                    "EVENT_BEGINNING_DATETIME": collective_booking.collectiveStock.beginningDatetime.strftime(
+                        "%d/%m/%Y à %H:%M"
+                    ),
+                    "EDUCATIONAL_REDACTOR_EMAIL": educational_booking.educationalRedactor.email,
+                },
+            )
+            mails.send(recipients=[booking_email], data=data)
+
+    # FIXME (MathildeDuboille 2022-03-03): decomment this once algolia is set up for new model
+    # search.async_index_offer_ids([collective_booking.collectiveStock.collectiveOfferId])
+
+    return educational_booking
+
+
 def create_educational_institution(institution_id: str) -> EducationalInstitution:
     educational_institution = EducationalInstitution(institutionId=institution_id)
     repository.save(educational_institution)
