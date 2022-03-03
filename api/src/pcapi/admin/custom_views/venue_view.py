@@ -14,6 +14,8 @@ from markupsafe import Markup
 from markupsafe import escape
 from sqlalchemy.orm import Query
 from sqlalchemy.orm import joinedload
+from sqlalchemy.orm import query
+from werkzeug.exceptions import abort
 from wtforms import Form
 from wtforms.fields.core import BooleanField
 from wtforms.fields.simple import HiddenField
@@ -24,6 +26,7 @@ from pcapi.core.bookings.exceptions import CannotDeleteVenueWithBookingsExceptio
 from pcapi.core.finance import repository as finance_repository
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers.api import VENUE_ALGOLIA_INDEXED_FIELDS
+from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers.api import update_stock_id_at_providers
 from pcapi.core.users.external import update_external_pro
@@ -56,9 +59,9 @@ class VenueCriteriaFilter(fa_filters.BaseSQLAFilter):
     Filter venues based on tag (criterion) name.
     """
 
-    def apply(self, query: Query, value: str, alias=None) -> Query:
+    def apply(self, query_: Query, value: str, alias=None) -> Query:
         parsed_value = tools.parse_like_term(value)
-        return query.join(offerers_models.VenueCriterion).join(Criterion).filter(Criterion.name.ilike(parsed_value))
+        return query_.join(offerers_models.VenueCriterion).join(Criterion).filter(Criterion.name.ilike(parsed_value))
 
     def operation(self):
         return lazy_gettext("contains")
@@ -254,3 +257,44 @@ class VenueView(BaseAdminView):
         # Form didn't validate
         flash("Le formulaire est invalide: %s" % (change_form.errors), "error")
         return redirect(url, code=307)
+
+
+class VenueForOffererSubview(VenueView):
+    column_searchable_list = ["name", "criteria.name", "siret", "city", "postalCode", "publicName"]
+    list_template = "admin/offerer_venues_list.html"
+
+    @expose("/", methods=(["GET", "POST"]))
+    def index(self):
+        if request.method == "POST":
+            return super().index()
+        self._template_args["offerer_name"] = self._get_offerer_name()
+        return super().index_view()
+
+    def is_visible(self) -> bool:
+        return False
+
+    def get_query(self) -> query:
+        return self._extend_query(super().get_query())
+
+    def get_count_query(self) -> query:
+        return self._extend_query(super().get_count_query())
+
+    def _extend_query(self, query_to_override: query) -> query:
+        offerer_id = request.args.get("id")
+
+        if offerer_id is None:
+            abort(400, "Offerer id required")
+
+        return query_to_override.filter(Venue.managingOffererId == offerer_id)
+
+    def _get_offerer_name(self) -> str:
+        offerer_id = request.args.get("id")
+
+        if offerer_id is None:
+            abort(400, "Offerer id required")
+
+        offerer = Offerer.query.filter(Offerer.id == offerer_id).one()
+        if not offerer:
+            abort(404, "Cette structure n'existe pas ou plus")
+
+        return offerer.name

@@ -1,0 +1,24 @@
+{% extends 'admin/model/list.html' %}
+{% import 'admin/bulk_edit_components/bulk_edit_modal.html' as bulk_edit_modal with context %}
+
+{% block body %}
+    <h1>Liste des lieux de la structure {{ offerer_name }}</h1>
+    {% block model_menu_bar %}
+        {{ super() }}
+    {% endblock %}
+
+    {% block model_list_table %}
+        {{ super() }}
+    {% endblock %}
+    {% block actions %}
+        {{ super() }}
+    {% endblock %}
+    {%- if admin_view.edit_modal or admin_view.create_modal or admin_view.details_modal -%}
+        {{ lib.add_modal_window() }}
+    {%- endif -%}
+    {{ bulk_edit_modal.modal_display(lib) }}
+{% endblock %}
+{% block tail %}
+    {{ super() }}
+    {{ bulk_edit_modal.modal_script()}}
+{% endblock tail %}
