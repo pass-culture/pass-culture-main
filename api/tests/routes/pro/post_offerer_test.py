@@ -124,14 +124,14 @@ class Returns201Test:
         offerer = Offerer.query.first()
         assert offerer.UserOfferers[0].user == pro
 
-    @patch("pcapi.domain.admin_emails.make_validation_email_object")
+    @patch("pcapi.domain.admin_emails.make_offerer_internal_validation_email")
     @patch("pcapi.connectors.api_entreprises.requests.get")
     @pytest.mark.usefixtures("db_session")
     def when_offerer_already_have_user_offerer_new_user_offerer_has_validation_token(
-        self, mock_api_entreprise, make_validation_email_object, app
+        self, mock_api_entreprise, make_offerer_internal_validation_email, app
     ):
         # Given
-        make_validation_email_object.return_value = {"Html-part": None}
+        make_offerer_internal_validation_email.return_value = {"html_content": None}
         mock_api_entreprise.return_value = MagicMock(
             status_code=200, text="", json=MagicMock(return_value=copy.deepcopy(api_entreprise_json_mock))
         )
