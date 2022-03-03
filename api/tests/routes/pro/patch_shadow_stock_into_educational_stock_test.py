@@ -63,6 +63,57 @@ class Return200Test:
         updated_offer = Offer.query.get(stock.offer.id)
         assert updated_offer.extraData["isShowcase"] == False
 
+    def test_create_valid_stock_for_collective_offer(self, app, client):
+        # Given
+        stock = offer_factories.EducationalEventStockFactory(
+            offer__extraData={
+                "students": [
+                    "CAP - 1re ann\u00e9e",
+                    "CAP - 2e ann\u00e9e",
+                    "Lyc\u00e9e - Seconde",
+                    "Lyc\u00e9e - Premi\u00e8re",
+                ],
+                "offerVenue": {
+                    "addressType": "other",
+                    "otherAddress": "1 rue des polissons, Paris 75017",
+                    "venueId": "",
+                },
+                "contactEmail": "miss.rond@point.com",
+                "contactPhone": "01010100101",
+                "isShowcase": True,
+            },
+        )
+        offer_factories.UserOffererFactory(
+            user__email="user@example.com",
+            offerer=stock.offer.venue.managingOfferer,
+        )
+
+        # When
+        stock_payload = {
+            "offerId": humanize(stock.offer.id),
+            "beginningDatetime": "2022-01-17T22:00:00Z",
+            "bookingLimitDatetime": "2021-12-31T20:00:00Z",
+            "totalPrice": 1500,
+            "numberOfTickets": 38,
+            "educationalPriceDetail": "Détail du prix",
+        }
+
+        client.with_session_auth("user@example.com")
+        response = client.patch(f"/stocks/shadow-to-educational/{humanize(stock.id)}", json=stock_payload)
+        response_dict = response.json
+
+        # Then
+        created_stock = educational_models.CollectiveStock.query.filter_by(
+            stockId=dehumanize(response_dict["id"])
+        ).one()
+        created_offer = educational_models.CollectiveOffer.query.filter_by(offerId=stock.offer.id).one_or_none()
+        template = educational_models.CollectiveOfferTemplate.query.filter_by(offerId=stock.offer.id).one_or_none()
+        assert response.status_code == 201
+        assert template is None
+        assert created_stock.price == 1500
+        assert created_stock.priceDetail == "Détail du prix"
+        assert created_offer is not None
+
     def test_create_collective_offer_and_delete_collective_offer_template(self, app, client):
         # Given
         stock = offer_factories.EducationalEventStockFactory(
