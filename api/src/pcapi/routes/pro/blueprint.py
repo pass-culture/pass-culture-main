@@ -43,7 +43,7 @@ SECURITY_SCHEMES = [
 ]
 
 
-api_v2 = ExtendedSpecTree(
+pro_public_schema_v2 = ExtendedSpecTree(
     "flask",
     title="pass Culture pro public API v2",
     MODE="strict",
@@ -53,10 +53,10 @@ api_v2 = ExtendedSpecTree(
     humanize_operation_id=True,
     version=2,
 )
-api_v2.register(pro_public_api_v2)
+pro_public_schema_v2.register(pro_public_api_v2)
 
 
-api = ExtendedSpecTree(
+pro_private_schema = ExtendedSpecTree(
     "flask",
     title="pass Culture pro private API",
     MODE="strict",
@@ -66,4 +66,4 @@ api = ExtendedSpecTree(
     humanize_operation_id=True,
     version=1,
 )
-api.register(pro_private_api)
+pro_private_schema.register(pro_private_api)

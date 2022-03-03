@@ -97,7 +97,9 @@ def delete_stock(stock_id: str) -> StockIdResponseModel:
 
 @blueprint.pro_public_api_v2.route("/venue/<int:venue_id>/stocks", methods=["POST"])
 @api_key_required
-@spectree_serialize(on_success_status=204, on_error_statuses=[401, 404], api=blueprint.api_v2, tags=["API Stocks"])
+@spectree_serialize(
+    on_success_status=204, on_error_statuses=[401, 404], api=blueprint.pro_public_schema_v2, tags=["API Stocks"]
+)
 def update_stocks(venue_id: int, body: UpdateVenueStocksBodyModel) -> None:
     # in French, to be used by Swagger for the API documentation
     """Mise à jour des stocks d'un lieu enregistré auprès du pass Culture.
