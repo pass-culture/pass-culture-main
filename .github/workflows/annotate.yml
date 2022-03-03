@@ -53,8 +53,11 @@ jobs:
         env:
           JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
         if: ${{ steps.get_jira_issue_RC.outputs.RC != null && steps.get_jira_issue_RC.outputs.RC != '<no value>' }}
+        # The echo command is to clear jira config.yml file set in get jira issue step
         # The jira edit command uses .jira.d/templates/edit template by default
-        run: jira edit --query='"Release Candidate[Number]" > ${{ steps.get_jira_issue_RC.outputs.RC }}' --override customfield_10044=true --noedit
+        run: |
+          echo "issue:" >> $HOME/.jira.d/config.yml
+          jira edit --query='"Release Candidate[Number]" > ${{ steps.get_jira_issue_RC.outputs.RC }}' --override customfield_10044=true --noedit
       - name: Push release candidate to jira issue
         if: ${{ steps.get_jira_key.outputs.issue != null }}
         env:
