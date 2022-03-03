@@ -12,7 +12,6 @@ import pcapi.core.finance.api as finance_api
 from pcapi.core.mails.transactional.users.birthday_to_newly_eligible_user import (
     send_birthday_age_18_email_to_newly_eligible_user,
 )
-from pcapi.core.offerers.repository import get_offerers_by_date_validated
 from pcapi.core.offers.repository import check_stock_consistency
 from pcapi.core.offers.repository import delete_past_draft_offers
 from pcapi.core.offers.repository import find_tomorrow_event_stock_ids
@@ -28,7 +27,6 @@ from pcapi.core.users.external.user_automations import users_inactive_since_30_d
 from pcapi.core.users.external.user_automations import users_one_year_with_pass_automation
 from pcapi.core.users.external.user_automations import users_turned_eighteen_automation
 from pcapi.core.users.repository import get_newly_eligible_age_18_users
-from pcapi.domain.user_emails import send_withdrawal_terms_to_newly_validated_offerer
 from pcapi.local_providers.provider_api import provider_api_stocks
 from pcapi.local_providers.provider_manager import synchronize_venue_providers_for_provider
 from pcapi.models import db
@@ -171,15 +169,6 @@ def pc_clean_past_draft_offers() -> None:
 
 @cron_context
 @log_cron_with_transaction
-def pc_send_withdrawal_terms_to_offerers_validated_yesterday() -> None:
-    yesterday = datetime.date.today() - datetime.timedelta(days=1)
-    offerers_validated_yesterday = get_offerers_by_date_validated(yesterday)
-    for offerer in offerers_validated_yesterday:
-        send_withdrawal_terms_to_newly_validated_offerer(offerer)
-
-
-@cron_context
-@log_cron_with_transaction
 def pc_recredit_underage_users() -> None:
     recredit_underage_users()
 
@@ -300,8 +289,6 @@ def clock() -> None:
     scheduler.add_job(pc_send_tomorrow_events_notifications, "cron", day="*", hour="16")
 
     scheduler.add_job(pc_clean_past_draft_offers, "cron", day="*", hour="20")
-
-    scheduler.add_job(pc_send_withdrawal_terms_to_offerers_validated_yesterday, "cron", day="*", hour="6")
 
     scheduler.add_job(pc_recredit_underage_users, "cron", day="*", hour="7")
 

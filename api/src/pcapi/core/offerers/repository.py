@@ -1,4 +1,3 @@
-import datetime
 from typing import Optional
 
 from sqlalchemy import or_
@@ -183,13 +182,6 @@ def filter_offerers_with_keywords_string(query: Query, keywords_string: str) -> 
 
 def check_if_siren_already_exists(siren: str) -> bool:
     return db.session.query(db.session.query(models.Offerer.id).filter(models.Offerer.siren == siren).exists())
-
-
-def get_offerers_by_date_validated(date_validated: datetime.date) -> list[models.Offerer]:
-    from_date = datetime.datetime.combine(date_validated, datetime.datetime.min.time())
-    to = datetime.datetime.combine(date_validated, datetime.datetime.max.time())
-
-    return models.Offerer.query.filter(models.Offerer.dateValidated.between(from_date, to)).all()
 
 
 def find_siren_by_offerer_id(offerer_id) -> str:
