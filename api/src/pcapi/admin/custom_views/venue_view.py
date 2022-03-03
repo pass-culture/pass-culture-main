@@ -9,9 +9,11 @@ from flask_admin.babel import lazy_gettext
 from flask_admin.base import expose
 from flask_admin.contrib.sqla import filters as fa_filters
 from flask_admin.contrib.sqla import tools
+from flask_admin.contrib.sqla.fields import QuerySelectMultipleField
 from flask_admin.helpers import get_redirect_target
 from markupsafe import Markup
 from markupsafe import escape
+from sqlalchemy import func
 from sqlalchemy.orm import Query
 from sqlalchemy.orm import joinedload
 from sqlalchemy.orm import query
@@ -23,6 +25,7 @@ from wtforms.fields.simple import HiddenField
 from pcapi.admin.base_configuration import BaseAdminView
 from pcapi.core import search
 from pcapi.core.bookings.exceptions import CannotDeleteVenueWithBookingsException
+from pcapi.core.criteria import api as criteria_api
 from pcapi.core.finance import repository as finance_repository
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers.api import VENUE_ALGOLIA_INDEXED_FIELDS
@@ -67,6 +70,14 @@ class VenueChangeForm(Form):
     ids = HiddenField()
     is_permanent = BooleanField(
         label="Lieu permanent",
+    )
+    tags = QuerySelectMultipleField(
+        get_label="name",
+        query_factory=lambda: Criterion.query.all(),  # pylint: disable=unnecessary-lambda
+        allow_blank=True,
+    )
+    remove_other_tags = BooleanField(
+        label="Supprimer tous les autres tags",
     )
 
 
@@ -264,6 +275,16 @@ class VenueView(BaseAdminView):
         change_form.ids.data = joined_ids
         change_form.is_permanent.data = True
 
+        criteria_in_common = (
+            db.session.query(Criterion)
+            .join(offerers_models.VenueCriterion)
+            .filter(offerers_models.VenueCriterion.venueId.in_(ids))
+            .group_by(Criterion.id)
+            .having(func.count(offerers_models.VenueCriterion.criterion) == len(ids))
+            .all()
+        )
+        change_form.tags.data = criteria_in_common
+
         self._template_args["url"] = url
         self._template_args["change_form"] = change_form
         self._template_args["change_modal"] = True
@@ -279,10 +300,16 @@ class VenueView(BaseAdminView):
         if change_form.validate():
             venue_ids: list[str] = change_form.ids.data.split(",")
             is_permanent: bool = change_form.is_permanent.data
+            criteria: list[offerers_models.VenueCriterion] = change_form.data["tags"]
+            remove_other_tags = change_form.data["remove_other_tags"]
 
             Venue.query.filter(Venue.id.in_(venue_ids)).update(
                 values={"isPermanent": is_permanent}, synchronize_session=False
             )
+
+            criteria_ids = [crit.id for crit in criteria]
+            criteria_api.VenueUpdate(venue_ids, criteria_ids, replace_tags=remove_other_tags).run()
+
             db.session.commit()
             return redirect(url)
 
