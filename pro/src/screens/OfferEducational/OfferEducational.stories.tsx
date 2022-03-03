@@ -64,7 +64,6 @@ const Template = () => (
       })
     }
     initialValues={DEFAULT_EAC_FORM_VALUES}
-    isShowcaseFeatureEnabled={false}
     mode={Mode.CREATION}
     notify={{
       success: () => null,

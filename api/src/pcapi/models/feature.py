@@ -87,9 +87,6 @@ class FeatureToggle(enum.Enum):
     )
     ENABLE_PRO_ACCOUNT_CREATION = "Permettre l'inscription des comptes professionels"
     DISABLE_ENTERPRISE_API = "Désactiver les appels à l'API entreprise"
-    ENABLE_EAC_SHOWCASE_OFFER = (
-        "Permet de créer des offres collectives sans date ni prix depuis le formulaire de création d’offres collectives"
-    )
     ENABLE_IOS_OFFERS_LINK_WITH_REDIRECTION = "Active l'utilisation du lien avec redirection pour les offres (nécessaires pour contourner des restrictions d'iOS)"
 
     def is_active(self) -> bool:
@@ -141,7 +138,6 @@ FEATURES_DISABLED_BY_DEFAULT = (
     FeatureToggle.USER_PROFILING_FRAUD_CHECK,
     FeatureToggle.SHOW_INVOICES_ON_PRO_PORTAL,
     FeatureToggle.DISABLE_ENTERPRISE_API,
-    FeatureToggle.ENABLE_EAC_SHOWCASE_OFFER,
     FeatureToggle.ENABLE_IOS_OFFERS_LINK_WITH_REDIRECTION,
 )
 

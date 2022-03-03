@@ -33,7 +33,6 @@ export interface IOfferEducationalProps {
   setIsOfferActive?: (isActive: boolean) => void
   isOfferBooked?: boolean
   isOfferActive?: boolean
-  isShowcaseFeatureEnabled: boolean
 }
 
 const OfferEducational = ({
@@ -49,7 +48,6 @@ const OfferEducational = ({
   setIsOfferActive,
   isOfferBooked = false,
   isOfferActive = false,
-  isShowcaseFeatureEnabled,
 }: IOfferEducationalProps): JSX.Element => {
   const { resetForm, ...formik } = useFormik({
     initialValues,
@@ -85,7 +83,6 @@ const OfferEducational = ({
             educationalCategories={educationalCategories}
             educationalSubCategories={educationalSubCategories}
             getIsOffererEligible={getIsOffererEligible}
-            isShowcaseFeatureEnabled={isShowcaseFeatureEnabled}
             mode={mode}
             notify={notify}
             userOfferers={userOfferers}
