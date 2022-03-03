@@ -37,8 +37,6 @@ from pcapi.core.mails.transactional.sendinblue_template_ids import Transactional
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import repository as offers_repository
 from pcapi.core.offers import validation as offer_validation
-from pcapi.core.offers.models import Offer
-from pcapi.core.offers.models import Stock
 from pcapi.core.users.models import User
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationStatus
@@ -49,9 +47,6 @@ from pcapi.routes.adage.v1.serialization.prebooking import serialize_educational
 from pcapi.routes.adage_iframe.serialization.adage_authentication import AuthenticatedInformation
 from pcapi.routes.adage_iframe.serialization.adage_authentication import RedactorInformation
 from pcapi.routes.serialization.stock_serialize import EducationalStockCreationBodyModel
-from pcapi.utils.mailing import build_pc_pro_offer_link
-from pcapi.utils.mailing import format_booking_date_for_email
-from pcapi.utils.mailing import format_booking_hours_for_email
 
 
 logger = logging.getLogger(__name__)
