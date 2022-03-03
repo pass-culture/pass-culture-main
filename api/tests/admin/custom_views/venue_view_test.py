@@ -1,3 +1,4 @@
+import re
 from unittest.mock import patch
 
 import pytest
@@ -311,3 +312,25 @@ class GetVenueProviderLinkTest:
 
         # Then
         assert str(venue.id) in link
+
+
+class VenueForOffererSubviewTest:
+    @clean_database
+    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    def test_list_venues_for_offerer(self, mocked_validate_csrf_token, client):
+        admin = AdminFactory(email="user@example.com")
+        offerer = offers_factories.OffererFactory()
+        venue1 = offers_factories.VenueFactory(managingOfferer=offerer)
+        venue2 = offers_factories.VenueFactory(managingOfferer=offerer)
+        offers_factories.VenueFactory()  # not expected result
+
+        api_client = client.with_session_auth(admin.email)
+        response = api_client.get(f"/pc/back-office/venue_for_offerer/?id={offerer.id}")
+
+        assert response.status_code == 200
+
+        # Check venues in html content
+        regex = r'<td class="col-id">\s+(\d+)\s+</td>'
+        venue_ids = re.findall(regex, response.data.decode("utf8"))
+
+        assert sorted(venue_ids) == sorted([str(venue1.id), str(venue2.id)])

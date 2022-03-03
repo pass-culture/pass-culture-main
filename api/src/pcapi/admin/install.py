@@ -31,6 +31,7 @@ from pcapi.admin.custom_views.suspend_fraudulent_users_by_email_providers import
 from pcapi.admin.custom_views.user_email_history_view import UserEmailHistoryView
 from pcapi.admin.custom_views.user_offerer_view import UserOffererView
 from pcapi.admin.custom_views.venue_provider_view import VenueProviderView
+from pcapi.admin.custom_views.venue_view import VenueForOffererSubview
 from pcapi.admin.custom_views.venue_view import VenueView
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.models as offers_models
@@ -102,6 +103,14 @@ def install_views(admin: Admin, session: Session) -> None:
         OffererView(offerers_models.Offerer, session, name="Structures", category=Category.OFFRES_STRUCTURES_LIEUX)
     )
     admin.add_view(VenueView(offerers_models.Venue, session, name="Lieux", category=Category.OFFRES_STRUCTURES_LIEUX))
+    admin.add_view(
+        VenueForOffererSubview(
+            offerers_models.Venue,
+            session,
+            name="Lieux pour une structure",
+            endpoint="venue_for_offerer",
+        )
+    )
     admin.add_view(
         UserOffererView(
             UserOfferer, session, name="Lien Utilisateurs/Structures", category=Category.OFFRES_STRUCTURES_LIEUX
