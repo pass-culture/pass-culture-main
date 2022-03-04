@@ -1,5 +1,6 @@
 import React, { useCallback, useState } from 'react'
 
+import useNotification from 'components/hooks/useNotification'
 import Icon from 'components/layout/Icon'
 import { useModal } from 'hooks/useModal'
 import { deleteVenueImage } from 'repository/pcapi/pcapi'
@@ -20,15 +21,23 @@ export const ButtonImageDelete = ({
 }: ButtonImageDeleteProps): JSX.Element => {
   const { visible, showModal, hideModal } = useModal()
   const [isLoading, setIsLoading] = useState(false)
+  const notification = useNotification()
 
   const tryToDeleteVenueImage = useCallback(async () => {
     setIsLoading(true)
-    await deleteVenueImage({ venueId })
+    try {
+      await deleteVenueImage({ venueId })
 
-    onDeleteImage()
-    setIsLoading(false)
-    hideModal()
-  }, [onDeleteImage, hideModal, venueId])
+      onDeleteImage()
+    } catch (exception) {
+      notification.error(
+        'Une erreur est survenue. Merci de réessayer plus tard.'
+      )
+    } finally {
+      hideModal()
+      setIsLoading(false)
+    }
+  }, [notification, onDeleteImage, hideModal, venueId])
 
   return (
     <>
