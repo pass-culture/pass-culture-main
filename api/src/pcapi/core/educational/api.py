@@ -2,7 +2,6 @@ from datetime import datetime
 import decimal
 import logging
 from typing import Optional
-from typing import Union
 
 from pydantic.error_wrappers import ValidationError
 from sqlalchemy.orm import joinedload
@@ -39,6 +38,7 @@ from pcapi.core.offers import repository as offers_repository
 from pcapi.core.offers import validation as offer_validation
 from pcapi.core.users.models import User
 from pcapi.models import db
+from pcapi.models.feature import FeatureToggle
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.repository import repository
 from pcapi.repository import transaction
@@ -375,8 +375,8 @@ def notify_educational_redactor_on_educational_offer_or_stock_edit(
 
 
 def create_collective_stock(
-    stock_data: EducationalStockCreationBodyModel, user: User, *, legacy_id: Union[int, bool] = False
-) -> Union[CollectiveStock, None]:
+    stock_data: EducationalStockCreationBodyModel, user: User, *, legacy_id: Optional[int] = None
+) -> Optional[CollectiveStock]:
     from pcapi.core.offers.api import _update_offer_fraud_information
 
     offer_id = stock_data.offer_id
@@ -418,7 +418,9 @@ def create_collective_stock(
     logger.info("Collective stock has been created", extra={"collective_offer": collective_offer.id})
 
     if collective_offer.validation == OfferValidationStatus.DRAFT:
-        _update_offer_fraud_information(collective_offer, user)  # FIXME doublon avec les offer ?
+        _update_offer_fraud_information(
+            collective_offer, user, silent=not FeatureToggle.ENABLE_NEW_COLLECTIVE_MODEL.is_active()
+        )
 
     if not legacy_id:
         search.async_index_offer_ids([collective_offer.id])
