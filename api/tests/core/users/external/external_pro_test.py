@@ -182,6 +182,21 @@ def test_update_external_pro_user_attributes(
         BankInformationFactory(venue=venue4, status=BankInformationStatus.ACCEPTED)
         BankInformationFactory(venue=venue1, status=BankInformationStatus.REJECTED)
 
+    # Create inactive offerer and its venue, linked to email, which should not be taken into account in any attribute
+    inactive_offerer = OffererFactory(siren="999999999", name="Structure désactivée", isActive=False)
+    UserOffererFactory(user=pro_user, offerer=inactive_offerer)
+    VenueFactory(
+        managingOfferer=inactive_offerer,
+        name="Salle de concert des calanques",
+        departementCode="13",  # different from others
+        postalCode="13260",
+        city="Cassis",
+        bookingEmail=email,
+        siret="99999999900009",
+        isPermanent=create_permanent,
+        venueTypeCode=VenueTypeCode.CONCERT_HALL,  # different from others
+    )
+
     attributes = get_pro_attributes(pro_user.email)
 
     assert attributes.is_pro is True

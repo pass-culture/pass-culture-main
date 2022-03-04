@@ -4,11 +4,14 @@ from unittest.mock import patch
 import pytest
 
 from pcapi.admin.custom_views.venue_view import _get_venue_provider_link
+from pcapi.core.bookings.factories import BookingFactory
+from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
 from pcapi.core.providers import factories as providers_factories
+from pcapi.core.users import testing as sendinblue_testing
 from pcapi.core.users.factories import AdminFactory
 
 from tests.conftest import TestClient
@@ -287,6 +290,61 @@ class VenueViewTest:
         mocked_reindex_venue_ids.assert_called_once_with([venue.id])
         mocked_async_index_venue_ids.assert_not_called()
         mocked_async_index_offers_of_venue_ids.assert_not_called()
+
+    @clean_database
+    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    def test_delete_venue(self, mocked_validate_csrf_token, client):
+        admin = AdminFactory(email="user@example.com")
+        venue = offers_factories.VenueFactory(bookingEmail="booking@example.com")
+        user_offerer1 = offers_factories.UserOffererFactory(offerer=venue.managingOfferer)
+        user_offerer2 = offers_factories.UserOffererFactory(offerer=venue.managingOfferer)
+
+        api_client = client.with_session_auth(admin.email)
+        response = api_client.post(
+            "/pc/back-office/venue/delete/", form={"id": venue.id, "url": "/pc/back-office/venue/"}
+        )
+
+        assert response.status_code == 302
+        assert len(Venue.query.all()) == 0
+        assert len(sendinblue_testing.sendinblue_requests) == 3
+        assert {req["email"] for req in sendinblue_testing.sendinblue_requests} == {
+            user_offerer1.user.email,
+            user_offerer2.user.email,
+            "booking@example.com",
+        }
+
+    @pytest.mark.parametrize(
+        "booking_status",
+        [
+            BookingStatus.PENDING,
+            BookingStatus.USED,
+            BookingStatus.CONFIRMED,
+            BookingStatus.CANCELLED,
+            BookingStatus.REIMBURSED,
+        ],
+    )
+    @clean_database
+    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    def test_delete_venue_rejected(self, mocked_validate_csrf_token, client, booking_status):
+        admin = AdminFactory(email="user@example.com")
+        venue = offers_factories.VenueFactory()
+        offers_factories.UserOffererFactory(offerer=venue.managingOfferer)
+        BookingFactory(stock__offer__venue=venue, status=booking_status)
+
+        api_client = client.with_session_auth(admin.email)
+        response = api_client.post(
+            "/pc/back-office/venue/delete/", form={"id": venue.id, "url": "/pc/back-office/venue/"}
+        )
+
+        assert response.status_code == 302
+
+        list_response = api_client.get(response.headers["location"])
+        assert "Impossible d&#39;effacer un lieu pour lequel il existe des réservations." in list_response.data.decode(
+            "utf8"
+        )
+
+        assert len(Venue.query.all()) == 1
+        assert len(sendinblue_testing.sendinblue_requests) == 0
 
 
 class GetVenueProviderLinkTest:
