@@ -14,6 +14,7 @@ interface IConfirmDialogProps {
   cancelText: string
   isLoading?: boolean
   children: React.ReactNode | React.ReactNode[]
+  icon?: React.FunctionComponent<React.SVGProps<SVGSVGElement>>
 }
 
 const ConfirmDialog = ({
@@ -24,8 +25,11 @@ const ConfirmDialog = ({
   cancelText,
   isLoading = false,
   children,
+  icon,
 }: IConfirmDialogProps): JSX.Element => {
   const buttonRef = useRef<HTMLButtonElement | null>(null)
+
+  const Icon = icon ?? AlertSvg
 
   return (
     <DialogBox
@@ -34,7 +38,7 @@ const ConfirmDialog = ({
       initialFocusRef={buttonRef}
       labelledBy={title}
     >
-      <AlertSvg className={styles['confirm-dialog-icon']} />
+      <Icon className={styles['confirm-dialog-icon']} />
       <div className={styles['confirm-dialog-title']}>
         <strong>{title}</strong>
       </div>

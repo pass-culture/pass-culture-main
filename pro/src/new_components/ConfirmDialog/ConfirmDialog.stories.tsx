@@ -1,6 +1,8 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 import React from 'react'
 
+import { ReactComponent as TrashIcon } from 'icons/ico-trash.svg'
+
 import ConfirmDialog from './ConfirmDialog'
 
 export default {
@@ -27,4 +29,13 @@ WithLoading.args = {
   cancelText: 'cancel',
   children: 'lorem ipsum dolor sit amet',
   isLoading: true,
+}
+
+export const WithIcon = Template.bind({})
+WithIcon.args = {
+  title: 'title',
+  confirmText: 'confirm',
+  cancelText: 'cancel',
+  children: 'lorem ipsum dolor sit amet',
+  icon: TrashIcon,
 }
