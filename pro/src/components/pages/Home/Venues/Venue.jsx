@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom'
 import useActiveFeature from 'components/hooks/useActiveFeature'
 import Icon from 'components/layout/Icon'
 import { BOOKING_STATUS } from 'core/Bookings'
+import { venueCreateOfferLink } from 'core/Venue/utils'
 import { ReactComponent as IcoPlus } from 'icons/ico-plus.svg'
 
 import VenueStat from './VenueStat'
@@ -113,7 +114,7 @@ const Venue = ({
             <div className="h-card-col v-add-offer-link">
               <Link
                 className="tertiary-link"
-                to={`/offre/creation?structure=${offererId}&lieu=${id}`}
+                to={venueCreateOfferLink(offererId, id, isVirtual)}
               >
                 <IcoPlus />
                 <div>

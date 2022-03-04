@@ -39,6 +39,8 @@ const OfferDetails = ({
     initialValues.venueId = queryParams.lieu
   }
 
+  initialValues.isVirtualVenue = queryParams.numerique
+
   const formInitialValues = useRef(initialValues)
 
   const [formErrors, setFormErrors] = useState({})
