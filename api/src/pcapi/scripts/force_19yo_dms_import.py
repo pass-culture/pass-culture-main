@@ -40,13 +40,14 @@ def force_19yo_dms_import(dry_run: bool = True) -> None:
     for user in users:
         if user.has_beneficiary_role:
             continue
+        user_dms_fraud_checks = [fc for fc in user.beneficiaryFraudChecks if fc.type == fraud_models.FraudCheckType.DMS]
         if (
             user.dateOfBirth
             and user.age == 19
             and users_utils.get_age_at_date(user.dateOfBirth, user.dateCreated) == 18
-            and len(user.beneficiaryFraudChecks) == 1
+            and len(user_dms_fraud_checks) == 1
         ):
-            fraud_check = user.beneficiaryFraudChecks[0]
+            fraud_check = user_dms_fraud_checks[0]
             reasons = fraud_check.reasonCodes
             valid_reasons = (
                 fraud_models.FraudReasonCode.ALREADY_BENEFICIARY,
@@ -57,18 +58,20 @@ def force_19yo_dms_import(dry_run: bool = True) -> None:
                     to_activate.append(user)
     logger.info("Needs to reactivate %d users", len(to_activate))
     if dry_run:
+        print("Needs to reactivate users: %s" % to_activate)
         return
     activated = []
     not_activated = []
     for user in to_activate:
         if user.has_beneficiary_role:
             continue
-        fraud_check = user.beneficiaryFraudChecks[0]
+        fraud_check = [fc for fc in user.beneficiaryFraudChecks if fc.type == fraud_models.FraudCheckType.DMS][0]
         fraud_check.reason = ""
         if fraud_check.reasonCodes:
-            fraud_check.reasonCodes.clear()
+            fraud_check.reasonCodes = None
         fraud_check.status = FraudCheckStatus.OK
         eligibility_type = users_models.EligibilityType.AGE18
+        fraud_check.eligibilityType = eligibility_type
         fraud_api.create_honor_statement_fraud_check(
             user, "honor statement contained in DMS application", eligibility_type
         )
@@ -87,10 +90,10 @@ def force_19yo_dms_import(dry_run: bool = True) -> None:
             db.session.add(user)
             db.session.commit()
             logger.info("User %s is now activated", user.id)
-            activated.append(user)
+            activated.append(user.id)
         else:
             logger.info("Cannot activate user %d", user.id)
-            not_activated.append(user)
+            not_activated.append(user.id)
 
     logger.info("Users activated : %d", len(activated))
     logger.info("Users not activated : %d", len(not_activated))
