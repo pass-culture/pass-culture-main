@@ -567,14 +567,16 @@ def upsert_stocks(
     return stocks
 
 
-def _update_offer_fraud_information(offer: Union[educational_models.CollectiveOffer, Offer], user: User) -> None:
+def _update_offer_fraud_information(
+    offer: Union[educational_models.CollectiveOffer, Offer], user: User, *, silent: bool = False
+) -> None:
     offer.validation = set_offer_status_based_on_fraud_criteria(offer)
     offer.author = user
     offer.lastValidationDate = datetime.datetime.utcnow()
     if offer.validation == OfferValidationStatus.PENDING or offer.validation == OfferValidationStatus.REJECTED:
         offer.isActive = False
     repository.save(offer)
-    if offer.validation == OfferValidationStatus.APPROVED:
+    if offer.validation == OfferValidationStatus.APPROVED and not silent:
         admin_emails.send_offer_creation_notification_to_administration(offer)
 
 
@@ -609,7 +611,7 @@ def create_educational_stock(stock_data: EducationalStockCreationBodyModel, user
     logger.info("Educational stock has been created", extra={"offer": offer_id})
 
     if offer.validation == OfferValidationStatus.DRAFT:
-        _update_offer_fraud_information(offer, user)
+        _update_offer_fraud_information(offer, user, silent=FeatureToggle.ENABLE_NEW_COLLECTIVE_MODEL.is_active())
 
     search.async_index_offer_ids([offer.id])
 
@@ -897,7 +899,9 @@ def deactivate_inappropriate_products(isbn: str) -> bool:
     return True
 
 
-def set_offer_status_based_on_fraud_criteria(offer: Offer) -> OfferValidationStatus:
+def set_offer_status_based_on_fraud_criteria(
+    offer: Union[educational_models.CollectiveOffer, Offer]
+) -> OfferValidationStatus:
     current_config = offers_repository.get_current_offer_validation_config()
     if not current_config:
         return OfferValidationStatus.APPROVED
