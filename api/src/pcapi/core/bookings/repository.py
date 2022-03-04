@@ -778,3 +778,12 @@ def venues_have_bookings(*venues: Venue) -> bool:
 def user_has_bookings(user: User) -> bool:
     bookings_query = Booking.query.join(Booking.offerer).join(Offerer.UserOfferers)
     return db.session.query(bookings_query.filter(UserOfferer.userId == user.id).exists()).scalar()
+
+
+def offerer_has_ongoing_bookings(offerer_id: Offerer) -> bool:
+    return db.session.query(
+        Booking.query.filter(
+            Booking.offererId == offerer_id,
+            Booking.status.in_((BookingStatus.PENDING, BookingStatus.CONFIRMED)),
+        ).exists()
+    ).scalar()

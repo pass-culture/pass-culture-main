@@ -125,8 +125,13 @@ def find_virtual_venue_by_offerer_id(offerer_id: int) -> Optional[models.Venue]:
     return models.Venue.query.filter_by(managingOffererId=offerer_id, isVirtual=True).first()
 
 
-def find_venues_by_booking_email(email: str) -> list[models.Venue]:
-    return models.Venue.query.filter_by(bookingEmail=email).all()
+def find_active_venues_by_booking_email(email: str) -> list[models.Venue]:
+    return (
+        models.Venue.query.filter_by(bookingEmail=email)
+        .join(models.Offerer)
+        .filter(models.Offerer.isActive == True)
+        .all()
+    )
 
 
 def has_physical_venue_without_draft_or_accepted_bank_information(offerer_id: int) -> bool:
@@ -200,6 +205,10 @@ def venues_have_offers(*venues: models.Venue) -> bool:
             Offer.venueId.in_([venue.id for venue in venues]), Offer.status == OfferStatus.ACTIVE.name
         ).exists()
     ).scalar()
+
+
+def find_venues_by_managing_offerer_id(offerer_id: int) -> list[models.Venue]:
+    return models.Venue.query.filter_by(managingOffererId=offerer_id).all()
 
 
 def find_venues_by_offerers(*offerers: models.Offerer) -> list[models.Venue]:
