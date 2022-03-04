@@ -12,6 +12,7 @@ from pydantic import root_validator
 from pydantic import validator
 from typing_extensions import TypedDict
 
+from pcapi.core.offerers import exceptions
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers.validation import VENUE_BANNER_MAX_SIZE
 from pcapi.routes.serialization import BaseModel
@@ -301,10 +302,10 @@ class VenueBannerContentModel(BaseModel):
         try:
             file = request.files["banner"]
         except (AttributeError, KeyError):
-            raise ValueError("Image manquante")
+            raise exceptions.InvalidVenueBannerContent("Image manquante")
 
         if file.content_length and file.content_length > VENUE_BANNER_MAX_SIZE:
-            raise ValueError(f"Image trop grande, max: {VENUE_BANNER_MAX_SIZE / 1_000}Ko")
+            raise exceptions.VenueBannerTooBig(f"Image trop grande, max: {VENUE_BANNER_MAX_SIZE / 1_000}Ko")
 
         return request
 

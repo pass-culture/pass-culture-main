@@ -1,14 +1,17 @@
 from flask import request
 from flask_login import current_user
 from flask_login import login_required
+import pydantic
 
 from pcapi.core.bookings.repository import get_legacy_active_bookings_quantity_for_venue
 from pcapi.core.bookings.repository import get_legacy_validated_bookings_quantity_for_venue
 from pcapi.core.offerers import api as offerers_api
+from pcapi.core.offerers import exceptions
 from pcapi.core.offerers import repository as offerers_repository
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers.repository import get_active_offers_count_for_venue
 from pcapi.core.offers.repository import get_sold_out_offers_count_for_venue
+from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import as_dict
 from pcapi.routes.serialization import venues_serialize
@@ -137,7 +140,18 @@ def upsert_venue_banner(venue_id: str) -> GetVenueResponseModel:
 
     check_user_has_access_to_offerer(current_user, venue.managingOffererId)
 
-    venue_banner = venues_serialize.VenueBannerContentModel.from_request(request)
+    try:
+        venue_banner = venues_serialize.VenueBannerContentModel.from_request(request)
+    except exceptions.InvalidVenueBannerContent as err:
+        content = {"code": "INVALID_BANNER_CONTENT", "message": str(err)}
+        raise ApiErrors(content, status_code=400)
+    except exceptions.VenueBannerTooBig as err:
+        content = {"code": "BANNER_TOO_BIG", "message": str(err)}
+        raise ApiErrors(content, status_code=400)
+    except pydantic.ValidationError as err:
+        locations = ", ".join([loc for e in err.errors() for loc in e["loc"]])
+        content = {"code": "INVALID_BANNER_PARAMS", "message": locations}
+        raise ApiErrors(content, status_code=400)
 
     offerers_api.save_venue_banner(
         user=current_user,

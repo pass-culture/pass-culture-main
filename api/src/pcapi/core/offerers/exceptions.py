@@ -28,3 +28,11 @@ class CannotFindOffererSiren(Exception):
 
 class MissingOffererIdQueryParameter(Exception):
     pass
+
+
+class InvalidVenueBannerContent(Exception):
+    pass
+
+
+class VenueBannerTooBig(Exception):
+    pass
