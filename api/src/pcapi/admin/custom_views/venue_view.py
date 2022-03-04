@@ -32,6 +32,7 @@ from pcapi.core.offers.api import update_stock_id_at_providers
 from pcapi.core.users.external import update_external_pro
 from pcapi.models import db
 from pcapi.models.criterion import Criterion
+from pcapi.repository import user_offerer_queries
 from pcapi.scripts.offerer.delete_cascade_venue_by_id import delete_cascade_venue_by_id
 
 
@@ -45,6 +46,17 @@ def _get_venue_provider_link(view, context, model, name) -> Union[Markup, None]:
         return None
     url = url_for("venue_providers.index_view", id=model.id)
     return Markup('<a href="{url}">{text}</a>').format(url=url, text=model.venueProviders[0].provider.name)
+
+
+def _get_emails_by_venue(venue: Venue) -> set[str]:
+    """
+    Get all emails for which pro attributes may be modified when the venue is updated or deleted.
+    Be careful: venue attributes are no longer available after venue object is deleted, call this function before.
+    """
+    users_offerer = user_offerer_queries.find_all_by_offerer_id(venue.managingOfferer.id)
+    emails = {user_offerer.user.email for user_offerer in users_offerer}
+    emails.add(venue.bookingEmail)
+    return emails
 
 
 class VenueChangeForm(Form):
@@ -90,6 +102,7 @@ class VenueView(BaseAdminView):
         "provider_name",
         "managingOfferer.name",
         "dateCreated",
+        "isActive",
     ]
     column_labels = {
         "name": "Nom",
@@ -105,6 +118,7 @@ class VenueView(BaseAdminView):
         "provider_name": "Provider",
         "managingOfferer.name": "Structure",
         "dateCreated": "Date de création",
+        "isActive": "Structure active",
     }
     column_searchable_list = ["name", "siret", "publicName"]
     column_filters = [
@@ -156,11 +170,14 @@ class VenueView(BaseAdminView):
         return formatters
 
     def delete_model(self, venue: Venue) -> bool:
+        emails = _get_emails_by_venue(venue)
         try:
             delete_cascade_venue_by_id(venue.id)
+            for email in emails:
+                update_external_pro(email)
             return True
         except CannotDeleteVenueWithBookingsException:
-            flash("Impossible d'effacer un lieu pour lequel il existe des reservations.", "error")
+            flash("Impossible d'effacer un lieu pour lequel il existe des réservations.", "error")
         return False
 
     def update_model(self, new_venue_form: Form, venue: Venue) -> bool:
@@ -214,7 +231,10 @@ class VenueView(BaseAdminView):
         if changed_attributes:
             search.async_index_offers_of_venue_ids([venue.id])
 
-        update_external_pro(venue.bookingEmail)
+        # Update pro attributes for all related emails: bookingEmail (no distinct former and new because bookingEmail
+        # cannot be changed from backoffice) and pro users
+        for email in _get_emails_by_venue(venue):
+            update_external_pro(email)
 
         return True
 

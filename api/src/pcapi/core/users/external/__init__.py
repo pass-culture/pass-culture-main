@@ -12,7 +12,7 @@ from pcapi.core.bookings.models import IndividualBooking
 from pcapi.core.bookings.repository import venues_have_bookings
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import Venue
-from pcapi.core.offerers.repository import find_venues_by_booking_email
+from pcapi.core.offerers.repository import find_active_venues_by_booking_email
 from pcapi.core.offerers.repository import find_venues_by_offerers
 from pcapi.core.offerers.repository import venues_have_offers
 from pcapi.core.offers.models import Offer
@@ -80,8 +80,10 @@ def get_pro_attributes(email: str) -> ProAttributes:
 
     user = find_pro_user_by_email(email)
     if user:
-        if user.offerers:
-            offerer_name += [offerer.name for offerer in user.offerers]
+        offerers = [offerer for offerer in user.offerers if offerer.isActive]
+
+        if offerers:
+            offerer_name += [offerer.name for offerer in offerers]
 
         # A pro user is considered as:
         # - a creator if he is the lowest id of user_offerer association for any offerer,
@@ -90,10 +92,10 @@ def get_pro_attributes(email: str) -> ProAttributes:
         # to get that information
         user_is_creator = False
         user_is_attached = False
-        if user and user.offerers:
-            offerer_ids = [offerer.id for offerer in user.offerers]
+        if user and offerers:
+            offerer_ids = [offerer.id for offerer in offerers]
             user_offerers = UserOfferer.query.filter(Offerer.id.in_(offerer_ids)).all()
-            all_venue_ids.update([venue.id for venue in find_venues_by_offerers(*user.offerers)])
+            all_venue_ids.update([venue.id for venue in find_venues_by_offerers(*offerers)])
             for offerer_id in offerer_ids:
                 if min([(uo.id, uo.userId) for uo in user_offerers if uo.offererId == offerer_id])[1] == user.id:
                     user_is_creator = True
@@ -111,7 +113,7 @@ def get_pro_attributes(email: str) -> ProAttributes:
             }
         )
 
-    venues = find_venues_by_booking_email(email)
+    venues = find_active_venues_by_booking_email(email)
     if venues:
         offerer_name += [venue.managingOfferer.name for venue in venues if venue.managingOfferer]
         all_venue_ids.update([venue.id for venue in venues])

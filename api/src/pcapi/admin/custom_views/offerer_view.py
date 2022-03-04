@@ -10,12 +10,27 @@ from wtforms import Form
 
 from pcapi.admin.base_configuration import BaseAdminView
 from pcapi.core.bookings.exceptions import CannotDeleteOffererWithBookingsException
+from pcapi.core.bookings.repository import offerer_has_ongoing_bookings
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import OffererTag
 from pcapi.core.offerers.models import OffererTagMapping
+from pcapi.core.offerers.repository import find_venues_by_managing_offerer_id
 from pcapi.core.users.external import update_external_pro
 from pcapi.repository import user_offerer_queries
 from pcapi.scripts.offerer.delete_cascade_offerer_by_id import delete_cascade_offerer_by_id
+
+
+def _get_emails_by_offerer(offerer: Offerer) -> set[str]:
+    """
+    Get all emails for which pro attributes may be modified when the offerer is updated or deleted.
+    Any bookingEmail in a venue should be updated in sendinblue when offerer is disabled, deleted or its name changed
+    """
+    users_offerer = user_offerer_queries.find_all_by_offerer_id(offerer.id)
+    emails = {user_offerer.user.email for user_offerer in users_offerer}
+
+    emails |= {venue.bookingEmail for venue in find_venues_by_managing_offerer_id(offerer.id)}
+
+    return emails
 
 
 def _venues_link(view, context, model, name) -> Markup:
@@ -42,7 +57,7 @@ class OffererTagFilter(fa_filters.BaseSQLAFilter):
 class OffererView(BaseAdminView):
     can_edit = True
     can_delete = True
-    column_list = ["id", "name", "siren", "city", "postalCode", "address", "tags", "venues"]
+    column_list = ["id", "name", "siren", "city", "postalCode", "address", "tags", "venues", "isActive"]
     column_labels = dict(
         name="Nom",
         siren="SIREN",
@@ -51,10 +66,11 @@ class OffererView(BaseAdminView):
         address="Adresse",
         tags="Tags",
         venues="Lieux",
+        isActive="Active",
     )
     column_searchable_list = ["name", "siren"]
-    column_filters = ["postalCode", "city", "id", "name", OffererTagFilter(Offerer.id, "Tag")]
-    form_columns = ["name", "siren", "city", "postalCode", "address", "tags"]
+    column_filters = ["postalCode", "city", "id", "name", OffererTagFilter(Offerer.id, "Tag"), "isActive"]
+    form_columns = ["name", "siren", "city", "postalCode", "address", "tags", "isActive"]
 
     @property
     def column_formatters(self):
@@ -65,8 +81,7 @@ class OffererView(BaseAdminView):
     def delete_model(self, offerer: Offerer) -> bool:
         # Get users to update before association info is deleted
         # joined user is no longer available after delete_model()
-        users_offerer = user_offerer_queries.find_all_by_offerer_id(offerer.id)
-        emails = [user_offerer.user.email for user_offerer in users_offerer]
+        emails = _get_emails_by_offerer(offerer)
 
         try:
             delete_cascade_offerer_by_id(offerer.id)
@@ -80,10 +95,18 @@ class OffererView(BaseAdminView):
         return True
 
     def update_model(self, form: Form, offerer: Offerer) -> bool:
+        if offerer.isActive and not form.isActive.data:
+            if offerer_has_ongoing_bookings(offerer.id):
+                flash(
+                    "Impossible de désactiver une structure juridique pour laquelle des réservations sont en cours.",
+                    "error",
+                )
+                return False
+
         result = super().update_model(form, offerer)
 
         if result:
-            for user_offerer in user_offerer_queries.find_all_by_offerer_id(offerer.id):
-                update_external_pro(user_offerer.user.email)
+            for email in _get_emails_by_offerer(offerer):
+                update_external_pro(email)
 
         return result

@@ -28,6 +28,7 @@ class OffererFactory(BaseFactory):
     postalCode = "75000"
     city = "Paris"
     siren = factory.Sequence(lambda n: f"{n:09}")
+    isActive = True
 
 
 class UserOffererFactory(BaseFactory):
