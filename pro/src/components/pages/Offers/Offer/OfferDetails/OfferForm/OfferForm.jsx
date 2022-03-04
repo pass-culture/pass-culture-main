@@ -673,6 +673,7 @@ const OfferForm = ({
             isTypeOfflineButOnlyVirtualVenues={
               isTypeOfflineButOnlyVirtualVenues
             }
+            isVirtualOffer={initialValues.isVirtualVenue}
             readOnlyFields={readOnlyFields}
             subCategories={subCategories}
             updateCategoriesFormValues={handleFormUpdate}

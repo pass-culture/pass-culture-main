@@ -214,6 +214,23 @@ describe('offerDetails - Creation - pro user', () => {
       ).not.toBeInTheDocument()
     })
 
+    it('should only display digital categories and subcategories', async () => {
+      //Given
+      const queryParams = `?structure=${offerers[0].id}&lieu=${venues[0].id}&numerique`
+
+      //When
+      await renderOffers(props, store, queryParams)
+
+      //Then
+      expect(
+        screen.queryByText('Beaux-arts', { selector: 'option' })
+      ).not.toBeInTheDocument()
+      setOfferValues({ categoryId: 'FILM' })
+      expect(
+        screen.queryByText('Support physique', { selector: 'option' })
+      ).not.toBeInTheDocument()
+    })
+
     describe('when selecting an offer type', () => {
       describe('when selecting physical type', () => {
         it('should inform user to add a venue if only virtual venue', async () => {
