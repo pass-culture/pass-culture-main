@@ -2,6 +2,7 @@ import PropTypes from 'prop-types'
 import React, { useCallback, useEffect, useState } from 'react'
 
 import Select, { buildSelectOptions } from 'components/layout/inputs/Select'
+import { CATEGORY_STATUS } from 'core/Offers'
 
 import { DEFAULT_FORM_VALUES } from '../../_constants'
 
@@ -11,16 +12,42 @@ const OfferCategories = ({
   categories,
   getErrorMessage,
   categoriesFormValues,
+  isVirtualOffer,
   isTypeOfflineButOnlyVirtualVenues,
   readOnlyFields,
   subCategories,
   updateCategoriesFormValues,
   updateFormErrors,
 }) => {
+  const categoryIsVirtual = useCallback(
+    categoryId => {
+      return (
+        subCategories.filter(
+          s =>
+            s.categoryId === categoryId &&
+            [
+              CATEGORY_STATUS.ONLINE,
+              CATEGORY_STATUS.ONLINE_OR_OFFLINE,
+            ].includes(s.onlineOfflinePlatform)
+        ).length > 0
+      )
+    },
+    [subCategories]
+  )
+  const categoryFilters = useCallback(
+    category => {
+      return (
+        category.isSelectable &&
+        (!isVirtualOffer || categoryIsVirtual(category.id))
+      )
+    },
+    [categoryIsVirtual, isVirtualOffer]
+  )
+
   const categoriesOptions = buildSelectOptions(
     'id',
     'proLabel',
-    categories.filter(category => category.isSelectable)
+    categories.filter(categoryFilters)
   )
   const [subCategoriesOptions, setSubCategoriesOptions] = useState(null)
   const [subCategoryConditionalFields, setSubCategoryConditionalFields] =
@@ -29,11 +56,14 @@ const OfferCategories = ({
   useEffect(
     function onCategoryChange() {
       if (categoriesFormValues.categoryId !== DEFAULT_FORM_VALUES.categoryId) {
-        const options = subCategories.filter(
+        let options = subCategories.filter(
           subCategory =>
             subCategory.categoryId === categoriesFormValues.categoryId &&
             subCategory.isSelectable
         )
+        if (isVirtualOffer) {
+          options = options.filter(option => option.isDigitalDeposit)
+        }
         updateFormErrors({})
         setSubCategoriesOptions(buildSelectOptions('id', 'proLabel', options))
       } else {
@@ -42,6 +72,7 @@ const OfferCategories = ({
     },
     [
       categoriesFormValues.categoryId,
+      isVirtualOffer,
       subCategories,
       updateCategoriesFormValues,
       updateFormErrors,
@@ -202,6 +233,7 @@ const OfferCategories = ({
 
 OfferCategories.defaultProps = {
   isTypeOfflineButOnlyVirtualVenues: false,
+  isVirtualOffer: false,
 }
 
 OfferCategories.propTypes = {
@@ -216,6 +248,7 @@ OfferCategories.propTypes = {
   }).isRequired,
   getErrorMessage: PropTypes.func.isRequired,
   isTypeOfflineButOnlyVirtualVenues: PropTypes.bool,
+  isVirtualOffer: PropTypes.bool,
   readOnlyFields: PropTypes.arrayOf(PropTypes.string).isRequired,
   subCategories: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   updateCategoriesFormValues: PropTypes.func.isRequired,
