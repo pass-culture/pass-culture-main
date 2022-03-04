@@ -28,6 +28,7 @@ from pcapi.core.mails.transactional.sendinblue_template_ids import Transactional
 from pcapi.core.offers import api as offers_api
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import factories as offers_factories
+from pcapi.core.testing import override_features
 from pcapi.core.testing import override_settings
 import pcapi.core.users.factories as users_factories
 from pcapi.models import api_errors
@@ -36,7 +37,6 @@ from pcapi.routes.adage.v1.serialization.prebooking import serialize_educational
 from pcapi.routes.adage_iframe.serialization.adage_authentication import AuthenticatedInformation
 from pcapi.routes.adage_iframe.serialization.adage_authentication import RedactorInformation
 from pcapi.routes.serialization import stock_serialize
-from pcapi.utils.human_ids import humanize
 
 from tests.conftest import clean_database
 
@@ -825,6 +825,7 @@ class CreateCollectiveOfferStocksTest:
         }
         assert CollectiveStock.query.count() == 0
 
+    @override_features(ENABLE_NEW_COLLECTIVE_MODEL=True)
     @mock.patch("pcapi.domain.admin_emails.send_offer_creation_notification_to_administration")
     @mock.patch("pcapi.core.offers.api.set_offer_status_based_on_fraud_criteria")
     def test_send_email_when_offer_automatically_approved_based_on_fraud_criteria(

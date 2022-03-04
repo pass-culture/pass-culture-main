@@ -1,5 +1,7 @@
 from dataclasses import dataclass
+from typing import Union
 
+from pcapi.core.educational.models import CollectiveOffer
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import OfferValidationConfig
 from pcapi.models.pc_object import PcObject
@@ -31,7 +33,7 @@ class OfferValidationRuleItem:
 
 
 def parse_offer_validation_config(
-    offer: Offer, config: OfferValidationConfig
+    offer: Union[CollectiveOffer, Offer], config: OfferValidationConfig
 ) -> tuple[float, list[OfferValidationRuleItem]]:
     minimum_score = float(config.specs["minimum_score"])
     rules = config.specs["rules"]
