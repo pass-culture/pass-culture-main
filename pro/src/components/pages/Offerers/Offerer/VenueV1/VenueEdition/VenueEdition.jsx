@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types'
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState, useCallback } from 'react'
 import { Form } from 'react-final-form'
 import { getCanSubmit, parseSubmitErrors } from 'react-final-form-utils'
 import { Link, NavLink } from 'react-router-dom'
@@ -55,16 +55,30 @@ const VenueEdition = ({
     'ENFORCE_BANK_INFORMATION_WITH_SIRET'
   )
 
-  const onImageUpload = ({ bannerUrl, credit }) => {
+  const onImageUpload = useCallback(
+    ({ bannerUrl, credit }) => {
+      setVenue({
+        ...venue,
+        bannerUrl,
+        bannerMeta: {
+          ...venue.bannerMeta,
+          image_credit: credit,
+        },
+      })
+    },
+    [venue]
+  )
+
+  const onDeleteImage = useCallback(() => {
     setVenue({
       ...venue,
-      bannerUrl,
+      bannerUrl: undefined,
       bannerMeta: {
         ...venue.bannerMeta,
-        image_credit: credit,
+        image_credit: undefined,
       },
     })
-  }
+  }, [venue])
 
   const shouldDisplayImageVenueUploaderSection = venue?.isPermanent
 
@@ -195,6 +209,7 @@ const VenueEdition = ({
           )}
           {!!shouldDisplayImageVenueUploaderSection && (
             <ImageVenueUploaderSection
+              onDeleteImage={onDeleteImage}
               onImageUpload={onImageUpload}
               venueCredit={venue.bannerMeta?.image_credit}
               venueId={venue.id}
