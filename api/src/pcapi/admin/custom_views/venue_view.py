@@ -98,6 +98,7 @@ class VenueView(BaseAdminView):
         "postalCode",
         "address",
         "venueTypeCode",
+        "venueLabel.label",
         "criteria",
         "offres",
         "publicName",
@@ -116,6 +117,7 @@ class VenueView(BaseAdminView):
         "postalCode": "Code postal",
         "address": "Adresse",
         "venueTypeCode": "Type de lieu",
+        "venueLabel.label": "Label du lieu",
         "criteria": "Tag",
         "publicName": "Nom d'usage",
         "latitude": "Latitude",
@@ -134,6 +136,7 @@ class VenueView(BaseAdminView):
         "id",
         "managingOfferer.name",
         "venueTypeCode",
+        "venueLabel.label",
         VenueCriteriaFilter(Venue.id, "Tag"),
     ]
     form_columns = [
@@ -154,6 +157,7 @@ class VenueView(BaseAdminView):
             self._extend_query(super().get_query())
             .options(joinedload(Venue.managingOfferer))
             .options(joinedload(Venue.venueProviders))
+            .options(joinedload(Venue.venueLabel))
             .options(joinedload(Venue.criteria))
         )
 
