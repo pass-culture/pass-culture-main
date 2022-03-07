@@ -630,7 +630,6 @@ class UpsertStocksTest:
         existing_stock = offer_models.Stock.query.one()
         assert existing_stock.price == 10
 
-    @override_features(ENABLE_NEW_COLLECTIVE_MODEL=True)
     @mock.patch("pcapi.domain.admin_emails.send_offer_creation_notification_to_administration")
     @mock.patch("pcapi.core.offers.api.set_offer_status_based_on_fraud_criteria")
     def test_send_email_when_offer_automatically_approved_based_on_fraud_criteria(

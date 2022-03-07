@@ -386,7 +386,7 @@ def create_collective_stock(
     number_of_tickets = stock_data.number_of_tickets
     educational_price_detail = stock_data.educational_price_detail
 
-    if legacy_id:  # FIXME remove legacy support layer
+    if legacy_id:  # FIXME (rpaoloni, 2022-03-7): Remove legacy support layer
         collective_offer = (
             CollectiveOffer.query.filter_by(offerId=offer_id)
             .options(joinedload(CollectiveOffer.collectiveStock))
@@ -412,15 +412,21 @@ def create_collective_stock(
         price=total_price,
         numberOfTickets=number_of_tickets,
         priceDetail=educational_price_detail,
-        stockId=legacy_id if legacy_id else None,  # FIXME remove legacy support layer
+        stockId=legacy_id if legacy_id else None,  # FIXME (rpaoloni, 2022-03-7): Remove legacy support layer
     )
     repository.save(collective_stock)
-    logger.info("Collective stock has been created", extra={"collective_offer": collective_offer.id})
+    logger.info(
+        "Collective stock has been created",
+        extra={"collective_offer": collective_offer.id, "collective_stock_id": collective_stock.id},
+    )
 
-    if collective_offer.validation == OfferValidationStatus.DRAFT:
-        _update_offer_fraud_information(
-            collective_offer, user, silent=not FeatureToggle.ENABLE_NEW_COLLECTIVE_MODEL.is_active()
-        )
+    if FeatureToggle.ENABLE_NEW_COLLECTIVE_MODEL.is_active():
+        if collective_offer.validation == OfferValidationStatus.DRAFT:
+            _update_offer_fraud_information(collective_offer, user)
+    else:
+        collective_offer.validation = OfferValidationStatus.APPROVED
+        collective_offer.lastValidationDate = datetime.now()
+        repository.save(collective_offer)
 
     if not legacy_id:
         search.async_index_offer_ids([collective_offer.id])
