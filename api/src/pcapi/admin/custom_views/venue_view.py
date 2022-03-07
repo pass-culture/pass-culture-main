@@ -48,6 +48,10 @@ def _get_venue_provider_link(view, context, model, name) -> Union[Markup, None]:
     return Markup('<a href="{url}">{text}</a>').format(url=url, text=model.venueProviders[0].provider.name)
 
 
+def _get_venue_type_code_formatter(view, context, model, name) -> Union[Markup, None]:
+    return Markup("<span>{text}</span>").format(text=model.venueTypeCode.value if model.venueTypeCode else "")
+
+
 def _get_emails_by_venue(venue: Venue) -> set[str]:
     """
     Get all emails for which pro attributes may be modified when the venue is updated or deleted.
@@ -93,6 +97,7 @@ class VenueView(BaseAdminView):
         "city",
         "postalCode",
         "address",
+        "venueTypeCode",
         "criteria",
         "offres",
         "publicName",
@@ -110,6 +115,7 @@ class VenueView(BaseAdminView):
         "city": "Ville",
         "postalCode": "Code postal",
         "address": "Adresse",
+        "venueTypeCode": "Type de lieu",
         "criteria": "Tag",
         "publicName": "Nom d'usage",
         "latitude": "Latitude",
@@ -127,6 +133,7 @@ class VenueView(BaseAdminView):
         "publicName",
         "id",
         "managingOfferer.name",
+        "venueTypeCode",
         VenueCriteriaFilter(Venue.id, "Tag"),
     ]
     form_columns = [
@@ -167,6 +174,7 @@ class VenueView(BaseAdminView):
         formatters = super().column_formatters
         formatters.update(offres=_offers_link)
         formatters.update(provider_name=_get_venue_provider_link)
+        formatters.update(venueTypeCode=_get_venue_type_code_formatter)
         return formatters
 
     def delete_model(self, venue: Venue) -> bool:
