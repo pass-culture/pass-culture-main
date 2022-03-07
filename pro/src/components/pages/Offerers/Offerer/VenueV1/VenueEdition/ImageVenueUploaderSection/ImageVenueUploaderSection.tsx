@@ -7,12 +7,12 @@ import DialogBox from 'new_components/DialogBox'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
+import { ButtonImageDelete } from '../ButtonImageDelete'
 import { ImageUploadButton } from '../ImageUploadButton/ImageUploadButton'
 import { VenueImage } from '../VenueImage/VenueImage'
 import { VenueImagePreview } from '../VenueImagePreview/VenueImagePreview'
 
 import styles from './ImageVenueUploaderSection.module.scss'
-import { VenueImageDeleteModal } from './VenueImageDeleteModal'
 import { VenueImageUploaderModal } from './VenueImageUploaderModal'
 
 type ImageVenueUploaderSectionProps = {
@@ -26,6 +26,7 @@ type ImageVenueUploaderSectionProps = {
     bannerUrl: string
     credit: string
   }) => void
+  onDeleteImage: () => void
 }
 
 export const ImageVenueUploaderSection = ({
@@ -33,16 +34,12 @@ export const ImageVenueUploaderSection = ({
   venueImage,
   venueCredit,
   onImageUpload,
+  onDeleteImage,
 }: ImageVenueUploaderSectionProps): JSX.Element => {
   const {
     visible: isUploaderModalVisible,
     showModal: showUploaderModal,
     hideModal: hideUploaderModal,
-  } = useModal()
-  const {
-    visible: isDeleteModalVisible,
-    showModal: showDeleteModal,
-    hideModal: hideDeleteModal,
   } = useModal()
   const {
     visible: isPreviewModalVisible,
@@ -92,13 +89,10 @@ export const ImageVenueUploaderSection = ({
               Prévisualiser
             </Button>
             {shouldDisplayImageVenueDeletion && (
-              <Button onClick={showDeleteModal} variant={ButtonVariant.TERNARY}>
-                <Icon
-                  className={styles['image-venue-uploader-section-icon']}
-                  svg="ico-trash-filled"
-                />
-                Supprimer
-              </Button>
+              <ButtonImageDelete
+                onDeleteImage={onDeleteImage}
+                venueId={venueId}
+              />
             )}
           </div>
         </div>
@@ -113,9 +107,6 @@ export const ImageVenueUploaderSection = ({
           venueCredit={venueCredit}
           venueId={venueId}
         />
-      )}
-      {!!isDeleteModalVisible && (
-        <VenueImageDeleteModal onDismiss={hideDeleteModal} />
       )}
       {isPreviewModalVisible && venueImage && (
         <DialogBox
