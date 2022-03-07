@@ -14,6 +14,7 @@ from pcapi.core.bookings.repository import offerer_has_ongoing_bookings
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import OffererTag
 from pcapi.core.offerers.models import OffererTagMapping
+from pcapi.core.offerers.models import Venue
 from pcapi.core.offerers.repository import find_venues_by_managing_offerer_id
 from pcapi.core.users.external import update_external_pro
 from pcapi.repository import user_offerer_queries
@@ -102,6 +103,16 @@ class OffererView(BaseAdminView):
                     "error",
                 )
                 return False
+
+            # When offerer is disabled, disable its venues -- committed in update_model() below
+            Venue.query.filter_by(managingOffererId=offerer.id).update({"isActive": False}, synchronize_session=False)
+
+        elif not offerer.isActive and form.isActive.data:
+            if find_venues_by_managing_offerer_id(offerer.id):
+                flash(
+                    "Attention : la réactivation de la structure ne réactive pas les lieux associés. "
+                    "Vous devez réactiver manuellement chaque lieu concerné."
+                )
 
         result = super().update_model(form, offerer)
 

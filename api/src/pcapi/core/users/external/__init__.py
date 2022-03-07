@@ -13,7 +13,7 @@ from pcapi.core.bookings.repository import venues_have_bookings
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offerers.repository import find_active_venues_by_booking_email
-from pcapi.core.offerers.repository import find_venues_by_offerers
+from pcapi.core.offerers.repository import find_active_venues_by_managing_offerers
 from pcapi.core.offerers.repository import venues_have_offers
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
@@ -95,7 +95,7 @@ def get_pro_attributes(email: str) -> ProAttributes:
         if user and offerers:
             offerer_ids = [offerer.id for offerer in offerers]
             user_offerers = UserOfferer.query.filter(Offerer.id.in_(offerer_ids)).all()
-            all_venue_ids.update([venue.id for venue in find_venues_by_offerers(*offerers)])
+            all_venue_ids.update([venue.id for venue in find_active_venues_by_managing_offerers(*offerers)])
             for offerer_id in offerer_ids:
                 if min([(uo.id, uo.userId) for uo in user_offerers if uo.offererId == offerer_id])[1] == user.id:
                     user_is_creator = True

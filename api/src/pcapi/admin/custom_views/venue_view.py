@@ -23,6 +23,7 @@ from wtforms.fields.simple import HiddenField
 from pcapi.admin.base_configuration import BaseAdminView
 from pcapi.core import search
 from pcapi.core.bookings.exceptions import CannotDeleteVenueWithBookingsException
+from pcapi.core.bookings.repository import venue_has_ongoing_bookings
 from pcapi.core.finance import repository as finance_repository
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers.api import VENUE_ALGOLIA_INDEXED_FIELDS
@@ -118,7 +119,7 @@ class VenueView(BaseAdminView):
         "provider_name": "Provider",
         "managingOfferer.name": "Structure",
         "dateCreated": "Date de création",
-        "isActive": "Structure active",
+        "isActive": "Lieu actif",
     }
     column_searchable_list = ["name", "siret", "publicName"]
     column_filters = [
@@ -128,6 +129,7 @@ class VenueView(BaseAdminView):
         "id",
         "managingOfferer.name",
         VenueCriteriaFilter(Venue.id, "Tag"),
+        "isActive",
     ]
     form_columns = [
         "name",
@@ -140,6 +142,7 @@ class VenueView(BaseAdminView):
         "longitude",
         "isPermanent",
         "criteria",
+        "isActive",
     ]
 
     def get_query(self) -> Query:
@@ -181,6 +184,10 @@ class VenueView(BaseAdminView):
         return False
 
     def update_model(self, new_venue_form: Form, venue: Venue) -> bool:
+        if venue.isActive and not new_venue_form.isActive.data and venue_has_ongoing_bookings(venue.id):
+            flash("Impossible de désactiver un lieu pour lequel des réservations sont en cours.", "error")
+            return False
+
         has_siret_changed = new_venue_form.siret.data != venue.siret
         if has_siret_changed:
             bu_with_same_target_siret = finance_repository.find_business_unit_by_siret(new_venue_form.siret.data)

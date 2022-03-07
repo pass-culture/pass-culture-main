@@ -104,6 +104,20 @@ def test_update_external_pro_user_attributes(
         BankInformationFactory(venue=venue1, status=BankInformationStatus.ACCEPTED)
         BankInformationFactory(venue=venue1b, status=BankInformationStatus.ACCEPTED)
 
+    # Create inactive venue, which should not be taken into account in any attribute
+    VenueFactory(
+        managingOfferer=offerer1,
+        name="Salle de concert des calanques",
+        departementCode="13",
+        postalCode="13260",
+        city="Cassis",
+        bookingEmail=email,
+        siret="11122233300003",
+        isPermanent=create_permanent,
+        venueTypeCode=VenueTypeCode.CONCERT_HALL,
+        isActive=False,
+    )
+
     if create_virtual:
         offerer2 = OffererFactory(siren="444555666", name="Culture en ligne")
         if attached == "all":
