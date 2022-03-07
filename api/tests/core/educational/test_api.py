@@ -768,6 +768,7 @@ class CreateCollectiveOfferStocksTest:
         stock = CollectiveStock.query.filter_by(id=stock_created.id).one()
         assert stock.bookingLimitDatetime == dateutil.parser.parse("2021-12-15T20:00:00")
 
+    @override_features(ENABLE_NEW_COLLECTIVE_MODEL=True)
     def test_create_stock_triggers_draft_offer_validation(self):
         # Given
         offers_api.import_offer_validation_config(SIMPLE_OFFER_VALIDATION_CONFIG)

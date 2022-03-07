@@ -106,6 +106,11 @@ class CollectiveOffer(PcObject, ValidationMixin, AccessibilityMixin, StatusMixin
 
     offerVenue = sa.Column(MutableDict.as_mutable(postgresql.json.JSONB), nullable=False)
 
+    @property
+    def isEducational(self):
+        # FIXME (rpaoloni, 2022-03-7): Remove legacy support layer
+        return True
+
     @sa.ext.hybrid.hybrid_property
     def isSoldOut(self):
         return self.collectiveStock.isSoldOut
