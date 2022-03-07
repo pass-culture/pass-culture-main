@@ -4,6 +4,11 @@ from freezegun import freeze_time
 import pytest
 
 import pcapi.core.bookings.factories as bookings_factories
+from pcapi.core.educational.factories import CollectiveBookingFactory
+from pcapi.core.educational.factories import CollectiveOfferFactory
+from pcapi.core.educational.factories import CollectiveOfferTemplateFactory
+from pcapi.core.educational.models import CollectiveOffer
+from pcapi.core.educational.models import CollectiveOfferTemplate
 import pcapi.core.educational.testing as adage_api_testing
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import Offer
@@ -228,6 +233,95 @@ class Returns200Test:
         # Then
         assert response.status_code == 200
         assert len(adage_api_testing.adage_requests) == 0
+
+    @freeze_time("2019-01-01T12:00:00Z")
+    @override_settings(ADAGE_API_URL="https://adage_base_url")
+    def test_patch_collective_offer(self, client):
+        # Given
+        offer = offers_factories.OfferFactory(
+            mentalDisabilityCompliant=False,
+            extraData={"contactEmail": "johndoe@yopmail.com", "contactPhone": "0600000000", "isShowcase": False},
+            isEducational=True,
+            subcategoryId="CINE_PLEIN_AIR",
+        )
+        collective_offer = CollectiveOfferFactory(
+            mentalDisabilityCompliant=False,
+            contactEmail="johndoe@yopmail.com",
+            contactPhone="0600000000",
+            subcategoryId="CINE_PLEIN_AIR",
+            offerId=offer.id,
+        )
+        CollectiveBookingFactory(
+            collectiveStock__collectiveOffer=collective_offer, collectiveStock__beginningDatetime=datetime(2020, 1, 1)
+        )
+        offers_factories.UserOffererFactory(
+            user__email="user@example.com",
+            offerer=offer.venue.managingOfferer,
+        )
+
+        # When
+        data = {
+            "name": "New name",
+            "mentalDisabilityCompliant": True,
+            "extraData": {"contactEmail": "toto@example.com"},
+            "subcategoryId": "CONCERT",
+        }
+        response = client.with_session_auth("user@example.com").patch(
+            f"/offers/educational/{humanize(offer.id)}", json=data
+        )
+
+        # Then
+        assert response.status_code == 200
+
+        updated_offer = CollectiveOffer.query.get(collective_offer.id)
+        assert updated_offer.name == "New name"
+        assert updated_offer.mentalDisabilityCompliant
+        assert updated_offer.contactEmail == "toto@example.com"
+        assert updated_offer.contactPhone == "0600000000"
+        assert updated_offer.subcategoryId == "CONCERT"
+
+    @freeze_time("2019-01-01T12:00:00Z")
+    @override_settings(ADAGE_API_URL="https://adage_base_url")
+    def test_patch_collective_offer_template(self, client):
+        # Given
+        offer = offers_factories.OfferFactory(
+            mentalDisabilityCompliant=False,
+            extraData={"contactEmail": "johndoe@yopmail.com", "contactPhone": "0600000000", "isShowcase": True},
+            isEducational=True,
+            subcategoryId="CINE_PLEIN_AIR",
+        )
+        collective_offer_template = CollectiveOfferTemplateFactory(
+            mentalDisabilityCompliant=False,
+            contactEmail="johndoe@yopmail.com",
+            contactPhone="0600000000",
+            subcategoryId="CINE_PLEIN_AIR",
+            offerId=offer.id,
+        )
+        offers_factories.UserOffererFactory(
+            user__email="user@example.com",
+            offerer=offer.venue.managingOfferer,
+        )
+
+        # When
+        data = {
+            "name": "New name",
+            "mentalDisabilityCompliant": True,
+            "extraData": {"contactEmail": "toto@example.com"},
+            "subcategoryId": "CONCERT",
+        }
+        response = client.with_session_auth("user@example.com").patch(
+            f"/offers/educational/{humanize(offer.id)}", json=data
+        )
+
+        # Then
+        assert response.status_code == 200
+
+        updated_offer = CollectiveOfferTemplate.query.get(collective_offer_template.id)
+        assert updated_offer.name == "New name"
+        assert updated_offer.mentalDisabilityCompliant
+        assert updated_offer.contactEmail == "toto@example.com"
+        assert updated_offer.contactPhone == "0600000000"
+        assert updated_offer.subcategoryId == "CONCERT"
 
 
 class Returns400Test:
