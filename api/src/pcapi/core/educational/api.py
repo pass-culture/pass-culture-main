@@ -503,6 +503,35 @@ def notify_educational_redactor_on_educational_offer_or_stock_edit(
         )
 
 
+def notify_educational_redactor_on_collective_offer_or_stock_edit(
+    collective_offer_id: int,
+    updated_fields: list[str],
+) -> None:
+    if len(updated_fields) == 0:
+        return
+
+    active_collective_bookings = educational_repository.find_active_collective_booking_by_offer_id(collective_offer_id)
+    if active_collective_bookings is None:
+        return
+
+    data = EducationalBookingEdition(
+        **serialize_educational_booking(active_collective_bookings).dict(),
+        updatedFields=updated_fields,
+    )
+    try:
+        adage_client.notify_offer_or_stock_edition(data)
+    except AdageException as exception:
+        logger.error(
+            "Error while sending notification to Adage",
+            extra={
+                "adage_response_message": exception.message,
+                "adage_response_status_code": exception.status_code,
+                "adage_response_response_text": exception.response_text,
+                "data": data.dict(),
+            },
+        )
+
+
 def create_collective_stock(
     stock_data: EducationalStockCreationBodyModel, user: User, *, legacy_id: Optional[int] = None
 ) -> Optional[CollectiveStock]:

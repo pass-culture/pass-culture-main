@@ -222,6 +222,9 @@ def edit_educational_offer(
         check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
 
         offers_api.update_educational_offer(offer, body.dict(exclude_unset=True))
+        offer_is_showcase = offer.extraData.get("isShowcase")
+        offers_api.update_collective_offer(offer.id, offer_is_showcase, body.dict(exclude_unset=True))
+
         offer = offers_repository.get_educational_offer_by_id(dehumanize(offer_id))
 
         # FIXME (cgaunet, 2022-01-26): This log is to investigate a bug causing extraData to be json_typeof 'null'

@@ -377,6 +377,61 @@ def update_educational_offer(
     )
 
 
+def update_collective_offer(
+    offer_id: str,
+    is_offer_showcase: bool,
+    new_values: dict,
+) -> None:
+    offer_to_update = (
+        educational_models.CollectiveOfferTemplate.query.filter(
+            educational_models.CollectiveOfferTemplate.offerId == offer_id
+        ).first()
+        if is_offer_showcase
+        else educational_models.CollectiveOffer.query.filter(
+            educational_models.CollectiveOffer.offerId == offer_id
+        ).first()
+    )
+
+    if offer_to_update is None:
+        # FIXME (MathildeDuboille - 2022-03-07): raise an error once all data has been migrated (PC-13427)
+        return
+
+    validation.check_validation_status(offer_to_update)
+    # This variable is meant for Adage mailing
+    updated_fields = []
+    for key, value in new_values.items():
+        updated_fields.append(key)
+
+        # FIXME (MathildeDuboille - 2022-03-07): remove this "if" once ENABLE_NEW_COLLECTIVE_MODEL FF is enabled on production
+        if key == "extraData":
+            for extra_data_key, extra_data_value in value.items():
+                # We denormalize extra_data for Adage mailing
+                updated_fields.append(extra_data_key)
+                setattr(offer_to_update, extra_data_key, extra_data_value)
+            continue
+
+        if key == "subcategoryId":
+            validation.check_offer_is_eligible_for_educational(value.name, True)
+            offer_to_update.subcategoryId = value.name
+            continue
+
+        setattr(offer_to_update, key, value)
+
+    db.session.add(offer_to_update)
+    db.session.commit()
+
+    if is_offer_showcase:
+        search.async_index_collective_offer_template_ids([offer_to_update.id])
+    else:
+        search.async_index_collective_offer_ids([offer_to_update.id])
+
+    if FeatureToggle.ENABLE_NEW_COLLECTIVE_MODEL.is_active():
+        educational_api.notify_educational_redactor_on_collective_offer_or_stock_edit(
+            offer_to_update.id,
+            updated_fields,
+        )
+
+
 def batch_update_offers(query, update_fields):
     offer_ids, venue_ids = zip(
         *query.filter(Offer.validation == OfferValidationStatus.APPROVED).with_entities(Offer.id, Offer.venueId)

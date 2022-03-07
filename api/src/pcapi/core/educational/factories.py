@@ -188,7 +188,6 @@ class CollectiveBookingFactory(BaseFactory):
     educationalYear = factory.SubFactory(EducationalYearFactory)
     educationalRedactor = factory.SubFactory(EducationalRedactorFactory)
     collectiveStock = factory.SubFactory(CollectiveStockFactory)
-    confirmationLimitDate = datetime.datetime.utcnow()
 
 
 class PendingCollectiveBookingFactory(CollectiveBookingFactory):
