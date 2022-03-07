@@ -18,6 +18,9 @@ from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.categories import subcategories
+import pcapi.core.educational.factories as educational_factories
+from pcapi.core.educational.models import CollectiveBooking
+from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.educational.models import EducationalBookingStatus
 import pcapi.core.finance.factories as finance_factories
 import pcapi.core.finance.models as finance_models
@@ -855,6 +858,41 @@ class AutoMarkAsUsedAfterEventTest:
 
         non_validated_by_ce_educational_booking = Booking.query.first()
         assert non_validated_by_ce_educational_booking.status is BookingStatus.USED
+
+    @freeze_time("2021-01-01")
+    def test_update_collective_booking_when_not_used_and_event_date_is_3_days_before(self):
+        event_date = datetime.now() - timedelta(days=3)
+        educational_factories.CollectiveBookingFactory(collectiveStock__beginningDatetime=event_date)
+
+        api.auto_mark_as_used_after_event()
+
+        collectiveBooking = CollectiveBooking.query.first()
+        assert collectiveBooking.status is CollectiveBookingStatus.USED
+        assert collectiveBooking.dateUsed == datetime(2021, 1, 1)
+
+    @freeze_time("2021-01-01")
+    def test_does_not_update_collective_booking_when_event_date_is_only_1_day_before(self):
+        event_date = datetime.now() - timedelta(days=1)
+        educational_factories.CollectiveBookingFactory(collectiveStock__beginningDatetime=event_date)
+
+        api.auto_mark_as_used_after_event()
+
+        collectiveBooking = CollectiveBooking.query.first()
+        assert collectiveBooking.status is not CollectiveBookingStatus.USED
+        assert collectiveBooking.dateUsed is None
+
+    @freeze_time("2021-01-01")
+    def test_does_not_update_collective_booking_when_cancelled(self):
+        event_date = datetime.now() - timedelta(days=3)
+        educational_factories.CollectiveBookingFactory(
+            collectiveStock__beginningDatetime=event_date, status=CollectiveBookingStatus.CANCELLED
+        )
+
+        api.auto_mark_as_used_after_event()
+
+        collectiveBooking = CollectiveBooking.query.first()
+        assert collectiveBooking.status is CollectiveBookingStatus.CANCELLED
+        assert collectiveBooking.dateUsed is None
 
     @pytest.mark.usefixtures("db_session")
     @override_features(UPDATE_BOOKING_USED=False)

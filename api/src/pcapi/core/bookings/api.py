@@ -503,6 +503,18 @@ def auto_mark_as_used_after_event() -> None:
         .filter(EducationalBooking.id == Booking.educationalBookingId)
         .filter(or_(EducationalBooking.status != EducationalBookingStatus.REFUSED, EducationalBooking.status.is_(None)))
     )
+
+    collective_bookings_subquery = (
+        CollectiveBooking.query.join(CollectiveStock)
+            .filter(CollectiveBooking.status.in_((CollectiveBookingStatus.CONFIRMED, CollectiveBookingStatus.PENDING)))
+            .filter(CollectiveStock.beginningDatetime < threshold)
+            .with_entities(CollectiveBooking.id)
+            .subquery()
+    )
+    collective_bookings = (
+        CollectiveBooking.query.filter(CollectiveBooking.id.in_(collective_bookings_subquery))
+    )
+
     # fmt: on
     n_individual_updated = individual_bookings.update(
         {"status": BookingStatus.USED, "dateUsed": now}, synchronize_session=False
@@ -514,11 +526,17 @@ def auto_mark_as_used_after_event() -> None:
     )
     db.session.commit()
 
+    n_collective_bookings_updated = collective_bookings.update(
+        {"status": CollectiveBookingStatus.USED, "dateUsed": now}, synchronize_session=False
+    )
+    db.session.commit()
+
     logger.info(
         "Automatically marked bookings as used after event",
         extra={
             "individualBookingsUpdatedCount": n_individual_updated,
             "educationalBookingsUpdatedCount": n_educational_updated,
+            "collectiveBookingsUpdatedCount": n_collective_bookings_updated,
         },
     )
 
