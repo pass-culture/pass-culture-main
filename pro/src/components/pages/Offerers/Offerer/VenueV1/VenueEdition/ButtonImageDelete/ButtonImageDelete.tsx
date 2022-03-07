@@ -1,7 +1,8 @@
-import React from 'react'
+import React, { useCallback, useState } from 'react'
 
 import Icon from 'components/layout/Icon'
 import { useModal } from 'hooks/useModal'
+import { deleteVenueImage } from 'repository/pcapi/pcapi'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
@@ -18,6 +19,16 @@ export const ButtonImageDelete = ({
   onDeleteImage,
 }: ButtonImageDeleteProps): JSX.Element => {
   const { visible, showModal, hideModal } = useModal()
+  const [isLoading, setIsLoading] = useState(false)
+
+  const tryToDeleteVenueImage = useCallback(async () => {
+    setIsLoading(true)
+    await deleteVenueImage({ venueId })
+
+    onDeleteImage()
+    setIsLoading(false)
+    hideModal()
+  }, [onDeleteImage, hideModal, venueId])
 
   return (
     <>
@@ -31,10 +42,8 @@ export const ButtonImageDelete = ({
 
       {!!visible && (
         <VenueImageDeleteModal
-          isLoading={false}
-          onDeleteImage={() => {
-            window.alert('Cette fonctionnalité sera développée par PC-13132')
-          }}
+          isLoading={isLoading}
+          onDeleteImage={tryToDeleteVenueImage}
           onDismiss={hideModal}
         />
       )}
