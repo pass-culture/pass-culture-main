@@ -178,10 +178,12 @@ class CollectiveBookingFactory(BaseFactory):
     class Meta:
         model = models.CollectiveBooking
 
+    collectiveStock = factory.SubFactory(CollectiveStockFactory)
     dateCreated = factory.LazyFunction(lambda: datetime.datetime.now() - datetime.timedelta(days=2))
     venue = factory.SubFactory(VenueFactory)
     offerer = factory.SubFactory(OffererFactory)
     cancellationLimitDate = factory.LazyFunction(lambda: datetime.datetime.now() - datetime.timedelta(days=1))
+    confirmationLimitDate = factory.LazyFunction(lambda: datetime.datetime.now() - datetime.timedelta(days=1))
     educationalInstitution = factory.SubFactory(EducationalInstitutionFactory)
     educationalYear = factory.SubFactory(EducationalYearFactory)
     educationalRedactor = factory.SubFactory(EducationalRedactorFactory)
