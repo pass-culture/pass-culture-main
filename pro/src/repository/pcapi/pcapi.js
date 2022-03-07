@@ -248,6 +248,10 @@ export const postImageToVenue = async ({
   )
 }
 
+export const deleteVenueImage = async ({ venueId }) => {
+  return await client.delete(`/venues/${venueId}/banner`)
+}
+
 //
 // types
 //
