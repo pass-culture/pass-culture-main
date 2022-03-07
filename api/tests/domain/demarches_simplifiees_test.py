@@ -123,10 +123,10 @@ class GetVenueBankInformation_applicationDetailsByApplicationIdTest:
                     {
                         "id": "Q2hhbXAtMzUyNzIy",
                         "label": "IBAN",
-                        "stringValue": "FR7630007000111234567890144",
-                        "value": "FR7630007000111234567890144",
+                        "stringValue": "Fr 763000 7000 111234567890144",
+                        "value": "Fr 763000 7000 111234567890144",
                     },
-                    {"id": "Q2hhbXAtMzUyNzI3", "label": "BIC", "stringValue": "SOGEFRPP", "value": "SOGEFRPP"},
+                    {"id": "Q2hhbXAtMzUyNzI3", "label": "BIC", "stringValue": "SOGEFRpp", "value": "SOGEFRpp"},
                 ],
                 "dateDerniereModification": "2020-01-03T01:00:00+01:00",
                 "state": "accepte",

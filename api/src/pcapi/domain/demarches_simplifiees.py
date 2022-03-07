@@ -44,8 +44,8 @@ class ApplicationDetail:
         self.siren = siren
         self.status = status
         self.application_id = application_id
-        self.iban = iban
-        self.bic = bic
+        self.iban = format_raw_iban_and_bic(iban)
+        self.bic = format_raw_iban_and_bic(bic)
         self.siret = siret
         self.venue_name = venue_name
         self.modification_date = modification_date
