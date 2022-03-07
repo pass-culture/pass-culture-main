@@ -175,6 +175,7 @@ class LostPassword extends PureComponent {
                           label="Nouveau mot de passe"
                           name="newPasswordValue"
                           placeholder="Mon nouveau mot de passe"
+                          showTooltip
                         />
                         <button
                           className="primary-button submit-button"
