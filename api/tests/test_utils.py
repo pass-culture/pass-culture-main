@@ -4,14 +4,6 @@ import operator
 import uuid
 
 
-def fake(object_type):
-    class FakeObject(object_type):
-        def __eq__(self, other_object):
-            return isinstance(other_object, object_type)
-
-    return FakeObject()
-
-
 def json_default(data):
     conversions = {
         enum.Enum: operator.attrgetter("value"),
