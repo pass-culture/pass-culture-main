@@ -4,8 +4,8 @@ from typing import Optional
 
 from pcapi.core.providers.models import VenueProvider
 import pcapi.local_providers
-from pcapi.local_providers.local_provider import LocalProvider
 from pcapi.local_providers.provider_api import synchronize_provider_api
+from pcapi.repository import transaction
 from pcapi.repository.venue_provider_queries import get_active_venue_providers_for_specific_provider
 from pcapi.scheduled_tasks.logger import CronStatus
 from pcapi.scheduled_tasks.logger import build_cron_log_message
@@ -18,7 +18,7 @@ def synchronize_data_for_provider(provider_name: str, limit: Optional[int] = Non
     provider_class = get_local_provider_class_by_name(provider_name)
     try:
         provider = provider_class()
-        do_update(provider, limit)
+        provider.updateObjects(limit)
     except Exception:  # pylint: disable=broad-except
         logger.exception(build_cron_log_message(name=provider_name, status=CronStatus.FAILED))
 
@@ -26,14 +26,19 @@ def synchronize_data_for_provider(provider_name: str, limit: Optional[int] = Non
 def synchronize_venue_providers_for_provider(provider_id: int, limit: Optional[int] = None) -> None:
     venue_providers = get_active_venue_providers_for_specific_provider(provider_id)
     for venue_provider in venue_providers:
-        synchronize_venue_provider(venue_provider, limit)
-
-
-def do_update(provider: LocalProvider, limit: Optional[int]):
-    try:
-        provider.updateObjects(limit)
-    except Exception:  # pylint: disable=broad-except
-        logger.exception(build_cron_log_message(name=provider.__class__.__name__, status=CronStatus.STARTED))
+        try:
+            with transaction():
+                synchronize_venue_provider(venue_provider, limit)
+        except Exception as exc:  # pylint: disable=broad-except
+            logger.exception(
+                "Could not synchronize venue provider",
+                extra={
+                    "venue_provider": venue_provider.id,
+                    "venue": venue_provider.venueId,
+                    "provider": venue_provider.providerId,
+                    "exc": exc,
+                },
+            )
 
 
 def get_local_provider_class_by_name(class_name: str) -> Callable:
@@ -53,11 +58,8 @@ def synchronize_venue_provider(venue_provider: VenueProvider, limit: Optional[in
             venue_provider.id,
             venue_provider.provider.localClass,
         )
-        try:
-            provider = provider_class(venue_provider)
-            do_update(provider, limit)
-        except Exception:  # pylint: disable=broad-except
-            logger.exception(build_cron_log_message(name=provider_class.__name__, status=CronStatus.FAILED))
+        provider = provider_class(venue_provider)
+        provider.updateObjects(limit)
         logger.info(
             "Ended synchronization of venue_provider=%s with provider=%s",
             venue_provider.id,

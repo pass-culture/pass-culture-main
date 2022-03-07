@@ -53,7 +53,8 @@ class Returns201Test:
         mock_synchronize_venue_provider.assert_called_once_with(dehumanize(venue_provider_id))
 
     @pytest.mark.usefixtures("db_session")
-    def when_add_allocine_stocks_provider_with_price_but_no_isDuo_config(self, app):
+    @patch("pcapi.workers.venue_provider_job.synchronize_venue_provider")
+    def when_add_allocine_stocks_provider_with_price_but_no_isDuo_config(self, mock_synchronize_venue_provider, app):
         # Given
         venue = offer_factories.VenueFactory(managingOfferer__siren="775671464")
         user = user_factories.AdminFactory()
@@ -71,12 +72,13 @@ class Returns201Test:
         # Then
         assert response.status_code == 201
         json = response.json
-        assert "_sa_polymorphic_on" not in json
         venue_provider = VenueProvider.query.one()
+        mock_synchronize_venue_provider.assert_called_once_with(venue_provider)
         assert json["venueId"] == humanize(venue_provider.venueId)
 
     @pytest.mark.usefixtures("db_session")
-    def when_add_allocine_stocks_provider_with_default_settings_at_import(self, app):
+    @patch("pcapi.workers.venue_provider_job.synchronize_venue_provider")
+    def when_add_allocine_stocks_provider_with_default_settings_at_import(self, mock_synchronize_venue_provider, app):
         # Given
         venue = offer_factories.VenueFactory(managingOfferer__siren="775671464")
         user = user_factories.AdminFactory()
@@ -102,6 +104,8 @@ class Returns201Test:
         assert response.json["isDuo"]
         assert response.json["price"] == 9.99
         assert response.json["quantity"] == 50
+        venue_provider = VenueProvider.query.one()
+        mock_synchronize_venue_provider.assert_called_once_with(venue_provider)
 
     @pytest.mark.usefixtures("db_session")
     @patch("pcapi.workers.venue_provider_job.venue_provider_job.delay")
