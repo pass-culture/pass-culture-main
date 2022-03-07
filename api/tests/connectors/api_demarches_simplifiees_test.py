@@ -60,3 +60,14 @@ class GraphqlResponseTest:
         client.get_single_application_details(42)
 
         assert client.execute_query.call_count == 1
+
+    @patch.object(api_dms.DMSGraphQLClient, "execute_query")
+    def test_update_annotations(self, execute_query):
+
+        execute_query.return_value = {
+            "dossierModifierAnnotationText": {"annotation": {"id": "XXXXXXXXX"}, "errors": None}
+        }
+        client = api_dms.DMSGraphQLClient()
+        client.update_text_annotation("dossier_id", "instructeur_id", "annotation_id", "Il y a une grosse erreur ici")
+
+        assert client.execute_query.call_count == 1

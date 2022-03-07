@@ -174,3 +174,8 @@ def _find_value_in_fields(fields: list[dict], value_name: str) -> Optional[dict]
         if field["type_de_champ"]["libelle"] == value_name:
             return field["value"]
     return None
+
+
+def update_demarches_simplifiees_annotations(application_id: str, annotation_id: str, error: Exception) -> None:
+    client = api_dms.DMSGraphQLClient()
+    client.update_text_annotation(application_id, settings.DMS_INSTRUCTOR_ID, int(annotation_id), str(error))

@@ -102,6 +102,18 @@ class DMSGraphQLClient:
         variables = {"dossierNumber": dossier_id}
         return self.execute_query(query, variables=variables)
 
+    def update_text_annotation(self, dossier_id: str, instructeur_id: str, annotation_id: str, value: str) -> Any:
+        query = self.build_query("pro/update_text_annotation")
+        variables = {
+            "input": {
+                "dossierId": dossier_id,
+                "instructeurId": instructeur_id,
+                "annotationId": annotation_id,
+                "value": value,
+            }
+        }
+        return self.execute_query(query, variables=variables)
+
 
 def parse_beneficiary_information_graphql(
     application_detail: dms_models.DmsApplicationResponse, procedure_id: int
