@@ -18,7 +18,7 @@ from pcapi.scripts.booking import handle_expired_bookings
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
-class CancelExpiredBookingsTest:
+class CancelExpiredIndividualBookingsTest:
     def test_should_cancel_old_thing_that_can_expire_booking(self, app) -> None:
         now = datetime.utcnow()
         eleven_days_ago = now - timedelta(days=11)
@@ -126,6 +126,52 @@ class CancelExpiredBookingsTest:
         assert not old_vod_booking.cancellationDate
         assert not old_vod_booking.cancellationReason
 
+    def test_handle_expired_bookings_should_cancel_expired_individual_bookings(self, app) -> None:
+        # Given
+        now = datetime.utcnow()
+        two_months_ago = now - timedelta(days=60)
+
+        dvd = ProductFactory(subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id)
+        expired_individual_booking = booking_factories.IndividualBookingFactory(
+            stock__offer__product=dvd, dateCreated=two_months_ago
+        )
+
+        book = ProductFactory(subcategoryId=subcategories.LIVRE_PAPIER.id)
+        book_individual_recent_booking = booking_factories.IndividualBookingFactory(stock__offer__product=book)
+
+        # When
+        handle_expired_bookings.handle_expired_bookings()
+
+        # Then
+        assert expired_individual_booking.status == BookingStatus.CANCELLED
+        assert book_individual_recent_booking.status != BookingStatus.CANCELLED
+
+    def test_queries_performance_individual_bookings(self, app) -> None:
+        now = datetime.utcnow()
+        two_months_ago = now - timedelta(days=60)
+        book = ProductFactory(subcategoryId=subcategories.LIVRE_PAPIER.id)
+        booking_factories.IndividualBookingFactory.create_batch(
+            size=10, stock__offer__product=book, dateCreated=two_months_ago
+        )
+        n_queries = (
+            +1  # select count
+            + 1  # select initial booking ids
+            + 1  # release savepoint/COMMIT
+            + 4
+            * (
+                1  # update
+                + 1  # release savepoint/COMMIT
+                + 1  # select stock
+                + 1  # recompute dnBookedQuantity
+                + 1  # select next ids
+            )
+        )
+
+        with assert_num_queries(n_queries):
+            handle_expired_bookings.cancel_expired_individual_bookings(batch_size=3)
+
+
+class CancelExpiredEducationalBookingsTest:
     def test_should_cancel_pending_dated_educational_booking_when_confirmation_limit_date_has_passed(self, app) -> None:
         # Given
         now = datetime.utcnow()
@@ -193,11 +239,10 @@ class CancelExpiredBookingsTest:
         # Then
         assert pending_educational_booking.status == BookingStatus.PENDING
 
-    def test_handle_expired_bookings_should_cancel_expired_individual_and_educational_bookings(self, app) -> None:
+    def test_handle_expired_bookings_should_cancel_expired_educational_bookings(self, app) -> None:
         # Given
         now = datetime.utcnow()
         yesterday = now - timedelta(days=1)
-        two_months_ago = now - timedelta(days=60)
         tomorrow = now + timedelta(days=1)
 
         expired_pending_educational_booking: Booking = booking_factories.PendingEducationalBookingFactory(
@@ -207,46 +252,12 @@ class CancelExpiredBookingsTest:
             educationalBooking__confirmationLimitDate=tomorrow
         )
 
-        dvd = ProductFactory(subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id)
-        expired_individual_booking = booking_factories.IndividualBookingFactory(
-            stock__offer__product=dvd, dateCreated=two_months_ago
-        )
-
-        book = ProductFactory(subcategoryId=subcategories.LIVRE_PAPIER.id)
-        book_individual_recent_booking = booking_factories.IndividualBookingFactory(stock__offer__product=book)
-
         # When
         handle_expired_bookings.handle_expired_bookings()
 
         # Then
         assert expired_pending_educational_booking.status == BookingStatus.CANCELLED
-        assert expired_individual_booking.status == BookingStatus.CANCELLED
-        assert book_individual_recent_booking.status != BookingStatus.CANCELLED
         assert non_expired_pending_educational_booking.status == BookingStatus.PENDING
-
-    def test_queries_performance_individual_bookings(self, app) -> None:
-        now = datetime.utcnow()
-        two_months_ago = now - timedelta(days=60)
-        book = ProductFactory(subcategoryId=subcategories.LIVRE_PAPIER.id)
-        booking_factories.IndividualBookingFactory.create_batch(
-            size=10, stock__offer__product=book, dateCreated=two_months_ago
-        )
-        n_queries = (
-            +1  # select count
-            + 1  # select initial booking ids
-            + 1  # release savepoint/COMMIT
-            + 4
-            * (
-                1  # update
-                + 1  # release savepoint/COMMIT
-                + 1  # select stock
-                + 1  # recompute dnBookedQuantity
-                + 1  # select next ids
-            )
-        )
-
-        with assert_num_queries(n_queries):
-            handle_expired_bookings.cancel_expired_individual_bookings(batch_size=3)
 
     def test_queries_performance_educational_bookings(self, app) -> None:
         now = datetime.utcnow()
