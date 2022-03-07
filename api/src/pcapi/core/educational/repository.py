@@ -181,6 +181,33 @@ def find_active_educational_booking_by_offer_id(
     )
 
 
+def find_active_collective_booking_by_offer_id(
+    collective_offer_id: int,
+) -> Optional[educational_models.CollectiveBooking]:
+    return (
+        educational_models.CollectiveBooking.query.filter(
+            educational_models.CollectiveBooking.status.in_(
+                [
+                    educational_models.CollectiveBookingStatus.CONFIRMED,
+                    educational_models.CollectiveBookingStatus.PENDING,
+                ]
+            )
+        )
+        .join(educational_models.CollectiveStock)
+        .filter(
+            educational_models.CollectiveStock.collectiveOfferId == collective_offer_id,
+        )
+        .options(
+            contains_eager(educational_models.CollectiveBooking.collectiveStock)
+            .joinedload(educational_models.CollectiveStock.collectiveOffer, innerjoin=True)
+            .joinedload(educational_models.CollectiveOffer.venue, innerjoin=True)
+        )
+        .options(joinedload(educational_models.CollectiveBooking.educationalInstitution, innerjoin=True))
+        .options(joinedload(educational_models.CollectiveBooking.educationalRedactor, innerjoin=True))
+        .one_or_none()
+    )
+
+
 def get_bookings_for_educational_year(educational_year_id: str) -> list[educational_models.EducationalBooking]:
     return (
         educational_models.EducationalBooking.query.filter(

@@ -158,6 +158,7 @@ class EventOfferFactory(OfferFactory):
 class EducationalEventOfferFactory(OfferFactory):
     product = factory.SubFactory(EventProductFactory)
     isEducational = True
+    extraData = {}
 
 
 class EducationalEventShadowOfferFactory(EducationalEventOfferFactory):
