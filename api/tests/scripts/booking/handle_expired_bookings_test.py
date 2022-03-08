@@ -9,6 +9,10 @@ from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.categories import subcategories
+from pcapi.core.educational import factories as educational_factories
+from pcapi.core.educational.models import CollectiveBooking
+from pcapi.core.educational.models import CollectiveBookingCancellationReasons
+from pcapi.core.educational.models import CollectiveBookingStatus
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.offers.factories import ProductFactory
 from pcapi.core.testing import assert_num_queries
@@ -281,6 +285,92 @@ class CancelExpiredEducationalBookingsTest:
 
         with assert_num_queries(n_queries):
             handle_expired_bookings.cancel_expired_educational_bookings(batch_size=3)
+
+
+class CancelExpiredCollectiveBookingsTest:
+    def test_should_cancel_pending_dated_collective_booking_when_confirmation_limit_date_has_passed(self, app) -> None:
+        # Given
+        now = datetime.utcnow()
+        yesterday = now - timedelta(days=1)
+        expired_pending_collective_booking: CollectiveBooking = educational_factories.PendingCollectiveBookingFactory(
+            confirmationLimitDate=yesterday
+        )
+
+        # When
+        handle_expired_bookings.cancel_expired_collective_bookings()
+
+        # Then
+        assert expired_pending_collective_booking.status == CollectiveBookingStatus.CANCELLED
+        assert expired_pending_collective_booking.cancellationDate.timestamp() == pytest.approx(
+            datetime.utcnow().timestamp(), rel=1
+        )
+        assert expired_pending_collective_booking.cancellationReason == CollectiveBookingCancellationReasons.EXPIRED
+
+    def test_should_not_cancel_confirmed_dated_collective_booking_when_confirmation_limit_date_has_passed(
+        self, app
+    ) -> None:
+        # Given
+        now = datetime.utcnow()
+        yesterday = now - timedelta(days=1)
+        confirmed_collective_booking: CollectiveBooking = educational_factories.CollectiveBookingFactory(
+            confirmationLimitDate=yesterday
+        )
+
+        # When
+        handle_expired_bookings.cancel_expired_collective_bookings()
+
+        # Then
+        assert confirmed_collective_booking.status == CollectiveBookingStatus.CONFIRMED
+
+    def test_should_not_cancel_pending_dated_collective_booking_when_confirmation_limit_date_has_not_passed(
+        self, app
+    ) -> None:
+        # Given
+        now = datetime.utcnow()
+        tomorrow = now + timedelta(days=1)
+        pending_collective_booking: CollectiveBooking = educational_factories.PendingCollectiveBookingFactory(
+            confirmationLimitDate=tomorrow
+        )
+
+        # When
+        handle_expired_bookings.cancel_expired_collective_bookings()
+
+        # Then
+        assert pending_collective_booking.status == CollectiveBookingStatus.PENDING
+
+    def test_handle_expired_bookings_should_cancel_expired_collective_bookings(self, app) -> None:
+        # Given
+        now = datetime.utcnow()
+        yesterday = now - timedelta(days=1)
+        tomorrow = now + timedelta(days=1)
+
+        expired_pending_collective_booking: CollectiveBooking = educational_factories.PendingCollectiveBookingFactory(
+            confirmationLimitDate=yesterday
+        )
+        non_expired_pending_collective_booking: CollectiveBooking = (
+            educational_factories.PendingCollectiveBookingFactory(confirmationLimitDate=tomorrow)
+        )
+
+        # When
+        handle_expired_bookings.handle_expired_bookings()
+
+        # Then
+        assert expired_pending_collective_booking.status == CollectiveBookingStatus.CANCELLED
+        assert non_expired_pending_collective_booking.status == CollectiveBookingStatus.PENDING
+
+    def test_queries_performance_collective_bookings(self, app) -> None:
+        now = datetime.utcnow()
+        yesterday = now - timedelta(days=1)
+        educational_factories.PendingCollectiveBookingFactory.create_batch(size=10, confirmationLimitDate=yesterday)
+        n_queries = (
+            +1  # select count
+            + 1  # select initial booking ids
+            + 1  # release savepoint/COMMIT
+            + 4 * (1 + 1 + 1)  # update  # release savepoint/COMMIT  # select stock  # select next ids
+        )
+
+        with assert_num_queries(n_queries):
+            handle_expired_bookings.cancel_expired_collective_bookings(batch_size=3)
 
 
 class NotifyUsersOfExpiredBookingsTest:

@@ -189,3 +189,9 @@ class CollectiveBookingFactory(BaseFactory):
     educationalRedactor = factory.SubFactory(EducationalRedactorFactory)
     collectiveStock = factory.SubFactory(CollectiveStockFactory)
     confirmationLimitDate = datetime.datetime.utcnow()
+
+
+class PendingCollectiveBookingFactory(CollectiveBookingFactory):
+    cancellationLimitDate = factory.LazyFunction(lambda: datetime.datetime.now() + datetime.timedelta(days=10))
+    confirmationLimitDate = factory.LazyFunction(lambda: datetime.datetime.now() - datetime.timedelta(days=10))
+    status = models.CollectiveBookingStatus.PENDING
