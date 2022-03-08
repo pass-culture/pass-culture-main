@@ -6,6 +6,7 @@ from typing import Optional
 from pydantic.error_wrappers import ValidationError
 from sqlalchemy.orm import joinedload
 
+from pcapi import settings
 from pcapi.connectors.api_adage import AdageException
 from pcapi.core import mails
 from pcapi.core import search
@@ -14,6 +15,7 @@ from pcapi.core.bookings import repository as bookings_repository
 from pcapi.core.categories import categories
 from pcapi.core.categories import subcategories
 from pcapi.core.educational import exceptions
+from pcapi.core.educational import models as educational_models
 from pcapi.core.educational import repository as educational_repository
 from pcapi.core.educational import validation
 import pcapi.core.educational.adage_backends as adage_client
@@ -556,3 +558,33 @@ def create_collective_stock(
     if not legacy_id:
         search.async_index_offer_ids([collective_offer.id])
     return collective_stock
+
+
+def unindex_expired_collective_offers(process_all_expired: bool = False) -> None:
+    """Unindex collective offers that have expired.
+
+    By default, process collective offers that have expired within the last 2
+    days. For example, if run on Thursday (whatever the time), this
+    function handles collective offers that have expired between Tuesday 00:00
+    and Wednesday 23:59 (included).
+
+    If ``process_all_expired`` is true, process... well all expired
+    collective offers.
+    """
+    start_of_day = datetime.datetime.combine(datetime.date.today(), datetime.time.min)
+    interval = [start_of_day - datetime.timedelta(days=2), start_of_day]
+    if process_all_expired:
+        interval[0] = datetime.datetime(2000, 1, 1)  # arbitrary old date
+
+    page = 0
+    limit = settings.ALGOLIA_DELETING_COLLECTIVE_OFFERS_CHUNK_SIZE
+    while collective_offer_ids := _get_expired_collective_offer_ids(interval, page, limit):
+        logger.info("[ALGOLIA] Found %d expired collective offers to unindex", len(collective_offer_ids))
+        search.unindex_collective_offer_ids(collective_offer_ids)
+        page += 1
+
+
+def _get_expired_collective_offer_ids(interval: list[datetime.datetime], page: int, limit: int) -> list[int]:
+    collective_offers = educational_repository.get_expired_collective_offers(interval)
+    collective_offers = collective_offers.offset(page * limit).limit(limit)
+    return [offer_id for offer_id, in collective_offers.with_entities(educational_models.CollectiveOffer.id)]

@@ -32,4 +32,6 @@ class TestingBackend(AlgoliaBackend):
     def __init__(self):  # pylint: disable=super-init-not-called
         self.algolia_offers_client = FakeClient("offers")
         self.algolia_venues_client = FakeClient("venues")
+        self.algolia_collective_offers_client = FakeClient("testing-collective-offers")
+        self.algolia_collective_offers_templates_client = FakeClient("testing-collective-offers-templates")
         self.redis_client = current_app.redis_client
