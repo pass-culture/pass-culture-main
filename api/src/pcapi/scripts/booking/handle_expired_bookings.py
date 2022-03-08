@@ -11,6 +11,10 @@ from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.bookings.models import BookingStatus
 import pcapi.core.bookings.repository as bookings_repository
+from pcapi.core.educational.models import CollectiveBooking
+from pcapi.core.educational.models import CollectiveBookingCancellationReasons
+from pcapi.core.educational.models import CollectiveBookingStatus
+import pcapi.core.educational.repository as educational_repository
 from pcapi.core.mails.transactional.bookings.booking_cancellation_by_institution import (
     send_education_booking_cancellation_by_institution_email,
 )
@@ -28,6 +32,7 @@ logger = logging.getLogger(__name__)
 def handle_expired_bookings() -> None:
     handle_expired_individual_bookings()
     handle_expired_educational_bookings()
+    handle_expired_collective_bookings()
 
 
 def handle_expired_educational_bookings() -> None:
@@ -44,6 +49,8 @@ def handle_expired_educational_bookings() -> None:
         notify_offerers_of_expired_educational_bookings()
     except Exception as e:  # pylint: disable=broad-except
         logger.exception("[handle_expired_educational_bookings] Error in STEP 2 : %s", e)
+
+    logger.info("[handle_expired_educational_bookings] End")
 
 
 def handle_expired_individual_bookings() -> None:
@@ -213,3 +220,72 @@ def notify_offerers_of_expired_educational_bookings() -> None:
     )
 
     logger.info("[notify_offerers_of_expired_educational_bookings] End")
+
+
+def handle_expired_collective_bookings() -> None:
+    logger.info("[handle_expired_collective_bookings] Start")
+
+    try:
+        cancel_expired_collective_bookings()
+    except Exception as e:  # pylint: disable=broad-except
+        logger.exception("[handle_expired_collective_bookings] Error in STEP 1 : %s", e)
+
+    logger.info("[handle_expired_collective_bookings] End")
+
+
+def cancel_expired_collective_bookings(batch_size: int = 500) -> None:
+    logger.info("[cancel_expired_collective_bookings] Start")
+
+    expiring_collective_bookings_query = educational_repository.find_expiring_collective_bookings_query()
+
+    expiring_bookings_count = expiring_collective_bookings_query.count()
+    logger.info("[cancel_expired_bookings] %d expiring bookings to cancel", expiring_bookings_count)
+    if expiring_bookings_count == 0:
+        return
+
+    updated_total = 0
+    expiring_booking_ids = (
+        educational_repository.find_expiring_collective_booking_ids_from_query(expiring_collective_bookings_query)
+        .limit(batch_size)
+        .all()
+    )
+    max_id = expiring_booking_ids[-1][0]
+
+    # we commit here to make sure there is no unexpected objects in SQLA cache before the update,
+    # as we use synchronize_session=False
+    db.session.commit()
+
+    while expiring_booking_ids:
+        updated = (
+            CollectiveBooking.query.filter(CollectiveBooking.id <= max_id)
+            .filter(CollectiveBooking.id.in_(expiring_booking_ids))
+            .update(
+                {
+                    "status": CollectiveBookingStatus.CANCELLED,
+                    "cancellationReason": CollectiveBookingCancellationReasons.EXPIRED,
+                    "cancellationDate": datetime.datetime.utcnow(),
+                },
+                synchronize_session=False,
+            )
+        )
+        db.session.commit()
+
+        updated_total += updated
+        expiring_booking_ids = (
+            educational_repository.find_expiring_collective_booking_ids_from_query(expiring_collective_bookings_query)
+            .limit(batch_size)
+            .all()
+        )
+        if expiring_booking_ids:
+            max_id = expiring_booking_ids[-1][0]
+        logger.info(
+            "[cancel_expired_bookings] %d Bookings have been cancelled in this batch",
+            updated,
+        )
+
+    logger.info(
+        "[cancel_expired_bookings] %d Bookings have been cancelled",
+        updated_total,
+    )
+
+    logger.info("[cancel_expired_collective_bookings] End")

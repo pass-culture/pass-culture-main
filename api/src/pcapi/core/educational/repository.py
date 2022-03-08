@@ -1,4 +1,6 @@
+from datetime import date
 from datetime import datetime
+from datetime import time
 from decimal import Decimal
 from typing import Optional
 from typing import Union
@@ -14,6 +16,8 @@ from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational.exceptions import EducationalDepositNotFound
 from pcapi.core.educational.exceptions import EducationalYearNotFound
+from pcapi.core.educational.models import CollectiveBooking
+from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
@@ -220,3 +224,16 @@ def get_expired_collective_offers(interval: list[datetime]) -> Query:
         .group_by(educational_models.CollectiveOffer.id)
         .order_by(educational_models.CollectiveOffer.id)
     )
+
+
+def find_expiring_collective_bookings_query() -> Query:
+    today_at_midnight = datetime.combine(date.today(), time(0, 0))
+
+    return CollectiveBooking.query.filter(
+        CollectiveBooking.status == CollectiveBookingStatus.PENDING,
+        CollectiveBooking.confirmationLimitDate <= today_at_midnight,
+    )
+
+
+def find_expiring_collective_booking_ids_from_query(query: Query) -> Query:
+    return query.order_by(CollectiveBooking.id).with_entities(CollectiveBooking.id)
