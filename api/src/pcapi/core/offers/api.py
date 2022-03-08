@@ -452,7 +452,7 @@ def _edit_stock(
         }
         # fmt: on
         validation.check_update_only_allowed_stock_fields_for_allocine_offer(updated_fields)
-        stock.fieldsUpdated = list(updated_fields)
+        stock.fieldsUpdated = list(set(stock.fieldsUpdated) | updated_fields)
 
     for model_attr, value in updates.items():
         setattr(stock, model_attr, value)
