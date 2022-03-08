@@ -35,6 +35,48 @@ def async_index_offer_ids(offer_ids: Iterable[int]) -> None:
         logger.exception("Could not enqueue offer ids to index", extra={"offers": offer_ids})
 
 
+def async_index_collective_offer_ids(collective_offer_ids: Iterable[int]) -> None:
+    """Ask for an asynchronous reindexation of the given list of
+    ``CollectiveOffer.id``.
+
+    This function returns quickly. The "real" reindexation will be
+    done later through a cron job.
+    """
+    backend = _get_backend()
+    try:
+        backend.enqueue_collective_offer_ids(collective_offer_ids)
+    except Exception:  # pylint: disable=broad-except
+        if settings.IS_RUNNING_TESTS:
+            raise
+        logger.exception(
+            "Could not enqueue collective offer ids to index",
+            extra={
+                "collective_offers": collective_offer_ids,
+            },
+        )
+
+
+def async_index_collective_offer_template_ids(collective_offer_template_ids: Iterable[int]) -> None:
+    """Ask for an asynchronous reindexation of the given list of
+    ``CollectiveOfferTemplate.id``.
+
+    This function returns quickly. The "real" reindexation will be
+    done later through a cron job.
+    """
+    backend = _get_backend()
+    try:
+        backend.enqueue_collective_offer_template_ids(collective_offer_template_ids)
+    except Exception:  # pylint: disable=broad-except
+        if settings.IS_RUNNING_TESTS:
+            raise
+        logger.exception(
+            "Could not enqueue collective offer template ids to index",
+            extra={
+                "collective_offer_template_ids": collective_offer_template_ids,
+            },
+        )
+
+
 def async_index_venue_ids(venue_ids: Iterable[int]) -> None:
     """Ask for an asynchronous reindexation of the given list of
     permanent ``Venue`` ids.
