@@ -10,6 +10,7 @@ from sqlalchemy import create_engine
 import sqlalchemy.exc
 from sqlalchemy.sql import text
 
+from pcapi.core import search
 from pcapi.core.bookings import exceptions as bookings_exceptions
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.bookings.models import Booking
@@ -28,6 +29,7 @@ from pcapi.core.mails.transactional.sendinblue_template_ids import Transactional
 from pcapi.core.offers import api as offers_api
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import factories as offers_factories
+import pcapi.core.search.testing as search_testing
 from pcapi.core.testing import override_features
 from pcapi.core.testing import override_settings
 import pcapi.core.users.factories as users_factories
@@ -725,8 +727,7 @@ class RefuseEducationalBookingTest:
 @freeze_time("2020-11-17 15:00:00")
 @pytest.mark.usefixtures("db_session")
 class CreateCollectiveOfferStocksTest:
-    @mock.patch("pcapi.core.search.async_index_offer_ids")
-    def should_create_one_stock_on_collective_offer_stock_creation(self, mocked_async_index_offer_ids):
+    def should_create_one_stock_on_collective_offer_stock_creation(self):
         # Given
         user_pro = users_factories.ProFactory()
         offer = educational_factories.CollectiveOfferFactory()
@@ -748,7 +749,9 @@ class CreateCollectiveOfferStocksTest:
         assert stock.price == 1200
         assert stock.numberOfTickets == 35
         assert stock.stockId == None
-        mocked_async_index_offer_ids.assert_called_once_with([offer.id])
+
+        search.index_collective_offers_in_queue()
+        assert offer.id in search_testing.search_store["collective-offers"]
 
     def should_set_booking_limit_datetime_to_beginning_datetime_when_not_provided(self):
         # Given

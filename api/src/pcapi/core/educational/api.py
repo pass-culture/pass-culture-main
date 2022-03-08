@@ -555,8 +555,8 @@ def create_collective_stock(
         collective_offer.lastValidationDate = datetime.now()
         repository.save(collective_offer)
 
-    if not legacy_id:
-        search.async_index_offer_ids([collective_offer.id])
+    search.async_index_collective_offer_ids([collective_offer.id])
+
     return collective_stock
 
 
