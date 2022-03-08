@@ -25,6 +25,10 @@ REDIS_LIST_OFFER_IDS_NAME = "offer_ids"
 REDIS_LIST_OFFER_IDS_IN_ERROR_NAME = "offer_ids_in_error"
 REDIS_LIST_VENUE_IDS_FOR_OFFERS_NAME = "venue_ids_for_offers"
 REDIS_VENUE_IDS_TO_INDEX = "search:algolia:venue-ids-to-index"
+REDIS_COLLECTIVE_OFFER_IDS_TO_INDEX = "search:algolia:collective-offer-ids-to-index"
+REDIS_COLLECTIVE_OFFER_TEMPLATE_IDS_TO_INDEX = "search:algolia:collective-offer-template-ids-to-index"
+REDIS_COLLECTIVE_OFFER_IDS_IN_ERROR_TO_INDEX = "search:algolia:collective-offer-ids-in-error-to-index"
+REDIS_COLLECTIVE_OFFER_TEMPLATE_IDS_IN_ERROR_TO_INDEX = "search:algolia:collective-offer-template-ids-in-error-to-index"
 REDIS_VENUE_IDS_IN_ERROR_TO_INDEX = "search:algolia:venue-ids-in-error-to-index"
 REDIS_HASHMAP_INDEXED_OFFERS_NAME = "indexed_offers"
 
@@ -74,6 +78,10 @@ class AlgoliaBackend(base.SearchBackend):
             app_id=settings.ALGOLIA_APPLICATION_ID, api_key=settings.ALGOLIA_API_KEY
         )
         self.algolia_offers_client = client.init_index(settings.ALGOLIA_OFFERS_INDEX_NAME)
+        self.algolia_collective_offers_client = client.init_index(settings.ALGOLIA_COLLECTIVE_OFFERS_INDEX_NAME)
+        self.algolia_collective_offers_templates_client = client.init_index(
+            settings.ALGOLIA_COLLECTIVE_OFFERS_TEMPLATES_INDEX_NAME
+        )
         self.algolia_venues_client = client.init_index(settings.ALGOLIA_VENUES_INDEX_NAME)
         self.redis_client = current_app.redis_client
 
