@@ -7,12 +7,15 @@ import pytest
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.categories import categories
 from pcapi.core.categories import subcategories
+import pcapi.core.educational.factories as educational_factories
+from pcapi.core.educational.models import CollectiveOffer
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.factories import ActivationCodeFactory
 from pcapi.core.offers.factories import EventStockFactory
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.core.offers.repository import check_stock_consistency
+from pcapi.core.offers.repository import delete_past_draft_collective_offers
 from pcapi.core.offers.repository import delete_past_draft_offers
 from pcapi.core.offers.repository import find_tomorrow_event_stock_ids
 from pcapi.core.offers.repository import get_active_offers_count_for_venue
@@ -1231,6 +1234,22 @@ class DeletePastDraftOfferTest:
 
         offers = Offer.query.all()
         assert set(offers) == {today_offer, past_offer}
+
+    @freeze_time("2020-10-15 09:00:00")
+    def test_delete_past_draft_collective_offers(self):
+        two_days_ago = datetime.utcnow() - timedelta(days=2)
+        educational_factories.CollectiveOfferFactory(dateCreated=two_days_ago, validation=OfferValidationStatus.DRAFT)
+        past_offer = educational_factories.CollectiveOfferFactory(
+            dateCreated=two_days_ago, validation=OfferValidationStatus.PENDING
+        )
+        today_offer = educational_factories.CollectiveOfferFactory(
+            dateCreated=datetime.utcnow(), validation=OfferValidationStatus.DRAFT
+        )
+
+        delete_past_draft_collective_offers()
+
+        collective_offers = CollectiveOffer.query.all()
+        assert set(collective_offers) == {today_offer, past_offer}
 
 
 @pytest.mark.usefixtures("db_session")
