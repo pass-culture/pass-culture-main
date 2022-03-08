@@ -14,10 +14,22 @@ class SearchBackend:
     def enqueue_offer_ids(self, offer_ids: Iterable[int]) -> None:
         raise NotImplementedError()
 
+    def enqueue_collective_offer_ids(self, collective_offer_ids: Iterable[int]) -> None:
+        raise NotImplementedError()
+
+    def enqueue_collective_offer_template_ids(self, collective_offer_template_ids: Iterable[int]) -> None:
+        raise NotImplementedError()
+
     def enqueue_offer_ids_in_error(self, offer_ids: Iterable[int]) -> None:
         raise NotImplementedError()
 
     def enqueue_venue_ids_in_error(self, venue_ids: Iterable[int]) -> None:
+        raise NotImplementedError()
+
+    def enqueue_collective_offer_ids_in_error(self, collective_offer_ids: Iterable[int]) -> None:
+        raise NotImplementedError()
+
+    def enqueue_collective_offer_template_ids_in_error(self, collective_offer_template_ids: Iterable[int]) -> None:
         raise NotImplementedError()
 
     def enqueue_venue_ids(self, venue_ids: Iterable[int]) -> None:

@@ -32,6 +32,50 @@ def test_enqueue_offer_ids_in_error(app):
     assert set(app.redis_client.lrange("offer_ids_in_error", 0, 5)) == {"1", "2", "3"}
 
 
+def test_enqueue_collective_offer_ids(app):
+    backend = get_backend()
+    backend.enqueue_collective_offer_ids([1])
+    backend.enqueue_collective_offer_ids({2, 3})
+    backend.enqueue_collective_offer_ids([])
+    assert app.redis_client.smembers("search:algolia:collective-offer-ids-to-index") == {"1", "2", "3"}
+
+
+def test_enqueue_collective_offer_ids_in_error(app):
+    backend = get_backend()
+    backend.enqueue_collective_offer_ids_in_error([1])
+    backend.enqueue_collective_offer_ids_in_error({2, 3})
+    backend.enqueue_collective_offer_ids_in_error([])
+    assert app.redis_client.smembers("search:algolia:collective-offer-ids-in-error-to-index") == {
+        "1",
+        "2",
+        "3",
+    }
+
+
+def test_enqueue_collective_offer_template_ids(app):
+    backend = get_backend()
+    backend.enqueue_collective_offer_template_ids([1])
+    backend.enqueue_collective_offer_template_ids({2, 3})
+    backend.enqueue_collective_offer_template_ids([])
+    assert app.redis_client.smembers("search:algolia:collective-offer-template-ids-to-index") == {
+        "1",
+        "2",
+        "3",
+    }
+
+
+def test_enqueue_collective_offer_template_ids_in_error(app):
+    backend = get_backend()
+    backend.enqueue_collective_offer_template_ids_in_error([1])
+    backend.enqueue_collective_offer_template_ids_in_error({2, 3})
+    backend.enqueue_collective_offer_template_ids_in_error([])
+    assert app.redis_client.smembers("search:algolia:collective-offer-template-ids-in-error-to-index") == {
+        "1",
+        "2",
+        "3",
+    }
+
+
 def test_enqueue_venue_ids_for_offers(app):
     backend = get_backend()
     backend.enqueue_venue_ids_for_offers([1])

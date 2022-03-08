@@ -105,6 +105,66 @@ class AlgoliaBackend(base.SearchBackend):
                 raise
             logger.exception("Could not add offers to error queue", extra={"offers": offer_ids})
 
+    def enqueue_collective_offer_ids(self, collective_offer_ids: Iterable[int]) -> None:
+        self._enqueue_collective_offer_ids(
+            collective_offer_ids,
+            REDIS_COLLECTIVE_OFFER_IDS_TO_INDEX,
+        )
+
+    def enqueue_collective_offer_ids_in_error(self, collective_offer_ids: Iterable[int]) -> None:
+        self._enqueue_collective_offer_ids(
+            collective_offer_ids,
+            REDIS_COLLECTIVE_OFFER_IDS_IN_ERROR_TO_INDEX,
+        )
+
+    def enqueue_collective_offer_template_ids(
+        self,
+        collective_offer_template_ids: Iterable[int],
+    ) -> None:
+        self._enqueue_collective_offer_template_ids(
+            collective_offer_template_ids,
+            REDIS_COLLECTIVE_OFFER_TEMPLATE_IDS_TO_INDEX,
+        )
+
+    def enqueue_collective_offer_template_ids_in_error(
+        self,
+        collective_offer_template_ids: Iterable[int],
+    ) -> None:
+        self._enqueue_collective_offer_template_ids(
+            collective_offer_template_ids,
+            REDIS_COLLECTIVE_OFFER_TEMPLATE_IDS_IN_ERROR_TO_INDEX,
+        )
+
+    def _enqueue_collective_offer_ids(self, collective_offer_ids: Iterable[int], queue_name: str) -> None:
+        if not collective_offer_ids:
+            return
+        try:
+            self.redis_client.sadd(queue_name, *collective_offer_ids)
+        except redis.exceptions.RedisError:
+            logger.exception(
+                "Could not add collective offers to indexation queue",
+                extra={
+                    "collective_offers": collective_offer_ids,
+                    "queue": queue_name,
+                },
+            )
+
+    def _enqueue_collective_offer_template_ids(
+        self, collective_offer_template_ids: Iterable[int], queue_name: str
+    ) -> None:
+        if not collective_offer_template_ids:
+            return
+        try:
+            self.redis_client.sadd(queue_name, *collective_offer_template_ids)
+        except redis.exceptions.RedisError:
+            logger.exception(
+                "Could not add collective offer templates to indexation queue",
+                extra={
+                    "collective_offer_templates": collective_offer_template_ids,
+                    "queue": queue_name,
+                },
+            )
+
     def enqueue_venue_ids(self, venue_ids: Iterable[int]) -> None:
         return self._enqueue_venue_ids(venue_ids, REDIS_VENUE_IDS_TO_INDEX)
 
