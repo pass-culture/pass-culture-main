@@ -80,9 +80,7 @@ const OfferDetails = ({ offer }: { offer: OfferType }): JSX.Element => {
         </OfferSection>
       )}
       {educationalPriceDetail && (
-        <OfferSection title="Détail du prix total">
-          {educationalPriceDetail}
-        </OfferSection>
+        <OfferSection title="Détail">{educationalPriceDetail}</OfferSection>
       )}
 
       <OfferSection title="Adresse où se déroulera l’évènement">
