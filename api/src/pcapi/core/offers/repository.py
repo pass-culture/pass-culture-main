@@ -19,6 +19,7 @@ from sqlalchemy.sql.functions import coalesce
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.categories import subcategories
+from pcapi.core.educational.models import CollectiveOffer
 from pcapi.core.educational.models import CollectiveStock
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import Venue
@@ -383,6 +384,14 @@ def delete_past_draft_offers() -> None:
     Mediation.query.filter(Mediation.offerId == Offer.id).filter(*filters).delete(synchronize_session=False)
     OfferCriterion.query.filter(OfferCriterion.offerId == Offer.id).filter(*filters).delete(synchronize_session=False)
     Offer.query.filter(*filters).delete()
+    db.session.commit()
+
+
+def delete_past_draft_collective_offers() -> None:
+    yesterday = datetime.utcnow() - timedelta(days=1)
+    CollectiveOffer.query.filter(
+        and_(CollectiveOffer.dateCreated < yesterday, CollectiveOffer.validation == OfferValidationStatus.DRAFT)
+    ).delete()
     db.session.commit()
 
 

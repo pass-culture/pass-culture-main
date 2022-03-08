@@ -13,6 +13,7 @@ from pcapi.core.mails.transactional.users.birthday_to_newly_eligible_user import
     send_birthday_age_18_email_to_newly_eligible_user,
 )
 from pcapi.core.offers.repository import check_stock_consistency
+from pcapi.core.offers.repository import delete_past_draft_collective_offers
 from pcapi.core.offers.repository import delete_past_draft_offers
 from pcapi.core.offers.repository import find_tomorrow_event_stock_ids
 import pcapi.core.payments.utils as payments_utils
@@ -165,6 +166,7 @@ def pc_send_tomorrow_events_notifications() -> None:
 @log_cron_with_transaction
 def pc_clean_past_draft_offers() -> None:
     delete_past_draft_offers()
+    delete_past_draft_collective_offers()
 
 
 @cron_context
