@@ -45,10 +45,7 @@ import sqlalchemy.sql.functions as sqla_func
 
 from pcapi import settings
 import pcapi.core.bookings.models as bookings_models
-from pcapi.core.educational.models import EducationalBooking
-from pcapi.core.educational.models import EducationalDeposit
-from pcapi.core.educational.models import EducationalInstitution
-from pcapi.core.finance import models
+import pcapi.core.educational.models as educational_models
 from pcapi.core.logging import log_elapsed
 from pcapi.core.mails.transactional.pro.invoice_available_to_pro import send_invoice_available_to_pro_email
 from pcapi.core.object_storage import store_public_object
@@ -689,12 +686,14 @@ def _generate_payments_file(batch_id: int) -> pathlib.Path:
         .outerjoin(bookings_models.Booking.individualBooking)
         .outerjoin(bookings_models.IndividualBooking.deposit)
         .outerjoin(bookings_models.Booking.educationalBooking)
-        .outerjoin(EducationalBooking.educationalInstitution)
+        .outerjoin(educational_models.EducationalBooking.educationalInstitution)
         .outerjoin(
-            EducationalDeposit,
+            educational_models.EducationalDeposit,
             and_(
-                EducationalDeposit.educationalYearId == EducationalBooking.educationalYearId,
-                EducationalDeposit.educationalInstitutionId == EducationalInstitution.id,
+                educational_models.EducationalDeposit.educationalYearId
+                == educational_models.EducationalBooking.educationalYearId,
+                educational_models.EducationalDeposit.educationalInstitutionId
+                == educational_models.EducationalInstitution.id,
             ),
         )
         .filter(models.Cashflow.batchId == batch_id)
@@ -720,7 +719,7 @@ def _generate_payments_file(batch_id: int) -> pathlib.Path:
             payments_models.Deposit.type.label("deposit_type"),
             models.Pricing.id.label("pricing_id"),
             models.Pricing.amount.label("pricing_amount"),
-            EducationalDeposit.ministry.label("ministry"),
+            educational_models.EducationalDeposit.ministry.label("ministry"),
         )
         # FIXME (dbaty, 2021-11-30): other functions use `yield_per()`
         # but I am not sure it helps here. We have used
