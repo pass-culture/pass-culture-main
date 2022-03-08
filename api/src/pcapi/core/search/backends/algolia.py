@@ -393,6 +393,7 @@ class AlgoliaBackend(base.SearchBackend):
         # Field used by Algolia (not the frontend) to deduplicate results
         # https://www.algolia.com/doc/api-reference/api-parameters/distinct/
         distinct = extra_data.get("isbn") or extra_data.get("visa") or str(offer.id)
+        distinct += extra_data.get("diffusionVersion", "")
 
         object_to_index = {
             "distinct": distinct,
