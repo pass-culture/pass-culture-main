@@ -4,6 +4,7 @@ from typing import Iterable
 from sqlalchemy.orm import joinedload
 
 from pcapi import settings
+from pcapi.core.educational import models as educational_models
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers.models import Offer
 from pcapi.core.search.backends import base
@@ -168,6 +169,47 @@ def index_offers_in_queue(stop_only_when_empty: bool = False, from_error_queue: 
             break
 
 
+def index_collective_offers_in_queue(from_error_queue: bool = False) -> None:
+    """Pop collective offers from indexation queue and reindex them."""
+    backend = _get_backend()
+    try:
+        chunk_size = settings.REDIS_COLLECTIVE_OFFER_IDS_CHUNK_SIZE
+        collective_offer_ids = backend.pop_collective_offer_ids_from_queue(
+            count=chunk_size,
+            from_error_queue=from_error_queue,
+        )
+
+        if not collective_offer_ids:
+            return
+
+        _reindex_collective_offer_ids(backend, collective_offer_ids)
+
+    except Exception as exc:  # pylint: disable=broad-except
+        if settings.IS_RUNNING_TESTS:
+            raise
+        logger.exception("Could not index collective offers from queue", extra={"exc": str(exc)})
+
+
+def index_collective_offers_templates_in_queue(from_error_queue: bool = False) -> None:
+    """Pop collective offers template from indexation queue and reindex them."""
+    backend = _get_backend()
+    try:
+        chunk_size = settings.REDIS_COLLECTIVE_OFFER_TEMPLATE_IDS_CHUNK_SIZE
+        collective_offer_template_ids = backend.pop_collective_offer_template_ids_from_queue(
+            count=chunk_size, from_error_queue=from_error_queue
+        )
+
+        if not collective_offer_template_ids:
+            return
+
+        _reindex_collective_offer_template_ids(backend, collective_offer_template_ids)
+
+    except Exception as exc:  # pylint: disable=broad-except
+        if settings.IS_RUNNING_TESTS:
+            raise
+        logger.exception("Could not index collective offers template from queue", extra={"exc": str(exc)})
+
+
 def index_venues_in_queue(from_error_queue: bool = False) -> None:
     """Pop venues from indexation queue and reindex them."""
     backend = _get_backend()
@@ -209,6 +251,83 @@ def _reindex_venue_ids(backend: base.SearchBackend, venue_ids: Iterable[int]) ->
     if to_delete_ids:
         unindex_venue_ids(to_delete_ids)
         logger.info("Finished unindexing venues", extra={"count": len(to_delete_ids)})
+
+
+def _reindex_collective_offer_ids(backend: base.SearchBackend, collective_offer_ids: Iterable[int]) -> None:
+    logger.info("Starting to index collective offers", extra={"count": len(collective_offer_ids)})
+    collective_offers = educational_models.CollectiveOffer.query.filter(
+        educational_models.CollectiveOffer.id.in_(collective_offer_ids)
+    ).options(
+        joinedload(educational_models.CollectiveOffer.collectiveStock).joinedload(
+            educational_models.CollectiveStock.collectiveBookings
+        ),
+        joinedload(educational_models.CollectiveOffer.venue, innerjoin=True).joinedload(
+            Venue.managingOfferer, innerjoin=True
+        ),
+    )
+
+    to_add = [collective_offer for collective_offer in collective_offers if collective_offer.is_eligible_for_search]
+    to_add_ids = [collective_offer.id for collective_offer in to_add]
+    to_delete_ids = [
+        collective_offer.id for collective_offer in collective_offers if not collective_offer.is_eligible_for_search
+    ]
+
+    try:
+        backend.index_collective_offers(to_add)
+    except Exception as exc:  # pylint: disable=broad-except
+        backend.enqueue_collective_offer_ids_in_error(to_add_ids)
+        logger.warning(
+            "Could not reindex collective offers, will automatically retry",
+            extra={"exc": str(exc), "collective_offers": to_add_ids},
+            exc_info=True,
+        )
+    else:
+        logger.info("Finished indexing collective offers", extra={"count": len(to_add)})
+
+    if to_delete_ids:
+        unindex_collective_offer_ids(to_delete_ids)
+        logger.info("Finished unindexing collective offers", extra={"count": len(to_delete_ids)})
+
+
+def _reindex_collective_offer_template_ids(
+    backend: base.SearchBackend, collective_offer_template_ids: Iterable[int]
+) -> None:
+    logger.info("Starting to index collective offers templates", extra={"count": len(collective_offer_template_ids)})
+    collective_offers_templates = educational_models.CollectiveOfferTemplate.query.filter(
+        educational_models.CollectiveOfferTemplate.id.in_(collective_offer_template_ids)
+    ).options(
+        joinedload(educational_models.CollectiveOfferTemplate.venue, innerjoin=True).joinedload(
+            Venue.managingOfferer, innerjoin=True
+        ),
+    )
+
+    to_add = [
+        collective_offers_template
+        for collective_offers_template in collective_offers_templates
+        if collective_offers_template.is_eligible_for_search
+    ]
+    to_add_ids = [collective_offers_template.id for collective_offers_template in to_add]
+    to_delete_ids = [
+        collective_offers_template.id
+        for collective_offers_template in collective_offers_templates
+        if not collective_offers_template.is_eligible_for_search
+    ]
+
+    try:
+        backend.index_collective_offer_templates(to_add)
+    except Exception as exc:  # pylint: disable=broad-except
+        backend.enqueue_collective_offer_template_ids_in_error(to_add_ids)
+        logger.warning(
+            "Could not reindex collective offers templates, will automatically retry",
+            extra={"exc": str(exc), "collective_offers_templates": to_add_ids},
+            exc_info=True,
+        )
+    else:
+        logger.info("Finished indexing collective offers templates", extra={"count": len(to_add)})
+
+    if to_delete_ids:
+        unindex_collective_offer_template_ids(to_delete_ids)
+        logger.info("Finished unindexing collective offers templates", extra={"count": len(to_delete_ids)})
 
 
 def index_offers_of_venues_in_queue() -> None:
@@ -341,6 +460,33 @@ def unindex_venue_ids(venue_ids: Iterable[int]) -> None:
         if settings.IS_RUNNING_TESTS:
             raise
         logger.exception("Could not unindex venues", extra={"venues": venue_ids})
+
+
+def unindex_collective_offer_ids(collective_offer_ids: Iterable[int]) -> None:
+    if not collective_offer_ids:
+        return
+    backend = _get_backend()
+    try:
+        backend.unindex_collective_offer_ids(collective_offer_ids)
+    except Exception:  # pylint: disable=broad-except
+        if settings.IS_RUNNING_TESTS:
+            raise
+        logger.exception("Could not unindex collective offers", extra={"collective_offers": collective_offer_ids})
+
+
+def unindex_collective_offer_template_ids(collective_offer_template_ids: Iterable[int]) -> None:
+    if not collective_offer_template_ids:
+        return
+    backend = _get_backend()
+    try:
+        backend.unindex_collective_offer_template_ids(collective_offer_template_ids)
+    except Exception:  # pylint: disable=broad-except
+        if settings.IS_RUNNING_TESTS:
+            raise
+        logger.exception(
+            "Could not unindex collective offer templates",
+            extra={"collective_offer_templates": collective_offer_template_ids},
+        )
 
 
 def unindex_all_venues() -> None:

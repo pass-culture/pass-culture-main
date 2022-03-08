@@ -3,6 +3,7 @@ from typing import Iterable
 
 
 if typing.TYPE_CHECKING:
+    import pcapi.core.educational.models as educational_models
     import pcapi.core.offerers.models as offerers_models
     import pcapi.core.offers.models as offers_models
 
@@ -53,6 +54,14 @@ class SearchBackend:
     def index_offers(self, offers: "Iterable[offers_models.Offer]") -> None:
         raise NotImplementedError()
 
+    def index_collective_offers(self, collective_offers: "Iterable[educational_models.CollectiveOffer]") -> None:
+        raise NotImplementedError()
+
+    def index_collective_offer_templates(
+        self, collective_offer_templates: "Iterable[educational_models.CollectiveOfferTemplate]"
+    ) -> None:
+        raise NotImplementedError()
+
     def index_venues(self, offers: "Iterable[offerers_models.Venue]") -> None:
         raise NotImplementedError()
 
@@ -63,6 +72,12 @@ class SearchBackend:
         raise NotImplementedError()
 
     def unindex_venue_ids(self, venues: Iterable[int]) -> None:
+        raise NotImplementedError()
+
+    def unindex_collective_offer_ids(self, venues: Iterable[int]) -> None:
+        raise NotImplementedError()
+
+    def unindex_collective_offer_template_ids(self, venues: Iterable[int]) -> None:
         raise NotImplementedError()
 
     def unindex_all_venues(self) -> None:
