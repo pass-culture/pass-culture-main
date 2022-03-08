@@ -577,8 +577,8 @@ def edit_collective_stock(stock: CollectiveStock, stock_data: dict) -> Collectiv
     # search.async_index_offer_ids([stock.collectiveOfferId])
 
     if FeatureToggle.ENABLE_NEW_COLLECTIVE_MODEL.is_active():
-        notify_educational_redactor_on_educational_offer_or_stock_edit(
-            stock.offerId,
+        notify_educational_redactor_on_collective_offer_or_stock_edit(
+            stock.collectiveOffer.id,
             list(stock_data.keys()),
         )
 
