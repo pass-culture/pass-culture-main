@@ -872,3 +872,49 @@ class CreateCollectiveOfferStocksTest:
 
         # Then
         assert not mocked_offer_creation_notification_to_admin.called
+
+
+@freeze_time("2020-01-05 10:00:00")
+@pytest.mark.usefixtures("db_session")
+class UnindexExpiredOffersTest:
+    @override_settings(ALGOLIA_DELETING_COLLECTIVE_OFFERS_CHUNK_SIZE=2)
+    @mock.patch("pcapi.core.search.unindex_collective_offer_ids")
+    def test_default_run(self, mock_unindex_collective_offer_ids):
+        # Given
+        educational_factories.CollectiveStockFactory(bookingLimitDatetime=datetime.datetime(2020, 1, 2, 12, 0))
+        collective_stock1 = educational_factories.CollectiveStockFactory(
+            bookingLimitDatetime=datetime.datetime(2020, 1, 3, 12, 0)
+        )
+        collective_stock2 = educational_factories.CollectiveStockFactory(
+            bookingLimitDatetime=datetime.datetime(2020, 1, 3, 12, 0)
+        )
+        collective_stock3 = educational_factories.CollectiveStockFactory(
+            bookingLimitDatetime=datetime.datetime(2020, 1, 4, 12, 0)
+        )
+        educational_factories.CollectiveStockFactory(bookingLimitDatetime=datetime.datetime(2020, 1, 5, 12, 0))
+
+        # When
+        educational_api.unindex_expired_collective_offers()
+
+        # Then
+        assert mock_unindex_collective_offer_ids.mock_calls == [
+            mock.call([collective_stock1.collectiveOfferId, collective_stock2.collectiveOfferId]),
+            mock.call([collective_stock3.collectiveOfferId]),
+        ]
+
+    @mock.patch("pcapi.core.search.unindex_collective_offer_ids")
+    def test_run_unlimited(self, mock_unindex_collective_offer_ids):
+        # more than 2 days ago, must be processed
+        collective_stock = educational_factories.CollectiveStockFactory(
+            bookingLimitDatetime=datetime.datetime(2020, 1, 2, 12, 0)
+        )
+        # today, must be ignored
+        educational_factories.CollectiveStockFactory(bookingLimitDatetime=datetime.datetime(2020, 1, 5, 12, 0))
+
+        # When
+        educational_api.unindex_expired_collective_offers(process_all_expired=True)
+
+        # Then
+        assert mock_unindex_collective_offer_ids.mock_calls == [
+            mock.call([collective_stock.collectiveOfferId]),
+        ]

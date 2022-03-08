@@ -3,6 +3,8 @@ from decimal import Decimal
 from typing import Optional
 from typing import Union
 
+from sqlalchemy import func
+from sqlalchemy.orm import Query
 from sqlalchemy.orm import contains_eager
 from sqlalchemy.orm import joinedload
 from sqlalchemy.sql.expression import extract
@@ -197,4 +199,24 @@ def get_bookings_for_educational_year(educational_year_id: str) -> list[educatio
         )
         .options(joinedload(educational_models.EducationalBooking.educationalInstitution, innerjoin=True))
         .all()
+    )
+
+
+def get_expired_collective_offers(interval: list[datetime]) -> Query:
+    """Return a query of collective offers whose latest booking limit occurs within
+    the given interval.
+
+    Inactive or deleted offers are ignored.
+    """
+
+    # FIXME (cgaunet, 2022-03-08): This query could be optimized by returning offers
+    # that do not have bookings because booking a collective offer will unindex it.
+    return (
+        educational_models.CollectiveOffer.query.join(educational_models.CollectiveStock)
+        .filter(
+            educational_models.CollectiveOffer.isActive.is_(True),
+        )
+        .having(func.max(educational_models.CollectiveStock.bookingLimitDatetime).between(*interval))
+        .group_by(educational_models.CollectiveOffer.id)
+        .order_by(educational_models.CollectiveOffer.id)
     )
