@@ -7,8 +7,10 @@ from typing import Optional
 
 from sqlalchemy import and_
 from sqlalchemy import func
+from sqlalchemy import not_
 from sqlalchemy import or_
 from sqlalchemy.orm import Query
+from sqlalchemy.orm import contains_eager
 from sqlalchemy.orm import joinedload
 from sqlalchemy.orm import load_only
 from sqlalchemy.orm.exc import NoResultFound
@@ -411,8 +413,9 @@ def get_offer_by_id(offer_id: int) -> Offer:
     try:
         return (
             Offer.query.filter(Offer.id == offer_id)
+            .outerjoin(Stock, and_(Stock.offerId == offer_id, not_(Stock.isSoftDeleted)))
+            .options(contains_eager(Offer.stocks))
             .options(joinedload(Offer.mediations))
-            .options(joinedload(Offer.stocks))
             .options(joinedload(Offer.product, innerjoin=True))
             .options(
                 joinedload(Offer.venue, innerjoin=True,).joinedload(
