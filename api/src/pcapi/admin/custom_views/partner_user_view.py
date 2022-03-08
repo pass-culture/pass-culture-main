@@ -64,6 +64,8 @@ class PartnerUserView(ResendValidationEmailMixin, SuspensionMixin, BaseAdminView
         postalCode="Code postal",
         isEmailValidated="Email validé ?",
         suspension_history="Historique de suspension",
+        city="Ville",
+        idPieceNumber="N° de pièce d'identité",
     )
 
     column_searchable_list = ["id", "publicName", "email", "firstName", "lastName"]
@@ -72,16 +74,26 @@ class PartnerUserView(ResendValidationEmailMixin, SuspensionMixin, BaseAdminView
 
     @property
     def form_columns(self):
-        fields = ("email", "firstName", "lastName", "dateOfBirth", "departementCode", "postalCode", "phoneNumber")
+        fields = (
+            "email",
+            "firstName",
+            "lastName",
+            "dateOfBirth",
+            "departementCode",
+            "postalCode",
+            "city",
+            "phoneNumber",
+        )
         if self.check_super_admins():
-            fields += ("comment",)
+            fields += (
+                "idPieceNumber",
+                "comment",
+            )
         return fields
 
     def scaffold_form(self) -> BaseForm:
         form_class = super().scaffold_form()
         form_class.email = StringField("Email", [DataRequired()], filters=[filter_email])
-        form_class.firstName = StringField("Prenom", [DataRequired()])
-        form_class.lastName = StringField("Nom", [DataRequired()])
         form_class.dateOfBirth = DateField("Date de naissance", [validators.Optional()])
         form_class.departementCode = StringField(
             "Département", [DataRequired(), Length(min=2, max=3, message="Mauvais format de département")]

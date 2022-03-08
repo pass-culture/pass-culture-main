@@ -304,13 +304,13 @@ class BeneficiaryUserViewTest:
         mocked_request_email_confirmation.assert_called_once_with(beneficiary)
 
 
+@override_settings(IS_PROD=True, SUPER_ADMIN_EMAIL_ADDRESSES="superadmin@example.com")
 @pytest.mark.usefixtures("db_session")
 class BeneficiaryUserUpdateTest:
-    @override_settings(IS_TESTING=True)
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
-    def test_update_idpiecenumber_testing_only(self, token, client):
-        admin = users_factories.AdminFactory()
-        client.with_session_auth(admin.email)
+    def test_update_idpiecenumber(self, token, client):
+        super_admin = users_factories.AdminFactory(email="superadmin@example.com")
+        client.with_session_auth(super_admin.email)
 
         user_to_update = users_factories.UserFactory(departementCode="92", postalCode="92700")
 
@@ -330,8 +330,31 @@ class BeneficiaryUserUpdateTest:
         assert user_to_update.idPieceNumber == "123123123"
 
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    def test_clear_idpiecenumber(self, token, client):
+        super_admin = users_factories.AdminFactory(email="superadmin@example.com")
+        client.with_session_auth(super_admin.email)
+
+        user_to_update = users_factories.UserFactory(
+            departementCode="92", postalCode="92700", idPieceNumber="123123123"
+        )
+
+        client.post(
+            f"/pc/back-office/beneficiary_users/edit/?id={user_to_update.id}",
+            form={
+                "id": user_to_update.id,
+                "idPieceNumber": "",
+                "departementCode": user_to_update.departementCode,
+                "csrf_token": "token",
+                "email": user_to_update.email,
+                "postalCode": user_to_update.postalCode,
+            },
+        )
+
+        assert user_to_update.idPieceNumber is None
+
+    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     def test_update_idpiecenumber_not_updated(self, token, client):
-        admin = users_factories.AdminFactory()
+        admin = users_factories.AdminFactory()  # not superadmin
 
         user_to_update = users_factories.UserFactory(departementCode="92", postalCode="92700")
         client.with_session_auth(admin.email)

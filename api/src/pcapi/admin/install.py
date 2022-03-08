@@ -147,13 +147,15 @@ def install_views(admin: Admin, session: Session) -> None:
         BeneficiaryUserView(
             User,
             session,
-            name="Comptes Jeunes",
+            name="Comptes Bénéficiaires",
             category=Category.USERS,
             endpoint="/beneficiary_users",
         )
     )
     admin.add_view(
-        PartnerUserView(User, session, name="Comptes Grand Public", category=Category.USERS, endpoint="/partner_users")
+        PartnerUserView(
+            User, session, name="Comptes Jeune et Grand Public", category=Category.USERS, endpoint="/partner_users"
+        )
     )
     admin.add_view(FeatureView(Feature, session, name="Feature Flipping", category=None))
     admin.add_view(BeneficiaryImportView(BeneficiaryImport, session, name="Imports DMS", category=Category.USERS))
