@@ -372,8 +372,8 @@ class ReportOfferTest:
 
         email = mails_testing.outbox[0]
         assert email.sent_data["To"] == "report_offer@example.com"
-        assert email.sent_data["Vars"]["user_id"] == user.id
-        assert email.sent_data["Vars"]["offer_id"] == offer.id
+        assert email.sent_data["params"]["USER_ID"] == user.id
+        assert email.sent_data["params"]["OFFER_ID"] == offer.id
 
     def test_report_offer_with_custom_reason(self, app):
         user, test_client = create_user_and_test_client(app)
@@ -404,10 +404,10 @@ class ReportOfferTest:
 
         email = mails_testing.outbox[0]
         assert email.sent_data["To"] == "support@example.com"
-        assert email.sent_data["Vars"]["user_id"] == user.id
-        assert email.sent_data["Vars"]["offer_id"] == offer.id
-        assert "saynul" in email.sent_data["Vars"]["reason"]
-        assert "offer_url" in email.sent_data["Vars"]
+        assert email.sent_data["params"]["USER_ID"] == user.id
+        assert email.sent_data["params"]["OFFER_ID"] == offer.id
+        assert "saynul" in email.sent_data["params"]["REASON"]
+        assert "OFFER_URL" in email.sent_data["params"]
 
     def test_report_offer_twice(self, app):
         user, test_client = create_user_and_test_client(app)

@@ -43,6 +43,7 @@ from pcapi.core.mails.transactional.bookings.booking_postponed_by_pro_to_benefic
 from pcapi.core.mails.transactional.pro.event_offer_postponed_confirmation_to_pro import (
     send_event_offer_postponement_confirmation_email_to_pro,
 )
+from pcapi.core.mails.transactional.users.reported_offer_by_user import send_email_reported_offer_by_user
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers import exceptions as offers_exceptions
@@ -69,7 +70,6 @@ from pcapi.core.users.external import update_external_pro
 from pcapi.core.users.models import ExpenseDomain
 from pcapi.core.users.models import User
 from pcapi.domain import admin_emails
-from pcapi.domain import offer_report_emails
 from pcapi.domain.pro_offers.offers_recap import OffersRecap
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
@@ -1033,7 +1033,8 @@ def report_offer(user: User, offer: Offer, reason: str, custom_reason: Optional[
             raise ReportMalformed() from error
         raise
 
-    offer_report_emails.send_report_notification(user, offer, reason, custom_reason)
+    if not send_email_reported_offer_by_user(user, offer, reason, custom_reason):
+        logger.warning("Could not send email reported offer by user", extra={"user_id": user.id})
 
 
 def cancel_educational_offer_booking(offer: Offer) -> None:
