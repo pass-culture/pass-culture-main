@@ -180,12 +180,19 @@ class BeneficiaryGrant18Factory(BaseFactory):
         if not create:
             return None
 
+        type_ = kwargs.get(
+            "type",
+            (
+                fraud_models.FraudCheckType.EDUCONNECT
+                if obj.eligibility == users_models.EligibilityType.UNDERAGE
+                else fraud_models.FraudCheckType.UBBLE
+            ),
+        )
+
         return fraud_factories.BeneficiaryFraudCheckFactory(
             user=obj,
             status=fraud_models.FraudCheckStatus.OK,
-            type=fraud_models.FraudCheckType.EDUCONNECT
-            if obj.eligibility == users_models.EligibilityType.UNDERAGE
-            else fraud_models.FraudCheckType.UBBLE,
+            type=type_,
             resultContent=fraud_factories.EduconnectContentFactory(
                 first_name=obj.firstName,
                 last_name=obj.lastName,
