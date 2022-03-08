@@ -234,6 +234,22 @@ class UpsertStocksTest:
         assert updated_booking.status is BookingStatus.USED
         assert updated_booking.dateUsed == date_used_in_48_hours
 
+    def test_update_fields_updated_on_allocine_stocks(self):
+        allocine_provider = providers_factories.ProviderFactory(localClass="AllocineStocks")
+        stock = offer_factories.StockFactory(
+            fieldsUpdated=["price"],  # suppose we already customized the price
+            quantity=5,
+            offer__idAtProvider="dummy",
+            offer__lastProviderId=allocine_provider.id,
+        )
+        stock_data = stock_serialize.StockEditionBodyModel(
+            id=stock.id,
+            price=stock.price,
+            quantity=50,
+        )
+        api.upsert_stocks(stock.offerId, stock_data_list=[stock_data], user="not needed")
+        assert set(stock.fieldsUpdated) == {"quantity", "price"}
+
     def test_does_not_allow_edition_of_stock_of_another_offer_than_given(self):
         # Given
         user = users_factories.ProFactory()
