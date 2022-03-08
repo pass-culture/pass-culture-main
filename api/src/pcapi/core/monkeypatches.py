@@ -17,7 +17,7 @@ def custom_restclient_request(self, method, url, **kwargs):
     # kwargs.setdefault("_request_timeout", SENDINBLUE_REQUEST_TIMEOUT)
     try:
         response = self.__orig_request(method, url, **kwargs)
-    except Exception as exc:  # pylint: disable=broad-except
+    except Exception as exc:
         logger.exception(
             "Call to external service failed with %s",
             # APIException from sib_api_v3_sdk has a status. Other exceptions don't.

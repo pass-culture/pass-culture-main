@@ -78,10 +78,10 @@ def find_educational_booking_by_id(
     )
 
 
-def find_educational_year_by_date(date: datetime) -> Optional[educational_models.EducationalYear]:
+def find_educational_year_by_date(date_searched: datetime) -> Optional[educational_models.EducationalYear]:
     return educational_models.EducationalYear.query.filter(
-        date >= educational_models.EducationalYear.beginningDate,
-        date <= educational_models.EducationalYear.expirationDate,
+        date_searched >= educational_models.EducationalYear.beginningDate,
+        date_searched <= educational_models.EducationalYear.expirationDate,
     ).one_or_none()
 
 

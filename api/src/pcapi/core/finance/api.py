@@ -155,7 +155,6 @@ def lock_business_unit(business_unit_id: int):
 
 
 def price_booking(booking: bookings_models.Booking) -> models.Pricing:
-    # pylint: disable=too-many-return-statements
     business_unit_id = booking.venue.businessUnitId
     if not business_unit_id:
         return None
