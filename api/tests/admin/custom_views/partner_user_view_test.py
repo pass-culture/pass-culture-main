@@ -1,9 +1,16 @@
+from datetime import datetime
 from unittest.mock import patch
 
+from dateutil.relativedelta import relativedelta
 from wtforms import Form
 
 from pcapi.admin.custom_views.partner_user_view import PartnerUserView
+import pcapi.core.fraud.factories as fraud_factories
+import pcapi.core.fraud.models as fraud_models
+import pcapi.core.subscription.api as subscription_api
+import pcapi.core.subscription.models as subscription_models
 from pcapi.core.testing import override_settings
+from pcapi.core.users import models as users_models
 import pcapi.core.users.factories as users_factories
 from pcapi.core.users.models import User
 
@@ -130,3 +137,86 @@ class PartnerUserViewTest:
         resend_validation_email_response = client.post(url, form={"csrf_token": "token"})
         assert resend_validation_email_response.status_code == 302
         mocked_request_email_confirmation.assert_called_once_with(partner)
+
+    @clean_database
+    @override_settings(IS_PROD=True, SUPER_ADMIN_EMAIL_ADDRESSES="superadmin@example.com")
+    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    def test_clear_profile(self, mocked_validate_csrf_token, client):
+        admin = users_factories.AdminFactory()
+        user = users_factories.UserFactory(
+            dateOfBirth=datetime.combine(datetime.today(), datetime.min.time()) - relativedelta(years=18, months=1),
+            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
+            activity=users_models.ActivityEnum.STUDENT.value,
+            email="user@example.com",
+            firstName="Partner",
+            lastName="Example",
+            departementCode="06",
+            postalCode="06000",
+            city="Nice",
+            idPieceNumber="123123123",
+        )
+
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.USER_PROFILING,
+            status=fraud_models.FraudCheckStatus.OK,
+        )
+
+        client.with_session_auth(admin.email)
+
+        client.post(
+            f"/pc/back-office/partner_users/edit/?id={user.id}",
+            form={
+                "csrf_token": "token",
+                "email": user.email,
+                "firstName": "",
+                "lastName": "",
+                "departementCode": user.departementCode,
+                "postalCode": "",
+                "city": "",
+                "idPieceNumber": "",
+            },
+        )
+
+        assert user.firstName is None
+        assert user.lastName is None
+        assert user.postalCode is None
+        assert user.city is None
+        assert user.idPieceNumber == "123123123"  # admin is not superadmin
+
+        # next step was IDENTITY_CHECK before update action clears profile
+        assert (
+            subscription_api.get_next_subscription_step(user) == subscription_models.SubscriptionStep.PROFILE_COMPLETION
+        )
+
+    @clean_database
+    @override_settings(IS_PROD=True, SUPER_ADMIN_EMAIL_ADDRESSES="superadmin@example.com")
+    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    def test_clear_idpiecenumber(self, mocked_validate_csrf_token, client):
+        admin = users_factories.AdminFactory(email="superadmin@example.com")
+        user = users_factories.UserFactory(
+            email="user@example.com",
+            firstName="Partner",
+            lastName="Example",
+            departementCode="06",
+            postalCode="06000",
+            city="Nice",
+            idPieceNumber="123123123",
+        )
+        client.with_session_auth(admin.email)
+
+        client.post(
+            f"/pc/back-office/partner_users/edit/?id={user.id}",
+            form={
+                "csrf_token": "token",
+                "email": user.email,
+                "firstName": user.firstName,
+                "lastName": user.lastName,
+                "departementCode": user.departementCode,
+                "postalCode": user.postalCode,
+                "city": user.city,
+                "idPieceNumber": "",
+            },
+        )
+
+        assert user.idPieceNumber is None
