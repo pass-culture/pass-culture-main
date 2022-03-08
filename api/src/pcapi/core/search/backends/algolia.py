@@ -8,6 +8,7 @@ from flask import current_app
 import redis
 
 from pcapi import settings
+import pcapi.core.educational.models as educational_models
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.models as offers_models
 from pcapi.core.search.backends import base
@@ -297,6 +298,27 @@ class AlgoliaBackend(base.SearchBackend):
         finally:
             pipeline.reset()
 
+    def index_collective_offers(
+        self,
+        collective_offers: Iterable[educational_models.CollectiveOffer],
+    ) -> None:
+        if not collective_offers:
+            return
+        objects = [self.serialize_collective_offer(collective_offer) for collective_offer in collective_offers]
+        self.algolia_collective_offers_client.save_objects(objects)
+
+    def index_collective_offer_templates(
+        self,
+        collective_offer_templates: Iterable[educational_models.CollectiveOfferTemplate],
+    ) -> None:
+        if not collective_offer_templates:
+            return
+        objects = [
+            self.serialize_collective_offer_template(collective_offer_template)
+            for collective_offer_template in collective_offer_templates
+        ]
+        self.algolia_collective_offers_templates_client.save_objects(objects)
+
     def index_venues(self, venues: Iterable[offerers_models.Venue]) -> None:
         if not venues:
             return
@@ -330,8 +352,24 @@ class AlgoliaBackend(base.SearchBackend):
             return
         self.algolia_venues_client.delete_objects(venue_ids)
 
+    def unindex_collective_offer_ids(self, collective_offer_ids: Iterable[int]) -> None:
+        if not collective_offer_ids:
+            return
+        self.algolia_collective_offers_client.delete_objects(collective_offer_ids)
+
+    def unindex_collective_offer_template_ids(self, collective_offer_template_ids: Iterable[int]) -> None:
+        if not collective_offer_template_ids:
+            return
+        self.algolia_collective_offers_templates_client.delete_objects(collective_offer_template_ids)
+
     def unindex_all_venues(self) -> None:
         self.algolia_venues_client.clear_objects()
+
+    def unindex_all_collective_offers(self) -> None:
+        self.algolia_collective_offers_client.clear_objects()
+
+    def unindex_all_collective_offers_templates(self) -> None:
+        self.algolia_collective_offers_templates_client.clear_objects()
 
     @classmethod
     def serialize_offer(cls, offer: offers_models.Offer) -> dict:
@@ -419,6 +457,58 @@ class AlgoliaBackend(base.SearchBackend):
             "tags": [criterion.name for criterion in venue.criteria],
             "banner_url": venue.bannerUrl,
             "_geoloc": position(venue),
+        }
+
+    @classmethod
+    def serialize_collective_offer(cls, collective_offer: educational_models.CollectiveOffer) -> dict:
+        venue = collective_offer.venue
+        offerer = venue.managingOfferer
+        date_created = collective_offer.dateCreated.timestamp()
+
+        return {
+            "objectID": collective_offer.id,
+            "offer": {
+                "dateCreated": date_created,
+                "name": collective_offer.name,
+                "students": [student.value for student in collective_offer.students],
+                "subcategoryId": collective_offer.subcategoryId,
+            },
+            "offerer": {
+                "name": offerer.name,
+            },
+            "venue": {
+                "departmentCode": venue.departementCode,
+                "id": venue.id,
+                "name": venue.name,
+                "publicName": venue.publicName,
+            },
+        }
+
+    @classmethod
+    def serialize_collective_offer_template(
+        cls, collective_offer_template: educational_models.CollectiveOfferTemplate
+    ) -> dict:
+        venue = collective_offer_template.venue
+        offerer = venue.managingOfferer
+        date_created = collective_offer_template.dateCreated.timestamp()
+
+        return {
+            "objectID": collective_offer_template.id,
+            "offer": {
+                "dateCreated": date_created,
+                "name": collective_offer_template.name,
+                "students": [student.value for student in collective_offer_template.students],
+                "subcategoryId": collective_offer_template.subcategoryId,
+            },
+            "offerer": {
+                "name": offerer.name,
+            },
+            "venue": {
+                "departmentCode": venue.departementCode,
+                "id": venue.id,
+                "name": venue.name,
+                "publicName": venue.publicName,
+            },
         }
 
     def redis_lpop(self, queue_name: str, count: int) -> set[int]:
