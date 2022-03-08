@@ -213,6 +213,86 @@ def test_pop_venue_ids_from_error_queue(app):
     assert venue_ids == set()
 
 
+def test_pop_collective_offer_ids_from_queue(app):
+    backend = get_backend()
+    app.redis_client.sadd("search:algolia:collective-offer-ids-to-index", 1, 2, 3)
+
+    popped = set()
+    collective_offer_ids = backend.pop_collective_offer_ids_from_queue(count=2)
+    popped |= collective_offer_ids
+    assert len(collective_offer_ids) == 2
+    assert collective_offer_ids.issubset({1, 2, 3})
+
+    collective_offer_ids = backend.pop_collective_offer_ids_from_queue(count=2)
+    popped |= collective_offer_ids
+    assert len(collective_offer_ids) == 1
+    assert collective_offer_ids.issubset({1, 2, 3})
+    assert popped == {1, 2, 3}
+
+    collective_offer_ids = backend.pop_collective_offer_ids_from_queue(count=2)
+    assert collective_offer_ids == set()
+
+
+def test_pop_collective_offer_ids_from_error_queue(app):
+    backend = get_backend()
+    app.redis_client.sadd("search:algolia:collective-offer-ids-in-error-to-index", 1, 2, 3)
+
+    popped = set()
+    collective_offer_ids = backend.pop_collective_offer_ids_from_queue(count=2, from_error_queue=True)
+    popped |= collective_offer_ids
+    assert len(collective_offer_ids) == 2
+    assert collective_offer_ids.issubset({1, 2, 3})
+
+    collective_offer_ids = backend.pop_collective_offer_ids_from_queue(count=2, from_error_queue=True)
+    popped |= collective_offer_ids
+    assert len(collective_offer_ids) == 1
+    assert collective_offer_ids.issubset({1, 2, 3})
+    assert popped == {1, 2, 3}
+
+    collective_offer_ids = backend.pop_collective_offer_ids_from_queue(count=2, from_error_queue=True)
+    assert collective_offer_ids == set()
+
+
+def test_pop_collective_offer_template_ids_from_queue(app):
+    backend = get_backend()
+    app.redis_client.sadd("search:algolia:collective-offer-template-ids-to-index", 1, 2, 3)
+
+    popped = set()
+    collective_offer_template_ids = backend.pop_collective_offer_template_ids_from_queue(count=2)
+    popped |= collective_offer_template_ids
+    assert len(collective_offer_template_ids) == 2
+    assert collective_offer_template_ids.issubset({1, 2, 3})
+
+    collective_offer_template_ids = backend.pop_collective_offer_template_ids_from_queue(count=2)
+    popped |= collective_offer_template_ids
+    assert len(collective_offer_template_ids) == 1
+    assert collective_offer_template_ids.issubset({1, 2, 3})
+    assert popped == {1, 2, 3}
+
+    collective_offer_template_ids = backend.pop_collective_offer_template_ids_from_queue(count=2)
+    assert collective_offer_template_ids == set()
+
+
+def test_pop_collective_offer_template_ids_from_error_queue(app):
+    backend = get_backend()
+    app.redis_client.sadd("search:algolia:collective-offer-template-ids-in-error-to-index", 1, 2, 3)
+
+    popped = set()
+    collective_offer_template_ids = backend.pop_collective_offer_template_ids_from_queue(count=2, from_error_queue=True)
+    popped |= collective_offer_template_ids
+    assert len(collective_offer_template_ids) == 2
+    assert collective_offer_template_ids.issubset({1, 2, 3})
+
+    collective_offer_template_ids = backend.pop_collective_offer_template_ids_from_queue(count=2, from_error_queue=True)
+    popped |= collective_offer_template_ids
+    assert len(collective_offer_template_ids) == 1
+    assert collective_offer_template_ids.issubset({1, 2, 3})
+    assert popped == {1, 2, 3}
+
+    collective_offer_template_ids = backend.pop_collective_offer_template_ids_from_queue(count=2, from_error_queue=True)
+    assert collective_offer_template_ids == set()
+
+
 @pytest.mark.usefixtures("db_session")
 def test_index_offers(app):
     backend = get_backend()
