@@ -232,9 +232,7 @@ class BeneficiaryUserView(ResendValidationEmailMixin, SuspensionMixin, BaseAdmin
             "needsToFillCulturalSurvey",
         )
         if self.check_super_admins():
-            fields += ("firstName", "lastName", "comment")
-        if settings.IS_TESTING or settings.IS_STAGING:
-            fields += ("idPieceNumber",)
+            fields += ("firstName", "lastName", "idPieceNumber", "comment")
 
         return fields
 
