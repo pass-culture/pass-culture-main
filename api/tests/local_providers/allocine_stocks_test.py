@@ -222,6 +222,7 @@ class UpdateObjectsTest:
         )
         assert created_offer.durationMinutes == 46
         assert created_offer.extraData == {
+            "diffusionVersion": "VF",
             "visa": "2009993528",
             "stageDirector": "Farkhondeh Torabi",
             "theater": {"allocine_movie_id": 37832, "allocine_room_id": "PXXXXX"},
@@ -339,6 +340,7 @@ class UpdateObjectsTest:
         assert original_version_offer.durationMinutes == 46
         assert original_version_offer.extraData["visa"] == "2009993528"
         assert original_version_offer.extraData["stageDirector"] == "Farkhondeh Torabi"
+        assert original_version_offer.extraData["diffusionVersion"] == "VO"
         assert not original_version_offer.isDuo
         assert original_version_offer.name == "Les Contes de la mère poule - VO"
         assert original_version_offer.product == created_products[0]
@@ -353,6 +355,7 @@ class UpdateObjectsTest:
         assert dubbed_version_offer.durationMinutes == 46
         assert dubbed_version_offer.extraData["visa"] == "2009993528"
         assert dubbed_version_offer.extraData["stageDirector"] == "Farkhondeh Torabi"
+        assert dubbed_version_offer.extraData["diffusionVersion"] == "VF"
         assert not dubbed_version_offer.isDuo
         assert dubbed_version_offer.name == "Les Contes de la mère poule - VF"
         assert dubbed_version_offer.product == created_products[0]
@@ -610,6 +613,7 @@ class UpdateObjectsTest:
             "cast": ["Chloë Grace Moretz", "Michael Peña"],
         }
         assert created_offer.extraData == {
+            "diffusionVersion": "VF",
             "visa": "2009993528",
             "stageDirector": "Farkhondeh Torabi",
             "theater": {"allocine_movie_id": 37832, "allocine_room_id": "P12345"},

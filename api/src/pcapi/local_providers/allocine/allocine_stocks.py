@@ -169,6 +169,7 @@ class AllocineStocks(LocalProvider):
         allocine_offer.name = f"{self.movie_information['title']} - {movie_version}"
         allocine_offer.subcategoryId = subcategories.SEANCE_CINE.id
         allocine_offer.productId = self.last_product_id
+        allocine_offer.extraData["diffusionVersion"] = movie_version
 
         is_new_offer_to_insert = allocine_offer.id is None
 
