@@ -68,13 +68,15 @@ def archive_past_identification_pictures(
                 # Catch all exception. Watch logs to find errors during archive
                 result.add_result()
 
-        offset = +limit
+        # Offset and limit are used to window query result inside loop.
+        # For the first request we use offset 0. Offset is updated at each iteration.
+        offset += limit
 
     return result
 
 
 def get_fraud_check_to_archive(
-    start_date: datetime, end_date: datetime, status: Optional[bool], limit: int = DEFAULT_LIMIT, offset=0
+    start_date: datetime, end_date: datetime, status: Optional[bool], limit: int = DEFAULT_LIMIT, offset: int = 0
 ) -> list[BeneficiaryFraudCheck]:
     query = (
         models.BeneficiaryFraudCheck.query.filter(
