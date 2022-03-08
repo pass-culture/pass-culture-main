@@ -16,8 +16,3 @@ def send_activation_email(user: User, reset_password_token_life_time: typing.Opt
     data = beneficiary_activation.get_activation_email_data(user=user, token=token)
 
     return mails.send(recipients=[user.email], data=data)
-
-
-def send_dms_application_emails(users: typing.Iterable[User]) -> bool:
-    data = beneficiary_activation.get_dms_application_data()
-    return mails.send(recipients=[user.email for user in users], data=data)

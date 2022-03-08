@@ -1,8 +1,14 @@
+import logging
 import typing
 
+from pcapi.core.mails.transactional.users.subscription_document_error import (
+    send_subscription_document_error_email_to_user_list,
+)
 from pcapi.core.users.models import User
-from pcapi.domain import user_emails
 from pcapi.models.beneficiary_import import BeneficiaryImport
+
+
+logger = logging.getLogger(__name__)
 
 
 def get_users_from_applications(application_ids: list[int], source: str) -> typing.Iterable[User]:
@@ -15,5 +21,6 @@ def get_users_from_applications(application_ids: list[int], source: str) -> typi
 
 def run(application_ids: list[int], source: str) -> typing.Iterable[User]:
     users = get_users_from_applications(application_ids, source)
-    user_emails.send_dms_application_emails(users)
+    if not send_subscription_document_error_email_to_user_list(users, code="unread-mrz-document"):
+        logger.warning("Could not send dms application emails")
     return users

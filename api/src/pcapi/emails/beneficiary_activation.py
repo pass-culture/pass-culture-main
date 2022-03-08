@@ -16,10 +16,3 @@ def get_activation_email_data(user: users_models.User, token: users_models.Token
             "email": quote(email),
         },
     }
-
-
-def get_dms_application_data() -> dict:
-    return {
-        "Mj-TemplateID": 3062771,
-        "Mj-TemplateLanguage": True,
-    }
