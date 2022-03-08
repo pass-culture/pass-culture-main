@@ -62,16 +62,16 @@ class SearchBackend:
     ) -> None:
         raise NotImplementedError()
 
-    def index_venues(self, offers: "Iterable[offerers_models.Venue]") -> None:
+    def index_venues(self, venues: "Iterable[offerers_models.Venue]") -> None:
         raise NotImplementedError()
 
-    def unindex_offer_ids(self, offers: Iterable[int]) -> None:
+    def unindex_offer_ids(self, offer_ids: Iterable[int]) -> None:
         raise NotImplementedError()
 
     def unindex_all_offers(self) -> None:
         raise NotImplementedError()
 
-    def unindex_venue_ids(self, venues: Iterable[int]) -> None:
+    def unindex_venue_ids(self, venue_ids: Iterable[int]) -> None:
         raise NotImplementedError()
 
     def unindex_collective_offer_ids(self, venues: Iterable[int]) -> None:
@@ -83,7 +83,7 @@ class SearchBackend:
     def unindex_all_venues(self) -> None:
         raise NotImplementedError()
 
-    def pop_venue_ids_from_queue(self, count: int, from_queue: bool = False) -> set[int]:
+    def pop_venue_ids_from_queue(self, count: int, from_error_queue: bool = False) -> set[int]:
         raise NotImplementedError()
 
     def pop_collective_offer_ids_from_queue(
