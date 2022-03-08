@@ -55,7 +55,7 @@ class ArchivePastIdentificationPicturesTest:
         actual = archive_past_identification_pictures(start_date, end_date, limit)
 
         # Then
-        mocked_get_fraud_check_to_archive.assert_called_with(start_date, end_date, None, limit)
+        mocked_get_fraud_check_to_archive.assert_called_with(start_date, end_date, None, limit, 2)
         assert mocked_get_fraud_check_to_archive.call_count == 3
         assert mocked_archive_ubble_user_id_pictures.call_count == 3
         assert actual == expected_result
@@ -178,31 +178,38 @@ class GetFraudCheckToArchiveTest:
         assert actual_fraud_check.idPicturesStored == expected_id_picture_stored_false
 
     @pytest.mark.usefixtures("db_session")
-    def test_should_give_limit_result_size(self):
+    def test_should_give_limit_result_size_with_offset(self):
         # Given
         start_date = datetime.datetime(2021, 1, 1)
         end_date = datetime.datetime(2022, 1, 1)
         limit = 1
+        offset = 1
 
-        BeneficiaryFraudCheckFactory(
+        first_fraud_check = BeneficiaryFraudCheckFactory(
             status=FraudCheckStatus.OK,
             type=FraudCheckType.UBBLE,
             dateCreated=datetime.datetime(2021, 12, 31),
             idPicturesStored=None,
         )
-        BeneficiaryFraudCheckFactory(
+        second_fraud_check = BeneficiaryFraudCheckFactory(
             status=FraudCheckStatus.OK,
             type=FraudCheckType.UBBLE,
             dateCreated=datetime.datetime(2022, 1, 1),
             idPicturesStored=None,
         )
 
-        expected = 1
+        expected_length = 1
 
         # When
-        actual = get_fraud_check_to_archive(start_date, end_date, None, limit)
+        first_call_result = get_fraud_check_to_archive(start_date, end_date, None, limit)
+        second_call_result = get_fraud_check_to_archive(start_date, end_date, None, limit, offset)
 
         # Then
-        assert len(actual) == expected
-        actual_fraud_check = actual[0]
-        assert actual_fraud_check.dateCreated == datetime.datetime(2021, 12, 31)
+        assert len(first_call_result) == expected_length
+        first_call_fraud_check = first_call_result[0]
+        assert first_call_fraud_check.dateCreated == datetime.datetime(2021, 12, 31)
+        assert first_call_fraud_check.id == first_fraud_check.id
+        assert len(second_call_result) == expected_length
+        second_call_fraud_check = second_call_result[0]
+        assert second_call_fraud_check.dateCreated == datetime.datetime(2022, 1, 1)
+        assert second_call_fraud_check.id == second_fraud_check.id
