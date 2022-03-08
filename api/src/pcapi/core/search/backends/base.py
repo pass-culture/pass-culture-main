@@ -71,6 +71,20 @@ class SearchBackend:
     def pop_venue_ids_from_queue(self, count: int, from_queue: bool = False) -> set[int]:
         raise NotImplementedError()
 
+    def pop_collective_offer_ids_from_queue(
+        self,
+        count: int,
+        from_error_queue: bool = False,
+    ) -> set[int]:
+        raise NotImplementedError()
+
+    def pop_collective_offer_template_ids_from_queue(
+        self,
+        count: int,
+        from_error_queue: bool = False,
+    ) -> set[int]:
+        raise NotImplementedError()
+
     @classmethod
     def serialize_offer(cls, offer: "offers_models.Offer") -> dict:
         raise NotImplementedError()
