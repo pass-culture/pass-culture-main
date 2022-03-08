@@ -1,4 +1,4 @@
-from datetime import datetime
+import datetime
 import decimal
 import logging
 from typing import Optional
@@ -100,7 +100,7 @@ def book_educational_offer(redactor_informations: RedactorInformation, stock_id:
             status=bookings_models.BookingStatus.PENDING,
         )
 
-        booking.dateCreated = datetime.utcnow()
+        booking.dateCreated = datetime.datetime.utcnow()
         booking.cancellationLimitDate = compute_educational_booking_cancellation_limit_date(
             stock.beginningDatetime, booking.dateCreated
         )
@@ -181,7 +181,7 @@ def create_collective_booking_with_collective_stock(
             educationalRedactor=redactor,
         )
 
-        collective_booking.dateCreated = datetime.utcnow()
+        collective_booking.dateCreated = datetime.datetime.utcnow()
         collective_booking.cancellationLimitDate = compute_educational_booking_cancellation_limit_date(
             collective_stock.beginningDatetime, collective_booking.dateCreated
         )
@@ -447,7 +447,7 @@ def create_educational_deposit(
         educationalInstitutionId=educational_institution_id,
         amount=decimal.Decimal(deposit_amount),
         isFinal=False,
-        dateCreated=datetime.utcnow(),
+        dateCreated=datetime.datetime.utcnow(),
         ministry=ministry,
     )
     repository.save(educational_deposit)
@@ -552,7 +552,7 @@ def create_collective_stock(
             _update_offer_fraud_information(collective_offer, user)
     else:
         collective_offer.validation = OfferValidationStatus.APPROVED
-        collective_offer.lastValidationDate = datetime.now()
+        collective_offer.lastValidationDate = datetime.datetime.utcnow()
         repository.save(collective_offer)
 
     search.async_index_collective_offer_ids([collective_offer.id])
