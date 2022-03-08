@@ -51,9 +51,10 @@ def archive_past_identification_pictures(
         raise ValueError('"start date" must be before "end date"')
 
     result = UbbleIdentificationPicturesArchiveResult()
+    offset = 0
 
     while True:
-        fraud_checks = get_fraud_check_to_archive(start_date, end_date, status, limit)
+        fraud_checks = get_fraud_check_to_archive(start_date, end_date, status, limit, offset)
 
         current_count = len(fraud_checks)
         if current_count == 0:
@@ -67,11 +68,13 @@ def archive_past_identification_pictures(
                 # Catch all exception. Watch logs to find errors during archive
                 result.add_result()
 
+        offset = +limit
+
     return result
 
 
 def get_fraud_check_to_archive(
-    start_date: datetime, end_date: datetime, status: Optional[bool], limit: int = DEFAULT_LIMIT
+    start_date: datetime, end_date: datetime, status: Optional[bool], limit: int = DEFAULT_LIMIT, offset=0
 ) -> list[BeneficiaryFraudCheck]:
     query = (
         models.BeneficiaryFraudCheck.query.filter(
@@ -82,5 +85,6 @@ def get_fraud_check_to_archive(
         )
         .order_by(BeneficiaryFraudCheck.dateCreated.asc())
         .limit(limit)
+        .offset(offset)
     )
     return query.all()
