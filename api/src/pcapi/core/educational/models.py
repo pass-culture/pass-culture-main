@@ -92,7 +92,7 @@ class CollectiveOffer(PcObject, ValidationMixin, AccessibilityMixin, StatusMixin
 
     dateUpdated: datetime = sa.Column(sa.DateTime, nullable=True, default=datetime.utcnow, onupdate=datetime.utcnow)
 
-    students: list[str] = sa.Column(
+    students: list[StudentLevels] = sa.Column(
         MutableList.as_mutable(postgresql.ARRAY(sa.Enum(StudentLevels))),
         nullable=False,
         server_default="{}",
@@ -241,7 +241,7 @@ class CollectiveOfferTemplate(PcObject, ValidationMixin, AccessibilityMixin, Sta
 
     dateUpdated: datetime = sa.Column(sa.DateTime, nullable=True, default=datetime.utcnow, onupdate=datetime.utcnow)
 
-    students: list[str] = sa.Column(
+    students: list[StudentLevels] = sa.Column(
         MutableList.as_mutable(postgresql.ARRAY(sa.Enum(StudentLevels))),
         nullable=False,
         server_default="{}",

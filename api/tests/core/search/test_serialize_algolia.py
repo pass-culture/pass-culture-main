@@ -4,6 +4,8 @@ import decimal
 import pytest
 
 from pcapi.core.categories import subcategories
+import pcapi.core.educational.factories as educational_factories
+from pcapi.core.educational.models import StudentLevels
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.factories as offers_factories
@@ -158,4 +160,72 @@ def test_serialize_venue():
         "tags": [],
         "banner_url": venue.bannerUrl,
         "_geoloc": {"lng": float(venue.longitude), "lat": float(venue.latitude)},
+    }
+
+
+def test_serialize_collective_offer():
+    collective_offer = educational_factories.CollectiveOfferFactory(
+        dateCreated=datetime.datetime(2022, 1, 1, 10, 0, 0),
+        name="Titre formidable",
+        students=[StudentLevels.CAP1, StudentLevels.CAP2],
+        subcategoryId=subcategories.LIVRE_PAPIER.id,
+        venue__postalCode="86140",
+        venue__name="La Moyenne Librairie SA",
+        venue__publicName="La Moyenne Librairie",
+        venue__managingOfferer__name="Les Librairies Associées",
+        venue__departementCode="86",
+    )
+
+    serialized = algolia.AlgoliaBackend().serialize_collective_offer(collective_offer)
+    assert serialized == {
+        "objectID": collective_offer.id,
+        "offer": {
+            "dateCreated": 1641031200.0,
+            "name": "Titre formidable",
+            "students": ["CAP - 1re année", "CAP - 2e année"],
+            "subcategoryId": subcategories.LIVRE_PAPIER.id,
+        },
+        "offerer": {
+            "name": "Les Librairies Associées",
+        },
+        "venue": {
+            "departmentCode": "86",
+            "id": collective_offer.venue.id,
+            "name": "La Moyenne Librairie SA",
+            "publicName": "La Moyenne Librairie",
+        },
+    }
+
+
+def test_serialize_collective_offer_template():
+    collective_offer_template = educational_factories.CollectiveOfferTemplateFactory(
+        dateCreated=datetime.datetime(2022, 1, 1, 10, 0, 0),
+        name="Titre formidable",
+        students=[StudentLevels.CAP1, StudentLevels.CAP2],
+        subcategoryId=subcategories.LIVRE_PAPIER.id,
+        venue__postalCode="86140",
+        venue__name="La Moyenne Librairie SA",
+        venue__publicName="La Moyenne Librairie",
+        venue__managingOfferer__name="Les Librairies Associées",
+        venue__departementCode="86",
+    )
+
+    serialized = algolia.AlgoliaBackend().serialize_collective_offer_template(collective_offer_template)
+    assert serialized == {
+        "objectID": collective_offer_template.id,
+        "offer": {
+            "dateCreated": 1641031200.0,
+            "name": "Titre formidable",
+            "students": ["CAP - 1re année", "CAP - 2e année"],
+            "subcategoryId": subcategories.LIVRE_PAPIER.id,
+        },
+        "offerer": {
+            "name": "Les Librairies Associées",
+        },
+        "venue": {
+            "departmentCode": "86",
+            "id": collective_offer_template.venue.id,
+            "name": "La Moyenne Librairie SA",
+            "publicName": "La Moyenne Librairie",
+        },
     }
