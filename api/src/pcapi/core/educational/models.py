@@ -132,6 +132,8 @@ class CollectiveOffer(PcObject, ValidationMixin, AccessibilityMixin, StatusMixin
     def isBookable(self) -> bool:
         return self.collectiveStock.isBookable
 
+    is_eligible_for_search = isBookable
+
     @property
     def isReleased(self) -> bool:
         return (
@@ -264,6 +266,8 @@ class CollectiveOfferTemplate(PcObject, ValidationMixin, AccessibilityMixin, Sta
             and self.venue.managingOfferer.isActive
             and self.venue.managingOfferer.isValidated
         )
+
+    is_eligible_for_search = isReleased
 
     @classmethod
     def create_from_collective_offer(cls, collective_offer: CollectiveOffer, price_detail: str = None):
