@@ -47,6 +47,7 @@ class TransactionalEmail(Enum):
         id_prod=510, id_not_prod=53, tags=["jeunes_erreur_importation_dms"]
     )
     RECREDIT_TO_UNDERAGE_BENEFICIARY = Template(id_prod=303, id_not_prod=31, tags=["anniversaire_16_17_ans"])
+    REPORTED_OFFER_BY_USER = Template(id_prod=589, id_not_prod=70, tags=["interne_offre_signale"])
     SUBSCRIPTION_FOREIGN_DOCUMENT_ERROR = Template(
         id_prod=385,
         id_not_prod=40,
