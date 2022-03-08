@@ -94,6 +94,8 @@ def test_serialize_offer_event():
         [{}, "1"],
         [{"visa": "56070"}, "56070"],
         [{"isbn": "123456789"}, "123456789"],
+        [{"visa": "56070", "diffusionVersion": "VO"}, "56070VO"],
+        [{"visa": "56070", "diffusionVersion": "VF"}, "56070VF"],
     ),
 )
 def test_serialize_offer_distinct(extra_data, expected_distinct):
