@@ -296,3 +296,18 @@ class Returns200Test:
         assert data["stocks"][0]["cancellationLimitDate"] is None
         assert data["subcategoryId"] == "ABO_PLATEFORME_MUSIQUE"
         assert data["stocks"][0]["hasActivationCode"] is True
+
+    @freeze_time("2020-10-15 00:00:00")
+    def test_should_not_return_soft_deleted_stock(self, app):
+        # Given
+        user_offerer = offers_factories.UserOffererFactory()
+        offer = offers_factories.EducationalEventOfferFactory(venue__managingOfferer=user_offerer.offerer)
+        deleted_stock = offers_factories.EducationalEventStockFactory(offer=offer, isSoftDeleted=True)
+
+        # When
+        client = TestClient(app.test_client()).with_session_auth(email=user_offerer.user.email)
+        response = client.get(f"/offers/{humanize(deleted_stock.offer.id)}")
+
+        # Then
+        assert response.status_code == 200
+        assert len(response.json["stocks"]) == 0
