@@ -2,6 +2,39 @@
 
 echo -e "Checking commit message format"
 MSG_FILE=$1
+
+INPUT_MSG=$(cat $MSG_FILE)
+
+HAVE_PREFIX=$(echo $INPUT_MSG | grep -E '.*(PC-[0-9]+).*')
+if [ -z "$HAVE_PREFIX" ]; then
+    CURRENT_BRANCH=$(git br --show-current)
+    JIRA_ID=$(echo $CURRENT_BRANCH | sed -E 's/.*(PC-[0-9]+).*/\1/')
+    HAVE_CHANGE_ADAGE=`git diff --cached --name-only | grep ^adage-front/`
+    HAVE_CHANGE_API=`git diff --cached --name-only | grep ^api/`
+    HAVE_CHANGE_PRO=`git diff --cached --name-only | grep ^pro/`
+
+    REPOSITORY_SCOOP_LIST=()
+    if [ "$HAVE_CHANGE_API" ]; then
+        REPOSITORY_SCOOP_LIST+=("API")
+    fi;
+
+    if [ "$HAVE_CHANGE_PRO" ]; then
+        REPOSITORY_SCOOP_LIST+=("PRO")
+    fi;
+
+    if [ "$HAVE_CHANGE_ADAGE" ]; then
+        REPOSITORY_SCOOP_LIST+=("ADAGE")
+    fi;
+    SEPARATOR=','
+    REPOSITORY_SCOOP=$(printf "$SEPARATOR%s" "${REPOSITORY_SCOOP_LIST[@]}")
+    REPOSITORY_SCOOP=${REPOSITORY_SCOOP:${#SEPARATOR}}
+
+    if [ "$REPOSITORY_SCOOP" ]; then
+        COMMIT_MSG="($JIRA_ID)[$REPOSITORY_SCOOP] $INPUT_MSG"
+        echo "$COMMIT_MSG" > $MSG_FILE
+    fi;
+fi;
+
 if cz -n cz_customize check --commit-msg-file $MSG_FILE ; then
     echo "Commit message correctly formated"
 else
