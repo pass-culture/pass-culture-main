@@ -50,12 +50,21 @@ class ArchivePastIdentificationPicturesTest:
         ]
         mocked_archive_ubble_user_id_pictures.side_effect = [True, False, True]
         expected_result = UbbleIdentificationPicturesArchiveResult(2, 1)
+        expected_default_offset = 0
+        expected_second_offset = 2
+        expected_last_offset = 4
 
         # When
         actual = archive_past_identification_pictures(start_date, end_date, limit)
 
         # Then
-        mocked_get_fraud_check_to_archive.assert_called_with(start_date, end_date, None, limit, 2)
+        mocked_get_fraud_check_to_archive.assert_has_calls(
+            [
+                mock.call(start_date, end_date, None, limit, expected_default_offset),
+                mock.call(start_date, end_date, None, limit, expected_second_offset),
+                mock.call(start_date, end_date, None, limit, expected_last_offset),
+            ]
+        )
         assert mocked_get_fraud_check_to_archive.call_count == 3
         assert mocked_archive_ubble_user_id_pictures.call_count == 3
         assert actual == expected_result
