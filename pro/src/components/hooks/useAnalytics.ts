@@ -13,6 +13,7 @@ interface IUseAnalyticsReturn {
   logConsultSupportClick: (page: string) => void
   setAnalyticsUserId: (userId: string) => void
   logTutoPageView: (pageNumber: string) => void
+  logForgottenPasswordClick: (page: string) => void
 }
 
 const useAnalytics = (): IUseAnalyticsReturn => {
@@ -40,6 +41,8 @@ const useAnalytics = (): IUseAnalyticsReturn => {
     logEvent(Events.CLICKED_PERSONAL_DATA, { from: page })
   const logConsultSupportClick = (page: string) =>
     logEvent(Events.CLICKED_CONSULT_SUPPORT, { from: page })
+  const logForgottenPasswordClick = (page: string) =>
+    logEvent(Events.CLICKED_FORGOTTEN_PASSWORD, { from: page })
   return {
     logPageView,
     logConsultCGUClick,
@@ -47,6 +50,7 @@ const useAnalytics = (): IUseAnalyticsReturn => {
     logConsultSupportClick,
     setAnalyticsUserId,
     logTutoPageView,
+    logForgottenPasswordClick,
   }
 }
 

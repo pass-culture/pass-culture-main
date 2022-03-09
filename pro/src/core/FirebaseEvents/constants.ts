@@ -4,4 +4,5 @@ export enum Events {
   CLICKED_PERSONAL_DATA = 'hasClickedConsultPersonalData',
   CLICKED_CONSULT_SUPPORT = 'hasClickedConsultSupport',
   TUTO_PAGE_VIEW = 'tutoPageView',
+  CLICKED_FORGOTTEN_PASSWORD = 'hasClickedForgottenPassword',
 }
