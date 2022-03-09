@@ -5,6 +5,8 @@ from typing import Optional
 
 import babel.dates
 
+from pcapi.connectors.dms import models as dms_models
+
 
 APPLICATION_DETAIL_STANDARD_RESPONSE = {
     "dossier": {
@@ -227,7 +229,7 @@ def make_graphql_application(
     state: str,
     postal_code: int = 67200,
     department_code: str = "67 - Bas-Rhin",
-    civility: str = "Mme",
+    civility: str = "MME",
     activity: str = "Étudiant",
     id_piece_number: Optional[str] = "123123123",
     email: Optional[str] = "young.individual@example.com",
@@ -243,6 +245,7 @@ def make_graphql_application(
         "number": application_id,
         "archived": False,
         "state": state,
+        "dateDepot": "2020-05-13T00:09:46+02:00",
         "dateDerniereModification": "2020-05-13T10:41:23+02:00",
         "datePassageEnConstruction": construction_datetime,
         "datePassageEnInstruction": "2020-05-13T10:37:31+02:00",
@@ -260,7 +263,7 @@ def make_graphql_application(
             },
             {
                 "id": "Q2hhbXAtNTk2NDUz",
-                "label": "Veuillez indiquer votre département de résidence",
+                "label": "Veuillez indiquer votre département",
                 "stringValue": department_code,
             },
             {
@@ -280,21 +283,21 @@ def make_graphql_application(
             },
             {
                 "id": "Q2hhbXAtMTg3Mzc0Mw==",
-                "label": "Quel est le numéro de la pièce que vous venez de saisir ?",
+                "label": "Quel est le numéro de la pièce que tu viens de saisir ?",
                 "stringValue": id_piece_number,
             },
-            {"id": "Q2hhbXAtNTgyMjE5", "label": "Quel est votre numéro de téléphone", "stringValue": "01 23 45 67 89"},
+            {"id": "Q2hhbXAtNTgyMjE5", "label": "Quel est ton numéro de téléphone ?", "stringValue": "01 23 45 67 89"},
             {
                 "id": "Q2hhbXAtNTgyMjIx",
-                "label": "Quel est le code postal de votre commune de résidence ?",
+                "label": "Quel est le code postal de ta commune de résidence ? (ex : 25370)",
                 "stringValue": postal_code,
             },
             {
                 "id": "Q2hhbXAtNTgyMjIz",
-                "label": "Quelle est votre adresse de résidence",
+                "label": "Quelle est ton adresse de résidence",
                 "stringValue": "3 La Bigotais 22800 Saint-Donan",
             },
-            {"id": "Q2hhbXAtNzE4MDk0", "label": "Veuillez indiquer votre statut", "stringValue": activity},
+            {"id": "Q2hhbXAtNzE4MDk0", "label": "Merci d'indiquer ton statut", "stringValue": activity},
             {"id": "Q2hhbXAtNDUxMjg0", "label": "Déclaration de résidence", "stringValue": ""},
             {"id": "Q2hhbXAtNTgyMzI4", "label": "Certification sur l'honneur", "stringValue": ""},
             {
@@ -330,8 +333,14 @@ def make_graphql_application(
             },
         ],
         "annotations": [],
-        "usager": {"email": email},
-        "demandeur": {"civilite": civility, "nom": last_name, "prenom": first_name, "dateDeNaissance": None},
+        "usager": {"id": "WSJvY2VkdXJlLTQ0Nhju", "email": email},
+        "demandeur": {
+            "id": "ABCvY2VkdXJlLTQ0Nxyz",
+            "civilite": civility,
+            "nom": last_name,
+            "prenom": first_name,
+            "dateDeNaissance": None,
+        },
     }
     if full_graphql_response:
         enveloppe = {
@@ -353,6 +362,7 @@ def make_new_application():
         "number": 5718303,
         "archived": False,
         "state": "en_construction",
+        "dateDepot": "2020-05-13T00:09:46+02:00",
         "dateDerniereModification": "2021-09-14T16:02:33+02:00",
         "datePassageEnConstruction": "2021-09-14T16:02:32+02:00",
         "datePassageEnInstruction": None,
@@ -566,7 +576,7 @@ def make_new_application():
                 "label": "Quelle est ton adresse de résidence",
                 "stringValue": "32 rue des sapins gris 21350 l'îsle à dent",
             },
-            {"id": "Q2hhbXAtNzE4MDk0", "label": "Veuillez indiquer votre statut", "stringValue": "Employé"},
+            {"id": "Q2hhbXAtNzE4MDk0", "label": "Merci d'indiquer ton statut", "stringValue": "Employé"},
             {"id": "Q2hhbXAtNDY2Njk1", "label": "Consentement à l'utilisation de mes données", "stringValue": ""},
             {
                 "id": "Q2hhbXAtNDY2Njk0",
@@ -600,8 +610,14 @@ def make_new_application():
                 "attachment": None,
             }
         ],
-        "usager": {"email": "jean.valgean@example.com"},
-        "demandeur": {"civilite": "M", "nom": "VALGEAN", "prenom": "Jean", "dateDeNaissance": None},
+        "usager": {"id": "WSJvY2VkdXJlLTQ0Nhju", "email": "jean.valgean@example.com"},
+        "demandeur": {
+            "id": "ABCvY2VkdXJlLTQ0Nxyz",
+            "civilite": "M",
+            "nom": "VALGEAN",
+            "prenom": "Jean",
+            "dateDeNaissance": None,
+        },
     }
     return response
 
@@ -612,6 +628,7 @@ def make_new_stranger_application():
         "number": 5742994,
         "archived": False,
         "state": "en_construction",
+        "dateDepot": "2020-05-13T00:09:46+02:00",
         "dateDerniereModification": "2021-09-15T15:19:21+02:00",
         "datePassageEnConstruction": "2021-09-15T15:19:20+02:00",
         "datePassageEnInstruction": None,
@@ -644,25 +661,25 @@ def make_new_stranger_application():
             },
             {
                 "id": "Q2hhbXAtMjAyMTk4Mw==",
-                "label": "Quel est le numéro de la pièce que vous venez de saisir ?",
+                "label": "Quel est le numéro de la pièce que tu viens de saisir ?",
                 "stringValue": "K682T8YLO",
             },
             {
                 "id": "Q2hhbXAtNTgyMjE5",
-                "label": "Quel est votre numéro de téléphone",
+                "label": "Quel est ton numéro de téléphone ?",
                 "stringValue": "06 01 01 01 01",
             },
             {
                 "id": "Q2hhbXAtNTgyMjIx",
-                "label": "Quel est le code postal de votre commune de résidence ?",
+                "label": "Quel est le code postal de ta commune de résidence ?",
                 "stringValue": "92700",
             },
             {
                 "id": "Q2hhbXAtNTgyMjIz",
-                "label": "Quelle est votre adresse de résidence",
+                "label": "Quelle est ton adresse de résidence ?",
                 "stringValue": "32 rue des sapins gris 21350 l'îsle à dent",
             },
-            {"id": "Q2hhbXAtNzE4MDk0", "label": "Veuillez indiquer votre statut", "stringValue": "Employé"},
+            {"id": "Q2hhbXAtNzE4MDk0", "label": "Merci d'indiquer ton statut", "stringValue": "Employé"},
             {"id": "Q2hhbXAtNDUxMjg0", "label": "Déclaration de résidence", "stringValue": ""},
             {"id": "Q2hhbXAtMjAxMTQxNQ==", "label": "Justificatif de domicile", "stringValue": ""},
             {
@@ -693,11 +710,21 @@ def make_new_stranger_application():
             },
         ],
         "annotations": [],
-        "usager": {"email": "jean.valgean@example.com"},
-        "demandeur": {"civilite": "M", "nom": "VALGEAN", "prenom": "Jean", "dateDeNaissance": None},
+        "usager": {"id": "WSJvY2VkdXJlLTQ0Nhju", "email": "jean.valgean@example.com"},
+        "demandeur": {
+            "id": "ABCvY2VkdXJlLTQ0Nxyz",
+            "civilite": "M",
+            "nom": "VALGEAN",
+            "prenom": "Jean",
+            "dateDeNaissance": None,
+        },
     }
     return data
 
 
 def make_single_application(*args, **kwargs):
     return {"dossier": make_graphql_application(*args, **kwargs)}
+
+
+def make_parsed_graphql_application(*args, **kwargs):
+    return dms_models.DmsApplicationResponse(**make_graphql_application(*args, **kwargs))

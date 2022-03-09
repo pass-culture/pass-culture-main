@@ -32,8 +32,8 @@ class GraphqlResponseTest:
     @patch.object(api_dms.DMSGraphQLClient, "execute_query")
     def test_get_applications_with_details(self, execute_query):
         execute_query.side_effect = [
-            make_graphql_application(123, "closed", full_graphql_response=True, has_next_page=True),
-            make_graphql_application(456, "closed", full_graphql_response=True),
+            make_graphql_application(123, "accepte", full_graphql_response=True, has_next_page=True),
+            make_graphql_application(456, "accepte", full_graphql_response=True),
         ]
 
         client = api_dms.DMSGraphQLClient()
@@ -54,7 +54,7 @@ class GraphqlResponseTest:
     @patch.object(api_dms.DMSGraphQLClient, "execute_query")
     def test_get_single_application_details(self, execute_query):
 
-        execute_query.return_value = make_single_application(12, state="closed")
+        execute_query.return_value = make_single_application(12, state="accepte")
 
         client = api_dms.DMSGraphQLClient()
         client.get_single_application_details(42)
