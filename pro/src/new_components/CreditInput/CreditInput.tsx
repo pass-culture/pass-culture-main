@@ -5,12 +5,14 @@ import TextInput from 'components/layout/inputs/TextInput/TextInput'
 export interface CreditInputProps {
   credit: string
   updateCredit: (credit: string) => void
+  onKeyDown?: (event: React.KeyboardEvent<HTMLInputElement>) => void
   extraClassName?: string
 }
 
 export const CreditInput: FunctionComponent<CreditInputProps> = ({
   credit,
   updateCredit,
+  onKeyDown,
   extraClassName = '',
 }) => {
   const onCreditChange = useCallback(
@@ -29,6 +31,7 @@ export const CreditInput: FunctionComponent<CreditInputProps> = ({
       maxLength={255}
       name="image-credit-input"
       onChange={onCreditChange}
+      onKeyDown={onKeyDown}
       placeholder="Photographe..."
       required={false}
       subLabel="Optionnel"
