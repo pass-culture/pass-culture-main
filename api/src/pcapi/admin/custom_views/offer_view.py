@@ -55,6 +55,7 @@ from pcapi.domain.admin_emails import send_offer_validation_notification_to_admi
 from pcapi.models import db
 from pcapi.models.criterion import Criterion
 from pcapi.models.offer_criterion import OfferCriterion
+from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.repository import repository
 from pcapi.settings import IS_PROD
 from pcapi.utils.human_ids import humanize
@@ -123,9 +124,17 @@ class OfferView(BaseAdminView):
         "rankingWeight",
         "validation",
         "lastValidationDate",
+        "lastValidationType",
         "isEducational",
     ]
-    column_sortable_list = ["name", "criteria", "rankingWeight", "validation", "lastValidationDate"]
+    column_sortable_list = [
+        "name",
+        "criteria",
+        "rankingWeight",
+        "validation",
+        "lastValidationDate",
+        "lastValidationType",
+    ]
     column_labels = {
         "name": "Nom",
         "subcategoryId": "Sous-catégorie",
@@ -134,6 +143,7 @@ class OfferView(BaseAdminView):
         "criteria.name": "Tag",
         "rankingWeight": "Pondération",
         "lastValidationDate": "Dernière date de validation",
+        "lastValidationType": "Type de valid.",  # "Dernier type de validation" would create a large column
         "isEducational": "Offre EAC",
     }
     # Do not add searchable column on offer view for performance reasons
@@ -147,6 +157,7 @@ class OfferView(BaseAdminView):
         "rankingWeight",
         "validation",
         "lastValidationDate",
+        "lastValidationType",
         "isEducational",
         ExtraDataFilterEqual(column=Offer.extraData["isbn"], name="ISBN"),
         ExtraDataFilterEqual(column=Offer.extraData["visa"], name="Visa d'exploitation"),
@@ -278,6 +289,7 @@ class OfferView(BaseAdminView):
             new_validation = offer.validation
             if previous_validation != new_validation:
                 offer.lastValidationDate = datetime.utcnow()
+                offer.lastValidationType = OfferValidationType.MANUAL
                 if new_validation == OfferValidationStatus.APPROVED:
                     offer.isActive = True
                 if new_validation == OfferValidationStatus.REJECTED:
@@ -475,6 +487,7 @@ class ValidationView(BaseAdminView):
                 if is_offer_updated:
                     count += 1
                     offer.lastValidationDate = datetime.utcnow()
+                    offer.lastValidationType = OfferValidationType.MANUAL
                     recipients = (
                         [offer.venue.bookingEmail]
                         if offer.venue.bookingEmail
@@ -523,6 +536,7 @@ class ValidationView(BaseAdminView):
                 if is_offer_updated:
                     flash("Le statut de l'offre a bien été modifié", "success")
                     offer.lastValidationDate = datetime.utcnow()
+                    offer.lastValidationType = OfferValidationType.MANUAL
                     recipients = (
                         [offer.venue.bookingEmail]
                         if offer.venue.bookingEmail

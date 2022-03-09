@@ -20,6 +20,16 @@ class OfferValidationStatus(enum.Enum):
     REJECTED = "REJECTED"
 
 
+class OfferValidationType(enum.Enum):
+    """
+    How the last validation status was set:
+    automatically by code at API call or manually from backoffice by pass Culture team.
+    """
+
+    AUTO = "AUTO"
+    MANUAL = "MANUAL"
+
+
 class AccessibilityMixin:
     audioDisabilityCompliant = sa.Column(sa.Boolean, nullable=True)
 
@@ -72,6 +82,8 @@ class StatusMixin:
 
 class ValidationMixin:
     lastValidationDate = sa.Column(sa.DateTime, index=True, nullable=True)
+
+    lastValidationType = sa.Column(sa.Enum(OfferValidationType, name="validation_type"), nullable=True)
 
     validation = sa.Column(
         sa.Enum(OfferValidationStatus, name="validation_status"),

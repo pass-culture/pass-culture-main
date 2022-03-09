@@ -13,6 +13,7 @@ from pcapi.models.bank_information import BankInformation
 from pcapi.models.bank_information import BankInformationStatus
 from pcapi.models.criterion import Criterion
 from pcapi.models.offer_criterion import OfferCriterion
+from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.models.product import Product
 from pcapi.models.user_offerer import UserOfferer
 
@@ -133,6 +134,7 @@ class OfferFactory(BaseFactory):
     motorDisabilityCompliant = False
     visualDisabilityCompliant = False
     isEducational = False
+    lastValidationType = OfferValidationType.AUTO
 
     @classmethod
     def _create(cls, model_class, *args, **kwargs):  # type: ignore [no-untyped-def]
