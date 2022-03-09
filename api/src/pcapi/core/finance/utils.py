@@ -30,3 +30,12 @@ def fr_currency_filter(eurocents: int) -> float:
 def install_template_filters(app) -> None:
     app.jinja_env.filters["fr_percentage"] = fr_percentage_filter
     app.jinja_env.filters["fr_currency"] = fr_currency_filter
+
+
+def format_raw_iban_and_bic(raw_data: str) -> typing.Optional[str]:
+    if not raw_data:
+        return None
+
+    formatted_data = raw_data.upper()
+    formatted_data = formatted_data.replace(" ", "")
+    return formatted_data
