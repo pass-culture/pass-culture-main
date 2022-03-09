@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import React, { useEffect, useState } from 'react'
 import { matchPath } from 'react-router'
 
+import useAnalytics from 'components/hooks/useAnalytics'
 import useCurrentUser from 'components/hooks/useCurrentUser'
 import Spinner from 'components/layout/Spinner'
 import routes, { routesWithMain } from 'utils/routes_map'
@@ -21,6 +22,7 @@ export const App = props => {
 
   const [isReady, setIsReady] = useState(false)
   const { isUserInitialized, currentUser } = useCurrentUser()
+  const analytics = useAnalytics()
   const currentPathname = window.location.pathname
 
   useEffect(() => {
@@ -49,9 +51,17 @@ export const App = props => {
 
     if (isUserInitialized && currentUser) {
       setSentryUser({ id: currentUser.id })
+      analytics.setAnalyticsUserId(currentUser.id)
       setIsReady(true)
     }
-  }, [currentUser, currentPathname, history, location, isUserInitialized])
+  }, [
+    analytics,
+    currentUser,
+    currentPathname,
+    history,
+    location,
+    isUserInitialized,
+  ])
 
   useEffect(() => {
     window.scrollTo(0, 0)

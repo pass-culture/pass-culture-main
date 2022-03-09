@@ -1,4 +1,4 @@
-import { getAnalytics } from '@firebase/analytics'
+import { getAnalytics, setUserId } from '@firebase/analytics'
 import { logEvent as analyticsLogEvent } from '@firebase/analytics'
 import * as firebase from '@firebase/app'
 import { useRef } from 'react'
@@ -11,6 +11,7 @@ interface IUseAnalyticsReturn {
   logConsultCGUClick: (page: string) => void
   logPersonalDataClick: (page: string) => void
   logConsultSupportClick: (page: string) => void
+  setAnalyticsUserId: (userId: string) => void
 }
 
 const useAnalytics = (): IUseAnalyticsReturn => {
@@ -21,6 +22,9 @@ const useAnalytics = (): IUseAnalyticsReturn => {
   }
 
   const analyticsProvider = getAnalytics(app.current)
+  const setAnalyticsUserId = (userId: string) => {
+    setUserId(analyticsProvider, userId)
+  }
   const logEvent = (event: string, params: { [key: string]: string } = {}) => {
     analyticsLogEvent(analyticsProvider, event, params)
   }
@@ -38,6 +42,7 @@ const useAnalytics = (): IUseAnalyticsReturn => {
     logConsultCGUClick,
     logPersonalDataClick,
     logConsultSupportClick,
+    setAnalyticsUserId,
   }
 }
 
