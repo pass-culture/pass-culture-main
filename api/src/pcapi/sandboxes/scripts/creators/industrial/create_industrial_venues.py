@@ -2,6 +2,7 @@ import logging
 import random
 import re
 
+import pcapi.core.offerers.api as offerers_api
 from pcapi.core.offerers.models import VENUE_TYPE_CODE_MAPPING
 from pcapi.core.offerers.models import VenueType
 from pcapi.core.offerers.models import VenueTypeCode
@@ -19,6 +20,24 @@ OFFERERS_WITH_PHYSICAL_VENUE_REMOVE_MODULO = 3
 OFFERERS_WITH_PHYSICAL_VENUE_WITH_SIRET_REMOVE_MODULO = OFFERERS_WITH_PHYSICAL_VENUE_REMOVE_MODULO * 2
 
 
+DEFAULT_VENUE_IMAGES = 4
+VENUE_IMAGE_INDEX_START_AT = 21
+
+
+def add_default_image_to_venue(image_venue_counter, offerer, venue):
+    image_number = image_venue_counter + VENUE_IMAGE_INDEX_START_AT
+    with open(
+        f"./src/pcapi/sandboxes/thumbs/generic_pictures/Picture_0{image_number}.jpg",
+        mode="rb",
+    ) as file:
+        offerers_api.save_venue_banner(
+            user=offerer.users[0],
+            venue=venue,
+            content=file.read(),
+            image_credit=None,
+        )
+
+
 def create_industrial_venues(offerers_by_name: dict, venue_types: list[VenueType]) -> dict:
     logger.info("create_industrial_venues")
 
@@ -31,6 +50,8 @@ def create_industrial_venues(offerers_by_name: dict, venue_types: list[VenueType
     application_id_prefix = "12"
 
     label_to_code = {label: code for code, label in VENUE_TYPE_CODE_MAPPING.items()}
+
+    image_venue_counter = 0
 
     for (offerer_index, (offerer_name, offerer)) in enumerate(offerers_by_name.items()):
         geoloc_match = re.match(r"(.*)lat\:(.*) lon\:(.*)", offerer_name)
@@ -61,7 +82,7 @@ def create_industrial_venues(offerers_by_name: dict, venue_types: list[VenueType
         if offerer_index % OFFERERS_WITH_PHYSICAL_VENUE_REMOVE_MODULO:
             if offerer_index % OFFERERS_WITH_PHYSICAL_VENUE_WITH_SIRET_REMOVE_MODULO:
                 comment = None
-                siret = "{}11111".format(offerer.siren)
+                siret = f"{offerer.siren}11111"
             else:
                 comment = "Pas de siret car c'est comme cela."
                 siret = None
@@ -86,6 +107,10 @@ def create_industrial_venues(offerers_by_name: dict, venue_types: list[VenueType
                 businessUnit__name=offerer.name,
             )
             providers_factories.VenueProviderFactory(venue=venue)
+
+            if image_venue_counter < DEFAULT_VENUE_IMAGES:
+                add_default_image_to_venue(image_venue_counter, offerer, venue)
+                image_venue_counter += 1
 
             venue_by_name[venue_name] = venue
 
