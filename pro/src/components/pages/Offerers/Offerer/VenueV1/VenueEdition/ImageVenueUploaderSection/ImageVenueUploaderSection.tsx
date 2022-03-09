@@ -1,21 +1,13 @@
-import React, { useCallback } from 'react'
+import React from 'react'
 
 import useActiveFeature from 'components/hooks/useActiveFeature'
-import useNotification from 'components/hooks/useNotification'
-import Icon from 'components/layout/Icon'
-import { useModal } from 'hooks/useModal'
-import DialogBox from 'new_components/DialogBox'
-import { Button } from 'ui-kit'
-import { ButtonVariant } from 'ui-kit/Button/types'
 
+import ButtonEditImage from '../ButtonEditImage'
 import { ButtonImageDelete } from '../ButtonImageDelete'
-import { ImageUploadButton } from '../ImageUploadButton/ImageUploadButton'
+import ButtonPreviewImage from '../ButtonPreviewImage'
 import { VenueImage } from '../VenueImage/VenueImage'
-import { VenueImagePreview } from '../VenueImagePreview/VenueImagePreview'
 
 import styles from './ImageVenueUploaderSection.module.scss'
-import { getDataURLFromImageURL } from './utils'
-import { VenueImageUploaderModal } from './VenueImageUploaderModal'
 
 type ImageVenueUploaderSectionProps = {
   venueId: string
@@ -38,38 +30,9 @@ export const ImageVenueUploaderSection = ({
   onImageUpload,
   onDeleteImage,
 }: ImageVenueUploaderSectionProps): JSX.Element => {
-  const {
-    visible: isUploaderModalVisible,
-    showModal: showUploaderModal,
-    hideModal: hideUploaderModal,
-  } = useModal()
-  const {
-    visible: isPreviewModalVisible,
-    showModal: showPreviewModal,
-    hideModal: hidePreviewModal,
-  } = useModal()
-
   // @TODO: remove this commit with PC-13132
   const shouldDisplayImageVenueDeletion = useActiveFeature(
     'PRO_ENABLE_UPLOAD_VENUE_IMAGE'
-  )
-
-  const notification = useNotification()
-
-  const controlImage = useCallback(
-    async showModal => {
-      try {
-        if (typeof venueImage === 'string') {
-          await getDataURLFromImageURL(venueImage)
-          return showModal()
-        }
-      } catch {
-        notification.error(
-          'Une erreur est survenue. Merci de réessayer plus tard'
-        )
-      }
-    },
-    [venueImage, notification]
   )
 
   return (
@@ -94,26 +57,13 @@ export const ImageVenueUploaderSection = ({
           <div
             className={styles['image-venue-uploader-section-icon-container']}
           >
-            <Button
-              onClick={() => controlImage(showUploaderModal)}
-              variant={ButtonVariant.TERNARY}
-            >
-              <Icon
-                className={styles['image-venue-uploader-section-icon']}
-                svg="ico-pen-black"
-              />
-              Modifier
-            </Button>
-            <Button
-              onClick={() => controlImage(showPreviewModal)}
-              variant={ButtonVariant.TERNARY}
-            >
-              <Icon
-                className={styles['image-venue-uploader-section-icon']}
-                svg="ico-eye-open-filled-black"
-              />
-              Prévisualiser
-            </Button>
+            <ButtonEditImage
+              onImageUpload={onImageUpload}
+              venueCredit={venueCredit}
+              venueId={venueId}
+              venueImage={venueImage}
+            />
+            <ButtonPreviewImage venueImage={venueImage} />
             {shouldDisplayImageVenueDeletion && (
               <ButtonImageDelete
                 onDeleteImage={onDeleteImage}
@@ -123,25 +73,7 @@ export const ImageVenueUploaderSection = ({
           </div>
         </div>
       ) : (
-        <ImageUploadButton onClick={showUploaderModal} />
-      )}
-      {!!isUploaderModalVisible && (
-        <VenueImageUploaderModal
-          defaultImage={venueImage || undefined}
-          onDismiss={hideUploaderModal}
-          onImageUpload={onImageUpload}
-          venueCredit={venueCredit}
-          venueId={venueId}
-        />
-      )}
-      {isPreviewModalVisible && venueImage && (
-        <DialogBox
-          hasCloseButton
-          labelledBy="Image du lieu"
-          onDismiss={hidePreviewModal}
-        >
-          <VenueImagePreview preview={venueImage} />
-        </DialogBox>
+        <ButtonEditImage onImageUpload={onImageUpload} venueId={venueId} />
       )}
     </section>
   )
