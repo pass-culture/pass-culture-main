@@ -4,6 +4,7 @@ from typing import Optional
 
 from pcapi import settings
 from pcapi.connectors.dms import api as api_dms
+from pcapi.connectors.dms import models as dms_models
 from pcapi.core.finance.utils import format_raw_iban_and_bic
 from pcapi.domain.bank_information import CannotRegisterBankInformation
 from pcapi.models.bank_information import BankInformationStatus
@@ -18,14 +19,14 @@ FIELD_FOR_VENUE_WITH_SIRET = (
 )
 FIELD_FOR_VENUE_WITHOUT_SIRET = "Si vous souhaitez renseigner les coordonn\u00e9es bancaires d'un lieu sans SIRET, merci de saisir le \"Nom du lieu\", \u00e0 l'identique de celui dans le pass Culture Pro :"
 
-ACCEPTED_DMS_STATUS = (api_dms.DmsApplicationStates.closed,)
+ACCEPTED_DMS_STATUS = (dms_models.DmsApplicationStates.closed,)
 DRAFT_DMS_STATUS = (
-    api_dms.DmsApplicationStates.received,
-    api_dms.DmsApplicationStates.initiated,
+    dms_models.DmsApplicationStates.received,
+    dms_models.DmsApplicationStates.initiated,
 )
 REJECTED_DMS_STATUS = (
-    api_dms.DmsApplicationStates.refused,
-    api_dms.DmsApplicationStates.without_continuation,
+    dms_models.DmsApplicationStates.refused,
+    dms_models.DmsApplicationStates.without_continuation,
 )
 
 
@@ -128,7 +129,7 @@ def get_venue_bank_information_application_details_by_application_id(
         return ApplicationDetail(
             siren=data["siren"],
             status=_get_status_from_demarches_simplifiees_application_state_v2(
-                api_dms.GraphQLApplicationStates(data["status"])
+                dms_models.GraphQLApplicationStates(data["status"])
             ),
             application_id=int(application_id),
             iban=data["iban"],
@@ -141,7 +142,7 @@ def get_venue_bank_information_application_details_by_application_id(
 
 def _get_status_from_demarches_simplifiees_application_state(state: str) -> BankInformationStatus:
     try:
-        dms_state = api_dms.DmsApplicationStates[state]
+        dms_state = dms_models.DmsApplicationStates[state]
     except KeyError:
         raise CannotRegisterBankInformation(f"Unknown Demarches Simplifiées state {state}")
     rejected_states = REJECTED_DMS_STATUS
@@ -157,14 +158,14 @@ def _get_status_from_demarches_simplifiees_application_state(state: str) -> Bank
 
 
 def _get_status_from_demarches_simplifiees_application_state_v2(
-    state: api_dms.GraphQLApplicationStates,
+    state: dms_models.GraphQLApplicationStates,
 ) -> BankInformationStatus:
     return {
-        api_dms.GraphQLApplicationStates.draft: BankInformationStatus.DRAFT,
-        api_dms.GraphQLApplicationStates.on_going: BankInformationStatus.DRAFT,
-        api_dms.GraphQLApplicationStates.accepted: BankInformationStatus.ACCEPTED,
-        api_dms.GraphQLApplicationStates.refused: BankInformationStatus.REJECTED,
-        api_dms.GraphQLApplicationStates.without_continuation: BankInformationStatus.REJECTED,
+        dms_models.GraphQLApplicationStates.draft: BankInformationStatus.DRAFT,
+        dms_models.GraphQLApplicationStates.on_going: BankInformationStatus.DRAFT,
+        dms_models.GraphQLApplicationStates.accepted: BankInformationStatus.ACCEPTED,
+        dms_models.GraphQLApplicationStates.refused: BankInformationStatus.REJECTED,
+        dms_models.GraphQLApplicationStates.without_continuation: BankInformationStatus.REJECTED,
     }[state]
 
 

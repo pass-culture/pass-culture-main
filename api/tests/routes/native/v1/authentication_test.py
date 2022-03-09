@@ -8,6 +8,7 @@ from freezegun import freeze_time
 import pytest
 
 from pcapi.connectors.dms import api as api_dms
+from pcapi.connectors.dms import models as dms_models
 from pcapi.core.fraud import factories as fraud_factories
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.testing import override_features
@@ -375,7 +376,7 @@ def test_validate_email_dms_orphan(execute_query, client):
     fraud_factories.OrphanDmsApplicationFactory(email=email, application_id=application_id)
 
     execute_query.return_value = make_single_application(
-        application_id, api_dms.GraphQLApplicationStates.accepted, email=email
+        application_id, dms_models.GraphQLApplicationStates.accepted, email=email
     )
     response = client.post("/native/v1/validate_email", json={"email_validation_token": token.value})
 

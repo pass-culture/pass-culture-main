@@ -5,6 +5,22 @@ import typing
 import pydantic
 
 
+class DmsApplicationStates(enum.Enum):
+    closed = enum.auto()
+    initiated = enum.auto()
+    refused = enum.auto()
+    received = enum.auto()
+    without_continuation = enum.auto()
+
+
+class GraphQLApplicationStates(enum.Enum):
+    draft = "en_construction"
+    on_going = "en_instruction"
+    accepted = "accepte"
+    refused = "refuse"
+    without_continuation = "sans_suite"
+
+
 class Profile(pydantic.BaseModel):
     """https://demarches-simplifiees-graphql.netlify.app/profile.doc.html"""
 

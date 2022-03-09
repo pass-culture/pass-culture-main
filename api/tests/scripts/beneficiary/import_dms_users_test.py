@@ -53,7 +53,7 @@ class RunTest:
 
         dms_api.import_dms_users(procedure_id=6712558)
         assert get_applications_with_details.call_count == 1
-        get_applications_with_details.assert_called_with(6712558, dms_connector_api.GraphQLApplicationStates.accepted)
+        get_applications_with_details.assert_called_with(6712558, dms_models.GraphQLApplicationStates.accepted)
 
     @patch.object(dms_connector_api.DMSGraphQLClient, "get_applications_with_details")
     @patch("pcapi.core.subscription.api.on_successful_application")

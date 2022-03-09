@@ -7,7 +7,7 @@ import flask
 import pydantic
 
 from pcapi import settings
-from pcapi.connectors.dms import api as api_dms
+from pcapi.connectors.dms import models as dms_models
 from pcapi.models.api_errors import ForbiddenError
 
 
@@ -23,7 +23,7 @@ def coerce_for_enum(enum):
 class DMSWebhookRequest(pydantic.BaseModel):
     procedure_id: int
     dossier_id: int
-    state: api_dms.GraphQLApplicationStates
+    state: dms_models.GraphQLApplicationStates
     updated_at: datetime.datetime
 
     @pydantic.validator("updated_at", pre=True)
