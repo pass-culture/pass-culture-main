@@ -29,6 +29,7 @@ from pcapi.core.testing import override_features
 from pcapi.core.testing import override_settings
 import pcapi.core.users.factories as users_factories
 from pcapi.models import api_errors
+from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.models.product import Product
 from pcapi.notifications.push import testing as push_testing
 from pcapi.routes.serialization import offers_serialize
@@ -103,9 +104,11 @@ class UpsertStocksTest:
         assert draft_approvable_offer.validation == offer_models.OfferValidationStatus.APPROVED
         assert draft_approvable_offer.isActive
         assert draft_approvable_offer.lastValidationDate == datetime(2020, 11, 17, 15, 0)
+        assert draft_approvable_offer.lastValidationType == OfferValidationType.AUTO
         assert draft_suspicious_offer.validation == offer_models.OfferValidationStatus.PENDING
         assert not draft_suspicious_offer.isActive
         assert draft_suspicious_offer.lastValidationDate == datetime(2020, 11, 17, 15, 0)
+        assert draft_suspicious_offer.lastValidationType == OfferValidationType.AUTO
 
     def test_upsert_stocks_does_not_trigger_approved_offer_validation(self):
         # Given offers with stock and new stock data
@@ -772,9 +775,11 @@ class CreateEducationalOfferStocksTest:
         assert draft_approvable_offer.validation == offer_models.OfferValidationStatus.APPROVED
         assert draft_approvable_offer.isActive
         assert draft_approvable_offer.lastValidationDate == datetime(2020, 11, 17, 15, 0)
+        assert draft_approvable_offer.lastValidationType == OfferValidationType.AUTO
         assert draft_suspicious_offer.validation == offer_models.OfferValidationStatus.PENDING
         assert not draft_suspicious_offer.isActive
         assert draft_suspicious_offer.lastValidationDate == datetime(2020, 11, 17, 15, 0)
+        assert draft_suspicious_offer.lastValidationType == OfferValidationType.AUTO
 
     def test_create_stock_for_non_approved_offer_fails(self):
         # Given

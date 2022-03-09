@@ -78,6 +78,7 @@ from pcapi.models.api_errors import ApiErrors
 from pcapi.models.criterion import Criterion
 from pcapi.models.feature import FeatureToggle
 from pcapi.models.offer_criterion import OfferCriterion
+from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.models.product import Product
 from pcapi.repository import offer_queries
 from pcapi.repository import repository
@@ -576,6 +577,7 @@ def _update_offer_fraud_information(
     offer.validation = set_offer_status_based_on_fraud_criteria(offer)
     offer.author = user
     offer.lastValidationDate = datetime.datetime.utcnow()
+    offer.lastValidationType = OfferValidationType.AUTO
     if offer.validation == OfferValidationStatus.PENDING or offer.validation == OfferValidationStatus.REJECTED:
         offer.isActive = False
     repository.save(offer)

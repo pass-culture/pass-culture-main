@@ -42,6 +42,7 @@ from pcapi.core.users.models import User
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.models.offer_mixin import OfferValidationStatus
+from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.repository import repository
 from pcapi.repository import transaction
 from pcapi.routes.adage.v1.serialization.prebooking import EducationalBookingEdition
@@ -553,6 +554,7 @@ def create_collective_stock(
     else:
         collective_offer.validation = OfferValidationStatus.APPROVED
         collective_offer.lastValidationDate = datetime.datetime.utcnow()
+        collective_offer.lastValidationType = OfferValidationType.AUTO
         repository.save(collective_offer)
 
     search.async_index_collective_offer_ids([collective_offer.id])
