@@ -4,6 +4,7 @@ from datetime import timedelta
 from operator import attrgetter
 from typing import List
 from typing import Optional
+from typing import Union
 
 from sqlalchemy import and_
 from sqlalchemy import func
@@ -304,7 +305,7 @@ def get_and_lock_stock(stock_id: int) -> Stock:
     return stock
 
 
-def get_and_lock_collective_stock(stock_id: int) -> Optional[Stock]:
+def get_and_lock_collective_stock(stock_id: Union[int, str]) -> Optional[Stock]:
     """Returns `stock_id` stock with a FOR UPDATE lock
     Raises StockDoesNotExist if no stock is found.
     WARNING: MAKE SURE YOU FREE THE LOCK (with COMMIT or ROLLBACK) and don't hold it longer than

@@ -6,7 +6,7 @@ from pcapi.routes.adage.v1.serialization.prebooking import EducationalBookingRes
 
 
 class AdageClient:
-    def __init__(self):
+    def __init__(self) -> None:
         self.base_url = settings.ADAGE_API_URL
 
     def notify_prebooking(self, data: EducationalBookingResponse) -> AdageApiResult:

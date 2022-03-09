@@ -12,7 +12,7 @@ from pcapi.utils import requests
 
 
 class AdageHttpClient(AdageClient):
-    def __init__(self):
+    def __init__(self) -> None:
         self.api_key = settings.ADAGE_API_KEY
         self.header_key = "X-omogen-api-key"
         super().__init__()
