@@ -5,7 +5,6 @@ from sqlalchemy.sql.functions import Function
 
 from pcapi.core.users.models import User
 from pcapi.core.users.utils import sanitize_email
-from pcapi.models import db
 from pcapi.models.user_offerer import UserOfferer
 
 
@@ -41,22 +40,6 @@ def find_pro_users_by_email_provider(email_provider: str) -> list[User]:
 
 def find_by_validation_token(token: str) -> User:
     return User.query.filter_by(validationToken=token).one_or_none()
-
-
-def get_all_users_wallet_balances():
-    """Return wallet balances.
-
-    WARNING: it ignores the expiration date of the deposits.
-    """
-    return (
-        db.session.query(
-            User.id.label("user_id"),
-            func.get_wallet_balance(User.id, False).label("current_balance"),
-            func.get_wallet_balance(User.id, True).label("real_balance"),
-        )
-        .filter(User.deposits != None)
-        .order_by(User.id)
-    )
 
 
 def matching(column: Column, search_value: str) -> BinaryExpression:
