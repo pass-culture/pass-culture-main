@@ -5,6 +5,7 @@ import freezegun
 import pytest
 
 from pcapi.connectors.dms import api as api_dms
+from pcapi.connectors.dms import models as dms_models
 from pcapi.core.fraud import factories as fraud_factories
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.subscription import models as subscription_models
@@ -91,7 +92,7 @@ class DMSOrphanSubsriptionTest:
         fraud_factories.OrphanDmsApplicationFactory(email=email, application_id=application_id, process_id=procedure_id)
 
         execute_query.return_value = make_single_application(
-            application_id, api_dms.GraphQLApplicationStates.draft, email=email
+            application_id, dms_models.GraphQLApplicationStates.draft, email=email
         )
 
         dms_subscription_api.try_dms_orphan_adoption(user)

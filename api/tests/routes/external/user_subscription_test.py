@@ -13,6 +13,7 @@ import pytest
 
 from pcapi import settings
 from pcapi.connectors.dms import api as api_dms
+from pcapi.connectors.dms import models as dms_models
 from pcapi.core import testing
 from pcapi.core.fraud import api as fraud_api
 from pcapi.core.fraud import factories as fraud_factories
@@ -49,7 +50,7 @@ class DmsWebhookApplicationTest:
     def test_dms_request(self, execute_query, client):
         user = users_factories.UserFactory()
         execute_query.return_value = make_single_application(
-            12, state=api_dms.GraphQLApplicationStates.accepted, email=user.email
+            12, state=dms_models.GraphQLApplicationStates.accepted, email=user.email
         )
         form_data = {
             "procedure_id": 48860,
@@ -70,9 +71,9 @@ class DmsWebhookApplicationTest:
     @pytest.mark.parametrize(
         "dms_status,fraud_check_status",
         [
-            (api_dms.GraphQLApplicationStates.draft, fraud_models.FraudCheckStatus.STARTED),
-            (api_dms.GraphQLApplicationStates.on_going, fraud_models.FraudCheckStatus.PENDING),
-            (api_dms.GraphQLApplicationStates.refused, fraud_models.FraudCheckStatus.KO),
+            (dms_models.GraphQLApplicationStates.draft, fraud_models.FraudCheckStatus.STARTED),
+            (dms_models.GraphQLApplicationStates.on_going, fraud_models.FraudCheckStatus.PENDING),
+            (dms_models.GraphQLApplicationStates.refused, fraud_models.FraudCheckStatus.KO),
         ],
     )
     def test_dms_request_with_existing_user(self, execute_query, dms_status, fraud_check_status, client):
@@ -105,13 +106,13 @@ class DmsWebhookApplicationTest:
     def test_dms_request_draft_application(self, execute_query, client):
         user = users_factories.UserFactory()
         execute_query.return_value = make_single_application(
-            12, state=api_dms.GraphQLApplicationStates.draft, email=user.email
+            12, state=dms_models.GraphQLApplicationStates.draft, email=user.email
         )
 
         form_data = {
             "procedure_id": 48860,
             "dossier_id": 6044787,
-            "state": api_dms.GraphQLApplicationStates.draft.value,
+            "state": dms_models.GraphQLApplicationStates.draft.value,
             "updated_at": "2021-09-30 17:55:58 +0200",
         }
         client.post(
@@ -136,13 +137,13 @@ class DmsWebhookApplicationTest:
     def test_dms_request_on_going_application(self, execute_query, client):
         user = users_factories.UserFactory()
         execute_query.return_value = make_single_application(
-            12, state=api_dms.GraphQLApplicationStates.on_going, email=user.email
+            12, state=dms_models.GraphQLApplicationStates.on_going, email=user.email
         )
 
         form_data = {
             "procedure_id": 48860,
             "dossier_id": 6044787,
-            "state": api_dms.GraphQLApplicationStates.on_going.value,
+            "state": dms_models.GraphQLApplicationStates.on_going.value,
             "updated_at": "2021-09-30 17:55:58 +0200",
         }
         client.post(
@@ -167,13 +168,13 @@ class DmsWebhookApplicationTest:
         user = users_factories.UserFactory()
         fraud_factories.BeneficiaryFraudCheckFactory(user=user, type=fraud_models.FraudCheckType.DMS, thirdPartyId="12")
         execute_query.return_value = make_single_application(
-            12, state=api_dms.GraphQLApplicationStates.refused, email=user.email
+            12, state=dms_models.GraphQLApplicationStates.refused, email=user.email
         )
 
         form_data = {
             "procedure_id": 48860,
             "dossier_id": 12,
-            "state": api_dms.GraphQLApplicationStates.refused.value,
+            "state": dms_models.GraphQLApplicationStates.refused.value,
             "updated_at": "2021-09-30 17:55:58 +0200",
         }
         client.post(
@@ -201,12 +202,12 @@ class DmsWebhookApplicationTest:
         form_data = {
             "procedure_id": 48860,
             "dossier_id": 6044787,
-            "state": api_dms.GraphQLApplicationStates.draft.value,
+            "state": dms_models.GraphQLApplicationStates.draft.value,
             "updated_at": "2021-09-30 17:55:58 +0200",
         }
         execute_query.return_value = make_single_application(
             12,
-            state=api_dms.GraphQLApplicationStates.draft.value,
+            state=dms_models.GraphQLApplicationStates.draft.value,
             email=user.email,
             postal_code="error_postal_code",
             id_piece_number="error_identity_piece_number",
@@ -240,12 +241,12 @@ class DmsWebhookApplicationTest:
     @patch.object(api_dms.DMSGraphQLClient, "send_user_message")
     def test_dms_request_with_unexisting_user(self, send_user_message, execute_query, client):
         execute_query.return_value = make_single_application(
-            6044787, state=api_dms.GraphQLApplicationStates.draft.value, email="user@example.com"
+            6044787, state=dms_models.GraphQLApplicationStates.draft.value, email="user@example.com"
         )
         form_data = {
             "procedure_id": 48860,
             "dossier_id": 6044787,
-            "state": api_dms.GraphQLApplicationStates.draft.value,
+            "state": dms_models.GraphQLApplicationStates.draft.value,
             "updated_at": "2021-09-30 17:55:58 +0200",
         }
         response = client.post(
@@ -270,14 +271,14 @@ class DmsWebhookApplicationTest:
         user = users_factories.UserFactory()
         execute_query.return_value = make_single_application(
             12,
-            state=api_dms.GraphQLApplicationStates.draft.value,
+            state=dms_models.GraphQLApplicationStates.draft.value,
             email=user.email,
             id_piece_number="error_identity_piece_number",
         )
         form_data = {
             "procedure_id": 48860,
             "dossier_id": 6044787,
-            "state": api_dms.GraphQLApplicationStates.draft.value,
+            "state": dms_models.GraphQLApplicationStates.draft.value,
             "updated_at": "2021-09-30 17:55:58 +0200",
         }
         response = client.post(
@@ -302,12 +303,12 @@ class DmsWebhookApplicationTest:
     def test_dms_first_name_error(self, send_user_message, execute_query, client):
         user = users_factories.UserFactory()
         execute_query.return_value = make_single_application(
-            12, state=api_dms.GraphQLApplicationStates.draft.value, email=user.email, first_name="first_n@me_error"
+            12, state=dms_models.GraphQLApplicationStates.draft.value, email=user.email, first_name="first_n@me_error"
         )
         form_data = {
             "procedure_id": 48860,
             "dossier_id": 6044787,
-            "state": api_dms.GraphQLApplicationStates.draft.value,
+            "state": dms_models.GraphQLApplicationStates.draft.value,
             "updated_at": "2021-09-30 17:55:58 +0200",
         }
         response = client.post(
@@ -333,7 +334,7 @@ class DmsWebhookApplicationTest:
         user = users_factories.UserFactory()
         execute_query.return_value = make_single_application(
             12,
-            state=api_dms.GraphQLApplicationStates.draft.value,
+            state=dms_models.GraphQLApplicationStates.draft.value,
             email=user.email,
             first_name="first_n@me_error",
             last_name="l@st_n@me_error",
@@ -341,7 +342,7 @@ class DmsWebhookApplicationTest:
         form_data = {
             "procedure_id": 48860,
             "dossier_id": 6044787,
-            "state": api_dms.GraphQLApplicationStates.draft.value,
+            "state": dms_models.GraphQLApplicationStates.draft.value,
             "updated_at": "2021-09-30 17:55:58 +0200",
         }
         response = client.post(
@@ -366,12 +367,12 @@ class DmsWebhookApplicationTest:
     def test_dms_postal_code_error(self, send_user_message, execute_query, client):
         user = users_factories.UserFactory()
         execute_query.return_value = make_single_application(
-            12, state=api_dms.GraphQLApplicationStates.draft.value, email=user.email, postal_code="error_postal_code"
+            12, state=dms_models.GraphQLApplicationStates.draft.value, email=user.email, postal_code="error_postal_code"
         )
         form_data = {
             "procedure_id": 48860,
             "dossier_id": 6044787,
-            "state": api_dms.GraphQLApplicationStates.draft.value,
+            "state": dms_models.GraphQLApplicationStates.draft.value,
             "updated_at": "2021-09-30 17:55:58 +0200",
         }
         response = client.post(
@@ -397,16 +398,14 @@ class DmsWebhookApplicationTest:
     @pytest.mark.parametrize("birthday_date", [datetime.date(2012, 5, 12), datetime.date(1999, 6, 12)])
     def test_dms_birth_date_error(self, send_user_message, execute_query, client, birthday_date):
         user = users_factories.UserFactory()
-        return_value = make_single_application(
-            12, state=api_dms.GraphQLApplicationStates.draft.value, email=user.email, birth_date=birthday_date
+        execute_query.return_value = make_single_application(
+            12, state=dms_models.GraphQLApplicationStates.draft.value, email=user.email, birth_date=birthday_date
         )
-
-        execute_query.return_value = return_value
 
         form_data = {
             "procedure_id": 48860,
             "dossier_id": 6044787,
-            "state": api_dms.GraphQLApplicationStates.draft.value,
+            "state": dms_models.GraphQLApplicationStates.draft.value,
             "updated_at": "2021-09-30 17:55:58 +0200",
         }
         response = client.post(
@@ -435,13 +434,13 @@ class DmsWebhookApplicationTest:
     def test_dms_application_on_going(self, execute_query, client):
         user = users_factories.UserFactory()
         execute_query.return_value = make_single_application(
-            12, state=api_dms.GraphQLApplicationStates.on_going.value, email=user.email
+            12, state=dms_models.GraphQLApplicationStates.on_going.value, email=user.email
         )
 
         form_data = {
             "procedure_id": 48860,
             "dossier_id": 6044787,
-            "state": api_dms.GraphQLApplicationStates.on_going.value,
+            "state": dms_models.GraphQLApplicationStates.on_going.value,
             "updated_at": "2021-09-30 17:55:58 +0200",
         }
 
@@ -464,14 +463,14 @@ class DmsWebhookApplicationTest:
         user = users_factories.UserFactory()
         execute_query.return_value = make_single_application(
             12,
-            state=api_dms.GraphQLApplicationStates.draft.value,
+            state=dms_models.GraphQLApplicationStates.draft.value,
             email=user.email,
             id_piece_number="error_identity_piece_number",
         )
         form_data = {
             "procedure_id": 48860,
             "dossier_id": 6044787,
-            "state": api_dms.GraphQLApplicationStates.on_going.value,
+            "state": dms_models.GraphQLApplicationStates.on_going.value,
             "updated_at": "2021-09-30 17:55:58 +0200",
         }
 
@@ -492,7 +491,7 @@ class DmsWebhookApplicationTest:
 
         # Second DMS webhook call: on_going with no value errors
         execute_query.return_value = make_single_application(
-            12, state=api_dms.GraphQLApplicationStates.on_going.value, email=user.email
+            12, state=dms_models.GraphQLApplicationStates.on_going.value, email=user.email
         )
         response = client.post(
             f"/webhooks/dms/application_status?token={settings.DMS_WEBHOOK_TOKEN}",

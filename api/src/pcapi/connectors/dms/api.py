@@ -1,4 +1,3 @@
-import enum
 import logging
 import os
 import pathlib
@@ -23,22 +22,6 @@ GRAPHQL_DIRECTORY = pathlib.Path(os.path.dirname(__file__)) / "graphql"
 
 class ApiDemarchesSimplifieesException(Exception):
     pass
-
-
-class DmsApplicationStates(enum.Enum):
-    closed = enum.auto()
-    initiated = enum.auto()
-    refused = enum.auto()
-    received = enum.auto()
-    without_continuation = enum.auto()
-
-
-class GraphQLApplicationStates(enum.Enum):
-    draft = "en_construction"
-    on_going = "en_instruction"
-    accepted = "accepte"
-    refused = "refuse"
-    without_continuation = "sans_suite"
 
 
 def get_application_details(application_id: str, procedure_id: str, token: str) -> dict:
@@ -69,7 +52,7 @@ class DMSGraphQLClient:
         return self.client.execute(gql.gql(query), variable_values=variables)
 
     def get_applications_with_details(
-        self, procedure_id: int, state: GraphQLApplicationStates, page_token: str = ""
+        self, procedure_id: int, state: dms_models.GraphQLApplicationStates, page_token: str = ""
     ) -> Any:
         query = self.build_query("beneficiaries/get_applications_with_details")
         variables = {

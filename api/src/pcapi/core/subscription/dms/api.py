@@ -7,6 +7,7 @@ from sqlalchemy.orm import load_only
 
 from pcapi import settings
 from pcapi.connectors.dms import api as dms_connector_api
+from pcapi.connectors.dms import models as dms_models
 from pcapi.core import logging as core_logging
 from pcapi.core.fraud import api as fraud_api
 from pcapi.core.fraud import models as fraud_models
@@ -35,14 +36,14 @@ def handle_dms_state(
     result_content: fraud_models.DMSContent,
     procedure_id: int,
     application_id: int,
-    state: dms_connector_api.GraphQLApplicationStates,
+    state: dms_models.GraphQLApplicationStates,
 ) -> fraud_models.BeneficiaryFraudCheck:
 
     logs_extra = {"application_id": application_id, "procedure_id": procedure_id, "user_email": user.email}
 
     current_fraud_check = fraud_dms_api.get_or_create_fraud_check(user, application_id, result_content)
 
-    if state == dms_connector_api.GraphQLApplicationStates.draft:
+    if state == dms_models.GraphQLApplicationStates.draft:
         eligibility_type = current_fraud_check.eligibilityType
         if eligibility_type is None:
             fraud_dms_api.on_dms_eligibility_error(user, current_fraud_check, extra_data=logs_extra)
@@ -51,16 +52,16 @@ def handle_dms_state(
         current_fraud_check.status = fraud_models.FraudCheckStatus.STARTED
         logger.info("DMS Application started.", extra=logs_extra)
 
-    elif state == dms_connector_api.GraphQLApplicationStates.on_going:
+    elif state == dms_models.GraphQLApplicationStates.on_going:
         subscription_messages.on_dms_application_received(user)
         current_fraud_check.status = fraud_models.FraudCheckStatus.PENDING
         logger.info("DMS Application created.", extra=logs_extra)
 
-    elif state == dms_connector_api.GraphQLApplicationStates.accepted:
+    elif state == dms_models.GraphQLApplicationStates.accepted:
         process_application(user, result_content)
         return current_fraud_check
 
-    elif state == dms_connector_api.GraphQLApplicationStates.refused:
+    elif state == dms_models.GraphQLApplicationStates.refused:
         current_fraud_check.status = fraud_models.FraudCheckStatus.KO
         current_fraud_check.reasonCodes = [fraud_models.FraudReasonCode.REFUSED_BY_OPERATOR]
 
@@ -68,7 +69,7 @@ def handle_dms_state(
 
         logger.info("DMS Application refused.", extra=logs_extra)
 
-    elif state == dms_connector_api.GraphQLApplicationStates.without_continuation:
+    elif state == dms_models.GraphQLApplicationStates.without_continuation:
         current_fraud_check.status = fraud_models.FraudCheckStatus.CANCELED
         logger.info("DMS Application without continuation.", extra=logs_extra)
 
@@ -87,7 +88,7 @@ def import_dms_users(procedure_id: int) -> None:
     existing_applications_ids = get_already_processed_applications_ids(procedure_id)
     client = dms_connector_api.DMSGraphQLClient()
     for application_details in client.get_applications_with_details(
-        procedure_id, dms_connector_api.GraphQLApplicationStates.accepted
+        procedure_id, dms_models.GraphQLApplicationStates.accepted
     ):
         application_id = application_details["number"]
         if application_id in existing_applications_ids:
@@ -388,7 +389,7 @@ def parse_and_handle_dms_application(
     }
 
     try:
-        state = dms_connector_api.GraphQLApplicationStates(raw_data["dossier"]["state"])
+        state = dms_models.GraphQLApplicationStates(dms_dossier.state)
     except ValueError:
         logger.exception(
             "Unknown GraphQLApplicationState for application %s procedure %s email %s",
@@ -402,7 +403,7 @@ def parse_and_handle_dms_application(
     user = find_user_by_email(user_email)
     if not user:
         _process_user_not_found_error(user_email, application_id, procedure_id)
-        if state == dms_connector_api.GraphQLApplicationStates.draft:
+        if state == dms_models.GraphQLApplicationStates.draft:
             client.send_user_message(
                 dossier_id,
                 settings.DMS_INSTRUCTOR_ID,
@@ -422,7 +423,7 @@ def parse_and_handle_dms_application(
         subscription_messages.on_dms_application_parsing_errors_but_updatables_values(
             user, list(parsing_error.errors.keys())
         )
-        if state == dms_connector_api.GraphQLApplicationStates.draft:
+        if state == dms_models.GraphQLApplicationStates.draft:
             notify_parsing_exception(parsing_error.errors, dossier_id, client)
 
         fraud_dms_api.on_dms_parsing_error(user, application_id, parsing_error, extra_data=log_extra_data)

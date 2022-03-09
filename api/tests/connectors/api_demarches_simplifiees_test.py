@@ -2,6 +2,7 @@ from unittest.mock import MagicMock
 from unittest.mock import patch
 
 from pcapi.connectors.dms import api as api_dms
+from pcapi.connectors.dms import models as dms_models
 
 from tests.scripts.beneficiary.fixture import make_graphql_application
 from tests.scripts.beneficiary.fixture import make_single_application
@@ -36,7 +37,7 @@ class GraphqlResponseTest:
         ]
 
         client = api_dms.DMSGraphQLClient()
-        results = list(client.get_applications_with_details(123, api_dms.GraphQLApplicationStates.accepted))
+        results = list(client.get_applications_with_details(123, dms_models.GraphQLApplicationStates.accepted))
         assert client.execute_query.call_count == 2
         assert len(results) == 2
 
