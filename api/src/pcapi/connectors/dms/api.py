@@ -9,6 +9,7 @@ import gql
 from gql.transport.requests import RequestsHTTPTransport
 
 from pcapi import settings
+from pcapi.connectors.dms import models as dms_models
 from pcapi.core.fraud import api as fraud_api
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.subscription import exceptions as subscription_exceptions
@@ -53,7 +54,7 @@ class DMSGraphQLClient:
 
     def get_applications_with_details(
         self, procedure_id: int, state: dms_models.GraphQLApplicationStates, page_token: str = ""
-    ) -> Any:
+    ) -> list[dms_models.DmsApplicationResponse]:
         query = self.build_query("beneficiaries/get_applications_with_details")
         variables = {
             "demarcheNumber": procedure_id,
@@ -62,18 +63,19 @@ class DMSGraphQLClient:
         if page_token:
             variables["after"] = page_token
         results = self.execute_query(query, variables=variables)
+        dms_demarche_response = dms_models.DmsProcessApplicationsResponse(**results["demarche"]["dossiers"])
         logger.info(
             "Found %s applications for procedure %d (page token :%s)",
-            len(results["demarche"]["dossiers"]["nodes"]),
+            len(dms_demarche_response.dms_applications),
             procedure_id,
             page_token,
         )
-        for application in results["demarche"]["dossiers"]["nodes"]:
+        for application in dms_demarche_response.dms_applications:
             yield application
 
-        if results["demarche"]["dossiers"]["pageInfo"]["hasNextPage"]:
+        if dms_demarche_response.page_info.has_next_page:
             yield from self.get_applications_with_details(
-                procedure_id, state, results["demarche"]["dossiers"]["pageInfo"]["endCursor"]
+                procedure_id, state, dms_demarche_response.page_info.end_cursor
             )
 
     def send_user_message(self, dossier_techid: str, instructeur_techid: str, body: str) -> Any:
@@ -89,10 +91,11 @@ class DMSGraphQLClient:
             query, variables={"input": {"dossierId": application_techid, "instructeurId": instructeur_techid}}
         )
 
-    def get_single_application_details(self, application_id: int) -> Any:
+    def get_single_application_details(self, application_id: int) -> dms_models.DmsApplicationResponse:
         query = self.build_query("beneficiaries/get_single_application_details")
+        response = self.execute_query(query, variables={"applicationNumber": application_id})
 
-        return self.execute_query(query, variables={"applicationNumber": application_id})
+        return dms_models.DmsApplicationResponse(**response["dossier"])
 
     def get_bic(self, dossier_id: int) -> Any:
         query = self.build_query("pro/get_banking_info_v2")
@@ -100,75 +103,90 @@ class DMSGraphQLClient:
         return self.execute_query(query, variables=variables)
 
 
-def parse_beneficiary_information_graphql(application_detail: dict, procedure_id: int) -> fraud_models.DMSContent:
-    email = application_detail["usager"]["email"]
+def parse_beneficiary_information_graphql(
+    application_detail: dms_models.DmsApplicationResponse, procedure_id: int
+) -> fraud_models.DMSContent:
 
-    information = {
-        "last_name": application_detail["demandeur"]["nom"],
-        "first_name": application_detail["demandeur"]["prenom"],
-        "civility": application_detail["demandeur"]["civilite"],
-        "email": email,
-        "application_id": application_detail["number"],
-        "procedure_id": procedure_id,
-        "registration_datetime": application_detail[
-            "datePassageEnConstruction"
-        ],  # parse with format  "2021-09-15T15:19:20+02:00"
-    }
+    application_id = application_detail.number
+    civility = application_detail.applicant.civility.value
+    email = application_detail.profile.email
+    first_name = application_detail.applicant.first_name
+    last_name = application_detail.applicant.last_name
+    registration_datetime = application_detail.draft_date  # parse with format  "2021-09-15T15:19:20+02:00"
+
+    # Fields that may be filled
+    activity = None
+    address = None
+    birth_date = None
+    department = None
+    id_piece_number = None
+    phone = None
+    postal_code = None
+
     parsing_errors = {}
 
-    if not fraud_api.is_subscription_name_valid(information["first_name"]):
-        parsing_errors["first_name"] = information["first_name"]
+    if not fraud_api.is_subscription_name_valid(first_name):
+        parsing_errors["first_name"] = first_name
 
-    if not fraud_api.is_subscription_name_valid(information["last_name"]):
-        parsing_errors["last_name"] = information["last_name"]
+    if not fraud_api.is_subscription_name_valid(last_name):
+        parsing_errors["last_name"] = last_name
 
-    for field in application_detail["champs"]:
-        label = field["label"]
-        value = field["stringValue"]
+    for field in application_detail.fields:
+        label = field.label
+        value = field.value
 
-        if "Veuillez indiquer votre département" in label:
-            information["department"] = re.search("^[0-9]{2,3}|[2BbAa]{2}", value).group(0)
-        if label in ("Quelle est votre date de naissance", "Quelle est ta date de naissance ?"):
+        if label in (dms_models.FieldLabel.DEPARTMENT_FR.value, dms_models.FieldLabel.DEPARTMENT_ET.value):
+            department = re.search("^[0-9]{2,3}|[2BbAa]{2}", value).group(0)
+        if label in (dms_models.FieldLabel.BIRTH_DATE_ET, dms_models.FieldLabel.BIRTH_DATE_FR.value):
             try:
-                information["birth_date"] = date_parser.parse(value, FrenchParserInfo())
+                birth_date = date_parser.parse(value, FrenchParserInfo())
             except Exception:  # pylint: disable=broad-except
                 parsing_errors["birth_date"] = value
 
+        if label in (dms_models.FieldLabel.TELEPHONE_FR.value, dms_models.FieldLabel.TELEPHONE_ET.value):
+            phone = value.replace(" ", "")
         if label in (
-            "Quel est votre numéro de téléphone",
-            "Quel est ton numéro de téléphone ?",
-        ):
-            information["phone"] = value.replace(" ", "")
-        if label in (
-            "Quel est le code postal de votre commune de résidence ?",
-            "Quel est le code postal de votre commune de résidence ? (ex : 25370)",
-            "Quel est le code postal de ta commune de résidence ? (ex : 25370)",
-            "Quel est le code postal de ta commune de résidence ?",
+            dms_models.FieldLabel.POSTAL_CODE_ET.value,
+            dms_models.FieldLabel.POSTAL_CODE_FR.value,
         ):
             space_free = str(value).strip().replace(" ", "")
             try:
-                information["postal_code"] = re.search("^[0-9]{5}", space_free).group(0)
+                postal_code = re.search("^[0-9]{5}", space_free).group(0)
             except Exception:  # pylint: disable=broad-except
                 parsing_errors["postal_code"] = value
 
-        if label in ("Veuillez indiquer votre statut", "Merci d'indiquer ton statut", "Merci d' indiquer ton statut"):
-            information["activity"] = value
+        if label in (dms_models.FieldLabel.ACTIVITY_FR.value, dms_models.FieldLabel.ACTIVITY_ET.value):
+            activity = value
         if label in (
-            "Quelle est votre adresse de résidence",
-            "Quelle est ton adresse de résidence",
-            "Quelle est ton adresse de résidence ?",
+            dms_models.FieldLabel.ADDRESS_ET.value,
+            dms_models.FieldLabel.ADDRESS_FR.value,
         ):
-            information["address"] = value
+            address = value
         if label in (
-            "Quel est le numéro de la pièce que vous venez de saisir ?",
-            "Quel est le numéro de la pièce que tu viens de saisir ?",
+            dms_models.FieldLabel.ID_PIECE_NUMBER_FR.value,
+            dms_models.FieldLabel.ID_PIECE_NUMBER_ET.value,
         ):
             value = value.strip()
             if not fraud_api.validate_id_piece_number_format_fraud_item(value):
                 parsing_errors["id_piece_number"] = value
             else:
-                information["id_piece_number"] = value
+                id_piece_number = value
 
     if parsing_errors:
         raise subscription_exceptions.DMSParsingError(email, parsing_errors, "Error validating")
-    return fraud_models.DMSContent(**information)
+    return fraud_models.DMSContent(
+        activity=activity,
+        address=address,
+        application_id=application_id,
+        birth_date=birth_date,
+        civility=civility,
+        department=department,
+        email=email,
+        first_name=first_name,
+        id_piece_number=id_piece_number,
+        last_name=last_name,
+        phone=phone,
+        postal_code=postal_code,
+        procedure_id=procedure_id,
+        registration_datetime=registration_datetime,
+    )

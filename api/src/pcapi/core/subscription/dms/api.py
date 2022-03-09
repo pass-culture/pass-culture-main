@@ -90,11 +90,11 @@ def import_dms_users(procedure_id: int) -> None:
     for application_details in client.get_applications_with_details(
         procedure_id, dms_models.GraphQLApplicationStates.accepted
     ):
-        application_id = application_details["number"]
+        application_id = application_details.number
         if application_id in existing_applications_ids:
             continue
         try:
-            user_email = application_details["usager"]["email"]
+            user_email = application_details.profile.email
         except KeyError as e:
             logger.error(
                 "[BATCH][REMOTE IMPORT BENEFICIARIES] Could not parse user email: %s",
@@ -110,9 +110,7 @@ def import_dms_users(procedure_id: int) -> None:
             continue
 
         try:
-            result_content: fraud_models.IdCheckContent = dms_connector_api.parse_beneficiary_information_graphql(
-                application_details, procedure_id
-            )
+            result_content = dms_connector_api.parse_beneficiary_information_graphql(application_details, procedure_id)
         except subscription_exceptions.DMSParsingError as exc:
             _process_parsing_error(exc, user, procedure_id, application_id)
             continue
@@ -376,10 +374,10 @@ def parse_and_handle_dms_application(
     application_id, procedure_id
 ) -> typing.Optional[fraud_models.BeneficiaryFraudCheck]:
     client = dms_connector_api.DMSGraphQLClient()
-    raw_data = client.get_single_application_details(application_id)
+    dms_dossier = client.get_single_application_details(application_id)
 
-    user_email = raw_data["dossier"]["usager"]["email"]
-    dossier_id = raw_data["dossier"]["id"]  # This is only used to get data from DMS (not used in our API)
+    user_email = dms_dossier.profile.email
+    dossier_id = dms_dossier.id  # This is only used to get data from DMS (not used in our API)
 
     log_extra_data = {
         "application_id": application_id,
@@ -412,7 +410,7 @@ def parse_and_handle_dms_application(
 
         return None
     try:
-        application = dms_connector_api.parse_beneficiary_information_graphql(raw_data["dossier"], procedure_id)
+        application = dms_connector_api.parse_beneficiary_information_graphql(dms_dossier, procedure_id)
         core_logging.log_for_supervision(
             logger=logger,
             log_level=logging.INFO,
