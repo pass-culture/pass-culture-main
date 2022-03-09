@@ -39,6 +39,12 @@ export const VenueImageEdit = ({
   const editorRef = useRef<AvatarEditor>(null)
   const notification = useNotification()
 
+  const onKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Enter') {
+      handleNext()
+    }
+  }
+
   const handleNext = useCallback(() => {
     try {
       if (editorRef.current) {
@@ -78,6 +84,7 @@ export const VenueImageEdit = ({
         <CreditInput
           credit={credit}
           extraClassName={style['venue-image-edit-credit']}
+          onKeyDown={onKeyDown}
           updateCredit={onSetCredit}
         />
       </form>

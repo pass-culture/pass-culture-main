@@ -15,6 +15,7 @@ const TextInput = ({
   name,
   onChange,
   onBlur,
+  onKeyDown,
   placeholder,
   required,
   subLabel,
@@ -35,6 +36,7 @@ const TextInput = ({
       name={name}
       onBlur={onBlur}
       onChange={onChange}
+      onKeyDown={onKeyDown}
       placeholder={placeholder}
       ref={inputRef}
       required={required}
@@ -60,6 +62,7 @@ TextInput.defaultProps = {
   maxLength: null,
   onBlur: null,
   onChange: null,
+  onKeyDown: null,
   placeholder: '',
   required: false,
   subLabel: '',
@@ -79,6 +82,7 @@ TextInput.propTypes = {
   name: PropTypes.string.isRequired,
   onBlur: PropTypes.func,
   onChange: PropTypes.func,
+  onKeyDown: PropTypes.func,
   placeholder: PropTypes.string,
   required: PropTypes.bool,
   subLabel: PropTypes.string,
