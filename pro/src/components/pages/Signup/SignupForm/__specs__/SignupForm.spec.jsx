@@ -53,24 +53,6 @@ describe('src | components | pages | Signup | SignupForm', () => {
       expect(signUpFormSubTitle).toHaveLength(1)
     })
 
-    it('should display an external link to the presentation of Pass Culture Pro', () => {
-      // when
-      const wrapper = mount(
-        <Router history={history}>
-          <SignupForm {...props} />
-        </Router>
-      )
-
-      // then
-      const presentationLink = wrapper
-        .find({ children: 'Fonctionnement du pass Culture pro' })
-        .parent('a')
-      expect(presentationLink).toHaveLength(1)
-      expect(presentationLink.prop('href')).toBe(
-        'https://docs.passculture.app/le-pass-culture-en-quelques-mots'
-      )
-    })
-
     it('should display an external link to the help center', () => {
       // when
       const wrapper = mount(
