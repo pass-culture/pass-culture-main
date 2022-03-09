@@ -87,11 +87,48 @@ def monkey_patch_logger_makeRecord():
         record = self.__original_makeRecord(
             name, level, fn, lno, msg, args, exc_info, func=func, extra=extra, sinfo=sinfo
         )
-        record.extra = extra or {}
+        extra = extra or {}
+        # Do not keep this key in `extra` if present. It's already an
+        # attribute of `record` and that's the only place we want it.
+        # See also `JsonFormatter.format()`.
+        extra.pop("technical_message_id", None)
+        record.extra = extra
         return record
 
     logging.Logger.__original_makeRecord = logging.Logger.makeRecord
     logging.Logger.makeRecord = makeRecord
+
+
+def monkey_patch_logger_log():
+    def _log(
+        self,
+        level,
+        msg,
+        args,
+        exc_info=None,
+        extra=None,
+        stack_info=False,
+        stacklevel=1,
+        technical_message_id=None,
+    ):
+        # Inject `technical_message_id` into extra, so that can pop it
+        # back in `JsonFormatter.format()` and have it at the root of
+        # the log.
+        extra = extra or {}
+        if technical_message_id:
+            extra["technical_message_id"] = technical_message_id
+        return self.__original_log(
+            level,
+            msg,
+            args,
+            exc_info=exc_info,
+            extra=extra,
+            stack_info=stack_info,
+            stacklevel=stacklevel,
+        )
+
+    logging.Logger.__original_log = logging.Logger._log
+    logging.Logger._log = _log
 
 
 class JsonLogEncoder(json.JSONEncoder):
@@ -129,6 +166,7 @@ class JsonFormatter(logging.Formatter):
             "severity": record.levelname,
             "user_id": user_id,
             "message": record.getMessage(),
+            "technical_message_id": extra.get("technical_message_id", ""),
             "extra": extra,
         }
         try:
@@ -152,7 +190,7 @@ class JsonFormatter(logging.Formatter):
 
 
 def install_logging():
-    if settings.IS_DEV and not settings.IS_RUNNING_TESTS:
+    if False and settings.IS_DEV and not settings.IS_RUNNING_TESTS:
         # JSON is hard to read, keep the default plain text logger.
         logging.basicConfig(level=settings.LOG_LEVEL)
         _silence_noisy_loggers()
@@ -166,6 +204,7 @@ def install_logging():
         return
 
     monkey_patch_logger_makeRecord()
+    monkey_patch_logger_log()
     handler = logging.StreamHandler(stream=sys.stdout)
     handler.setFormatter(JsonFormatter())
     handlers = [handler]
