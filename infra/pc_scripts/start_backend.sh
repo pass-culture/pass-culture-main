@@ -3,7 +3,7 @@
 function start_backend {
     docker_compose_major=$(docker-compose -v 2>&1 | sed "s/.*version \([0-9]\).\([0-9]*\).\([0-9]*\)*/\1/");
     docker_compose_minor=$(docker-compose -v 2>&1 | sed "s/.*version \([0-9]\).\([0-9]*\).\([0-9]*\)*/\2/");
-    if [ "$docker_compose_major" -lt "2"] && [ "$docker_compose_minor" -lt "24"]; then
+    if [ "$docker_compose_major" -le "1"] && [ "$docker_compose_minor" -le "23"]; then
         echo "This script requires docker-compose 1.24 or greater"
         exit 1
     fi
