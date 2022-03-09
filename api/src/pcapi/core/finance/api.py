@@ -47,7 +47,6 @@ from pcapi import settings
 import pcapi.core.bookings.models as bookings_models
 import pcapi.core.educational.models as educational_models
 from pcapi.core.educational.models import CollectiveBooking
-from pcapi.core.finance import models
 from pcapi.core.logging import log_elapsed
 from pcapi.core.mails.transactional.pro.invoice_available_to_pro import send_invoice_available_to_pro_email
 from pcapi.core.object_storage import store_public_object
@@ -57,12 +56,12 @@ import pcapi.core.offers.models as offers_models
 import pcapi.core.payments.models as payments_models
 import pcapi.core.payments.utils as payments_utils
 import pcapi.core.reference.models as reference_models
+import pcapi.core.users.models as users_models
 from pcapi.domain import reimbursement
 from pcapi.models import db
 from pcapi.models.bank_information import BankInformation
 from pcapi.models.bank_information import BankInformationStatus
 from pcapi.repository import transaction
-from pcapi.repository import user_queries
 from pcapi.utils import human_ids
 from pcapi.utils import pdf as pdf_utils
 
@@ -786,10 +785,17 @@ def _payment_details_row_formatter(sql_row):
 
 
 def _generate_wallets_file() -> pathlib.Path:
-    # FIXME (dbaty, 2021-12-01): once the old system is removed, inline
-    # `get_all_users_wallet_balances()` into this function.
     header = ["ID de l'utilisateur", "Solde théorique", "Solde réel"]
-    query = user_queries.get_all_users_wallet_balances()
+    # Warning: this query ignores the expiration date of deposits.
+    query = (
+        db.session.query(
+            users_models.User.id.label("user_id"),
+            sqla.func.get_wallet_balance(users_models.User.id, False).label("current_balance"),
+            sqla.func.get_wallet_balance(users_models.User.id, True).label("real_balance"),
+        )
+        .filter(users_models.User.deposits != None)
+        .order_by(users_models.User.id)
+    )
     row_formatter = lambda row: (row.user_id, row.current_balance, row.real_balance)
     return _write_csv(
         "soldes_des_utilisateurs",
