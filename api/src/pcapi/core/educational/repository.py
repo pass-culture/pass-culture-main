@@ -161,7 +161,9 @@ def find_redactor_by_email(redactor_email: str) -> Optional[educational_models.E
     ).one_or_none()
 
 
-def find_active_educational_booking_by_offer_id(offer_id: int) -> Optional[educational_models.EducationalBooking]:
+def find_active_educational_booking_by_offer_id(
+    offer_id: Union[int, str]
+) -> Optional[educational_models.EducationalBooking]:
     return (
         educational_models.EducationalBooking.query.join(Booking)
         .filter(Booking.status.in_([BookingStatus.CONFIRMED, BookingStatus.PENDING]))

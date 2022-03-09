@@ -65,7 +65,7 @@ class EducationalBookingStatus(enum.Enum):
     REFUSED = "REFUSED"
 
 
-class CollectiveOffer(PcObject, ValidationMixin, AccessibilityMixin, StatusMixin, Model):  # type: ignore[valid-type]
+class CollectiveOffer(PcObject, ValidationMixin, AccessibilityMixin, StatusMixin, Model):  # type: ignore[valid-type, misc]
     __tablename__ = "collective_offer"
 
     id: int = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
@@ -107,7 +107,7 @@ class CollectiveOffer(PcObject, ValidationMixin, AccessibilityMixin, StatusMixin
     offerVenue = sa.Column(MutableDict.as_mutable(postgresql.json.JSONB), nullable=False)
 
     @property
-    def isEducational(self):
+    def isEducational(self) -> bool:
         # FIXME (rpaoloni, 2022-03-7): Remove legacy support layer
         return True
 
@@ -157,7 +157,7 @@ class CollectiveOffer(PcObject, ValidationMixin, AccessibilityMixin, StatusMixin
         )
 
     @classmethod
-    def create_from_offer(cls, offer: Offer):
+    def create_from_offer(cls, offer: Offer) -> CollectiveOffer:
         list_of_common_attributes = [
             "isActive",
             "venue",
@@ -187,7 +187,9 @@ class CollectiveOffer(PcObject, ValidationMixin, AccessibilityMixin, StatusMixin
         )
 
     @classmethod
-    def create_from_collective_offer_template(cls, collective_offer_template: CollectiveOfferTemplate):
+    def create_from_collective_offer_template(
+        cls, collective_offer_template: CollectiveOfferTemplate
+    ) -> CollectiveOffer:
         list_of_common_attributes = [
             "isActive",
             "venue",
@@ -216,7 +218,7 @@ class CollectiveOffer(PcObject, ValidationMixin, AccessibilityMixin, StatusMixin
         )
 
 
-class CollectiveOfferTemplate(PcObject, ValidationMixin, AccessibilityMixin, StatusMixin, Model):  # type: ignore[valid-type]
+class CollectiveOfferTemplate(PcObject, ValidationMixin, AccessibilityMixin, StatusMixin, Model):  # type: ignore[valid-type, misc]
     __tablename__ = "collective_offer_template"
 
     id: int = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
@@ -270,7 +272,9 @@ class CollectiveOfferTemplate(PcObject, ValidationMixin, AccessibilityMixin, Sta
     is_eligible_for_search = isReleased
 
     @classmethod
-    def create_from_collective_offer(cls, collective_offer: CollectiveOffer, price_detail: str = None):
+    def create_from_collective_offer(
+        cls, collective_offer: CollectiveOffer, price_detail: str = None
+    ) -> CollectiveOfferTemplate:
         list_of_common_attributes = [
             "isActive",
             "venue",
@@ -300,7 +304,7 @@ class CollectiveOfferTemplate(PcObject, ValidationMixin, AccessibilityMixin, Sta
         )
 
     @classmethod
-    def create_from_offer(cls, offer: Offer, price_detail: str = None):
+    def create_from_offer(cls, offer: Offer, price_detail: str = None) -> CollectiveOfferTemplate:
         list_of_common_attributes = [
             "isActive",
             "venue",
@@ -331,7 +335,7 @@ class CollectiveOfferTemplate(PcObject, ValidationMixin, AccessibilityMixin, Sta
         )
 
 
-class CollectiveStock(PcObject, Model):  # type: ignore[valid-type]
+class CollectiveStock(PcObject, Model):  # type: ignore[valid-type, misc]
     __tablename__ = "collective_stock"
 
     id = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
@@ -400,7 +404,7 @@ class CollectiveStock(PcObject, Model):  # type: ignore[valid-type]
         return False
 
 
-class EducationalInstitution(PcObject, Model):  # type: ignore[valid-type]
+class EducationalInstitution(PcObject, Model):  # type: ignore[valid-type, misc]
     __tablename__ = "educational_institution"
 
     id: int = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
@@ -418,7 +422,7 @@ class EducationalInstitution(PcObject, Model):  # type: ignore[valid-type]
     phoneNumber: str = sa.Column(sa.String(30), nullable=True)
 
 
-class EducationalYear(PcObject, Model):  # type: ignore[valid-type]
+class EducationalYear(PcObject, Model):  # type: ignore[valid-type, misc]
     __tablename__ = "educational_year"
 
     id: int = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
@@ -430,7 +434,7 @@ class EducationalYear(PcObject, Model):  # type: ignore[valid-type]
     expirationDate: datetime = sa.Column(sa.DateTime, nullable=False)
 
 
-class EducationalDeposit(PcObject, Model):  # type: ignore[valid-type]
+class EducationalDeposit(PcObject, Model):  # type: ignore[valid-type, misc]
     __tablename__ = "educational_deposit"
 
     TEMPORARY_FUND_AVAILABLE_RATIO = 0.8
@@ -475,7 +479,7 @@ class EducationalDeposit(PcObject, Model):  # type: ignore[valid-type]
         return
 
 
-class EducationalRedactor(PcObject, Model):  # type: ignore[valid-type]
+class EducationalRedactor(PcObject, Model):  # type: ignore[valid-type, misc]
 
     __tablename__ = "educational_redactor"
 
@@ -497,7 +501,7 @@ class EducationalRedactor(PcObject, Model):  # type: ignore[valid-type]
     collectiveBookings = relationship("CollectiveBooking", back_populates="educationalRedactor")
 
 
-class EducationalBooking(PcObject, Model):  # type: ignore[valid-type]
+class EducationalBooking(PcObject, Model):  # type: ignore[valid-type, misc]
     __tablename__ = "educational_booking"
 
     id: int = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
@@ -564,7 +568,7 @@ class EducationalBooking(PcObject, Model):  # type: ignore[valid-type]
         self.status = EducationalBookingStatus.REFUSED
 
 
-class CollectiveBooking(PcObject, Model):  # type: ignore[valid-type]
+class CollectiveBooking(PcObject, Model):  # type: ignore[valid-type, misc]
     __tablename__ = "collective_booking"
     id = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
 
