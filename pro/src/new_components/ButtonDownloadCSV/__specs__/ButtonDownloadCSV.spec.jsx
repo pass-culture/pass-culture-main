@@ -1,7 +1,7 @@
+import '@testing-library/jest-dom'
 import { fireEvent, render, screen } from '@testing-library/react'
 import fetch from 'jest-fetch-mock'
 import React from 'react'
-import '@testing-library/jest-dom'
 import { Provider } from 'react-redux'
 
 import { configureTestStore } from '../../../store/testUtils'

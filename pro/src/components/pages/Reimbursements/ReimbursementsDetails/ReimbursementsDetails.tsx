@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react'
 
-import CsvTableButtonContainer from 'components/layout/CsvTableButton/CsvTableButtonContainer'
 import ButtonDownloadCSV from 'new_components/ButtonDownloadCSV'
+import CsvTableButton from 'new_components/CsvTableButton'
 import { API_URL } from 'utils/config'
 import {
   FORMAT_ISO_DATE_ONLY,
@@ -124,13 +124,13 @@ const ReimbursementsDetails = ({
         >
           Télécharger
         </ButtonDownloadCSV>
-        <CsvTableButtonContainer
+        <CsvTableButton
           href={csvUrl}
           isDisabled={shouldDisableButtons}
           url="/remboursements-details"
         >
           Afficher
-        </CsvTableButtonContainer>
+        </CsvTableButton>
       </DetailsFilters>
       <p className="format-mention">
         Le fichier est au format CSV, compatible avec tous les tableurs et
