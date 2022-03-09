@@ -4,10 +4,13 @@ import * as firebase from '@firebase/app'
 import { useRef } from 'react'
 
 import { firebaseConfig } from 'config/firebase'
-import { PAGE_VIEW } from 'core/FirebaseEvents/constants'
+import { Events } from 'core/FirebaseEvents/constants'
 
 interface IUseAnalyticsReturn {
   logPageView: (page: string) => void
+  logConsultCGUClick: (page: string) => void
+  logPersonalDataClick: (page: string) => void
+  logConsultSupportClick: (page: string) => void
 }
 
 const useAnalytics = (): IUseAnalyticsReturn => {
@@ -22,10 +25,19 @@ const useAnalytics = (): IUseAnalyticsReturn => {
     analyticsLogEvent(analyticsProvider, event, params)
   }
 
-  const logPageView = (page: string) => logEvent(PAGE_VIEW, { from: page })
-
+  const logPageView = (page: string) =>
+    logEvent(Events.PAGE_VIEW, { from: page })
+  const logConsultCGUClick = (page: string) =>
+    logEvent(Events.CLICKED_CONSULT_CGU, { from: page })
+  const logPersonalDataClick = (page: string) =>
+    logEvent(Events.CLICKED_PERSONAL_DATA, { from: page })
+  const logConsultSupportClick = (page: string) =>
+    logEvent(Events.CLICKED_CONSULT_SUPPORT, { from: page })
   return {
     logPageView,
+    logConsultCGUClick,
+    logPersonalDataClick,
+    logConsultSupportClick,
   }
 }
 
