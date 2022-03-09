@@ -143,15 +143,6 @@ class SignupForm extends PureComponent {
             </div>
             <a
               className="tertiary-link"
-              href="https://docs.passculture.app/le-pass-culture-en-quelques-mots"
-              rel="noopener noreferrer"
-              target="_blank"
-            >
-              <Icon svg="ico-external-site" />
-              <span>Fonctionnement du pass Culture pro</span>
-            </a>
-            <a
-              className="tertiary-link"
               href="https://passculture.zendesk.com/hc/fr/articles/4411999179665"
               rel="noopener noreferrer"
               target="_blank"
