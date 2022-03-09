@@ -14,10 +14,7 @@ from pcapi.domain.admin_emails import maybe_send_offerer_validation_email
 from pcapi.domain.admin_emails import send_offer_creation_notification_to_administration
 from pcapi.domain.admin_emails import send_offer_rejection_notification_to_administration
 from pcapi.domain.admin_emails import send_offer_validation_notification_to_administration
-from pcapi.domain.admin_emails import send_payment_details_email
-from pcapi.domain.admin_emails import send_payments_report_emails
 from pcapi.domain.admin_emails import send_suspended_fraudulent_users_email
-from pcapi.domain.admin_emails import send_wallet_balances_email
 
 
 @pytest.mark.usefixtures("db_session")
@@ -57,48 +54,6 @@ def test_maybe_send_offerer_validation_email_does_not_send_email_if_all_validate
 
     # Then
     assert not mails_testing.outbox
-
-
-@pytest.mark.usefixtures("db_session")
-def test_send_payment_details_email_sends_email_to_pass_culture(app):
-    # Given
-    csv = '"header A","header B","header C","header D"\n"part A","part B","part C","part D"\n'
-    recipients = ["comptable1@culture.fr", "comptable2@culture.fr"]
-
-    # When
-    send_payment_details_email(csv, recipients)
-
-    # Then
-    assert len(mails_testing.outbox) == 1
-    assert mails_testing.outbox[0].sent_data["To"] == "comptable1@culture.fr, comptable2@culture.fr"
-
-
-@pytest.mark.usefixtures("db_session")
-def test_send_wallet_balances_email_sends_email_to_recipients(app):
-    # Given
-    csv = '"header A","header B","header C","header D"\n"part A","part B","part C","part D"\n'
-    recipients = ["comptable1@culture.fr", "comptable2@culture.fr"]
-
-    # When
-    send_wallet_balances_email(csv, recipients)
-
-    # Then
-    assert len(mails_testing.outbox) == 1
-    assert mails_testing.outbox[0].sent_data["To"] == "comptable1@culture.fr, comptable2@culture.fr"
-
-
-@pytest.mark.usefixtures("db_session")
-def test_send_payments_report_email_sends_email_to_recipients(app):
-    # Given
-    not_processable_csv = '"header A","header B","header C","header D"\n"part A","part B","part C","part D"\n'
-    n_payments_by_status = {"ERROR": 1, "PENDING": 2}
-
-    # When
-    send_payments_report_emails(not_processable_csv, n_payments_by_status, ["recipient@example.com"])
-
-    # Then
-    assert len(mails_testing.outbox) == 1
-    assert mails_testing.outbox[0].sent_data["To"] == "recipient@example.com"
 
 
 @pytest.mark.usefixtures("db_session")

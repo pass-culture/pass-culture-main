@@ -48,7 +48,6 @@ from pcapi.domain.booking_recap.bookings_recap_paginated import BookingsRecapPag
 from pcapi.domain.postal_code.postal_code import PostalCode
 from pcapi.models import db
 from pcapi.models.api_errors import ResourceNotFoundError
-from pcapi.models.payment import Payment
 from pcapi.models.user_offerer import UserOfferer
 from pcapi.routes.serialization.bookings_recap_serialize import OfferType
 from pcapi.utils.date import get_department_timezone
@@ -162,39 +161,6 @@ def find_ongoing_bookings_by_stock(stock_id: int) -> list[Booking]:
 
 def find_not_cancelled_bookings_by_stock(stock: Stock) -> list[Booking]:
     return Booking.query.filter(Booking.stockId == stock.id, Booking.status != BookingStatus.CANCELLED).all()
-
-
-def find_bookings_eligible_for_payment_for_venue(venue_id: int, cutoff_date: datetime) -> list[Booking]:
-    bookings = Booking.query
-    bookings = bookings.filter(Booking.status == BookingStatus.USED)
-    bookings = bookings.filter_by(venueId=venue_id)
-    # fmt: off
-    bookings = (
-        bookings
-        .filter(Booking.dateUsed < cutoff_date, Booking.amount > 0)
-        .join(Stock)
-        .filter(
-            Stock.beginningDatetime.is_(None)
-            | (cast(Stock.beginningDatetime, Date) < date.today())
-        )
-    )
-    # fmt: on
-    return (
-        bookings.outerjoin(Payment)
-        .options(contains_eager(Booking.stock).joinedload(Stock.offer).joinedload(Offer.product))
-        # FIXME (dbaty, 2021-08-18): `create_payment_for_booking` goes
-        # through `Booking.venue.iban` to access the IBAN of the
-        # venue. Could there be a way to avoid the JOIN on venue?
-        # (Unfortunately, The JOIN on offerer is necessary, since
-        # `create_payment_for_booking()` uses `Offerer.name` and
-        # `Offerer.siren`.) Also, the two lines below make 2 distinct
-        # JOIN on `bank_information`.
-        .options(joinedload(Booking.venue).joinedload(Venue.bankInformation))
-        .options(joinedload(Booking.offerer).joinedload(Offerer.bankInformation))
-        .options(joinedload(Booking.payments))
-        .order_by(Payment.id, Booking.dateUsed.asc())
-        .all()
-    )
 
 
 def token_exists(token: str) -> bool:

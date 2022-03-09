@@ -1,5 +1,4 @@
 """ transfer model """
-from datetime import datetime
 
 from sqlalchemy import BigInteger
 from sqlalchemy import CheckConstraint
@@ -9,16 +8,11 @@ from sqlalchemy import ForeignKey
 from sqlalchemy import Numeric
 from sqlalchemy import String
 from sqlalchemy import Text
-from sqlalchemy import desc
 from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import backref
 from sqlalchemy.orm import relationship
 
 from pcapi.models import Model
-from pcapi.models import db
-from pcapi.models.payment_status import PaymentStatus
-from pcapi.models.payment_status import TransactionStatus
 from pcapi.models.pc_object import PcObject
 
 
@@ -88,51 +82,3 @@ class Payment(PcObject, Model):
             name="reimbursement_constraint_check",
         ),
     )
-
-    @property
-    def paymentMessageName(self):
-        return self.paymentMessage.name if self.paymentMessage else None
-
-    @property
-    def paymentMessageChecksum(self):
-        return self.paymentMessage.checksum if self.paymentMessage else None
-
-    @hybrid_property
-    def currentStatus(self):
-        statuses_by_date_desc = sorted(self.statuses, key=lambda x: x.date, reverse=True)
-        return statuses_by_date_desc[0]
-
-    @currentStatus.expression
-    def currentStatus(cls):  # pylint: disable=no-self-argument
-        return (
-            db.session.query(PaymentStatus.status)
-            .filter(PaymentStatus.paymentId == cls.id)
-            .order_by(desc(PaymentStatus.date))
-            .limit(1)
-            .as_scalar()
-        )
-
-    @hybrid_property
-    def lastProcessedDate(self):
-        payment_sent_date = [status.date for status in self.statuses if status.status == TransactionStatus.SENT]
-        sorted_sent_dates = sorted(payment_sent_date, key=lambda x: x.date)
-        return sorted_sent_dates[0] if len(sorted_sent_dates) > 0 else None
-
-    @lastProcessedDate.expression
-    def lastProcessedDate(cls):  # pylint: disable=no-self-argument
-        return (
-            db.session.query(PaymentStatus.date)
-            .filter(PaymentStatus.paymentId == cls.id)
-            .filter(PaymentStatus.status == TransactionStatus.SENT)
-            .order_by(PaymentStatus.date.asc())
-            .limit(1)
-            .as_scalar()
-        )
-
-    def setStatus(self, status: TransactionStatus, detail: str = None):
-        payment_status = PaymentStatus()
-        payment_status.status = status
-        payment_status.date = datetime.utcnow()
-        payment_status.detail = detail
-
-        self.statuses.append(payment_status)

@@ -11,11 +11,7 @@ from pcapi.models.user_offerer import UserOfferer
 from pcapi.utils.mailing import make_offer_creation_notification_email
 from pcapi.utils.mailing import make_offer_rejection_notification_email
 from pcapi.utils.mailing import make_offerer_internal_validation_email
-from pcapi.utils.mailing import make_payment_details_email
-from pcapi.utils.mailing import make_payment_message_email
-from pcapi.utils.mailing import make_payments_report_email
 from pcapi.utils.mailing import make_suspended_fraudulent_beneficiary_by_ids_notification_email
-from pcapi.utils.mailing import make_wallet_balances_email
 
 
 def maybe_send_offerer_validation_email(offerer: Offerer, user_offerer: UserOfferer) -> bool:
@@ -23,33 +19,6 @@ def maybe_send_offerer_validation_email(offerer: Offerer, user_offerer: UserOffe
         return True
     email = make_offerer_internal_validation_email(offerer, user_offerer)
     recipients = [settings.ADMINISTRATION_EMAIL_ADDRESS]
-    return mails.send(recipients=recipients, data=email)
-
-
-def send_payment_message_email(xml_attachment: str, venues_csv: str, checksum: bytes, recipients: list[str]) -> bool:
-    email = make_payment_message_email(xml_attachment, venues_csv, checksum)
-    return mails.send(recipients=recipients, data=email)
-
-
-def send_payment_details_email(csv_attachment: str, recipients: list[str]) -> bool:
-    email = make_payment_details_email(csv_attachment)
-    return mails.send(recipients=recipients, data=email)
-
-
-def send_wallet_balances_email(csv_attachment: str, recipients: list[str]) -> bool:
-    email = make_wallet_balances_email(csv_attachment)
-    return mails.send(recipients=recipients, data=email)
-
-
-def send_payments_report_emails(
-    not_processable_payments_csv: str,
-    n_payments_by_status: dict,
-    recipients: list[str],
-) -> bool:
-    email = make_payments_report_email(
-        not_processable_payments_csv,
-        n_payments_by_status,
-    )
     return mails.send(recipients=recipients, data=email)
 
 

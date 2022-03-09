@@ -1,4 +1,3 @@
-from collections import defaultdict
 from dataclasses import dataclass
 import datetime
 from decimal import Decimal
@@ -232,26 +231,6 @@ class CustomRuleFinder:
             if rule.matches(booking):
                 return rule
         return None
-
-
-def find_all_booking_reimbursements(
-    bookings: list[Booking], custom_rule_finder: CustomRuleFinder
-) -> list[BookingReimbursement]:
-    reimbursements = []
-    total_per_year: dict[int, Decimal] = defaultdict(lambda: Decimal(0))
-
-    for booking in bookings:
-        year = booking.dateUsed.year
-
-        if (
-            is_relevant_for_standard_reimbursement_rule(booking.stock.offer)
-            or booking.stock.offer.subcategory.reimbursement_rule == subcategories.ReimbursementRuleChoices.BOOK.value
-        ):
-            total_per_year[year] += booking.total_amount
-        rule = get_reimbursement_rule(booking, custom_rule_finder, total_per_year[year])
-        reimbursements.append(BookingReimbursement(booking, rule, reimbursed_amount=rule.apply(booking)))
-
-    return reimbursements
 
 
 def get_reimbursement_rule(

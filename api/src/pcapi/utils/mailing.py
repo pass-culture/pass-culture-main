@@ -1,9 +1,6 @@
-import base64
 from datetime import datetime
-import io
 from pprint import pformat
 from typing import Union
-import zipfile
 
 from flask import render_template
 
@@ -91,109 +88,6 @@ def make_offerer_internal_validation_email(
         html_content=email_html,
         sender=SendinblueTransactionalSender.SUPPORT_PRO,
     )
-
-
-def make_payment_message_email(xml: str, venues_csv, checksum: bytes) -> dict:
-    now = datetime.utcnow()
-    encoded_xml = base64.b64encode(xml.encode("utf-8")).decode()
-    xml_name = "message_banque_de_france_{}.xml".format(now.strftime("%Y%m%d"))
-    encoded_csv = base64.b64encode(venues_csv.encode("utf-8")).decode()
-    csv_name = "lieux_{}.csv".format(now.strftime("%Y%m%d"))
-
-    attachments = [
-        {
-            "ContentType": "text/xml",
-            "Filename": xml_name,
-            "Content": encoded_xml,
-        },
-        {
-            "ContentType": "text/csv",
-            "Filename": csv_name,
-            "Content": encoded_csv,
-        },
-    ]
-
-    return {
-        "FromName": "pass Culture Pro",
-        "Subject": "Virements XML pass Culture Pro - {}".format(datetime.strftime(now, "%Y-%m-%d")),
-        "Attachments": attachments,
-        "Html-part": render_template(
-            "mails/payments_xml_email.html", xml_name=xml_name, csv_name=csv_name, xml_hash=checksum.hex()
-        ),
-    }
-
-
-def _get_zipfile_content(content: str, filename: str):
-    """Return the content of a ZIP fie that would include a single file
-    with the requested content and filename.
-    """
-    stream = io.BytesIO()
-    with zipfile.ZipFile(stream, mode="w", compression=zipfile.ZIP_DEFLATED, compresslevel=9) as zf:
-        zf.writestr(filename, content)
-    stream.seek(0)
-    return stream.read()
-
-
-def make_payment_details_email(csv: str) -> dict:
-    now = datetime.utcnow()
-    csv_filename = f"details_des_paiements_{datetime.strftime(now, '%Y%m%d')}.csv"
-    zipfile_content = _get_zipfile_content(csv, csv_filename)
-    return {
-        "FromName": "pass Culture Pro",
-        "Subject": "Détails des paiements pass Culture Pro - {}".format(datetime.strftime(now, "%Y-%m-%d")),
-        "Attachments": [
-            {
-                "ContentType": "application/zip",
-                "Filename": f"{csv_filename}.zip",
-                "Content": base64.b64encode(zipfile_content).decode(),
-            },
-        ],
-        "Html-part": "",
-    }
-
-
-def make_payments_report_email(not_processable_csv: str, n_payments_by_status: dict) -> dict:
-    now = datetime.utcnow()
-    not_processable_csv_b64encode = base64.b64encode(not_processable_csv.encode("utf-8")).decode()
-    formatted_date = datetime.strftime(now, "%Y-%m-%d")
-
-    n_total_payments = sum(count for count in n_payments_by_status.values())
-
-    return {
-        "Subject": "Récapitulatif des paiements pass Culture Pro - {}".format(formatted_date),
-        "FromName": "pass Culture Pro",
-        "Attachments": [
-            {
-                "ContentType": "text/csv",
-                "Filename": "paiements_non_traitables_{}.csv".format(formatted_date),
-                "Content": not_processable_csv_b64encode,
-            },
-        ],
-        "Html-part": render_template(
-            "mails/payments_report_email.html",
-            date_sent=formatted_date,
-            total_number=n_total_payments,
-            n_payments_by_status=n_payments_by_status,
-        ),
-    }
-
-
-def make_wallet_balances_email(csv: str) -> dict:
-    now = datetime.utcnow()
-    csv_filename = "soldes_des_utilisateurs_{}.csv".format(now.strftime("%Y%m%d"))
-    zipfile_content = _get_zipfile_content(csv, csv_filename)
-    return {
-        "FromName": "pass Culture Pro",
-        "Subject": "Soldes des utilisateurs pass Culture - {}".format(datetime.strftime(now, "%Y-%m-%d")),
-        "Attachments": [
-            {
-                "ContentType": "application/zip",
-                "Filename": f"{csv_filename}.zip",
-                "Content": base64.b64encode(zipfile_content).decode(),
-            }
-        ],
-        "Html-part": "",
-    }
 
 
 def make_offer_creation_notification_email(offer: Union[Offer, CollectiveOffer]) -> dict:

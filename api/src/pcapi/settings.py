@@ -131,14 +131,10 @@ COMPLIANCE_EMAIL_ADDRESS = os.environ.get("COMPLIANCE_EMAIL_ADDRESS", "")
 DEV_EMAIL_ADDRESS = os.environ.get("DEV_EMAIL_ADDRESS")
 EMAIL_BACKEND = os.environ.get("EMAIL_BACKEND", _default_email_backend)
 MAILJET_EMAIL_BACKEND = os.environ.get("MAILJET_EMAIL_BACKEND", _mailjet_email_backend)
-PAYMENTS_DETAILS_RECIPIENTS = utils.parse_str_to_list(os.environ.get("PAYMENTS_DETAILS_RECIPIENTS"))
-PAYMENTS_REPORT_RECIPIENTS = utils.parse_str_to_list(os.environ.get("PAYMENTS_REPORT_RECIPIENTS"))
 REPORT_OFFER_EMAIL_ADDRESS = os.environ.get("REPORT_OFFER_EMAIL_ADDRESS", "")
 SUPER_ADMIN_EMAIL_ADDRESSES = utils.parse_str_to_list(os.environ.get("SUPER_ADMIN_EMAIL_ADDRESSES"))
 SUPPORT_EMAIL_ADDRESS = os.environ.get("SUPPORT_EMAIL_ADDRESS", "")
 SUPPORT_PRO_EMAIL_ADDRESS = os.environ.get("SUPPORT_PRO_EMAIL_ADDRESS", "")
-TRANSACTIONS_RECIPIENTS = utils.parse_str_to_list(os.environ.get("TRANSACTIONS_RECIPIENTS"))
-WALLET_BALANCES_RECIPIENTS = utils.parse_str_to_list(os.environ.get("WALLET_BALANCES_RECIPIENTS"))
 WHITELISTED_EMAIL_RECIPIENTS = utils.parse_str_to_list(os.environ.get("WHITELISTED_EMAIL_RECIPIENTS"))
 WHITELISTED_SMS_RECIPIENTS = utils.parse_phone_numbers(os.environ.get("WHITELISTED_SMS_RECIPIENTS"))
 
@@ -284,13 +280,6 @@ SWIFT_USER = os.environ.get("OVH_USER")
 SWIFT_KEY = os.environ.get("OVH_PASSWORD")
 SWIFT_TENANT_NAME = os.environ.get("OVH_TENANT_NAME")
 SWIFT_REGION_NAME = os.environ.get("OVH_REGION_NAME", "GRA")
-
-
-# PAYMENT
-PASS_CULTURE_IBAN = os.environ.get("PASS_CULTURE_IBAN")
-PASS_CULTURE_BIC = os.environ.get("PASS_CULTURE_BIC")
-PASS_CULTURE_REMITTANCE_CODE = os.environ.get("PASS_CULTURE_REMITTANCE_CODE")
-PAYMENTS_CSV_DETAILS_BATCH_SIZE = os.environ.get("PAYMENTS_CSV_DETAILS_BATCH_SIZE", 10_000)
 
 # GOOGLE
 GCP_BUCKET_CREDENTIALS = json.loads(base64.b64decode(os.environ.get("GCP_BUCKET_CREDENTIALS", "")) or "{}")

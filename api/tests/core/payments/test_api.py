@@ -22,9 +22,6 @@ from pcapi.core.users import api as users_api
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.models import db
-from pcapi.models.payment import Payment
-from pcapi.models.payment_status import PaymentStatus
-from pcapi.models.payment_status import TransactionStatus
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -152,36 +149,6 @@ class CreateDepositTest:
             age = users_api.get_user_age_at_registration(user)
 
         assert age == expected_result
-
-
-class BulkCreatePaymentStatusesTest:
-    def test_without_detail(self):
-        p1 = payments_factories.PaymentFactory(statuses=[])
-        p2 = payments_factories.PaymentFactory(statuses=[])
-        _ignored = payments_factories.PaymentFactory(statuses=[])
-
-        query = Payment.query.filter(Payment.id.in_((p1.id, p2.id)))
-        api.bulk_create_payment_statuses(query, TransactionStatus.PENDING)
-
-        statuses = PaymentStatus.query.all()
-        assert len(statuses) == 2
-        assert {s.payment for s in statuses} == {p1, p2}
-        assert {s.status for s in statuses} == {TransactionStatus.PENDING}
-        assert {s.detail for s in statuses} == {None}
-
-    def test_with_detail(self):
-        p1 = payments_factories.PaymentFactory(statuses=[])
-        p2 = payments_factories.PaymentFactory(statuses=[])
-        _ignored = payments_factories.PaymentFactory(statuses=[])
-
-        query = Payment.query.filter(Payment.id.in_((p1.id, p2.id)))
-        api.bulk_create_payment_statuses(query, TransactionStatus.PENDING, "something")
-
-        statuses = PaymentStatus.query.all()
-        assert len(statuses) == 2
-        assert {s.payment for s in statuses} == {p1, p2}
-        assert {s.status for s in statuses} == {TransactionStatus.PENDING}
-        assert {s.detail for s in statuses} == {"something"}
 
 
 class CreateOffererReimbursementRuleTest:

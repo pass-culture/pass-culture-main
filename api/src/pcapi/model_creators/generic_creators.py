@@ -1,8 +1,6 @@
 from datetime import datetime
-from hashlib import sha256
 from typing import Optional
 
-from pcapi.core.bookings.models import Booking
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import Venue
@@ -17,10 +15,6 @@ from pcapi.core.users.models import Favorite
 from pcapi.core.users.models import User
 from pcapi.domain.price_rule import PriceRule
 from pcapi.models.criterion import Criterion
-from pcapi.models.payment import Payment
-from pcapi.models.payment_message import PaymentMessage
-from pcapi.models.payment_status import PaymentStatus
-from pcapi.models.payment_status import TransactionStatus
 from pcapi.models.user_offerer import UserOfferer
 
 
@@ -102,62 +96,6 @@ def create_offerer(
     offerer.dateValidated = date_validated
 
     return offerer
-
-
-def create_payment(
-    booking: Booking,
-    offerer: Offerer,
-    amount: int = 10,
-    author: str = "test author",
-    bic: str = None,
-    comment: str = None,
-    iban: str = None,
-    idx: int = None,
-    payment_message: PaymentMessage = None,
-    payment_message_name: str = None,
-    reimbursement_rate: float = 0.5,
-    reimbursement_rule: str = "remboursement à 100%",
-    status: TransactionStatus = TransactionStatus.PENDING,
-    detail: str = None,
-    status_date: datetime = datetime.utcnow(),
-    transaction_end_to_end_id: str = None,
-    transaction_label: str = None,
-) -> Payment:
-    payment_status = PaymentStatus()
-    payment_status.status = status
-    payment_status.date = status_date
-    payment_status.detail = detail
-
-    payment = Payment()
-    payment.amount = amount
-    payment.author = author
-    payment.bic = bic
-    payment.booking = booking
-    payment.comment = comment
-    payment.iban = iban
-    payment.id = idx
-    if payment_message_name:
-        payment.paymentMessage = create_payment_message(name=payment_message_name)
-    elif payment_message:
-        payment.paymentMessage = payment_message
-    payment.recipientName = offerer.name
-    payment.recipientSiren = offerer.siren
-    payment.reimbursementRate = reimbursement_rate
-    payment.reimbursementRule = reimbursement_rule
-    payment.statuses = [payment_status]
-    payment.transactionEndToEndId = transaction_end_to_end_id
-    payment.transactionLabel = transaction_label
-
-    return payment
-
-
-def create_payment_message(checksum: str = None, idx: int = None, name: str = "ABCD123") -> PaymentMessage:
-    payment_message = PaymentMessage()
-    payment_message.checksum = checksum if checksum else sha256(name.encode("utf-8")).digest()
-    payment_message.id = idx
-    payment_message.name = name
-
-    return payment_message
 
 
 def create_provider(
@@ -327,17 +265,3 @@ def create_allocine_venue_provider_price_rule(
     venue_provider_price_rule.allocineVenueProvider = allocine_venue_provider
 
     return venue_provider_price_rule
-
-
-def create_payment_status(
-    payment: Payment,
-    detail: str = None,
-    status: TransactionStatus = TransactionStatus.PENDING,
-    date: datetime = datetime.utcnow(),
-) -> PaymentStatus:
-    payment_status = PaymentStatus()
-    payment_status.payment = payment
-    payment_status.detail = detail
-    payment_status.status = status
-    payment_status.date = date
-    return payment_status

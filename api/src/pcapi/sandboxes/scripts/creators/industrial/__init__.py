@@ -24,7 +24,6 @@ from pcapi.sandboxes.scripts.creators.industrial.create_industrial_offerers_with
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_offers_with_activation_codes import (
     create_industrial_offers_with_activation_codes,
 )
-from pcapi.sandboxes.scripts.creators.industrial.create_industrial_payments import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_pro_users import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_pro_users_api_keys import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_search_objects import (
@@ -84,8 +83,6 @@ def save_industrial_sandbox() -> None:
         if "has-booked-some-but-deposit-expired" in name:
             user.deposit.expirationDate = datetime.datetime.now()
             repository.save(user.deposit)
-
-    create_industrial_payments()
 
     create_industrial_invoices()
     create_specific_invoice()
