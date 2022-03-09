@@ -662,6 +662,13 @@ def test_generate_payments_file():
         booking__educationalBooking__educationalInstitution=deposit2.educationalInstitution,
         booking__educationalBooking__educationalYear=deposit2.educationalYear,
     )
+    # A pricing that belongs to a business unit whose SIRET is not a
+    # SIRET of any venue.
+    pricing6 = factories.PricingFactory(
+        amount=-1000,  # rate = 100 %
+        booking__dateUsed=used_date,
+        booking__stock__offer__venue__businessUnit__siret="orphan siret",
+    )
 
     cutoff = datetime.datetime.utcnow()
     batch_id = api.generate_cashflows(cutoff)
@@ -676,7 +683,7 @@ def test_generate_payments_file():
             reader = csv.DictReader(csv_textfile, quoting=csv.QUOTE_NONNUMERIC)
             rows = list(reader)
 
-    assert len(rows) == 5
+    assert len(rows) == 6
     assert rows[0] == {
         "Identifiant de la BU": human_ids.humanize(venue1.id),
         "SIRET de la BU": "123456 test",
@@ -761,6 +768,24 @@ def test_generate_payments_file():
         "Taux de remboursement": 1.0,
         "Montant remboursé à l'offreur": 6,
         "Ministère": Ministry.EDUCATION_NATIONALE.name,
+    }
+    assert rows[5] == {
+        # Some fields are empty since there are no corresponding venue.
+        "Identifiant de la BU": "",
+        "SIRET de la BU": "orphan siret",
+        "Libellé de la BU": "",
+        "Identifiant du lieu": human_ids.humanize(pricing6.booking.venue.id),
+        "Libellé du lieu": pricing6.booking.venue.name,
+        "Identifiant de l'offre": pricing6.booking.stock.offerId,
+        "Nom de l'offre": pricing6.booking.stock.offer.name,
+        "Sous-catégorie de l'offre": pricing6.booking.stock.offer.subcategoryId,
+        "Prix de la réservation": pricing6.booking.total_amount,
+        "Type de réservation": "PC",
+        "Date de validation": "2020-01-02 00:00:00",
+        "Identifiant de la valorisation": pricing6.id,
+        "Taux de remboursement": 1.0,
+        "Montant remboursé à l'offreur": 10,
+        "Ministère": "",
     }
 
 

@@ -618,7 +618,9 @@ def _generate_business_units_file() -> pathlib.Path:
     )
     query = (
         models.BusinessUnit.query.join(models.BusinessUnit.bankAccount)
-        .join(
+        # See `_generate_payments_file()` as for why we do an _outer_
+        # join and not an _inner_ join here.
+        .outerjoin(
             offerers_models.Venue,
             offerers_models.Venue.siret == models.BusinessUnit.siret,
         )
@@ -682,7 +684,13 @@ def _generate_payments_file(batch_id: int) -> pathlib.Path:
         .join(models.Pricing.booking)
         .filter(bookings_models.Booking.amount != 0)
         .join(models.Pricing.businessUnit)
-        .join(
+        # There should be a Venue with the same SIRET as the business
+        # unit... but edition has been sloppy and there are
+        # inconsistencies. To avoid excluding business unit, we do an
+        # _outer_ join and not an _inner_ join here. Obviously, the
+        # corresponding columns will be empty in the CSV file.
+        # See also `_generate_business_units_file()` and `generate_invoice_file()`.
+        .outerjoin(
             BusinessUnitVenue,
             models.BusinessUnit.siret == BusinessUnitVenue.siret,
         )
@@ -903,7 +911,9 @@ def generate_invoice_file(invoice_date: datetime.date = datetime.date.today()) -
         .join(models.Cashflow.pricings)
         .join(models.Pricing.lines)
         .join(models.Invoice.businessUnit)
-        .join(
+        # See `_generate_payments_file()` as for why we do an _outer_
+        # join and not an _inner_ join here.
+        .outerjoin(
             BusinessUnitVenue,
             models.BusinessUnit.siret == BusinessUnitVenue.siret,
         )
