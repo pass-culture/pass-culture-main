@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types'
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 
+import useAnalytics from 'components/hooks/useAnalytics'
 import { TUTO_DIALOG_LABEL_ID } from 'components/layout/Tutorial/_constants'
 import DialogBox from 'new_components/DialogBox/DialogBox'
 
@@ -32,6 +33,7 @@ const steps = [
 const getStep = position => steps.find(step => step.position === position)
 
 const TutorialDialog = ({ currentUser, setUserHasSeenTuto }) => {
+  const analytics = useAnalytics()
   const [activeStepPosition, setActiveStepPosition] = useState(1)
   const [areTutoDisplayed, setAreTutoDisplayed] = useState(
     currentUser && !currentUser.hasSeenProTutorials
@@ -54,6 +56,12 @@ const TutorialDialog = ({ currentUser, setUserHasSeenTuto }) => {
   )
 
   const activeStep = getStep(activeStepPosition)
+
+  useEffect(() => {
+    if (areTutoDisplayed) {
+      analytics.logTutoPageView(activeStep.position)
+    }
+  }, [activeStep]) // eslint-disable-line react-hooks/exhaustive-deps
 
   return areTutoDisplayed ? (
     <DialogBox

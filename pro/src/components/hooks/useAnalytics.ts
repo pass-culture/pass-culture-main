@@ -12,6 +12,7 @@ interface IUseAnalyticsReturn {
   logPersonalDataClick: (page: string) => void
   logConsultSupportClick: (page: string) => void
   setAnalyticsUserId: (userId: string) => void
+  logTutoPageView: (pageNumber: string) => void
 }
 
 const useAnalytics = (): IUseAnalyticsReturn => {
@@ -31,6 +32,8 @@ const useAnalytics = (): IUseAnalyticsReturn => {
 
   const logPageView = (page: string) =>
     logEvent(Events.PAGE_VIEW, { from: page })
+  const logTutoPageView = (pageNumber: string) =>
+    logEvent(Events.TUTO_PAGE_VIEW, { page_number: pageNumber })
   const logConsultCGUClick = (page: string) =>
     logEvent(Events.CLICKED_CONSULT_CGU, { from: page })
   const logPersonalDataClick = (page: string) =>
@@ -43,6 +46,7 @@ const useAnalytics = (): IUseAnalyticsReturn => {
     logPersonalDataClick,
     logConsultSupportClick,
     setAnalyticsUserId,
+    logTutoPageView,
   }
 }
 
