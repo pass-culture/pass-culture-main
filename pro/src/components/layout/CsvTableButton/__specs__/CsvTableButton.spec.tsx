@@ -1,10 +1,11 @@
-import { mount, shallow } from 'enzyme'
+import '@testing-library/jest-dom'
 import React from 'react'
-
+import { fireEvent, render, screen } from '@testing-library/react'
+import type { CsvTableButtonProps } from '../CsvTableButton'
 import CsvTableButton from '../CsvTableButton'
 
 describe('src | components | layout | CsvTableButton', () => {
-  let props
+  let props: CsvTableButtonProps
 
   beforeEach(() => {
     props = {
@@ -16,29 +17,28 @@ describe('src | components | layout | CsvTableButton', () => {
       location: {
         pathname: '/fake-url',
       },
-    }
+    } as unknown as CsvTableButtonProps
   })
 
   describe('render', () => {
     it('should render a button with the default props', () => {
       // when
-      const wrapper = mount(<CsvTableButton {...props} />)
+      render(<CsvTableButton {...props} />)
 
       // then
-      const button = wrapper
-        .find('button[type="button"]')
-        .find({ children: 'foobar' })
-      expect(button).toHaveLength(1)
+      const children = screen.getByText('foobar')
+      expect(children).toBeInTheDocument()
     })
   })
 
   describe('redirection', () => {
     it('should redirect to next url when clicking on button', () => {
       // given
-      const wrapper = shallow(<CsvTableButton {...props} />)
+      render(<CsvTableButton {...props} />)
 
       // when
-      wrapper.simulate('click')
+      const button = screen.getByRole('button')
+      fireEvent.click(button)
 
       // then
       expect(props.history.push).toHaveBeenCalledWith(
