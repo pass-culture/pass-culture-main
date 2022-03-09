@@ -255,7 +255,7 @@ jobs:
         default: false
     working_directory: ~/pass-culture
     docker:
-      - image: cimg/python:3.9.7
+      - image: circleci/python:3.9.10
         auth:
           username: $DOCKERHUB_USER
           password: $DOCKERHUB_PASSWORD
@@ -341,7 +341,7 @@ jobs:
         type: string
     working_directory: ~/pass-culture
     docker:
-      - image: cimg/python:3.9.7
+      - image: circleci/python:3.9.10
         auth:
           username: $DOCKERHUB_USER
           password: $DOCKERHUB_PASSWORD
