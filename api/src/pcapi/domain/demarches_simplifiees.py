@@ -176,6 +176,6 @@ def _find_value_in_fields(fields: list[dict], value_name: str) -> Optional[dict]
     return None
 
 
-def update_demarches_simplifiees_annotations(application_id: str, annotation_id: str, error: Exception) -> None:
+def update_demarches_simplifiees_text_annotations(application_id: str, annotation_id: str, message: str) -> None:
     client = api_dms.DMSGraphQLClient()
-    client.update_text_annotation(application_id, settings.DMS_INSTRUCTOR_ID, int(annotation_id), str(error))
+    client.update_text_annotation(application_id, settings.DMS_INSTRUCTOR_ID, int(annotation_id), message)
