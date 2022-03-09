@@ -3,7 +3,6 @@ from typing import Optional
 
 from dateutil.relativedelta import relativedelta
 import pytz
-from sqlalchemy import sql
 
 from pcapi import settings
 import pcapi.core.payments.conf as deposit_conf
@@ -15,9 +14,6 @@ from pcapi.core.users import api as users_api
 from pcapi.core.users import constants
 from pcapi.core.users import models as users_models
 from pcapi.models import db
-from pcapi.models.payment import Payment
-from pcapi.models.payment_status import PaymentStatus
-from pcapi.models.payment_status import TransactionStatus
 from pcapi.repository import repository
 
 from . import exceptions
@@ -101,13 +97,6 @@ def create_deposit(
     )
 
     return deposit
-
-
-def bulk_create_payment_statuses(payment_query, status: TransactionStatus, detail=None):
-    sel = payment_query.with_entities(Payment.id, sql.literal(status.name), sql.literal(detail))
-    query = sql.insert(PaymentStatus).from_select(["paymentId", "status", "detail"], sel)
-    db.session.execute(query)
-    db.session.commit()
 
 
 def create_offerer_reimbursement_rule(offerer_id, subcategories, rate, start_date, end_date=None):
