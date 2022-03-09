@@ -4,7 +4,7 @@ from typing import Optional
 
 from pcapi import settings
 from pcapi.connectors.dms import api as api_dms
-from pcapi.domain.bank_account import format_raw_iban_and_bic
+from pcapi.core.finance.utils import format_raw_iban_and_bic
 from pcapi.domain.bank_information import CannotRegisterBankInformation
 from pcapi.models.bank_information import BankInformationStatus
 from pcapi.utils.date import DATE_ISO_FORMAT
