@@ -17,6 +17,7 @@ from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import OfferValidationConfig
 from pcapi.core.offers.models import OfferValidationStatus
 import pcapi.core.users.factories as users_factories
+from pcapi.models.offer_mixin import OfferValidationType
 
 from tests.conftest import TestClient
 from tests.conftest import clean_database
@@ -355,6 +356,7 @@ class OfferValidationViewTest:
             OfferValidationStatus.APPROVED, offer
         )
         assert offer.lastValidationDate == datetime.datetime(2020, 11, 17, 15)
+        assert offer.lastValidationType == OfferValidationType.MANUAL
 
     @freeze_time("2020-11-17 15:00:00")
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
@@ -403,6 +405,7 @@ class OfferValidationViewTest:
         assert offer.validation == OfferValidationStatus.REJECTED
         assert offer.isActive is False
         assert offer.lastValidationDate == datetime.datetime(2020, 11, 17, 15)
+        assert offer.lastValidationType == OfferValidationType.MANUAL
 
     @testing.override_settings(IS_PROD=True, SUPER_ADMIN_EMAIL_ADDRESSES="super_admin@example.com")
     def test_access_to_validation_page_with_super_admin_user_on_prod_env(self, app):
@@ -660,6 +663,7 @@ class OfferViewTest:
         assert response.status_code == 302
         assert offer.validation == OfferValidationStatus.REJECTED
         assert offer.lastValidationDate == datetime.datetime(2020, 12, 20, 15)
+        assert offer.lastValidationType == OfferValidationType.MANUAL
 
         mocked_send_offer_validation_notification_to_administration.assert_called_once_with(
             OfferValidationStatus.REJECTED, offer
@@ -691,6 +695,7 @@ class OfferViewTest:
         assert response.status_code == 302
         assert offer.validation == OfferValidationStatus.APPROVED
         assert offer.lastValidationDate == datetime.datetime(2020, 12, 20, 15)
+        assert offer.lastValidationType == OfferValidationType.MANUAL
 
         mocked_send_offer_validation_notification_to_administration.assert_called_once_with(
             OfferValidationStatus.APPROVED, offer
@@ -725,6 +730,7 @@ class OfferViewTest:
         assert response.status_code == 302
         assert offer.validation == OfferValidationStatus.REJECTED
         assert offer.lastValidationDate == datetime.datetime(2020, 12, 20, 15)
+        assert offer.lastValidationType == OfferValidationType.MANUAL
         assert unused_booking.status is BookingStatus.CANCELLED
         assert used_booking.status is not BookingStatus.CANCELLED
 
@@ -742,6 +748,7 @@ class OfferViewTest:
 
         assert response.status_code == 200
         assert offer.validation == OfferValidationStatus.APPROVED
+        assert offer.lastValidationType == OfferValidationType.AUTO  # unchanged
 
     @clean_database
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
@@ -763,3 +770,4 @@ class OfferViewTest:
 
         assert response.status_code == 302
         mocked_reindex_offer_ids.assert_called_once_with([offer.id])
+        assert offer.lastValidationType == OfferValidationType.AUTO  # unchanged
