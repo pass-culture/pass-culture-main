@@ -255,7 +255,7 @@ jobs:
         default: false
     working_directory: ~/pass-culture
     docker:
-      - image: circleci/python:3.9.10
+      - image: cimg/python:3.9.10
         auth:
           username: $DOCKERHUB_USER
           password: $DOCKERHUB_PASSWORD
@@ -341,14 +341,14 @@ jobs:
         type: string
     working_directory: ~/pass-culture
     docker:
-      - image: circleci/python:3.9.10
+      - image: cimg/python:3.9.10
         auth:
           username: $DOCKERHUB_USER
           password: $DOCKERHUB_PASSWORD
         environment:
           DATABASE_URL_TEST: postgresql://pytest:pytest@localhost:5432/pass_culture
           REDIS_URL: redis://localhost:6379
-      - image: circleci/postgres:12.3-postgis
+      - image: cimg/postgres:12.9-postgis
         auth:
           username: $DOCKERHUB_USER
           password: $DOCKERHUB_PASSWORD
@@ -431,7 +431,7 @@ jobs:
 
   type-checking-adage-front:
     docker:
-      - image: cimg/node:14.17
+      - image: cimg/node:14.18
     working_directory: ~/pass-culture
     steps:
       - checkout
@@ -470,7 +470,7 @@ jobs:
 
   quality-adage-front:
     docker:
-      - image: cimg/node:14.17
+      - image: cimg/node:14.18
     working_directory: ~/pass-culture
     steps:
       - checkout
@@ -511,7 +511,7 @@ jobs:
 
   tests-adage-front:
     docker:
-      - image: cimg/node:14.17
+      - image: cimg/node:14.18
     working_directory: ~/pass-culture
     steps:
       - checkout
@@ -552,7 +552,7 @@ jobs:
 
   type-checking-pro:
     docker:
-      - image: cimg/node:14.17
+      - image: cimg/node:14.18
     working_directory: ~/pass-culture
     steps:
       - checkout
