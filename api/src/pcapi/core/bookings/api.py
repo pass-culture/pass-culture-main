@@ -5,6 +5,7 @@ from operator import or_
 import typing
 
 import pytz
+from sqlalchemy import and_
 
 from pcapi.core import search
 from pcapi.core.bookings import constants
@@ -486,22 +487,22 @@ def auto_mark_as_used_after_event() -> None:
     now = datetime.datetime.now()
     threshold = now - constants.AUTO_USE_AFTER_EVENT_TIME_DELAY
     # fmt: off
-    bookings = (
-        Booking.query
+    bookings_subquery = (
+        Booking.query.join(Stock).outerjoin(EducationalBooking)
             .filter(Booking.status.in_((BookingStatus.CONFIRMED, BookingStatus.PENDING)))
-            .filter(Stock.id == Booking.stockId)
             .filter(Stock.beginningDatetime < threshold)
+            .with_entities(Booking.id)
+            .subquery()
     )
 
     individual_bookings = (
-        bookings
-        .filter(Booking.educationalBookingId == None)
+        Booking.query.filter(and_(Booking.id.in_(bookings_subquery), Booking.educationalBookingId.is_(None)))
     )
 
     educational_bookings = (
-        bookings
-        .filter(EducationalBooking.id == Booking.educationalBookingId)
-        .filter(or_(EducationalBooking.status != EducationalBookingStatus.REFUSED, EducationalBooking.status.is_(None)))
+        Booking.query.filter(Booking.id.in_(bookings_subquery))
+            .filter(
+            or_(EducationalBooking.status != EducationalBookingStatus.REFUSED, EducationalBooking.status.is_(None)))
     )
 
     collective_bookings_subquery = (
