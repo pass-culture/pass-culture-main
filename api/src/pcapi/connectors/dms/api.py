@@ -103,7 +103,7 @@ class DMSGraphQLClient:
         return self.execute_query(query, variables=variables)
 
     def update_text_annotation(self, dossier_id: str, instructeur_id: str, annotation_id: str, value: str) -> Any:
-        query = self.build_query("pro/update_text_annotation")
+        query = self.build_query("update_text_annotation")
         variables = {
             "input": {
                 "dossierId": dossier_id,
