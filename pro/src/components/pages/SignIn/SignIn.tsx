@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom'
 
 import { HTTP_STATUS } from 'api/helpers'
 import useActiveFeature from 'components/hooks/useActiveFeature'
+import useAnalytics from 'components/hooks/useAnalytics'
 import useCurrentUser from 'components/hooks/useCurrentUser'
 import useNotification from 'components/hooks/useNotification'
 import TextInput from 'components/layout/inputs/TextInput/TextInput'
@@ -23,6 +24,7 @@ const SignIn = (): JSX.Element => {
   const { currentUser } = useCurrentUser()
   const history = useHistory()
   const location = useLocation()
+  const analytics = useAnalytics()
   const dispatch = useDispatch()
   const notification = useNotification()
   const isAccountCreationAvailable = useActiveFeature('API_SIRENE_AVAILABLE')
@@ -106,6 +108,9 @@ const SignIn = (): JSX.Element => {
               <Link
                 className="tertiary-link"
                 id="lostPasswordLink"
+                onClick={() =>
+                  analytics.logForgottenPasswordClick(location.pathname)
+                }
                 to="/mot-de-passe-perdu"
               >
                 Mot de passe égaré ?
