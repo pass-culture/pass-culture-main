@@ -1,6 +1,6 @@
 ########## BUILDER ##########
 
-FROM python:3.9.7-slim AS builder
+FROM python:3.9.10-slim AS builder
 
 ENV PYTHONUNBUFFERED 1
 
@@ -16,7 +16,7 @@ RUN pip install --user \
 
 ######### DEV ##########
 
-FROM python:3.9.7-slim AS api-flask
+FROM python:3.9.10-slim AS api-flask
 
 ENV PATH=$PATH:/root/.local/bin
 
