@@ -1,4 +1,5 @@
 import React, { FunctionComponent } from 'react'
+import { withRouter } from 'react-router-dom'
 import type { RouteComponentProps } from 'react-router-dom'
 
 export interface CsvTableButtonProps extends RouteComponentProps {
@@ -33,5 +34,5 @@ const CsvTableButton: FunctionComponent<CsvTableButtonProps> = ({
     </button>
   )
 }
-
-export default CsvTableButton
+export { CsvTableButton }
+export default withRouter(CsvTableButton)

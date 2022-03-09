@@ -2,7 +2,7 @@ import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import { compose } from 'redux'
 
-import csvConverter from '../CsvTableButton/utils/csvConverter'
+import csvConverter from 'utils/csvConverter'
 
 import CsvTable from './CsvTable'
 
