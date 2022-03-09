@@ -1,8 +1,10 @@
 import '@testing-library/jest-dom'
-import React from 'react'
+
 import { fireEvent, render, screen } from '@testing-library/react'
-import type { CsvTableButtonProps } from '../CsvTableButton'
-import CsvTableButton from '../CsvTableButton'
+import React from 'react'
+
+import type { CsvTableButtonProps } from '../'
+import { CsvTableButton } from '../'
 
 describe('src | components | layout | CsvTableButton', () => {
   let props: CsvTableButtonProps
