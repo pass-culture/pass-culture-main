@@ -6,12 +6,12 @@ import { Link } from 'react-router-dom'
 
 import FieldErrors from 'components/layout/form/FieldErrors'
 import PasswordField from 'components/layout/form/fields/PasswordField'
-import Icon from 'components/layout/Icon'
 import TextInput from 'components/layout/inputs/TextInput/TextInput'
 import { LegalInfos } from 'components/layout/LegalInfos/LegalInfos'
 import { redirectLoggedUser } from 'components/router/helpers'
 import bindAddressAndDesignationFromSiren from 'repository/siren/bindSirenFieldToDesignation'
 
+import { OperatingProcedures } from './OperationProcedures'
 import SirenField from './SirenField/SirenField'
 
 const addressAndDesignationFromSirenDecorator = createDecorator({
@@ -136,21 +136,8 @@ class SignupForm extends PureComponent {
           <h2>
             Merci de compléter les champs suivants pour créer votre compte.
           </h2>
-          <div className="sign-up-operating-procedures">
-            <div>
-              Nous vous invitons à prendre connaissance des modalités de
-              fonctionnement avant de renseigner les champs suivants.
-            </div>
-            <a
-              className="tertiary-link"
-              href="https://passculture.zendesk.com/hc/fr/articles/4411999179665"
-              rel="noopener noreferrer"
-              target="_blank"
-            >
-              <Icon svg="ico-external-site" />
-              <span>Consulter notre centre d’aide</span>
-            </a>
-          </div>
+          <OperatingProcedures />
+
           <div className="sign-up-tips">
             Tous les champs sont obligatoires sauf mention contraire
           </div>
