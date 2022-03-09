@@ -2,6 +2,7 @@ import datetime
 import decimal
 import logging
 from typing import Optional
+from typing import Union
 
 from pydantic.error_wrappers import ValidationError
 from sqlalchemy.orm import joinedload
@@ -155,7 +156,7 @@ def book_educational_offer(redactor_informations: RedactorInformation, stock_id:
 
 
 def create_collective_booking_with_collective_stock(
-    stock_id: str,
+    stock_id: Union[int, str],
     booking_id: str,
     educational_institution: EducationalInstitution,
     educational_year: EducationalYear,
@@ -250,7 +251,7 @@ def confirm_collective_booking(educational_booking_id: int) -> Optional[Collecti
 
     if collective_booking is None:
         # FIXME (MathildeDuboille - 2022-03-03): raise an error once all data has been migrated (PC-13427)
-        return CollectiveBooking
+        return None
 
     if collective_booking.status == bookings_models.BookingStatus.CONFIRMED:
         return collective_booking
