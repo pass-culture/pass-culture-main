@@ -87,11 +87,49 @@ def monkey_patch_logger_makeRecord():
         record = self.__original_makeRecord(
             name, level, fn, lno, msg, args, exc_info, func=func, extra=extra, sinfo=sinfo
         )
-        record.extra = extra or {}
+        _extra = extra or {}
+
+        # Do not keep this key in `extra` if present. It's already an
+        # attribute of `record` and that's the only place we want it.
+        # See also `JsonFormatter.format()`.
+        _extra.pop("technical_message_id", None)
+        record.extra = _extra
         return record
 
     logging.Logger.__original_makeRecord = logging.Logger.makeRecord
     logging.Logger.makeRecord = makeRecord
+
+
+def monkey_patch_logger_log():
+    def _log(
+        self,
+        level,
+        msg,
+        args,
+        exc_info=None,
+        extra=None,
+        stack_info=False,
+        stacklevel=1,
+        technical_message_id=None,
+    ):
+        # Inject `technical_message_id` into extra, so that we can pop it
+        # back in `JsonFormatter.format()` and have it at the root of
+        # the log.
+        extra = extra or {}
+        if technical_message_id:
+            extra["technical_message_id"] = technical_message_id
+        return self.__original_log(
+            level,
+            msg,
+            args,
+            exc_info=exc_info,
+            extra=extra,
+            stack_info=stack_info,
+            stacklevel=stacklevel,
+        )
+
+    logging.Logger.__original_log = logging.Logger._log
+    logging.Logger._log = _log
 
 
 class JsonLogEncoder(json.JSONEncoder):
@@ -117,6 +155,7 @@ class JsonFormatter(logging.Formatter):
         # been created by our `Logger.makeRecord()` defined above.
         # It should not happen, but let's be defensive.
         extra = getattr(record, "extra", {})
+        tech_msg_id = getattr(record, "technical_message_id", "")
 
         # We need to be able to deactivate current_user accession
         # in case we are logging inside the current_user context itself.
@@ -129,6 +168,7 @@ class JsonFormatter(logging.Formatter):
             "severity": record.levelname,
             "user_id": user_id,
             "message": record.getMessage(),
+            "technical_message_id": tech_msg_id,
             "extra": extra,
         }
         try:
@@ -166,6 +206,7 @@ def install_logging():
         return
 
     monkey_patch_logger_makeRecord()
+    monkey_patch_logger_log()
     handler = logging.StreamHandler(stream=sys.stdout)
     handler.setFormatter(JsonFormatter())
     handlers = [handler]
