@@ -41,6 +41,9 @@ from . import blueprint
 logger = logging.getLogger(__name__)
 
 
+N_VENUES_THRESHOLD_TO_SHOW_OFFER_COUNT = 20
+
+
 @private_api.route("/offerers", methods=["GET"])
 @login_required
 @spectree_serialize(
@@ -81,8 +84,19 @@ def get_offerers(query: GetOffererListQueryModel) -> GetOfferersListResponseMode
 
     offerers = offerers_query.items
 
-    venue_ids = {venue.id for offerer in offerers for venue in offerer.managedVenues}
-    offer_counts = repository.get_offer_counts_by_venue(venue_ids)
+    # Counting offers for large venues is costly. To avoid doing that
+    # too much, we don't count offers for offerers that have many
+    # venues (because most large offerers have venues with many
+    # offers). Instead, we save a negative number, for which the
+    # frontend has custom logic.
+    offer_counts = {}
+    venue_ids = set()
+    for offerer in offerers:
+        if len(offerer.managedVenues) >= N_VENUES_THRESHOLD_TO_SHOW_OFFER_COUNT:
+            offer_counts.update({venue.id: -1 for venue in offerer.managedVenues})
+        else:
+            venue_ids |= {venue.id for venue in offerer.managedVenues}
+    offer_counts.update(repository.get_offer_counts_by_venue(venue_ids))
 
     return GetOfferersListResponseModel(
         offerers=[
