@@ -36,7 +36,7 @@ const ReimbursementsInvoices = ({
     },
     {
       title: 'Point de remboursement',
-      sortBy: 'businessUnit',
+      sortBy: 'businessUnitName',
       selfDirection: 'default',
     },
     {
