@@ -8,7 +8,7 @@ import React, {
   useCallback,
   useState,
 } from 'react'
-import AvatarEditor from 'react-avatar-editor'
+import AvatarEditor, { Position } from 'react-avatar-editor'
 
 import { useEffectUnmount } from 'hooks'
 
@@ -23,6 +23,7 @@ export interface IImageEditorProps {
   cropBorderHeight: number
   cropBorderWidth: number
   saveInitialScale?: (scale: number) => void
+  initialPosition?: Position
   initialScale?: number
   children?: never
 }
@@ -37,11 +38,13 @@ const ImageEditor = forwardRef<AvatarEditor, IImageEditorProps>(
       cropBorderHeight,
       cropBorderWidth,
       saveInitialScale,
+      initialPosition = { x: 0.5, y: 0.5 },
       initialScale,
     },
     ref
   ) => {
     const [scale, setScale] = useState(initialScale ? initialScale : 1)
+    const [position, setPosition] = useState(initialPosition)
     const scaleRef = useRef(scale)
     const theme = createTheme({
       palette: {
@@ -86,6 +89,10 @@ const ImageEditor = forwardRef<AvatarEditor, IImageEditorProps>(
       setScale(event.target.value)
     }, [])
 
+    const onPositionChange = useCallback(position => {
+      setPosition(position)
+    }, [])
+
     return (
       <div className={style['image-editor']}>
         <AvatarEditor
@@ -98,6 +105,8 @@ const ImageEditor = forwardRef<AvatarEditor, IImageEditorProps>(
           onImageReady={drawCropBorder}
           onMouseMove={drawCropBorder}
           onMouseUp={drawCropBorder}
+          onPositionChange={onPositionChange}
+          position={position}
           ref={ref}
           scale={Number(scale)}
           width={canvasWidth}

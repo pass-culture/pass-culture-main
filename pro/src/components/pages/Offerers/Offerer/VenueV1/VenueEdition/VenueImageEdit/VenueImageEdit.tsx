@@ -1,5 +1,5 @@
 import React, { useCallback, useRef } from 'react'
-import AvatarEditor, { CroppedRect } from 'react-avatar-editor'
+import AvatarEditor, { CroppedRect, Position } from 'react-avatar-editor'
 
 import useNotification from 'components/hooks/useNotification'
 import { ReactComponent as DownloadIcon } from 'icons/ico-download-filled.svg'
@@ -22,8 +22,10 @@ interface IVenueImageEditProps {
   onSetCredit: (credit: string) => void
   children?: never
   onReplaceImage: () => void
+  initialPosition?: Position
   initialScale?: number
   saveInitialScale: (scale: number) => void
+  saveInitialPosition: (position: Position) => void
   onEditedImageSave: (dataUrl: string, croppedRect: CroppedRect) => void
 }
 
@@ -34,6 +36,8 @@ export const VenueImageEdit = ({
   onSetCredit,
   onEditedImageSave,
   saveInitialScale,
+  saveInitialPosition,
+  initialPosition,
   initialScale,
 }: IVenueImageEditProps): JSX.Element => {
   const editorRef = useRef<AvatarEditor>(null)
@@ -50,6 +54,15 @@ export const VenueImageEdit = ({
       if (editorRef.current) {
         const canvas = editorRef.current.getImage()
         const croppingRect = editorRef.current.getCroppingRect()
+
+        // croppingRect give us the top left corner of the cropped area
+        // where AvatarEditor expect the center of it
+        const coordonateToPosition = (coordonate: number, size: number) =>
+          coordonate + size / 2
+        saveInitialPosition({
+          x: coordonateToPosition(croppingRect.x, croppingRect.width),
+          y: coordonateToPosition(croppingRect.y, croppingRect.height),
+        })
         onEditedImageSave(canvas.toDataURL(), croppingRect)
       }
     } catch {
@@ -57,7 +70,7 @@ export const VenueImageEdit = ({
         'Une erreur est survenue. Merci de réessayer plus tard'
       )
     }
-  }, [onEditedImageSave, notification])
+  }, [onEditedImageSave, saveInitialPosition, notification])
 
   return (
     <section className={style['venue-image-edit']}>
@@ -77,6 +90,7 @@ export const VenueImageEdit = ({
           cropBorderHeight={CROP_BORDER_HEIGHT}
           cropBorderWidth={CROP_BORDER_WIDTH}
           image={image}
+          initialPosition={initialPosition}
           initialScale={initialScale}
           ref={editorRef}
           saveInitialScale={saveInitialScale}
