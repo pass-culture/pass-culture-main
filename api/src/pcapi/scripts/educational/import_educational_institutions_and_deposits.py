@@ -2,6 +2,7 @@ import csv
 from datetime import datetime
 import logging
 from typing import Iterable
+from typing import Optional
 
 from pcapi.core.educational import api
 from pcapi.core.educational import exceptions
@@ -15,7 +16,10 @@ DEFAULT_FILEPATH = ""
 
 
 def import_educational_institutions_and_deposits(
-    filename: str, ministry: Ministry, path: str = DEFAULT_FILEPATH
+    filename: str,
+    ministry: Ministry,
+    path: str = DEFAULT_FILEPATH,
+    educational_year_beginning: Optional[int] = None,
 ) -> None:
     if path is not None and path != DEFAULT_FILEPATH and not path.endswith("/"):
         path += "/"
@@ -26,14 +30,18 @@ def import_educational_institutions_and_deposits(
         if not headers or "UAICode" not in headers or "depositAmount" not in headers:
             print("\033[91mERROR: UAICode or depositAmount missing in CSV headers\033[0m")
             return
-        _process_educational_csv(csv_rows, ministry)
+        _process_educational_csv(csv_rows, ministry, educational_year_beginning)
     return
 
 
-def _process_educational_csv(educational_institutions_rows: Iterable[dict], ministry: Ministry) -> None:
-    currentYear = datetime.now().year
+def _process_educational_csv(
+    educational_institutions_rows: Iterable[dict],
+    ministry: Ministry,
+    educational_year_beginning: Optional[int] = None,
+) -> None:
+    current_year = educational_year_beginning if educational_year_beginning is not None else datetime.now().year
     try:
-        educational_year = educational_repository.get_educational_year_beginning_at_given_year(currentYear)
+        educational_year = educational_repository.get_educational_year_beginning_at_given_year(current_year)
     except exceptions.EducationalYearNotFound:
         print("\033[91mERROR: script has ceased execution")
         print(
