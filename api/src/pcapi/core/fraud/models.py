@@ -8,8 +8,7 @@ from pydantic.class_validators import validator
 import pydantic.datetime_parse
 import pydantic.errors
 import pytz
-import sqlalchemy.dialects.postgresql
-import sqlalchemy.orm
+import sqlalchemy as sa
 
 from pcapi.core.users import models as users_models
 from pcapi.models import Model
@@ -322,38 +321,38 @@ class FraudCheckStatus(enum.Enum):
 class BeneficiaryFraudCheck(PcObject, Model):
     __tablename__ = "beneficiary_fraud_check"
 
-    id = sqlalchemy.Column(sqlalchemy.BigInteger, primary_key=True, autoincrement=True)
+    id = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
 
-    dateCreated = sqlalchemy.Column(sqlalchemy.DateTime, nullable=False, server_default=sqlalchemy.func.now())
+    dateCreated = sa.Column(sa.DateTime, nullable=False, server_default=sa.func.now())
 
-    userId = sqlalchemy.Column(sqlalchemy.BigInteger, sqlalchemy.ForeignKey("user.id"), index=True, nullable=False)
+    userId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=False)
 
-    user = sqlalchemy.orm.relationship("User", foreign_keys=[userId], backref="beneficiaryFraudChecks")
+    user = sa.orm.relationship("User", foreign_keys=[userId], backref="beneficiaryFraudChecks")
 
-    type = sqlalchemy.Column(sqlalchemy.Enum(FraudCheckType, create_constraint=False), nullable=False)
+    type = sa.Column(sa.Enum(FraudCheckType, create_constraint=False), nullable=False)
 
-    thirdPartyId = sqlalchemy.Column(sqlalchemy.TEXT(), nullable=False)
+    thirdPartyId = sa.Column(sa.TEXT(), nullable=False)
 
-    resultContent = sqlalchemy.Column(sqlalchemy.dialects.postgresql.JSONB(none_as_null=True))
+    resultContent = sa.Column(sa.dialects.postgresql.JSONB(none_as_null=True))
 
-    status = sqlalchemy.Column(sqlalchemy.Enum(FraudCheckStatus, create_constraint=False), nullable=True)
+    status = sa.Column(sa.Enum(FraudCheckStatus, create_constraint=False), nullable=True)
 
-    reason = sqlalchemy.Column(sqlalchemy.Text, nullable=True)
+    reason = sa.Column(sa.Text, nullable=True)
 
-    reasonCodes = sqlalchemy.Column(
-        sqlalchemy.ARRAY(sqlalchemy.Enum(FraudReasonCode, create_constraint=False, native_enum=False)),
+    reasonCodes = sa.Column(
+        sa.ARRAY(sa.Enum(FraudReasonCode, create_constraint=False, native_enum=False)),
         nullable=True,
     )
 
     # Unlike BeneficiaryFraudResult, the eligibility is nullable here to support existing objects.
     # A script may fill in this column for past objects.
-    eligibilityType = sqlalchemy.Column(
-        sqlalchemy.Enum(users_models.EligibilityType, create_constraint=False),
+    eligibilityType = sa.Column(
+        sa.Enum(users_models.EligibilityType, create_constraint=False),
         nullable=True,
     )
 
-    idPicturesStored = sqlalchemy.Column(
-        sqlalchemy.Boolean(),
+    idPicturesStored = sa.Column(
+        sa.Boolean(),
         nullable=True,
     )
 
@@ -374,61 +373,59 @@ class OrphanDmsApplication(PcObject, Model):
     # This model is used to store fraud checks that were not associated with a user.
     # This is mainly used for the DMS fraud check, when the user is not yet created, or in case of a failure.
 
-    email = sqlalchemy.Column(sqlalchemy.Text, nullable=True, index=True)
-    application_id = sqlalchemy.Column(sqlalchemy.BigInteger, primary_key=True)
-    process_id = sqlalchemy.Column(sqlalchemy.BigInteger)
+    email = sa.Column(sa.Text, nullable=True, index=True)
+    application_id = sa.Column(sa.BigInteger, primary_key=True)
+    process_id = sa.Column(sa.BigInteger)
 
 
 class BeneficiaryFraudResult(PcObject, Model):
     __tablename__ = "beneficiary_fraud_result"
 
-    id = sqlalchemy.Column(sqlalchemy.BigInteger, primary_key=True, autoincrement=True)
+    id = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
 
-    userId = sqlalchemy.Column(sqlalchemy.BigInteger, sqlalchemy.ForeignKey("user.id"), index=True, nullable=False)
+    userId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=False)
 
-    user = sqlalchemy.orm.relationship(
-        "User", foreign_keys=[userId], backref=sqlalchemy.orm.backref("beneficiaryFraudResults")
-    )
+    user = sa.orm.relationship("User", foreign_keys=[userId], backref=sa.orm.backref("beneficiaryFraudResults"))
 
-    eligibilityType = sqlalchemy.Column(
-        sqlalchemy.Enum(users_models.EligibilityType, create_constraint=False),
+    eligibilityType = sa.Column(
+        sa.Enum(users_models.EligibilityType, create_constraint=False),
         nullable=True,
     )
 
-    status = sqlalchemy.Column(sqlalchemy.Enum(FraudStatus, create_constraint=False))
+    status = sa.Column(sa.Enum(FraudStatus, create_constraint=False))
 
-    reason = sqlalchemy.Column(sqlalchemy.Text)
+    reason = sa.Column(sa.Text)
 
-    reason_codes = sqlalchemy.Column(
-        sqlalchemy.ARRAY(sqlalchemy.Enum(FraudReasonCode, create_constraint=False, native_enum=False)),
+    reason_codes = sa.Column(
+        sa.ARRAY(sa.Enum(FraudReasonCode, create_constraint=False, native_enum=False)),
         nullable=False,
         server_default="{}",
         default=[],
     )
 
-    dateCreated = sqlalchemy.Column(sqlalchemy.DateTime, nullable=False, server_default=sqlalchemy.func.now())
+    dateCreated = sa.Column(sa.DateTime, nullable=False, server_default=sa.func.now())
 
-    dateUpdated = sqlalchemy.Column(sqlalchemy.DateTime, nullable=True, onupdate=sqlalchemy.func.now())
+    dateUpdated = sa.Column(sa.DateTime, nullable=True, onupdate=sa.func.now())
 
 
 class BeneficiaryFraudReview(PcObject, Model):
     __tablename__ = "beneficiary_fraud_review"
 
-    userId = sqlalchemy.Column(sqlalchemy.BigInteger, sqlalchemy.ForeignKey("user.id"), index=True, nullable=False)
+    userId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=False)
 
-    user = sqlalchemy.orm.relationship(
-        "User", foreign_keys=[userId], backref=sqlalchemy.orm.backref("beneficiaryFraudReview", uselist=False)
+    user = sa.orm.relationship(
+        "User", foreign_keys=[userId], backref=sa.orm.backref("beneficiaryFraudReview", uselist=False)
     )
 
-    authorId = sqlalchemy.Column(sqlalchemy.BigInteger, sqlalchemy.ForeignKey("user.id"), index=True, nullable=False)
+    authorId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=False)
 
-    author = sqlalchemy.orm.relationship("User", foreign_keys=[authorId], backref="adminFraudReviews")
+    author = sa.orm.relationship("User", foreign_keys=[authorId], backref="adminFraudReviews")
 
-    review = sqlalchemy.Column(sqlalchemy.Enum(FraudReviewStatus, create_constraint=False))
+    review = sa.Column(sa.Enum(FraudReviewStatus, create_constraint=False))
 
-    dateReviewed = sqlalchemy.Column(sqlalchemy.DateTime, nullable=False, server_default=sqlalchemy.func.now())
+    dateReviewed = sa.Column(sa.DateTime, nullable=False, server_default=sa.func.now())
 
-    reason = sqlalchemy.Column(sqlalchemy.Text)
+    reason = sa.Column(sa.Text)
 
 
 @dataclasses.dataclass
