@@ -86,6 +86,34 @@ class ImportEducationalInstitutionTest:
         assert educational_deposit.amount == Decimal(5000)
 
     @freeze_time("2020-11-17 15:00:00")
+    def test_import_educational_institutions_and_deposits_giving_year_as_input(self, db_session):
+        # Given
+        educational_year = factories.EducationalYearFactory(
+            beginningDate=datetime(2020, 9, 1),
+            expirationDate=datetime(2021, 8, 30),
+        )
+        future_educational_year = factories.EducationalYearFactory(
+            beginningDate=datetime(2024, 9, 1),
+            expirationDate=datetime(2025, 8, 30),
+        )
+
+        educational_institution2 = factories.EducationalInstitutionFactory(institutionId="4790032L")
+        factories.EducationalDepositFactory(
+            educationalInstitution=educational_institution2,
+            educationalYear=educational_year,
+        )
+
+        # When
+        _process_educational_csv([{"UAICode": "4790032L", "depositAmount": 5000}], "EDUCATION_NATIONALE", "2024")
+
+        # Then it creates educational deposit for future year because we give year as input
+        educational_deposit = models.EducationalDeposit.query.filter(
+            models.EducationalDeposit.educationalInstitutionId == educational_institution2.id,
+            models.EducationalDeposit.educationalYearId == future_educational_year.adageId,
+        ).one()
+        assert educational_deposit.amount == Decimal(5000)
+
+    @freeze_time("2020-11-17 15:00:00")
     def test_stop_execution_when_no_educational_year_found(self):
         # When
         import_educational_institutions_and_deposits(
