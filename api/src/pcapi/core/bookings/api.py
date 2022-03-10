@@ -183,12 +183,11 @@ def _cancel_booking(
         booking.cancellationReason = reason
         stock.dnBookedQuantity -= booking.quantity
         repository.save(booking, stock)
+
     logger.info(
         "Booking has been cancelled",
-        extra={
-            "booking": booking.id,
-            "reason": str(reason),
-        },
+        extra={"booking_id": booking.id, "reason": str(reason)},
+        technical_message_id="booking.cancelled",
     )
 
     if booking.individualBooking is not None:
@@ -352,7 +351,8 @@ def mark_as_used(booking: Booking) -> None:
     validation.check_is_usable(booking)
     booking.mark_as_used()
     repository.save(booking)
-    logger.info("Booking was marked as used", extra={"bookingId": booking.id})
+
+    logger.info("Booking was marked as used", extra={"booking_id": booking.id}, technical_message_id="booking.used")
 
     if booking.individualBookingId is not None:
         update_external_user(booking.individualBooking.user)
@@ -410,7 +410,8 @@ def mark_as_unused(booking: Booking) -> None:
         finance_api.cancel_pricing(booking, finance_models.PricingLogReason.MARK_AS_UNUSED)
     booking.mark_as_unused_set_confirmed()
     repository.save(booking)
-    logger.info("Booking was marked as unused", extra={"booking": booking.id})
+
+    logger.info("Booking was marked as unused", extra={"booking_id": booking.id}, technical_message_id="booking.unused")
 
     if booking.individualBookingId is not None:
         update_external_user(booking.individualBooking.user)
