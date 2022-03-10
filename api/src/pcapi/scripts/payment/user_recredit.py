@@ -4,7 +4,7 @@ import logging
 from dateutil.relativedelta import relativedelta
 from sqlalchemy.orm import joinedload
 
-from pcapi.core.fraud.models import IDENTITY_CHECK_TYPES
+from pcapi.core.fraud import models as fraud_models
 from pcapi.core.mails.transactional.users.recredit_to_underage_beneficiary import (
     send_recredit_email_to_underage_beneficiary,
 )
@@ -22,16 +22,25 @@ RECREDIT_BATCH_SIZE = 1000
 
 
 def has_celebrated_birthday_since_registration(user: users_models.User) -> bool:
-    user_identity_fraud_check_registration_datetimes = [
-        fraud_check.source_data().get_registration_datetime()
+    user_identity_fraud_checks = [
+        fraud_check
         for fraud_check in user.beneficiaryFraudChecks
-        if fraud_check.type in IDENTITY_CHECK_TYPES
+        if fraud_check.type in fraud_models.IDENTITY_CHECK_TYPES
     ]
-    if not user_identity_fraud_check_registration_datetimes:
+    ordered_fraud_checks = sorted(user_identity_fraud_checks, key=lambda fraud_check: fraud_check.dateCreated)
+    if not ordered_fraud_checks:
         return False
-    user_identity_fraud_check_registration_datetimes.sort()
-    first_identity_fraud_check_registration_datetime = user_identity_fraud_check_registration_datetimes[0]
-    return first_identity_fraud_check_registration_datetime.date() < user.latest_birthday
+
+    first_fraud_check = ordered_fraud_checks[0]
+    try:
+        first_fraud_check_registration_datetime = first_fraud_check.source_data().get_registration_datetime()
+    except ValueError as e:  # This will happen for older Educonnect fraud checks that do not have registration date in their content
+        if first_fraud_check.type == fraud_models.FraudCheckType.EDUCONNECT:
+            first_fraud_check_registration_datetime = first_fraud_check.dateCreated
+        else:
+            raise e
+
+    return first_fraud_check_registration_datetime.date() < user.latest_birthday
 
 
 def can_be_recredited(user: users_models.User) -> bool:
@@ -43,6 +52,8 @@ def can_be_recredited(user: users_models.User) -> bool:
 
 
 def has_been_recredited(user: users_models.User) -> bool:
+    if user.deposit is None:
+        return False
     if len(user.deposit.recredits) == 0:
         return False
 
@@ -66,6 +77,7 @@ def recredit_underage_users() -> None:
     ]
 
     start_index = 0
+    total_users_recredited = 0
 
     while start_index < len(user_ids):
         users = (
@@ -91,6 +103,7 @@ def recredit_underage_users() -> None:
 
                 db.session.add(user)
                 db.session.add(recredit)
+                total_users_recredited += 1
 
         logger.info("Recredited %s underage users deposits", len(users_to_recredit))
 
@@ -100,3 +113,4 @@ def recredit_underage_users() -> None:
                 logger.error("Failed to send recredit email to: %s", user.email)
 
         start_index += RECREDIT_BATCH_SIZE
+    logger.info("Recredited %s users successfully", total_users_recredited)
