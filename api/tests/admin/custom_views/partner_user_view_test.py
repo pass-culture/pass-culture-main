@@ -160,6 +160,7 @@ class PartnerUserViewTest:
             user=user,
             type=fraud_models.FraudCheckType.USER_PROFILING,
             status=fraud_models.FraudCheckStatus.OK,
+            resultContent=fraud_factories.UserProfilingFraudDataFactory(risk_rating="trusted"),
         )
 
         client.with_session_auth(admin.email)
