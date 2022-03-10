@@ -41,14 +41,18 @@ const OffererItem = ({ offerer, isVenueCreationAvailable }) => {
             </Link>
           </li>
 
-          {nOffers && nOffers > 0 ? (
+          {nOffers !== 0 ? (
             <li className="count-offers-action">
               <Link
                 className="has-text-primary"
                 to={`/offres?structure=${offererId}`}
               >
                 <Icon svg="ico-offres-r" />
-                {pluralize(nOffers, 'offres')}
+                {
+                  // Count is negative if offerer has too much venues and
+                  // probably too much offers to count.
+                  nOffers > 0 ? pluralize(nOffers, 'offres') : `offres`
+                }
               </Link>
             </li>
           ) : (

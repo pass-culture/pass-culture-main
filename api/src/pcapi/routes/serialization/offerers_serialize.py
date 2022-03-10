@@ -214,7 +214,7 @@ class GetOfferersResponseModel(BaseModel):
     siren: Optional[str]
     isValidated: bool
     userHasAccess: bool
-    nOffers: int
+    nOffers: int  # possibly `-1` for offerers with too much offers.
     managedVenues: list[GetOfferersVenueResponseModel]
 
     _humanize_id = humanize_field("id")
