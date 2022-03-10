@@ -192,6 +192,8 @@ class JsonFormatter(logging.Formatter):
 
 
 def install_logging():
+    monkey_patch_logger_makeRecord()
+    monkey_patch_logger_log()
     if settings.IS_DEV and not settings.IS_RUNNING_TESTS:
         # JSON is hard to read, keep the default plain text logger.
         logging.basicConfig(level=settings.LOG_LEVEL)
@@ -205,8 +207,6 @@ def install_logging():
     if _internal_logger is not None:
         return
 
-    monkey_patch_logger_makeRecord()
-    monkey_patch_logger_log()
     handler = logging.StreamHandler(stream=sys.stdout)
     handler.setFormatter(JsonFormatter())
     handlers = [handler]
