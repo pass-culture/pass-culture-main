@@ -4,6 +4,7 @@ from pcapi.core import mails
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.bookings.repository import find_ongoing_bookings_by_stock
+from pcapi.core.mails.models.sendinblue_models import SendinblueTransactionalWithoutTemplateEmailData
 from pcapi.core.mails.transactional.bookings.booking_cancellation_by_beneficiary import (
     send_booking_cancellation_by_beneficiary_email,
 )
@@ -26,21 +27,21 @@ def send_booking_cancellation_emails_to_user_and_offerer(
         return send_booking_cancellation_by_beneficiary_to_pro_email(booking)
     if reason == BookingCancellationReasons.OFFERER:
         send_booking_cancellation_by_pro_to_beneficiary_email(booking)
-        return send_offerer_driven_cancellation_email_to_offerer(booking)
+        return send_booking_cancellation_confirmation_by_pro_to_pro_email(booking)
     if reason == BookingCancellationReasons.FRAUD:
         return send_booking_cancellation_by_beneficiary_to_pro_email(booking)
     return True
 
 
-def send_offerer_driven_cancellation_email_to_offerer(booking: Booking) -> bool:
+def send_booking_cancellation_confirmation_by_pro_to_pro_email(booking: Booking) -> bool:
     offerer_booking_email = booking.stock.offer.bookingEmail
     if not offerer_booking_email:
         return True
-    email = make_offerer_driven_cancellation_email_for_offerer(booking)
+    email = get_booking_cancellation_confirmation_by_pro_email_data(booking)
     return mails.send(recipients=[offerer_booking_email], data=email)
 
 
-def make_offerer_driven_cancellation_email_for_offerer(booking: Booking) -> dict:
+def get_booking_cancellation_confirmation_by_pro_email_data(booking: Booking) -> dict:
     stock_name = booking.stock.offer.name
     venue = booking.venue
     user_name = booking.userName
@@ -65,8 +66,8 @@ def make_offerer_driven_cancellation_email_for_offerer(booking: Booking) -> dict
         stock_name=stock_name,
         venue=venue,
     )
-    return {
-        "FromName": "pass Culture",
-        "Subject": email_subject,
-        "Html-part": email_html,
-    }
+
+    return SendinblueTransactionalWithoutTemplateEmailData(
+        subject=email_subject,
+        html_content=email_html,
+    )

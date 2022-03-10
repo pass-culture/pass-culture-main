@@ -3,7 +3,7 @@ import pytest
 import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.mails.transactional.bookings.booking_cancellation import (
-    send_offerer_driven_cancellation_email_to_offerer,
+    send_booking_cancellation_confirmation_by_pro_to_pro_email,
 )
 
 
@@ -18,7 +18,7 @@ class SendOffererDrivenCancellationEmailToOffererTest:
         )
 
         # When
-        send_offerer_driven_cancellation_email_to_offerer(booking)
+        send_booking_cancellation_confirmation_by_pro_to_pro_email(booking)
 
         # Then
         assert len(mails_testing.outbox) == 1  # test number of emails sent
