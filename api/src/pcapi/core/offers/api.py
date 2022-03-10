@@ -195,7 +195,12 @@ def create_offer(
     _complete_common_offer_fields(offer, offer_data, venue)
 
     repository.save(offer)
-    logger.info("Offer has been created", extra={"offer": offer.id, "venue": venue.id, "product": offer.productId})
+
+    logger.info(
+        "Offer has been created",
+        extra={"offer_id": offer.id, "venue_id": venue.id, "product_id": offer.productId},
+        technical_message_id="offer.created",
+    )
 
     update_external_pro(venue.bookingEmail)
 
@@ -323,7 +328,8 @@ def update_offer(
         offer.fieldsUpdated = list(set(offer.fieldsUpdated) | set(modifications))
 
     repository.save(offer)
-    logger.info("Offer has been updated", extra={"offer": offer.id})
+
+    logger.info("Offer has been updated", extra={"offer_id": offer.id}, technical_message_id="offer.updated")
     if product_has_been_updated:
         repository.save(offer.product)
         logger.info("Product has been updated", extra={"product": offer.product.id})
