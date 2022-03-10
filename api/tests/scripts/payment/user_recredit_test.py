@@ -32,7 +32,10 @@ class UserRecreditTest:
         )
         fraud_check_result_content = fraud_factories.UbbleContentFactory(registration_datetime=registration_datetime)
         fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user, resultContent=fraud_check_result_content, type=fraud_models.FraudCheckType.UBBLE
+            user=user,
+            resultContent=fraud_check_result_content,
+            type=fraud_models.FraudCheckType.UBBLE,
+            dateCreated=datetime.datetime(2021, 5, 1),
         )
         assert has_celebrated_birthday_since_registration(user) == expected_result
 
@@ -73,6 +76,30 @@ class UserRecreditTest:
             assert user.deposit.recredits[1].recreditType == payments_models.RecreditType.RECREDIT_17
             assert user.recreditAmountToShow == 30
             assert can_be_recredited(user) is False
+
+    def test_can_be_recredited_no_registration_datetime(self):
+        with freeze_time("2020-05-02"):
+            user = user_factories.UnderageBeneficiaryFactory(subscription_age=15, dateOfBirth=datetime.date(2005, 5, 1))
+            # I voluntarily don't use the EduconnectContentFactory to be allowed to omit registration_datetime
+            content = {
+                "birth_date": "2020-05-02",
+                "educonnect_id": "educonnect_id",
+                "first_name": "first_name",
+                "ine_hash": "ine_hash",
+                "last_name": "last_name",
+                "school_uai": "school_uai",
+                "student_level": "student_level",
+            }
+            fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
+                user=user,
+                type=fraud_models.FraudCheckType.EDUCONNECT,
+                status=fraud_models.FraudCheckStatus.OK,
+                resultContent={},
+                dateCreated=datetime.datetime(2020, 5, 1),  # first fraud check created
+            )
+            fraud_check.resultContent = content
+        with freeze_time("2022-05-02"):
+            assert can_be_recredited(user) is True
 
     def test_can_be_recredited_no_identity_fraud_check(self):
         user = user_factories.UserFactory(dateOfBirth=datetime.date(2005, 5, 1))
@@ -167,6 +194,7 @@ class UserRecreditTest:
             id_check_application_date = datetime.datetime(2019, 7, 31)  # Application date before birthday
 
             fraud_factories.BeneficiaryFraudCheckFactory(
+                dateCreated=datetime.datetime(2019, 12, 31),
                 user=user_15,
                 type=fraud_models.FraudCheckType.EDUCONNECT,
                 status=fraud_models.FraudCheckStatus.OK,
@@ -175,6 +203,7 @@ class UserRecreditTest:
                 ),
             )
             fraud_factories.BeneficiaryFraudCheckFactory(
+                dateCreated=datetime.datetime(2019, 12, 31),
                 user=user_16_not_recredited,
                 type=fraud_models.FraudCheckType.EDUCONNECT,
                 status=fraud_models.FraudCheckStatus.OK,
@@ -185,6 +214,7 @@ class UserRecreditTest:
                 ),
             )
             fraud_factories.BeneficiaryFraudCheckFactory(
+                dateCreated=datetime.datetime(2019, 12, 31),
                 user=user_16_already_recredited,
                 type=fraud_models.FraudCheckType.EDUCONNECT,
                 status=fraud_models.FraudCheckStatus.OK,
@@ -195,6 +225,7 @@ class UserRecreditTest:
                 ),
             )
             fraud_factories.BeneficiaryFraudCheckFactory(
+                dateCreated=datetime.datetime(2019, 12, 31),
                 user=user_17_not_recredited,
                 type=fraud_models.FraudCheckType.EDUCONNECT,
                 status=fraud_models.FraudCheckStatus.OK,
@@ -205,6 +236,7 @@ class UserRecreditTest:
                 ),
             )
             fraud_factories.BeneficiaryFraudCheckFactory(
+                dateCreated=datetime.datetime(2019, 12, 31),
                 user=user_17_only_recredited_at_16,
                 type=fraud_models.FraudCheckType.EDUCONNECT,
                 status=fraud_models.FraudCheckStatus.OK,
@@ -215,6 +247,7 @@ class UserRecreditTest:
                 ),
             )
             fraud_factories.BeneficiaryFraudCheckFactory(
+                dateCreated=datetime.datetime(2019, 12, 31),
                 user=user_17_already_recredited,
                 type=fraud_models.FraudCheckType.EDUCONNECT,
                 status=fraud_models.FraudCheckStatus.OK,
@@ -225,6 +258,7 @@ class UserRecreditTest:
                 ),
             )
             fraud_factories.BeneficiaryFraudCheckFactory(
+                dateCreated=datetime.datetime(2019, 12, 31),
                 user=user_17_already_recredited_twice,
                 type=fraud_models.FraudCheckType.EDUCONNECT,
                 status=fraud_models.FraudCheckStatus.OK,
