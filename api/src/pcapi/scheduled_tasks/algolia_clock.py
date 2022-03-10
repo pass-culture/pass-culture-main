@@ -13,6 +13,9 @@ from pcapi.utils.blueprint import Blueprint
 
 blueprint = Blueprint(__name__, __name__)
 
+# FIXME (jsdupuis, 2022-03-15) : every @cron in this module functions are to be deleted
+#  when cron will be managed by the infrastructure rather than by the app
+
 
 @cron_context
 @log_cron_with_transaction
@@ -80,6 +83,7 @@ def index_venues_in_error():
     search.index_venues_in_queue(from_error_queue=True)
 
 
+# FIXME (jsdupuis, 2022-03-10) : to be deleted when cron will be managed by the infrastructure rather than by the app
 @blueprint.cli.command("algolia_clock")
 def algolia_clock():
     set_tag("pcapi.app_type", "algolia_clock")
