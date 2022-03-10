@@ -2,7 +2,7 @@ version: "3.7"
 
 services:
   postgres:
-    image: gangstead/postgis:13-3.1-arm
+    image: circleci/postgres:12.3-postgis
     container_name: pc-postgres
     volumes:
       - postgres_data:/var/lib/postgresql/data
@@ -15,8 +15,10 @@ services:
     command: postgres -c logging_collector=on -c log_destination=stderr -c log_min_duration_statement=0 -c log_statement=all -c log_duration=on
 
   postgres-test:
-    image: gangstead/postgis:13-3.1-arm
+    image: circleci/postgres:12.3-postgis
     container_name: pc-postgres-pytest
+    volumes:
+      - postgres_data_test:/var/lib/postgresql-test/data
     environment:
       - POSTGRES_DB=pass_culture
       - POSTGRES_USER=pytest
@@ -35,7 +37,7 @@ services:
     container_name: pc-flask
     command: ["./start-api-when-database-is-ready.sh"]
     volumes:
-      - appcode-native-osx-sync:/opt/services/flaskapp/src:delegated
+      - ./api:/opt/services/flaskapp/src
     env_file:
       - env_file
     networks:
@@ -84,7 +86,6 @@ networks:
     driver: bridge
 
 volumes:
-  redis_data:
-  appcode-native-osx-sync:
-    external: true
   postgres_data:
+  postgres_data_test:
+  redis_data:
