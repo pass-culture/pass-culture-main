@@ -34,9 +34,10 @@ const ConfirmDialog = ({
   return (
     <DialogBox
       extraClassNames={styles['confirm-dialog']}
-      hasCloseButton={false}
+      hasCloseButton
       initialFocusRef={buttonRef}
       labelledBy={title}
+      onDismiss={onCancel}
     >
       <Icon className={styles['confirm-dialog-icon']} />
       <div className={styles['confirm-dialog-title']}>
