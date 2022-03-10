@@ -32,14 +32,13 @@
 
   &-actions {
     display: flex;
+    flex-wrap: wrap;
     margin-top: rem(48px);
+    gap: rem(24px);
 
     button {
-      padding: 0 rem(80px);
-
-      &:last-child {
-        margin-left: rem(24px);
-      }
+      min-width: rem(150px);
+      padding: 0 rem(40px);
     }
   }
 }
