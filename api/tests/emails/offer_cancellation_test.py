@@ -8,7 +8,7 @@ import pytest
 
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.mails.transactional.bookings.booking_cancellation import (
-    make_offerer_driven_cancellation_email_for_offerer,
+    get_booking_cancellation_confirmation_by_pro_email_data,
 )
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.users import factories as users_factories
@@ -16,7 +16,7 @@ from pcapi.core.users import factories as users_factories
 
 class MakeOffererDrivenCancellationEmailForOffererTest:
     @pytest.mark.usefixtures("db_session")
-    def test_make_offerer_driven_cancellation_email_for_offerer_event_when_no_other_booking(self, app):
+    def test_offer_cancellation_confirmation_by_offerer_event_when_no_other_booking(self, app):
         # Given
         beginning_datetime = datetime(2019, 7, 20, 12, 0, 0, tzinfo=timezone.utc)
         booking_limit_datetime = beginning_datetime - timedelta(hours=1)
@@ -28,11 +28,11 @@ class MakeOffererDrivenCancellationEmailForOffererTest:
 
         # When
         with patch("pcapi.core.bookings.repository.find_ongoing_bookings_by_stock", return_value=[]):
-            email = make_offerer_driven_cancellation_email_for_offerer(booking)
+            email = get_booking_cancellation_confirmation_by_pro_email_data(booking)
 
         # Then
         venue = stock.offer.venue
-        email_html = BeautifulSoup(email["Html-part"], "html.parser")
+        email_html = BeautifulSoup(email.html_content, "html.parser")
         html_action = str(email_html.find("p", {"id": "action"}))
         html_recap = str(email_html.find("p", {"id": "recap"}))
         assert "Vous venez d'annuler" in html_action
@@ -46,7 +46,7 @@ class MakeOffererDrivenCancellationEmailForOffererTest:
         assert venue.postalCode in html_recap
 
         assert (
-            email["Subject"]
+            email.subject
             == f"Confirmation de votre annulation de réservation pour {stock.offer.name}, proposé par {venue.name}"
         )
         # FIXME (tgabin, 2022-01-27): test below should work but html_no_recap return None
@@ -54,7 +54,7 @@ class MakeOffererDrivenCancellationEmailForOffererTest:
         # assert "Aucune réservation" in html_no_recap
 
     @pytest.mark.usefixtures("db_session")
-    def test_make_offerer_driven_cancellation_email_for_offerer_event_when_other_booking(self, app):
+    def test_offer_cancellation_confirmation_by_offerer_event_when_other_booking(self, app):
         # Given
         other_beneficiary = users_factories.BeneficiaryGrant18Factory()
         stock = offers_factories.EventStockFactory(
@@ -67,10 +67,10 @@ class MakeOffererDrivenCancellationEmailForOffererTest:
 
         # When
         with patch("pcapi.core.bookings.repository.find_ongoing_bookings_by_stock", return_value=[booking2]):
-            email = make_offerer_driven_cancellation_email_for_offerer(booking1)
+            email = get_booking_cancellation_confirmation_by_pro_email_data(booking1)
 
         # Then
-        email_html = BeautifulSoup(email["Html-part"], "html.parser")
+        email_html = BeautifulSoup(email.html_content, "html.parser")
         html_recap_table = email_html.find("table", {"id": "recap-table"}).text
         assert "Prénom" in html_recap_table
         assert "Nom" in html_recap_table
@@ -81,7 +81,7 @@ class MakeOffererDrivenCancellationEmailForOffererTest:
         assert booking2.token in html_recap_table
 
     @pytest.mark.usefixtures("db_session")
-    def test_make_offerer_driven_cancellation_email_for_offerer_thing_and_already_existing_booking(self, app):
+    def test_offer_cancellation_confirmation_by_offerer_thing_and_already_existing_booking(self, app):
         # Given
         stock = offers_factories.ThingStockFactory(price=0, quantity=10)
         booking = bookings_factories.IndividualBookingFactory(stock=stock, token="12346")
@@ -91,11 +91,11 @@ class MakeOffererDrivenCancellationEmailForOffererTest:
 
         # When
         with patch("pcapi.core.bookings.repository.find_ongoing_bookings_by_stock", return_value=ongoing_bookings):
-            email = make_offerer_driven_cancellation_email_for_offerer(booking)
+            email = get_booking_cancellation_confirmation_by_pro_email_data(booking)
 
         # Then
         venue = stock.offer.venue
-        email_html = BeautifulSoup(email["Html-part"], "html.parser")
+        email_html = BeautifulSoup(email.html_content, "html.parser")
         html_action = str(email_html.find("p", {"id": "action"}))
         html_recap = email_html.find("p", {"id": "recap"}).text
         html_recap_table = email_html.find("table", {"id": "recap-table"}).text
@@ -112,6 +112,6 @@ class MakeOffererDrivenCancellationEmailForOffererTest:
         assert booking.token not in html_recap_table
         assert booking2.token not in html_recap_table
         assert (
-            email["Subject"]
+            email.subject
             == f"Confirmation de votre annulation de réservation pour {stock.offer.product.name}, proposé par {venue.name}"
         )
