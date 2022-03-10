@@ -46,6 +46,10 @@ export const VenueImageUploaderModal = ({
   const [editedImage, setEditedImage] = useState('')
   const [isUploading, setIsUploading] = useState(false)
   const [editorInitialScale, setEditorInitialScale] = useState(1)
+  const [editorInitialPosition, setEditorInitialPosition] = useState({
+    x: 0.5,
+    y: 0.5,
+  })
   const notification = useNotification()
 
   const onSetImage = useCallback(
@@ -57,8 +61,8 @@ export const VenueImageUploaderModal = ({
 
   const onEditedImageSave = useCallback(
     (dataUrl, croppedRect) => {
-      setEditedImage(dataUrl)
       setCroppingRect(croppedRect)
+      setEditedImage(dataUrl)
     },
     [setEditedImage, setCroppingRect]
   )
@@ -126,10 +130,12 @@ export const VenueImageUploaderModal = ({
         <VenueImageEdit
           credit={credit}
           image={image}
+          initialPosition={editorInitialPosition}
           initialScale={editorInitialScale}
           onEditedImageSave={onEditedImageSave}
           onReplaceImage={onReplaceImage}
           onSetCredit={setCredit}
+          saveInitialPosition={setEditorInitialPosition}
           saveInitialScale={setEditorInitialScale}
         />
       ) : (
