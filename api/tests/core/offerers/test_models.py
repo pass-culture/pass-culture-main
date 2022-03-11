@@ -86,27 +86,12 @@ class OffererDepartementCodeSQLExpressionTest:
 
 
 @pytest.mark.usefixtures("db_session")
-class OffererNValidatedOffersTest:
-    def test_offerer_with_validated_offers(self):
-        offerer = offers_factories.OffererFactory()
-        offers_factories.OfferFactory.create_batch(
-            size=2, validation=OfferValidationStatus.APPROVED, venue__managingOfferer=offerer
-        )
-
-        assert offerer.nApprovedOffers == 2
-
-    def test_offerer_without_offer(self):
-        offerer = offers_factories.OffererFactory()
-
-        assert offerer.nApprovedOffers == 0
-
-    def test_offerer_without_validated_offer(self):
-        offerer = offers_factories.OffererFactory()
-        offers_factories.OfferFactory(validation=OfferValidationStatus.DRAFT, venue__managingOfferer=offerer)
-        offers_factories.OfferFactory(validation=OfferValidationStatus.REJECTED, venue__managingOfferer=offerer)
-        offers_factories.OfferFactory(validation=OfferValidationStatus.PENDING, venue__managingOfferer=offerer)
-
-        assert offerer.nApprovedOffers == 0
+class VenueNApprovedOffersTest:
+    def test_venue_n_approved_offers(self):
+        venue = offers_factories.VenueFactory()
+        offers_factories.OfferFactory(venue=venue, validation=OfferValidationStatus.APPROVED)
+        offers_factories.OfferFactory(venue=venue, validation=OfferValidationStatus.DRAFT)
+        assert venue.nApprovedOffers == 1
 
 
 @pytest.mark.usefixtures("db_session")

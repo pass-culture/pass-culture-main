@@ -468,13 +468,6 @@ class Offerer(
 
         return self.bankInformation.applicationId
 
-    @property
-    def nApprovedOffers(self):
-        n_approved_offers = 0
-        for venue in self.managedVenues:
-            n_approved_offers += venue.nApprovedOffers
-        return n_approved_offers
-
     @hybrid_property
     def departementCode(self):
         return PostalCode(self.postalCode).get_departement_code()
