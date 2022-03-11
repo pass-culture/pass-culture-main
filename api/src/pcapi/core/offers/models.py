@@ -474,8 +474,11 @@ class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ValidationMixin, 
         return self.subcategory.online_offline_platform == subcategories.OnlineOfflinePlatformChoices.OFFLINE.value
 
     @property
-    def max_price(self) -> float:
-        return max(stock.price for stock in self.stocks if not stock.isSoftDeleted)
+    def max_price(self) -> float:  # used in validation rule, do not remove
+        try:
+            return max(stock.price for stock in self.stocks if not stock.isSoftDeleted)
+        except ValueError:  # if no non-deleted stocks
+            return 0
 
 
 class ActivationCode(PcObject, Model):
