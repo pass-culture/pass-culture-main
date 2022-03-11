@@ -39,8 +39,8 @@ def test_access_by_pro(client):
     assert len(offerers) == 3
     names = [o["name"] for o in offerers]
     assert names == ["offreur A", "offreur B", "offreur C"]
-    venue_ids = [v["id"] for v in offerers[0]["managedVenues"]]
-    assert venue_ids == [humanize(venue1.id), humanize(venue2.id)]
+    venue_ids = {v["id"] for v in offerers[0]["managedVenues"]}
+    assert venue_ids == {humanize(venue1.id), humanize(venue2.id)}
     assert offerers[0]["userHasAccess"]
     assert offerers[1]["userHasAccess"]
     assert not offerers[2]["userHasAccess"]
