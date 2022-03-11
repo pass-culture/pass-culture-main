@@ -544,21 +544,10 @@ describe('test page : VenueEdition', () => {
     })
 
     describe('image uploader', () => {
-      const storeOverrides = {
-        features: {
-          list: [
-            {
-              isActive: true,
-              nameKey: 'PRO_ENABLE_UPLOAD_VENUE_IMAGE',
-            },
-          ],
-        },
-      }
-
       it('hides when venue is not permanent', async () => {
         venue.isPermanent = false
 
-        await renderVenueEdition({ props, storeOverrides })
+        await renderVenueEdition({ props })
 
         expect(
           screen.queryByTestId('image-venue-uploader-section')
@@ -568,7 +557,7 @@ describe('test page : VenueEdition', () => {
       it('displays when feature flag is enabled and venue is permanent', async () => {
         venue.isPermanent = true
 
-        await renderVenueEdition({ props, storeOverrides })
+        await renderVenueEdition({ props })
 
         expect(
           screen.queryByTestId('image-venue-uploader-section')
