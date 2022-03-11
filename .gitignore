@@ -38,5 +38,5 @@ pro-packed-staging/
 tests/result_output.txt
 
 # misc
-.vscode/
+/.vscode/
 .dccache
