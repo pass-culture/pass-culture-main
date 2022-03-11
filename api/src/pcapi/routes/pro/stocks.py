@@ -7,6 +7,7 @@ from sqlalchemy.orm.exc import MultipleResultsFound as SQLAMultipleResultsFound
 
 from pcapi.core.educational import api as educational_api
 from pcapi.core.educational import exceptions as educational_exceptions
+from pcapi.core.educational import repository as educational_repository
 from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import Venue
@@ -194,9 +195,13 @@ def edit_educational_stock(
         raise ApiErrors({"offerer": ["Aucune structure trouvée à partir de cette offre"]}, status_code=404)
     check_user_has_access_to_offerer(current_user, offerer.id)
 
+    collective_stock = educational_repository.get_collective_stock_from_stock_id(stock.id)
+
     try:
         stock = offers_api.edit_educational_stock(stock, body.dict(exclude_unset=True))
-
+        if collective_stock:
+            # FIXME (rpaoloni, 2022-03-09): raise exception if not collective_stock after the migration
+            educational_api.edit_collective_stock(stock, body.dict(exclude_unset=True))
         return stock_serialize.StockEditionResponseModel.from_orm(stock)
     except educational_exceptions.OfferIsNotEducational:
         raise ApiErrors(
