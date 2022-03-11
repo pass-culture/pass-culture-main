@@ -34,11 +34,15 @@ def has_celebrated_birthday_since_registration(user: users_models.User) -> bool:
     first_fraud_check = ordered_fraud_checks[0]
     try:
         first_fraud_check_registration_datetime = first_fraud_check.source_data().get_registration_datetime()
-    except ValueError as e:  # This will happen for older Educonnect fraud checks that do not have registration date in their content
+    except ValueError:  # This will happen for older Educonnect fraud checks that do not have registration date in their content
         if first_fraud_check.type == fraud_models.FraudCheckType.EDUCONNECT:
             first_fraud_check_registration_datetime = first_fraud_check.dateCreated
         else:
-            raise e
+            logger.warning("Could not get registration date for fraud check %s", first_fraud_check.id)
+            return False
+
+    if first_fraud_check_registration_datetime is None:
+        first_fraud_check_registration_datetime = first_fraud_check.dateCreated
 
     return first_fraud_check_registration_datetime.date() < user.latest_birthday
 
