@@ -142,7 +142,7 @@ class Returns200Test:
             educationalBooking__educationalYear=educational_year,
             educationalBooking__educationalRedactor=redactor,
             status=BookingStatus.PENDING,
-            educationalBooking__confirmationLimitDate=datetime(2021, 10, 15, 10),
+            educationalBooking__confirmationLimitDate=datetime(2021, 10, 15, 15),
         )
         CollectiveBookingFactory(
             collectiveStock__price=Decimal(20.00),
@@ -150,6 +150,7 @@ class Returns200Test:
             educationalYear=educational_year,
             status=CollectiveBookingStatus.PENDING,
             bookingId=booking.id,
+            confirmationLimitDate=datetime(2021, 10, 15, 15),
         )
 
         client = client.with_eac_token()
