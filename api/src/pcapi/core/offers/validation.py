@@ -13,6 +13,7 @@ from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.educational.models import CollectiveOffer
 from pcapi.core.educational.models import CollectiveOfferTemplate
+from pcapi.core.educational.models import CollectiveStock
 import pcapi.core.finance.repository as finance_repository
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
@@ -180,7 +181,7 @@ def check_stock_is_updatable(stock: Stock) -> None:
     check_event_expiration(stock)
 
 
-def check_event_expiration(stock):
+def check_event_expiration(stock: Union[CollectiveStock, Stock]):
     if stock.isEventExpired:
         api_errors = ApiErrors()
         api_errors.add_error("global", "Les événements passés ne sont pas modifiables")
@@ -340,7 +341,7 @@ def check_stock_booking_status(booking: Booking) -> Union[None, Exception]:
 
 
 def check_booking_limit_datetime(
-    stock: Stock, beginning: Optional[datetime], booking_limit_datetime: Optional[datetime]
+    stock: Union[CollectiveStock, Stock], beginning: Optional[datetime], booking_limit_datetime: Optional[datetime]
 ) -> None:
     beginning = copy.deepcopy(beginning)
     booking_limit_datetime = copy.deepcopy(booking_limit_datetime)

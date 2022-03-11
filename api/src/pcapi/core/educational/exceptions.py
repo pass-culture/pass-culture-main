@@ -1,4 +1,5 @@
 from pcapi.domain.client_exceptions import ClientError
+from pcapi.models.api_errors import ApiErrors
 
 
 class EducationalInstitutionUnknown(ClientError):
@@ -74,3 +75,13 @@ class OfferIsNotShowcase(Exception):
 
 class CollectiveStockAlreadyExists(Exception):
     pass
+
+
+class StockDoesNotExist(ApiErrors):
+    status_code = 400
+
+
+class CollectiveOfferStockBookedAndBookingNotPending(Exception):
+    def __init__(self, status, booking_id):
+        self.booking_status = status
+        super().__init__()

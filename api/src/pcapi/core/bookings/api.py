@@ -19,6 +19,7 @@ from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.educational.models import CollectiveStock
 from pcapi.core.educational.models import EducationalBooking
 from pcapi.core.educational.models import EducationalBookingStatus
+from pcapi.core.educational.repository import get_and_lock_collective_stock
 import pcapi.core.finance.api as finance_api
 import pcapi.core.finance.models as finance_models
 import pcapi.core.finance.repository as finance_repository
@@ -199,9 +200,7 @@ def _cancel_collective_booking(
     reason: CollectiveBookingCancellationReasons,
 ) -> bool:
     with transaction():
-        collective_stock = offers_repository.get_and_lock_collective_stock(
-            stock_id=collective_booking.collectiveStock.stockId
-        )
+        collective_stock = get_and_lock_collective_stock(stock_id=collective_booking.collectiveStock.id)
         db.session.refresh(collective_booking)
         old_status = collective_booking.status
         try:

@@ -6,6 +6,7 @@ from typing import Union
 
 from pydantic.error_wrappers import ValidationError
 from sqlalchemy.orm import joinedload
+from sqlalchemy.sql.elements import not_
 
 from pcapi import settings
 from pcapi.connectors.api_adage import AdageException
@@ -31,6 +32,7 @@ from pcapi.core.educational.models import EducationalInstitution
 from pcapi.core.educational.models import EducationalRedactor
 from pcapi.core.educational.models import EducationalYear
 from pcapi.core.educational.models import Ministry
+from pcapi.core.educational.repository import get_and_lock_collective_stock
 from pcapi.core.educational.utils import compute_educational_booking_cancellation_limit_date
 from pcapi.core.mails.models.sendinblue_models import SendinblueTransactionalEmailData
 from pcapi.core.mails.transactional.educational.eac_new_booking_to_pro import send_eac_new_booking_email_to_pro
@@ -39,6 +41,7 @@ from pcapi.core.mails.transactional.sendinblue_template_ids import Transactional
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import repository as offers_repository
 from pcapi.core.offers import validation as offer_validation
+from pcapi.core.offers.utils import as_utc_without_timezone
 from pcapi.core.users.models import User
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
@@ -110,9 +113,11 @@ def book_educational_offer(redactor_informations: RedactorInformation, stock_id:
 
         repository.save(booking)
 
-        create_collective_booking_with_collective_stock(
-            stock_id, booking.id, educational_institution, educational_year, redactor
-        )
+        collective_stock = db.session.query(CollectiveStock.id).filter_by(stockId=stock_id).one_or_none()
+        if collective_stock:
+            create_collective_booking_with_collective_stock(
+                collective_stock.id, booking.id, educational_institution, educational_year, redactor
+            )
 
     logger.info(
         "Redactor booked an educational offer",
@@ -163,12 +168,7 @@ def create_collective_booking_with_collective_stock(
     redactor: EducationalRedactor,
 ) -> Optional[CollectiveBooking]:
     with transaction():
-        collective_stock = offers_repository.get_and_lock_collective_stock(stock_id=stock_id)
-
-        # TODO: remove this once this code is on production
-        # and all data has been migrated to the new models
-        if not collective_stock:
-            return None
+        collective_stock = get_and_lock_collective_stock(stock_id=stock_id)
 
         validation.check_collective_stock_is_bookable(collective_stock)
 
@@ -530,6 +530,81 @@ def notify_educational_redactor_on_collective_offer_or_stock_edit(
                 "data": data.dict(),
             },
         )
+
+
+def edit_collective_stock(stock: CollectiveStock, stock_data: dict) -> CollectiveStock:
+    from pcapi.core.offers.api import _update_educational_booking_cancellation_limit_date
+
+    beginning = stock_data.get("beginningDatetime")
+    booking_limit_datetime = stock_data.get("bookingLimitDatetime")
+    beginning = as_utc_without_timezone(beginning) if beginning else None
+    booking_limit_datetime = as_utc_without_timezone(booking_limit_datetime) if booking_limit_datetime else None
+
+    updatable_fields = _extract_updatable_fields_from_stock_data(stock, stock_data, beginning, booking_limit_datetime)
+
+    offer_validation.check_booking_limit_datetime(stock, beginning, booking_limit_datetime)
+
+    collective_stock_unique_booking = CollectiveBooking.query.filter(
+        CollectiveBooking.collectiveStockId == stock.id,
+        not_(CollectiveBooking.status == CollectiveBookingStatus.CANCELLED),
+    ).one_or_none()
+
+    if collective_stock_unique_booking:
+        validation.check_collective_booking_status_pending(collective_stock_unique_booking)
+
+        collective_stock_unique_booking.confirmationLimitDate = updatable_fields["bookingLimitDatetime"]
+
+        if beginning:
+            _update_educational_booking_cancellation_limit_date(collective_stock_unique_booking, beginning)
+
+        if stock_data.get("price"):
+            collective_stock_unique_booking.amount = stock_data.get("price")
+
+        # db.session.add(collective_stock_unique_booking)
+    validation.check_collective_stock_is_editable(stock)
+
+    with transaction():
+        stock = get_and_lock_collective_stock(stock_id=stock.id)
+        for attribute, new_value in updatable_fields.items():
+            if new_value is not None and getattr(stock, attribute) != new_value:
+                setattr(stock, attribute, new_value)
+        db.session.add(stock)
+        db.session.commit()
+
+    logger.info("Stock has been updated", extra={"stock": stock.id})
+
+    # FIXME (rpaoloni, 2022-03-09): Uncomment for when pc-13428 is merged
+    # search.async_index_offer_ids([stock.collectiveOfferId])
+
+    if FeatureToggle.ENABLE_NEW_COLLECTIVE_MODEL.is_active():
+        notify_educational_redactor_on_educational_offer_or_stock_edit(
+            stock.offerId,
+            list(stock_data.keys()),
+        )
+
+    db.session.refresh(stock)
+    return stock
+
+
+def _extract_updatable_fields_from_stock_data(
+    stock: CollectiveStock, stock_data: dict, beginning: datetime, booking_limit_datetime: datetime
+) -> dict:
+    # if booking_limit_datetime is provided but null, set it to default value which is event datetime
+    if "bookingLimitDatetime" in stock_data.keys() and booking_limit_datetime is None:
+        booking_limit_datetime = beginning if beginning else stock.beginningDatetime
+
+    if "bookingLimitDatetime" not in stock_data.keys():
+        booking_limit_datetime = stock.bookingLimitDatetime
+
+    updatable_fields = {
+        "beginningDatetime": beginning,
+        "bookingLimitDatetime": booking_limit_datetime,
+        "price": stock_data.get("price"),
+        "numberOfTickets": stock_data.get("numberOfTickets"),
+        "priceDetail": stock_data.get("educationalPriceDetail"),
+    }
+
+    return updatable_fields
 
 
 def create_collective_stock(

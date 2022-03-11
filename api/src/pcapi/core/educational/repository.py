@@ -16,6 +16,7 @@ from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational.exceptions import EducationalDepositNotFound
 from pcapi.core.educational.exceptions import EducationalYearNotFound
+from pcapi.core.educational.exceptions import StockDoesNotExist
 from pcapi.core.educational.models import CollectiveBooking
 from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.offerers import models as offerers_models
@@ -266,3 +267,31 @@ def find_expiring_collective_bookings_query() -> Query:
 
 def find_expiring_collective_booking_ids_from_query(query: Query) -> Query:
     return query.order_by(CollectiveBooking.id).with_entities(CollectiveBooking.id)
+
+
+def get_and_lock_collective_stock(stock_id: int) -> educational_models.CollectiveStock:
+    """Returns `stock_id` stock with a FOR UPDATE lock
+    Raises StockDoesNotExist if no stock is found.
+    WARNING: MAKE SURE YOU FREE THE LOCK (with COMMIT or ROLLBACK) and don't hold it longer than
+    strictly necessary.
+    """
+    # Use `with_for_update()` to make sure we lock the stock while perfoming
+    # the booking checks and update the `dnBookedQuantity`
+    # This is required to prevent bugs due to concurent acces
+    # Also call `populate_existing()` to make sure we don't use something
+    # older from the SQLAlchemy's session.
+    stock = (
+        educational_models.CollectiveStock.query.filter_by(id=stock_id)
+        .populate_existing()
+        .with_for_update()
+        .one_or_none()
+    )
+    if not stock:
+        raise StockDoesNotExist()
+    return stock
+
+
+def get_collective_stock_from_stock_id(stock_id: Union[int, str]) -> educational_models.CollectiveStock:
+    return educational_models.CollectiveStock.query.filter(
+        educational_models.CollectiveStock.stockId == stock_id
+    ).one_or_none()
