@@ -65,7 +65,6 @@ class FeatureToggle(enum.Enum):
     )
     ID_CHECK_ADDRESS_AUTOCOMPLETION = "Autocomplétion de l'adresse lors du parcours IDCheck"
     PRICE_BOOKINGS = "Active la valorisation des réservations"
-    PRO_ENABLE_UPLOAD_VENUE_IMAGE = "Active la fonctionnalité d'upload des images des lieux permanents"
     SYNCHRONIZE_ALLOCINE = "Permettre la synchronisation journalière avec Allociné"
     SYNCHRONIZE_TITELIVE_PRODUCTS = "Permettre limport journalier du référentiel des livres"
     SYNCHRONIZE_TITELIVE_PRODUCTS_DESCRIPTION = "Permettre limport journalier des résumés des livres"
@@ -130,7 +129,6 @@ FEATURES_DISABLED_BY_DEFAULT = (
     FeatureToggle.FORCE_PHONE_VALIDATION,
     FeatureToggle.GENERATE_CASHFLOWS_BY_CRON,
     FeatureToggle.ID_CHECK_ADDRESS_AUTOCOMPLETION,
-    FeatureToggle.PRO_ENABLE_UPLOAD_VENUE_IMAGE,
     FeatureToggle.USER_PROFILING_FRAUD_CHECK,
     FeatureToggle.SHOW_INVOICES_ON_PRO_PORTAL,
     FeatureToggle.DISABLE_ENTERPRISE_API,
