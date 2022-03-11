@@ -899,10 +899,10 @@ def generate_invoices():
                     "exc": str(exc),
                 },
             )
-    generate_invoice_file()
+    generate_invoice_file(datetime.date.today())
 
 
-def generate_invoice_file(invoice_date: datetime.date = datetime.date.today()) -> pathlib.Path:
+def generate_invoice_file(invoice_date: datetime.date) -> pathlib.Path:
     header = [
         "Identifiant de la BU",
         "Date du justificatif",
