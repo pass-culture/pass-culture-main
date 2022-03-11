@@ -8,7 +8,13 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 class VenuesTest:
     def test_get_venue(self, client):
-        venue = offerer_factories.VenueFactory(isPermanent=True)
+        venue = offerer_factories.VenueFactory(
+            isPermanent=True,
+            bannerMeta={
+                "image_credit": "Wikimedia Commons CC By",
+                "author_id": 1,
+            },
+        )
 
         response = client.get(f"/native/v1/venue/{venue.id}")
 
@@ -40,6 +46,7 @@ class VenuesTest:
                 "visualDisability": venue.visualDisabilityCompliant,
             },
             "bannerUrl": venue.bannerUrl,
+            "bannerMeta": {"image_credit": venue.bannerMeta["image_credit"]},
         }
 
     def test_get_non_permanent_venue(self, client):
