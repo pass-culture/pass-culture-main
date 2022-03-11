@@ -888,7 +888,7 @@ def test_genererate_invoice_file():
         date=datetime.datetime(2022, 1, 1),
     )
 
-    path = api.generate_invoice_file()
+    path = api.generate_invoice_file(datetime.date.today())
     with zipfile.ZipFile(path) as zfile:
         with zfile.open("invoices.csv") as csv_bytefile:
             csv_textfile = io.TextIOWrapper(csv_bytefile)

@@ -20,6 +20,7 @@ def generate_invoices():
     finance_api.generate_invoices()
 
 
+# FIXME (dbaty, 2022-03-11): do we really need this command?
 @blueprint.cli.command("generate_invoice_file")
 @click.option("-d", "--date", type=click.DateTime(formats=["%Y-%m-%d"]), default=str(datetime.date.today()))
 def generate_invoice_file(date):
