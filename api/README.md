@@ -55,7 +55,7 @@ Une base de données de test et un cache redis sont nécessaires à l'exécution
 docker run -d --name postgres -p 5434:5432 \
 --env-file ../env_file \
 -v postgres_local_data:/var/lib/postgresql/data \
-cimg/postgres:12.3-postgis
+cimg/postgres:12.9-postgis
 
 docker run -d --name redis -p 6379:6379 \
     -v redis_local_data:/data \
