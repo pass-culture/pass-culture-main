@@ -644,6 +644,7 @@ def test_public_api(client, app):
                     "properties": {
                         "accessibility": {"$ref": "#/components/schemas/VenueAccessibilityModel"},
                         "address": {"nullable": True, "title": "Address", "type": "string"},
+                        "bannerMeta": {"anyOf": [{"$ref": "#/components/schemas/BannerMetaModel"}], "nullable": True},
                         "bannerUrl": {"nullable": True, "title": "Bannerurl", "type": "string"},
                         "city": {"nullable": True, "title": "City", "type": "string"},
                         "contact": {
@@ -1181,6 +1182,19 @@ def test_public_api(client, app):
                     "description": "An enumeration.",
                     "enum": ["browser_computer", "browser_mobile", "agent_mobile"],
                     "title": "AgentType",
+                },
+                "BannerMetaModel": {
+                    "properties": {
+                        "image_credit": {
+                            "maxLength": 255,
+                            "minLength": 1,
+                            "nullable": True,
+                            "title": "Image " "Credit",
+                            "type": "string",
+                        }
+                    },
+                    "title": "BannerMetaModel",
+                    "type": "object",
                 },
                 "UserProfilingSessionIdResponse": {
                     "properties": {"sessionId": {"title": "Sessionid", "type": "string"}},

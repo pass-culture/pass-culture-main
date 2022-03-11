@@ -1,5 +1,7 @@
 import typing
 
+from typing_extensions import TypedDict
+
 from pcapi.core.offerers import models as offerers_models
 from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import base
@@ -12,7 +14,12 @@ class VenueAccessibilityModel(BaseModel):
     visualDisability: typing.Optional[bool]
 
 
+class BannerMetaModel(TypedDict, total=False):
+    image_credit: typing.Optional[base.VenueImageCredit]
+
+
 class VenueResponse(base.BaseVenueResponse):
     id: int
     accessibility: VenueAccessibilityModel
     venueTypeCode: typing.Optional[offerers_models.VenueTypeCodeKey]
+    bannerMeta: typing.Optional[BannerMetaModel]
