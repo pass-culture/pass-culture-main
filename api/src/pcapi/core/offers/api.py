@@ -487,7 +487,6 @@ def batch_update_collective_offers_template(query, update_fields):
     number_of_collective_offers_template_to_update = len(collective_offer_template_ids)
     batch_size = 1000
 
-    # update collective offers templates
     for current_start_index in range(0, number_of_collective_offers_template_to_update, batch_size):
         collective_offer_template_ids_batch = collective_offer_template_ids[
             current_start_index : min(current_start_index + batch_size, number_of_collective_offers_template_to_update)
