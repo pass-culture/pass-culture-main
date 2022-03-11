@@ -173,7 +173,12 @@ def create_educational_offer(
 @spectree_serialize(response_model=None, on_success_status=204, api=blueprint.pro_private_schema)  # type: ignore
 def patch_offers_active_status(body: offers_serialize.PatchOfferActiveStatusBodyModel) -> None:
     query = offers_repository.get_offers_by_ids(current_user, body.ids)
+    collective_query = offers_repository.get_collective_offers_by_offer_ids(current_user, body.ids)
+    collective_template_query = offers_repository.get_collective_offers_template_by_offer_ids(current_user, body.ids)
     offers_api.batch_update_offers(query, {"isActive": body.is_active})
+    offers_api.batch_update_collective_offers(collective_query, {"isActive": body.is_active})
+    if collective_template_query is not None:
+        offers_api.batch_update_collective_offers_template(collective_template_query, {"isActive": body.is_active})
 
 
 @private_api.route("/offers/all-active-status", methods=["PATCH"])
