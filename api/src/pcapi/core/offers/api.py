@@ -32,6 +32,7 @@ from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import models as educational_models
 import pcapi.core.educational.adage_backends as adage_client
 from pcapi.core.educational.models import CollectiveOffer
+from pcapi.core.educational.models import CollectiveOfferTemplate
 from pcapi.core.educational.utils import compute_educational_booking_cancellation_limit_date
 from pcapi.core.mails.transactional.bookings.booking_cancellation_by_pro_to_beneficiary import (
     send_booking_cancellation_by_pro_to_beneficiary_email,
@@ -454,6 +455,51 @@ def batch_update_offers(query, update_fields):
         db.session.commit()
 
         search.async_index_offer_ids(offer_ids_batch)
+
+
+def batch_update_collective_offers(query, update_fields):
+    collective_offer_ids_tuples = query.filter(
+        CollectiveOffer.validation == OfferValidationStatus.APPROVED
+    ).with_entities(CollectiveOffer.id)
+
+    collective_offer_ids = [offer_id for offer_id, in collective_offer_ids_tuples]
+    number_of_collective_offers_to_update = len(collective_offer_ids)
+    batch_size = 1000
+
+    for current_start_index in range(0, number_of_collective_offers_to_update, batch_size):
+        collective_offer_ids_batch = collective_offer_ids[
+            current_start_index : min(current_start_index + batch_size, number_of_collective_offers_to_update)
+        ]
+
+        query_to_update = CollectiveOffer.query.filter(CollectiveOffer.id.in_(collective_offer_ids_batch))
+        query_to_update.update(update_fields, synchronize_session=False)
+        db.session.commit()
+
+        search.async_index_collective_offer_ids(collective_offer_ids_batch)
+
+
+def batch_update_collective_offers_template(query, update_fields):
+    collective_offer_ids_tuples = query.filter(
+        CollectiveOffer.validation == OfferValidationStatus.APPROVED
+    ).with_entities(CollectiveOfferTemplate.id)
+
+    collective_offer_template_ids = [offer_id for offer_id, in collective_offer_ids_tuples]
+    number_of_collective_offers_template_to_update = len(collective_offer_template_ids)
+    batch_size = 1000
+
+    # update collective offers templates
+    for current_start_index in range(0, number_of_collective_offers_template_to_update, batch_size):
+        collective_offer_template_ids_batch = collective_offer_template_ids[
+            current_start_index : min(current_start_index + batch_size, number_of_collective_offers_template_to_update)
+        ]
+
+        query_to_update = CollectiveOfferTemplate.query.filter(
+            CollectiveOfferTemplate.id.in_(collective_offer_template_ids_batch)
+        )
+        query_to_update.update(update_fields, synchronize_session=False)
+        db.session.commit()
+
+        search.async_index_collective_offer_template_ids(collective_offer_template_ids_batch)
 
 
 def _create_stock(

@@ -21,6 +21,7 @@ from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.categories import subcategories
 from pcapi.core.educational.models import CollectiveOffer
+from pcapi.core.educational.models import CollectiveOfferTemplate
 from pcapi.core.educational.models import CollectiveStock
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import Venue
@@ -101,6 +102,26 @@ def get_offers_by_ids(user: User, offer_ids: list[int]) -> Query:
             and_(UserOfferer.userId == user.id, UserOfferer.validationToken.is_(None))
         )
     query = query.filter(Offer.id.in_(offer_ids))
+    return query
+
+
+def get_collective_offers_by_offer_ids(user: User, offer_ids: list[int]) -> Query:
+    query = CollectiveOffer.query
+    if not user.has_admin_role:
+        query = query.join(Venue, Offerer, UserOfferer).filter(
+            and_(UserOfferer.userId == user.id, UserOfferer.validationToken.is_(None))
+        )
+    query = query.filter(CollectiveOffer.offerId.in_(offer_ids))
+    return query
+
+
+def get_collective_offers_template_by_offer_ids(user: User, offer_ids: list[int]) -> Query:
+    query = CollectiveOfferTemplate.query
+    if not user.has_admin_role:
+        query = query.join(Venue, Offerer, UserOfferer).filter(
+            and_(UserOfferer.userId == user.id, UserOfferer.validationToken.is_(None))
+        )
+    query = query.filter(CollectiveOfferTemplate.offerId.in_(offer_ids))
     return query
 
 
