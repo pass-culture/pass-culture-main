@@ -371,9 +371,15 @@ def update_educational_offer(
 
 
 def batch_update_offers(query, update_fields):
-    offer_ids_tuples = query.filter(Offer.validation == OfferValidationStatus.APPROVED).with_entities(Offer.id)
+    offer_ids, venue_ids = zip(
+        *query.filter(Offer.validation == OfferValidationStatus.APPROVED).with_entities(Offer.id, Offer.venueId)
+    )
+    venue_ids = sorted(set(venue_ids))
+    logger.info(
+        "Batch update of offers",
+        extra={"updated_fields": update_fields, "nb_offers": len(offer_ids), "venue_ids": venue_ids},
+    )
 
-    offer_ids = [offer_id for offer_id, in offer_ids_tuples]
     number_of_offers_to_update = len(offer_ids)
     batch_size = 1000
     for current_start_index in range(0, number_of_offers_to_update, batch_size):
