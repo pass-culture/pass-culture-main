@@ -210,6 +210,133 @@ def get_offers_by_filters(
     return query
 
 
+def get_collective_offers_by_filters(
+    user_id: int,
+    user_is_admin: bool,
+    offerer_id: Optional[int] = None,
+    status: Optional[str] = None,
+    venue_id: Optional[int] = None,
+    category_id: Optional[str] = None,
+    name_keywords_or_isbn: Optional[str] = None,
+    period_beginning_date: Optional[datetime] = None,
+    period_ending_date: Optional[datetime] = None,
+) -> Query:
+    query = CollectiveOffer.query.filter(CollectiveOffer.validation != OfferValidationStatus.DRAFT)
+
+    if not user_is_admin:
+        query = (
+            query.join(Venue)
+            .join(Offerer)
+            .join(UserOfferer)
+            .filter(and_(UserOfferer.userId == user_id, UserOfferer.validationToken.is_(None)))
+        )
+    if offerer_id is not None:
+        if user_is_admin:
+            query = query.join(Venue)
+        query = query.filter(Venue.managingOffererId == offerer_id)
+    if venue_id is not None:
+        query = query.filter(CollectiveOffer.venueId == venue_id)
+    if category_id is not None:
+        requested_subcategories = [
+            subcategory.id for subcategory in subcategories.ALL_SUBCATEGORIES if subcategory.category_id == category_id
+        ]
+        query = query.filter(CollectiveOffer.subcategoryId.in_(requested_subcategories))
+    if name_keywords_or_isbn is not None:
+        search = name_keywords_or_isbn
+        if len(name_keywords_or_isbn) > 3:
+            search = "%{}%".format(name_keywords_or_isbn)
+        # We should really be using `union` instead of `union_all` here since we don't want duplicates but
+        # 1. it's unlikely that a book will contain its ISBN in its name
+        # 2. we need to migrate Offer.extraData to JSONB in order to use `union`
+        query = query.filter(CollectiveOffer.name.ilike(search))
+    if status is not None:
+        query = query.filter(CollectiveOffer.status == OfferStatus[status].name)
+    if period_beginning_date is not None or period_ending_date is not None:
+        subquery = (
+            CollectiveStock.query.with_entities(CollectiveStock.collectiveOfferId)
+            .distinct(CollectiveStock.collectiveOfferId)
+            .join(CollectiveOffer)
+            .join(Venue)
+        )
+        if period_beginning_date is not None:
+            subquery = subquery.filter(
+                func.timezone(
+                    Venue.timezone,
+                    func.timezone("UTC", CollectiveStock.beginningDatetime),
+                )
+                >= period_beginning_date
+            )
+        if period_ending_date is not None:
+            subquery = subquery.filter(
+                func.timezone(
+                    Venue.timezone,
+                    func.timezone("UTC", CollectiveStock.beginningDatetime),
+                )
+                <= period_ending_date
+            )
+        if venue_id is not None:
+            subquery = subquery.filter(CollectiveOffer.venueId == venue_id)
+        elif offerer_id is not None:
+            subquery = subquery.filter(Venue.managingOffererId == offerer_id)
+        elif not user_is_admin:
+            subquery = (
+                subquery.join(Offerer)
+                .join(UserOfferer)
+                .filter(and_(UserOfferer.userId == user_id, UserOfferer.validationToken.is_(None)))
+            )
+        q2 = subquery.subquery()
+        query = query.join(q2, q2.c.collectiveOfferId == CollectiveOffer.id)
+    return query
+
+
+def get_collective_offers_template_by_filters(
+    user_id: int,
+    user_is_admin: bool,
+    offerer_id: Optional[int] = None,
+    status: Optional[str] = None,
+    venue_id: Optional[int] = None,
+    category_id: Optional[str] = None,
+    name_keywords_or_isbn: Optional[str] = None,
+    period_beginning_date: Optional[datetime] = None,
+    period_ending_date: Optional[datetime] = None,
+) -> Optional[Query]:
+    if period_beginning_date is not None or period_ending_date is not None:
+        return None
+
+    query = CollectiveOfferTemplate.query
+
+    if not user_is_admin:
+        query = (
+            query.join(Venue)
+            .join(Offerer)
+            .join(UserOfferer)
+            .filter(and_(UserOfferer.userId == user_id, UserOfferer.validationToken.is_(None)))
+        )
+    if offerer_id is not None:
+        if user_is_admin:
+            query = query.join(Venue)
+        query = query.filter(Venue.managingOffererId == offerer_id)
+    if venue_id is not None:
+        query = query.filter(CollectiveOfferTemplate.venueId == venue_id)
+    if category_id is not None:
+        requested_subcategories = [
+            subcategory.id for subcategory in subcategories.ALL_SUBCATEGORIES if subcategory.category_id == category_id
+        ]
+        query = query.filter(CollectiveOfferTemplate.subcategoryId.in_(requested_subcategories))
+    if name_keywords_or_isbn is not None:
+        search = name_keywords_or_isbn
+        if len(name_keywords_or_isbn) > 3:
+            search = "%{}%".format(name_keywords_or_isbn)
+        # We should really be using `union` instead of `union_all` here since we don't want duplicates but
+        # 1. it's unlikely that a book will contain its ISBN in its name
+        # 2. we need to migrate Offer.extraData to JSONB in order to use `union`
+        query = query.filter(CollectiveOfferTemplate.name.ilike(search))
+    if status is not None:
+        query = query.filter(CollectiveOfferTemplate.status == OfferStatus[status].name)
+
+    return query
+
+
 def _filter_by_creation_mode(query: Query, creation_mode: str) -> Query:
     if creation_mode == MANUAL_CREATION_MODE:
         query = query.filter(Offer.lastProviderId.is_(None))
