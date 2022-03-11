@@ -8,7 +8,7 @@ interface ISubmitButtonProps {
   className: string
   disabled?: boolean
   isLoading: boolean
-  ref?: ForwardedRef<HTMLButtonElement | null>
+  buttonRef?: ForwardedRef<HTMLButtonElement | null>
   onClick?(): void
 }
 
@@ -17,7 +17,7 @@ const SubmitButton: FC<ISubmitButtonProps> = ({
   className,
   disabled = false,
   isLoading = false,
-  ref,
+  buttonRef,
   onClick,
 }) => (
   <button
@@ -29,7 +29,7 @@ const SubmitButton: FC<ISubmitButtonProps> = ({
     )}
     disabled={disabled || isLoading}
     onClick={onClick}
-    ref={ref}
+    ref={buttonRef}
     type="submit"
   >
     {isLoading ? <SpinnerIcon /> : children}
