@@ -2,6 +2,7 @@ import copy
 import dataclasses
 from datetime import datetime
 from datetime import timedelta
+import logging
 import os
 import pathlib
 from unittest import mock
@@ -1736,7 +1737,7 @@ class UpdateOfferTest:
 
 class BatchUpdateOffersTest:
     @mock.patch("pcapi.core.search.async_index_offer_ids")
-    def test_activate(self, mocked_async_index_offer_ids):
+    def test_activate(self, mocked_async_index_offer_ids, caplog):
         offer1 = offer_factories.OfferFactory(isActive=False)
         offer2 = offer_factories.OfferFactory(isActive=False)
         offer3 = offer_factories.OfferFactory(isActive=False)
@@ -1748,7 +1749,8 @@ class BatchUpdateOffersTest:
         query = offer_models.Offer.query.filter(
             offer_models.Offer.id.in_({offer1.id, offer2.id, rejected_offer.id, pending_offer.id})
         )
-        api.batch_update_offers(query, {"isActive": True})
+        with caplog.at_level(logging.INFO):
+            api.batch_update_offers(query, {"isActive": True})
 
         assert offer_models.Offer.query.get(offer1.id).isActive
         assert offer_models.Offer.query.get(offer2.id).isActive
@@ -1758,17 +1760,38 @@ class BatchUpdateOffersTest:
         mocked_async_index_offer_ids.assert_called_once()
         assert set(mocked_async_index_offer_ids.call_args[0][0]) == set([offer1.id, offer2.id])
 
-    def test_deactivate(self):
+        assert len(caplog.records) == 1
+        record = caplog.records[0]
+
+        assert record.message == "Batch update of offers"
+        assert record.extra == {
+            "nb_offers": 2,
+            "updated_fields": {"isActive": True},
+            "venue_ids": [offer1.venueId, offer2.venueId],
+        }
+
+    def test_deactivate(self, caplog):
         offer1 = offer_factories.OfferFactory()
         offer2 = offer_factories.OfferFactory()
         offer3 = offer_factories.OfferFactory()
 
         query = offer_models.Offer.query.filter(offer_models.Offer.id.in_({offer1.id, offer2.id}))
-        api.batch_update_offers(query, {"isActive": False})
+        with caplog.at_level(logging.INFO):
+            api.batch_update_offers(query, {"isActive": False})
 
         assert not offer_models.Offer.query.get(offer1.id).isActive
         assert not offer_models.Offer.query.get(offer2.id).isActive
         assert offer_models.Offer.query.get(offer3.id).isActive
+
+        assert len(caplog.records) == 1
+        record = caplog.records[0]
+
+        assert record.message == "Batch update of offers"
+        assert record.extra == {
+            "nb_offers": 2,
+            "updated_fields": {"isActive": False},
+            "venue_ids": [offer1.venueId, offer2.venueId],
+        }
 
 
 class UpdateStockIdAtProvidersTest:
