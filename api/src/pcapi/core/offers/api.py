@@ -780,10 +780,11 @@ def edit_educational_stock(stock: Stock, stock_data: dict) -> Stock:
 
     search.async_index_offer_ids([stock.offerId])
 
-    educational_api.notify_educational_redactor_on_educational_offer_or_stock_edit(
-        stock.offerId,
-        list(stock_data.keys()),
-    )
+    if not FeatureToggle.ENABLE_NEW_COLLECTIVE_MODEL.is_active():
+        educational_api.notify_educational_redactor_on_educational_offer_or_stock_edit(
+            stock.offerId,
+            list(stock_data.keys()),
+        )
 
     db.session.refresh(stock)
     return stock
@@ -811,7 +812,7 @@ def _extract_updatable_fields_from_stock_data(
 
 
 def _update_educational_booking_cancellation_limit_date(
-    booking: Booking, new_beginning_datetime: datetime.datetime
+    booking: Union[Booking, educational_models.CollectiveBooking], new_beginning_datetime: datetime.datetime
 ) -> None:
     booking.cancellationLimitDate = compute_educational_booking_cancellation_limit_date(
         new_beginning_datetime, datetime.datetime.utcnow()
