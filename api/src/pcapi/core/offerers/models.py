@@ -258,12 +258,10 @@ class Venue(PcObject, Model, HasThumbMixin, HasAddressMixin, ProvidableMixin, Ne
         return self.bankInformation and self.bankInformation.status == BankInformationStatus.ACCEPTED
 
     @property
-    def nApprovedOffers(self) -> int:
+    def nApprovedOffers(self) -> int:  # used in validation rule, do not remove
         from pcapi.core.offers.models import OfferValidationStatus
 
-        n_approved_offers = 0
-        n_approved_offers += len([offer for offer in self.offers if offer.validation == OfferValidationStatus.APPROVED])
-        return n_approved_offers
+        return len([offer for offer in self.offers if offer.validation == OfferValidationStatus.APPROVED])
 
     @property
     def isBusinessUnitMainVenue(self) -> bool:
