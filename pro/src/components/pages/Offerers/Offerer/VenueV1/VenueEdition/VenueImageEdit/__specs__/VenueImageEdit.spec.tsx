@@ -21,17 +21,7 @@ const defaultProps = {
 
 describe('venue image edit', () => {
   it('closes the modal on cancel button click', () => {
-    const storeOverrides = {
-      features: {
-        list: [
-          {
-            isActive: false,
-            nameKey: 'PRO_ENABLE_UPLOAD_VENUE_IMAGE',
-          },
-        ],
-      },
-    }
-    const store = configureTestStore(storeOverrides)
+    const store = configureTestStore()
     const { getByText } = render(
       <Provider store={store}>
         <VenueImageEdit {...defaultProps} />
