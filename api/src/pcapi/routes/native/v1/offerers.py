@@ -36,4 +36,5 @@ def get_venue(venue_id: int) -> serializers.VenueResponse:
             "visualDisability": venue.visualDisabilityCompliant,
         },
         bannerUrl=venue.bannerUrl,
+        bannerMeta=venue.bannerMeta,
     )
