@@ -124,7 +124,7 @@ class GetVenueManagingOffererResponseModel(BaseModel):
 
 
 class BannerMetaModel(TypedDict, total=False):
-    image_credit: Optional[str]
+    image_credit: Optional[base.VenueImageCredit]
 
 
 class GetVenueResponseModel(base.BaseVenueResponse):
@@ -246,7 +246,7 @@ class VenueListQueryModel(BaseModel):
 
 class VenueBannerContentModel(BaseModel):
     content: pydantic.conbytes(min_length=2, max_length=VENUE_BANNER_MAX_SIZE)  # type: ignore
-    image_credit: Optional[pydantic.constr(strip_whitespace=True, min_length=1, max_length=255)]  # type: ignore
+    image_credit: Optional[base.VenueImageCredit]  # type: ignore
 
     # cropping parameters must be a % (between 0 and 1) of the original
     # bottom right corner and the original height

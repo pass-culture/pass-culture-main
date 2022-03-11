@@ -37,6 +37,8 @@ class VenueContactModel(BaseModel):
             raise ValueError(f"numéro de téléphone invalide: {phone_number}")
 
 
+VenueImageCredit = pydantic.constr(strip_whitespace=True, min_length=1, max_length=255)
+
 VenueDescription = pydantic.constr(max_length=1000, strip_whitespace=True)
 
 
