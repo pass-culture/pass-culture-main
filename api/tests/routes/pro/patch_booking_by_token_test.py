@@ -1,5 +1,3 @@
-import urllib.parse
-
 import pytest
 
 import pcapi.core.bookings.factories as bookings_factories
@@ -46,24 +44,6 @@ class Returns204Test:
 
             url = f"/bookings/token/{booking.token.lower()}"
             response = client.with_session_auth("pro@example.com").patch(url)
-
-            assert response.status_code == 204
-            booking = Booking.query.one()
-            assert booking.status is BookingStatus.USED
-
-        # FIXME: what is the purpose of this test? Are we testing that
-        # Flask knows how to URL-decode parameters?
-        def expect_booking_to_be_used_with_special_char_in_url(self, client):
-            booking = bookings_factories.IndividualBookingFactory(
-                token="ABCDEF", individualBooking__user__email="user+plus@example.com"
-            )
-            pro_user = users_factories.ProFactory(email="pro@example.com")
-            offers_factories.UserOffererFactory(user=pro_user, offerer=booking.offerer)
-
-            quoted_email = urllib.parse.quote("user+plus@example.com")
-            url = f"/bookings/token/{booking.token}?email={quoted_email}"
-            client = client.with_session_auth("pro@example.com")
-            response = client.patch(url)
 
             assert response.status_code == 204
             booking = Booking.query.one()
