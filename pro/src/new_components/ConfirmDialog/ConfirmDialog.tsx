@@ -49,10 +49,10 @@ const ConfirmDialog = ({
           {cancelText}
         </button>
         <SubmitButton
+          buttonRef={buttonRef}
           className="primary-button"
           isLoading={isLoading}
           onClick={onConfirm}
-          ref={buttonRef}
         >
           {confirmText}
         </SubmitButton>
