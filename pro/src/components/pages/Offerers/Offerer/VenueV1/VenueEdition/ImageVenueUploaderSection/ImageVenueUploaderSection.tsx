@@ -1,7 +1,5 @@
 import React from 'react'
 
-import useActiveFeature from 'components/hooks/useActiveFeature'
-
 import ButtonEditImage from '../ButtonEditImage'
 import { ButtonImageDelete } from '../ButtonImageDelete'
 import ButtonPreviewImage from '../ButtonPreviewImage'
@@ -30,11 +28,6 @@ export const ImageVenueUploaderSection = ({
   onImageUpload,
   onDeleteImage,
 }: ImageVenueUploaderSectionProps): JSX.Element => {
-  // @TODO: remove this commit with PC-13132
-  const shouldDisplayImageVenueDeletion = useActiveFeature(
-    'PRO_ENABLE_UPLOAD_VENUE_IMAGE'
-  )
-
   return (
     <section
       className={
@@ -64,12 +57,10 @@ export const ImageVenueUploaderSection = ({
               venueImage={venueImage}
             />
             <ButtonPreviewImage venueImage={venueImage} />
-            {shouldDisplayImageVenueDeletion && (
-              <ButtonImageDelete
-                onDeleteImage={onDeleteImage}
-                venueId={venueId}
-              />
-            )}
+            <ButtonImageDelete
+              onDeleteImage={onDeleteImage}
+              venueId={venueId}
+            />
           </div>
         </div>
       ) : (
