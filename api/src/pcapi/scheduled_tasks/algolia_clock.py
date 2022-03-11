@@ -14,8 +14,6 @@ from pcapi.utils.blueprint import Blueprint
 blueprint = Blueprint(__name__, __name__)
 
 
-# FIXME (dbaty, 2021-06-16): rename the file and the cron (and the
-# name of the pod).
 @cron_context
 @log_cron_with_transaction
 def index_offers_in_algolia_by_offer():
