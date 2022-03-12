@@ -37,7 +37,8 @@
     "debt:check:changed": "debt-collector check -c ./.debt-collector/config.js -s master",
     "debt:check:all": "debt-collector check -c ./.debt-collector/config.js",
     "debt:compare": "debt-collector compare -c ./.debt-collector/config.js --revision master --output-html",
-    "debt:walk": "debt-collector walk -c ./.debt-collector/config.js -n 10"
+    "debt:walk": "debt-collector walk -c ./.debt-collector/config.js -n 10",
+    "new:component": "hygen new component"
   },
   "lint-staged": {
     "./public/**/*.svg": "svgo",
