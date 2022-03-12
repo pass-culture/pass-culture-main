@@ -1,14 +1,16 @@
-import PropTypes from 'prop-types'
+import cn from 'classnames'
 import React, { useCallback } from 'react'
 import { useDispatch } from 'react-redux'
 import { NavLink, useHistory } from 'react-router-dom'
 import { reinitializeData } from 'redux-saga-data'
 
+import useCurrentUser from 'components/hooks/useCurrentUser'
 import { signout } from 'repository/pcapi/pcapi'
 import { resetIsInitialized } from 'store/user/actions'
 
 import Logo from '../Logo'
 
+import { STYLEGUIDE_ACTIVE } from './_constants'
 import { ReactComponent as BookingsSvg } from './assets/bookings.svg'
 import { ReactComponent as CounterSvg } from './assets/counter.svg'
 import { ReactComponent as HomeSvg } from './assets/home.svg'
@@ -16,10 +18,13 @@ import { ReactComponent as OffersSvg } from './assets/offers.svg'
 import { ReactComponent as RefundsSvg } from './assets/refunds.svg'
 import { ReactComponent as SignoutSvg } from './assets/signout.svg'
 import { ReactComponent as StyleguideSvg } from './assets/styleguide.svg'
+import styles from './Header.module.scss'
 
-const Header = ({ isStyleguideActive, isUserAdmin }) => {
+const Header = (): JSX.Element => {
   const dispatch = useDispatch()
   const history = useHistory()
+  const { currentUser } = useCurrentUser()
+  const isUserAdmin = currentUser.isAdmin
 
   const onSignoutClick = useCallback(() => {
     signout().then(() => {
@@ -30,15 +35,15 @@ const Header = ({ isStyleguideActive, isUserAdmin }) => {
   }, [dispatch, history])
 
   return (
-    <header className="menu-v2">
+    <header className={cn(styles['menu-v2'])}>
       <nav>
-        <div className="nav-brand">
-          <Logo className="nav-item" isUserAdmin={isUserAdmin} />
+        <div className={cn(styles['nav-brand'])}>
+          <Logo className={cn(styles['nav-item'])} isUserAdmin={isUserAdmin} />
         </div>
 
-        <div className="nav-menu">
+        <div className={cn(styles['nav-menu'])}>
           <NavLink
-            className="nav-item"
+            className={cn(styles['nav-item'])}
             role="menuitem"
             to={isUserAdmin ? '/structures' : '/accueil'}
           >
@@ -46,23 +51,35 @@ const Header = ({ isStyleguideActive, isUserAdmin }) => {
             Accueil
           </NavLink>
 
-          <NavLink className="nav-item" role="menuitem" to="/guichet">
+          <NavLink
+            className={cn(styles['nav-item'])}
+            role="menuitem"
+            to="/guichet"
+          >
             <CounterSvg aria-hidden />
             Guichet
           </NavLink>
 
-          <NavLink className="nav-item" role="menuitem" to="/offres">
+          <NavLink
+            className={cn(styles['nav-item'])}
+            role="menuitem"
+            to="/offres"
+          >
             <OffersSvg aria-hidden />
             Offres
           </NavLink>
 
-          <NavLink className="nav-item" role="menuitem" to="/reservations">
+          <NavLink
+            className={cn(styles['nav-item'])}
+            role="menuitem"
+            to="/reservations"
+          >
             <BookingsSvg aria-hidden />
             Réservations
           </NavLink>
 
           <NavLink
-            className="nav-item"
+            className={cn(styles['nav-item'])}
             role="menuitem"
             to="/remboursements/justificatifs"
           >
@@ -72,9 +89,9 @@ const Header = ({ isStyleguideActive, isUserAdmin }) => {
 
           <div className="separator" />
 
-          {isStyleguideActive && (
+          {STYLEGUIDE_ACTIVE && (
             <NavLink
-              className="nav-item icon-only"
+              className={cn(styles['nav-item'], styles['icon-only'])}
               data-testid="styleguide"
               role="menuitem"
               to="/styleguide"
@@ -84,7 +101,7 @@ const Header = ({ isStyleguideActive, isUserAdmin }) => {
           )}
 
           <button
-            className="nav-item icon-only"
+            className={cn(styles['nav-item'], styles['icon-only'])}
             onClick={onSignoutClick}
             role="menuitem"
             type="button"
@@ -95,11 +112,6 @@ const Header = ({ isStyleguideActive, isUserAdmin }) => {
       </nav>
     </header>
   )
-}
-
-Header.propTypes = {
-  isStyleguideActive: PropTypes.bool.isRequired,
-  isUserAdmin: PropTypes.bool.isRequired,
 }
 
 export default Header

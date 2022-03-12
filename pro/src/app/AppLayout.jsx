@@ -4,7 +4,7 @@ import React from 'react'
 import { NavLink } from 'react-router-dom'
 import ReactTooltip from 'react-tooltip'
 
-import HeaderContainer from 'components/layout/Header/HeaderContainer'
+import Header from 'components/layout/Header'
 import Icon from 'components/layout/Icon'
 import NotificationContainer from 'components/layout/Notification/NotificationContainer'
 import TutorialDialogContainer from 'components/layout/Tutorial/TutorialDialogContainer'
@@ -26,7 +26,7 @@ const AppLayout = props => {
 
   return (
     <>
-      {!fullscreen && <HeaderContainer />}
+      {!fullscreen && <Header />}
       <ReactTooltip
         className="flex-center items-center"
         delayHide={500}

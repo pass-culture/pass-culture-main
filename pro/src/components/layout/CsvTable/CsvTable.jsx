@@ -1,7 +1,8 @@
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 
-import HeaderContainer from '../Header/HeaderContainer'
+import Header from 'components/layout/Header'
+
 import PageTitle from '../PageTitle/PageTitle'
 import Spinner from '../Spinner'
 
@@ -42,7 +43,7 @@ class CsvTable extends PureComponent {
     return (
       <>
         <PageTitle title="Liste de vos remboursements" />
-        <HeaderContainer />
+        <Header />
         {isLoading && (
           <div id="spinner-container">
             <Spinner />
