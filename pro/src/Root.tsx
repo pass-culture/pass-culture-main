@@ -7,18 +7,21 @@ import AppLayout from 'app/AppLayout'
 import NotFound from 'components/pages/Errors/NotFound/NotFound'
 import FeaturedRoute from 'components/router/FeaturedRoute'
 import NavigationLogger from 'components/router/NavigationLogger'
+import { routes, routesWithMain, IRouteData, RedirectLogin } from 'routes'
 import configureStore from 'store'
-import routes, { routesWithMain } from 'utils/routes_map'
 
 const { store } = configureStore()
 
-const Root = () => {
+const Root = (): JSX.Element => {
   return (
     <Provider store={store}>
       <BrowserRouter>
         <NavigationLogger />
         <AppContainer>
           <Switch>
+            <Route exact path="/">
+              <RedirectLogin />
+            </Route>
             <Redirect
               from="/offres/:offerId([A-Z0-9]+)/edition"
               to="/offre/:offerId([A-Z0-9]+)/individuel/edition"
@@ -27,30 +30,30 @@ const Root = () => {
               from="/offre/:offerId([A-Z0-9]+)/scolaire/edition"
               to="/offre/:offerId([A-Z0-9]+)/collectif/edition"
             />
-            {routes.map(route => {
+            {routes.map((routeData: IRouteData) => {
               return (
                 <FeaturedRoute
-                  exact={route.exact}
-                  featureName={route.featureName}
-                  key={route.path}
-                  path={route.path}
+                  exact={routeData.exact}
+                  featureName={routeData.featureName}
+                  key={routeData.path as string}
+                  path={routeData.path}
                 >
                   <AppLayout
-                    layoutConfig={route.meta && route.meta.layoutConfig}
+                    layoutConfig={routeData.meta && routeData.meta.layoutConfig}
                   >
-                    <route.component />
+                    <routeData.component />
                   </AppLayout>
                 </FeaturedRoute>
               )
             })}
 
-            {routesWithMain.map(route => {
+            {routesWithMain.map((routeData: IRouteData) => {
               // first props, last overrides
               return (
                 <FeaturedRoute
-                  {...route}
-                  exact={route.exact}
-                  key={route.path}
+                  {...routeData}
+                  exact={routeData.exact}
+                  key={routeData.path as string}
                 />
               )
             })}
