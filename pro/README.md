@@ -57,11 +57,11 @@ Vous trouverez une documentation générale ainsi que des liens vers les différ
 
 ## Dette technique
 
-Nous utilisons une petite librairie faite sur-mesure pour monitorer la dette technique. 
+Nous utilisons une bibliotèque faite sur-mesure pour monitorer la dette technique.
 
 voir la documentation ici : https://github.com/gael-boyenval/debt-collector
 
-4 commandes pré-établies sont à disposition : 
+4 commandes pré-établies sont à disposition :
 
 ```
 yarn debt:check:changed
@@ -69,6 +69,8 @@ yarn debt:check:all
 yarn debt:compare
 yarn debt:walk
 ```
+
+Pour plus de details sur sont utilisations sur le portail-pro, vous pouvez consulter la section [debt-collector](./.debt-collector/README.md).
 
 ### 1) yarn debt:check:changed
 
@@ -89,8 +91,8 @@ Vérifie chaque tag de release, et produit un rapport html complet avec un histo
 
 ### options
 
-De nombreuse options de filtrages sont disponible en ligne de commande. 
-référez-vous à la [documentation](https://github.com/gael-boyenval/debt-collector) de l'outil pour cela, ou à l'aide du CLI : 
+De nombreuse options de filtrages sont disponible en ligne de commande.
+référez-vous à la [documentation](https://github.com/gael-boyenval/debt-collector) de l'outil pour cela, ou à l'aide du CLI :
 
 ```
 yarn debt-collector check --help
