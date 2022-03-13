@@ -17,7 +17,6 @@ const App = ({ children, className, small }: IAppProps): JSX.Element => (
 )
 
 App.Header = AppHeader
-App.ContentCenter = AppContentCenter
-App.FullScreen = AppContentFullScreen
+App.Content = AppContentCenter
 
 export default App
