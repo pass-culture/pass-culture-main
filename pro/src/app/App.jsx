@@ -5,7 +5,7 @@ import { matchPath } from 'react-router'
 
 import useCurrentUser from 'components/hooks/useCurrentUser'
 import Spinner from 'components/layout/Spinner'
-import routes, { routesWithMain } from 'utils/routes_map'
+import { routes, routesWithMain } from 'routes'
 
 import RedirectToMaintenance from './RedirectToMaintenance'
 
