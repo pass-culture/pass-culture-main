@@ -1,13 +1,15 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
 import ButtonDownloadCSV from 'new_components/ButtonDownloadCSV'
-import CsvTableButton from 'new_components/CsvTableButton'
-import { API_URL } from 'utils/config'
+import { ButtonLink } from 'ui-kit/Button'
+import { ButtonVariant } from 'ui-kit/Button/types'
+import { API_URL, ROOT_PATH } from 'utils/config'
 import {
   FORMAT_ISO_DATE_ONLY,
   formatBrowserTimezonedDateAsUTC,
   getToday,
 } from 'utils/date'
+import { stringify } from 'utils/query-string'
 
 import DetailsFilters from './DetailsFilters'
 
@@ -23,12 +25,17 @@ interface IReimbursementsDetailsProps {
   venuesOptions: venuesOptionsType
 }
 
+interface ICsvQueryParams {
+  venueId?: string
+  reimbursementPeriodBeginningDate?: string
+  reimbursementPeriodEndingDate?: string
+}
+
 const ReimbursementsDetails = ({
   isCurrentUserAdmin,
   venuesOptions,
 }: IReimbursementsDetailsProps): JSX.Element => {
   const ALL_VENUES_OPTION_ID = 'allVenues'
-  const INITIAL_CSV_URL = `${API_URL}/reimbursements/csv`
   const today = getToday()
   const oneMonthAGo = new Date(
     today.getFullYear(),
@@ -42,66 +49,26 @@ const ReimbursementsDetails = ({
   }
 
   const [filters, setFilters] = useState(INITIAL_FILTERS)
-  const {
-    venue: selectedVenue,
-    periodStart: selectedPeriodStart,
-    periodEnd: selectedPeriodEnd,
-  } = filters
-  const [csvUrl, setCsvUrl] = useState(INITIAL_CSV_URL)
+  const { venue, periodStart, periodEnd } = filters
+  const [csvQueryParams, setCsvQueryParams] = useState('')
 
   const dateFilterFormat = (date: Date) =>
     formatBrowserTimezonedDateAsUTC(date, FORMAT_ISO_DATE_ONLY)
-  const isPeriodFilterSelected = selectedPeriodStart && selectedPeriodEnd
+  const isPeriodFilterSelected = periodStart && periodEnd
   const requireVenueFilterForAdmin =
-    isCurrentUserAdmin && selectedVenue === ALL_VENUES_OPTION_ID
+    isCurrentUserAdmin && venue === ALL_VENUES_OPTION_ID
   const shouldDisableButtons =
     !isPeriodFilterSelected || requireVenueFilterForAdmin
 
-  const buildCsvUrlWithParameters = useCallback(
-    (
-      selectedVenue: string,
-      selectedPeriodStart: Date,
-      selectedPeriodEnd: Date
-    ) => {
-      const url = new URL(INITIAL_CSV_URL)
-
-      if (selectedVenue && selectedVenue !== ALL_VENUES_OPTION_ID) {
-        url.searchParams.set('venueId', selectedVenue)
-      }
-
-      if (selectedPeriodStart) {
-        url.searchParams.set(
-          'reimbursementPeriodBeginningDate',
-          dateFilterFormat(selectedPeriodStart)
-        )
-      }
-
-      if (selectedPeriodEnd) {
-        url.searchParams.set(
-          'reimbursementPeriodEndingDate',
-          dateFilterFormat(selectedPeriodEnd)
-        )
-      }
-
-      return url.toString()
-    },
-    [INITIAL_CSV_URL]
-  )
-
   useEffect(() => {
-    setCsvUrl(
-      buildCsvUrlWithParameters(
-        selectedVenue,
-        selectedPeriodStart,
-        selectedPeriodEnd
-      )
-    )
-  }, [
-    buildCsvUrlWithParameters,
-    selectedPeriodEnd,
-    selectedPeriodStart,
-    selectedVenue,
-  ])
+    const params: ICsvQueryParams = {}
+    if (periodStart)
+      params.reimbursementPeriodBeginningDate = dateFilterFormat(periodStart)
+    if (periodEnd)
+      params.reimbursementPeriodEndingDate = dateFilterFormat(periodEnd)
+    if (venue && venue !== ALL_VENUES_OPTION_ID) params.venueId = venue
+    setCsvQueryParams(stringify(params))
+  }, [periodEnd, periodStart, venue])
 
   return (
     <>
@@ -118,19 +85,19 @@ const ReimbursementsDetails = ({
       >
         <ButtonDownloadCSV
           filename="remboursements_pass_culture"
-          href={csvUrl}
+          href={`${API_URL}/reimbursements/csv?${csvQueryParams}`}
           isDisabled={shouldDisableButtons}
           mimeType="text/csv"
         >
           Télécharger
         </ButtonDownloadCSV>
-        <CsvTableButton
-          href={csvUrl}
+        <ButtonLink
           isDisabled={shouldDisableButtons}
-          url="/remboursements-details"
+          to={`${ROOT_PATH}/remboursements-details?${csvQueryParams}`}
+          variant={ButtonVariant.SECONDARY}
         >
           Afficher
-        </CsvTableButton>
+        </ButtonLink>
       </DetailsFilters>
       <p className="format-mention">
         Le fichier est au format CSV, compatible avec tous les tableurs et
