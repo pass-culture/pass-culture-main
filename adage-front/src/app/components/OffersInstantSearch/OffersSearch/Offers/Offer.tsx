@@ -10,6 +10,7 @@ import ContactButton from './ContactButton'
 import OfferDetails from './OfferDetails/OfferDetails'
 import OfferSummary from './OfferSummary/OfferSummary'
 import PrebookingButton from './PrebookingButton/PrebookingButton'
+import { formatDescription } from './utils/formatDescription'
 import { getOfferVenueAndOffererName } from './utils/getOfferVenueAndOffererName'
 
 export const Offer = ({
@@ -53,7 +54,9 @@ export const Offer = ({
           </p>
         </div>
         <OfferSummary offer={offer} />
-        <p className="offer-description">{offer.description}</p>
+        <p className="offer-description">
+          {formatDescription(offer.description)}
+        </p>
         <button
           className="offer-see-more"
           onClick={() => setDisplayDetails(!displayDetails)}

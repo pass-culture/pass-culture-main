@@ -253,5 +253,39 @@ describe('offer', () => {
         screen.queryByText('Visuel', { exact: false })
       ).not.toBeInTheDocument()
     })
+
+    it('should format the description when links are present', async () => {
+      // Given
+      mockedPcapi.getOffer.mockResolvedValue({
+        ...offerInParis,
+        description: `lien 1 : www.lien1.com
+          https://lien2.com et http://lien3.com
+          https://\nurl.com http://unlien avecuneespace`,
+      })
+
+      // When
+      renderOffers(offersProps)
+
+      // Then
+      const offerName = await screen.findByText(offerInParis.name)
+      expect(offerName).toBeInTheDocument()
+
+      const descriptionParagraph = await screen.findByText('lien 1', {
+        exact: false,
+        selector: 'p',
+      })
+
+      const links = within(descriptionParagraph).getAllByRole('link')
+
+      expect(links).toHaveLength(5)
+      expect((links[0] as HTMLLinkElement).href).toBe('https://www.lien1.com/')
+      expect((links[0] as HTMLLinkElement).childNodes[0].nodeValue).toBe(
+        'www.lien1.com'
+      )
+      expect((links[1] as HTMLLinkElement).href).toBe('https://lien2.com/')
+      expect((links[2] as HTMLLinkElement).href).toBe('http://lien3.com/')
+      expect((links[3] as HTMLLinkElement).href).toBe('https://')
+      expect((links[4] as HTMLLinkElement).href).toBe('http://unlien/')
+    })
   })
 })
