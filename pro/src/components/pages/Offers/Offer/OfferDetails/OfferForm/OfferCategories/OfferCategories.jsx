@@ -62,7 +62,12 @@ const OfferCategories = ({
             subCategory.isSelectable
         )
         if (isVirtualOffer) {
-          options = options.filter(option => option.isDigitalDeposit)
+          options = options.filter(option =>
+            [
+              CATEGORY_STATUS.ONLINE,
+              CATEGORY_STATUS.ONLINE_OR_OFFLINE,
+            ].includes(option.onlineOfflinePlatform)
+          )
         }
         updateFormErrors({})
         setSubCategoriesOptions(buildSelectOptions('id', 'proLabel', options))
