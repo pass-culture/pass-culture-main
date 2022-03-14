@@ -21,7 +21,9 @@ def upload_file(user_id: str, file_path: str, file_name: str) -> bool:
     key = f"{user_id}/{file_name}"
 
     try:
-        client.upload_file(file_path, settings.OUTSCALE_SECNUM_BUCKET_NAME, key)
+        client.upload_file(
+            file_path, settings.OUTSCALE_SECNUM_BUCKET_NAME, key, ExtraArgs={"ACL": "bucket-owner-full-control"}
+        )
         logger.info(
             "Outscale upload started",
             extra={"file_name": file_name},
