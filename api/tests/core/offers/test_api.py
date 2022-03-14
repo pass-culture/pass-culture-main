@@ -128,7 +128,11 @@ class UpsertStocksTest:
     def test_sends_email_if_beginning_date_changes_on_edition(self):
         # Given
         user = users_factories.ProFactory()
-        offer = offer_factories.EventOfferFactory(bookingEmail="offer@bookingemail.fr")
+        offerer = offer_factories.OffererFactory()
+        offer_factories.UserOffererFactory(user=user, offerer=offerer)
+
+        venue = offer_factories.VenueFactory(managingOfferer=offerer, bookingEmail="venue@postponed.net")
+        offer = offer_factories.EventOfferFactory(venue=venue, bookingEmail="offer@bookingemail.fr")
         existing_stock = offer_factories.StockFactory(offer=offer, price=10)
         beginning = datetime.now() + timedelta(days=10)
         edited_stock_data = stock_serialize.StockEditionBodyModel(
@@ -154,7 +158,7 @@ class UpsertStocksTest:
         assert mails_testing.outbox[0].sent_data["template"] == dataclasses.asdict(
             TransactionalEmail.EVENT_OFFER_POSTPONED_CONFIRMATION_TO_PRO.value
         )
-        assert mails_testing.outbox[0].sent_data["To"] == "offer@bookingemail.fr"
+        assert mails_testing.outbox[0].sent_data["To"] == "venue@postponed.net"
         assert mails_testing.outbox[1].sent_data["template"] == dataclasses.asdict(
             TransactionalEmail.BOOKING_POSTPONED_BY_PRO_TO_BENEFICIARY.value
         )

@@ -25,7 +25,7 @@ class SendEventOfferPosponedConfirmationToProEmailTest:
         offerer = offers_factories.OffererFactory()
         offers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
-        venue = offers_factories.VenueFactory(managingOfferer=offerer)
+        venue = offers_factories.VenueFactory(managingOfferer=offerer, bookingEmail="venue@postponed.net")
         product = offers_factories.EventProductFactory()
         offer = offers_factories.EventOfferFactory(venue=venue, product=product, bookingEmail="test@bookingEmail.fr")
         stock = offers_factories.EventStockFactory(offer=offer, price=5, beginningDatetime=datetime(2022, 3, 1))
@@ -35,7 +35,7 @@ class SendEventOfferPosponedConfirmationToProEmailTest:
 
         # Then
         assert len(mails_testing.outbox) == 1  # test number of emails sent
-        assert mails_testing.outbox[0].sent_data["To"] == "test@bookingEmail.fr"
+        assert mails_testing.outbox[0].sent_data["To"] == "venue@postponed.net"
         assert mails_testing.outbox[0].sent_data["template"] == asdict(
             TransactionalEmail.EVENT_OFFER_POSTPONED_CONFIRMATION_TO_PRO.value
         )
