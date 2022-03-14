@@ -9,6 +9,11 @@
       min-height: rem(60px);
       padding: rem(14px);
       vertical-align: middle;
+      text-align: left;
+
+      .status-filter {
+        padding-left: 0;
+      }
 
       .sorting-icons {
         display: inline-block;
