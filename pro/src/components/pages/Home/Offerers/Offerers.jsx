@@ -83,7 +83,6 @@ const Offerers = () => {
           setIsUserOffererValidated(false)
         }
       }
-
       setIsLoading(false)
     }
     selectedOffererId && loadOfferer(selectedOffererId)
@@ -141,6 +140,7 @@ const Offerers = () => {
           )}
         </>
       )}
+
       {isOffererSoftDeleted && <SoftDeletedOffererWarning />}
 
       {!userHasOfferers && <OffererCreationLinks />}

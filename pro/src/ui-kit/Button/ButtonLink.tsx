@@ -26,17 +26,18 @@ const ButtonLink = ({
   const classNames = cn(
     styles['button'],
     styles[`button-${variant}`],
-    isDisabled ? styles[`button-disabled`] : null,
+    { [styles[`button-disabled`]]: isDisabled },
     className
   )
 
-  return isExternal ? (
-    <a
-      className={classNames}
-      href={to}
-      {...linkAttrs}
-      {...(isDisabled ? 'aria-disabled' : undefined)}
-    >
+  return isDisabled ? (
+    // eslint-disable-next-line
+    <a className={classNames} aria-disabled>
+      {Icon && <Icon className={styles['button-icon']} />}
+      {children}
+    </a>
+  ) : isExternal ? (
+    <a className={classNames} href={to} {...linkAttrs}>
       {Icon && <Icon className={styles['button-icon']} />}
       {children}
     </a>

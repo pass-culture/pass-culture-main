@@ -71,7 +71,7 @@ const renderReimbursements = (store, props) => {
       download: screen.queryByRole('button', {
         name: /Télécharger/i,
       }),
-      display: screen.queryByRole('button', {
+      display: screen.queryByRole('link', {
         name: /Afficher/i,
       }),
       resetFilters: screen.queryByRole('button', {
@@ -219,7 +219,10 @@ describe('reimbursementsWithFilters', () => {
     expect(buttons.display).toBeInTheDocument()
 
     expect(buttons.download).toBeEnabled()
-    expect(buttons.display).toBeEnabled()
+    expect(buttons.display).toHaveAttribute(
+      'href',
+      `${API_URL}/remboursements-details?reimbursementPeriodBeginningDate=2020-11-15&reimbursementPeriodEndingDate=2020-12-15`
+    )
   })
 
   it('should disable buttons if one or both of the period dates are not filled', async () => {
@@ -234,7 +237,10 @@ describe('reimbursementsWithFilters', () => {
     // then
     await expectFilters.toHaveValues('allVenues', '', '')
     expect(buttons.download).toBeDisabled()
-    expect(buttons.display).toBeDisabled()
+    expect(screen.getByText(/Afficher/)).toHaveAttribute(
+      'aria-disabled',
+      'true'
+    )
 
     // when
     setPeriodFilters('12/11/2020', '')
@@ -242,7 +248,10 @@ describe('reimbursementsWithFilters', () => {
     // then
     await expectFilters.toHaveValues('allVenues', '12/11/2020', '')
     expect(buttons.download).toBeDisabled()
-    expect(buttons.display).toBeDisabled()
+    expect(screen.getByText(/Afficher/)).toHaveAttribute(
+      'aria-disabled',
+      'true'
+    )
 
     // when
     setPeriodFilters('12/11/2020', '12/12/2020')
@@ -261,7 +270,10 @@ describe('reimbursementsWithFilters', () => {
 
     // then
     expect(buttons.download).toBeDisabled()
-    expect(buttons.display).toBeDisabled()
+    expect(screen.getByText(/Afficher/)).toHaveAttribute(
+      'aria-disabled',
+      'true'
+    )
 
     // when
     const options = await within(filters.venue).findAllByRole('option')
@@ -269,7 +281,10 @@ describe('reimbursementsWithFilters', () => {
 
     // then
     expect(buttons.download).toBeEnabled()
-    expect(buttons.display).toBeEnabled()
+    expect(screen.getByRole('link', { name: /Afficher/ })).toHaveAttribute(
+      'href',
+      `${API_URL}/remboursements-details?reimbursementPeriodBeginningDate=2020-11-15&reimbursementPeriodEndingDate=2020-12-15&venueId=VENUE2`
+    )
   })
 
   // eslint-disable-next-line jest/expect-expect
@@ -317,31 +332,26 @@ describe('reimbursementsWithFilters', () => {
 
   it('should call the right URL and filters when clicking display', async () => {
     // given
-    const { getElementsOnLoadingComplete, mockedHistoryPush } =
-      renderReimbursements(store, props)
-    const { buttons, filters } = await getElementsOnLoadingComplete()
-
-    // when
-    userEvent.click(buttons.display)
-    const options = await within(filters.venue).findAllByRole('option')
-    userEvent.selectOptions(filters.venue, [options[1].value])
-    userEvent.click(buttons.display)
-
-    // then
     const initialFilterUrlParams =
       'reimbursementPeriodBeginningDate=2020-11-15&reimbursementPeriodEndingDate=2020-12-15'
     const withVenueFilterUrlParams =
-      'venueId=VENUE2&reimbursementPeriodBeginningDate=2020-11-15&reimbursementPeriodEndingDate=2020-12-15'
-    const displayRouteParams = filtersParams => [
-      '/remboursements-details',
-      `${API_URL}/reimbursements/csv?${filtersParams}`,
-    ]
+      'reimbursementPeriodBeginningDate=2020-11-15&reimbursementPeriodEndingDate=2020-12-15&venueId=VENUE2'
 
-    // eslint-disable-next-line jest/prefer-strict-equal
-    expect(mockedHistoryPush.mock.calls).toEqual([
-      displayRouteParams(initialFilterUrlParams),
-      displayRouteParams(withVenueFilterUrlParams),
-    ])
+    // when
+    const { getElementsOnLoadingComplete } = renderReimbursements(store, props)
+    const { buttons, filters } = await getElementsOnLoadingComplete()
+
+    // then
+    expect(buttons.display).toHaveAttribute(
+      'href',
+      `${API_URL}/remboursements-details?${initialFilterUrlParams}`
+    )
+    const options = await within(filters.venue).findAllByRole('option')
+    userEvent.selectOptions(filters.venue, [options[1].value])
+    expect(buttons.display).toHaveAttribute(
+      'href',
+      `${API_URL}/remboursements-details?${withVenueFilterUrlParams}`
+    )
   })
 
   it('should display no refunds message when user has no associated venues', async () => {
