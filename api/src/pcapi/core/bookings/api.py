@@ -505,7 +505,7 @@ def auto_mark_as_used_after_event() -> None:
 
     collective_bookings_subquery = (
         CollectiveBooking.query.join(CollectiveStock)
-            .filter(CollectiveBooking.status.in_((CollectiveBookingStatus.CONFIRMED, CollectiveBookingStatus.PENDING)))
+            .filter(CollectiveBooking.status == CollectiveBookingStatus.CONFIRMED)
             .filter(CollectiveStock.beginningDatetime < threshold)
             .with_entities(CollectiveBooking.id)
             .subquery()
