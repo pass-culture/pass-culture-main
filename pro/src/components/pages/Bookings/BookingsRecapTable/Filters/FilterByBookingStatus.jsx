@@ -85,7 +85,7 @@ const FilterByBookingStatus = ({
         onFocus={showFilter}
         type="button"
       >
-        <span className="table-head-label">Statut</span>
+        <span className="table-head-label status-filter">Statut</span>
 
         <Icon alt="Filtrer par statut" svg={computeIconSrc()} />
       </button>
