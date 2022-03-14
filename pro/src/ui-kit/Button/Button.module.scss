@@ -18,7 +18,8 @@
     cursor: pointer;
   }
 
-  &:disabled {
+  &:disabled,
+  &.button-disabled {
     cursor: default;
   }
 
@@ -40,7 +41,8 @@
       border-color: $primary-dark;
     }
 
-    &:disabled {
+    &:disabled,
+    &.button-disabled {
       background-color: $primary-disabled;
       border-color: $primary-disabled;
     }
@@ -58,7 +60,8 @@
       border-color: $primary-dark;
     }
 
-    &:disabled {
+    &:disabled,
+    &.button-disabled {
       background-color: $white;
       border-color: $primary-disabled;
       color: $primary-disabled;
@@ -76,7 +79,8 @@
       text-decoration: underline;
     }
 
-    &:disabled {
+    &:disabled,
+    &.button-disabled {
       color: $grey-medium;
       text-decoration: none;
     }

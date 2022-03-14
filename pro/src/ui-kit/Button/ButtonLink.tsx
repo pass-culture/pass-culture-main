@@ -9,12 +9,14 @@ interface IButtonProps extends SharedButtonProps {
   to: string
   children: React.ReactNode | React.ReactNode[]
   className?: string
+  isDisabled?: boolean
 }
 
 const ButtonLink = ({
   className,
   children,
   Icon,
+  isDisabled = false,
   variant = ButtonVariant.TERNARY,
   to,
   ...linkAttrs
@@ -24,11 +26,17 @@ const ButtonLink = ({
   const classNames = cn(
     styles['button'],
     styles[`button-${variant}`],
+    isDisabled ? styles[`button-disabled`] : null,
     className
   )
 
   return isExternal ? (
-    <a className={classNames} href={to} {...linkAttrs}>
+    <a
+      className={classNames}
+      href={to}
+      {...linkAttrs}
+      {...(isDisabled ? 'aria-disabled' : undefined)}
+    >
       {Icon && <Icon className={styles['button-icon']} />}
       {children}
     </a>
