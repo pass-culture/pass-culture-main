@@ -29,18 +29,18 @@ class UpdateGenderAndMarriedNameFromUbbleTest:
         )
 
         # Beneficiary with gender
-        self.user_beneficiary_up_to_date = users_factories.BeneficiaryGrant18Factory(gender=users_models.GenderEnum.F)
+        self.user_beneficiary_up_to_date = users_factories.BeneficiaryGrant18Factory(civility=users_models.GenderEnum.F)
 
         # Beneficiary with no gender nor married_name
-        self.user_beneficiary_to_update = users_factories.BeneficiaryGrant18Factory(gender=None, married_name=None)
+        self.user_beneficiary_to_update = users_factories.BeneficiaryGrant18Factory(civility=None, married_name=None)
 
         # Beneficiary from DMS
         self.user_beneficiary_dms = users_factories.BeneficiaryGrant18Factory(
-            gender=None, married_name=None, beneficiaryFraudChecks__type=fraud_models.FraudCheckType.DMS
+            civility=None, married_name=None, beneficiaryFraudChecks__type=fraud_models.FraudCheckType.DMS
         )
         # Beneficiary created before january 1st, 2022
         self.old_user_beneficiary = users_factories.BeneficiaryGrant18Factory(
-            gender=None,
+            civility=None,
             married_name=None,
             beneficiaryFraudChecks__type=fraud_models.FraudCheckType.DMS,
             dateCreated=datetime.datetime(2021, 12, 25),
@@ -63,15 +63,15 @@ class UpdateGenderAndMarriedNameFromUbbleTest:
 
         assert mock_logger.call_args_list[0].args == ("Would have updated %d users", 1)
 
-        assert self.user_not_beneficiary.gender is None
+        assert self.user_not_beneficiary.civility is None
         assert self.user_not_beneficiary.married_name is None
-        assert self.user_beneficiary_up_to_date.gender == users_models.GenderEnum.F
+        assert self.user_beneficiary_up_to_date.civility == users_models.GenderEnum.F
         assert self.user_beneficiary_up_to_date.married_name is None
-        assert self.user_beneficiary_dms.gender is None
+        assert self.user_beneficiary_dms.civility is None
         assert self.user_beneficiary_dms.married_name is None
-        assert self.old_user_beneficiary.gender is None
+        assert self.old_user_beneficiary.civility is None
         assert self.old_user_beneficiary.married_name is None
-        assert self.user_beneficiary_to_update.gender is None
+        assert self.user_beneficiary_to_update.civility is None
         assert self.user_beneficiary_to_update.married_name is None
 
     def test_update_gender_and_married_name_from_ubble(self, requests_mock):
@@ -88,15 +88,15 @@ class UpdateGenderAndMarriedNameFromUbbleTest:
         # Should update user_beneficiary_to_update
         update_gender_and_married_name_from_ubble(dry_run=False)
 
-        assert self.user_not_beneficiary.gender is None
+        assert self.user_not_beneficiary.civility is None
         assert self.user_not_beneficiary.married_name is None
-        assert self.user_beneficiary_up_to_date.gender == users_models.GenderEnum.F
+        assert self.user_beneficiary_up_to_date.civility == users_models.GenderEnum.F
         assert self.user_beneficiary_up_to_date.married_name is None
-        assert self.user_beneficiary_dms.gender is None
+        assert self.user_beneficiary_dms.civility is None
         assert self.user_beneficiary_dms.married_name is None
-        assert self.old_user_beneficiary.gender is None
+        assert self.old_user_beneficiary.civility is None
         assert self.old_user_beneficiary.married_name is None
 
         # Only user to be updated
-        assert self.user_beneficiary_to_update.gender == users_models.GenderEnum.F
+        assert self.user_beneficiary_to_update.civility == users_models.GenderEnum.F
         assert self.user_beneficiary_to_update.married_name == "Kelly"
