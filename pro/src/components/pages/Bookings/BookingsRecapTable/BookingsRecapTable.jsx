@@ -86,16 +86,13 @@ class BookingsRecapTable extends Component {
           Cell: ({ row }) => <BookingStatusCell bookingRecapInfo={row} />,
           className: 'column-booking-status',
           disableSortBy: true,
-          HeaderTitleFilter: () =>
-            !props.isBookingFiltersActive ? (
-              <FilterByBookingStatus
-                bookingStatuses={this.state.filters.bookingStatus}
-                bookingsRecap={props.bookingsRecap}
-                updateGlobalFilters={this.updateGlobalFilters}
-              />
-            ) : (
-              <span className="table-head-label">Statut actuel</span>
-            ),
+          HeaderTitleFilter: () => (
+            <FilterByBookingStatus
+              bookingStatuses={this.state.filters.bookingStatus}
+              bookingsRecap={props.bookingsRecap}
+              updateGlobalFilters={this.updateGlobalFilters}
+            />
+          ),
         },
       ],
       currentPage: FIRST_PAGE_INDEX,
@@ -199,7 +196,6 @@ BookingsRecapTable.defaultProps = {
 
 BookingsRecapTable.propTypes = {
   bookingsRecap: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
-  isBookingFiltersActive: PropTypes.bool.isRequired,
   isLoading: PropTypes.bool.isRequired,
   locationState: PropTypes.shape({
     venueId: PropTypes.string,
