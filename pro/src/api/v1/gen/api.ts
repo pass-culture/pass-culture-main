@@ -436,27 +436,18 @@ export interface GetOfferersNamesResponseModel {
 }
 
 export interface GetOfferersResponseModel {
-    address?: string | null;
-    bic?: string | null;
-    city: string;
-    dateCreated: Date;
-    dateModifiedAtLastProvider?: Date | null;
-    dateValidated?: Date | null;
-    demarchesSimplifieesApplicationId?: string | null;
-    fieldsUpdated: Array<string>;
-    iban?: string | null;
     id: string;
-    idAtProviders?: string | null;
-    isActive: boolean;
     isValidated: boolean;
-    lastProviderId?: string | null;
-    managedVenues: Array<GetOffererVenueResponseModel>;
+    managedVenues: Array<GetOfferersVenueResponseModel>;
     nOffers: number;
     name: string;
-    postalCode: string;
     siren?: string | null;
-    thumbCount: number;
     userHasAccess: boolean;
+}
+
+export interface GetOfferersVenueResponseModel {
+    id: string;
+    isVirtual: boolean;
 }
 
 export interface GetVenueManagingOffererResponseModel {
