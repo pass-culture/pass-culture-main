@@ -13,6 +13,8 @@ from pcapi.routes.serialization.reimbursement_csv_serialize import validate_reim
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.serialization.utils import dehumanize_id
 
+from . import blueprint
+
 
 @private_api.route("/reimbursements/csv", methods=["GET"])
 @login_required
@@ -22,6 +24,7 @@ from pcapi.serialization.utils import dehumanize_id
         "Content-Type": "text/csv; charset=utf-8;",
         "Content-Disposition": "attachment; filename=remboursements_pass_culture.csv",
     },
+    api=blueprint.pro_private_schema,
 )
 def get_reimbursements_csv(query: ReimbursementCsvQueryModel) -> bytes:
     reimbursement_details_csv = _get_reimbursements_csv_filter(current_user, query)
