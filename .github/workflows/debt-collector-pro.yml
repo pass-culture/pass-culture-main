@@ -33,6 +33,7 @@ jobs:
           git fetch origin master:master
           yarn debt:compare
       - name: Find Comment
+        if: steps.changes.outputs.src == 'true'
         uses: peter-evans/find-comment@v1
         id: fc
         with:
@@ -40,6 +41,7 @@ jobs:
           comment-author: 'github-actions[bot]'
           body-includes: Debt collector report
       - id: get-comment-body
+        if: steps.changes.outputs.src == 'true'
         run: |
           body="$(cat ./pro/node_modules/.cache/debt-collector/report.html)"
           body="${body//'%'/'%25'}"
