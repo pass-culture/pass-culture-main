@@ -38,6 +38,17 @@ class StudentLevels(enum.Enum):
     GENERAL0 = "Lycée - Terminale"
 
 
+ADAGE_STUDENT_LEVEL_MAPPING = {
+    "Collège - 4e": StudentLevels.COLLEGE4,
+    "Collège - 3e": StudentLevels.COLLEGE3,
+    "CAP - 1re année": StudentLevels.CAP1,
+    "CAP - 2e année": StudentLevels.CAP2,
+    "Lycée - Seconde": StudentLevels.GENERAL2,
+    "Lycée - Première": StudentLevels.GENERAL1,
+    "Lycée - Terminale": StudentLevels.GENERAL0,
+}
+
+
 class CollectiveBookingCancellationReasons(enum.Enum):
     OFFERER = "OFFERER"
     BENEFICIARY = "BENEFICIARY"

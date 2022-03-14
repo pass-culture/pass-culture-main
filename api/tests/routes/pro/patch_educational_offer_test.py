@@ -9,6 +9,7 @@ from pcapi.core.educational.factories import CollectiveOfferFactory
 from pcapi.core.educational.factories import CollectiveOfferTemplateFactory
 from pcapi.core.educational.models import CollectiveOffer
 from pcapi.core.educational.models import CollectiveOfferTemplate
+from pcapi.core.educational.models import StudentLevels
 import pcapi.core.educational.testing as adage_api_testing
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import Offer
@@ -286,7 +287,12 @@ class Returns200Test:
         # Given
         offer = offers_factories.OfferFactory(
             mentalDisabilityCompliant=False,
-            extraData={"contactEmail": "johndoe@yopmail.com", "contactPhone": "0600000000", "isShowcase": True},
+            extraData={
+                "contactEmail": "johndoe@yopmail.com",
+                "contactPhone": "0600000000",
+                "isShowcase": True,
+                "students": ["Collège - 3e"],
+            },
             isEducational=True,
             subcategoryId="CINE_PLEIN_AIR",
         )
@@ -296,6 +302,7 @@ class Returns200Test:
             contactPhone="0600000000",
             subcategoryId="CINE_PLEIN_AIR",
             offerId=offer.id,
+            students=[StudentLevels.COLLEGE3],
         )
         offers_factories.UserOffererFactory(
             user__email="user@example.com",
@@ -306,7 +313,7 @@ class Returns200Test:
         data = {
             "name": "New name",
             "mentalDisabilityCompliant": True,
-            "extraData": {"contactEmail": "toto@example.com"},
+            "extraData": {"contactEmail": "toto@example.com", "students": ["Collège - 4e"]},
             "subcategoryId": "CONCERT",
         }
         response = client.with_session_auth("user@example.com").patch(
@@ -322,6 +329,7 @@ class Returns200Test:
         assert updated_offer.contactEmail == "toto@example.com"
         assert updated_offer.contactPhone == "0600000000"
         assert updated_offer.subcategoryId == "CONCERT"
+        assert updated_offer.students == [StudentLevels.COLLEGE4]
 
 
 class Returns400Test:
