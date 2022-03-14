@@ -103,7 +103,7 @@ class UbbleIdentificationDocuments(UbbleIdentificationObject):
     document_number: str = pydantic.Field(None, alias="document-number")
     document_type: str = pydantic.Field(None, alias="document-type")
     first_name: str = pydantic.Field(None, alias="first-name")
-    gender: users_models.GenderEnum = pydantic.Field(None)
+    gender: str = pydantic.Field(None)
     last_name: str = pydantic.Field(None, alias="last-name")
     married_name: str = pydantic.Field(None, alias="married-name")
     signed_image_front_url: str = pydantic.Field(None, alias="signed-image-front-url")

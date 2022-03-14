@@ -34,6 +34,7 @@ from pcapi.core.users.external import update_external_user
 from pcapi.core.users.models import Credit
 from pcapi.core.users.models import DomainsCredit
 from pcapi.core.users.models import EligibilityType
+from pcapi.core.users.models import GenderEnum
 from pcapi.core.users.models import NotificationSubscriptions
 from pcapi.core.users.models import PhoneValidationStatusType
 from pcapi.core.users.models import Token
@@ -255,9 +256,9 @@ def update_user_information_from_external_source(
     elif isinstance(data, ubble_fraud_models.UbbleContent):
         user.firstName = data.first_name
         user.lastName = data.last_name
-        user.dateOfBirth = datetime.combine(data.birth_date, time(0, 0))
+        user.dateOfBirth = datetime.combine(data.birth_date, time(0, 0)) if data.birth_date else None
         user.idPieceNumber = data.get_id_piece_number()
-        user.gender = data.gender
+        user.civility = GenderEnum(data.gender).value if data.gender else None
         user.married_name = data.married_name
 
     # update user fields to be correctly initialized
