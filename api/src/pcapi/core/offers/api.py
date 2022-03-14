@@ -31,6 +31,7 @@ from pcapi.core.educational import api as educational_api
 from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import models as educational_models
 import pcapi.core.educational.adage_backends as adage_client
+from pcapi.core.educational.models import ADAGE_STUDENT_LEVEL_MAPPING
 from pcapi.core.educational.models import CollectiveOffer
 from pcapi.core.educational.models import CollectiveOfferTemplate
 from pcapi.core.educational.utils import compute_educational_booking_cancellation_limit_date
@@ -408,6 +409,12 @@ def update_collective_offer(
             for extra_data_key, extra_data_value in value.items():
                 # We denormalize extra_data for Adage mailing
                 updated_fields.append(extra_data_key)
+
+                if extra_data_key == "students":
+                    students = [ADAGE_STUDENT_LEVEL_MAPPING[student] for student in extra_data_value]
+                    setattr(offer_to_update, extra_data_key, students)
+                    continue
+
                 setattr(offer_to_update, extra_data_key, extra_data_value)
             continue
 
