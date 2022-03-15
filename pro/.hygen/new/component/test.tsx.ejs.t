@@ -4,8 +4,7 @@ to: <%= absPath %>/__specs__/<%= component_name %>.spec.tsx
 // react-testing-library doc: https://testing-library.com/docs/react-testing-library/api
 import '@testing-library/jest-dom'
 import { render, screen } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
-import React, { useState } from 'react'
+import React from 'react'
 
 import { <%= component_name %> } from '../'
 
