@@ -91,6 +91,8 @@ class VenueNApprovedOffersTest:
         venue = offers_factories.VenueFactory()
         offers_factories.OfferFactory(venue=venue, validation=OfferValidationStatus.APPROVED)
         offers_factories.OfferFactory(venue=venue, validation=OfferValidationStatus.DRAFT)
+        offers_factories.OfferFactory(venue=venue, validation=OfferValidationStatus.PENDING)
+        offers_factories.OfferFactory(venue=venue, validation=OfferValidationStatus.REJECTED)
         assert venue.nApprovedOffers == 1
 
 
