@@ -5,7 +5,7 @@ import React, { useState, useRef, useEffect } from 'react'
 import useOnClickOrFocusOutside from 'components/hooks/useOnClickOrFocusOutside'
 import Icon from 'components/layout/Icon'
 
-import { getBookingStatusDisplayInformations } from '../CellsFormatter/utils/bookingStatusConverter'
+import { getBookingStatusDisplayInformations } from '../../CellsFormatter/utils/bookingStatusConverter'
 
 function getAvailableBookingStatuses(bookingsRecap) {
   const presentBookingStatues = Array.from(
