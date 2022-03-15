@@ -86,7 +86,7 @@ class SharedLoginUserResponseModel(BaseModel):
     activity: Optional[str]
     address: Optional[str]
     city: Optional[str]
-    civility: Optional[str]
+    civility: Optional[user_models.GenderEnum]
     dateCreated: datetime
     dateOfBirth: Optional[datetime]
     departementCode: Optional[str]
@@ -127,7 +127,7 @@ class SharedCurrentUserResponseModel(BaseModel):
     activity: Optional[str]
     address: Optional[str]
     city: Optional[str]
-    civility: Optional[str]
+    civility: Optional[user_models.GenderEnum]
     dateCreated: datetime
     dateOfBirth: Optional[datetime]
     departementCode: Optional[str]

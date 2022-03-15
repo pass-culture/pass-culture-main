@@ -11,7 +11,6 @@ import pytz
 
 from pcapi import settings
 from pcapi.core.fraud.ubble import models as ubble_fraud_models
-from pcapi.core.users import models as users_models
 
 
 class IdentificationState(Enum):
@@ -208,7 +207,7 @@ class UbbleIdentificationIncludedDocumentsAttributesFactory(factory.Factory):
     document_type_detailed = None
     expiry_date = None
     first_name = factory.Faker("first_name")
-    gender = factory.LazyFunction(lambda: random.choice([gender.value for gender in users_models.GenderEnum]))
+    gender = "M"
     issue_date = None
     issue_place = None
     issuing_state_code = None

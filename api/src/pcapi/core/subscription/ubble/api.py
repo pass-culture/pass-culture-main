@@ -64,14 +64,14 @@ def update_ubble_workflow(
         if fraud_check.status != fraud_models.FraudCheckStatus.OK:
             can_retry = ubble_fraud_api.is_user_allowed_to_perform_ubble_check(user, fraud_check.eligibilityType)
             handle_validation_errors(user, fraud_check.reasonCodes, can_retry=can_retry)
-            subscription_api.update_user_birth_date(user, fraud_check.source_data().get_birth_date())
+            subscription_api.update_user_birth_date(user, content.get_birth_date())
             return
 
         payload = ubble_tasks.StoreIdPictureRequest(identification_id=fraud_check.thirdPartyId)
         ubble_tasks.store_id_pictures_task.delay(payload)
 
         try:
-            subscription_api.on_successful_application(user=user, source_data=fraud_check.source_data())
+            subscription_api.on_successful_application(user=user, source_data=content)
         except Exception:  # pylint: disable=broad-except
             logger.exception("Failure after ubble successful result", extra={"user_id"})
 
