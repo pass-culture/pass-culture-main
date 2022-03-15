@@ -6,7 +6,7 @@ import { useRef } from 'react'
 import { firebaseConfig } from 'config/firebase'
 import { Events } from 'core/FirebaseEvents/constants'
 
-interface IUseAnalyticsReturn {
+export interface IUseAnalyticsReturn {
   logPageView: (page: string) => void
   logConsultCGUClick: (page: string) => void
   logPersonalDataClick: (page: string) => void
