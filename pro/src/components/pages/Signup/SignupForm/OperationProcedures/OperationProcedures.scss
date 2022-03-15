@@ -1,0 +1,13 @@
+.sign-up-form-page {
+  .content {
+    .sign-up-operating-procedures {
+      background-color: $notification-info;
+      margin-bottom: rem(32px);
+      padding: rem(16px);
+
+      div {
+        margin-bottom: rem(10px);
+      }
+    }
+  }
+}
