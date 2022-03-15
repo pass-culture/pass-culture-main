@@ -3,10 +3,10 @@ import pytest
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingStatus
+import pcapi.core.finance.factories as finance_factories
 from pcapi.core.offerers.factories import ApiKeyFactory
 from pcapi.core.offerers.factories import DEFAULT_CLEAR_API_KEY
 import pcapi.core.offers.factories as offers_factories
-from pcapi.core.payments import factories as payments_factories
 from pcapi.core.users import factories as users_factories
 
 
@@ -162,7 +162,7 @@ class Returns410Test:
     @pytest.mark.usefixtures("db_session")
     def test_when_user_is_logged_in_and_booking_payment_exists(self, client):
         # Given
-        booking = payments_factories.PaymentFactory().booking
+        booking = finance_factories.PaymentFactory().booking
         pro_user = offers_factories.UserOffererFactory(offerer=booking.offerer).user
 
         # When

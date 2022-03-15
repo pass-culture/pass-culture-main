@@ -5,7 +5,7 @@ import pytest
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingStatus
-import pcapi.core.payments.factories as payments_factories
+import pcapi.core.finance.factories as finance_factories
 import pcapi.core.users.factories as users_factories
 
 from tests.conftest import TestClient
@@ -107,7 +107,7 @@ class BookingViewTest:
     def test_can_not_cancel_refunded_booking(self, app):
         users_factories.AdminFactory(email="admin@example.com")
         booking = bookings_factories.UsedIndividualBookingFactory()
-        payments_factories.PaymentFactory(booking=booking)
+        finance_factories.PaymentFactory(booking=booking)
 
         client = TestClient(app.test_client()).with_session_auth("admin@example.com")
         route = f"/pc/back-office/bookings/cancel/{booking.id}"

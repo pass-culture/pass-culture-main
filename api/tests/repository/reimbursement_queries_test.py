@@ -12,9 +12,7 @@ import pcapi.core.finance.models as finance_models
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers.factories import OffererFactory
 from pcapi.core.offers.factories import VenueFactory
-from pcapi.core.payments import factories as payments_factories
 from pcapi.core.users import factories as users_factories
-from pcapi.models.payment_status import TransactionStatus
 from pcapi.repository.reimbursement_queries import find_all_offerer_payments
 
 
@@ -30,11 +28,13 @@ class FindAllOffererPaymentsTest:
         # Given
         booking = bookings_factories.UsedBookingFactory()
         offerer = booking.offerer
-        payment = payments_factories.PaymentFactory(
+        payment = finance_factories.PaymentFactory(
             booking=booking, transactionLabel="pass Culture Pro - remboursement 1ère quinzaine 07-2019"
         )
-        payments_factories.PaymentStatusFactory(
-            payment=payment, status=TransactionStatus.ERROR, detail="Iban non fourni"
+        finance_factories.PaymentStatusFactory(
+            payment=payment,
+            status=finance_models.TransactionStatus.ERROR,
+            detail="Iban non fourni",
         )
 
         # When
@@ -59,18 +59,28 @@ class FindAllOffererPaymentsTest:
             individualBooking__user=beneficiary, stock=stock, dateUsed=now, token="ABCDEF"
         )
 
-        payment = payments_factories.PaymentFactory(
+        payment = finance_factories.PaymentFactory(
             amount=50,
             reimbursementRate=0.5,
             booking=booking,
             iban="CF13QSDFGH456789",
             transactionLabel="pass Culture Pro - remboursement 1ère quinzaine 07-2019",
         )
-        payments_factories.PaymentStatusFactory(
-            payment=payment, status=TransactionStatus.ERROR, detail="Iban non fourni"
+        finance_factories.PaymentStatusFactory(
+            payment=payment,
+            status=finance_models.TransactionStatus.ERROR,
+            detail="Iban non fourni",
         )
-        payments_factories.PaymentStatusFactory(payment=payment, status=TransactionStatus.RETRY, detail="All good")
-        payments_factories.PaymentStatusFactory(payment=payment, status=TransactionStatus.SENT, detail="All good")
+        finance_factories.PaymentStatusFactory(
+            payment=payment,
+            status=finance_models.TransactionStatus.RETRY,
+            detail="All good",
+        )
+        finance_factories.PaymentStatusFactory(
+            payment=payment,
+            status=finance_models.TransactionStatus.SENT,
+            detail="All good",
+        )
 
         # When
         payments = find_all_offerer_payments(stock.offer.venue.managingOfferer.id, reimbursement_period)
@@ -111,18 +121,28 @@ class FindAllOffererPaymentsTest:
             stock__price=10,
         )
 
-        payment = payments_factories.PaymentFactory(
+        payment = finance_factories.PaymentFactory(
             amount=50,
             reimbursementRate=1,
             booking=educational_booking,
             iban="CF13QSDFGH456789",
             transactionLabel="pass Culture Pro - remboursement 1ère quinzaine 07-2019",
         )
-        payments_factories.PaymentStatusFactory(
-            payment=payment, status=TransactionStatus.ERROR, detail="Iban non fourni"
+        finance_factories.PaymentStatusFactory(
+            payment=payment,
+            status=finance_models.TransactionStatus.ERROR,
+            detail="Iban non fourni",
         )
-        payments_factories.PaymentStatusFactory(payment=payment, status=TransactionStatus.RETRY, detail="All good")
-        payments_factories.PaymentStatusFactory(payment=payment, status=TransactionStatus.SENT, detail="All good")
+        finance_factories.PaymentStatusFactory(
+            payment=payment,
+            status=finance_models.TransactionStatus.RETRY,
+            detail="All good",
+        )
+        finance_factories.PaymentStatusFactory(
+            payment=payment,
+            status=finance_models.TransactionStatus.SENT,
+            detail="All good",
+        )
 
         # When
         payments = find_all_offerer_payments(
@@ -171,28 +191,32 @@ class FindAllOffererPaymentsTest:
             individualBooking__user=beneficiary, stock=stock, dateUsed=now, token="ABCDFE"
         )
 
-        payment = payments_factories.PaymentFactory(
+        payment = finance_factories.PaymentFactory(
             amount=50,
             reimbursementRate=0.5,
             booking=booking1,
             iban="CF13QSDFGH456789",
             transactionLabel="pass Culture Pro - remboursement 1ère quinzaine 07-2019",
         )
-        payments_factories.PaymentStatusFactory(payment=payment, status=TransactionStatus.RETRY, detail="Retry")
-        payments_factories.PaymentStatusFactory(payment=payment, status=TransactionStatus.SENT, detail="All good")
+        finance_factories.PaymentStatusFactory(
+            payment=payment, status=finance_models.TransactionStatus.RETRY, detail="Retry"
+        )
+        finance_factories.PaymentStatusFactory(
+            payment=payment, status=finance_models.TransactionStatus.SENT, detail="All good"
+        )
 
-        payment2 = payments_factories.PaymentFactory(
+        payment2 = finance_factories.PaymentFactory(
             amount=75,
             reimbursementRate=0.5,
             booking=booking2,
             iban="CF13QSDFGH456789",
             transactionLabel="pass Culture Pro - remboursement 2ème quinzaine 07-2019",
         )
-        payments_factories.PaymentStatusFactory(
-            payment=payment2, status=TransactionStatus.ERROR, detail="Iban non fourni"
+        finance_factories.PaymentStatusFactory(
+            payment=payment2, status=finance_models.TransactionStatus.ERROR, detail="Iban non fourni"
         )
-        payments_factories.PaymentStatusFactory(
-            payment=payment2, status=TransactionStatus.SENT, detail="All realy good"
+        finance_factories.PaymentStatusFactory(
+            payment=payment2, status=finance_models.TransactionStatus.SENT, detail="All realy good"
         )
 
         # When
@@ -244,11 +268,11 @@ class FindAllOffererPaymentsTest:
     def test_should_return_payments_from_multiple_venues(self, app):
         # Given
         offerer = OffererFactory()
-        payments_factories.PaymentStatusFactory(
-            payment__booking__stock__offer__venue__managingOfferer=offerer, status=TransactionStatus.SENT
+        finance_factories.PaymentStatusFactory(
+            payment__booking__stock__offer__venue__managingOfferer=offerer, status=finance_models.TransactionStatus.SENT
         )
-        payments_factories.PaymentStatusFactory(
-            payment__booking__stock__offer__venue__managingOfferer=offerer, status=TransactionStatus.SENT
+        finance_factories.PaymentStatusFactory(
+            payment__booking__stock__offer__venue__managingOfferer=offerer, status=finance_models.TransactionStatus.SENT
         )
 
         # When
@@ -263,10 +287,10 @@ class FindAllOffererPaymentsTest:
         venue_1 = VenueFactory(managingOfferer=offerer)
         venue_2 = VenueFactory(managingOfferer=offerer)
 
-        payment_1 = payments_factories.PaymentFactory(booking__stock__offer__venue=venue_1)
-        payments_factories.PaymentStatusFactory(payment=payment_1, status=TransactionStatus.SENT)
-        payment_2 = payments_factories.PaymentFactory(booking__stock__offer__venue=venue_2)
-        payments_factories.PaymentStatusFactory(payment=payment_2, status=TransactionStatus.SENT)
+        payment_1 = finance_factories.PaymentFactory(booking__stock__offer__venue=venue_1)
+        finance_factories.PaymentStatusFactory(payment=payment_1, status=finance_models.TransactionStatus.SENT)
+        payment_2 = finance_factories.PaymentFactory(booking__stock__offer__venue=venue_2)
+        finance_factories.PaymentStatusFactory(payment=payment_2, status=finance_models.TransactionStatus.SENT)
 
         # When
         payments = find_all_offerer_payments(offerer.id, reimbursement_period, venue_1.id)
@@ -281,10 +305,14 @@ class FindAllOffererPaymentsTest:
         tomorrow_at_nine = datetime.combine(tomorrow, datetime.min.time()) + timedelta(hours=9)
         offerer = OffererFactory()
         venue_1 = VenueFactory(managingOfferer=offerer)
-        payment_1 = payments_factories.PaymentFactory(booking__stock__offer__venue=venue_1)
-        payments_factories.PaymentStatusFactory(date=tomorrow_at_nine, payment=payment_1, status=TransactionStatus.SENT)
-        payment_2 = payments_factories.PaymentFactory(booking__stock__offer__venue=venue_1)
-        payments_factories.PaymentStatusFactory(date=in_two_days, payment=payment_2, status=TransactionStatus.SENT)
+        payment_1 = finance_factories.PaymentFactory(booking__stock__offer__venue=venue_1)
+        finance_factories.PaymentStatusFactory(
+            date=tomorrow_at_nine, payment=payment_1, status=finance_models.TransactionStatus.SENT
+        )
+        payment_2 = finance_factories.PaymentFactory(booking__stock__offer__venue=venue_1)
+        finance_factories.PaymentStatusFactory(
+            date=in_two_days, payment=payment_2, status=finance_models.TransactionStatus.SENT
+        )
 
         # When
         payments = find_all_offerer_payments(offerer.id, (today, tomorrow))
@@ -294,10 +322,10 @@ class FindAllOffererPaymentsTest:
         assert payment_1.booking.token in payments[0]
         assert venue_1.name in payments[0]
 
-    # FIXME (dbaty, 2021-01-14): when we remove the old `Payment` and
-    # `PaymentStatus` models, this test could be renamed and updated.
-    # Some tests above could be updated, some could be removed when
-    # they don't make sense.
+    # FIXME (dbaty, 2022-03-15): once we have Pricing and Cashflow for
+    # pre-2022 payments, we can rename and update this test. Some
+    # tests above could be updated, some could be removed if they
+    # don't make sense.
     def test_with_new_models(self):
         stock = offers_factories.ThingStockFactory(
             offer__name="Test Book",
@@ -316,16 +344,16 @@ class FindAllOffererPaymentsTest:
         )
 
         # Create an old-style payment
-        payment = payments_factories.PaymentFactory(
+        payment = finance_factories.PaymentFactory(
             amount=9.5,
             reimbursementRate=0.95,
             booking=booking,
             iban="CF13QSDFGH456789",
             transactionLabel="pass Culture Pro - remboursement 1ère quinzaine 07-2019",
         )
-        payments_factories.PaymentStatusFactory(
+        finance_factories.PaymentStatusFactory(
             payment=payment,
-            status=TransactionStatus.SENT,
+            status=finance_models.TransactionStatus.SENT,
         )
 
         # Create a new-style pricing on the same booking. In real life

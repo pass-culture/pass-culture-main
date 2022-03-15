@@ -12,7 +12,6 @@ import pcapi.core.users.models as users_models
 from pcapi.models import db
 from pcapi.models.bank_information import BankInformation
 from pcapi.models.bank_information import BankInformationStatus
-from pcapi.models.payment import Payment
 from pcapi.models.user_offerer import UserOfferer
 import pcapi.utils.date as date_utils
 
@@ -93,7 +92,7 @@ def get_invoices_query(
 
 def has_reimbursement(booking: bookings_models.Booking) -> bool:
     """Return whether the requested booking has been reimbursed."""
-    if db.session.query(Payment.query.filter_by(bookingId=booking.id).exists()).scalar():
+    if db.session.query(models.Payment.query.filter_by(bookingId=booking.id).exists()).scalar():
         return True
     paid_pricings = models.Pricing.query.filter(
         models.Pricing.bookingId == booking.id,

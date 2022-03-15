@@ -18,9 +18,6 @@ from pcapi.models.criterion import Criterion
 from pcapi.models.feature import Feature
 from pcapi.models.feature import install_feature_flags
 from pcapi.models.offer_criterion import OfferCriterion
-from pcapi.models.payment import Payment
-from pcapi.models.payment_message import PaymentMessage
-from pcapi.models.payment_status import PaymentStatus
 from pcapi.models.product import Product
 from pcapi.models.user_offerer import UserOfferer
 from pcapi.models.user_session import UserSession
@@ -35,9 +32,9 @@ def clean_all_database(*args, **kwargs):
     providers_models.AllocineVenueProviderPriceRule.query.delete()
     providers_models.AllocineVenueProvider.query.delete()
     providers_models.VenueProvider.query.delete()
-    PaymentStatus.query.delete()
-    Payment.query.delete()
-    PaymentMessage.query.delete()
+    finance_models.PaymentStatus.query.delete()
+    finance_models.Payment.query.delete()
+    finance_models.PaymentMessage.query.delete()
     finance_models.CashflowPricing.query.delete()
     finance_models.CashflowLog.query.delete()
     finance_models.InvoiceCashflow.query.delete()

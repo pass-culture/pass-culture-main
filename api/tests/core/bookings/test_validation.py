@@ -13,8 +13,8 @@ from pcapi.core.bookings import validation
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.bookings.models import IndividualBooking
 from pcapi.core.categories import subcategories
+import pcapi.core.finance.factories as finance_factories
 import pcapi.core.offers.factories as offers_factories
-import pcapi.core.payments.factories as payments_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.models import api_errors
 from pcapi.models import db
@@ -370,7 +370,7 @@ class CheckIsUsableTest:
 
     def should_raises_forbidden_error_if_payement_exists(self, app):
         booking = factories.UsedIndividualBookingFactory()
-        payments_factories.PaymentFactory(booking=booking)
+        finance_factories.PaymentFactory(booking=booking)
         with pytest.raises(api_errors.ForbiddenError) as exc:
             validation.check_is_usable(booking)
         assert exc.value.errors["payment"] == ["Cette réservation a été remboursée"]
@@ -521,7 +521,7 @@ class CheckCanBeMarkAsUnusedTest:
         assert exc.value.errors["booking"] == ["Cette réservation a été annulée"]
 
     def test_should_raise_resource_gone_error_if_payement_exists(self, app):
-        booking = payments_factories.PaymentFactory().booking
+        booking = finance_factories.PaymentFactory().booking
         with pytest.raises(api_errors.ResourceGoneError) as exc:
             validation.check_can_be_mark_as_unused(booking)
         assert exc.value.errors["payment"] == ["Le remboursement est en cours de traitement"]

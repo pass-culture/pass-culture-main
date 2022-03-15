@@ -15,9 +15,6 @@ from pcapi.core.offers.models import Stock
 from pcapi.core.users.models import User
 from pcapi.models.bank_information import BankInformation
 from pcapi.models.feature import FeatureToggle
-from pcapi.models.payment import Payment
-from pcapi.models.payment_status import PaymentStatus
-from pcapi.models.payment_status import TransactionStatus
 
 
 def find_all_offerer_payments(
@@ -33,12 +30,12 @@ def find_all_offerer_payments(
 def find_all_offerers_payments(
     offerer_ids: list[int], reimbursement_period: tuple[date, date], venue_id: Optional[int] = None
 ) -> list[tuple]:
-    payment_date = sqla.cast(PaymentStatus.date, sqla.Date)
+    payment_date = sqla.cast(finance_models.PaymentStatus.date, sqla.Date)
     sent_payments = (
-        Payment.query.join(PaymentStatus)
+        finance_models.Payment.query.join(finance_models.PaymentStatus)
         .join(Booking)
         .filter(
-            PaymentStatus.status == TransactionStatus.SENT,
+            finance_models.PaymentStatus.status == finance_models.TransactionStatus.SENT,
             payment_date.between(*reimbursement_period, symmetric=True),
             Booking.offererId.in_(offerer_ids),
             (Booking.venueId == venue_id) if venue_id else (Booking.venueId is not None),
@@ -51,8 +48,8 @@ def find_all_offerers_payments(
         .join(Stock)
         .join(Offer)
         .join(Venue)
-        .distinct(Payment.id)
-        .order_by(Payment.id.desc(), PaymentStatus.date.desc())
+        .distinct(finance_models.Payment.id)
+        .order_by(finance_models.Payment.id.desc(), finance_models.PaymentStatus.date.desc())
         .with_entities(
             User.lastName.label("user_lastName"),
             User.firstName.label("user_firstName"),
@@ -68,10 +65,10 @@ def find_all_offerers_payments(
             Venue.name.label("venue_name"),
             Venue.siret.label("venue_siret"),
             Venue.address.label("venue_address"),
-            Payment.amount.label("amount"),
-            Payment.reimbursementRate.label("reimbursement_rate"),
-            Payment.iban.label("iban"),
-            Payment.transactionLabel.label("transactionLabel"),
+            finance_models.Payment.amount.label("amount"),
+            finance_models.Payment.reimbursementRate.label("reimbursement_rate"),
+            finance_models.Payment.iban.label("iban"),
+            finance_models.Payment.transactionLabel.label("transactionLabel"),
         )
     )
 

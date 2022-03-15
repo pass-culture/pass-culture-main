@@ -3,7 +3,7 @@ import pytest
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingStatus
-import pcapi.core.payments.factories as payments_factories
+import pcapi.core.finance.factories as finance_factories
 from pcapi.models.api_errors import ResourceGoneError
 from pcapi.scripts.booking.canceling_token_validation import canceling_token_validation
 
@@ -27,7 +27,7 @@ def test_should_update_booking_when_valid_token_is_given_and_no_payment_associat
 def test_should_do_nothing_when_valid_token_is_given_but_the_booking_is_linked_to_a_payment(app):
     # Given
     token = "123456"
-    booking = payments_factories.PaymentFactory(booking__token=token).booking
+    booking = finance_factories.PaymentFactory(booking__token=token).booking
     initial_date_used = booking.dateUsed
 
     # When
