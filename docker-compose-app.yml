@@ -48,7 +48,7 @@ services:
       - redis
       - postgres-test
     ports:
-      - 5000:5000
+      - 5001:5001
       - 10002:10002 # debugger port
     stdin_open: true
     tty: true
