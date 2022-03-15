@@ -19,7 +19,7 @@ FLAG = feature.FeatureToggle.ID_CHECK_ADDRESS_AUTOCOMPLETION
 
 
 def upgrade():
-    feature.add_feature_to_database(FLAG)
+    feature.legacy_add_feature_to_database(FLAG)
 
 
 def downgrade():

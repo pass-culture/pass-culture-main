@@ -31,4 +31,4 @@ def upgrade():
 
 
 def downgrade():
-    feature.add_feature_to_database(FLAG)
+    feature.legacy_add_feature_to_database(FLAG)

@@ -18,7 +18,7 @@ FLAG = feature.FeatureToggle.ENABLE_ISBN_REQUIRED_IN_LIVRE_EDITION_OFFER_CREATIO
 
 
 def upgrade():
-    feature.add_feature_to_database(FLAG)
+    feature.legacy_add_feature_to_database(FLAG)
 
 
 def downgrade():

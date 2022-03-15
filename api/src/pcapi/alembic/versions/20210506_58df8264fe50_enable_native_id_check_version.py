@@ -19,7 +19,7 @@ FLAG = feature.FeatureToggle.ENABLE_NATIVE_ID_CHECK_VERSION
 
 
 def upgrade():
-    feature.add_feature_to_database(FLAG)
+    feature.legacy_add_feature_to_database(FLAG)
 
 
 def downgrade():
