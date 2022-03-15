@@ -47,3 +47,4 @@ fetch.mockResponse(req => {
 })
 
 jest.mock('tracking/mediaCampaignsTracking')
+jest.mock('components/hooks/useAnalytics')
