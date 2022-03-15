@@ -46,12 +46,12 @@ def test_write_object_validation_email(app):
     assert summary_section.select("h2")[0].a["href"] == "http://localhost:3001/accueil?structure=PM"
     assert summary_section.select("h2")[1].text == "Utilisateur :"
     assert summary_section.select("h2")[2].text == "Nouveau rattachement :"
-    assert summary_section.select("strong")[0].a["href"] == "http://localhost:5000/validate/user-offerer/{}".format(
+    assert summary_section.select("strong")[0].a["href"] == "http://localhost:5001/validate/user-offerer/{}".format(
         user_offerer.validationToken
     )
     assert summary_section.select("strong")[0].a.text == "cliquez ici"
     assert summary_section.select("h2")[3].text == "Nouvelle structure :"
-    assert summary_section.select("strong")[1].a["href"] == "http://localhost:5000/validate/offerer/{}".format(
+    assert summary_section.select("strong")[1].a["href"] == "http://localhost:5001/validate/offerer/{}".format(
         offerer.validationToken
     )
     assert summary_section.select("strong")[1].a.text == "cliquez ici"
@@ -59,7 +59,7 @@ def test_write_object_validation_email(app):
     offerer_section = html.select_one("section[data-testId='offerer']")
     assert offerer_section.h2.text == "Nouvelle structure :"
     assert offerer_section.h3.text == "Infos API entreprise :"
-    assert offerer_section.strong.a["href"] == "http://localhost:5000/validate/offerer/{}".format(
+    assert offerer_section.strong.a["href"] == "http://localhost:5001/validate/offerer/{}".format(
         offerer.validationToken
     )
     assert offerer_section.strong.a.text == "cliquez ici"
@@ -67,7 +67,7 @@ def test_write_object_validation_email(app):
     user_offerer_section = html.select_one("section[data-testId='user_offerer']")
     assert user_offerer_section.h2.text == "Nouveau rattachement :"
     assert user_offerer_section.h3.text == "Utilisateur :"
-    assert user_offerer_section.strong.a["href"] == "http://localhost:5000/validate/user-offerer/{}".format(
+    assert user_offerer_section.strong.a["href"] == "http://localhost:5001/validate/user-offerer/{}".format(
         user_offerer.validationToken
     )
     assert user_offerer_section.strong.a.text == "cliquez ici"

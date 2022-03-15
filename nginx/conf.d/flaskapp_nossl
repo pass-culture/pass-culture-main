@@ -10,7 +10,7 @@ server {
         proxy_set_header   X-Forwarded-Proto    $scheme;
 
         resolver 127.0.0.11 ipv6=off;
-        set $upstream http://flask:5000;
+        set $upstream http://flask:5001;
         proxy_pass $upstream;
     }
 
