@@ -7,6 +7,9 @@ from pcapi.core.bookings.exceptions import BookingIsAlreadyUsed
 from pcapi.core.bookings.factories import IndividualBookingFactory
 from pcapi.core.bookings.factories import UsedIndividualBookingFactory
 from pcapi.core.categories import subcategories
+from pcapi.core.finance.factories import PaymentFactory
+from pcapi.core.finance.factories import PaymentStatusFactory
+from pcapi.core.finance.models import TransactionStatus
 from pcapi.core.offers.factories import EventOfferFactory
 from pcapi.core.offers.factories import EventProductFactory
 from pcapi.core.offers.factories import EventStockFactory
@@ -16,11 +19,8 @@ from pcapi.core.offers.factories import ThingProductFactory
 from pcapi.core.offers.factories import ThingStockFactory
 from pcapi.core.offers.factories import UserOffererFactory
 from pcapi.core.offers.factories import VenueFactory
-from pcapi.core.payments.factories import PaymentFactory
-from pcapi.core.payments.factories import PaymentStatusFactory
 from pcapi.core.users.factories import BeneficiaryGrant18Factory
 from pcapi.core.users.factories import ProFactory
-from pcapi.models.payment_status import TransactionStatus
 from pcapi.repository import repository
 
 

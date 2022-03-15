@@ -8,8 +8,8 @@ import pytest
 from pcapi.core.bookings.factories import CancelledIndividualBookingFactory
 from pcapi.core.bookings.factories import IndividualBookingFactory
 from pcapi.core.bookings.factories import UsedIndividualBookingFactory
+import pcapi.core.finance.factories as finance_factories
 from pcapi.core.offers import factories as offers_factories
-from pcapi.core.payments.factories import PaymentFactory
 from pcapi.core.users import factories as users_factories
 from pcapi.models import api_errors
 from pcapi.routes.serialization import serialize
@@ -247,7 +247,7 @@ class Returns403Test:
     @pytest.mark.usefixtures("db_session")
     def when_booking_is_refunded(self, client):
         # Given
-        booking = PaymentFactory(booking=UsedIndividualBookingFactory()).booking
+        booking = finance_factories.PaymentFactory().booking
         url = (
             f"/bookings/token/{booking.token}?"
             f"email={booking.individualBooking.user.email}&offer_id={humanize(booking.stock.offerId)}"

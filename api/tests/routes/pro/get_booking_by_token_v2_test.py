@@ -7,9 +7,9 @@ import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.categories import subcategories
 import pcapi.core.educational.factories as educational_factories
 from pcapi.core.educational.models import EducationalBookingStatus
+import pcapi.core.finance.factories as finance_factories
 from pcapi.core.offerers.factories import ApiKeyFactory
 import pcapi.core.offers.factories as offers_factories
-import pcapi.core.payments.factories as payments_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.utils.date import format_into_utc_date
 from pcapi.utils.human_ids import humanize
@@ -203,7 +203,7 @@ class Returns403Test:
 
     def test_when_booking_is_refunded(self, client):
         # Given
-        booking = payments_factories.PaymentFactory().booking
+        booking = finance_factories.PaymentFactory().booking
         pro_user = offers_factories.UserOffererFactory(offerer=booking.offerer).user
 
         # When

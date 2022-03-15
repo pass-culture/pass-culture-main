@@ -10,7 +10,6 @@ import pcapi.core.finance.factories as finance_factories
 import pcapi.core.finance.models as finance_models
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.payments.factories as payments_factories
-from pcapi.models.payment_status import TransactionStatus
 from pcapi.repository import repository
 from pcapi.repository.reimbursement_queries import find_all_offerer_payments
 from pcapi.routes.serialization.reimbursement_csv_serialize import ReimbursementDetails
@@ -26,13 +25,13 @@ reimbursement_period = (today, in_two_days)
 @pytest.mark.usefixtures("db_session")
 class ReimbursementDetailsTest:
     def test_reimbursement_details_as_csv_individual_booking(self):
-        payment = payments_factories.PaymentFactory(
+        payment = finance_factories.PaymentFactory(
             transactionLabel="pass Culture Pro - remboursement 1ère quinzaine 07-2019",
             booking__amount=10.5,
             booking__quantity=2,
             booking__stock__offer__venue__businessUnit__bankAccount__iban="CF13QSDFGH456789",
         )
-        payments_factories.PaymentStatusFactory(payment=payment, status=TransactionStatus.SENT)
+        finance_factories.PaymentStatusFactory(payment=payment, status=finance_models.TransactionStatus.SENT)
         finance_factories.PricingFactory(
             booking=payment.booking,
             amount=-2100,
@@ -92,11 +91,11 @@ class ReimbursementDetailsTest:
             stock__beginningDatetime=datetime.utcnow(),
             stock__offer__venue__businessUnit__bankAccount__iban="CF13QSDFGH456789",
         )
-        payment = payments_factories.PaymentFactory(
+        payment = finance_factories.PaymentFactory(
             booking=booking,
             transactionLabel="pass Culture Pro - remboursement 1ère quinzaine 07-2019",
         )
-        payments_factories.PaymentStatusFactory(payment=payment, status=TransactionStatus.SENT)
+        finance_factories.PaymentStatusFactory(payment=payment, status=finance_models.TransactionStatus.SENT)
         finance_factories.PricingFactory(
             booking=payment.booking,
             amount=-2100,
@@ -155,7 +154,7 @@ class ReimbursementDetailsTest:
             amount=None,
             rate=0.1234,
         )
-        payment = payments_factories.PaymentWithCustomRuleFactory(
+        payment = finance_factories.PaymentWithCustomRuleFactory(
             transactionLabel="pass Culture Pro - remboursement 1ère quinzaine 07-2019",
             amount=2.71,
             customReimbursementRule=custom_reimbursement_rule,
@@ -163,7 +162,7 @@ class ReimbursementDetailsTest:
             booking__quantity=2,
             booking__stock__offer__venue__businessUnit__bankAccount__iban="CF13QSDFGH456789",
         )
-        payments_factories.PaymentStatusFactory(payment=payment, status=TransactionStatus.SENT)
+        finance_factories.PaymentStatusFactory(payment=payment, status=finance_models.TransactionStatus.SENT)
         finance_factories.PricingFactory(
             booking=payment.booking,
             amount=-271,
@@ -223,7 +222,7 @@ class ReimbursementDetailsTest:
 @pytest.mark.usefixtures("db_session")
 def test_generate_reimbursement_details_csv():
     # given
-    payment = payments_factories.PaymentFactory(
+    payment = finance_factories.PaymentFactory(
         booking__stock__offer__name='Mon titre ; un peu "spécial"',
         booking__stock__offer__isEducational=False,
         booking__stock__offer__venue__name='Mon lieu ; un peu "spécial"',
@@ -236,7 +235,7 @@ def test_generate_reimbursement_details_csv():
         iban="CF13QSDFGH456789",
         transactionLabel="pass Culture Pro - remboursement 1ère quinzaine 07-2019",
     )
-    payments_factories.PaymentStatusFactory(payment=payment, status=TransactionStatus.SENT)
+    finance_factories.PaymentStatusFactory(payment=payment, status=finance_models.TransactionStatus.SENT)
     offerer = payment.booking.offerer
 
     finance_factories.PricingFactory(
@@ -284,12 +283,12 @@ def test_find_all_offerer_reimbursement_details():
         stock__offer__venue=venue2,
     )
     label = ("pass Culture Pro - remboursement 1ère quinzaine 07-2019",)
-    payment_1 = payments_factories.PaymentFactory(booking=booking1, transactionLabel=label)
-    payment_2 = payments_factories.PaymentFactory(booking=booking2, transactionLabel=label)
-    payment_3 = payments_factories.PaymentFactory(booking=booking3, transactionLabel=label)
-    payments_factories.PaymentStatusFactory(payment=payment_1, status=TransactionStatus.SENT)
-    payments_factories.PaymentStatusFactory(payment=payment_2, status=TransactionStatus.SENT)
-    payments_factories.PaymentStatusFactory(payment=payment_3, status=TransactionStatus.SENT)
+    payment_1 = finance_factories.PaymentFactory(booking=booking1, transactionLabel=label)
+    payment_2 = finance_factories.PaymentFactory(booking=booking2, transactionLabel=label)
+    payment_3 = finance_factories.PaymentFactory(booking=booking3, transactionLabel=label)
+    finance_factories.PaymentStatusFactory(payment=payment_1, status=finance_models.TransactionStatus.SENT)
+    finance_factories.PaymentStatusFactory(payment=payment_2, status=finance_models.TransactionStatus.SENT)
+    finance_factories.PaymentStatusFactory(payment=payment_3, status=finance_models.TransactionStatus.SENT)
 
     for booking in (booking1, booking2, booking3):
         finance_factories.PricingFactory(

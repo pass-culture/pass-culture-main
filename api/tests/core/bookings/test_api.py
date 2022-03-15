@@ -28,7 +28,6 @@ import pcapi.core.mails.testing as mails_testing
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offers_models
-import pcapi.core.payments.factories as payments_factories
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.testing import override_features
 from pcapi.core.users.external.batch import BATCH_DATETIME_FORMAT
@@ -630,7 +629,7 @@ class MarkAsUsedTest:
 
     def test_raise_if_already_reimbursed(self):
         booking = booking_factories.UsedIndividualBookingFactory()
-        payments_factories.PaymentFactory(booking=booking)
+        finance_factories.PaymentFactory(booking=booking)
         with pytest.raises(api_errors.ForbiddenError):
             api.mark_as_used(booking)
 
@@ -672,7 +671,7 @@ class MarkAsUnusedTest:
 
     def test_raise_if_has_reimbursement_legacy_payment(self):
         booking = booking_factories.UsedIndividualBookingFactory()
-        payments_factories.PaymentFactory(booking=booking)
+        finance_factories.PaymentFactory(booking=booking)
         with pytest.raises(api_errors.ResourceGoneError):
             api.mark_as_unused(booking)
         assert booking.status is BookingStatus.USED

@@ -6,6 +6,7 @@ signed:
 - a positive amount will be incoming (payable to us by someone).
 """
 import dataclasses
+import datetime
 import enum
 
 import sqlalchemy as sqla
@@ -14,6 +15,7 @@ import sqlalchemy.orm as sqla_orm
 
 from pcapi import settings
 from pcapi.models import Model
+from pcapi.models.pc_object import PcObject
 import pcapi.utils.db as db_utils
 
 
@@ -335,3 +337,89 @@ class InvoiceCashflow(Model):
             name="unique_invoice_cashflow_association",
         ),
     )
+
+
+# "Payment", "PaymentStatus" and "PaymentMessage" are deprecated. They
+# were used in the "old" reimbursement system. No new data is created
+# with these models since 2022-01-01. These models have been replaced
+# by `Pricing`, `Cashflow` and other models listed above.
+class Payment(PcObject, Model):
+    id = sqla.Column(sqla.BigInteger, primary_key=True, autoincrement=True)
+    bookingId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("booking.id"), index=True, nullable=False)
+    booking = sqla_orm.relationship("Booking", foreign_keys=[bookingId], backref="payments")
+    amount = sqla.Column(sqla.Numeric(10, 2), nullable=False)
+    reimbursementRule = sqla.Column(sqla.String(200))
+    reimbursementRate = sqla.Column(sqla.Numeric(10, 2))
+    customReimbursementRuleId = sqla.Column(
+        sqla.BigInteger,
+        sqla.ForeignKey("custom_reimbursement_rule.id"),
+    )
+    customReimbursementRule = sqla_orm.relationship(
+        "CustomReimbursementRule", foreign_keys=[customReimbursementRuleId], backref="payments"
+    )
+    recipientName = sqla.Column(sqla.String(140), nullable=False)
+    recipientSiren = sqla.Column(sqla.String(9), nullable=False)
+    iban = sqla.Column(sqla.String(27), nullable=True)
+    bic = sqla.Column(
+        sqla.String(11),
+        sqla.CheckConstraint(
+            "(iban IS NULL AND bic IS NULL) OR (iban IS NOT NULL AND bic IS NOT NULL)",
+            name="check_iban_and_bic_xor_not_iban_and_not_bic",
+        ),
+        nullable=True,
+    )
+    comment = sqla.Column(sqla.Text, nullable=True)
+    author = sqla.Column(sqla.String(27), nullable=False)
+    transactionEndToEndId = sqla.Column(sqla_psql.UUID(as_uuid=True), nullable=True)
+    transactionLabel = sqla.Column(sqla.String(140), nullable=True)
+    paymentMessageId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("payment_message.id"), nullable=True)
+    paymentMessage = sqla_orm.relationship(
+        "PaymentMessage", foreign_keys=[paymentMessageId], backref=sqla_orm.backref("payments")
+    )
+    batchDate = sqla.Column(sqla.DateTime, nullable=True, index=True)
+
+    __table_args__ = (
+        sqla.CheckConstraint(
+            """
+            (
+              "reimbursementRule" IS NOT NULL
+              AND "reimbursementRate" IS NOT NULL
+              AND "customReimbursementRuleId" IS NULL
+            ) OR (
+              "reimbursementRule" IS NULL
+              AND "customReimbursementRuleId" IS NOT NULL
+            )
+            """,
+            name="reimbursement_constraint_check",
+        ),
+    )
+
+
+# `TransactionStatus` is deprecated. See comment above `Payment` model
+# for further details.
+class TransactionStatus(enum.Enum):
+    PENDING = "PENDING"
+    NOT_PROCESSABLE = "NOT PROCESSABLE"
+    SENT = "SENT"
+    ERROR = "ERROR"
+    RETRY = "RETRY"
+    BANNED = "BANNED"
+    UNDER_REVIEW = "UNDER REVIEW"
+
+
+# `PaymentStatus` is deprecated. See comment above `Payment` model for
+# further details.
+class PaymentStatus(PcObject, Model):
+    id = sqla.Column(sqla.BigInteger, primary_key=True, autoincrement=True)
+    paymentId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("payment.id"), index=True, nullable=False)
+    payment = sqla_orm.relationship("Payment", foreign_keys=[paymentId], backref="statuses")
+    date = sqla.Column(sqla.DateTime, nullable=False, default=datetime.datetime.utcnow, server_default=sqla.func.now())
+    status = sqla.Column(sqla.Enum(TransactionStatus), nullable=False)
+    detail = sqla.Column(sqla.Text, nullable=True)
+
+
+# `PaymentMessage` is deprecated. See comment above `Payment` model
+# for further details.
+class PaymentMessage(PcObject, Model):
+    name = sqla.Column(sqla.String(50), unique=True, nullable=False)
+    checksum = sqla.Column(sqla.LargeBinary(32), unique=True, nullable=False)

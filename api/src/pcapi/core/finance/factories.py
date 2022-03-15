@@ -1,11 +1,14 @@
 import datetime
+import decimal
 import secrets
 
 import factory
 from factory.declarations import LazyAttribute
 
 import pcapi.core.bookings.factories as bookings_factories
+import pcapi.core.payments.factories as payments_factories
 from pcapi.core.testing import BaseFactory
+from pcapi.domain import reimbursement
 
 from . import models
 
@@ -100,3 +103,55 @@ class CashflowPricingFactory(BaseFactory):
 
     cashflow = factory.SubFactory(CashflowFactory)
     pricing = factory.SubFactory(PricingFactory, businessUnit=factory.SelfAttribute("..cashflow.businessUnit"))
+
+
+# Factories below are deprecated and should probably NOT BE USED in
+# any new test. See comment in `models.py` above the definition of the
+# `Payment` model.
+REIMBURSEMENT_RULE_DESCRIPTIONS = {t.description for t in reimbursement.REGULAR_RULES}
+
+
+class PaymentFactory(BaseFactory):
+    class Meta:
+        model = models.Payment
+
+    author = "batch"
+    booking = factory.SubFactory(bookings_factories.UsedIndividualBookingFactory)
+    amount = factory.LazyAttribute(
+        lambda payment: payment.booking.total_amount * decimal.Decimal(payment.reimbursementRate)
+    )
+    recipientSiren = factory.SelfAttribute("booking.stock.offer.venue.managingOfferer.siren")
+    reimbursementRule = factory.Iterator(REIMBURSEMENT_RULE_DESCRIPTIONS)
+    reimbursementRate = factory.LazyAttribute(
+        lambda payment: reimbursement.get_reimbursement_rule(
+            payment.booking, reimbursement.CustomRuleFinder(), decimal.Decimal(0)
+        ).rate
+    )
+    recipientName = "Récipiendaire"
+    iban = "CF13QSDFGH456789"
+    bic = "QSDFGH8Z555"
+    transactionLabel = None
+
+    @factory.post_generation
+    def statuses(obj, create, extracted, **kwargs):  # pylint: disable=no-self-argument
+
+        if not create:
+            return None
+        if extracted is not None:
+            return extracted
+        status = PaymentStatusFactory(payment=obj, status=models.TransactionStatus.PENDING)
+        return [status]
+
+
+class PaymentStatusFactory(BaseFactory):
+    class Meta:
+        model = models.PaymentStatus
+
+    payment = factory.SubFactory(PaymentFactory, statuses=[])
+
+
+class PaymentWithCustomRuleFactory(PaymentFactory):
+    amount = factory.LazyAttribute(lambda payment: payment.customReimbursementRule.amount)
+    customReimbursementRule = factory.SubFactory(payments_factories.CustomReimbursementRuleFactory)
+    reimbursementRule = None
+    reimbursementRate = None

@@ -28,9 +28,6 @@ def install_models() -> None:
     import pcapi.models.criterion
     import pcapi.models.feature
     import pcapi.models.offer_criterion
-    import pcapi.models.payment
-    import pcapi.models.payment_message
-    import pcapi.models.payment_status
     import pcapi.models.product
     import pcapi.models.user_offerer
     import pcapi.models.user_session

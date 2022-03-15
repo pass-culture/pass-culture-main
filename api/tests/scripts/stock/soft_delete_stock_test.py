@@ -2,8 +2,8 @@ import pytest
 
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.bookings.models import BookingStatus
+import pcapi.core.finance.factories as finance_factories
 import pcapi.core.offers.factories as offer_factories
-import pcapi.core.payments.factories as payment_factories
 from pcapi.scripts.stock.soft_delete_stock import soft_delete_stock
 
 
@@ -22,7 +22,7 @@ class SoftDeleteStockTest:
     @pytest.mark.usefixtures("db_session")
     def should_return_ko_if_at_least_one_booking_has_payments(self):
         # Given
-        booking = payment_factories.PaymentFactory().booking
+        booking = finance_factories.PaymentFactory().booking
 
         # When
         soft_delete_stock(booking.stock.id)
