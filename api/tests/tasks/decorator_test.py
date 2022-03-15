@@ -64,7 +64,7 @@ class CloudTaskDecoratorTest:
         # Asynchronous call
         test_task.delay(payload)
         requests_post.assert_called_once_with(
-            "http://localhost:5000/cloud-tasks/void_task",
+            "http://localhost:5001/cloud-tasks/void_task",
             headers={"HTTP_X_CLOUDTASKS_QUEUENAME": "test-queue", "AUTHORIZATION": "Bearer secret-token"},
             json={"chouquette_price": 12},
         )
