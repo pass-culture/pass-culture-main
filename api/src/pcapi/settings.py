@@ -92,7 +92,7 @@ SQLALCHEMY_ECHO = bool(int(os.environ.get("SQLALCHEMY_ECHO", "0")))
 # FLASK
 PROFILE_REQUESTS = bool(os.environ.get("PROFILE_REQUESTS", False))
 PROFILE_REQUESTS_LINES_LIMIT = int(os.environ.get("PROFILE_REQUESTS_LINES_LIMIT", 100))
-FLASK_PORT = int(os.environ.get("PORT", 5000))
+FLASK_PORT = int(os.environ.get("PORT", 5001))
 FLASK_SECRET = os.environ.get("FLASK_SECRET", "+%+3Q23!zbc+!Dd@")
 CORS_ALLOWED_ORIGINS = os.environ.get("CORS_ALLOWED_ORIGINS").split(",")
 CORS_ALLOWED_ORIGINS_NATIVE = os.environ.get("CORS_ALLOWED_ORIGINS_NATIVE").split(",")

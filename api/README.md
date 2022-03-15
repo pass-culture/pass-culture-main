@@ -272,7 +272,7 @@ Configurer le working directory par défaut pour être toujours à la racine de 
 Pour debugger sous IntelliJ Pycharm, configurer la configuration de lancement python en précisant :
 
 - Le script à lancer : `scr/pcapi/app.py`
-- Les variables d'environnement `DATABASE_URL` et `PORT` (Sinon le port sera 5000)
+- Les variables d'environnement `DATABASE_URL` et `PORT` (Sinon le port sera 5001)
 - Le répertoire de lancement (Working directory) qui doit pointer vers api
 
   ![pycharm-test-config][pycharm-debugging]
