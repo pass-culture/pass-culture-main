@@ -357,11 +357,11 @@ class CollectiveStock(PcObject, Model):  # type: ignore[valid-type, misc]
 
     dateModified = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow, onupdate=datetime.utcnow)
 
-    beginningDatetime = sa.Column(
-        sa.DateTime, index=True, nullable=False
-    )  #  TODO 4 cas a ratrapper avec un beginDatetime NULL
+    beginningDatetime = sa.Column(sa.DateTime, index=True, nullable=False)
 
-    collectiveOfferId = sa.Column(sa.BigInteger, sa.ForeignKey("collective_offer.id"), index=True, nullable=False)
+    collectiveOfferId = sa.Column(
+        sa.BigInteger, sa.ForeignKey("collective_offer.id"), index=True, nullable=False, unique=True
+    )
 
     collectiveOffer = sa.orm.relationship(
         "CollectiveOffer", foreign_keys=[collectiveOfferId], uselist=False, back_populates="collectiveStock"
