@@ -4,9 +4,9 @@ import decimal
 import click
 import sqlalchemy.orm as sqla_orm
 
+import pcapi.core.finance.utils as finance_utils
 import pcapi.core.offers.models as offers_models
 import pcapi.core.payments.api as payments_api
-import pcapi.core.payments.utils as payments_utils
 from pcapi.utils import human_ids
 from pcapi.utils.blueprint import Blueprint
 import pcapi.utils.date as date_utils
@@ -70,9 +70,9 @@ def add_custom_offer_reimbursement_rule(
             )
             return
 
-    valid_from = date_utils.get_day_start(datetime.date.fromisoformat(valid_from), payments_utils.ACCOUNTING_TIMEZONE)
+    valid_from = date_utils.get_day_start(datetime.date.fromisoformat(valid_from), finance_utils.ACCOUNTING_TIMEZONE)
     valid_until = (
-        date_utils.get_day_start(datetime.date.fromisoformat(valid_until), payments_utils.ACCOUNTING_TIMEZONE)
+        date_utils.get_day_start(datetime.date.fromisoformat(valid_until), finance_utils.ACCOUNTING_TIMEZONE)
         if valid_until
         else None
     )

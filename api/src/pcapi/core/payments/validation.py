@@ -4,11 +4,11 @@ import pytz
 from sqlalchemy import or_
 
 from pcapi.core.categories.subcategories import ALL_SUBCATEGORIES_DICT
+from pcapi.core.finance import utils
 import pcapi.utils.date as date_utils
 
 from . import exceptions
 from . import models
-from . import utils
 
 
 def validate_reimbursement_rule(rule: models.CustomReimbursementRule, check_start_date=True):

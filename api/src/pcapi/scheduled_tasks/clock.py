@@ -10,6 +10,7 @@ import pcapi.core.bookings.api as bookings_api
 import pcapi.core.bookings.repository as bookings_repository
 from pcapi.core.bookings.repository import find_educational_bookings_done_yesterday
 import pcapi.core.finance.api as finance_api
+import pcapi.core.finance.utils as finance_utils
 from pcapi.core.mails.transactional.educational.eac_satisfaction_study_to_pro import (
     send_eac_satisfaction_study_email_to_pro,
 )
@@ -20,7 +21,6 @@ from pcapi.core.offers.repository import check_stock_consistency
 from pcapi.core.offers.repository import delete_past_draft_collective_offers
 from pcapi.core.offers.repository import delete_past_draft_offers
 from pcapi.core.offers.repository import find_tomorrow_event_stock_ids
-import pcapi.core.payments.utils as payments_utils
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.core.subscription.dms import api as dms_api
 from pcapi.core.users import api as users_api
@@ -201,7 +201,7 @@ def price_bookings() -> None:
 @cron_require_feature(FeatureToggle.GENERATE_CASHFLOWS_BY_CRON)
 def generate_cashflows_and_payment_files() -> None:
     last_day = datetime.date.today() - datetime.timedelta(days=1)
-    cutoff = payments_utils.get_cutoff_as_datetime(last_day)
+    cutoff = finance_utils.get_cutoff_as_datetime(last_day)
     finance_api.generate_cashflows_and_payment_files(cutoff)
 
 

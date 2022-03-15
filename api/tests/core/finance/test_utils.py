@@ -1,4 +1,8 @@
+import datetime
 import decimal
+
+import pytest
+import pytz
 
 from pcapi.core.finance import utils
 
@@ -52,3 +56,17 @@ def test_fr_currency_filter():
 def test_format_raw_iban_and_bic():
     assert utils.format_raw_iban_and_bic(None) is None
     assert utils.format_raw_iban_and_bic(" Space and Mixed Case  ") == "SPACEANDMIXEDCASE"
+
+
+@pytest.mark.parametrize(
+    "last_day_as_str, expected_result",
+    [
+        # CET (UTC+1)
+        (datetime.date(2020, 12, 31), datetime.datetime(2020, 12, 31, 23, 0, tzinfo=pytz.utc)),
+        (datetime.date(2021, 2, 28), datetime.datetime(2021, 2, 28, 23, 0, tzinfo=pytz.utc)),
+        # CEST (UTC+2)
+        (datetime.date(2021, 3, 31), datetime.datetime(2021, 3, 31, 22, 0, tzinfo=pytz.utc)),
+    ],
+)
+def test_get_cutoff_as_datetime(last_day_as_str, expected_result):
+    assert utils.get_cutoff_as_datetime(last_day_as_str) == expected_result
