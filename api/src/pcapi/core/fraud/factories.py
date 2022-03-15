@@ -9,6 +9,7 @@ from factory.declarations import LazyAttribute
 import factory.fuzzy
 import pytz
 
+from pcapi.connectors.dms import models as dms_models
 from pcapi.core import testing
 import pcapi.core.fraud.ubble.models as ubble_fraud_models
 from pcapi.core.users import models as users_models
@@ -97,7 +98,7 @@ class DMSContentFactory(factory.Factory):
 
     last_name = factory.Faker("last_name")
     first_name = factory.Faker("first_name")
-    civility = random.choice(["M.", "Mme"])
+    civility = random.choice([civility.value for civility in dms_models.Civility])
     email = factory.Faker("ascii_safe_email")
     application_id = factory.Faker("pyint")
     procedure_id = factory.Faker("pyint")

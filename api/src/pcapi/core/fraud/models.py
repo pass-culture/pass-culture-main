@@ -10,6 +10,7 @@ import pydantic.errors
 import pytz
 import sqlalchemy as sa
 
+from pcapi.connectors.dms import models as dms_models
 from pcapi.core.users import models as users_models
 from pcapi.models import Model
 from pcapi.models.pc_object import PcObject
@@ -166,10 +167,18 @@ class JouveContent(common_models.IdentityCheckContent):
         return self.bodyPieceNumber
 
 
+def _parse_dms_civility(civility: dms_models.Civility) -> typing.Optional[users_models.GenderEnum]:
+    if civility == dms_models.Civility.M:
+        return users_models.GenderEnum.M
+    if civility == dms_models.Civility.MME:
+        return users_models.GenderEnum.F
+    return None
+
+
 class DMSContent(common_models.IdentityCheckContent):
     last_name: str
     first_name: str
-    civility: str
+    civility: typing.Optional[users_models.GenderEnum]
     email: str
     application_id: int
     procedure_id: int
@@ -181,6 +190,8 @@ class DMSContent(common_models.IdentityCheckContent):
     address: typing.Optional[str]
     id_piece_number: typing.Optional[str]
     registration_datetime: typing.Optional[datetime.datetime]
+
+    _parse_civility = pydantic.validator("civility", pre=True, allow_reuse=True)(_parse_dms_civility)
 
     def get_registration_datetime(self) -> typing.Optional[datetime.datetime]:
         return (

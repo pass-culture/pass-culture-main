@@ -5,6 +5,7 @@ import pytest
 
 from pcapi.core.categories import subcategories
 from pcapi.core.users import factories as users_factories
+from pcapi.core.users import models as users_models
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_user_offerer
 from pcapi.model_creators.generic_creators import create_venue
@@ -20,7 +21,7 @@ class Returns200Test:
     @pytest.mark.usefixtures("db_session")
     def when_user_is_logged_in_and_has_no_deposit(self, app):
         user = users_factories.BeneficiaryGrant18Factory(
-            civility="M.",
+            civility=users_models.GenderEnum.M,
             address=None,
             city=None,
             needsToFillCulturalSurvey=False,

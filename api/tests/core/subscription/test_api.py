@@ -10,6 +10,7 @@ from freezegun import freeze_time
 import pytest
 
 from pcapi import settings
+from pcapi.connectors.dms import models as dms_models
 from pcapi.core.fraud import factories as fraud_factories
 from pcapi.core.fraud import models as fraud_models
 import pcapi.core.mails.testing as mails_testing
@@ -446,7 +447,7 @@ class OnSuccessfulDMSApplicationTest:
             address="11 Rue du Test",
             application_id=123,
             procedure_id=123456,
-            civility="Mme",
+            civility=dms_models.Civility.MME,
             activity="Étudiant",
             registration_datetime=datetime.today(),
         )
@@ -461,7 +462,7 @@ class OnSuccessfulDMSApplicationTest:
         # then
         first = users_models.User.query.first()
         assert first.email == "jane.doe@example.com"
-        assert first.civility == "Mme"
+        assert first.civility == users_models.GenderEnum.F
         assert first.activity == "Étudiant"
         assert not first.has_beneficiary_role
         assert (
@@ -482,7 +483,7 @@ class OnSuccessfulDMSApplicationTest:
             address="11 Rue du Test",
             application_id=123,
             procedure_id=123456,
-            civility="Mme",
+            civility=dms_models.Civility.MME,
             activity="Étudiant",
             registration_datetime=datetime.today(),
         )
@@ -504,7 +505,7 @@ class OnSuccessfulDMSApplicationTest:
         first = users_models.User.query.first()
         assert first.email == "jane.doe@example.com"
         assert first.wallet_balance == 300
-        assert first.civility == "Mme"
+        assert first.civility == users_models.GenderEnum.F
         assert first.activity == "Étudiant"
         assert first.has_beneficiary_role
         assert len(push_testing.requests) == 2
@@ -535,19 +536,8 @@ class OnSuccessfulDMSApplicationTest:
             eighteen_years_and_one_month_ago = datetime.today() - relativedelta(years=18, months=1)
 
             # the user deposited their DMS application before turning 18
-            information = fraud_models.DMSContent(
-                department="93",
-                last_name="Doe",
-                first_name="Jane",
+            information = fraud_factories.DMSContentFactory(
                 birth_date=eighteen_years_and_one_month_ago,
-                email="jane.doe@example.com",
-                phone="0612345678",
-                postal_code="93130",
-                address="11 Rue du Test",
-                application_id=123,
-                procedure_id=123456,
-                civility="Mme",
-                activity="Étudiant",
                 registration_datetime=datetime.today(),
             )
             fraud_factories.BeneficiaryFraudCheckFactory(

@@ -3,6 +3,7 @@ import datetime
 import pytest
 
 from pcapi.core.users import factories as users_factories
+from pcapi.core.users import models as user_models
 from pcapi.models.user_session import UserSession
 from pcapi.repository import repository
 from pcapi.utils.date import format_into_utc_date
@@ -16,7 +17,7 @@ class Returns200Test:
     def when_account_is_known(self, app):
         # given
         user = users_factories.BeneficiaryGrant18Factory(
-            civility="M.",
+            civility=user_models.GenderEnum.M,
             city=None,
             address=None,
             needsToFillCulturalSurvey=False,
