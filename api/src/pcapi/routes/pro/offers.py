@@ -199,7 +199,7 @@ def patch_all_offers_active_status(
         "period_beginning_date": body.period_beginning_date,
         "period_ending_date": body.period_ending_date,
     }
-    update_all_offers_active_status_job.delay(filters, body.is_active)
+    update_all_offers_active_status_job.delay(filters, body.is_active, requesting_user_id=current_user.id)
     return offers_serialize.PatchAllOffersActiveStatusResponseModel()
 
 
