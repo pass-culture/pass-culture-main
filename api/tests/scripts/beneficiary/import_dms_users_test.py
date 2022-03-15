@@ -182,7 +182,7 @@ class RunTest:
             source_data=fraud_models.DMSContent(
                 last_name="Doe",
                 first_name="John",
-                civility="MME",
+                civility=dms_models.Civility.MME,
                 email="john.doe@test.com",
                 application_id=123,
                 procedure_id=6712558,
@@ -229,7 +229,7 @@ class ParseBeneficiaryInformationTest:
         information = dms_connector_api.parse_beneficiary_information_graphql(application_detail, procedure_id=201201)
 
         # then
-        assert information.civility == "M"
+        assert information.civility == users_models.GenderEnum.M
 
     @pytest.mark.parametrize("activity", ["Étudiant", None])
     def test_handles_activity(self, activity):
@@ -252,7 +252,7 @@ class ParseBeneficiaryInformationTest:
         )
         assert content.last_name == "VALGEAN"
         assert content.first_name == "Jean"
-        assert content.civility == "M"
+        assert content.civility == users_models.GenderEnum.M
         assert content.email == "jean.valgean@example.com"
         assert content.application_id == 5718303
         assert content.procedure_id == 32
@@ -272,7 +272,7 @@ class ParseBeneficiaryInformationTest:
         )
         assert content.last_name == "VALGEAN"
         assert content.first_name == "Jean"
-        assert content.civility == "M"
+        assert content.civility == users_models.GenderEnum.M
         assert content.email == "jean.valgean@example.com"
         assert content.application_id == 5742994
         assert content.procedure_id == 32

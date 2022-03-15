@@ -222,7 +222,7 @@ def update_user_information_from_external_source(
         if data.city:
             user.city = data.city
         if data.gender:
-            user.civility = "Mme" if data.gender == "F" else "M."
+            user.civility = GenderEnum.F if data.gender == "F" else GenderEnum.M
         if data.birthDateTxt:
             user.dateOfBirth = data.birthDateTxt
         if data.firstName:
@@ -258,7 +258,7 @@ def update_user_information_from_external_source(
         user.lastName = data.last_name
         user.dateOfBirth = datetime.combine(data.birth_date, time(0, 0)) if data.birth_date else None
         user.idPieceNumber = data.get_id_piece_number()
-        user.civility = GenderEnum(data.gender).value if data.gender else None
+        user.civility = data.gender if data.gender else None
         user.married_name = data.married_name
 
     # update user fields to be correctly initialized

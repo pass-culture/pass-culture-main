@@ -157,9 +157,8 @@ class SchoolTypeEnum(enum.Enum):
 
 
 class GenderEnum(enum.Enum):
-    M: str = "M"
-    F: str = "F"
-    NULL: str = "NULL"
+    M: str = "M."
+    F: str = "Mme"
 
 
 class User(PcObject, Model, NeedsValidationMixin):
@@ -168,7 +167,7 @@ class User(PcObject, Model, NeedsValidationMixin):
     activity = sa.Column(sa.String(128), nullable=True)
     address = sa.Column(sa.Text, nullable=True)
     city = sa.Column(sa.String(100), nullable=True)
-    civility = sa.Column(sa.String(20), nullable=True)
+    civility = sa.Column(sa.Enum(GenderEnum, create_constraint=False), nullable=True)
     clearTextPassword = None
     comment = sa.Column(sa.Text(), nullable=True)
     culturalSurveyFilledDate = sa.Column(sa.DateTime, nullable=True)

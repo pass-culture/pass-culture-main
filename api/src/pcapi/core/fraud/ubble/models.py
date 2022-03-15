@@ -25,6 +25,14 @@ class UbbleScore(enum.Enum):
     UNDECIDABLE = -1.0
 
 
+def _parse_ubble_gender(ubble_gender: typing.Optional[str]) -> typing.Optional[users_models.GenderEnum]:
+    if ubble_gender == "M":
+        return users_models.GenderEnum.M
+    if ubble_gender == "F":
+        return users_models.GenderEnum.F
+    return None
+
+
 class UbbleContent(IdentityCheckContent):
     birth_date: typing.Optional[datetime.date]
     comment: typing.Optional[str]
@@ -48,6 +56,7 @@ class UbbleContent(IdentityCheckContent):
     _parse_birth_date = pydantic.validator("birth_date", pre=True, allow_reuse=True)(
         lambda d: datetime.datetime.strptime(d, "%Y-%m-%d").date() if d is not None else None
     )
+    _parse_gender = pydantic.validator("gender", pre=True, allow_reuse=True)(_parse_ubble_gender)
 
     def get_registration_datetime(self) -> typing.Optional[datetime.datetime]:
         return (
