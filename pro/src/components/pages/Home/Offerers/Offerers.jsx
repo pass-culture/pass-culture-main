@@ -113,7 +113,7 @@ const Offerers = () => {
   }
 
   const isOffererSoftDeleted =
-    selectedOfferer && !selectedOfferer.isActive && !selectedOfferer.isValidated
+    selectedOfferer && selectedOfferer.isActive === false
   const userHasOfferers = offererOptions.length > 0
   return (
     <>
