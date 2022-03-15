@@ -54,7 +54,6 @@ from pcapi.core.offerers import repository as offerers_repository
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.models as offers_models
 import pcapi.core.payments.models as payments_models
-import pcapi.core.payments.utils as payments_utils
 import pcapi.core.reference.models as reference_models
 import pcapi.core.users.models as users_models
 from pcapi.domain import reimbursement
@@ -214,14 +213,14 @@ def _get_revenue_period(value_date: datetime.datetime) -> [datetime.datetime, da
     """Return a datetime (year) period for the given value date, i.e. the
     first and last seconds of the year of the ``value_date``.
     """
-    year = value_date.replace(tzinfo=pytz.utc).astimezone(payments_utils.ACCOUNTING_TIMEZONE).year
-    first_second = payments_utils.ACCOUNTING_TIMEZONE.localize(
+    year = value_date.replace(tzinfo=pytz.utc).astimezone(utils.ACCOUNTING_TIMEZONE).year
+    first_second = utils.ACCOUNTING_TIMEZONE.localize(
         datetime.datetime.combine(
             datetime.date(year, 1, 1),
             datetime.time.min,
         )
     ).astimezone(pytz.utc)
-    last_second = payments_utils.ACCOUNTING_TIMEZONE.localize(
+    last_second = utils.ACCOUNTING_TIMEZONE.localize(
         datetime.datetime.combine(
             datetime.date(year, 12, 31),
             datetime.time.max,

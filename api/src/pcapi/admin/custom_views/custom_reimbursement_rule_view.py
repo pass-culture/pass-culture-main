@@ -20,11 +20,11 @@ from pcapi.admin.base_configuration import BaseAdminView
 from pcapi.core.categories.categories import ALL_CATEGORIES_DICT
 from pcapi.core.categories.subcategories import ALL_SUBCATEGORIES
 from pcapi.core.categories.subcategories import ALL_SUBCATEGORIES_DICT
+import pcapi.core.finance.utils as finance_utils
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.models as offers_models
 import pcapi.core.payments.api as payments_api
 import pcapi.core.payments.exceptions as payments_exceptions
-import pcapi.core.payments.utils as payments_utils
 from pcapi.utils import human_ids
 import pcapi.utils.date as date_utils
 from pcapi.utils.mailing import build_pc_pro_offer_link
@@ -138,11 +138,9 @@ def format_rate(view, context, model, name):
 
 
 def format_timespan(view, context, model, name):
-    start = pytz.utc.localize(model.timespan.lower).astimezone(payments_utils.ACCOUNTING_TIMEZONE).strftime("%d/%m/%Y")
+    start = pytz.utc.localize(model.timespan.lower).astimezone(finance_utils.ACCOUNTING_TIMEZONE).strftime("%d/%m/%Y")
     if model.timespan.upper:
-        end = (
-            pytz.utc.localize(model.timespan.upper).astimezone(payments_utils.ACCOUNTING_TIMEZONE).strftime("%d/%m/%Y")
-        )
+        end = pytz.utc.localize(model.timespan.upper).astimezone(finance_utils.ACCOUNTING_TIMEZONE).strftime("%d/%m/%Y")
     else:
         end = "∞"
     return markupsafe.Markup("{start} → {end}").format(start=start, end=end)
@@ -261,9 +259,9 @@ class CustomReimbursementRuleView(BaseAdminView):
     def create_model(self, form):
         if not self.can_create:
             raise Forbidden()
-        start_date = date_utils.get_day_start(form.start_date.data, payments_utils.ACCOUNTING_TIMEZONE)
+        start_date = date_utils.get_day_start(form.start_date.data, finance_utils.ACCOUNTING_TIMEZONE)
         end_date = (
-            date_utils.get_day_start(form.end_date.data, payments_utils.ACCOUNTING_TIMEZONE)
+            date_utils.get_day_start(form.end_date.data, finance_utils.ACCOUNTING_TIMEZONE)
             if form.end_date.data
             else None
         )
@@ -286,7 +284,7 @@ class CustomReimbursementRuleView(BaseAdminView):
     def update_model(self, form, rule):
         if not self.can_edit:
             raise Forbidden()
-        end_date = date_utils.get_day_start(form.end_date.data, payments_utils.ACCOUNTING_TIMEZONE)
+        end_date = date_utils.get_day_start(form.end_date.data, finance_utils.ACCOUNTING_TIMEZONE)
         try:
             rule = payments_api.edit_reimbursement_rule(rule, end_date=end_date)
         except payments_exceptions.ReimbursementRuleValidationError as exc:

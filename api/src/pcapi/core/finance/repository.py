@@ -7,7 +7,6 @@ import pcapi.core.bookings.models as bookings_models
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.models as offers_models
 import pcapi.core.payments.models as payments_models
-import pcapi.core.payments.utils as payments_utils
 import pcapi.core.users.models as users_models
 from pcapi.models import db
 from pcapi.models.bank_information import BankInformation
@@ -16,6 +15,7 @@ from pcapi.models.user_offerer import UserOfferer
 import pcapi.utils.date as date_utils
 
 from . import models
+from . import utils
 
 
 def get_business_units_query(
@@ -77,9 +77,7 @@ def get_invoices_query(
             business_units_subquery.with_entities(offerers_models.Venue.businessUnitId).subquery()
         )
     )
-    convert_to_datetime = lambda date: date_utils.get_day_start(date, payments_utils.ACCOUNTING_TIMEZONE).astimezone(
-        pytz.utc
-    )
+    convert_to_datetime = lambda date: date_utils.get_day_start(date, utils.ACCOUNTING_TIMEZONE).astimezone(pytz.utc)
     if date_from:
         datetime_from = convert_to_datetime(date_from)
         invoices = invoices.filter(models.Invoice.date >= datetime_from)
