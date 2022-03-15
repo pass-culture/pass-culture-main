@@ -3,8 +3,9 @@ import { useLocation } from 'react-router-dom'
 
 import useAnalytics from 'components/hooks/useAnalytics'
 import Icon from 'components/layout/Icon'
+import './OperationProcedures.scss'
 
-export const OperatingProcedures = (): JSX.Element => {
+const OperatingProcedures = (): JSX.Element => {
   const location = useLocation()
   const analytics = useAnalytics()
   return (
@@ -26,3 +27,5 @@ export const OperatingProcedures = (): JSX.Element => {
     </div>
   )
 }
+
+export default OperatingProcedures

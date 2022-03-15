@@ -2,15 +2,14 @@ import React from 'react'
 import { useLocation } from 'react-router-dom'
 
 import useAnalytics from 'components/hooks/useAnalytics'
+import Icon from 'components/layout/Icon'
 
-import Icon from '../Icon'
-
-interface ILegalInfo {
+interface ILegalInfoProps {
   title: string
   className: string
 }
 
-export const LegalInfos = ({ title, className }: ILegalInfo): JSX.Element => {
+const LegalInfos = ({ title, className }: ILegalInfoProps): JSX.Element => {
   const location = useLocation()
   const analytics = useAnalytics()
   return (
@@ -55,3 +54,5 @@ export const LegalInfos = ({ title, className }: ILegalInfo): JSX.Element => {
     </div>
   )
 }
+
+export default LegalInfos

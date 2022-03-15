@@ -7,11 +7,11 @@ import { Link } from 'react-router-dom'
 import FieldErrors from 'components/layout/form/FieldErrors'
 import PasswordField from 'components/layout/form/fields/PasswordField'
 import TextInput from 'components/layout/inputs/TextInput/TextInput'
-import { LegalInfos } from 'components/layout/LegalInfos/LegalInfos'
+import LegalInfos from 'components/layout/LegalInfos/LegalInfos'
 import { redirectLoggedUser } from 'components/router/helpers'
 import bindAddressAndDesignationFromSiren from 'repository/siren/bindSirenFieldToDesignation'
 
-import { OperatingProcedures } from './OperationProcedures'
+import OperatingProcedures from './OperationProcedures'
 import SirenField from './SirenField/SirenField'
 
 const addressAndDesignationFromSirenDecorator = createDecorator({
