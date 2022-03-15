@@ -32,7 +32,7 @@ class Civility(enum.Enum):
     """https://demarches-simplifiees-graphql.netlify.app/civilite.doc.html"""
 
     M = "M"
-    MME = "MME"
+    MME = "Mme"
 
 
 class Applicant(pydantic.BaseModel):

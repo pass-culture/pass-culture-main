@@ -229,7 +229,7 @@ def make_graphql_application(
     state: str,
     postal_code: int = 67200,
     department_code: str = "67 - Bas-Rhin",
-    civility: str = "MME",
+    civility: str = "Mme",
     activity: str = "Étudiant",
     id_piece_number: Optional[str] = "123123123",
     email: Optional[str] = "young.individual@example.com",
