@@ -13,7 +13,6 @@ import BookingOfferCell from '../CellsFormatter/BookingOfferCell'
 import BookingStatusCell from '../CellsFormatter/BookingStatusCell'
 import BookingTokenCell from '../CellsFormatter/BookingTokenCell'
 import { ALL_BOOKING_STATUS, EMPTY_FILTER_VALUE } from '../Filters/_constants'
-import Filters from '../Filters/Filters'
 import Header from '../Header/Header'
 import { NB_BOOKINGS_PER_PAGE } from '../NB_BOOKINGS_PER_PAGE'
 import NoFilteredBookings from '../NoFilteredBookings/NoFilteredBookings'
@@ -549,26 +548,6 @@ describe('components | BookingsRecapTable', () => {
     expect(bookingStatusCell).toHaveLength(1)
   })
 
-  it('should render filters component with expected props', () => {
-    // given
-    const bookingsRecap = []
-    const props = {
-      bookingsRecap: bookingsRecap,
-      isLoading: true,
-    }
-    filterBookingsRecap.mockReturnValueOnce(bookingsRecap)
-
-    // When
-    const wrapper = shallow(<BookingsRecapTable {...props} />)
-
-    // Then
-    const filters = wrapper.find(Filters)
-    expect(filters.props()).toStrictEqual({
-      isLoading: true,
-      updateGlobalFilters: expect.any(Function),
-    })
-  })
-
   it('should not apply filters when component didnt receive new data', () => {
     // given
     const bookingsRecap = [
@@ -676,7 +655,7 @@ describe('components | BookingsRecapTable', () => {
     const wrapper = shallow(<BookingsRecapTable {...props} />)
 
     // When
-    wrapper.setState({ filters: { offerName: 'Avez' } })
+    wrapper.setState({ offerName: 'Avez' })
     const expectedBookingsRecap = [...props.bookingsRecap].concat([newBooking])
     wrapper.setProps({
       bookingsRecap: expectedBookingsRecap,
@@ -692,9 +671,10 @@ describe('components | BookingsRecapTable', () => {
       nbBookingsPerPage: 1,
       updateCurrentPage: expect.any(Function),
     })
-    expect(filterBookingsRecap).toHaveBeenCalledWith(expectedBookingsRecap, {
-      offerName: 'Avez',
-    })
+    expect(filterBookingsRecap).toHaveBeenCalledWith(
+      expectedBookingsRecap,
+      expect.objectContaining({ offerName: 'Avez' })
+    )
   })
 
   it('should render a NoFilteredBookings when no bookings', () => {
@@ -739,9 +719,7 @@ describe('components | BookingsRecapTable', () => {
         <BookingsRecapTable {...props} />
       </Provider>
     )
-    const input = wrapper
-      .find(Filters)
-      .find({ placeholder: "Rechercher par nom d'offre" })
+    const input = wrapper.find({ placeholder: "Rechercher par nom d'offre" })
 
     // When
     input.simulate('change', { target: { value: 'not findable' } })
@@ -800,9 +778,9 @@ describe('components | BookingsRecapTable', () => {
       </Provider>
     )
 
-    const offerNameInput = wrapper
-      .find(Filters)
-      .find({ placeholder: "Rechercher par nom d'offre" })
+    const offerNameInput = wrapper.find({
+      placeholder: "Rechercher par nom d'offre",
+    })
     await offerNameInput.simulate('change', {
       target: { value: 'not findable' },
     })
@@ -816,9 +794,9 @@ describe('components | BookingsRecapTable', () => {
     await displayAllBookingsButton.simulate('click')
 
     // Then
-    const offerName = wrapper
-      .find(Filters)
-      .find({ placeholder: "Rechercher par nom d'offre" })
+    const offerName = wrapper.find({
+      placeholder: "Rechercher par nom d'offre",
+    })
     expect(offerName.text()).toBe('')
   })
 
@@ -896,13 +874,13 @@ describe('components | BookingsRecapTable', () => {
     // Then
     expect(filterBookingsRecap).toHaveBeenCalledWith(
       updatedProps.bookingsRecap,
-      {
+      expect.objectContaining({
         bookingBeneficiary: EMPTY_FILTER_VALUE,
         bookingStatus: ALL_BOOKING_STATUS,
         bookingToken: EMPTY_FILTER_VALUE,
         offerISBN: EMPTY_FILTER_VALUE,
         offerName: EMPTY_FILTER_VALUE,
-      }
+      })
     )
   })
 
@@ -1037,12 +1015,15 @@ describe('components | BookingsRecapTable', () => {
     shallow(<BookingsRecapTable {...props} />)
 
     // Then
-    expect(filterBookingsRecap).toHaveBeenCalledWith(props.bookingsRecap, {
-      bookingStatus: props.locationState.statuses,
-      bookingBeneficiary: EMPTY_FILTER_VALUE,
-      bookingToken: EMPTY_FILTER_VALUE,
-      offerISBN: EMPTY_FILTER_VALUE,
-      offerName: EMPTY_FILTER_VALUE,
-    })
+    expect(filterBookingsRecap).toHaveBeenCalledWith(
+      props.bookingsRecap,
+      expect.objectContaining({
+        bookingStatus: props.locationState.statuses,
+        bookingBeneficiary: EMPTY_FILTER_VALUE,
+        bookingToken: EMPTY_FILTER_VALUE,
+        offerISBN: EMPTY_FILTER_VALUE,
+        offerName: EMPTY_FILTER_VALUE,
+      })
+    )
   })
 })
