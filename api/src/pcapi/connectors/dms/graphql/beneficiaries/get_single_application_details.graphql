@@ -1,7 +1,7 @@
 query getApplication($applicationNumber: Int!) {
-    dossier(number: $applicationNumber) {
-        ...DossierFragment
-    }
+  dossier(number: $applicationNumber) {
+    ...DossierFragment
+  }
 }
 
 fragment DossierFragment on Dossier {
@@ -9,6 +9,7 @@ fragment DossierFragment on Dossier {
   number
   archived
   state
+  dateDepot
   dateDerniereModification
   datePassageEnConstruction
   datePassageEnInstruction
@@ -31,10 +32,12 @@ fragment DossierFragment on Dossier {
     ...RootChampFragment
   }
   usager {
-      email
+    id
+    email
   }
   demandeur {
     ... on PersonnePhysique {
+      id
       civilite
       nom
       prenom

@@ -19,6 +19,7 @@ fragment DossierFragment on Dossier {
   number
   archived
   state
+  dateDepot
   dateDerniereModification
   datePassageEnConstruction
   datePassageEnInstruction
@@ -51,10 +52,12 @@ fragment DossierFragment on Dossier {
     ...RootChampFragment
   }
   usager {
-      email
+    id
+    email
   }
   demandeur {
     ... on PersonnePhysique {
+      id
       civilite
       nom
       prenom
