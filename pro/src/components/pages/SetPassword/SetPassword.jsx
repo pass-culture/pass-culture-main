@@ -3,7 +3,7 @@ import React, { useCallback, Fragment, useState } from 'react'
 import { Field, Form } from 'react-final-form'
 
 import PasswordField from 'components/layout/form/fields/PasswordField'
-import { LegalInfos } from 'components/layout/LegalInfos/LegalInfos'
+import LegalInfos from 'components/layout/LegalInfos/LegalInfos'
 import Logo from 'components/layout/Logo'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import { redirectLoggedUser } from 'components/router/helpers'
