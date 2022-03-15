@@ -7,9 +7,13 @@ import BookingIsDuoCell from './CellsFormatter/BookingIsDuoCell'
 import BookingOfferCell from './CellsFormatter/BookingOfferCell'
 import BookingStatusCell from './CellsFormatter/BookingStatusCell'
 import BookingTokenCell from './CellsFormatter/BookingTokenCell'
-import { ALL_BOOKING_STATUS, EMPTY_FILTER_VALUE } from './Filters/_constants'
+import {
+  ALL_BOOKING_STATUS,
+  DEFAULT_OMNISEARCH_CRITERIA,
+  EMPTY_FILTER_VALUE,
+} from './Filters/_constants'
 import FilterByBookingStatus from './Filters/FilterByBookingStatus'
-import Filters from './Filters/Filters'
+import FilterByOmniSearch from './Filters/FilterByOmniSearch'
 import Header from './Header/Header'
 import { NB_BOOKINGS_PER_PAGE } from './NB_BOOKINGS_PER_PAGE'
 import NoFilteredBookings from './NoFilteredBookings/NoFilteredBookings'
@@ -86,27 +90,28 @@ class BookingsRecapTable extends Component {
           Cell: ({ row }) => <BookingStatusCell bookingRecapInfo={row} />,
           className: 'column-booking-status',
           disableSortBy: true,
-          HeaderTitleFilter: () => (
-            <FilterByBookingStatus
-              bookingStatuses={this.state.filters.bookingStatus}
-              bookingsRecap={props.bookingsRecap}
-              updateGlobalFilters={this.updateGlobalFilters}
-            />
-          ),
+          HeaderTitleFilter: () =>
+            !props.isBookingFiltersActive ? (
+              <FilterByBookingStatus
+                bookingStatuses={this.state.bookingStatus}
+                bookingsRecap={props.bookingsRecap}
+                updateGlobalFilters={this.updateGlobalFilters}
+              />
+            ) : (
+              <span className="table-head-label">Statut actuel</span>
+            ),
         },
       ],
       currentPage: FIRST_PAGE_INDEX,
-      filters: {
-        bookingBeneficiary: EMPTY_FILTER_VALUE,
-        bookingToken: EMPTY_FILTER_VALUE,
-        offerISBN: EMPTY_FILTER_VALUE,
-        offerName: EMPTY_FILTER_VALUE,
-        bookingStatus: props.locationState?.statuses.length
-          ? props.locationState.statuses
-          : [...ALL_BOOKING_STATUS],
-      },
+      bookingBeneficiary: EMPTY_FILTER_VALUE,
+      bookingToken: EMPTY_FILTER_VALUE,
+      offerISBN: EMPTY_FILTER_VALUE,
+      offerName: EMPTY_FILTER_VALUE,
+      bookingStatus: props.locationState?.statuses.length
+        ? props.locationState.statuses
+        : [...ALL_BOOKING_STATUS],
+      selectedOmniSearchCriteria: DEFAULT_OMNISEARCH_CRITERIA,
     }
-    this.filtersRef = React.createRef()
   }
 
   componentDidMount() {
@@ -126,23 +131,16 @@ class BookingsRecapTable extends Component {
     })
   }
 
-  updateGlobalFilters = updatedFilters => {
-    const { filters } = this.state
-
-    this.setState(
-      {
-        filters: {
-          ...filters,
-          ...updatedFilters,
-        },
-      },
-      () => this.applyFilters()
-    )
-  }
-
-  applyFilters = () => {
+  applyFilters = filtersBookingResults => {
     const { bookingsRecap } = this.props
-    const { filters } = this.state
+    const filters = filtersBookingResults || {
+      currentPage: this.state.currentPage,
+      bookingBeneficiary: this.state.bookingBeneficiary,
+      bookingToken: this.state.bookingToken,
+      offerISBN: this.state.offerISBN,
+      offerName: this.state.offerName,
+      bookingStatus: this.state.bookingStatus,
+    }
     const bookingsRecapFiltered = filterBookingsRecap(bookingsRecap, filters)
 
     this.setState({
@@ -151,8 +149,31 @@ class BookingsRecapTable extends Component {
     })
   }
 
-  resetFilters = () => {
-    this.filtersRef.current.resetAllFilters()
+  resetAllFilters = () => {
+    const filtersBookingResults = {
+      bookingBeneficiary: EMPTY_FILTER_VALUE,
+      bookingToken: EMPTY_FILTER_VALUE,
+      offerISBN: EMPTY_FILTER_VALUE,
+      offerName: EMPTY_FILTER_VALUE,
+      bookingStatus: [...ALL_BOOKING_STATUS],
+      keywords: EMPTY_FILTER_VALUE,
+    }
+    this.setState(filtersBookingResults)
+    this.applyFilters(filtersBookingResults)
+  }
+
+  updateFilters = (updatedFilter, updatedSelectedContent) => {
+    const { keywords, selectedOmniSearchCriteria } = updatedSelectedContent
+    this.setState({ ...updatedFilter, keywords, selectedOmniSearchCriteria })
+    this.applyFilters({
+      bookingBeneficiary: this.state.bookingBeneficiary,
+      bookingToken: this.state.bookingToken,
+      offerISBN: this.state.offerISBN,
+      offerName: this.state.offerName,
+      bookingStatus: this.state.bookingStatus,
+      keywords: this.state.keywords,
+      ...updatedFilter,
+    })
   }
 
   render() {
@@ -162,11 +183,14 @@ class BookingsRecapTable extends Component {
 
     return (
       <div>
-        <Filters
-          isLoading={isLoading}
-          ref={this.filtersRef}
-          updateGlobalFilters={this.updateGlobalFilters}
-        />
+        <div className="filters-wrapper">
+          <FilterByOmniSearch
+            isDisabled={isLoading}
+            keywords={this.state.keywords}
+            selectedOmniSearchCriteria={this.state.selectedOmniSearchCriteria}
+            updateFilters={this.updateFilters}
+          />
+        </div>
         {nbBookings > 0 ? (
           <Fragment>
             <Header
@@ -183,7 +207,7 @@ class BookingsRecapTable extends Component {
             />
           </Fragment>
         ) : (
-          <NoFilteredBookings resetFilters={this.resetFilters} />
+          <NoFilteredBookings resetFilters={this.resetAllFilters} />
         )}
       </div>
     )
@@ -196,6 +220,7 @@ BookingsRecapTable.defaultProps = {
 
 BookingsRecapTable.propTypes = {
   bookingsRecap: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+  isBookingFiltersActive: PropTypes.bool.isRequired,
   isLoading: PropTypes.bool.isRequired,
   locationState: PropTypes.shape({
     venueId: PropTypes.string,
