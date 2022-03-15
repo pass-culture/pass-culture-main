@@ -1,11 +1,11 @@
 import * as PropTypes from 'prop-types'
 import React, { useCallback, useEffect, useState, useMemo } from 'react'
 
-import useActiveFeature from 'components/hooks/useActiveFeature'
 import useCurrentUser from 'components/hooks/useCurrentUser'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Spinner from 'components/layout/Spinner'
 import Titles from 'components/layout/Titles/Titles'
+import { useFeature } from 'hooks'
 import * as pcapi from 'repository/pcapi/pcapi'
 
 import BookingsRecapTable from './BookingsRecapTable/BookingsRecapTable'
@@ -32,7 +32,9 @@ const BookingsRecap = ({ location, showNotification }) => {
   const [isDownloadingCSV, setIsDownloadingCSV] = useState(false)
   const [isTableLoading, setIsTableLoading] = useState(false)
   const [wereBookingsRequested, setWereBookingsRequested] = useState(false)
-  const isBookingFiltersActive = useActiveFeature('ENABLE_NEW_BOOKING_FILTERS')
+  const { isActive: isBookingFiltersActive } = useFeature(
+    'ENABLE_NEW_BOOKING_FILTERS'
+  )
   const [hasBooking, setHasBooking] = useState(true)
 
   const loadBookingsRecap = useCallback(

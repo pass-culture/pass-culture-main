@@ -1,21 +1,18 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import { useSelector } from 'react-redux'
 import { Route } from 'react-router-dom'
 
-import useActiveFeature from 'components/hooks/useActiveFeature'
 import Spinner from 'components/layout/Spinner'
 import NotMatch from 'components/pages/Errors/NotFound/NotFound'
-import { selectFeaturesInitialized } from 'store/features/selectors'
+import { useFeature } from 'hooks'
 
 const FeaturedRoute = props => {
   const { children, featureName, ...routeProps } = props
   const { path } = routeProps
 
-  const isFeaturesInitialized = useSelector(selectFeaturesInitialized)
-  const isActive = useActiveFeature(featureName)
+  const { initialized, isActive: isActive } = useFeature(featureName)
 
-  if (!isFeaturesInitialized) {
+  if (!initialized) {
     return (
       <main className="spinner-container">
         <Spinner />

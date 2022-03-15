@@ -8,12 +8,12 @@ import { buildSelectOptions } from 'components/layout/inputs/Select'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Spinner from 'components/layout/Spinner'
 import Titles from 'components/layout/Titles/Titles'
+import { useFeature } from 'hooks'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { Banner } from 'ui-kit'
 
 import './Reimbursement.scss'
 import Breadcrumb from '../../../new_components/Breadcrumb'
-import useActiveFeature from '../../hooks/useActiveFeature'
 
 import ReimbursementsDetails from './ReimbursementsDetails/ReimbursementsDetails'
 import ReimbursementsInvoices from './ReimbursementsInvoices/ReimbursementsInvoices'
@@ -39,7 +39,9 @@ const buildAndSortVenueFilterOptions = venues =>
     .sort(sortByKeyAlphabeticalOrder('displayName'))
 
 const Reimbursements = ({ currentUser }) => {
-  const areInvoicesEnabled = useActiveFeature('SHOW_INVOICES_ON_PRO_PORTAL')
+  const { isActive: areInvoicesEnabled } = useFeature(
+    'SHOW_INVOICES_ON_PRO_PORTAL'
+  )
   const [isLoading, setIsLoading] = useState(true)
   const [venuesOptions, setVenuesOptions] = useState([])
   const [businessUnitsOptions, setBusinessUnitsOptions] = useState([])

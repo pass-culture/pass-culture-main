@@ -4,13 +4,13 @@ import { useHistory, useLocation } from 'react-router'
 import { Link } from 'react-router-dom'
 
 import { HTTP_STATUS } from 'api/helpers'
-import useActiveFeature from 'components/hooks/useActiveFeature'
 import useCurrentUser from 'components/hooks/useCurrentUser'
 import useNotification from 'components/hooks/useNotification'
 import TextInput from 'components/layout/inputs/TextInput/TextInput'
 import Logo from 'components/layout/Logo'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import { redirectLoggedUser } from 'components/router/helpers'
+import { useFeature } from 'hooks'
 import { signin } from 'store/user/thunks'
 import { UNAVAILABLE_ERROR_PAGE } from 'utils/routes'
 
@@ -25,7 +25,9 @@ const SignIn = (): JSX.Element => {
   const location = useLocation()
   const dispatch = useDispatch()
   const notification = useNotification()
-  const isAccountCreationAvailable = useActiveFeature('API_SIRENE_AVAILABLE')
+  const { isActive: isAccountCreationAvailable } = useFeature(
+    'API_SIRENE_AVAILABLE'
+  )
   const isSubmitButtonDisabled = emailValue === '' || passwordValue === ''
 
   useEffect(() => {

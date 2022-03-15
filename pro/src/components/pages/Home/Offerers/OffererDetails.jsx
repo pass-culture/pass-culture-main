@@ -2,9 +2,9 @@ import PropTypes from 'prop-types'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 
-import useActiveFeature from 'components/hooks/useActiveFeature'
 import Icon from 'components/layout/Icon'
 import Select from 'components/layout/inputs/Select'
+import { useFeature } from 'hooks'
 import { Banner } from 'ui-kit'
 
 import { STEP_OFFERER_HASH } from '../HomepageBreadcrumb'
@@ -41,7 +41,7 @@ const OffererDetails = ({
   offererOptions,
   selectedOfferer,
 }) => {
-  const isBankInformationWithSiretActive = useActiveFeature(
+  const { isActive: isBankInformationWithSiretActive } = useFeature(
     'ENFORCE_BANK_INFORMATION_WITH_SIRET'
   )
 

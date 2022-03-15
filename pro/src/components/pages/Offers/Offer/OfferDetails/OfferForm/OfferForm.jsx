@@ -9,7 +9,6 @@ import React, {
 } from 'react'
 import { Link } from 'react-router-dom'
 
-import useActiveFeature from 'components/hooks/useActiveFeature'
 import CheckboxInput from 'components/layout/inputs/CheckboxInput'
 import DurationInput from 'components/layout/inputs/DurationInput/DurationInput'
 import Select, {
@@ -20,6 +19,7 @@ import TextareaInput from 'components/layout/inputs/TextareaInput'
 import TextInput from 'components/layout/inputs/TextInput/TextInput'
 import InternalBanner from 'components/layout/InternalBanner'
 import Spinner from 'components/layout/Spinner'
+import { useFeature } from 'hooks'
 import { SubmitButton } from 'ui-kit'
 import { doesUserPreferReducedMotion } from 'utils/windowMatchMedia'
 
@@ -121,7 +121,7 @@ const OfferForm = ({
   const [isLoading, setIsLoading] = useState(true)
   const [isSubmitLoading, setIsSubmitLoading] = useState(false)
 
-  const isIsbnRequiredInLivreEditionEnabled = useActiveFeature(
+  const { isActive: isIsbnRequiredInLivreEditionEnabled } = useFeature(
     'ENABLE_ISBN_REQUIRED_IN_LIVRE_EDITION_OFFER_CREATION'
   )
 

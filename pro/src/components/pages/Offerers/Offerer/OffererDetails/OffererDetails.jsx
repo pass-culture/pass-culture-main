@@ -2,11 +2,11 @@ import PropTypes from 'prop-types'
 import React, { useEffect, useMemo, useState, useCallback } from 'react'
 import { NavLink } from 'react-router-dom'
 
-import useActiveFeature from 'components/hooks/useActiveFeature'
 import Icon from 'components/layout/Icon'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Spinner from 'components/layout/Spinner'
 import Titles from 'components/layout/Titles/Titles'
+import { useFeature } from 'hooks'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { HTTP_STATUS } from 'repository/pcapi/pcapiClient'
 
@@ -16,7 +16,7 @@ import { Offerer } from './Offerer'
 import VenuesContainer from './Venues/VenuesContainer'
 
 const OffererDetails = ({ offererId }) => {
-  const isBankInformationWithSiretActive = useActiveFeature(
+  const { isActive: isBankInformationWithSiretActive } = useFeature(
     'ENFORCE_BANK_INFORMATION_WITH_SIRET'
   )
   const [offerer, setOfferer] = useState(null)

@@ -3,9 +3,9 @@ import React, { useEffect } from 'react'
 import { Route, Switch } from 'react-router-dom'
 
 import AppLayout from 'app/AppLayout'
-import useActiveFeature from 'components/hooks/useActiveFeature'
 import Logo from 'components/layout/Logo'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
+import { useFeature } from 'hooks'
 import { campaignTracker } from 'tracking/mediaCampaignsTracking'
 
 import SignupConfirmationContainer from './SignupConfirmation/SignupConfirmationContainer'
@@ -16,7 +16,7 @@ const Signup = ({ location }) => {
   useEffect(() => {
     campaignTracker.signUp()
   }, [])
-  const isProAccountCreationEnabled = useActiveFeature(
+  const { isActive: isProAccountCreationEnabled } = useFeature(
     'ENABLE_PRO_ACCOUNT_CREATION'
   )
   return (

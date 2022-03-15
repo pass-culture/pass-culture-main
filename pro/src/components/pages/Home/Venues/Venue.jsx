@@ -2,7 +2,7 @@ import * as PropTypes from 'prop-types'
 import React, { Fragment } from 'react'
 import { Link } from 'react-router-dom'
 
-import useActiveFeature from 'components/hooks/useActiveFeature'
+import useFeature from 'hooks/useFeature'
 import Icon from 'components/layout/Icon'
 import { BOOKING_STATUS } from 'core/Bookings'
 import { venueCreateOfferLink } from 'core/Venue/utils'
@@ -59,8 +59,8 @@ const Venue = ({
     },
   ]
 
-  const isVenueV2Enabled = useActiveFeature('ENABLE_NEW_VENUE_PAGES')
-  const isBankInformationWithSiretActive = useActiveFeature(
+  const { isActive: isVenueV2Enabled } = useFeature('ENABLE_NEW_VENUE_PAGES')
+  const { isActive: isBankInformationWithSiretActive } = useFeature(
     'ENFORCE_BANK_INFORMATION_WITH_SIRET'
   )
 

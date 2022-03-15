@@ -5,29 +5,19 @@ import { matchPath } from 'react-router'
 
 import useCurrentUser from 'components/hooks/useCurrentUser'
 import Spinner from 'components/layout/Spinner'
+import { useFeature } from 'hooks'
 import routes, { routesWithMain } from 'utils/routes_map'
 
 import RedirectToMaintenance from './RedirectToMaintenance'
 
 export const App = props => {
-  const {
-    children,
-    isFeaturesInitialized,
-    history,
-    isMaintenanceActivated,
-    loadFeatures,
-    location,
-  } = props
+  const { children, history, isMaintenanceActivated, location } = props
 
   const [isReady, setIsReady] = useState(false)
   const { isUserInitialized, currentUser } = useCurrentUser()
   const currentPathname = window.location.pathname
 
-  useEffect(() => {
-    if (!isFeaturesInitialized) {
-      loadFeatures()
-    }
-  }, [isFeaturesInitialized, loadFeatures])
+  const { initialized: isFeaturesInitialized } = useFeature()
 
   useEffect(() => {
     if (isUserInitialized && !currentUser) {
@@ -61,7 +51,7 @@ export const App = props => {
     return <RedirectToMaintenance />
   }
 
-  if (!isReady || !isUserInitialized) {
+  if (!isReady || !isUserInitialized || !isFeaturesInitialized) {
     return (
       <main className="spinner-container">
         <Spinner />
@@ -78,8 +68,6 @@ App.propTypes = {
     PropTypes.shape(),
   ]).isRequired,
   history: PropTypes.shape().isRequired,
-  isFeaturesInitialized: PropTypes.bool.isRequired,
   isMaintenanceActivated: PropTypes.bool.isRequired,
-  loadFeatures: PropTypes.func.isRequired,
   location: PropTypes.shape().isRequired,
 }

@@ -4,10 +4,10 @@ import { Form } from 'react-final-form'
 import { getCanSubmit, parseSubmitErrors } from 'react-final-form-utils'
 import { Link, NavLink } from 'react-router-dom'
 
-import useActiveFeature from 'components/hooks/useActiveFeature'
 import Icon from 'components/layout/Icon'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Titles from 'components/layout/Titles/Titles'
+import { useFeature } from 'hooks'
 import { ReactComponent as AddOfferSvg } from 'icons/ico-plus.svg'
 import { Banner } from 'ui-kit'
 
@@ -51,7 +51,7 @@ const VenueEdition = ({
   const [venueLabels, setVenueLabels] = useState(null)
   const deleteBusinessUnitConfirmed = useRef(false)
 
-  const isBankInformationWithSiretActive = useActiveFeature(
+  const { isActive: isBankInformationWithSiretActive } = useFeature(
     'ENFORCE_BANK_INFORMATION_WITH_SIRET'
   )
 
