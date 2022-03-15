@@ -19,7 +19,7 @@ FLAG = feature.FeatureToggle.USER_PROFILING_FRAUD_CHECK
 
 
 def upgrade() -> None:
-    feature.add_feature_to_database(FLAG)
+    feature.legacy_add_feature_to_database(FLAG)
 
 
 def downgrade() -> None:

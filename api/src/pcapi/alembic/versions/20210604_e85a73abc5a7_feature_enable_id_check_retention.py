@@ -18,7 +18,7 @@ FLAG = feature.FeatureToggle.ENABLE_ID_CHECK_RETENTION
 
 
 def upgrade():
-    feature.add_feature_to_database(FLAG)
+    feature.legacy_add_feature_to_database(FLAG)
 
 
 def downgrade():

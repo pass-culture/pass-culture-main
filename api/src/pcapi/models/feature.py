@@ -136,7 +136,9 @@ FEATURES_DISABLED_BY_DEFAULT = (
 )
 
 
-def add_feature_to_database(feature: FeatureToggle) -> None:
+# FIXME (dbaty, 2022-03-15): remove this function once migrations have
+# been squashed and we don't need this function anymore.
+def legacy_add_feature_to_database(feature: FeatureToggle) -> None:
     """This function is to be used as the "upgrade" function of a
     migration when introducing a new feature flag.
     """
@@ -154,15 +156,38 @@ def add_feature_to_database(feature: FeatureToggle) -> None:
     op.execute(statement)
 
 
-def remove_feature_from_database(feature: FeatureToggle) -> None:
-    """This function is to be used as the "downgrade" function of a
-    migration when introducing a new feature flag.
+def add_feature_to_database(feature: Feature) -> None:
+    """This function is to be used in the "downgrade" function of a
+    migration when removing a new feature flag (so that it's added
+    back if we revert the migration).
+    """
+    statement = text(
+        """
+        INSERT INTO feature (name, description, "isActive")
+        VALUES (:name, :description, :is_active)
+        """
+    )
+    statement = statement.bindparams(
+        name=feature.name,
+        description=feature.description,
+        is_active=feature.isActive,
+    )
+    op.execute(statement)
+
+
+def remove_feature_from_database(feature: Feature) -> None:
+    """This function is to be used in the "upgrade" function of a
+    migration when removing a feature flag.
     """
     statement = text("DELETE FROM feature WHERE name = :name").bindparams(name=feature.name)
     op.execute(statement)
 
 
 def install_feature_flags() -> None:
+    """Automatically add new feature flags to the database.
+
+    This is done before each deployment and in tests.
+    """
     installed_flag_names = {f[0] for f in Feature.query.with_entities(Feature.name).all()}
     defined_flag_name = {f.name for f in list(FeatureToggle)}
 
