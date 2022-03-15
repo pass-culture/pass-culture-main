@@ -201,7 +201,7 @@ def edit_educational_stock(
         stock = offers_api.edit_educational_stock(stock, body.dict(exclude_unset=True))
         if collective_stock:
             # FIXME (rpaoloni, 2022-03-09): raise exception if not collective_stock after the migration
-            educational_api.edit_collective_stock(stock, body.dict(exclude_unset=True))
+            educational_api.edit_collective_stock(collective_stock, body.dict(exclude_unset=True))
         return stock_serialize.StockEditionResponseModel.from_orm(stock)
     except educational_exceptions.OfferIsNotEducational:
         raise ApiErrors(
