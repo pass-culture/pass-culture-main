@@ -20,10 +20,13 @@ parameters:
     default: 'deps1-{{ checksum "/home/circleci/.pyenv/version" }}-{{ checksum "api/requirements.txt" }}'
   pro_cache_key:
     type: string
-    default: 'yarn-packages-{{ checksum "pro/yarn.lock" }}'
+    default: 'node_modules-14.18-{{ checksum "pro/yarn.lock" }}'
+  pro_jest_cache_key:
+    type: string
+    default: 'node-14.18-jest-cache-{{ epoch }}' # epoch is to ensure we store jest cache at each run (cf https://circleci.com/docs/2.0/caching/#using-keys-and-templates)
   adage-front_cache_key:
     type: string
-    default: 'yarn-packages-{{ checksum "adage-front/yarn.lock" }}'
+    default: 'node_modules-14.18-{{ checksum "adage-front/yarn.lock" }}'
 
 ###################
 #  EXECUTORS
@@ -456,7 +459,7 @@ jobs:
                 name: Save Yarn Package Cache
                 key: << pipeline.parameters.adage-front_cache_key >>
                 paths:
-                  - ~/.cache/yarn
+                  - ~/pass-culture/adage-front/node_modules
       - run:
           name: Running type checking
           working_directory: adage-front
@@ -496,7 +499,7 @@ jobs:
                 name: Save Yarn Package Cache
                 key: << pipeline.parameters.adage-front_cache_key >>
                 paths:
-                  - ~/.cache/yarn
+                  - ~/pass-culture/adage-front/node_modules
       - run:
           name: Running linter
           working_directory: adage-front
@@ -527,8 +530,7 @@ jobs:
       - run:
           name: Install dependencies
           working_directory: adage-front
-          command: |
-            yarn install
+          command: yarn install
       - unless:
           condition:
             equal: ["master", << pipeline.git.branch >>]
@@ -537,12 +539,11 @@ jobs:
                 name: Save Yarn Package Cache
                 key: << pipeline.parameters.adage-front_cache_key >>
                 paths:
-                  - ~/.cache/yarn
+                  - ~/pass-culture/adage-front/node_modules
       - run:
           name: Run Unit Test Adage-front
           working_directory: adage-front
-          command: |
-            yarn test:unit
+          command: yarn test:unit
       - when:
           condition:
             equal: ["master", << pipeline.git.branch >>]
@@ -577,7 +578,7 @@ jobs:
                 name: Save Yarn Package Cache
                 key: << pipeline.parameters.pro_cache_key >>
                 paths:
-                  - ~/.cache/yarn
+                  - ~/pass-culture/pro/node_modules
       - run:
           name: Running type checking
           working_directory: pro
@@ -590,14 +591,13 @@ jobs:
                 channel: shérif
 
   quality-pro:
-    machine:
-      image: ubuntu-2004:202101-01
+    docker:
+      - image: cimg/node:14.18
     working_directory: ~/pass-culture
     steps:
       - checkout
       - skip_unchanged:
           paths: pro
-      - run: ./install_lib_ci.sh
       - unless:
           condition:
             equal: ["master", << pipeline.git.branch >>]
@@ -608,11 +608,7 @@ jobs:
       - run:
           name: Install dependencies
           working_directory: pro
-          command: |
-            export NVM_DIR="/opt/circleci/.nvm"
-            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-            nvm install
-            yarn install
+          command: yarn install
       - unless:
           condition:
             equal: ["master", << pipeline.git.branch >>]
@@ -621,15 +617,11 @@ jobs:
                 name: Save Yarn Package Cache
                 key: << pipeline.parameters.pro_cache_key >>
                 paths:
-                  - ~/.cache/yarn
+                  - ~/pass-culture/pro/node_modules
       - run:
           name: Running linter
           working_directory: pro
-          command: |
-            export NVM_DIR="/opt/circleci/.nvm"
-            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-            nvm install
-            yarn lint:js
+          command: yarn lint:js
       - when:
           condition:
             equal: ["master", << pipeline.git.branch >>]
@@ -638,23 +630,43 @@ jobs:
                 channel: shérif
 
   tests-pro-unit-tests:
-    machine:
-      image: ubuntu-2004:202101-01
+    docker:
+      - image: cimg/node:14.18
     working_directory: ~/pass-culture
     steps:
       - checkout
       - skip_unchanged:
           paths: pro
-      - run: ./install_lib_ci.sh
+      - unless:
+          condition:
+            equal: ["master", << pipeline.git.branch >>]
+          steps:
+            - restore_cache:
+                name: Restore Yarn Package Cache
+                key: << pipeline.parameters.pro_cache_key >>
+      - restore_cache:
+          name: Restore Jest Cache
+          key: node-14.18-jest-cache-
       - run:
           name: Run Unit Test PRO
           command: |
-            export NVM_DIR="/opt/circleci/.nvm"
-            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-            cd pro
-            nvm install
             yarn install
-            yarn test:unit
+            yarn test:unit:ci
+          working_directory: pro
+      - unless:
+          condition:
+            equal: ["master", << pipeline.git.branch >>]
+          steps:
+            - save_cache:
+                name: Save Yarn Package Cache
+                key: << pipeline.parameters.pro_cache_key >>
+                paths:
+                  - ~/pass-culture/pro/node_modules
+      - save_cache:
+          name: Save Jest Package Cache
+          key: node-14.18-jest-cache-{{ epoch }}
+          paths:
+            - ~/pass-culture/pro/.jest_cache
       - when:
           condition:
             equal: ["master", << pipeline.git.branch >>]
@@ -681,6 +693,13 @@ jobs:
             cd api
             pc start-backend
           background: true
+      - unless:
+          condition:
+            equal: ["master", << pipeline.git.branch >>]
+          steps:
+            - restore_cache:
+                name: Restore Yarn Package Cache
+                key: << pipeline.parameters.pro_cache_key >>
       - run:
           name: Run Frontend PRO
           command: |
