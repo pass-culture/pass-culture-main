@@ -12,6 +12,9 @@ class IdentityCheckContent(pydantic.BaseModel):
     def get_registration_datetime(self) -> typing.Optional[datetime.datetime]:
         raise NotImplementedError()
 
+    def set_registration_datetime(self, new_date: datetime.datetime) -> None:
+        raise NotImplementedError()
+
     def get_first_name(self) -> typing.Optional[str]:
         raise NotImplementedError()
 

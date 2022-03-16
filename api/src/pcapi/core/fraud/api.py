@@ -370,7 +370,7 @@ def on_user_profiling_check_result(
 
 
 def get_source_data(user: users_models.User) -> pydantic.BaseModel:
-    fraud_check = (
+    fraud_check: models.BeneficiaryFraudCheck = (
         models.BeneficiaryFraudCheck.query.filter(
             models.BeneficiaryFraudCheck.userId == user.id,
             models.BeneficiaryFraudCheck.type.in_(
@@ -385,7 +385,14 @@ def get_source_data(user: users_models.User) -> pydantic.BaseModel:
         .order_by(models.BeneficiaryFraudCheck.dateCreated.desc())
         .first()
     )
-    return models.FRAUD_CHECK_MAPPING[fraud_check.type](**fraud_check.resultContent)
+    identity_check_content: common_models.IdentityCheckContent = models.FRAUD_CHECK_MAPPING[fraud_check.type](
+        **fraud_check.resultContent
+    )
+
+    if not identity_check_content.get_registration_datetime():
+        # If no registration date is filled, we use the next best thing: the fraud_check creation date
+        identity_check_content.set_registration_datetime(fraud_check.dateCreated)
+    return identity_check_content
 
 
 def create_failed_phone_validation_fraud_check(

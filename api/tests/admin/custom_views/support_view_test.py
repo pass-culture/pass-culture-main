@@ -278,6 +278,42 @@ class BeneficiaryValidationViewTest:
         assert message.popOverIcon == subscription_models.PopOverIcon.ERROR
         assert message.userMessage == "Ton dossier a été rejeté. Tu n'es malheureusement pas éligible au pass culture."
 
+    @override_features(BENEFICIARY_VALIDATION_AFTER_FRAUD_CHECKS=True)
+    def test_review_ok_with_jouve_and_no_registration_date(self, client):
+        # Dates extracted from real data, after investigating a bug
+        with freezegun.freeze_time("2022-03-16"):
+            user = users_factories.UserFactory(dateOfBirth=datetime(2003, 3, 4))
+            content = fraud_factories.JouveContentFactory(registrationDate=None)
+            check = fraud_factories.BeneficiaryFraudCheckFactory(
+                user=user,
+                type=fraud_models.FraudCheckType.JOUVE,
+                resultContent=content,
+            )
+            admin = users_factories.AdminFactory()
+            client.with_session_auth(admin.email)
+
+            response = client.post(
+                f"/pc/back-office/support_beneficiary/validate/beneficiary/{user.id}",
+                form={"user_id": user.id, "reason": "User is granted", "review": "OK"},
+            )
+            assert response.status_code == 302
+
+            review = fraud_models.BeneficiaryFraudReview.query.filter_by(user=user, author=admin).one()
+
+            assert review.review == fraud_models.FraudReviewStatus.OK
+            assert review.reason == "User is granted"
+
+            user = users_models.User.query.get(user.id)
+            assert user.has_beneficiary_role is True
+            assert len(user.deposits) == 1
+            assert mails_testing.outbox[0].sent_data["template"] == dataclasses.asdict(
+                TransactionalEmail.ACCEPTED_AS_BENEFICIARY.value
+            )
+
+            jouve_content = fraud_models.JouveContent(**check.resultContent)
+            assert user.firstName == jouve_content.firstName
+            assert user.lastName == jouve_content.lastName
+
 
 @pytest.mark.usefixtures("db_session")
 class JouveAccessTest:

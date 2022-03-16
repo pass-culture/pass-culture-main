@@ -101,6 +101,9 @@ class EduconnectContent(common_models.IdentityCheckContent):
     def get_registration_datetime(self) -> datetime.datetime:
         return self.registration_datetime
 
+    def set_registration_datetime(self, new_date: datetime.datetime) -> None:
+        self.registration_datetime = new_date
+
     def get_first_name(self) -> str:
         return self.first_name
 
@@ -154,6 +157,9 @@ class JouveContent(common_models.IdentityCheckContent):
     def get_registration_datetime(self) -> typing.Optional[datetime.datetime]:
         return self.registrationDate
 
+    def set_registration_datetime(self, new_date: datetime.datetime) -> None:
+        self.registrationDate = new_date
+
     def get_first_name(self) -> typing.Optional[str]:
         return self.firstName
 
@@ -197,6 +203,9 @@ class DMSContent(common_models.IdentityCheckContent):
         return (
             self.registration_datetime.astimezone(pytz.utc).replace(tzinfo=None) if self.registration_datetime else None
         )
+
+    def set_registration_datetime(self, new_date: datetime.datetime) -> None:
+        self.registration_datetime = new_date
 
     def get_first_name(self) -> str:
         return self.first_name
