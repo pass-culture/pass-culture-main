@@ -1741,6 +1741,27 @@ class UpdateOfferTest:
 
 class BatchUpdateOffersTest:
     @mock.patch("pcapi.core.search.async_index_offer_ids")
+    def test_activate_empty_list(self, mocked_async_index_offer_ids, caplog):
+        pending_offer = offer_factories.OfferFactory(validation=offer_models.OfferValidationStatus.PENDING)
+
+        query = offer_models.Offer.query.filter(offer_models.Offer.id.in_({pending_offer.id}))
+        with caplog.at_level(logging.INFO):
+            api.batch_update_offers(query, {"isActive": True})
+
+        assert not offer_models.Offer.query.get(pending_offer.id).isActive
+        mocked_async_index_offer_ids.assert_not_called()
+
+        assert len(caplog.records) == 1
+        record = caplog.records[0]
+
+        assert record.message == "Batch update of offers"
+        assert record.extra == {
+            "nb_offers": 0,
+            "updated_fields": {"isActive": True},
+            "venue_ids": [],
+        }
+
+    @mock.patch("pcapi.core.search.async_index_offer_ids")
     def test_activate(self, mocked_async_index_offer_ids, caplog):
         offer1 = offer_factories.OfferFactory(isActive=False)
         offer2 = offer_factories.OfferFactory(isActive=False)
