@@ -104,81 +104,89 @@ const BankInformationWithBusinessUnit = ({
   ])
 
   if (isLoading) return <Spinner />
-  return (
-    <div className="section vp-content-section bank-information">
-      <div className="main-list-title title-actions-container">
-        <h2 className="main-list-title-text">Coordonnées bancaires du lieu</h2>
-        {displayedBanners[REPLACE_DMS_FILE_BUTTON] && (
-          <a
-            className="tertiary-link"
-            href={DEMARCHES_SIMPLIFIEES_BUSINESS_UNIT_RIB_UPLOAD_PROCEDURE_URL}
-            rel="noopener noreferrer"
-            target="_blank"
-          >
-            <Icon alt="" svg="ico-external-site" />
-            Modifier
-          </a>
-        )}
-      </div>
-      <p className="bi-subtitle">
-        Ces coordonnées bancaires seront utilisées pour les remboursements des
-        offres éligibles de ce lieu.
-      </p>
-      {!!businessUnitOptions.length && (
-        <div className="field field-select">
-          <div className="field-label">
-            <label htmlFor="venue-business-unit">
-              Coordonnées bancaires pour vos remboursements :
-            </label>
-          </div>
-          {readOnly ? (
-            businessUnitDisplayName(venueBusinessUnit)
-          ) : (
-            <div className="control control-select">
-              <div className="select">
-                <Field
-                  component="select"
-                  id="venue-business-unit"
-                  name="businessUnitId"
-                  readOnly={readOnly}
-                >
-                  <option disabled value="">
-                    Sélectionner des coordonnées dans la liste
-                  </option>
-                  {businessUnitOptions.map(option => (
-                    <option key={option.key} value={option.id}>
-                      {option.displayName}
-                    </option>
-                  ))}
-                </Field>
-              </div>
-            </div>
+  if (!venue.isVirtual || !!businessUnitOptions.length)
+    return (
+      <div className="section vp-content-section bank-information">
+        <div className="main-list-title title-actions-container">
+          <h2 className="main-list-title-text">
+            Coordonnées bancaires du lieu
+          </h2>
+          {displayedBanners[REPLACE_DMS_FILE_BUTTON] && (
+            <a
+              className="tertiary-link"
+              href={
+                DEMARCHES_SIMPLIFIEES_BUSINESS_UNIT_RIB_UPLOAD_PROCEDURE_URL
+              }
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              <Icon alt="" svg="ico-external-site" />
+              Modifier
+            </a>
           )}
         </div>
-      )}
-      <div className="banners">
-        {displayedBanners[PENDING_DMS_FILE_BANNER] && (
-          <ApplicationBanner
-            applicationId={venue.demarchesSimplifieesApplicationId}
-          />
+        <p className="bi-subtitle">
+          Ces coordonnées bancaires seront utilisées pour les remboursements des
+          offres éligibles de ce lieu.
+        </p>
+        {!!businessUnitOptions.length && (
+          <div className="field field-select">
+            <div className="field-label">
+              <label htmlFor="venue-business-unit">
+                Coordonnées bancaires pour vos remboursements :
+              </label>
+            </div>
+            {readOnly ? (
+              businessUnitDisplayName(venueBusinessUnit)
+            ) : (
+              <div className="control control-select">
+                <div className="select">
+                  <Field
+                    component="select"
+                    id="venue-business-unit"
+                    name="businessUnitId"
+                    readOnly={readOnly}
+                  >
+                    <option disabled value="">
+                      Sélectionner des coordonnées dans la liste
+                    </option>
+                    {businessUnitOptions.map(option => (
+                      <option key={option.key} value={option.id}>
+                        {option.displayName}
+                      </option>
+                    ))}
+                  </Field>
+                </div>
+              </div>
+            )}
+          </div>
         )}
-        {displayedBanners[CREATE_DMS_FILE_BANNER] && (
+        <div className="banners">
+          {displayedBanners[PENDING_DMS_FILE_BANNER] && (
+            <ApplicationBanner
+              applicationId={venue.demarchesSimplifieesApplicationId}
+            />
+          )}
+          {displayedBanners[CREATE_DMS_FILE_BANNER] && (
+            <Banner
+              href={
+                DEMARCHES_SIMPLIFIEES_BUSINESS_UNIT_RIB_UPLOAD_PROCEDURE_URL
+              }
+              linkTitle="Ajouter des coordonnées bancaires"
+            >
+              Pour ajouter de nouvelles coordonnées bancaires, rendez-vous sur
+              Démarches Simplifiées.
+            </Banner>
+          )}
           <Banner
-            href={DEMARCHES_SIMPLIFIEES_BUSINESS_UNIT_RIB_UPLOAD_PROCEDURE_URL}
-            linkTitle="Ajouter des coordonnées bancaires"
-          >
-            Pour ajouter de nouvelles coordonnées bancaires, rendez-vous sur
-            Démarches Simplifiées.
-          </Banner>
-        )}
-        <Banner
-          href="https://passculture.zendesk.com/hc/fr/articles/4411992051601"
-          linkTitle="En savoir plus sur les remboursements"
-          type="notification-info"
-        />
+            href="https://passculture.zendesk.com/hc/fr/articles/4411992051601"
+            linkTitle="En savoir plus sur les remboursements"
+            type="notification-info"
+          />
+        </div>
       </div>
-    </div>
-  )
+    )
+  return null
 }
 
 BankInformationWithBusinessUnit.defaultProps = {
