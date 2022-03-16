@@ -462,7 +462,7 @@ class OnSuccessfulDMSApplicationTest:
         # then
         first = users_models.User.query.first()
         assert first.email == "jane.doe@example.com"
-        assert first.civility == users_models.GenderEnum.F
+        assert first.civility == users_models.GenderEnum.F.value
         assert first.activity == "Étudiant"
         assert not first.has_beneficiary_role
         assert (
@@ -505,7 +505,7 @@ class OnSuccessfulDMSApplicationTest:
         first = users_models.User.query.first()
         assert first.email == "jane.doe@example.com"
         assert first.wallet_balance == 300
-        assert first.civility == users_models.GenderEnum.F
+        assert first.civility == users_models.GenderEnum.F.value
         assert first.activity == "Étudiant"
         assert first.has_beneficiary_role
         assert len(push_testing.requests) == 2

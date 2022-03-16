@@ -42,7 +42,7 @@ def update_gender_and_married_name_from_ubble(dry_run: bool = True) -> None:
         if content.gender is not None or content.married_name is not None:
             nb_users_updated += 1
             if not dry_run:
-                user.civility = content.gender
+                user.civility = content.gender.value
                 user.married_name = content.married_name
 
                 if nb_users_updated % BATCH_SIZE == 0:

@@ -29,7 +29,9 @@ class UpdateGenderAndMarriedNameFromUbbleTest:
         )
 
         # Beneficiary with gender
-        self.user_beneficiary_up_to_date = users_factories.BeneficiaryGrant18Factory(civility=users_models.GenderEnum.F)
+        self.user_beneficiary_up_to_date = users_factories.BeneficiaryGrant18Factory(
+            civility=users_models.GenderEnum.F.value
+        )
 
         # Beneficiary with no gender nor married_name
         self.user_beneficiary_to_update = users_factories.BeneficiaryGrant18Factory(civility=None, married_name=None)
@@ -65,7 +67,7 @@ class UpdateGenderAndMarriedNameFromUbbleTest:
 
         assert self.user_not_beneficiary.civility is None
         assert self.user_not_beneficiary.married_name is None
-        assert self.user_beneficiary_up_to_date.civility == users_models.GenderEnum.F
+        assert self.user_beneficiary_up_to_date.civility == users_models.GenderEnum.F.value
         assert self.user_beneficiary_up_to_date.married_name is None
         assert self.user_beneficiary_dms.civility is None
         assert self.user_beneficiary_dms.married_name is None
@@ -90,7 +92,7 @@ class UpdateGenderAndMarriedNameFromUbbleTest:
 
         assert self.user_not_beneficiary.civility is None
         assert self.user_not_beneficiary.married_name is None
-        assert self.user_beneficiary_up_to_date.civility == users_models.GenderEnum.F
+        assert self.user_beneficiary_up_to_date.civility == users_models.GenderEnum.F.value
         assert self.user_beneficiary_up_to_date.married_name is None
         assert self.user_beneficiary_dms.civility is None
         assert self.user_beneficiary_dms.married_name is None
@@ -98,5 +100,5 @@ class UpdateGenderAndMarriedNameFromUbbleTest:
         assert self.old_user_beneficiary.married_name is None
 
         # Only user to be updated
-        assert self.user_beneficiary_to_update.civility == users_models.GenderEnum.F
+        assert self.user_beneficiary_to_update.civility == users_models.GenderEnum.F.value
         assert self.user_beneficiary_to_update.married_name == "Kelly"
