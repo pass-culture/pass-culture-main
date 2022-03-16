@@ -25,6 +25,6 @@ class BaseBackend:
     def _send(
         self,
         recipients: Iterable,
-        data: Union[SendinblueTransactionalEmailData, dict],
+        data: Union[SendinblueTransactionalEmailData, SendinblueTransactionalWithoutTemplateEmailData, dict],
     ) -> MailResult:
         raise NotImplementedError()
