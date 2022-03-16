@@ -63,6 +63,15 @@ describe('src | components | pages | SignIn', () => {
     expect(screen.getByLabelText('Mot de passe')).toBeInTheDocument()
     expect(screen.getByText('Se connecter')).toBeInTheDocument()
     expect(screen.getByText('Créer un compte')).toBeInTheDocument()
+    expect(screen.getByText('Mot de passe égaré ?')).toBeInTheDocument()
+    expect(
+      screen.getByRole('link', {
+        name: 'Consulter nos recommendations de sécurité',
+      })
+    ).toHaveAttribute(
+      'href',
+      'https://aide.passculture.app/hc/fr/articles/4458607720732--Acteurs-Culturels-Comment-assurer-la-s%C3%A9curit%C3%A9-de-votre-compte-'
+    )
   })
 
   describe('when user clicks on the eye on password input', () => {

@@ -12,6 +12,7 @@ import TextInput from 'components/layout/inputs/TextInput/TextInput'
 import Logo from 'components/layout/Logo'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import { redirectLoggedUser } from 'components/router/helpers'
+import { BannerRGS } from 'new_components/Banner'
 import { signin } from 'store/user/thunks'
 import { UNAVAILABLE_ERROR_PAGE } from 'utils/routes'
 
@@ -115,6 +116,7 @@ const SignIn = (): JSX.Element => {
               >
                 Mot de passe égaré ?
               </Link>
+              <BannerRGS />
             </div>
             <div className="field buttons-field">
               <Link className="secondary-link" to={accountCreationUrl}>
