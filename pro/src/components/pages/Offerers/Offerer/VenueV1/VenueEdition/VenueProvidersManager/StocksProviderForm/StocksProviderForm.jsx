@@ -66,7 +66,7 @@ const StocksProviderForm = ({
             exclus de la synchronisation automatique en suivant le lien
             <a
               className="tertiary-link"
-              href="https://aide.passculture.app/fr/articles/5394935-acteurs-culturels-pourquoi-la-remontee-de-mes-stocks-n-integre-pas-toutes-les-references"
+              href="https://aide.passculture.app/hc/fr/articles/4412007214225"
               rel="noopener noreferrer"
               target="_blank"
             >
