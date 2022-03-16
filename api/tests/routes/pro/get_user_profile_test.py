@@ -21,7 +21,7 @@ class Returns200Test:
     @pytest.mark.usefixtures("db_session")
     def when_user_is_logged_in_and_has_no_deposit(self, app):
         user = users_factories.BeneficiaryGrant18Factory(
-            civility=users_models.GenderEnum.M,
+            civility=users_models.GenderEnum.M.value,
             address=None,
             city=None,
             needsToFillCulturalSurvey=False,

@@ -29,7 +29,7 @@ class BeneficiaryListViewTest:
         client.with_session_auth(admin.email)
 
         for review_status in fraud_models.FraudReviewStatus:
-            user = users_factories.UserFactory()
+            user = users_factories.UserFactory(civility="M.")
             fraud_factories.BeneficiaryFraudCheckFactory(user=user)
             fraud_factories.BeneficiaryFraudResultFactory(user=user)
             fraud_factories.BeneficiaryFraudReviewFactory(user=user, review=review_status)

@@ -17,7 +17,7 @@ class Returns200Test:
     def when_account_is_known(self, app):
         # given
         user = users_factories.BeneficiaryGrant18Factory(
-            civility=user_models.GenderEnum.M,
+            civility=user_models.GenderEnum.M.value,
             city=None,
             address=None,
             needsToFillCulturalSurvey=False,
