@@ -183,10 +183,6 @@ def price_bookings() -> None:
 @log_cron_with_transaction
 @cron_require_feature(FeatureToggle.GENERATE_CASHFLOWS_BY_CRON)
 def generate_cashflows_and_payment_files() -> None:
-    # FIXME (dbaty, 2011-11-18): once `get_cutoff_as_datetime()` is
-    # only used here (and not by the old payment generation script
-    # anymore), adapt the function to take a `datetime` object and not
-    # a string.
     last_day = datetime.date.today() - datetime.timedelta(days=1)
     cutoff = payments_utils.get_cutoff_as_datetime(last_day)
     finance_api.generate_cashflows_and_payment_files(cutoff)
