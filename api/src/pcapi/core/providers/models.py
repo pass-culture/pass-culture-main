@@ -1,4 +1,6 @@
 from dataclasses import dataclass
+import datetime
+import enum
 from typing import Optional
 
 from sqlalchemy import BigInteger
@@ -198,3 +200,22 @@ class AllocinePivot(PcObject, Model):
     theaterId = Column(String(20), nullable=False, unique=True)
 
     internalId = Column(Text, nullable=False, unique=True)
+
+
+class LocalProviderEventType(enum.Enum):
+    SyncError = "SyncError"
+
+    SyncPartStart = "SyncPartStart"
+    SyncPartEnd = "SyncPartEnd"
+
+    SyncStart = "SyncStart"
+    SyncEnd = "SyncEnd"
+
+
+class LocalProviderEvent(PcObject, Model):
+    id = Column(BigInteger, primary_key=True, autoincrement=True)
+    providerId = Column(BigInteger, ForeignKey("provider.id"), nullable=False)
+    provider = relationship("Provider", foreign_keys=[providerId])
+    date = Column(DateTime, nullable=False, default=datetime.datetime.utcnow)
+    type = Column(Enum(LocalProviderEventType), nullable=False)
+    payload = Column(String(50), nullable=True)

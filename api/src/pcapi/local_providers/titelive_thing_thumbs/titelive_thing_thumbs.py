@@ -4,10 +4,10 @@ import re
 
 from pcapi.connectors.ftp_titelive import get_files_to_process_from_titelive_ftp
 from pcapi.connectors.ftp_titelive import get_zip_file_from_ftp
+import pcapi.core.providers.models as providers_models
 from pcapi.domain.titelive import get_date_from_filename
 from pcapi.local_providers.local_provider import LocalProvider
 from pcapi.local_providers.providable_info import ProvidableInfo
-from pcapi.models.local_provider_event import LocalProviderEventType
 from pcapi.models.product import Product
 from pcapi.repository import local_provider_event_queries
 
@@ -51,13 +51,13 @@ class TiteLiveThingThumbs(LocalProvider):
     def open_next_file(self):
         if self.zip:
             file_date = get_date_from_filename(self.zip, DATE_REGEXP)
-            self.log_provider_event(LocalProviderEventType.SyncPartEnd, file_date)
+            self.log_provider_event(providers_models.LocalProviderEventType.SyncPartEnd, file_date)
 
         next_zip_file_name = str(next(self.zips))
         file_date = get_date_from_filename(next_zip_file_name, DATE_REGEXP)
 
         self.zip = get_zip_file_from_ftp(next_zip_file_name, THUMB_FOLDER_NAME_TITELIVE)
-        self.log_provider_event(LocalProviderEventType.SyncPartStart, file_date)
+        self.log_provider_event(providers_models.LocalProviderEventType.SyncPartStart, file_date)
 
         self.thumb_zipinfos = iter(
             filter(

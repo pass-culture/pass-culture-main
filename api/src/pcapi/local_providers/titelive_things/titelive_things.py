@@ -7,11 +7,11 @@ from typing import Optional
 from pcapi.connectors.ftp_titelive import connect_to_titelive_ftp
 from pcapi.connectors.ftp_titelive import get_files_to_process_from_titelive_ftp
 from pcapi.core.categories import subcategories
+import pcapi.core.providers.models as providers_models
 from pcapi.domain.titelive import get_date_from_filename
 from pcapi.domain.titelive import read_things_date
 from pcapi.local_providers.local_provider import LocalProvider
 from pcapi.local_providers.providable_info import ProvidableInfo
-from pcapi.models.local_provider_event import LocalProviderEventType
 from pcapi.models.product import BookFormat
 from pcapi.models.product import Product
 from pcapi.repository import local_provider_event_queries
@@ -106,7 +106,7 @@ class TiteLiveThings(LocalProvider):
             elements = next(self.data_lines).split("~")
 
         if len(elements) != NUMBER_OF_ELEMENTS_PER_LINE:
-            self.log_provider_event(LocalProviderEventType.SyncError, "number of elements mismatch")
+            self.log_provider_event(providers_models.LocalProviderEventType.SyncError, "number of elements mismatch")
             return []
 
         self.product_infos = get_infos_from_data_line(elements)
@@ -124,7 +124,8 @@ class TiteLiveThings(LocalProvider):
                 product_queries.delete_unwanted_existing_product(book_unique_identifier)
             except ProductWithBookingsException:
                 self.log_provider_event(
-                    LocalProviderEventType.SyncError, f"Error deleting product with ISBN: {self.product_infos['ean13']}"
+                    providers_models.LocalProviderEventType.SyncError,
+                    f"Error deleting product with ISBN: {self.product_infos['ean13']}",
                 )
             return []
 
@@ -173,10 +174,10 @@ class TiteLiveThings(LocalProvider):
     def open_next_file(self):
         if self.products_file:
             file_date = get_date_from_filename(self.products_file, DATE_REGEXP)
-            self.log_provider_event(LocalProviderEventType.SyncPartEnd, file_date)
+            self.log_provider_event(providers_models.LocalProviderEventType.SyncPartEnd, file_date)
         self.products_file = next(self.thing_files)
         file_date = get_date_from_filename(self.products_file, DATE_REGEXP)
-        self.log_provider_event(LocalProviderEventType.SyncPartStart, file_date)
+        self.log_provider_event(providers_models.LocalProviderEventType.SyncPartStart, file_date)
 
         self.data_lines = get_lines_from_thing_file(str(self.products_file))
 

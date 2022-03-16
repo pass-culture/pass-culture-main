@@ -12,11 +12,10 @@ from pcapi.core.offers.factories import ThingStockFactory
 from pcapi.core.offers.factories import VenueFactory
 from pcapi.core.offers.models import Offer
 from pcapi.core.providers.api import activate_provider
+import pcapi.core.providers.models as providers_models
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.local_providers import TiteLiveThings
 from pcapi.model_creators.specific_creators import create_product_with_thing_subcategory
-from pcapi.models.local_provider_event import LocalProviderEvent
-from pcapi.models.local_provider_event import LocalProviderEventType
 from pcapi.models.product import BookFormat
 from pcapi.models.product import Product
 from pcapi.repository import repository
@@ -379,7 +378,9 @@ class TiteliveThingsTest:
 
         # Then
         assert Product.query.count() == 1
-        provider_log_error = LocalProviderEvent.query.filter_by(type=LocalProviderEventType.SyncError).one()
+        provider_log_error = providers_models.LocalProviderEvent.query.filter_by(
+            type=providers_models.LocalProviderEventType.SyncError
+        ).one()
         assert provider_log_error.payload == "Error deleting product with ISBN: 9782895026310"
 
     @pytest.mark.usefixtures("db_session")

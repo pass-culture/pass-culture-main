@@ -12,7 +12,7 @@ from pcapi.core.categories import subcategories
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
-from pcapi.core.providers.models import AllocineVenueProvider
+import pcapi.core.providers.models as providers_models
 from pcapi.domain.allocine import get_movie_poster
 from pcapi.domain.allocine import get_movies_showtimes
 from pcapi.domain.price_rule import AllocineStocksPriceRule
@@ -20,7 +20,6 @@ from pcapi.local_providers.local_provider import LocalProvider
 from pcapi.local_providers.providable_info import ProvidableInfo
 from pcapi.models import Model
 from pcapi.models import db
-from pcapi.models.local_provider_event import LocalProviderEventType
 from pcapi.models.product import Product
 from pcapi.utils.date import DEFAULT_STORED_TIMEZONE
 from pcapi.utils.date import get_department_timezone
@@ -38,7 +37,7 @@ class AllocineStocks(LocalProvider):
     name = "Allociné"
     can_create = True
 
-    def __init__(self, allocine_venue_provider: AllocineVenueProvider):
+    def __init__(self, allocine_venue_provider: providers_models.AllocineVenueProvider):
         super().__init__(allocine_venue_provider)
         self.api_key = settings.ALLOCINE_API_KEY
         self.venue = allocine_venue_provider.venue
@@ -63,7 +62,8 @@ class AllocineStocks(LocalProvider):
             )
         except (KeyError, TypeError):
             self.log_provider_event(
-                LocalProviderEventType.SyncError, f"Error parsing movie for theater {self.venue.siret}"
+                providers_models.LocalProviderEventType.SyncError,
+                f"Error parsing movie for theater {self.venue.siret}",
             )
             return []
 

@@ -7,6 +7,7 @@ from pcapi.connectors.thumb_storage import create_thumb
 from pcapi.core import search
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
+import pcapi.core.providers.models as providers_models
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.local_providers.chunk_manager import get_existing_pc_obj
 from pcapi.local_providers.chunk_manager import save_chunks
@@ -15,8 +16,6 @@ from pcapi.models import Model
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.has_thumb_mixin import HasThumbMixin
-from pcapi.models.local_provider_event import LocalProviderEvent
-from pcapi.models.local_provider_event import LocalProviderEventType
 from pcapi.repository import repository
 from pcapi.repository.providable_queries import get_last_update_for_provider
 from pcapi.validation.models import entity_validator
@@ -97,7 +96,7 @@ class LocalProvider(Iterator):
 
         errors = entity_validator.validate(pc_object)
         if errors and len(errors.errors) > 0:
-            self.log_provider_event(LocalProviderEventType.SyncError, "ApiErrors")
+            self.log_provider_event(providers_models.LocalProviderEventType.SyncError, "ApiErrors")
             self.erroredObjects += 1
             raise errors
 
@@ -115,14 +114,14 @@ class LocalProvider(Iterator):
             # expire pc_object because we may have modified it during fill_object_attributes
             # and we don't want it to be pushed to the DB if there is any error
             db.session.expire(pc_object)
-            self.log_provider_event(LocalProviderEventType.SyncError, "ApiErrors")
+            self.log_provider_event(providers_models.LocalProviderEventType.SyncError, "ApiErrors")
             self.erroredObjects += 1
             raise errors
 
         self.updatedObjects += 1
 
     def log_provider_event(self, event_type, event_payload=None):
-        local_provider_event = LocalProviderEvent()
+        local_provider_event = providers_models.LocalProviderEvent()
         local_provider_event.type = event_type
         local_provider_event.payload = str(event_payload)
         local_provider_event.provider = self.provider
@@ -163,7 +162,7 @@ class LocalProvider(Iterator):
             return
 
         # TODO (asaunier,2021-03-18): We may replace this log in BDD with logs in the monitoring system
-        self.log_provider_event(LocalProviderEventType.SyncStart)
+        self.log_provider_event(providers_models.LocalProviderEventType.SyncStart)
 
         chunk_to_insert = {}
         chunk_to_update = {}
@@ -213,14 +212,14 @@ class LocalProvider(Iterator):
                     try:
                         self._handle_thumb(pc_object)
                     except Exception as e:  # pylint: disable=broad-except
-                        self.log_provider_event(LocalProviderEventType.SyncError, e.__class__.__name__)
+                        self.log_provider_event(providers_models.LocalProviderEventType.SyncError, e.__class__.__name__)
                         self.erroredThumbs += 1
                         logger.info("ERROR during handle thumb: %s", e, exc_info=True)
                     pc_object_has_new_thumbs = pc_object.thumbCount != initial_thumb_count
                     if pc_object_has_new_thumbs:
                         errors = entity_validator.validate(pc_object)
                         if errors and len(errors.errors) > 0:
-                            self.log_provider_event(LocalProviderEventType.SyncError, "ApiErrors")
+                            self.log_provider_event(providers_models.LocalProviderEventType.SyncError, "ApiErrors")
                             continue
 
                         chunk_to_update[chunk_key] = pc_object
@@ -238,7 +237,7 @@ class LocalProvider(Iterator):
             _reindex_offers(list(chunk_to_insert.values()) + list(chunk_to_update.values()))
 
         self._print_objects_summary()
-        self.log_provider_event(LocalProviderEventType.SyncEnd)
+        self.log_provider_event(providers_models.LocalProviderEventType.SyncEnd)
 
         if self.venue_provider is not None:
             self.venue_provider.lastSyncDate = datetime.utcnow()
