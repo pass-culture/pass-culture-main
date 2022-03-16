@@ -1,18 +1,16 @@
 from datetime import datetime
 from datetime import timedelta
 
-from pcapi.core.providers.models import Provider
-from pcapi.models.local_provider_event import LocalProviderEvent
-from pcapi.models.local_provider_event import LocalProviderEventType
+import pcapi.core.providers.models as providers_models
 
 
-def find_latest_sync_part_end_event(provider: Provider) -> LocalProviderEvent:
+def find_latest_sync_part_end_event(provider: providers_models.Provider) -> providers_models.LocalProviderEvent:
     return (
-        LocalProviderEvent.query.filter(
-            (LocalProviderEvent.provider == provider)
-            & (LocalProviderEvent.type == LocalProviderEventType.SyncPartEnd)
-            & (LocalProviderEvent.date > datetime.utcnow() - timedelta(days=25))
+        providers_models.LocalProviderEvent.query.filter(
+            (providers_models.LocalProviderEvent.provider == provider)
+            & (providers_models.LocalProviderEvent.type == providers_models.LocalProviderEventType.SyncPartEnd)
+            & (providers_models.LocalProviderEvent.date > datetime.utcnow() - timedelta(days=25))
         )
-        .order_by(LocalProviderEvent.date.desc())
+        .order_by(providers_models.LocalProviderEvent.date.desc())
         .first()
     )

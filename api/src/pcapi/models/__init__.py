@@ -27,7 +27,6 @@ def install_models() -> None:
     import pcapi.models.beneficiary_import_status
     import pcapi.models.criterion
     import pcapi.models.feature
-    import pcapi.models.local_provider_event
     import pcapi.models.offer_criterion
     import pcapi.models.payment
     import pcapi.models.payment_message

@@ -6,11 +6,10 @@ import pytest
 from pcapi.core.categories import subcategories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.providers.factories as providers_factories
+import pcapi.core.providers.models as providers_models
 from pcapi.local_providers.local_provider import _save_same_thumb_from_thumb_count_to_index
 from pcapi.local_providers.providable_info import ProvidableInfo
 from pcapi.models.api_errors import ApiErrors
-from pcapi.models.local_provider_event import LocalProviderEvent
-from pcapi.models.local_provider_event import LocalProviderEventType
 from pcapi.models.product import Product
 from pcapi.repository import repository
 
@@ -43,9 +42,11 @@ class UpdateObjectsTest:
         local_provider.updateObjects()
 
         # Then
-        provider_events = LocalProviderEvent.query.order_by(LocalProviderEvent.id.asc()).all()
-        assert provider_events[0].type == LocalProviderEventType.SyncStart
-        assert provider_events[1].type == LocalProviderEventType.SyncEnd
+        provider_events = providers_models.LocalProviderEvent.query.order_by(
+            providers_models.LocalProviderEvent.id.asc()
+        ).all()
+        assert provider_events[0].type == providers_models.LocalProviderEventType.SyncStart
+        assert provider_events[1].type == providers_models.LocalProviderEventType.SyncEnd
 
     @patch("tests.local_providers.provider_test_utils.TestLocalProvider.__next__")
     def test_creates_new_object_when_no_object_in_database(self, next_function):
@@ -202,8 +203,8 @@ class CreateObjectTest:
             "Un produit de sous-catégorie ACHAT_INSTRUMENT ne peut pas être numérique"
         ]
         assert Product.query.count() == 0
-        provider_event = LocalProviderEvent.query.one()
-        assert provider_event.type == LocalProviderEventType.SyncError
+        provider_event = providers_models.LocalProviderEvent.query.one()
+        assert provider_event.type == providers_models.LocalProviderEventType.SyncError
 
 
 @pytest.mark.usefixtures("db_session")
@@ -248,8 +249,8 @@ class HandleUpdateTest:
         assert api_errors.value.errors["url"] == [
             "Un produit de sous-catégorie ACHAT_INSTRUMENT ne peut pas être numérique"
         ]
-        provider_event = LocalProviderEvent.query.one()
-        assert provider_event.type == LocalProviderEventType.SyncError
+        provider_event = providers_models.LocalProviderEvent.query.one()
+        assert provider_event.type == providers_models.LocalProviderEventType.SyncError
 
 
 @pytest.mark.usefixtures("db_session")
