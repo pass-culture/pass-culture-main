@@ -29,6 +29,9 @@ class SignupForm extends PureComponent {
     super(props)
     const { history, location, currentUser } = props
     redirectLoggedUser(history, location, currentUser)
+    this.state = {
+      errors: {},
+    }
   }
 
   componentDidMount() {
@@ -54,20 +57,21 @@ class SignupForm extends PureComponent {
     redirectToConfirmation()
   }
 
-  onHandleFail = () => {
+  onHandleFail = errors => {
     const { notifyError } = this.props
-
+    this.setState({ errors })
     notifyError('Une ou plusieurs erreurs sont présentes dans le formulaire.')
   }
 
   handleSubmit = values => {
     const { createNewProUser } = this.props
+    this.setState({ errors: {} })
 
     createNewProUser(values, this.onHandleFail, this.onHandleSuccess)
   }
 
   renderEmailTextField = ({ input }) => {
-    const { errors } = this.props
+    const { errors } = this.state
     return (
       <TextInput
         error={errors ? errors.email : null}
@@ -82,7 +86,7 @@ class SignupForm extends PureComponent {
   }
 
   renderNameTextField = ({ input }) => {
-    const { errors } = this.props
+    const { errors } = this.state
     return (
       <TextInput
         error={errors ? errors.lastName : null}
@@ -97,7 +101,7 @@ class SignupForm extends PureComponent {
   }
 
   renderFirstNameTextField = ({ input }) => {
-    const { errors } = this.props
+    const { errors } = this.state
     return (
       <TextInput
         error={errors ? errors.publicName : null}
@@ -112,7 +116,7 @@ class SignupForm extends PureComponent {
   }
 
   renderPhoneNumberField = ({ input }) => {
-    const { errors } = this.props
+    const { errors } = this.state
     return (
       <TextInput
         error={errors ? errors.phoneNumber : null}
@@ -127,8 +131,7 @@ class SignupForm extends PureComponent {
   }
 
   render() {
-    const { errors } = this.props
-
+    const { errors } = this.state
     return (
       <section className="sign-up-form-page">
         <div className="content">
@@ -245,7 +248,6 @@ SignupForm.defaultProps = {
 SignupForm.propTypes = {
   createNewProUser: PropTypes.func.isRequired,
   currentUser: PropTypes.shape(),
-  errors: PropTypes.shape().isRequired,
   history: PropTypes.func.isRequired,
   location: PropTypes.shape().isRequired,
   notifyError: PropTypes.func.isRequired,
