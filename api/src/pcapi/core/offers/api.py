@@ -441,9 +441,12 @@ def update_collective_offer(
 
 
 def batch_update_offers(query, update_fields):
-    offer_ids, venue_ids = zip(
-        *query.filter(Offer.validation == OfferValidationStatus.APPROVED).with_entities(Offer.id, Offer.venueId)
+    raw_results = (
+        query.filter(Offer.validation == OfferValidationStatus.APPROVED).with_entities(Offer.id, Offer.venueId).all()
     )
+    offer_ids, venue_ids = [], []
+    if raw_results:
+        offer_ids, venue_ids = zip(*raw_results)
     venue_ids = sorted(set(venue_ids))
     logger.info(
         "Batch update of offers",
