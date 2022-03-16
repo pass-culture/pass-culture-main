@@ -1,4 +1,3 @@
-import get from 'lodash.get'
 import { removeWhitespaces } from 'react-final-form-utils'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
@@ -15,7 +14,6 @@ const STATE_ERROR_NAME = 'user'
 
 export const mapStateToProps = state => ({
   currentUser: selectCurrentUser(state),
-  errors: get(state, `errors["${STATE_ERROR_NAME}"]`),
 })
 
 export const mapDispatchToProps = (dispatch, ownProps) => ({
@@ -30,7 +28,7 @@ export const mapDispatchToProps = (dispatch, ownProps) => ({
         publicName: firstName,
       })
       .then(() => onHandleSuccess())
-      .catch(() => onHandleFail())
+      .catch(response => onHandleFail(response.errors ? response.errors : {}))
   },
 
   redirectToConfirmation: () => {

@@ -13,7 +13,6 @@ describe('src | components | pages | Signup | SignupForm', () => {
   beforeEach(() => {
     props = {
       createNewProUser: jest.fn(),
-      errors: {},
       redirectToConfirmation: jest.fn(),
       showNotification: jest.fn(),
     }
@@ -268,22 +267,6 @@ describe('src | components | pages | Signup | SignupForm', () => {
       const input = field.find('input')
       expect(input.prop('name')).toBe('contactOk')
       expect(input.prop('type')).toBe('checkbox')
-    })
-
-    it('should render errors when provided', () => {
-      // given
-      props.errors = { email: 'erreur sur le mail' }
-
-      // when
-      const wrapper = mount(
-        <Router history={history}>
-          <SignupForm {...props} />
-        </Router>
-      )
-
-      // then
-      const error = wrapper.find({ children: 'erreur sur le mail' }).hostNodes()
-      expect(error).toHaveLength(1)
     })
 
     it('should render a Link component', () => {
