@@ -6,7 +6,6 @@ from typing import Optional
 from pcapi.core.bookings import exceptions
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingStatus
-from pcapi.core.bookings.models import IndividualBooking
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
 from pcapi.routes.serialization import BaseModel
@@ -56,18 +55,20 @@ def get_bookings_cancellation_notification_data(booking_ids: list[int]) -> Optio
 
 def get_tomorrow_stock_notification_data(stock_id: int) -> Optional[TransactionalNotificationData]:
     stock = Stock.query.filter_by(id=stock_id).one()
-    individual_bookings = (
-        IndividualBooking.query.join(Booking, Booking.stockId == stock_id)
-        .filter(Booking.status != BookingStatus.CANCELLED)
-        .all()
+    query = (
+        Booking.query.filter(Booking.stockId == stock_id, Booking.status != BookingStatus.CANCELLED)
+        .join(Booking.individualBooking)  # exclude collective bookings
+        .with_entities(Booking.userId)
+        .distinct()
     )
 
-    if not individual_bookings:
+    user_ids = [booking.userId for booking in query]
+    if not user_ids:
         return None
 
     return TransactionalNotificationData(
         group_id=GroupId.TOMORROW_STOCK.value,
-        user_ids=[individual_booking.userId for individual_booking in individual_bookings],
+        user_ids=user_ids,
         message=TransactionalNotificationMessage(
             title=f"{stock.offer.name}, c'est demain !",
             body="Retrouve les détails de la réservation sur l’application pass Culture",
