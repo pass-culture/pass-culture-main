@@ -285,6 +285,7 @@ def cancel_booking_by_offerer(booking: Booking) -> None:
     validation.check_booking_can_be_cancelled(booking)
     _cancel_booking(booking, BookingCancellationReasons.OFFERER)
     send_cancel_booking_notification.delay([booking.id])
+    send_booking_cancellation_emails_to_user_and_offerer_job.delay(booking.id)
 
 
 def cancel_bookings_from_stock_by_offerer(stock: offers_models.Stock) -> list[Booking]:
