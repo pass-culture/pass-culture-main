@@ -710,7 +710,7 @@ class BeneficiaryInformationUpdateTest:
         assert not beneficiary.has_admin_role
         assert beneficiary.password is not None
         assert beneficiary.activity == "Lycéen"
-        assert beneficiary.civility.value == "Mme"
+        assert beneficiary.civility == "Mme"
         assert beneficiary.hasSeenTutorials == False
         assert not beneficiary.deposits
 

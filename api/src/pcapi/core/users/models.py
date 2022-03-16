@@ -167,7 +167,7 @@ class User(PcObject, Model, NeedsValidationMixin):
     activity = sa.Column(sa.String(128), nullable=True)
     address = sa.Column(sa.Text, nullable=True)
     city = sa.Column(sa.String(100), nullable=True)
-    civility = sa.Column(sa.Enum(GenderEnum, create_constraint=False), nullable=True)
+    civility = sa.Column(sa.Text, nullable=True)
     clearTextPassword = None
     comment = sa.Column(sa.Text(), nullable=True)
     culturalSurveyFilledDate = sa.Column(sa.DateTime, nullable=True)
