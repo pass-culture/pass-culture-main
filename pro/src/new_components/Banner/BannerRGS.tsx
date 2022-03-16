@@ -1,4 +1,5 @@
 import React from 'react'
+
 import Banner from 'ui-kit/Banner'
 
 const BannerRGS = (): JSX.Element => (

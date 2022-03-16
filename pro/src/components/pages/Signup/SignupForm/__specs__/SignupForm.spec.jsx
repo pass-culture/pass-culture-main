@@ -283,6 +283,21 @@ describe('src | components | pages | Signup | SignupForm', () => {
       expect(link.prop('to')).toBe('/connexion')
     })
 
+    it('should render a link to RGS information', () => {
+      // when
+      const wrapper = mount(
+        <Router history={history}>
+          <SignupForm {...props} />
+        </Router>
+      )
+
+      // then
+      const RGSLink = wrapper.find('a').at(4)
+      expect(RGSLink.prop('href')).toBe(
+        'https://aide.passculture.app/hc/fr/articles/4458607720732--Acteurs-Culturels-Comment-assurer-la-s%C3%A9curit%C3%A9-de-votre-compte-'
+      )
+    })
+
     it('should render a SubmitButton component with the right props', () => {
       // when
       const wrapper = mount(

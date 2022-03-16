@@ -9,6 +9,7 @@ import PasswordField from 'components/layout/form/fields/PasswordField'
 import TextInput from 'components/layout/inputs/TextInput/TextInput'
 import LegalInfos from 'components/layout/LegalInfos/LegalInfos'
 import { redirectLoggedUser } from 'components/router/helpers'
+import { BannerRGS } from 'new_components/Banner'
 import bindAddressAndDesignationFromSiren from 'repository/siren/bindSirenFieldToDesignation'
 
 import OperatingProcedures from './OperationProcedures'
@@ -207,6 +208,7 @@ class SignupForm extends PureComponent {
                   className="sign-up-infos-before-signup"
                   title="Créer mon compte"
                 />
+                <BannerRGS />
                 <div className="buttons-field">
                   <Link className="secondary-link" to="/connexion">
                     J’ai déjà un compte
