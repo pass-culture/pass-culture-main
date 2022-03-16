@@ -564,6 +564,21 @@ class CancelByOffererTest:
         assert cancelled_booking.status is BookingStatus.CANCELLED
         assert cancelled_booking.cancellationReason == BookingCancellationReasons.BENEFICIARY
 
+    def test_send_email_when_cancelled_by_offerer(self):
+        # when
+        booking = booking_factories.IndividualBookingFactory(stock__offer__bookingEmail="test@sent")
+
+        api.cancel_booking_by_offerer(booking)
+
+        # then
+        assert len(mails_testing.outbox) == 2
+        assert mails_testing.outbox[0].sent_data["To"] == booking.email
+        assert mails_testing.outbox[0].sent_data["template"] == dataclasses.asdict(
+            TransactionalEmail.BOOKING_CANCELLATION_BY_PRO_TO_BENEFICIARY.value
+        )
+        assert mails_testing.outbox[1].sent_data["To"] == "test@sent"
+        assert "Confirmation de votre annulation de réservation " in mails_testing.outbox[1].sent_data["subject"]
+
 
 @pytest.mark.usefixtures("db_session")
 class CancelForFraudTest:
