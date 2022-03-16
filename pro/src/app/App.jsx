@@ -6,9 +6,8 @@ import { matchPath } from 'react-router'
 import useAnalytics from 'components/hooks/useAnalytics'
 import useCurrentUser from 'components/hooks/useCurrentUser'
 import Spinner from 'components/layout/Spinner'
+import { RedirectToMaintenance } from 'new_components/RedirectToMaintenance'
 import routes, { routesWithoutLayout } from 'utils/routes_map'
-
-import RedirectToMaintenance from './RedirectToMaintenance'
 
 export const App = props => {
   const {
