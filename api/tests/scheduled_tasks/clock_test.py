@@ -24,26 +24,31 @@ def test_pc_send_tomorrow_events_notifications_only_to_individual_bookings_users
     tomorrow = datetime.now() + timedelta(days=1)
     stock_tomorrow = offers_factories.EventStockFactory(beginningDatetime=tomorrow, offer__name="my_offer")
 
-    begin = datetime.now() + timedelta(days=7)
-    stock_next_week = offers_factories.EventStockFactory(beginningDatetime=begin)
+    next_week = datetime.now() + timedelta(days=7)
+    stock_next_week = offers_factories.EventStockFactory(beginningDatetime=next_week)
 
-    bookings_tomorrow = bookings_factories.IndividualBookingFactory.create_batch(2, stock=stock_tomorrow)
-    bookings_factories.BookingFactory.create_batch(2, stock=stock_tomorrow, status=BookingStatus.CANCELLED)
-    bookings_factories.BookingFactory.create_batch(2, stock=stock_next_week)
-    bookings_factories.EducationalBookingFactory.create_batch(2, stock=stock_tomorrow)
+    user1 = users_factories.BeneficiaryGrant18Factory()
+    user2 = users_factories.BeneficiaryGrant18Factory()
+
+    # should be fetched
+    bookings_factories.IndividualBookingFactory(stock=stock_tomorrow, user=user1)
+
+    # should not be fetched: cancelled
+    bookings_factories.IndividualBookingFactory(stock=stock_tomorrow, status=BookingStatus.CANCELLED, user=user2)
+
+    # should not be fetched: educational
+    bookings_factories.EducationalBookingFactory(stock=stock_tomorrow, user=user2)
+
+    # should not be fetched: next week
+    bookings_factories.IndividualBookingFactory(stock=stock_next_week, user=user2)
 
     pc_send_tomorrow_events_notifications()
 
     assert len(testing.requests) == 1
     assert all(data["message"]["title"] == "my_offer, c'est demain !" for data in testing.requests)
 
-    user_ids = set()
-    for data in testing.requests:
-        for user_id in data["user_ids"]:
-            user_ids.add(user_id)
-
-    expected_user_ids = {booking.individualBooking.userId for booking in bookings_tomorrow}
-    assert user_ids == expected_user_ids
+    user_ids = {user_id for data in testing.requests for user_id in data["user_ids"]}
+    assert user_ids == {user1.id}
 
 
 @pytest.mark.usefixtures("db_session")
