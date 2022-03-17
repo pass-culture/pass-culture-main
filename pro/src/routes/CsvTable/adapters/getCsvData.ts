@@ -1,9 +1,7 @@
+import { ITableData } from 'screens/CsvTable'
 import csvConverter from 'utils/csvConverter'
-export interface CsvData {
-  headers: string[]
-  data: string[][]
-}
-export const getCsvData = (csvUrl: string): Promise<CsvData | null> => {
+
+export const getCsvData = (csvUrl: string): Promise<ITableData | null> => {
   return new Promise((resolve, reject) => {
     ;(async () => {
       try {
