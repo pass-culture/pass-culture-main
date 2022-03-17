@@ -4,63 +4,15 @@ from typing import Optional
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import Venue
-from pcapi.core.offers.models import Mediation
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
 from pcapi.core.providers.models import AllocineVenueProvider
 from pcapi.core.providers.models import AllocineVenueProviderPriceRule
 from pcapi.core.providers.models import Provider
 from pcapi.core.providers.models import VenueProvider
-from pcapi.core.users.models import Favorite
 from pcapi.core.users.models import User
 from pcapi.domain.price_rule import PriceRule
-from pcapi.models.criterion import Criterion
 from pcapi.models.user_offerer import UserOfferer
-
-
-def create_criterion(description: str = None, name: str = "best offer", score_delta: int = 1) -> Criterion:
-    criterion = Criterion()
-    criterion.name = name
-    criterion.description = description
-
-    return criterion
-
-
-def create_favorite(idx: int = None, mediation: Mediation = None, offer: Offer = None, user: User = None) -> Favorite:
-    favorite = Favorite()
-    favorite.id = idx
-    favorite.mediation = mediation
-    favorite.offer = offer
-    favorite.user = user
-
-    return favorite
-
-
-def create_mediation(
-    offer: Offer = None,
-    author: User = None,
-    credit: str = None,
-    date_created: datetime = datetime.utcnow(),
-    date_modified_at_last_provider: datetime = None,
-    id_at_providers: str = None,
-    idx: int = None,
-    is_active: bool = True,
-    last_provider_id: int = None,
-    thumb_count: int = 0,
-) -> Mediation:
-    mediation = Mediation()
-    mediation.author = author
-    mediation.credit = credit
-    mediation.dateCreated = date_created
-    mediation.dateModifiedAtLastProvider = date_modified_at_last_provider
-    mediation.idAtProviders = id_at_providers
-    mediation.id = idx
-    mediation.isActive = is_active
-    mediation.lastProviderId = last_provider_id
-    mediation.offer = offer
-    mediation.thumbCount = thumb_count
-
-    return mediation
 
 
 def create_offerer(
