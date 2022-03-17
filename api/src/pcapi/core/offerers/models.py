@@ -432,20 +432,6 @@ class Offerer(
 
     thumb_path_component = "offerers"
 
-    def grant_access(self, user):
-        # FIXME (dbaty, 2021-11-26): consider moving this code to a
-        # function in `core.offerers.api`. It should not be in the
-        # model!
-        from pcapi.models.user_offerer import UserOfferer
-
-        if not user:
-            return None
-        user_offerer = UserOfferer()
-        user_offerer.offerer = self
-        user_offerer.user = user
-
-        return user_offerer
-
     @property
     def bic(self):
         return self.bankInformation.bic if self.bankInformation else None
