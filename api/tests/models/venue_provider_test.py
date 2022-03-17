@@ -1,80 +1,32 @@
 import pytest
 
+import pcapi.core.offerers.factories as offerers_factories
+import pcapi.core.offers.factories as offers_factories
 from pcapi.core.providers.api import activate_provider
 import pcapi.core.providers.factories as providers_factories
 from pcapi.core.providers.models import VenueProvider
 from pcapi.model_creators.generic_creators import create_offerer
-from pcapi.model_creators.generic_creators import create_provider
 from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.generic_creators import create_venue_provider
-from pcapi.model_creators.specific_creators import create_offer_with_event_product
-from pcapi.model_creators.specific_creators import create_offer_with_thing_product
 from pcapi.models.api_errors import ApiErrors
 from pcapi.repository import repository
 
 
 @pytest.mark.usefixtures("db_session")
-def test_nOffers_with_one_venue_provider(app):
-    # given
-    provider = create_provider()
-    repository.save(provider)
+def test_venue_provider_nOffers():
+    venue = offerers_factories.VenueFactory()
+    provider1 = providers_factories.ProviderFactory()
+    offers_factories.OfferFactory(venue=venue, lastProvider=provider1)
+    offers_factories.OfferFactory(venue=venue, lastProvider=provider1)
+    offers_factories.OfferFactory(venue=venue, lastProvider=provider1, isActive=False)  # not counted
+    offers_factories.OfferFactory(venue=venue, lastProvider=None)  # not counted
+    provider2 = providers_factories.ProviderFactory()
+    offers_factories.OfferFactory(venue=venue, lastProvider=provider2)
 
-    offerer = create_offerer()
-    venue = create_venue(offerer)
-    venue_provider = create_venue_provider(venue, provider)
-    offer_1 = create_offer_with_thing_product(
-        venue, last_provider_id=provider.id, id_at_provider="offer1", last_provider=provider
-    )
-    offer_2 = create_offer_with_event_product(
-        venue, last_provider_id=provider.id, id_at_provider="offer2", last_provider=provider
-    )
-    offer_3 = create_offer_with_event_product(
-        venue, last_provider_id=provider.id, id_at_provider="offer3", last_provider=provider
-    )
-    offer_4 = create_offer_with_thing_product(
-        venue, last_provider_id=provider.id, id_at_provider="offer4", last_provider=provider
-    )
-    repository.save(offer_1, offer_2, offer_3, offer_4, venue_provider)
-
-    # when
-    n_offers = venue_provider.nOffers
-
-    # then
-    assert n_offers == 4
-
-
-@pytest.mark.usefixtures("db_session")
-def test_nOffers_with_two_venue_providers_from_different_providers(app):
-    # given
-    provider1 = create_provider(local_class="OpenAgenda")
-    provider2 = create_provider(local_class="TiteLive")
-    repository.save(provider1, provider2)
-
-    offerer = create_offerer()
-    venue = create_venue(offerer)
-    venue_provider1 = create_venue_provider(venue, provider1)
-    venue_provider2 = create_venue_provider(venue, provider2)
-    offer_1 = create_offer_with_thing_product(
-        venue, last_provider_id=provider1.id, id_at_provider="offer1", last_provider=provider1
-    )
-    offer_2 = create_offer_with_event_product(
-        venue, last_provider_id=provider2.id, id_at_provider="offer2", last_provider=provider2
-    )
-    offer_3 = create_offer_with_event_product(
-        venue, last_provider_id=provider1.id, id_at_provider="offer3", last_provider=provider1
-    )
-    offer_4 = create_offer_with_thing_product(
-        venue, last_provider_id=provider1.id, id_at_provider="offer4", last_provider=provider1
-    )
-    repository.save(offer_1, offer_2, offer_3, offer_4, venue_provider1, venue_provider2)
-
-    # when
-    n_offers_for_venue_provider1 = venue_provider1.nOffers
-    n_offers_for_venue_provider2 = venue_provider2.nOffers
-
-    # then
-    assert n_offers_for_venue_provider1 == 3
-    assert n_offers_for_venue_provider2 == 1
+    venue_provider1 = providers_factories.VenueProviderFactory(venue=venue, provider=provider1)
+    venue_provider2 = providers_factories.VenueProviderFactory(venue=venue, provider=provider2)
+    assert venue_provider1.nOffers == 2
+    assert venue_provider2.nOffers == 1
 
 
 @pytest.mark.usefixtures("db_session")

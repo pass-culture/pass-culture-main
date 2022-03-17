@@ -47,24 +47,6 @@ def create_offerer(
     return offerer
 
 
-def create_provider(
-    idx: int = None,
-    is_active: bool = True,
-    is_enable_for_pro: bool = True,
-    local_class: str = "TiteLive",
-    name: str = "My Test Provider",
-    require_provider_identifier: bool = True,
-) -> Provider:
-    provider = Provider()
-    provider.id = idx
-    provider.enabledForPro = is_enable_for_pro
-    provider.isActive = is_active
-    provider.localClass = local_class
-    provider.name = name
-
-    return provider
-
-
 def create_stock(
     beginning_datetime: Optional[datetime] = None,
     booking_limit_datetime: Optional[datetime] = None,
