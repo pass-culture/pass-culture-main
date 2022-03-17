@@ -80,7 +80,7 @@ function TextField(props) {
                 />
                 {props.renderInner()}
               </div>
-              {props.renderValue()}
+              {props.renderTooltip()}
             </div>
             <FieldErrors meta={meta} />
           </div>
@@ -107,7 +107,7 @@ TextField.defaultProps = {
   renderInner: function () {
     return null
   },
-  renderValue: function () {
+  renderTooltip: function () {
     return null
   },
   required: false,
@@ -132,7 +132,7 @@ TextField.propTypes = {
   placeholder: PropTypes.string,
   readOnly: PropTypes.bool,
   renderInner: PropTypes.func,
-  renderValue: PropTypes.func,
+  renderTooltip: PropTypes.func,
   required: PropTypes.oneOfType([PropTypes.bool, PropTypes.func]),
   step: PropTypes.number,
   title: PropTypes.string,
