@@ -25,6 +25,19 @@ export type Offerer = {
   name: string
 }
 
+export type Venue = {
+  name: string
+  publicName?: string | null
+  offererName: string
+  isVirtual: boolean
+  departementCode?: string | null
+}
+
+export type Stock = {
+  beginningDatetime?: Date | null
+  remainingQuantity: string | number
+}
+
 export type Offer = {
   id: string
   status: string
@@ -35,17 +48,8 @@ export type Offer = {
   name: string
   isEvent: boolean
   productIsbn?: string | null
-  venue: {
-    name: string
-    publicName?: string | null
-    offererName: string
-    isVirtual: boolean
-    departementCode?: string | null
-  }
-  stocks: {
-    beginningDatetime?: Date | null
-    remainingQuantity: string | number
-  }[]
+  venue: Venue
+  stocks: Stock[]
   isEditable: boolean
   isShowcase?: boolean | null
 }
