@@ -45,6 +45,8 @@ class CommonTest:
     @pytest.mark.parametrize(
         "id_piece_number",
         [
+            # Some edge cases examples come from here:
+            # https://www.notion.so/passcultureapp/79afb2e511544bfcb2da83826cde0043?v=48070c75add24820ac1cae498199d469
             "321070751234",
             "090435303687",
             "Y808952",  # Tunisie
@@ -55,6 +57,12 @@ class CommonTest:
             "100030595009080004",  # ID Algerienne
             "00000000 0 ZU4",  # portugal format
             "03146310",  # andora CNI format
+            "53 1278779",  # Passeport Russe
+            "2 99 20030915 00001 3",  # ID Sénégalaise
+            "CES 177869",  # ID Polonaise
+            "040211-5703",  # ID Suédoise
+            "339546T",  # Titre de séjour Français
+            "32363144 4 ZZ7",  # ID Portugaise
         ],
     )
     def test_id_piece_number_valid_format(self, id_piece_number):
