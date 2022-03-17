@@ -1,13 +1,15 @@
 import { useMemo } from 'react'
 import { useLocation } from 'react-router-dom'
 
+import {
+  DEFAULT_PAGE,
+  DEFAULT_SEARCH_FILTERS,
+} from 'components/pages/Offers/Offers/_constants'
 import { parse } from 'utils/query-string'
 import {
   mapBrowserToApi,
   translateQueryParamsToApiParams,
 } from 'utils/translate'
-
-import { DEFAULT_PAGE, DEFAULT_SEARCH_FILTERS } from './_constants'
 
 interface IUrlSearchFilters {
   nameOrIsbn: string
@@ -58,4 +60,5 @@ const useQuerySearchFilters = (): [IUrlSearchFilters, number] => {
 
   return [urlSearchFilters, urlPageNumber]
 }
+
 export default useQuerySearchFilters

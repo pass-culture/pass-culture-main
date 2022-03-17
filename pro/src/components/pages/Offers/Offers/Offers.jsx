@@ -10,6 +10,7 @@ import Spinner from 'components/layout/Spinner'
 import Titles from 'components/layout/Titles/Titles'
 import { getOffersCountToDisplay } from 'components/pages/Offers/domain/getOffersCountToDisplay'
 import { isOfferDisabled } from 'components/pages/Offers/domain/isOfferDisabled'
+import { useQuerySearchFilters } from 'core/Offers/hooks'
 import { ReactComponent as AddOfferSvg } from 'icons/ico-plus.svg'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { savePageNumber, saveSearchFilters } from 'store/offers/actions'
@@ -30,7 +31,6 @@ import NoResults from './NoResults/NoResults'
 import OffersTableBody from './OffersTableBody/OffersTableBody'
 import OffersTableHead from './OffersTableHead/OffersTableHead'
 import SearchFilters from './SearchFilters/SearchFilters'
-import useQuerySearchFilters from './useQuerySearchFilters'
 
 const Offers = ({ currentUser, getOfferer }) => {
   const dispatch = useDispatch()
