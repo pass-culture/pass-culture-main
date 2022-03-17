@@ -11,6 +11,13 @@ import { DEFAULT_SEARCH_FILTERS, NUMBER_OF_OFFERS_PER_PAGE } from 'core/Offers'
 import { Offer, Offerer, SearchFilters } from 'core/Offers/types'
 import { ReactComponent as AddOfferSvg } from 'icons/ico-plus.svg'
 
+import OfferListFilterTabs from './OfferListFilterTabs'
+
+const isAudienceIndividualOrCollective = (
+  audience?: string
+): audience is 'individual' | 'collective' =>
+  audience === 'individual' || audience === 'collective'
+
 interface IOffersProps {
   currentPageNumber: number
   currentUser: { isAdmin: boolean }
@@ -27,6 +34,7 @@ interface IOffersProps {
   setSearchFilters: (searchFilters: SearchFilters) => void
   urlSearchFilters: SearchFilters
 }
+
 const Offers = ({
   currentPageNumber,
   currentUser,
@@ -43,8 +51,12 @@ const Offers = ({
   setSearchFilters,
   urlSearchFilters,
 }: IOffersProps): JSX.Element => {
+  const { audience } = searchFilters
   const [areAllOffersSelected, setAreAllOffersSelected] = useState(false)
   const [selectedOfferIds, setSelectedOfferIds] = useState<string[]>([])
+  const [selectedAudience, setSelectedAudience] = useState<
+    'individual' | 'collective'
+  >(isAudienceIndividualOrCollective(audience) ? audience : 'individual')
 
   const { isAdmin } = currentUser || {}
   const currentPageOffersSubset = offers.slice(
@@ -108,6 +120,10 @@ const Offers = ({
     <div className="offers-page">
       <PageTitle title="Vos offres" />
       <Titles action={actionLink} title="Offres" />
+      <OfferListFilterTabs
+        selectedAudience={selectedAudience}
+        setSelectedAudience={setSelectedAudience}
+      />
       <ActionsBarPortal isVisible={nbSelectedOffers > 0}>
         <ActionsBarContainer
           areAllOffersSelected={areAllOffersSelected}

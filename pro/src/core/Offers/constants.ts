@@ -52,6 +52,7 @@ export const DEFAULT_SEARCH_FILTERS = {
   creationMode: ALL_CREATION_MODES,
   periodBeginningDate: ALL_EVENT_PERIODS,
   periodEndingDate: ALL_EVENT_PERIODS,
+  audience: 'individuel',
 }
 
 export const ALL_VENUES_OPTION = {
