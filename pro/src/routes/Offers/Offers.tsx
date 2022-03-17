@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
 
 import useCurrentUser from 'components/hooks/useCurrentUser'
+import useNotification from 'components/hooks/useNotification'
 import {
   DEFAULT_PAGE,
   DEFAULT_SEARCH_FILTERS,
@@ -14,7 +15,10 @@ import * as pcapi from 'repository/pcapi/pcapi'
 import OffersScreen from 'screens/Offers'
 import { savePageNumber, saveSearchFilters } from 'store/offers/actions'
 
+import { getFilteredOffersAdapter } from './adapters'
+
 const Offers = (): JSX.Element => {
+  const notify = useNotification()
   const [urlSearchFilters, urlPageNumber] = useQuerySearchFilters()
   const { currentUser } = useCurrentUser()
   const dispatch = useDispatch()
@@ -32,25 +36,29 @@ const Offers = (): JSX.Element => {
   const [currentPageNumber, setCurrentPageNumber] = useState(DEFAULT_PAGE)
 
   const loadAndUpdateOffers = useCallback(
-    filters => {
+    async (filters: SearchFilters) => {
       const apiFilters = {
         ...DEFAULT_SEARCH_FILTERS,
         ...filters,
       }
-      pcapi
-        .loadFilteredOffers(apiFilters)
-        .then(offers => {
-          const offersCount = offers.length
-          setIsLoading(false)
-          setOffersCount(offersCount)
-          const pageCount = Math.ceil(offersCount / NUMBER_OF_OFFERS_PER_PAGE)
-          const cappedPageCount = Math.min(pageCount, MAX_TOTAL_PAGES)
-          setPageCount(cappedPageCount)
-          setOffers(offers)
-        })
-        .catch(() => setIsLoading(false))
+      const { isOk, message, payload } = await getFilteredOffersAdapter(
+        apiFilters
+      )
+
+      if (!isOk) {
+        setIsLoading(false)
+        return notify.error(message)
+      }
+
+      const offersCount = payload.offers.length
+      setIsLoading(false)
+      setOffersCount(offersCount)
+      const pageCount = Math.ceil(offersCount / NUMBER_OF_OFFERS_PER_PAGE)
+      const cappedPageCount = Math.min(pageCount, MAX_TOTAL_PAGES)
+      setPageCount(cappedPageCount)
+      setOffers(payload.offers)
     },
-    [setIsLoading, setOffersCount, setPageCount, setOffers]
+    [notify]
   )
 
   useEffect(() => {
