@@ -10,7 +10,8 @@ from pcapi.utils.human_ids import humanize
 @pytest.mark.usefixtures("db_session")
 class VenueBannerTest:
     @patch("pcapi.core.object_storage.backends.local.LocalBackend.delete_public_object")
-    def test_delete_banner(self, mock_delete_public_object, client):
+    @patch("pcapi.core.search.async_index_venue_ids")
+    def test_delete_banner(self, mock_search_async_index_venue_ids, mock_delete_public_object, client):
         user_offerer = offers_factories.UserOffererFactory()
         venue = offers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
 
@@ -25,8 +26,11 @@ class VenueBannerTest:
 
         mock_delete_public_object.assert_called_once_with("thumbs", expected_thumb_base_path)
 
+        mock_search_async_index_venue_ids.assert_called_once_with([venue.id])
+
     @patch("pcapi.core.object_storage.backends.local.LocalBackend.delete_public_object")
-    def test_delete_banner_legacy_url(self, mock_delete_public_object, client):
+    @patch("pcapi.core.search.async_index_venue_ids")
+    def test_delete_banner_legacy_url(self, mock_search_async_index_venue_ids, mock_delete_public_object, client):
         user_offerer = offers_factories.UserOffererFactory()
         venue = offers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
 
@@ -39,6 +43,8 @@ class VenueBannerTest:
         assert response.status_code == 204
 
         mock_delete_public_object.assert_called_once_with("thumbs", expected_thumb_base_path)
+
+        mock_search_async_index_venue_ids.assert_called_once_with([venue.id])
 
     @patch("pcapi.core.object_storage.backends.local.LocalBackend.delete_public_object")
     def test_delete_no_banner(self, mock_delete_public_object, client):

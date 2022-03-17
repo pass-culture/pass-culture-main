@@ -1,5 +1,6 @@
 import io
 import pathlib
+from unittest.mock import patch
 
 from freezegun import freeze_time
 import pytest
@@ -231,7 +232,8 @@ def test_create_venue_malformed(app, client, data, key):
 @pytest.mark.usefixtures("db_session")
 @freeze_time("2020-10-15 00:00:00")
 class VenueBannerTest:
-    def test_upload_image(self, client, tmpdir):
+    @patch("pcapi.core.search.async_index_venue_ids")
+    def test_upload_image(self, mock_search_async_index_venue_ids, client, tmpdir):
         """
         Check that the image upload works for a legit file (size and type):
             * API returns a 201 status code
@@ -261,12 +263,14 @@ class VenueBannerTest:
             )
             assert response.json["bannerMeta"] == {"image_credit": "none"}
 
-            venue = Venue.query.get(venue.id)
-            with open(venue.bannerUrl, mode="rb") as f:
+            updated_venue = Venue.query.get(venue.id)
+            with open(updated_venue.bannerUrl, mode="rb") as f:
                 # test that image size has been reduced
                 assert len(f.read()) < len(image_content)
 
-            assert venue.bannerMeta == {"author_id": user_offerer.user.id, "image_credit": "none"}
+            assert updated_venue.bannerMeta == {"author_id": user_offerer.user.id, "image_credit": "none"}
+
+            mock_search_async_index_venue_ids.assert_called_once_with([venue.id])
 
     def test_upload_image_missing(self, client):
         user_offerer = offers_factories.UserOffererFactory()
