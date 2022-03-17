@@ -1,8 +1,7 @@
 import PropTypes from 'prop-types'
-import React, { useEffect, useMemo, useState, useCallback } from 'react'
+import React, { useEffect, useState, useCallback } from 'react'
 import { NavLink } from 'react-router-dom'
 
-import useActiveFeature from 'components/hooks/useActiveFeature'
 import Icon from 'components/layout/Icon'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Spinner from 'components/layout/Spinner'
@@ -11,30 +10,16 @@ import * as pcapi from 'repository/pcapi/pcapi'
 import { HTTP_STATUS } from 'repository/pcapi/pcapiClient'
 
 import ApiKey from './ApiKey/ApiKey'
-import BankInformation from './BankInformation/BankInformation'
 import { Offerer } from './Offerer'
 import VenuesContainer from './Venues/VenuesContainer'
 
 const OffererDetails = ({ offererId }) => {
-  const isBankInformationWithSiretActive = useActiveFeature(
-    'ENFORCE_BANK_INFORMATION_WITH_SIRET'
-  )
   const [offerer, setOfferer] = useState(null)
   const [physicalVenues, setPhysicalVenues] = useState([])
-  const [businessUnitList, setBusinessUnitList] = useState([])
   const [isLoading, setIsLoading] = useState(true)
-
-  const hasInvalidBusinessUnits = useMemo(() => {
-    if (!isBankInformationWithSiretActive) return false
-    if (!offerer) return false
-    return (
-      businessUnitList.filter(businessUnit => !businessUnit.siret).length > 0
-    )
-  }, [offerer, businessUnitList, isBankInformationWithSiretActive])
 
   const resetOfferer = useCallback(id => {
     setOfferer({ id: id, managedVenues: [] })
-    setBusinessUnitList([])
     setPhysicalVenues([])
   }, [])
 
@@ -59,8 +44,6 @@ const OffererDetails = ({ offererId }) => {
     async function initializeOfferer(id) {
       try {
         await loadOfferer(id)
-        const receivedBusinessUnitList = await pcapi.getBusinessUnits(id)
-        setBusinessUnitList(receivedBusinessUnitList)
       } catch (error) {
         if (error.status === HTTP_STATUS.FORBIDDEN) {
           resetOfferer(id)
@@ -114,12 +97,6 @@ const OffererDetails = ({ offererId }) => {
           </span>
         </div>
       </div>
-      {offerer.areBankInformationProvided && (
-        <BankInformation
-          hasBusinessUnitError={hasInvalidBusinessUnits}
-          offerer={offerer}
-        />
-      )}
       <ApiKey
         maxAllowedApiKeys={offerer.apiKey.maxAllowed}
         offererId={offerer.id}

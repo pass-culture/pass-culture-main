@@ -54,17 +54,6 @@ describe('src | components | pages | Offerer | OffererDetails', () => {
   })
 
   describe('render', () => {
-    it('should render a bank instructions block if they are already provided', async () => {
-      // When
-      renderOffererDetails({ props, store })
-
-      // Then
-      const bankInstructions = await screen.findByText(
-        'Les coordonnées bancaires ci-dessous seront attribuées à tous les lieux sans coordonnées bancaires propres :'
-      )
-      expect(bankInstructions).toBeInTheDocument()
-    })
-
     it('should render Venues', async () => {
       // when
       await renderOffererDetails({ props, store })
@@ -72,36 +61,6 @@ describe('src | components | pages | Offerer | OffererDetails', () => {
       // then
       expect(screen.getByText('Lieux')).toBeInTheDocument()
       expect(screen.getByText('fake venue')).toBeInTheDocument()
-    })
-
-    it('should render business unit banner when offerer has invalid business unit', async () => {
-      // Given
-      store = configureTestStore({
-        features: {
-          list: [
-            { isActive: true, nameKey: 'ENFORCE_BANK_INFORMATION_WITH_SIRET' },
-          ],
-        },
-      })
-      pcapi.getBusinessUnits.mockResolvedValue([
-        {
-          name: 'Business Unit #2',
-          siret: null,
-          id: 2,
-          bic: 'BDFEFRPP',
-          iban: 'FR9410010000000000000000022',
-        },
-      ])
-
-      // When
-      await renderOffererDetails({ props, store })
-
-      // Then
-      expect(
-        screen.getByText(
-          'Certains de vos points de remboursement ne sont pas rattachés à un SIRET. Pour continuer à percevoir vos remboursements, veuillez renseigner un SIRET de référence.'
-        )
-      ).toBeInTheDocument()
     })
   })
 })
