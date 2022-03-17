@@ -7,20 +7,19 @@ import Icon from 'components/layout/Icon'
 import PeriodSelector from 'components/layout/inputs/PeriodSelector/PeriodSelector'
 import Select from 'components/layout/inputs/Select'
 import TextInput from 'components/layout/inputs/TextInput/TextInput'
-import * as pcapi from 'repository/pcapi/pcapi'
-import {
-  fetchAllVenuesByProUser,
-  formatAndOrderVenues,
-} from 'repository/venuesService'
-import { formatBrowserTimezonedDateAsUTC, getToday } from 'utils/date'
-
 import {
   ALL_CATEGORIES_OPTION,
   ALL_VENUES_OPTION,
   CREATION_MODES_FILTERS,
   DEFAULT_CREATION_MODE,
   DEFAULT_SEARCH_FILTERS,
-} from '../_constants'
+} from 'core/Offers/constants'
+import * as pcapi from 'repository/pcapi/pcapi'
+import {
+  fetchAllVenuesByProUser,
+  formatAndOrderVenues,
+} from 'repository/venuesService'
+import { formatBrowserTimezonedDateAsUTC, getToday } from 'utils/date'
 
 const SearchFilters = ({
   applyFilters,

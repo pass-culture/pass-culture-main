@@ -20,7 +20,7 @@ import {
   validateUpdatedStock,
 } from 'components/pages/Offers/Offer/Stocks/StockItem/domain'
 import StockItem from 'components/pages/Offers/Offer/Stocks/StockItem/StockItem'
-import { OFFER_STATUS_DRAFT } from 'components/pages/Offers/Offers/_constants'
+import { OFFER_STATUS_DRAFT } from 'core/Offers/constants'
 import { ReactComponent as AddStockSvg } from 'icons/ico-plus.svg'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { SubmitButton } from 'ui-kit'

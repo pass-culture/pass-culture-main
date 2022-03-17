@@ -2,11 +2,11 @@ import PropTypes from 'prop-types'
 import React, { Fragment } from 'react'
 
 import Icon from 'components/layout/Icon'
-
 import {
   ADMINS_DISABLED_FILTERS_MESSAGE,
   OFFER_STATUS_LIST,
-} from '../_constants'
+} from 'core/Offers/constants'
+
 import { OffersStatusFiltersModal } from '../OffersStatusFiltersModal/OffersStatusFiltersModal'
 
 const StatusFiltersButton = ({
