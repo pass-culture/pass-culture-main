@@ -30,6 +30,7 @@ def format_user_attributes(user_attributes: UserAttributes) -> dict:
         "date(u.deposit_expiration_date)": _format_date(user_attributes.deposit_expiration_date),
         "date(u.last_booking_date)": _format_date(user_attributes.last_booking_date),
         "u.credit": int(user_attributes.domains_credit.all.remaining * 100) if user_attributes.domains_credit else None,
+        "u.city": user_attributes.city,
         "u.departement_code": user_attributes.departement_code,
         "u.first_name": user_attributes.first_name,
         "u.has_completed_id_check": user_attributes.has_completed_id_check,

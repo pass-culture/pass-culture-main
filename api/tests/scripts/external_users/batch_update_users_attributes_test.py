@@ -71,7 +71,7 @@ def test_run_sendinblue_only(mock_import_contacts):
 
 @pytest.mark.usefixtures("db_session")
 def test_format_batch_user():
-    user = BeneficiaryGrant18Factory(deposit__version=1, departementCode="75")
+    user = BeneficiaryGrant18Factory(deposit__version=1, departementCode="75", city="Paris")
     booking = IndividualBookingFactory(individualBooking__user=user)
 
     res = format_batch_users([user])
@@ -82,6 +82,7 @@ def test_format_batch_user():
         "date(u.date_of_birth)": user.dateOfBirth.strftime(BATCH_DATETIME_FORMAT),
         "date(u.deposit_expiration_date)": user.deposit_expiration_date.strftime(BATCH_DATETIME_FORMAT),
         "date(u.last_booking_date)": booking.dateCreated.strftime(BATCH_DATETIME_FORMAT),
+        "u.city": "Paris",
         "u.credit": 49000,
         "u.departement_code": "75",
         "u.is_beneficiary": True,
