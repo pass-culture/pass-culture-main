@@ -1,41 +1,62 @@
 import PropTypes from 'prop-types'
 import React, { useCallback, useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
-import { Link, useHistory } from 'react-router-dom'
+import { useHistory } from 'react-router-dom'
 
-import ActionsBarPortal from 'components/layout/ActionsBarPortal/ActionsBarPortal'
 import Icon from 'components/layout/Icon'
-import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Spinner from 'components/layout/Spinner'
-import Titles from 'components/layout/Titles/Titles'
 import { getOffersCountToDisplay } from 'components/pages/Offers/domain/getOffersCountToDisplay'
 import { isOfferDisabled } from 'components/pages/Offers/domain/isOfferDisabled'
+import {
+  DEFAULT_SEARCH_FILTERS,
+  MAX_OFFERS_TO_DISPLAY,
+  MAX_TOTAL_PAGES,
+  NUMBER_OF_OFFERS_PER_PAGE,
+} from 'core/Offers/constants'
 import { useQuerySearchFilters } from 'core/Offers/hooks'
-import { ReactComponent as AddOfferSvg } from 'icons/ico-plus.svg'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { savePageNumber, saveSearchFilters } from 'store/offers/actions'
 import { Banner } from 'ui-kit'
 
 import { computeOffersUrl } from '../utils/computeOffersUrl'
 
-import {
-  DEFAULT_PAGE,
-  DEFAULT_SEARCH_FILTERS,
-  MAX_OFFERS_TO_DISPLAY,
-  MAX_TOTAL_PAGES,
-  NUMBER_OF_OFFERS_PER_PAGE,
-} from './_constants'
-import ActionsBarContainer from './ActionsBar/ActionsBarContainer'
-import NoOffers from './NoOffers/NoOffers'
 import NoResults from './NoResults/NoResults'
 import OffersTableBody from './OffersTableBody/OffersTableBody'
 import OffersTableHead from './OffersTableHead/OffersTableHead'
 import SearchFilters from './SearchFilters/SearchFilters'
 
-const Offers = ({ currentUser, getOfferer }) => {
+const Offers = ({
+  currentUser,
+  getOfferer,
+  areAllOffersSelected,
+  currentPageNumber,
+  currentPageOffersSubset,
+  hasOffers,
+  hasSearchFilters,
+  isLoading,
+  isRefreshingOffers,
+  offerer,
+  offersCount,
+  pageCount,
+  refreshOffers,
+  resetFilters,
+  searchFilters,
+  selectedOfferIds,
+  setCurrentPageNumber,
+  setIsLoading,
+  setIsRefreshingOffers,
+  setOfferer,
+  setOffers,
+  setOffersCount,
+  setPageCount,
+  setSearchFilters,
+  setSelectedOfferIds,
+  toggleSelectAllCheckboxes,
+  urlSearchFilters,
+}) => {
   const dispatch = useDispatch()
   const history = useHistory()
-  const [urlSearchFilters, urlPageNumber] = useQuerySearchFilters()
+  const [urlPageNumber] = useQuerySearchFilters()
 
   useEffect(() => {
     setCurrentPageNumber(urlPageNumber)
@@ -63,26 +84,8 @@ const Offers = ({ currentUser, getOfferer }) => {
       })
     )
     dispatch(savePageNumber(urlPageNumber))
-  }, [dispatch, urlPageNumber, urlSearchFilters])
-  const [isLoading, setIsLoading] = useState(true)
-  const [offersCount, setOffersCount] = useState(0)
-  const [currentPageNumber, setCurrentPageNumber] = useState(DEFAULT_PAGE)
-  const [pageCount, setPageCount] = useState(null)
-  const [searchFilters, setSearchFilters] = useState({
-    ...DEFAULT_SEARCH_FILTERS,
-    ...urlSearchFilters,
-  })
-  const [offerer, setOfferer] = useState(null)
+  }, [dispatch, urlPageNumber, urlSearchFilters, setCurrentPageNumber])
   const [isStatusFiltersVisible, setIsStatusFiltersVisible] = useState(false)
-  const [areAllOffersSelected, setAreAllOffersSelected] = useState(false)
-
-  const [offers, setOffers] = useState([])
-  const [selectedOfferIds, setSelectedOfferIds] = useState([])
-  const currentPageOffersSubset = offers.slice(
-    (currentPageNumber - 1) * NUMBER_OF_OFFERS_PER_PAGE,
-    currentPageNumber * NUMBER_OF_OFFERS_PER_PAGE
-  )
-  const [isRefreshingOffers, setIsRefreshingOffers] = useState(true)
 
   const applyUrlFiltersAndRedirect = useCallback(
     (filters, isRefreshing = true) => {
@@ -91,7 +94,7 @@ const Offers = ({ currentUser, getOfferer }) => {
 
       history.push(newUrl)
     },
-    [history]
+    [history, setIsRefreshingOffers]
   )
 
   useEffect(() => {
@@ -103,7 +106,7 @@ const Offers = ({ currentUser, getOfferer }) => {
         setOfferer(offerer)
       )
     }
-  }, [getOfferer, urlSearchFilters.offererId])
+  }, [getOfferer, urlSearchFilters.offererId, setOfferer])
 
   useEffect(() => {
     if (currentUser.isAdmin) {
@@ -121,31 +124,35 @@ const Offers = ({ currentUser, getOfferer }) => {
         }))
       }
     }
-  }, [currentUser.isAdmin, urlSearchFilters.offererId, searchFilters.venueId])
+  }, [
+    currentUser.isAdmin,
+    urlSearchFilters.offererId,
+    searchFilters.venueId,
+    setSearchFilters,
+  ])
 
-  const loadAndUpdateOffers = useCallback(filters => {
-    const apiFilters = {
-      ...DEFAULT_SEARCH_FILTERS,
-      ...filters,
-    }
-    pcapi
-      .loadFilteredOffers(apiFilters)
-      .then(offers => {
-        const offersCount = offers.length
-        setIsLoading(false)
-        setOffersCount(offersCount)
-        const pageCount = Math.ceil(offersCount / NUMBER_OF_OFFERS_PER_PAGE)
-        const cappedPageCount = Math.min(pageCount, MAX_TOTAL_PAGES)
-        setPageCount(cappedPageCount)
-        setOffers(offers)
-      })
-      .catch(() => setIsLoading(false))
-  }, [])
-
-  const refreshOffers = useCallback(
-    () => loadAndUpdateOffers(urlSearchFilters),
-    [loadAndUpdateOffers, urlSearchFilters]
+  const loadAndUpdateOffers = useCallback(
+    filters => {
+      const apiFilters = {
+        ...DEFAULT_SEARCH_FILTERS,
+        ...filters,
+      }
+      pcapi
+        .loadFilteredOffers(apiFilters)
+        .then(offers => {
+          const offersCount = offers.length
+          setIsLoading(false)
+          setOffersCount(offersCount)
+          const pageCount = Math.ceil(offersCount / NUMBER_OF_OFFERS_PER_PAGE)
+          const cappedPageCount = Math.min(pageCount, MAX_TOTAL_PAGES)
+          setPageCount(cappedPageCount)
+          setOffers(offers)
+        })
+        .catch(() => setIsLoading(false))
+    },
+    [setIsLoading, setOffersCount, setPageCount, setOffers]
   )
+
   const hasDifferentFiltersFromLastSearch = useCallback(
     (searchFilters, filterNames = Object.keys(searchFilters)) => {
       const lastSearchFilters = {
@@ -174,6 +181,7 @@ const Offers = ({ currentUser, getOfferer }) => {
     refreshOffers,
     searchFilters,
     applyUrlFiltersAndRedirect,
+    setIsLoading,
   ])
 
   useEffect(() => {
@@ -202,20 +210,7 @@ const Offers = ({ currentUser, getOfferer }) => {
       updatedFilters.status = DEFAULT_SEARCH_FILTERS.status
     }
     applyUrlFiltersAndRedirect(updatedFilters)
-  }, [applyUrlFiltersAndRedirect, searchFilters])
-
-  const hasSearchFilters = useCallback(
-    (searchFilters, filterNames = Object.keys(searchFilters)) => {
-      return filterNames
-        .map(
-          filterName =>
-            searchFilters[filterName] !==
-            { ...DEFAULT_SEARCH_FILTERS }[filterName]
-        )
-        .includes(true)
-    },
-    []
-  )
+  }, [applyUrlFiltersAndRedirect, searchFilters, setIsLoading, setOfferer])
 
   const isAdminForbidden = useCallback(
     searchFilters => {
@@ -227,12 +222,15 @@ const Offers = ({ currentUser, getOfferer }) => {
     [currentUser.isAdmin, hasSearchFilters]
   )
 
-  const updateStatusFilter = useCallback(selectedStatus => {
-    setSearchFilters(currentSearchFilters => ({
-      ...currentSearchFilters,
-      status: selectedStatus,
-    }))
-  }, [])
+  const updateStatusFilter = useCallback(
+    selectedStatus => {
+      setSearchFilters(currentSearchFilters => ({
+        ...currentSearchFilters,
+        status: selectedStatus,
+      }))
+    },
+    [setSearchFilters]
+  )
 
   const onPreviousPageClick = useCallback(() => {
     const newPageNumber = currentPageNumber - 1
@@ -250,22 +248,21 @@ const Offers = ({ currentUser, getOfferer }) => {
     )
   }, [currentPageNumber, applyUrlFiltersAndRedirect, urlSearchFilters])
 
-  const selectOffer = useCallback((offerId, selected) => {
-    setSelectedOfferIds(currentSelectedIds => {
-      let newSelectedOfferIds = [...currentSelectedIds]
-      if (selected) {
-        newSelectedOfferIds.push(offerId)
-      } else {
-        const offerIdIndex = newSelectedOfferIds.indexOf(offerId)
-        newSelectedOfferIds.splice(offerIdIndex, 1)
-      }
-      return newSelectedOfferIds
-    })
-  }, [])
-
-  const toggleSelectAllCheckboxes = useCallback(() => {
-    setAreAllOffersSelected(currentValue => !currentValue)
-  }, [])
+  const selectOffer = useCallback(
+    (offerId, selected) => {
+      setSelectedOfferIds(currentSelectedIds => {
+        let newSelectedOfferIds = [...currentSelectedIds]
+        if (selected) {
+          newSelectedOfferIds.push(offerId)
+        } else {
+          const offerIdIndex = newSelectedOfferIds.indexOf(offerId)
+          newSelectedOfferIds.splice(offerIdIndex, 1)
+        }
+        return newSelectedOfferIds
+      })
+    },
+    [setSelectedOfferIds]
+  )
 
   function selectAllOffers() {
     setSelectedOfferIds(
@@ -279,153 +276,117 @@ const Offers = ({ currentUser, getOfferer }) => {
     toggleSelectAllCheckboxes()
   }
 
-  const clearSelectedOfferIds = useCallback(() => {
-    setSelectedOfferIds([])
-  }, [])
-
-  const resetFilters = useCallback(() => {
-    setIsLoading(true)
-    setOfferer(null)
-    setSearchFilters({ ...DEFAULT_SEARCH_FILTERS })
-  }, [setSearchFilters])
-
-  const { isAdmin } = currentUser || {}
-  const hasOffers = currentPageOffersSubset.length > 0
-  const userHasNoOffers =
-    !isLoading && !hasOffers && !hasSearchFilters(searchFilters)
-
-  const actionLink =
-    userHasNoOffers || isAdmin ? null : (
-      <Link className="primary-button with-icon" to="/offre/creation">
-        <AddOfferSvg />
-        Créer une offre
-      </Link>
-    )
-
-  const nbSelectedOffers = areAllOffersSelected
-    ? offersCount
-    : selectedOfferIds.length
-
   const isLastPage = currentPageNumber === pageCount
 
   return (
-    <div className="offers-page">
-      <PageTitle title="Vos offres" />
-      <Titles action={actionLink} title="Offres" />
-      <ActionsBarPortal isVisible={nbSelectedOffers > 0}>
-        <ActionsBarContainer
-          areAllOffersSelected={areAllOffersSelected}
-          clearSelectedOfferIds={clearSelectedOfferIds}
-          nbSelectedOffers={nbSelectedOffers}
-          refreshOffers={refreshOffers}
-          selectedOfferIds={selectedOfferIds}
-          toggleSelectAllCheckboxes={toggleSelectAllCheckboxes}
-        />
-      </ActionsBarPortal>
-      {userHasNoOffers ? (
-        <NoOffers />
-      ) : (
-        <>
-          <h3 className="op-title">Rechercher une offre</h3>
-          {hasSearchFilters(searchFilters) ? (
-            <Link
-              className="reset-filters-link"
-              onClick={resetFilters}
-              to="/offres"
-            >
-              Réinitialiser les filtres
-            </Link>
-          ) : (
-            <span className="reset-filters-link disabled">
-              Réinitialiser les filtres
-            </span>
-          )}
+    <>
+      <SearchFilters
+        applyFilters={applyFilters}
+        offerer={offerer}
+        removeOfferer={removeOfferer}
+        selectedFilters={searchFilters}
+        setSearchFilters={setSearchFilters}
+      />
 
-          <SearchFilters
-            applyFilters={applyFilters}
-            offerer={offerer}
-            removeOfferer={removeOfferer}
-            selectedFilters={searchFilters}
-            setSearchFilters={setSearchFilters}
-          />
-
-          <div aria-busy={isLoading} aria-live="polite" className="section">
-            {isLoading ? (
-              <Spinner />
-            ) : (
-              <>
-                {offersCount > MAX_OFFERS_TO_DISPLAY && (
-                  <Banner type="notification-info">
-                    L’affichage est limité à 500 offres. Modifiez les filtres
-                    pour affiner votre recherche.
-                  </Banner>
-                )}
-                {hasOffers && (
-                  <div className="offers-count">
-                    {`${getOffersCountToDisplay(offersCount)} ${
-                      offersCount <= 1 ? 'offre' : 'offres'
-                    }`}
-                  </div>
-                )}
-                <table>
-                  <OffersTableHead
-                    applyFilters={applyFilters}
-                    areAllOffersSelected={areAllOffersSelected}
-                    areOffersPresent={hasOffers}
-                    filters={searchFilters}
-                    isAdminForbidden={isAdminForbidden}
-                    isStatusFiltersVisible={isStatusFiltersVisible}
-                    selectAllOffers={selectAllOffers}
-                    setIsStatusFiltersVisible={setIsStatusFiltersVisible}
-                    updateStatusFilter={updateStatusFilter}
-                  />
-                  <OffersTableBody
-                    areAllOffersSelected={areAllOffersSelected}
-                    offers={currentPageOffersSubset}
-                    selectOffer={selectOffer}
-                    selectedOfferIds={selectedOfferIds}
-                  />
-                </table>
-                {hasOffers && (
-                  <div className="pagination">
-                    <button
-                      disabled={currentPageNumber === 1}
-                      onClick={onPreviousPageClick}
-                      type="button"
-                    >
-                      <Icon
-                        alt="Aller à la page précédente"
-                        svg="ico-left-arrow"
-                      />
-                    </button>
-                    <span>{`Page ${currentPageNumber}/${pageCount}`}</span>
-                    <button
-                      disabled={isLastPage}
-                      onClick={onNextPageClick}
-                      type="button"
-                    >
-                      <Icon
-                        alt="Aller à la page suivante"
-                        svg="ico-right-arrow"
-                      />
-                    </button>
-                  </div>
-                )}
-                {!hasOffers && hasSearchFilters(urlSearchFilters) && (
-                  <NoResults resetFilters={resetFilters} />
-                )}
-              </>
+      <div aria-busy={isLoading} aria-live="polite" className="section">
+        {isLoading ? (
+          <Spinner />
+        ) : (
+          <>
+            {offersCount > MAX_OFFERS_TO_DISPLAY && (
+              <Banner type="notification-info">
+                L’affichage est limité à 500 offres. Modifiez les filtres pour
+                affiner votre recherche.
+              </Banner>
             )}
-          </div>
-        </>
-      )}
-    </div>
+            {hasOffers && (
+              <div className="offers-count">
+                {`${getOffersCountToDisplay(offersCount)} ${
+                  offersCount <= 1 ? 'offre' : 'offres'
+                }`}
+              </div>
+            )}
+            <table>
+              <OffersTableHead
+                applyFilters={applyFilters}
+                areAllOffersSelected={areAllOffersSelected}
+                areOffersPresent={hasOffers}
+                filters={searchFilters}
+                isAdminForbidden={isAdminForbidden}
+                isStatusFiltersVisible={isStatusFiltersVisible}
+                selectAllOffers={selectAllOffers}
+                setIsStatusFiltersVisible={setIsStatusFiltersVisible}
+                updateStatusFilter={updateStatusFilter}
+              />
+              <OffersTableBody
+                areAllOffersSelected={areAllOffersSelected}
+                offers={currentPageOffersSubset}
+                selectOffer={selectOffer}
+                selectedOfferIds={selectedOfferIds}
+              />
+            </table>
+            {hasOffers && (
+              <div className="pagination">
+                <button
+                  disabled={currentPageNumber === 1}
+                  onClick={onPreviousPageClick}
+                  type="button"
+                >
+                  <Icon alt="Aller à la page précédente" svg="ico-left-arrow" />
+                </button>
+                <span>{`Page ${currentPageNumber}/${pageCount}`}</span>
+                <button
+                  disabled={isLastPage}
+                  onClick={onNextPageClick}
+                  type="button"
+                >
+                  <Icon alt="Aller à la page suivante" svg="ico-right-arrow" />
+                </button>
+              </div>
+            )}
+            {!hasOffers && hasSearchFilters(urlSearchFilters) && (
+              <NoResults resetFilters={resetFilters} />
+            )}
+          </>
+        )}
+      </div>
+    </>
   )
 }
 
+Offers.defaultProps = {
+  offerer: null,
+  pageCount: null,
+}
+
 Offers.propTypes = {
+  areAllOffersSelected: PropTypes.bool.isRequired,
+  currentPageNumber: PropTypes.number.isRequired,
+  currentPageOffersSubset: PropTypes.shape().isRequired,
   currentUser: PropTypes.shape().isRequired,
   getOfferer: PropTypes.func.isRequired,
+  hasOffers: PropTypes.bool.isRequired,
+  hasSearchFilters: PropTypes.func.isRequired,
+  isLoading: PropTypes.bool.isRequired,
+  isRefreshingOffers: PropTypes.bool.isRequired,
+  offerer: PropTypes.shape(),
+  offersCount: PropTypes.number.isRequired,
+  pageCount: PropTypes.number,
+  refreshOffers: PropTypes.func.isRequired,
+  resetFilters: PropTypes.func.isRequired,
+  searchFilters: PropTypes.shape().isRequired,
+  selectedOfferIds: PropTypes.shape.isRequired,
+  setCurrentPageNumber: PropTypes.func.isRequired,
+  setIsLoading: PropTypes.func.isRequired,
+  setIsRefreshingOffers: PropTypes.func.isRequired,
+  setOfferer: PropTypes.func.isRequired,
+  setOffers: PropTypes.func.isRequired,
+  setOffersCount: PropTypes.func.isRequired,
+  setPageCount: PropTypes.func.isRequired,
+  setSearchFilters: PropTypes.func.isRequired,
+  setSelectedOfferIds: PropTypes.func.isRequired,
+  toggleSelectAllCheckboxes: PropTypes.func.isRequired,
+  urlSearchFilters: PropTypes.shape().isRequired,
 }
 
 export default Offers
