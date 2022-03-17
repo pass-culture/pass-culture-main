@@ -11,11 +11,10 @@ import {
 } from 'core/Offers/constants'
 import { useQuerySearchFilters } from 'core/Offers/hooks'
 import { Offer, Offerer, SearchFilters } from 'core/Offers/types'
-import * as pcapi from 'repository/pcapi/pcapi'
 import OffersScreen from 'screens/Offers'
 import { savePageNumber, saveSearchFilters } from 'store/offers/actions'
 
-import { getFilteredOffersAdapter } from './adapters'
+import { getFilteredOffersAdapter, getOffererAdapter } from './adapters'
 
 const Offers = (): JSX.Element => {
   const notify = useNotification()
@@ -62,15 +61,25 @@ const Offers = (): JSX.Element => {
   )
 
   useEffect(() => {
-    if (
-      urlSearchFilters.offererId &&
-      urlSearchFilters.offererId !== DEFAULT_SEARCH_FILTERS.offererId
-    ) {
-      pcapi
-        .getOfferer(urlSearchFilters.offererId)
-        .then(offerer => setOfferer(offerer))
+    const loadOfferer = async () => {
+      if (
+        urlSearchFilters.offererId &&
+        urlSearchFilters.offererId !== DEFAULT_SEARCH_FILTERS.offererId
+      ) {
+        const { isOk, message, payload } = await getOffererAdapter(
+          urlSearchFilters.offererId
+        )
+
+        if (!isOk) {
+          return notify.error(message)
+        }
+
+        setOfferer(payload)
+      }
     }
-  }, [urlSearchFilters.offererId, setOfferer])
+
+    loadOfferer()
+  }, [urlSearchFilters.offererId, notify])
 
   useEffect(() => {
     if (isRefreshingOffers) {
