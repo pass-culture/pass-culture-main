@@ -11,6 +11,7 @@ from flask import Response
 from flask import make_response
 from flask import request
 import pydantic
+from spectree.utils import parse_code
 from werkzeug.exceptions import BadRequest
 
 from pcapi.models.api_errors import ApiErrors
@@ -155,10 +156,16 @@ def spectree_serialize(
                     raise ApiErrors(error_dict)
 
             result = route(*args, **kwargs)
+            status_code = on_success_status if result else on_empty_status
+            # If we explicitly define "resp" which may have several HTTP codes and associated models
+            # then try to match the HTTP code linked to the pydantic model in result.
+            if resp and result:
+                class_http_code_mapping = {v: parse_code(k) for k, v in resp.code_models.items()}
+                status_code = class_http_code_mapping[type(result)]
             if json_format:
                 return _make_json_response(
                     content=result,
-                    status_code=on_success_status if result else on_empty_status,
+                    status_code=status_code,
                     by_alias=response_by_alias,
                     exclude_none=exclude_none,
                     headers=response_headers,
