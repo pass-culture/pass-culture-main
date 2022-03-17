@@ -2,14 +2,12 @@ import pytest
 
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.categories import subcategories
-from pcapi.core.offers.factories import ProductFactory
+import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import Mediation
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users.models import Favorite
-from pcapi.model_creators.generic_creators import create_favorite
-from pcapi.model_creators.generic_creators import create_mediation
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_stock
 from pcapi.model_creators.generic_creators import create_venue
@@ -53,7 +51,7 @@ class DeleteUnwantedExistingProductTest:
     def test_should_delete_nothing_when_product_not_found(self, app):
         # Given
         isbn = "1111111111111"
-        ProductFactory(
+        offers_factories.ProductFactory(
             idAtProviders=isbn, isSynchronizationCompatible=False, subcategoryId=subcategories.LIVRE_PAPIER.id
         )
 
@@ -88,7 +86,7 @@ class DeleteUnwantedExistingProductTest:
     ):
         # Given
         isbn = "1111111111111"
-        product = ProductFactory(
+        product = offers_factories.ProductFactory(
             idAtProviders=isbn,
             isGcuCompatible=True,
             isSynchronizationCompatible=True,
@@ -111,14 +109,11 @@ class DeleteUnwantedExistingProductTest:
     def test_should_delete_product_when_related_offer_has_mediation(self, app):
         # Given
         isbn = "1111111111111"
-        offerer = create_offerer(siren="775671464")
-        venue = create_venue(offerer, name="Librairie Titelive", siret="77567146400110")
-        product = create_product_with_thing_subcategory(id_at_providers=isbn)
-        offer = create_offer_with_thing_product(venue, product=product)
-        stock = create_stock(offer=offer, price=0)
-        mediation = create_mediation(offer=offer)
-
-        repository.save(venue, product, offer, stock, mediation)
+        offer = offers_factories.StockFactory(
+            offer__product__idAtProviders=isbn,
+            offer__product__subcategoryId=subcategories.LIVRE_PAPIER.id,
+        ).offer
+        offers_factories.MediationFactory(offer=offer)
 
         # When
         delete_unwanted_existing_product("1111111111111")
@@ -133,16 +128,11 @@ class DeleteUnwantedExistingProductTest:
     def test_should_delete_product_when_related_offer_is_on_user_favorite_list(self, app):
         # Given
         isbn = "1111111111111"
-        beneficiary = users_factories.BeneficiaryGrant18Factory()
-        offerer = create_offerer(siren="775671464")
-        venue = create_venue(offerer, name="Librairie Titelive", siret="77567146400110")
-        product = create_product_with_thing_subcategory(id_at_providers=isbn)
-        offer = create_offer_with_thing_product(venue, product=product)
-        stock = create_stock(offer=offer, price=0)
-        mediation = create_mediation(offer=offer)
-        favorite = create_favorite(mediation=mediation, offer=offer, user=beneficiary)
-
-        repository.save(venue, product, offer, stock, mediation, favorite)
+        offer = offers_factories.StockFactory(
+            offer__product__idAtProviders=isbn,
+            offer__product__subcategoryId=subcategories.LIVRE_PAPIER.id,
+        ).offer
+        users_factories.FavoriteFactory(offer=offer)
 
         # When
         delete_unwanted_existing_product("1111111111111")
@@ -151,7 +141,6 @@ class DeleteUnwantedExistingProductTest:
         assert Product.query.count() == 0
         assert Offer.query.count() == 0
         assert Stock.query.count() == 0
-        assert Mediation.query.count() == 0
         assert Favorite.query.count() == 0
 
 
@@ -207,7 +196,7 @@ class FindActiveBookProductByIsbnTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_not_return_not_synchronization_compatible_product(self, app):
         valid_isbn = "1111111111111"
-        ProductFactory(
+        offers_factories.ProductFactory(
             idAtProviders=valid_isbn,
             subcategoryId=subcategories.LIVRE_PAPIER.id,
             isSynchronizationCompatible=False,

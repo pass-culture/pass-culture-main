@@ -1,13 +1,10 @@
 import pytest
 
 from pcapi.core.bookings import factories as booking_factories
+from pcapi.core.offers import factories as offers_factories
 from pcapi.core.users import factories as users_factories
-from pcapi.model_creators.generic_creators import create_mediation
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_user_offerer
-from pcapi.model_creators.generic_creators import create_venue
-from pcapi.model_creators.specific_creators import create_offer_with_event_product
-from pcapi.model_creators.specific_creators import create_product_with_event_subcategory
 from pcapi.repository import repository
 from pcapi.routes.serialization import as_dict
 
@@ -93,38 +90,18 @@ class AsDictTest:
         assert "siren" in dict_result["offerers"][0]
 
     @pytest.mark.usefixtures("db_session")
-    def test_returns_included_properties_on_joined_relationships(self, app):
-        # given
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        event_product = create_product_with_event_subcategory(event_name="My Event")
-        offer = create_offer_with_event_product(venue, product=event_product)
-        mediation = create_mediation(offer)
-        repository.save(mediation)
-        EVENT_INCLUDES = [{"key": "mediations", "includes": ["thumbUrl"]}]
-
-        # when
-        dict_result = as_dict(offer, includes=EVENT_INCLUDES)
-
-        # then
-        assert "thumbUrl" in dict_result["mediations"][0]
+    def test_returns_included_properties_on_joined_relationships(self):
+        mediation = offers_factories.MediationFactory.build()
+        includes = [{"key": "mediations", "includes": ["thumbUrl"]}]
+        dict_ = as_dict(mediation.offer, includes=includes)
+        assert "thumbUrl" in dict_["mediations"][0]
 
     @pytest.mark.usefixtures("db_session")
     def test_does_not_return_excluded_keys_on_joined_relationships(self, app):
-        # given
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        event_product = create_product_with_event_subcategory(event_name="My Event")
-        offer = create_offer_with_event_product(venue, product=event_product)
-        mediation = create_mediation(offer)
-        repository.save(mediation)
-        EVENT_INCLUDES = [{"key": "mediations", "includes": ["-isActive"]}]
-
-        # when
-        dict_result = as_dict(offer, includes=EVENT_INCLUDES)
-
-        # then
-        assert "isActive" not in dict_result["mediations"][0]
+        mediation = offers_factories.MediationFactory.build()
+        includes = [{"key": "mediations", "includes": ["-isActive"]}]
+        dict_ = as_dict(mediation.offer, includes=includes)
+        assert "isActive" not in dict_["mediations"][0]
 
     @pytest.mark.usefixtures("db_session")
     def test_returns_humanized_ids_for_primary_keys(self, app):
