@@ -27,6 +27,12 @@ parameters:
   adage-front_cache_key:
     type: string
     default: 'node_modules-14.18-{{ checksum "adage-front/yarn.lock" }}'
+  run_measurement_workflow:
+    type: boolean
+    default: false
+  measure_workflow_id:
+    type: string
+    default: ''
 
 ###################
 #  EXECUTORS
@@ -1004,6 +1010,36 @@ jobs:
           command: gcloud container clusters get-credentials --region ${GCP_REGION} ${GKE_CLUSTER_NAME}
       - run: kubectl get deploy -n <<parameters.helm_environment>> -o name | xargs  -L 1 kubectl rollout restart -n <<parameters.helm_environment>>
 
+  measure_workflow_execution_time:
+    docker:
+      - image: cimg/python:3.9.7
+        auth:
+          username: $DOCKERHUB_USER
+          password: $DOCKERHUB_PASSWORD
+    steps:
+      - checkout
+      - run:
+          name: Measure circle CI workflow execution time from workflow_id
+          command: |
+            pip install -U datetime tzlocal
+            python3 scripts/measure_workflow_execution_time.py $CIRCLE_CI_TOKEN $METRICS_ENDPOINT << pipeline.parameters.measure_workflow_id >>
+
+  trigger_measure_workflow_execution_time:
+    docker:
+      - image: cimg/base:2021.04
+        auth:
+          username: $DOCKERHUB_USER
+          password: $DOCKERHUB_PASSWORD
+    steps:
+      - run:
+          name: Trigger measure workflow execution time
+          command: >
+            curl --request POST \
+              --url https://circleci.com/api/v2/project/github/pass-culture/pass-culture-main/pipeline \
+              --header "Circle-Token: $CIRCLE_CI_TOKEN" \
+              --header 'content-type: application/json' \
+              --data "{\"parameters\":{\"run_measurement_workflow\":true, \"measure_workflow_id\":\"$CIRCLE_WORKFLOW_ID\"}}"
+
 ###################
 #  WORKFLOWS
 ###################
@@ -1153,6 +1189,26 @@ workflows:
            - GCP
            - GCP_EHP
          app_environment: testing
+      - trigger_measure_workflow_execution_time:
+         filters:
+           branches:
+             ignore:
+               - production
+               - staging
+               - integration
+               - master
+         requires:
+           - type-checking-pro
+           - quality-pro
+           - type-checking-adage-front
+           - quality-adage-front
+           - quality-api
+           - tests-api
+           - tests-adage-front
+           - tests-pro-unit-tests
+           - tests-pro-e2e-tests
+         context:
+           - CI_MEASURE
   gcp-ehp:
     jobs:
       - build-and-push-image:
@@ -1250,3 +1306,9 @@ workflows:
           context:
             - GCP
             - GCP_PROD
+  measure_execution_time:
+    when: << pipeline.parameters.run_measurement_workflow >>
+    jobs:
+      - measure_workflow_execution_time:
+          context:
+            - CI_MEASURE
