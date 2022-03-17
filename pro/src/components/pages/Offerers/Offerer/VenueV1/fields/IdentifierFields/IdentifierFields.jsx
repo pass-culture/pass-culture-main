@@ -6,55 +6,20 @@ import { removeWhitespaces } from 'react-final-form-utils'
 import ReactTooltip from 'react-tooltip'
 
 import HiddenField from 'components/layout/form/fields/HiddenField'
+import { SiretField } from 'components/layout/form/fields/SiretField'
 import TextareaField from 'components/layout/form/fields/TextareaField'
 import TextField from 'components/layout/form/fields/TextField'
 import Icon from 'components/layout/Icon'
+import VenueLabel from 'components/pages/Offerers/Offerer/VenueV1/ValueObjects/VenueLabel'
+import VenueType from 'components/pages/Offerers/Offerer/VenueV1/ValueObjects/VenueType'
 import { CheckboxField } from 'ui-kit'
 
-import { formatSiret } from '../../siret/formatSiret'
-import VenueLabel from '../../ValueObjects/VenueLabel'
-import VenueType from '../../ValueObjects/VenueType'
-
 import getLabelFromList from './utils/getLabelFromList'
-import siretValidate from './validators/siretValidate'
-
-const parseSiret = value => {
-  return value.replace(/[^[0-9]/g, '')
-}
 
 class IdentifierFields extends PureComponent {
   componentDidUpdate() {
     ReactTooltip.rebuild()
   }
-
-  /* eslint-disable react/no-unstable-nested-components */
-  handleRenderTooltipSiret =
-    (fieldReadOnlyBecauseFrozenFormSiret, readOnly) => () => {
-      if (readOnly) {
-        return null
-      }
-
-      return fieldReadOnlyBecauseFrozenFormSiret ? (
-        <span
-          className="button"
-          data-place="bottom"
-          data-tip="<p>Il n’est pas possible de modifier le nom, l’addresse et la géolocalisation du lieu quand un siret est renseigné.</p>"
-          data-type="info"
-        >
-          <Icon svg="picto-info" />
-        </span>
-      ) : (
-        <span
-          className="button"
-          data-place="bottom"
-          data-tip="<div><p>Saisissez ici le SIRET du lieu lié à votre structure pour retrouver ses informations automatiquement.</p>
-        <p>Si les informations ne correspondent pas au SIRET saisi, <a href='mailto:support-pro@passculture.app?subject=Question%20SIRET'> contactez notre équipe</a>.</p></div>"
-          data-type="info"
-        >
-          <Icon svg="picto-info" />
-        </span>
-      )
-    }
 
   /* eslint-disable react/no-unstable-nested-components */
   handleTooltipBookingEmail = readOnly => () =>
@@ -98,7 +63,6 @@ class IdentifierFields extends PureComponent {
       initialSiret,
       isCreatedEntity,
       isDirtyFieldBookingEmail,
-      isEntrepriseApiDisabled,
       readOnly,
       venueIsVirtual,
       venueLabels,
@@ -132,22 +96,9 @@ class IdentifierFields extends PureComponent {
         <div className="field-group">
           {isCreatedEntity && <HiddenField name="managingOffererId" />}
           {!venueIsVirtual && (
-            <TextField
-              format={formatSiret}
+            <SiretField
               label={siretLabel}
-              name="siret"
-              parse={parseSiret}
               readOnly={readOnly || initialSiret !== null}
-              renderTooltip={this.handleRenderTooltip(
-                fieldReadOnlyBecauseFrozenFormSiret,
-                readOnly
-              )}
-              type="siret"
-              validate={
-                initialSiret || isEntrepriseApiDisabled
-                  ? undefined
-                  : siretValidate
-              }
             />
           )}
           <TextField
@@ -309,7 +260,6 @@ IdentifierFields.propTypes = {
   initialSiret: PropTypes.string,
   isCreatedEntity: PropTypes.bool,
   isDirtyFieldBookingEmail: PropTypes.bool,
-  isEntrepriseApiDisabled: PropTypes.bool.isRequired,
   readOnly: PropTypes.bool,
   venueIsVirtual: PropTypes.bool,
   venueLabelId: PropTypes.string,

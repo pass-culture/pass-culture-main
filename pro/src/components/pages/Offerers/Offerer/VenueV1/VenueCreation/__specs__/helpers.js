@@ -5,7 +5,14 @@ import userEvent from '@testing-library/user-event'
 import fetchAddressData from 'components/pages/Offerers/Offerer/VenueV1/fields/LocationFields/utils/fetchAddressData'
 
 export const fieldLabels = {
+  siret: {
+    labelCreation: 'SIRET du lieu qui accueille vos offres (si applicable) :',
+    label: 'SIRET :',
+    exact: true,
+    type: 'text',
+  },
   name: { label: 'Nom du lieu', exact: false, type: 'text' },
+  publicName: { label: 'Nom d’usage du lieu', exact: false, type: 'text' },
   bookingEmail: { label: 'Mail : *', exact: false, type: 'text' },
   comment: { label: 'Commentaire', exact: false, type: 'text' },
   address: { label: 'Numéro et voie', exact: false, type: 'text' },
@@ -13,17 +20,56 @@ export const fieldLabels = {
   postalCode: { label: 'Code postal', exact: false, type: 'text' },
   longitude: { label: 'Longitude', exact: false, type: 'text' },
   latitude: { label: 'Latitude', exact: false, type: 'text' },
-  type: { label: 'Type de lieu', exact: false, type: 'select' },
+  venueTypeCode: { label: 'Type de lieu', exact: false, type: 'select' },
+  venueLabelId: {
+    label: 'Label du Ministère de la Culture ou du CNC',
+    exact: false,
+    type: 'select',
+  },
   noDisabilityCompliant: {
     label: 'Non accessible',
     exact: false,
     type: 'checkbox',
   },
+  audioDisabilityCompliant: {
+    label: 'Auditif',
+    exact: false,
+    type: 'checkbox',
+  },
+  motorDisabilityCompliant: {
+    label: 'Moteur',
+    exact: false,
+    type: 'checkbox',
+  },
+  mentalDisabilityCompliant: {
+    label: 'Psychique ou cognitif',
+    exact: false,
+    type: 'checkbox',
+  },
+  visualDisabilityCompliant: {
+    label: 'Visuel',
+    exact: false,
+    type: 'checkbox',
+  },
+  description: { label: 'Description', exact: false, type: 'text' },
 }
 
-export const findVenueInputForField = async fieldName => {
+export const findVenueInputForField = async (fieldName, isCreatedEntity) => {
   const { label, exact } = fieldLabels[fieldName]
+  if (fieldName === 'siret' && isCreatedEntity) {
+    const { labelCreation } = fieldLabels[fieldName]
+    return await screen.findByLabelText(labelCreation, { exact })
+  }
   return await screen.findByLabelText(label, { exact })
+}
+
+export const queryVenueInputForField = (fieldName, isCreatedEntity) => {
+  const { label, exact } = fieldLabels[fieldName]
+  if (fieldName === 'siret' && isCreatedEntity) {
+    const { labelCreation } = fieldLabels[fieldName]
+    return screen.queryByLabelText(labelCreation, { exact })
+  }
+  return screen.queryByLabelText(label, { exact })
 }
 
 export const setVenueAddress = async addressDetails => {
