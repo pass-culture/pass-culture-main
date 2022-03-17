@@ -113,6 +113,7 @@ def test_get_user_attributes_beneficiary():
             physical=Credit(initial=200, remaining=Decimal("180.00")),
         ),
         booking_categories=["FILM"],
+        city="Paris",
         date_created=user.dateCreated,
         date_of_birth=user.dateOfBirth,
         departement_code="75",
@@ -142,7 +143,10 @@ def test_get_user_attributes_beneficiary():
 
 def test_get_user_attributes_not_beneficiary():
     user = UserFactory(
-        dateOfBirth=datetime.now() - relativedelta.relativedelta(years=18, months=3), firstName="Cou", lastName="Zin"
+        dateOfBirth=datetime.now() - relativedelta.relativedelta(years=18, months=3),
+        firstName="Cou",
+        lastName="Zin",
+        city="Nice",
     )
 
     fraud_factories.BeneficiaryFraudCheckFactory(
@@ -161,6 +165,7 @@ def test_get_user_attributes_not_beneficiary():
 
     assert attributes == UserAttributes(
         booking_categories=[],
+        city="Nice",
         date_created=user.dateCreated,
         date_of_birth=user.dateOfBirth,
         departement_code=None,

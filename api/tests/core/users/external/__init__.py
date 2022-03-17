@@ -12,6 +12,7 @@ common_user_attributes = UserAttributes(
     booking_count=4,
     booking_categories=["CINEMA", "LIVRE"],
     booking_subcategories=["ABO_LIVRE_NUMERIQUE", "CARTE_CINE_ILLIMITE", "CINE_PLEIN_AIR"],
+    city="Rodez",
     date_created=datetime(2021, 2, 6),
     date_of_birth=datetime(2003, 5, 6),
     departement_code="12",
