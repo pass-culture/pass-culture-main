@@ -27,6 +27,7 @@ from pcapi.routes.serialization.stock_serialize import StockIdResponseModel
 from pcapi.routes.serialization.thumbnails_serialize import CreateThumbnailBodyModel
 from pcapi.routes.serialization.thumbnails_serialize import CreateThumbnailResponseModel
 from pcapi.serialization.decorator import spectree_serialize
+from pcapi.serialization.spec_tree import ExtendResponse as SpectreeResponse
 from pcapi.utils.human_ids import dehumanize
 from pcapi.workers.update_all_offers_active_status_job import update_all_offers_active_status_job
 
@@ -76,7 +77,13 @@ def get_offer(offer_id: str) -> offers_serialize.GetOfferResponseModel:
 
 @private_api.route("/offers", methods=["POST"])
 @login_required
-@spectree_serialize(response_model=offers_serialize.OfferResponseIdModel, on_success_status=201, api=blueprint.pro_private_schema)  # type: ignore
+@spectree_serialize(
+    on_success_status=201,
+    api=blueprint.pro_private_schema,
+    resp=SpectreeResponse(
+        HTTP_201=offers_serialize.OfferResponseIdModel,
+    ),
+)  # type: ignore
 def post_offer(body: offers_serialize.PostOfferBodyModel) -> offers_serialize.OfferResponseIdModel:
     try:
         offer = offers_api.create_offer(offer_data=body, user=current_user)
