@@ -17,6 +17,7 @@ interface IUrlSearchFilters {
   creationMode: string
   periodBeginningDate: string
   periodEndingDate: string
+  audience: string
 }
 
 const useQuerySearchFilters = (): [IUrlSearchFilters, number] => {

@@ -26,11 +26,6 @@ interface IOffersProps {
   setOfferer: (offerer: Offerer | null) => void
   setSearchFilters: (searchFilters: SearchFilters) => void
   urlSearchFilters: SearchFilters
-  setOffers: (offers: Offer[]) => void
-  setOffersCount: (offersCount: number) => void
-  setPageCount: (pageCount: number) => void
-  setCurrentPageNumber: (currentPageNumber: number) => void
-  isRefreshingOffers: boolean
 }
 const Offers = ({
   currentPageNumber,
@@ -47,11 +42,6 @@ const Offers = ({
   setOfferer,
   setSearchFilters,
   urlSearchFilters,
-  setOffers,
-  setOffersCount,
-  setPageCount,
-  isRefreshingOffers,
-  setCurrentPageNumber,
 }: IOffersProps): JSX.Element => {
   const [areAllOffersSelected, setAreAllOffersSelected] = useState(false)
   const [selectedOfferIds, setSelectedOfferIds] = useState<string[]>([])
@@ -156,7 +146,6 @@ const Offers = ({
         hasOffers={hasOffers}
         hasSearchFilters={hasSearchFilters}
         isLoading={isLoading}
-        isRefreshingOffers={isRefreshingOffers}
         offerer={offerer}
         offersCount={offersCount}
         pageCount={pageCount}
@@ -164,13 +153,9 @@ const Offers = ({
         resetFilters={resetFilters}
         searchFilters={searchFilters}
         selectedOfferIds={selectedOfferIds}
-        setCurrentPageNumber={setCurrentPageNumber}
         setIsLoading={setIsLoading}
         setIsRefreshingOffers={setIsRefreshingOffers}
         setOfferer={setOfferer}
-        setOffers={setOffers}
-        setOffersCount={setOffersCount}
-        setPageCount={setPageCount}
         setSearchFilters={setSearchFilters}
         setSelectedOfferIds={setSelectedOfferIds}
         toggleSelectAllCheckboxes={toggleSelectAllCheckboxes}
