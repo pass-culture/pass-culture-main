@@ -1,4 +1,4 @@
-export interface CsvData {
+export interface ITableData {
   headers: string[]
   data: string[][]
 }

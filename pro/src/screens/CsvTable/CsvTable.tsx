@@ -1,27 +1,28 @@
-import React, { FunctionComponent, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 
 import Spinner from 'components/layout/Spinner'
-import type { CsvData } from 'screens/CsvTable'
+import type { ITableData } from 'screens/CsvTable'
+import { Button } from 'ui-kit/Button'
 import { API_URL } from 'utils/config'
 import { getKey } from 'utils/strings'
 
-interface Props {
-  getCsvData: (url: string) => Promise<CsvData | null>
+export interface ICsvTableProps {
+  getCsvData: (url: string) => Promise<ITableData | null>
 }
 
-const CsvTable: FunctionComponent<Props> = ({ getCsvData }) => {
+const CsvTable = ({ getCsvData }: ICsvTableProps): JSX.Element => {
   const { search } = useLocation()
 
   const handlePrintCurrentView = () => window.print()
-  const [dataFromCsv, setDataFromCsv] = useState<CsvData | null>()
+  const [dataFromCsv, setDataFromCsv] = useState<ITableData | null>()
   const [isLoading, setIsLoading] = useState<boolean>(true)
 
   useEffect(() => {
     const searchParams = new URLSearchParams(search)
 
     getCsvData(`${API_URL}/reimbursements/csv?${searchParams}`)
-      .then((res: CsvData | null) => {
+      .then((res: ITableData | null) => {
         setDataFromCsv(res)
       })
       .catch(() => {
@@ -62,14 +63,9 @@ const CsvTable: FunctionComponent<Props> = ({ getCsvData }) => {
       </div>
       <hr />
       <div id="csv-print-container">
-        <button
-          className="button is-primary"
-          id="csv-print-button"
-          onClick={handlePrintCurrentView}
-          type="button"
-        >
+        <Button id="csv-print-button" onClick={handlePrintCurrentView}>
           Imprimer
-        </button>
+        </Button>
       </div>
     </main>
   ) : (
