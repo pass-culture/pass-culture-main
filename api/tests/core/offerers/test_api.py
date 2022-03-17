@@ -542,3 +542,14 @@ class ValidateOffererTest:
         # Then
         assert not applicant.has_pro_role
         assert user_offerer.offerer.validationToken == "TOKEN"
+
+
+def test_grant_user_offerer_access():
+    offerer = offerers_factories.OffererFactory.build()
+    user = users_factories.UserFactory.build()
+
+    user_offerer = offerers_api.grant_user_offerer_access(offerer, user)
+
+    assert user_offerer.user == user
+    assert user_offerer.offerer == offerer
+    assert not user.has_pro_role

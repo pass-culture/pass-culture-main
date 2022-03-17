@@ -225,7 +225,7 @@ def create_offerer(user: User, offerer_informations: CreateOffererQueryModel):
     offerer = find_offerer_by_siren(offerer_informations.siren)
 
     if offerer is not None:
-        user_offerer = offerer.grant_access(user)
+        user_offerer = grant_user_offerer_access(offerer, user)
         user_offerer.generate_validation_token()
         repository.save(user_offerer)
 
@@ -238,7 +238,7 @@ def create_offerer(user: User, offerer_informations: CreateOffererQueryModel):
         offerer.siren = offerer_informations.siren
         offerer.generate_validation_token()
         digital_venue = create_digital_venue(offerer)
-        user_offerer = offerer.grant_access(user)
+        user_offerer = grant_user_offerer_access(offerer, user)
         repository.save(offerer, digital_venue, user_offerer)
 
     _send_to_pc_admin_offerer_to_validate_email(offerer, user_offerer)
@@ -246,6 +246,10 @@ def create_offerer(user: User, offerer_informations: CreateOffererQueryModel):
     update_external_pro(user.email)
 
     return user_offerer
+
+
+def grant_user_offerer_access(offerer: Offerer, user: User) -> UserOfferer:
+    return UserOfferer(offerer=offerer, user=user)
 
 
 def _send_to_pc_admin_offerer_to_validate_email(offerer: Offerer, user_offerer: UserOfferer) -> None:

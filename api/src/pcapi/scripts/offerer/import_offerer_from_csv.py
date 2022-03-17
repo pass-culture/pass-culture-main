@@ -4,7 +4,7 @@ import json
 from json import JSONDecodeError
 import logging
 
-from pcapi.core.offerers.api import create_digital_venue
+import pcapi.core.offerers.api as offerers_api
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offerers.models import VenueType
@@ -107,9 +107,9 @@ def import_new_offerer_from_csv(row: dict) -> None:
         offerer = existing_offerer
     else:
         offerer = create_offerer_from_csv(row)
-        create_digital_venue(offerer)
+        offerers_api.create_digital_venue(offerer)
 
-    offerer.grant_access(pro)
+    offerers_api.grant_user_offerer_access(offerer, pro)
 
     repository.save(pro)
 

@@ -7,7 +7,6 @@ from pcapi.core.offerers import factories
 from pcapi.core.offerers import models
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
-from pcapi.core.users import factories as users_factories
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.repository import repository
@@ -163,31 +162,6 @@ class OffererLegalCategoryTest:
         assert offerer.legal_category == info
         assert offerer.legal_category == info
         assert mocked_get_offerer_legal_category.call_count == 1
-
-
-class OffererGrantAccessTest:
-    def test_grant_access_to_offerer_to_given_pro(self):
-        # Given
-        offerer = factories.OffererFactory.build()
-        user = users_factories.UserFactory.build()
-
-        # When
-        created_user_offerer = offerer.grant_access(user)
-
-        # Then
-        assert created_user_offerer.user == user
-        assert created_user_offerer.offerer == offerer
-        assert not user.has_pro_role
-
-    def test_do_nothing_when_no_user_provided(self):
-        # Given
-        offerer = factories.OffererFactory.build()
-
-        # When
-        created_user_offerer = offerer.grant_access(None)
-
-        # Then
-        assert created_user_offerer is None
 
 
 @pytest.mark.usefixtures("db_session")

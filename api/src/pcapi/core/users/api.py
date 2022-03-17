@@ -26,6 +26,8 @@ import pcapi.core.fraud.ubble.models as ubble_fraud_models
 from pcapi.core.mails.transactional.pro.email_validation import send_email_validation_to_pro_email
 from pcapi.core.mails.transactional.users.email_address_change_confirmation import send_email_confirmation_email
 from pcapi.core.mails.transactional.users.reset_password import send_reset_password_email_to_user
+import pcapi.core.offerers.api as offerers_api
+import pcapi.core.offerers.models as offerers_models
 import pcapi.core.payments.api as payment_api
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.users import utils as users_utils
@@ -62,8 +64,6 @@ from pcapi.utils import phone_number as phone_number_utils
 from . import constants
 from . import exceptions
 from . import models
-from ..offerers.api import create_digital_venue
-from ..offerers.models import Offerer
 
 
 if typing.TYPE_CHECKING:
@@ -555,16 +555,16 @@ def create_pro_user_and_offerer(pro_user: ProUserCreationBodyModel) -> User:
 
     new_pro_user = create_pro_user(pro_user)
 
-    existing_offerer = Offerer.query.filter_by(siren=pro_user.siren).one_or_none()
+    existing_offerer = offerers_models.Offerer.query.filter_by(siren=pro_user.siren).one_or_none()
 
     if existing_offerer:
         user_offerer = _generate_user_offerer_when_existing_offerer(new_pro_user, existing_offerer)
         offerer = existing_offerer
     else:
         offerer = _generate_offerer(pro_user.dict(by_alias=True))
-        user_offerer = offerer.grant_access(new_pro_user)
-        digital_venue = create_digital_venue(offerer)
-        objects_to_save.extend([digital_venue, offerer])
+        user_offerer = offerers_api.grant_user_offerer_access(offerer, new_pro_user)
+        digital_venue = offerers_api.create_digital_venue(offerer)
+        objects_to_save.extend([digital_venue, offerer, user_offerer])
     objects_to_save.append(user_offerer)
     new_pro_user = _set_offerer_departement_code(new_pro_user, offerer)
 
@@ -603,15 +603,15 @@ def create_pro_user(pro_user: ProUserCreationBodyModel) -> User:
     return new_pro_user
 
 
-def _generate_user_offerer_when_existing_offerer(new_user: User, offerer: Offerer) -> UserOfferer:
-    user_offerer = offerer.grant_access(new_user)
+def _generate_user_offerer_when_existing_offerer(new_user: User, offerer: offerers_models.Offerer) -> UserOfferer:
+    user_offerer = offerers_api.grant_user_offerer_access(offerer, new_user)
     if not settings.IS_INTEGRATION:
         user_offerer.generate_validation_token()
     return user_offerer
 
 
-def _generate_offerer(data: dict) -> Offerer:
-    offerer = Offerer()
+def _generate_offerer(data: dict) -> offerers_models.Offerer:
+    offerer = offerers_models.Offerer()
     offerer.populate_from_dict(data)
 
     if not settings.IS_INTEGRATION:
@@ -619,7 +619,7 @@ def _generate_offerer(data: dict) -> Offerer:
     return offerer
 
 
-def _set_offerer_departement_code(new_user: User, offerer: Offerer) -> User:
+def _set_offerer_departement_code(new_user: User, offerer: offerers_models.Offerer) -> User:
     if offerer.postalCode is not None:
         new_user.departementCode = PostalCode(offerer.postalCode).get_departement_code()
     else:
