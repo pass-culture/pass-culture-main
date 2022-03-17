@@ -40,7 +40,7 @@ class Provider(PcObject, Model, DeactivableMixin):
     localClass = Column(
         String(60),
         CheckConstraint(
-            '("localClass" IS NOT NULsrc/pcapi/core/offerers/factories.pyL AND "apiUrl" IS NULL) OR ("localClass" IS NULL AND "apiUrl" IS NOT NULL)',
+            '("localClass" IS NOT NULL AND "apiUrl" IS NULL) OR ("localClass" IS NULL AND "apiUrl" IS NOT NULL)',
             name="check_provider_has_localclass_or_apiUrl",
         ),
         nullable=True,
