@@ -3,13 +3,13 @@ import { shallow } from 'enzyme'
 import React from 'react'
 import { Field } from 'react-final-form'
 
+import { validateSiret } from 'core/Venue/validate'
 import TextareaField from 'components/layout/form/fields/TextareaField'
 import TextField from 'components/layout/form/fields/TextField'
 
 import VenueLabel from '../../../ValueObjects/VenueLabel'
 import VenueType from '../../../ValueObjects/VenueType'
 import IdentifierFields from '../IdentifierFields'
-import siretValidate from '../validators/siretValidate'
 
 describe('src | components | pages | Venue | fields | IdentifierFields', () => {
   let props
@@ -140,7 +140,7 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
 
         // then
         const siretField = wrapper.find(TextField).at(0)
-        expect(siretField.prop('validate')).toBe(siretValidate)
+        expect(siretField.prop('validate')).toBe(validateSiret)
       })
 
       it('proper siret validate is null when Entreprise Api is disabled', () => {
