@@ -28,35 +28,36 @@ class IdentifierFields extends PureComponent {
   }
 
   /* eslint-disable react/no-unstable-nested-components */
-  handleRenderValue = (fieldReadOnlyBecauseFrozenFormSiret, readOnly) => () => {
-    if (readOnly) {
-      return null
+  handleRenderTooltipSiret =
+    (fieldReadOnlyBecauseFrozenFormSiret, readOnly) => () => {
+      if (readOnly) {
+        return null
+      }
+
+      return fieldReadOnlyBecauseFrozenFormSiret ? (
+        <span
+          className="button"
+          data-place="bottom"
+          data-tip="<p>Il n’est pas possible de modifier le nom, l’addresse et la géolocalisation du lieu quand un siret est renseigné.</p>"
+          data-type="info"
+        >
+          <Icon svg="picto-info" />
+        </span>
+      ) : (
+        <span
+          className="button"
+          data-place="bottom"
+          data-tip="<div><p>Saisissez ici le SIRET du lieu lié à votre structure pour retrouver ses informations automatiquement.</p>
+        <p>Si les informations ne correspondent pas au SIRET saisi, <a href='mailto:support-pro@passculture.app?subject=Question%20SIRET'> contactez notre équipe</a>.</p></div>"
+          data-type="info"
+        >
+          <Icon svg="picto-info" />
+        </span>
+      )
     }
 
-    return fieldReadOnlyBecauseFrozenFormSiret ? (
-      <span
-        className="button"
-        data-place="bottom"
-        data-tip="<p>Il n’est pas possible de modifier le nom, l’addresse et la géolocalisation du lieu quand un siret est renseigné.</p>"
-        data-type="info"
-      >
-        <Icon svg="picto-info" />
-      </span>
-    ) : (
-      <span
-        className="button"
-        data-place="bottom"
-        data-tip="<div><p>Saisissez ici le SIRET du lieu lié à votre structure pour retrouver ses informations automatiquement.</p>
-        <p>Si les informations ne correspondent pas au SIRET saisi, <a href='mailto:support-pro@passculture.app?subject=Question%20SIRET'> contactez notre équipe</a>.</p></div>"
-        data-type="info"
-      >
-        <Icon svg="picto-info" />
-      </span>
-    )
-  }
-
   /* eslint-disable react/no-unstable-nested-components */
-  handleRender = readOnly => () =>
+  handleTooltipBookingEmail = readOnly => () =>
     readOnly ? null : (
       <span
         className="button"
@@ -137,7 +138,7 @@ class IdentifierFields extends PureComponent {
               name="siret"
               parse={parseSiret}
               readOnly={readOnly || initialSiret !== null}
-              renderValue={this.handleRenderValue(
+              renderTooltip={this.handleRenderTooltip(
                 fieldReadOnlyBecauseFrozenFormSiret,
                 readOnly
               )}
@@ -166,7 +167,7 @@ class IdentifierFields extends PureComponent {
             label="Mail : "
             name="bookingEmail"
             readOnly={readOnly}
-            renderValue={this.handleRender(readOnly)}
+            renderTooltip={this.handleTooltipBookingEmail(readOnly)}
             required={!venueIsVirtual}
             type="email"
           />
