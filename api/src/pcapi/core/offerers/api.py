@@ -314,6 +314,10 @@ def save_venue_banner(
     Use a timestamp as index in order to have a unique URL for each
     upload
     """
+    if venue.bannerUrl:
+        index = int(venue.bannerUrl.split("_")[-1]) if "_" in venue.bannerUrl else 0
+        storage.remove_thumb(venue, index)
+
     banner_timestamp = int(datetime.now().timestamp())
     storage.create_thumb(
         model_with_thumb=venue,

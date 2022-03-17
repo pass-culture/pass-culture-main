@@ -1,4 +1,6 @@
 from datetime import datetime
+import os
+import pathlib
 from unittest.mock import patch
 
 from freezegun import freeze_time
@@ -11,12 +13,17 @@ from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers.exceptions import ValidationTokenNotFoundError
 from pcapi.core.offerers.models import ApiKey
+from pcapi.core.offerers.models import Venue
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.testing import assert_num_queries
+from pcapi.core.testing import override_settings
 from pcapi.core.users import factories as users_factories
 from pcapi.models import api_errors
 from pcapi.routes.serialization import base as serialize_base
 from pcapi.routes.serialization.offerers_serialize import CreateOffererQueryModel
+from pcapi.utils.human_ids import humanize
+
+import tests
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -553,3 +560,70 @@ def test_grant_user_offerer_access():
     assert user_offerer.user == user
     assert user_offerer.offerer == offerer
     assert not user.has_pro_role
+
+
+class VenueBannerTest:
+    IMAGES_DIR = pathlib.Path(tests.__path__[0]) / "files"
+
+    @patch("pcapi.core.search.async_index_venue_ids")
+    def test_save_venue_banner(self, mock_search_async_index_venue_ids, tmpdir):
+        user = users_factories.UserFactory()
+        venue = offerers_factories.VenueFactory()
+        image_content = (VenueBannerTest.IMAGES_DIR / "mouette_full_size.jpg").read_bytes()
+
+        with override_settings(OBJECT_STORAGE_URL=tmpdir.dirname, LOCAL_STORAGE_DIR=pathlib.Path(tmpdir.dirname)):
+            offerers_api.save_venue_banner(user, venue, image_content, image_credit="none")
+
+            updated_venue = Venue.query.get(venue.id)
+            with open(updated_venue.bannerUrl, mode="rb") as f:
+                # test that image size has been reduced
+                assert len(f.read()) < len(image_content)
+
+            assert updated_venue.bannerMeta == {"author_id": user.id, "image_credit": "none"}
+
+            mock_search_async_index_venue_ids.assert_called_once_with([venue.id])
+
+    @patch("pcapi.core.search.async_index_venue_ids")
+    def test_replace_venue_banner(self, mock_search_async_index_venue_ids, tmpdir):
+        user = users_factories.UserFactory()
+        venue = offerers_factories.VenueFactory()
+        first_image_content = (VenueBannerTest.IMAGES_DIR / "mouette_full_size.jpg").read_bytes()
+        second_image_content = (VenueBannerTest.IMAGES_DIR / "mouette_small.jpg").read_bytes()
+        directory = pathlib.Path(tmpdir.dirname) / "thumbs" / "venues"
+
+        with override_settings(OBJECT_STORAGE_URL=tmpdir.dirname, LOCAL_STORAGE_DIR=pathlib.Path(tmpdir.dirname)):
+            with freeze_time("2020-10-15 00:00:00"):
+                offerers_api.save_venue_banner(user, venue, first_image_content, image_credit="first_image")
+
+            with freeze_time("2020-10-15 00:00:01"):
+                offerers_api.save_venue_banner(user, venue, second_image_content, image_credit="second_image")
+
+            files = set(os.listdir(directory))
+            assert f"{humanize(venue.id)}_1602720000" not in files
+            assert f"{humanize(venue.id)}_1602720001" in files
+
+    @patch("pcapi.core.search.async_index_venue_ids")
+    def test_replace_venue_legacy_banner(self, mock_search_async_index_venue_ids, tmpdir):
+        user = users_factories.UserFactory()
+        venue = offerers_factories.VenueFactory()
+        first_image_content = (VenueBannerTest.IMAGES_DIR / "mouette_full_size.jpg").read_bytes()
+        second_image_content = (VenueBannerTest.IMAGES_DIR / "mouette_small.jpg").read_bytes()
+        directory = pathlib.Path(tmpdir.dirname) / "thumbs" / "venues"
+
+        with override_settings(OBJECT_STORAGE_URL=tmpdir.dirname, LOCAL_STORAGE_DIR=pathlib.Path(tmpdir.dirname)):
+            with freeze_time("2020-10-15 00:00:00"):
+                offerers_api.save_venue_banner(user, venue, first_image_content, image_credit="first_image")
+                move_venue_banner_to_legacy_location(venue, directory, "1602720000")
+
+            with freeze_time("2020-10-15 00:00:01"):
+                offerers_api.save_venue_banner(user, venue, second_image_content, image_credit="second_image")
+
+            files = set(os.listdir(directory))
+            assert f"{humanize(venue.id)}" not in files
+            assert f"{humanize(venue.id)}_1602720001" in files
+
+
+def move_venue_banner_to_legacy_location(venue, directory, timestamp):
+    venue.bannerUrl = venue.bannerUrl.split("_")[0]
+    os.rename(directory / f"{humanize(venue.id)}_{timestamp}", directory / f"{humanize(venue.id)}")
+    os.rename(directory / f"{humanize(venue.id)}_{timestamp}.type", directory / f"{humanize(venue.id)}.type")
