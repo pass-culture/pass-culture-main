@@ -256,6 +256,10 @@ class OfferResponseIdModel(BaseModel):
         arbitrary_types_allowed = True
 
 
+class OfferResponseIdError(BaseModel):
+    subcategory: Optional[list[str]]
+
+
 class PatchOfferActiveStatusBodyModel(BaseModel):
     is_active: bool
     ids: list[int]

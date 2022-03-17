@@ -1,4 +1,5 @@
 import logging
+from typing import Union
 
 from flask import request
 from flask_login import current_user
@@ -78,13 +79,15 @@ def get_offer(offer_id: str) -> offers_serialize.GetOfferResponseModel:
 @private_api.route("/offers", methods=["POST"])
 @login_required
 @spectree_serialize(
-    on_success_status=201,
     api=blueprint.pro_private_schema,
     resp=SpectreeResponse(
         HTTP_201=offers_serialize.OfferResponseIdModel,
+        HTTP_400=offers_serialize.OfferResponseIdError,
     ),
 )  # type: ignore
-def post_offer(body: offers_serialize.PostOfferBodyModel) -> offers_serialize.OfferResponseIdModel:
+def post_offer(
+    body: offers_serialize.PostOfferBodyModel,
+) -> Union[offers_serialize.OfferResponseIdModel, offers_serialize.OfferResponseIdError]:
     try:
         offer = offers_api.create_offer(offer_data=body, user=current_user)
 
@@ -93,10 +96,8 @@ def post_offer(body: offers_serialize.PostOfferBodyModel) -> offers_serialize.Of
             "Could not create offer: selected subcategory is unknown.",
             extra={"offer_name": body.name, "venue_id": body.venue_id},
         )
-        raise ApiErrors(
-            error.errors,
-            status_code=400,
-        )
+        # TODO: fix the duplicated error message
+        return offers_serialize.OfferResponseIdError(subcategory=["La sous-catégorie de cette offre est inconnue"])
 
     except exceptions.SubCategoryIsInactive as error:
         logger.info(
