@@ -1,14 +1,14 @@
-import { stringify } from '../../../../utils/query-string'
-import {
-  mapApiToBrowser,
-  translateApiParamsToQueryParams,
-} from '../../../../utils/translate'
 import {
   ALL_STATUS,
   DEFAULT_CREATION_MODE,
   DEFAULT_PAGE,
   DEFAULT_SEARCH_FILTERS,
-} from '../Offers/_constants'
+} from 'core/Offers/constants'
+import { stringify } from 'utils/query-string'
+import {
+  mapApiToBrowser,
+  translateApiParamsToQueryParams,
+} from 'utils/translate'
 
 export const computeOffersUrl = (offersSearchFilters, offersPageNumber = 1) => {
   const { creationMode, status } = offersSearchFilters

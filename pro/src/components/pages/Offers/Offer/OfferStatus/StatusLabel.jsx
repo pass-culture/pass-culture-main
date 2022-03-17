@@ -9,7 +9,7 @@ import {
   OFFER_STATUS_INACTIVE,
   OFFER_STATUS_REJECTED,
   OFFER_STATUS_SOLD_OUT,
-} from 'components/pages/Offers/Offers/_constants'
+} from 'core/Offers/constants'
 
 export const OFFER_STATUS_PROPERTIES = {
   [OFFER_STATUS_EXPIRED]: {

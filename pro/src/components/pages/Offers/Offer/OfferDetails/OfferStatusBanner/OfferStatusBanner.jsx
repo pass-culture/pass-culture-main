@@ -4,7 +4,7 @@ import React from 'react'
 import {
   OFFER_STATUS_PENDING,
   OFFER_STATUS_REJECTED,
-} from 'components/pages/Offers/Offers/_constants'
+} from 'core/Offers/constants'
 import { Banner } from 'ui-kit'
 import { CGU_URL } from 'utils/config'
 

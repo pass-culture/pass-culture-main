@@ -1,10 +1,7 @@
 import { useMemo } from 'react'
 import { useLocation } from 'react-router-dom'
 
-import {
-  DEFAULT_PAGE,
-  DEFAULT_SEARCH_FILTERS,
-} from 'components/pages/Offers/Offers/_constants'
+import { DEFAULT_PAGE, DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
 import { parse } from 'utils/query-string'
 import {
   mapBrowserToApi,
