@@ -73,7 +73,7 @@ def update_ubble_workflow(
         try:
             subscription_api.on_successful_application(user=user, source_data=content)
         except Exception:  # pylint: disable=broad-except
-            logger.exception("Failure after ubble successful result", extra={"user_id"})
+            logger.exception("Failure after ubble successful result", extra={"user_id": user.id})
 
     elif status in (
         ubble_fraud_models.UbbleIdentificationStatus.ABORTED,
