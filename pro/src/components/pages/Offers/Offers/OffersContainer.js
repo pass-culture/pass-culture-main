@@ -1,16 +1,9 @@
 import { connect } from 'react-redux'
 import { compose } from 'redux'
 
-import * as pcapi from 'repository/pcapi/pcapi'
 import { showNotification } from 'store/reducers/notificationReducer'
 
 import Offers from './Offers'
-
-export const mapStateToProps = state => {
-  return {
-    getOfferer: pcapi.getOfferer,
-  }
-}
 
 export const mapDispatchToProps = dispatch => ({
   showInformationNotification: information =>
@@ -22,4 +15,4 @@ export const mapDispatchToProps = dispatch => ({
     ),
 })
 
-export default compose(connect(mapStateToProps, mapDispatchToProps))(Offers)
+export default compose(connect(null, mapDispatchToProps))(Offers)
