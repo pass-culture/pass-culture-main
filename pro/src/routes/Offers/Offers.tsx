@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
 
+import useActiveFeature from 'components/hooks/useActiveFeature'
 import useCurrentUser from 'components/hooks/useCurrentUser'
 import useNotification from 'components/hooks/useNotification'
 import {
@@ -21,6 +22,10 @@ const Offers = (): JSX.Element => {
   const [urlSearchFilters, urlPageNumber] = useQuerySearchFilters()
   const { currentUser } = useCurrentUser()
   const dispatch = useDispatch()
+
+  const separateIndividualAndCollectiveOffers = useActiveFeature(
+    'ENABLE_INDIVIDUAL_AND_COLLECTIVE_OFFER_SEPARATION'
+  )
 
   const [offerer, setOfferer] = useState<Offerer | null>(null)
   const [isRefreshingOffers, setIsRefreshingOffers] = useState(true)
@@ -155,6 +160,9 @@ const Offers = (): JSX.Element => {
       offersCount={offersCount}
       pageCount={pageCount}
       searchFilters={searchFilters}
+      separateIndividualAndCollectiveOffers={
+        separateIndividualAndCollectiveOffers
+      }
       setIsLoading={setIsLoading}
       setIsRefreshingOffers={setIsRefreshingOffers}
       setOfferer={setOfferer}
