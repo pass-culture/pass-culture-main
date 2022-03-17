@@ -324,6 +324,8 @@ def save_venue_banner(
 
     repository.save(venue)
 
+    search.async_index_venue_ids([venue.id])
+
 
 def delete_venue_banner(venue: Venue) -> None:
     if venue.bannerUrl:
@@ -334,6 +336,8 @@ def delete_venue_banner(venue: Venue) -> None:
     venue.bannerMeta = None
 
     repository.save(venue)
+
+    search.async_index_venue_ids([venue.id])
 
 
 def can_offerer_create_educational_offer(offerer_id: str) -> bool:
