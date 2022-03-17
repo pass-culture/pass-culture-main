@@ -6,12 +6,9 @@ from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
-from pcapi.core.providers.models import AllocineVenueProvider
-from pcapi.core.providers.models import AllocineVenueProviderPriceRule
 from pcapi.core.providers.models import Provider
 from pcapi.core.providers.models import VenueProvider
 from pcapi.core.users.models import User
-from pcapi.domain.price_rule import PriceRule
 from pcapi.models.user_offerer import UserOfferer
 
 
@@ -184,36 +181,3 @@ def create_venue_provider(
     venue_provider.venueIdAtOfferProvider = venue_id_at_offer_provider or venue.siret
 
     return venue_provider
-
-
-def create_allocine_venue_provider(
-    venue: Venue,
-    allocine_provider: Provider,
-    is_duo: bool = False,
-    quantity: Optional[int] = None,
-    venue_id_at_offer_provider: str = None,
-    internal_id: str = "PXXXXX",
-) -> AllocineVenueProvider:
-    allocine_venue_provider = AllocineVenueProvider()
-    allocine_venue_provider.venue = venue
-    allocine_venue_provider.provider = allocine_provider
-    allocine_venue_provider.isDuo = is_duo
-    allocine_venue_provider.quantity = quantity
-    allocine_venue_provider.venueIdAtOfferProvider = venue_id_at_offer_provider
-    allocine_venue_provider.internalId = internal_id
-    return allocine_venue_provider
-
-
-def create_allocine_venue_provider_price_rule(
-    allocine_venue_provider: AllocineVenueProvider,
-    idx: int = None,
-    price: int = 10,
-    price_rule: PriceRule = PriceRule.default,
-) -> AllocineVenueProviderPriceRule:
-    venue_provider_price_rule = AllocineVenueProviderPriceRule()
-    venue_provider_price_rule.id = idx
-    venue_provider_price_rule.price = price
-    venue_provider_price_rule.priceRule = price_rule
-    venue_provider_price_rule.allocineVenueProvider = allocine_venue_provider
-
-    return venue_provider_price_rule
