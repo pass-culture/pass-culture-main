@@ -158,6 +158,7 @@ def get_user_attributes(user: User) -> UserAttributes:
         booking_categories=booking_categories,
         booking_count=len(user_bookings),
         booking_subcategories=booking_subcategories,
+        city=user.city,
         date_created=user.dateCreated,
         date_of_birth=user.dateOfBirth,
         departement_code=user.departementCode,

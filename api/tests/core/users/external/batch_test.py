@@ -23,6 +23,7 @@ class FormatUserAttributesTest:
             "date(u.last_booking_date)": "2021-05-06T00:00:00",
             "date(u.product_brut_x_use)": "2021-05-06T00:00:00",
             "u.credit": 48000,
+            "u.city": "Rodez",
             "u.departement_code": "12",
             "u.first_name": "First name",
             "u.has_completed_id_check": True,

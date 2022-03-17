@@ -12,6 +12,7 @@ class UserAttributes:
     booking_categories: list[str]
     booking_count: int
     booking_subcategories: list[str]
+    city: Optional[str]
     date_created: datetime
     date_of_birth: datetime
     departement_code: Optional[str]
