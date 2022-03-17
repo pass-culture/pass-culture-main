@@ -263,15 +263,6 @@ class VenueBannerTest:
             )
             assert response.json["bannerMeta"] == {"image_credit": "none"}
 
-            updated_venue = Venue.query.get(venue.id)
-            with open(updated_venue.bannerUrl, mode="rb") as f:
-                # test that image size has been reduced
-                assert len(f.read()) < len(image_content)
-
-            assert updated_venue.bannerMeta == {"author_id": user_offerer.user.id, "image_credit": "none"}
-
-            mock_search_async_index_venue_ids.assert_called_once_with([venue.id])
-
     def test_upload_image_missing(self, client):
         user_offerer = offers_factories.UserOffererFactory()
         venue = offers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
