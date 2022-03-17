@@ -8,6 +8,7 @@ import Icon from 'components/layout/Icon'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Spinner from 'components/layout/Spinner'
 import Titles from 'components/layout/Titles/Titles'
+import { unhumanizeSiret } from 'core/Venue/utils'
 
 import ModifyOrCancelControl from '../controls/ModifyOrCancelControl/ModifyOrCancelControl'
 import ReturnOrSubmitControl from '../controls/ReturnOrSubmitControl/ReturnOrSubmitControl'
@@ -26,7 +27,6 @@ import LocationFields, {
   FRANCE_POSITION,
 } from '../fields/LocationFields'
 import WithdrawalDetailsFields from '../fields/WithdrawalDetailsFields'
-import { formatSiret } from '../siret/formatSiret'
 
 class VenueCreation extends PureComponent {
   constructor() {
@@ -92,7 +92,6 @@ class VenueCreation extends PureComponent {
         params: { offererId },
       },
       isBankInformationWithSiretActive,
-      isEntrepriseApiDisabled,
     } = this.props
     const { venueTypes, venueLabels, offerer } = this.state
     const readOnly = false
@@ -106,14 +105,13 @@ class VenueCreation extends PureComponent {
     } = values
 
     const siretValidOnCreation =
-      !!formSiret && formatSiret(formSiret).length === 14
+      !!formSiret && unhumanizeSiret(formSiret).length === 14
     return (
       <form name="venue" onSubmit={handleSubmit}>
         <IdentifierFields
           fieldReadOnlyBecauseFrozenFormSiret={siretValidOnCreation}
           formSiret={formSiret}
           isCreatedEntity
-          isEntrepriseApiDisabled={isEntrepriseApiDisabled}
           readOnly={readOnly}
           venueLabels={venueLabels}
           venueTypes={venueTypes}

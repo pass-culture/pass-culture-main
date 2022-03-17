@@ -4,11 +4,10 @@ import { Field } from 'react-final-form'
 
 import Icon from 'components/layout/Icon'
 import Spinner from 'components/layout/Spinner'
+import { humanizeSiret } from 'core/Venue/utils'
 import { getBusinessUnits } from 'repository/pcapi/pcapi'
 import { Banner } from 'ui-kit'
 import { DEMARCHES_SIMPLIFIEES_BUSINESS_UNIT_RIB_UPLOAD_PROCEDURE_URL } from 'utils/config'
-
-import { formatSiret } from '../../siret/formatSiret'
 
 import { ApplicationBanner } from './ApplicationBanner'
 
@@ -35,7 +34,7 @@ const BankInformationWithBusinessUnit = ({
     businessUnit
       ? `${
           businessUnit.siret
-            ? formatSiret(businessUnit.siret)
+            ? humanizeSiret(businessUnit.siret)
             : 'SIRET manquant'
         } - ${businessUnit.iban}`
       : ''
