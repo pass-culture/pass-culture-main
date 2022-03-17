@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types'
-import React, { useCallback, useEffect, useState } from 'react'
-import { useDispatch } from 'react-redux'
+import React, { useCallback, useState } from 'react'
 import { useHistory } from 'react-router-dom'
 
 import Icon from 'components/layout/Icon'
@@ -10,12 +9,7 @@ import { isOfferDisabled } from 'components/pages/Offers/domain/isOfferDisabled'
 import {
   DEFAULT_SEARCH_FILTERS,
   MAX_OFFERS_TO_DISPLAY,
-  MAX_TOTAL_PAGES,
-  NUMBER_OF_OFFERS_PER_PAGE,
 } from 'core/Offers/constants'
-import { useQuerySearchFilters } from 'core/Offers/hooks'
-import * as pcapi from 'repository/pcapi/pcapi'
-import { savePageNumber, saveSearchFilters } from 'store/offers/actions'
 import { Banner } from 'ui-kit'
 
 import { computeOffersUrl } from '../utils/computeOffersUrl'
@@ -27,14 +21,12 @@ import SearchFilters from './SearchFilters/SearchFilters'
 
 const Offers = ({
   currentUser,
-  getOfferer,
   areAllOffersSelected,
   currentPageNumber,
   currentPageOffersSubset,
   hasOffers,
   hasSearchFilters,
   isLoading,
-  isRefreshingOffers,
   offerer,
   offersCount,
   pageCount,
@@ -42,49 +34,16 @@ const Offers = ({
   resetFilters,
   searchFilters,
   selectedOfferIds,
-  setCurrentPageNumber,
   setIsLoading,
   setIsRefreshingOffers,
   setOfferer,
-  setOffers,
-  setOffersCount,
-  setPageCount,
   setSearchFilters,
   setSelectedOfferIds,
   toggleSelectAllCheckboxes,
   urlSearchFilters,
 }) => {
-  const dispatch = useDispatch()
   const history = useHistory()
-  const [urlPageNumber] = useQuerySearchFilters()
 
-  useEffect(() => {
-    setCurrentPageNumber(urlPageNumber)
-    dispatch(
-      saveSearchFilters({
-        nameOrIsbn:
-          urlSearchFilters.nameOrIsbn || DEFAULT_SEARCH_FILTERS.nameOrIsbn,
-        offererId:
-          urlSearchFilters.offererId || DEFAULT_SEARCH_FILTERS.offererId,
-        venueId: urlSearchFilters.venueId || DEFAULT_SEARCH_FILTERS.venueId,
-        categoryId:
-          urlSearchFilters.categoryId || DEFAULT_SEARCH_FILTERS.categoryId,
-        status: urlSearchFilters.status
-          ? urlSearchFilters.status
-          : DEFAULT_SEARCH_FILTERS.status,
-        creationMode: urlSearchFilters.creationMode
-          ? urlSearchFilters.creationMode
-          : DEFAULT_SEARCH_FILTERS.creationMode,
-        periodBeginningDate:
-          urlSearchFilters.periodBeginningDate ||
-          DEFAULT_SEARCH_FILTERS.periodBeginningDate,
-        periodEndingDate:
-          urlSearchFilters.periodEndingDate ||
-          DEFAULT_SEARCH_FILTERS.periodEndingDate,
-      })
-    )
-    dispatch(savePageNumber(urlPageNumber))
-  }, [dispatch, urlPageNumber, urlSearchFilters, setCurrentPageNumber])
   const [isStatusFiltersVisible, setIsStatusFiltersVisible] = useState(false)
 
   const applyUrlFiltersAndRedirect = useCallback(
@@ -95,62 +54,6 @@ const Offers = ({
       history.push(newUrl)
     },
     [history, setIsRefreshingOffers]
-  )
-
-  useEffect(() => {
-    if (
-      urlSearchFilters.offererId &&
-      urlSearchFilters.offererId !== DEFAULT_SEARCH_FILTERS.offererId
-    ) {
-      getOfferer(urlSearchFilters.offererId).then(offerer =>
-        setOfferer(offerer)
-      )
-    }
-  }, [getOfferer, urlSearchFilters.offererId, setOfferer])
-
-  useEffect(() => {
-    if (currentUser.isAdmin) {
-      const isVenueFilterSelected =
-        searchFilters.venueId !== DEFAULT_SEARCH_FILTERS.venueId
-      const isOffererFilterApplied =
-        urlSearchFilters.offererId !== DEFAULT_SEARCH_FILTERS.offererId
-      const isFilterByVenueOrOfferer =
-        isVenueFilterSelected || isOffererFilterApplied
-
-      if (!isFilterByVenueOrOfferer) {
-        setSearchFilters(currentSearchFilters => ({
-          ...currentSearchFilters,
-          status: DEFAULT_SEARCH_FILTERS.status,
-        }))
-      }
-    }
-  }, [
-    currentUser.isAdmin,
-    urlSearchFilters.offererId,
-    searchFilters.venueId,
-    setSearchFilters,
-  ])
-
-  const loadAndUpdateOffers = useCallback(
-    filters => {
-      const apiFilters = {
-        ...DEFAULT_SEARCH_FILTERS,
-        ...filters,
-      }
-      pcapi
-        .loadFilteredOffers(apiFilters)
-        .then(offers => {
-          const offersCount = offers.length
-          setIsLoading(false)
-          setOffersCount(offersCount)
-          const pageCount = Math.ceil(offersCount / NUMBER_OF_OFFERS_PER_PAGE)
-          const cappedPageCount = Math.min(pageCount, MAX_TOTAL_PAGES)
-          setPageCount(cappedPageCount)
-          setOffers(offers)
-        })
-        .catch(() => setIsLoading(false))
-    },
-    [setIsLoading, setOffersCount, setPageCount, setOffers]
   )
 
   const hasDifferentFiltersFromLastSearch = useCallback(
@@ -182,18 +85,6 @@ const Offers = ({
     searchFilters,
     applyUrlFiltersAndRedirect,
     setIsLoading,
-  ])
-
-  useEffect(() => {
-    if (isRefreshingOffers) {
-      setSearchFilters(urlSearchFilters)
-      loadAndUpdateOffers(urlSearchFilters)
-    }
-  }, [
-    isRefreshingOffers,
-    loadAndUpdateOffers,
-    setSearchFilters,
-    urlSearchFilters,
   ])
 
   const removeOfferer = useCallback(() => {
@@ -364,11 +255,9 @@ Offers.propTypes = {
   currentPageNumber: PropTypes.number.isRequired,
   currentPageOffersSubset: PropTypes.shape().isRequired,
   currentUser: PropTypes.shape().isRequired,
-  getOfferer: PropTypes.func.isRequired,
   hasOffers: PropTypes.bool.isRequired,
   hasSearchFilters: PropTypes.func.isRequired,
   isLoading: PropTypes.bool.isRequired,
-  isRefreshingOffers: PropTypes.bool.isRequired,
   offerer: PropTypes.shape(),
   offersCount: PropTypes.number.isRequired,
   pageCount: PropTypes.number,
@@ -376,13 +265,9 @@ Offers.propTypes = {
   resetFilters: PropTypes.func.isRequired,
   searchFilters: PropTypes.shape().isRequired,
   selectedOfferIds: PropTypes.shape.isRequired,
-  setCurrentPageNumber: PropTypes.func.isRequired,
   setIsLoading: PropTypes.func.isRequired,
   setIsRefreshingOffers: PropTypes.func.isRequired,
   setOfferer: PropTypes.func.isRequired,
-  setOffers: PropTypes.func.isRequired,
-  setOffersCount: PropTypes.func.isRequired,
-  setPageCount: PropTypes.func.isRequired,
   setSearchFilters: PropTypes.func.isRequired,
   setSelectedOfferIds: PropTypes.func.isRequired,
   toggleSelectAllCheckboxes: PropTypes.func.isRequired,
