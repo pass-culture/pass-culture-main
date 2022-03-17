@@ -291,7 +291,7 @@ def get_and_lock_collective_stock(stock_id: int) -> educational_models.Collectiv
     return stock
 
 
-def get_collective_stock_from_stock_id(stock_id: Union[int, str]) -> educational_models.CollectiveStock:
+def get_collective_stock_from_stock_id(stock_id: Union[int, str]) -> Optional[educational_models.CollectiveStock]:
     return educational_models.CollectiveStock.query.filter(
         educational_models.CollectiveStock.stockId == stock_id
     ).one_or_none()

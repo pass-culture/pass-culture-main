@@ -3,6 +3,7 @@ import json
 
 from flask_sqlalchemy import SQLAlchemy
 import pydantic.json
+from sqlalchemy.ext.declarative import declarative_base
 
 from pcapi import settings
 
@@ -55,4 +56,4 @@ if _db_options:
     _engine_options["connect_args"] = {"options": " ".join(_db_options)}
 
 db = SQLAlchemy(engine_options=_engine_options)
-Model = db.Model
+Model = declarative_base(cls=db.Model)
