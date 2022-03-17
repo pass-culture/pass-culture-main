@@ -8,9 +8,7 @@ import pcapi.core.providers.factories as providers_factories
 from pcapi.core.providers.factories import AllocinePivotFactory
 from pcapi.core.providers.models import VenueProvider
 from pcapi.core.users import factories as user_factories
-from pcapi.model_creators.generic_creators import create_venue_provider
 from pcapi.models.api_errors import ApiErrors
-from pcapi.repository import repository
 from pcapi.utils.human_ids import dehumanize
 from pcapi.utils.human_ids import humanize
 
@@ -191,30 +189,25 @@ class Returns201Test:
         mock_synchronize_venue_provider.assert_called_once_with(dehumanize(venue_provider_id))
 
     @pytest.mark.usefixtures("db_session")
-    @patch("pcapi.workers.venue_provider_job.venue_provider_job.delay")
-    @patch("pcapi.core.providers.api._siret_can_be_synchronized")
-    def test_when_add_same_provider(self, mock_siret_can_be_synchronized, mock_synchronize_venue_provider, app):
+    @patch("pcapi.core.providers.api._siret_can_be_synchronized", lambda *args: True)
+    def test_when_add_same_provider(self, client):
         # Given
-        user = user_factories.AdminFactory()
-        venue = offer_factories.VenueFactory(siret="12345678912345")
-        provider = providers_factories.APIProviderFactory()
-        venue_provider = create_venue_provider(venue, provider, venue_id_at_offer_provider="12345678912345")
-        repository.save(venue_provider)
+        admin = user_factories.AdminFactory()
+        venue_provider = providers_factories.VenueProviderFactory()
 
-        auth_request = TestClient(app.test_client()).with_session_auth(email=user.email)
+        client = client.with_session_auth(email=admin.email)
         venue_provider_data = {
-            "providerId": humanize(provider.id),
-            "venueId": humanize(venue.id),
+            "providerId": humanize(venue_provider.providerId),
+            "venueId": humanize(venue_provider.venueId),
         }
-        mock_siret_can_be_synchronized.return_value = True
 
         # When
-        response = auth_request.post("/venueProviders", json=venue_provider_data)
+        response = client.post("/venueProviders", json=venue_provider_data)
 
         # Then
         assert response.status_code == 400
         assert response.json == {"global": ["Votre lieu est déjà lié à cette source"]}
-        assert venue.venueProviders[0].provider.id == provider.id
+        assert venue_provider.venue.venueProviders == [venue_provider]
 
 
 class Returns400Test:

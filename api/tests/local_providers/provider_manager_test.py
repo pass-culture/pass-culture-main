@@ -12,9 +12,6 @@ import pcapi.core.providers.factories as providers_factories
 from pcapi.local_providers.provider_manager import synchronize_data_for_provider
 from pcapi.local_providers.provider_manager import synchronize_venue_provider
 from pcapi.local_providers.provider_manager import synchronize_venue_providers_for_provider
-from pcapi.model_creators.generic_creators import create_offerer
-from pcapi.model_creators.generic_creators import create_venue
-from pcapi.model_creators.generic_creators import create_venue_provider
 from pcapi.repository import repository
 
 from tests.local_providers.provider_test_utils import TestLocalProvider
@@ -83,41 +80,17 @@ class SynchronizeVenueProviderTest:
     @pytest.mark.usefixtures("db_session")
     @patch("pcapi.local_providers.provider_manager.get_local_provider_class_by_name")
     @patch("pcapi.local_providers.local_provider.LocalProvider.updateObjects")
-    def test_should_start_synchronization_with_linked_provider(self, mock_updateObjects, mock_get_provider_class, app):
+    def test_should_start_synchronization_with_linked_provider(self, mock_updateObjects, mock_get_provider_class):
         # Given
-        limit = 10
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        provider = providers_factories.AllocineProviderFactory()
-        venue_provider = create_venue_provider(venue, provider)
-        repository.save(venue_provider)
+        allocine = providers_factories.AllocineProviderFactory()
+        venue_provider = providers_factories.VenueProviderFactory(provider=allocine)
         mock_get_provider_class.return_value = TestLocalProvider
 
         # When
-        synchronize_venue_provider(venue_provider, limit)
+        synchronize_venue_provider(venue_provider, limit=10)
 
         # Then
-        mock_updateObjects.assert_called_once_with(limit)
-
-    @pytest.mark.usefixtures("db_session")
-    @patch("pcapi.local_providers.provider_manager.get_local_provider_class_by_name")
-    @patch("pcapi.local_providers.local_provider.LocalProvider.updateObjects")
-    def test_should_init_provider_with_expected_venue_provider(self, mock_updateObjects, mock_get_provider_class, app):
-        # Given
-        limit = 10
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        provider = providers_factories.AllocineProviderFactory()
-        venue_provider = create_venue_provider(venue, provider)
-        repository.save(venue_provider)
-        mock_provider_class = MagicMock()
-        mock_get_provider_class.return_value = mock_provider_class
-
-        # When
-        synchronize_venue_provider(venue_provider, limit)
-
-        # Then
-        mock_provider_class.assert_called_once_with(venue_provider)
+        mock_updateObjects.assert_called_once_with(10)
 
     @pytest.mark.usefixtures("db_session")
     @patch("pcapi.local_providers.provider_manager.get_local_provider_class_by_name")
@@ -145,17 +118,14 @@ class SynchronizeVenueProvidersForProviderTest:
     @patch("pcapi.local_providers.local_provider.LocalProvider.updateObjects")
     @patch("pcapi.local_providers.provider_manager.get_local_provider_class_by_name")
     @pytest.mark.usefixtures("db_session")
-    def test_should_entirely_synchronize_venue_provider(self, mock_get_provider_class, mock_updateObjects, app):
+    def test_should_entirely_synchronize_venue_provider(self, mock_get_provider_class, mock_updateObjects):
         # Given
-        provider_test = providers_factories.AllocineProviderFactory()
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        venue_provider = create_venue_provider(venue, provider_test)
-        repository.save(venue_provider)
+        allocine = providers_factories.AllocineProviderFactory()
+        providers_factories.VenueProviderFactory(provider=allocine)
         mock_get_provider_class.return_value = TestLocalProvider
 
         # When
-        synchronize_venue_providers_for_provider(provider_test.id, None)
+        synchronize_venue_providers_for_provider(allocine.id, limit=None)
 
         # Then
         mock_get_provider_class.assert_called_once()
@@ -164,19 +134,14 @@ class SynchronizeVenueProvidersForProviderTest:
     @patch("pcapi.local_providers.local_provider.LocalProvider.updateObjects")
     @patch("pcapi.local_providers.provider_manager.get_local_provider_class_by_name")
     @pytest.mark.usefixtures("db_session")
-    def test_should_synchronize_venue_provider_with_defined_limit(
-        self, mock_get_provider_class, mock_updateObjects, app
-    ):
+    def test_should_synchronize_venue_provider_with_defined_limit(self, mock_get_provider_class, mock_updateObjects):
         # Given
-        provider_test = providers_factories.AllocineProviderFactory()
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        venue_provider = create_venue_provider(venue, provider_test)
-        repository.save(venue_provider)
+        allocine = providers_factories.AllocineProviderFactory()
+        providers_factories.VenueProviderFactory(provider=allocine)
         mock_get_provider_class.return_value = TestLocalProvider
 
         # When
-        synchronize_venue_providers_for_provider(provider_test.id, 10)
+        synchronize_venue_providers_for_provider(allocine.id, limit=10)
 
         # Then
         mock_get_provider_class.assert_called_once()
@@ -184,33 +149,23 @@ class SynchronizeVenueProvidersForProviderTest:
 
     @patch("pcapi.local_providers.provider_manager.synchronize_venue_provider")
     @pytest.mark.usefixtures("db_session")
-    def test_should_call_synchronize_venue_provider(self, mock_synchronize_venue_provider, app):
-        # Given
-        provider_test = providers_factories.APIProviderFactory()
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        venue_provider = create_venue_provider(venue, provider_test)
-        repository.save(venue_provider)
+    def test_should_call_synchronize_venue_provider(self, mock_synchronize_venue_provider):
+        provider = providers_factories.ProviderFactory()
+        providers_factories.VenueProviderFactory(provider=provider)
 
-        # When
-        synchronize_venue_providers_for_provider(provider_test.id, 10)
-
-        # Then
+        synchronize_venue_providers_for_provider(provider.id, limit=10)
         mock_synchronize_venue_provider.assert_called_once()
 
     @pytest.mark.usefixtures("db_session")
     @patch("pcapi.local_providers.provider_manager.synchronize_venue_provider")
     def test_catch_exception_and_continue(self, mock_synchronize_venue_provider):
-        allocine_provider = providers_factories.AllocineProviderFactory()
-        offerer = create_offerer()
-        venue1 = create_venue(offerer, siret="1")
-        venue_provider1 = create_venue_provider(venue1, allocine_provider)
-        venue2 = create_venue(offerer, siret="2")
-        venue_provider2 = create_venue_provider(venue2, allocine_provider)
-        repository.save(venue_provider1, venue_provider2)
+        provider = providers_factories.ProviderFactory(localClass="Unknown")
+        providers_factories.VenueProviderFactory(provider=provider)
+        providers_factories.VenueProviderFactory(provider=provider)
 
-        synchronize_venue_providers_for_provider(allocine_provider.id, 10)
+        mock_synchronize_venue_provider.side_effect = ValueError()
 
+        synchronize_venue_providers_for_provider(provider.id, 10)
         assert mock_synchronize_venue_provider.call_count == 2
 
 
