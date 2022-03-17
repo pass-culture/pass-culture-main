@@ -122,7 +122,7 @@ describe('venue form', () => {
         name: 'Librairie de test',
         bookingEmail: 'rené@example.com',
         comment: 'Pas de siret',
-        type: venueTypes[0].id,
+        venueTypeCode: venueTypes[0].id,
         address: `Addresse de test ${testId}`,
         city: 'Paris',
         postalCode: '75001',
@@ -154,7 +154,7 @@ describe('venue form', () => {
         name: formValues['name'],
         postalCode: formValues['postalCode'],
         venueLabelId: null,
-        venueTypeCode: formValues['type'],
+        venueTypeCode: formValues['venueTypeCode'],
         visualDisabilityCompliant: false,
       })
       expect(props.handleSubmitSuccessNotification).toHaveBeenCalledTimes(1)
@@ -188,7 +188,7 @@ describe('venue form', () => {
           name: formValues['name'],
           postalCode: formValues['postalCode'],
           venueLabelId: null,
-          venueTypeCode: formValues['type'],
+          venueTypeCode: formValues['venueTypeCode'],
           visualDisabilityCompliant: false,
         })
         expect(props.handleSubmitFailNotification).toHaveBeenCalledTimes(1)
