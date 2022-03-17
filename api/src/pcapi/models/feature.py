@@ -85,6 +85,9 @@ class FeatureToggle(enum.Enum):
     # then, this flag musty be kept because it is still fetched by the
     # old webapp.
     WEBAPP_V2_ENABLED = "Utiliser la nouvelle web app (décli web/v2) au lieu de l'ancienne"
+    ENABLE_INDIVIDUAL_AND_COLLECTIVE_OFFER_SEPARATION = (
+        "Sépare la visualisation des offres et des remboursements sur le portail PRO"
+    )
 
     def is_active(self) -> bool:
         if flask.has_request_context():
@@ -137,6 +140,7 @@ FEATURES_DISABLED_BY_DEFAULT = (
     FeatureToggle.PRO_DISABLE_EVENTS_QRCODE,
     FeatureToggle.SHOW_INVOICES_ON_PRO_PORTAL,
     FeatureToggle.USER_PROFILING_FRAUD_CHECK,
+    FeatureToggle.ENABLE_INDIVIDUAL_AND_COLLECTIVE_OFFER_SEPARATION,
 )
 
 
