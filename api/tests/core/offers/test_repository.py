@@ -9,6 +9,7 @@ from pcapi.core.categories import categories
 from pcapi.core.categories import subcategories
 import pcapi.core.educational.factories as educational_factories
 from pcapi.core.educational.models import CollectiveOffer
+import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.factories import ActivationCodeFactory
 from pcapi.core.offers.factories import EventStockFactory
@@ -24,10 +25,10 @@ from pcapi.core.offers.repository import get_capped_offers_for_filters
 from pcapi.core.offers.repository import get_expired_offers
 from pcapi.core.offers.repository import get_offers_by_ids
 from pcapi.core.offers.repository import get_sold_out_offers_count_for_venue
+import pcapi.core.providers.factories as providers_factories
 from pcapi.core.users import factories as users_factories
 from pcapi.domain.pro_offers.offers_recap import OffersRecap
 from pcapi.model_creators.generic_creators import create_offerer
-from pcapi.model_creators.generic_creators import create_provider
 from pcapi.model_creators.generic_creators import create_user_offerer
 from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.specific_creators import create_offer_with_thing_product
@@ -117,52 +118,30 @@ class GetCappedOffersForFiltersTest:
         assert len(offers.offers) == 1
 
     @pytest.mark.usefixtures("db_session")
-    def test_returns_offers_filtered_by_manual_creation_mode_when_provided(self):
-        # given
-        pro_user = users_factories.ProFactory()
-        offerer = create_offerer()
-        create_user_offerer(pro_user, offerer)
-        venue = create_venue(offerer)
-        provider = create_provider()
-        manually_created_offer = create_offer_with_thing_product(venue=venue, last_provider=None, last_provider_id=None)
-        imported_offer = create_offer_with_thing_product(
-            venue=venue, last_provider=provider, last_provider_id=provider.id
-        )
+    def test_filter_on_creation_mode(self):
+        venue = offerers_factories.VenueFactory()
+        manual_offer = offers_factories.OfferFactory(venue=venue)
+        provider = providers_factories.ProviderFactory()
+        synced_offer = offers_factories.OfferFactory(venue=venue, lastProvider=provider)
+        pro_user = users_factories.ProFactory(offerers=[venue.managingOfferer])
 
-        repository.save(manually_created_offer, imported_offer, pro_user)
-
-        # When
         offers = get_capped_offers_for_filters(
-            user_id=pro_user.id, user_is_admin=pro_user.has_admin_role, offers_limit=10, creation_mode="manual"
+            user_id=pro_user.id,
+            user_is_admin=False,
+            offers_limit=10,
+            creation_mode="manual",
         )
-
-        # then
-        assert offers.offers[0].id == manually_created_offer.id
         assert len(offers.offers) == 1
+        assert offers.offers[0].id == manual_offer.id
 
-    @pytest.mark.usefixtures("db_session")
-    def test_returns_offers_filtered_by_imported_creation_mode_when_provided(self):
-        # given
-        pro_user = users_factories.ProFactory()
-        offerer = create_offerer()
-        create_user_offerer(pro_user, offerer)
-        venue = create_venue(offerer)
-        provider = create_provider()
-        manually_created_offer = create_offer_with_thing_product(venue=venue, last_provider=None, last_provider_id=None)
-        imported_offer = create_offer_with_thing_product(
-            venue=venue, last_provider=provider, last_provider_id=provider.id
-        )
-
-        repository.save(manually_created_offer, imported_offer, pro_user)
-
-        # When
         offers = get_capped_offers_for_filters(
-            user_id=pro_user.id, user_is_admin=pro_user.has_admin_role, offers_limit=10, creation_mode="imported"
+            user_id=pro_user.id,
+            user_is_admin=False,
+            offers_limit=10,
+            creation_mode="imported",
         )
-
-        # then
-        assert offers.offers[0].id == imported_offer.id
         assert len(offers.offers) == 1
+        assert offers.offers[0].id == synced_offer.id
 
     @pytest.mark.usefixtures("db_session")
     def should_not_return_event_offers_with_only_deleted_stock_if_filtering_by_time_period(self):
