@@ -7,6 +7,7 @@ export type SearchFilters = {
   creationMode?: string
   periodBeginningDate?: string
   periodEndingDate?: string
+  audience?: string
 }
 
 export type SearchFiltersAPI = {
@@ -18,6 +19,7 @@ export type SearchFiltersAPI = {
   creationMode?: string
   periodBeginningDate?: string
   periodEndingDate?: string
+  audience?: string
 }
 
 export type Offerer = {

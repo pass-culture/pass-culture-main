@@ -1,0 +1,42 @@
+.offer-list-filter-tabs {
+  display: flex;
+  margin-bottom: rem(32px);
+
+  &-tab {
+    background-color: transparent;
+    padding-bottom: rem(8px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    font-size: rem(15px);
+    font-weight: 700;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+
+    &-radio {
+      z-index: -1;
+      margin-right: rem(12px);
+    }
+
+    &-icon {
+      fill: $black;
+      width: rem(20px);
+      position: absolute;
+      left: 0;
+    }
+
+    &.is-selected {
+      border-bottom: 2px solid $primary;
+      color: $primary;
+
+      .offer-list-filter-tabs-tab-icon {
+        fill: $primary;
+      }
+    }
+
+    &:not(:last-of-type) {
+      margin-right: rem(32px);
+    }
+  }
+}
