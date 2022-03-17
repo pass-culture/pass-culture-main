@@ -8,6 +8,7 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter, Router } from 'react-router'
 
+import Offers from 'components/pages/Offers/Offers/Offers'
 import {
   ALL_OFFERERS,
   ALL_OFFERS,
@@ -21,8 +22,7 @@ import {
   DEFAULT_CREATION_MODE,
   DEFAULT_PAGE,
   DEFAULT_SEARCH_FILTERS,
-} from 'components/pages/Offers/Offers/_constants'
-import Offers from 'components/pages/Offers/Offers/Offers'
+} from 'core/Offers/constants'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { fetchAllVenuesByProUser } from 'repository/venuesService'
 import { configureTestStore } from 'store/testUtils'

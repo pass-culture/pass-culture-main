@@ -6,7 +6,7 @@ import {
   OFFER_STATUS_INACTIVE,
   OFFER_STATUS_PENDING,
   OFFER_STATUS_REJECTED,
-} from 'components/pages/Offers/Offers/_constants'
+} from 'core/Offers/constants'
 import * as pcapi from 'repository/pcapi/pcapi'
 
 export const StatusToggleButton = ({

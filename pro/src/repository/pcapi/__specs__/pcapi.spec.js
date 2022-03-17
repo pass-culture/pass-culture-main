@@ -1,8 +1,5 @@
 import { DEFAULT_PRE_FILTERS } from 'components/pages/Bookings/PreFilters/_constants'
-import {
-  ALL_OFFERERS,
-  DEFAULT_SEARCH_FILTERS,
-} from 'components/pages/Offers/Offers/_constants'
+import { ALL_OFFERERS, DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
 import {
   getBooking,
   generateOffererApiKey,

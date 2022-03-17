@@ -7,7 +7,7 @@ import Titles from 'components/layout/Titles/Titles'
 import ConfirmationContainer from 'components/pages/Offers/Offer/Confirmation/ConfirmationContainer'
 import { OfferHeader } from 'components/pages/Offers/Offer/OfferStatus/OfferHeader'
 import StocksContainer from 'components/pages/Offers/Offer/Stocks/StocksContainer'
-import { OFFER_STATUS_DRAFT } from 'components/pages/Offers/Offers/_constants'
+import { OFFER_STATUS_DRAFT } from 'core/Offers/constants'
 import Breadcrumb, { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 import RouteLeavingGuardOfferCreation from 'new_components/RouteLeavingGuardOfferCreation'
 

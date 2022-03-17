@@ -17,7 +17,7 @@ import StockItem from 'components/pages/Offers/Offer/Stocks/StockItem/StockItem'
 import {
   LIVRE_PAPIER_SUBCATEGORY_ID,
   OFFER_STATUS_DRAFT,
-} from 'components/pages/Offers/Offers/_constants'
+} from 'core/Offers/constants'
 import { ReactComponent as AddStockSvg } from 'icons/ico-plus.svg'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { SubmitButton } from 'ui-kit'

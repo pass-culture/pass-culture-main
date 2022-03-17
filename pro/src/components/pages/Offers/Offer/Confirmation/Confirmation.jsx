@@ -7,8 +7,8 @@ import useOfferEditionURL from 'components/hooks/useOfferEditionURL'
 import { ReactComponent as PendingIcon } from 'components/pages/Offers/Offer/Confirmation/assets/pending.svg'
 import { ReactComponent as ValidateIcon } from 'components/pages/Offers/Offer/Confirmation/assets/validate.svg'
 import { DisplayOfferInAppLink } from 'components/pages/Offers/Offer/DisplayOfferInAppLink'
-import { OFFER_STATUS_PENDING } from 'components/pages/Offers/Offers/_constants'
 import { queryParamsFromOfferer } from 'components/pages/Offers/utils/queryParamsFromOfferer'
+import { OFFER_STATUS_PENDING } from 'core/Offers/constants'
 
 const Confirmation = ({ isCreatingOffer, location, offer, setOffer }) => {
   const editionUrl = useOfferEditionURL(offer.isEducational, offer.id)
