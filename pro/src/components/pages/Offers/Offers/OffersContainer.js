@@ -3,13 +3,11 @@ import { compose } from 'redux'
 
 import * as pcapi from 'repository/pcapi/pcapi'
 import { showNotification } from 'store/reducers/notificationReducer'
-import { selectCurrentUser } from 'store/selectors/data/usersSelectors'
 
 import Offers from './Offers'
 
 export const mapStateToProps = state => {
   return {
-    currentUser: selectCurrentUser(state),
     getOfferer: pcapi.getOfferer,
   }
 }
