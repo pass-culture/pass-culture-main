@@ -33,6 +33,7 @@ interface IOffersProps {
   setOfferer: (offerer: Offerer | null) => void
   setSearchFilters: (searchFilters: SearchFilters) => void
   urlSearchFilters: SearchFilters
+  separateIndividualAndCollectiveOffers: boolean
 }
 
 const Offers = ({
@@ -50,6 +51,7 @@ const Offers = ({
   setOfferer,
   setSearchFilters,
   urlSearchFilters,
+  separateIndividualAndCollectiveOffers,
 }: IOffersProps): JSX.Element => {
   const { audience } = searchFilters
   const [areAllOffersSelected, setAreAllOffersSelected] = useState(false)
@@ -120,10 +122,12 @@ const Offers = ({
     <div className="offers-page">
       <PageTitle title="Vos offres" />
       <Titles action={actionLink} title="Offres" />
-      <OfferListFilterTabs
-        selectedAudience={selectedAudience}
-        setSelectedAudience={setSelectedAudience}
-      />
+      {separateIndividualAndCollectiveOffers && (
+        <OfferListFilterTabs
+          selectedAudience={selectedAudience}
+          setSelectedAudience={setSelectedAudience}
+        />
+      )}
       <ActionsBarPortal isVisible={nbSelectedOffers > 0}>
         <ActionsBarContainer
           areAllOffersSelected={areAllOffersSelected}
