@@ -192,6 +192,41 @@ Il est possible de se connecter aux bases de données lancées via docker compos
     - port : 5433
     - database : pass_culture
 
+
+## Ajout de données avec les factories
+
+- Lancer python avec docker: `pc python`
+- Dans l'éditeur de code, identifier la factory `pcapi.core`.
+  Tous les arguments sont renseignés par défaut et peuvent être surchargés.
+- importer la factory et l'utiliser: les données sont disponibles en localhost
+
+### exemple 1 - créer un utilisateur
+
+```
+>>> from pcapi.core.users.factories import UserFactory;
+>>> UserFactory(email='user@example.com’);
+```
+
+On peut ensuite se connecter avec ce mail et le mot de passe par défaut en localhost.
+
+### exemple 2 - création d'un utilisateur et d'une structure liée
+
+```
+>>> from pcapi.core.users.factories import UserFactory;
+>>> user = UserFactory(email='marie2@app.com’)
+>>> from pcapi.core.offers.factories import OffererFactory;
+>>> factory = OffererFactory(siren=444444444)
+>>> from pcapi.core.offers.factories import UserOffererFactory;
+>>> UserOffererFactory(user, offerer)
+```
+
+### en cas d’erreur, rollback avant de recommencer la transaction
+
+```
+>>> from pcapi.models import db
+>>> db.session.rollback()
+```
+
 ## Linter et hooks
 
 Pour une meilleure expérience de développement sur le repo API, des hooks ([pre-commit](api/hooks/pre-commit)
