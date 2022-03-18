@@ -28,6 +28,7 @@ class FeatureToggle(enum.Enum):
     )
     API_SIRENE_AVAILABLE = "Active les fonctionnalitées liées à l'API Sirene"
     BENEFICIARY_VALIDATION_AFTER_FRAUD_CHECKS = "Active la validation d'un bénéficiaire via les contrôles de sécurité"
+    DISABLE_ENTERPRISE_API = "Désactiver les appels à l'API entreprise"
     DISPLAY_DMS_REDIRECTION = "Affiche une redirection vers DMS si ID Check est KO"
     ENABLE_CULTURAL_SURVEY = "Activer l'affichage du questionnaire des pratiques initiales pour les bénéficiaires"
     ENABLE_DMS_LINK_ON_MAINTENANCE_PAGE_FOR_AGE_18 = (
@@ -40,6 +41,7 @@ class FeatureToggle(enum.Enum):
     ENABLE_EDUCONNECT_AUTHENTICATION = "Active l'authentification via educonnect sur l'app native"
     ENABLE_ID_CHECK_RETENTION = "Active le mode bassin de retention dans Id Check V2"
     ENABLE_IDCHECK_FRAUD_CONTROLS = "Active les contrôles de sécurité en sortie du process ID Check"
+    ENABLE_IOS_OFFERS_LINK_WITH_REDIRECTION = "Active l'utilisation du lien avec redirection pour les offres (nécessaires pour contourner des restrictions d'iOS)"
     ENABLE_ISBN_REQUIRED_IN_LIVRE_EDITION_OFFER_CREATION = (
         "Active le champ isbn obligatoire lors de la création d'offre de type LIVRE_EDITION"
     )
@@ -55,6 +57,7 @@ class FeatureToggle(enum.Enum):
     ENABLE_NEW_COLLECTIVE_MODEL = "Utiliser le nouveau modèle des offres collectives"
     ENABLE_NEW_VENUE_PAGES = "Utiliser la nouvelle version des pages d'edition et de creation de lieux"
     ENABLE_PHONE_VALIDATION = "Active la validation du numéro de téléphone"  # TODO (viconnex) remove when FORCE_PHONE_VALIDATION is released in production
+    ENABLE_PRO_ACCOUNT_CREATION = "Permettre l'inscription des comptes professionels"
     ENABLE_PRO_BOOKINGS_V2 = "Activer l'affichage de la page booking avec la nouvelle architecture."
     ENABLE_UBBLE = "Active la vérification d'identité par Ubble"
     ENABLE_UBBLE_SUBSCRIPTION_LIMITATION = "Active la limitation en fonction de l'âge lors de pic d'inscription"
@@ -64,7 +67,12 @@ class FeatureToggle(enum.Enum):
         "Active la génération automatique (via cron) des flux monétaires et fichiers de remboursement"
     )
     ID_CHECK_ADDRESS_AUTOCOMPLETION = "Autocomplétion de l'adresse lors du parcours IDCheck"
+    INCLUDE_LEGACY_PAYMENTS_FOR_REIMBURSEMENTS = (
+        "Inclure les anciens modèles de données pour le téléchargement des remboursements "
+    )
     PRICE_BOOKINGS = "Active la valorisation des réservations"
+    PRO_DISABLE_EVENTS_QRCODE = "Active la possibilité de différencier le type d’envoi des billets sur une offre et le retrait du QR code sur la réservation"
+    SHOW_INVOICES_ON_PRO_PORTAL = "Activer l'affichage des remboursements sur le portail pro"
     SYNCHRONIZE_ALLOCINE = "Permettre la synchronisation journalière avec Allociné"
     SYNCHRONIZE_TITELIVE_PRODUCTS = "Permettre limport journalier du référentiel des livres"
     SYNCHRONIZE_TITELIVE_PRODUCTS_DESCRIPTION = "Permettre limport journalier des résumés des livres"
@@ -76,13 +84,6 @@ class FeatureToggle(enum.Enum):
     # then, this flag musty be kept because it is still fetched by the
     # old webapp.
     WEBAPP_V2_ENABLED = "Utiliser la nouvelle web app (décli web/v2) au lieu de l'ancienne"
-    SHOW_INVOICES_ON_PRO_PORTAL = "Activer l'affichage des remboursements sur le portail pro"
-    INCLUDE_LEGACY_PAYMENTS_FOR_REIMBURSEMENTS = (
-        "Inclure les anciens modèles de données pour le téléchargement des remboursements "
-    )
-    ENABLE_PRO_ACCOUNT_CREATION = "Permettre l'inscription des comptes professionels"
-    DISABLE_ENTERPRISE_API = "Désactiver les appels à l'API entreprise"
-    ENABLE_IOS_OFFERS_LINK_WITH_REDIRECTION = "Active l'utilisation du lien avec redirection pour les offres (nécessaires pour contourner des restrictions d'iOS)"
 
     def is_active(self) -> bool:
         if flask.has_request_context():
@@ -112,12 +113,14 @@ class Feature(PcObject, Model, DeactivableMixin):
 
 FEATURES_DISABLED_BY_DEFAULT = (
     FeatureToggle.ALLOW_EMPTY_USER_PROFILING,
-    FeatureToggle.ALLOW_IDCHECK_UNDERAGE_REGISTRATION,
     FeatureToggle.ALLOW_IDCHECK_REGISTRATION_FOR_EDUCONNECT_ELIGIBLE,
+    FeatureToggle.ALLOW_IDCHECK_UNDERAGE_REGISTRATION,
+    FeatureToggle.DISABLE_ENTERPRISE_API,
     FeatureToggle.ENABLE_DMS_LINK_ON_MAINTENANCE_PAGE_FOR_UNDERAGE,
     FeatureToggle.ENABLE_DUPLICATE_USER_RULE_WITHOUT_BIRTHDATE,
     FeatureToggle.ENABLE_EDUCONNECT_AUTHENTICATION,
     FeatureToggle.ENABLE_ID_CHECK_RETENTION,
+    FeatureToggle.ENABLE_IOS_OFFERS_LINK_WITH_REDIRECTION,
     FeatureToggle.ENABLE_ISBN_REQUIRED_IN_LIVRE_EDITION_OFFER_CREATION,
     FeatureToggle.ENABLE_NATIVE_CULTURAL_SURVEY,
     FeatureToggle.ENABLE_NATIVE_ID_CHECK_VERBOSE_DEBUGGING,
@@ -129,10 +132,9 @@ FEATURES_DISABLED_BY_DEFAULT = (
     FeatureToggle.FORCE_PHONE_VALIDATION,
     FeatureToggle.GENERATE_CASHFLOWS_BY_CRON,
     FeatureToggle.ID_CHECK_ADDRESS_AUTOCOMPLETION,
-    FeatureToggle.USER_PROFILING_FRAUD_CHECK,
+    FeatureToggle.PRO_DISABLE_EVENTS_QRCODE,
     FeatureToggle.SHOW_INVOICES_ON_PRO_PORTAL,
-    FeatureToggle.DISABLE_ENTERPRISE_API,
-    FeatureToggle.ENABLE_IOS_OFFERS_LINK_WITH_REDIRECTION,
+    FeatureToggle.USER_PROFILING_FRAUD_CHECK,
 )
 
 
