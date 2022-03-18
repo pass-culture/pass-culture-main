@@ -256,9 +256,40 @@ class OfferResponseIdModel(BaseModel):
         arbitrary_types_allowed = True
 
 
+class GenericErrorBody(BaseModel):
+    code: str
+    message: str
+
+
+# TODO: Enums should probably not be here and should be used in the route
+class SubcategoryErrorEnum(str, enum.Enum):
+    UNKNOWN_OFFER_SUBCATEGORY = "UNKNOWN_OFFER_SUBCATEGORY"
+    SUBCATEGORY_IS_INACTIVE = "SUBCATEGORY_IS_INACTIVE"
+
+
+class OfferErrorEnum(str, enum.Enum):
+    SUBCATEGORY_NOT_ELIGIBLE_FOR_EDUCATIONAL_OFFER = "SUBCATEGORY_NOT_ELIGIBLE_FOR_EDUCATIONAL_OFFER"
+
+
+class SubcategoryErrorBody(BaseModel):
+    code: SubcategoryErrorEnum
+    message: str
+
+
+class OfferErrorBody(BaseModel):
+    code: OfferErrorEnum
+    message: str
+
+
+class DetailedOfferResponseIdError(BaseModel):
+    globals: Optional[list[GenericErrorBody]]
+    subcategory: Optional[list[SubcategoryErrorBody]]
+    offer: Optional[list[OfferErrorBody]]
+
+
 class OfferResponseIdError(BaseModel):
-    subcategory: Optional[list[str]]
-    offer: Optional[list[str]]
+    errors: DetailedOfferResponseIdError
+    version: str = "1.0"
 
 
 class PatchOfferActiveStatusBodyModel(BaseModel):

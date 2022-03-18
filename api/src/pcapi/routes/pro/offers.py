@@ -96,21 +96,31 @@ def post_offer(
             "Could not create offer: selected subcategory is unknown.",
             extra={"offer_name": body.name, "venue_id": body.venue_id},
         )
-        return offers_serialize.OfferResponseIdError(subcategory=error.errors["subcategory"])
+        return offers_serialize.OfferResponseIdError(
+            errors={"subcategory": [{"code": "UNKNOWN_OFFER_SUBCATEGORY", "message": error.errors["subcategory"][0]}]}
+        )
 
     except exceptions.SubCategoryIsInactive as error:
         logger.info(
             "Could not create offer: subcategory cannot be selected.",
             extra={"offer_name": body.name, "venue_id": body.venue_id},
         )
-        return offers_serialize.OfferResponseIdError(subcategory=error.errors["subcategory"])
+        return offers_serialize.OfferResponseIdError(
+            errors={"subcategory": [{"code": "SUBCATEGORY_IS_INACTIVE", "message": error.errors["subcategory"][0]}]}
+        )
 
     except exceptions.SubcategoryNotEligibleForEducationalOffer as error:
         logger.info(
             "Could not create offer: subcategory is not eligible for educational offer.",
             extra={"offer_name": body.name, "venue_id": body.venue_id},
         )
-        return offers_serialize.OfferResponseIdError(offer=error.errors["offer"])
+        return offers_serialize.OfferResponseIdError(
+            errors={
+                "offer": [
+                    {"code": "SUBCATEGORY_NOT_ELIGIBLE_FOR_EDUCATIONAL_OFFER", "message": error.errors["offer"][0]}
+                ]
+            }
+        )
 
     return offers_serialize.OfferResponseIdModel.from_orm(offer)
 

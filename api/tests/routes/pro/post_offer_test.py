@@ -351,7 +351,16 @@ class Returns400Test:
 
         # Then
         assert response.status_code == 400
-        assert response.json["subcategory"] == ["La sous-catégorie de cette offre est inconnue"]
+        assert response.json == {
+            "errors": {
+                "subcategory": [
+                    {"code": "UNKNOWN_OFFER_SUBCATEGORY", "message": "La sous-catégorie de cette offre est inconnue"}
+                ],
+                "offer": None,
+                "globals": None,
+            },
+            "version": "1.0",
+        }
 
     def test_fail_if_inactive_subcategory(self, app):
         # Given
@@ -370,9 +379,19 @@ class Returns400Test:
 
         # Then
         assert response.status_code == 400
-        assert response.json["subcategory"] == [
-            "Une offre ne peut être créée ou éditée en utilisant cette sous-catégorie"
-        ]
+        assert response.json == {
+            "errors": {
+                "subcategory": [
+                    {
+                        "code": "SUBCATEGORY_IS_INACTIVE",
+                        "message": "Une offre ne peut être créée ou éditée en utilisant cette sous-catégorie",
+                    }
+                ],
+                "offer": None,
+                "globals": None,
+            },
+            "version": "1.0",
+        }
 
     def test_fail_when_educational_and_non_eligible_subcategory(self, app):
         # Given
@@ -392,7 +411,19 @@ class Returns400Test:
 
         # Then
         assert response.status_code == 400
-        assert response.json["offer"] == ["Cette catégorie d'offre n'est pas éligible aux offres éducationnelles"]
+        assert response.json == {
+            "errors": {
+                "offer": [
+                    {
+                        "code": "SUBCATEGORY_NOT_ELIGIBLE_FOR_EDUCATIONAL_OFFER",
+                        "message": "Cette catégorie d'offre n'est pas éligible aux offres éducationnelles",
+                    }
+                ],
+                "subcategory": None,
+                "globals": None,
+            },
+            "version": "1.0",
+        }
 
     def test_fail_when_offer_subcategory_is_offline_only_and_venue_is_virtuel(self, app):
         # Given
