@@ -83,6 +83,7 @@ class FeatureToggle(enum.Enum):
     ENABLE_PRO_ACCOUNT_CREATION = "Permettre l'inscription des comptes professionels"
     DISABLE_ENTERPRISE_API = "Désactiver les appels à l'API entreprise"
     ENABLE_IOS_OFFERS_LINK_WITH_REDIRECTION = "Active l'utilisation du lien avec redirection pour les offres (nécessaires pour contourner des restrictions d'iOS)"
+    PRO_DISABLE_EVENTS_QRCODE = "Active la possibilité de différencier le type d’envoi des billets sur une offre et le retrait du QR code sur la réservation"
 
     def is_active(self) -> bool:
         if flask.has_request_context():
@@ -133,6 +134,7 @@ FEATURES_DISABLED_BY_DEFAULT = (
     FeatureToggle.SHOW_INVOICES_ON_PRO_PORTAL,
     FeatureToggle.DISABLE_ENTERPRISE_API,
     FeatureToggle.ENABLE_IOS_OFFERS_LINK_WITH_REDIRECTION,
+    FeatureToggle.PRO_DISABLE_EVENTS_QRCODE,
 )
 
 
