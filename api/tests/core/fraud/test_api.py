@@ -9,6 +9,7 @@ import pcapi.core.fraud.factories as fraud_factories
 import pcapi.core.fraud.models as fraud_models
 from pcapi.core.fraud.ubble import api as ubble_fraud_api
 import pcapi.core.fraud.ubble.models as ubble_fraud_models
+from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
 import pcapi.core.users.models as users_models
 
@@ -68,6 +69,29 @@ class CommonTest:
     def test_id_piece_number_valid_format(self, id_piece_number):
         item = fraud_api.validate_id_piece_number_format_fraud_item(id_piece_number)
         assert item.status == fraud_models.FraudStatus.OK
+
+    @pytest.mark.parametrize(
+        "name,is_valid",
+        [
+            ("Ellingson", True),
+            ("Ellingson2", False),
+            ("/", False),
+            (" ", False),
+            ("Charles-Apollon", True),
+            ("John O'Wick", True),
+            ("John O’Wick", True),
+            ("Martin king, Jr.", True),
+            ("მარიამ", False),
+            ("aé", True),
+            ("&", False),
+            ("a&", False),
+            ("1", False),
+        ],
+    )
+    def test_is_subscription_name_valid(self, name, is_valid):
+        assert fraud_api.is_subscription_name_valid(name) is is_valid
+        with override_features(DISABLE_USER_NAME_AND_FIRST_NAME_VALIDATION_IN_TESTING_AND_STAGING=True):
+            assert fraud_api.is_subscription_name_valid(name) is True
 
 
 def filter_invalid_fraud_items_to_reason_code(
