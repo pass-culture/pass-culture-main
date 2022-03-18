@@ -363,6 +363,7 @@ jobs:
         auth:
           username: $DOCKERHUB_USER
           password: $DOCKERHUB_PASSWORD
+    parallelism: 4
     steps:
       - checkout
       - skip_unchanged:
@@ -419,11 +420,14 @@ jobs:
           working_directory: api
       - run:
           name: Running tests
-          command: >
-            RUN_ENV=tests venv/bin/pytest << parameters.pytest_extra_args >> --durations=10
-            --junitxml=test-results/junit.xml
+          command: |
+            TEST_FILES=$(circleci tests glob "tests/**/*.py" | circleci tests split --split-by=timings)
+            mkdir -p test-results
+            RUN_ENV=tests venv/bin/pytest $TEST_FILES --durations=10 --junitxml=test-results/junit.xml
           working_directory: api
       - store_test_results:
+          path: api/test-results
+      - store_artifacts:
           path: api/test-results
       - when:
           condition:
@@ -1043,38 +1047,6 @@ workflows:
                - integration
          context: Slack
       - tests-api:
-         name: "Run core tests (except core/users/external)"
-         pytest_extra_args: "tests/core --ignore=tests/core/users/external"
-         filters:
-           branches:
-             ignore:
-               - production
-               - staging
-               - integration
-         context: Slack
-      - tests-api:
-         name: "Run core/users/external"
-         pytest_extra_args: "tests/core/users/external"
-         filters:
-           branches:
-             ignore:
-               - production
-               - staging
-               - integration
-         context: Slack
-      - tests-api:
-         name: "Run routes tests"
-         pytest_extra_args: "tests/routes"
-         filters:
-           branches:
-             ignore:
-               - production
-               - staging
-               - integration
-         context: Slack
-      - tests-api:
-         name: "Run other tests"
-         pytest_extra_args: "tests --ignore=tests/core --ignore=tests/routes"
          filters:
            branches:
              ignore:
@@ -1118,10 +1090,7 @@ workflows:
              only:
                - master
          requires:
-           - "Run core tests (except core/users/external)"
-           - "Run routes tests"
-           - "Run other tests"
-           - "Run core/users/external"
+           - tests-api
            - quality-api
          context:
            - GCP
