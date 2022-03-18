@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 
 import ActionsBarPortal from 'components/layout/ActionsBarPortal/ActionsBarPortal'
@@ -7,7 +7,11 @@ import Titles from 'components/layout/Titles/Titles'
 import ActionsBarContainer from 'components/pages/Offers/Offers/ActionsBar/ActionsBarContainer'
 import NoOffers from 'components/pages/Offers/Offers/NoOffers/NoOffers'
 import OffersContainer from 'components/pages/Offers/Offers/OffersContainer'
-import { DEFAULT_SEARCH_FILTERS, NUMBER_OF_OFFERS_PER_PAGE } from 'core/Offers'
+import {
+  DEFAULT_SEARCH_FILTERS,
+  MAX_TOTAL_PAGES,
+  NUMBER_OF_OFFERS_PER_PAGE,
+} from 'core/Offers'
 import { Offer, Offerer, SearchFilters } from 'core/Offers/types'
 import { ReactComponent as AddOfferSvg } from 'icons/ico-plus.svg'
 
@@ -18,22 +22,18 @@ const isAudienceIndividualOrCollective = (
 ): audience is 'individual' | 'collective' =>
   audience === 'individual' || audience === 'collective'
 
-interface IOffersProps {
+export interface IOffersProps {
   currentPageNumber: number
   currentUser: { isAdmin: boolean }
   isLoading: boolean
   loadAndUpdateOffers: (filters: SearchFilters) => Promise<void>
   offerer: Offerer | null
   offers: Offer[]
-  offersCount: number
-  pageCount: number | null
-  searchFilters: SearchFilters
   setIsLoading: (isLoading: boolean) => void
-  setIsRefreshingOffers: (isRefreshing: boolean) => void
   setOfferer: (offerer: Offerer | null) => void
-  setSearchFilters: (searchFilters: SearchFilters) => void
   urlSearchFilters: SearchFilters
   separateIndividualAndCollectiveOffers: boolean
+  initialSearchFilters: SearchFilters
 }
 
 const Offers = ({
@@ -43,16 +43,16 @@ const Offers = ({
   loadAndUpdateOffers,
   offerer,
   offers,
-  offersCount,
-  pageCount,
-  searchFilters,
   setIsLoading,
-  setIsRefreshingOffers,
   setOfferer,
-  setSearchFilters,
   urlSearchFilters,
   separateIndividualAndCollectiveOffers,
+  initialSearchFilters,
 }: IOffersProps): JSX.Element => {
+  const [searchFilters, setSearchFilters] =
+    useState<SearchFilters>(initialSearchFilters)
+  const [isRefreshingOffers, setIsRefreshingOffers] = useState(true)
+
   const { audience } = searchFilters
   const [areAllOffersSelected, setAreAllOffersSelected] = useState(false)
   const [selectedOfferIds, setSelectedOfferIds] = useState<string[]>([])
@@ -96,7 +96,7 @@ const Offers = ({
     )
 
   const nbSelectedOffers = areAllOffersSelected
-    ? offersCount
+    ? offers.length
     : selectedOfferIds.length
 
   const clearSelectedOfferIds = useCallback(() => {
@@ -104,8 +104,8 @@ const Offers = ({
   }, [])
 
   const refreshOffers = useCallback(
-    () => loadAndUpdateOffers(urlSearchFilters),
-    [loadAndUpdateOffers, urlSearchFilters]
+    () => loadAndUpdateOffers(initialSearchFilters),
+    [loadAndUpdateOffers, initialSearchFilters]
   )
 
   const toggleSelectAllCheckboxes = useCallback(() => {
@@ -117,6 +117,21 @@ const Offers = ({
     setOfferer(null)
     setSearchFilters({ ...DEFAULT_SEARCH_FILTERS })
   }, [setSearchFilters, setIsLoading, setOfferer])
+
+  const numberOfPages = Math.ceil(offers.length / NUMBER_OF_OFFERS_PER_PAGE)
+  const pageCount = Math.min(numberOfPages, MAX_TOTAL_PAGES)
+
+  useEffect(() => {
+    if (isRefreshingOffers) {
+      setSearchFilters(initialSearchFilters)
+      loadAndUpdateOffers(initialSearchFilters)
+    }
+  }, [
+    isRefreshingOffers,
+    loadAndUpdateOffers,
+    setSearchFilters,
+    initialSearchFilters,
+  ])
 
   return (
     <div className="offers-page">
@@ -167,7 +182,7 @@ const Offers = ({
         hasSearchFilters={hasSearchFilters}
         isLoading={isLoading}
         offerer={offerer}
-        offersCount={offersCount}
+        offersCount={offers.length}
         pageCount={pageCount}
         refreshOffers={refreshOffers}
         resetFilters={resetFilters}
