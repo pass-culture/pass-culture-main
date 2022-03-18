@@ -1,6 +1,7 @@
 import datetime
 import decimal
 import logging
+from operator import or_
 from typing import Optional
 from typing import Union
 
@@ -460,6 +461,13 @@ def create_educational_deposit(
 def get_venues_by_siret(siret: str) -> list[offerers_models.Venue]:
     venue = offerers_models.Venue.query.filter_by(siret=siret).one()
     return [venue]
+
+
+def get_venues_by_name(name: str) -> list[offerers_models.Venue]:
+    venues = offerers_models.Venue.query.filter(
+        or_(offerers_models.Venue.name.ilike(f"%{name}%"), offerers_models.Venue.publicName.ilike(f"%{name}%"))
+    ).all()
+    return venues
 
 
 def get_educational_categories() -> dict:
