@@ -96,8 +96,7 @@ def post_offer(
             "Could not create offer: selected subcategory is unknown.",
             extra={"offer_name": body.name, "venue_id": body.venue_id},
         )
-        # TODO: fix the duplicated error message
-        return offers_serialize.OfferResponseIdError(subcategory=["La sous-catégorie de cette offre est inconnue"])
+        return offers_serialize.OfferResponseIdError(subcategory=error.errors["subcategory"])
 
     except exceptions.SubCategoryIsInactive as error:
         logger.info(
