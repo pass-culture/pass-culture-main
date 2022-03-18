@@ -125,6 +125,15 @@ const OfferForm = ({
     'ENABLE_ISBN_REQUIRED_IN_LIVRE_EDITION_OFFER_CREATION'
   )
 
+  const isWithdrawalTypeEnabled = useActiveFeature('PRO_DISABLE_EVENTS_QRCODE')
+  const withdrawalTypeCompatibleSubcategories = [
+    'FESTIVAL_MUSIQUE',
+    'CONCERT',
+    'EVENEMENT_MUSIQUE',
+    'FESTIVAL_SPECTACLE',
+    'SPECTACLE_REPRESENTATION',
+  ]
+
   const [mandatoryFields, setMandatoryFields] = useState([...MANDATORY_FIELDS])
 
   const resetMandatoryFields = useCallback(() => {
@@ -914,6 +923,11 @@ const OfferForm = ({
                   <WithdrawalReminder />
                 </div>
               )}
+
+              {isWithdrawalTypeEnabled &&
+                withdrawalTypeCompatibleSubcategories.includes(
+                  formValues.subcategoryId
+                ) && <div className="form-row" />}
 
               <div className="form-row">
                 <TextareaInput
