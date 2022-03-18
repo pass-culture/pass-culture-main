@@ -6,6 +6,7 @@ import typing
 import pydantic
 import sqlalchemy
 
+from pcapi import settings
 from pcapi.core.fraud.utils import is_latin
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import models as subscription_models
@@ -281,6 +282,11 @@ def _check_user_eligibility(
 
 
 def is_subscription_name_valid(name: typing.Optional[str]) -> bool:
+    if (
+        FeatureToggle.DISABLE_USER_NAME_AND_FIRST_NAME_VALIDATION_IN_TESTING_AND_STAGING.is_active()
+        and not settings.IS_PROD
+    ):
+        return True
     if not name:
         return False
     stripped_name = name.strip()
