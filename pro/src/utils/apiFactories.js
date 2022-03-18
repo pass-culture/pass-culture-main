@@ -24,6 +24,8 @@ export const offerFactory = (
     status: 'ACTIVE',
     stocks,
     venue: customVenue,
+    hasBookingLimitDatetimesPassed: false,
+    isEducational: false,
     ...customOffer,
   }
 }
@@ -43,6 +45,7 @@ export const venueFactory = (
     managingOffererId: customOfferer.id,
     postalCode: '11100',
     publicName: 'Mon Lieu',
+    offererName: 'Ma structure',
     ...customVenue,
   }
 }
@@ -64,6 +67,7 @@ export const stockFactory = (customStock = {}) => {
     price: 10,
     quantity: null,
     activationCodes: [],
+    remainingQuantity: 2,
     ...customStock,
   }
 }
