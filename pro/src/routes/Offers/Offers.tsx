@@ -4,12 +4,8 @@ import { useDispatch } from 'react-redux'
 import useActiveFeature from 'components/hooks/useActiveFeature'
 import useCurrentUser from 'components/hooks/useCurrentUser'
 import useNotification from 'components/hooks/useNotification'
-import {
-  DEFAULT_PAGE,
-  DEFAULT_SEARCH_FILTERS,
-  MAX_TOTAL_PAGES,
-  NUMBER_OF_OFFERS_PER_PAGE,
-} from 'core/Offers/constants'
+import Spinner from 'components/layout/Spinner'
+import { DEFAULT_PAGE, DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
 import { useQuerySearchFilters } from 'core/Offers/hooks'
 import { Offer, Offerer, SearchFilters } from 'core/Offers/types'
 import OffersScreen from 'screens/Offers'
@@ -28,16 +24,10 @@ const Offers = (): JSX.Element => {
   )
 
   const [offerer, setOfferer] = useState<Offerer | null>(null)
-  const [isRefreshingOffers, setIsRefreshingOffers] = useState(true)
-  const [searchFilters, setSearchFilters] = useState<SearchFilters>({
-    ...DEFAULT_SEARCH_FILTERS,
-    ...urlSearchFilters,
-  })
   const [offers, setOffers] = useState<Offer[]>([])
-  const [offersCount, setOffersCount] = useState(0)
-  const [pageCount, setPageCount] = useState<number | null>(null)
   const [isLoading, setIsLoading] = useState(true)
-  const [currentPageNumber, setCurrentPageNumber] = useState(DEFAULT_PAGE)
+  const [initialSearchFilters, setInitialSearchFilters] =
+    useState<SearchFilters | null>(null)
 
   const loadAndUpdateOffers = useCallback(
     async (filters: SearchFilters) => {
@@ -54,12 +44,7 @@ const Offers = (): JSX.Element => {
         return notify.error(message)
       }
 
-      const offersCount = payload.offers.length
       setIsLoading(false)
-      setOffersCount(offersCount)
-      const pageCount = Math.ceil(offersCount / NUMBER_OF_OFFERS_PER_PAGE)
-      const cappedPageCount = Math.min(pageCount, MAX_TOTAL_PAGES)
-      setPageCount(cappedPageCount)
       setOffers(payload.offers)
     },
     [notify]
@@ -87,42 +72,23 @@ const Offers = (): JSX.Element => {
   }, [urlSearchFilters.offererId, notify])
 
   useEffect(() => {
-    if (isRefreshingOffers) {
-      setSearchFilters(urlSearchFilters)
-      loadAndUpdateOffers(urlSearchFilters)
-    }
-  }, [
-    isRefreshingOffers,
-    loadAndUpdateOffers,
-    setSearchFilters,
-    urlSearchFilters,
-  ])
-
-  useEffect(() => {
+    const filters = { ...DEFAULT_SEARCH_FILTERS, ...urlSearchFilters }
     if (currentUser.isAdmin) {
       const isVenueFilterSelected =
-        searchFilters.venueId !== DEFAULT_SEARCH_FILTERS.venueId
+        urlSearchFilters.venueId !== DEFAULT_SEARCH_FILTERS.venueId
       const isOffererFilterApplied =
         urlSearchFilters.offererId !== DEFAULT_SEARCH_FILTERS.offererId
       const isFilterByVenueOrOfferer =
         isVenueFilterSelected || isOffererFilterApplied
 
       if (!isFilterByVenueOrOfferer) {
-        setSearchFilters(currentSearchFilters => ({
-          ...currentSearchFilters,
-          status: DEFAULT_SEARCH_FILTERS.status,
-        }))
+        filters.status = DEFAULT_SEARCH_FILTERS.status
       }
     }
-  }, [
-    currentUser.isAdmin,
-    urlSearchFilters.offererId,
-    searchFilters.venueId,
-    setSearchFilters,
-  ])
+    setInitialSearchFilters(filters)
+  }, [setInitialSearchFilters, urlSearchFilters, currentUser.isAdmin])
 
   useEffect(() => {
-    setCurrentPageNumber(urlPageNumber)
     dispatch(
       saveSearchFilters({
         nameOrIsbn:
@@ -149,24 +115,24 @@ const Offers = (): JSX.Element => {
     dispatch(savePageNumber(urlPageNumber))
   }, [dispatch, urlPageNumber, urlSearchFilters])
 
+  if (!initialSearchFilters) {
+    return <Spinner />
+  }
+
   return (
     <OffersScreen
-      currentPageNumber={currentPageNumber}
+      currentPageNumber={urlPageNumber ?? DEFAULT_PAGE}
       currentUser={currentUser}
+      initialSearchFilters={initialSearchFilters}
       isLoading={isLoading}
       loadAndUpdateOffers={loadAndUpdateOffers}
       offerer={offerer}
       offers={offers}
-      offersCount={offersCount}
-      pageCount={pageCount}
-      searchFilters={searchFilters}
       separateIndividualAndCollectiveOffers={
         separateIndividualAndCollectiveOffers
       }
       setIsLoading={setIsLoading}
-      setIsRefreshingOffers={setIsRefreshingOffers}
       setOfferer={setOfferer}
-      setSearchFilters={setSearchFilters}
       urlSearchFilters={urlSearchFilters}
     />
   )
