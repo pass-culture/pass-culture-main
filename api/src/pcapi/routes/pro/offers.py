@@ -103,20 +103,14 @@ def post_offer(
             "Could not create offer: subcategory cannot be selected.",
             extra={"offer_name": body.name, "venue_id": body.venue_id},
         )
-        raise ApiErrors(
-            error.errors,
-            status_code=400,
-        )
+        return offers_serialize.OfferResponseIdError(subcategory=error.errors["subcategory"])
 
     except exceptions.SubcategoryNotEligibleForEducationalOffer as error:
         logger.info(
             "Could not create offer: subcategory is not eligible for educational offer.",
             extra={"offer_name": body.name, "venue_id": body.venue_id},
         )
-        raise ApiErrors(
-            error.errors,
-            status_code=400,
-        )
+        return offers_serialize.OfferResponseIdError(offer=error.errors["offer"])
 
     return offers_serialize.OfferResponseIdModel.from_orm(offer)
 

@@ -258,6 +258,7 @@ class OfferResponseIdModel(BaseModel):
 
 class OfferResponseIdError(BaseModel):
     subcategory: Optional[list[str]]
+    offer: Optional[list[str]]
 
 
 class PatchOfferActiveStatusBodyModel(BaseModel):
