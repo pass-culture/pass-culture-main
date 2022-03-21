@@ -1,6 +1,7 @@
 import datetime
 from unittest.mock import patch
 
+from flask import url_for
 from freezegun import freeze_time
 import pytest
 
@@ -34,6 +35,95 @@ class BeneficiaryUserViewTest:
 
 @pytest.mark.usefixtures("db_session")
 class OfferValidationViewTest:
+    @pytest.mark.parametrize("view_name", ("fraud_rules_configuration.index_view",))
+    @testing.override_settings(IS_PROD=True, SUPER_ADMIN_EMAIL_ADDRESSES=["super_admin@example.com"])
+    def test_super_admin_views_are_not_accessible_for_admins(self, client, view_name):
+        # given
+        users_factories.AdminFactory(email="admin@example.com")
+
+        # when
+        response = client.with_session_auth("admin@example.com").get(url_for(view_name))
+
+        # then
+        # redirection to admin.index due to inaccessibilty
+        assert response.status_code == 302
+        assert url_for("admin.index") in response.location
+
+    @pytest.mark.parametrize(
+        "view_name",
+        (
+            "suspend_fraud_users_by_email_providers.search",
+            "suspend_fraud_users_by_user_ids.search",
+        ),
+    )
+    @testing.override_settings(IS_PROD=True, SUPER_ADMIN_EMAIL_ADDRESSES=["super_admin@example.com"])
+    def test_super_admin_custom_views_are_not_accessible_for_admins(self, client, view_name):
+        # given
+        users_factories.AdminFactory(email="admin@example.com")
+
+        # when
+        response = client.with_session_auth("admin@example.com").get(url_for(view_name))
+
+        # then
+        assert response.status_code == 403
+
+    @pytest.mark.parametrize(
+        "view_name",
+        (
+            "fraud_rules_configuration.index_view",
+            "suspend_fraud_users_by_email_providers.search",
+            "suspend_fraud_users_by_user_ids.search",
+        ),
+    )
+    @testing.override_settings(IS_PROD=True, SUPER_ADMIN_EMAIL_ADDRESSES=["super_admin@example.com"])
+    def test_super_admin_views_are_accessible_for_super_admins(self, client, view_name):
+        # given
+        users_factories.AdminFactory(email="super_admin@example.com")
+
+        # when
+        response = client.with_session_auth("super_admin@example.com").get(url_for(view_name))
+
+        # then
+        assert response.status_code == 200
+
+    @pytest.mark.parametrize(
+        "view_name",
+        (
+            "fraud_rules_configuration.index_view",
+            "suspend_fraud_users_by_email_providers.search",
+            "suspend_fraud_users_by_user_ids.search",
+        ),
+    )
+    @testing.override_settings(IS_PROD=True, SUPER_ADMIN_EMAIL_ADDRESSES=["super_admin@example.com"])
+    def test_super_admin_menu_items_are_not_present_for_admins(self, client, view_name):
+        # given
+        users_factories.AdminFactory(email="admin@example.com")
+
+        # when
+        response = client.with_session_auth("admin@example.com").get(url_for("admin.index"))
+
+        # then
+        assert url_for(view_name) not in response.data.decode("utf-8")
+
+    @pytest.mark.parametrize(
+        "view_name",
+        (
+            "fraud_rules_configuration.index_view",
+            "suspend_fraud_users_by_email_providers.search",
+            "suspend_fraud_users_by_user_ids.search",
+        ),
+    )
+    @testing.override_settings(IS_PROD=True, SUPER_ADMIN_EMAIL_ADDRESSES=["super_admin@example.com"])
+    def test_super_admin_menu_items_are_present_for_super_admins(self, client, view_name):
+        # given
+        users_factories.AdminFactory(email="super_admin@example.com")
+
+        # when
+        response = client.with_session_auth("super_admin@example.com").get(url_for("admin.index"))
+
+        # then
+        assert url_for(view_name) in response.data.decode("utf-8")
+
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     @patch("pcapi.connectors.api_entreprises.get_offerer_legal_category")
     def test_approve_offer_and_go_to_next_offer(
@@ -73,16 +163,14 @@ class OfferValidationViewTest:
         }
 
         data = dict(validation=OfferValidationStatus.APPROVED.value, action="save-and-go-next")
-        response = (
-            client
-            .with_session_auth("admin@example.com")
-            .post(url_for('validation.edit', id=currently_displayed_offer.id), form=data)
+        response = client.with_session_auth("admin@example.com").post(
+            url_for("validation.edit", id=currently_displayed_offer.id), form=data
         )
 
         currently_displayed_offer = Offer.query.get(currently_displayed_offer.id)
         assert currently_displayed_offer.validation == OfferValidationStatus.APPROVED
         assert response.status_code == 302
-        assert url_for('validation.edit', id=oldest_offer.id) in response.location
+        assert url_for("validation.edit", id=oldest_offer.id) in response.location
 
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     @patch("pcapi.connectors.api_entreprises.get_offerer_legal_category")
@@ -109,15 +197,13 @@ class OfferValidationViewTest:
         }
 
         data = dict(validation=OfferValidationStatus.APPROVED.value, action="save-and-go-next")
-        response = (
-            client
-            .with_session_auth("admin@example.com")
-            .post(url_for('validation.edit', id=offer.id), form=data)
+        response = client.with_session_auth("admin@example.com").post(
+            url_for("validation.edit", id=offer.id), form=data
         )
 
         assert offer.validation == OfferValidationStatus.APPROVED
         assert response.status_code == 302
-        assert url_for('validation.index_view') in response.location
+        assert url_for("validation.index_view") in response.location
 
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     @patch("pcapi.connectors.api_entreprises.get_offerer_legal_category")
@@ -146,7 +232,7 @@ class OfferValidationViewTest:
         data = dict(validation=OfferValidationStatus.APPROVED.value, action="save-and-go-next")
 
         # When
-        client.with_session_auth("admin@example.com").post(url_for('validation.edit', id=offer.id), form=data)
+        client.with_session_auth("admin@example.com").post(url_for("validation.edit", id=offer.id), form=data)
 
         # Then
         mocked_send_offer_validation_status_update_email.assert_called_once_with(
@@ -177,7 +263,7 @@ class OfferValidationViewTest:
         data = dict(validation=OfferValidationStatus.APPROVED.value, action="save-and-go-next")
 
         # When
-        client.with_session_auth("admin@example.com").post(url_for('validation.edit', id=offer.id), form=data)
+        client.with_session_auth("admin@example.com").post(url_for("validation.edit", id=offer.id), form=data)
 
         # Then
         mocked_send_offer_validation_status_update_email.assert_called_once_with(
@@ -213,9 +299,8 @@ class OfferValidationViewTest:
         data = dict(specs=config_yaml, action="save")
 
         # When
-        response = (
-            client.with_session_auth("super_admin@example.com")
-            .post(url_for('fraud_rules_configuration.create_view'), form=data)
+        response = client.with_session_auth("super_admin@example.com").post(
+            url_for("fraud_rules_configuration.create_view"), form=data
         )
         saved_config = OfferValidationConfig.query.one()
 
@@ -278,9 +363,8 @@ class OfferValidationViewTest:
         data = dict(specs=config_yaml, action="save")
 
         # When
-        response = (
-            client.with_session_auth("super_admin@example.com")
-            .post(url_for('fraud_rules_configuration.create_view'), form=data)
+        response = client.with_session_auth("super_admin@example.com").post(
+            url_for("fraud_rules_configuration.create_view"), form=data
         )
 
         # Then
@@ -288,7 +372,9 @@ class OfferValidationViewTest:
 
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     @testing.override_settings(IS_PROD=True, SUPER_ADMIN_EMAIL_ADDRESSES=["super_admin@example.com"])
-    def test_import_validation_config_fail_when_user_is_not_super_admin(self, mocked_validate_csrf_token, client):
+    def test_import_validation_config_inaccessible_when_user_is_not_super_admin(
+        self, mocked_validate_csrf_token, client
+    ):
         # Given
         users_factories.AdminFactory(email="not_super_admin@example.com")
         config_yaml = """
@@ -313,13 +399,14 @@ class OfferValidationViewTest:
         data = dict(specs=config_yaml, action="save")
 
         # When
-        response = (
-            client.with_session_auth("not_super_admin@example.com")
-            .post(url_for('fraud_rules_configuration.create_view'), form=data)
+        response = client.with_session_auth("not_super_admin@example.com").post(
+            url_for("fraud_rules_configuration.create_view"), form=data
         )
 
         # Then
-        assert response.status_code == 403
+        # redirection to admin.index due to inaccessibilty
+        assert response.status_code == 302
+        assert url_for("admin.index") in response.location
 
     @freeze_time("2020-11-17 15:00:00")
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
@@ -355,14 +442,13 @@ class OfferValidationViewTest:
         data = dict(validation=OfferValidationStatus.APPROVED.value, action="save")
 
         # When
-        response = (
-            client.with_session_auth("admin@example.com")
-            .post(url_for('validation.edit', id=offer.id), form=data)
+        response = client.with_session_auth("admin@example.com").post(
+            url_for("validation.edit", id=offer.id), form=data
         )
 
         # Then
         assert response.status_code == 302
-        assert url_for('validation.index_view') in response.location
+        assert url_for("validation.index_view") in response.location
         assert offer.validation == OfferValidationStatus.APPROVED
         mocked_send_offer_validation_notification_to_administration.assert_called_once_with(
             OfferValidationStatus.APPROVED, offer
@@ -405,9 +491,8 @@ class OfferValidationViewTest:
         data = dict(validation=OfferValidationStatus.REJECTED.value, action="save")
 
         # When
-        response = (
-            client.with_session_auth("admin@example.com")
-            .post(url_for('validation.edit', id=offer.id), form=data)
+        response = client.with_session_auth("admin@example.com").post(
+            url_for("validation.edit", id=offer.id), form=data
         )
 
         # Then
@@ -415,7 +500,7 @@ class OfferValidationViewTest:
             OfferValidationStatus.REJECTED, offer
         )
         assert response.status_code == 302
-        assert url_for('validation.index_view') in response.location
+        assert url_for("validation.index_view") in response.location
         assert offer.validation == OfferValidationStatus.REJECTED
         assert offer.isActive is False
         assert offer.lastValidationDate == datetime.datetime(2020, 11, 17, 15)
@@ -425,7 +510,7 @@ class OfferValidationViewTest:
     def test_access_to_validation_page_with_super_admin_user_on_prod_env(self, client):
         users_factories.AdminFactory(email="super_admin@example.com")
 
-        response = client.with_session_auth("super_admin@example.com").get(url_for('validation.index_view'))
+        response = client.with_session_auth("super_admin@example.com").get(url_for("validation.index_view"))
 
         assert response.status_code == 200
 
@@ -433,10 +518,10 @@ class OfferValidationViewTest:
     def test_access_to_validation_page_with_none_super_admin_user_on_prod_env(self, client):
         users_factories.AdminFactory(email="simple_admin@example.com")
 
-        response = client.with_session_auth("simple_admin@example.com").get(url_for('validation.index_view'))
+        response = client.with_session_auth("simple_admin@example.com").get(url_for("validation.index_view"))
 
         assert response.status_code == 302
-        assert url_for('admin.index') in response.location
+        assert url_for("admin.index") in response.location
 
     def test_get_query_and_count(self, db_session):
         offer_view = ValidationView(model=Offer, session=db_session)
@@ -489,7 +574,7 @@ class OfferValidationViewTest:
         n_queries += 1  # count
         n_queries += 1  # select offers
         with testing.assert_num_queries(n_queries):
-            response = client.get(url_for('validation.index_view'))
+            response = client.get(url_for("validation.index_view"))
 
         assert response.status_code == 200
         assert b"<h2>Validation des offres</h2>" in response.data
@@ -527,10 +612,10 @@ class OfferValidationViewTest:
 
         data = dict(rowid=[offer1.id, offer2.id], action=action)
         client.with_session_auth("admin@example.com")
-        response = client.post(url_for('validation.action_view'), form=data)
+        response = client.post(url_for("validation.action_view"), form=data)
 
         assert response.status_code == 302
-        assert url_for('validation.index_view') in response.location
+        assert url_for("validation.index_view") in response.location
 
         assert Offer.query.get(offer1.id).validation == expected
         assert Offer.query.get(offer2.id).validation == expected
@@ -573,10 +658,10 @@ class OfferValidationViewTest:
 
         data = dict(rowid=[offer.id], action=action)
         client.with_session_auth("admin@example.com")
-        response = client.post(url_for('validation.action_view'), form=data)
+        response = client.post(url_for("validation.action_view"), form=data)
 
         assert response.status_code == 302
-        assert url_for('validation.index_view') in response.location
+        assert url_for("validation.index_view") in response.location
 
         assert Offer.query.get(offer.id).validation == OfferValidationStatus.PENDING
 
@@ -623,9 +708,9 @@ class GetOfferValidationViewTest:
             "legal_category_label": "Société en nom collectif",
         }
 
-        response_1 = client.get(url_for('validation.index_view'))
-        response_2 = client.get(url_for('validation.index_view'))
-        response_3 = client.get(url_for('validation.edit', id=offer.id))
+        response_1 = client.get(url_for("validation.index_view"))
+        response_2 = client.get(url_for("validation.index_view"))
+        response_3 = client.get(url_for("validation.edit", id=offer.id))
 
         assert response_1.status_code == response_2.status_code == response_3.status_code == 200
         assert mocked_get_offerer_legal_category.call_count == 1
@@ -643,7 +728,7 @@ class GetOfferValidationViewTest:
         mocked_get_by_offerer.side_effect = ApiEntrepriseException(
             f"Error getting API entreprise DATA for SIREN:{offerer.siren}"
         )
-        response = client.get(url_for('validation.edit', id=offer.id))
+        response = client.get(url_for("validation.edit", id=offer.id))
 
         assert response.status_code == 200
         assert caplog.messages == ["Could not reach API Entreprise"]
@@ -670,7 +755,7 @@ class OfferViewTest:
             data = dict(validation=OfferValidationStatus.REJECTED.value)
             client = TestClient(app.test_client()).with_session_auth("admin@example.com")
 
-            response = client.post(url_for('offer.edit_view', id=offer.id), form=data)
+            response = client.post(url_for("offer.edit_view", id=offer.id), form=data)
 
         assert response.status_code == 302
         assert offer.validation == OfferValidationStatus.REJECTED
@@ -702,7 +787,7 @@ class OfferViewTest:
             data = dict(validation=OfferValidationStatus.APPROVED.value)
             client = TestClient(app.test_client()).with_session_auth("admin@example.com")
 
-            response = client.post(url_for('offer.edit_view', id=offer.id), form=data)
+            response = client.post(url_for("offer.edit_view", id=offer.id), form=data)
 
         assert response.status_code == 302
         assert offer.validation == OfferValidationStatus.APPROVED
@@ -737,7 +822,7 @@ class OfferViewTest:
             data = dict(validation=OfferValidationStatus.REJECTED.value)
             client = TestClient(app.test_client()).with_session_auth("admin@example.com")
 
-            response = client.post(url_for('offer.edit_view', id=offer.id), form=data)
+            response = client.post(url_for("offer.edit_view", id=offer.id), form=data)
 
         assert response.status_code == 302
         assert offer.validation == OfferValidationStatus.REJECTED
@@ -756,7 +841,7 @@ class OfferViewTest:
         data = dict(validation=OfferValidationStatus.DRAFT.value)
         client = TestClient(app.test_client()).with_session_auth("admin@example.com")
 
-        response = client.post(url_for('offer.edit_view', id=offer.id), form=data)
+        response = client.post(url_for("offer.edit_view", id=offer.id), form=data)
 
         assert response.status_code == 200
         assert offer.validation == OfferValidationStatus.APPROVED
@@ -778,7 +863,7 @@ class OfferViewTest:
         admin = users_factories.AdminFactory(email="admin@example.com")
         client = client.with_session_auth(admin.email)
 
-        response = client.post(url_for('offer.edit_view', id=offer.id), form=data)
+        response = client.post(url_for("offer.edit_view", id=offer.id), form=data)
 
         assert response.status_code == 302
         mocked_reindex_offer_ids.assert_called_once_with([offer.id])
