@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import { Form } from 'react-final-form'
-import { Link } from 'react-router-dom'
 
 import AppLayout from 'app/AppLayout'
 import PasswordField from 'components/layout/form/fields/PasswordField'
@@ -9,6 +8,7 @@ import TextInput from 'components/layout/inputs/TextInput/TextInput'
 import Logo from 'components/layout/Logo'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import { redirectLoggedUser } from 'components/router/helpers'
+import Hero from 'ui-kit/Hero'
 
 import { initReCaptchaScript } from '../../../utils/recaptcha'
 
@@ -126,32 +126,20 @@ class LostPassword extends PureComponent {
         <div className="scrollable-content-side">
           <div className="content">
             {change && (
-              <section className="hero password-reset">
-                <div className="hero-body">
-                  <h1>Mot de passe changé !</h1>
-                  <h2>
-                    Vous pouvez dès à présent vous connecter avec votre nouveau
-                    mot de passe
-                  </h2>
-                  <Link className="primary-link" to="/connexion">
-                    Se connecter
-                  </Link>
-                </div>
-              </section>
+              <Hero
+                linkLabel="Se connecter"
+                linkTo="/connexion"
+                text="Vous pouvez dès à présent vous connecter avec votre nouveau mot de passe"
+                title="Mot de passe changé !"
+              />
             )}
             {envoye && (
-              <section className="hero mail-sent">
-                <div className="hero-body">
-                  <h1>Merci !</h1>
-                  <h2>
-                    Vous allez recevoir par e-mail les instructions pour définir
-                    un nouveau mot de passe.
-                  </h2>
-                  <Link className="primary-link" to="/">
-                    Revenir à l’accueil
-                  </Link>
-                </div>
-              </section>
+              <Hero
+                linkLabel="Revenir à l’accueil"
+                linkTo="/"
+                text="Vous allez recevoir par e-mail les instructions pour définir un nouveau mot de passe."
+                title="Merci !"
+              />
             )}
             {token && (
               <section className="hero password-reset-request-form">
