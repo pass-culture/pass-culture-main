@@ -23,7 +23,7 @@ class TransactionalEmail(Enum):
         id_prod=144, id_not_prod=42, tags=["jeunes_reservation_bientot_expiree"]
     )
     EDUCATIONAL_BOOKING_CANCELLATION_BY_INSTITUTION = Template(
-        id_prod=406, id_not_prod=41, tags=["eac_annulationoffre"]
+        id_prod=522, id_not_prod=65, tags=["eac_annulationoffre"]
     )
     EMAIL_CHANGE_CONFIRMATION = Template(
         id_prod=253, id_not_prod=18, tags=["changement_email_confirmation"], use_priority_queue=True

@@ -20,6 +20,7 @@ from pcapi.core.educational.exceptions import StockDoesNotExist
 from pcapi.core.educational.models import CollectiveBooking
 from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.offerers import models as offerers_models
+from pcapi.core.offerers.models import Venue
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
 
@@ -69,12 +70,22 @@ def find_educational_booking_by_id(
         educational_models.EducationalBooking.query.filter(
             educational_models.EducationalBooking.id == educational_booking_id
         )
-        .join(Booking)
         .options(
-            joinedload(educational_models.EducationalBooking.educationalRedactor).load_only(
-                educational_models.EducationalRedactor.email
+            joinedload(educational_models.EducationalBooking.booking, innerjoin=True)
+            .joinedload(Booking.stock, innerjoin=True)
+            .joinedload(Stock.offer, innerjoin=True)
+            .load_only(Offer.name)
+            .joinedload(Offer.venue, innerjoin=True)
+            .load_only(Venue.name)
+        )
+        .options(
+            joinedload(educational_models.EducationalBooking.educationalRedactor, innerjoin=True).load_only(
+                educational_models.EducationalRedactor.email,
+                educational_models.EducationalRedactor.firstName,
+                educational_models.EducationalRedactor.lastName,
             )
         )
+        .options(joinedload(educational_models.EducationalBooking.educationalInstitution, innerjoin=True))
         .one_or_none()
     )
 
