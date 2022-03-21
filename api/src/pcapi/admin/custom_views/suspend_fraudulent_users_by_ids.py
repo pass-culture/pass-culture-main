@@ -12,7 +12,7 @@ from flask_login import current_user
 from werkzeug import Response
 from wtforms import FileField
 
-from pcapi.admin.base_configuration import BaseCustomAdminView
+from pcapi.admin.base_configuration import BaseCustomSuperAdminView
 from pcapi.workers.suspend_fraudulent_beneficiary_users_by_ids_job import (
     suspend_fraudulent_beneficiary_users_by_ids_job,
 )
@@ -29,7 +29,7 @@ class SuspendFraudulentUsersByIdsForm(SecureForm):
     user_ids_csv = FileField("Importer un fichier CSV contenant une seule colonne des utilisateurs à suspendre")
 
 
-class SuspendFraudulentUsersByUserIdsView(BaseCustomAdminView):
+class SuspendFraudulentUsersByUserIdsView(BaseCustomSuperAdminView):
     @expose("/", methods=["GET", "POST"])
     def search(self) -> Response:
         form = SuspendFraudulentUsersByIdsForm()
