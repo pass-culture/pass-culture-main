@@ -44,12 +44,24 @@ const PreFilters = ({
     [appliedPreFilters]
   )
 
-  const updateSelectedFilters = useCallback(updatedFilter => {
-    setSelectedPreFilters(currentFilters => ({
-      ...currentFilters,
-      ...updatedFilter,
-    }))
-  }, [])
+  const updateSelectedFilters = useCallback(
+    updatedFilter => {
+      if (updatedFilter.offerEventDate) {
+        updatedFilter.bookingBeginningDate = null
+        updatedFilter.bookingEndingDate = null
+        if (updatedFilter.offerEventDate === appliedPreFilters.offerEventDate) {
+          updatedFilter.bookingBeginningDate =
+            appliedPreFilters.bookingBeginningDate
+          updatedFilter.bookingEndingDate = appliedPreFilters.bookingEndingDate
+        }
+      }
+      setSelectedPreFilters(currentFilters => ({
+        ...currentFilters,
+        ...updatedFilter,
+      }))
+    },
+    [appliedPreFilters]
+  )
 
   const requestFilteredBookings = useCallback(
     event => {
