@@ -111,6 +111,7 @@ class BookingsRecapTable extends Component {
         ? props.locationState.statuses
         : [...ALL_BOOKING_STATUS],
       selectedOmniSearchCriteria: DEFAULT_OMNISEARCH_CRITERIA,
+      keywords: '',
     }
   }
 
