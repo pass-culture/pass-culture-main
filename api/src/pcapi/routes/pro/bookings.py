@@ -90,7 +90,9 @@ def get_bookings_pro(query: ListBookingsQueryModel) -> ListBookingsResponseModel
     venue_id = query.venue_id
     event_date = query.event_date
     booking_status = query.booking_status_filter
-    booking_period = (query.booking_period_beginning_date, query.booking_period_ending_date)
+    booking_period = None
+    if query.booking_period_beginning_date and query.booking_period_ending_date:
+        booking_period = (query.booking_period_beginning_date, query.booking_period_ending_date)
     offer_type = query.offer_type
 
     # FIXME: rewrite this route. The repository function should return
