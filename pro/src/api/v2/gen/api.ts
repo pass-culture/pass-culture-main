@@ -119,7 +119,7 @@ export const APIContremarqueApiFetchParamCreator = function (configuration?: API
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getBookingsGetBookingByTokenV2(token: string, options: any = {}): Promise<FetchArgs> {
+        async getBookingsGetBookingByTokenV2(token: string | null, options: any = {}): Promise<FetchArgs> {
             // verify required parameter 'token' is not null or undefined
             if (token === null || token === undefined) {
                 throw new RequiredError('token','Required parameter token was null or undefined when calling getBookingsGetBookingByTokenV2.');
@@ -149,7 +149,7 @@ export const APIContremarqueApiFetchParamCreator = function (configuration?: API
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async patchBookingsPatchBookingKeepByToken(token: string, options: any = {}): Promise<FetchArgs> {
+        async patchBookingsPatchBookingKeepByToken(token: string | null, options: any = {}): Promise<FetchArgs> {
             // verify required parameter 'token' is not null or undefined
             if (token === null || token === undefined) {
                 throw new RequiredError('token','Required parameter token was null or undefined when calling patchBookingsPatchBookingKeepByToken.');
@@ -179,7 +179,7 @@ export const APIContremarqueApiFetchParamCreator = function (configuration?: API
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async patchBookingsPatchBookingUseByToken(token: string, options: any = {}): Promise<FetchArgs> {
+        async patchBookingsPatchBookingUseByToken(token: string | null, options: any = {}): Promise<FetchArgs> {
             // verify required parameter 'token' is not null or undefined
             if (token === null || token === undefined) {
                 throw new RequiredError('token','Required parameter token was null or undefined when calling patchBookingsPatchBookingUseByToken.');
@@ -209,7 +209,7 @@ export const APIContremarqueApiFetchParamCreator = function (configuration?: API
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async patchBookingsPatchCancelBookingByToken(token: string, options: any = {}): Promise<FetchArgs> {
+        async patchBookingsPatchCancelBookingByToken(token: string | null, options: any = {}): Promise<FetchArgs> {
             // verify required parameter 'token' is not null or undefined
             if (token === null || token === undefined) {
                 throw new RequiredError('token','Required parameter token was null or undefined when calling patchBookingsPatchCancelBookingByToken.');
@@ -411,7 +411,7 @@ export const APIStocksApiFetchParamCreator = function (configuration?: APIConfig
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async postVenueUpdateStocks(venueId: number, body?: UpdateVenueStocksBodyModel, options: any = {}): Promise<FetchArgs> {
+        async postVenueUpdateStocks(venueId: number | null, body?: UpdateVenueStocksBodyModel | null, options: any = {}): Promise<FetchArgs> {
             // verify required parameter 'venueId' is not null or undefined
             if (venueId === null || venueId === undefined) {
                 throw new RequiredError('venueId','Required parameter venueId was null or undefined when calling postVenueUpdateStocks.');
