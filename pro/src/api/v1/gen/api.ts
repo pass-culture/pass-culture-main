@@ -172,6 +172,10 @@ export interface FeatureResponseModel {
     nameKey: string;
 }
 
+export enum GenderEnum {
+    M = 'M.',
+    Mme = 'Mme'
+}
 export interface GenerateOffererApiKeyResponse {
     apiKey: string;
 }
@@ -783,11 +787,17 @@ export interface ProviderResponse {
     name: string;
 }
 
+export interface ReimbursementCsvQueryModel {
+    reimbursementPeriodBeginningDate?: string;
+    reimbursementPeriodEndingDate?: string;
+    venueId?: string;
+}
+
 export interface SharedCurrentUserResponseModel {
     activity?: string | null;
     address?: string | null;
     city?: string | null;
-    civility?: string | null;
+    civility?: GenderEnum | null;
     dateCreated: Date;
     dateOfBirth?: Date | null;
     departementCode?: string | null;
@@ -815,7 +825,7 @@ export interface SharedLoginUserResponseModel {
     activity?: string | null;
     address?: string | null;
     city?: string | null;
-    civility?: string | null;
+    civility?: GenderEnum | null;
     dateCreated: Date;
     dateOfBirth?: Date | null;
     departementCode?: string | null;
@@ -1095,7 +1105,7 @@ export const DefaultApiFetchParamCreator = function (configuration?: APIConfigur
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async deleteOfferersDeleteApiKey(apiKeyPrefix: string, options: any = {}): Promise<FetchArgs> {
+        async deleteOfferersDeleteApiKey(apiKeyPrefix: string | null, options: any = {}): Promise<FetchArgs> {
             // verify required parameter 'apiKeyPrefix' is not null or undefined
             if (apiKeyPrefix === null || apiKeyPrefix === undefined) {
                 throw new RequiredError('apiKeyPrefix','Required parameter apiKeyPrefix was null or undefined when calling deleteOfferersDeleteApiKey.');
@@ -1125,7 +1135,7 @@ export const DefaultApiFetchParamCreator = function (configuration?: APIConfigur
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async deleteStocksDeleteStock(stockId: string, options: any = {}): Promise<FetchArgs> {
+        async deleteStocksDeleteStock(stockId: string | null, options: any = {}): Promise<FetchArgs> {
             // verify required parameter 'stockId' is not null or undefined
             if (stockId === null || stockId === undefined) {
                 throw new RequiredError('stockId','Required parameter stockId was null or undefined when calling deleteStocksDeleteStock.');
@@ -1162,7 +1172,7 @@ export const DefaultApiFetchParamCreator = function (configuration?: APIConfigur
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getBookingsGetBookingsPro(bookingStatusFilter: BookingStatusFilter, bookingPeriodBeginningDate: string, bookingPeriodEndingDate: string, page?: number, venueId?: number, eventDate?: Date, offerType?: OfferType, extra?: string, options: any = {}): Promise<FetchArgs> {
+        async getBookingsGetBookingsPro(bookingStatusFilter: BookingStatusFilter | null, bookingPeriodBeginningDate: string | null, bookingPeriodEndingDate: string | null, page?: number | null, venueId?: number, eventDate?: Date, offerType?: OfferType | null, extra?: string | null, options: any = {}): Promise<FetchArgs> {
             // verify required parameter 'bookingStatusFilter' is not null or undefined
             if (bookingStatusFilter === null || bookingStatusFilter === undefined) {
                 throw new RequiredError('bookingStatusFilter','Required parameter bookingStatusFilter was null or undefined when calling getBookingsGetBookingsPro.');
@@ -1311,7 +1321,7 @@ export const DefaultApiFetchParamCreator = function (configuration?: APIConfigur
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getOfferersCanOffererCreateEducationalOffer(humanizedOffererId: string, options: any = {}): Promise<FetchArgs> {
+        async getOfferersCanOffererCreateEducationalOffer(humanizedOffererId: string | null, options: any = {}): Promise<FetchArgs> {
             // verify required parameter 'humanizedOffererId' is not null or undefined
             if (humanizedOffererId === null || humanizedOffererId === undefined) {
                 throw new RequiredError('humanizedOffererId','Required parameter humanizedOffererId was null or undefined when calling getOfferersCanOffererCreateEducationalOffer.');
@@ -1341,7 +1351,7 @@ export const DefaultApiFetchParamCreator = function (configuration?: APIConfigur
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getOfferersGetOfferer(offererId: string, options: any = {}): Promise<FetchArgs> {
+        async getOfferersGetOfferer(offererId: string | null, options: any = {}): Promise<FetchArgs> {
             // verify required parameter 'offererId' is not null or undefined
             if (offererId === null || offererId === undefined) {
                 throw new RequiredError('offererId','Required parameter offererId was null or undefined when calling getOfferersGetOfferer.');
@@ -1491,7 +1501,7 @@ export const DefaultApiFetchParamCreator = function (configuration?: APIConfigur
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getOffersGetOffer(offerId: string, options: any = {}): Promise<FetchArgs> {
+        async getOffersGetOffer(offerId: string | null, options: any = {}): Promise<FetchArgs> {
             // verify required parameter 'offerId' is not null or undefined
             if (offerId === null || offerId === undefined) {
                 throw new RequiredError('offerId','Required parameter offerId was null or undefined when calling getOffersGetOffer.');
@@ -1521,7 +1531,7 @@ export const DefaultApiFetchParamCreator = function (configuration?: APIConfigur
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getOffersGetStocks(offerId: string, options: any = {}): Promise<FetchArgs> {
+        async getOffersGetStocks(offerId: string | null, options: any = {}): Promise<FetchArgs> {
             // verify required parameter 'offerId' is not null or undefined
             if (offerId === null || offerId === undefined) {
                 throw new RequiredError('offerId','Required parameter offerId was null or undefined when calling getOffersGetStocks.');
@@ -1602,12 +1612,48 @@ export const DefaultApiFetchParamCreator = function (configuration?: APIConfigur
         },
         /**
          * 
+         * @summary get_reimbursements_csv <GET>
+         * @param {string} [venueId] 
+         * @param {string} [reimbursementPeriodBeginningDate] 
+         * @param {string} [reimbursementPeriodEndingDate] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getReimbursementsGetReimbursementsCsv(venueId?: string | null, reimbursementPeriodBeginningDate?: string | null, reimbursementPeriodEndingDate?: string | null, options: any = {}): Promise<FetchArgs> {
+            const localVarPath = `/reimbursements/csv`;
+            const localVarUrlObj = url.parse(localVarPath, true);
+            const localVarRequestOptions = Object.assign({
+                method: 'GET',
+                credentials: 'includes',
+            }, options);
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+            if (venueId !== undefined) {
+                localVarQueryParameter['venueId'] = venueId;
+            }
+            if (reimbursementPeriodBeginningDate !== undefined) {
+                localVarQueryParameter['reimbursementPeriodBeginningDate'] = reimbursementPeriodBeginningDate;
+            }
+            if (reimbursementPeriodEndingDate !== undefined) {
+                localVarQueryParameter['reimbursementPeriodEndingDate'] = reimbursementPeriodEndingDate;
+            }
+            localVarUrlObj.query = Object.assign({}, localVarUrlObj.query, localVarQueryParameter, options.query);
+            // fix override query string Detail: https://stackoverflow.com/a/7517673/1077943
+            localVarUrlObj.search = null;
+            localVarRequestOptions.headers = Object.assign({}, localVarHeaderParameter, options.headers);
+            return {
+                url: url.format(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
          * @summary get_user_offerer <GET>
          * @param {string} offererId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getUserofferersGetUserOfferer(offererId: string, options: any = {}): Promise<FetchArgs> {
+        async getUserofferersGetUserOfferer(offererId: string | null, options: any = {}): Promise<FetchArgs> {
             // verify required parameter 'offererId' is not null or undefined
             if (offererId === null || offererId === undefined) {
                 throw new RequiredError('offererId','Required parameter offererId was null or undefined when calling getUserofferersGetUserOfferer.');
@@ -1637,7 +1683,7 @@ export const DefaultApiFetchParamCreator = function (configuration?: APIConfigur
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getUsersCheckActivationTokenExists(token: string, options: any = {}): Promise<FetchArgs> {
+        async getUsersCheckActivationTokenExists(token: string | null, options: any = {}): Promise<FetchArgs> {
             // verify required parameter 'token' is not null or undefined
             if (token === null || token === undefined) {
                 throw new RequiredError('token','Required parameter token was null or undefined when calling getUsersCheckActivationTokenExists.');
@@ -1739,7 +1785,7 @@ export const DefaultApiFetchParamCreator = function (configuration?: APIConfigur
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getVenueprovidersListVenueProviders(venueId: number, options: any = {}): Promise<FetchArgs> {
+        async getVenueprovidersListVenueProviders(venueId: number | null, options: any = {}): Promise<FetchArgs> {
             // verify required parameter 'venueId' is not null or undefined
             if (venueId === null || venueId === undefined) {
                 throw new RequiredError('venueId','Required parameter venueId was null or undefined when calling getVenueprovidersListVenueProviders.');
@@ -1771,7 +1817,7 @@ export const DefaultApiFetchParamCreator = function (configuration?: APIConfigur
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getVenuesGetVenue(venueId: string, options: any = {}): Promise<FetchArgs> {
+        async getVenuesGetVenue(venueId: string | null, options: any = {}): Promise<FetchArgs> {
             // verify required parameter 'venueId' is not null or undefined
             if (venueId === null || venueId === undefined) {
                 throw new RequiredError('venueId','Required parameter venueId was null or undefined when calling getVenuesGetVenue.');
@@ -1801,7 +1847,7 @@ export const DefaultApiFetchParamCreator = function (configuration?: APIConfigur
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getVenuesGetVenueStats(humanizedVenueId: string, options: any = {}): Promise<FetchArgs> {
+        async getVenuesGetVenueStats(humanizedVenueId: string | null, options: any = {}): Promise<FetchArgs> {
             // verify required parameter 'humanizedVenueId' is not null or undefined
             if (humanizedVenueId === null || humanizedVenueId === undefined) {
                 throw new RequiredError('humanizedVenueId','Required parameter humanizedVenueId was null or undefined when calling getVenuesGetVenueStats.');
@@ -1832,7 +1878,7 @@ export const DefaultApiFetchParamCreator = function (configuration?: APIConfigur
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async patchFinanceEditBusinessUnit(businessUnitId: number, body?: BusinessUnitEditionBodyModel, options: any = {}): Promise<FetchArgs> {
+        async patchFinanceEditBusinessUnit(businessUnitId: number | null, body?: BusinessUnitEditionBodyModel | null, options: any = {}): Promise<FetchArgs> {
             // verify required parameter 'businessUnitId' is not null or undefined
             if (businessUnitId === null || businessUnitId === undefined) {
                 throw new RequiredError('businessUnitId','Required parameter businessUnitId was null or undefined when calling patchFinanceEditBusinessUnit.');
@@ -1865,7 +1911,7 @@ export const DefaultApiFetchParamCreator = function (configuration?: APIConfigur
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async patchOffersCancelEducationalOfferBooking(offerId: string, options: any = {}): Promise<FetchArgs> {
+        async patchOffersCancelEducationalOfferBooking(offerId: string | null, options: any = {}): Promise<FetchArgs> {
             // verify required parameter 'offerId' is not null or undefined
             if (offerId === null || offerId === undefined) {
                 throw new RequiredError('offerId','Required parameter offerId was null or undefined when calling patchOffersCancelEducationalOfferBooking.');
@@ -1896,7 +1942,7 @@ export const DefaultApiFetchParamCreator = function (configuration?: APIConfigur
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async patchOffersEditEducationalOffer(offerId: string, body?: PatchEducationalOfferBodyModel, options: any = {}): Promise<FetchArgs> {
+        async patchOffersEditEducationalOffer(offerId: string | null, body?: PatchEducationalOfferBodyModel | null, options: any = {}): Promise<FetchArgs> {
             // verify required parameter 'offerId' is not null or undefined
             if (offerId === null || offerId === undefined) {
                 throw new RequiredError('offerId','Required parameter offerId was null or undefined when calling patchOffersEditEducationalOffer.');
@@ -1929,7 +1975,7 @@ export const DefaultApiFetchParamCreator = function (configuration?: APIConfigur
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async patchOffersPatchAllOffersActiveStatus(body?: PatchAllOffersActiveStatusBodyModel, options: any = {}): Promise<FetchArgs> {
+        async patchOffersPatchAllOffersActiveStatus(body?: PatchAllOffersActiveStatusBodyModel | null, options: any = {}): Promise<FetchArgs> {
             const localVarPath = `/offers/all-active-status`;
             const localVarUrlObj = url.parse(localVarPath, true);
             const localVarRequestOptions = Object.assign({
@@ -1958,7 +2004,7 @@ export const DefaultApiFetchParamCreator = function (configuration?: APIConfigur
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async patchOffersPatchOffer(offerId: string, body?: PatchOfferBodyModel, options: any = {}): Promise<FetchArgs> {
+        async patchOffersPatchOffer(offerId: string | null, body?: PatchOfferBodyModel | null, options: any = {}): Promise<FetchArgs> {
             // verify required parameter 'offerId' is not null or undefined
             if (offerId === null || offerId === undefined) {
                 throw new RequiredError('offerId','Required parameter offerId was null or undefined when calling patchOffersPatchOffer.');
@@ -1991,7 +2037,7 @@ export const DefaultApiFetchParamCreator = function (configuration?: APIConfigur
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async patchOffersPatchOffersActiveStatus(body?: PatchOfferActiveStatusBodyModel, options: any = {}): Promise<FetchArgs> {
+        async patchOffersPatchOffersActiveStatus(body?: PatchOfferActiveStatusBodyModel | null, options: any = {}): Promise<FetchArgs> {
             const localVarPath = `/offers/active-status`;
             const localVarUrlObj = url.parse(localVarPath, true);
             const localVarRequestOptions = Object.assign({
@@ -2020,7 +2066,7 @@ export const DefaultApiFetchParamCreator = function (configuration?: APIConfigur
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async patchStocksEditEducationalStock(stockId: string, body?: EducationalStockEditionBodyModel, options: any = {}): Promise<FetchArgs> {
+        async patchStocksEditEducationalStock(stockId: string | null, body?: EducationalStockEditionBodyModel | null, options: any = {}): Promise<FetchArgs> {
             // verify required parameter 'stockId' is not null or undefined
             if (stockId === null || stockId === undefined) {
                 throw new RequiredError('stockId','Required parameter stockId was null or undefined when calling patchStocksEditEducationalStock.');
@@ -2053,7 +2099,7 @@ export const DefaultApiFetchParamCreator = function (configuration?: APIConfigur
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async patchUsersPatchProfile(body?: PatchProUserBodyModel, options: any = {}): Promise<FetchArgs> {
+        async patchUsersPatchProfile(body?: PatchProUserBodyModel | null, options: any = {}): Promise<FetchArgs> {
             const localVarPath = `/users/current`;
             const localVarUrlObj = url.parse(localVarPath, true);
             const localVarRequestOptions = Object.assign({
@@ -2105,7 +2151,7 @@ export const DefaultApiFetchParamCreator = function (configuration?: APIConfigur
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async patchValidateValidateUser(token: string, options: any = {}): Promise<FetchArgs> {
+        async patchValidateValidateUser(token: string | null, options: any = {}): Promise<FetchArgs> {
             // verify required parameter 'token' is not null or undefined
             if (token === null || token === undefined) {
                 throw new RequiredError('token','Required parameter token was null or undefined when calling patchValidateValidateUser.');
@@ -2136,7 +2182,7 @@ export const DefaultApiFetchParamCreator = function (configuration?: APIConfigur
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async patchVenuesEditVenue(venueId: string, body?: EditVenueBodyModel, options: any = {}): Promise<FetchArgs> {
+        async patchVenuesEditVenue(venueId: string | null, body?: EditVenueBodyModel | null, options: any = {}): Promise<FetchArgs> {
             // verify required parameter 'venueId' is not null or undefined
             if (venueId === null || venueId === undefined) {
                 throw new RequiredError('venueId','Required parameter venueId was null or undefined when calling patchVenuesEditVenue.');
@@ -2169,7 +2215,7 @@ export const DefaultApiFetchParamCreator = function (configuration?: APIConfigur
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async postOfferersCreateOfferer(body?: CreateOffererQueryModel, options: any = {}): Promise<FetchArgs> {
+        async postOfferersCreateOfferer(body?: CreateOffererQueryModel | null, options: any = {}): Promise<FetchArgs> {
             const localVarPath = `/offerers`;
             const localVarUrlObj = url.parse(localVarPath, true);
             const localVarRequestOptions = Object.assign({
@@ -2197,7 +2243,7 @@ export const DefaultApiFetchParamCreator = function (configuration?: APIConfigur
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async postOfferersGenerateApiKeyRoute(offererId: string, options: any = {}): Promise<FetchArgs> {
+        async postOfferersGenerateApiKeyRoute(offererId: string | null, options: any = {}): Promise<FetchArgs> {
             // verify required parameter 'offererId' is not null or undefined
             if (offererId === null || offererId === undefined) {
                 throw new RequiredError('offererId','Required parameter offererId was null or undefined when calling postOfferersGenerateApiKeyRoute.');
@@ -2227,7 +2273,7 @@ export const DefaultApiFetchParamCreator = function (configuration?: APIConfigur
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async postOffersCreateEducationalOffer(body?: PostEducationalOfferBodyModel, options: any = {}): Promise<FetchArgs> {
+        async postOffersCreateEducationalOffer(body?: PostEducationalOfferBodyModel | null, options: any = {}): Promise<FetchArgs> {
             const localVarPath = `/offers/educational`;
             const localVarUrlObj = url.parse(localVarPath, true);
             const localVarRequestOptions = Object.assign({
@@ -2279,7 +2325,7 @@ export const DefaultApiFetchParamCreator = function (configuration?: APIConfigur
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async postOffersPostOffer(body?: PostOfferBodyModel, options: any = {}): Promise<FetchArgs> {
+        async postOffersPostOffer(body?: PostOfferBodyModel | null, options: any = {}): Promise<FetchArgs> {
             const localVarPath = `/offers`;
             const localVarUrlObj = url.parse(localVarPath, true);
             const localVarRequestOptions = Object.assign({
@@ -2307,7 +2353,7 @@ export const DefaultApiFetchParamCreator = function (configuration?: APIConfigur
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async postStocksCreateEducationalStock(body?: EducationalStockCreationBodyModel, options: any = {}): Promise<FetchArgs> {
+        async postStocksCreateEducationalStock(body?: EducationalStockCreationBodyModel | null, options: any = {}): Promise<FetchArgs> {
             const localVarPath = `/stocks/educational`;
             const localVarUrlObj = url.parse(localVarPath, true);
             const localVarRequestOptions = Object.assign({
@@ -2335,7 +2381,7 @@ export const DefaultApiFetchParamCreator = function (configuration?: APIConfigur
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async postStocksUpsertStocks(body?: StocksUpsertBodyModel, options: any = {}): Promise<FetchArgs> {
+        async postStocksUpsertStocks(body?: StocksUpsertBodyModel | null, options: any = {}): Promise<FetchArgs> {
             const localVarPath = `/stocks/bulk`;
             const localVarUrlObj = url.parse(localVarPath, true);
             const localVarRequestOptions = Object.assign({
@@ -2363,7 +2409,7 @@ export const DefaultApiFetchParamCreator = function (configuration?: APIConfigur
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async postUsersSignin(body?: LoginUserBodyModel, options: any = {}): Promise<FetchArgs> {
+        async postUsersSignin(body?: LoginUserBodyModel | null, options: any = {}): Promise<FetchArgs> {
             const localVarPath = `/users/signin`;
             const localVarUrlObj = url.parse(localVarPath, true);
             const localVarRequestOptions = Object.assign({
@@ -2391,7 +2437,7 @@ export const DefaultApiFetchParamCreator = function (configuration?: APIConfigur
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async postVenueprovidersCreateVenueProvider(body?: PostVenueProviderBody, options: any = {}): Promise<FetchArgs> {
+        async postVenueprovidersCreateVenueProvider(body?: PostVenueProviderBody | null, options: any = {}): Promise<FetchArgs> {
             const localVarPath = `/venueProviders`;
             const localVarUrlObj = url.parse(localVarPath, true);
             const localVarRequestOptions = Object.assign({
@@ -2419,7 +2465,7 @@ export const DefaultApiFetchParamCreator = function (configuration?: APIConfigur
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async putVenueprovidersUpdateVenueProvider(body?: PostVenueProviderBody, options: any = {}): Promise<FetchArgs> {
+        async putVenueprovidersUpdateVenueProvider(body?: PostVenueProviderBody | null, options: any = {}): Promise<FetchArgs> {
             const localVarPath = `/venueProviders`;
             const localVarUrlObj = url.parse(localVarPath, true);
             const localVarRequestOptions = Object.assign({
@@ -2643,6 +2689,20 @@ export const DefaultApiFp = function(api: DefaultApi, configuration?: APIConfigu
          */
         async getOffersListOffers(basePath: string, nameOrIsbn?: string, offererId?: number, status?: string, venueId?: number, categoryId?: string, creationMode?: string, periodBeginningDate?: string, periodEndingDate?: string, options?: any): Promise<ListOffersResponseModel> {
             const localVarFetchArgs = await DefaultApiFetchParamCreator(configuration).getOffersListOffers(nameOrIsbn, offererId, status, venueId, categoryId, creationMode, periodBeginningDate, periodEndingDate, options);
+            const response = await safeFetch(basePath + localVarFetchArgs.url, localVarFetchArgs.options)
+            return handleGeneratedApiResponse(response)
+        },
+        /**
+         * 
+         * @summary get_reimbursements_csv <GET>
+         * @param {string} [venueId] 
+         * @param {string} [reimbursementPeriodBeginningDate] 
+         * @param {string} [reimbursementPeriodEndingDate] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getReimbursementsGetReimbursementsCsv(basePath: string, venueId?: string, reimbursementPeriodBeginningDate?: string, reimbursementPeriodEndingDate?: string, options?: any): Promise<EmptyResponse> {
+            const localVarFetchArgs = await DefaultApiFetchParamCreator(configuration).getReimbursementsGetReimbursementsCsv(venueId, reimbursementPeriodBeginningDate, reimbursementPeriodEndingDate, options);
             const response = await safeFetch(basePath + localVarFetchArgs.url, localVarFetchArgs.options)
             return handleGeneratedApiResponse(response)
         },
@@ -3172,6 +3232,18 @@ export interface DefaultApiInterface {
 
     /**
      * 
+     * @summary get_reimbursements_csv <GET>
+     * @param {string} [venueId] 
+     * @param {string} [reimbursementPeriodBeginningDate] 
+     * @param {string} [reimbursementPeriodEndingDate] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApiInterface
+     */
+    getReimbursementsGetReimbursementsCsv(venueId?: string, reimbursementPeriodBeginningDate?: string, reimbursementPeriodEndingDate?: string, options?: any): Promise<{}>;
+
+    /**
+     * 
      * @summary get_user_offerer <GET>
      * @param {string} offererId 
      * @param {*} [options] Override http request option.
@@ -3665,6 +3737,20 @@ export class DefaultApi extends BaseAPI implements DefaultApiInterface {
     public async getOffersListOffers(nameOrIsbn?: string, offererId?: number, status?: string, venueId?: number, categoryId?: string, creationMode?: string, periodBeginningDate?: string, periodEndingDate?: string, options?: any) {
         const functionalApi = DefaultApiFp(this, this.configuration)
         return functionalApi.getOffersListOffers(this.basePath, nameOrIsbn, offererId, status, venueId, categoryId, creationMode, periodBeginningDate, periodEndingDate, options)
+    }
+    /**
+     * 
+     * @summary get_reimbursements_csv <GET>
+     * @param {string} [venueId] 
+     * @param {string} [reimbursementPeriodBeginningDate] 
+     * @param {string} [reimbursementPeriodEndingDate] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public async getReimbursementsGetReimbursementsCsv(venueId?: string, reimbursementPeriodBeginningDate?: string, reimbursementPeriodEndingDate?: string, options?: any) {
+        const functionalApi = DefaultApiFp(this, this.configuration)
+        return functionalApi.getReimbursementsGetReimbursementsCsv(this.basePath, venueId, reimbursementPeriodBeginningDate, reimbursementPeriodEndingDate, options)
     }
     /**
      * 
