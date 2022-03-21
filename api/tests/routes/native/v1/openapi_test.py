@@ -1090,6 +1090,48 @@ def test_public_api(client, app):
                     "title": "Credit",
                     "type": "object",
                 },
+                "CulturalSurveyAnswer": {
+                    "properties": {
+                        "id": {"title": "Id", "type": "string"},
+                        "sub_question": {"$ref": "#/components/schemas/CulturalSurveyQuestionEnum"},
+                        "subtitle": {"title": "Subtitle", "type": "string"},
+                        "title": {"title": "Title", "type": "string"},
+                    },
+                    "required": ["id", "title"],
+                    "title": "CulturalSurveyAnswer",
+                    "type": "object",
+                },
+                "CulturalSurveyQuestion": {
+                    "properties": {
+                        "answers": {
+                            "items": {"$ref": "#/components/schemas/CulturalSurveyAnswer"},
+                            "title": "Answers",
+                            "type": "array",
+                        },
+                        "id": {"title": "Id", "type": "string"},
+                        "title": {"title": "Title", "type": "string"},
+                    },
+                    "required": ["id", "title", "answers"],
+                    "title": "CulturalSurveyQuestion",
+                    "type": "object",
+                },
+                "CulturalSurveyQuestionEnum": {
+                    "description": "An enumeration.",
+                    "enum": ["SORTIES", "FESTIVALS", "SPECTACLES", "ACTIVITES"],
+                    "title": "CulturalSurveyQuestionEnum",
+                },
+                "CulturalSurveyQuestionsResponse": {
+                    "properties": {
+                        "questions": {
+                            "items": {"$ref": "#/components/schemas/CulturalSurveyQuestion"},
+                            "title": "Questions",
+                            "type": "array",
+                        }
+                    },
+                    "required": ["questions"],
+                    "title": "CulturalSurveyQuestionsResponse",
+                    "type": "object",
+                },
                 "DepositType": {
                     "description": "An enumeration.",
                     "enum": ["GRANT_15_17", "GRANT_18"],
@@ -1528,6 +1570,33 @@ def test_public_api(client, app):
                     },
                     "security": [{"JWTAuth": []}],
                     "summary": "change_password <POST>",
+                    "tags": [],
+                }
+            },
+            "/native/v1/cultural_survey/questions": {
+                "get": {
+                    "description": "",
+                    "operationId": "get_/native/v1/cultural_survey/questions",
+                    "parameters": [],
+                    "responses": {
+                        "200": {
+                            "content": {
+                                "application/json": {
+                                    "schema": {"$ref": "#/components/schemas/CulturalSurveyQuestionsResponse"}
+                                }
+                            },
+                            "description": "OK",
+                        },
+                        "403": {"description": "Forbidden"},
+                        "422": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
+                            },
+                            "description": "Unprocessable Entity",
+                        },
+                    },
+                    "security": [{"JWTAuth": []}],
+                    "summary": "get_cultural_survey_questions <GET>",
                     "tags": [],
                 }
             },
