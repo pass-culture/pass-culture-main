@@ -15,7 +15,6 @@ import sqlalchemy.orm as sqla_orm
 
 from pcapi import settings
 from pcapi.models import Model
-from pcapi.models.pc_object import PcObject
 import pcapi.utils.db as db_utils
 
 
@@ -343,7 +342,7 @@ class InvoiceCashflow(Model):
 # were used in the "old" reimbursement system. No new data is created
 # with these models since 2022-01-01. These models have been replaced
 # by `Pricing`, `Cashflow` and other models listed above.
-class Payment(PcObject, Model):
+class Payment(Model):
     id = sqla.Column(sqla.BigInteger, primary_key=True, autoincrement=True)
     bookingId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("booking.id"), index=True, nullable=False)
     booking = sqla_orm.relationship("Booking", foreign_keys=[bookingId], backref="payments")
@@ -409,7 +408,7 @@ class TransactionStatus(enum.Enum):
 
 # `PaymentStatus` is deprecated. See comment above `Payment` model for
 # further details.
-class PaymentStatus(PcObject, Model):
+class PaymentStatus(Model):
     id = sqla.Column(sqla.BigInteger, primary_key=True, autoincrement=True)
     paymentId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("payment.id"), index=True, nullable=False)
     payment = sqla_orm.relationship("Payment", foreign_keys=[paymentId], backref="statuses")
@@ -420,6 +419,7 @@ class PaymentStatus(PcObject, Model):
 
 # `PaymentMessage` is deprecated. See comment above `Payment` model
 # for further details.
-class PaymentMessage(PcObject, Model):
+class PaymentMessage(Model):
+    id = sqla.Column(sqla.BigInteger, primary_key=True, autoincrement=True)
     name = sqla.Column(sqla.String(50), unique=True, nullable=False)
     checksum = sqla.Column(sqla.LargeBinary(32), unique=True, nullable=False)
