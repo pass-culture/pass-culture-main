@@ -52,16 +52,16 @@ class MakeOffererBookingRecapEmailAfterUserCancellationTest:
         venue = stock.offer.venue
         assert email_data.template == TransactionalEmail.BOOKING_CANCELLATION_BY_BENEFICIARY_TO_PRO.value
         assert email_data.params == {
-            "DEPARTEMENT": venue.departementCode,
-            "NOM_OFFRE": stock.offer.name,
-            "NOM_LIEU": venue.name,
-            "PRIX": stock.price,
+            "DEPARTMENT_CODE": venue.departementCode,
+            "EVENT_DATE": "09-Oct-2019",
+            "EVENT_HOUR": "12h20",
             "IS_EVENT": True,
-            "DATE": "09-Oct-2019",
-            "HEURE": "12h20",
-            "QUANTITE": booking.quantity,
-            "USER_NAME": booking.userName,
+            "OFFER_NAME": stock.offer.name,
+            "PRICE": stock.price,
+            "QUANTITY": booking.quantity,
             "USER_EMAIL": booking.email,
+            "USER_NAME": booking.userName,
+            "VENUE_NAME": venue.name,
         }
 
     @pytest.mark.usefixtures("db_session")
@@ -77,16 +77,16 @@ class MakeOffererBookingRecapEmailAfterUserCancellationTest:
         venue = stock.offer.venue
         assert email_data.template == TransactionalEmail.BOOKING_CANCELLATION_BY_BENEFICIARY_TO_PRO.value
         assert email_data.params == {
-            "DEPARTEMENT": venue.departementCode,
-            "NOM_OFFRE": stock.offer.name,
-            "NOM_LIEU": venue.name,
-            "PRIX": "Gratuit",
+            "DEPARTMENT_CODE": venue.departementCode,
+            "EVENT_DATE": "09-Oct-2019",
+            "EVENT_HOUR": "12h20",
             "IS_EVENT": True,
-            "DATE": "09-Oct-2019",
-            "HEURE": "12h20",
-            "QUANTITE": booking1.quantity,
-            "USER_NAME": booking1.userName,
+            "OFFER_NAME": stock.offer.name,
+            "PRICE": "Gratuit",
+            "QUANTITY": booking1.quantity,
             "USER_EMAIL": booking1.email,
+            "USER_NAME": booking1.userName,
+            "VENUE_NAME": venue.name,
         }
 
     @pytest.mark.usefixtures("db_session")
@@ -102,14 +102,14 @@ class MakeOffererBookingRecapEmailAfterUserCancellationTest:
         # Then
         assert email_data.template == TransactionalEmail.BOOKING_CANCELLATION_BY_BENEFICIARY_TO_PRO.value
         assert email_data.params == {
-            "DEPARTEMENT": "numérique",
-            "NOM_OFFRE": stock.offer.name,
-            "NOM_LIEU": virtual_venue.name,
-            "PRIX": stock.price,
+            "DEPARTMENT_CODE": "numérique",
+            "EVENT_DATE": "",
+            "EVENT_HOUR": "",
             "IS_EVENT": False,
-            "DATE": "",
-            "HEURE": "",
-            "QUANTITE": booking1.quantity,
-            "USER_NAME": booking1.userName,
+            "OFFER_NAME": stock.offer.name,
+            "PRICE": stock.price,
+            "QUANTITY": booking1.quantity,
             "USER_EMAIL": booking1.email,
+            "USER_NAME": booking1.userName,
+            "VENUE_NAME": virtual_venue.name,
         }
