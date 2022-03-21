@@ -220,7 +220,7 @@ On peut ensuite se connecter avec ce mail et le mot de passe par défaut en loca
 >>> UserOffererFactory(user, offerer)
 ```
 
-On peut audit surcharger directement les arguments des factories appelées par d'autres factories, en préfixant l'argument avec le nom de la factory secondaire suivie d'un double underscore. Les deux lignes suivantes sont équivalentes à celles qui précèdent:
+On peut aussi surcharger directement les arguments des factories appelées par d'autres factories, en préfixant l'argument avec le nom de la factory secondaire suivie d'un double underscore. Les deux lignes suivantes sont équivalentes à celles qui précèdent:
 
 ```
 >>> from pcapi.core.offers.factories import UserOffererFactory;
