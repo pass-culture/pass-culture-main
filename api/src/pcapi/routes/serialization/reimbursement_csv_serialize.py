@@ -11,10 +11,10 @@ from typing import Union
 from pydantic.main import BaseModel
 
 import pcapi.core.finance.api as finance_api
+import pcapi.core.finance.repository as finance_repository
 import pcapi.core.finance.utils as finance_utils
 from pcapi.core.offers.serialize import serialize_offer_type_educational_or_individual
 from pcapi.models.api_errors import ApiErrors
-from pcapi.repository.reimbursement_queries import find_all_offerers_payments
 from pcapi.utils.date import MONTHS_IN_FRENCH
 
 
@@ -149,7 +149,7 @@ def find_all_offerer_reimbursement_details(
 def find_all_offerers_reimbursement_details(
     offerer_ids: list[int], reimbursements_period: tuple[Optional[date], Optional[date]], venue_id: Optional[int] = None
 ) -> list[ReimbursementDetails]:
-    offerer_payments = find_all_offerers_payments(offerer_ids, reimbursements_period, venue_id)
+    offerer_payments = finance_repository.find_all_offerers_payments(offerer_ids, reimbursements_period, venue_id)
     reimbursement_details = [ReimbursementDetails(offerer_payment) for offerer_payment in offerer_payments]
 
     return reimbursement_details
