@@ -199,63 +199,70 @@ CulturalSurveyAnswerIdEnum = Enum(
     "CulturalSurveyAnswerIdEnum", {answer.id: answer.id for answer in ALL_CULTURAL_SURVEY_ANSWERS}
 )
 
+
+SORTIES_ANSWERS = [
+    FESTIVAL,
+    SPECTACLE,
+    BIBLIOTHEQUE,
+    EVENEMENT_JEU,
+    CONCERT,
+    CINEMA,
+    MUSEE,
+    CONFERENCE,
+    COURS,
+    SANS_SORTIES,
+]
+FESTIVALS_ANSWERS = [
+    FESTIVAL_MUSIQUE,
+    FESTIVAL_AVANT_PREMIERE,
+    FESTIVAL_SPECTACLE,
+    FESTIVAL_LIVRE,
+    FESTIVAL_CINEMA,
+    FESTIVAL_AUTRE,
+]
+SPECTACLES_ANSWERS = [
+    SPECTACLE_HUMOUR,
+    SPECTACLE_THEATRE,
+    SPECTACLE_RUE,
+    SPECTACLE_OPERA,
+    SPECTACLE_CIRQUE,
+    SPECTACLE_DANSE,
+    SPECTACLE_AUTRE,
+]
+ACTIVITES_ANSWERS = [
+    MATERIEL_ART_CREATIF,
+    PODCAST,
+    LIVRE,
+    JOUE_INSTRUMENT,
+    PRESSE_EN_LIGNE,
+    JEU_VIDEO,
+    FILM_DOMICILE,
+    SANS_ACTIVITES,
+]
+
+
 SORTIES = CulturalSurveyQuestion(
-    id=CulturalSurveyQuestionEnum.SORTIES,
+    id=CulturalSurveyQuestionEnum.SORTIES.value,
     title="Au cours de l'année précédente, tu as/es au moins une fois ...",
-    answers=[
-        FESTIVAL,
-        SPECTACLE,
-        BIBLIOTHEQUE,
-        EVENEMENT_JEU,
-        CONCERT,
-        CINEMA,
-        MUSEE,
-        CONFERENCE,
-        COURS,
-        SANS_SORTIES,
-    ],
+    answers=SORTIES_ANSWERS,
 )
 
 FESTIVALS = CulturalSurveyQuestion(
-    id=CulturalSurveyQuestionEnum.FESTIVALS,
+    id=CulturalSurveyQuestionEnum.FESTIVALS.value,
     title="À quels types de festivals as-tu participé ?",
-    answers=[
-        FESTIVAL_MUSIQUE,
-        FESTIVAL_AVANT_PREMIERE,
-        FESTIVAL_SPECTACLE,
-        FESTIVAL_LIVRE,
-        FESTIVAL_CINEMA,
-        FESTIVAL_AUTRE,
-    ],
+    answers=FESTIVALS_ANSWERS,
 )
 
 SPECTACLES = CulturalSurveyQuestion(
-    id=CulturalSurveyQuestionEnum.SPECTACLES,
+    id=CulturalSurveyQuestionEnum.SPECTACLES.value,
     title="À quels types de spectacles as-tu assisté ?",
-    answers=[
-        SPECTACLE_HUMOUR,
-        SPECTACLE_THEATRE,
-        SPECTACLE_RUE,
-        SPECTACLE_OPERA,
-        SPECTACLE_CIRQUE,
-        SPECTACLE_DANSE,
-        SPECTACLE_AUTRE,
-    ],
+    answers=SPECTACLES_ANSWERS,
 )
 
 ACTIVITES = CulturalSurveyQuestion(
-    id=CulturalSurveyQuestionEnum.ACTIVITES,
+    id=CulturalSurveyQuestionEnum.ACTIVITES.value,
     title="Au cours de l'année précédente, tu as au moins une fois ...",
-    answers=[
-        MATERIEL_ART_CREATIF,
-        PODCAST,
-        LIVRE,
-        JOUE_INSTRUMENT,
-        PRESSE_EN_LIGNE,
-        JEU_VIDEO,
-        FILM_DOMICILE,
-        SANS_ACTIVITES,
-    ],
+    answers=ACTIVITES_ANSWERS,
 )
 
 ALL_CULTURAL_SURVEY_QUESTIONS = (
