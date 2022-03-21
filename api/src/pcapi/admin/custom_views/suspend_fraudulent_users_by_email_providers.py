@@ -7,7 +7,7 @@ from werkzeug import Response
 from wtforms import StringField
 from wtforms.validators import DataRequired
 
-from pcapi.admin.base_configuration import BaseCustomAdminView
+from pcapi.admin.base_configuration import BaseCustomSuperAdminView
 from pcapi.scripts.suspend_fraudulent_beneficiary_users import suspend_fraudulent_beneficiary_users_by_email_providers
 
 
@@ -20,7 +20,7 @@ class EmailDomainsForm(SecureForm):
     )
 
 
-class SuspendFraudulentUsersByEmailProvidersView(BaseCustomAdminView):
+class SuspendFraudulentUsersByEmailProvidersView(BaseCustomSuperAdminView):
     @expose("/", methods=["GET", "POST"])
     def search(self) -> Response:
         form = EmailDomainsForm()

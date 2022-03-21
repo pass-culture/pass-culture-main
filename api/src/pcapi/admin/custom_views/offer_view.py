@@ -34,6 +34,7 @@ import yaml
 
 from pcapi import settings
 from pcapi.admin.base_configuration import BaseAdminView
+from pcapi.admin.base_configuration import BaseSuperAdminView
 from pcapi.core import search
 from pcapi.core.bookings.api import cancel_bookings_from_rejected_offer
 from pcapi.core.categories import categories
@@ -607,7 +608,7 @@ class OfferValidationConfigForm(SecureForm):
     specs = wtforms.TextAreaField("Configuration", [InputRequired()])
 
 
-class ImportConfigValidationOfferView(BaseAdminView):
+class ImportConfigValidationOfferView(BaseSuperAdminView):
     can_create = True
     can_edit = False
     can_view_details = True

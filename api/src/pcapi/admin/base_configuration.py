@@ -44,11 +44,30 @@ class BaseAdminMixin:
         form_class = self.get_edit_form()
         return form_class(get_form_data(), obj=obj)
 
+    def check_super_admins(self) -> bool:
+        # `current_user` may be None, here, because this function
+        # is (also) called when admin views are registered and
+        # Flask-Admin populates its form cache.
+        if not current_user or not current_user.is_authenticated:
+            return False
+        return current_user.is_super_admin()
+
     def is_accessible(self) -> bool:
         authorized = current_user.is_authenticated and current_user.has_admin_role
         if not authorized:
             logger.warning("[ADMIN] Tentative d'accès non autorisé à l'interface d'administration par %s", current_user)
 
+        return authorized
+
+
+class BaseSuperAdminMixin(BaseAdminMixin):
+    def is_accessible(self) -> bool:
+        authorized = self.check_super_admins() and super().is_accessible()
+        if not authorized:
+            logger.warning(
+                "[ADMIN] Tentative d'accès non autorisé à l'interface d'administration par %s (niveau super admin requis)",
+                current_user,
+            )
         return authorized
 
 
@@ -68,23 +87,17 @@ class BaseAdminView(BaseAdminMixin, ModelView):
         model_name = str(model)
         logger.info("[ADMIN] %s du modèle %s par l'utilisateur %s", action, model_name, current_user)
 
-    def check_super_admins(self) -> bool:
-        # `current_user` may be None, here, because this function
-        # is (also) called when admin views are registered and
-        # Flask-Admin populates its form cache.
-        if not current_user or not current_user.is_authenticated:
-            return False
-        return current_user.is_super_admin()
+
+class BaseSuperAdminView(BaseSuperAdminMixin, BaseAdminView):
+    pass
 
 
 class BaseCustomAdminView(BaseAdminMixin, BaseView):
-    def check_super_admins(self) -> bool:
-        # `current_user` may be None, here, because this function
-        # is (also) called when admin views are registered and
-        # Flask-Admin populates its form cache.
-        if not current_user or not current_user.is_authenticated:
-            return False
-        return current_user.is_super_admin()
+    pass
+
+
+class BaseCustomSuperAdminView(BaseSuperAdminMixin, BaseView):
+    pass
 
 
 class AdminIndexView(AdminIndexBaseView):
