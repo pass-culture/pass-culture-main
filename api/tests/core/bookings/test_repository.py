@@ -826,6 +826,7 @@ class FindByProUserTest:
         user_offerer = offers_factories.UserOffererFactory()
         booking_beginning_period = datetime(2020, 12, 24, 10, 30).date()
         booking_ending_period = datetime(2020, 12, 26, 15, 00).date()
+        booking_status_filter = BookingStatusFilter.BOOKED
         expected_booking = bookings_factories.IndividualBookingFactory(
             dateCreated=datetime(2020, 12, 26, 15, 30),
             stock=offers_factories.ThingStockFactory(offer__venue__managingOfferer=user_offerer.offerer),
@@ -843,6 +844,7 @@ class FindByProUserTest:
         bookings_recap_paginated = booking_repository.find_by_pro_user(
             user=user_offerer.user,
             booking_period=(booking_beginning_period, booking_ending_period),
+            status_filter=booking_status_filter,
         )
 
         # Then

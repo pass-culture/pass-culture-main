@@ -291,17 +291,22 @@ class Returns400Test:
         pro = users_factories.ProFactory()
 
         client = TestClient(app.test_client()).with_session_auth(pro.email)
-        response = client.get("/bookings/pro?page=not-a-number")
+        response = client.get(f"/bookings/pro?{BOOKING_PERIOD_PARAMS}&page=not-a-number")
 
         assert response.status_code == 400
         assert response.json["page"] == ["Saisissez un nombre valide"]
 
-    def when_booking_period_is_not_given(self, app):
+    def when_booking_period_and_event_date_is_not_given(self, app):
         pro = users_factories.ProFactory()
 
         client = TestClient(app.test_client()).with_session_auth(pro.email)
         response = client.get("/bookings/pro")
 
         assert response.status_code == 400
-        assert response.json["bookingPeriodBeginningDate"] == ["Ce champ est obligatoire"]
-        assert response.json["bookingPeriodEndingDate"] == ["Ce champ est obligatoire"]
+        assert response.json["eventDate"] == ["Ce champ est obligatoire si aucune période n'est renseignée."]
+        assert response.json["bookingPeriodBeginningDate"] == [
+            "Ce champ est obligatoire si la date d'évènement n'est renseignée"
+        ]
+        assert response.json["bookingPeriodEndingDate"] == [
+            "Ce champ est obligatoire si la date d'évènement n'est renseignée"
+        ]

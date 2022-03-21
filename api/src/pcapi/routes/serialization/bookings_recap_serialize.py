@@ -4,6 +4,8 @@ from enum import Enum
 from typing import Any
 from typing import Optional
 
+from pydantic import root_validator
+
 from pcapi.core.bookings.models import BookingStatusFilter
 from pcapi.domain.booking_recap.booking_recap import BookingRecap
 from pcapi.domain.booking_recap.booking_recap import BookingRecapStatus
@@ -14,6 +16,7 @@ from pcapi.domain.booking_recap.booking_recap_history import BookingRecapPending
 from pcapi.domain.booking_recap.booking_recap_history import BookingRecapReimbursedHistory
 from pcapi.domain.booking_recap.booking_recap_history import BookingRecapValidatedHistory
 from pcapi.domain.booking_recap.bookings_recap_paginated import BookingsRecapPaginated
+from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.utils import dehumanize_field
 from pcapi.serialization.utils import to_camel
@@ -117,9 +120,9 @@ class ListBookingsQueryModel(BaseModel):
     page: int = 1
     venue_id: Optional[int]
     event_date: Optional[datetime]
-    booking_status_filter: BookingStatusFilter
-    booking_period_beginning_date: date
-    booking_period_ending_date: date
+    booking_status_filter: Optional[BookingStatusFilter]
+    booking_period_beginning_date: Optional[date]
+    booking_period_ending_date: Optional[date]
     offer_type: Optional[OfferType]
 
     _dehumanize_venue_id = dehumanize_field("venue_id")
@@ -128,6 +131,21 @@ class ListBookingsQueryModel(BaseModel):
         alias_generator = to_camel
 
     extra = "forbid"
+
+    @root_validator(pre=True)
+    def booking_period_or_event_date_required(cls, values):  # pylint: disable=no-self-argument
+        event_date = values.get("eventDate")
+        booking_period_beginning_date = values.get("bookingPeriodBeginningDate")
+        booking_period_ending_date = values.get("bookingPeriodEndingDate")
+        if not event_date and not (booking_period_beginning_date and booking_period_ending_date):
+            raise ApiErrors(
+                errors={
+                    "eventDate": ["Ce champ est obligatoire si aucune période n'est renseignée."],
+                    "bookingPeriodEndingDate": ["Ce champ est obligatoire si la date d'évènement n'est renseignée"],
+                    "bookingPeriodBeginningDate": ["Ce champ est obligatoire si la date d'évènement n'est renseignée"],
+                }
+            )
+        return values
 
 
 class ListBookingsResponseModel(BaseModel):
