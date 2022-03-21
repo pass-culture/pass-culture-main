@@ -73,5 +73,9 @@ input[type="radio"] {
 
   .input-radio-input {
     align-self: flex-start;
+
+    &.error:not(:focus-within) {
+      border: rem(2px) solid $red-error;
+    }
   }
 }
