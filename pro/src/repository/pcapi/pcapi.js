@@ -415,14 +415,19 @@ export const buildBookingsRecapQuery = ({
   if (eventDate !== DEFAULT_PRE_FILTERS.offerEventDate) {
     params.eventDate = formatBrowserTimezonedDateAsUTC(eventDate)
   }
-  params.bookingPeriodBeginningDate = formatBrowserTimezonedDateAsUTC(
-    bookingPeriodBeginningDate,
-    FORMAT_ISO_DATE_ONLY
-  )
-  params.bookingPeriodEndingDate = formatBrowserTimezonedDateAsUTC(
-    bookingPeriodEndingDate,
-    FORMAT_ISO_DATE_ONLY
-  )
+  if (bookingPeriodBeginningDate) {
+    params.bookingPeriodBeginningDate = formatBrowserTimezonedDateAsUTC(
+      bookingPeriodBeginningDate,
+      FORMAT_ISO_DATE_ONLY
+    )
+  }
+
+  if (bookingPeriodEndingDate) {
+    params.bookingPeriodEndingDate = formatBrowserTimezonedDateAsUTC(
+      bookingPeriodEndingDate,
+      FORMAT_ISO_DATE_ONLY
+    )
+  }
 
   params.bookingStatusFilter = bookingStatusFilter
 
