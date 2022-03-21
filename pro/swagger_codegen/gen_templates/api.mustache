@@ -69,7 +69,7 @@ export const {{classname}}FetchParamCreator = function (configuration?: APIConfi
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async {{nickname}}({{#allParams}}{{paramName}}{{^required}}?{{/required}}: {{{dataType}}}, {{/allParams}}options: any = {}): Promise<FetchArgs> {
+        async {{nickname}}({{#allParams}}{{paramName}}{{^required}}?{{/required}}: {{{dataType}}}{{^nullable}} | null{{/nullable}}, {{/allParams}}options: any = {}): Promise<FetchArgs> {
     {{#allParams}}
     {{#required}}
             // verify required parameter '{{paramName}}' is not null or undefined
