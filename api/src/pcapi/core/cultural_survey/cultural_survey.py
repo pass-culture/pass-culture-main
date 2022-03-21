@@ -5,7 +5,7 @@ from typing import Optional
 from pcapi.core.cultural_survey.models import CulturalSurveyQuestionEnum
 
 
-@dataclass(frozen=True)
+@dataclass()
 class CulturalSurveyAnswer:
     id: str
     title: str
@@ -13,7 +13,7 @@ class CulturalSurveyAnswer:
     sub_question: Optional[CulturalSurveyQuestionEnum] = None
 
 
-@dataclass(frozen=True)
+@dataclass()
 class CulturalSurveyQuestion:
     id: str
     title: str
