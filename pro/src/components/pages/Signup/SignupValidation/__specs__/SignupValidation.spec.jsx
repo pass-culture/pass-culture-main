@@ -1,112 +1,146 @@
-import { mount, shallow } from 'enzyme'
+import '@testing-library/jest-dom'
+import { render, waitFor } from '@testing-library/react'
 import { createBrowserHistory } from 'history'
 import React from 'react'
-import { Redirect, Router } from 'react-router-dom'
+import { Provider } from 'react-redux'
+import { Router } from 'react-router-dom'
 
+import * as routerHelpers from 'components/router/helpers'
 import * as pcapi from 'repository/pcapi/pcapi'
+import configureStore from 'store'
 import { campaignTracker } from 'tracking/mediaCampaignsTracking'
 
 import SignupValidation from '../SignupValidation'
 
-jest.mock('repository/pcapi/pcapi', () => ({
-  validateUser: jest.fn(),
-}))
+jest.mock('repository/pcapi/pcapi')
 
 describe('src | components | pages | Signup | validation', () => {
   let history
   let props
+  let store
 
   beforeEach(() => {
+    store = configureStore({
+      data: {
+        users: null,
+      },
+      features: {
+        list: [{ isActive: true, nameKey: 'ENABLE_PRO_ACCOUNT_CREATION' }],
+      },
+    }).store
     history = createBrowserHistory()
-    const notifyError = jest.fn()
-    const notifySuccess = jest.fn()
     props = {
+      history,
+      location: {
+        pathname: '/validation/AAA',
+      },
       match: {
         params: {
           token: 'AAA',
         },
       },
-      notifyError,
-      notifySuccess,
+      notifyError: () => {},
+      notifySuccess: () => {},
     }
   })
 
   afterEach(jest.resetAllMocks)
 
-  it('should render a Redirect component', () => {
-    // when
-    const wrapper = mount(
-      <Router history={history}>
-        <SignupValidation {...props} />
-      </Router>
+  it('should redirect to home page if the user is logged in', async () => {
+    const validateUser = jest.spyOn(pcapi, 'validateUser')
+    const redirect = jest
+      .spyOn(routerHelpers, 'redirectLoggedUser')
+      .mockImplementation(() => {})
+    // when the user is logged in and lands on signup validation page
+    render(
+      <Provider store={store}>
+        <Router history={history}>
+          <SignupValidation {...props} currentUser={{ id: 'CMOI' }} />
+        </Router>
+      </Provider>
     )
+    // then the validity of his token should not be verified
+    expect(validateUser).not.toHaveBeenCalled()
+    // and he should be redirected to home page
 
-    // then
-    const redirect = wrapper.find(Redirect)
-    expect(redirect).toHaveLength(1)
-    expect(redirect.prop('to')).toBe('/connexion')
+    expect(redirect).toHaveBeenCalledTimes(1)
   })
 
-  it('should dispatch an action to verify validity of user token', () => {
-    // when
-    mount(
-      <Router history={history}>
-        <SignupValidation {...props} />
-      </Router>
+  it('should verify validity of user token and redirect to connexion', async () => {
+    const validateUser = jest
+      .spyOn(pcapi, 'validateUser')
+      .mockResolvedValue(true)
+    // when the user lands on signup validation page
+    render(
+      <Provider store={store}>
+        <Router history={history}>
+          <SignupValidation {...props} />
+        </Router>
+      </Provider>
     )
-
-    // then
-    expect(pcapi.validateUser).toHaveBeenCalledWith(props.match.params.token)
+    // then the validity of his token should be verified
+    expect(validateUser).toHaveBeenCalledTimes(1)
+    expect(validateUser).toHaveBeenNthCalledWith(1, props.match.params.token)
+    // and he should be redirected to signin page
+    await waitFor(() => {
+      expect(history.location.pathname).toBe('/connexion')
+    })
   })
 
-  it('should call media campaign tracker on mount only', () => {
-    // when on mount
-    const wrapper = mount(
-      <Router history={history}>
-        <SignupValidation {...props} />
-      </Router>
+  it('should call media campaign tracker once', () => {
+    jest.spyOn(pcapi, 'validateUser').mockResolvedValue(true)
+    // when the user lands on signup validation page
+    render(
+      <Provider store={store}>
+        <Router history={history}>
+          <SignupValidation {...props} />
+        </Router>
+      </Provider>
     )
-
-    // then
+    // then the media campaign tracker should be called once
     expect(campaignTracker.signUpValidation).toHaveBeenCalledTimes(1)
-
-    // when rerender
-    wrapper.setProps(props)
-
-    // then
-    expect(campaignTracker.signUpValidation).toHaveBeenCalledTimes(1)
   })
 
-  describe('notifySuccess', () => {
-    it('should display a notification with success message', () => {
-      // given
-      const wrapper = shallow(<SignupValidation {...props} />)
-
-      // when
-      wrapper.instance().notifySuccess()
-
-      // then
-      expect(props.notifySuccess).toHaveBeenCalledWith(
+  it('should display a success message when token verification is successful', async () => {
+    jest.spyOn(pcapi, 'validateUser').mockResolvedValue(true)
+    const notifySuccess = jest.fn()
+    // given the user lands on signup validation page
+    render(
+      <Provider store={store}>
+        <Router history={history}>
+          <SignupValidation {...props} notifySuccess={notifySuccess} />
+        </Router>
+      </Provider>
+    )
+    // when his token is successfully validated
+    // then a success message should be dispatched
+    await waitFor(() => {
+      expect(notifySuccess).toHaveBeenNthCalledWith(
+        1,
         'Votre compte a été créé. Vous pouvez vous connecter avec les identifiants que vous avez choisis.'
       )
     })
   })
 
-  describe('notifyFailure', () => {
-    it('should display a notification with error message', () => {
-      // given
-      const wrapper = shallow(<SignupValidation {...props} />)
-      const payload = {
-        errors: {
-          global: ['error1', 'error2'],
-        },
-      }
-
-      // when
-      wrapper.instance().notifyFailure(payload)
-
-      // then
-      expect(props.notifyError).toHaveBeenCalledWith(['error1', 'error2'])
+  it('should display an error message when token verification is not successful', async () => {
+    const notifyError = jest.fn()
+    jest.spyOn(pcapi, 'validateUser').mockRejectedValue({
+      errors: {
+        global: ['error1', 'error2'],
+      },
+    })
+    // given the user lands on signup validation page
+    render(
+      <Provider store={store}>
+        <Router history={history}>
+          <SignupValidation {...props} notifyError={notifyError} />
+        </Router>
+      </Provider>
+    )
+    // when his token is not successfully validated
+    // then an error message should be dispatched
+    await waitFor(() => {
+      expect(notifyError).toHaveBeenNthCalledWith(1, ['error1', 'error2'])
     })
   })
 })
