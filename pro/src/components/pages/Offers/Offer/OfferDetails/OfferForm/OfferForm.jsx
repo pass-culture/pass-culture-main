@@ -32,6 +32,7 @@ import {
   NOT_REIMBURSED,
   PLATFORM,
   TEXT_INPUT_DEFAULT_VALUE,
+  WITHDRAWAL_TYPE_COMPATIBLE_SUBCATEGORIE,
 } from '../_constants'
 
 import AccessibilityCheckboxList, {
@@ -41,6 +42,7 @@ import OfferRefundWarning from './Messages/OfferRefundWarning'
 import WithdrawalReminder from './Messages/WithdrawalReminder'
 import OfferCategories from './OfferCategories'
 import OfferOptions from './OfferOptions'
+import { OfferWithdrawalTypeOptions } from './OfferWithdrawalTypeOptions'
 import SynchronizedProviderInformation from './SynchronisedProviderInfos'
 import { isUrlValid } from './validators'
 
@@ -80,6 +82,10 @@ const getOfferConditionalFields = ({
 
   if (venue?.isVirtual) {
     offerConditionalFields.push('url')
+  }
+
+  if (WITHDRAWAL_TYPE_COMPATIBLE_SUBCATEGORIE.includes(offerSubCategory?.id)) {
+    offerConditionalFields.push('withdrawalType')
   }
 
   return offerConditionalFields
@@ -126,13 +132,6 @@ const OfferForm = ({
   )
 
   const isWithdrawalTypeEnabled = useActiveFeature('PRO_DISABLE_EVENTS_QRCODE')
-  const withdrawalTypeCompatibleSubcategories = [
-    'FESTIVAL_MUSIQUE',
-    'CONCERT',
-    'EVENEMENT_MUSIQUE',
-    'FESTIVAL_SPECTACLE',
-    'SPECTACLE_REPRESENTATION',
-  ]
 
   const [mandatoryFields, setMandatoryFields] = useState([...MANDATORY_FIELDS])
 
@@ -148,6 +147,12 @@ const OfferForm = ({
     newFormValues =>
       setFormValues(oldFormValues => {
         const updatedFormValues = { ...oldFormValues, ...newFormValues }
+        if (
+          oldFormValues['subcategoryId'] !== updatedFormValues['subcategoryId']
+        ) {
+          updatedFormValues['withdrawalType'] = null
+        }
+
         return isEqual(oldFormValues, updatedFormValues)
           ? oldFormValues
           : updatedFormValues
@@ -203,9 +208,16 @@ const OfferForm = ({
     ) {
       mandatoryFields.push('isbn')
     }
+    if (
+      isWithdrawalTypeEnabled &&
+      WITHDRAWAL_TYPE_COMPATIBLE_SUBCATEGORIE.includes(offerSubCategory?.id)
+    ) {
+      mandatoryFields.push('withdrawalType')
+    }
   }, [
     offerSubCategory,
     isIsbnRequiredInLivreEditionEnabled,
+    isWithdrawalTypeEnabled,
     mandatoryFields,
     resetMandatoryFields,
   ])
@@ -469,9 +481,21 @@ const OfferForm = ({
         'Veuillez renseigner une URL valide'
     }
 
+    if (
+      isWithdrawalTypeEnabled &&
+      WITHDRAWAL_TYPE_COMPATIBLE_SUBCATEGORIE.includes(
+        formValues.subcategoryId
+      ) &&
+      !formValues.withdrawalType
+    ) {
+      newFormErrors[
+        'withdrawalType'
+      ] = `Vous devez cocher l'une des options ci-dessus`
+    }
+
     setFormErrors(newFormErrors)
     return Object.keys(newFormErrors).length === 0
-  }, [offerFormFields, mandatoryFields, formValues])
+  }, [offerFormFields, mandatoryFields, formValues, isWithdrawalTypeEnabled])
 
   const submitForm = useCallback(
     async event => {
@@ -510,6 +534,8 @@ const OfferForm = ({
             }
             // front should check categoryId but do not send to backend
             delete submittedValues.categoryId
+            // TODO remove withdrawalType waiting api merge of PC-14049
+            delete submittedValues.withdrawalType
 
             return submittedValues
           },
@@ -925,9 +951,15 @@ const OfferForm = ({
               )}
 
               {isWithdrawalTypeEnabled &&
-                withdrawalTypeCompatibleSubcategories.includes(
+                WITHDRAWAL_TYPE_COMPATIBLE_SUBCATEGORIE.includes(
                   formValues.subcategoryId
-                ) && <div className="form-row" />}
+                ) && (
+                  <OfferWithdrawalTypeOptions
+                    error={getErrorMessage('withdrawalType')}
+                    updateWithdrawalType={handleSingleFormUpdate}
+                    withdrawalType={formValues.withdrawalType}
+                  />
+                )}
 
               <div className="form-row">
                 <TextareaInput

@@ -32,6 +32,7 @@ export const DEFAULT_FORM_VALUES = {
   visa: TEXT_INPUT_DEFAULT_VALUE,
   // set to null to set default value from venue
   withdrawalDetails: null,
+  withdrawalType: undefined,
 }
 
 export const BASE_OFFER_FIELDS = [
@@ -105,3 +106,11 @@ export const OFFER_OPTIONS = {
 }
 
 export const CAN_CREATE_FROM_ISBN_SUBCATEGORIES = ['LIVRE_PAPIER']
+
+export const WITHDRAWAL_TYPE_COMPATIBLE_SUBCATEGORIE = [
+  'FESTIVAL_MUSIQUE',
+  'CONCERT',
+  'EVENEMENT_MUSIQUE',
+  'FESTIVAL_SPECTACLE',
+  'SPECTACLE_REPRESENTATION',
+]
