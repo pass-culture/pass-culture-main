@@ -8,10 +8,10 @@ import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.finance.api as finance_api
 import pcapi.core.finance.factories as finance_factories
 import pcapi.core.finance.models as finance_models
+import pcapi.core.finance.repository as finance_repository
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.payments.factories as payments_factories
 from pcapi.repository import repository
-from pcapi.repository.reimbursement_queries import find_all_offerer_payments
 from pcapi.routes.serialization.reimbursement_csv_serialize import ReimbursementDetails
 from pcapi.routes.serialization.reimbursement_csv_serialize import find_all_offerer_reimbursement_details
 from pcapi.routes.serialization.reimbursement_csv_serialize import generate_reimbursement_details_csv
@@ -42,7 +42,10 @@ class ReimbursementDetailsTest:
         finance_models.Pricing.query.update(
             {"status": finance_models.PricingStatus.INVOICED},
         )
-        payments_info = find_all_offerer_payments(payment.booking.offerer.id, reimbursement_period)
+        payments_info = finance_repository.find_all_offerer_payments(
+            payment.booking.offerer.id,
+            reimbursement_period,
+        )
 
         # legacy payment data
         raw_csv = ReimbursementDetails(payments_info[1]).as_csv_row()
@@ -107,7 +110,10 @@ class ReimbursementDetailsTest:
             {"status": finance_models.PricingStatus.INVOICED},
             synchronize_session=False,
         )
-        payments_info = find_all_offerer_payments(payment.booking.offerer.id, reimbursement_period)
+        payments_info = finance_repository.find_all_offerer_payments(
+            payment.booking.offerer.id,
+            reimbursement_period,
+        )
 
         # legacy payment data
         raw_csv = ReimbursementDetails(payments_info[1]).as_csv_row()
@@ -174,7 +180,10 @@ class ReimbursementDetailsTest:
         finance_models.Pricing.query.update(
             {"status": finance_models.PricingStatus.INVOICED},
         )
-        payments_info = find_all_offerer_payments(payment.booking.offererId, reimbursement_period)
+        payments_info = finance_repository.find_all_offerer_payments(
+            payment.booking.offererId,
+            reimbursement_period,
+        )
 
         # legacy payment data
         row = ReimbursementDetails(payments_info[1]).as_csv_row()
@@ -206,14 +215,14 @@ class ReimbursementDetailsTest:
         cashflow.creationDate = datetime(2021, 1, 1, 4, 0)
         repository.save(cashflow)
         period = (cashflow.creationDate.date(), date.today() + timedelta(days=1))
-        payments = find_all_offerer_payments(booking.offererId, period)
+        payments = finance_repository.find_all_offerer_payments(booking.offererId, period)
         row = ReimbursementDetails(payments[0]).as_csv_row()
         assert row[0] == 2021
         assert row[1] == "Janvier : remboursement 1ère quinzaine"
 
         cashflow.creationDate = datetime(2021, 2, 16, 4, 0)
         repository.save(cashflow)
-        payments = find_all_offerer_payments(booking.offererId, period)
+        payments = finance_repository.find_all_offerer_payments(booking.offererId, period)
         row = ReimbursementDetails(payments[0]).as_csv_row()
         assert row[0] == 2021
         assert row[1] == "Février : remboursement 2nde quinzaine"

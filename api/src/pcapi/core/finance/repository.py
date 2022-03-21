@@ -2,8 +2,10 @@ import datetime
 import typing
 
 import pytz
+import sqlalchemy as sqla
 
 import pcapi.core.bookings.models as bookings_models
+import pcapi.core.educational.models as educational_models
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.models as offers_models
 import pcapi.core.payments.models as payments_models
@@ -11,6 +13,7 @@ import pcapi.core.users.models as users_models
 from pcapi.models import db
 from pcapi.models.bank_information import BankInformation
 from pcapi.models.bank_information import BankInformationStatus
+from pcapi.models.feature import FeatureToggle
 from pcapi.models.user_offerer import UserOfferer
 import pcapi.utils.date as date_utils
 
@@ -115,3 +118,118 @@ def has_active_or_future_custom_reimbursement_rule(offer: offers_models.Offer) -
         payments_models.CustomReimbursementRule.timespan.overlaps(timespan),
     ).exists()
     return db.session.query(query).scalar()
+
+
+def find_all_offerer_payments(
+    offerer_id: int,
+    reimbursement_period: tuple[datetime.date, datetime.date],
+    venue_id: typing.Optional[int] = None,
+) -> list[tuple]:
+    return find_all_offerers_payments(
+        offerer_ids=[offerer_id],
+        reimbursement_period=reimbursement_period,
+        venue_id=venue_id,
+    )
+
+
+def find_all_offerers_payments(
+    offerer_ids: list[int],
+    reimbursement_period: tuple[datetime.date, datetime.date],
+    venue_id: typing.Optional[int] = None,
+) -> list[tuple]:
+    payment_date = sqla.cast(models.PaymentStatus.date, sqla.Date)
+    sent_payments = (
+        models.Payment.query.join(models.PaymentStatus)
+        .join(bookings_models.Booking)
+        .filter(
+            models.PaymentStatus.status == models.TransactionStatus.SENT,
+            payment_date.between(*reimbursement_period, symmetric=True),
+            bookings_models.Booking.offererId.in_(offerer_ids),
+            (bookings_models.Booking.venueId == venue_id)
+            if venue_id
+            else (bookings_models.Booking.venueId is not None),
+        )
+        .join(offerers_models.Offerer)
+        .outerjoin(bookings_models.IndividualBooking)
+        .outerjoin(users_models.User)
+        .outerjoin(educational_models.EducationalBooking)
+        .outerjoin(educational_models.EducationalRedactor)
+        .join(offers_models.Stock)
+        .join(offers_models.Offer)
+        .join(offerers_models.Venue)
+        .distinct(models.Payment.id)
+        .order_by(models.Payment.id.desc(), models.PaymentStatus.date.desc())
+        .with_entities(
+            users_models.User.lastName.label("user_lastName"),
+            users_models.User.firstName.label("user_firstName"),
+            educational_models.EducationalRedactor.firstName.label("redactor_firstname"),
+            educational_models.EducationalRedactor.lastName.label("redactor_lastname"),
+            bookings_models.Booking.token.label("booking_token"),
+            bookings_models.Booking.dateUsed.label("booking_dateUsed"),
+            bookings_models.Booking.quantity.label("booking_quantity"),
+            bookings_models.Booking.amount.label("booking_amount"),
+            offers_models.Offer.name.label("offer_name"),
+            offers_models.Offer.isEducational.label("offer_is_educational"),
+            offerers_models.Offerer.address.label("offerer_address"),
+            offerers_models.Venue.name.label("venue_name"),
+            offerers_models.Venue.siret.label("venue_siret"),
+            offerers_models.Venue.address.label("venue_address"),
+            models.Payment.amount.label("amount"),
+            models.Payment.reimbursementRate.label("reimbursement_rate"),
+            models.Payment.iban.label("iban"),
+            models.Payment.transactionLabel.label("transactionLabel"),
+        )
+    )
+
+    sent_pricings = (
+        models.Pricing.query.join(models.Pricing.booking)
+        .join(models.Pricing.cashflows)
+        .join(models.Cashflow.bankAccount)
+        .outerjoin(models.Pricing.customRule)
+        .filter(
+            models.Pricing.status == models.PricingStatus.INVOICED,
+            sqla.cast(models.Cashflow.creationDate, sqla.Date).between(
+                *reimbursement_period,
+                symmetric=True,
+            ),
+            bookings_models.Booking.offererId.in_(offerer_ids),
+            (bookings_models.Booking.venueId == venue_id) if venue_id else sqla.true(),
+        )
+        .join(bookings_models.Booking.offerer)
+        .outerjoin(bookings_models.IndividualBooking)
+        .outerjoin(users_models.User)
+        .outerjoin(educational_models.EducationalBooking)
+        .outerjoin(educational_models.EducationalRedactor)
+        .join(offers_models.Stock)
+        .join(offers_models.Offer)
+        .join(offerers_models.Venue)
+        .order_by(bookings_models.Booking.dateUsed.desc(), bookings_models.Booking.id.desc())
+        .with_entities(
+            users_models.User.lastName.label("user_lastName"),
+            users_models.User.firstName.label("user_firstName"),
+            educational_models.EducationalRedactor.firstName.label("redactor_firstname"),
+            educational_models.EducationalRedactor.lastName.label("redactor_lastname"),
+            bookings_models.Booking.token.label("booking_token"),
+            bookings_models.Booking.dateUsed.label("booking_dateUsed"),
+            bookings_models.Booking.quantity.label("booking_quantity"),
+            bookings_models.Booking.amount.label("booking_amount"),
+            offers_models.Offer.name.label("offer_name"),
+            offers_models.Offer.isEducational.label("offer_is_educational"),
+            offerers_models.Offerer.address.label("offerer_address"),
+            offerers_models.Venue.name.label("venue_name"),
+            offerers_models.Venue.siret.label("venue_siret"),
+            offerers_models.Venue.address.label("venue_address"),
+            # See note about `amount` in `core/finance/models.py`.
+            (-models.Pricing.amount).label("amount"),
+            models.Pricing.standardRule.label("rule_name"),
+            models.Pricing.customRuleId.label("rule_id"),
+            models.Cashflow.creationDate.label("cashflow_date"),
+            BankInformation.iban.label("iban"),
+        )
+    )
+
+    results = sent_pricings.all()
+    if FeatureToggle.INCLUDE_LEGACY_PAYMENTS_FOR_REIMBURSEMENTS.is_active():
+        results.extend(sent_payments.all())
+
+    return results
