@@ -37,7 +37,7 @@ class OfferValidationViewTest:
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     @patch("pcapi.connectors.api_entreprises.get_offerer_legal_category")
     def test_approve_offer_and_go_to_next_offer(
-        self, mocked_get_offerer_legal_category, mocked_validate_csrf_token, app
+        self, mocked_get_offerer_legal_category, mocked_validate_csrf_token, client
     ):
         users_factories.AdminFactory(email="admin@example.com")
         venue = VenueFactory()
@@ -73,8 +73,11 @@ class OfferValidationViewTest:
         }
 
         data = dict(validation=OfferValidationStatus.APPROVED.value, action="save-and-go-next")
-        client = TestClient(app.test_client()).with_session_auth("admin@example.com")
-        response = client.post(f"/pc/back-office/validation/edit?id={currently_displayed_offer.id}", form=data)
+        response = (
+            client
+            .with_session_auth("admin@example.com")
+            .post(f"/pc/back-office/validation/edit?id={currently_displayed_offer.id}", form=data)
+        )
 
         currently_displayed_offer = Offer.query.get(currently_displayed_offer.id)
         assert currently_displayed_offer.validation == OfferValidationStatus.APPROVED
@@ -84,7 +87,7 @@ class OfferValidationViewTest:
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     @patch("pcapi.connectors.api_entreprises.get_offerer_legal_category")
     def test_approve_last_pending_offer_and_go_to_the_next_offer_redirect_to_validation_page(
-        self, mocked_get_offerer_legal_category, mocked_validate_csrf_token, app
+        self, mocked_get_offerer_legal_category, mocked_validate_csrf_token, client
     ):
         users_factories.AdminFactory(email="admin@example.com")
         venue = VenueFactory()
@@ -106,8 +109,11 @@ class OfferValidationViewTest:
         }
 
         data = dict(validation=OfferValidationStatus.APPROVED.value, action="save-and-go-next")
-        client = TestClient(app.test_client()).with_session_auth("admin@example.com")
-        response = client.post(f"/pc/back-office/validation/edit?id={offer.id}", form=data)
+        response = (
+            client
+            .with_session_auth("admin@example.com")
+            .post(f"/pc/back-office/validation/edit?id={offer.id}", form=data)
+        )
 
         assert offer.validation == OfferValidationStatus.APPROVED
         assert response.status_code == 302
@@ -121,7 +127,7 @@ class OfferValidationViewTest:
         mocked_send_offer_validation_status_update_email,
         mocked_get_offerer_legal_category,
         mocked_validate_csrf_token,
-        app,
+        client,
     ):
         # Given
         users_factories.AdminFactory(email="admin@example.com")
@@ -138,10 +144,9 @@ class OfferValidationViewTest:
             "legal_category_label": "Société en nom collectif",
         }
         data = dict(validation=OfferValidationStatus.APPROVED.value, action="save-and-go-next")
-        client = TestClient(app.test_client()).with_session_auth("admin@example.com")
 
         # When
-        client.post(f"/pc/back-office/validation/edit?id={offer.id}", form=data)
+        client.with_session_auth("admin@example.com").post(f"/pc/back-office/validation/edit?id={offer.id}", form=data)
 
         # Then
         mocked_send_offer_validation_status_update_email.assert_called_once_with(
@@ -156,7 +161,7 @@ class OfferValidationViewTest:
         mocked_send_offer_validation_status_update_email,
         mocked_get_offerer_legal_category,
         mocked_validate_csrf_token,
-        app,
+        client,
     ):
         # Given
         users_factories.AdminFactory(email="admin@example.com")
@@ -170,10 +175,9 @@ class OfferValidationViewTest:
             "legal_category_label": "Société en nom collectif",
         }
         data = dict(validation=OfferValidationStatus.APPROVED.value, action="save-and-go-next")
-        client = TestClient(app.test_client()).with_session_auth("admin@example.com")
 
         # When
-        client.post(f"/pc/back-office/validation/edit?id={offer.id}", form=data)
+        client.with_session_auth("admin@example.com").post(f"/pc/back-office/validation/edit?id={offer.id}", form=data)
 
         # Then
         mocked_send_offer_validation_status_update_email.assert_called_once_with(
@@ -182,7 +186,7 @@ class OfferValidationViewTest:
 
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     @testing.override_settings(IS_PROD=True, SUPER_ADMIN_EMAIL_ADDRESSES="super_admin@example.com")
-    def test_import_validation_config(self, mocked_validate_csrf_token, app):
+    def test_import_validation_config(self, mocked_validate_csrf_token, client):
         # Given
         users_factories.AdminFactory(email="super_admin@example.com")
         config_yaml = """
@@ -207,10 +211,9 @@ class OfferValidationViewTest:
                     """
 
         data = dict(specs=config_yaml, action="save")
-        client = TestClient(app.test_client()).with_session_auth("super_admin@example.com")
 
         # When
-        response = client.post("pc/back-office/fraud_rules_configuration/new/", form=data)
+        response = client.with_session_auth("super_admin@example.com").post("pc/back-office/fraud_rules_configuration/new/", form=data)
         saved_config = OfferValidationConfig.query.one()
 
         # Then
@@ -247,7 +250,7 @@ class OfferValidationViewTest:
 
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     @testing.override_settings(IS_PROD=True, SUPER_ADMIN_EMAIL_ADDRESSES="super_admin@example.com")
-    def test_import_validation_config_fail_with_wrong_value(self, mocked_validate_csrf_token, app):
+    def test_import_validation_config_fail_with_wrong_value(self, mocked_validate_csrf_token, client):
         # Given
         users_factories.AdminFactory(email="super_admin@example.com")
         config_yaml = """
@@ -270,17 +273,16 @@ class OfferValidationViewTest:
                     """
 
         data = dict(specs=config_yaml, action="save")
-        client = TestClient(app.test_client()).with_session_auth("super_admin@example.com")
 
         # When
-        response = client.post("pc/back-office/fraud_rules_configuration/new/", form=data)
+        response = client.with_session_auth("super_admin@example.com").post("pc/back-office/fraud_rules_configuration/new/", form=data)
 
         # Then
         assert response.status_code == 400
 
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     @testing.override_settings(IS_PROD=True, SUPER_ADMIN_EMAIL_ADDRESSES="super_admin@example.com")
-    def test_import_validation_config_fail_when_user_is_not_super_admin(self, mocked_validate_csrf_token, app):
+    def test_import_validation_config_fail_when_user_is_not_super_admin(self, mocked_validate_csrf_token, client):
         # Given
         users_factories.AdminFactory(email="not_super_admin@example.com")
         config_yaml = """
@@ -303,10 +305,12 @@ class OfferValidationViewTest:
                     """
 
         data = dict(specs=config_yaml, action="save")
-        client = TestClient(app.test_client()).with_session_auth("not_super_admin@example.com")
 
         # When
-        response = client.post("pc/back-office/fraud_rules_configuration/new/", form=data)
+        response = (
+            client.with_session_auth("not_super_admin@example.com")
+            .post("pc/back-office/fraud_rules_configuration/new/", form=data)
+        )
 
         # Then
         assert response.status_code == 403
@@ -320,7 +324,7 @@ class OfferValidationViewTest:
         mocked_send_offer_validation_notification_to_administration,
         mocked_get_offerer_legal_category,
         mocked_validate_csrf_token,
-        app,
+        client,
     ):
         # Given
         config_yaml = """
@@ -343,10 +347,12 @@ class OfferValidationViewTest:
             "legal_category_label": "Société en nom collectif",
         }
         data = dict(validation=OfferValidationStatus.APPROVED.value, action="save")
-        client = TestClient(app.test_client()).with_session_auth("admin@example.com")
 
         # When
-        response = client.post(f"/pc/back-office/validation/edit?id={offer.id}", form=data)
+        response = (
+            client.with_session_auth("admin@example.com")
+            .post(f"/pc/back-office/validation/edit?id={offer.id}", form=data)
+        )
 
         # Then
         assert response.status_code == 302
@@ -367,7 +373,7 @@ class OfferValidationViewTest:
         mocked_send_offer_validation_notification_to_administration,
         mocked_get_offerer_legal_category,
         mocked_validate_csrf_token,
-        app,
+        client,
     ):
         # Given
         config_yaml = """
@@ -391,10 +397,12 @@ class OfferValidationViewTest:
             "legal_category_label": "Société en nom collectif",
         }
         data = dict(validation=OfferValidationStatus.REJECTED.value, action="save")
-        client = TestClient(app.test_client()).with_session_auth("admin@example.com")
 
         # When
-        response = client.post(f"/pc/back-office/validation/edit?id={offer.id}", form=data)
+        response = (
+            client.with_session_auth("admin@example.com")
+            .post(f"/pc/back-office/validation/edit?id={offer.id}", form=data)
+        )
 
         # Then
         mocked_send_offer_validation_notification_to_administration.assert_called_once_with(
@@ -408,20 +416,18 @@ class OfferValidationViewTest:
         assert offer.lastValidationType == OfferValidationType.MANUAL
 
     @testing.override_settings(IS_PROD=True, SUPER_ADMIN_EMAIL_ADDRESSES="super_admin@example.com")
-    def test_access_to_validation_page_with_super_admin_user_on_prod_env(self, app):
+    def test_access_to_validation_page_with_super_admin_user_on_prod_env(self, client):
         users_factories.AdminFactory(email="super_admin@example.com")
-        client = TestClient(app.test_client()).with_session_auth("super_admin@example.com")
 
-        response = client.get("/pc/back-office/validation/")
+        response = client.with_session_auth("super_admin@example.com").get("/pc/back-office/validation/")
 
         assert response.status_code == 200
 
     @testing.override_settings(IS_PROD=True, SUPER_ADMIN_EMAIL_ADDRESSES="super_admin@example.com")
-    def test_access_to_validation_page_with_none_super_admin_user_on_prod_env(self, app):
+    def test_access_to_validation_page_with_none_super_admin_user_on_prod_env(self, client):
         users_factories.AdminFactory(email="simple_admin@example.com")
-        client = TestClient(app.test_client()).with_session_auth("simple_admin@example.com")
 
-        response = client.get("/pc/back-office/validation/")
+        response = client.with_session_auth("simple_admin@example.com").get("/pc/back-office/validation/")
 
         assert response.status_code == 302
         assert response.headers["location"] == "http://localhost/pc/back-office/"
@@ -447,9 +453,8 @@ class OfferValidationViewTest:
 
     @clean_database
     @testing.override_settings(IS_PROD=True, SUPER_ADMIN_EMAIL_ADDRESSES="superadmin@example.com")
-    def test_number_of_queries_for_offer_list(self, app):
+    def test_number_of_queries_for_offer_list(self, client):
         admin = users_factories.AdminFactory(email="superadmin@example.com")
-        client = TestClient(app.test_client()).with_session_auth(admin.email)
 
         offers_factories.OfferValidationConfigFactory(
             specs={
@@ -472,6 +477,8 @@ class OfferValidationViewTest:
         for _ in range(5):
             offers_factories.StockFactory(offer__validation=OfferValidationStatus.PENDING)
 
+        client = client.with_session_auth(admin.email)
+
         n_queries = testing.AUTHENTICATION_QUERIES
         n_queries += 1  # count
         n_queries += 1  # select offers
@@ -487,7 +494,7 @@ class OfferValidationViewTest:
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     @patch("pcapi.connectors.api_entreprises.get_offerer_legal_category")
     def test_batch_approve_offers(
-        self, mocked_get_offerer_legal_category, mocked_validate_csrf_token, action, expected, client, app
+        self, mocked_get_offerer_legal_category, mocked_validate_csrf_token, action, expected, client
     ):
         users_factories.AdminFactory(email="admin@example.com")
         venue = VenueFactory()
@@ -537,7 +544,6 @@ class OfferValidationViewTest:
         mocked_validate_csrf_token,
         action,
         client,
-        app,
     ):
         users_factories.AdminFactory(email="admin@example.com")
         venue = VenueFactory()
