@@ -1,6 +1,11 @@
 import React from 'react'
 
-type WordOrLinkItem = { type: 'word' | 'link'; value: string }
+type WordOrLinkItem = { type: 'word' | 'link' | 'mail'; value: string }
+
+// Found here: http://emailregex.com/
+const EMAIL_REGEXP = new RegExp(
+  /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+)
 
 const addLinkItemWithSpace = (value: string, list: WordOrLinkItem[]) => {
   list.push({ type: 'link', value })
@@ -9,6 +14,11 @@ const addLinkItemWithSpace = (value: string, list: WordOrLinkItem[]) => {
 
 const addWordItemWithSpace = (value: string, list: WordOrLinkItem[]) => {
   list.push({ type: 'word', value })
+  list.push({ type: 'word', value: ' ' })
+}
+
+const addMailItemWithSpace = (value: string, list: WordOrLinkItem[]) => {
+  list.push({ type: 'mail', value })
   list.push({ type: 'word', value: ' ' })
 }
 
@@ -23,11 +33,16 @@ export const formatDescription = (description: string): React.ReactNode => {
         )
       ) {
         // add link with following space
-        addLinkItemWithSpace(wordOrLink, descriptionWordsItems)
-      } else {
-        // add word with following space
-        addWordItemWithSpace(wordOrLink, descriptionWordsItems)
+        return addLinkItemWithSpace(wordOrLink, descriptionWordsItems)
       }
+
+      if (wordOrLink.match(EMAIL_REGEXP)) {
+        // add mail with following space
+        return addMailItemWithSpace(wordOrLink, descriptionWordsItems)
+      }
+
+      // add word with following space
+      return addWordItemWithSpace(wordOrLink, descriptionWordsItems)
     })
 
     // re add line break
@@ -50,6 +65,10 @@ export const formatDescription = (description: string): React.ReactNode => {
           {value}
         </a>
       )
+    }
+
+    if (type === 'mail') {
+      return <a href={`mailto:${value}`}>{value}</a>
     }
 
     return value

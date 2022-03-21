@@ -260,7 +260,8 @@ describe('offer', () => {
         ...offerInParis,
         description: `lien 1 : www.lien1.com
           https://lien2.com et http://lien3.com
-          https://\nurl.com http://unlien avecuneespace`,
+          https://\nurl.com http://unlien avecuneespace
+          contact: toto@toto.com`,
       })
 
       // When
@@ -277,7 +278,7 @@ describe('offer', () => {
 
       const links = within(descriptionParagraph).getAllByRole('link')
 
-      expect(links).toHaveLength(5)
+      expect(links).toHaveLength(6)
       expect((links[0] as HTMLLinkElement).href).toBe('https://www.lien1.com/')
       expect((links[0] as HTMLLinkElement).childNodes[0].nodeValue).toBe(
         'www.lien1.com'
@@ -286,6 +287,7 @@ describe('offer', () => {
       expect((links[2] as HTMLLinkElement).href).toBe('http://lien3.com/')
       expect((links[3] as HTMLLinkElement).href).toBe('https://')
       expect((links[4] as HTMLLinkElement).href).toBe('http://unlien/')
+      expect((links[5] as HTMLLinkElement).href).toBe('mailto:toto@toto.com')
     })
   })
 })
