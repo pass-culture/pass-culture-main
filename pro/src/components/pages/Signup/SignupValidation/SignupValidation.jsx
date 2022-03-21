@@ -14,25 +14,26 @@ class SignupValidation extends PureComponent {
     super(props)
     const { currentUser, location, history } = props
     redirectLoggedUser(history, location, currentUser)
+    this.state = {}
   }
 
   componentDidMount() {
     campaignTracker.signUpValidation()
-
     const {
       match: {
         params: { token },
       },
     } = this.props
-
     this.buildRequestData(token)
   }
 
   buildRequestData = async token => {
-    await pcapi
-      .validateUser(token)
-      .then(() => this.notifySuccess())
-      .catch(payload => this.notifyFailure(payload))
+    if (!this.props.currentUser)
+      await pcapi
+        .validateUser(token)
+        .then(() => this.notifySuccess())
+        .catch(payload => this.notifyFailure(payload))
+        .finally(() => this.setState({ isReady: true }))
   }
 
   notifyFailure = payload => {
@@ -49,17 +50,16 @@ class SignupValidation extends PureComponent {
   }
 
   render() {
-    return <Redirect to="/connexion" />
+    return this.state.isReady ? <Redirect to="/connexion" /> : null
   }
 }
-
 SignupValidation.defaultProps = {
   currentUser: null,
 }
 
 SignupValidation.propTypes = {
   currentUser: PropTypes.shape(),
-  history: PropTypes.func.isRequired,
+  history: PropTypes.shape().isRequired,
   location: PropTypes.shape().isRequired,
   match: PropTypes.shape({
     params: PropTypes.shape({
