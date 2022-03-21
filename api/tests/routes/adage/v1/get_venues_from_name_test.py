@@ -3,9 +3,15 @@ from pcapi.core.offerers import factories as offerer_factories
 
 class Returns200Test:
     def test_get_venues_from_name(self, client, db_session) -> None:
-        venue1 = offerer_factories.VenueFactory(name="a beautiful name")
+        venue1 = offerer_factories.VenueFactory(
+            name="a beautiful name",
+            siret=None,
+            comment="no siret",
+            publicName=None,
+        )
         venue2 = offerer_factories.VenueFactory(publicName="a beautiful name")
         offerer_factories.VenueFactory(name="not the same")
+        offerer_factories.VenueFactory(isVirtual=True, name="a beautiful name", siret=None)
 
         client.with_eac_token()
         response = client.get("/adage/v1/venues/name/utiful%20name")
@@ -16,7 +22,11 @@ class Returns200Test:
         assert {venue["id"] for venue in response_venues} == {venue1.id, venue2.id}
 
     def test_get_venues_from_name_serialization(self, client, db_session) -> None:
-        venue1 = offerer_factories.VenueFactory(name="a beautiful name")
+        venue1 = offerer_factories.VenueFactory(
+            name="a beautiful name",
+            siret=None,
+            comment="no siret",
+        )
 
         client.with_eac_token()
         response = client.get("/adage/v1/venues/name/utiful%20name")
