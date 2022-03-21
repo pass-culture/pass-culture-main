@@ -464,9 +464,13 @@ def get_venues_by_siret(siret: str) -> list[offerers_models.Venue]:
 
 
 def get_venues_by_name(name: str) -> list[offerers_models.Venue]:
-    venues = offerers_models.Venue.query.filter(
-        or_(offerers_models.Venue.name.ilike(f"%{name}%"), offerers_models.Venue.publicName.ilike(f"%{name}%"))
-    ).all()
+    venues = (
+        offerers_models.Venue.query.filter(
+            or_(offerers_models.Venue.name.ilike(f"%{name}%"), offerers_models.Venue.publicName.ilike(f"%{name}%"))
+        )
+        .filter(offerers_models.Venue.isVirtual.is_(False))
+        .all()
+    )
     return venues
 
 
