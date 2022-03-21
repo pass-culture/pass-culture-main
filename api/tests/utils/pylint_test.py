@@ -1,9 +1,29 @@
 import pathlib
 
 import astroid
-import pylint.testutils
 
 from pcapi.utils.pylint import MarkupSafeChecker
+
+
+try:
+    import pylint.testutils
+except ImportError as exc:
+    import os
+    import sys
+
+    # FIXME: DEBUG ONLY : Est-ce qu'on ne lance pas les tests d'un
+    # répertoire où "pylint" n'est pas le package tiers (par exemple
+    # depuis `src/pcapi/utils` qui contient un fichier "pylint.py"
+    debug = []
+    debug.append(f"cwd = {os.getcwd()}")
+    debug.append(f"sys.path = {sys.path}")
+    try:
+        import pylint
+
+        debug.append(f"pylint.__path__: {pylint.__path__}")  # nous donnera un peu d'infos sur le package pylint
+    except ImportError as inner_exc:
+        debug.append(f"impossible de 'import pylint' seulement: {inner_exc}")
+    raise ValueError("\n".join(debug)) from exc
 
 import tests
 
