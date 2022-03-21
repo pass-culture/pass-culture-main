@@ -500,57 +500,6 @@ describe('route Offers', () => {
     })
   })
 
-  describe('on click on event filter ending date', () => {
-    // PAS LE BON TEST
-    //   it('should properly format received date', async () => {
-    //     // Given
-    //     renderOffers(props, store)
-    //     fireEvent.change(
-    //       screen.getByPlaceholderText('Rechercher par nom d’offre ou par ISBN'),
-    //       {
-    //         target: { value: 'Any word' },
-    //       }
-    //     )
-    //     // When
-    //     await fireEvent.click(screen.getByText('Lancer la recherche'))
-    //     // Then
-    //     expect(pcapi.loadFilteredOffers).toHaveBeenCalledWith({
-    //       nameOrIsbn: 'Any word',
-    //       venueId: DEFAULT_SEARCH_FILTERS.venueId,
-    //       categoryId: DEFAULT_SEARCH_FILTERS.categoryId,
-    //       offererId: DEFAULT_SEARCH_FILTERS.offererId,
-    //       status: DEFAULT_SEARCH_FILTERS.status,
-    //       creationMode: DEFAULT_SEARCH_FILTERS.creationMode,
-    //       periodBeginningDate: DEFAULT_SEARCH_FILTERS.periodBeginningDate,
-    //       periodEndingDate: DEFAULT_SEARCH_FILTERS.periodEndingDate,
-    //     })
-    //   })
-    // PAS LE BON TEST
-    //   it('should set new date value on filters', async () => {
-    //     // Given
-    //     renderOffers(props, store)
-    //     fireEvent.change(
-    //       screen.getByPlaceholderText('Rechercher par nom d’offre ou par ISBN'),
-    //       {
-    //         target: { value: 'Any word' },
-    //       }
-    //     )
-    //     // When
-    //     await fireEvent.click(screen.getByText('Lancer la recherche'))
-    //     // Then
-    //     expect(pcapi.loadFilteredOffers).toHaveBeenCalledWith({
-    //       nameOrIsbn: 'Any word',
-    //       venueId: DEFAULT_SEARCH_FILTERS.venueId,
-    //       categoryId: DEFAULT_SEARCH_FILTERS.categoryId,
-    //       offererId: DEFAULT_SEARCH_FILTERS.offererId,
-    //       status: DEFAULT_SEARCH_FILTERS.status,
-    //       creationMode: DEFAULT_SEARCH_FILTERS.creationMode,
-    //       periodBeginningDate: DEFAULT_SEARCH_FILTERS.periodBeginningDate,
-    //       periodEndingDate: DEFAULT_SEARCH_FILTERS.periodEndingDate,
-    //     })
-    //   })
-  })
-
   describe('url query params', () => {
     it('should have page value when page value is not first page', async () => {
       // Given
