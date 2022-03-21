@@ -31,6 +31,7 @@ def make_booking(**kwargs):
         stock__offer__venue__postalCode="75010",
         stock__offer__venue__city="Paris",
         stock__offer__venue__managingOfferer__name="Théâtre du coin",
+        stock__offer__venue__departementCode="75",
     )
     attributes.update(kwargs)
     return bookings_factories.IndividualBookingFactory(**attributes)
@@ -38,22 +39,23 @@ def make_booking(**kwargs):
 
 def get_expected_base_email_data(booking, **overrides):
     email_data_params = {
-        "OFFER_NAME": "Super événement",
-        "VENUE_NAME": "Lieu de l'offreur",
-        "PRICE": "10.00 €",
+        "CAN_EXPIRE": False,
+        "COUNTERMARK": "ABC123",
+        "DEPARTMENT_CODE": "75",
         "EVENT_DATE": "06-Nov-2019",
         "EVENT_HOUR": "15h59",
+        "IS_BOOKING_AUTOVALIDATED": False,
+        "IS_EVENT": True,
+        "ISBN": "",
+        "OFFER_NAME": "Super événement",
+        "OFFER_SUBCATEGORY": "SPECTACLE_REPRESENTATION",
+        "PRICE": "10.00 €",
         "QUANTITY": 1,
+        "USER_EMAIL": "john@example.com",
         "USER_FIRSTNAME": "John",
         "USER_LASTNAME": "Doe",
-        "USER_EMAIL": "john@example.com",
         "USER_PHONENUMBER": "",
-        "IS_EVENT": True,
-        "CAN_EXPIRE": False,
-        "IS_BOOKING_AUTOVALIDATED": False,
-        "COUNTERMARK": "ABC123",
-        "ISBN": "",
-        "OFFER_SUBCATEGORY": "SPECTACLE_REPRESENTATION",
+        "VENUE_NAME": "Lieu de l'offreur",
         "MUST_USE_TOKEN_FOR_PAYMENT": True,
     }
     email_data_params.update(overrides)
@@ -111,6 +113,7 @@ class OffererBookingRecapTest:
 
         expected = get_expected_base_email_data(
             booking,
+            DEPARTMENT_CODE=None,
             EVENT_DATE="",
             EVENT_HOUR="",
             IS_EVENT=False,
@@ -139,6 +142,7 @@ class OffererBookingRecapTest:
 
         expected = get_expected_base_email_data(
             booking,
+            DEPARTMENT_CODE=None,
             EVENT_DATE="",
             EVENT_HOUR="",
             IS_EVENT=False,
