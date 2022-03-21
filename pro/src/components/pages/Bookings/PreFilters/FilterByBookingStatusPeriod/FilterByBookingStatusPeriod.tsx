@@ -13,16 +13,16 @@ import styles from './FilterByBookingStatusPeriod.module.scss'
 import FilterByStatus from './FilterByStatus'
 
 interface IPreFiltersProp {
-  bookingBeginningDate: Date
-  bookingEndingDate: Date
+  bookingBeginningDate?: Date
+  bookingEndingDate?: Date
   bookingStatusFilter: string
   offerEventDate: Date
   offerVenueId: string
 }
 interface IFilterByBookingStatusPeriodProps {
   isDisabled: boolean
-  selectedBookingBeginningDate: Date
-  selectedBookingEndingDate: Date
+  selectedBookingBeginningDate?: Date
+  selectedBookingEndingDate?: Date
   selectedBookingFilter: string
   updateFilters: (filters: Partial<IPreFiltersProp>) => void
 }
@@ -38,7 +38,9 @@ const FilterByBookingStatusPeriod = ({
     updateFilters({
       bookingBeginningDate: bookingBeginningDate
         ? bookingBeginningDate
-        : subDays(selectedBookingEndingDate, DEFAULT_BOOKING_PERIOD),
+        : selectedBookingEndingDate
+        ? subDays(selectedBookingEndingDate, DEFAULT_BOOKING_PERIOD)
+        : undefined,
     })
   }
 
@@ -46,7 +48,9 @@ const FilterByBookingStatusPeriod = ({
     updateFilters({
       bookingEndingDate: bookingEndingDate
         ? bookingEndingDate
-        : addDays(selectedBookingBeginningDate, DEFAULT_BOOKING_PERIOD),
+        : selectedBookingBeginningDate
+        ? addDays(selectedBookingBeginningDate, DEFAULT_BOOKING_PERIOD)
+        : undefined,
     })
   }
 

@@ -476,6 +476,31 @@ describe('components | BookingsRecap | Pro user', () => {
     ).toStrictEqual(new Date(2020, 5, 8))
   })
 
+  it('should set booking period to null when user select event date', async () => {
+    // Given
+    let bookingRecap = bookingRecapFactory()
+    loadFilteredBookingsRecap.mockResolvedValue({
+      page: 1,
+      pages: 1,
+      total: 1,
+      bookings_recap: [bookingRecap],
+    })
+    const { submitFilters } = await renderBookingsRecap(props, store)
+
+    // When
+    fireEvent.click(screen.getByLabelText('Date de l’évènement'))
+    fireEvent.click(screen.getByText('8'))
+    await submitFilters()
+    // Then
+    await screen.findAllByText(bookingRecap.stock.offer_name)
+    expect(
+      getNthCallNthArg(loadFilteredBookingsRecap, 1).bookingPeriodEndingDate
+    ).toBeNull()
+    expect(
+      getNthCallNthArg(loadFilteredBookingsRecap, 1).bookingPeriodBeginningDate
+    ).toBeNull()
+  })
+
   it('should request bookings of default period when user clicks on "Afficher" without selecting a period', async () => {
     // Given
     let bookingRecap = bookingRecapFactory()
