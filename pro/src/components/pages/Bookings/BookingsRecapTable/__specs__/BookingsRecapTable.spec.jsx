@@ -78,7 +78,7 @@ describe('components | BookingsRecapTable', () => {
     // 2 lines = 12 cells
     expect(screen.getAllByRole('cell')).toHaveLength(12)
 
-    userEvent.type(screen.getByRole('textbox'), 'Autre nom offre')
+    userEvent.paste(screen.getByRole('textbox'), 'Autre nom offre')
     await waitFor(() => {
       // 1 line = 6 cells
       expect(screen.getAllByRole('cell')).toHaveLength(6)
@@ -94,7 +94,7 @@ describe('components | BookingsRecapTable', () => {
       // 2 lines = 12 cells
       expect(screen.getAllByRole('cell')).toHaveLength(12)
     })
-    userEvent.type(screen.getByRole('textbox'), 'Parjeot')
+    userEvent.paste(screen.getByRole('textbox'), 'Parjeot')
     await waitFor(() => {
       // 1 line = 6 cells
       expect(screen.getAllByRole('cell')).toHaveLength(6)
