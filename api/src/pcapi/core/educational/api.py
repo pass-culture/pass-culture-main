@@ -347,8 +347,15 @@ def refuse_educational_booking(educational_booking_id: int) -> EducationalBookin
             template=TransactionalEmail.EDUCATIONAL_BOOKING_CANCELLATION_BY_INSTITUTION.value,
             params={
                 "OFFER_NAME": stock.offer.name,
-                "EVENT_BEGINNING_DATETIME": stock.beginningDatetime.strftime("%d/%m/%Y à %H:%M"),
-                "EDUCATIONAL_REDACTOR_EMAIL": educational_booking.educationalRedactor.email,
+                "EDUCATIONAL_INSTITUTION_NAME": educational_booking.educationalInstitution.name,
+                "VENUE_NAME": stock.offer.venue.name,
+                "EVENT_DATE": stock.beginningDatetime.strftime("%d/%m/%Y"),
+                "EVENT_HOUR": stock.beginningDatetime.strftime("%H:%M"),
+                "REDACTOR_FIRSTNAME": educational_booking.educationalRedactor.firstName,
+                "REDACTOR_LASTNAME": educational_booking.educationalRedactor.lastName,
+                "REDACTOR_EMAIL": educational_booking.educationalRedactor.email,
+                "EDUCATIONAL_INSTITUTION_CITY": educational_booking.educationalInstitution.city,
+                "EDUCATIONAL_INSTITUTION_POSTAL_CODE": educational_booking.educationalInstitution.postalCode,
             },
         )
         mails.send(recipients=[booking_email], data=data)

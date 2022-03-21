@@ -8,12 +8,14 @@ from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.educational.factories import CollectiveBookingFactory
+from pcapi.core.educational.factories import EducationalInstitutionFactory
 from pcapi.core.educational.factories import EducationalRedactorFactory
 from pcapi.core.educational.models import CollectiveBooking
 from pcapi.core.educational.models import CollectiveBookingCancellationReasons
 from pcapi.core.educational.models import CollectiveBookingStatus
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
+from pcapi.core.offers.factories import EducationalEventStockFactory
 from pcapi.core.offers.factories import EventStockFactory
 from pcapi.core.offers.models import Stock
 from pcapi.core.offers.utils import offer_app_link
@@ -33,7 +35,8 @@ class Returns200Test:
             lastName="Doudou",
             email="jean.doux@example.com",
         )
-        stock: Stock = EventStockFactory(
+        institution = EducationalInstitutionFactory(name="Collège Dupont", city="Tourcoing", postalCode=59200)
+        stock: Stock = EducationalEventStockFactory(
             quantity=200,
             dnBookedQuantity=0,
             offer__bookingEmail="test@mail.com",
@@ -41,6 +44,7 @@ class Returns200Test:
         )
         booking = EducationalBookingFactory(
             educationalBooking__educationalRedactor=redactor,
+            educationalBooking__educationalInstitution=institution,
             status=BookingStatus.CONFIRMED,
             stock=stock,
             quantity=20,
@@ -80,7 +84,7 @@ class Returns200Test:
             "isDigital": offer.isDigital,
             "venueName": venue.name,
             "name": offer.name,
-            "numberOfTickets": None,
+            "numberOfTickets": stock.numberOfTickets,
             "participants": [],
             "priceDetail": stock.educationalPriceDetail,
             "postalCode": venue.postalCode,
@@ -115,8 +119,15 @@ class Returns200Test:
         assert mails_testing.outbox[0].sent_data["To"] == "test@mail.com"
         assert mails_testing.outbox[0].sent_data["params"] == {
             "OFFER_NAME": offer.name,
-            "EVENT_BEGINNING_DATETIME": "01/01/2020 à 12:53",
-            "EDUCATIONAL_REDACTOR_EMAIL": "jean.doux@example.com",
+            "EDUCATIONAL_INSTITUTION_NAME": institution.name,
+            "VENUE_NAME": venue.name,
+            "EVENT_DATE": "01/01/2020",
+            "EVENT_HOUR": "12:53",
+            "REDACTOR_FIRSTNAME": redactor.firstName,
+            "REDACTOR_LASTNAME": redactor.lastName,
+            "REDACTOR_EMAIL": redactor.email,
+            "EDUCATIONAL_INSTITUTION_CITY": institution.city,
+            "EDUCATIONAL_INSTITUTION_POSTAL_CODE": institution.postalCode,
         }
 
     def test_refuse_educational_booking_when_pending(self, client) -> None:
@@ -170,6 +181,27 @@ class Returns200Test:
         assert (
             refused_collective_booking.cancellationReason == CollectiveBookingCancellationReasons.REFUSED_BY_INSTITUTE
         )
+
+        offer = stock.offer
+        educational_institution = refused_collective_booking.educationalInstitution
+        assert len(mails_testing.outbox) == 1
+        assert (
+            mails_testing.outbox[0].sent_data["template"]
+            == TransactionalEmail.EDUCATIONAL_BOOKING_CANCELLATION_BY_INSTITUTION.value.__dict__
+        )
+        assert mails_testing.outbox[0].sent_data["To"] == "test@mail.com"
+        assert mails_testing.outbox[0].sent_data["params"] == {
+            "OFFER_NAME": offer.name,
+            "EDUCATIONAL_INSTITUTION_NAME": educational_institution.name,
+            "VENUE_NAME": offer.venue.name,
+            "EVENT_DATE": "01/01/2020",
+            "EVENT_HOUR": "12:53",
+            "REDACTOR_FIRSTNAME": redactor.firstName,
+            "REDACTOR_LASTNAME": redactor.lastName,
+            "REDACTOR_EMAIL": redactor.email,
+            "EDUCATIONAL_INSTITUTION_CITY": educational_institution.city,
+            "EDUCATIONAL_INSTITUTION_POSTAL_CODE": educational_institution.postalCode,
+        }
 
     def test_refuse_collective_booking_when_pending(self, client) -> None:
         booking = EducationalBookingFactory(
