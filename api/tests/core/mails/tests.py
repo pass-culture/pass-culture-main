@@ -43,7 +43,13 @@ class SendTest:
         assert not successful
         email = Email.query.one()
         assert email.status == EmailStatus.ERROR
-        assert email.content == self.expected_sent_data
+        # FIXME: DEBUG ONLY
+        if email.content != self.expected_sent_data:
+            from pcapi import settings
+
+            keys = {"IS_PROD", "MAILJET_TEMPLATE_DEBUGGING"}
+            settings_summary = {key: getattr(settings, key) for key in keys}
+            raise ValueError(f"settings summary: {settings_summary}")
 
     @override_settings(MAILJET_EMAIL_BACKEND="pcapi.core.mails.backends.mailjet.MailjetBackend")
     def test_send_with_mailjet(self):
