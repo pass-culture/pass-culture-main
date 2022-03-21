@@ -2,7 +2,6 @@ import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import { Redirect } from 'react-router-dom'
 
-import { redirectLoggedUser } from 'components/router/helpers'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { campaignTracker } from 'tracking/mediaCampaignsTracking'
 
