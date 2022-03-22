@@ -210,12 +210,12 @@ class UserTest:
 
 @pytest.mark.usefixtures("db_session")
 class SuperAdminTest:
-    @override_settings(SUPER_ADMIN_EMAIL_ADDRESSES="super@admin.user", IS_PROD=True)
+    @override_settings(SUPER_ADMIN_EMAIL_ADDRESSES=["super@admin.user"], IS_PROD=True)
     def test_super_user_prod(self):
         user = users_factories.UserFactory(email="super@admin.user")
         assert user.is_super_admin()
 
-    @override_settings(SUPER_ADMIN_EMAIL_ADDRESSES="", IS_PROD=True)
+    @override_settings(SUPER_ADMIN_EMAIL_ADDRESSES=[], IS_PROD=True)
     def test_super_user_prod_not_configured(self):
         user = users_factories.UserFactory(email="simple-admin@admin.user")
         assert user.is_super_admin() is False
