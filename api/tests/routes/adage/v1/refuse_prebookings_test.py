@@ -8,17 +8,19 @@ from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.educational.factories import CollectiveBookingFactory
+from pcapi.core.educational.factories import CollectiveStockFactory
 from pcapi.core.educational.factories import EducationalInstitutionFactory
 from pcapi.core.educational.factories import EducationalRedactorFactory
 from pcapi.core.educational.models import CollectiveBooking
 from pcapi.core.educational.models import CollectiveBookingCancellationReasons
 from pcapi.core.educational.models import CollectiveBookingStatus
+from pcapi.core.educational.models import CollectiveStock
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.offers.factories import EducationalEventStockFactory
-from pcapi.core.offers.factories import EventStockFactory
 from pcapi.core.offers.models import Stock
 from pcapi.core.offers.utils import offer_app_link
+from pcapi.core.testing import override_features
 from pcapi.utils.date import format_into_utc_date
 
 
@@ -141,6 +143,7 @@ class Returns200Test:
 
         assert response.status_code == 200
 
+    @override_features(ENABLE_NEW_COLLECTIVE_MODEL=True)
     def test_refuse_collective_booking(
         self,
         client,
@@ -151,22 +154,22 @@ class Returns200Test:
             lastName="Doudou",
             email="jean.doux@example.com",
         )
-        stock: Stock = EventStockFactory(
-            quantity=200,
-            dnBookedQuantity=0,
-            offer__bookingEmail="test@mail.com",
+        collective_stock: CollectiveStock = CollectiveStockFactory(
+            collectiveOffer__bookingEmail="test_collective@mail.com",
             beginningDatetime=datetime(2020, 1, 1, 12, 53, 00),
         )
         booking = EducationalBookingFactory(
             educationalBooking__educationalRedactor=redactor,
             status=BookingStatus.CONFIRMED,
-            stock=stock,
             quantity=20,
             cancellation_limit_date=datetime(2023, 1, 1),
             dateCreated=datetime(2021, 12, 15, 10, 5, 5),
         )
         collective_booking = CollectiveBookingFactory(
-            status=CollectiveBookingStatus.PENDING, bookingId=booking.id, educationalRedactor=redactor
+            status=CollectiveBookingStatus.PENDING,
+            bookingId=booking.id,
+            educationalRedactor=redactor,
+            collectiveStock=collective_stock,
         )
 
         client = client.with_eac_token()
@@ -182,18 +185,18 @@ class Returns200Test:
             refused_collective_booking.cancellationReason == CollectiveBookingCancellationReasons.REFUSED_BY_INSTITUTE
         )
 
-        offer = stock.offer
+        collective_offer = collective_stock.collectiveOffer
         educational_institution = refused_collective_booking.educationalInstitution
         assert len(mails_testing.outbox) == 1
         assert (
             mails_testing.outbox[0].sent_data["template"]
             == TransactionalEmail.EDUCATIONAL_BOOKING_CANCELLATION_BY_INSTITUTION.value.__dict__
         )
-        assert mails_testing.outbox[0].sent_data["To"] == "test@mail.com"
+        assert mails_testing.outbox[0].sent_data["To"] == "test_collective@mail.com"
         assert mails_testing.outbox[0].sent_data["params"] == {
-            "OFFER_NAME": offer.name,
+            "OFFER_NAME": collective_offer.name,
             "EDUCATIONAL_INSTITUTION_NAME": educational_institution.name,
-            "VENUE_NAME": offer.venue.name,
+            "VENUE_NAME": collective_offer.venue.name,
             "EVENT_DATE": "01/01/2020",
             "EVENT_HOUR": "12:53",
             "REDACTOR_FIRSTNAME": redactor.firstName,
