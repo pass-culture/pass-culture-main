@@ -5,8 +5,15 @@ import { useHistory, useParams } from 'react-router'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { campaignTracker } from 'tracking/mediaCampaignsTracking'
 
-const SignupValidation = ({ notifyError, notifySuccess }) => {
-  let { token } = useParams()
+type Params = { token: string }
+
+export type Props = {
+  notifyError: (message: string) => void
+  notifySuccess: (message: string) => void
+}
+
+const SignupValidation = ({ notifyError, notifySuccess }: Props): null => {
+  const { token } = useParams<Params>()
   const history = useHistory()
   useEffect(() => {
     campaignTracker.signUpValidation()

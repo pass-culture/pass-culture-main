@@ -1,6 +1,7 @@
 import '@testing-library/jest-dom'
 import { render, waitFor } from '@testing-library/react'
 import { createBrowserHistory } from 'history'
+import type { History } from 'history'
 import React from 'react'
 import { Provider } from 'react-redux'
 import reactRouter from 'react-router'
@@ -12,6 +13,7 @@ import { configureTestStore } from 'store/testUtils'
 import { campaignTracker } from 'tracking/mediaCampaignsTracking'
 
 import SignupValidation from '../SignupValidation'
+import type { Props } from '../SignupValidation'
 
 jest.mock('repository/pcapi/pcapi')
 
