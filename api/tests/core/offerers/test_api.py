@@ -627,3 +627,29 @@ def move_venue_banner_to_legacy_location(venue, directory, timestamp):
     venue.bannerUrl = venue.bannerUrl.split("_")[0]
     os.rename(directory / f"{humanize(venue.id)}_{timestamp}", directory / f"{humanize(venue.id)}")
     os.rename(directory / f"{humanize(venue.id)}_{timestamp}.type", directory / f"{humanize(venue.id)}.type")
+
+
+class GetEligibleForSearchVenuesTest:
+    def test_get_all_eligibles_venues_by_default(self) -> None:
+        eligible_venues = offers_factories.VenueFactory.create_batch(3, isPermanent=True)
+
+        with assert_num_queries(1):
+            venues = list(offerers_api.get_eligible_for_search_venues())
+
+        assert {venue.id for venue in venues} == {venue.id for venue in eligible_venues}
+
+    def test_max_limit_number_of_venues(self) -> None:
+        eligible_venues = offers_factories.VenueFactory.create_batch(3, isPermanent=True)
+
+        with assert_num_queries(1):
+            venues = list(offerers_api.get_eligible_for_search_venues(max_venues=1))
+
+        assert venues[0].id == eligible_venues[0].id
+
+    def test_only_permantent_venues_are_eligibles(self) -> None:
+        eligible_venues = offers_factories.VenueFactory.create_batch(3, isPermanent=True)
+        offers_factories.VirtualVenueFactory.create_batch(2)  # non-eligible venues
+
+        venues = list(offerers_api.get_eligible_for_search_venues())
+
+        assert {venue.id for venue in venues} == {venue.id for venue in eligible_venues}

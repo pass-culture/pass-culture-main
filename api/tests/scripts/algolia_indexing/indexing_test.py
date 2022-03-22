@@ -1,6 +1,10 @@
 from unittest import mock
 
+import pytest
+
+import pcapi.core.offers.factories as offers_factories
 from pcapi.scripts.algolia_indexing.indexing import batch_indexing_offers_in_algolia_from_database
+from pcapi.scripts.algolia_indexing.indexing import batch_indexing_venues_in_algolia_from_database
 
 
 # FIXME (dbaty, 2021-06-25): review these tests (remove mock of database queries)
@@ -51,3 +55,17 @@ class BatchIndexingOffersInAlgoliaFromDatabaseTest:
 
         # Then
         mock_reindex_offer_ids.assert_called_once_with([1])
+
+
+@pytest.mark.usefixtures("db_session")
+@mock.patch("pcapi.core.search.reindex_venue_ids")
+def test_batch_indexing_venues_in_algolia_from_database(mock_reindex_venue_ids) -> None:
+    offers_factories.VenueFactory.create_batch(3, isPermanent=True)  # eligible venues
+    offers_factories.VenueFactory.create_batch(1, isPermanent=False)  # non-eligible venues
+
+    batch_size = 2
+    batch_indexing_venues_in_algolia_from_database(algolia_batch_size=batch_size, max_venues=10)
+
+    # 3 eligible venues, splitted into two batches since the batch_size
+    # is 2 -> 2 calls to reindex_venue_ids
+    assert mock_reindex_venue_ids.call_count == batch_size
