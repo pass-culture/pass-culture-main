@@ -1,17 +1,8 @@
 import { connect } from 'react-redux'
-import { withRouter } from 'react-router'
-import { compose } from 'redux'
 
 import { showNotification } from 'store/reducers/notificationReducer'
-import { selectCurrentUser } from 'store/selectors/data/usersSelectors'
 
 import SignupValidation from './SignupValidation'
-
-export function mapStateToProps(state) {
-  return {
-    currentUser: selectCurrentUser(state),
-  }
-}
 
 export const mapDispatchToProps = dispatch => ({
   dispatch,
@@ -33,7 +24,4 @@ export const mapDispatchToProps = dispatch => ({
   },
 })
 
-export default compose(
-  withRouter,
-  connect(mapStateToProps, mapDispatchToProps)
-)(SignupValidation)
+export default connect(null, mapDispatchToProps)(SignupValidation)
