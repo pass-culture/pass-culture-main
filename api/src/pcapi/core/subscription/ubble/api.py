@@ -224,29 +224,29 @@ def archive_ubble_user_id_pictures(identification_id: str) -> bool:
     ubble_content = ubble.get_content(fraud_check.thirdPartyId)
     ubble_files = download_ubble_document_pictures(ubble_content, fraud_check)
 
-    # pass boolean "are_pictures_stored" to True when they are really saved
-    are_pictures_stored = False  # both files are successfully stored on secured bucket
+    front_picture_stored = back_picture_stored = False
 
     if ubble_files["front"] is not None:
-        res = outscale.upload_file(
+        front_picture_stored = outscale.upload_file(
             str(fraud_check.userId), str(ubble_files["front"]["file_path"]), str(ubble_files["front"]["file_name"])
         )
-        are_pictures_stored = res
         os.remove(ubble_files["front"]["file_path"])
 
-    if (ubble_files["back"] is not None) and are_pictures_stored:
-        res = outscale.upload_file(
+    if ubble_files["back"] is not None:
+        back_picture_stored = outscale.upload_file(
             str(fraud_check.userId), str(ubble_files["back"]["file_path"]), str(ubble_files["back"]["file_name"])
         )
-        are_pictures_stored = are_pictures_stored and res
         os.remove(ubble_files["back"]["file_path"])
-    else:
-        are_pictures_stored = False
 
-    fraud_check.idPicturesStored = are_pictures_stored
+    # all expected files are successfully stored on secured bucket
+    archive_is_successful = (ubble_content.signed_image_front_url is None or front_picture_stored) and (
+        ubble_content.signed_image_back_url is None or back_picture_stored
+    )
+
+    fraud_check.idPicturesStored = archive_is_successful
     pcapi_repository.repository.save(fraud_check)
 
-    return are_pictures_stored
+    return archive_is_successful
 
 
 def download_ubble_document_pictures(
