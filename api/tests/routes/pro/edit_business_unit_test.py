@@ -10,8 +10,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 def test_edit_business_unit(client):
     venue = offerers_factories.VenueFactory(
-        businessUnit__siret=None,
-        managingOfferer__siren="123456789",
+        businessUnit__siret=None, managingOfferer__siren="123456789", siret="12345678901234"
     )
     business_unit = venue.businessUnit
     pro = users_factories.ProFactory(offerers=[venue.managingOfferer])
