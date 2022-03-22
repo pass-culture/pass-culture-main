@@ -1,3 +1,4 @@
+import './why-did-you-render'
 import '@fontsource/barlow/latin.css'
 import { init as SentryInit } from '@sentry/browser'
 import { Integrations as TracingIntegrations } from '@sentry/tracing'
