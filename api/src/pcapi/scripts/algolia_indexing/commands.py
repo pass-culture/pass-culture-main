@@ -4,6 +4,7 @@ from pcapi.core import search
 import pcapi.core.educational.api as educational_api
 import pcapi.core.offers.api as offers_api
 from pcapi.scripts.algolia_indexing.indexing import batch_indexing_offers_in_algolia_from_database
+from pcapi.scripts.algolia_indexing.indexing import batch_indexing_venues_in_algolia_from_database
 from pcapi.utils.blueprint import Blueprint
 
 
@@ -46,3 +47,13 @@ def process_expired_offers(all_offers: bool):
 @click.option("-a", "--all", help="Bypass the two days limit to delete all expired collective offers", default=False)
 def process_expired_collective_offers(all_offers: bool):
     educational_api.unindex_expired_collective_offers(process_all_expired=all_offers)
+
+
+@blueprint.cli.command("process_venues_from_database")
+@click.option("--clear", help="Clear search index", type=bool, default=False)
+@click.option("--batch-size", help="Batch size (Algolia)", type=int, default=10_000)
+@click.option("--max-venues", help="Max number of venues (total)", type=int, default=10_000)
+def process_venues_from_database(clear: bool, batch_size: int, max_venues: int):
+    if clear:
+        search.unindex_all_venues()
+    batch_indexing_venues_in_algolia_from_database(algolia_batch_size=batch_size, max_venues=max_venues)
