@@ -555,9 +555,9 @@ class ValidationView(BaseAdminView):
                         if next_offer_query.count() > 0:
                             next_offer = next_offer_query.one()
                             return redirect(url_for(".edit", id=next_offer.id))
-                        return redirect(url_for("/validation.index_view"))
+                        return redirect(url_for("validation.index_view"))
                     if request.form["action"] == "save":
-                        return redirect(url_for("/validation.index_view"))
+                        return redirect(url_for("validation.index_view"))
                 else:
                     flash("Une erreur s'est produite lors de la mise à jour du statut de validation", "error")
 
@@ -572,7 +572,7 @@ class ValidationView(BaseAdminView):
         validation_items = parse_offer_validation_config(offer, current_config)[1]
         context = {
             "form": form,
-            "cancel_link_url": url_for("/validation.index_view"),
+            "cancel_link_url": url_for("validation.index_view"),
             "legal_category_code": legal_category_code,
             "legal_category_label": legal_category_label,
             "pc_offer_url": _pro_offer_url(offer),
