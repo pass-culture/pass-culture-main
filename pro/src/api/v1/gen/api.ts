@@ -3580,7 +3580,7 @@ export class DefaultApi extends BaseAPI implements DefaultApiInterface {
      * @throws {RequiredError}
      * @memberof DefaultApi
      */
-    public async getBookingsGetBookingsPro(bookingStatusFilter: BookingStatusFilter, bookingPeriodBeginningDate: string, bookingPeriodEndingDate: string, page?: number, venueId?: number, eventDate?: Date, offerType?: OfferType, extra?: string, options?: any) {
+    public async getBookingsGetBookingsPro(bookingStatusFilter: BookingStatusFilter, bookingPeriodBeginningDate: string, bookingPeriodEndingDate: string, page?: number, venueId?: number | null, eventDate?: Date | null, offerType?: OfferType, extra?: string, options?: any) {
         const functionalApi = DefaultApiFp(this, this.configuration)
         return functionalApi.getBookingsGetBookingsPro(this.basePath, bookingStatusFilter, bookingPeriodBeginningDate, bookingPeriodEndingDate, page, venueId, eventDate, offerType, extra, options)
     }
@@ -3603,7 +3603,7 @@ export class DefaultApi extends BaseAPI implements DefaultApiInterface {
      * @throws {RequiredError}
      * @memberof DefaultApi
      */
-    public async getFinanceGetBusinessUnits(offererId?: number, options?: any) {
+    public async getFinanceGetBusinessUnits(offererId?: number | null, options?: any) {
         const functionalApi = DefaultApiFp(this, this.configuration)
         return functionalApi.getFinanceGetBusinessUnits(this.basePath, offererId, options)
     }
@@ -3617,7 +3617,7 @@ export class DefaultApi extends BaseAPI implements DefaultApiInterface {
      * @throws {RequiredError}
      * @memberof DefaultApi
      */
-    public async getFinanceGetInvoices(businessUnitId?: number, periodBeginningDate?: string, periodEndingDate?: string, options?: any) {
+    public async getFinanceGetInvoices(businessUnitId?: number | null, periodBeginningDate?: string | null, periodEndingDate?: string | null, options?: any) {
         const functionalApi = DefaultApiFp(this, this.configuration)
         return functionalApi.getFinanceGetInvoices(this.basePath, businessUnitId, periodBeginningDate, periodEndingDate, options)
     }
@@ -3655,7 +3655,7 @@ export class DefaultApi extends BaseAPI implements DefaultApiInterface {
      * @throws {RequiredError}
      * @memberof DefaultApi
      */
-    public async getOfferersGetOfferers(keywords?: string, page?: number, paginate?: number, options?: any) {
+    public async getOfferersGetOfferers(keywords?: string | null, page?: number | null, paginate?: number | null, options?: any) {
         const functionalApi = DefaultApiFp(this, this.configuration)
         return functionalApi.getOfferersGetOfferers(this.basePath, keywords, page, paginate, options)
     }
@@ -3667,7 +3667,7 @@ export class DefaultApi extends BaseAPI implements DefaultApiInterface {
      * @throws {RequiredError}
      * @memberof DefaultApi
      */
-    public async getOfferersListEducationalOfferers(offererId?: string, options?: any) {
+    public async getOfferersListEducationalOfferers(offererId?: string | null, options?: any) {
         const functionalApi = DefaultApiFp(this, this.configuration)
         return functionalApi.getOfferersListEducationalOfferers(this.basePath, offererId, options)
     }
@@ -3680,7 +3680,7 @@ export class DefaultApi extends BaseAPI implements DefaultApiInterface {
      * @throws {RequiredError}
      * @memberof DefaultApi
      */
-    public async getOfferersListOfferersNames(validated?: boolean, validatedForUser?: boolean, options?: any) {
+    public async getOfferersListOfferersNames(validated?: boolean | null, validatedForUser?: boolean | null, options?: any) {
         const functionalApi = DefaultApiFp(this, this.configuration)
         return functionalApi.getOfferersListOfferersNames(this.basePath, validated, validatedForUser, options)
     }
@@ -3734,7 +3734,7 @@ export class DefaultApi extends BaseAPI implements DefaultApiInterface {
      * @throws {RequiredError}
      * @memberof DefaultApi
      */
-    public async getOffersListOffers(nameOrIsbn?: string, offererId?: number, status?: string, venueId?: number, categoryId?: string, creationMode?: string, periodBeginningDate?: string, periodEndingDate?: string, options?: any) {
+    public async getOffersListOffers(nameOrIsbn?: string | null, offererId?: number | null, status?: string | null, venueId?: number | null, categoryId?: string | null, creationMode?: string | null, periodBeginningDate?: string | null, periodEndingDate?: string | null, options?: any) {
         const functionalApi = DefaultApiFp(this, this.configuration)
         return functionalApi.getOffersListOffers(this.basePath, nameOrIsbn, offererId, status, venueId, categoryId, creationMode, periodBeginningDate, periodEndingDate, options)
     }
