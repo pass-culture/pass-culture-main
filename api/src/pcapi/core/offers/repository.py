@@ -216,7 +216,7 @@ def get_collective_offers_by_filters(
     status: Optional[str] = None,
     venue_id: Optional[int] = None,
     category_id: Optional[str] = None,
-    name_keywords_or_isbn: Optional[str] = None,
+    name_keywords: Optional[str] = None,
     period_beginning_date: Optional[datetime] = None,
     period_ending_date: Optional[datetime] = None,
 ) -> Query:
@@ -240,10 +240,10 @@ def get_collective_offers_by_filters(
             subcategory.id for subcategory in subcategories.ALL_SUBCATEGORIES if subcategory.category_id == category_id
         ]
         query = query.filter(CollectiveOffer.subcategoryId.in_(requested_subcategories))
-    if name_keywords_or_isbn is not None:
-        search = name_keywords_or_isbn
-        if len(name_keywords_or_isbn) > 3:
-            search = "%{}%".format(name_keywords_or_isbn)
+    if name_keywords is not None:
+        search = name_keywords
+        if len(name_keywords) > 3:
+            search = "%{}%".format(name_keywords)
         # We should really be using `union` instead of `union_all` here since we don't want duplicates but
         # 1. it's unlikely that a book will contain its ISBN in its name
         # 2. we need to migrate Offer.extraData to JSONB in order to use `union`
@@ -295,7 +295,7 @@ def get_collective_offers_template_by_filters(
     status: Optional[str] = None,
     venue_id: Optional[int] = None,
     category_id: Optional[str] = None,
-    name_keywords_or_isbn: Optional[str] = None,
+    name_keywords: Optional[str] = None,
     period_beginning_date: Optional[datetime] = None,
     period_ending_date: Optional[datetime] = None,
 ) -> Optional[Query]:
@@ -322,10 +322,10 @@ def get_collective_offers_template_by_filters(
             subcategory.id for subcategory in subcategories.ALL_SUBCATEGORIES if subcategory.category_id == category_id
         ]
         query = query.filter(CollectiveOfferTemplate.subcategoryId.in_(requested_subcategories))
-    if name_keywords_or_isbn is not None:
-        search = name_keywords_or_isbn
-        if len(name_keywords_or_isbn) > 3:
-            search = "%{}%".format(name_keywords_or_isbn)
+    if name_keywords is not None:
+        search = name_keywords
+        if len(name_keywords) > 3:
+            search = "%{}%".format(name_keywords)
         # We should really be using `union` instead of `union_all` here since we don't want duplicates but
         # 1. it's unlikely that a book will contain its ISBN in its name
         # 2. we need to migrate Offer.extraData to JSONB in order to use `union`
