@@ -14,7 +14,8 @@
     @include body();
 
     appearance: none;
-    background: url('/icons/dropdown-disclosure-down-b.svg') no-repeat right rem(15px) top 56%;
+    background: url('/icons/dropdown-disclosure-down-b.svg') no-repeat right
+      rem(15px) top 56%;
     border: 1px solid $grey-medium;
     border-radius: rem(20px);
     height: rem(40px);
@@ -40,6 +41,24 @@
 
     &.error:not(:focus-within) {
       border: 2px solid $red-error;
+    }
+  }
+
+  &-full-width {
+    display: flex;
+    flex-direction: column;
+  }
+
+  &-inline {
+    display: flex;
+    align-items: flex-end;
+
+    select {
+      min-width: rem(178px);
+    }
+
+    &-label-complement {
+      padding: rem(10px) rem(16px);
     }
   }
 }

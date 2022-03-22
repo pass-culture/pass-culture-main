@@ -40,6 +40,7 @@ const Select = ({
   name,
   options,
   required,
+  rightLabel,
   selectedValue,
   subLabel,
 }) => (
@@ -50,25 +51,34 @@ const Select = ({
         {subLabel && <span className="it-sub-label">{subLabel}</span>}
       </label>
     )}
-    <select
-      className={`${error ? 'error' : ''}`}
-      disabled={isDisabled}
-      id={name}
-      name={name}
-      onBlur={handleSelection}
-      onChange={handleSelection}
-      required={required}
-      value={selectedValue || (defaultOption && defaultOption.id) || null}
+    <div
+      className={rightLabel ? 'input-select-inline' : 'input-select-full-width'}
     >
-      {defaultOption && (
-        <option value={defaultOption.id}>{defaultOption.displayName}</option>
+      <select
+        className={`${error ? 'error' : ''}`}
+        disabled={isDisabled}
+        id={name}
+        name={name}
+        onBlur={handleSelection}
+        onChange={handleSelection}
+        required={required}
+        value={selectedValue || (defaultOption && defaultOption.id) || null}
+      >
+        {defaultOption && (
+          <option value={defaultOption.id}>{defaultOption.displayName}</option>
+        )}
+        {options.map(option => (
+          <option key={option.id} value={option.id}>
+            {option.displayName}
+          </option>
+        ))}
+      </select>
+      {rightLabel && (
+        <span className="input-select-inline-label-complement">
+          {rightLabel}
+        </span>
       )}
-      {options.map(option => (
-        <option key={option.id} value={option.id}>
-          {option.displayName}
-        </option>
-      ))}
-    </select>
+    </div>
     {error && <InputError name={name}>{error}</InputError>}
   </div>
 )
@@ -79,6 +89,7 @@ Select.defaultProps = {
   isDisabled: false,
   label: undefined,
   required: false,
+  rightLabel: '',
   subLabel: '',
 }
 
@@ -99,6 +110,7 @@ Select.propTypes = {
     })
   ).isRequired,
   required: PropTypes.bool,
+  rightLabel: PropTypes.string,
   selectedValue: PropTypes.string.isRequired,
   subLabel: PropTypes.string,
 }
