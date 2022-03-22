@@ -80,7 +80,7 @@ class AdminUserViewTest:
         }
         assert mails_testing.outbox[0].sent_data["template"] == asdict(TransactionalEmail.EMAIL_VALIDATION_TO_PRO.value)
 
-    @override_settings(IS_PROD=True, SUPER_ADMIN_EMAIL_ADDRESSES="")
+    @override_settings(IS_PROD=True, SUPER_ADMIN_EMAIL_ADDRESSES=[])
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     def test_admin_user_creation_is_restricted_in_prod(self, mocked_validate_csrf_token, app, db_session):
         users_factories.AdminFactory(email="user@example.com")
@@ -102,7 +102,7 @@ class AdminUserViewTest:
         assert len(filtered_users) == 0
 
     @clean_database
-    @override_settings(IS_PROD=True, SUPER_ADMIN_EMAIL_ADDRESSES="superadmin@example.com")
+    @override_settings(IS_PROD=True, SUPER_ADMIN_EMAIL_ADDRESSES=["superadmin@example.com"])
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     def test_super_admin_can_suspend_then_unsuspend_simple_admin(self, mocked_validate_csrf_token, app):
         super_admin = users_factories.AdminFactory(email="superadmin@example.com")
@@ -141,7 +141,7 @@ class AdminUserViewTest:
         assert admin_2.isActive
 
     @clean_database
-    @override_settings(IS_PROD=True, SUPER_ADMIN_EMAIL_ADDRESSES="superadmin@example.com")
+    @override_settings(IS_PROD=True, SUPER_ADMIN_EMAIL_ADDRESSES=["superadmin@example.com"])
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     def test_simple_admin_can_not_unsuspend_simple_admin(self, mocked_validate_csrf_token, app):
         super_admin = users_factories.AdminFactory(email="superadmin@example.com")

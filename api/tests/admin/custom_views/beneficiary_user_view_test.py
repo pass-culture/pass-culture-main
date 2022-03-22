@@ -282,7 +282,7 @@ class BeneficiaryUserViewTest:
         mocked_request_email_confirmation.assert_called_once_with(beneficiary)
 
 
-@override_settings(IS_PROD=True, SUPER_ADMIN_EMAIL_ADDRESSES="superadmin@example.com")
+@override_settings(IS_PROD=True, SUPER_ADMIN_EMAIL_ADDRESSES=["superadmin@example.com"])
 @pytest.mark.usefixtures("db_session")
 class BeneficiaryUserUpdateTest:
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
