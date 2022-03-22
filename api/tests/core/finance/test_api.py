@@ -920,6 +920,7 @@ class EditBusinessUnitTest:
         venue = offerers_factories.VenueFactory(
             businessUnit__siret=None,
             managingOfferer__siren="123456789",
+            siret="12345678901234",
         )
         business_unit = venue.businessUnit
 
@@ -927,6 +928,7 @@ class EditBusinessUnitTest:
 
         business_unit = models.BusinessUnit.query.one()
         assert business_unit.siret == "12345678901234"
+        assert business_unit.name == venue.publicName
 
     def test_cannot_edit_siret_if_one_is_already_set(self):
         venue = offerers_factories.VenueFactory(

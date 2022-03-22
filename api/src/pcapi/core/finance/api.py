@@ -819,7 +819,8 @@ def edit_business_unit(business_unit: models.BusinessUnit, siret: str) -> None:
         raise ValueError("Cannot edit a business unit that already has a SIRET.")
 
     validation.check_business_unit_siret(business_unit, siret)
-
+    venue = offerers_models.Venue.query.filter(offerers_models.Venue.siret == siret).one()
+    business_unit.name = venue.publicName or venue.name
     business_unit.siret = siret
     db.session.add(business_unit)
     db.session.commit()
