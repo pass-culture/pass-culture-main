@@ -85,7 +85,7 @@ const Offers = ({
   )
 
   const userHasNoOffers =
-    !isLoading && !hasOffers && !hasSearchFilters(searchFilters)
+    !isLoading && !hasOffers && !hasSearchFilters(urlSearchFilters)
 
   const actionLink =
     userHasNoOffers || isAdmin ? null : (
