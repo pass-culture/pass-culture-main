@@ -8,32 +8,46 @@ import {
   translateQueryParamsToApiParams,
 } from 'utils/translate'
 
+import { Audience, SearchFilters } from '../types'
+
 interface IUrlSearchFilters {
-  nameOrIsbn: string
-  offererId: string
-  venueId: string
-  categoryId: string
-  status: string
-  creationMode: string
-  periodBeginningDate: string
-  periodEndingDate: string
-  audience: string
+  nameOrIsbn?: string
+  offererId?: string
+  venueId?: string
+  categoryId?: string
+  statut?: string
+  creation?: string
+  periodBeginningDate?: string
+  periodEndingDate?: string
+  audience?: string
+  page?: string
 }
 
-const useQuerySearchFilters = (): [IUrlSearchFilters, number] => {
+const isAudienceIndividualOrCollective = (
+  audience?: string
+): audience is Audience =>
+  audience === Audience.INDIVIDUAL || audience === Audience.COLLECTIVE
+
+const useQuerySearchFilters = (): [SearchFilters, number, Audience] => {
   const { search } = useLocation()
 
+  const queryParams: IUrlSearchFilters = useMemo(() => parse(search), [search])
+
   const urlPageNumber: number = useMemo(() => {
-    const queryParams = parse(search)
-    return Number(queryParams['page']) || DEFAULT_PAGE
-  }, [search])
+    return Number(queryParams.page) || DEFAULT_PAGE
+  }, [queryParams])
 
-  const urlSearchFilters: IUrlSearchFilters = useMemo(() => {
-    const queryParams = parse(search)
+  const urlOfferType: Audience = useMemo(() => {
+    if (isAudienceIndividualOrCollective(queryParams.audience)) {
+      return queryParams.audience
+    }
+    return Audience.INDIVIDUAL
+  }, [queryParams])
 
+  const urlSearchFilters: SearchFilters = useMemo(() => {
     const translatedFilters: Record<string, string> = {}
 
-    const fieldsWithTranslatedValues = ['statut', 'creation']
+    const fieldsWithTranslatedValues = ['statut', 'creation'] as const
     fieldsWithTranslatedValues.forEach(field => {
       if (queryParams[field]) {
         type mapBrowserToApiKey = keyof typeof mapBrowserToApi
@@ -44,6 +58,7 @@ const useQuerySearchFilters = (): [IUrlSearchFilters, number] => {
         translatedFilters[field] = translatedValue
       }
     })
+
     const translatedQuery = translateQueryParamsToApiParams({
       ...queryParams,
       ...translatedFilters,
@@ -53,10 +68,11 @@ const useQuerySearchFilters = (): [IUrlSearchFilters, number] => {
       ...DEFAULT_SEARCH_FILTERS,
       ...translatedQuery,
     }
-    return urlFilters
-  }, [search])
 
-  return [urlSearchFilters, urlPageNumber]
+    return urlFilters
+  }, [queryParams])
+
+  return [urlSearchFilters, urlPageNumber, urlOfferType]
 }
 
 export default useQuerySearchFilters

@@ -1,33 +1,34 @@
 import cn from 'classnames'
 import React from 'react'
 
+import { Audience } from 'core/Offers/types'
 import { ReactComponent as LibraryIcon } from 'icons/library.svg'
 import { ReactComponent as UserIcon } from 'icons/user.svg'
 
 import styles from './OfferListFilterTabs.module.scss'
 
 interface IOfferListFilterTabsProps {
-  selectedAudience: 'individual' | 'collective'
-  setSelectedAudience: (audience: 'individual' | 'collective') => void
+  selectedAudience: Audience
+  onSelectAudience: (audience: Audience) => void
 }
 
 const OfferListFilterTabs = ({
   selectedAudience,
-  setSelectedAudience,
+  onSelectAudience,
 }: IOfferListFilterTabsProps): JSX.Element => {
   return (
     <div className={styles['offer-list-filter-tabs']}>
       <label
         className={cn(styles['offer-list-filter-tabs-tab'], {
-          [styles['is-selected']]: selectedAudience === 'individual',
+          [styles['is-selected']]: selectedAudience === Audience.INDIVIDUAL,
         })}
       >
         <UserIcon className={styles['offer-list-filter-tabs-tab-icon']} />
         <input
-          checked={selectedAudience === 'individual'}
+          checked={selectedAudience === Audience.INDIVIDUAL}
           className={styles['offer-list-filter-tabs-tab-radio']}
           name="audience"
-          onChange={() => setSelectedAudience('individual')}
+          onChange={() => onSelectAudience(Audience.INDIVIDUAL)}
           type="radio"
           value="individual"
         />
@@ -35,15 +36,15 @@ const OfferListFilterTabs = ({
       </label>
       <label
         className={cn(styles['offer-list-filter-tabs-tab'], {
-          [styles['is-selected']]: selectedAudience === 'collective',
+          [styles['is-selected']]: selectedAudience === Audience.COLLECTIVE,
         })}
       >
         <LibraryIcon className={styles['offer-list-filter-tabs-tab-icon']} />
         <input
-          checked={selectedAudience === 'collective'}
+          checked={selectedAudience === Audience.COLLECTIVE}
           className={styles['offer-list-filter-tabs-tab-radio']}
           name="audience"
-          onChange={() => setSelectedAudience('collective')}
+          onChange={() => onSelectAudience(Audience.COLLECTIVE)}
           type="radio"
           value="collective"
         />

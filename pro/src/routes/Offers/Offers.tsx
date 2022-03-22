@@ -1,21 +1,24 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
+import { useHistory } from 'react-router-dom'
 
 import useActiveFeature from 'components/hooks/useActiveFeature'
 import useCurrentUser from 'components/hooks/useCurrentUser'
 import useNotification from 'components/hooks/useNotification'
 import Spinner from 'components/layout/Spinner'
+import { computeOffersUrl } from 'components/pages/Offers/utils/computeOffersUrl'
 import { DEFAULT_PAGE, DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
 import { useQuerySearchFilters } from 'core/Offers/hooks'
-import { Offer, Offerer, SearchFilters } from 'core/Offers/types'
+import { Audience, Offer, Offerer, SearchFilters } from 'core/Offers/types'
 import OffersScreen from 'screens/Offers'
 import { savePageNumber, saveSearchFilters } from 'store/offers/actions'
 
 import { getFilteredOffersAdapter, getOffererAdapter } from './adapters'
 
 const Offers = (): JSX.Element => {
+  const history = useHistory()
   const notify = useNotification()
-  const [urlSearchFilters, urlPageNumber] = useQuerySearchFilters()
+  const [urlSearchFilters, urlPageNumber, urlAudience] = useQuerySearchFilters()
   const { currentUser } = useCurrentUser()
   const dispatch = useDispatch()
 
@@ -48,6 +51,20 @@ const Offers = (): JSX.Element => {
       setOffers(payload.offers)
     },
     [notify]
+  )
+
+  const redirectWithUrlFilters = useCallback(
+    (
+      filters: SearchFilters & {
+        page?: number
+        audience?: Audience
+      }
+    ) => {
+      const newUrl = computeOffersUrl(filters, filters.page)
+
+      history.push(newUrl)
+    },
+    [history]
   )
 
   useEffect(() => {
@@ -128,11 +145,13 @@ const Offers = (): JSX.Element => {
       loadAndUpdateOffers={loadAndUpdateOffers}
       offerer={offerer}
       offers={offers}
+      redirectWithUrlFilters={redirectWithUrlFilters}
       separateIndividualAndCollectiveOffers={
         separateIndividualAndCollectiveOffers
       }
       setIsLoading={setIsLoading}
       setOfferer={setOfferer}
+      urlAudience={urlAudience}
       urlSearchFilters={urlSearchFilters}
     />
   )
