@@ -342,7 +342,7 @@ def refuse_educational_booking(educational_booking_id: int) -> EducationalBookin
     )
 
     booking_email = booking.stock.offer.bookingEmail
-    if booking_email:
+    if booking_email and not FeatureToggle.ENABLE_NEW_COLLECTIVE_MODEL.is_active():
         data = SendinblueTransactionalEmailData(
             template=TransactionalEmail.EDUCATIONAL_BOOKING_CANCELLATION_BY_INSTITUTION.value,
             params={
@@ -411,14 +411,20 @@ def refuse_collective_booking(educational_booking_id: int) -> Optional[Collectiv
     if FeatureToggle.ENABLE_NEW_COLLECTIVE_MODEL.is_active():
         booking_email = collective_booking.collectiveStock.collectiveOffer.bookingEmail
         if booking_email:
+            collective_stock = collective_booking.collectiveStock
             data = SendinblueTransactionalEmailData(
                 template=TransactionalEmail.EDUCATIONAL_BOOKING_CANCELLATION_BY_INSTITUTION.value,
                 params={
-                    "OFFER_NAME": collective_booking.collectiveStock.offer.name,
-                    "EVENT_BEGINNING_DATETIME": collective_booking.collectiveStock.beginningDatetime.strftime(
-                        "%d/%m/%Y à %H:%M"
-                    ),
-                    "EDUCATIONAL_REDACTOR_EMAIL": educational_booking.educationalRedactor.email,
+                    "OFFER_NAME": collective_stock.collectiveOffer.name,
+                    "EDUCATIONAL_INSTITUTION_NAME": collective_booking.educationalInstitution.name,
+                    "VENUE_NAME": collective_stock.collectiveOffer.venue.name,
+                    "EVENT_DATE": collective_stock.beginningDatetime.strftime("%d/%m/%Y"),
+                    "EVENT_HOUR": collective_stock.beginningDatetime.strftime("%H:%M"),
+                    "REDACTOR_FIRSTNAME": collective_booking.educationalRedactor.firstName,
+                    "REDACTOR_LASTNAME": collective_booking.educationalRedactor.lastName,
+                    "REDACTOR_EMAIL": collective_booking.educationalRedactor.email,
+                    "EDUCATIONAL_INSTITUTION_CITY": collective_booking.educationalInstitution.city,
+                    "EDUCATIONAL_INSTITUTION_POSTAL_CODE": collective_booking.educationalInstitution.postalCode,
                 },
             )
             mails.send(recipients=[booking_email], data=data)
