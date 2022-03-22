@@ -32,3 +32,9 @@ Les fonctionnalités "feature flippées" doivent être activées ou désactivée
 ## Ajout de la feature en base
 
 Ajouter une ligne dans la classe `FeatureToggle`. Si sa valeur par défaut est `False`, ajouter une ligne dans `FEATURES_DISABLED_BY_DEFAULT`.
+
+# Troubleshooting
+
+## Ajout d'un nouveau fichier de route
+
+Vous pouvez être amené à ajouter un nouveau fichier de routes `votre_fichier.py` pour un nouveau besoin métier. Pour que ces routes du nouveau fichier soient exposées et, par conséquent, pour les voir apparaître dans votre interface de routes (swagger, par exemple), il faut bien s'assurer que ce fichier soit initialisé dans le fichier `__init__.py` situé au même niveau dans l'arborescence de fichiers.
