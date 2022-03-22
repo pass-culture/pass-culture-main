@@ -260,7 +260,7 @@ export class {{classname}} extends BaseAPI {
      * @throws {RequiredError}
      * @memberof {{classname}}
      */
-    public async {{nickname}}({{#allParams}}{{paramName}}{{^required}}?{{/required}}: {{{dataType}}}, {{/allParams}}options?: any) {
+    public async {{nickname}}({{#allParams}}{{paramName}}{{^required}}?{{/required}}: {{{dataType}}}{{#nullable}} | null{{/nullable}}, {{/allParams}}options?: any) {
         const functionalApi = {{classname}}Fp(this, this.configuration)
         return functionalApi.{{nickname}}(this.basePath, {{#allParams}}{{paramName}}, {{/allParams}}options)
     }
