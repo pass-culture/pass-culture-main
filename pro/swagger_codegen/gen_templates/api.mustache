@@ -69,7 +69,7 @@ export const {{classname}}FetchParamCreator = function (configuration?: APIConfi
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async {{nickname}}({{#allParams}}{{paramName}}{{^required}}?{{/required}}: {{{dataType}}}{{^nullable}} | null{{/nullable}}, {{/allParams}}options: any = {}): Promise<FetchArgs> {
+        async {{nickname}}({{#allParams}}{{paramName}}{{^required}}?{{/required}}: {{{dataType}}}{{#nullable}} | null{{/nullable}}, {{/allParams}}options: any = {}): Promise<FetchArgs> {
     {{#allParams}}
     {{#required}}
             // verify required parameter '{{paramName}}' is not null or undefined
@@ -198,7 +198,7 @@ export const {{classname}}Fp = function(api: {{classname}}, configuration?: APIC
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async {{nickname}}(basePath: string, {{#allParams}}{{paramName}}{{^required}}?{{/required}}: {{{dataType}}}{{^nullable}} | null{{/nullable}}, {{/allParams}}options?: any): Promise<{{#returnType}}{{{returnType}}}{{/returnType}}{{^returnType}}EmptyResponse{{/returnType}}> {
+        async {{nickname}}(basePath: string, {{#allParams}}{{paramName}}{{^required}}?{{/required}}: {{{dataType}}}{{#nullable}} | null{{/nullable}}, {{/allParams}}options?: any): Promise<{{#returnType}}{{{returnType}}}{{/returnType}}{{^returnType}}EmptyResponse{{/returnType}}> {
             const localVarFetchArgs = await {{classname}}FetchParamCreator(configuration).{{nickname}}({{#allParams}}{{paramName}}, {{/allParams}}options);
             const response = await safeFetch(basePath + localVarFetchArgs.url, localVarFetchArgs.options)
             return handleGeneratedApiResponse(response)
@@ -228,7 +228,7 @@ export interface {{classname}}Interface {
      * @throws {RequiredError}
      * @memberof {{classname}}Interface
      */
-    {{nickname}}({{#allParams}}{{paramName}}{{^required}}?{{/required}}: {{{dataType}}}{{^nullable}} | null{{/nullable}}, {{/allParams}}options?: any): Promise<{{#returnType}}{{{returnType}}}{{/returnType}}{{^returnType}}{}{{/returnType}}>;
+    {{nickname}}({{#allParams}}{{paramName}}{{^required}}?{{/required}}: {{{dataType}}}{{#nullable}} | null{{/nullable}}, {{/allParams}}options?: any): Promise<{{#returnType}}{{{returnType}}}{{/returnType}}{{^returnType}}{}{{/returnType}}>;
 
 {{/operation}}
 }
