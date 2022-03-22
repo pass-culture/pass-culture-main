@@ -33,8 +33,6 @@ export const getFilteredOffersAdapter: GetFilteredOffersAdapter =
 
       const offers = await api.getOffersListOffers(
         nameOrIsbn,
-        // @ts-expect-error: frontend send humanized id (string) but backend dehumanize it (number)
-        // the API generator used type number to type this function but it should be string
         offererId,
         status,
         venueId,
