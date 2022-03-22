@@ -12,15 +12,10 @@ import {
   MAX_TOTAL_PAGES,
   NUMBER_OF_OFFERS_PER_PAGE,
 } from 'core/Offers'
-import { Offer, Offerer, SearchFilters } from 'core/Offers/types'
+import { Audience, Offer, Offerer, SearchFilters } from 'core/Offers/types'
 import { ReactComponent as AddOfferSvg } from 'icons/ico-plus.svg'
 
 import OfferListFilterTabs from './OfferListFilterTabs'
-
-const isAudienceIndividualOrCollective = (
-  audience?: string
-): audience is 'individual' | 'collective' =>
-  audience === 'individual' || audience === 'collective'
 
 export interface IOffersProps {
   currentPageNumber: number
@@ -34,6 +29,13 @@ export interface IOffersProps {
   urlSearchFilters: SearchFilters
   separateIndividualAndCollectiveOffers: boolean
   initialSearchFilters: SearchFilters
+  urlAudience: Audience
+  redirectWithUrlFilters: (
+    filters: SearchFilters & {
+      page?: number
+      audience?: Audience
+    }
+  ) => void
 }
 
 const Offers = ({
@@ -48,17 +50,17 @@ const Offers = ({
   urlSearchFilters,
   separateIndividualAndCollectiveOffers,
   initialSearchFilters,
+  urlAudience,
+  redirectWithUrlFilters,
 }: IOffersProps): JSX.Element => {
   const [searchFilters, setSearchFilters] =
     useState<SearchFilters>(initialSearchFilters)
   const [isRefreshingOffers, setIsRefreshingOffers] = useState(true)
 
-  const { audience } = searchFilters
   const [areAllOffersSelected, setAreAllOffersSelected] = useState(false)
   const [selectedOfferIds, setSelectedOfferIds] = useState<string[]>([])
-  const [selectedAudience, setSelectedAudience] = useState<
-    'individual' | 'collective'
-  >(isAudienceIndividualOrCollective(audience) ? audience : 'individual')
+  const [selectedAudience, setSelectedAudience] =
+    useState<Audience>(urlAudience)
 
   const { isAdmin } = currentUser || {}
   const currentPageOffersSubset = offers.slice(
@@ -133,14 +135,39 @@ const Offers = ({
     initialSearchFilters,
   ])
 
+  const applyUrlFiltersAndRedirect = useCallback(
+    (
+      filters: SearchFilters & {
+        page?: number
+        audience?: Audience
+      },
+      isRefreshing = true
+    ) => {
+      setIsRefreshingOffers(isRefreshing)
+      redirectWithUrlFilters(filters)
+    },
+    [setIsRefreshingOffers, redirectWithUrlFilters]
+  )
+
+  const onSelectAudience = (selectedAudience: Audience) => {
+    applyUrlFiltersAndRedirect({
+      ...DEFAULT_SEARCH_FILTERS,
+      audience: selectedAudience,
+    })
+  }
+
+  useEffect(() => {
+    setSelectedAudience(urlAudience)
+  }, [urlAudience])
+
   return (
     <div className="offers-page">
       <PageTitle title="Vos offres" />
       <Titles action={actionLink} title="Offres" />
       {separateIndividualAndCollectiveOffers && (
         <OfferListFilterTabs
+          onSelectAudience={onSelectAudience}
           selectedAudience={selectedAudience}
-          setSelectedAudience={setSelectedAudience}
         />
       )}
       <ActionsBarPortal isVisible={nbSelectedOffers > 0}>
@@ -174,6 +201,7 @@ const Offers = ({
         </>
       )}
       <OffersContainer
+        applyUrlFiltersAndRedirect={applyUrlFiltersAndRedirect}
         areAllOffersSelected={areAllOffersSelected}
         currentPageNumber={currentPageNumber}
         currentPageOffersSubset={currentPageOffersSubset}
@@ -189,7 +217,6 @@ const Offers = ({
         searchFilters={searchFilters}
         selectedOfferIds={selectedOfferIds}
         setIsLoading={setIsLoading}
-        setIsRefreshingOffers={setIsRefreshingOffers}
         setOfferer={setOfferer}
         setSearchFilters={setSearchFilters}
         setSelectedOfferIds={setSelectedOfferIds}

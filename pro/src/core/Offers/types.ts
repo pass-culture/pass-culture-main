@@ -1,25 +1,12 @@
 export type SearchFilters = {
-  nameOrIsbn?: string
-  offererId?: number | string
-  venueId?: number | string
-  categoryId?: string | string
-  status?: string
-  creationMode?: string
-  periodBeginningDate?: string
-  periodEndingDate?: string
-  audience?: string
-}
-
-export type SearchFiltersAPI = {
-  nameOrIsbn?: string
-  offererId?: number
-  venueId?: number
-  categoryId?: string
-  status?: string
-  creationMode?: string
-  periodBeginningDate?: string
-  periodEndingDate?: string
-  audience?: string
+  nameOrIsbn: string
+  offererId: string
+  venueId: string
+  categoryId: string
+  status: string
+  creationMode: string
+  periodBeginningDate: string
+  periodEndingDate: string
 }
 
 export type Offerer = {
@@ -54,4 +41,9 @@ export type Offer = {
   stocks: Stock[]
   isEditable: boolean
   isShowcase?: boolean | null
+}
+
+export enum Audience {
+  INDIVIDUAL = 'individual',
+  COLLECTIVE = 'collective',
 }

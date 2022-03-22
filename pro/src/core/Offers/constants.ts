@@ -1,3 +1,5 @@
+import { SearchFilters } from './types'
+
 export enum OFFER_TYPES {
   INDIVIDUAL_OR_DUO = 'INDIVIDUAL_OR_DUO',
   EDUCATIONAL = 'EDUCATIONAL',
@@ -43,7 +45,8 @@ export const DEFAULT_PAGE = 1
 export const NUMBER_OF_OFFERS_PER_PAGE = 10
 export const MAX_TOTAL_PAGES = 50
 export const MAX_OFFERS_TO_DISPLAY = MAX_TOTAL_PAGES * NUMBER_OF_OFFERS_PER_PAGE
-export const DEFAULT_SEARCH_FILTERS = {
+export const DEFAULT_AUDIENCE = 'individual'
+export const DEFAULT_SEARCH_FILTERS: SearchFilters = {
   nameOrIsbn: ALL_OFFERS,
   offererId: 'all',
   venueId: ALL_VENUES,
@@ -52,7 +55,6 @@ export const DEFAULT_SEARCH_FILTERS = {
   creationMode: ALL_CREATION_MODES,
   periodBeginningDate: ALL_EVENT_PERIODS,
   periodEndingDate: ALL_EVENT_PERIODS,
-  audience: 'individuel',
 }
 
 export const ALL_VENUES_OPTION = {
