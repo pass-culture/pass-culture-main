@@ -21,6 +21,7 @@ from pcapi.core.educational.models import CollectiveBooking
 from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers.models import Venue
+from pcapi.core.offers import repository as offers_repository
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
 
@@ -328,3 +329,74 @@ def get_collective_stock_from_stock_id(stock_id: Union[int, str]) -> educational
     return educational_models.CollectiveStock.query.filter(
         educational_models.CollectiveStock.stockId == stock_id
     ).one_or_none()
+
+
+def get_collective_offers_for_filters(
+    user_id: int,
+    user_is_admin: bool,
+    offers_limit: int,
+    offerer_id: Optional[int] = None,
+    status: Optional[str] = None,
+    venue_id: Optional[int] = None,
+    category_id: Optional[str] = None,
+    name_keywords: Optional[str] = None,
+    period_beginning_date: Optional[str] = None,
+    period_ending_date: Optional[str] = None,
+) -> list[educational_models.CollectiveOffer]:
+    query = offers_repository.get_collective_offers_by_filters(
+        user_id=user_id,
+        user_is_admin=user_is_admin,
+        offerer_id=offerer_id,
+        status=status,
+        venue_id=venue_id,
+        category_id=category_id,
+        name_keywords=name_keywords,
+        period_beginning_date=period_beginning_date,
+        period_ending_date=period_ending_date,
+    )
+    query = query.order_by(educational_models.CollectiveOffer.id.desc())
+    offers = (
+        query.options(
+            joinedload(educational_models.CollectiveOffer.venue).joinedload(offerers_models.Venue.managingOfferer)
+        )
+        .options(joinedload(educational_models.CollectiveOffer.collectiveStock))
+        .limit(offers_limit)
+        .all()
+    )
+    return offers
+
+
+def get_collective_offers_template_for_filters(
+    user_id: int,
+    user_is_admin: bool,
+    offers_limit: int,
+    offerer_id: Optional[int] = None,
+    status: Optional[str] = None,
+    venue_id: Optional[int] = None,
+    category_id: Optional[str] = None,
+    name_keywords: Optional[str] = None,
+    period_beginning_date: Optional[str] = None,
+    period_ending_date: Optional[str] = None,
+) -> list[educational_models.CollectiveOfferTemplate]:
+    query = offers_repository.get_collective_offers_template_by_filters(
+        user_id=user_id,
+        user_is_admin=user_is_admin,
+        offerer_id=offerer_id,
+        status=status,
+        venue_id=venue_id,
+        category_id=category_id,
+        name_keywords=name_keywords,
+        period_beginning_date=period_beginning_date,
+        period_ending_date=period_ending_date,
+    )
+    query = query.order_by(educational_models.CollectiveOfferTemplate.id.desc())
+    offers = (
+        query.options(
+            joinedload(educational_models.CollectiveOfferTemplate.venue).joinedload(
+                offerers_models.Venue.managingOfferer
+            )
+        )
+        .limit(offers_limit)
+        .all()
+    )
+    return offers
