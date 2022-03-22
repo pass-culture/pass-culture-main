@@ -2502,7 +2502,7 @@ export const DefaultApiFp = function(api: DefaultApi, configuration?: APIConfigu
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async deleteOfferersDeleteApiKey(basePath: string, apiKeyPrefix: string, options?: any): Promise<EmptyResponse> {
+        async deleteOfferersDeleteApiKey(basePath: string, apiKeyPrefix: string | null, options?: any): Promise<EmptyResponse> {
             const localVarFetchArgs = await DefaultApiFetchParamCreator(configuration).deleteOfferersDeleteApiKey(apiKeyPrefix, options);
             const response = await safeFetch(basePath + localVarFetchArgs.url, localVarFetchArgs.options)
             return handleGeneratedApiResponse(response)
@@ -2514,7 +2514,7 @@ export const DefaultApiFp = function(api: DefaultApi, configuration?: APIConfigu
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async deleteStocksDeleteStock(basePath: string, stockId: string, options?: any): Promise<StockIdResponseModel> {
+        async deleteStocksDeleteStock(basePath: string, stockId: string | null, options?: any): Promise<StockIdResponseModel> {
             const localVarFetchArgs = await DefaultApiFetchParamCreator(configuration).deleteStocksDeleteStock(stockId, options);
             const response = await safeFetch(basePath + localVarFetchArgs.url, localVarFetchArgs.options)
             return handleGeneratedApiResponse(response)
@@ -2533,7 +2533,7 @@ export const DefaultApiFp = function(api: DefaultApi, configuration?: APIConfigu
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getBookingsGetBookingsPro(basePath: string, bookingStatusFilter: BookingStatusFilter, bookingPeriodBeginningDate: string, bookingPeriodEndingDate: string, page?: number, venueId?: number, eventDate?: Date, offerType?: OfferType, extra?: string, options?: any): Promise<ListBookingsResponseModel> {
+        async getBookingsGetBookingsPro(basePath: string, bookingStatusFilter: BookingStatusFilter | null, bookingPeriodBeginningDate: string | null, bookingPeriodEndingDate: string | null, page?: number | null, venueId?: number, eventDate?: Date, offerType?: OfferType | null, extra?: string | null, options?: any): Promise<ListBookingsResponseModel> {
             const localVarFetchArgs = await DefaultApiFetchParamCreator(configuration).getBookingsGetBookingsPro(bookingStatusFilter, bookingPeriodBeginningDate, bookingPeriodEndingDate, page, venueId, eventDate, offerType, extra, options);
             const response = await safeFetch(basePath + localVarFetchArgs.url, localVarFetchArgs.options)
             return handleGeneratedApiResponse(response)
@@ -2582,7 +2582,7 @@ export const DefaultApiFp = function(api: DefaultApi, configuration?: APIConfigu
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getOfferersCanOffererCreateEducationalOffer(basePath: string, humanizedOffererId: string, options?: any): Promise<EmptyResponse> {
+        async getOfferersCanOffererCreateEducationalOffer(basePath: string, humanizedOffererId: string | null, options?: any): Promise<EmptyResponse> {
             const localVarFetchArgs = await DefaultApiFetchParamCreator(configuration).getOfferersCanOffererCreateEducationalOffer(humanizedOffererId, options);
             const response = await safeFetch(basePath + localVarFetchArgs.url, localVarFetchArgs.options)
             return handleGeneratedApiResponse(response)
@@ -2594,7 +2594,7 @@ export const DefaultApiFp = function(api: DefaultApi, configuration?: APIConfigu
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getOfferersGetOfferer(basePath: string, offererId: string, options?: any): Promise<GetOffererResponseModel> {
+        async getOfferersGetOfferer(basePath: string, offererId: string | null, options?: any): Promise<GetOffererResponseModel> {
             const localVarFetchArgs = await DefaultApiFetchParamCreator(configuration).getOfferersGetOfferer(offererId, options);
             const response = await safeFetch(basePath + localVarFetchArgs.url, localVarFetchArgs.options)
             return handleGeneratedApiResponse(response)
@@ -2656,7 +2656,7 @@ export const DefaultApiFp = function(api: DefaultApi, configuration?: APIConfigu
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getOffersGetOffer(basePath: string, offerId: string, options?: any): Promise<GetOfferResponseModel> {
+        async getOffersGetOffer(basePath: string, offerId: string | null, options?: any): Promise<GetOfferResponseModel> {
             const localVarFetchArgs = await DefaultApiFetchParamCreator(configuration).getOffersGetOffer(offerId, options);
             const response = await safeFetch(basePath + localVarFetchArgs.url, localVarFetchArgs.options)
             return handleGeneratedApiResponse(response)
@@ -2668,7 +2668,7 @@ export const DefaultApiFp = function(api: DefaultApi, configuration?: APIConfigu
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getOffersGetStocks(basePath: string, offerId: string, options?: any): Promise<StocksResponseModel> {
+        async getOffersGetStocks(basePath: string, offerId: string | null, options?: any): Promise<StocksResponseModel> {
             const localVarFetchArgs = await DefaultApiFetchParamCreator(configuration).getOffersGetStocks(offerId, options);
             const response = await safeFetch(basePath + localVarFetchArgs.url, localVarFetchArgs.options)
             return handleGeneratedApiResponse(response)
@@ -2701,7 +2701,7 @@ export const DefaultApiFp = function(api: DefaultApi, configuration?: APIConfigu
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getReimbursementsGetReimbursementsCsv(basePath: string, venueId?: string, reimbursementPeriodBeginningDate?: string, reimbursementPeriodEndingDate?: string, options?: any): Promise<EmptyResponse> {
+        async getReimbursementsGetReimbursementsCsv(basePath: string, venueId?: string | null, reimbursementPeriodBeginningDate?: string | null, reimbursementPeriodEndingDate?: string | null, options?: any): Promise<EmptyResponse> {
             const localVarFetchArgs = await DefaultApiFetchParamCreator(configuration).getReimbursementsGetReimbursementsCsv(venueId, reimbursementPeriodBeginningDate, reimbursementPeriodEndingDate, options);
             const response = await safeFetch(basePath + localVarFetchArgs.url, localVarFetchArgs.options)
             return handleGeneratedApiResponse(response)
@@ -2713,7 +2713,7 @@ export const DefaultApiFp = function(api: DefaultApi, configuration?: APIConfigu
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getUserofferersGetUserOfferer(basePath: string, offererId: string, options?: any): Promise<ListUserOfferersResponseModel> {
+        async getUserofferersGetUserOfferer(basePath: string, offererId: string | null, options?: any): Promise<ListUserOfferersResponseModel> {
             const localVarFetchArgs = await DefaultApiFetchParamCreator(configuration).getUserofferersGetUserOfferer(offererId, options);
             const response = await safeFetch(basePath + localVarFetchArgs.url, localVarFetchArgs.options)
             return handleGeneratedApiResponse(response)
@@ -2725,7 +2725,7 @@ export const DefaultApiFp = function(api: DefaultApi, configuration?: APIConfigu
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getUsersCheckActivationTokenExists(basePath: string, token: string, options?: any): Promise<EmptyResponse> {
+        async getUsersCheckActivationTokenExists(basePath: string, token: string | null, options?: any): Promise<EmptyResponse> {
             const localVarFetchArgs = await DefaultApiFetchParamCreator(configuration).getUsersCheckActivationTokenExists(token, options);
             const response = await safeFetch(basePath + localVarFetchArgs.url, localVarFetchArgs.options)
             return handleGeneratedApiResponse(response)
@@ -2770,7 +2770,7 @@ export const DefaultApiFp = function(api: DefaultApi, configuration?: APIConfigu
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getVenueprovidersListVenueProviders(basePath: string, venueId: number, options?: any): Promise<ListVenueProviderResponse> {
+        async getVenueprovidersListVenueProviders(basePath: string, venueId: number | null, options?: any): Promise<ListVenueProviderResponse> {
             const localVarFetchArgs = await DefaultApiFetchParamCreator(configuration).getVenueprovidersListVenueProviders(venueId, options);
             const response = await safeFetch(basePath + localVarFetchArgs.url, localVarFetchArgs.options)
             return handleGeneratedApiResponse(response)
@@ -2782,7 +2782,7 @@ export const DefaultApiFp = function(api: DefaultApi, configuration?: APIConfigu
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getVenuesGetVenue(basePath: string, venueId: string, options?: any): Promise<GetVenueResponseModel> {
+        async getVenuesGetVenue(basePath: string, venueId: string | null, options?: any): Promise<GetVenueResponseModel> {
             const localVarFetchArgs = await DefaultApiFetchParamCreator(configuration).getVenuesGetVenue(venueId, options);
             const response = await safeFetch(basePath + localVarFetchArgs.url, localVarFetchArgs.options)
             return handleGeneratedApiResponse(response)
@@ -2794,7 +2794,7 @@ export const DefaultApiFp = function(api: DefaultApi, configuration?: APIConfigu
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getVenuesGetVenueStats(basePath: string, humanizedVenueId: string, options?: any): Promise<VenueStatsResponseModel> {
+        async getVenuesGetVenueStats(basePath: string, humanizedVenueId: string | null, options?: any): Promise<VenueStatsResponseModel> {
             const localVarFetchArgs = await DefaultApiFetchParamCreator(configuration).getVenuesGetVenueStats(humanizedVenueId, options);
             const response = await safeFetch(basePath + localVarFetchArgs.url, localVarFetchArgs.options)
             return handleGeneratedApiResponse(response)
@@ -2807,7 +2807,7 @@ export const DefaultApiFp = function(api: DefaultApi, configuration?: APIConfigu
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async patchFinanceEditBusinessUnit(basePath: string, businessUnitId: number, body?: BusinessUnitEditionBodyModel, options?: any): Promise<EmptyResponse> {
+        async patchFinanceEditBusinessUnit(basePath: string, businessUnitId: number | null, body?: BusinessUnitEditionBodyModel | null, options?: any): Promise<EmptyResponse> {
             const localVarFetchArgs = await DefaultApiFetchParamCreator(configuration).patchFinanceEditBusinessUnit(businessUnitId, body, options);
             const response = await safeFetch(basePath + localVarFetchArgs.url, localVarFetchArgs.options)
             return handleGeneratedApiResponse(response)
@@ -2819,7 +2819,7 @@ export const DefaultApiFp = function(api: DefaultApi, configuration?: APIConfigu
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async patchOffersCancelEducationalOfferBooking(basePath: string, offerId: string, options?: any): Promise<EmptyResponse> {
+        async patchOffersCancelEducationalOfferBooking(basePath: string, offerId: string | null, options?: any): Promise<EmptyResponse> {
             const localVarFetchArgs = await DefaultApiFetchParamCreator(configuration).patchOffersCancelEducationalOfferBooking(offerId, options);
             const response = await safeFetch(basePath + localVarFetchArgs.url, localVarFetchArgs.options)
             return handleGeneratedApiResponse(response)
@@ -2832,7 +2832,7 @@ export const DefaultApiFp = function(api: DefaultApi, configuration?: APIConfigu
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async patchOffersEditEducationalOffer(basePath: string, offerId: string, body?: PatchEducationalOfferBodyModel, options?: any): Promise<OfferResponseIdModel> {
+        async patchOffersEditEducationalOffer(basePath: string, offerId: string | null, body?: PatchEducationalOfferBodyModel | null, options?: any): Promise<OfferResponseIdModel> {
             const localVarFetchArgs = await DefaultApiFetchParamCreator(configuration).patchOffersEditEducationalOffer(offerId, body, options);
             const response = await safeFetch(basePath + localVarFetchArgs.url, localVarFetchArgs.options)
             return handleGeneratedApiResponse(response)
@@ -2844,7 +2844,7 @@ export const DefaultApiFp = function(api: DefaultApi, configuration?: APIConfigu
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async patchOffersPatchAllOffersActiveStatus(basePath: string, body?: PatchAllOffersActiveStatusBodyModel, options?: any): Promise<EmptyResponse> {
+        async patchOffersPatchAllOffersActiveStatus(basePath: string, body?: PatchAllOffersActiveStatusBodyModel | null, options?: any): Promise<EmptyResponse> {
             const localVarFetchArgs = await DefaultApiFetchParamCreator(configuration).patchOffersPatchAllOffersActiveStatus(body, options);
             const response = await safeFetch(basePath + localVarFetchArgs.url, localVarFetchArgs.options)
             return handleGeneratedApiResponse(response)
@@ -2857,7 +2857,7 @@ export const DefaultApiFp = function(api: DefaultApi, configuration?: APIConfigu
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async patchOffersPatchOffer(basePath: string, offerId: string, body?: PatchOfferBodyModel, options?: any): Promise<OfferResponseIdModel> {
+        async patchOffersPatchOffer(basePath: string, offerId: string | null, body?: PatchOfferBodyModel | null, options?: any): Promise<OfferResponseIdModel> {
             const localVarFetchArgs = await DefaultApiFetchParamCreator(configuration).patchOffersPatchOffer(offerId, body, options);
             const response = await safeFetch(basePath + localVarFetchArgs.url, localVarFetchArgs.options)
             return handleGeneratedApiResponse(response)
@@ -2869,7 +2869,7 @@ export const DefaultApiFp = function(api: DefaultApi, configuration?: APIConfigu
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async patchOffersPatchOffersActiveStatus(basePath: string, body?: PatchOfferActiveStatusBodyModel, options?: any): Promise<EmptyResponse> {
+        async patchOffersPatchOffersActiveStatus(basePath: string, body?: PatchOfferActiveStatusBodyModel | null, options?: any): Promise<EmptyResponse> {
             const localVarFetchArgs = await DefaultApiFetchParamCreator(configuration).patchOffersPatchOffersActiveStatus(body, options);
             const response = await safeFetch(basePath + localVarFetchArgs.url, localVarFetchArgs.options)
             return handleGeneratedApiResponse(response)
@@ -2882,7 +2882,7 @@ export const DefaultApiFp = function(api: DefaultApi, configuration?: APIConfigu
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async patchStocksEditEducationalStock(basePath: string, stockId: string, body?: EducationalStockEditionBodyModel, options?: any): Promise<EmptyResponse> {
+        async patchStocksEditEducationalStock(basePath: string, stockId: string | null, body?: EducationalStockEditionBodyModel | null, options?: any): Promise<EmptyResponse> {
             const localVarFetchArgs = await DefaultApiFetchParamCreator(configuration).patchStocksEditEducationalStock(stockId, body, options);
             const response = await safeFetch(basePath + localVarFetchArgs.url, localVarFetchArgs.options)
             return handleGeneratedApiResponse(response)
@@ -2894,7 +2894,7 @@ export const DefaultApiFp = function(api: DefaultApi, configuration?: APIConfigu
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async patchUsersPatchProfile(basePath: string, body?: PatchProUserBodyModel, options?: any): Promise<PatchProUserResponseModel> {
+        async patchUsersPatchProfile(basePath: string, body?: PatchProUserBodyModel | null, options?: any): Promise<PatchProUserResponseModel> {
             const localVarFetchArgs = await DefaultApiFetchParamCreator(configuration).patchUsersPatchProfile(body, options);
             const response = await safeFetch(basePath + localVarFetchArgs.url, localVarFetchArgs.options)
             return handleGeneratedApiResponse(response)
@@ -2917,7 +2917,7 @@ export const DefaultApiFp = function(api: DefaultApi, configuration?: APIConfigu
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async patchValidateValidateUser(basePath: string, token: string, options?: any): Promise<EmptyResponse> {
+        async patchValidateValidateUser(basePath: string, token: string | null, options?: any): Promise<EmptyResponse> {
             const localVarFetchArgs = await DefaultApiFetchParamCreator(configuration).patchValidateValidateUser(token, options);
             const response = await safeFetch(basePath + localVarFetchArgs.url, localVarFetchArgs.options)
             return handleGeneratedApiResponse(response)
@@ -2930,7 +2930,7 @@ export const DefaultApiFp = function(api: DefaultApi, configuration?: APIConfigu
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async patchVenuesEditVenue(basePath: string, venueId: string, body?: EditVenueBodyModel, options?: any): Promise<GetVenueResponseModel> {
+        async patchVenuesEditVenue(basePath: string, venueId: string | null, body?: EditVenueBodyModel | null, options?: any): Promise<GetVenueResponseModel> {
             const localVarFetchArgs = await DefaultApiFetchParamCreator(configuration).patchVenuesEditVenue(venueId, body, options);
             const response = await safeFetch(basePath + localVarFetchArgs.url, localVarFetchArgs.options)
             return handleGeneratedApiResponse(response)
@@ -2942,7 +2942,7 @@ export const DefaultApiFp = function(api: DefaultApi, configuration?: APIConfigu
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async postOfferersCreateOfferer(basePath: string, body?: CreateOffererQueryModel, options?: any): Promise<GetOffererResponseModel> {
+        async postOfferersCreateOfferer(basePath: string, body?: CreateOffererQueryModel | null, options?: any): Promise<GetOffererResponseModel> {
             const localVarFetchArgs = await DefaultApiFetchParamCreator(configuration).postOfferersCreateOfferer(body, options);
             const response = await safeFetch(basePath + localVarFetchArgs.url, localVarFetchArgs.options)
             return handleGeneratedApiResponse(response)
@@ -2954,7 +2954,7 @@ export const DefaultApiFp = function(api: DefaultApi, configuration?: APIConfigu
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async postOfferersGenerateApiKeyRoute(basePath: string, offererId: string, options?: any): Promise<GenerateOffererApiKeyResponse> {
+        async postOfferersGenerateApiKeyRoute(basePath: string, offererId: string | null, options?: any): Promise<GenerateOffererApiKeyResponse> {
             const localVarFetchArgs = await DefaultApiFetchParamCreator(configuration).postOfferersGenerateApiKeyRoute(offererId, options);
             const response = await safeFetch(basePath + localVarFetchArgs.url, localVarFetchArgs.options)
             return handleGeneratedApiResponse(response)
@@ -2966,7 +2966,7 @@ export const DefaultApiFp = function(api: DefaultApi, configuration?: APIConfigu
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async postOffersCreateEducationalOffer(basePath: string, body?: PostEducationalOfferBodyModel, options?: any): Promise<OfferResponseIdModel> {
+        async postOffersCreateEducationalOffer(basePath: string, body?: PostEducationalOfferBodyModel | null, options?: any): Promise<OfferResponseIdModel> {
             const localVarFetchArgs = await DefaultApiFetchParamCreator(configuration).postOffersCreateEducationalOffer(body, options);
             const response = await safeFetch(basePath + localVarFetchArgs.url, localVarFetchArgs.options)
             return handleGeneratedApiResponse(response)
@@ -2989,7 +2989,7 @@ export const DefaultApiFp = function(api: DefaultApi, configuration?: APIConfigu
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async postOffersPostOffer(basePath: string, body?: PostOfferBodyModel, options?: any): Promise<OfferResponseIdModel> {
+        async postOffersPostOffer(basePath: string, body?: PostOfferBodyModel | null, options?: any): Promise<OfferResponseIdModel> {
             const localVarFetchArgs = await DefaultApiFetchParamCreator(configuration).postOffersPostOffer(body, options);
             const response = await safeFetch(basePath + localVarFetchArgs.url, localVarFetchArgs.options)
             return handleGeneratedApiResponse(response)
@@ -3001,7 +3001,7 @@ export const DefaultApiFp = function(api: DefaultApi, configuration?: APIConfigu
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async postStocksCreateEducationalStock(basePath: string, body?: EducationalStockCreationBodyModel, options?: any): Promise<StockIdResponseModel> {
+        async postStocksCreateEducationalStock(basePath: string, body?: EducationalStockCreationBodyModel | null, options?: any): Promise<StockIdResponseModel> {
             const localVarFetchArgs = await DefaultApiFetchParamCreator(configuration).postStocksCreateEducationalStock(body, options);
             const response = await safeFetch(basePath + localVarFetchArgs.url, localVarFetchArgs.options)
             return handleGeneratedApiResponse(response)
@@ -3013,7 +3013,7 @@ export const DefaultApiFp = function(api: DefaultApi, configuration?: APIConfigu
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async postStocksUpsertStocks(basePath: string, body?: StocksUpsertBodyModel, options?: any): Promise<StockIdsResponseModel> {
+        async postStocksUpsertStocks(basePath: string, body?: StocksUpsertBodyModel | null, options?: any): Promise<StockIdsResponseModel> {
             const localVarFetchArgs = await DefaultApiFetchParamCreator(configuration).postStocksUpsertStocks(body, options);
             const response = await safeFetch(basePath + localVarFetchArgs.url, localVarFetchArgs.options)
             return handleGeneratedApiResponse(response)
@@ -3025,7 +3025,7 @@ export const DefaultApiFp = function(api: DefaultApi, configuration?: APIConfigu
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async postUsersSignin(basePath: string, body?: LoginUserBodyModel, options?: any): Promise<SharedLoginUserResponseModel> {
+        async postUsersSignin(basePath: string, body?: LoginUserBodyModel | null, options?: any): Promise<SharedLoginUserResponseModel> {
             const localVarFetchArgs = await DefaultApiFetchParamCreator(configuration).postUsersSignin(body, options);
             const response = await safeFetch(basePath + localVarFetchArgs.url, localVarFetchArgs.options)
             return handleGeneratedApiResponse(response)
@@ -3037,7 +3037,7 @@ export const DefaultApiFp = function(api: DefaultApi, configuration?: APIConfigu
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async postVenueprovidersCreateVenueProvider(basePath: string, body?: PostVenueProviderBody, options?: any): Promise<VenueProviderResponse> {
+        async postVenueprovidersCreateVenueProvider(basePath: string, body?: PostVenueProviderBody | null, options?: any): Promise<VenueProviderResponse> {
             const localVarFetchArgs = await DefaultApiFetchParamCreator(configuration).postVenueprovidersCreateVenueProvider(body, options);
             const response = await safeFetch(basePath + localVarFetchArgs.url, localVarFetchArgs.options)
             return handleGeneratedApiResponse(response)
@@ -3049,7 +3049,7 @@ export const DefaultApiFp = function(api: DefaultApi, configuration?: APIConfigu
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async putVenueprovidersUpdateVenueProvider(basePath: string, body?: PostVenueProviderBody, options?: any): Promise<VenueProviderResponse> {
+        async putVenueprovidersUpdateVenueProvider(basePath: string, body?: PostVenueProviderBody | null, options?: any): Promise<VenueProviderResponse> {
             const localVarFetchArgs = await DefaultApiFetchParamCreator(configuration).putVenueprovidersUpdateVenueProvider(body, options);
             const response = await safeFetch(basePath + localVarFetchArgs.url, localVarFetchArgs.options)
             return handleGeneratedApiResponse(response)
@@ -3071,7 +3071,7 @@ export interface DefaultApiInterface {
      * @throws {RequiredError}
      * @memberof DefaultApiInterface
      */
-    deleteOfferersDeleteApiKey(apiKeyPrefix: string, options?: any): Promise<{}>;
+    deleteOfferersDeleteApiKey(apiKeyPrefix: string | null, options?: any): Promise<{}>;
 
     /**
      * 
@@ -3081,7 +3081,7 @@ export interface DefaultApiInterface {
      * @throws {RequiredError}
      * @memberof DefaultApiInterface
      */
-    deleteStocksDeleteStock(stockId: string, options?: any): Promise<StockIdResponseModel>;
+    deleteStocksDeleteStock(stockId: string | null, options?: any): Promise<StockIdResponseModel>;
 
     /**
      * 
@@ -3098,7 +3098,7 @@ export interface DefaultApiInterface {
      * @throws {RequiredError}
      * @memberof DefaultApiInterface
      */
-    getBookingsGetBookingsPro(bookingStatusFilter: BookingStatusFilter, bookingPeriodBeginningDate: string, bookingPeriodEndingDate: string, page?: number, venueId?: number, eventDate?: Date, offerType?: OfferType, extra?: string, options?: any): Promise<ListBookingsResponseModel>;
+    getBookingsGetBookingsPro(bookingStatusFilter: BookingStatusFilter | null, bookingPeriodBeginningDate: string | null, bookingPeriodEndingDate: string | null, page?: number | null, venueId?: number, eventDate?: Date, offerType?: OfferType | null, extra?: string | null, options?: any): Promise<ListBookingsResponseModel>;
 
     /**
      * 
@@ -3139,7 +3139,7 @@ export interface DefaultApiInterface {
      * @throws {RequiredError}
      * @memberof DefaultApiInterface
      */
-    getOfferersCanOffererCreateEducationalOffer(humanizedOffererId: string, options?: any): Promise<{}>;
+    getOfferersCanOffererCreateEducationalOffer(humanizedOffererId: string | null, options?: any): Promise<{}>;
 
     /**
      * 
@@ -3149,7 +3149,7 @@ export interface DefaultApiInterface {
      * @throws {RequiredError}
      * @memberof DefaultApiInterface
      */
-    getOfferersGetOfferer(offererId: string, options?: any): Promise<GetOffererResponseModel>;
+    getOfferersGetOfferer(offererId: string | null, options?: any): Promise<GetOffererResponseModel>;
 
     /**
      * 
@@ -3201,7 +3201,7 @@ export interface DefaultApiInterface {
      * @throws {RequiredError}
      * @memberof DefaultApiInterface
      */
-    getOffersGetOffer(offerId: string, options?: any): Promise<GetOfferResponseModel>;
+    getOffersGetOffer(offerId: string | null, options?: any): Promise<GetOfferResponseModel>;
 
     /**
      * 
@@ -3211,7 +3211,7 @@ export interface DefaultApiInterface {
      * @throws {RequiredError}
      * @memberof DefaultApiInterface
      */
-    getOffersGetStocks(offerId: string, options?: any): Promise<StocksResponseModel>;
+    getOffersGetStocks(offerId: string | null, options?: any): Promise<StocksResponseModel>;
 
     /**
      * 
@@ -3240,7 +3240,7 @@ export interface DefaultApiInterface {
      * @throws {RequiredError}
      * @memberof DefaultApiInterface
      */
-    getReimbursementsGetReimbursementsCsv(venueId?: string, reimbursementPeriodBeginningDate?: string, reimbursementPeriodEndingDate?: string, options?: any): Promise<{}>;
+    getReimbursementsGetReimbursementsCsv(venueId?: string | null, reimbursementPeriodBeginningDate?: string | null, reimbursementPeriodEndingDate?: string | null, options?: any): Promise<{}>;
 
     /**
      * 
@@ -3250,7 +3250,7 @@ export interface DefaultApiInterface {
      * @throws {RequiredError}
      * @memberof DefaultApiInterface
      */
-    getUserofferersGetUserOfferer(offererId: string, options?: any): Promise<ListUserOfferersResponseModel>;
+    getUserofferersGetUserOfferer(offererId: string | null, options?: any): Promise<ListUserOfferersResponseModel>;
 
     /**
      * 
@@ -3260,7 +3260,7 @@ export interface DefaultApiInterface {
      * @throws {RequiredError}
      * @memberof DefaultApiInterface
      */
-    getUsersCheckActivationTokenExists(token: string, options?: any): Promise<{}>;
+    getUsersCheckActivationTokenExists(token: string | null, options?: any): Promise<{}>;
 
     /**
      * 
@@ -3297,7 +3297,7 @@ export interface DefaultApiInterface {
      * @throws {RequiredError}
      * @memberof DefaultApiInterface
      */
-    getVenueprovidersListVenueProviders(venueId: number, options?: any): Promise<ListVenueProviderResponse>;
+    getVenueprovidersListVenueProviders(venueId: number | null, options?: any): Promise<ListVenueProviderResponse>;
 
     /**
      * 
@@ -3307,7 +3307,7 @@ export interface DefaultApiInterface {
      * @throws {RequiredError}
      * @memberof DefaultApiInterface
      */
-    getVenuesGetVenue(venueId: string, options?: any): Promise<GetVenueResponseModel>;
+    getVenuesGetVenue(venueId: string | null, options?: any): Promise<GetVenueResponseModel>;
 
     /**
      * 
@@ -3317,7 +3317,7 @@ export interface DefaultApiInterface {
      * @throws {RequiredError}
      * @memberof DefaultApiInterface
      */
-    getVenuesGetVenueStats(humanizedVenueId: string, options?: any): Promise<VenueStatsResponseModel>;
+    getVenuesGetVenueStats(humanizedVenueId: string | null, options?: any): Promise<VenueStatsResponseModel>;
 
     /**
      * 
@@ -3328,7 +3328,7 @@ export interface DefaultApiInterface {
      * @throws {RequiredError}
      * @memberof DefaultApiInterface
      */
-    patchFinanceEditBusinessUnit(businessUnitId: number, body?: BusinessUnitEditionBodyModel, options?: any): Promise<{}>;
+    patchFinanceEditBusinessUnit(businessUnitId: number | null, body?: BusinessUnitEditionBodyModel | null, options?: any): Promise<{}>;
 
     /**
      * 
@@ -3338,7 +3338,7 @@ export interface DefaultApiInterface {
      * @throws {RequiredError}
      * @memberof DefaultApiInterface
      */
-    patchOffersCancelEducationalOfferBooking(offerId: string, options?: any): Promise<{}>;
+    patchOffersCancelEducationalOfferBooking(offerId: string | null, options?: any): Promise<{}>;
 
     /**
      * 
@@ -3349,7 +3349,7 @@ export interface DefaultApiInterface {
      * @throws {RequiredError}
      * @memberof DefaultApiInterface
      */
-    patchOffersEditEducationalOffer(offerId: string, body?: PatchEducationalOfferBodyModel, options?: any): Promise<OfferResponseIdModel>;
+    patchOffersEditEducationalOffer(offerId: string | null, body?: PatchEducationalOfferBodyModel | null, options?: any): Promise<OfferResponseIdModel>;
 
     /**
      * 
@@ -3359,7 +3359,7 @@ export interface DefaultApiInterface {
      * @throws {RequiredError}
      * @memberof DefaultApiInterface
      */
-    patchOffersPatchAllOffersActiveStatus(body?: PatchAllOffersActiveStatusBodyModel, options?: any): Promise<{}>;
+    patchOffersPatchAllOffersActiveStatus(body?: PatchAllOffersActiveStatusBodyModel | null, options?: any): Promise<{}>;
 
     /**
      * 
@@ -3370,7 +3370,7 @@ export interface DefaultApiInterface {
      * @throws {RequiredError}
      * @memberof DefaultApiInterface
      */
-    patchOffersPatchOffer(offerId: string, body?: PatchOfferBodyModel, options?: any): Promise<OfferResponseIdModel>;
+    patchOffersPatchOffer(offerId: string | null, body?: PatchOfferBodyModel | null, options?: any): Promise<OfferResponseIdModel>;
 
     /**
      * 
@@ -3380,7 +3380,7 @@ export interface DefaultApiInterface {
      * @throws {RequiredError}
      * @memberof DefaultApiInterface
      */
-    patchOffersPatchOffersActiveStatus(body?: PatchOfferActiveStatusBodyModel, options?: any): Promise<{}>;
+    patchOffersPatchOffersActiveStatus(body?: PatchOfferActiveStatusBodyModel | null, options?: any): Promise<{}>;
 
     /**
      * 
@@ -3391,7 +3391,7 @@ export interface DefaultApiInterface {
      * @throws {RequiredError}
      * @memberof DefaultApiInterface
      */
-    patchStocksEditEducationalStock(stockId: string, body?: EducationalStockEditionBodyModel, options?: any): Promise<{}>;
+    patchStocksEditEducationalStock(stockId: string | null, body?: EducationalStockEditionBodyModel | null, options?: any): Promise<{}>;
 
     /**
      * 
@@ -3401,7 +3401,7 @@ export interface DefaultApiInterface {
      * @throws {RequiredError}
      * @memberof DefaultApiInterface
      */
-    patchUsersPatchProfile(body?: PatchProUserBodyModel, options?: any): Promise<PatchProUserResponseModel>;
+    patchUsersPatchProfile(body?: PatchProUserBodyModel | null, options?: any): Promise<PatchProUserResponseModel>;
 
     /**
      * 
@@ -3420,7 +3420,7 @@ export interface DefaultApiInterface {
      * @throws {RequiredError}
      * @memberof DefaultApiInterface
      */
-    patchValidateValidateUser(token: string, options?: any): Promise<{}>;
+    patchValidateValidateUser(token: string | null, options?: any): Promise<{}>;
 
     /**
      * 
@@ -3431,7 +3431,7 @@ export interface DefaultApiInterface {
      * @throws {RequiredError}
      * @memberof DefaultApiInterface
      */
-    patchVenuesEditVenue(venueId: string, body?: EditVenueBodyModel, options?: any): Promise<GetVenueResponseModel>;
+    patchVenuesEditVenue(venueId: string | null, body?: EditVenueBodyModel | null, options?: any): Promise<GetVenueResponseModel>;
 
     /**
      * 
@@ -3441,7 +3441,7 @@ export interface DefaultApiInterface {
      * @throws {RequiredError}
      * @memberof DefaultApiInterface
      */
-    postOfferersCreateOfferer(body?: CreateOffererQueryModel, options?: any): Promise<GetOffererResponseModel>;
+    postOfferersCreateOfferer(body?: CreateOffererQueryModel | null, options?: any): Promise<GetOffererResponseModel>;
 
     /**
      * 
@@ -3451,7 +3451,7 @@ export interface DefaultApiInterface {
      * @throws {RequiredError}
      * @memberof DefaultApiInterface
      */
-    postOfferersGenerateApiKeyRoute(offererId: string, options?: any): Promise<GenerateOffererApiKeyResponse>;
+    postOfferersGenerateApiKeyRoute(offererId: string | null, options?: any): Promise<GenerateOffererApiKeyResponse>;
 
     /**
      * 
@@ -3461,7 +3461,7 @@ export interface DefaultApiInterface {
      * @throws {RequiredError}
      * @memberof DefaultApiInterface
      */
-    postOffersCreateEducationalOffer(body?: PostEducationalOfferBodyModel, options?: any): Promise<OfferResponseIdModel>;
+    postOffersCreateEducationalOffer(body?: PostEducationalOfferBodyModel | null, options?: any): Promise<OfferResponseIdModel>;
 
     /**
      * 
@@ -3480,7 +3480,7 @@ export interface DefaultApiInterface {
      * @throws {RequiredError}
      * @memberof DefaultApiInterface
      */
-    postOffersPostOffer(body?: PostOfferBodyModel, options?: any): Promise<OfferResponseIdModel>;
+    postOffersPostOffer(body?: PostOfferBodyModel | null, options?: any): Promise<OfferResponseIdModel>;
 
     /**
      * 
@@ -3490,7 +3490,7 @@ export interface DefaultApiInterface {
      * @throws {RequiredError}
      * @memberof DefaultApiInterface
      */
-    postStocksCreateEducationalStock(body?: EducationalStockCreationBodyModel, options?: any): Promise<StockIdResponseModel>;
+    postStocksCreateEducationalStock(body?: EducationalStockCreationBodyModel | null, options?: any): Promise<StockIdResponseModel>;
 
     /**
      * 
@@ -3500,7 +3500,7 @@ export interface DefaultApiInterface {
      * @throws {RequiredError}
      * @memberof DefaultApiInterface
      */
-    postStocksUpsertStocks(body?: StocksUpsertBodyModel, options?: any): Promise<StockIdsResponseModel>;
+    postStocksUpsertStocks(body?: StocksUpsertBodyModel | null, options?: any): Promise<StockIdsResponseModel>;
 
     /**
      * 
@@ -3510,7 +3510,7 @@ export interface DefaultApiInterface {
      * @throws {RequiredError}
      * @memberof DefaultApiInterface
      */
-    postUsersSignin(body?: LoginUserBodyModel, options?: any): Promise<SharedLoginUserResponseModel>;
+    postUsersSignin(body?: LoginUserBodyModel | null, options?: any): Promise<SharedLoginUserResponseModel>;
 
     /**
      * 
@@ -3520,7 +3520,7 @@ export interface DefaultApiInterface {
      * @throws {RequiredError}
      * @memberof DefaultApiInterface
      */
-    postVenueprovidersCreateVenueProvider(body?: PostVenueProviderBody, options?: any): Promise<VenueProviderResponse>;
+    postVenueprovidersCreateVenueProvider(body?: PostVenueProviderBody | null, options?: any): Promise<VenueProviderResponse>;
 
     /**
      * 
@@ -3530,7 +3530,7 @@ export interface DefaultApiInterface {
      * @throws {RequiredError}
      * @memberof DefaultApiInterface
      */
-    putVenueprovidersUpdateVenueProvider(body?: PostVenueProviderBody, options?: any): Promise<VenueProviderResponse>;
+    putVenueprovidersUpdateVenueProvider(body?: PostVenueProviderBody | null, options?: any): Promise<VenueProviderResponse>;
 
 }
 
