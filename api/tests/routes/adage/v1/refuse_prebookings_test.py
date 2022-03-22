@@ -225,6 +225,7 @@ class Returns200Test:
 
         assert response.status_code == 200
         assert refused_collective_booking.status == CollectiveBookingStatus.CANCELLED
+        assert len(mails_testing.outbox) == 0
 
 
 @pytest.mark.usefixtures("db_session")
@@ -238,8 +239,8 @@ class Returns400Test:
         response = client.post(f"/adage/v1/prebookings/{booking.educationalBookingId}/refuse")
 
         assert response.status_code == 422
-
         assert response.json == {"code": "EDUCATIONAL_BOOKING_NOT_REFUSABLE"}
+        assert len(mails_testing.outbox) == 0
 
     def test_returns_error_when_already_cancelled(self, client) -> None:
         booking = EducationalBookingFactory(
@@ -250,16 +251,16 @@ class Returns400Test:
         response = client.post(f"/adage/v1/prebookings/{booking.educationalBookingId}/refuse")
 
         assert response.status_code == 422
-
         assert response.json == {"code": "EDUCATIONAL_BOOKING_ALREADY_CANCELLED"}
+        assert len(mails_testing.outbox) == 0
 
     def test_returns_error_when_no_educational_booking_found(self, client) -> None:
         client = client.with_eac_token()
         response = client.post("/adage/v1/prebookings/123/refuse")
 
         assert response.status_code == 404
-
         assert response.json == {"code": "EDUCATIONAL_BOOKING_NOT_FOUND"}
+        assert len(mails_testing.outbox) == 0
 
     def test_returns_error_when_cancellation_limit_date_is_passed(self, client) -> None:
         booking = EducationalBookingFactory(
@@ -271,5 +272,5 @@ class Returns400Test:
         response = client.post(f"/adage/v1/prebookings/{booking.educationalBookingId}/refuse")
 
         assert response.status_code == 422
-
         assert response.json == {"code": "EDUCATIONAL_BOOKING_NOT_REFUSABLE"}
+        assert len(mails_testing.outbox) == 0
