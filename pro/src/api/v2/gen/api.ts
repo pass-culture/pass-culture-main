@@ -248,7 +248,7 @@ export const APIContremarqueApiFp = function(api: APIContremarqueApi, configurat
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getBookingsGetBookingByTokenV2(basePath: string, token: string, options?: any): Promise<GetBookingResponse> {
+        async getBookingsGetBookingByTokenV2(basePath: string, token: string | null, options?: any): Promise<GetBookingResponse> {
             const localVarFetchArgs = await APIContremarqueApiFetchParamCreator(configuration).getBookingsGetBookingByTokenV2(token, options);
             const response = await safeFetch(basePath + localVarFetchArgs.url, localVarFetchArgs.options)
             return handleGeneratedApiResponse(response)
@@ -260,7 +260,7 @@ export const APIContremarqueApiFp = function(api: APIContremarqueApi, configurat
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async patchBookingsPatchBookingKeepByToken(basePath: string, token: string, options?: any): Promise<EmptyResponse> {
+        async patchBookingsPatchBookingKeepByToken(basePath: string, token: string | null, options?: any): Promise<EmptyResponse> {
             const localVarFetchArgs = await APIContremarqueApiFetchParamCreator(configuration).patchBookingsPatchBookingKeepByToken(token, options);
             const response = await safeFetch(basePath + localVarFetchArgs.url, localVarFetchArgs.options)
             return handleGeneratedApiResponse(response)
@@ -272,7 +272,7 @@ export const APIContremarqueApiFp = function(api: APIContremarqueApi, configurat
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async patchBookingsPatchBookingUseByToken(basePath: string, token: string, options?: any): Promise<EmptyResponse> {
+        async patchBookingsPatchBookingUseByToken(basePath: string, token: string | null, options?: any): Promise<EmptyResponse> {
             const localVarFetchArgs = await APIContremarqueApiFetchParamCreator(configuration).patchBookingsPatchBookingUseByToken(token, options);
             const response = await safeFetch(basePath + localVarFetchArgs.url, localVarFetchArgs.options)
             return handleGeneratedApiResponse(response)
@@ -284,7 +284,7 @@ export const APIContremarqueApiFp = function(api: APIContremarqueApi, configurat
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async patchBookingsPatchCancelBookingByToken(basePath: string, token: string, options?: any): Promise<EmptyResponse> {
+        async patchBookingsPatchCancelBookingByToken(basePath: string, token: string | null, options?: any): Promise<EmptyResponse> {
             const localVarFetchArgs = await APIContremarqueApiFetchParamCreator(configuration).patchBookingsPatchCancelBookingByToken(token, options);
             const response = await safeFetch(basePath + localVarFetchArgs.url, localVarFetchArgs.options)
             return handleGeneratedApiResponse(response)
@@ -306,7 +306,7 @@ export interface APIContremarqueApiInterface {
      * @throws {RequiredError}
      * @memberof APIContremarqueApiInterface
      */
-    getBookingsGetBookingByTokenV2(token: string, options?: any): Promise<GetBookingResponse>;
+    getBookingsGetBookingByTokenV2(token: string | null, options?: any): Promise<GetBookingResponse>;
 
     /**
      * 
@@ -316,7 +316,7 @@ export interface APIContremarqueApiInterface {
      * @throws {RequiredError}
      * @memberof APIContremarqueApiInterface
      */
-    patchBookingsPatchBookingKeepByToken(token: string, options?: any): Promise<{}>;
+    patchBookingsPatchBookingKeepByToken(token: string | null, options?: any): Promise<{}>;
 
     /**
      * Pour confirmer que la réservation a bien été utilisée par le jeune.
@@ -326,7 +326,7 @@ export interface APIContremarqueApiInterface {
      * @throws {RequiredError}
      * @memberof APIContremarqueApiInterface
      */
-    patchBookingsPatchBookingUseByToken(token: string, options?: any): Promise<{}>;
+    patchBookingsPatchBookingUseByToken(token: string | null, options?: any): Promise<{}>;
 
     /**
      * Bien que, dans le cas d’un événement, l’utilisateur ne peut plus annuler sa réservation 72h avant le début de ce dernier, cette API permet d’annuler la réservation d’un utilisateur si elle n’a pas encore été validé.
@@ -336,7 +336,7 @@ export interface APIContremarqueApiInterface {
      * @throws {RequiredError}
      * @memberof APIContremarqueApiInterface
      */
-    patchBookingsPatchCancelBookingByToken(token: string, options?: any): Promise<{}>;
+    patchBookingsPatchCancelBookingByToken(token: string | null, options?: any): Promise<{}>;
 
 }
 
@@ -454,7 +454,7 @@ export const APIStocksApiFp = function(api: APIStocksApi, configuration?: APICon
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async postVenueUpdateStocks(basePath: string, venueId: number, body?: UpdateVenueStocksBodyModel, options?: any): Promise<EmptyResponse> {
+        async postVenueUpdateStocks(basePath: string, venueId: number | null, body?: UpdateVenueStocksBodyModel | null, options?: any): Promise<EmptyResponse> {
             const localVarFetchArgs = await APIStocksApiFetchParamCreator(configuration).postVenueUpdateStocks(venueId, body, options);
             const response = await safeFetch(basePath + localVarFetchArgs.url, localVarFetchArgs.options)
             return handleGeneratedApiResponse(response)
@@ -477,7 +477,7 @@ export interface APIStocksApiInterface {
      * @throws {RequiredError}
      * @memberof APIStocksApiInterface
      */
-    postVenueUpdateStocks(venueId: number, body?: UpdateVenueStocksBodyModel, options?: any): Promise<{}>;
+    postVenueUpdateStocks(venueId: number | null, body?: UpdateVenueStocksBodyModel | null, options?: any): Promise<{}>;
 
 }
 
