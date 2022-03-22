@@ -4,6 +4,8 @@ import secrets
 import typing
 from typing import Optional
 
+import sqlalchemy.orm as sa_orm
+
 from pcapi import settings
 from pcapi.connectors import thumb_storage as storage
 from pcapi.connectors.api_adage import AdageException
@@ -377,3 +379,19 @@ def get_educational_offerers(offerer_id: Optional[str], current_user: User) -> l
             validated_for_user=True,
         ).all()
     return offerers
+
+
+def get_eligible_for_search_venues(max_venues: typing.Optional[int] = None) -> typing.Generator[Venue, None, None]:
+    query = Venue.query.options(
+        # needed by is_eligible_for_search
+        sa_orm.joinedload(offerers_models.Venue.managingOfferer).load_only(
+            offerers_models.Offerer.isActive,
+        )
+    )
+
+    if max_venues:
+        query = query.limit(max_venues)
+
+    for venue in query.yield_per(1_000):
+        if venue.is_eligible_for_search:
+            yield venue
