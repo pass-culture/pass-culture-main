@@ -20,7 +20,7 @@ const SignupConfirmation = () => (
           </div>
           <div className="information-text flex-left">
             <img
-              alt="picto info"
+              alt="information"
               src={`${ROOT_PATH}/icons/picto-info-grey.svg`}
             />
             <p>
