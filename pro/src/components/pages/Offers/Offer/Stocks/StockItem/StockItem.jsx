@@ -313,7 +313,7 @@ const StockItem = ({
       <td>{!isNewStock && initialStock.bookingsQuantity}</td>
       <td className="action-column">
         <StockItemOptionsMenu
-          canAddActivationCodes={isDigital}
+          canAddActivationCodes={isDigital && !isEvent}
           deleteButtonTitle={computeStockDeleteButtonTitle()}
           deleteStock={
             isNewStock ? removeNewStockLine : askDeletionConfirmation

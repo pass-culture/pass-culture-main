@@ -2939,6 +2939,23 @@ describe('stocks page', () => {
             )
           ).toBeInTheDocument()
         })
+        it('should not allow the user to add activation codes when offer is digital and is event', async () => {
+          let eventOffer = {
+            ...digitalOffer,
+            isEvent: true,
+          }
+          jest.spyOn(apiV1, 'getOffersGetOffer').mockResolvedValue(eventOffer)
+          // given
+          await renderOffers(props, store)
+
+          // when
+          fireEvent.click(screen.getByText('Ajouter une date'))
+
+          // then
+          expect(
+            screen.queryByText('Ajouter des codes d’activation')
+          ).not.toBeInTheDocument()
+        })
 
         it('should display number of activation codes to be added', async () => {
           // Given
