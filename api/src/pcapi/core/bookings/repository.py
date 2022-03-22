@@ -312,10 +312,15 @@ def find_expired_educational_bookings() -> list[EducationalBooking]:
             .load_only(Stock.beginningDatetime)
             .joinedload(Stock.offer, innerjoin=True)
             .load_only(Offer.name)
+            .joinedload(Offer.venue, innerjoin=True)
+            .load_only(Venue.name)
         )
         .options(
-            joinedload(EducationalBooking.educationalRedactor, innerjoin=True).load_only(EducationalRedactor.email)
+            joinedload(EducationalBooking.educationalRedactor, innerjoin=True).load_only(
+                EducationalRedactor.email, EducationalRedactor.firstName, EducationalRedactor.lastName
+            )
         )
+        .options(joinedload(EducationalBooking.educationalInstitution, innerjoin=True))
         .all()
     )
 

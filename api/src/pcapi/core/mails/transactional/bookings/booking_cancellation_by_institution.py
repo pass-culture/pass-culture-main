@@ -7,14 +7,22 @@ from pcapi.core.mails.transactional.sendinblue_template_ids import Transactional
 def get_education_booking_cancellation_by_institution_email_data(
     educational_booking: EducationalBooking,
 ) -> SendinblueTransactionalEmailData:
+    stock = educational_booking.booking.stock
+    institution = educational_booking.educationalInstitution
+    redactor = educational_booking.educationalRedactor
     return SendinblueTransactionalEmailData(
         template=TransactionalEmail.EDUCATIONAL_BOOKING_CANCELLATION_BY_INSTITUTION.value,
         params={
-            "OFFER_NAME": educational_booking.booking.stock.offer.name,
-            "EVENT_BEGINNING_DATETIME": educational_booking.booking.stock.beginningDatetime.strftime(
-                "%d/%m/%Y à %H:%M"
-            ),
-            "EDUCATIONAL_REDACTOR_EMAIL": educational_booking.educationalRedactor.email,
+            "OFFER_NAME": stock.offer.name,
+            "EDUCATIONAL_INSTITUTION_NAME": institution.name,
+            "VENUE_NAME": stock.offer.venue.name,
+            "EVENT_DATE": stock.beginningDatetime.strftime("%d/%m/%Y"),
+            "EVENT_HOUR": stock.beginningDatetime.strftime("%H:%M"),
+            "REDACTOR_FIRSTNAME": redactor.firstName,
+            "REDACTOR_LASTNAME": redactor.lastName,
+            "REDACTOR_EMAIL": redactor.email,
+            "EDUCATIONAL_INSTITUTION_CITY": institution.city,
+            "EDUCATIONAL_INSTITUTION_POSTAL_CODE": institution.postalCode,
         },
     )
 
