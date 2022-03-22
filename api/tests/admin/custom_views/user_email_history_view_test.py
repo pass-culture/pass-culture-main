@@ -13,8 +13,8 @@ def admin_client_fixture(client):
     return client.with_session_auth("admin@example.com")
 
 
-VALIDATE_EMAIL_PATH = "/user_email_history.validate_user_email"
-INDEX_PATH = "/user_email_history.index_view"
+VALIDATE_EMAIL_PATH = "user_email_history.validate_user_email"
+INDEX_PATH = "user_email_history.index_view"
 BENEFICIARY_DETAILS_PATH = "support_beneficiary.details_view"
 
 

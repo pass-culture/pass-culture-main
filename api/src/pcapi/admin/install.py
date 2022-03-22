@@ -122,7 +122,7 @@ def install_views(admin: Admin, session: Session) -> None:
             session,
             name="Comptes Pros",
             category=Category.USERS,
-            endpoint="/pro_users",
+            endpoint="pro_users",
         )
     )
     admin.add_view(
@@ -140,7 +140,7 @@ def install_views(admin: Admin, session: Session) -> None:
             session,
             name="Comptes admin",
             category=Category.USERS,
-            endpoint="/admin_users",
+            endpoint="admin_users",
         )
     )
     admin.add_view(
@@ -149,12 +149,12 @@ def install_views(admin: Admin, session: Session) -> None:
             session,
             name="Comptes Bénéficiaires",
             category=Category.USERS,
-            endpoint="/beneficiary_users",
+            endpoint="beneficiary_users",
         )
     )
     admin.add_view(
         PartnerUserView(
-            User, session, name="Comptes Jeune et Grand Public", category=Category.USERS, endpoint="/partner_users"
+            User, session, name="Comptes Jeune et Grand Public", category=Category.USERS, endpoint="partner_users"
         )
     )
     admin.add_view(FeatureView(Feature, session, name="Feature Flipping", category=None))
@@ -166,7 +166,7 @@ def install_views(admin: Admin, session: Session) -> None:
             session,
             name="Historique des modifications emails",
             category=Category.USERS,
-            endpoint="/user_email_history",
+            endpoint="user_email_history",
         )
     )
     admin.add_view(
@@ -177,21 +177,21 @@ def install_views(admin: Admin, session: Session) -> None:
             Provider,
             session,
             name="Fournisseurs d'import",
-            endpoint="/providers",
+            endpoint="providers",
             category=Category.CUSTOM_OPERATIONS,
         )
     )
     admin.add_view(
         ManyOffersOperationsView(
             name="Opérations sur plusieurs offres",
-            endpoint="/many_offers_operations",
+            endpoint="many_offers_operations",
             category=Category.CUSTOM_OPERATIONS,
         )
     )
     admin.add_view(
         BookingView(
             name="Réservations",
-            endpoint="/bookings",
+            endpoint="bookings",
             category=Category.CUSTOM_OPERATIONS,
         )
     )
@@ -200,7 +200,7 @@ def install_views(admin: Admin, session: Session) -> None:
             offers_models.Offer,
             session,
             name="Validation",
-            endpoint="/validation",
+            endpoint="validation",
             category=Category.CUSTOM_OPERATIONS,
         )
     )
@@ -210,7 +210,7 @@ def install_views(admin: Admin, session: Session) -> None:
             OfferValidationConfig,
             session,
             name="Configuration des règles de fraude",
-            endpoint="/fraud_rules_configuration",
+            endpoint="fraud_rules_configuration",
             category=Category.CUSTOM_OPERATIONS,
         )
     )
@@ -218,7 +218,7 @@ def install_views(admin: Admin, session: Session) -> None:
     admin.add_view(
         SuspendFraudulentUsersByEmailProvidersView(
             name="Suspension d'utilisateurs via noms de domaine",
-            endpoint="/suspend_fraud_users_by_email_providers",
+            endpoint="suspend_fraud_users_by_email_providers",
             category=Category.CUSTOM_OPERATIONS,
         )
     )
@@ -226,7 +226,7 @@ def install_views(admin: Admin, session: Session) -> None:
     admin.add_view(
         SuspendFraudulentUsersByUserIdsView(
             name="Suspension d'utilisateurs via identifiants",
-            endpoint="/suspend_fraud_users_by_user_ids",
+            endpoint="suspend_fraud_users_by_user_ids",
             category=Category.CUSTOM_OPERATIONS,
         )
     )
@@ -234,7 +234,7 @@ def install_views(admin: Admin, session: Session) -> None:
     admin.add_view(
         CategoryView(
             name="Catégories",
-            endpoint="/categories",
+            endpoint="categories",
             category=Category.CUSTOM_OPERATIONS,
         )
     )
@@ -242,7 +242,7 @@ def install_views(admin: Admin, session: Session) -> None:
     admin.add_view(
         CulturalSurveyView(
             name="Questionnaire de pratiques initiales",
-            endpoint="/cultural_survey_answers",
+            endpoint="cultural_survey_answers",
             category=Category.CUSTOM_OPERATIONS,
         )
     )
@@ -250,7 +250,7 @@ def install_views(admin: Admin, session: Session) -> None:
     admin.add_view(
         SubcategoryView(
             name="Sous-catégories",
-            endpoint="/subcategories",
+            endpoint="subcategories",
             category=Category.CUSTOM_OPERATIONS,
         )
     )
