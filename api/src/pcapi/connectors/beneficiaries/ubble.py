@@ -204,6 +204,7 @@ def get_content(identification_id: str) -> ubble_fraud_models.UbbleContent:
             "score": content.score,
             "status": content.status.value,
             "request_type": "get-content",
+            "document_type": content.document_type,
         },
     )
     return content

@@ -638,3 +638,47 @@ class ArchiveUbbleUserIdPicturesTest:
         db.session.refresh(fraud_check)
         assert fraud_check.idPicturesStored is expected_id_pictures_stored
         assert mock_s3_client.return_value.upload_file.call_count == 2
+
+    @patch("pcapi.connectors.beneficiaries.outscale.boto3.client")
+    def test_archive_ubble_user_id_pictures_all_expected_files_saved(self, mock_s3_client, ubble_mocker, requests_mock):
+        # Given
+        fraud_check = BeneficiaryFraudCheckFactory(status=FraudCheckStatus.OK, type=FraudCheckType.UBBLE)
+
+        ubble_response = UbbleIdentificationResponseFactory(
+            identification_state=IdentificationState.VALID,
+            data__attributes__identification_id=str(fraud_check.thirdPartyId),
+            included=[
+                UbbleIdentificationIncludedDocumentsFactory(
+                    attributes__signed_image_front_url=self.front_picture_url,
+                    attributes__signed_image_back_url=None,
+                    attributes__document_type="Passport",
+                ),
+            ],
+        )
+
+        with open(f"{IMAGES_DIR}/carte_identite_front.png", "rb") as img_front:
+            identity_file_picture_front = BytesIO(img_front.read())
+
+        requests_mock.register_uri(
+            "GET",
+            self.front_picture_url,
+            status_code=200,
+            headers={"content-type": "image/png"},
+            body=identity_file_picture_front,
+        )
+
+        expected_id_pictures_stored = True
+
+        # When
+        with ubble_mocker(
+            fraud_check.thirdPartyId,
+            json.dumps(ubble_response.dict(by_alias=True), sort_keys=True, default=json_default),
+            mocker=requests_mock,
+        ):
+            actual = ubble_subscription_api.archive_ubble_user_id_pictures(fraud_check.thirdPartyId)
+
+        # Then
+        assert actual is expected_id_pictures_stored
+        db.session.refresh(fraud_check)
+        assert fraud_check.idPicturesStored is expected_id_pictures_stored
+        assert mock_s3_client.return_value.upload_file.call_count == 1
