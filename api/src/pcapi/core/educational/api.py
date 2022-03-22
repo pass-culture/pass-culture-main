@@ -37,6 +37,9 @@ from pcapi.core.educational.repository import find_collective_booking_by_booking
 from pcapi.core.educational.repository import get_and_lock_collective_stock
 from pcapi.core.educational.utils import compute_educational_booking_cancellation_limit_date
 from pcapi.core.mails.models.sendinblue_models import SendinblueTransactionalEmailData
+from pcapi.core.mails.transactional.bookings.booking_cancellation_by_institution import (
+    send_education_booking_cancellation_by_institution_email,
+)
 from pcapi.core.mails.transactional.educational.eac_new_booking_to_pro import send_eac_new_booking_email_to_pro
 from pcapi.core.mails.transactional.educational.eac_new_prebooking_to_pro import send_eac_new_prebooking_email_to_pro
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
@@ -344,22 +347,7 @@ def refuse_educational_booking(educational_booking_id: int) -> EducationalBookin
 
     booking_email = booking.stock.offer.bookingEmail
     if booking_email and not FeatureToggle.ENABLE_NEW_COLLECTIVE_MODEL.is_active():
-        data = SendinblueTransactionalEmailData(
-            template=TransactionalEmail.EDUCATIONAL_BOOKING_CANCELLATION_BY_INSTITUTION.value,
-            params={
-                "OFFER_NAME": stock.offer.name,
-                "EDUCATIONAL_INSTITUTION_NAME": educational_booking.educationalInstitution.name,
-                "VENUE_NAME": stock.offer.venue.name,
-                "EVENT_DATE": stock.beginningDatetime.strftime("%d/%m/%Y"),
-                "EVENT_HOUR": stock.beginningDatetime.strftime("%H:%M"),
-                "REDACTOR_FIRSTNAME": educational_booking.educationalRedactor.firstName,
-                "REDACTOR_LASTNAME": educational_booking.educationalRedactor.lastName,
-                "REDACTOR_EMAIL": educational_booking.educationalRedactor.email,
-                "EDUCATIONAL_INSTITUTION_CITY": educational_booking.educationalInstitution.city,
-                "EDUCATIONAL_INSTITUTION_POSTAL_CODE": educational_booking.educationalInstitution.postalCode,
-            },
-        )
-        mails.send(recipients=[booking_email], data=data)
+        send_education_booking_cancellation_by_institution_email(educational_booking)
 
     search.async_index_offer_ids([stock.offerId])
 
