@@ -114,6 +114,8 @@ export const mapBrowserToApi = {
   'periode-evenement-debut': 'periodBeginningDate',
   'periode-evenement-fin': 'periodEndingDate',
   page: 'page',
+  individuel: 'individual',
+  collectif: 'collective',
 }
 
 export const mapApiToBrowser = invert(mapBrowserToApi)

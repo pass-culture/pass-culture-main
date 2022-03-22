@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types'
 import React, { useCallback, useState } from 'react'
-import { useHistory } from 'react-router-dom'
 
 import Icon from 'components/layout/Icon'
 import Spinner from 'components/layout/Spinner'
@@ -11,8 +10,6 @@ import {
   MAX_OFFERS_TO_DISPLAY,
 } from 'core/Offers/constants'
 import { Banner } from 'ui-kit'
-
-import { computeOffersUrl } from '../utils/computeOffersUrl'
 
 import NoResults from './NoResults/NoResults'
 import OffersTableBody from './OffersTableBody/OffersTableBody'
@@ -35,26 +32,14 @@ const Offers = ({
   searchFilters,
   selectedOfferIds,
   setIsLoading,
-  setIsRefreshingOffers,
+  applyUrlFiltersAndRedirect,
   setOfferer,
   setSearchFilters,
   setSelectedOfferIds,
   toggleSelectAllCheckboxes,
   urlSearchFilters,
 }) => {
-  const history = useHistory()
-
   const [isStatusFiltersVisible, setIsStatusFiltersVisible] = useState(false)
-
-  const applyUrlFiltersAndRedirect = useCallback(
-    (filters, isRefreshing = true) => {
-      setIsRefreshingOffers(isRefreshing)
-      const newUrl = computeOffersUrl(filters, filters.page)
-
-      history.push(newUrl)
-    },
-    [history, setIsRefreshingOffers]
-  )
 
   const hasDifferentFiltersFromLastSearch = useCallback(
     (searchFilters, filterNames = Object.keys(searchFilters)) => {
@@ -251,6 +236,7 @@ Offers.defaultProps = {
 }
 
 Offers.propTypes = {
+  applyUrlFiltersAndRedirect: PropTypes.func.isRequired,
   areAllOffersSelected: PropTypes.bool.isRequired,
   currentPageNumber: PropTypes.number.isRequired,
   currentPageOffersSubset: PropTypes.shape().isRequired,
@@ -266,7 +252,6 @@ Offers.propTypes = {
   searchFilters: PropTypes.shape().isRequired,
   selectedOfferIds: PropTypes.shape.isRequired,
   setIsLoading: PropTypes.func.isRequired,
-  setIsRefreshingOffers: PropTypes.func.isRequired,
   setOfferer: PropTypes.func.isRequired,
   setSearchFilters: PropTypes.func.isRequired,
   setSelectedOfferIds: PropTypes.func.isRequired,

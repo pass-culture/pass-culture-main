@@ -41,9 +41,7 @@ export const serializeOffers = (offers: ListOffersResponseModel): Offer[] =>
     isShowcase: offer.isShowcase,
   }))
 
-export const serializeApiFilters = <
-  K extends keyof typeof DEFAULT_SEARCH_FILTERS
->(
+export const serializeApiFilters = <K extends keyof SearchFilters>(
   searchFilters: SearchFilters & { page?: number }
 ): ListOffersQueryModel => {
   const keys = Object.keys(DEFAULT_SEARCH_FILTERS) as K[]
