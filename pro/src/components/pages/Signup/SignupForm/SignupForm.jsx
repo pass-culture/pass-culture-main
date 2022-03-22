@@ -8,6 +8,7 @@ import FieldErrors from 'components/layout/form/FieldErrors'
 import PasswordField from 'components/layout/form/fields/PasswordField'
 import TextInput from 'components/layout/inputs/TextInput/TextInput'
 import LegalInfos from 'components/layout/LegalInfos/LegalInfos'
+import { redirectLoggedUser } from 'components/router/helpers'
 import { BannerRGS } from 'new_components/Banner'
 import bindAddressAndDesignationFromSiren from 'repository/siren/bindSirenFieldToDesignation'
 
@@ -27,6 +28,8 @@ const required = value => (value ? undefined : 'Required')
 class SignupForm extends PureComponent {
   constructor(props) {
     super(props)
+    const { history, location, currentUser } = props
+    redirectLoggedUser(history, location, currentUser)
     this.state = {
       errors: {},
     }
@@ -236,6 +239,9 @@ SignupForm.defaultProps = {
 }
 SignupForm.propTypes = {
   createNewProUser: PropTypes.func.isRequired,
+  currentUser: PropTypes.shape(),
+  history: PropTypes.func.isRequired,
+  location: PropTypes.shape().isRequired,
   notifyError: PropTypes.func.isRequired,
   redirectToConfirmation: PropTypes.func.isRequired,
 }

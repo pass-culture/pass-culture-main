@@ -13,7 +13,6 @@ import SetPasswordContainer from 'components/pages/SetPassword/SetPasswordContai
 import SetPasswordConfirmContainer from 'components/pages/SetPasswordConfirm/SetPasswordConfirmContainer'
 import SignIn from 'components/pages/SignIn/SignIn'
 import SignupContainer from 'components/pages/Signup/SignupContainer'
-import SignupValidationContainer from 'components/pages/Signup/SignupValidation/SignupValidationContainer'
 import StyleguideContainer from 'components/pages/Styleguide/StyleguideContainer'
 import CsvDetailViewContainer from 'routes/CsvTable'
 import Desk from 'routes/Desk'
@@ -24,6 +23,7 @@ import OfferEducationalStockCreation from 'routes/OfferEducationalStockCreation'
 import OfferEducationalStockEdition from 'routes/OfferEducationalStockEdition/OfferEducationalStockEdition'
 import Offers from 'routes/Offers'
 import OfferType from 'routes/OfferType'
+import SignUpValidation from 'routes/SignUpValidation'
 import { UNAVAILABLE_ERROR_PAGE } from 'utils/routes'
 
 const RedirectToConnexionComponent = () => {
@@ -47,7 +47,7 @@ export const routesWithoutLayout = [
     },
   },
   {
-    component: SignupValidationContainer,
+    component: SignUpValidation,
     exact: true,
     path: '/inscription/validation/:token',
     title: 'Validation de votre inscription',
