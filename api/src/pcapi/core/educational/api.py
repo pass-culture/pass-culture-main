@@ -25,6 +25,7 @@ import pcapi.core.educational.adage_backends as adage_client
 from pcapi.core.educational.models import CollectiveBooking
 from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.educational.models import CollectiveOffer
+from pcapi.core.educational.models import CollectiveOfferTemplate
 from pcapi.core.educational.models import CollectiveStock
 from pcapi.core.educational.models import EducationalBooking
 from pcapi.core.educational.models import EducationalBookingStatus
@@ -35,6 +36,8 @@ from pcapi.core.educational.models import EducationalYear
 from pcapi.core.educational.models import Ministry
 from pcapi.core.educational.repository import find_collective_booking_by_booking_id
 from pcapi.core.educational.repository import get_and_lock_collective_stock
+from pcapi.core.educational.repository import get_collective_offers_for_filters
+from pcapi.core.educational.repository import get_collective_offers_template_for_filters
 from pcapi.core.educational.utils import compute_educational_booking_cancellation_limit_date
 from pcapi.core.mails.models.sendinblue_models import SendinblueTransactionalEmailData
 from pcapi.core.mails.transactional.bookings.booking_cancellation_by_institution import (
@@ -62,6 +65,7 @@ from pcapi.routes.serialization.stock_serialize import EducationalStockCreationB
 
 
 logger = logging.getLogger(__name__)
+OFFERS_RECAP_LIMIT = 501
 
 
 def _create_redactor(redactor_informations: AuthenticatedInformation) -> EducationalRedactor:
@@ -707,3 +711,72 @@ def _get_expired_collective_offer_ids(interval: list[datetime.datetime], page: i
     collective_offers = educational_repository.get_expired_collective_offers(interval)
     collective_offers = collective_offers.offset(page * limit).limit(limit)
     return [offer_id for offer_id, in collective_offers.with_entities(educational_models.CollectiveOffer.id)]
+
+
+def list_collective_offers_for_pro_user(
+    user_id: int,
+    user_is_admin: bool,
+    category_id: Optional[str],
+    offerer_id: Optional[int],
+    venue_id: Optional[int] = None,
+    name_keywords: Optional[str] = None,
+    status: Optional[str] = None,
+    period_beginning_date: Optional[str] = None,
+    period_ending_date: Optional[str] = None,
+) -> list[Union[CollectiveOffer, CollectiveOfferTemplate]]:
+    offers = get_collective_offers_for_filters(
+        user_id=user_id,
+        user_is_admin=user_is_admin,
+        offers_limit=OFFERS_RECAP_LIMIT,
+        offerer_id=offerer_id,
+        status=status,
+        venue_id=venue_id,
+        category_id=category_id,
+        name_keywords=name_keywords,
+        period_beginning_date=period_beginning_date,
+        period_ending_date=period_ending_date,
+    )
+    templates = get_collective_offers_template_for_filters(
+        user_id=user_id,
+        user_is_admin=user_is_admin,
+        offers_limit=OFFERS_RECAP_LIMIT,
+        offerer_id=offerer_id,
+        status=status,
+        venue_id=venue_id,
+        category_id=category_id,
+        name_keywords=name_keywords,
+        period_beginning_date=period_beginning_date,
+        period_ending_date=period_ending_date,
+    )
+    offer_index = 0
+    template_index = 0
+    merged_offers = []
+
+    # merge two ordered lists to one shorter than OFFERS_RECAP_LIMIT items
+    for _ in range(min(OFFERS_RECAP_LIMIT, (len(offers) + len(templates)))):
+
+        if offer_index >= len(offers) and template_index >= len(templates):
+            # this should never hapen. Only there as defensive mesure.
+            break
+
+        if offer_index >= len(offers):
+            merged_offers.append(templates[template_index])
+            template_index += 1
+            continue
+
+        if template_index >= len(templates):
+            merged_offers.append(offers[offer_index])
+            offer_index += 1
+            continue
+
+        offer_date = offers[offer_index].dateCreated
+        template_date = templates[template_index].dateCreated
+
+        if offer_date > template_date:
+            merged_offers.append(offers[offer_index])
+            offer_index += 1
+        else:
+            merged_offers.append(templates[template_index])
+            template_index += 1
+
+    return merged_offers

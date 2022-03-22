@@ -25,7 +25,7 @@ def update_all_offers_active_status_job(filters: dict, is_active: bool) -> None:
         status=filters["status"],
         venue_id=filters["venue_id"],
         category_id=filters["category_id"],
-        name_keywords_or_isbn=filters["name_or_isbn"],
+        name_keywords=filters["name_or_isbn"],
         period_beginning_date=filters["period_beginning_date"],
         period_ending_date=filters["period_ending_date"],
     )
@@ -36,7 +36,7 @@ def update_all_offers_active_status_job(filters: dict, is_active: bool) -> None:
         status=filters["status"],
         venue_id=filters["venue_id"],
         category_id=filters["category_id"],
-        name_keywords_or_isbn=filters["name_or_isbn"],
+        name_keywords=filters["name_or_isbn"],
         period_beginning_date=filters["period_beginning_date"],
         period_ending_date=filters["period_ending_date"],
     )
