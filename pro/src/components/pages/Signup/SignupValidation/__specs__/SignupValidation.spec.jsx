@@ -3,6 +3,7 @@ import { render, waitFor } from '@testing-library/react'
 import { createBrowserHistory } from 'history'
 import React from 'react'
 import { Provider } from 'react-redux'
+import reactRouter from 'react-router'
 import { Router } from 'react-router-dom'
 
 import * as routerHelpers from 'components/router/helpers'
@@ -29,6 +30,7 @@ describe('src | components | pages | Signup | validation', () => {
       },
     })
     history = createBrowserHistory()
+    jest.spyOn(reactRouter, 'useParams').mockReturnValue({ token: 'AAA' })
     props = {
       history,
       location: {
@@ -80,7 +82,7 @@ describe('src | components | pages | Signup | validation', () => {
     )
     // then the validity of his token should be verified
     expect(validateUser).toHaveBeenCalledTimes(1)
-    expect(validateUser).toHaveBeenNthCalledWith(1, props.match.params.token)
+    expect(validateUser).toHaveBeenNthCalledWith(1, 'AAA')
     // and he should be redirected to signin page
     await waitFor(() => {
       expect(history.location.pathname).toBe('/connexion')
