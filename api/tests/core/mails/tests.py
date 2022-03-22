@@ -51,7 +51,7 @@ class SendTest:
         expected["MJ-TemplateErrorReporting"] = "dev@example.com"
         with requests_mock.Mocker() as mock:
             posted = mock.post("https://api.mailjet.com/v3/send")
-            successful = mails.send(recipients=self.recipients, data=self.data)
+            successful = mails.send(recipients=self.recipients, data=copy.deepcopy(self.data))
             assert posted.last_request.json() == expected
         assert successful
 
