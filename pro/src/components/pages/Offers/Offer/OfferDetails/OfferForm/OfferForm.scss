@@ -16,5 +16,15 @@
         margin: 2.5px 8px 2.5px 3px;
       }
     }
+
+    .inline-select {
+      display: flex;
+      align-items: flex-end;
+
+      &-label-complement{
+
+        padding: rem(10px) rem(16px);
+      }
+    }
   }
 }

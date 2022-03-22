@@ -20,6 +20,7 @@ import TextareaInput from 'components/layout/inputs/TextareaInput'
 import TextInput from 'components/layout/inputs/TextInput/TextInput'
 import InternalBanner from 'components/layout/InternalBanner'
 import Spinner from 'components/layout/Spinner'
+import { OFFER_WITHDRAWAL_TYPE_OPTIONS } from 'core/Offers'
 import { SubmitButton } from 'ui-kit'
 import { doesUserPreferReducedMotion } from 'utils/windowMatchMedia'
 
@@ -32,6 +33,7 @@ import {
   NOT_REIMBURSED,
   PLATFORM,
   TEXT_INPUT_DEFAULT_VALUE,
+  WITHDRAWAL_ON_SITE_DELAY_OPTIONS,
   WITHDRAWAL_TYPE_COMPATIBLE_SUBCATEGORIE,
 } from '../_constants'
 
@@ -53,6 +55,7 @@ const getOfferConditionalFields = ({
   isUserAdmin = null,
   receiveNotificationEmails = null,
   venue = null,
+  withdrawalType = undefined,
 }) => {
   let offerConditionalFields = []
 
@@ -86,6 +89,10 @@ const getOfferConditionalFields = ({
 
   if (WITHDRAWAL_TYPE_COMPATIBLE_SUBCATEGORIE.includes(offerSubCategory?.id)) {
     offerConditionalFields.push('withdrawalType')
+
+    if (withdrawalType === OFFER_WITHDRAWAL_TYPE_OPTIONS.ON_SITE) {
+      offerConditionalFields.push('withdrawalDelay')
+    }
   }
 
   return offerConditionalFields
@@ -150,7 +157,8 @@ const OfferForm = ({
         if (
           oldFormValues['subcategoryId'] !== updatedFormValues['subcategoryId']
         ) {
-          updatedFormValues['withdrawalType'] = null
+          updatedFormValues['withdrawalType'] =
+            DEFAULT_FORM_VALUES['withdrawalType']
         }
 
         return isEqual(oldFormValues, updatedFormValues)
@@ -213,8 +221,13 @@ const OfferForm = ({
       WITHDRAWAL_TYPE_COMPATIBLE_SUBCATEGORIE.includes(offerSubCategory?.id)
     ) {
       mandatoryFields.push('withdrawalType')
+
+      if (formValues.withdrawalType === OFFER_WITHDRAWAL_TYPE_OPTIONS.ON_SITE) {
+        mandatoryFields.push('withdrawalDelay')
+      }
     }
   }, [
+    formValues,
     offerSubCategory,
     isIsbnRequiredInLivreEditionEnabled,
     isWithdrawalTypeEnabled,
@@ -260,6 +273,7 @@ const OfferForm = ({
         isUserAdmin,
         receiveNotificationEmails,
         venue,
+        withdrawalType: formValues.withdrawalType,
       })
       let offerSubCategoryConditionalFields = offerSubCategory
         ? offerSubCategory.conditionalFields
@@ -272,7 +286,13 @@ const OfferForm = ({
       ]
       setOfferFormFields(newFormFields)
     },
-    [offerSubCategory, isUserAdmin, receiveNotificationEmails, venue]
+    [
+      formValues,
+      offerSubCategory,
+      isUserAdmin,
+      receiveNotificationEmails,
+      venue,
+    ]
   )
 
   useEffect(
@@ -536,6 +556,7 @@ const OfferForm = ({
             delete submittedValues.categoryId
             // TODO remove withdrawalType waiting api merge of PC-14049
             delete submittedValues.withdrawalType
+            delete submittedValues.withdrawalDelay
 
             return submittedValues
           },
@@ -954,11 +975,35 @@ const OfferForm = ({
                 WITHDRAWAL_TYPE_COMPATIBLE_SUBCATEGORIE.includes(
                   formValues.subcategoryId
                 ) && (
-                  <OfferWithdrawalTypeOptions
-                    error={getErrorMessage('withdrawalType')}
-                    updateWithdrawalType={handleSingleFormUpdate}
-                    withdrawalType={formValues.withdrawalType}
-                  />
+                  <>
+                    <OfferWithdrawalTypeOptions
+                      error={getErrorMessage('withdrawalType')}
+                      updateWithdrawalType={handleSingleFormUpdate}
+                      withdrawalType={formValues.withdrawalType}
+                    />
+                    {formValues.withdrawalType ===
+                      OFFER_WITHDRAWAL_TYPE_OPTIONS.ON_SITE && (
+                      <div className="form-row inline-select">
+                        <Select
+                          error={getErrorMessage('withdrawalDelay')}
+                          handleSelection={handleSingleFormUpdate}
+                          label="Heure de retrait"
+                          name="withdrawalDelay"
+                          options={WITHDRAWAL_ON_SITE_DELAY_OPTIONS}
+                          selectedValue={
+                            formValues.withdrawalDelay ||
+                            DEFAULT_FORM_VALUES.withdrawalDelay
+                          }
+                        />
+                        <label
+                          className="inline-select-label-complement"
+                          htmlFor="withdrawalDelay"
+                        >
+                          avant le début de l’événement
+                        </label>
+                      </div>
+                    )}
+                  </>
                 )}
 
               <div className="form-row">
