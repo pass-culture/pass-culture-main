@@ -229,11 +229,9 @@ class SignupForm extends PureComponent {
     )
   }
 }
-
 SignupForm.defaultProps = {
   currentUser: null,
 }
-
 SignupForm.propTypes = {
   createNewProUser: PropTypes.func.isRequired,
   currentUser: PropTypes.shape(),
