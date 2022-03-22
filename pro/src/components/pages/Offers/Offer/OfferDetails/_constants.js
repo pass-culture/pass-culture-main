@@ -33,6 +33,7 @@ export const DEFAULT_FORM_VALUES = {
   // set to null to set default value from venue
   withdrawalDetails: null,
   withdrawalType: undefined,
+  withdrawalDelay: undefined,
 }
 
 export const BASE_OFFER_FIELDS = [
@@ -113,4 +114,15 @@ export const WITHDRAWAL_TYPE_COMPATIBLE_SUBCATEGORIE = [
   'EVENEMENT_MUSIQUE',
   'FESTIVAL_SPECTACLE',
   'SPECTACLE_REPRESENTATION',
+]
+
+export const WITHDRAWAL_ON_SITE_DELAY_OPTIONS = [
+  { displayName: 'À tout moment', id: (0).toString() },
+  { displayName: '15 minutes', id: (60 * 15).toString() },
+  { displayName: '30 minutes', id: (60 * 30).toString() },
+  { displayName: '1 heure', id: (60 * 60).toString() },
+  { displayName: '2 heures', id: (60 * 60 * 2).toString() },
+  { displayName: '4 heures', id: (60 * 60 * 4).toString() },
+  { displayName: '24 heures', id: (60 * 60 * 24).toString() },
+  { displayName: '48 heures', id: (60 * 60 * 48).toString() },
 ]
