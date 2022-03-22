@@ -1,18 +1,14 @@
-import { mount } from 'enzyme'
+import '@testing-library/jest-dom'
+import { render, screen } from '@testing-library/react'
 import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
 
-import Logo from 'components/layout/Logo'
 import * as pcapi from 'repository/pcapi/pcapi'
 import configureStore from 'store'
 import { campaignTracker } from 'tracking/mediaCampaignsTracking'
-import { enzymeWaitFor } from 'utils/testHelpers'
 
 import Signup from '../Signup'
-import SignupConfirmation from '../SignupConfirmation/SignupConfirmation'
-import SignupForm from '../SignupForm/SignupForm'
-import SignupUnavailable from '../SignupUnavailable/SignupUnavailable'
 
 jest.mock('repository/pcapi/pcapi', () => ({
   loadFeatures: jest.fn(),
@@ -42,7 +38,7 @@ describe('src | components | pages | Signup', () => {
     }
 
     // when
-    const wrapper = mount(
+    render(
       <Provider store={store}>
         <MemoryRouter>
           <Signup {...props} />
@@ -51,10 +47,9 @@ describe('src | components | pages | Signup', () => {
     )
 
     // then
-    const logo = wrapper.find(Logo)
-    const signupForm = wrapper.find(SignupForm)
-    expect(logo).toHaveLength(1)
-    expect(signupForm).toHaveLength(1)
+    expect(
+      screen.getByRole('heading', { name: /Créer votre compte professionnel/ })
+    ).toBeInTheDocument()
   })
 
   it('should render logo and confirmation page', () => {
@@ -66,7 +61,7 @@ describe('src | components | pages | Signup', () => {
     }
 
     // when
-    const wrapper = mount(
+    render(
       <Provider store={store}>
         <MemoryRouter>
           <Signup {...props} />
@@ -75,10 +70,9 @@ describe('src | components | pages | Signup', () => {
     )
 
     // then
-    const logo = wrapper.find(Logo)
-    const signupConfirmation = wrapper.find(SignupConfirmation)
-    expect(logo).toHaveLength(1)
-    expect(signupConfirmation).toHaveLength(1)
+    expect(
+      screen.getByText(/Votre compte est en cours de création./)
+    ).toBeInTheDocument()
   })
 
   it('should render maintenance page when signup is unavailable', async () => {
@@ -95,7 +89,7 @@ describe('src | components | pages | Signup', () => {
     }).store
 
     // when
-    const wrapper = mount(
+    render(
       <Provider store={store}>
         <MemoryRouter>
           <Signup {...props} />
@@ -104,8 +98,9 @@ describe('src | components | pages | Signup', () => {
     )
 
     // then
-    const unavailablePage = wrapper.find(SignupUnavailable)
-    expect(unavailablePage).toHaveLength(1)
+    expect(
+      screen.getByRole('heading', { name: /Inscription indisponible/ })
+    ).toBeInTheDocument()
   })
 
   it('should call media campaign tracker on mount only', async () => {
@@ -121,26 +116,23 @@ describe('src | components | pages | Signup', () => {
     }
 
     // when
-    const wrapper = mount(
+    const { rerender } = render(
       <Provider store={store}>
         <MemoryRouter>
           <Signup {...props} />
         </MemoryRouter>
       </Provider>
     )
-    wrapper.update()
-
-    // then
-    await enzymeWaitFor(() =>
-      expect(campaignTracker.signUp).toHaveBeenCalledTimes(1)
-    )
-
     // when rerender
-    wrapper.setProps(props)
+    rerender(
+      <Provider store={store}>
+        <MemoryRouter>
+          <Signup {...props} />
+        </MemoryRouter>
+      </Provider>
+    )
 
     // then
-    await enzymeWaitFor(() =>
-      expect(campaignTracker.signUp).toHaveBeenCalledTimes(1)
-    )
+    expect(campaignTracker.signUp).toHaveBeenCalledTimes(1)
   })
 })
