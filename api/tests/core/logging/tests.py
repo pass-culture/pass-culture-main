@@ -4,6 +4,7 @@ import json
 import logging
 import uuid
 
+from flask import g
 from flask_login import login_user
 import pytest
 
@@ -64,6 +65,11 @@ class JsonFormatterTest:
         )
 
     def test_serialization(self):
+        # Sometimes, the current api key may be defined in other tests
+        # and not cleaned so we need to reset it here to avoid logger
+        # from accessing stale data
+        g.current_api_key = None  # pylint: disable=assigning-non-slot
+
         formatter = JsonFormatter()
 
         # empty extra
