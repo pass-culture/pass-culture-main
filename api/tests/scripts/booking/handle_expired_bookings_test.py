@@ -2,6 +2,7 @@ from datetime import datetime
 from datetime import timedelta
 from unittest import mock
 
+from freezegun import freeze_time
 import pytest
 
 from pcapi.core.bookings import factories as booking_factories
@@ -14,6 +15,8 @@ from pcapi.core.educational.models import CollectiveBooking
 from pcapi.core.educational.models import CollectiveBookingCancellationReasons
 from pcapi.core.educational.models import CollectiveBookingStatus
 import pcapi.core.mails.testing as mails_testing
+from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
+from pcapi.core.offers import factories as offer_factories
 from pcapi.core.offers.factories import ProductFactory
 from pcapi.core.testing import assert_num_queries
 from pcapi.scripts.booking import handle_expired_bookings
@@ -474,21 +477,88 @@ class NotifyOfferersOfExpiredBookingsTest:
             [expired_today_cd_booking.individualBooking.booking],
         )
 
-    @mock.patch("pcapi.scripts.booking.handle_expired_bookings.send_bookings_expiration_to_pro_email")
-    def test_should_not_notify_of_todays_expired_educational_bookings(self, mocked_send_email_recap, app) -> None:
+    @freeze_time("2022-11-17 15:00:00")
+    def test_should_notify_of_todays_expired_educational_bookings(self, app) -> None:
         # Given
-        now = datetime.utcnow()
-        long_ago = now - timedelta(days=31)
-        dvd = ProductFactory(subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id)
+        today = datetime.today()
+        yesterday = today - timedelta(days=1)
+        redactor = educational_factories.EducationalRedactorFactory(
+            civility="M.",
+            firstName="Jean",
+            lastName="Doudou",
+            email="jean.doux@example.com",
+        )
+        institution = educational_factories.EducationalInstitutionFactory(
+            name="Collège Dupont", city="Tourcoing", postalCode=59200
+        )
+        stock_one = offer_factories.EducationalEventStockFactory(
+            dnBookedQuantity=0,
+            offer__bookingEmail="test@mail.com",
+            beginningDatetime=datetime(2022, 11, 24, 12, 53, 00),
+            offer__name="Ma première offre expirée",
+        )
         booking_factories.EducationalBookingFactory(
-            stock__offer__product=dvd,
-            dateCreated=long_ago,
             status=BookingStatus.CANCELLED,
+            cancellationReason=BookingCancellationReasons.EXPIRED,
+            cancellationDate=today,
+            stock=stock_one,
+            educationalBooking__educationalRedactor=redactor,
+            educationalBooking__educationalInstitution=institution,
+        )
+
+        stock_two = offer_factories.EducationalEventStockFactory(
+            dnBookedQuantity=0,
+            offer__bookingEmail="new_test@mail.com",
+            beginningDatetime=datetime(2022, 12, 3, 20, 00, 00),
+            offer__name="Ma deuxième offre expirée",
+        )
+        second_expired_booking = booking_factories.EducationalBookingFactory(
+            status=BookingStatus.CANCELLED,
+            cancellationReason=BookingCancellationReasons.EXPIRED,
+            cancellationDate=today,
+            stock=stock_two,
+            educationalBooking__educationalRedactor=redactor,
+        )
+        booking_factories.EducationalBookingFactory(
+            status=BookingStatus.CANCELLED,
+            cancellationDate=yesterday,
             cancellationReason=BookingCancellationReasons.EXPIRED,
         )
 
         # Given
-        handle_expired_bookings.notify_offerers_of_expired_individual_bookings()
+        handle_expired_bookings.notify_offerers_of_expired_educational_bookings()
 
         # Then
-        assert not mocked_send_email_recap.called
+        assert len(mails_testing.outbox) == 2
+        assert (
+            mails_testing.outbox[0].sent_data["template"]
+            == TransactionalEmail.EDUCATIONAL_BOOKING_CANCELLATION_BY_INSTITUTION.value.__dict__
+        )
+        assert mails_testing.outbox[0].sent_data["To"] == "test@mail.com"
+        assert mails_testing.outbox[0].sent_data["params"] == {
+            "OFFER_NAME": "Ma première offre expirée",
+            "EDUCATIONAL_INSTITUTION_NAME": institution.name,
+            "VENUE_NAME": stock_one.offer.venue.name,
+            "EVENT_DATE": "24/11/2022",
+            "EVENT_HOUR": "12:53",
+            "REDACTOR_FIRSTNAME": redactor.firstName,
+            "REDACTOR_LASTNAME": redactor.lastName,
+            "REDACTOR_EMAIL": redactor.email,
+            "EDUCATIONAL_INSTITUTION_CITY": institution.city,
+            "EDUCATIONAL_INSTITUTION_POSTAL_CODE": institution.postalCode,
+        }
+
+        second_educational_institution = second_expired_booking.educationalBooking.educationalInstitution
+        assert mails_testing.outbox[1].sent_data["To"] == "new_test@mail.com"
+        assert mails_testing.outbox[1].sent_data["params"] == {
+            "OFFER_NAME": "Ma deuxième offre expirée",
+            "EDUCATIONAL_INSTITUTION_NAME": second_educational_institution.name,
+            "VENUE_NAME": stock_two.offer.venue.name,
+            "EVENT_DATE": "03/12/2022",
+            "EVENT_HOUR": "20:00",
+            "REDACTOR_FIRSTNAME": redactor.firstName,
+            "REDACTOR_LASTNAME": redactor.lastName,
+            "REDACTOR_EMAIL": redactor.email,
+            "EDUCATIONAL_INSTITUTION_CITY": second_educational_institution.city,
+            "EDUCATIONAL_INSTITUTION_POSTAL_CODE": second_educational_institution.postalCode,
+        }
