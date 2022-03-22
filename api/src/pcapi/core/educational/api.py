@@ -33,6 +33,7 @@ from pcapi.core.educational.models import EducationalInstitution
 from pcapi.core.educational.models import EducationalRedactor
 from pcapi.core.educational.models import EducationalYear
 from pcapi.core.educational.models import Ministry
+from pcapi.core.educational.repository import find_collective_booking_by_booking_id
 from pcapi.core.educational.repository import get_and_lock_collective_stock
 from pcapi.core.educational.utils import compute_educational_booking_cancellation_limit_date
 from pcapi.core.mails.models.sendinblue_models import SendinblueTransactionalEmailData
@@ -371,9 +372,7 @@ def refuse_collective_booking(educational_booking_id: int) -> Optional[Collectiv
     if educational_booking is None:
         raise exceptions.EducationalBookingNotFound()
 
-    collective_booking = CollectiveBooking.query.filter(
-        CollectiveBooking.bookingId == educational_booking.booking.id
-    ).first()
+    collective_booking = find_collective_booking_by_booking_id(educational_booking.booking.id)
 
     if collective_booking is None:
         # FIXME (MathildeDuboille - 2022-03-03): raise an error once data has been migrated to the new model
