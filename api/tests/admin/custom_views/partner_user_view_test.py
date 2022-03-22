@@ -104,7 +104,7 @@ class PartnerUserViewTest:
         assert user.publicName == "Ken Thompson"
 
     @clean_database
-    @override_settings(IS_PROD=True, SUPER_ADMIN_EMAIL_ADDRESSES="superadmin@example.com")
+    @override_settings(IS_PROD=True, SUPER_ADMIN_EMAIL_ADDRESSES=["superadmin@example.com"])
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     def test_super_admin_can_suspend_then_unsuspend_partner(self, mocked_validate_csrf_token, app):
         super_admin = users_factories.AdminFactory(email="superadmin@example.com")
@@ -139,7 +139,7 @@ class PartnerUserViewTest:
         mocked_request_email_confirmation.assert_called_once_with(partner)
 
     @clean_database
-    @override_settings(IS_PROD=True, SUPER_ADMIN_EMAIL_ADDRESSES="superadmin@example.com")
+    @override_settings(IS_PROD=True, SUPER_ADMIN_EMAIL_ADDRESSES=["superadmin@example.com"])
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     def test_clear_profile(self, mocked_validate_csrf_token, client):
         admin = users_factories.AdminFactory()
@@ -191,7 +191,7 @@ class PartnerUserViewTest:
         )
 
     @clean_database
-    @override_settings(IS_PROD=True, SUPER_ADMIN_EMAIL_ADDRESSES="superadmin@example.com")
+    @override_settings(IS_PROD=True, SUPER_ADMIN_EMAIL_ADDRESSES=["superadmin@example.com"])
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     def test_clear_idpiecenumber(self, mocked_validate_csrf_token, client):
         admin = users_factories.AdminFactory(email="superadmin@example.com")

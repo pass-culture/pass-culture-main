@@ -185,7 +185,7 @@ class OfferValidationViewTest:
         )
 
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
-    @testing.override_settings(IS_PROD=True, SUPER_ADMIN_EMAIL_ADDRESSES="super_admin@example.com")
+    @testing.override_settings(IS_PROD=True, SUPER_ADMIN_EMAIL_ADDRESSES=["super_admin@example.com"])
     def test_import_validation_config(self, mocked_validate_csrf_token, client):
         # Given
         users_factories.AdminFactory(email="super_admin@example.com")
@@ -249,7 +249,7 @@ class OfferValidationViewTest:
         }
 
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
-    @testing.override_settings(IS_PROD=True, SUPER_ADMIN_EMAIL_ADDRESSES="super_admin@example.com")
+    @testing.override_settings(IS_PROD=True, SUPER_ADMIN_EMAIL_ADDRESSES=["super_admin@example.com"])
     def test_import_validation_config_fail_with_wrong_value(self, mocked_validate_csrf_token, client):
         # Given
         users_factories.AdminFactory(email="super_admin@example.com")
@@ -281,7 +281,7 @@ class OfferValidationViewTest:
         assert response.status_code == 400
 
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
-    @testing.override_settings(IS_PROD=True, SUPER_ADMIN_EMAIL_ADDRESSES="super_admin@example.com")
+    @testing.override_settings(IS_PROD=True, SUPER_ADMIN_EMAIL_ADDRESSES=["super_admin@example.com"])
     def test_import_validation_config_fail_when_user_is_not_super_admin(self, mocked_validate_csrf_token, client):
         # Given
         users_factories.AdminFactory(email="not_super_admin@example.com")
@@ -415,7 +415,7 @@ class OfferValidationViewTest:
         assert offer.lastValidationDate == datetime.datetime(2020, 11, 17, 15)
         assert offer.lastValidationType == OfferValidationType.MANUAL
 
-    @testing.override_settings(IS_PROD=True, SUPER_ADMIN_EMAIL_ADDRESSES="super_admin@example.com")
+    @testing.override_settings(IS_PROD=True, SUPER_ADMIN_EMAIL_ADDRESSES=["super_admin@example.com"])
     def test_access_to_validation_page_with_super_admin_user_on_prod_env(self, client):
         users_factories.AdminFactory(email="super_admin@example.com")
 
@@ -423,7 +423,7 @@ class OfferValidationViewTest:
 
         assert response.status_code == 200
 
-    @testing.override_settings(IS_PROD=True, SUPER_ADMIN_EMAIL_ADDRESSES="super_admin@example.com")
+    @testing.override_settings(IS_PROD=True, SUPER_ADMIN_EMAIL_ADDRESSES=["super_admin@example.com"])
     def test_access_to_validation_page_with_none_super_admin_user_on_prod_env(self, client):
         users_factories.AdminFactory(email="simple_admin@example.com")
 
@@ -452,7 +452,7 @@ class OfferValidationViewTest:
         assert get_count_query_scalar == 1
 
     @clean_database
-    @testing.override_settings(IS_PROD=True, SUPER_ADMIN_EMAIL_ADDRESSES="superadmin@example.com")
+    @testing.override_settings(IS_PROD=True, SUPER_ADMIN_EMAIL_ADDRESSES=["superadmin@example.com"])
     def test_number_of_queries_for_offer_list(self, client):
         admin = users_factories.AdminFactory(email="superadmin@example.com")
 

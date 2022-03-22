@@ -82,7 +82,7 @@ class IsAccessibleTest:
         assert view.is_accessible() is True
 
     @patch("flask_login.utils._get_user")
-    @override_settings(SUPER_ADMIN_EMAIL_ADDRESSES="", IS_PROD=True)
+    @override_settings(SUPER_ADMIN_EMAIL_ADDRESSES=[], IS_PROD=True)
     def test_check_super_admins_is_false_for_non_super_admin_users(self, get_user):
         # given
         get_user.return_value = users_factories.UserFactory.build(email="dummy@email.com")
@@ -94,7 +94,7 @@ class IsAccessibleTest:
         assert view.check_super_admins() is False
 
     @patch("flask_login.utils._get_user")
-    @override_settings(SUPER_ADMIN_EMAIL_ADDRESSES="super@admin.user", IS_PROD=True)
+    @override_settings(SUPER_ADMIN_EMAIL_ADDRESSES=["super@admin.user"], IS_PROD=True)
     def test_check_super_admins_is_true_for_super_admin_users(self, get_user):
         # given
         get_user.return_value = users_factories.UserFactory.build(email="super@admin.user")
@@ -106,7 +106,7 @@ class IsAccessibleTest:
         assert view.check_super_admins() is True
 
     @patch("flask_login.utils._get_user")
-    @override_settings(SUPER_ADMIN_EMAIL_ADDRESSES="")
+    @override_settings(SUPER_ADMIN_EMAIL_ADDRESSES=[])
     def test_check_super_admins_is_deactived_in_non_prod_environments(self, get_user):
         # given
         get_user.return_value = users_factories.AdminFactory.build(email="dummy@example.com")
