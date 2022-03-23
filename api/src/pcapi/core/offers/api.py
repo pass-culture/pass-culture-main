@@ -706,7 +706,7 @@ def _update_offer_fraud_information(
     offer.lastValidationDate = datetime.datetime.utcnow()
     offer.lastValidationType = OfferValidationType.AUTO
 
-    if offer.validation == OfferValidationStatus.PENDING or offer.validation == OfferValidationStatus.REJECTED:
+    if offer.validation in (OfferValidationStatus.PENDING, OfferValidationStatus.REJECTED):
         offer.isActive = False
     repository.save(offer)
     if offer.validation == OfferValidationStatus.APPROVED and not silent:
@@ -911,8 +911,8 @@ def create_mediation(
     try:
         create_thumb(mediation, image_as_bytes, image_index=0, crop_params=crop_params)
 
-    except Exception as exc:
-        logger.exception("An unexpected error was encountered during the thumbnail creation: %s", exc)
+    except Exception as exception:
+        logger.exception("An unexpected error was encountered during the thumbnail creation: %s", exception)
         # I could not use savepoints and rollbacks with SQLA
         repository.delete(mediation)
         raise ThumbnailStorageError
@@ -929,11 +929,11 @@ def create_mediation(
             try:
                 for thumb_index in range(0, previous_mediation.thumbCount):
                     remove_thumb(previous_mediation, image_index=thumb_index)
-            except Exception as exc:  # pylint: disable=broad-except
+            except Exception as exception:  # pylint: disable=broad-except
                 logger.exception(
                     "An unexpected error was encountered during the thumbnails deletion for %s: %s",
                     mediation,
-                    exc,
+                    exception,
                 )
             else:
                 repository.delete(previous_mediation)

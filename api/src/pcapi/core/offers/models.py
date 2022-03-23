@@ -142,17 +142,17 @@ class Stock(PcObject, Model, ProvidableMixin, SoftDeletableMixin):
         return Stock.query.filter_by(isSoftDeleted=False)
 
     @staticmethod
-    def restize_internal_error(ie):
-        if "check_stock" in str(ie.orig):
-            if "quantity_too_low" in str(ie.orig):
+    def restize_internal_error(internal_error):
+        if "check_stock" in str(internal_error.orig):
+            if "quantity_too_low" in str(internal_error.orig):
                 return ["quantity", "Le stock total ne peut être inférieur au nombre de réservations"]
-            if "bookingLimitDatetime_too_late" in str(ie.orig):
+            if "bookingLimitDatetime_too_late" in str(internal_error.orig):
                 return [
                     "bookingLimitDatetime",
                     "La date limite de réservation pour cette offre est postérieure à la date de début de l'évènement",
                 ]
-            logger.error("Unexpected error in patch stocks: %s", ie)
-        return PcObject.restize_internal_error(ie)
+            logger.error("Unexpected error in patch stocks: %s", internal_error)
+        return PcObject.restize_internal_error(internal_error)
 
     @property
     def canHaveActivationCodes(self):
