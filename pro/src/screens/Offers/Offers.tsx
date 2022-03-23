@@ -5,7 +5,6 @@ import ActionsBarPortal from 'components/layout/ActionsBarPortal/ActionsBarPorta
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Titles from 'components/layout/Titles/Titles'
 import ActionsBarContainer from 'components/pages/Offers/Offers/ActionsBar/ActionsBarContainer'
-import NoOffers from 'components/pages/Offers/Offers/NoOffers/NoOffers'
 import OffersContainer from 'components/pages/Offers/Offers/OffersContainer'
 import {
   DEFAULT_SEARCH_FILTERS,
@@ -15,6 +14,7 @@ import {
 import { Audience, Offer, Offerer, SearchFilters } from 'core/Offers/types'
 import { ReactComponent as AddOfferSvg } from 'icons/ico-plus.svg'
 
+import NoOffers from './NoOffers'
 import OfferListFilterTabs from './OfferListFilterTabs'
 
 export interface IOffersProps {

@@ -1,0 +1,24 @@
+.no-search-results {
+  @include body();
+
+  align-items: center;
+  color: $grey-dark;
+  display: flex;
+  flex-direction: column;
+
+  &-icon {
+    margin-top: rem(40px);
+  }
+
+  &-highlight {
+    @include title4;
+
+    margin-bottom: rem(8px);
+    margin-top: rem(24px);
+  }
+
+  &-link {
+    margin-bottom: rem(48px);
+    margin-top: rem(48px);
+  }
+}
