@@ -9,9 +9,9 @@ import {
   DEFAULT_SEARCH_FILTERS,
   MAX_OFFERS_TO_DISPLAY,
 } from 'core/Offers/constants'
+import NoResults from 'screens/Offers/NoResults'
 import { Banner } from 'ui-kit'
 
-import NoResults from './NoResults/NoResults'
 import OffersTableBody from './OffersTableBody/OffersTableBody'
 import OffersTableHead from './OffersTableHead/OffersTableHead'
 import SearchFilters from './SearchFilters/SearchFilters'
