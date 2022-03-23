@@ -1,7 +1,6 @@
 from random import randint
 
 from pcapi.core.categories import subcategories
-from pcapi.core.providers.api import activate_provider
 import pcapi.core.providers.factories as providers_factories
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.model_creators.generic_creators import create_offerer
@@ -55,8 +54,9 @@ def save_allocine_sandbox() -> None:
         siret=sirene.siret,
     )
 
-    activate_provider("AllocineStocks")
     provider = get_provider_by_local_class("AllocineStocks")
+    provider.isActive = True
+    provider.enabledForPro = True
 
     venue_provider = providers_factories.VenueProviderFactory(venue=venue, provider=provider)
 

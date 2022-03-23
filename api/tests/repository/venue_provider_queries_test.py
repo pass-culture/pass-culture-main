@@ -2,7 +2,6 @@ import pytest
 
 from pcapi.core.offers.factories import OffererFactory
 from pcapi.core.offers.factories import VenueFactory
-from pcapi.core.providers.api import activate_provider
 import pcapi.core.providers.factories as providers_factories
 from pcapi.core.providers.models import AllocineVenueProvider
 from pcapi.core.providers.models import VenueProvider
@@ -18,7 +17,7 @@ class GetActiveVenueProvidersForSpecificProviderTest:
         venue1 = VenueFactory(managingOfferer=offerer, siret="12345678901234")
         venue2 = VenueFactory(managingOfferer=offerer)
         titelive_provider = providers_factories.APIProviderFactory()
-        allocine_provider = activate_provider("AllocineStocks")
+        allocine_provider = providers_factories.AllocineProviderFactory()
         venue_provider1 = providers_factories.VenueProviderFactory(venue=venue1, provider=titelive_provider)
         providers_factories.VenueProviderFactory(venue=venue2, provider=allocine_provider)
 

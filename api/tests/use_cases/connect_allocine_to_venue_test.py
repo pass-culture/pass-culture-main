@@ -1,37 +1,42 @@
 from decimal import Decimal
 
-from pcapi.core.offers.factories import VenueFactory
-from pcapi.core.providers.api import activate_provider
-from pcapi.core.providers.factories import AllocinePivotFactory
-from pcapi.core.providers.models import AllocineVenueProvider
-from pcapi.core.providers.models import AllocineVenueProviderPriceRule
-from pcapi.core.providers.models import VenueProviderCreationPayload
+import pytest
+
+import pcapi.core.offerers.factories as offerers_factories
+import pcapi.core.providers.factories as providers_factories
+import pcapi.core.providers.models as providers_models
 from pcapi.use_cases.connect_venue_to_allocine import connect_venue_to_allocine
 
 
-class ConnectAllocineToVenueTest:
-    def should_connect_venue_to_allocine_provider(self, app, db_session):
-        # Given
-        venue = VenueFactory()
-        provider = activate_provider("AllocineStocks")
-        AllocinePivotFactory(
-            siret=venue.siret,
-            internalId="PXXXXXX",
-            theaterId="123VHJ==",
-        )
+@pytest.mark.usefixtures("db_session")
+def test_connect_venue_to_allocine_provider():
+    # Given
+    venue = offerers_factories.VenueFactory()
+    allocine_provider = providers_factories.AllocineProviderFactory()
+    providers_factories.AllocinePivotFactory(
+        siret=venue.siret,
+        internalId="PXXXXXX",
+        theaterId="123VHJ==",
+    )
 
-        # When
-        connect_venue_to_allocine(
-            venue, provider.id, VenueProviderCreationPayload(price="9.99", isDuo=True, quantity=50)
-        )
+    # When
+    connect_venue_to_allocine(
+        venue,
+        allocine_provider.id,
+        providers_models.VenueProviderCreationPayload(
+            price="9.99",
+            isDuo=True,
+            quantity=50,
+        ),
+    )
 
-        # Then
-        allocine_venue_provider = AllocineVenueProvider.query.one()
-        venue_provider_price_rule = AllocineVenueProviderPriceRule.query.one()
+    # Then
+    allocine_venue_provider = providers_models.AllocineVenueProvider.query.one()
+    venue_provider_price_rule = providers_models.AllocineVenueProviderPriceRule.query.one()
 
-        assert allocine_venue_provider.venue == venue
-        assert allocine_venue_provider.isDuo
-        assert allocine_venue_provider.quantity == 50
-        assert allocine_venue_provider.internalId == "PXXXXXX"
-        assert allocine_venue_provider.venueIdAtOfferProvider == "123VHJ=="
-        assert venue_provider_price_rule.price == Decimal("9.99")
+    assert allocine_venue_provider.venue == venue
+    assert allocine_venue_provider.isDuo
+    assert allocine_venue_provider.quantity == 50
+    assert allocine_venue_provider.internalId == "PXXXXXX"
+    assert allocine_venue_provider.venueIdAtOfferProvider == "123VHJ=="
+    assert venue_provider_price_rule.price == Decimal("9.99")
