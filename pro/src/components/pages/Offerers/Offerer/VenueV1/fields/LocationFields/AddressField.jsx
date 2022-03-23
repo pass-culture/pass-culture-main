@@ -138,7 +138,7 @@ export const AddressField = ({
 AddressField.defaultProps = {
   className: '',
   disabled: false,
-  format: null,
+  format: undefined,
   id: null,
   innerClassName: null,
   label: '',
