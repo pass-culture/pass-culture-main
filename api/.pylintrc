@@ -48,8 +48,10 @@ enable=
 
 disable=
     arguments-differ,
+    arguments-renamed,
     attribute-defined-outside-init,
     bad-continuation,
+    consider-using-f-string,
     cyclic-import,
     duplicate-code,
     fixme,
