@@ -25,6 +25,7 @@ from pcapi.core.offers.repository import check_stock_consistency
 from pcapi.core.offers.repository import delete_past_draft_collective_offers
 from pcapi.core.offers.repository import delete_past_draft_offers
 from pcapi.core.offers.repository import find_event_stocks_happening_in_x_days
+from pcapi.core.offers.repository import find_today_event_stock_ids_metropolitan_france
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.core.subscription.dms import api as dms_api
 from pcapi.core.users import api as users_api
@@ -53,7 +54,7 @@ from pcapi.scripts.booking.notify_soon_to_be_expired_bookings import notify_soon
 from pcapi.scripts.payment.user_recredit import recredit_underage_users
 from pcapi.tasks import batch_tasks
 from pcapi.utils.blueprint import Blueprint
-from pcapi.workers.push_notification_job import send_tomorrow_stock_notification
+from pcapi.workers.push_notification_job import send_today_stock_notification
 
 
 blueprint = Blueprint(__name__, __name__)
@@ -176,12 +177,17 @@ def pc_send_yesterday_event_offers_notifications() -> None:
 
 @cron_context
 @log_cron_with_transaction
-def pc_send_tomorrow_events_notifications() -> None:
-    if not settings.IS_PROD and not settings.IS_TESTING and not settings.IS_DEV:
-        return
-    stock_ids = [stock_id for stock_id, in find_event_stocks_happening_in_x_days(1).with_entities(Stock.id)]
+def pc_send_today_events_notifications_metropolitan_france() -> None:
+    """
+    Find bookings (grouped by stocks) that occur today in metropolitan
+    France but not the morning (11h UTC -> 12h/13h local time), and
+    send notification to all the user to remind them of the event.
+    """
+    today_min = datetime.datetime.combine(datetime.date.today(), datetime.time(hour=11))
+    stock_ids = find_today_event_stock_ids_metropolitan_france(today_min)
+
     for stock_id in stock_ids:
-        send_tomorrow_stock_notification.delay(stock_id)
+        send_today_stock_notification.delay(stock_id)
 
 
 @cron_context
@@ -321,7 +327,7 @@ def clock() -> None:
 
     scheduler.add_job(pc_check_stock_quantity_consistency, "cron", day="*", hour="1")
 
-    scheduler.add_job(pc_send_tomorrow_events_notifications, "cron", day="*", hour="16")
+    scheduler.add_job(pc_send_today_events_notifications_metropolitan_france, "cron", day="*", hour="8")
 
     scheduler.add_job(pc_clean_past_draft_offers, "cron", day="*", hour="20")
 

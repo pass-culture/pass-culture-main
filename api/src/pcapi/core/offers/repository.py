@@ -1,3 +1,4 @@
+from datetime import date
 from datetime import datetime
 from datetime import time
 from datetime import timedelta
@@ -505,6 +506,33 @@ def get_expired_offers(interval: List[datetime]) -> BaseQuery:
         .group_by(Offer.id)
         .order_by(Offer.id)
     )
+
+
+def find_today_event_stock_ids_metropolitan_france(today_min: Optional[datetime] = None) -> set[int]:
+    """
+    Find stocks linked to offers that happen today (and that are not
+    cancelled).
+    """
+    if not today_min:
+        today_min = datetime.utcnow()
+    today_max = datetime.combine(date.today(), time.max)
+
+    not_overseas_france = and_(
+        not_(Venue.departementCode.startswith("97")),
+        not_(Venue.departementCode.startswith("98")),
+    )
+
+    query = (
+        Stock.query.filter(Stock.beginningDatetime.between(today_min, today_max))
+        .join(Booking)
+        .join(Venue)
+        .filter(Booking.status != BookingStatus.CANCELLED)
+        .filter(not_overseas_france)
+        .with_entities(Stock.id)
+        .distinct()
+    )
+
+    return {stock.id for stock in query}
 
 
 def delete_past_draft_offers() -> None:
