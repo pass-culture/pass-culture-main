@@ -252,8 +252,13 @@ def _get_siret_and_current_revenue(booking: bookings_models.Booking) -> typing.U
     # just calculate the sum on-the-fly.
     current_revenue = (
         bookings_models.Booking.query.join(models.Pricing)
+        # Collective bookings must not be included in revenue.
+        .filter(bookings_models.Booking.individualBookingId.isnot(None))
         .filter(
             models.Pricing.siret == siret,
+            # The following filter is not strictly necessary, because
+            # this function is called when the booking is being priced
+            # (so there is no Pricing yet).
             models.Pricing.bookingId != booking.id,
             models.Pricing.valueDate.between(*revenue_period),
             models.Pricing.status.notin_(
@@ -271,7 +276,10 @@ def _get_siret_and_current_revenue(booking: bookings_models.Booking) -> typing.U
 
 def _price_booking(booking: bookings_models.Booking) -> models.Pricing:
     siret, current_revenue = _get_siret_and_current_revenue(booking)
-    new_revenue = current_revenue + utils.to_eurocents(booking.total_amount)
+    new_revenue = current_revenue
+    # Collective bookings must not be included in revenue.
+    if booking.individualBookingId:
+        new_revenue += utils.to_eurocents(booking.total_amount)
     rule_finder = reimbursement.CustomRuleFinder()
     # FIXME (dbaty, 2021-11-10): `revenue` here is in eurocents but
     # `get_reimbursement_rule` expects euros. Clean that once the
