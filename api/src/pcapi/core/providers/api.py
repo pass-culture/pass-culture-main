@@ -6,6 +6,7 @@ from typing import Optional
 from typing import Union
 
 from pcapi.core import search
+from pcapi.core.logging import log_elapsed
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offerers.repository import find_venue_by_id
 from pcapi.core.offers.models import Offer
@@ -172,10 +173,26 @@ def synchronize_stocks(
 
     offers_provider_references = [stock_detail.offers_provider_reference for stock_detail in stock_details]
     # here offers.id_at_providers is the "ref" field that provider api gives use.
-    offers_by_provider_reference = get_offers_map_by_id_at_provider(offers_provider_references, venue)
+    with log_elapsed(
+        logger,
+        "get_offers_map_by_id_at_provider",
+        extra={
+            "venue": venue.id,
+            "ref_count": len(offers_provider_references),
+        },
+    ):
+        offers_by_provider_reference = get_offers_map_by_id_at_provider(offers_provider_references, venue)
 
     products_references = [stock_detail.products_provider_reference for stock_detail in stock_details]
-    offers_by_venue_reference = get_offers_map_by_venue_reference(products_references, venue.id)
+    with log_elapsed(
+        logger,
+        "get_offers_map_by_venue_reference",
+        extra={
+            "venue": venue.id,
+            "ref_count": len(products_references),
+        },
+    ):
+        offers_by_venue_reference = get_offers_map_by_venue_reference(products_references, venue.id)
 
     offers_update_mapping = [
         {"id": offer_id, "lastProviderId": provider_id} for offer_id in offers_by_provider_reference.values()
