@@ -251,6 +251,7 @@ const Offers = ({
       )}
       <OffersSearchFilters
         applyFilters={applyFilters}
+        disableAllFilters={userHasNoOffers}
         offerer={offerer}
         removeOfferer={removeOfferer}
         selectedFilters={searchFilters}
