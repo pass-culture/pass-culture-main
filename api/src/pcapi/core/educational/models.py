@@ -163,7 +163,7 @@ class CollectiveOffer(PcObject, ValidationMixin, AccessibilityMixin, StatusMixin
     def hasBookingLimitDatetimesPassed(cls):  # pylint: disable=no-self-argument
         return (
             sa.exists()
-            .where(CollectiveStock.offerId == cls.id)
+            .where(CollectiveStock.collectiveOfferId == cls.id)
             .where(CollectiveStock.hasBookingLimitDatetimePassed.is_(True))
         )
 
