@@ -67,7 +67,7 @@ def fetch_user_ids_from_tasks(client: CloudTasksClient, parent: str) -> UsersTas
         "response_view": Task.View.FULL,
     }
 
-    for task in client.list_tasks(request=request):  # type: ignore
+    for task in client.list_tasks(request=request):
         try:
             payload = json.loads(task.http_request.body)
         except Exception:  # pylint: disable=broad-except

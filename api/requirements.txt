@@ -26,9 +26,9 @@ Flask-Limiter==1.4
 Flask-Login==0.5.0
 Flask-SQLAlchemy==2.4.4
 freezegun==0.3.12
-google-auth==1.23.0
-google-cloud-storage==1.35.0
-google-cloud-tasks==2.3.0
+google-auth==2.6.2
+google-cloud-storage==2.2.1
+google-cloud-tasks==2.8.1
 gql[requests]
 gunicorn==20.0.4
 ipaddress
