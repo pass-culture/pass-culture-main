@@ -22,7 +22,6 @@ import {
   DEFAULT_SEARCH_FILTERS,
 } from 'core/Offers/constants'
 import { Offer, SearchFilters } from 'core/Offers/types'
-import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
 import { offerFactory } from 'utils/apiFactories'
 
@@ -76,14 +75,13 @@ jest.mock('repository/venuesService', () => ({
   fetchAllVenuesByProUser: jest.fn().mockResolvedValue(proVenues),
 }))
 
-jest.mock('repository/pcapi/pcapi', () => ({
-  loadCategories: jest.fn().mockResolvedValue(categoriesAndSubcategories),
-}))
-
 jest.mock('api/v1/api', () => ({
   api: {
     getOffersListOffers: jest.fn(),
     getOfferersGetOfferer: jest.fn(),
+    getOffersGetCategories: jest
+      .fn()
+      .mockResolvedValue(categoriesAndSubcategories),
   },
 }))
 
@@ -597,7 +595,7 @@ describe('route Offers', () => {
 
     it('should have venue value be removed when user asks for all venues', async () => {
       // Given
-      ;(pcapi.loadCategories as jest.Mock).mockResolvedValue({
+      ;(api.getOffersGetCategories as jest.Mock).mockResolvedValue({
         categories: [
           { id: 'test_id_1', proLabel: 'My test value', isSelectable: true },
           {
