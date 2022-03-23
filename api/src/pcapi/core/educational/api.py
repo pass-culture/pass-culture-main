@@ -643,9 +643,8 @@ def create_collective_stock(
         collective_offer = (
             CollectiveOffer.query.filter_by(id=offer_id).options(joinedload(CollectiveOffer.collectiveStock)).one()
         )
-    if collective_offer.collectiveStock:
-        raise exceptions.CollectiveStockAlreadyExists()
 
+    validation.check_collective_offer_number_of_collective_stocks(collective_offer)
     offer_validation.check_validation_status(collective_offer)
     if booking_limit_datetime is None:
         booking_limit_datetime = beginning
@@ -659,7 +658,8 @@ def create_collective_stock(
         priceDetail=educational_price_detail,
         stockId=legacy_id if legacy_id else None,  # FIXME (rpaoloni, 2022-03-7): Remove legacy support layer
     )
-    repository.save(collective_stock)
+    db.session.add(collective_stock)
+    db.session.commit()
     logger.info(
         "Collective stock has been created",
         extra={"collective_offer": collective_offer.id, "collective_stock_id": collective_stock.id},
