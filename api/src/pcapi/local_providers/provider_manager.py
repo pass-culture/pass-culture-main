@@ -3,10 +3,10 @@ from typing import Callable
 from typing import Optional
 
 from pcapi.core.providers.models import VenueProvider
+import pcapi.core.providers.repository as providers_repository
 import pcapi.local_providers
 from pcapi.local_providers.provider_api import synchronize_provider_api
 from pcapi.repository import transaction
-from pcapi.repository.venue_provider_queries import get_active_venue_providers_for_specific_provider
 from pcapi.scheduled_tasks.logger import CronStatus
 from pcapi.scheduled_tasks.logger import build_cron_log_message
 
@@ -24,7 +24,7 @@ def synchronize_data_for_provider(provider_name: str, limit: Optional[int] = Non
 
 
 def synchronize_venue_providers_for_provider(provider_id: int, limit: Optional[int] = None) -> None:
-    venue_providers = get_active_venue_providers_for_specific_provider(provider_id)
+    venue_providers = providers_repository.get_active_venue_providers_by_provider(provider_id)
     for venue_provider in venue_providers:
         try:
             with transaction():

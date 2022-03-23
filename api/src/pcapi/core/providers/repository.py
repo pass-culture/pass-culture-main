@@ -17,6 +17,10 @@ def get_venue_provider_list(venue_id: int) -> list[VenueProvider]:
     return VenueProvider.query.filter_by(venueId=venue_id).all()
 
 
+def get_active_venue_providers_by_provider(provider_id: int) -> list[VenueProvider]:
+    return VenueProvider.query.filter_by(providerId=provider_id, isActive=True).all()
+
+
 def get_venue_provider_by_venue_and_provider_ids(venue_id: int, provider_id: int) -> VenueProvider:
     return VenueProvider.query.filter_by(venueId=venue_id, providerId=provider_id).one()
 
