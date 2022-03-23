@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 class GroupId(Enum):
     CANCEL_BOOKING = "Cancel_booking"
-    TOMORROW_STOCK = "Tomorrow_stock"
+    TODAY_STOCK = "Today_stock"
     OFFER_LINK = "Offer_link"
     SOON_EXPIRING_BOOKINGS = "Soon_expiring_bookings"
 
@@ -53,7 +53,7 @@ def get_bookings_cancellation_notification_data(booking_ids: list[int]) -> Optio
     )
 
 
-def get_tomorrow_stock_notification_data(stock_id: int) -> Optional[TransactionalNotificationData]:
+def get_today_stock_notification_data(stock_id: int) -> Optional[TransactionalNotificationData]:
     stock = Stock.query.filter_by(id=stock_id).one()
     query = (
         Booking.query.filter(Booking.stockId == stock_id, Booking.status != BookingStatus.CANCELLED)
@@ -67,10 +67,10 @@ def get_tomorrow_stock_notification_data(stock_id: int) -> Optional[Transactiona
         return None
 
     return TransactionalNotificationData(
-        group_id=GroupId.TOMORROW_STOCK.value,
+        group_id=GroupId.TODAY_STOCK.value,
         user_ids=user_ids,
         message=TransactionalNotificationMessage(
-            title=f"{stock.offer.name}, c'est demain !",
+            title=f"{stock.offer.name}, c'est aujourd'hui !",
             body="Retrouve les détails de la réservation sur l’application pass Culture",
         ),
     )

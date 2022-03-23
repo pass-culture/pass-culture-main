@@ -19,6 +19,7 @@ from pcapi.core.offers.repository import check_stock_consistency
 from pcapi.core.offers.repository import delete_past_draft_collective_offers
 from pcapi.core.offers.repository import delete_past_draft_offers
 from pcapi.core.offers.repository import find_event_stocks_happening_in_x_days
+from pcapi.core.offers.repository import find_today_event_stock_ids_metropolitan_france
 from pcapi.core.offers.repository import get_active_offers_count_for_venue
 from pcapi.core.offers.repository import get_available_activation_code
 from pcapi.core.offers.repository import get_capped_offers_for_filters
@@ -1157,6 +1158,36 @@ class TomorrowStockTest:
         ]
 
         assert set(stock_ids) == set(stock.id for stock in stocks_tomorrow)
+
+
+@pytest.mark.usefixtures("db_session")
+class TodayStockTest:
+    @freeze_time("2020-10-15 15:00:00")
+    def test_find_today_event_stock_ids_metropolitan_france(self):
+        today = datetime.now() + timedelta(hours=1)
+        next_week = datetime.now() + timedelta(days=7)
+
+        stock_today_1 = EventStockFactory(beginningDatetime=today)
+        bookings_factories.BookingFactory.create_batch(2, stock=stock_today_1)
+
+        stock_today_2 = EventStockFactory(beginningDatetime=today)
+        bookings_factories.BookingFactory.create_batch(2, stock=stock_today_2)
+
+        # today but overseas -> ignored
+        offer = offers_factories.OfferFactory(venue__departementCode="97", venue__postalCode="97180")
+        stock_today_overseas = EventStockFactory(beginningDatetime=today, offer=offer)
+        bookings_factories.BookingFactory(stock=stock_today_overseas)
+
+        # cancelled -> ignored
+        stock_today_cancelled = EventStockFactory(beginningDatetime=today)
+        bookings_factories.CancelledBookingFactory(stock=stock_today_cancelled)
+
+        # not today -> ignored
+        stock_next_week = EventStockFactory(beginningDatetime=next_week)
+        bookings_factories.BookingFactory(stock=stock_next_week)
+
+        stock_ids = find_today_event_stock_ids_metropolitan_france()
+        assert set(stock_ids) == {stock_today_1.id, stock_today_2.id}
 
 
 @pytest.mark.usefixtures("db_session")
