@@ -1,9 +1,7 @@
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
-import { Form } from 'react-final-form'
 
 import AppLayout from 'app/AppLayout'
-import PasswordField from 'components/layout/form/fields/PasswordField'
 import TextInput from 'components/layout/inputs/TextInput/TextInput'
 import Logo from 'components/layout/Logo'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
@@ -11,6 +9,8 @@ import { redirectLoggedUser } from 'components/router/helpers'
 import Hero from 'ui-kit/Hero'
 
 import { initReCaptchaScript } from '../../../utils/recaptcha'
+
+import ChangePasswordForm from './ChangePasswordForm'
 
 /**
  * @debt standard "Annaëlle: Composant de classe à migrer en fonctionnel"
@@ -142,41 +142,13 @@ class LostPassword extends PureComponent {
               />
             )}
             {token && (
-              <section className="hero password-reset-request-form">
-                <div className="hero-body">
-                  <h1>Créer un nouveau mot de passe</h1>
-                  <h2>Saisissez le nouveau mot de passe</h2>
-                  <Form onSubmit={this.submitResetPassword}>
-                    {({ handleSubmit, errors, values }) => (
-                      <form
-                        className="new-password-form"
-                        onSubmit={handleSubmit}
-                      >
-                        <PasswordField
-                          errors={
-                            errors?.newPasswordValue
-                              ? errors?.newPasswordValue
-                              : newPasswordErrorMessage
-                              ? [newPasswordErrorMessage]
-                              : null
-                          }
-                          label="Nouveau mot de passe"
-                          name="newPasswordValue"
-                          placeholder="Mon nouveau mot de passe"
-                          showTooltip
-                        />
-                        <button
-                          className="primary-button submit-button"
-                          disabled={this.isResetPasswordSubmitDisabled(values)}
-                          type="submit"
-                        >
-                          Envoyer
-                        </button>
-                      </form>
-                    )}
-                  </Form>
-                </div>
-              </section>
+              <ChangePasswordForm
+                isChangePasswordSubmitDisabled={
+                  this.isResetPasswordSubmitDisabled
+                }
+                newPasswordErrorMessage={newPasswordErrorMessage}
+                onSubmit={this.submitResetPassword}
+              />
             )}
             {!token && !envoye && !change && (
               <section className="hero password-reset-request">
