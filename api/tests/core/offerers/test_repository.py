@@ -84,6 +84,14 @@ class GetAllOfferersForUserTest:
         offerers_ids = [offerer.id for offerer in offerers]
         assert unvalidated_pro_offerer_attachment.offerer.id in offerers_ids
 
+    def test_return_distinct(self):
+        admin = users_factories.AdminFactory()
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.VenueFactory(managingOfferer=offerer, name="match")
+        offerers_factories.VenueFactory(managingOfferer=offerer, name="match also")
+        offerers = get_all_offerers_for_user(user=admin, keywords="match")
+        assert offerers.count() == 1
+
     def should_not_return_deactivated_offerers(self) -> None:
         # Given
         admin = users_factories.AdminFactory()

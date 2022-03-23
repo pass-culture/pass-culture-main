@@ -63,6 +63,7 @@ def get_all_offerers_for_user(
         query = query.join(models.Venue, models.Venue.managingOffererId == models.Offerer.id)
         query = filter_offerers_with_keywords_string(query, keywords)
 
+    query = query.distinct()
     return query
 
 
