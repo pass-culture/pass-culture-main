@@ -70,13 +70,12 @@ jest.mock('repository/venuesService', () => ({
   fetchAllVenuesByProUser: jest.fn().mockResolvedValue(proVenues),
 }))
 
-jest.mock('repository/pcapi/pcapi', () => ({
-  loadCategories: jest.fn().mockResolvedValue(categoriesAndSubcategories),
-}))
-
 jest.mock('api/v1/api', () => ({
   api: {
     getOffersListOffers: jest.fn(),
+    getOffersGetCategories: jest
+      .fn()
+      .mockResolvedValue(categoriesAndSubcategories),
   },
 }))
 
