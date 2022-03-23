@@ -3,10 +3,10 @@ from time import time
 
 import click
 
+import pcapi.core.providers.repository as providers_repository
 from pcapi.local_providers.provider_manager import synchronize_data_for_provider
 from pcapi.local_providers.provider_manager import synchronize_venue_provider
 from pcapi.local_providers.provider_manager import synchronize_venue_providers_for_provider
-from pcapi.repository.venue_provider_queries import get_venue_provider_by_id
 from pcapi.utils.blueprint import Blueprint
 
 
@@ -23,8 +23,8 @@ logger = logging.getLogger(__name__)
     type=int,
     default=None,
 )
-@click.option("-w", "--venue-provider-id", help="Limit update to this venue provider id")
-def update_providables(provider_name: str, venue_provider_id: str, limit: int):
+@click.option("-w", "--venue-provider-id", type=int, help="Limit update to this venue provider id")
+def update_providables(provider_name: str, venue_provider_id: int, limit: int):
     start = time()
     logger.info(
         "Starting update_providables with provider_name=%s and venue_provider_id=%s", provider_name, venue_provider_id
@@ -37,7 +37,7 @@ def update_providables(provider_name: str, venue_provider_id: str, limit: int):
         synchronize_data_for_provider(provider_name, limit)
 
     if venue_provider_id:
-        venue_provider = get_venue_provider_by_id(int(venue_provider_id))
+        venue_provider = providers_repository.get_venue_provider_by_id(venue_provider_id)
         synchronize_venue_provider(venue_provider, limit)
 
     logger.info(
