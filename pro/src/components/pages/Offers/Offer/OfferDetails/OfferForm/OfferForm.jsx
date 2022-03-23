@@ -33,6 +33,7 @@ import {
   NOT_REIMBURSED,
   PLATFORM,
   TEXT_INPUT_DEFAULT_VALUE,
+  WITHDRAWAL_BY_EMAIL_DELAY_OPTIONS,
   WITHDRAWAL_ON_SITE_DELAY_OPTIONS,
   WITHDRAWAL_TYPE_COMPATIBLE_SUBCATEGORIE,
 } from '../_constants'
@@ -90,7 +91,10 @@ const getOfferConditionalFields = ({
   if (WITHDRAWAL_TYPE_COMPATIBLE_SUBCATEGORIE.includes(offerSubCategory?.id)) {
     offerConditionalFields.push('withdrawalType')
 
-    if (withdrawalType === OFFER_WITHDRAWAL_TYPE_OPTIONS.ON_SITE) {
+    if (
+      withdrawalType === OFFER_WITHDRAWAL_TYPE_OPTIONS.ON_SITE ||
+      withdrawalType === OFFER_WITHDRAWAL_TYPE_OPTIONS.BY_EMAIL
+    ) {
       offerConditionalFields.push('withdrawalDelay')
     }
   }
@@ -224,7 +228,10 @@ const OfferForm = ({
     ) {
       mandatoryFields.push('withdrawalType')
 
-      if (formValues.withdrawalType === OFFER_WITHDRAWAL_TYPE_OPTIONS.ON_SITE) {
+      if (
+        formValues.withdrawalType === OFFER_WITHDRAWAL_TYPE_OPTIONS.ON_SITE ||
+        formValues.withdrawalType === OFFER_WITHDRAWAL_TYPE_OPTIONS.BY_EMAIL
+      ) {
         mandatoryFields.push('withdrawalDelay')
       }
     }
@@ -624,7 +631,8 @@ const OfferForm = ({
       resetFormError('withdrawalDelay')
       handleFormUpdate({
         withdrawalDelay:
-          event.target.value === OFFER_WITHDRAWAL_TYPE_OPTIONS.ON_SITE
+          event.target.value === OFFER_WITHDRAWAL_TYPE_OPTIONS.ON_SITE ||
+          event.target.value === OFFER_WITHDRAWAL_TYPE_OPTIONS.BY_EMAIL
             ? WITHDRAWAL_ON_SITE_DELAY_OPTIONS[0].id
             : DEFAULT_FORM_VALUES['withdrawalDelay'],
       })
@@ -1005,6 +1013,20 @@ const OfferForm = ({
                           label="Heure de retrait"
                           name="withdrawalDelay"
                           options={WITHDRAWAL_ON_SITE_DELAY_OPTIONS}
+                          rightLabel="avant le début de l’événement"
+                          selectedValue={formValues.withdrawalDelay}
+                        />
+                      </div>
+                    )}
+                    {formValues.withdrawalType ===
+                      OFFER_WITHDRAWAL_TYPE_OPTIONS.BY_EMAIL && (
+                      <div className="form-row">
+                        <Select
+                          error={getErrorMessage('withdrawalDelay')}
+                          handleSelection={handleSingleFormUpdate}
+                          label="Date d'envoi"
+                          name="withdrawalDelay"
+                          options={WITHDRAWAL_BY_EMAIL_DELAY_OPTIONS}
                           rightLabel="avant le début de l’événement"
                           selectedValue={formValues.withdrawalDelay}
                         />
