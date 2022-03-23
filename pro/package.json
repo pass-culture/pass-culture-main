@@ -86,7 +86,7 @@
     "react-datepicker": "^3.8.0",
     "react-dom": "^16.13.1",
     "react-dotdotdot": "^1.2.3",
-    "react-final-form": "^5.1.2",
+    "react-final-form": "^6.5.8",
     "react-final-form-utils": "^1.4.0",
     "react-leaflet": "^2.7.0",
     "react-loading-infinite-scroller": "^1.5.1",
