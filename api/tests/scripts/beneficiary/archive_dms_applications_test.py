@@ -9,7 +9,7 @@ from pcapi.core.users import factories as users_factories
 from pcapi.models.beneficiary_import_status import ImportStatus
 from pcapi.scripts.beneficiary import archive_dms_applications
 
-from tests.scripts.beneficiary.fixture import make_graphql_application
+from tests.scripts.beneficiary.fixture import make_parsed_graphql_application
 
 
 @pytest.mark.usefixtures("db_session")
@@ -28,7 +28,7 @@ class ArchiveDMSApplicationsTest:
         users_factories.BeneficiaryImportStatusFactory(
             beneficiaryImport=beneficiary_import, status=ImportStatus.CREATED
         )
-        dms_applications.return_value = [make_graphql_application(application_id, "closed", email=user.email)]
+        dms_applications.return_value = [make_parsed_graphql_application(application_id, "accepte", email=user.email)]
 
         archive_dms_applications.archive_applications(self.PROCEDURE_ID, dry_run=False)
         assert dms_archive.call_count == 1
@@ -44,7 +44,7 @@ class ArchiveDMSApplicationsTest:
         users_factories.BeneficiaryImportStatusFactory(
             beneficiaryImport=beneficiary_import, status=ImportStatus.CREATED
         )
-        dms_applications.return_value = [make_graphql_application(application_id, "closed", email=user.email)]
+        dms_applications.return_value = [make_parsed_graphql_application(application_id, "accepte", email=user.email)]
 
         archive_dms_applications.archive_applications(self.PROCEDURE_ID, dry_run=True)
 
@@ -64,14 +64,14 @@ class ArchiveDMSApplicationsTest:
             beneficiaryImport=beneficiary_import, status=ImportStatus.CREATED
         )
         user_to_not_archive = users_factories.UserFactory()
-        application_to_archive = make_graphql_application(application_id, "closed", email=user_to_archive.email)
+        application_to_archive = make_parsed_graphql_application(application_id, "accepte", email=user_to_archive.email)
         dms_applications.return_value = [
-            make_graphql_application(20, "closed", email=user_to_not_archive.email),
+            make_parsed_graphql_application(20, "accepte", email=user_to_not_archive.email),
             application_to_archive,
         ]
         archive_dms_applications.archive_applications(self.PROCEDURE_ID, dry_run=False)
         assert dms_archive.call_count == 1
-        assert dms_archive.call_args == [(application_to_archive["id"], "SomeInstructorId")]
+        assert dms_archive.call_args == [(application_to_archive.id, "SomeInstructorId")]
 
         assert (
             caplog.messages[0]
