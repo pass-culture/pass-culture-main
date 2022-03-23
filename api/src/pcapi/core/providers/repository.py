@@ -9,6 +9,10 @@ from pcapi.core.providers.models import Provider
 from pcapi.core.providers.models import VenueProvider
 
 
+def get_venue_provider_by_id(venue_provider_id: int) -> VenueProvider:
+    return VenueProvider.query.filter_by(id=venue_provider_id).one()
+
+
 def get_venue_provider_list(venue_id: int) -> list[VenueProvider]:
     return VenueProvider.query.filter_by(venueId=venue_id).all()
 
