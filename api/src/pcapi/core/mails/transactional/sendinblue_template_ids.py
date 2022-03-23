@@ -22,9 +22,6 @@ class TransactionalEmail(Enum):
     BOOKING_SOON_TO_BE_EXPIRED_TO_BENEFICIARY = Template(
         id_prod=144, id_not_prod=42, tags=["jeunes_reservation_bientot_expiree"]
     )
-    EDUCATIONAL_BOOKING_CANCELLATION_BY_INSTITUTION = Template(
-        id_prod=522, id_not_prod=65, tags=["eac_annulationoffre"]
-    )
     EMAIL_CHANGE_CONFIRMATION = Template(
         id_prod=253, id_not_prod=18, tags=["changement_email_confirmation"], use_priority_queue=True
     )
@@ -87,6 +84,9 @@ class TransactionalEmail(Enum):
     EAC_NEW_BOOKING_TO_PRO = TemplatePro(id_prod=383, id_not_prod=67, tags=["pro_nouvelle_reservation_eac"])
     EAC_NEW_PREBOOKING_TO_PRO = TemplatePro(id_prod=429, id_not_prod=68, tags=["pro_nouvelle_prereservation_eac"])
     EAC_SATISFACTION_STUDY_TO_PRO = TemplatePro(id_prod=523, id_not_prod=66, tags=["pro_bilan_satisfaction_eac"])
+    EDUCATIONAL_BOOKING_CANCELLATION_BY_INSTITUTION = TemplatePro(
+        id_prod=522, id_not_prod=65, tags=["pro_eac_annulation_reservation"]
+    )
     EMAIL_VALIDATION_TO_PRO = TemplatePro(id_prod=361, id_not_prod=56, tags=["validation_email_invitation_pro"])
     EVENT_OFFER_POSTPONED_CONFIRMATION_TO_PRO = TemplatePro(
         id_prod=519, id_not_prod=63, tags=["pro_offre_evenement_reportee"]
