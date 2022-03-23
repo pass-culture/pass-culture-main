@@ -1,4 +1,4 @@
-import React, { useEffect, useState, FunctionComponent } from 'react'
+import React, { useEffect, useState } from 'react'
 
 import {
   NOTIFICATION_SHOW_DURATION,
@@ -9,24 +9,26 @@ import { ReactComponent as InfoIcon } from './assets/notification-information.sv
 import { ReactComponent as SuccessIcon } from './assets/notification-success-white.svg'
 import { ReactComponent as PendingIcon } from './assets/status-pending.svg'
 
-type Props = {
+interface INotification {
+  text: React.ReactNode
+  type: 'error' | 'success' | 'pending' | 'information'
+}
+
+type INotificationProps = {
   hideNotification: () => void
-  notification: {
-    text: React.ReactNode
-    type: 'error' | 'success' | 'pending' | 'information'
-  }
+  notification?: INotification | null
   children?: never
 }
 
-const Notification: FunctionComponent<Props> = ({
+const Notification = ({
   hideNotification,
   notification,
-}) => {
+}: INotificationProps): JSX.Element | null => {
   const [isVisible, setIsVisible] = useState(false)
   const [isInDom, setIsInDom] = useState(false)
 
   useEffect(() => {
-    if (notification.text) {
+    if (notification && notification.text) {
       setIsVisible(true)
       setIsInDom(true)
       const timer = setTimeout(
@@ -36,10 +38,10 @@ const Notification: FunctionComponent<Props> = ({
       return () => clearTimeout(timer)
     }
     return () => undefined
-  }, [notification.text])
+  }, [notification])
 
   useEffect(() => {
-    if (!isVisible && notification.text) {
+    if (!isVisible && notification && notification.text) {
       const timer = setTimeout(() => {
         setIsInDom(false)
         hideNotification()
@@ -47,7 +49,11 @@ const Notification: FunctionComponent<Props> = ({
       return () => clearTimeout(timer)
     }
     return () => undefined
-  }, [hideNotification, isVisible, notification.text])
+  }, [hideNotification, isVisible, notification])
+
+  if (!notification) {
+    return null
+  }
 
   const { text, type } = notification
   let iconComponent = <SuccessIcon />

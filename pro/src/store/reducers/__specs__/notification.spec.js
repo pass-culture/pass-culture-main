@@ -19,7 +19,7 @@ describe('src | reducers | notification', () => {
       const state = notificationReducer(initialState, action)
 
       // then
-      expect(state).toStrictEqual({})
+      expect(state).toBeNull()
     })
   })
 
