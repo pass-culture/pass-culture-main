@@ -33,6 +33,7 @@ interface ISearchFiltersProps {
       | SearchFiltersType
       | ((previousFilters: SearchFiltersType) => SearchFiltersType)
   ) => void
+  disableAllFilters: boolean
 }
 
 const SearchFilters = ({
@@ -41,6 +42,7 @@ const SearchFilters = ({
   removeOfferer,
   selectedFilters,
   setSearchFilters,
+  disableAllFilters,
 }: ISearchFiltersProps): JSX.Element => {
   const [categoriesOptions, setCategoriesOptions] = useState<
     { id: string; displayName: string }[]
@@ -145,6 +147,7 @@ const SearchFilters = ({
       )}
       <form onSubmit={requestFilteredOffers}>
         <TextInput
+          disabled={disableAllFilters}
           label="Nom de l’offre ou ISBN"
           name="offre"
           onChange={storeNameOrIsbnSearchValue}
@@ -155,6 +158,7 @@ const SearchFilters = ({
           <Select
             defaultOption={ALL_VENUES_OPTION}
             handleSelection={storeSelectedVenue}
+            isDisabled={disableAllFilters}
             label="Lieu"
             name="lieu"
             options={venueOptions}
@@ -163,6 +167,7 @@ const SearchFilters = ({
           <Select
             defaultOption={ALL_CATEGORIES_OPTION}
             handleSelection={storeSelectedCategory}
+            isDisabled={disableAllFilters}
             label="Catégories"
             name="categorie"
             options={categoriesOptions}
@@ -171,6 +176,7 @@ const SearchFilters = ({
           <Select
             defaultOption={DEFAULT_CREATION_MODE}
             handleSelection={storeCreationMode}
+            isDisabled={disableAllFilters}
             label="Mode de création"
             name="creationMode"
             options={CREATION_MODES_FILTERS}
@@ -179,7 +185,7 @@ const SearchFilters = ({
           <PeriodSelector
             changePeriodBeginningDateValue={changePeriodBeginningDateValue}
             changePeriodEndingDateValue={changePeriodEndingDateValue}
-            isDisabled={false}
+            isDisabled={disableAllFilters}
             label="Période de l’évènement"
             periodBeginningDate={
               selectedFilters.periodBeginningDate
@@ -196,7 +202,11 @@ const SearchFilters = ({
         </div>
         <div className={styles['search-separator']}>
           <div className={styles['separator']} />
-          <button className="primary-button" type="submit">
+          <button
+            className="primary-button"
+            disabled={disableAllFilters}
+            type="submit"
+          >
             Lancer la recherche
           </button>
           <div className={styles['separator']} />
