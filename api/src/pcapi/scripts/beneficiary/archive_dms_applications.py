@@ -20,8 +20,8 @@ def archive_applications(procedure_id: int, dry_run: bool = True) -> None:
     for application_details in client.get_applications_with_details(
         procedure_id, dms_models.GraphQLApplicationStates.accepted
     ):
-        application_techid = application_details["id"]
-        application_number = application_details["number"]
+        application_techid = application_details.id
+        application_number = application_details.number
         total_applications += 1
         bi = (
             BeneficiaryImport.query.join(users_models.User, users_models.User.id == BeneficiaryImport.beneficiaryId)
