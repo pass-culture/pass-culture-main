@@ -14,6 +14,7 @@ from pcapi.core.categories.subcategories import SubcategoryIdEnum
 from pcapi.core.educational.models import StudentLevels
 from pcapi.core.offers import repository as offers_repository
 from pcapi.core.offers.models import Stock
+from pcapi.core.offers.models import WithdrawalTypeEnum
 from pcapi.models.feature import FeatureToggle
 from pcapi.models.offer_mixin import OfferStatus
 from pcapi.routes.serialization import BaseModel
@@ -72,6 +73,8 @@ class PostOfferBodyModel(BaseModel):
     media_urls: Optional[list[str]]
     description: Optional[str]
     withdrawal_details: Optional[str]
+    withdrawal_type: Optional[WithdrawalTypeEnum]
+    withdrawal_delay: Optional[int]
     conditions: Optional[str]
     age_min: Optional[int]
     age_max: Optional[int]
@@ -152,6 +155,8 @@ class PostEducationalOfferBodyModel(BaseModel):
     motor_disability_compliant: bool = False
     visual_disability_compliant: bool = False
     extra_data: PostEducationalOfferExtraDataBodyModel
+    withdrawal_type: Optional[WithdrawalTypeEnum]
+    withdrawal_delay: Optional[int]
 
     @validator("name", pre=True)
     def validate_name(cls, name, values):  # pylint: disable=no-self-argument

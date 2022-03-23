@@ -73,6 +73,7 @@ class Subcategory:
     is_selectable: bool = True
     is_bookable_by_underage_when_free: bool = True
     is_bookable_by_underage_when_not_free: bool = True
+    can_be_withdrawable: bool = False
 
     def __post_init__(self):
         if self.search_group_name not in [s.name for s in SearchGroups]:
@@ -804,6 +805,7 @@ CONCERT = Subcategory(
     is_digital_deposit=False,
     is_physical_deposit=False,
     reimbursement_rule=ReimbursementRuleChoices.STANDARD.value,
+    can_be_withdrawable=True,
 )
 EVENEMENT_MUSIQUE = Subcategory(
     id="EVENEMENT_MUSIQUE",
@@ -821,6 +823,7 @@ EVENEMENT_MUSIQUE = Subcategory(
     is_digital_deposit=False,
     is_physical_deposit=False,
     reimbursement_rule=ReimbursementRuleChoices.STANDARD.value,
+    can_be_withdrawable=True,
 )
 LIVESTREAM_MUSIQUE = Subcategory(
     id="LIVESTREAM_MUSIQUE",
@@ -873,6 +876,7 @@ FESTIVAL_MUSIQUE = Subcategory(
     is_digital_deposit=False,
     is_physical_deposit=False,
     reimbursement_rule=ReimbursementRuleChoices.STANDARD.value,
+    can_be_withdrawable=True,
 )
 # endregion
 # region MUSIQUE_ENREGISTREE
@@ -1128,6 +1132,7 @@ SPECTACLE_REPRESENTATION = Subcategory(
     is_digital_deposit=False,
     is_physical_deposit=False,
     reimbursement_rule=ReimbursementRuleChoices.STANDARD.value,
+    can_be_withdrawable=True,
 )
 SPECTACLE_ENREGISTRE = Subcategory(
     id="SPECTACLE_ENREGISTRE",
@@ -1181,6 +1186,7 @@ FESTIVAL_SPECTACLE = Subcategory(
     is_digital_deposit=False,
     is_physical_deposit=False,
     reimbursement_rule=ReimbursementRuleChoices.STANDARD.value,
+    can_be_withdrawable=True,
 )
 ABO_SPECTACLE = Subcategory(
     id="ABO_SPECTACLE",
@@ -1474,6 +1480,10 @@ BOOK_WITH_ISBN = (LIVRE_PAPIER.id, LIVRE_AUDIO_PHYSIQUE.id, LIVRE_NUMERIQUE.id)
 
 COLLECTIVE_SUBCATEGORIES = {
     subcategory.id: subcategory for subcategory in ALL_SUBCATEGORIES if subcategory.can_be_educational
+}
+
+WITHDRAWABLE_SUBCATEGORIES = {
+    subcategory.id: subcategory for subcategory in ALL_SUBCATEGORIES if subcategory.can_be_withdrawable
 }
 
 assert set(subcategory.id for subcategory in ALL_SUBCATEGORIES) == set(
