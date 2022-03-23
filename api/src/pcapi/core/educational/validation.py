@@ -5,8 +5,10 @@ from typing import Union
 from pcapi.core.bookings import exceptions as booking_exceptions
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.educational import exceptions
+from pcapi.core.educational.exceptions import CollectiveStockAlreadyExists
 from pcapi.core.educational.models import CollectiveBooking
 from pcapi.core.educational.models import CollectiveBookingStatus
+from pcapi.core.educational.models import CollectiveOffer
 from pcapi.core.educational.models import CollectiveStock
 from pcapi.core.educational.models import EducationalBooking
 from pcapi.core.educational.models import EducationalBookingStatus
@@ -80,3 +82,10 @@ def check_collective_stock_is_editable(stock: CollectiveStock) -> None:
 def check_collective_booking_status_pending(booking: CollectiveBooking) -> Optional[Exception]:
     if booking.status is not CollectiveBookingStatus.PENDING:
         raise exceptions.CollectiveOfferStockBookedAndBookingNotPending(booking.status, booking.id)
+
+
+def check_collective_offer_number_of_collective_stocks(
+    collective_offer: CollectiveOffer,
+) -> Optional[CollectiveStockAlreadyExists]:
+    if collective_offer.collectiveStock:
+        raise exceptions.CollectiveStockAlreadyExists()
