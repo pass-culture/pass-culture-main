@@ -145,70 +145,75 @@ class SignupForm extends PureComponent {
           <div className="sign-up-tips">
             Tous les champs sont obligatoires sauf mention contraire
           </div>
-          <div>{}</div>
+
           <Form
             decorators={[addressAndDesignationFromSirenDecorator]}
             onSubmit={this.handleSubmit}
           >
             {({ handleSubmit, valid, values }) => (
               <form onSubmit={handleSubmit}>
-                <Field
-                  component={this.renderEmailTextField}
-                  name="email"
-                  type="text"
-                  validate={required}
-                />
-
-                <PasswordField
-                  errors={errors ? errors.password : null}
-                  label="Mot de passe"
-                  name="password"
-                  showTooltip
-                />
-
-                <Field
-                  component={this.renderNameTextField}
-                  name="lastName"
-                  required
-                  validate={required}
-                />
-
-                <Field
-                  component={this.renderFirstNameTextField}
-                  name="firstName"
-                  validate={required}
-                />
-
-                <Field
-                  component={this.renderPhoneNumberField}
-                  name="phoneNumber"
-                  required
-                  validate={required}
-                />
-
-                <SirenField value={values.name} />
-
-                <label className="sign-up-checkbox" htmlFor="sign-up-checkbox">
+                <div className="sign-up-form">
                   <Field
-                    component="input"
-                    id="sign-up-checkbox"
-                    name="contactOk"
-                    type="checkbox"
+                    component={this.renderEmailTextField}
+                    name="email"
+                    type="text"
+                    validate={required}
                   />
-                  <span>
-                    J’accepte d’être contacté par e-mail pour recevoir les
-                    nouveautés du pass Culture et contribuer à son amélioration
-                    (facultatif)
-                  </span>
-                  <FieldErrors
-                    customMessage={errors ? errors.contactOk : null}
+
+                  <PasswordField
+                    errors={errors ? errors.password : null}
+                    label="Mot de passe"
+                    name="password"
+                    showTooltip
                   />
-                </label>
-                <LegalInfos
-                  className="sign-up-infos-before-signup"
-                  title="Créer mon compte"
-                />
-                <BannerRGS />
+
+                  <Field
+                    component={this.renderNameTextField}
+                    name="lastName"
+                    required
+                    validate={required}
+                  />
+
+                  <Field
+                    component={this.renderFirstNameTextField}
+                    name="firstName"
+                    validate={required}
+                  />
+
+                  <Field
+                    component={this.renderPhoneNumberField}
+                    name="phoneNumber"
+                    required
+                    validate={required}
+                  />
+
+                  <SirenField value={values.name} />
+
+                  <label
+                    className="sign-up-checkbox"
+                    htmlFor="sign-up-checkbox"
+                  >
+                    <Field
+                      component="input"
+                      id="sign-up-checkbox"
+                      name="contactOk"
+                      type="checkbox"
+                    />
+                    <span>
+                      J’accepte d’être contacté par e-mail pour recevoir les
+                      nouveautés du pass Culture et contribuer à son
+                      amélioration (facultatif)
+                    </span>
+                    <FieldErrors
+                      customMessage={errors ? errors.contactOk : null}
+                    />
+                  </label>
+                  <LegalInfos
+                    className="sign-up-infos-before-signup"
+                    title="Créer mon compte"
+                  />
+                  <BannerRGS />
+                </div>
                 <div className="buttons-field">
                   <Link className="secondary-link" to="/connexion">
                     J’ai déjà un compte
