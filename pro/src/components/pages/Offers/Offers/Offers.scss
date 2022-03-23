@@ -38,22 +38,6 @@
     margin-bottom: rem(20px);
   }
 
-  .search-separator {
-    align-items: center;
-    display: flex;
-    margin-top: rem(35px);
-
-    .separator {
-      background-color: $grey-medium;
-      flex: 5;
-      height: rem(1px);
-    }
-
-    button {
-      flex: 3;
-    }
-  }
-
   .input-select {
     margin-top: rem(24px);
     width: rem(162px);

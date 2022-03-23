@@ -10,11 +10,11 @@ import {
   MAX_OFFERS_TO_DISPLAY,
 } from 'core/Offers/constants'
 import NoResults from 'screens/Offers/NoResults'
+import SearchFilters from 'screens/Offers/SearchFilters'
 import { Banner } from 'ui-kit'
 
 import OffersTableBody from './OffersTableBody/OffersTableBody'
 import OffersTableHead from './OffersTableHead/OffersTableHead'
-import SearchFilters from './SearchFilters/SearchFilters'
 
 const Offers = ({
   currentUser,
