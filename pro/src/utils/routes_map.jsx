@@ -49,7 +49,7 @@ export const routesWithMain = [
     },
   },
   {
-    component: SignupValidation,
+    component: SignUpValidation,
     exact: true,
     path: '/inscription/validation/:token',
     title: 'Validation de votre inscription',
