@@ -16,6 +16,7 @@ import { ReactComponent as AddOfferSvg } from 'icons/ico-plus.svg'
 
 import NoOffers from './NoOffers'
 import OfferListFilterTabs from './OfferListFilterTabs'
+import OffersSearchFilters from './SearchFilters'
 
 export interface IOffersProps {
   currentPageNumber: number
@@ -61,6 +62,7 @@ const Offers = ({
   const [selectedOfferIds, setSelectedOfferIds] = useState<string[]>([])
   const [selectedAudience, setSelectedAudience] =
     useState<Audience>(urlAudience)
+  const [isStatusFiltersVisible, setIsStatusFiltersVisible] = useState(false)
 
   const { isAdmin } = currentUser || {}
   const currentPageOffersSubset = offers.slice(
@@ -88,6 +90,27 @@ const Offers = ({
 
   const userHasNoOffers =
     !isLoading && !hasOffers && !hasSearchFilters(urlSearchFilters)
+
+  const hasDifferentFiltersFromLastSearch = useCallback(
+    (
+      searchFilters: SearchFilters,
+      filterNames: (keyof SearchFilters)[] = Object.keys(
+        searchFilters
+      ) as (keyof SearchFilters)[]
+    ) => {
+      const lastSearchFilters = {
+        ...DEFAULT_SEARCH_FILTERS,
+        ...urlSearchFilters,
+      }
+      return filterNames
+        .map(
+          filterName =>
+            searchFilters[filterName] !== lastSearchFilters[filterName]
+        )
+        .includes(true)
+    },
+    [urlSearchFilters]
+  )
 
   const actionLink =
     userHasNoOffers || isAdmin ? null : (
@@ -156,6 +179,38 @@ const Offers = ({
     })
   }
 
+  const applyFilters = useCallback(() => {
+    setIsLoading(true)
+    setIsStatusFiltersVisible(false)
+
+    if (!hasDifferentFiltersFromLastSearch(searchFilters)) {
+      refreshOffers()
+    }
+    applyUrlFiltersAndRedirect(searchFilters)
+  }, [
+    hasDifferentFiltersFromLastSearch,
+    refreshOffers,
+    searchFilters,
+    applyUrlFiltersAndRedirect,
+    setIsLoading,
+  ])
+
+  const removeOfferer = useCallback(() => {
+    setIsLoading(true)
+    setOfferer(null)
+    const updatedFilters = {
+      ...searchFilters,
+      offererId: DEFAULT_SEARCH_FILTERS.offererId,
+    }
+    if (
+      searchFilters.venueId === DEFAULT_SEARCH_FILTERS.venueId &&
+      searchFilters.status !== DEFAULT_SEARCH_FILTERS.status
+    ) {
+      updatedFilters.status = DEFAULT_SEARCH_FILTERS.status
+    }
+    applyUrlFiltersAndRedirect(updatedFilters)
+  }, [applyUrlFiltersAndRedirect, searchFilters, setIsLoading, setOfferer])
+
   useEffect(() => {
     setSelectedAudience(urlAudience)
   }, [urlAudience])
@@ -180,49 +235,53 @@ const Offers = ({
           toggleSelectAllCheckboxes={toggleSelectAllCheckboxes}
         />
       </ActionsBarPortal>
+      <h3 className="op-title">Rechercher une offre</h3>
+      {hasSearchFilters(searchFilters) ? (
+        <Link
+          className="reset-filters-link"
+          onClick={resetFilters}
+          to="/offres"
+        >
+          Réinitialiser les filtres
+        </Link>
+      ) : (
+        <span className="reset-filters-link disabled">
+          Réinitialiser les filtres
+        </span>
+      )}
+      <OffersSearchFilters
+        applyFilters={applyFilters}
+        offerer={offerer}
+        removeOfferer={removeOfferer}
+        selectedFilters={searchFilters}
+        setSearchFilters={setSearchFilters}
+      />
       {userHasNoOffers ? (
         <NoOffers />
       ) : (
-        <>
-          <h3 className="op-title">Rechercher une offre</h3>
-          {hasSearchFilters(searchFilters) ? (
-            <Link
-              className="reset-filters-link"
-              onClick={resetFilters}
-              to="/offres"
-            >
-              Réinitialiser les filtres
-            </Link>
-          ) : (
-            <span className="reset-filters-link disabled">
-              Réinitialiser les filtres
-            </span>
-          )}
-        </>
+        <OffersContainer
+          applyFilters={applyFilters}
+          applyUrlFiltersAndRedirect={applyUrlFiltersAndRedirect}
+          areAllOffersSelected={areAllOffersSelected}
+          currentPageNumber={currentPageNumber}
+          currentPageOffersSubset={currentPageOffersSubset}
+          currentUser={currentUser}
+          hasOffers={hasOffers}
+          hasSearchFilters={hasSearchFilters}
+          isLoading={isLoading}
+          isStatusFiltersVisible={isStatusFiltersVisible}
+          offersCount={offers.length}
+          pageCount={pageCount}
+          resetFilters={resetFilters}
+          searchFilters={searchFilters}
+          selectedOfferIds={selectedOfferIds}
+          setIsStatusFiltersVisible={setIsStatusFiltersVisible}
+          setSearchFilters={setSearchFilters}
+          setSelectedOfferIds={setSelectedOfferIds}
+          toggleSelectAllCheckboxes={toggleSelectAllCheckboxes}
+          urlSearchFilters={urlSearchFilters}
+        />
       )}
-      <OffersContainer
-        applyUrlFiltersAndRedirect={applyUrlFiltersAndRedirect}
-        areAllOffersSelected={areAllOffersSelected}
-        currentPageNumber={currentPageNumber}
-        currentPageOffersSubset={currentPageOffersSubset}
-        currentUser={currentUser}
-        hasOffers={hasOffers}
-        hasSearchFilters={hasSearchFilters}
-        isLoading={isLoading}
-        offerer={offerer}
-        offersCount={offers.length}
-        pageCount={pageCount}
-        refreshOffers={refreshOffers}
-        resetFilters={resetFilters}
-        searchFilters={searchFilters}
-        selectedOfferIds={selectedOfferIds}
-        setIsLoading={setIsLoading}
-        setOfferer={setOfferer}
-        setSearchFilters={setSearchFilters}
-        setSelectedOfferIds={setSelectedOfferIds}
-        toggleSelectAllCheckboxes={toggleSelectAllCheckboxes}
-        urlSearchFilters={urlSearchFilters}
-      />
     </div>
   )
 }
