@@ -11,7 +11,7 @@ from pcapi.core.offers.factories import ThingProductFactory
 from pcapi.core.offers.factories import ThingStockFactory
 from pcapi.core.offers.factories import VenueFactory
 from pcapi.core.offers.models import Offer
-from pcapi.core.providers.api import activate_provider
+import pcapi.core.providers.factories as providers_factories
 import pcapi.core.providers.models as providers_models
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.local_providers import TiteLiveThings
@@ -86,7 +86,7 @@ class TiteliveThingsTest:
         data_line = "~".join(BASE_DATA_LINE_PARTS)
         get_lines_from_thing_file.return_value = iter([data_line])
 
-        activate_provider("TiteLiveThings")
+        providers_factories.ProviderFactory(localClass="TiteLiveThings")
         titelive_things = TiteLiveThings()
 
         # When
@@ -119,7 +119,7 @@ class TiteliveThingsTest:
 
         get_lines_from_thing_file.return_value = iter([data_line])
 
-        activate_provider("TiteLiveThings")
+        providers_factories.ProviderFactory(localClass="TiteLiveThings")
         titelive_things = TiteLiveThings()
 
         # When
@@ -152,7 +152,7 @@ class TiteliveThingsTest:
             date_modified_at_last_provider=datetime(2001, 1, 1),
             last_provider_id=titelive_things_provider.id,
         )
-        activate_provider("TiteLiveThings")
+        providers_factories.ProviderFactory(localClass="TiteLiveThings")
         repository.save(product)
         titelive_things = TiteLiveThings()
 
@@ -171,7 +171,7 @@ class TiteliveThingsTest:
         files_list = list()
         get_files_to_process_from_titelive_ftp.return_value = files_list
 
-        activate_provider("TiteLiveThings")
+        providers_factories.ProviderFactory(localClass="TiteLiveThings")
         titelive_things = TiteLiveThings()
 
         # When
@@ -196,7 +196,7 @@ class TiteliveThingsTest:
 
         get_lines_from_thing_file.return_value = iter([data_line])
 
-        activate_provider("TiteLiveThings")
+        providers_factories.ProviderFactory(localClass="TiteLiveThings")
         titelive_things = TiteLiveThings()
 
         # When
@@ -227,7 +227,7 @@ class TiteliveThingsTest:
 
         get_lines_from_thing_file.return_value = iter([data_line])
 
-        activate_provider("TiteLiveThings")
+        providers_factories.ProviderFactory(localClass="TiteLiveThings")
         titelive_things = TiteLiveThings()
 
         # When
@@ -258,7 +258,7 @@ class TiteliveThingsTest:
 
         get_lines_from_thing_file.return_value = iter([data_line])
 
-        activate_provider("TiteLiveThings")
+        providers_factories.ProviderFactory(localClass="TiteLiveThings")
         titelive_things = TiteLiveThings()
 
         # When
@@ -289,7 +289,7 @@ class TiteliveThingsTest:
 
         get_lines_from_thing_file.return_value = iter([data_line])
 
-        titelive_provider = activate_provider("TiteLiveThings")
+        titelive_provider = providers_factories.ProviderFactory(localClass="TiteLiveThings")
         repository.save(titelive_provider)
         product = create_product_with_thing_subcategory(
             id_at_providers="9782895026310",
@@ -331,7 +331,7 @@ class TiteliveThingsTest:
         get_lines_from_thing_file.return_value = iter([data_line])
         get_lines_from_thing_file.return_value = iter([data_line])
 
-        titelive_provider = activate_provider("TiteLiveThings")
+        titelive_provider = providers_factories.ProviderFactory(localClass="TiteLiveThings")
         product = create_product_with_thing_subcategory(
             id_at_providers="9782895026310",
             thing_name="Toto à la playa",
@@ -364,7 +364,7 @@ class TiteliveThingsTest:
         data_line = "~".join(data_line_parts)
         get_lines_from_thing_file.return_value = iter([data_line])
 
-        provider = activate_provider("TiteLiveThings")
+        provider = providers_factories.ProviderFactory(localClass="TiteLiveThings")
         bookings_factories.BookingFactory(
             stock__offer__product__dateModifiedAtLastProvider=datetime(2001, 1, 1),
             stock__offer__product__idAtProviders="9782895026310",
@@ -409,7 +409,7 @@ class TiteliveThingsTest:
 
         get_lines_from_thing_file.return_value = iter([data_line_1, data_line_2])
 
-        activate_provider("TiteLiveThings")
+        providers_factories.ProviderFactory(localClass="TiteLiveThings")
         titelive_things = TiteLiveThings()
 
         # When
@@ -440,7 +440,7 @@ class TiteliveThingsTest:
 
         get_lines_from_thing_file.return_value = iter([data_line])
 
-        titelive_provider = activate_provider("TiteLiveThings")
+        titelive_provider = providers_factories.ProviderFactory(localClass="TiteLiveThings")
         repository.save(titelive_provider)
         product = create_product_with_thing_subcategory(
             id_at_providers="9782895026310",
@@ -478,7 +478,7 @@ class TiteliveThingsTest:
 
         get_lines_from_thing_file.return_value = iter([data_line])
 
-        titelive_provider = activate_provider("TiteLiveThings")
+        titelive_provider = providers_factories.ProviderFactory(localClass="TiteLiveThings")
         repository.save(titelive_provider)
 
         offerer = OffererFactory(siren="123456789")
@@ -523,7 +523,7 @@ class TiteliveThingsTest:
 
         get_lines_from_thing_file.return_value = iter([data_line])
 
-        activate_provider("TiteLiveThings")
+        providers_factories.ProviderFactory(localClass="TiteLiveThings")
         titelive_things = TiteLiveThings()
 
         # When

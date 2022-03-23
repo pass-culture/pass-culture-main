@@ -3,9 +3,7 @@ from unittest.mock import patch
 import pytest
 
 from pcapi.core.offers import factories as offer_factories
-from pcapi.core.providers.api import activate_provider
 import pcapi.core.providers.factories as providers_factories
-from pcapi.core.providers.factories import AllocinePivotFactory
 from pcapi.core.providers.models import VenueProvider
 from pcapi.core.users import factories as user_factories
 from pcapi.models.api_errors import ApiErrors
@@ -56,9 +54,8 @@ class Returns201Test:
         # Given
         venue = offer_factories.VenueFactory(managingOfferer__siren="775671464")
         user = user_factories.AdminFactory()
-        AllocinePivotFactory(siret=venue.siret)
-
-        provider = activate_provider("AllocineStocks")
+        providers_factories.AllocinePivotFactory(siret=venue.siret)
+        provider = providers_factories.AllocineProviderFactory()
 
         venue_provider_data = {"providerId": humanize(provider.id), "venueId": humanize(venue.id), "price": "9.99"}
 
@@ -80,9 +77,8 @@ class Returns201Test:
         # Given
         venue = offer_factories.VenueFactory(managingOfferer__siren="775671464")
         user = user_factories.AdminFactory()
-        AllocinePivotFactory(siret=venue.siret)
-
-        provider = activate_provider("AllocineStocks")
+        providers_factories.AllocinePivotFactory(siret=venue.siret)
+        provider = providers_factories.AllocineProviderFactory()
 
         venue_provider_data = {
             "providerId": humanize(provider.id),
@@ -231,9 +227,8 @@ class Returns400Test:
         # Given
         venue = offer_factories.VenueFactory(managingOfferer__siren="775671464")
         user = user_factories.AdminFactory()
-        AllocinePivotFactory(siret=venue.siret)
-
-        provider = activate_provider("AllocineStocks")
+        providers_factories.AllocinePivotFactory(siret=venue.siret)
+        provider = providers_factories.AllocineProviderFactory()
 
         venue_provider_data = {
             "providerId": humanize(provider.id),
@@ -256,9 +251,8 @@ class Returns400Test:
         # Given
         venue = offer_factories.VenueFactory(managingOfferer__siren="775671464")
         user = user_factories.AdminFactory()
-        AllocinePivotFactory(siret=venue.siret)
-
-        provider = activate_provider("AllocineStocks")
+        providers_factories.AllocinePivotFactory(siret=venue.siret)
+        provider = providers_factories.AllocineProviderFactory()
 
         venue_provider_data = {
             "providerId": humanize(provider.id),
@@ -312,7 +306,7 @@ class Returns404Test:
         # Given
         venue = offer_factories.VenueFactory(managingOfferer__siren="775671464")
         user = user_factories.AdminFactory()
-        provider = activate_provider("AllocineStocks")
+        provider = providers_factories.AllocineProviderFactory()
 
         venue_provider_data = {
             "providerId": humanize(provider.id),
@@ -405,9 +399,8 @@ class ConnectProviderToVenueTest:
         # Given
         user = user_factories.AdminFactory()
         venue = offer_factories.VenueFactory(siret="12345678912345")
-        AllocinePivotFactory(siret=venue.siret)
-
-        provider = activate_provider("AllocineStocks")
+        providers_factories.AllocinePivotFactory(siret=venue.siret)
+        provider = providers_factories.AllocineProviderFactory()
 
         venue_provider_data = {"providerId": humanize(provider.id), "venueId": humanize(venue.id), "price": "33.33"}
 

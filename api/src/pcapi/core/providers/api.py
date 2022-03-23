@@ -25,7 +25,6 @@ from pcapi.core.providers.models import Provider
 from pcapi.core.providers.models import StockDetail
 from pcapi.core.providers.models import VenueProvider
 from pcapi.core.providers.models import VenueProviderCreationPayload
-from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.core.providers.repository import get_provider_enabled_for_pro_by_id
 from pcapi.domain.price_rule import PriceRule
 from pcapi.models import db
@@ -400,11 +399,3 @@ def _should_reindex_offer(new_quantity: int, new_price: float, existing_stock: d
     is_new_quantity_stock_empty = new_quantity == 0
 
     return is_existing_stock_empty is not is_new_quantity_stock_empty
-
-
-def activate_provider(provider_classname: str) -> Provider:
-    provider = get_provider_by_local_class(provider_classname)
-    provider.isActive = True
-    provider.enabledForPro = True
-    repository.save(provider)
-    return provider
