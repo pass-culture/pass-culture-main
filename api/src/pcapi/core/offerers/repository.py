@@ -45,6 +45,10 @@ def get_all_offerers_for_user(
             query = query.filter(models.Offerer.validationToken.isnot(None))
 
     if validated_for_user is not None:
+        if user.has_admin_role:
+            query = query.join(UserOfferer, UserOfferer.offererId == models.Offerer.id)
+        else:
+            pass  # we already JOINed above.
         if validated_for_user:
             query = query.filter(UserOfferer.validationToken.is_(None))
         else:
