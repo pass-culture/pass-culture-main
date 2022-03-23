@@ -2,6 +2,7 @@ import { endOfDay } from 'date-fns'
 import { utcToZonedTime } from 'date-fns-tz'
 import React, { useCallback, useEffect, useState } from 'react'
 
+import { api } from 'api/v1/api'
 import Icon from 'components/layout/Icon'
 import PeriodSelector from 'components/layout/inputs/PeriodSelector/PeriodSelector'
 import Select from 'components/layout/inputs/Select'
@@ -14,7 +15,6 @@ import {
   DEFAULT_SEARCH_FILTERS,
 } from 'core/Offers/constants'
 import { Offerer, SearchFilters as SearchFiltersType } from 'core/Offers/types'
-import * as pcapi from 'repository/pcapi/pcapi'
 import {
   fetchAllVenuesByProUser,
   formatAndOrderVenues,
@@ -25,10 +25,14 @@ import styles from './SearchFilters.module.scss'
 
 interface ISearchFiltersProps {
   applyFilters: () => void
-  offerer: Offerer
+  offerer: Offerer | null
   removeOfferer: () => void
   selectedFilters: SearchFiltersType
-  setSearchFilters: (filters: SearchFiltersType) => void
+  setSearchFilters: (
+    filters:
+      | SearchFiltersType
+      | ((previousFilters: SearchFiltersType) => SearchFiltersType)
+  ) => void
 }
 
 const SearchFilters = ({
@@ -38,11 +42,13 @@ const SearchFilters = ({
   selectedFilters,
   setSearchFilters,
 }: ISearchFiltersProps): JSX.Element => {
-  const [categoriesOptions, setCategoriesOptions] = useState([])
+  const [categoriesOptions, setCategoriesOptions] = useState<
+    { id: string; displayName: string }[]
+  >([])
   const [venueOptions, setVenueOptions] = useState([])
 
   useEffect(() => {
-    pcapi.loadCategories().then(categoriesAndSubcategories => {
+    api.getOffersGetCategories().then(categoriesAndSubcategories => {
       const { categories } = categoriesAndSubcategories
       const categoriesOptions = categories
         .filter(category => category.isSelectable)
