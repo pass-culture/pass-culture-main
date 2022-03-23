@@ -1,7 +1,6 @@
 import { endOfDay } from 'date-fns'
 import { utcToZonedTime } from 'date-fns-tz'
-import PropTypes from 'prop-types'
-import React, { Fragment, useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 
 import Icon from 'components/layout/Icon'
 import PeriodSelector from 'components/layout/inputs/PeriodSelector/PeriodSelector'
@@ -14,6 +13,7 @@ import {
   DEFAULT_CREATION_MODE,
   DEFAULT_SEARCH_FILTERS,
 } from 'core/Offers/constants'
+import { Offerer, SearchFilters as SearchFiltersType } from 'core/Offers/types'
 import * as pcapi from 'repository/pcapi/pcapi'
 import {
   fetchAllVenuesByProUser,
@@ -21,20 +21,30 @@ import {
 } from 'repository/venuesService'
 import { formatBrowserTimezonedDateAsUTC, getToday } from 'utils/date'
 
+import styles from './SearchFilters.module.scss'
+
+interface ISearchFiltersProps {
+  applyFilters: () => void
+  offerer: Offerer
+  removeOfferer: () => void
+  selectedFilters: SearchFiltersType
+  setSearchFilters: (filters: SearchFiltersType) => void
+}
+
 const SearchFilters = ({
   applyFilters,
   offerer,
   removeOfferer,
   selectedFilters,
   setSearchFilters,
-}) => {
+}: ISearchFiltersProps): JSX.Element => {
   const [categoriesOptions, setCategoriesOptions] = useState([])
   const [venueOptions, setVenueOptions] = useState([])
 
   useEffect(() => {
     pcapi.loadCategories().then(categoriesAndSubcategories => {
-      let { categories } = categoriesAndSubcategories
-      let categoriesOptions = categories
+      const { categories } = categoriesAndSubcategories
+      const categoriesOptions = categories
         .filter(category => category.isSelectable)
         .map(category => ({
           id: category.id,
@@ -52,7 +62,7 @@ const SearchFilters = ({
   }, [offerer?.id])
 
   const updateSearchFilters = useCallback(
-    newSearchFilters => {
+    (newSearchFilters: Partial<SearchFiltersType>) => {
       setSearchFilters(currentSearchFilters => ({
         ...currentSearchFilters,
         ...newSearchFilters,
@@ -165,16 +175,6 @@ const SearchFilters = ({
             changePeriodEndingDateValue={changePeriodEndingDateValue}
             isDisabled={false}
             label="Période de l’évènement"
-            maxDateBeginning={
-              selectedFilters.periodEndingDate
-                ? utcToZonedTime(selectedFilters.periodEndingDate, 'UTC')
-                : undefined
-            }
-            minDateEnding={
-              selectedFilters.periodBeginningDate
-                ? utcToZonedTime(selectedFilters.periodBeginningDate, 'UTC')
-                : undefined
-            }
             periodBeginningDate={
               selectedFilters.periodBeginningDate
                 ? utcToZonedTime(selectedFilters.periodBeginningDate, 'UTC')
@@ -188,39 +188,16 @@ const SearchFilters = ({
             todayDate={getToday()}
           />
         </div>
-        <div className="search-separator">
-          <div className="separator" />
+        <div className={styles['search-separator']}>
+          <div className={styles['separator']} />
           <button className="primary-button" type="submit">
             Lancer la recherche
           </button>
-          <div className="separator" />
+          <div className={styles['separator']} />
         </div>
       </form>
     </>
   )
-}
-
-SearchFilters.defaultProps = {
-  offerer: null,
-}
-
-SearchFilters.propTypes = {
-  applyFilters: PropTypes.func.isRequired,
-  offerer: PropTypes.shape({
-    id: PropTypes.string.isRequired,
-    name: PropTypes.string.isRequired,
-  }),
-  removeOfferer: PropTypes.func.isRequired,
-  selectedFilters: PropTypes.shape({
-    nameOrIsbn: PropTypes.string,
-    offererId: PropTypes.string,
-    venueId: PropTypes.string,
-    categoryId: PropTypes.string,
-    creationMode: PropTypes.string,
-    periodBeginningDate: PropTypes.string,
-    periodEndingDate: PropTypes.string,
-  }).isRequired,
-  setSearchFilters: PropTypes.func.isRequired,
 }
 
 export default SearchFilters
