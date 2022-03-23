@@ -1,0 +1,12 @@
+.search-no-results {
+  color: $grey-dark;
+  text-align: center;
+
+  &-icon {
+    margin: rem(10px) 0 rem(30px);
+  }
+
+  &-text {
+    margin-bottom: rem(20px);
+  }
+}

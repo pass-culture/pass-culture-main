@@ -234,19 +234,6 @@
     margin-top: rem(70px);
   }
 
-  .search-no-results {
-    color: $grey-dark;
-    text-align: center;
-
-    img {
-      margin: rem(10px) 0 rem(30px);
-    }
-
-    p {
-      margin-bottom: rem(20px);
-    }
-  }
-
   .reset-filters-link {
     @include body-important();
 
