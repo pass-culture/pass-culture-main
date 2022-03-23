@@ -139,7 +139,9 @@ def get_user_has_bookings() -> UserHasBookingResponse:
 def get_bookings_csv(query: ListBookingsQueryModel) -> bytes:
     venue_id = query.venue_id
     event_date = query.event_date
-    booking_period = (query.booking_period_beginning_date, query.booking_period_ending_date)
+    booking_period = None
+    if query.booking_period_beginning_date and query.booking_period_ending_date:
+        booking_period = (query.booking_period_beginning_date, query.booking_period_ending_date)
     booking_status = query.booking_status_filter
     offer_type = query.offer_type
 

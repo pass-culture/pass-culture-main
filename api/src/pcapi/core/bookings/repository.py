@@ -388,8 +388,8 @@ def get_bookings_from_deposit(deposit_id: int) -> list[Booking]:
 
 def get_csv_report(
     user: User,
-    booking_period: tuple[date, date],
-    status_filter: BookingStatusFilter = BookingStatusFilter.BOOKED,
+    booking_period: Optional[tuple[date, date]] = None,
+    status_filter: Optional[BookingStatusFilter] = BookingStatusFilter.BOOKED,
     event_date: Optional[datetime] = None,
     venue_id: Optional[int] = None,
     offer_type: Optional[OfferType] = None,
