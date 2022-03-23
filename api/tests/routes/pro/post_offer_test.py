@@ -7,6 +7,7 @@ from pcapi.core.educational.models import StudentLevels
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import Offer
+from pcapi.core.offers.models import WithdrawalTypeEnum
 from pcapi.core.testing import override_settings
 import pcapi.core.users.factories as users_factories
 from pcapi.utils.human_ids import dehumanize
@@ -28,6 +29,7 @@ class Returns200Test:
             "durationMinutes": 60,
             "name": "La pièce de théâtre",
             "subcategoryId": subcategories.SPECTACLE_REPRESENTATION.id,
+            "withdrawalType": "no_ticket",
             "extraData": {"toto": "text"},
             "externalTicketOfficeUrl": "http://example.net",
             "audioDisabilityCompliant": False,
@@ -108,6 +110,7 @@ class Returns200Test:
             "durationMinutes": 60,
             "name": "La pièce de théâtre",
             "subcategoryId": subcategories.SPECTACLE_REPRESENTATION.id,
+            "withdrawalType": "no_ticket",
             "extraData": {"toto": "text"},
             "externalTicketOfficeUrl": "http://example.net",
             "audioDisabilityCompliant": False,
@@ -141,6 +144,7 @@ class Returns200Test:
             "durationMinutes": 60,
             "name": "La pièce de théâtre",
             "subcategoryId": subcategories.SPECTACLE_REPRESENTATION.id,
+            "withdrawalType": "no_ticket",
             "extraData": {
                 "students": ["Collège - 4e"],
                 "contactEmail": "toto@toto.com",
@@ -282,6 +286,28 @@ class Returns200Test:
         assert collective_offer.contactPhone == data["extraData"]["contactPhone"]
         assert collective_offer.offerVenue == data["extraData"]["offerVenue"]
 
+    def test_withdrawable_event_offer_can_have_no_ticket_to_withdraw(self, client):
+        # Given
+        venue = offers_factories.VenueFactory()
+        offerer = venue.managingOfferer
+        offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
+
+        # When
+        data = {
+            "venueId": humanize(venue.id),
+            "name": "La pièce de théâtre",
+            "subcategoryId": subcategories.CONCERT.id,
+            "withdrawalDetails": "Veuillez récuperer vos billets à l'accueil :)",
+            "withdrawalType": "no_ticket",
+        }
+        response = client.with_session_auth("user@example.com").post("/offers", json=data)
+
+        # Then
+        offer_id = dehumanize(response.json["id"])
+        offer = Offer.query.get(offer_id)
+        assert offer.withdrawalDetails == "Veuillez récuperer vos billets à l'accueil :)"
+        assert offer.withdrawalType == WithdrawalTypeEnum.NO_TICKET
+
 
 @pytest.mark.usefixtures("db_session")
 class Returns400Test:
@@ -319,6 +345,7 @@ class Returns400Test:
             "venueId": humanize(venue.id),
             "name": "too long" * 30,
             "subcategoryId": subcategories.SPECTACLE_REPRESENTATION.id,
+            "withdrawalType": "no_ticket",
         }
         response = client.with_session_auth("user@example.com").post("/offers", json=data)
 
@@ -497,6 +524,7 @@ class Returns400Test:
             "durationMinutes": 60,
             "name": "La pièce de théâtre",
             "subcategoryId": subcategories.SPECTACLE_REPRESENTATION.id,
+            "withdrawalType": "no_ticket",
             "extraData": {
                 "students": ["Collège - 4e"],
             },
@@ -545,6 +573,24 @@ class Returns400Test:
         # Then
         assert response.status_code == 400
 
+    def test_non_withdrawable_event_offer_cant_have_withdrawal(self, client):
+        # Given
+        venue = offers_factories.VenueFactory()
+        offerer = venue.managingOfferer
+        offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
+
+        # When
+        data = {
+            "venueId": humanize(venue.id),
+            "name": "Dofus",
+            "subcategoryId": subcategories.JEU_EN_LIGNE.id,
+            "withdrawalType": "no_ticket",
+        }
+        response = client.with_session_auth("user@example.com").post("/offers", json=data)
+
+        # Then
+        assert response.status_code == 400
+
 
 @pytest.mark.usefixtures("db_session")
 class Returns403Test:
@@ -586,6 +632,7 @@ class Returns403Test:
             "durationMinutes": 60,
             "name": "La pièce de théâtre",
             "subcategoryId": subcategories.SPECTACLE_REPRESENTATION.id,
+            "withdrawalType": "no_ticket",
             "extraData": {
                 "students": ["Collège - 4e"],
                 "contactEmail": "toto@toto.com",

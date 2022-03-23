@@ -233,6 +233,12 @@ class OfferImage:
     credit: Optional[str] = None
 
 
+class WithdrawalTypeEnum(enum.Enum):
+    NO_TICKET = "no_ticket"
+    BY_EMAIL = "by_email"
+    ON_SITE = "on_site"
+
+
 class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ValidationMixin, AccessibilityMixin, StatusMixin):
     __tablename__ = "offer"
 
@@ -254,6 +260,9 @@ class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ValidationMixin, 
     description = sa.Column(sa.Text, nullable=True)
 
     withdrawalDetails = sa.Column(sa.Text, nullable=True)
+
+    withdrawalType = sa.Column(sa.Enum(WithdrawalTypeEnum), nullable=True)
+    withdrawalDelay = sa.Column(sa.BigInteger, nullable=True)
 
     conditions = sa.Column(sa.String(120), nullable=True)
 

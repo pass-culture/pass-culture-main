@@ -20,13 +20,16 @@ from pcapi.core.offers.models import Stock
 from pcapi.core.users.models import User
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.api_errors import ForbiddenError
+from pcapi.models.feature import FeatureToggle
 
 from . import exceptions
 from ..categories import subcategories
 from ..categories.subcategories import ALL_SUBCATEGORIES_DICT
+from ..categories.subcategories import WITHDRAWABLE_SUBCATEGORIES
 from ..providers.models import Provider
 from .models import ActivationCode
 from .models import OfferValidationStatus
+from .models import WithdrawalTypeEnum
 
 
 logger = logging.getLogger(__name__)
@@ -326,6 +329,26 @@ def check_offer_is_eligible_for_educational(subcategory_id: str, is_educational:
         subcategory = subcategories.ALL_SUBCATEGORIES_DICT.get(subcategory_id)
         if not subcategory or not subcategory.can_be_educational:
             raise exceptions.SubcategoryNotEligibleForEducationalOffer()
+
+
+def check_offer_withdrawal(
+    withdrawal_type: Optional[WithdrawalTypeEnum], withdrawal_delay: Optional[int], subcategory_id: Optional[str]
+) -> None:
+    if subcategory_id not in WITHDRAWABLE_SUBCATEGORIES and withdrawal_type is not None:
+        raise exceptions.NonWithdrawableEventOfferCantHaveWithdrawal()
+
+    if (
+        FeatureToggle.PRO_DISABLE_EVENTS_QRCODE.is_active()
+        and subcategory_id in WITHDRAWABLE_SUBCATEGORIES
+        and withdrawal_type is None
+    ):
+        raise exceptions.WithdrawableEventOfferMustHaveWithdrawal()
+
+    if withdrawal_type == WithdrawalTypeEnum.NO_TICKET and withdrawal_delay is not None:
+        raise exceptions.NoDelayWhenEventWithdrawalTypeHasNoTicket()
+
+    if withdrawal_type in (WithdrawalTypeEnum.ON_SITE, WithdrawalTypeEnum.BY_EMAIL) and withdrawal_delay is None:
+        raise exceptions.EventWithTicketMustHaveDelay()
 
 
 def check_offer_subcategory_is_valid(offer_subcategory_id):
