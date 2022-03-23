@@ -3,11 +3,14 @@ import pathlib
 
 import pytest
 
+from pcapi.core.categories import subcategories
 from pcapi.core.offers import exceptions
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import validation
 from pcapi.core.offers.models import OfferValidationStatus
+from pcapi.core.offers.models import WithdrawalTypeEnum
 import pcapi.core.providers.factories as providers_factories
+from pcapi.core.testing import override_features
 from pcapi.models.api_errors import ApiErrors
 
 import tests
@@ -336,3 +339,99 @@ class CheckValidationStatusTest:
         assert error.value.errors["global"] == [
             "Les offres refusées ou en attente de validation ne sont pas modifiables"
         ]
+
+
+@pytest.mark.usefixtures("db_session")
+class CheckOfferWithdrawalTest:
+    def test_offer_can_have_no_withdrawal_informations(self):
+        assert not validation.check_offer_withdrawal(
+            withdrawal_type=None,
+            withdrawal_delay=None,
+            subcategory_id=None,
+        )
+
+    def test_withdrawable_event_offer_can_have_no_ticket_to_withdraw(self):
+        assert not validation.check_offer_withdrawal(
+            withdrawal_type=WithdrawalTypeEnum.NO_TICKET,
+            withdrawal_delay=None,
+            subcategory_id=subcategories.CONCERT.id,
+        )
+
+    def test_withdrawable_event_offer_with_no_ticket_to_withdraw_cant_have_delay(self):
+        with pytest.raises(exceptions.NoDelayWhenEventWithdrawalTypeHasNoTicket):
+            validation.check_offer_withdrawal(
+                withdrawal_type=WithdrawalTypeEnum.NO_TICKET,
+                withdrawal_delay=60 * 30,
+                subcategory_id=subcategories.CONCERT.id,
+            )
+
+    def test_non_withdrawable_event_offer_cant_have_withdrawal(self):
+        with pytest.raises(exceptions.NonWithdrawableEventOfferCantHaveWithdrawal):
+            validation.check_offer_withdrawal(
+                withdrawal_type=WithdrawalTypeEnum.NO_TICKET,
+                withdrawal_delay=None,
+                subcategory_id=subcategories.JEU_EN_LIGNE.id,
+            )
+
+    @pytest.mark.parametrize(
+        "withdrawal_type",
+        [
+            WithdrawalTypeEnum.BY_EMAIL,
+            WithdrawalTypeEnum.ON_SITE,
+        ],
+    )
+    def test_withdrawable_event_offer_with_withdrawal_with_a_delay(self, withdrawal_type):
+        assert not validation.check_offer_withdrawal(
+            withdrawal_type=withdrawal_type,
+            withdrawal_delay=60 * 30,
+            subcategory_id=subcategories.CONCERT.id,
+        )
+
+    @pytest.mark.parametrize(
+        "withdrawal_type",
+        [
+            WithdrawalTypeEnum.BY_EMAIL,
+            WithdrawalTypeEnum.ON_SITE,
+        ],
+    )
+    def test_withdrawable_event_offer_with_ticket_must_have_delay(self, withdrawal_type):
+        with pytest.raises(exceptions.EventWithTicketMustHaveDelay):
+            validation.check_offer_withdrawal(
+                withdrawal_type=withdrawal_type,
+                withdrawal_delay=None,
+                subcategory_id=subcategories.CONCERT.id,
+            )
+
+    @override_features(PRO_DISABLE_EVENTS_QRCODE=True)
+    @pytest.mark.parametrize(
+        "subcategory_id",
+        subcategories.WITHDRAWABLE_SUBCATEGORIES,
+    )
+    def test_withdrawable_event_offer_must_have_withdrawal_type(self, subcategory_id):
+        assert not validation.check_offer_withdrawal(
+            withdrawal_type=WithdrawalTypeEnum.NO_TICKET,
+            withdrawal_delay=None,
+            subcategory_id=subcategory_id,
+        )
+
+    # @TODO: bruno: remove this test when removing the feature flag PC-14050
+    @override_features(PRO_DISABLE_EVENTS_QRCODE=False)
+    def test_withdrawable_event_offer_can_have_no_withdrawal_type(self):
+        """
+        Test retrocompatibility when disable events QRCode feature toggle is off
+        withdrawable event offer can have no withdrawal type
+        """
+        assert not validation.check_offer_withdrawal(
+            withdrawal_type=None,
+            withdrawal_delay=None,
+            subcategory_id=subcategories.CONCERT.id,
+        )
+
+    @override_features(PRO_DISABLE_EVENTS_QRCODE=True)
+    def test_withdrawable_event_offer_must_have_withdrawal(self):
+        with pytest.raises(exceptions.WithdrawableEventOfferMustHaveWithdrawal):
+            validation.check_offer_withdrawal(
+                withdrawal_type=None,
+                withdrawal_delay=None,
+                subcategory_id=subcategories.FESTIVAL_MUSIQUE.id,
+            )

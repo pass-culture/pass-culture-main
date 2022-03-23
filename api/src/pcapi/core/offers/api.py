@@ -70,6 +70,7 @@ from pcapi.core.offers.utils import as_utc_without_timezone
 from pcapi.core.offers.validation import KEY_VALIDATION_CONFIG
 from pcapi.core.offers.validation import check_offer_is_eligible_for_educational
 from pcapi.core.offers.validation import check_offer_subcategory_is_valid
+from pcapi.core.offers.validation import check_offer_withdrawal
 from pcapi.core.offers.validation import check_shadow_stock_is_editable
 from pcapi.core.offers.validation import check_validation_config_parameters
 from pcapi.core.payments import conf as deposit_conf
@@ -280,6 +281,7 @@ def _check_offer_data_is_valid(
 ) -> None:
     check_offer_subcategory_is_valid(offer_data.subcategory_id)
     check_offer_is_eligible_for_educational(offer_data.subcategory_id, offer_is_educational)
+    check_offer_withdrawal(offer_data.withdrawal_type, offer_data.withdrawal_delay, offer_data.subcategory_id)
 
 
 def update_offer(

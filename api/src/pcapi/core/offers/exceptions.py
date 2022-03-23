@@ -64,6 +64,38 @@ class SubCategoryIsInactive(OfferCreationBaseException):
         )
 
 
+class NoDelayWhenEventWithdrawalTypeHasNoTicket(OfferCreationBaseException):
+    def __init__(self):
+        super().__init__(
+            "offer",
+            "Il ne peut pas y avoir de délai de retrait lorsqu'il s'agit d'un évènement sans ticket",
+        )
+
+
+class EventWithTicketMustHaveDelay(OfferCreationBaseException):
+    def __init__(self):
+        super().__init__(
+            "offer",
+            "Un évènement avec ticket doit avoir un délai de renseigné",
+        )
+
+
+class NonWithdrawableEventOfferCantHaveWithdrawal(OfferCreationBaseException):
+    def __init__(self):
+        super().__init__(
+            "offer",
+            "Une offre qui n'a pas de ticket retirable ne peut pas avoir un type de retrait renseigné",
+        )
+
+
+class WithdrawableEventOfferMustHaveWithdrawal(OfferCreationBaseException):
+    def __init__(self):
+        super().__init__(
+            "offer",
+            "Une offre qui a un ticket retirable doit avoir un type de retrait renseigné",
+        )
+
+
 class ThumbnailStorageError(ApiErrors):
     status_code = 500
 
