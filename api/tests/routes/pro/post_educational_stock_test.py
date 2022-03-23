@@ -1,5 +1,9 @@
+from unittest.mock import patch
+
 import pytest
 
+from pcapi.core.educational import factories as educational_factories
+from pcapi.core.educational.models import CollectiveStock
 from pcapi.core.offers import factories as offer_factories
 from pcapi.core.offers.models import Stock
 from pcapi.utils.human_ids import dehumanize
@@ -38,6 +42,42 @@ class Return200Test:
         assert offer.id == created_stock.offerId
         assert created_stock.price == 1500
         assert created_stock.educationalPriceDetail == "Détail du prix"
+
+    @patch("pcapi.core.educational.validation.check_collective_offer_number_of_collective_stocks")
+    def test_does_not_allow_second_stock_creation_when_concurrent_request(
+        self, mocked_check_collective_offer_number_of_collective_stocks, app, client
+    ):
+        # Given
+        classic_offer = offer_factories.EducationalEventOfferFactory()
+        offer_factories.UserOffererFactory(
+            user__email="user@example.com",
+            offerer=classic_offer.venue.managingOfferer,
+        )
+        collective_offer = educational_factories.CollectiveOfferFactory(offerId=classic_offer.id)
+        educational_factories.CollectiveStockFactory(collectiveOffer=collective_offer)
+
+        # When
+        stock_payload = {
+            "offerId": humanize(classic_offer.id),
+            "beginningDatetime": "2022-01-17T22:00:00Z",
+            "bookingLimitDatetime": "2021-12-31T20:00:00Z",
+            "totalPrice": 1500,
+            "numberOfTickets": 38,
+            "educationalPriceDetail": "Détail du prix",
+        }
+
+        # Here we mock the return value to None as we want to assert that two stocks cannot be created concurrently
+        # for the same offer (we have encountered this issue). So we have to simulate two stock creations in the db
+        mocked_check_collective_offer_number_of_collective_stocks.return_value = None
+
+        client.with_session_auth("user@example.com")
+        response = client.post("/stocks/educational/", json=stock_payload)
+
+        # Then
+        assert response.status_code == 201
+        stock_id = response.json["id"]
+        non_created_collective_stock = CollectiveStock.query.filter_by(stockId=dehumanize(stock_id)).one_or_none()
+        assert non_created_collective_stock is None
 
 
 class Return400Test:

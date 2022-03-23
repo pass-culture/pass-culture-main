@@ -3,6 +3,7 @@ from typing import List
 
 from flask_login import current_user
 from flask_login import login_required
+from sqlalchemy import exc
 from sqlalchemy.orm.exc import MultipleResultsFound as SQLAMultipleResultsFound
 
 from pcapi.core.educational import api as educational_api
@@ -39,6 +40,7 @@ from pcapi.validation.routes.users_authentifications import current_api_key
 from pcapi.workers.synchronize_stocks_job import synchronize_stocks_job
 
 from . import blueprint
+from ...models import db
 
 
 logger = logging.getLogger(__name__)
@@ -154,7 +156,13 @@ def create_educational_stock(body: EducationalStockCreationBodyModel) -> StockId
             status_code=400,
         )
 
-    educational_api.create_collective_stock(body, current_user, legacy_id=stock.id)
+    try:
+        educational_api.create_collective_stock(body, current_user, legacy_id=stock.id)
+    except exc.IntegrityError:
+        logger.error(
+            "Concurrent request trying to create educational stock for same offer", extra={"offerId": body.offer_id}
+        )
+        db.session.rollback()
 
     return StockIdResponseModel.from_orm(stock)
 
