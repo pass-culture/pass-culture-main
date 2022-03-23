@@ -1,6 +1,7 @@
 from datetime import datetime
 from datetime import timedelta
 
+from freezegun import freeze_time
 import pytest
 
 from pcapi.core.bookings import constants
@@ -11,18 +12,19 @@ from pcapi.core.testing import override_settings
 from pcapi.core.users import factories as users_factories
 from pcapi.notifications.push import testing
 from pcapi.scheduled_tasks.clock import pc_notify_users_bookings_not_retrieved
-from pcapi.scheduled_tasks.clock import pc_send_tomorrow_events_notifications
+from pcapi.scheduled_tasks.clock import pc_send_today_events_notifications_metropolitan_france
 
 
 @pytest.mark.usefixtures("db_session")
-def test_pc_send_tomorrow_events_notifications_only_to_individual_bookings_users():
+@freeze_time("2020-10-15 15:00:00")
+def test_pc_send_today_events_notifications_only_to_individual_bookings_users():
     """
-    Test that each stock that is linked to an offer that occurs tomorrow and
+    Test that each stock that is linked to an offer that occurs today and
     creates a job that will send a notification to all of the stock's users
     with a valid (not cancelled) booking, for individual bookings only.
     """
-    tomorrow = datetime.utcnow() + timedelta(days=1)
-    stock_tomorrow = offers_factories.EventStockFactory(beginningDatetime=tomorrow, offer__name="my_offer")
+    in_one_hour = datetime.utcnow() + timedelta(hours=1)
+    stock_today = offers_factories.EventStockFactory(beginningDatetime=in_one_hour, offer__name="my_offer")
 
     next_week = datetime.utcnow() + timedelta(days=7)
     stock_next_week = offers_factories.EventStockFactory(beginningDatetime=next_week)
@@ -31,21 +33,21 @@ def test_pc_send_tomorrow_events_notifications_only_to_individual_bookings_users
     user2 = users_factories.BeneficiaryGrant18Factory()
 
     # should be fetched
-    bookings_factories.IndividualBookingFactory(stock=stock_tomorrow, user=user1)
+    bookings_factories.IndividualBookingFactory(stock=stock_today, user=user1)
 
     # should not be fetched: cancelled
-    bookings_factories.IndividualBookingFactory(stock=stock_tomorrow, status=BookingStatus.CANCELLED, user=user2)
+    bookings_factories.IndividualBookingFactory(stock=stock_today, status=BookingStatus.CANCELLED, user=user2)
 
     # should not be fetched: educational
-    bookings_factories.EducationalBookingFactory(stock=stock_tomorrow, user=user2)
+    bookings_factories.EducationalBookingFactory(stock=stock_today, user=user2)
 
     # should not be fetched: next week
     bookings_factories.IndividualBookingFactory(stock=stock_next_week, user=user2)
 
-    pc_send_tomorrow_events_notifications()
+    pc_send_today_events_notifications_metropolitan_france()
 
     assert len(testing.requests) == 1
-    assert all(data["message"]["title"] == "my_offer, c'est demain !" for data in testing.requests)
+    assert all(data["message"]["title"] == "my_offer, c'est aujourd'hui !" for data in testing.requests)
 
     user_ids = {user_id for data in testing.requests for user_id in data["user_ids"]}
     assert user_ids == {user1.id}
