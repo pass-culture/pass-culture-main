@@ -50,6 +50,7 @@ from sqlalchemy.orm import joinedload
 import sqlalchemy.sql.functions as sqla_func
 
 from pcapi import settings
+from pcapi.connectors import googledrive
 import pcapi.core.bookings.models as bookings_models
 from pcapi.core.educational import repository as educational_repository
 import pcapi.core.educational.models as educational_models
@@ -71,6 +72,7 @@ from pcapi.models.bank_information import BankInformation
 from pcapi.models.bank_information import BankInformationStatus
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository import transaction
+from pcapi.utils import date as date_utils
 from pcapi.utils import human_ids
 from pcapi.utils import pdf as pdf_utils
 
@@ -810,6 +812,8 @@ def generate_payment_files(batch_id: int):  # type: ignore [no-untyped-def]
         "Finance files have been generated",
         extra={"paths": [str(path) for path in file_paths.values()]},
     )
+    drive_folder_name = _get_drive_folder_name(batch_id)
+    _upload_files_to_google_drive(drive_folder_name, file_paths.values())
 
     logger.info("Updating cashflow status")
     db.session.execute(
@@ -832,6 +836,53 @@ def generate_payment_files(batch_id: int):  # type: ignore [no-untyped-def]
     )
     db.session.commit()
     logger.info("Updated cashflow status")
+
+
+def _get_drive_folder_name(batch_id: int) -> str:
+    """Return the name of the directory (on Google Drive) that holds
+    finance files for the requested cashflow batch.
+
+    Looks like "2022-03 - jusqu'au 15 mars".
+    """
+    batch = models.CashflowBatch.query.get(batch_id)
+    last_day = pytz.utc.localize(batch.cutoff).astimezone(utils.ACCOUNTING_TIMEZONE).date() - datetime.timedelta(days=1)
+    return "{year}-{month} - jusqu'au {day} {month_name}".format(
+        year=last_day.year,
+        month=last_day.month,
+        day=last_day.day,
+        month_name=date_utils.MONTHS_IN_FRENCH[last_day.month],
+    )
+
+
+def _upload_files_to_google_drive(folder_name: str, paths: typing.Iterable[pathlib.Path]) -> None:
+    """Upload finance files (linked to cashflow generation) to a new
+    directory on Google Drive.
+    """
+    gdrive_api = googledrive.get_backend()
+    try:
+        parent_folder_id = gdrive_api.get_or_create_folder(
+            parent_folder_id=settings.FINANCE_GOOGLE_DRIVE_ROOT_FOLDER_ID,
+            name=folder_name,
+        )
+    except Exception as exc:  # pylint: disable=broad-except
+        logger.exception(
+            "Could not create folder and upload finance files to Google Drive",
+            extra={"exc": exc},
+        )
+        return
+    for path in paths:
+        try:
+            gdrive_api.create_file(parent_folder_id, path.name, path)
+        except Exception as exc:  # pylint: disable=broad-except
+            logger.exception(
+                "Could not upload finance file to Google Drive",
+                extra={
+                    "path": str(path),
+                    "exc": str(exc),
+                },
+            )
+        else:
+            logger.info("Finance file has been uploaded to Google Drive", extra={"path": str(path)})
 
 
 def _write_csv(
@@ -1288,7 +1339,10 @@ def generate_invoices():  # type: ignore [no-untyped-def]
                     "exc": str(exc),
                 },
             )
-    generate_invoice_file(datetime.date.today())
+    path = generate_invoice_file(datetime.date.today())
+    batch_id = models.CashflowBatch.query.order_by(models.CashflowBatch.cutoff.desc()).first().id
+    drive_folder_name = _get_drive_folder_name(batch_id)
+    _upload_files_to_google_drive(drive_folder_name, [path])
 
 
 def generate_invoice_file(invoice_date: datetime.date) -> pathlib.Path:

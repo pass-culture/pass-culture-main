@@ -808,7 +808,8 @@ class GenerateCashflowsTest:
 
 
 @clean_temporary_files
-def test_generate_payment_files():
+@mock.patch("pcapi.connectors.googledrive.TestingBackend.create_file")
+def test_generate_payment_files(mocked_gdrive_create_file):
     # The contents of generated files is unit-tested in other test
     # functions below.
     factories.PricingFactory(status=models.PricingStatus.VALIDATED)
@@ -822,6 +823,12 @@ def test_generate_payment_files():
     assert len(cashflow.logs) == 1
     assert cashflow.logs[0].statusBefore == models.CashflowStatus.PENDING
     assert cashflow.logs[0].statusAfter == models.CashflowStatus.UNDER_REVIEW
+    gdrive_file_names = {call.args[1] for call in mocked_gdrive_create_file.call_args_list}
+    assert gdrive_file_names == {
+        "business_units.csv",
+        "payment_details.csv.zip",
+        "soldes_des_utilisateurs.csv.zip",
+    }
 
 
 @clean_temporary_files
