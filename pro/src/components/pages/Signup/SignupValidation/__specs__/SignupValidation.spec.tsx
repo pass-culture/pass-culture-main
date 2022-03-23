@@ -8,19 +8,26 @@ import reactRouter from 'react-router'
 import { Router } from 'react-router-dom'
 
 import * as routerHelpers from 'components/router/helpers'
+import * as useNotification from 'components/hooks/useNotification'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
 import { campaignTracker } from 'tracking/mediaCampaignsTracking'
 
 import SignupValidation from '../SignupValidation'
-import type { Props } from '../SignupValidation'
 
 jest.mock('repository/pcapi/pcapi')
+jest.mock('components/hooks/useNotification')
 
 describe('src | components | pages | Signup | validation', () => {
-  let history
-  let props
-  let store
+  let history: History
+  let store = configureTestStore()
+  const mockUseNotification = {
+    close: jest.fn(),
+    error: jest.fn(),
+    pending: jest.fn(),
+    information: jest.fn(),
+    success: jest.fn(),
+  }
 
   beforeEach(() => {
     store = configureTestStore({
@@ -33,19 +40,10 @@ describe('src | components | pages | Signup | validation', () => {
     })
     history = createBrowserHistory()
     jest.spyOn(reactRouter, 'useParams').mockReturnValue({ token: 'AAA' })
-    props = {
-      history,
-      location: {
-        pathname: '/validation/AAA',
-      },
-      match: {
-        params: {
-          token: 'AAA',
-        },
-      },
-      notifyError: () => {},
-      notifySuccess: () => {},
-    }
+    store = configureTestStore()
+    jest.spyOn(useNotification, 'default').mockImplementation(() => ({
+      ...mockUseNotification,
+    }))
   })
 
   afterEach(jest.resetAllMocks)
@@ -78,7 +76,7 @@ describe('src | components | pages | Signup | validation', () => {
     render(
       <Provider store={store}>
         <Router history={history}>
-          <SignupValidation {...props} />
+          <SignupValidation />
         </Router>
       </Provider>
     )
@@ -97,7 +95,7 @@ describe('src | components | pages | Signup | validation', () => {
     render(
       <Provider store={store}>
         <Router history={history}>
-          <SignupValidation {...props} />
+          <SignupValidation />
         </Router>
       </Provider>
     )
@@ -108,11 +106,15 @@ describe('src | components | pages | Signup | validation', () => {
   it('should display a success message when token verification is successful', async () => {
     jest.spyOn(pcapi, 'validateUser').mockResolvedValue(true)
     const notifySuccess = jest.fn()
+    jest.spyOn(useNotification, 'default').mockImplementation(() => ({
+      ...mockUseNotification,
+      success: notifySuccess,
+    }))
     // given the user lands on signup validation page
     render(
       <Provider store={store}>
         <Router history={history}>
-          <SignupValidation {...props} notifySuccess={notifySuccess} />
+          <SignupValidation />
         </Router>
       </Provider>
     )
@@ -128,6 +130,10 @@ describe('src | components | pages | Signup | validation', () => {
 
   it('should display an error message when token verification is not successful', async () => {
     const notifyError = jest.fn()
+    jest.spyOn(useNotification, 'default').mockImplementation(() => ({
+      ...mockUseNotification,
+      error: notifyError,
+    }))
     jest.spyOn(pcapi, 'validateUser').mockRejectedValue({
       errors: {
         global: ['error1', 'error2'],
@@ -137,7 +143,7 @@ describe('src | components | pages | Signup | validation', () => {
     render(
       <Provider store={store}>
         <Router history={history}>
-          <SignupValidation {...props} notifyError={notifyError} />
+          <SignupValidation />
         </Router>
       </Provider>
     )
