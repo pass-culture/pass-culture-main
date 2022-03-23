@@ -5,8 +5,6 @@ pygments<2.11.2  # because pygments 2.11.2 breaks pgcli, see https://github.com/
 
 alembic==1.4.3
 algoliasearch==2.4.0
-# astroid is required by pylint and version 2.5.7 and 2.5.8 crashes
-astroid==2.5.6
 APScheduler==3.6.3
 Authlib==0.15.5
 Babel==2.9.1
@@ -44,7 +42,7 @@ phonenumberslite==8.12.23
 Pillow>=8.1.1
 pydantic[email]==1.8.2
 PyJWT[crypto]==2.1.0
-pylint==2.8.3
+pylint
 pylint-strict-informational
 pysaml2
 pytest==6.2.5
