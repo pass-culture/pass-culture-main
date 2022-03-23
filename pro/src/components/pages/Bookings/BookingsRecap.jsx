@@ -33,6 +33,9 @@ const BookingsRecap = ({ location, showNotification }) => {
   const [isTableLoading, setIsTableLoading] = useState(false)
   const [wereBookingsRequested, setWereBookingsRequested] = useState(false)
   const isBookingFiltersActive = useActiveFeature('ENABLE_NEW_BOOKING_FILTERS')
+  const isCsvMultiDownloadFiltersActive = useActiveFeature(
+    'ENABLE_CSV_MULTI_DOWNLOAD_BUTTON'
+  )
   const [hasBooking, setHasBooking] = useState(true)
 
   const loadBookingsRecap = useCallback(
@@ -174,6 +177,7 @@ const BookingsRecap = ({ location, showNotification }) => {
         downloadBookingsCSV={downloadBookingsCSV}
         hasResult={bookingsRecap.length > 0}
         isBookingFiltersActive={isBookingFiltersActive}
+        isCsvMultiDownloadFiltersActive={isCsvMultiDownloadFiltersActive}
         isDownloadingCSV={isDownloadingCSV}
         isFiltersDisabled={!hasBooking}
         isTableLoading={isTableLoading}

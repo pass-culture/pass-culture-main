@@ -7,6 +7,8 @@ import FilterByOfferType from 'new_components/FilterByOfferType'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { formatAndOrderVenues } from 'repository/venuesService'
 
+import MultiDownloadButtonsModal from '../../../../new_components/MultiDownloadModal/MultiDownloadButtonsModal'
+
 import FilterByBookingPeriod from './FilterByBookingPeriod'
 import FilterByBookingStatusPeriod from './FilterByBookingStatusPeriod'
 import FilterByEventDate from './FilterByEventDate.jsx'
@@ -16,6 +18,7 @@ const PreFilters = ({
   appliedPreFilters,
   applyPreFilters,
   downloadBookingsCSV,
+  isCsvMultiDownloadFiltersActive,
   hasResult,
   isBookingFiltersActive,
   isFiltersDisabled,
@@ -28,7 +31,14 @@ const PreFilters = ({
   })
   const [venues, setVenues] = useState([])
   const [isLocalLoading, setIsLocalLoading] = useState(false)
-
+  const buttonsData = [
+    {
+      label: 'Microsoft Excel (XCLX)',
+    },
+    {
+      label: 'Fichier CSV (.CSV)',
+    },
+  ]
   useEffect(() => {
     async function fetchVenues() {
       setIsLocalLoading(true)
@@ -130,14 +140,25 @@ const PreFilters = ({
         <div className="button-group">
           <span className="button-group-separator" />
           <div className="button-group-buttons">
-            <button
-              className="primary-button"
-              disabled={isDownloadingCSV || isLocalLoading || isFiltersDisabled}
-              onClick={() => downloadBookingsCSV(downloadBookingsFilters)}
-              type="button"
-            >
-              Télécharger
-            </button>
+            {isCsvMultiDownloadFiltersActive ? (
+              <MultiDownloadButtonsModal
+                buttonsData={buttonsData}
+                isDownloadingCSV={isDownloadingCSV}
+                isFiltersDisabled={isFiltersDisabled}
+                isLocalLoading={isLocalLoading}
+              />
+            ) : (
+              <button
+                className="primary-button"
+                disabled={
+                  isDownloadingCSV || isLocalLoading || isFiltersDisabled
+                }
+                onClick={() => downloadBookingsCSV(downloadBookingsFilters)}
+                type="button"
+              >
+                Télécharger
+              </button>
+            )}
             <button
               className="secondary-button"
               disabled={isTableLoading || isLocalLoading || isFiltersDisabled}
