@@ -5,7 +5,7 @@ import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
 
 import * as pcapi from 'repository/pcapi/pcapi'
-import configureStore from 'store'
+import { configureTestStore } from 'store/testUtils'
 import { campaignTracker } from 'tracking/mediaCampaignsTracking'
 
 import Signup from '../Signup'
@@ -17,14 +17,14 @@ jest.mock('repository/pcapi/pcapi', () => ({
 describe('src | components | pages | Signup', () => {
   let store
   beforeEach(() => {
-    store = configureStore({
+    store = configureTestStore({
       data: {
         users: null,
       },
       features: {
         list: [{ isActive: true, nameKey: 'ENABLE_PRO_ACCOUNT_CREATION' }],
       },
-    }).store
+    })
     pcapi.loadFeatures.mockResolvedValue([])
   })
   afterEach(jest.resetAllMocks)
@@ -82,11 +82,11 @@ describe('src | components | pages | Signup', () => {
         pathname: '/inscription',
       },
     }
-    const store = configureStore({
+    const store = configureTestStore({
       features: {
         list: [{ isActive: false, nameKey: 'ENABLE_PRO_ACCOUNT_CREATION' }],
       },
-    }).store
+    })
 
     // when
     render(

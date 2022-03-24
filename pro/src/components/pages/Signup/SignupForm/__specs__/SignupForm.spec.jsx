@@ -6,7 +6,7 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import { Router } from 'react-router-dom'
 
-import configureStore from 'store'
+import { configureTestStore } from 'store/testUtils'
 
 import SignupForm from '../SignupForm'
 
@@ -23,26 +23,26 @@ describe('src | components | pages | Signup | SignupForm', () => {
       showNotification: jest.fn(),
     }
     history = createBrowserHistory()
-    store = configureStore({
+    store = configureTestStore({
       data: {
         users: null,
       },
       features: {
         list: [{ isActive: true, nameKey: 'ENABLE_PRO_ACCOUNT_CREATION' }],
       },
-    }).store
+    })
   })
 
   it('should redirect to home page if the user is logged in', async () => {
     // when the user is logged in and lands on signup validation page
-    store = configureStore({
+    store = configureTestStore({
       data: {
         users: [{ id: 'CMOI' }],
       },
       features: {
         list: [{ isActive: true, nameKey: 'ENABLE_PRO_ACCOUNT_CREATION' }],
       },
-    }).store
+    })
     render(
       <Provider store={store}>
         <Router history={history}>
