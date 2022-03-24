@@ -39,6 +39,7 @@ export const HTTP_STATUS = {
   NO_CONTENT: 204,
   FORBIDDEN: 403,
   SERVICE_UNAVAILABLE: 503,
+  GATEWAY_TIMEOUT: 504,
   TOO_MANY_REQUESTS: 429,
   GONE: 410,
   NOT_FOUND: 404,
@@ -83,7 +84,6 @@ export async function handleGeneratedApiResponse(
     return {}
   }
   const responseBody = await response.json()
-
   if (!response.ok) {
     throw new ApiError(
       response.status,

@@ -1,4 +1,3 @@
-import createDecorator from 'final-form-calculate'
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import { Field, Form } from 'react-final-form'
@@ -6,19 +5,16 @@ import { Link } from 'react-router-dom'
 
 import FieldErrors from 'components/layout/form/FieldErrors'
 import PasswordField from 'components/layout/form/fields/PasswordField'
-import { SirenField } from 'components/layout/form/fields/SirenField'
+import {
+  SirenField,
+  addressAndDesignationFromSirenDecorator,
+} from 'components/layout/form/fields/SirenField'
 import TextInput from 'components/layout/inputs/TextInput/TextInput'
 import LegalInfos from 'components/layout/LegalInfos/LegalInfos'
 import { redirectLoggedUser } from 'components/router/helpers'
 import { BannerRGS } from 'new_components/Banner'
-import bindAddressAndDesignationFromSiren from 'repository/siren/bindSirenFieldToDesignation'
 
 import OperatingProcedures from './OperationProcedures'
-
-const addressAndDesignationFromSirenDecorator = createDecorator({
-  field: 'siren',
-  updates: bindAddressAndDesignationFromSiren,
-})
 
 const required = value => (value ? undefined : 'Required')
 
@@ -133,6 +129,7 @@ class SignupForm extends PureComponent {
 
   render() {
     const { errors } = this.state
+
     return (
       <section className="sign-up-form-page">
         <div className="content">
@@ -187,10 +184,10 @@ class SignupForm extends PureComponent {
                     validate={required}
                   />
 
-                  <SirenField
-                    label="SIREN de la structure que vous représentez"
-                    value={values.name}
-                  />
+                  <div className="siren-field">
+                    <SirenField label="SIREN de la structure que vous représentez" />
+                    <span className="field-siren-value">{values.name}</span>
+                  </div>
 
                   <label
                     className="sign-up-checkbox"

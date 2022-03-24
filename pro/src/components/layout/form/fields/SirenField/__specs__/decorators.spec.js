@@ -1,27 +1,34 @@
-import bindAddressAndDesignationFromSiren from '../bindSirenFieldToDesignation'
-import getSirenInformation from '../getSirenInformation'
+import { sirenUpdate } from '../decorators'
 
-jest.mock('../getSirenInformation', () => {
-  return jest.fn().mockImplementation(() => ({
-    address: null,
-    city: null,
-    name: null,
-    postalCode: null,
-    siren: '841166096',
-  }))
-})
+const sirenApiUrl = siren =>
+  `https://entreprise.data.gouv.fr/api/sirene/v3/unites_legales/${siren}`
 
-describe('bindAddressAndDesignationFromSiren', () => {
+describe('sirenUpdate', () => {
+  beforeEach(() => {
+    fetch.mockResponse(
+      JSON.stringify({
+        address: null,
+        city: null,
+        name: null,
+        postalCode: null,
+        siren: '841166096',
+      }),
+      {
+        status: 200,
+      }
+    )
+  })
+
   describe('when the SIREN is not complete', () => {
     it('should not load SIREN information', () => {
       // Given
       const siren = '418'
 
       // When
-      bindAddressAndDesignationFromSiren(siren)
+      sirenUpdate(siren)
 
       // Then
-      expect(getSirenInformation).not.toHaveBeenCalled()
+      expect(fetch).not.toHaveBeenCalled()
     })
 
     it('should return empty information', async () => {
@@ -29,7 +36,7 @@ describe('bindAddressAndDesignationFromSiren', () => {
       const siren = '418 71'
 
       // When
-      const result = await bindAddressAndDesignationFromSiren(siren)
+      const result = await sirenUpdate(siren)
 
       // Then
       expect(result).toStrictEqual({
@@ -48,10 +55,10 @@ describe('bindAddressAndDesignationFromSiren', () => {
       const siren = '418166096'
 
       // When
-      bindAddressAndDesignationFromSiren(siren)
+      sirenUpdate(siren)
 
       // Then
-      expect(getSirenInformation).toHaveBeenCalledWith(siren)
+      expect(fetch).toHaveBeenCalledWith(sirenApiUrl(siren))
     })
 
     it('should format the SIREN to the API standards', () => {
@@ -59,10 +66,10 @@ describe('bindAddressAndDesignationFromSiren', () => {
       const siren = '418 166 096'
 
       // When
-      bindAddressAndDesignationFromSiren(siren)
+      sirenUpdate(siren)
 
       // Then
-      expect(getSirenInformation).toHaveBeenCalledWith('418166096')
+      expect(fetch).toHaveBeenCalledWith(sirenApiUrl('418166096'))
     })
   })
 
@@ -71,10 +78,10 @@ describe('bindAddressAndDesignationFromSiren', () => {
     const siren = '841 166 09616'
 
     // When
-    bindAddressAndDesignationFromSiren(siren)
+    sirenUpdate(siren)
 
     // Then
-    expect(getSirenInformation).toHaveBeenCalledWith('841166096')
+    expect(fetch).toHaveBeenCalledWith(sirenApiUrl('841166096'))
   })
 
   it('should return the result', async () => {
@@ -82,15 +89,15 @@ describe('bindAddressAndDesignationFromSiren', () => {
     const siren = '841 166 096'
 
     // When
-    const result = await bindAddressAndDesignationFromSiren(siren)
+    const result = await sirenUpdate(siren)
 
     // Then
     expect(result).toStrictEqual({
-      address: null,
-      name: null,
-      siren: '841166096',
-      postalCode: null,
-      city: null,
+      address: '',
+      name: '',
+      siren: siren,
+      postalCode: '',
+      city: '',
     })
   })
 })

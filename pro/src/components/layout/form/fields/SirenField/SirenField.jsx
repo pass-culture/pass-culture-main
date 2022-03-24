@@ -1,54 +1,28 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import { Field } from 'react-final-form'
-import { removeWhitespaces } from 'react-final-form-utils'
 
 import TextInput from 'components/layout/inputs/TextInput/TextInput'
-import { getSirenInformation } from 'repository/siren/getSirenInformation'
-import { composeValidators } from 'utils/react-final-form'
+import { humanizeSiren, unhumanizeSiren } from 'core/Offerers/utils'
 
-import formatSiren from './formatSiren'
+import validate from './validate'
 
-const required = value => {
-  return value ? undefined : 'Ce champ est obligatoire'
-}
-
-const mustHaveTheProperLength = value => {
-  return value.length < 9 ? 'SIREN trop court' : undefined
-}
-
-const simpleMemoize = fn => {
-  let lastArg
-  let lastResult
-  return arg => {
-    if (arg !== lastArg) {
-      lastArg = arg
-      lastResult = fn(arg)
-    }
-    return lastResult
+const formatSiren = value => {
+  // remove character when when it's not a number
+  // this way we're sure that this field only accept number
+  if (value && isNaN(Number(value))) {
+    return value.slice(0, -1)
   }
+  return humanizeSiren(value)
 }
-
-export const existsInINSEERegistry = simpleMemoize(async value => {
-  value = removeWhitespaces(value)
-  const sirenInformation = await getSirenInformation(value)
-  if (sirenInformation.error === 'SIREN invalide')
-    return "Ce SIREN n'est pas reconnu"
-  if (sirenInformation.error === 'Service indisponible')
-    return 'L’Annuaire public des Entreprises est indisponible. Veuillez réessayer plus tard.'
-  return undefined
-})
 
 const SirenField = ({ label }) => (
   <Field
     format={formatSiren}
     minLength={11}
     name="siren"
-    validate={composeValidators(
-      required,
-      mustHaveTheProperLength,
-      existsInINSEERegistry
-    )}
+    parse={unhumanizeSiren}
+    validate={validate}
   >
     {({ input, meta }) => {
       return (
