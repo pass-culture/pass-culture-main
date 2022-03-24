@@ -58,15 +58,6 @@ export const routesWithoutLayout = [
     },
   },
   {
-    component: LostPasswordContainer,
-    exact: true,
-    path: '/mot-de-passe-perdu',
-    title: 'Mot de passe perdu',
-    meta: {
-      public: true,
-    },
-  },
-  {
     component: ReimbursementsContainer,
     path: '/remboursements',
     title: 'Remboursements',
@@ -228,6 +219,19 @@ const routes = [
     exact: true,
     path: '/offre/:offerId([A-Z0-9]+)/collectif/stocks/edition',
     title: 'Edition d’un stock d’une offre scolaire',
+  },
+  {
+    component: LostPasswordContainer,
+    exact: true,
+    path: '/mot-de-passe-perdu',
+    title: 'Mot de passe perdu',
+    meta: {
+      public: true,
+      layoutConfig: {
+        fullscreen: true,
+        pageName: 'sign-in',
+      }
+    },
   },
 ]
 
