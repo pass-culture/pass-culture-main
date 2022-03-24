@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types'
 import React from 'react'
 import { Field } from 'react-final-form'
 import { composeValidators, removeWhitespaces } from 'react-final-form-utils'
@@ -37,7 +38,7 @@ export const existsInINSEERegistry = simpleMemoize(async value => {
   return undefined
 })
 
-const SirenField = () => (
+const SirenField = ({ label }) => (
   <Field
     format={formatSiren}
     minLength={11}
@@ -52,7 +53,7 @@ const SirenField = () => (
       return (
         <TextInput
           error={meta.modified && meta.error ? meta.error : null}
-          label="SIREN"
+          label={label}
           maxLength="11"
           name="siren"
           onChange={input.onChange}
@@ -64,5 +65,13 @@ const SirenField = () => (
     }}
   </Field>
 )
+
+SirenField.defaultProps = {
+  label: 'SIREN',
+}
+
+SirenField.propTypes = {
+  label: PropTypes.string,
+}
 
 export default SirenField
