@@ -1,1 +1,1 @@
-export * from './getEntrepriseData'
+export { default as getSiretDataAdapter } from './getSiretDataAdapter'
