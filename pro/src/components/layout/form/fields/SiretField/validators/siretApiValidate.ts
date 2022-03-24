@@ -1,4 +1,4 @@
-import { getEntrepriseData } from 'core/Venue'
+import { getSiretDataAdapter } from 'core/Venue'
 
 const siretApiValidate = async (
   siret: string,
@@ -8,7 +8,7 @@ const siretApiValidate = async (
     return comment ? undefined : 'Ce champs est obligatoire'
   }
 
-  const entrepriseData = await getEntrepriseData(siret)
+  const entrepriseData = await getSiretDataAdapter(siret)
   return entrepriseData.isOk ? undefined : entrepriseData.message
 }
 

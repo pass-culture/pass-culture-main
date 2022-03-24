@@ -1,10 +1,11 @@
 import { API_ENTREPRISE_BASE_URL, STATUS_ACTIVE } from './constants'
-import type { IEntrepriseData, IEntrepriseDataFail } from './types'
+import type { IEntrepriseSiretData, IEntrepriseDataFail } from './types'
+
 
 export default {
-  getEntrepriseDataFromSiret: async (
+  getSiretData: async (
     siret: string
-  ): Promise<IEntrepriseData | IEntrepriseDataFail> => {
+  ): Promise<IEntrepriseSiretData | IEntrepriseDataFail> => {
     const response = await fetch(
       `${API_ENTREPRISE_BASE_URL}/etablissements/${siret}`
     )
