@@ -8,7 +8,7 @@ import {
   translateQueryParamsToApiParams,
 } from 'utils/translate'
 
-import { Audience, SearchFilters } from '../types'
+import { Audience, TSearchFilters } from '../types'
 
 interface IUrlSearchFilters {
   nameOrIsbn?: string
@@ -28,7 +28,7 @@ const isAudienceIndividualOrCollective = (
 ): audience is Audience =>
   audience === Audience.INDIVIDUAL || audience === Audience.COLLECTIVE
 
-const useQuerySearchFilters = (): [SearchFilters, number, Audience] => {
+const useQuerySearchFilters = (): [TSearchFilters, number, Audience] => {
   const { search } = useLocation()
 
   const queryParams: IUrlSearchFilters = useMemo(() => parse(search), [search])
@@ -44,7 +44,7 @@ const useQuerySearchFilters = (): [SearchFilters, number, Audience] => {
     return Audience.INDIVIDUAL
   }, [queryParams])
 
-  const urlSearchFilters: SearchFilters = useMemo(() => {
+  const urlSearchFilters: TSearchFilters = useMemo(() => {
     const translatedFilters: Record<string, string> = {}
 
     const fieldsWithTranslatedValues = ['statut', 'creation'] as const

@@ -21,7 +21,7 @@ import {
   DEFAULT_PAGE,
   DEFAULT_SEARCH_FILTERS,
 } from 'core/Offers/constants'
-import { Offer, SearchFilters } from 'core/Offers/types'
+import { Offer, TSearchFilters } from 'core/Offers/types'
 import { configureTestStore } from 'store/testUtils'
 import { offerFactory } from 'utils/apiFactories'
 
@@ -29,7 +29,7 @@ import Offers from '../Offers'
 
 const renderOffers = (
   store: Store,
-  filters: Partial<SearchFilters> & { page?: number } = DEFAULT_SEARCH_FILTERS
+  filters: Partial<TSearchFilters> & { page?: number } = DEFAULT_SEARCH_FILTERS
 ) => {
   const history = createMemoryHistory()
   const route = computeOffersUrl(filters)

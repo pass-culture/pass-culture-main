@@ -1,5 +1,5 @@
 import { api } from 'api/v1/api'
-import { Offer, SearchFilters } from 'core/Offers/types'
+import { Offer, TSearchFilters } from 'core/Offers/types'
 
 import { serializeOffers, serializeApiFilters } from './serializers'
 
@@ -7,7 +7,7 @@ type IPayload = {
   offers: Offer[]
 }
 
-type GetFilteredOffersAdapter = Adapter<SearchFilters, IPayload, IPayload>
+type GetFilteredOffersAdapter = Adapter<TSearchFilters, IPayload, IPayload>
 
 const FAILING_RESPONSE: AdapterFailure<IPayload> = {
   isOk: false,
