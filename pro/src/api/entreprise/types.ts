@@ -1,4 +1,4 @@
-export interface IEntrepriseData {
+export interface IEntrepriseSiretData {
   address: string
   city: string
   latitude: number | null

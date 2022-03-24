@@ -1,6 +1,6 @@
 import createDecorator from 'final-form-calculate'
 
-import { getEntrepriseData } from 'core/Venue/adapters'
+import { getSiretDataAdapter } from 'core/Venue/adapters'
 
 const emptyValues = {
   address: null,
@@ -14,7 +14,7 @@ const emptyValues = {
 const bindGetSiretInformationToSiret = createDecorator({
   field: 'siret',
   updates: async siret => {
-    const response = await getEntrepriseData(siret)
+    const response = await getSiretDataAdapter(siret)
     if (!response.isOk) return emptyValues
     return response.payload.values
   },
