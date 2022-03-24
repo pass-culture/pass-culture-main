@@ -1,4 +1,4 @@
-import { SearchFilters } from './types'
+import { TSearchFilters } from './types'
 
 export enum OFFER_TYPES {
   INDIVIDUAL_OR_DUO = 'INDIVIDUAL_OR_DUO',
@@ -46,7 +46,7 @@ export const NUMBER_OF_OFFERS_PER_PAGE = 10
 export const MAX_TOTAL_PAGES = 50
 export const MAX_OFFERS_TO_DISPLAY = MAX_TOTAL_PAGES * NUMBER_OF_OFFERS_PER_PAGE
 export const DEFAULT_AUDIENCE = 'individual'
-export const DEFAULT_SEARCH_FILTERS: SearchFilters = {
+export const DEFAULT_SEARCH_FILTERS: TSearchFilters = {
   nameOrIsbn: ALL_OFFERS,
   offererId: 'all',
   venueId: ALL_VENUES,

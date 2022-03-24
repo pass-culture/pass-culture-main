@@ -4,7 +4,7 @@ import {
   ListOffersResponseModel,
 } from 'api/v1/gen'
 import { DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
-import { Offer, Stock, Venue, SearchFilters } from 'core/Offers/types'
+import { Offer, Stock, Venue, TSearchFilters } from 'core/Offers/types'
 
 const serializeVenue = (
   venue: ListOffersOfferResponseModel['venue']
@@ -41,8 +41,8 @@ export const serializeOffers = (offers: ListOffersResponseModel): Offer[] =>
     isShowcase: offer.isShowcase,
   }))
 
-export const serializeApiFilters = <K extends keyof SearchFilters>(
-  searchFilters: SearchFilters & { page?: number }
+export const serializeApiFilters = <K extends keyof TSearchFilters>(
+  searchFilters: TSearchFilters & { page?: number }
 ): ListOffersQueryModel => {
   const keys = Object.keys(DEFAULT_SEARCH_FILTERS) as K[]
 
