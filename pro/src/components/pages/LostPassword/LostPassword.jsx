@@ -11,6 +11,7 @@ import Hero from 'ui-kit/Hero'
 import { initReCaptchaScript } from '../../../utils/recaptcha'
 
 import ChangePasswordForm from './ChangePasswordForm'
+import ChangePasswordRequestForm from './ChangePasswordRequestForm'
 
 /**
  * @debt standard "Annaëlle: Composant de classe à migrer en fonctionnel"
@@ -151,36 +152,14 @@ class LostPassword extends PureComponent {
               />
             )}
             {!token && !envoye && !change && (
-              <section className="hero password-reset-request">
-                <div className="hero-body">
-                  <h1>Mot de passe égaré ?</h1>
-                  <h2>
-                    Indiquez ci-dessous l’adresse e-mail avec laquelle vous avez
-                    créé votre compte.
-                  </h2>
-
-                  <form noValidate onSubmit={this.submitResetPasswordRequest}>
-                    <TextInput
-                      label="Adresse e-mail"
-                      name="email"
-                      onChange={this.handleInputEmailChange}
-                      placeholder="nom@exemple.fr"
-                      required
-                      subLabel="obligatoire"
-                      type="email"
-                      value={emailValue}
-                    />
-
-                    <button
-                      className="primary-button"
-                      disabled={this.isResetPasswordRequestSubmitDisabled()}
-                      type="submit"
-                    >
-                      Envoyer
-                    </button>
-                  </form>
-                </div>
-              </section>
+              <ChangePasswordRequestForm
+                emailValue={emailValue}
+                isChangePasswordRequestSubmitDisabled={
+                  this.isResetPasswordRequestSubmitDisabled
+                }
+                onChange={this.handleInputEmailChange}
+                onSubmit={this.submitResetPasswordRequest}
+              />
             )}
           </div>
         </div>
