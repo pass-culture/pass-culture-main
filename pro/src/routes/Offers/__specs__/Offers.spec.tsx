@@ -21,7 +21,7 @@ import {
   DEFAULT_PAGE,
   DEFAULT_SEARCH_FILTERS,
 } from 'core/Offers/constants'
-import { Offer, TSearchFilters } from 'core/Offers/types'
+import { Audience, Offer, TSearchFilters } from 'core/Offers/types'
 import { configureTestStore } from 'store/testUtils'
 import { offerFactory } from 'utils/apiFactories'
 
@@ -29,7 +29,10 @@ import Offers from '../Offers'
 
 const renderOffers = (
   store: Store,
-  filters: Partial<TSearchFilters> & { page?: number } = DEFAULT_SEARCH_FILTERS
+  filters: Partial<TSearchFilters> & {
+    page?: number
+    audience?: Audience
+  } = DEFAULT_SEARCH_FILTERS
 ) => {
   const history = createMemoryHistory()
   const route = computeOffersUrl(filters)
@@ -78,6 +81,7 @@ jest.mock('repository/venuesService', () => ({
 jest.mock('api/v1/api', () => ({
   api: {
     getOffersListOffers: jest.fn(),
+    getCollectiveListCollectiveOffers: jest.fn(),
     getOfferersGetOfferer: jest.fn(),
     getOffersGetCategories: jest
       .fn()
@@ -90,6 +94,11 @@ jest.mock('utils/date', () => ({
   getToday: jest
     .fn()
     .mockImplementation(() => new Date('2020-12-15T12:00:00Z')),
+}))
+
+jest.mock('components/hooks/useActiveFeature', () => ({
+  __esModule: true,
+  default: jest.fn().mockReturnValue(true),
 }))
 
 describe('route Offers', () => {
@@ -733,6 +742,65 @@ describe('route Offers', () => {
       const urlSearchParams = parse(history.location.search.substring(1))
       // Then
       expect(urlSearchParams).toMatchObject({})
+    })
+
+    it('should call collective adapter when audience query param value is collective', async () => {
+      // Given
+      ;(api.getCollectiveListCollectiveOffers as jest.Mock).mockResolvedValue(
+        offersRecap
+      )
+      const filters = {
+        audience: Audience.COLLECTIVE,
+      }
+      renderOffers(store, filters)
+      await screen.findByText('Lancer la recherche')
+
+      // Then
+      expect(api.getCollectiveListCollectiveOffers).toHaveBeenLastCalledWith(
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined
+      )
+    })
+
+    it('should update query param with selected audience when user clicks on toggle', async () => {
+      // Given
+      ;(api.getCollectiveListCollectiveOffers as jest.Mock).mockResolvedValue(
+        offersRecap
+      )
+      const { history } = renderOffers(store)
+      await screen.findByText('Lancer la recherche')
+      const collectiveAudienceToggle = screen.getByLabelText(
+        'Offres collectives',
+        { selector: 'input' }
+      )
+
+      // When
+      fireEvent.click(collectiveAudienceToggle)
+
+      // Then
+      await waitFor(() => {
+        const urlSearchParams = parse(history.location.search.substring(1))
+        expect(urlSearchParams).toMatchObject({
+          audience: Audience.COLLECTIVE,
+        })
+      })
+
+      expect(api.getCollectiveListCollectiveOffers).toHaveBeenLastCalledWith(
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined
+      )
     })
   })
 
