@@ -11,8 +11,10 @@ class VenuesTest:
         venue = offerer_factories.VenueFactory(
             isPermanent=True,
             bannerMeta={
-                "image_credit": "Wikimedia Commons CC By",
                 "author_id": 1,
+                "original_image_url": "https://ou.ps",
+                # only this field should be sent
+                "image_credit": "Wikimedia Commons CC By",
             },
         )
 
@@ -46,7 +48,9 @@ class VenuesTest:
                 "visualDisability": venue.visualDisabilityCompliant,
             },
             "bannerUrl": venue.bannerUrl,
-            "bannerMeta": {"image_credit": venue.bannerMeta["image_credit"]},
+            "bannerMeta": {
+                "image_credit": venue.bannerMeta["image_credit"],
+            },
         }
 
     def test_get_non_permanent_venue(self, client):

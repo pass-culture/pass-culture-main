@@ -9,6 +9,7 @@ from pcapi.utils.image_conversion import IMAGE_RATIO_PORTRAIT_DEFAULT
 from pcapi.utils.image_conversion import _crop_image
 from pcapi.utils.image_conversion import _resize_image
 from pcapi.utils.image_conversion import _transpose_image
+from pcapi.utils.image_conversion import process_original_image
 from pcapi.utils.image_conversion import standardize_image
 
 import tests
@@ -82,3 +83,17 @@ class ImageConversionTest:
 
         result_image = PIL.Image.open(io.BytesIO(standardized_image)).convert("RGB")
         assert (result_image.width / result_image.height) == pytest.approx(IMAGE_RATIO_LANDSCAPE_DEFAULT, 0.01)
+
+    def test_image_shrink_with_same_ratio(self):
+        image_as_bytes = (IMAGES_DIR / "mouette_full_size.jpg").read_bytes()
+        original_image = PIL.Image.open(io.BytesIO(image_as_bytes))
+
+        expected_ratio = original_image.width / original_image.height
+
+        standardized_image = process_original_image(image_as_bytes)
+
+        result_image = PIL.Image.open(io.BytesIO(standardized_image))
+
+        assert result_image.width < original_image.width
+        assert result_image.height < original_image.height
+        assert (result_image.width / result_image.height) == pytest.approx(expected_ratio, 0.01)
