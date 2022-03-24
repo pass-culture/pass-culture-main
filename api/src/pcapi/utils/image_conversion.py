@@ -33,7 +33,7 @@ class Coordinates:
     y: float
 
 
-def standardize_image(image: bytes, ratio: float, crop_params: Optional[CropParams] = None) -> bytes:
+def standardize_image(content: bytes, ratio: float, crop_params: Optional[CropParams] = None) -> bytes:
     """
     Standardization steps are:
         * transpose image
@@ -57,8 +57,32 @@ def standardize_image(image: bytes, ratio: float, crop_params: Optional[CropPara
     better understanding of how the cropping works:
         https://pillow.readthedocs.io/en/stable/handbook/concepts.html#coordinate-system
     """
+
+    preprocessed_image = _pre_process_image(content)
+
     crop_params = crop_params or DO_NOT_CROP
-    raw_image = PIL.Image.open(io.BytesIO(image))
+    x_crop_percent, y_crop_percent, height_crop_percent = crop_params
+    cropped_image = _crop_image(x_crop_percent, y_crop_percent, height_crop_percent, preprocessed_image, ratio)
+    resized_image = _resize_image(cropped_image, ratio)
+
+    return _post_process_image(resized_image)
+
+
+def process_original_image(content: bytes) -> PIL.Image:
+    """
+    Process steps are:
+        * transpose image
+        * convert to RGB mode
+        * shrink image if necessary (keep the original ratio)
+        * convert to jpeg using predefined values
+    """
+    image = _pre_process_image(content)
+    image = _shrink_image(image)
+    return _post_process_image(image)
+
+
+def _pre_process_image(content: bytes) -> PIL.Image:
+    raw_image = PIL.Image.open(io.BytesIO(content))
 
     # Remove exif orientation so that it doesnt rotate after upload
     transposed_image = _transpose_image(raw_image)
@@ -67,16 +91,15 @@ def standardize_image(image: bytes, ratio: float, crop_params: Optional[CropPara
         background = PIL.Image.new("RGB", transposed_image.size, (255, 255, 255))
         background.paste(transposed_image, mask=transposed_image.split()[3])
         transposed_image = background
-    transposed_image = transposed_image.convert("RGB")
 
-    x_crop_percent, y_crop_percent, height_crop_percent = crop_params
-    cropped_image = _crop_image(x_crop_percent, y_crop_percent, height_crop_percent, transposed_image, ratio)
-    resized_image = _resize_image(cropped_image, ratio)
-    standard_image = _convert_to_jpeg(resized_image)
-    return standard_image
+    return transposed_image.convert("RGB")
 
 
-def _transpose_image(raw_image):
+def _post_process_image(image: PIL.Image) -> bytes:
+    return _convert_to_jpeg(image)
+
+
+def _transpose_image(raw_image: PIL.Image) -> PIL.Image:
     return ImageOps.exif_transpose(raw_image)
 
 
@@ -111,14 +134,27 @@ def _crop_image(
 
 
 def _resize_image(image: Image, ratio: float) -> Image:
-    if image.size[0] <= MAX_THUMB_WIDTH:
+    """
+    Resize image, adapt ratio if image is too wide
+    """
+    if image.width <= MAX_THUMB_WIDTH:
         return image
 
     height_to_width_ratio = 1 / ratio
     new_height = int(MAX_THUMB_WIDTH * height_to_width_ratio)
-    resized_image = image.resize([MAX_THUMB_WIDTH, new_height])
+    return image.resize([MAX_THUMB_WIDTH, new_height])
 
-    return resized_image
+
+def _shrink_image(image: Image) -> Image:
+    """
+    Resize image, keep its original ratio
+    """
+    if image.width <= MAX_THUMB_WIDTH:
+        return image
+
+    reduce_factor = MAX_THUMB_WIDTH / image.width
+    height = int(image.height * reduce_factor)
+    return image.resize([MAX_THUMB_WIDTH, height])
 
 
 def _convert_to_jpeg(image: Image) -> bytes:

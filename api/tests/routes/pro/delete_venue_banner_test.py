@@ -15,16 +15,22 @@ class VenueBannerTest:
         user_offerer = offers_factories.UserOffererFactory()
         venue = offers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
 
-        timestamp = "1602720000"
+        timestamp = 1602720000
         expected_thumb_base_path = f"{venue.thumb_path_component}/{humanize(venue.id)}_{timestamp}"
         venue.bannerUrl = f"{settings.OBJECT_STORAGE_URL}/{expected_thumb_base_path}"
+
+        expected_original_thumb_base_path = f"{venue.thumb_path_component}/{humanize(venue.id)}_{timestamp + 1}"
+        venue.bannerMeta = {"original_image_url": f"{settings.OBJECT_STORAGE_URL}/{expected_original_thumb_base_path}"}
 
         client = client.with_session_auth(email=user_offerer.user.email)
 
         response = client.delete(f"/venues/{humanize(venue.id)}/banner")
         assert response.status_code == 204
 
-        mock_delete_public_object.assert_called_once_with("thumbs", expected_thumb_base_path)
+        assert mock_delete_public_object.call_args_list == [
+            (("thumbs", expected_thumb_base_path),),
+            (("thumbs", expected_original_thumb_base_path),),
+        ]
 
         mock_search_async_index_venue_ids.assert_called_once_with([venue.id])
 
@@ -36,6 +42,7 @@ class VenueBannerTest:
 
         expected_thumb_base_path = f"{venue.thumb_path_component}/{humanize(venue.id)}"
         venue.bannerUrl = f"{settings.OBJECT_STORAGE_URL}/{expected_thumb_base_path}"
+        venue.bannerMeta = {}
 
         client = client.with_session_auth(email=user_offerer.user.email)
 

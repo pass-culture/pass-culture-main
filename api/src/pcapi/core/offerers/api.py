@@ -305,6 +305,28 @@ def validate_offerer(token: str) -> None:
         )
 
 
+def get_timestamp_from_url(image_url: str) -> str:
+    return int(image_url.split("_")[-1])
+
+
+def rm_previous_venue_thumbs(venue: Venue) -> None:
+    if not venue.bannerUrl:
+        return
+
+    # handle old banner urls that did not have a timestamp
+    timestamp = get_timestamp_from_url(venue.bannerUrl) if "_" in venue.bannerUrl else 0
+    storage.remove_thumb(venue, image_index=timestamp)
+
+    # some older venues might have a banner but not the original file
+    # note: if bannerUrl is not None, bannerMeta should not be either.
+    if original_image_url := venue.bannerMeta.get("original_image_url"):
+        original_image_timestamp = get_timestamp_from_url(original_image_url)
+        storage.remove_thumb(venue, image_index=original_image_timestamp)
+
+    venue.bannerUrl = None
+    venue.bannerMeta = None
+
+
 def save_venue_banner(
     user: User,
     venue: Venue,
@@ -313,12 +335,16 @@ def save_venue_banner(
     crop_params: Optional[CropParams] = None,
 ) -> None:
     """
-    Use a timestamp as index in order to have a unique URL for each
-    upload
+    Save the new venue's new banner: crop it and resize it if asked
+    or needed, and save the original image too (shrinked if too big,
+    but with the same ratio).
+
+    The previous banner (if any) is removed.
+
+    Use a timestamps as indexes in order to have a unique URL for each
+    upload.
     """
-    if venue.bannerUrl:
-        index = int(venue.bannerUrl.split("_")[-1]) if "_" in venue.bannerUrl else 0
-        storage.remove_thumb(venue, index)
+    rm_previous_venue_thumbs(venue)
 
     banner_timestamp = int(datetime.now().timestamp())
     storage.create_thumb(
@@ -329,8 +355,17 @@ def save_venue_banner(
         ratio=IMAGE_RATIO_LANDSCAPE_DEFAULT,
     )
 
+    original_image_timestamp = banner_timestamp + 1
+    storage.create_thumb(
+        model_with_thumb=venue, image_as_bytes=content, image_index=original_image_timestamp, keep_ratio=True
+    )
+
     venue.bannerUrl = f"{venue.thumbUrl}_{banner_timestamp}"
-    venue.bannerMeta = {"image_credit": image_credit, "author_id": user.id}
+    venue.bannerMeta = {
+        "image_credit": image_credit,
+        "author_id": user.id,
+        "original_image_url": f"{venue.thumbUrl}_{original_image_timestamp}",
+    }
 
     repository.save(venue)
 
@@ -338,15 +373,8 @@ def save_venue_banner(
 
 
 def delete_venue_banner(venue: Venue) -> None:
-    if venue.bannerUrl:
-        timestamp = int(venue.bannerUrl.split("_")[-1]) if "_" in venue.bannerUrl else 0
-        storage.remove_thumb(venue, image_index=timestamp)
-
-    venue.bannerUrl = None
-    venue.bannerMeta = None
-
+    rm_previous_venue_thumbs(venue)
     repository.save(venue)
-
     search.async_index_venue_ids([venue.id])
 
 
