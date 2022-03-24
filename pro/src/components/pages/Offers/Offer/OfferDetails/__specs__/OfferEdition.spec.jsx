@@ -869,7 +869,7 @@ describe('offerDetails - Edition', () => {
         expect(providerBanner).toBeInTheDocument()
         expect(
           screen.getByRole('img', {
-            name: `Icône de ${providerInformation.name}`,
+            name: `${providerInformation.name}`,
           })
         ).toHaveAttribute(
           'src',

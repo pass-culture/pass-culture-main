@@ -9,7 +9,7 @@ const SynchronizedProviderInformation = ({ providerName }) => {
 
   return (
     <div className="provider-information">
-      <Icon alt={`Icône de ${providerInfo.name}`} svg={providerInfo.icon} />
+      <Icon alt={providerInfo.name} svg={providerInfo.icon} />
       {providerInfo.synchronizedOfferMessage}
     </div>
   )

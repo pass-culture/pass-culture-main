@@ -12,7 +12,7 @@ const PriceErrorHTMLNotification = () => {
         'Le prix d’une offre ne peut excéder 300 euros. Pour plus d’infos, merci de consulter nos '
       }
       <a href={CGU_URL} rel="noreferrer" target="_blank">
-        <Icon alt="" svg="ico-external-site" />
+        <Icon alt="lien externe, nouvel onglet" svg="ico-external-site" />
         Conditions Générales d’Utilisation
       </a>
     </p>

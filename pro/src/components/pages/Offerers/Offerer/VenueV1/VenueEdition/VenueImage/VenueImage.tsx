@@ -8,5 +8,5 @@ export type VenueImageProps = {
 }
 
 export const VenueImage: FunctionComponent<VenueImageProps> = ({ url }) => (
-  <img alt="Lieu" className={style['venue-image']} src={url} />
+  <img alt="" className={style['venue-image']} src={url} />
 )
