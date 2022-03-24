@@ -70,7 +70,10 @@ const StocksProviderForm = ({
               rel="noopener noreferrer"
               target="_blank"
             >
-              <Icon alt="" svg="ico-external-site-red" />
+              <Icon
+                alt="lien externe, nouvel onglet"
+                svg="ico-external-site-red"
+              />
               FAQ
             </a>
           </p>

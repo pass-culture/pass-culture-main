@@ -22,7 +22,7 @@ const BankInformation = ({ offerer, hasBusinessUnitError }) => (
           rel="noopener noreferrer"
           target="_blank"
         >
-          <Icon alt="" svg="ico-external-site" />
+          <Icon alt="lien externe, nouvel onglet" svg="ico-external-site" />
           Modifier
         </a>
       )}

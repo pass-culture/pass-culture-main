@@ -36,6 +36,7 @@ const ButtonEditImage = ({
       {venueImage ? (
         <Button onClick={showModal} variant={ButtonVariant.TERNARY}>
           <Icon
+            alt="Modifier l'image du lieu"
             className={styles['image-venue-uploader-section-icon']}
             svg="ico-pen-black"
           />
