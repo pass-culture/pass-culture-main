@@ -258,10 +258,16 @@ class VenueBannerTest:
             response = client.post(url, files=file)
             assert response.status_code == 201
 
-            assert response.json["bannerUrl"] == str(
-                pathlib.Path(tmpdir.dirname) / "thumbs" / "venues" / f"{humanize(venue.id)}_1602720000"
-            )
-            assert response.json["bannerMeta"] == {"image_credit": "none"}
+            url_prefix = pathlib.Path(tmpdir.dirname) / "thumbs" / "venues"
+
+            banner_url_timestamp = 1602720000
+            assert response.json["bannerUrl"] == str(url_prefix / f"{humanize(venue.id)}_{banner_url_timestamp}")
+
+            original_banner_url_timestamp = 1602720001
+            assert response.json["bannerMeta"] == {
+                "image_credit": "none",
+                "original_image_url": str(url_prefix / f"{humanize(venue.id)}_{original_banner_url_timestamp}"),
+            }
 
     def test_upload_image_missing(self, client):
         user_offerer = offers_factories.UserOffererFactory()

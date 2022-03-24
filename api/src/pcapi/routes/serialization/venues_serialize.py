@@ -125,6 +125,7 @@ class GetVenueManagingOffererResponseModel(BaseModel):
 
 class BannerMetaModel(TypedDict, total=False):
     image_credit: Optional[base.VenueImageCredit]
+    original_image_url: Optional[str]
 
 
 class GetVenueResponseModel(base.BaseVenueResponse):

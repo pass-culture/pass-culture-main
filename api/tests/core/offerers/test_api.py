@@ -565,11 +565,13 @@ def test_grant_user_offerer_access():
 class VenueBannerTest:
     IMAGES_DIR = pathlib.Path(tests.__path__[0]) / "files"
 
+    @freeze_time("2020-10-15 00:00:00")
     @patch("pcapi.core.search.async_index_venue_ids")
     def test_save_venue_banner(self, mock_search_async_index_venue_ids, tmpdir):
         user = users_factories.UserFactory()
         venue = offerers_factories.VenueFactory()
         image_content = (VenueBannerTest.IMAGES_DIR / "mouette_full_size.jpg").read_bytes()
+        directory = pathlib.Path(tmpdir.dirname) / "thumbs" / "venues"
 
         with override_settings(OBJECT_STORAGE_URL=tmpdir.dirname, LOCAL_STORAGE_DIR=pathlib.Path(tmpdir.dirname)):
             offerers_api.save_venue_banner(user, venue, image_content, image_credit="none")
@@ -579,7 +581,11 @@ class VenueBannerTest:
                 # test that image size has been reduced
                 assert len(f.read()) < len(image_content)
 
-            assert updated_venue.bannerMeta == {"author_id": user.id, "image_credit": "none"}
+            assert updated_venue.bannerMeta == {
+                "author_id": user.id,
+                "image_credit": "none",
+                "original_image_url": str(directory / f"{humanize(venue.id)}_1602720001"),
+            }
 
             mock_search_async_index_venue_ids.assert_called_once_with([venue.id])
 
@@ -595,12 +601,18 @@ class VenueBannerTest:
             with freeze_time("2020-10-15 00:00:00"):
                 offerers_api.save_venue_banner(user, venue, first_image_content, image_credit="first_image")
 
-            with freeze_time("2020-10-15 00:00:01"):
+            with freeze_time("2020-10-15 00:00:05"):
                 offerers_api.save_venue_banner(user, venue, second_image_content, image_credit="second_image")
 
             files = set(os.listdir(directory))
+
+            # old banner and its original image
             assert f"{humanize(venue.id)}_1602720000" not in files
-            assert f"{humanize(venue.id)}_1602720001" in files
+            assert f"{humanize(venue.id)}_1602720001" not in files
+
+            # new banner and its original image
+            assert f"{humanize(venue.id)}_1602720005" in files
+            assert f"{humanize(venue.id)}_1602720006" in files
 
     @patch("pcapi.core.search.async_index_venue_ids")
     def test_replace_venue_legacy_banner(self, mock_search_async_index_venue_ids, tmpdir):
