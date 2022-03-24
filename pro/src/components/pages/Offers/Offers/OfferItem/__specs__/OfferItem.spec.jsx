@@ -70,10 +70,9 @@ describe('src | components | pages | Offers | OfferItem', () => {
         renderOfferItem(props, store)
 
         // then
-        expect(screen.getByAltText("Miniature d'offre")).toHaveAttribute(
-          'src',
-          eventOffer.thumbUrl
-        )
+        expect(
+          screen.getAllByRole('img', { name: /éditer l'offre/ })[0]
+        ).toHaveAttribute('src', eventOffer.thumbUrl)
       })
 
       it('should render an image with an empty url when offer does not have a thumb url', () => {
@@ -84,7 +83,9 @@ describe('src | components | pages | Offers | OfferItem', () => {
         renderOfferItem(props, store)
 
         // then
-        expect(screen.getByText("Miniature d'offre")).toBeInTheDocument()
+        expect(
+          screen.getAllByRole('img', { name: /éditer l'offre/ })[0]
+        ).toHaveAttribute('src')
       })
     })
 
@@ -141,10 +142,6 @@ describe('src | components | pages | Offers | OfferItem', () => {
         expect(offerTitle).toHaveAttribute(
           'href',
           `/offre/${props.offer.id}/individuel/edition`
-        )
-        expect(offerTitle).toHaveAttribute(
-          'title',
-          "Afficher les détails de l'offre"
         )
       })
     })
