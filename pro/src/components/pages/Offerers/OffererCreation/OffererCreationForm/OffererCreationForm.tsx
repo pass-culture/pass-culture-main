@@ -3,7 +3,7 @@ import type { FormRenderProps } from 'react-final-form'
 import { FormSpy } from 'react-final-form'
 import { Link } from 'react-router-dom'
 
-import SirenField from 'components/layout/form/fields/SirenField/SirenField'
+import { SirenField } from 'components/layout/form/fields/SirenField'
 
 interface IOffererCreationForm extends FormRenderProps {
   backTo: string
