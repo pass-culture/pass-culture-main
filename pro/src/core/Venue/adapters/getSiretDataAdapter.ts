@@ -2,19 +2,17 @@ import createCachedSelector from 're-reselect'
 import type { KeySelector } from 're-reselect'
 
 import { apiEntreprise } from 'api/api'
-import type { IEntrepriseData } from 'api/entreprise/types'
+import type { IEntrepriseSiretData } from 'api/entreprise/types'
 import { unhumanizeSiret } from 'core/Venue/utils'
 import { validateSiret } from 'core/Venue/validate'
 
 type Params = string
 type IPayload = {
-  values?: IEntrepriseData
+  values?: IEntrepriseSiretData
 }
-type GetEntrepriseDataFromSiretAdapter = Adapter<Params, IPayload, IPayload>
+type GetSiretDataAdapter = Adapter<Params, IPayload, IPayload>
 
-const getEntrepriseDataAdapter: GetEntrepriseDataFromSiretAdapter = async (
-  humanSiret: string
-) => {
+const getSiretDataAdapter: GetSiretDataAdapter = async (humanSiret: string) => {
   const siret = unhumanizeSiret(humanSiret || '')
   if (humanSiret === '') {
     return {
@@ -42,9 +40,9 @@ const getEntrepriseDataAdapter: GetEntrepriseDataFromSiretAdapter = async (
     }
   }
   try {
-    const values = (await apiEntreprise.getEntrepriseDataFromSiret(
+    const values = (await apiEntreprise.getSiretData(
       siret
-    )) as IEntrepriseData
+    )) as IEntrepriseSiretData
     return {
       isOk: true,
       message: `Siret ${humanSiret} :`,
@@ -62,7 +60,9 @@ const getEntrepriseDataAdapter: GetEntrepriseDataFromSiretAdapter = async (
 }
 
 const mapArgsToCacheKey: KeySelector<string> = (siret: string) => siret || ''
-export const getEntrepriseData = createCachedSelector(
+const getSiretData = createCachedSelector(
   (siret: string): string => siret,
-  getEntrepriseDataAdapter
+  getSiretDataAdapter
 )(mapArgsToCacheKey)
+
+export default getSiretData
