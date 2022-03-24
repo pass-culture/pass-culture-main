@@ -9,7 +9,7 @@ import Spinner from 'components/layout/Spinner'
 import { computeOffersUrl } from 'components/pages/Offers/utils/computeOffersUrl'
 import { DEFAULT_PAGE, DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
 import { useQuerySearchFilters } from 'core/Offers/hooks'
-import { Audience, Offer, Offerer, SearchFilters } from 'core/Offers/types'
+import { Audience, Offer, Offerer, TSearchFilters } from 'core/Offers/types'
 import OffersScreen from 'screens/Offers'
 import { savePageNumber, saveSearchFilters } from 'store/offers/actions'
 
@@ -30,10 +30,10 @@ const Offers = (): JSX.Element => {
   const [offers, setOffers] = useState<Offer[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [initialSearchFilters, setInitialSearchFilters] =
-    useState<SearchFilters | null>(null)
+    useState<TSearchFilters | null>(null)
 
   const loadAndUpdateOffers = useCallback(
-    async (filters: SearchFilters) => {
+    async (filters: TSearchFilters) => {
       const apiFilters = {
         ...DEFAULT_SEARCH_FILTERS,
         ...filters,
@@ -55,7 +55,7 @@ const Offers = (): JSX.Element => {
 
   const redirectWithUrlFilters = useCallback(
     (
-      filters: SearchFilters & {
+      filters: TSearchFilters & {
         page?: number
         audience?: Audience
       }

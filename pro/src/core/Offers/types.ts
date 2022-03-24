@@ -1,4 +1,4 @@
-export type SearchFilters = {
+export type TSearchFilters = {
   nameOrIsbn: string
   offererId: string
   venueId: string

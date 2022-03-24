@@ -11,28 +11,28 @@ import {
   MAX_TOTAL_PAGES,
   NUMBER_OF_OFFERS_PER_PAGE,
 } from 'core/Offers'
-import { Audience, Offer, Offerer, SearchFilters } from 'core/Offers/types'
+import { Audience, Offer, Offerer, TSearchFilters } from 'core/Offers/types'
 import { ReactComponent as AddOfferSvg } from 'icons/ico-plus.svg'
 
 import NoOffers from './NoOffers'
 import OfferListFilterTabs from './OfferListFilterTabs'
-import OffersSearchFilters from './SearchFilters'
+import SearchFilters from './SearchFilters'
 
 export interface IOffersProps {
   currentPageNumber: number
   currentUser: { isAdmin: boolean }
   isLoading: boolean
-  loadAndUpdateOffers: (filters: SearchFilters) => Promise<void>
+  loadAndUpdateOffers: (filters: TSearchFilters) => Promise<void>
   offerer: Offerer | null
   offers: Offer[]
   setIsLoading: (isLoading: boolean) => void
   setOfferer: (offerer: Offerer | null) => void
-  urlSearchFilters: SearchFilters
+  urlSearchFilters: TSearchFilters
   separateIndividualAndCollectiveOffers: boolean
-  initialSearchFilters: SearchFilters
+  initialSearchFilters: TSearchFilters
   urlAudience: Audience
   redirectWithUrlFilters: (
-    filters: SearchFilters & {
+    filters: TSearchFilters & {
       page?: number
       audience?: Audience
     }
@@ -55,7 +55,7 @@ const Offers = ({
   redirectWithUrlFilters,
 }: IOffersProps): JSX.Element => {
   const [searchFilters, setSearchFilters] =
-    useState<SearchFilters>(initialSearchFilters)
+    useState<TSearchFilters>(initialSearchFilters)
   const [isRefreshingOffers, setIsRefreshingOffers] = useState(true)
 
   const [areAllOffersSelected, setAreAllOffersSelected] = useState(false)
@@ -72,10 +72,10 @@ const Offers = ({
   const hasOffers = currentPageOffersSubset.length > 0
   const hasSearchFilters = useCallback(
     (
-      searchFilters: SearchFilters,
-      filterNames: (keyof SearchFilters)[] = Object.keys(
+      searchFilters: TSearchFilters,
+      filterNames: (keyof TSearchFilters)[] = Object.keys(
         searchFilters
-      ) as (keyof SearchFilters)[]
+      ) as (keyof TSearchFilters)[]
     ) => {
       return filterNames
         .map(
@@ -93,10 +93,10 @@ const Offers = ({
 
   const hasDifferentFiltersFromLastSearch = useCallback(
     (
-      searchFilters: SearchFilters,
-      filterNames: (keyof SearchFilters)[] = Object.keys(
+      searchFilters: TSearchFilters,
+      filterNames: (keyof TSearchFilters)[] = Object.keys(
         searchFilters
-      ) as (keyof SearchFilters)[]
+      ) as (keyof TSearchFilters)[]
     ) => {
       const lastSearchFilters = {
         ...DEFAULT_SEARCH_FILTERS,
@@ -160,7 +160,7 @@ const Offers = ({
 
   const applyUrlFiltersAndRedirect = useCallback(
     (
-      filters: SearchFilters & {
+      filters: TSearchFilters & {
         page?: number
         audience?: Audience
       },
@@ -249,7 +249,7 @@ const Offers = ({
           Réinitialiser les filtres
         </span>
       )}
-      <OffersSearchFilters
+      <SearchFilters
         applyFilters={applyFilters}
         disableAllFilters={userHasNoOffers}
         offerer={offerer}

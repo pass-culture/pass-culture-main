@@ -14,7 +14,7 @@ import {
   DEFAULT_CREATION_MODE,
   DEFAULT_SEARCH_FILTERS,
 } from 'core/Offers/constants'
-import { Offerer, SearchFilters as SearchFiltersType } from 'core/Offers/types'
+import { Offerer, TSearchFilters } from 'core/Offers/types'
 import {
   fetchAllVenuesByProUser,
   formatAndOrderVenues,
@@ -27,11 +27,11 @@ interface ISearchFiltersProps {
   applyFilters: () => void
   offerer: Offerer | null
   removeOfferer: () => void
-  selectedFilters: SearchFiltersType
+  selectedFilters: TSearchFilters
   setSearchFilters: (
     filters:
-      | SearchFiltersType
-      | ((previousFilters: SearchFiltersType) => SearchFiltersType)
+      | TSearchFilters
+      | ((previousFilters: TSearchFilters) => TSearchFilters)
   ) => void
   disableAllFilters: boolean
 }
@@ -70,7 +70,7 @@ const SearchFilters = ({
   }, [offerer?.id])
 
   const updateSearchFilters = useCallback(
-    (newSearchFilters: Partial<SearchFiltersType>) => {
+    (newSearchFilters: Partial<TSearchFilters>) => {
       setSearchFilters(currentSearchFilters => ({
         ...currentSearchFilters,
         ...newSearchFilters,
