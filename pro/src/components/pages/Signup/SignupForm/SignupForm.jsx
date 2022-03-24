@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom'
 
 import FieldErrors from 'components/layout/form/FieldErrors'
 import PasswordField from 'components/layout/form/fields/PasswordField'
+import { SirenField } from 'components/layout/form/fields/SirenField'
 import TextInput from 'components/layout/inputs/TextInput/TextInput'
 import LegalInfos from 'components/layout/LegalInfos/LegalInfos'
 import { redirectLoggedUser } from 'components/router/helpers'
@@ -13,7 +14,6 @@ import { BannerRGS } from 'new_components/Banner'
 import bindAddressAndDesignationFromSiren from 'repository/siren/bindSirenFieldToDesignation'
 
 import OperatingProcedures from './OperationProcedures'
-import SirenField from './SirenField/SirenField'
 
 const addressAndDesignationFromSirenDecorator = createDecorator({
   field: 'siren',
@@ -187,7 +187,10 @@ class SignupForm extends PureComponent {
                     validate={required}
                   />
 
-                  <SirenField value={values.name} />
+                  <SirenField
+                    label="SIREN de la structure que vous représentez"
+                    value={values.name}
+                  />
 
                   <label
                     className="sign-up-checkbox"
