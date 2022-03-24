@@ -21,7 +21,10 @@ const Logo = ({ className, noLink, signPage, isUserAdmin }) => {
       to={isUserAdmin ? '/structures' : '/accueil'}
       {...extraProps}
     >
-      <img alt="Logo" src={src} />
+      <img
+        alt="Pass Culture pro, l'espace Pass Culture des acteurs culturels"
+        src={src}
+      />
     </NavLink>
   )
 }
