@@ -68,8 +68,8 @@ from pcapi.utils import pdf as pdf_utils
 from . import conf
 from . import exceptions
 from . import models
+from . import repository
 from . import utils
-from . import validation
 
 
 logger = logging.getLogger(__name__)
@@ -153,7 +153,11 @@ def lock_business_unit(business_unit_id: int):
     logger.info("Acquired lock on business unit", extra={"business_unit": business_unit_id})
 
 
-def price_booking(booking: bookings_models.Booking) -> models.Pricing:
+def price_booking(
+    booking: typing.Union[bookings_models.Booking, educational_models.CollectiveBooking]
+) -> typing.Optional[models.Pricing]:
+    is_individual_booking = isinstance(booking, bookings_models.Booking)
+
     business_unit_id = booking.venue.businessUnitId
     if not business_unit_id:
         return None
@@ -165,23 +169,19 @@ def price_booking(booking: bookings_models.Booking) -> models.Pricing:
         # database again so that we can make some final checks before
         # actually pricing the booking.
         booking = (
-            bookings_models.Booking.query.filter_by(id=booking.id)
-            .options(
-                sqla_orm.joinedload(bookings_models.Booking.venue, innerjoin=True).joinedload(
-                    offerers_models.Venue.businessUnit, innerjoin=True
-                ),
-                sqla_orm.joinedload(bookings_models.Booking.stock, innerjoin=True).joinedload(
-                    offers_models.Stock.offer, innerjoin=True
-                ),
-            )
-            .one()
+            repository.get_booking_for_pricing(booking.id)
+            if is_individual_booking
+            else repository.get_collective_booking_for_pricing(booking.id)
         )
 
         # Perhaps the booking has been marked as unused since we
         # fetched it before we acquired the lock.
         # If the status is REIMBURSED, it means the booking is
         # already priced.
-        if booking.status is not bookings_models.BookingStatus.USED:
+        if (
+            booking.status is not bookings_models.BookingStatus.USED
+            and booking.status is not educational_models.CollectiveBookingStatus.USED
+        ):
             return None
 
         business_unit = booking.venue.businessUnit
@@ -201,7 +201,10 @@ def price_booking(booking: bookings_models.Booking) -> models.Pricing:
         if pricing:
             return pricing
 
-        _delete_dependent_pricings(booking, "Deleted pricings priced too early")
+        # we do not need to delete the pricing if booking is collective
+        # because there is no degressive reimbursement rate
+        if is_individual_booking:
+            _delete_dependent_pricings(booking, "Deleted pricings priced too early")
 
         pricing = _price_booking(booking)
         db.session.add(pricing)
@@ -230,7 +233,7 @@ def _get_revenue_period(value_date: datetime.datetime) -> [datetime.datetime, da
     return first_second, last_second
 
 
-def _get_siret_and_current_revenue(booking: bookings_models.Booking) -> typing.Union[str, int]:
+def _get_siret_and_current_revenue(booking: bookings_models.Booking) -> typing.Tuple[str, int]:
     """Return the SIRET to use for the requested booking, and the current
     year revenue for this SIRET, NOT including the requested booking.
     """
@@ -274,7 +277,9 @@ def _get_siret_and_current_revenue(booking: bookings_models.Booking) -> typing.U
     return siret, utils.to_eurocents(current_revenue or 0)
 
 
-def _price_booking(booking: bookings_models.Booking) -> models.Pricing:
+def _price_booking(
+    booking: typing.Union[bookings_models.Booking, educational_models.CollectiveBooking]
+) -> models.Pricing:
     siret, current_revenue = _get_siret_and_current_revenue(booking)
     new_revenue = current_revenue
     # Collective bookings must not be included in revenue.

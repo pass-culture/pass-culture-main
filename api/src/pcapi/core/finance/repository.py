@@ -2,8 +2,10 @@ import datetime
 import typing
 
 import pytz
+import sqlalchemy.orm as sqla_orm
 
 import pcapi.core.bookings.models as bookings_models
+import pcapi.core.educational.models as educational_models
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.models as offers_models
 import pcapi.core.payments.models as payments_models
@@ -118,3 +120,33 @@ def has_active_or_future_custom_reimbursement_rule(offer: offers_models.Offer) -
         payments_models.CustomReimbursementRule.timespan.overlaps(timespan),
     ).exists()
     return db.session.query(query).scalar()
+
+
+def get_booking_for_pricing(booking_id: int) -> bookings_models.Booking:
+    return (
+        bookings_models.Booking.query.filter_by(id=booking_id)
+        .options(
+            sqla_orm.joinedload(bookings_models.Booking.venue, innerjoin=True).joinedload(
+                offerers_models.Venue.businessUnit, innerjoin=True
+            ),
+            sqla_orm.joinedload(bookings_models.Booking.stock, innerjoin=True).joinedload(
+                offers_models.Stock.offer, innerjoin=True
+            ),
+        )
+        .one()
+    )
+
+
+def get_collective_booking_for_pricing(collective_booking_id: int) -> bookings_models.Booking:
+    return (
+        educational_models.CollectiveBooking.query.filter_by(id=collective_booking_id)
+        .options(
+            sqla_orm.joinedload(educational_models.CollectiveBooking.venue, innerjoin=True).joinedload(
+                offerers_models.Venue.businessUnit, innerjoin=True
+            ),
+            sqla_orm.joinedload(educational_models.CollectiveBooking.collectiveStock, innerjoin=True).joinedload(
+                educational_models.CollectiveStock.collectiveOffer, innerjoin=True
+            ),
+        )
+        .one()
+    )
