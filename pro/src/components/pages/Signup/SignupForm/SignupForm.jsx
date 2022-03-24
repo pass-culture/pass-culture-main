@@ -187,7 +187,10 @@ class SignupForm extends PureComponent {
                     validate={required}
                   />
 
-                  <SirenField value={values.name} />
+                  <SirenField
+                    label={'SIREN de la structure que vous représentez'}
+                    value={values.name}
+                  />
 
                   <label
                     className="sign-up-checkbox"
