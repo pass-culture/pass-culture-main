@@ -38,8 +38,9 @@ class SaveVenueBankInformationsTest:
                 bank_informations_repository=BankInformationsSQLRepository(),
             )
 
+        @patch("pcapi.connectors.api_entreprises.check_siret_is_still_active", return_value=False)
         @pytest.mark.usefixtures("db_session")
-        def test_raises_an_error_if_no_venue_found_by_siret(self):
+        def test_raises_an_error_if_no_venue_found_by_siret(self, siret_is_active):
             application_details = ApplicationDetail(
                 siren="999999999",
                 status=BankInformationStatus.ACCEPTED,
@@ -49,11 +50,10 @@ class SaveVenueBankInformationsTest:
                 modification_date=datetime.utcnow(),
                 siret="99999999900000",
             )
+            errors = ApiErrors()
 
-            with pytest.raises(CannotRegisterBankInformation) as error:
-                self.save_venue_bank_informations.get_referent_venue(application_details, None)
-
-            assert error.value.args == ("Venue not found",)
+            self.save_venue_bank_informations.get_referent_venue(application_details, None, errors)
+            assert errors.errors["Venue"] == ["Venue not found", "SIRET is no longer active"]
 
         @pytest.mark.usefixtures("db_session")
         def test_raises_an_error_if_no_venue_found_by_name(self):
@@ -67,16 +67,17 @@ class SaveVenueBankInformationsTest:
                 modification_date=datetime.utcnow(),
                 venue_name="venuedemo",
             )
+            errors = ApiErrors()
 
-            with pytest.raises(CannotRegisterBankInformation) as error:
-                self.save_venue_bank_informations.get_referent_venue(application_details, offerer)
-
-            assert error.value.args == ("Venue name not found",)
+            self.save_venue_bank_informations.get_referent_venue(application_details, offerer, errors)
+            assert errors.errors["Venue"] == ["Venue name not found"]
 
         @pytest.mark.usefixtures("db_session")
         def test_raises_an_error_if_more_than_one_venue_found(self):
             offerer = OffererFactory()
-            offers_factories.VenueFactory.build_batch(2, managingOfferer=offerer, name="venuedemo")
+            offers_factories.VenueFactory.build_batch(
+                2, managingOfferer=offerer, name="venuedemo", siret=None, comment="No siret"
+            )
             application_details = ApplicationDetail(
                 siren="999999999",
                 status=BankInformationStatus.ACCEPTED,
@@ -86,11 +87,10 @@ class SaveVenueBankInformationsTest:
                 modification_date=datetime.utcnow(),
                 venue_name="venuedemo",
             )
+            errors = ApiErrors()
 
-            with pytest.raises(CannotRegisterBankInformation) as error:
-                self.save_venue_bank_informations.get_referent_venue(application_details, offerer)
-
-            assert error.value.args == ("Venue name not found",)
+            self.save_venue_bank_informations.get_referent_venue(application_details, offerer, errors)
+            assert errors.errors["Venue"] == ["Multiple venues found"]
 
     class SaveBankInformationTest:
         @patch("pcapi.connectors.api_entreprises.check_siret_is_still_active")
@@ -293,6 +293,10 @@ class SaveVenueBankInformationsTest:
                 # Given
                 application_id = "8"
                 mock_check_siret_is_still_active.return_value = True
+                offers_factories.VenueFactory(
+                    siret="79387503012345", managingOfferer__siren="123456789", businessUnit=None
+                )
+                bank_information_count = BankInformation.query.count()
                 mock_application_details.return_value = (
                     venue_demarche_simplifiee_application_detail_response_with_siret(
                         siret="79387503012345",
@@ -310,7 +314,7 @@ class SaveVenueBankInformationsTest:
                 # Then
                 bank_information_count = BankInformation.query.count()
                 assert bank_information_count == 0
-                assert error.value.args == ("Offerer not found",)
+                assert error.value.errors == {"Offerer": ["Offerer not found"]}
 
             @pytest.mark.usefixtures("db_session")
             def test_when_no_offerer_is_found_but_status_is_not_closed_should_not_create_bank_information_and_not_raise(
@@ -362,7 +366,7 @@ class SaveVenueBankInformationsTest:
                 # Then
                 bank_information_count = BankInformation.query.count()
                 assert bank_information_count == 0
-                assert error.value.args == ("Venue not found",)
+                assert error.value.errors == {"Venue": ["Venue not found"]}
 
             @pytest.mark.usefixtures("db_session")
             def test_when_no_venue_is_found_but_status_is_not_closed_should_not_create_bank_information_and_not_raise(
@@ -595,7 +599,7 @@ class SaveVenueBankInformationsTest:
                 # Then
                 bank_information_count = BankInformation.query.count()
                 assert bank_information_count == 0
-                assert error.value.args == ("Offerer not found",)
+                assert error.value.errors == {"Offerer": ["Offerer not found"]}
 
             @pytest.mark.usefixtures("db_session")
             def test_when_no_venue_without_siret_is_found_and_state_is_closed_should_raise_and_not_create_bank_information(
@@ -623,7 +627,7 @@ class SaveVenueBankInformationsTest:
                 # Then
                 bank_information_count = BankInformation.query.count()
                 assert bank_information_count == 0
-                assert error.value.args == ("Venue name not found",)
+                assert error.value.errors["Venue"] == ["Venue name not found"]
 
             @pytest.mark.usefixtures("db_session")
             def test_when_no_venue_is_found_but_status_is_not_closed_should_not_raise(
@@ -854,7 +858,9 @@ class SaveVenueBankInformationsTest:
             assert bank_information.iban == "NL36INGB2682297498"
             assert bank_information.status == BankInformationStatus.ACCEPTED
             assert bank_information.applicationId == 79
-            assert error.value.args == ("Received application details state does not allow to change bank information",)
+            assert error.value.errors == {
+                "BankInformation": ["Received application details state does not allow to change bank information"]
+            }
 
         @pytest.mark.usefixtures("db_session")
         def test_when_receive_older_application_should_reject(self, mock_application_details, app):
@@ -885,7 +891,7 @@ class SaveVenueBankInformationsTest:
             assert bank_information.iban == "NL36INGB2682297498"
             assert bank_information.status == BankInformationStatus.ACCEPTED
             assert bank_information.applicationId == 79
-            assert error.value.args == ("Received application details are older than saved one",)
+            assert error.value.errors == {"BankInformation": ["Received application details are older than saved one"]}
 
         @pytest.mark.usefixtures("db_session")
         def test_when_state_is_unknown(self, mock_application_details, app):
@@ -906,4 +912,4 @@ class SaveVenueBankInformationsTest:
             # Then
             bank_information_count = BankInformation.query.count()
             assert bank_information_count == 0
-            assert error.value.args == (f"Unknown Demarches Simplifiées state {unknown_status}",)
+            assert error.value.errors == {"BankInformation": f"Unknown Demarches Simplifiées state {unknown_status}"}

@@ -144,7 +144,7 @@ def _get_status_from_demarches_simplifiees_application_state(state: str) -> Bank
     try:
         dms_state = dms_models.DmsApplicationStates[state]
     except KeyError:
-        raise CannotRegisterBankInformation(f"Unknown Demarches Simplifiées state {state}")
+        raise CannotRegisterBankInformation(errors={"BankInformation": f"Unknown Demarches Simplifiées state {state}"})
     rejected_states = REJECTED_DMS_STATUS
     accepted_states = ACCEPTED_DMS_STATUS
     draft_states = DRAFT_DMS_STATUS

@@ -242,7 +242,7 @@ class GetStatusFromDemarchesSimplifieesApplicationStateTest:
             _get_status_from_demarches_simplifiees_application_state(state)
 
         # Then
-        assert error.value.args == (f"Unknown Demarches Simplifiées state {state}",)
+        assert error.value.errors == {"BankInformation": "Unknown Demarches Simplifiées state wrong"}
 
 
 class ParseRawBicDataTest:

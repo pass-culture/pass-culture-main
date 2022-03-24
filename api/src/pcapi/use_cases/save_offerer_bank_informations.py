@@ -17,12 +17,14 @@ class SaveOffererBankInformations:
     def execute(self, application_id: str):
         application_details = get_offerer_bank_information_application_details_by_application_id(application_id)
 
-        try:
-            offerer = Offerer.query.filter_by(siren=application_details.siren).one_or_none()
-            check_offerer_presence(offerer)
-        except CannotRegisterBankInformation as error:
+        api_errors = CannotRegisterBankInformation()
+
+        offerer = Offerer.query.filter_by(siren=application_details.siren).one_or_none()
+        check_offerer_presence(offerer, api_errors)
+
+        if api_errors.errors:
             if application_details.status == BankInformationStatus.ACCEPTED:
-                raise error
+                raise api_errors
             return None
 
         bank_information_by_application_id = self.bank_informations_repository.get_by_application(
@@ -31,21 +33,25 @@ class SaveOffererBankInformations:
 
         if bank_information_by_application_id:
             check_new_bank_information_older_than_saved_one(
-                bank_information_by_application_id, application_details.modification_date
+                bank_information_by_application_id, application_details.modification_date, api_errors
             )
             new_bank_informations = self.create_new_bank_informations(application_details, offerer.id)
+            if api_errors.errors:
+                raise api_errors
+
             return self.bank_informations_repository.update_by_application_id(new_bank_informations)
 
         bank_information_by_offerer_id = self.bank_informations_repository.find_by_offerer(offerer.id)
 
         if bank_information_by_offerer_id:
             check_new_bank_information_older_than_saved_one(
-                bank_information_by_offerer_id, application_details.modification_date
+                bank_information_by_offerer_id, application_details.modification_date, api_errors
             )
             check_new_bank_information_has_a_more_advanced_status(
-                bank_information_by_offerer_id, application_details.status
+                bank_information_by_offerer_id, application_details.status, api_errors
             )
-
+            if api_errors.errors:
+                raise api_errors
             new_bank_informations = self.create_new_bank_informations(application_details, offerer.id)
             return self.bank_informations_repository.update_by_offerer_id(new_bank_informations)
 
