@@ -114,12 +114,7 @@ class LostPassword extends PureComponent {
     const { change, envoye, token } = this.props
 
     return (
-      <AppLayout
-        layoutConfig={{
-          fullscreen: true,
-          pageName: 'sign-in',
-        }}
-      >
+      <>
         <PageTitle title="Mot de passe perdu" />
         <div className="logo-side">
           <Logo noLink signPage />
@@ -163,7 +158,7 @@ class LostPassword extends PureComponent {
             )}
           </div>
         </div>
-      </AppLayout>
+      </>
     )
   }
 }

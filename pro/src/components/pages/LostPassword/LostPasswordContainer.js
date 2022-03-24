@@ -1,4 +1,5 @@
 import { connect } from 'react-redux'
+import { withRouter } from 'react-router'
 import { compose } from 'redux'
 
 import * as pcapi from 'repository/pcapi/pcapi'
@@ -57,6 +58,7 @@ export const mapDispatchToProps = dispatch => ({
   },
 })
 
-export default compose(connect(mapStateToProps, mapDispatchToProps))(
-  LostPassword
-)
+export default compose(
+  withRouter,
+  connect(mapStateToProps, mapDispatchToProps)
+)(LostPassword)
