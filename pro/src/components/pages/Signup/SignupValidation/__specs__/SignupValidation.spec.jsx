@@ -7,7 +7,7 @@ import { Router } from 'react-router-dom'
 
 import * as routerHelpers from 'components/router/helpers'
 import * as pcapi from 'repository/pcapi/pcapi'
-import configureStore from 'store'
+import { configureTestStore } from 'store/testUtils'
 import { campaignTracker } from 'tracking/mediaCampaignsTracking'
 
 import SignupValidation from '../SignupValidation'
@@ -20,14 +20,14 @@ describe('src | components | pages | Signup | validation', () => {
   let store
 
   beforeEach(() => {
-    store = configureStore({
+    store = configureTestStore({
       data: {
         users: null,
       },
       features: {
         list: [{ isActive: true, nameKey: 'ENABLE_PRO_ACCOUNT_CREATION' }],
       },
-    }).store
+    })
     history = createBrowserHistory()
     props = {
       history,
