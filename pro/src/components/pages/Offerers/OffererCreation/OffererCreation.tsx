@@ -1,15 +1,14 @@
-import createDecorator from 'final-form-calculate'
 import React from 'react'
 import { Form } from 'react-final-form'
 import { NavLink, useHistory } from 'react-router-dom'
 
 import useActiveFeature from 'components/hooks/useActiveFeature'
 import useNotification from 'components/hooks/useNotification'
+import { addressAndDesignationFromSirenDecorator } from 'components/layout/form/fields/SirenField'
 import Icon from 'components/layout/Icon'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Titles from 'components/layout/Titles/Titles'
 import * as pcapi from 'repository/pcapi/pcapi'
-import { bindAddressAndDesignationFromSiren } from 'repository/siren/bindSirenFieldToDesignation'
 
 import OffererCreationForm from './OffererCreationForm/OffererCreationForm'
 import OffererCreationUnavailable from './OffererCreationUnavailable/OffererCreationUnavailable'
@@ -51,14 +50,6 @@ const OffererCreation = (): JSX.Element => {
     notification.error('Vous étes déjà rattaché à cette structure.')
   }
 
-  const createDecorators = () => {
-    const addressAndDesignationFromSirenDecorator = createDecorator({
-      field: 'siren',
-      updates: bindAddressAndDesignationFromSiren,
-    })
-    return [addressAndDesignationFromSirenDecorator]
-  }
-
   return (
     <div className="offerer-page">
       <NavLink className="back-button has-text-primary" to="/accueil">
@@ -73,7 +64,7 @@ const OffererCreation = (): JSX.Element => {
         <Form
           backTo="/accueil"
           component={OffererCreationForm as any /* eslint-disable-line */}
-          decorators={createDecorators()}
+          decorators={[addressAndDesignationFromSirenDecorator]}
           onSubmit={handleSubmit}
         />
       )}
