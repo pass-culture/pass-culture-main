@@ -45,16 +45,17 @@ class SaveVenueBankInformations:
             application_id, version=PROCEDURE_ID_VERSION_MAP[procedure_id]
         )
 
-        try:
-            siret = application_details.siret
-            siren = application_details.siren
-            offerer = Offerer.query.filter_by(siren=siren).one_or_none()
-            check_offerer_presence(offerer)
-            venue = self.get_referent_venue(application_details, offerer)
-            business_unit = BusinessUnit.query.filter(BusinessUnit.siret == siret).one_or_none()
-        except CannotRegisterBankInformation as error:
+        api_errors = CannotRegisterBankInformation()
+        siret = application_details.siret
+        siren = application_details.siren
+        offerer = Offerer.query.filter_by(siren=siren).one_or_none()
+        check_offerer_presence(offerer, api_errors)
+        venue = self.get_referent_venue(application_details, offerer, api_errors)
+        business_unit = BusinessUnit.query.filter(BusinessUnit.siret == siret).one_or_none()
+
+        if api_errors.errors:
             if application_details.status == BankInformationStatus.ACCEPTED:
-                raise error
+                raise api_errors
             return None
 
         bank_information = self.bank_informations_repository.get_by_application(application_details.application_id)
@@ -62,14 +63,22 @@ class SaveVenueBankInformations:
             bank_information = self.bank_informations_repository.find_by_venue(venue.identifier)
 
         if bank_information:
-            check_new_bank_information_older_than_saved_one(bank_information, application_details.modification_date)
+            check_new_bank_information_older_than_saved_one(
+                bank_information, application_details.modification_date, api_errors
+            )
             if (
                 bank_information.venue_id == venue.identifier
                 and bank_information.application_id != application_details.application_id
             ):
-                check_new_bank_information_has_a_more_advanced_status(bank_information, application_details.status)
+                check_new_bank_information_has_a_more_advanced_status(
+                    bank_information, application_details.status, api_errors
+                )
 
         new_bank_informations = self.create_new_bank_informations(application_details, venue.identifier)
+
+        if api_errors.errors:
+            raise api_errors
+
 
         if not bank_information:
             updated_bank_information = self.bank_informations_repository.save(new_bank_informations)
@@ -96,22 +105,27 @@ class SaveVenueBankInformations:
 
         return bank_information
 
-    def get_referent_venue(self, application_details: ApplicationDetail, offerer: Offerer) -> VenueWithBasicInformation:
+    def get_referent_venue(
+        self, application_details: ApplicationDetail, offerer: Offerer, api_errors: CannotRegisterBankInformation
+    ) -> VenueWithBasicInformation:
         siret = application_details.siret
-
         if siret:
             venue = self.venue_repository.find_by_siret(siret)
             if not venue:
-                raise CannotRegisterBankInformation("Venue not found")
+                api_errors.add_error("Venue", "Venue not found")
             if not api_entreprises.check_siret_is_still_active(siret):
-                raise CannotRegisterBankInformation("SIRET is no longer active")
+                api_errors.add_error("Venue", "SIRET is no longer active")
         else:
+            if not offerer:
+                return None
             name = application_details.venue_name
             venues = self.venue_repository.find_by_name(name, offerer.id)
             if len(venues) == 0:
-                raise CannotRegisterBankInformation("Venue name not found")
+                api_errors.add_error("Venue", "Venue name not found")
             if len(venues) > 1:
-                raise CannotRegisterBankInformation("Multiple venues found")
+                api_errors.add_error("Venue", "Multiple venues found")
+            if api_errors.errors:
+                return None
             venue = venues[0]
         return venue
 

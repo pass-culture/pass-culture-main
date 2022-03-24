@@ -1,17 +1,14 @@
-import pytest
-
-from pcapi.domain.bank_information import CannotRegisterBankInformation
 from pcapi.domain.bank_information import check_offerer_presence
+from pcapi.models.api_errors import ApiErrors
 
 
 class CheckOffererPresenceTest:
     def test_raises_an_error_if_no_offerer_found(self):
         # given
         offerer = None
+        api_errors = ApiErrors()
 
         # when
-        with pytest.raises(CannotRegisterBankInformation) as error:
-            check_offerer_presence(offerer)
-
+        check_offerer_presence(offerer, api_errors)
         # then
-        assert error.value.args == ("Offerer not found",)
+        assert api_errors.errors == {"Offerer": ["Offerer not found"]}
