@@ -1,4 +1,4 @@
-import { existsInINSEERegistry } from '../SirenField'
+import { existsInINSEERegistry } from '../validate'
 
 describe('components | SirenField', () => {
   describe('existsInINSEERegistry', () => {
@@ -11,26 +11,27 @@ describe('components | SirenField', () => {
       fetch.mockResponseOnce(JSON.stringify({ message: 'no results found' }), {
         status: 404,
       })
-      const siren = '245 474 278'
+      const siren = '245474278'
+      const humanSiren = '245 474 278'
 
       // when
-      await existsInINSEERegistry(siren)
+      await existsInINSEERegistry(humanSiren)
 
       // then
       expect(fetch).toHaveBeenCalledTimes(1)
       expect(fetch).toHaveBeenCalledWith(
-        `https://entreprise.data.gouv.fr/api/sirene/v3/unites_legales/245474278`
+        `https://entreprise.data.gouv.fr/api/sirene/v3/unites_legales/${siren}`
       )
     })
 
     it('should not return an error message when SIREN exists in INSEE registry', async () => {
       // given
-      const siren = '245474278'
+      const siren = '345474278'
       fetch.mockResponseOnce(
         JSON.stringify({
           unite_legale: {
             denomination: 'nom du lieu',
-            siren: '418166096',
+            siren: siren,
             etablissement_siege: {
               geo_l4: '3 rue de la gare',
               libelle_commune: 'paris',
@@ -51,7 +52,7 @@ describe('components | SirenField', () => {
 
     it('should return an error message when SIREN does not exist in INSEE registry', async () => {
       // given
-      const siren = '245474279'
+      const siren = '445474278'
       fetch.mockResponseOnce(JSON.stringify({ message: 'no results found' }), {
         status: 404,
       })
@@ -65,7 +66,7 @@ describe('components | SirenField', () => {
 
     it('should return another error message when API returns a status code >=400 and != 404', async () => {
       // given
-      const siren = '245474278'
+      const siren = '545474278'
       fetch.mockResponseOnce(JSON.stringify({ message: 'Gateway timeout' }), {
         status: 504,
       })
@@ -81,7 +82,7 @@ describe('components | SirenField', () => {
 
     it('should check once for same SIREN called in INSEE registery', async () => {
       // given
-      const siren = '245474280'
+      const siren = '645474278'
       fetch.mockResponse(JSON.stringify({ message: 'no results found' }), {
         status: 404,
       })
@@ -93,7 +94,7 @@ describe('components | SirenField', () => {
       // then
       expect(fetch).toHaveBeenCalledTimes(1)
       expect(fetch).toHaveBeenCalledWith(
-        `https://entreprise.data.gouv.fr/api/sirene/v3/unites_legales/245474280`
+        `https://entreprise.data.gouv.fr/api/sirene/v3/unites_legales/${siren}`
       )
     })
   })
