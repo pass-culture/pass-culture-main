@@ -145,7 +145,7 @@ const Offers = ({
                 onClick={onPreviousPageClick}
                 type="button"
               >
-                <Icon alt="Aller à la page précédente" svg="ico-left-arrow" />
+                <Icon alt="page précédente" svg="ico-left-arrow" />
               </button>
               <span>{`Page ${currentPageNumber}/${pageCount}`}</span>
               <button
@@ -153,7 +153,7 @@ const Offers = ({
                 onClick={onNextPageClick}
                 type="button"
               >
-                <Icon alt="Aller à la page suivante" svg="ico-right-arrow" />
+                <Icon alt="page suivante" svg="ico-right-arrow" />
               </button>
             </div>
           )}

@@ -77,6 +77,7 @@ const Header = ({ isStyleguideActive, isUserAdmin }) => {
               className="nav-item icon-only"
               data-testid="styleguide"
               role="menuitem"
+              title="Guide de style"
               to="/styleguide"
             >
               <StyleguideSvg />

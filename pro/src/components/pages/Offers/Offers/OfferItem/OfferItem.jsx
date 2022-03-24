@@ -83,10 +83,10 @@ const OfferItem = ({ disabled, offer, isSelected, selectOffer }) => {
       <td className="thumb-column">
         <Link
           className="name"
-          title="Afficher les détails de l'offre"
+          title={`${offer.name} - éditer l'offre`}
           to={editionOfferLink}
         >
-          <Thumb alt="Miniature d'offre" url={offer.thumbUrl} />
+          <Thumb alt={`${offer.name} - éditer l'offre`} url={offer.thumbUrl} />
         </Link>
       </td>
       <td className="title-column">
@@ -95,7 +95,7 @@ const OfferItem = ({ disabled, offer, isSelected, selectOffer }) => {
         )}
         <Link
           className="name"
-          title="Afficher les détails de l'offre"
+          title={`${offer.name} - éditer l'offre`}
           to={editionOfferLink}
         >
           {offer.name}
@@ -106,12 +106,13 @@ const OfferItem = ({ disabled, offer, isSelected, selectOffer }) => {
             {shouldShowSoldOutWarning && (
               <div>
                 <Icon
+                  alt=""
                   className="sold-out-icon"
                   svg="ico-warning-stocks"
                   tabIndex={0}
                 />
                 <span className="sold-out-dates">
-                  <Icon svg="ico-warning-stocks" />
+                  <Icon alt="" svg="ico-warning-stocks" />
                   {pluralize(
                     computeNumberOfSoldOutStocks(stocks),
                     'date épuisée'
@@ -139,7 +140,7 @@ const OfferItem = ({ disabled, offer, isSelected, selectOffer }) => {
       <td className="edit-column">
         {isOfferEditable && (
           <Link className="secondary-link" to={editionOfferLink}>
-            <Icon svg="ico-pen" />
+            <Icon alt={`${offer.name} - éditer l'offre`} svg="ico-pen" />
           </Link>
         )}
       </td>
