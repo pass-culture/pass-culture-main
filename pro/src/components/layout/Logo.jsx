@@ -19,7 +19,10 @@ const Logo = ({ className, noLink, onClick, signPage, isUserAdmin }) => {
       onClick={handleClick}
       to={isUserAdmin ? '/structures' : '/accueil'}
     >
-      <img alt="Logo" src={src} />
+      <img
+        alt="Pass Culture pro, l'espace Pass Culture des acteurs culturels"
+        src={src}
+      />
     </NavLink>
   )
 }
