@@ -1208,11 +1208,11 @@ def cancel_educational_offer_booking(offer: Offer) -> None:
 def create_collective_shadow_offer(stock_data: EducationalOfferShadowStockBodyModel, user: User, offer_id: str):
     offer = Offer.query.filter_by(id=offer_id).options(joinedload(Offer.stocks)).one()
     stock = create_educational_shadow_stock_and_set_offer_showcase(stock_data, user, offer)
-    create_collective_offer_template_and_delete_collective_offer(offer, stock)
+    create_collective_offer_template_and_delete_collective_offer(offer, stock, user)
     return stock
 
 
-def create_collective_offer_template_and_delete_collective_offer(offer: Offer, stock: Stock) -> None:
+def create_collective_offer_template_and_delete_collective_offer(offer: Offer, stock: Stock, user: User) -> None:
     collective_offer = educational_models.CollectiveOffer.query.filter_by(offerId=offer.id).one_or_none()
     if collective_offer is None:
         raise offers_exceptions.CollectiveOfferNotFound()
@@ -1223,6 +1223,11 @@ def create_collective_offer_template_and_delete_collective_offer(offer: Offer, s
     db.session.delete(collective_offer)
     db.session.add(collective_offer_template)
     db.session.commit()
+
+    if FeatureToggle.ENABLE_NEW_COLLECTIVE_MODEL.is_active():
+        if offer.validation == OfferValidationStatus.DRAFT:
+            _update_offer_fraud_information(collective_offer_template, user)
+
     logger.info(
         "Collective offer template has been created and regular collective offer deleted if applicable",
         extra={"collectiveOfferTemplate": collective_offer_template.id, "offer": offer.id},
