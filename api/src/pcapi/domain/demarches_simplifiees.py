@@ -42,6 +42,7 @@ class ApplicationDetail:
         siret: Optional[str] = None,
         venue_name: Optional[str] = None,
         annotation_id: Optional[str] = None,
+        dossier_id: str = None,
     ):
         self.siren = siren
         self.status = status
@@ -52,6 +53,7 @@ class ApplicationDetail:
         self.venue_name = venue_name
         self.modification_date = modification_date
         self.annotation_id = annotation_id
+        self.dossier_id = dossier_id
 
 
 def get_offerer_bank_information_application_details_by_application_id(application_id: str) -> ApplicationDetail:
@@ -78,6 +80,7 @@ def parse_raw_bic_data(data: dict) -> dict:
     result = {
         "status": data["dossier"]["state"],
         "updated_at": data["dossier"]["dateDerniereModification"],
+        "dossier_id": data["dossier"]["id"],
     }
     ID_TO_NAME_MAPPING = {
         "Q2hhbXAtNDA3ODg5": "firstname",
@@ -145,6 +148,7 @@ def get_venue_bank_information_application_details_by_application_id(
             siret=data["siret"],
             modification_date=datetime.fromisoformat(data["updated_at"]).astimezone().replace(tzinfo=None),
             annotation_id=data["annotation_id"],
+            dossier_id=data["dossier_id"],
         )
     raise ValueError("Unknown version %s" % version)
 
@@ -185,9 +189,9 @@ def _find_value_in_fields(fields: list[dict], value_name: str) -> Optional[dict]
     return None
 
 
-def update_demarches_simplifiees_text_annotations(application_id: str, annotation_id: str, message: str) -> None:
+def update_demarches_simplifiees_text_annotations(dossier_id: str, annotation_id: str, message: str) -> None:
     client = api_dms.DMSGraphQLClient()
-    client.update_text_annotation(application_id, settings.DMS_INSTRUCTOR_ID, annotation_id, message)
+    client.update_text_annotation(dossier_id, settings.DMS_INSTRUCTOR_ID, annotation_id, message)
 
 
 def format_error_to_demarches_simplifiees_text(api_error: CannotRegisterBankInformation) -> str:
