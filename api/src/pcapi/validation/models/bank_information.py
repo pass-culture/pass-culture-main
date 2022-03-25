@@ -6,6 +6,7 @@ from pcapi.models.bank_information import BankInformation
 from pcapi.models.bank_information import BankInformationStatus
 
 
+# TODO(mgeoffray, 2022-03-24): This should be deleted when save_offerer_bank_information is deleted
 def validate(bank_information: BankInformation, api_errors: ApiErrors) -> ApiErrors:
     if bank_information.status == BankInformationStatus.ACCEPTED:
         if bank_information.iban is None:
