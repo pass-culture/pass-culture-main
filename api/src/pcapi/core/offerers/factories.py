@@ -1,5 +1,3 @@
-from typing import Optional
-
 import factory
 
 from pcapi.core.offerers import models
@@ -67,6 +65,7 @@ class ApiKeyFactory(BaseFactory):
     offerer = factory.SubFactory(OffererFactory)
     prefix = DEFAULT_PREFIX
 
-    @factory.post_generation
-    def hash_secret(self, create: bool, extracted: Optional[str]) -> None:
-        self.secret = crypto.hash_password(extracted or DEFAULT_SECRET)
+    @classmethod
+    def _create(cls, model_class, *args, **kwargs):
+        kwargs["secret"] = crypto.hash_password(kwargs.get("secret", DEFAULT_SECRET))
+        return super()._create(model_class, *args, **kwargs)
