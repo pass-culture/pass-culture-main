@@ -168,7 +168,7 @@ function pod_console() {
 # Need to specify what alembic command you want to execute
 # Example: ./pc alembic upgrade head
 if [[ "$CMD" == "alembic" ]]; then
-  RUN='docker exec pc-flask bash -c "cd /opt/services/flaskapp/src && alembic '"$*"'"'
+  RUN='docker exec pc-flask bash -c "cd /usr/src/app && alembic '"$*"'"'
 
 # Connect to API container
 elif [[ "$CMD" == "bash" ]]; then
@@ -214,8 +214,8 @@ elif [[ "$CMD" == "restart-backend" ]]; then
 
 # Clear all data in postgresql database
 elif [[ "$CMD" == "reset-all-db" ]]; then
-  RUN='docker exec -it pc-flask bash -c "rm -rf /opt/services/flaskapp/src/static/object_store_data/*";
-    docker exec pc-flask bash -c "cd /opt/services/flaskapp/src/ && flask clean_database"'
+  RUN='docker exec -it pc-flask bash -c "rm -rf /usr/src/app/static/object_store_data/*";
+    docker exec pc-flask bash -c "cd /usr/src/app/ && flask clean_database"'
 
 # Remove all booking & reco from database
 elif [[ "$CMD" == "reset-reco-db" ]]; then
@@ -490,7 +490,7 @@ elif [[ "$CMD" == "pgcli" ]]; then
 elif [[ "$CMD" == "python" ]]; then
   COLUMNS=${COLUMNS:-''}
   if [[ "$ENV" == "development" ]]; then
-    RUN='docker exec -it pc-flask bash -c "cd /opt/services/flaskapp/src/ && flask shell '"$*"'"'
+    RUN='docker exec -it pc-flask bash -c "cd /usr/src/app/ && flask shell '"$*"'"'
   else
     if [ "$FILE_TO_UPLOAD" == 'none' ]; then
       kubectl -n $ENV exec -it $(pod_console) -- flask shell
@@ -513,7 +513,7 @@ elif [[ "$CMD" == "db_restore_infos" ]]; then
 # Run python scripts from api/scripts
 else
   if [[ "$ENV" == "development" ]]; then
-    RUN='docker exec pc-flask bash -c "cd /opt/services/flaskapp/src/ && flask '"$CMD $*"'"'
+    RUN='docker exec pc-flask bash -c "cd /usr/src/app/ && flask '"$CMD $*"'"'
   else
     if [ "$FILE_TO_UPLOAD" == 'none' ]; then
       kubectl -n $ENV exec -it $(pod_console) -- flask "$CMD" $*

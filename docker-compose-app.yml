@@ -33,11 +33,11 @@ services:
     build:
       context: ./api
       target: api-flask
-    working_dir: /opt/services/flaskapp/src
+    working_dir: /usr/src/app
     container_name: pc-flask
     command: ["./start-api-when-database-is-ready.sh"]
     volumes:
-      - ./api:/opt/services/flaskapp/src
+      - ./api:/usr/src/app
     env_file:
       - env_file
     networks:
