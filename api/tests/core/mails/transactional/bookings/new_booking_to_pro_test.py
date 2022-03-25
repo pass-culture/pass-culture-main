@@ -170,6 +170,7 @@ class OffererBookingRecapTest:
         # Then
         expected = get_expected_base_email_data(
             booking,
+            DEPARTMENT_CODE="numérique",
             EVENT_DATE="",
             EVENT_HOUR="",
             IS_EVENT=False,
@@ -248,6 +249,7 @@ class OffererBookingRecapTest:
         # Then
         expected = get_expected_base_email_data(
             booking,
+            DEPARTMENT_CODE="numérique",
             EVENT_DATE="",
             EVENT_HOUR="",
             IS_EVENT=False,
@@ -283,6 +285,7 @@ class OffererBookingRecapTest:
         # Then
         expected = get_expected_base_email_data(
             booking,
+            DEPARTMENT_CODE="numérique",
             EVENT_DATE="",
             EVENT_HOUR="",
             PRICE="10.00 €",
