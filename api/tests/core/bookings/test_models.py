@@ -11,12 +11,10 @@ from pcapi.core.bookings import models
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.categories import subcategories
-from pcapi.core.offers.factories import MediationFactory
 import pcapi.core.users.factories as users_factories
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.repository import repository
-from pcapi.utils.human_ids import humanize
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -72,32 +70,6 @@ def test_too_many_bookings_postgresql_exception():
         with pytest.raises(ApiErrors) as exc:
             repository.save(booking2)
         assert exc.value.errors["global"] == ["La quantité disponible pour cette offre est atteinte."]
-
-
-class BookingThumbUrlTest:
-    def test_thumb_url_use_mediation_if_exists(self):
-        mediation = MediationFactory(thumbCount=1)
-        booking = factories.BookingFactory(
-            stock__offer=mediation.offer,
-        )
-        mediation_id = humanize(mediation.id)
-        assert booking.thumbUrl == f"http://localhost/storage/thumbs/mediations/{mediation_id}"
-
-    def test_thumb_url_use_product_if_no_mediation(self):
-        booking = factories.BookingFactory(stock__offer__product__thumbCount=1)
-        product_id = humanize(booking.stock.offer.product.id)
-        assert booking.thumbUrl == f"http://localhost/storage/thumbs/products/{product_id}"
-
-    def test_no_thumb_if_no_mediation_and_product_thumb_count_is_zero(self):
-        booking = factories.BookingFactory(stock__offer__product__thumbCount=0)
-        assert booking.thumbUrl is None
-
-    def test_no_thumb_if_mediation_thumb_count_is_zero(self):
-        mediation = MediationFactory(thumbCount=0)
-        booking = factories.BookingFactory(
-            stock__offer=mediation.offer,
-        )
-        assert booking.thumbUrl is None
 
 
 class BookingIsConfirmedPropertyTest:
