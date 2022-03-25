@@ -127,7 +127,7 @@ class GetVenueBankInformation_applicationDetailsByApplicationIdTest:
         assert application_details.iban == "FR7630007000111234567890144"
         assert application_details.bic == "SOGEFRPP"
         assert application_details.siret == "12345678900014"
-        # assert application_details.venue_name == "VENUE_NAME"
+        assert application_details.dossier_id == "Q2zzbXAtNzgyODAw"
         assert application_details.modification_date == updated_at
         assert application_details.annotation_id == (
             annotation["id"] if annotation["label"] == "Erreur traitement pass Culture" else None
@@ -235,6 +235,7 @@ class ParseRawBicDataTest:
     def test_parsing_works(self):
         INPUT_DATA = {
             "dossier": {
+                "id": "Q2zzbXAtNzgyODAw",
                 "champs": [
                     {"id": "Q2hhbXAtNDA3ODk1", "label": "Mes informations", "stringValue": "", "value": None},
                     {"id": "Q2hhbXAtNDA3ODg5", "label": "Mon prénom", "stringValue": "John", "value": "John"},
@@ -374,4 +375,5 @@ class ParseRawBicDataTest:
             "iban": "FR7630001007941234567890185",
             "bic": "QSDFGH8Z",
             "annotation_id": "InterestingId",
+            "dossier_id": "Q2zzbXAtNzgyODAw",
         }

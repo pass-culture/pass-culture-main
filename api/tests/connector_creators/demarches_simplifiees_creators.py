@@ -161,6 +161,7 @@ def venue_demarche_simplifiee_application_detail_response_without_siret(
 def venue_demarche_simplifiee_get_bic_response_v2(annotation: dict):
     return {
         "dossier": {
+            "id": "Q2zzbXAtNzgyODAw",
             "champs": [
                 {
                     "etablissement": {
