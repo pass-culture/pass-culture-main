@@ -2,10 +2,19 @@ from dataclasses import dataclass
 from typing import Union
 
 from pcapi.core.educational.models import CollectiveOffer
+from pcapi.core.educational.models import CollectiveOfferTemplate
+from pcapi.core.offers.exceptions import UnapplicableModel
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import OfferValidationConfig
 from pcapi.models.pc_object import PcObject
 from pcapi.utils.custom_logic import OPERATIONS
+
+
+OFFER_LIKE_MODELS = {
+    "Offer",
+    "CollectiveOffer",
+    "CollectiveOfferTemplate",
+}
 
 
 @dataclass
@@ -27,13 +36,32 @@ class OfferValidationRuleItem:
     offer_validation_items: list[OfferValidationItem]
 
     def resolve(self) -> float:
-        if all(item.resolve() for item in self.offer_validation_items):
-            return self.factor
+        if self.offer_validation_items:
+            if all(item.resolve() for item in self.offer_validation_items):
+                return self.factor
         return 1.0
 
 
+def _get_class_name(obj: any) -> str:
+    return type(obj).__name__
+
+
+def _get_model(offer: Union[CollectiveOffer, CollectiveOfferTemplate, Offer], parameter_model: str) -> any:
+    if parameter_model in OFFER_LIKE_MODELS and _get_class_name(offer) == parameter_model:
+        model = offer
+    elif parameter_model == "CollectiveStock" and isinstance(offer, CollectiveOffer):
+        model = offer.collectiveStock
+    elif parameter_model == "Venue":
+        model = offer.venue
+    elif parameter_model == "Offerer":
+        model = offer.venue.managingOfferer
+    else:
+        raise UnapplicableModel()
+    return model
+
+
 def parse_offer_validation_config(
-    offer: Union[CollectiveOffer, Offer], config: OfferValidationConfig
+    offer: Union[CollectiveOffer, CollectiveOfferTemplate, Offer], config: OfferValidationConfig
 ) -> tuple[float, list[OfferValidationRuleItem]]:
     minimum_score = float(config.specs["minimum_score"])
     rules = config.specs["rules"]
@@ -42,11 +70,10 @@ def parse_offer_validation_config(
     for rule in rules:
         validation_items = []
         for parameter in rule["conditions"]:
-            model = offer
-            if parameter["model"] == "Venue":
-                model = offer.venue
-            elif parameter["model"] == "Offerer":
-                model = offer.venue.managingOfferer
+            try:
+                model = _get_model(offer, parameter.get("model", None))
+            except UnapplicableModel:
+                continue
 
             validation_item = OfferValidationItem(
                 model=model,
@@ -55,10 +82,11 @@ def parse_offer_validation_config(
                 condition=parameter["condition"],
             )
             validation_items.append(validation_item)
-        rule_item = OfferValidationRuleItem(
-            name=rule["name"], factor=rule["factor"], offer_validation_items=validation_items
-        )
-        rule_items.append(rule_item)
+        if validation_items:
+            rule_item = OfferValidationRuleItem(
+                name=rule["name"], factor=rule["factor"], offer_validation_items=validation_items
+            )
+            rule_items.append(rule_item)
     return minimum_score, rule_items
 
 

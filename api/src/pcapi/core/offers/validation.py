@@ -61,7 +61,7 @@ KEY_VALIDATION_CONFIG = {
 VALUE_VALIDATION_CONFIG = {
     "name": [str],
     "conditions": [list],
-    "model": ["Offer", "Venue", "Offerer"],
+    "model": ["Offer", "Venue", "Offerer", "CollectiveOffer", "CollectiveOfferTemplate", "CollectiveStock"],
     "attribute": [str],
     "type": [str, list],
     "factor": [float, int],
