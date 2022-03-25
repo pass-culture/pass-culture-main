@@ -156,3 +156,34 @@ def venue_demarche_simplifiee_application_detail_response_without_siret(
             ],
         }
     }
+
+
+def venue_demarche_simplifiee_get_bic_response_v2(annotation: dict):
+    return {
+        "dossier": {
+            "champs": [
+                {
+                    "etablissement": {
+                        "entreprise": {
+                            "siren": "123456789",
+                        },
+                        "siret": "12345678900014",
+                    },
+                    "id": "Q2hhbXAtNzgyODAw",
+                    "label": "SIRET",
+                    "stringValue": "12345678900014",
+                },
+                {"id": "Q2hhbXAtNzAwNTA5", "label": "Vos coordonnées bancaires", "stringValue": "", "value": None},
+                {
+                    "id": "Q2hhbXAtMzUyNzIy",
+                    "label": "IBAN",
+                    "stringValue": "FR7630007000111234567890144",
+                    "value": "FR7630007000111234567890144",
+                },
+                {"id": "Q2hhbXAtMzUyNzI3", "label": "BIC", "stringValue": "SOGEFRPP", "value": "SOGEFRPP"},
+            ],
+            "dateDerniereModification": "2020-01-03T01:00:00+01:00",
+            "state": "accepte",
+            "annotations": [annotation],
+        },
+    }

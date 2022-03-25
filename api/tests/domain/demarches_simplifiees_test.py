@@ -22,6 +22,7 @@ from tests.connector_creators.demarches_simplifiees_creators import (
 from tests.connector_creators.demarches_simplifiees_creators import (
     venue_demarche_simplifiee_application_detail_response_without_siret,
 )
+from tests.connector_creators.demarches_simplifiees_creators import venue_demarche_simplifiee_get_bic_response_v2
 
 
 @patch("pcapi.connectors.dms.api.get_application_details")
@@ -102,36 +103,18 @@ class GetVenueBankInformation_applicationDetailsByApplicationIdTest:
         assert application_details.venue_name == None
         assert application_details.modification_date == updated_at
 
-    def test_retrieve_and_format_all_fields_v2(self, DMSGraphQLClient, get_application_details):
+    @pytest.mark.parametrize(
+        "annotation",
+        [
+            {"label": "Erreur traitement pass Culture", "id": "INTERESTINGID"},
+            # "Nouvelle annotation Texte" is a default annotation created by DMS
+            {"label": "Nouvelle annotation Texte", "id": "OTHERID"},
+        ],
+    )
+    def test_retrieve_and_format_all_fields_v2(self, DMSGraphQLClient, get_application_details, annotation):
         # Given
         updated_at = datetime(2020, 1, 3)
-        DMSGraphQLClient.return_value.get_bic.return_value = {
-            "dossier": {
-                "champs": [
-                    {
-                        "etablissement": {
-                            "entreprise": {
-                                "siren": "123456789",
-                            },
-                            "siret": "12345678900014",
-                        },
-                        "id": "Q2hhbXAtNzgyODAw",
-                        "label": "SIRET",
-                        "stringValue": "12345678900014",
-                    },
-                    {"id": "Q2hhbXAtNzAwNTA5", "label": "Vos coordonnées bancaires", "stringValue": "", "value": None},
-                    {
-                        "id": "Q2hhbXAtMzUyNzIy",
-                        "label": "IBAN",
-                        "stringValue": "Fr 763000 7000 111234567890144",
-                        "value": "Fr 763000 7000 111234567890144",
-                    },
-                    {"id": "Q2hhbXAtMzUyNzI3", "label": "BIC", "stringValue": "SOGEFRpp", "value": "SOGEFRpp"},
-                ],
-                "dateDerniereModification": "2020-01-03T01:00:00+01:00",
-                "state": "accepte",
-            }
-        }
+        DMSGraphQLClient.return_value.get_bic.return_value = venue_demarche_simplifiee_get_bic_response_v2(annotation)
 
         # When
         application_details = get_venue_bank_information_application_details_by_application_id(8, 2)
@@ -146,6 +129,9 @@ class GetVenueBankInformation_applicationDetailsByApplicationIdTest:
         assert application_details.siret == "12345678900014"
         # assert application_details.venue_name == "VENUE_NAME"
         assert application_details.modification_date == updated_at
+        assert application_details.annotation_id == (
+            annotation["id"] if annotation["label"] == "Erreur traitement pass Culture" else None
+        )
 
     def test_retrieve_and_format_all_fields_when_without_siret(self, DMSGraphQLClient, get_application_details):
         # Given
@@ -370,6 +356,10 @@ class ParseRawBicDataTest:
                 ],
                 "dateDerniereModification": "2021-11-12T14:51:42+01:00",
                 "state": "en_construction",
+                "annotations": [
+                    {"label": "Nouvelle annotation texte", "id": "OtherId"},
+                    {"label": "Erreur traitement pass Culture", "id": "InterestingId"},
+                ],
             }
         }
         result = parse_raw_bic_data(INPUT_DATA)
@@ -383,4 +373,5 @@ class ParseRawBicDataTest:
             "siren": "438391195",
             "iban": "FR7630001007941234567890185",
             "bic": "QSDFGH8Z",
+            "annotation_id": "InterestingId",
         }
