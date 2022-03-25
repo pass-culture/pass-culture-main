@@ -57,6 +57,24 @@ SIMPLE_OFFER_VALIDATION_CONFIG = """
                     operator: "contains"
                     comparated:
                       - "suspicious"
+            - name: "check CollectiveOffer name"
+              factor: 0
+              conditions:
+               - model: "CollectiveOffer"
+                 attribute: "name"
+                 condition:
+                    operator: "contains"
+                    comparated:
+                      - "suspicious"
+            - name: "check CollectiveOfferTemplate name"
+              factor: 0
+              conditions:
+               - model: "CollectiveOfferTemplate"
+                 attribute: "name"
+                 condition:
+                    operator: "contains"
+                    comparated:
+                      - "suspicious"
         """
 
 

@@ -116,3 +116,7 @@ class CollectiveStockNotFound(Exception):
 
 class CollectiveOfferNotFound(Exception):
     pass
+
+
+class UnapplicableModel(Exception):
+    ...
