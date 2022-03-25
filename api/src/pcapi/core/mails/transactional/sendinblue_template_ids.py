@@ -80,7 +80,6 @@ class TransactionalEmail(Enum):
         id_prod=377, id_not_prod=60, tags=["pro_annulation_rerservation"]
     )
     BOOKING_EXPIRATION_TO_PRO = TemplatePro(id_prod=380, id_not_prod=50, tags=["pro_reservation_expiree_30j"])
-    EAC_BOOKING_DAY_TO_PRO = TemplatePro(id_prod=0000, id_not_prod=0000, tags=[""])
     EAC_NEW_BOOKING_TO_PRO = TemplatePro(id_prod=383, id_not_prod=67, tags=["pro_nouvelle_reservation_eac"])
     EAC_NEW_PREBOOKING_TO_PRO = TemplatePro(id_prod=429, id_not_prod=68, tags=["pro_nouvelle_prereservation_eac"])
     EAC_SATISFACTION_STUDY_TO_PRO = TemplatePro(id_prod=523, id_not_prod=66, tags=["pro_bilan_satisfaction_eac"])
@@ -91,10 +90,6 @@ class TransactionalEmail(Enum):
     EVENT_OFFER_POSTPONED_CONFIRMATION_TO_PRO = TemplatePro(
         id_prod=519, id_not_prod=63, tags=["pro_offre_evenement_reportee"]
     )
-    EXCEEDING_20K_REVENUE_TO_PRO = TemplatePro(id_prod=0000, id_not_prod=0000, tags=["pro_depassement_20k"])
-    FIRST_BOOKING_TO_PRO = TemplatePro(id_prod=0000, id_not_prod=0000, tags=[""])
-    FIRST_OFFER_CREATED_BY_PRO = TemplatePro(id_prod=0000, id_not_prod=0000, tags=[""])
-    FRAUD_PREVENTION_TO_PRO = TemplatePro(id_prod=0000, id_not_prod=0000, tags=[""])
     INVOICE_AVAILABLE_TO_PRO = TemplatePro(id_prod=405, id_not_prod=61, tags=["remboursement_justificatif"])
     NEW_BOOKING_TO_PRO = TemplatePro(id_prod=608, id_not_prod=59, tags=["pro_nouvelle_reservation"])
     NEW_OFFERER_VALIDATION = TemplatePro(id_prod=489, id_not_prod=58, tags=["pro_validation_structure"])
@@ -105,6 +100,5 @@ class TransactionalEmail(Enum):
         id_prod=375, id_not_prod=48, tags=["pro_offre_refusee"], sender=SendinblueTransactionalSender.COMPLIANCE
     )
     OFFERER_ATTACHMENT_VALIDATION = TemplatePro(id_prod=488, id_not_prod=62, tags=["pro_rattachement_structure_valide"])
-    REFUND_TO_PRO = TemplatePro(id_prod=0000, id_not_prod=0000, tags=[""])
     RESET_PASSWORD_TO_PRO = TemplatePro(id_prod=364, id_not_prod=47, tags=["pro_reinit_mdp"])
     WELCOME_TO_PRO = TemplatePro(id_prod=481, id_not_prod=57, tags=["pro-bienvenue-pass"])
