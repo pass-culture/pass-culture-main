@@ -60,7 +60,7 @@ class SaveVenueBankInformations:
             if application_details.status == BankInformationStatus.ACCEPTED:
                 if application_details.annotation_id is not None:
                     update_demarches_simplifiees_text_annotations(
-                        application_id,
+                        application_details.dossier_id,
                         application_details.annotation_id,
                         format_error_to_demarches_simplifiees_text(api_errors),
                     )
@@ -91,7 +91,7 @@ class SaveVenueBankInformations:
         if api_errors.errors:
             if application_details.annotation_id is not None:
                 update_demarches_simplifiees_text_annotations(
-                    application_id,
+                    application_details.dossier_id,
                     application_details.annotation_id,
                     format_error_to_demarches_simplifiees_text(api_errors),
                 )

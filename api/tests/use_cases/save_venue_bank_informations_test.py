@@ -958,6 +958,7 @@ class SaveVenueBankInformationsTest:
     class SaveBankInformationUpdateTextOnErrorTest:
         application_id = 1
         annotation_id = "Q4hhaXAtOEE1NSg5"
+        dossier_id = "Q4zzaXAtOEE1NSg5"
 
         def setup_method(self):
             self.save_venue_bank_informations = SaveVenueBankInformations(
@@ -975,6 +976,7 @@ class SaveVenueBankInformationsTest:
                 "modification_date": datetime.utcnow(),
                 "venue_name": "venuedemo",
                 "annotation_id": self.annotation_id,
+                "dossier_id": self.dossier_id,
             }
             if updated_field:
                 application_data.update(updated_field)
@@ -986,7 +988,7 @@ class SaveVenueBankInformationsTest:
             self.save_venue_bank_informations.execute(self.application_id)
 
             mock_update_text_annotation.assert_called_once_with(
-                self.application_id, self.annotation_id, "Offerer: Offerer not found"
+                self.dossier_id, self.annotation_id, "Offerer: Offerer not found"
             )
 
         @pytest.mark.usefixtures("db_session")
@@ -997,7 +999,7 @@ class SaveVenueBankInformationsTest:
             self.save_venue_bank_informations.execute(self.application_id)
 
             mock_update_text_annotation.assert_called_once_with(
-                self.application_id, self.annotation_id, "Venue: Venue name not found"
+                self.dossier_id, self.annotation_id, "Venue: Venue name not found"
             )
 
         @pytest.mark.usefixtures("db_session")
@@ -1011,7 +1013,7 @@ class SaveVenueBankInformationsTest:
             self.save_venue_bank_informations.execute(self.application_id)
 
             mock_update_text_annotation.assert_called_once_with(
-                self.application_id, self.annotation_id, "Venue: Multiple venues found"
+                self.dossier_id, self.annotation_id, "Venue: Multiple venues found"
             )
 
         @pytest.mark.usefixtures("db_session")
@@ -1025,7 +1027,7 @@ class SaveVenueBankInformationsTest:
             self.save_venue_bank_informations.execute(self.application_id)
 
             mock_update_text_annotation.assert_called_once_with(
-                self.application_id, self.annotation_id, "Venue: Venue not found"
+                self.dossier_id, self.annotation_id, "Venue: Venue not found"
             )
 
         @pytest.mark.usefixtures("db_session")
@@ -1040,7 +1042,7 @@ class SaveVenueBankInformationsTest:
             self.save_venue_bank_informations.execute(self.application_id)
 
             mock_update_text_annotation.assert_called_once_with(
-                self.application_id, self.annotation_id, "Venue: SIRET is no longer active"
+                self.dossier_id, self.annotation_id, "Venue: SIRET is no longer active"
             )
 
         @patch("pcapi.connectors.api_entreprises.check_siret_is_still_active", return_value=True)
@@ -1059,7 +1061,7 @@ class SaveVenueBankInformationsTest:
             self.save_venue_bank_informations.execute(self.application_id)
 
             mock_update_text_annotation.assert_called_once_with(
-                self.application_id,
+                self.dossier_id,
                 self.annotation_id,
                 "BankInformation: Received application details are older than saved one",
             )
@@ -1079,7 +1081,7 @@ class SaveVenueBankInformationsTest:
             self.save_venue_bank_informations.execute(self.application_id)
 
             mock_update_text_annotation.assert_called_once_with(
-                self.application_id,
+                self.dossier_id,
                 self.annotation_id,
                 "BankInformation: Received application details state does not allow to change bank information",
             )
@@ -1098,7 +1100,7 @@ class SaveVenueBankInformationsTest:
             self.save_venue_bank_informations.execute(self.application_id)
 
             mock_update_text_annotation.assert_called_once_with(
-                self.application_id,
+                self.dossier_id,
                 self.annotation_id,
                 'iban: L’IBAN renseigné ("INVALID") est invalide; bic: Cette information est obligatoire',
             )
