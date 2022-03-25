@@ -6,6 +6,8 @@ from dateutil.relativedelta import relativedelta
 from freezegun import freeze_time
 import pytest
 
+from pcapi.core.offerers import factories as offerers_factories
+from pcapi.core.offers import factories as offers_factories
 from pcapi.core.payments.models import DepositType
 from pcapi.core.testing import override_settings
 from pcapi.core.users import factories as users_factories
@@ -206,6 +208,19 @@ class UserTest:
         def test_get_birthday_with_leap_year(self, birth_date, today, latest_birthday):
             with freeze_time(today):
                 assert user_models._get_latest_birthday(birth_date) == latest_birthday
+
+    def test_hasPhysicalVenue(self):
+        user = users_factories.UserFactory()
+        assert not user.hasPhysicalVenues
+
+        offerer = offers_factories.UserOffererFactory(user=user).offerer
+        assert not user.hasPhysicalVenues
+
+        offers_factories.VirtualVenueFactory(managingOfferer=offerer)
+        assert not user.hasPhysicalVenues
+
+        offerers_factories.VenueFactory(managingOfferer=offerer)
+        assert user.hasPhysicalVenues
 
 
 @pytest.mark.usefixtures("db_session")
