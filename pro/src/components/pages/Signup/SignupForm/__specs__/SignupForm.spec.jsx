@@ -110,7 +110,7 @@ describe('src | components | pages | Signup | SignupForm', () => {
       // and a RGS link
       expect(
         screen.getByRole('link', {
-          name: /Consulter nos recommendations de sécurité/,
+          name: /Consulter nos recommandations de sécurité/,
         })
       ).toHaveAttribute(
         'href',
