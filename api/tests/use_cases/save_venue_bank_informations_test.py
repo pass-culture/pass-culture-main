@@ -913,3 +913,39 @@ class SaveVenueBankInformationsTest:
             bank_information_count = BankInformation.query.count()
             assert bank_information_count == 0
             assert error.value.errors == {"BankInformation": f"Unknown Demarches Simplifiées state {unknown_status}"}
+
+        @pytest.mark.usefixtures("db_session")
+        def test_raises_an_error_when_bank_information_data_is_invalid(self, mock_application_details, app):
+            application_id = "8"
+            offerer = OffererFactory(siren="793875030")
+            offers_factories.VenueFactory(managingOfferer=offerer, siret="79387503012345", businessUnit=None)
+            mock_application_details.return_value = venue_demarche_simplifiee_application_detail_response_with_siret(
+                siret="79387503012345", bic="SOG", iban="FR76", idx=8
+            )
+            with pytest.raises(CannotRegisterBankInformation) as error:
+                self.save_venue_bank_informations.execute(application_id)
+
+            bank_information_count = BankInformation.query.count()
+            assert bank_information_count == 0
+            assert error.value.errors == {
+                "bic": ['Le BIC renseigné ("SOG") est invalide'],
+                "iban": ['L’IBAN renseigné ("FR76") est invalide'],
+            }
+
+        @pytest.mark.usefixtures("db_session")
+        def test_raises_an_error_when_no_bank_information_data_is_provided(self, mock_application_details, app):
+            application_id = "8"
+            offerer = OffererFactory(siren="793875030")
+            offers_factories.VenueFactory(managingOfferer=offerer, siret="79387503012345", businessUnit=None)
+            mock_application_details.return_value = venue_demarche_simplifiee_application_detail_response_with_siret(
+                siret="79387503012345", bic="", iban="", idx=8
+            )
+            with pytest.raises(CannotRegisterBankInformation) as error:
+                self.save_venue_bank_informations.execute(application_id)
+
+            bank_information_count = BankInformation.query.count()
+            assert bank_information_count == 0
+            assert error.value.errors == {
+                "bic": ["Cette information est obligatoire"],
+                "iban": ["Cette information est obligatoire"],
+            }
