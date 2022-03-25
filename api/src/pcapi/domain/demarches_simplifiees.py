@@ -41,6 +41,7 @@ class ApplicationDetail:
         modification_date: datetime,
         siret: Optional[str] = None,
         venue_name: Optional[str] = None,
+        annotation_id: Optional[str] = None,
     ):
         self.siren = siren
         self.status = status
@@ -50,6 +51,7 @@ class ApplicationDetail:
         self.siret = siret
         self.venue_name = venue_name
         self.modification_date = modification_date
+        self.annotation_id = annotation_id
 
 
 def get_offerer_bank_information_application_details_by_application_id(application_id: str) -> ApplicationDetail:
@@ -90,6 +92,12 @@ def parse_raw_bic_data(data: dict) -> dict:
         elif field["id"] == "Q2hhbXAtNzgyODAw":
             result["siret"] = field["etablissement"]["siret"]
             result["siren"] = field["etablissement"]["entreprise"]["siren"]
+
+    result["annotation_id"] = None
+    for annotation in data["dossier"]["annotations"]:
+        if annotation["label"] == "Erreur traitement pass Culture":
+            result["annotation_id"] = annotation["id"]
+            break
     return result
 
 
@@ -136,6 +144,7 @@ def get_venue_bank_information_application_details_by_application_id(
             bic=data["bic"],
             siret=data["siret"],
             modification_date=datetime.fromisoformat(data["updated_at"]).astimezone().replace(tzinfo=None),
+            annotation_id=data["annotation_id"],
         )
     raise ValueError("Unknown version %s" % version)
 

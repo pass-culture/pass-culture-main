@@ -5,6 +5,10 @@ query get_banking_info($dossierNumber: Int!) {
     champs {
       ...ChampFragment
     }
+    annotations {
+      id
+      label
+    }
   }
 }
 
