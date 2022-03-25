@@ -1,8 +1,6 @@
 ########## BUILDER ##########
 
-FROM python:3.9.10-slim AS builder
-
-ENV PYTHONUNBUFFERED 1
+FROM python:3.9-slim AS builder
 
 RUN apt-get update \
 	&& apt-get -y install \
@@ -14,9 +12,10 @@ COPY ./requirements.txt ./
 RUN pip install --user \
 	--requirement ./requirements.txt
 
-######### DEV ##########
+######### LIB ##########
 
-FROM python:3.9.10-slim AS api-flask
+FROM python:3.9-slim AS lib
+
 
 ENV PATH=$PATH:/root/.local/bin
 
