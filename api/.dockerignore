@@ -4,6 +4,8 @@
 *.pyd
 __pycache__
 .pytest_cache
+.cache
+.local
 
 # Local env
 start-api-when-database-is-ready.sh
@@ -26,6 +28,7 @@ LICENSE
 .vscode
 .pylintrc
 .tyrion-config.json
+helm
 mypy.ini
 Procfile
 pyproject.toml

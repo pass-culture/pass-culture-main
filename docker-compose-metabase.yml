@@ -8,12 +8,12 @@ services:
     container_name: pc-flask-metabase
     command: >
       bash -c "set -x;
-               cd /opt/services/flaskapp/src;
+               cd /usr/src/app;
                pip install -r ./requirements.txt;
                python src/pcapi/scripts/pc.py install_data_for_metabase;
                python src/pcapi/scripts/pc.py sandbox -n industrial"
     volumes:
-      - ./api:/opt/services/flaskapp/src
+      - ./api:/usr/src/app
     environment:
       - DATABASE_URL=postgresql://pass_culture:passq@postgres-product/pass_culture
       - MAILJET_API_KEY=$MAILJET_API_KEY

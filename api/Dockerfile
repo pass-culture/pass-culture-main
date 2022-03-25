@@ -7,6 +7,12 @@ RUN apt-get update \
 		gcc \
 		libpq-dev
 
+RUN useradd -rm -d /home/pcapi -u 1000 pcapi
+
+USER pcapi
+
+ENV PYTHONUNBUFFERED 1
+
 COPY ./requirements.txt ./
 
 RUN pip install --user \
@@ -16,8 +22,9 @@ RUN pip install --user \
 
 FROM python:3.9-slim AS lib
 
+RUN useradd -rm -d /home/pcapi -u 1000 pcapi
 
-ENV PATH=$PATH:/root/.local/bin
+ENV PATH=$PATH:/home/pcapi/.local/bin
 
 RUN apt-get update \
 	&& apt-get --no-install-recommends -y install \
@@ -28,15 +35,32 @@ RUN apt-get update \
 		libxmlsec1-openssl \
 		xmlsec1
 
-COPY --from=builder /root/.local /root/.local
+COPY --from=builder /home/pcapi/.local /home/pcapi/.local
 
-######### PRODUCTION #########
-
-FROM api-flask AS pcapi
+USER pcapi
 
 WORKDIR /usr/src/app
 
-COPY . .
+COPY --chown=pcapi:pcapi . .
+
+######### DEV ##########
+
+FROM lib AS api-flask
+
+USER root
+
+RUN apt-get update && \
+    apt-get -y install postgresql-client
+
+USER pcapi
+
+RUN pip install --user -e .
+
+######### PRODUCTION #########
+
+FROM lib AS pcapi
+
+WORKDIR /usr/src/app
 
 RUN pip install \
 		--no-cache-dir \
@@ -48,9 +72,10 @@ ENTRYPOINT exec ./entrypoint.sh
 
 FROM pcapi AS pcapi-console
 
+USER root
+
 RUN apt-get update && \
     apt-get -y install \
-		postgresql-client \
 		curl \
 		git
 
@@ -59,3 +84,5 @@ RUN apt update && \
 	wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add - && \
 	echo "deb http://apt.postgresql.org/pub/repos/apt/ `. /etc/os-release && echo $VERSION_CODENAME`-pgdg main" > /etc/apt/sources.list.d/pgdg.list && \
 	apt update && apt -y install postgresql-client-12
+
+USER pcapi
