@@ -428,15 +428,9 @@ elif [[ "$CMD" == "install" ]]; then
   pc set-git-config
   exit_success_restoring_branch
 
-# Install pre-push and pre-commit hooks in the api submodule
+# Install pre-push and pre-commit hooks
 elif [[ "$CMD" == "install-hooks" ]]; then
-  RUN='cd $ROOT_PATH;
-    ln -s -f ../../api/hooks/pre-push .git/hooks/pre-push;
-    ln -s -f ../../api/hooks/pre-commit .git/hooks/pre-commit;
-    ln -s -f ../../api/hooks/commit-msg .git/hooks/commit-msg;
-    chmod +x .git/hooks/pre-push;
-    chmod +x .git/hooks/pre-commit;
-    chmod +x .git/hooks/commit-msg;'
+  RUN='git config core.hooksPath ./.githooks'
 
 # Define a local Git configuration
 elif [[ "$CMD" == "set-git-config" ]]; then

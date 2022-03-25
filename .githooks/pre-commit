@@ -1,0 +1,162 @@
+#!/bin/bash
+
+# uncomment next line to debug
+# set -x
+
+DIR=$(git rev-parse --show-toplevel)
+
+##########
+## PRO ##
+##########
+cd $DIR/pro
+#
+# To disable some checks, set DISABLED_API_PRE_COMMIT_CHECKS
+# environment variable. For example:
+#
+#     export DISABLED_PRO_PRE_COMMIT_CHECKS="lint:js,test"
+#
+
+STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACMR | grep '^pro/src/*' | sed 's|^pro\/||g')
+
+
+if [[ ! -z "$STAGED_FILES" ]]
+then
+  # run linter on staged files
+  if [[ ! ",${DISABLED_PRO_PRE_COMMIT_CHECKS}," =~ ",lint," ]]
+  then
+    echo "Running Linter..."
+    yarn lint:js $STAGED_FILES
+    LINTER_EXIT_CODE=$?
+
+    # check linter exit code
+    if [ $LINTER_EXIT_CODE -ne 0 ]; then
+        echo "❌ Please fix lint errors first "
+        exit 1
+    else
+        echo "✅ lint all good"
+    fi
+
+    # add files auto-fixed by the linter
+    git add -f $STAGED_FILES
+  fi
+
+
+  # run tests related to staged files
+  if [[ ! ",${DISABLED_PRO_PRE_COMMIT_CHECKS}," =~ ",test," ]]
+  then
+    echo "Running Tests"
+    yarn test:unit -- --coverage --findRelatedTests $STAGED_FILES
+    JEST_EXIT_CODE=$?
+
+    # check jest exit code
+    if [ $JEST_EXIT_CODE -ne 0 ]; then
+        echo "❌ Please fix unit tests first"
+        exit 1
+    else
+        echo "✅ tests all good"
+    fi
+  fi
+fi
+
+cd ../
+##########
+## END PRO ##
+##########
+
+##########
+## API ##
+##########
+cd $DIR/api
+#
+# To disable some checks, set DISABLED_API_PRE_COMMIT_CHECKS
+# environment variable. For example:
+#
+#     export DISABLED_API_PRE_COMMIT_CHECKS="mypy,pylint"
+#
+
+
+ALEMBIC_STAGED_FILES=$(git diff --staged --name-only -- 'api/src/pcapi/alembic/versions/*.py' | grep '^api/*' | sed 's|^api\/||g')
+
+if [[ "$ALEMBIC_STAGED_FILES" != "" ]]; then
+  echo -e "\033[0;96mMigration changes detected: $ALEMBIC_STAGED_FILES \033[0m"
+  echo -e "\033[0;96mUpdating alembic_version_conflict_detection.txt \033[0m\n"
+  alembic --config alembic.ini heads > alembic_version_conflict_detection.txt
+  git add alembic_version_conflict_detection.txt
+fi
+
+counter=0
+
+STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACM -- '*.py' | grep '^api/*' | sed 's|^api\/||g')
+
+
+LINTED_FILES=""
+
+for FILE in $STAGED_FILES; do
+  LINTED_FILES+=" ${FILE}"
+done
+
+if [[ ! -z "$STAGED_FILES" ]] 
+then 
+  if [[ ! ",${DISABLED_API_PRE_COMMIT_CHECKS}," =~ ",isort," ]]
+  then
+      echo -ne "\033[0;96mRunning isort to organize imports...\033[0m"
+      isort $LINTED_FILES --check-only --settings-file pyproject.toml 2>/dev/null
+      if [[ "$?" != 0 ]]; then
+        edited_files=$(isort $LINTED_FILES --settings-file pyproject.toml | sed -E "s/Fixing (.*)/  - \\1/g")
+        # Go up 1 line to overwrite "Running..." line
+        echo -e "\033[1F"
+        echo -e "\033[0;91misort: Add edited files to your commit:"
+        echo -e "${edited_files}\033[0m"
+        counter=$((counter + 1))
+      else
+        echo -e "\033[2K\r\033[0;92misort: Imports correctly sorted\033[0m"
+      fi
+  fi
+
+  if [[ ! ",${DISABLED_API_PRE_COMMIT_CHECKS}," =~ ",black," ]]
+  then
+      echo -ne "\033[0;96mRunning black to format files...\033[0m"
+      black $LINTED_FILES --check --quiet --config pyproject.toml
+      if [[ "$?" != 0 ]]; then
+        edited_files=$(black $LINTED_FILES --config pyproject.toml 2>&1 | grep "^reformatted " | sed -E "s/reformatted (.*)/  - \\1/g")
+        counter=$((counter + 1))
+        # Go up 1 line to overwrite "Running..." line
+        echo -e "\033[1F"
+        echo -e "\033[0;91mblack: Add edited files to your commit:"
+        echo -e "${edited_files}\033[0m"
+      else
+        echo -e "\033[2K\r\033[0;92mblack: Code correctly formatted\033[0m"
+      fi
+  fi
+
+  if [[ ! ",${DISABLED_API_PRE_COMMIT_CHECKS}," =~ ",mypy," ]]
+  then
+      echo -e "\033[0;96mRunning mypy for type checking...\033[0m"
+      mypy $LINTED_FILES --pretty --show-error-codes --config-file api/mypy.ini
+      if [[ "$?" != 0 ]]; then
+          counter=$((counter + 1))
+      fi
+  fi
+
+  if [[ ! ",${DISABLED_API_PRE_COMMIT_CHECKS}," =~ ",pylint," ]]
+  then
+      echo -e "\033[0;96mRunning pylint for code linting...\033[0m"
+      pylint $LINTED_FILES --output-format="colorized" --score=no --rcfile=.pylintrc
+      if [[ "$?" != 0 ]]; then
+          counter=$((counter + 1))
+      fi
+  fi
+fi
+if [[ $counter > 0 ]]; then
+  echo -e "\033[0;96mIf you want to bypass these checks, add --no-verify option when committing.\033[0m"
+  exit 1
+fi
+
+cd ../
+##########
+## END API ##
+##########
+
+
+# return 0-exit code
+exit 0
