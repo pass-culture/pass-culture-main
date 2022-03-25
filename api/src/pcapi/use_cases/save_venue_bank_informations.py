@@ -6,7 +6,7 @@ from pcapi.core.finance.models import BusinessUnit
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.users.external import update_external_pro
-from pcapi.domain.bank_information import CannotRegisterBankInformation
+from pcapi.domain.bank_information import CannotRegisterBankInformation, check_new_bank_information_valid
 from pcapi.domain.bank_information import check_new_bank_information_has_a_more_advanced_status
 from pcapi.domain.bank_information import check_new_bank_information_older_than_saved_one
 from pcapi.domain.bank_information import check_offerer_presence
@@ -75,6 +75,8 @@ class SaveVenueBankInformations:
                 )
 
         new_bank_informations = self.create_new_bank_informations(application_details, venue.identifier)
+
+        check_new_bank_information_valid(new_bank_informations, api_errors)
 
         if api_errors.errors:
             raise api_errors

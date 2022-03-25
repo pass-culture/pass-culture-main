@@ -1,5 +1,7 @@
 from datetime import datetime
 
+from schwifty import BIC
+from schwifty import IBAN
 
 from pcapi.core.offerers.models import Offerer
 from pcapi.domain.bank_informations.bank_informations import BankInformations
@@ -39,3 +41,29 @@ def check_new_bank_information_has_a_more_advanced_status(
         api_errors.add_error(
             "BankInformation", "Received application details state does not allow to change bank information"
         )
+
+
+def check_new_bank_information_valid(
+    bank_information: BankInformations, api_errors: CannotRegisterBankInformation
+) -> None:
+    if bank_information.status == BankInformationStatus.ACCEPTED:
+        if bank_information.iban is None:
+            api_errors.add_error("iban", "Cette information est obligatoire")
+        else:
+            try:
+                IBAN(bank_information.iban)
+            except (ValueError, TypeError):
+                api_errors.add_error("iban", f'L’IBAN renseigné ("{bank_information.iban}") est invalide')
+
+        if bank_information.bic is None:
+            api_errors.add_error("bic", "Cette information est obligatoire")
+        else:
+            try:
+                BIC(bank_information.bic)
+            except (ValueError, TypeError):
+                api_errors.add_error("bic", f'Le BIC renseigné ("{bank_information.bic}") est invalide')
+    else:
+        if bank_information.iban is not None:
+            api_errors.add_error("iban", f"L’IBAN doit être vide pour le statut {bank_information.status.name}")
+        if bank_information.bic is not None:
+            api_errors.add_error("bic", f"Le BIC doit être vide pour le statut {bank_information.status.name}")
