@@ -31,7 +31,6 @@ from pcapi.utils.human_ids import humanize
 
 if typing.TYPE_CHECKING:
     from pcapi.core.educational.models import EducationalBooking
-    from pcapi.core.offers.models import Mediation
 
 
 class BookingCancellationReasons(enum.Enum):
@@ -240,20 +239,6 @@ class Booking(PcObject, Model):
         if "insufficientFunds" in str(ie.orig):
             return ["insufficientFunds", "Le solde de votre pass est insuffisant pour réserver cette offre."]
         return PcObject.restize_integrity_error(ie)
-
-    @property
-    def isEventExpired(self) -> bool:
-        return self.stock.isEventExpired
-
-    @property
-    def thumbUrl(self) -> str:
-        if self.mediation:
-            return self.mediation.thumbUrl
-        return self.stock.offer.product.thumbUrl
-
-    @property
-    def mediation(self) -> Optional["Mediation"]:
-        return self.stock.offer.activeMediation
 
     @hybrid_property
     def isConfirmed(self):
