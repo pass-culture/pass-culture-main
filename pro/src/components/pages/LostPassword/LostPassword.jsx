@@ -1,8 +1,6 @@
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 
-import AppLayout from 'app/AppLayout'
-import TextInput from 'components/layout/inputs/TextInput/TextInput'
 import Logo from 'components/layout/Logo'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import { redirectLoggedUser } from 'components/router/helpers'
