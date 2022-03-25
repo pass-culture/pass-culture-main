@@ -1,4 +1,5 @@
 from datetime import datetime
+from datetime import timedelta
 from unittest.mock import patch
 
 import pytest
@@ -949,3 +950,155 @@ class SaveVenueBankInformationsTest:
                 "bic": ["Cette information est obligatoire"],
                 "iban": ["Cette information est obligatoire"],
             }
+
+    @patch("pcapi.use_cases.save_venue_bank_informations.update_demarches_simplifiees_text_annotations")
+    @patch(
+        "pcapi.use_cases.save_venue_bank_informations.get_venue_bank_information_application_details_by_application_id"
+    )
+    class SaveBankInformationUpdateTextOnErrorTest:
+        application_id = 1
+        annotation_id = "Q4hhaXAtOEE1NSg5"
+
+        def setup_method(self):
+            self.save_venue_bank_informations = SaveVenueBankInformations(
+                venue_repository=VenueWithBasicInformationSQLRepository(),
+                bank_informations_repository=BankInformationsSQLRepository(),
+            )
+
+        def build_application_detail(self, updated_field=None):
+            application_data = {
+                "siren": "999999999",
+                "status": BankInformationStatus.ACCEPTED,
+                "application_id": self.application_id,
+                "iban": "FR7630007000111234567890144",
+                "bic": "SOGEFRPP",
+                "modification_date": datetime.utcnow(),
+                "venue_name": "venuedemo",
+                "annotation_id": self.annotation_id,
+            }
+            if updated_field:
+                application_data.update(updated_field)
+            return ApplicationDetail(**application_data)
+
+        def test_update_text_offerer_not_found(self, mock_application_details, mock_update_text_annotation, app):
+            mock_application_details.return_value = self.build_application_detail()
+
+            self.save_venue_bank_informations.execute(self.application_id)
+
+            mock_update_text_annotation.assert_called_once_with(
+                self.application_id, self.annotation_id, "Offerer: Offerer not found"
+            )
+
+        @pytest.mark.usefixtures("db_session")
+        def test_update_text_venue_not_found(self, mock_application_details, mock_update_text_annotation, app):
+            OffererFactory(siren="999999999")
+            mock_application_details.return_value = self.build_application_detail()
+
+            self.save_venue_bank_informations.execute(self.application_id)
+
+            mock_update_text_annotation.assert_called_once_with(
+                self.application_id, self.annotation_id, "Venue: Venue name not found"
+            )
+
+        @pytest.mark.usefixtures("db_session")
+        def test_update_text_venue_multiple_found(self, mock_application_details, mock_update_text_annotation, app):
+            offerer = OffererFactory(siren="999999999")
+            offers_factories.VenueFactory.build_batch(
+                2, name="venuedemo", managingOfferer=offerer, siret=None, comment="No siret", businessUnit=None
+            )
+            mock_application_details.return_value = self.build_application_detail()
+
+            self.save_venue_bank_informations.execute(self.application_id)
+
+            mock_update_text_annotation.assert_called_once_with(
+                self.application_id, self.annotation_id, "Venue: Multiple venues found"
+            )
+
+        @pytest.mark.usefixtures("db_session")
+        @patch("pcapi.connectors.api_entreprises.check_siret_is_still_active", return_value=True)
+        def test_update_text_no_venue_with_same_siret_found(
+            self, siret_active, mock_application_details, mock_update_text_annotation, app
+        ):
+            OffererFactory(siren="999999999")
+            mock_application_details.return_value = self.build_application_detail({"siret": "36252187900034"})
+
+            self.save_venue_bank_informations.execute(self.application_id)
+
+            mock_update_text_annotation.assert_called_once_with(
+                self.application_id, self.annotation_id, "Venue: Venue not found"
+            )
+
+        @pytest.mark.usefixtures("db_session")
+        @patch("pcapi.connectors.api_entreprises.check_siret_is_still_active", return_value=False)
+        def test_update_text_siret_no_longer_active(
+            self, siret_active, mock_application_details, mock_update_text_annotation, app
+        ):
+            OffererFactory(siren="999999999")
+            offers_factories.VenueFactory(name="venuedemo", siret="36252187900034")
+            mock_application_details.return_value = self.build_application_detail({"siret": "36252187900034"})
+
+            self.save_venue_bank_informations.execute(self.application_id)
+
+            mock_update_text_annotation.assert_called_once_with(
+                self.application_id, self.annotation_id, "Venue: SIRET is no longer active"
+            )
+
+        @patch("pcapi.connectors.api_entreprises.check_siret_is_still_active", return_value=True)
+        @pytest.mark.usefixtures("db_session")
+        def test_update_text_application_details_older_than_saved(
+            self, siret_active, mock_application_details, mock_update_text_annotation, app
+        ):
+            OffererFactory(siren="999999999")
+            venue = offers_factories.VenueFactory(name="venuedemo", siret="36252187900034")
+            offers_factories.BankInformationFactory(dateModified=datetime.utcnow(), venue=venue)
+            yesterday = datetime.utcnow() - timedelta(days=1)
+            mock_application_details.return_value = self.build_application_detail(
+                {"siret": "36252187900034", "modification_date": yesterday}
+            )
+
+            self.save_venue_bank_informations.execute(self.application_id)
+
+            mock_update_text_annotation.assert_called_once_with(
+                self.application_id,
+                self.annotation_id,
+                "BankInformation: Received application details are older than saved one",
+            )
+
+        @patch("pcapi.connectors.api_entreprises.check_siret_is_still_active", return_value=True)
+        @pytest.mark.usefixtures("db_session")
+        def test_update_text_application_details_has_more_advanced_status(
+            self, siret_active, mock_application_details, mock_update_text_annotation, app
+        ):
+            OffererFactory(siren="999999999")
+            venue = offers_factories.VenueFactory(name="venuedemo", siret="36252187900034")
+            offers_factories.BankInformationFactory(venue=venue, status=BankInformationStatus.ACCEPTED)
+            mock_application_details.return_value = self.build_application_detail(
+                {"siret": "36252187900034", "status": BankInformationStatus.DRAFT}
+            )
+
+            self.save_venue_bank_informations.execute(self.application_id)
+
+            mock_update_text_annotation.assert_called_once_with(
+                self.application_id,
+                self.annotation_id,
+                "BankInformation: Received application details state does not allow to change bank information",
+            )
+
+        @patch("pcapi.connectors.api_entreprises.check_siret_is_still_active", return_value=True)
+        @pytest.mark.usefixtures("db_session")
+        def test_update_text_application_details_on_bank_information_error(
+            self, siret_active, mock_application_details, mock_update_text_annotation, app
+        ):
+            OffererFactory(siren="999999999")
+            offers_factories.VenueFactory(name="venuedemo", siret="36252187900034")
+            mock_application_details.return_value = self.build_application_detail(
+                {"siret": "36252187900034", "bic": "", "iban": "INVALID"}
+            )
+
+            self.save_venue_bank_informations.execute(self.application_id)
+
+            mock_update_text_annotation.assert_called_once_with(
+                self.application_id,
+                self.annotation_id,
+                'iban: L’IBAN renseigné ("INVALID") est invalide; bic: Cette information est obligatoire',
+            )

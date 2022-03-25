@@ -6,14 +6,17 @@ from pcapi.core.finance.models import BusinessUnit
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.users.external import update_external_pro
-from pcapi.domain.bank_information import CannotRegisterBankInformation, check_new_bank_information_valid
+from pcapi.domain.bank_information import CannotRegisterBankInformation
 from pcapi.domain.bank_information import check_new_bank_information_has_a_more_advanced_status
 from pcapi.domain.bank_information import check_new_bank_information_older_than_saved_one
+from pcapi.domain.bank_information import check_new_bank_information_valid
 from pcapi.domain.bank_information import check_offerer_presence
 from pcapi.domain.bank_informations.bank_informations import BankInformations
 from pcapi.domain.bank_informations.bank_informations_repository import BankInformationsRepository
 from pcapi.domain.demarches_simplifiees import ApplicationDetail
+from pcapi.domain.demarches_simplifiees import format_error_to_demarches_simplifiees_text
 from pcapi.domain.demarches_simplifiees import get_venue_bank_information_application_details_by_application_id
+from pcapi.domain.demarches_simplifiees import update_demarches_simplifiees_text_annotations
 from pcapi.domain.venue.venue_with_basic_information.venue_with_basic_information import VenueWithBasicInformation
 from pcapi.domain.venue.venue_with_basic_information.venue_with_basic_information_repository import (
     VenueWithBasicInformationRepository,
@@ -55,6 +58,13 @@ class SaveVenueBankInformations:
 
         if api_errors.errors:
             if application_details.status == BankInformationStatus.ACCEPTED:
+                if application_details.annotation_id is not None:
+                    update_demarches_simplifiees_text_annotations(
+                        application_id,
+                        application_details.annotation_id,
+                        format_error_to_demarches_simplifiees_text(api_errors),
+                    )
+                    return None
                 raise api_errors
             return None
 
@@ -79,8 +89,14 @@ class SaveVenueBankInformations:
         check_new_bank_information_valid(new_bank_informations, api_errors)
 
         if api_errors.errors:
+            if application_details.annotation_id is not None:
+                update_demarches_simplifiees_text_annotations(
+                    application_id,
+                    application_details.annotation_id,
+                    format_error_to_demarches_simplifiees_text(api_errors),
+                )
+                return None
             raise api_errors
-
 
         if not bank_information:
             updated_bank_information = self.bank_informations_repository.save(new_bank_informations)

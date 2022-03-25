@@ -188,3 +188,10 @@ def _find_value_in_fields(fields: list[dict], value_name: str) -> Optional[dict]
 def update_demarches_simplifiees_text_annotations(application_id: str, annotation_id: str, message: str) -> None:
     client = api_dms.DMSGraphQLClient()
     client.update_text_annotation(application_id, settings.DMS_INSTRUCTOR_ID, annotation_id, message)
+
+
+def format_error_to_demarches_simplifiees_text(api_error: CannotRegisterBankInformation) -> str:
+    error_fields = []
+    for key, value in api_error.errors.items():
+        error_fields.append("%s: %s" % (key, ", ".join(value)))
+    return "; ".join(error_fields)
