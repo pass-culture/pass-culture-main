@@ -3,6 +3,7 @@ from unittest.mock import patch
 import pytest
 
 from pcapi import settings
+import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.utils.human_ids import humanize
 
@@ -12,7 +13,7 @@ class VenueBannerTest:
     @patch("pcapi.core.object_storage.backends.local.LocalBackend.delete_public_object")
     @patch("pcapi.core.search.async_index_venue_ids")
     def test_delete_banner(self, mock_search_async_index_venue_ids, mock_delete_public_object, client):
-        user_offerer = offers_factories.UserOffererFactory()
+        user_offerer = offerers_factories.UserOffererFactory()
         venue = offers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
 
         timestamp = 1602720000
@@ -37,7 +38,7 @@ class VenueBannerTest:
     @patch("pcapi.core.object_storage.backends.local.LocalBackend.delete_public_object")
     @patch("pcapi.core.search.async_index_venue_ids")
     def test_delete_banner_legacy_url(self, mock_search_async_index_venue_ids, mock_delete_public_object, client):
-        user_offerer = offers_factories.UserOffererFactory()
+        user_offerer = offerers_factories.UserOffererFactory()
         venue = offers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
 
         expected_thumb_base_path = f"{venue.thumb_path_component}/{humanize(venue.id)}"
@@ -59,7 +60,7 @@ class VenueBannerTest:
         Test that an API call to delete a venue's banner works even if
         the venue does not have any (DELETE method must be idempotent)
         """
-        user_offerer = offers_factories.UserOffererFactory()
+        user_offerer = offerers_factories.UserOffererFactory()
         venue = offers_factories.VenueFactory(managingOfferer=user_offerer.offerer, bannerUrl=None)
 
         client = client.with_session_auth(email=user_offerer.user.email)
@@ -70,7 +71,7 @@ class VenueBannerTest:
         mock_delete_public_object.assert_not_called()
 
     def test_unknown_venue(self, client):
-        user_offerer = offers_factories.UserOffererFactory()
+        user_offerer = offerers_factories.UserOffererFactory()
         client = client.with_session_auth(email=user_offerer.user.email)
 
         response = client.delete("/venues/AZERTYUIOP1234567890/banner")
@@ -78,7 +79,7 @@ class VenueBannerTest:
 
     @patch("pcapi.core.offerers.api.delete_venue_banner")
     def test_no_access_rights(self, mock_delete_venue_banner, client):
-        user = offers_factories.UserOffererFactory()
+        user = offerers_factories.UserOffererFactory()
         venue = offers_factories.VenueFactory()  # user has no rights to do anything with this venue
 
         client = client.with_session_auth(email=user.user.email)

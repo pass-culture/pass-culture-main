@@ -36,7 +36,7 @@ def check_user_can_alter_venue(user: User, venue_id: int) -> None:
 
 
 def check_api_key_allows_to_validate_booking(valid_api_key: ApiKey, offerer_id: int) -> None:
-    if not valid_api_key.offererId == offerer_id:
+    if valid_api_key.offererId != offerer_id:
         api_errors = ForbiddenError()
         api_errors.add_error(
             "user",

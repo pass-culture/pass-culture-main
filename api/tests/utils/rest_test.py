@@ -1,9 +1,10 @@
 import pytest
 
+import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offerers.models import Venue
-from pcapi.core.offers import factories as offers_factories
+import pcapi.core.offers.factories as offers_factories
 from pcapi.core.testing import assert_num_queries
-from pcapi.core.users import factories as users_factories
+import pcapi.core.users.factories as users_factories
 from pcapi.models.api_errors import ApiErrors
 from pcapi.utils.human_ids import humanize
 from pcapi.utils.rest import check_user_has_access_to_offerer
@@ -17,7 +18,7 @@ class CheckUserHasAccessToOffererTest:
     def test_check_user_has_access_to_offerer(self, app):
         pro = users_factories.UserFactory()
         offerer = offers_factories.OffererFactory()
-        offers_factories.UserOffererFactory(user=pro, offerer=offerer)
+        offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
         # fmt: off
         n_queries = (
             1  # select Offerer

@@ -1,9 +1,10 @@
-from pcapi.core.offers import factories as offers_factories
+import pcapi.core.offerers.factories as offerers_factories
+import pcapi.core.offers.factories as offers_factories
 from pcapi.sandboxes.scripts.utils.helpers import get_pro_helper
 
 
 def get_pro_user():
-    user_offerer = offers_factories.UserOffererFactory(
+    user_offerer = offerers_factories.UserOffererFactory(
         validationToken=None,
         offerer__validationToken=None,
         user__validationToken=None,

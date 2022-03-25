@@ -3,7 +3,7 @@ import pytest
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingStatus
-import pcapi.core.offers.factories as offers_factories
+import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.users import factories as users_factories
 from pcapi.utils.human_ids import humanize
 
@@ -28,7 +28,7 @@ class Returns204Test:
         def expect_booking_to_be_used(self, client):
             booking = bookings_factories.IndividualBookingFactory(token="ABCDEF")
             pro_user = users_factories.ProFactory(email="pro@example.com")
-            offers_factories.UserOffererFactory(user=pro_user, offerer=booking.offerer)
+            offerers_factories.UserOffererFactory(user=pro_user, offerer=booking.offerer)
 
             url = f"/bookings/token/{booking.token}"
             response = client.with_session_auth("pro@example.com").patch(url)
@@ -40,7 +40,7 @@ class Returns204Test:
         def expect_booking_with_token_in_lower_case_to_be_used(self, client):
             booking = bookings_factories.IndividualBookingFactory(token="ABCDEF")
             pro_user = users_factories.ProFactory(email="pro@example.com")
-            offers_factories.UserOffererFactory(user=pro_user, offerer=booking.offerer)
+            offerers_factories.UserOffererFactory(user=pro_user, offerer=booking.offerer)
 
             url = f"/bookings/token/{booking.token.lower()}"
             response = client.with_session_auth("pro@example.com").patch(url)

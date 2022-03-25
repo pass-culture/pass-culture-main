@@ -3,6 +3,7 @@ from unittest.mock import patch
 import pytest
 
 from pcapi.core import testing
+import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.testing import assert_num_queries
 import pcapi.core.users.factories as users_factories
@@ -13,7 +14,7 @@ from tests.conftest import TestClient
 
 @pytest.mark.usefixtures("db_session")
 def test_response_serialization(app):
-    user_offerer = offers_factories.UserOffererFactory(
+    user_offerer = offerers_factories.UserOffererFactory(
         user__email="user.pro@test.com",
     )
     venue = offers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
@@ -49,7 +50,7 @@ def test_response_serialization(app):
 @pytest.mark.usefixtures("db_session")
 @patch("pcapi.core.offerers.repository.get_filtered_venues")
 def test_default_call(mock_get_filtered_venues, app):
-    user_offerer = offers_factories.UserOffererFactory(
+    user_offerer = offerers_factories.UserOffererFactory(
         user__email="user.pro@test.com",
     )
     offers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
@@ -94,7 +95,7 @@ def test_admin_call_num_queries(app):
 
     admin_user = users_factories.AdminFactory(email="admin.pro@test.com")
 
-    user_offerers = offers_factories.UserOffererFactory.create_batch(3)
+    user_offerers = offerers_factories.UserOffererFactory.create_batch(3)
 
     offers_factories.VenueFactory(managingOfferer=user_offerers[0].offerer)
     offers_factories.VenueFactory(managingOfferer=user_offerers[1].offerer)
@@ -118,7 +119,7 @@ def test_admin_call_num_queries(app):
 def test_invalid_offerer_id(mock_get_filtered_venues, app):
     pro_user = users_factories.ProFactory(email="user.pro@test.com")
     offerer = offers_factories.OffererFactory()
-    offers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
+    offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
     offers_factories.VenueFactory(managingOfferer=offerer)
 
     query_params = [
@@ -149,7 +150,7 @@ def test_invalid_offerer_id(mock_get_filtered_venues, app):
 def test_full_valid_call(mock_get_filtered_venues, app):
     pro_user = users_factories.ProFactory(email="user.pro@test.com")
     offerer = offers_factories.OffererFactory()
-    offers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
+    offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
 
     query_params = [
         "validated=true",
@@ -178,7 +179,7 @@ def test_full_valid_call(mock_get_filtered_venues, app):
 def test_full_valid_call_with_false(mock_get_filtered_venues, app):
     pro_user = users_factories.ProFactory(email="user.pro@test.com")
     offerer = offers_factories.OffererFactory()
-    offers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
+    offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
 
     query_params = [
         "validated=false",

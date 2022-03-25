@@ -1,6 +1,7 @@
 import pytest
 
 import pcapi.core.bookings.factories as bookings_factories
+import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.utils.human_ids import humanize
@@ -15,7 +16,7 @@ class Returns200Test:
         booking = bookings_factories.BookingFactory()
         bookings_factories.UsedBookingFactory(stock=booking.stock)
         venue = booking.venue
-        venue_owner = offers_factories.UserOffererFactory(offerer=venue.managingOfferer).user
+        venue_owner = offerers_factories.UserOffererFactory(offerer=venue.managingOfferer).user
 
         auth_request = TestClient(app.test_client()).with_session_auth(email=venue_owner.email)
 

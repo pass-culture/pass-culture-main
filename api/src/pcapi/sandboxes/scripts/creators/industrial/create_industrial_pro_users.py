@@ -1,6 +1,6 @@
 import logging
 
-from pcapi.core.offers.factories import UserOffererFactory
+from pcapi.core.offerers.factories import UserOffererFactory
 from pcapi.core.users import factories as users_factories
 from pcapi.repository import repository
 from pcapi.sandboxes.scripts.mocks.educational_siren_mocks import MOCK_ADAGE_ELIGIBLE_SIREN

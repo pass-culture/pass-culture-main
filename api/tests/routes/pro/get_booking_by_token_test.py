@@ -9,8 +9,9 @@ from pcapi.core.bookings.factories import CancelledIndividualBookingFactory
 from pcapi.core.bookings.factories import IndividualBookingFactory
 from pcapi.core.bookings.factories import UsedIndividualBookingFactory
 import pcapi.core.finance.factories as finance_factories
-from pcapi.core.offers import factories as offers_factories
-from pcapi.core.users import factories as users_factories
+import pcapi.core.offerers.factories as offerers_factories
+import pcapi.core.offers.factories as offers_factories
+import pcapi.core.users.factories as users_factories
 from pcapi.models import api_errors
 from pcapi.routes.serialization import serialize
 from pcapi.utils.human_ids import humanize
@@ -21,7 +22,7 @@ class Returns200Test:
     def when_user_has_rights_and_regular_offer(self, client):
         # Given
         user_admin = users_factories.AdminFactory(email="admin@example.com")
-        user_offerer = offers_factories.UserOffererFactory(user=user_admin)
+        user_offerer = offerers_factories.UserOffererFactory(user=user_admin)
         booking = IndividualBookingFactory(stock__offer__venue__managingOfferer=user_offerer.offerer)
         url = f"/bookings/token/{booking.token}"
 

@@ -5,6 +5,7 @@ import pytest
 
 import pcapi.core.finance.factories as finance_factories
 import pcapi.core.finance.models as finance_models
+import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.utils.human_ids import humanize
@@ -45,7 +46,7 @@ def test_with_venue_filter(app):
 def test_with_reimbursement_period_filter(app):
     beginning_date_iso_format = (date.today() - timedelta(days=2)).isoformat()
     ending_date_iso_format = (date.today() + timedelta(days=2)).isoformat()
-    user_offerer = offers_factories.UserOffererFactory()
+    user_offerer = offerers_factories.UserOffererFactory()
     offerer = user_offerer.offerer
     pro = user_offerer.user
     finance_factories.PaymentStatusFactory(
@@ -89,7 +90,7 @@ def test_with_reimbursement_period_filter(app):
 
 @pytest.mark.usefixtures("db_session")
 def test_with_non_given_reimbursement_period(app):
-    user_offerer = offers_factories.UserOffererFactory()
+    user_offerer = offerers_factories.UserOffererFactory()
     pro = user_offerer.user
 
     # When
@@ -112,7 +113,7 @@ def test_admin_can_access_reimbursements_data_with_venue_filter(app, client):
     beginning_date = date.today() - timedelta(days=2)
     ending_date = date.today() + timedelta(days=2)
     admin = users_factories.AdminFactory()
-    user_offerer = offers_factories.UserOffererFactory()
+    user_offerer = offerers_factories.UserOffererFactory()
     offerer = user_offerer.offerer
     status = finance_factories.PaymentStatusFactory(
         payment__booking__stock__offer__venue__managingOfferer=offerer,
@@ -144,7 +145,7 @@ def test_admin_cannot_access_reimbursements_data_without_venue_filter(app, clien
     beginning_date = date.today() - timedelta(days=2)
     ending_date = date.today() + timedelta(days=2)
     admin = users_factories.AdminFactory()
-    user_offerer = offers_factories.UserOffererFactory()
+    user_offerer = offerers_factories.UserOffererFactory()
     offerer = user_offerer.offerer
     finance_factories.PaymentStatusFactory(
         payment__booking__stock__offer__venue__managingOfferer=offerer,

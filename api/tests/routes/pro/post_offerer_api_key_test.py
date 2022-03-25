@@ -3,8 +3,8 @@ import pytest
 from pcapi.core.bookings import factories as booking_factories
 from pcapi.core.offerers.api import find_api_key
 from pcapi.core.offerers.factories import ApiKeyFactory
+from pcapi.core.offerers.factories import UserOffererFactory
 from pcapi.core.offerers.models import ApiKey
-from pcapi.core.offers.factories import UserOffererFactory
 from pcapi.utils.human_ids import humanize
 
 

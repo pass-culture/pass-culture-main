@@ -5,9 +5,7 @@ import pytest
 
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.categories import subcategories
-from pcapi.core.users import factories as users_factories
 from pcapi.model_creators.generic_creators import create_offerer
-from pcapi.model_creators.generic_creators import create_user_offerer
 from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.specific_creators import create_offer_with_thing_product
 from pcapi.repository import repository
@@ -15,22 +13,6 @@ from pcapi.utils.human_ids import humanize
 from pcapi.utils.mailing import build_pc_pro_offer_link
 from pcapi.utils.mailing import format_booking_date_for_email
 from pcapi.utils.mailing import format_booking_hours_for_email
-from pcapi.utils.mailing import make_offerer_internal_validation_email
-
-
-def get_by_siren_stub(offerer):
-    return {
-        "unite_legale": {
-            "siren": "395251440",
-            "etablissement_siege": {
-                "siren": "395251440",
-                "siret": "39525144000016",
-                "etablissement_siege": "true",
-            },
-            "activite_principale": "59.14Z",
-        },
-        "other_etablissements_sirets": ["39525144000032", "39525144000065"],
-    }
 
 
 class BuildPcProOfferLinkTest:
@@ -88,19 +70,3 @@ class FormatBookingHoursForEmailTest:
             stock__offer__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
         )
         assert format_booking_hours_for_email(booking) == ""
-
-
-class MakeValidationEmailObjectTest:
-    def test_should_return_subject_with_correct_departement_code(self):
-        # Given
-        user = users_factories.UserFactory.build()
-        offerer = create_offerer(postal_code="95490")
-        user_offerer = create_user_offerer(user=user, offerer=offerer)
-
-        # When
-        email_object = make_offerer_internal_validation_email(
-            user_offerer=user_offerer, offerer=offerer, get_by_siren=get_by_siren_stub
-        )
-
-        # Then
-        assert email_object.subject == "95 - inscription / rattachement PRO à valider : Test Offerer"

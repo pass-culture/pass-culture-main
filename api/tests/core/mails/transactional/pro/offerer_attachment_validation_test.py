@@ -10,8 +10,8 @@ from pcapi.core.mails.transactional.pro.offerer_attachment_validation import (
     send_offerer_attachment_validation_email_to_pro,
 )
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
+from pcapi.core.offerers.factories import UserOffererFactory
 from pcapi.core.offers.factories import OffererFactory
-from pcapi.core.offers.factories import UserOffererFactory
 
 
 @pytest.mark.usefixtures("db_session")

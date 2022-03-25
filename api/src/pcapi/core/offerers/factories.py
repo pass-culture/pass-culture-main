@@ -1,27 +1,34 @@
 import factory
 
-from pcapi.core.offerers import models
-from pcapi.core.offerers.models import ApiKey
-from pcapi.core.offerers.models import VenueCriterion
-from pcapi.core.offerers.models import VenueLabel
-from pcapi.core.offerers.models import VenueType
 from pcapi.core.offers.factories import CriterionFactory
 from pcapi.core.offers.factories import OffererFactory
 from pcapi.core.offers.factories import VenueFactory
 from pcapi.core.testing import BaseFactory
+import pcapi.core.users.factories as users_factories
+from pcapi.models.user_offerer import UserOfferer
 from pcapi.utils import crypto
+
+from . import models
+
+
+class UserOffererFactory(BaseFactory):
+    class Meta:
+        model = UserOfferer
+
+    user = factory.SubFactory(users_factories.ProFactory)
+    offerer = factory.SubFactory(OffererFactory)
 
 
 class VirtualVenueTypeFactory(BaseFactory):
     class Meta:
-        model = VenueType
+        model = models.VenueType
 
     label = "Offre numérique"
 
 
 class VenueTypeFactory(BaseFactory):
     class Meta:
-        model = VenueType
+        model = models.VenueType
         sqlalchemy_get_or_create = ("label",)
 
     label = "Librairie"
@@ -29,7 +36,7 @@ class VenueTypeFactory(BaseFactory):
 
 class VenueLabelFactory(BaseFactory):
     class Meta:
-        model = VenueLabel
+        model = models.VenueLabel
 
     label = "Cinéma d'art et d'essai"
 
@@ -47,7 +54,7 @@ class VenueContactFactory(BaseFactory):
 
 class VenueCriterionFactory(BaseFactory):
     class Meta:
-        model = VenueCriterion
+        model = models.VenueCriterion
 
     venue = factory.SubFactory(VenueFactory)
     criterion = factory.SubFactory(CriterionFactory)
@@ -60,7 +67,7 @@ DEFAULT_CLEAR_API_KEY = f"{DEFAULT_PREFIX}_{DEFAULT_SECRET}"
 
 class ApiKeyFactory(BaseFactory):
     class Meta:
-        model = ApiKey
+        model = models.ApiKey
 
     offerer = factory.SubFactory(OffererFactory)
     prefix = DEFAULT_PREFIX

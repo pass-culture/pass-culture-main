@@ -3,7 +3,7 @@ import pytest
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.bookings.models import BookingStatus
 import pcapi.core.finance.factories as finance_factories
-import pcapi.core.offers.factories as offer_factories
+import pcapi.core.offers.factories as offers_factories
 from pcapi.scripts.stock.soft_delete_stock import soft_delete_stock
 
 
@@ -33,7 +33,7 @@ class SoftDeleteStockTest:
     @pytest.mark.usefixtures("db_session")
     def should_return_ok_if_stock_has_no_bookings_and_soft_delete_it(self):
         # Given
-        stock = offer_factories.StockFactory()
+        stock = offers_factories.StockFactory()
 
         # When
         soft_delete_stock(stock.id)

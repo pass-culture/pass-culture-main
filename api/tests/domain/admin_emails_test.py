@@ -5,9 +5,9 @@ import pytest
 
 from pcapi.core.categories import subcategories
 import pcapi.core.mails.testing as mails_testing
+from pcapi.core.offerers.factories import UserOffererFactory
 from pcapi.core.offers.factories import OfferFactory
 from pcapi.core.offers.factories import OffererFactory
-from pcapi.core.offers.factories import UserOffererFactory
 from pcapi.core.offers.models import OfferValidationStatus
 import pcapi.core.users.factories as users_factories
 from pcapi.domain.admin_emails import maybe_send_offerer_validation_email

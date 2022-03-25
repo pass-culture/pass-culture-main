@@ -9,21 +9,19 @@ from sqlalchemy import func
 import sqlalchemy.exc
 
 import pcapi.core.bookings.factories as bookings_factories
+import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.payments import api as payments_api
 from pcapi.core.payments.models import DepositType
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as user_models
-from pcapi.model_creators.generic_creators import create_offerer
-from pcapi.model_creators.generic_creators import create_user_offerer
-from pcapi.model_creators.generic_creators import create_venue
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.repository import repository
 
 
 @pytest.mark.usefixtures("db_session")
-def test_cannot_create_admin_that_can_book(app):
+def test_cannot_create_admin_that_can_book():
     # Given
     user = users_factories.UserFactory.build(roles=[user_models.UserRole.BENEFICIARY, user_models.UserRole.ADMIN])
 
@@ -40,15 +38,15 @@ class HasAccessTest:
 
         assert not user.has_access(offerer.id)
 
-    def test_does_not_have_access_if_not_validated(self, app):
-        user_offerer = offers_factories.UserOffererFactory(validationToken="token")
+    def test_does_not_have_access_if_not_validated(self):
+        user_offerer = offerers_factories.UserOffererFactory(validationToken="token")
         offerer = user_offerer.offerer
         user = user_offerer.user
 
         assert not user.has_access(offerer.id)
 
     def test_has_access(self):
-        user_offerer = offers_factories.UserOffererFactory()
+        user_offerer = offerers_factories.UserOffererFactory()
         offerer = user_offerer.offerer
         user = user_offerer.user
 
@@ -180,73 +178,18 @@ class SQLFunctionsTest:
         assert "the deposit was not found" in str(exc)
 
 
-class HasPhysicalVenuesTest:
-    @pytest.mark.usefixtures("db_session")
-    def test_webapp_user_has_no_venue(self, app):
-        # given
-        user = users_factories.UserFactory.build()
-
-        # when
-        repository.save(user)
-
-        # then
-        assert user.hasPhysicalVenues is False
-
-    @pytest.mark.usefixtures("db_session")
-    def test_pro_user_has_one_digital_venue_by_default(self, app):
-        # given
-        user = users_factories.UserFactory.build()
-        offerer = create_offerer()
-        user_offerer = create_user_offerer(user, offerer)
-        offerer_venue = create_venue(offerer, is_virtual=True, siret=None)
-
-        # when
-        repository.save(offerer_venue, user_offerer)
-
-        # then
-        assert user.hasPhysicalVenues is False
-
-    @pytest.mark.usefixtures("db_session")
-    def test_pro_user_has_one_digital_venue_and_a_physical_venue(self, app):
-        # given
-        user = users_factories.UserFactory.build()
-        offerer = create_offerer()
-        user_offerer = create_user_offerer(user, offerer)
-        offerer_virtual_venue = create_venue(offerer, is_virtual=True, siret=None)
-        offerer_physical_venue = create_venue(offerer)
-        repository.save(offerer_virtual_venue, offerer_physical_venue, user_offerer)
-
-        # then
-        assert user.hasPhysicalVenues is True
-
-
-class needsToSeeTutorialsTest:
-    @pytest.mark.usefixtures("db_session")
-    def test_beneficiary_has_to_see_tutorials_when_not_already_seen(self, app):
-        # given
+class NeedsToSeeTutorialsTest:
+    def test_beneficiary_has_to_see_tutorials_when_not_already_seen(self):
         user = users_factories.BeneficiaryGrant18Factory.build(hasSeenTutorials=False)
-        # when
-        repository.save(user)
-        # then
-        assert user.needsToSeeTutorials is True
+        assert user.needsToSeeTutorials
 
-    @pytest.mark.usefixtures("db_session")
-    def test_beneficiary_has_not_to_see_tutorials_when_already_seen(self, app):
-        # given
+    def test_beneficiary_has_not_to_see_tutorials_when_already_seen(self):
         user = users_factories.BeneficiaryGrant18Factory.build(hasSeenTutorials=True)
-        # when
-        repository.save(user)
-        # then
-        assert user.needsToSeeTutorials is False
+        assert not user.needsToSeeTutorials
 
-    @pytest.mark.usefixtures("db_session")
-    def test_pro_user_has_not_to_see_tutorials_when_already_seen(self, app):
-        # given
+    def test_pro_user_has_not_to_see_tutorials_when_already_seen(self):
         user = users_factories.ProFactory.build()
-        # when
-        repository.save(user)
-        # then
-        assert user.needsToSeeTutorials is False
+        assert not user.needsToSeeTutorials
 
 
 class CalculateAgeTest:

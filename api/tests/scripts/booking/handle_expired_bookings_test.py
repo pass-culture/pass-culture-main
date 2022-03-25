@@ -16,7 +16,7 @@ from pcapi.core.educational.models import CollectiveBookingCancellationReasons
 from pcapi.core.educational.models import CollectiveBookingStatus
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
-from pcapi.core.offers import factories as offer_factories
+from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers.factories import ProductFactory
 from pcapi.core.testing import assert_num_queries
 from pcapi.scripts.booking import handle_expired_bookings
@@ -491,7 +491,7 @@ class NotifyOfferersOfExpiredBookingsTest:
         institution = educational_factories.EducationalInstitutionFactory(
             name="Collège Dupont", city="Tourcoing", postalCode=59200
         )
-        stock_one = offer_factories.EducationalEventStockFactory(
+        stock_one = offers_factories.EducationalEventStockFactory(
             dnBookedQuantity=0,
             offer__bookingEmail="test@mail.com",
             beginningDatetime=datetime(2022, 11, 24, 12, 53, 00),
@@ -506,7 +506,7 @@ class NotifyOfferersOfExpiredBookingsTest:
             educationalBooking__educationalInstitution=institution,
         )
 
-        stock_two = offer_factories.EducationalEventStockFactory(
+        stock_two = offers_factories.EducationalEventStockFactory(
             dnBookedQuantity=0,
             offer__bookingEmail="new_test@mail.com",
             beginningDatetime=datetime(2022, 12, 3, 20, 00, 00),

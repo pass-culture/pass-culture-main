@@ -1,6 +1,6 @@
 import pytest
 
-import pcapi.core.offers.factories as offers_factories
+import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.users import testing as sendinblue_testing
 from pcapi.models.user_offerer import UserOfferer
 
@@ -11,7 +11,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 class Returns202Test:
     def expect_user_offerer_attachment_to_be_validated(self, client):
         # Given
-        user_offerer = offers_factories.UserOffererFactory(validationToken="TOKEN")
+        user_offerer = offerers_factories.UserOffererFactory(validationToken="TOKEN")
 
         # When
         response = client.get(f"/validate/user-offerer/{user_offerer.validationToken}")

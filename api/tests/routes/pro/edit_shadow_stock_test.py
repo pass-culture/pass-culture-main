@@ -2,7 +2,8 @@ from datetime import datetime
 
 import pytest
 
-from pcapi.core.offers import factories as offer_factories
+import pcapi.core.offerers.factories as offerers_factories
+import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import Stock
 from pcapi.utils.human_ids import humanize
 
@@ -13,10 +14,10 @@ pytestmark = pytest.mark.usefixtures("db_session")
 class Return200Test:
     def test_edit_shadow_stock(self, client):
         # Given
-        stock = offer_factories.EducationalEventShadowStockFactory(
+        stock = offers_factories.EducationalEventShadowStockFactory(
             educationalPriceDetail="Détail du prix",
         )
-        offer_factories.UserOffererFactory(user__email="user@example.com", offerer=stock.offer.venue.managingOfferer)
+        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=stock.offer.venue.managingOfferer)
 
         # When
         stock_edition_payload = {
@@ -37,10 +38,10 @@ class Return200Test:
 
     def test_edit_shadow_stock_with_no_payload(self, client):
         # Given
-        stock = offer_factories.EducationalEventShadowStockFactory(
+        stock = offers_factories.EducationalEventShadowStockFactory(
             educationalPriceDetail="Détail du prix",
         )
-        offer_factories.UserOffererFactory(user__email="user@example.com", offerer=stock.offer.venue.managingOfferer)
+        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=stock.offer.venue.managingOfferer)
 
         # When
         stock_edition_payload = {}
@@ -60,10 +61,10 @@ class Return200Test:
 
 class Return403Test:
     def test_edit_educational_stocks_should_not_be_possible_when_user_not_linked_to_offerer(self, app, client):
-        stock = offer_factories.EducationalEventShadowStockFactory(
+        stock = offers_factories.EducationalEventShadowStockFactory(
             educationalPriceDetail="Détail du prix",
         )
-        offer_factories.UserOffererFactory(
+        offerers_factories.UserOffererFactory(
             user__email="user@example.com",
         )
 
@@ -85,10 +86,10 @@ class Return403Test:
 class Return400Test:
     def should_raise_error_when_educational_price_detail_length_is_greater_than_1000(self, app, client):
         # Given
-        stock = offer_factories.EducationalEventShadowStockFactory(
+        stock = offers_factories.EducationalEventShadowStockFactory(
             educationalPriceDetail="Détail du prix",
         )
-        offer_factories.UserOffererFactory(user__email="user@example.com", offerer=stock.offer.venue.managingOfferer)
+        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=stock.offer.venue.managingOfferer)
 
         # When
         stock_edition_payload = {
@@ -104,7 +105,7 @@ class Return400Test:
 
     def should_raise_error_when_offer_is_not_showcase(self, app, client):
         # Given
-        stock = offer_factories.EducationalEventStockFactory(
+        stock = offers_factories.EducationalEventStockFactory(
             beginningDatetime=datetime(2021, 12, 18),
             price=1200,
             numberOfTickets=32,
@@ -127,7 +128,7 @@ class Return400Test:
                 "isShowcase": False,
             },
         )
-        offer_factories.UserOffererFactory(user__email="user@example.com", offerer=stock.offer.venue.managingOfferer)
+        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=stock.offer.venue.managingOfferer)
 
         # When
         stock_edition_payload = {

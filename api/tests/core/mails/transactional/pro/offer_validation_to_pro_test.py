@@ -5,7 +5,7 @@ from pcapi.core.mails.transactional.pro.offer_validation_to_pro import retrieve_
 from pcapi.core.mails.transactional.pro.offer_validation_to_pro import retrieve_data_for_offer_rejection_email
 from pcapi.core.mails.transactional.pro.offer_validation_to_pro import send_offer_validation_status_update_email
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
-import pcapi.core.offers.factories as offer_factories
+import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.factories import OfferFactory
 from pcapi.core.offers.factories import VenueFactory
 from pcapi.core.offers.models import OfferValidationStatus
@@ -19,7 +19,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 class SendinblueSendOfferValidationTest:
     def test_get_validation_approval_correct_email_metadata(self):
         # Given
-        offer = offer_factories.OfferFactory(name="Ma petite offre", venue__name="Mon stade")
+        offer = offers_factories.OfferFactory(name="Ma petite offre", venue__name="Mon stade")
 
         # When
         new_offer_validation_email = retrieve_data_for_offer_approval_email(offer)
@@ -54,7 +54,7 @@ class SendinblueSendOfferValidationTest:
 
     def test_get_validation_rejection_correct_email_metadata(self):
         # Given
-        offer = offer_factories.OfferFactory(name="Ma petite offre", venue__name="Mon stade")
+        offer = offers_factories.OfferFactory(name="Ma petite offre", venue__name="Mon stade")
 
         # When
         new_offer_validation_email = retrieve_data_for_offer_rejection_email(offer)

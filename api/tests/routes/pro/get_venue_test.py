@@ -1,5 +1,6 @@
 import pytest
 
+import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.utils.date import format_into_utc_date
@@ -22,7 +23,7 @@ class Returns200Test:
     @pytest.mark.usefixtures("db_session")
     def when_user_has_rights_on_managing_offerer(self, client, banner_meta_in, banner_meta_out):
         # given
-        user_offerer = offers_factories.UserOffererFactory(user__email="user.pro@test.com")
+        user_offerer = offerers_factories.UserOffererFactory(user__email="user.pro@test.com")
         venue = offers_factories.VenueFactory(
             name="L'encre et la plume", managingOfferer=user_offerer.offerer, bannerMeta=banner_meta_in
         )

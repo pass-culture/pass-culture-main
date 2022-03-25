@@ -3,13 +3,13 @@ from dataclasses import asdict
 import pytest
 
 from pcapi.core.bookings.factories import BookingFactory
+from pcapi.core.offerers.factories import UserOffererFactory
 from pcapi.core.offerers.factories import VenueLabelFactory
 from pcapi.core.offerers.models import VenueTypeCode
 from pcapi.core.offers.factories import BankInformationFactory
 from pcapi.core.offers.factories import OfferFactory
 from pcapi.core.offers.factories import OffererFactory
 from pcapi.core.offers.factories import StockFactory
-from pcapi.core.offers.factories import UserOffererFactory
 from pcapi.core.offers.factories import VenueFactory
 from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.core.users.external import get_pro_attributes

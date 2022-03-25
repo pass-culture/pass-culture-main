@@ -1,7 +1,7 @@
 from unittest.mock import patch
 
+import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offerers.models import Offerer
-import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.core.users.models import User
 from pcapi.models.user_offerer import UserOfferer
@@ -15,7 +15,7 @@ class UserOffererViewTest:
     def test_delete_user_offerer(self, mocked_validate_csrf_token, client):
         users_factories.AdminFactory(email="admin@example.com")
 
-        user_offerer = offers_factories.UserOffererFactory()
+        user_offerer = offerers_factories.UserOffererFactory()
 
         api_client = client.with_session_auth("admin@example.com")
 

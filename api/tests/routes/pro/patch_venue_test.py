@@ -38,7 +38,7 @@ class Returns200Test:
     @pytest.mark.usefixtures("db_session")
     def test_should_update_venue(self, app) -> None:
         # given
-        user_offerer = offers_factories.UserOffererFactory()
+        user_offerer = offerers_factories.UserOffererFactory()
         venue = offers_factories.VenueFactory(name="old name", managingOfferer=user_offerer.offerer)
 
         venue_label = offerers_factories.VenueLabelFactory(label="CAC - Centre d'art contemporain d'intérêt national")
@@ -73,7 +73,7 @@ class Returns200Test:
     @pytest.mark.usefixtures("db_session")
     @patch("pcapi.routes.pro.venues.update_all_venue_offers_email_job.delay")
     def test_edit_venue_booking_email_with_applied_on_all_offers(self, mocked_update_all_venue_offers_email_job, app):
-        user_offerer = offers_factories.UserOffererFactory()
+        user_offerer = offerers_factories.UserOffererFactory()
         venue = offers_factories.VenueFactory(
             name="old name", managingOfferer=user_offerer.offerer, bookingEmail="old.venue@email.com"
         )
@@ -122,7 +122,7 @@ class Returns200Test:
     def test_edit_venue_withdrawal_details_with_applied_on_all_offers(
         self, mocked_update_all_venue_offers_withdrawal_details_job, app
     ):
-        user_offerer = offers_factories.UserOffererFactory()
+        user_offerer = offerers_factories.UserOffererFactory()
         venue = offers_factories.VenueFactory(
             name="old name",
             managingOfferer=user_offerer.offerer,
@@ -155,7 +155,7 @@ class Returns200Test:
     def test_edit_venue_accessibility_with_applied_on_all_offers(
         self, mocked_update_all_venue_offers_accessibility_job, app
     ):
-        user_offerer = offers_factories.UserOffererFactory()
+        user_offerer = offerers_factories.UserOffererFactory()
         venue = offers_factories.VenueFactory(
             name="old name",
             managingOfferer=user_offerer.offerer,
@@ -190,7 +190,7 @@ class Returns200Test:
     @pytest.mark.usefixtures("db_session")
     def when_siret_does_not_change(self, app) -> None:
         # Given
-        user_offerer = offers_factories.UserOffererFactory()
+        user_offerer = offerers_factories.UserOffererFactory()
         venue = offers_factories.VenueFactory(
             managingOfferer=user_offerer.offerer,
         )
@@ -206,7 +206,7 @@ class Returns200Test:
 
     @pytest.mark.usefixtures("db_session")
     def test_add_business_unit_id(self, app) -> None:
-        user_offerer = offers_factories.UserOffererFactory()
+        user_offerer = offerers_factories.UserOffererFactory()
         venue = offers_factories.VenueFactory(
             managingOfferer=user_offerer.offerer,
             businessUnit=None,
@@ -227,7 +227,7 @@ class Returns200Test:
 
     @pytest.mark.usefixtures("db_session")
     def test_remove_business_unit_id(self, app) -> None:
-        user_offerer = offers_factories.UserOffererFactory()
+        user_offerer = offerers_factories.UserOffererFactory()
         venue = offers_factories.VenueFactory(
             managingOfferer=user_offerer.offerer,
         )
@@ -245,7 +245,7 @@ class Returns200Test:
 
     @pytest.mark.usefixtures("db_session")
     def test_error_add_business_unit_id(self, app) -> None:
-        user_offerer = offers_factories.UserOffererFactory()
+        user_offerer = offerers_factories.UserOffererFactory()
         venue = offers_factories.VenueFactory(
             managingOfferer=user_offerer.offerer,
             businessUnit=None,
@@ -266,7 +266,7 @@ class Returns200Test:
 @pytest.mark.usefixtures("db_session")
 @pytest.mark.parametrize("data, key", venue_malformed_test_data)
 def test_update_venue_malformed(app, client, data, key):
-    user_offerer = offers_factories.UserOffererFactory()
+    user_offerer = offerers_factories.UserOffererFactory()
     venue = offers_factories.VenueFactory(
         managingOfferer=user_offerer.offerer,
     )

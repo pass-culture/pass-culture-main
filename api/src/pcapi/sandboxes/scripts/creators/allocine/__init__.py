@@ -1,10 +1,10 @@
 from random import randint
 
 from pcapi.core.categories import subcategories
+import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.providers.factories as providers_factories
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.model_creators.generic_creators import create_offerer
-from pcapi.model_creators.generic_creators import create_user_offerer
 from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.specific_creators import create_offer_with_event_product
 from pcapi.repository import repository
@@ -38,10 +38,7 @@ def save_allocine_sandbox() -> None:
         siren=sirene.siren,
     )
 
-    user_offerer = create_user_offerer(
-        offerer=offerer,
-        user=pro,
-    )
+    offerers_factories.UserOffererFactory(offerer=offerer, user=pro)
 
     venue = create_venue(
         offerer,
@@ -60,7 +57,7 @@ def save_allocine_sandbox() -> None:
 
     venue_provider = providers_factories.VenueProviderFactory(venue=venue, provider=provider)
 
-    repository.save(offerer, user_offerer, venue, provider, venue_provider)
+    repository.save(offerer, venue, provider, venue_provider)
 
     offer = create_offer_with_event_product(
         venue,

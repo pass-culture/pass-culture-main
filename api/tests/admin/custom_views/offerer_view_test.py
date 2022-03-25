@@ -4,6 +4,7 @@ import pytest
 
 import pcapi.core.bookings.factories as booking_factories
 from pcapi.core.bookings.models import BookingStatus
+import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offerers.models import Offerer
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.users import testing as sendinblue_testing
@@ -82,7 +83,7 @@ class OffererViewTest:
         venue = offers_factories.VenueFactory()
         offerer = venue.managingOfferer
         pro_user = users_factories.ProFactory()
-        offers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
+        offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
         if booking_status is not None:
             booking_factories.BookingFactory(stock__offer__venue=venue, status=booking_status)
 
@@ -115,7 +116,7 @@ class OffererViewTest:
         admin = users_factories.AdminFactory(email="user@example.com")
         venue = offers_factories.VenueFactory()
         offerer = venue.managingOfferer
-        offers_factories.UserOffererFactory(offerer=offerer)
+        offerers_factories.UserOffererFactory(offerer=offerer)
         booking_factories.BookingFactory(stock__offer__venue=venue, status=booking_status)
 
         api_client = client.with_session_auth(admin.email)
@@ -150,7 +151,7 @@ class OffererViewTest:
         offerer = offers_factories.OffererFactory(isActive=False)
         venue = offers_factories.VenueFactory(managingOfferer=offerer)
         pro_user = users_factories.ProFactory()
-        offers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
+        offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
 
         api_client = client.with_session_auth(admin.email)
         response = api_client.post(
@@ -181,7 +182,7 @@ class OffererViewTest:
         admin = users_factories.AdminFactory(email="user@example.com")
         venue = offers_factories.VenueFactory(bookingEmail="booking@example.com")
         pro_user = users_factories.ProFactory()
-        offers_factories.UserOffererFactory(user=pro_user, offerer=venue.managingOfferer)
+        offerers_factories.UserOffererFactory(user=pro_user, offerer=venue.managingOfferer)
 
         api_client = client.with_session_auth(admin.email)
         response = api_client.post(
@@ -212,7 +213,7 @@ class OffererViewTest:
         admin = users_factories.AdminFactory(email="user@example.com")
         venue = offers_factories.VenueFactory()
         booking_factories.BookingFactory(stock__offer__venue=venue, status=booking_status)
-        offers_factories.UserOffererFactory(offerer=venue.managingOfferer)
+        offerers_factories.UserOffererFactory(offerer=venue.managingOfferer)
 
         api_client = client.with_session_auth(admin.email)
         response = api_client.post(

@@ -4,11 +4,12 @@ from datetime import timedelta
 from freezegun import freeze_time
 import pytest
 
-from pcapi.core.bookings import factories as booking_factories
+import pcapi.core.bookings.factories as booking_factories
 from pcapi.core.bookings.models import Booking
 from pcapi.core.educational.models import EducationalBooking
 import pcapi.core.educational.testing as adage_api_testing
-from pcapi.core.offers import factories as offer_factories
+import pcapi.core.offerers.factories as offerers_factories
+import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import Stock
 from pcapi.core.testing import override_settings
 from pcapi.routes.adage.v1.serialization.prebooking import EducationalBookingEdition
@@ -23,14 +24,14 @@ pytestmark = pytest.mark.usefixtures("db_session")
 class Return200Test:
     def test_edit_educational_stock(self, client):
         # Given
-        stock = offer_factories.EducationalEventStockFactory(
+        stock = offers_factories.EducationalEventStockFactory(
             beginningDatetime=datetime(2021, 12, 18),
             price=1200,
             numberOfTickets=32,
             bookingLimitDatetime=datetime(2021, 12, 1),
             educationalPriceDetail="Détail du prix",
         )
-        offer_factories.UserOffererFactory(user__email="user@example.com", offerer=stock.offer.venue.managingOfferer)
+        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=stock.offer.venue.managingOfferer)
 
         # When
         stock_edition_payload = {
@@ -65,7 +66,7 @@ class Return200Test:
 
     def test_edit_educational_stock_partially(self, client):
         # Given
-        stock = offer_factories.EducationalEventStockFactory(
+        stock = offers_factories.EducationalEventStockFactory(
             beginningDatetime=datetime(2021, 12, 18),
             price=1200,
             numberOfTickets=32,
@@ -73,7 +74,7 @@ class Return200Test:
             educationalPriceDetail="Détail du prix",
         )
         booking_factories.RefusedEducationalBookingFactory(stock=stock)
-        offer_factories.UserOffererFactory(user__email="user@example.com", offerer=stock.offer.venue.managingOfferer)
+        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=stock.offer.venue.managingOfferer)
 
         # When
         stock_edition_payload = {
@@ -98,7 +99,7 @@ class Return200Test:
     @override_settings(ADAGE_API_URL="https://adage_base_url")
     def test_edit_educational_stock_with_pending_booking(self, client):
         # Given
-        stock = offer_factories.EducationalEventStockFactory(
+        stock = offers_factories.EducationalEventStockFactory(
             beginningDatetime=datetime(2021, 12, 18),
             price=1200,
             numberOfTickets=32,
@@ -106,7 +107,7 @@ class Return200Test:
             educationalPriceDetail="Détail du prix",
         )
         booking = booking_factories.PendingEducationalBookingFactory(stock=stock)
-        offer_factories.UserOffererFactory(user__email="user@example.com", offerer=stock.offer.venue.managingOfferer)
+        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=stock.offer.venue.managingOfferer)
 
         # When
         stock_edition_payload = {
@@ -141,7 +142,7 @@ class Return200Test:
     @override_settings(ADAGE_API_URL="https://adage_base_url")
     def test_edit_educational_stock_does_not_send_notification_when_no_modification(self, client):
         # Given
-        stock = offer_factories.EducationalEventStockFactory(
+        stock = offers_factories.EducationalEventStockFactory(
             beginningDatetime=datetime(2021, 12, 18),
             price=1200,
             numberOfTickets=32,
@@ -149,7 +150,7 @@ class Return200Test:
             educationalPriceDetail="Détail du prix",
         )
         booking_factories.PendingEducationalBookingFactory(stock=stock)
-        offer_factories.UserOffererFactory(user__email="user@example.com", offerer=stock.offer.venue.managingOfferer)
+        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=stock.offer.venue.managingOfferer)
 
         # When
         stock_edition_payload = {}
@@ -164,11 +165,11 @@ class Return200Test:
 @freeze_time("2020-11-17 15:00:00")
 class Return403Test:
     def test_edit_educational_stocks_should_not_be_possible_when_user_not_linked_to_offerer(self, app, client):
-        stock = offer_factories.EducationalEventStockFactory(
+        stock = offers_factories.EducationalEventStockFactory(
             beginningDatetime=datetime(2021, 12, 18),
             price=1200,
         )
-        offer_factories.UserOffererFactory(
+        offerers_factories.UserOffererFactory(
             user__email="user@example.com",
         )
 
@@ -192,13 +193,13 @@ class Return403Test:
 class Return400Test:
     def should_not_allow_number_of_tickets_to_be_negative_on_edition(self, app, client):
         # Given
-        stock = offer_factories.EducationalEventStockFactory(
+        stock = offers_factories.EducationalEventStockFactory(
             beginningDatetime=datetime(2021, 12, 18),
             price=1200,
             numberOfTickets=32,
             bookingLimitDatetime=datetime(2021, 12, 1),
         )
-        offer_factories.UserOffererFactory(user__email="user@example.com", offerer=stock.offer.venue.managingOfferer)
+        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=stock.offer.venue.managingOfferer)
 
         # When
         stock_edition_payload = {
@@ -216,13 +217,13 @@ class Return400Test:
 
     def should_not_allow_price_to_be_negative_on_creation(self, app, client):
         # Given
-        stock = offer_factories.EducationalEventStockFactory(
+        stock = offers_factories.EducationalEventStockFactory(
             beginningDatetime=datetime(2021, 12, 18),
             price=1200,
             numberOfTickets=32,
             bookingLimitDatetime=datetime(2021, 12, 1),
         )
-        offer_factories.UserOffererFactory(user__email="user@example.com", offerer=stock.offer.venue.managingOfferer)
+        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=stock.offer.venue.managingOfferer)
 
         # When
         stock_edition_payload = {
@@ -240,13 +241,13 @@ class Return400Test:
 
     def should_not_accept_payload_with_bookingLimitDatetime_after_beginningDatetime(self, app, client):
         # Given
-        stock = offer_factories.EducationalEventStockFactory(
+        stock = offers_factories.EducationalEventStockFactory(
             beginningDatetime=datetime(2021, 12, 18),
             price=1200,
             numberOfTickets=32,
             bookingLimitDatetime=datetime(2021, 12, 1),
         )
-        offer_factories.UserOffererFactory(user__email="user@example.com", offerer=stock.offer.venue.managingOfferer)
+        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=stock.offer.venue.managingOfferer)
 
         # When
         stock_edition_payload = {
@@ -264,8 +265,10 @@ class Return400Test:
 
     def should_not_edit_stock_when_event_expired(self, app, client):
         # Given
-        stock = offer_factories.EducationalEventStockFactory(beginningDatetime=datetime.utcnow() - timedelta(minutes=1))
-        offer_factories.UserOffererFactory(user__email="user@example.com", offerer=stock.offer.venue.managingOfferer)
+        stock = offers_factories.EducationalEventStockFactory(
+            beginningDatetime=datetime.utcnow() - timedelta(minutes=1)
+        )
+        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=stock.offer.venue.managingOfferer)
 
         # When
         stock_edition_payload = {
@@ -280,8 +283,8 @@ class Return400Test:
 
     def should_not_allow_stock_edition_when_numberOfTickets_has_been_set_to_none(self, app, client):
         # Given
-        stock = offer_factories.EducationalEventStockFactory()
-        offer_factories.UserOffererFactory(user__email="user@example.com", offerer=stock.offer.venue.managingOfferer)
+        stock = offers_factories.EducationalEventStockFactory()
+        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=stock.offer.venue.managingOfferer)
 
         # When
         stock_edition_payload = {
@@ -297,8 +300,8 @@ class Return400Test:
 
     def should_not_allow_stock_edition_when_totalPrice_has_been_set_to_none(self, app, client):
         # Given
-        stock = offer_factories.EducationalEventStockFactory()
-        offer_factories.UserOffererFactory(user__email="user@example.com", offerer=stock.offer.venue.managingOfferer)
+        stock = offers_factories.EducationalEventStockFactory()
+        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=stock.offer.venue.managingOfferer)
 
         # When
         stock_edition_payload = {
@@ -314,8 +317,8 @@ class Return400Test:
 
     def should_not_allow_stock_edition_when_beginnningDatetime_has_been_set_to_none(self, app, client):
         # Given
-        stock = offer_factories.EducationalEventStockFactory()
-        offer_factories.UserOffererFactory(user__email="user@example.com", offerer=stock.offer.venue.managingOfferer)
+        stock = offers_factories.EducationalEventStockFactory()
+        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=stock.offer.venue.managingOfferer)
 
         # When
         stock_edition_payload = {
@@ -331,11 +334,11 @@ class Return400Test:
 
     def should_raise_error_when_more_than_one_non_cancelled_bookings_associated_with_stock(self, app, client):
         # Given
-        stock = offer_factories.EducationalEventStockFactory(price=1200, quantity=2, dnBookedQuantity=2)
+        stock = offers_factories.EducationalEventStockFactory(price=1200, quantity=2, dnBookedQuantity=2)
         booking_factories.EducationalBookingFactory(stock=stock)
         booking_factories.EducationalBookingFactory(stock=stock)
 
-        offer_factories.UserOffererFactory(user__email="user@example.com", offerer=stock.offer.venue.managingOfferer)
+        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=stock.offer.venue.managingOfferer)
 
         # When
         stock_edition_payload = {
@@ -355,14 +358,14 @@ class Return400Test:
 
     def should_raise_error_when_educational_price_detail_length_is_greater_than_1000(self, app, client):
         # Given
-        stock = offer_factories.EducationalEventStockFactory(
+        stock = offers_factories.EducationalEventStockFactory(
             beginningDatetime=datetime(2021, 12, 18),
             price=1200,
             numberOfTickets=32,
             bookingLimitDatetime=datetime(2021, 12, 1),
             educationalPriceDetail="Détail du prix",
         )
-        offer_factories.UserOffererFactory(user__email="user@example.com", offerer=stock.offer.venue.managingOfferer)
+        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=stock.offer.venue.managingOfferer)
 
         # When
         stock_edition_payload = {

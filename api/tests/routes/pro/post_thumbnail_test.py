@@ -4,6 +4,7 @@ from unittest import mock
 
 import pytest
 
+import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offers import exceptions
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import Mediation
@@ -24,7 +25,7 @@ def offer_fixture():
 @pytest.fixture(name="offerer")
 def offerer_fixture(offer):
     an_offerer = offer.venue.managingOfferer
-    offers_factories.UserOffererFactory(
+    offerers_factories.UserOffererFactory(
         user__email="user@example.com",
         offerer=an_offerer,
     )

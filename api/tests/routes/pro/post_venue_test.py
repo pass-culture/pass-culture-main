@@ -26,7 +26,7 @@ def create_valid_venue_data(user=None):
     user_offerer_data = {"offerer__siren": "302559178"}
     if user:
         user_offerer_data["user"] = user
-    user_offerer = offers_factories.UserOffererFactory(**user_offerer_data)
+    user_offerer = offerers_factories.UserOffererFactory(**user_offerer_data)
     venue_label = offerers_factories.VenueLabelFactory(label="CAC - Centre d'art contemporain d'intérêt national")
 
     return {
@@ -220,7 +220,7 @@ venue_malformed_test_data = [
 @pytest.mark.usefixtures("db_session")
 @pytest.mark.parametrize("data, key", venue_malformed_test_data)
 def test_create_venue_malformed(app, client, data, key):
-    user_offerer = offers_factories.UserOffererFactory()
+    user_offerer = offerers_factories.UserOffererFactory()
 
     client = client.with_session_auth(user_offerer.user.email)
     response = client.post("/venues", json=data)
@@ -241,7 +241,7 @@ class VenueBannerTest:
             * venue's banner information have been updated
             * venue's banner information are sent back to the client
         """
-        user_offerer = offers_factories.UserOffererFactory()
+        user_offerer = offerers_factories.UserOffererFactory()
         venue = offers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
 
         image_content = (IMAGES_DIR / "mouette_full_size.jpg").read_bytes()
@@ -270,7 +270,7 @@ class VenueBannerTest:
             }
 
     def test_upload_image_missing(self, client):
-        user_offerer = offers_factories.UserOffererFactory()
+        user_offerer = offerers_factories.UserOffererFactory()
         venue = offers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
 
         client = client.with_session_auth(email=user_offerer.user.email)
@@ -281,7 +281,7 @@ class VenueBannerTest:
         assert response.json["code"] == "INVALID_BANNER_CONTENT"
 
     def test_upload_image_invalid_query_param(self, client):
-        user_offerer = offers_factories.UserOffererFactory()
+        user_offerer = offerers_factories.UserOffererFactory()
         venue = offers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
 
         url = f"/venues/{humanize(venue.id)}/banner"

@@ -15,7 +15,6 @@ from pcapi.models.criterion import Criterion
 from pcapi.models.offer_criterion import OfferCriterion
 from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.models.product import Product
-from pcapi.models.user_offerer import UserOfferer
 
 from . import models
 
@@ -30,14 +29,6 @@ class OffererFactory(BaseFactory):
     city = "Paris"
     siren = factory.Sequence(lambda n: f"{n:09}")
     isActive = True
-
-
-class UserOffererFactory(BaseFactory):
-    class Meta:
-        model = UserOfferer
-
-    user = factory.SubFactory(users_factories.ProFactory)
-    offerer = factory.SubFactory(OffererFactory)
 
 
 class VenueFactory(BaseFactory):

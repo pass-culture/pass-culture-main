@@ -10,6 +10,7 @@ from pcapi.core.categories import subcategories
 from pcapi.core.finance.factories import PaymentFactory
 from pcapi.core.finance.factories import PaymentStatusFactory
 from pcapi.core.finance.models import TransactionStatus
+from pcapi.core.offerers.factories import UserOffererFactory
 from pcapi.core.offers.factories import EventOfferFactory
 from pcapi.core.offers.factories import EventProductFactory
 from pcapi.core.offers.factories import EventStockFactory
@@ -17,7 +18,6 @@ from pcapi.core.offers.factories import OffererFactory
 from pcapi.core.offers.factories import ThingOfferFactory
 from pcapi.core.offers.factories import ThingProductFactory
 from pcapi.core.offers.factories import ThingStockFactory
-from pcapi.core.offers.factories import UserOffererFactory
 from pcapi.core.offers.factories import VenueFactory
 from pcapi.core.users.factories import BeneficiaryGrant18Factory
 from pcapi.core.users.factories import ProFactory

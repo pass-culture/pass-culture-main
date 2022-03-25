@@ -2,9 +2,10 @@ from unittest.mock import patch
 
 import pytest
 
-from pcapi.core.educational import factories as educational_factories
+import pcapi.core.educational.factories as educational_factories
 from pcapi.core.educational.models import CollectiveStock
-from pcapi.core.offers import factories as offer_factories
+import pcapi.core.offerers.factories as offerers_factories
+import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import Stock
 from pcapi.utils.human_ids import dehumanize
 from pcapi.utils.human_ids import humanize
@@ -16,8 +17,8 @@ pytestmark = pytest.mark.usefixtures("db_session")
 class Return200Test:
     def test_create_valid_stock_for_educational_offer(self, app, client):
         # Given
-        offer = offer_factories.EducationalEventOfferFactory()
-        offer_factories.UserOffererFactory(
+        offer = offers_factories.EducationalEventOfferFactory()
+        offerers_factories.UserOffererFactory(
             user__email="user@example.com",
             offerer=offer.venue.managingOfferer,
         )
@@ -48,8 +49,8 @@ class Return200Test:
         self, mocked_check_collective_offer_number_of_collective_stocks, app, client
     ):
         # Given
-        classic_offer = offer_factories.EducationalEventOfferFactory()
-        offer_factories.UserOffererFactory(
+        classic_offer = offers_factories.EducationalEventOfferFactory()
+        offerers_factories.UserOffererFactory(
             user__email="user@example.com",
             offerer=classic_offer.venue.managingOfferer,
         )
@@ -83,8 +84,8 @@ class Return200Test:
 class Return400Test:
     def test_create_educational_stocks_should_not_be_available_if_user_not_linked_to_offerer(self, app, client):
         # Given
-        offer = offer_factories.EducationalEventOfferFactory()
-        offer_factories.UserOffererFactory(
+        offer = offers_factories.EducationalEventOfferFactory()
+        offerers_factories.UserOffererFactory(
             user__email="user@example.com",
         )
 
@@ -108,8 +109,8 @@ class Return400Test:
 
     def should_not_allow_number_of_tickets_to_be_negative_on_creation(self, app, client):
         # Given
-        offer = offer_factories.EducationalEventOfferFactory()
-        offer_factories.UserOffererFactory(
+        offer = offers_factories.EducationalEventOfferFactory()
+        offerers_factories.UserOffererFactory(
             user__email="user@example.com",
             offerer=offer.venue.managingOfferer,
         )
@@ -132,8 +133,8 @@ class Return400Test:
 
     def should_not_allow_price_to_be_negative_on_creation(self, app, client):
         # Given
-        offer = offer_factories.EducationalEventOfferFactory()
-        offer_factories.UserOffererFactory(
+        offer = offers_factories.EducationalEventOfferFactory()
+        offerers_factories.UserOffererFactory(
             user__email="user@example.com",
             offerer=offer.venue.managingOfferer,
         )
@@ -156,8 +157,8 @@ class Return400Test:
 
     def should_not_accept_payload_with_bookingLimitDatetime_after_beginningDatetime(self, app, client):
         # Given
-        offer = offer_factories.EducationalEventOfferFactory()
-        offer_factories.UserOffererFactory(
+        offer = offers_factories.EducationalEventOfferFactory()
+        offerers_factories.UserOffererFactory(
             user__email="user@example.com",
             offerer=offer.venue.managingOfferer,
         )
@@ -184,8 +185,8 @@ class Return400Test:
 
     def should_not_accept_payload_with_price_details_with_more_than_1000_caracters(self, app, client):
         # Given
-        offer = offer_factories.EducationalEventOfferFactory()
-        offer_factories.UserOffererFactory(
+        offer = offers_factories.EducationalEventOfferFactory()
+        offerers_factories.UserOffererFactory(
             user__email="user@example.com",
             offerer=offer.venue.managingOfferer,
         )
@@ -209,8 +210,8 @@ class Return400Test:
 
     def should_not_allow_multiple_stocks(self, client):
         # Given
-        offer = offer_factories.EducationalEventStockFactory().offer
-        offer_factories.UserOffererFactory(
+        offer = offers_factories.EducationalEventStockFactory().offer
+        offerers_factories.UserOffererFactory(
             user__email="user@example.com",
             offerer=offer.venue.managingOfferer,
         )

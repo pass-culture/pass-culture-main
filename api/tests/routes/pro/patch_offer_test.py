@@ -3,6 +3,7 @@ from datetime import datetime
 import pytest
 
 from pcapi.core.categories import subcategories
+import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import OfferValidationStatus
@@ -18,7 +19,7 @@ class Returns200Test:
     def test_patch_offer(self, app, client):
         # Given
         offer = offers_factories.OfferFactory(subcategoryId="SEANCE_CINE")
-        offers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
+        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
 
         # When
         data = {
@@ -44,7 +45,7 @@ class Returns400Test:
     def when_trying_to_patch_forbidden_attributes(self, app, client):
         # Given
         offer = offers_factories.OfferFactory()
-        offers_factories.UserOffererFactory(
+        offerers_factories.UserOffererFactory(
             user__email="user@example.com",
             offerer=offer.venue.managingOfferer,
         )
@@ -82,7 +83,7 @@ class Returns400Test:
         # Given
         virtual_venue = offers_factories.VirtualVenueFactory()
         offer = offers_factories.OfferFactory(venue=virtual_venue)
-        offers_factories.UserOffererFactory(
+        offerers_factories.UserOffererFactory(
             user__email="user@example.com",
             offerer=offer.venue.managingOfferer,
         )
@@ -102,7 +103,7 @@ class Returns400Test:
         # Given
         virtual_venue = offers_factories.VirtualVenueFactory()
         offer = offers_factories.OfferFactory(venue=virtual_venue)
-        offers_factories.UserOffererFactory(
+        offerers_factories.UserOffererFactory(
             user__email="user@example.com",
             offerer=offer.venue.managingOfferer,
         )
@@ -122,7 +123,7 @@ class Returns400Test:
         # Given
         virtual_venue = offers_factories.VirtualVenueFactory()
         offer = offers_factories.OfferFactory(venue=virtual_venue)
-        offers_factories.UserOffererFactory(
+        offerers_factories.UserOffererFactory(
             user__email="user@example.com",
             offerer=offer.venue.managingOfferer,
         )
@@ -142,7 +143,7 @@ class Returns400Test:
         # Given
         virtual_venue = offers_factories.VirtualVenueFactory()
         offer = offers_factories.OfferFactory(venue=virtual_venue)
-        offers_factories.UserOffererFactory(
+        offerers_factories.UserOffererFactory(
             user__email="user@example.com",
             offerer=offer.venue.managingOfferer,
         )
@@ -160,7 +161,7 @@ class Returns400Test:
 
     def test_patch_non_approved_offer_fails(self, app, client):
         offer = offers_factories.OfferFactory(validation=OfferValidationStatus.PENDING)
-        offers_factories.UserOffererFactory(
+        offerers_factories.UserOffererFactory(
             user__email="user@example.com",
             offerer=offer.venue.managingOfferer,
         )
@@ -178,7 +179,7 @@ class Returns403Test:
     def when_user_is_not_attached_to_offerer(self, app, client):
         # Given
         offer = offers_factories.OfferFactory(name="Old name")
-        offers_factories.UserOffererFactory(user__email="user@example.com")
+        offerers_factories.UserOffererFactory(user__email="user@example.com")
 
         # When
         data = {"name": "New name"}

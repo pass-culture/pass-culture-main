@@ -5,7 +5,7 @@ from typing import Optional
 from freezegun.api import freeze_time
 import pytest
 
-from pcapi.core.offers import factories as offer_factories
+from pcapi.core.offers import factories as offers_factories
 from pcapi.core.testing import assert_num_queries
 
 from tests.routes.adage_iframe.utils_create_test_token import create_adage_jwt_fake_valid_token
@@ -33,11 +33,11 @@ def _create_adage_valid_token_with_email(
 class Returns200Test:
     def test_get_offer(self, client):
         # Given
-        offer = offer_factories.EducationalEventOfferFactory(name="offer name", description="offer description")
-        offer_factories.EducationalEventStockFactory(
+        offer = offers_factories.EducationalEventOfferFactory(name="offer name", description="offer description")
+        offers_factories.EducationalEventStockFactory(
             beginningDatetime=datetime(2021, 5, 15), offer=offer, isSoftDeleted=True
         )
-        stock2 = offer_factories.EducationalEventStockFactory(
+        stock2 = offers_factories.EducationalEventStockFactory(
             beginningDatetime=datetime(2021, 5, 16), offer=offer, price=200, isSoftDeleted=False
         )
 

@@ -4,10 +4,10 @@ from unittest.mock import patch
 
 import pytest
 
+from pcapi.core.offerers.factories import UserOffererFactory
 from pcapi.core.offerers.factories import VirtualVenueTypeFactory
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offers.factories import OffererFactory
-from pcapi.core.offers.factories import UserOffererFactory
 from pcapi.core.users import testing as sendinblue_testing
 from pcapi.core.users.factories import AdminFactory
 from pcapi.core.users.factories import ProFactory
