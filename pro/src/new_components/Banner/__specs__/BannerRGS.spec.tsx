@@ -9,7 +9,7 @@ describe('src | new_components | BannerRGS', () => {
     render(<BannerRGS />)
     expect(
       screen.getByRole('link', {
-        name: 'Consulter nos recommendations de sécurité',
+        name: 'Consulter nos recommandations de sécurité',
       })
     ).toHaveAttribute(
       'href',

@@ -66,7 +66,7 @@ describe('src | components | pages | SignIn', () => {
     expect(screen.getByText('Mot de passe égaré ?')).toBeInTheDocument()
     expect(
       screen.getByRole('link', {
-        name: 'Consulter nos recommendations de sécurité',
+        name: 'Consulter nos recommandations de sécurité',
       })
     ).toHaveAttribute(
       'href',
