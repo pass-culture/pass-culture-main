@@ -4,7 +4,7 @@ import { useLocation } from 'react-router-dom'
 
 import Unavailable from 'components/pages/Errors/Unavailable/Unavailable'
 import Homepage from 'components/pages/Home/Homepage'
-import LostPasswordContainer from 'components/pages/LostPassword/LostPasswordContainer'
+import LostPasswordRoute from 'components/pages/LostPassword/LostPasswordRoute'
 import OfferersLayout from 'components/pages/Offerers/OfferersLayout'
 import OfferLayoutContainer from 'components/pages/Offers/Offer/OfferLayoutContainer'
 import ReimbursementsContainer from 'components/pages/Reimbursements/ReimbursementsContainer'
@@ -221,7 +221,7 @@ const routes = [
     title: 'Edition d’un stock d’une offre scolaire',
   },
   {
-    component: LostPasswordContainer,
+    component: LostPasswordRoute,
     exact: true,
     path: '/mot-de-passe-perdu',
     title: 'Mot de passe perdu',
@@ -230,7 +230,7 @@ const routes = [
       layoutConfig: {
         fullscreen: true,
         pageName: 'sign-in',
-      }
+      },
     },
   },
 ]
