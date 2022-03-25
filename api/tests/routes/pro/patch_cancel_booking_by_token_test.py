@@ -3,8 +3,7 @@ import pytest
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingStatus
-from pcapi.core.offerers.factories import ApiKeyFactory
-from pcapi.core.offerers.factories import DEFAULT_CLEAR_API_KEY
+import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
 import pcapi.notifications.push.testing as push_testing
@@ -16,12 +15,12 @@ class Returns204Test:
         # Given
         stock = offers_factories.EventStockFactory(offer__name="Chouette concert")
         booking = bookings_factories.IndividualBookingFactory(stock=stock)
-        ApiKeyFactory(offerer=booking.offerer)
+        offerers_factories.ApiKeyFactory(offerer=booking.offerer)
 
         # When
         response = client.patch(
             f"/v2/bookings/cancel/token/{booking.token}",
-            headers={"Authorization": "Bearer " + DEFAULT_CLEAR_API_KEY},
+            headers={"Authorization": "Bearer " + offerers_factories.DEFAULT_CLEAR_API_KEY},
         )
 
         # Then
@@ -44,12 +43,12 @@ class Returns204Test:
     def test_should_returns_204_with_lowercase_token(self, client):
         # Given
         booking = bookings_factories.IndividualBookingFactory()
-        ApiKeyFactory(offerer=booking.offerer)
+        offerers_factories.ApiKeyFactory(offerer=booking.offerer)
 
         # When
         response = client.patch(
             f"/v2/bookings/cancel/token/{booking.token.lower()}",
-            headers={"Authorization": "Bearer " + DEFAULT_CLEAR_API_KEY},
+            headers={"Authorization": "Bearer " + offerers_factories.DEFAULT_CLEAR_API_KEY},
         )
 
         assert response.status_code == 204
@@ -75,12 +74,12 @@ class Returns403Test:
     def when_the_api_key_is_not_linked_to_the_right_offerer(self, client):
         # Given
         booking = bookings_factories.BookingFactory()
-        ApiKeyFactory()  # another offerer's API key
+        offerers_factories.ApiKeyFactory()  # another offerer's API key
 
         # When
         response = client.patch(
             f"/v2/bookings/cancel/token/{booking.token}",
-            headers={"Authorization": "Bearer " + DEFAULT_CLEAR_API_KEY},
+            headers={"Authorization": "Bearer " + offerers_factories.DEFAULT_CLEAR_API_KEY},
         )
 
         # Then
@@ -91,7 +90,7 @@ class Returns403Test:
     def when_the_logged_user_has_not_rights_on_offerer(self, client):
         # Given
         booking = bookings_factories.BookingFactory()
-        another_pro_user = offers_factories.UserOffererFactory().user
+        another_pro_user = offerers_factories.UserOffererFactory().user
 
         # When
         url = f"/v2/bookings/cancel/token/{booking.token}"
@@ -107,7 +106,7 @@ class Returns403Test:
     def test_should_prevent_a_used_booking_from_being_cancelled(self, client):
         # Given
         booking = bookings_factories.UsedBookingFactory()
-        pro_user = offers_factories.UserOffererFactory(offerer=booking.offerer).user
+        pro_user = offerers_factories.UserOffererFactory(offerer=booking.offerer).user
 
         # When
         url = f"/v2/bookings/cancel/token/{booking.token}"
@@ -136,7 +135,7 @@ class Returns410Test:
     def test_cancel_a_booking_already_cancelled(self, client):
         # Given
         booking = bookings_factories.CancelledBookingFactory()
-        pro_user = offers_factories.UserOffererFactory(offerer=booking.offerer).user
+        pro_user = offerers_factories.UserOffererFactory(offerer=booking.offerer).user
 
         # When
         url = f"/v2/bookings/cancel/token/{booking.token}"

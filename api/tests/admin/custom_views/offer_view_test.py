@@ -11,6 +11,7 @@ from pcapi.connectors.api_entreprises import ApiEntrepriseException
 from pcapi.core import testing
 import pcapi.core.bookings.factories as booking_factories
 from pcapi.core.bookings.models import BookingStatus
+import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offers.api import import_offer_validation_config
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.factories import VenueFactory
@@ -133,7 +134,7 @@ class OfferValidationViewTest:
         venue = VenueFactory()
         offerer = venue.managingOfferer
         pro_user = users_factories.ProFactory(email="pro@example.com")
-        offers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
+        offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
         # newest offer
         offers_factories.OfferFactory(
             validation=OfferValidationStatus.PENDING,
@@ -182,7 +183,7 @@ class OfferValidationViewTest:
         offerer = venue.managingOfferer
 
         pro_user = users_factories.ProFactory(email="pro@example.com")
-        offers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
+        offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
 
         offer = offers_factories.OfferFactory(
             validation=OfferValidationStatus.PENDING,
@@ -221,7 +222,7 @@ class OfferValidationViewTest:
         venue = VenueFactory(bookingEmail=None)
         offerer = venue.managingOfferer
         pro_user = users_factories.ProFactory(email="pro@example.com")
-        offers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
+        offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
 
         offer = offers_factories.OfferFactory(validation=OfferValidationStatus.PENDING, isActive=True, venue=venue)
 
@@ -591,7 +592,7 @@ class OfferValidationViewTest:
         venue = VenueFactory()
         offerer = venue.managingOfferer
         pro_user = users_factories.ProFactory(email="pro@example.com")
-        offers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
+        offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
         offer1 = offers_factories.OfferFactory(
             validation=OfferValidationStatus.PENDING,
             isActive=True,
@@ -640,7 +641,7 @@ class OfferValidationViewTest:
         venue = VenueFactory()
         offerer = venue.managingOfferer
         pro_user = users_factories.ProFactory(email="pro@example.com")
-        offers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
+        offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
         offer = offers_factories.OfferFactory(
             validation=OfferValidationStatus.PENDING,
             isActive=True,

@@ -7,6 +7,7 @@ from pcapi.core.educational.factories import CollectiveOfferTemplateFactory
 from pcapi.core.educational.factories import CollectiveStockFactory
 from pcapi.core.educational.models import CollectiveOffer
 from pcapi.core.educational.models import CollectiveOfferTemplate
+import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import OfferValidationStatus
@@ -23,7 +24,7 @@ class Returns204Test:
         venue = offer1.venue
         offer2 = offers_factories.OfferFactory(venue=venue, isActive=False)
         offerer = venue.managingOfferer
-        offers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offerer)
+        offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offerer)
 
         # When
         client = TestClient(app.test_client()).with_session_auth("pro@example.com")
@@ -41,7 +42,7 @@ class Returns204Test:
         venue = offer1.venue
         offer2 = offers_factories.OfferFactory(venue=venue)
         offerer = venue.managingOfferer
-        offers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offerer)
+        offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offerer)
 
         # When
         client = TestClient(app.test_client()).with_session_auth("pro@example.com")
@@ -55,7 +56,7 @@ class Returns204Test:
 
     def should_update_offers_by_given_filters(self, app):
         # Given
-        user_offerer = offers_factories.UserOffererFactory()
+        user_offerer = offerers_factories.UserOffererFactory()
         venue = offers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
         matching_offer1 = offers_factories.OfferFactory(name="OKAY 1", venue=venue)
         offers_factories.StockFactory(offer=matching_offer1, beginningDatetime=datetime(2020, 10, 10, 12, 0, 0))
@@ -97,7 +98,7 @@ class Returns204Test:
         pending_offer = offers_factories.OfferFactory(venue=venue, validation=OfferValidationStatus.PENDING)
         rejected_offer = offers_factories.OfferFactory(venue=venue, validation=OfferValidationStatus.REJECTED)
         offerer = venue.managingOfferer
-        offers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offerer)
+        offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offerer)
 
         client = TestClient(app.test_client()).with_session_auth("pro@example.com")
         data = {"isActive": True, "page": 1, "venueId": humanize(venue.id)}
@@ -118,7 +119,7 @@ class Returns204Test:
         )
         collective_offer_template = CollectiveOfferTemplateFactory(isActive=False, venue=venue, offerId=offer2.id)
         offerer = venue.managingOfferer
-        offers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offerer)
+        offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offerer)
 
         # When
         client = client.with_session_auth("pro@example.com")
@@ -140,7 +141,7 @@ class Returns204Test:
         )
         collective_offer_template = CollectiveOfferTemplateFactory(isActive=True, venue=venue, offerId=offer2.id)
         offerer = venue.managingOfferer
-        offers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offerer)
+        offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offerer)
 
         # When
         client = client.with_session_auth("pro@example.com")
@@ -156,7 +157,7 @@ class Returns204Test:
         self, client
     ):
         # Given
-        user_offerer = offers_factories.UserOffererFactory()
+        user_offerer = offerers_factories.UserOffererFactory()
         venue = offers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
         matching_offer1 = offers_factories.EducationalEventOfferFactory(name="OKAY 1", venue=venue)
         matching_collective_offer = CollectiveOfferFactory(name="OKAY 1", venue=venue, offerId=matching_offer1.id)

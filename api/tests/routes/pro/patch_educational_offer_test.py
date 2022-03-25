@@ -11,6 +11,7 @@ from pcapi.core.educational.models import CollectiveOffer
 from pcapi.core.educational.models import CollectiveOfferTemplate
 from pcapi.core.educational.models import StudentLevels
 import pcapi.core.educational.testing as adage_api_testing
+import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import OfferValidationStatus
@@ -40,7 +41,7 @@ class Returns200Test:
         booking = bookings_factories.EducationalBookingFactory(
             stock__offer=offer, stock__beginningDatetime=datetime(2020, 1, 1)
         )
-        offers_factories.UserOffererFactory(
+        offerers_factories.UserOffererFactory(
             user__email="user@example.com",
             offerer=offer.venue.managingOfferer,
         )
@@ -218,7 +219,7 @@ class Returns200Test:
         # Given
         offer = offers_factories.EducationalEventOfferFactory()
         bookings_factories.RefusedEducationalBookingFactory(stock__offer=offer)
-        offers_factories.UserOffererFactory(
+        offerers_factories.UserOffererFactory(
             user__email="user@example.com",
             offerer=offer.venue.managingOfferer,
         )
@@ -255,7 +256,7 @@ class Returns200Test:
         CollectiveBookingFactory(
             collectiveStock__collectiveOffer=collective_offer, collectiveStock__beginningDatetime=datetime(2020, 1, 1)
         )
-        offers_factories.UserOffererFactory(
+        offerers_factories.UserOffererFactory(
             user__email="user@example.com",
             offerer=offer.venue.managingOfferer,
         )
@@ -304,7 +305,7 @@ class Returns200Test:
             offerId=offer.id,
             students=[StudentLevels.COLLEGE3],
         )
-        offers_factories.UserOffererFactory(
+        offerers_factories.UserOffererFactory(
             user__email="user@example.com",
             offerer=offer.venue.managingOfferer,
         )
@@ -336,7 +337,7 @@ class Returns400Test:
     def when_trying_to_patch_forbidden_attributes(self, app, client):
         # Given
         offer = offers_factories.OfferFactory(isEducational=True)
-        offers_factories.UserOffererFactory(
+        offerers_factories.UserOffererFactory(
             user__email="user@example.com",
             offerer=offer.venue.managingOfferer,
         )
@@ -362,7 +363,7 @@ class Returns400Test:
 
     def test_patch_non_approved_offer_fails(self, app, client):
         offer = offers_factories.OfferFactory(validation=OfferValidationStatus.PENDING, isEducational=True)
-        offers_factories.UserOffererFactory(
+        offerers_factories.UserOffererFactory(
             user__email="user@example.com",
             offerer=offer.venue.managingOfferer,
         )
@@ -384,7 +385,7 @@ class Returns400Test:
             extraData={"contactEmail": "johndoe@yopmail.com", "contactPhone": "0600000000"},
             isEducational=True,
         )
-        offers_factories.UserOffererFactory(
+        offerers_factories.UserOffererFactory(
             user__email="user@example.com",
             offerer=offer.venue.managingOfferer,
         )
@@ -405,7 +406,7 @@ class Returns400Test:
             extraData={"contactEmail": "johndoe@yopmail.com", "contactPhone": "0600000000"},
             isEducational=True,
         )
-        offers_factories.UserOffererFactory(
+        offerers_factories.UserOffererFactory(
             user__email="user@example.com",
             offerer=offer.venue.managingOfferer,
         )
@@ -426,7 +427,7 @@ class Returns400Test:
             extraData={"contactEmail": "johndoe@yopmail.com", "contactPhone": "0600000000"},
             isEducational=True,
         )
-        offers_factories.UserOffererFactory(
+        offerers_factories.UserOffererFactory(
             user__email="user@example.com",
             offerer=offer.venue.managingOfferer,
         )
@@ -447,7 +448,7 @@ class Returns400Test:
             extraData={"contactEmail": "johndoe@yopmail.com", "contactPhone": "0600000000"},
             isEducational=True,
         )
-        offers_factories.UserOffererFactory(
+        offerers_factories.UserOffererFactory(
             user__email="user@example.com",
             offerer=offer.venue.managingOfferer,
         )
@@ -466,7 +467,7 @@ class Returns403Test:
     def when_user_is_not_attached_to_offerer(self, app, client):
         # Given
         offer = offers_factories.OfferFactory(name="Old name", isEducational=True)
-        offers_factories.UserOffererFactory(user__email="user@example.com")
+        offerers_factories.UserOffererFactory(user__email="user@example.com")
 
         # When
         data = {"name": "New name"}
@@ -496,7 +497,7 @@ class Returns404Test:
     def test_returns_404_if_no_educational_offer_exist(self, app, client):
         # Given
         offer = offers_factories.OfferFactory(isEducational=False)
-        offers_factories.UserOffererFactory(
+        offerers_factories.UserOffererFactory(
             user__email="user@example.com",
             offerer=offer.venue.managingOfferer,
         )

@@ -6,9 +6,7 @@ import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.educational.models import EducationalBookingStatus
-from pcapi.core.offerers.factories import ApiKeyFactory
-from pcapi.core.offerers.factories import DEFAULT_CLEAR_API_KEY
-import pcapi.core.offers.factories as offers_factories
+import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.users import factories as users_factories
 
 
@@ -19,13 +17,13 @@ class Returns204Test:
     class WithApiKeyAuthTest:
         def test_when_api_key_is_provided_and_rights_and_regular_offer(self, client):
             booking = bookings_factories.BookingFactory(token="ABCDEF")
-            ApiKeyFactory(offerer=booking.offerer)
+            offerers_factories.ApiKeyFactory(offerer=booking.offerer)
 
             url = f"/v2/bookings/use/token/{booking.token}"
             response = client.patch(
                 url,
                 headers={
-                    "Authorization": f"Bearer {DEFAULT_CLEAR_API_KEY}",
+                    "Authorization": f"Bearer {offerers_factories.DEFAULT_CLEAR_API_KEY}",
                 },
             )
 
@@ -37,7 +35,7 @@ class Returns204Test:
         def test_when_user_is_logged_in_and_regular_offer(self, client):
             booking = bookings_factories.BookingFactory(token="ABCDEF")
             pro_user = users_factories.ProFactory(email="pro@example.com")
-            offers_factories.UserOffererFactory(user=pro_user, offerer=booking.offerer)
+            offerers_factories.UserOffererFactory(user=pro_user, offerer=booking.offerer)
 
             url = f"/v2/bookings/use/token/{booking.token}"
             response = client.with_session_auth("pro@example.com").patch(url)
@@ -49,7 +47,7 @@ class Returns204Test:
         def test_when_user_is_logged_in_expect_booking_with_token_in_lower_case_to_be_used(self, client):
             booking = bookings_factories.BookingFactory(token="ABCDEF")
             pro_user = users_factories.ProFactory(email="pro@example.com")
-            offers_factories.UserOffererFactory(user=pro_user, offerer=booking.offerer)
+            offerers_factories.UserOffererFactory(user=pro_user, offerer=booking.offerer)
 
             url = f"/v2/bookings/use/token/{booking.token.lower()}"
             response = client.with_session_auth("pro@example.com").patch(url)
@@ -65,7 +63,7 @@ class Returns204Test:
                 dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=3),
             )
             pro_user = users_factories.ProFactory(email="pro@example.com")
-            offers_factories.UserOffererFactory(user=pro_user, offerer=booking.offerer)
+            offerers_factories.UserOffererFactory(user=pro_user, offerer=booking.offerer)
 
             # When
             url = f"/v2/bookings/use/token/{booking.token}"
@@ -93,10 +91,10 @@ class Returns403Test:
         def test_when_api_key_given_not_related_to_booking_offerer(self, client):
             # Given
             booking = bookings_factories.BookingFactory()
-            ApiKeyFactory()  # another offerer's API key
+            offerers_factories.ApiKeyFactory()  # another offerer's API key
 
             # When
-            auth = "Bearer " + DEFAULT_CLEAR_API_KEY
+            auth = "Bearer " + offerers_factories.DEFAULT_CLEAR_API_KEY
             url = f"/v2/bookings/use/token/{booking.token}"
             response = client.patch(url, headers={"Authorization": auth})
 
@@ -110,7 +108,7 @@ class Returns403Test:
         def test_when_user_is_not_attached_to_linked_offerer(self, client):
             # Given
             booking = bookings_factories.BookingFactory()
-            another_pro_user = offers_factories.UserOffererFactory().user
+            another_pro_user = offerers_factories.UserOffererFactory().user
 
             # When
             url = f"/v2/bookings/use/token/{booking.token}"
@@ -132,7 +130,7 @@ class Returns403Test:
                 educationalBooking__status=EducationalBookingStatus.REFUSED,
             )
             pro_user = users_factories.ProFactory(email="pro@example.com")
-            offers_factories.UserOffererFactory(user=pro_user, offerer=booking.offerer)
+            offerers_factories.UserOffererFactory(user=pro_user, offerer=booking.offerer)
 
             # When
             url = f"/v2/bookings/use/token/{booking.token}"
@@ -164,7 +162,7 @@ class Returns410Test:
     def test_when_api_key_is_provided_and_booking_has_been_cancelled_already(self, client):
         # Given
         booking = bookings_factories.CancelledBookingFactory()
-        ApiKeyFactory(offerer=booking.offerer)
+        offerers_factories.ApiKeyFactory(offerer=booking.offerer)
 
         # When
         url = f"/v2/bookings/use/token/{booking.token}"

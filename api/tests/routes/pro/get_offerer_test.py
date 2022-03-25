@@ -1,7 +1,7 @@
 import pytest
 
 from pcapi.core import testing
-from pcapi.core.offerers.factories import ApiKeyFactory
+import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.utils.date import format_into_utc_date
@@ -27,15 +27,15 @@ class Returns200Test:
     def test_when_user_has_rights_on_offerer(self, app):
         pro = users_factories.ProFactory()
         offerer = offers_factories.OffererFactory()
-        offers_factories.UserOffererFactory(user=pro, offerer=offerer)
+        offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
         venue_1 = offers_factories.VenueFactory(managingOfferer=offerer, withdrawalDetails="Venue withdrawal details")
         offers_factories.OfferFactory(venue=venue_1)
         venue_2 = offers_factories.VenueFactory(
             managingOfferer=offerer, withdrawalDetails="Other venue withdrawal details"
         )
         offers_factories.VenueFactory(managingOfferer=offerer, withdrawalDetails="More venue withdrawal details")
-        ApiKeyFactory(offerer=offerer, prefix="testenv_prefix")
-        ApiKeyFactory(offerer=offerer, prefix="testenv_prefix2")
+        offerers_factories.ApiKeyFactory(offerer=offerer, prefix="testenv_prefix")
+        offerers_factories.ApiKeyFactory(offerer=offerer, prefix="testenv_prefix2")
         offers_factories.BankInformationFactory(venue=venue_1, applicationId=2, status="REJECTED")
         offers_factories.BankInformationFactory(venue=venue_1, applicationId=3)
         offers_factories.BankInformationFactory(venue=venue_2, applicationId=4)

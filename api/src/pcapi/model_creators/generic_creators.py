@@ -8,8 +8,6 @@ from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
 from pcapi.core.providers.models import Provider
 from pcapi.core.providers.models import VenueProvider
-from pcapi.core.users.models import User
-from pcapi.models.user_offerer import UserOfferer
 
 
 def create_offerer(
@@ -77,16 +75,6 @@ def create_stock(
     stock.price = price
 
     return stock
-
-
-def create_user_offerer(user: User, offerer: Offerer, idx: int = None, validation_token: str = None) -> UserOfferer:
-    user_offerer = UserOfferer()
-    user_offerer.id = idx
-    user_offerer.offerer = offerer
-    user_offerer.user = user
-    user_offerer.validationToken = validation_token
-
-    return user_offerer
 
 
 def create_venue(

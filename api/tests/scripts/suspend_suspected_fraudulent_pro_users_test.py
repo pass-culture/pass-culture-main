@@ -4,12 +4,12 @@ from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.bookings.models import BookingStatus
+from pcapi.core.offerers.factories import UserOffererFactory
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers.factories import OfferFactory
 from pcapi.core.offers.factories import OffererFactory
 from pcapi.core.offers.factories import StockFactory
-from pcapi.core.offers.factories import UserOffererFactory
 from pcapi.core.offers.factories import VenueFactory
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock

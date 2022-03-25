@@ -5,7 +5,7 @@ import pytest
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.mails.transactional.pro.new_offerer_validation import send_new_offerer_validation_email_to_pro
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
-from pcapi.core.offers.factories import UserOffererFactory
+from pcapi.core.offerers.factories import UserOffererFactory
 
 
 @pytest.mark.usefixtures("db_session")

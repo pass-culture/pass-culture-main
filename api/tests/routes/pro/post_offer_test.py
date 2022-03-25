@@ -4,6 +4,7 @@ import requests_mock
 from pcapi.core.categories import subcategories
 from pcapi.core.educational.models import CollectiveOffer
 from pcapi.core.educational.models import StudentLevels
+import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import Offer
 from pcapi.core.testing import override_settings
@@ -20,7 +21,7 @@ class Returns200Test:
         # Given
         venue = offers_factories.VenueFactory()
         offerer = venue.managingOfferer
-        offers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
+        offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
 
         # When
         data = {
@@ -59,7 +60,7 @@ class Returns200Test:
         # Given
         venue = offers_factories.VirtualVenueFactory()
         offerer = venue.managingOfferer
-        offers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
+        offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
 
         # When
         client = TestClient(app.test_client()).with_session_auth("user@example.com")
@@ -102,7 +103,7 @@ class Returns200Test:
         # Given
         venue = offers_factories.VenueFactory()
         offerer = venue.managingOfferer
-        offers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
+        offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
 
         # When
         data = {
@@ -135,7 +136,7 @@ class Returns200Test:
         # Given
         venue = offers_factories.VenueFactory()
         offerer = venue.managingOfferer
-        offers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
+        offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
 
         # When
         data = {
@@ -221,7 +222,7 @@ class Returns200Test:
     def test_create_collective_offer_on_draft_offer_creation(self, app):
         venue = offers_factories.VenueFactory()
         offerer = venue.managingOfferer
-        offers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
+        offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
 
         data = {
             "venueId": humanize(venue.id),
@@ -293,7 +294,7 @@ class Returns200Test:
 class Returns400Test:
     def test_fail_if_venue_is_not_found(self, app):
         # Given
-        offers_factories.UserOffererFactory(user__email="user@example.com")
+        offerers_factories.UserOffererFactory(user__email="user@example.com")
 
         # When
         client = TestClient(app.test_client()).with_session_auth("user@example.com")
@@ -319,7 +320,7 @@ class Returns400Test:
         # Given
         venue = offers_factories.VenueFactory()
         offerer = venue.managingOfferer
-        offers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
+        offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
 
         # When
         data = {
@@ -338,7 +339,7 @@ class Returns400Test:
         # Given
         venue = offers_factories.VenueFactory()
         offerer = venue.managingOfferer
-        offers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
+        offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
 
         # When
         data = {
@@ -357,7 +358,7 @@ class Returns400Test:
         # Given
         venue = offers_factories.VenueFactory()
         offerer = venue.managingOfferer
-        offers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
+        offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
 
         # When
         data = {
@@ -378,7 +379,7 @@ class Returns400Test:
         # Given
         venue = offers_factories.VenueFactory()
         offerer = venue.managingOfferer
-        offers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
+        offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
 
         # When
         data = {
@@ -398,7 +399,7 @@ class Returns400Test:
         # Given
         venue = offers_factories.VirtualVenueFactory()
         offerer = venue.managingOfferer
-        offers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
+        offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
 
         # When
         data = {
@@ -423,7 +424,7 @@ class Returns400Test:
         # Given
         venue = offers_factories.VirtualVenueFactory()
         offerer = venue.managingOfferer
-        offers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
+        offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
 
         # When
         client = TestClient(app.test_client()).with_session_auth("user@example.com")
@@ -443,7 +444,7 @@ class Returns400Test:
         # Given
         venue = offers_factories.VirtualVenueFactory()
         offerer = venue.managingOfferer
-        offers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
+        offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
 
         # When
         client = TestClient(app.test_client()).with_session_auth("user@example.com")
@@ -463,7 +464,7 @@ class Returns400Test:
         # Given
         venue = offers_factories.VirtualVenueFactory()
         offerer = venue.managingOfferer
-        offers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
+        offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
 
         # When
         client = TestClient(app.test_client()).with_session_auth("user@example.com")
@@ -483,7 +484,7 @@ class Returns400Test:
         # Given
         venue = offers_factories.VirtualVenueFactory()
         offerer = venue.managingOfferer
-        offers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
+        offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
 
         # When
         client = TestClient(app.test_client()).with_session_auth("user@example.com")
@@ -503,7 +504,7 @@ class Returns400Test:
         # Given
         venue = offers_factories.VenueFactory()
         offerer = venue.managingOfferer
-        offers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
+        offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
 
         # When
         data = {
@@ -594,7 +595,7 @@ class Returns403Test:
         # Given
         venue = offers_factories.VenueFactory()
         offerer = venue.managingOfferer
-        offers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
+        offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
 
         # When
         data = {

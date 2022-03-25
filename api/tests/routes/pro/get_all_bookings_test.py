@@ -9,6 +9,7 @@ import pytest
 from pcapi.core import testing
 import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.bookings.models as bookings_models
+import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.factories import VenueFactory
 from pcapi.core.testing import assert_num_queries
@@ -92,7 +93,7 @@ class GetAllBookingsTest:
 class Returns200Test:
     def when_user_is_admin(self, app):
         admin = users_factories.AdminFactory()
-        user_offerer = offers_factories.UserOffererFactory()
+        user_offerer = offerers_factories.UserOffererFactory()
         bookings_factories.BookingFactory(
             dateCreated=datetime(2020, 8, 11, 12, 0, 0),
             stock__offer__venue__managingOfferer=user_offerer.offerer,
@@ -106,7 +107,7 @@ class Returns200Test:
 
     def when_booking_is_educational(self, app):
         admin = users_factories.AdminFactory()
-        user_offerer = offers_factories.UserOffererFactory()
+        user_offerer = offerers_factories.UserOffererFactory()
         bookings_factories.EducationalBookingFactory(
             dateCreated=datetime(2020, 8, 11, 12, 0, 0),
             stock__offer__venue__managingOfferer=user_offerer.offerer,
@@ -139,7 +140,7 @@ class Returns200Test:
             individualBooking__user__phoneNumber="0100000000",
         )
         pro_user = users_factories.ProFactory(email="pro@example.com")
-        offers_factories.UserOffererFactory(user=pro_user, offerer=booking.offerer)
+        offerers_factories.UserOffererFactory(user=pro_user, offerer=booking.offerer)
 
         client = TestClient(app.test_client()).with_session_auth(pro_user.email)
         with assert_num_queries(testing.AUTHENTICATION_QUERIES + 2):
@@ -197,7 +198,7 @@ class Returns200Test:
         bookings_factories.BookingFactory(stock=offers_factories.EventStockFactory(), token="BBBBBB")
         pro_user = users_factories.ProFactory(email="pro@example.com")
         offerer = stock.offer.venue.managingOfferer
-        offers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
+        offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
 
         client = TestClient(app.test_client()).with_session_auth(pro_user.email)
         with assert_num_queries(testing.AUTHENTICATION_QUERIES + 2):
@@ -219,7 +220,7 @@ class Returns200Test:
         booking = bookings_factories.BookingFactory(dateCreated=booking_date, token="AAAAAA")
         bookings_factories.BookingFactory(token="BBBBBB")
         pro_user = users_factories.ProFactory(email="pro@example.com")
-        offers_factories.UserOffererFactory(user=pro_user, offerer=booking.offerer)
+        offerers_factories.UserOffererFactory(user=pro_user, offerer=booking.offerer)
 
         client = TestClient(app.test_client()).with_session_auth(pro_user.email)
         with assert_num_queries(testing.AUTHENTICATION_QUERIES + 2):
@@ -244,7 +245,7 @@ class Returns200Test:
             educationalBooking__confirmationDate=datetime(2021, 1, 1),
         )
         pro_user = users_factories.ProFactory(email="pro@example.com")
-        offers_factories.UserOffererFactory(user=pro_user, offerer=booking.offerer)
+        offerers_factories.UserOffererFactory(user=pro_user, offerer=booking.offerer)
 
         response = client.with_session_auth(pro_user.email).get(
             f"/bookings/pro?{BOOKING_PERIOD_PARAMS}&bookingStatusFilter=booked"
@@ -267,7 +268,7 @@ class Returns200Test:
             dateCreated=datetime(2020, 8, 11, 12, 0, 0), status=bookings_models.BookingStatus.PENDING
         )
         pro_user = users_factories.ProFactory(email="pro@example.com")
-        offers_factories.UserOffererFactory(user=pro_user, offerer=booking.offerer)
+        offerers_factories.UserOffererFactory(user=pro_user, offerer=booking.offerer)
 
         response = client.with_session_auth(pro_user.email).get(
             f"/bookings/pro?{BOOKING_PERIOD_PARAMS}&bookingStatusFilter=booked"

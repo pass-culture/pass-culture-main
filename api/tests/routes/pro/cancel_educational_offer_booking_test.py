@@ -5,8 +5,8 @@ from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.educational.factories import CollectiveBookingFactory
 from pcapi.core.educational.models import CollectiveBookingStatus
 import pcapi.core.educational.testing as adage_api_testing
-from pcapi.core.offerers import factories as offerer_factories
-from pcapi.core.offers import factories as offer_factories
+from pcapi.core.offerers import factories as offerers_factories
+from pcapi.core.offers import factories as offers_factories
 from pcapi.core.testing import override_settings
 from pcapi.core.users import factories as user_factories
 from pcapi.routes.adage.v1.serialization.prebooking import serialize_educational_booking
@@ -21,8 +21,8 @@ pytestmark = pytest.mark.usefixtures("db_session")
 class Returns204Test:
     def test_cancel_pending_booking(self, client):
         user = user_factories.UserFactory()
-        offerer = offerer_factories.OffererFactory()
-        offer_factories.UserOffererFactory(user=user, offerer=offerer)
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(user=user, offerer=offerer)
 
         educational_booking = booking_factories.PendingEducationalBookingFactory(
             stock__offer__venue__managingOfferer=offerer
@@ -58,8 +58,8 @@ class Returns204Test:
 
     def test_cancel_collective_booking_if_pending(self, client):
         user = user_factories.UserFactory()
-        offerer = offerer_factories.OffererFactory()
-        offer_factories.UserOffererFactory(user=user, offerer=offerer)
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(user=user, offerer=offerer)
 
         booking = booking_factories.PendingEducationalBookingFactory(stock__offer__venue__managingOfferer=offerer)
         collective_booking = CollectiveBookingFactory(
@@ -78,8 +78,8 @@ class Returns204Test:
 
     def test_cancel_collective_booking_if_confirmed(self, client):
         user = user_factories.UserFactory()
-        offerer = offerer_factories.OffererFactory()
-        offer_factories.UserOffererFactory(user=user, offerer=offerer)
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(user=user, offerer=offerer)
 
         booking = booking_factories.PendingEducationalBookingFactory(stock__offer__venue__managingOfferer=offerer)
         collective_booking = CollectiveBookingFactory(
@@ -104,7 +104,7 @@ class Returns404Test:
     @override_settings(ADAGE_API_KEY="adage-api-key")
     def test_no_educational_offer_found(self, client):
         user = user_factories.AdminFactory()
-        offer = offer_factories.OfferFactory()
+        offer = offers_factories.OfferFactory()
         offer_id = humanize(offer.id)
 
         client = client.with_session_auth(user.email)
@@ -121,7 +121,7 @@ class Returns404Test:
     @override_settings(ADAGE_API_KEY="adage-api-key")
     def test_no_active_stock_found(self, client):
         user = user_factories.AdminFactory()
-        stock = offer_factories.EducationalEventStockFactory(isSoftDeleted=True)
+        stock = offers_factories.EducationalEventStockFactory(isSoftDeleted=True)
         offer_id = humanize(stock.offer.id)
 
         client = client.with_session_auth(user.email)
@@ -140,10 +140,10 @@ class Returns404Test:
 class Returns403Test:
     def test_user_does_not_have_access_to_offerer(self, client):
         user = user_factories.UserFactory()
-        offerer = offerer_factories.OffererFactory()
-        offer_factories.UserOffererFactory(user=user, offerer=offerer, validationToken="validationToken")
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(user=user, offerer=offerer, validationToken="validationToken")
 
-        offer = offer_factories.EducationalEventOfferFactory(venue__managingOfferer=offerer)
+        offer = offers_factories.EducationalEventOfferFactory(venue__managingOfferer=offerer)
 
         offer_id = humanize(offer.id)
         client = client.with_session_auth(user.email)
@@ -161,9 +161,9 @@ class Returns403Test:
 class Returns400Test:
     def test_offer_has_multiple_active_stocks(self, client):
         user = user_factories.AdminFactory()
-        offer = offer_factories.EducationalEventOfferFactory()
-        stock1 = offer_factories.EducationalEventStockFactory(offer=offer)
-        offer_factories.EducationalEventStockFactory(offer=offer)
+        offer = offers_factories.EducationalEventOfferFactory()
+        stock1 = offers_factories.EducationalEventStockFactory(offer=offer)
+        offers_factories.EducationalEventStockFactory(offer=offer)
         educational_booking = booking_factories.PendingEducationalBookingFactory(stock=stock1)
 
         offer_id = humanize(offer.id)
@@ -192,7 +192,7 @@ class Returns400Test:
 
     def test_offer_has_no_booking_to_cancel_because_used(self, client):
         user = user_factories.AdminFactory()
-        stock = offer_factories.EducationalThingStockFactory()
+        stock = offers_factories.EducationalThingStockFactory()
         educational_booking = booking_factories.UsedEducationalBookingFactory(stock=stock)
         offer_id = humanize(educational_booking.stock.offer.id)
 

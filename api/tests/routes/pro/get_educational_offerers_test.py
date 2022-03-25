@@ -1,5 +1,6 @@
 import pytest
 
+import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.utils.human_ids import humanize
@@ -15,9 +16,9 @@ class GetEducationalOfferersTest:
         not_validated_offerer = offers_factories.OffererFactory(validationToken="validationToken")
         venue_offerer_1 = offers_factories.VenueFactory(managingOfferer=offerer_1)
         venue_offerer_2 = offers_factories.VenueFactory(managingOfferer=offerer_2)
-        offers_factories.UserOffererFactory(user=pro_user, offerer=offerer_1)
-        offers_factories.UserOffererFactory(user=pro_user, offerer=offerer_2)
-        offers_factories.UserOffererFactory(user=pro_user, offerer=not_validated_offerer)
+        offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer_1)
+        offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer_2)
+        offerers_factories.UserOffererFactory(user=pro_user, offerer=not_validated_offerer)
 
         # when
         response = client.with_session_auth(pro_user.email).get("/offerers/educational")

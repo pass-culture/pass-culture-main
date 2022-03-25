@@ -4,7 +4,7 @@ from datetime import timedelta
 from freezegun import freeze_time
 import pytest
 
-from pcapi.core.offers import factories as offers_factories
+import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.users import factories
 from pcapi.scripts.beneficiary.send_mail_after_idcheck_outage import _get_eligible_users_created_between
 
@@ -28,7 +28,7 @@ class SendMailAfterIdcheckOutageTest:
         factories.AdminFactory(dateOfBirth=datetime(2000, 1, 1), dateCreated=datetime.now())
         # Pro
         pro_user = factories.ProFactory(dateOfBirth=datetime(2000, 1, 1), **ELIGIBLE_CONDTIONS)
-        offers_factories.UserOffererFactory(user=pro_user)
+        offerers_factories.UserOffererFactory(user=pro_user)
         # User not yet 18
         factories.UserFactory(dateOfBirth=datetime(2000, 1, 2), **ELIGIBLE_CONDTIONS)
 

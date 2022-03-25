@@ -5,7 +5,6 @@ from freezegun import freeze_time
 import pytest
 
 from pcapi.core.offerers import factories as offerers_factories
-from pcapi.core.offers import factories as offers_factories
 from pcapi.core.users import exceptions
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import repository
@@ -82,7 +81,7 @@ class GetNewlyEligibleUsersTest:
         users_factories.AdminFactory(dateOfBirth=datetime(2000, 1, 1), dateCreated=datetime(2018, 1, 1))
         # Pro
         pro_user = users_factories.ProFactory(dateOfBirth=datetime(2000, 1, 1), dateCreated=datetime(2018, 1, 1))
-        offers_factories.UserOffererFactory(user=pro_user)
+        offerers_factories.UserOffererFactory(user=pro_user)
         # User not yet 18
         users_factories.UserFactory(dateOfBirth=datetime(2000, 1, 2), dateCreated=datetime(2017, 12, 1))
 
@@ -99,8 +98,8 @@ class GetApplicantOfOffererUnderValidationTest:
         applicant = users_factories.UserFactory()
         user_who_asked_for_attachment = users_factories.UserFactory()
         applied_offerer = offerers_factories.OffererFactory(validationToken="TOKEN")
-        offers_factories.UserOffererFactory(offerer=applied_offerer, user=applicant)
-        offers_factories.UserOffererFactory(
+        offerers_factories.UserOffererFactory(offerer=applied_offerer, user=applicant)
+        offerers_factories.UserOffererFactory(
             offerer=applied_offerer, user=user_who_asked_for_attachment, validationToken="OTHER_TOKEN"
         )
 

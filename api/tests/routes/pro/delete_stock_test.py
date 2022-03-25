@@ -1,4 +1,5 @@
 from pcapi.core.bookings.factories import IndividualBookingFactory
+import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import OfferValidationStatus
 import pcapi.core.providers.factories as providers_factories
@@ -13,7 +14,7 @@ class Returns200Test:
     def when_current_user_has_rights_on_offer(self, app, db_session):
         # given
         offer = offers_factories.OfferFactory()
-        offers_factories.UserOffererFactory(
+        offerers_factories.UserOffererFactory(
             user__email="pro@example.com",
             offerer=offer.venue.managingOfferer,
         )

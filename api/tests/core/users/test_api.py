@@ -15,7 +15,7 @@ from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.categories import subcategories
 import pcapi.core.fraud.factories as fraud_factories
 import pcapi.core.fraud.models as fraud_models
-from pcapi.core.offers import factories as offers_factories
+from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.payments.conf import GRANT_18_VALIDITY_IN_YEARS
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.testing import override_features
@@ -266,7 +266,7 @@ class SuspendAccountTest:
 
     def test_suspend_pro(self):
         booking = bookings_factories.IndividualBookingFactory()
-        pro = offers_factories.UserOffererFactory(offerer=booking.offerer).user
+        pro = offerers_factories.UserOffererFactory(offerer=booking.offerer).user
         actor = users_factories.AdminFactory()
         reason = users_constants.SuspensionReason.FRAUD_SUSPICION
 
@@ -279,8 +279,8 @@ class SuspendAccountTest:
 
     def test_suspend_pro_with_other_offerer_users(self):
         booking = bookings_factories.IndividualBookingFactory()
-        pro = offers_factories.UserOffererFactory(offerer=booking.offerer).user
-        offers_factories.UserOffererFactory(offerer=booking.offerer)
+        pro = offerers_factories.UserOffererFactory(offerer=booking.offerer).user
+        offerers_factories.UserOffererFactory(offerer=booking.offerer)
         actor = users_factories.AdminFactory()
         reason = users_constants.SuspensionReason.FRAUD_SUSPICION
 

@@ -1,6 +1,7 @@
 import pytest
 
-import pcapi.core.offers.factories as offer_factories
+import pcapi.core.offerers.factories as offerers_factories
+import pcapi.core.offers.factories as offers_factories
 import pcapi.core.providers.factories as providers_factories
 import pcapi.core.users.factories as user_factories
 from pcapi.utils.human_ids import humanize
@@ -12,10 +13,10 @@ class Returns200Test:
     @pytest.mark.usefixtures("db_session")
     def test_allocine_venue_provider_is_successfully_updated(self, app):
         # Given
-        user_offerer = offer_factories.UserOffererFactory()
+        user_offerer = offerers_factories.UserOffererFactory()
         user = user_offerer.user
         offerer = user_offerer.offerer
-        venue = offer_factories.VenueFactory(managingOfferer=offerer)
+        venue = offers_factories.VenueFactory(managingOfferer=offerer)
         provider = providers_factories.AllocineProviderFactory()
         venue_provider = providers_factories.AllocineVenueProviderFactory(
             venue=venue,
@@ -51,10 +52,10 @@ class Returns400Test:
     @pytest.mark.usefixtures("db_session")
     def test_provider_is_not_allocine(self, app):
         # Given
-        user_offerer = offer_factories.UserOffererFactory()
+        user_offerer = offerers_factories.UserOffererFactory()
         user = user_offerer.user
         offerer = user_offerer.offerer
-        venue = offer_factories.VenueFactory(managingOfferer=offerer)
+        venue = offers_factories.VenueFactory(managingOfferer=offerer)
         provider = providers_factories.ProviderFactory()
         providers_factories.VenueProviderFactory(venue=venue, provider=provider)
 
@@ -90,9 +91,9 @@ class Returns403Test:
     def test_user_has_right_on_venue(self, app):
         # Given
         user = user_factories.ProFactory()
-        owner_offerer = offer_factories.UserOffererFactory()
+        owner_offerer = offerers_factories.UserOffererFactory()
         offerer = owner_offerer.offerer
-        venue = offer_factories.VenueFactory(managingOfferer=offerer)
+        venue = offers_factories.VenueFactory(managingOfferer=offerer)
         provider = providers_factories.AllocineProviderFactory()
         venue_provider = providers_factories.AllocineVenueProviderFactory(
             venue=venue,

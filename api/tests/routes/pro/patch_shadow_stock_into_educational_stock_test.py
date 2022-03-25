@@ -1,8 +1,9 @@
 import pytest
 
-from pcapi.core.educational import factories as educational_factories
-from pcapi.core.educational import models as educational_models
-from pcapi.core.offers import factories as offer_factories
+import pcapi.core.educational.factories as educational_factories
+import pcapi.core.educational.models as educational_models
+import pcapi.core.offerers.factories as offerers_factories
+import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
 from pcapi.utils.human_ids import dehumanize
@@ -15,7 +16,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 class Return200Test:
     def test_create_valid_stock_for_educational_offer(self, app, client):
         # Given
-        stock = offer_factories.EducationalEventStockFactory(
+        stock = offers_factories.EducationalEventStockFactory(
             offer__extraData={
                 "students": [
                     "CAP - 1re ann\u00e9e",
@@ -33,7 +34,7 @@ class Return200Test:
                 "isShowcase": True,
             },
         )
-        offer_factories.UserOffererFactory(
+        offerers_factories.UserOffererFactory(
             user__email="user@example.com",
             offerer=stock.offer.venue.managingOfferer,
         )
@@ -65,7 +66,7 @@ class Return200Test:
 
     def test_create_valid_stock_for_collective_offer(self, app, client):
         # Given
-        stock = offer_factories.EducationalEventStockFactory(
+        stock = offers_factories.EducationalEventStockFactory(
             offer__extraData={
                 "students": [
                     "CAP - 1re ann\u00e9e",
@@ -83,7 +84,7 @@ class Return200Test:
                 "isShowcase": True,
             },
         )
-        offer_factories.UserOffererFactory(
+        offerers_factories.UserOffererFactory(
             user__email="user@example.com",
             offerer=stock.offer.venue.managingOfferer,
         )
@@ -116,7 +117,7 @@ class Return200Test:
 
     def test_create_collective_offer_and_delete_collective_offer_template(self, app, client):
         # Given
-        stock = offer_factories.EducationalEventStockFactory(
+        stock = offers_factories.EducationalEventStockFactory(
             offer__extraData={
                 "students": [
                     "CAP - 1re ann\u00e9e",
@@ -132,7 +133,7 @@ class Return200Test:
                 "isShowcase": True,
             },
         )
-        offer_factories.UserOffererFactory(
+        offerers_factories.UserOffererFactory(
             user__email="user@example.com",
             offerer=stock.offer.venue.managingOfferer,
         )
@@ -172,7 +173,7 @@ class Return200Test:
 
     def test_create_collective_offer_from_offer_in_case_collective_offer_template_not_found(self, app, client):
         # Given
-        stock = offer_factories.EducationalEventStockFactory(
+        stock = offers_factories.EducationalEventStockFactory(
             offer__extraData={
                 "students": [
                     "CAP - 1re ann\u00e9e",
@@ -188,7 +189,7 @@ class Return200Test:
                 "isShowcase": True,
             },
         )
-        offer_factories.UserOffererFactory(
+        offerers_factories.UserOffererFactory(
             user__email="user@example.com",
             offerer=stock.offer.venue.managingOfferer,
         )
@@ -222,7 +223,7 @@ class Return200Test:
 class Return400Test:
     def test_create_educational_stocks_should_not_be_available_if_user_not_linked_to_offerer(self, app, client):
         # Given
-        stock = offer_factories.EducationalEventStockFactory(
+        stock = offers_factories.EducationalEventStockFactory(
             offer__extraData={
                 "students": [
                     "CAP - 1re ann\u00e9e",
@@ -240,7 +241,7 @@ class Return400Test:
                 "isShowcase": True,
             },
         )
-        offer_factories.UserOffererFactory(
+        offerers_factories.UserOffererFactory(
             user__email="user@example.com",
         )
 
@@ -264,7 +265,7 @@ class Return400Test:
 
     def should_not_allow_number_of_tickets_to_be_negative_on_creation(self, app, client):
         # Given
-        stock = offer_factories.EducationalEventStockFactory(
+        stock = offers_factories.EducationalEventStockFactory(
             offer__extraData={
                 "students": [
                     "CAP - 1re ann\u00e9e",
@@ -282,7 +283,7 @@ class Return400Test:
                 "isShowcase": True,
             },
         )
-        offer_factories.UserOffererFactory(
+        offerers_factories.UserOffererFactory(
             user__email="user@example.com",
             offerer=stock.offer.venue.managingOfferer,
         )
@@ -305,7 +306,7 @@ class Return400Test:
 
     def should_not_allow_price_to_be_negative_on_creation(self, app, client):
         # Given
-        stock = offer_factories.EducationalEventStockFactory(
+        stock = offers_factories.EducationalEventStockFactory(
             offer__extraData={
                 "students": [
                     "CAP - 1re ann\u00e9e",
@@ -323,7 +324,7 @@ class Return400Test:
                 "isShowcase": True,
             },
         )
-        offer_factories.UserOffererFactory(
+        offerers_factories.UserOffererFactory(
             user__email="user@example.com",
             offerer=stock.offer.venue.managingOfferer,
         )
@@ -346,7 +347,7 @@ class Return400Test:
 
     def should_not_accept_payload_with_bookingLimitDatetime_after_beginningDatetime(self, app, client):
         # Given
-        stock = offer_factories.EducationalEventStockFactory(
+        stock = offers_factories.EducationalEventStockFactory(
             offer__extraData={
                 "students": [
                     "CAP - 1re ann\u00e9e",
@@ -364,7 +365,7 @@ class Return400Test:
                 "isShowcase": True,
             },
         )
-        offer_factories.UserOffererFactory(
+        offerers_factories.UserOffererFactory(
             user__email="user@example.com",
             offerer=stock.offer.venue.managingOfferer,
         )
@@ -391,7 +392,7 @@ class Return400Test:
 
     def should_not_accept_payload_with_price_details_with_more_than_1000_caracters(self, app, client):
         # Given
-        stock = offer_factories.EducationalEventStockFactory(
+        stock = offers_factories.EducationalEventStockFactory(
             offer__extraData={
                 "students": [
                     "CAP - 1re ann\u00e9e",
@@ -409,7 +410,7 @@ class Return400Test:
                 "isShowcase": True,
             },
         )
-        offer_factories.UserOffererFactory(
+        offerers_factories.UserOffererFactory(
             user__email="user@example.com",
             offerer=stock.offer.venue.managingOfferer,
         )
@@ -433,7 +434,7 @@ class Return400Test:
 
     def should_not_allow_stock_transformation_on_a_non_showcase_offer(self, client):
         # Given
-        stock = offer_factories.EducationalEventStockFactory(
+        stock = offers_factories.EducationalEventStockFactory(
             offer__extraData={
                 "students": [
                     "CAP - 1re ann\u00e9e",
@@ -451,7 +452,7 @@ class Return400Test:
                 "isShowcase": False,
             },
         )
-        offer_factories.UserOffererFactory(
+        offerers_factories.UserOffererFactory(
             user__email="user@example.com",
             offerer=stock.offer.venue.managingOfferer,
         )

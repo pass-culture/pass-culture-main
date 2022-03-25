@@ -2,6 +2,7 @@ from datetime import datetime
 
 import pytest
 
+import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.core.offers.models import Stock
@@ -18,7 +19,7 @@ class Returns201Test:
     def test_create_one_stock(self, app):
         # Given
         offer = offers_factories.ThingOfferFactory()
-        offers_factories.UserOffererFactory(
+        offerers_factories.UserOffererFactory(
             user__email="user@example.com",
             offerer=offer.venue.managingOfferer,
         )
@@ -46,7 +47,7 @@ class Returns201Test:
     def test_create_one_stock_with_activation_codes(self, app):
         # Given
         offer = offers_factories.ThingOfferFactory(url="https://chartreu.se")
-        offers_factories.UserOffererFactory(
+        offerers_factories.UserOffererFactory(
             user__email="user@example.com",
             offerer=offer.venue.managingOfferer,
         )
@@ -88,7 +89,7 @@ class Returns201Test:
         # Given
         offer = offers_factories.ThingOfferFactory()
         existing_stock = offers_factories.StockFactory(offer=offer, price=10)
-        offers_factories.UserOffererFactory(
+        offerers_factories.UserOffererFactory(
             user__email="user@example.com",
             offerer=offer.venue.managingOfferer,
         )
@@ -115,7 +116,7 @@ class Returns201Test:
         # Given
         offer = offers_factories.ThingOfferFactory()
         existing_stock = offers_factories.StockFactory(offer=offer, price=10)
-        offers_factories.UserOffererFactory(
+        offerers_factories.UserOffererFactory(
             user__email="user@example.com",
             offerer=offer.venue.managingOfferer,
         )
@@ -166,7 +167,7 @@ class Returns400Test:
     def when_missing_offer_id(self, app):
         # Given
         offer = offers_factories.ThingOfferFactory()
-        offers_factories.UserOffererFactory(
+        offerers_factories.UserOffererFactory(
             user__email="user@example.com",
             offerer=offer.venue.managingOfferer,
         )
@@ -195,7 +196,7 @@ class Returns400Test:
         # Given
         offer = offers_factories.ThingOfferFactory()
         existing_stock = offers_factories.StockFactory(offer=offer, price=10)
-        offers_factories.UserOffererFactory(
+        offerers_factories.UserOffererFactory(
             user__email="user@example.com",
             offerer=offer.venue.managingOfferer,
         )
@@ -233,7 +234,7 @@ class Returns400Test:
     def test_patch_non_approved_offer_fails(self, app):
         pending_validation_offer = offers_factories.OfferFactory(validation=OfferValidationStatus.PENDING)
         stock = offers_factories.StockFactory(offer=pending_validation_offer)
-        offers_factories.UserOffererFactory(
+        offerers_factories.UserOffererFactory(
             user__email="user@example.com",
             offerer=pending_validation_offer.venue.managingOfferer,
         )
@@ -252,7 +253,7 @@ class Returns400Test:
     def test_invalid_activation_codes_expiration_datetime(self, app):
         # Given
         offer = offers_factories.ThingOfferFactory(url="https://chartreu.se")
-        offers_factories.UserOffererFactory(
+        offerers_factories.UserOffererFactory(
             user__email="user@example.com",
             offerer=offer.venue.managingOfferer,
         )
@@ -286,7 +287,7 @@ class Returns400Test:
     def test_invalid_booking_limit_datetime(self, app):
         # Given
         offer = offers_factories.ThingOfferFactory(url="https://chartreu.se")
-        offers_factories.UserOffererFactory(
+        offerers_factories.UserOffererFactory(
             user__email="user@example.com",
             offerer=offer.venue.managingOfferer,
         )
@@ -322,7 +323,7 @@ class Returns400Test:
     def test_when_offer_is_not_digital(self, app):
         # Given
         offer = offers_factories.ThingOfferFactory(url=None)
-        offers_factories.UserOffererFactory(
+        offerers_factories.UserOffererFactory(
             user__email="user@example.com",
             offerer=offer.venue.managingOfferer,
         )
@@ -352,7 +353,7 @@ class Returns400Test:
     def test_create_one_stock_with_invalid_prices(self, price_str, app):
         # Given
         offer = offers_factories.ThingOfferFactory()
-        offers_factories.UserOffererFactory(
+        offerers_factories.UserOffererFactory(
             user__email="user@example.com",
             offerer=offer.venue.managingOfferer,
         )
@@ -386,7 +387,7 @@ class Returns403Test:
         # Given
         user = users_factories.ProFactory(email="wrong@example.com")
         offer = offers_factories.ThingOfferFactory()
-        offers_factories.UserOffererFactory(user__email="right@example.com", offerer=offer.venue.managingOfferer)
+        offerers_factories.UserOffererFactory(user__email="right@example.com", offerer=offer.venue.managingOfferer)
         booking_datetime = datetime.utcnow()
 
         # When

@@ -12,7 +12,7 @@ from pcapi.core.mails.transactional.bookings.booking_cancellation_confirmation_b
     send_booking_cancellation_confirmation_by_pro_email,
 )
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
-from pcapi.core.offers import factories as offer_factories
+from pcapi.core.offers import factories as offers_factories
 from pcapi.core.users import factories as users_factories
 
 
@@ -23,7 +23,7 @@ class BookingCancellationConfirmationByProEmailData:
         beneficiary = users_factories.BeneficiaryGrant18Factory(
             publicName="John Doe", firstName="John", lastName="Doe", email="john@example.com"
         )
-        offer = offer_factories.EventOfferFactory(
+        offer = offers_factories.EventOfferFactory(
             venue__name="Venue name",
             product__name="My Event",
         )
@@ -58,7 +58,7 @@ class BookingCancellationConfirmationByProEmailData:
         beneficiary = users_factories.BeneficiaryGrant18Factory(
             publicName="John Doe", firstName="John", lastName="Doe", email="john@example.com"
         )
-        offer = offer_factories.ThingOfferFactory(
+        offer = offers_factories.ThingOfferFactory(
             venue__name="La petite librairie",
             venue__publicName="La grande librairie",
             product__name="Le récit de voyage",

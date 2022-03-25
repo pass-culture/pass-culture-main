@@ -6,6 +6,7 @@ import pytest
 from pcapi.core import testing
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.bookings.models import BookingStatus
+import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.testing import assert_num_queries
 import pcapi.core.users.factories as users_factories
@@ -29,7 +30,7 @@ class Returns200Test:
             bookingLimitDatetime=now,
         )
         bookings_factories.BookingFactory.create_batch(3, stock=stock)
-        offers_factories.UserOffererFactory(user=pro, offerer=stock.offer.venue.managingOfferer)
+        offerers_factories.UserOffererFactory(user=pro, offerer=stock.offer.venue.managingOfferer)
         client = TestClient(app.test_client()).with_session_auth(email=pro.email)
 
         # When
@@ -82,7 +83,7 @@ class Returns200Test:
         )
         bookings_factories.EducationalBookingFactory.create_batch(3, stock=stock, status=BookingStatus.PENDING)
         bookings_factories.RefusedEducationalBookingFactory(stock=stock)
-        offers_factories.UserOffererFactory(user=pro, offerer=stock.offer.venue.managingOfferer)
+        offerers_factories.UserOffererFactory(user=pro, offerer=stock.offer.venue.managingOfferer)
         client = TestClient(app.test_client()).with_session_auth(email=pro.email)
 
         # When
@@ -136,7 +137,7 @@ class Returns200Test:
         )
         bookings_factories.EducationalBookingFactory.create_batch(2, stock=stock, status=BookingStatus.PENDING)
         bookings_factories.EducationalBookingFactory(stock=stock, status=BookingStatus.CONFIRMED)
-        offers_factories.UserOffererFactory(user=pro, offerer=stock.offer.venue.managingOfferer)
+        offerers_factories.UserOffererFactory(user=pro, offerer=stock.offer.venue.managingOfferer)
         client = TestClient(app.test_client()).with_session_auth(email=pro.email)
 
         # When
@@ -187,7 +188,7 @@ class Returns200Test:
             bookingLimitDatetime=now,
         )
         stock_on_other_offer = offers_factories.ThingStockFactory(offer__venue=stock.offer.venue)
-        offers_factories.UserOffererFactory(user=pro, offerer=stock.offer.venue.managingOfferer)
+        offerers_factories.UserOffererFactory(user=pro, offerer=stock.offer.venue.managingOfferer)
         client = TestClient(app.test_client()).with_session_auth(email=pro.email)
 
         # When
@@ -236,7 +237,7 @@ class Returns200Test:
         offers_factories.ActivationCodeFactory(stock=stock, code="ABC", expirationDate=datetime(2022, 10, 15))
         offers_factories.ActivationCodeFactory(stock=stock, code="DEF", expirationDate=datetime(2022, 10, 15))
         stock_on_other_offer = offers_factories.ThingStockFactory(offer__venue=stock.offer.venue)
-        offers_factories.UserOffererFactory(user=pro, offerer=stock.offer.venue.managingOfferer)
+        offerers_factories.UserOffererFactory(user=pro, offerer=stock.offer.venue.managingOfferer)
         client = TestClient(app.test_client()).with_session_auth(email=pro.email)
 
         # When
@@ -281,7 +282,7 @@ class Returns200Test:
         # Given
         pro = users_factories.ProFactory()
         stock = offers_factories.ThingStockFactory(isSoftDeleted=True)
-        offers_factories.UserOffererFactory(user=pro, offerer=stock.offer.venue.managingOfferer)
+        offerers_factories.UserOffererFactory(user=pro, offerer=stock.offer.venue.managingOfferer)
         client = TestClient(app.test_client()).with_session_auth(email=pro.email)
 
         # When
@@ -311,7 +312,7 @@ class Returns200Test:
         bookings_factories.BookingFactory(stock=stock_1)
         bookings_factories.EducationalBookingFactory(stock=stock_1)
         bookings_factories.BookingFactory(stock=stock_2)
-        offers_factories.UserOffererFactory(user=pro, offerer=offer.venue.managingOfferer)
+        offerers_factories.UserOffererFactory(user=pro, offerer=offer.venue.managingOfferer)
         client = TestClient(app.test_client()).with_session_auth(email=pro.email)
         check_user_has_rights_queries = 2
         get_stock_queries = 1

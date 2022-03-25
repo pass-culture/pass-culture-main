@@ -1,6 +1,6 @@
 import pytest
 
-import pcapi.core.offers.factories as offers_factories
+import pcapi.core.offerers.factories as offerers_factories
 from pcapi.models.user_offerer import UserOfferer
 from pcapi.scripts.user_offerer.delete_user_offerer_from_csv import _delete_user_offerers_from_rows
 
@@ -8,9 +8,9 @@ from pcapi.scripts.user_offerer.delete_user_offerer_from_csv import _delete_user
 @pytest.mark.usefixtures("db_session")
 def test_should_delete_user_offerers_in_csv():
     # Given
-    user_offerer1 = offers_factories.UserOffererFactory()
-    user_offerer2 = offers_factories.UserOffererFactory()
-    user_offerer3 = offers_factories.UserOffererFactory()
+    user_offerer1 = offerers_factories.UserOffererFactory()
+    user_offerer2 = offerers_factories.UserOffererFactory()
+    user_offerer3 = offerers_factories.UserOffererFactory()
 
     csv_rows = [
         [

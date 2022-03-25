@@ -28,10 +28,6 @@ from pcapi.core.offers.repository import get_sold_out_offers_count_for_venue
 import pcapi.core.providers.factories as providers_factories
 from pcapi.core.users import factories as users_factories
 from pcapi.domain.pro_offers.offers_recap import OffersRecap
-from pcapi.model_creators.generic_creators import create_offerer
-from pcapi.model_creators.generic_creators import create_user_offerer
-from pcapi.model_creators.generic_creators import create_venue
-from pcapi.model_creators.specific_creators import create_offer_with_thing_product
 from pcapi.models.offer_mixin import OfferStatus
 from pcapi.repository import repository
 from pcapi.utils.date import utc_datetime_to_department_timezone
@@ -41,7 +37,7 @@ class GetCappedOffersForFiltersTest:
     @pytest.mark.usefixtures("db_session")
     def should_return_offers_capped_to_max_offers_count(self):
         # Given
-        user_offerer = offers_factories.UserOffererFactory()
+        user_offerer = offerers_factories.UserOffererFactory()
         older_offer = offers_factories.OfferFactory(venue__managingOfferer=user_offerer.offerer)
         offers_factories.OfferFactory(venue=older_offer.venue, venue__managingOfferer=user_offerer.offerer)
 
@@ -61,13 +57,11 @@ class GetCappedOffersForFiltersTest:
     @pytest.mark.usefixtures("db_session")
     def should_return_offers_sorted_by_id_desc(self):
         # Given
-        user = users_factories.ProFactory()
-        offerer = create_offerer()
-        user_offerer = create_user_offerer(user, offerer)
-        venue = create_venue(offerer)
-        offer1 = create_offer_with_thing_product(venue)
-        offer2 = create_offer_with_thing_product(venue)
-        repository.save(user_offerer, offer1, offer2)
+        user_offerer = offerers_factories.UserOffererFactory()
+        user = user_offerer.user
+        offerer = user_offerer.offerer
+        offers_factories.OfferFactory(venue__managingOfferer=offerer)
+        offers_factories.OfferFactory(venue__managingOfferer=offerer)
 
         # When
         offers = get_capped_offers_for_filters(user_id=user.id, user_is_admin=user.has_admin_role, offers_limit=10)
@@ -78,7 +72,7 @@ class GetCappedOffersForFiltersTest:
     @pytest.mark.usefixtures("db_session")
     def should_exclude_draft_offers_when_requesting_all_offers(self, app):
         # given
-        user_offerer = offers_factories.UserOffererFactory()
+        user_offerer = offerers_factories.UserOffererFactory()
         non_draft_offer = offers_factories.OfferFactory(venue__managingOfferer=user_offerer.offerer)
         offers_factories.OfferFactory(
             venue__managingOfferer=user_offerer.offerer,
@@ -96,7 +90,7 @@ class GetCappedOffersForFiltersTest:
 
     @pytest.mark.usefixtures("db_session")
     def should_return_offers_of_given_subcategory_id(self):
-        user_offerer = offers_factories.UserOffererFactory()
+        user_offerer = offerers_factories.UserOffererFactory()
         requested_offer = offers_factories.OfferFactory(
             subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id, venue__managingOfferer=user_offerer.offerer
         )
@@ -221,7 +215,7 @@ class GetCappedOffersForFiltersTest:
         def should_return_offers_of_given_venue_when_user_is_attached_to_its_offerer(self, app):
             # given
             admin = users_factories.AdminFactory()
-            admin_attachment_to_offerer = offers_factories.UserOffererFactory(user=admin)
+            admin_attachment_to_offerer = offerers_factories.UserOffererFactory(user=admin)
             offer_for_requested_venue = offers_factories.OfferFactory(
                 venue__managingOfferer=admin_attachment_to_offerer.offerer
             )
@@ -268,8 +262,8 @@ class GetCappedOffersForFiltersTest:
         def should_return_offers_of_given_offerer_when_user_is_attached_to_it(self):
             # given
             admin = users_factories.AdminFactory()
-            admin_attachment_to_requested_offerer = offers_factories.UserOffererFactory(user=admin)
-            admin_attachment_to_other_offerer = offers_factories.UserOffererFactory(user=admin)
+            admin_attachment_to_requested_offerer = offerers_factories.UserOffererFactory(user=admin)
+            admin_attachment_to_other_offerer = offerers_factories.UserOffererFactory(user=admin)
             offer_for_requested_offerer = offers_factories.OfferFactory(
                 venue__managingOfferer=admin_attachment_to_requested_offerer.offerer
             )
@@ -317,7 +311,7 @@ class GetCappedOffersForFiltersTest:
         def should_return_offers_of_given_venue_when_user_is_attached_to_its_offerer(self, app):
             # given
             pro = users_factories.ProFactory()
-            pro_attachment_to_offerer = offers_factories.UserOffererFactory(user=pro)
+            pro_attachment_to_offerer = offerers_factories.UserOffererFactory(user=pro)
             offer_for_requested_venue = offers_factories.OfferFactory(
                 venue__managingOfferer=pro_attachment_to_offerer.offerer
             )
@@ -364,8 +358,8 @@ class GetCappedOffersForFiltersTest:
         def should_return_offers_of_given_offerer_when_user_is_attached_to_it(self):
             # given
             pro = users_factories.ProFactory()
-            pro_attachment_to_requested_offerer = offers_factories.UserOffererFactory(user=pro)
-            pro_attachment_to_other_offerer = offers_factories.UserOffererFactory(user=pro)
+            pro_attachment_to_requested_offerer = offerers_factories.UserOffererFactory(user=pro)
+            pro_attachment_to_other_offerer = offerers_factories.UserOffererFactory(user=pro)
             offer_for_requested_offerer = offers_factories.OfferFactory(
                 venue__managingOfferer=pro_attachment_to_requested_offerer.offerer
             )
@@ -391,7 +385,7 @@ class GetCappedOffersForFiltersTest:
         @pytest.mark.usefixtures("db_session")
         def should_return_offer_which_name_equal_keyword_when_keyword_is_less_or_equal_than_3_letters(self, app):
             # given
-            user_offerer = offers_factories.UserOffererFactory()
+            user_offerer = offerers_factories.UserOffererFactory()
             expected_offer = offers_factories.OfferFactory(name="ocs", venue__managingOfferer=user_offerer.offerer)
             other_offer = offers_factories.OfferFactory(name="ocsir", venue__managingOfferer=user_offerer.offerer)
 
@@ -412,7 +406,7 @@ class GetCappedOffersForFiltersTest:
         @pytest.mark.usefixtures("db_session")
         def should_return_offer_which_name_contains_keyword_when_keyword_is_more_than_3_letters(self, app):
             # given
-            user_offerer = offers_factories.UserOffererFactory()
+            user_offerer = offerers_factories.UserOffererFactory()
             expected_offer = offers_factories.OfferFactory(
                 name="seras-tu là", venue__managingOfferer=user_offerer.offerer
             )
@@ -439,7 +433,7 @@ class GetCappedOffersForFiltersTest:
         @pytest.mark.usefixtures("db_session")
         def should_be_case_insensitive(self, app):
             # given
-            user_offerer = offers_factories.UserOffererFactory()
+            user_offerer = offerers_factories.UserOffererFactory()
             expected_offer = offers_factories.OfferFactory(
                 name="Mon océan", venue__managingOfferer=user_offerer.offerer
             )
@@ -464,7 +458,7 @@ class GetCappedOffersForFiltersTest:
         @pytest.mark.usefixtures("db_session")
         def should_be_accent_sensitive(self, app):
             # given
-            user_offerer = offers_factories.UserOffererFactory()
+            user_offerer = offerers_factories.UserOffererFactory()
             expected_offer = offers_factories.OfferFactory(name="ocean", venue__managingOfferer=user_offerer.offerer)
             other_offer = offers_factories.OfferFactory(name="océan", venue__managingOfferer=user_offerer.offerer)
 
@@ -485,7 +479,7 @@ class GetCappedOffersForFiltersTest:
         @pytest.mark.usefixtures("db_session")
         def should_return_offer_which_isbn_is_equally_to_name_keyword_or_isbn(self, app):
             # given
-            user_offerer = offers_factories.UserOffererFactory()
+            user_offerer = offerers_factories.UserOffererFactory()
             expected_offer = offers_factories.OfferFactory(
                 name="seras-tu là", venue__managingOfferer=user_offerer.offerer, extraData={"isbn": "1234567891234"}
             )
@@ -515,7 +509,7 @@ class GetCappedOffersForFiltersTest:
             self.offerer = self.venue.managingOfferer
             self.other_venue = offers_factories.VenueFactory(managingOfferer=self.offerer)
             self.pro = users_factories.ProFactory()
-            self.user_offerer = offers_factories.UserOffererFactory(user=self.pro, offerer=self.offerer)
+            self.user_offerer = offerers_factories.UserOffererFactory(user=self.pro, offerer=self.offerer)
 
             self.sold_out_offer_on_other_venue = offers_factories.ThingOfferFactory(
                 venue=self.other_venue, description="sold_out_offer_on_other_venue"
@@ -1019,7 +1013,7 @@ class GetOffersByIdsTest:
     def test_filter_on_user_offerer(self):
         offer1 = offers_factories.OfferFactory()
         offerer = offer1.venue.managingOfferer
-        user_offerer = offers_factories.UserOffererFactory(offerer=offerer)
+        user_offerer = offerers_factories.UserOffererFactory(offerer=offerer)
         user = user_offerer.user
         offer2 = offers_factories.OfferFactory()
 

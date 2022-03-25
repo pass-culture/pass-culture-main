@@ -1,7 +1,8 @@
 import pytest
 
-from pcapi.core.offers import factories as offers_factories
-from pcapi.core.users import factories as users_factories
+import pcapi.core.offerers.factories as offerers_factories
+import pcapi.core.offers.factories as offers_factories
+import pcapi.core.users.factories as users_factories
 from pcapi.repository import repository
 from pcapi.utils.human_ids import humanize
 
@@ -13,8 +14,8 @@ class Returns200Test:
         user1 = users_factories.ProFactory(email="patrick.fiori@example.com")
         user2 = users_factories.ProFactory(email="celine.dion@example.com")
         offerer = offers_factories.OffererFactory(siren="123456781")
-        user_offerer1 = offers_factories.UserOffererFactory(user=user1, offerer=offerer)
-        user_offerer2 = offers_factories.UserOffererFactory(user=user2, offerer=offerer)
+        user_offerer1 = offerers_factories.UserOffererFactory(user=user1, offerer=offerer)
+        user_offerer2 = offerers_factories.UserOffererFactory(user=user2, offerer=offerer)
         repository.save(user_offerer1, user_offerer2)
 
         # when
@@ -32,8 +33,8 @@ class Returns200Test:
         user1 = users_factories.ProFactory(email="patrick.fiori@example.com")
         user2 = users_factories.ProFactory(email="celine.dion@example.com")
         offerer = offers_factories.OffererFactory(siren="123456781")
-        user_offerer1 = offers_factories.UserOffererFactory(user=user1, offerer=offerer)
-        user_offerer2 = offers_factories.UserOffererFactory(user=user2, offerer=offerer)
+        user_offerer1 = offerers_factories.UserOffererFactory(user=user1, offerer=offerer)
+        user_offerer2 = offerers_factories.UserOffererFactory(user=user2, offerer=offerer)
         repository.save(user_offerer1, user_offerer2)
         non_existing_offerer_id = "B9"
 

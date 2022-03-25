@@ -213,7 +213,7 @@ class UserTest:
         user = users_factories.UserFactory()
         assert not user.hasPhysicalVenues
 
-        offerer = offers_factories.UserOffererFactory(user=user).offerer
+        offerer = offerers_factories.UserOffererFactory(user=user).offerer
         assert not user.hasPhysicalVenues
 
         offers_factories.VirtualVenueFactory(managingOfferer=offerer)

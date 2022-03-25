@@ -6,13 +6,14 @@ import pytest
 from pcapi.admin.custom_views.venue_view import _get_venue_provider_link
 from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.bookings.models import BookingStatus
-from pcapi.core.finance import factories as finance_factories
+import pcapi.core.finance.factories as finance_factories
+import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offerers.models import Venue
-from pcapi.core.offers import factories as offers_factories
-from pcapi.core.offers import models as offers_models
-from pcapi.core.providers import factories as providers_factories
-from pcapi.core.users import testing as sendinblue_testing
+import pcapi.core.offers.factories as offers_factories
+import pcapi.core.offers.models as offers_models
+import pcapi.core.providers.factories as providers_factories
 from pcapi.core.users.factories import AdminFactory
+import pcapi.core.users.testing as sendinblue_testing
 
 from tests.conftest import TestClient
 from tests.conftest import clean_database
@@ -296,8 +297,8 @@ class VenueViewTest:
     def test_delete_venue(self, mocked_validate_csrf_token, client):
         admin = AdminFactory(email="user@example.com")
         venue = offers_factories.VenueFactory(bookingEmail="booking@example.com")
-        user_offerer1 = offers_factories.UserOffererFactory(offerer=venue.managingOfferer)
-        user_offerer2 = offers_factories.UserOffererFactory(offerer=venue.managingOfferer)
+        user_offerer1 = offerers_factories.UserOffererFactory(offerer=venue.managingOfferer)
+        user_offerer2 = offerers_factories.UserOffererFactory(offerer=venue.managingOfferer)
 
         api_client = client.with_session_auth(admin.email)
         response = api_client.post(
@@ -328,7 +329,7 @@ class VenueViewTest:
     def test_delete_venue_rejected(self, mocked_validate_csrf_token, client, booking_status):
         admin = AdminFactory(email="user@example.com")
         venue = offers_factories.VenueFactory()
-        offers_factories.UserOffererFactory(offerer=venue.managingOfferer)
+        offerers_factories.UserOffererFactory(offerer=venue.managingOfferer)
         BookingFactory(stock__offer__venue=venue, status=booking_status)
 
         api_client = client.with_session_auth(admin.email)

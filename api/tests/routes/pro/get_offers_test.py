@@ -2,6 +2,7 @@ import secrets
 from unittest.mock import patch
 
 from pcapi.core import testing
+import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.testing import assert_num_queries
 import pcapi.core.users.factories as users_factories
@@ -85,7 +86,7 @@ class Returns200Test:
         # Given
         pro = users_factories.ProFactory()
         offerer = offers_factories.OffererFactory()
-        offers_factories.UserOffererFactory(user=pro, offerer=offerer)
+        offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
         requested_venue = offers_factories.VenueFactory(managingOfferer=offerer, siret="12345678912345")
         other_venue = offers_factories.VenueFactory(managingOfferer=offerer, siret="54321987654321")
         offers_factories.ThingOfferFactory(venue=requested_venue)
@@ -108,7 +109,7 @@ class Returns200Test:
         # given
         pro = users_factories.ProFactory()
         offerer = offers_factories.OffererFactory()
-        offers_factories.UserOffererFactory(user=pro, offerer=offerer)
+        offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
         venue = offers_factories.VenueFactory(managingOfferer=offerer)
 
         # when
@@ -138,7 +139,7 @@ class Returns200Test:
         # given
         pro = users_factories.ProFactory()
         offerer = offers_factories.OffererFactory()
-        offers_factories.UserOffererFactory(user=pro, offerer=offerer)
+        offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
         # when
         response = TestClient(app.test_client()).with_session_auth(email=pro.email).get("/offers?status=active")
@@ -163,7 +164,7 @@ class Returns200Test:
         # given
         pro = users_factories.ProFactory()
         offerer = offers_factories.OffererFactory()
-        offers_factories.UserOffererFactory(user=pro, offerer=offerer)
+        offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
         offers_factories.VenueFactory(managingOfferer=offerer)
 
         # when
@@ -193,7 +194,7 @@ class Returns200Test:
         # given
         pro = users_factories.ProFactory()
         offerer = offers_factories.OffererFactory()
-        offers_factories.UserOffererFactory(user=pro, offerer=offerer)
+        offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
         # when
         response = TestClient(app.test_client()).with_session_auth(email=pro.email).get("/offers?creationMode=imported")
@@ -218,7 +219,7 @@ class Returns200Test:
         # given
         pro = users_factories.ProFactory()
         offerer = offers_factories.OffererFactory()
-        offers_factories.UserOffererFactory(user=pro, offerer=offerer)
+        offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
         # when
         response = (
@@ -247,7 +248,7 @@ class Returns200Test:
         # given
         pro = users_factories.ProFactory()
         offerer = offers_factories.OffererFactory()
-        offers_factories.UserOffererFactory(user=pro, offerer=offerer)
+        offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
         # when
         response = (
@@ -276,7 +277,7 @@ class Returns200Test:
         # given
         pro = users_factories.ProFactory()
         offerer = offers_factories.OffererFactory()
-        offers_factories.UserOffererFactory(user=pro, offerer=offerer)
+        offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
         # when
         response = TestClient(app.test_client()).with_session_auth(email=pro.email).get("/offers?categoryId=LIVRE")
@@ -330,7 +331,7 @@ class Returns404Test:
         # Given
         pro = users_factories.ProFactory()
         offerer = offers_factories.OffererFactory()
-        offers_factories.UserOffererFactory(user=pro, offerer=offerer, validationToken=secrets.token_urlsafe(20))
+        offerers_factories.UserOffererFactory(user=pro, offerer=offerer, validationToken=secrets.token_urlsafe(20))
         venue = offers_factories.VenueFactory(managingOfferer=offerer)
         offers_factories.ThingOfferFactory(venue=venue)
 

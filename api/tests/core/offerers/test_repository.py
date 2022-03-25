@@ -46,7 +46,7 @@ class GetAllOfferersForUserTest:
     def should_return_pro_offerers_only(self) -> None:
         # Given
         pro = users_factories.ProFactory()
-        pro_offerer_attachment = offers_factories.UserOffererFactory(user=pro)
+        pro_offerer_attachment = offerers_factories.UserOffererFactory(user=pro)
         other_offerer = offers_factories.OffererFactory()
 
         # When
@@ -61,7 +61,7 @@ class GetAllOfferersForUserTest:
     def should_return_non_validated_offerers(self) -> None:
         # Given
         pro = users_factories.ProFactory()
-        pro_offerer_attachment = offers_factories.UserOffererFactory(user=pro, offerer__validationToken="Token")
+        pro_offerer_attachment = offerers_factories.UserOffererFactory(user=pro, offerer__validationToken="Token")
 
         # When
         offerers = get_all_offerers_for_user(user=pro).all()
@@ -74,7 +74,7 @@ class GetAllOfferersForUserTest:
     def should_return_offerers_with_non_validated_attachment_to_given_pro(self) -> None:
         # Given
         pro = users_factories.ProFactory()
-        unvalidated_pro_offerer_attachment = offers_factories.UserOffererFactory(user=pro, validationToken="Token")
+        unvalidated_pro_offerer_attachment = offerers_factories.UserOffererFactory(user=pro, validationToken="Token")
 
         # When
         offerers = get_all_offerers_for_user(user=pro).all()
@@ -133,8 +133,8 @@ class GetAllOfferersForUserTest:
         def should_return_all_pro_offerers_when_filter_is_none(self) -> None:
             # Given
             pro = users_factories.ProFactory()
-            pro_attachment_to_validated_offerer = offers_factories.UserOffererFactory(user=pro)
-            pro_attachment_to_unvalidated_offerer = offers_factories.UserOffererFactory(
+            pro_attachment_to_validated_offerer = offerers_factories.UserOffererFactory(user=pro)
+            pro_attachment_to_unvalidated_offerer = offerers_factories.UserOffererFactory(
                 user=pro, offerer__validationToken="Token"
             )
 
@@ -150,8 +150,8 @@ class GetAllOfferersForUserTest:
         def should_return_only_validated_offerers_when_filter_is_true(self) -> None:
             # Given
             pro = users_factories.ProFactory()
-            pro_attachment_to_validated_offerer = offers_factories.UserOffererFactory(user=pro)
-            pro_attachment_to_unvalidated_offerer = offers_factories.UserOffererFactory(
+            pro_attachment_to_validated_offerer = offerers_factories.UserOffererFactory(user=pro)
+            pro_attachment_to_unvalidated_offerer = offerers_factories.UserOffererFactory(
                 user=pro, offerer__validationToken="Token"
             )
 
@@ -167,8 +167,8 @@ class GetAllOfferersForUserTest:
         def should_return_only_unvalidated_offerers_when_filter_is_false(self) -> None:
             # Given
             pro = users_factories.ProFactory()
-            pro_attachment_to_validated_offerer = offers_factories.UserOffererFactory(user=pro)
-            pro_attachment_to_unvalidated_offerer = offers_factories.UserOffererFactory(
+            pro_attachment_to_validated_offerer = offerers_factories.UserOffererFactory(user=pro)
+            pro_attachment_to_unvalidated_offerer = offerers_factories.UserOffererFactory(
                 user=pro, offerer__validationToken="Token"
             )
 
@@ -185,8 +185,10 @@ class GetAllOfferersForUserTest:
         def should_return_all_pro_offerers_when_filter_is_none(self) -> None:
             # Given
             pro = users_factories.ProFactory()
-            validated_pro_offerer_attachment = offers_factories.UserOffererFactory(user=pro)
-            unvalidated_pro_offerer_attachment = offers_factories.UserOffererFactory(user=pro, validationToken="Token")
+            validated_pro_offerer_attachment = offerers_factories.UserOffererFactory(user=pro)
+            unvalidated_pro_offerer_attachment = offerers_factories.UserOffererFactory(
+                user=pro, validationToken="Token"
+            )
 
             # When
             offerers = get_all_offerers_for_user(user=pro).all()
@@ -200,8 +202,10 @@ class GetAllOfferersForUserTest:
         def should_return_only_offerers_with_validated_attachment_when_filter_is_true(self) -> None:
             # Given
             pro = users_factories.ProFactory()
-            validated_pro_offerer_attachment = offers_factories.UserOffererFactory(user=pro)
-            unvalidated_pro_offerer_attachment = offers_factories.UserOffererFactory(user=pro, validationToken="Token")
+            validated_pro_offerer_attachment = offerers_factories.UserOffererFactory(user=pro)
+            unvalidated_pro_offerer_attachment = offerers_factories.UserOffererFactory(
+                user=pro, validationToken="Token"
+            )
 
             # When
             offerers = get_all_offerers_for_user(user=pro, validated_for_user=True).all()
@@ -215,8 +219,10 @@ class GetAllOfferersForUserTest:
         def should_return_only_offerers_with_unvalidated_attachment_when_filter_is_false(self) -> None:
             # Given
             pro = users_factories.ProFactory()
-            validated_pro_offerer_attachment = offers_factories.UserOffererFactory(user=pro)
-            unvalidated_pro_offerer_attachment = offers_factories.UserOffererFactory(user=pro, validationToken="Token")
+            validated_pro_offerer_attachment = offerers_factories.UserOffererFactory(user=pro)
+            unvalidated_pro_offerer_attachment = offerers_factories.UserOffererFactory(
+                user=pro, validationToken="Token"
+            )
 
             # When
             offerers = get_all_offerers_for_user(user=pro, validated_for_user=False).all()
@@ -231,7 +237,7 @@ class GetAllOfferersForUserTest:
 class FindUserOffererByValidationTokenTest:
     def test_return_user_offerer_given_validation_token(self):
         # Given
-        user_offerer_expected = offers_factories.UserOffererFactory(validationToken="TOKEN")
+        user_offerer_expected = offerers_factories.UserOffererFactory(validationToken="TOKEN")
 
         # When
         user_offerer_received = find_user_offerer_by_validation_token(user_offerer_expected.validationToken)
@@ -241,7 +247,7 @@ class FindUserOffererByValidationTokenTest:
 
     def test_return_nothing_when_validation_token_does_not_exist(self):
         # Given
-        offers_factories.UserOffererFactory(validationToken="TOKEN")
+        offerers_factories.UserOffererFactory(validationToken="TOKEN")
 
         # When
         user_offerer_received = find_user_offerer_by_validation_token("ANOTHER TOKEN")
@@ -253,7 +259,7 @@ class FindUserOffererByValidationTokenTest:
 class FindOffererByValidationTokenTest:
     def test_return_offerer_given_validation_token(self):
         # Given
-        user_offerer_expected = offers_factories.UserOffererFactory(offerer__validationToken="TOKEN")
+        user_offerer_expected = offerers_factories.UserOffererFactory(offerer__validationToken="TOKEN")
 
         # When
         offerer_received = find_offerer_by_validation_token(user_offerer_expected.offerer.validationToken)
@@ -263,7 +269,7 @@ class FindOffererByValidationTokenTest:
 
     def test_return_nothing_when_validation_token_does_not_exist(self):
         # Given
-        offers_factories.UserOffererFactory(offerer__validationToken="TOKEN")
+        offerers_factories.UserOffererFactory(offerer__validationToken="TOKEN")
 
         # When
         offerer_received = find_offerer_by_validation_token("ANOTHER TOKEN")
@@ -276,7 +282,7 @@ class FindNewOffererUserEmailTest:
     def test_find_existing_email(self):
         offerer = offerers_factories.OffererFactory()
         pro_user = users_factories.ProFactory()
-        offers_factories.UserOffererFactory(offerer=offerer, user=pro_user)
+        offerers_factories.UserOffererFactory(offerer=offerer, user=pro_user)
 
         result = find_new_offerer_user_email(offerer.id)
 

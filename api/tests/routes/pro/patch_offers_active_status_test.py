@@ -5,6 +5,7 @@ from pcapi.core.educational.factories import CollectiveOfferFactory
 from pcapi.core.educational.factories import CollectiveOfferTemplateFactory
 from pcapi.core.educational.models import CollectiveOffer
 from pcapi.core.educational.models import CollectiveOfferTemplate
+import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import OfferValidationStatus
@@ -21,7 +22,7 @@ class Returns204Test:
         venue = offer1.venue
         offer2 = offers_factories.OfferFactory(venue=venue, isActive=False)
         offerer = venue.managingOfferer
-        offers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offerer)
+        offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offerer)
 
         # When
         client = TestClient(app.test_client()).with_session_auth("pro@example.com")
@@ -39,7 +40,7 @@ class Returns204Test:
         venue = offer1.venue
         offer2 = offers_factories.OfferFactory(venue=venue)
         offerer = venue.managingOfferer
-        offers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offerer)
+        offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offerer)
 
         offers_update_queries = 3
         collective_offers_update_queries = 2  # collective + template
@@ -63,7 +64,7 @@ class Returns204Test:
         pending_offer = offers_factories.OfferFactory(venue=venue, validation=OfferValidationStatus.PENDING)
         rejected_offer = offers_factories.OfferFactory(venue=venue, validation=OfferValidationStatus.REJECTED)
         offerer = venue.managingOfferer
-        offers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offerer)
+        offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offerer)
 
         client = TestClient(app.test_client()).with_session_auth("pro@example.com")
         data = {
@@ -87,7 +88,7 @@ class Returns204Test:
         )
         collective_offer_template = CollectiveOfferTemplateFactory(isActive=False, offerId=offer2.id, venue=venue)
         offerer = venue.managingOfferer
-        offers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offerer)
+        offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offerer)
 
         # When
         client = client.with_session_auth("pro@example.com")
@@ -110,7 +111,7 @@ class Returns204Test:
         )
         collective_offer_template = CollectiveOfferTemplateFactory(isActive=True, venue=venue, offerId=offer2.id)
         offerer = venue.managingOfferer
-        offers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offerer)
+        offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offerer)
 
         # When
         client = client.with_session_auth("pro@example.com")

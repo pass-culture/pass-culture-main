@@ -4,10 +4,10 @@ from pcapi.core.bookings.factories import EducationalBookingFactory
 from pcapi.core.bookings.factories import UsedEducationalBookingFactory
 from pcapi.core.bookings.models import BookingStatus
 import pcapi.core.educational.factories as educational_factories
+from pcapi.core.offerers.factories import UserOffererFactory
 from pcapi.core.offerers.models import VenueTypeCode
 from pcapi.core.offers.factories import EducationalEventStockFactory
 from pcapi.core.offers.factories import MediationFactory
-from pcapi.core.offers.factories import UserOffererFactory
 from pcapi.core.offers.factories import VenueFactory
 from pcapi.sandboxes.scripts.utils.storage_utils import store_public_object_from_sandbox_assets
 

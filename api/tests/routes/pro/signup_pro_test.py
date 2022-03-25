@@ -1,9 +1,9 @@
 import pytest
 
-from pcapi.core.offerers import models as offerers_models
+import pcapi.core.offerers.factories as offerers_factories
+import pcapi.core.offerers.models as offerers_models
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offers.factories import OffererFactory
-from pcapi.core.offers.factories import UserOffererFactory
 from pcapi.core.users.factories import ProFactory
 from pcapi.core.users.models import User
 from pcapi.models.user_offerer import UserOfferer
@@ -91,7 +91,7 @@ class Returns204Test:
         # Given
         offerer = OffererFactory(siren="349974931", validationToken="not_validated")
         pro = ProFactory(email="bobby@test.com", publicName="bobby")
-        UserOffererFactory(user=pro, offerer=offerer)
+        offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
         data = BASE_DATA_PRO.copy()
 

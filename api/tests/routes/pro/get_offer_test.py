@@ -6,6 +6,7 @@ import pytest
 
 from pcapi.core import testing
 from pcapi.core.categories import subcategories
+import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.repository import repository
@@ -300,7 +301,7 @@ class Returns200Test:
     @freeze_time("2020-10-15 00:00:00")
     def test_should_not_return_soft_deleted_stock(self, app):
         # Given
-        user_offerer = offers_factories.UserOffererFactory()
+        user_offerer = offerers_factories.UserOffererFactory()
         offer = offers_factories.EducationalEventOfferFactory(venue__managingOfferer=user_offerer.offerer)
         deleted_stock = offers_factories.EducationalEventStockFactory(offer=offer, isSoftDeleted=True)
 

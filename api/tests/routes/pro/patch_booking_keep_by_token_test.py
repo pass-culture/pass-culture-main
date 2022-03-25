@@ -4,9 +4,9 @@ from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingStatus
 import pcapi.core.finance.factories as finance_factories
+import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offerers.factories import ApiKeyFactory
 from pcapi.core.offerers.factories import DEFAULT_CLEAR_API_KEY
-import pcapi.core.offers.factories as offers_factories
 from pcapi.core.users import factories as users_factories
 
 
@@ -33,7 +33,7 @@ class Returns204Test:
     class WithBasicAuthTest:
         def test_when_user_is_logged_in_and_regular_offer(self, client):
             booking = bookings_factories.UsedIndividualBookingFactory()
-            pro_user = offers_factories.UserOffererFactory(offerer=booking.offerer).user
+            pro_user = offerers_factories.UserOffererFactory(offerer=booking.offerer).user
 
             url = f"/v2/bookings/keep/token/{booking.token}"
             response = client.with_session_auth(pro_user.email).patch(url)
@@ -45,7 +45,7 @@ class Returns204Test:
 
         def test_when_user_is_logged_in_expect_booking_with_token_in_lower_case_to_be_used(self, client):
             booking = bookings_factories.UsedIndividualBookingFactory()
-            pro_user = offers_factories.UserOffererFactory(offerer=booking.offerer).user
+            pro_user = offerers_factories.UserOffererFactory(offerer=booking.offerer).user
 
             url = f"/v2/bookings/keep/token/{booking.token.lower()}"
             response = client.with_session_auth(pro_user.email).patch(url)
@@ -58,7 +58,7 @@ class Returns204Test:
         # FIXME: I don't understand what we're trying to test, here.
         def test_when_there_is_no_remaining_quantity_after_validating(self, client):
             booking = bookings_factories.UsedIndividualBookingFactory(stock__quantity=1)
-            pro_user = offers_factories.UserOffererFactory(offerer=booking.offerer).user
+            pro_user = offerers_factories.UserOffererFactory(offerer=booking.offerer).user
 
             url = f"/v2/bookings/keep/token/{booking.token.lower()}"
             response = client.with_session_auth(pro_user.email).patch(url)
@@ -114,7 +114,7 @@ class Returns403Test:
         def test_when_user_is_not_attached_to_linked_offerer(self, client):
             # Given
             booking = bookings_factories.IndividualBookingFactory()
-            another_pro_user = offers_factories.UserOffererFactory().user
+            another_pro_user = offerers_factories.UserOffererFactory().user
 
             # When
             url = f"/v2/bookings/keep/token/{booking.token}?email={booking.email}"
@@ -148,7 +148,7 @@ class Returns410Test:
     def test_when_booking_has_not_been_used_yet(self, client):
         # Given
         booking = bookings_factories.IndividualBookingFactory()
-        pro_user = offers_factories.UserOffererFactory(offerer=booking.offerer).user
+        pro_user = offerers_factories.UserOffererFactory(offerer=booking.offerer).user
 
         # When
         url = f"/v2/bookings/keep/token/{booking.token}"
@@ -163,7 +163,7 @@ class Returns410Test:
     def test_when_user_is_logged_in_and_booking_payment_exists(self, client):
         # Given
         booking = finance_factories.PaymentFactory().booking
-        pro_user = offers_factories.UserOffererFactory(offerer=booking.offerer).user
+        pro_user = offerers_factories.UserOffererFactory(offerer=booking.offerer).user
 
         # When
         url = f"/v2/bookings/keep/token/{booking.token}"

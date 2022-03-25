@@ -1,8 +1,9 @@
 import pytest
 
 from pcapi.core import testing
-from pcapi.core.offers import factories as offers_factories
-from pcapi.core.users import factories as users_factories
+import pcapi.core.offerers.factories as offerers_factories
+import pcapi.core.offers.factories as offers_factories
+import pcapi.core.users.factories as users_factories
 from pcapi.utils.human_ids import humanize
 
 
@@ -21,7 +22,7 @@ def test_access_by_pro(client):
     offers_factories.VenueFactory(managingOfferer=offerer1, name="lieu B1")
     pro = users_factories.ProFactory(offerers=[offerer1, offerer2, inactive])
     # Non-validated offerers should be included, too.
-    offers_factories.UserOffererFactory(user=pro, offerer=offerer3, validationToken="TOKEN")
+    offerers_factories.UserOffererFactory(user=pro, offerer=offerer3, validationToken="TOKEN")
     # Offerer that belongs to another user should not be returned.
     offers_factories.OffererFactory(name="not returned")
 

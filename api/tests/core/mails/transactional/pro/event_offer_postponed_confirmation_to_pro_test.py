@@ -11,6 +11,7 @@ from pcapi.core.mails.transactional.pro.event_offer_postponed_confirmation_to_pr
     send_event_offer_postponement_confirmation_email_to_pro,
 )
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
+import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
 
@@ -23,7 +24,7 @@ class SendEventOfferPosponedConfirmationToProEmailTest:
         # Given
         pro = users_factories.ProFactory()
         offerer = offers_factories.OffererFactory()
-        offers_factories.UserOffererFactory(user=pro, offerer=offerer)
+        offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
         venue = offers_factories.VenueFactory(managingOfferer=offerer, bookingEmail="venue@postponed.net")
         product = offers_factories.EventProductFactory()
@@ -49,7 +50,7 @@ class SendEventOfferPosponedConfirmationToProEmailTest:
     def test_get_email_metadata(self):
         pro = users_factories.ProFactory()
         offerer = offers_factories.OffererFactory()
-        offers_factories.UserOffererFactory(user=pro, offerer=offerer)
+        offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
         venue = offers_factories.VenueFactory(managingOfferer=offerer)
         product = offers_factories.EventProductFactory()

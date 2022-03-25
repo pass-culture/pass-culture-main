@@ -5,6 +5,7 @@ import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.bookings.models import Booking
 import pcapi.core.finance.factories as finance_factories
 from pcapi.core.finance.models import BusinessUnit
+import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offerers.factories import ApiKeyFactory
 from pcapi.core.offerers.models import ApiKey
 from pcapi.core.offerers.models import Offerer
@@ -74,8 +75,8 @@ def test_delete_cascade_offerer_should_remove_all_user_attachments_to_deleted_of
     # Given
     pro = users_factories.ProFactory()
     offerer_to_delete = offers_factories.OffererFactory()
-    offers_factories.UserOffererFactory(user=pro, offerer=offerer_to_delete)
-    offers_factories.UserOffererFactory(user=pro)
+    offerers_factories.UserOffererFactory(user=pro, offerer=offerer_to_delete)
+    offerers_factories.UserOffererFactory(user=pro)
 
     # When
     delete_cascade_offerer_by_id(offerer_to_delete.id)

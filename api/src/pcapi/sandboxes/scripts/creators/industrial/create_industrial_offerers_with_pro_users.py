@@ -1,11 +1,11 @@
 import logging
 
-from pcapi.core.offerers import models as offerers_models
+import pcapi.core.offerers.factories as offerers_factories
+import pcapi.core.offerers.models as offerers_models
 from pcapi.core.offerers.repository import check_if_siren_already_exists
-from pcapi.core.offers import factories as offers_factories
-from pcapi.core.users import factories as users_factories
+import pcapi.core.offers.factories as offers_factories
+import pcapi.core.users.factories as users_factories
 from pcapi.model_creators.generic_creators import create_offerer
-from pcapi.model_creators.generic_creators import create_user_offerer
 from pcapi.repository import repository
 from pcapi.sandboxes.scripts.mocks.educational_siren_mocks import MOCK_ADAGE_ELIGIBLE_SIREN
 from pcapi.sandboxes.scripts.mocks.offerer_mocks import MOCK_NAMES
@@ -144,7 +144,7 @@ def create_industrial_offerers_with_pro_users():
         user_index += 1
         user_validation_suffix += 1
 
-        user_offerers_by_name["{} / {}".format(user_name, offerer_name)] = create_user_offerer(
+        user_offerers_by_name["{} / {}".format(user_name, offerer_name)] = offerers_factories.UserOffererFactory(
             offerer=offerer,
             user=pro,
         )
@@ -233,8 +233,9 @@ def create_industrial_offerers_with_pro_users():
 
         # user_offerer with None as validation token
         # because this user has created the offerer
-        user_offerers_by_name["{} / {}".format(user_name, offerer_name)] = create_user_offerer(
-            offerer=offerer, user=pro
+        user_offerers_by_name["{} / {}".format(user_name, offerer_name)] = offerers_factories.UserOffererFactory(
+            offerer=offerer,
+            user=pro,
         )
 
         # create also users that are attached to this offerer
@@ -270,8 +271,10 @@ def create_industrial_offerers_with_pro_users():
                 user_offerer_validation_token = "{}{}".format(
                     user_offerer_validation_prefix, user_offerer_validation_suffix
                 )
-            user_offerers_by_name["{} / {}".format(user_name, offerer_name)] = create_user_offerer(
-                offerer=offerer, user=pro, validation_token=user_offerer_validation_token
+            user_offerers_by_name["{} / {}".format(user_name, offerer_name)] = offerers_factories.UserOffererFactory(
+                offerer=offerer,
+                user=pro,
+                validationToken=user_offerer_validation_token,
             )
             user_offerer_validation_suffix += 1
 
@@ -295,8 +298,10 @@ def create_industrial_offerers_with_pro_users():
                 user_offerer_validation_token = "{}{}".format(
                     user_offerer_validation_prefix, user_offerer_validation_suffix
                 )
-            user_offerers_by_name["{} / {}".format(user_name, offerer_name)] = create_user_offerer(
-                offerer=offerer, user=pro, validation_token=user_offerer_validation_token
+            user_offerers_by_name["{} / {}".format(user_name, offerer_name)] = offerers_factories.UserOffererFactory(
+                offerer=offerer,
+                user=pro,
+                validationToken=user_offerer_validation_token,
             )
             user_offerer_index += 1
             user_offerer_validation_suffix += 1

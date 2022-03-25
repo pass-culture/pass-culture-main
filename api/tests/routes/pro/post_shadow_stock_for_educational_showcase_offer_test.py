@@ -2,9 +2,10 @@ from datetime import datetime
 
 import pytest
 
-from pcapi.core.educational import factories as educational_factories
-from pcapi.core.educational import models as educational_models
-from pcapi.core.offers import factories as offer_factories
+import pcapi.core.educational.factories as educational_factories
+import pcapi.core.educational.models as educational_models
+import pcapi.core.offerers.factories as offerers_factories
+import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
 from pcapi.utils.human_ids import dehumanize
@@ -17,7 +18,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 class Return200Test:
     def test_create_valid_shadow_stock_for_educational_offer(self, client):
         # Given
-        offer = offer_factories.EducationalEventOfferFactory(
+        offer = offers_factories.EducationalEventOfferFactory(
             extraData={"isShowcase": False, "contactEmail": "toto@example.com", "contactPhone": "0101010101"}
         )
         educational_factories.CollectiveOfferFactory(
@@ -25,7 +26,7 @@ class Return200Test:
             contactPhone="0101010101",
             offerId=offer.id,
         )
-        offer_factories.UserOffererFactory(
+        offerers_factories.UserOffererFactory(
             user__email="user@example.com",
             offerer=offer.venue.managingOfferer,
         )
@@ -54,12 +55,12 @@ class Return200Test:
 
     def test_create_collective_offer_template_and_delete_collective_offer(self, client):
         # Given
-        offer = offer_factories.EducationalEventOfferFactory(extraData={"isShowcase": False})
+        offer = offers_factories.EducationalEventOfferFactory(extraData={"isShowcase": False})
         collective_offer = educational_factories.CollectiveOfferFactory(
             offerId=offer.id,
             students=[educational_models.StudentLevels.COLLEGE4, educational_models.StudentLevels.CAP2],
         )
-        offer_factories.UserOffererFactory(
+        offerers_factories.UserOffererFactory(
             user__email="user@example.com",
             offerer=offer.venue.managingOfferer,
         )
@@ -94,8 +95,8 @@ class Return200Test:
 class Return400Test:
     def test_create_educational_shadow_stocks_should_not_be_available_if_user_not_linked_to_offerer(self, app, client):
         # Given
-        offer = offer_factories.EducationalEventOfferFactory(extraData={"isShowcase": False})
-        offer_factories.UserOffererFactory(
+        offer = offers_factories.EducationalEventOfferFactory(extraData={"isShowcase": False})
+        offerers_factories.UserOffererFactory(
             user__email="user@example.com",
         )
 
@@ -116,8 +117,8 @@ class Return400Test:
 
     def should_not_accept_payload_with_price_details_with_more_than_1000_caracters(self, app, client):
         # Given
-        offer = offer_factories.EducationalEventOfferFactory(extraData={"isShowcase": False})
-        offer_factories.UserOffererFactory(
+        offer = offers_factories.EducationalEventOfferFactory(extraData={"isShowcase": False})
+        offerers_factories.UserOffererFactory(
             user__email="user@example.com",
             offerer=offer.venue.managingOfferer,
         )
@@ -139,8 +140,8 @@ class Return400Test:
 
     def should_not_allow_multiple_stocks(self, client):
         # Given
-        offer = offer_factories.EducationalEventStockFactory(offer__extraData={"isShowcase": False}).offer
-        offer_factories.UserOffererFactory(
+        offer = offers_factories.EducationalEventStockFactory(offer__extraData={"isShowcase": False}).offer
+        offerers_factories.UserOffererFactory(
             user__email="user@example.com",
             offerer=offer.venue.managingOfferer,
         )
@@ -164,7 +165,7 @@ class Return400Test:
 class Return404Test:
     def test_returns404_when_no_collective_offer_found(self, client):
         # Given
-        offer = offer_factories.EducationalEventOfferFactory(
+        offer = offers_factories.EducationalEventOfferFactory(
             extraData={
                 "isShowcase": False,
                 "students": ["Collège - 4e", "CAP - 1re année"],
@@ -172,7 +173,7 @@ class Return404Test:
                 "contactPhone": "0101010101",
             }
         )
-        offer_factories.UserOffererFactory(
+        offerers_factories.UserOffererFactory(
             user__email="user@example.com",
             offerer=offer.venue.managingOfferer,
         )
