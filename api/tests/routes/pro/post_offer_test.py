@@ -12,12 +12,10 @@ import pcapi.core.users.factories as users_factories
 from pcapi.utils.human_ids import dehumanize
 from pcapi.utils.human_ids import humanize
 
-from tests.conftest import TestClient
-
 
 @pytest.mark.usefixtures("db_session")
 class Returns200Test:
-    def test_create_event_offer(self, app):
+    def test_create_event_offer(self, client):
         # Given
         venue = offers_factories.VenueFactory()
         offerer = venue.managingOfferer
@@ -37,8 +35,7 @@ class Returns200Test:
             "motorDisabilityCompliant": False,
             "visualDisabilityCompliant": False,
         }
-        client = TestClient(app.test_client()).with_session_auth("user@example.com")
-        response = client.post("/offers", json=data)
+        response = client.with_session_auth("user@example.com").post("/offers", json=data)
 
         # Then
         assert response.status_code == 201
@@ -56,14 +53,13 @@ class Returns200Test:
         assert offer.audioDisabilityCompliant == False
         assert offer.mentalDisabilityCompliant == True
 
-    def when_creating_new_thing_offer(self, app):
+    def when_creating_new_thing_offer(self, client):
         # Given
         venue = offers_factories.VirtualVenueFactory()
         offerer = venue.managingOfferer
         offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
 
         # When
-        client = TestClient(app.test_client()).with_session_auth("user@example.com")
         data = {
             "venueId": humanize(venue.id),
             "bookingEmail": "offer@example.com",
@@ -77,7 +73,7 @@ class Returns200Test:
             "motorDisabilityCompliant": False,
             "visualDisabilityCompliant": False,
         }
-        response = client.post("/offers", json=data)
+        response = client.with_session_auth("user@example.com").post("/offers", json=data)
 
         # Then
         assert response.status_code == 201
@@ -99,7 +95,7 @@ class Returns200Test:
         assert offer.audioDisabilityCompliant == True
         assert offer.mentalDisabilityCompliant == False
 
-    def test_create_valid_collective_offer_in_old_offer_model(self, app):
+    def test_create_valid_collective_offer_in_old_offer_model(self, client):
         # Given
         venue = offers_factories.VenueFactory()
         offerer = venue.managingOfferer
@@ -120,8 +116,7 @@ class Returns200Test:
             "visualDisabilityCompliant": False,
             "isEducational": True,
         }
-        client = TestClient(app.test_client()).with_session_auth("user@example.com")
-        response = client.post("/offers", json=data)
+        response = client.with_session_auth("user@example.com").post("/offers", json=data)
 
         # Then
         assert response.status_code == 201
@@ -132,7 +127,7 @@ class Returns200Test:
     @override_settings(ADAGE_API_URL="https://adage-api-url")
     @override_settings(ADAGE_API_KEY="adage-api-key")
     @override_settings(ADAGE_BACKEND="pcapi.core.educational.adage_backends.adage.AdageHttpClient")
-    def test_create_valid_educational_offer_with_new_route_on_old_offer_model(self, app):
+    def test_create_valid_educational_offer_with_new_route_on_old_offer_model(self, client):
         # Given
         venue = offers_factories.VenueFactory()
         offerer = venue.managingOfferer
@@ -157,7 +152,6 @@ class Returns200Test:
             "motorDisabilityCompliant": False,
             "visualDisabilityCompliant": False,
         }
-        client = TestClient(app.test_client()).with_session_auth("user@example.com")
         with requests_mock.Mocker() as request_mock:
             request_mock.get(
                 f"https://adage-api-url/v1/partenaire-culturel/{offerer.siren}",
@@ -192,7 +186,7 @@ class Returns200Test:
                 ],
             )
 
-            response = client.post("/offers/educational", json=data)
+            response = client.with_session_auth("user@example.com").post("/offers/educational", json=data)
 
         # Then
         assert response.status_code == 201
@@ -219,7 +213,7 @@ class Returns200Test:
     @override_settings(ADAGE_API_URL="https://adage-api-url")
     @override_settings(ADAGE_API_KEY="adage-api-key")
     @override_settings(ADAGE_BACKEND="pcapi.core.educational.adage_backends.adage.AdageHttpClient")
-    def test_create_collective_offer_on_draft_offer_creation(self, app):
+    def test_create_collective_offer_on_draft_offer_creation(self, client):
         venue = offers_factories.VenueFactory()
         offerer = venue.managingOfferer
         offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
@@ -241,7 +235,6 @@ class Returns200Test:
             },
         }
 
-        client = TestClient(app.test_client()).with_session_auth("user@example.com")
         with requests_mock.Mocker() as request_mock:
             request_mock.get(
                 f"https://adage-api-url/v1/partenaire-culturel/{offerer.siren}",
@@ -276,7 +269,7 @@ class Returns200Test:
                 ],
             )
 
-            response = client.post("/offers/educational", json=data)
+            response = client.with_session_auth("user@example.com").post("/offers/educational", json=data)
 
         assert response.status_code == 201
         offer_id = dehumanize(response.json["id"])
@@ -292,12 +285,11 @@ class Returns200Test:
 
 @pytest.mark.usefixtures("db_session")
 class Returns400Test:
-    def test_fail_if_venue_is_not_found(self, app):
+    def test_fail_if_venue_is_not_found(self, client):
         # Given
         offerers_factories.UserOffererFactory(user__email="user@example.com")
 
         # When
-        client = TestClient(app.test_client()).with_session_auth("user@example.com")
         data = {
             "venueId": humanize(1),
             "bookingEmail": "offer@example.com",
@@ -310,13 +302,13 @@ class Returns400Test:
             "motorDisabilityCompliant": False,
             "visualDisabilityCompliant": False,
         }
-        response = client.post("/offers", json=data)
+        response = client.with_session_auth("user@example.com").post("/offers", json=data)
 
         # Then
         assert response.status_code == 404
         assert response.json["global"] == ["Aucun objet ne correspond à cet identifiant dans notre base de données"]
 
-    def test_fail_if_name_too_long(self, app):
+    def test_fail_if_name_too_long(self, client):
         # Given
         venue = offers_factories.VenueFactory()
         offerer = venue.managingOfferer
@@ -328,14 +320,13 @@ class Returns400Test:
             "name": "too long" * 30,
             "subcategoryId": subcategories.SPECTACLE_REPRESENTATION.id,
         }
-        client = TestClient(app.test_client()).with_session_auth("user@example.com")
-        response = client.post("/offers", json=data)
+        response = client.with_session_auth("user@example.com").post("/offers", json=data)
 
         # Then
         assert response.status_code == 400
         assert response.json["name"] == ["Le titre de l’offre doit faire au maximum 90 caractères."]
 
-    def test_fail_if_unknown_subcategory(self, app):
+    def test_fail_if_unknown_subcategory(self, client):
         # Given
         venue = offers_factories.VenueFactory()
         offerer = venue.managingOfferer
@@ -347,14 +338,13 @@ class Returns400Test:
             "name": "An unacceptable name",
             "subcategoryId": "TOTO",
         }
-        client = TestClient(app.test_client()).with_session_auth("user@example.com")
-        response = client.post("/offers", json=data)
+        response = client.with_session_auth("user@example.com").post("/offers", json=data)
 
         # Then
         assert response.status_code == 400
         assert response.json["subcategory"] == ["La sous-catégorie de cette offre est inconnue"]
 
-    def test_fail_if_inactive_subcategory(self, app):
+    def test_fail_if_inactive_subcategory(self, client):
         # Given
         venue = offers_factories.VenueFactory()
         offerer = venue.managingOfferer
@@ -366,8 +356,7 @@ class Returns400Test:
             "name": "A cool offer name",
             "subcategoryId": "OEUVRE_ART",
         }
-        client = TestClient(app.test_client()).with_session_auth("user@example.com")
-        response = client.post("/offers", json=data)
+        response = client.with_session_auth("user@example.com").post("/offers", json=data)
 
         # Then
         assert response.status_code == 400
@@ -375,7 +364,7 @@ class Returns400Test:
             "Une offre ne peut être créée ou éditée en utilisant cette sous-catégorie"
         ]
 
-    def test_fail_when_educational_and_non_eligible_subcategory(self, app):
+    def test_fail_when_educational_and_non_eligible_subcategory(self, client):
         # Given
         venue = offers_factories.VenueFactory()
         offerer = venue.managingOfferer
@@ -388,14 +377,13 @@ class Returns400Test:
             "subcategoryId": "SUPPORT_PHYSIQUE_FILM",
             "isEducational": True,
         }
-        client = TestClient(app.test_client()).with_session_auth("user@example.com")
-        response = client.post("/offers", json=data)
+        response = client.with_session_auth("user@example.com").post("/offers", json=data)
 
         # Then
         assert response.status_code == 400
         assert response.json["offer"] == ["Cette catégorie d'offre n'est pas éligible aux offres éducationnelles"]
 
-    def test_fail_when_offer_subcategory_is_offline_only_and_venue_is_virtuel(self, app):
+    def test_fail_when_offer_subcategory_is_offline_only_and_venue_is_virtuel(self, client):
         # Given
         venue = offers_factories.VirtualVenueFactory()
         offerer = venue.managingOfferer
@@ -413,88 +401,83 @@ class Returns400Test:
             "motorDisabilityCompliant": False,
             "visualDisabilityCompliant": False,
         }
-        client = TestClient(app.test_client()).with_session_auth("user@example.com")
-        response = client.post("/offers", json=data)
+        response = client.with_session_auth("user@example.com").post("/offers", json=data)
 
         # Then
         assert response.status_code == 400
         assert response.json["url"] == ["Une offre de sous-catégorie Achat instrument ne peut pas être numérique"]
 
-    def should_fail_when_url_has_no_scheme(self, app):
+    def should_fail_when_url_has_no_scheme(self, client):
         # Given
         venue = offers_factories.VirtualVenueFactory()
         offerer = venue.managingOfferer
         offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
 
         # When
-        client = TestClient(app.test_client()).with_session_auth("user@example.com")
         data = {
             "venueId": humanize(venue.id),
             "name": "Les lièvres pas malins",
             "subcategoryId": subcategories.JEU_EN_LIGNE.id,
             "url": "missing.something",
         }
-        response = client.post("/offers", json=data)
+        response = client.with_session_auth("user@example.com").post("/offers", json=data)
 
         # Then
         assert response.status_code == 400
         assert response.json["url"] == ['L\'URL doit commencer par "http://" ou "https://"']
 
-    def should_fail_when_externalTicketOfficeUrl_has_no_scheme(self, app):
+    def should_fail_when_externalTicketOfficeUrl_has_no_scheme(self, client):
         # Given
         venue = offers_factories.VirtualVenueFactory()
         offerer = venue.managingOfferer
         offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
 
         # When
-        client = TestClient(app.test_client()).with_session_auth("user@example.com")
         data = {
             "venueId": humanize(venue.id),
             "name": "Les lièvres pas malins",
             "subcategoryId": subcategories.JEU_EN_LIGNE.id,
             "externalTicketOfficeUrl": "missing.something",
         }
-        response = client.post("/offers", json=data)
+        response = client.with_session_auth("user@example.com").post("/offers", json=data)
 
         # Then
         assert response.status_code == 400
         assert response.json["externalTicketOfficeUrl"] == ['L\'URL doit commencer par "http://" ou "https://"']
 
-    def should_fail_when_url_has_no_host(self, app):
+    def should_fail_when_url_has_no_host(self, client):
         # Given
         venue = offers_factories.VirtualVenueFactory()
         offerer = venue.managingOfferer
         offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
 
         # When
-        client = TestClient(app.test_client()).with_session_auth("user@example.com")
         data = {
             "venueId": humanize(venue.id),
             "name": "Les lièvres pas malins",
             "subcategoryId": subcategories.JEU_EN_LIGNE.id,
             "url": "https://missing",
         }
-        response = client.post("/offers", json=data)
+        response = client.with_session_auth("user@example.com").post("/offers", json=data)
 
         # Then
         assert response.status_code == 400
         assert response.json["url"] == ['L\'URL doit terminer par une extension (ex. ".fr")']
 
-    def should_fail_when_externalTicketOfficeUrl_has_no_host(self, app):
+    def should_fail_when_externalTicketOfficeUrl_has_no_host(self, client):
         # Given
         venue = offers_factories.VirtualVenueFactory()
         offerer = venue.managingOfferer
         offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
 
         # When
-        client = TestClient(app.test_client()).with_session_auth("user@example.com")
         data = {
             "venueId": humanize(venue.id),
             "name": "Les lièvres pas malins",
             "subcategoryId": subcategories.JEU_EN_LIGNE.id,
             "externalTicketOfficeUrl": "https://missing",
         }
-        response = client.post("/offers", json=data)
+        response = client.with_session_auth("user@example.com").post("/offers", json=data)
 
         # Then
         assert response.status_code == 400
@@ -557,8 +540,7 @@ class Returns400Test:
                 ],
             )
 
-            client.with_session_auth("user@example.com")
-            response = client.post("/offers/educational", json=data)
+            response = client.with_session_auth("user@example.com").post("/offers/educational", json=data)
 
         # Then
         assert response.status_code == 400
@@ -566,13 +548,12 @@ class Returns400Test:
 
 @pytest.mark.usefixtures("db_session")
 class Returns403Test:
-    def when_user_is_not_attached_to_offerer(self, app):
+    def when_user_is_not_attached_to_offerer(self, client):
         # Given
         users_factories.ProFactory(email="user@example.com")
         venue = offers_factories.VirtualVenueFactory()
 
         # When
-        client = TestClient(app.test_client()).with_session_auth("user@example.com")
         data = {
             "venueId": humanize(venue.id),
             "audioDisabilityCompliant": True,
@@ -580,7 +561,7 @@ class Returns403Test:
             "motorDisabilityCompliant": False,
             "visualDisabilityCompliant": False,
         }
-        response = client.post("/offers", json=data)
+        response = client.with_session_auth("user@example.com").post("/offers", json=data)
 
         # Then
         assert response.status_code == 403
@@ -591,7 +572,7 @@ class Returns403Test:
     @override_settings(ADAGE_API_URL="https://adage-api-url")
     @override_settings(ADAGE_API_KEY="adage-api-key")
     @override_settings(ADAGE_BACKEND="pcapi.core.educational.adage_backends.adage.AdageHttpClient")
-    def when_offerer_cannot_create_educational_offer(self, app):
+    def when_offerer_cannot_create_educational_offer(self, client):
         # Given
         venue = offers_factories.VenueFactory()
         offerer = venue.managingOfferer
@@ -616,7 +597,6 @@ class Returns403Test:
             "motorDisabilityCompliant": False,
             "visualDisabilityCompliant": False,
         }
-        client = TestClient(app.test_client()).with_session_auth("user@example.com")
         with requests_mock.Mocker() as request_mock:
             request_mock.get(
                 f"https://adage-api-url/v1/partenaire-culturel/{offerer.siren}",
@@ -626,7 +606,7 @@ class Returns403Test:
                 status_code=404,
             )
 
-            response = client.post("/offers/educational", json=data)
+            response = client.with_session_auth("user@example.com").post("/offers/educational", json=data)
 
         # Then
         assert response.status_code == 403
