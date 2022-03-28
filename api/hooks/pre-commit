@@ -14,7 +14,8 @@ if [[ "$ALEMBIC_STAGED_FILES" != "" ]]; then
   echo -e "\033[0;96mUpdating alembic_version_conflict_detection.txt \033[0m\n"
   pushd `pwd`
   cd api
-  alembic --config alembic.ini heads > alembic_version_conflict_detection.txt
+  # Sort heads: "pre" then "post" (the output of Alembic is not stable)
+  alembic --config alembic.ini heads | sort --key 2 --reverse  > alembic_version_conflict_detection.txt
   git add alembic_version_conflict_detection.txt
   popd
 fi
