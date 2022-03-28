@@ -215,10 +215,18 @@
   }
 
   .reset-filters-link {
-    @include body-important();
+    @include highlight();
+    display: flex;
+    align-items: center;
+    margin-top: rem(36px);
 
     color: $primary;
     line-height: rem(22px);
+
+    &-icon {
+      margin-right: rem(5px);
+      fill: $primary;
+    }
 
     &:hover,
     &:focus {
@@ -227,6 +235,10 @@
 
     &.disabled {
       color: $grey-dark;
+
+      .reset-filters-link-icon {
+        fill: $grey-dark;
+      }
 
       &:hover,
       &:focus {

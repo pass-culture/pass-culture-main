@@ -1,6 +1,7 @@
 import { endOfDay } from 'date-fns'
 import { utcToZonedTime } from 'date-fns-tz'
 import React, { useCallback, useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 
 import { api } from 'api/v1/api'
 import Icon from 'components/layout/Icon'
@@ -15,6 +16,7 @@ import {
   DEFAULT_SEARCH_FILTERS,
 } from 'core/Offers/constants'
 import { Offerer, TSearchFilters } from 'core/Offers/types'
+import { ReactComponent as ResetIcon } from 'icons/reset.svg'
 import {
   fetchAllVenuesByProUser,
   formatAndOrderVenues,
@@ -34,6 +36,8 @@ interface ISearchFiltersProps {
       | ((previousFilters: TSearchFilters) => TSearchFilters)
   ) => void
   disableAllFilters: boolean
+  userHasSearchFilters: boolean
+  resetFilters: () => void
 }
 
 const SearchFilters = ({
@@ -43,6 +47,8 @@ const SearchFilters = ({
   selectedFilters,
   setSearchFilters,
   disableAllFilters,
+  userHasSearchFilters,
+  resetFilters,
 }: ISearchFiltersProps): JSX.Element => {
   const [categoriesOptions, setCategoriesOptions] = useState<
     { id: string; displayName: string }[]
@@ -200,6 +206,21 @@ const SearchFilters = ({
             todayDate={getToday()}
           />
         </div>
+        {userHasSearchFilters ? (
+          <Link
+            className="reset-filters-link"
+            onClick={resetFilters}
+            to="/offres"
+          >
+            <ResetIcon className="reset-filters-link-icon" />
+            Réinitialiser les filtres
+          </Link>
+        ) : (
+          <span className="reset-filters-link disabled">
+            <ResetIcon className="reset-filters-link-icon" />
+            Réinitialiser les filtres
+          </span>
+        )}
         <div className={styles['search-separator']}>
           <div className={styles['separator']} />
           <button

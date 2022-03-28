@@ -235,28 +235,17 @@ const Offers = ({
           toggleSelectAllCheckboxes={toggleSelectAllCheckboxes}
         />
       </ActionsBarPortal>
-      <h3 className="op-title">Rechercher une offre</h3>
-      {hasSearchFilters(searchFilters) ? (
-        <Link
-          className="reset-filters-link"
-          onClick={resetFilters}
-          to="/offres"
-        >
-          Réinitialiser les filtres
-        </Link>
-      ) : (
-        <span className="reset-filters-link disabled">
-          Réinitialiser les filtres
-        </span>
-      )}
       <SearchFilters
         applyFilters={applyFilters}
         disableAllFilters={userHasNoOffers}
         offerer={offerer}
         removeOfferer={removeOfferer}
+        resetFilters={resetFilters}
         selectedFilters={searchFilters}
         setSearchFilters={setSearchFilters}
+        userHasSearchFilters={hasSearchFilters(searchFilters)}
       />
+
       {userHasNoOffers ? (
         <NoOffers />
       ) : (
