@@ -7,15 +7,17 @@ import { Provider } from 'react-redux'
 import reactRouter from 'react-router'
 import { Router } from 'react-router-dom'
 
-import * as routerHelpers from 'components/router/helpers'
+import * as useCurrentUser from 'components/hooks/useCurrentUser'
+import type { IUseCurrentUserReturn } from 'components/hooks/useCurrentUser'
 import * as useNotification from 'components/hooks/useNotification'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
 import { campaignTracker } from 'tracking/mediaCampaignsTracking'
 
-import SignupValidation from '../SignupValidation'
+import SignUpValidation from '../SignUpValidation'
 
 jest.mock('repository/pcapi/pcapi')
+jest.mock('components/hooks/useCurrentUser')
 jest.mock('components/hooks/useNotification')
 
 describe('src | components | pages | Signup | validation', () => {
@@ -44,28 +46,40 @@ describe('src | components | pages | Signup | validation', () => {
     jest.spyOn(useNotification, 'default').mockImplementation(() => ({
       ...mockUseNotification,
     }))
+    jest.spyOn(useCurrentUser, 'default').mockReturnValue({
+      currentUser: {},
+    } as IUseCurrentUserReturn)
   })
 
   afterEach(jest.resetAllMocks)
 
   it('should redirect to home page if the user is logged in', async () => {
     const validateUser = jest.spyOn(pcapi, 'validateUser')
-    const redirect = jest
-      .spyOn(routerHelpers, 'redirectLoggedUser')
-      .mockImplementation(() => {})
+    const redirect = jest.fn()
+    jest.spyOn(reactRouter, 'useHistory').mockImplementation(
+      () =>
+        ({
+          push: redirect,
+        } as unknown as History<unknown>)
+    )
+    jest.spyOn(useCurrentUser, 'default').mockReturnValue({
+      currentUser: {
+        id: '123',
+      },
+    } as IUseCurrentUserReturn)
     // when the user is logged in and lands on signup validation page
     render(
       <Provider store={store}>
         <Router history={history}>
-          <SignupValidation {...props} currentUser={{ id: 'CMOI' }} />
+          <SignUpValidation />
         </Router>
       </Provider>
     )
     // then the validity of his token should not be verified
     expect(validateUser).not.toHaveBeenCalled()
     // and he should be redirected to home page
-
     expect(redirect).toHaveBeenCalledTimes(1)
+    expect(redirect).toHaveBeenNthCalledWith(1, '/')
   })
 
   it('should verify validity of user token and redirect to connexion', async () => {
@@ -76,7 +90,7 @@ describe('src | components | pages | Signup | validation', () => {
     render(
       <Provider store={store}>
         <Router history={history}>
-          <SignupValidation />
+          <SignUpValidation />
         </Router>
       </Provider>
     )
@@ -95,7 +109,7 @@ describe('src | components | pages | Signup | validation', () => {
     render(
       <Provider store={store}>
         <Router history={history}>
-          <SignupValidation />
+          <SignUpValidation />
         </Router>
       </Provider>
     )
@@ -114,7 +128,7 @@ describe('src | components | pages | Signup | validation', () => {
     render(
       <Provider store={store}>
         <Router history={history}>
-          <SignupValidation />
+          <SignUpValidation />
         </Router>
       </Provider>
     )
@@ -143,7 +157,7 @@ describe('src | components | pages | Signup | validation', () => {
     render(
       <Provider store={store}>
         <Router history={history}>
-          <SignupValidation />
+          <SignUpValidation />
         </Router>
       </Provider>
     )

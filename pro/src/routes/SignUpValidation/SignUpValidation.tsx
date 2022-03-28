@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { useHistory, useParams } from 'react-router'
 
+import useCurrentUser from 'components/hooks/useCurrentUser'
 import useNotification from 'components/hooks/useNotification'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { campaignTracker } from 'tracking/mediaCampaignsTracking'
@@ -9,13 +10,16 @@ type Params = { token: string }
 
 const SignupValidation = (): null => {
   const { token } = useParams<Params>()
+  const { currentUser } = useCurrentUser()
   const history = useHistory()
   useEffect(() => {
     campaignTracker.signUpValidation()
   }, [])
   const notify = useNotification()
   useEffect(() => {
-    if (token)
+    if (currentUser?.id) {
+      history.push('/')
+    } else if (token) {
       pcapi
         .validateUser(token)
         .then(() => {
@@ -28,7 +32,8 @@ const SignupValidation = (): null => {
           notify.error(errors.global)
         })
         .finally(() => history.push('/connexion'))
-  }, [history, notify, token])
+    }
+  }, [history, notify, token, currentUser?.id])
   return null
 }
 SignupValidation.defaultProps = {
