@@ -35,11 +35,11 @@ DMS_ERROR_MESSAGE_ERROR_ID_PIECE = """Bonjour,
 
 Nous avons bien reçu ton dossier, mais le numéro de pièce d'identité sur le formulaire ne correspond pas à celui indiqué sur ta pièce d'identité.
 
-Cet article peut t’aider à le trouver sur ta pièce d'identité : <a href="https://aide.passculture.app/fr/articles/5508680-jeunes-ou-puis-je-trouver-le-numero-de-ma-piece-d-identite">https://aide.passculture.app/fr/articles/5508680-jeunes-ou-puis-je-trouver-le-numero-de-ma-piece-d-identite</a>
+Cet article peut t’aider à le trouver sur ta pièce d'identité : <a href="https://aide.passculture.app/hc/fr/articles/4411999008657--Jeunes-Où-puis-je-trouver-le-numéro-de-ma-pièce-d-identité-">https://aide.passculture.app/hc/fr/articles/4411999008657--Jeunes-Où-puis-je-trouver-le-numéro-de-ma-pièce-d-identité-</a>
 
 Peux-tu mettre à jour ton dossier sur le formulaire en ligne ?
 
-Pour t'aider à corriger ton dossier, merci de consulter cet article : <a href="https://aide.passculture.app/fr/articles/5100876-jeunes-ou-puis-je-trouver-de-l-aide-concernant-mon-dossier-d-inscription-sur-demarches-simplifiees">https://aide.passculture.app/fr/articles/5100876-jeunes-ou-puis-je-trouver-de-l-aide-concernant-mon-dossier-d-inscription-sur-demarches-simplifiees</a>
+Pour t'aider à corriger ton dossier, merci de consulter cet article : <a href="https://aide.passculture.app/hc/fr/articles/4411999116433--Jeunes-Où-puis-je-trouver-de-l-aide-concernant-mon-dossier-d-inscription-sur-Démarches-Simplifiées-">https://aide.passculture.app/hc/fr/articles/4411999116433--Jeunes-Où-puis-je-trouver-de-l-aide-concernant-mon-dossier-d-inscription-sur-Démarches-Simplifiées-</a>
 
 Merci et à très vite,
 
@@ -49,7 +49,7 @@ DMS_ERROR_MESSAGE_ERROR_POSTAL_CODE = """Bonjour,
 
             Le champ du code postal doit être rempli par 5 chiffres uniquement, sans lettres ni espace. Si tu as saisi ta ville dans le champ du code postal, merci de ne saisir que ces 5 chiffres.
 
-            Pour corriger ton formulaire, cet article est là pour t'aider : <a href="https://aide.passculture.app/fr/articles/5100876-jeunes-ou-puis-je-trouver-de-l-aide-concernant-mon-dossier-d-inscription-sur-demarches-simplifiees">https://aide.passculture.app/fr/articles/5100876-jeunes-ou-puis-je-trouver-de-l-aide-concernant-mon-dossier-d-inscription-sur-demarches-simplifiees</a>
+            Pour corriger ton formulaire, cet article est là pour t'aider : <a href="https://aide.passculture.app/hc/fr/articles/4411999116433--Jeunes-Où-puis-je-trouver-de-l-aide-concernant-mon-dossier-d-inscription-sur-Démarches-Simplifiées-">https://aide.passculture.app/hc/fr/articles/4411999116433--Jeunes-Où-puis-je-trouver-de-l-aide-concernant-mon-dossier-d-inscription-sur-Démarches-Simplifiées-</a>
 
             Très cordialement,
 
@@ -68,8 +68,8 @@ DMS_ERROR_MESSAGE_DOUBLE_ERROR = """Bonjour,
 
                                  Pour avoir plus d’informations sur les étapes de ton inscription sur Démarches Simplifiées, je t’invite à consulter les articles suivants :
 
-                                 Où puis-je trouver le numéro de ma pièce d'identité ? <a href="https://aide.passculture.app/fr/articles/5508680-jeunes-ou-puis-je-trouver-le-numero-de-ma-piece-d-identite">https://aide.passculture.app/fr/articles/5508680-jeunes-ou-puis-je-trouver-le-numero-de-ma-piece-d-identite</a>
-                                 Comment bien renseigner mon adresse et mon code postal lors de l'inscription ? <a href="https://aide.passculture.app/fr/articles/5100876-jeunes-ou-puis-je-trouver-de-l-aide-concernant-mon-dossier-d-inscription-sur-demarches-simplifiees">https://aide.passculture.app/fr/articles/5100876-jeunes-ou-puis-je-trouver-de-l-aide-concernant-mon-dossier-d-inscription-sur-demarches-simplifiees</a>
+                                 Où puis-je trouver le numéro de ma pièce d'identité ? <a href="https://aide.passculture.app/hc/fr/articles/4411999008657--Jeunes-Où-puis-je-trouver-le-numéro-de-ma-pièce-d-identité">https://aide.passculture.app/hc/fr/articles/4411999008657--Jeunes-Où-puis-je-trouver-le-numéro-de-ma-pièce-d-identité</a>
+                                 Comment bien renseigner mon adresse et mon code postal lors de l'inscription ? <a href="https://aide.passculture.app/hc/fr/articles/4411998995985--Jeunes-Comment-bien-renseigner-mon-adresse-et-mon-code-postal-lors-de-l-inscription-">https://aide.passculture.app/hc/fr/articles/4411998995985--Jeunes-Comment-bien-renseigner-mon-adresse-et-mon-code-postal-lors-de-l-inscription-</a>
 
 
                                  Nous te souhaitons une belle journée.
@@ -81,7 +81,7 @@ DMS_ERROR_MESSSAGE_BIRTH_DATE = """Bonjour,
                         Nous avons bien reçu ton dossier, mais il y a une erreur dans la date de naissance inscrite sur le formulaire en ligne.
 
                         Merci de corriger ton dossier.
-                        Tu trouveras de l'aide dans cet article : <a href="https://aide.passculture.app/hc/fr/sections/4411991878545-Inscription-sur-D%C3%A9marches-Simplifi%C3%A9es">https://aide.passculture.app/hc/fr/sections/4411991878545-Inscription-sur-Démarches-Simplifiées</a>
+                        Tu trouveras de l'aide dans cet article : <a href="https://aide.passculture.app/hc/fr/articles/4411999116433--Jeunes-Où-puis-je-trouver-de-l-aide-concernant-mon-dossier-d-inscription-sur-Démarches-Simplifiées-">https://aide.passculture.app/hc/fr/articles/4411999116433--Jeunes-Où-puis-je-trouver-de-l-aide-concernant-mon-dossier-d-inscription-sur-Démarches-Simplifiées-</a>
 
                         Bonne journée,
 
