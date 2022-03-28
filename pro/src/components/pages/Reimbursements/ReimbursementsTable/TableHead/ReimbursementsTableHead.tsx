@@ -47,51 +47,41 @@ const ReimbursementsTableHead = ({
       changeDirection(columnOption)
     }
   }
-
   return (
     <thead>
       <tr>
-        {columns.map(column => (
-          <th
-            key={column.title}
-            onClick={() => {
-              sortAndChangeColumnDirection(column)
-            }}
-          >
-            {column.title}
-            {column.selfDirection !== 'None' && (
-              <>
-                {column.selfDirection === 'default' && (
-                  <Icon
-                    alt=""
-                    png=""
-                    role="button"
-                    svg="ico-unfold"
-                    tabIndex={0}
-                  />
+        {columns.map(column => {
+          const ico =
+            column.selfDirection === 'default'
+              ? { label: 'trier par ordre croissant', type: 'ico-unfold' }
+              : column.selfDirection === 'desc'
+              ? {
+                  label: 'annuler le tri sur cette colonne',
+                  type: 'ico-arrow-up-r',
+                }
+              : {
+                  label: 'trier par ordre décroissant',
+                  type: 'ico-arrow-down-r',
+                }
+          return column.selfDirection !== 'None' ? (
+            <th key={column.title}>
+              <button
+                onClick={() => {
+                  sortAndChangeColumnDirection(column)
+                }}
+                title={ico.label}
+                type="button"
+              >
+                {column.title}
+                {column.selfDirection !== 'None' && (
+                  <Icon alt={ico.label} png="" svg={ico.type} />
                 )}
-                {column.selfDirection === 'desc' && (
-                  <Icon
-                    alt=""
-                    png=""
-                    role="button"
-                    svg="ico-arrow-up-r"
-                    tabIndex={0}
-                  />
-                )}
-                {column.selfDirection === 'asc' && (
-                  <Icon
-                    alt=""
-                    png=""
-                    role="button"
-                    svg="ico-arrow-down-r"
-                    tabIndex={0}
-                  />
-                )}
-              </>
-            )}
-          </th>
-        ))}
+              </button>
+            </th>
+          ) : (
+            <th key={column.title}>{column.title}</th>
+          )
+        })}
       </tr>
     </thead>
   )

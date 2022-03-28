@@ -14,9 +14,18 @@ table.reimbursement-table {
       cursor: pointer;
       display: flex;
 
-      img {
-        height: rem(20px);
-        margin-left: rem(10px);
+      button {
+        background: none;
+        border: none;
+        display: flex;
+        font-size: 0.875rem;
+        font-weight: 500;
+        padding: 0;
+
+        img {
+          height: rem(20px);
+          margin-left: rem(10px);
+        }
       }
     }
 
@@ -37,7 +46,7 @@ table.reimbursement-table {
     }
   }
 
-  tbody tr:nth-child(n+1):nth-child(odd) {
+  tbody tr:nth-child(n + 1):nth-child(odd) {
     background-color: #f1f1f4;
   }
 }
