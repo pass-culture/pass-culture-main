@@ -81,31 +81,7 @@ def post_offer(body: offers_serialize.PostOfferBodyModel) -> offers_serialize.Of
     try:
         offer = offers_api.create_offer(offer_data=body, user=current_user)
 
-    except exceptions.UnknownOfferSubCategory as error:
-        logger.info(
-            "Could not create offer: selected subcategory is unknown.",
-            extra={"offer_name": body.name, "venue_id": body.venue_id},
-        )
-        raise ApiErrors(
-            error.errors,
-            status_code=400,
-        )
-
-    except exceptions.SubCategoryIsInactive as error:
-        logger.info(
-            "Could not create offer: subcategory cannot be selected.",
-            extra={"offer_name": body.name, "venue_id": body.venue_id},
-        )
-        raise ApiErrors(
-            error.errors,
-            status_code=400,
-        )
-
-    except exceptions.SubcategoryNotEligibleForEducationalOffer as error:
-        logger.info(
-            "Could not create offer: subcategory is not eligible for educational offer.",
-            extra={"offer_name": body.name, "venue_id": body.venue_id},
-        )
+    except exceptions.OfferCreationBaseException as error:
         raise ApiErrors(
             error.errors,
             status_code=400,
