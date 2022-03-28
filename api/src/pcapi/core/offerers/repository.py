@@ -135,12 +135,20 @@ def find_offerer_by_siren(siren: str) -> Optional[models.Offerer]:
     return models.Offerer.query.filter_by(siren=siren).one_or_none()
 
 
+def find_offerer_by_validation_token(token: str) -> Optional[models.UserOfferer]:
+    return models.Offerer.query.filter_by(validationToken=token).one_or_none()
+
+
 def find_user_offerer_by_validation_token(token: str) -> Optional[models.UserOfferer]:
     return models.UserOfferer.query.filter_by(validationToken=token).one_or_none()
 
 
-def find_offerer_by_validation_token(token: str) -> Optional[models.UserOfferer]:
-    return models.Offerer.query.filter_by(validationToken=token).one_or_none()
+def find_all_user_offerers_by_offerer_id(offerer_id: int) -> list[models.UserOfferer]:
+    return models.UserOfferer.query.filter_by(offererId=offerer_id).all()
+
+
+def filter_query_where_user_is_user_offerer_and_is_validated(query, user):
+    return query.join(models.UserOfferer).filter_by(user=user).filter(models.UserOfferer.validationToken.is_(None))
 
 
 def find_user_offerers(user: int, offerer_id: str) -> models.UserOfferer:

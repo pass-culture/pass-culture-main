@@ -1,20 +1,11 @@
 import pytest
 
-from pcapi.core.offerers.exceptions import CannotFindOffererSiren
-from pcapi.core.offerers.exceptions import CannotFindOffererUserEmail
+from pcapi.core.offerers import exceptions
+from pcapi.core.offerers import models
+from pcapi.core.offerers import repository
 import pcapi.core.offerers.factories as offerers_factories
-from pcapi.core.offerers.models import Offerer
-from pcapi.core.offerers.models import Venue
-from pcapi.core.offerers.repository import filter_offerers_with_keywords_string
-from pcapi.core.offerers.repository import find_new_offerer_user_email
-from pcapi.core.offerers.repository import find_offerer_by_validation_token
-from pcapi.core.offerers.repository import find_siren_by_offerer_id
-from pcapi.core.offerers.repository import find_user_offerer_by_validation_token
-from pcapi.core.offerers.repository import get_all_offerers_for_user
-from pcapi.core.offerers.repository import get_all_venue_labels
-from pcapi.core.offerers.repository import has_digital_venue_with_at_least_one_offer
-from pcapi.core.offerers.repository import has_physical_venue_without_draft_or_accepted_bank_information
 import pcapi.core.offers.factories as offers_factories
+import pcapi.core.offers.models as offers_models
 from pcapi.core.users import factories as users_factories
 from pcapi.models.bank_information import BankInformationStatus
 
@@ -27,7 +18,7 @@ class GetAllVenueLabelsTest:
         label1 = offerers_factories.VenueLabelFactory()
         label2 = offerers_factories.VenueLabelFactory()
 
-        assert set(get_all_venue_labels()) == {label1, label2}
+        assert set(repository.get_all_venue_labels()) == {label1, label2}
 
 
 class GetAllOfferersForUserTest:
@@ -37,7 +28,7 @@ class GetAllOfferersForUserTest:
         offerer = offers_factories.OffererFactory()
 
         # When
-        offerers = get_all_offerers_for_user(user=admin).all()
+        offerers = repository.get_all_offerers_for_user(user=admin).all()
 
         # Then
         assert len(offerers) == 1
@@ -50,7 +41,7 @@ class GetAllOfferersForUserTest:
         other_offerer = offers_factories.OffererFactory()
 
         # When
-        offerers = get_all_offerers_for_user(user=pro).all()
+        offerers = repository.get_all_offerers_for_user(user=pro).all()
 
         # Then
         assert len(offerers) == 1
@@ -64,7 +55,7 @@ class GetAllOfferersForUserTest:
         pro_offerer_attachment = offerers_factories.UserOffererFactory(user=pro, offerer__validationToken="Token")
 
         # When
-        offerers = get_all_offerers_for_user(user=pro).all()
+        offerers = repository.get_all_offerers_for_user(user=pro).all()
 
         # Then
         assert len(offerers) == 1
@@ -77,7 +68,7 @@ class GetAllOfferersForUserTest:
         unvalidated_pro_offerer_attachment = offerers_factories.UserOffererFactory(user=pro, validationToken="Token")
 
         # When
-        offerers = get_all_offerers_for_user(user=pro).all()
+        offerers = repository.get_all_offerers_for_user(user=pro).all()
 
         # Then
         assert len(offerers) == 1
@@ -89,7 +80,7 @@ class GetAllOfferersForUserTest:
         offerer = offerers_factories.OffererFactory()
         offerers_factories.VenueFactory(managingOfferer=offerer, name="match")
         offerers_factories.VenueFactory(managingOfferer=offerer, name="match also")
-        offerers = get_all_offerers_for_user(user=admin, keywords="match")
+        offerers = repository.get_all_offerers_for_user(user=admin, keywords="match")
         assert offerers.count() == 1
 
     def should_not_return_deactivated_offerers(self) -> None:
@@ -98,7 +89,7 @@ class GetAllOfferersForUserTest:
         offers_factories.OffererFactory(isActive=False)
 
         # When
-        offerers = get_all_offerers_for_user(user=admin).all()
+        offerers = repository.get_all_offerers_for_user(user=admin).all()
 
         # Then
         assert len(offerers) == 0
@@ -107,12 +98,12 @@ class GetAllOfferersForUserTest:
         offerer1 = offers_factories.OffererFactory(name="cinéma")
         offerer2 = offers_factories.OffererFactory(name="théâtre")
         # Because of a bug, we need venues, here: see bug explained in
-        # `get_all_offerers_for_user()`.
+        # `repository.get_all_offerers_for_user()`.
         offers_factories.VenueFactory(managingOfferer=offerer1, name="dummy")
         offers_factories.VenueFactory(managingOfferer=offerer2, name="dummy")
         pro = users_factories.ProFactory(offerers=[offerer1, offerer2])
 
-        offerers = get_all_offerers_for_user(user=pro, keywords="cinema").all()
+        offerers = repository.get_all_offerers_for_user(user=pro, keywords="cinema").all()
 
         assert len(offerers) == 1
         assert offerers == [offerer1]
@@ -124,7 +115,7 @@ class GetAllOfferersForUserTest:
         offers_factories.VenueFactory(managingOfferer=offerer2, name="théâtre")
         pro = users_factories.ProFactory(offerers=[offerer1, offerer2])
 
-        offerers = get_all_offerers_for_user(user=pro, keywords="cinema").all()
+        offerers = repository.get_all_offerers_for_user(user=pro, keywords="cinema").all()
 
         assert len(offerers) == 1
         assert offerers == [offerer1]
@@ -139,7 +130,7 @@ class GetAllOfferersForUserTest:
             )
 
             # When
-            offerers = get_all_offerers_for_user(user=pro).all()
+            offerers = repository.get_all_offerers_for_user(user=pro).all()
 
             # Then
             assert len(offerers) == 2
@@ -156,7 +147,7 @@ class GetAllOfferersForUserTest:
             )
 
             # When
-            offerers = get_all_offerers_for_user(user=pro, validated=True).all()
+            offerers = repository.get_all_offerers_for_user(user=pro, validated=True).all()
 
             # Then
             assert len(offerers) == 1
@@ -173,7 +164,7 @@ class GetAllOfferersForUserTest:
             )
 
             # When
-            offerers = get_all_offerers_for_user(user=pro, validated=False).all()
+            offerers = repository.get_all_offerers_for_user(user=pro, validated=False).all()
 
             # Then
             assert len(offerers) == 1
@@ -191,7 +182,7 @@ class GetAllOfferersForUserTest:
             )
 
             # When
-            offerers = get_all_offerers_for_user(user=pro).all()
+            offerers = repository.get_all_offerers_for_user(user=pro).all()
 
             # Then
             assert len(offerers) == 2
@@ -208,7 +199,7 @@ class GetAllOfferersForUserTest:
             )
 
             # When
-            offerers = get_all_offerers_for_user(user=pro, validated_for_user=True).all()
+            offerers = repository.get_all_offerers_for_user(user=pro, validated_for_user=True).all()
 
             # Then
             assert len(offerers) == 1
@@ -225,7 +216,7 @@ class GetAllOfferersForUserTest:
             )
 
             # When
-            offerers = get_all_offerers_for_user(user=pro, validated_for_user=False).all()
+            offerers = repository.get_all_offerers_for_user(user=pro, validated_for_user=False).all()
 
             # Then
             assert len(offerers) == 1
@@ -240,7 +231,7 @@ class FindUserOffererByValidationTokenTest:
         user_offerer_expected = offerers_factories.UserOffererFactory(validationToken="TOKEN")
 
         # When
-        user_offerer_received = find_user_offerer_by_validation_token(user_offerer_expected.validationToken)
+        user_offerer_received = repository.find_user_offerer_by_validation_token(user_offerer_expected.validationToken)
 
         # Then
         assert user_offerer_received.id == user_offerer_expected.id
@@ -250,7 +241,7 @@ class FindUserOffererByValidationTokenTest:
         offerers_factories.UserOffererFactory(validationToken="TOKEN")
 
         # When
-        user_offerer_received = find_user_offerer_by_validation_token("ANOTHER TOKEN")
+        user_offerer_received = repository.find_user_offerer_by_validation_token("ANOTHER TOKEN")
 
         # Then
         assert user_offerer_received is None
@@ -262,7 +253,7 @@ class FindOffererByValidationTokenTest:
         user_offerer_expected = offerers_factories.UserOffererFactory(offerer__validationToken="TOKEN")
 
         # When
-        offerer_received = find_offerer_by_validation_token(user_offerer_expected.offerer.validationToken)
+        offerer_received = repository.find_offerer_by_validation_token(user_offerer_expected.offerer.validationToken)
 
         # Then
         assert offerer_received.id == user_offerer_expected.offerer.id
@@ -272,7 +263,7 @@ class FindOffererByValidationTokenTest:
         offerers_factories.UserOffererFactory(offerer__validationToken="TOKEN")
 
         # When
-        offerer_received = find_offerer_by_validation_token("ANOTHER TOKEN")
+        offerer_received = repository.find_offerer_by_validation_token("ANOTHER TOKEN")
 
         # Then
         assert offerer_received is None
@@ -284,13 +275,13 @@ class FindNewOffererUserEmailTest:
         pro_user = users_factories.ProFactory()
         offerers_factories.UserOffererFactory(offerer=offerer, user=pro_user)
 
-        result = find_new_offerer_user_email(offerer.id)
+        result = repository.find_new_offerer_user_email(offerer.id)
 
         assert result == pro_user.email
 
     def test_find_unknown_email(self):
-        with pytest.raises(CannotFindOffererUserEmail):
-            find_new_offerer_user_email(offerer_id=1)
+        with pytest.raises(exceptions.CannotFindOffererUserEmail):
+            repository.find_new_offerer_user_email(offerer_id=1)
 
 
 class FilterOfferersWithKeywordsStringTest:
@@ -333,10 +324,18 @@ class FilterOfferersWithKeywordsStringTest:
         offers_factories.EventOfferFactory(venue=venue_with_offer_3)
         offers_factories.EventOfferFactory(venue=venue_with_offer_5)
 
-        one_keyword_search = filter_offerers_with_keywords_string(Offerer.query.join(Venue), "perdus")
-        partial_keyword_search = filter_offerers_with_keywords_string(Offerer.query.join(Venue), "Libr")
-        two_keywords_search = filter_offerers_with_keywords_string(Offerer.query.join(Venue), "Librairie perd")
-        two_partial_keywords_search = filter_offerers_with_keywords_string(Offerer.query.join(Venue), "Lib perd")
+        one_keyword_search = repository.filter_offerers_with_keywords_string(
+            models.Offerer.query.join(models.Venue), "perdus"
+        )
+        partial_keyword_search = repository.filter_offerers_with_keywords_string(
+            models.Offerer.query.join(models.Venue), "Libr"
+        )
+        two_keywords_search = repository.filter_offerers_with_keywords_string(
+            models.Offerer.query.join(models.Venue), "Librairie perd"
+        )
+        two_partial_keywords_search = repository.filter_offerers_with_keywords_string(
+            models.Offerer.query.join(models.Venue), "Lib perd"
+        )
 
         assert {
             offerer_with_both_venues_offer_on_both,
@@ -360,6 +359,28 @@ class FilterOfferersWithKeywordsStringTest:
         } == set(two_partial_keywords_search)
 
 
+@pytest.mark.usefixtures("db_session")
+def test_filter_query_where_user_is_user_offerer_and_is_validated():
+    # Given
+    offer1 = offers_factories.OfferFactory()
+    offer2 = offers_factories.OfferFactory()
+    offer3 = offers_factories.OfferFactory()
+    offerer1 = offer1.venue.managingOfferer
+    offerer2 = offer2.venue.managingOfferer
+    pro = users_factories.ProFactory()
+    offerers_factories.UserOffererFactory(user=pro, offerer=offerer1)
+    offerers_factories.UserOffererFactory(user=pro, offerer=offerer2)
+
+    # When
+    base_query = offers_models.Offer.query.join(models.Venue).join(models.Offerer)
+    offers = repository.filter_query_where_user_is_user_offerer_and_is_validated(base_query, pro).all()
+
+    # Then
+    assert offer1 in offers
+    assert offer2 in offers
+    assert offer3 not in offers
+
+
 class HasVenueWithoutDraftOrAcceptedBankInformationTest:
     def test_venue_with_accepted_bank_information(self):
         offerer = offerers_factories.OffererFactory()
@@ -367,7 +388,7 @@ class HasVenueWithoutDraftOrAcceptedBankInformationTest:
         venue = offers_factories.VenueFactory(managingOfferer=offerer)
         offers_factories.BankInformationFactory(venue=venue, status=BankInformationStatus.ACCEPTED)
 
-        assert not has_physical_venue_without_draft_or_accepted_bank_information(offerer_id=offerer.id)
+        assert not repository.has_physical_venue_without_draft_or_accepted_bank_information(offerer_id=offerer.id)
 
     def test_venue_with_draft_bank_information(self):
         offerer = offerers_factories.OffererFactory()
@@ -375,7 +396,7 @@ class HasVenueWithoutDraftOrAcceptedBankInformationTest:
         venue = offers_factories.VenueFactory(managingOfferer=offerer)
         offers_factories.BankInformationFactory(venue=venue, status=BankInformationStatus.DRAFT)
 
-        assert not has_physical_venue_without_draft_or_accepted_bank_information(offerer_id=offerer.id)
+        assert not repository.has_physical_venue_without_draft_or_accepted_bank_information(offerer_id=offerer.id)
 
     def test_venues_with_rejected_and_accepted_bank_information(self):
         offerer = offerers_factories.OffererFactory()
@@ -389,7 +410,7 @@ class HasVenueWithoutDraftOrAcceptedBankInformationTest:
             venue=venue_with_rejected_bank_information, status=BankInformationStatus.ACCEPTED
         )
 
-        assert has_physical_venue_without_draft_or_accepted_bank_information(offerer_id=offerer.id)
+        assert repository.has_physical_venue_without_draft_or_accepted_bank_information(offerer_id=offerer.id)
 
     def test_venues_with_missing_and_accepted_bank_information(self):
         offerer = offerers_factories.OffererFactory()
@@ -400,7 +421,7 @@ class HasVenueWithoutDraftOrAcceptedBankInformationTest:
             venue=venue_with_rejected_bank_information, status=BankInformationStatus.ACCEPTED
         )
 
-        assert has_physical_venue_without_draft_or_accepted_bank_information(offerer_id=offerer.id)
+        assert repository.has_physical_venue_without_draft_or_accepted_bank_information(offerer_id=offerer.id)
 
 
 class HasDigitalVenueWithAtLeastOneOfferTest:
@@ -409,21 +430,21 @@ class HasDigitalVenueWithAtLeastOneOfferTest:
         digital_venue = offers_factories.VirtualVenueFactory(managingOfferer=offerer)
         offers_factories.DigitalOfferFactory(venue=digital_venue)
 
-        assert has_digital_venue_with_at_least_one_offer(offerer.id)
+        assert repository.has_digital_venue_with_at_least_one_offer(offerer.id)
 
     def test_digital_venue_without_offer(self):
         offerer = offerers_factories.OffererFactory()
         offers_factories.VirtualVenueFactory(managingOfferer=offerer)
 
-        assert not has_digital_venue_with_at_least_one_offer(offerer.id)
+        assert not repository.has_digital_venue_with_at_least_one_offer(offerer.id)
 
 
 class GetSirenByOffererIdTest:
     def test_return_siren_for_offerer_id(self):
         offerer = offerers_factories.OffererFactory()
 
-        assert find_siren_by_offerer_id(offerer.id) == offerer.siren
+        assert repository.find_siren_by_offerer_id(offerer.id) == offerer.siren
 
     def test_return_error_when_no_siren_found(self):
-        with pytest.raises(CannotFindOffererSiren):
-            find_siren_by_offerer_id(0)
+        with pytest.raises(exceptions.CannotFindOffererSiren):
+            repository.find_siren_by_offerer_id(0)

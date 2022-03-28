@@ -27,15 +27,15 @@ from pcapi.core import search
 from pcapi.core.bookings.exceptions import CannotDeleteVenueWithBookingsException
 from pcapi.core.criteria import api as criteria_api
 from pcapi.core.finance import repository as finance_repository
-from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers.api import VENUE_ALGOLIA_INDEXED_FIELDS
+import pcapi.core.offerers.models as offerers_models
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import Venue
+import pcapi.core.offerers.repository as offerers_repository
 from pcapi.core.offers.api import update_stock_id_at_providers
 from pcapi.core.users.external import update_external_pro
 from pcapi.models import db
 from pcapi.models.criterion import Criterion
-from pcapi.repository import user_offerer_queries
 from pcapi.scripts.offerer.delete_cascade_venue_by_id import delete_cascade_venue_by_id
 
 
@@ -60,7 +60,7 @@ def _get_emails_by_venue(venue: Venue) -> set[str]:
     Get all emails for which pro attributes may be modified when the venue is updated or deleted.
     Be careful: venue attributes are no longer available after venue object is deleted, call this function before.
     """
-    users_offerer = user_offerer_queries.find_all_by_offerer_id(venue.managingOfferer.id)
+    users_offerer = offerers_repository.find_all_user_offerers_by_offerer_id(venue.managingOffererId)
     emails = {user_offerer.user.email for user_offerer in users_offerer}
     emails.add(venue.bookingEmail)
     return emails

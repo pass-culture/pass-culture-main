@@ -2,9 +2,9 @@ from flask_login import current_user
 from flask_login import login_required
 
 from pcapi.core.offerers.models import Offerer
+import pcapi.core.offerers.repository as offerers_repository
 from pcapi.core.users.models import User
 from pcapi.models.api_errors import ApiErrors
-from pcapi.repository.user_offerer_queries import filter_query_where_user_is_user_offerer_and_is_validated
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization.reimbursement_csv_serialize import ReimbursementCsvQueryModel
 from pcapi.routes.serialization.reimbursement_csv_serialize import find_all_offerers_reimbursement_details
@@ -34,7 +34,7 @@ def get_reimbursements_csv(query: ReimbursementCsvQueryModel) -> bytes:
 def _get_reimbursements_csv_filter(user: User, query: ReimbursementCsvQueryModel) -> str:
     offerers = Offerer.query.with_entities(Offerer.id)
     if not user.has_admin_role:
-        offerers = filter_query_where_user_is_user_offerer_and_is_validated(offerers, user)
+        offerers = offerers_repository.filter_query_where_user_is_user_offerer_and_is_validated(offerers, user)
     elif not query.venueId:
         raise ApiErrors({"venueId": ["Le filtre par lieu est obligatoire pour les administrateurs"]})
 

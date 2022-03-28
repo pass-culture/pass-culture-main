@@ -1,10 +1,10 @@
 import markupsafe
+import sqlalchemy.orm as sqla_orm
 
 from pcapi import settings
 from pcapi.admin.base_configuration import BaseAdminView
 from pcapi.core.offerers.models import UserOfferer
 from pcapi.core.users.external import update_external_pro
-from pcapi.repository.user_offerer_queries import find_one_or_none_by_id
 from pcapi.utils import human_ids
 
 
@@ -66,8 +66,10 @@ class UserOffererView(BaseAdminView):
     def delete_model(self, user_offerer: UserOfferer) -> bool:
         # user_offerer.user is not available in this call, get email before deletion
         # joined user is no longer available after delete_model()
-        user_offerer_with_join = find_one_or_none_by_id(user_offerer.id)
-        email = user_offerer_with_join.user.email if user_offerer_with_join else None
+        user_offerer = (
+            UserOfferer.query.filter_by(id=user_offerer.id).options(sqla_orm.joinedload(UserOfferer.user)).one_or_none()
+        )
+        email = user_offerer.user.email if user_offerer else None
 
         result = super().delete_model(user_offerer)
 

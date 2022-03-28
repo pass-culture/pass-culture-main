@@ -34,8 +34,8 @@ def _delete_users_and_favorites(user_ids: set) -> None:
         fraud_models.BeneficiaryFraudResult.query.filter_by(userId=user_id).delete(synchronize_session=False)
         fraud_models.BeneficiaryFraudCheck.query.filter_by(userId=user_id).delete(synchronize_session=False)
         fraud_models.BeneficiaryFraudReview.query.filter_by(userId=user_id).delete(synchronize_session=False)
-        user_offerers: list[offerers_models.UserOfferer] = offerers_models.UserOfferer.query.filter(
-            offerers_models.UserOfferer.userId == user_id
+        user_offerers: list[offerers_models.UserOfferer] = offerers_models.UserOfferer.query.filter_by(
+            userId=user_id
         ).all()
         for user_offerer in user_offerers:
             if user_offerer.isValidated and user_offerer.offerer.isValidated:
