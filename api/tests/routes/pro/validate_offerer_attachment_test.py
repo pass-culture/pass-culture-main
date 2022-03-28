@@ -36,5 +36,5 @@ class Returns404Test:
         assert response.status_code == 404
         assert (
             response.json["validation"][0]
-            == "Aucun(e) objet ne correspond à ce code de validation ou l'objet est déjà validé"
+            == "Aucun objet ne correspond à ce code de validation ou l'objet est déjà validé"
         )
