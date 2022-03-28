@@ -1,8 +1,12 @@
 import React from 'react'
+import { useLocation } from 'react-router-dom'
 
+import useAnalytics from 'components/hooks/useAnalytics'
 import Icon from 'components/layout/Icon'
 
 const Support = () => {
+  const location = useLocation()
+  const analytics = useAnalytics()
   return (
     <div className="h-support h-card h-card-secondary-hover">
       <div className="h-card-inner">
@@ -14,6 +18,7 @@ const Support = () => {
               <a
                 className="hs-link tertiary-link"
                 href="https://aide.passculture.app"
+                onClick={() => analytics.logHasClickedFaq(location.pathname)}
                 rel="noopener noreferrer"
                 target="_blank"
               >
@@ -28,6 +33,9 @@ const Support = () => {
               <a
                 className="hs-link tertiary-link"
                 href="mailto:support-pro@passculture.app"
+                onClick={() =>
+                  analytics.logConsultSupportClick(location.pathname)
+                }
                 rel="noopener noreferrer"
                 target="_blank"
               >
@@ -42,6 +50,7 @@ const Support = () => {
               <a
                 className="hs-link tertiary-link"
                 href="https://pass.culture.fr/cgu-professionnels/"
+                onClick={() => analytics.logConsultCGUClick(location.pathname)}
                 rel="noopener noreferrer"
                 target="_blank"
               >

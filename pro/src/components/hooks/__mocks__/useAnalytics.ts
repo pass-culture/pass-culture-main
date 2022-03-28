@@ -10,6 +10,8 @@ const useAnalytics = (): IUseAnalyticsReturn => {
     logTutoPageView: jest.fn(),
     logForgottenPasswordClick: jest.fn(),
     logHelpCenterClick: jest.fn(),
+    logFaqClick: jest.fn(),
+    logCreateAccountClick: jest.fn(),
     logCreateVenueClick: jest.fn(),
     logCreateOfferClick: jest.fn(),
   }

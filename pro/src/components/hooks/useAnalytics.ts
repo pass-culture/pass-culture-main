@@ -15,6 +15,8 @@ export interface IUseAnalyticsReturn {
   logTutoPageView: (pageNumber: string) => void
   logForgottenPasswordClick: (page: string) => void
   logHelpCenterClick: (page: string) => void
+  logFaqClick: (page: string) => void
+  logCreateAccountClick: (page: string) => void
   logCreateVenueClick: (page: string) => void
   logCreateOfferClick: (page: string, offererId: string) => void
 }
@@ -48,6 +50,10 @@ const useAnalytics = (): IUseAnalyticsReturn => {
     logEvent(Events.CLICKED_FORGOTTEN_PASSWORD, { from: page })
   const logHelpCenterClick = (page: string) =>
     logEvent(Events.CLICKED_HELP_CENTER, { from: page })
+  const logFaqClick = (page: string) =>
+    logEvent(Events.CLICKED_FAQ, { from: page })
+  const logCreateAccountClick = (page: string) =>
+    logEvent(Events.CLICKED_CREATE_ACCOUNT, { from: page })
 
   const logCreateVenueClick = (page: string) =>
     logEvent(Events.CLICKED_CREATE_VENUE, { from: page })
@@ -62,6 +68,8 @@ const useAnalytics = (): IUseAnalyticsReturn => {
     logTutoPageView,
     logForgottenPasswordClick,
     logHelpCenterClick,
+    logFaqClick,
+    logCreateAccountClick,
     logCreateVenueClick,
     logCreateOfferClick,
   }

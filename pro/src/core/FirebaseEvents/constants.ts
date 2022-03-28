@@ -6,6 +6,8 @@ export enum Events {
   TUTO_PAGE_VIEW = 'tutoPageView',
   CLICKED_FORGOTTEN_PASSWORD = 'hasClickedForgottenPassword',
   CLICKED_HELP_CENTER = 'hasClickedHelpCenter',
+  CLICKED_FAQ = 'hasClickedFaq',
+  CLICKED_CREATE_ACCOUNT = 'hasClickedCreateAccount',
   CLICKED_CREATE_OFFER = 'hasClickedCreateOffer',
   CLICKED_CREATE_VENUE = 'hasClickedCreateVenue',
 }
