@@ -582,6 +582,8 @@ class GetOfferResponseModel(BaseModel):
     venue: GetOfferVenueResponseModel
     venueId: str
     withdrawalDetails: Optional[str]
+    withdrawalType: Optional[WithdrawalTypeEnum]
+    withdrawalDelay: Optional[int]
     status: OfferStatus
 
     _humanize_id = humanize_field("id")

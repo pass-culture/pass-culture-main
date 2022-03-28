@@ -197,6 +197,8 @@ class Returns200Test:
             "venueId": humanize(venue.id),
             "visualDisabilityCompliant": False,
             "withdrawalDetails": None,
+            "withdrawalType": None,
+            "withdrawalDelay": None,
         }
         updated_offer = Offer.query.get(offer.id)
         assert updated_offer.name == "New name"
