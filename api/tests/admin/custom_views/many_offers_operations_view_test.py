@@ -19,6 +19,8 @@ class ManyOffersOperationsViewTest:
     def test_search_product_from_isbn(self, mocked_validate_csrf_token, app):
         # Given
         users_factories.AdminFactory(email="admin@example.com")
+        product = offers_factories.ProductFactory(extraData={"isbn": "9783161484100"})
+        offers_factories.OfferFactory(product=product, extraData={"isbn": "9783161484100"})
 
         data = dict(isbn="978-3-16-148410-0")
 
@@ -32,6 +34,10 @@ class ManyOffersOperationsViewTest:
             response.headers["location"]
             == "http://localhost/pc/back-office/many_offers_operations/edit?isbn=9783161484100"
         )
+
+        # Check that redirected page is rendered without error
+        get_response = client.get(response.headers["location"])
+        assert get_response.status_code == 200
 
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     def test_search_product_from_visa(self, mocked_validate_csrf_token, app):
