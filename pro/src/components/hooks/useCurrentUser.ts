@@ -34,7 +34,7 @@ interface IAPICurrentUser {
   roles: string[]
 }
 
-interface IUseCurrentUserReturn {
+export interface IUseCurrentUserReturn {
   isUserInitialized: boolean
   currentUser: IAPICurrentUser
 }
