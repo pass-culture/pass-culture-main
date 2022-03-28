@@ -8,7 +8,7 @@ import NotFound from 'components/pages/Errors/NotFound/NotFound'
 import FeaturedRoute from 'components/router/FeaturedRoute'
 import NavigationLogger from 'components/router/NavigationLogger'
 import configureStore from 'store'
-import routes, { routesWithMain } from 'utils/routes_map'
+import routes, { routesWithoutLayout } from 'utils/routes_map'
 
 const { store } = configureStore()
 
@@ -43,8 +43,7 @@ const Root = () => {
                 </FeaturedRoute>
               )
             })}
-
-            {routesWithMain.map(route => {
+            {routesWithoutLayout.map(route => {
               // first props, last overrides
               return (
                 <FeaturedRoute
