@@ -1,0 +1,2 @@
+class CineDigitalServiceAPIException(Exception):
+    pass
