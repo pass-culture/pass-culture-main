@@ -656,7 +656,7 @@ class GetEligibleForSearchVenuesTest:
         with assert_num_queries(1):
             venues = list(offerers_api.get_eligible_for_search_venues(max_venues=1))
 
-        assert venues[0].id == eligible_venues[0].id
+        assert venues[0].id in {venue.id for venue in eligible_venues}
 
     def test_only_permantent_venues_are_eligibles(self) -> None:
         eligible_venues = offers_factories.VenueFactory.create_batch(3, isPermanent=True)
