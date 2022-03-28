@@ -1,7 +1,7 @@
 <div style="margin-top: 40px;">
     {% if product_compatibility["status"] != 'incompatible_products' %}
     <form
-        action="{{ url_for('/many_offers_operations.product_gcu_compatibility') }}?isbn={{ isbn }}"
+        action="{{ url_for('many_offers_operations.product_gcu_compatibility') }}?isbn={{ isbn }}"
         method="POST"
         onSubmit="return confirm('Êtes-vous sûr de vouloir rendre le produit incompatible et rendre inactif les offres associées ?');"
     >
