@@ -8,6 +8,7 @@ from pcapi.core import testing
 from pcapi.core.categories import subcategories
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
+from pcapi.core.offers.models import WithdrawalTypeEnum
 import pcapi.core.users.factories as users_factories
 from pcapi.repository import repository
 from pcapi.utils.human_ids import humanize
@@ -100,6 +101,9 @@ class Returns200Test:
             offer__durationMinutes=60,
             offer__mentalDisabilityCompliant=True,
             offer__externalTicketOfficeUrl="http://example.net",
+            offer__withdrawalDetails="Veuillez chercher votre billet au guichet",
+            offer__withdrawalType=WithdrawalTypeEnum.ON_SITE,
+            offer__withdrawalDelay=60 * 30,
             offer__product__name="Derrick",
             offer__product__description="Tatort, but slower",
             offer__product__durationMinutes=60,
@@ -254,7 +258,9 @@ class Returns200Test:
                 "visualDisabilityCompliant": False,
             },
             "venueId": humanize(venue.id),
-            "withdrawalDetails": None,
+            "withdrawalDetails": "Veuillez chercher votre billet au guichet",
+            "withdrawalType": "on_site",
+            "withdrawalDelay": 60 * 30,
         }
 
     @freeze_time("2019-10-15 00:00:00")
