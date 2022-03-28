@@ -1,7 +1,7 @@
 {% if type == 'book' %}
-    {% set form_action = url_for('/many_offers_operations.add_criteria_to_offers')+ "?isbn=" + isbn %}
+    {% set form_action = url_for('many_offers_operations.add_criteria_to_offers')+ "?isbn=" + isbn %}
 {% else %}
-    {% set form_action = url_for('/many_offers_operations.add_criteria_to_offers')+ "?visa=" + visa %}
+    {% set form_action = url_for('many_offers_operations.add_criteria_to_offers')+ "?visa=" + visa %}
 {% endif %}
 
 <div style="margin: 20px 0 2px;">
