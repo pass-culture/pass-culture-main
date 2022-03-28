@@ -6,7 +6,7 @@ import { matchPath } from 'react-router'
 import useAnalytics from 'components/hooks/useAnalytics'
 import useCurrentUser from 'components/hooks/useCurrentUser'
 import Spinner from 'components/layout/Spinner'
-import routes, { routesWithMain } from 'utils/routes_map'
+import routes, { routesWithoutLayout } from 'utils/routes_map'
 
 import RedirectToMaintenance from './RedirectToMaintenance'
 
@@ -33,7 +33,7 @@ export const App = props => {
 
   useEffect(() => {
     if (isUserInitialized && !currentUser) {
-      const publicRouteList = [...routes, ...routesWithMain].filter(
+      const publicRouteList = [...routes, ...routesWithoutLayout].filter(
         route => route.meta && route.meta.public
       )
       const isPublicRoute = !!publicRouteList.find(route =>

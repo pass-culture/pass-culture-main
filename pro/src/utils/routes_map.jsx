@@ -31,9 +31,7 @@ const RedirectToConnexionComponent = () => {
   return <Redirect to={`/connexion${location.search}`} />
 }
 
-// NOTE: routes are sorted by PATH alphabetical order
-// DEPRECATED: Pages are currently be rework to not use <Main> component
-export const routesWithMain = [
+export const routesWithoutLayout = [
   {
     component: RedirectToConnexionComponent,
     exact: true,
@@ -100,7 +98,7 @@ export const routesWithMain = [
   },
 ]
 
-// Routes that does not use <Main> and are now functional components
+// Routes wrapped with app layout
 const routes = [
   {
     component: Homepage,
