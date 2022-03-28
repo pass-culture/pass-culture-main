@@ -36,7 +36,11 @@ class MissingImage(ImageValidationError):
         super().__init__("Nous n'avons pas réceptionné l'image, merci d'essayer à nouveau.")
 
 
-class SubcategoryNotEligibleForEducationalOffer(ClientError):
+class OfferCreationBaseException(ClientError):
+    pass
+
+
+class SubcategoryNotEligibleForEducationalOffer(OfferCreationBaseException):
     def __init__(self):
         super().__init__(
             "offer",
@@ -44,7 +48,7 @@ class SubcategoryNotEligibleForEducationalOffer(ClientError):
         )
 
 
-class UnknownOfferSubCategory(ClientError):
+class UnknownOfferSubCategory(OfferCreationBaseException):
     def __init__(self):
         super().__init__(
             "subcategory",
@@ -52,7 +56,7 @@ class UnknownOfferSubCategory(ClientError):
         )
 
 
-class SubCategoryIsInactive(ClientError):
+class SubCategoryIsInactive(OfferCreationBaseException):
     def __init__(self):
         super().__init__(
             "subcategory",
