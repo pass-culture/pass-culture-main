@@ -14,9 +14,8 @@ from pcapi.core.bookings.repository import offerer_has_ongoing_bookings
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import OffererTag
 from pcapi.core.offerers.models import OffererTagMapping
-from pcapi.core.offerers.repository import find_venues_by_managing_offerer_id
+import pcapi.core.offerers.repository as offerers_repository
 from pcapi.core.users.external import update_external_pro
-from pcapi.repository import user_offerer_queries
 from pcapi.scripts.offerer.delete_cascade_offerer_by_id import delete_cascade_offerer_by_id
 
 
@@ -25,10 +24,10 @@ def _get_emails_by_offerer(offerer: Offerer) -> set[str]:
     Get all emails for which pro attributes may be modified when the offerer is updated or deleted.
     Any bookingEmail in a venue should be updated in sendinblue when offerer is disabled, deleted or its name changed
     """
-    users_offerer = user_offerer_queries.find_all_by_offerer_id(offerer.id)
+    users_offerer = offerers_repository.find_all_user_offerers_by_offerer_id(offerer.id)
     emails = {user_offerer.user.email for user_offerer in users_offerer}
 
-    emails |= {venue.bookingEmail for venue in find_venues_by_managing_offerer_id(offerer.id)}
+    emails |= {venue.bookingEmail for venue in offerers_repository.find_venues_by_managing_offerer_id(offerer.id)}
 
     return emails
 

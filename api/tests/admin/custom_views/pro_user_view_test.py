@@ -2,7 +2,6 @@ from datetime import datetime
 from datetime import timedelta
 from unittest.mock import patch
 
-from sqlalchemy import and_
 from wtforms.form import Form
 
 from pcapi.admin.custom_views.pro_user_view import ProUserView
@@ -69,8 +68,9 @@ class ProUserViewTest:
         assert offerer_created.postalCode == "93000"
         assert offerer_created.city == "Nantes"
 
-        user_offerers_filtered = UserOfferer.query.filter(
-            and_(UserOfferer.userId == user_created.id, UserOfferer.offererId == offerer_created.id)
+        user_offerers_filtered = UserOfferer.query.filter_by(
+            userId=user_created.id,
+            offererId=offerer_created.id,
         ).all()
         assert len(user_offerers_filtered) == 1
 

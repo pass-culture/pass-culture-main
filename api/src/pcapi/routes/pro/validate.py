@@ -3,10 +3,10 @@ import logging
 from pcapi.core.mails.transactional.pro.welcome_to_pro import send_welcome_to_pro_email
 from pcapi.core.offerers import api
 from pcapi.core.offerers.exceptions import ValidationTokenNotFoundError
+import pcapi.core.offerers.models as offerers_models
 from pcapi.domain.admin_emails import maybe_send_offerer_validation_email
 from pcapi.models.api_errors import ResourceNotFoundError
 from pcapi.repository import repository
-from pcapi.repository import user_offerer_queries
 from pcapi.repository import user_queries
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.validation.routes.validate import check_valid_token_for_user_validation
@@ -62,7 +62,7 @@ def validate_user(token) -> None:
             extra={"user": user_to_validate.id},
         )
 
-    user_offerer = user_offerer_queries.find_one_or_none_by_user_id(user_to_validate.id)
+    user_offerer = offerers_models.UserOfferer.query.filter_by(userId=user_to_validate.id).one_or_none()
 
     if user_offerer:
         offerer = user_offerer.offerer

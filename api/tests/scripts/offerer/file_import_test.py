@@ -1,11 +1,9 @@
 from datetime import datetime
-from unittest.mock import Mock
 from unittest.mock import patch
 
 from freezegun import freeze_time
 import pytest
 
-from pcapi.core.offerers.factories import VirtualVenueTypeFactory
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import UserOfferer
 from pcapi.core.offers.factories import OffererFactory
@@ -59,42 +57,24 @@ class IterateRowForUserOfferersTest:
 
 
 @pytest.mark.usefixtures("db_session")
-class CreateActivatedUserOffererTest:
-    def setup_method(self):
-        self.csv_row = [
-            "Mortimer",
-            "Philip",
-            "pmortimer@bletchley.co.uk",
-            "29",
-            "362521879",
-            "29200",
-            "Bletchley",
-            "MyBletcheyCompany",
-        ]
-        self.find_user_query = Mock()
-        self.find_offerer_query = Mock()
-        self.find_user_offerer_query = Mock()
+def test_create_activated_user_offerer():
+    # given
+    pro = ProFactory(id=123, email="jsmith@example.com")
+    offerer = OffererFactory(siren="123456789")
+    row = [
+        "Smith",
+        "Jane",
+        "jsmith@example.com",
+        "29",
+        "123456789",
+        "29200",
+        "dummy",
+        "dummy",
+    ]
 
-    def test_returns_created_user_offerer(self, app):
-        # given
-        blake = ProFactory(email="fblake@bletchley.co.uk", id=123)
-        VirtualVenueTypeFactory()
-        blakes_company = OffererFactory(siren="362521879", name="MyBletcheyCompany", id=234)
-        self.find_user_query.side_effect = [blake]
-        self.find_offerer_query.side_effect = [blakes_company]
-        self.find_user_offerer_query.side_effect = [None]
-
-        # when
-        user_offerer = create_activated_user_offerer(
-            self.csv_row,
-            find_user=self.find_user_query,
-            find_offerer=self.find_offerer_query,
-            find_user_offerer=self.find_user_offerer_query,
-        )
-
-        # then
-        assert user_offerer.userId == 123
-        assert user_offerer.offererId == 234
+    user_offerer = create_activated_user_offerer(row)
+    assert user_offerer.user == pro
+    assert user_offerer.offerer == offerer
 
 
 @pytest.mark.usefixtures("db_session")

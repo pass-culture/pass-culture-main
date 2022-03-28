@@ -2,9 +2,9 @@ import csv
 import logging
 from typing import Iterable
 
+import pcapi.core.offerers.models as offerers_models
 from pcapi.models.api_errors import ApiErrors
 from pcapi.repository import repository
-from pcapi.repository.user_offerer_queries import find_one_or_none_by_user_id_and_offerer_id
 
 
 logger = logging.getLogger(__name__)
@@ -39,7 +39,10 @@ def _delete_user_offerers_from_rows(csv_rows: Iterable) -> None:
         user_id = row[USER_ID_COLUMN_HEADER]
         offerer_id = row[OFFERER_ID_COLUMN_HEADER]
 
-        user_offerer = find_one_or_none_by_user_id_and_offerer_id(int(user_id), int(offerer_id))
+        user_offerer = offerers_models.UserOfferer.query.filter_by(
+            userId=user_id,
+            offererId=int(offerer_id),
+        ).one_or_none()
         if user_offerer is None:
             continue
 
