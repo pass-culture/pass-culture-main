@@ -46,7 +46,6 @@ from pcapi.core.users.models import UserEmailHistory
 from pcapi.models.beneficiary_import import BeneficiaryImport
 from pcapi.models.criterion import Criterion
 from pcapi.models.feature import Feature
-from pcapi.models.user_offerer import UserOfferer
 
 from . import base_configuration
 from . import templating
@@ -113,7 +112,10 @@ def install_views(admin: Admin, session: Session) -> None:
     )
     admin.add_view(
         UserOffererView(
-            UserOfferer, session, name="Lien Utilisateurs/Structures", category=Category.OFFRES_STRUCTURES_LIEUX
+            offerers_models.UserOfferer,
+            session,
+            name="Lien Utilisateurs/Structures",
+            category=Category.OFFRES_STRUCTURES_LIEUX,
         )
     )
     admin.add_view(

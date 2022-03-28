@@ -484,6 +484,21 @@ offerer_ts_indexes = [
 (Offerer.__ts_vectors__, Offerer.__table_args__) = create_ts_vector_and_table_args(offerer_ts_indexes)
 
 
+class UserOfferer(PcObject, Model, NeedsValidationMixin):
+    userId = Column(BigInteger, ForeignKey("user.id"), primary_key=True)
+    user = relationship("User", foreign_keys=[userId], backref=backref("UserOfferers"))
+    offererId = Column(BigInteger, ForeignKey("offerer.id"), index=True, primary_key=True)
+    offerer = relationship("Offerer", foreign_keys=[offererId], backref=backref("UserOfferers"))
+
+    __table_args__ = (
+        UniqueConstraint(
+            "userId",
+            "offererId",
+            name="unique_user_offerer",
+        ),
+    )
+
+
 class ApiKey(PcObject, Model):
     # TODO: remove value colum when legacy keys are migrated
     value = Column(CHAR(64), index=True, nullable=True)

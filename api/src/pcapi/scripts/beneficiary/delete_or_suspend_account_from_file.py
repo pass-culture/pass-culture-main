@@ -2,6 +2,7 @@ import logging
 from typing import Iterable
 
 import pcapi.core.fraud.models as fraud_models
+import pcapi.core.offerers.models as offerers_models
 from pcapi.core.payments.models import Deposit
 from pcapi.core.users import constants
 from pcapi.core.users.api import suspend_account
@@ -10,7 +11,6 @@ from pcapi.core.users.models import User
 from pcapi.models import db
 from pcapi.models.beneficiary_import import BeneficiaryImport
 from pcapi.models.beneficiary_import_status import BeneficiaryImportStatus
-from pcapi.models.user_offerer import UserOfferer
 
 
 logger = logging.getLogger(__name__)
@@ -34,7 +34,9 @@ def _delete_users_and_favorites(user_ids: set) -> None:
         fraud_models.BeneficiaryFraudResult.query.filter_by(userId=user_id).delete(synchronize_session=False)
         fraud_models.BeneficiaryFraudCheck.query.filter_by(userId=user_id).delete(synchronize_session=False)
         fraud_models.BeneficiaryFraudReview.query.filter_by(userId=user_id).delete(synchronize_session=False)
-        user_offerers: list[UserOfferer] = UserOfferer.query.filter(UserOfferer.userId == user_id).all()
+        user_offerers: list[offerers_models.UserOfferer] = offerers_models.UserOfferer.query.filter(
+            offerers_models.UserOfferer.userId == user_id
+        ).all()
         for user_offerer in user_offerers:
             if user_offerer.isValidated and user_offerer.offerer.isValidated:
                 raise Exception("Trying to delete a pro user with a valid offerer")

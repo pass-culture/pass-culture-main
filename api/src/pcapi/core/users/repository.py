@@ -7,17 +7,16 @@ from dateutil.relativedelta import relativedelta
 import sqlalchemy
 from sqlalchemy.sql.functions import func
 
-from pcapi.core.fraud import models as fraud_models
-from pcapi.core.offerers.models import Offerer
-from pcapi.core.users.utils import sanitize_email
+import pcapi.core.fraud.models as fraud_models
+import pcapi.core.offerers.models as offerers_models
 from pcapi.models import db
-from pcapi.models.user_offerer import UserOfferer
 from pcapi.repository import repository
 from pcapi.utils import crypto
 
 from . import constants
 from . import exceptions
 from . import models
+from . import utils
 
 
 logger = logging.getLogger(__name__)
@@ -51,7 +50,7 @@ def get_user_with_credentials(identifier: str, password: str) -> models.User:
 def _find_user_by_email_query(email: str):
     # FIXME (dbaty, 2021-05-02): remove call to `func.lower()` once
     # all emails have been sanitized in the database.
-    return models.User.query.filter(func.lower(models.User.email) == sanitize_email(email))
+    return models.User.query.filter(func.lower(models.User.email) == utils.sanitize_email(email))
 
 
 def find_user_by_email(email: str) -> Optional[models.User]:
@@ -87,11 +86,11 @@ def get_newly_eligible_age_18_users(since: date) -> list[models.User]:
     today = datetime.combine(datetime.today(), datetime.min.time())
     since = datetime.combine(since, datetime.min.time())
     eligible_users = (
-        models.User.query.outerjoin(UserOfferer)
+        models.User.query.outerjoin(offerers_models.UserOfferer)
         .filter(
             models.User.has_beneficiary_role == False,  # not already beneficiary
             models.User.has_admin_role == False,  # not an admin
-            UserOfferer.userId.is_(None),  # not a pro
+            offerers_models.UserOfferer.userId.is_(None),  # not a pro
             models.User.dateOfBirth > today - relativedelta(years=(constants.ELIGIBILITY_AGE_18 + 1)),  # less than 19yo
             models.User.dateOfBirth <= today - relativedelta(years=constants.ELIGIBILITY_AGE_18),  # more than or 18yo
             models.User.dateOfBirth
@@ -113,10 +112,13 @@ def does_validated_phone_exist(phone_number: str) -> bool:
     )
 
 
-def get_users_with_validated_attachment_by_offerer(offerer: Offerer) -> models.User:
+def get_users_with_validated_attachment_by_offerer(offerer: offerers_models.Offerer) -> models.User:
     return (
-        models.User.query.join(UserOfferer)
-        .filter(UserOfferer.validationToken.is_(None), UserOfferer.offererId == offerer.id)
+        models.User.query.join(offerers_models.UserOfferer)
+        .filter(
+            offerers_models.UserOfferer.validationToken.is_(None),
+            offerers_models.UserOfferer.offererId == offerer.id,
+        )
         .all()
     )
 

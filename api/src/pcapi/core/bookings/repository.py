@@ -37,6 +37,7 @@ from pcapi.core.educational.models import EducationalBooking
 from pcapi.core.educational.models import EducationalInstitution
 from pcapi.core.educational.models import EducationalRedactor
 from pcapi.core.offerers.models import Offerer
+from pcapi.core.offerers.models import UserOfferer
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
@@ -49,7 +50,6 @@ from pcapi.domain.booking_recap.bookings_recap_paginated import BookingsRecapPag
 from pcapi.domain.postal_code.postal_code import PostalCode
 from pcapi.models import db
 from pcapi.models.api_errors import ResourceNotFoundError
-from pcapi.models.user_offerer import UserOfferer
 from pcapi.routes.serialization.bookings_recap_serialize import OfferType
 from pcapi.utils.date import get_department_timezone
 from pcapi.utils.token import random_token

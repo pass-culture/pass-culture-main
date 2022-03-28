@@ -8,11 +8,11 @@ from wtforms.form import Form
 from pcapi.admin.custom_views.pro_user_view import ProUserView
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offerers.models import Offerer
+from pcapi.core.offerers.models import UserOfferer
 import pcapi.core.users.factories as users_factories
 from pcapi.core.users.models import Token
 from pcapi.core.users.models import TokenType
 from pcapi.core.users.models import User
-from pcapi.models.user_offerer import UserOfferer
 
 from tests.conftest import TestClient
 from tests.conftest import clean_database

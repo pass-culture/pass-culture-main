@@ -5,7 +5,6 @@ from pcapi.core.offers.factories import OffererFactory
 from pcapi.core.offers.factories import VenueFactory
 from pcapi.core.testing import BaseFactory
 import pcapi.core.users.factories as users_factories
-from pcapi.models.user_offerer import UserOfferer
 from pcapi.utils import crypto
 
 from . import models
@@ -13,7 +12,7 @@ from . import models
 
 class UserOffererFactory(BaseFactory):
     class Meta:
-        model = UserOfferer
+        model = models.UserOfferer
 
     user = factory.SubFactory(users_factories.ProFactory)
     offerer = factory.SubFactory(OffererFactory)

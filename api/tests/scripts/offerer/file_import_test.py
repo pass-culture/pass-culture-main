@@ -7,11 +7,11 @@ import pytest
 
 from pcapi.core.offerers.factories import VirtualVenueTypeFactory
 from pcapi.core.offerers.models import Offerer
+from pcapi.core.offerers.models import UserOfferer
 from pcapi.core.offers.factories import OffererFactory
 from pcapi.core.users.factories import ProFactory
 from pcapi.core.users.factories import UserFactory
 from pcapi.core.users.models import User
-from pcapi.models.user_offerer import UserOfferer
 from pcapi.scripts.offerer.file_import import OffererNotCreatedException
 from pcapi.scripts.offerer.file_import import UserNotCreatedException
 from pcapi.scripts.offerer.file_import import create_activated_user_offerer

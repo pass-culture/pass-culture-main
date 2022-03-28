@@ -51,7 +51,6 @@ from pcapi.domain.postal_code.postal_code import PostalCode
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.feature import FeatureToggle
-from pcapi.models.user_offerer import UserOfferer
 from pcapi.models.user_session import UserSession
 from pcapi.notifications.sms import send_transactional_sms
 from pcapi.notifications.sms.sending_limit import is_SMS_sending_allowed
@@ -603,7 +602,9 @@ def create_pro_user(pro_user: ProUserCreationBodyModel) -> User:
     return new_pro_user
 
 
-def _generate_user_offerer_when_existing_offerer(new_user: User, offerer: offerers_models.Offerer) -> UserOfferer:
+def _generate_user_offerer_when_existing_offerer(
+    new_user: User, offerer: offerers_models.Offerer
+) -> offerers_models.UserOfferer:
     user_offerer = offerers_api.grant_user_offerer_access(offerer, new_user)
     if not settings.IS_INTEGRATION:
         user_offerer.generate_validation_token()

@@ -5,8 +5,9 @@ from sqlalchemy.exc import IntegrityError
 
 from pcapi.core.offerers import factories
 from pcapi.core.offerers import models
-from pcapi.core.offers import factories as offers_factories
-from pcapi.core.offers import models as offers_models
+import pcapi.core.offers.factories as offers_factories
+import pcapi.core.offers.models as offers_models
+import pcapi.core.users.factories as users_factories
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.repository import repository
@@ -172,3 +173,16 @@ class VenueCriterionTest:
         factories.VenueCriterionFactory(venue=venue, criterion=criterion)
         with pytest.raises(IntegrityError):
             factories.VenueCriterionFactory(venue=venue, criterion=criterion)
+
+
+@pytest.mark.usefixtures("db_session")
+def test_save_user_offerer_raise_api_error_when_not_unique(app):
+    user = users_factories.ProFactory.build()
+    offerer = factories.OffererFactory()
+    factories.UserOffererFactory(user=user, offerer=offerer)
+
+    uo2 = factories.UserOffererFactory.build(user=user, offerer=offerer)
+    with pytest.raises(ApiErrors) as error:
+        repository.save(uo2)
+
+    assert error.value.errors["global"] == ["Une entrée avec cet identifiant existe déjà dans notre base de données"]

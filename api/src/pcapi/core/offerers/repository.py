@@ -14,7 +14,6 @@ from pcapi.models.bank_information import BankInformation
 from pcapi.models.bank_information import BankInformationStatus
 from pcapi.models.offer_mixin import OfferStatus
 from pcapi.models.offer_mixin import OfferValidationStatus
-from pcapi.models.user_offerer import UserOfferer
 from pcapi.utils.human_ids import dehumanize
 
 from . import exceptions
@@ -34,8 +33,8 @@ def get_all_offerers_for_user(
     query = models.Offerer.query.filter(models.Offerer.isActive.is_(True))
 
     if not user.has_admin_role:
-        query = query.join(UserOfferer, UserOfferer.offererId == models.Offerer.id).filter(
-            UserOfferer.userId == user.id
+        query = query.join(models.UserOfferer, models.UserOfferer.offererId == models.Offerer.id).filter(
+            models.UserOfferer.userId == user.id
         )
 
     if validated is not None:
@@ -46,13 +45,13 @@ def get_all_offerers_for_user(
 
     if validated_for_user is not None:
         if user.has_admin_role:
-            query = query.join(UserOfferer, UserOfferer.offererId == models.Offerer.id)
+            query = query.join(models.UserOfferer, models.UserOfferer.offererId == models.Offerer.id)
         else:
             pass  # we already JOINed above.
         if validated_for_user:
-            query = query.filter(UserOfferer.validationToken.is_(None))
+            query = query.filter(models.UserOfferer.validationToken.is_(None))
         else:
-            query = query.filter(UserOfferer.validationToken.isnot(None))
+            query = query.filter(models.UserOfferer.validationToken.isnot(None))
 
     if keywords:
         # FIXME (dbaty, 2022-03-02): There is a bug here. If an
@@ -95,12 +94,12 @@ def get_filtered_venues(
 ) -> list[models.Venue]:
     query = (
         models.Venue.query.join(models.Offerer, models.Offerer.id == models.Venue.managingOffererId)
-        .join(UserOfferer, UserOfferer.offererId == models.Offerer.id)
+        .join(models.UserOfferer, models.UserOfferer.offererId == models.Offerer.id)
         .options(sqla_orm.joinedload(models.Venue.managingOfferer))
         .options(sqla_orm.joinedload(models.Venue.businessUnit))
     )
     if not user_is_admin:
-        query = query.filter(UserOfferer.userId == pro_user_id)
+        query = query.filter(models.UserOfferer.userId == pro_user_id)
 
     if validated_offerer is not None:
         if validated_offerer:
@@ -109,9 +108,9 @@ def get_filtered_venues(
             query = query.filter(models.Offerer.validationToken.isnot(None))
     if validated_offerer_for_user is not None:
         if validated_offerer_for_user:
-            query = query.filter(UserOfferer.validationToken.is_(None))
+            query = query.filter(models.UserOfferer.validationToken.is_(None))
         else:
-            query = query.filter(UserOfferer.validationToken.isnot(None))
+            query = query.filter(models.UserOfferer.validationToken.isnot(None))
 
     if active_offerers_only:
         query = query.filter(models.Offerer.isActive.is_(True))
@@ -136,16 +135,16 @@ def find_offerer_by_siren(siren: str) -> Optional[models.Offerer]:
     return models.Offerer.query.filter_by(siren=siren).one_or_none()
 
 
-def find_user_offerer_by_validation_token(token: str) -> Optional[UserOfferer]:
-    return UserOfferer.query.filter_by(validationToken=token).one_or_none()
+def find_user_offerer_by_validation_token(token: str) -> Optional[models.UserOfferer]:
+    return models.UserOfferer.query.filter_by(validationToken=token).one_or_none()
 
 
-def find_offerer_by_validation_token(token: str) -> Optional[UserOfferer]:
+def find_offerer_by_validation_token(token: str) -> Optional[models.UserOfferer]:
     return models.Offerer.query.filter_by(validationToken=token).one_or_none()
 
 
-def find_user_offerers(user: int, offerer_id: str) -> UserOfferer:
-    return UserOfferer.query.filter_by(user=user, offererId=dehumanize(offerer_id)).all()
+def find_user_offerers(user: int, offerer_id: str) -> models.UserOfferer:
+    return models.UserOfferer.query.filter_by(user=user, offererId=dehumanize(offerer_id)).all()
 
 
 def find_venue_by_id(venue_id: int) -> Optional[models.Venue]:
@@ -210,10 +209,10 @@ def get_by_offer_id(offer_id: int) -> Optional[models.Offerer]:
 
 
 def find_new_offerer_user_email(offerer_id: int) -> str:
-    result_tuple = UserOfferer.query.filter_by(offererId=offerer_id).join(User).with_entities(User.email).first()
+    result_tuple = models.UserOfferer.query.filter_by(offererId=offerer_id).join(User).with_entities(User.email).first()
     if result_tuple:
         return result_tuple[0]
-    raise exceptions.CannotFindOffererUserEmail
+    raise exceptions.CannotFindOffererUserEmail()
 
 
 def filter_offerers_with_keywords_string(query: Query, keywords_string: str) -> Query:

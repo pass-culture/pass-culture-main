@@ -1,10 +1,9 @@
 from unittest.mock import patch
 
 import pcapi.core.offerers.factories as offerers_factories
-from pcapi.core.offerers.models import Offerer
+import pcapi.core.offerers.models as offerers_models
 import pcapi.core.users.factories as users_factories
-from pcapi.core.users.models import User
-from pcapi.models.user_offerer import UserOfferer
+import pcapi.core.users.models as users_models
 
 from tests.conftest import clean_database
 
@@ -25,6 +24,6 @@ class UserOffererViewTest:
         )
 
         assert response.status_code == 302
-        assert UserOfferer.query.count() == 0
-        assert User.query.count() == 2
-        assert Offerer.query.count() == 1
+        assert offerers_models.UserOfferer.query.count() == 0
+        assert users_models.User.query.count() == 2
+        assert offerers_models.Offerer.query.count() == 1

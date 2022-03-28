@@ -256,7 +256,7 @@ class User(PcObject, Model, NeedsValidationMixin):
 
     def has_access(self, offerer_id: int) -> bool:
         # FIXME (dbaty, 2021-11-26): consider moving to a function in `core.users.api`?
-        from pcapi.models.user_offerer import UserOfferer
+        from pcapi.core.offerers.models import UserOfferer
 
         if self.has_admin_role:  # pylint: disable=using-constant-test
             return True

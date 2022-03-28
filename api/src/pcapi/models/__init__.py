@@ -29,7 +29,6 @@ def install_models() -> None:
     import pcapi.models.feature
     import pcapi.models.offer_criterion
     import pcapi.models.product
-    import pcapi.models.user_offerer
     import pcapi.models.user_session
 
 

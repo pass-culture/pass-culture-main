@@ -6,6 +6,7 @@ from pcapi.core.bookings.models import Booking
 from pcapi.core.finance.models import BusinessUnit
 from pcapi.core.offerers.models import ApiKey
 from pcapi.core.offerers.models import Offerer
+from pcapi.core.offerers.models import UserOfferer
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers.models import Mediation
 from pcapi.core.offers.models import Offer
@@ -18,7 +19,6 @@ from pcapi.models import db
 from pcapi.models.bank_information import BankInformation
 from pcapi.models.offer_criterion import OfferCriterion
 from pcapi.models.product import Product
-from pcapi.models.user_offerer import UserOfferer
 
 
 logger = logging.getLogger(__name__)
