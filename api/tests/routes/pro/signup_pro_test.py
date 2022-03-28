@@ -3,10 +3,10 @@ import pytest
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offerers.models as offerers_models
 from pcapi.core.offerers.models import Offerer
+from pcapi.core.offerers.models import UserOfferer
 from pcapi.core.offers.factories import OffererFactory
 from pcapi.core.users.factories import ProFactory
 from pcapi.core.users.models import User
-from pcapi.models.user_offerer import UserOfferer
 
 from tests.conftest import TestClient
 

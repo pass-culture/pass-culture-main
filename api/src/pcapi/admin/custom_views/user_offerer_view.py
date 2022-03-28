@@ -2,8 +2,8 @@ import markupsafe
 
 from pcapi import settings
 from pcapi.admin.base_configuration import BaseAdminView
+from pcapi.core.offerers.models import UserOfferer
 from pcapi.core.users.external import update_external_pro
-from pcapi.models.user_offerer import UserOfferer
 from pcapi.repository.user_offerer_queries import find_one_or_none_by_id
 from pcapi.utils import human_ids
 

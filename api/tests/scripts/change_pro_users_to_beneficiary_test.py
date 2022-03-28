@@ -4,8 +4,8 @@ from dateutil.relativedelta import relativedelta
 import pytest
 
 import pcapi.core.offerers.factories as offerers_factories
+import pcapi.core.offerers.models as offerers_models
 import pcapi.core.users.factories as users_factories
-from pcapi.models.user_offerer import UserOfferer
 from pcapi.scripts.change_some_pro_users_to_beneficiary import change_pro_users_to_beneficiary
 
 
@@ -34,4 +34,4 @@ def test_should_change_pro_users_to_beneficiary():
     assert not pro_2.has_pro_role
     assert pro_2.needsToFillCulturalSurvey
     assert pro_2.wallet_balance == 300
-    assert UserOfferer.query.count() == 1
+    assert offerers_models.UserOfferer.query.count() == 1

@@ -15,7 +15,6 @@ from pcapi.core.offerers.exceptions import MissingOffererIdQueryParameter
 import pcapi.core.offerers.models as offerers_models
 from pcapi.core.offerers.repository import get_all_offerers_for_user
 from pcapi.models.api_errors import ApiErrors
-import pcapi.models.user_offerer as user_offerer_models
 from pcapi.repository import transaction
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import offerers_serialize
@@ -59,7 +58,7 @@ def get_offerers(query: GetOffererListQueryModel) -> GetOfferersListResponseMode
     # on the arguments passed to `get_all_offerers_for_user()`.
     for model, relationship in (
         (offerers_models.Venue, offerers_models.Offerer.managedVenues),
-        (user_offerer_models.UserOfferer, offerers_models.Offerer.UserOfferers),
+        (offerers_models.UserOfferer, offerers_models.Offerer.UserOfferers),
     ):
         if model in {mapper.entity for mapper in offerers_query._join_entities}:
             option = sqla_orm.contains_eager(relationship)

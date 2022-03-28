@@ -15,23 +15,21 @@ from wtforms.validators import ValidationError
 
 from pcapi.admin.base_configuration import BaseAdminView
 from pcapi.core.mails.transactional.pro.reset_password_to_pro import send_reset_password_link_to_admin_email
+import pcapi.core.offerers.api as offerers_api
+import pcapi.core.offerers.models as offerers_models
+import pcapi.core.users.api as users_api
 from pcapi.core.users.constants import RESET_PASSWORD_TOKEN_LIFE_TIME_EXTENDED
 from pcapi.core.users.external import update_external_pro
 from pcapi.core.users.models import User
 from pcapi.core.users.utils import sanitize_email
-from pcapi.models.user_offerer import UserOfferer
 from pcapi.utils.mailing import build_pc_pro_create_password_link
 from pcapi.validation.models.has_address_mixin import POSTAL_CODE_REGEX
 
-from ...core.offerers.api import create_digital_venue
-from ...core.offerers.models import Offerer
-from ...core.users.api import create_reset_password_token
-from ...core.users.api import fulfill_account_password
 from .mixins.suspension_mixin import SuspensionMixin
 
 
 def unique_siren(form: Form, field: Field) -> None:
-    if Offerer.query.filter_by(siren=field.data).one_or_none():
+    if offerers_models.Offerer.query.filter_by(siren=field.data).one_or_none():
         raise ValidationError("Une structure avec le même Siren existe déjà.")
 
 
@@ -41,8 +39,8 @@ def filter_email(value: Optional[str]) -> Optional[str]:
     return sanitize_email(value)
 
 
-def create_offerer(form: Form) -> Offerer:
-    offerer = Offerer()
+def create_offerer(form: Form) -> offerers_models.Offerer:
+    offerer = offerers_models.Offerer()
     offerer.siren = form.offererSiren.data
     offerer.name = form.offererName.data
     offerer.postalCode = form.offererPostalCode.data
@@ -51,8 +49,8 @@ def create_offerer(form: Form) -> Offerer:
     return offerer
 
 
-def create_user_offerer(user: User, offerer: Offerer) -> UserOfferer:
-    user_offerer = UserOfferer()
+def create_user_offerer(user: User, offerer: offerers_models.Offerer) -> offerers_models.UserOfferer:
+    user_offerer = offerers_models.UserOfferer()
     user_offerer.user = user
     user_offerer.offerer = offerer
 
@@ -165,16 +163,16 @@ class ProUserView(SuspensionMixin, BaseAdminView):
         if is_created:
             model.remove_beneficiary_role()
             model.add_pro_role()
-            fulfill_account_password(model)
+            users_api.fulfill_account_password(model)
             offerer = create_offerer(form)
-            create_digital_venue(offerer)
+            offerers_api.create_digital_venue(offerer)
             user_offerer = create_user_offerer(user=model, offerer=offerer)
             model.userOfferers = [user_offerer]
         super().on_model_change(form, model, is_created)
 
     def after_model_change(self, form: Form, model: User, is_created: bool) -> None:
         if is_created:
-            resetPasswordToken = create_reset_password_token(
+            resetPasswordToken = users_api.create_reset_password_token(
                 model, token_life_time=RESET_PASSWORD_TOKEN_LIFE_TIME_EXTENDED
             )
             reset_password_link = build_pc_pro_create_password_link(resetPasswordToken.value)
@@ -186,7 +184,7 @@ class ProUserView(SuspensionMixin, BaseAdminView):
         update_external_pro(model.email)
 
     def get_query(self) -> query:
-        return User.query.join(UserOfferer).distinct(User.id).from_self()
+        return User.query.join(offerers_models.UserOfferer).distinct(User.id).from_self()
 
     def get_count_query(self) -> query:
-        return self.session.query(func.count(distinct(User.id))).select_from(User).join(UserOfferer)
+        return self.session.query(func.count(distinct(User.id))).select_from(User).join(offerers_models.UserOfferer)

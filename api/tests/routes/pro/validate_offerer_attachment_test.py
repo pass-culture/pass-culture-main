@@ -1,8 +1,8 @@
 import pytest
 
 import pcapi.core.offerers.factories as offerers_factories
+import pcapi.core.offerers.models as offerers_models
 from pcapi.core.users import testing as sendinblue_testing
-from pcapi.models.user_offerer import UserOfferer
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -20,10 +20,8 @@ class Returns202Test:
         assert response.status_code == 202
         assert response.data.decode("utf8") == "Validation du rattachement de la structure effectuée"
 
-        user_offerer = UserOfferer.query.filter_by(id=user_offerer.id).first()
-
+        user_offerer = offerers_models.UserOfferer.query.one()
         assert user_offerer.isValidated
-
         assert len(sendinblue_testing.sendinblue_requests) == 1
 
 

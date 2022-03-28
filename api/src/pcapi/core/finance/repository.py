@@ -14,7 +14,6 @@ from pcapi.models import db
 from pcapi.models.bank_information import BankInformation
 from pcapi.models.bank_information import BankInformationStatus
 from pcapi.models.feature import FeatureToggle
-from pcapi.models.user_offerer import UserOfferer
 import pcapi.utils.date as date_utils
 
 from . import models
@@ -34,8 +33,9 @@ def get_business_units_query(
     venue_subquery = offerers_models.Venue.query
     if not user.has_admin_role:
         venue_subquery = venue_subquery.join(
-            UserOfferer, offerers_models.Venue.managingOffererId == UserOfferer.offererId
-        ).filter(UserOfferer.user == user)
+            offerers_models.UserOfferer,
+            offerers_models.Venue.managingOffererId == offerers_models.UserOfferer.offererId,
+        ).filter(offerers_models.UserOfferer.user == user)
     if offerer_id:
         venue_subquery = venue_subquery.filter(offerers_models.Venue.managingOffererId == offerer_id)
     if venue_subquery.whereclause is not None:
@@ -62,8 +62,9 @@ def get_invoices_query(
     business_units_subquery = offerers_models.Venue.query
     if not user.has_admin_role:
         business_units_subquery = business_units_subquery.join(
-            UserOfferer, UserOfferer.offererId == offerers_models.Venue.managingOffererId
-        ).filter(UserOfferer.user == user)
+            offerers_models.UserOfferer,
+            offerers_models.UserOfferer.offererId == offerers_models.Venue.managingOffererId,
+        ).filter(offerers_models.UserOfferer.user == user)
     if business_unit_id:
         # Filtering like this makes sure that the requested business
         # unit id is accessible by the requesting user.

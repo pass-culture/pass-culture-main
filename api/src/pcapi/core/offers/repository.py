@@ -23,6 +23,7 @@ from pcapi.core.educational.models import CollectiveOffer
 from pcapi.core.educational.models import CollectiveOfferTemplate
 from pcapi.core.educational.models import CollectiveStock
 from pcapi.core.offerers.models import Offerer
+from pcapi.core.offerers.models import UserOfferer
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers.exceptions import OfferNotFound
 from pcapi.core.offers.exceptions import StockDoesNotExist
@@ -40,7 +41,6 @@ from pcapi.models.feature import FeatureToggle
 from pcapi.models.offer_criterion import OfferCriterion
 from pcapi.models.offer_mixin import OfferStatus
 from pcapi.models.product import Product
-from pcapi.models.user_offerer import UserOfferer
 from pcapi.utils.custom_keys import compute_venue_reference
 
 

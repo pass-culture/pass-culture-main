@@ -16,12 +16,12 @@ from wtforms.validators import Length
 from pcapi.admin.base_configuration import BaseAdminView
 from pcapi.admin.custom_views.mixins.resend_validation_email_mixin import ResendValidationEmailMixin
 from pcapi.admin.custom_views.mixins.suspension_mixin import SuspensionMixin
+from pcapi.core.offerers.models import UserOfferer
 from pcapi.core.users.api import create_reset_password_token
 from pcapi.core.users.api import fulfill_account_password
 from pcapi.core.users.constants import RESET_PASSWORD_TOKEN_LIFE_TIME_EXTENDED
 from pcapi.core.users.models import User
 from pcapi.core.users.utils import sanitize_email
-from pcapi.models.user_offerer import UserOfferer
 from pcapi.utils.mailing import build_pc_webapp_reset_password_link
 
 

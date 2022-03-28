@@ -10,12 +10,11 @@ from pcapi.core.bookings.models import Booking
 from pcapi.core.educational.models import CollectiveOffer
 from pcapi.core.mails.models.sendinblue_models import SendinblueTransactionalSender
 from pcapi.core.mails.models.sendinblue_models import SendinblueTransactionalWithoutTemplateEmailData
-from pcapi.core.offerers.models import Offerer
+import pcapi.core.offerers.models as offerers_models
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
 from pcapi.core.offers.utils import offer_app_link
 from pcapi.domain.postal_code.postal_code import PostalCode
-from pcapi.models.user_offerer import UserOfferer
 from pcapi.utils.date import utc_datetime_to_department_timezone
 from pcapi.utils.human_ids import humanize
 
@@ -27,7 +26,7 @@ def build_pc_pro_offer_link(offer: Union[CollectiveOffer, Offer]) -> str:
     return f"{settings.PRO_URL}/offre/{humanize(offer.id)}/individuel/edition"
 
 
-def build_pc_pro_offerer_link(offerer: Offerer) -> str:
+def build_pc_pro_offerer_link(offerer: offerers_models.Offerer) -> str:
     return f"{settings.PRO_URL}/accueil?structure={humanize(offerer.id)}"
 
 
@@ -61,7 +60,9 @@ def format_booking_hours_for_email(booking: Booking) -> str:
 
 
 def make_offerer_internal_validation_email(
-    offerer: Offerer, user_offerer: UserOfferer, get_by_siren=api_entreprises.get_by_offerer
+    offerer: offerers_models.Offerer,
+    user_offerer: offerers_models.UserOfferer,
+    get_by_siren=api_entreprises.get_by_offerer,
 ) -> dict:
     vars_obj_user = vars(user_offerer.user)
     vars_obj_user.pop("clearTextPassword", None)
@@ -172,7 +173,7 @@ def _add_template_debugging(message_data: dict) -> None:
     }
 
 
-def _summarize_offerer_vars(offerer: Offerer, api_entreprise: dict) -> dict:
+def _summarize_offerer_vars(offerer: offerers_models.Offerer, api_entreprise: dict) -> dict:
     return {
         "name": offerer.name,
         "siren": offerer.siren,
@@ -184,7 +185,7 @@ def _summarize_offerer_vars(offerer: Offerer, api_entreprise: dict) -> dict:
     }
 
 
-def _summarize_user_vars(user_offerer: UserOfferer) -> dict:
+def _summarize_user_vars(user_offerer: offerers_models.UserOfferer) -> dict:
     return {
         "firstName": user_offerer.user.firstName,
         "lastName": user_offerer.user.lastName,

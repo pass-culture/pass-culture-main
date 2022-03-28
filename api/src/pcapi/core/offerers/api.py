@@ -20,6 +20,7 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers.exceptions import MissingOffererIdQueryParameter
 from pcapi.core.offerers.models import ApiKey
 from pcapi.core.offerers.models import Offerer
+from pcapi.core.offerers.models import UserOfferer
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offerers.models import VenueContact
 from pcapi.core.offerers.repository import find_offerer_by_siren
@@ -32,7 +33,6 @@ from pcapi.core.users.models import User
 from pcapi.core.users.repository import get_users_with_validated_attachment_by_offerer
 from pcapi.domain.admin_emails import maybe_send_offerer_validation_email
 from pcapi.models import db
-from pcapi.models.user_offerer import UserOfferer
 from pcapi.repository import repository
 from pcapi.routes.serialization import base as serialize_base
 from pcapi.routes.serialization.offerers_serialize import CreateOffererQueryModel

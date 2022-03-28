@@ -11,6 +11,7 @@ from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.bookings.models import IndividualBooking
 from pcapi.core.bookings.repository import venues_have_bookings
 from pcapi.core.offerers.models import Offerer
+from pcapi.core.offerers.models import UserOfferer
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offerers.repository import find_active_venues_by_booking_email
 from pcapi.core.offerers.repository import find_venues_by_offerers
@@ -23,7 +24,6 @@ from pcapi.core.users.models import Favorite
 from pcapi.core.users.models import User
 from pcapi.core.users.repository import find_pro_user_by_email
 from pcapi.models import db
-from pcapi.models.user_offerer import UserOfferer
 
 from .batch import update_user_attributes as update_batch_user
 from .sendinblue import update_contact_attributes as update_sendinblue_user

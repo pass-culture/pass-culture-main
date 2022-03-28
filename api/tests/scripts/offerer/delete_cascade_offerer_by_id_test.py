@@ -9,6 +9,7 @@ import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offerers.factories import ApiKeyFactory
 from pcapi.core.offerers.models import ApiKey
 from pcapi.core.offerers.models import Offerer
+from pcapi.core.offerers.models import UserOfferer
 from pcapi.core.offerers.models import Venue
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import Mediation
@@ -26,7 +27,6 @@ from pcapi.models.bank_information import BankInformation
 from pcapi.models.criterion import Criterion
 from pcapi.models.offer_criterion import OfferCriterion
 from pcapi.models.product import Product
-from pcapi.models.user_offerer import UserOfferer
 from pcapi.scripts.offerer.delete_cascade_offerer_by_id import delete_cascade_offerer_by_id
 
 

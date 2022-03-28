@@ -1,6 +1,6 @@
 from typing import Optional
 
-from pcapi.models.user_offerer import UserOfferer
+from pcapi.core.offerers.models import UserOfferer
 
 
 def filter_query_where_user_is_user_offerer_and_is_validated(query, user):

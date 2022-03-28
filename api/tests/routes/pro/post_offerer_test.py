@@ -7,11 +7,11 @@ import pytest
 from pcapi.core.offerers.factories import UserOffererFactory
 from pcapi.core.offerers.factories import VirtualVenueTypeFactory
 from pcapi.core.offerers.models import Offerer
+from pcapi.core.offerers.models import UserOfferer
 from pcapi.core.offers.factories import OffererFactory
 from pcapi.core.users import testing as sendinblue_testing
 from pcapi.core.users.factories import AdminFactory
 from pcapi.core.users.factories import ProFactory
-from pcapi.models.user_offerer import UserOfferer
 
 from tests.conftest import TestClient
 

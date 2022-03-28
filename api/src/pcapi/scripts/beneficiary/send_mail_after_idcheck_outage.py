@@ -7,10 +7,10 @@ from dateutil.relativedelta import relativedelta
 from pcapi.core.mails.transactional.users.birthday_to_newly_eligible_user import (
     send_birthday_age_18_email_to_newly_eligible_user,
 )
+from pcapi.core.offerers.models import UserOfferer
 from pcapi.core.users import constants
 from pcapi.core.users.models import EligibilityType
 from pcapi.core.users.models import User
-from pcapi.models.user_offerer import UserOfferer
 
 
 logger = logging.getLogger(__name__)

@@ -4,17 +4,19 @@ from pcapi import settings
 from pcapi.core import mails
 from pcapi.core.categories import subcategories
 from pcapi.core.educational.models import CollectiveOffer
-from pcapi.core.offerers.models import Offerer
+import pcapi.core.offerers.models as offerers_models
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import OfferValidationStatus
-from pcapi.models.user_offerer import UserOfferer
 from pcapi.utils.mailing import make_offer_creation_notification_email
 from pcapi.utils.mailing import make_offer_rejection_notification_email
 from pcapi.utils.mailing import make_offerer_internal_validation_email
 from pcapi.utils.mailing import make_suspended_fraudulent_beneficiary_by_ids_notification_email
 
 
-def maybe_send_offerer_validation_email(offerer: Offerer, user_offerer: UserOfferer) -> bool:
+def maybe_send_offerer_validation_email(
+    offerer: offerers_models.Offerer,
+    user_offerer: offerers_models.UserOfferer,
+) -> bool:
     if offerer.isValidated and user_offerer.isValidated:
         return True
     email = make_offerer_internal_validation_email(offerer, user_offerer)

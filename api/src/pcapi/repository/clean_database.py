@@ -19,7 +19,6 @@ from pcapi.models.feature import Feature
 from pcapi.models.feature import install_feature_flags
 from pcapi.models.offer_criterion import OfferCriterion
 from pcapi.models.product import Product
-from pcapi.models.user_offerer import UserOfferer
 from pcapi.models.user_session import UserSession
 
 
@@ -60,7 +59,7 @@ def clean_all_database(*args, **kwargs):
     finance_models.BusinessUnit.query.delete()
     BankInformation.query.delete()
     offerers_models.Venue.query.delete()
-    UserOfferer.query.delete()
+    offerers_models.UserOfferer.query.delete()
     offerers_models.ApiKey.query.delete()
     offerers_models.Offerer.query.delete()
     offerers_models.OffererTag.query.delete()
