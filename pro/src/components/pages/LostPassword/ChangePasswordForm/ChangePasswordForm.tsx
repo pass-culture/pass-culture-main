@@ -6,7 +6,7 @@ import PasswordField from 'components/layout/form/fields/PasswordField'
 import styles from './ChangePasswordForm.module.scss'
 
 interface iChangePasswordForm {
-  onSubmit: () => void
+  onSubmit: (values: Record<string, string>) => void
   newPasswordErrorMessage: string
   isChangePasswordSubmitDisabled: (values: Record<string, string>) => boolean
 }
