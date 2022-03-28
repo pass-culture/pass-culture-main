@@ -5,8 +5,8 @@ import TextInput from 'components/layout/inputs/TextInput/TextInput'
 import styles from './ChangePasswordRequestForm.module.scss'
 
 interface iChangePasswordRequestForm {
-  onChange: () => void
-  onSubmit: () => void
+  onChange: (event: React.ChangeEvent<HTMLInputElement>) => void
+  onSubmit: (event: React.FormEvent<HTMLFormElement>) => void
   emailValue: string
   isChangePasswordRequestSubmitDisabled: (
     values?: Record<string, string>
