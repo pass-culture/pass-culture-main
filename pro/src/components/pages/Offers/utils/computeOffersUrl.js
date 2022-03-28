@@ -3,6 +3,7 @@ import {
   DEFAULT_CREATION_MODE,
   DEFAULT_PAGE,
   DEFAULT_SEARCH_FILTERS,
+  DEFAULT_AUDIENCE,
 } from 'core/Offers/constants'
 import { stringify } from 'utils/query-string'
 import {
@@ -10,7 +11,11 @@ import {
   translateApiParamsToQueryParams,
 } from 'utils/translate'
 
-export const computeOffersUrl = (offersSearchFilters, offersPageNumber = 1) => {
+export const computeOffersUrl = (
+  offersSearchFilters,
+  offersPageNumber = 1,
+  audience = DEFAULT_AUDIENCE
+) => {
   const { creationMode, status } = offersSearchFilters
   const searchFiltersParams = { ...offersSearchFilters }
   if (status && status !== ALL_STATUS) {
@@ -22,6 +27,10 @@ export const computeOffersUrl = (offersSearchFilters, offersPageNumber = 1) => {
 
   if (offersPageNumber !== DEFAULT_PAGE) {
     searchFiltersParams.page = offersPageNumber
+  }
+
+  if (audience !== DEFAULT_AUDIENCE) {
+    searchFiltersParams.audience = audience
   }
 
   const newFilters = {}

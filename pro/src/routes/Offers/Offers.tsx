@@ -39,7 +39,8 @@ const Offers = (): JSX.Element => {
       }
     ) => {
       setInitialSearchFilters(null)
-      const newUrl = computeOffersUrl(filters, filters.page)
+      const { page, audience, ...searchFilters } = filters
+      const newUrl = computeOffersUrl(searchFilters, page, audience)
 
       history.push(newUrl)
     },

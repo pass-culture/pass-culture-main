@@ -59,8 +59,17 @@ const useQuerySearchFilters = (): [TSearchFilters, number, Audience] => {
       }
     })
 
+    const queryParamsWithoutAudienceAndPage = (
+      Object.keys(queryParams) as (keyof IUrlSearchFilters)[]
+    ).reduce((acc, key) => {
+      if (key !== 'audience' && key !== 'page') {
+        return { ...acc, [key]: queryParams[key] }
+      }
+      return acc
+    }, {})
+
     const translatedQuery = translateQueryParamsToApiParams({
-      ...queryParams,
+      ...queryParamsWithoutAudienceAndPage,
       ...translatedFilters,
     })
 
