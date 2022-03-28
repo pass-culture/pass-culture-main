@@ -25,7 +25,7 @@ def validate_offerer_attachment(token) -> str:
     except ValidationTokenNotFoundError:
         errors = ResourceNotFoundError()
         errors.add_error(
-            "validation", "Aucun(e) objet ne correspond à ce code de validation" + " ou l'objet est déjà validé"
+            "validation", "Aucun objet ne correspond à ce code de validation" + " ou l'objet est déjà validé"
         )
         raise errors
 
@@ -40,7 +40,7 @@ def validate_new_offerer(token) -> str:
     except ValidationTokenNotFoundError:
         errors = ResourceNotFoundError()
         errors.add_error(
-            "validation", "Aucun(e) objet ne correspond à ce code de validation" + " ou l'objet est déjà validé"
+            "validation", "Aucun objet ne correspond à ce code de validation" + " ou l'objet est déjà validé"
         )
         raise errors
     return "Validation effectuée"
