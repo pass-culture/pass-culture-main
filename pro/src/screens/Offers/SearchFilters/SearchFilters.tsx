@@ -1,28 +1,19 @@
 import { endOfDay } from 'date-fns'
-import { utcToZonedTime } from 'date-fns-tz'
 import React, { useCallback, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 
 import { api } from 'api/v1/api'
 import Icon from 'components/layout/Icon'
-import PeriodSelector from 'components/layout/inputs/PeriodSelector/PeriodSelector'
-import Select from 'components/layout/inputs/Select'
-import TextInput from 'components/layout/inputs/TextInput/TextInput'
-import {
-  ALL_CATEGORIES_OPTION,
-  ALL_VENUES_OPTION,
-  CREATION_MODES_FILTERS,
-  DEFAULT_CREATION_MODE,
-  DEFAULT_SEARCH_FILTERS,
-} from 'core/Offers/constants'
+import { DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
 import { Offerer, TSearchFilters } from 'core/Offers/types'
 import { ReactComponent as ResetIcon } from 'icons/reset.svg'
 import {
   fetchAllVenuesByProUser,
   formatAndOrderVenues,
 } from 'repository/venuesService'
-import { formatBrowserTimezonedDateAsUTC, getToday } from 'utils/date'
+import { formatBrowserTimezonedDateAsUTC } from 'utils/date'
 
+import IndividualSearchFilters from './IndividualSearchFilters'
 import styles from './SearchFilters.module.scss'
 
 interface ISearchFiltersProps {
@@ -152,60 +143,18 @@ const SearchFilters = ({
         </span>
       )}
       <form onSubmit={requestFilteredOffers}>
-        <TextInput
-          disabled={disableAllFilters}
-          label="Nom de l’offre ou ISBN"
-          name="offre"
-          onChange={storeNameOrIsbnSearchValue}
-          placeholder="Rechercher par nom d’offre ou par ISBN"
-          value={selectedFilters.nameOrIsbn}
+        <IndividualSearchFilters
+          categoriesOptions={categoriesOptions}
+          changePeriodBeginningDateValue={changePeriodBeginningDateValue}
+          changePeriodEndingDateValue={changePeriodEndingDateValue}
+          disableAllFilters={disableAllFilters}
+          selectedFilters={selectedFilters}
+          storeCreationMode={storeCreationMode}
+          storeNameOrIsbnSearchValue={storeNameOrIsbnSearchValue}
+          storeSelectedCategory={storeSelectedCategory}
+          storeSelectedVenue={storeSelectedVenue}
+          venueOptions={venueOptions}
         />
-        <div className="form-row">
-          <Select
-            defaultOption={ALL_VENUES_OPTION}
-            handleSelection={storeSelectedVenue}
-            isDisabled={disableAllFilters}
-            label="Lieu"
-            name="lieu"
-            options={venueOptions}
-            selectedValue={selectedFilters.venueId}
-          />
-          <Select
-            defaultOption={ALL_CATEGORIES_OPTION}
-            handleSelection={storeSelectedCategory}
-            isDisabled={disableAllFilters}
-            label="Catégories"
-            name="categorie"
-            options={categoriesOptions}
-            selectedValue={selectedFilters.categoryId}
-          />
-          <Select
-            defaultOption={DEFAULT_CREATION_MODE}
-            handleSelection={storeCreationMode}
-            isDisabled={disableAllFilters}
-            label="Mode de création"
-            name="creationMode"
-            options={CREATION_MODES_FILTERS}
-            selectedValue={selectedFilters.creationMode}
-          />
-          <PeriodSelector
-            changePeriodBeginningDateValue={changePeriodBeginningDateValue}
-            changePeriodEndingDateValue={changePeriodEndingDateValue}
-            isDisabled={disableAllFilters}
-            label="Période de l’évènement"
-            periodBeginningDate={
-              selectedFilters.periodBeginningDate
-                ? utcToZonedTime(selectedFilters.periodBeginningDate, 'UTC')
-                : undefined
-            }
-            periodEndingDate={
-              selectedFilters.periodEndingDate
-                ? utcToZonedTime(selectedFilters.periodEndingDate, 'UTC')
-                : undefined
-            }
-            todayDate={getToday()}
-          />
-        </div>
         {userHasSearchFilters ? (
           <Link
             className="reset-filters-link"
