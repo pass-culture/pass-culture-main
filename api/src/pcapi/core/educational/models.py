@@ -128,15 +128,11 @@ class CollectiveOffer(PcObject, ValidationMixin, AccessibilityMixin, StatusMixin
 
     @isSoldOut.expression  # type: ignore[no-redef]
     def isSoldOut(cls):  # pylint: disable=no-self-argument
-        return sa.exists(
-            sa.select(CollectiveStock)
-            .join(CollectiveBooking, CollectiveBooking.collectiveStockId == CollectiveStock.id)
-            .where(
-                sa.and_(
-                    CollectiveStock.collectiveOfferId == cls.id,
-                    CollectiveBooking.status != CollectiveBookingStatus.CANCELLED,
-                )
-            )
+        return (
+            sa.exists()
+            .where(CollectiveStock.collectiveOfferId == cls.id)
+            .where(CollectiveBooking.collectiveStockId == CollectiveStock.id)
+            .where(CollectiveBooking.status != CollectiveBookingStatus.CANCELLED)
         )
 
     @property
