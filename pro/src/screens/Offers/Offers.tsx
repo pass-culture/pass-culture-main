@@ -247,6 +247,7 @@ const Offers = ({
       </ActionsBarPortal>
       <SearchFilters
         applyFilters={applyFilters}
+        audience={urlAudience}
         categories={categories}
         disableAllFilters={userHasNoOffers}
         offerer={offerer}

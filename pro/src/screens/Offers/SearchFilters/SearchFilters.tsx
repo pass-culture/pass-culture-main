@@ -4,10 +4,11 @@ import { Link } from 'react-router-dom'
 
 import Icon from 'components/layout/Icon'
 import { DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
-import { Offerer, Option, TSearchFilters } from 'core/Offers/types'
+import { Audience, Offerer, Option, TSearchFilters } from 'core/Offers/types'
 import { ReactComponent as ResetIcon } from 'icons/reset.svg'
 import { formatBrowserTimezonedDateAsUTC } from 'utils/date'
 
+import CollectiveSearchFilters from './CollectiveSearchFilters'
 import IndividualSearchFilters from './IndividualSearchFilters'
 import styles from './SearchFilters.module.scss'
 
@@ -26,6 +27,7 @@ interface ISearchFiltersProps {
   resetFilters: () => void
   venues: Option[]
   categories: Option[]
+  audience: Audience
 }
 
 const SearchFilters = ({
@@ -39,6 +41,7 @@ const SearchFilters = ({
   resetFilters,
   venues,
   categories,
+  audience,
 }: ISearchFiltersProps): JSX.Element => {
   const updateSearchFilters = useCallback(
     (newSearchFilters: Partial<TSearchFilters>) => {
@@ -117,23 +120,39 @@ const SearchFilters = ({
         </span>
       )}
       <form onSubmit={requestFilteredOffers}>
-        <IndividualSearchFilters
-          categoriesOptions={categories}
-          changePeriodBeginningDateValue={changePeriodBeginningDateValue}
-          changePeriodEndingDateValue={changePeriodEndingDateValue}
-          disableAllFilters={disableAllFilters}
-          selectedFilters={selectedFilters}
-          storeCreationMode={storeCreationMode}
-          storeNameOrIsbnSearchValue={storeNameOrIsbnSearchValue}
-          storeSelectedCategory={storeSelectedCategory}
-          storeSelectedVenue={storeSelectedVenue}
-          venueOptions={venues}
-        />
+        {audience === Audience.INDIVIDUAL ? (
+          <IndividualSearchFilters
+            categoriesOptions={categories}
+            changePeriodBeginningDateValue={changePeriodBeginningDateValue}
+            changePeriodEndingDateValue={changePeriodEndingDateValue}
+            disableAllFilters={disableAllFilters}
+            selectedFilters={selectedFilters}
+            storeCreationMode={storeCreationMode}
+            storeNameOrIsbnSearchValue={storeNameOrIsbnSearchValue}
+            storeSelectedCategory={storeSelectedCategory}
+            storeSelectedVenue={storeSelectedVenue}
+            venueOptions={venues}
+          />
+        ) : (
+          <CollectiveSearchFilters
+            categoriesOptions={categories}
+            changePeriodBeginningDateValue={changePeriodBeginningDateValue}
+            changePeriodEndingDateValue={changePeriodEndingDateValue}
+            disableAllFilters={disableAllFilters}
+            selectedFilters={selectedFilters}
+            storeNameOrIsbnSearchValue={storeNameOrIsbnSearchValue}
+            storeSelectedCategory={storeSelectedCategory}
+            storeSelectedVenue={storeSelectedVenue}
+            venueOptions={venues}
+          />
+        )}
         {userHasSearchFilters ? (
           <Link
             className="reset-filters-link"
             onClick={resetFilters}
-            to="/offres"
+            to={`/offres${
+              audience === Audience.COLLECTIVE ? '?audience=collective' : ''
+            }`}
           >
             <ResetIcon className="reset-filters-link-icon" />
             Réinitialiser les filtres
