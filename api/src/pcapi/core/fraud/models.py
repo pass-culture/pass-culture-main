@@ -314,7 +314,6 @@ class FraudReasonCode(enum.Enum):
     ID_CHECK_BLOCKED_OTHER = "id_check_bocked_other"
     ID_CHECK_NOT_SUPPORTED = "id_check_not_supported"
     ID_CHECK_UNPROCESSABLE = "id_check_unprocessable"
-    INE_NOT_WHITELISTED = "ine_not_whitelisted"
     INVALID_ID_PIECE_NUMBER = "invalid_id_piece_number"
     NAME_INCORRECT = "name_incorrect"
     NOT_ELIGIBLE = "not_eligible"

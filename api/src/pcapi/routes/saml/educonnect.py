@@ -149,8 +149,4 @@ def _on_educonnect_authentication_errors(
         } | base_query_param
         return redirect(ERROR_PAGE_URL + urlencode(error_query_param), code=302)
 
-    if fraud_models.FraudReasonCode.INE_NOT_WHITELISTED in error_codes:
-        error_query_param = {"code": "UserNotWhitelisted"} | base_query_param
-        return redirect(ERROR_PAGE_URL + urlencode(error_query_param), code=302)
-
     return redirect(ERROR_PAGE_URL + urlencode(base_query_param), code=302)
