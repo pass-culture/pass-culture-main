@@ -9,7 +9,11 @@ import Spinner from 'components/layout/Spinner'
 import { computeOffersUrl } from 'components/pages/Offers/utils/computeOffersUrl'
 import { DEFAULT_SEARCH_FILTERS, hasSearchFilters } from 'core/Offers'
 import { useQuerySearchFilters } from 'core/Offers/hooks'
-import { Audience, Offerer, TSearchFilters } from 'core/Offers/types'
+import { Audience, Offerer, Option, TSearchFilters } from 'core/Offers/types'
+import {
+  fetchAllVenuesByProUser,
+  formatAndOrderVenues,
+} from 'repository/venuesService'
 import { savePageNumber, saveSearchFilters } from 'store/offers/actions'
 
 import { getOffererAdapter } from './adapters'
@@ -26,6 +30,7 @@ const Offers = (): JSX.Element => {
   const notify = useNotification()
 
   const [offerer, setOfferer] = useState<Offerer | null>(null)
+  const [venues, setVenues] = useState<Option[]>([])
 
   const separateIndividualAndCollectiveOffers = useActiveFeature(
     'ENABLE_INDIVIDUAL_AND_COLLECTIVE_OFFER_SEPARATION'
@@ -98,6 +103,15 @@ const Offers = (): JSX.Element => {
     dispatch(savePageNumber(urlPageNumber))
   }, [dispatch, urlPageNumber])
 
+  useEffect(() => {
+    const loadAllVenuesByProUser = () =>
+      fetchAllVenuesByProUser(offerer?.id).then(venues =>
+        setVenues(formatAndOrderVenues(venues))
+      )
+
+    loadAllVenuesByProUser()
+  }, [offerer?.id])
+
   if (!initialSearchFilters) {
     return <Spinner />
   }
@@ -113,6 +127,7 @@ const Offers = (): JSX.Element => {
       }
       setOfferer={setOfferer}
       urlPageNumber={urlPageNumber}
+      venues={venues}
     />
   ) : (
     <CollectiveOffers
@@ -125,6 +140,7 @@ const Offers = (): JSX.Element => {
       }
       setOfferer={setOfferer}
       urlPageNumber={urlPageNumber}
+      venues={venues}
     />
   )
 }

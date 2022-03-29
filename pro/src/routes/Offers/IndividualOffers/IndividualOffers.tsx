@@ -1,9 +1,16 @@
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 
+import { api } from 'api/v1/api'
 import { SharedCurrentUserResponseModel } from 'api/v1/gen'
 import useNotification from 'components/hooks/useNotification'
 import { DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
-import { Audience, Offer, Offerer, TSearchFilters } from 'core/Offers/types'
+import {
+  Audience,
+  Offer,
+  Offerer,
+  Option,
+  TSearchFilters,
+} from 'core/Offers/types'
 import OffersScreen from 'screens/Offers'
 
 import { getFilteredOffersAdapter } from '../adapters'
@@ -21,6 +28,7 @@ interface IIndividualOffersProps {
       audience?: Audience
     }
   ) => void
+  venues: Option[]
 }
 
 const IndividualOffers = ({
@@ -31,11 +39,13 @@ const IndividualOffers = ({
   separateIndividualAndCollectiveOffers,
   currentUser,
   redirectWithUrlFilters,
+  venues,
 }: IIndividualOffersProps): JSX.Element => {
   const notify = useNotification()
 
   const [offers, setOffers] = useState<Offer[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const [categories, setCategories] = useState<Option[]>([])
 
   const loadAndUpdateOffers = useCallback(
     async (filters: TSearchFilters) => {
@@ -59,8 +69,29 @@ const IndividualOffers = ({
     [notify]
   )
 
+  useEffect(() => {
+    const loadCategories = () =>
+      api.getOffersGetCategories().then(categoriesAndSubcategories => {
+        const categoriesOptions = categoriesAndSubcategories.categories
+          .filter(category => category.isSelectable)
+          .map(category => ({
+            id: category.id,
+            displayName: category.proLabel,
+          }))
+
+        setCategories(
+          categoriesOptions.sort((a, b) =>
+            a.displayName.localeCompare(b.displayName)
+          )
+        )
+      })
+
+    loadCategories()
+  }, [])
+
   return (
     <OffersScreen
+      categories={categories}
       currentPageNumber={urlPageNumber}
       currentUser={currentUser}
       initialSearchFilters={initialSearchFilters}
@@ -74,6 +105,7 @@ const IndividualOffers = ({
       }
       setOfferer={setOfferer}
       urlAudience={Audience.INDIVIDUAL}
+      venues={venues}
     />
   )
 }

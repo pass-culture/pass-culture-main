@@ -1,9 +1,17 @@
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 
+import { api } from 'api/v1/api'
 import { SharedCurrentUserResponseModel } from 'api/v1/gen'
 import useNotification from 'components/hooks/useNotification'
+import { filterEducationalCategories } from 'core/OfferEducational'
 import { DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
-import { Audience, Offer, Offerer, TSearchFilters } from 'core/Offers/types'
+import {
+  Audience,
+  Offer,
+  Offerer,
+  Option,
+  TSearchFilters,
+} from 'core/Offers/types'
 import OffersScreen from 'screens/Offers'
 
 import { getFilteredCollectiveOffersAdapter } from '../adapters'
@@ -21,6 +29,7 @@ interface ICollectiveOffersProps {
       audience?: Audience
     }
   ) => void
+  venues: Option[]
 }
 
 const CollectiveOffers = ({
@@ -31,11 +40,13 @@ const CollectiveOffers = ({
   separateIndividualAndCollectiveOffers,
   currentUser,
   redirectWithUrlFilters,
+  venues,
 }: ICollectiveOffersProps): JSX.Element => {
   const notify = useNotification()
 
   const [offers, setOffers] = useState<Offer[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const [categories, setCategories] = useState<Option[]>([])
 
   const loadAndUpdatCollectiveOffers = useCallback(
     async (filters: TSearchFilters) => {
@@ -58,8 +69,30 @@ const CollectiveOffers = ({
     [notify]
   )
 
+  useEffect(() => {
+    const loadCategories = () => {
+      api.getOffersGetCategories().then(categoriesAndSubcategories => {
+        const categoriesOptions = filterEducationalCategories(
+          categoriesAndSubcategories
+        ).educationalCategories.map(category => ({
+          id: category.id,
+          displayName: category.label,
+        }))
+
+        setCategories(
+          categoriesOptions.sort((a, b) =>
+            a.displayName.localeCompare(b.displayName)
+          )
+        )
+      })
+    }
+
+    loadCategories()
+  }, [offerer?.id])
+
   return (
     <OffersScreen
+      categories={categories}
       currentPageNumber={urlPageNumber}
       currentUser={currentUser}
       initialSearchFilters={initialSearchFilters}
@@ -73,6 +106,7 @@ const CollectiveOffers = ({
       }
       setOfferer={setOfferer}
       urlAudience={Audience.COLLECTIVE}
+      venues={venues}
     />
   )
 }

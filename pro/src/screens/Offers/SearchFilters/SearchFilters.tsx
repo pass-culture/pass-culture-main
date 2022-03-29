@@ -1,10 +1,9 @@
 import cn from 'classnames'
 import { endOfDay } from 'date-fns'
 import { utcToZonedTime } from 'date-fns-tz'
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback } from 'react'
 import { Link } from 'react-router-dom'
 
-import { api } from 'api/v1/api'
 import Icon from 'components/layout/Icon'
 import PeriodSelector from 'components/layout/inputs/PeriodSelector/PeriodSelector'
 import Select from 'components/layout/inputs/Select'
@@ -16,12 +15,8 @@ import {
   DEFAULT_CREATION_MODE,
   DEFAULT_SEARCH_FILTERS,
 } from 'core/Offers/constants'
-import { Offerer, TSearchFilters } from 'core/Offers/types'
+import { Offerer, Option, TSearchFilters } from 'core/Offers/types'
 import { ReactComponent as ResetIcon } from 'icons/reset.svg'
-import {
-  fetchAllVenuesByProUser,
-  formatAndOrderVenues,
-} from 'repository/venuesService'
 import { formatBrowserTimezonedDateAsUTC, getToday } from 'utils/date'
 
 import styles from './SearchFilters.module.scss'
@@ -39,6 +34,8 @@ interface ISearchFiltersProps {
   disableAllFilters: boolean
   userHasSearchFilters: boolean
   resetFilters: () => void
+  venues: Option[]
+  categories: Option[]
 }
 
 const SearchFilters = ({
@@ -50,32 +47,9 @@ const SearchFilters = ({
   disableAllFilters,
   userHasSearchFilters,
   resetFilters,
+  venues,
+  categories,
 }: ISearchFiltersProps): JSX.Element => {
-  const [categoriesOptions, setCategoriesOptions] = useState<
-    { id: string; displayName: string }[]
-  >([])
-  const [venueOptions, setVenueOptions] = useState([])
-
-  useEffect(() => {
-    api.getOffersGetCategories().then(categoriesAndSubcategories => {
-      const { categories } = categoriesAndSubcategories
-      const categoriesOptions = categories
-        .filter(category => category.isSelectable)
-        .map(category => ({
-          id: category.id,
-          displayName: category.proLabel,
-        }))
-      setCategoriesOptions(
-        categoriesOptions.sort((a, b) =>
-          a.displayName.localeCompare(b.displayName)
-        )
-      )
-    })
-    fetchAllVenuesByProUser(offerer?.id).then(venues =>
-      setVenueOptions(formatAndOrderVenues(venues))
-    )
-  }, [offerer?.id])
-
   const updateSearchFilters = useCallback(
     (newSearchFilters: Partial<TSearchFilters>) => {
       setSearchFilters(currentSearchFilters => ({
@@ -168,7 +142,7 @@ const SearchFilters = ({
             isDisabled={disableAllFilters}
             label="Lieu"
             name="lieu"
-            options={venueOptions}
+            options={venues}
             selectedValue={selectedFilters.venueId}
           />
           <Select
@@ -177,7 +151,7 @@ const SearchFilters = ({
             isDisabled={disableAllFilters}
             label="Catégories"
             name="categorie"
-            options={categoriesOptions}
+            options={categories}
             selectedValue={selectedFilters.categoryId}
           />
           <Select

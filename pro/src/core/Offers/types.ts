@@ -47,3 +47,8 @@ export enum Audience {
   INDIVIDUAL = 'individual',
   COLLECTIVE = 'collective',
 }
+
+export type Option = {
+  id: string
+  displayName: string
+}

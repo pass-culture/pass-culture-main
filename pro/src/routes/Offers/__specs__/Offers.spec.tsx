@@ -135,6 +135,22 @@ describe('route Offers', () => {
 
   describe('render', () => {
     describe('filters', () => {
+      it('should display only selectable categories on filters', async () => {
+        // When
+        renderOffers(store)
+
+        // Then
+        await expect(
+          screen.findByRole('option', { name: 'Cinéma' })
+        ).resolves.toBeInTheDocument()
+        await expect(
+          screen.findByRole('option', { name: 'Jeux' })
+        ).resolves.toBeInTheDocument()
+        await expect(
+          screen.findByRole('option', { name: 'Technique' })
+        ).rejects.toBeTruthy()
+      })
+
       describe('status filters', () => {
         it('should filter offers given status filter when clicking on "Appliquer"', async () => {
           // Given
