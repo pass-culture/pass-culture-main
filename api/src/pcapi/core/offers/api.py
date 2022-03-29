@@ -106,6 +106,7 @@ from pcapi.workers.push_notification_job import send_cancel_booking_notification
 from .exceptions import ThumbnailStorageError
 from .models import ActivationCode
 from .models import Mediation
+from .models import WithdrawalTypeEnum
 
 
 logger = logging.getLogger(__name__)
@@ -294,6 +295,8 @@ def update_offer(
     externalTicketOfficeUrl: str = UNCHANGED,
     url: str = UNCHANGED,
     withdrawalDetails: str = UNCHANGED,
+    withdrawalType: WithdrawalTypeEnum = UNCHANGED,
+    withdrawalDelay: int = UNCHANGED,
     isActive: bool = UNCHANGED,
     isDuo: bool = UNCHANGED,
     durationMinutes: int = UNCHANGED,
@@ -320,6 +323,17 @@ def update_offer(
     # fmt: on
     if not modifications:
         return offer
+
+    if (UNCHANGED, UNCHANGED) != (withdrawalType, withdrawalDelay):
+        try:
+            changed_withdrawalType = withdrawalType if withdrawalType != UNCHANGED else offer.withdrawalType
+            changed_withdrawalDelay = withdrawalDelay if withdrawalDelay != UNCHANGED else offer.withdrawalDelay
+            check_offer_withdrawal(changed_withdrawalType, changed_withdrawalDelay, offer.subcategoryId)
+        except offers_exceptions.OfferCreationBaseException as error:
+            raise ApiErrors(
+                error.errors,
+                status_code=400,
+            )
 
     if offer.isFromProvider:
         validation.check_update_only_allowed_fields_for_offer_from_provider(set(modifications), offer.lastProvider)

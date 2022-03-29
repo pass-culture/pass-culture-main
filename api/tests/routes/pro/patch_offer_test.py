@@ -7,6 +7,7 @@ import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import OfferValidationStatus
+from pcapi.core.offers.models import WithdrawalTypeEnum
 import pcapi.core.users.factories as users_factories
 from pcapi.routes.serialization import serialize
 from pcapi.utils.human_ids import humanize
@@ -39,6 +40,21 @@ class Returns200Test:
         assert updated_offer.externalTicketOfficeUrl == "http://example.net"
         assert updated_offer.mentalDisabilityCompliant
         assert updated_offer.subcategoryId == "SEANCE_CINE"
+
+    def test_withdrawal_can_be_updated(self, client):
+        offer = offers_factories.OfferFactory(subcategoryId=subcategories.CONCERT.id)
+        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
+
+        data = {
+            "withdrawalDetails": "Veuillez récuperer vos billets à l'accueil :)",
+            "withdrawalType": "no_ticket",
+        }
+        response = client.with_session_auth("user@example.com").patch(f"/offers/{humanize(offer.id)}", json=data)
+
+        assert response.status_code == 200
+        offer = Offer.query.get(offer.id)
+        assert offer.withdrawalDetails == "Veuillez récuperer vos billets à l'accueil :)"
+        assert offer.withdrawalType == WithdrawalTypeEnum.NO_TICKET
 
 
 class Returns400Test:
@@ -173,6 +189,36 @@ class Returns400Test:
 
         assert response.status_code == 400
         assert response.json["global"] == ["Les offres refusées ou en attente de validation ne sont pas modifiables"]
+
+    def test_withdrawal_is_checked_when_changed(self, client):
+        offer = offers_factories.OfferFactory(subcategoryId=subcategories.JEU_EN_LIGNE.id)
+        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
+
+        data = {
+            "withdrawalType": "no_ticket",
+        }
+        response = client.with_session_auth("user@example.com").patch(f"offers/{humanize(offer.id)}", json=data)
+
+        assert response.status_code == 400
+        assert response.json["offer"] == [
+            "Une offre qui n'a pas de ticket retirable ne peut pas avoir un type de retrait renseigné"
+        ]
+
+    def test_reuse_unchanged_withdrawal(self, client):
+        offer = offers_factories.OfferFactory(
+            subcategoryId=subcategories.CONCERT.id, withdrawalType=WithdrawalTypeEnum.BY_EMAIL, withdrawalDelay=60 * 15
+        )
+        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
+
+        data = {
+            "withdrawalType": "no_ticket",
+        }
+        response = client.with_session_auth("user@example.com").patch(f"offers/{humanize(offer.id)}", json=data)
+
+        assert response.status_code == 400
+        assert response.json["offer"] == [
+            "Il ne peut pas y avoir de délai de retrait lorsqu'il s'agit d'un évènement sans ticket"
+        ]
 
 
 class Returns403Test:
