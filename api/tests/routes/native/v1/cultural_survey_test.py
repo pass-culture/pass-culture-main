@@ -1,9 +1,14 @@
 import datetime
+from unittest.mock import patch
 
 from dateutil.relativedelta import relativedelta
+import freezegun
 import pytest
 
+from pcapi.core.cultural_survey import cultural_survey
 from pcapi.core.users import factories as users_factories
+from pcapi.core.users import models as users_models
+from pcapi.tasks.serialization import cultural_survey_tasks as serializers
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -184,3 +189,68 @@ class CulturalSurveyQuestionsTest:
                 },
             ]
         }
+
+    @patch("pcapi.tasks.cultural_survey_tasks.upload_answers_task.delay")
+    @freezegun.freeze_time("2020-01-01")
+    def test_post_cultural_survey_answers(self, upload_answers_task, client):
+        user: users_models.User = users_factories.UserFactory()
+        client.with_token(user.email)
+
+        all_answers = [
+            {
+                "questionId": cultural_survey.SORTIES.id,
+                "answerIds": [
+                    cultural_survey.FESTIVAL.id,
+                ],
+            },
+            {
+                "questionId": cultural_survey.FESTIVALS.id,
+                "answerIds": [
+                    cultural_survey.FESTIVAL_MUSIQUE.id,
+                    cultural_survey.LIVRE.id,
+                ],
+            },
+            {
+                "questionId": cultural_survey.ACTIVITES.id,
+                "answerIds": [
+                    cultural_survey.LIVRE.id,
+                    cultural_survey.PODCAST.id,
+                ],
+            },
+        ]
+        response = client.post(
+            "/native/v1/cultural_survey/answers",
+            json={"answers": all_answers},
+        )
+
+        assert response.status_code == 204
+
+        expected_answers = [
+            {
+                "question_id": cultural_survey.SORTIES.id,
+                "answer_ids": [
+                    cultural_survey.FESTIVAL.id,
+                ],
+            },
+            {
+                "question_id": cultural_survey.FESTIVALS.id,
+                "answer_ids": [
+                    cultural_survey.FESTIVAL_MUSIQUE.id,
+                    cultural_survey.LIVRE.id,
+                ],
+            },
+            {
+                "question_id": cultural_survey.ACTIVITES.id,
+                "answer_ids": [
+                    cultural_survey.LIVRE.id,
+                    cultural_survey.PODCAST.id,
+                ],
+            },
+        ]
+        upload_answers_task.assert_called_once_with(
+            serializers.CulturalSurveyAnswersForData(
+                user_id=user.id, answers=expected_answers, submitted_at=datetime.datetime.now()
+            )
+        )
+        assert not user.needsToFillCulturalSurvey
+        assert user.culturalSurveyFilledDate == datetime.datetime.now()
