@@ -64,3 +64,5 @@ secrets:
   - name: GOOGLE_CLIENT_SECRET
   - name: OUTSCALE_ACCESS_KEY
   - name: OUTSCALE_SECRET_KEY
+  - name: GCP_DATA_BUCKET_NAME
+  - name: GCP_DATA_PROJECT_ID
