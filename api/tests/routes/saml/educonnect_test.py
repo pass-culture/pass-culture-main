@@ -11,6 +11,7 @@ import pytest
 
 from pcapi.core.fraud import factories as fraud_factories
 import pcapi.core.fraud.models as fraud_models
+import pcapi.core.mails.testing as mails_testing
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import models as subscription_status
 from pcapi.core.testing import override_settings
@@ -283,7 +284,7 @@ class EduconnectTest:
         assert caplog.records[0].message == "Wrong user type of educonnect user"
 
     @patch("pcapi.connectors.beneficiaries.educonnect.educonnect_connector.get_educonnect_user")
-    def test_educonnect_redirects_to_success_page_with_warning_log(self, mock_get_educonnect_user, client, app, caplog):
+    def test_duplicate_beneficiary(self, mock_get_educonnect_user, client, app, caplog):
         user, request_id = self.connect_to_educonnect(client, app)
         educonnect_user = users_factories.EduconnectUserFactory(saml_request_id=request_id)
         mock_get_educonnect_user.return_value = educonnect_user
@@ -291,6 +292,7 @@ class EduconnectTest:
         users_factories.UserFactory(
             firstName=educonnect_user.first_name,
             lastName=educonnect_user.last_name,
+            email="titus@quartier-latin.com",
             dateOfBirth=build_date_of_birth_from_age(self.default_underage_user_age).date(),
             roles=[user_models.UserRole.UNDERAGE_BENEFICIARY],
         )
@@ -302,6 +304,11 @@ class EduconnectTest:
         assert response.location.startswith("https://webapp-v2.example.com/educonnect/validation")
         assert caplog.messages == ["Fraud suspicion after educonnect authentication with codes: duplicate_user"]
         assert caplog.records[0].extra == {"user_id": user.id}
+
+        assert len(mails_testing.outbox) == 1
+        assert mails_testing.outbox[0].sent_data["params"] == {
+            "DUPLICATE_BENEFICIARY_EMAIL": "tit***@quartier-latin.com"
+        }
 
     @patch("pcapi.connectors.beneficiaries.educonnect.educonnect_connector.get_educonnect_user")
     @freezegun.freeze_time("2021-12-21")
