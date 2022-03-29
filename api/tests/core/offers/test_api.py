@@ -626,7 +626,8 @@ class UpsertStocksTest:
         # Then
         assert error.value.errors == {"global": ["Pour les offres importées, certains champs ne sont pas modifiables"]}
 
-    def test_create_stock_for_non_approved_offer_fails(self):
+    @mock.patch("pcapi.core.offers.api.send_first_venue_approved_offer_email_to_pro")
+    def test_create_stock_for_non_approved_offer_fails(self, mocked_send_first_venue_approved_offer_email_to_pro):
         user = users_factories.ProFactory()
         offer = offer_factories.ThingOfferFactory(validation=offer_models.OfferValidationStatus.PENDING)
         created_stock_data = stock_serialize.StockCreationBodyModel(price=10, quantity=7)
@@ -639,7 +640,13 @@ class UpsertStocksTest:
         }
         assert offer_models.Stock.query.count() == 0
 
-    def test_edit_stock_of_non_approved_offer_fails(self):
+        assert not mocked_send_first_venue_approved_offer_email_to_pro.called
+
+    @mock.patch("pcapi.core.offers.api.send_first_venue_approved_offer_email_to_pro")
+    def test_edit_stock_of_non_approved_offer_fails(
+        self,
+        mocked_send_first_venue_approved_offer_email_to_pro,
+    ):
         user = users_factories.ProFactory()
         offer = offer_factories.ThingOfferFactory(validation=offer_models.OfferValidationStatus.PENDING)
         existing_stock = offer_factories.StockFactory(offer=offer, price=10)
@@ -654,10 +661,16 @@ class UpsertStocksTest:
         existing_stock = offer_models.Stock.query.one()
         assert existing_stock.price == 10
 
+        assert not mocked_send_first_venue_approved_offer_email_to_pro.called
+
     @mock.patch("pcapi.domain.admin_emails.send_offer_creation_notification_to_administration")
+    @mock.patch("pcapi.core.offers.api.send_first_venue_approved_offer_email_to_pro")
     @mock.patch("pcapi.core.offers.api.set_offer_status_based_on_fraud_criteria")
     def test_send_email_when_offer_automatically_approved_based_on_fraud_criteria(
-        self, mocked_set_offer_status_based_on_fraud_criteria, mocked_offer_creation_notification_to_admin
+        self,
+        mocked_set_offer_status_based_on_fraud_criteria,
+        mocked_send_first_venue_approved_offer_email_to_pro,
+        mocked_offer_creation_notification_to_admin,
     ):
         user = users_factories.ProFactory()
         offer = offer_factories.ThingOfferFactory(validation=offer_models.OfferValidationStatus.DRAFT)
@@ -667,11 +680,16 @@ class UpsertStocksTest:
         api.upsert_stocks(offer_id=offer.id, stock_data_list=[created_stock_data], user=user)
 
         mocked_offer_creation_notification_to_admin.assert_called_once_with(offer)
+        mocked_send_first_venue_approved_offer_email_to_pro.assert_called_once_with(offer)
 
     @mock.patch("pcapi.domain.admin_emails.send_offer_creation_notification_to_administration")
+    @mock.patch("pcapi.core.offers.api.send_first_venue_approved_offer_email_to_pro")
     @mock.patch("pcapi.core.offers.api.set_offer_status_based_on_fraud_criteria")
     def test_not_send_email_when_offer_pass_to_pending_based_on_fraud_criteria(
-        self, mocked_set_offer_status_based_on_fraud_criteria, mocked_offer_creation_notification_to_admin
+        self,
+        mocked_set_offer_status_based_on_fraud_criteria,
+        mocked_send_first_venue_approved_offer_email_to_pro,
+        mocked_offer_creation_notification_to_admin,
     ):
         user = users_factories.ProFactory()
         offer = offer_factories.ThingOfferFactory(validation=offer_models.OfferValidationStatus.DRAFT)
@@ -681,6 +699,7 @@ class UpsertStocksTest:
         api.upsert_stocks(offer_id=offer.id, stock_data_list=[created_stock_data], user=user)
 
         assert not mocked_offer_creation_notification_to_admin.called
+        assert not mocked_send_first_venue_approved_offer_email_to_pro.called
 
 
 @freeze_time("2020-11-17 15:00:00")
@@ -810,9 +829,13 @@ class CreateEducationalOfferStocksTest:
 
     @override_features(ENABLE_NEW_COLLECTIVE_MODEL=False)
     @mock.patch("pcapi.domain.admin_emails.send_offer_creation_notification_to_administration")
+    @mock.patch("pcapi.core.offers.api.send_first_venue_approved_offer_email_to_pro")
     @mock.patch("pcapi.core.offers.api.set_offer_status_based_on_fraud_criteria")
     def test_send_email_when_offer_automatically_approved_based_on_fraud_criteria(
-        self, mocked_set_offer_status_based_on_fraud_criteria, mocked_offer_creation_notification_to_admin
+        self,
+        mocked_set_offer_status_based_on_fraud_criteria,
+        mocked_send_first_venue_approved_offer_email_to_pro,
+        mocked_offer_creation_notification_to_admin,
     ):
         # Given
         user = users_factories.ProFactory()
@@ -831,11 +854,16 @@ class CreateEducationalOfferStocksTest:
 
         # Then
         mocked_offer_creation_notification_to_admin.assert_called_once_with(offer)
+        assert not mocked_send_first_venue_approved_offer_email_to_pro.called
 
     @mock.patch("pcapi.domain.admin_emails.send_offer_creation_notification_to_administration")
+    @mock.patch("pcapi.core.offers.api.send_first_venue_approved_offer_email_to_pro")
     @mock.patch("pcapi.core.offers.api.set_offer_status_based_on_fraud_criteria")
     def test_not_send_email_when_offer_pass_to_pending_based_on_fraud_criteria(
-        self, mocked_set_offer_status_based_on_fraud_criteria, mocked_offer_creation_notification_to_admin
+        self,
+        mocked_set_offer_status_based_on_fraud_criteria,
+        mocked_send_first_venue_approved_offer_email_to_pro,
+        mocked_offer_creation_notification_to_admin,
     ):
         # Given
         user = users_factories.ProFactory()
@@ -854,6 +882,7 @@ class CreateEducationalOfferStocksTest:
 
         # Then
         assert not mocked_offer_creation_notification_to_admin.called
+        assert not mocked_send_first_venue_approved_offer_email_to_pro.called
 
 
 class EditEducationalOfferStocksTest:
