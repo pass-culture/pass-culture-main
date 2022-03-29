@@ -191,6 +191,8 @@ class PatchOfferBodyModel(BaseModel):
     externalTicketOfficeUrl: Optional[HttpUrl]
     url: Optional[HttpUrl]
     withdrawalDetails: Optional[str]
+    withdrawalType: Optional[WithdrawalTypeEnum]
+    withdrawalDelay: Optional[int]
     isActive: Optional[bool]
     isDuo: Optional[bool]
     durationMinutes: Optional[int]
