@@ -47,6 +47,9 @@ from pcapi.core.mails.transactional.bookings.booking_postponed_by_pro_to_benefic
 from pcapi.core.mails.transactional.pro.event_offer_postponed_confirmation_to_pro import (
     send_event_offer_postponement_confirmation_email_to_pro,
 )
+from pcapi.core.mails.transactional.pro.first_venue_approved_offer_to_pro import (
+    send_first_venue_approved_offer_email_to_pro,
+)
 from pcapi.core.mails.transactional.users.reported_offer_by_user import send_email_reported_offer_by_user
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers.models import Venue
@@ -696,15 +699,37 @@ def upsert_stocks(
 def _update_offer_fraud_information(
     offer: Union[educational_models.CollectiveOffer, Offer], user: User, *, silent: bool = False
 ) -> None:
+    venue_already_has_validated_offer = _venue_already_has_validated_offer(offer)
+
     offer.validation = set_offer_status_based_on_fraud_criteria(offer)
     offer.author = user
     offer.lastValidationDate = datetime.datetime.utcnow()
     offer.lastValidationType = OfferValidationType.AUTO
+
     if offer.validation == OfferValidationStatus.PENDING or offer.validation == OfferValidationStatus.REJECTED:
         offer.isActive = False
     repository.save(offer)
     if offer.validation == OfferValidationStatus.APPROVED and not silent:
         admin_emails.send_offer_creation_notification_to_administration(offer)
+
+    if (
+        offer.validation == OfferValidationStatus.APPROVED
+        and not offer.isEducational
+        and not venue_already_has_validated_offer
+    ):
+        if not send_first_venue_approved_offer_email_to_pro(offer):
+            logger.warning("Could not send first venue approved offer email", extra={"offer_id": offer.id})
+
+
+def _venue_already_has_validated_offer(offer: Offer) -> bool:
+    return (
+        Offer.query.filter(
+            Offer.venueId == offer.venueId,
+            Offer.validation == OfferValidationStatus.APPROVED,
+            Offer.lastValidationDate.isnot(None),
+        ).first()
+        is not None
+    )
 
 
 def create_educational_stock(stock_data: EducationalStockCreationBodyModel, user: User) -> Stock:
