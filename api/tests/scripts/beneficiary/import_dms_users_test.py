@@ -889,20 +889,9 @@ class GraphQLSourceProcessApplicationTest:
     @patch.object(dms_connector_api.DMSGraphQLClient, "get_applications_with_details")
     def test_avoid_reimporting_already_imported_user(self, get_applications_with_details):
         procedure_id = 42
-        user = users_factories.UserFactory(
-            dateOfBirth=AGE18_ELIGIBLE_BIRTH_DATE,
-            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
-        )
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user,
-            type=fraud_models.FraudCheckType.USER_PROFILING,
-            status=fraud_models.FraudCheckStatus.OK,
-            eligibilityType=users_models.EligibilityType.AGE18,
-        )
         already_imported_user = users_factories.BeneficiaryGrant18Factory()
 
         get_applications_with_details.return_value = [
-            make_parsed_graphql_application(application_id=1, state="accepte", email=user.email),
             make_parsed_graphql_application(
                 application_id=2,
                 state="accepte",
@@ -921,9 +910,3 @@ class GraphQLSourceProcessApplicationTest:
             "L’utilisateur est déjà bénéfiaire du pass AGE18 ; "
             "L’utilisateur est déjà bénéfiaire, avec un portefeuille non expiré. Il ne peut pas prétendre au pass culture 18 ans"
         ) in fraud_check.reason
-
-        assert len(mails_testing.outbox) == 1
-        assert mails_testing.outbox[0].sent_data["To"] == user.email
-        assert mails_testing.outbox[0].sent_data["template"] == dataclasses.asdict(
-            TransactionalEmail.ACCEPTED_AS_BENEFICIARY.value
-        )
