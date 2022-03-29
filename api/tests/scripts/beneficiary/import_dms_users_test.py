@@ -603,6 +603,9 @@ class RunIntegrationTest:
         )
         assert sub_msg.callToActionIcon == subscription_models.CallToActionIcon.EMAIL
 
+        assert len(mails_testing.outbox) == 1
+        assert mails_testing.outbox[0].sent_data["params"] == {"DUPLICATE_BENEFICIARY_EMAIL": "joh***@example.com"}
+
     @override_features(FORCE_PHONE_VALIDATION=False)
     @freezegun.freeze_time("2021-10-30 09:00:00")
     @patch.object(dms_connector_api.DMSGraphQLClient, "get_applications_with_details")

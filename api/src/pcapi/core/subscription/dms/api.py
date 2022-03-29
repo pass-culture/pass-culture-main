@@ -12,6 +12,7 @@ from pcapi.core import logging as core_logging
 from pcapi.core.fraud import api as fraud_api
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.fraud.dms import api as fraud_dms_api
+from pcapi.core.mails.transactional.users import duplicate_beneficiary
 from pcapi.core.mails.transactional.users.pre_subscription_dms_error import (
     send_pre_subscription_from_dms_error_email_to_beneficiary,
 )
@@ -259,16 +260,17 @@ def process_application(
 def handle_validation_errors(
     user: users_models.User,
     reason_codes: list[fraud_models.FraudReasonCode],
-    information: fraud_models.DMSContent,
+    dms_content: fraud_models.DMSContent,
     procedure_id: int,
 ) -> None:
     for item in reason_codes:
         if item == fraud_models.FraudReasonCode.ALREADY_BENEFICIARY:
-            _log_rejection(information.application_id, procedure_id, "L'utilisateur est déjà bénéficiaire")
+            _log_rejection(dms_content.application_id, procedure_id, "L'utilisateur est déjà bénéficiaire")
         if item == fraud_models.FraudReasonCode.NOT_ELIGIBLE:
-            _log_rejection(information.application_id, procedure_id, "L'utilisateur n'est pas éligible")
+            _log_rejection(dms_content.application_id, procedure_id, "L'utilisateur n'est pas éligible")
         if item == fraud_models.FraudReasonCode.DUPLICATE_USER:
             subscription_messages.on_duplicate_user(user)
+            duplicate_beneficiary.send_duplicate_beneficiary_email(user, dms_content)
         if item == fraud_models.FraudReasonCode.DUPLICATE_ID_PIECE_NUMBER:
             subscription_messages.on_duplicate_user(user)
 
