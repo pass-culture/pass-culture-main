@@ -14,12 +14,18 @@ from .base import BaseBackend
 
 
 class GCPBackend(BaseBackend):
+    def __init__(
+        self,
+        project_id: str = settings.GCP_BUCKET_CREDENTIALS.get("project_id"),
+        bucket_name: str = settings.GCP_BUCKET_NAME,
+    ) -> None:
+        self.project_id = project_id
+        self.bucket_name = bucket_name
+
     def get_gcp_storage_client_bucket(self) -> Bucket:
         credentials = Credentials.from_service_account_info(settings.GCP_BUCKET_CREDENTIALS)
-        project_id = settings.GCP_BUCKET_CREDENTIALS.get("project_id")
-        storage_client = Client(credentials=credentials, project=project_id)
-
-        return storage_client.bucket(settings.GCP_BUCKET_NAME)
+        storage_client = Client(credentials=credentials, project=self.project_id)
+        return storage_client.bucket(self.bucket_name)
 
     def store_public_object(self, folder: str, object_id: str, blob: bytes, content_type: str) -> None:
         storage_path = folder + "/" + object_id
