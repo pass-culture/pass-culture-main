@@ -15,6 +15,7 @@ from pcapi.core.offers.factories import ActivationCodeFactory
 from pcapi.core.offers.factories import EventStockFactory
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import OfferValidationStatus
+from pcapi.core.offers.models import Stock
 from pcapi.core.offers.repository import check_stock_consistency
 from pcapi.core.offers.repository import delete_past_draft_collective_offers
 from pcapi.core.offers.repository import delete_past_draft_offers
@@ -1133,87 +1134,49 @@ class CheckStockConsistenceTest:
 
 
 @pytest.mark.usefixtures("db_session")
-class TomorrowStockTest:
-    def test_find_tomorrow_event_stock_ids(self):
-        from pcapi.core.offers.models import Stock
-
+class IncomingEventStocksTest:
+    def setup_stocks(self):
+        today = datetime.utcnow() + timedelta(hours=1)
         tomorrow = datetime.utcnow() + timedelta(days=1)
-        stocks_tomorrow = EventStockFactory.create_batch(2, beginningDatetime=tomorrow)
-        stocks_tomorrow_cancelled = EventStockFactory.create_batch(3, beginningDatetime=tomorrow)
-
         next_week = datetime.utcnow() + timedelta(days=7)
-        stocks_next_week = EventStockFactory.create_batch(3, beginningDatetime=next_week)
 
-        for stock in stocks_tomorrow:
-            bookings_factories.BookingFactory.create_batch(2, stock=stock)
+        self.stock_today = EventStockFactory(beginningDatetime=today)
+        bookings_factories.BookingFactory.create_batch(2, stock=self.stock_today)
 
-        for stock in stocks_tomorrow_cancelled:
-            bookings_factories.CancelledBookingFactory.create_batch(2, stock=stock)
+        offer = offers_factories.OfferFactory(venue__departementCode="97", venue__postalCode="97180")
+        self.stock_today_overseas = EventStockFactory(beginningDatetime=today, offer=offer)
+        bookings_factories.BookingFactory(stock=self.stock_today_overseas)
 
-        for stock in stocks_next_week:
-            bookings_factories.BookingFactory.create_batch(2, stock=stock)
+        self.stock_today_cancelled = EventStockFactory(beginningDatetime=today)
+        bookings_factories.CancelledBookingFactory(stock=self.stock_today_cancelled)
 
-        stock_ids = [
-            stock_id for stock_id, in find_event_stocks_happening_in_x_days(number_of_days=1).with_entities(Stock.id)
-        ]
+        self.stock_tomorrow = EventStockFactory(beginningDatetime=tomorrow)
+        bookings_factories.BookingFactory(stock=self.stock_tomorrow)
 
-        assert set(stock_ids) == set(stock.id for stock in stocks_tomorrow)
+        self.stock_tomorrow_cancelled = EventStockFactory(beginningDatetime=tomorrow)
+        bookings_factories.CancelledBookingFactory(stock=self.stock_tomorrow_cancelled)
 
+        self.stock_next_week = EventStockFactory(beginningDatetime=next_week)
+        bookings_factories.BookingFactory(stock=self.stock_next_week)
 
-@pytest.mark.usefixtures("db_session")
-class TodayStockTest:
+    def test_find_tomorrow_event_stock_ids(self):
+        self.setup_stocks()
+
+        query = find_event_stocks_happening_in_x_days(number_of_days=1).with_entities(Stock.id)
+        assert {stock_id for stock_id, in query} == {self.stock_tomorrow.id}
+
+    def test_find_event_stocks_happening_in_7_days(self):
+        self.setup_stocks()
+
+        query = find_event_stocks_happening_in_x_days(number_of_days=7)
+        assert {stock.id for stock in query} == {self.stock_next_week.id}
+
     @freeze_time("2020-10-15 15:00:00")
     def test_find_today_event_stock_ids_metropolitan_france(self):
-        today = datetime.now() + timedelta(hours=1)
-        next_week = datetime.now() + timedelta(days=7)
-
-        stock_today_1 = EventStockFactory(beginningDatetime=today)
-        bookings_factories.BookingFactory.create_batch(2, stock=stock_today_1)
-
-        stock_today_2 = EventStockFactory(beginningDatetime=today)
-        bookings_factories.BookingFactory.create_batch(2, stock=stock_today_2)
-
-        # today but overseas -> ignored
-        offer = offers_factories.OfferFactory(venue__departementCode="97", venue__postalCode="97180")
-        stock_today_overseas = EventStockFactory(beginningDatetime=today, offer=offer)
-        bookings_factories.BookingFactory(stock=stock_today_overseas)
-
-        # cancelled -> ignored
-        stock_today_cancelled = EventStockFactory(beginningDatetime=today)
-        bookings_factories.CancelledBookingFactory(stock=stock_today_cancelled)
-
-        # not today -> ignored
-        stock_next_week = EventStockFactory(beginningDatetime=next_week)
-        bookings_factories.BookingFactory(stock=stock_next_week)
+        self.setup_stocks()
 
         stock_ids = find_today_event_stock_ids_metropolitan_france()
-        assert set(stock_ids) == {stock_today_1.id, stock_today_2.id}
-
-
-@pytest.mark.usefixtures("db_session")
-class EventStockIn7DaysTest:
-    def test_find_event_stocks_happening_in_7_days(self):
-        # Given
-        tomorrow = datetime.utcnow() + timedelta(days=1)
-        stocks_tomorrow = EventStockFactory.create_batch(2, beginningDatetime=tomorrow)
-        stocks_tomorrow_cancelled = EventStockFactory.create_batch(3, beginningDatetime=tomorrow)
-
-        next_week = datetime.utcnow() + timedelta(days=7)
-        stocks_next_week = EventStockFactory.create_batch(3, beginningDatetime=next_week)
-
-        for stock in stocks_tomorrow:
-            bookings_factories.BookingFactory.create_batch(2, stock=stock)
-
-        for stock in stocks_tomorrow_cancelled:
-            bookings_factories.CancelledBookingFactory.create_batch(2, stock=stock)
-
-        for stock in stocks_next_week:
-            bookings_factories.BookingFactory.create_batch(2, stock=stock)
-        # When
-        stocks = find_event_stocks_happening_in_x_days(number_of_days=7)
-
-        # Then
-        assert set(stocks) == set(stocks_next_week)
+        assert set(stock_ids) == {self.stock_today.id}
 
 
 @pytest.mark.usefixtures("db_session")
