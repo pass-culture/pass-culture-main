@@ -1352,6 +1352,7 @@ class UbbleWebhookTest:
             firstName="Duplicate",
             lastName="Fraudster",
             dateOfBirth=datetime.datetime.combine(birth_date, datetime.time(0, 0)),
+            email="shotgun@me.com",
         )
 
         user, ubble_fraud_check, request_data = self._init_decision_test()
@@ -1419,7 +1420,8 @@ class UbbleWebhookTest:
         assert message.callToActionIcon == subscription_models.CallToActionIcon.EMAIL
         assert message.callToActionTitle == "Contacter le support"
 
-        assert len(mails_testing.outbox) == 0
+        assert len(mails_testing.outbox) == 1
+        assert mails_testing.outbox[0].sent_data["params"] == {"DUPLICATE_BENEFICIARY_EMAIL": "sho***@me.com"}
 
     def test_decision_duplicate_id_piece_number(self, client, ubble_mocker):
         users_factories.BeneficiaryGrant18Factory(

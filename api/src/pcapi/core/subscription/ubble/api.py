@@ -18,6 +18,7 @@ import pcapi.core.fraud.models as fraud_models
 from pcapi.core.fraud.ubble import api as ubble_fraud_api
 from pcapi.core.fraud.ubble import constants as ubble_constants
 import pcapi.core.fraud.ubble.models as ubble_fraud_models
+from pcapi.core.mails.transactional.users import duplicate_beneficiary
 from pcapi.core.mails.transactional.users import subscription_document_error
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import messages as subscription_messages
@@ -63,7 +64,7 @@ def update_ubble_workflow(
 
         if fraud_check.status != fraud_models.FraudCheckStatus.OK:
             can_retry = ubble_fraud_api.is_user_allowed_to_perform_ubble_check(user, fraud_check.eligibilityType)
-            handle_validation_errors(user, fraud_check.reasonCodes, can_retry=can_retry)
+            handle_validation_errors(user, fraud_check, can_retry=can_retry)
             subscription_api.update_user_birth_date(user, content.get_birth_date())
             return
 
@@ -98,10 +99,10 @@ def start_ubble_workflow(user: users_models.User, redirect_url: str) -> str:
 
 def handle_validation_errors(
     user: users_models.User,
-    reason_codes: typing.Optional[list[fraud_models.FraudReasonCode]],
+    fraud_check: fraud_models.BeneficiaryFraudCheck,
     can_retry: bool = False,  # when available
 ):
-    reason_codes = reason_codes or []
+    reason_codes = fraud_check.reasonCodes or []
 
     if fraud_models.FraudReasonCode.ID_CHECK_UNPROCESSABLE in reason_codes:
         if can_retry:
@@ -133,6 +134,7 @@ def handle_validation_errors(
 
     elif fraud_models.FraudReasonCode.DUPLICATE_USER in reason_codes:
         subscription_messages.on_duplicate_user(user)
+        duplicate_beneficiary.send_duplicate_beneficiary_email(user, fraud_check.source_data())
 
     elif fraud_models.FraudReasonCode.DUPLICATE_ID_PIECE_NUMBER in reason_codes:
         subscription_messages.on_duplicate_user(user)
