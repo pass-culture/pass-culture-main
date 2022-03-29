@@ -5,6 +5,7 @@ import typing
 from pcapi.connectors.beneficiaries.educonnect import models as educonnect_models
 from pcapi.core.fraud import api as fraud_api
 from pcapi.core.fraud import models as fraud_models
+from pcapi.core.mails.transactional.users import duplicate_beneficiary
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import messages as subscription_messages
 from pcapi.core.subscription import models as subscription_models
@@ -45,7 +46,7 @@ def handle_educonnect_authentication(
             logger.exception("Error while activating user from Educonnect", extra={"user_id": user.id})
             raise exceptions.EduconnectSubscriptionException()
     else:
-        _add_error_subscription_messages(user, fraud_check.reasonCodes, educonnect_user)
+        _handle_validation_errors(user, fraud_check, educonnect_user)
         subscription_api.update_user_birth_date(user, fraud_check.source_data().get_birth_date())
         logger.warning(
             "Fraud suspicion after educonnect authentication with codes: %s",
@@ -56,19 +57,19 @@ def handle_educonnect_authentication(
     return fraud_check.reasonCodes
 
 
-def _add_error_subscription_messages(
+def _handle_validation_errors(
     user: users_models.User,
-    reason_codes: list[fraud_models.FraudReasonCode],
+    fraud_check: fraud_models.BeneficiaryFraudCheck,
     educonnect_user: educonnect_models.EduconnectUser,
 ) -> None:
-    if fraud_models.FraudReasonCode.ALREADY_BENEFICIARY in reason_codes:
+    if fraud_models.FraudReasonCode.ALREADY_BENEFICIARY in fraud_check.reasonCodes:
         subscription_messages.on_already_beneficiary(user)
 
-    if fraud_models.FraudReasonCode.AGE_NOT_VALID in reason_codes:
+    if fraud_models.FraudReasonCode.AGE_NOT_VALID in fraud_check.reasonCodes:
         message = f"Ton dossier a été refusé. La date de naissance enregistrée sur ton compte Educonnect ({educonnect_user.birth_date.strftime('%d/%m/%Y')}) indique que tu n'as pas entre {users_constants.ELIGIBILITY_UNDERAGE_RANGE[0]} et {users_constants.ELIGIBILITY_UNDERAGE_RANGE[-1]} ans."
         subscription_messages.add_error_message(user, message)
 
-    elif fraud_models.FraudReasonCode.NOT_ELIGIBLE in reason_codes:
+    elif fraud_models.FraudReasonCode.NOT_ELIGIBLE in fraud_check.reasonCodes:
         message = f"La date de naissance de ton dossier Educonnect ({educonnect_user.birth_date.strftime('%d/%m/%Y')}) indique que tu n'es pas éligible."
         eligibity_start = users_api.get_eligibility_start_datetime(educonnect_user.birth_date)
 
@@ -77,13 +78,14 @@ def _add_error_subscription_messages(
 
         subscription_messages.add_error_message(user, message)
 
-    if fraud_models.FraudReasonCode.DUPLICATE_USER in reason_codes:
+    if fraud_models.FraudReasonCode.DUPLICATE_USER in fraud_check.reasonCodes:
         subscription_messages.add_error_message(
             user,
             "Ton compte ÉduConnect est déjà rattaché à un autre compte pass Culture. Vérifie que tu n'as pas déjà créé un compte avec une autre adresse mail.",
         )
+        duplicate_beneficiary.send_duplicate_beneficiary_email(user, fraud_check.source_data())
 
-    if fraud_models.FraudReasonCode.DUPLICATE_INE in reason_codes:
+    if fraud_models.FraudReasonCode.DUPLICATE_INE in fraud_check.reasonCodes:
         subscription_messages.add_error_message(
             user,
             "Ton identificant national INE est déjà rattaché à un autre compte pass Culture. Vérifie que tu n'as pas déjà créé un compte avec une autre adresse mail.",
