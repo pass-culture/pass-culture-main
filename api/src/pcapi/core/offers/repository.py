@@ -472,13 +472,17 @@ def check_stock_consistency() -> list[int]:
     ]
 
 
-def find_event_stocks_happening_in_x_days(number_of_days: int) -> set[int]:
-    tomorrow = datetime.utcnow() + timedelta(days=number_of_days)
-    tomorrow_min = datetime.combine(tomorrow, time.min)
-    tomorrow_max = datetime.combine(tomorrow, time.max)
+def find_event_stocks_happening_in_x_days(number_of_days: int) -> BaseQuery:
+    target_day = datetime.utcnow() + timedelta(days=number_of_days)
+    start = datetime.combine(target_day, time.min)
+    end = datetime.combine(target_day, time.max)
 
+    return find_event_stocks_day(start, end)
+
+
+def find_event_stocks_day(start: datetime, end: datetime) -> BaseQuery:
     return (
-        Stock.query.filter(Stock.beginningDatetime.between(tomorrow_min, tomorrow_max))
+        Stock.query.filter(Stock.beginningDatetime.between(start, end))
         .join(Booking)
         .filter(Booking.status != BookingStatus.CANCELLED)
         .distinct()
@@ -522,15 +526,8 @@ def find_today_event_stock_ids_metropolitan_france(today_min: Optional[datetime]
         not_(Venue.departementCode.startswith("98")),
     )
 
-    query = (
-        Stock.query.filter(Stock.beginningDatetime.between(today_min, today_max))
-        .join(Booking)
-        .join(Venue)
-        .filter(Booking.status != BookingStatus.CANCELLED)
-        .filter(not_overseas_france)
-        .with_entities(Stock.id)
-        .distinct()
-    )
+    base_query = find_event_stocks_day(today_min, today_max)
+    query = base_query.join(Venue).filter(not_overseas_france).with_entities(Stock.id)
 
     return {stock.id for stock in query}
 
