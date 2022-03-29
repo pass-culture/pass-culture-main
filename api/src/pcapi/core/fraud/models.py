@@ -121,7 +121,6 @@ class EduconnectContent(common_models.IdentityCheckContent):
 
 
 class JouveContent(common_models.IdentityCheckContent):
-    # TODO: analyze jouve results to see where we can remove "optional"
     activity: typing.Optional[str]
     address: typing.Optional[str]
     birthDateTxt: typing.Optional[datetime.datetime]

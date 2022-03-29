@@ -199,13 +199,7 @@ def validate_id_piece_number_format_fraud_item(id_piece_number: typing.Optional[
 def _duplicate_user_fraud_item(
     first_name: str, last_name: str, birth_date: datetime.date, excluded_user_id: int
 ) -> models.FraudItem:
-    duplicate_user = users_models.User.query.filter(
-        matching(users_models.User.firstName, first_name)
-        & (matching(users_models.User.lastName, last_name))
-        & (sqlalchemy.func.DATE(users_models.User.dateOfBirth) == birth_date)
-        & (users_models.User.is_beneficiary == True)
-        & (users_models.User.id != excluded_user_id)
-    ).first()
+    duplicate_user = find_duplicate_beneficiary(first_name, last_name, birth_date, excluded_user_id)
 
     if duplicate_user:
         return models.FraudItem(
@@ -215,6 +209,18 @@ def _duplicate_user_fraud_item(
         )
 
     return models.FraudItem(status=models.FraudStatus.OK, detail="Utilisateur non dupliqué")
+
+
+def find_duplicate_beneficiary(
+    first_name: str, last_name: str, birth_date: datetime.date, excluded_user_id: int
+) -> typing.Optional[users_models.User]:
+    return users_models.User.query.filter(
+        matching(users_models.User.firstName, first_name)
+        & (matching(users_models.User.lastName, last_name))
+        & (sqlalchemy.func.DATE(users_models.User.dateOfBirth) == birth_date)
+        & (users_models.User.is_beneficiary == True)
+        & (users_models.User.id != excluded_user_id)
+    ).first()
 
 
 def duplicate_id_piece_number_fraud_item(user: users_models.User, document_id_number: str) -> models.FraudItem:
