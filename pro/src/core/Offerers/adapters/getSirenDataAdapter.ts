@@ -2,8 +2,8 @@ import createCachedSelector from 're-reselect'
 import type { KeySelector } from 're-reselect'
 
 import { apiEntreprise } from 'api/api'
-import { isApiError, HTTP_STATUS } from 'api/helpers'
 import type { IEntrepriseSirenData } from 'api/entreprise/types'
+import { isApiError, HTTP_STATUS } from 'api/helpers'
 import { unhumanizeSiren } from 'core/Offerers/utils'
 import { validateSiren } from 'core/Offerers/validate'
 

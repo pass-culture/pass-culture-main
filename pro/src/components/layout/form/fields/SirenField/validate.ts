@@ -9,7 +9,9 @@ const mustHaveTheProperLength = (value: string) => {
   return value.length < 9 ? 'SIREN trop court' : undefined
 }
 
-export const existsInINSEERegistry = async (value: string) => {
+export const existsInINSEERegistry = async (
+  value: string
+): Promise<string | void> => {
   const response = await getSirenDataAdapter(value)
   return response.isOk ? undefined : response.message
 }

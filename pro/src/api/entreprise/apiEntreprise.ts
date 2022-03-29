@@ -1,12 +1,32 @@
+import { ApiError } from 'api/helpers'
+
 import { API_ENTREPRISE_BASE_URL } from './constants'
 import type {
   IEntrepriseSiretData,
   IEntrepriseSirenData,
   IEntrepriseDataFail,
 } from './types'
-import { ApiError, handleGeneratedApiResponse } from 'api/helpers'
 
-const handleApiError = async (response: Response): Promise<any | void> => {
+interface IEntrepriseApiJson {
+  unite_legale: {
+    prenom_1: string | null
+    nom: string | null
+    denomination: string | null
+    etablissement_siege: {
+      enseigne_1: string | null
+      geo_l4: string
+      libelle_commune: string
+      latitude: string | null
+      longitude: string | null
+      code_postal: string
+    }
+    siren: string
+  }
+}
+
+const handleApiError = async (
+  response: Response
+): Promise<IEntrepriseApiJson> => {
   if (!response.ok) {
     throw new ApiError(
       response.status,
@@ -14,7 +34,8 @@ const handleApiError = async (response: Response): Promise<any | void> => {
       `Échec de la requête ${response.url}, code: ${response.status}`
     )
   }
-  return await response.json()
+
+  return (await response.json()) as IEntrepriseApiJson
 }
 
 export default {
@@ -58,11 +79,14 @@ export default {
       name = `${legalUnit.prenom_1 || ''} ${legalUnit.nom || ''}`
     }
 
+    const latitude = legalUnit.etablissement_siege.latitude
+    const longitude = legalUnit.etablissement_siege.longitude
+
     return {
       address: legalUnit.etablissement_siege.geo_l4,
       city: legalUnit.etablissement_siege.libelle_commune,
-      latitude: parseFloat(legalUnit.etablissement_siege.latitude) || null,
-      longitude: parseFloat(legalUnit.etablissement_siege.longitude) || null,
+      latitude: latitude ? parseFloat(latitude) : null,
+      longitude: longitude ? parseFloat(longitude) : null,
       name,
       postalCode: legalUnit.etablissement_siege.code_postal,
       siren: legalUnit.siren,
