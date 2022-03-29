@@ -149,15 +149,15 @@ def parse_beneficiary_information_graphql(
 
         if label in (dms_models.FieldLabel.DEPARTMENT_FR.value, dms_models.FieldLabel.DEPARTMENT_ET.value):
             department = re.search("^[0-9]{2,3}|[2BbAa]{2}", value).group(0)
-        if label in (dms_models.FieldLabel.BIRTH_DATE_ET, dms_models.FieldLabel.BIRTH_DATE_FR.value):
+        elif label in (dms_models.FieldLabel.BIRTH_DATE_ET.value, dms_models.FieldLabel.BIRTH_DATE_FR.value):
             try:
                 birth_date = date_parser.parse(value, FrenchParserInfo())
             except Exception:  # pylint: disable=broad-except
                 parsing_errors["birth_date"] = value
 
-        if label in (dms_models.FieldLabel.TELEPHONE_FR.value, dms_models.FieldLabel.TELEPHONE_ET.value):
+        elif label in (dms_models.FieldLabel.TELEPHONE_FR.value, dms_models.FieldLabel.TELEPHONE_ET.value):
             phone = value.replace(" ", "")
-        if label in (
+        elif label in (
             dms_models.FieldLabel.POSTAL_CODE_ET.value,
             dms_models.FieldLabel.POSTAL_CODE_FR.value,
         ):
@@ -167,14 +167,14 @@ def parse_beneficiary_information_graphql(
             except Exception:  # pylint: disable=broad-except
                 parsing_errors["postal_code"] = value
 
-        if label in (dms_models.FieldLabel.ACTIVITY_FR.value, dms_models.FieldLabel.ACTIVITY_ET.value):
+        elif label in (dms_models.FieldLabel.ACTIVITY_FR.value, dms_models.FieldLabel.ACTIVITY_ET.value):
             activity = value
-        if label in (
+        elif label in (
             dms_models.FieldLabel.ADDRESS_ET.value,
             dms_models.FieldLabel.ADDRESS_FR.value,
         ):
             address = value
-        if label in (
+        elif label in (
             dms_models.FieldLabel.ID_PIECE_NUMBER_FR.value,
             dms_models.FieldLabel.ID_PIECE_NUMBER_ET.value,
         ):
