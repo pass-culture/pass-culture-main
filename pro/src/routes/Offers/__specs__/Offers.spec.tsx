@@ -760,30 +760,6 @@ describe('route Offers', () => {
       expect(urlSearchParams).toMatchObject({})
     })
 
-    it('should call collective adapter when audience query param value is collective', async () => {
-      // Given
-      ;(api.getCollectiveListCollectiveOffers as jest.Mock).mockResolvedValue(
-        offersRecap
-      )
-      const filters = {
-        audience: Audience.COLLECTIVE,
-      }
-      renderOffers(store, filters)
-      await screen.findByText('Lancer la recherche')
-
-      // Then
-      expect(api.getCollectiveListCollectiveOffers).toHaveBeenLastCalledWith(
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined
-      )
-    })
-
     it('should update query param with selected audience when user clicks on toggle', async () => {
       // Given
       ;(api.getCollectiveListCollectiveOffers as jest.Mock).mockResolvedValue(
