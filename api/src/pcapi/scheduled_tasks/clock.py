@@ -164,6 +164,8 @@ def pc_check_stock_quantity_consistency() -> None:
 @cron_context
 @log_cron_with_transaction
 def pc_send_yesterday_event_offers_notifications() -> None:
+    if not settings.IS_PROD and not settings.IS_TESTING:
+        return
     for educational_booking in find_educational_bookings_done_yesterday():
         send_eac_satisfaction_study_email_to_pro(educational_booking)
 
