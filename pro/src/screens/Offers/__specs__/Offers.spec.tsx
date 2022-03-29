@@ -64,11 +64,16 @@ const proVenues = [
     isVirtual: true,
   },
 ]
-
-jest.mock('repository/venuesService', () => ({
-  ...jest.requireActual('repository/venuesService'),
-  fetchAllVenuesByProUser: jest.fn().mockResolvedValue(proVenues),
-}))
+const proVenuesOptions = [
+  {
+    id: 'JI',
+    displayName: 'Ma venue',
+  },
+  {
+    id: 'JQ',
+    displayName: 'Mon offerer - Offre numérique',
+  },
+]
 
 jest.mock('api/v1/api', () => ({
   api: {
@@ -134,6 +139,10 @@ describe('screen Offers', () => {
       initialSearchFilters: DEFAULT_SEARCH_FILTERS,
       urlAudience: Audience.INDIVIDUAL,
       redirectWithUrlFilters: jest.fn(),
+      venues: proVenuesOptions,
+      categories: categoriesAndSubcategories.categories.map(
+        ({ id, proLabel }) => ({ id, displayName: proLabel })
+      ),
     } as IOffersProps
   })
 
@@ -249,22 +258,6 @@ describe('screen Offers', () => {
     })
 
     describe('filters', () => {
-      it('should display only selectable categories on filters', async () => {
-        // When
-        renderOffers(props, store)
-
-        // Then
-        await expect(
-          screen.findByRole('option', { name: 'Cinéma' })
-        ).resolves.toBeInTheDocument()
-        await expect(
-          screen.findByRole('option', { name: 'Jeux' })
-        ).resolves.toBeInTheDocument()
-        await expect(
-          screen.findByRole('option', { name: 'Technique' })
-        ).rejects.toBeTruthy()
-      })
-
       it('should render venue filter with default option selected and given venues as options', async () => {
         // Given
         const expectedSelectOptions = [
@@ -430,8 +423,8 @@ describe('screen Offers', () => {
           // When
           fireEvent.click(
             screen.getByRole('heading', {
-              name: 'Rechercher une offre',
-              level: 3,
+              name: 'Offres',
+              level: 1,
             })
           )
           // Then

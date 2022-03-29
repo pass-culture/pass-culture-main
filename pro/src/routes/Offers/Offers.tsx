@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { useHistory } from 'react-router-dom'
 
+import { api } from 'api/v1/api'
 import useActiveFeature from 'components/hooks/useActiveFeature'
 import useCurrentUser from 'components/hooks/useCurrentUser'
 import useNotification from 'components/hooks/useNotification'
@@ -9,7 +10,17 @@ import Spinner from 'components/layout/Spinner'
 import { computeOffersUrl } from 'components/pages/Offers/utils/computeOffersUrl'
 import { DEFAULT_SEARCH_FILTERS, hasSearchFilters } from 'core/Offers'
 import { useQuerySearchFilters } from 'core/Offers/hooks'
-import { Audience, Offer, Offerer, TSearchFilters } from 'core/Offers/types'
+import {
+  Audience,
+  Offerer,
+  Offer,
+  Option,
+  TSearchFilters,
+} from 'core/Offers/types'
+import {
+  fetchAllVenuesByProUser,
+  formatAndOrderVenues,
+} from 'repository/venuesService'
 import OffersScreen from 'screens/Offers'
 import { savePageNumber, saveSearchFilters } from 'store/offers/actions'
 
@@ -27,6 +38,8 @@ const Offers = (): JSX.Element => {
   const [isLoading, setIsLoading] = useState(true)
   const [initialSearchFilters, setInitialSearchFilters] =
     useState<TSearchFilters | null>(null)
+  const [venues, setVenues] = useState<Option[]>([])
+  const [categories, setCategories] = useState<Option[]>([])
 
   const separateIndividualAndCollectiveOffers = useActiveFeature(
     'ENABLE_INDIVIDUAL_AND_COLLECTIVE_OFFER_SEPARATION'
@@ -73,6 +86,26 @@ const Offers = (): JSX.Element => {
     },
     [notify]
   )
+
+  useEffect(() => {
+    const loadCategories = () =>
+      api.getOffersGetCategories().then(categoriesAndSubcategories => {
+        const categoriesOptions = categoriesAndSubcategories.categories
+          .filter(category => category.isSelectable)
+          .map(category => ({
+            id: category.id,
+            displayName: category.proLabel,
+          }))
+
+        setCategories(
+          categoriesOptions.sort((a, b) =>
+            a.displayName.localeCompare(b.displayName)
+          )
+        )
+      })
+
+    loadCategories()
+  }, [])
 
   const redirectWithUrlFilters = useCallback(
     (
@@ -130,12 +163,22 @@ const Offers = (): JSX.Element => {
     dispatch(savePageNumber(urlPageNumber))
   }, [dispatch, urlPageNumber, urlSearchFilters])
 
+  useEffect(() => {
+    const loadAllVenuesByProUser = () =>
+      fetchAllVenuesByProUser(offerer?.id).then(venues =>
+        setVenues(formatAndOrderVenues(venues))
+      )
+
+    loadAllVenuesByProUser()
+  }, [offerer?.id])
+
   if (!initialSearchFilters) {
     return <Spinner />
   }
 
   return (
     <OffersScreen
+      categories={categories}
       currentPageNumber={urlPageNumber}
       currentUser={currentUser}
       initialSearchFilters={initialSearchFilters}
@@ -150,6 +193,7 @@ const Offers = (): JSX.Element => {
       setOfferer={setOfferer}
       urlAudience={Audience.INDIVIDUAL}
       urlSearchFilters={urlSearchFilters}
+      venues={venues}
     />
   )
 }
