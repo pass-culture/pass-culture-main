@@ -432,7 +432,6 @@ class EduconnectFraudTest:
         )
         assert duplicate_ine_check is None
 
-
 @pytest.mark.usefixtures("db_session")
 class HasUserPerformedIdentityCheckTest:
     def test_has_not_performed(self):
