@@ -89,12 +89,6 @@ def _add_error_subscription_messages(
             "Ton identificant national INE est déjà rattaché à un autre compte pass Culture. Vérifie que tu n'as pas déjà créé un compte avec une autre adresse mail.",
         )
 
-    if fraud_models.FraudReasonCode.INE_NOT_WHITELISTED in reason_codes:
-        message = (
-            "Tu ne fais pas partie de la phase de test. Encore un peu de patience, on se donne rendez-vous en janvier."
-        )
-        subscription_messages.add_error_message(user, message)
-
 
 def get_educonnect_subscription_item_status(
     user: users_models.User,

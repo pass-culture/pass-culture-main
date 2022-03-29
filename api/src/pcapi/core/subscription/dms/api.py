@@ -264,21 +264,19 @@ def handle_validation_errors(
 ) -> None:
     for item in reason_codes:
         if item == fraud_models.FraudReasonCode.ALREADY_BENEFICIARY:
-            _process_rejection(information, procedure_id=procedure_id, reason="Compte existant avec cet email")
+            _log_rejection(information.application_id, procedure_id, "L'utilisateur est déjà bénéficiaire")
         if item == fraud_models.FraudReasonCode.NOT_ELIGIBLE:
-            _process_rejection(information, procedure_id=procedure_id, reason="L'utilisateur n'est pas éligible")
+            _log_rejection(information.application_id, procedure_id, "L'utilisateur n'est pas éligible")
         if item == fraud_models.FraudReasonCode.DUPLICATE_USER:
             subscription_messages.on_duplicate_user(user)
         if item == fraud_models.FraudReasonCode.DUPLICATE_ID_PIECE_NUMBER:
             subscription_messages.on_duplicate_user(user)
 
 
-def _process_rejection(
-    information: fraud_models.DMSContent, procedure_id: int, reason: str, user: users_models.User = None
-) -> None:
+def _log_rejection(application_id: int, procedure_id: int, reason: str) -> None:
     logger.warning(
         "[BATCH][REMOTE IMPORT BENEFICIARIES] Rejected application %s because of '%s' - Procedure %s",
-        information.application_id,
+        application_id,
         reason,
         procedure_id,
     )
