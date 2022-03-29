@@ -26,6 +26,7 @@ from pcapi.core.subscription import messages as subscription_messages
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
+from pcapi.core.users.api import get_domains_credit
 from pcapi.models import db
 from pcapi.repository import repository
 from pcapi.validation.routes import ubble as ubble_routes
@@ -100,6 +101,170 @@ class DmsWebhookApplicationTest:
         assert fraud_check.status == fraud_check_status
 
         assert fraud_api.has_user_performed_identity_check(user)
+
+    @freezegun.freeze_time("2022-03-17 09:00:00")
+    @patch.object(api_dms.DMSGraphQLClient, "execute_query")
+    def test_dms_pc_14151(self, execute_query, client):
+        """
+        Scenario from reported bug PC-14151.
+        Eligible young user did not become beneficiary after DMS application approved.
+        Unit tests uses RAW data retrieved from DMS, then anonymized
+        """
+        user = users_factories.UserFactory(
+            email="young@example.com",
+            dateOfBirth=datetime.datetime.combine(datetime.date(2003, 5, 5), datetime.time(0, 0)),
+            firstName="Young",
+            lastName="Beneficiary",
+            publicName="Young Beneficiary",
+            phoneNumber="+33706050403",
+            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
+        )
+
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.USER_PROFILING,
+            status=fraud_models.FraudCheckStatus.OK,
+            eligibilityType=None,
+        )
+
+        execute_query.return_value = {
+            "dossier": {
+                "id": "RG9zc2llci03MDA2NzYz",
+                "number": 7654321,
+                "archived": False,
+                "state": "accepte",
+                "dateDepot": "2022-03-17T12:19:37+01:00",
+                "dateDerniereModification": "2022-03-23T10:22:01+01:00",
+                "datePassageEnConstruction": "2022-03-17T12:19:37+01:00",
+                "datePassageEnInstruction": "2022-03-22T16:58:25+01:00",
+                "dateTraitement": "2022-03-22T16:58:28+01:00",
+                "instructeurs": [{"id": "SW5zdHJ1Y3RldXItNDk5Nzg=", "email": "admin@example.com"}],
+                "groupeInstructeur": {"id": "R3JvdXBlSW5zdHJ1Y3RldXItNjEyNzE=", "number": 12345, "label": "défaut"},
+                "champs": [
+                    {
+                        "id": "Q2hhbXAtNjA5NDQ3",
+                        "label": "Comment remplir ce formulaire de pré-inscription au pass Culture ?",
+                        "stringValue": "",
+                    },
+                    {
+                        "id": "Q2hhbXAtNTgyMjIw",
+                        "label": "Quelle est ta date de naissance ?",
+                        "stringValue": "05 mai 2003",
+                    },
+                    {
+                        "id": "Q2hhbXAtNTgyMjE5",
+                        "label": "Quel est ton numéro de téléphone ?",
+                        "stringValue": "07 06 05 04 03",
+                    },
+                    {"id": "Q2hhbXAtNzE4MDk0", "label": "Merci d' indiquer ton statut", "stringValue": "Étudiant"},
+                    {"id": "Q2hhbXAtMjI3MTA3MQ==", "label": "Document d'identité", "stringValue": ""},
+                    {"id": "Q2hhbXAtNzE4MjIy", "label": "Pièces justificatives acceptées", "stringValue": ""},
+                    {"id": "Q2hhbXAtNDU5ODE5", "label": "Pièce d'identité (page avec votre photo)", "stringValue": ""},
+                    {"id": "Q2hhbXAtMjAyMTk4MQ==", "label": "Ton selfie avec ta pièce d'identité  ", "stringValue": ""},
+                    {
+                        "id": "Q2hhbXAtMjAyMTk4Mw==",
+                        "label": "Quel est le numéro de la pièce que tu viens de saisir ?",
+                        "stringValue": "9X8Y7654Z",
+                    },
+                    {"id": "Q2hhbXAtNDUxMjg0", "label": "Déclaration de résidence", "stringValue": ""},
+                    {
+                        "id": "Q2hhbXAtMjAxMTQxNQ==",
+                        "label": "Justificatif de domicile - Documents",
+                        "stringValue": "",
+                        "champs": [
+                            {"id": "Q2hhbXAtMjI3MzY2Mw==", "label": "Justificatif de domicile ", "stringValue": ""},
+                            {"id": "Q2hhbXAtMjI3MzY2MQ==", "label": "Attestation d'hébergement ", "stringValue": ""},
+                            {
+                                "id": "Q2hhbXAtMjI3MzY2Mg==",
+                                "label": "Document d'identité du responsable légal",
+                                "stringValue": "",
+                            },
+                        ],
+                    },
+                    {
+                        "id": "Q2hhbXAtNTgyMjIx",
+                        "label": "Quel est le code postal de ta commune de résidence ?",
+                        "stringValue": "06000",
+                    },
+                    {
+                        "id": "Q2hhbXAtNTgyMjIz",
+                        "label": "Quelle est ton adresse de résidence ?",
+                        "stringValue": "1 Promenade des Anglais 06000 Nice",
+                    },
+                    {
+                        "id": "Q2hhbXAtNzE4MjU0",
+                        "label": "Je certifie sur l’honneur résider légalement et habituellement sur le territoire français depuis plus de un an.",
+                        "stringValue": "true",
+                    },
+                    {
+                        "id": "Q2hhbXAtNDY2Njk1",
+                        "label": "Consentement à l'utilisation de mes données",
+                        "stringValue": "",
+                    },
+                    {
+                        "id": "Q2hhbXAtNDY2Njk0",
+                        "label": "J'accepte les conditions générales d'utilisation du pass Culture",
+                        "stringValue": "true",
+                    },
+                    {
+                        "id": "Q2hhbXAtNDU3MzAz",
+                        "label": "Je donne mon accord au traitement de mes données à caractère personnel. *",
+                        "stringValue": "true",
+                    },
+                    {
+                        "id": "Q2hhbXAtMTE0NTg4Mg==",
+                        "label": "Je déclare sur l’honneur que l'ensemble des réponses et documents fournis sont corrects et authentiques.",
+                        "stringValue": "true",
+                    },
+                    {
+                        "id": "Q2hhbXAtNDU0Nzc1",
+                        "label": "Un grand merci et à très vite sur le pass Culture !",
+                        "stringValue": "",
+                    },
+                ],
+                "annotations": [],
+                "usager": {"id": "VXNlci0yMzA4Mjg0", "email": "young@example.com"},
+                "demandeur": {
+                    "id": "SW5kaXZpZHVhbC01MDYxNjMw",
+                    "civilite": "Mme",
+                    "nom": "Beneficiary",
+                    "prenom": "Young",
+                    "dateDeNaissance": None,
+                },
+            }
+        }
+        form_data = {
+            "procedure_id": 45678,
+            "dossier_id": 7654321,
+            "state": dms_models.GraphQLApplicationStates.accepted.value,
+            "updated_at": "2022-03-17 08:00:00 +0100",
+        }
+        response = client.post(
+            f"/webhooks/dms/application_status?token={settings.DMS_WEBHOOK_TOKEN}",
+            form=form_data,
+            headers={"Content-Type": "application/x-www-form-urlencoded"},
+        )
+
+        assert response.status_code == 204
+        assert execute_query.call_count == 1
+
+        fraud_check = fraud_models.BeneficiaryFraudCheck.query.order_by(
+            fraud_models.BeneficiaryFraudCheck.type == fraud_models.FraudCheckType.DMS,
+            fraud_models.BeneficiaryFraudCheck.id.desc(),
+        ).first()
+
+        assert fraud_check.userId == user.id
+        assert fraud_check.status == fraud_models.FraudCheckStatus.OK
+        assert fraud_check.eligibilityType == users_models.EligibilityType.AGE18
+
+        db.session.refresh(user)
+
+        assert fraud_api.has_user_performed_identity_check(user)
+        assert user.has_beneficiary_role
+
+        domains_credit = get_domains_credit(user)
+        assert domains_credit.all.initial == 300
+        assert domains_credit.all.remaining == 300
 
     @freezegun.freeze_time("2021-10-30 09:00:00")
     @patch.object(api_dms.DMSGraphQLClient, "execute_query")
