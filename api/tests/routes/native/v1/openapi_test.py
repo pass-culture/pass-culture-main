@@ -958,6 +958,27 @@ def test_public_api(client, app):
                     "title": "CulturalSurveyRequest",
                     "type": "object",
                 },
+                "CulturalSurveyUserAnswer": {
+                    "properties": {
+                        "answerIds": {"items": {"type": "string"}, "title": "Answerids", "type": "array"},
+                        "questionId": {"title": "Questionid", "type": "string"},
+                    },
+                    "required": ["questionId", "answerIds"],
+                    "title": "CulturalSurveyUserAnswer",
+                    "type": "object",
+                },
+                "CulturalSurveyAnswersRequest": {
+                    "properties": {
+                        "answers": {
+                            "items": {"$ref": "#/components/schemas/CulturalSurveyUserAnswer"},
+                            "title": "Answers",
+                            "type": "array",
+                        },
+                    },
+                    "required": ["answers"],
+                    "title": "CulturalSurveyAnswersRequest",
+                    "type": "object",
+                },
                 "IdentificationSessionRequest": {
                     "properties": {"redirectUrl": {"title": "Redirecturl", "type": "string"}},
                     "required": ["redirectUrl"],
@@ -1611,6 +1632,34 @@ def test_public_api(client, app):
                     "summary": "get_cultural_survey_questions <GET>",
                     "tags": [],
                 }
+            },
+            "/native/v1/cultural_survey/answers": {
+                "post": {
+                    "description": "",
+                    "operationId": "post_/native/v1/cultural_survey/answers",
+                    "parameters": [],
+                    "requestBody": {
+                        "content": {
+                            "application/json": {
+                                "schema": {"$ref": "#/components/schemas/CulturalSurveyAnswersRequest"}
+                            }
+                        }
+                    },
+                    "responses": {
+                        "204": {"description": "No Content"},
+                        "400": {"description": "Bad Request"},
+                        "403": {"description": "Forbidden"},
+                        "422": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
+                            },
+                            "description": "Unprocessable Entity",
+                        },
+                    },
+                    "security": [{"JWTAuth": []}],
+                    "summary": "post_cultural_survey_answers <POST>",
+                    "tags": [],
+                },
             },
             "/native/v1/me": {
                 "get": {

@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from enum import Enum
 from typing import Optional
 
 from pcapi.core.cultural_survey.models import CulturalSurveyQuestionEnum
@@ -195,9 +194,7 @@ ALL_CULTURAL_SURVEY_ANSWERS = (
 )
 
 
-CulturalSurveyAnswerIdEnum = Enum(
-    "CulturalSurveyAnswerIdEnum", {answer.id: answer.id for answer in ALL_CULTURAL_SURVEY_ANSWERS}
-)
+CulturalSurveyAnswersDict = {answer.id: answer for answer in ALL_CULTURAL_SURVEY_ANSWERS}
 
 
 SORTIES_ANSWERS = [
