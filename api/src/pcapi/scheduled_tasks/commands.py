@@ -1,19 +1,28 @@
 import datetime
 import logging
 
+import sqlalchemy.orm as sqla_orm
+
 from pcapi import settings
 from pcapi.core.bookings import exceptions as bookings_exceptions
 import pcapi.core.bookings.api as bookings_api
 import pcapi.core.bookings.repository as bookings_repository
+from pcapi.core.bookings.repository import find_educational_bookings_done_yesterday
 import pcapi.core.finance.api as finance_api
 import pcapi.core.finance.utils as finance_utils
+from pcapi.core.mails.transactional.educational.eac_satisfaction_study_to_pro import (
+    send_eac_satisfaction_study_email_to_pro,
+)
+from pcapi.core.mails.transactional.pro.reminder_before_event_to_pro import send_reminder_7_days_before_event_to_pro
 from pcapi.core.mails.transactional.users.birthday_to_newly_eligible_user import (
     send_birthday_age_18_email_to_newly_eligible_user,
 )
+from pcapi.core.offers.models import Offer
+from pcapi.core.offers.models import Stock
 from pcapi.core.offers.repository import check_stock_consistency
 from pcapi.core.offers.repository import delete_past_draft_collective_offers
 from pcapi.core.offers.repository import delete_past_draft_offers
-from pcapi.core.offers.repository import find_tomorrow_event_stock_ids
+from pcapi.core.offers.repository import find_event_stocks_happening_in_x_days
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.core.subscription.dms import api as dms_api
 from pcapi.core.users import api as users_api
@@ -148,13 +157,30 @@ def check_stock_quantity_consistency() -> None:
         logger.error("Found inconsistent stocks: %s", ", ".join([str(stock_id) for stock_id in inconsistent_stocks]))
 
 
+@blueprint.cli.command("send_yesterday_event_offers_notifications")
+@log_cron_with_transaction
+def send_yesterday_event_offers_notifications() -> None:
+    """Triggers email to be sent for yesterday events"""
+    for educational_booking in find_educational_bookings_done_yesterday():
+        send_eac_satisfaction_study_email_to_pro(educational_booking)
+
+
 @blueprint.cli.command("send_tomorrow_events_notifications")
 @log_cron_with_transaction
 def send_tomorrow_events_notifications() -> None:
     """Triggers notifications to be sent for tomorrow events"""
-    stock_ids = find_tomorrow_event_stock_ids()
+    stock_ids = [stock_id for stock_id, in find_event_stocks_happening_in_x_days(1).with_entities(Stock.id)]
     for stock_id in stock_ids:
         send_tomorrow_stock_notification.delay(stock_id)
+
+
+@blueprint.cli.command("send_email_reminder_7_days_before_event")
+@log_cron_with_transaction
+def send_email_reminder_7_days_before_event() -> None:
+    """Triggers email to be sent for events happening in 7 days"""
+    stocks = find_event_stocks_happening_in_x_days(7).options(sqla_orm.joinedload(Stock.offer).joinedload(Offer.venue))
+    for stock in stocks:
+        send_reminder_7_days_before_event_to_pro(stock)
 
 
 @blueprint.cli.command("clean_past_draft_offers")
