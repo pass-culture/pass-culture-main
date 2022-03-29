@@ -31,9 +31,6 @@ class TransactionalEmail(Enum):
     EMAIL_CONFIRMATION = Template(
         id_prod=201, id_not_prod=15, tags=["jeunes_confirmation_mail"], use_priority_queue=True
     )
-    EMAIL_DUPLICATE_BENEFICIARY_PRE_SUBCRIPTION_REJECTED = Template(
-        id_prod=80, id_not_prod=19, tags=["jeunes_compte_refuse_doublon"], use_priority_queue=True
-    )
     EXPIRED_BOOKING_TO_BENEFICIARY = Template(id_prod=145, id_not_prod=34, tags=["jeunes_resa_expiree"])
     FRAUD_SUSPICION = Template(id_prod=82, id_not_prod=24, tags=["jeunes_compte_en_cours_d_analyse"])
     NEW_PASSWORD_REQUEST = Template(id_prod=141, id_not_prod=26, tags=["jeunes_nouveau_mdp"], use_priority_queue=True)
@@ -62,6 +59,9 @@ class TransactionalEmail(Enum):
         id_not_prod=39,
         tags=["jeunes_document_invalide"],
         use_priority_queue=True,
+    )
+    SUBCRIPTION_REJECTED_FOR_DUPLICATE_BENEFICIARY = Template(
+        id_prod=80, id_not_prod=77, tags=["jeunes_compte_refuse_doublon"], use_priority_queue=False
     )
     SUBSCRIPTION_UNREADABLE_DOCUMENT_ERROR = Template(
         id_prod=304,
