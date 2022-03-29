@@ -12,7 +12,13 @@ import {
   MAX_TOTAL_PAGES,
   NUMBER_OF_OFFERS_PER_PAGE,
 } from 'core/Offers'
-import { Audience, Offer, Offerer, TSearchFilters } from 'core/Offers/types'
+import {
+  Audience,
+  Offer,
+  Offerer,
+  Option,
+  TSearchFilters,
+} from 'core/Offers/types'
 import { ReactComponent as AddOfferSvg } from 'icons/ico-plus.svg'
 
 import NoOffers from './NoOffers'
@@ -37,6 +43,8 @@ export interface IOffersProps {
     }
   ) => void
   urlSearchFilters: TSearchFilters
+  venues: Option[]
+  categories: Option[]
 }
 
 const Offers = ({
@@ -52,6 +60,8 @@ const Offers = ({
   urlAudience,
   redirectWithUrlFilters,
   urlSearchFilters,
+  venues,
+  categories,
 }: IOffersProps): JSX.Element => {
   const [searchFilters, setSearchFilters] =
     useState<TSearchFilters>(initialSearchFilters)
@@ -214,12 +224,14 @@ const Offers = ({
       </ActionsBarPortal>
       <SearchFilters
         applyFilters={applyFilters}
+        categories={categories}
         disableAllFilters={userHasNoOffers}
         offerer={offerer}
         removeOfferer={removeOfferer}
         resetFilters={resetFilters}
         selectedFilters={searchFilters}
         setSearchFilters={setSearchFilters}
+        venues={venues}
       />
       {userHasNoOffers ? (
         <NoOffers />

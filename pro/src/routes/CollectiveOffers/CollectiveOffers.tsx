@@ -2,15 +2,27 @@ import React, { useCallback, useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { Redirect, useHistory } from 'react-router-dom'
 
+import { api } from 'api/v1/api'
 import useActiveFeature from 'components/hooks/useActiveFeature'
 import useCurrentUser from 'components/hooks/useCurrentUser'
 import useNotification from 'components/hooks/useNotification'
 import Spinner from 'components/layout/Spinner'
 import { computeOffersUrl } from 'components/pages/Offers/utils/computeOffersUrl'
+import { filterEducationalCategories } from 'core/OfferEducational'
 import { DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
 import { useQuerySearchFilters } from 'core/Offers/hooks'
-import { Audience, Offer, Offerer, TSearchFilters } from 'core/Offers/types'
+import {
+  Audience,
+  Offer,
+  Offerer,
+  TSearchFilters,
+  Option,
+} from 'core/Offers/types'
 import { hasSearchFilters } from 'core/Offers/utils'
+import {
+  fetchAllVenuesByProUser,
+  formatAndOrderVenues,
+} from 'repository/venuesService'
 import OffersScreen from 'screens/Offers'
 import { savePageNumber, saveSearchFilters } from 'store/offers/actions'
 
@@ -31,6 +43,8 @@ const CollectiveOffers = (): JSX.Element => {
   const [isLoading, setIsLoading] = useState(true)
   const [initialSearchFilters, setInitialSearchFilters] =
     useState<TSearchFilters | null>(null)
+  const [venues, setVenues] = useState<Option[]>([])
+  const [categories, setCategories] = useState<Option[]>([])
 
   const separateIndividualAndCollectiveOffers = useActiveFeature(
     'ENABLE_INDIVIDUAL_AND_COLLECTIVE_OFFER_SEPARATION'
@@ -56,6 +70,36 @@ const CollectiveOffers = (): JSX.Element => {
 
     loadOfferer()
   }, [urlSearchFilters.offererId, notify])
+
+  useEffect(() => {
+    const loadCategories = () => {
+      api.getOffersGetCategories().then(categoriesAndSubcategories => {
+        const categoriesOptions = filterEducationalCategories(
+          categoriesAndSubcategories
+        ).educationalCategories.map(category => ({
+          id: category.id,
+          displayName: category.label,
+        }))
+
+        setCategories(
+          categoriesOptions.sort((a, b) =>
+            a.displayName.localeCompare(b.displayName)
+          )
+        )
+      })
+    }
+
+    loadCategories()
+  }, [])
+
+  useEffect(() => {
+    const loadAllVenuesByProUser = () =>
+      fetchAllVenuesByProUser(offerer?.id).then(venues =>
+        setVenues(formatAndOrderVenues(venues))
+      )
+
+    loadAllVenuesByProUser()
+  }, [offerer?.id])
 
   const loadAndUpdateOffers = useCallback(
     async (filters: TSearchFilters) => {
@@ -141,6 +185,7 @@ const CollectiveOffers = (): JSX.Element => {
 
   return (
     <OffersScreen
+      categories={categories}
       currentPageNumber={urlPageNumber}
       currentUser={currentUser}
       initialSearchFilters={initialSearchFilters}
@@ -155,6 +200,7 @@ const CollectiveOffers = (): JSX.Element => {
       setOfferer={setOfferer}
       urlAudience={Audience.INDIVIDUAL}
       urlSearchFilters={urlSearchFilters}
+      venues={venues}
     />
   )
 }
