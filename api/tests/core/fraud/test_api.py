@@ -208,6 +208,51 @@ class CommonFraudCheckTest:
 
 
 @pytest.mark.usefixtures("db_session")
+class FindDuplicateUserTest:
+    first_name = "Alice"
+    last_name = "Ravineau"
+    birth_date = datetime.datetime(2000, 1, 1)
+
+    def test_duplicate_user_found(self):
+        existing_user = users_factories.UserFactory(
+            firstName=self.first_name,
+            lastName=self.last_name,
+            dateOfBirth=self.birth_date,
+            roles=[users_models.UserRole.BENEFICIARY],
+        )
+
+        assert (
+            fraud_api.find_duplicate_beneficiary("Alice", "RAVINEAU ", self.birth_date.date(), existing_user.id + 1)
+            == existing_user
+        )
+
+    def test_same_user_id(self):
+        existing_user = users_factories.UserFactory(
+            firstName=self.first_name,
+            lastName=self.last_name,
+            dateOfBirth=self.birth_date,
+            roles=[users_models.UserRole.BENEFICIARY],
+        )
+
+        assert (
+            fraud_api.find_duplicate_beneficiary(self.first_name, self.last_name, self.birth_date, existing_user.id)
+            is None
+        )
+
+    def test_duplicate_not_beneficiary(self):
+        existing_user = users_factories.UserFactory(
+            firstName=self.first_name,
+            lastName=self.last_name,
+            dateOfBirth=self.birth_date,
+        )
+
+        assert (
+            fraud_api.find_duplicate_beneficiary(self.first_name, self.last_name, self.birth_date, existing_user.id + 1)
+            is None
+        )
+
+
+@pytest.mark.usefixtures("db_session")
 class DMSFraudCheckTest:
     def test_dms_fraud_check(self):
         user = users_factories.UserFactory()
