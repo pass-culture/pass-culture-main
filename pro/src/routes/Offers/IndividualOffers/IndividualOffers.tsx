@@ -2,12 +2,19 @@ import React, { useCallback, useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { useHistory } from 'react-router-dom'
 
+import { api } from 'api/v1/api'
 import useCurrentUser from 'components/hooks/useCurrentUser'
 import useNotification from 'components/hooks/useNotification'
 import Spinner from 'components/layout/Spinner'
 import { computeOffersUrl } from 'components/pages/Offers/utils/computeOffersUrl'
 import { DEFAULT_PAGE, DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
-import { Audience, Offer, Offerer, TSearchFilters } from 'core/Offers/types'
+import {
+  Audience,
+  Offer,
+  Offerer,
+  Option,
+  TSearchFilters,
+} from 'core/Offers/types'
 import OffersScreen from 'screens/Offers'
 import { savePageNumber, saveSearchFilters } from 'store/offers/actions'
 
@@ -19,6 +26,7 @@ interface IIndividualOffersProps {
   offerer: Offerer | null
   setOfferer: (offerer: Offerer | null) => void
   separateIndividualAndCollectiveOffers: boolean
+  venues: Option[]
 }
 
 const IndividualOffers = ({
@@ -27,6 +35,7 @@ const IndividualOffers = ({
   offerer,
   setOfferer,
   separateIndividualAndCollectiveOffers,
+  venues,
 }: IIndividualOffersProps): JSX.Element => {
   const history = useHistory()
   const notify = useNotification()
@@ -37,6 +46,7 @@ const IndividualOffers = ({
   const [isLoading, setIsLoading] = useState(true)
   const [initialSearchFilters, setInitialSearchFilters] =
     useState<TSearchFilters | null>(null)
+  const [categories, setCategories] = useState<Option[]>([])
 
   const loadAndUpdateOffers = useCallback(
     async (filters: TSearchFilters) => {
@@ -117,12 +127,33 @@ const IndividualOffers = ({
     dispatch(savePageNumber(urlPageNumber))
   }, [dispatch, urlPageNumber, urlSearchFilters])
 
+  useEffect(() => {
+    const loadCategories = () =>
+      api.getOffersGetCategories().then(categoriesAndSubcategories => {
+        const categoriesOptions = categoriesAndSubcategories.categories
+          .filter(category => category.isSelectable)
+          .map(category => ({
+            id: category.id,
+            displayName: category.proLabel,
+          }))
+
+        setCategories(
+          categoriesOptions.sort((a, b) =>
+            a.displayName.localeCompare(b.displayName)
+          )
+        )
+      })
+
+    loadCategories()
+  }, [])
+
   if (!initialSearchFilters) {
     return <Spinner />
   }
 
   return (
     <OffersScreen
+      categories={categories}
       currentPageNumber={urlPageNumber ?? DEFAULT_PAGE}
       currentUser={currentUser}
       initialSearchFilters={initialSearchFilters}
@@ -138,6 +169,7 @@ const IndividualOffers = ({
       setOfferer={setOfferer}
       urlAudience={Audience.INDIVIDUAL}
       urlSearchFilters={urlSearchFilters}
+      venues={venues}
     />
   )
 }

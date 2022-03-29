@@ -2,12 +2,20 @@ import React, { useCallback, useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { useHistory } from 'react-router-dom'
 
+import { api } from 'api/v1/api'
 import useCurrentUser from 'components/hooks/useCurrentUser'
 import useNotification from 'components/hooks/useNotification'
 import Spinner from 'components/layout/Spinner'
 import { computeOffersUrl } from 'components/pages/Offers/utils/computeOffersUrl'
+import { filterEducationalCategories } from 'core/OfferEducational'
 import { DEFAULT_PAGE, DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
-import { Audience, Offer, Offerer, TSearchFilters } from 'core/Offers/types'
+import {
+  Audience,
+  Offer,
+  Offerer,
+  Option,
+  TSearchFilters,
+} from 'core/Offers/types'
 import OffersScreen from 'screens/Offers'
 import { savePageNumber, saveSearchFilters } from 'store/offers/actions'
 
@@ -19,6 +27,7 @@ interface ICollectiveOffersProps {
   offerer: Offerer | null
   setOfferer: (offerer: Offerer | null) => void
   separateIndividualAndCollectiveOffers: boolean
+  venues: Option[]
 }
 
 const CollectiveOffers = ({
@@ -27,6 +36,7 @@ const CollectiveOffers = ({
   offerer,
   setOfferer,
   separateIndividualAndCollectiveOffers,
+  venues,
 }: ICollectiveOffersProps): JSX.Element => {
   const history = useHistory()
   const notify = useNotification()
@@ -37,6 +47,7 @@ const CollectiveOffers = ({
   const [isLoading, setIsLoading] = useState(true)
   const [initialSearchFilters, setInitialSearchFilters] =
     useState<TSearchFilters | null>(null)
+  const [categories, setCategories] = useState<Option[]>([])
 
   const loadAndUpdatCollectiveOffers = useCallback(
     async (filters: TSearchFilters) => {
@@ -116,12 +127,34 @@ const CollectiveOffers = ({
     dispatch(savePageNumber(urlPageNumber))
   }, [dispatch, urlPageNumber, urlSearchFilters])
 
+  useEffect(() => {
+    const loadCategories = () => {
+      api.getOffersGetCategories().then(categoriesAndSubcategories => {
+        const categoriesOptions = filterEducationalCategories(
+          categoriesAndSubcategories
+        ).educationalCategories.map(category => ({
+          id: category.id,
+          displayName: category.label,
+        }))
+
+        setCategories(
+          categoriesOptions.sort((a, b) =>
+            a.displayName.localeCompare(b.displayName)
+          )
+        )
+      })
+    }
+
+    loadCategories()
+  }, [offerer?.id])
+
   if (!initialSearchFilters) {
     return <Spinner />
   }
 
   return (
     <OffersScreen
+      categories={categories}
       currentPageNumber={urlPageNumber ?? DEFAULT_PAGE}
       currentUser={currentUser}
       initialSearchFilters={initialSearchFilters}
@@ -137,6 +170,7 @@ const CollectiveOffers = ({
       setOfferer={setOfferer}
       urlAudience={Audience.COLLECTIVE}
       urlSearchFilters={urlSearchFilters}
+      venues={venues}
     />
   )
 }

@@ -1,3 +1,4 @@
+import { CategoriesResponseModel } from 'api/v1/gen'
 import {
   IEducationalCategory,
   IEducationalSubCategory,
@@ -11,10 +12,12 @@ interface IFilterEducationalCategoriesResult {
 export const filterEducationalCategories = ({
   categories,
   subcategories,
-}: {
-  categories?: Category[]
-  subcategories?: SubCategory[]
-}): IFilterEducationalCategoriesResult => {
+}:
+  | {
+      categories?: Category[]
+      subcategories?: SubCategory[]
+    }
+  | CategoriesResponseModel): IFilterEducationalCategoriesResult => {
   if (!subcategories || !categories) {
     return {
       educationalCategories: [],

@@ -1,16 +1,11 @@
 import { endOfDay } from 'date-fns'
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback } from 'react'
 import { Link } from 'react-router-dom'
 
-import { api } from 'api/v1/api'
 import Icon from 'components/layout/Icon'
 import { DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
-import { Offerer, TSearchFilters } from 'core/Offers/types'
+import { Offerer, Option, TSearchFilters } from 'core/Offers/types'
 import { ReactComponent as ResetIcon } from 'icons/reset.svg'
-import {
-  fetchAllVenuesByProUser,
-  formatAndOrderVenues,
-} from 'repository/venuesService'
 import { formatBrowserTimezonedDateAsUTC } from 'utils/date'
 
 import IndividualSearchFilters from './IndividualSearchFilters'
@@ -29,6 +24,8 @@ interface ISearchFiltersProps {
   disableAllFilters: boolean
   userHasSearchFilters: boolean
   resetFilters: () => void
+  venues: Option[]
+  categories: Option[]
 }
 
 const SearchFilters = ({
@@ -40,32 +37,9 @@ const SearchFilters = ({
   disableAllFilters,
   userHasSearchFilters,
   resetFilters,
+  venues,
+  categories,
 }: ISearchFiltersProps): JSX.Element => {
-  const [categoriesOptions, setCategoriesOptions] = useState<
-    { id: string; displayName: string }[]
-  >([])
-  const [venueOptions, setVenueOptions] = useState([])
-
-  useEffect(() => {
-    api.getOffersGetCategories().then(categoriesAndSubcategories => {
-      const { categories } = categoriesAndSubcategories
-      const categoriesOptions = categories
-        .filter(category => category.isSelectable)
-        .map(category => ({
-          id: category.id,
-          displayName: category.proLabel,
-        }))
-      setCategoriesOptions(
-        categoriesOptions.sort((a, b) =>
-          a.displayName.localeCompare(b.displayName)
-        )
-      )
-    })
-    fetchAllVenuesByProUser(offerer?.id).then(venues =>
-      setVenueOptions(formatAndOrderVenues(venues))
-    )
-  }, [offerer?.id])
-
   const updateSearchFilters = useCallback(
     (newSearchFilters: Partial<TSearchFilters>) => {
       setSearchFilters(currentSearchFilters => ({
@@ -144,7 +118,7 @@ const SearchFilters = ({
       )}
       <form onSubmit={requestFilteredOffers}>
         <IndividualSearchFilters
-          categoriesOptions={categoriesOptions}
+          categoriesOptions={categories}
           changePeriodBeginningDateValue={changePeriodBeginningDateValue}
           changePeriodEndingDateValue={changePeriodEndingDateValue}
           disableAllFilters={disableAllFilters}
@@ -153,7 +127,7 @@ const SearchFilters = ({
           storeNameOrIsbnSearchValue={storeNameOrIsbnSearchValue}
           storeSelectedCategory={storeSelectedCategory}
           storeSelectedVenue={storeSelectedVenue}
-          venueOptions={venueOptions}
+          venueOptions={venues}
         />
         {userHasSearchFilters ? (
           <Link
