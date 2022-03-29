@@ -3,6 +3,7 @@ import logging
 
 from apscheduler.schedulers.blocking import BlockingScheduler
 from sentry_sdk import set_tag
+import sqlalchemy.orm as sqla_orm
 
 from pcapi import settings
 from pcapi.core.bookings import exceptions as bookings_exceptions
@@ -14,13 +15,16 @@ import pcapi.core.finance.utils as finance_utils
 from pcapi.core.mails.transactional.educational.eac_satisfaction_study_to_pro import (
     send_eac_satisfaction_study_email_to_pro,
 )
+from pcapi.core.mails.transactional.pro.reminder_before_event_to_pro import send_reminder_7_days_before_event_to_pro
 from pcapi.core.mails.transactional.users.birthday_to_newly_eligible_user import (
     send_birthday_age_18_email_to_newly_eligible_user,
 )
+from pcapi.core.offers.models import Offer
+from pcapi.core.offers.models import Stock
 from pcapi.core.offers.repository import check_stock_consistency
 from pcapi.core.offers.repository import delete_past_draft_collective_offers
 from pcapi.core.offers.repository import delete_past_draft_offers
-from pcapi.core.offers.repository import find_tomorrow_event_stock_ids
+from pcapi.core.offers.repository import find_event_stocks_happening_in_x_days
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.core.subscription.dms import api as dms_api
 from pcapi.core.users import api as users_api
@@ -139,7 +143,7 @@ def pc_notify_soon_to_be_expired_individual_bookings() -> None:
 @cron_context
 @log_cron_with_transaction
 def pc_notify_newly_eligible_age_18_users() -> None:
-    if not settings.IS_PROD and not settings.IS_TESTING:
+    if not settings.IS_PROD and not settings.IS_TESTING and not settings.IS_DEV:
         return
     yesterday = datetime.date.today() - datetime.timedelta(days=1)
     for user in get_newly_eligible_age_18_users(yesterday):
@@ -173,9 +177,21 @@ def pc_send_yesterday_event_offers_notifications() -> None:
 @cron_context
 @log_cron_with_transaction
 def pc_send_tomorrow_events_notifications() -> None:
-    stock_ids = find_tomorrow_event_stock_ids()
+    if not settings.IS_PROD and not settings.IS_TESTING and not settings.IS_DEV:
+        return
+    stock_ids = [stock_id for stock_id, in find_event_stocks_happening_in_x_days(1).with_entities(Stock.id)]
     for stock_id in stock_ids:
         send_tomorrow_stock_notification.delay(stock_id)
+
+
+@cron_context
+@log_cron_with_transaction
+def pc_send_email_reminder_7days_before_event() -> None:
+    if not settings.IS_PROD and not settings.IS_TESTING:
+        return
+    stocks = find_event_stocks_happening_in_x_days(7).options(sqla_orm.joinedload(Stock.offer).joinedload(Offer.venue))
+    for stock in stocks:
+        send_reminder_7_days_before_event_to_pro(stock)
 
 
 @cron_context
@@ -281,6 +297,8 @@ def clock() -> None:
     scheduler.add_job(update_booking_used, "cron", day="*", hour="0")
 
     scheduler.add_job(pc_send_yesterday_event_offers_notifications, "cron", day="*", hour="4", minute="10")
+
+    scheduler.add_job(pc_send_email_reminder_7days_before_event, "cron", day="*", hour="8")
 
     scheduler.add_job(
         pc_handle_expired_bookings,

@@ -12,7 +12,6 @@ from sqlalchemy import or_
 from sqlalchemy.orm import Query
 from sqlalchemy.orm import contains_eager
 from sqlalchemy.orm import joinedload
-from sqlalchemy.orm import load_only
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.sql.functions import coalesce
 
@@ -472,20 +471,17 @@ def check_stock_consistency() -> list[int]:
     ]
 
 
-def find_tomorrow_event_stock_ids() -> set[int]:
-    """Find stocks linked to offers that happen tomorrow (and that are not cancelled)"""
-    tomorrow = datetime.now() + timedelta(days=1)
+def find_event_stocks_happening_in_x_days(number_of_days: int) -> set[int]:
+    tomorrow = datetime.now() + timedelta(days=number_of_days)
     tomorrow_min = datetime.combine(tomorrow, time.min)
     tomorrow_max = datetime.combine(tomorrow, time.max)
 
-    stocks = (
+    return (
         Stock.query.filter(Stock.beginningDatetime.between(tomorrow_min, tomorrow_max))
         .join(Booking)
         .filter(Booking.status != BookingStatus.CANCELLED)
-        .options(load_only(Stock.id))
+        .distinct()
     )
-
-    return {stock.id for stock in stocks}
 
 
 def get_current_offer_validation_config() -> Optional[OfferValidationConfig]:

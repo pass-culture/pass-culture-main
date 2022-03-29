@@ -18,7 +18,7 @@ from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.core.offers.repository import check_stock_consistency
 from pcapi.core.offers.repository import delete_past_draft_collective_offers
 from pcapi.core.offers.repository import delete_past_draft_offers
-from pcapi.core.offers.repository import find_tomorrow_event_stock_ids
+from pcapi.core.offers.repository import find_event_stocks_happening_in_x_days
 from pcapi.core.offers.repository import get_active_offers_count_for_venue
 from pcapi.core.offers.repository import get_available_activation_code
 from pcapi.core.offers.repository import get_capped_offers_for_filters
@@ -1134,6 +1134,8 @@ class CheckStockConsistenceTest:
 @pytest.mark.usefixtures("db_session")
 class TomorrowStockTest:
     def test_find_tomorrow_event_stock_ids(self):
+        from pcapi.core.offers.models import Stock
+
         tomorrow = datetime.now() + timedelta(days=1)
         stocks_tomorrow = EventStockFactory.create_batch(2, beginningDatetime=tomorrow)
         stocks_tomorrow_cancelled = EventStockFactory.create_batch(3, beginningDatetime=tomorrow)
@@ -1150,8 +1152,37 @@ class TomorrowStockTest:
         for stock in stocks_next_week:
             bookings_factories.BookingFactory.create_batch(2, stock=stock)
 
-        stock_ids = find_tomorrow_event_stock_ids()
+        stock_ids = [
+            stock_id for stock_id, in find_event_stocks_happening_in_x_days(number_of_days=1).with_entities(Stock.id)
+        ]
+
         assert set(stock_ids) == set(stock.id for stock in stocks_tomorrow)
+
+
+@pytest.mark.usefixtures("db_session")
+class EventStockIn7DaysTest:
+    def test_find_event_stocks_happening_in_7_days(self):
+        # Given
+        tomorrow = datetime.now() + timedelta(days=1)
+        stocks_tomorrow = EventStockFactory.create_batch(2, beginningDatetime=tomorrow)
+        stocks_tomorrow_cancelled = EventStockFactory.create_batch(3, beginningDatetime=tomorrow)
+
+        next_week = datetime.now() + timedelta(days=7)
+        stocks_next_week = EventStockFactory.create_batch(3, beginningDatetime=next_week)
+
+        for stock in stocks_tomorrow:
+            bookings_factories.BookingFactory.create_batch(2, stock=stock)
+
+        for stock in stocks_tomorrow_cancelled:
+            bookings_factories.CancelledBookingFactory.create_batch(2, stock=stock)
+
+        for stock in stocks_next_week:
+            bookings_factories.BookingFactory.create_batch(2, stock=stock)
+        # When
+        stocks = find_event_stocks_happening_in_x_days(number_of_days=7)
+
+        # Then
+        assert set(stocks) == set(stocks_next_week)
 
 
 @pytest.mark.usefixtures("db_session")
