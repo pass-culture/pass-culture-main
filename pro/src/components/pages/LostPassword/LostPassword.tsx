@@ -17,65 +17,18 @@ import { initReCaptchaScript } from '../../../utils/recaptcha'
 import ChangePasswordForm from './ChangePasswordForm'
 import ChangePasswordRequestForm from './ChangePasswordRequestForm'
 
-interface iAction {
-  payload: {
-    errors: { newPassword: string[] }
-  }
-}
-
-type ISubmitResetPasswordRequest = (
-  email: string,
-  onSuccess: () => void,
-  onFail: () => void
-) => void
-
-type ISubmitResetPassword = (
-  newPasswordValue: string,
-  token: string,
-  onSuccess: () => void,
-  onFail: (state: string, action: iAction) => void
-) => void
-
 const LostPassword = (): JSX.Element => {
   const [emailValue, setEmailValue] = useState('')
   const [newPasswordErrorMessage, setNewPasswordErrorMessage] = useState('')
+  const [passwordSent, setPasswordSent] = useState(false)
+  const [passwordChanged, setPasswordChanged] = useState(false)
   const history = useHistory()
   const location = useLocation()
   const { search } = location
-  const { change, envoye, token } = parse(search)
+  const { token } = parse(search)
   const { currentUser } = useCurrentUser()
 
   const notification = useNotification()
-  const submitResetPasswordRequest: ISubmitResetPasswordRequest = (
-    emailValue,
-    success,
-    fail
-  ) => {
-    if (!IS_DEV) {
-      getReCaptchaToken('resetPassword').then(token =>
-        pcapi
-          .resetPassword(token, emailValue)
-          .then(() => success())
-          .catch(() => fail())
-      )
-    } else {
-      pcapi
-        .resetPassword('test_token', emailValue)
-        .then(() => success())
-        .catch(() => fail())
-    }
-  }
-
-  const submitResetPassword: ISubmitResetPassword = (
-    newPassword,
-    token,
-    success
-  ) => {
-    pcapi
-      .submitResetPassword(newPassword, token)
-      .then(() => success())
-      .catch(() => displayPasswordResetRequestErrorMessage())
-  }
 
   useEffect(() => {
     redirectLoggedUser(history, location, currentUser)
@@ -89,49 +42,38 @@ const LostPassword = (): JSX.Element => {
     }
   })
 
-  const redirectToResetPasswordRequestSuccessPage = () => {
-    history.push('/mot-de-passe-perdu?envoye=1')
-  }
-
-  const displayPasswordResetRequestErrorMessage = () => {
-    notification.error(
-      'Un problème est survenu pendant la réinitialisation du mot de passe, veuillez réessayer plus tard.'
-    )
-  }
-
-  const submitChangePasswordRequest = (
+  const submitChangePasswordRequest = async (
     event: React.FormEvent<HTMLFormElement>
   ) => {
     event.preventDefault()
+    const error =
+      'Un problème est survenu pendant la réinitialisation du mot de passe, veuillez réessayer plus tard.'
+    const token = !IS_DEV
+      ? await getReCaptchaToken('resetPassword')
+      : 'test_token'
 
-    return submitResetPasswordRequest(
-      emailValue,
-      redirectToResetPasswordRequestSuccessPage,
-      displayPasswordResetRequestErrorMessage
-    )
-  }
-
-  const redirectToResetPasswordSuccessPage = () => {
-    history.push('/mot-de-passe-perdu?change=1')
+    pcapi
+      .resetPassword(token, emailValue)
+      .then(() => setPasswordSent(true))
+      .catch(() => notification.error(error))
   }
 
   const submitChangePassword = (values: Record<string, string>) => {
     const { newPasswordValue } = values
-
-    return submitResetPassword(
-      newPasswordValue,
-      token,
-      redirectToResetPasswordSuccessPage,
-      (state, action) => {
-        if (action.payload.errors.newPassword) {
-          setNewPasswordErrorMessage(action.payload.errors.newPassword[0])
+    console.log('SUBMIT NEW password')
+    pcapi
+      .submitResetPassword(newPasswordValue, token)
+      .then(() => setPasswordChanged(true))
+      .catch(reason => {
+        const { errors } = reason
+        if (errors.newPassword) {
+          setNewPasswordErrorMessage(errors.newPassword[0])
         } else {
           notification.error(
             "Une erreur s'est produite, veuillez réessayer ultérieurement."
           )
         }
-      }
-    )
+      })
   }
 
   const handleInputEmailChange = (
@@ -160,7 +102,7 @@ const LostPassword = (): JSX.Element => {
       </div>
       <div className="scrollable-content-side">
         <div className="content">
-          {change && (
+          {passwordChanged && (
             <Hero
               linkLabel="Se connecter"
               linkTo="/connexion"
@@ -168,7 +110,7 @@ const LostPassword = (): JSX.Element => {
               title="Mot de passe changé !"
             />
           )}
-          {envoye && (
+          {passwordSent && (
             <Hero
               linkLabel="Revenir à l’accueil"
               linkTo="/"
@@ -176,14 +118,14 @@ const LostPassword = (): JSX.Element => {
               title="Merci !"
             />
           )}
-          {token && (
+          {token && !passwordChanged && (
             <ChangePasswordForm
               isChangePasswordSubmitDisabled={isChangePasswordSubmitDisabled}
               newPasswordErrorMessage={newPasswordErrorMessage}
               onSubmit={submitChangePassword}
             />
           )}
-          {!token && !envoye && !change && (
+          {!token && !passwordSent && !passwordChanged && (
             <ChangePasswordRequestForm
               emailValue={emailValue}
               isChangePasswordRequestSubmitDisabled={

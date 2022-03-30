@@ -4,7 +4,7 @@ import TextInput from 'components/layout/inputs/TextInput/TextInput'
 
 import styles from './ChangePasswordRequestForm.module.scss'
 
-interface iChangePasswordRequestForm {
+interface IChangePasswordRequestForm {
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void
   onSubmit: (event: React.FormEvent<HTMLFormElement>) => void
   emailValue: string
@@ -18,14 +18,14 @@ const ChangePasswordRequestForm = ({
   emailValue,
   onSubmit,
   onChange,
-}: iChangePasswordRequestForm): JSX.Element => (
+}: IChangePasswordRequestForm): JSX.Element => (
   <section className={styles['change-password-request-form']}>
     <div className={styles['hero-body']}>
       <h1>Mot de passe égaré ?</h1>
-      <h2>
+      <p>
         Indiquez ci-dessous l’adresse e-mail avec laquelle vous avez créé votre
         compte.
-      </h2>
+      </p>
 
       <form noValidate onSubmit={onSubmit}>
         <TextInput
