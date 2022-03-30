@@ -1,15 +1,15 @@
-import React, { FunctionComponent } from 'react'
+import React from 'react'
 import { Link } from 'react-router-dom'
 
 import styles from './Hero.module.scss'
-interface iHero {
+interface IHero {
   title: string
   text: string
   linkLabel: string
   linkTo: string
 }
 
-const Hero: FunctionComponent<iHero> = ({ title, text, linkLabel, linkTo }) => (
+const Hero = ({ title, text, linkLabel, linkTo }: IHero): JSX.Element => (
   <section className={styles['hero']}>
     <div className={styles['hero-body']}>
       <h1>{title}</h1>
