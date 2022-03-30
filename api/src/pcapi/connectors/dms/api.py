@@ -63,7 +63,9 @@ class DMSGraphQLClient:
         if page_token:
             variables["after"] = page_token
         results = self.execute_query(query, variables=variables)
+        # pylint: disable=unsubscriptable-object
         dms_demarche_response = dms_models.DmsProcessApplicationsResponse(**results["demarche"]["dossiers"])
+        # pylint: enable=unsubscriptable-object
         logger.info(
             "Found %s applications for procedure %d (page token :%s)",
             len(dms_demarche_response.dms_applications),
@@ -104,7 +106,7 @@ class DMSGraphQLClient:
         query = self.build_query("beneficiaries/get_single_application_details")
         response = self.execute_query(query, variables={"applicationNumber": application_id})
 
-        return dms_models.DmsApplicationResponse(**response["dossier"])
+        return dms_models.DmsApplicationResponse(**response["dossier"])  # pylint: disable=unsubscriptable-object
 
     def get_bic(self, dossier_id: int) -> Any:
         query = self.build_query("pro/get_banking_info_v2")
