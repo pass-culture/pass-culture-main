@@ -5,21 +5,19 @@ import { NavLink } from 'react-router-dom'
 
 import { ROOT_PATH } from 'utils/config'
 
-const Logo = ({ className, noLink, signPage, isUserAdmin }) => {
+const Logo = ({ className, noLink, onClick, signPage, isUserAdmin }) => {
   let src = `${ROOT_PATH}/icons/brand-logo-pro-small-pro.png`
   if (signPage) {
     src = `${ROOT_PATH}/icons/logo-pass-culture-white.svg`
   }
 
-  const extraProps = {}
-  if (noLink) {
-    extraProps.onClick = e => e.preventDefault()
-  }
+  const handleClick = noLink ? e => e.preventDefault() : onClick
+
   return (
     <NavLink
       className={classnames('logo', className, { 'no-link': noLink })}
+      onClick={handleClick}
       to={isUserAdmin ? '/structures' : '/accueil'}
-      {...extraProps}
     >
       <img alt="Logo" src={src} />
     </NavLink>
@@ -30,6 +28,7 @@ Logo.defaultProps = {
   className: '',
   isUserAdmin: false,
   noLink: false,
+  onClick: () => {},
   signPage: false,
 }
 
@@ -37,6 +36,7 @@ Logo.propTypes = {
   className: PropTypes.string,
   isUserAdmin: PropTypes.bool,
   noLink: PropTypes.bool,
+  onClick: PropTypes.func,
   signPage: PropTypes.bool,
 }
 
