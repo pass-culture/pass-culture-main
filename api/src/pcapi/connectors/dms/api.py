@@ -80,12 +80,18 @@ class DMSGraphQLClient:
 
     def send_user_message(self, application_scalar_id: str, instructeur_techid: str, body: str) -> Any:
         query = self.build_query("send_user_message")
-        return self.execute_query(
-            query,
-            variables={
-                "input": {"dossierId": application_scalar_id, "instructeurId": instructeur_techid, "body": body}
-            },
-        )
+        try:
+            return self.execute_query(
+                query,
+                variables={
+                    "input": {"dossierId": application_scalar_id, "instructeurId": instructeur_techid, "body": body}
+                },
+            )
+        except Exception:  # pylint: disable=broad-except
+            logger.exception(
+                "DMS : unexpected error when sending message", extra={"application_scalar_id": application_scalar_id}
+            )
+            return None
 
     def archive_application(self, application_techid: str, instructeur_techid: str) -> Any:
         query = self.build_query("archive_application")
