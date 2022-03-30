@@ -181,6 +181,7 @@ class User(PcObject, Model, NeedsValidationMixin):
     firstName = sa.Column(sa.String(128), nullable=True)
     hasSeenTutorials = sa.Column(sa.Boolean, nullable=True)
     hasSeenProTutorials = sa.Column(sa.Boolean, nullable=False, server_default=expression.false())
+    hasSeenProRgs = sa.Column(sa.Boolean, nullable=False, server_default=expression.false())
     idPieceNumber = sa.Column(sa.String, nullable=True, unique=True)
     ineHash = sa.Column(sa.Text, nullable=True, unique=True)
 
