@@ -139,7 +139,7 @@ class VenueProviderView(BaseAdminView):
 
         return form_class
 
-    def update_model(self, form: Form, model: VenueProvider) -> None:  # pylint: disable=too-many-return-statements
+    def update_model(self, form: Form, model: VenueProvider) -> None:
         if form.venue.data.id != model.venue.id:
             flash("Le lieu ne peut pas changer", "error")
             return None

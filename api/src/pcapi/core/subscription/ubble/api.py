@@ -155,7 +155,7 @@ def handle_validation_errors(
         subscription_messages.on_ubble_journey_cannot_continue(user)
 
 
-def get_ubble_subscription_item_status(  # pylint: disable=too-many-return-statements
+def get_ubble_subscription_item_status(
     user: users_models.User,
     eligibility: typing.Optional[users_models.EligibilityType],
     ubble_fraud_checks: list[fraud_models.BeneficiaryFraudCheck],

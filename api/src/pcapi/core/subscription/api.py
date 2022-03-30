@@ -167,7 +167,7 @@ def get_profile_completion_subscription_item(
     return models.SubscriptionItem(type=models.SubscriptionStep.PROFILE_COMPLETION, status=status)
 
 
-def get_identity_check_subscription_status(  # pylint: disable=too-many-return-statements
+def get_identity_check_subscription_status(
     user: users_models.User, eligibility: typing.Optional[users_models.EligibilityType]
 ) -> models.SubscriptionItem:
     """
@@ -229,7 +229,6 @@ def get_honor_statement_subscription_item(
     return models.SubscriptionItem(type=models.SubscriptionStep.HONOR_STATEMENT, status=status)
 
 
-# pylint: disable=too-many-return-statements
 def get_next_subscription_step(user: users_models.User) -> typing.Optional[models.SubscriptionStep]:
     if not user.isEmailValidated:
         return models.SubscriptionStep.EMAIL_VALIDATION

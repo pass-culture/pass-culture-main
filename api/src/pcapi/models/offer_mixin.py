@@ -43,7 +43,6 @@ class AccessibilityMixin:
 class StatusMixin:
     @sa.ext.hybrid.hybrid_property
     def status(self) -> OfferStatus:
-        # pylint: disable=too-many-return-statements
         if self.validation == OfferValidationStatus.REJECTED:
             return OfferStatus.REJECTED
 

@@ -133,7 +133,7 @@ def monkey_patch_logger_log():
 
 
 class JsonLogEncoder(json.JSONEncoder):
-    def default(self, obj):  # pylint: disable=too-many-return-statements
+    def default(self, obj):
         if isinstance(obj, decimal.Decimal):
             return float(obj)
         if isinstance(obj, enum.Enum):
