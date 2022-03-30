@@ -24,4 +24,4 @@ def test_should_not_return_error_message_when_postal_code_is_valid():
     api_error = validate(offerer, api_errors)
 
     # Then
-    assert api_error.errors == {}
+    assert not api_error.errors
