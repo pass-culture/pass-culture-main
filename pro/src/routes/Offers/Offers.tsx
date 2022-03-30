@@ -147,7 +147,6 @@ const Offers = (): JSX.Element => {
       separateIndividualAndCollectiveOffers={
         separateIndividualAndCollectiveOffers
       }
-      setIsLoading={setIsLoading}
       setOfferer={setOfferer}
       urlAudience={Audience.INDIVIDUAL}
       urlSearchFilters={urlSearchFilters}
