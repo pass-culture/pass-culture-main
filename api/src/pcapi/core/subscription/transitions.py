@@ -42,7 +42,7 @@ TRANSITIONS = [
 
 
 def install_machine():
-    flask.g.subscription_machine = transitions.Machine(  # pylint: disable=assigning-non-slot
+    flask.g.subscription_machine = transitions.Machine(
         states=users_models.SubscriptionState,
         transitions=TRANSITIONS,
         model_attribute="subscriptionState",

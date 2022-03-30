@@ -263,7 +263,7 @@ class override_features(TestContextDecorator):
         # Clear the feature cache on request if any
         if flask.has_request_context():
             if hasattr(flask.request, "_cached_features"):
-                flask.request._cached_features = {}  # pylint: disable=assigning-non-slot
+                flask.request._cached_features = {}
 
     def disable(self):
         for name, status in self.apply_to_revert.items():
@@ -271,7 +271,7 @@ class override_features(TestContextDecorator):
         # Clear the feature cache on request if any
         if flask.has_request_context():
             if hasattr(flask.request, "_cached_features"):
-                flask.request._cached_features = {}  # pylint: disable=assigning-non-slot
+                flask.request._cached_features = {}
 
 
 def clean_temporary_files(test_function):

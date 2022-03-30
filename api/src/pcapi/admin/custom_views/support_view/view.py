@@ -195,9 +195,7 @@ class BeneficiaryView(base_configuration.BaseAdminView):
             display_beneficiary_imports=display_beneficiary_imports,
         )
 
-    @flask_admin.expose(
-        "/validate/beneficiary/<user_id>", methods=["POST"]
-    )  # pylint: disable=too-many-return-statements
+    @flask_admin.expose("/validate/beneficiary/<user_id>", methods=["POST"])
     def validate_beneficiary(self, user_id: int) -> Response:
         if not FeatureToggle.BENEFICIARY_VALIDATION_AFTER_FRAUD_CHECKS.is_active():
             flask.flash("Fonctionnalité non activée", "error")

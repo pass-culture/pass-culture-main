@@ -109,4 +109,4 @@ def get_zip_thumbs_file_from_named_sandbox_file(file_name):
 
 
 def get_zip_file_from_sandbox(file):
-    return ZipFile(file)  # pylint: disable=consider-using-with
+    return ZipFile(file)

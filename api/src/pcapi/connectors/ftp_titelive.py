@@ -32,7 +32,7 @@ def get_zip_file_from_ftp(zip_file_name: str, folder_name: str) -> ZipFile:
     logger.info("Downloading file %s", file_path)
     connect_to_titelive_ftp().retrbinary(file_path, data_file.write)
     # FIXME: this should be a with statement. Requires titelive sync to be rewritten
-    return ZipFile(data_file, "r")  # pylint: disable=consider-using-with
+    return ZipFile(data_file, "r")
 
 
 def get_files_to_process_from_titelive_ftp(titelive_folder_name: str, date_regexp: Pattern[str]) -> list[str]:

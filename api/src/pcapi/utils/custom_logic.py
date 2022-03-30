@@ -1,4 +1,4 @@
-# pylint: disable=no-value-for-parameter,arguments-out-of-order
+# pylint: disable=arguments-out-of-order
 from pcapi.utils.clean_accents import clean_accents
 
 

@@ -64,11 +64,11 @@ def api_key_required(route_function: Callable) -> Callable:
 def _fill_current_api_key() -> None:
     mandatory_authorization_type = "Bearer "
     authorization_header = request.headers.get("Authorization")
-    g.current_api_key = None  # pylint: disable=assigning-non-slot
+    g.current_api_key = None
 
     if authorization_header and mandatory_authorization_type in authorization_header:
         app_authorization_credentials = authorization_header.replace(mandatory_authorization_type, "")
-        g.current_api_key = find_api_key(app_authorization_credentials)  # pylint: disable=assigning-non-slot
+        g.current_api_key = find_api_key(app_authorization_credentials)
 
 
 def _get_current_api_key() -> Optional[ApiKey]:
