@@ -47,7 +47,7 @@ def _repaire_beginningdatetime() -> None:
     )
 
     for stock in stocks:
-        stock.beginningDatetime = stock.dateCreated
+        stock.beginningDatetime = stock.bookingLimitDatetime
         db.session.add(stock)
     db.session.commit()
 
