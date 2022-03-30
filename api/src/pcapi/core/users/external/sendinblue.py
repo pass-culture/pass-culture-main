@@ -234,7 +234,7 @@ def make_update_request(payload: UpdateSendinblueContactRequest) -> bool:
             )
         return False
 
-    except Exception as exception:  # pylint: disable=broad-except
+    except Exception:  # pylint: disable=broad-except
         logger.exception(
             "Exception when calling ContactsApi->create_contact",
             extra={
