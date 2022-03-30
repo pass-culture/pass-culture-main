@@ -173,8 +173,8 @@ class RetrieveMovieInformationTest:
         movie_parsed_information = retrieve_movie_information(movie_information["node"]["movie"])
 
         # Then
-        assert "visa" not in movie_parsed_information.keys()
-        assert "stageDirector" not in movie_parsed_information.keys()
+        assert "visa" not in movie_parsed_information
+        assert "stageDirector" not in movie_parsed_information
 
     def test_should_raise_key_error_exception_when_missing_required_keys_in_movie_information(self):
         # Given
