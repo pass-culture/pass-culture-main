@@ -8,4 +8,11 @@ export enum Events {
   CLICKED_HELP_CENTER = 'hasClickedHelpCenter',
   CLICKED_CREATE_OFFER = 'hasClickedCreateOffer',
   CLICKED_CREATE_VENUE = 'hasClickedCreateVenue',
+  CLICKED_HOME = 'hasClickedHome',
+  CLICKED_TICKET = 'hasClickedTicket',
+  CLICKED_OFFER = 'hasClickedOffer',
+  CLICKED_BOOKING = 'hasClickedBooking',
+  CLICKED_REIMBURSEMENT = 'hasClickedReimbursement',
+  CLICKED_LOGOUT = 'hasClickedLogout',
+  CLICKED_PRO = 'hasClickedPro',
 }
