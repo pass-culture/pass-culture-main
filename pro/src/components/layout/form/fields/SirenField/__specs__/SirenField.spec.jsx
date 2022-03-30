@@ -1,4 +1,4 @@
-import { existsInINSEERegistry } from '../SirenField'
+import { existsInINSEERegistry } from '../validate'
 
 describe('components | SirenField', () => {
   describe('existsInINSEERegistry', () => {

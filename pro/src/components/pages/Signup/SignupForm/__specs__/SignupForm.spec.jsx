@@ -190,33 +190,33 @@ describe('src | components | pages | Signup | SignupForm', () => {
         name: /Créer mon compte/,
       })
       // when the user fills required information
-      userEvent.type(
+      userEvent.paste(
         screen.getByRole('textbox', {
           name: /Adresse e-mail/,
         }),
         'test@example.com'
       )
-      userEvent.type(screen.getByLabelText(/Mot de passe/), 'user@AZERTY123')
-      userEvent.type(
+      userEvent.paste(screen.getByLabelText(/Mot de passe/), 'user@AZERTY123')
+      userEvent.paste(
         screen.getByRole('textbox', {
           name: /Nom/,
         }),
         'Nom'
       )
-      userEvent.type(
+      userEvent.paste(
         screen.getByRole('textbox', {
           name: /Prénom/,
         }),
         'Prénom'
       )
-      userEvent.type(
+      userEvent.paste(
         screen.getByRole('textbox', {
           name: /Téléphone/,
         }),
         '0722332233'
       )
       expect(submitButton).toBeDisabled()
-      userEvent.type(
+      userEvent.paste(
         screen.getByRole('textbox', {
           name: /SIREN/,
         }),

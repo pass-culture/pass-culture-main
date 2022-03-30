@@ -24,7 +24,7 @@ describe('getSirenDataAdapter', () => {
         `https://entreprise.data.gouv.fr/api/sirene/v3/unites_legales/${siren}`
       )
       expect(response.isOk).toBeFalsy()
-      expect(response.message).toStrictEqual("Ce SIREN n'est pas reconnu")
+      expect(response.message).toBe("Ce SIREN n'est pas reconnu")
       expect(response.payload).toStrictEqual({
         error: "Ce SIREN n'est pas reconnu",
       })
@@ -47,7 +47,7 @@ describe('getSirenDataAdapter', () => {
         `https://entreprise.data.gouv.fr/api/sirene/v3/unites_legales/${siren}`
       )
       expect(response.isOk).toBeFalsy()
-      expect(response.message).toStrictEqual(
+      expect(response.message).toBe(
         'L’Annuaire public des Entreprises est indisponible. Veuillez réessayer plus tard.'
       )
       expect(response.payload).toStrictEqual({

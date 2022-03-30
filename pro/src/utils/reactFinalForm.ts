@@ -3,15 +3,13 @@ type TAsyncValidator = (value: string) => Promise<string | void>
 
 export const composeValidators =
   (...validators: (TValidator | TAsyncValidator)[]) =>
-  async (value: string): Promise<string[] | void> => {
-    const mapCallback = async (validator: TValidator | TAsyncValidator) => {
-      if (<TValidator>validator) validator(value)
-      return await validator(value)
+  async (value: string): Promise<string | void> => {
+    for (const i in validators) {
+      const validator = validators[i]
+      const error: string | void = await validator(value)
+      if (error !== undefined) return error
     }
-    const validationErrors: string[] = await Promise.all(
-      validators.map(mapCallback)
-    ).then(errors => errors.filter((err): err is string => err !== undefined))
-    return validationErrors.length > 0 ? validationErrors : undefined
+    return undefined
   }
 
 export default composeValidators
