@@ -15,6 +15,7 @@ from pcapi.core.offers.factories import EventStockFactory
 from pcapi.core.offers.factories import MediationFactory
 from pcapi.core.offers.factories import StockFactory
 from pcapi.core.offers.factories import StockWithActivationCodesFactory
+from pcapi.core.offers.models import WithdrawalTypeEnum
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
 from pcapi.models import db
@@ -220,6 +221,8 @@ class GetBookingsTest:
                         "publicName": used2.venue.publicName,
                     },
                     "withdrawalDetails": None,
+                    "withdrawalType": None,
+                    "withdrawalDelay": None,
                 },
             },
             "token": used2.token,
@@ -228,6 +231,25 @@ class GetBookingsTest:
 
         for booking in response.json["ongoing_bookings"]:
             assert booking["qrCodeData"] is not None
+
+    @freeze_time("2021-03-12")
+    def test_get_bookings_withdrawal_informations(self, client):
+        user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
+        booking_factories.IndividualBookingFactory(
+            individualBooking__user=user,
+            stock__offer__subcategoryId=subcategories.CONCERT.id,
+            stock__offer__withdrawalDetails="Veuillez chercher votre billet au guichet",
+            stock__offer__withdrawalType=WithdrawalTypeEnum.ON_SITE,
+            stock__offer__withdrawalDelay=60 * 30,
+        )
+
+        response = client.with_token(self.identifier).get("/native/v1/bookings")
+
+        assert response.status_code == 200
+        offer = response.json["ongoing_bookings"][0]["stock"]["offer"]
+        assert offer["withdrawalDetails"] == "Veuillez chercher votre billet au guichet"
+        assert offer["withdrawalType"] == "on_site"
+        assert offer["withdrawalDelay"] == 60 * 30
 
 
 class CancelBookingTest:

@@ -85,7 +85,12 @@ def test_public_api(client, app):
                         "subcategoryId": {"$ref": "#/components/schemas/SubcategoryIdEnum"},
                         "url": {"nullable": True, "title": "Url", "type": "string"},
                         "venue": {"$ref": "#/components/schemas/BookingVenueResponse"},
+                        "withdrawalDelay": {"nullable": True, "title": "Withdrawaldelay", "type": "integer"},
                         "withdrawalDetails": {"nullable": True, "title": "Withdrawaldetails", "type": "string"},
+                        "withdrawalType": {
+                            "anyOf": [{"$ref": "#/components/schemas/WithdrawalTypeEnum"}],
+                            "nullable": True,
+                        },
                     },
                     "required": ["id", "name", "isDigital", "isPermanent", "subcategoryId", "venue"],
                     "title": "BookingOfferResponse",
@@ -595,6 +600,11 @@ def test_public_api(client, app):
                     ],
                     "title": "SubcategoryResponseModel",
                     "type": "object",
+                },
+                "WithdrawalTypeEnum": {
+                    "description": "An enumeration.",
+                    "enum": ["no_ticket", "by_email", "on_site"],
+                    "title": "WithdrawalTypeEnum",
                 },
                 "_HomepageLabelNameEnum": {
                     "description": "An enumeration.",
