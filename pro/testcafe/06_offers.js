@@ -192,7 +192,7 @@ test("je peux modifier la thumbnail d'une offre", async t => {
     .notOk()
 })
 
-test("Je suis scrollé sur l'élément incorrect du formulaire d'édition d'offre", async t => {
+test("je suis scrollé sur l'élément incorrect du formulaire d'édition d'offre", async t => {
   const { offer, user } = await fetchSandbox(
     'pro_06_offers',
     'get_existing_pro_validated_user_with_at_least_one_offer_with_at_least_one_thumbnail'
@@ -211,7 +211,7 @@ test("Je suis scrollé sur l'élément incorrect du formulaire d'édition d'offr
 
 // skip this test until flakiness is fixed
 // eslint-disable-next-line jest/no-disabled-tests
-test.skip("Je suis empêché de quitter la création d'offre sans confirmation", async t => {
+test.skip("je suis empêché de quitter la création d'offre sans confirmation", async t => {
   const { offerer, user, venue } = await fetchSandbox(
     'pro_07_offer',
     'get_existing_pro_validated_user_with_validated_offerer_validated_user_offerer_with_physical_venue'
@@ -245,7 +245,7 @@ test.skip("Je suis empêché de quitter la création d'offre sans confirmation",
     .match(/\/offre\/([A-Z0-9]+)\/individuel\/stocks$/)
 })
 
-test("Je peux quitter la création d'offre avec confirmation", async t => {
+test("je peux quitter la création d'offre avec confirmation", async t => {
   const { offerer, user, venue } = await fetchSandbox(
     'pro_07_offer',
     'get_existing_pro_validated_user_with_validated_offerer_validated_user_offerer_with_physical_venue'
@@ -272,7 +272,7 @@ test("Je peux quitter la création d'offre avec confirmation", async t => {
     .match(/\/accueil$/)
 })
 
-test('Je peux créer une offre avec médiation', async t => {
+test('je peux créer une offre avec médiation', async t => {
   const { user } = await fetchSandbox(
     'pro_07_offer',
     'get_existing_pro_validated_user_with_validated_offerer_validated_user_offerer_with_physical_venue'
@@ -294,7 +294,7 @@ test('Je peux créer une offre avec médiation', async t => {
     .match(/\/offre\/([A-Z0-9]+)\/individuel\/stocks$/)
 })
 
-test("Je suis redirigé sur la page de choix du type d'offre si je clique sur retour à partir de la page de création d'offre", async t => {
+test("je suis redirigé sur la page de choix du type d'offre si je clique sur retour à partir de la page de création d'offre", async t => {
   const { user } = await fetchSandbox(
     'pro_07_offer',
     'get_existing_pro_validated_user_with_validated_offerer_validated_user_offerer_with_physical_venue'
@@ -322,7 +322,7 @@ test("Je suis redirigé sur la page de choix du type d'offre si je clique sur re
 
 // skip this test until flakiness is fixed
 // eslint-disable-next-line jest/no-disabled-tests
-test.skip("Je suis redirigé sur la liste des offres si je clique sur retour à partir de la page des stock au moment de la création d'offre", async t => {
+test.skip("je suis redirigé sur la liste des offres si je clique sur retour à partir de la page des stock au moment de la création d'offre", async t => {
   const { user } = await fetchSandbox(
     'pro_07_offer',
     'get_existing_pro_validated_user_with_validated_offerer_validated_user_offerer_with_physical_venue'
@@ -352,7 +352,7 @@ test.skip("Je suis redirigé sur la liste des offres si je clique sur retour à 
     .eql('/offres')
 })
 
-test("Je suis redirigé sur la liste des offres si je clique sur retour à partir de la page de confirmation de la création d'offre", async t => {
+test("je suis redirigé sur la liste des offres si je clique sur retour à partir de la page de confirmation de la création d'offre", async t => {
   const { user } = await fetchSandbox(
     'pro_07_offer',
     'get_existing_pro_validated_user_with_validated_offerer_validated_user_offerer_with_physical_venue'
@@ -392,7 +392,7 @@ test("Je suis redirigé sur la liste des offres si je clique sur retour à parti
 
 // skip this test until flakiness is fixed
 // eslint-disable-next-line jest/no-disabled-tests
-test.skip('Je suis redirigé sur la liste des offres si je clique sur retour à partir de la page de création quand je viens de la confirmation', async t => {
+test.skip('je suis redirigé sur la liste des offres si je clique sur retour à partir de la page de création quand je viens de la confirmation', async t => {
   const { user } = await fetchSandbox(
     'pro_07_offer',
     'get_existing_pro_validated_user_with_validated_offerer_validated_user_offerer_with_physical_venue'
