@@ -8,8 +8,8 @@ from typing import Union
 from psycopg2.errorcodes import CHECK_VIOLATION
 from psycopg2.errorcodes import UNIQUE_VIOLATION
 from pydantic import ValidationError
-from sqlalchemy import exc
-from sqlalchemy.orm import joinedload
+import sqlalchemy.exc as sqla_exc
+import sqlalchemy.orm as sqla_orm
 import yaml
 from yaml.scanner import ScannerError
 
@@ -643,7 +643,7 @@ def upsert_stocks(
             stock = (
                 Stock.queryNotSoftDeleted()
                 .filter_by(id=stock_data.id)
-                .options(joinedload(Stock.activationCodes))
+                .options(sqla_orm.joinedload(Stock.activationCodes))
                 .first_or_404()
             )
             if stock.offerId != offer_id:
@@ -756,7 +756,7 @@ def create_educational_stock(stock_data: EducationalStockCreationBodyModel, user
     number_of_tickets = stock_data.number_of_tickets
     educational_price_detail = stock_data.educational_price_detail
 
-    offer = Offer.query.filter_by(id=offer_id).options(joinedload(Offer.stocks)).one()
+    offer = Offer.query.filter_by(id=offer_id).options(sqla_orm.joinedload(Offer.stocks)).one()
     if len(offer.activeStocks) > 0:
         raise educational_exceptions.EducationalStockAlreadyExists()
 
@@ -1186,7 +1186,7 @@ def report_offer(user: User, offer: Offer, reason: str, custom_reason: Optional[
         with transaction():
             report = OfferReport(user=user, offer=offer, reason=reason, customReasonContent=custom_reason)
             db.session.add(report)
-    except exc.IntegrityError as error:
+    except sqla_exc.IntegrityError as error:
         if error.orig.pgcode == UNIQUE_VIOLATION:
             raise OfferAlreadyReportedError() from error
         if error.orig.pgcode == CHECK_VIOLATION:
@@ -1246,7 +1246,7 @@ def cancel_educational_offer_booking(offer: Offer) -> None:
 
 
 def create_collective_shadow_offer(stock_data: EducationalOfferShadowStockBodyModel, user: User, offer_id: str):
-    offer = Offer.query.filter_by(id=offer_id).options(joinedload(Offer.stocks)).one()
+    offer = Offer.query.filter_by(id=offer_id).options(sqla_orm.joinedload(Offer.stocks)).one()
     stock = create_educational_shadow_stock_and_set_offer_showcase(stock_data, user, offer)
     create_collective_offer_template_and_delete_collective_offer(offer, stock, user)
     return stock
