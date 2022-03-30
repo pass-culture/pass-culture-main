@@ -41,6 +41,11 @@ export const OffersStatusFiltersModal = ({
     }
   }, [onClickOutside])
 
+  const handleClick = () => {
+    setIsVisible(false)
+    applyFilters()
+  }
+
   if (!isVisible) {
     return null
   }
@@ -97,7 +102,7 @@ export const OffersStatusFiltersModal = ({
         onChange={handleStatusFilterChange}
         value="REJECTED"
       />
-      <button className="primary-button" onClick={applyFilters} type="button">
+      <button className="primary-button" onClick={handleClick} type="button">
         Appliquer
       </button>
     </div>

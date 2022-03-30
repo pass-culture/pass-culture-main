@@ -11,10 +11,8 @@ const OffersTableHead = ({
   areOffersPresent,
   filters,
   isAdminForbidden,
-  isStatusFiltersVisible,
   applyFilters,
   selectAllOffers,
-  setIsStatusFiltersVisible,
   updateStatusFilter,
 }) => {
   const savedSearchFilters = useSelector(state => state.offers.searchFilters)
@@ -57,8 +55,6 @@ const OffersTableHead = ({
           <StatusFiltersButton
             applyFilters={applyFilters}
             disabled={isAdminForbidden(filters)}
-            isStatusFiltersVisible={isStatusFiltersVisible}
-            setIsStatusFiltersVisible={setIsStatusFiltersVisible}
             status={filters.status}
             updateStatusFilter={updateStatusFilter}
           />
@@ -78,9 +74,7 @@ OffersTableHead.propTypes = {
     status: PropTypes.string,
   }).isRequired,
   isAdminForbidden: PropTypes.func.isRequired,
-  isStatusFiltersVisible: PropTypes.bool.isRequired,
   selectAllOffers: PropTypes.func.isRequired,
-  setIsStatusFiltersVisible: PropTypes.func.isRequired,
   updateStatusFilter: PropTypes.func.isRequired,
 }
 
