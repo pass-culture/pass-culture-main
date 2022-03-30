@@ -78,10 +78,7 @@ class TiteliveThingsTest:
     def test_create_1_thing_from_one_data_line_in_one_file(
         self, get_lines_from_thing_file, get_files_to_process_from_titelive_ftp, app
     ):
-        files_list = list()
-        files_list.append("Quotidien30.tit")
-
-        get_files_to_process_from_titelive_ftp.return_value = files_list
+        get_files_to_process_from_titelive_ftp.return_value = ["Quotidien30.tit"]
 
         data_line = "~".join(BASE_DATA_LINE_PARTS)
         get_lines_from_thing_file.return_value = iter([data_line])
@@ -104,19 +101,14 @@ class TiteliveThingsTest:
     def test_does_not_create_product_when_product_is_a_school_book(
         self, get_lines_from_thing_file, get_files_to_process_from_titelive_ftp, app
     ):
-        files_list = list()
-        files_list.append("Quotidien30.tit")
-
-        get_files_to_process_from_titelive_ftp.return_value = files_list
+        get_files_to_process_from_titelive_ftp.return_value = ["Quotidien30.tit"]
 
         DATA_LINE_PARTS = BASE_DATA_LINE_PARTS[:]
         DATA_LINE_PARTS[2] = "livre scolaire"
         DATA_LINE_PARTS[27] = "Littérature scolaire"
         DATA_LINE_PARTS[39] = "1"
         DATA_LINE_PARTS[40] = "0"
-
         data_line = "~".join(DATA_LINE_PARTS)
-
         get_lines_from_thing_file.return_value = iter([data_line])
 
         providers_factories.ProviderFactory(localClass="TiteLiveThings")
@@ -135,13 +127,9 @@ class TiteliveThingsTest:
         self, get_lines_from_thing_file, get_files_to_process_from_titelive_ftp, app
     ):
         # Given
-        files_list = list()
-        files_list.append("Quotidien30.tit")
-
-        get_files_to_process_from_titelive_ftp.return_value = files_list
+        get_files_to_process_from_titelive_ftp.return_value = ["Quotidien30.tit"]
 
         data_line = "~".join(BASE_DATA_LINE_PARTS)
-
         get_lines_from_thing_file.return_value = iter([data_line])
 
         titelive_things_provider = get_provider_by_local_class("TiteLiveThings")
@@ -168,8 +156,7 @@ class TiteliveThingsTest:
     @patch("pcapi.local_providers.titelive_things.titelive_things.get_files_to_process_from_titelive_ftp")
     def test_does_not_create_thing_when_no_files_found(self, get_files_to_process_from_titelive_ftp, app):
         # Given
-        files_list = list()
-        get_files_to_process_from_titelive_ftp.return_value = files_list
+        get_files_to_process_from_titelive_ftp.return_value = []
 
         providers_factories.ProviderFactory(localClass="TiteLiveThings")
         titelive_things = TiteLiveThings()
@@ -187,13 +174,9 @@ class TiteliveThingsTest:
         self, get_lines_from_thing_file, get_files_to_process_from_titelive_ftp, app
     ):
         # Given
-        files_list = list()
-        files_list.append("Quotidien30.tit")
-
-        get_files_to_process_from_titelive_ftp.return_value = files_list
+        get_files_to_process_from_titelive_ftp.return_value = ["Quotidien30.tit"]
 
         data_line = "9782895026310"
-
         get_lines_from_thing_file.return_value = iter([data_line])
 
         providers_factories.ProviderFactory(localClass="TiteLiveThings")
@@ -212,19 +195,14 @@ class TiteliveThingsTest:
         self, get_lines_from_thing_file, get_files_to_process_from_titelive_ftp, app
     ):
         # Given
-        files_list = list()
-        files_list.append("Quotidien30.tit")
-
-        get_files_to_process_from_titelive_ftp.return_value = files_list
+        get_files_to_process_from_titelive_ftp.return_value = ["Quotidien30.tit"]
 
         DATA_LINE_PARTS = BASE_DATA_LINE_PARTS[:]
         DATA_LINE_PARTS[13] = "LE"
         DATA_LINE_PARTS[27] = "Littérature scolaire"
         DATA_LINE_PARTS[39] = "1"
         DATA_LINE_PARTS[40] = "0"
-
         data_line = "~".join(DATA_LINE_PARTS)
-
         get_lines_from_thing_file.return_value = iter([data_line])
 
         providers_factories.ProviderFactory(localClass="TiteLiveThings")
@@ -243,19 +221,14 @@ class TiteliveThingsTest:
         self, get_lines_from_thing_file, get_files_to_process_from_titelive_ftp, app
     ):
         # Given
-        files_list = list()
-        files_list.append("Quotidien30.tit")
-
-        get_files_to_process_from_titelive_ftp.return_value = files_list
+        get_files_to_process_from_titelive_ftp.return_value = ["Quotidien30.tit"]
 
         DATA_LINE_PARTS = BASE_DATA_LINE_PARTS[:]
         DATA_LINE_PARTS[2] = "livre scolaire"
         DATA_LINE_PARTS[4] = "2704"
         DATA_LINE_PARTS[27] = "Littérature scolaire"
         DATA_LINE_PARTS[40] = ""
-
         data_line = "~".join(DATA_LINE_PARTS)
-
         get_lines_from_thing_file.return_value = iter([data_line])
 
         providers_factories.ProviderFactory(localClass="TiteLiveThings")
@@ -274,19 +247,14 @@ class TiteliveThingsTest:
         self, get_lines_from_thing_file, get_files_to_process_from_titelive_ftp, app
     ):
         # Given
-        files_list = list()
-        files_list.append("Quotidien30.tit")
-
-        get_files_to_process_from_titelive_ftp.return_value = files_list
+        get_files_to_process_from_titelive_ftp.return_value = ["Quotidien30.tit"]
 
         DATA_LINE_PARTS = BASE_DATA_LINE_PARTS[:]
         DATA_LINE_PARTS[2] = "livre scolaire"
         DATA_LINE_PARTS[4] = "2704"
         DATA_LINE_PARTS[27] = "Littérature scolaire"
         DATA_LINE_PARTS[40] = ""
-
         data_line = "~".join(DATA_LINE_PARTS)
-
         get_lines_from_thing_file.return_value = iter([data_line])
 
         titelive_provider = providers_factories.ProviderFactory(localClass="TiteLiveThings")
@@ -314,10 +282,7 @@ class TiteliveThingsTest:
         self, get_lines_from_thing_file, get_files_to_process_from_titelive_ftp, app
     ):
         # Given
-        files_list = list()
-        files_list.append("Quotidien30.tit")
-
-        get_files_to_process_from_titelive_ftp.return_value = files_list
+        get_files_to_process_from_titelive_ftp.return_value = ["Quotidien30.tit"]
 
         DATA_LINE_PARTS = BASE_DATA_LINE_PARTS[:]
         DATA_LINE_PARTS[2] = "jeux de société"
@@ -325,10 +290,7 @@ class TiteliveThingsTest:
         DATA_LINE_PARTS[13] = "O"
         DATA_LINE_PARTS[27] = "Littérature scolaire"
         DATA_LINE_PARTS[40] = ""
-
         data_line = "~".join(DATA_LINE_PARTS)
-
-        get_lines_from_thing_file.return_value = iter([data_line])
         get_lines_from_thing_file.return_value = iter([data_line])
 
         titelive_provider = providers_factories.ProviderFactory(localClass="TiteLiveThings")
@@ -355,6 +317,7 @@ class TiteliveThingsTest:
     ):
         # Given
         get_files_to_process_from_titelive_ftp.return_value = ["Quotidien30.tit"]
+
         data_line_parts = BASE_DATA_LINE_PARTS[:]
         data_line_parts[2] = "jeux de société"
         data_line_parts[4] = "1234"
@@ -390,23 +353,16 @@ class TiteliveThingsTest:
         self, get_lines_from_thing_file, get_files_to_process_from_titelive_ftp, app
     ):
         # Given
-        files_list = list()
-        files_list.append("Quotidien30.tit")
-
-        get_files_to_process_from_titelive_ftp.return_value = files_list
+        get_files_to_process_from_titelive_ftp.return_value = ["Quotidien30.tit"]
 
         DATA_LINE_PARTS = BASE_DATA_LINE_PARTS[:]
         DATA_LINE_PARTS[1] = "9136205982"
         DATA_LINE_PARTS[13] = "R"
         DATA_LINE_PARTS[26] = "2,10"
-
         data_line_1 = "~".join(DATA_LINE_PARTS)
-
         DATA_LINE_PARTS = BASE_DATA_LINE_PARTS[:]
         DATA_LINE_PARTS[26] = "2,10"
-
         data_line_2 = "~".join(DATA_LINE_PARTS)
-
         get_lines_from_thing_file.return_value = iter([data_line_1, data_line_2])
 
         providers_factories.ProviderFactory(localClass="TiteLiveThings")
@@ -428,16 +384,12 @@ class TiteliveThingsTest:
         self, get_lines_from_thing_file, get_files_to_process_from_titelive_ftp, app
     ):
         # Given
-        files_list = list()
-        files_list.append("Quotidien30.tit")
+        get_files_to_process_from_titelive_ftp.return_value = ["Quotidien30.tit"]
 
         DATA_LINE_PARTS = BASE_DATA_LINE_PARTS[:]
         DATA_LINE_PARTS[13] = "R"
         DATA_LINE_PARTS[26] = "2,10"
         data_line = "~".join(DATA_LINE_PARTS)
-
-        get_files_to_process_from_titelive_ftp.return_value = files_list
-
         get_lines_from_thing_file.return_value = iter([data_line])
 
         titelive_provider = providers_factories.ProviderFactory(localClass="TiteLiveThings")
@@ -465,17 +417,12 @@ class TiteliveThingsTest:
         self, get_lines_from_thing_file, get_files_to_process_from_titelive_ftp, app
     ):
         # Given
-        files_list = list()
-        files_list.append("Quotidien30.tit")
+        get_files_to_process_from_titelive_ftp.return_value = ["Quotidien30.tit"]
 
         DATA_LINE_PARTS = BASE_DATA_LINE_PARTS[:]
         DATA_LINE_PARTS[13] = "R"
         DATA_LINE_PARTS[26] = "2,10"
-
         data_line = "~".join(DATA_LINE_PARTS)
-
-        get_files_to_process_from_titelive_ftp.return_value = files_list
-
         get_lines_from_thing_file.return_value = iter([data_line])
 
         titelive_provider = providers_factories.ProviderFactory(localClass="TiteLiveThings")
@@ -510,17 +457,12 @@ class TiteliveThingsTest:
     def test_does_not_create_product_with_xxx_mark(
         self, get_lines_from_thing_file, get_files_to_process_from_titelive_ftp, app
     ):
-        files_list = list()
-        files_list.append("Quotidien30.tit")
-
-        get_files_to_process_from_titelive_ftp.return_value = files_list
+        get_files_to_process_from_titelive_ftp.return_value = ["Quotidien30.tit"]
 
         DATA_LINE_PARTS = BASE_DATA_LINE_PARTS[:]
         DATA_LINE_PARTS[2] = "xxx"
         DATA_LINE_PARTS[23] = "Xxx"
-
         data_line = "~".join(DATA_LINE_PARTS)
-
         get_lines_from_thing_file.return_value = iter([data_line])
 
         providers_factories.ProviderFactory(localClass="TiteLiveThings")
