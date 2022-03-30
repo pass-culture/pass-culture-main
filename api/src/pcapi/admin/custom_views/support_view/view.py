@@ -85,6 +85,7 @@ class BeneficiaryView(base_configuration.BaseAdminView):
 
     column_searchable_list = ["id", "email", "firstName", "lastName"]
     column_filters = [
+        "id",
         "email",
         "dateCreated",
         "beneficiaryFraudChecks.type",
