@@ -14,8 +14,8 @@ from urllib3.util.retry import Retry
 # Keep these imports so that our monkey patch of mailjet_rest allows
 # its code to use `requests.exception` and get `RequestException`
 # from this module.
+from requests import exceptions
 from requests import RequestException
-import requests.exceptions as exceptions
 # pylint: enable=unused-import
 # isort: on
 # fmt: on

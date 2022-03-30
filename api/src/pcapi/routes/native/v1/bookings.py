@@ -4,7 +4,7 @@ import logging
 from sqlalchemy.orm import joinedload
 
 import pcapi.core.bookings.api as bookings_api
-import pcapi.core.bookings.exceptions as exceptions
+import pcapi.core.bookings.exceptions as bookings_exceptions
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.bookings.models import IndividualBooking
@@ -52,22 +52,22 @@ def book_offer(user: User, body: BookOfferRequest) -> BookOfferResponse:
         raise ApiErrors({"stock": "stock introuvable"}, status_code=400)
 
     except (
-        exceptions.UserHasInsufficientFunds,
-        exceptions.DigitalExpenseLimitHasBeenReached,
-        exceptions.PhysicalExpenseLimitHasBeenReached,
+        bookings_exceptions.UserHasInsufficientFunds,
+        bookings_exceptions.DigitalExpenseLimitHasBeenReached,
+        bookings_exceptions.PhysicalExpenseLimitHasBeenReached,
     ):
         logger.info("Could not book offer: insufficient credit", extra={"stock_id": body.stock_id})
         raise ApiErrors({"code": "INSUFFICIENT_CREDIT"})
 
-    except exceptions.OfferIsAlreadyBooked:
+    except bookings_exceptions.OfferIsAlreadyBooked:
         logger.info("Could not book offer: offer already booked", extra={"stock_id": body.stock_id})
         raise ApiErrors({"code": "ALREADY_BOOKED"})
 
-    except exceptions.StockIsNotBookable:
+    except bookings_exceptions.StockIsNotBookable:
         logger.info("Could not book offer: stock is not bookable", extra={"stock_id": body.stock_id})
         raise ApiErrors({"code": "STOCK_NOT_BOOKABLE"})
 
-    except exceptions.OfferCategoryNotBookableByUser:
+    except bookings_exceptions.OfferCategoryNotBookableByUser:
         logger.info(
             "Could not book offer: category is not bookable by user",
             extra={"stock_id": body.stock_id, "subcategory_id": stock.offer.subcategoryId, "user_roles": user.roles},
@@ -192,9 +192,9 @@ def cancel_booking(user: User, booking_id: int) -> None:
     )
     try:
         bookings_api.cancel_booking_by_beneficiary(user, booking)
-    except exceptions.BookingIsAlreadyUsed:
+    except bookings_exceptions.BookingIsAlreadyUsed:
         raise ApiErrors({"code": "ALREADY_USED", "message": "La réservation a déjà été utilisée."})
-    except exceptions.CannotCancelConfirmedBooking:
+    except bookings_exceptions.CannotCancelConfirmedBooking:
         raise ApiErrors({"code": "CONFIRMED_BOOKING", "message": "La date limite d'annulation est dépassée."})
     except RuntimeError:
         logger.error("Unexpected call to cancel_booking_by_beneficiary with non-beneficiary user %s", user.id)
