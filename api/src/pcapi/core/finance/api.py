@@ -1062,7 +1062,7 @@ def _prepare_invoice_context(invoice: models.Invoice) -> dict:
     total_used_bookings_amount = 0
     total_contribution_amount = 0
     total_reimbursed_amount = 0
-    invoice_groups = dict()
+    invoice_groups = {}
     for group, lines in itertools.groupby(invoice_lines, attrgetter("group")):
         invoice_groups[group["label"]] = (group, list(lines))
 

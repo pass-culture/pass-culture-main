@@ -1505,8 +1505,7 @@ class GetObjectThumbTest:
         allocine_venue_provider = AllocineVenueProviderFactory()
 
         allocine_stocks_provider = AllocineStocks(allocine_venue_provider)
-        allocine_stocks_provider.movie_information = dict()
-        allocine_stocks_provider.movie_information["poster_url"] = "http://url.example.com"
+        allocine_stocks_provider.movie_information = {"poster_url": "http://url.example.com"}
 
         # When
         poster_thumb = allocine_stocks_provider.get_object_thumb()
@@ -1527,7 +1526,7 @@ class GetObjectThumbTest:
         allocine_venue_provider = AllocineVenueProviderFactory()
 
         allocine_stocks_provider = AllocineStocks(allocine_venue_provider)
-        allocine_stocks_provider.movie_information = dict()
+        allocine_stocks_provider.movie_information = {}
 
         # When
         poster_thumb = allocine_stocks_provider.get_object_thumb()

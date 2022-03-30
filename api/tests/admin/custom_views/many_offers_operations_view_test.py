@@ -75,11 +75,9 @@ class ManyOffersOperationsViewTest:
         # Given
         users_factories.AdminFactory(email="admin@example.com")
 
-        data = dict()
-
         # When
         client = TestClient(app.test_client()).with_session_auth("admin@example.com")
-        response = client.post("/pc/back-office/many_offers_operations/", form=data)
+        response = client.post("/pc/back-office/many_offers_operations/", form={})
 
         # Then
         assert response.status_code == 200

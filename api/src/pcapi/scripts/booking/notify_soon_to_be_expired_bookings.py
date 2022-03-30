@@ -24,13 +24,14 @@ def notify_soon_to_be_expired_individual_bookings() -> None:
 
 def notify_users_of_soon_to_be_expired_individual_bookings(given_date: datetime.date = None) -> None:
     logger.info("[notify_users_of_soon_to_be_expired_bookings] Start")
-    individual_bookings_ordered_by_user = (
-        bookings_repository.find_soon_to_be_expiring_individual_bookings_ordered_by_user(given_date)
-    )
 
-    expired_individual_bookings_grouped_by_user = dict()
-    for user, individual_booking in groupby(individual_bookings_ordered_by_user, attrgetter("user")):
-        expired_individual_bookings_grouped_by_user[user] = list(individual_booking)
+    expired_individual_bookings_grouped_by_user = {
+        user: list(individual_booking)
+        for user, individual_booking in groupby(
+            bookings_repository.find_soon_to_be_expiring_individual_bookings_ordered_by_user(given_date),
+            attrgetter("user"),
+        )
+    }
 
     notified_users = []
 
