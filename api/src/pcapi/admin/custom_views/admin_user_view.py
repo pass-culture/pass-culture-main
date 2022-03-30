@@ -1,7 +1,7 @@
 from typing import Optional
 
 from flask.helpers import flash
-from sqlalchemy.orm import query
+from flask_sqlalchemy import BaseQuery
 from sqlalchemy.sql.expression import distinct
 from sqlalchemy.sql.functions import func
 from wtforms import Form
@@ -80,12 +80,12 @@ class AdminUserView(SuspensionMixin, BaseAdminView):
         email=dict(validators=[DataRequired()], filters=[filter_email]),
     )
 
-    def get_query(self) -> query:
+    def get_query(self) -> BaseQuery:
         from pcapi.core.users.models import User
 
         return User.query.filter(User.has_admin_role.is_(True)).from_self()
 
-    def get_count_query(self) -> query:
+    def get_count_query(self) -> BaseQuery:
         from pcapi.core.users.models import User
 
         return self.session.query(func.count(distinct(User.id))).select_from(User).filter(User.has_admin_role.is_(True))

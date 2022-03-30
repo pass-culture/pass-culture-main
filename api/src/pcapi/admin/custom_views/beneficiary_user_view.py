@@ -2,11 +2,11 @@ from typing import Optional
 
 from flask_admin.contrib.sqla import tools
 from flask_admin.contrib.sqla.filters import BaseSQLAFilter
+from flask_sqlalchemy import BaseQuery
 from markupsafe import Markup
 from sqlalchemy import and_
 from sqlalchemy.orm import aliased
 from sqlalchemy.orm import joinedload
-from sqlalchemy.orm import query
 from sqlalchemy.sql.functions import func
 from wtforms import Form
 from wtforms import SelectField
@@ -31,7 +31,7 @@ def filter_email(value: Optional[str]) -> Optional[str]:
 
 
 class FilterByDepositTypeEqual(BaseSQLAFilter):
-    def apply(self, current_query, value, alias=None):
+    def apply(self, query, value, alias=None):
         aliased_deposit = aliased(Deposit)
         current_deposit_by_user = (
             Deposit.query.outerjoin(
@@ -41,7 +41,7 @@ class FilterByDepositTypeEqual(BaseSQLAFilter):
             .filter(aliased_deposit.id.is_(None))
             .subquery()
         )
-        return current_query.join(current_deposit_by_user).filter(current_deposit_by_user.c.type == value)
+        return query.join(current_deposit_by_user).filter(current_deposit_by_user.c.type == value)
 
     def operation(self) -> str:
         return "equals"
@@ -51,7 +51,7 @@ class FilterByDepositTypeEqual(BaseSQLAFilter):
 
 
 class FilterByDepositTypeNotEqual(BaseSQLAFilter):
-    def apply(self, current_query, value, alias=None):
+    def apply(self, query, value, alias=None):
         aliased_deposit = aliased(Deposit)
         current_deposit_by_user = (
             Deposit.query.outerjoin(
@@ -61,7 +61,7 @@ class FilterByDepositTypeNotEqual(BaseSQLAFilter):
             .filter(aliased_deposit.id.is_(None))
             .subquery()
         )
-        return current_query.join(current_deposit_by_user).filter(current_deposit_by_user.c.type != value)
+        return query.join(current_deposit_by_user).filter(current_deposit_by_user.c.type != value)
 
     def operation(self) -> str:
         return "not equal"
@@ -271,10 +271,10 @@ class BeneficiaryUserView(ResendValidationEmailMixin, SuspensionMixin, BaseAdmin
         update_external_user(model)
         super().after_model_change(form, model, is_created)
 
-    def get_one(self, model_id: str) -> query:
+    def get_one(self, model_id: str) -> BaseQuery:
         return User.query.get(tools.iterdecode(model_id))
 
-    def get_query(self) -> query:
+    def get_query(self) -> BaseQuery:
         return (
             User.query.filter(User.has_pro_role.is_(False))
             .filter(User.is_beneficiary.is_(True))
@@ -282,7 +282,7 @@ class BeneficiaryUserView(ResendValidationEmailMixin, SuspensionMixin, BaseAdmin
             .options(joinedload(User.suspension_history))
         )
 
-    def get_count_query(self) -> query:
+    def get_count_query(self) -> BaseQuery:
         return (
             self.session.query(func.count("*"))
             .select_from(self.model)

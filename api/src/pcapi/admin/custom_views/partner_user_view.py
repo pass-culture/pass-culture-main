@@ -1,8 +1,8 @@
 from typing import Optional
 
 from flask.helpers import flash
+from flask_sqlalchemy import BaseQuery
 from sqlalchemy import distinct
-from sqlalchemy.orm import query
 from sqlalchemy.sql.functions import func
 from wtforms import Form
 from wtforms import StringField
@@ -124,7 +124,7 @@ class PartnerUserView(ResendValidationEmailMixin, SuspensionMixin, BaseAdminView
                 f"Lien de réinitialisation du mot de passe : {build_pc_webapp_reset_password_link(resetPasswordToken.value)}"
             )
 
-    def get_query(self) -> query:
+    def get_query(self) -> BaseQuery:
         return (
             User.query.outerjoin(UserOfferer)
             .filter(UserOfferer.userId.is_(None))
@@ -132,7 +132,7 @@ class PartnerUserView(ResendValidationEmailMixin, SuspensionMixin, BaseAdminView
             .filter(User.has_admin_role.is_(False))
         )
 
-    def get_count_query(self) -> query:
+    def get_count_query(self) -> BaseQuery:
         return (
             self.session.query(func.count(distinct(User.id)))
             .select_from(self.model)

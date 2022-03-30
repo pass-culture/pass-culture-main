@@ -1,7 +1,7 @@
 from operator import or_
 from typing import Optional
 
-from sqlalchemy.orm import query
+from flask_sqlalchemy import BaseQuery
 
 from pcapi.core.offerers.models import Venue
 from pcapi.core.providers.models import AllocinePivot
@@ -33,7 +33,7 @@ def get_provider_by_local_class(local_class: str) -> Provider:
     return Provider.query.filter_by(localClass=local_class).one_or_none()
 
 
-def get_active_providers_query() -> query:
+def get_active_providers_query() -> BaseQuery:
     return Provider.query.filter_by(isActive=True).order_by(Provider.name)
 
 
@@ -41,7 +41,7 @@ def get_enabled_providers_for_pro() -> list[Provider]:
     return get_enabled_providers_for_pro_query().all()
 
 
-def get_enabled_providers_for_pro_query() -> query:
+def get_enabled_providers_for_pro_query() -> BaseQuery:
     return Provider.query.filter_by(isActive=True).filter_by(enabledForPro=True).order_by(Provider.name)
 
 

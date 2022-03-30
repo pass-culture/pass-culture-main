@@ -11,6 +11,7 @@ from typing import List
 from typing import Optional
 
 from dateutil import tz
+from flask_sqlalchemy import BaseQuery
 from sqlalchemy import Column
 from sqlalchemy import Date
 from sqlalchemy import case
@@ -18,7 +19,6 @@ from sqlalchemy import cast
 from sqlalchemy import func
 from sqlalchemy import or_
 from sqlalchemy import text
-from sqlalchemy.orm import Query
 from sqlalchemy.orm import contains_eager
 from sqlalchemy.orm import joinedload
 from sqlalchemy.orm.attributes import InstrumentedAttribute
@@ -175,7 +175,7 @@ def find_used_by_token(token: str) -> Booking:
     ).one_or_none()
 
 
-def find_expiring_individual_bookings_query() -> Query:
+def find_expiring_individual_bookings_query() -> BaseQuery:
     today_at_midnight = datetime.combine(date.today(), time(0, 0))
     return (
         IndividualBooking.query.join(Booking)
@@ -197,7 +197,7 @@ def find_expiring_individual_bookings_query() -> Query:
     )
 
 
-def find_expiring_educational_bookings_query() -> Query:
+def find_expiring_educational_bookings_query() -> BaseQuery:
     today_at_midnight = datetime.combine(date.today(), time(0, 0))
 
     return EducationalBooking.query.join(Booking).filter(
@@ -206,11 +206,11 @@ def find_expiring_educational_bookings_query() -> Query:
     )
 
 
-def find_expiring_booking_ids_from_query(query: Query) -> Query:
+def find_expiring_booking_ids_from_query(query: BaseQuery) -> BaseQuery:
     return query.order_by(Booking.id).with_entities(Booking.id)
 
 
-def find_soon_to_be_expiring_individual_bookings_ordered_by_user(given_date: date = None) -> Query:
+def find_soon_to_be_expiring_individual_bookings_ordered_by_user(given_date: date = None) -> BaseQuery:
     given_date = given_date or date.today()
     books_expiring_date = datetime.combine(given_date, time(0, 0)) + constants.BOOKS_BOOKINGS_EXPIRY_NOTIFICATION_DELAY
     other_expiring_date = datetime.combine(given_date, time(0, 0)) + constants.BOOKINGS_EXPIRY_NOTIFICATION_DELAY
@@ -423,7 +423,7 @@ def _get_filtered_bookings_query(
     venue_id: Optional[int] = None,
     offer_type: Optional[OfferType] = None,
     extra_joins: Optional[Iterable[Column]] = None,
-) -> Query:
+) -> BaseQuery:
     extra_joins = extra_joins or tuple()
 
     bookings_query = (
@@ -544,7 +544,7 @@ def _get_filtered_booking_pro(
     event_date: Optional[datetime] = None,
     venue_id: Optional[int] = None,
     offer_type: Optional[OfferType] = None,
-) -> Query:
+) -> BaseQuery:
     bookings_query = (
         _get_filtered_bookings_query(
             pro_user,
@@ -594,7 +594,7 @@ def _get_filtered_booking_pro(
     return bookings_query
 
 
-def _duplicate_booking_when_quantity_is_two(bookings_recap_query: Query) -> Query:
+def _duplicate_booking_when_quantity_is_two(bookings_recap_query: BaseQuery) -> BaseQuery:
     return bookings_recap_query.union_all(bookings_recap_query.filter(Booking.quantity == 2))
 
 
@@ -671,7 +671,7 @@ def _get_booking_status(status: BookingStatus, is_confirmed: bool) -> str:
     return BOOKING_STATUS_LABELS[status]
 
 
-def _serialize_csv_report(query: Query) -> str:
+def _serialize_csv_report(query: BaseQuery) -> str:
     output = StringIO()
     writer = csv.writer(output, dialect=csv.excel, delimiter=";", quoting=csv.QUOTE_NONNUMERIC)
     writer.writerow(

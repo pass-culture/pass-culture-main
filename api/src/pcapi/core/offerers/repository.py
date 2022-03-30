@@ -1,9 +1,9 @@
 from typing import Iterable
 from typing import Optional
 
+from flask_sqlalchemy import BaseQuery
 import sqlalchemy as sqla
 import sqlalchemy.orm as sqla_orm
-from sqlalchemy.orm import Query
 
 from pcapi.core.offers.models import Offer
 from pcapi.core.users.models import User
@@ -223,7 +223,7 @@ def find_new_offerer_user_email(offerer_id: int) -> str:
     raise exceptions.CannotFindOffererUserEmail()
 
 
-def filter_offerers_with_keywords_string(query: Query, keywords_string: str) -> Query:
+def filter_offerers_with_keywords_string(query: BaseQuery, keywords_string: str) -> BaseQuery:
     keywords_filter = create_filter_matching_all_keywords_in_any_model(
         get_filter_matching_ts_query_for_offerer, keywords_string
     )
@@ -235,7 +235,7 @@ def check_if_siren_already_exists(siren: str) -> bool:
     return db.session.query(db.session.query(models.Offerer.id).filter(models.Offerer.siren == siren).exists())
 
 
-def find_siren_by_offerer_id(offerer_id) -> str:
+def find_siren_by_offerer_id(offerer_id: int) -> str:
     siren = models.Offerer.query.filter_by(id=offerer_id).with_entities(models.Offerer.siren).scalar()
 
     if siren:

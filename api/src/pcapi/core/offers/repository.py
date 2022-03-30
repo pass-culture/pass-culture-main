@@ -5,11 +5,11 @@ from operator import attrgetter
 from typing import List
 from typing import Optional
 
+from flask_sqlalchemy import BaseQuery
 from sqlalchemy import and_
 from sqlalchemy import func
 from sqlalchemy import not_
 from sqlalchemy import or_
-from sqlalchemy.orm import Query
 from sqlalchemy.orm import contains_eager
 from sqlalchemy.orm import joinedload
 from sqlalchemy.orm.exc import NoResultFound
@@ -99,7 +99,7 @@ def get_capped_offers_for_filters(
     )
 
 
-def get_offers_by_ids(user: User, offer_ids: list[int]) -> Query:
+def get_offers_by_ids(user: User, offer_ids: list[int]) -> BaseQuery:
     query = Offer.query
     if not user.has_admin_role:
         query = query.join(Venue, Offerer, UserOfferer).filter(
@@ -109,7 +109,7 @@ def get_offers_by_ids(user: User, offer_ids: list[int]) -> Query:
     return query
 
 
-def get_collective_offers_by_offer_ids(user: User, offer_ids: list[int]) -> Query:
+def get_collective_offers_by_offer_ids(user: User, offer_ids: list[int]) -> BaseQuery:
     query = CollectiveOffer.query
     if not user.has_admin_role:
         query = query.join(Venue, Offerer, UserOfferer).filter(
@@ -119,7 +119,7 @@ def get_collective_offers_by_offer_ids(user: User, offer_ids: list[int]) -> Quer
     return query
 
 
-def get_collective_offers_template_by_offer_ids(user: User, offer_ids: list[int]) -> Query:
+def get_collective_offers_template_by_offer_ids(user: User, offer_ids: list[int]) -> BaseQuery:
     query = CollectiveOfferTemplate.query
     if not user.has_admin_role:
         query = query.join(Venue, Offerer, UserOfferer).filter(
@@ -140,7 +140,7 @@ def get_offers_by_filters(
     creation_mode: Optional[str] = None,
     period_beginning_date: Optional[datetime] = None,
     period_ending_date: Optional[datetime] = None,
-) -> Query:
+) -> BaseQuery:
     query = Offer.query.filter(Offer.validation != OfferValidationStatus.DRAFT)
 
     if not user_is_admin:
@@ -224,7 +224,7 @@ def get_collective_offers_by_filters(
     name_keywords: Optional[str] = None,
     period_beginning_date: Optional[datetime] = None,
     period_ending_date: Optional[datetime] = None,
-) -> Query:
+) -> BaseQuery:
     query = CollectiveOffer.query.filter(CollectiveOffer.validation != OfferValidationStatus.DRAFT)
 
     if not user_is_admin:
@@ -303,7 +303,7 @@ def get_collective_offers_template_by_filters(
     name_keywords: Optional[str] = None,
     period_beginning_date: Optional[datetime] = None,
     period_ending_date: Optional[datetime] = None,
-) -> Optional[Query]:
+) -> Optional[BaseQuery]:
     if period_beginning_date is not None or period_ending_date is not None:
         return None
 
@@ -341,7 +341,7 @@ def get_collective_offers_template_by_filters(
     return query
 
 
-def _filter_by_creation_mode(query: Query, creation_mode: str) -> Query:
+def _filter_by_creation_mode(query: BaseQuery, creation_mode: str) -> BaseQuery:
     if creation_mode == MANUAL_CREATION_MODE:
         query = query.filter(Offer.lastProviderId.is_(None))
     if creation_mode == IMPORTED_CREATION_MODE:
@@ -350,7 +350,7 @@ def _filter_by_creation_mode(query: Query, creation_mode: str) -> Query:
     return query
 
 
-def _filter_by_status(query: Query, status: str) -> Query:
+def _filter_by_status(query: BaseQuery, status: str) -> BaseQuery:
     return query.filter(Offer.status == OfferStatus[status].name)
 
 
@@ -488,7 +488,7 @@ def get_current_offer_validation_config() -> Optional[OfferValidationConfig]:
     return OfferValidationConfig.query.order_by(OfferValidationConfig.id.desc()).first()
 
 
-def get_expired_offers(interval: List[datetime]) -> Query:
+def get_expired_offers(interval: List[datetime]) -> BaseQuery:
     """Return a query of offers whose latest booking limit occurs within
     the given interval.
 

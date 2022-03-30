@@ -2,9 +2,9 @@ from flask import flash
 from flask import request
 from flask import url_for
 from flask_admin.helpers import get_form_data
+from flask_sqlalchemy import BaseQuery
 from markupsafe import Markup
 from markupsafe import escape
-from sqlalchemy.orm import query
 from wtforms import BooleanField
 from wtforms import Form
 from wtforms.fields.core import IntegerField
@@ -112,10 +112,10 @@ class VenueProviderView(BaseAdminView):
 
         return form_class(get_form_data(), obj=obj)
 
-    def get_query(self) -> query:
+    def get_query(self) -> BaseQuery:
         return self._extend_query(super().get_query())
 
-    def get_count_query(self) -> query:
+    def get_count_query(self) -> BaseQuery:
         return self._extend_query(super().get_count_query())
 
     @property
@@ -125,7 +125,7 @@ class VenueProviderView(BaseAdminView):
         return formatters
 
     @staticmethod
-    def _extend_query(query_to_override: query) -> query:
+    def _extend_query(query_to_override: BaseQuery) -> BaseQuery:
         venue_id = request.args.get("id")
 
         if venue_id:
