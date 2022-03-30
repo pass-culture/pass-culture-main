@@ -69,7 +69,6 @@ const Offers = ({
 
   const [areAllOffersSelected, setAreAllOffersSelected] = useState(false)
   const [selectedOfferIds, setSelectedOfferIds] = useState<string[]>([])
-  const [isStatusFiltersVisible, setIsStatusFiltersVisible] = useState(false)
 
   const { isAdmin } = currentUser || {}
   const currentPageOffersSubset = offers.slice(
@@ -162,7 +161,6 @@ const Offers = ({
   )
 
   const applyFilters = useCallback(() => {
-    setIsStatusFiltersVisible(false)
     if (!hasDifferentFiltersFromLastSearch(searchFilters)) {
       refreshOffers()
     }
@@ -231,13 +229,11 @@ const Offers = ({
           currentUser={currentUser}
           hasOffers={hasOffers}
           isLoading={isLoading}
-          isStatusFiltersVisible={isStatusFiltersVisible}
           offersCount={offers.length}
           pageCount={pageCount}
           resetFilters={resetFilters}
           searchFilters={searchFilters}
           selectedOfferIds={selectedOfferIds}
-          setIsStatusFiltersVisible={setIsStatusFiltersVisible}
           setSearchFilters={setSearchFilters}
           setSelectedOfferIds={setSelectedOfferIds}
           toggleSelectAllCheckboxes={toggleSelectAllCheckboxes}

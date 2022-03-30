@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types'
-import React, { Fragment } from 'react'
+import React, { Fragment, useState } from 'react'
 
 import Icon from 'components/layout/Icon'
 import {
@@ -14,10 +14,11 @@ const StatusFiltersButton = ({
   applyFilters,
   status,
   updateStatusFilter,
-  isStatusFiltersVisible,
-  setIsStatusFiltersVisible,
 }) => {
+  const [isStatusFiltersVisible, setIsStatusFiltersVisible] = useState(false)
+
   const isFilteredByStatus = OFFER_STATUS_LIST.includes(status)
+
   function toggleStatusFiltersVisibility() {
     setIsStatusFiltersVisible(!isStatusFiltersVisible)
   }
@@ -56,15 +57,12 @@ export default StatusFiltersButton
 
 StatusFiltersButton.defaultProps = {
   disabled: false,
-  isStatusFiltersVisible: false,
   status: null,
 }
 
 StatusFiltersButton.propTypes = {
   applyFilters: PropTypes.func.isRequired,
   disabled: PropTypes.bool,
-  isStatusFiltersVisible: PropTypes.bool,
-  setIsStatusFiltersVisible: PropTypes.func.isRequired,
   status: PropTypes.string,
   updateStatusFilter: PropTypes.func.isRequired,
 }
