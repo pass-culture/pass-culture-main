@@ -240,11 +240,10 @@ class Venue(PcObject, Model, HasThumbMixin, HasAddressMixin, ProvidableMixin, Ne
         if not self.bankInformation:
             return None
 
-        can_show_application_id = (
-            self.bankInformation.status == BankInformationStatus.DRAFT
-            or self.bankInformation.status == BankInformationStatus.ACCEPTED
-        )
-        if not can_show_application_id:
+        if self.bankInformation.status not in (
+            BankInformationStatus.DRAFT,
+            BankInformationStatus.ACCEPTED,
+        ):
             return None
 
         return self.bankInformation.applicationId
@@ -445,11 +444,10 @@ class Offerer(
         if not self.bankInformation:
             return None
 
-        can_show_application_id = (
-            self.bankInformation.status == BankInformationStatus.DRAFT
-            or self.bankInformation.status == BankInformationStatus.ACCEPTED
-        )
-        if not can_show_application_id:
+        if self.bankInformation.status not in (
+            BankInformationStatus.DRAFT,
+            BankInformationStatus.ACCEPTED,
+        ):
             return None
 
         return self.bankInformation.applicationId

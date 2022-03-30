@@ -305,9 +305,9 @@ def is_identity_check_with_document_method_allowed_for_underage(user: users_mode
     if not FeatureToggle.ALLOW_IDCHECK_UNDERAGE_REGISTRATION.is_active():
         return False
 
-    if (
-        user.schoolType == users_models.SchoolTypeEnum.PUBLIC_HIGH_SCHOOL
-        or user.schoolType == users_models.SchoolTypeEnum.PUBLIC_SECONDARY_SCHOOL
+    if user.schoolType in (
+        users_models.SchoolTypeEnum.PUBLIC_HIGH_SCHOOL,
+        users_models.SchoolTypeEnum.PUBLIC_SECONDARY_SCHOOL,
     ):
         return FeatureToggle.ALLOW_IDCHECK_REGISTRATION_FOR_EDUCONNECT_ELIGIBLE.is_active()
     return True
