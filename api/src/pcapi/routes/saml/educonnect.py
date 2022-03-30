@@ -49,7 +49,7 @@ def login_educonnect(user: users_models.User) -> Response:
 
 
 @blueprint.saml_blueprint.route("acs", methods=["POST"])
-def on_educonnect_authentication_response() -> Response:  # pylint: disable=too-many-return-statements
+def on_educonnect_authentication_response() -> Response:
     try:
         educonnect_user = educonnect_connector.get_educonnect_user(request.form["SAMLResponse"])
 
