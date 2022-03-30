@@ -24,7 +24,7 @@ def import_educational_institutions_and_deposits(
     if path is not None and path != DEFAULT_FILEPATH and not path.endswith("/"):
         path += "/"
 
-    with open(f"{path}{filename}", "r") as csv_file:
+    with open(f"{path}{filename}", "r", encoding="utf-8") as csv_file:
         csv_rows = csv.DictReader(csv_file, delimiter=";")
         headers = csv_rows.fieldnames
         if not headers or "UAICode" not in headers or "depositAmount" not in headers:

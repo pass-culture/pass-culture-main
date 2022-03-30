@@ -34,6 +34,6 @@ def update_venue_type(file_path: str):
 
 
 def _read_venue_type_from_file(file_path: str) -> list[tuple]:
-    with open(file_path, mode="r", newline="\n") as file:
+    with open(file_path, mode="r", newline="\n", encoding="utf-8") as file:
         data = [tuple(line) for line in csv.reader(file, delimiter=";")]
         return data

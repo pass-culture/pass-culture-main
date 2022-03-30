@@ -51,5 +51,5 @@ def _process_file(csv_file) -> None:
 
 def catching_up_dms_beneficiaries_adresses_from_csv_file(csv_file_path: str) -> None:
     logger.info("Import DMS beneficiary addresses", extra={"csv_path": csv_file_path})
-    with open(csv_file_path) as fp:
+    with open(csv_file_path, encoding="utf-8") as fp:
         _process_file(fp)

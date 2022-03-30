@@ -66,6 +66,6 @@ def suspend_or_delete_users_by_email(admin_email: str, user_emails: Iterable[str
 
 def suspend_or_delete_from_file(path: str, admin_email: str) -> None:
     user_emails = set()
-    with open(path) as fp:
+    with open(path, encoding="utf-8") as fp:
         user_emails = {line.strip() for line in fp.readlines()}
     suspend_or_delete_users_by_email(admin_email, user_emails)

@@ -20,10 +20,8 @@ depends_on = None
 
 def upgrade():
     sql_file = Path(os.path.dirname(os.path.realpath(__file__))) / "sql" / "schema_init.sql"
-
-    with open(sql_file, "r") as file:
-        data = file.read()
-    op.execute(data)
+    sql = sql_file.read_text()
+    op.execute(sql)
 
 
 def downgrade():

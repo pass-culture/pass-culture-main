@@ -25,7 +25,7 @@ BOOKINGS_TOKEN_NOT_TO_UPDATE = ["2QLYYA", "BMTUME", "LUJ9AM", "DA8YLU", "Q46YHM"
 def run(csv_file_path: str, cancellation_reason: BookingCancellationReasons) -> None:
     logger.info("[CANCEL BOOKINGS OF EVENTS FROM FILE] START")
     logger.info("[CANCEL BOOKINGS OF EVENTS FROM FILE] STEP 1 - Lecture du fichier CSV")
-    with open(csv_file_path) as csv_file:
+    with open(csv_file_path, encoding="utf-8") as csv_file:
         csv_reader = csv.reader(csv_file)
         logger.info("[CANCEL BOOKINGS OF EVENTS FROM FILE] STEP 2 - Annulation des réservations")
         _cancel_bookings_of_offers_from_rows(csv_reader, cancellation_reason)

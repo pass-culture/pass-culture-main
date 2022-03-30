@@ -54,12 +54,12 @@ def bulk_update_is_gcu_compatible_via_isbns(iterable: Iterable[str], batch_size:
 def bulk_mark_incompatible_from_path(path: str, batch_size: int) -> None:
     """Script à lancer en passant en premier paramètre le path d'un fichier csv avec une colonne contenant les isbns
     à désactiver"""
-    with open(path) as fp:
+    with open(path, encoding="utf-8") as fp:
         return bulk_update_is_gcu_compatible_via_isbns(fp, batch_size, is_compatible=False)
 
 
 def bulk_mark_compatible_from_path(path: str, batch_size: int) -> None:
     """Script à lancer en passant en premier paramètre le path d'un fichier csv avec une colonne contenant les isbns
     à activer"""
-    with open(path) as fp:
+    with open(path, encoding="utf-8") as fp:
         return bulk_update_is_gcu_compatible_via_isbns(fp, batch_size, is_compatible=True)

@@ -564,7 +564,7 @@ def test_generate_business_units_file():
     with assert_num_queries(n_queries):
         path = api._generate_business_units_file()
 
-    reader = csv.DictReader(path.open(), quoting=csv.QUOTE_NONNUMERIC)
+    reader = csv.DictReader(path.open(encoding="utf-8"), quoting=csv.QUOTE_NONNUMERIC)
     rows = list(reader)
     assert len(rows) == 2
     assert rows[0] == {
@@ -1330,7 +1330,7 @@ class GenerateInvoiceHtmlTest:
 
         invoice_html = api._generate_invoice_html(invoice)
 
-        with open(self.TEST_FILES_PATH / "invoice" / "rendered_invoice.html", "r") as f:
+        with open(self.TEST_FILES_PATH / "invoice" / "rendered_invoice.html", "r", encoding="utf-8") as f:
             expected_invoice_html = f.read()
         # We need to replace Cashflow IDs and dates that were used when generating the expected html
         expected_invoice_html = expected_invoice_html.replace(

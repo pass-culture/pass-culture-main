@@ -48,7 +48,7 @@ def bulk_update_is_synchronization_compatible_via_isbns(
 def bulk_mark_synchronization_compatible_product_from_path(path: str, batch_size: int) -> None:
     """Script à lancer en passant en premier paramètre le path d'un fichier csv avec une colonne contenant les isbns
     à passer en synchronisable"""
-    with open(path) as fp:
+    with open(path, encoding="utf-8") as fp:
         return bulk_update_is_synchronization_compatible_via_isbns(
             fp, is_synchronization_compatible=True, batch_size=batch_size
         )
@@ -57,7 +57,7 @@ def bulk_mark_synchronization_compatible_product_from_path(path: str, batch_size
 def bulk_mark_not_synchronization_compatible_product_from_path(path: str, batch_size: int) -> None:
     """Script à lancer en passant en premier paramètre le path d'un fichier csv avec une colonne contenant les isbns
     à passer en non synchronisable"""
-    with open(path) as fp:
+    with open(path, encoding="utf-8") as fp:
         return bulk_update_is_synchronization_compatible_via_isbns(
             fp, is_synchronization_compatible=False, batch_size=batch_size
         )

@@ -30,9 +30,9 @@ PUBLIC_CERTIFICATE_FILE_PATH = path.join(BASEDIR, f"{FILES_DIR}/public.cert")
 PASS_CULTURE_IDENTITY_ID = f"{settings.API_URL_FOR_EDUCONNECT}/saml/metadata.xml"
 PASS_CULTURE_ACS_URL = f"{settings.API_URL_FOR_EDUCONNECT}/saml/acs/"
 
-with open(PUBLIC_CERTIFICATE_FILE_PATH, "w") as certificate_file:
+with open(PUBLIC_CERTIFICATE_FILE_PATH, "w", encoding="ascii") as certificate_file:
     certificate_file.write(settings.EDUCONNECT_SP_CERTIFICATE)
-with open(PRIVATE_KEY_FILE_PATH, "w") as key_file:
+with open(PRIVATE_KEY_FILE_PATH, "w", encoding="ascii") as key_file:
     key_file.write(settings.EDUCONNECT_SP_PRIVATE_KEY)
 
 
