@@ -21,7 +21,6 @@ const Offers = ({
   currentPageOffersSubset,
   hasOffers,
   isLoading,
-  isStatusFiltersVisible,
   offersCount,
   pageCount,
   resetFilters,
@@ -32,7 +31,6 @@ const Offers = ({
   setSelectedOfferIds,
   toggleSelectAllCheckboxes,
   initialSearchFilters,
-  setIsStatusFiltersVisible,
 }) => {
   const isAdminForbidden = useCallback(
     searchFilters => {
@@ -126,9 +124,7 @@ const Offers = ({
               areOffersPresent={hasOffers}
               filters={searchFilters}
               isAdminForbidden={isAdminForbidden}
-              isStatusFiltersVisible={isStatusFiltersVisible}
               selectAllOffers={selectAllOffers}
-              setIsStatusFiltersVisible={setIsStatusFiltersVisible}
               updateStatusFilter={updateStatusFilter}
             />
             <OffersTableBody
@@ -180,13 +176,11 @@ Offers.propTypes = {
   hasOffers: PropTypes.bool.isRequired,
   initialSearchFilters: PropTypes.shape().isRequired,
   isLoading: PropTypes.bool.isRequired,
-  isStatusFiltersVisible: PropTypes.bool.isRequired,
   offersCount: PropTypes.number.isRequired,
   pageCount: PropTypes.number,
   resetFilters: PropTypes.func.isRequired,
   searchFilters: PropTypes.shape().isRequired,
   selectedOfferIds: PropTypes.shape.isRequired,
-  setIsStatusFiltersVisible: PropTypes.func.isRequired,
   setSearchFilters: PropTypes.func.isRequired,
   setSelectedOfferIds: PropTypes.func.isRequired,
   toggleSelectAllCheckboxes: PropTypes.func.isRequired,
