@@ -86,7 +86,7 @@ if __name__ == "__main__":
     if len(sys.argv) != 2:
         raise ValueError("This script requires one argument: the path to the CSV file with users to import")
     csv_file_path = sys.argv[1]
-    with open(csv_file_path) as fp:
+    with open(csv_file_path, encoding="utf-8") as fp:
         with app.app_context():
             new_users = _read_file(fp)
     logger.info("Created or updated %d beneficiary users from %s", len(new_users), csv_file_path)

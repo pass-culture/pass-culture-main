@@ -35,5 +35,5 @@ def bulk_inactivate_offers(iterable: Iterable[str], batch_size: int) -> None:
 
 
 def bulk_mark_incompatible_from_path(path: str, batch_size: int) -> None:
-    with open(path) as fp:
+    with open(path, encoding="utf-8") as fp:
         return bulk_inactivate_offers(fp, batch_size)

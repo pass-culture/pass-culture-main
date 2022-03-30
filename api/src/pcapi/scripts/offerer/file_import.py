@@ -115,7 +115,7 @@ def run(csv_file_path: str) -> None:
     logger.info("-------------------------------------------------------------------------------\n")
 
     logger.info("[STEP 1] Lecture du fichier CSV")
-    with open(csv_file_path) as csv_file:
+    with open(csv_file_path, encoding="utf-8") as csv_file:
         csv_reader = csv.reader(csv_file)
 
         logger.info("[STEP 2] Enregistrement des structures et lieux")

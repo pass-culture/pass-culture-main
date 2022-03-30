@@ -221,7 +221,7 @@ def install_logging():
     # output of the master process (for log gathering).
     if any((settings.IS_TESTING, settings.IS_STAGING, settings.IS_PROD)) and sys.stdout.isatty():
         # pylint: disable=consider-using-with
-        handler2 = logging.StreamHandler(stream=open("/proc/1/fd/1", "w"))
+        handler2 = logging.StreamHandler(stream=open("/proc/1/fd/1", "w", encoding="utf-8"))
         handler2.setFormatter(JsonFormatter())
         handlers.append(handler2)
     logging.basicConfig(level=settings.LOG_LEVEL, handlers=handlers, force=True)

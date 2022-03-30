@@ -11,7 +11,7 @@ from pcapi.models import db
 
 
 def read_allocine_csv(file_path: str) -> list[tuple]:
-    with open(file_path, mode="r", newline="\n") as file:
+    with open(file_path, mode="r", newline="\n", encoding="utf-8") as file:
         return [tuple(line) for line in csv.reader(file, delimiter=",")]
 
 

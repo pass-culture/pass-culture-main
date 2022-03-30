@@ -25,7 +25,7 @@ class LocalBackend(BaseBackend):
         try:
             os.makedirs(self.local_dir(folder, object_id), exist_ok=True)
             file_local_path = self.local_path(folder, object_id)
-            with open(str(file_local_path) + ".type", "w") as new_type_file:
+            with open(str(file_local_path) + ".type", "w", encoding="ascii") as new_type_file:
                 new_type_file.write(content_type)
 
             with open(file_local_path, "wb") as new_file:

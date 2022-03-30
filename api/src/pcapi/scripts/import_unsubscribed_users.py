@@ -14,7 +14,7 @@ def _get_emails() -> list[str]:
     file_to_open = script_execution_dir / "unsubscribed_users.txt"
 
     # Expecting unsubscribed_users.txt to be a text file containing one email per line
-    with open(file_to_open, "r") as file:
+    with open(file_to_open, "r", encoding="utf-8") as file:
         unsubscribed_users = file.read().splitlines()
     return unsubscribed_users
 

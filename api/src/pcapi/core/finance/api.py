@@ -592,7 +592,7 @@ def _write_csv(
     # Store file in a dedicated directory within "/tmp". It's easier
     # to clean files in tests that way.
     path = pathlib.Path(tempfile.mkdtemp()) / f"{filename}.csv"
-    with open(path, "w+") as fp:
+    with open(path, "w+", encoding="utf-8") as fp:
         writer = csv.writer(fp, quoting=csv.QUOTE_NONNUMERIC)
         writer.writerow(header)
         if rows is not None:

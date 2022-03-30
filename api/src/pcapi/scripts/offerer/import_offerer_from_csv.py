@@ -128,7 +128,7 @@ def import_new_offerer_from_csv(row: dict) -> None:
 
 
 def import_from_csv_file(csv_file_path: str) -> None:
-    with open(csv_file_path) as csv_file:
+    with open(csv_file_path, encoding="utf-8") as csv_file:
         csv_reader = csv.dictReader(csv_file)
 
         for row in csv_reader:

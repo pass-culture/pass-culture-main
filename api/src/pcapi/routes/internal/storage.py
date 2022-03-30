@@ -13,7 +13,7 @@ def send_storage_file(bucketId, objectId):
     path = LocalBackend().local_path(bucketId, objectId)
     type_path = path.parent / (path.name + ".type")
     if type_path.exists():
-        mimetype = type_path.readtext()
+        mimetype = type_path.read_text()
     else:
         return "file not found", 404
     with path.open("rb") as fp:

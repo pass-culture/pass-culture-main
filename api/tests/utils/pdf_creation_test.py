@@ -16,7 +16,7 @@ ACCEPTABLE_GENERATION_DURATION = 2  # seconds. The CI might be quite slow.
 class GeneratePdfFromHtmlTest:
     @pytest.fixture(name="example_html")
     def example_html_fixture(self):
-        with open(TEST_FILES_PATH / "pdf" / "example.html", "r") as f:
+        with open(TEST_FILES_PATH / "pdf" / "example.html", "r", encoding="utf-8") as f:
             example_html = f.read()
         return example_html
 
