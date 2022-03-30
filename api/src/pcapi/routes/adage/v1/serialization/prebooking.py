@@ -221,9 +221,9 @@ def serialize_collective_booking(collective_booking: CollectiveBooking) -> Educa
 def get_educational_booking_status(
     educational_booking: EducationalBooking,
 ) -> Union[EducationalBookingStatus, BookingStatus]:
-    if (
-        educational_booking.booking.status == BookingStatus.USED
-        or educational_booking.booking.status == BookingStatus.REIMBURSED
+    if educational_booking.booking.status in (
+        BookingStatus.USED,
+        BookingStatus.REIMBURSED,
     ):
         return BookingStatus.USED.value
 
@@ -237,9 +237,9 @@ def get_educational_booking_status(
 def get_collective_booking_status(
     collective_booking: CollectiveBooking,
 ) -> CollectiveBookingStatus:
-    if (
-        collective_booking.status == CollectiveBookingStatus.USED
-        or collective_booking.status == CollectiveBookingStatus.REIMBURSED
+    if collective_booking.status in (
+        CollectiveBookingStatus.USED,
+        CollectiveBookingStatus.REIMBURSED,
     ):
         return CollectiveBookingStatus.USED.value
 
