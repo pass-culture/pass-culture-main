@@ -5,7 +5,7 @@ import NotFound from 'components/pages/Errors/NotFound/NotFound'
 
 import OfferersContainer from './List/OfferersContainer'
 import OffererDetailsLayout from './Offerer/OffererDetailsLayout'
-import OffererCreationContainer from './OffererCreation/OffererCreationContainer'
+import OffererCreation from './OffererCreation'
 
 const OfferersLayout = () => {
   const match = useRouteMatch()
@@ -16,7 +16,7 @@ const OfferersLayout = () => {
         <OfferersContainer />
       </Route>
       <Route exact path={`${match.path}/creation`}>
-        <OffererCreationContainer />
+        <OffererCreation />
       </Route>
       <Route path={`${match.path}/:offererId([A-Z0-9]+)`}>
         <OffererDetailsLayout />
