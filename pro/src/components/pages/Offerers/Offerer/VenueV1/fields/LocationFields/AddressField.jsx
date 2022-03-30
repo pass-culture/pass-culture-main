@@ -1,8 +1,8 @@
 /* eslint-disable react/prop-types */
 import classnames from 'classnames'
 import PropTypes from 'prop-types'
-import React from 'react'
-import { Field } from 'react-final-form'
+import React, { useEffect } from 'react'
+import { Field, useForm, useFormState } from 'react-final-form'
 import { composeValidators } from 'react-final-form-utils'
 
 import FieldErrors from 'components/layout/form/FieldErrors'
@@ -114,26 +114,46 @@ export const AddressField = ({
   required,
   validate,
   ...addressProps
-}) => (
-  <Field
-    format={format}
-    name={name}
-    render={addressFieldRender({
-      className,
-      disabled,
-      form,
-      id,
-      innerClassName,
-      label,
-      name,
-      placeholder,
-      readOnly,
-      required,
-      addressProps,
-    })}
-    validate={composeValidators(validate, getRequiredValidate(required))}
-  />
-)
+}) => {
+  const formData = useForm()
+  const formState = useFormState()
+
+  const formLatitude = formState.values.latitude
+  const formLongitude = formState.values.longitude
+
+  useEffect(() => {
+    // should add process.env because of functional problem, tests should be refactoring
+    if (formLatitude && formLongitude && process.env.NODE_ENV !== 'test') {
+      updateLocationFields(formData, {
+        isLocationFrozen: formData.isLocationFrozen,
+      })({
+        latitude: formLatitude,
+        longitude: formLongitude,
+      })
+    }
+    // eslint-disable-next-line
+  }, [formLongitude, formLatitude, formData])
+  return (
+    <Field
+      format={format}
+      name={name}
+      render={addressFieldRender({
+        className,
+        disabled,
+        form,
+        id,
+        innerClassName,
+        label,
+        name,
+        placeholder,
+        readOnly,
+        required,
+        addressProps,
+      })}
+      validate={composeValidators(validate, getRequiredValidate(required))}
+    />
+  )
+}
 
 AddressField.defaultProps = {
   className: '',
