@@ -7,9 +7,10 @@ import useCurrentUser from 'components/hooks/useCurrentUser'
 import useNotification from 'components/hooks/useNotification'
 import Spinner from 'components/layout/Spinner'
 import { computeOffersUrl } from 'components/pages/Offers/utils/computeOffersUrl'
-import { DEFAULT_SEARCH_FILTERS } from 'core/Offers'
+import { DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
 import { useQuerySearchFilters } from 'core/Offers/hooks'
 import { Audience, Offer, Offerer, TSearchFilters } from 'core/Offers/types'
+import { hasSearchFilters } from 'core/Offers/utils'
 import OffersScreen from 'screens/Offers'
 import { savePageNumber, saveSearchFilters } from 'store/offers/actions'
 
@@ -91,14 +92,12 @@ const CollectiveOffers = (): JSX.Element => {
   )
 
   useEffect(() => {
-    const filters = { ...DEFAULT_SEARCH_FILTERS, ...urlSearchFilters }
+    const filters = { ...urlSearchFilters }
     if (currentUser.isAdmin) {
-      const isVenueFilterSelected =
-        urlSearchFilters.venueId !== DEFAULT_SEARCH_FILTERS.venueId
-      const isOffererFilterApplied =
-        urlSearchFilters.offererId !== DEFAULT_SEARCH_FILTERS.offererId
-      const isFilterByVenueOrOfferer =
-        isVenueFilterSelected || isOffererFilterApplied
+      const isFilterByVenueOrOfferer = hasSearchFilters(urlSearchFilters, [
+        'venueId',
+        'offererId',
+      ])
 
       if (!isFilterByVenueOrOfferer) {
         filters.status = DEFAULT_SEARCH_FILTERS.status
