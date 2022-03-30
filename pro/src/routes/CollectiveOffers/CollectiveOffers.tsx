@@ -198,7 +198,7 @@ const CollectiveOffers = (): JSX.Element => {
         separateIndividualAndCollectiveOffers
       }
       setOfferer={setOfferer}
-      urlAudience={Audience.INDIVIDUAL}
+      urlAudience={Audience.COLLECTIVE}
       urlSearchFilters={urlSearchFilters}
       venues={venues}
     />
