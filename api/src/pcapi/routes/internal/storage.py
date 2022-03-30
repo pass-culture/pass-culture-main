@@ -1,6 +1,4 @@
 """ storage """
-import os.path
-
 from flask import send_file
 
 from pcapi.core.object_storage.backends.local import LocalBackend
@@ -13,9 +11,10 @@ print("LOCAL DEV MODE: Using disk based object storage")
 @public_api.route("/storage/<bucketId>/<path:objectId>")
 def send_storage_file(bucketId, objectId):
     path = LocalBackend().local_path(bucketId, objectId)
-    type_path = str(path) + ".type"
-    if os.path.isfile(type_path):
-        mimetype = open(type_path).read()
+    type_path = path.parent / (path.name + ".type")
+    if type_path.exists():
+        mimetype = type_path.readtext()
     else:
         return "file not found", 404
-    return send_file(open(path, "rb"), mimetype=mimetype)
+    with path.open("rb") as fp:
+        return send_file(fp, mimetype=mimetype)
