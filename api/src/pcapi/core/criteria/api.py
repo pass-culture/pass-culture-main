@@ -1,6 +1,6 @@
 import typing
 
-from sqlalchemy.orm import Query
+from flask_sqlalchemy import BaseQuery
 from sqlalchemy.orm import joinedload
 
 from pcapi.core.offerers.models import Venue
@@ -71,7 +71,7 @@ class BulkUpdate:
 
         return missing_base_criteria
 
-    def fetch_base_objects(self) -> Query:
+    def fetch_base_objects(self) -> BaseQuery:
         return self.base_cls.query.options(joinedload(self.base_cls.criteria)).filter(
             self.base_cls.id.in_(self.base_ids)
         )

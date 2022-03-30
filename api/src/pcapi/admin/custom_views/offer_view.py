@@ -18,11 +18,11 @@ from flask_admin.helpers import get_form_data
 from flask_admin.helpers import get_redirect_target
 from flask_admin.helpers import is_form_submitted
 from flask_login import current_user
+from flask_sqlalchemy import BaseQuery
 from markupsafe import Markup
 from markupsafe import escape
 from sqlalchemy import func
 import sqlalchemy.orm as sqla_orm
-from sqlalchemy.orm import Query
 from werkzeug import Response
 import wtforms
 from wtforms.fields.core import BooleanField
@@ -313,7 +313,7 @@ class OfferView(BaseAdminView):
 
         search.async_index_offer_ids([offer.id])
 
-    def get_query(self) -> Query:
+    def get_query(self) -> BaseQuery:
         return self.session.query(self.model).filter(Offer.validation != OfferValidationStatus.DRAFT).from_self()
 
 
@@ -331,13 +331,13 @@ class OfferForVenueSubview(OfferView):
     def is_visible(self) -> bool:
         return False
 
-    def get_query(self) -> Query:
+    def get_query(self) -> BaseQuery:
         return self._extend_query(super().get_query())
 
-    def get_count_query(self) -> Query:
+    def get_count_query(self) -> BaseQuery:
         return self._extend_query(super().get_count_query())
 
-    def _extend_query(self, query_to_override: Query) -> Query:
+    def _extend_query(self, query_to_override: BaseQuery) -> BaseQuery:
         venue_id = request.args.get("id")
 
         if venue_id is None:

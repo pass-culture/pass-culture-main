@@ -3,9 +3,9 @@ from flask import url_for
 from flask_admin.babel import lazy_gettext
 from flask_admin.contrib.sqla import filters as fa_filters
 from flask_admin.contrib.sqla import tools
+from flask_sqlalchemy import BaseQuery
 from markupsafe import Markup
 from markupsafe import escape
-from sqlalchemy.orm import Query
 from wtforms import Form
 
 from pcapi.admin.base_configuration import BaseAdminView
@@ -42,7 +42,7 @@ class OffererTagFilter(fa_filters.BaseSQLAFilter):
     Filter offerers based on tag (offerer_tag) name.
     """
 
-    def apply(self, query: Query, value: str, alias: str = None) -> Query:
+    def apply(self, query: BaseQuery, value: str, alias: str = None) -> BaseQuery:
         parsed_value = tools.parse_like_term(value)
         return query.join(OffererTagMapping).join(OffererTag).filter(OffererTag.name.ilike(parsed_value))
 

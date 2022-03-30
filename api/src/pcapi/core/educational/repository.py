@@ -5,8 +5,8 @@ from decimal import Decimal
 from typing import Optional
 from typing import Union
 
+from flask_sqlalchemy import BaseQuery
 from sqlalchemy import func
-from sqlalchemy.orm import Query
 from sqlalchemy.orm import contains_eager
 from sqlalchemy.orm import joinedload
 from sqlalchemy.sql.expression import extract
@@ -270,7 +270,7 @@ def get_bookings_for_educational_year(educational_year_id: str) -> list[educatio
     )
 
 
-def get_expired_collective_offers(interval: list[datetime]) -> Query:
+def get_expired_collective_offers(interval: list[datetime]) -> BaseQuery:
     """Return a query of collective offers whose latest booking limit occurs within
     the given interval.
 
@@ -290,7 +290,7 @@ def get_expired_collective_offers(interval: list[datetime]) -> Query:
     )
 
 
-def find_expiring_collective_bookings_query() -> Query:
+def find_expiring_collective_bookings_query() -> BaseQuery:
     today_at_midnight = datetime.combine(date.today(), time(0, 0))
 
     return CollectiveBooking.query.filter(
@@ -299,7 +299,7 @@ def find_expiring_collective_bookings_query() -> Query:
     )
 
 
-def find_expiring_collective_booking_ids_from_query(query: Query) -> Query:
+def find_expiring_collective_booking_ids_from_query(query: BaseQuery) -> BaseQuery:
     return query.order_by(CollectiveBooking.id).with_entities(CollectiveBooking.id)
 
 

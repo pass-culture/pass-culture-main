@@ -11,12 +11,11 @@ from flask_admin.contrib.sqla import filters as fa_filters
 from flask_admin.contrib.sqla import tools
 from flask_admin.contrib.sqla.fields import QuerySelectMultipleField
 from flask_admin.helpers import get_redirect_target
+from flask_sqlalchemy import BaseQuery
 from markupsafe import Markup
 from markupsafe import escape
 from sqlalchemy import func
-from sqlalchemy.orm import Query
 from sqlalchemy.orm import joinedload
-from sqlalchemy.orm import query
 from werkzeug.exceptions import abort
 from wtforms import Form
 from wtforms.fields.core import BooleanField
@@ -86,9 +85,9 @@ class VenueCriteriaFilter(fa_filters.BaseSQLAFilter):
     Filter venues based on tag (criterion) name.
     """
 
-    def apply(self, query_: Query, value: str, alias=None) -> Query:
+    def apply(self, query: BaseQuery, value: str, alias=None) -> BaseQuery:
         parsed_value = tools.parse_like_term(value)
-        return query_.join(offerers_models.VenueCriterion).join(Criterion).filter(Criterion.name.ilike(parsed_value))
+        return query.join(offerers_models.VenueCriterion).join(Criterion).filter(Criterion.name.ilike(parsed_value))
 
     def operation(self):
         return lazy_gettext("contains")
@@ -163,7 +162,7 @@ class VenueView(BaseAdminView):
         "criteria",
     ]
 
-    def get_query(self) -> Query:
+    def get_query(self) -> BaseQuery:
         return (
             self._extend_query(super().get_query())
             .options(joinedload(Venue.managingOfferer))
@@ -172,11 +171,11 @@ class VenueView(BaseAdminView):
             .options(joinedload(Venue.criteria))
         )
 
-    def get_count_query(self) -> Query:
+    def get_count_query(self) -> BaseQuery:
         return self._extend_query(super().get_count_query())
 
     @staticmethod
-    def _extend_query(query_to_override: Query) -> Query:
+    def _extend_query(query_to_override: BaseQuery) -> BaseQuery:
         venue_id = request.args.get("id")
 
         if venue_id:
@@ -332,13 +331,13 @@ class VenueForOffererSubview(VenueView):
     def is_visible(self) -> bool:
         return False
 
-    def get_query(self) -> query:
+    def get_query(self) -> BaseQuery:
         return self._extend_query(super().get_query())
 
-    def get_count_query(self) -> query:
+    def get_count_query(self) -> BaseQuery:
         return self._extend_query(super().get_count_query())
 
-    def _extend_query(self, query_to_override: query) -> query:
+    def _extend_query(self, query_to_override: BaseQuery) -> BaseQuery:
         offerer_id = request.args.get("id")
 
         if offerer_id is None:
