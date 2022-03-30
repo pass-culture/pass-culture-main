@@ -81,6 +81,7 @@ def on_dms_parsing_error(
 def on_dms_eligibility_error(
     user: users_models.User,
     fraud_check: fraud_models.BeneficiaryFraudCheck,
+    application_scalar_id: str,
     extra_data: Optional[dict] = None,
 ) -> None:
     dms_client = DMSGraphQLClient()
@@ -91,7 +92,7 @@ def on_dms_eligibility_error(
     )
     subscription_messages.on_dms_application_parsing_errors_but_updatables_values(user, ["birth_date"])
     dms_client.send_user_message(
-        fraud_check.thirdPartyId, settings.DMS_INSTRUCTOR_ID, subscription_messages.DMS_ERROR_MESSSAGE_BIRTH_DATE
+        application_scalar_id, settings.DMS_INSTRUCTOR_ID, subscription_messages.DMS_ERROR_MESSSAGE_BIRTH_DATE
     )
     fraud_check.reason = "La date de naissance de l'utilisateur ne correspond pas à un âge autorisé"
     fraud_check.reasonCodes = [fraud_models.FraudReasonCode.AGE_NOT_VALID]
