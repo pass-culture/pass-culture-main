@@ -4,6 +4,10 @@ import React from 'react'
 import HiddenField from 'components/layout/form/fields/HiddenField'
 import NumberField from 'components/layout/form/fields/NumberField'
 import TextField from 'components/layout/form/fields/TextField'
+import {
+  parsePostalCode,
+  validatePostalCode,
+} from 'components/layout/form/validate'
 
 import AddressField from './AddressField'
 
@@ -41,8 +45,10 @@ const LocationFields = ({
           innerClassName="col-33"
           label="Code postal : "
           name="postalCode"
+          parse={parsePostalCode}
           readOnly={fieldIsFrozen}
           required
+          validate={validatePostalCode}
         />
         <TextField
           autoComplete="address-level2"
