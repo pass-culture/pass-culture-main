@@ -411,7 +411,8 @@ def get_csv_report(
     return _serialize_csv_report(bookings_query)
 
 
-def _field_to_venue_timezone(field: InstrumentedAttribute) -> cast:
+# FIXME (Gautier, 03-25-2022): also used in collective_booking. SHould we move it to core or some other place?
+def field_to_venue_timezone(field: InstrumentedAttribute) -> cast:
     return cast(func.timezone(Venue.timezone, func.timezone("UTC", field)), Date)
 
 
@@ -448,14 +449,14 @@ def _get_filtered_bookings_query(
         )
 
         bookings_query = bookings_query.filter(
-            _field_to_venue_timezone(period_attribut_filter).between(*period, symmetric=True)
+            field_to_venue_timezone(period_attribut_filter).between(*period, symmetric=True)
         )
 
     if venue_id is not None:
         bookings_query = bookings_query.filter(Booking.venueId == venue_id)
 
     if event_date:
-        bookings_query = bookings_query.filter(_field_to_venue_timezone(Stock.beginningDatetime) == event_date)
+        bookings_query = bookings_query.filter(field_to_venue_timezone(Stock.beginningDatetime) == event_date)
 
     if offer_type is not None:
         if offer_type == OfferType.INDIVIDUAL_OR_DUO:
