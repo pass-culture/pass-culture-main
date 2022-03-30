@@ -4,30 +4,10 @@ from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.specific_creators import create_offer_with_event_product
 from pcapi.model_creators.specific_creators import create_offer_with_thing_product
-from pcapi.model_creators.specific_creators import create_product_with_thing_subcategory
 from pcapi.repository import repository
 from pcapi.repository.offer_queries import get_offers_by_ids
-from pcapi.repository.offer_queries import get_offers_by_venue_id
 from pcapi.repository.offer_queries import get_paginated_active_offer_ids
 from pcapi.repository.offer_queries import get_paginated_offer_ids_by_venue_id
-
-
-class FindOffersTest:
-    @pytest.mark.usefixtures("db_session")
-    def test_get_offers_by_venue_id_returns_offers_matching_venue_id(self, app):
-        # Given
-        product = create_product_with_thing_subcategory(thing_name="Lire un livre", is_national=True)
-        offerer = create_offerer()
-        venue = create_venue(offerer, postal_code="34000", departement_code="34")
-        offer = create_offer_with_thing_product(venue=venue, product=product)
-        repository.save(offer)
-
-        # When
-        offers = get_offers_by_venue_id(venue.id)
-
-        # Then
-        assert len(offers) == 1
-        assert offers[0].venueId == venue.id
 
 
 class GetOffersByIdsTest:

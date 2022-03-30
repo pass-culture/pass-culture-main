@@ -7,10 +7,6 @@ def get_offer_by_id(offer_id: int):
     return Offer.query.get(offer_id)
 
 
-def get_offers_by_venue_id(venue_id: int) -> list[Offer]:
-    return Offer.query.filter_by(venueId=venue_id).all()
-
-
 def get_offers_by_product_id(product_id: int) -> list[Offer]:
     return Offer.query.filter_by(productId=product_id).all()
 
