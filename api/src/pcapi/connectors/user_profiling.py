@@ -7,7 +7,7 @@ import pydantic
 
 from pcapi import settings
 import pcapi.core.fraud.models as fraud_models
-import pcapi.utils.requests as requests
+from pcapi.utils import requests
 
 
 logger = logging.getLogger(__name__)

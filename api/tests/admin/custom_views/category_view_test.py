@@ -1,5 +1,5 @@
-import pcapi.core.categories.categories as categories
-import pcapi.core.categories.subcategories as subcategories
+from pcapi.core.categories import categories
+from pcapi.core.categories import subcategories
 import pcapi.core.users.factories as users_factories
 
 
