@@ -16,6 +16,13 @@ export interface IUseAnalyticsReturn {
   logForgottenPasswordClick: (page: string) => void
   logHelpCenterClick: (page: string) => void
   logCreateVenueClick: (page: string) => void
+  logHomeClick: (page: string) => void
+  logTicketClick: (page: string) => void
+  logOfferClick: (page: string) => void
+  logBookingClick: (page: string) => void
+  logReimbursementClick: (page: string) => void
+  logLogoutClick: (page: string) => void
+  logProClick: (page: string) => void
   logCreateOfferClick: (page: string, offererId: string) => void
 }
 
@@ -48,7 +55,20 @@ const useAnalytics = (): IUseAnalyticsReturn => {
     logEvent(Events.CLICKED_FORGOTTEN_PASSWORD, { from: page })
   const logHelpCenterClick = (page: string) =>
     logEvent(Events.CLICKED_HELP_CENTER, { from: page })
-
+  const logHomeClick = (page: string) =>
+    logEvent(Events.CLICKED_HOME, { from: page })
+  const logTicketClick = (page: string) =>
+    logEvent(Events.CLICKED_TICKET, { from: page })
+  const logOfferClick = (page: string) =>
+    logEvent(Events.CLICKED_OFFER, { from: page })
+  const logBookingClick = (page: string) =>
+    logEvent(Events.CLICKED_BOOKING, { from: page })
+  const logReimbursementClick = (page: string) =>
+    logEvent(Events.CLICKED_REIMBURSEMENT, { from: page })
+  const logLogoutClick = (page: string) =>
+    logEvent(Events.CLICKED_LOGOUT, { from: page })
+  const logProClick = (page: string) =>
+    logEvent(Events.CLICKED_PRO, { from: page })
   const logCreateVenueClick = (page: string) =>
     logEvent(Events.CLICKED_CREATE_VENUE, { from: page })
   const logCreateOfferClick = (page: string, offererId: string) =>
@@ -64,6 +84,13 @@ const useAnalytics = (): IUseAnalyticsReturn => {
     logHelpCenterClick,
     logCreateVenueClick,
     logCreateOfferClick,
+    logHomeClick,
+    logTicketClick,
+    logOfferClick,
+    logBookingClick,
+    logReimbursementClick,
+    logLogoutClick,
+    logProClick,
   }
 }
 

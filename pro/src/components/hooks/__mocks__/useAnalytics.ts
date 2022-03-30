@@ -12,6 +12,13 @@ const useAnalytics = (): IUseAnalyticsReturn => {
     logHelpCenterClick: jest.fn(),
     logCreateVenueClick: jest.fn(),
     logCreateOfferClick: jest.fn(),
+    logHomeClick: jest.fn(),
+    logTicketClick: jest.fn(),
+    logOfferClick: jest.fn(),
+    logBookingClick: jest.fn(),
+    logReimbursementClick: jest.fn(),
+    logLogoutClick: jest.fn(),
+    logProClick: jest.fn(),
   }
 }
 
