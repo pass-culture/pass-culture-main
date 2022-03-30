@@ -34,10 +34,11 @@ logger = logging.getLogger(__name__)
 
 def handle_dms_state(
     user: users_models.User,
+    state: dms_models.GraphQLApplicationStates,
     result_content: fraud_models.DMSContent,
     procedure_id: int,
     application_id: int,
-    state: dms_models.GraphQLApplicationStates,
+    application_scalar_id: str,
 ) -> fraud_models.BeneficiaryFraudCheck:
 
     logs_extra = {"application_id": application_id, "procedure_id": procedure_id, "user_email": user.email}
@@ -47,7 +48,9 @@ def handle_dms_state(
     if state == dms_models.GraphQLApplicationStates.draft:
         eligibility_type = current_fraud_check.eligibilityType
         if eligibility_type is None:
-            fraud_dms_api.on_dms_eligibility_error(user, current_fraud_check, extra_data=logs_extra)
+            fraud_dms_api.on_dms_eligibility_error(
+                user, current_fraud_check, application_scalar_id, extra_data=logs_extra
+            )
         else:
             subscription_messages.on_dms_application_received(user)
         current_fraud_check.status = fraud_models.FraudCheckStatus.STARTED
@@ -429,4 +432,4 @@ def parse_and_handle_dms_application(
         fraud_dms_api.on_dms_parsing_error(user, application_id, parsing_error, extra_data=log_extra_data)
         return None
 
-    return handle_dms_state(user, application, procedure_id, application_id, state)
+    return handle_dms_state(user, state, application, procedure_id, application_id, application_scalar_id)
