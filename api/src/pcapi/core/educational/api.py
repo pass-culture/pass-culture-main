@@ -24,6 +24,7 @@ from pcapi.core.educational import validation
 import pcapi.core.educational.adage_backends as adage_client
 from pcapi.core.educational.models import CollectiveBooking
 from pcapi.core.educational.models import CollectiveBookingStatus
+from pcapi.core.educational.models import CollectiveBookingStatusFilter
 from pcapi.core.educational.models import CollectiveOffer
 from pcapi.core.educational.models import CollectiveStock
 from pcapi.core.educational.models import EducationalBooking
@@ -35,6 +36,7 @@ from pcapi.core.educational.models import EducationalYear
 from pcapi.core.educational.models import Ministry
 from pcapi.core.educational.repository import find_collective_booking_by_booking_id
 from pcapi.core.educational.repository import get_and_lock_collective_stock
+from pcapi.core.educational.repository import get_filtered_collective_booking_report
 from pcapi.core.educational.utils import compute_educational_booking_cancellation_limit_date
 from pcapi.core.mails.models.sendinblue_models import SendinblueTransactionalEmailData
 from pcapi.core.mails.transactional.bookings.booking_cancellation_by_institution import (
@@ -58,6 +60,7 @@ from pcapi.routes.adage.v1.serialization.prebooking import EducationalBookingEdi
 from pcapi.routes.adage.v1.serialization.prebooking import serialize_educational_booking
 from pcapi.routes.adage_iframe.serialization.adage_authentication import AuthenticatedInformation
 from pcapi.routes.adage_iframe.serialization.adage_authentication import RedactorInformation
+from pcapi.routes.serialization.collective_bookings_serialize import serialize_collective_booking_csv_report
 from pcapi.routes.serialization.stock_serialize import EducationalStockCreationBodyModel
 
 
@@ -707,3 +710,20 @@ def _get_expired_collective_offer_ids(interval: list[datetime.datetime], page: i
     collective_offers = educational_repository.get_expired_collective_offers(interval)
     collective_offers = collective_offers.offset(page * limit).limit(limit)
     return [offer_id for offer_id, in collective_offers.with_entities(educational_models.CollectiveOffer.id)]
+
+
+def get_collective_booking_csv_report(
+    user: User,
+    booking_period: Optional[tuple[datetime.date, datetime.date]] = None,
+    status_filter: Optional[CollectiveBookingStatusFilter] = CollectiveBookingStatusFilter.BOOKED,
+    event_date: Optional[datetime.datetime] = None,
+    venue_id: Optional[int] = None,
+) -> str:
+    bookings_query = get_filtered_collective_booking_report(
+        pro_user=user,
+        period=booking_period,
+        status_filter=status_filter,
+        event_date=event_date,
+        venue_id=venue_id,
+    )
+    return serialize_collective_booking_csv_report(bookings_query)

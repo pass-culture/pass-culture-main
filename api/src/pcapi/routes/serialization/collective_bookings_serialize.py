@@ -1,15 +1,19 @@
+import csv
 from datetime import date
 from datetime import datetime
 from enum import Enum
+from io import StringIO
 import math
 from typing import Optional
 
 from pydantic import root_validator
+from sqlalchemy.orm import Query
 from sqlalchemy.util._collections import AbstractKeyedTuple
 
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.bookings.models import BookingStatusFilter
 from pcapi.core.bookings.repository import BOOKING_STATUS_LABELS
+from pcapi.core.bookings.utils import convert_booking_date_utc_to_venue_timezone
 from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.serialization import BaseModel
@@ -70,7 +74,7 @@ class CollectiveStockResponseModel(BaseModel):
     offer_identifier: str
     event_beginning_datetime: datetime
     offer_isbn: None
-    offer_is_educational: True
+    offer_is_educational: bool
 
 
 class EducationalRedactorResponseModel(BaseModel):
@@ -86,7 +90,7 @@ class CollectiveBookingResponseModel(BaseModel):
     booking_token: None
     booking_date: datetime
     booking_status: CollectiveBookingRecapStatus
-    booking_is_duo: False
+    booking_is_duo: bool
     booking_amount: float
     booking_status_history: list[BookingStatusHistoryResponseModel]
 
@@ -220,3 +224,39 @@ def serialize_collective_bookings_page(
         "pages": int(math.ceil(total_collective_bookings / per_page_limit)),
         "total": total_collective_bookings,
     }
+
+
+def serialize_collective_booking_csv_report(query: Query) -> str:
+    output = StringIO()
+    writer = csv.writer(output, dialect=csv.excel, delimiter=";", quoting=csv.QUOTE_NONNUMERIC)
+    writer.writerow(
+        (
+            "Lieu",
+            "Nom de l'offre",
+            "Date de l'évènement",
+            "Nom et prénom du bénéficiaire",
+            "Email du bénéficiaire",
+            "Date et heure de réservation",
+            "Date et heure de validation",
+            "Prix de la réservation",
+            "Date et heure de remboursement",
+        )
+    )
+    for collective_booking in query.yield_per(1000):
+        writer.writerow(
+            (
+                collective_booking.venueName,
+                collective_booking.offerName,
+                convert_booking_date_utc_to_venue_timezone(
+                    collective_booking.stockBeginningDatetime, collective_booking
+                ),
+                f"{collective_booking.lastName} {collective_booking.firstName}",
+                collective_booking.email,
+                convert_booking_date_utc_to_venue_timezone(collective_booking.bookedAt, collective_booking),
+                convert_booking_date_utc_to_venue_timezone(collective_booking.usedAt, collective_booking),
+                collective_booking.price,
+                convert_booking_date_utc_to_venue_timezone(collective_booking.reimbursedAt, collective_booking),
+            )
+        )
+
+    return output.getvalue()

@@ -526,3 +526,48 @@ def find_collective_bookings_by_pro_user(
         collective_bookings_page_with_converted_dates.append(booking_with_converted_dates)
 
     return total_collective_bookings, collective_bookings_page_with_converted_dates
+
+
+def get_filtered_collective_booking_report(
+    pro_user: User,
+    period: tuple[date, date],
+    status_filter: CollectiveBookingStatusFilter,
+    event_date: Optional[datetime] = None,
+    venue_id: Optional[int] = None,
+) -> str:
+    bookings_query = (
+        _get_filtered_collective_bookings_query(
+            pro_user,
+            period,
+            status_filter,
+            event_date,
+            venue_id,
+            extra_joins=(
+                CollectiveStock.collectiveOffer,
+                CollectiveBooking.educationalRedactor,
+            ),
+        )
+        .with_entities(
+            func.coalesce(Venue.publicName, Venue.name).label("venueName"),
+            Venue.departementCode.label("venueDepartmentCode"),
+            offerers_models.Offerer.postalCode.label("offererPostalCode"),
+            CollectiveOffer.name.label("offerName"),
+            CollectiveStock.price,
+            CollectiveStock.beginningDatetime.label("stockBeginningDatetime"),
+            EducationalRedactor.firstName,
+            EducationalRedactor.lastName,
+            EducationalRedactor.email,
+            CollectiveBooking.id,
+            CollectiveBooking.dateCreated.label("bookedAt"),
+            CollectiveBooking.dateUsed.label("usedAt"),
+            CollectiveBooking.reimbursementDate.label("reimbursedAt"),
+            CollectiveBooking.isConfirmed,
+            # `get_batch` function needs a field called exactly `id` to work,
+            # the label prevents SA from using a bad (prefixed) label for this field
+            CollectiveBooking.id.label("id"),
+            CollectiveBooking.educationalRedactorId,
+        )
+        .distinct(CollectiveBooking.id)
+    )
+
+    return bookings_query
