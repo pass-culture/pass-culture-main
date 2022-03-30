@@ -31,7 +31,7 @@ def get_request_authorization():
 
 @app.login_manager.user_loader
 def get_user_with_id(user_id):
-    session.permanent = True  # pylint: disable=assigning-non-slot
+    session.permanent = True
     session_uuid = session.get("session_uuid")
     if existing_user_session(user_id, session_uuid):
         return User.query.get(user_id)

@@ -6,7 +6,7 @@ class CronStatus(Enum):
     ENDED = "ended"
     FAILED = "failed"
 
-    def __str__(self):  # pylint: disable=invalid-str-returned
+    def __str__(self):
         return self.value
 
 
