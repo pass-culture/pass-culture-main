@@ -8,6 +8,7 @@ import ActionsBarContainer from 'components/pages/Offers/Offers/ActionsBar/Actio
 import OffersContainer from 'components/pages/Offers/Offers/OffersContainer'
 import {
   DEFAULT_SEARCH_FILTERS,
+  hasSearchFilters,
   MAX_TOTAL_PAGES,
   NUMBER_OF_OFFERS_PER_PAGE,
 } from 'core/Offers'
@@ -27,7 +28,6 @@ export interface IOffersProps {
   offers: Offer[]
   setIsLoading: (isLoading: boolean) => void
   setOfferer: (offerer: Offerer | null) => void
-  urlSearchFilters: TSearchFilters
   separateIndividualAndCollectiveOffers: boolean
   initialSearchFilters: TSearchFilters
   urlAudience: Audience
@@ -37,6 +37,7 @@ export interface IOffersProps {
       audience?: Audience
     }
   ) => void
+  urlSearchFilters: TSearchFilters
 }
 
 const Offers = ({
@@ -48,11 +49,11 @@ const Offers = ({
   offers,
   setIsLoading,
   setOfferer,
-  urlSearchFilters,
   separateIndividualAndCollectiveOffers,
   initialSearchFilters,
   urlAudience,
   redirectWithUrlFilters,
+  urlSearchFilters,
 }: IOffersProps): JSX.Element => {
   const [searchFilters, setSearchFilters] =
     useState<TSearchFilters>(initialSearchFilters)
@@ -70,23 +71,6 @@ const Offers = ({
     currentPageNumber * NUMBER_OF_OFFERS_PER_PAGE
   )
   const hasOffers = currentPageOffersSubset.length > 0
-  const hasSearchFilters = useCallback(
-    (
-      searchFilters: TSearchFilters,
-      filterNames: (keyof TSearchFilters)[] = Object.keys(
-        searchFilters
-      ) as (keyof TSearchFilters)[]
-    ) => {
-      return filterNames
-        .map(
-          filterName =>
-            searchFilters[filterName] !==
-            { ...DEFAULT_SEARCH_FILTERS }[filterName]
-        )
-        .includes(true)
-    },
-    []
-  )
 
   const userHasNoOffers =
     !isLoading && !hasOffers && !hasSearchFilters(urlSearchFilters)
@@ -268,7 +252,6 @@ const Offers = ({
           currentPageOffersSubset={currentPageOffersSubset}
           currentUser={currentUser}
           hasOffers={hasOffers}
-          hasSearchFilters={hasSearchFilters}
           isLoading={isLoading}
           isStatusFiltersVisible={isStatusFiltersVisible}
           offersCount={offers.length}

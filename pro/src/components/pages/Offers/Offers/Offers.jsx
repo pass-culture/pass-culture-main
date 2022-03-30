@@ -6,6 +6,7 @@ import Spinner from 'components/layout/Spinner'
 import { getOffersCountToDisplay } from 'components/pages/Offers/domain/getOffersCountToDisplay'
 import { isOfferDisabled } from 'components/pages/Offers/domain/isOfferDisabled'
 import { MAX_OFFERS_TO_DISPLAY } from 'core/Offers/constants'
+import { hasSearchFilters } from 'core/Offers/utils'
 import NoResults from 'screens/Offers/NoResults'
 import { Banner } from 'ui-kit'
 
@@ -19,7 +20,6 @@ const Offers = ({
   currentPageNumber,
   currentPageOffersSubset,
   hasOffers,
-  hasSearchFilters,
   isLoading,
   isStatusFiltersVisible,
   offersCount,
@@ -41,7 +41,7 @@ const Offers = ({
         !hasSearchFilters(searchFilters, ['venueId', 'offererId'])
       )
     },
-    [currentUser.isAdmin, hasSearchFilters]
+    [currentUser.isAdmin]
   )
 
   const updateStatusFilter = useCallback(
@@ -178,7 +178,6 @@ Offers.propTypes = {
   currentPageOffersSubset: PropTypes.shape().isRequired,
   currentUser: PropTypes.shape().isRequired,
   hasOffers: PropTypes.bool.isRequired,
-  hasSearchFilters: PropTypes.func.isRequired,
   isLoading: PropTypes.bool.isRequired,
   isStatusFiltersVisible: PropTypes.bool.isRequired,
   offersCount: PropTypes.number.isRequired,
