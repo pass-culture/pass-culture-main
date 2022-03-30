@@ -262,7 +262,7 @@ def get_subcategory_and_extra_data_from_titelive_type(titelive_type):
 
 
 def get_infos_from_data_line(elts: []) -> dict:
-    infos = dict()
+    infos = {}
     infos["ean13"] = elts[0]
     infos["isbn"] = elts[1]
     infos["titre"] = elts[2]
@@ -306,7 +306,7 @@ def get_infos_from_data_line(elts: []) -> dict:
 
 
 def get_extra_data_from_infos(infos: dict) -> dict:
-    extra_data = dict()
+    extra_data = {}
     extra_data["author"] = infos["auteurs"]
     extra_data["isbn"] = infos["ean13"]
     if infos["indice_dewey"] != "":

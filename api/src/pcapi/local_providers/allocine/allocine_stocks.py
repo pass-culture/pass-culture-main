@@ -237,7 +237,7 @@ def get_next_offer_id_from_database():
 
 
 def retrieve_movie_information(raw_movie_information: dict) -> dict:
-    parsed_movie_information = dict()
+    parsed_movie_information = {}
     parsed_movie_information["id"] = raw_movie_information["id"]
     parsed_movie_information["title"] = raw_movie_information["title"]
     parsed_movie_information["internal_id"] = raw_movie_information["internalId"]

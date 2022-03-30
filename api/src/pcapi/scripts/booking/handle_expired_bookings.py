@@ -179,14 +179,13 @@ def notify_offerers_of_expired_individual_bookings(expired_on: datetime.date = N
     expired_on = expired_on or datetime.date.today()
     logger.info("[notify_offerers_of_expired_bookings] Start")
 
-    expired_individual_bookings_ordered_by_offerer = (
-        bookings_repository.find_expired_individual_bookings_ordered_by_offerer(expired_on)
-    )
-    expired_individual_bookings_grouped_by_offerer = dict()
-    for offerer, individual_bookings in groupby(
-        expired_individual_bookings_ordered_by_offerer, attrgetter("booking.offerer")
-    ):
-        expired_individual_bookings_grouped_by_offerer[offerer] = list(individual_bookings)
+    expired_individual_bookings_grouped_by_offerer = {
+        offerer: list(individual_bookings)
+        for offerer, individual_bookings in groupby(
+            bookings_repository.find_expired_individual_bookings_ordered_by_offerer(expired_on),
+            attrgetter("booking.offerer"),
+        )
+    }
 
     notified_offerers = []
 
