@@ -95,6 +95,8 @@ def get_bookings(user: User) -> BookingsResponse:
                 Offer.url,
                 Offer.subcategoryId,
                 Offer.withdrawalDetails,
+                Offer.withdrawalType,
+                Offer.withdrawalDelay,
                 Offer.extraData,
             )
             .joinedload(Offer.product)
