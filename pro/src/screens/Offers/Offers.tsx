@@ -57,8 +57,6 @@ const Offers = ({
 
   const [areAllOffersSelected, setAreAllOffersSelected] = useState(false)
   const [selectedOfferIds, setSelectedOfferIds] = useState<string[]>([])
-  const [selectedAudience, setSelectedAudience] =
-    useState<Audience>(urlAudience)
 
   const { isAdmin } = currentUser || {}
   const currentPageOffersSubset = offers.slice(
@@ -180,10 +178,6 @@ const Offers = ({
     applyUrlFiltersAndRedirect(updatedFilters)
   }, [applyUrlFiltersAndRedirect, searchFilters, setOfferer])
 
-  useEffect(() => {
-    setSelectedAudience(urlAudience)
-  }, [urlAudience])
-
   return (
     <div className="offers-page">
       <PageTitle title="Vos offres" />
@@ -191,7 +185,7 @@ const Offers = ({
       {separateIndividualAndCollectiveOffers && (
         <OfferListFilterTabs
           onSelectAudience={onSelectAudience}
-          selectedAudience={selectedAudience}
+          selectedAudience={urlAudience}
         />
       )}
       <ActionsBarPortal isVisible={nbSelectedOffers > 0}>
