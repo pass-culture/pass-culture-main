@@ -101,5 +101,6 @@ export const departmentOptions: Option[] = [
   { value: '972', label: '972 - Martinique' },
   { value: '973', label: '973 - Guyane' },
   { value: '974', label: '974 - La Réunion' },
+  { value: '975', label: '975 - Saint-Pierre-Et-Miquelon' },
   { value: '976', label: '976 - Mayotte' },
 ]
