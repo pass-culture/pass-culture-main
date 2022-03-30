@@ -649,7 +649,7 @@ class CreateProUserTest:
         assert not pro_user.has_pro_role
         assert not pro_user.has_admin_role
         assert not pro_user.has_beneficiary_role
-        assert pro_user.deposits == []
+        assert not pro_user.deposits
 
     @override_settings(IS_INTEGRATION=True)
     def test_create_pro_user_in_integration(self):
@@ -665,7 +665,7 @@ class CreateProUserTest:
         assert not pro_user.has_pro_role
         assert not pro_user.has_admin_role
         assert pro_user.has_beneficiary_role
-        assert pro_user.deposits != []
+        assert pro_user.deposits
 
 
 class BeneficiaryInformationUpdateTest:

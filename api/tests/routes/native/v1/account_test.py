@@ -333,7 +333,7 @@ class AccountCreationTest:
         assert mails_testing.outbox[0].sent_data["template"] == dataclasses.asdict(
             TransactionalEmail.NEW_PASSWORD_REQUEST.value
         )
-        assert push_testing.requests == []
+        assert not push_testing.requests
 
     @patch("pcapi.connectors.api_recaptcha.check_recaptcha_token_is_valid")
     def test_account_creation_with_unvalidated_email_sends_email(
@@ -379,7 +379,7 @@ class AccountCreationTest:
 
         response = client.post("/native/v1/account", json=data)
         assert response.status_code == 400
-        assert push_testing.requests == []
+        assert not push_testing.requests
 
     @patch("pcapi.connectors.api_recaptcha.check_recaptcha_token_is_valid")
     @override_settings(IS_PERFORMANCE_TESTS=True)

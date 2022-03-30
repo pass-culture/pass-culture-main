@@ -37,7 +37,7 @@ class UserAlreadyExistsTest:
         api_error = validate(user, api_errors)
 
         # Then
-        assert api_error.errors == {}
+        assert not api_error.errors
 
     @patch("pcapi.validation.models.user.user_queries.count_users_by_email")
     def test_should_return_error_when_user_count_raise_error_and_no_id_is_provided(
@@ -67,7 +67,7 @@ class UserAlreadyExistsTest:
         api_error = validate(user, api_errors)
 
         # Then
-        assert api_error.errors == {}
+        assert not api_error.errors
 
 
 class PublicNameTest:
@@ -93,7 +93,7 @@ class PublicNameTest:
         api_error = validate(user, api_errors)
 
         # Then
-        assert api_error.errors == {}
+        assert not api_error.errors
 
 
 class EmailTest:
@@ -119,7 +119,7 @@ class EmailTest:
         api_error = validate(user, api_errors)
 
         # Then
-        assert api_error.errors == {}
+        assert not api_error.errors
 
 
 class AdminTest:
@@ -162,4 +162,4 @@ class PasswordTest:
         api_error = validate(user, api_errors)
 
         # Then
-        assert api_error.errors == {}
+        assert not api_error.errors

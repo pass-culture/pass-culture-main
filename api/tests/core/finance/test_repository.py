@@ -71,8 +71,8 @@ class GetBusinessUnitsTest:
         offerer_id = venue.managingOffererId
         pro = users_factories.ProFactory(offerers=[])
 
-        business_units = list(repository.get_business_units_query(pro, offerer_id=offerer_id))
-        assert business_units == []
+        business_units = repository.get_business_units_query(pro, offerer_id=offerer_id)
+        assert not business_units.count()
 
     def test_return_accepted_bank_information_only(self):
         admin = users_factories.AdminFactory()
@@ -162,7 +162,7 @@ class GetInvoicesQueryTest:
             pro1,
             business_unit_id=other_business_unit.id,
         )
-        assert list(invoices) == []
+        assert not invoices.count()
 
     def test_admin_filter_on_business_unit(self):
         invoice1 = factories.InvoiceFactory()
@@ -183,7 +183,7 @@ class GetInvoicesQueryTest:
         admin = users_factories.AdminFactory()
 
         invoices = repository.get_invoices_query(admin)
-        assert list(invoices) == []
+        assert not invoices.count()
 
 
 def test_has_reimbursement():

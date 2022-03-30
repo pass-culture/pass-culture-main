@@ -26,7 +26,7 @@ def test_should_not_return_error_message_when_stock_is_positive():
     api_error = validate(stock, api_errors)
 
     # Then
-    assert api_error.errors == {}
+    assert not api_error.errors
 
 
 def test_should_not_return_error_message_when_stock_is_unlimited():
@@ -38,7 +38,7 @@ def test_should_not_return_error_message_when_stock_is_unlimited():
     api_error = validate(stock, api_errors)
 
     # Then
-    assert api_error.errors == {}
+    assert not api_error.errors
 
 
 def test_should_not_return_error_message_when_datetime_is_valid():
@@ -50,4 +50,4 @@ def test_should_not_return_error_message_when_datetime_is_valid():
     api_error = validate(stock, api_errors)
 
     # Then
-    assert api_error.errors == {}
+    assert not api_error.errors

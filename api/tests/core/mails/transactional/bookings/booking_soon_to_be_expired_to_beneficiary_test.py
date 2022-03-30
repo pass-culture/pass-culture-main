@@ -28,8 +28,8 @@ class FilterBooksBookingsTest:
         books_bookings, other_bookings = _filter_books_bookings(bookings)
 
         # Then
-        assert books_bookings == []
-        assert other_bookings == []
+        assert not books_bookings
+        assert not other_bookings
 
     def test_filter_books_bookings_with_one_book_and_one_other_booking(self):
         # Given

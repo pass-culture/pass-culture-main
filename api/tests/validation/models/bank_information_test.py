@@ -50,7 +50,7 @@ class BankInformationValidationTest:
         api_error = validate(bank_information, api_errors)
 
         # Then
-        assert api_error.errors == {}
+        assert not api_error.errors
 
     def test_should_return_an_error_if_status_is_not_accepted_and_bic_or_iban_is_present(self):
         # Given
@@ -77,4 +77,4 @@ class BankInformationValidationTest:
         api_error = validate(bank_information, api_errors)
 
         # Then
-        assert api_error.errors == {}
+        assert not api_error.errors

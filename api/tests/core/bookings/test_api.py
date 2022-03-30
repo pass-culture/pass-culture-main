@@ -528,7 +528,7 @@ class CancelByOffererTest:
         assert booking.status is BookingStatus.CANCELLED
         assert booking.cancellationReason == BookingCancellationReasons.BENEFICIARY  # unchanged
 
-        assert push_testing.requests == []
+        assert not push_testing.requests
 
     def test_raise_if_already_used(self):
         booking = booking_factories.UsedIndividualBookingFactory()
@@ -537,7 +537,7 @@ class CancelByOffererTest:
         assert booking.status is BookingStatus.USED
         assert not booking.cancellationReason
 
-        assert push_testing.requests == []
+        assert not push_testing.requests
 
     def test_cancel_all_bookings_from_stock(self, app):
         stock = offers_factories.StockFactory(dnBookedQuantity=1)

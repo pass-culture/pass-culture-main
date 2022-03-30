@@ -26,7 +26,7 @@ def test_should_not_return_error_message_when_product_is_not_digital():
     api_error = validate(product, api_errors)
 
     # Then
-    assert api_error.errors == {}
+    assert not api_error.errors
 
 
 def test_should_not_return_error_message_when_product_is_online():
@@ -38,4 +38,4 @@ def test_should_not_return_error_message_when_product_is_online():
     api_error = validate(product, api_errors)
 
     # Then
-    assert api_error.errors == {}
+    assert not api_error.errors

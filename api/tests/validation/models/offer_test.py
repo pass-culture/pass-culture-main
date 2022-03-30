@@ -79,4 +79,4 @@ def test_should_not_return_error_message_when_offer_is_valid():
     api_error = validate(thing_offer, api_errors)
 
     # Then
-    assert api_error.errors == {}
+    assert not api_error.errors

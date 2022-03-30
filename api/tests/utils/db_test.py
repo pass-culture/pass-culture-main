@@ -26,4 +26,4 @@ class GetBatchesTest:
 
     def test_empty(self):
         batches = db_utils.get_batches(users_models.User.query, users_models.User.id, 10)
-        assert list(batches) == []
+        assert not list(batches)
