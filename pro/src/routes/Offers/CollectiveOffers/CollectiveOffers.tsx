@@ -89,31 +89,19 @@ const CollectiveOffers = ({
   }, [setInitialSearchFilters, urlSearchFilters, currentUser.isAdmin])
 
   useEffect(() => {
-    dispatch(
-      saveSearchFilters({
-        nameOrIsbn:
-          urlSearchFilters.nameOrIsbn || DEFAULT_SEARCH_FILTERS.nameOrIsbn,
-        offererId:
-          urlSearchFilters.offererId || DEFAULT_SEARCH_FILTERS.offererId,
-        venueId: urlSearchFilters.venueId || DEFAULT_SEARCH_FILTERS.venueId,
-        categoryId:
-          urlSearchFilters.categoryId || DEFAULT_SEARCH_FILTERS.categoryId,
-        status: urlSearchFilters.status
-          ? urlSearchFilters.status
-          : DEFAULT_SEARCH_FILTERS.status,
-        creationMode: urlSearchFilters.creationMode
-          ? urlSearchFilters.creationMode
-          : DEFAULT_SEARCH_FILTERS.creationMode,
-        periodBeginningDate:
-          urlSearchFilters.periodBeginningDate ||
-          DEFAULT_SEARCH_FILTERS.periodBeginningDate,
-        periodEndingDate:
-          urlSearchFilters.periodEndingDate ||
-          DEFAULT_SEARCH_FILTERS.periodEndingDate,
-      })
-    )
+    if (initialSearchFilters) {
+      dispatch(
+        saveSearchFilters({
+          ...initialSearchFilters,
+          status: urlSearchFilters.status,
+        })
+      )
+    }
+  }, [dispatch, urlSearchFilters, initialSearchFilters])
+
+  useEffect(() => {
     dispatch(savePageNumber(urlPageNumber))
-  }, [dispatch, urlPageNumber, urlSearchFilters])
+  }, [dispatch, urlPageNumber])
 
   if (!initialSearchFilters) {
     return <Spinner />
@@ -135,7 +123,6 @@ const CollectiveOffers = ({
       setIsLoading={setIsLoading}
       setOfferer={setOfferer}
       urlAudience={Audience.COLLECTIVE}
-      urlSearchFilters={urlSearchFilters}
     />
   )
 }

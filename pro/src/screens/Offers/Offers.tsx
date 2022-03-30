@@ -71,7 +71,7 @@ const Offers = ({
   const hasOffers = currentPageOffersSubset.length > 0
 
   const userHasNoOffers =
-    !isLoading && !hasOffers && !hasSearchFilters(urlSearchFilters)
+    !isLoading && !hasOffers && !hasSearchFilters(initialSearchFilters)
 
   const hasDifferentFiltersFromLastSearch = useCallback(
     (
@@ -80,18 +80,14 @@ const Offers = ({
         searchFilters
       ) as (keyof TSearchFilters)[]
     ) => {
-      const lastSearchFilters = {
-        ...DEFAULT_SEARCH_FILTERS,
-        ...urlSearchFilters,
-      }
       return filterNames
         .map(
           filterName =>
-            searchFilters[filterName] !== lastSearchFilters[filterName]
+            searchFilters[filterName] !== initialSearchFilters[filterName]
         )
         .includes(true)
     },
-    [urlSearchFilters]
+    [initialSearchFilters]
   )
 
   const actionLink =
@@ -250,6 +246,7 @@ const Offers = ({
           currentPageOffersSubset={currentPageOffersSubset}
           currentUser={currentUser}
           hasOffers={hasOffers}
+          initialSearchFilters={initialSearchFilters}
           isLoading={isLoading}
           isStatusFiltersVisible={isStatusFiltersVisible}
           offersCount={offers.length}
@@ -261,7 +258,6 @@ const Offers = ({
           setSearchFilters={setSearchFilters}
           setSelectedOfferIds={setSelectedOfferIds}
           toggleSelectAllCheckboxes={toggleSelectAllCheckboxes}
-          urlSearchFilters={urlSearchFilters}
         />
       )}
     </div>

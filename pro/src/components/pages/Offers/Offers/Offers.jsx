@@ -31,7 +31,7 @@ const Offers = ({
   setSearchFilters,
   setSelectedOfferIds,
   toggleSelectAllCheckboxes,
-  urlSearchFilters,
+  initialSearchFilters,
   setIsStatusFiltersVisible,
 }) => {
   const isAdminForbidden = useCallback(
@@ -57,18 +57,18 @@ const Offers = ({
   const onPreviousPageClick = useCallback(() => {
     const newPageNumber = currentPageNumber - 1
     applyUrlFiltersAndRedirect(
-      { ...urlSearchFilters, ...{ page: newPageNumber } },
+      { ...initialSearchFilters, page: newPageNumber },
       false
     )
-  }, [currentPageNumber, applyUrlFiltersAndRedirect, urlSearchFilters])
+  }, [currentPageNumber, applyUrlFiltersAndRedirect, initialSearchFilters])
 
   const onNextPageClick = useCallback(() => {
     const newPageNumber = currentPageNumber + 1
     applyUrlFiltersAndRedirect(
-      { ...urlSearchFilters, ...{ page: newPageNumber } },
+      { ...initialSearchFilters, page: newPageNumber },
       false
     )
-  }, [currentPageNumber, applyUrlFiltersAndRedirect, urlSearchFilters])
+  }, [currentPageNumber, applyUrlFiltersAndRedirect, initialSearchFilters])
 
   const selectOffer = useCallback(
     (offerId, selected) => {
@@ -157,7 +157,7 @@ const Offers = ({
               </button>
             </div>
           )}
-          {!hasOffers && hasSearchFilters(urlSearchFilters) && (
+          {!hasOffers && hasSearchFilters(initialSearchFilters) && (
             <NoResults resetFilters={resetFilters} />
           )}
         </>
@@ -178,6 +178,7 @@ Offers.propTypes = {
   currentPageOffersSubset: PropTypes.shape().isRequired,
   currentUser: PropTypes.shape().isRequired,
   hasOffers: PropTypes.bool.isRequired,
+  initialSearchFilters: PropTypes.shape().isRequired,
   isLoading: PropTypes.bool.isRequired,
   isStatusFiltersVisible: PropTypes.bool.isRequired,
   offersCount: PropTypes.number.isRequired,
@@ -189,7 +190,6 @@ Offers.propTypes = {
   setSearchFilters: PropTypes.func.isRequired,
   setSelectedOfferIds: PropTypes.func.isRequired,
   toggleSelectAllCheckboxes: PropTypes.func.isRequired,
-  urlSearchFilters: PropTypes.shape().isRequired,
 }
 
 export default Offers
