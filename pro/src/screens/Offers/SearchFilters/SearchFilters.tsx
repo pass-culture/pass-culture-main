@@ -15,7 +15,7 @@ import {
   DEFAULT_CREATION_MODE,
   DEFAULT_SEARCH_FILTERS,
 } from 'core/Offers/constants'
-import { Offerer, Option, TSearchFilters } from 'core/Offers/types'
+import { Audience, Offerer, Option, TSearchFilters } from 'core/Offers/types'
 import { ReactComponent as ResetIcon } from 'icons/reset.svg'
 import { formatBrowserTimezonedDateAsUTC, getToday } from 'utils/date'
 
@@ -36,6 +36,7 @@ interface ISearchFiltersProps {
   resetFilters: () => void
   venues: Option[]
   categories: Option[]
+  audience: Audience
 }
 
 const SearchFilters = ({
@@ -49,6 +50,7 @@ const SearchFilters = ({
   resetFilters,
   venues,
   categories,
+  audience,
 }: ISearchFiltersProps): JSX.Element => {
   const updateSearchFilters = useCallback(
     (newSearchFilters: Partial<TSearchFilters>) => {
@@ -116,6 +118,15 @@ const SearchFilters = ({
     [applyFilters]
   )
 
+  const searchByOfferNameLabel =
+    audience === Audience.INDIVIDUAL
+      ? 'Nom de l’offre ou ISBN'
+      : 'Nom de l’offre'
+  const searchByOfferNamePlaceholder =
+    audience === Audience.INDIVIDUAL
+      ? 'Rechercher par nom d’offre ou par ISBN'
+      : 'Rechercher par nom d’offre'
+
   return (
     <>
       {offerer && (
@@ -129,13 +140,19 @@ const SearchFilters = ({
       <form onSubmit={requestFilteredOffers}>
         <TextInput
           disabled={disableAllFilters}
-          label="Nom de l’offre ou ISBN"
+          label={searchByOfferNameLabel}
           name="offre"
           onChange={storeNameOrIsbnSearchValue}
-          placeholder="Rechercher par nom d’offre ou par ISBN"
+          placeholder={searchByOfferNamePlaceholder}
           value={selectedFilters.nameOrIsbn}
         />
-        <div className="form-row">
+        <div
+          className={
+            audience === Audience.INDIVIDUAL
+              ? 'form-row'
+              : 'collective-form-row'
+          }
+        >
           <Select
             defaultOption={ALL_VENUES_OPTION}
             handleSelection={storeSelectedVenue}
@@ -154,15 +171,17 @@ const SearchFilters = ({
             options={categories}
             selectedValue={selectedFilters.categoryId}
           />
-          <Select
-            defaultOption={DEFAULT_CREATION_MODE}
-            handleSelection={storeCreationMode}
-            isDisabled={disableAllFilters}
-            label="Mode de création"
-            name="creationMode"
-            options={CREATION_MODES_FILTERS}
-            selectedValue={selectedFilters.creationMode}
-          />
+          {audience === Audience.INDIVIDUAL && (
+            <Select
+              defaultOption={DEFAULT_CREATION_MODE}
+              handleSelection={storeCreationMode}
+              isDisabled={disableAllFilters}
+              label="Mode de création"
+              name="creationMode"
+              options={CREATION_MODES_FILTERS}
+              selectedValue={selectedFilters.creationMode}
+            />
+          )}
           <PeriodSelector
             changePeriodBeginningDateValue={changePeriodBeginningDateValue}
             changePeriodEndingDateValue={changePeriodEndingDateValue}
@@ -185,7 +204,9 @@ const SearchFilters = ({
           <Link
             className={styles['reset-filters-link']}
             onClick={resetFilters}
-            to="/offres"
+            to={`/offres${
+              audience === Audience.COLLECTIVE ? '?audience=collective' : ''
+            }`}
           >
             <ResetIcon className={styles['reset-filters-link-icon']} />
             Réinitialiser les filtres

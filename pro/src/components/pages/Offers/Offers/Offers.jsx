@@ -31,6 +31,7 @@ const Offers = ({
   setSelectedOfferIds,
   toggleSelectAllCheckboxes,
   initialSearchFilters,
+  audience,
 }) => {
   const isAdminForbidden = useCallback(
     searchFilters => {
@@ -154,7 +155,7 @@ const Offers = ({
             </div>
           )}
           {!hasOffers && hasSearchFilters(initialSearchFilters) && (
-            <NoResults resetFilters={resetFilters} />
+            <NoResults audience={audience} resetFilters={resetFilters} />
           )}
         </>
       )}
@@ -170,6 +171,7 @@ Offers.propTypes = {
   applyFilters: PropTypes.func.isRequired,
   applyUrlFiltersAndRedirect: PropTypes.func.isRequired,
   areAllOffersSelected: PropTypes.bool.isRequired,
+  audience: PropTypes.string.isRequired,
   currentPageNumber: PropTypes.number.isRequired,
   currentPageOffersSubset: PropTypes.shape().isRequired,
   currentUser: PropTypes.shape().isRequired,

@@ -216,6 +216,7 @@ const Offers = ({
       </ActionsBarPortal>
       <SearchFilters
         applyFilters={applyFilters}
+        audience={urlAudience}
         categories={categories}
         disableAllFilters={userHasNoOffers}
         offerer={offerer}
@@ -234,6 +235,7 @@ const Offers = ({
           applyFilters={applyFilters}
           applyUrlFiltersAndRedirect={applyUrlFiltersAndRedirect}
           areAllOffersSelected={areAllOffersSelected}
+          audience={urlAudience}
           currentPageNumber={currentPageNumber}
           currentPageOffersSubset={currentPageOffersSubset}
           currentUser={currentUser}
