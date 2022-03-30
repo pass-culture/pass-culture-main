@@ -1,58 +1,55 @@
-import { shallow } from 'enzyme'
+import '@testing-library/jest-dom'
+import { render, screen } from '@testing-library/react'
 import React from 'react'
-import { Form } from 'react-final-form'
+import { Provider } from 'react-redux'
+import { MemoryRouter } from 'react-router'
+
+import { configureTestStore } from 'store/testUtils'
 
 import OffererCreation from '../OffererCreation'
-import OffererCreationForm from '../OffererCreationForm/OffererCreationForm'
-import OffererCreationUnavailable from '../OffererCreationUnavailable/OffererCreationUnavailable'
+
+const renderOffererCreation = store => {
+  return render(
+    <Provider store={store}>
+      <MemoryRouter>
+        <OffererCreation />
+      </MemoryRouter>
+    </Provider>
+  )
+}
 
 describe('src | components | OffererCreation', () => {
-  let props
-
-  beforeEach(() => {
-    props = {
-      isEntrepriseApiDisabled: false,
-      showNotification: jest.fn(),
-      redirectAfterSubmit: jest.fn(),
-    }
-  })
-
   describe('render', () => {
     it('should render a OffererCreationUnavailable component when pro offerer creation is disabled', () => {
-      props.isEntrepriseApiDisabled = true
-      const wrapper = shallow(<OffererCreation {...props} />)
+      const store = configureTestStore({
+        features: {
+          initialized: true,
+          list: [
+            {
+              description: 'Active feature',
+              id: 'DISABLE_ENTERPRISE_API',
+              isActive: true,
+              name: 'DISABLE_ENTERPRISE_API',
+              nameKey: 'DISABLE_ENTERPRISE_API',
+            },
+          ],
+        },
+      })
 
-      expect(wrapper.find(OffererCreationUnavailable)).toHaveLength(1)
+      renderOffererCreation(store)
+
+      expect(
+        screen.getByText('Impossibilité de créer une structure actuellement.')
+      ).toBeInTheDocument()
     })
 
-    it('should render a OffererCreation component with default props', () => {
-      // when
-      const wrapper = shallow(<OffererCreation {...props} />)
+    it('should render a OffererCreation component', () => {
+      const store = configureTestStore({})
 
-      // then
-      expect(wrapper.prop('createNewOfferer')).toBe()
-      expect(wrapper.prop('showNotification')).toBe()
-    })
+      renderOffererCreation(store)
 
-    it('should display "Structure" title', () => {
-      // given
-      const wrapper = shallow(<OffererCreation {...props} />)
-
-      // when
-      const title = wrapper.find('Titles').props()
-
-      // then
-      expect(title.title).toBe('Structure')
-    })
-
-    it('should display offerer creation form', () => {
-      // when
-      const wrapper = shallow(<OffererCreation {...props} />)
-
-      // then
-      const form = wrapper.find(Form)
-      const componentProp = form.prop('component')
-      expect(componentProp).toBe(OffererCreationForm)
+      expect(screen.getByText('Structure')).toBeInTheDocument()
+      expect(screen.getByText('Créer')).toBeInTheDocument()
     })
   })
 })

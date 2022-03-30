@@ -1,11 +1,20 @@
-import PropTypes from 'prop-types'
 import React, { useCallback } from 'react'
+import type { FormRenderProps } from 'react-final-form'
 import { FormSpy } from 'react-final-form'
 import { Link } from 'react-router-dom'
 
 import SirenField from 'components/layout/form/fields/SirenField/SirenField'
 
-const OffererCreationForm = ({ backTo, handleSubmit, invalid, pristine }) => {
+interface IOffererCreationForm extends FormRenderProps {
+  backTo: string
+}
+
+const OffererCreationForm = ({
+  backTo,
+  handleSubmit,
+  invalid,
+  pristine,
+}: IOffererCreationForm): JSX.Element => {
   const renderAddress = useCallback(
     ({ values }) => (
       <div className="op-detail-creation-form">
@@ -56,13 +65,6 @@ const OffererCreationForm = ({ backTo, handleSubmit, invalid, pristine }) => {
       </div>
     </form>
   )
-}
-
-OffererCreationForm.propTypes = {
-  backTo: PropTypes.string.isRequired,
-  handleSubmit: PropTypes.func.isRequired,
-  invalid: PropTypes.bool.isRequired,
-  pristine: PropTypes.bool.isRequired,
 }
 
 export default OffererCreationForm
