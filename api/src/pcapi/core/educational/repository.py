@@ -2,28 +2,47 @@ from datetime import date
 from datetime import datetime
 from datetime import time
 from decimal import Decimal
+from typing import Iterable
 from typing import Optional
+from typing import Tuple
 from typing import Union
 
 from flask_sqlalchemy import BaseQuery
+from sqlalchemy import Column
 from sqlalchemy import func
 from sqlalchemy.orm import contains_eager
 from sqlalchemy.orm import joinedload
 from sqlalchemy.sql.expression import extract
+from sqlalchemy.util._collections import AbstractKeyedTuple
 
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingStatus
+from pcapi.core.bookings.models import BookingStatusFilter
+from pcapi.core.bookings.repository import field_to_venue_timezone
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational.exceptions import EducationalDepositNotFound
 from pcapi.core.educational.exceptions import EducationalYearNotFound
 from pcapi.core.educational.exceptions import StockDoesNotExist
 from pcapi.core.educational.models import CollectiveBooking
 from pcapi.core.educational.models import CollectiveBookingStatus
+from pcapi.core.educational.models import CollectiveOffer
+from pcapi.core.educational.models import CollectiveStock
+from pcapi.core.educational.models import EducationalRedactor
 from pcapi.core.offerers import models as offerers_models
+from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers import repository as offers_repository
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
+from pcapi.core.users.models import User
+from pcapi.models.user_offerer import UserOfferer
+
+
+BOOKING_DATE_STATUS_MAPPING = {
+    BookingStatusFilter.BOOKED: CollectiveBooking.dateCreated,
+    BookingStatusFilter.VALIDATED: CollectiveBooking.dateUsed,
+    BookingStatusFilter.REIMBURSED: CollectiveBooking.reimbursementDate,
+}
 
 
 def get_and_lock_educational_deposit(
@@ -400,3 +419,125 @@ def get_collective_offers_template_for_filters(
         .all()
     )
     return offers
+
+
+def _get_filtered_collective_bookings_query(
+    pro_user: User,
+    period: Optional[tuple[date, date]] = None,
+    status_filter: Optional[BookingStatusFilter] = None,
+    event_date: Optional[date] = None,
+    venue_id: Optional[int] = None,
+    extra_joins: Optional[Iterable[Column]] = None,
+) -> Query:
+    extra_joins = extra_joins or tuple()
+
+    collective_bookings_query = (
+        CollectiveBooking.query.join(CollectiveBooking.offerer)
+        .join(Offerer.UserOfferers)
+        .join(CollectiveBooking.collectiveStock)
+        .join(CollectiveBooking.venue, isouter=True)
+    )
+    for join_key in extra_joins:
+        collective_bookings_query = collective_bookings_query.join(join_key, isouter=True)
+
+    if not pro_user.has_admin_role:
+        collective_bookings_query = collective_bookings_query.filter(UserOfferer.user == pro_user)
+
+    collective_bookings_query = collective_bookings_query.filter(UserOfferer.validationToken.is_(None))
+
+    if period:
+        period_attribute_filter = (
+            BOOKING_DATE_STATUS_MAPPING[status_filter]
+            if status_filter
+            else BOOKING_DATE_STATUS_MAPPING[BookingStatusFilter.BOOKED]
+        )
+
+        collective_bookings_query = collective_bookings_query.filter(
+            field_to_venue_timezone(period_attribute_filter).between(*period, symmetric=True)
+        )
+
+    if venue_id is not None:
+        collective_bookings_query = collective_bookings_query.filter(Booking.venueId == venue_id)
+
+    if event_date:
+        collective_bookings_query = collective_bookings_query.filter(
+            field_to_venue_timezone(Stock.beginningDatetime) == event_date
+        )
+
+    return collective_bookings_query
+
+
+def _get_filtered_collective_bookings_pro(
+    pro_user: User,
+    period: Optional[tuple[date, date]] = None,
+    status_filter: Optional[BookingStatusFilter] = None,
+    event_date: Optional[datetime] = None,
+    venue_id: Optional[int] = None,
+) -> Query:
+    bookings_query = (
+        _get_filtered_collective_bookings_query(
+            pro_user,
+            period,
+            status_filter,
+            event_date,
+            venue_id,
+            extra_joins=(
+                CollectiveStock.collectiveOffer,
+                CollectiveBooking.educationalRedactor,
+            ),
+        )
+        .with_entities(
+            CollectiveBooking.dateCreated.label("bookedAt"),
+            CollectiveStock.price.label("bookingAmount"),
+            CollectiveBooking.dateUsed.label("usedAt"),
+            CollectiveBooking.cancellationDate.label("cancelledAt"),
+            CollectiveBooking.cancellationLimitDate,
+            CollectiveBooking.status,
+            CollectiveBooking.reimbursementDate.label("reimbursedAt"),
+            CollectiveBooking.isConfirmed,
+            CollectiveBooking.confirmationDate,
+            EducationalRedactor.firstName.label("redactorFirstname"),
+            EducationalRedactor.lastName.label("redactorLastname"),
+            EducationalRedactor.email.label("redactorEmail"),
+            CollectiveOffer.name.label("offerName"),
+            CollectiveOffer.id.label("offerId"),
+            CollectiveStock.beginningDatetime.label("stockBeginningDatetime"),
+            Venue.departementCode.label("venueDepartmentCode"),
+            Offerer.postalCode.label("offererPostalCode"),
+        )
+        .distinct(CollectiveBooking.id)
+    )
+
+    return bookings_query
+
+
+def find_collective_bookings_by_pro_user(
+    user: User,
+    booking_period: Optional[tuple[date, date]] = None,
+    status_filter: Optional[BookingStatusFilter] = None,
+    event_date: Optional[datetime] = None,
+    venue_id: Optional[int] = None,
+    page: int = 1,
+    per_page_limit: int = 1000,
+) -> Tuple[Optional[int], list[AbstractKeyedTuple]]:
+    # TODO count only if page = 1. Check everything okay with how the front handles it
+    total_collective_bookings = None
+    if page == 1:
+        total_collective_bookings = (
+            _get_filtered_collective_bookings_query(user, booking_period, status_filter, event_date, venue_id)
+            .with_entities(CollectiveBooking.id)
+            .count()
+        )
+
+    collective_bookings_query = _get_filtered_collective_bookings_pro(
+        user, booking_period, status_filter, event_date, venue_id
+    )
+
+    collective_bookings_page = (
+        collective_bookings_query.order_by(CollectiveBooking.id.desc(), CollectiveBooking.dateCreated.desc())
+        .offset((page - 1) * per_page_limit)
+        .limit(per_page_limit)
+        .all()
+    )
+
+    return total_collective_bookings, collective_bookings_page
