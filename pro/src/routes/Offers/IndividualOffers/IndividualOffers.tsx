@@ -41,6 +41,7 @@ const IndividualOffers = ({
 
   const loadAndUpdateOffers = useCallback(
     async (filters: TSearchFilters) => {
+      setIsLoading(true)
       const apiFilters = {
         ...DEFAULT_SEARCH_FILTERS,
         ...filters,
@@ -121,7 +122,6 @@ const IndividualOffers = ({
       separateIndividualAndCollectiveOffers={
         separateIndividualAndCollectiveOffers
       }
-      setIsLoading={setIsLoading}
       setOfferer={setOfferer}
       urlAudience={Audience.INDIVIDUAL}
     />

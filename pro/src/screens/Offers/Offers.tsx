@@ -26,7 +26,6 @@ export interface IOffersProps {
   loadAndUpdateOffers: (filters: TSearchFilters) => Promise<void>
   offerer: Offerer | null
   offers: Offer[]
-  setIsLoading: (isLoading: boolean) => void
   setOfferer: (offerer: Offerer | null) => void
   separateIndividualAndCollectiveOffers: boolean
   initialSearchFilters: TSearchFilters
@@ -46,7 +45,6 @@ const Offers = ({
   loadAndUpdateOffers,
   offerer,
   offers,
-  setIsLoading,
   setOfferer,
   separateIndividualAndCollectiveOffers,
   initialSearchFilters,
@@ -115,10 +113,9 @@ const Offers = ({
   }, [])
 
   const resetFilters = useCallback(() => {
-    setIsLoading(true)
     setOfferer(null)
     setSearchFilters({ ...DEFAULT_SEARCH_FILTERS })
-  }, [setSearchFilters, setIsLoading, setOfferer])
+  }, [setSearchFilters, setOfferer])
 
   const numberOfPages = Math.ceil(offers.length / NUMBER_OF_OFFERS_PER_PAGE)
   const pageCount = Math.min(numberOfPages, MAX_TOTAL_PAGES)
@@ -157,8 +154,6 @@ const Offers = ({
   }
 
   const applyFilters = useCallback(() => {
-    setIsLoading(true)
-
     if (!hasDifferentFiltersFromLastSearch(searchFilters)) {
       refreshOffers()
     }
@@ -168,11 +163,9 @@ const Offers = ({
     refreshOffers,
     searchFilters,
     applyUrlFiltersAndRedirect,
-    setIsLoading,
   ])
 
   const removeOfferer = useCallback(() => {
-    setIsLoading(true)
     setOfferer(null)
     const updatedFilters = {
       ...searchFilters,
@@ -185,7 +178,7 @@ const Offers = ({
       updatedFilters.status = DEFAULT_SEARCH_FILTERS.status
     }
     applyUrlFiltersAndRedirect(updatedFilters)
-  }, [applyUrlFiltersAndRedirect, searchFilters, setIsLoading, setOfferer])
+  }, [applyUrlFiltersAndRedirect, searchFilters, setOfferer])
 
   useEffect(() => {
     setSelectedAudience(urlAudience)
