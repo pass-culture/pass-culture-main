@@ -173,7 +173,7 @@ class FillUserFromTest:
         user = fill_user_from(self.csv_row, User())
 
         # then
-        assert user.has_beneficiary_role == False  # pylint: disable=comparison-with-callable
+        assert not user.has_beneficiary_role
         assert user.password
 
     def test_returns_the_given_user_with_modified_data_from_the_csv(self):

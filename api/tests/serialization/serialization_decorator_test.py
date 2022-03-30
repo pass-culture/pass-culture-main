@@ -47,7 +47,7 @@ class SerializationDecoratorTest:
 
         # Then
         assert response.status_code == 200
-        assert response.json == {
+        assert response.json == {  # pylint: disable=comparison-with-callable
             "compulsory_int_response": 1,
             "optional_string_response": None,
         }
