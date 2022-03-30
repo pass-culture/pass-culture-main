@@ -127,30 +127,32 @@ def import_dms_users(procedure_id: int) -> None:
     )
 
 
-def notify_parsing_exception(parsing_error: subscription_exceptions.DMSParsingError, application_techid: str, client):
+def notify_parsing_exception(
+    parsing_error: subscription_exceptions.DMSParsingError, application_scalar_id: str, client
+):
     if "birth_date" in parsing_error:
         client.send_user_message(
-            application_techid, settings.DMS_INSTRUCTOR_ID, subscription_messages.DMS_ERROR_MESSSAGE_BIRTH_DATE
+            application_scalar_id, settings.DMS_INSTRUCTOR_ID, subscription_messages.DMS_ERROR_MESSSAGE_BIRTH_DATE
         )
     elif "postal_code" in parsing_error and "id_piece_number" in parsing_error:
         client.send_user_message(
-            application_techid, settings.DMS_INSTRUCTOR_ID, subscription_messages.DMS_ERROR_MESSAGE_DOUBLE_ERROR
+            application_scalar_id, settings.DMS_INSTRUCTOR_ID, subscription_messages.DMS_ERROR_MESSAGE_DOUBLE_ERROR
         )
     elif "postal_code" in parsing_error and "id_piece_number" not in parsing_error:
         client.send_user_message(
-            application_techid,
+            application_scalar_id,
             settings.DMS_INSTRUCTOR_ID,
             subscription_messages.DMS_ERROR_MESSAGE_ERROR_POSTAL_CODE,
         )
     elif "id_piece_number" in parsing_error and "postal_code" not in parsing_error:
         client.send_user_message(
-            application_techid,
+            application_scalar_id,
             settings.DMS_INSTRUCTOR_ID,
             subscription_messages.DMS_ERROR_MESSAGE_ERROR_ID_PIECE,
         )
     elif "first_name" in parsing_error or "last_name" in parsing_error:
         client.send_user_message(
-            application_techid,
+            application_scalar_id,
             settings.DMS_INSTRUCTOR_ID,
             subscription_messages.DMS_NAME_INVALID_ERROR_MESSAGE,
         )
@@ -377,11 +379,11 @@ def parse_and_handle_dms_application(
     dms_dossier = client.get_single_application_details(application_id)
 
     user_email = dms_dossier.profile.email
-    dossier_id = dms_dossier.id  # This is only used to get data from DMS (not used in our API)
+    application_scalar_id = dms_dossier.id
 
     log_extra_data = {
         "application_id": application_id,
-        "dossier_id": dossier_id,
+        "application_scalar_id": application_scalar_id,
         "procedure_id": procedure_id,
         "user_email": user_email,
     }
@@ -403,7 +405,7 @@ def parse_and_handle_dms_application(
         _process_user_not_found_error(user_email, application_id, procedure_id)
         if state == dms_models.GraphQLApplicationStates.draft:
             client.send_user_message(
-                dossier_id,
+                application_scalar_id,
                 settings.DMS_INSTRUCTOR_ID,
                 subscription_messages.DMS_ERROR_MESSAGE_USER_NOT_FOUND,
             )
@@ -422,7 +424,7 @@ def parse_and_handle_dms_application(
             user, list(parsing_error.errors.keys())
         )
         if state == dms_models.GraphQLApplicationStates.draft:
-            notify_parsing_exception(parsing_error.errors, dossier_id, client)
+            notify_parsing_exception(parsing_error.errors, application_scalar_id, client)
 
         fraud_dms_api.on_dms_parsing_error(user, application_id, parsing_error, extra_data=log_extra_data)
         return None

@@ -78,10 +78,13 @@ class DMSGraphQLClient:
                 procedure_id, state, dms_demarche_response.page_info.end_cursor
             )
 
-    def send_user_message(self, dossier_techid: str, instructeur_techid: str, body: str) -> Any:
+    def send_user_message(self, application_scalar_id: str, instructeur_techid: str, body: str) -> Any:
         query = self.build_query("send_user_message")
         return self.execute_query(
-            query, variables={"input": {"dossierId": dossier_techid, "instructeurId": instructeur_techid, "body": body}}
+            query,
+            variables={
+                "input": {"dossierId": application_scalar_id, "instructeurId": instructeur_techid, "body": body}
+            },
         )
 
     def archive_application(self, application_techid: str, instructeur_techid: str) -> Any:
