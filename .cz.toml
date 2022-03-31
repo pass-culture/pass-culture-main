@@ -4,14 +4,14 @@ name = "cz_customize"
 [tool.commitizen.customize]
 message_template = "({{jira_ticket}}){% if affected_repository %}[{{affected_repository}}]{% endif %} {{change_type}}: {{message}}"
 schema = "(<ticket_number>)[<affected_repository>] <type>: <commit_message>"
-schema_pattern = "\\(PC-\\d+\\)(\\[(API|PRO|ADAGE)\\])? ?(build|ci|docs|feat|fix|perf|refactor|style|test|chore|revert|bump)(\\[[\\w\\s]+\\])?:[\\w\\s]+"
+schema_pattern = "\\((PC-\\d+|BSR)\\)(\\[(API|PRO|ADAGE)\\])? ?(build|ci|docs|feat|fix|perf|refactor|style|test|chore|revert|bump)(\\[[\\w\\s]+\\])?:[\\w\\s]+"
 example = "(PC-88888)[API] feat: this is such a great commit"
 
 
 [[tool.commitizen.customize.questions]]
 type = "input"
 name = "jira_ticket"
-message = "Jira ticket number. e.g. PC-XXXX"
+message = "'BSR' or Jira ticket number. e.g. PC-XXXX"
 
 [[tool.commitizen.customize.questions]]
 type = "list"
