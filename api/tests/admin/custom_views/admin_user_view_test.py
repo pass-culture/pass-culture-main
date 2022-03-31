@@ -46,6 +46,7 @@ class AdminUserViewTest:
         assert not user_created.has_beneficiary_role
         assert user_created.has_admin_role
         assert user_created.hasSeenProTutorials is True
+        assert user_created.hasSeenProRgs is True
         assert user_created.needsToFillCulturalSurvey is False
 
         token = Token.query.filter_by(userId=user_created.id).first()
