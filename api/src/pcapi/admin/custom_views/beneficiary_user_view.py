@@ -151,7 +151,6 @@ class BeneficiaryUserView(ResendValidationEmailMixin, SuspensionMixin, BaseAdmin
         "extraData",
         "firstName",
         "hasSeenTutorials",
-        "hasSeenProTutorials",
         "idPieceNumber",
         "ineHash",
         "isActive",
