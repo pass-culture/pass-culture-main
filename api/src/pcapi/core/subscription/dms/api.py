@@ -366,6 +366,7 @@ def try_dms_orphan_adoption(user: users_models.User):
         return
 
     fraud_check = parse_and_handle_dms_application(dms_orphan.application_id, dms_orphan.process_id)
+
     if fraud_check is not None:
         pcapi_repository.repository.delete(dms_orphan)
 
@@ -424,7 +425,6 @@ def parse_and_handle_dms_application(
         if state == dms_models.GraphQLApplicationStates.draft:
             notify_parsing_exception(parsing_error.errors, dossier_id, client)
 
-        fraud_dms_api.on_dms_parsing_error(user, application_id, parsing_error, extra_data=log_extra_data)
-        return None
+        return fraud_dms_api.on_dms_parsing_error(user, application_id, parsing_error, extra_data=log_extra_data)
 
     return handle_dms_state(user, application, procedure_id, application_id, state)
