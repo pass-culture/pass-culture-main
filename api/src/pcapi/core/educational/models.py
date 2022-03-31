@@ -76,6 +76,12 @@ class EducationalBookingStatus(enum.Enum):
     REFUSED = "REFUSED"
 
 
+class CollectiveBookingStatusFilter(enum.Enum):
+    BOOKED = "booked"
+    VALIDATED = "validated"
+    REIMBURSED = "reimbursed"
+
+
 class CollectiveOffer(PcObject, ValidationMixin, AccessibilityMixin, StatusMixin, Model):  # type: ignore[valid-type, misc]
     __tablename__ = "collective_offer"
 
