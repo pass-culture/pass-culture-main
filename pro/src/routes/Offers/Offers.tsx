@@ -7,7 +7,11 @@ import useActiveFeature from 'components/hooks/useActiveFeature'
 import useCurrentUser from 'components/hooks/useCurrentUser'
 import useNotification from 'components/hooks/useNotification'
 import Spinner from 'components/layout/Spinner'
-import { DEFAULT_SEARCH_FILTERS, hasSearchFilters } from 'core/Offers'
+import {
+  DEFAULT_SEARCH_FILTERS,
+  getOffererAdapter,
+  hasSearchFilters,
+} from 'core/Offers'
 import { useQuerySearchFilters } from 'core/Offers/hooks'
 import {
   Audience,
@@ -24,7 +28,7 @@ import {
 import OffersScreen from 'screens/Offers'
 import { savePageNumber, saveSearchFilters } from 'store/offers/actions'
 
-import { getFilteredOffersAdapter, getOffererAdapter } from './adapters'
+import { getFilteredOffersAdapter } from './adapters'
 
 const Offers = (): JSX.Element => {
   const [urlSearchFilters, urlPageNumber] = useQuerySearchFilters()
