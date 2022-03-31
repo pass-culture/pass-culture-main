@@ -28,6 +28,7 @@ def get_settings() -> serializers.SettingsResponse:
         FeatureToggle.ENABLE_NATIVE_ID_CHECK_VERBOSE_DEBUGGING,
         FeatureToggle.ENABLE_PHONE_VALIDATION,
         FeatureToggle.ID_CHECK_ADDRESS_AUTOCOMPLETION,
+        FeatureToggle.PRO_DISABLE_EVENTS_QRCODE,
     )
 
     return serializers.SettingsResponse(
@@ -49,4 +50,5 @@ def get_settings() -> serializers.SettingsResponse:
         # the last forced release v1.166.3 was not future proof enough to delete yet in this PR.
         is_webapp_v2_enabled=True,
         object_storage_url=OBJECT_STORAGE_URL,
+        pro_disable_events_qrcode=features[FeatureToggle.PRO_DISABLE_EVENTS_QRCODE],
     )
