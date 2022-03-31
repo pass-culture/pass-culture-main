@@ -62,7 +62,7 @@ def on_dms_parsing_error(
     application_id: int,
     parsing_error: subscription_exceptions.DMSParsingError,
     extra_data: Optional[dict] = None,
-) -> None:
+) -> fraud_models.BeneficiaryFraudCheck:
     fraud_check = get_or_create_fraud_check(user, application_id)
     fraud_check.reason = (
         "Erreur lors de la récupération de l'application DMS: "
@@ -71,11 +71,9 @@ def on_dms_parsing_error(
     fraud_check.reasonCodes = [fraud_models.FraudReasonCode.ERROR_IN_DATA]
     repository.save(fraud_check)
 
-    logger.info(
-        "Cannot parse DMS application %s in webhook. Errors will be handled in the import_dms_users cron",
-        application_id,
-        extra=extra_data,
-    )
+    logger.info("Cannot parse DMS application %s in webhook.", application_id, extra=extra_data)
+
+    return fraud_check
 
 
 def on_dms_eligibility_error(

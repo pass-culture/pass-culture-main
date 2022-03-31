@@ -102,3 +102,24 @@ class DMSOrphanSubsriptionTest:
 
         dms_orphan = fraud_models.OrphanDmsApplication.query.filter_by(email=user.email).first()
         assert dms_orphan is None
+
+    @patch.object(api_dms.DMSGraphQLClient, "execute_query")
+    def test_dms_orphan_corresponding_user_with_parsing_error(self, execute_query):
+        application_id = 1234
+        procedure_id = 4321
+        email = "dms_orphan@example.com"
+
+        user = users_factories.UserFactory(email=email)
+        fraud_factories.OrphanDmsApplicationFactory(email=email, application_id=application_id, process_id=procedure_id)
+
+        execute_query.return_value = make_single_application(
+            application_id, dms_models.GraphQLApplicationStates.draft, email=email, postal_code="1234"
+        )
+
+        dms_subscription_api.try_dms_orphan_adoption(user)
+
+        fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(userId=user.id).first()
+        assert fraud_check is not None
+
+        dms_orphan = fraud_models.OrphanDmsApplication.query.filter_by(email=user.email).first()
+        assert dms_orphan is None
