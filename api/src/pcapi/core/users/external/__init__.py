@@ -107,7 +107,6 @@ def get_pro_attributes(email: str) -> ProAttributes:
                 "user_id": user.id,
                 "first_name": user.firstName,
                 "last_name": user.lastName,
-                "marketing_email_subscription": user.get_notification_subscriptions().marketing_email,
                 "user_is_attached": user_is_attached,
                 "user_is_creator": user_is_creator,
             }
@@ -132,10 +131,19 @@ def get_pro_attributes(email: str) -> ProAttributes:
             }
         )
 
+    marketing_email_subscription = (
+        # Force email subscription to True when email is used only as bookingEmail
+        # Force to False when email has been removed from db, maybe replaced with another one in user and/or venue
+        user.get_notification_subscriptions().marketing_email
+        if user
+        else bool(venues)
+    )
+
     return ProAttributes(
         is_pro=True,
         is_user_email=bool(user),
         is_booking_email=bool(venues),
+        marketing_email_subscription=marketing_email_subscription,
         offerer_name=set(offerer_name),
         venue_count=len(all_venue_ids),
         **attributes,
