@@ -47,7 +47,7 @@ L'équipe du pass Culture"""
 
 DMS_ERROR_MESSAGE_ERROR_POSTAL_CODE = """Bonjour,
 
-            Le champ du code postal doit être rempli par 5 chiffres uniquement, sans lettres ni espace. Si tu as saisi ta ville dans le champ du code postal, merci de ne saisir que ces 5 chiffres.
+            Le champ du code postal doit être rempli par 5 chiffres uniquement, sans lettre ni espace. Si tu as saisi ta ville dans le champ du code postal, merci de ne saisir que ces 5 chiffres.
 
             Pour corriger ton formulaire, cet article est là pour t'aider : <a href="https://aide.passculture.app/hc/fr/articles/4411999116433--Jeunes-Où-puis-je-trouver-de-l-aide-concernant-mon-dossier-d-inscription-sur-Démarches-Simplifiées-">https://aide.passculture.app/hc/fr/articles/4411999116433--Jeunes-Où-puis-je-trouver-de-l-aide-concernant-mon-dossier-d-inscription-sur-Démarches-Simplifiées-</a>
 
