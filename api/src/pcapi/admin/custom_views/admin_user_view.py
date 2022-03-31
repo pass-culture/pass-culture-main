@@ -94,6 +94,7 @@ class AdminUserView(SuspensionMixin, BaseAdminView):
         model.publicName = f"{model.firstName} {model.lastName}"
         model.add_admin_role()
         model.hasSeenProTutorials = True
+        model.hasSeenProRgs = True
         model.needsToFillCulturalSurvey = False
 
         users_api.fulfill_account_password(model)

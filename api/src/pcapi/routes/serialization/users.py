@@ -94,6 +94,7 @@ class SharedLoginUserResponseModel(BaseModel):
     firstName: Optional[str]
     hasPhysicalVenues: Optional[bool]
     hasSeenProTutorials: Optional[bool]
+    hasSeenProRgs: Optional[bool]
     id: str
     isAdmin: bool
     isEmailValidated: bool
@@ -136,6 +137,7 @@ class SharedCurrentUserResponseModel(BaseModel):
     firstName: Optional[str]
     hasPhysicalVenues: Optional[bool]
     hasSeenProTutorials: Optional[bool]
+    hasSeenProRgs: Optional[bool]
     id: str
     idPieceNumber: Optional[str]
     isAdmin: bool
