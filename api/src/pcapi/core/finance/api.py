@@ -4,8 +4,9 @@ Dependent pricings
 ==================
 
 The reimbursement rule to be applied for each booking depends on the
-yearly revenue to date. That means that we must price bookings in the
-order in which they are marked as used. As such:
+yearly revenue to date. For this to be reproducible, we must price
+bookings in a specific, stable order: more or less (*), the order in
+which bookings are used.
 
 - When a booking B is priced, we should delete all pricings of
   bookings that have been marked as used later than booking B. It
@@ -15,10 +16,14 @@ order in which they are marked as used. As such:
   `price_bookings` that avoids pricing bookings that have been very
   recently marked as used.
 
- - When a pricing is cancelled, we should delete all dependent
-   pricings (since the revenue will be different), so that related
-   booking can be priced again. That happens only if we mark a booking
-   as unused, which should be very rare.
+- When a pricing is cancelled, we should delete all dependent pricings
+  (since the revenue will be different), so that related booking can
+  be priced again. That happens only if we mark a booking as unused,
+  which should be very rare.
+
+(*) Actually, it's a bit more complicated. Bookings are ordered on a
+few more criteria, see `price_bookings()` and
+`_delete_dependent_pricings()`.
 """
 
 from collections import defaultdict
@@ -79,6 +84,37 @@ logger = logging.getLogger(__name__)
 MIN_DATE_TO_PRICE = datetime.datetime(2021, 12, 31, 23, 0)  # UTC
 
 
+# The ORDER BY clause to be used to price bookings in a specific,
+# stable order. If you change this, you MUST update
+# `_booking_comparison_tuple()` below.
+_PRICE_BOOKINGS_ORDER_CLAUSE = (
+    # In case of an event, we should order by the event date
+    # first. Otherwise, we would risk the following with a venue that
+    # has two events E1 (on 15/02) and E2 (on 20/02):
+    # 1. B1 is a booking for E1.
+    # 2. B2 is a booking for E2.
+    # 3. B2 is marked as used on 14/02 (_before_ the event date, it's
+    #    allowed).
+    # 4. B1 is also marked as used on 14/02, _after_ B2.
+    # 5. On 16/02, a cashflow is generated for B1 only, because it's
+    #    the only event that has happened yet.
+    # 6. The venue cancels E2. We should cancel B2's pricing.
+    #    However, we have priced B1 _after_ B2, i.e. we have included
+    #    the amount of B2 into the revenue when pricing B1. As such,
+    #    we cannot cancel B2's pricing.
+    # To work around that, we price in the order of the event date
+    # first.
+    sqla_func.coalesce(
+        offers_models.Stock.beginningDatetime,
+        bookings_models.Booking.dateUsed,
+    ),
+    bookings_models.Booking.dateUsed,
+    # Some bookings are marked as used in a batch, hence with the same
+    # datetime value. In that case, we order by their id.
+    bookings_models.Booking.id,
+)
+
+
 def price_bookings(min_date: datetime.datetime = MIN_DATE_TO_PRICE):
     """Price bookings that have been recently marked as used.
 
@@ -92,6 +128,7 @@ def price_bookings(min_date: datetime.datetime = MIN_DATE_TO_PRICE):
     window = (min_date, threshold)
     bookings = (
         bookings_models.Booking.query.filter(bookings_models.Booking.dateUsed.between(*window))
+        .join(bookings_models.Booking.stock)
         .outerjoin(
             models.Pricing,
             models.Pricing.bookingId == bookings_models.Booking.id,
@@ -103,7 +140,7 @@ def price_bookings(min_date: datetime.datetime = MIN_DATE_TO_PRICE):
         # once BusinessUnit.siret is set as NOT NULLable.
         .filter(models.BusinessUnit.siret.isnot(None))
         .filter(models.BusinessUnit.status == models.BusinessUnitStatus.ACTIVE)
-        .order_by(bookings_models.Booking.dateUsed, bookings_models.Booking.id)
+        .order_by(*_PRICE_BOOKINGS_ORDER_CLAUSE)
         .options(
             sqla_orm.load_only(bookings_models.Booking.id),
             # Our code does not access `Venue.id` but SQLAlchemy needs
@@ -136,6 +173,20 @@ def price_bookings(min_date: datetime.datetime = MIN_DATE_TO_PRICE):
                     "exc": str(exc),
                 },
             )
+
+
+def _booking_comparison_tuple(booking: bookings_models.Booking) -> list:
+    """Return a list of values, for a particular booking, that can be
+    compared to `_PRICE_BOOKINGS_ORDER_CLAUSE`.
+    """
+    tupl = (
+        booking.stock.beginningDatetime or booking.dateUsed,
+        booking.dateUsed,
+        booking.id,
+    )
+    if len(tupl) != len(_PRICE_BOOKINGS_ORDER_CLAUSE):
+        raise RuntimeError("_booking_comparison_tuple has a wrong length.")
+    return tupl
 
 
 def lock_business_unit(business_unit_id: int):
@@ -323,46 +374,90 @@ def _get_initial_pricing_status(booking: bookings_models.Booking) -> models.Pric
 
 
 def _delete_dependent_pricings(booking: bookings_models.Booking, log_message: str):
-    """Delete pricings for bookings that have been used after the given
-    ``booking``.
+    """Delete pricings for bookings that should be priced after the
+    requested ``booking``.
 
     See note in the module docstring for further details.
     """
-
-    # récupérer les pricings avec le même SIRET, liés à des bookings
-    # dont le numéro d'ordonnancement est supérieur au numéro
-    # d'ordonnancement du booking demandé.
-
     siret = booking.venue.siret or booking.venue.businessUnit.siret
-    _period_start, period_end = _get_revenue_period(booking.dateUsed)
-    query = models.Pricing.query.filter(
-        models.Pricing.siret == siret,
-        sqla.or_(
-            sqla.and_(
-                models.Pricing.valueDate > booking.dateUsed,
-                models.Pricing.valueDate <= period_end,
-            ),
-            sqla.and_(
-                models.Pricing.valueDate == booking.dateUsed,
-                models.Pricing.bookingId > booking.id,
-            ),
-        ),
+    _start, revenue_period_end = _get_revenue_period(booking.dateUsed)
+    pricings = (
+        models.Pricing.query.filter(models.Pricing.siret == siret)
+        .join(models.Pricing.booking)
+        .join(bookings_models.Booking.stock)
+        .filter(
+            models.Pricing.valueDate <= revenue_period_end,
+            sqla.func.ROW(*_PRICE_BOOKINGS_ORDER_CLAUSE) > sqla.func.ROW(*_booking_comparison_tuple(booking)),
+        )
+        .with_entities(
+            models.Pricing.id, models.Pricing.bookingId, models.Pricing.status, bookings_models.Booking.stockId
+        )
+        .all()
     )
-    pricings = query.all()
     if not pricings:
         return
     for pricing in pricings:
         if pricing.status not in models.DELETABLE_PRICING_STATUSES:
-            logger.error(
-                "Found non-deletable pricing for a SIRET that has an older booking to price or cancel",
-                extra={
-                    "siret": pricing.siret,
-                    "booking_being_priced_or_cancelled": booking.id,
-                    "older_pricing": pricing.id,
-                    "older_pricing_status": pricing.status,
-                },
-            )
-            raise exceptions.NonCancellablePricingError()
+            # FIXME (dbaty, 2022-04-06): there was a bug that caused
+            # cashflows to be generated for events that had not yet
+            # happened (see fix in 4d68e12dae26c54d8e03fcacdfdf3002b).
+            # For impacted events, we will end up here but we cannot
+            # do anything. Once all impacted events have happened
+            # (i.e. after 2022-11-05), we can remove the `if` part of
+            # the block (and always log an error and raise an
+            # exception as we currently do in the `else` part).
+            #
+            # Stock identifiers have been exported with this query:
+            #   SELECT id, "beginningDatetime" FROM stock
+            #   WHERE id in (
+            #     SELECT distinct(stock.id) FROM stock
+            #     JOIN booking ON booking."stockId" = stock.id
+            #     JOIN pricing ON pricing."bookingId" = booking.id
+            #     WHERE stock."beginningDatetime" > now() AND pricing.status = 'invoiced'
+            #   )
+            #   ORDER BY "beginningDatetime";
+            # fmt: off
+            stock_ids = {
+                # happen before end of April
+                50064552, 50416251, 46417998, 23264071, 48486869, 49304599, 49474883, 43553116,
+                45321327, 30776142, 51231535, 46406103, 50416326, 49096489, 49096374, 50222944,
+                49096506, 49096405, 45964076, 49096446, 50222788, 49096475, 48487047, 23264187,
+                44848126,
+                # happen before end of May
+                49726292, 30070444,
+                # happen before end of June
+                47917093, 47917071, 47916748, 50629375, 50276834, 47916807, 30833457,
+                # happen before end of July
+                49729242, 49729181, 49729227, 49729197, 49729210, 49923686, 50221016, 42193135,
+                49343153, 49343119, 49343139, 49343148, 49343160, 50259980, 49425966, 48774702,
+                50259991, 49425801,
+                # happens before end of September
+                30776103,
+                # happens on 2022-11-05
+                51132276,
+            }
+            # fmt: on
+            if pricing.stockId in stock_ids:
+                logger.info(
+                    "Found non-deletable pricing for a SIRET that has an older booking to price or cancel (special case for prematurely reimbursed event bookings)",
+                    extra={
+                        "siret": siret,
+                        "booking_being_priced_or_cancelled": booking.id,
+                        "older_pricing": pricing.id,
+                        "older_pricing_status": pricing.status,
+                    },
+                )
+            else:
+                logger.error(
+                    "Found non-deletable pricing for a SIRET that has an older booking to price or cancel",
+                    extra={
+                        "siret": siret,
+                        "booking_being_priced_or_cancelled": booking.id,
+                        "older_pricing": pricing.id,
+                        "older_pricing_status": pricing.status,
+                    },
+                )
+                raise exceptions.NonCancellablePricingError()
 
     # Do not reuse `query` from above. It should not have changed
     # since the beginning of the function (since we should have an

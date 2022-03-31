@@ -139,14 +139,17 @@ class PriceBookingTest:
         assert pricing.amount == 0
 
     def test_accrue_revenue(self):
-        booking1 = bookings_factories.UsedIndividualBookingFactory(amount=10)
+        booking1 = bookings_factories.UsedIndividualBookingFactory(
+            amount=10,
+            stock=offers_factories.EventStockFactory(),
+        )
         booking2 = bookings_factories.UsedEducationalBookingFactory(
             stock__offer__venue=booking1.venue,
             amount=20,
         )
         booking3 = bookings_factories.UsedIndividualBookingFactory(
             amount=40,
-            stock__offer__venue=booking1.venue,
+            stock=offers_factories.EventStockFactory(offer__venue=booking1.venue),
         )
         pricing1 = api.price_booking(booking1)
         pricing2 = api.price_booking(booking2)
@@ -343,15 +346,15 @@ class DeleteDependentPricingsTest:
         booking = bookings_factories.UsedBookingFactory(dateUsed=used_date)
         earlier_pricing = factories.PricingFactory(
             siret=booking.venue.siret,
-            valueDate=booking.dateUsed - datetime.timedelta(seconds=1),
+            booking__dateUsed=booking.dateUsed - datetime.timedelta(seconds=1),
         )
         later_pricing = factories.PricingFactory(
             siret=booking.venue.siret,
-            valueDate=booking.dateUsed + datetime.timedelta(seconds=1),
+            booking__dateUsed=booking.dateUsed + datetime.timedelta(seconds=1),
         )
         later_pricing_another_year = factories.PricingFactory(
             siret=booking.venue.siret,
-            valueDate=used_date + datetime.timedelta(days=365),
+            booking__dateUsed=used_date + datetime.timedelta(days=365),
         )
         factories.PricingLineFactory(pricing=later_pricing)
         factories.PricingLogFactory(pricing=later_pricing)
@@ -360,8 +363,8 @@ class DeleteDependentPricingsTest:
             valueDate=booking.dateUsed,
         )
         api._delete_dependent_pricings(booking, "some log message")
-        kept = [earlier_pricing, later_pricing_another_year]
-        assert list(models.Pricing.query.all()) == kept
+        expected_kept = [earlier_pricing, later_pricing_another_year]
+        assert list(models.Pricing.query.all()) == expected_kept
 
     def test_raise_if_a_pricing_is_not_deletable(self):
         booking = create_booking_with_undeletable_dependent()
@@ -402,6 +405,40 @@ class PriceBookingsTest:
         )
         api.price_bookings(min_date=self.few_minutes_ago)
         assert len(booking.pricings) == 1
+
+    def test_order_on_event_date(self):
+        event_day1 = datetime.datetime.utcnow() - datetime.timedelta(days=3)
+        event_day2 = datetime.datetime.utcnow() - datetime.timedelta(days=2)
+
+        used_date1 = datetime.datetime.utcnow() - datetime.timedelta(days=10)
+        used_date2 = datetime.datetime.utcnow() - datetime.timedelta(days=9)
+        used_date3 = datetime.datetime.utcnow() - datetime.timedelta(days=8)
+        used_date4 = datetime.datetime.utcnow() - datetime.timedelta(days=7)
+
+        booking1 = bookings_factories.UsedBookingFactory(
+            # non-event, created first, marked as used first
+            dateUsed=used_date1,
+        )
+        booking2 = bookings_factories.UsedBookingFactory(
+            # event, marked as used before the event date
+            dateUsed=used_date3,
+            stock__beginningDatetime=event_day2,
+        )
+        booking3 = bookings_factories.UsedBookingFactory(
+            # event, marked as used after booking2, but with an event
+            # date *before* booking2 event date.
+            dateUsed=used_date4,
+            stock__beginningDatetime=event_day1,
+        )
+        booking4 = bookings_factories.UsedBookingFactory(
+            # non-event, created last, marked as used second
+            dateUsed=used_date2,
+        )
+
+        api.price_bookings()
+        pricings = models.Pricing.query.order_by(models.Pricing.id).all()
+        ordered_bookings = [pricing.booking for pricing in pricings]
+        assert ordered_bookings == [booking1, booking4, booking3, booking2]
 
 
 class GenerateCashflowsTest:
