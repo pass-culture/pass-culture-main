@@ -5,7 +5,12 @@ import getSuggestionsFromLatitudeAndLongitude from '../selectors/getSuggestionsF
 const bindGetSuggestionsToLongitude = createDecorator({
   field: 'longitude',
   updates: async (longitude, key, values) => {
-    if (!values.latitude || !longitude || values.address || values.siret) {
+    if (
+      !values.latitude ||
+      !longitude ||
+      values.siret ||
+      process.env.NODE_ENV === 'test'
+    ) {
       return {}
     }
 
