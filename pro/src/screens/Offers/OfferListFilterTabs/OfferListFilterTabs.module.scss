@@ -14,16 +14,11 @@
     cursor: pointer;
     border-bottom: 2px solid transparent;
 
-    &-radio {
-      z-index: -1;
-      margin-right: rem(12px);
-    }
-
     &-icon {
       fill: $black;
       width: rem(20px);
-      position: absolute;
-      left: 0;
+      height: auto;
+      margin-right: rem(12px);
     }
 
     &.is-selected {

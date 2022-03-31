@@ -137,7 +137,7 @@ describe('screen Offers', () => {
       urlSearchFilters: DEFAULT_SEARCH_FILTERS,
       separateIndividualAndCollectiveOffers: false,
       initialSearchFilters: DEFAULT_SEARCH_FILTERS,
-      urlAudience: Audience.INDIVIDUAL,
+      audience: Audience.INDIVIDUAL,
       redirectWithUrlFilters: jest.fn(),
       venues: proVenuesOptions,
       categories: categoriesAndSubcategories.categories.map(

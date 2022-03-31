@@ -185,6 +185,7 @@ const CollectiveOffers = (): JSX.Element => {
 
   return (
     <OffersScreen
+      audience={Audience.COLLECTIVE}
       categories={categories}
       currentPageNumber={urlPageNumber}
       currentUser={currentUser}
@@ -198,7 +199,6 @@ const CollectiveOffers = (): JSX.Element => {
         separateIndividualAndCollectiveOffers
       }
       setOfferer={setOfferer}
-      urlAudience={Audience.COLLECTIVE}
       urlSearchFilters={urlSearchFilters}
       venues={venues}
     />

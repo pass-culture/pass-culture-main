@@ -178,6 +178,7 @@ const Offers = (): JSX.Element => {
 
   return (
     <OffersScreen
+      audience={Audience.INDIVIDUAL}
       categories={categories}
       currentPageNumber={urlPageNumber}
       currentUser={currentUser}
@@ -191,7 +192,6 @@ const Offers = (): JSX.Element => {
         separateIndividualAndCollectiveOffers
       }
       setOfferer={setOfferer}
-      urlAudience={Audience.INDIVIDUAL}
       urlSearchFilters={urlSearchFilters}
       venues={venues}
     />
