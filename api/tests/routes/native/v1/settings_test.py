@@ -16,6 +16,7 @@ class SettingsTest:
         ENABLE_NATIVE_ID_CHECK_VERBOSE_DEBUGGING=False,
         ENABLE_PHONE_VALIDATION=True,
         ID_CHECK_ADDRESS_AUTOCOMPLETION=True,
+        PRO_DISABLE_EVENTS_QRCODE=False,
     )
     def test_get_settings_feature_combination_1(self, app):
         response = TestClient(app.test_client()).get("/native/v1/settings")
@@ -34,6 +35,7 @@ class SettingsTest:
             "isRecaptchaEnabled": True,
             "isWebappV2Enabled": True,
             "objectStorageUrl": "http://localhost/storage",
+            "proDisableEventsQrcode": False,
         }
 
     @override_features(
@@ -43,6 +45,7 @@ class SettingsTest:
         ENABLE_NATIVE_ID_CHECK_VERBOSE_DEBUGGING=True,
         ENABLE_PHONE_VALIDATION=False,
         ID_CHECK_ADDRESS_AUTOCOMPLETION=False,
+        PRO_DISABLE_EVENTS_QRCODE=True,
     )
     def test_get_settings_feature_combination_2(self, app):
         response = TestClient(app.test_client()).get("/native/v1/settings")
@@ -61,4 +64,5 @@ class SettingsTest:
             "isRecaptchaEnabled": False,
             "isWebappV2Enabled": True,
             "objectStorageUrl": "http://localhost/storage",
+            "proDisableEventsQrcode": True,
         }

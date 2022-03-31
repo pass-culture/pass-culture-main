@@ -184,6 +184,7 @@ def test_public_api(client, app):
                         "isRecaptchaEnabled": {"title": "Isrecaptchaenabled", "type": "boolean"},
                         "isWebappV2Enabled": {"title": "Iswebappv2Enabled", "type": "boolean"},
                         "objectStorageUrl": {"title": "Objectstorageurl", "type": "string"},
+                        "proDisableEventsQrcode": {"title": "Prodisableeventsqrcode", "type": "boolean"},
                     },
                     "required": [
                         "accountCreationMinimumAge",
@@ -198,6 +199,7 @@ def test_public_api(client, app):
                         "isRecaptchaEnabled",
                         "isWebappV2Enabled",
                         "objectStorageUrl",
+                        "proDisableEventsQrcode",
                     ],
                     "title": "SettingsResponse",
                     "type": "object",
