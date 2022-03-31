@@ -80,8 +80,8 @@ class FieldLabel(enum.Enum):
 class ApplicationPageInfo(pydantic.BaseModel):
     """https://demarches-simplifiees-graphql.netlify.app/dossierspageinfo.doc.html"""
 
-    end_cursor: str = pydantic.Field(alias="endCursor")
-    has_next_page: typing.Optional[bool] = pydantic.Field(None, alias="hasNextPage")
+    end_cursor: typing.Optional[str] = pydantic.Field(None, alias="endCursor")
+    has_next_page: bool = pydantic.Field(alias="hasNextPage")
 
 
 class DmsApplicationResponse(pydantic.BaseModel):
