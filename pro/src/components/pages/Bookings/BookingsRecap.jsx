@@ -183,7 +183,6 @@ const BookingsRecap = ({ location, showNotification }) => {
         bookingsRecap.length > 0 ? (
           <BookingsRecapTable
             bookingsRecap={bookingsRecap}
-            isBookingFiltersActive={isBookingFiltersActive}
             isLoading={isTableLoading}
             locationState={location.state}
           />
