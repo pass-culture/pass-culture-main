@@ -14,6 +14,7 @@ import SetPasswordConfirmContainer from 'components/pages/SetPasswordConfirm/Set
 import SignIn from 'components/pages/SignIn/SignIn'
 import SignupContainer from 'components/pages/Signup/SignupContainer'
 import StyleguideContainer from 'components/pages/Styleguide/StyleguideContainer'
+import CollectiveOffers from 'routes/CollectiveOffers'
 import CsvDetailViewContainer from 'routes/CsvTable'
 import Desk from 'routes/Desk'
 import OfferEducationalConfirmation from 'routes/OfferEducationalConfirmation'
@@ -189,6 +190,13 @@ const routes = [
     exact: true,
     path: '/offres',
     title: 'Offres',
+  },
+  {
+    component: CollectiveOffers,
+    exact: true,
+    path: '/offres/collectives',
+    title: 'Offres',
+    featureName: 'ENABLE_INDIVIDUAL_AND_COLLECTIVE_OFFER_SEPARATION',
   },
   {
     component: OfferEducationalStockCreation,

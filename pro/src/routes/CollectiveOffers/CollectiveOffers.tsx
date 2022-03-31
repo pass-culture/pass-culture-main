@@ -1,44 +1,62 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
-import { useHistory } from 'react-router-dom'
+import { Redirect, useHistory } from 'react-router-dom'
 
+import useActiveFeature from 'components/hooks/useActiveFeature'
 import useCurrentUser from 'components/hooks/useCurrentUser'
 import useNotification from 'components/hooks/useNotification'
 import Spinner from 'components/layout/Spinner'
 import { computeOffersUrl } from 'components/pages/Offers/utils/computeOffersUrl'
-import { DEFAULT_PAGE, DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
+import { DEFAULT_SEARCH_FILTERS } from 'core/Offers'
+import { useQuerySearchFilters } from 'core/Offers/hooks'
 import { Audience, Offer, Offerer, TSearchFilters } from 'core/Offers/types'
 import OffersScreen from 'screens/Offers'
 import { savePageNumber, saveSearchFilters } from 'store/offers/actions'
 
-import { getFilteredCollectiveOffersAdapter } from '../adapters'
+import {
+  getFilteredCollectiveOffersAdapter,
+  getOffererAdapter,
+} from './adapters'
 
-interface ICollectiveOffersProps {
-  urlPageNumber: number
-  urlSearchFilters: TSearchFilters
-  offerer: Offerer | null
-  setOfferer: (offerer: Offerer | null) => void
-  separateIndividualAndCollectiveOffers: boolean
-}
-
-const CollectiveOffers = ({
-  urlPageNumber,
-  urlSearchFilters,
-  offerer,
-  setOfferer,
-  separateIndividualAndCollectiveOffers,
-}: ICollectiveOffersProps): JSX.Element => {
-  const history = useHistory()
+const CollectiveOffers = (): JSX.Element => {
+  const [urlSearchFilters, urlPageNumber] = useQuerySearchFilters()
   const notify = useNotification()
+  const history = useHistory()
   const { currentUser } = useCurrentUser()
   const dispatch = useDispatch()
 
+  const [offerer, setOfferer] = useState<Offerer | null>(null)
   const [offers, setOffers] = useState<Offer[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [initialSearchFilters, setInitialSearchFilters] =
     useState<TSearchFilters | null>(null)
 
-  const loadAndUpdatCollectiveOffers = useCallback(
+  const separateIndividualAndCollectiveOffers = useActiveFeature(
+    'ENABLE_INDIVIDUAL_AND_COLLECTIVE_OFFER_SEPARATION'
+  )
+
+  useEffect(() => {
+    const loadOfferer = async () => {
+      if (
+        urlSearchFilters.offererId &&
+        urlSearchFilters.offererId !== DEFAULT_SEARCH_FILTERS.offererId
+      ) {
+        const { isOk, message, payload } = await getOffererAdapter(
+          urlSearchFilters.offererId
+        )
+
+        if (!isOk) {
+          return notify.error(message)
+        }
+
+        setOfferer(payload)
+      }
+    }
+
+    loadOfferer()
+  }, [urlSearchFilters.offererId, notify])
+
+  const loadAndUpdateOffers = useCallback(
     async (filters: TSearchFilters) => {
       const apiFilters = {
         ...DEFAULT_SEARCH_FILTERS,
@@ -102,9 +120,6 @@ const CollectiveOffers = ({
         status: urlSearchFilters.status
           ? urlSearchFilters.status
           : DEFAULT_SEARCH_FILTERS.status,
-        creationMode: urlSearchFilters.creationMode
-          ? urlSearchFilters.creationMode
-          : DEFAULT_SEARCH_FILTERS.creationMode,
         periodBeginningDate:
           urlSearchFilters.periodBeginningDate ||
           DEFAULT_SEARCH_FILTERS.periodBeginningDate,
@@ -116,17 +131,21 @@ const CollectiveOffers = ({
     dispatch(savePageNumber(urlPageNumber))
   }, [dispatch, urlPageNumber, urlSearchFilters])
 
+  if (!separateIndividualAndCollectiveOffers) {
+    ;<Redirect to="/offres" />
+  }
+
   if (!initialSearchFilters) {
     return <Spinner />
   }
 
   return (
     <OffersScreen
-      currentPageNumber={urlPageNumber ?? DEFAULT_PAGE}
+      currentPageNumber={urlPageNumber}
       currentUser={currentUser}
       initialSearchFilters={initialSearchFilters}
       isLoading={isLoading}
-      loadAndUpdateOffers={loadAndUpdatCollectiveOffers}
+      loadAndUpdateOffers={loadAndUpdateOffers}
       offerer={offerer}
       offers={offers}
       redirectWithUrlFilters={redirectWithUrlFilters}
@@ -135,7 +154,7 @@ const CollectiveOffers = ({
       }
       setIsLoading={setIsLoading}
       setOfferer={setOfferer}
-      urlAudience={Audience.COLLECTIVE}
+      urlAudience={Audience.INDIVIDUAL}
       urlSearchFilters={urlSearchFilters}
     />
   )
