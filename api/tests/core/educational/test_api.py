@@ -951,6 +951,7 @@ class EditCollectiveOfferStocksTest:
         booking_updated = CollectiveBooking.query.filter_by(id=booking.id).one()
         assert booking_updated.cancellationLimitDate == datetime.datetime.utcnow()
 
+    @freeze_time("2020-11-17 15:00:00")
     def test_should_allow_stock_edition_and_not_modify_cancellation_limit_date_when_booking_cancelled(self):
         # Given
         initial_event_date = datetime.datetime.now() + datetime.timedelta(days=20)
