@@ -52,7 +52,7 @@
   },
   "dependencies": {
     "@firebase/analytics": "^0.7.7",
-    "@firebase/app": "^0.7.17",
+    "@firebase/app": "^0.7.20",
     "@fontsource/barlow": "^4.5.2",
     "@reach/dialog": "^0.16.2",
     "@reach/menu-button": "^0.15.1",

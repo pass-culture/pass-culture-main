@@ -3099,7 +3099,7 @@
     minimatch "^3.0.4"
     strip-json-comments "^3.1.1"
 
-"@firebase/analytics@^0.7.5":
+"@firebase/analytics@^0.7.7":
   version "0.7.7"
   resolved "https://registry.yarnpkg.com/@firebase/analytics/-/analytics-0.7.7.tgz#a7f50fd2b5ef9f3ca23e1ce4a2326fa6a659d907"
   integrity sha512-duzzyDmBSF2ql6lp0m2jxmOH5PIgw0utqSXRjSgoYzD7lURncMAZVC2u3IgsAoUNTW/lcBSHpv+t4lnxTCNMCw==
@@ -3110,22 +3110,14 @@
     "@firebase/util" "1.5.1"
     tslib "^2.1.0"
 
-"@firebase/app@^0.7.17":
-  version "0.7.17"
-  resolved "https://registry.yarnpkg.com/@firebase/app/-/app-0.7.17.tgz#b6a75c03bc1236bf852e56ff7876e431835e18f1"
-  integrity sha512-OnZab790eMwRxkUs7o/kgniAzSBxecDTGEk1PVhiG0HQhKrIf+R7lgqOZHDb/2GJsX12jby1p/Z5+WJCBxVbJQ==
+"@firebase/app@^0.7.20":
+  version "0.7.20"
+  resolved "https://registry.yarnpkg.com/@firebase/app/-/app-0.7.20.tgz#919bcf199def75a8c2beb0658757cb83eec7302c"
+  integrity sha512-tTVrEYCbEKBcMp/bj5rUa35iM32W5z9l3jbLAqDh0ZM2yO4JvF08a3hHacZ32XDh9Av/yCgla0QmVPp/Z2klNg==
   dependencies:
-    "@firebase/component" "0.5.10"
+    "@firebase/component" "0.5.12"
     "@firebase/logger" "0.3.2"
-    "@firebase/util" "1.4.3"
-    tslib "^2.1.0"
-
-"@firebase/component@0.5.10":
-  version "0.5.10"
-  resolved "https://registry.yarnpkg.com/@firebase/component/-/component-0.5.10.tgz#eab8acfd9b1a2b6534a63cbcd7cbc7660c47663d"
-  integrity sha512-mzUpg6rsBbdQJvAdu1rNWabU3O7qdd+B+/ubE1b+pTbBKfw5ySRpRRE6sKcZ/oQuwLh0HHB6FRJHcylmI7jDzA==
-  dependencies:
-    "@firebase/util" "1.4.3"
+    "@firebase/util" "1.5.1"
     tslib "^2.1.0"
 
 "@firebase/component@0.5.12":
@@ -3149,13 +3141,6 @@
   version "0.3.2"
   resolved "https://registry.yarnpkg.com/@firebase/logger/-/logger-0.3.2.tgz#5046ffa8295c577846d54b6ca95645a03809800e"
   integrity sha512-lzLrcJp9QBWpo40OcOM9B8QEtBw2Fk1zOZQdvv+rWS6gKmhQBCEMc4SMABQfWdjsylBcDfniD1Q+fUX1dcBTXA==
-  dependencies:
-    tslib "^2.1.0"
-
-"@firebase/util@1.4.3":
-  version "1.4.3"
-  resolved "https://registry.yarnpkg.com/@firebase/util/-/util-1.4.3.tgz#4358cf5f18beaa9c8a1e5a5fc4c7c44a4ccd4b7b"
-  integrity sha512-gQJl6r0a+MElLQEyU8Dx0kkC2coPj67f/zKZrGR7z7WpLgVanhaCUqEsptwpwoxi9RMFIaebleG+C9xxoARq+Q==
   dependencies:
     tslib "^2.1.0"
 
