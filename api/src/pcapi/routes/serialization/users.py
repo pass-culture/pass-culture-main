@@ -94,6 +94,9 @@ class SharedLoginUserResponseModel(BaseModel):
     firstName: Optional[str]
     hasPhysicalVenues: Optional[bool]
     hasSeenProTutorials: Optional[bool]
+    # FIXME (mageoffray, 2022-04-04): Optional can be removed after
+    # post-deploy migrations have been done
+    hasSeenProRgs: Optional[bool]
     id: str
     isAdmin: bool
     isEmailValidated: bool
@@ -136,6 +139,9 @@ class SharedCurrentUserResponseModel(BaseModel):
     firstName: Optional[str]
     hasPhysicalVenues: Optional[bool]
     hasSeenProTutorials: Optional[bool]
+    hasSeenProRgs: Optional[bool]
+    # FIXME (mageoffray, 2022-04-04): Optional can be removed after
+    # post-deploy migrations have been done
     id: str
     idPieceNumber: Optional[str]
     isAdmin: bool
