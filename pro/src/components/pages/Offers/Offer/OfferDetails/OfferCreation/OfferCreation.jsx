@@ -2,7 +2,7 @@ import PropTypes from 'prop-types'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 
 import Spinner from 'components/layout/Spinner'
-import { computeOffersUrl } from 'components/pages/Offers/utils/computeOffersUrl'
+import { computeOffersUrl } from 'core/Offers/utils'
 import * as pcapi from 'repository/pcapi/pcapi'
 
 import OfferForm from '../OfferForm'

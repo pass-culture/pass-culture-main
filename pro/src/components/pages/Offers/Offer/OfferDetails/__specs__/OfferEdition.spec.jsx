@@ -16,7 +16,7 @@ import { apiV1 } from 'api/api'
 import NotificationContainer from 'components/layout/Notification/NotificationContainer'
 import { getProviderInfo } from 'components/pages/Offers/domain/getProviderInfo'
 import OfferLayoutContainer from 'components/pages/Offers/Offer/OfferLayoutContainer'
-import * as computeUrl from 'components/pages/Offers/utils/computeOffersUrl'
+import * as computeUrl from 'core/Offers/utils'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
 
@@ -40,7 +40,7 @@ jest.mock('repository/pcapi/pcapi', () => ({
   updateOffer: jest.fn(),
 }))
 
-jest.mock('../../../utils/computeOffersUrl', () => ({
+jest.mock('core/Offers/utils/computeOffersUrl', () => ({
   computeOffersUrl: jest.fn().mockReturnValue('/offres'),
 }))
 

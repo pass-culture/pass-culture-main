@@ -7,7 +7,6 @@ import useActiveFeature from 'components/hooks/useActiveFeature'
 import useCurrentUser from 'components/hooks/useCurrentUser'
 import useNotification from 'components/hooks/useNotification'
 import Spinner from 'components/layout/Spinner'
-import { computeOffersUrl } from 'components/pages/Offers/utils/computeOffersUrl'
 import { filterEducationalCategories } from 'core/OfferEducational'
 import { DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
 import { useQuerySearchFilters } from 'core/Offers/hooks'
@@ -18,6 +17,7 @@ import {
   TSearchFilters,
   Option,
 } from 'core/Offers/types'
+import { computeCollectiveOffersUrl } from 'core/Offers/utils'
 import { hasSearchFilters } from 'core/Offers/utils'
 import {
   fetchAllVenuesByProUser,
@@ -129,7 +129,7 @@ const CollectiveOffers = (): JSX.Element => {
         audience?: Audience
       }
     ) => {
-      const newUrl = computeOffersUrl(filters, filters.page)
+      const newUrl = computeCollectiveOffersUrl(filters, filters.page)
 
       history.push(newUrl)
     },

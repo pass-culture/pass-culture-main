@@ -6,7 +6,7 @@ import {
   isFieldReadOnlyForSynchronizedOffer,
   isSynchronizedOffer,
 } from 'components/pages/Offers/domain/localProvider'
-import { computeOffersUrl } from 'components/pages/Offers/utils/computeOffersUrl'
+import { computeOffersUrl } from 'core/Offers/utils'
 
 import {
   DEFAULT_FORM_VALUES,

@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
 import { Link, useHistory, useLocation } from 'react-router-dom'
 
-import { computeOffersUrl } from 'components/pages/Offers/utils/computeOffersUrl'
 import { OFFER_TYPES } from 'core/Offers'
+import { computeOffersUrl } from 'core/Offers/utils'
 import { ReactComponent as LibraryIcon } from 'icons/library.svg'
 import { ReactComponent as UserIcon } from 'icons/user.svg'
 import FormLayout from 'new_components/FormLayout'

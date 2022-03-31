@@ -10,7 +10,6 @@ import { Router } from 'react-router'
 import type { Store } from 'redux'
 
 import { api } from 'api/v1/api'
-import { computeOffersUrl } from 'components/pages/Offers/utils/computeOffersUrl'
 import {
   ALL_OFFERS,
   ALL_CATEGORIES_OPTION,
@@ -22,6 +21,7 @@ import {
   DEFAULT_SEARCH_FILTERS,
 } from 'core/Offers/constants'
 import { Audience, Offer, TSearchFilters } from 'core/Offers/types'
+import { computeOffersUrl } from 'core/Offers/utils'
 import { configureTestStore } from 'store/testUtils'
 import { offerFactory } from 'utils/apiFactories'
 
