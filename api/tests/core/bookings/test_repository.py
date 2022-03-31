@@ -1161,7 +1161,7 @@ class GetCsvReportTest:
             dateUsed=(booking_date + timedelta(days=1)),
             stock__offer__name="Harry Potter Vol 1",
         )
-        bo = bookings_factories.EducationalBookingFactory(
+        bookings_factories.EducationalBookingFactory(
             stock__offer__venue=venue,
             dateCreated=booking_date,
             dateUsed=(booking_date + timedelta(days=3)),
@@ -1181,7 +1181,6 @@ class GetCsvReportTest:
             dateUsed=(booking_date + timedelta(days=8)),
             stock__offer__name="Harry Potter Vol 4",
         )
-        print(bo.stock.offer.product.name)
         bookings_csv = booking_repository.get_csv_report(
             user=pro,
             booking_period=((booking_date + timedelta(2)), (booking_date + timedelta(5))),
