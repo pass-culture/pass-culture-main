@@ -16,18 +16,16 @@ MAILTO_SUPPORT_PARAMS = "?subject=%23{id}+-+Mon+inscription+sur+le+pass+Culture+
 
 DMS_ERROR_MESSAGE_USER_NOT_FOUND = """Bonjour,
 
-                Nous avons bien reçu ton dossier. Cependant, nous avons remarqué que tu n’es pas passé par l’application  avant de déposer le dossier ou que tu n’utilises pas la même adresse email sur le site Démarches Simplifiées.
+                Nous avons bien reçu ton dossier. Cependant, nous avons remarqué que tu n’avais pas créé de compte sur l’application pass Culture avec l’adresse email que tu utilises sur le site Démarches Simplifiées.
 
-                C’est pour cette raison que tu vas devoir poursuivre ton inscription en passant ton application.
+                Pour cela, il te faut :
+                - Télécharger l’application sur ton smartphone ou y accéder en suivant le lien suivant : passculture.app
+                - Créer un compte en indiquant la même adresse email que celle que tu utilises sur Démarches Simplifiées.
+                - Cliquer sur le lien de validation reçu par mail.
 
-                Pour cela, il faut :
-                - Télécharger l’application sur ton smartphone
-                - Entrer tes informations personnelles (nom, prénom, date de naissance, mail). Tu recevras alors un mail de confirmation (il peut se cacher dans tes spams, n’hésite pas à vérifier).
-                - Cliquer sur le lien de validation
+                Ensuite, je t’invite à patienter le temps que ton dossier déposé sur Démarches Simplifiées soit accepté.
 
-                Une fois ton inscription faite, je t’invite à nous contacter pour que nous puissions t’indiquer les étapes à suivre.
-
-                Nous te souhaitons une belle journée.
+                Nous te souhaitons une belle journée !
 
                 L’équipe pass Culture"""
 
