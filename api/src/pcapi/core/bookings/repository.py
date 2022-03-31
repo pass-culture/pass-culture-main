@@ -10,7 +10,6 @@ from typing import Iterable
 from typing import List
 from typing import Optional
 
-from dateutil import tz
 from sqlalchemy import Column
 from sqlalchemy import Date
 from sqlalchemy import case
@@ -32,6 +31,8 @@ from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.bookings.models import BookingStatusFilter
 from pcapi.core.bookings.models import IndividualBooking
+from pcapi.core.bookings.utils import _apply_departement_timezone
+from pcapi.core.bookings.utils import convert_booking_date_utc_to_venue_timezone
 from pcapi.core.categories import subcategories
 from pcapi.core.educational.models import EducationalBooking
 from pcapi.core.educational.models import EducationalInstitution
@@ -46,12 +47,10 @@ from pcapi.core.users.utils import sanitize_email
 from pcapi.domain.booking_recap import utils as booking_recap_utils
 from pcapi.domain.booking_recap.booking_recap import BookingRecap
 from pcapi.domain.booking_recap.bookings_recap_paginated import BookingsRecapPaginated
-from pcapi.domain.postal_code.postal_code import PostalCode
 from pcapi.models import db
 from pcapi.models.api_errors import ResourceNotFoundError
 from pcapi.models.user_offerer import UserOfferer
 from pcapi.routes.serialization.bookings_recap_serialize import OfferType
-from pcapi.utils.date import get_department_timezone
 from pcapi.utils.token import random_token
 
 
@@ -609,7 +608,7 @@ def _serialize_booking_recap(booking: AbstractKeyedTuple) -> BookingRecap:
         beneficiary_lastname=booking.beneficiaryLastname,
         booking_amount=booking.bookingAmount,
         booking_token=booking.bookingToken,
-        booking_date=_serialize_date_with_timezone(booking.bookedAt, booking),
+        booking_date=convert_booking_date_utc_to_venue_timezone(booking.bookedAt, booking),
         booking_is_used=booking.status in (BookingStatus.USED, BookingStatus.REIMBURSED),
         booking_is_cancelled=booking.status == BookingStatus.CANCELLED,
         booking_is_reimbursed=booking.status == BookingStatus.REIMBURSED,
@@ -621,10 +620,10 @@ def _serialize_booking_recap(booking: AbstractKeyedTuple) -> BookingRecap:
         redactor_email=booking.redactorEmail,
         redactor_firstname=booking.redactorFirstname,
         redactor_lastname=booking.redactorLastname,
-        date_used=_serialize_date_with_timezone(booking.usedAt, booking),
-        payment_date=_serialize_date_with_timezone(booking.reimbursedAt, booking),
-        cancellation_date=_serialize_date_with_timezone(booking.cancelledAt, booking=booking),
-        cancellation_limit_date=_serialize_date_with_timezone(booking.cancellationLimitDate, booking),
+        date_used=convert_booking_date_utc_to_venue_timezone(booking.usedAt, booking),
+        payment_date=convert_booking_date_utc_to_venue_timezone(booking.reimbursedAt, booking),
+        cancellation_date=convert_booking_date_utc_to_venue_timezone(booking.cancelledAt, booking=booking),
+        cancellation_limit_date=convert_booking_date_utc_to_venue_timezone(booking.cancellationLimitDate, booking),
         event_beginning_datetime=(
             _apply_departement_timezone(booking.stockBeginningDatetime, booking.venueDepartmentCode)
             if booking.stockBeginningDatetime
@@ -646,23 +645,6 @@ def _paginated_bookings_sql_entities_to_bookings_recap(
         pages=int(math.ceil(total_bookings_recap / per_page_limit)),
         total=total_bookings_recap,
     )
-
-
-def _apply_departement_timezone(naive_datetime: datetime, departement_code: str) -> datetime:
-    return (
-        naive_datetime.astimezone(tz.gettz(get_department_timezone(departement_code)))
-        if naive_datetime is not None
-        else None
-    )
-
-
-def _serialize_date_with_timezone(date_without_timezone: datetime, booking: AbstractKeyedTuple) -> datetime:
-    if booking.venueDepartmentCode:
-        return _apply_departement_timezone(
-            naive_datetime=date_without_timezone, departement_code=booking.venueDepartmentCode
-        )
-    offerer_department_code = PostalCode(booking.offererPostalCode).get_departement_code()
-    return _apply_departement_timezone(naive_datetime=date_without_timezone, departement_code=offerer_department_code)
 
 
 def _get_booking_status(status: BookingStatus, is_confirmed: bool) -> str:
@@ -699,19 +681,19 @@ def _serialize_csv_report(query: Query) -> str:
             (
                 booking.venueName,
                 booking.offerName,
-                _serialize_date_with_timezone(booking.stockBeginningDatetime, booking),
+                convert_booking_date_utc_to_venue_timezone(booking.stockBeginningDatetime, booking),
                 booking.isbn,
                 f"{booking.beneficiaryLastName} {booking.beneficiaryFirstName}",
                 booking.beneficiaryEmail,
                 booking.beneficiaryPhoneNumber,
-                _serialize_date_with_timezone(booking.bookedAt, booking),
-                _serialize_date_with_timezone(booking.usedAt, booking),
+                convert_booking_date_utc_to_venue_timezone(booking.bookedAt, booking),
+                convert_booking_date_utc_to_venue_timezone(booking.usedAt, booking),
                 booking_recap_utils.get_booking_token(
                     booking.token, booking.status, booking.offerIsEducational, booking.stockBeginningDatetime
                 ),
                 booking.amount,
                 _get_booking_status(booking.status, booking.isConfirmed),
-                _serialize_date_with_timezone(booking.reimbursedAt, booking),
+                convert_booking_date_utc_to_venue_timezone(booking.reimbursedAt, booking),
                 serialize_offer_type_educational_or_individual(booking.offerIsEducational),
             )
         )
