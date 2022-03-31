@@ -425,6 +425,7 @@ elif [[ "$CMD" == "install" ]]; then
   cd $ROOT_PATH/pro && yarn
   cd $ROOT_PATH/adage-front && yarn
   pc install-hooks
+  pc set-git-config
   exit_success_restoring_branch
 
 # Install pre-push and pre-commit hooks in the api submodule
@@ -436,6 +437,11 @@ elif [[ "$CMD" == "install-hooks" ]]; then
     chmod +x .git/hooks/pre-push;
     chmod +x .git/hooks/pre-commit;
     chmod +x .git/hooks/commit-msg;'
+
+# Define a local Git configuration
+elif [[ "$CMD" == "set-git-config" ]]; then
+  RUN='cd $ROOT_PATH;
+    git config --local commit.template .git-commit-message-template'
 
 # Create symlink to use "pc" command (admin rights may be needed)
 elif [[ "$CMD" == "symlink" ]]; then
