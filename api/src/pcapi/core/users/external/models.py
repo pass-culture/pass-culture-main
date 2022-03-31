@@ -44,6 +44,7 @@ class ProAttributes:
     is_pro: bool  # Always True
     is_user_email: bool  # Email address is set at least for a user account
     is_booking_email: bool  # Email address is set as bookingEmail for at least one active venue
+    marketing_email_subscription: bool
     offerer_name: Iterable[str]  # All active offerers associated with user account or bookingEmail
     venue_count: Optional[int] = None  # Total number of active venues related to email (by offerer or bookingEmail)
 
@@ -51,7 +52,6 @@ class ProAttributes:
     user_id: Optional[int] = None
     first_name: Optional[str] = None
     last_name: Optional[str] = None
-    marketing_email_subscription: Optional[bool] = None
     user_is_attached: Optional[bool] = None  # User is attached to at least one active offerer, he is not the creator
     user_is_creator: Optional[bool] = None  # User is the creator of at least one active offerer
 
