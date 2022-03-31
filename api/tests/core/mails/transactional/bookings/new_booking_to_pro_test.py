@@ -327,7 +327,9 @@ class OffererBookingRecapTest:
         booking = make_booking(individualBooking__user__phoneNumber="0123456789")
 
         # when
-        email_data = get_new_booking_to_pro_email_data(booking.individualBooking)
+        email_data = get_new_booking_to_pro_email_data(
+            booking.individualBooking,
+        )
 
         # then
         assert email_data.params["USER_PHONENUMBER"] == "0123456789"
@@ -343,11 +345,34 @@ class SendNewBookingEmailToProTest:
             stock__offer__bookingEmail="booking.email@example.com",
         )
 
-        send_user_new_booking_to_pro_email(booking.individualBooking)
+        send_user_new_booking_to_pro_email(booking.individualBooking, first_venue_booking=False)
 
         assert len(mails_testing.outbox) == 1  # test number of emails sent
         assert mails_testing.outbox[0].sent_data["To"] == "booking.email@example.com"
         assert mails_testing.outbox[0].sent_data["template"] == asdict(TransactionalEmail.NEW_BOOKING_TO_PRO.value)
+        assert mails_testing.outbox[0].sent_data["reply_to"] == {
+            "email": "user@example.com",
+            "name": "Tom P",
+        }
+
+
+class SendFirstVenueBookingEmailToProTest:
+    @pytest.mark.usefixtures("db_session")
+    def test_send_to_offerer(self):
+        booking = bookings_factories.IndividualBookingFactory(
+            individualBooking__user__email="user@example.com",
+            individualBooking__user__firstName="Tom",
+            individualBooking__user__lastName="P",
+            stock__offer__venue__bookingEmail="venue@bookingEmail.app",
+        )
+
+        send_user_new_booking_to_pro_email(booking.individualBooking, first_venue_booking=True)
+
+        assert len(mails_testing.outbox) == 1  # test number of emails sent
+        assert mails_testing.outbox[0].sent_data["To"] == "venue@bookingEmail.app"
+        assert mails_testing.outbox[0].sent_data["template"] == asdict(
+            TransactionalEmail.FIRST_VENUE_BOOKING_TO_PRO.value
+        )
         assert mails_testing.outbox[0].sent_data["reply_to"] == {
             "email": "user@example.com",
             "name": "Tom P",

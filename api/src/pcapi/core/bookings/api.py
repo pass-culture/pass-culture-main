@@ -85,6 +85,10 @@ def book_offer(
         if is_activation_code_applicable:
             validation.check_activation_code_available(stock)
 
+        first_venue_booking = not db.session.query(
+            Booking.query.filter(Booking.venueId == stock.offer.venueId).exists()
+        ).scalar()
+
         # FIXME (dbaty, 2020-10-20): if we directly set relations (for
         # example with `booking.user = beneficiary`) instead of foreign keys,
         # the session tries to add the object when `get_user_expenses()`
@@ -134,7 +138,7 @@ def book_offer(
         },
     )
 
-    if not send_user_new_booking_to_pro_email(individual_booking):
+    if not send_user_new_booking_to_pro_email(individual_booking, first_venue_booking):
         logger.warning(
             "Could not send booking confirmation email to offerer",
             extra={"booking": booking.id},
