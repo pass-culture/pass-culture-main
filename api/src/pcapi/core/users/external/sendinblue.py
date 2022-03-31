@@ -261,7 +261,7 @@ def send_import_contacts_request(
     try:
         api_instance.import_contacts(request_contact_import)
     except SendinblueApiException as e:
-        print("Exception when calling ContactsApi->import_contacts: %s" % e)
+        logger.exception("Exception when calling ContactsApi->import_contacts: %s", e)
 
 
 def format_file_value(value: Optional[Union[str, bool, int, datetime]]) -> str:

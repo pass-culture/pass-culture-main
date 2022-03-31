@@ -693,7 +693,6 @@ def _serialize_csv_report(query: BaseQuery) -> str:
         )
     )
     for booking in query.yield_per(1000):
-        print(booking)
         writer.writerow(
             (
                 booking.venueName,
