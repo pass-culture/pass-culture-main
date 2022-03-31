@@ -8,7 +8,7 @@ from pcapi.utils.mailing import format_booking_hours_for_email
 
 
 def get_new_booking_to_pro_email_data(
-    individual_booking: IndividualBooking,
+    individual_booking: IndividualBooking, first_venue_booking: bool = False
 ) -> SendinblueTransactionalEmailData:
     booking = individual_booking.booking
     offer = booking.stock.offer
@@ -35,12 +35,17 @@ def get_new_booking_to_pro_email_data(
         can_expire = offer.subcategory.can_expire
         is_booking_autovalidated = False
 
+    if first_venue_booking:
+        template = TransactionalEmail.FIRST_VENUE_BOOKING_TO_PRO.value
+    else:
+        template = TransactionalEmail.NEW_BOOKING_TO_PRO.value
+
     data = SendinblueTransactionalEmailData(
         reply_to=EmailInfo(
             email=individual_booking.user.email,
             name=f"{individual_booking.user.firstName} {individual_booking.user.lastName}",
         ),
-        template=TransactionalEmail.NEW_BOOKING_TO_PRO.value,
+        template=template,
         params={
             "CAN_EXPIRE": can_expire,
             "COUNTERMARK": booking.token,
@@ -70,9 +75,13 @@ def get_new_booking_to_pro_email_data(
     return data
 
 
-def send_user_new_booking_to_pro_email(individual_booking: IndividualBooking) -> bool:
-    offerer_booking_email = individual_booking.booking.stock.offer.bookingEmail
+def send_user_new_booking_to_pro_email(individual_booking: IndividualBooking, first_venue_booking: bool) -> bool:
+    if first_venue_booking:
+        offerer_booking_email = individual_booking.booking.stock.offer.venue.bookingEmail
+    else:
+        offerer_booking_email = individual_booking.booking.stock.offer.bookingEmail
+
     if not offerer_booking_email:
         return True
-    data = get_new_booking_to_pro_email_data(individual_booking)
+    data = get_new_booking_to_pro_email_data(individual_booking, first_venue_booking)
     return mails.send(recipients=[offerer_booking_email], data=data)

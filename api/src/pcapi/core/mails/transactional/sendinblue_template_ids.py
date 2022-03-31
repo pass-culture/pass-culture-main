@@ -91,6 +91,7 @@ class TransactionalEmail(Enum):
         id_prod=519, id_not_prod=63, tags=["pro_offre_evenement_reportee"]
     )
     FIRST_VENUE_APPROVED_OFFER_TO_PRO = TemplatePro(id_prod=569, id_not_prod=75, tags=["pro_premiere_offre"])
+    FIRST_VENUE_BOOKING_TO_PRO = TemplatePro(id_prod=568, id_not_prod=78, tags=["pro_premiere_reservation"])
     INVOICE_AVAILABLE_TO_PRO = TemplatePro(id_prod=405, id_not_prod=61, tags=["remboursement_justificatif"])
     NEW_BOOKING_TO_PRO = TemplatePro(id_prod=608, id_not_prod=59, tags=["pro_nouvelle_reservation"])
     NEW_OFFERER_VALIDATION = TemplatePro(id_prod=489, id_not_prod=58, tags=["pro_validation_structure"])
