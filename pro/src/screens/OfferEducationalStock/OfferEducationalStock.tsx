@@ -4,13 +4,13 @@ import { Link } from 'react-router-dom'
 /* @debt standard "Gautier: Do not load internal page dependencies"*/
 import * as yup from 'yup'
 
-import { computeOffersUrl } from 'components/pages/Offers/utils/computeOffersUrl'
 import {
   Mode,
   OfferEducationalStockFormValues,
   GetStockOfferSuccessPayload,
   EducationalOfferType,
 } from 'core/OfferEducational'
+import { computeOffersUrl } from 'core/Offers/utils'
 import FormLayout from 'new_components/FormLayout'
 import OfferEducationalActions from 'new_components/OfferEducationalActions'
 import { RadioGroup, SubmitButton, Banner, TextArea } from 'ui-kit'

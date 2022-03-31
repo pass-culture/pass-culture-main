@@ -7,7 +7,6 @@ import useActiveFeature from 'components/hooks/useActiveFeature'
 import useCurrentUser from 'components/hooks/useCurrentUser'
 import useNotification from 'components/hooks/useNotification'
 import Spinner from 'components/layout/Spinner'
-import { computeOffersUrl } from 'components/pages/Offers/utils/computeOffersUrl'
 import { DEFAULT_SEARCH_FILTERS, hasSearchFilters } from 'core/Offers'
 import { useQuerySearchFilters } from 'core/Offers/hooks'
 import {
@@ -17,6 +16,7 @@ import {
   Option,
   TSearchFilters,
 } from 'core/Offers/types'
+import { computeOffersUrl } from 'core/Offers/utils'
 import {
   fetchAllVenuesByProUser,
   formatAndOrderVenues,
