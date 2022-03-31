@@ -240,7 +240,7 @@ SignupForm.defaultProps = {
 SignupForm.propTypes = {
   createNewProUser: PropTypes.func.isRequired,
   currentUser: PropTypes.shape(),
-  history: PropTypes.func.isRequired,
+  history: PropTypes.shape().isRequired,
   location: PropTypes.shape().isRequired,
   notifyError: PropTypes.func.isRequired,
   redirectToConfirmation: PropTypes.func.isRequired,

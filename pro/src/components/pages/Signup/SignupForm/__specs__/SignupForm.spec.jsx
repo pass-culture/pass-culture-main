@@ -10,9 +10,29 @@ import { configureTestStore } from 'store/testUtils'
 
 import SignupForm from '../SignupForm'
 
+const renderSignupForm = ({ props, storeOverride = {} }) => {
+  const store = configureTestStore(storeOverride)
+  const history = createBrowserHistory()
+  const routerProps = {
+    history,
+    location: history.location,
+  }
+  const rtlReturns = render(
+    <Provider store={store}>
+      <Router history={history}>
+        <SignupForm {...props} {...routerProps} />
+      </Router>
+    </Provider>
+  )
+
+  return {
+    history,
+    rtlReturns,
+  }
+}
+
 describe('src | components | pages | Signup | SignupForm', () => {
   let props
-  let history
   let store
 
   beforeEach(() => {
@@ -22,34 +42,21 @@ describe('src | components | pages | Signup | SignupForm', () => {
       redirectToConfirmation: jest.fn(),
       showNotification: jest.fn(),
     }
-    history = createBrowserHistory()
-    store = configureTestStore({
+    store = {
       data: {
         users: null,
       },
       features: {
         list: [{ isActive: true, nameKey: 'ENABLE_PRO_ACCOUNT_CREATION' }],
       },
-    })
+    }
   })
 
   it('should redirect to home page if the user is logged in', async () => {
     // when the user is logged in and lands on signup validation page
-    store = configureTestStore({
-      data: {
-        users: [{ id: 'CMOI' }],
-      },
-      features: {
-        list: [{ isActive: true, nameKey: 'ENABLE_PRO_ACCOUNT_CREATION' }],
-      },
-    })
-    render(
-      <Provider store={store}>
-        <Router history={history}>
-          <SignupForm {...props} />
-        </Router>
-      </Provider>
-    )
+    store.data.users = [{ id: 'CMOI' }]
+    const { history } = renderSignupForm({ props, storeOverride: store })
+
     // then he should be redirected to home page
     await waitFor(() => {
       expect(history.location.pathname).toBe('/')
@@ -57,15 +64,9 @@ describe('src | components | pages | Signup | SignupForm', () => {
   })
 
   describe('render', () => {
-    it('should render with all information', () => {
+    it('should render with all information', async () => {
       // when the user sees the form
-      render(
-        <Provider store={store}>
-          <Router history={history}>
-            <SignupForm {...props} />
-          </Router>
-        </Provider>
-      )
+      renderSignupForm({ props, storeOverride: store })
 
       // then it should have a title
       expect(
@@ -124,15 +125,10 @@ describe('src | components | pages | Signup | SignupForm', () => {
       ).toHaveAttribute('href', '/connexion')
     })
 
-    it('should render with all fields', () => {
+    it('should render with all fields', async () => {
       // when the user sees the form
-      render(
-        <Provider store={store}>
-          <Router history={history}>
-            <SignupForm {...props} />
-          </Router>
-        </Provider>
-      )
+      renderSignupForm({ props, storeOverride: store })
+
       // then it should have an email field
       expect(
         screen.getByRole('textbox', {
@@ -179,49 +175,67 @@ describe('src | components | pages | Signup | SignupForm', () => {
       ).toBeInTheDocument()
     })
 
-    it('should enable submit button only when required inputs are filled', () => {
+    it('should enable submit button only when required inputs are filled', async () => {
       // Given the signup form
-      render(
-        <Router history={history}>
-          <SignupForm {...props} />
-        </Router>
-      )
+      renderSignupForm({ props, storeOverride: store })
+
       const submitButton = screen.getByRole('button', {
         name: /Créer mon compte/,
       })
       // when the user fills required information
-      userEvent.type(
+      userEvent.paste(
         screen.getByRole('textbox', {
           name: /Adresse e-mail/,
         }),
         'test@example.com'
       )
-      userEvent.type(screen.getByLabelText(/Mot de passe/), 'user@AZERTY123')
-      userEvent.type(
+      userEvent.paste(screen.getByLabelText(/Mot de passe/), 'user@AZERTY123')
+      userEvent.paste(
         screen.getByRole('textbox', {
           name: /Nom/,
         }),
         'Nom'
       )
-      userEvent.type(
+      userEvent.paste(
         screen.getByRole('textbox', {
           name: /Prénom/,
         }),
         'Prénom'
       )
-      userEvent.type(
+      userEvent.paste(
         screen.getByRole('textbox', {
           name: /Téléphone/,
         }),
         '0722332233'
       )
       expect(submitButton).toBeDisabled()
-      userEvent.type(
+
+      fetch.mockResponse(
+        JSON.stringify({
+          unite_legale: {
+            denomination: 'nom du lieu',
+            siren: '881457238',
+            etablissement_siege: {
+              geo_l4: '3 rue de la gare',
+              libelle_commune: 'paris',
+              latitude: 1.1,
+              longitude: 1.1,
+              code_postal: '75000',
+            },
+          },
+        }),
+        {
+          status: 200,
+        }
+      )
+      userEvent.paste(
         screen.getByRole('textbox', {
           name: /SIREN/,
         }),
         '881457238'
       )
+      // await the end of async calls trigger by siren field.
+      await screen.findByDisplayValue('881457238')
       // then it should enable submit button
       expect(submitButton).toBeEnabled()
     })

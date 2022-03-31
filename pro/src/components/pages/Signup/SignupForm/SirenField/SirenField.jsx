@@ -57,7 +57,7 @@ const SirenField = props => {
               {...input}
               error={meta.modified && meta.error ? meta.error : null}
               label="SIREN de la structure que vous représentez"
-              maxLength="11"
+              maxLength={11}
               name="siren"
               placeholder="123456789"
             />
