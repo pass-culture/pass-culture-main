@@ -153,7 +153,7 @@ def _update_collective_offer(
     collective_offer.students = students
 
     if is_template and offer.stocks:
-        collective_offer.priceDetail = stock.price_detail
+        collective_offer.priceDetail = stock.educationalPriceDetail
 
     db.session.add(collective_offer)
     return collective_offer
@@ -166,7 +166,7 @@ def _create_collective_offer(
     base_class = CollectiveOfferTemplate if is_template else CollectiveOffer
     collective_offer = base_class.create_from_offer(offer)
     if is_template:
-        collective_offer.priceDetail = stock.price_detail
+        collective_offer.priceDetail = stock.educationalPriceDetail
     db.session.add(collective_offer)
     return collective_offer
 
