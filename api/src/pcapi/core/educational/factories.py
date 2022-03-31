@@ -4,12 +4,14 @@ from dateutil.relativedelta import relativedelta
 import factory
 
 from pcapi.core.categories.subcategories import COLLECTIVE_SUBCATEGORIES
+from pcapi.core.educational import api
 from pcapi.core.offerers.factories import OffererFactory
 from pcapi.core.offerers.factories import VenueFactory
 from pcapi.core.testing import BaseFactory
 from pcapi.models.offer_mixin import OfferValidationStatus
 
 from . import models
+from ...models import db
 from .models import EducationalBookingStatus
 from .models import Ministry
 from .models import StudentLevels
@@ -194,9 +196,54 @@ class CollectiveBookingFactory(BaseFactory):
     educationalYear = factory.SubFactory(EducationalYearFactory)
     educationalRedactor = factory.SubFactory(EducationalRedactorFactory)
     collectiveStock = factory.SubFactory(CollectiveStockFactory)
+    confirmationDate = factory.LazyFunction(lambda: datetime.datetime.now() - datetime.timedelta(days=1))
+
+    @factory.post_generation
+    def cancellation_limit_date(self, create, extracted, **kwargs):
+        if extracted:
+            self.cancellationLimitDate = extracted
+        else:
+            self.cancellationLimitDate = api.compute_educational_booking_cancellation_limit_date(
+                self.collectiveStock.beginningDatetime, self.dateCreated
+            )
+        db.session.add(self)
+        db.session.commit()
+
+    @factory.post_generation
+    def cancellation_date(self, create, extracted, **kwargs):
+        # the public.save_cancellation_date() psql trigger overrides the extracted cancellationDate
+        if extracted:
+            self.cancellationDate = extracted
+            db.session.add(self)
+            db.session.flush()
+
+    @classmethod
+    def _create(cls, model_class, *args, **kwargs):
+        kwargs["venue"] = kwargs["collectiveStock"].collectiveOffer.venue
+        kwargs["offerer"] = kwargs["collectiveStock"].collectiveOffer.venue.managingOfferer
+        return super()._create(model_class, *args, **kwargs)
+
+
+class CancelledCollectiveBookingFactory(CollectiveBookingFactory):
+    status = models.CollectiveBookingStatus.CANCELLED
+    cancellationDate = factory.LazyFunction(lambda: datetime.datetime.now() - datetime.timedelta(hours=1))
 
 
 class PendingCollectiveBookingFactory(CollectiveBookingFactory):
     cancellationLimitDate = factory.LazyFunction(lambda: datetime.datetime.now() + datetime.timedelta(days=10))
     confirmationLimitDate = factory.LazyFunction(lambda: datetime.datetime.now() - datetime.timedelta(days=10))
     status = models.CollectiveBookingStatus.PENDING
+
+
+class UsedCollectiveBookingFactory(CollectiveBookingFactory):
+    status = models.CollectiveBookingStatus.USED
+    dateUsed = factory.LazyFunction(lambda: datetime.datetime.now() - datetime.timedelta(days=5))
+    dateCreated = factory.LazyFunction(lambda: datetime.datetime.now() - datetime.timedelta(days=20))
+    cancellationLimitDate = factory.LazyFunction(lambda: datetime.datetime.now() - datetime.timedelta(days=8))
+    confirmationLimitDate = factory.LazyFunction(lambda: datetime.datetime.now() - datetime.timedelta(days=12))
+    confirmationDate = None
+
+
+class ReimbursedCollectiveBookingFactory(UsedCollectiveBookingFactory):
+    status = models.CollectiveBookingStatus.REIMBURSED
+    reimbursementDate = factory.LazyFunction(lambda: datetime.datetime.now() - datetime.timedelta(days=1))
