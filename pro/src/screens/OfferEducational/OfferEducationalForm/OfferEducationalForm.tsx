@@ -2,12 +2,12 @@ import { useFormikContext } from 'formik'
 import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 
-import { computeOffersUrl } from 'components/pages/Offers/utils/computeOffersUrl'
 import {
   IOfferEducationalFormValues,
   IUserOfferer,
   Mode,
 } from 'core/OfferEducational'
+import { computeOffersUrl } from 'core/Offers/utils'
 import { useScrollToFirstErrorAfterSubmit } from 'hooks'
 import FormLayout from 'new_components/FormLayout'
 import { SubmitButton, Banner } from 'ui-kit'
