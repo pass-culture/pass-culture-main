@@ -2,7 +2,6 @@ import React from 'react'
 import { Redirect } from 'react-router'
 import { useLocation } from 'react-router-dom'
 
-import BookingsRecapContainer from 'components/pages/Bookings/BookingsRecapContainer'
 import Unavailable from 'components/pages/Errors/Unavailable/Unavailable'
 import Homepage from 'components/pages/Home/Homepage'
 import LostPasswordContainer from 'components/pages/LostPassword/LostPasswordContainer'
@@ -14,6 +13,7 @@ import SetPasswordConfirmContainer from 'components/pages/SetPasswordConfirm/Set
 import SignIn from 'components/pages/SignIn/SignIn'
 import SignupContainer from 'components/pages/Signup/SignupContainer'
 import StyleguideContainer from 'components/pages/Styleguide/StyleguideContainer'
+import Bookings from 'routes/Bookings'
 import CollectiveOffers from 'routes/CollectiveOffers'
 import CsvDetailViewContainer from 'routes/CsvTable'
 import Desk from 'routes/Desk'
@@ -114,7 +114,7 @@ const routes = [
     title: 'Guichet',
   },
   {
-    component: BookingsRecapContainer,
+    component: Bookings,
     exact: true,
     path: '/reservations',
     title: 'Réservations',
