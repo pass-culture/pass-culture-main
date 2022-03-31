@@ -33,6 +33,7 @@ from pcapi.core.users.api import fulfill_beneficiary_data
 from pcapi.core.users.api import generate_and_save_token
 from pcapi.core.users.api import get_domains_credit
 from pcapi.core.users.api import get_eligibility_at_date
+from pcapi.core.users.api import set_pro_rgs_as_seen
 from pcapi.core.users.api import set_pro_tuto_as_seen
 from pcapi.core.users.constants import SuspensionEventType
 from pcapi.core.users.factories import UserFactory
@@ -528,6 +529,19 @@ class SetProTutoAsSeenTest:
 
         # Then
         assert User.query.one().hasSeenProTutorials == True
+
+
+@pytest.mark.usefixtures("db_session")
+class SetProRgsAsSeenTest:
+    def should_set_has_seen_pro_rgs_to_true_for_user(self):
+        # Given
+        user = users_factories.UserFactory(hasSeenProRgs=False)
+
+        # When
+        set_pro_rgs_as_seen(user)
+
+        # Then
+        assert User.query.one().hasSeenProRgs == True
 
 
 @pytest.mark.usefixtures("db_session")
