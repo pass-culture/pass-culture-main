@@ -8,6 +8,7 @@ import useCurrentUser from 'components/hooks/useCurrentUser'
 import useNotification from 'components/hooks/useNotification'
 import Spinner from 'components/layout/Spinner'
 import { filterEducationalCategories } from 'core/OfferEducational'
+import { getOffererAdapter } from 'core/Offers/adapters'
 import { DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
 import { useQuerySearchFilters } from 'core/Offers/hooks'
 import {
@@ -26,10 +27,7 @@ import {
 import OffersScreen from 'screens/Offers'
 import { savePageNumber, saveSearchFilters } from 'store/offers/actions'
 
-import {
-  getFilteredCollectiveOffersAdapter,
-  getOffererAdapter,
-} from './adapters'
+import { getFilteredCollectiveOffersAdapter } from './adapters'
 
 const CollectiveOffers = (): JSX.Element => {
   const [urlSearchFilters, urlPageNumber] = useQuerySearchFilters()
