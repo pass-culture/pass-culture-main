@@ -90,16 +90,13 @@ class BookingsRecapTable extends Component {
           Cell: ({ row }) => <BookingStatusCell bookingRecapInfo={row} />,
           className: 'column-booking-status',
           disableSortBy: true,
-          HeaderTitleFilter: () =>
-            !props.isBookingFiltersActive ? (
-              <FilterByBookingStatus
-                bookingStatuses={this.state.bookingStatus}
-                bookingsRecap={props.bookingsRecap}
-                updateGlobalFilters={this.updateGlobalFilters}
-              />
-            ) : (
-              <span className="table-head-label">Statut actuel</span>
-            ),
+          HeaderTitleFilter: () => (
+            <FilterByBookingStatus
+              bookingStatuses={this.state.bookingStatus}
+              bookingsRecap={props.bookingsRecap}
+              updateGlobalFilters={this.updateGlobalFilters}
+            />
+          ),
         },
       ],
       currentPage: FIRST_PAGE_INDEX,
@@ -130,6 +127,25 @@ class BookingsRecapTable extends Component {
     this.setState({
       currentPage: currentPage,
     })
+  }
+
+  updateGlobalFilters = updatedFilters => {
+    const { filters } = {
+      currentPage: this.state.currentPage,
+      bookingBeneficiary: this.state.bookingBeneficiary,
+      bookingToken: this.state.bookingToken,
+      offerISBN: this.state.offerISBN,
+      offerName: this.state.offerName,
+      bookingStatus: this.state.bookingStatus,
+    }
+
+    this.setState(
+      {
+        ...filters,
+        ...updatedFilters,
+      },
+      () => this.applyFilters()
+    )
   }
 
   applyFilters = filtersBookingResults => {
@@ -221,7 +237,6 @@ BookingsRecapTable.defaultProps = {
 
 BookingsRecapTable.propTypes = {
   bookingsRecap: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
-  isBookingFiltersActive: PropTypes.bool.isRequired,
   isLoading: PropTypes.bool.isRequired,
   locationState: PropTypes.shape({
     venueId: PropTypes.string,
