@@ -35,7 +35,7 @@ export interface IOffersProps {
   setOfferer: (offerer: Offerer | null) => void
   separateIndividualAndCollectiveOffers: boolean
   initialSearchFilters: TSearchFilters
-  urlAudience: Audience
+  audience: Audience
   redirectWithUrlFilters: (
     filters: TSearchFilters & {
       page?: number
@@ -57,7 +57,7 @@ const Offers = ({
   setOfferer,
   separateIndividualAndCollectiveOffers,
   initialSearchFilters,
-  urlAudience,
+  audience,
   redirectWithUrlFilters,
   urlSearchFilters,
   venues,
@@ -69,8 +69,6 @@ const Offers = ({
 
   const [areAllOffersSelected, setAreAllOffersSelected] = useState(false)
   const [selectedOfferIds, setSelectedOfferIds] = useState<string[]>([])
-  const [selectedAudience, setSelectedAudience] =
-    useState<Audience>(urlAudience)
   const [isStatusFiltersVisible, setIsStatusFiltersVisible] = useState(false)
 
   const { isAdmin } = currentUser || {}
@@ -163,13 +161,6 @@ const Offers = ({
     [setIsRefreshingOffers, redirectWithUrlFilters]
   )
 
-  const onSelectAudience = (selectedAudience: Audience) => {
-    applyUrlFiltersAndRedirect({
-      ...DEFAULT_SEARCH_FILTERS,
-      audience: selectedAudience,
-    })
-  }
-
   const applyFilters = useCallback(() => {
     setIsStatusFiltersVisible(false)
     if (!hasDifferentFiltersFromLastSearch(searchFilters)) {
@@ -198,19 +189,12 @@ const Offers = ({
     applyUrlFiltersAndRedirect(updatedFilters)
   }, [applyUrlFiltersAndRedirect, searchFilters, setOfferer])
 
-  useEffect(() => {
-    setSelectedAudience(urlAudience)
-  }, [urlAudience])
-
   return (
     <div className="offers-page">
       <PageTitle title="Vos offres" />
       <Titles action={actionLink} title="Offres" />
       {separateIndividualAndCollectiveOffers && (
-        <OfferListFilterTabs
-          onSelectAudience={onSelectAudience}
-          selectedAudience={selectedAudience}
-        />
+        <OfferListFilterTabs selectedAudience={audience} />
       )}
       <ActionsBarPortal isVisible={nbSelectedOffers > 0}>
         <ActionsBarContainer
@@ -224,7 +208,7 @@ const Offers = ({
       </ActionsBarPortal>
       <SearchFilters
         applyFilters={applyFilters}
-        audience={urlAudience}
+        audience={audience}
         categories={categories}
         disableAllFilters={userHasNoOffers}
         offerer={offerer}
@@ -241,7 +225,7 @@ const Offers = ({
           applyFilters={applyFilters}
           applyUrlFiltersAndRedirect={applyUrlFiltersAndRedirect}
           areAllOffersSelected={areAllOffersSelected}
-          audience={urlAudience}
+          audience={audience}
           currentPageNumber={currentPageNumber}
           currentPageOffersSubset={currentPageOffersSubset}
           currentUser={currentUser}
