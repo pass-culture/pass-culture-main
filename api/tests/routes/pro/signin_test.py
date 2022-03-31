@@ -50,6 +50,7 @@ class Returns200Test:
             "firstName": "Jean",
             "hasPhysicalVenues": False,
             "hasSeenProTutorials": True,
+            "hasSeenProRgs": False,
             "id": humanize(user.id),
             "isAdmin": False,
             "isEmailValidated": True,

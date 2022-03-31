@@ -133,6 +133,7 @@ class BeneficiaryGrant18Factory(BaseFactory):
     isEmailValidated = True
     roles = [users_models.UserRole.BENEFICIARY]
     hasSeenProTutorials = True
+    hasSeenProRgs = False
     subscriptionState = users_models.SubscriptionState.beneficiary_18
 
     @classmethod
