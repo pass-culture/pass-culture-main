@@ -106,7 +106,7 @@ export function extractApiErrorMessageForKey(
 ): string {
   let errorMessages = ''
   if (isApiError(error)) {
-    const { content } = error as ApiError
+    const { content } = error
     if (errorKey in content) {
       errorMessages = content[errorKey][0]
     }
@@ -122,4 +122,16 @@ export function extractApiGlobalErrorMessage(error: unknown) {
     message = globalErrorMessages
   }
   return message
+}
+
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+export function extractApiFirstErrorMessage(error: unknown) {
+  if (isApiError(error)) {
+    const { content } = error
+    const errorsList: string[][] = Object.values(content)
+    if (errorsList.length && errorsList[0].length) {
+      return errorsList[0][0]
+    }
+  }
+  return ''
 }
