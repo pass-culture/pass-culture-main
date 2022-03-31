@@ -51,7 +51,7 @@
     "*.scss": "stylelint --syntax=scss --fix"
   },
   "dependencies": {
-    "@firebase/analytics": "^0.7.5",
+    "@firebase/analytics": "^0.7.7",
     "@firebase/app": "^0.7.17",
     "@fontsource/barlow": "^4.5.2",
     "@reach/dialog": "^0.16.2",
