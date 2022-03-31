@@ -29,6 +29,14 @@ def patch_user_tuto_seen() -> None:
     users_api.set_pro_tuto_as_seen(user)
 
 
+@blueprint.pro_private_api.route("/users/rgs-seen", methods=["PATCH"])
+@login_required
+@spectree_serialize(response_model=None, on_success_status=204, api=blueprint.pro_private_schema)
+def patch_pro_user_rgs_seen() -> None:
+    user = current_user._get_current_object()  # get underlying User object from proxy
+    users_api.set_pro_rgs_as_seen(user)
+
+
 @blueprint.pro_private_api.route("/users/current", methods=["GET"])
 @login_required
 @spectree_serialize(response_model=users_serializers.SharedCurrentUserResponseModel, api=blueprint.pro_private_schema)
