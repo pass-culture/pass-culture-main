@@ -21,6 +21,10 @@ Si la valeur initiale est `False`, ajouter une ligne dans le tuple `FEATURES_DIS
 - la qualité des tests : c'est la valeur par défaut qui est utilisée (sauf si `@override_features` est utilisé)
 - les bugs sur l'environnement `testing` : les données sont périodiquement regénérées et les Feature Flag sont alors réinitialisés avec leur valeur par défaut.
 
+#### Transmettre un Feature Flag à l'app jeune
+
+Lorsqu'on a besoin d'utiliser un Feature Flag sur l'app jeune, il faut transmettre le Feature Flag via l'endpoint [`/settings`](https://github.com/pass-culture/pass-culture-main/blob/d4eeed54c82aa616f10473198518b636c8e19d3c/api/tests/routes/native/v1/settings_test.py#L24)
+
 ### Supprimer un Feature Flag
 
 1. Enlever toute utilisation du flag
