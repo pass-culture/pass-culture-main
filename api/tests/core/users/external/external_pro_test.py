@@ -202,6 +202,7 @@ def test_update_external_pro_user_attributes(
     assert attributes.is_pro is True
     assert attributes.is_user_email is True
     assert attributes.is_booking_email is True
+    assert attributes.marketing_email_subscription is enable_subscription
     assert (
         attributes.offerer_name == {"Culture en ligne", "Juste Libraire", "Plage Culture", "Plage Events"}
         if create_virtual
@@ -212,7 +213,6 @@ def test_update_external_pro_user_attributes(
     assert attributes.user_id == pro_user.id
     assert attributes.first_name == pro_user.firstName
     assert attributes.last_name == pro_user.lastName
-    assert attributes.marketing_email_subscription is enable_subscription
     assert attributes.user_is_attached is (attached in ("one", "all"))
     assert attributes.user_is_creator is not (attached == "all")
 
@@ -245,13 +245,13 @@ def test_update_external_pro_user_attributes_no_offerer_no_venue():
     assert attributes.is_pro is True
     assert attributes.is_user_email is True
     assert attributes.is_booking_email is False
+    assert attributes.marketing_email_subscription is True
     assert attributes.offerer_name == set()
     assert attributes.venue_count == 0
 
     assert attributes.user_id == user.id
     assert attributes.first_name == user.firstName
     assert attributes.last_name == user.lastName
-    assert attributes.marketing_email_subscription is True
     assert attributes.user_is_attached is False
     assert attributes.user_is_creator is False
 
@@ -286,13 +286,13 @@ def test_update_external_pro_booking_email_attributes():
     assert attributes.is_pro is True
     assert attributes.is_user_email is False
     assert attributes.is_booking_email is True
+    assert attributes.marketing_email_subscription is True
     assert attributes.offerer_name == {offerer.name}
     assert attributes.venue_count == 1
 
     assert attributes.user_id is None
     assert attributes.first_name is None
     assert attributes.last_name is None
-    assert attributes.marketing_email_subscription is None
     assert attributes.user_is_attached is None
     assert attributes.user_is_creator is None
 
@@ -306,3 +306,31 @@ def test_update_external_pro_booking_email_attributes():
     assert attributes.isPermanent is True
     assert attributes.has_offers is False
     assert attributes.has_bookings is False
+
+
+def test_update_external_pro_removed_email_attributes():
+    attributes = get_pro_attributes("removed@example.net")
+
+    assert attributes.is_pro is True
+    assert attributes.is_user_email is False
+    assert attributes.is_booking_email is False
+    assert attributes.marketing_email_subscription is False
+    assert attributes.offerer_name == set()
+    assert attributes.venue_count == 0
+
+    assert attributes.user_id is None
+    assert attributes.first_name is None
+    assert attributes.last_name is None
+    assert attributes.user_is_attached is None
+    assert attributes.user_is_creator is None
+
+    assert attributes.venue_name is None
+    assert attributes.venue_type is None
+    assert attributes.venue_label is None
+    assert attributes.departement_code is None
+    assert attributes.dms_application_submitted is None
+    assert attributes.dms_application_approved is None
+    assert attributes.isVirtual is None
+    assert attributes.isPermanent is None
+    assert attributes.has_offers is None
+    assert attributes.has_bookings is None
