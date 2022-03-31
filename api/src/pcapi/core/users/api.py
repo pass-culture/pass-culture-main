@@ -633,6 +633,11 @@ def set_pro_tuto_as_seen(user: User) -> None:
     repository.save(user)
 
 
+def set_pro_rgs_as_seen(user: User) -> None:
+    user.hasSeenProRgs = True
+    repository.save(user)
+
+
 def change_user_phone_number(user: User, phone_number: str) -> None:
     _check_phone_number_validation_is_authorized(user)
 
