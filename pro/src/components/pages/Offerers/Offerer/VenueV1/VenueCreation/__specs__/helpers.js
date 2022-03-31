@@ -167,6 +167,5 @@ export const setVenueValues = async values => {
       })),
     }
   }
-  // return await Promise.all(modifiedInputs)
   return Promise.resolve(modifiedInputs)
 }
