@@ -1,24 +1,27 @@
-import * as PropTypes from 'prop-types'
 import React, { useCallback, useEffect, useState, useMemo } from 'react'
+import { useLocation } from 'react-router-dom'
 
 import useActiveFeature from 'components/hooks/useActiveFeature'
 import useCurrentUser from 'components/hooks/useCurrentUser'
+import useNotification from 'components/hooks/useNotification'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Spinner from 'components/layout/Spinner'
 import Titles from 'components/layout/Titles/Titles'
 import * as pcapi from 'repository/pcapi/pcapi'
 
-import BookingsRecapTable from './BookingsRecapTable/BookingsRecapTable'
-import ChoosePreFiltersMessage from './ChoosePreFiltersMessage/ChoosePreFiltersMessage'
-import { downloadCSVFile } from './downloadCSVBookings'
-import NoBookingMessage from './NoBookingMessage'
-import NoBookingsForPreFiltersMessage from './NoBookingsForPreFiltersMessage/NoBookingsForPreFiltersMessage'
-import { DEFAULT_PRE_FILTERS } from './PreFilters/_constants'
-import PreFilters from './PreFilters/PreFilters'
+import BookingsRecapTable from '../../components/pages/Bookings/BookingsRecapTable/BookingsRecapTable'
+import ChoosePreFiltersMessage from '../../components/pages/Bookings/ChoosePreFiltersMessage/ChoosePreFiltersMessage'
+import { downloadCSVFile } from '../../components/pages/Bookings/downloadCSVBookings'
+import NoBookingMessage from '../../components/pages/Bookings/NoBookingMessage'
+import NoBookingsForPreFiltersMessage from '../../components/pages/Bookings/NoBookingsForPreFiltersMessage/NoBookingsForPreFiltersMessage'
+import { DEFAULT_PRE_FILTERS } from '../../components/pages/Bookings/PreFilters/_constants'
+import PreFilters from '../../components/pages/Bookings/PreFilters/PreFilters'
 
 const MAX_LOADED_PAGES = 5
 
-const BookingsRecap = ({ location, showNotification }) => {
+const Bookings = (): JSX.Element => {
+  const location = useLocation<{ venueId: string; statuses: string[] }>()
+  const notify = useNotification()
   const [appliedPreFilters, setAppliedPreFilters] = useState({
     bookingStatusFilter: DEFAULT_PRE_FILTERS.bookingStatusFilter,
     bookingBeginningDate: DEFAULT_PRE_FILTERS.bookingBeginningDate,
@@ -82,13 +85,12 @@ const BookingsRecap = ({ location, showNotification }) => {
 
       setIsTableLoading(false)
       if (currentPage === MAX_LOADED_PAGES && currentPage < pages) {
-        showNotification(
-          'information',
+        notify.information(
           'L’affichage des réservations a été limité à 5 000 réservations. Vous pouvez modifier les filtres pour affiner votre recherche.'
         )
       }
     },
-    [showNotification]
+    [notify]
   )
 
   const checkUserHasBookings = useCallback(async () => {
@@ -107,14 +109,13 @@ const BookingsRecap = ({ location, showNotification }) => {
       try {
         await downloadCSVFile(filters)
       } catch (e) {
-        showNotification(
-          'error',
+        notify.error(
           "Une erreur s'est produite. Veuillez réessayer ultérieurement."
         )
       }
       setIsDownloadingCSV(false)
     },
-    [showNotification]
+    [notify]
   )
 
   useEffect(() => {
@@ -200,14 +201,4 @@ const BookingsRecap = ({ location, showNotification }) => {
   )
 }
 
-BookingsRecap.propTypes = {
-  location: PropTypes.shape({
-    state: PropTypes.shape({
-      venueId: PropTypes.string,
-      statuses: PropTypes.arrayOf(PropTypes.string),
-    }),
-  }).isRequired,
-  showNotification: PropTypes.func.isRequired,
-}
-
-export default BookingsRecap
+export default Bookings
