@@ -1,6 +1,7 @@
 import { apiV2 } from 'api/api'
 import {
   HTTP_STATUS,
+  extractApiFirstErrorMessage,
   extractApiErrorMessageForKey,
   ApiError,
 } from 'api/helpers'
@@ -30,7 +31,7 @@ const getBookingSuccess = (
 const getBookingFailure = (
   apiResponseError: ApiError
 ): IDeskGetBookingResponse => {
-  const errorMessage = extractApiErrorMessageForKey(apiResponseError, 'global')
+  const errorMessage = extractApiFirstErrorMessage(apiResponseError)
   if (apiResponseError.statusCode === HTTP_STATUS.GONE) {
     // api return HTTP_STATUS.GONE when :
     // * booking is already been validated
