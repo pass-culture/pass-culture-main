@@ -689,6 +689,7 @@ jobs:
       - checkout
       - skip_unchanged:
           paths: pro
+      - run: sudo chown -R 1000:1000 .
       - run: ./install_lib_ci_with_chrome.sh
       - run: sudo ./pc symlink
       - run: ./scripts/install_dockerize.sh $DOCKERIZE_VERSION
