@@ -119,8 +119,12 @@ class BookOfferConcurrencyTest:
 class BookOfferTest:
     @mock.patch("pcapi.core.search.async_index_offer_ids")
     def test_create_booking(self, mocked_async_index_offer_ids, app):
+
         beneficiary = users_factories.BeneficiaryGrant18Factory(deposit__version=1)
         stock = offers_factories.StockFactory(price=10, dnBookedQuantity=5, offer__bookingEmail="offerer@example.com")
+
+        # There is a different email for the first venue booking
+        booking_factories.IndividualBookingFactory(stock=stock)
 
         booking = api.book_offer(beneficiary=beneficiary, stock_id=stock.id, quantity=1)
 
@@ -147,13 +151,28 @@ class BookOfferTest:
         assert len(booking.token) == 6
         assert booking.status is BookingStatus.CONFIRMED
         assert booking.cancellationLimitDate is None
-        assert stock.dnBookedQuantity == 6
+        assert stock.dnBookedQuantity == 7
 
         mocked_async_index_offer_ids.assert_called_once_with([stock.offer.id])
 
         assert len(mails_testing.outbox) == 2
         email_data1 = mails_testing.outbox[0].sent_data
         assert email_data1["template"] == dataclasses.asdict(TransactionalEmail.NEW_BOOKING_TO_PRO.value)  # to offerer
+        email_data2 = mails_testing.outbox[1].sent_data
+        assert email_data2["template"] == dataclasses.asdict(
+            TransactionalEmail.BOOKING_CONFIRMATION_BY_BENEFICIARY.value
+        )  # to beneficiary
+
+    def test_if_it_is_first_venue_booking_to_send_specific_email(self):
+        beneficiary = users_factories.BeneficiaryGrant18Factory(deposit__version=1)
+        stock = offers_factories.StockFactory(price=10, dnBookedQuantity=5, offer__bookingEmail="offerer@example.com")
+
+        api.book_offer(beneficiary=beneficiary, stock_id=stock.id, quantity=1)
+        assert len(mails_testing.outbox) == 2
+        email_data1 = mails_testing.outbox[0].sent_data
+        assert email_data1["template"] == dataclasses.asdict(
+            TransactionalEmail.FIRST_VENUE_BOOKING_TO_PRO.value
+        )  # to offerer
         email_data2 = mails_testing.outbox[1].sent_data
         assert email_data2["template"] == dataclasses.asdict(
             TransactionalEmail.BOOKING_CONFIRMATION_BY_BENEFICIARY.value
