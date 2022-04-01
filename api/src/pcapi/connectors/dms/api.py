@@ -135,8 +135,8 @@ def parse_beneficiary_information_graphql(
     email = application_detail.profile.email
     first_name = application_detail.applicant.first_name
     last_name = application_detail.applicant.last_name
-    registration_datetime = application_detail.draft_date  # parse with format  "2021-09-15T15:19:20+02:00"
-    processed_datetime = application_detail.processed_datetime  # parse with format  "2021-09-15T15:19:20+02:00"
+    registration_datetime = application_detail.draft_date
+    processed_datetime = application_detail.processed_datetime
 
     # Fields that may be filled
     activity = None
