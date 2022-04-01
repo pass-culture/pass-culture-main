@@ -14,6 +14,7 @@ from pcapi.core.educational import repository as educational_repository
 from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.educational.models import CollectiveBookingStatusFilter
 from pcapi.core.educational.repository import get_confirmed_educational_bookings_amount
+from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.users import factories as users_factories
 from pcapi.utils.date import utc_datetime_to_department_timezone
@@ -88,7 +89,7 @@ class FindByProUserTest:
         redactor = educational_factories.EducationalRedactorFactory(
             email="reda.ktheur@example.com", firstName="Reda", lastName="Khteur", civility="M."
         )
-        user_offerer = offers_factories.UserOffererFactory()
+        user_offerer = offerers_factories.UserOffererFactory()
         collective_stock = educational_factories.CollectiveStockFactory(
             collectiveOffer__name="Le chant des cigales",
             collectiveOffer__venue__managingOfferer=user_offerer.offerer,
@@ -128,7 +129,7 @@ class FindByProUserTest:
     def test_should_return_only_validated_collective_bookings_for_requested_period(self, app):
         # Given
         booking_date = datetime(2022, 3, 15, 10, 15, 0)
-        user_offerer = offers_factories.UserOffererFactory()
+        user_offerer = offerers_factories.UserOffererFactory()
         educational_factories.UsedCollectiveBookingFactory(
             dateUsed=booking_date + timedelta(days=10),
             collectiveStock__collectiveOffer__venue__managingOfferer=user_offerer.offerer,
@@ -169,7 +170,7 @@ class FindByProUserTest:
     def test_should_return_only_reimbursed_collective_bookings_for_requested_period(self, app):
         # Given
         booking_date = datetime(2022, 3, 15, 10, 15, 0)
-        user_offerer = offers_factories.UserOffererFactory()
+        user_offerer = offerers_factories.UserOffererFactory()
         educational_factories.ReimbursedCollectiveBookingFactory(
             reimbursementDate=booking_date + timedelta(days=1),
             collectiveStock__collectiveOffer__venue__managingOfferer=user_offerer.offerer,
@@ -216,7 +217,7 @@ class FindByProUserTest:
     def test_should_return_confirmed_collective_bookings_when_booking_is_in_confirmation_period(self, app):
         # Given
         booking_date = datetime.utcnow() - timedelta(days=5)
-        user_offerer = offers_factories.UserOffererFactory()
+        user_offerer = offerers_factories.UserOffererFactory()
         educational_factories.CollectiveBookingFactory(
             collectiveStock__collectiveOffer__venue__managingOfferer=user_offerer.offerer,
             dateCreated=booking_date,
@@ -236,7 +237,7 @@ class FindByProUserTest:
     def test_should_return_cancellation_date_when_booking_has_been_cancelled(self, app):
         # Given
         booking_date = datetime.utcnow() - timedelta(days=5)
-        user_offerer = offers_factories.UserOffererFactory()
+        user_offerer = offerers_factories.UserOffererFactory()
         booking = educational_factories.CancelledCollectiveBookingFactory(
             collectiveStock__collectiveOffer__venue__managingOfferer=user_offerer.offerer,
             dateCreated=booking_date,
@@ -258,13 +259,13 @@ class FindByProUserTest:
         booking_date = datetime.utcnow() - timedelta(days=5)
         pro = users_factories.ProFactory()
 
-        user_offerer_1 = offers_factories.UserOffererFactory(user=pro)
+        user_offerer_1 = offerers_factories.UserOffererFactory(user=pro)
         educational_factories.CollectiveBookingFactory(
             collectiveStock__collectiveOffer__venue__managingOfferer=user_offerer_1.offerer,
             dateCreated=booking_date,
         )
 
-        user_offerer_2 = offers_factories.UserOffererFactory(user=pro)
+        user_offerer_2 = offerers_factories.UserOffererFactory(user=pro)
         educational_factories.CollectiveBookingFactory(
             collectiveStock__collectiveOffer__venue__managingOfferer=user_offerer_2.offerer,
             dateCreated=booking_date - timedelta(days=2),
@@ -282,7 +283,7 @@ class FindByProUserTest:
 
     def test_should_return_bookings_from_first_page(self, app):
         # Given
-        user_offerer = offers_factories.UserOffererFactory()
+        user_offerer = offerers_factories.UserOffererFactory()
         educational_factories.CollectiveBookingFactory(
             collectiveStock__collectiveOffer__venue__managingOfferer=user_offerer.offerer,
             dateCreated=datetime.utcnow() - timedelta(days=1),
@@ -308,7 +309,7 @@ class FindByProUserTest:
     def test_should_not_return_bookings_when_offerer_link_is_not_validated(self, app):
         # Given
         booking_date = datetime.utcnow() - timedelta(days=5)
-        user_offerer = offers_factories.UserOffererFactory(validationToken="token")
+        user_offerer = offerers_factories.UserOffererFactory(validationToken="token")
         educational_factories.CollectiveBookingFactory(
             collectiveStock__collectiveOffer__venue__managingOfferer=user_offerer.offerer,
             dateCreated=booking_date,
@@ -326,7 +327,7 @@ class FindByProUserTest:
     def test_should_return_only_booking_for_requested_venue(self, app):
         # Given
         booking_date = datetime.utcnow() - timedelta(days=5)
-        user_offerer = offers_factories.UserOffererFactory()
+        user_offerer = offerers_factories.UserOffererFactory()
         venue = offers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
         educational_factories.CollectiveBookingFactory(
             collectiveStock__collectiveOffer__venue__managingOfferer=user_offerer.offerer,
@@ -355,7 +356,7 @@ class FindByProUserTest:
     def test_should_return_only_booking_for_requested_event_date(self, app):
         # Given
         booking_date = datetime.utcnow() - timedelta(days=5)
-        user_offerer = offers_factories.UserOffererFactory()
+        user_offerer = offerers_factories.UserOffererFactory()
         event_date = datetime.utcnow() + timedelta(days=30, hours=20)
         educational_factories.CollectiveBookingFactory(
             collectiveStock__collectiveOffer__venue__managingOfferer=user_offerer.offerer,
@@ -385,7 +386,7 @@ class FindByProUserTest:
     def should_consider_venue_locale_datetime_when_filtering_by_event_date(self, app):
         # Given
         booking_date = datetime.utcnow() - timedelta(days=5)
-        user_offerer = offers_factories.UserOffererFactory()
+        user_offerer = offerers_factories.UserOffererFactory()
         event_datetime = datetime(2022, 4, 21, 20, 00)
         collective_offer_in_cayenne = educational_factories.CollectiveOfferFactory(
             venue__postalCode="97300", venue__managingOfferer=user_offerer.offerer
@@ -420,7 +421,7 @@ class FindByProUserTest:
 
     def test_should_return_only_bookings_for_requested_booking_period(self, app):
         # Given
-        user_offerer = offers_factories.UserOffererFactory()
+        user_offerer = offerers_factories.UserOffererFactory()
         booking_beginning_period = datetime(2020, 12, 24, 10, 30).date()
         booking_ending_period = datetime(2020, 12, 26, 15, 00).date()
         booking_status_filter = CollectiveBookingStatusFilter.BOOKED
@@ -453,7 +454,7 @@ class FindByProUserTest:
 
     def should_consider_venue_locale_datetime_when_filtering_by_booking_period(self, app):
         # Given
-        user_offerer = offers_factories.UserOffererFactory()
+        user_offerer = offerers_factories.UserOffererFactory()
         requested_booking_period_beginning = datetime(2020, 4, 21, 20, 00).date()
         requested_booking_period_ending = datetime(2020, 4, 22, 20, 00).date()
 

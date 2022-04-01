@@ -11,6 +11,7 @@ from typing import Union
 from flask_sqlalchemy import BaseQuery
 from sqlalchemy import Column
 from sqlalchemy import func
+from sqlalchemy.orm import Query
 from sqlalchemy.orm import contains_eager
 from sqlalchemy.orm import joinedload
 from sqlalchemy.sql.expression import extract
@@ -32,12 +33,12 @@ from pcapi.core.educational.models import CollectiveStock
 from pcapi.core.educational.models import EducationalRedactor
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers.models import Offerer
+from pcapi.core.offerers.models import UserOfferer
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers import repository as offers_repository
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
 from pcapi.core.users.models import User
-from pcapi.models.user_offerer import UserOfferer
 
 
 BOOKING_DATE_STATUS_MAPPING = {

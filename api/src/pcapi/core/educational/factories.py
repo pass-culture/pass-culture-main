@@ -8,10 +8,10 @@ from pcapi.core.educational import api
 from pcapi.core.offerers.factories import OffererFactory
 from pcapi.core.offerers.factories import VenueFactory
 from pcapi.core.testing import BaseFactory
+from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationStatus
 
 from . import models
-from ...models import db
 from .models import EducationalBookingStatus
 from .models import Ministry
 from .models import StudentLevels

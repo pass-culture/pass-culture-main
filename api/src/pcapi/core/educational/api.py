@@ -37,9 +37,9 @@ from pcapi.core.educational.models import EducationalYear
 from pcapi.core.educational.models import Ministry
 from pcapi.core.educational.repository import find_collective_booking_by_booking_id
 from pcapi.core.educational.repository import get_and_lock_collective_stock
-from pcapi.core.educational.repository import get_filtered_collective_booking_report
 from pcapi.core.educational.repository import get_collective_offers_for_filters
 from pcapi.core.educational.repository import get_collective_offers_template_for_filters
+from pcapi.core.educational.repository import get_filtered_collective_booking_report
 from pcapi.core.educational.utils import compute_educational_booking_cancellation_limit_date
 from pcapi.core.mails.models.sendinblue_models import SendinblueTransactionalEmailData
 from pcapi.core.mails.transactional.bookings.booking_cancellation_by_institution import (
