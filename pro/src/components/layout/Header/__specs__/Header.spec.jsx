@@ -29,6 +29,10 @@ jest.mock('components/hooks/useAnalytics', () => {
   })
 })
 
+jest.mock('repository/pcapi/pcapi', () => ({
+  signout: jest.fn().mockResolvedValue({}),
+}))
+
 const renderHeader = props => {
   const stubStore = configureTestStore()
 
@@ -88,7 +92,11 @@ describe('navigation menu', () => {
       renderHeader({ isUserAdmin: false, isStyleguideActive: false })
 
       // When
-      userEvent.click(screen.getByAltText('Logo'))
+      userEvent.click(
+        screen.getByAltText(
+          "Pass Culture pro, l'espace Pass Culture des acteurs culturels"
+        )
+      )
 
       // Then
       expect(mockLogProClick).toHaveBeenCalledTimes(1)
