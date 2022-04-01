@@ -15,33 +15,30 @@ import {
   ALL_CATEGORIES_OPTION,
   ALL_VENUES,
   ALL_VENUES_OPTION,
-  CREATION_MODES_FILTERS,
-  DEFAULT_CREATION_MODE,
   DEFAULT_PAGE,
   DEFAULT_SEARCH_FILTERS,
 } from 'core/Offers/constants'
-import { Audience, Offer, TSearchFilters } from 'core/Offers/types'
-import { computeOffersUrl } from 'core/Offers/utils'
+import { Offer, TSearchFilters } from 'core/Offers/types'
+import { computeCollectiveOffersUrl } from 'core/Offers/utils'
 import { configureTestStore } from 'store/testUtils'
 import { offerFactory } from 'utils/apiFactories'
 
-import Offers from '../Offers'
+import CollectiveOffers from '../CollectiveOffers'
 
 const renderOffers = (
   store: Store,
   filters: Partial<TSearchFilters> & {
     page?: number
-    audience?: Audience
   } = DEFAULT_SEARCH_FILTERS
 ) => {
   const history = createMemoryHistory()
-  const route = computeOffersUrl(filters)
+  const route = computeCollectiveOffersUrl(filters)
   history.push(route)
   return {
     ...render(
       <Provider store={store}>
         <Router history={history}>
-          <Offers />
+          <CollectiveOffers />
         </Router>
       </Provider>
     ),
@@ -55,7 +52,22 @@ const categoriesAndSubcategories = {
     { id: 'JEU', proLabel: 'Jeux', isSelectable: true },
     { id: 'TECHNIQUE', proLabel: 'Technique', isSelectable: false },
   ],
-  subcategories: [],
+  subcategories: [
+    {
+      id: 'EVENEMENT_CINE',
+      proLabel: 'Evénement ciné',
+      canBeEducational: true,
+      categoryId: 'CINEMA',
+      isSelectable: true,
+    },
+    {
+      id: 'CONCOURS',
+      proLabel: 'Concours jeux',
+      canBeEducational: false,
+      categoryId: 'JEU',
+      isSelectable: true,
+    },
+  ],
 }
 
 const proVenues = [
@@ -81,6 +93,7 @@ jest.mock('repository/venuesService', () => ({
 jest.mock('api/v1/api', () => ({
   api: {
     getOffersListOffers: jest.fn(),
+    getCollectiveListCollectiveOffers: jest.fn(),
     getOfferersGetOfferer: jest.fn(),
     getOffersGetCategories: jest
       .fn()
@@ -100,7 +113,7 @@ jest.mock('components/hooks/useActiveFeature', () => ({
   default: jest.fn().mockReturnValue(true),
 }))
 
-describe('route Offers', () => {
+describe('route CollectiveOffers', () => {
   let currentUser: {
     id: string
     isAdmin: boolean
@@ -129,14 +142,17 @@ describe('route Offers', () => {
       },
     })
     offersRecap = [offerFactory({ venue: proVenues[0] })]
-    ;(api.getOffersListOffers as jest.Mock).mockResolvedValue(offersRecap)
+    ;(api.getCollectiveListCollectiveOffers as jest.Mock).mockResolvedValue(
+      offersRecap
+    )
   })
 
   describe('render', () => {
     describe('filters', () => {
-      it('should display only selectable categories on filters', async () => {
+      it('should display only selectable categories eligible for EAC on filters', async () => {
         // When
         renderOffers(store)
+        await screen.findByText('Lancer la recherche')
 
         // Then
         await expect(
@@ -144,7 +160,7 @@ describe('route Offers', () => {
         ).resolves.toBeInTheDocument()
         await expect(
           screen.findByRole('option', { name: 'Jeux' })
-        ).resolves.toBeInTheDocument()
+        ).rejects.toBeTruthy()
         await expect(
           screen.findByRole('option', { name: 'Technique' })
         ).rejects.toBeTruthy()
@@ -163,7 +179,9 @@ describe('route Offers', () => {
           // When
           fireEvent.click(screen.getByText('Appliquer'))
           // Then
-          expect(api.getOffersListOffers).toHaveBeenLastCalledWith(
+          expect(
+            api.getCollectiveListCollectiveOffers
+          ).toHaveBeenLastCalledWith(
             undefined,
             undefined,
             'EXPIRED',
@@ -177,7 +195,7 @@ describe('route Offers', () => {
 
         it('should indicate that no offers match selected filters', async () => {
           // Given
-          ;(api.getOffersListOffers as jest.Mock)
+          ;(api.getCollectiveListCollectiveOffers as jest.Mock)
             .mockResolvedValueOnce(offersRecap)
             .mockResolvedValueOnce([])
           renderOffers(store)
@@ -198,7 +216,9 @@ describe('route Offers', () => {
 
         it('should not display column titles when no offers are returned', async () => {
           // Given
-          ;(api.getOffersListOffers as jest.Mock).mockResolvedValueOnce([])
+          ;(
+            api.getCollectiveListCollectiveOffers as jest.Mock
+          ).mockResolvedValueOnce([])
           // When
           renderOffers(store)
 
@@ -244,7 +264,9 @@ describe('route Offers', () => {
               'Afficher ou masquer le filtre par statut'
             )
             expect(statusFiltersIcon.closest('button')).toBeDisabled()
-            expect(api.getOffersListOffers).toHaveBeenLastCalledWith(
+            expect(
+              api.getCollectiveListCollectiveOffers
+            ).toHaveBeenLastCalledWith(
               undefined,
               undefined,
               undefined,
@@ -275,7 +297,9 @@ describe('route Offers', () => {
               'Afficher ou masquer le filtre par statut'
             )
             expect(statusFiltersIcon.closest('button')).not.toBeDisabled()
-            expect(api.getOffersListOffers).toHaveBeenLastCalledWith(
+            expect(
+              api.getCollectiveListCollectiveOffers
+            ).toHaveBeenLastCalledWith(
               undefined,
               'EF',
               'INACTIVE',
@@ -305,7 +329,9 @@ describe('route Offers', () => {
               'Afficher ou masquer le filtre par statut'
             )
             expect(statusFiltersIcon.closest('button')).toBeDisabled()
-            expect(api.getOffersListOffers).toHaveBeenLastCalledWith(
+            expect(
+              api.getCollectiveListCollectiveOffers
+            ).toHaveBeenLastCalledWith(
               undefined,
               undefined,
               undefined,
@@ -337,7 +363,9 @@ describe('route Offers', () => {
               'Afficher ou masquer le filtre par statut'
             )
             expect(statusFiltersIcon.closest('button')).not.toBeDisabled()
-            expect(api.getOffersListOffers).toHaveBeenLastCalledWith(
+            expect(
+              api.getCollectiveListCollectiveOffers
+            ).toHaveBeenLastCalledWith(
               undefined,
               undefined,
               'INACTIVE',
@@ -380,9 +408,7 @@ describe('route Offers', () => {
           // Given
           renderOffers(store)
           fireEvent.change(
-            await screen.findByPlaceholderText(
-              'Rechercher par nom d’offre ou par ISBN'
-            ),
+            await screen.findByPlaceholderText('Rechercher par nom d’offre'),
             {
               target: { value: 'Any word' },
             }
@@ -390,7 +416,7 @@ describe('route Offers', () => {
           // When
           fireEvent.click(screen.getByText('Lancer la recherche'))
           // Then
-          expect(api.getOffersListOffers).toHaveBeenCalledWith(
+          expect(api.getCollectiveListCollectiveOffers).toHaveBeenCalledWith(
             'Any word',
             undefined,
             undefined,
@@ -413,7 +439,7 @@ describe('route Offers', () => {
           // When
           fireEvent.click(screen.getByText('Lancer la recherche'))
           // Then
-          expect(api.getOffersListOffers).toHaveBeenCalledWith(
+          expect(api.getCollectiveListCollectiveOffers).toHaveBeenCalledWith(
             undefined,
             undefined,
             undefined,
@@ -438,38 +464,15 @@ describe('route Offers', () => {
           // When
           fireEvent.click(screen.getByText('Lancer la recherche'))
           // Then
-          expect(api.getOffersListOffers).toHaveBeenLastCalledWith(
+          expect(
+            api.getCollectiveListCollectiveOffers
+          ).toHaveBeenLastCalledWith(
             undefined,
             undefined,
             undefined,
             undefined,
             'CINEMA',
             undefined,
-            undefined,
-            undefined
-          )
-        })
-
-        it('should load offers with selected creation mode filter', async () => {
-          // Given
-          renderOffers(store)
-          const creationModeSelect = await screen.findByDisplayValue(
-            DEFAULT_CREATION_MODE.displayName
-          )
-          const importedCreationMode = CREATION_MODES_FILTERS[1].id
-          fireEvent.change(creationModeSelect, {
-            target: { value: importedCreationMode },
-          })
-          // When
-          fireEvent.click(screen.getByText('Lancer la recherche'))
-          // Then
-          expect(api.getOffersListOffers).toHaveBeenLastCalledWith(
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            'imported',
             undefined,
             undefined
           )
@@ -485,7 +488,9 @@ describe('route Offers', () => {
           // When
           fireEvent.click(screen.getByText('Lancer la recherche'))
           // Then
-          expect(api.getOffersListOffers).toHaveBeenLastCalledWith(
+          expect(
+            api.getCollectiveListCollectiveOffers
+          ).toHaveBeenLastCalledWith(
             undefined,
             undefined,
             undefined,
@@ -507,7 +512,9 @@ describe('route Offers', () => {
           // When
           fireEvent.click(screen.getByText('Lancer la recherche'))
           // Then
-          expect(api.getOffersListOffers).toHaveBeenLastCalledWith(
+          expect(
+            api.getCollectiveListCollectiveOffers
+          ).toHaveBeenLastCalledWith(
             undefined,
             undefined,
             undefined,
@@ -526,9 +533,13 @@ describe('route Offers', () => {
     it('should have page value when page value is not first page', async () => {
       // Given
       const offersRecap = Array.from({ length: 11 }, () => offerFactory())
-      ;(api.getOffersListOffers as jest.Mock).mockResolvedValueOnce(offersRecap)
+      ;(
+        api.getCollectiveListCollectiveOffers as jest.Mock
+      ).mockResolvedValueOnce(offersRecap)
       const { history } = renderOffers(store)
-      const nextPageIcon = await screen.findByAltText('page suivante')
+      const nextPageIcon = await screen.findByAltText(
+        'Aller à la page suivante'
+      )
       // When
       fireEvent.click(nextPageIcon)
       const urlSearchParams = parse(history.location.search.substring(1))
@@ -543,9 +554,7 @@ describe('route Offers', () => {
       const { history } = renderOffers(store)
       // When
       fireEvent.change(
-        await screen.findByPlaceholderText(
-          'Rechercher par nom d’offre ou par ISBN'
-        ),
+        await screen.findByPlaceholderText('Rechercher par nom d’offre'),
         {
           target: { value: 'AnyWord' },
         }
@@ -562,13 +571,13 @@ describe('route Offers', () => {
       // Given
       renderOffers(store)
       const searchInput = await screen.findByPlaceholderText(
-        'Rechercher par nom d’offre ou par ISBN'
+        'Rechercher par nom d’offre'
       )
       // When
       fireEvent.change(searchInput, { target: { value: 'search string' } })
       fireEvent.click(screen.getByText('Lancer la recherche'))
       // Then
-      expect(api.getOffersListOffers).toHaveBeenCalledWith(
+      expect(api.getCollectiveListCollectiveOffers).toHaveBeenCalledWith(
         'search string',
         undefined,
         undefined,
@@ -585,9 +594,7 @@ describe('route Offers', () => {
       const { history } = renderOffers(store)
       // When
       fireEvent.change(
-        await screen.findByPlaceholderText(
-          'Rechercher par nom d’offre ou par ISBN'
-        ),
+        await screen.findByPlaceholderText('Rechercher par nom d’offre'),
         {
           target: { value: ALL_OFFERS },
         }
@@ -617,12 +624,29 @@ describe('route Offers', () => {
 
     it('should have venue value be removed when user asks for all venues', async () => {
       // Given
+      ;(
+        api.getCollectiveListCollectiveOffers as jest.Mock
+      ).mockResolvedValueOnce(offersRecap)
       ;(api.getOffersGetCategories as jest.Mock).mockResolvedValue({
         categories: [
           { id: 'test_id_1', proLabel: 'My test value', isSelectable: true },
           {
             id: 'test_id_2',
             proLabel: 'My second test value',
+            isSelectable: true,
+          },
+        ],
+        subcategories: [
+          {
+            id: 'test_sub_id_1',
+            categoryId: 'test_id_1',
+            isSelectable: true,
+            canBeEducational: true,
+          },
+          {
+            id: 'test_sub_id_2',
+            categoryId: 'test_id_2',
+            canBeEducational: true,
             isSelectable: true,
           },
         ],
@@ -637,16 +661,21 @@ describe('route Offers', () => {
       // When
       userEvent.selectOptions(typeSelect, firstTypeOption)
       fireEvent.click(screen.getByText('Lancer la recherche'))
-      const urlSearchParams = parse(history.location.search.substring(1))
-      // Then
-      expect(urlSearchParams).toMatchObject({
-        categorie: 'test_id_1',
+      await waitFor(() => {
+        const urlSearchParams = parse(history.location.search.substring(1))
+
+        // Then
+        expect(urlSearchParams).toMatchObject({
+          categorie: 'test_id_1',
+        })
       })
     })
 
     it('should have status value when user filters by status', async () => {
       // Given
-      ;(api.getOffersListOffers as jest.Mock).mockResolvedValueOnce([
+      ;(
+        api.getCollectiveListCollectiveOffers as jest.Mock
+      ).mockResolvedValueOnce([
         offerFactory(
           {
             id: 'KE',
@@ -673,7 +702,9 @@ describe('route Offers', () => {
 
     it('should have status value be removed when user ask for all status', async () => {
       // Given
-      ;(api.getOffersListOffers as jest.Mock).mockResolvedValueOnce([
+      ;(
+        api.getCollectiveListCollectiveOffers as jest.Mock
+      ).mockResolvedValueOnce([
         offerFactory(
           {
             id: 'KE',
@@ -723,70 +754,52 @@ describe('route Offers', () => {
       // Then
       expect(screen.queryByText('La structure')).not.toBeInTheDocument()
     })
-
-    it('should have creation mode value when user filters by creation mode', async () => {
-      // Given
-      const { history } = renderOffers(store)
-      // When
-      fireEvent.change(await screen.findByDisplayValue('Tous les modes'), {
-        target: { value: 'manual' },
-      })
-      fireEvent.click(screen.getByText('Lancer la recherche'))
-      const urlSearchParams = parse(history.location.search.substring(1))
-      // Then
-      expect(urlSearchParams).toMatchObject({
-        creation: 'manuelle',
-      })
-    })
-
-    it('should have creation mode value be removed when user ask for all creation modes', async () => {
-      // Given
-      const { history } = renderOffers(store)
-      const searchButton = await screen.findByText('Lancer la recherche')
-      fireEvent.change(screen.getByDisplayValue('Tous les modes'), {
-        target: { value: 'manual' },
-      })
-      fireEvent.click(searchButton)
-      // When
-      fireEvent.change(screen.getByDisplayValue('Manuelle'), {
-        target: { value: DEFAULT_CREATION_MODE.id },
-      })
-      fireEvent.click(searchButton)
-      const urlSearchParams = parse(history.location.search.substring(1))
-      // Then
-      expect(urlSearchParams).toMatchObject({})
-    })
   })
 
   describe('page navigation', () => {
-    it('should redirect to collective offers when user click on collective offer link', async () => {
+    it('should redirect to individual offers when user clicks on individual offers link', async () => {
       // Given
-      ;(api.getOffersListOffers as jest.Mock).mockResolvedValue(offersRecap)
+      ;(api.getCollectiveListCollectiveOffers as jest.Mock).mockResolvedValue(
+        offersRecap
+      )
       const { history } = renderOffers(store)
       await screen.findByText('Lancer la recherche')
-      const collectiveAudienceLink = screen.getByText('Offres collectives', {
+      const individualAudienceLink = screen.getByText('Offres individuelles', {
         selector: 'span',
       })
 
       // When
-      fireEvent.click(collectiveAudienceLink)
+      fireEvent.click(individualAudienceLink)
 
       // Then
       await waitFor(() => {
-        expect(history.location.pathname).toBe('/offres/collectives')
+        expect(history.location.pathname).toBe('/offres')
       })
+
+      expect(api.getCollectiveListCollectiveOffers).toHaveBeenLastCalledWith(
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined
+      )
     })
 
     it('should display next page when clicking on right arrow', async () => {
       // Given
       const offers = Array.from({ length: 11 }, () => offerFactory())
-      ;(api.getOffersListOffers as jest.Mock).mockResolvedValueOnce(offers)
+      ;(
+        api.getCollectiveListCollectiveOffers as jest.Mock
+      ).mockResolvedValueOnce(offers)
       renderOffers(store)
-      const nextIcon = await screen.findByAltText('page suivante')
+      const nextIcon = await screen.findByAltText('Aller à la page suivante')
       // When
       fireEvent.click(nextIcon)
       // Then
-      expect(api.getOffersListOffers).toHaveBeenCalledTimes(1)
+      expect(api.getCollectiveListCollectiveOffers).toHaveBeenCalledTimes(1)
       await expect(
         screen.findByText(offers[10].name)
       ).resolves.toBeInTheDocument()
@@ -796,15 +809,19 @@ describe('route Offers', () => {
     it('should display previous page when clicking on left arrow', async () => {
       // Given
       const offers = Array.from({ length: 11 }, () => offerFactory())
-      ;(api.getOffersListOffers as jest.Mock).mockResolvedValueOnce(offers)
+      ;(
+        api.getCollectiveListCollectiveOffers as jest.Mock
+      ).mockResolvedValueOnce(offers)
       renderOffers(store)
-      const nextIcon = await screen.findByAltText('page suivante')
-      const previousIcon = await screen.findByAltText('page précédente')
+      const nextIcon = await screen.findByAltText('Aller à la page suivante')
+      const previousIcon = await screen.findByAltText(
+        'Aller à la page précédente'
+      )
       fireEvent.click(nextIcon)
       // When
       fireEvent.click(previousIcon)
       // Then
-      expect(api.getOffersListOffers).toHaveBeenCalledTimes(1)
+      expect(api.getCollectiveListCollectiveOffers).toHaveBeenCalledTimes(1)
       await expect(
         screen.findByText(offers[0].name)
       ).resolves.toBeInTheDocument()
@@ -817,17 +834,21 @@ describe('route Offers', () => {
       // When
       renderOffers(store, filters)
       // Then
-      const previousIcon = await screen.findByAltText('page précédente')
+      const previousIcon = await screen.findByAltText(
+        'Aller à la page précédente'
+      )
       expect(previousIcon.closest('button')).toBeDisabled()
     })
 
     it('should not be able to click on next arrow when being on the last page', async () => {
       // Given
-      ;(api.getOffersListOffers as jest.Mock).mockResolvedValueOnce(offersRecap)
+      ;(
+        api.getCollectiveListCollectiveOffers as jest.Mock
+      ).mockResolvedValueOnce(offersRecap)
       // When
       renderOffers(store)
       // Then
-      const nextIcon = await screen.findByAltText('page suivante')
+      const nextIcon = await screen.findByAltText('Aller à la page suivante')
       expect(nextIcon.closest('button')).toBeDisabled()
     })
 
@@ -838,9 +859,9 @@ describe('route Offers', () => {
 
       it('should have max number page of 50', async () => {
         // Given
-        ;(api.getOffersListOffers as jest.Mock).mockResolvedValueOnce(
-          offersRecap
-        )
+        ;(
+          api.getCollectiveListCollectiveOffers as jest.Mock
+        ).mockResolvedValueOnce(offersRecap)
         // When
         renderOffers(store)
         // Then
@@ -851,11 +872,11 @@ describe('route Offers', () => {
 
       it('should not display the 501st offer', async () => {
         // Given
-        ;(api.getOffersListOffers as jest.Mock).mockResolvedValueOnce(
-          offersRecap
-        )
+        ;(
+          api.getCollectiveListCollectiveOffers as jest.Mock
+        ).mockResolvedValueOnce(offersRecap)
         renderOffers(store)
-        const nextIcon = await screen.findByAltText('page suivante')
+        const nextIcon = await screen.findByAltText('Aller à la page suivante')
         // When
         for (let i = 1; i < 51; i++) {
           fireEvent.click(nextIcon)
@@ -871,7 +892,7 @@ describe('route Offers', () => {
 
   describe('should reset filters', () => {
     it('when clicking on "afficher toutes les offres" when no offers are displayed', async () => {
-      ;(api.getOffersListOffers as jest.Mock)
+      ;(api.getCollectiveListCollectiveOffers as jest.Mock)
         .mockResolvedValueOnce(offersRecap)
         .mockResolvedValueOnce([])
       renderOffers(store)
@@ -886,8 +907,8 @@ describe('route Offers', () => {
 
       userEvent.selectOptions(venueSelect, firstVenueOption)
 
-      expect(api.getOffersListOffers).toHaveBeenCalledTimes(1)
-      expect(api.getOffersListOffers).toHaveBeenNthCalledWith(
+      expect(api.getCollectiveListCollectiveOffers).toHaveBeenCalledTimes(1)
+      expect(api.getCollectiveListCollectiveOffers).toHaveBeenNthCalledWith(
         1,
         undefined,
         undefined,
@@ -901,8 +922,8 @@ describe('route Offers', () => {
 
       fireEvent.click(screen.getByText('Lancer la recherche'))
 
-      expect(api.getOffersListOffers).toHaveBeenCalledTimes(2)
-      expect(api.getOffersListOffers).toHaveBeenNthCalledWith(
+      expect(api.getCollectiveListCollectiveOffers).toHaveBeenCalledTimes(2)
+      expect(api.getCollectiveListCollectiveOffers).toHaveBeenNthCalledWith(
         2,
         undefined,
         undefined,
@@ -918,8 +939,8 @@ describe('route Offers', () => {
 
       fireEvent.click(screen.getByText('afficher toutes les offres'))
 
-      expect(api.getOffersListOffers).toHaveBeenCalledTimes(3)
-      expect(api.getOffersListOffers).toHaveBeenNthCalledWith(
+      expect(api.getCollectiveListCollectiveOffers).toHaveBeenCalledTimes(3)
+      expect(api.getCollectiveListCollectiveOffers).toHaveBeenNthCalledWith(
         3,
         undefined,
         undefined,
@@ -933,7 +954,7 @@ describe('route Offers', () => {
     })
 
     it('when clicking on "Réinitialiser les filtres"', async () => {
-      ;(api.getOffersListOffers as jest.Mock)
+      ;(api.getCollectiveListCollectiveOffers as jest.Mock)
         .mockResolvedValueOnce(offersRecap)
         .mockResolvedValueOnce([])
 
@@ -949,8 +970,8 @@ describe('route Offers', () => {
 
       userEvent.selectOptions(venueSelect, venueOptionToSelect)
 
-      expect(api.getOffersListOffers).toHaveBeenCalledTimes(1)
-      expect(api.getOffersListOffers).toHaveBeenNthCalledWith(
+      expect(api.getCollectiveListCollectiveOffers).toHaveBeenCalledTimes(1)
+      expect(api.getCollectiveListCollectiveOffers).toHaveBeenNthCalledWith(
         1,
         undefined,
         undefined,
@@ -963,8 +984,8 @@ describe('route Offers', () => {
       )
 
       fireEvent.click(screen.getByText('Lancer la recherche'))
-      expect(api.getOffersListOffers).toHaveBeenCalledTimes(2)
-      expect(api.getOffersListOffers).toHaveBeenNthCalledWith(
+      expect(api.getCollectiveListCollectiveOffers).toHaveBeenCalledTimes(2)
+      expect(api.getCollectiveListCollectiveOffers).toHaveBeenNthCalledWith(
         2,
         undefined,
         undefined,
@@ -977,8 +998,8 @@ describe('route Offers', () => {
       )
 
       fireEvent.click(screen.getByText('Réinitialiser les filtres'))
-      expect(api.getOffersListOffers).toHaveBeenCalledTimes(3)
-      expect(api.getOffersListOffers).toHaveBeenNthCalledWith(
+      expect(api.getCollectiveListCollectiveOffers).toHaveBeenCalledTimes(3)
+      expect(api.getCollectiveListCollectiveOffers).toHaveBeenNthCalledWith(
         3,
         undefined,
         undefined,
