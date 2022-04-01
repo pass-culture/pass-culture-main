@@ -181,39 +181,39 @@ def _parse_dms_civility(civility: dms_models.Civility) -> typing.Optional[users_
 
 
 class DMSContent(common_models.IdentityCheckContent):
-    last_name: str
-    first_name: str
-    civility: typing.Optional[users_models.GenderEnum]
-    email: str
-    application_id: int
-    procedure_id: int
-    department: typing.Optional[str]
-    birth_date: typing.Optional[datetime.date]
-    phone: typing.Optional[str]
-    postal_code: typing.Optional[str]
     activity: typing.Optional[str]
     address: typing.Optional[str]
+    application_id: int
+    birth_date: typing.Optional[datetime.date]
+    civility: typing.Optional[users_models.GenderEnum]
+    department: typing.Optional[str]
+    email: str
+    first_name: str
     id_piece_number: typing.Optional[str]
+    last_name: str
+    phone: typing.Optional[str]
+    postal_code: typing.Optional[str]
+    procedure_id: int
     registration_datetime: typing.Optional[datetime.datetime]
 
     _parse_civility = pydantic.validator("civility", pre=True, allow_reuse=True)(_parse_dms_civility)
+
+    def get_birth_date(self) -> typing.Optional[datetime.date]:
+        return self.birth_date
+
+    def get_first_name(self) -> str:
+        return self.first_name
+
+    def get_id_piece_number(self) -> typing.Optional[str]:
+        return self.id_piece_number
+
+    def get_last_name(self) -> str:
+        return self.last_name
 
     def get_registration_datetime(self) -> typing.Optional[datetime.datetime]:
         return (
             self.registration_datetime.astimezone(pytz.utc).replace(tzinfo=None) if self.registration_datetime else None
         )
-
-    def get_first_name(self) -> str:
-        return self.first_name
-
-    def get_last_name(self) -> str:
-        return self.last_name
-
-    def get_birth_date(self) -> typing.Optional[datetime.date]:
-        return self.birth_date
-
-    def get_id_piece_number(self) -> typing.Optional[str]:
-        return self.id_piece_number
 
 
 class UserProfilingRiskRating(enum.Enum):
