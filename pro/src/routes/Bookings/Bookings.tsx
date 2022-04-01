@@ -1,36 +1,22 @@
-import React, { useCallback, useEffect, useState, useMemo } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 
 import useActiveFeature from 'components/hooks/useActiveFeature'
 import useCurrentUser from 'components/hooks/useCurrentUser'
 import useNotification from 'components/hooks/useNotification'
-import PageTitle from 'components/layout/PageTitle/PageTitle'
-import Spinner from 'components/layout/Spinner'
-import Titles from 'components/layout/Titles/Titles'
+import { downloadCSVFile } from 'components/pages/Bookings/downloadCSVBookings'
+import { DEFAULT_PRE_FILTERS } from 'components/pages/Bookings/PreFilters/_constants'
+import { TPreFilters } from 'core/Bookings/types'
 import * as pcapi from 'repository/pcapi/pcapi'
-
-import BookingsRecapTable from '../../components/pages/Bookings/BookingsRecapTable/BookingsRecapTable'
-import ChoosePreFiltersMessage from '../../components/pages/Bookings/ChoosePreFiltersMessage/ChoosePreFiltersMessage'
-import { downloadCSVFile } from '../../components/pages/Bookings/downloadCSVBookings'
-import NoBookingMessage from '../../components/pages/Bookings/NoBookingMessage'
-import NoBookingsForPreFiltersMessage from '../../components/pages/Bookings/NoBookingsForPreFiltersMessage/NoBookingsForPreFiltersMessage'
-import { DEFAULT_PRE_FILTERS } from '../../components/pages/Bookings/PreFilters/_constants'
-import PreFilters from '../../components/pages/Bookings/PreFilters/PreFilters'
+import BookingsScreen from 'screens/Bookings'
 
 const MAX_LOADED_PAGES = 5
 
 const Bookings = (): JSX.Element => {
   const location = useLocation<{ venueId: string; statuses: string[] }>()
   const notify = useNotification()
-  const [appliedPreFilters, setAppliedPreFilters] = useState({
-    bookingStatusFilter: DEFAULT_PRE_FILTERS.bookingStatusFilter,
-    bookingBeginningDate: DEFAULT_PRE_FILTERS.bookingBeginningDate,
-    bookingEndingDate: DEFAULT_PRE_FILTERS.bookingEndingDate,
-    offerEventDate: DEFAULT_PRE_FILTERS.offerEventDate,
-    offerVenueId: location.state?.venueId || DEFAULT_PRE_FILTERS.offerVenueId,
-    offerType: DEFAULT_PRE_FILTERS.offerType,
-  })
   const { currentUser: user } = useCurrentUser()
+
   const [bookingsRecap, setBookingsRecap] = useState([])
   const [isDownloadingCSV, setIsDownloadingCSV] = useState(false)
   const [isTableLoading, setIsTableLoading] = useState(false)
@@ -39,11 +25,10 @@ const Bookings = (): JSX.Element => {
   const [hasBooking, setHasBooking] = useState(true)
 
   const loadBookingsRecap = useCallback(
-    async preFilters => {
+    async (preFilters: TPreFilters) => {
       setIsTableLoading(true)
       setBookingsRecap([])
       setWereBookingsRequested(true)
-      setAppliedPreFilters({ ...preFilters })
 
       const bookingsFilters = {
         page: 1,
@@ -99,6 +84,7 @@ const Bookings = (): JSX.Element => {
       setHasBooking(hasBookings)
     }
   }, [user.isAdmin, setHasBooking])
+
   useEffect(() => {
     checkUserHasBookings()
   }, [checkUserHasBookings])
@@ -127,77 +113,25 @@ const Bookings = (): JSX.Element => {
         offerEventDate: DEFAULT_PRE_FILTERS.offerEventDate,
         offerVenueId:
           location.state?.venueId || DEFAULT_PRE_FILTERS.offerVenueId,
+        offerType: DEFAULT_PRE_FILTERS.offerType,
       })
     }
   }, [location.state, loadBookingsRecap])
 
-  const werePreFiltersCustomized = useMemo(() => {
-    return (
-      appliedPreFilters.offerVenueId !== DEFAULT_PRE_FILTERS.offerVenueId ||
-      appliedPreFilters.bookingBeginningDate !==
-        DEFAULT_PRE_FILTERS.bookingBeginningDate ||
-      appliedPreFilters.bookingEndingDate !==
-        DEFAULT_PRE_FILTERS.bookingEndingDate ||
-      appliedPreFilters.bookingStatusFilter !==
-        DEFAULT_PRE_FILTERS.bookingStatusFilter ||
-      appliedPreFilters.offerEventDate !== DEFAULT_PRE_FILTERS.offerEventDate
-    )
-  }, [
-    appliedPreFilters.bookingStatusFilter,
-    appliedPreFilters.bookingBeginningDate,
-    appliedPreFilters.bookingEndingDate,
-    appliedPreFilters.offerEventDate,
-    appliedPreFilters.offerVenueId,
-  ])
-
-  const resetPreFilters = useCallback(() => {
-    setWereBookingsRequested(false)
-    setAppliedPreFilters({ ...DEFAULT_PRE_FILTERS })
-  }, [])
-
   return (
-    <div className="bookings-page">
-      <PageTitle title="Vos réservations" />
-      <Titles title="Réservations" />
-      <h2 className="br-title">Affichage des réservations</h2>
-      {werePreFiltersCustomized && (
-        <button
-          className="tertiary-button reset-filters-link"
-          onClick={resetPreFilters}
-          type="button"
-        >
-          Réinitialiser les filtres
-        </button>
-      )}
-      <PreFilters
-        appliedPreFilters={appliedPreFilters}
-        applyPreFilters={loadBookingsRecap}
-        downloadBookingsCSV={downloadBookingsCSV}
-        hasResult={bookingsRecap.length > 0}
-        isBookingFiltersActive={isBookingFiltersActive}
-        isDownloadingCSV={isDownloadingCSV}
-        isFiltersDisabled={!hasBooking}
-        isTableLoading={isTableLoading}
-        wereBookingsRequested={wereBookingsRequested}
-      />
-      {wereBookingsRequested ? (
-        bookingsRecap.length > 0 ? (
-          <BookingsRecapTable
-            bookingsRecap={bookingsRecap}
-            isLoading={isTableLoading}
-            locationState={location.state}
-          />
-        ) : isTableLoading ? (
-          <Spinner />
-        ) : (
-          <NoBookingsForPreFiltersMessage resetPreFilters={resetPreFilters} />
-        )
-      ) : hasBooking ? (
-        <ChoosePreFiltersMessage />
-      ) : (
-        <NoBookingMessage />
-      )}
-    </div>
+    <BookingsScreen
+      bookingsRecap={bookingsRecap}
+      downloadBookingsCSV={downloadBookingsCSV}
+      hasBooking={hasBooking}
+      isBookingFiltersActive={isBookingFiltersActive}
+      isDownloadingCSV={isDownloadingCSV}
+      isTableLoading={isTableLoading}
+      loadBookingsRecap={loadBookingsRecap}
+      locationState={location.state}
+      setWereBookingsRequested={setWereBookingsRequested}
+      venueId={location.state.venueId}
+      wereBookingsRequested={wereBookingsRequested}
+    />
   )
 }
 

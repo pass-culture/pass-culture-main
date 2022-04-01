@@ -182,6 +182,7 @@ PreFilters.propTypes = {
       PropTypes.string,
     ]),
     offerVenueId: PropTypes.string.isRequired,
+    offerType: PropTypes.string.isRequired,
   }).isRequired,
   applyPreFilters: PropTypes.func.isRequired,
   downloadBookingsCSV: PropTypes.func.isRequired,
