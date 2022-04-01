@@ -198,6 +198,7 @@ class RunTest:
                 activity="Étudiant",
                 address="3 La Bigotais 22800 Saint-Donan",
                 postal_code="67200",
+                processed_datetime=datetime(2020, 5, 13, 10, 41, 21, tzinfo=timezone(timedelta(seconds=7200))),
                 registration_datetime=datetime(2020, 5, 13, 9, 9, 46, tzinfo=timezone(timedelta(seconds=7200))),
                 id_piece_number="123123121",
             ),
@@ -289,6 +290,20 @@ class ParseBeneficiaryInformationTest:
         assert content.activity == "Employé"
         assert content.address == "32 rue des sapins gris 21350 l'îsle à dent"
         assert content.id_piece_number == "K682T8YLO"
+
+    def test_processed_datetime_none(self):
+        raw_data = fixture.make_graphql_application(1, "en_construction", processed_datetime=None)
+        content = dms_connector_api.parse_beneficiary_information_graphql(
+            dms_models.DmsApplicationResponse(**raw_data), 32
+        )
+        assert content.processed_datetime is None
+
+    def test_processed_datetime_not_none(self):
+        raw_data = fixture.make_graphql_application(1, "accepte")
+        content = dms_connector_api.parse_beneficiary_information_graphql(
+            dms_models.DmsApplicationResponse(**raw_data), 32
+        )
+        assert content.processed_datetime == datetime(2020, 5, 13, 10, 41, 21, tzinfo=timezone(timedelta(seconds=7200)))
 
 
 class ParsingErrorsTest:

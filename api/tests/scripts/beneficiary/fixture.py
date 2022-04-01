@@ -21,6 +21,7 @@ def make_graphql_application(
     full_graphql_response: bool = False,
     has_next_page: bool = False,
     construction_datetime: str = "2020-05-13T09:09:46+02:00",
+    processed_datetime: Optional[str] = "2020-05-13T10:41:21+02:00",
     first_name: str = "John",
     last_name: str = "Doe",
 ) -> dict:
@@ -33,7 +34,7 @@ def make_graphql_application(
         "dateDerniereModification": "2020-05-13T10:41:23+02:00",
         "datePassageEnConstruction": construction_datetime,
         "datePassageEnInstruction": "2020-05-13T10:37:31+02:00",
-        "dateTraitement": "2020-05-13T10:41:21+02:00",
+        "dateTraitement": processed_datetime,
         "motivation": "",
         "motivationAttachment": None,
         "attestation": None,
