@@ -76,7 +76,7 @@ def request_password_reset(body: RequestPasswordResetRequest) -> None:
         try:
             api_recaptcha.check_native_app_recaptcha_token(body.token)
         except api_recaptcha.ReCaptchaException:
-            raise ApiErrors({"token": "The given token is not invalid"})
+            raise ApiErrors({"token": "The given token is not valid"})
     user = find_user_by_email(body.email)
     try:
         users_api.request_password_reset(user)
