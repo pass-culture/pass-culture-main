@@ -1,7 +1,6 @@
 from datetime import date
 from datetime import datetime
 from enum import Enum
-from typing import Any
 from typing import Optional
 
 from pydantic import root_validator
@@ -29,30 +28,75 @@ class OfferType(Enum):
     EDUCATIONAL = "EDUCATIONAL"
 
 
-def serialize_bookings_recap_paginated(bookings_recap_paginated: BookingsRecapPaginated) -> dict[str, Any]:
-    return {
-        "bookings_recap": [
+class BookingRecapResponseBeneficiaryModel(BaseModel):
+    email: Optional[str]
+    firstname: Optional[str]
+    lastname: Optional[str]
+    phonenumber: Optional[str]
+
+
+class BookingRecapResponseStockModel(BaseModel):
+    event_beginning_datetime: Optional[datetime]
+    offer_identifier: str
+    offer_is_educational: bool
+    offer_isbn: Optional[str]
+    offer_name: str
+
+
+class BookingRecapResponseBookingStatusHistoryModel(BaseModel):
+    status: BookingRecapStatus
+    date: Optional[datetime]
+
+
+class BookingRecapResponseModel(BaseModel):
+    beneficiary: BookingRecapResponseBeneficiaryModel
+    booking_amount: int
+    booking_date: datetime
+    booking_is_duo: bool
+    booking_status: BookingRecapStatus
+    booking_status_history: list[BookingRecapResponseBookingStatusHistoryModel]
+    booking_token: Optional[str]
+    stock: BookingRecapResponseStockModel
+
+
+class ListBookingsResponseModel(BaseModel):
+    bookings_recap: list[BookingRecapResponseModel]
+    page: int
+    pages: int
+    total: int
+
+
+class PatchBookingByTokenQueryModel(BaseModel):
+    email: Optional[str]
+    offer_id: Optional[str]
+
+
+def serialize_bookings_recap_paginated(bookings_recap_paginated: BookingsRecapPaginated) -> ListBookingsResponseModel:
+    return ListBookingsResponseModel(
+        bookings_recap=[
             _serialize_booking_recap(booking_recap) for booking_recap in bookings_recap_paginated.bookings_recap
         ],
-        "page": bookings_recap_paginated.page,
-        "pages": bookings_recap_paginated.pages,
-        "total": bookings_recap_paginated.total,
-    }
+        page=bookings_recap_paginated.page,
+        pages=bookings_recap_paginated.pages,
+        total=bookings_recap_paginated.total,
+    )
 
 
 def _serialize_booking_status_info(
     booking_status: BookingRecapStatus, booking_status_date: datetime
-) -> dict[str, Optional[str]]:
+) -> BookingRecapResponseBookingStatusHistoryModel:
 
     serialized_booking_status_date = format_into_timezoned_date(booking_status_date) if booking_status_date else None
 
-    return {
-        "status": booking_status.value,
-        "date": serialized_booking_status_date,
-    }
+    return BookingRecapResponseBookingStatusHistoryModel(
+        status=booking_status.value,
+        date=serialized_booking_status_date,
+    )
 
 
-def _serialize_booking_status_history(booking_status_history: BookingRecapHistory) -> list[dict[str, str]]:
+def _serialize_booking_status_history(
+    booking_status_history: BookingRecapHistory,
+) -> list[BookingRecapResponseBookingStatusHistoryModel]:
     if isinstance(booking_status_history, BookingRecapPendingHistory):
         serialized_booking_status_history = [
             _serialize_booking_status_info(BookingRecapStatus.pending, booking_status_history.booking_date)
@@ -88,9 +132,9 @@ def _serialize_booking_status_history(booking_status_history: BookingRecapHistor
     return serialized_booking_status_history
 
 
-def _serialize_booking_recap(booking_recap: BookingRecap) -> dict[str, Any]:
-    serialized_booking_recap = {
-        "stock": {
+def _serialize_booking_recap(booking_recap: BookingRecap) -> BookingRecapResponseModel:
+    serialized_booking_recap = BookingRecapResponseModel(
+        stock={
             "offer_name": booking_recap.offer_name,
             "offer_identifier": humanize(booking_recap.offer_identifier),
             "event_beginning_datetime": format_into_timezoned_date(booking_recap.event_beginning_datetime)
@@ -99,19 +143,19 @@ def _serialize_booking_recap(booking_recap: BookingRecap) -> dict[str, Any]:
             "offer_isbn": booking_recap.offer_isbn,
             "offer_is_educational": booking_recap.booking_is_educational,
         },
-        "beneficiary": {
+        beneficiary={
             "lastname": booking_recap.beneficiary_lastname or booking_recap.redactor_lastname,
             "firstname": booking_recap.beneficiary_firstname or booking_recap.redactor_firstname,
             "email": booking_recap.beneficiary_email or booking_recap.redactor_email,
             "phonenumber": booking_recap.beneficiary_phonenumber,
         },
-        "booking_token": booking_recap.booking_token,
-        "booking_date": format_into_timezoned_date(booking_recap.booking_date),
-        "booking_status": booking_recap.booking_status.value,
-        "booking_is_duo": booking_recap.booking_is_duo,
-        "booking_amount": booking_recap.booking_amount,
-        "booking_status_history": _serialize_booking_status_history(booking_recap.booking_status_history),
-    }
+        booking_token=booking_recap.booking_token,
+        booking_date=format_into_timezoned_date(booking_recap.booking_date),
+        booking_status=booking_recap.booking_status.value,
+        booking_is_duo=booking_recap.booking_is_duo,
+        booking_amount=booking_recap.booking_amount,
+        booking_status_history=_serialize_booking_status_history(booking_recap.booking_status_history),
+    )
 
     return serialized_booking_recap
 
@@ -146,15 +190,3 @@ class ListBookingsQueryModel(BaseModel):
                 }
             )
         return values
-
-
-class ListBookingsResponseModel(BaseModel):
-    bookings_recap: list[dict]
-    page: int
-    pages: int
-    total: int
-
-
-class PatchBookingByTokenQueryModel(BaseModel):
-    email: Optional[str]
-    offer_id: Optional[str]
