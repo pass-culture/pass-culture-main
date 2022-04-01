@@ -5,6 +5,7 @@ const NODE_ENV = process.env.NODE_ENV || 'development'
 export const LAST_DEPLOYED_COMMIT = '##LAST_DEPLOYED_COMMIT##'
 
 export const IS_DEV = NODE_ENV === 'development'
+export const IS_TEST = NODE_ENV === 'test'
 
 export const CGU_URL = 'https://pass.culture.fr/cgu-professionnels/'
 

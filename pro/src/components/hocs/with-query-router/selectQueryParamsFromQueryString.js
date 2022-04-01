@@ -1,5 +1,4 @@
-import createCachedSelector from 're-reselect'
-
+import { createCachedSelector } from 'store/utils'
 import { parse } from 'utils/query-string'
 
 function mapArgsToCacheKey(queryString) {

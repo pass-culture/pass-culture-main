@@ -1,4 +1,4 @@
-import createCachedSelector from 're-reselect'
+import { createCachedSelector } from 'store/utils'
 
 export const selectProductById = createCachedSelector(
   state => state.data.products,

@@ -1,10 +1,10 @@
-import createCachedSelector from 're-reselect'
-import type { KeySelector } from 're-reselect'
 
 import { apiEntreprise } from 'api/api'
 import type { IEntrepriseData } from 'api/entreprise/types'
 import { unhumanizeSiret } from 'core/Venue/utils'
 import { validateSiret } from 'core/Venue/validate'
+import type { KeySelector } from 're-reselect'
+import { createCachedSelector } from 'store/utils'
 
 type Params = string
 type IPayload = {
