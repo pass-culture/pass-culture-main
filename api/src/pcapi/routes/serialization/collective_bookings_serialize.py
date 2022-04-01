@@ -3,20 +3,17 @@ from datetime import date
 from datetime import datetime
 from enum import Enum
 from io import StringIO
-import math
-from io import StringIO
 from typing import Optional
 
 from pydantic import root_validator
 from sqlalchemy.orm import Query
-from sqlalchemy.orm import Query
-from sqlalchemy.util._collections import AbstractKeyedTuple
 
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.bookings.repository import BOOKING_STATUS_LABELS
-from pcapi.core.bookings.utils import convert_booking_date_utc_to_venue_timezone
+from pcapi.core.bookings.utils import convert_booking_dates_utc_to_venue_timezone
 from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.educational.models import CollectiveBookingStatusFilter
+from pcapi.core.educational.repository import CollectiveBookingNamedTuple
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.utils import dehumanize_field

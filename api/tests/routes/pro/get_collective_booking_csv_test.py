@@ -5,7 +5,7 @@ from io import StringIO
 import pytest
 
 from pcapi.core.educational import factories as educational_factories
-import pcapi.core.offers.factories as offers_factories
+import pcapi.core.offerers.factories as offerers_factories
 
 from tests.conftest import TestClient
 
@@ -21,7 +21,7 @@ def reader_from_response(response):
 
 class Returns200Test:
     def test_complete_booking_single(self, app):
-        user_offerer = offers_factories.UserOffererFactory()
+        user_offerer = offerers_factories.UserOffererFactory()
         booking = educational_factories.CollectiveBookingFactory(
             dateCreated=datetime(2020, 8, 11, 12, 0, 0),
             collectiveStock__beginningDatetime=datetime(2020, 8, 13, 12, 0, 0),
@@ -52,7 +52,7 @@ class Returns200Test:
         assert reader[0]["Date et heure de remboursement"] == "2021-08-11 14:00:00+02:00"
 
     def test_created_booking_single(self, app):
-        user_offerer = offers_factories.UserOffererFactory()
+        user_offerer = offerers_factories.UserOffererFactory()
         booking = educational_factories.CollectiveBookingFactory(
             dateCreated=datetime(2020, 8, 11, 12, 0, 0),
             collectiveStock__beginningDatetime=datetime(2020, 8, 13, 12, 0, 0),
@@ -83,12 +83,12 @@ class Returns200Test:
         assert reader[0]["Date et heure de remboursement"] == ""
 
     def test_one_invisible_rights_booking(self, app):
-        invisible_user_offerer = offers_factories.UserOffererFactory()
+        invisible_user_offerer = offerers_factories.UserOffererFactory()
         educational_factories.CollectiveBookingFactory(
             collectiveStock__collectiveOffer__venue__managingOfferer=invisible_user_offerer.offerer,
             offerer=invisible_user_offerer.offerer,
         )
-        user_offerer = offers_factories.UserOffererFactory()
+        user_offerer = offerers_factories.UserOffererFactory()
         booking = educational_factories.CollectiveBookingFactory(
             dateCreated=datetime(2020, 8, 11, 12, 0, 0),
             collectiveStock__beginningDatetime=datetime(2020, 8, 13, 12, 0, 0),
@@ -119,13 +119,13 @@ class Returns200Test:
         assert reader[0]["Date et heure de remboursement"] == "2021-08-11 14:00:00+02:00"
 
     def test_one_invisible_date_range_booking(self, app):
-        invisible_user_offerer = offers_factories.UserOffererFactory()
+        invisible_user_offerer = offerers_factories.UserOffererFactory()
         educational_factories.CollectiveBookingFactory(
             dateCreated=datetime(2015, 8, 11, 12, 0, 0),
             collectiveStock__collectiveOffer__venue__managingOfferer=invisible_user_offerer.offerer,
             offerer=invisible_user_offerer.offerer,
         )
-        user_offerer = offers_factories.UserOffererFactory()
+        user_offerer = offerers_factories.UserOffererFactory()
         booking = educational_factories.CollectiveBookingFactory(
             dateCreated=datetime(2020, 8, 11, 12, 0, 0),
             collectiveStock__beginningDatetime=datetime(2020, 8, 13, 12, 0, 0),
@@ -156,7 +156,7 @@ class Returns200Test:
         assert reader[0]["Date et heure de remboursement"] == "2021-08-11 14:00:00+02:00"
 
     def test_complete_booking_multiple(self, app):
-        user_offerer = offers_factories.UserOffererFactory()
+        user_offerer = offerers_factories.UserOffererFactory()
         bookings = [
             educational_factories.CollectiveBookingFactory(
                 dateCreated=datetime(2020, 8, 11, 12, 0, 0),

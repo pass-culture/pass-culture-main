@@ -10,7 +10,6 @@ from typing import Iterable
 from typing import List
 from typing import Optional
 
-from dateutil import tz
 from flask_sqlalchemy import BaseQuery
 from sqlalchemy import Column
 from sqlalchemy import Date
