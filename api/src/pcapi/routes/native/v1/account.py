@@ -160,7 +160,7 @@ def create_account(body: serializers.AccountRequest) -> None:
         try:
             api_recaptcha.check_native_app_recaptcha_token(body.token)
         except api_recaptcha.ReCaptchaException:
-            raise ApiErrors({"token": "The given token is not invalid"})
+            raise ApiErrors({"token": "The given token is not valid"})
 
     try:
         api.create_account(
