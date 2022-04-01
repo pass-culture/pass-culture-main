@@ -90,7 +90,7 @@ class DmsApplicationResponse(pydantic.BaseModel):
     """
 
     applicant: Applicant = pydantic.Field(alias="demandeur")
-    done_date: typing.Optional[datetime.datetime] = pydantic.Field(None, alias="dateTraitement")
+    processed_datetime: typing.Optional[datetime.datetime] = pydantic.Field(None, alias="dateTraitement")
     draft_date: datetime.datetime = pydantic.Field(alias="datePassageEnConstruction")
     fields: list[DmsField] = pydantic.Field(alias="champs")
     filing_date: datetime.datetime = pydantic.Field(alias="dateDepot")
