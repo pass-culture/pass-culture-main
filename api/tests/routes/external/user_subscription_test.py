@@ -294,7 +294,7 @@ class DmsWebhookApplicationTest:
         assert user.subscriptionMessages[0].popOverIcon == subscription_models.PopOverIcon.FILE
         assert (
             user.subscriptionMessages[0].userMessage
-            == "Nous avons bien reçu ton dossier le 30/10/2021. Rends toi sur la messagerie du site Démarches-Simplifiées pour être informé en temps réel."
+            == "Nous avons bien reçu ton dossier le 30/10/2021. Rends-toi sur la messagerie du site Démarches-Simplifiées pour être informé en temps réel."
         )
 
     @freezegun.freeze_time("2021-10-30 09:00:00")
@@ -325,7 +325,7 @@ class DmsWebhookApplicationTest:
         assert user.subscriptionMessages[0].popOverIcon == subscription_models.PopOverIcon.FILE
         assert (
             user.subscriptionMessages[0].userMessage
-            == "Nous avons bien reçu ton dossier le 30/10/2021. Rends toi sur la messagerie du site Démarches-Simplifiées pour être informé en temps réel."
+            == "Nous avons bien reçu ton dossier le 30/10/2021. Rends-toi sur la messagerie du site Démarches-Simplifiées pour être informé en temps réel."
         )
 
     @patch.object(api_dms.DMSGraphQLClient, "execute_query")
