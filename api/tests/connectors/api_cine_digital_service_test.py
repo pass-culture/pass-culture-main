@@ -19,6 +19,17 @@ class CineDigitalServiceBuildUrlTest:
 
         assert url == "https://test_id.test_url/tariffs?api_token=test_token"
 
+    def test_build_url_with_path_params(self):
+        cinema_id = "test_id"
+        api_url = "test_url/"
+        token = "test_token"
+        resource = ResourceCDS.SEATMAP
+        path_params = {"showid": 1}
+
+        url = _build_url(api_url, cinema_id, token, resource, path_params)
+
+        assert url == "https://test_id.test_url/shows/1/seatmap?api_token=test_token"
+
 
 class CineDigitalServiceGetResourceTest:
     @mock.patch("pcapi.connectors.cine_digital_service.requests.get")
@@ -57,6 +68,21 @@ class CineDigitalServiceGetResourceTest:
         # Then
         request_get.assert_called_once_with("https://test_id.test_url/tariffs?api_token=test_token")
         assert json_data == shows_json
+
+    @mock.patch("pcapi.connectors.cine_digital_service.requests.get")
+    @override_settings(IS_DEV=False)
+    def should_call_url_with_path_params_if_present(self, request_get):
+        # Given
+        cinema_id = "test_id"
+        api_url = "test_url/"
+        token = "test_token"
+        resource = ResourceCDS.SEATMAP
+        path_params = {"showid": 1}
+
+        # When
+        get_resource(api_url, cinema_id, token, resource, path_params)
+        # Then
+        request_get.assert_called_once_with("https://test_id.test_url/shows/1/seatmap?api_token=test_token")
 
 
 class CineDigitalServicePutResourceTest:

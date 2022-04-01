@@ -1,3 +1,6 @@
+import math
+from typing import Optional
+
 from pydantic.tools import parse_obj_as
 
 from pcapi.connectors.cine_digital_service import ResourceCDS
@@ -7,6 +10,7 @@ import pcapi.connectors.serialization.cine_digital_service_serializers as cds_se
 from pcapi.core.booking_providers.cds.constants import PASS_CULTURE_PAYMENT_TYPE_CDS
 from pcapi.core.booking_providers.cds.constants import PASS_CULTURE_TARIFF_LABEL_CDS
 import pcapi.core.booking_providers.cds.exceptions as cds_exceptions
+from pcapi.core.booking_providers.models import SeatCDS
 
 
 class CineDigitalServiceAPI:
@@ -59,6 +63,60 @@ class CineDigitalServiceAPI:
         raise cds_exceptions.CineDigitalServiceAPIException(
             f"Screen #{screen_id} not found in Cine Digital Service API for cinemaId={self.cinema_id} & url={self.api_url}"
         )
+
+    def get_available_seat(self, show_id: int, screen: cds_serializers.ScreenCDS) -> Optional[SeatCDS]:
+        seatmap = self._get_seatmap(show_id)
+        available_seats_index = [
+            (i, j) for i in range(0, seatmap.nb_row) for j in range(0, seatmap.nb_col) if seatmap.map[i][j] % 10 == 1
+        ]
+        if len(available_seats_index) == 0:
+            return None
+        best_seat = self._get_closest_seat_to_center((seatmap.nb_row / 2, seatmap.nb_col / 2), available_seats_index)
+        return SeatCDS(best_seat, screen, seatmap)
+
+    def get_available_duo_seat(self, show_id: int, screen: cds_serializers.ScreenCDS) -> list[SeatCDS]:
+        seatmap = self._get_seatmap(show_id)
+        seatmap_center = ((seatmap.nb_row - 1) / 2.0, (seatmap.nb_col - 1) / 2.0)
+
+        available_seats_index = [
+            (i, j) for i in range(0, seatmap.nb_row) for j in range(0, seatmap.nb_col) if seatmap.map[i][j] % 10 == 1
+        ]
+        if len(available_seats_index) <= 1:
+            return []
+
+        available_seats_for_duo = [
+            seat for seat in available_seats_index if (seat[0], seat[1] + 1) in available_seats_index
+        ]
+
+        if len(available_seats_for_duo) > 0:
+            first_seat = self._get_closest_seat_to_center(seatmap_center, available_seats_for_duo)
+            second_seat = (first_seat[0], first_seat[1] + 1)
+        else:
+            first_seat = self._get_closest_seat_to_center(seatmap_center, available_seats_index)
+            available_seats_index.remove(first_seat)
+            second_seat = self._get_closest_seat_to_center(seatmap_center, available_seats_index)
+
+        return [
+            SeatCDS(first_seat, screen, seatmap),
+            SeatCDS(second_seat, screen, seatmap),
+        ]
+
+    def _get_seatmap(self, show_id: int) -> cds_serializers.SeatmapCDS:
+        data = get_resource(self.api_url, self.cinema_id, self.token, ResourceCDS.SEATMAP, {"show_id": show_id})
+        return parse_obj_as(cds_serializers.SeatmapCDS, data)
+
+    def _get_closest_seat_to_center(
+        self, center: tuple[int, int], seats_index: list[tuple[int, int]]
+    ) -> tuple[int, int]:
+        distances_to_center = list(
+            map(
+                lambda seat_index: math.sqrt(pow(seat_index[0] - center[0], 2) + pow(seat_index[1] - center[1], 2)),
+                seats_index,
+            )
+        )
+        min_distance = min(distances_to_center)
+        index_min_distance = distances_to_center.index(min_distance)
+        return seats_index[index_min_distance]
 
     def cancel_booking(self, barcodes: list[str], paiement_type_id: int) -> None:
         cancel_body = cds_serializers.CancelBookingCDS(barcodes=barcodes, paiementtypeid=paiement_type_id)

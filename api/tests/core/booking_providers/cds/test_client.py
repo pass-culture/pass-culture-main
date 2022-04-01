@@ -236,6 +236,154 @@ class CineDigitalServiceGetScreenTest:
         )
 
 
+class CineDigitalServiceGetAvailableSingleSeatTest:
+    @patch("pcapi.core.booking_providers.cds.client.get_resource")
+    def test_should_return_seat_available(self, mocked_get_resource):
+        seatmap_json = [
+            [1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1],
+            [1, 3, 1, 1, 1, 1, 1, 1, 0, 1, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1],
+            [0, 0, 0, 1, 1, 1, 1, 1, 0, 1, 1],
+        ]
+
+        screen = cds_serializers.ScreenCDS(
+            id=1,
+            seatmapfronttoback=True,
+            seatmaplefttoright=True,
+            seatmapskipmissingseats=False,
+        )
+
+        mocked_get_resource.return_value = seatmap_json
+        cine_digital_service = CineDigitalServiceAPI(cinema_id="test_id", token="token_test", api_url="test_url")
+        best_seat = cine_digital_service.get_available_seat(1, screen)
+        assert best_seat.seatRow == 5
+        assert best_seat.seatCol == 6
+        assert best_seat.seatNumber == "E_6"
+
+    @patch("pcapi.core.booking_providers.cds.client.get_resource")
+    def test_should_return_seat_infos_according_to_screen(self, mocked_get_resource):
+        seatmap_json = [
+            [3, 3, 3, 3, 0, 3],
+            [3, 3, 3, 3, 0, 3],
+            [3, 3, 3, 3, 0, 3],
+            [3, 3, 3, 1, 0, 3],
+            [3, 3, 3, 3, 0, 3],
+        ]
+
+        screen = cds_serializers.ScreenCDS(
+            id=1,
+            seatmapfronttoback=False,
+            seatmaplefttoright=False,
+            seatmapskipmissingseats=True,
+        )
+
+        mocked_get_resource.return_value = seatmap_json
+        cine_digital_service = CineDigitalServiceAPI(cinema_id="test_id", token="token_test", api_url="test_url")
+        best_seat = cine_digital_service.get_available_seat(1, screen)
+        assert best_seat.seatRow == 2
+        assert best_seat.seatCol == 2
+        assert best_seat.seatNumber == "B_2"
+
+    @patch("pcapi.core.booking_providers.cds.client.get_resource")
+    def test_should_return_None_if_no_seat_available(self, mocked_get_resource):
+        seatmap_json = [
+            [3, 3, 3, 3, 0, 3],
+            [3, 3, 3, 3, 0, 3],
+            [3, 3, 3, 3, 0, 3],
+            [3, 3, 3, 3, 0, 3],
+            [3, 3, 3, 3, 0, 3],
+        ]
+
+        screen = cds_serializers.ScreenCDS(
+            id=1,
+            seatmapfronttoback=True,
+            seatmaplefttoright=True,
+            seatmapskipmissingseats=False,
+        )
+
+        mocked_get_resource.return_value = seatmap_json
+        cine_digital_service = CineDigitalServiceAPI(cinema_id="test_id", token="token_test", api_url="test_url")
+        best_seat = cine_digital_service.get_available_seat(1, screen)
+        assert best_seat is None
+
+
+class CineDigitalServiceGetAvailableDuoSeatTest:
+    @patch("pcapi.core.booking_providers.cds.client.get_resource")
+    def test_should_return_duo_seat_if_available(self, mocked_get_resource):
+        seatmap_json = [
+            [1, 1, 1, 1, 0, 1],
+            [1, 1, 1, 3, 0, 1],
+            [1, 1, 3, 3, 0, 1],
+            [1, 1, 3, 1, 0, 1],
+            [1, 1, 1, 1, 0, 1],
+        ]
+
+        screen = cds_serializers.ScreenCDS(
+            id=1,
+            seatmapfronttoback=True,
+            seatmaplefttoright=True,
+            seatmapskipmissingseats=False,
+        )
+
+        mocked_get_resource.return_value = seatmap_json
+        cine_digital_service = CineDigitalServiceAPI(cinema_id="test_id", token="token_test", api_url="test_url")
+        duo_seats = cine_digital_service.get_available_duo_seat(1, screen)
+        assert len(duo_seats) == 2
+        assert duo_seats[0].seatNumber == "B_2"
+        assert duo_seats[1].seatNumber == "B_3"
+
+    @patch("pcapi.core.booking_providers.cds.client.get_resource")
+    def test_should_return_empty_if_less_than_two_seats_available(self, mocked_get_resource):
+        seatmap_json = [
+            [3, 3, 3, 3, 0, 1],
+            [3, 3, 3, 3, 0, 3],
+            [3, 3, 3, 3, 0, 3],
+            [3, 3, 3, 3, 0, 3],
+            [3, 3, 3, 3, 0, 3],
+        ]
+
+        screen = cds_serializers.ScreenCDS(
+            id=1,
+            seatmapfronttoback=True,
+            seatmaplefttoright=True,
+            seatmapskipmissingseats=False,
+        )
+
+        mocked_get_resource.return_value = seatmap_json
+        cine_digital_service = CineDigitalServiceAPI(cinema_id="test_id", token="token_test", api_url="test_url")
+        duo_seats = cine_digital_service.get_available_duo_seat(1, screen)
+        assert len(duo_seats) == 0
+
+    @patch("pcapi.core.booking_providers.cds.client.get_resource")
+    def test_should_return_two_separate_seats_if_no_duo_available(self, mocked_get_resource):
+        seatmap_json = [
+            [1, 3, 1, 3, 0, 1],
+            [3, 3, 3, 3, 0, 3],
+            [1, 3, 1, 3, 0, 1],
+            [3, 3, 1, 3, 0, 3],
+            [3, 1, 3, 1, 0, 1],
+        ]
+
+        screen = cds_serializers.ScreenCDS(
+            id=1,
+            seatmapfronttoback=True,
+            seatmaplefttoright=True,
+            seatmapskipmissingseats=False,
+        )
+
+        mocked_get_resource.return_value = seatmap_json
+        cine_digital_service = CineDigitalServiceAPI(cinema_id="test_id", token="token_test", api_url="test_url")
+        duo_seats = cine_digital_service.get_available_duo_seat(1, screen)
+        assert len(duo_seats) == 2
+        assert duo_seats[0].seatNumber == "C_3"
+        assert duo_seats[1].seatNumber == "D_3"
+
+
 class CineDigitalServiceCancelBookingTest:
     @patch("pcapi.core.booking_providers.cds.client.put_resource")
     def test_should_cancel_booking_with_success(self, mocked_put_resource):
