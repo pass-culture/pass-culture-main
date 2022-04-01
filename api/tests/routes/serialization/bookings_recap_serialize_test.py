@@ -4,6 +4,8 @@ from datetime import timedelta
 from pytest import fixture
 
 from pcapi.domain.booking_recap.bookings_recap_paginated import BookingsRecapPaginated
+from pcapi.routes.serialization.bookings_recap_serialize import BookingRecapResponseBookingStatusHistoryModel
+from pcapi.routes.serialization.bookings_recap_serialize import BookingRecapResponseModel
 from pcapi.routes.serialization.bookings_recap_serialize import serialize_bookings_recap_paginated
 from pcapi.utils.date import format_into_timezoned_date
 from pcapi.utils.human_ids import humanize
@@ -46,63 +48,63 @@ class SerializeBookingRecapTest:
 
         # Then
         expected_bookings_recap = [
-            {
-                "stock": {
+            BookingRecapResponseModel(
+                stock={
                     "offer_name": "Fondation",
                     "offer_identifier": humanize(thing_booking_recap.offer_identifier),
                     "event_beginning_datetime": None,
                     "offer_isbn": None,
                     "offer_is_educational": False,
                 },
-                "beneficiary": {
+                beneficiary={
                     "lastname": "Seldon",
                     "firstname": "Hari",
                     "email": "hari.seldon@example.com",
                     "phonenumber": "0100000000",
                 },
-                "booking_date": format_into_timezoned_date(booking_date),
-                "booking_token": None,
-                "booking_status": "booked",
-                "booking_is_duo": False,
-                "booking_status_history": [
+                booking_date=format_into_timezoned_date(booking_date),
+                booking_token=None,
+                booking_status="booked",
+                booking_is_duo=False,
+                booking_status_history=[
                     {
                         "status": "booked",
                         "date": "2020-01-01T10:00:00",
                     },
                 ],
-                "booking_amount": 18,
-            },
-            {
-                "stock": {
+                booking_amount=18,
+            ),
+            BookingRecapResponseModel(
+                stock={
                     "offer_name": "Fondation",
                     "offer_identifier": humanize(thing_booking_recap_2.offer_identifier),
                     "event_beginning_datetime": None,
                     "offer_isbn": None,
                     "offer_is_educational": False,
                 },
-                "beneficiary": {
+                beneficiary={
                     "lastname": "Trevize",
                     "firstname": "Golan",
                     "email": "golan.trevize@example.com",
                     "phonenumber": "0100000000",
                 },
-                "booking_date": format_into_timezoned_date(booking_date),
-                "booking_token": None,
-                "booking_status": "booked",
-                "booking_is_duo": True,
-                "booking_status_history": [
+                booking_date=format_into_timezoned_date(booking_date),
+                booking_token=None,
+                booking_status="booked",
+                booking_is_duo=True,
+                booking_status_history=[
                     {
                         "status": "booked",
                         "date": "2020-01-01T10:00:00",
                     },
                 ],
-                "booking_amount": 0,
-            },
+                booking_amount=0,
+            ),
         ]
-        assert result["bookings_recap"] == expected_bookings_recap
-        assert result["page"] == 0
-        assert result["pages"] == 1
-        assert result["total"] == 2
+        assert getattr(result, "bookings_recap") == expected_bookings_recap
+        assert getattr(result, "page") == 0
+        assert getattr(result, "pages") == 1
+        assert getattr(result, "total") == 2
 
     def test_should_return_json_with_event_date_additional_parameter_for_event_stock(self, app: fixture):
         # Given
@@ -127,37 +129,37 @@ class SerializeBookingRecapTest:
 
         # Then
         expected_response = [
-            {
-                "stock": {
+            BookingRecapResponseModel(
+                stock={
                     "offer_name": "Cirque du soleil",
                     "offer_identifier": humanize(event_booking_recap.offer_identifier),
                     "event_beginning_datetime": format_into_timezoned_date(day_after_booking_date),
                     "offer_isbn": None,
                     "offer_is_educational": False,
                 },
-                "beneficiary": {
+                beneficiary={
                     "lastname": "Seldon",
                     "firstname": "Hari",
                     "email": "hari.seldon@example.com",
                     "phonenumber": "0100000000",
                 },
-                "booking_date": format_into_timezoned_date(booking_date),
-                "booking_token": "SOLEIL",
-                "booking_status": "booked",
-                "booking_is_duo": False,
-                "booking_status_history": [
+                booking_date=format_into_timezoned_date(booking_date),
+                booking_token="SOLEIL",
+                booking_status="booked",
+                booking_is_duo=False,
+                booking_status_history=[
                     {
                         "status": "booked",
                         "date": "2020-01-01T10:00:00",
                     },
                 ],
-                "booking_amount": 0,
-            },
+                booking_amount=0,
+            ),
         ]
-        assert results["bookings_recap"] == expected_response
-        assert results["page"] == 0
-        assert results["pages"] == 1
-        assert results["total"] == 2
+        assert getattr(results, "bookings_recap") == expected_response
+        assert getattr(results, "page") == 0
+        assert getattr(results, "pages") == 1
+        assert getattr(results, "total") == 2
 
     def test_should_return_json_with_offer_isbn_additional_parameter_for_thing_stock(self, app: fixture):
         # Given
@@ -181,38 +183,37 @@ class SerializeBookingRecapTest:
         results = serialize_bookings_recap_paginated(bookings_recap_paginated_response)
 
         # Then
-        expected_response = [
-            {
-                "stock": {
-                    "event_beginning_datetime": None,
-                    "offer_name": "Martine a la playa",
-                    "offer_identifier": humanize(thing_booking_recap.offer_identifier),
-                    "offer_isbn": "987654345678",
-                    "offer_is_educational": False,
-                },
-                "beneficiary": {
-                    "lastname": "Seldon",
-                    "firstname": "Hari",
-                    "email": "hari.seldon@example.com",
-                    "phonenumber": "0100000000",
-                },
-                "booking_date": format_into_timezoned_date(booking_date),
-                "booking_token": None,
-                "booking_status": "booked",
-                "booking_is_duo": False,
-                "booking_amount": 0,
-                "booking_status_history": [
-                    {
-                        "status": "booked",
-                        "date": "2020-01-01T10:00:00",
-                    },
-                ],
+        expected_response = BookingRecapResponseModel(
+            stock={
+                "event_beginning_datetime": None,
+                "offer_name": "Martine a la playa",
+                "offer_identifier": humanize(thing_booking_recap.offer_identifier),
+                "offer_isbn": "987654345678",
+                "offer_is_educational": False,
             },
-        ]
-        assert results["bookings_recap"] == expected_response
-        assert results["page"] == 0
-        assert results["pages"] == 1
-        assert results["total"] == 2
+            beneficiary={
+                "lastname": "Seldon",
+                "firstname": "Hari",
+                "email": "hari.seldon@example.com",
+                "phonenumber": "0100000000",
+            },
+            booking_date=format_into_timezoned_date(booking_date),
+            booking_token=None,
+            booking_status="booked",
+            booking_is_duo=False,
+            booking_amount=0,
+            booking_status_history=[
+                {
+                    "status": "booked",
+                    "date": "2020-01-01T10:00:00",
+                },
+            ],
+        )
+
+        assert getattr(results, "bookings_recap")[0] == expected_response
+        assert getattr(results, "page") == 0
+        assert getattr(results, "pages") == 1
+        assert getattr(results, "total") == 2
 
 
 class SerializeBookingRecapHistoryTest:
@@ -241,16 +242,18 @@ class SerializeBookingRecapHistoryTest:
 
         # Then
         expected_booking_recap_history = [
-            {
-                "status": "booked",
-                "date": "2020-01-01T10:00:00",
-            },
-            {
-                "status": "cancelled",
-                "date": "2020-04-03T10:00:00",
-            },
+            BookingRecapResponseBookingStatusHistoryModel(
+                status="booked",
+                date="2020-01-01T10:00:00",
+            ),
+            BookingRecapResponseBookingStatusHistoryModel(
+                status="cancelled",
+                date="2020-04-03T10:00:00",
+            ),
         ]
-        assert results["bookings_recap"][0]["booking_status_history"] == expected_booking_recap_history
+        assert (
+            getattr(getattr(results, "bookings_recap")[0], "booking_status_history") == expected_booking_recap_history
+        )
 
     def test_should_return_booking_recap_history_with_reimbursed_and_used_dated_when_reimbursed(self, app: fixture):
         # Given
@@ -279,20 +282,22 @@ class SerializeBookingRecapHistoryTest:
 
         # Then
         expected_booking_recap_history = [
-            {
-                "status": "booked",
-                "date": "2020-01-01T10:00:00",
-            },
-            {
-                "status": "validated",
-                "date": "2020-04-03T10:00:00",
-            },
-            {
-                "status": "reimbursed",
-                "date": "2020-05-03T10:00:00",
-            },
+            BookingRecapResponseBookingStatusHistoryModel(
+                status="booked",
+                date="2020-01-01T10:00:00",
+            ),
+            BookingRecapResponseBookingStatusHistoryModel(
+                status="validated",
+                date="2020-04-03T10:00:00",
+            ),
+            BookingRecapResponseBookingStatusHistoryModel(
+                status="reimbursed",
+                date="2020-05-03T10:00:00",
+            ),
         ]
-        assert results["bookings_recap"][0]["booking_status_history"] == expected_booking_recap_history
+        assert (
+            getattr(getattr(results, "bookings_recap")[0], "booking_status_history") == expected_booking_recap_history
+        )
 
     def test_should_return_booking_recap_history_with_date_used_when_used(self, app: fixture):
         # Given
@@ -319,16 +324,18 @@ class SerializeBookingRecapHistoryTest:
 
         # Then
         expected_booking_recap_history = [
-            {
-                "status": "booked",
-                "date": "2020-01-01T10:00:00",
-            },
-            {
-                "status": "validated",
-                "date": "2020-04-03T10:00:00",
-            },
+            BookingRecapResponseBookingStatusHistoryModel(
+                status="booked",
+                date="2020-01-01T10:00:00",
+            ),
+            BookingRecapResponseBookingStatusHistoryModel(
+                status="validated",
+                date="2020-04-03T10:00:00",
+            ),
         ]
-        assert results["bookings_recap"][0]["booking_status_history"] == expected_booking_recap_history
+        assert (
+            getattr(getattr(results, "bookings_recap")[0], "booking_status_history") == expected_booking_recap_history
+        )
 
     def test_should_return_booking_recap_history_with_only_booking_date_when_just_booked(self, app: fixture):
         # Given
@@ -353,12 +360,14 @@ class SerializeBookingRecapHistoryTest:
 
         # Then
         expected_booking_recap_history = [
-            {
-                "status": "booked",
-                "date": "2020-01-01T10:00:00",
-            },
+            BookingRecapResponseBookingStatusHistoryModel(
+                status="booked",
+                date="2020-01-01T10:00:00",
+            ),
         ]
-        assert results["bookings_recap"][0]["booking_status_history"] == expected_booking_recap_history
+        assert (
+            getattr(getattr(results, "bookings_recap")[0], "booking_status_history") == expected_booking_recap_history
+        )
 
     def test_should_return_booking_recap_history_with_empty_validated_date_when_booking_was_not_validated_but_reimbursed(
         self, app: fixture
@@ -389,17 +398,19 @@ class SerializeBookingRecapHistoryTest:
 
         # Then
         expected_booking_recap_history = [
-            {
-                "status": "booked",
-                "date": "2020-01-01T10:00:00",
-            },
-            {
-                "status": "validated",
-                "date": None,
-            },
-            {
-                "status": "reimbursed",
-                "date": "2020-05-03T10:00:00",
-            },
+            BookingRecapResponseBookingStatusHistoryModel(
+                status="booked",
+                date="2020-01-01T10:00:00",
+            ),
+            BookingRecapResponseBookingStatusHistoryModel(
+                status="validated",
+                date=None,
+            ),
+            BookingRecapResponseBookingStatusHistoryModel(
+                status="reimbursed",
+                date="2020-05-03T10:00:00",
+            ),
         ]
-        assert results["bookings_recap"][0]["booking_status_history"] == expected_booking_recap_history
+        assert (
+            getattr(getattr(results, "bookings_recap")[0], "booking_status_history") == expected_booking_recap_history
+        )
