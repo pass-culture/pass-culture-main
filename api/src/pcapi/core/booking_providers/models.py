@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 import enum
 from typing import Optional
 
@@ -61,6 +62,12 @@ class SeatMap:
         self.nb_col = len(self.map[0]) if len(self.map[0]) > 0 else 0
 
 
+@dataclass
+class Ticket:
+    barcode: str
+    seat_number: str
+
+
 class BookingProviderClientAPI:
     def __init__(self, cinema_id: str, api_url: str, token: Optional[str]):
         self.token = token
@@ -79,7 +86,7 @@ class BookingProviderClientAPI:
     def cancel_booking(self, barcodes: list[str]) -> None:
         raise NotImplementedError("Should be implemented in subclass (abstract method)")
 
-    def create_booking(self) -> None:
+    def book_ticket(self, show_id: int, quantity: int) -> list[Ticket]:
         raise NotImplementedError("Should be implemented in subclass (abstract method)")
 
 
