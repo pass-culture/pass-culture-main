@@ -1,9 +1,13 @@
 #!/bin/bash
 
-echo -e "Checking commit message format"
+echo -e "\033[0;96mChecking commit message format...\033[0m"
 MSG_FILE=$1
-if cz -n cz_customize check --commit-msg-file $MSG_FILE ; then
-    echo "Commit message correctly formated"
+# Standard output is useless: commitizen just says that everything is
+# fine.
+if cz -n cz_customize check --commit-msg-file $MSG_FILE 1>/dev/null; then
+    # Go up 1 line to overwrite "Checking..." line
+    echo -e "\033[2F"
+    echo -e "\033[2K\r\033[0;92mCommit message correctly formatted\033[0m"
 else
     echo -e "\nWrong commit format. Commit should look like this:"
     cz schema

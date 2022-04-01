@@ -328,6 +328,11 @@ def _delete_dependent_pricings(booking: bookings_models.Booking, log_message: st
 
     See note in the module docstring for further details.
     """
+
+    # récupérer les pricings avec le même SIRET, liés à des bookings
+    # dont le numéro d'ordonnancement est supérieur au numéro
+    # d'ordonnancement du booking demandé.
+
     siret = booking.venue.siret or booking.venue.businessUnit.siret
     _period_start, period_end = _get_revenue_period(booking.dateUsed)
     query = models.Pricing.query.filter(
