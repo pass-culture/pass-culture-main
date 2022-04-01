@@ -115,6 +115,9 @@ describe('venue form', () => {
     let testId = 0
 
     beforeEach(async () => {
+      // calls external api are saved with cacheSelector.
+      // in order to get a new call each time we need to change called argument.
+      // FIXME: make cacheSelector reset on each test.
       testId += 1
       await renderVenueCreation({ props, storeOverrides })
 
@@ -126,8 +129,8 @@ describe('venue form', () => {
         address: `Addresse de test ${testId}`,
         city: 'Paris',
         postalCode: '75001',
-        latitude: 50.292226,
-        longitude: 3.969992,
+        latitude: Number(`50.29222${testId}`),
+        longitude: Number(`3.96999${testId}`),
         noDisabilityCompliant: true,
       }
       await setVenueValues(formValues)
