@@ -7,7 +7,7 @@ import pytest
 
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational.models import CollectiveBookingStatus
-from pcapi.core.offers import factories as offers_factories
+from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.users import factories as users_factories
 from pcapi.utils.human_ids import humanize
 
@@ -23,7 +23,7 @@ BOOKING_PERIOD = (datetime(2022, 3, 10, tzinfo=timezone.utc).date(), datetime(20
 class Returns200Test:
     def test_when_user_is_admin(self, client):
         admin = users_factories.AdminFactory()
-        user_offerer = offers_factories.UserOffererFactory()
+        user_offerer = offerers_factories.UserOffererFactory()
         educational_factories.CollectiveBookingFactory(
             dateCreated=datetime(2022, 3, 11, 12, 0, 0),
             collectiveStock__collectiveOffer__venue__managingOfferer=user_offerer.offerer,
@@ -39,7 +39,7 @@ class Returns200Test:
         # Given
         booking_date = datetime(2022, 3, 11, 10, 15, 0)
         pro_user = users_factories.ProFactory()
-        user_offerer = offers_factories.UserOffererFactory(user=pro_user)
+        user_offerer = offerers_factories.UserOffererFactory(user=pro_user)
         redactor = educational_factories.EducationalRedactorFactory(
             email="reda.ktheur@example.com", firstName="Reda", lastName="Khteur", civility="M."
         )
@@ -101,7 +101,7 @@ class Returns200Test:
         # Given
         booking_date = datetime(2022, 3, 15, 10, 15, 0)
         pro_user = users_factories.ProFactory()
-        user_offerer = offers_factories.UserOffererFactory(user=pro_user)
+        user_offerer = offerers_factories.UserOffererFactory(user=pro_user)
         redactor = educational_factories.EducationalRedactorFactory(
             email="reda.ktheur@example.com", firstName="Reda", lastName="Khteur", civility="M."
         )
@@ -132,7 +132,7 @@ class Returns200Test:
         # Given
         booking_date = datetime(2022, 3, 11, 10, 15, 0)
         pro_user = users_factories.ProFactory()
-        user_offerer = offers_factories.UserOffererFactory(user=pro_user)
+        user_offerer = offerers_factories.UserOffererFactory(user=pro_user)
         redactor = educational_factories.EducationalRedactorFactory(
             email="reda.ktheur@example.com", firstName="Reda", lastName="Khteur", civility="M."
         )
@@ -168,7 +168,7 @@ class Returns200Test:
         booking_date = datetime(2022, 3, 11, 10, 15, 0)
         event_date = datetime(2022, 5, 15, 20, 00, 0)
         pro_user = users_factories.ProFactory()
-        user_offerer = offers_factories.UserOffererFactory(user=pro_user)
+        user_offerer = offerers_factories.UserOffererFactory(user=pro_user)
         redactor = educational_factories.EducationalRedactorFactory(
             email="reda.ktheur@example.com", firstName="Reda", lastName="Khteur", civility="M."
         )
@@ -212,7 +212,7 @@ class Returns200Test:
         booking_date = datetime(2022, 3, 11, 10, 15, 0)
         event_date = datetime(2022, 5, 15, 20, 00, 0)
         pro_user = users_factories.ProFactory()
-        user_offerer = offers_factories.UserOffererFactory(user=pro_user)
+        user_offerer = offerers_factories.UserOffererFactory(user=pro_user)
         redactor = educational_factories.EducationalRedactorFactory(
             email="reda.ktheur@example.com", firstName="Reda", lastName="Khteur", civility="M."
         )
@@ -256,7 +256,7 @@ class Returns200Test:
         booking_date = datetime(2022, 3, 11, 10, 15, 0)
         event_date = datetime(2022, 5, 15, 20, 00, 0)
         pro_user = users_factories.ProFactory()
-        user_offerer = offers_factories.UserOffererFactory(user=pro_user)
+        user_offerer = offerers_factories.UserOffererFactory(user=pro_user)
         redactor = educational_factories.EducationalRedactorFactory(
             email="reda.ktheur@example.com", firstName="Reda", lastName="Khteur", civility="M."
         )
@@ -301,7 +301,7 @@ class Returns200Test:
         booking_date = datetime(2022, 3, 11, 10, 15, 0)
         event_date = datetime(2022, 5, 15, 20, 00, 0)
         pro_user = users_factories.ProFactory()
-        user_offerer = offers_factories.UserOffererFactory(user=pro_user)
+        user_offerer = offerers_factories.UserOffererFactory(user=pro_user)
         redactor = educational_factories.EducationalRedactorFactory(
             email="reda.ktheur@example.com", firstName="Reda", lastName="Khteur", civility="M."
         )
@@ -356,7 +356,7 @@ class Returns200Test:
         booking_date = datetime(2022, 3, 11, 10, 15, 0)
         event_date = datetime(2022, 5, 15, 20, 00, 0)
         pro_user = users_factories.ProFactory()
-        user_offerer = offers_factories.UserOffererFactory(user=pro_user)
+        user_offerer = offerers_factories.UserOffererFactory(user=pro_user)
         redactor = educational_factories.EducationalRedactorFactory(
             email="reda.ktheur@example.com", firstName="Reda", lastName="Khteur", civility="M."
         )
@@ -392,7 +392,7 @@ class Returns200Test:
         # Given
         booking_date = datetime(2022, 3, 11, 10, 15, 0)
         pro_user = users_factories.ProFactory()
-        user_offerer = offers_factories.UserOffererFactory(user=pro_user)
+        user_offerer = offerers_factories.UserOffererFactory(user=pro_user)
         redactor = educational_factories.EducationalRedactorFactory(
             email="reda.ktheur@example.com", firstName="Reda", lastName="Khteur", civility="M."
         )
@@ -462,7 +462,7 @@ class Returns200Test:
         # Given
         booking_date = datetime(2022, 3, 11, 10, 15, 0)
         pro_user = users_factories.ProFactory()
-        user_offerer = offers_factories.UserOffererFactory(user=pro_user)
+        user_offerer = offerers_factories.UserOffererFactory(user=pro_user)
         redactor = educational_factories.EducationalRedactorFactory(
             email="reda.ktheur@example.com", firstName="Reda", lastName="Khteur", civility="M."
         )
@@ -534,7 +534,7 @@ class Returns200Test:
         booking_date = datetime(2022, 2, 11, 10, 15, 0)
         event_date = datetime(2022, 3, 10, 10, 15, 0)
         pro_user = users_factories.ProFactory()
-        user_offerer = offers_factories.UserOffererFactory(user=pro_user)
+        user_offerer = offerers_factories.UserOffererFactory(user=pro_user)
         redactor = educational_factories.EducationalRedactorFactory(
             email="reda.ktheur@example.com", firstName="Reda", lastName="Khteur", civility="M."
         )
