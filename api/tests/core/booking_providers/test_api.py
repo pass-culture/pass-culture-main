@@ -86,12 +86,13 @@ class GetShowStockTest:
         venue_id = venue_booking_provider.venueId
         mocked_show.return_value = ShowCDS(
             id=1,
-            canceled=False,
-            deleted=False,
-            internetremainingplace=15,
+            is_cancelled=False,
+            is_deleted=False,
+            is_disabled_seatmap=False,
+            internet_remaining_place=15,
             showtime=datetime.utcnow(),
-            showsTariffPostypeCollection=[ShowTariffCDS(tariff=IdObjectCDS(id=4))],
-            screenid=IdObjectCDS(id=2),
+            shows_tariff_pos_type_collection=[ShowTariffCDS(tariff=IdObjectCDS(id=4))],
+            screen=IdObjectCDS(id=2),
         )
 
         # When

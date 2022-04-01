@@ -56,12 +56,18 @@ class VoucherTypeCDS(BaseModel):
     code: str
     tariff: Optional[TariffCDS] = Field(alias="tariffid")
 
+    class Config:
+        allow_population_by_field_name = True
+
 
 class ScreenCDS(BaseModel):
     id: int
     seatmap_front_to_back: bool = Field(alias="seatmapfronttoback")
     seatmap_left_to_right: bool = Field(alias="seatmaplefttoright")
     seatmap_skip_missing_seats: bool = Field(alias="seatmapskipmissingseats")
+
+    class Config:
+        allow_population_by_field_name = True
 
 
 class SeatmapCDS(BaseModel):
@@ -87,3 +93,57 @@ class CancelBookingCDS(BaseModel):
 
 class CancelBookingsErrorsCDS(BaseModel):
     __root__: Dict[str, str]
+
+
+class TicketSaleCDS(BaseModel):
+    id: int
+    cinema_id: str = Field(alias="cinemaid")
+    operation_date: str = Field(alias="operationdate")
+    is_cancelled: bool = Field(alias="canceled")
+    seat_col: Optional[int] = Field(alias="seatcol")
+    seat_row: Optional[int] = Field(alias="seatrow")
+    seat_number: Optional[str] = Field(alias="seatnumber")
+    tariff: IdObjectCDS = Field(alias="tariffid")
+    show: IdObjectCDS = Field(alias="showid")
+    disabled_person: bool = Field(alias="disabledperson")
+
+    class Config:
+        allow_population_by_field_name = True
+
+
+class TransactionPayementCDS(BaseModel):
+    id: int
+    amount: float
+    payement_type: IdObjectCDS = Field(alias="paiementtypeid")
+    voucher_type: IdObjectCDS = Field(alias="vouchertypeid")
+
+    class Config:
+        allow_population_by_field_name = True
+
+
+class CreateTransactionBodyCDS(BaseModel):
+    cinema_id: str = Field(alias="cinemaid")
+    transaction_date: str = Field(alias="transactiondate")
+    is_cancelled: bool = Field(alias="canceled")
+    ticket_sale_collection: list[TicketSaleCDS] = Field(alias="ticketsaleCollection")
+    payement_collection: list[TransactionPayementCDS] = Field(alias="paiementCollection")
+
+    class Config:
+        allow_population_by_field_name = True
+
+
+class TicketResponseCDS(BaseModel):
+    barcode: str
+    seat_number: Optional[str] = Field(alias="seatnumber")
+
+    class Config:
+        allow_population_by_field_name = True
+
+
+class CreateTransactionResponseCDS(BaseModel):
+    id: int
+    invoice_id: str = Field(alias="invoiceid")
+    tickets: list[TicketResponseCDS]
+
+    class Config:
+        allow_population_by_field_name = True
