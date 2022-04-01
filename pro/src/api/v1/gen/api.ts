@@ -64,6 +64,45 @@ export enum BookingStatusFilter {
     Validated = 'validated',
     Reimbursed = 'reimbursed'
 }
+export interface BookingRecapResponseBeneficiaryModel {
+    email?: string | null;
+    firstname?: string | null;
+    lastname?: string | null;
+    phonenumber?: string | null;
+}
+
+export interface BookingRecapResponseBookingStatusHistoryModel {
+    date?: Date | null;
+    status: BookingRecapStatus;
+}
+
+export interface BookingRecapResponseModel {
+    beneficiary: BookingRecapResponseBeneficiaryModel;
+    bookingAmount: number;
+    bookingDate: Date;
+    bookingIsDuo: boolean;
+    bookingStatus: BookingRecapStatus;
+    bookingStatusHistory: Array<BookingRecapResponseBookingStatusHistoryModel>;
+    bookingToken?: string | null;
+    stock: BookingRecapResponseStockModel;
+}
+
+export interface BookingRecapResponseStockModel {
+    eventBeginningDatetime?: Date | null;
+    offerIdentifier: string;
+    offerIsEducational: boolean;
+    offerIsbn?: string | null;
+    offerName: string;
+}
+
+export enum BookingRecapStatus {
+    Booked = 'booked',
+    Validated = 'validated',
+    Cancelled = 'cancelled',
+    Reimbursed = 'reimbursed',
+    Confirmed = 'confirmed',
+    Pending = 'pending'
+}
 export interface BusinessUnitEditionBodyModel {
     siret: string;
 }
@@ -560,9 +599,9 @@ export interface InvoiceResponseModel {
 }
 
 export interface ListBookingsQueryModel {
-    bookingPeriodBeginningDate: string;
-    bookingPeriodEndingDate: string;
-    bookingStatusFilter: BookingStatusFilter;
+    bookingPeriodBeginningDate?: string | null;
+    bookingPeriodEndingDate?: string | null;
+    bookingStatusFilter?: BookingStatusFilter | null;
     eventDate?: Date | null;
     extra?: string;
     offerType?: OfferType | null;
@@ -571,7 +610,7 @@ export interface ListBookingsQueryModel {
 }
 
 export interface ListBookingsResponseModel {
-    bookingsRecap: Array<any>;
+    bookingsRecap: Array<BookingRecapResponseModel>;
     page: number;
     pages: number;
     total: number;
@@ -1202,30 +1241,18 @@ export const DefaultApiFetchParamCreator = function (configuration?: APIConfigur
         /**
          * 
          * @summary get_bookings_pro <GET>
-         * @param {BookingStatusFilter} bookingStatusFilter 
-         * @param {string} bookingPeriodBeginningDate 
-         * @param {string} bookingPeriodEndingDate 
          * @param {number} [page] 
          * @param {number} [venueId] 
          * @param {Date} [eventDate] 
+         * @param {BookingStatusFilter} [bookingStatusFilter] 
+         * @param {string} [bookingPeriodBeginningDate] 
+         * @param {string} [bookingPeriodEndingDate] 
          * @param {OfferType} [offerType] 
          * @param {string} [extra] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getBookingsGetBookingsPro(bookingStatusFilter: BookingStatusFilter, bookingPeriodBeginningDate: string, bookingPeriodEndingDate: string, page?: number, venueId?: number | null, eventDate?: Date | null, offerType?: OfferType, extra?: string, options: any = {}): Promise<FetchArgs> {
-            // verify required parameter 'bookingStatusFilter' is not null or undefined
-            if (bookingStatusFilter === null || bookingStatusFilter === undefined) {
-                throw new RequiredError('bookingStatusFilter','Required parameter bookingStatusFilter was null or undefined when calling getBookingsGetBookingsPro.');
-            }
-            // verify required parameter 'bookingPeriodBeginningDate' is not null or undefined
-            if (bookingPeriodBeginningDate === null || bookingPeriodBeginningDate === undefined) {
-                throw new RequiredError('bookingPeriodBeginningDate','Required parameter bookingPeriodBeginningDate was null or undefined when calling getBookingsGetBookingsPro.');
-            }
-            // verify required parameter 'bookingPeriodEndingDate' is not null or undefined
-            if (bookingPeriodEndingDate === null || bookingPeriodEndingDate === undefined) {
-                throw new RequiredError('bookingPeriodEndingDate','Required parameter bookingPeriodEndingDate was null or undefined when calling getBookingsGetBookingsPro.');
-            }
+        async getBookingsGetBookingsPro(page?: number, venueId?: number | null, eventDate?: Date | null, bookingStatusFilter?: BookingStatusFilter, bookingPeriodBeginningDate?: string | null, bookingPeriodEndingDate?: string | null, offerType?: OfferType, extra?: string, options: any = {}): Promise<FetchArgs> {
             const localVarPath = `/bookings/pro`;
             const localVarUrlObj = url.parse(localVarPath, true);
             const localVarRequestOptions = Object.assign({
@@ -2619,19 +2646,19 @@ export const DefaultApiFp = function(api: DefaultApi, configuration?: APIConfigu
         /**
          * 
          * @summary get_bookings_pro <GET>
-         * @param {BookingStatusFilter} bookingStatusFilter 
-         * @param {string} bookingPeriodBeginningDate 
-         * @param {string} bookingPeriodEndingDate 
          * @param {number} [page] 
          * @param {number} [venueId] 
          * @param {Date} [eventDate] 
+         * @param {BookingStatusFilter} [bookingStatusFilter] 
+         * @param {string} [bookingPeriodBeginningDate] 
+         * @param {string} [bookingPeriodEndingDate] 
          * @param {OfferType} [offerType] 
          * @param {string} [extra] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getBookingsGetBookingsPro(basePath: string, bookingStatusFilter: BookingStatusFilter, bookingPeriodBeginningDate: string, bookingPeriodEndingDate: string, page?: number, venueId?: number | null, eventDate?: Date | null, offerType?: OfferType, extra?: string, options?: any): Promise<ListBookingsResponseModel> {
-            const localVarFetchArgs = await DefaultApiFetchParamCreator(configuration).getBookingsGetBookingsPro(bookingStatusFilter, bookingPeriodBeginningDate, bookingPeriodEndingDate, page, venueId, eventDate, offerType, extra, options);
+        async getBookingsGetBookingsPro(basePath: string, page?: number, venueId?: number | null, eventDate?: Date | null, bookingStatusFilter?: BookingStatusFilter, bookingPeriodBeginningDate?: string | null, bookingPeriodEndingDate?: string | null, offerType?: OfferType, extra?: string, options?: any): Promise<ListBookingsResponseModel> {
+            const localVarFetchArgs = await DefaultApiFetchParamCreator(configuration).getBookingsGetBookingsPro(page, venueId, eventDate, bookingStatusFilter, bookingPeriodBeginningDate, bookingPeriodEndingDate, offerType, extra, options);
             const response = await safeFetch(basePath + localVarFetchArgs.url, localVarFetchArgs.options)
             return handleGeneratedApiResponse(response)
         },
@@ -3202,21 +3229,21 @@ export interface DefaultApiInterface {
     /**
      * 
      * @summary get_bookings_pro <GET>
-     * @param {BookingStatusFilter} bookingStatusFilter 
-     * @param {string} bookingPeriodBeginningDate 
-     * @param {string} bookingPeriodEndingDate 
      * @param {number} [page] 
      * @param {number} [venueId] 
      * @param {Date} [eventDate] 
+     * @param {BookingStatusFilter} [bookingStatusFilter] 
+     * @param {string} [bookingPeriodBeginningDate] 
+     * @param {string} [bookingPeriodEndingDate] 
      * @param {OfferType} [offerType] 
      * @param {string} [extra] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApiInterface
      */
-    getBookingsGetBookingsPro(bookingStatusFilter: BookingStatusFilter, bookingPeriodBeginningDate: string, bookingPeriodEndingDate: string, page?: number, venueId?: number | null, eventDate?: Date | null, offerType?: OfferType, extra?: string, options?: any): Promise<ListBookingsResponseModel>;
+    getBookingsGetBookingsPro(page?: number, venueId?: number | null, eventDate?: Date | null, bookingStatusFilter?: BookingStatusFilter, bookingPeriodBeginningDate?: string | null, bookingPeriodEndingDate?: string | null, offerType?: OfferType, extra?: string, options?: any): Promise<ListBookingsResponseModel>;
 
-     /**
+    /**
      * 
      * @summary list_collective_offers <GET>
      * @param {string} [nameOrIsbn] 
@@ -3701,21 +3728,21 @@ export class DefaultApi extends BaseAPI implements DefaultApiInterface {
     /**
      * 
      * @summary get_bookings_pro <GET>
-     * @param {BookingStatusFilter} bookingStatusFilter 
-     * @param {string} bookingPeriodBeginningDate 
-     * @param {string} bookingPeriodEndingDate 
      * @param {number} [page] 
      * @param {number} [venueId] 
      * @param {Date} [eventDate] 
+     * @param {BookingStatusFilter} [bookingStatusFilter] 
+     * @param {string} [bookingPeriodBeginningDate] 
+     * @param {string} [bookingPeriodEndingDate] 
      * @param {OfferType} [offerType] 
      * @param {string} [extra] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi
      */
-    public async getBookingsGetBookingsPro(bookingStatusFilter: BookingStatusFilter, bookingPeriodBeginningDate: string, bookingPeriodEndingDate: string, page?: number, venueId?: number | null, eventDate?: Date | null, offerType?: OfferType, extra?: string, options?: any) {
+    public async getBookingsGetBookingsPro(page?: number, venueId?: number | null, eventDate?: Date | null, bookingStatusFilter?: BookingStatusFilter, bookingPeriodBeginningDate?: string | null, bookingPeriodEndingDate?: string | null, offerType?: OfferType, extra?: string, options?: any) {
         const functionalApi = DefaultApiFp(this, this.configuration)
-        return functionalApi.getBookingsGetBookingsPro(this.basePath, bookingStatusFilter, bookingPeriodBeginningDate, bookingPeriodEndingDate, page, venueId, eventDate, offerType, extra, options)
+        return functionalApi.getBookingsGetBookingsPro(this.basePath, page, venueId, eventDate, bookingStatusFilter, bookingPeriodBeginningDate, bookingPeriodEndingDate, offerType, extra, options)
     }
     /**
      * 
