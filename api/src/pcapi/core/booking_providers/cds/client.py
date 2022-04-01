@@ -1,3 +1,4 @@
+import datetime
 import math
 from operator import attrgetter
 from typing import Optional
@@ -6,6 +7,7 @@ from pydantic.tools import parse_obj_as
 
 from pcapi.connectors.cine_digital_service import ResourceCDS
 from pcapi.connectors.cine_digital_service import get_resource
+from pcapi.connectors.cine_digital_service import post_resource
 from pcapi.connectors.cine_digital_service import put_resource
 import pcapi.connectors.serialization.cine_digital_service_serializers as cds_serializers
 from pcapi.core.booking_providers.cds.constants import PASS_CULTURE_TARIFF_LABEL_CDS
@@ -15,6 +17,10 @@ import pcapi.core.booking_providers.cds.exceptions as cds_exceptions
 from pcapi.core.booking_providers.models import BookingProviderClientAPI
 from pcapi.core.booking_providers.models import SeatCDS
 from pcapi.core.booking_providers.models import SeatMap
+from pcapi.core.booking_providers.models import Ticket
+
+
+CDS_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%f%z"
 
 
 class CineDigitalServiceAPI(BookingProviderClientAPI):
@@ -159,8 +165,85 @@ class CineDigitalServiceAPI(BookingProviderClientAPI):
                 f"Error while canceling bookings :{sep}{sep.join([f'{barcode} : {error_msg}' for barcode, error_msg in cancel_errors.__root__.items()])}"
             )
 
-    def create_booking(self) -> None:
-        raise NotImplementedError("Should be implemented in subclass (abstract method)")
+    def book_ticket(self, show_id: int, quantity: int) -> list[Ticket]:
+        if quantity < 0 or quantity > 2:
+            raise cds_exceptions.CineDigitalServiceAPIException(f"Booking quantity={quantity} should be 1 or 2")
+
+        show = self.get_show(show_id)
+        screen = self.get_screen(show.screen.id)
+        show_voucher_type = self.get_voucher_type_for_show(show)
+        if not show_voucher_type:
+            raise cds_exceptions.CineDigitalServiceAPIException(f"Unavailable pass culture tariff for show={show.id}")
+
+        ticket_sale_collection = self._create_ticket_sale_dict(show, quantity, screen, show_voucher_type)
+        payment = self._create_transaction_payment(show_voucher_type)
+
+        create_transaction_body = cds_serializers.CreateTransactionBodyCDS(
+            cinema_id=self.cinema_id,
+            is_cancelled=False,
+            transaction_date=datetime.datetime.utcnow().strftime(CDS_DATE_FORMAT),
+            ticket_sale_collection=ticket_sale_collection,
+            payement_collection=[payment],
+        )
+
+        json_response = post_resource(
+            self.api_url, self.cinema_id, self.token, ResourceCDS.CREATE_TRANSACTION, create_transaction_body
+        )
+        create_transaction_response = parse_obj_as(cds_serializers.CreateTransactionResponseCDS, json_response)
+
+        booking_informations = [
+            Ticket(barcode=ticket.barcode, seat_number=ticket.seat_number)
+            for ticket in create_transaction_response.tickets
+        ]
+        return booking_informations
+
+    def _create_ticket_sale_dict(
+        self,
+        show: cds_serializers.ShowCDS,
+        booking_quantity: int,
+        screen: cds_serializers.ScreenCDS,
+        show_voucher_type: cds_serializers.VoucherTypeCDS,
+    ) -> list[cds_serializers.TicketSaleCDS]:
+        seats_to_book = []
+        if not show.is_disabled_seatmap:
+            seats_to_book = (
+                self.get_available_seat(show.id, screen)
+                if booking_quantity == 1
+                else self.get_available_duo_seat(show.id, screen)
+            )
+
+            if not seats_to_book:
+                raise cds_exceptions.CineDigitalServiceAPIException(f"Unavailable seats to book for show={show.id}")
+
+        ticket_sale_list = []
+        for i in range(booking_quantity):
+            ticket_sale = cds_serializers.TicketSaleCDS(
+                id=(i + 1) * -1,
+                cinema_id=self.cinema_id,
+                operation_date=datetime.datetime.utcnow().strftime(CDS_DATE_FORMAT),
+                is_cancelled=False,
+                seat_col=seats_to_book[i].seatCol if not show.is_disabled_seatmap else None,
+                seat_row=seats_to_book[i].seatRow if not show.is_disabled_seatmap else None,
+                seat_number=seats_to_book[i].seatNumber if not show.is_disabled_seatmap else None,
+                tariff=cds_serializers.IdObjectCDS(id=show_voucher_type.tariff.id),
+                show=cds_serializers.IdObjectCDS(id=show.id),
+                disabled_person=False,
+            )
+            ticket_sale_list.append(ticket_sale)
+
+        return ticket_sale_list
+
+    def _create_transaction_payment(
+        self, show_voucher_type: cds_serializers.VoucherTypeCDS
+    ) -> cds_serializers.TransactionPayementCDS:
+        payment_type = self.get_voucher_payment_type()
+
+        return cds_serializers.TransactionPayementCDS(
+            id=-1,
+            amount=0,
+            payement_type=cds_serializers.IdObjectCDS(id=payment_type.id),
+            voucher_type=cds_serializers.IdObjectCDS(id=show_voucher_type.id),
+        )
 
     def get_voucher_type_for_show(self, show: cds_serializers.ShowCDS) -> Optional[cds_serializers.VoucherTypeCDS]:
         pc_voucher_types = self.get_pc_voucher_types()

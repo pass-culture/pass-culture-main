@@ -7,6 +7,50 @@ from pcapi.connectors.cine_digital_service import ResourceCDS
 import pcapi.connectors.serialization.cine_digital_service_serializers as cds_serializers
 from pcapi.core.booking_providers.cds.client import CineDigitalServiceAPI
 import pcapi.core.booking_providers.cds.exceptions as cds_exceptions
+from pcapi.core.booking_providers.models import SeatCDS
+from pcapi.core.booking_providers.models import SeatMap
+from pcapi.core.testing import override_settings
+
+
+def create_show_cds(
+    id_: int = 1,
+    is_cancelled: bool = False,
+    is_deleted: bool = False,
+    is_disabled_seatmap: bool = False,
+    internet_remaining_place: int = 100,
+    showtime: datetime.datetime = datetime.datetime.utcnow(),
+    shows_tariff_pos_type_ids=None,
+    screen_id: int = 50,
+) -> cds_serializers.ShowCDS:
+    if shows_tariff_pos_type_ids is None:
+        shows_tariff_pos_type_ids = []
+    return cds_serializers.ShowCDS(
+        id=id_,
+        is_cancelled=is_cancelled,
+        is_deleted=is_deleted,
+        is_disabled_seatmap=is_disabled_seatmap,
+        internet_remaining_place=internet_remaining_place,
+        showtime=showtime,
+        shows_tariff_pos_type_collection=[
+            cds_serializers.ShowTariffCDS(tariff=cds_serializers.IdObjectCDS(id=show_tariff_id))
+            for show_tariff_id in shows_tariff_pos_type_ids
+        ],
+        screen=cds_serializers.IdObjectCDS(id=screen_id),
+    )
+
+
+def create_screen_cds(
+    id_: int = 50,
+    seatmap_front_to_back: bool = True,
+    seatmap_left_to_right: bool = True,
+    seatmap_skip_missing_seats: bool = False,
+) -> cds_serializers.ScreenCDS:
+    return cds_serializers.ScreenCDS(
+        id=id_,
+        seatmap_front_to_back=seatmap_front_to_back,
+        seatmap_left_to_right=seatmap_left_to_right,
+        seatmap_skip_missing_seats=seatmap_skip_missing_seats,
+    )
 
 
 class CineDigitalServiceGetShowTest:
@@ -581,7 +625,226 @@ class CineDigitalServiceGetVoucherForShowTest:
         cine_digital_service = CineDigitalServiceAPI(cinema_id="test_id", token="token_test", api_url="test_url")
 
         voucher_type = cine_digital_service.get_voucher_type_for_show(show)
-        print("voucher_type", voucher_type)
         assert voucher_type.id == 1
         assert voucher_type.tariff.id == 2
         assert voucher_type.tariff.price == 5
+
+
+class CineDigitalServiceBookTicketTest:
+    @patch("pcapi.core.booking_providers.cds.client.post_resource")
+    @patch("pcapi.core.booking_providers.cds.client.CineDigitalServiceAPI.get_show")
+    @patch("pcapi.core.booking_providers.cds.client.CineDigitalServiceAPI.get_screen")
+    @patch("pcapi.core.booking_providers.cds.client.CineDigitalServiceAPI.get_available_seat")
+    @patch("pcapi.core.booking_providers.cds.client.CineDigitalServiceAPI.get_pc_voucher_types")
+    @patch("pcapi.core.booking_providers.cds.client.CineDigitalServiceAPI.get_voucher_payment_type")
+    @override_settings(IS_DEV=False)
+    def test_should_call_connector_with_correct_args_and_return_barcode_and_seat_number(
+        self,
+        mocked_get_voucher_payment_type,
+        mocked_get_pc_voucher_types,
+        mocked_get_available_seat,
+        mocked_get_screen,
+        mocked_get_show,
+        mocked_post_resource,
+    ):
+        mocked_get_voucher_payment_type.return_value = cds_serializers.PaymentTypeCDS(
+            id=12, internal_code="VCH", is_active=True
+        )
+        mocked_get_pc_voucher_types.return_value = [
+            cds_serializers.VoucherTypeCDS(
+                id=3,
+                code="PSCULTURE",
+                tariff=cds_serializers.TariffCDS(id=42, price=5, is_active=True, label="pass Culture"),
+            )
+        ]
+
+        mocked_get_available_seat.return_value = [
+            SeatCDS((0, 0), create_screen_cds(), SeatMap([["1", "1", "1"], ["1", "1", "1"], ["1", "1", "1"]])),
+        ]
+
+        mocked_get_show.return_value = create_show_cds(id_=181, shows_tariff_pos_type_ids=[42])
+        mocked_get_screen.return_value = create_screen_cds()
+
+        json_create_transaction = {
+            "id": 2964,
+            "invoiceid": "3472",
+            "tickets": [
+                {
+                    "barcode": "141414141414",
+                    "canceled": False,
+                    "cancellable": True,
+                    "id": 7699,
+                    "seatcol": 1,
+                    "seatnumber": "A_1",
+                    "seatrow": 1,
+                }
+            ],
+        }
+
+        mocked_post_resource.return_value = json_create_transaction
+
+        cine_digital_service = CineDigitalServiceAPI(cinema_id="test_id", token="token_test", api_url="test_url")
+
+        tickets = cine_digital_service.book_ticket(show_id=14, quantity=1)
+
+        create_transaction_body_arg_call = mocked_post_resource.call_args_list[0][0][4]
+
+        assert create_transaction_body_arg_call.cinema_id == "test_id"
+        assert len(create_transaction_body_arg_call.ticket_sale_collection) == 1
+        assert create_transaction_body_arg_call.ticket_sale_collection[0].id == -1
+        assert create_transaction_body_arg_call.ticket_sale_collection[0].show.id == 181
+        assert create_transaction_body_arg_call.ticket_sale_collection[0].tariff.id == 42
+        assert create_transaction_body_arg_call.ticket_sale_collection[0].seat_number == "A_1"
+
+        assert len(tickets) == 1
+        assert tickets[0].barcode == "141414141414"
+        assert tickets[0].seat_number == "A_1"
+
+    @patch("pcapi.core.booking_providers.cds.client.post_resource")
+    @patch("pcapi.core.booking_providers.cds.client.CineDigitalServiceAPI.get_show")
+    @patch("pcapi.core.booking_providers.cds.client.CineDigitalServiceAPI.get_screen")
+    @patch("pcapi.core.booking_providers.cds.client.CineDigitalServiceAPI.get_available_duo_seat")
+    @patch("pcapi.core.booking_providers.cds.client.CineDigitalServiceAPI.get_pc_voucher_types")
+    @patch("pcapi.core.booking_providers.cds.client.CineDigitalServiceAPI.get_voucher_payment_type")
+    @override_settings(IS_DEV=False)
+    def test_should_call_connector_with_correct_args_and_return_barcodes_and_seat_numbers_for_duo(
+        self,
+        mocked_get_voucher_payment_type,
+        mocked_get_pc_voucher_types,
+        mocked_get_available_duo_seat,
+        mocked_get_screen,
+        mocked_get_show,
+        mocked_post_resource,
+    ):
+        mocked_get_voucher_payment_type.return_value = cds_serializers.PaymentTypeCDS(
+            id=12, internal_code="VCH", is_active=True
+        )
+        mocked_get_pc_voucher_types.return_value = [
+            cds_serializers.VoucherTypeCDS(
+                id=3,
+                code="PSCULTURE",
+                tariff=cds_serializers.TariffCDS(id=42, price=5, is_active=True, label="pass Culture"),
+            )
+        ]
+
+        mocked_get_available_duo_seat.return_value = [
+            SeatCDS((0, 0), create_screen_cds(), SeatMap([["1", "1", "1"], ["1", "1", "1"], ["1", "1", "1"]])),
+            SeatCDS((0, 1), create_screen_cds(), SeatMap([["1", "1", "1"], ["1", "1", "1"], ["1", "1", "1"]])),
+        ]
+
+        mocked_get_show.return_value = create_show_cds(id_=181, shows_tariff_pos_type_ids=[42])
+        mocked_get_screen.return_value = create_screen_cds()
+
+        json_create_transaction = {
+            "id": 2964,
+            "invoiceid": "3472",
+            "tickets": [
+                {
+                    "barcode": "141414141414",
+                    "canceled": False,
+                    "cancellable": True,
+                    "id": 7699,
+                    "seatcol": 1,
+                    "seatnumber": "A_1",
+                    "seatrow": 1,
+                },
+                {
+                    "barcode": "252525252525",
+                    "canceled": False,
+                    "cancellable": True,
+                    "id": 7700,
+                    "seatcol": 1,
+                    "seatnumber": "A_2",
+                    "seatrow": 2,
+                },
+            ],
+        }
+
+        mocked_post_resource.return_value = json_create_transaction
+
+        cine_digital_service = CineDigitalServiceAPI(cinema_id="test_id", token="token_test", api_url="test_url")
+
+        tickets = cine_digital_service.book_ticket(show_id=14, quantity=2)
+
+        create_transaction_body_arg_call = mocked_post_resource.call_args_list[0][0][4]
+
+        assert create_transaction_body_arg_call.cinema_id == "test_id"
+        assert len(create_transaction_body_arg_call.ticket_sale_collection) == 2
+        assert create_transaction_body_arg_call.ticket_sale_collection[0].id == -1
+        assert create_transaction_body_arg_call.ticket_sale_collection[0].show.id == 181
+        assert create_transaction_body_arg_call.ticket_sale_collection[0].tariff.id == 42
+        assert create_transaction_body_arg_call.ticket_sale_collection[0].seat_number == "A_1"
+        assert create_transaction_body_arg_call.ticket_sale_collection[1].id == -2
+        assert create_transaction_body_arg_call.ticket_sale_collection[1].seat_number == "A_2"
+        assert len(create_transaction_body_arg_call.payement_collection) == 1
+        assert create_transaction_body_arg_call.payement_collection[0].id == -1
+        assert create_transaction_body_arg_call.payement_collection[0].amount == 0
+        assert create_transaction_body_arg_call.payement_collection[0].payement_type.id == 12
+
+        assert len(tickets) == 2
+        assert tickets[0].barcode == "141414141414"
+        assert tickets[0].seat_number == "A_1"
+        assert tickets[1].barcode == "252525252525"
+        assert tickets[1].seat_number == "A_2"
+
+    @patch("pcapi.core.booking_providers.cds.client.post_resource")
+    @patch("pcapi.core.booking_providers.cds.client.CineDigitalServiceAPI.get_show")
+    @patch("pcapi.core.booking_providers.cds.client.CineDigitalServiceAPI.get_screen")
+    @patch("pcapi.core.booking_providers.cds.client.CineDigitalServiceAPI.get_pc_voucher_types")
+    @patch("pcapi.core.booking_providers.cds.client.CineDigitalServiceAPI.get_voucher_payment_type")
+    @override_settings(IS_DEV=False)
+    def test_should_call_connector_with_correct_args_and_return_barcode_when_setamap_is_disabled(
+        self,
+        mocked_get_voucher_payment_type,
+        mocked_get_pc_voucher_types,
+        mocked_get_screen,
+        mocked_get_show,
+        mocked_post_resource,
+    ):
+        mocked_get_voucher_payment_type.return_value = cds_serializers.PaymentTypeCDS(
+            id=12, internal_code="VCH", is_active=True
+        )
+        mocked_get_pc_voucher_types.return_value = [
+            cds_serializers.VoucherTypeCDS(
+                id=3,
+                code="PSCULTURE",
+                tariff=cds_serializers.TariffCDS(id=42, price=5, is_active=True, label="pass Culture"),
+            )
+        ]
+
+        mocked_get_show.return_value = create_show_cds(
+            id_=181, shows_tariff_pos_type_ids=[42], is_disabled_seatmap=True
+        )
+        mocked_get_screen.return_value = create_screen_cds()
+
+        json_create_transaction = {
+            "id": 2964,
+            "invoiceid": "3472",
+            "tickets": [
+                {
+                    "barcode": "141414141414",
+                    "canceled": False,
+                    "cancellable": True,
+                    "id": 7699,
+                }
+            ],
+        }
+
+        mocked_post_resource.return_value = json_create_transaction
+
+        cine_digital_service = CineDigitalServiceAPI(cinema_id="test_id", token="token_test", api_url="test_url")
+
+        tickets = cine_digital_service.book_ticket(show_id=14, quantity=1)
+
+        create_transaction_body_arg_call = mocked_post_resource.call_args_list[0][0][4]
+
+        assert create_transaction_body_arg_call.cinema_id == "test_id"
+        assert len(create_transaction_body_arg_call.ticket_sale_collection) == 1
+        assert create_transaction_body_arg_call.ticket_sale_collection[0].id == -1
+        assert create_transaction_body_arg_call.ticket_sale_collection[0].show.id == 181
+        assert create_transaction_body_arg_call.ticket_sale_collection[0].tariff.id == 42
+        assert not create_transaction_body_arg_call.ticket_sale_collection[0].seat_number
+
+        assert len(tickets) == 1
+        assert tickets[0].barcode == "141414141414"
+        assert not tickets[0].seat_number

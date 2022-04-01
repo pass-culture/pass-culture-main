@@ -22,6 +22,7 @@ class ResourceCDS(enum.Enum):
     VOUCHER_TYPE = "vouchertype"
     SCREENS = "screens"
     SEATMAP = "shows/:show_id/seatmap"
+    CREATE_TRANSACTION = "transaction/create"
     CANCEL_BOOKING = "transaction/cancel"
 
 
@@ -76,6 +77,19 @@ def put_resource(
     if response_headers and "application/json" in response_headers:
         return response.json()
     return None
+
+
+def post_resource(api_url: str, cinema_id: str, token: Optional[str], resource: ResourceCDS, body: BaseModel) -> dict:
+    try:
+        url = _build_url(api_url, cinema_id, token, resource)
+        headers = {"Content-Type": "application/json"}
+        response = requests.post(url, headers=headers, data=body.json(by_alias=True))
+        response.raise_for_status()
+
+    except requests.exceptions.RequestException as e:
+        raise cds_exceptions.CineDigitalServiceAPIException(f"API CDS - url : {url} - error : {e}")
+
+    return response.json()
 
 
 def _build_url(
