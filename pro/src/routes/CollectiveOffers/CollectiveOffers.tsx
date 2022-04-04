@@ -174,7 +174,7 @@ const CollectiveOffers = (): JSX.Element => {
   }, [dispatch, urlPageNumber, urlSearchFilters])
 
   if (!separateIndividualAndCollectiveOffers) {
-    ;<Redirect to="/offres" />
+    return <Redirect to="/offres" />
   }
 
   if (!initialSearchFilters) {
