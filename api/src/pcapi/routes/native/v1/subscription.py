@@ -1,10 +1,14 @@
 import logging
 from typing import Optional
 
+from pcapi.connectors.beneficiaries import exceptions as beneficiaries_exceptions
 from pcapi.core.fraud import api as fraud_api
+from pcapi.core.fraud.ubble import api as ubble_fraud_api
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import profile_options
+from pcapi.core.subscription.ubble import api as ubble_subscription_api
 from pcapi.core.users import models as users_models
+from pcapi.models import api_errors
 from pcapi.routes.native.security import authenticated_user_required
 from pcapi.serialization.decorator import spectree_serialize
 
@@ -76,3 +80,46 @@ def create_honor_statement_fraud_check(user: users_models.User) -> None:
     fraud_api.create_honor_statement_fraud_check(user, "statement from /subscription/honor_statement endpoint")
 
     subscription_api.activate_beneficiary_if_no_missing_step(user)
+
+
+@blueprint.native_v1.route("/ubble_identification", methods=["POST"])
+@spectree_serialize(api=blueprint.api, response_model=serializers.IdentificationSessionResponse)
+@authenticated_user_required
+def start_identification_session(
+    user: users_models.User, body: serializers.IdentificationSessionRequest
+) -> serializers.IdentificationSessionResponse:
+
+    if user.eligibility is None:
+        raise api_errors.ApiErrors(
+            {"code": "IDCHECK_NOT_ELIGIBLE", "message": "Non éligible à un crédit"},
+            status_code=400,
+        )
+
+    if not ubble_fraud_api.is_user_allowed_to_perform_ubble_check(user, user.eligibility):
+        raise api_errors.ApiErrors(
+            {"code": "IDCHECK_ALREADY_PROCESSED", "message": "Une identification a déjà été traitée"},
+            status_code=400,
+        )
+
+    fraud_check = ubble_fraud_api.get_restartable_identity_checks(user)
+    if fraud_check:
+        return serializers.IdentificationSessionResponse(identificationUrl=fraud_check.source_data().identification_url)
+
+    try:
+        identification_url = ubble_subscription_api.start_ubble_workflow(user, body.redirectUrl)
+        return serializers.IdentificationSessionResponse(identificationUrl=identification_url)
+
+    except beneficiaries_exceptions.IdentificationServiceUnavailable:
+        raise api_errors.ApiErrors(
+            {"code": "IDCHECK_SERVICE_UNAVAILABLE", "message": "Le service d'identification n'est pas joignable"},
+            status_code=503,
+        )
+
+    except beneficiaries_exceptions.IdentificationServiceError:
+        raise api_errors.ApiErrors(
+            {
+                "code": "IDCHECK_SERVICE_ERROR",
+                "message": "Une erreur s'est produite à l'appel du service d'identification",
+            },
+            status_code=500,
+        )

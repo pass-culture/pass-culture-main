@@ -80,3 +80,11 @@ class ActivityResponseModel(BaseModel):
 class ProfileOptionsResponse(BaseModel):
     activities: list[ActivityResponseModel]
     school_types: list[SchoolTypeResponseModel]
+
+
+class IdentificationSessionResponse(BaseModel):
+    identificationUrl: str
+
+
+class IdentificationSessionRequest(BaseModel):
+    redirectUrl: str
