@@ -149,7 +149,7 @@ def update_cultural_survey(user: User, body: serializers.CulturalSurveyRequest) 
         if body.cultural_survey_id:
             logger.info("User %s updated cultural survey", user.id, extra={"actor": user.id})
             user.culturalSurveyId = body.cultural_survey_id
-            user.culturalSurveyFilledDate = datetime.now()
+            user.culturalSurveyFilledDate = datetime.utcnow()
     return
 
 

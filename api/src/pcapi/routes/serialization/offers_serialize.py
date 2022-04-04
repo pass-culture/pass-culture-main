@@ -430,7 +430,7 @@ class GetOfferStockResponseModel(BaseModel):
 
     @validator("cancellationLimitDate", pre=True, always=True)
     def validate_cancellation_limit_date(cls, cancellation_limit_date, values):  # pylint: disable=no-self-argument
-        return compute_cancellation_limit_date(values.get("beginningDatetime"), datetime.now())
+        return compute_cancellation_limit_date(values.get("beginningDatetime"), datetime.utcnow())
 
     class Config:
         allow_population_by_field_name = True

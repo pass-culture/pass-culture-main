@@ -486,7 +486,7 @@ def auto_mark_as_used_after_event() -> None:
     if not FeatureToggle.UPDATE_BOOKING_USED.is_active():
         raise ValueError("This function is behind a deactivated feature flag.")
 
-    now = datetime.datetime.now()
+    now = datetime.datetime.utcnow()
     threshold = now - constants.AUTO_USE_AFTER_EVENT_TIME_DELAY
     # fmt: off
     bookings_subquery = (

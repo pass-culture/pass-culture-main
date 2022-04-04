@@ -96,4 +96,4 @@ def get_age_at_date(birth_date: Union[date, datetime], specified_datetime: datet
 
 
 def get_age_from_birth_date(birth_date: Union[date, datetime]) -> int:
-    return get_age_at_date(birth_date, datetime.now())
+    return get_age_at_date(birth_date, datetime.utcnow())

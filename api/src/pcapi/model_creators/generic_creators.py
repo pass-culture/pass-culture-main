@@ -98,7 +98,7 @@ def create_venue(
     thumb_count: int = 0,
     validation_token: Optional[str] = None,
     venue_type_code: Optional[offerers_models.VenueTypeCode] = None,
-    date_created: Optional[datetime] = datetime.now(),
+    date_created: Optional[datetime] = datetime.utcnow(),
 ) -> Venue:
     venue = Venue()
     venue.bookingEmail = booking_email

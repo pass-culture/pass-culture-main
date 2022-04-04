@@ -75,11 +75,11 @@ def get_active_token_expiration(user) -> typing.Optional[datetime]:
     if ttl < 0:
         return None
 
-    return datetime.now() + timedelta(seconds=ttl)
+    return datetime.utcnow() + timedelta(seconds=ttl)
 
 
 def generate_token_expiration_date() -> datetime:
-    return datetime.now() + constants.EMAIL_CHANGE_TOKEN_LIFE_TIME
+    return datetime.utcnow() + constants.EMAIL_CHANGE_TOKEN_LIFE_TIME
 
 
 def check_user_password(user: User, password: str) -> None:

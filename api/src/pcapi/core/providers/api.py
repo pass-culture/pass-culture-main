@@ -350,7 +350,7 @@ def _build_stock_from_stock_detail(
         bookingLimitDatetime=None,
         offerId=offers_id,
         price=price,
-        dateModified=datetime.now(),
+        dateModified=datetime.utcnow(),
         idAtProviders=stock_detail.stocks_provider_reference,
         lastProviderId=provider_id,
     )

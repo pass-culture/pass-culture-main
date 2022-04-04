@@ -28,7 +28,7 @@ def handle_educonnect_authentication(
         first_name=educonnect_user.first_name,
         ine_hash=educonnect_user.ine_hash,
         last_name=educonnect_user.last_name,
-        registration_datetime=datetime.datetime.now(),
+        registration_datetime=datetime.datetime.utcnow(),
         school_uai=educonnect_user.school_uai,
         student_level=educonnect_user.student_level,
     )
@@ -73,7 +73,7 @@ def _handle_validation_errors(
         message = f"La date de naissance de ton dossier Educonnect ({educonnect_user.birth_date.strftime('%d/%m/%Y')}) indique que tu n'es pas éligible."
         eligibity_start = users_api.get_eligibility_start_datetime(educonnect_user.birth_date)
 
-        if datetime.datetime.now() < eligibity_start:
+        if datetime.datetime.utcnow() < eligibity_start:
             message += f" Tu seras éligible le {eligibity_start.strftime('%d/%m/%Y')}."
 
         subscription_messages.add_error_message(user, message)

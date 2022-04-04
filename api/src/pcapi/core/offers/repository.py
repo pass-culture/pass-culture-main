@@ -472,7 +472,7 @@ def check_stock_consistency() -> list[int]:
 
 
 def find_event_stocks_happening_in_x_days(number_of_days: int) -> set[int]:
-    tomorrow = datetime.now() + timedelta(days=number_of_days)
+    tomorrow = datetime.utcnow() + timedelta(days=number_of_days)
     tomorrow_min = datetime.combine(tomorrow, time.min)
     tomorrow_max = datetime.combine(tomorrow, time.max)
 

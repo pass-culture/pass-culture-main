@@ -54,7 +54,7 @@ def update_external_pro(email: Optional[str]) -> None:
     from pcapi.tasks.serialization.sendinblue_tasks import UpdateProAttributesRequest
 
     if email:
-        now = datetime.now()
+        now = datetime.utcnow()
         update_pro_attributes_task.delay(
             UpdateProAttributesRequest(email=email, time_id=f"{now.hour}:{now.minute // 15}")
         )

@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 
 def create_future_beneficiaries() -> None:
-    coming_saturday = datetime.now() + relativedelta(weekday=SA)
+    coming_saturday = datetime.utcnow() + relativedelta(weekday=SA)
     eighteen_on_saturday = coming_saturday + relativedelta(years=-18)
     users_factories.UserFactory(
         email="pctest.non-beneficiary.17-going-on-18.v1@example.com",
@@ -31,7 +31,7 @@ def create_future_beneficiaries() -> None:
 
 
 def create_expiring_beneficiary() -> None:
-    coming_saturday = datetime.now() + relativedelta(weekday=SA)
+    coming_saturday = datetime.utcnow() + relativedelta(weekday=SA)
     users_factories.BeneficiaryGrant18Factory(
         email="pctest.beneficiary.deposit-expires-soon@example.com",
         deposit__expirationDate=coming_saturday,

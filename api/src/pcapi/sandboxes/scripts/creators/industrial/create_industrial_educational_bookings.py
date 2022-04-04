@@ -74,7 +74,7 @@ def create_industrial_educational_bookings() -> None:
         educational_factories.EducationalInstitutionFactory(institutionId="0560071Y"),
     ]
 
-    now = datetime.datetime.now(datetime.timezone.utc)
+    now = datetime.datetime.utcnow()
     stocks = []
     venue = VenueFactory(
         name="Opéra Royal de Versailles",

@@ -346,7 +346,7 @@ def save_venue_banner(
     """
     rm_previous_venue_thumbs(venue)
 
-    banner_timestamp = int(datetime.now().timestamp())
+    banner_timestamp = int(datetime.utcnow().timestamp())
     storage.create_thumb(
         model_with_thumb=venue,
         image_as_bytes=content,

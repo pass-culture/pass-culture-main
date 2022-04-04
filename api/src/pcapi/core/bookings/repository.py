@@ -764,7 +764,7 @@ def offerer_has_ongoing_bookings(offerer_id: Offerer) -> bool:
 
 
 def find_educational_bookings_done_yesterday() -> list[EducationalBooking]:
-    yesterday = datetime.now() - timedelta(days=1)
+    yesterday = datetime.utcnow() - timedelta(days=1)
     yesterday_min = datetime.combine(yesterday, time.min)
     yesterday_max = datetime.combine(yesterday, time.max)
 

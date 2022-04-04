@@ -348,7 +348,7 @@ class User(PcObject, Model, NeedsValidationMixin):
     def eligibility(self) -> Optional[EligibilityType]:
         from pcapi.core.users import api as users_api
 
-        return users_api.get_eligibility_at_date(self.dateOfBirth, datetime.now())
+        return users_api.get_eligibility_at_date(self.dateOfBirth, datetime.utcnow())
 
     @property
     def has_active_deposit(self):

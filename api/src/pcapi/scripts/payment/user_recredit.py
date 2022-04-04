@@ -66,8 +66,8 @@ def has_been_recredited(user: users_models.User) -> bool:
 
 
 def recredit_underage_users() -> None:
-    sixteen_years_ago = datetime.now() - relativedelta(years=16)
-    eighteen_years_ago = datetime.now() - relativedelta(years=18)
+    sixteen_years_ago = datetime.utcnow() - relativedelta(years=16)
+    eighteen_years_ago = datetime.utcnow() - relativedelta(years=18)
 
     user_ids = [
         result
