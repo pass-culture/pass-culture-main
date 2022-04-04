@@ -14,11 +14,10 @@ CULTURAL_SURVEY_ANSWERS_QUEUE_NAME = settings.GCP_CULTURAL_SURVEY_ANSWERS_QUEUE_
 def upload_answers_task(payload: serializers.CulturalSurveyAnswersForData) -> None:
     BUCKET_NAME = settings.GCP_DATA_BUCKET_NAME
     PROJECT_ID = settings.GCP_DATA_PROJECT_ID
-    today = datetime.date.today().strftime("%Y%m%d")
 
-    STORAGE_PATH = BUCKET_NAME + f"/QPI_exports/qpi_answers_{today}/"
+    STORAGE_PATH = f"QPI_exports/qpi_answers_{datetime.date.today().strftime('%Y%m%d')}/"
     answers_file_name = STORAGE_PATH + f"{payload.user_id}.jsonl"
-    gcp_client = gcp_backend.GCPBackend(BUCKET_NAME, PROJECT_ID)
+    gcp_client = gcp_backend.GCPBackend(bucket_name=BUCKET_NAME, project_id=PROJECT_ID)
 
     gcp_client.store_public_object(
         folder=BUCKET_NAME,
