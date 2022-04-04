@@ -543,26 +543,6 @@ def is_risky_user_profile(user: users_models.User) -> bool:
     return False
 
 
-def create_dms_fraud_check_error(
-    user: users_models.User,
-    application_id: int,
-    reason_codes: list[models.FraudReasonCode],
-    error_details: str,
-):
-    fraud_check = models.BeneficiaryFraudCheck(
-        user=user,
-        type=models.FraudCheckType.DMS,
-        thirdPartyId=str(application_id),
-        resultContent=None,
-        eligibilityType=None,
-        status=models.FraudCheckStatus.ERROR,
-        reasonCodes=reason_codes,
-        reason=error_details,
-    )
-    repository.save(fraud_check)
-    return fraud_check
-
-
 def create_honor_statement_fraud_check(
     user: users_models.User, origin: str, eligibility_type: typing.Optional[users_models.EligibilityType] = None
 ) -> None:

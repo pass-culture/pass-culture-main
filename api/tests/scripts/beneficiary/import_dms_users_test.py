@@ -118,7 +118,7 @@ class RunTest:
         assert dms_fraud_check.userId == user.id
         assert dms_fraud_check.thirdPartyId == "123"
         assert dms_fraud_check.status == fraud_models.FraudCheckStatus.ERROR
-        assert dms_fraud_check.reason == "Le dossier 123 contient des erreurs et a été ignoré - Procedure 6712558"
+        assert dms_fraud_check.reason == "Erreur de lecture du dossier"
 
     @patch.object(dms_connector_api.DMSGraphQLClient, "get_applications_with_details")
     @patch("pcapi.core.subscription.api.on_successful_application")
