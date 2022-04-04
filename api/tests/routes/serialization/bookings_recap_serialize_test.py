@@ -101,7 +101,7 @@ class SerializeBookingRecapTest:
                 booking_amount=0,
             ),
         ]
-        assert getattr(result, "bookings_recap") == expected_bookings_recap
+        assert getattr(result, "bookingsRecap") == expected_bookings_recap
         assert getattr(result, "page") == 0
         assert getattr(result, "pages") == 1
         assert getattr(result, "total") == 2
@@ -156,7 +156,7 @@ class SerializeBookingRecapTest:
                 booking_amount=0,
             ),
         ]
-        assert getattr(results, "bookings_recap") == expected_response
+        assert getattr(results, "bookingsRecap") == expected_response
         assert getattr(results, "page") == 0
         assert getattr(results, "pages") == 1
         assert getattr(results, "total") == 2
@@ -210,7 +210,7 @@ class SerializeBookingRecapTest:
             ],
         )
 
-        assert getattr(results, "bookings_recap")[0] == expected_response
+        assert getattr(results, "bookingsRecap")[0] == expected_response
         assert getattr(results, "page") == 0
         assert getattr(results, "pages") == 1
         assert getattr(results, "total") == 2
@@ -251,9 +251,7 @@ class SerializeBookingRecapHistoryTest:
                 date="2020-04-03T10:00:00",
             ),
         ]
-        assert (
-            getattr(getattr(results, "bookings_recap")[0], "booking_status_history") == expected_booking_recap_history
-        )
+        assert getattr(getattr(results, "bookingsRecap")[0], "booking_status_history") == expected_booking_recap_history
 
     def test_should_return_booking_recap_history_with_reimbursed_and_used_dated_when_reimbursed(self, app: fixture):
         # Given
@@ -295,9 +293,7 @@ class SerializeBookingRecapHistoryTest:
                 date="2020-05-03T10:00:00",
             ),
         ]
-        assert (
-            getattr(getattr(results, "bookings_recap")[0], "booking_status_history") == expected_booking_recap_history
-        )
+        assert getattr(getattr(results, "bookingsRecap")[0], "booking_status_history") == expected_booking_recap_history
 
     def test_should_return_booking_recap_history_with_date_used_when_used(self, app: fixture):
         # Given
@@ -333,9 +329,7 @@ class SerializeBookingRecapHistoryTest:
                 date="2020-04-03T10:00:00",
             ),
         ]
-        assert (
-            getattr(getattr(results, "bookings_recap")[0], "booking_status_history") == expected_booking_recap_history
-        )
+        assert getattr(getattr(results, "bookingsRecap")[0], "booking_status_history") == expected_booking_recap_history
 
     def test_should_return_booking_recap_history_with_only_booking_date_when_just_booked(self, app: fixture):
         # Given
@@ -365,9 +359,7 @@ class SerializeBookingRecapHistoryTest:
                 date="2020-01-01T10:00:00",
             ),
         ]
-        assert (
-            getattr(getattr(results, "bookings_recap")[0], "booking_status_history") == expected_booking_recap_history
-        )
+        assert getattr(getattr(results, "bookingsRecap")[0], "booking_status_history") == expected_booking_recap_history
 
     def test_should_return_booking_recap_history_with_empty_validated_date_when_booking_was_not_validated_but_reimbursed(
         self, app: fixture
@@ -411,6 +403,4 @@ class SerializeBookingRecapHistoryTest:
                 date="2020-05-03T10:00:00",
             ),
         ]
-        assert (
-            getattr(getattr(results, "bookings_recap")[0], "booking_status_history") == expected_booking_recap_history
-        )
+        assert getattr(getattr(results, "bookingsRecap")[0], "booking_status_history") == expected_booking_recap_history
