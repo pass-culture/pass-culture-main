@@ -85,3 +85,7 @@ class CollectiveOfferStockBookedAndBookingNotPending(Exception):
     def __init__(self, status, booking_id):
         self.booking_status = status
         super().__init__()
+
+
+class CollectiveOfferNotFound(Exception):
+    pass
