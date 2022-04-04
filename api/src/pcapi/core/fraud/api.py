@@ -223,19 +223,25 @@ def find_duplicate_beneficiary(
     ).first()
 
 
-def duplicate_id_piece_number_fraud_item(user: users_models.User, document_id_number: str) -> models.FraudItem:
-    duplicate_user = users_models.User.query.filter(
-        users_models.User.id != user.id, users_models.User.idPieceNumber == document_id_number
-    ).first()
+def duplicate_id_piece_number_fraud_item(user: users_models.User, id_piece_number: str) -> models.FraudItem:
+    duplicate_user = find_duplicate_id_piece_number_user(id_piece_number, user.id)
 
     if duplicate_user:
         return models.FraudItem(
             status=models.FraudStatus.SUSPICIOUS,
-            detail=f"La pièce d'identité n°{document_id_number} est déjà prise par l'utilisateur {duplicate_user.id}",
+            detail=f"La pièce d'identité n°{id_piece_number} est déjà prise par l'utilisateur {duplicate_user.id}",
             reason_code=models.FraudReasonCode.DUPLICATE_ID_PIECE_NUMBER,
         )
 
     return models.FraudItem(status=models.FraudStatus.OK, detail="La pièce d'identité n'est pas déjà utilisée")
+
+
+def find_duplicate_id_piece_number_user(
+    id_piece_number: str, excluded_user_id: int
+) -> typing.Optional[users_models.User]:
+    return users_models.User.query.filter(
+        users_models.User.id != excluded_user_id, users_models.User.idPieceNumber == id_piece_number
+    ).first()
 
 
 def _duplicate_ine_hash_fraud_item(ine_hash: str, excluded_user_id: int) -> models.FraudItem:

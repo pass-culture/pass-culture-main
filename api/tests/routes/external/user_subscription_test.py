@@ -1427,6 +1427,7 @@ class UbbleWebhookTest:
         users_factories.BeneficiaryGrant18Factory(
             dateOfBirth=datetime.datetime.now().date() - relativedelta.relativedelta(years=18, months=2),
             idPieceNumber="012345678910",
+            email="prems@me.com",
         )
 
         user, ubble_fraud_check, request_data = self._init_decision_test()
@@ -1495,7 +1496,9 @@ class UbbleWebhookTest:
         assert message.callToActionIcon == subscription_models.CallToActionIcon.EMAIL
         assert message.callToActionTitle == "Contacter le support"
 
-        assert len(mails_testing.outbox) == 0
+        assert len(mails_testing.outbox) == 1
+        assert mails_testing.outbox[0].sent_data["params"] == {"DUPLICATE_BENEFICIARY_EMAIL": "pre***@me.com"}
+
         assert not user.has_beneficiary_role
 
     def test_decision_reference_data_check_failed(self, client, ubble_mocker):
