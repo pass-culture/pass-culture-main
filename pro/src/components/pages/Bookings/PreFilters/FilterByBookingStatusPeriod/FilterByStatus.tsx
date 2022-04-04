@@ -6,8 +6,7 @@ import PropTypes from 'prop-types'
 import React from 'react'
 
 import Select from 'components/layout/inputs/Select'
-
-import { BOOOKING_STATUS_FILTER, DEFAULT_BOOKING_FILTER } from '../_constants'
+import { BOOOKING_STATUS_FILTER, DEFAULT_BOOKING_FILTER } from 'core/Bookings'
 
 interface IPreFiltersProp {
   bookingBeginningDate: Date

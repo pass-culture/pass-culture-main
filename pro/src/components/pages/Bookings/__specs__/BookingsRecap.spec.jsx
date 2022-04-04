@@ -12,8 +12,7 @@ import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
 
 import NotificationContainer from 'components/layout/Notification/NotificationContainer'
-import { DEFAULT_PRE_FILTERS } from 'components/pages/Bookings/PreFilters/_constants'
-import { BOOKING_STATUS } from 'core/Bookings'
+import { BOOKING_STATUS, DEFAULT_PRE_FILTERS } from 'core/Bookings'
 import {
   getVenuesForOfferer,
   getUserHasBookings,
