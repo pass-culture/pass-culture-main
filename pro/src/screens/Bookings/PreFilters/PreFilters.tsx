@@ -1,8 +1,8 @@
 import classNames from 'classnames'
 import isEqual from 'lodash.isequal'
-import PropTypes from 'prop-types'
 import React, { useCallback, useEffect, useState } from 'react'
 
+import { TPreFilters } from 'core/Bookings'
 import FilterByOfferType from 'new_components/FilterByOfferType'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { formatAndOrderVenues } from 'repository/venuesService'
@@ -11,6 +11,18 @@ import FilterByBookingPeriod from './FilterByBookingPeriod'
 import FilterByBookingStatusPeriod from './FilterByBookingStatusPeriod'
 import FilterByEventDate from './FilterByEventDate.jsx'
 import FilterByVenue from './FilterByVenue'
+
+interface IPreFilters {
+  appliedPreFilters: TPreFilters
+  applyPreFilters: (filters: TPreFilters) => void
+  downloadBookingsCSV: (filters: TPreFilters) => void
+  hasResult: boolean
+  isBookingFiltersActive: boolean
+  isDownloadingCSV: boolean
+  isFiltersDisabled: boolean
+  isTableLoading: boolean
+  wereBookingsRequested: boolean
+}
 
 const PreFilters = ({
   appliedPreFilters,
@@ -22,7 +34,7 @@ const PreFilters = ({
   isTableLoading,
   isDownloadingCSV,
   wereBookingsRequested,
-}) => {
+}: IPreFilters): JSX.Element => {
   const [selectedPreFilters, setSelectedPreFilters] = useState({
     ...appliedPreFilters,
   })
@@ -73,14 +85,10 @@ const PreFilters = ({
 
   const isRefreshRequired =
     !isEqual(selectedPreFilters, appliedPreFilters) && wereBookingsRequested
+
   const downloadBookingsFilters = {
+    ...selectedPreFilters,
     page: 1,
-    venueId: selectedPreFilters.offerVenueId,
-    eventDate: selectedPreFilters.offerEventDate,
-    bookingPeriodBeginningDate: selectedPreFilters.bookingBeginningDate,
-    bookingPeriodEndingDate: selectedPreFilters.bookingEndingDate,
-    bookingStatusFilter: selectedPreFilters.bookingStatusFilter,
-    offerType: selectedPreFilters.offerType,
   }
 
   return (
@@ -171,27 +179,6 @@ const PreFilters = ({
       )}
     </>
   )
-}
-
-PreFilters.propTypes = {
-  appliedPreFilters: PropTypes.shape({
-    bookingBeginningDate: PropTypes.instanceOf(Date).isRequired,
-    bookingEndingDate: PropTypes.instanceOf(Date).isRequired,
-    offerEventDate: PropTypes.oneOfType([
-      PropTypes.instanceOf(Date),
-      PropTypes.string,
-    ]),
-    offerVenueId: PropTypes.string.isRequired,
-    offerType: PropTypes.string.isRequired,
-  }).isRequired,
-  applyPreFilters: PropTypes.func.isRequired,
-  downloadBookingsCSV: PropTypes.func.isRequired,
-  hasResult: PropTypes.bool.isRequired,
-  isBookingFiltersActive: PropTypes.bool.isRequired,
-  isDownloadingCSV: PropTypes.bool.isRequired,
-  isFiltersDisabled: PropTypes.bool.isRequired,
-  isTableLoading: PropTypes.bool.isRequired,
-  wereBookingsRequested: PropTypes.bool.isRequired,
 }
 
 export default PreFilters
