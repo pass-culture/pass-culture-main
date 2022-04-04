@@ -4,7 +4,7 @@ import React from 'react'
 import styles from './Tag.module.scss'
 
 interface ITagProps {
-  children: JSX.Element
+  children: React.ReactNode | React.ReactNode[]
   className?: string
 }
 
