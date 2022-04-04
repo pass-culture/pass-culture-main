@@ -20,9 +20,9 @@ import {
   TSearchFilters,
 } from 'core/Offers/types'
 import { ReactComponent as AddOfferSvg } from 'icons/ico-plus.svg'
+import FilterTabs from 'new_components/FilterTabs'
 
 import NoOffers from './NoOffers'
-import OfferListFilterTabs from './OfferListFilterTabs'
 import SearchFilters from './SearchFilters'
 
 export interface IOffersProps {
@@ -192,7 +192,13 @@ const Offers = ({
       <PageTitle title="Vos offres" />
       <Titles action={actionLink} title="Offres" />
       {separateIndividualAndCollectiveOffers && (
-        <OfferListFilterTabs selectedAudience={audience} />
+        <FilterTabs
+          collectiveLabel="Offres collectives"
+          collectiveLink="/offres/collectives"
+          individualLabel="Offres individuelles"
+          individualLink="/offres"
+          selectedAudience={audience}
+        />
       )}
       <ActionsBarPortal isVisible={nbSelectedOffers > 0}>
         <ActionsBarContainer
