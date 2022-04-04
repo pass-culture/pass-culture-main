@@ -17,8 +17,8 @@ class CustomReimbursementRuleFactory(BaseFactory):
     offer = factory.SubFactory(offers_factories.OfferFactory)
     timespan = factory.LazyFunction(
         lambda: [
-            datetime.datetime.now() - datetime.timedelta(days=365),
-            datetime.datetime.now() + datetime.timedelta(days=365),
+            datetime.datetime.utcnow() - datetime.timedelta(days=365),
+            datetime.datetime.utcnow() + datetime.timedelta(days=365),
         ]
     )
     amount = 5
