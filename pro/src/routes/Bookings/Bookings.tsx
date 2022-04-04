@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 
+import { BookingRecapResponseModel } from 'api/v1/gen'
 import useActiveFeature from 'components/hooks/useActiveFeature'
 import useCurrentUser from 'components/hooks/useCurrentUser'
 import useNotification from 'components/hooks/useNotification'
@@ -10,6 +11,8 @@ import { TPreFilters } from 'core/Bookings/types'
 import * as pcapi from 'repository/pcapi/pcapi'
 import BookingsScreen from 'screens/Bookings'
 
+import getFilteredBookingsRecapAdapter from './adapters/getFilteredBookingsRecapAdapter'
+
 const MAX_LOADED_PAGES = 5
 
 const Bookings = (): JSX.Element => {
@@ -17,7 +20,9 @@ const Bookings = (): JSX.Element => {
   const notify = useNotification()
   const { currentUser: user } = useCurrentUser()
 
-  const [bookingsRecap, setBookingsRecap] = useState([])
+  const [bookingsRecap, setBookingsRecap] = useState<
+    BookingRecapResponseModel[]
+  >([])
   const [isDownloadingCSV, setIsDownloadingCSV] = useState(false)
   const [isTableLoading, setIsTableLoading] = useState(false)
   const [wereBookingsRequested, setWereBookingsRequested] = useState(false)
@@ -30,41 +35,32 @@ const Bookings = (): JSX.Element => {
       setBookingsRecap([])
       setWereBookingsRequested(true)
 
-      const bookingsFilters = {
+      const { isOk, message, payload } = await getFilteredBookingsRecapAdapter({
+        ...preFilters,
         page: 1,
-        venueId: preFilters.offerVenueId,
-        eventDate: preFilters.offerEventDate,
-        bookingPeriodBeginningDate: preFilters.bookingBeginningDate,
-        bookingPeriodEndingDate: preFilters.bookingEndingDate,
-        bookingStatusFilter: preFilters.bookingStatusFilter,
-        offerType: preFilters.offerType,
+      })
+
+      if (!isOk) {
+        notify.error(message)
       }
-      let filteredBookingsResponse
-      try {
-        filteredBookingsResponse = await pcapi.loadFilteredBookingsRecap(
-          bookingsFilters
-        )
-      } catch {
-        filteredBookingsResponse = {
-          page: 0,
-          pages: 0,
-          total: 0,
-          bookings_recap: [],
-        }
-      }
-      const { pages, bookings_recap: bookingsRecap } = filteredBookingsResponse
+
+      const { pages, bookingsRecap } = payload.bookings
       setBookingsRecap(bookingsRecap)
 
-      let currentPage = bookingsFilters.page
+      let currentPage = 1
       while (currentPage < Math.min(pages, MAX_LOADED_PAGES)) {
         currentPage += 1
         const nextPageFilters = {
-          ...bookingsFilters,
+          ...preFilters,
           page: currentPage,
         }
-        const response = await pcapi.loadFilteredBookingsRecap(nextPageFilters)
+        const { isOk, message, payload } =
+          await getFilteredBookingsRecapAdapter(nextPageFilters)
+        if (!isOk) {
+          notify.error(message)
+        }
         setBookingsRecap(currentBookingsRecap =>
-          [...currentBookingsRecap].concat(response.bookings_recap)
+          [...currentBookingsRecap].concat(payload.bookings.bookingsRecap)
         )
       }
 
