@@ -6,12 +6,12 @@ import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Spinner from 'components/layout/Spinner'
 import Titles from 'components/layout/Titles/Titles'
 import { TPreFilters } from 'core/Bookings'
+import { DEFAULT_PRE_FILTERS } from 'core/Bookings'
 
 import BookingsRecapTable from '../../components/pages/Bookings/BookingsRecapTable/BookingsRecapTable'
 import ChoosePreFiltersMessage from '../../components/pages/Bookings/ChoosePreFiltersMessage/ChoosePreFiltersMessage'
 import NoBookingMessage from '../../components/pages/Bookings/NoBookingMessage'
 import NoBookingsForPreFiltersMessage from '../../components/pages/Bookings/NoBookingsForPreFiltersMessage/NoBookingsForPreFiltersMessage'
-import { DEFAULT_PRE_FILTERS } from '../../components/pages/Bookings/PreFilters/_constants'
 import PreFilters from '../../components/pages/Bookings/PreFilters/PreFilters'
 
 interface IBookingsProps {

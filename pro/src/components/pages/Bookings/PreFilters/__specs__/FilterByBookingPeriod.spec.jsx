@@ -2,10 +2,10 @@ import '@testing-library/jest-dom'
 import { fireEvent, render, screen } from '@testing-library/react'
 import React from 'react'
 
+import { DEFAULT_PRE_FILTERS } from 'core/Bookings'
 import { getVenuesForOfferer } from 'repository/pcapi/pcapi'
 import { venueFactory } from 'utils/apiFactories'
 
-import { DEFAULT_PRE_FILTERS } from '../_constants'
 import PreFilters from '../PreFilters'
 
 jest.mock('utils/date', () => ({
