@@ -53,32 +53,17 @@ const Bookings = ({
   venues,
 }: IBookingsProps): JSX.Element => {
   const [appliedPreFilters, setAppliedPreFilters] = useState<TPreFilters>({
-    bookingStatusFilter: DEFAULT_PRE_FILTERS.bookingStatusFilter,
-    bookingBeginningDate: DEFAULT_PRE_FILTERS.bookingBeginningDate,
-    bookingEndingDate: DEFAULT_PRE_FILTERS.bookingEndingDate,
-    offerEventDate: DEFAULT_PRE_FILTERS.offerEventDate,
+    ...DEFAULT_PRE_FILTERS,
     offerVenueId: venueId || DEFAULT_PRE_FILTERS.offerVenueId,
-    offerType: DEFAULT_PRE_FILTERS.offerType,
   })
 
   const werePreFiltersCustomized = useMemo(() => {
-    return (
-      appliedPreFilters.offerVenueId !== DEFAULT_PRE_FILTERS.offerVenueId ||
-      appliedPreFilters.bookingBeginningDate !==
-        DEFAULT_PRE_FILTERS.bookingBeginningDate ||
-      appliedPreFilters.bookingEndingDate !==
-        DEFAULT_PRE_FILTERS.bookingEndingDate ||
-      appliedPreFilters.bookingStatusFilter !==
-        DEFAULT_PRE_FILTERS.bookingStatusFilter ||
-      appliedPreFilters.offerEventDate !== DEFAULT_PRE_FILTERS.offerEventDate
-    )
-  }, [
-    appliedPreFilters.bookingStatusFilter,
-    appliedPreFilters.bookingBeginningDate,
-    appliedPreFilters.bookingEndingDate,
-    appliedPreFilters.offerEventDate,
-    appliedPreFilters.offerVenueId,
-  ])
+    const keys = Object.keys(
+      appliedPreFilters
+    ) as (keyof typeof DEFAULT_PRE_FILTERS)[]
+
+    return keys.some(key => appliedPreFilters[key] !== DEFAULT_PRE_FILTERS[key])
+  }, [appliedPreFilters])
 
   const resetPreFilters = useCallback(() => {
     setWereBookingsRequested(false)
