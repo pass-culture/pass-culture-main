@@ -226,10 +226,7 @@ def _process_user_not_found_error(email: str, application_id: int, procedure_id:
     )
 
 
-def process_application(
-    user: users_models.User,
-    result_content: fraud_models.DMSContent,
-) -> None:
+def process_application(user: users_models.User, result_content: fraud_models.DMSContent) -> None:
     try:
         fraud_check = fraud_api.on_dms_fraud_result(user, result_content)
     except Exception as exc:  # pylint: disable=broad-except
