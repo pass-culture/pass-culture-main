@@ -23,7 +23,7 @@ from tests.conftest import clean_database
 
 
 class BeneficiaryUserViewTest:
-    AGE18_ELIGIBLE_BIRTH_DATE = datetime.now() - relativedelta(years=18, months=4)
+    AGE18_ELIGIBLE_BIRTH_DATE = datetime.utcnow() - relativedelta(years=18, months=4)
 
     @clean_database
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")

@@ -21,10 +21,10 @@ def test_pc_send_tomorrow_events_notifications_only_to_individual_bookings_users
     creates a job that will send a notification to all of the stock's users
     with a valid (not cancelled) booking, for individual bookings only.
     """
-    tomorrow = datetime.now() + timedelta(days=1)
+    tomorrow = datetime.utcnow() + timedelta(days=1)
     stock_tomorrow = offers_factories.EventStockFactory(beginningDatetime=tomorrow, offer__name="my_offer")
 
-    next_week = datetime.now() + timedelta(days=7)
+    next_week = datetime.utcnow() + timedelta(days=7)
     stock_next_week = offers_factories.EventStockFactory(beginningDatetime=next_week)
 
     user1 = users_factories.BeneficiaryGrant18Factory()
@@ -56,7 +56,7 @@ def test_pc_send_tomorrow_events_notifications_only_to_individual_bookings_users
 def test_pc_notify_users_bookings_not_retrieved() -> None:
     user = users_factories.BeneficiaryGrant18Factory()
     stock = offers_factories.ThingStockFactory()
-    creation_date = datetime.now() - constants.BOOKINGS_AUTO_EXPIRY_DELAY + timedelta(days=3)
+    creation_date = datetime.utcnow() - constants.BOOKINGS_AUTO_EXPIRY_DELAY + timedelta(days=3)
 
     # booking that will expire in three days
     booking = bookings_factories.IndividualBookingFactory(user=user, stock=stock, dateCreated=creation_date)

@@ -249,8 +249,8 @@ class CulturalSurveyQuestionsTest:
         ]
         upload_answers_task.assert_called_once_with(
             serializers.CulturalSurveyAnswersForData(
-                user_id=user.id, answers=expected_answers, submitted_at=datetime.datetime.now()
+                user_id=user.id, answers=expected_answers, submitted_at=datetime.datetime.utcnow()
             )
         )
         assert not user.needsToFillCulturalSurvey
-        assert user.culturalSurveyFilledDate == datetime.datetime.now()
+        assert user.culturalSurveyFilledDate == datetime.datetime.utcnow()

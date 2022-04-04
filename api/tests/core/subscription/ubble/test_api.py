@@ -124,7 +124,7 @@ class UbbleWorkflowTest:
             assert message.popOverIcon == subscription_models.PopOverIcon.CLOCK
 
     def test_ubble_workflow_rejected_add_inapp_message(self, ubble_mocker):
-        user = users_factories.UserFactory(dateOfBirth=datetime.datetime.now() - relativedelta(years=18, months=1))
+        user = users_factories.UserFactory(dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=18, months=1))
         fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
             type=fraud_models.FraudCheckType.UBBLE, status=fraud_models.FraudCheckStatus.PENDING, user=user
         )

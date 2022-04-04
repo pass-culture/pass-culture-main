@@ -11,7 +11,7 @@ from pcapi.core.payments import validation
 
 class CustomReimbursementRuleValidationTest:
     def _make_rule(self, **kwargs):
-        tomorrow = datetime.datetime.now() + datetime.timedelta(days=1)
+        tomorrow = datetime.datetime.utcnow() + datetime.timedelta(days=1)
         kwargs.setdefault("offererId", 1)
         kwargs.setdefault("rate", 0.8)
         kwargs.setdefault("subcategories", [])

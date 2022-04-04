@@ -68,10 +68,10 @@ class Returns200Test:
         offerer = offerer_factories.OffererFactory(users=[user])
         venue = offerer_factories.VenueFactory(managingOfferer=offerer)
         offer = educational_factories.CollectiveOfferFactory(
-            venue=venue, dateCreated=datetime.datetime.now(), offerId=1
+            venue=venue, dateCreated=datetime.datetime.utcnow(), offerId=1
         )
         template = educational_factories.CollectiveOfferTemplateFactory(
-            venue=venue, dateCreated=datetime.datetime.now() + datetime.timedelta(days=10), offerId=2
+            venue=venue, dateCreated=datetime.datetime.utcnow() + datetime.timedelta(days=10), offerId=2
         )
         stock = educational_factories.CollectiveStockFactory(collectiveOffer=offer, stockId=1)
 
@@ -106,12 +106,12 @@ class Returns200Test:
         for i in range(510):
             if random.randrange(10) % 2:
                 offer = educational_factories.CollectiveOfferFactory(
-                    venue=venue, dateCreated=datetime.datetime.now() + datetime.timedelta(days=i), offerId=1
+                    venue=venue, dateCreated=datetime.datetime.utcnow() + datetime.timedelta(days=i), offerId=1
                 )
                 educational_factories.CollectiveStockFactory(collectiveOffer=offer)
             else:
                 offer = educational_factories.CollectiveOfferTemplateFactory(
-                    venue=venue, dateCreated=datetime.datetime.now() + datetime.timedelta(days=i), offerId=2
+                    venue=venue, dateCreated=datetime.datetime.utcnow() + datetime.timedelta(days=i), offerId=2
                 )
 
             offers.append(offer)
@@ -135,10 +135,10 @@ class Returns200Test:
         offerer = offerer_factories.OffererFactory()
         venue = offerer_factories.VenueFactory(managingOfferer=offerer)
         offer = educational_factories.CollectiveOfferFactory(
-            venue=venue, dateCreated=datetime.datetime.now(), offerId=1
+            venue=venue, dateCreated=datetime.datetime.utcnow(), offerId=1
         )
         educational_factories.CollectiveOfferTemplateFactory(
-            venue=venue, dateCreated=datetime.datetime.now() + datetime.timedelta(days=10), offerId=2
+            venue=venue, dateCreated=datetime.datetime.utcnow() + datetime.timedelta(days=10), offerId=2
         )
         educational_factories.CollectiveStockFactory(collectiveOffer=offer, stockId=1)
 

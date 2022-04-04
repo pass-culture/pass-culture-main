@@ -16,7 +16,7 @@ from tests.routes.adage_iframe import VALID_RSA_PRIVATE_KEY_PATH
 class EncodeJWTPayloadTest:
     def test_encode_jwt_payload(self):
         payload = dict(data="value")
-        expiration_date = datetime.now()
+        expiration_date = datetime.utcnow()
 
         jwt_token = encode_jwt_payload(payload, expiration_date)
 

@@ -51,7 +51,7 @@ class AdminUserViewTest:
 
         token = Token.query.filter_by(userId=user_created.id).first()
         assert token.type == TokenType.RESET_PASSWORD
-        assert token.expirationDate > datetime.now() + timedelta(hours=20)
+        assert token.expirationDate > datetime.utcnow() + timedelta(hours=20)
 
     @clean_database
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")

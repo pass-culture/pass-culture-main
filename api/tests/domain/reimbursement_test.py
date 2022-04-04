@@ -18,7 +18,7 @@ def create_non_digital_thing_booking(quantity=1, price=10, user=None, date_used=
     booking_kwargs = {}
     if user:
         booking_kwargs["user"] = user
-    booking_kwargs["dateUsed"] = date_used or datetime.now()
+    booking_kwargs["dateUsed"] = date_used or datetime.utcnow()
     offer_kwargs = {}
     if product_subcategory_id:
         offer_kwargs = {"product__subcategoryId": product_subcategory_id}
@@ -39,14 +39,14 @@ def create_digital_booking(quantity=1, price=10, user=None, product_subcategory_
         price=price,
         offer=offers_factories.ThingOfferFactory(product=product),
     )
-    return bookings_factories.UsedBookingFactory(user=user, stock=stock, quantity=quantity, dateUsed=datetime.now())
+    return bookings_factories.UsedBookingFactory(user=user, stock=stock, quantity=quantity, dateUsed=datetime.utcnow())
 
 
 def create_event_booking(quantity=1, price=10, user=None, date_used=None):
     booking_kwargs = {}
     if user:
         booking_kwargs["user"] = user
-    booking_kwargs["dateUsed"] = date_used or datetime.now()
+    booking_kwargs["dateUsed"] = date_used or datetime.utcnow()
     user = user or users_factories.BeneficiaryGrant18Factory()
     stock = offers_factories.StockFactory(
         price=price,
@@ -345,7 +345,7 @@ class ReimbursementRuleIsActiveTest:
         def group(self):
             return None
 
-    booking = Booking(dateCreated=datetime.now() + timedelta(days=365), dateUsed=datetime.now())
+    booking = Booking(dateCreated=datetime.utcnow() + timedelta(days=365), dateUsed=datetime.utcnow())
 
     def test_is_active_if_rule_has_no_start_nor_end(self):
         rule = self.DummyRule(None, None)
@@ -393,8 +393,8 @@ class ReimbursementRuleIsActiveTest:
 @pytest.mark.usefixtures("db_session")
 class CustomRuleFinderTest:
     def test_offer_rule(self):
-        yesterday = datetime.now() - timedelta(days=1)
-        far_in_the_past = datetime.now() - timedelta(days=800)
+        yesterday = datetime.utcnow() - timedelta(days=1)
+        far_in_the_past = datetime.utcnow() - timedelta(days=800)
         booking1 = bookings_factories.UsedBookingFactory()
         offer = booking1.stock.offer
         booking2 = bookings_factories.UsedBookingFactory(stock=booking1.stock, dateUsed=far_in_the_past)
@@ -407,8 +407,8 @@ class CustomRuleFinderTest:
         assert finder.get_rule(booking3) is None  # no rule for this offer
 
     def test_offerer_without_category_rule(self):
-        yesterday = datetime.now() - timedelta(days=1)
-        far_in_the_past = datetime.now() - timedelta(days=800)
+        yesterday = datetime.utcnow() - timedelta(days=1)
+        far_in_the_past = datetime.utcnow() - timedelta(days=800)
         booking1 = bookings_factories.UsedBookingFactory()
         offerer = booking1.offerer
         booking2 = bookings_factories.UsedBookingFactory(offerer=offerer, dateUsed=far_in_the_past)
@@ -421,8 +421,8 @@ class CustomRuleFinderTest:
         assert finder.get_rule(booking3) is None  # no rule for this offerer
 
     def test_offerer_with_category_rule(self):
-        yesterday = datetime.now() - timedelta(days=1)
-        far_in_the_past = datetime.now() - timedelta(days=800)
+        yesterday = datetime.utcnow() - timedelta(days=1)
+        far_in_the_past = datetime.utcnow() - timedelta(days=800)
         booking1 = bookings_factories.UsedBookingFactory(stock__offer__subcategoryId=subcategories.FESTIVAL_CINE.id)
         offerer = booking1.offerer
         booking2 = bookings_factories.UsedBookingFactory(

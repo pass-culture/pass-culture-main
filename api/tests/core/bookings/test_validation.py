@@ -111,7 +111,7 @@ class CheckStockIsBookableTest:
         validation.check_stock_is_bookable(stock, self.booking_quantity)  # should not raise
 
     def test_raise_if_not_bookable(self):
-        yesterday = datetime.now() - timedelta(days=1)
+        yesterday = datetime.utcnow() - timedelta(days=1)
         stock = offers_factories.StockFactory(bookingLimitDatetime=yesterday)
 
         with pytest.raises(exceptions.StockIsNotBookable) as error:
@@ -202,7 +202,7 @@ class CheckExpenseLimitsDepositVersion2Test:
         return users_factories.BeneficiaryGrant18Factory(deposit__version=2, **kwargs)
 
     def test_raise_if_deposit_expired(self):
-        yesterday = datetime.now() - timedelta(days=1)
+        yesterday = datetime.utcnow() - timedelta(days=1)
         beneficiary = self._get_beneficiary(deposit__expirationDate=yesterday)
         offer = offers_factories.OfferFactory(product__subcategoryId=subcategories.ACHAT_INSTRUMENT.id)
         with pytest.raises(exceptions.UserHasInsufficientFunds):
@@ -260,7 +260,7 @@ class CheckExpenseLimitsDepositVersion2Test:
 class InsufficientFundsSQLCheckTest:
     def _expire_deposit(self, user):
         deposit = user.deposits[0]
-        deposit.expirationDate = datetime.now() - timedelta(days=1)
+        deposit.expirationDate = datetime.utcnow() - timedelta(days=1)
         repository.save(deposit)
 
     def test_insufficient_funds_when_user_has_negative_deposit(self):

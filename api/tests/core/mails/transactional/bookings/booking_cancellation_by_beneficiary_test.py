@@ -56,7 +56,7 @@ class MakeBeneficiaryBookingCancellationEmailSendinblueDataTest:
             individualBooking__user=BeneficiaryGrant18Factory(email="fabien@example.com", firstName="Fabien"),
             stock=ThingStockFactory(
                 price=10.20,
-                beginningDatetime=datetime.now() - timedelta(days=1),
+                beginningDatetime=datetime.utcnow() - timedelta(days=1),
                 offer__name="Test thing name",
                 offer__id=123456,
             ),

@@ -9,7 +9,7 @@ from pcapi.core.users.models import User
 from pcapi.scripts.beneficiary import import_users
 
 
-AGE18_ELIGIBLE_BIRTH_DATE = datetime.datetime.now() - relativedelta(years=18, months=4)
+AGE18_ELIGIBLE_BIRTH_DATE = datetime.datetime.utcnow() - relativedelta(years=18, months=4)
 
 CSV = f"""Nom,Prénom,Mail,Téléphone,Département,Code postal,Date de naissance
 Doux,Jeanne,jeanne.doux@example.com,0102030405,86,86140,{AGE18_ELIGIBLE_BIRTH_DATE:%Y-%m-%d}

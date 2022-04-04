@@ -13,8 +13,8 @@ class ProviderApiStocksTest:
     @pytest.mark.usefixtures("db_session")
     def test_synchronize_venue_providers(self, mocked_synchronize_venue_provider, app):
         # Given
-        yesterday = datetime.datetime.now() - datetime.timedelta(days=1)
-        two_days_ago = datetime.datetime.now() - datetime.timedelta(days=2)
+        yesterday = datetime.datetime.utcnow() - datetime.timedelta(days=1)
+        two_days_ago = datetime.datetime.utcnow() - datetime.timedelta(days=2)
         api_provider_1 = providers_factories.APIProviderFactory()
         api_provider_2 = providers_factories.APIProviderFactory()
         specific_provider = providers_factories.AllocineProviderFactory()

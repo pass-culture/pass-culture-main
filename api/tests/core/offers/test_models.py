@@ -33,8 +33,8 @@ class OfferDateRangeTest:
 
     def test_event_offer(self):
         offer = factories.EventOfferFactory()
-        first = datetime.datetime.now() + datetime.timedelta(days=1)
-        last = datetime.datetime.now() + datetime.timedelta(days=5)
+        first = datetime.datetime.utcnow() + datetime.timedelta(days=1)
+        last = datetime.datetime.utcnow() + datetime.timedelta(days=5)
         factories.StockFactory(offer=offer, beginningDatetime=first)
         factories.StockFactory(offer=offer, beginningDatetime=last)
         assert offer.dateRange == DateTimes(first, last)
@@ -66,12 +66,12 @@ class OfferHasBookingLimitDatetimesPassedTest:
     def test_with_stock_with_no_booking_limit_datetime(self):
         stock = factories.StockFactory(bookingLimitDatetime=None)
         offer = stock.offer
-        past = datetime.datetime.now() - datetime.timedelta(days=1)
+        past = datetime.datetime.utcnow() - datetime.timedelta(days=1)
         stock = factories.StockFactory(offer=offer, isSoftDeleted=True, bookingLimitDatetime=past)
         assert not offer.hasBookingLimitDatetimesPassed
 
     def test_with_stocks_with_booking_limit_datetime(self):
-        past = datetime.datetime.now() - datetime.timedelta(days=1)
+        past = datetime.datetime.utcnow() - datetime.timedelta(days=1)
         stock = factories.StockFactory(bookingLimitDatetime=past)
         assert stock.offer.hasBookingLimitDatetimesPassed
 
@@ -83,7 +83,7 @@ class OfferHasBookingLimitDatetimesPassedTest:
         assert Offer.query.filter(Offer.hasBookingLimitDatetimesPassed.is_(False)).all() == [offer]
 
     def test_expression_with_stock_with_booking_limit_datetime_passed(self):
-        past = datetime.datetime.now() - datetime.timedelta(days=1)
+        past = datetime.datetime.utcnow() - datetime.timedelta(days=1)
         stock = factories.StockFactory(bookingLimitDatetime=past)
         offer = stock.offer
 
@@ -91,7 +91,7 @@ class OfferHasBookingLimitDatetimesPassedTest:
         assert Offer.query.filter(Offer.hasBookingLimitDatetimesPassed.is_(False)).all() == []
 
     def test_expression_with_stock_with_booking_limit_datetime_in_the_future(self):
-        future = datetime.datetime.now() + datetime.timedelta(days=2)
+        future = datetime.datetime.utcnow() + datetime.timedelta(days=2)
         stock = factories.StockFactory(bookingLimitDatetime=future)
         offer = stock.offer
 
@@ -105,7 +105,7 @@ class OfferHasBookingLimitDatetimesPassedTest:
         assert Offer.query.filter(Offer.hasBookingLimitDatetimesPassed.is_(False)).all() == [offer]
 
     def test_expression_with_soft_deleted_stock(self):
-        past = datetime.datetime.now() - datetime.timedelta(days=2)
+        past = datetime.datetime.utcnow() - datetime.timedelta(days=2)
         stock = factories.StockFactory(bookingLimitDatetime=past, isSoftDeleted=True)
         offer = stock.offer
 
@@ -218,7 +218,7 @@ class OfferStatusTest:
         assert Offer.query.filter(Offer.status != OfferStatus.INACTIVE.name).all() == [approved_offer]
 
     def test_expired(self):
-        past = datetime.datetime.now() - datetime.timedelta(days=2)
+        past = datetime.datetime.utcnow() - datetime.timedelta(days=2)
         expired_stock = factories.StockFactory(bookingLimitDatetime=past)
         expired_offer = factories.OfferFactory(
             validation=OfferValidationStatus.APPROVED,
@@ -262,8 +262,8 @@ class OfferStatusTest:
         assert Offer.query.filter(Offer.status != OfferStatus.SOLD_OUT.name).count() == 0
 
     def test_expression_sold_out_offer_with_passed_stock(self):
-        past = datetime.datetime.now() - datetime.timedelta(days=2)
-        future = datetime.datetime.now() + datetime.timedelta(days=2)
+        past = datetime.datetime.utcnow() - datetime.timedelta(days=2)
+        future = datetime.datetime.utcnow() + datetime.timedelta(days=2)
         offer = factories.OfferFactory()
         factories.StockFactory(offer=offer, quantity=10, beginningDatetime=past, bookingLimitDatetime=past)
         factories.StockFactory(offer=offer, quantity=0, beginningDatetime=future, bookingLimitDatetime=future)
@@ -330,7 +330,7 @@ class OfferIsSoldOutTest:
         assert Offer.query.filter(Offer.isSoldOut.is_(False)).count() == 0
 
     def test_offer_with_passed_stock_date(self):
-        past = datetime.datetime.now() - datetime.timedelta(days=2)
+        past = datetime.datetime.utcnow() - datetime.timedelta(days=2)
         stock = factories.StockFactory(quantity=10, beginningDatetime=past)
         offer = stock.offer
 

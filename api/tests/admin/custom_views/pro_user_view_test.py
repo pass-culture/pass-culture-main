@@ -76,8 +76,8 @@ class ProUserViewTest:
 
         token = Token.query.filter_by(userId=user_created.id).first()
         assert token.type == TokenType.RESET_PASSWORD
-        assert token.expirationDate > datetime.now() + timedelta(days=29)
-        assert token.expirationDate < datetime.now() + timedelta(days=31)
+        assert token.expirationDate > datetime.utcnow() + timedelta(days=29)
+        assert token.expirationDate < datetime.utcnow() + timedelta(days=31)
 
     def test_it_gives_a_random_password_to_user(self, app, db_session):
         # Given

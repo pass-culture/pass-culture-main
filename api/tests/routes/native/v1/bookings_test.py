@@ -130,7 +130,7 @@ class GetBookingsTest:
             activationCode=second_activation_code,
         )
         expire_tomorrow = booking_factories.IndividualBookingFactory(
-            individualBooking__user=user, dateCreated=datetime.now() - timedelta(days=29)
+            individualBooking__user=user, dateCreated=datetime.utcnow() - timedelta(days=29)
         )
         used_but_in_future = booking_factories.UsedIndividualBookingFactory(
             individualBooking__user=user,
@@ -286,7 +286,7 @@ class CancelBookingTest:
     def test_cancel_confirmed_booking(self, app):
         user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
         booking = booking_factories.IndividualBookingFactory(
-            individualBooking__user=user, cancellation_limit_date=datetime.now() - timedelta(days=1)
+            individualBooking__user=user, cancellation_limit_date=datetime.utcnow() - timedelta(days=1)
         )
 
         access_token = create_access_token(identity=self.identifier)
@@ -336,7 +336,7 @@ class ToggleBookingVisibilityTest:
         booking = booking_factories.UsedIndividualBookingFactory(
             individualBooking__user=user,
             displayAsEnded=None,
-            dateUsed=datetime.now(),
+            dateUsed=datetime.utcnow(),
             stock=stock,
             activationCode=activation_code,
         )
