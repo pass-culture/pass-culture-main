@@ -3,7 +3,7 @@ import React from 'react'
 
 import { EMPTY_FILTER_VALUE } from 'core/Bookings'
 
-import FilterByEventDate from '../FilterByEventDate.jsx'
+import FilterByEventDate from '../FilterByEventDate'
 
 describe('components | FilterByEventDate', () => {
   let props

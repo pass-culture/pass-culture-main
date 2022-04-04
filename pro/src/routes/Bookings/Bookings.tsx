@@ -18,8 +18,10 @@ import getFilteredBookingsRecapAdapter from './adapters/getFilteredBookingsRecap
 
 const MAX_LOADED_PAGES = 5
 
+export type BookingsRouterState = { venueId?: string; statuses?: string[] }
+
 const Bookings = (): JSX.Element => {
-  const location = useLocation<{ venueId?: string; statuses?: string[] }>()
+  const location = useLocation<BookingsRouterState>()
   const notify = useNotification()
   const { currentUser: user } = useCurrentUser()
   const separateIndividualAndCollectiveOffers = useActiveFeature(
