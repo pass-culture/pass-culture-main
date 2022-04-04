@@ -30,9 +30,7 @@ const NoResults = ({
       <Link
         className="reset-filters-link"
         onClick={resetFilters}
-        to={`/offres${
-          audience === Audience.COLLECTIVE ? '?audience=collective' : ''
-        }`}
+        to={`/offres${audience === Audience.COLLECTIVE ? '/collectives' : ''}`}
       >
         afficher toutes les offres
       </Link>
