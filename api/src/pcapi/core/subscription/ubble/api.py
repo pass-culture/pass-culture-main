@@ -138,6 +138,9 @@ def handle_validation_errors(
 
     elif fraud_models.FraudReasonCode.DUPLICATE_ID_PIECE_NUMBER in reason_codes:
         subscription_messages.on_duplicate_user(user)
+        duplicate_beneficiary.send_duplicate_beneficiary_email(
+            user, fraud_check.source_data(), is_id_piece_number_duplicate=True
+        )
 
     elif fraud_models.FraudReasonCode.ALREADY_BENEFICIARY in reason_codes:
         subscription_messages.on_already_beneficiary(user)

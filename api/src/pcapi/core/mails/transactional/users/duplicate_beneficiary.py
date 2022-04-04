@@ -12,14 +12,21 @@ logger = logging.getLogger(__name__)
 
 
 def send_duplicate_beneficiary_email(
-    rejected_user: users_models.User, identity_content: common_fraud_models.IdentityCheckContent
+    rejected_user: users_models.User,
+    identity_content: common_fraud_models.IdentityCheckContent,
+    is_id_piece_number_duplicate: bool = False,
 ) -> bool:
-    duplicate_beneficiary = fraud_api.find_duplicate_beneficiary(
-        identity_content.get_first_name(),
-        identity_content.get_last_name(),
-        identity_content.get_birth_date(),
-        rejected_user.id,
-    )
+    if is_id_piece_number_duplicate:
+        duplicate_beneficiary = fraud_api.find_duplicate_id_piece_number_user(
+            identity_content.get_id_piece_number(), rejected_user.id
+        )
+    else:
+        duplicate_beneficiary = fraud_api.find_duplicate_beneficiary(
+            identity_content.get_first_name(),
+            identity_content.get_last_name(),
+            identity_content.get_birth_date(),
+            rejected_user.id,
+        )
     if not duplicate_beneficiary:
         logger.error("No duplicate beneficiary found", extra={"user_id": rejected_user.id})
         anonymized_email = "***"
