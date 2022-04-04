@@ -537,9 +537,7 @@ describe('route CollectiveOffers', () => {
         api.getCollectiveListCollectiveOffers as jest.Mock
       ).mockResolvedValueOnce(offersRecap)
       const { history } = renderOffers(store)
-      const nextPageIcon = await screen.findByAltText(
-        'Aller à la page suivante'
-      )
+      const nextPageIcon = await screen.findByAltText('page suivante')
       // When
       fireEvent.click(nextPageIcon)
       const urlSearchParams = parse(history.location.search.substring(1))
@@ -795,7 +793,7 @@ describe('route CollectiveOffers', () => {
         api.getCollectiveListCollectiveOffers as jest.Mock
       ).mockResolvedValueOnce(offers)
       renderOffers(store)
-      const nextIcon = await screen.findByAltText('Aller à la page suivante')
+      const nextIcon = await screen.findByAltText('page suivante')
       // When
       fireEvent.click(nextIcon)
       // Then
@@ -813,10 +811,8 @@ describe('route CollectiveOffers', () => {
         api.getCollectiveListCollectiveOffers as jest.Mock
       ).mockResolvedValueOnce(offers)
       renderOffers(store)
-      const nextIcon = await screen.findByAltText('Aller à la page suivante')
-      const previousIcon = await screen.findByAltText(
-        'Aller à la page précédente'
-      )
+      const nextIcon = await screen.findByAltText('page suivante')
+      const previousIcon = await screen.findByAltText('page précédente')
       fireEvent.click(nextIcon)
       // When
       fireEvent.click(previousIcon)
@@ -834,9 +830,7 @@ describe('route CollectiveOffers', () => {
       // When
       renderOffers(store, filters)
       // Then
-      const previousIcon = await screen.findByAltText(
-        'Aller à la page précédente'
-      )
+      const previousIcon = await screen.findByAltText('page précédente')
       expect(previousIcon.closest('button')).toBeDisabled()
     })
 
@@ -848,7 +842,7 @@ describe('route CollectiveOffers', () => {
       // When
       renderOffers(store)
       // Then
-      const nextIcon = await screen.findByAltText('Aller à la page suivante')
+      const nextIcon = await screen.findByAltText('page suivante')
       expect(nextIcon.closest('button')).toBeDisabled()
     })
 
@@ -876,7 +870,7 @@ describe('route CollectiveOffers', () => {
           api.getCollectiveListCollectiveOffers as jest.Mock
         ).mockResolvedValueOnce(offersRecap)
         renderOffers(store)
-        const nextIcon = await screen.findByAltText('Aller à la page suivante')
+        const nextIcon = await screen.findByAltText('page suivante')
         // When
         for (let i = 1; i < 51; i++) {
           fireEvent.click(nextIcon)

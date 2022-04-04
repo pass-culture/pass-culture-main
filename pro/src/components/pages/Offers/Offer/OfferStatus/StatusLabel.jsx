@@ -47,10 +47,10 @@ export const OFFER_STATUS_PROPERTIES = {
 const StatusLabel = ({ status }) => {
   return (
     <span
-      className={`op-offer-status ${OFFER_STATUS_PROPERTIES[status].className}`}
+      className={`op-offer-status ${OFFER_STATUS_PROPERTIES[status]?.className}`}
     >
-      <Icon svg={OFFER_STATUS_PROPERTIES[status].icon} />
-      {OFFER_STATUS_PROPERTIES[status].label}
+      <Icon svg={OFFER_STATUS_PROPERTIES[status]?.icon} />
+      {OFFER_STATUS_PROPERTIES[status]?.label}
     </span>
   )
 }
