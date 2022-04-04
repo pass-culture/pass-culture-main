@@ -1,8 +1,3 @@
-/*
- * @debt directory "Gaël: this file should be migrated within the new directory structure"
- */
-
-import PropTypes from 'prop-types'
 import React from 'react'
 
 import Select from 'components/layout/inputs/Select'
@@ -21,6 +16,7 @@ interface IFilterByStatusProps {
   updateFilters: (filters: Partial<IPreFiltersProp>) => void
   selectedStatusId: string
 }
+
 const FilterByStatus = ({
   isDisabled = false,
   updateFilters,
@@ -42,12 +38,6 @@ const FilterByStatus = ({
       selectedValue={selectedStatusId}
     />
   )
-}
-
-FilterByStatus.propTypes = {
-  isDisabled: PropTypes.bool,
-  selectedStatusId: PropTypes.string.isRequired,
-  updateFilters: PropTypes.func.isRequired,
 }
 
 export default FilterByStatus

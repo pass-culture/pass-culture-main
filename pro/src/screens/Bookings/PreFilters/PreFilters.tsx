@@ -9,7 +9,7 @@ import { formatAndOrderVenues } from 'repository/venuesService'
 
 import FilterByBookingPeriod from './FilterByBookingPeriod'
 import FilterByBookingStatusPeriod from './FilterByBookingStatusPeriod'
-import FilterByEventDate from './FilterByEventDate.jsx'
+import FilterByEventDate from './FilterByEventDate'
 import FilterByVenue from './FilterByVenue'
 
 interface IPreFilters {

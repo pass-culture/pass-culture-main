@@ -1,7 +1,3 @@
-/*
- * @debt directory "Gaël: this file should be migrated within the new directory structure"
- */
-
 import { addDays, subDays } from 'date-fns'
 import React from 'react'
 
