@@ -7,11 +7,8 @@ import useActiveFeature from 'components/hooks/useActiveFeature'
 import useCurrentUser from 'components/hooks/useCurrentUser'
 import useNotification from 'components/hooks/useNotification'
 import Spinner from 'components/layout/Spinner'
-import {
-  DEFAULT_SEARCH_FILTERS,
-  getOffererAdapter,
-  hasSearchFilters,
-} from 'core/Offers'
+import { DEFAULT_SEARCH_FILTERS, hasSearchFilters } from 'core/Offers'
+import { getOffererAdapter } from 'core/Offers/adapters'
 import { useQuerySearchFilters } from 'core/Offers/hooks'
 import {
   Audience,
