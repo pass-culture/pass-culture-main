@@ -377,11 +377,3 @@ class UserProfilingFraudRequest(BaseModel):
 
 class UserProfilingSessionIdResponse(BaseModel):
     sessionId: str
-
-
-class IdentificationSessionRequest(BaseModel):
-    redirectUrl: str
-
-
-class IdentificationSessionResponse(BaseModel):
-    identificationUrl: str
