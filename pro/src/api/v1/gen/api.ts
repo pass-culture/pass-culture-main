@@ -602,7 +602,7 @@ export interface ListBookingsQueryModel {
     bookingPeriodBeginningDate?: string | null;
     bookingPeriodEndingDate?: string | null;
     bookingStatusFilter?: BookingStatusFilter | null;
-    eventDate?: Date | null;
+    eventDate?: string | null;
     extra?: string;
     offerType?: OfferType | null;
     page?: number;
@@ -1243,7 +1243,7 @@ export const DefaultApiFetchParamCreator = function (configuration?: APIConfigur
          * @summary get_bookings_pro <GET>
          * @param {number} [page] 
          * @param {number} [venueId] 
-         * @param {Date} [eventDate] 
+         * @param {string} [eventDate] 
          * @param {BookingStatusFilter} [bookingStatusFilter] 
          * @param {string} [bookingPeriodBeginningDate] 
          * @param {string} [bookingPeriodEndingDate] 
@@ -1252,7 +1252,7 @@ export const DefaultApiFetchParamCreator = function (configuration?: APIConfigur
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getBookingsGetBookingsPro(page?: number, venueId?: number | null, eventDate?: Date | null, bookingStatusFilter?: BookingStatusFilter, bookingPeriodBeginningDate?: string | null, bookingPeriodEndingDate?: string | null, offerType?: OfferType, extra?: string, options: any = {}): Promise<FetchArgs> {
+        async getBookingsGetBookingsPro(page?: number, venueId?: number | null, eventDate?: string | null, bookingStatusFilter?: BookingStatusFilter, bookingPeriodBeginningDate?: string | null, bookingPeriodEndingDate?: string | null, offerType?: OfferType, extra?: string, options: any = {}): Promise<FetchArgs> {
             const localVarPath = `/bookings/pro`;
             const localVarUrlObj = url.parse(localVarPath, true);
             const localVarRequestOptions = Object.assign({
@@ -1268,16 +1268,16 @@ export const DefaultApiFetchParamCreator = function (configuration?: APIConfigur
                 localVarQueryParameter['venueId'] = venueId;
             }
             if (eventDate !== undefined) {
-                localVarQueryParameter['eventDate'] = (eventDate as any).toISOString();
+                localVarQueryParameter['eventDate'] = eventDate;
             }
             if (bookingStatusFilter !== undefined) {
                 localVarQueryParameter['bookingStatusFilter'] = bookingStatusFilter;
             }
             if (bookingPeriodBeginningDate !== undefined) {
-                localVarQueryParameter['bookingPeriodBeginningDate'] = (bookingPeriodBeginningDate as any).toISOString();
+                localVarQueryParameter['bookingPeriodBeginningDate'] = bookingPeriodBeginningDate;
             }
             if (bookingPeriodEndingDate !== undefined) {
-                localVarQueryParameter['bookingPeriodEndingDate'] = (bookingPeriodEndingDate as any).toISOString();
+                localVarQueryParameter['bookingPeriodEndingDate'] = bookingPeriodEndingDate;
             }
             if (offerType !== undefined) {
                 localVarQueryParameter['offerType'] = offerType;
@@ -2648,7 +2648,7 @@ export const DefaultApiFp = function(api: DefaultApi, configuration?: APIConfigu
          * @summary get_bookings_pro <GET>
          * @param {number} [page] 
          * @param {number} [venueId] 
-         * @param {Date} [eventDate] 
+         * @param {string} [eventDate] 
          * @param {BookingStatusFilter} [bookingStatusFilter] 
          * @param {string} [bookingPeriodBeginningDate] 
          * @param {string} [bookingPeriodEndingDate] 
@@ -2657,7 +2657,7 @@ export const DefaultApiFp = function(api: DefaultApi, configuration?: APIConfigu
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getBookingsGetBookingsPro(basePath: string, page?: number, venueId?: number | null, eventDate?: Date | null, bookingStatusFilter?: BookingStatusFilter, bookingPeriodBeginningDate?: string | null, bookingPeriodEndingDate?: string | null, offerType?: OfferType, extra?: string, options?: any): Promise<ListBookingsResponseModel> {
+        async getBookingsGetBookingsPro(basePath: string, page?: number, venueId?: number | null, eventDate?: string | null, bookingStatusFilter?: BookingStatusFilter, bookingPeriodBeginningDate?: string | null, bookingPeriodEndingDate?: string | null, offerType?: OfferType, extra?: string, options?: any): Promise<ListBookingsResponseModel> {
             const localVarFetchArgs = await DefaultApiFetchParamCreator(configuration).getBookingsGetBookingsPro(page, venueId, eventDate, bookingStatusFilter, bookingPeriodBeginningDate, bookingPeriodEndingDate, offerType, extra, options);
             const response = await safeFetch(basePath + localVarFetchArgs.url, localVarFetchArgs.options)
             return handleGeneratedApiResponse(response)
@@ -3231,7 +3231,7 @@ export interface DefaultApiInterface {
      * @summary get_bookings_pro <GET>
      * @param {number} [page] 
      * @param {number} [venueId] 
-     * @param {Date} [eventDate] 
+     * @param {string} [eventDate] 
      * @param {BookingStatusFilter} [bookingStatusFilter] 
      * @param {string} [bookingPeriodBeginningDate] 
      * @param {string} [bookingPeriodEndingDate] 
@@ -3241,7 +3241,7 @@ export interface DefaultApiInterface {
      * @throws {RequiredError}
      * @memberof DefaultApiInterface
      */
-    getBookingsGetBookingsPro(page?: number, venueId?: number | null, eventDate?: Date | null, bookingStatusFilter?: BookingStatusFilter, bookingPeriodBeginningDate?: string | null, bookingPeriodEndingDate?: string | null, offerType?: OfferType, extra?: string, options?: any): Promise<ListBookingsResponseModel>;
+    getBookingsGetBookingsPro(page?: number, venueId?: number | null, eventDate?: string | null, bookingStatusFilter?: BookingStatusFilter, bookingPeriodBeginningDate?: string | null, bookingPeriodEndingDate?: string | null, offerType?: OfferType, extra?: string, options?: any): Promise<ListBookingsResponseModel>;
 
     /**
      * 
@@ -3730,7 +3730,7 @@ export class DefaultApi extends BaseAPI implements DefaultApiInterface {
      * @summary get_bookings_pro <GET>
      * @param {number} [page] 
      * @param {number} [venueId] 
-     * @param {Date} [eventDate] 
+     * @param {string} [eventDate] 
      * @param {BookingStatusFilter} [bookingStatusFilter] 
      * @param {string} [bookingPeriodBeginningDate] 
      * @param {string} [bookingPeriodEndingDate] 
@@ -3740,7 +3740,7 @@ export class DefaultApi extends BaseAPI implements DefaultApiInterface {
      * @throws {RequiredError}
      * @memberof DefaultApi
      */
-    public async getBookingsGetBookingsPro(page?: number, venueId?: number | null, eventDate?: Date | null, bookingStatusFilter?: BookingStatusFilter, bookingPeriodBeginningDate?: string | null, bookingPeriodEndingDate?: string | null, offerType?: OfferType, extra?: string, options?: any) {
+    public async getBookingsGetBookingsPro(page?: number, venueId?: number | null, eventDate?: string | null, bookingStatusFilter?: BookingStatusFilter, bookingPeriodBeginningDate?: string | null, bookingPeriodEndingDate?: string | null, offerType?: OfferType, extra?: string, options?: any) {
         const functionalApi = DefaultApiFp(this, this.configuration)
         return functionalApi.getBookingsGetBookingsPro(this.basePath, page, venueId, eventDate, bookingStatusFilter, bookingPeriodBeginningDate, bookingPeriodEndingDate, offerType, extra, options)
     }
