@@ -2,8 +2,7 @@ import PropTypes from 'prop-types'
 import React from 'react'
 
 import Select from 'components/layout/inputs/Select'
-
-import { ALL_VENUES_OPTION } from './_constants'
+import { ALL_VENUES_OPTION } from 'core/Bookings'
 
 const FilterByVenue = ({
   isDisabled,

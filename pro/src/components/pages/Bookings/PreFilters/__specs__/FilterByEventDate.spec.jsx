@@ -1,7 +1,8 @@
 import { shallow } from 'enzyme'
 import React from 'react'
 
-import { EMPTY_FILTER_VALUE } from '../_constants'
+import { EMPTY_FILTER_VALUE } from 'core/Bookings'
+
 import FilterByEventDate from '../FilterByEventDate.jsx'
 
 describe('components | FilterByEventDate', () => {

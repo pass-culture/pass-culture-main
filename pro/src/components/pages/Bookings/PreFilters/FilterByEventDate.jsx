@@ -4,7 +4,7 @@ import React from 'react'
 import DatePicker, { registerLocale } from 'react-datepicker'
 
 import InputWithCalendar from 'components/layout/inputs/PeriodSelector/InputWithCalendar'
-import { DEFAULT_PRE_FILTERS } from 'components/pages/Bookings/PreFilters/_constants'
+import { DEFAULT_PRE_FILTERS } from 'core/Bookings'
 import { getToday } from 'utils/date'
 
 registerLocale('fr', fr)

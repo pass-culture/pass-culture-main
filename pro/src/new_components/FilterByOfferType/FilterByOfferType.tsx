@@ -1,7 +1,7 @@
 import React from 'react'
 
 import Select from 'components/layout/inputs/Select'
-import { ALL_OFFER_TYPE_OPTION } from 'components/pages/Bookings/PreFilters/_constants'
+import { ALL_OFFER_TYPE_OPTION } from 'core/Bookings'
 import { OFFER_TYPES } from 'core/Offers'
 
 const { INDIVIDUAL_OR_DUO, EDUCATIONAL } = OFFER_TYPES

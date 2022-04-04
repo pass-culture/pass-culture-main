@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import React from 'react'
 
 import PeriodSelector from 'components/layout/inputs/PeriodSelector/PeriodSelector'
-import { DEFAULT_BOOKING_PERIOD } from 'components/pages/Bookings/PreFilters/_constants'
+import { DEFAULT_BOOKING_PERIOD } from 'core/Bookings'
 import { getToday } from 'utils/date'
 
 const FilterByBookingPeriod = ({

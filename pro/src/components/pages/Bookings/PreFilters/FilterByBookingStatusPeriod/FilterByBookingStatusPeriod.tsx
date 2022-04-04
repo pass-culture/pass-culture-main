@@ -6,7 +6,7 @@ import { addDays, subDays } from 'date-fns'
 import React from 'react'
 
 import PeriodSelector from 'components/layout/inputs/PeriodSelector/PeriodSelector'
-import { DEFAULT_BOOKING_PERIOD } from 'components/pages/Bookings/PreFilters/_constants'
+import { DEFAULT_BOOKING_PERIOD } from 'core/Bookings'
 import { getToday } from 'utils/date'
 
 import styles from './FilterByBookingStatusPeriod.module.scss'
