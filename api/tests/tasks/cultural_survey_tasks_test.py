@@ -37,8 +37,8 @@ class CulturalSurveyTasksTest:
 
         # Note: if the path does not exist, GCP creates the necessary folders
         store_public_object.assert_called_once_with(
-            folder="data-bucket-dev",
-            object_id="QPI_exports/qpi_answers_20200101/1.jsonl",
+            folder="QPI_exports/qpi_answers_20200101",
+            object_id="user_id_1.jsonl",
             blob=bytes(answers_str, "utf-8"),
             content_type="application/json",
         )
