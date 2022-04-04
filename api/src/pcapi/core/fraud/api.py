@@ -589,7 +589,7 @@ def decide_eligibility(
     user_age_today = users_utils.get_age_from_birth_date(birth_date)
     eligibility_at_registration = users_api.get_eligibility_at_date(birth_date, registration_datetime)
 
-    eligibility_today = users_api.get_eligibility_at_date(birth_date, datetime.datetime.now())
+    eligibility_today = users_api.get_eligibility_at_date(birth_date, datetime.datetime.utcnow())
 
     if eligibility_at_registration is None and eligibility_today is None and user_age_today == 19:
         earliest_identity_check_date = users_repository.get_earliest_identity_check_date_of_eligibility(

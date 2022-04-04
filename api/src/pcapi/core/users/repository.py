@@ -70,7 +70,7 @@ def get_user_with_valid_token(
     if not token:
         return None
 
-    if token.expirationDate and token.expirationDate < datetime.now():
+    if token.expirationDate and token.expirationDate < datetime.utcnow():
         return None
 
     if use_token:

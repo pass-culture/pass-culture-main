@@ -17,7 +17,7 @@ def get_booking_cancellation_by_beneficiary_email_data(
     beneficiary = individual_booking.user
     offer = stock.offer
     is_free_offer = stock.price == 0
-    can_book_again = beneficiary.deposit.expirationDate > datetime.datetime.now()
+    can_book_again = beneficiary.deposit.expirationDate > datetime.datetime.utcnow()
 
     if offer.isEvent:
         beginning_date_time_in_tz = utc_datetime_to_department_timezone(

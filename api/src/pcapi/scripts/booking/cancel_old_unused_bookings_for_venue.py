@@ -26,7 +26,7 @@ def cancel_old_unused_bookings_for_venue(humanized_venue_id: str, reason: Bookin
     if venue is None:
         raise Exception(f"There is no venue with id {humanized_venue_id}")
 
-    limit_date = datetime.now() - timedelta(days=30)
+    limit_date = datetime.utcnow() - timedelta(days=30)
 
     old_unused_bookings = _get_old_unused_bookings_from_venue_id(venue.id, limit_date)
 

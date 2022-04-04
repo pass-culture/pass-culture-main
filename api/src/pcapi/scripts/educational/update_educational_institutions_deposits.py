@@ -34,7 +34,7 @@ def update_educational_institutions_deposits(
 def _process_educational_csv(
     educational_institutions_rows: Iterable[dict], educational_year_beginning: int = None
 ) -> None:
-    current_year = educational_year_beginning if educational_year_beginning is not None else datetime.now().year
+    current_year = educational_year_beginning if educational_year_beginning is not None else datetime.utcnow().year
     try:
         educational_year = educational_repository.get_educational_year_beginning_at_given_year(current_year)
     except exceptions.EducationalYearNotFound:

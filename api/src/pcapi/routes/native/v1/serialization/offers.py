@@ -64,7 +64,7 @@ class OfferStockResponse(BaseModel):
     @staticmethod
     def _get_cancellation_limit_datetime(stock: Stock) -> Optional[datetime]:
         # compute date as if it were booked now
-        return compute_cancellation_limit_date(stock.beginningDatetime, datetime.now())
+        return compute_cancellation_limit_date(stock.beginningDatetime, datetime.utcnow())
 
     @staticmethod
     def _get_non_scrappable_activation_code(stock: Stock) -> Optional[dict]:

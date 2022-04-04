@@ -25,7 +25,7 @@ def job(queue: Queue):
                 return func(*args, **kwargs)
 
             start = time.perf_counter()
-            started_at = current_job.started_at or datetime.now()
+            started_at = current_job.started_at or datetime.utcnow()
             logger.info(
                 "Started job %s",
                 func.__name__,

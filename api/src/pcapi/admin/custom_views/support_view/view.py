@@ -245,7 +245,7 @@ class BeneficiaryView(base_configuration.BaseAdminView):
                         thirdPartyId="admin_validation",
                         resultContent={
                             "id": 0,
-                            "registrationDate": datetime.datetime.now().isoformat(),
+                            "registrationDate": datetime.datetime.utcnow().isoformat(),
                         },
                     )
 

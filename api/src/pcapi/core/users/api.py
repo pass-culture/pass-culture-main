@@ -100,7 +100,7 @@ def generate_and_save_token(
 ) -> Token:
     assert token_type.name in TokenType.__members__, "Only registered token types are allowed"
 
-    expiration_date = datetime.now() + life_time if life_time else None
+    expiration_date = datetime.utcnow() + life_time if life_time else None
 
     if settings.IS_PERFORMANCE_TESTS:
         token_value = f"performance-tests_{token_type.value}_{user.id}"
@@ -114,7 +114,7 @@ def generate_and_save_token(
 
 
 def delete_expired_tokens() -> None:
-    Token.query.filter(Token.expirationDate < datetime.now()).delete()
+    Token.query.filter(Token.expirationDate < datetime.utcnow()).delete()
 
 
 def delete_all_users_tokens(user: User) -> None:
@@ -145,7 +145,7 @@ def create_account(
         hasSeenTutorials=False,
         notificationSubscriptions=asdict(NotificationSubscriptions(marketing_email=marketing_email_subscription)),
         phoneNumber=phone_number,
-        lastConnectionDate=datetime.now(),
+        lastConnectionDate=datetime.utcnow(),
         subscriptionState=models.SubscriptionState.account_created,
     )
 
@@ -684,7 +684,7 @@ def validate_phone_number(user: User, code: str) -> None:
     if not token:
         raise exceptions.NotValidCode()
 
-    if token.expirationDate and token.expirationDate < datetime.now():
+    if token.expirationDate and token.expirationDate < datetime.utcnow():
         raise exceptions.ExpiredCode()
 
     db.session.delete(token)

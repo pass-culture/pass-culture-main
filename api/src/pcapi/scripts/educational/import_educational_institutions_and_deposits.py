@@ -39,7 +39,7 @@ def _process_educational_csv(
     ministry: Ministry,
     educational_year_beginning: Optional[int] = None,
 ) -> None:
-    current_year = educational_year_beginning if educational_year_beginning is not None else datetime.now().year
+    current_year = educational_year_beginning if educational_year_beginning is not None else datetime.utcnow().year
     try:
         educational_year = educational_repository.get_educational_year_beginning_at_given_year(current_year)
     except exceptions.EducationalYearNotFound:

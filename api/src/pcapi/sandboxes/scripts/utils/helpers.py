@@ -66,6 +66,6 @@ def get_venue_helper(venue):
 
 def _get_reset_password_token(user: User):
     for token in user.tokens:
-        if token.type == TokenType.RESET_PASSWORD and token.expirationDate > datetime.now():
+        if token.type == TokenType.RESET_PASSWORD and token.expirationDate > datetime.utcnow():
             return token.value
     return None

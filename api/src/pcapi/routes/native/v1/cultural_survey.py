@@ -39,11 +39,11 @@ def get_cultural_survey_questions(user: users_models.User) -> serializers.Cultur
 def post_cultural_survey_answers(user: users_models.User, body: serializers.CulturalSurveyAnswersRequest) -> None:
     payload = CulturalSurveyAnswersForData(
         user_id=user.id,
-        submitted_at=datetime.datetime.now().isoformat(),
+        submitted_at=datetime.datetime.utcnow().isoformat(),
         answers=body.answers,
     )
 
     upload_answers_task.delay(payload)
     with transaction():
         user.needsToFillCulturalSurvey = False
-        user.culturalSurveyFilledDate = datetime.datetime.now()
+        user.culturalSurveyFilledDate = datetime.datetime.utcnow()
