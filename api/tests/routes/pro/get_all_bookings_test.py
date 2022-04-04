@@ -103,7 +103,7 @@ class Returns200Test:
         response = client.get(f"/bookings/pro?{BOOKING_PERIOD_PARAMS}&bookingStatusFilter=booked")
 
         assert response.status_code == 200
-        assert len(response.json["bookings_recap"]) == 1
+        assert len(response.json["bookingsRecap"]) == 1
 
     def when_booking_is_educational(self, app):
         admin = users_factories.AdminFactory()
@@ -120,14 +120,14 @@ class Returns200Test:
         response = client.get(f"/bookings/pro?{BOOKING_PERIOD_PARAMS}&bookingStatusFilter=booked")
 
         assert response.status_code == 200
-        assert response.json["bookings_recap"][0]["stock"]["offer_is_educational"] is True
-        assert response.json["bookings_recap"][0]["beneficiary"] == {
+        assert response.json["bookingsRecap"][0]["stock"]["offer_is_educational"] is True
+        assert response.json["bookingsRecap"][0]["beneficiary"] == {
             "email": "redactor@email.com",
             "firstname": "Georges",
             "lastname": "Moustaki",
             "phonenumber": None,
         }
-        assert response.json["bookings_recap"][0]["booking_token"] is None
+        assert response.json["bookingsRecap"][0]["booking_token"] is None
 
     def when_user_is_linked_to_a_valid_offerer(self, app):
         booking = bookings_factories.UsedIndividualBookingFactory(
@@ -185,7 +185,7 @@ class Returns200Test:
             }
         ]
         assert response.status_code == 200
-        assert response.json["bookings_recap"] == expected_bookings_recap
+        assert response.json["bookingsRecap"] == expected_bookings_recap
         assert response.json["page"] == 1
         assert response.json["pages"] == 1
         assert response.json["total"] == 1
@@ -207,8 +207,8 @@ class Returns200Test:
             )
 
         assert response.status_code == 200
-        assert len(response.json["bookings_recap"]) == 1
-        assert response.json["bookings_recap"][0]["booking_token"] == booking.token
+        assert len(response.json["bookingsRecap"]) == 1
+        assert response.json["bookingsRecap"][0]["booking_token"] == booking.token
         assert response.json["page"] == 1
         assert response.json["pages"] == 1
         assert response.json["total"] == 1
@@ -230,8 +230,8 @@ class Returns200Test:
             )
 
         assert response.status_code == 200
-        assert len(response.json["bookings_recap"]) == 1
-        assert response.json["bookings_recap"][0]["booking_date"] == datetime.isoformat(
+        assert len(response.json["bookingsRecap"]) == 1
+        assert response.json["bookingsRecap"][0]["booking_date"] == datetime.isoformat(
             utc_datetime_to_department_timezone(booking.dateCreated, booking.venue.departementCode)
         )
         assert response.json["page"] == 1
@@ -260,7 +260,7 @@ class Returns200Test:
             },
         ]
         assert response.status_code == 200
-        assert response.json["bookings_recap"][0]["booking_status_history"] == expected_bookings_recap_status_history
+        assert response.json["bookingsRecap"][0]["booking_status_history"] == expected_bookings_recap_status_history
 
     @freeze_time("2020-08-11 13:00")
     def test_should_return_booking_pending_status_in_history(self, app, client):
@@ -283,7 +283,7 @@ class Returns200Test:
             },
         ]
         assert response.status_code == 200
-        assert response.json["bookings_recap"][0]["booking_status_history"] == expected_bookings_recap
+        assert response.json["bookingsRecap"][0]["booking_status_history"] == expected_bookings_recap
 
 
 @pytest.mark.usefixtures("db_session")

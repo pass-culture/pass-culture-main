@@ -1,6 +1,8 @@
+import { api } from 'api/v1/api'
 import { ListBookingsResponseModel } from 'api/v1/gen'
 import { TPreFilters } from 'core/Bookings'
-import * as pcapi from 'repository/pcapi/pcapi'
+
+import { buildBookingsRecapQuery } from './utils'
 
 type IPayload = {
   bookings: ListBookingsResponseModel
@@ -28,21 +30,31 @@ const FAILING_RESPONSE: AdapterFailure<IPayload> = {
 export const getFilteredBookingsRecapAdapter: GetFilteredBookingsRecapAdapter =
   async apiFilters => {
     try {
-      const bookings = await pcapi.loadFilteredBookingsRecap({
-        venueId: apiFilters.offerVenueId,
-        eventDate: apiFilters.offerEventDate,
-        bookingPeriodBeginningDate: apiFilters.bookingBeginningDate,
-        bookingPeriodEndingDate: apiFilters.bookingEndingDate,
-        bookingStatusFilter: apiFilters.bookingStatusFilter,
-        offerType: apiFilters.offerType,
-        page: apiFilters.page,
-      })
+      const {
+        venueId,
+        eventDate,
+        bookingPeriodBeginningDate,
+        bookingPeriodEndingDate,
+        bookingStatusFilter,
+        offerType,
+        page,
+      } = buildBookingsRecapQuery(apiFilters)
+      const bookings = await api.getBookingsGetBookingsPro(
+        page,
+        // @ts-expect-error vgfk
+        venueId,
+        eventDate,
+        bookingStatusFilter,
+        bookingPeriodBeginningDate,
+        bookingPeriodEndingDate,
+        offerType
+      )
 
       return {
         isOk: true,
         message: null,
         payload: {
-          bookings: { ...bookings, bookingsRecap: bookings.bookings_recap },
+          bookings,
         },
       }
     } catch (e) {

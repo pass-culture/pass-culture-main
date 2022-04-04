@@ -1,5 +1,7 @@
+from datetime import datetime
 from typing import Optional
 
+from dateutil import parser
 from flask import request
 from flask_login import current_user
 from flask_login import login_required
@@ -88,11 +90,14 @@ def patch_booking_by_token(token: str, query: PatchBookingByTokenQueryModel) -> 
 def get_bookings_pro(query: ListBookingsQueryModel) -> ListBookingsResponseModel:
     page = query.page
     venue_id = query.venue_id
-    event_date = query.event_date
+    event_date = parser.parse(query.event_date) if query.event_date else None
     booking_status = query.booking_status_filter
     booking_period = None
     if query.booking_period_beginning_date and query.booking_period_ending_date:
-        booking_period = (query.booking_period_beginning_date, query.booking_period_ending_date)
+        booking_period = (
+            datetime.fromisoformat(query.booking_period_beginning_date).date(),
+            datetime.fromisoformat(query.booking_period_ending_date).date(),
+        )
     offer_type = query.offer_type
 
     # FIXME: rewrite this route. The repository function should return
@@ -110,7 +115,7 @@ def get_bookings_pro(query: ListBookingsQueryModel) -> ListBookingsResponseModel
     )
 
     return ListBookingsResponseModel(
-        bookings_recap=[
+        bookingsRecap=[
             _serialize_booking_recap(booking_recap) for booking_recap in bookings_recap_paginated.bookings_recap
         ],
         page=bookings_recap_paginated.page,
@@ -138,10 +143,13 @@ def get_user_has_bookings() -> UserHasBookingResponse:
 )
 def get_bookings_csv(query: ListBookingsQueryModel) -> bytes:
     venue_id = query.venue_id
-    event_date = query.event_date
+    event_date = parser.parse(query.event_date) if query.event_date else None
     booking_period = None
     if query.booking_period_beginning_date and query.booking_period_ending_date:
-        booking_period = (query.booking_period_beginning_date, query.booking_period_ending_date)
+        booking_period = (
+            datetime.fromisoformat(query.booking_period_beginning_date).date(),
+            datetime.fromisoformat(query.booking_period_ending_date).date(),
+        )
     booking_status = query.booking_status_filter
     offer_type = query.offer_type
 

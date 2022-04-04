@@ -12,16 +12,17 @@ import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
 import type { Store } from 'redux'
 
+import { api } from 'api/v1/api'
 import NotificationContainer from 'components/layout/Notification/NotificationContainer'
 import { BOOKING_STATUS, DEFAULT_PRE_FILTERS } from 'core/Bookings'
-import {
-  getVenuesForOfferer,
-  getUserHasBookings,
-  loadFilteredBookingsRecap,
-} from 'repository/pcapi/pcapi'
+import { getVenuesForOfferer, getUserHasBookings } from 'repository/pcapi/pcapi'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
 import { bookingRecapFactory, venueFactory } from 'utils/apiFactories'
+import {
+  formatBrowserTimezonedDateAsUTC,
+  FORMAT_ISO_DATE_ONLY,
+} from 'utils/date'
 import { getNthCallNthArg } from 'utils/testHelpers'
 
 import BookingsRecapContainer, { BookingsRouterState } from '../Bookings'
@@ -31,13 +32,34 @@ jest.mock('repository/pcapi/pcapi', () => ({
   getFilteredBookingsCSV: jest.fn(),
   getUserInformations: jest.fn(),
   getUserHasBookings: jest.fn(),
-  loadFilteredBookingsRecap: jest.fn(),
+}))
+
+jest.mock('api/v1/api', () => ({
+  api: {
+    getBookingsGetBookingsPro: jest.fn(),
+  },
 }))
 
 jest.mock('utils/date', () => ({
   ...jest.requireActual('utils/date'),
   getToday: jest.fn().mockReturnValue(new Date('2020-06-15T12:00:00Z')),
 }))
+
+const FORMATTED_DEFAULT_BEGINNING_DATE = formatBrowserTimezonedDateAsUTC(
+  DEFAULT_PRE_FILTERS.bookingBeginningDate,
+  FORMAT_ISO_DATE_ONLY
+)
+const FORMATTED_DEFAULT_ENDING_DATE = formatBrowserTimezonedDateAsUTC(
+  DEFAULT_PRE_FILTERS.bookingEndingDate,
+  FORMAT_ISO_DATE_ONLY
+)
+const NTH_ARGUMENT_GET_BOOKINGS = {
+  page: 1,
+  venueId: 2,
+  eventDate: 3,
+  bookingBeginningDate: 5,
+  bookingEndingDate: 6,
+}
 
 const renderBookingsRecap = async (
   store: Store,
@@ -93,12 +115,12 @@ describe('components | BookingsRecap | Pro user', () => {
 
   beforeEach(() => {
     const emptyBookingsRecapPage = {
-      bookings_recap: [],
+      bookingsRecap: [],
       page: 0,
       pages: 0,
       total: 0,
     }
-    ;(loadFilteredBookingsRecap as jest.Mock).mockResolvedValue(
+    ;(api.getBookingsGetBookingsPro as jest.Mock).mockResolvedValue(
       emptyBookingsRecapPage
     )
 
@@ -119,7 +141,7 @@ describe('components | BookingsRecap | Pro user', () => {
   })
 
   afterEach(() => {
-    ;(loadFilteredBookingsRecap as jest.Mock).mockReset()
+    ;(api.getBookingsGetBookingsPro as jest.Mock).mockReset()
   })
 
   it('should show a pre-filter section', async () => {
@@ -148,11 +170,11 @@ describe('components | BookingsRecap | Pro user', () => {
 
   it('should request bookings pre-filtered by venue and period when coming from home page', async () => {
     // Given
-    ;(loadFilteredBookingsRecap as jest.Mock).mockResolvedValue({
+    ;(api.getBookingsGetBookingsPro as jest.Mock).mockResolvedValue({
       page: 1,
       pages: 1,
       total: 1,
-      bookings_recap: [bookingRecapFactory()],
+      bookingsRecap: [bookingRecapFactory()],
     })
 
     // When
@@ -170,15 +192,27 @@ describe('components | BookingsRecap | Pro user', () => {
 
     // Then
     expect(screen.getByLabelText('Lieu')).toHaveValue(venue.id)
-    expect(getNthCallNthArg(loadFilteredBookingsRecap, 1).venueId).toBe(
-      venue.id
-    )
     expect(
-      getNthCallNthArg(loadFilteredBookingsRecap, 1).bookingPeriodBeginningDate
-    ).toStrictEqual(DEFAULT_PRE_FILTERS.bookingBeginningDate)
+      getNthCallNthArg(
+        api.getBookingsGetBookingsPro,
+        1,
+        NTH_ARGUMENT_GET_BOOKINGS.venueId
+      )
+    ).toBe(venue.id)
     expect(
-      getNthCallNthArg(loadFilteredBookingsRecap, 1).bookingPeriodEndingDate
-    ).toStrictEqual(DEFAULT_PRE_FILTERS.bookingEndingDate)
+      getNthCallNthArg(
+        api.getBookingsGetBookingsPro,
+        1,
+        NTH_ARGUMENT_GET_BOOKINGS.bookingBeginningDate
+      )
+    ).toStrictEqual(FORMATTED_DEFAULT_BEGINNING_DATE)
+    expect(
+      getNthCallNthArg(
+        api.getBookingsGetBookingsPro,
+        1,
+        NTH_ARGUMENT_GET_BOOKINGS.bookingEndingDate
+      )
+    ).toStrictEqual(FORMATTED_DEFAULT_ENDING_DATE)
     expect(
       screen.getByRole('checkbox', { name: 'réservé', checked: true })
     ).toBeInTheDocument()
@@ -189,7 +223,7 @@ describe('components | BookingsRecap | Pro user', () => {
     await renderBookingsRecap(store)
 
     // Then
-    expect(loadFilteredBookingsRecap).not.toHaveBeenCalled()
+    expect(api.getBookingsGetBookingsPro).not.toHaveBeenCalled()
     const choosePreFiltersMessage = screen.getByText(
       'Pour visualiser vos réservations, veuillez sélectionner un ou plusieurs des filtres précédents et cliquer sur « Afficher »'
     )
@@ -199,11 +233,11 @@ describe('components | BookingsRecap | Pro user', () => {
   it('should request bookings of venue requested by user when user clicks on "Afficher"', async () => {
     // Given
     const bookingRecap = bookingRecapFactory()
-    ;(loadFilteredBookingsRecap as jest.Mock).mockResolvedValue({
+    ;(api.getBookingsGetBookingsPro as jest.Mock).mockResolvedValue({
       page: 1,
       pages: 1,
       total: 1,
-      bookings_recap: [bookingRecap],
+      bookingsRecap: [bookingRecap],
     })
     const { submitFilters } = await renderBookingsRecap(store)
 
@@ -213,18 +247,22 @@ describe('components | BookingsRecap | Pro user', () => {
 
     // Then
     await screen.findAllByText(bookingRecap.stock.offer_name)
-    expect(getNthCallNthArg(loadFilteredBookingsRecap, 1).venueId).toBe(
-      venue.id
-    )
+    expect(
+      getNthCallNthArg(
+        api.getBookingsGetBookingsPro,
+        1,
+        NTH_ARGUMENT_GET_BOOKINGS.venueId
+      )
+    ).toBe(venue.id)
   })
 
   it('should warn user that his prefilters returned no booking when no bookings where returned by selected pre-filters', async () => {
     // Given
-    ;(loadFilteredBookingsRecap as jest.Mock).mockResolvedValue({
+    ;(api.getBookingsGetBookingsPro as jest.Mock).mockResolvedValue({
       page: 1,
       pages: 0,
       total: 0,
-      bookings_recap: [],
+      bookingsRecap: [],
     })
     const { submitFilters } = await renderBookingsRecap(store)
 
@@ -240,11 +278,11 @@ describe('components | BookingsRecap | Pro user', () => {
 
   it('should allow user to reset its pre-filters in the no bookings warning', async () => {
     // Given
-    ;(loadFilteredBookingsRecap as jest.Mock).mockResolvedValue({
+    ;(api.getBookingsGetBookingsPro as jest.Mock).mockResolvedValue({
       page: 1,
       pages: 0,
       total: 0,
-      bookings_recap: [],
+      bookingsRecap: [],
     })
     const { submitFilters } = await renderBookingsRecap(store)
     userEvent.selectOptions(screen.getByLabelText('Lieu'), venue.id)
@@ -265,11 +303,11 @@ describe('components | BookingsRecap | Pro user', () => {
   it('should not allow user to reset prefilters when none were applied', async () => {
     // Given
     const bookingRecap = bookingRecapFactory()
-    ;(loadFilteredBookingsRecap as jest.Mock).mockResolvedValue({
+    ;(api.getBookingsGetBookingsPro as jest.Mock).mockResolvedValue({
       page: 1,
       pages: 1,
       total: 1,
-      bookings_recap: [bookingRecap],
+      bookingsRecap: [bookingRecap],
     })
     const { submitFilters } = await renderBookingsRecap(store)
 
@@ -285,11 +323,11 @@ describe('components | BookingsRecap | Pro user', () => {
   it('should allow user to reset prefilters when some where applied', async () => {
     // Given
     const bookingRecap = bookingRecapFactory()
-    ;(loadFilteredBookingsRecap as jest.Mock).mockResolvedValue({
+    ;(api.getBookingsGetBookingsPro as jest.Mock).mockResolvedValue({
       page: 1,
       pages: 1,
       total: 1,
-      bookings_recap: [bookingRecap],
+      bookingsRecap: [bookingRecap],
     })
     const { submitFilters } = await renderBookingsRecap(store)
     userEvent.selectOptions(screen.getByLabelText('Lieu'), venue.id)
@@ -326,11 +364,11 @@ describe('components | BookingsRecap | Pro user', () => {
   it('should ask user to select a pre-filter when user reset them', async () => {
     // Given
     const bookingRecap = bookingRecapFactory()
-    ;(loadFilteredBookingsRecap as jest.Mock).mockResolvedValue({
+    ;(api.getBookingsGetBookingsPro as jest.Mock).mockResolvedValue({
       page: 1,
       pages: 1,
       total: 1,
-      bookings_recap: [bookingRecap],
+      bookingsRecap: [bookingRecap],
     })
     const { submitFilters } = await renderBookingsRecap(store)
     userEvent.selectOptions(screen.getByLabelText('Lieu'), venue.id)
@@ -408,15 +446,15 @@ describe('components | BookingsRecap | Pro user', () => {
       page: 1,
       pages: 2,
       total: 2,
-      bookings_recap: [bookings1],
+      bookingsRecap: [bookings1],
     }
     const secondPaginatedBookingRecapReturned = {
       page: 2,
       pages: 2,
       total: 2,
-      bookings_recap: [bookings2],
+      bookingsRecap: [bookings2],
     }
-    ;(loadFilteredBookingsRecap as jest.Mock)
+    ;(api.getBookingsGetBookingsPro as jest.Mock)
       .mockResolvedValueOnce(paginatedBookingRecapReturned)
       .mockResolvedValueOnce(secondPaginatedBookingRecapReturned)
     const { submitFilters } = await renderBookingsRecap(store)
@@ -433,25 +471,45 @@ describe('components | BookingsRecap | Pro user', () => {
     const firstBookingRecap = screen.getAllByText(bookings1.stock.offer_name)
     expect(firstBookingRecap).toHaveLength(2)
 
-    expect(loadFilteredBookingsRecap).toHaveBeenCalledTimes(2)
-    expect(getNthCallNthArg(loadFilteredBookingsRecap, 1).page).toBe(1)
-    expect(getNthCallNthArg(loadFilteredBookingsRecap, 1).venueId).toBe(
-      venue.id
-    )
-    expect(getNthCallNthArg(loadFilteredBookingsRecap, 2).page).toBe(2)
-    expect(getNthCallNthArg(loadFilteredBookingsRecap, 2).venueId).toBe(
-      venue.id
-    )
+    expect(api.getBookingsGetBookingsPro).toHaveBeenCalledTimes(2)
+    expect(
+      getNthCallNthArg(
+        api.getBookingsGetBookingsPro,
+        1,
+        NTH_ARGUMENT_GET_BOOKINGS.page
+      )
+    ).toBe(1)
+    expect(
+      getNthCallNthArg(
+        api.getBookingsGetBookingsPro,
+        1,
+        NTH_ARGUMENT_GET_BOOKINGS.venueId
+      )
+    ).toBe(venue.id)
+    expect(
+      getNthCallNthArg(
+        api.getBookingsGetBookingsPro,
+        2,
+        NTH_ARGUMENT_GET_BOOKINGS.page
+      )
+    ).toBe(2)
+    expect(
+      getNthCallNthArg(
+        api.getBookingsGetBookingsPro,
+        2,
+        NTH_ARGUMENT_GET_BOOKINGS.venueId
+      )
+    ).toBe(venue.id)
   })
 
   it('should request bookings of event date requested by user when user clicks on "Afficher"', async () => {
     // Given
     const bookingRecap = bookingRecapFactory()
-    ;(loadFilteredBookingsRecap as jest.Mock).mockResolvedValue({
+    ;(api.getBookingsGetBookingsPro as jest.Mock).mockResolvedValue({
       page: 1,
       pages: 1,
       total: 1,
-      bookings_recap: [bookingRecap],
+      bookingsRecap: [bookingRecap],
     })
     const { submitFilters } = await renderBookingsRecap(store)
 
@@ -463,18 +521,22 @@ describe('components | BookingsRecap | Pro user', () => {
     // Then
     await screen.findAllByText(bookingRecap.stock.offer_name)
     expect(
-      getNthCallNthArg(loadFilteredBookingsRecap, 1).eventDate
-    ).toStrictEqual(new Date(2020, 5, 8))
+      getNthCallNthArg(
+        api.getBookingsGetBookingsPro,
+        1,
+        NTH_ARGUMENT_GET_BOOKINGS.eventDate
+      )
+    ).toStrictEqual(formatBrowserTimezonedDateAsUTC(new Date(2020, 5, 8)))
   })
 
   it('should set booking period to null when user select event date', async () => {
     // Given
     const bookingRecap = bookingRecapFactory()
-    ;(loadFilteredBookingsRecap as jest.Mock).mockResolvedValue({
+    ;(api.getBookingsGetBookingsPro as jest.Mock).mockResolvedValue({
       page: 1,
       pages: 1,
       total: 1,
-      bookings_recap: [bookingRecap],
+      bookingsRecap: [bookingRecap],
     })
     const { submitFilters } = await renderBookingsRecap(store)
 
@@ -485,21 +547,29 @@ describe('components | BookingsRecap | Pro user', () => {
     // Then
     await screen.findAllByText(bookingRecap.stock.offer_name)
     expect(
-      getNthCallNthArg(loadFilteredBookingsRecap, 1).bookingPeriodEndingDate
-    ).toBeNull()
+      getNthCallNthArg(
+        api.getBookingsGetBookingsPro,
+        1,
+        NTH_ARGUMENT_GET_BOOKINGS.bookingEndingDate
+      )
+    ).toBeUndefined()
     expect(
-      getNthCallNthArg(loadFilteredBookingsRecap, 1).bookingPeriodBeginningDate
-    ).toBeNull()
+      getNthCallNthArg(
+        api.getBookingsGetBookingsPro,
+        1,
+        NTH_ARGUMENT_GET_BOOKINGS.bookingBeginningDate
+      )
+    ).toBeUndefined()
   })
 
   it('should request bookings of default period when user clicks on "Afficher" without selecting a period', async () => {
     // Given
     const bookingRecap = bookingRecapFactory()
-    ;(loadFilteredBookingsRecap as jest.Mock).mockResolvedValue({
+    ;(api.getBookingsGetBookingsPro as jest.Mock).mockResolvedValue({
       page: 1,
       pages: 1,
       total: 1,
-      bookings_recap: [bookingRecap],
+      bookingsRecap: [bookingRecap],
     })
     const { submitFilters } = await renderBookingsRecap(store)
 
@@ -509,21 +579,29 @@ describe('components | BookingsRecap | Pro user', () => {
     // Then
     await screen.findAllByText(bookingRecap.stock.offer_name)
     expect(
-      getNthCallNthArg(loadFilteredBookingsRecap, 1).bookingPeriodBeginningDate
-    ).toStrictEqual(DEFAULT_PRE_FILTERS.bookingBeginningDate)
+      getNthCallNthArg(
+        api.getBookingsGetBookingsPro,
+        1,
+        NTH_ARGUMENT_GET_BOOKINGS.bookingBeginningDate
+      )
+    ).toStrictEqual(FORMATTED_DEFAULT_BEGINNING_DATE)
     expect(
-      getNthCallNthArg(loadFilteredBookingsRecap, 1).bookingPeriodEndingDate
-    ).toStrictEqual(DEFAULT_PRE_FILTERS.bookingEndingDate)
+      getNthCallNthArg(
+        api.getBookingsGetBookingsPro,
+        1,
+        NTH_ARGUMENT_GET_BOOKINGS.bookingEndingDate
+      )
+    ).toStrictEqual(FORMATTED_DEFAULT_ENDING_DATE)
   })
 
   it('should request bookings of selected period when user clicks on "Afficher"', async () => {
     // Given
     const bookingRecap = bookingRecapFactory()
-    ;(loadFilteredBookingsRecap as jest.Mock).mockResolvedValue({
+    ;(api.getBookingsGetBookingsPro as jest.Mock).mockResolvedValue({
       page: 1,
       pages: 1,
       total: 1,
-      bookings_recap: [bookingRecap],
+      bookingsRecap: [bookingRecap],
     })
     const { submitFilters } = await renderBookingsRecap(store)
 
@@ -541,21 +619,39 @@ describe('components | BookingsRecap | Pro user', () => {
     // Then
     await screen.findAllByText(bookingRecap.stock.offer_name)
     expect(
-      getNthCallNthArg(loadFilteredBookingsRecap, 1).bookingPeriodBeginningDate
-    ).toStrictEqual(new Date(2020, 4, 10))
+      getNthCallNthArg(
+        api.getBookingsGetBookingsPro,
+        1,
+        NTH_ARGUMENT_GET_BOOKINGS.bookingBeginningDate
+      )
+    ).toStrictEqual(
+      formatBrowserTimezonedDateAsUTC(
+        new Date(2020, 4, 10),
+        FORMAT_ISO_DATE_ONLY
+      )
+    )
     expect(
-      getNthCallNthArg(loadFilteredBookingsRecap, 1).bookingPeriodEndingDate
-    ).toStrictEqual(new Date(2020, 5, 5))
+      getNthCallNthArg(
+        api.getBookingsGetBookingsPro,
+        1,
+        NTH_ARGUMENT_GET_BOOKINGS.bookingEndingDate
+      )
+    ).toStrictEqual(
+      formatBrowserTimezonedDateAsUTC(
+        new Date(2020, 5, 5),
+        FORMAT_ISO_DATE_ONLY
+      )
+    )
   })
 
   it('should set default beginning period date when user empties it and clicks on "Afficher"', async () => {
     // Given
     const bookingRecap = bookingRecapFactory()
-    ;(loadFilteredBookingsRecap as jest.Mock).mockResolvedValue({
+    ;(api.getBookingsGetBookingsPro as jest.Mock).mockResolvedValue({
       page: 1,
       pages: 1,
       total: 1,
-      bookings_recap: [bookingRecap],
+      bookingsRecap: [bookingRecap],
     })
     const { submitFilters } = await renderBookingsRecap(store)
 
@@ -571,20 +667,27 @@ describe('components | BookingsRecap | Pro user', () => {
 
     // Then
     await screen.findAllByText(bookingRecap.stock.offer_name)
-    const thirtyDaysBeforeEndingDate = new Date(2020, 4, 13)
+    const thirtyDaysBeforeEndingDate = formatBrowserTimezonedDateAsUTC(
+      new Date(2020, 4, 13),
+      FORMAT_ISO_DATE_ONLY
+    )
     expect(
-      getNthCallNthArg(loadFilteredBookingsRecap, 1).bookingPeriodBeginningDate
+      getNthCallNthArg(
+        api.getBookingsGetBookingsPro,
+        1,
+        NTH_ARGUMENT_GET_BOOKINGS.bookingBeginningDate
+      )
     ).toStrictEqual(thirtyDaysBeforeEndingDate)
   })
 
   it('should set default ending period date when user empties it and clicks on "Afficher"', async () => {
     // Given
     const bookingRecap = bookingRecapFactory()
-    ;(loadFilteredBookingsRecap as jest.Mock).mockResolvedValue({
+    ;(api.getBookingsGetBookingsPro as jest.Mock).mockResolvedValue({
       page: 1,
       pages: 1,
       total: 1,
-      bookings_recap: [bookingRecap],
+      bookingsRecap: [bookingRecap],
     })
     const { submitFilters } = await renderBookingsRecap(store)
 
@@ -600,20 +703,27 @@ describe('components | BookingsRecap | Pro user', () => {
 
     // Then
     await screen.findAllByText(bookingRecap.stock.offer_name)
-    const thirtyDaysAfterBeginningDate = new Date(2020, 5, 9)
+    const thirtyDaysAfterBeginningDate = formatBrowserTimezonedDateAsUTC(
+      new Date(2020, 5, 9),
+      FORMAT_ISO_DATE_ONLY
+    )
     expect(
-      getNthCallNthArg(loadFilteredBookingsRecap, 1).bookingPeriodEndingDate
+      getNthCallNthArg(
+        api.getBookingsGetBookingsPro,
+        1,
+        NTH_ARGUMENT_GET_BOOKINGS.bookingEndingDate
+      )
     ).toStrictEqual(thirtyDaysAfterBeginningDate)
   })
 
   it('should not be possible to select ending period date greater than today', async () => {
     // Given
     const bookingRecap = bookingRecapFactory()
-    ;(loadFilteredBookingsRecap as jest.Mock).mockResolvedValue({
+    ;(api.getBookingsGetBookingsPro as jest.Mock).mockResolvedValue({
       page: 1,
       pages: 1,
       total: 1,
-      bookings_recap: [bookingRecap],
+      bookingsRecap: [bookingRecap],
     })
     const { submitFilters } = await renderBookingsRecap(store)
 
@@ -629,8 +739,12 @@ describe('components | BookingsRecap | Pro user', () => {
     // Then
     await screen.findAllByText(bookingRecap.stock.offer_name)
     expect(
-      getNthCallNthArg(loadFilteredBookingsRecap, 1).bookingPeriodEndingDate
-    ).toStrictEqual(DEFAULT_PRE_FILTERS.bookingEndingDate)
+      getNthCallNthArg(
+        api.getBookingsGetBookingsPro,
+        1,
+        NTH_ARGUMENT_GET_BOOKINGS.bookingEndingDate
+      )
+    ).toStrictEqual(FORMATTED_DEFAULT_ENDING_DATE)
   })
 
   it('should reset bookings recap list when applying filters', async () => {
@@ -643,15 +757,15 @@ describe('components | BookingsRecap | Pro user', () => {
       page: 1,
       pages: 1,
       total: 1,
-      bookings_recap: [booking],
+      bookingsRecap: [booking],
     }
     const otherVenuePaginatedBookingRecapReturned = {
       page: 1,
       pages: 1,
       total: 1,
-      bookings_recap: [otherVenueBooking],
+      bookingsRecap: [otherVenueBooking],
     }
-    ;(loadFilteredBookingsRecap as jest.Mock)
+    ;(api.getBookingsGetBookingsPro as jest.Mock)
       .mockResolvedValueOnce(otherVenuePaginatedBookingRecapReturned)
       .mockResolvedValueOnce(paginatedBookingRecapReturned)
     const { submitFilters } = await renderBookingsRecap(store)
@@ -676,8 +790,8 @@ describe('components | BookingsRecap | Pro user', () => {
 
   it('should show notification with information message when there are more than 5 pages', async () => {
     // Given
-    const bookingsRecap = { pages: 6, bookings_recap: [] }
-    ;(loadFilteredBookingsRecap as jest.Mock)
+    const bookingsRecap = { pages: 6, bookingsRecap: [] }
+    ;(api.getBookingsGetBookingsPro as jest.Mock)
       .mockResolvedValueOnce({ ...bookingsRecap, page: 1 })
       .mockResolvedValueOnce({ ...bookingsRecap, page: 2 })
       .mockResolvedValueOnce({ ...bookingsRecap, page: 3 })
@@ -695,13 +809,13 @@ describe('components | BookingsRecap | Pro user', () => {
       'L’affichage des réservations a été limité à 5 000 réservations. Vous pouvez modifier les filtres pour affiner votre recherche.'
     )
     expect(informationalMessage).toBeInTheDocument()
-    expect(loadFilteredBookingsRecap).toHaveBeenCalledTimes(5)
+    expect(api.getBookingsGetBookingsPro).toHaveBeenCalledTimes(5)
   })
 
   it('should not show notification with information message when there are 5 pages or less', async () => {
     // Given
-    const bookingsRecap = { pages: 5, bookings_recap: [] }
-    ;(loadFilteredBookingsRecap as jest.Mock)
+    const bookingsRecap = { pages: 5, bookingsRecap: [] }
+    ;(api.getBookingsGetBookingsPro as jest.Mock)
       .mockResolvedValueOnce({ ...bookingsRecap, page: 1 })
       .mockResolvedValueOnce({ ...bookingsRecap, page: 2 })
       .mockResolvedValueOnce({ ...bookingsRecap, page: 3 })
@@ -715,7 +829,7 @@ describe('components | BookingsRecap | Pro user', () => {
 
     // Then
     await waitFor(() =>
-      expect(loadFilteredBookingsRecap).toHaveBeenCalledTimes(5)
+      expect(api.getBookingsGetBookingsPro).toHaveBeenCalledTimes(5)
     )
     const informationalMessage = screen.queryByText(
       'L’affichage des réservations a été limité à 5 000 réservations. Vous pouvez modifier les filtres pour affiner votre recherche.'

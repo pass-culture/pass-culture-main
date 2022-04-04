@@ -1,4 +1,3 @@
-from datetime import date
 from datetime import datetime
 from enum import Enum
 from typing import Optional
@@ -60,7 +59,7 @@ class BookingRecapResponseModel(BaseModel):
 
 
 class ListBookingsResponseModel(BaseModel):
-    bookings_recap: list[BookingRecapResponseModel]
+    bookingsRecap: list[BookingRecapResponseModel]
     page: int
     pages: int
     total: int
@@ -73,7 +72,7 @@ class PatchBookingByTokenQueryModel(BaseModel):
 
 def serialize_bookings_recap_paginated(bookings_recap_paginated: BookingsRecapPaginated) -> ListBookingsResponseModel:
     return ListBookingsResponseModel(
-        bookings_recap=[
+        bookingsRecap=[
             _serialize_booking_recap(booking_recap) for booking_recap in bookings_recap_paginated.bookings_recap
         ],
         page=bookings_recap_paginated.page,
@@ -163,10 +162,10 @@ def _serialize_booking_recap(booking_recap: BookingRecap) -> BookingRecapRespons
 class ListBookingsQueryModel(BaseModel):
     page: int = 1
     venue_id: Optional[int]
-    event_date: Optional[datetime]
+    event_date: Optional[str]
     booking_status_filter: Optional[BookingStatusFilter]
-    booking_period_beginning_date: Optional[date]
-    booking_period_ending_date: Optional[date]
+    booking_period_beginning_date: Optional[str]
+    booking_period_ending_date: Optional[str]
     offer_type: Optional[OfferType]
 
     _dehumanize_venue_id = dehumanize_field("venue_id")

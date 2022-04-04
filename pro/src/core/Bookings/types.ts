@@ -8,3 +8,13 @@ export type TPreFilters = {
   bookingStatusFilter: BookingStatusFilter
   offerType: string
 }
+
+export type TAPIFilters = {
+  venueId: string
+  eventDate: string
+  bookingPeriodBeginningDate: string
+  bookingPeriodEndingDate: string
+  bookingStatusFilter: BookingStatusFilter
+  offerType: string
+  page: number
+}
