@@ -35,12 +35,10 @@ class CulturalSurveyTasksTest:
             '{"question_id": "FESTIVALS", "choices": ["FESTIVAL_LIVRE"]}]'
         )
 
-        # user_data.update({"answers": self.extract_answers(result["answers"])})
-
         # Note: if the path does not exist, GCP creates the necessary folders
         store_public_object.assert_called_once_with(
             folder="data-bucket-dev",
-            object_id="data-bucket-dev/QPI_exports/qpi_answers_20200101/1.jsonl",
+            object_id="QPI_exports/qpi_answers_20200101/1.jsonl",
             blob=bytes(answers_str, "utf-8"),
             content_type="application/json",
         )
