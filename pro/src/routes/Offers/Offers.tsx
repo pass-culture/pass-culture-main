@@ -10,14 +10,9 @@ import Spinner from 'components/layout/Spinner'
 import { DEFAULT_SEARCH_FILTERS, hasSearchFilters } from 'core/Offers'
 import { getOffererAdapter } from 'core/Offers/adapters'
 import { useQuerySearchFilters } from 'core/Offers/hooks'
-import {
-  Audience,
-  Offerer,
-  Offer,
-  Option,
-  TSearchFilters,
-} from 'core/Offers/types'
+import { Offerer, Offer, Option, TSearchFilters } from 'core/Offers/types'
 import { computeOffersUrl } from 'core/Offers/utils'
+import { Audience } from 'core/shared'
 import {
   fetchAllVenuesByProUser,
   formatAndOrderVenues,
