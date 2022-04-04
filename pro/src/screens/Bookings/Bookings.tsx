@@ -1,6 +1,7 @@
 import type { Location } from 'history'
 import React, { useCallback, useState, useMemo } from 'react'
 
+import { BookingRecapResponseModel } from 'api/v1/gen'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Spinner from 'components/layout/Spinner'
 import Titles from 'components/layout/Titles/Titles'
@@ -14,7 +15,7 @@ import { DEFAULT_PRE_FILTERS } from '../../components/pages/Bookings/PreFilters/
 import PreFilters from '../../components/pages/Bookings/PreFilters/PreFilters'
 
 interface IBookingsProps {
-  bookingsRecap: any[]
+  bookingsRecap: BookingRecapResponseModel[]
   downloadBookingsCSV: (filters: TPreFilters) => void
   hasBooking: boolean
   isBookingFiltersActive: boolean
