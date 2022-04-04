@@ -4,9 +4,13 @@ from flask_login import current_user
 from flask_login import login_required
 
 from pcapi.core.educational import api as educational_api
+from pcapi.core.educational import exceptions as educational_exceptions
+from pcapi.core.educational import repository as educational_repository
+from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import collective_offers_serialize
 from pcapi.serialization.decorator import spectree_serialize
+from pcapi.utils.human_ids import dehumanize
 
 from . import blueprint
 
@@ -35,3 +39,21 @@ def list_collective_offers(
     return collective_offers_serialize.ListCollectiveOffersResponseModel(
         __root__=collective_offers_serialize.serialize_collective_offers_capped(capped_offers)
     )
+
+
+@private_api.route("/collective/offers/<offer_id>", methods=["GET"])
+@login_required
+@spectree_serialize(
+    response_model=collective_offers_serialize.GetCollectiveOfferResponseModel, api=blueprint.pro_private_schema
+)
+def get_collective_offer(offer_id: str) -> collective_offers_serialize.GetCollectiveOfferResponseModel:
+    try:
+        offer = educational_repository.get_offer_by_id(dehumanize(offer_id))
+    except educational_exceptions.CollectiveOfferNotFound:
+        raise ApiErrors(
+            errors={
+                "global": ["Aucun objet ne correspond à cet identifiant dans notre base de données"],
+            },
+            status_code=404,
+        )
+    return collective_offers_serialize.GetCollectiveOfferResponseModel.from_orm(offer)
