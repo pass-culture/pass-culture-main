@@ -56,7 +56,6 @@ const getOfferConditionalFields = ({
   isUserAdmin = null,
   receiveNotificationEmails = null,
   venue = null,
-  withdrawalType = undefined,
 }) => {
   let offerConditionalFields = []
 
@@ -90,13 +89,7 @@ const getOfferConditionalFields = ({
 
   if (WITHDRAWAL_TYPE_COMPATIBLE_SUBCATEGORIE.includes(offerSubCategory?.id)) {
     offerConditionalFields.push('withdrawalType')
-
-    if (
-      withdrawalType === OFFER_WITHDRAWAL_TYPE_OPTIONS.ON_SITE ||
-      withdrawalType === OFFER_WITHDRAWAL_TYPE_OPTIONS.BY_EMAIL
-    ) {
-      offerConditionalFields.push('withdrawalDelay')
-    }
+    offerConditionalFields.push('withdrawalDelay')
   }
 
   return offerConditionalFields
@@ -572,6 +565,14 @@ const OfferForm = ({
 
         if (!receiveNotificationEmails) {
           submittedValues.bookingEmail = null
+        }
+
+        if (
+          submittedValues.withdrawalType &&
+          submittedValues.withdrawalType ===
+            OFFER_WITHDRAWAL_TYPE_OPTIONS.NO_TICKET
+        ) {
+          submittedValues.withdrawalDelay = null
         }
 
         await onSubmit(submittedValues)
