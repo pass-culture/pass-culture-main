@@ -12,6 +12,7 @@ import BookingsScreen from 'screens/Bookings'
 import {
   getBookingsCSVFileAdapter,
   getUserHasBookingsAdapter,
+  getVenuesAdapter,
 } from './adapters'
 import getFilteredBookingsRecapAdapter from './adapters/getFilteredBookingsRecapAdapter'
 
@@ -33,6 +34,10 @@ const Bookings = (): JSX.Element => {
   const [wereBookingsRequested, setWereBookingsRequested] = useState(false)
   const isBookingFiltersActive = useActiveFeature('ENABLE_NEW_BOOKING_FILTERS')
   const [hasBooking, setHasBooking] = useState(true)
+  const [isLocalLoading, setIsLocalLoading] = useState(false)
+  const [venues, setVenues] = useState<{ id: string; displayName: string }[]>(
+    []
+  )
 
   const loadBookingsRecap = useCallback(
     async (preFilters: TPreFilters) => {
@@ -118,6 +123,20 @@ const Bookings = (): JSX.Element => {
     }
   }, [location.state, loadBookingsRecap])
 
+  useEffect(() => {
+    async function fetchVenues() {
+      setIsLocalLoading(true)
+      const { isOk, message, payload } = await getVenuesAdapter()
+
+      if (!isOk) {
+        notify.error(message)
+      }
+      setVenues(payload.venues)
+      setIsLocalLoading(false)
+    }
+    fetchVenues()
+  }, [setIsLocalLoading, setVenues, notify])
+
   return (
     <BookingsScreen
       audience={Audience.INDIVIDUAL}
@@ -126,6 +145,7 @@ const Bookings = (): JSX.Element => {
       hasBooking={hasBooking}
       isBookingFiltersActive={isBookingFiltersActive}
       isDownloadingCSV={isDownloadingCSV}
+      isLocalLoading={isLocalLoading}
       isTableLoading={isTableLoading}
       loadBookingsRecap={loadBookingsRecap}
       locationState={location.state}
@@ -134,6 +154,7 @@ const Bookings = (): JSX.Element => {
       }
       setWereBookingsRequested={setWereBookingsRequested}
       venueId={location.state?.venueId}
+      venues={venues}
       wereBookingsRequested={wereBookingsRequested}
     />
   )

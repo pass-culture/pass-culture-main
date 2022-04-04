@@ -4,8 +4,6 @@ import React, { useCallback, useEffect, useState } from 'react'
 
 import { TPreFilters } from 'core/Bookings'
 import FilterByOfferType from 'new_components/FilterByOfferType'
-import * as pcapi from 'repository/pcapi/pcapi'
-import { formatAndOrderVenues } from 'repository/venuesService'
 
 import FilterByBookingPeriod from './FilterByBookingPeriod'
 import FilterByBookingStatusPeriod from './FilterByBookingStatusPeriod'
@@ -22,6 +20,8 @@ interface IPreFilters {
   isFiltersDisabled: boolean
   isTableLoading: boolean
   wereBookingsRequested: boolean
+  isLocalLoading: boolean
+  venues: { id: string; displayName: string }[]
 }
 
 const PreFilters = ({
@@ -34,22 +34,12 @@ const PreFilters = ({
   isTableLoading,
   isDownloadingCSV,
   wereBookingsRequested,
+  isLocalLoading,
+  venues,
 }: IPreFilters): JSX.Element => {
   const [selectedPreFilters, setSelectedPreFilters] = useState({
     ...appliedPreFilters,
   })
-  const [venues, setVenues] = useState([])
-  const [isLocalLoading, setIsLocalLoading] = useState(false)
-
-  useEffect(() => {
-    async function fetchVenues() {
-      setIsLocalLoading(true)
-      const venuesForOfferer = await pcapi.getVenuesForOfferer()
-      setVenues(formatAndOrderVenues(venuesForOfferer))
-      setIsLocalLoading(false)
-    }
-    fetchVenues()
-  }, [setIsLocalLoading, setVenues])
 
   useEffect(
     () => setSelectedPreFilters({ ...appliedPreFilters }),
