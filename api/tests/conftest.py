@@ -17,6 +17,7 @@ from requests import Response
 from requests.auth import _basic_auth_str
 from requests.exceptions import ConnectionError as RequestConnectionError
 import requests_mock
+from sqlalchemy.orm import scoped_session, Session, sessionmaker
 
 from pcapi import settings
 import pcapi.core.educational.testing as adage_api_testing
@@ -38,12 +39,12 @@ from pcapi.routes import install_all_routes
 
 from tests.serialization.serialization_decorator_test import test_blueprint
 
-from .pfsa import _engine  # pylint: disable=unused-import
-from .pfsa import _session  # pylint: disable=unused-import
-from .pfsa import _transaction  # pylint: disable=unused-import
-from .pfsa import db_session  # pylint: disable=unused-import
-from .pfsa import pytest_addoption as pfsa_addoption
-from .pfsa import pytest_configure as pfsa_configure
+# from .pfsa import _engine  # pylint: disable=unused-import
+# from .pfsa import _session  # pylint: disable=unused-import
+# from .pfsa import _transaction  # pylint: disable=unused-import
+# from .pfsa import db_session  # pylint: disable=unused-import
+# from .pfsa import pytest_addoption as pfsa_addoption
+# from .pfsa import pytest_configure as pfsa_configure
 
 
 def run_migrations():
@@ -52,12 +53,12 @@ def run_migrations():
     command.upgrade(alembic_cfg, "heads")
 
 
-def pytest_addoption(parser):
-    pfsa_addoption(parser)
+# def pytest_addoption(parser):
+#     pfsa_addoption(parser)
 
 
 def pytest_configure(config):
-    pfsa_configure(config)
+    # pfsa_configure(config)
     if config.getoption("capture") == "no":
         TestClient.WITH_DOC = True
 
@@ -82,10 +83,10 @@ def app_fixture():
 
         app.register_blueprint(test_blueprint, url_prefix="/test-blueprint")
 
-        install_database_extensions()
-        run_migrations()
-        install_feature_flags()
-        install_local_providers()
+        # install_database_extensions()
+        # run_migrations()
+        # install_feature_flags()
+        # install_local_providers()
 
         yield app
 
@@ -142,22 +143,65 @@ def clean_database(f: object) -> object:
     return decorated_function
 
 
+# FIXME (ASK, SA1.4): remove this
+# @pytest.fixture(scope="session")
+# def _db(app):
+#     """
+#     Provide the transactional fixtures with access to the database via a Flask-SQLAlchemy
+#     database connection.
+#     """
+#     mock_db = db
+#     mock_db.init_app(app)
+#     install_database_extensions()
+#     run_migrations()
+#     install_feature_flags()
+#
+#     install_local_providers()
+#     clean_all_database()
+#
+#     return mock_db
+
+
 @pytest.fixture(scope="session")
-def _db(app):
-    """
-    Provide the transactional fixtures with access to the database via a Flask-SQLAlchemy
-    database connection.
-    """
-    mock_db = db
-    mock_db.init_app(app)
+def db_engine():
+    return db.get_engine()
+
+
+@pytest.fixture(scope="session")
+def db_initialization(db_engine, app):
+    connection = db_engine.connect()
+    transaction = connection.begin()
+    session = scoped_session(sessionmaker(bind=connection))
+    db.session = session
+
+    db.init_app(app)
     install_database_extensions()
     run_migrations()
     install_feature_flags()
-
     install_local_providers()
-    clean_all_database()
 
-    return mock_db
+    session.commit()
+    session.close()
+    transaction.commit()
+    connection.close()
+
+    yield
+
+    db.Model.metadata.drop_all()
+
+
+@pytest.fixture(scope="function", autouse=True)
+def db_session(db_engine, db_initialization):
+    connection = db_engine.connect()
+    transaction = connection.begin()
+    session = scoped_session(sessionmaker(bind=connection))
+    db.session = session
+
+    yield session
+
+    session.close()
+    transaction.rollback()
+    connection.close()
 
 
 pcapi.core.testing.register_event_for_assert_num_queries()

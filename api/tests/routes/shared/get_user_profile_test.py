@@ -17,7 +17,6 @@ from tests.conftest import TestClient
 
 
 class Returns200Test:
-    @pytest.mark.usefixtures("db_session")
     def when_user_is_logged_in_and_has_no_deposit(self, app):
         user = users_factories.BeneficiaryGrant18Factory(
             civility="M.",

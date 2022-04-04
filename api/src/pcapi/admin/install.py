@@ -124,7 +124,7 @@ def install_views(admin: Admin, session: Session) -> None:
             session,
             name="Comptes admin",
             category=Category.USERS,
-            endpoint="/admin_users",
+            endpoint="admin_users",
         )
     )
     admin.add_view(
