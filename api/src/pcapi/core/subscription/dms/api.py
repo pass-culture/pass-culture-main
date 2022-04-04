@@ -226,10 +226,7 @@ def _process_user_not_found_error(email: str, application_id: int, procedure_id:
     )
 
 
-def process_application(
-    user: users_models.User,
-    result_content: fraud_models.DMSContent,
-) -> None:
+def process_application(user: users_models.User, result_content: fraud_models.DMSContent) -> None:
     try:
         fraud_check = fraud_api.on_dms_fraud_result(user, result_content)
     except Exception as exc:  # pylint: disable=broad-except
@@ -241,13 +238,13 @@ def process_application(
         subscription_api.update_user_birth_date(user, result_content.get_birth_date())
         return
 
+    fraud_api.create_honor_statement_fraud_check(
+        user, "honor statement contained in DMS application", fraud_check.eligibilityType
+    )
     try:
-        fraud_api.create_honor_statement_fraud_check(
-            user, "honor statement contained in DMS application", fraud_check.eligibilityType
-        )
         subscription_api.on_successful_application(user=user, source_data=result_content)
     except Exception as exception:  # pylint: disable=broad-except
-        logger.warning(
+        logger.exception(
             "[BATCH][REMOTE IMPORT BENEFICIARIES] Could not save application %s, because of error: %s - Procedure %s",
             result_content.application_id,
             exception,
