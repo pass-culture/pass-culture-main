@@ -14,6 +14,7 @@ from sqlalchemy import func
 from sqlalchemy.orm import Query
 from sqlalchemy.orm import contains_eager
 from sqlalchemy.orm import joinedload
+from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.sql.expression import extract
 
 from pcapi.core.bookings.models import Booking
@@ -22,6 +23,7 @@ from pcapi.core.bookings.models import BookingStatusFilter
 from pcapi.core.bookings.repository import field_to_venue_timezone
 from pcapi.core.bookings.utils import convert_booking_dates_utc_to_venue_timezone
 from pcapi.core.educational import models as educational_models
+from pcapi.core.educational.exceptions import CollectiveOfferNotFound
 from pcapi.core.educational.exceptions import EducationalDepositNotFound
 from pcapi.core.educational.exceptions import EducationalYearNotFound
 from pcapi.core.educational.exceptions import StockDoesNotExist
@@ -642,3 +644,22 @@ def get_filtered_collective_booking_report(
     )
 
     return bookings_query
+
+
+def get_offer_by_id(offer_id: int) -> educational_models.CollectiveOffer:
+    try:
+        return (
+            educational_models.CollectiveOffer.query.filter(educational_models.CollectiveOffer.id == offer_id)
+            .outerjoin(
+                educational_models.CollectiveStock, educational_models.CollectiveStock.collectiveOfferId == offer_id
+            )
+            .options(
+                joinedload(educational_models.CollectiveOffer.venue, innerjoin=True,).joinedload(
+                    Venue.managingOfferer,
+                    innerjoin=True,
+                )
+            )
+            .one()
+        )
+    except NoResultFound:
+        raise CollectiveOfferNotFound()

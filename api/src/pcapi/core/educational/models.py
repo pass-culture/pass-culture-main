@@ -143,7 +143,9 @@ class CollectiveOffer(PcObject, ValidationMixin, AccessibilityMixin, StatusMixin
 
     @property
     def isBookable(self) -> bool:
-        return self.collectiveStock.isBookable
+        if self.collectiveStock:
+            return self.collectiveStock.isBookable
+        return False
 
     is_eligible_for_search = isBookable
 
@@ -156,6 +158,12 @@ class CollectiveOffer(PcObject, ValidationMixin, AccessibilityMixin, StatusMixin
             and self.venue.managingOfferer.isActive
             and self.venue.managingOfferer.isValidated
         )
+
+    @property
+    def hasBookingLimitDatetimePassed(self):
+        if self.collectiveStock:
+            return self.collectiveStock.hasBookingLimitDatetimePassed
+        return False
 
     @sa.ext.hybrid.hybrid_property
     def hasBookingLimitDatetimesPassed(self) -> bool:
