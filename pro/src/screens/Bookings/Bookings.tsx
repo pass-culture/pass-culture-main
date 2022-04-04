@@ -31,6 +31,8 @@ interface IBookingsProps {
   wereBookingsRequested: boolean
   separateIndividualAndCollectiveOffers: boolean
   audience: Audience
+  isLocalLoading: boolean
+  venues: { id: string; displayName: string }[]
 }
 
 const Bookings = ({
@@ -47,6 +49,8 @@ const Bookings = ({
   wereBookingsRequested,
   separateIndividualAndCollectiveOffers,
   audience,
+  isLocalLoading,
+  venues,
 }: IBookingsProps): JSX.Element => {
   const [appliedPreFilters, setAppliedPreFilters] = useState<TPreFilters>({
     bookingStatusFilter: DEFAULT_PRE_FILTERS.bookingStatusFilter,
@@ -117,7 +121,9 @@ const Bookings = ({
         isBookingFiltersActive={isBookingFiltersActive}
         isDownloadingCSV={isDownloadingCSV}
         isFiltersDisabled={!hasBooking}
+        isLocalLoading={isLocalLoading}
         isTableLoading={isTableLoading}
+        venues={venues}
         wereBookingsRequested={wereBookingsRequested}
       />
       {wereBookingsRequested ? (
