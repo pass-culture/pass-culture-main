@@ -585,8 +585,8 @@ class GetCappedOffersForFiltersTest:
                 )
             )
 
-            five_days_ago = datetime.now() - timedelta(days=5)
-            in_five_days = datetime.now() + timedelta(days=5)
+            five_days_ago = datetime.utcnow() - timedelta(days=5)
+            in_five_days = datetime.utcnow() + timedelta(days=5)
             beneficiary = users_factories.BeneficiaryGrant18Factory(email="jane.doe@example.com")
             offers_factories.ThingStockFactory(offer=self.sold_old_thing_offer_with_all_stocks_empty, quantity=0)
             offers_factories.ThingStockFactory(
@@ -697,7 +697,7 @@ class GetCappedOffersForFiltersTest:
                 bookingLimitDatetime=five_days_ago,
                 quantity=0,
             )
-            in_six_days = datetime.now() + timedelta(days=6)
+            in_six_days = datetime.utcnow() + timedelta(days=6)
             self.active_event_in_six_days_offer = offers_factories.EventOfferFactory(venue=self.venue)
             offers_factories.EventStockFactory(
                 offer=self.active_event_in_six_days_offer,
@@ -984,7 +984,7 @@ class GetCappedOffersForFiltersTest:
             # given
             self.init_test_data()
 
-            in_six_days = datetime.now() + timedelta(days=6)
+            in_six_days = datetime.utcnow() + timedelta(days=6)
             in_six_days_beginning = in_six_days.replace(hour=0, minute=0, second=0)
             in_six_days_ending = in_six_days.replace(hour=23, minute=59, second=59)
 
@@ -1136,11 +1136,11 @@ class TomorrowStockTest:
     def test_find_tomorrow_event_stock_ids(self):
         from pcapi.core.offers.models import Stock
 
-        tomorrow = datetime.now() + timedelta(days=1)
+        tomorrow = datetime.utcnow() + timedelta(days=1)
         stocks_tomorrow = EventStockFactory.create_batch(2, beginningDatetime=tomorrow)
         stocks_tomorrow_cancelled = EventStockFactory.create_batch(3, beginningDatetime=tomorrow)
 
-        next_week = datetime.now() + timedelta(days=7)
+        next_week = datetime.utcnow() + timedelta(days=7)
         stocks_next_week = EventStockFactory.create_batch(3, beginningDatetime=next_week)
 
         for stock in stocks_tomorrow:
@@ -1163,11 +1163,11 @@ class TomorrowStockTest:
 class EventStockIn7DaysTest:
     def test_find_event_stocks_happening_in_7_days(self):
         # Given
-        tomorrow = datetime.now() + timedelta(days=1)
+        tomorrow = datetime.utcnow() + timedelta(days=1)
         stocks_tomorrow = EventStockFactory.create_batch(2, beginningDatetime=tomorrow)
         stocks_tomorrow_cancelled = EventStockFactory.create_batch(3, beginningDatetime=tomorrow)
 
-        next_week = datetime.now() + timedelta(days=7)
+        next_week = datetime.utcnow() + timedelta(days=7)
         stocks_next_week = EventStockFactory.create_batch(3, beginningDatetime=next_week)
 
         for stock in stocks_tomorrow:
@@ -1276,7 +1276,7 @@ class AvailableActivationCodeTest:
         booking = bookings_factories.BookingFactory()
         stock = booking.stock
         ActivationCodeFactory(booking=booking, stock=stock)  # booked_code
-        ActivationCodeFactory(stock=stock, expirationDate=datetime.now() - timedelta(days=1))  # expired code
+        ActivationCodeFactory(stock=stock, expirationDate=datetime.utcnow() - timedelta(days=1))  # expired code
 
         # WHEN THEN
         assert not get_available_activation_code(stock)

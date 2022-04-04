@@ -18,20 +18,20 @@ def test_should_cancel_old_unused_bookings_for_venue():
     other_venue = offers_factories.VenueFactory()
 
     to_cancel_booking = bookings_factories.BookingFactory(
-        dateCreated=(datetime.now() - timedelta(days=40)), stock__offer__venue=venue
+        dateCreated=(datetime.utcnow() - timedelta(days=40)), stock__offer__venue=venue
     )
 
     used_booking = bookings_factories.UsedBookingFactory(
-        dateCreated=(datetime.now() - timedelta(days=40)),
+        dateCreated=(datetime.utcnow() - timedelta(days=40)),
         stock__offer__venue=venue,
     )
 
     recent_booking = bookings_factories.BookingFactory(
-        dateCreated=(datetime.now() - timedelta(days=10)), stock__offer__venue=venue
+        dateCreated=(datetime.utcnow() - timedelta(days=10)), stock__offer__venue=venue
     )
 
     other_venue_booking = bookings_factories.BookingFactory(
-        dateCreated=(datetime.now() - timedelta(days=40)),
+        dateCreated=(datetime.utcnow() - timedelta(days=40)),
         stock__offer__venue=other_venue,
     )
 

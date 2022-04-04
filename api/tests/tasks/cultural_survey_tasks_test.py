@@ -25,7 +25,7 @@ class CulturalSurveyTasksTest:
 
         payload = serializers.CulturalSurveyAnswersForData(
             user_id=1,
-            submitted_at=datetime.datetime.now().isoformat(),
+            submitted_at=datetime.datetime.utcnow().isoformat(),
             answers=answers,
         )
         upload_answers_task(payload)

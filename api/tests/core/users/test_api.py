@@ -95,7 +95,7 @@ class ValidateJwtTokenTest:
     def test_get_user_with_valid_token(self):
         user = users_factories.UserFactory()
         token_type = TokenType.RESET_PASSWORD
-        expiration_date = datetime.now() + timedelta(hours=24)
+        expiration_date = datetime.utcnow() + timedelta(hours=24)
 
         saved_token = users_factories.TokenFactory(
             user=user, value=self.token_value, type=token_type, expirationDate=expiration_date
@@ -109,7 +109,7 @@ class ValidateJwtTokenTest:
     def test_get_user_and_mark_token_as_used(self):
         user = users_factories.UserFactory()
         token_type = TokenType.RESET_PASSWORD
-        expiration_date = datetime.now() + timedelta(hours=24)
+        expiration_date = datetime.utcnow() + timedelta(hours=24)
 
         saved_token = users_factories.TokenFactory(
             user=user, value=self.token_value, type=token_type, expirationDate=expiration_date
@@ -158,7 +158,7 @@ class ValidateJwtTokenTest:
         user = users_factories.UserFactory()
         token_type = TokenType.RESET_PASSWORD
 
-        expiration_date = datetime.now() - timedelta(hours=24)
+        expiration_date = datetime.utcnow() - timedelta(hours=24)
         users_factories.TokenFactory(user=user, value=self.token_value, type=token_type, expirationDate=expiration_date)
 
         assert Token.query.filter_by(value=self.token_value).first() is not None
@@ -177,7 +177,7 @@ class DeleteExpiredTokensTest:
         never_expire_token = generate_and_save_token(user, token_type)
         not_expired_token = generate_and_save_token(user, token_type, life_time=life_time)
         # Generate an expired token
-        with freeze_time(datetime.now() - life_time):
+        with freeze_time(datetime.utcnow() - life_time):
             generate_and_save_token(user, token_type, life_time=life_time)
 
         delete_expired_tokens()
@@ -200,7 +200,7 @@ class DeleteUserTokenTest:
 
 
 def _datetime_within_last_5sec(when: datetime) -> bool:
-    return datetime.now() - relativedelta(seconds=5) < when < datetime.now()
+    return datetime.utcnow() - relativedelta(seconds=5) < when < datetime.utcnow()
 
 
 def _assert_user_suspension_history(
@@ -245,7 +245,7 @@ class SuspendAccountTest:
     def test_suspend_beneficiary(self):
         user = users_factories.BeneficiaryGrant18Factory()
         cancellable_booking = bookings_factories.IndividualBookingFactory(individualBooking__user=user)
-        yesterday = datetime.now() - timedelta(days=1)
+        yesterday = datetime.utcnow() - timedelta(days=1)
         confirmed_booking = bookings_factories.IndividualBookingFactory(
             individualBooking__user=user, cancellation_limit_date=yesterday, status=BookingStatus.CONFIRMED
         )
@@ -407,7 +407,7 @@ class ChangeUserEmailTest:
 
 
 class CreateBeneficiaryTest:
-    AGE18_ELIGIBLE_BIRTH_DATE = datetime.now() - relativedelta(years=18, months=4)
+    AGE18_ELIGIBLE_BIRTH_DATE = datetime.utcnow() - relativedelta(years=18, months=4)
 
     def test_with_eligible_user(self):
         user = users_factories.UserFactory(roles=[], dateOfBirth=self.AGE18_ELIGIBLE_BIRTH_DATE)
@@ -452,7 +452,7 @@ class CreateBeneficiaryTest:
 
 
 class FulfillBeneficiaryDataTest:
-    AGE18_ELIGIBLE_BIRTH_DATE = datetime.now() - relativedelta(years=18, months=4)
+    AGE18_ELIGIBLE_BIRTH_DATE = datetime.utcnow() - relativedelta(years=18, months=4)
 
     def test_fill_user_with_password_token_and_deposit(self):
         # given
@@ -636,7 +636,7 @@ class DomainsCreditTest:
             stock__offer__subcategoryId=subcategories.JEU_SUPPORT_PHYSIQUE.id,
         )
 
-        with freeze_time(datetime.now() + relativedelta(years=GRANT_18_VALIDITY_IN_YEARS, days=2)):
+        with freeze_time(datetime.utcnow() + relativedelta(years=GRANT_18_VALIDITY_IN_YEARS, days=2)):
             assert get_domains_credit(user) == DomainsCredit(
                 all=Credit(initial=Decimal(300), remaining=Decimal(0)),
                 digital=Credit(initial=Decimal(100), remaining=Decimal(0)),

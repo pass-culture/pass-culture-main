@@ -12,7 +12,7 @@ from pcapi.scripts.change_some_pro_users_to_beneficiary import change_pro_users_
 @pytest.mark.usefixtures("db_session")
 def test_should_change_pro_users_to_beneficiary():
     # given
-    AGE18_ELIGIBLE_BIRTH_DATE = datetime.now() - relativedelta(years=18, months=4)
+    AGE18_ELIGIBLE_BIRTH_DATE = datetime.utcnow() - relativedelta(years=18, months=4)
     pro_1 = users_factories.ProFactory(dateOfBirth=AGE18_ELIGIBLE_BIRTH_DATE, needsToFillCulturalSurvey=False)
     pro_2 = users_factories.ProFactory(dateOfBirth=AGE18_ELIGIBLE_BIRTH_DATE)
     offerers_factories.UserOffererFactory(user=pro_1)

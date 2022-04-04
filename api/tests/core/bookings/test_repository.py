@@ -2560,7 +2560,7 @@ class SoonExpiringBookingsTest:
         bookings_factories.CancelledBookingFactory(stock=stock)
         booking = bookings_factories.IndividualBookingFactory(stock=stock)
 
-        creation_date = datetime.now() - timedelta(days=1)
+        creation_date = datetime.utcnow() - timedelta(days=1)
         bookings_factories.IndividualBookingFactory(stock=stock, dateCreated=creation_date)
 
         remaining_days = (booking.expirationDate.date() - date.today()).days

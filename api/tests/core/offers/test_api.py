@@ -135,7 +135,7 @@ class UpsertStocksTest:
         venue = factories.VenueFactory(managingOfferer=offerer, bookingEmail="venue@postponed.net")
         offer = factories.EventOfferFactory(venue=venue, bookingEmail="offer@bookingemail.fr")
         existing_stock = factories.StockFactory(offer=offer, price=10)
-        beginning = datetime.now() + timedelta(days=10)
+        beginning = datetime.utcnow() + timedelta(days=10)
         edited_stock_data = stock_serialize.StockEditionBodyModel(
             id=existing_stock.id,
             beginningDatetime=beginning,
@@ -169,7 +169,7 @@ class UpsertStocksTest:
     def should_update_bookings_cancellation_limit_date_if_report_of_event(self, mock_update_cancellation_limit_dates):
         # Given
         user = users_factories.ProFactory()
-        now = datetime.now()
+        now = datetime.utcnow()
         event_in_4_days = now + timedelta(days=4)
         event_reported_in_10_days = now + timedelta(days=10)
         offer = factories.EventOfferFactory(bookingEmail="test@bookingEmail.fr")
@@ -191,7 +191,7 @@ class UpsertStocksTest:
     def should_invalidate_booking_token_when_event_is_reported(self):
         # Given
         user = users_factories.ProFactory()
-        now = datetime.now()
+        now = datetime.utcnow()
         booking_made_3_days_ago = now - timedelta(days=3)
         event_in_4_days = now + timedelta(days=4)
         event_reported_in_10_days = now + timedelta(days=10)
@@ -219,8 +219,8 @@ class UpsertStocksTest:
     def should_not_invalidate_booking_token_when_event_is_reported_in_less_than_48_hours(self):
         # Given
         user = users_factories.ProFactory()
-        now = datetime.now()
-        date_used_in_48_hours = datetime.now() + timedelta(days=2)
+        now = datetime.utcnow()
+        date_used_in_48_hours = datetime.utcnow() + timedelta(days=2)
         event_in_3_days = now + timedelta(days=3)
         event_reported_in_less_48_hours = now + timedelta(days=1)
         offer = factories.EventOfferFactory(bookingEmail="test@bookingEmail.fr")
@@ -343,7 +343,7 @@ class UpsertStocksTest:
         # Given
         user = users_factories.ProFactory()
         offer = factories.EventOfferFactory()
-        now = datetime.now()
+        now = datetime.utcnow()
         created_stock_data = stock_serialize.StockCreationBodyModel(
             price=301, beginningDatetime=now, bookingLimitDatetime=now
         )
@@ -359,7 +359,7 @@ class UpsertStocksTest:
         # Given
         user = users_factories.ProFactory()
         existing_stock = factories.EventStockFactory(price=10, offer__bookingEmail="test@bookingEmail.fr")
-        now = datetime.now()
+        now = datetime.utcnow()
         edited_stock_data = stock_serialize.StockEditionBodyModel(
             id=existing_stock.id, price=301, beginningDatetime=now, bookingLimitDatetime=now
         )
@@ -459,7 +459,7 @@ class UpsertStocksTest:
         created_stock_data = stock_serialize.StockCreationBodyModel(
             price=0,
             bookingLimitDatetime=None,
-            activationCodesExpirationDatetime=datetime.now(),
+            activationCodesExpirationDatetime=datetime.utcnow(),
             activationCodes=["ABC", "DEF"],
         )
 
@@ -482,7 +482,7 @@ class UpsertStocksTest:
         user = users_factories.ProFactory()
         offer = factories.DigitalOfferFactory()
         existing_stock = factories.StockFactory(offer=offer)
-        factories.ActivationCodeFactory(expirationDate=datetime.now(), stock=existing_stock)
+        factories.ActivationCodeFactory(expirationDate=datetime.utcnow(), stock=existing_stock)
         edited_stock_data = stock_serialize.StockEditionBodyModel(
             id=existing_stock.id, price=0, bookingLimitDatetime=None
         )
@@ -889,8 +889,8 @@ class CreateEducationalOfferStocksTest:
 class EditEducationalOfferStocksTest:
     def test_should_update_all_fields_when_all_changed(self):
         # Given
-        initial_event_date = datetime.now() + timedelta(days=5)
-        initial_booking_limit_date = datetime.now() + timedelta(days=3)
+        initial_event_date = datetime.utcnow() + timedelta(days=5)
+        initial_booking_limit_date = datetime.utcnow() + timedelta(days=3)
         stock_to_be_updated = factories.EducationalEventStockFactory(
             beginningDatetime=initial_event_date,
             price=1200,
@@ -899,8 +899,8 @@ class EditEducationalOfferStocksTest:
             bookingLimitDatetime=initial_booking_limit_date,
         )
         new_stock_data = stock_serialize.EducationalStockEditionBodyModel(
-            beginningDatetime=datetime.now() + timedelta(days=7, hours=5),
-            bookingLimitDatetime=datetime.now() + timedelta(days=5, hours=16),
+            beginningDatetime=datetime.utcnow() + timedelta(days=7, hours=5),
+            bookingLimitDatetime=datetime.utcnow() + timedelta(days=5, hours=16),
             totalPrice=1500,
             numberOfTickets=35,
         )
@@ -917,8 +917,8 @@ class EditEducationalOfferStocksTest:
 
     def test_should_update_some_fields_and_keep_non_edited_ones(self):
         # Given
-        initial_event_date = datetime.now() + timedelta(days=5)
-        initial_booking_limit_date = datetime.now() + timedelta(days=3)
+        initial_event_date = datetime.utcnow() + timedelta(days=5)
+        initial_booking_limit_date = datetime.utcnow() + timedelta(days=3)
         stock_to_be_updated = factories.EducationalEventStockFactory(
             beginningDatetime=initial_event_date,
             price=1200,
@@ -927,7 +927,7 @@ class EditEducationalOfferStocksTest:
             bookingLimitDatetime=initial_booking_limit_date,
         )
         new_stock_data = stock_serialize.EducationalStockEditionBodyModel(
-            beginningDatetime=datetime.now() + timedelta(days=7, hours=5),
+            beginningDatetime=datetime.utcnow() + timedelta(days=7, hours=5),
             numberOfTickets=35,
         )
 
@@ -943,8 +943,8 @@ class EditEducationalOfferStocksTest:
 
     def test_should_update_educational_booking_amount(self):
         # Given
-        initial_event_date = datetime.now() + timedelta(days=5)
-        initial_booking_limit_date = datetime.now() + timedelta(days=3)
+        initial_event_date = datetime.utcnow() + timedelta(days=5)
+        initial_booking_limit_date = datetime.utcnow() + timedelta(days=3)
         stock_to_be_updated = factories.EducationalEventStockFactory(
             beginningDatetime=initial_event_date,
             price=1200,
@@ -972,13 +972,13 @@ class EditEducationalOfferStocksTest:
 
     def test_should_replace_bookingLimitDatetime_with_new_event_datetime_if_provided_but_none(self):
         # Given
-        initial_event_date = datetime.now() + timedelta(days=5)
-        initial_booking_limit_date = datetime.now() + timedelta(days=3)
+        initial_event_date = datetime.utcnow() + timedelta(days=5)
+        initial_booking_limit_date = datetime.utcnow() + timedelta(days=3)
         stock_to_be_updated = factories.EducationalEventStockFactory(
             beginningDatetime=initial_event_date,
             bookingLimitDatetime=initial_booking_limit_date,
         )
-        new_event_datetime = datetime.now() + timedelta(days=7, hours=5)
+        new_event_datetime = datetime.utcnow() + timedelta(days=7, hours=5)
         new_stock_data = stock_serialize.EducationalStockEditionBodyModel(
             beginningDatetime=new_event_datetime,
             bookingLimitDatetime=None,
@@ -995,8 +995,8 @@ class EditEducationalOfferStocksTest:
         self,
     ):
         # Given
-        initial_event_date = datetime.now() + timedelta(days=5)
-        initial_booking_limit_date = datetime.now() + timedelta(days=3)
+        initial_event_date = datetime.utcnow() + timedelta(days=5)
+        initial_booking_limit_date = datetime.utcnow() + timedelta(days=3)
         stock_to_be_updated = factories.EducationalEventStockFactory(
             beginningDatetime=initial_event_date,
             bookingLimitDatetime=initial_booking_limit_date,
@@ -1015,8 +1015,8 @@ class EditEducationalOfferStocksTest:
     @mock.patch("pcapi.core.search.async_index_offer_ids")
     def test_should_reindex_offer_on_algolia(self, mocked_async_index_offer_ids):
         # Given
-        initial_event_date = datetime.now() + timedelta(days=5)
-        initial_booking_limit_date = datetime.now() + timedelta(days=3)
+        initial_event_date = datetime.utcnow() + timedelta(days=5)
+        initial_booking_limit_date = datetime.utcnow() + timedelta(days=3)
         stock_to_be_updated = factories.EducationalEventStockFactory(
             beginningDatetime=initial_event_date,
             price=1200,
@@ -1025,7 +1025,7 @@ class EditEducationalOfferStocksTest:
             bookingLimitDatetime=initial_booking_limit_date,
         )
         new_stock_data = stock_serialize.EducationalStockEditionBodyModel(
-            beginningDatetime=datetime.now() + timedelta(days=7, hours=5),
+            beginningDatetime=datetime.utcnow() + timedelta(days=7, hours=5),
             numberOfTickets=35,
         )
 
@@ -1055,8 +1055,8 @@ class EditEducationalOfferStocksTest:
 
     def should_update_bookings_cancellation_limit_date_if_event_postponed(self):
         # Given
-        initial_event_date = datetime.now() + timedelta(days=20)
-        cancellation_limit_date = datetime.now() + timedelta(days=5)
+        initial_event_date = datetime.utcnow() + timedelta(days=20)
+        cancellation_limit_date = datetime.utcnow() + timedelta(days=5)
         stock_to_be_updated = factories.EducationalEventStockFactory(
             beginningDatetime=initial_event_date, quantity=1, dnBookedQuantity=1
         )
@@ -1064,7 +1064,7 @@ class EditEducationalOfferStocksTest:
             stock=stock_to_be_updated, status=BookingStatus.PENDING, cancellation_limit_date=cancellation_limit_date
         )
 
-        new_event_date = datetime.now() + timedelta(days=25, hours=5)
+        new_event_date = datetime.utcnow() + timedelta(days=25, hours=5)
         new_stock_data = stock_serialize.EducationalStockEditionBodyModel(
             beginningDatetime=new_event_date,
         )
@@ -1103,8 +1103,8 @@ class EditEducationalOfferStocksTest:
 
     def test_should_allow_stock_edition_and_not_modify_cancellation_limit_date_when_booking_cancelled(self):
         # Given
-        initial_event_date = datetime.now() + timedelta(days=20)
-        cancellation_limit_date = datetime.now() + timedelta(days=5)
+        initial_event_date = datetime.utcnow() + timedelta(days=20)
+        cancellation_limit_date = datetime.utcnow() + timedelta(days=5)
         stock_to_be_updated = factories.EducationalEventStockFactory(
             beginningDatetime=initial_event_date, quantity=1, dnBookedQuantity=1
         )
@@ -1112,7 +1112,7 @@ class EditEducationalOfferStocksTest:
             stock=stock_to_be_updated, status=BookingStatus.CANCELLED, cancellation_limit_date=cancellation_limit_date
         )
 
-        new_event_date = datetime.now() + timedelta(days=25, hours=5)
+        new_event_date = datetime.utcnow() + timedelta(days=25, hours=5)
         new_stock_data = stock_serialize.EducationalStockEditionBodyModel(
             beginningDatetime=new_event_date,
         )
@@ -1128,8 +1128,8 @@ class EditEducationalOfferStocksTest:
 
     def test_does_not_allow_edition_of_an_expired_event_stock(self):
         # Given
-        initial_event_date = datetime.now() - timedelta(days=1)
-        initial_booking_limit_date = datetime.now() - timedelta(days=10)
+        initial_event_date = datetime.utcnow() - timedelta(days=1)
+        initial_booking_limit_date = datetime.utcnow() - timedelta(days=10)
         stock_to_be_updated = factories.EducationalEventStockFactory(
             beginningDatetime=initial_event_date,
             price=1200,
@@ -1138,7 +1138,7 @@ class EditEducationalOfferStocksTest:
             bookingLimitDatetime=initial_booking_limit_date,
         )
         new_stock_data = stock_serialize.EducationalStockEditionBodyModel(
-            beginningDatetime=datetime.now() + timedelta(days=7, hours=5),
+            beginningDatetime=datetime.utcnow() + timedelta(days=7, hours=5),
             numberOfTickets=35,
         )
 
@@ -1307,7 +1307,7 @@ class DeleteStockTest:
         assert not stock.isSoftDeleted
 
     def test_can_delete_if_event_ended_recently(self):
-        recently = datetime.now() - timedelta(days=1)
+        recently = datetime.utcnow() - timedelta(days=1)
         stock = factories.EventStockFactory(beginningDatetime=recently)
 
         api.delete_stock(stock)
@@ -1315,7 +1315,7 @@ class DeleteStockTest:
         assert stock.isSoftDeleted
 
     def test_cannot_delete_if_too_late(self):
-        too_long_ago = datetime.now() - timedelta(days=3)
+        too_long_ago = datetime.utcnow() - timedelta(days=3)
         stock = factories.EventStockFactory(beginningDatetime=too_long_ago)
 
         with pytest.raises(exceptions.TooLateToDeleteStock):

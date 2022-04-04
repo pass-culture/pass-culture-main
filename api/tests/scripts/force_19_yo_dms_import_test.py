@@ -15,8 +15,8 @@ from pcapi.scripts.force_19yo_dms_import import force_19yo_dms_import
 class User19YearOldActivationTest:
     def test_user_should_be_activated(self):
         user = users_factories.UserFactory(
-            dateOfBirth=datetime.datetime.now() - relativedelta(years=19, months=4),
-            dateCreated=datetime.datetime.now() - relativedelta(months=5),
+            dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=19, months=4),
+            dateCreated=datetime.datetime.utcnow() - relativedelta(months=5),
             phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
         )
         fraud_factories.BeneficiaryFraudCheckFactory(
@@ -44,8 +44,8 @@ class User19YearOldActivationTest:
 
     def test_user_required_to_validate_user_profiling(self):
         user = users_factories.UserFactory(
-            dateOfBirth=datetime.datetime.now() - relativedelta(years=19, months=4),
-            dateCreated=datetime.datetime.now() - relativedelta(months=5),
+            dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=19, months=4),
+            dateCreated=datetime.datetime.utcnow() - relativedelta(months=5),
         )
         fraud_factories.BeneficiaryFraudCheckFactory(
             user=user,
@@ -71,8 +71,8 @@ class User19YearOldActivationTest:
 
     def test_user_should_not_be_activated_dry_run(self):
         user = users_factories.UserFactory(
-            dateOfBirth=datetime.datetime.now() - relativedelta(years=19, months=4),
-            dateCreated=datetime.datetime.now() - relativedelta(months=5),
+            dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=19, months=4),
+            dateCreated=datetime.datetime.utcnow() - relativedelta(months=5),
         )
         fraud_factories.BeneficiaryFraudCheckFactory(
             user=user,
@@ -91,8 +91,8 @@ class User19YearOldActivationTest:
 
     def test_user_should_not_be_activated(self):
         user = users_factories.UserFactory(
-            dateOfBirth=datetime.datetime.now() - relativedelta(years=19, months=4),
-            dateCreated=datetime.datetime.now() - relativedelta(months=5),
+            dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=19, months=4),
+            dateCreated=datetime.datetime.utcnow() - relativedelta(months=5),
         )
         fraud_factories.BeneficiaryFraudCheckFactory(
             user=user,

@@ -96,12 +96,12 @@ class UbbleIdentificationDataAttributesFactory(factory.Factory):
 
     @factory.lazy_attribute
     def started_at(self):
-        return None if self.identification_state == IdentificationState.NEW else datetime.datetime.now()
+        return None if self.identification_state == IdentificationState.NEW else datetime.datetime.utcnow()
 
     @factory.lazy_attribute
     def ended_at(self):
         return (
-            datetime.datetime.now()
+            datetime.datetime.utcnow()
             if self.identification_state
             in (IdentificationState.VALID, IdentificationState.INVALID, IdentificationState.UNPROCESSABLE)
             else None
@@ -112,8 +112,8 @@ class UbbleIdentificationDataAttributesFactory(factory.Factory):
         return {
             IdentificationState.NEW: self.created_at,
             IdentificationState.INITIATED: self.started_at,
-            IdentificationState.ABORTED: datetime.datetime.now(),
-            IdentificationState.PROCESSING: datetime.datetime.now(),
+            IdentificationState.ABORTED: datetime.datetime.utcnow(),
+            IdentificationState.PROCESSING: datetime.datetime.utcnow(),
             IdentificationState.VALID: self.ended_at,
             IdentificationState.INVALID: self.ended_at,
             IdentificationState.UNPROCESSABLE: self.ended_at,
@@ -128,8 +128,8 @@ class UbbleIdentificationDataAttributesFactory(factory.Factory):
         return {
             IdentificationState.NEW: self.created_at,
             IdentificationState.INITIATED: self.started_at,
-            IdentificationState.ABORTED: datetime.datetime.now(),
-            IdentificationState.PROCESSING: datetime.datetime.now(),
+            IdentificationState.ABORTED: datetime.datetime.utcnow(),
+            IdentificationState.PROCESSING: datetime.datetime.utcnow(),
             IdentificationState.VALID: self.ended_at,
             IdentificationState.INVALID: self.ended_at,
             IdentificationState.UNPROCESSABLE: self.ended_at,

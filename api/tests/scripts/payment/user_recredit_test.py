@@ -45,7 +45,7 @@ class UserRecreditTest:
 
             # User turned 15. They are credited a first time
             content = fraud_factories.UbbleContentFactory(
-                user=user, birth_date="2005-05-01", registration_datetime=datetime.datetime.now()
+                user=user, birth_date="2005-05-01", registration_datetime=datetime.datetime.utcnow()
             )
             fraud_factories.BeneficiaryFraudCheckFactory(
                 user=user,

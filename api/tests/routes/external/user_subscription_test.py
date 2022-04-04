@@ -689,7 +689,7 @@ class UbbleWebhookTest:
     def _init_test(self, current_identification_state, notified_identification_state):
         user = users_factories.UserFactory(
             phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
-            dateOfBirth=datetime.datetime.now() - relativedelta.relativedelta(years=18),
+            dateOfBirth=datetime.datetime.utcnow() - relativedelta.relativedelta(years=18),
             activity="Lycéen",
         )
         fraud_factories.BeneficiaryFraudCheckFactory(
@@ -1178,7 +1178,7 @@ class UbbleWebhookTest:
     def _init_decision_test(
         self,
     ) -> typing.Tuple[users_models.User, fraud_models.BeneficiaryFraudCheck, ubble_routes.WebhookRequest]:
-        birth_date = datetime.datetime.now().date() - relativedelta.relativedelta(years=18, months=6)
+        birth_date = datetime.datetime.utcnow().date() - relativedelta.relativedelta(years=18, months=6)
         user = users_factories.UserFactory(dateOfBirth=datetime.datetime.combine(birth_date, datetime.time(0, 0)))
         profiling_fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
             user=user,
@@ -1205,7 +1205,7 @@ class UbbleWebhookTest:
                 "identification_id": identification_id,
                 "identification_url": f"https://id.ubble.ai/{identification_id}",
                 "last_name": None,
-                "registration_datetime": datetime.datetime.now().isoformat(),
+                "registration_datetime": datetime.datetime.utcnow().isoformat(),
                 "score": None,
                 "status": ubble_fraud_models.UbbleIdentificationStatus.PROCESSING.value,
                 "supported": None,
@@ -1283,7 +1283,7 @@ class UbbleWebhookTest:
         ],
     )
     def test_decision_age_cannot_become_beneficiary(self, client, ubble_mocker, age, reason_code, reason, inappmessage):
-        document_birth_date = datetime.datetime.now().date() - relativedelta.relativedelta(years=age)
+        document_birth_date = datetime.datetime.utcnow().date() - relativedelta.relativedelta(years=age)
         user, ubble_fraud_check, request_data = self._init_decision_test()
 
         request_data = self._get_request_body(ubble_fraud_check, ubble_fraud_models.UbbleIdentificationStatus.PROCESSED)
@@ -1347,7 +1347,7 @@ class UbbleWebhookTest:
         assert len(mails_testing.outbox) == 0
 
     def test_decision_duplicate_user(self, client, ubble_mocker):
-        birth_date = datetime.datetime.now().date() - relativedelta.relativedelta(years=18, months=2)
+        birth_date = datetime.datetime.utcnow().date() - relativedelta.relativedelta(years=18, months=2)
         existing_user = users_factories.BeneficiaryGrant18Factory(
             firstName="Duplicate",
             lastName="Fraudster",
@@ -1425,7 +1425,7 @@ class UbbleWebhookTest:
 
     def test_decision_duplicate_id_piece_number(self, client, ubble_mocker):
         users_factories.BeneficiaryGrant18Factory(
-            dateOfBirth=datetime.datetime.now().date() - relativedelta.relativedelta(years=18, months=2),
+            dateOfBirth=datetime.datetime.utcnow().date() - relativedelta.relativedelta(years=18, months=2),
             idPieceNumber="012345678910",
             email="prems@me.com",
         )
@@ -1438,7 +1438,7 @@ class UbbleWebhookTest:
             included=[
                 test_factories.UbbleIdentificationIncludedDocumentsFactory(
                     attributes__birth_date=(
-                        datetime.datetime.now().date() - relativedelta.relativedelta(years=18, months=1)
+                        datetime.datetime.utcnow().date() - relativedelta.relativedelta(years=18, months=1)
                     ).isoformat(),
                     attributes__document_number="012345678910",
                     attributes__document_type="CI",

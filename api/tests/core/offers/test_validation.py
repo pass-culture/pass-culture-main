@@ -82,7 +82,7 @@ class CheckRequiredDatesForStockTest:
         with pytest.raises(ApiErrors) as error:
             validation.check_required_dates_for_stock(
                 offer,
-                beginning=datetime.datetime.now(),
+                beginning=datetime.datetime.utcnow(),
                 booking_limit_datetime=None,
             )
 
@@ -96,7 +96,7 @@ class CheckRequiredDatesForStockTest:
         validation.check_required_dates_for_stock(
             offer,
             beginning=None,
-            booking_limit_datetime=datetime.datetime.now(),
+            booking_limit_datetime=datetime.datetime.utcnow(),
         )
 
     def test_thing_offer_ok_without_booking_limit_datetime(self):
@@ -115,7 +115,7 @@ class CheckRequiredDatesForStockTest:
             validation.check_required_dates_for_stock(
                 offer,
                 beginning=None,
-                booking_limit_datetime=datetime.datetime.now(),
+                booking_limit_datetime=datetime.datetime.utcnow(),
             )
         assert error.value.errors["beginningDatetime"] == ["Ce paramètre est obligatoire"]
 
@@ -125,7 +125,7 @@ class CheckRequiredDatesForStockTest:
         with pytest.raises(ApiErrors) as error:
             validation.check_required_dates_for_stock(
                 offer,
-                beginning=datetime.datetime.now(),
+                beginning=datetime.datetime.utcnow(),
                 booking_limit_datetime=None,
             )
         assert error.value.errors["bookingLimitDatetime"] == ["Ce paramètre est obligatoire"]
@@ -135,8 +135,8 @@ class CheckRequiredDatesForStockTest:
 
         validation.check_required_dates_for_stock(
             offer,
-            beginning=datetime.datetime.now(),
-            booking_limit_datetime=datetime.datetime.now(),
+            beginning=datetime.datetime.utcnow(),
+            booking_limit_datetime=datetime.datetime.utcnow(),
         )
 
 
@@ -204,13 +204,13 @@ class CheckStockIsDeletableTest:
         assert error.value.errors["global"] == ["Les offres importées ne sont pas modifiables"]
 
     def test_recently_begun_event_stock(self):
-        recently = datetime.datetime.now() - datetime.timedelta(days=1)
+        recently = datetime.datetime.utcnow() - datetime.timedelta(days=1)
         stock = offers_factories.EventStockFactory(beginningDatetime=recently)
 
         validation.check_stock_is_deletable(stock)
 
     def test_long_begun_event_stock(self):
-        too_long_ago = datetime.datetime.now() - datetime.timedelta(days=3)
+        too_long_ago = datetime.datetime.utcnow() - datetime.timedelta(days=3)
         stock = offers_factories.EventStockFactory(beginningDatetime=too_long_ago)
 
         with pytest.raises(exceptions.TooLateToDeleteStock) as error:
@@ -258,7 +258,7 @@ class CheckStockIsUpdatableTest:
         assert error.value.errors["global"] == ["Les offres importées ne sont pas modifiables"]
 
     def test_past_event_stock(self):
-        recently = datetime.datetime.now() - datetime.timedelta(minutes=1)
+        recently = datetime.datetime.utcnow() - datetime.timedelta(minutes=1)
         stock = offers_factories.EventStockFactory(beginningDatetime=recently)
 
         with pytest.raises(ApiErrors) as error:

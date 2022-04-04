@@ -197,7 +197,7 @@ class BookOfferTest:
         stock2 = offers_factories.StockFactory(price=10, dnBookedQuantity=5, offer=offer2)
 
         beneficiary = users_factories.BeneficiaryGrant18Factory()
-        date_created = datetime.now() - timedelta(days=5)
+        date_created = datetime.utcnow() - timedelta(days=5)
         booking_factories.IndividualBookingFactory.create_batch(
             3, individualBooking__user=beneficiary, dateCreated=date_created, stock=stock2
         )
@@ -459,7 +459,7 @@ class CancelByBeneficiaryTest:
         assert booking.status is not BookingStatus.CANCELLED
 
     def test_raise_if_event_too_close(self):
-        event_date_too_close_to_cancel_booking = datetime.now() + timedelta(days=1)
+        event_date_too_close_to_cancel_booking = datetime.utcnow() + timedelta(days=1)
         booking = booking_factories.IndividualBookingFactory(
             stock__beginningDatetime=event_date_too_close_to_cancel_booking,
         )
@@ -473,7 +473,7 @@ class CancelByBeneficiaryTest:
         ]
 
     def test_raise_if_booking_created_too_long_ago_to_cancel_booking(self):
-        event_date_far_enough_to_cancel_booking = datetime.now() + timedelta(days=2, minutes=1)
+        event_date_far_enough_to_cancel_booking = datetime.utcnow() + timedelta(days=2, minutes=1)
         booking_date_too_long_ago_to_cancel_booking = datetime.utcnow() - timedelta(days=2, minutes=1)
         booking = booking_factories.IndividualBookingFactory(
             stock__beginningDatetime=event_date_far_enough_to_cancel_booking,
@@ -490,7 +490,7 @@ class CancelByBeneficiaryTest:
 
     def test_raise_if_event_too_close_and_booked_long_ago(self):
         booking_date_too_long_ago_to_cancel_booking = datetime.utcnow() - timedelta(days=2, minutes=1)
-        event_date_too_close_to_cancel_booking = datetime.now() + timedelta(days=1)
+        event_date_too_close_to_cancel_booking = datetime.utcnow() + timedelta(days=1)
         booking = booking_factories.IndividualBookingFactory(
             stock__beginningDatetime=event_date_too_close_to_cancel_booking,
             dateCreated=booking_date_too_long_ago_to_cancel_booking,
@@ -630,7 +630,7 @@ class MarkAsUsedTest:
 
     def test_mark_as_used_when_stock_starts_soon(self):
         booking = booking_factories.IndividualBookingFactory(
-            stock__beginningDatetime=datetime.now() + timedelta(days=1)
+            stock__beginningDatetime=datetime.utcnow() + timedelta(days=1)
         )
         api.mark_as_used(booking)
         assert booking.status is BookingStatus.USED
@@ -654,7 +654,7 @@ class MarkAsUsedTest:
 
     def test_raise_if_too_soon_to_mark_as_used(self):
         booking = booking_factories.IndividualBookingFactory(
-            stock__beginningDatetime=datetime.now() + timedelta(days=4)
+            stock__beginningDatetime=datetime.utcnow() + timedelta(days=4)
         )
         with pytest.raises(api_errors.ForbiddenError):
             api.mark_as_used(booking)
@@ -709,7 +709,7 @@ class MarkAsUnusedTest:
 
 @pytest.mark.parametrize(
     "booking_date",
-    [datetime(2020, 7, 14, 15, 30), datetime(2020, 10, 25, 1, 45), datetime.now()],
+    [datetime(2020, 7, 14, 15, 30), datetime(2020, 10, 25, 1, 45), datetime.utcnow()],
     ids=["14 Jul", "Daylight Saving Switch", "Now"],
 )
 @pytest.mark.usefixtures("db_session")
@@ -748,14 +748,15 @@ class UpdateCancellationLimitDatesTest:
     def should_update_bookings_cancellation_limit_dates_for_event_beginning_tomorrow(self):
         #  Given
         recent_booking = booking_factories.IndividualBookingFactory(
-            stock__beginningDatetime=datetime.now() + timedelta(days=90)
+            stock__beginningDatetime=datetime.utcnow() + timedelta(days=90)
         )
         old_booking = booking_factories.IndividualBookingFactory(
-            stock=recent_booking.stock, dateCreated=(datetime.now() - timedelta(days=7))
+            stock=recent_booking.stock, dateCreated=(datetime.utcnow() - timedelta(days=7))
         )
         # When
         updated_bookings = api.update_cancellation_limit_dates(
-            bookings_to_update=[recent_booking, old_booking], new_beginning_datetime=datetime.now() + timedelta(days=1)
+            bookings_to_update=[recent_booking, old_booking],
+            new_beginning_datetime=datetime.utcnow() + timedelta(days=1),
         )
         # Then
         assert updated_bookings == [recent_booking, old_booking]
@@ -764,14 +765,15 @@ class UpdateCancellationLimitDatesTest:
     def should_update_bookings_cancellation_limit_dates_for_event_beginning_in_three_days(self):
         #  Given
         recent_booking = booking_factories.IndividualBookingFactory(
-            stock__beginningDatetime=datetime.now() + timedelta(days=90)
+            stock__beginningDatetime=datetime.utcnow() + timedelta(days=90)
         )
         old_booking = booking_factories.IndividualBookingFactory(
-            stock=recent_booking.stock, dateCreated=(datetime.now() - timedelta(days=7))
+            stock=recent_booking.stock, dateCreated=(datetime.utcnow() - timedelta(days=7))
         )
         # When
         updated_bookings = api.update_cancellation_limit_dates(
-            bookings_to_update=[recent_booking, old_booking], new_beginning_datetime=datetime.now() + timedelta(days=3)
+            bookings_to_update=[recent_booking, old_booking],
+            new_beginning_datetime=datetime.utcnow() + timedelta(days=3),
         )
         # Then
         assert updated_bookings == [recent_booking, old_booking]
@@ -780,14 +782,15 @@ class UpdateCancellationLimitDatesTest:
     def should_update_bookings_cancellation_limit_dates_for_event_beginning_in_a_week(self):
         #  Given
         recent_booking = booking_factories.IndividualBookingFactory(
-            stock__beginningDatetime=datetime.now() + timedelta(days=90)
+            stock__beginningDatetime=datetime.utcnow() + timedelta(days=90)
         )
         old_booking = booking_factories.IndividualBookingFactory(
-            stock=recent_booking.stock, dateCreated=(datetime.now() - timedelta(days=7))
+            stock=recent_booking.stock, dateCreated=(datetime.utcnow() - timedelta(days=7))
         )
         # When
         updated_bookings = api.update_cancellation_limit_dates(
-            bookings_to_update=[recent_booking, old_booking], new_beginning_datetime=datetime.now() + timedelta(days=7)
+            bookings_to_update=[recent_booking, old_booking],
+            new_beginning_datetime=datetime.utcnow() + timedelta(days=7),
         )
         # Then
         assert updated_bookings == [recent_booking, old_booking]
@@ -807,7 +810,7 @@ class AutoMarkAsUsedAfterEventTest:
 
     @freeze_time("2021-01-01")
     def test_update_booking_used_when_event_date_is_3_days_before(self):
-        event_date = datetime.now() - timedelta(days=3)
+        event_date = datetime.utcnow() - timedelta(days=3)
         booking_factories.IndividualBookingFactory(stock__beginningDatetime=event_date)
 
         api.auto_mark_as_used_after_event()
@@ -818,7 +821,7 @@ class AutoMarkAsUsedAfterEventTest:
 
     @freeze_time("2021-01-01")
     def test_does_not_update_when_event_date_is_only_1_day_before(self):
-        event_date = datetime.now() - timedelta(days=1)
+        event_date = datetime.utcnow() - timedelta(days=1)
         booking_factories.IndividualBookingFactory(stock__beginningDatetime=event_date)
 
         api.auto_mark_as_used_after_event()
@@ -829,7 +832,7 @@ class AutoMarkAsUsedAfterEventTest:
 
     @freeze_time("2021-01-01")
     def test_does_not_update_booking_if_already_used(self):
-        event_date = datetime.now() - timedelta(days=3)
+        event_date = datetime.utcnow() - timedelta(days=3)
         booking = booking_factories.UsedIndividualBookingFactory(stock__beginningDatetime=event_date)
         initial_date_used = booking.dateUsed
 
@@ -841,7 +844,7 @@ class AutoMarkAsUsedAfterEventTest:
 
     @freeze_time("2021-01-01")
     def test_does_not_update_booking_if_cancelled(self):
-        event_date = datetime.now() - timedelta(days=3)
+        event_date = datetime.utcnow() - timedelta(days=3)
         booking = booking_factories.CancelledIndividualBookingFactory(stock__beginningDatetime=event_date)
 
         api.auto_mark_as_used_after_event()
@@ -850,7 +853,7 @@ class AutoMarkAsUsedAfterEventTest:
         assert booking.status is BookingStatus.CANCELLED
 
     def test_update_educational_booking_if_not_used(self):
-        event_date = datetime.now() - timedelta(days=3)
+        event_date = datetime.utcnow() - timedelta(days=3)
         booking_factories.EducationalBookingFactory(
             stock__beginningDatetime=event_date,
         )
@@ -861,7 +864,7 @@ class AutoMarkAsUsedAfterEventTest:
         assert validated_educational_booking.status is BookingStatus.USED
 
     def test_does_not_update_educational_booking_if_not_used_and_refused_by_principal(self):
-        event_date = datetime.now() - timedelta(days=3)
+        event_date = datetime.utcnow() - timedelta(days=3)
         booking_factories.EducationalBookingFactory(
             stock__beginningDatetime=event_date,
             educationalBooking__status=EducationalBookingStatus.REFUSED,
@@ -873,7 +876,7 @@ class AutoMarkAsUsedAfterEventTest:
         assert validated_educational_booking.status is not BookingStatus.USED
 
     def test_update_educational_booking_if_not_used_and_not_validated_by_principal_yet(self):
-        event_date = datetime.now() - timedelta(days=3)
+        event_date = datetime.utcnow() - timedelta(days=3)
         booking_factories.EducationalBookingFactory(
             stock__beginningDatetime=event_date,
             educationalBooking__status=None,
@@ -886,7 +889,7 @@ class AutoMarkAsUsedAfterEventTest:
 
     @freeze_time("2021-01-01")
     def test_update_collective_booking_when_not_used_and_event_date_is_3_days_before(self):
-        event_date = datetime.now() - timedelta(days=3)
+        event_date = datetime.utcnow() - timedelta(days=3)
         educational_factories.CollectiveBookingFactory(collectiveStock__beginningDatetime=event_date)
 
         api.auto_mark_as_used_after_event()
@@ -897,7 +900,7 @@ class AutoMarkAsUsedAfterEventTest:
 
     @freeze_time("2021-01-01")
     def test_does_not_update_collective_booking_when_event_date_is_only_1_day_before(self):
-        event_date = datetime.now() - timedelta(days=1)
+        event_date = datetime.utcnow() - timedelta(days=1)
         educational_factories.CollectiveBookingFactory(collectiveStock__beginningDatetime=event_date)
 
         api.auto_mark_as_used_after_event()
@@ -908,7 +911,7 @@ class AutoMarkAsUsedAfterEventTest:
 
     @freeze_time("2021-01-01")
     def test_does_not_update_collective_booking_when_cancelled(self):
-        event_date = datetime.now() - timedelta(days=3)
+        event_date = datetime.utcnow() - timedelta(days=3)
         educational_factories.CollectiveBookingFactory(
             collectiveStock__beginningDatetime=event_date, status=CollectiveBookingStatus.CANCELLED
         )

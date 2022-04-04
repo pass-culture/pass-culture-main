@@ -693,7 +693,7 @@ class CommonSubscritpionTest:
 
 @pytest.mark.usefixtures("db_session")
 class HasPassedAllChecksToBecomeBeneficiaryTest:
-    AGE18_ELIGIBLE_BIRTH_DATE = datetime.now() - relativedelta(years=18, months=4)
+    AGE18_ELIGIBLE_BIRTH_DATE = datetime.utcnow() - relativedelta(years=18, months=4)
 
     def eligible_user(
         self,
@@ -785,7 +785,7 @@ class HasPassedAllChecksToBecomeBeneficiaryTest:
 
 @pytest.mark.usefixtures("db_session")
 class SubscriptionItemTest:
-    AGE18_ELIGIBLE_BIRTH_DATE = datetime.now() - relativedelta(years=18, months=4)
+    AGE18_ELIGIBLE_BIRTH_DATE = datetime.utcnow() - relativedelta(years=18, months=4)
 
     def test_phone_validation_item(self):
         user = users_factories.UserFactory(
@@ -818,9 +818,9 @@ class SubscriptionItemTest:
 
 @pytest.mark.usefixtures("db_session")
 class IdentityCheckSubscriptionStatusTest:
-    AGE16_ELIGIBLE_BIRTH_DATE = datetime.now() - relativedelta(years=16, months=4)
-    AGE18_ELIGIBLE_BIRTH_DATE = datetime.now() - relativedelta(years=18, months=4)
-    AGE20_ELIGIBLE_BIRTH_DATE = datetime.now() - relativedelta(years=20, months=4)
+    AGE16_ELIGIBLE_BIRTH_DATE = datetime.utcnow() - relativedelta(years=16, months=4)
+    AGE18_ELIGIBLE_BIRTH_DATE = datetime.utcnow() - relativedelta(years=18, months=4)
+    AGE20_ELIGIBLE_BIRTH_DATE = datetime.utcnow() - relativedelta(years=20, months=4)
 
     def test_not_eligible(self):
         user = users_factories.UserFactory(dateOfBirth=self.AGE20_ELIGIBLE_BIRTH_DATE)
@@ -941,9 +941,9 @@ class IdentityCheckSubscriptionStatusTest:
 
 @pytest.mark.usefixtures("db_session")
 class NeedsToPerformeIdentityCheckTest:
-    AGE16_ELIGIBLE_BIRTH_DATE = datetime.now() - relativedelta(years=16, months=4)
-    AGE18_ELIGIBLE_BIRTH_DATE = datetime.now() - relativedelta(years=18, months=4)
-    AGE20_ELIGIBLE_BIRTH_DATE = datetime.now() - relativedelta(years=20, months=4)
+    AGE16_ELIGIBLE_BIRTH_DATE = datetime.utcnow() - relativedelta(years=16, months=4)
+    AGE18_ELIGIBLE_BIRTH_DATE = datetime.utcnow() - relativedelta(years=18, months=4)
+    AGE20_ELIGIBLE_BIRTH_DATE = datetime.utcnow() - relativedelta(years=20, months=4)
 
     def test_not_eligible(self):
         user = users_factories.UserFactory(dateOfBirth=self.AGE20_ELIGIBLE_BIRTH_DATE)

@@ -239,7 +239,7 @@ class BulkImportUsersDataTest:
 
     def _test_add_many_contacts_to_list_without_mock(self, count: int, prefix: str):
         # 40 characters per email address
-        test_time = datetime.now().strftime("%y%m%d.%H%M")
+        test_time = datetime.utcnow().strftime("%y%m%d.%H%M")
         thousands_emails = (f"test.{prefix}.{test_time}.{i:06d}@example.net" for i in range(1, count + 1))
 
         result = add_contacts_to_list(
@@ -268,7 +268,7 @@ class BulkImportUsersDataTest:
         # temporarily disabled in make_update_request to really send data to Sendinblue test account.
         assert make_update_request(
             UpdateSendinblueContactRequest(
-                email=f"test.pro.{datetime.now().strftime('%y%m%d.%H%M')}@example.net",
+                email=f"test.pro.{datetime.utcnow().strftime('%y%m%d.%H%M')}@example.net",
                 attributes=format_user_attributes(common_pro_attributes),
                 contact_list_ids=[SENDINBLUE_PRO_TESTING_CONTACT_LIST_ID],
                 emailBlacklisted=False,

@@ -29,7 +29,7 @@ class UserTest:
         def test_return_expired_deposit_if_only_expired_deposits_exists(self):
             user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=18))
             user.add_beneficiary_role()
-            yesterday = datetime.now() - timedelta(days=1)
+            yesterday = datetime.utcnow() - timedelta(days=1)
             users_factories.DepositGrantFactory(user=user, expirationDate=yesterday)
 
             assert user.deposit.type == DepositType.GRANT_18

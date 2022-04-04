@@ -377,7 +377,7 @@ class RunIntegrationTest:
             eligibilityType=users_models.EligibilityType.AGE18,
         )
         details = fixture.make_parsed_graphql_application(application_id=123, state="accepte", email=user.email)
-        details.draft_date = datetime.now().isoformat()
+        details.draft_date = datetime.utcnow().isoformat()
         get_applications_with_details.return_value = [details]
         dms_api.import_dms_users(procedure_id=6712558)
 
@@ -555,7 +555,7 @@ class RunIntegrationTest:
 
     @patch.object(dms_connector_api.DMSGraphQLClient, "get_applications_with_details")
     def test_import_makes_user_beneficiary_after_19_birthday(self, get_applications_with_details):
-        date_of_birth = (datetime.now() - relativedelta(years=19)).strftime("%Y-%m-%dT%H:%M:%S")
+        date_of_birth = (datetime.utcnow() - relativedelta(years=19)).strftime("%Y-%m-%dT%H:%M:%S")
 
         # Create a user that has validated its email and phone number, meaning it
         # should become beneficiary.

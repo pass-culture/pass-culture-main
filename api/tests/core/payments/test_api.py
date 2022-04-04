@@ -103,9 +103,9 @@ class CreateDepositTest:
 
     def test_cannot_create_twice_a_deposit_of_same_type(self):
         # Given
-        AGE18_ELIGIBLE_BIRTH_DATE = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0) - relativedelta(
-            years=18, months=2
-        )
+        AGE18_ELIGIBLE_BIRTH_DATE = datetime.utcnow().replace(
+            hour=0, minute=0, second=0, microsecond=0
+        ) - relativedelta(years=18, months=2)
         beneficiary = users_factories.BeneficiaryGrant18Factory(dateOfBirth=AGE18_ELIGIBLE_BIRTH_DATE)
 
         # When

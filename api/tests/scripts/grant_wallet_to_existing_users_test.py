@@ -13,7 +13,7 @@ def test_should_grant_wallet_to_existing_users(app, db_session):
     # given
     # The build method is explicitly called to avoid the deposit generation
     # which is done if the Factory saves the object.
-    AGE18_ELIGIBLE_BIRTH_DATE = datetime.now() - relativedelta(years=18, months=4)
+    AGE18_ELIGIBLE_BIRTH_DATE = datetime.utcnow() - relativedelta(years=18, months=4)
     beneficiary = users_factories.UserFactory.build(dateOfBirth=AGE18_ELIGIBLE_BIRTH_DATE, email="email@example.com")
     beneficiary_2 = users_factories.UserFactory.build(dateOfBirth=AGE18_ELIGIBLE_BIRTH_DATE, email="email2@example.com")
     repository.save(beneficiary, beneficiary_2)

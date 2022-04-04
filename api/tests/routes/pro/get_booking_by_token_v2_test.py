@@ -21,7 +21,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 class Returns200Test:
     def test_when_user_has_rights_and_regular_offer(self, client):
         # Given
-        past = datetime.now() - timedelta(days=2)
+        past = datetime.utcnow() - timedelta(days=2)
         booking = bookings_factories.IndividualBookingFactory(
             individualBooking__user__email="beneficiary@example.com",
             stock__beginningDatetime=past,
@@ -131,7 +131,7 @@ class Returns200Test:
     def test_when_user_has_rights_and_regular_offer_and_token_in_lower_case(self, client):
         # Given
         booking = bookings_factories.IndividualBookingFactory(
-            stock__beginningDatetime=datetime.now() - timedelta(days=2),
+            stock__beginningDatetime=datetime.utcnow() - timedelta(days=2),
         )
         user_offerer = offerers_factories.UserOffererFactory(offerer=booking.offerer)
         pro_user = user_offerer.user

@@ -143,7 +143,7 @@ def test_get_user_attributes_beneficiary():
 
 def test_get_user_attributes_not_beneficiary():
     user = UserFactory(
-        dateOfBirth=datetime.now() - relativedelta.relativedelta(years=18, months=3),
+        dateOfBirth=datetime.utcnow() - relativedelta.relativedelta(years=18, months=3),
         firstName="Cou",
         lastName="Zin",
         city="Nice",

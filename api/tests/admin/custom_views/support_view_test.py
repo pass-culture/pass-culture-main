@@ -19,7 +19,7 @@ import pcapi.core.users.factories as users_factories
 import pcapi.core.users.models as users_models
 
 
-AGE18_ELIGIBLE_BIRTH_DATE = datetime.now() - relativedelta(years=18, months=4)
+AGE18_ELIGIBLE_BIRTH_DATE = datetime.utcnow() - relativedelta(years=18, months=4)
 
 
 @pytest.mark.usefixtures("db_session")
@@ -341,7 +341,7 @@ class ValidatePhoneNumberTest:
 @pytest.mark.usefixtures("db_session")
 class BeneficiaryActivationStatusTest:
     def test_not_eligible(self):
-        user = users_factories.UserFactory(dateOfBirth=datetime.now() - relativedelta(years=25))
+        user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=25))
         assert get_beneficiary_activation_status(user) == BeneficiaryActivationStatus.NOT_APPLICABLE
 
     def test_beneficiary(self):
@@ -353,14 +353,14 @@ class BeneficiaryActivationStatusTest:
     def test_ex_underage(self):
         with freezegun.freeze_time(datetime.utcnow() - relativedelta(years=3)):
             user = users_factories.UnderageBeneficiaryFactory(
-                dateOfBirth=datetime.now() - relativedelta(years=15, months=5),
+                dateOfBirth=datetime.utcnow() - relativedelta(years=15, months=5),
             )
         assert get_beneficiary_activation_status(user) == BeneficiaryActivationStatus.INCOMPLETE
 
     def test_ex_underage_with_some_fraud_check_ko(self):
         with freezegun.freeze_time(datetime.utcnow() - relativedelta(years=3)):
             user = users_factories.UnderageBeneficiaryFactory(
-                dateOfBirth=datetime.now() - relativedelta(years=15, months=5),
+                dateOfBirth=datetime.utcnow() - relativedelta(years=15, months=5),
             )
         fraud_factories.BeneficiaryFraudCheckFactory(
             user=user, type=fraud_models.FraudCheckType.HONOR_STATEMENT, status=fraud_models.FraudCheckStatus.OK
