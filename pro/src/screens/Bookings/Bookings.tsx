@@ -94,6 +94,7 @@ const Bookings = ({
         </button>
       )}
       <PreFilters
+        //@ts-expect-error should migrate PreFilters into ts
         appliedPreFilters={appliedPreFilters}
         applyPreFilters={applyPreFilters}
         downloadBookingsCSV={downloadBookingsCSV}
