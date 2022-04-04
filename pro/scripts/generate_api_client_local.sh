@@ -7,7 +7,7 @@ success() {
 
 docker run --network="host" --rm -v ${PWD}:/local swaggerapi/swagger-codegen-cli-v3 generate \
         -l typescript-fetch `# client type` \
-        -i http://localhost/apidoc/openapi.json `# schema location` \
+        -i http://localhost/pro/openapi.json `# schema location` \
         -c /local/swagger_codegen/swagger_codegen_config.json `# swagger codegen config` \
         -t /local/swagger_codegen/gen_templates `# templates directory` \
         -o /local/src/api/v1/gen `# output directory`
