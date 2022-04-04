@@ -30,7 +30,7 @@ class CollectiveOfferFactory(BaseFactory):
     mentalDisabilityCompliant = False
     motorDisabilityCompliant = False
     visualDisabilityCompliant = False
-    dateCreated = factory.LazyFunction(lambda: datetime.datetime.now() - datetime.timedelta(days=5))
+    dateCreated = factory.LazyFunction(lambda: datetime.datetime.utcnow() - datetime.timedelta(days=5))
     students = [StudentLevels.GENERAL2]
     contactEmail = "collectiveofferfactory+contact@example.com"
     bookingEmail = "collectiveofferfactory+booking@example.com"
@@ -65,7 +65,7 @@ class CollectiveOfferTemplateFactory(BaseFactory):
     motorDisabilityCompliant = False
     visualDisabilityCompliant = False
 
-    dateCreated = factory.LazyFunction(lambda: datetime.datetime.now() - datetime.timedelta(days=5))
+    dateCreated = factory.LazyFunction(lambda: datetime.datetime.utcnow() - datetime.timedelta(days=5))
     students = [StudentLevels.GENERAL2]
     contactEmail = "collectiveofferfactory+contact@example.com"
     contactPhone = "+33199006328"
@@ -91,10 +91,10 @@ class CollectiveStockFactory(BaseFactory):
         model = models.CollectiveStock
 
     collectiveOffer = factory.SubFactory(CollectiveOfferFactory)
-    beginningDatetime = factory.LazyFunction(lambda: datetime.datetime.now() + datetime.timedelta(days=1))
+    beginningDatetime = factory.LazyFunction(lambda: datetime.datetime.utcnow() + datetime.timedelta(days=1))
     bookingLimitDatetime = factory.LazyAttribute(lambda stock: stock.beginningDatetime - datetime.timedelta(minutes=60))
-    dateCreated = factory.LazyFunction(lambda: datetime.datetime.now() - datetime.timedelta(days=3))
-    dateModified = factory.LazyFunction(lambda: datetime.datetime.now() - datetime.timedelta(days=1))
+    dateCreated = factory.LazyFunction(lambda: datetime.datetime.utcnow() - datetime.timedelta(days=3))
+    dateModified = factory.LazyFunction(lambda: datetime.datetime.utcnow() - datetime.timedelta(days=1))
     numberOfTickets = 25
     price = 100
 
@@ -185,11 +185,11 @@ class CollectiveBookingFactory(BaseFactory):
         model = models.CollectiveBooking
 
     collectiveStock = factory.SubFactory(CollectiveStockFactory)
-    dateCreated = factory.LazyFunction(lambda: datetime.datetime.now() - datetime.timedelta(days=2))
+    dateCreated = factory.LazyFunction(lambda: datetime.datetime.utcnow() - datetime.timedelta(days=2))
     venue = factory.SubFactory(VenueFactory)
     offerer = factory.SubFactory(OffererFactory)
-    cancellationLimitDate = factory.LazyFunction(lambda: datetime.datetime.now() - datetime.timedelta(days=1))
-    confirmationLimitDate = factory.LazyFunction(lambda: datetime.datetime.now() - datetime.timedelta(days=1))
+    cancellationLimitDate = factory.LazyFunction(lambda: datetime.datetime.utcnow() - datetime.timedelta(days=1))
+    confirmationLimitDate = factory.LazyFunction(lambda: datetime.datetime.utcnow() - datetime.timedelta(days=1))
     educationalInstitution = factory.SubFactory(EducationalInstitutionFactory)
     educationalYear = factory.SubFactory(EducationalYearFactory)
     educationalRedactor = factory.SubFactory(EducationalRedactorFactory)
@@ -197,6 +197,6 @@ class CollectiveBookingFactory(BaseFactory):
 
 
 class PendingCollectiveBookingFactory(CollectiveBookingFactory):
-    cancellationLimitDate = factory.LazyFunction(lambda: datetime.datetime.now() + datetime.timedelta(days=10))
-    confirmationLimitDate = factory.LazyFunction(lambda: datetime.datetime.now() - datetime.timedelta(days=10))
+    cancellationLimitDate = factory.LazyFunction(lambda: datetime.datetime.utcnow() + datetime.timedelta(days=10))
+    confirmationLimitDate = factory.LazyFunction(lambda: datetime.datetime.utcnow() - datetime.timedelta(days=10))
     status = models.CollectiveBookingStatus.PENDING

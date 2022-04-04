@@ -131,7 +131,7 @@ class UbbleContentFactory(factory.Factory):
     supported = None
     identification_id = None
     identification_url = None
-    registration_datetime = datetime.now()
+    registration_datetime = factory.LazyFunction(datetime.utcnow)
 
 
 class EduconnectContentFactory(factory.Factory):
@@ -146,7 +146,7 @@ class EduconnectContentFactory(factory.Factory):
     first_name = factory.Faker("first_name")
     ine_hash = factory.Sequence(lambda _: "".join(random.choices(string.ascii_lowercase + string.digits, k=32)))
     last_name = factory.Faker("last_name")
-    registration_datetime = datetime.now()
+    registration_datetime = factory.LazyFunction(datetime.utcnow)
 
 
 FRAUD_CHECK_TYPE_MODEL_ASSOCIATION = {
