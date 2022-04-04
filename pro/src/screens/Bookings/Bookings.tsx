@@ -7,6 +7,8 @@ import Spinner from 'components/layout/Spinner'
 import Titles from 'components/layout/Titles/Titles'
 import { TPreFilters } from 'core/Bookings'
 import { DEFAULT_PRE_FILTERS } from 'core/Bookings'
+import { Audience } from 'core/shared/types'
+import FilterTabs from 'new_components/FilterTabs'
 
 import BookingsRecapTable from '../../components/pages/Bookings/BookingsRecapTable/BookingsRecapTable'
 import ChoosePreFiltersMessage from '../../components/pages/Bookings/ChoosePreFiltersMessage/ChoosePreFiltersMessage'
@@ -27,6 +29,8 @@ interface IBookingsProps {
   setWereBookingsRequested: (wereBookingsRequested: boolean) => void
   venueId?: string
   wereBookingsRequested: boolean
+  separateIndividualAndCollectiveOffers: boolean
+  audience: Audience
 }
 
 const Bookings = ({
@@ -41,6 +45,8 @@ const Bookings = ({
   setWereBookingsRequested,
   venueId,
   wereBookingsRequested,
+  separateIndividualAndCollectiveOffers,
+  audience,
 }: IBookingsProps): JSX.Element => {
   const [appliedPreFilters, setAppliedPreFilters] = useState<TPreFilters>({
     bookingStatusFilter: DEFAULT_PRE_FILTERS.bookingStatusFilter,
@@ -84,6 +90,15 @@ const Bookings = ({
     <div className="bookings-page">
       <PageTitle title="Vos réservations" />
       <Titles title="Réservations" />
+      {separateIndividualAndCollectiveOffers && (
+        <FilterTabs
+          collectiveLabel="Réservations collectives"
+          collectiveLink="/reservations/collectives"
+          individualLabel="Réservations individuelles"
+          individualLink="/reservations"
+          selectedAudience={audience}
+        />
+      )}
       <h2 className="br-title">Affichage des réservations</h2>
       {werePreFiltersCustomized && (
         <button

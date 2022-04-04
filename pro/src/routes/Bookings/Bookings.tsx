@@ -6,6 +6,7 @@ import useActiveFeature from 'components/hooks/useActiveFeature'
 import useCurrentUser from 'components/hooks/useCurrentUser'
 import useNotification from 'components/hooks/useNotification'
 import { DEFAULT_PRE_FILTERS, TPreFilters } from 'core/Bookings'
+import { Audience } from 'core/shared'
 import BookingsScreen from 'screens/Bookings'
 
 import {
@@ -20,6 +21,9 @@ const Bookings = (): JSX.Element => {
   const location = useLocation<{ venueId?: string; statuses?: string[] }>()
   const notify = useNotification()
   const { currentUser: user } = useCurrentUser()
+  const separateIndividualAndCollectiveOffers = useActiveFeature(
+    'ENABLE_INDIVIDUAL_AND_COLLECTIVE_OFFER_SEPARATION'
+  )
 
   const [bookingsRecap, setBookingsRecap] = useState<
     BookingRecapResponseModel[]
@@ -116,6 +120,7 @@ const Bookings = (): JSX.Element => {
 
   return (
     <BookingsScreen
+      audience={Audience.INDIVIDUAL}
       bookingsRecap={bookingsRecap}
       downloadBookingsCSV={downloadBookingsCSV}
       hasBooking={hasBooking}
@@ -124,6 +129,9 @@ const Bookings = (): JSX.Element => {
       isTableLoading={isTableLoading}
       loadBookingsRecap={loadBookingsRecap}
       locationState={location.state}
+      separateIndividualAndCollectiveOffers={
+        separateIndividualAndCollectiveOffers
+      }
       setWereBookingsRequested={setWereBookingsRequested}
       venueId={location.state?.venueId}
       wereBookingsRequested={wereBookingsRequested}
