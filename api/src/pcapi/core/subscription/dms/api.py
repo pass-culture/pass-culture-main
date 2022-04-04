@@ -116,11 +116,13 @@ def import_dms_users(procedure_id: int) -> None:
         try:
             result_content = dms_connector_api.parse_beneficiary_information_graphql(application_details, procedure_id)
         except subscription_exceptions.DMSParsingError as exc:
-            _process_parsing_error(exc, user, procedure_id, application_id)
+            logger.info("[DMS] Invalid values (%r) detected in application %s", exc.errors, application_id)
+            _process_parsing_error(exc, user, application_id)
             continue
 
-        except Exception as exc:  # pylint: disable=broad-except
-            process_parsing_exception(exc, user, procedure_id, application_id)
+        except Exception:  # pylint: disable=broad-except
+            logger.exception("[DMS] Exception when parsing application %s", application_id)
+            _process_parsing_exception(user, application_id)
             continue
 
         process_application(user, result_content)
@@ -161,48 +163,33 @@ def notify_parsing_exception(
         )
 
 
-def process_parsing_exception(
-    exception: Exception, user: users_models.User, procedure_id: int, application_id: int
-) -> None:
-    logger.info(
-        "[BATCH][REMOTE IMPORT BENEFICIARIES] Application %s in procedure %s had errors and was ignored: %s",
-        application_id,
-        procedure_id,
-        exception,
-        exc_info=True,
-    )
-    error_details = f"Le dossier {application_id} contient des erreurs et a été ignoré - Procedure {procedure_id}"
-    # Create fraud check for observability
-    fraud_api.create_dms_fraud_check_error(
-        user,
-        application_id,
-        reason_codes=[fraud_models.FraudReasonCode.ERROR_IN_DATA],
-        error_details=error_details,
-    )
-
-
 def _process_parsing_error(
-    exception: subscription_exceptions.DMSParsingError, user: users_models.User, procedure_id: int, application_id: int
+    exception: subscription_exceptions.DMSParsingError, user: users_models.User, application_id: int
 ) -> None:
-    logger.info(
-        "[BATCH][REMOTE IMPORT BENEFICIARIES] Invalid values (%r) detected in Application %s in procedure %s",
-        exception.errors,
-        application_id,
-        procedure_id,
-    )
     send_pre_subscription_from_dms_error_email_to_beneficiary(
         exception.user_email, exception.errors.get("postal_code"), exception.errors.get("id_piece_number")
     )
+    subscription_messages.on_dms_application_parsing_errors(user, list(exception.errors.keys()))
+
     errors = ",".join([f"'{key}' ({value})" for key, value in sorted(exception.errors.items())])
     error_details = f"Erreur dans les données soumises dans le dossier DMS : {errors}"
-    subscription_messages.on_dms_application_parsing_errors(user, list(exception.errors.keys()))
-    # Create fraud check for observability, and to avoid reimporting the same application
-    fraud_api.create_dms_fraud_check_error(
-        user,
-        application_id,
-        reason_codes=[fraud_models.FraudReasonCode.ERROR_IN_DATA],
-        error_details=error_details,
-    )
+
+    _update_or_create_error_fraud_check(user, application_id, error_details)
+
+
+def _process_parsing_exception(user: users_models.User, application_id: int) -> None:
+    _update_or_create_error_fraud_check(user, application_id, "Erreur de lecture du dossier")
+
+
+def _update_or_create_error_fraud_check(user: users_models.User, application_id: int, reason: str):
+    # Update fraud check for observability and to avoid reimporting the same application
+    fraud_check = fraud_dms_api.get_or_create_fraud_check(user, application_id)
+
+    fraud_check.status = fraud_models.FraudCheckStatus.ERROR
+    fraud_check.reason = reason
+    fraud_check.reasonCodes = [fraud_models.FraudReasonCode.ERROR_IN_DATA]
+
+    pcapi_repository.repository.save(fraud_check)
 
 
 def _process_user_parsing_error(application_id: int, procedure_id: int) -> None:
