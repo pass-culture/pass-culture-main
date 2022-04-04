@@ -6,10 +6,12 @@ import useActiveFeature from 'components/hooks/useActiveFeature'
 import useCurrentUser from 'components/hooks/useCurrentUser'
 import useNotification from 'components/hooks/useNotification'
 import { DEFAULT_PRE_FILTERS, TPreFilters } from 'core/Bookings'
-import * as pcapi from 'repository/pcapi/pcapi'
 import BookingsScreen from 'screens/Bookings'
 
-import { getBookingsCSVFileAdapter } from './adapters'
+import {
+  getBookingsCSVFileAdapter,
+  getUserHasBookingsAdapter,
+} from './adapters'
 import getFilteredBookingsRecapAdapter from './adapters/getFilteredBookingsRecapAdapter'
 
 const MAX_LOADED_PAGES = 5
@@ -75,8 +77,8 @@ const Bookings = (): JSX.Element => {
 
   const checkUserHasBookings = useCallback(async () => {
     if (!user.isAdmin) {
-      const { hasBookings } = await pcapi.getUserHasBookings()
-      setHasBooking(hasBookings)
+      const { payload } = await getUserHasBookingsAdapter()
+      setHasBooking(payload)
     }
   }, [user.isAdmin, setHasBooking])
 
