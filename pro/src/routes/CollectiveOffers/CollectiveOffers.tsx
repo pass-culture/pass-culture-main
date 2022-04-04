@@ -11,15 +11,10 @@ import { filterEducationalCategories } from 'core/OfferEducational'
 import { getOffererAdapter } from 'core/Offers/adapters'
 import { DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
 import { useQuerySearchFilters } from 'core/Offers/hooks'
-import {
-  Audience,
-  Offer,
-  Offerer,
-  TSearchFilters,
-  Option,
-} from 'core/Offers/types'
+import { Offer, Offerer, TSearchFilters, Option } from 'core/Offers/types'
 import { computeCollectiveOffersUrl } from 'core/Offers/utils'
 import { hasSearchFilters } from 'core/Offers/utils'
+import { Audience } from 'core/shared/types'
 import {
   fetchAllVenuesByProUser,
   formatAndOrderVenues,

@@ -8,7 +8,8 @@ import {
   translateQueryParamsToApiParams,
 } from 'utils/translate'
 
-import { Audience, TSearchFilters } from '../types'
+import { Audience } from '../../shared/types'
+import { TSearchFilters } from '../types'
 
 interface IUrlSearchFilters {
   nameOrIsbn?: string

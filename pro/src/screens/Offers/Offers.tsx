@@ -12,13 +12,8 @@ import {
   MAX_TOTAL_PAGES,
   NUMBER_OF_OFFERS_PER_PAGE,
 } from 'core/Offers'
-import {
-  Audience,
-  Offer,
-  Offerer,
-  Option,
-  TSearchFilters,
-} from 'core/Offers/types'
+import { Offer, Offerer, Option, TSearchFilters } from 'core/Offers/types'
+import { Audience } from 'core/shared'
 import { ReactComponent as AddOfferSvg } from 'icons/ico-plus.svg'
 import FilterTabs from 'new_components/FilterTabs'
 

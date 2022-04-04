@@ -10,7 +10,8 @@ import {
   translateApiParamsToQueryParams,
 } from 'utils/translate'
 
-import { Audience, TSearchFilters } from '../types'
+import { Audience } from '../../shared/types'
+import { TSearchFilters } from '../types'
 
 const INDIVIDUAL_OFFERS_URL = '/offres'
 const COLLECTIVE_OFFERS_URL = '/offres/collectives'

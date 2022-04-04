@@ -20,8 +20,9 @@ import {
   DEFAULT_PAGE,
   DEFAULT_SEARCH_FILTERS,
 } from 'core/Offers/constants'
-import { Audience, Offer, TSearchFilters } from 'core/Offers/types'
+import { Offer, TSearchFilters } from 'core/Offers/types'
 import { computeOffersUrl } from 'core/Offers/utils'
+import { Audience } from 'core/shared'
 import { configureTestStore } from 'store/testUtils'
 import { offerFactory } from 'utils/apiFactories'
 

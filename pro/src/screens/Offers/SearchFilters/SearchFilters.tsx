@@ -15,8 +15,9 @@ import {
   DEFAULT_CREATION_MODE,
   DEFAULT_SEARCH_FILTERS,
 } from 'core/Offers/constants'
-import { Audience, Offerer, Option, TSearchFilters } from 'core/Offers/types'
+import { Offerer, Option, TSearchFilters } from 'core/Offers/types'
 import { hasSearchFilters } from 'core/Offers/utils'
+import { Audience } from 'core/shared'
 import { ReactComponent as ResetIcon } from 'icons/reset.svg'
 import { formatBrowserTimezonedDateAsUTC, getToday } from 'utils/date'
 
