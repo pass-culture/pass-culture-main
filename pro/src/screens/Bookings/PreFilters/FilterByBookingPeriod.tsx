@@ -1,18 +1,24 @@
 import { addDays, subDays } from 'date-fns'
-import PropTypes from 'prop-types'
 import React from 'react'
 
 import PeriodSelector from 'components/layout/inputs/PeriodSelector/PeriodSelector'
-import { DEFAULT_BOOKING_PERIOD } from 'core/Bookings'
+import { DEFAULT_BOOKING_PERIOD, TPreFilters } from 'core/Bookings'
 import { getToday } from 'utils/date'
+
+interface IFilterByBookingPeriodProps {
+  isDisabled?: boolean
+  updateFilters: (filters: Partial<TPreFilters>) => void
+  selectedBookingBeginningDate: Date
+  selectedBookingEndingDate: Date
+}
 
 const FilterByBookingPeriod = ({
   isDisabled,
   updateFilters,
   selectedBookingBeginningDate,
   selectedBookingEndingDate,
-}) => {
-  function handleBookingBeginningDateChange(bookingBeginningDate) {
+}: IFilterByBookingPeriodProps): JSX.Element => {
+  function handleBookingBeginningDateChange(bookingBeginningDate: Date) {
     updateFilters({
       bookingBeginningDate: bookingBeginningDate
         ? bookingBeginningDate
@@ -20,7 +26,7 @@ const FilterByBookingPeriod = ({
     })
   }
 
-  function handleBookingEndingDateChange(bookingEndingDate) {
+  function handleBookingEndingDateChange(bookingEndingDate: Date) {
     updateFilters({
       bookingEndingDate: bookingEndingDate
         ? bookingEndingDate
@@ -40,22 +46,6 @@ const FilterByBookingPeriod = ({
       todayDate={getToday()}
     />
   )
-}
-
-FilterByBookingPeriod.defaultProps = {
-  isDisabled: false,
-}
-FilterByBookingPeriod.propTypes = {
-  isDisabled: PropTypes.bool,
-  selectedBookingBeginningDate: PropTypes.oneOfType([
-    PropTypes.shape(),
-    PropTypes.string,
-  ]).isRequired,
-  selectedBookingEndingDate: PropTypes.oneOfType([
-    PropTypes.shape(),
-    PropTypes.string,
-  ]).isRequired,
-  updateFilters: PropTypes.func.isRequired,
 }
 
 export default FilterByBookingPeriod

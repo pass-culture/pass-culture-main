@@ -1,16 +1,22 @@
-import PropTypes from 'prop-types'
 import React from 'react'
 
 import Select from 'components/layout/inputs/Select'
-import { ALL_VENUES_OPTION } from 'core/Bookings'
+import { ALL_VENUES_OPTION, TPreFilters } from 'core/Bookings'
+
+interface IFilterByVenueProps {
+  isDisabled?: boolean
+  selectedVenueId: string
+  updateFilters: (filter: Partial<TPreFilters>) => void
+  venuesFormattedAndOrdered: { displayName: string; id: string }[]
+}
 
 const FilterByVenue = ({
   isDisabled,
   updateFilters,
   selectedVenueId,
   venuesFormattedAndOrdered,
-}) => {
-  function handleVenueSelection(event) {
+}: IFilterByVenueProps): JSX.Element => {
+  function handleVenueSelection(event: React.ChangeEvent<HTMLSelectElement>) {
     const venueId = event.target.value
     updateFilters({ offerVenueId: venueId })
   }
@@ -31,20 +37,6 @@ const FilterByVenue = ({
       selectedValue={selectedVenueId}
     />
   )
-}
-FilterByVenue.defaultProps = {
-  isDisabled: false,
-}
-FilterByVenue.propTypes = {
-  isDisabled: PropTypes.bool,
-  selectedVenueId: PropTypes.string.isRequired,
-  updateFilters: PropTypes.func.isRequired,
-  venuesFormattedAndOrdered: PropTypes.arrayOf(
-    PropTypes.shape({
-      displayName: PropTypes.string.isRequired,
-      id: PropTypes.string.isRequired,
-    })
-  ).isRequired,
 }
 
 export default FilterByVenue

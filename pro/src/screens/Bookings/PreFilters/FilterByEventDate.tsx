@@ -1,20 +1,30 @@
 import fr from 'date-fns/locale/fr'
-import PropTypes from 'prop-types'
 import React from 'react'
 import DatePicker, { registerLocale } from 'react-datepicker'
 
 import InputWithCalendar from 'components/layout/inputs/PeriodSelector/InputWithCalendar'
-import { DEFAULT_PRE_FILTERS } from 'core/Bookings'
+import { DEFAULT_PRE_FILTERS, TPreFilters } from 'core/Bookings'
 import { getToday } from 'utils/date'
 
 registerLocale('fr', fr)
 
+interface IFilterByEventDateProps {
+  isDisabled?: boolean
+  selectedOfferDate: Date | string
+  updateFilters: (filters: Partial<TPreFilters>) => void
+}
+
+const selectedOfferDateIsDate = (
+  selectedOfferDate: Date | string
+): selectedOfferDate is Date =>
+  selectedOfferDate !== DEFAULT_PRE_FILTERS.offerEventDate
+
 const FilterByEventDate = ({
-  isDisabled,
+  isDisabled = false,
   updateFilters,
   selectedOfferDate,
-}) => {
-  function handleOfferDateChange(offerEventDate) {
+}: IFilterByEventDateProps): JSX.Element => {
+  function handleOfferDateChange(offerEventDate: Date) {
     updateFilters({
       offerEventDate: offerEventDate
         ? offerEventDate
@@ -32,6 +42,7 @@ const FilterByEventDate = ({
           className="pf-offer-date-input"
           customInput={
             <InputWithCalendar
+              // @ts-expect-error InputWithCalendar should be rewritten in ts
               customClass={`field-date-only${isDisabled ? ' disabled' : ''}`}
             />
           }
@@ -42,29 +53,20 @@ const FilterByEventDate = ({
           locale="fr"
           onChange={handleOfferDateChange}
           openToDate={
-            selectedOfferDate === DEFAULT_PRE_FILTERS.offerEventDate
-              ? getToday()
-              : selectedOfferDate
+            selectedOfferDateIsDate(selectedOfferDate)
+              ? selectedOfferDate
+              : getToday()
           }
           placeholderText="JJ/MM/AAAA"
           selected={
-            selectedOfferDate === DEFAULT_PRE_FILTERS.offerEventDate
-              ? ''
-              : selectedOfferDate
+            selectedOfferDateIsDate(selectedOfferDate)
+              ? selectedOfferDate
+              : null
           }
         />
       </div>
     </div>
   )
-}
-FilterByEventDate.defaultProps = {
-  isDisabled: false,
-}
-FilterByEventDate.propTypes = {
-  isDisabled: PropTypes.bool,
-  selectedOfferDate: PropTypes.oneOfType([PropTypes.shape(), PropTypes.string])
-    .isRequired,
-  updateFilters: PropTypes.func.isRequired,
 }
 
 export default FilterByEventDate

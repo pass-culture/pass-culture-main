@@ -13,7 +13,7 @@ import ChoosePreFiltersMessage from '../../components/pages/Bookings/ChoosePreFi
 import NoBookingMessage from '../../components/pages/Bookings/NoBookingMessage'
 import NoBookingsForPreFiltersMessage from '../../components/pages/Bookings/NoBookingsForPreFiltersMessage/NoBookingsForPreFiltersMessage'
 
-import PreFilters from './PreFilters/PreFilters'
+import PreFilters from './PreFilters'
 
 interface IBookingsProps {
   bookingsRecap: BookingRecapResponseModel[]
