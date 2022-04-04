@@ -16,7 +16,7 @@ import getFilteredBookingsRecapAdapter from './adapters/getFilteredBookingsRecap
 const MAX_LOADED_PAGES = 5
 
 const Bookings = (): JSX.Element => {
-  const location = useLocation<{ venueId: string; statuses: string[] }>()
+  const location = useLocation<{ venueId?: string; statuses?: string[] }>()
   const notify = useNotification()
   const { currentUser: user } = useCurrentUser()
 
@@ -101,7 +101,7 @@ const Bookings = (): JSX.Element => {
   )
 
   useEffect(() => {
-    if (location.state?.statuses.length > 0) {
+    if (location.state?.statuses && location.state?.statuses?.length > 0) {
       loadBookingsRecap({
         bookingBeginningDate: DEFAULT_PRE_FILTERS.bookingBeginningDate,
         bookingEndingDate: DEFAULT_PRE_FILTERS.bookingEndingDate,
@@ -125,7 +125,7 @@ const Bookings = (): JSX.Element => {
       loadBookingsRecap={loadBookingsRecap}
       locationState={location.state}
       setWereBookingsRequested={setWereBookingsRequested}
-      venueId={location.state.venueId}
+      venueId={location.state?.venueId}
       wereBookingsRequested={wereBookingsRequested}
     />
   )
