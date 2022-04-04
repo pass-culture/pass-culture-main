@@ -12,7 +12,8 @@ import BookingsRecapTable from '../../components/pages/Bookings/BookingsRecapTab
 import ChoosePreFiltersMessage from '../../components/pages/Bookings/ChoosePreFiltersMessage/ChoosePreFiltersMessage'
 import NoBookingMessage from '../../components/pages/Bookings/NoBookingMessage'
 import NoBookingsForPreFiltersMessage from '../../components/pages/Bookings/NoBookingsForPreFiltersMessage/NoBookingsForPreFiltersMessage'
-import PreFilters from '../../components/pages/Bookings/PreFilters/PreFilters'
+
+import PreFilters from './PreFilters/PreFilters'
 
 interface IBookingsProps {
   bookingsRecap: BookingRecapResponseModel[]
@@ -94,7 +95,6 @@ const Bookings = ({
         </button>
       )}
       <PreFilters
-        //@ts-expect-error should migrate PreFilters into ts
         appliedPreFilters={appliedPreFilters}
         applyPreFilters={applyPreFilters}
         downloadBookingsCSV={downloadBookingsCSV}
