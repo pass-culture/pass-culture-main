@@ -219,7 +219,7 @@ def process_application(user: users_models.User, result_content: fraud_models.DM
         return
 
     if fraud_check.status != fraud_models.FraudCheckStatus.OK:
-        handle_validation_errors(user, fraud_check.reasonCodes, result_content, result_content.procedure_id)
+        handle_validation_errors(user, fraud_check.reasonCodes, result_content)
         subscription_api.update_user_birth_date(user, result_content.get_birth_date())
         return
 
@@ -248,26 +248,22 @@ def handle_validation_errors(
     user: users_models.User,
     reason_codes: list[fraud_models.FraudReasonCode],
     dms_content: fraud_models.DMSContent,
-    procedure_id: int,
 ) -> None:
-    for item in reason_codes:
-        if item == fraud_models.FraudReasonCode.ALREADY_BENEFICIARY:
-            _log_rejection(dms_content.application_id, procedure_id, "L'utilisateur est déjà bénéficiaire")
-        if item == fraud_models.FraudReasonCode.NOT_ELIGIBLE:
-            _log_rejection(dms_content.application_id, procedure_id, "L'utilisateur n'est pas éligible")
-        if item == fraud_models.FraudReasonCode.DUPLICATE_USER:
-            subscription_messages.on_duplicate_user(user)
-            duplicate_beneficiary.send_duplicate_beneficiary_email(user, dms_content)
-        if item == fraud_models.FraudReasonCode.DUPLICATE_ID_PIECE_NUMBER:
-            subscription_messages.on_duplicate_user(user)
+    if fraud_models.FraudReasonCode.DUPLICATE_USER in reason_codes:
+        subscription_messages.on_duplicate_user(user)
+        duplicate_beneficiary.send_duplicate_beneficiary_email(user, dms_content, False)
+    elif fraud_models.FraudReasonCode.DUPLICATE_ID_PIECE_NUMBER in reason_codes:
+        subscription_messages.on_duplicate_user(user)
+        duplicate_beneficiary.send_duplicate_beneficiary_email(user, dms_content, True)
 
+    reason = ", ".join([code.name for code in reason_codes])
 
-def _log_rejection(application_id: int, procedure_id: int, reason: str) -> None:
     logger.warning(
         "[BATCH][REMOTE IMPORT BENEFICIARIES] Rejected application %s because of '%s' - Procedure %s",
-        application_id,
+        dms_content.application_id,
         reason,
-        procedure_id,
+        dms_content.procedure_id,
+        extra={"user_id": user.id},
     )
 
 
