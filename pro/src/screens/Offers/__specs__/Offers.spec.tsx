@@ -20,7 +20,8 @@ import {
   DEFAULT_CREATION_MODE,
   DEFAULT_SEARCH_FILTERS,
 } from 'core/Offers/constants'
-import { Audience, Offer } from 'core/Offers/types'
+import { Offer } from 'core/Offers/types'
+import { Audience } from 'core/shared'
 import { configureTestStore } from 'store/testUtils'
 import { offererFactory, offerFactory } from 'utils/apiFactories'
 import { queryByTextTrimHtml, renderWithStyles } from 'utils/testHelpers'
