@@ -5,12 +5,11 @@ import { BookingRecapResponseModel } from 'api/v1/gen'
 import useActiveFeature from 'components/hooks/useActiveFeature'
 import useCurrentUser from 'components/hooks/useCurrentUser'
 import useNotification from 'components/hooks/useNotification'
-import { downloadCSVFile } from 'components/pages/Bookings/downloadCSVBookings'
-import { DEFAULT_PRE_FILTERS } from 'core/Bookings/constants'
-import { TPreFilters } from 'core/Bookings/types'
+import { DEFAULT_PRE_FILTERS, TPreFilters } from 'core/Bookings'
 import * as pcapi from 'repository/pcapi/pcapi'
 import BookingsScreen from 'screens/Bookings'
 
+import { getBookingsCSVFileAdapter } from './adapters'
 import getFilteredBookingsRecapAdapter from './adapters/getFilteredBookingsRecapAdapter'
 
 const MAX_LOADED_PAGES = 5
@@ -86,15 +85,14 @@ const Bookings = (): JSX.Element => {
   }, [checkUserHasBookings])
 
   const downloadBookingsCSV = useCallback(
-    async filters => {
+    async (filters: TPreFilters) => {
       setIsDownloadingCSV(true)
-      try {
-        await downloadCSVFile(filters)
-      } catch (e) {
-        notify.error(
-          "Une erreur s'est produite. Veuillez réessayer ultérieurement."
-        )
+      const { isOk, message } = await getBookingsCSVFileAdapter(filters)
+
+      if (!isOk) {
+        notify.error(message)
       }
+
       setIsDownloadingCSV(false)
     },
     [notify]
