@@ -132,9 +132,7 @@ def import_dms_users(procedure_id: int) -> None:
     )
 
 
-def notify_parsing_exception(
-    parsing_error: subscription_exceptions.DMSParsingError, application_scalar_id: str, client
-):
+def _notify_parsing_error(parsing_error: subscription_exceptions.DMSParsingError, application_scalar_id: str, client):
     if "birth_date" in parsing_error:
         client.send_user_message(
             application_scalar_id, settings.DMS_INSTRUCTOR_ID, subscription_messages.DMS_ERROR_MESSSAGE_BIRTH_DATE
@@ -412,7 +410,7 @@ def parse_and_handle_dms_application(
             user, list(parsing_error.errors.keys())
         )
         if state == dms_models.GraphQLApplicationStates.draft:
-            notify_parsing_exception(parsing_error.errors, application_scalar_id, client)
+            _notify_parsing_error(parsing_error.errors, application_scalar_id, client)
 
         return fraud_dms_api.on_dms_parsing_error(user, application_id, parsing_error, extra_data=log_extra_data)
 
