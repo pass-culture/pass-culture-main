@@ -8,7 +8,7 @@ import { getToday } from 'utils/date'
 
 registerLocale('fr', fr)
 
-interface IFilterByEventDateProps {
+export interface IFilterByEventDateProps {
   isDisabled?: boolean
   selectedOfferDate: Date | string
   updateFilters: (filters: Partial<TPreFilters>) => void
