@@ -1,12 +1,12 @@
 import React from 'react'
 import { useLocation } from 'react-router-dom'
 
+import { getVenuesAdapter } from 'core/Bookings/adapters'
 import { Audience } from 'core/shared'
 import BookingsScreen from 'screens/Bookings'
 
 import {
   getUserHasBookingsAdapter,
-  getVenuesAdapter,
   getBookingsCSVFileAdapter,
   getFilteredBookingsRecapAdapter,
 } from './adapters'
