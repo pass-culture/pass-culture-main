@@ -37,9 +37,12 @@ export const ALL_VENUES_OPTION = {
 }
 
 const BOOOKING_STATUS_OPTIONS = [
-  { displayName: 'Période de réservation', id: BOOKING_STATUS.BOOKED },
-  { displayName: 'Période de validation', id: BOOKING_STATUS.VALIDATED },
-  { displayName: 'Période de remboursement', id: BOOKING_STATUS.REIMBURSED },
+  { displayName: 'Période de réservation', id: BookingStatusFilter.Booked },
+  { displayName: 'Période de validation', id: BookingStatusFilter.Validated },
+  {
+    displayName: 'Période de remboursement',
+    id: BookingStatusFilter.Reimbursed,
+  },
 ]
 
 export const [DEFAULT_BOOKING_FILTER, ...BOOOKING_STATUS_FILTER] =

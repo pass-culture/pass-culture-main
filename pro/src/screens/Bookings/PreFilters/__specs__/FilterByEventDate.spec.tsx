@@ -3,10 +3,12 @@ import React from 'react'
 
 import { EMPTY_FILTER_VALUE } from 'core/Bookings'
 
-import FilterByEventDate from '../FilterByEventDate'
+import FilterByEventDate, {
+  IFilterByEventDateProps,
+} from '../FilterByEventDate'
 
 describe('components | FilterByEventDate', () => {
-  let props
+  let props: IFilterByEventDateProps
   beforeEach(() => {
     props = {
       updateFilters: jest.fn(),
@@ -30,7 +32,7 @@ describe('components | FilterByEventDate', () => {
     const offerDateInput = wrapper.find({ placeholderText: 'JJ/MM/AAAA' }).at(0)
 
     // When
-    await offerDateInput.simulate('change', selectedDate)
+    offerDateInput.simulate('change', selectedDate)
 
     // Then
     expect(props.updateFilters).toHaveBeenCalledWith({

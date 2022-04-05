@@ -10,7 +10,7 @@ import FilterByBookingStatusPeriod from './FilterByBookingStatusPeriod'
 import FilterByEventDate from './FilterByEventDate'
 import FilterByVenue from './FilterByVenue'
 
-interface IPreFilters {
+export interface IPreFiltersProps {
   appliedPreFilters: TPreFilters
   applyPreFilters: (filters: TPreFilters) => void
   downloadBookingsCSV: (filters: TPreFilters) => void
@@ -36,7 +36,7 @@ const PreFilters = ({
   wereBookingsRequested,
   isLocalLoading,
   venues,
-}: IPreFilters): JSX.Element => {
+}: IPreFiltersProps): JSX.Element => {
   const [selectedPreFilters, setSelectedPreFilters] = useState({
     ...appliedPreFilters,
   })
