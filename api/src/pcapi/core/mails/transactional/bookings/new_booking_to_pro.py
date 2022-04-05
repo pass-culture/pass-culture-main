@@ -1,5 +1,7 @@
 from pcapi.core import mails
+from pcapi.core.bookings import constants as booking_constants
 from pcapi.core.bookings.models import IndividualBooking
+from pcapi.core.categories import subcategories
 from pcapi.core.mails.models.sendinblue_models import EmailInfo
 from pcapi.core.mails.models.sendinblue_models import SendinblueTransactionalEmailData
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
@@ -54,6 +56,8 @@ def get_new_booking_to_pro_email_data(
             "EVENT_HOUR": event_hour,
             "IS_BOOKING_AUTOVALIDATED": is_booking_autovalidated,
             "IS_EVENT": offer.isEvent,
+            "IS_THING": offer.isThing,
+            "IS_DIGITAL": offer.isDigital,
             "ISBN": isbn,
             "OFFER_NAME": offer.name,
             "OFFER_SUBCATEGORY": offer_subcategory,
@@ -69,6 +73,9 @@ def get_new_booking_to_pro_email_data(
                 or individual_booking.booking.activationCode
                 or is_booking_autovalidated
             ),
+            "WITHDRAWAL_PERIOD": booking_constants.BOOKS_BOOKINGS_AUTO_EXPIRY_DELAY.days
+            if offer.subcategoryId == subcategories.LIVRE_PAPIER.id
+            else booking_constants.BOOKINGS_AUTO_EXPIRY_DELAY.days,
         },
     )
 
