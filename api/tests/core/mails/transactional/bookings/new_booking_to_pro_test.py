@@ -45,8 +45,11 @@ def get_expected_base_email_data(booking, **overrides):
         "EVENT_DATE": "06-Nov-2019",
         "EVENT_HOUR": "15h59",
         "IS_BOOKING_AUTOVALIDATED": False,
+        "IS_DIGITAL": False,
         "IS_EVENT": True,
+        "IS_THING": False,
         "ISBN": "",
+        "MUST_USE_TOKEN_FOR_PAYMENT": True,
         "OFFER_NAME": "Super événement",
         "OFFER_SUBCATEGORY": "SPECTACLE_REPRESENTATION",
         "PRICE": "10.00 €",
@@ -56,7 +59,7 @@ def get_expected_base_email_data(booking, **overrides):
         "USER_LASTNAME": "Doe",
         "USER_PHONENUMBER": "",
         "VENUE_NAME": "Lieu de l'offreur",
-        "MUST_USE_TOKEN_FOR_PAYMENT": True,
+        "WITHDRAWAL_PERIOD": 30,
     }
     email_data_params.update(overrides)
     return email_data_params
@@ -91,6 +94,8 @@ class OffererBookingRecapTest:
             OFFER_NAME="Le récit de voyage",
             OFFER_SUBCATEGORY="book",
             CAN_EXPIRE=True,
+            IS_THING=True,
+            WITHDRAWAL_PERIOD=10,
         )
         assert email_data.params == expected
 
@@ -117,6 +122,7 @@ class OffererBookingRecapTest:
             EVENT_DATE="",
             EVENT_HOUR="",
             IS_EVENT=False,
+            IS_THING=True,
             OFFER_NAME="Le récit de voyage",
             OFFER_SUBCATEGORY="SUPPORT_PHYSIQUE_FILM",
             CAN_EXPIRE=True,
@@ -150,6 +156,8 @@ class OffererBookingRecapTest:
             OFFER_SUBCATEGORY="book",
             ISBN="",
             CAN_EXPIRE=True,
+            IS_THING=True,
+            WITHDRAWAL_PERIOD=10,
         )
         assert email_data.params == expected
 
@@ -180,6 +188,8 @@ class OffererBookingRecapTest:
             QUANTITY=10,
             CAN_EXPIRE=False,
             MUST_USE_TOKEN_FOR_PAYMENT=False,
+            IS_THING=True,
+            IS_DIGITAL=True,
         )
         assert email_data.params == expected
 
@@ -257,6 +267,8 @@ class OffererBookingRecapTest:
             MUST_USE_TOKEN_FOR_PAYMENT=False,
             OFFER_SUBCATEGORY="VOD",
             COUNTERMARK=booking.token,
+            IS_THING=True,
+            IS_DIGITAL=True,
         )
         assert email_data.params == expected
 
@@ -297,6 +309,8 @@ class OffererBookingRecapTest:
             IS_BOOKING_AUTOVALIDATED=True,
             MUST_USE_TOKEN_FOR_PAYMENT=False,
             COUNTERMARK=booking.token,
+            IS_THING=True,
+            IS_DIGITAL=True,
         )
         assert email_data.params == expected
 
