@@ -314,6 +314,7 @@ def get_bookings_for_educational_year(educational_year_id: str) -> list[educatio
             .load_only(offerers_models.Offerer.postalCode)
         )
         .options(joinedload(educational_models.EducationalBooking.educationalInstitution, innerjoin=True))
+        .order_by(educational_models.EducationalBooking.id)
         .all()
     )
 
