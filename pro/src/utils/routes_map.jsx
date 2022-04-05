@@ -14,6 +14,7 @@ import SignIn from 'components/pages/SignIn/SignIn'
 import SignupContainer from 'components/pages/Signup/SignupContainer'
 import StyleguideContainer from 'components/pages/Styleguide/StyleguideContainer'
 import Bookings from 'routes/Bookings'
+import CollectiveBookings from 'routes/CollectiveBookings'
 import CollectiveOffers from 'routes/CollectiveOffers'
 import CsvDetailViewContainer from 'routes/CsvTable'
 import Desk from 'routes/Desk'
@@ -117,6 +118,12 @@ const routes = [
     component: Bookings,
     exact: true,
     path: '/reservations',
+    title: 'Réservations',
+  },
+  {
+    component: CollectiveBookings,
+    exact: true,
+    path: '/reservations/collectives',
     title: 'Réservations',
   },
   {
