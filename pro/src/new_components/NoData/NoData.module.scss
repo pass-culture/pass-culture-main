@@ -1,9 +1,10 @@
 .no-data {
-  @include body();
+  @include title4();
 
   align-items: center;
   display: flex;
   flex-direction: column;
+  margin-bottom: rem(32px);
 
   &-icon {
     margin: rem(40px) 0;
