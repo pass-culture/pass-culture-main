@@ -1039,12 +1039,16 @@ def _generate_invoice(business_unit_id: int, cashflow_ids: list[int]):
         """,
         {"status": models.PricingStatus.INVOICED.value, "cashflow_ids": tuple(cashflow_ids)},
     )
-    # Booking.status: USED -> REIMBURSED
+    # Booking.status: USED -> REIMBURSED (but keep CANCELLED as is)
     db.session.execute(
         """
         UPDATE booking
         SET
-          status = :status,
+          status =
+            CASE WHEN booking.status = CAST(:cancelled AS booking_status)
+            THEN CAST(:cancelled AS booking_status)
+            ELSE CAST(:reimbursed AS booking_status)
+            END,
           "reimbursementDate" = :reimbursement_date
         FROM pricing, cashflow_pricing
         WHERE
@@ -1053,7 +1057,8 @@ def _generate_invoice(business_unit_id: int, cashflow_ids: list[int]):
           AND cashflow_pricing."cashflowId" IN :cashflow_ids
         """,
         {
-            "status": bookings_models.BookingStatus.REIMBURSED.value,
+            "cancelled": bookings_models.BookingStatus.CANCELLED.value,
+            "reimbursed": bookings_models.BookingStatus.REIMBURSED.value,
             "cashflow_ids": tuple(cashflow_ids),
             "reimbursement_date": datetime.datetime.utcnow(),
         },

@@ -1237,20 +1237,25 @@ class GenerateInvoiceTest:
         assert line6.label == "Montant remboursé"
 
     def test_update_statuses(self):
-        booking = bookings_factories.UsedBookingFactory()
-        business_unit_id = booking.venue.businessUnitId
-        api.price_booking(booking)
+        booking1 = bookings_factories.UsedBookingFactory()
+        booking2 = bookings_factories.UsedBookingFactory()
+        business_unit_id = booking1.venue.businessUnitId
+        api.price_booking(booking1)
+        api.price_booking(booking2)
         api.generate_cashflows(datetime.datetime.utcnow())
         cashflow_ids = {cf.id for cf in models.Cashflow.query.all()}
-        api._generate_invoice(business_unit_id, cashflow_ids)
+        booking2.status = bookings_models.BookingStatus.CANCELLED
+        db.session.add(booking2)
+        db.session.commit()
 
+        api._generate_invoice(business_unit_id, cashflow_ids)
         get_statuses = lambda model: {s for s, in model.query.with_entities(getattr(model, "status"))}
         cashflow_statuses = get_statuses(models.Cashflow)
         assert cashflow_statuses == {models.CashflowStatus.ACCEPTED}
         pricing_statuses = get_statuses(models.Pricing)
         assert pricing_statuses == {models.PricingStatus.INVOICED}
-        booking_statuses = get_statuses(bookings_models.Booking)
-        assert booking_statuses == {bookings_models.BookingStatus.REIMBURSED}
+        assert booking1.status == bookings_models.BookingStatus.REIMBURSED  # updated
+        assert booking2.status == bookings_models.BookingStatus.CANCELLED  # not updated
 
 
 class PrepareInvoiceContextTest:
