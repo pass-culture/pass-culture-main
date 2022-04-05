@@ -2,25 +2,18 @@ import { addDays, subDays } from 'date-fns'
 import React from 'react'
 
 import PeriodSelector from 'components/layout/inputs/PeriodSelector/PeriodSelector'
-import { DEFAULT_BOOKING_PERIOD } from 'core/Bookings'
+import { DEFAULT_BOOKING_PERIOD, TPreFilters } from 'core/Bookings'
 import { getToday } from 'utils/date'
 
 import styles from './FilterByBookingStatusPeriod.module.scss'
 import FilterByStatus from './FilterByStatus'
 
-interface IPreFiltersProp {
-  bookingBeginningDate?: Date
-  bookingEndingDate?: Date
-  bookingStatusFilter: string
-  offerEventDate: Date
-  offerVenueId: string
-}
 interface IFilterByBookingStatusPeriodProps {
   isDisabled: boolean
   selectedBookingBeginningDate?: Date
   selectedBookingEndingDate?: Date
   selectedBookingFilter: string
-  updateFilters: (filters: Partial<IPreFiltersProp>) => void
+  updateFilters: (filters: Partial<TPreFilters>) => void
 }
 
 const FilterByBookingStatusPeriod = ({

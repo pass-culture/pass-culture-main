@@ -1,19 +1,16 @@
 import React from 'react'
 
+import { BookingStatusFilter } from 'api/v1/gen'
 import Select from 'components/layout/inputs/Select'
-import { BOOOKING_STATUS_FILTER, DEFAULT_BOOKING_FILTER } from 'core/Bookings'
-
-interface IPreFiltersProp {
-  bookingBeginningDate: Date
-  bookingEndingDate: Date
-  bookingStatusFilter: string
-  offerEventDate: Date
-  offerVenueId: string
-}
+import {
+  BOOOKING_STATUS_FILTER,
+  DEFAULT_BOOKING_FILTER,
+  TPreFilters,
+} from 'core/Bookings'
 
 interface IFilterByStatusProps {
   isDisabled: boolean
-  updateFilters: (filters: Partial<IPreFiltersProp>) => void
+  updateFilters: (filters: Partial<TPreFilters>) => void
   selectedStatusId: string
 }
 
@@ -25,7 +22,9 @@ const FilterByStatus = ({
   function handleStatusFilterSelection(
     event: React.ChangeEvent<HTMLSelectElement>
   ) {
-    updateFilters({ bookingStatusFilter: event.target.value })
+    updateFilters({
+      bookingStatusFilter: event.target.value as BookingStatusFilter,
+    })
   }
 
   return (
