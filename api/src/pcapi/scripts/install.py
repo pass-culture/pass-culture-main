@@ -15,7 +15,6 @@ def install_commands(app: flask.Flask) -> None:
         "pcapi.scripts.clean_database",
         "pcapi.scripts.external_users.commands",
         "pcapi.scripts.force_19yo_dms_import",
-        "pcapi.scripts.full_extract_offers",
         "pcapi.scripts.full_index_offers",
         "pcapi.scripts.generate_invoices",
         "pcapi.scripts.install_data",
