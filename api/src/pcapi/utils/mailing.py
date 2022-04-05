@@ -7,7 +7,9 @@ from flask import render_template
 from pcapi import settings
 from pcapi.connectors import api_entreprises
 from pcapi.core.bookings.models import Booking
+from pcapi.core.educational.models import CollectiveBooking
 from pcapi.core.educational.models import CollectiveOffer
+from pcapi.core.educational.models import CollectiveStock
 from pcapi.core.mails.models.sendinblue_models import SendinblueTransactionalSender
 from pcapi.core.mails.models.sendinblue_models import SendinblueTransactionalWithoutTemplateEmailData
 import pcapi.core.offerers.models as offerers_models
@@ -42,17 +44,19 @@ def build_pc_webapp_reset_password_link(token_value: str) -> str:
     return f"{settings.WEBAPP_V2_URL}/mot-de-passe-perdu?token={token_value}"
 
 
-def format_booking_date_for_email(booking: Booking) -> str:
-    if booking.stock.offer.isEvent:
-        date_in_tz = get_event_datetime(booking.stock)
+def format_booking_date_for_email(booking: Union[Booking, CollectiveBooking]) -> str:
+    if isinstance(booking, CollectiveBooking) or booking.stock.offer.isEvent:
+        stock = booking.collectiveStock if isinstance(booking, CollectiveBooking) else booking.stock
+        date_in_tz = get_event_datetime(stock)
         offer_date = date_in_tz.strftime("%d-%b-%Y")
         return offer_date
     return ""
 
 
-def format_booking_hours_for_email(booking: Booking) -> str:
-    if booking.stock.offer.isEvent:
-        date_in_tz = get_event_datetime(booking.stock)
+def format_booking_hours_for_email(booking: Union[Booking, CollectiveBooking]) -> str:
+    if isinstance(booking, CollectiveBooking) or booking.stock.offer.isEvent:
+        stock = booking.collectiveStock if isinstance(booking, CollectiveBooking) else booking.stock
+        date_in_tz = get_event_datetime(stock)
         event_hour = date_in_tz.hour
         event_minute = date_in_tz.minute
         return f"{event_hour}h" if event_minute == 0 else f"{event_hour}h{event_minute}"
@@ -139,10 +143,14 @@ def make_offer_rejection_notification_email(offer: Offer) -> dict:
     )
 
 
-def get_event_datetime(stock: Stock) -> datetime:
-    if stock.offer.venue.departementCode is not None:
+def get_event_datetime(stock: Union[CollectiveStock, Stock]) -> datetime:
+    if isinstance(stock, Stock):
+        departement_code = stock.offer.venue.departementCode
+    else:
+        departement_code = stock.collectiveOffer.venue.departementCode
+    if departement_code is not None:
         date_in_utc = stock.beginningDatetime
-        date_in_tz = utc_datetime_to_department_timezone(date_in_utc, stock.offer.venue.departementCode)
+        date_in_tz = utc_datetime_to_department_timezone(date_in_utc, departement_code)
     else:
         date_in_tz = stock.beginningDatetime
 
