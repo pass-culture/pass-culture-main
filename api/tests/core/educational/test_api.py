@@ -157,7 +157,7 @@ class ConfirmEducationalBookingTest:
         )
         booking = bookings_factories.EducationalBookingFactory(
             amount=Decimal(20.00),
-            quantity=20,
+            quantity=1,
             educationalBooking__educationalInstitution=educational_institution,
             educationalBooking__educationalYear=educational_year,
             educationalBooking__educationalRedactor=educational_redactor,
@@ -180,7 +180,7 @@ class ConfirmEducationalBookingTest:
             "VENUE_NAME": offer.venue.name,
             "EVENT_DATE": "15-May-2021",
             "EVENT_HOUR": "2h",
-            "QUANTITY": 20,
+            "QUANTITY": 1,
             "REDACTOR_FIRSTNAME": "Georges",
             "REDACTOR_LASTNAME": "Moustaki",
             "REDACTOR_EMAIL": "professeur@example.com",
