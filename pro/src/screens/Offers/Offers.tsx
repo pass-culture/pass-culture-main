@@ -15,9 +15,9 @@ import {
 import { Offer, Offerer, Option, TSearchFilters } from 'core/Offers/types'
 import { Audience } from 'core/shared'
 import { ReactComponent as AddOfferSvg } from 'icons/ico-plus.svg'
+import NoOffers from 'new_components/NoData'
 import Tabs from 'new_components/Tabs'
 
-import NoOffers from './NoOffers'
 import SearchFilters from './SearchFilters'
 
 export interface IOffersProps {
@@ -218,7 +218,7 @@ const Offers = ({
         venues={venues}
       />
       {userHasNoOffers ? (
-        <NoOffers />
+        <NoOffers audience={audience} page="offers" />
       ) : (
         <OffersContainer
           applyFilters={applyFilters}
