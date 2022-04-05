@@ -10,7 +10,6 @@ import Spinner from 'components/layout/Spinner'
 import Titles from 'components/layout/Titles/Titles'
 import BookingsRecapTable from 'components/pages/Bookings/BookingsRecapTable/BookingsRecapTable'
 import ChoosePreFiltersMessage from 'components/pages/Bookings/ChoosePreFiltersMessage/ChoosePreFiltersMessage'
-import NoBookingMessage from 'components/pages/Bookings/NoBookingMessage'
 import NoBookingsForPreFiltersMessage from 'components/pages/Bookings/NoBookingsForPreFiltersMessage/NoBookingsForPreFiltersMessage'
 import {
   GetBookingsCSVFileAdapter,
@@ -21,6 +20,7 @@ import {
 } from 'core/Bookings'
 import { DEFAULT_PRE_FILTERS } from 'core/Bookings'
 import { Audience } from 'core/shared/types'
+import NoData from 'new_components/NoData'
 import Tabs from 'new_components/Tabs'
 
 import PreFilters from './PreFilters'
@@ -187,7 +187,7 @@ const Bookings = ({
       ) : hasBooking ? (
         <ChoosePreFiltersMessage />
       ) : (
-        <NoBookingMessage />
+        <NoData audience={audience} page="bookings" />
       )}
     </div>
   )
