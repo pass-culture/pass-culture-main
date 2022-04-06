@@ -1971,6 +1971,34 @@ class DeactivateInappropriateProductTest:
         assert set(mocked_async_index_offer_ids.call_args[0][0]) == {o.id for o in offers}
 
 
+class DeactivatePermanentlyUnavailableProductTest:
+    @mock.patch("pcapi.core.search.async_index_offer_ids")
+    def test_should_deactivate_permanently_unavailable_product(self, mocked_async_index_offer_ids):
+        # Given
+        product1 = factories.ThingProductFactory(
+            subcategoryId=subcategories.LIVRE_PAPIER.id, extraData={"isbn": "isbn-de-test"}
+        )
+        product2 = factories.ThingProductFactory(
+            subcategoryId=subcategories.LIVRE_PAPIER.id, extraData={"isbn": "isbn-de-test"}
+        )
+        factories.OfferFactory(product=product1)
+        factories.OfferFactory(product=product1)
+        factories.OfferFactory(product=product2)
+
+        # When
+        api.deactivate_permanently_unavailable_products("isbn-de-test")
+
+        # Then
+        products = Product.query.all()
+        offers = models.Offer.query.all()
+
+        assert any(product.name == "xxx" for product in products)
+        assert not any(offer.isActive for offer in offers)
+        assert any(offer.name == "xxx" for offer in offers)
+        mocked_async_index_offer_ids.assert_called_once()
+        assert set(mocked_async_index_offer_ids.call_args[0][0]) == {o.id for o in offers}
+
+
 class ComputeOfferValidationTest:
     def test_approve_if_no_offer_validation_config(self):
         offer = models.Offer(name="Maybe we should reject this offer")

@@ -1066,6 +1066,37 @@ def deactivate_inappropriate_products(isbn: str) -> bool:
     return True
 
 
+def deactivate_permanently_unavailable_products(isbn: str) -> bool:
+    products = Product.query.filter(Product.extraData["isbn"].astext == isbn).all()
+    if not products:
+        return False
+
+    for product in products:
+        product.name = "xxx"
+        db.session.add(product)
+
+    offers = Offer.query.filter(Offer.productId.in_(p.id for p in products)).filter(Offer.isActive.is_(True))
+    offer_ids = [offer_id for offer_id, in offers.with_entities(Offer.id).all()]
+    offers.update(values={"isActive": False, "name": "xxx"}, synchronize_session="fetch")
+
+    try:
+        db.session.commit()
+    except Exception as exception:  # pylint: disable=broad-except
+        logger.exception(
+            "Could not mark product and offers as permanently unavailable: %s",
+            extra={"isbn": isbn, "products": [p.id for p in products], "exc": str(exception)},
+        )
+        return False
+    logger.info(
+        "Deactivated permanently unavailable products",
+        extra={"isbn": isbn, "products": [p.id for p in products], "offers": offer_ids},
+    )
+
+    search.async_index_offer_ids(offer_ids)
+
+    return True
+
+
 def set_offer_status_based_on_fraud_criteria(
     offer: Union[educational_models.CollectiveOffer, educational_models.CollectiveOfferTemplate, Offer]
 ) -> OfferValidationStatus:
