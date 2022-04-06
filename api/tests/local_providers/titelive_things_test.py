@@ -473,3 +473,46 @@ class TiteliveThingsTest:
 
         # Then
         assert Product.query.count() == 0
+
+    @pytest.mark.usefixtures("db_session")
+    @patch("pcapi.local_providers.titelive_things.titelive_things.get_files_to_process_from_titelive_ftp")
+    @patch("pcapi.local_providers.titelive_things.titelive_things.get_lines_from_thing_file")
+    def test_deactivate_offers_with_product_with_xxx_mark(
+        self, get_lines_from_thing_file, get_files_to_process_from_titelive_ftp, app
+    ):
+        get_files_to_process_from_titelive_ftp.return_value = ["Quotidien30.tit"]
+
+        book_isbn = "9782895026310"
+
+        DATA_LINE_PARTS = BASE_DATA_LINE_PARTS[:]
+        DATA_LINE_PARTS[1] = book_isbn
+        DATA_LINE_PARTS[2] = "xxx"
+        DATA_LINE_PARTS[23] = "Xxx"
+        data_line = "~".join(DATA_LINE_PARTS)
+        get_lines_from_thing_file.return_value = iter([data_line])
+
+        titelive_provider = providers_factories.ProviderFactory(localClass="TiteLiveThings")
+        repository.save(titelive_provider)
+        titelive_things = TiteLiveThings()
+
+        offerer = OffererFactory(siren="123456789")
+        venue = VenueFactory(managingOfferer=offerer)
+        product = ThingProductFactory(
+            idAtProviders=book_isbn,
+            name="Presse papier",
+            subcategoryId=subcategories.LIVRE_PAPIER.id,
+            dateModifiedAtLastProvider=datetime(2001, 1, 1),
+            lastProviderId=titelive_provider.id,
+            extraData={"isbn": book_isbn},
+        )
+        offer = ThingOfferFactory(product=product, venue=venue, isActive=True)
+
+        # When
+        titelive_things.updateObjects()
+
+        # Then
+        refreshed_offer = Offer.query.get(offer.id)
+        refreshed_product = Product.query.get(product.id)
+        assert refreshed_product.name == "xxx"
+        assert refreshed_offer.isActive == False
+        assert refreshed_offer.name == "xxx"
