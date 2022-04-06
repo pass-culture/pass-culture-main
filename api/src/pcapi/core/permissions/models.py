@@ -1,0 +1,73 @@
+import enum
+import logging
+from typing import Type
+
+import sqlalchemy as sa
+
+from pcapi.models import Model
+from pcapi.models.pc_object import PcObject
+
+
+logger = logging.getLogger(__name__)
+
+
+class Permissions(enum.Enum):
+    MANAGE_PERMISSIONS = "gérer les droits"
+
+
+def sync_enum_with_db_field(session: sa.orm.Session, py_enum: Type[enum.Enum], db_field: sa.Column) -> None:
+    db_values = set(p.name for p in session.query(db_field).all())
+    py_values = set(e.value for e in py_enum)
+
+    if removed_permissions := db_values - py_values:
+        logger.warning(
+            "Some permissions have been removed from code: %s\n"
+            "Please check that those permissions are not assigned to any role.",
+            ", ".join(removed_permissions),
+        )
+
+    if added_permissions := py_values - db_values:
+        for perm_name in added_permissions:
+            session.add(Permission(name=perm_name))
+        session.commit()
+        logger.info(
+            "%s permission(s) added: %s",
+            len(added_permissions),
+            ", ".join(added_permissions),
+        )
+
+
+def sync_db_permissions(session: sa.orm.Session) -> None:
+    """
+    Automatically synchronize `permission` table in database from the
+    the `Permissions` Python Enum.
+
+    This is done before each deployment and in tests
+    """
+    return sync_enum_with_db_field(session, Permissions, Permission.name)
+
+
+role_permission_table = sa.Table(
+    "role_permission",
+    Model.metadata,
+    sa.Column("role_id", sa.ForeignKey("role.id")),
+    sa.Column("permission_id", sa.ForeignKey("permission.id")),
+)
+
+
+class Permission(PcObject, Model):
+    __tablename__ = "permission"
+
+    name = sa.Column(sa.String(length=140), nullable=False, unique=True)
+    category = sa.Column(sa.String(140), nullable=True, default=None)
+
+
+class Role(PcObject, Model):
+    __tablename__ = "role"
+
+    name = sa.Column(sa.String(140), nullable=False)
+    permissions = sa.orm.relationship(
+        Permission,
+        secondary=role_permission_table,
+        backref="roles",
+    )
