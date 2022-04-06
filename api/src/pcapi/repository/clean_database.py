@@ -8,6 +8,7 @@ import pcapi.core.mails.models as mails_models
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.models as offers_models
 import pcapi.core.payments.models as payments_models
+import pcapi.core.permissions.models as perm_models
 import pcapi.core.providers.models as providers_models
 import pcapi.core.users.models as users_models
 from pcapi.local_providers.install import install_local_providers
@@ -90,6 +91,9 @@ def clean_all_database(*args, **kwargs):  # type: ignore [no-untyped-def]
     educational_models.EducationalYear.query.delete()
     educational_models.EducationalRedactor.query.delete()
     Feature.query.delete()
+    db.session.execute(f"DELETE FROM {perm_models.role_permission_table.name};")
+    perm_models.Permission.query.delete()
+    perm_models.Role.query.delete()
 
     # Dans le cadre du projet EAC, notre partenaire Adage requête notre api sur le endpoint get_pre_bookings.
     # Ils récupèrent les pré-réservations EAC liées à un utilisateur EAC et stockent les ids en base.
@@ -102,3 +106,4 @@ def clean_all_database(*args, **kwargs):  # type: ignore [no-untyped-def]
     db.session.commit()
     install_feature_flags()
     install_local_providers()
+    perm_models.sync_db_permissions(db.session)
