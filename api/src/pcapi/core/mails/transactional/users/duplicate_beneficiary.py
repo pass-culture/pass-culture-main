@@ -49,4 +49,11 @@ def _anonymize_email(email: str) -> str:
         logger.exception("User email %s format is wrong", email)
         return "***"
 
-    return name[:3] + "***@" + domain
+    if len(name) > 3:
+        hidden_name = name[:3]
+    elif len(name) > 1:
+        hidden_name = name[:1]
+    else:
+        hidden_name = ""
+
+    return f"{hidden_name}***@{domain}"
