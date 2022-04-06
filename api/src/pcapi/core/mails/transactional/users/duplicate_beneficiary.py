@@ -31,7 +31,7 @@ def send_duplicate_beneficiary_email(
         logger.error("No duplicate beneficiary found", extra={"user_id": rejected_user.id})
         anonymized_email = "***"
     else:
-        anonymized_email = _anonimyze_email(duplicate_beneficiary.email)
+        anonymized_email = _anonymize_email(duplicate_beneficiary.email)
 
     return mails.send(
         recipients=[rejected_user.email],
@@ -42,7 +42,7 @@ def send_duplicate_beneficiary_email(
     )
 
 
-def _anonimyze_email(email: str) -> str:
+def _anonymize_email(email: str) -> str:
     try:
         name, domain = email.split("@")
     except ValueError:
