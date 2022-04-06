@@ -122,8 +122,16 @@ class Pricing(Model):  # type: ignore [valid-type, misc]
 
     status = sqla.Column(db_utils.MagicEnum(PricingStatus), index=True, nullable=False)
 
-    bookingId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("booking.id"), index=True, nullable=False)
+    bookingId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("booking.id"), index=True, nullable=True)
     booking = sqla_orm.relationship("Booking", foreign_keys=[bookingId], backref="pricings")  # type: ignore [misc]
+
+    collectiveBookingId = sqla.Column(
+        sqla.BigInteger, sqla.ForeignKey("collective_booking.id"), index=True, nullable=True
+    )
+    collectiveBooking = sqla_orm.relationship(
+        "CollectiveBooking", foreign_keys=[collectiveBookingId], backref="pricings"
+    )
+
     businessUnitId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("business_unit.id"), index=True, nullable=False)
     businessUnit = sqla_orm.relationship("BusinessUnit", foreign_keys=[businessUnitId])
     # `siret` is either the SIRET of the venue if it has one, or the
