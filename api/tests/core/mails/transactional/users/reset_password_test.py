@@ -41,7 +41,9 @@ class SendinblueSendResetPasswordToUserEmailTest:
         )
         users_factories.ResetPasswordToken.build(user=user, value="abc", expirationDate=datetime(2020, 1, 1))
         # When
-        reset_password_email_data = get_reset_password_email_data(user, user.tokens[0])
+        reset_password_email_data = get_reset_password_email_data(
+            user, user.tokens[0], TransactionalEmail.NEW_PASSWORD_REQUEST.value
+        )
 
         # Then
         assert reset_password_email_data.template == TransactionalEmail.NEW_PASSWORD_REQUEST.value

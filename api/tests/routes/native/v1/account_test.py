@@ -316,7 +316,9 @@ class AccountCreationTest:
         assert "performance-tests" not in email_validation_token.value
 
     @patch("pcapi.connectors.api_recaptcha.check_recaptcha_token_is_valid")
-    def test_account_creation_with_existing_email_sends_email(self, mocked_check_recaptcha_token_is_valid, client, app):
+    def test_account_creation_with_existing_validated_email_sends_email(
+        self, mocked_check_recaptcha_token_is_valid, client, app
+    ):
         users_factories.UserFactory(email=self.identifier)
         mocked_check_recaptcha_token_is_valid.return_value = None
 
@@ -333,16 +335,16 @@ class AccountCreationTest:
         assert response.status_code == 204, response.json
         assert len(mails_testing.outbox) == 1
         assert mails_testing.outbox[0].sent_data["template"] == dataclasses.asdict(
-            TransactionalEmail.NEW_PASSWORD_REQUEST.value
+            TransactionalEmail.EMAIL_ALREADY_EXISTS.value
         )
         assert not push_testing.requests
 
     @patch("pcapi.connectors.api_recaptcha.check_recaptcha_token_is_valid")
-    def test_account_creation_with_unvalidated_email_sends_email(
+    def test_account_creation_with_unvalidated_existing_email_sends_email(
         self, mocked_check_recaptcha_token_is_valid, client, app
     ):
         subscriber = users_factories.UserFactory(email=self.identifier, isEmailValidated=False)
-        previous_token = users_factories.EmailValidationToken(user=subscriber).value
+        users_factories.EmailValidationToken(user=subscriber)
         mocked_check_recaptcha_token_is_valid.return_value = None
 
         data = {
@@ -358,14 +360,13 @@ class AccountCreationTest:
         assert response.status_code == 204, response.json
         assert len(mails_testing.outbox) == 1
         assert mails_testing.outbox[0].sent_data["template"] == dataclasses.asdict(
-            TransactionalEmail.EMAIL_CONFIRMATION.value
+            TransactionalEmail.EMAIL_ALREADY_EXISTS.value
         )
-        assert len(push_testing.requests) == 2
+        assert not push_testing.requests
         subscriber.checkPassword(data["password"])
 
         tokens = Token.query.all()
-        assert len(tokens) == 1
-        assert previous_token != tokens[0].value
+        assert len(tokens) == 2
 
     @patch("pcapi.connectors.api_recaptcha.check_recaptcha_token_is_valid")
     def test_too_young_account_creation(self, mocked_check_recaptcha_token_is_valid, client, app):
@@ -1798,3 +1799,47 @@ class IdentificationSessionTest:
         check = user.beneficiaryFraudChecks[0]
         assert check.type == fraud_models.FraudCheckType.UBBLE
         assert response.json["identificationUrl"] == expected_url
+
+
+class AccountSecurityTest:
+    def test_account_hacker_changes_password(self, client, app):
+        """
+        This scenario has been suggested by a security bug hunter: it is possible for a hacker to register with the
+        email someone else registered earlier, before the hacked user clicks on email confirmation link. The hacker can
+        change user's password this way.
+        """
+        assert User.query.first() is None
+        data = {
+            "appsFlyerPlatform": "web",
+            "birthdate": "2004-01-01",
+            "email": "patrick@example.com",
+            "marketingEmailSubscription": True,
+            "password": "User@1234",
+            "postalCode": "",
+            "token": "usertoken",
+        }
+
+        response = client.post("/native/v1/account", json=data)
+        assert response.status_code == 204, response.json
+
+        user = User.query.first()
+        assert user is not None
+        assert user.email == data["email"]
+        assert user.isEmailValidated is False
+
+        user_password = user.password
+
+        hacker_data = data.copy()
+        hacker_data.update(
+            {
+                "password": "Hacker@5678",
+                "token": "hackertoken",
+            }
+        )
+
+        hacker_response = client.post("/native/v1/account", json=hacker_data)
+        assert hacker_response.status_code == 204, hacker_response.json
+
+        assert User.query.count() == 1
+        user = User.query.first()
+        assert user.password == user_password

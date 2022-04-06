@@ -24,8 +24,8 @@ from pcapi.core.fraud.common import models as common_fraud_models
 import pcapi.core.fraud.models as fraud_models
 import pcapi.core.fraud.ubble.models as ubble_fraud_models
 from pcapi.core.mails.transactional.pro.email_validation import send_email_validation_to_pro_email
+from pcapi.core.mails.transactional.users import reset_password
 from pcapi.core.mails.transactional.users.email_address_change_confirmation import send_email_confirmation_email
-from pcapi.core.mails.transactional.users.reset_password import send_reset_password_email_to_user
 import pcapi.core.offerers.api as offerers_api
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.payments.api as payment_api
@@ -280,10 +280,21 @@ def request_password_reset(user: User) -> None:
     if not user or not user.isActive:
         return
 
-    is_email_sent = send_reset_password_email_to_user(user)
+    is_email_sent = reset_password.send_reset_password_email_to_user(user)
 
     if not is_email_sent:
         logger.error("Email service failure when user requested password reset for email '%s'", user.email)
+        raise exceptions.EmailNotSent()
+
+
+def handle_create_account_with_existing_email(user: User) -> None:
+    if not user or not user.isActive:
+        return
+
+    is_email_sent = reset_password.send_email_already_exists_email(user)
+
+    if not is_email_sent:
+        logger.error("Email service failure when user email already exists in database '%s'", user.email)
         raise exceptions.EmailNotSent()
 
 
