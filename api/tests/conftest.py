@@ -23,6 +23,7 @@ from pcapi import settings
 import pcapi.core.educational.testing as adage_api_testing
 import pcapi.core.mails.testing as mails_testing
 import pcapi.core.object_storage.testing as object_storage_testing
+from pcapi.core.permissions.models import sync_db_permissions
 import pcapi.core.search.testing as search_testing
 import pcapi.core.testing
 from pcapi.core.users import testing as users_testing
@@ -73,6 +74,7 @@ def app_fixture():
         run_migrations()
         install_feature_flags()
         install_local_providers()
+        sync_db_permissions(db.session)
 
         install_all_routes(app)
 
@@ -143,6 +145,7 @@ def _db(app):
     install_database_extensions()
     run_migrations()
     install_feature_flags()
+    sync_db_permissions(db.session)
 
     install_local_providers()
     clean_all_database()
