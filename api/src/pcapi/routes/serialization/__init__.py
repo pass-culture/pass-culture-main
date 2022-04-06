@@ -38,5 +38,4 @@ class BaseModel(PydanticBaseModel):
                         if issubclass(field.type_, PydanticBaseModel):
                             # add 'title' in schema to have the exact same behaviour as the rest
                             value["title"] = field.type_.__config__.title or field.type_.__name__
-                        value["anyOf"] = [{"$ref": value.pop("$ref")}]
                     value["nullable"] = True
