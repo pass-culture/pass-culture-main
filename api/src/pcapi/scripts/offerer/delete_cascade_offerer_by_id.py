@@ -3,7 +3,7 @@ import logging
 from pcapi.core import search
 from pcapi.core.bookings.exceptions import CannotDeleteOffererWithBookingsException
 from pcapi.core.bookings.models import Booking
-from pcapi.core.finance.models import BusinessUnit
+import pcapi.core.finance.models as finance_models
 from pcapi.core.offerers.models import ApiKey
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import UserOfferer
@@ -80,13 +80,24 @@ def delete_cascade_offerer_by_id(offerer_id: int) -> None:
     Venue.query.filter_by(managingOffererId=offerer_id).update({"businessUnitId": None}, synchronize_session=False)
     bank_information_ids_to_delete = {
         id_
-        for id_, in BusinessUnit.query.filter(BusinessUnit.id.in_(business_unit_ids_to_delete)).with_entities(
-            BusinessUnit.bankAccountId
-        )
+        for id_, in finance_models.BusinessUnit.query.filter(
+            finance_models.BusinessUnit.id.in_(business_unit_ids_to_delete)
+        ).with_entities(finance_models.BusinessUnit.bankAccountId)
     }
-    deleted_business_unit_count = BusinessUnit.query.filter(BusinessUnit.id.in_(business_unit_ids_to_delete)).delete(
-        synchronize_session=False
+    deleted_business_unit_venue_link_count = finance_models.BusinessUnitVenueLink.query.filter(
+        finance_models.BusinessUnitVenueLink.businessUnitId.in_(business_unit_ids_to_delete)
+    ).delete(synchronize_session=False)
+    business_unit_venue_link_ids = (
+        finance_models.BusinessUnitVenueLink.query.join(finance_models.BusinessUnitVenueLink.venue)
+        .filter(Venue.managingOffererId == offerer_id)
+        .with_entities(finance_models.BusinessUnitVenueLink.id)
     )
+    deleted_business_unit_venue_link_count += finance_models.BusinessUnitVenueLink.query.filter(
+        finance_models.BusinessUnitVenueLink.id.in_(business_unit_venue_link_ids)
+    ).delete(synchronize_session=False)
+    deleted_business_unit_count = finance_models.BusinessUnit.query.filter(
+        finance_models.BusinessUnit.id.in_(business_unit_ids_to_delete)
+    ).delete(synchronize_session=False)
 
     deleted_bank_informations_count = 0
     deleted_bank_informations_count += BankInformation.query.filter(
@@ -123,6 +134,7 @@ def delete_cascade_offerer_by_id(offerer_id: int) -> None:
         "deleted_user_offerers_count": deleted_user_offerers_count,
         "deleted_bank_informations_count": deleted_bank_informations_count,
         "deleted_business_unit_count": deleted_business_unit_count,
+        "deleted_business_unit_venue_link_count": deleted_business_unit_venue_link_count,
         "deleted_product_count": deleted_product_count,
         "deleted_venues_count": deleted_venues_count,
         "deleted_venue_providers_count": deleted_venue_providers_count,

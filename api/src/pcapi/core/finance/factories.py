@@ -6,6 +6,7 @@ import factory
 from factory.declarations import LazyAttribute
 
 import pcapi.core.bookings.factories as bookings_factories
+import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.payments.factories as payments_factories
 from pcapi.core.testing import BaseFactory
 from pcapi.domain import reimbursement
@@ -22,6 +23,20 @@ class BusinessUnitFactory(BaseFactory):
     status = models.BusinessUnitStatus.ACTIVE
 
     bankAccount = factory.SubFactory("pcapi.core.offers.factories.BankInformationFactory")
+
+
+class BusinessUnitVenueLinkFactory(BaseFactory):
+    class Meta:
+        model = models.BusinessUnitVenueLink
+
+    businessUnit = factory.SelfAttribute("venue.businessUnit")
+    venue = factory.SubFactory(offerers_factories.VenueFactory)
+    timespan = factory.LazyFunction(
+        lambda: [
+            datetime.datetime.utcnow() - datetime.timedelta(days=365),
+            None,
+        ]
+    )
 
 
 class PricingFactory(BaseFactory):

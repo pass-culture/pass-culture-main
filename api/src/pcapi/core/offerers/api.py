@@ -4,6 +4,7 @@ import secrets
 import typing
 from typing import Optional
 
+import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
 
 from pcapi import settings
@@ -110,6 +111,16 @@ def update_venue(
 
 
 def delete_business_unit(business_unit: finance_models.BusinessUnit) -> None:
+    finance_models.BusinessUnitVenueLink.query.update(
+        {
+            "timespan": sa.func.tsrange(
+                sa.func.lower(finance_models.BusinessUnitVenueLink.timespan),
+                datetime.utcnow(),
+                "[)",
+            )
+        },
+        synchronize_session=False,
+    )
     Venue.query.filter(Venue.businessUnitId == business_unit.id).update(
         {"businessUnitId": None}, synchronize_session=False
     )
@@ -165,6 +176,18 @@ def create_venue(venue_data: PostVenueBodyModel) -> Venue:
 
 
 def set_business_unit_to_venue_id(business_unit_id: int, venue_id: int) -> None:
+    current_link = finance_models.BusinessUnitVenueLink.query.filter_by(venueId=venue_id).one_or_none()
+    now = datetime.utcnow()
+    if current_link:
+        current_link.timespan = current_link._make_timespan(
+            current_link.timespan.lower,
+            now,
+        )
+        db.session.add(current_link)
+    new_link = finance_models.BusinessUnitVenueLink(
+        businessUnitId=business_unit_id, venueId=venue_id, timespan=(now, None)
+    )
+    db.session.add(new_link)
     Venue.query.filter(Venue.id == venue_id).update({"businessUnitId": business_unit_id})
     db.session.commit()
 

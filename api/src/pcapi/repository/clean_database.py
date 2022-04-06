@@ -44,6 +44,7 @@ def clean_all_database(*args, **kwargs):
     finance_models.Pricing.query.delete()
     finance_models.InvoiceLine.query.delete()
     finance_models.Invoice.query.delete()
+    finance_models.BusinessUnitVenueLink.query.delete()
     payments_models.CustomReimbursementRule.query.delete()
     educational_models.CollectiveBooking.query.delete()
     bookings_models.Booking.query.delete()

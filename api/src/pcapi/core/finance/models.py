@@ -9,6 +9,8 @@ import dataclasses
 import datetime
 import enum
 
+import psycopg2.extras
+import pytz
 import sqlalchemy as sqla
 import sqlalchemy.dialects.postgresql as sqla_psql
 import sqlalchemy.orm as sqla_orm
@@ -78,6 +80,41 @@ class BusinessUnit(Model):
     invoiceFrequency = sqla.Column(db_utils.MagicEnum(Frequency), nullable=False, default=Frequency.EVERY_TWO_WEEKS)
 
     invoices = sqla_orm.relationship("Invoice", back_populates="businessUnit")
+
+
+class BusinessUnitVenueLink(Model):
+    """Represent the period of time during which a venue was linked to a
+    specific business unit.
+    """
+
+    id = sqla.Column(sqla.BigInteger, primary_key=True, autoincrement=True)
+    venueId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("venue.id"), index=True, nullable=False)
+    venue = sqla_orm.relationship("Venue", foreign_keys=[venueId])
+    businessUnitId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("business_unit.id"), index=True, nullable=False)
+    businessUnit = sqla_orm.relationship("BusinessUnit", foreign_keys=[businessUnitId])
+    # The lower bound is inclusive and required. The upper bound is
+    # exclusive and optional. If there is no upper bound, it means
+    # that the venue is still linked to the business unit.
+    # Because business units have been linked to venues before this
+    # table was created, the lower bound was set to the Epoch for
+    # existing links when this table was first populated.
+    timespan = sqla.Column(sqla_psql.TSRANGE, nullable=False)
+
+    __table_args__ = (
+        # A venue cannot be linked to multiple business units at the
+        # same time.
+        sqla_psql.ExcludeConstraint(("venueId", "="), ("timespan", "&&")),
+    )
+
+    def __init__(self, **kwargs):
+        kwargs["timespan"] = self._make_timespan(*kwargs["timespan"])
+        super().__init__(**kwargs)
+
+    @classmethod
+    def _make_timespan(cls, start, end=None):
+        start = start.astimezone(pytz.utc).isoformat()
+        end = end.astimezone(pytz.utc).isoformat() if end else None
+        return psycopg2.extras.DateTimeRange(start, end, bounds="[)")
 
 
 class Pricing(Model):
