@@ -155,7 +155,7 @@ def test_request_reset_password_for_existing_email(client):
     assert mails_testing.outbox[0].sent_data["params"]["RESET_PASSWORD_LINK"]
 
 
-@patch("pcapi.core.users.api.send_reset_password_email_to_user")
+@patch("pcapi.core.users.api.reset_password.send_reset_password_email_to_user")
 def test_request_reset_password_for_inactive_account(mock_send_reset_password_email_to_user, client):
     email = "existing_user@example.com"
     data = {"email": email}
@@ -167,7 +167,7 @@ def test_request_reset_password_for_inactive_account(mock_send_reset_password_em
     mock_send_reset_password_email_to_user.assert_not_called()
 
 
-@patch("pcapi.core.users.api.send_reset_password_email_to_user")
+@patch("pcapi.core.users.api.reset_password.send_reset_password_email_to_user")
 def test_request_reset_password_with_mail_service_exception(mock_send_reset_password_email_to_user, client):
     email = "tt_user@example.com"
     data = {"email": email}
