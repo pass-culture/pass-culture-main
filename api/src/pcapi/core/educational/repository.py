@@ -664,3 +664,16 @@ def get_offer_by_id(offer_id: int) -> educational_models.CollectiveOffer:
         )
     except NoResultFound:
         raise CollectiveOfferNotFound()
+
+
+def get_collective_booking_by_id(booking_id: int) -> CollectiveBooking:
+    return (
+        CollectiveBooking.query.filter_by(id=booking_id)
+        .options(
+            joinedload(CollectiveBooking.venue, innerjoin=True).joinedload(Venue.businessUnit, innerjoin=True),
+            joinedload(CollectiveBooking.collectiveStock, innerjoin=True).joinedload(
+                CollectiveStock.collectiveOffer, innerjoin=True
+            ),
+        )
+        .one()
+    )

@@ -784,3 +784,14 @@ def find_educational_bookings_done_yesterday() -> list[EducationalBooking]:
         )
         .all()
     )
+
+
+def get_booking_by_id(booking_id: int) -> Booking:
+    return (
+        Booking.query.filter_by(id=booking_id)
+        .options(
+            joinedload(Booking.venue, innerjoin=True).joinedload(Venue.businessUnit, innerjoin=True),
+            joinedload(Booking.stock, innerjoin=True).joinedload(Stock.offer, innerjoin=True),
+        )
+        .one()
+    )

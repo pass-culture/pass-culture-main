@@ -16,6 +16,7 @@ from pcapi.core.categories import subcategories
 from pcapi.core.educational.factories import EducationalDepositFactory
 from pcapi.core.educational.factories import EducationalInstitutionFactory
 from pcapi.core.educational.factories import EducationalYearFactory
+from pcapi.core.educational.factories import UsedCollectiveBookingFactory
 from pcapi.core.educational.models import Ministry
 from pcapi.core.finance import api
 from pcapi.core.finance import exceptions
@@ -40,10 +41,11 @@ import tests
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
-def create_booking_with_undeletable_dependent(date_used=None):
+def create_booking_with_undeletable_dependent(date_used=None, is_collective=False):
+    model = UsedCollectiveBookingFactory if is_collective else bookings_factories.UsedBookingFactory
     if not date_used:
         date_used = datetime.datetime.utcnow()
-    booking = bookings_factories.UsedBookingFactory(dateUsed=date_used)
+    booking = model(dateUsed=date_used)
     factories.PricingFactory(
         siret=booking.venue.siret,
         valueDate=booking.dateUsed + datetime.timedelta(seconds=1),
@@ -376,32 +378,45 @@ class PriceBookingsTest:
 
     def test_basics(self):
         booking = bookings_factories.UsedBookingFactory(dateUsed=self.few_minutes_ago)
+        collective_booking = UsedCollectiveBookingFactory(dateUsed=self.few_minutes_ago)
         api.price_bookings(min_date=self.few_minutes_ago)
         assert len(booking.pricings) == 1
+        assert len(collective_booking.pricings) == 1
 
     @mock.patch("pcapi.core.finance.api.price_booking", lambda booking: None)
     def test_num_queries(self):
         bookings_factories.UsedBookingFactory(dateUsed=self.few_minutes_ago)
-        n_queries = 1
+        n_queries = 2  # 1 for Bookings and 1 for CollectiveBookings
         with assert_num_queries(n_queries):
             api.price_bookings(self.few_minutes_ago)
 
     def test_error_on_a_booking_does_not_block_other_bookings(self):
         booking1 = create_booking_with_undeletable_dependent(date_used=self.few_minutes_ago)
         booking2 = bookings_factories.UsedBookingFactory(dateUsed=self.few_minutes_ago)
+        collective_booking1 = create_booking_with_undeletable_dependent(
+            date_used=self.few_minutes_ago, is_collective=True
+        )
+        collective_booking2 = UsedCollectiveBookingFactory(dateUsed=self.few_minutes_ago)
 
         api.price_bookings(self.few_minutes_ago)
 
         assert not booking1.pricings
         assert len(booking2.pricings) == 1
+        assert not collective_booking1.pricings
+        assert len(collective_booking2.pricings) == 1
 
     def test_price_even_without_accepted_bank_info(self):
         booking = bookings_factories.UsedBookingFactory(
             dateUsed=self.few_minutes_ago,
             stock__offer__venue__businessUnit__bankAccount__status=BankInformationStatus.DRAFT,
         )
+        collective_booking = UsedCollectiveBookingFactory(
+            dateUsed=self.few_minutes_ago,
+            collectiveStock__collectiveOffer__venue__businessUnit__bankAccount__status=BankInformationStatus.DRAFT,
+        )
         api.price_bookings(min_date=self.few_minutes_ago)
         assert len(booking.pricings) == 1
+        assert len(collective_booking.pricings) == 1
 
 
 class GenerateCashflowsTest:
