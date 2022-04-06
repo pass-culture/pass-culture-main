@@ -665,3 +665,34 @@ class GetEligibleForSearchVenuesTest:
         venues = list(offerers_api.get_eligible_for_search_venues())
 
         assert {venue.id for venue in venues} == {venue.id for venue in eligible_venues}
+
+
+def test_set_business_unit_to_venue_id():
+    current_link = finance_factories.BusinessUnitVenueLinkFactory()
+    venue = current_link.venue
+    new_business_unit = finance_factories.BusinessUnitFactory()
+
+    offerers_api.set_business_unit_to_venue_id(new_business_unit.id, venue.id)
+
+    assert current_link.timespan.upper.timestamp() == pytest.approx(datetime.utcnow().timestamp())
+    new_link = finance_models.BusinessUnitVenueLink.query.order_by(
+        finance_models.BusinessUnitVenueLink.id.desc()
+    ).first()
+    assert new_link.venue == venue
+    assert new_link.businessUnit == new_business_unit
+    assert new_link.timespan.lower == current_link.timespan.upper
+    assert new_link.timespan.upper is None
+
+
+def test_delete_business_unit():
+    venue = offerers_factories.VenueFactory()
+    business_unit = venue.businessUnit
+    link = finance_factories.BusinessUnitVenueLinkFactory(venue=venue)
+    start_link_date = link.timespan.lower
+
+    offerers_api.delete_business_unit(business_unit)
+
+    assert business_unit.status == finance_models.BusinessUnitStatus.DELETED
+    assert venue.businessUnit is None
+    assert link.timespan.lower == start_link_date  # unchanged
+    assert link.timespan.upper.timestamp() == pytest.approx(datetime.utcnow().timestamp())
