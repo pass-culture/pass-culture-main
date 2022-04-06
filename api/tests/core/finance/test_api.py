@@ -29,6 +29,7 @@ import pcapi.core.offers.factories as offers_factories
 import pcapi.core.payments.factories as payments_factories
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.testing import clean_temporary_files
+from pcapi.core.testing import override_features
 from pcapi.core.testing import override_settings
 import pcapi.core.users.factories as users_factories
 from pcapi.models import db
@@ -470,6 +471,53 @@ class GenerateCashflowsTest:
         assert not pricing_pending.cashflows
         assert not pricing_after_cutoff.cashflows
 
+    @override_features(ENABLE_NEW_COLLECTIVE_MODEL=True)
+    def test_create_cashflow_for_collective_bookings_but_not_educational_booking_if_ff_is_enabled(self):
+        now = datetime.datetime.utcnow()
+        business_unit1 = factories.BusinessUnitFactory(siret="85331845900023")
+        business_unit2 = factories.BusinessUnitFactory(siret="11223344555667")
+        pricing = factories.PricingFactory(
+            status=models.PricingStatus.VALIDATED,
+            businessUnit=business_unit1,
+            amount=-1000,
+        )
+        educational_pricing = factories.EducationalPricingFactory(
+            status=models.PricingStatus.VALIDATED,
+            businessUnit=business_unit1,
+            amount=-1000,
+            booking__stock__beginningDatetime=now - datetime.timedelta(days=1),
+        )
+        pricing_collective_booking = factories.CollectivePricingFactory(
+            status=models.PricingStatus.VALIDATED,
+            businessUnit=business_unit2,
+            amount=-1000,
+            collectiveBooking__collectiveStock__beginningDatetime=now - datetime.timedelta(days=1),
+        )
+        pricing_collective_booking_future_event = factories.CollectivePricingFactory(
+            status=models.PricingStatus.VALIDATED,
+            collectiveBooking__collectiveStock__beginningDatetime=now + datetime.timedelta(days=1),
+        )
+        cutoff = datetime.datetime.utcnow()
+
+        batch_id = api.generate_cashflows(cutoff)
+
+        batch = models.CashflowBatch.query.one()
+
+        assert batch.id == batch_id
+        assert batch.cutoff == cutoff
+        assert pricing.status == models.PricingStatus.PROCESSED
+        assert pricing_collective_booking.status == models.PricingStatus.PROCESSED
+        assert models.Cashflow.query.count() == 2
+        assert len(pricing.cashflows) == 1
+        assert len(pricing_collective_booking.cashflows) == 1
+        assert pricing.cashflows[0].amount == -1000
+        assert pricing.cashflows[0].bankAccount == business_unit1.bankAccount
+        assert pricing_collective_booking.cashflows[0].amount == -1000
+        assert pricing_collective_booking.cashflows[0].bankAccount == business_unit2.bankAccount
+
+        assert not educational_pricing.cashflows
+        assert not pricing_collective_booking_future_event.cashflows
+
     def test_no_cashflow_if_total_is_zero(self):
         business_unit1 = factories.BusinessUnitFactory()
         _pricing_total_is_zero_1 = factories.PricingFactory(
@@ -520,6 +568,7 @@ class GenerateCashflowsTest:
         n_queries = 0
         n_queries += 1  # insert CashflowBatch
         n_queries += 1  # commit
+        n_queries += 1  # get feature toggle ENABLE_NEW_COLLECTIVE_MODEL
         n_queries += 1  # select business unit and bank account ids to process
         n_queries += 2 * sum(  # 2 business units
             (

@@ -7,6 +7,7 @@ from factory.declarations import LazyAttribute
 
 import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.offerers.factories as offerers_factories
+from pcapi.core.educational.factories import UsedCollectiveBookingFactory
 import pcapi.core.payments.factories as payments_factories
 from pcapi.core.testing import BaseFactory
 from pcapi.domain import reimbursement
@@ -51,6 +52,20 @@ class PricingFactory(BaseFactory):
     amount = LazyAttribute(lambda pricing: -int(100 * pricing.booking.total_amount))
     standardRule = "Remboursement total pour les offres physiques"
     revenue = LazyAttribute(lambda pricing: int(100 * pricing.booking.total_amount))
+
+
+class CollectivePricingFactory(BaseFactory):
+    class Meta:
+        model = models.Pricing
+
+    status = models.PricingStatus.VALIDATED
+    collectiveBooking = factory.SubFactory(UsedCollectiveBookingFactory)
+    businessUnit = factory.SelfAttribute("collectiveBooking.venue.businessUnit")
+    siret = factory.SelfAttribute("collectiveBooking.venue.siret")
+    valueDate = factory.SelfAttribute("collectiveBooking.dateUsed")
+    amount = LazyAttribute(lambda pricing: -int(100 * pricing.collectiveBooking.collectiveStock.price))
+    standardRule = "Remboursement total pour les offres éducationnelles"
+    revenue = LazyAttribute(lambda pricing: int(100 * pricing.collectiveBooking.collectiveStock.price))
 
 
 class EducationalPricingFactory(BaseFactory):

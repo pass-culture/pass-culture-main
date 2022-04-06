@@ -63,6 +63,7 @@ from pcapi.domain import reimbursement
 from pcapi.models import db
 from pcapi.models.bank_information import BankInformation
 from pcapi.models.bank_information import BankInformationStatus
+from pcapi.models.feature import FeatureToggle
 from pcapi.repository import transaction
 from pcapi.utils import human_ids
 from pcapi.utils import pdf as pdf_utils
@@ -563,12 +564,6 @@ def generate_cashflows(cutoff: datetime.datetime) -> int:
     filters = (
         models.Pricing.status == models.PricingStatus.VALIDATED,
         models.Pricing.valueDate < cutoff,
-        # Even if a booking is marked as used prematurely, we should
-        # wait for the event to happen.
-        sqla.or_(
-            offers_models.Stock.beginningDatetime.is_(None),
-            offers_models.Stock.beginningDatetime < cutoff,
-        ),
         # We should not have any validated pricing with a cashflow,
         # this is a safety belt.
         models.CashflowPricing.pricingId.is_(None),
@@ -576,6 +571,38 @@ def generate_cashflows(cutoff: datetime.datetime) -> int:
         # but to generate cashflows we definitely need it.
         BankInformation.status == BankInformationStatus.ACCEPTED,
     )
+
+    if FeatureToggle.ENABLE_NEW_COLLECTIVE_MODEL.is_active():
+        filters = (
+            *filters,
+            # Even if a booking is marked as used prematurely, we should
+            # wait for the event to happen.
+            sqla.or_(
+                sqla.and_(
+                    models.Pricing.bookingId.isnot(None),
+                    sqla.or_(
+                        offers_models.Stock.beginningDatetime.is_(None), offers_models.Stock.beginningDatetime < cutoff
+                    ),
+                ),
+                sqla.and_(
+                    models.Pricing.collectiveBookingId.isnot(None),
+                    sqla.or_(
+                        educational_models.CollectiveStock.beginningDatetime.is_(None),
+                        educational_models.CollectiveStock.beginningDatetime < cutoff,
+                    ),
+                ),
+            ),
+            bookings_models.Booking.educationalBookingId.is_(None),
+        )
+    else:
+        filters = (
+            *filters,  # Even if a booking is marked as used prematurely, we should
+            # wait for the event to happen.
+            sqla.or_(
+                offers_models.Stock.beginningDatetime.is_(None),
+                offers_models.Stock.beginningDatetime < cutoff,
+            ),
+        )
 
     def _mark_as_processed(pricings):
         pricings_to_update = models.Pricing.query.filter(
@@ -586,14 +613,29 @@ def generate_cashflows(cutoff: datetime.datetime) -> int:
             synchronize_session=False,
         )
 
-    business_unit_ids_and_bank_account_ids = (
-        models.Pricing.query.filter(
-            models.BusinessUnit.bankAccountId.isnot(None),
-            *filters,
+    if FeatureToggle.ENABLE_NEW_COLLECTIVE_MODEL.is_active():
+        business_unit_ids_and_bank_account_ids_base_query = (
+            models.Pricing.query.filter(
+                models.BusinessUnit.bankAccountId.isnot(None),
+                *filters,
+            )
+            .outerjoin(models.Pricing.booking)
+            .outerjoin(models.Pricing.collectiveBooking)
+            .outerjoin(bookings_models.Booking.stock)
+            .outerjoin(educational_models.CollectiveBooking.collectiveStock)
         )
-        .join(models.Pricing.booking)
-        .join(bookings_models.Booking.stock)
-        .join(models.Pricing.businessUnit)
+    else:
+        business_unit_ids_and_bank_account_ids_base_query = (
+            models.Pricing.query.filter(
+                models.BusinessUnit.bankAccountId.isnot(None),
+                *filters,
+            )
+            .join(models.Pricing.booking)
+            .join(bookings_models.Booking.stock)
+        )
+
+    business_unit_ids_and_bank_account_ids = (
+        business_unit_ids_and_bank_account_ids_base_query.join(models.Pricing.businessUnit)
         .join(models.BusinessUnit.bankAccount)
         .outerjoin(models.CashflowPricing)
         .with_entities(models.Pricing.businessUnitId, models.BusinessUnit.bankAccountId)
@@ -603,11 +645,20 @@ def generate_cashflows(cutoff: datetime.datetime) -> int:
         logger.info("Generating cashflow", extra={"business_unit": business_unit_id})
         try:
             with transaction():
+                if FeatureToggle.ENABLE_NEW_COLLECTIVE_MODEL.is_active():
+                    pricing_base_query = (
+                        models.Pricing.query.outerjoin(models.Pricing.booking)
+                        .outerjoin(models.Pricing.collectiveBooking)
+                        .outerjoin(bookings_models.Booking.stock)
+                        .outerjoin(educational_models.CollectiveBooking.collectiveStock)
+                    )
+                else:
+                    pricing_base_query = models.Pricing.query.join(models.Pricing.booking).join(
+                        bookings_models.Booking.stock
+                    )
                 pricings = (
-                    models.Pricing.query.join(models.BusinessUnit)
+                    pricing_base_query.join(models.BusinessUnit)
                     .join(models.BusinessUnit.bankAccount)
-                    .join(models.Pricing.booking)
-                    .join(bookings_models.Booking.stock)
                     .outerjoin(models.CashflowPricing)
                     .filter(
                         models.Pricing.businessUnitId == business_unit_id,
