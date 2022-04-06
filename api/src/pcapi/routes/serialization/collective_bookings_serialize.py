@@ -72,7 +72,7 @@ class CollectiveStockResponseModel(BaseModel):
     offer_name: str
     offer_identifier: str
     event_beginning_datetime: str
-    offer_isbn: None = None
+    offer_isbn: Optional[str] = None
     offer_is_educational = True
 
 
@@ -86,7 +86,7 @@ class EducationalRedactorResponseModel(BaseModel):
 class CollectiveBookingResponseModel(BaseModel):
     stock: CollectiveStockResponseModel
     beneficiary: EducationalRedactorResponseModel
-    booking_token: None = None
+    booking_token: Optional[str] = None
     booking_date: str
     booking_status: str
     booking_is_duo = False
