@@ -18,10 +18,10 @@ pc -e testing python
 print(pcapi.settings.GOOGLE_CLIENT_SECRET, pcapi.settings.GOOGLE_CLIENT_ID)
 ```
 
-2. Overrider les valeurs de ces variables dans le `.env.local` ou `.env.local.secret` du projet.
+2. Overrider les valeurs de ces variables dans le `.env.local.secret` du projet (créer le fichier s'il n'existe pas).
 
 ```
-GOOGLE_CLIENT_id=client-id
+GOOGLE_CLIENT_ID=client-id
 GOOGLE_CLIENT_SECRET=client-secret
 ```
 
