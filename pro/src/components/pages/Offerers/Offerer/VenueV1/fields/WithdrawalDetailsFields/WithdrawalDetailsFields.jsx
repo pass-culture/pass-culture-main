@@ -20,7 +20,8 @@ const WithdrawalDetailsFields = props => {
           maxLength={500}
           name="withdrawalDetails"
           rows={4}
-          value={input.value}
+          // allows empty values to be store
+          value={value => value}
         />
       )
     },
