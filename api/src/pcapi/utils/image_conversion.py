@@ -8,6 +8,7 @@ from the PIL library:
 from dataclasses import dataclass
 import io
 from typing import Optional
+from typing import TYPE_CHECKING
 
 import PIL
 from PIL import Image
@@ -23,8 +24,11 @@ IMAGE_RATIO_PORTRAIT_DEFAULT = 6 / 9
 IMAGE_RATIO_LANDSCAPE_DEFAULT = 3 / 2
 
 
-CropParam = confloat(ge=0.0, le=1.0)
-CropParams = tuple[CropParam, CropParam, CropParam]  # type: ignore
+if TYPE_CHECKING:
+    CropParam = float
+else:
+    CropParam = confloat(gt=0.0, lt=1.0)
+CropParams = tuple[CropParam, CropParam, CropParam]
 
 
 @dataclass
