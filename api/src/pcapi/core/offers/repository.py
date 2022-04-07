@@ -14,7 +14,6 @@ from sqlalchemy import or_
 from sqlalchemy.orm import contains_eager
 from sqlalchemy.orm import joinedload
 from sqlalchemy.orm.exc import NoResultFound
-from sqlalchemy.sql.functions import coalesce
 
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingStatus
@@ -405,27 +404,21 @@ def get_offers_map_by_venue_reference(id_at_provider_list: list[str], venue_id: 
 
 
 def get_stocks_by_id_at_providers(id_at_providers: list[str]) -> dict:
-    stocks = (
-        Stock.query.filter(Stock.idAtProviders.in_(id_at_providers))
-        .outerjoin(Booking, and_(Stock.id == Booking.stockId, Booking.status != BookingStatus.CANCELLED))
-        .group_by(Stock.id)
-        .with_entities(
-            Stock.id,
-            Stock.idAtProviders,
-            coalesce(func.sum(Booking.quantity), 0),
-            Stock.quantity,
-            Stock.price,
-        )
-        .all()
+    stocks = Stock.query.filter(Stock.idAtProviders.in_(id_at_providers)).with_entities(
+        Stock.id,
+        Stock.idAtProviders,
+        Stock.dnBookedQuantity,
+        Stock.quantity,
+        Stock.price,
     )
     return {
-        id_at_providers: {
-            "id": id,
-            "booking_quantity": booking_quantity,
-            "quantity": quantity,
-            "price": price,
+        stock.idAtProviders: {
+            "id": stock.id,
+            "booking_quantity": stock.dnBookedQuantity,
+            "quantity": stock.quantity,
+            "price": stock.price,
         }
-        for (id, id_at_providers, booking_quantity, quantity, price) in stocks
+        for stock in stocks
     }
 
 
