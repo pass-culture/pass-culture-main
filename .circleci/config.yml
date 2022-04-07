@@ -308,6 +308,11 @@ jobs:
           when: always
           command: venv/bin/pylint src tests --jobs=8
           working_directory: api
+      - run:
+          name: Run mypy
+          when: always
+          command: venv/bin/mypy src --show-error-codes --config-file mypy.ini
+          working_directory: api
       - when:
           condition:
             equal: ["master", << pipeline.git.branch >>]
