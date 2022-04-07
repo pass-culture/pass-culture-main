@@ -4,6 +4,7 @@ import typing
 import sqlalchemy as sqla
 import sqlalchemy.dialects.postgresql.json as sqla_json
 import sqlalchemy.ext.mutable as sqla_mutable
+import sqlalchemy.sql.functions as sqla_functions
 import sqlalchemy.types as sqla_types
 
 from pcapi.models import db
@@ -87,3 +88,7 @@ class MagicEnum(sqla_types.TypeDecorator):
 
 
 SafeJsonB = sqla_mutable.MutableDict.as_mutable(sqla_json.JSONB)
+
+
+class unaccent(sqla_functions.ReturnTypeFromArgs):
+    """remove accent on a column for a sql query"""
