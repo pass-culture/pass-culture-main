@@ -85,12 +85,15 @@ def import_dms_users(procedure_id: int) -> None:
 
     existing_applications_ids = dms_repository.get_already_processed_applications_ids(procedure_id)
     client = dms_connector_api.DMSGraphQLClient()
+    processed_count = 0
+
     for application_details in client.get_applications_with_details(
         procedure_id, dms_models.GraphQLApplicationStates.accepted
     ):
         application_id = application_details.number
         if application_id in existing_applications_ids:
             continue
+        processed_count += 1
         try:
             user_email = application_details.profile.email
         except KeyError as e:
@@ -122,7 +125,9 @@ def import_dms_users(procedure_id: int) -> None:
         process_application(user, result_content)
 
     logger.info(
-        "[BATCH][REMOTE IMPORT BENEFICIARIES] End import from Démarches Simplifiées - Procedure %s", procedure_id
+        "[DMS][REMOTE IMPORT BENEFICIARIES] End import from Démarches Simplifiées - Procedure %s - Processed %s applications",
+        procedure_id,
+        processed_count,
     )
 
 
