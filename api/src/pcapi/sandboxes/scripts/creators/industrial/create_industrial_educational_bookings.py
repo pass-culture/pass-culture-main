@@ -81,7 +81,7 @@ def create_industrial_educational_bookings() -> None:
         isPermanent=True,
         siret="95046949400021",
         managingOfferer__siren="950469494",
-        venueTypeCode=VenueTypeCode.PERFORMING_ARTS,
+        venueTypeCode=VenueTypeCode.PERFORMING_ARTS,  # type: ignore [attr-defined]
     )
     UserOffererFactory(validationToken=None, offerer=venue.managingOfferer)
 
@@ -93,7 +93,7 @@ def create_industrial_educational_bookings() -> None:
         name="Théâtre des potirons",
         isPermanent=True,
         managingOfferer=user_offerer_reimbursements.offerer,
-        venueTypeCode=VenueTypeCode.PERFORMING_ARTS,
+        venueTypeCode=VenueTypeCode.PERFORMING_ARTS,  # type: ignore [attr-defined]
     )
 
     for stock_data in FAKE_STOCK_DATA:
@@ -101,7 +101,7 @@ def create_industrial_educational_bookings() -> None:
             EducationalEventStockFactory(
                 quantity=100,
                 price=stock_data["price"],
-                beginningDatetime=now + datetime.timedelta(days=stock_data["timedelta"]),
+                beginningDatetime=now + datetime.timedelta(days=stock_data["timedelta"]),  # type: ignore [arg-type]
                 offer__durationMinutes=60,
                 offer__withdrawalDetails="Récupération du ticket à l'adresse du lieu",
                 offer__description="Une description multi-lignes.\nOù il est notamment question du nombre d'élèves.\nNbr d'élèves max: 50",

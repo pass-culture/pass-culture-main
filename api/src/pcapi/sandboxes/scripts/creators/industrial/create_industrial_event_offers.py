@@ -11,7 +11,7 @@ DEACTIVATED_OFFERS_PICK_MODULO = 3
 EVENTS_PER_OFFERER_WITH_PHYSICAL_VENUE = 5
 
 
-def create_industrial_event_offers(events_by_name, offerers_by_name):
+def create_industrial_event_offers(events_by_name, offerers_by_name):  # type: ignore [no-untyped-def]
     logger.info("create_industrial_event_offers")
 
     event_offers_by_name = {}

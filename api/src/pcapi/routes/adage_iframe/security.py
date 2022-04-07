@@ -16,11 +16,11 @@ from pcapi.serialization.spec_tree import add_security_scheme
 logger = logging.getLogger(__name__)
 
 
-def adage_jwt_required(route_function):
+def adage_jwt_required(route_function):  # type: ignore [no-untyped-def]
     add_security_scheme(route_function, JWT_AUTH)
 
     @wraps(route_function)
-    def wrapper(*args, **kwargs):
+    def wrapper(*args, **kwargs):  # type: ignore [no-untyped-def]
         mandatory_authorization_type = "Bearer "
         authorization_header = request.headers.get("Authorization")
 

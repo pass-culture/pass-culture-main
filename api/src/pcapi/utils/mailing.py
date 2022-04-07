@@ -63,7 +63,7 @@ def format_booking_hours_for_email(booking: Union[Booking, CollectiveBooking]) -
     return ""
 
 
-def make_offerer_internal_validation_email(
+def make_offerer_internal_validation_email(  # type: ignore [no-untyped-def]
     offerer: offerers_models.Offerer,
     user_offerer: offerers_models.UserOfferer,
     get_by_siren=api_entreprises.get_by_offerer,
@@ -88,7 +88,7 @@ def make_offerer_internal_validation_email(
         api_url=settings.API_URL,
     )
 
-    return SendinblueTransactionalWithoutTemplateEmailData(
+    return SendinblueTransactionalWithoutTemplateEmailData(  # type: ignore [return-value]
         subject="%s - inscription / rattachement PRO à valider : %s" % (offerer_departement_code, offerer.name),
         html_content=email_html,
         sender=SendinblueTransactionalSender.SUPPORT_PRO,
@@ -113,7 +113,7 @@ def make_offer_creation_notification_email(offer: Union[Offer, CollectiveOffer])
     location_information = offer.venue.departementCode or "numérique"
     is_educational_offer_label = "EAC " if offer.isEducational else ""
 
-    return SendinblueTransactionalWithoutTemplateEmailData(
+    return SendinblueTransactionalWithoutTemplateEmailData(  # type: ignore [return-value]
         subject=f"[Création d’offre {is_educational_offer_label}- {location_information}] {offer.name}",
         html_content=html,
         sender=SendinblueTransactionalSender.SUPPORT_PRO,
@@ -136,7 +136,7 @@ def make_offer_rejection_notification_email(offer: Offer) -> dict:
     location_information = offer.venue.departementCode or "numérique"
     is_educational_offer_label = "EAC " if offer.isEducational else ""
 
-    return SendinblueTransactionalWithoutTemplateEmailData(
+    return SendinblueTransactionalWithoutTemplateEmailData(  # type: ignore [return-value]
         subject=f"[Création d’offre {is_educational_offer_label}: refus - {location_information}] {offer.name}",
         html_content=html,
         sender=SendinblueTransactionalSender.SUPPORT_PRO,
@@ -152,7 +152,7 @@ def get_event_datetime(stock: Union[CollectiveStock, Stock]) -> datetime:
         date_in_utc = stock.beginningDatetime
         date_in_tz = utc_datetime_to_department_timezone(date_in_utc, departement_code)
     else:
-        date_in_tz = stock.beginningDatetime
+        date_in_tz = stock.beginningDatetime  # type: ignore [assignment]
 
     return date_in_tz
 

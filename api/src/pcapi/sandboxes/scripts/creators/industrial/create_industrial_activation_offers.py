@@ -13,7 +13,7 @@ from pcapi.repository import repository
 logger = logging.getLogger(__name__)
 
 
-def create_industrial_activation_offers():
+def create_industrial_activation_offers():  # type: ignore [no-untyped-def]
     logger.info("create_industrial_activation_offers")
 
     activated_user = User.query.filter_by(has_beneficiary_role=True).first()

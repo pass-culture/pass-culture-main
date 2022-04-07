@@ -19,13 +19,13 @@ def create_beneficiary_user() -> users_models.User:
     return beneficiary_user
 
 
-def create_admin_user():
+def create_admin_user():  # type: ignore [no-untyped-def]
     users_factories.AdminFactory(email="pctest.admin93.0@example.com")
     logger.info("created 1 admin user")
 
 
 def create_beneficiary_imports(beneficiary_user: users_models.User) -> list[BeneficiaryImport]:
-    beneficiary_imports = []
+    beneficiary_imports = []  # type: ignore [var-annotated]
     index_of_beneficiary_imports = 1
     for status in ImportStatus:
         user = beneficiary_user if status == ImportStatus.CREATED else None
@@ -41,7 +41,7 @@ def create_beneficiary_imports(beneficiary_user: users_models.User) -> list[Bene
     return beneficiary_imports
 
 
-def save_beneficiary_import_sandbox():
+def save_beneficiary_import_sandbox():  # type: ignore [no-untyped-def]
     create_admin_user()
     beneficiary_users = create_beneficiary_user()
     create_beneficiary_imports(beneficiary_users)

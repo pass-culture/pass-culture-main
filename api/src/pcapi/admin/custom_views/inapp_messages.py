@@ -9,7 +9,7 @@ class MessageView(base_configuration.BaseAdminView):
     can_view_details = True
 
     column_searchable_list = ["id", "user.email"]
-    column_list = []
+    column_list = []  # type: ignore [var-annotated]
     column_labels = {
         "user": "Utilisateur",
         "dateCreated": "Date de création",
@@ -20,7 +20,7 @@ class MessageView(base_configuration.BaseAdminView):
         "popOverIcon": "Icône popover",
     }
 
-    column_filters = []
+    column_filters = []  # type: ignore [var-annotated]
     column_sortable_list = [
         "dateCreated",
     ]

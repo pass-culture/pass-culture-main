@@ -21,7 +21,7 @@ from pcapi.workers.suspend_fraudulent_beneficiary_users_by_ids_job import (
 ALLOWED_EXTENSIONS = {".csv"}
 
 
-def allowed_file(filename):
+def allowed_file(filename):  # type: ignore [no-untyped-def]
     return pathlib.Path(filename).suffix.lower() in ALLOWED_EXTENSIONS
 
 
@@ -43,8 +43,8 @@ class SuspendFraudulentUsersByUserIdsView(BaseCustomSuperAdminView):
             form.validate()
             user_ids_csv_file = request.files["user_ids_csv"]
             if user_ids_csv_file and allowed_file(user_ids_csv_file.filename):
-                user_ids_csv_file = TextIOWrapper(user_ids_csv_file, encoding="ascii")
-                csv_rows = csv.reader(user_ids_csv_file)
+                user_ids_csv_file = TextIOWrapper(user_ids_csv_file, encoding="ascii")  # type: ignore [assignment, arg-type]
+                csv_rows = csv.reader(user_ids_csv_file)  # type: ignore [arg-type]
                 user_ids = [int(row[0]) for row in csv_rows if row and row[0].isdigit()]
                 admin_user = current_user._get_current_object()
                 suspend_fraudulent_beneficiary_users_by_ids_job.delay(user_ids, admin_user)

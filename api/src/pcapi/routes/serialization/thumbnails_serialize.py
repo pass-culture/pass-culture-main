@@ -20,12 +20,12 @@ class CreateThumbnailBodyModel(BaseModel):
         alias_generator = to_camel
 
     @property
-    def crop_params(self):
+    def crop_params(self):  # type: ignore [no-untyped-def]
         if {self.cropping_rect_x, self.cropping_rect_y, self.cropping_rect_height} == {None}:
             return None
         return (self.cropping_rect_x, self.cropping_rect_y, self.cropping_rect_height)
 
-    def get_image_as_bytes(self, request) -> bytes:
+    def get_image_as_bytes(self, request) -> bytes:  # type: ignore [no-untyped-def]
         """
         Get the image from the POSTed data (request)
         Only the max size is checked at this stage, and possibly the content type header

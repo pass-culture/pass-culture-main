@@ -5,7 +5,7 @@ import pcapi.core.offerers.models as offerers_models
 
 
 def get_offerer_attachment_validation_email_data(offerer: offerers_models.Offerer) -> dict:
-    return SendinblueTransactionalEmailData(
+    return SendinblueTransactionalEmailData(  # type: ignore [return-value]
         template=TransactionalEmail.OFFERER_ATTACHMENT_VALIDATION.value, params={"OFFERER_NAME": offerer.name}
     )
 

@@ -8,7 +8,7 @@ from pcapi.core.users.external import update_external_pro
 from pcapi.utils import human_ids
 
 
-def format_offerer_name(view, context, model, name):
+def format_offerer_name(view, context, model, name):  # type: ignore [no-untyped-def]
     offerer = model.offerer
     humanized_id = human_ids.humanize(offerer.id)
     url = f"{settings.PRO_URL}/accueil?structure={humanized_id}"

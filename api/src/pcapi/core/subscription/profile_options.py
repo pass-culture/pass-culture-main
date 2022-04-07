@@ -18,7 +18,7 @@ class SchoolType:
         super().__init__()
 
 
-SCHOOL_TYPE_ID_ENUM = enum.Enum(
+SCHOOL_TYPE_ID_ENUM = enum.Enum(  # type: ignore [misc]
     "SchoolTypesIdEnum", {school_type.name: school_type.name for school_type in users_models.SchoolTypeEnum}
 )
 
@@ -71,21 +71,21 @@ ALL_SCHOOL_TYPES = [
 MIDDLE_SCHOOL_STUDENT = Activity(
     users_models.ActivityEnum.MIDDLE_SCHOOL_STUDENT,
     associated_school_types_ids=[
-        PUBLIC_SECONDARY_SCHOOL.id,
-        PRIVATE_SECONDARY_SCHOOL.id,
-        HOME_OR_REMOTE_SCHOOLING.id,
+        PUBLIC_SECONDARY_SCHOOL.id,  # type: ignore [list-item]
+        PRIVATE_SECONDARY_SCHOOL.id,  # type: ignore [list-item]
+        HOME_OR_REMOTE_SCHOOLING.id,  # type: ignore [list-item]
     ],
 )
 HIGH_SCHOOL_STUDENT = Activity(
     users_models.ActivityEnum.HIGH_SCHOOL_STUDENT,
     associated_school_types_ids=[
-        PUBLIC_HIGH_SCHOOL.id,
-        PRIVATE_HIGH_SCHOOL.id,
-        AGRICULTURAL_HIGH_SCHOOL.id,
-        MILITARY_HIGH_SCHOOL.id,
-        NAVAL_HIGH_SCHOOL.id,
-        APPRENTICE_FORMATION_CENTER.id,
-        HOME_OR_REMOTE_SCHOOLING.id,
+        PUBLIC_HIGH_SCHOOL.id,  # type: ignore [list-item]
+        PRIVATE_HIGH_SCHOOL.id,  # type: ignore [list-item]
+        AGRICULTURAL_HIGH_SCHOOL.id,  # type: ignore [list-item]
+        MILITARY_HIGH_SCHOOL.id,  # type: ignore [list-item]
+        NAVAL_HIGH_SCHOOL.id,  # type: ignore [list-item]
+        APPRENTICE_FORMATION_CENTER.id,  # type: ignore [list-item]
+        HOME_OR_REMOTE_SCHOOLING.id,  # type: ignore [list-item]
     ],
 )
 STUDENT = Activity(users_models.ActivityEnum.STUDENT)
@@ -109,4 +109,4 @@ ALL_ACTIVITIES = [
     UNEMPLOYED,
 ]
 
-ACTIVITY_ID_ENUM = enum.Enum("ActivityIdEnum", {activity.id: activity.id for activity in ALL_ACTIVITIES})
+ACTIVITY_ID_ENUM = enum.Enum("ActivityIdEnum", {activity.id: activity.id for activity in ALL_ACTIVITIES})  # type: ignore [misc]

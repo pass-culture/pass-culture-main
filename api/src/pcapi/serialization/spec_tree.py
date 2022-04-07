@@ -10,11 +10,11 @@ from spectree import SpecTree
 from spectree.utils import parse_code
 
 
-def get_model_key(model):
+def get_model_key(model):  # type: ignore [no-untyped-def]
     return model.__name__
 
 
-def get_model_schema(model):
+def get_model_schema(model):  # type: ignore [no-untyped-def]
     assert issubclass(model, BaseModel)
     return model.schema(
         ref_template=f"#/components/schemas/{{model}}"  # pylint: disable=f-string-without-interpolation
@@ -27,18 +27,18 @@ def add_security_scheme(route_function: Callable, auth_key: str, scopes: Optiona
     the SpecTree initialization of the route's BluePrint.
     """
     if not hasattr(route_function, "requires_authentication"):
-        route_function.requires_authentication = []
-    route_function.requires_authentication.append({auth_key: scopes or []})
+        route_function.requires_authentication = []  # type: ignore [attr-defined]
+    route_function.requires_authentication.append({auth_key: scopes or []})  # type: ignore [attr-defined]
 
 
-def build_operation_id(method, path, func):
+def build_operation_id(method, path, func):  # type: ignore [no-untyped-def]
     path_parts = path.split("/")
     module = path_parts[1] if path_parts[1].lower() not in ["v1", "v2"] else path_parts[2]
     return "".join([method.lower(), module.capitalize(), *[part.capitalize() for part in func.__name__.split("_")]])
 
 
 class ExtendedSpecTree(SpecTree):
-    def __init__(self, *args, humanize_operation_id=False, **kwargs):
+    def __init__(self, *args, humanize_operation_id=False, **kwargs):  # type: ignore [no-untyped-def]
         super().__init__(*args, **kwargs)
         self.humanize_operation_id = humanize_operation_id
 
@@ -54,13 +54,13 @@ class ExtendedSpecTree(SpecTree):
                     spec["paths"][path][method.lower()]["operationId"] = build_operation_id(method, path, func)
         return spec
 
-    def _add_model(self, model) -> str:
+    def _add_model(self, model) -> str:  # type: ignore [no-untyped-def]
         model_key = get_model_key(model=model)
         self.models[model_key] = deepcopy(get_model_schema(model=model))
 
         return model_key
 
-    def _get_model_definitions(self):
+    def _get_model_definitions(self):  # type: ignore [no-untyped-def]
 
         definitions = {}
         for _name, schema in self.models.items():

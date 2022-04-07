@@ -170,7 +170,7 @@ class BeneficiaryFraudCheckFactory(testing.BaseFactory):
     eligibilityType = users_models.EligibilityType.AGE18
 
     @classmethod
-    def _create(cls, model_class, *args, **kwargs):
+    def _create(cls, model_class, *args, **kwargs):  # type: ignore [no-untyped-def]
         """Override the default ``_create`` with our custom call."""
         factory_class = FRAUD_CHECK_TYPE_MODEL_ASSOCIATION.get(kwargs["type"])
         content = {}

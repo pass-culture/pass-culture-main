@@ -48,7 +48,7 @@ def list_collective_offers(
 )
 def get_collective_offer(offer_id: str) -> collective_offers_serialize.GetCollectiveOfferResponseModel:
     try:
-        offer = educational_repository.get_offer_by_id(dehumanize(offer_id))
+        offer = educational_repository.get_offer_by_id(dehumanize(offer_id))  # type: ignore [arg-type]
     except educational_exceptions.CollectiveOfferNotFound:
         raise ApiErrors(
             errors={

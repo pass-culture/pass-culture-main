@@ -153,7 +153,7 @@ jwt = JWTManager(app)
 rate_limiter.init_app(app)
 
 
-@app.teardown_request
+@app.teardown_request  # type: ignore [arg-type]
 def remove_db_session(
     exc: typing.Optional[Exception] = None,  # pylint: disable=unused-argument
 ) -> None:
@@ -173,22 +173,22 @@ finance_utils.install_template_filters(app)
 app.url_map.strict_slashes = False
 
 with app.app_context():
-    app.redis_client = redis.from_url(url=settings.REDIS_URL, decode_responses=True)
+    app.redis_client = redis.from_url(url=settings.REDIS_URL, decode_responses=True)  # type: ignore [attr-defined]
 
 
 @app.shell_context_processor
-def get_shell_extra_context():
+def get_shell_extra_context():  # type: ignore [no-untyped-def]
     # We abuse `shell_context_processor` to call custom code when
     # `flask shell` is run.
     _set_python_prompt()
     return {}
 
 
-def _non_printable(seq):
+def _non_printable(seq):  # type: ignore [no-untyped-def]
     return f"\001{seq}\002"
 
 
-def _set_python_prompt():
+def _set_python_prompt():  # type: ignore [no-untyped-def]
     env = settings.ENV
     if env in "production":
         color = "\x1b[1;49;31m"  # red

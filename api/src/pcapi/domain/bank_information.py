@@ -35,7 +35,7 @@ def check_new_bank_information_has_a_more_advanced_status(
     bank_information: BankInformations, status: BankInformationStatus, api_errors: CannotRegisterBankInformation
 ) -> None:
     is_new_bank_information_status_more_important_than_saved_one = (
-        bank_information.status and status_weight[status] < status_weight[bank_information.status]
+        bank_information.status and status_weight[status] < status_weight[bank_information.status]  # type: ignore [index]
     )
     if is_new_bank_information_status_more_important_than_saved_one:
         api_errors.add_error(
@@ -64,6 +64,6 @@ def check_new_bank_information_valid(
                 api_errors.add_error("bic", f'Le BIC renseigné ("{bank_information.bic}") est invalide')
     else:
         if bank_information.iban is not None:
-            api_errors.add_error("iban", f"L’IBAN doit être vide pour le statut {bank_information.status.name}")
+            api_errors.add_error("iban", f"L’IBAN doit être vide pour le statut {bank_information.status.name}")  # type: ignore [union-attr]
         if bank_information.bic is not None:
-            api_errors.add_error("bic", f"Le BIC doit être vide pour le statut {bank_information.status.name}")
+            api_errors.add_error("bic", f"Le BIC doit être vide pour le statut {bank_information.status.name}")  # type: ignore [union-attr]

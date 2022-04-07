@@ -82,7 +82,7 @@ class BookingRecap:
         )
         self.event_beginning_datetime = event_beginning_datetime
 
-    def __new__(cls, *args, **kwargs):
+    def __new__(cls, *args, **kwargs):  # type: ignore [no-untyped-def]
         return object.__new__(cls)
 
     def _get_booking_token(self) -> Optional[str]:
@@ -128,21 +128,21 @@ class BookingRecap:
             return BookingRecapReimbursedHistory(
                 booking_date=booking_date,
                 cancellation_limit_date=cancellation_limit_date,
-                payment_date=payment_date,
+                payment_date=payment_date,  # type: ignore [arg-type]
                 date_used=date_used,
                 confirmation_date=confirmation_date,
             )
         if self.booking_is_cancelled:
             return BookingRecapCancelledHistory(
                 booking_date=booking_date,
-                cancellation_date=cancellation_date,
+                cancellation_date=cancellation_date,  # type: ignore [arg-type]
                 confirmation_date=confirmation_date,
             )
         if self.booking_is_used:
             return BookingRecapValidatedHistory(
                 booking_date=booking_date,
                 cancellation_limit_date=cancellation_limit_date,
-                date_used=date_used,
+                date_used=date_used,  # type: ignore [arg-type]
                 confirmation_date=confirmation_date,
             )
         if self.booking_is_confirmed:

@@ -28,7 +28,7 @@ SUBSCRIPTION_ITEM_METHODS = [
 ]
 
 
-def get_subscription_items_by_eligibility(user: users_models.User):
+def get_subscription_items_by_eligibility(user: users_models.User):  # type: ignore [no-untyped-def]
     subscription_items = []
     for method in SUBSCRIPTION_ITEM_METHODS:
         subscription_items.append(

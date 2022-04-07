@@ -6,7 +6,7 @@ import pcapi.sandboxes
 from pcapi.utils.human_ids import humanize
 
 
-def store_public_object_from_sandbox_assets(folder, model, subcategoryId):
+def store_public_object_from_sandbox_assets(folder, model, subcategoryId):  # type: ignore [no-untyped-def]
     mimes_by_folder = {"spreadsheets": "application/CSV", "thumbs": "image/jpeg", "zips": "application/zip"}
     thumb_id = humanize(model.id)
     thumbs_folder_path = Path(pcapi.sandboxes.__path__[0]) / "thumbs"

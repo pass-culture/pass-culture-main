@@ -18,19 +18,19 @@ SENDINBLUE_TRANSACTIONAL_EMAILS_PRIMARY_QUEUE_NAME = settings.GCP_SENDINBLUE_TRA
 SENDINBLUE_TRANSACTIONAL_EMAILS_SECONDARY_QUEUE_NAME = settings.GCP_SENDINBLUE_TRANSACTIONAL_EMAILS_SECONDARY_QUEUE_NAME
 
 
-@task(SENDINBLUE_CONTACTS_QUEUE_NAME, "/sendinblue/update_contact_attributes")
+@task(SENDINBLUE_CONTACTS_QUEUE_NAME, "/sendinblue/update_contact_attributes")  # type: ignore [arg-type]
 def update_contact_attributes_task(payload: UpdateSendinblueContactRequest) -> None:
     if not sendinblue.make_update_request(payload):
         raise ApiErrors()
 
 
-@task(SENDINBLUE_TRANSACTIONAL_EMAILS_PRIMARY_QUEUE_NAME, "/sendinblue/send-transactional-email-primary")
+@task(SENDINBLUE_TRANSACTIONAL_EMAILS_PRIMARY_QUEUE_NAME, "/sendinblue/send-transactional-email-primary")  # type: ignore [arg-type]
 def send_transactional_email_primary_task(payload: SendTransactionalEmailRequest) -> None:
     if not send_transactional_email(payload):
         raise ApiErrors()
 
 
-@task(SENDINBLUE_TRANSACTIONAL_EMAILS_SECONDARY_QUEUE_NAME, "/sendinblue/send-transactional-email-secondary")
+@task(SENDINBLUE_TRANSACTIONAL_EMAILS_SECONDARY_QUEUE_NAME, "/sendinblue/send-transactional-email-secondary")  # type: ignore [arg-type]
 def send_transactional_email_secondary_task(payload: SendTransactionalEmailRequest) -> None:
     if not send_transactional_email(payload):
         raise ApiErrors()
@@ -46,7 +46,7 @@ def send_transactional_email_secondary_task(payload: SendTransactionalEmailReque
 #
 # So time_id parameter in UpdateProAttributesRequest helps to generate different hashes, so different task ids, every
 # 15 minutes. Keep delayed_seconds below consistent with time_id generation.
-@task(SENDINBLUE_PRO_QUEUE_NAME, "/sendinblue/update_pro_attributes", True, 900)
+@task(SENDINBLUE_PRO_QUEUE_NAME, "/sendinblue/update_pro_attributes", True, 900)  # type: ignore [arg-type]
 def update_pro_attributes_task(payload: UpdateProAttributesRequest) -> None:
     from pcapi.core.users.external import get_pro_attributes
     from pcapi.core.users.external.sendinblue import update_contact_attributes

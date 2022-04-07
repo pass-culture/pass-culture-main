@@ -21,7 +21,7 @@ OFFER_WITH_SEVERAL_STOCKS_REMOVE_MODULO = 2
 BOOKINGS_USED_REMOVE_MODULO = 5
 
 
-def create_industrial_bookings(offers_by_name, users_by_name):
+def create_industrial_bookings(offers_by_name, users_by_name):  # type: ignore [no-untyped-def]
     logger.info("create_industrial_bookings")
 
     bookings_by_name = {}
@@ -57,7 +57,7 @@ def create_industrial_bookings(offers_by_name, users_by_name):
     finance_api.price_bookings()
 
 
-def _create_bookings_for_other_beneficiaries(
+def _create_bookings_for_other_beneficiaries(  # type: ignore [no-untyped-def]
     bookings_by_name, list_of_users_with_no_more_money, offers_by_name, token: int, user: User, user_name: str
 ) -> int:
     user_should_have_no_more_money = "has-no-more-money" in user.email
@@ -100,7 +100,7 @@ def _create_bookings_for_other_beneficiaries(
                 repository.save(stock)
 
             if user_should_have_no_more_money and user not in list_of_users_with_no_more_money:
-                booking_amount = user.deposit.amount
+                booking_amount = user.deposit.amount  # type: ignore [union-attr]
                 list_of_users_with_no_more_money.append(user)
             elif user_should_have_no_more_money and user in list_of_users_with_no_more_money:
                 booking_amount = 0
@@ -123,7 +123,7 @@ def _create_bookings_for_other_beneficiaries(
     return token
 
 
-def _create_has_booked_some_bookings(bookings_by_name, offers_by_name, user, user_name):
+def _create_has_booked_some_bookings(bookings_by_name, offers_by_name, user, user_name):  # type: ignore [no-untyped-def]
 
     for (offer_index, (offer_name, offer)) in enumerate(list(offers_by_name.items())):
         # FIXME (viconnex, 2020-12-22) trying to adapt previous code - not sure of the result and intention

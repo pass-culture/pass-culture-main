@@ -51,11 +51,11 @@ logger = logging.getLogger(__name__)
 @spectree_serialize(response_model=StocksResponseModel, api=blueprint.pro_private_schema)
 def get_stocks(offer_id: str) -> StocksResponseModel:
     try:
-        offerer = offerers_repository.get_by_offer_id(dehumanize(offer_id))
+        offerer = offerers_repository.get_by_offer_id(dehumanize(offer_id))  # type: ignore [arg-type]
     except offerers_exceptions.CannotFindOffererForOfferId:
         raise ApiErrors({"offerer": ["Aucune structure trouvée à partir de cette offre"]}, status_code=404)
-    check_user_has_access_to_offerer(current_user, offerer.id)
-    stocks = get_stocks_for_offer(dehumanize(offer_id))
+    check_user_has_access_to_offerer(current_user, offerer.id)  # type: ignore [union-attr]
+    stocks = get_stocks_for_offer(dehumanize(offer_id))  # type: ignore [arg-type]
     return StocksResponseModel(
         stocks=[StockResponseModel.from_orm(stock) for stock in stocks],
     )
@@ -69,7 +69,7 @@ def upsert_stocks(body: StocksUpsertBodyModel) -> StockIdsResponseModel:
         offerer = offerers_repository.get_by_offer_id(body.offer_id)
     except offerers_exceptions.CannotFindOffererForOfferId:
         raise ApiErrors({"offerer": ["Aucune structure trouvée à partir de cette offre"]}, status_code=404)
-    check_user_has_access_to_offerer(current_user, offerer.id)
+    check_user_has_access_to_offerer(current_user, offerer.id)  # type: ignore [union-attr]
 
     stocks = offers_api.upsert_stocks(body.offer_id, body.stocks, current_user)
     return StockIdsResponseModel(
@@ -117,7 +117,7 @@ def update_stocks(venue_id: int, body: UpdateVenueStocksBodyModel) -> None:
 
     Le paramètre {venue_id} correspond à un lieu qui doit être attaché à la structure à laquelle la clé d'API utilisée est reliée.
     """
-    offerer_id = current_api_key.offererId
+    offerer_id = current_api_key.offererId  # type: ignore [attr-defined]
     venue = Venue.query.join(Offerer).filter(Venue.id == venue_id, Offerer.id == offerer_id).first_or_404()
 
     stock_details = _build_stock_details_from_body(body.stocks, venue.id)
@@ -146,7 +146,7 @@ def create_educational_stock(body: EducationalStockCreationBodyModel) -> StockId
         offerer = offerers_repository.get_by_offer_id(body.offer_id)
     except offerers_exceptions.CannotFindOffererForOfferId:
         raise ApiErrors({"offerer": ["Aucune structure trouvée à partir de cette offre"]}, status_code=404)
-    check_user_has_access_to_offerer(current_user, offerer.id)
+    check_user_has_access_to_offerer(current_user, offerer.id)  # type: ignore [union-attr]
 
     try:
         stock = offers_api.create_educational_stock(body, current_user)
@@ -177,11 +177,11 @@ def transform_shadow_stock_into_educational_stock(
         offerer = offerers_repository.get_by_offer_id(body.offer_id)
     except offerers_exceptions.CannotFindOffererForOfferId:
         raise ApiErrors({"offerer": ["Aucune structure trouvée à partir de cette offre"]}, status_code=404)
-    check_user_has_access_to_offerer(current_user, offerer.id)
+    check_user_has_access_to_offerer(current_user, offerer.id)  # type: ignore [union-attr]
 
     try:
         stock = offers_api.transform_shadow_stock_into_educational_stock_and_create_collective_offer(
-            dehumanize(stock_id), body, current_user
+            dehumanize(stock_id), body, current_user  # type: ignore [arg-type]
         )
     except educational_exceptions.OfferIsNotShowcase:
         raise ApiErrors({"code": "OFFER_IS_NOT_SHOWCASE"}, status_code=400)
@@ -195,13 +195,13 @@ def edit_educational_stock(
     stock_id: str, body: EducationalStockEditionBodyModel
 ) -> stock_serialize.StockEditionResponseModel:
     try:
-        stock = offers_repository.get_non_deleted_stock_by_id(dehumanize(stock_id))
+        stock = offers_repository.get_non_deleted_stock_by_id(dehumanize(stock_id))  # type: ignore [arg-type]
         offerer = offerers_repository.get_by_offer_id(stock.offerId)
     except offers_exceptions.StockDoesNotExist:
         raise ApiErrors({"educationalStock": ["Le stock n'existe pas"]}, status_code=404)
     except offerers_exceptions.CannotFindOffererForOfferId:
         raise ApiErrors({"offerer": ["Aucune structure trouvée à partir de cette offre"]}, status_code=404)
-    check_user_has_access_to_offerer(current_user, offerer.id)
+    check_user_has_access_to_offerer(current_user, offerer.id)  # type: ignore [union-attr]
 
     collective_stock = educational_repository.get_collective_stock_from_stock_id(stock.id)
 
@@ -251,9 +251,9 @@ def edit_shadow_stock(
     stock_id: str, body: offers_serialize.EducationalOfferShadowStockBodyModel
 ) -> stock_serialize.StockEditionResponseModel:
     try:
-        stock = offers_repository.get_non_deleted_stock_by_id(dehumanize(stock_id))
+        stock = offers_repository.get_non_deleted_stock_by_id(dehumanize(stock_id))  # type: ignore [arg-type]
         offerer = offerers_repository.get_by_offer_id(stock.offerId)
-        check_user_has_access_to_offerer(current_user, offerer.id)
+        check_user_has_access_to_offerer(current_user, offerer.id)  # type: ignore [union-attr]
         stock = offers_api.edit_shadow_stock(stock, body.dict(exclude_unset=True))
 
         return stock_serialize.StockEditionResponseModel.from_orm(stock)

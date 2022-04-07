@@ -118,10 +118,10 @@ def get_pro_attributes(email: str) -> ProAttributes:
         all_venue_ids.update([venue.id for venue in venues])
         attributes.update(
             {
-                "venue_name": {venue.publicName or venue.name for venue in venues},
-                "venue_type": {venue.venueTypeCode.name for venue in venues if venue.venueTypeCode},
-                "venue_label": {venue.venueLabel.label for venue in venues if venue.venueLabelId},
-                "departement_code": {venue.departementCode for venue in venues if venue.departementCode},
+                "venue_name": {venue.publicName or venue.name for venue in venues},  # type: ignore [dict-item]
+                "venue_type": {venue.venueTypeCode.name for venue in venues if venue.venueTypeCode},  # type: ignore [dict-item, attr-defined]
+                "venue_label": {venue.venueLabel.label for venue in venues if venue.venueLabelId},  # type: ignore [dict-item]
+                "departement_code": {venue.departementCode for venue in venues if venue.departementCode},  # type: ignore [dict-item]
                 "dms_application_submitted": any(venue.demarchesSimplifieesIsDraft for venue in venues),
                 "dms_application_approved": all(venue.demarchesSimplifieesIsAccepted for venue in venues),
                 "isVirtual": any(venue.isVirtual for venue in venues),
@@ -146,7 +146,7 @@ def get_pro_attributes(email: str) -> ProAttributes:
         marketing_email_subscription=marketing_email_subscription,
         offerer_name=set(offerer_name),
         venue_count=len(all_venue_ids),
-        **attributes,
+        **attributes,  # type: ignore [arg-type]
     )
 
 
@@ -168,7 +168,7 @@ def get_user_attributes(user: User) -> UserAttributes:
         booking_subcategories=booking_subcategories,
         city=user.city,
         date_created=user.dateCreated,
-        date_of_birth=user.dateOfBirth,
+        date_of_birth=user.dateOfBirth,  # type: ignore [arg-type]
         departement_code=user.departementCode,
         deposit_activation_date=user.deposit_activation_date,
         deposit_expiration_date=user.deposit_expiration_date,
@@ -177,12 +177,12 @@ def get_user_attributes(user: User) -> UserAttributes:
         first_name=user.firstName,
         has_completed_id_check=fraud_api.has_user_performed_identity_check(user),
         user_id=user.id,
-        is_beneficiary=user.is_beneficiary,
+        is_beneficiary=user.is_beneficiary,  # type: ignore [arg-type]
         is_eligible=user.is_eligible,
-        is_email_validated=user.isEmailValidated,
-        is_pro=is_pro_user,
+        is_email_validated=user.isEmailValidated,  # type: ignore [arg-type]
+        is_pro=is_pro_user,  # type: ignore [arg-type]
         last_booking_date=user_bookings[0].dateCreated if user_bookings else None,
-        last_favorite_creation_date=last_favorite.dateCreated if last_favorite else None,
+        last_favorite_creation_date=last_favorite.dateCreated if last_favorite else None,  # type: ignore [attr-defined]
         last_name=user.lastName,
         last_visit_date=user.lastConnectionDate,
         marketing_email_subscription=user.get_notification_subscriptions().marketing_email,

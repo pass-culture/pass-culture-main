@@ -11,7 +11,7 @@ DEACTIVATED_OFFERS_PICK_MODULO = 3
 THINGS_PER_OFFERER = 5
 
 
-def create_industrial_thing_offers(thing_products_by_name, offerers_by_name, venues_by_name):
+def create_industrial_thing_offers(thing_products_by_name, offerers_by_name, venues_by_name):  # type: ignore [no-untyped-def]
     logger.info("create_industrial_thing_offers")
 
     thing_offers_by_name = {}

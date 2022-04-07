@@ -15,15 +15,15 @@ def send_eac_new_prebooking_email_to_pro(stock: Stock, booking: Booking) -> bool
     if not booking.stock.offer.bookingEmail:
         return True
     data = get_eac_new_prebooking_email_data(booking)
-    return mails.send(recipients=[stock.offer.bookingEmail], data=data)
+    return mails.send(recipients=[stock.offer.bookingEmail], data=data)  # type: ignore [list-item]
 
 
 def get_eac_new_prebooking_email_data(booking: Booking) -> dict:
     stock: Stock = booking.stock
     offer: Offer = stock.offer
-    educational_booking: EducationalBooking = booking.educationalBooking
+    educational_booking: EducationalBooking = booking.educationalBooking  # type: ignore [assignment]
 
-    return SendinblueTransactionalEmailData(
+    return SendinblueTransactionalEmailData(  # type: ignore [return-value]
         template=TransactionalEmail.EAC_NEW_PREBOOKING_TO_PRO.value,
         params={
             "OFFER_NAME": offer.name,

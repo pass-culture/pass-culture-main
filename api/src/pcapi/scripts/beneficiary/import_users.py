@@ -69,13 +69,13 @@ def create_or_update_users(rows: Iterable[dict]) -> list[User]:
     admin.add_admin_role()
     admin.firstName = "Jeanne"
     admin.lastName = "Admin"
-    admin.publicName = f"{user.firstName} {user.lastName}"
+    admin.publicName = f"{user.firstName} {user.lastName}"  # type: ignore [union-attr]
     repository.save(admin)
     logger.info("Created or updated admin user=%s", admin.id)
     return users
 
 
-def _read_file(csv_file):
+def _read_file(csv_file):  # type: ignore [no-untyped-def]
     csv_reader = csv.DictReader(csv_file)
     return create_or_update_users(csv_reader)
 

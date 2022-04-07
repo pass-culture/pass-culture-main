@@ -55,13 +55,13 @@ class BookingStatusFilter(enum.Enum):
     REIMBURSED = "reimbursed"
 
 
-class IndividualBooking(PcObject, Model):
+class IndividualBooking(PcObject, Model):  # type: ignore [valid-type, misc]
     __tablename__ = "individual_booking"
 
     id = Column(BigInteger, primary_key=True, autoincrement=True)
 
     userId = Column(BigInteger, ForeignKey("user.id"), index=True, nullable=False)
-    user = relationship(
+    user = relationship(  # type: ignore [misc]
         "User",
         foreign_keys=[userId],
         backref="userIndividualBookings",
@@ -70,7 +70,7 @@ class IndividualBooking(PcObject, Model):
     )
 
     depositId = Column(BigInteger, ForeignKey("deposit.id"), index=True, nullable=True)
-    deposit = relationship("Deposit", back_populates="individual_bookings")
+    deposit = relationship("Deposit", back_populates="individual_bookings")  # type: ignore [misc]
 
     booking = relationship(
         "Booking",
@@ -81,7 +81,7 @@ class IndividualBooking(PcObject, Model):
     )
 
 
-class Booking(PcObject, Model):
+class Booking(PcObject, Model):  # type: ignore [valid-type, misc]
     __tablename__ = "booking"
 
     id = Column(BigInteger, primary_key=True, autoincrement=True)
@@ -93,15 +93,15 @@ class Booking(PcObject, Model):
 
     stockId = Column(BigInteger, ForeignKey("stock.id"), index=True, nullable=False)
 
-    stock = relationship("Stock", foreign_keys=[stockId], backref="bookings")
+    stock = relationship("Stock", foreign_keys=[stockId], backref="bookings")  # type: ignore [misc]
 
     venueId = Column(BigInteger, ForeignKey("venue.id"), index=True, nullable=False)
 
-    venue = relationship("Venue", foreign_keys=[venueId], backref="bookings")
+    venue = relationship("Venue", foreign_keys=[venueId], backref="bookings")  # type: ignore [misc]
 
     offererId = Column(BigInteger, ForeignKey("offerer.id"), index=True, nullable=False)
 
-    offerer = relationship("Offerer", foreign_keys=[offererId], backref="bookings")
+    offerer = relationship("Offerer", foreign_keys=[offererId], backref="bookings")  # type: ignore [misc]
 
     quantity = Column(Integer, nullable=False, default=1)
 
@@ -109,9 +109,9 @@ class Booking(PcObject, Model):
 
     userId = Column(BigInteger, ForeignKey("user.id"), index=True, nullable=True)
 
-    activationCode = relationship("ActivationCode", uselist=False, back_populates="booking")
+    activationCode = relationship("ActivationCode", uselist=False, back_populates="booking")  # type: ignore [misc]
 
-    user = relationship("User", foreign_keys=[userId], backref="userBookings")
+    user = relationship("User", foreign_keys=[userId], backref="userBookings")  # type: ignore [misc]
 
     amount = Column(Numeric(10, 2), nullable=False)
 
@@ -142,7 +142,7 @@ class Booking(PcObject, Model):
         unique=True,
         index=True,
     )
-    educationalBooking: Optional["EducationalBooking"] = relationship(
+    educationalBooking: Optional["EducationalBooking"] = relationship(  # type: ignore [assignment]
         "EducationalBooking",
         back_populates="booking",
         uselist=False,
@@ -155,7 +155,7 @@ class Booking(PcObject, Model):
         unique=True,
         index=True,
     )
-    individualBooking: Optional[IndividualBooking] = relationship(
+    individualBooking: Optional[IndividualBooking] = relationship(  # type: ignore [assignment]
         IndividualBooking,
         back_populates="booking",
         uselist=False,
@@ -173,16 +173,16 @@ class Booking(PcObject, Model):
 
     def mark_as_unused_set_confirmed(self) -> None:
         self.dateUsed = None
-        self.status = BookingStatus.CONFIRMED
+        self.status = BookingStatus.CONFIRMED  # type: ignore [assignment]
 
-    def cancel_booking(self, cancel_even_if_used=False) -> None:
+    def cancel_booking(self, cancel_even_if_used=False) -> None:  # type: ignore [no-untyped-def]
         if self.status is BookingStatus.CANCELLED:
             raise exceptions.BookingIsAlreadyCancelled()
         if self.status is BookingStatus.REIMBURSED:
             raise exceptions.BookingIsAlreadyUsed()
         if self.status is BookingStatus.USED and not cancel_even_if_used:
             raise exceptions.BookingIsAlreadyUsed()
-        self.status = BookingStatus.CANCELLED
+        self.status = BookingStatus.CANCELLED  # type: ignore [assignment]
         self.cancellationDate = datetime.utcnow()
 
     def uncancel_booking_set_used(self) -> None:
@@ -199,7 +199,7 @@ class Booking(PcObject, Model):
         if self.educationalBooking.has_confirmation_limit_date_passed():
             raise exceptions.ConfirmationLimitDateHasPassed()
 
-        self.status = BookingStatus.CONFIRMED
+        self.status = BookingStatus.CONFIRMED  # type: ignore [assignment]
         self.educationalBooking.confirmationDate = datetime.utcnow()
 
     @property
@@ -234,9 +234,9 @@ class Booking(PcObject, Model):
 
     @staticmethod
     def restize_internal_error(ie: Exception) -> list[str]:
-        if "tooManyBookings" in str(ie.orig):
+        if "tooManyBookings" in str(ie.orig):  # type: ignore [attr-defined]
             return ["global", "La quantité disponible pour cette offre est atteinte."]
-        if "insufficientFunds" in str(ie.orig):
+        if "insufficientFunds" in str(ie.orig):  # type: ignore [attr-defined]
             return ["insufficientFunds", "Le solde de votre pass est insuffisant pour réserver cette offre."]
         return PcObject.restize_integrity_error(ie)
 
@@ -244,7 +244,7 @@ class Booking(PcObject, Model):
     def isConfirmed(self):
         return self.cancellationLimitDate is not None and self.cancellationLimitDate <= datetime.utcnow()
 
-    @isConfirmed.expression
+    @isConfirmed.expression  # type: ignore [no-redef]
     def isConfirmed(cls):  # pylint: disable=no-self-argument # type: ignore[no-redef]
         return and_(cls.cancellationLimitDate.isnot(None), cls.cancellationLimitDate <= datetime.utcnow())
 
@@ -252,7 +252,7 @@ class Booking(PcObject, Model):
     def is_used_or_reimbursed(self) -> bool:
         return self.status in [BookingStatus.USED, BookingStatus.REIMBURSED]
 
-    @is_used_or_reimbursed.expression
+    @is_used_or_reimbursed.expression  # type: ignore [no-redef]
     def is_used_or_reimbursed(cls) -> bool:  # pylint: disable=no-self-argument
         return cls.status.in_([BookingStatus.USED, BookingStatus.REIMBURSED])
 

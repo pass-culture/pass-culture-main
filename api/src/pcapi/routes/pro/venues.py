@@ -86,7 +86,7 @@ def get_venues(query: VenueListQueryModel) -> GetVenueListResponseModel:
 @spectree_serialize(response_model=VenueResponseModel, on_success_status=201)
 def post_create_venue(body: PostVenueBodyModel) -> VenueResponseModel:
     dehumanized_managing_offerer_id = dehumanize(body.managingOffererId)
-    check_user_has_access_to_offerer(current_user, dehumanized_managing_offerer_id)
+    check_user_has_access_to_offerer(current_user, dehumanized_managing_offerer_id)  # type: ignore [arg-type]
     venue = offerers_api.create_venue(body)
 
     return VenueResponseModel.from_orm(venue)
@@ -159,7 +159,7 @@ def upsert_venue_banner(venue_id: str) -> GetVenueResponseModel:
         user=current_user,
         venue=venue,
         content=venue_banner.content,
-        image_credit=venue_banner.image_credit,
+        image_credit=venue_banner.image_credit,  # type: ignore [arg-type]
         crop_params=venue_banner.crop_params,
     )
 

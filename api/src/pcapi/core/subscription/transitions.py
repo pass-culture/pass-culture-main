@@ -41,7 +41,7 @@ TRANSITIONS = [
 ]
 
 
-def install_machine():
+def install_machine():  # type: ignore [no-untyped-def]
     flask.g.subscription_machine = transitions.Machine(
         states=users_models.SubscriptionState,
         transitions=TRANSITIONS,

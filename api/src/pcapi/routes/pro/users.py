@@ -91,7 +91,7 @@ def signin(body: users_serializers.LoginUserBodyModel) -> users_serializers.Shar
 
 @blueprint.pro_private_api.route("/users/signout", methods=["GET"])
 @login_required
-def signout():
+def signout():  # type: ignore [no-untyped-def]
     discard_session()
     logout_user()
     return jsonify({"global": "Déconnecté"})

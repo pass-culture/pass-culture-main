@@ -53,8 +53,8 @@ def find_all_offerers_payments(
         .with_entities(
             User.lastName.label("user_lastName"),
             User.firstName.label("user_firstName"),
-            EducationalRedactor.firstName.label("redactor_firstname"),
-            EducationalRedactor.lastName.label("redactor_lastname"),
+            EducationalRedactor.firstName.label("redactor_firstname"),  # type: ignore [attr-defined]
+            EducationalRedactor.lastName.label("redactor_lastname"),  # type: ignore [attr-defined]
             Booking.token.label("booking_token"),
             Booking.dateUsed.label("booking_dateUsed"),
             Booking.quantity.label("booking_quantity"),
@@ -98,8 +98,8 @@ def find_all_offerers_payments(
         .with_entities(
             User.lastName.label("user_lastName"),
             User.firstName.label("user_firstName"),
-            EducationalRedactor.firstName.label("redactor_firstname"),
-            EducationalRedactor.lastName.label("redactor_lastname"),
+            EducationalRedactor.firstName.label("redactor_firstname"),  # type: ignore [attr-defined]
+            EducationalRedactor.lastName.label("redactor_lastname"),  # type: ignore [attr-defined]
             Booking.token.label("booking_token"),
             Booking.dateUsed.label("booking_dateUsed"),
             Booking.quantity.label("booking_quantity"),

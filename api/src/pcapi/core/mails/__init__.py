@@ -34,7 +34,7 @@ def send(
     return result.successful
 
 
-def _save_email(result: models.MailResult):
+def _save_email(result: models.MailResult):  # type: ignore [no-untyped-def]
     """Save email to the database with its status"""
     email = models.Email(
         content=result.sent_data,

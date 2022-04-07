@@ -8,9 +8,9 @@ from pcapi.models import Model
 from pcapi.models.api_errors import ApiErrors
 
 
-def validate_generic(model: Model) -> ApiErrors:
+def validate_generic(model: Model) -> ApiErrors:  # type: ignore [valid-type]
     api_errors = ApiErrors()
-    columns = model.__mapper__.column_attrs
+    columns = model.__mapper__.column_attrs  # type: ignore [attr-defined]
 
     for key in columns.keys():
         if key.startswith("_sa_"):

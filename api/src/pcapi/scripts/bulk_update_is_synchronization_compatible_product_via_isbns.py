@@ -27,7 +27,7 @@ def process_batch(isbns: list[str], is_synchronization_compatible: bool) -> None
     )
 
 
-def bulk_update_is_synchronization_compatible_via_isbns(
+def bulk_update_is_synchronization_compatible_via_isbns(  # type: ignore [no-untyped-def]
     iterable: Iterable[str], is_synchronization_compatible: bool, batch_size: int
 ):
     total = 0

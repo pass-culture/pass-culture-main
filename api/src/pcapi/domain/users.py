@@ -5,5 +5,5 @@ class ClientError(Exception):
 
 
 class UnauthorizedForAdminUser(ClientError):
-    def __init__(self):
+    def __init__(self):  # type: ignore [no-untyped-def]
         super().__init__("global", "Le statut d'administrateur ne permet pas d'accéder au suivi des réservations")

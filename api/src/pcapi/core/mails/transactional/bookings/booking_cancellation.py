@@ -67,7 +67,7 @@ def get_booking_cancellation_confirmation_by_pro_email_data(booking: Booking) ->
         venue=venue,
     )
 
-    return SendinblueTransactionalWithoutTemplateEmailData(
+    return SendinblueTransactionalWithoutTemplateEmailData(  # type: ignore [return-value]
         subject=email_subject,
         html_content=email_html,
     )

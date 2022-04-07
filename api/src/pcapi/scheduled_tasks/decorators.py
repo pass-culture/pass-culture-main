@@ -11,9 +11,9 @@ from pcapi.scheduled_tasks.logger import build_cron_log_message
 logger = logging.getLogger(__name__)
 
 
-def cron_context(func):
+def cron_context(func):  # type: ignore [no-untyped-def]
     @wraps(func)
-    def wrapper(*args, **kwargs):
+    def wrapper(*args, **kwargs):  # type: ignore [no-untyped-def]
         # The `flask clock` command sets up an application context,
         # but it gets lost when apscheduler starts a job in a new
         # thread. So here we must set an application context again.
@@ -25,10 +25,10 @@ def cron_context(func):
     return wrapper
 
 
-def cron_require_feature(feature_toggle: FeatureToggle):
-    def decorator(func):
+def cron_require_feature(feature_toggle: FeatureToggle):  # type: ignore [no-untyped-def]
+    def decorator(func):  # type: ignore [no-untyped-def]
         @wraps(func)
-        def wrapper(*args, **kwargs):
+        def wrapper(*args, **kwargs):  # type: ignore [no-untyped-def]
             if feature_toggle.is_active():
                 return func(*args, **kwargs)
             logger.info("%s is not active", feature_toggle)
@@ -39,9 +39,9 @@ def cron_require_feature(feature_toggle: FeatureToggle):
     return decorator
 
 
-def log_cron_with_transaction(func):
+def log_cron_with_transaction(func):  # type: ignore [no-untyped-def]
     @wraps(func)
-    def wrapper(*args, **kwargs):
+    def wrapper(*args, **kwargs):  # type: ignore [no-untyped-def]
         start_time = time.time()
         logger.info(build_cron_log_message(name=func.__name__, status=CronStatus.STARTED))
 

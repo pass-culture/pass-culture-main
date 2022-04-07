@@ -27,7 +27,7 @@ from pcapi.utils.date import DateTimes
 logger = logging.getLogger(__name__)
 
 
-class Mediation(PcObject, Model, HasThumbMixin, ProvidableMixin, DeactivableMixin):
+class Mediation(PcObject, Model, HasThumbMixin, ProvidableMixin, DeactivableMixin):  # type: ignore [valid-type, misc]
     __tablename__ = "mediation"
 
     id = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
@@ -38,7 +38,7 @@ class Mediation(PcObject, Model, HasThumbMixin, ProvidableMixin, DeactivableMixi
 
     authorId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), nullable=True)
 
-    author = sa.orm.relationship("User", foreign_keys=[authorId], backref="mediations")
+    author = sa.orm.relationship("User", foreign_keys=[authorId], backref="mediations")  # type: ignore [misc]
 
     offerId = sa.Column(sa.BigInteger, sa.ForeignKey("offer.id"), index=True, nullable=False)
 
@@ -47,7 +47,7 @@ class Mediation(PcObject, Model, HasThumbMixin, ProvidableMixin, DeactivableMixi
     thumb_path_component = "mediations"
 
 
-class Stock(PcObject, Model, ProvidableMixin, SoftDeletableMixin):
+class Stock(PcObject, Model, ProvidableMixin, SoftDeletableMixin):  # type: ignore [valid-type, misc]
     __tablename__ = "stock"
 
     id = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
@@ -81,11 +81,11 @@ class Stock(PcObject, Model, ProvidableMixin, SoftDeletableMixin):
     educationalPriceDetail = sa.Column(sa.Text, nullable=True)
 
     @property
-    def isBookable(self):
+    def isBookable(self):  # type: ignore [no-untyped-def]
         return not self.isExpired and self.offer.isReleased and not self.isSoldOut
 
     @property
-    def is_forbidden_to_underage(self):
+    def is_forbidden_to_underage(self):  # type: ignore [no-untyped-def]
         return (self.price > 0 and not self.offer.subcategory.is_bookable_by_underage_when_not_free) or (
             self.price == 0 and not self.offer.subcategory.is_bookable_by_underage_when_free
         )
@@ -94,7 +94,7 @@ class Stock(PcObject, Model, ProvidableMixin, SoftDeletableMixin):
     def hasBookingLimitDatetimePassed(self):
         return bool(self.bookingLimitDatetime and self.bookingLimitDatetime <= datetime.utcnow())
 
-    @hasBookingLimitDatetimePassed.expression
+    @hasBookingLimitDatetimePassed.expression  # type: ignore [no-redef]
     def hasBookingLimitDatetimePassed(cls):  # pylint: disable=no-self-argument
         return sa.and_(cls.bookingLimitDatetime != None, cls.bookingLimitDatetime <= sa.func.now())
 
@@ -103,7 +103,7 @@ class Stock(PcObject, Model, ProvidableMixin, SoftDeletableMixin):
     def remainingQuantity(self):
         return "unlimited" if self.quantity is None else self.quantity - self.dnBookedQuantity
 
-    @remainingQuantity.expression
+    @remainingQuantity.expression  # type: ignore [no-redef]
     def remainingQuantity(cls):  # pylint: disable=no-self-argument
         return sa.case([(cls.quantity.is_(None), None)], else_=(cls.quantity - cls.dnBookedQuantity))
 
@@ -111,23 +111,23 @@ class Stock(PcObject, Model, ProvidableMixin, SoftDeletableMixin):
     def isEventExpired(self):
         return bool(self.beginningDatetime and self.beginningDatetime <= datetime.utcnow())
 
-    @isEventExpired.expression
+    @isEventExpired.expression  # type: ignore [no-redef]
     def isEventExpired(cls):  # pylint: disable=no-self-argument
         return sa.and_(cls.beginningDatetime != None, cls.beginningDatetime <= sa.func.now())
 
     @property
-    def isExpired(self):
+    def isExpired(self):  # type: ignore [no-untyped-def]
         return self.isEventExpired or self.hasBookingLimitDatetimePassed
 
     @property
-    def isEventDeletable(self):
+    def isEventDeletable(self):  # type: ignore [no-untyped-def]
         if not self.beginningDatetime:
             return True
         limit_date_for_stock_deletion = self.beginningDatetime + bookings_constants.AUTO_USE_AFTER_EVENT_TIME_DELAY
         return limit_date_for_stock_deletion >= datetime.utcnow()
 
     @property
-    def isSoldOut(self):
+    def isSoldOut(self):  # type: ignore [no-untyped-def]
         # pylint: disable=comparison-with-callable
         if (
             not self.isSoftDeleted
@@ -138,11 +138,11 @@ class Stock(PcObject, Model, ProvidableMixin, SoftDeletableMixin):
         return True
 
     @classmethod
-    def queryNotSoftDeleted(cls):
+    def queryNotSoftDeleted(cls):  # type: ignore [no-untyped-def]
         return Stock.query.filter_by(isSoftDeleted=False)
 
     @staticmethod
-    def restize_internal_error(internal_error):
+    def restize_internal_error(internal_error):  # type: ignore [no-untyped-def]
         if "check_stock" in str(internal_error.orig):
             if "quantity_too_low" in str(internal_error.orig):
                 return ["quantity", "Le stock total ne peut être inférieur au nombre de réservations"]
@@ -155,12 +155,12 @@ class Stock(PcObject, Model, ProvidableMixin, SoftDeletableMixin):
         return PcObject.restize_internal_error(internal_error)
 
     @property
-    def canHaveActivationCodes(self):
+    def canHaveActivationCodes(self):  # type: ignore [no-untyped-def]
         return self.offer.isDigital
 
 
 @sa.event.listens_for(Stock, "before_insert")
-def before_insert(mapper, configuration, self):
+def before_insert(mapper, configuration, self):  # type: ignore [no-untyped-def]
     if self.beginningDatetime and not self.bookingLimitDatetime:
         self.bookingLimitDatetime = self.beginningDatetime.replace(hour=23).replace(minute=59) - timedelta(days=3)
 
@@ -239,18 +239,18 @@ class WithdrawalTypeEnum(enum.Enum):
     ON_SITE = "on_site"
 
 
-class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ValidationMixin, AccessibilityMixin, StatusMixin):
+class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ValidationMixin, AccessibilityMixin, StatusMixin):  # type: ignore [valid-type, misc]
     __tablename__ = "offer"
 
     id = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
 
     productId = sa.Column(sa.BigInteger, sa.ForeignKey("product.id"), index=True, nullable=False)
 
-    product = sa.orm.relationship("Product", foreign_keys=[productId], backref="offers")
+    product = sa.orm.relationship("Product", foreign_keys=[productId], backref="offers")  # type: ignore [misc]
 
     venueId = sa.Column(sa.BigInteger, sa.ForeignKey("venue.id"), nullable=False, index=True)
 
-    venue = sa.orm.relationship("Venue", foreign_keys=[venueId], backref="offers")
+    venue = sa.orm.relationship("Venue", foreign_keys=[venueId], backref="offers")  # type: ignore [misc]
 
     bookingEmail = sa.Column(sa.String(120), nullable=True)
 
@@ -281,7 +281,7 @@ class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ValidationMixin, 
 
     dateCreated = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow)
 
-    criteria = sa.orm.relationship(
+    criteria = sa.orm.relationship(  # type: ignore [misc]
         "Criterion", backref=db.backref("criteria", lazy="dynamic"), secondary="offer_criterion"
     )
 
@@ -289,7 +289,7 @@ class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ValidationMixin, 
 
     authorId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), nullable=True)
 
-    author = sa.orm.relationship("User", foreign_keys=[authorId], backref="offers")
+    author = sa.orm.relationship("User", foreign_keys=[authorId], backref="offers")  # type: ignore [misc]
 
     rankingWeight = sa.Column(sa.Integer, nullable=True)
 
@@ -307,7 +307,7 @@ class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ValidationMixin, 
 
     subcategoryId = sa.Column(sa.Text, nullable=False, index=True)
 
-    dateUpdated: datetime = sa.Column(sa.DateTime, nullable=True, default=datetime.utcnow, onupdate=datetime.utcnow)
+    dateUpdated: datetime = sa.Column(sa.DateTime, nullable=True, default=datetime.utcnow, onupdate=datetime.utcnow)  # type: ignore [assignment]
 
     dateModifiedAtLastProvider = sa.Column(sa.DateTime, nullable=True, default=datetime.utcnow)
 
@@ -320,11 +320,11 @@ class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ValidationMixin, 
     sa.Index("offer_isbn_idx", ExtraDataMixin.extraData["isbn"].astext)
 
     @sa.ext.declarative.declared_attr
-    def lastProviderId(cls):  # pylint: disable=no-self-argument
+    def lastProviderId(cls):  # type: ignore [no-untyped-def] # pylint: disable=no-self-argument
         return sa.Column(sa.BigInteger, sa.ForeignKey("provider.id"), nullable=True)
 
     @sa.ext.declarative.declared_attr
-    def lastProvider(cls):  # pylint: disable=no-self-argument
+    def lastProvider(cls):  # type: ignore [no-untyped-def] # pylint: disable=no-self-argument
         return sa.orm.relationship("Provider", foreign_keys=[cls.lastProviderId])
 
     @sa.ext.hybrid.hybrid_property
@@ -338,7 +338,7 @@ class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ValidationMixin, 
                 return False
         return True
 
-    @isSoldOut.expression
+    @isSoldOut.expression  # type: ignore [no-redef]
     def isSoldOut(cls):  # pylint: disable=no-self-argument
         return (
             ~sa.exists()
@@ -358,7 +358,7 @@ class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ValidationMixin, 
     def canExpire(self) -> bool:
         return self.subcategoryId in subcategories.EXPIRABLE_SUBCATEGORIES
 
-    @canExpire.expression
+    @canExpire.expression  # type: ignore [no-redef]
     def canExpire(cls) -> bool:  # pylint: disable=no-self-argument
         return cls.subcategoryId.in_(subcategories.EXPIRABLE_SUBCATEGORIES)
 
@@ -376,7 +376,7 @@ class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ValidationMixin, 
     def isPermanent(self) -> bool:
         return self.subcategoryId in subcategories.PERMANENT_SUBCATEGORIES
 
-    @isPermanent.expression
+    @isPermanent.expression  # type: ignore [no-redef]
     def isPermanent(cls) -> bool:  # pylint: disable=no-self-argument
         return cls.subcategoryId.in_(subcategories.PERMANENT_SUBCATEGORIES)
 
@@ -385,8 +385,8 @@ class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ValidationMixin, 
         if self.isThing or not self.activeStocks:
             return DateTimes()
 
-        start = min([stock.beginningDatetime for stock in self.activeStocks])
-        end = max([stock.beginningDatetime for stock in self.activeStocks])
+        start = min([stock.beginningDatetime for stock in self.activeStocks])  # type: ignore [type-var]
+        end = max([stock.beginningDatetime for stock in self.activeStocks])  # type: ignore [type-var]
         return DateTimes(start, end)
 
     @property
@@ -431,7 +431,7 @@ class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ValidationMixin, 
             return all(stock.hasBookingLimitDatetimePassed for stock in self.activeStocks)
         return False
 
-    @hasBookingLimitDatetimesPassed.expression
+    @hasBookingLimitDatetimesPassed.expression  # type: ignore [no-redef]
     def hasBookingLimitDatetimesPassed(cls):  # pylint: disable=no-self-argument
         return sa.and_(
             sa.exists().where(Stock.offerId == cls.id).where(Stock.isSoftDeleted.is_(False)),
@@ -476,7 +476,7 @@ class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ValidationMixin, 
     @property
     def thumbUrl(self) -> str:
         image = self.image
-        return image.url if image else None
+        return image.url if image else None  # type: ignore [return-value]
 
     @property
     def is_offline_only(self) -> bool:
@@ -490,7 +490,7 @@ class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ValidationMixin, 
             return 0
 
 
-class ActivationCode(PcObject, Model):
+class ActivationCode(PcObject, Model):  # type: ignore [valid-type, misc]
     __tablename__ = "activation_code"
 
     id = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
@@ -505,7 +505,7 @@ class ActivationCode(PcObject, Model):
 
     bookingId = sa.Column(sa.BigInteger, sa.ForeignKey("booking.id"), index=True, nullable=True)
 
-    booking = sa.orm.relationship("Booking", back_populates="activationCode")
+    booking = sa.orm.relationship("Booking", back_populates="activationCode")  # type: ignore [misc]
 
     __table_args__ = (
         sa.UniqueConstraint(
@@ -516,7 +516,7 @@ class ActivationCode(PcObject, Model):
     )
 
 
-class OfferValidationConfig(PcObject, Model):
+class OfferValidationConfig(PcObject, Model):  # type: ignore [valid-type, misc]
     __tablename__ = "offer_validation_config"
 
     id = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
@@ -525,7 +525,7 @@ class OfferValidationConfig(PcObject, Model):
 
     userId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"))
 
-    user = sa.orm.relationship("User", foreign_keys=[userId], backref="offer_validation_configs")
+    user = sa.orm.relationship("User", foreign_keys=[userId], backref="offer_validation_configs")  # type: ignore [misc]
 
     specs = sa.Column("specs", sa.dialects.postgresql.JSONB, nullable=False)
 
@@ -582,7 +582,7 @@ OR (
 """
 
 
-class OfferReport(PcObject, Model):
+class OfferReport(PcObject, Model):  # type: ignore [valid-type, misc]
     __tablename__ = "offer_report"
 
     __table_args__ = (
@@ -601,7 +601,7 @@ class OfferReport(PcObject, Model):
 
     userId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id", ondelete="CASCADE"), index=True, nullable=False)
 
-    user = sa.orm.relationship("User", foreign_keys=[userId], backref="reported_offers")
+    user = sa.orm.relationship("User", foreign_keys=[userId], backref="reported_offers")  # type: ignore [misc]
 
     offerId = sa.Column(sa.BigInteger, sa.ForeignKey("offer.id", ondelete="CASCADE"), index=True, nullable=False)
 

@@ -28,9 +28,9 @@ def synchronize_venue_provider(venue_provider: VenueProvider) -> None:
     logger.info("Starting synchronization of venue=%s provider=%s", venue.id, provider.name)
     provider_api = provider.getProviderAPI()
 
-    stats = Counter()
+    stats = Counter()  # type: ignore [var-annotated]
     for raw_stocks in _get_stocks_by_batch(
-        venue_provider.venueIdAtOfferProvider, provider_api, venue_provider.lastSyncDate
+        venue_provider.venueIdAtOfferProvider, provider_api, venue_provider.lastSyncDate  # type: ignore [arg-type]
     ):
         stock_details = _build_stock_details_from_raw_stocks(
             raw_stocks, venue_provider.venueIdAtOfferProvider, provider, venue.id
@@ -60,7 +60,7 @@ def _get_stocks_by_batch(siret: str, provider_api: ProviderAPI, modified_since: 
         response = provider_api.validated_stocks(
             siret=siret,
             last_processed_reference=last_processed_provider_reference,
-            modified_since=modified_since.strftime("%Y-%m-%dT%H:%M:%SZ") if modified_since else "",
+            modified_since=modified_since.strftime("%Y-%m-%dT%H:%M:%SZ") if modified_since else "",  # type: ignore [attr-defined]
         )
         raw_stocks = response.get("stocks", [])
 
@@ -88,7 +88,7 @@ def _build_stock_details_from_raw_stocks(
             products_provider_reference=stock["ref"],
             offers_provider_reference=stock["ref"],
             stocks_provider_reference=stock["ref"] + "@" + venue_siret,
-            venue_reference=compute_venue_reference(stock["ref"], venue_id),
+            venue_reference=compute_venue_reference(stock["ref"], venue_id),  # type: ignore [arg-type]
             available_quantity=stock["available"],
             price=price,
         )

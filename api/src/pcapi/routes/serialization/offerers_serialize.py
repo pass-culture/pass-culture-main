@@ -223,7 +223,7 @@ class GetOfferersResponseModel(BaseModel):
         orm_mode = True
 
     @classmethod
-    def from_orm(
+    def from_orm(  # type: ignore [no-untyped-def, override]
         cls,
         offerer: offerers_models.Offerer,
         user: users_models.User,

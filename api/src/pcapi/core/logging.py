@@ -13,7 +13,7 @@ from flask_login import current_user
 from pcapi import settings
 
 
-def _is_within_app_context():
+def _is_within_app_context():  # type: ignore [no-untyped-def]
     # If we are called before setting up an application context,
     # accessing Flask global objects raise a RuntimeError.
     try:
@@ -27,7 +27,7 @@ def _is_within_app_context():
         return True
 
 
-def get_or_set_correlation_id():
+def get_or_set_correlation_id():  # type: ignore [no-untyped-def]
     """Get a correlation id (set by Nginx upstream) if we are in the
     context of an HTTP request, or get/set one from/in Flask global
     object otherwise.
@@ -45,7 +45,7 @@ def get_or_set_correlation_id():
         return flask.g.correlation_id
 
 
-def get_logged_in_user_id():
+def get_logged_in_user_id():  # type: ignore [no-untyped-def]
     if not _is_within_app_context():
         return None
     try:
@@ -63,7 +63,7 @@ def get_logged_in_user_id():
         return None
 
 
-def get_api_key_offerer_id():
+def get_api_key_offerer_id():  # type: ignore [no-untyped-def]
     return (
         flask.g.current_api_key.offererId
         if _is_within_app_context() and hasattr(flask.g, "current_api_key") and flask.g.current_api_key
@@ -71,8 +71,8 @@ def get_api_key_offerer_id():
     )
 
 
-def monkey_patch_logger_makeRecord():
-    def makeRecord(self, name, level, fn, lno, msg, args, exc_info, func=None, extra=None, sinfo=None):
+def monkey_patch_logger_makeRecord():  # type: ignore [no-untyped-def]
+    def makeRecord(self, name, level, fn, lno, msg, args, exc_info, func=None, extra=None, sinfo=None):  # type: ignore [no-untyped-def]
         """Make a record but store ``extra`` arguments in an ``extra``
         attribute (not only as direct attributes of the object itself,
         like the original method does).
@@ -100,8 +100,8 @@ def monkey_patch_logger_makeRecord():
     logging.Logger.makeRecord = makeRecord
 
 
-def monkey_patch_logger_log():
-    def _log(
+def monkey_patch_logger_log():  # type: ignore [no-untyped-def]
+    def _log(  # type: ignore [no-untyped-def]
         self,
         level,
         msg,
@@ -133,7 +133,7 @@ def monkey_patch_logger_log():
 
 
 class JsonLogEncoder(json.JSONEncoder):
-    def default(self, obj):
+    def default(self, obj):  # type: ignore [no-untyped-def]
         if isinstance(obj, decimal.Decimal):
             return float(obj)
         if isinstance(obj, enum.Enum):
@@ -150,7 +150,7 @@ class JsonLogEncoder(json.JSONEncoder):
 
 
 class JsonFormatter(logging.Formatter):
-    def format(self, record):
+    def format(self, record):  # type: ignore [no-untyped-def]
         # `getattr()` is necessary for log records that have not
         # been created by our `Logger.makeRecord()` defined above.
         # It should not happen, but let's be defensive.
@@ -191,7 +191,7 @@ class JsonFormatter(logging.Formatter):
                 return serialized
 
 
-def install_logging():
+def install_logging():  # type: ignore [no-untyped-def]
     monkey_patch_logger_makeRecord()
     monkey_patch_logger_log()
     if settings.IS_DEV and not settings.IS_RUNNING_TESTS:
@@ -231,7 +231,7 @@ def install_logging():
     _silence_noisy_loggers()
 
 
-def _silence_noisy_loggers():
+def _silence_noisy_loggers():  # type: ignore [no-untyped-def]
     logging.getLogger("spectree.config").setLevel(logging.WARNING)
     logging.getLogger("xmlschema").setLevel(logging.WARNING)
     logging.getLogger("saml2").setLevel(logging.WARNING)
@@ -245,12 +245,12 @@ def _silence_noisy_loggers():
     logging.getLogger("rq.worker").setLevel(logging.CRITICAL)
 
 
-def log_for_supervision(logger: logging.Logger, log_level: int, log_message: str, *args, **kwargs) -> None:
+def log_for_supervision(logger: logging.Logger, log_level: int, log_message: str, *args, **kwargs) -> None:  # type: ignore [no-untyped-def]
     logger.log(log_level, log_message, *args, **kwargs)
 
 
 @contextlib.contextmanager
-def log_elapsed(logger, message, extra=None):
+def log_elapsed(logger, message, extra=None):  # type: ignore [no-untyped-def]
     """A context manager that logs ``message`` with an additional
     ``elapsed`` key in "extra" that is the execution time (in seconds)
     of the block.

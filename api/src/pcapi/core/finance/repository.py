@@ -20,7 +20,7 @@ from . import models
 from . import utils
 
 
-def get_business_units_query(
+def get_business_units_query(  # type: ignore [no-untyped-def]
     user: users_models.User,
     offerer_id: int = None,
 ):
@@ -48,7 +48,7 @@ def find_business_unit_by_siret(siret: str) -> typing.Optional[models.BusinessUn
     return models.BusinessUnit.query.filter_by(siret=siret).one_or_none()
 
 
-def get_invoices_query(
+def get_invoices_query(  # type: ignore [no-untyped-def]
     user: users_models.User,
     business_unit_id: int = None,
     date_from: datetime.date = None,
@@ -116,7 +116,7 @@ def has_active_or_future_custom_reimbursement_rule(offer: offers_models.Offer) -
     timespan = payments_models.CustomReimbursementRule._make_timespan(start=now, end=None)
     query = payments_models.CustomReimbursementRule.query.filter(
         payments_models.CustomReimbursementRule.offerId == offer.id,
-        payments_models.CustomReimbursementRule.timespan.overlaps(timespan),
+        payments_models.CustomReimbursementRule.timespan.overlaps(timespan),  # type: ignore [attr-defined]
     ).exists()
     return db.session.query(query).scalar()
 
@@ -163,8 +163,8 @@ def find_all_offerers_payments(
         .with_entities(
             users_models.User.lastName.label("user_lastName"),
             users_models.User.firstName.label("user_firstName"),
-            educational_models.EducationalRedactor.firstName.label("redactor_firstname"),
-            educational_models.EducationalRedactor.lastName.label("redactor_lastname"),
+            educational_models.EducationalRedactor.firstName.label("redactor_firstname"),  # type: ignore [attr-defined]
+            educational_models.EducationalRedactor.lastName.label("redactor_lastname"),  # type: ignore [attr-defined]
             bookings_models.Booking.token.label("booking_token"),
             bookings_models.Booking.dateUsed.label("booking_dateUsed"),
             bookings_models.Booking.quantity.label("booking_quantity"),
@@ -208,8 +208,8 @@ def find_all_offerers_payments(
         .with_entities(
             users_models.User.lastName.label("user_lastName"),
             users_models.User.firstName.label("user_firstName"),
-            educational_models.EducationalRedactor.firstName.label("redactor_firstname"),
-            educational_models.EducationalRedactor.lastName.label("redactor_lastname"),
+            educational_models.EducationalRedactor.firstName.label("redactor_firstname"),  # type: ignore [attr-defined]
+            educational_models.EducationalRedactor.lastName.label("redactor_lastname"),  # type: ignore [attr-defined]
             bookings_models.Booking.token.label("booking_token"),
             bookings_models.Booking.dateUsed.label("booking_dateUsed"),
             bookings_models.Booking.quantity.label("booking_quantity"),

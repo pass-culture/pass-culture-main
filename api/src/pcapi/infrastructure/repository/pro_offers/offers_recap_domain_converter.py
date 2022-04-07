@@ -15,13 +15,13 @@ def _offer_recap_to_domain(offer: Offer) -> OfferRecap:
 
     return OfferRecap(
         id=offer.id,
-        has_booking_limit_datetimes_passed=offer.hasBookingLimitDatetimesPassed,
+        has_booking_limit_datetimes_passed=offer.hasBookingLimitDatetimesPassed,  # type: ignore [arg-type]
         is_active=offer.isActive,
         is_editable=offer.isEditable,
         is_event=offer.isEvent,
         is_thing=offer.isThing,
         is_educational=offer.isEducational,
-        product_isbn=offer.extraData.get("isbn") if offer.extraData else None,
+        product_isbn=offer.extraData.get("isbn") if offer.extraData else None,  # type: ignore [union-attr]
         name=offer.name,
         thumb_url=offer.thumbUrl,
         subcategory_id=offer.subcategoryId,
@@ -33,8 +33,8 @@ def _offer_recap_to_domain(offer: Offer) -> OfferRecap:
         venue_public_name=offer.venue.publicName,
         venue_departement_code=offer.venue.departementCode,
         stocks=stocks,
-        status=offer.status.name,
-        is_showcase=offer.extraData.get("isShowcase") if offer.extraData else None,
+        status=offer.status.name,  # type: ignore [attr-defined]
+        is_showcase=offer.extraData.get("isShowcase") if offer.extraData else None,  # type: ignore [union-attr, arg-type]
     )
 
 

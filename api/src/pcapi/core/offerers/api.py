@@ -61,7 +61,7 @@ def create_digital_venue(offerer: Offerer) -> Venue:
     digital_venue = Venue()
     digital_venue.isVirtual = True
     digital_venue.name = "Offre numérique"
-    digital_venue.venueTypeCode = offerers_models.VenueTypeCode.DIGITAL
+    digital_venue.venueTypeCode = offerers_models.VenueTypeCode.DIGITAL  # type: ignore [attr-defined]
     digital_venue.managingOfferer = offerer
     return digital_venue
 
@@ -246,7 +246,7 @@ def delete_api_key_by_user(user: User, api_key_prefix: str) -> None:
     db.session.delete(api_key)
 
 
-def create_offerer(user: User, offerer_informations: CreateOffererQueryModel):
+def create_offerer(user: User, offerer_informations: CreateOffererQueryModel):  # type: ignore [no-untyped-def]
     offerer = find_offerer_by_siren(offerer_informations.siren)
 
     if offerer is not None:
@@ -329,7 +329,7 @@ def validate_offerer(token: str) -> None:
 
 
 def get_timestamp_from_url(image_url: str) -> str:
-    return int(image_url.split("_")[-1])
+    return int(image_url.split("_")[-1])  # type: ignore [return-value]
 
 
 def rm_previous_venue_thumbs(venue: Venue) -> None:
@@ -338,13 +338,13 @@ def rm_previous_venue_thumbs(venue: Venue) -> None:
 
     # handle old banner urls that did not have a timestamp
     timestamp = get_timestamp_from_url(venue.bannerUrl) if "_" in venue.bannerUrl else 0
-    storage.remove_thumb(venue, image_index=timestamp)
+    storage.remove_thumb(venue, image_index=timestamp)  # type: ignore [arg-type]
 
     # some older venues might have a banner but not the original file
     # note: if bannerUrl is not None, bannerMeta should not be either.
-    if original_image_url := venue.bannerMeta.get("original_image_url"):
+    if original_image_url := venue.bannerMeta.get("original_image_url"):  # type: ignore [union-attr]
         original_image_timestamp = get_timestamp_from_url(original_image_url)
-        storage.remove_thumb(venue, image_index=original_image_timestamp)
+        storage.remove_thumb(venue, image_index=original_image_timestamp)  # type: ignore [arg-type]
 
     venue.bannerUrl = None
     venue.bannerMeta = None
@@ -401,10 +401,10 @@ def delete_venue_banner(venue: Venue) -> None:
     search.async_index_venue_ids([venue.id])
 
 
-def can_offerer_create_educational_offer(offerer_id: str) -> bool:
+def can_offerer_create_educational_offer(offerer_id: str) -> bool:  # type: ignore [return]
     import pcapi.core.educational.adage_backends as adage_client
 
-    siren = find_siren_by_offerer_id(offerer_id)
+    siren = find_siren_by_offerer_id(offerer_id)  # type: ignore [arg-type]
     try:
         response = adage_client.get_adage_offerer(siren)
         if len(response) == 0:

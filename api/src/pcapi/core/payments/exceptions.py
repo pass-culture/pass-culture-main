@@ -20,7 +20,7 @@ class ReimbursementRuleValidationError(Exception):
 
 
 class ConflictingReimbursementRule(ReimbursementRuleValidationError):
-    def __init__(self, msg, conflicts):
+    def __init__(self, msg, conflicts):  # type: ignore [no-untyped-def]
         super().__init__(msg)
         self.conflicts = conflicts
 

@@ -40,25 +40,25 @@ class DeletedRecordException(Exception):
 class PcObject:
     id = Column(BigInteger, primary_key=True, autoincrement=True)
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs):  # type: ignore [no-untyped-def]
         from_dict = kwargs.pop("from_dict", None)
         if from_dict:
             self.populate_from_dict(from_dict)
         super().__init__(**kwargs)
 
-    def __repr__(self):
+    def __repr__(self):  # type: ignore [no-untyped-def]
         if self.id is None:
             object_id = "unsaved"
         else:
             object_id = f"{self.id}/{humanize(self.id)}"
         return "<%s #%s>" % (self.__class__.__name__, object_id)
 
-    def dump(self):
+    def dump(self):  # type: ignore [no-untyped-def]
         pprint(vars(self))
 
-    def populate_from_dict(self, data: dict, skipped_keys: Iterable[str] = ()):
+    def populate_from_dict(self, data: dict, skipped_keys: Iterable[str] = ()):  # type: ignore [no-untyped-def]
         self._check_not_soft_deleted()
-        columns = self.__mapper__.column_attrs
+        columns = self.__mapper__.column_attrs  # type: ignore [attr-defined]
         keys_to_populate = self._get_keys_to_populate(columns.keys(), data, skipped_keys)
 
         for key in keys_to_populate:
@@ -80,11 +80,11 @@ class PcObject:
             else:
                 setattr(self, key, value)
 
-    def is_soft_deleted(self):
+    def is_soft_deleted(self):  # type: ignore [no-untyped-def]
         return issubclass(type(self), SoftDeletableMixin) and self.isSoftDeleted
 
     @staticmethod
-    def restize_global_error(global_error):
+    def restize_global_error(global_error):  # type: ignore [no-untyped-def]
         logger.exception("UNHANDLED ERROR : %s", global_error)
         return [
             "global",
@@ -92,7 +92,7 @@ class PcObject:
         ]
 
     @staticmethod
-    def restize_data_error(data_error):
+    def restize_data_error(data_error):  # type: ignore [no-untyped-def]
         if (
             data_error.args
             and len(data_error.args) > 0
@@ -107,7 +107,7 @@ class PcObject:
         return PcObject.restize_global_error(data_error)
 
     @staticmethod
-    def restize_integrity_error(integrity_error):
+    def restize_integrity_error(integrity_error):  # type: ignore [no-untyped-def]
         if (
             hasattr(integrity_error, "orig")
             and hasattr(integrity_error.orig, "pgcode")
@@ -134,11 +134,11 @@ class PcObject:
         return PcObject.restize_global_error(integrity_error)
 
     @staticmethod
-    def restize_internal_error(internal_error):
+    def restize_internal_error(internal_error):  # type: ignore [no-untyped-def]
         return PcObject.restize_global_error(internal_error)
 
     @staticmethod
-    def restize_type_error(type_error):
+    def restize_type_error(type_error):  # type: ignore [no-untyped-def]
         if type_error.args and len(type_error.args) > 1 and type_error.args[1] == "geography":
             return [type_error.args[2], "doit etre une liste de nombre décimaux comme par exemple : [2.22, 3.22]"]
         if type_error.args and len(type_error.args) > 1 and type_error.args[1] and type_error.args[1] == "decimal":
@@ -148,7 +148,7 @@ class PcObject:
         return PcObject.restize_global_error(type_error)
 
     @staticmethod
-    def restize_value_error(value_error):
+    def restize_value_error(value_error):  # type: ignore [no-untyped-def]
         if len(value_error.args) > 1 and value_error.args[1] == "enum":
             return [
                 value_error.args[2],
@@ -164,7 +164,7 @@ class PcObject:
         keys_to_populate = set(columns).intersection(allowed_columns_to_update)
         return keys_to_populate
 
-    def _try_to_set_attribute_with_deserialized_datetime(self, col, key, value):
+    def _try_to_set_attribute_with_deserialized_datetime(self, col, key, value):  # type: ignore [no-untyped-def]
         try:
             datetime_value = _deserialize_datetime(value)
             setattr(self, key, datetime_value)
@@ -173,7 +173,7 @@ class PcObject:
             error.add_error(col.expression.name, "Invalid value for %s (datetime): %r" % (key, value))
             raise error
 
-    def _try_to_set_attribute_with_uuid(self, col, key, value):
+    def _try_to_set_attribute_with_uuid(self, col, key, value):  # type: ignore [no-untyped-def]
         try:
             uuid.UUID(value)
             setattr(self, key, value)
@@ -182,7 +182,7 @@ class PcObject:
             error.add_error(col.expression.name, "Invalid value for %s (uuid): %r" % (key, value))
             raise error
 
-    def _try_to_set_attribute_with_decimal_value(self, col, key, value, expected_format):
+    def _try_to_set_attribute_with_decimal_value(self, col, key, value, expected_format):  # type: ignore [no-untyped-def]
         try:
             setattr(self, key, Decimal(value))
         except InvalidOperation:
@@ -190,18 +190,18 @@ class PcObject:
             error.add_error(col.expression.name, "Invalid value for {} ({}): '{}'".format(key, expected_format, value))
             raise error
 
-    def _check_not_soft_deleted(self):
+    def _check_not_soft_deleted(self):  # type: ignore [no-untyped-def]
         if self.is_soft_deleted():
             raise DeletedRecordException
 
 
-def _dehumanize_if_needed(column, value: Any) -> Any:
+def _dehumanize_if_needed(column, value: Any) -> Any:  # type: ignore [no-untyped-def]
     if _is_human_id_column(column) and not isinstance(value, int):
         return dehumanize(value)
     return value
 
 
-def _deserialize_datetime(value):
+def _deserialize_datetime(value):  # type: ignore [no-untyped-def]
     if value is None:
         return None
 

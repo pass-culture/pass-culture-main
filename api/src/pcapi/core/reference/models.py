@@ -7,7 +7,7 @@ from pcapi.models import Model
 from . import exceptions
 
 
-class ReferenceScheme(Model):
+class ReferenceScheme(Model):  # type: ignore [valid-type, misc]
     """This table holds the next reference number (and other related
     parameters) for our invoices and possibly other entities.
 
@@ -58,7 +58,7 @@ class ReferenceScheme(Model):
     )
 
     @classmethod
-    def get_and_lock(cls, name, year=None):
+    def get_and_lock(cls, name, year=None):  # type: ignore [no-untyped-def]
         # Here we wait for the lock. If another transaction has a
         # lock, that's fine: we'll wait for that other transaction to
         # commit and release the lock, so that we get the latest,

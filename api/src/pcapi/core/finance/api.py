@@ -115,7 +115,7 @@ _PRICE_BOOKINGS_ORDER_CLAUSE = (
 )
 
 
-def price_bookings(min_date: datetime.datetime = MIN_DATE_TO_PRICE):
+def price_bookings(min_date: datetime.datetime = MIN_DATE_TO_PRICE):  # type: ignore [no-untyped-def]
     """Price bookings that have been recently marked as used.
 
     This function is normally called by a cron job.
@@ -186,10 +186,10 @@ def _booking_comparison_tuple(booking: bookings_models.Booking) -> list:
     )
     if len(tupl) != len(_PRICE_BOOKINGS_ORDER_CLAUSE):
         raise RuntimeError("_booking_comparison_tuple has a wrong length.")
-    return tupl
+    return tupl  # type: ignore [return-value]
 
 
-def lock_business_unit(business_unit_id: int):
+def lock_business_unit(business_unit_id: int):  # type: ignore [no-untyped-def]
     """Lock a business unit while we are doing some work that cannot be
     done while there are other running operations on the same business
     unit.
@@ -206,7 +206,7 @@ def lock_business_unit(business_unit_id: int):
 def price_booking(booking: bookings_models.Booking) -> models.Pricing:
     business_unit_id = booking.venue.businessUnitId
     if not business_unit_id:
-        return None
+        return None  # type: ignore [return-value]
 
     with transaction():
         lock_business_unit(business_unit_id)
@@ -232,7 +232,7 @@ def price_booking(booking: bookings_models.Booking) -> models.Pricing:
         # If the status is REIMBURSED, it means the booking is
         # already priced.
         if booking.status is not bookings_models.BookingStatus.USED:
-            return None
+            return None  # type: ignore [return-value]
 
         business_unit = booking.venue.businessUnit
         # FIXME (dbaty, 2021-12-08): we can get rid of this condition
@@ -260,7 +260,7 @@ def price_booking(booking: bookings_models.Booking) -> models.Pricing:
     return pricing
 
 
-def _get_revenue_period(value_date: datetime.datetime) -> [datetime.datetime, datetime.datetime]:
+def _get_revenue_period(value_date: datetime.datetime) -> [datetime.datetime, datetime.datetime]:  # type: ignore [misc]
     """Return a datetime (year) period for the given value date, i.e. the
     first and last seconds of the year of the ``value_date``.
     """
@@ -285,7 +285,7 @@ def _get_siret_and_current_revenue(booking: bookings_models.Booking) -> typing.U
     year revenue for this SIRET, NOT including the requested booking.
     """
     siret = booking.venue.siret or booking.venue.businessUnit.siret
-    revenue_period = _get_revenue_period(booking.dateUsed)
+    revenue_period = _get_revenue_period(booking.dateUsed)  # type: ignore [arg-type]
     # I tried to be clever and store the accruing revenue on `Pricing`
     # for quick access. But my first attempt had a bug. I *think* that
     # the right way is to do this (but it has NOT been field-tested):
@@ -321,11 +321,11 @@ def _get_siret_and_current_revenue(booking: bookings_models.Booking) -> typing.U
         .with_entities(sqla.func.sum(bookings_models.Booking.amount * bookings_models.Booking.quantity))
         .scalar()
     )
-    return siret, utils.to_eurocents(current_revenue or 0)
+    return siret, utils.to_eurocents(current_revenue or 0)  # type: ignore [return-value]
 
 
 def _price_booking(booking: bookings_models.Booking) -> models.Pricing:
-    siret, current_revenue = _get_siret_and_current_revenue(booking)
+    siret, current_revenue = _get_siret_and_current_revenue(booking)  # type: ignore [misc]
     new_revenue = current_revenue
     # Collective bookings must not be included in revenue.
     if booking.individualBookingId:
@@ -373,14 +373,14 @@ def _get_initial_pricing_status(booking: bookings_models.Booking) -> models.Pric
     return models.PricingStatus.VALIDATED
 
 
-def _delete_dependent_pricings(booking: bookings_models.Booking, log_message: str):
+def _delete_dependent_pricings(booking: bookings_models.Booking, log_message: str):  # type: ignore [no-untyped-def]
     """Delete pricings for bookings that should be priced after the
     requested ``booking``.
 
     See note in the module docstring for further details.
     """
     siret = booking.venue.siret or booking.venue.businessUnit.siret
-    _start, revenue_period_end = _get_revenue_period(booking.dateUsed)
+    _start, revenue_period_end = _get_revenue_period(booking.dateUsed)  # type: ignore [arg-type]
     pricings = (
         models.Pricing.query.filter(models.Pricing.siret == siret)
         .join(models.Pricing.booking)
@@ -526,7 +526,7 @@ def cancel_pricing(
     return pricing
 
 
-def generate_cashflows_and_payment_files(cutoff: datetime.datetime):
+def generate_cashflows_and_payment_files(cutoff: datetime.datetime):  # type: ignore [no-untyped-def]
     batch_id = generate_cashflows(cutoff)
     generate_payment_files(batch_id)
 
@@ -559,7 +559,7 @@ def generate_cashflows(cutoff: datetime.datetime) -> int:
         BankInformation.status == BankInformationStatus.ACCEPTED,
     )
 
-    def _mark_as_processed(pricings):
+    def _mark_as_processed(pricings):  # type: ignore [no-untyped-def]
         pricings_to_update = models.Pricing.query.filter(
             models.Pricing.id.in_(pricings.with_entities(models.Pricing.id))
         )
@@ -629,7 +629,7 @@ def generate_cashflows(cutoff: datetime.datetime) -> int:
     return batch_id
 
 
-def generate_payment_files(batch_id: int):
+def generate_payment_files(batch_id: int):  # type: ignore [no-untyped-def]
     """Generate all payment files that are related to the requested
     CashflowBatch and mark all related Cashflow as ``UNDER_REVIEW``.
     """
@@ -684,7 +684,7 @@ def _write_csv(
     header: typing.Iterable,
     rows: typing.Iterable = None,
     batched_rows: typing.Iterable = None,
-    row_formatter: typing.Callable[typing.Any, typing.Iterable] = lambda row: row,
+    row_formatter: typing.Callable[typing.Any, typing.Iterable] = lambda row: row,  # type: ignore [misc]
     compress: bool = False,
 ) -> pathlib.Path:
     assert (rows is not None) ^ (batched_rows is not None)
@@ -857,7 +857,7 @@ def _generate_payments_file(batch_id: int) -> pathlib.Path:
     )
 
 
-def _payment_details_row_formatter(sql_row):
+def _payment_details_row_formatter(sql_row):  # type: ignore [no-untyped-def]
     if sql_row.educational_booking_id is not None:
         booking_type = "EACC"
     elif sql_row.deposit_type == payments_models.DepositType.GRANT_15_17:
@@ -925,7 +925,7 @@ def edit_business_unit(business_unit: models.BusinessUnit, siret: str) -> None:
     db.session.commit()
 
 
-def find_reimbursement_rule(rule_reference: [str, int]) -> payments_models.ReimbursementRule:
+def find_reimbursement_rule(rule_reference: [str, int]) -> payments_models.ReimbursementRule:  # type: ignore [misc]
     # regular rule description
     if isinstance(rule_reference, str):
         for regular_rule in reimbursement.REGULAR_RULES:
@@ -935,7 +935,7 @@ def find_reimbursement_rule(rule_reference: [str, int]) -> payments_models.Reimb
     return payments_models.CustomReimbursementRule.query.get(rule_reference)
 
 
-def _make_invoice_line(group: conf.RuleGroups, pricings: list, line_rate: decimal.Decimal = None):
+def _make_invoice_line(group: conf.RuleGroups, pricings: list, line_rate: decimal.Decimal = None):  # type: ignore [no-untyped-def]
     reimbursed_amount = 0
     flat_lines = list(itertools.chain.from_iterable(pricing.lines for pricing in pricings))
     # positive
@@ -965,7 +965,7 @@ def _make_invoice_line(group: conf.RuleGroups, pricings: list, line_rate: decima
     return invoice_line, reimbursed_amount
 
 
-def generate_invoices():
+def generate_invoices():  # type: ignore [no-untyped-def]
     """Generate (and store) all invoices."""
     rows = (
         db.session.query(
@@ -1053,7 +1053,7 @@ def generate_invoice_file(invoice_date: datetime.date) -> pathlib.Path:
     )
 
 
-def generate_and_store_invoice(business_unit_id: int, cashflow_ids: list[int]):
+def generate_and_store_invoice(business_unit_id: int, cashflow_ids: list[int]):  # type: ignore [no-untyped-def]
     log_extra = {"business_unit": business_unit_id}
     with log_elapsed(logger, "Generated invoice model instance", log_extra):
         invoice = _generate_invoice(business_unit_id=business_unit_id, cashflow_ids=cashflow_ids)
@@ -1065,7 +1065,7 @@ def generate_and_store_invoice(business_unit_id: int, cashflow_ids: list[int]):
         send_invoice_available_to_pro_email(invoice)
 
 
-def _generate_invoice(business_unit_id: int, cashflow_ids: list[int]):
+def _generate_invoice(business_unit_id: int, cashflow_ids: list[int]):  # type: ignore [no-untyped-def]
     invoice = models.Invoice(businessUnitId=business_unit_id)
     total_reimbursed_amount = 0
     cashflows = models.Cashflow.query.filter(models.Cashflow.id.in_(cashflow_ids)).options(
@@ -1084,7 +1084,7 @@ def _generate_invoice(business_unit_id: int, cashflow_ids: list[int]):
         if isinstance(rule, payments_models.CustomReimbursementRule):
             pricings_by_custom_rule[rule].append(pricing)
         else:
-            pricings_and_rates_by_rule_group[rule.group].append((pricing, rule.rate))
+            pricings_and_rates_by_rule_group[rule.group].append((pricing, rule.rate))  # type: ignore [attr-defined]
 
     invoice_lines = []
     for rule_group, pricings_and_rates in pricings_and_rates_by_rule_group.items():
@@ -1092,7 +1092,7 @@ def _generate_invoice(business_unit_id: int, cashflow_ids: list[int]):
         for pricing, rate in pricings_and_rates:
             rates[rate].append(pricing)
         for rate, pricings in rates.items():
-            invoice_line, reimbursed_amount = _make_invoice_line(rule_group, pricings, rate)
+            invoice_line, reimbursed_amount = _make_invoice_line(rule_group, pricings, rate)  # type: ignore [arg-type]
             invoice_lines.append(invoice_line)
             total_reimbursed_amount += reimbursed_amount
 
@@ -1174,7 +1174,7 @@ def _prepare_invoice_context(invoice: models.Invoice) -> dict:
     groups = []
     for _group_label, group_and_lines in invoice_groups.items():
         group = group_and_lines[0]
-        lines = group_and_lines[1]
+        lines = group_and_lines[1]  # type: ignore [assignment]
         contribution_subtotal = sum(line.contributionAmount for line in lines)
         total_contribution_amount += contribution_subtotal
         reimbursed_amount_subtotal = sum(line.reimbursedAmount for line in lines)
@@ -1188,11 +1188,11 @@ def _prepare_invoice_context(invoice: models.Invoice) -> dict:
             contribution_subtotal=contribution_subtotal,
             reimbursed_amount_subtotal=reimbursed_amount_subtotal,
             used_bookings_subtotal=used_bookings_subtotal,
-            lines=lines,
+            lines=lines,  # type: ignore [arg-type]
         )
         groups.append(invoice_group)
 
-    venue = offerers_repository.find_venue_by_siret(invoice.businessUnit.siret)
+    venue = offerers_repository.find_venue_by_siret(invoice.businessUnit.siret)  # type: ignore [arg-type]
     return dict(
         invoice=invoice,
         groups=groups,
@@ -1208,14 +1208,14 @@ def _generate_invoice_html(invoice: models.Invoice) -> str:
     return render_template("invoices/invoice.html", **context)
 
 
-def _store_invoice_pdf(invoice_storage_id: str, invoice_html: str):
+def _store_invoice_pdf(invoice_storage_id: str, invoice_html: str):  # type: ignore [no-untyped-def]
     invoice_pdf = pdf_utils.generate_pdf_from_html(html_content=invoice_html)
     store_public_object(
         folder="invoices", object_id=invoice_storage_id, blob=invoice_pdf, content_type="application/pdf"
     )
 
 
-def merge_cashflow_batches(
+def merge_cashflow_batches(  # type: ignore [no-untyped-def]
     batches_to_remove: list[models.CashflowBatch],
     target_batch: models.CashflowBatch,
 ):

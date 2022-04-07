@@ -48,7 +48,7 @@ def create_fraud_check(
     return fraud_check
 
 
-def get_or_create_fraud_check(
+def get_or_create_fraud_check(  # type: ignore [no-untyped-def]
     user: users_models.User, application_id: int, result_content=None
 ) -> fraud_models.BeneficiaryFraudCheck:
     fraud_check = get_fraud_check(user, application_id)
@@ -68,7 +68,7 @@ def on_dms_parsing_error(
         "Erreur lors de la récupération de l'application DMS: "
         f"les champs {list(parsing_error.errors.keys())} sont erronés"
     )
-    fraud_check.reasonCodes = [fraud_models.FraudReasonCode.ERROR_IN_DATA]
+    fraud_check.reasonCodes = [fraud_models.FraudReasonCode.ERROR_IN_DATA]  # type: ignore [list-item]
     repository.save(fraud_check)
 
     logger.info("Cannot parse DMS application %s in webhook.", application_id, extra=extra_data)
@@ -90,8 +90,8 @@ def on_dms_eligibility_error(
     )
     subscription_messages.on_dms_application_parsing_errors_but_updatables_values(user, ["birth_date"])
     dms_client.send_user_message(
-        application_scalar_id, settings.DMS_INSTRUCTOR_ID, subscription_messages.DMS_ERROR_MESSSAGE_BIRTH_DATE
+        application_scalar_id, settings.DMS_INSTRUCTOR_ID, subscription_messages.DMS_ERROR_MESSSAGE_BIRTH_DATE  # type: ignore [arg-type]
     )
     fraud_check.reason = "La date de naissance de l'utilisateur ne correspond pas à un âge autorisé"
-    fraud_check.reasonCodes = [fraud_models.FraudReasonCode.AGE_NOT_VALID]
+    fraud_check.reasonCodes = [fraud_models.FraudReasonCode.AGE_NOT_VALID]  # type: ignore [list-item]
     repository.save(fraud_check)

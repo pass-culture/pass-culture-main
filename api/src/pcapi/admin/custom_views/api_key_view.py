@@ -45,7 +45,7 @@ class ApiKeyView(BaseAdminView):
     def on_model_change(self, form: Form, model: ApiKey, is_created: bool) -> None:
         if is_created:
             with db.session.no_autoflush:
-                offerer_id = find_offerer_by_siren(form.offererSiren.data).id
+                offerer_id = find_offerer_by_siren(form.offererSiren.data).id  # type: ignore [union-attr]
                 api_key, clear_api_key = generate_api_key(offerer_id)
             model.offererId = offerer_id
             model.prefix = api_key.prefix

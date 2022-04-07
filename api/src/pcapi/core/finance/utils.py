@@ -32,7 +32,7 @@ def fr_currency_filter(eurocents: int) -> float:
     return numbers.format_decimal(amount_in_euros, format="#,##0.00", locale="fr_FR")
 
 
-def install_template_filters(app) -> None:
+def install_template_filters(app) -> None:  # type: ignore [no-untyped-def]
     app.jinja_env.filters["fr_percentage"] = fr_percentage_filter
     app.jinja_env.filters["fr_currency"] = fr_currency_filter
 

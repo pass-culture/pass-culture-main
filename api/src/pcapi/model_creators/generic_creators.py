@@ -31,7 +31,7 @@ def create_offerer(
     offerer.city = city
     offerer.dateCreated = date_created
     offerer.dateModifiedAtLastProvider = date_modified_at_last_provider
-    offerer.id = idx
+    offerer.id = idx  # type: ignore [assignment]
     offerer.idAtProviders = id_at_providers
     offerer.isActive = is_active
     offerer.lastProviderId = last_provider_id
@@ -71,8 +71,8 @@ def create_stock(
     stock.idAtProviders = id_at_providers
     stock.isSoftDeleted = is_soft_deleted
     stock.lastProviderId = last_provider_id
-    stock.offer = offer
-    stock.price = price
+    stock.offer = offer  # type: ignore [assignment]
+    stock.price = price  # type: ignore [assignment]
 
     return stock
 
@@ -104,8 +104,8 @@ def create_venue(
     venue.bookingEmail = booking_email
     venue.comment = comment
     venue.dateModifiedAtLastProvider = date_modified_at_last_provider
-    venue.dateCreated = date_created
-    venue.id = idx
+    venue.dateCreated = date_created  # type: ignore [assignment]
+    venue.id = idx  # type: ignore [assignment]
     venue.idAtProviders = id_at_providers
     venue.isVirtual = is_virtual
     venue.lastProviderId = last_provider_id
@@ -115,15 +115,15 @@ def create_venue(
     venue.thumbCount = thumb_count
     venue.validationToken = validation_token
     venue.siret = siret
-    venue.venueTypeCode = venue_type_code
+    venue.venueTypeCode = venue_type_code  # type: ignore [assignment]
 
     if not is_virtual:
         venue.address = address
-        venue.city = city
+        venue.city = city  # type: ignore [has-type]
         venue.departementCode = departement_code
-        venue.latitude = latitude
-        venue.longitude = longitude
-        venue.postalCode = postal_code
+        venue.latitude = latitude  # type: ignore [assignment]
+        venue.longitude = longitude  # type: ignore [assignment]
+        venue.postalCode = postal_code  # type: ignore [has-type]
 
     return venue
 
@@ -141,13 +141,13 @@ def create_venue_provider(
 ) -> VenueProvider:
     venue_provider = VenueProvider()
     venue_provider.dateModifiedAtLastProvider = date_modified_at_last_provider
-    venue_provider.id = idx
+    venue_provider.id = idx  # type: ignore [assignment]
     venue_provider.idAtProviders = id_at_providers
     venue_provider.isActive = is_active
     venue_provider.lastProviderId = last_provider_id
     venue_provider.lastSyncDate = last_sync_date
     venue_provider.provider = provider
     venue_provider.venue = venue
-    venue_provider.venueIdAtOfferProvider = venue_id_at_offer_provider or venue.siret
+    venue_provider.venueIdAtOfferProvider = venue_id_at_offer_provider or venue.siret  # type: ignore [assignment]
 
     return venue_provider

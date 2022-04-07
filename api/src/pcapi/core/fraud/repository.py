@@ -28,7 +28,7 @@ def get_identity_fraud_checks(
     ).all()
 
 
-def has_failed_phone_validation(user) -> bool:
+def has_failed_phone_validation(user) -> bool:  # type: ignore [no-untyped-def]
     return db.session.query(
         models.BeneficiaryFraudCheck.query.filter(
             models.BeneficiaryFraudCheck.userId == user.id,

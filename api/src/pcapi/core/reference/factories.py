@@ -12,7 +12,7 @@ class ReferenceSchemeFactory(BaseFactory):
     year = 2022
 
     @classmethod
-    def _create(cls, model_class, *args, **kwargs):
+    def _create(cls, model_class, *args, **kwargs):  # type: ignore [no-untyped-def]
         # We need to set the prefix ourselves, because it's not part
         # of the "key" of `sqlalchemy_get_or_create, and there are two
         # UNIQUE contraints on both `(name, year)` and `(prefix, year)`.

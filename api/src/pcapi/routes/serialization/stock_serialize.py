@@ -121,25 +121,25 @@ class EducationalStockCreationBodyModel(BaseModel):
         extra = "forbid"
 
     @validator("number_of_tickets", pre=True)
-    def validate_number_of_tickets(cls, number_of_tickets):  # pylint: disable=no-self-argument
+    def validate_number_of_tickets(cls, number_of_tickets):  # type: ignore [no-untyped-def] # pylint: disable=no-self-argument
         if number_of_tickets < 0:
             raise ValueError("Le nombre de places ne peut pas être négatif.")
         return number_of_tickets
 
     @validator("total_price", pre=True)
-    def validate_price(cls, price):  # pylint: disable=no-self-argument
+    def validate_price(cls, price):  # type: ignore [no-untyped-def] # pylint: disable=no-self-argument
         if price < 0:
             raise ValueError("Le prix ne peut pas être négatif.")
         return price
 
     @validator("booking_limit_datetime")
-    def validate_booking_limit_datetime(cls, booking_limit_datetime, values):  # pylint: disable=no-self-argument
+    def validate_booking_limit_datetime(cls, booking_limit_datetime, values):  # type: ignore [no-untyped-def] # pylint: disable=no-self-argument
         if booking_limit_datetime and booking_limit_datetime > values["beginning_datetime"]:
             raise ValueError("La date limite de réservation ne peut être postérieure à la date de début de l'évènement")
         return booking_limit_datetime
 
     @validator("educational_price_detail")
-    def validate_price_detail(cls, educational_price_detail):  # pylint: disable=no-self-argument
+    def validate_price_detail(cls, educational_price_detail):  # type: ignore [no-untyped-def] # pylint: disable=no-self-argument
         if len(educational_price_detail) > 1000:
             raise ValueError("Le détail du prix ne doit pas excéder 1000 caractères.")
         return educational_price_detail
@@ -156,13 +156,13 @@ class EducationalStockEditionBodyModel(BaseModel):
         extra = "forbid"
 
     @validator("beginningDatetime", pre=True)
-    def validate_beginning_datetime(cls, beginning_datetime):  # pylint: disable=no-self-argument
+    def validate_beginning_datetime(cls, beginning_datetime):  # type: ignore [no-untyped-def] # pylint: disable=no-self-argument
         if beginning_datetime is None:
             raise ValueError("La date d’évènement ne peut être nulle")
         return beginning_datetime
 
     @validator("numberOfTickets", pre=True)
-    def validate_number_of_tickets(cls, number_of_tickets):  # pylint: disable=no-self-argument
+    def validate_number_of_tickets(cls, number_of_tickets):  # type: ignore [no-untyped-def] # pylint: disable=no-self-argument
         if number_of_tickets is None:
             raise ValueError("Le nombre de places ne peut être nul")
         if number_of_tickets < 0:
@@ -170,7 +170,7 @@ class EducationalStockEditionBodyModel(BaseModel):
         return number_of_tickets
 
     @validator("price", pre=True)
-    def validate_price(cls, price):  # pylint: disable=no-self-argument
+    def validate_price(cls, price):  # type: ignore [no-untyped-def] # pylint: disable=no-self-argument
         if price is None:
             raise ValueError("Le prix ne peut être nul")
         if price < 0:
@@ -178,7 +178,7 @@ class EducationalStockEditionBodyModel(BaseModel):
         return price
 
     @validator("bookingLimitDatetime")
-    def validate_booking_limit_datetime(cls, booking_limit_datetime, values):  # pylint: disable=no-self-argument
+    def validate_booking_limit_datetime(cls, booking_limit_datetime, values):  # type: ignore [no-untyped-def] # pylint: disable=no-self-argument
         if (
             all([booking_limit_datetime, values["beginningDatetime"]])
             and booking_limit_datetime > values["beginningDatetime"]
@@ -187,7 +187,7 @@ class EducationalStockEditionBodyModel(BaseModel):
         return booking_limit_datetime
 
     @validator("educationalPriceDetail")
-    def validate_educational_price_detail(cls, educational_price_detail):  # pylint: disable=no-self-argument
+    def validate_educational_price_detail(cls, educational_price_detail):  # type: ignore [no-untyped-def] # pylint: disable=no-self-argument
         if len(educational_price_detail) > 1000:
             raise ValueError("Le détail du prix ne doit pas excéder 1000 caractères.")
         return educational_price_detail
@@ -237,19 +237,19 @@ class UpdateVenueStockBodyModel(BaseModel):
 
     ref: str = Field(title="ISBN", description="Format: EAN13")
     available: NonNegativeInt
-    price: condecimal(decimal_places=2) = Field(
+    price: condecimal(decimal_places=2) = Field(  # type: ignore [valid-type]
         None, description="(Optionnel) Prix en Euros avec 2 décimales possibles"
     )
 
     @validator("price", pre=True)
-    def empty_string_price_casted_to_none(cls, v):  # pylint: disable=no-self-argument
+    def empty_string_price_casted_to_none(cls, v):  # type: ignore [no-untyped-def] # pylint: disable=no-self-argument
         # Performed before Pydantic validators to catch empty strings but will not get "0"
         if not v:
             return None
         return v
 
     @validator("price")
-    def zero_price_casted_to_none(cls, v):  # pylint: disable=no-self-argument
+    def zero_price_casted_to_none(cls, v):  # type: ignore [no-untyped-def] # pylint: disable=no-self-argument
         # Performed before Pydantic validators to catch empty strings but will not get "0"
         if not v:
             return None

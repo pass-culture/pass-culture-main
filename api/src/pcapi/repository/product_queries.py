@@ -17,7 +17,7 @@ class ProductWithBookingsException(Exception):
     pass
 
 
-def delete_unwanted_existing_product(isbn: str):
+def delete_unwanted_existing_product(isbn: str):  # type: ignore [no-untyped-def]
     product_has_at_least_one_booking = (
         Product.query.filter_by(idAtProviders=isbn).join(Offer).join(Stock).join(Booking).count() > 0
     )

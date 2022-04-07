@@ -49,9 +49,9 @@ def sanitize_email(email: str) -> str:
 
 def get_encrypted_gcp_storage_client_bucket() -> Bucket:
     if not hasattr(get_encrypted_gcp_storage_client_bucket, "client"):
-        get_encrypted_gcp_storage_client_bucket.client = Client(project=settings.GCP_PROJECT)
+        get_encrypted_gcp_storage_client_bucket.client = Client(project=settings.GCP_PROJECT)  # type: ignore [attr-defined]
 
-    return get_encrypted_gcp_storage_client_bucket.client.bucket(settings.GCP_ENCRYPTED_BUCKET_NAME)
+    return get_encrypted_gcp_storage_client_bucket.client.bucket(settings.GCP_ENCRYPTED_BUCKET_NAME)  # type: ignore [attr-defined]
 
 
 def store_object(

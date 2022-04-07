@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 blueprint = Blueprint(__name__, __name__)
 
 
-def _get_eta(end, current, elapsed_per_batch):
+def _get_eta(end, current, elapsed_per_batch):  # type: ignore [no-untyped-def]
     left_to_do = end - current
     eta = left_to_do / BATCH_SIZE * statistics.mean(elapsed_per_batch)
     eta = datetime.datetime.utcnow() + datetime.timedelta(seconds=eta)
@@ -32,7 +32,7 @@ def _get_eta(end, current, elapsed_per_batch):
 @blueprint.cli.command("full_index_offers")
 @click.argument("start", type=int, required=True)
 @click.argument("end", type=int, required=True)
-def full_index_offers(start, end):
+def full_index_offers(start, end):  # type: ignore [no-untyped-def]
     """Reindex all bookable offers.
 
     The script iterates over all active offers. For each offer, it
@@ -65,7 +65,7 @@ def full_index_offers(start, end):
 
     queue = []
 
-    def enqueue_or_index(q, offer, force_index=False):
+    def enqueue_or_index(q, offer, force_index=False):  # type: ignore [no-untyped-def]
         if offer:
             q.append(offer)
         if force_index or len(q) > BATCH_SIZE:

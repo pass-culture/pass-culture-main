@@ -185,13 +185,13 @@ def initialize_account(
     return user
 
 
-def validate_phone_number_and_activate_user(user: User, code: str) -> User:
+def validate_phone_number_and_activate_user(user: User, code: str) -> User:  # type: ignore [return]
     validate_phone_number(user, code)
 
     subscription_api.activate_beneficiary_if_no_missing_step(user)
 
 
-def update_user_information_from_external_source(
+def update_user_information_from_external_source(  # type: ignore [no-untyped-def]
     user: User,
     data: common_fraud_models.IdentityCheckContent,
     commit=False,
@@ -237,7 +237,7 @@ def update_user_information_from_external_source(
         if data.bodyPieceNumber:
             items = (
                 fraud_api.validate_id_piece_number_format_fraud_item(data.get_id_piece_number()),
-                fraud_api.duplicate_id_piece_number_fraud_item(user, data.get_id_piece_number()),
+                fraud_api.duplicate_id_piece_number_fraud_item(user, data.get_id_piece_number()),  # type: ignore [arg-type]
             )
             if all((item.status == fraud_models.FraudStatus.OK) for item in items):
                 user.idPieceNumber = data.bodyPieceNumber
@@ -312,7 +312,7 @@ def fulfill_beneficiary_data(user: User, deposit_source: str, deposit_version: i
     return user
 
 
-def _generate_random_password(user):
+def _generate_random_password(user):  # type: ignore [no-untyped-def]
     user.password = random_hashed_password()
 
 
@@ -447,7 +447,7 @@ def update_user_password(user: User, new_password: str) -> None:
     repository.save(user)
 
 
-def update_password_and_external_user(user, new_password):
+def update_password_and_external_user(user, new_password):  # type: ignore [no-untyped-def]
     user.setPassword(new_password)
     if not user.isEmailValidated:
         user.isEmailValidated = True
@@ -455,7 +455,7 @@ def update_password_and_external_user(user, new_password):
     repository.save(user)
 
 
-def update_user_info(
+def update_user_info(  # type: ignore [no-untyped-def]
     user,
     cultural_survey_filled_date=UNCHANGED,
     cultural_survey_id=UNCHANGED,
@@ -596,7 +596,7 @@ def create_pro_user_and_offerer(pro_user: ProUserCreationBodyModel) -> User:
 def create_pro_user(pro_user: ProUserCreationBodyModel) -> User:
     new_pro_user = User(from_dict=pro_user.dict(by_alias=True))
     new_pro_user.email = users_utils.sanitize_email(new_pro_user.email)
-    new_pro_user.notificationSubscriptions = asdict(NotificationSubscriptions(marketing_email=pro_user.contact_ok))
+    new_pro_user.notificationSubscriptions = asdict(NotificationSubscriptions(marketing_email=pro_user.contact_ok))  # type: ignore [arg-type]
     new_pro_user.remove_admin_role()
     new_pro_user.remove_beneficiary_role()
     new_pro_user.needsToFillCulturalSurvey = False
@@ -665,28 +665,28 @@ def change_user_phone_number(user: User, phone_number: str) -> None:
 def send_phone_validation_code(user: User) -> None:
     _check_phone_number_validation_is_authorized(user)
 
-    phone_data = phone_number_utils.ParsedPhoneNumber(user.phoneNumber)
+    phone_data = phone_number_utils.ParsedPhoneNumber(user.phoneNumber)  # type: ignore [arg-type]
     with fraud_manager(user=user, phone_number=phone_data.phone_number):
         check_phone_number_is_legit(phone_data.phone_number, phone_data.country_code)
         check_phone_number_not_used(phone_data.phone_number)
         check_sms_sending_is_allowed(user)
 
     phone_validation_token = create_phone_validation_token(user)
-    content = f"{phone_validation_token.value} est ton code de confirmation pass Culture"
+    content = f"{phone_validation_token.value} est ton code de confirmation pass Culture"  # type: ignore [union-attr]
 
     if not send_transactional_sms(phone_data.phone_number, content):
         raise exceptions.PhoneVerificationCodeSendingException()
 
-    update_sent_SMS_counter(app.redis_client, user)
+    update_sent_SMS_counter(app.redis_client, user)  # type: ignore [attr-defined]
 
 
 def validate_phone_number(user: User, code: str) -> None:
     _check_phone_number_validation_is_authorized(user)
 
-    phone_data = phone_number_utils.ParsedPhoneNumber(user.phoneNumber)
+    phone_data = phone_number_utils.ParsedPhoneNumber(user.phoneNumber)  # type: ignore [arg-type]
     with fraud_manager(user=user, phone_number=phone_data.phone_number):
         check_phone_number_is_legit(phone_data.phone_number, phone_data.country_code)
-        check_and_update_phone_validation_attempts(app.redis_client, user)
+        check_and_update_phone_validation_attempts(app.redis_client, user)  # type: ignore [attr-defined]
 
     token = Token.query.filter(
         Token.user == user, Token.value == code, Token.type == TokenType.PHONE_VALIDATION
@@ -704,7 +704,7 @@ def validate_phone_number(user: User, code: str) -> None:
     # log in case this check raises an exception at this point
     check_phone_number_not_used(phone_data.phone_number)
 
-    user.phoneValidationStatus = PhoneValidationStatusType.VALIDATED
+    user.phoneValidationStatus = PhoneValidationStatusType.VALIDATED  # type: ignore [assignment]
     user.validate_phone()
     repository.save(user)
 
@@ -751,7 +751,7 @@ def check_phone_number_not_used(phone_number: str) -> None:
 
 
 def check_sms_sending_is_allowed(user: User) -> None:
-    if not is_SMS_sending_allowed(app.redis_client, user):
+    if not is_SMS_sending_allowed(app.redis_client, user):  # type: ignore [attr-defined]
         raise exceptions.SMSSendingLimitReached()
 
 
@@ -781,7 +781,7 @@ def fraud_manager(user: User, phone_number: str) -> typing.Generator:
         raise
 
 
-def update_last_connection_date(user):
+def update_last_connection_date(user):  # type: ignore [no-untyped-def]
     previous_connection_date = user.lastConnectionDate
     last_connection_date = datetime.utcnow()
 
@@ -851,7 +851,7 @@ def get_eligibility_at_date(
     eligibility_start = get_eligibility_start_datetime(date_of_birth)
     eligibility_end = get_eligibility_end_datetime(date_of_birth)
 
-    if not date_of_birth or not (eligibility_start <= specified_datetime < eligibility_end):
+    if not date_of_birth or not (eligibility_start <= specified_datetime < eligibility_end):  # type: ignore [operator]
         return None
 
     age = users_utils.get_age_at_date(date_of_birth, specified_datetime)
@@ -861,7 +861,7 @@ def get_eligibility_at_date(
     if age in constants.ELIGIBILITY_UNDERAGE_RANGE:
         return EligibilityType.UNDERAGE
     # If the user is older than 18 in UTC timezone, we consider them eligible until they reach eligibility_end
-    if constants.ELIGIBILITY_AGE_18 <= age and specified_datetime < eligibility_end:
+    if constants.ELIGIBILITY_AGE_18 <= age and specified_datetime < eligibility_end:  # type: ignore [operator]
         return EligibilityType.AGE18
 
     return None
@@ -890,7 +890,7 @@ def get_activable_identity_fraud_check(user: User) -> typing.Optional[fraud_mode
         and fraud_check.type in fraud_models.IDENTITY_CHECK_TYPES
         and is_eligible_for_beneficiary_upgrade(user, fraud_check.eligibilityType)
         and not (
-            fraud_check.eligibilityType == EligibilityType.UNDERAGE and user.age >= constants.ELIGIBILITY_AGE_18
+            fraud_check.eligibilityType == EligibilityType.UNDERAGE and user.age >= constants.ELIGIBILITY_AGE_18  # type: ignore [operator]
         )  # TODO: put this condition inside is_eligible_for_beneficiary_upgrade
     ]
     if not user_identity_fraud_checks:
@@ -903,7 +903,7 @@ def get_user_age_at_registration(user: User) -> Optional[int]:
     fraud_check = get_activable_identity_fraud_check(user)
     if not fraud_check:
         return None
-    registration_datetime = fraud_check.source_data().get_registration_datetime()
+    registration_datetime = fraud_check.source_data().get_registration_datetime()  # type: ignore [union-attr]
     if registration_datetime is None:
         return None
-    return users_utils.get_age_at_date(user.dateOfBirth, registration_datetime)
+    return users_utils.get_age_at_date(user.dateOfBirth, registration_datetime)  # type: ignore [arg-type]

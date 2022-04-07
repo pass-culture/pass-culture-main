@@ -15,7 +15,7 @@ from pcapi.core.bookings.exceptions import UserHasInsufficientFunds
 from pcapi.domain.users import UnauthorizedForAdminUser
 
 
-@app.errorhandler(OfferIsAlreadyBooked)
+@app.errorhandler(OfferIsAlreadyBooked)  # type: ignore [arg-type]
 @app.errorhandler(QuantityIsInvalid)
 @app.errorhandler(StockIsNotBookable)
 @app.errorhandler(CannotBookFreeOffers)
@@ -23,21 +23,21 @@ from pcapi.domain.users import UnauthorizedForAdminUser
 @app.errorhandler(PhysicalExpenseLimitHasBeenReached)
 @app.errorhandler(DigitalExpenseLimitHasBeenReached)
 @app.errorhandler(OfferCategoryNotBookableByUser)
-def handle_book_an_offer(exception):
+def handle_book_an_offer(exception):  # type: ignore [no-untyped-def]
     return jsonify(exception.errors), 400
 
 
 @app.errorhandler(UnauthorizedForAdminUser)
-def handle_get_all_bookings_exceptions(exception):
+def handle_get_all_bookings_exceptions(exception):  # type: ignore [no-untyped-def]
     return jsonify(exception.errors), 401
 
 
-@app.errorhandler(BookingIsAlreadyUsed)
+@app.errorhandler(BookingIsAlreadyUsed)  # type: ignore [arg-type]
 @app.errorhandler(CannotCancelConfirmedBooking)
-def handle_cancel_a_booking(exception):
+def handle_cancel_a_booking(exception):  # type: ignore [no-untyped-def]
     return jsonify(exception.errors), 400
 
 
 @app.errorhandler(BookingDoesntExist)
-def handle_cancel_a_booking_not_found(exception):
+def handle_cancel_a_booking_not_found(exception):  # type: ignore [no-untyped-def]
     return jsonify(exception.errors), 404

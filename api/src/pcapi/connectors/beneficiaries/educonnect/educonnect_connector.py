@@ -82,7 +82,7 @@ def get_login_redirect_url(user: users_models.User) -> str:
         "Sending saml login request with educonnect request_id = %s", saml_request_id, extra={"user_id": user.id}
     )
     key = build_saml_request_id_key(saml_request_id)
-    app.redis_client.set(name=key, value=user.id, ex=constants.EDUCONNECT_SAML_REQUEST_ID_TTL)
+    app.redis_client.set(name=key, value=user.id, ex=constants.EDUCONNECT_SAML_REQUEST_ID_TTL)  # type: ignore [attr-defined]
 
     redirect_url = next(header[1] for header in info["headers"] if header[0] == "Location")
     return redirect_url
@@ -145,7 +145,7 @@ def _get_mocked_user_for_performance_tests(user_id: str) -> models.EduconnectUse
     user = users_models.User.query.get(int(user_id))
     mocked_saml_request_id = f"saml-request-id_perf-test_{user.id}"
     key = build_saml_request_id_key(mocked_saml_request_id)
-    app.redis_client.set(name=key, value=user.id, ex=constants.EDUCONNECT_SAML_REQUEST_ID_TTL)
+    app.redis_client.set(name=key, value=user.id, ex=constants.EDUCONNECT_SAML_REQUEST_ID_TTL)  # type: ignore [attr-defined]
 
     return users_factories.EduconnectUserFactory(
         birth_date=user.dateOfBirth.date(),

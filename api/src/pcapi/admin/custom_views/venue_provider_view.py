@@ -24,7 +24,7 @@ from pcapi.repository import repository
 from pcapi.workers.venue_provider_job import venue_provider_job
 
 
-def _venue_link(view, context, model, name) -> Markup:
+def _venue_link(view, context, model, name) -> Markup:  # type: ignore [no-untyped-def]
     url = url_for("venue.index_view", id=model.venueId)
     return Markup('<a href="{}">Lieu associé</a>').format(escape(url))
 
@@ -78,7 +78,7 @@ class VenueProviderView(BaseAdminView):
         venue=dict(get_label=_get_venue_name_and_id, label="Nom du lieu"),
     )
 
-    def edit_form(self, obj=None) -> Form:
+    def edit_form(self, obj=None) -> Form:  # type: ignore [no-untyped-def]
         form_class = self.get_edit_form()
         is_allocine = isinstance(obj, AllocineVenueProvider)
 
@@ -119,7 +119,7 @@ class VenueProviderView(BaseAdminView):
         return self._extend_query(super().get_count_query())
 
     @property
-    def column_formatters(self):
+    def column_formatters(self):  # type: ignore [no-untyped-def]
         formatters = super().column_formatters
         formatters.update(venue_link=_venue_link)
         return formatters
@@ -204,4 +204,4 @@ class VenueProviderView(BaseAdminView):
         except exceptions.VenueProviderException:
             flash("Le provider n'a pas pu être enregistré", "error")
 
-        return venue_provider
+        return venue_provider  # type: ignore [return-value]

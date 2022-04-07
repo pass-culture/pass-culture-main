@@ -67,7 +67,7 @@ from pcapi.workers.push_notification_job import send_cancel_booking_notification
 logger = logging.getLogger(__name__)
 
 
-def offer_category_formatter(view, context, model, name) -> str:
+def offer_category_formatter(view, context, model, name) -> str:  # type: ignore [no-untyped-def]
     if model.subcategoryId is None:
         return ""
     return subcategories.ALL_SUBCATEGORIES_DICT[model.subcategoryId].category_id
@@ -79,17 +79,17 @@ class ExtraDataFilterEqual(FilterEqual):
 
 
 class SubcategoryFilterEqual(FilterEqual):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs):  # type: ignore [no-untyped-def]
         options = [(subcategory.id, subcategory.id) for subcategory in subcategories.ALL_SUBCATEGORIES]
         super().__init__(*args, **kwargs, options=options)
 
 
 class CategoryFilterEqual(FilterEqual):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs):  # type: ignore [no-untyped-def]
         options = [(category.id, category.id) for category in categories.ALL_CATEGORIES]
         super().__init__(*args, **kwargs, options=options)
 
-    def apply(self, filter_query, value, alias=None):
+    def apply(self, filter_query, value, alias=None):  # type: ignore [no-untyped-def]
         searched_subcategories = [
             subcategory.id
             for subcategory in subcategories.ALL_SUBCATEGORIES
@@ -168,12 +168,12 @@ class OfferView(BaseAdminView):
     simple_list_pager = True
 
     @action("bulk_edit", "Édition multiple")
-    def action_bulk_edit(self, ids):
+    def action_bulk_edit(self, ids):  # type: ignore [no-untyped-def]
         url = get_redirect_target() or self.get_url(".index_view")
         return redirect(url, code=307)
 
     @expose("/", methods=["POST"])
-    def index(self):
+    def index(self):  # type: ignore [no-untyped-def]
         if request.method != "POST":
             return self.index_view()
 
@@ -201,7 +201,7 @@ class OfferView(BaseAdminView):
         return self.index_view()
 
     @expose("/update/", methods=["POST"])
-    def update_view(self):
+    def update_view(self):  # type: ignore [no-untyped-def]
         url = get_redirect_target() or self.get_url(".index_view")
         if request.method != "POST":
             return redirect(url)
@@ -240,7 +240,7 @@ class OfferView(BaseAdminView):
         return form
 
     @property
-    def column_formatters(self):
+    def column_formatters(self):  # type: ignore [no-untyped-def]
         formatters = super().column_formatters
         formatters.update(
             {
@@ -249,7 +249,7 @@ class OfferView(BaseAdminView):
         )
         return formatters
 
-    def on_form_prefill(self, form, id):  # pylint:disable=redefined-builtin
+    def on_form_prefill(self, form, id):  # type: ignore [no-untyped-def] # pylint:disable=redefined-builtin
         if hasattr(form, "validation"):
             current_offer = self.session.query(self.model).get(id)
             form.validation.data = current_offer.validation.value
@@ -290,7 +290,7 @@ class OfferView(BaseAdminView):
             new_validation = offer.validation
             if previous_validation != new_validation:
                 offer.lastValidationDate = datetime.utcnow()
-                offer.lastValidationType = OfferValidationType.MANUAL
+                offer.lastValidationType = OfferValidationType.MANUAL  # type: ignore [assignment]
                 if new_validation == OfferValidationStatus.APPROVED:
                     offer.isActive = True
                 if new_validation == OfferValidationStatus.REJECTED:
@@ -307,7 +307,7 @@ class OfferView(BaseAdminView):
                     else [recipient.user.email for recipient in offer.venue.managingOfferer.UserOfferers]
                 )
                 send_offer_validation_status_update_email(offer, new_validation, recipients)
-                send_offer_validation_notification_to_administration(new_validation, offer)
+                send_offer_validation_notification_to_administration(new_validation, offer)  # type: ignore [arg-type]
 
                 flash("Le statut de l'offre a bien été modifié", "success")
 
@@ -322,7 +322,7 @@ class OfferForVenueSubview(OfferView):
     list_template = "admin/venue_offers_list.html"
 
     @expose("/", methods=(["GET", "POST"]))
-    def index(self):
+    def index(self):  # type: ignore [no-untyped-def]
         if request.method == "POST":
             return super().index()
         self._template_args["venue_name"] = self._get_venue_name()
@@ -378,28 +378,28 @@ def _offerer_url(offerer_id: int) -> str:
     return f"{settings.PRO_URL}/accueil?structure={humanize(offerer_id)}"
 
 
-def _pro_offer_link(view, context, model, name) -> Markup:
+def _pro_offer_link(view, context, model, name) -> Markup:  # type: ignore [no-untyped-def]
     url = _pro_offer_url(model)
     return Markup('<a href="{}" target="_blank" rel="noopener noreferrer">Offre PC</a>').format(escape(url))
 
 
-def _related_offers_link(view, context, model, name) -> Markup:
+def _related_offers_link(view, context, model, name) -> Markup:  # type: ignore [no-untyped-def]
     url = url_for("offer_for_venue.index", id=model.venue.id)
     return Markup('<a href="{}">Offres associées</a>').format(escape(url))
 
 
-def _metabase_offer_link(view, context, model, name) -> Markup:
+def _metabase_offer_link(view, context, model, name) -> Markup:  # type: ignore [no-untyped-def]
     url = _metabase_offer_url(model.id)
     return Markup('<a href="{}" target="_blank" rel="noopener noreferrer">Offre</a>').format(escape(url))
 
 
-def _offerer_link(view, context, model, name) -> Markup:
+def _offerer_link(view, context, model, name) -> Markup:  # type: ignore [no-untyped-def]
     url = _offerer_url(model.venue.managingOffererId)
     link = Markup('<a href="{url}" target="_blank" rel="noopener noreferrer">{name}</a>')
     return link.format(url=escape(url), name=escape(model.venue.managingOfferer.name))
 
 
-def _venue_link(view, context, model, name) -> Markup:
+def _venue_link(view, context, model, name) -> Markup:  # type: ignore [no-untyped-def]
     url = _venue_url(model.venue)
     link = Markup('<a href="{url}" target="_blank" rel="noopener noreferrer">{name}</a>')
     return link.format(url=escape(url), name=escape(model.venue.publicName or model.venue.name))
@@ -448,11 +448,11 @@ class ValidationView(BaseAdminView):
     column_default_sort = ("id", True)
     page_size = 100
 
-    def is_accessible(self):
+    def is_accessible(self):  # type: ignore [no-untyped-def]
         return super().is_accessible() and self.check_super_admins()
 
     @property
-    def column_formatters(self):
+    def column_formatters(self):  # type: ignore [no-untyped-def]
         formatters = super().column_formatters
         formatters.update(offer=_pro_offer_link)
         formatters.update(offers=_related_offers_link)
@@ -461,7 +461,7 @@ class ValidationView(BaseAdminView):
         formatters.update(venue=_venue_link)
         return formatters
 
-    def get_query(self):
+    def get_query(self):  # type: ignore [no-untyped-def]
         return (
             Offer.query.join(Venue)
             .join(Offerer)
@@ -470,7 +470,7 @@ class ValidationView(BaseAdminView):
             .filter(Offer.validation == OfferValidationStatus.PENDING)
         )
 
-    def get_count_query(self):
+    def get_count_query(self):  # type: ignore [no-untyped-def]
         return (
             self.session.query(func.count(Offer.id))
             .join(Venue)
@@ -479,7 +479,7 @@ class ValidationView(BaseAdminView):
             .filter(Offer.validation == OfferValidationStatus.PENDING)
         )
 
-    def _batch_validate(self, offers, validation_status):
+    def _batch_validate(self, offers, validation_status):  # type: ignore [no-untyped-def]
         count = 0
         not_updated_offers = []
         for offer in offers:
@@ -513,12 +513,12 @@ class ValidationView(BaseAdminView):
             )
 
     @action("approve", "Approuver", "Etes-vous sûr(e) de vouloir approuver les offres sélectionnées ?")
-    def action_approve(self, ids):
+    def action_approve(self, ids):  # type: ignore [no-untyped-def]
         offers_to_approve = Offer.query.filter(Offer.id.in_(ids))
         self._batch_validate(offers_to_approve, OfferValidationStatus.APPROVED)
 
     @action("reject", "Rejeter", "Etes-vous sûr(e) de vouloir rejeter les offres sélectionnées ?")
-    def action_reject(self, ids):
+    def action_reject(self, ids):  # type: ignore [no-untyped-def]
         offers_to_reject = Offer.query.filter(Offer.id.in_(ids))
         self._batch_validate(offers_to_reject, OfferValidationStatus.REJECTED)
 
@@ -570,7 +570,7 @@ class ValidationView(BaseAdminView):
             legal_category["legal_category_label"] or "Ce lieu n'a pas de libellé de catégorie juridique"
         )
         current_config = offers_repository.get_current_offer_validation_config()
-        validation_items = parse_offer_validation_config(offer, current_config)[1]
+        validation_items = parse_offer_validation_config(offer, current_config)[1]  # type: ignore [arg-type]
         context = {
             "form": form,
             "cancel_link_url": url_for("validation.index_view"),
@@ -588,18 +588,18 @@ class ValidationView(BaseAdminView):
         return self.render("admin/edit_offer_validation.html", **context)
 
 
-def yaml_formatter(view, context, model, name) -> Markup:
+def yaml_formatter(view, context, model, name) -> Markup:  # type: ignore [no-untyped-def]
     value = getattr(model, name)
     yaml_value = yaml.dump(value, indent=4)
     return Markup("<pre>{}</pre>").format(yaml_value)
 
 
-def user_formatter(view, context, model, name) -> str:
+def user_formatter(view, context, model, name) -> str:  # type: ignore [no-untyped-def]
     author = getattr(model, name)
     return author.email if author else ""
 
 
-def date_formatter(view, context, model, name) -> datetime:
+def date_formatter(view, context, model, name) -> datetime:  # type: ignore [no-untyped-def]
     config_date = getattr(model, name)
     return config_date.strftime("%Y-%m-%d %H:%M:%S")
 
@@ -633,7 +633,7 @@ class ImportConfigValidationOfferView(BaseSuperAdminView):
     form_excluded_columns = ("id", "dateCreated", "userId", "user")
     form_widget_args = {"specs": {"rows": 40, "style": "color: black"}}
 
-    def create_form(self, obj=None):
+    def create_form(self, obj=None):  # type: ignore [no-untyped-def]
         if not is_form_submitted():
             current_config = offers_repository.get_current_offer_validation_config()
             if current_config:

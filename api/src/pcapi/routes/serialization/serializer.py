@@ -12,12 +12,12 @@ from pcapi.utils.human_ids import humanize
 
 
 @singledispatch
-def serialize(value, column=None):
+def serialize(value, column=None):  # type: ignore [no-untyped-def]
     return value
 
 
 @serialize.register(int)
-def _(value, column=None):
+def _(value, column=None):  # type: ignore [no-untyped-def]
     if column is not None and isinstance(column.type, Integer) and column.key.lower().endswith("id"):
         return humanize(value)
 
@@ -25,35 +25,35 @@ def _(value, column=None):
 
 
 @serialize.register(sqlalchemy.Enum)
-def _(value, column=None):
+def _(value, column=None):  # type: ignore [no-untyped-def]
     return value.name
 
 
 @serialize.register(enum.Enum)
-def _(value, column=None):
+def _(value, column=None):  # type: ignore [no-untyped-def]
     return value.value
 
 
 @serialize.register(datetime)
-def _(value, column=None):
+def _(value, column=None):  # type: ignore [no-untyped-def]
     return format_into_utc_date(value)
 
 
 @serialize.register(DateTimeRange)
-def _(value, column=None):
+def _(value, column=None):  # type: ignore [no-untyped-def]
     return {"start": value.lower, "end": value.upper}
 
 
 @serialize.register(bytes)
-def _(value, column=None):
+def _(value, column=None):  # type: ignore [no-untyped-def]
     return list(value)
 
 
 @serialize.register(list)
-def _(value, column=None):
+def _(value, column=None):  # type: ignore [no-untyped-def]
     return [serialize(d) for d in value]
 
 
 @serialize.register(DateTimes)
-def _(value, column=None):
+def _(value, column=None):  # type: ignore [no-untyped-def]
     return [format_into_utc_date(v) for v in value.datetimes]

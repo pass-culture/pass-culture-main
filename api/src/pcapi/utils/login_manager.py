@@ -17,7 +17,7 @@ from pcapi.repository.user_session_queries import register_user_session
 logger = logging.getLogger(__name__)
 
 
-def get_request_authorization():
+def get_request_authorization():  # type: ignore [no-untyped-def]
     try:
         return request.authorization
     except UnicodeDecodeError:
@@ -29,8 +29,8 @@ def get_request_authorization():
         return None
 
 
-@app.login_manager.user_loader
-def get_user_with_id(user_id):
+@app.login_manager.user_loader  # type: ignore [attr-defined]
+def get_user_with_id(user_id):  # type: ignore [no-untyped-def]
     session.permanent = True
     session_uuid = session.get("session_uuid")
     if existing_user_session(user_id, session_uuid):
@@ -38,21 +38,21 @@ def get_user_with_id(user_id):
     return None
 
 
-@app.login_manager.unauthorized_handler
-def send_401():
+@app.login_manager.unauthorized_handler  # type: ignore [attr-defined]
+def send_401():  # type: ignore [no-untyped-def]
     e = ApiErrors()
     e.add_error("global", "Authentification nécessaire")
     return jsonify(e.errors), 401
 
 
-def stamp_session(user):
+def stamp_session(user):  # type: ignore [no-untyped-def]
     session_uuid = uuid.uuid4()
     session["session_uuid"] = session_uuid
     session["user_id"] = user.id
     register_user_session(user.id, session_uuid)
 
 
-def discard_session():
+def discard_session():  # type: ignore [no-untyped-def]
     session_uuid = session.get("session_uuid")
     user_id = session.get("user_id")
     session.clear()

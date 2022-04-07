@@ -37,7 +37,7 @@ def get_granted_deposit(
 
         return GrantedDeposit(
             amount=deposit_conf.GRANTED_DEPOSIT_AMOUNTS_FOR_UNDERAGE_BY_AGE[user_age_at_registration],
-            expiration_date=_compute_eighteenth_birthday(beneficiary.dateOfBirth),
+            expiration_date=_compute_eighteenth_birthday(beneficiary.dateOfBirth),  # type: ignore [arg-type]
             type=DepositType.GRANT_15_17,
             version=1,
         )
@@ -70,8 +70,8 @@ def create_deposit(
         age_at_registration = users_api.get_user_age_at_registration(beneficiary)
     granted_deposit = get_granted_deposit(
         beneficiary,
-        eligibility,
-        user_age_at_registration=age_at_registration,
+        eligibility,  # type: ignore [arg-type]
+        user_age_at_registration=age_at_registration,  # type: ignore [arg-type]
         version=version,
     )
 
@@ -99,7 +99,7 @@ def create_deposit(
     return deposit
 
 
-def create_offerer_reimbursement_rule(offerer_id, subcategories, rate, start_date, end_date=None):
+def create_offerer_reimbursement_rule(offerer_id, subcategories, rate, start_date, end_date=None):  # type: ignore [no-untyped-def]
     return _create_reimbursement_rule(
         offerer_id=offerer_id,
         subcategories=subcategories,
@@ -109,7 +109,7 @@ def create_offerer_reimbursement_rule(offerer_id, subcategories, rate, start_dat
     )
 
 
-def create_offer_reimbursement_rule(offer_id, amount, start_date, end_date=None):
+def create_offer_reimbursement_rule(offer_id, amount, start_date, end_date=None):  # type: ignore [no-untyped-def]
     return _create_reimbursement_rule(
         offer_id=offer_id,
         amount=amount,
@@ -118,7 +118,7 @@ def create_offer_reimbursement_rule(offer_id, amount, start_date, end_date=None)
     )
 
 
-def _create_reimbursement_rule(
+def _create_reimbursement_rule(  # type: ignore [no-untyped-def]
     offerer_id=None, offer_id=None, subcategories=None, rate=None, amount=None, start_date=None, end_date=None
 ):
     subcategories = subcategories or []
@@ -145,7 +145,7 @@ def _create_reimbursement_rule(
     return rule
 
 
-def edit_reimbursement_rule(rule, end_date):
+def edit_reimbursement_rule(rule, end_date):  # type: ignore [no-untyped-def]
     # To avoid complexity, we do not allow to edit the end date of a
     # rule that already has one.
     if rule.timespan.upper:

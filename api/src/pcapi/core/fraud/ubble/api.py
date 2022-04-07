@@ -34,7 +34,7 @@ def _ubble_result_fraud_item(content: ubble_fraud_models.UbbleContent) -> fraud_
     # Decision from identification/score
     if content.score == ubble_fraud_models.UbbleScore.VALID.value:
         # Decision from age
-        age = users_utils.get_age_at_date(content.get_birth_date(), content.get_registration_datetime())
+        age = users_utils.get_age_at_date(content.get_birth_date(), content.get_registration_datetime())  # type: ignore [arg-type]
         if age < min(users_constants.ELIGIBILITY_UNDERAGE_RANGE):
             status = fraud_models.FraudStatus.KO
             reason_code = fraud_models.FraudReasonCode.AGE_TOO_YOUNG
@@ -88,7 +88,7 @@ def _ubble_result_fraud_item(content: ubble_fraud_models.UbbleContent) -> fraud_
 def ubble_fraud_checks(
     user: users_models.User, beneficiary_fraud_check: fraud_models.BeneficiaryFraudCheck
 ) -> list[fraud_models.FraudItem]:
-    content = ubble_fraud_models.UbbleContent(**beneficiary_fraud_check.resultContent)
+    content = ubble_fraud_models.UbbleContent(**beneficiary_fraud_check.resultContent)  # type: ignore [arg-type]
 
     ubble_fraud_models_item = _ubble_result_fraud_item(content)
     fraud_items = [ubble_fraud_models_item]

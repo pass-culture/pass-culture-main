@@ -27,7 +27,7 @@ logger = logging.getLogger(__name__)
 REQUEST_TIMEOUT_IN_SECOND = 10
 
 
-def _wrapper(request_func: Callable, method: str, url: str, log_at_error_level=True, **kwargs: Any) -> Response:
+def _wrapper(request_func: Callable, method: str, url: str, log_at_error_level=True, **kwargs: Any) -> Response:  # type: ignore [no-untyped-def]
     timeout = kwargs.pop("timeout", REQUEST_TIMEOUT_IN_SECOND)
     try:
         response = request_func(method=method, url=url, timeout=timeout, **kwargs)
@@ -76,11 +76,11 @@ def delete(url: str, **kwargs: Any) -> Response:
 
 class _SessionMixin:
     def request(self, method: str, url: str, *args: Any, **kwargs: Any) -> Response:
-        return _wrapper(super().request, method, url, *args, **kwargs)
+        return _wrapper(super().request, method, url, *args, **kwargs)  # type: ignore [misc]
 
 
-class Session(_SessionMixin, requests.Session):
-    def __init__(self, *args, **kwargs):
+class Session(_SessionMixin, requests.Session):  # type: ignore [misc]
+    def __init__(self, *args, **kwargs):  # type: ignore [no-untyped-def]
         super().__init__(*args, **kwargs)
         # Only sets a retry strategy for safe verbs
         safe_retry_strategy = Retry(total=3, allowed_methods=["HEAD", "GET", "OPTIONS"])

@@ -3,7 +3,7 @@ from sqlalchemy.orm import joinedload
 from pcapi.core.offers.models import Offer
 
 
-def get_offer_by_id(offer_id: int):
+def get_offer_by_id(offer_id: int):  # type: ignore [no-untyped-def]
     return Offer.query.get(offer_id)
 
 

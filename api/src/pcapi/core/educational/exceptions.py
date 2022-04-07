@@ -82,7 +82,7 @@ class StockDoesNotExist(ApiErrors):
 
 
 class CollectiveOfferStockBookedAndBookingNotPending(Exception):
-    def __init__(self, status, booking_id):
+    def __init__(self, status, booking_id):  # type: ignore [no-untyped-def]
         self.booking_status = status
         super().__init__()
 

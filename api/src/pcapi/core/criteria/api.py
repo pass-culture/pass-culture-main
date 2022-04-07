@@ -73,7 +73,7 @@ class BulkUpdate:
 
     def fetch_base_objects(self) -> BaseQuery:
         return self.base_cls.query.options(joinedload(self.base_cls.criteria)).filter(
-            self.base_cls.id.in_(self.base_ids)
+            self.base_cls.id.in_(self.base_ids)  # type: ignore [attr-defined]
         )
 
     def delete_mapper_objects(self, prefetched_criteria: bool = True) -> None:

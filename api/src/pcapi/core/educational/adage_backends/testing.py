@@ -9,7 +9,7 @@ from .. import testing
 class AdageSpyClient(AdageClient):
     def notify_prebooking(self, data: EducationalBookingResponse) -> AdageApiResult:
         testing.adage_requests.append({"url": f"{self.base_url}/v1/prereservation", "sent_data": data})
-        return AdageApiResult(sent_data=data, response={"status_code": 201}, success=True)
+        return AdageApiResult(sent_data=data, response={"status_code": 201}, success=True)  # type: ignore [arg-type]
 
     def notify_offer_or_stock_edition(self, data: EducationalBookingResponse) -> AdageApiResult:
         testing.adage_requests.append({"url": f"{self.base_url}/v1/prereservation-edit", "sent_data": data})

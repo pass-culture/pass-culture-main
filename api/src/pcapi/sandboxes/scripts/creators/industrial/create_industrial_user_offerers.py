@@ -8,7 +8,7 @@ from pcapi.repository import repository
 logger = logging.getLogger(__name__)
 
 
-def create_industrial_user_offerers(users_by_name, offerers_by_name):
+def create_industrial_user_offerers(users_by_name, offerers_by_name):  # type: ignore [no-untyped-def]
     logger.info("create_industrial_user_offerers")
 
     user_offerers_by_name = {}

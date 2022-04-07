@@ -12,7 +12,7 @@ from .base import BaseBackend
 logger = logging.getLogger(__name__)
 
 
-def monkey_patch_mailjet_requests():
+def monkey_patch_mailjet_requests():  # type: ignore [no-untyped-def]
     # We want the `mailjet_rest` library to use our wrapper around
     # `requests` to have automatic logging.
     import mailjet_rest.client  # pylint: disable=redefined-outer-name
@@ -30,7 +30,7 @@ def _add_template_debugging(message_data: dict) -> None:
 
 
 class MailjetBackend(BaseBackend):
-    def __init__(self):
+    def __init__(self):  # type: ignore [no-untyped-def]
         super().__init__()
         auth = (settings.MAILJET_API_KEY, settings.MAILJET_API_SECRET)
         self.mailjet_client = mailjet_rest.Client(
@@ -43,7 +43,7 @@ class MailjetBackend(BaseBackend):
             api_url="https://api.mailjet.com/",
         )
 
-    def _send(self, recipients: Iterable[str], data: dict) -> MailResult:
+    def _send(self, recipients: Iterable[str], data: dict) -> MailResult:  # type: ignore [override]
         data["To"] = ", ".join(recipients)
 
         if settings.MAILJET_TEMPLATE_DEBUGGING:
@@ -80,7 +80,7 @@ class ToDevMailjetBackend(MailjetBackend):
     environments.
     """
 
-    def _inject_html_test_notice(self, recipients, data):
+    def _inject_html_test_notice(self, recipients, data):  # type: ignore [no-untyped-def]
         if "Html-part" not in data:
             return
         notice = (
@@ -89,7 +89,7 @@ class ToDevMailjetBackend(MailjetBackend):
         )
         data["Html-part"] = notice + data["Html-part"]
 
-    def send_mail(self, recipients: Iterable[str], data: dict) -> MailResult:
+    def send_mail(self, recipients: Iterable[str], data: dict) -> MailResult:  # type: ignore [override]
         # FIXME (apibrac, 2021-03-17): we can delete this as soon as AppNative's beta test is finished
         # WHITELISTED_EMAIL_RECIPIENTS should be deleted as well
         some_recipients_are_whitelisted = set(recipients) & set(settings.WHITELISTED_EMAIL_RECIPIENTS)
@@ -97,5 +97,5 @@ class ToDevMailjetBackend(MailjetBackend):
             return super().send_mail(recipients=recipients, data=data)
 
         self._inject_html_test_notice(recipients, data)
-        recipients = [settings.DEV_EMAIL_ADDRESS]
+        recipients = [settings.DEV_EMAIL_ADDRESS]  # type: ignore [list-item]
         return super().send_mail(recipients=recipients, data=data)

@@ -84,7 +84,7 @@ class TiteLiveThings(LocalProvider):
     name = "TiteLive (Epagine / Place des libraires.com)"
     can_create = True
 
-    def __init__(self):
+    def __init__(self):  # type: ignore [no-untyped-def]
         super().__init__()
 
         ordered_thing_files = get_files_to_process_from_titelive_ftp(THINGS_FOLDER_NAME_TITELIVE, DATE_REGEXP)
@@ -99,11 +99,11 @@ class TiteLiveThings(LocalProvider):
             self.open_next_file()
 
         try:
-            data_lines = next(self.data_lines)
+            data_lines = next(self.data_lines)  # type: ignore [arg-type]
             elements = data_lines.split("~")
         except StopIteration:
             self.open_next_file()
-            elements = next(self.data_lines).split("~")
+            elements = next(self.data_lines).split("~")  # type: ignore [arg-type]
 
         if len(elements) != NUMBER_OF_ELEMENTS_PER_LINE:
             self.log_provider_event(providers_models.LocalProviderEventType.SyncError, "number of elements mismatch")
@@ -129,7 +129,7 @@ class TiteLiveThings(LocalProvider):
                 )
             return []
 
-        if is_unreleased_book(self.product_infos):
+        if is_unreleased_book(self.product_infos):  # type: ignore [func-returns-value]
             logger.info(
                 "Ignoring isbn=%s because it has 'xxx' in 'titre' and 'auteurs' fields, which means it is not yet released",
                 book_unique_identifier,
@@ -157,13 +157,13 @@ class TiteLiveThings(LocalProvider):
 
         return None
 
-    def fill_object_attributes(self, product: Product):
+    def fill_object_attributes(self, product: Product):  # type: ignore [no-untyped-def]
         product.name = trim_with_elipsis(self.product_infos["titre"], 140)
         product.datePublished = read_things_date(self.product_infos["date_parution"])
         subcategory = subcategories.ALL_SUBCATEGORIES_DICT[self.product_subcategory_id]
         product.subcategoryId = subcategory.id
         product.extraData = self.product_extra_data.copy()
-        product.extraData.update(get_extra_data_from_infos(self.product_infos))
+        product.extraData.update(get_extra_data_from_infos(self.product_infos))  # type: ignore [union-attr]
 
         if self.product_infos["url_extrait_pdf"] != "":
             if product.mediaUrls is None:
@@ -171,7 +171,7 @@ class TiteLiveThings(LocalProvider):
 
             product.mediaUrls.append(self.product_infos["url_extrait_pdf"])
 
-    def open_next_file(self):
+    def open_next_file(self):  # type: ignore [no-untyped-def]
         if self.products_file:
             file_date = get_date_from_filename(self.products_file, DATE_REGEXP)
             self.log_provider_event(providers_models.LocalProviderEventType.SyncPartEnd, file_date)
@@ -181,17 +181,17 @@ class TiteLiveThings(LocalProvider):
 
         self.data_lines = get_lines_from_thing_file(str(self.products_file))
 
-    def get_remaining_files_to_check(self, ordered_thing_files: list) -> iter:
+    def get_remaining_files_to_check(self, ordered_thing_files: list) -> iter:  # type: ignore [valid-type]
         latest_sync_part_end_event = local_provider_event_queries.find_latest_sync_part_end_event(self.provider)
         if latest_sync_part_end_event is None:
             return iter(ordered_thing_files)
         for index, filename in enumerate(ordered_thing_files):
-            if get_date_from_filename(filename, DATE_REGEXP) == int(latest_sync_part_end_event.payload):
+            if get_date_from_filename(filename, DATE_REGEXP) == int(latest_sync_part_end_event.payload):  # type: ignore [arg-type]
                 return iter(ordered_thing_files[index + 1 :])
         return iter([])
 
 
-def get_lines_from_thing_file(thing_file: str):
+def get_lines_from_thing_file(thing_file: str):  # type: ignore [no-untyped-def]
     data_file = BytesIO()
     data_wrapper = TextIOWrapper(
         data_file,
@@ -204,7 +204,7 @@ def get_lines_from_thing_file(thing_file: str):
     return iter(data_wrapper.readlines())
 
 
-def get_subcategory_and_extra_data_from_titelive_type(titelive_type):
+def get_subcategory_and_extra_data_from_titelive_type(titelive_type):  # type: ignore [no-untyped-def]
     if titelive_type in ("A", "I", "LA"):  # obsolete codes
         return None, None
     if titelive_type == "BD":  # bande dessinée
@@ -260,7 +260,7 @@ def get_subcategory_and_extra_data_from_titelive_type(titelive_type):
     return None, None
 
 
-def get_infos_from_data_line(elts: []) -> dict:
+def get_infos_from_data_line(elts: []) -> dict:  # type: ignore [misc]
     infos = {}
     infos["ean13"] = elts[0]
     infos["isbn"] = elts[1]

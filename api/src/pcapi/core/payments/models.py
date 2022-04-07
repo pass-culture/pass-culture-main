@@ -31,9 +31,9 @@ class ReimbursementRule:
     # then miss the `rate` column in `CustomReimbursementRule`.
 
     def is_active(self, booking: "Booking") -> bool:
-        valid_from = self.valid_from or MIN_DATETIME
-        valid_until = self.valid_until or MAX_DATETIME
-        return valid_from <= booking.dateUsed < valid_until
+        valid_from = self.valid_from or MIN_DATETIME  # type: ignore [attr-defined]
+        valid_until = self.valid_until or MAX_DATETIME  # type: ignore [attr-defined]
+        return valid_from <= booking.dateUsed < valid_until  # type: ignore [operator]
 
     def is_relevant(self, booking: "Booking", cumulative_revenue: Decimal) -> bool:
         raise NotImplementedError()
@@ -42,18 +42,18 @@ class ReimbursementRule:
     def description(self) -> str:
         raise NotImplementedError()
 
-    def matches(self, booking: "Booking", cumulative_revenue="ignored") -> bool:
+    def matches(self, booking: "Booking", cumulative_revenue="ignored") -> bool:  # type: ignore [no-untyped-def]
         return self.is_active(booking) and self.is_relevant(booking, cumulative_revenue)
 
     def apply(self, booking: "Booking") -> Decimal:
-        return Decimal(booking.total_amount * self.rate)
+        return Decimal(booking.total_amount * self.rate)  # type: ignore [attr-defined]
 
     @property
     def group(self) -> str:
         raise NotImplementedError()
 
 
-class CustomReimbursementRule(ReimbursementRule, Model):
+class CustomReimbursementRule(ReimbursementRule, Model):  # type: ignore [valid-type, misc]
     """Some offers are linked to custom reimbursement rules that overrides
     standard reimbursement rules.
 
@@ -65,11 +65,11 @@ class CustomReimbursementRule(ReimbursementRule, Model):
 
     offerId = sa.Column(sa.BigInteger, sa.ForeignKey("offer.id"), nullable=True)
 
-    offer = relationship("Offer", foreign_keys=[offerId], backref="custom_reimbursement_rules")
+    offer = relationship("Offer", foreign_keys=[offerId], backref="custom_reimbursement_rules")  # type: ignore [misc]
 
     offererId = sa.Column(sa.BigInteger, sa.ForeignKey("offerer.id"), nullable=True)
 
-    offerer = relationship("Offerer", foreign_keys=[offererId], backref="custom_reimbursement_rules")
+    offerer = relationship("Offerer", foreign_keys=[offererId], backref="custom_reimbursement_rules")  # type: ignore [misc]
 
     # FIXME (dbaty, 2021-11-04): remove `categories` column once v161 is deployed
     categories = sa.Column(postgresql.ARRAY(sa.Text()), server_default="{}")
@@ -100,22 +100,22 @@ class CustomReimbursementRule(ReimbursementRule, Model):
         sa.CheckConstraint("rate IS NULL OR (rate BETWEEN 0 AND 1)"),
     )
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs):  # type: ignore [no-untyped-def]
         kwargs["timespan"] = self._make_timespan(*kwargs["timespan"])
         super().__init__(**kwargs)
 
     @classmethod
-    def _make_timespan(cls, start, end=None):
+    def _make_timespan(cls, start, end=None):  # type: ignore [no-untyped-def]
         start = start.astimezone(pytz.utc).isoformat()
         end = end.astimezone(pytz.utc).isoformat() if end else None
         return psycopg2.extras.DateTimeRange(start, end, bounds="[)")
 
-    def is_active(self, booking: "Booking"):
-        if booking.dateUsed < self.timespan.lower:
+    def is_active(self, booking: "Booking"):  # type: ignore [no-untyped-def]
+        if booking.dateUsed < self.timespan.lower:  # type: ignore [union-attr]
             return False
-        return self.timespan.upper is None or booking.dateUsed < self.timespan.upper
+        return self.timespan.upper is None or booking.dateUsed < self.timespan.upper  # type: ignore [union-attr]
 
-    def is_relevant(self, booking: "Booking", cumulative_revenue="ignored"):
+    def is_relevant(self, booking: "Booking", cumulative_revenue="ignored"):  # type: ignore [no-untyped-def]
         if booking.stock.offerId == self.offerId:
             return True
         if self.subcategories:
@@ -125,17 +125,17 @@ class CustomReimbursementRule(ReimbursementRule, Model):
             return True
         return False
 
-    def apply(self, booking: "Booking"):
+    def apply(self, booking: "Booking"):  # type: ignore [no-untyped-def]
         if self.amount is not None:
             return booking.quantity * self.amount
-        return booking.total_amount * self.rate
+        return booking.total_amount * self.rate  # type: ignore [operator]
 
     @property
-    def description(self):  # implementation of ReimbursementRule.description
+    def description(self):  # type: ignore [no-untyped-def] # implementation of ReimbursementRule.description
         raise TypeError("A custom reimbursement rule does not have any description")
 
     @property
-    def group(self):
+    def group(self):  # type: ignore [no-untyped-def]
         return finance_conf.RuleGroups.CUSTOM
 
 
@@ -144,16 +144,16 @@ class DepositType(enum.Enum):
     GRANT_18 = "GRANT_18"
 
 
-class Deposit(PcObject, Model):
+class Deposit(PcObject, Model):  # type: ignore [valid-type, misc]
     id = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
 
     amount = sa.Column(sa.Numeric(10, 2), nullable=False)
 
     userId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=False)
 
-    user = relationship("User", foreign_keys=[userId], backref="deposits")
+    user = relationship("User", foreign_keys=[userId], backref="deposits")  # type: ignore [misc]
 
-    individual_bookings = relationship("IndividualBooking", back_populates="deposit")
+    individual_bookings = relationship("IndividualBooking", back_populates="deposit")  # type: ignore [misc]
 
     source = sa.Column(sa.String(300), nullable=False)
 
@@ -183,7 +183,7 @@ class Deposit(PcObject, Model):
     )
 
     @property
-    def specific_caps(self):
+    def specific_caps(self):  # type: ignore [no-untyped-def]
         from . import conf
 
         return conf.SPECIFIC_CAPS[self.type][self.version]
@@ -202,7 +202,7 @@ class RecreditType(enum.Enum):
     RECREDIT_17 = "Recredit17"
 
 
-class Recredit(PcObject, Model):
+class Recredit(PcObject, Model):  # type: ignore [valid-type, misc]
     depositId = sa.Column(sa.BigInteger, sa.ForeignKey("deposit.id"), nullable=False)
 
     deposit = relationship("Deposit", foreign_keys=[depositId])

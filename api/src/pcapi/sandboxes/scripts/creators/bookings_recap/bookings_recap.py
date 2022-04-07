@@ -27,7 +27,7 @@ from pcapi.repository import repository
 logger = logging.getLogger(__name__)
 
 
-def save_bookings_recap_sandbox():
+def save_bookings_recap_sandbox():  # type: ignore [no-untyped-def]
     yesterday = datetime.utcnow() - timedelta(days=1)
     today = datetime.utcnow()
 

@@ -138,7 +138,7 @@ class PaymentFactory(BaseFactory):
     recipientSiren = factory.SelfAttribute("booking.stock.offer.venue.managingOfferer.siren")
     reimbursementRule = factory.Iterator(REIMBURSEMENT_RULE_DESCRIPTIONS)
     reimbursementRate = factory.LazyAttribute(
-        lambda payment: reimbursement.get_reimbursement_rule(
+        lambda payment: reimbursement.get_reimbursement_rule(  # type: ignore [attr-defined]
             payment.booking, reimbursement.CustomRuleFinder(), decimal.Decimal(0)
         ).rate
     )
@@ -148,7 +148,7 @@ class PaymentFactory(BaseFactory):
     transactionLabel = None
 
     @factory.post_generation
-    def statuses(obj, create, extracted, **kwargs):  # pylint: disable=no-self-argument
+    def statuses(obj, create, extracted, **kwargs):  # type: ignore [no-untyped-def] # pylint: disable=no-self-argument
 
         if not create:
             return None

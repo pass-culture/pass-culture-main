@@ -104,26 +104,26 @@ VENUE_TYPE_CODE_MAPPING = {
 
 class BaseVenueTypeCode(enum.Enum):
     @classmethod
-    def __get_validators__(cls):
+    def __get_validators__(cls):  # type: ignore [no-untyped-def]
         cls.lookup = {v: k.name for v, k in cls.__members__.items()}
         yield cls.validate
 
     @classmethod
-    def validate(cls, v):
+    def validate(cls, v):  # type: ignore [no-untyped-def]
         try:
             return cls.lookup[v]
         except KeyError:
             raise ValueError(f"{v}: invalide")
 
 
-VenueTypeCode = enum.Enum("VenueTypeCode", VENUE_TYPE_CODE_MAPPING, type=BaseVenueTypeCode)
-VenueTypeCodeKey = enum.Enum(
+VenueTypeCode = enum.Enum("VenueTypeCode", VENUE_TYPE_CODE_MAPPING, type=BaseVenueTypeCode)  # type: ignore [misc]
+VenueTypeCodeKey = enum.Enum(  # type: ignore [misc]
     "VenueTypeCodeKey",
     {name: name for name, _ in VENUE_TYPE_CODE_MAPPING.items()},
 )
 
 
-class Venue(PcObject, Model, HasThumbMixin, HasAddressMixin, ProvidableMixin, NeedsValidationMixin):
+class Venue(PcObject, Model, HasThumbMixin, HasAddressMixin, ProvidableMixin, NeedsValidationMixin):  # type: ignore [valid-type, misc]
     __tablename__ = "venue"
 
     id = Column(BigInteger, primary_key=True)
@@ -138,7 +138,7 @@ class Venue(PcObject, Model, HasThumbMixin, HasAddressMixin, ProvidableMixin, Ne
 
     longitude = Column(Numeric(8, 5), nullable=True)
 
-    venueProviders = relationship("VenueProvider", back_populates="venue")
+    venueProviders = relationship("VenueProvider", back_populates="venue")  # type: ignore [misc]
 
     managingOffererId = Column(BigInteger, ForeignKey("offerer.id"), nullable=False, index=True)
 
@@ -146,9 +146,9 @@ class Venue(PcObject, Model, HasThumbMixin, HasAddressMixin, ProvidableMixin, Ne
 
     bookingEmail = Column(String(120), nullable=True)
 
-    postalCode = Column(String(6), nullable=True)
+    postalCode = Column(String(6), nullable=True)  # type: ignore [assignment]
 
-    city = Column(String(50), nullable=True)
+    city = Column(String(50), nullable=True)  # type: ignore [assignment]
 
     publicName = Column(String(255), nullable=True)
 
@@ -174,15 +174,15 @@ class Venue(PcObject, Model, HasThumbMixin, HasAddressMixin, ProvidableMixin, Ne
         nullable=True,
     )
 
-    collectiveOffers = relationship("CollectiveOffer", back_populates="venue")
+    collectiveOffers = relationship("CollectiveOffer", back_populates="venue")  # type: ignore [misc]
 
-    collectiveOfferTemplates = relationship("CollectiveOfferTemplate", back_populates="venue")
+    collectiveOfferTemplates = relationship("CollectiveOfferTemplate", back_populates="venue")  # type: ignore [misc]
 
     venueTypeId = Column(Integer, ForeignKey("venue_type.id"), nullable=True)
 
     venueType = relationship("VenueType", foreign_keys=[venueTypeId])
 
-    venueTypeCode = Column(sa.Enum(VenueTypeCode, create_constraint=False), nullable=True, default=VenueTypeCode.OTHER)
+    venueTypeCode = Column(sa.Enum(VenueTypeCode, create_constraint=False), nullable=True, default=VenueTypeCode.OTHER)  # type: ignore [attr-defined]
 
     venueLabelId = Column(Integer, ForeignKey("venue_label.id"), nullable=True)
 
@@ -205,7 +205,7 @@ class Venue(PcObject, Model, HasThumbMixin, HasAddressMixin, ProvidableMixin, Ne
     contact = relationship("VenueContact", back_populates="venue", uselist=False)
 
     businessUnitId = Column(Integer, ForeignKey("business_unit.id"), nullable=True)
-    businessUnit = relationship("BusinessUnit", foreign_keys=[businessUnitId], backref="venues")
+    businessUnit = relationship("BusinessUnit", foreign_keys=[businessUnitId], backref="venues")  # type: ignore [misc]
 
     # bannerUrl should provide a safe way to retrieve the banner,
     # whereas bannerMeta should provide extra information that might be
@@ -216,16 +216,16 @@ class Venue(PcObject, Model, HasThumbMixin, HasAddressMixin, ProvidableMixin, Ne
 
     thumb_path_component = "venues"
 
-    criteria = sa.orm.relationship(
+    criteria = sa.orm.relationship(  # type: ignore [misc]
         "Criterion", backref=db.backref("venue_criteria", lazy="dynamic"), secondary="venue_criterion"
     )
 
     @property
     def is_eligible_for_search(self) -> bool:
-        return self.isPermanent and self.managingOfferer.isActive and self.venueTypeCode != VenueTypeCode.ADMINISTRATIVE
+        return self.isPermanent and self.managingOfferer.isActive and self.venueTypeCode != VenueTypeCode.ADMINISTRATIVE  # type: ignore [return-value, attr-defined]
 
     def store_departement_code(self) -> None:
-        self.departementCode = PostalCode(self.postalCode).get_departement_code()
+        self.departementCode = PostalCode(self.postalCode).get_departement_code()  # type: ignore [has-type]
 
     @property
     def bic(self) -> Optional[str]:
@@ -249,11 +249,11 @@ class Venue(PcObject, Model, HasThumbMixin, HasAddressMixin, ProvidableMixin, Ne
         return self.bankInformation.applicationId
 
     @property
-    def demarchesSimplifieesIsDraft(self):
+    def demarchesSimplifieesIsDraft(self):  # type: ignore [no-untyped-def]
         return self.bankInformation and self.bankInformation.status == BankInformationStatus.DRAFT
 
     @property
-    def demarchesSimplifieesIsAccepted(self):
+    def demarchesSimplifieesIsAccepted(self):  # type: ignore [no-untyped-def]
         return self.bankInformation and self.bankInformation.status == BankInformationStatus.ACCEPTED
 
     @property
@@ -269,7 +269,7 @@ class Venue(PcObject, Model, HasThumbMixin, HasAddressMixin, ProvidableMixin, Ne
         return False
 
     @property
-    def thumbUrl(self):
+    def thumbUrl(self):  # type: ignore [no-untyped-def]
         """
         Override to discard the thumbCount column: not used by Venues
         which have at most one banner (thumb).
@@ -282,7 +282,7 @@ class Venue(PcObject, Model, HasThumbMixin, HasAddressMixin, ProvidableMixin, Ne
             return get_postal_code_timezone(self.managingOfferer.postalCode)
         return get_department_timezone(self.departementCode)
 
-    @timezone.expression
+    @timezone.expression  # type: ignore [no-redef]
     def timezone(cls):  # pylint: disable=no-self-argument
         offerer_alias = aliased(Offerer)
         return case(
@@ -307,7 +307,7 @@ class Venue(PcObject, Model, HasThumbMixin, HasAddressMixin, ProvidableMixin, Ne
         return getattr(self, field) != value
 
 
-class VenueLabel(PcObject, Model):
+class VenueLabel(PcObject, Model):  # type: ignore [valid-type, misc]
     __tablename__ = "venue_label"
 
     label = Column(String(100), nullable=False)
@@ -315,13 +315,13 @@ class VenueLabel(PcObject, Model):
     venue = relationship("Venue")
 
 
-class VenueType(PcObject, Model):
+class VenueType(PcObject, Model):  # type: ignore [valid-type, misc]
     label = Column(String(100), nullable=False)
 
     venue = relationship("Venue")
 
 
-class VenueContact(PcObject, Model):
+class VenueContact(PcObject, Model):  # type: ignore [valid-type, misc]
     __tablename__ = "venue_contact"
 
     id = Column(BigInteger, primary_key=True)
@@ -353,14 +353,14 @@ class VenueContact(PcObject, Model):
         return getattr(self, field) != value
 
 
-class VenueCriterion(PcObject, Model):
+class VenueCriterion(PcObject, Model):  # type: ignore [valid-type, misc]
     venueId = Column(BigInteger, ForeignKey("venue.id", ondelete="CASCADE"), index=True, nullable=False)
 
     venue = relationship("Venue", foreign_keys=[venueId])
 
     criterionId = Column(BigInteger, ForeignKey("criterion.id", ondelete="CASCADE"), nullable=False, index=True)
 
-    criterion = relationship("Criterion", foreign_keys=[criterionId])
+    criterion = relationship("Criterion", foreign_keys=[criterionId])  # type: ignore [misc]
 
     __table_args__ = (
         UniqueConstraint(
@@ -372,16 +372,16 @@ class VenueCriterion(PcObject, Model):
 
 
 @listens_for(Venue, "before_insert")
-def before_insert(mapper, connect, self):
+def before_insert(mapper, connect, self):  # type: ignore [no-untyped-def]
     _fill_departement_code_from_postal_code(self)
 
 
 @listens_for(Venue, "before_update")
-def before_update(mapper, connect, self):
+def before_update(mapper, connect, self):  # type: ignore [no-untyped-def]
     _fill_departement_code_from_postal_code(self)
 
 
-def _fill_departement_code_from_postal_code(self):
+def _fill_departement_code_from_postal_code(self):  # type: ignore [no-untyped-def]
     if not self.isVirtual:
         if not self.postalCode:
             raise IntegrityError(None, None, None)
@@ -396,7 +396,7 @@ ts_indexes = [
     ),
     ("idx_venue_fts_address", Venue.address),
     ("idx_venue_fts_siret", Venue.siret),
-    ("idx_venue_fts_city", Venue.city),
+    ("idx_venue_fts_city", Venue.city),  # type: ignore [has-type]
 ]
 
 (Venue.__ts_vectors__, Venue.__table_args__) = create_ts_vector_and_table_args(ts_indexes)
@@ -404,7 +404,7 @@ ts_indexes = [
 
 class Offerer(
     PcObject,
-    Model,
+    Model,  # type: ignore [valid-type, misc]
     HasThumbMixin,
     HasAddressMixin,
     ProvidableMixin,
@@ -417,7 +417,7 @@ class Offerer(
 
     name = Column(String(140), nullable=False)
 
-    users = relationship("User", secondary="user_offerer")
+    users = relationship("User", secondary="user_offerer")  # type: ignore [misc]
 
     siren = Column(
         String(9), nullable=True, unique=True
@@ -432,15 +432,15 @@ class Offerer(
     thumb_path_component = "offerers"
 
     @property
-    def bic(self):
+    def bic(self):  # type: ignore [no-untyped-def]
         return self.bankInformation.bic if self.bankInformation else None
 
     @property
-    def iban(self):
+    def iban(self):  # type: ignore [no-untyped-def]
         return self.bankInformation.iban if self.bankInformation else None
 
     @property
-    def demarchesSimplifieesApplicationId(self):
+    def demarchesSimplifieesApplicationId(self):  # type: ignore [no-untyped-def]
         if not self.bankInformation:
             return None
 
@@ -456,7 +456,7 @@ class Offerer(
     def departementCode(self):
         return PostalCode(self.postalCode).get_departement_code()
 
-    @departementCode.expression
+    @departementCode.expression  # type: ignore [no-redef]
     def departementCode(cls):  # pylint: disable=no-self-argument
         return case(
             [
@@ -482,9 +482,9 @@ offerer_ts_indexes = [
 (Offerer.__ts_vectors__, Offerer.__table_args__) = create_ts_vector_and_table_args(offerer_ts_indexes)
 
 
-class UserOfferer(PcObject, Model, NeedsValidationMixin):
+class UserOfferer(PcObject, Model, NeedsValidationMixin):  # type: ignore [valid-type, misc]
     userId = Column(BigInteger, ForeignKey("user.id"), primary_key=True)
-    user = relationship("User", foreign_keys=[userId], backref=backref("UserOfferers"))
+    user = relationship("User", foreign_keys=[userId], backref=backref("UserOfferers"))  # type: ignore [misc]
     offererId = Column(BigInteger, ForeignKey("offerer.id"), index=True, primary_key=True)
     offerer = relationship("Offerer", foreign_keys=[offererId], backref=backref("UserOfferers"))
 
@@ -497,7 +497,7 @@ class UserOfferer(PcObject, Model, NeedsValidationMixin):
     )
 
 
-class ApiKey(PcObject, Model):
+class ApiKey(PcObject, Model):  # type: ignore [valid-type, misc]
     # TODO: remove value colum when legacy keys are migrated
     value = Column(CHAR(64), index=True, nullable=True)
 
@@ -512,10 +512,10 @@ class ApiKey(PcObject, Model):
     secret = Column(LargeBinary, nullable=True)
 
     def check_secret(self, clear_text: str) -> bool:
-        return crypto.check_password(clear_text, self.secret)
+        return crypto.check_password(clear_text, self.secret)  # type: ignore [arg-type]
 
 
-class OffererTag(PcObject, Model):
+class OffererTag(PcObject, Model):  # type: ignore [valid-type, misc]
     """
     Tags on offerers are only used in backoffice, set to help for filtering and analytics in metabase.
     There is currently no display or impact in mobile and web apps.
@@ -525,11 +525,11 @@ class OffererTag(PcObject, Model):
 
     name = Column(String(140), nullable=False, unique=True)
 
-    def __repr__(self):
+    def __repr__(self):  # type: ignore [no-untyped-def]
         return "%s" % self.name
 
 
-class OffererTagMapping(PcObject, Model):
+class OffererTagMapping(PcObject, Model):  # type: ignore [valid-type, misc]
     __tablename__ = "offerer_tag_mapping"
 
     offererId = Column(BigInteger, ForeignKey("offerer.id", ondelete="CASCADE"), index=True, nullable=False)

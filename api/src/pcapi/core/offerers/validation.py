@@ -14,7 +14,7 @@ MAX_LATITUDE = 90
 VENUE_BANNER_MAX_SIZE = 10_000_000
 
 
-def check_existing_business_unit(business_unit_id: int, offerer: Offerer):
+def check_existing_business_unit(business_unit_id: int, offerer: Offerer):  # type: ignore [no-untyped-def]
     business_unit = BusinessUnit.query.filter_by(id=business_unit_id).one_or_none()
     if not business_unit:
         raise ApiErrors(errors={"businessUnitId": ["Ce point de facturation n'existe pas."]})
@@ -23,7 +23,7 @@ def check_existing_business_unit(business_unit_id: int, offerer: Offerer):
         raise ApiErrors(errors={"businessUnitId": ["Ce point de facturation n'est pas un choix valide pour ce lieu."]})
 
 
-def validate_coordinates(raw_latitude, raw_longitude):
+def validate_coordinates(raw_latitude, raw_longitude):  # type: ignore [no-untyped-def]
     api_errors = ApiErrors()
 
     if raw_latitude:
@@ -36,7 +36,7 @@ def validate_coordinates(raw_latitude, raw_longitude):
         raise api_errors
 
 
-def check_venue_creation(data):
+def check_venue_creation(data):  # type: ignore [no-untyped-def]
     offerer_id = dehumanize(data.get("managingOffererId"))
     if not offerer_id:
         raise ApiErrors(errors={"managingOffererId": ["Vous devez choisir une structure pour votre lieu."]})
@@ -57,7 +57,7 @@ def check_venue_creation(data):
         check_existing_business_unit(business_unit_id, offerer)
 
 
-def check_venue_edition(modifications, venue):
+def check_venue_edition(modifications, venue):  # type: ignore [no-untyped-def]
     managing_offerer_id = modifications.get("managingOffererId")
     siret = modifications.get("siret")
     business_unit_id = modifications.get("businessUnitId")
@@ -90,7 +90,7 @@ def check_venue_edition(modifications, venue):
         check_existing_business_unit(business_unit_id, offerer=venue.managingOfferer)
 
 
-def _validate_longitude(api_errors, raw_longitude):
+def _validate_longitude(api_errors, raw_longitude):  # type: ignore [no-untyped-def]
     try:
         longitude = Decimal(raw_longitude)
     except InvalidOperation:
@@ -100,7 +100,7 @@ def _validate_longitude(api_errors, raw_longitude):
             api_errors.add_error("longitude", "La longitude doit être comprise entre -180.0 et +180.0")
 
 
-def _validate_latitude(api_errors, raw_latitude):
+def _validate_latitude(api_errors, raw_latitude):  # type: ignore [no-untyped-def]
     try:
         latitude = Decimal(raw_latitude)
     except InvalidOperation:

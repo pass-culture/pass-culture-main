@@ -47,12 +47,12 @@ def handle_dms_state(
             )
         else:
             subscription_messages.on_dms_application_received(user)
-        current_fraud_check.status = fraud_models.FraudCheckStatus.STARTED
+        current_fraud_check.status = fraud_models.FraudCheckStatus.STARTED  # type: ignore [assignment]
         logger.info("DMS Application started.", extra=logs_extra)
 
     elif state == dms_models.GraphQLApplicationStates.on_going:
         subscription_messages.on_dms_application_received(user)
-        current_fraud_check.status = fraud_models.FraudCheckStatus.PENDING
+        current_fraud_check.status = fraud_models.FraudCheckStatus.PENDING  # type: ignore [assignment]
         logger.info("DMS Application created.", extra=logs_extra)
 
     elif state == dms_models.GraphQLApplicationStates.accepted:
@@ -60,15 +60,15 @@ def handle_dms_state(
         return current_fraud_check
 
     elif state == dms_models.GraphQLApplicationStates.refused:
-        current_fraud_check.status = fraud_models.FraudCheckStatus.KO
-        current_fraud_check.reasonCodes = [fraud_models.FraudReasonCode.REFUSED_BY_OPERATOR]
+        current_fraud_check.status = fraud_models.FraudCheckStatus.KO  # type: ignore [assignment]
+        current_fraud_check.reasonCodes = [fraud_models.FraudReasonCode.REFUSED_BY_OPERATOR]  # type: ignore [list-item]
 
         subscription_messages.on_dms_application_refused(user)
 
         logger.info("DMS Application refused.", extra=logs_extra)
 
     elif state == dms_models.GraphQLApplicationStates.without_continuation:
-        current_fraud_check.status = fraud_models.FraudCheckStatus.CANCELED
+        current_fraud_check.status = fraud_models.FraudCheckStatus.CANCELED  # type: ignore [assignment]
         logger.info("DMS Application without continuation.", extra=logs_extra)
 
     pcapi_repository.repository.save(current_fraud_check)
@@ -131,28 +131,28 @@ def import_dms_users(procedure_id: int) -> None:
     )
 
 
-def _notify_parsing_error(parsing_error: subscription_exceptions.DMSParsingError, application_scalar_id: str, client):
-    if "birth_date" in parsing_error:
+def _notify_parsing_error(parsing_error: subscription_exceptions.DMSParsingError, application_scalar_id: str, client):  # type: ignore [no-untyped-def]
+    if "birth_date" in parsing_error:  # type: ignore [operator]
         client.send_user_message(
             application_scalar_id, settings.DMS_INSTRUCTOR_ID, subscription_messages.DMS_ERROR_MESSSAGE_BIRTH_DATE
         )
-    elif "postal_code" in parsing_error and "id_piece_number" in parsing_error:
+    elif "postal_code" in parsing_error and "id_piece_number" in parsing_error:  # type: ignore [operator]
         client.send_user_message(
             application_scalar_id, settings.DMS_INSTRUCTOR_ID, subscription_messages.DMS_ERROR_MESSAGE_DOUBLE_ERROR
         )
-    elif "postal_code" in parsing_error and "id_piece_number" not in parsing_error:
+    elif "postal_code" in parsing_error and "id_piece_number" not in parsing_error:  # type: ignore [operator]
         client.send_user_message(
             application_scalar_id,
             settings.DMS_INSTRUCTOR_ID,
             subscription_messages.DMS_ERROR_MESSAGE_ERROR_POSTAL_CODE,
         )
-    elif "id_piece_number" in parsing_error and "postal_code" not in parsing_error:
+    elif "id_piece_number" in parsing_error and "postal_code" not in parsing_error:  # type: ignore [operator]
         client.send_user_message(
             application_scalar_id,
             settings.DMS_INSTRUCTOR_ID,
             subscription_messages.DMS_ERROR_MESSAGE_ERROR_ID_PIECE,
         )
-    elif "first_name" in parsing_error or "last_name" in parsing_error:
+    elif "first_name" in parsing_error or "last_name" in parsing_error:  # type: ignore [operator]
         client.send_user_message(
             application_scalar_id,
             settings.DMS_INSTRUCTOR_ID,
@@ -178,13 +178,13 @@ def _process_parsing_exception(user: users_models.User, application_id: int) -> 
     _update_or_create_error_fraud_check(user, application_id, "Erreur de lecture du dossier")
 
 
-def _update_or_create_error_fraud_check(user: users_models.User, application_id: int, reason: str):
+def _update_or_create_error_fraud_check(user: users_models.User, application_id: int, reason: str):  # type: ignore [no-untyped-def]
     # Update fraud check for observability and to avoid reimporting the same application
     fraud_check = fraud_dms_api.get_or_create_fraud_check(user, application_id)
 
-    fraud_check.status = fraud_models.FraudCheckStatus.ERROR
+    fraud_check.status = fraud_models.FraudCheckStatus.ERROR  # type: ignore [assignment]
     fraud_check.reason = reason
-    fraud_check.reasonCodes = [fraud_models.FraudReasonCode.ERROR_IN_DATA]
+    fraud_check.reasonCodes = [fraud_models.FraudReasonCode.ERROR_IN_DATA]  # type: ignore [list-item]
 
     pcapi_repository.repository.save(fraud_check)
 
@@ -216,12 +216,12 @@ def process_application(user: users_models.User, result_content: fraud_models.DM
         return
 
     if fraud_check.status != fraud_models.FraudCheckStatus.OK:
-        handle_validation_errors(user, fraud_check.reasonCodes, result_content)
+        handle_validation_errors(user, fraud_check.reasonCodes, result_content)  # type: ignore [arg-type]
         subscription_api.update_user_birth_date(user, result_content.get_birth_date())
         return
 
     fraud_api.create_honor_statement_fraud_check(
-        user, "honor statement contained in DMS application", fraud_check.eligibilityType
+        user, "honor statement contained in DMS application", fraud_check.eligibilityType  # type: ignore [arg-type]
     )
     try:
         subscription_api.on_successful_application(user=user, source_data=result_content)
@@ -287,7 +287,7 @@ def get_dms_subscription_item_status(
     return subscription_models.SubscriptionItemStatus.VOID
 
 
-def try_dms_orphan_adoption(user: users_models.User):
+def try_dms_orphan_adoption(user: users_models.User):  # type: ignore [no-untyped-def]
     dms_orphan = fraud_models.OrphanDmsApplication.query.filter_by(email=user.email).first()
     if not dms_orphan:
         return
@@ -298,7 +298,7 @@ def try_dms_orphan_adoption(user: users_models.User):
         pcapi_repository.repository.delete(dms_orphan)
 
 
-def parse_and_handle_dms_application(
+def parse_and_handle_dms_application(  # type: ignore [no-untyped-def]
     application_id, procedure_id
 ) -> typing.Optional[fraud_models.BeneficiaryFraudCheck]:
     client = dms_connector_api.DMSGraphQLClient()
@@ -332,7 +332,7 @@ def parse_and_handle_dms_application(
         if state == dms_models.GraphQLApplicationStates.draft:
             client.send_user_message(
                 application_scalar_id,
-                settings.DMS_INSTRUCTOR_ID,
+                settings.DMS_INSTRUCTOR_ID,  # type: ignore [arg-type]
                 subscription_messages.DMS_ERROR_MESSAGE_USER_NOT_FOUND,
             )
 
@@ -350,7 +350,7 @@ def parse_and_handle_dms_application(
             user, list(parsing_error.errors.keys())
         )
         if state == dms_models.GraphQLApplicationStates.draft:
-            _notify_parsing_error(parsing_error.errors, application_scalar_id, client)
+            _notify_parsing_error(parsing_error.errors, application_scalar_id, client)  # type: ignore [arg-type]
 
         return fraud_dms_api.on_dms_parsing_error(user, application_id, parsing_error, extra_data=log_extra_data)
 

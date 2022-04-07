@@ -11,7 +11,7 @@ blueprint = Blueprint(__name__, __name__)
 @blueprint.cli.command("synchronize_titelive_things")
 @log_cron_with_transaction
 @cron_require_feature(FeatureToggle.SYNCHRONIZE_TITELIVE_PRODUCTS)
-def synchronize_titelive_things():
+def synchronize_titelive_things():  # type: ignore [no-untyped-def]
     """Launches Titelive products synchronization through TiteLiveThings provider"""
     synchronize_data_for_provider("TiteLiveThings")
 
@@ -19,7 +19,7 @@ def synchronize_titelive_things():
 @blueprint.cli.command("synchronize_titelive_thing_descriptions")
 @log_cron_with_transaction
 @cron_require_feature(FeatureToggle.SYNCHRONIZE_TITELIVE_PRODUCTS_DESCRIPTION)
-def synchronize_titelive_thing_descriptions():
+def synchronize_titelive_thing_descriptions():  # type: ignore [no-untyped-def]
     """Launches Titelive descriptions synchronization through TiteLiveThingDescriptions provider"""
     synchronize_data_for_provider("TiteLiveThingDescriptions")
 
@@ -27,6 +27,6 @@ def synchronize_titelive_thing_descriptions():
 @blueprint.cli.command("synchronize_titelive_thing_thumbs")
 @log_cron_with_transaction
 @cron_require_feature(FeatureToggle.SYNCHRONIZE_TITELIVE_PRODUCTS_THUMBS)
-def synchronize_titelive_thing_thumbs():
+def synchronize_titelive_thing_thumbs():  # type: ignore [no-untyped-def]
     """Launches Titelive thumbs synchronization through TiteLiveThingThumbs provider"""
     synchronize_data_for_provider("TiteLiveThingThumbs")

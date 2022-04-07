@@ -4,7 +4,7 @@ from pcapi.models import db
 
 
 @contextmanager
-def transaction():
+def transaction():  # type: ignore [no-untyped-def]
     try:
         yield
         db.session.commit()

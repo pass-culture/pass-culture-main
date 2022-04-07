@@ -41,14 +41,14 @@ class BaseSpecificCaps:
     PHYSICAL_CAP = None
 
     # fmt: off
-    def digital_cap_applies(self, offer):
+    def digital_cap_applies(self, offer): # type: ignore [no-untyped-def]
         return (
             offer.isDigital
             and bool(self.DIGITAL_CAP)
             and offer.subcategory.is_digital_deposit
         )
 
-    def physical_cap_applies(self, offer):
+    def physical_cap_applies(self, offer): # type: ignore [no-untyped-def]
         return (
             not offer.isDigital
             and bool(self.PHYSICAL_CAP)
@@ -63,12 +63,12 @@ class GrantUnderageSpecificCaps(BaseSpecificCaps):
 
 
 class Grant18SpecificCapsV1(BaseSpecificCaps):
-    DIGITAL_CAP = Decimal(200)
-    PHYSICAL_CAP = Decimal(200)
+    DIGITAL_CAP = Decimal(200)  # type: ignore [assignment]
+    PHYSICAL_CAP = Decimal(200)  # type: ignore [assignment]
 
 
 class Grant18SpecificCapsV2(BaseSpecificCaps):
-    DIGITAL_CAP = Decimal(100)
+    DIGITAL_CAP = Decimal(100)  # type: ignore [assignment]
     PHYSICAL_CAP = None
 
 

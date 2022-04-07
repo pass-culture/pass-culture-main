@@ -39,7 +39,7 @@ DEFAULT_LATITUDE = 47.158459
 WORD_SPLITTER = re.compile(r"\W+")
 
 
-def url_path(url):
+def url_path(url):  # type: ignore [no-untyped-def]
     """Return the path component of a URL.
 
     Example::
@@ -73,7 +73,7 @@ def remove_stopwords(s: str) -> str:
 
 
 class AlgoliaBackend(base.SearchBackend):
-    def __init__(self):
+    def __init__(self):  # type: ignore [no-untyped-def]
         super().__init__()
         client = algoliasearch.search_client.SearchClient.create(
             app_id=settings.ALGOLIA_APPLICATION_ID, api_key=settings.ALGOLIA_API_KEY
@@ -380,20 +380,20 @@ class AlgoliaBackend(base.SearchBackend):
         dates = []
         times = []
         if offer.isEvent:
-            dates = [stock.beginningDatetime.timestamp() for stock in offer.bookableStocks]
+            dates = [stock.beginningDatetime.timestamp() for stock in offer.bookableStocks]  # type: ignore [union-attr]
             times = [
-                date_utils.get_time_in_seconds_from_datetime(stock.beginningDatetime) for stock in offer.bookableStocks
+                date_utils.get_time_in_seconds_from_datetime(stock.beginningDatetime) for stock in offer.bookableStocks  # type: ignore [arg-type]
             ]
         date_created = offer.dateCreated.timestamp()
         stocks_date_created = [stock.dateCreated.timestamp() for stock in offer.bookableStocks]
         tags = [criterion.name for criterion in offer.criteria]
         extra_data = offer.extraData or {}
-        artist = " ".join(extra_data.get(key, "") for key in ("author", "performer", "speaker", "stageDirector"))
+        artist = " ".join(extra_data.get(key, "") for key in ("author", "performer", "speaker", "stageDirector"))  # type: ignore [union-attr]
 
         # Field used by Algolia (not the frontend) to deduplicate results
         # https://www.algolia.com/doc/api-reference/api-parameters/distinct/
-        distinct = extra_data.get("isbn") or extra_data.get("visa") or str(offer.id)
-        distinct += extra_data.get("diffusionVersion", "")
+        distinct = extra_data.get("isbn") or extra_data.get("visa") or str(offer.id)  # type: ignore [union-attr]
+        distinct += extra_data.get("diffusionVersion", "")  # type: ignore [union-attr]
 
         object_to_index = {
             "distinct": distinct,
@@ -414,7 +414,7 @@ class AlgoliaBackend(base.SearchBackend):
                 "prices": prices_sorted,
                 "searchGroupName": offer.subcategory.search_group_name,
                 "stocksDateCreated": sorted(stocks_date_created),
-                "students": extra_data.get("students") or [],
+                "students": extra_data.get("students") or [],  # type: ignore [union-attr]
                 "subcategoryId": offer.subcategory.id,
                 "thumbUrl": url_path(offer.thumbUrl),
                 "tags": tags,
@@ -439,10 +439,10 @@ class AlgoliaBackend(base.SearchBackend):
         social_medias = getattr(venue.contact, "social_medias", {})
         return {
             "objectID": venue.id,
-            "city": venue.city,
+            "city": venue.city,  # type: ignore [has-type]
             "name": venue.publicName or venue.name,
             "offerer_name": venue.managingOfferer.name,
-            "venue_type": venue.venueTypeCode.name,
+            "venue_type": venue.venueTypeCode.name,  # type: ignore [union-attr]
             "description": venue.description,
             "audio_disability": venue.audioDisabilityCompliant,
             "mental_disability": venue.mentalDisabilityCompliant,
@@ -546,7 +546,7 @@ class AlgoliaBackend(base.SearchBackend):
         return obj_ids
 
 
-def position(venue):
+def position(venue):  # type: ignore [no-untyped-def]
     latitude = venue.latitude or DEFAULT_LATITUDE
     longitude = venue.longitude or DEFAULT_LONGITUDE
     return {"lat": float(latitude), "lng": float(longitude)}

@@ -28,13 +28,13 @@ class UnsuspensionForm(SecureForm):
     pass  # empty form, only has the CSRF token field
 
 
-def _allow_suspension_and_unsuspension(user):
+def _allow_suspension_and_unsuspension(user):  # type: ignore [no-untyped-def]
     if not settings.IS_PROD:
         return True
     return user.email in settings.SUPER_ADMIN_EMAIL_ADDRESSES
 
 
-def _action_links(view, context, model, name):
+def _action_links(view, context, model, name):  # type: ignore [no-untyped-def]
     if not _allow_suspension_and_unsuspension(current_user):
         return None
 
@@ -57,7 +57,7 @@ def _action_links(view, context, model, name):
     )
 
 
-def beneficiary_suspension_history_formatter(view, context, model, name) -> Markup:
+def beneficiary_suspension_history_formatter(view, context, model, name) -> Markup:  # type: ignore [no-untyped-def]
     """
     Bullet list of suspension events which affected any user account (beneficiary, pro, admin).
     Formatting must take old suspensions into account (migrated from user table, without date and author).
@@ -95,17 +95,17 @@ class SuspensionMixin:
     """
 
     @property
-    def column_formatters(self):
+    def column_formatters(self):  # type: ignore [no-untyped-def]
         formatters = super().column_formatters
         formatters.update(suspension_history=beneficiary_suspension_history_formatter, actions=_action_links)
         return formatters
 
     @property
-    def user_list_url(self):
+    def user_list_url(self):  # type: ignore [no-untyped-def]
         return url_for(".index_view")
 
     @action("unsuspend_selection", "Réactiver la sélection")
-    def action_bulk_edit(self, ids):
+    def action_bulk_edit(self, ids):  # type: ignore [no-untyped-def]
         if not _allow_suspension_and_unsuspension(current_user):
             return Forbidden()
 
@@ -114,7 +114,7 @@ class SuspensionMixin:
         return redirect(self.user_list_url)
 
     @expose("suspend", methods=["GET", "POST"])
-    def suspend_user_view(self):
+    def suspend_user_view(self):  # type: ignore [no-untyped-def]
         if not _allow_suspension_and_unsuspension(current_user):
             return Forbidden()
 
@@ -139,7 +139,7 @@ class SuspensionMixin:
         return self.render("admin/confirm_suspension.html", **context)
 
     @expose("unsuspend", methods=["GET", "POST"])
-    def unsuspend_user_view(self):
+    def unsuspend_user_view(self):  # type: ignore [no-untyped-def]
         if not _allow_suspension_and_unsuspension(current_user):
             return Forbidden()
 

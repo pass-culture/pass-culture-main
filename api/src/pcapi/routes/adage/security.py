@@ -8,11 +8,11 @@ from pcapi.routes.adage.v1.blueprint import EAC_API_KEY_AUTH
 from pcapi.serialization.spec_tree import add_security_scheme
 
 
-def adage_api_key_required(route_function):
+def adage_api_key_required(route_function):  # type: ignore [no-untyped-def]
     add_security_scheme(route_function, EAC_API_KEY_AUTH)
 
     @wraps(route_function)
-    def wrapper(*args, **kwds):
+    def wrapper(*args, **kwds):  # type: ignore [no-untyped-def]
         mandatory_authorization_type = "Bearer "
         authorization_header = request.headers.get("Authorization")
 

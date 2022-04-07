@@ -38,19 +38,19 @@ from pcapi.models.criterion import Criterion
 from pcapi.scripts.offerer.delete_cascade_venue_by_id import delete_cascade_venue_by_id
 
 
-def _offers_link(view, context, model, name) -> Markup:
+def _offers_link(view, context, model, name) -> Markup:  # type: ignore [no-untyped-def]
     url = url_for("offer_for_venue.index", id=model.id)
     return Markup('<a href="{}">Offres associées</a>').format(escape(url))
 
 
-def _get_venue_provider_link(view, context, model, name) -> Union[Markup, None]:
+def _get_venue_provider_link(view, context, model, name) -> Union[Markup, None]:  # type: ignore [no-untyped-def]
     if not model.venueProviders:
         return None
     url = url_for("venue_providers.index_view", id=model.id)
     return Markup('<a href="{url}">{text}</a>').format(url=url, text=model.venueProviders[0].provider.name)
 
 
-def _get_venue_type_code_formatter(view, context, model, name) -> Union[Markup, None]:
+def _get_venue_type_code_formatter(view, context, model, name) -> Union[Markup, None]:  # type: ignore [no-untyped-def]
     return Markup("<span>{text}</span>").format(text=model.venueTypeCode.value if model.venueTypeCode else "")
 
 
@@ -85,11 +85,11 @@ class VenueCriteriaFilter(fa_filters.BaseSQLAFilter):
     Filter venues based on tag (criterion) name.
     """
 
-    def apply(self, query: BaseQuery, value: str, alias=None) -> BaseQuery:
+    def apply(self, query: BaseQuery, value: str, alias=None) -> BaseQuery:  # type: ignore [no-untyped-def]
         parsed_value = tools.parse_like_term(value)
         return query.join(offerers_models.VenueCriterion).join(Criterion).filter(Criterion.name.ilike(parsed_value))
 
-    def operation(self):
+    def operation(self):  # type: ignore [no-untyped-def]
         return lazy_gettext("contains")
 
     def clean(self, value: str) -> str:
@@ -184,7 +184,7 @@ class VenueView(BaseAdminView):
         return query_to_override
 
     @property
-    def column_formatters(self):
+    def column_formatters(self):  # type: ignore [no-untyped-def]
         formatters = super().column_formatters
         formatters.update(offres=_offers_link)
         formatters.update(provider_name=_get_venue_provider_link)
@@ -214,7 +214,7 @@ class VenueView(BaseAdminView):
                 )
                 return False
 
-            related_bu = finance_repository.find_business_unit_by_siret(venue.siret)
+            related_bu = finance_repository.find_business_unit_by_siret(venue.siret)  # type: ignore [arg-type]
             if related_bu:
                 flash(
                     f"Le SIRET de ce lieu est le SIRET de référence du point de remboursement {related_bu.name},"
@@ -261,12 +261,12 @@ class VenueView(BaseAdminView):
         return True
 
     @action("bulk_edit", "Édition multiple")
-    def action_bulk_edit(self, ids):
+    def action_bulk_edit(self, ids):  # type: ignore [no-untyped-def]
         url = get_redirect_target() or self.get_url(".index_view")
         return redirect(url, code=307)
 
     @expose("/", methods=["POST"])
-    def index(self):
+    def index(self):  # type: ignore [no-untyped-def]
         url = get_redirect_target() or self.get_url(".index_view")
         ids = request.form.getlist("rowid")
         joined_ids = ",".join(ids)
@@ -293,7 +293,7 @@ class VenueView(BaseAdminView):
         return self.index_view()
 
     @expose("/update/", methods=["POST"])
-    def update_view(self):
+    def update_view(self):  # type: ignore [no-untyped-def]
         url = get_redirect_target() or self.get_url(".index_view")
         change_form = VenueChangeForm(request.form)
         if change_form.validate():
@@ -322,7 +322,7 @@ class VenueForOffererSubview(VenueView):
     list_template = "admin/offerer_venues_list.html"
 
     @expose("/", methods=(["GET", "POST"]))
-    def index(self):
+    def index(self):  # type: ignore [no-untyped-def]
         if request.method == "POST":
             return super().index()
         self._template_args["offerer_name"] = self._get_offerer_name()
@@ -337,7 +337,7 @@ class VenueForOffererSubview(VenueView):
     def get_count_query(self) -> BaseQuery:
         return self._extend_query(super().get_count_query())
 
-    def _extend_query(self, query_to_override: BaseQuery) -> BaseQuery:
+    def _extend_query(self, query_to_override: BaseQuery) -> BaseQuery:  # type: ignore [override]
         offerer_id = request.args.get("id")
 
         if offerer_id is None:

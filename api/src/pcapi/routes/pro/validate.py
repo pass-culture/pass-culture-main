@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 
 @blueprint.pro_public_api_v1.route("/validate/user-offerer/<token>", methods=["GET"])
 @spectree_serialize(on_success_status=202, json_format=False)
-def validate_offerer_attachment(token) -> str:
+def validate_offerer_attachment(token) -> str:  # type: ignore [no-untyped-def]
     try:
         api.validate_offerer_attachment(token)
     except ValidationTokenNotFoundError:
@@ -34,7 +34,7 @@ def validate_offerer_attachment(token) -> str:
 
 @blueprint.pro_public_api_v1.route("/validate/offerer/<token>", methods=["GET"])
 @spectree_serialize(on_success_status=202, json_format=False)
-def validate_new_offerer(token) -> str:
+def validate_new_offerer(token) -> str:  # type: ignore [no-untyped-def]
     try:
         api.validate_offerer(token)
     except ValidationTokenNotFoundError:
@@ -48,7 +48,7 @@ def validate_new_offerer(token) -> str:
 
 @blueprint.pro_private_api.route("/validate/user/<token>", methods=["PATCH"])
 @spectree_serialize(on_success_status=204, api=blueprint.pro_private_schema)
-def validate_user(token) -> None:
+def validate_user(token) -> None:  # type: ignore [no-untyped-def]
     user_to_validate = user_queries.find_by_validation_token(token)
     check_valid_token_for_user_validation(user_to_validate)
 

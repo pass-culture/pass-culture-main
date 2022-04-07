@@ -27,7 +27,7 @@ class NoSiretSpecified(VenueProviderException):
 
 
 class VenueSiretNotRegistered(VenueProviderException):
-    def __init__(self, provider_name: str, siret: str, *args) -> None:
+    def __init__(self, provider_name: str, siret: str, *args) -> None:  # type: ignore [no-untyped-def]
         self.provider_name = provider_name
         self.siret = siret
         super().__init__(*args)

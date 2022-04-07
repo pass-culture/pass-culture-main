@@ -145,7 +145,7 @@ def update_cultural_survey(user: User, body: serializers.CulturalSurveyRequest) 
             user.needsToFillCulturalSurvey = False
         if body.cultural_survey_id:
             logger.info("User %s updated cultural survey", user.id, extra={"actor": user.id})
-            user.culturalSurveyId = body.cultural_survey_id
+            user.culturalSurveyId = body.cultural_survey_id  # type: ignore [assignment]
             user.culturalSurveyFilledDate = datetime.utcnow()
     return
 
@@ -273,18 +273,18 @@ def profiling_fraud_score(user: User, body: serializers.UserProfilingFraudReques
 
     try:
         profiling_infos = handler.get_user_profiling_fraud_data(
-            session_id=body.sessionId,
+            session_id=body.sessionId,  # type: ignore [arg-type]
             user_id=user.id,
             user_email=user.email,
             birth_date=user.dateOfBirth.date() if user.dateOfBirth else None,
             phone_number=user.phoneNumber,
             workflow_type=user_profiling.WorkflowType.BENEFICIARY_VALIDATION,
             # depends on loadbalancer configuration
-            ip_address=request.headers.get("X-Forwarded-For"),
+            ip_address=request.headers.get("X-Forwarded-For"),  # type: ignore [arg-type]
             line_of_business=user_profiling.LineOfBusiness.B2C,
             # Insert request unique identifier
             transaction_id=get_or_set_correlation_id(),
-            agent_type=body.agentType,
+            agent_type=body.agentType,  # type: ignore [arg-type]
         )
     except user_profiling.BaseUserProfilingException:
         logger.exception("Error while retrieving user profiling infos", exc_info=True)

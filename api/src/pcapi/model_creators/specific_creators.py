@@ -45,7 +45,7 @@ def create_offer_with_event_product(
         product = create_product_with_event_subcategory(
             event_name=event_name,
             event_subcategory_id=event_subcategory_id,
-            duration_minutes=duration_minutes,
+            duration_minutes=duration_minutes,  # type: ignore [arg-type]
             thumb_count=thumb_count,
             is_national=is_national,
         )
@@ -61,12 +61,12 @@ def create_offer_with_event_product(
     offer.dateCreated = date_created
     offer.bookingEmail = booking_email
     offer.isActive = is_active
-    offer.id = idx
+    offer.id = idx  # type: ignore [assignment]
     offer.lastProviderId = last_provider_id
     offer.lastProvider = last_provider
     offer.idAtProvider = id_at_provider
     offer.isDuo = is_duo
-    offer.validation = validation
+    offer.validation = validation  # type: ignore [assignment]
     offer.withdrawalDetails = withdrawal_details
     offer.extraData = extra_data
     offer.rankingWeight = ranking_weight
@@ -79,8 +79,8 @@ def create_event_occurrence(
 ) -> dict:
     event_occurrence = {}
     event_occurrence["offer"] = offer
-    event_occurrence["offerId"] = offer.id
-    event_occurrence["beginningDatetime"] = beginning_datetime
+    event_occurrence["offerId"] = offer.id  # type: ignore [assignment]
+    event_occurrence["beginningDatetime"] = beginning_datetime  # type: ignore [assignment]
 
     return event_occurrence
 
@@ -129,7 +129,7 @@ def create_offer_with_thing_product(
             thing_subcategory_id = subcategories.CARTE_CINE_MULTISEANCES.id
 
         offer.product = create_product_with_thing_subcategory(
-            thing_name=thing_name,
+            thing_name=thing_name,  # type: ignore [arg-type]
             thing_subcategory_id=thing_subcategory_id,
             media_urls=media_urls,
             idx=product_idx,
@@ -139,9 +139,9 @@ def create_offer_with_thing_product(
             is_national=is_national,
             description=description,
         )
-        offer.name = thing_name
-        offer.subcategoryId = thing_subcategory_id
-        offer.mediaUrls = media_urls
+        offer.name = thing_name  # type: ignore [assignment]
+        offer.subcategoryId = thing_subcategory_id  # type: ignore [assignment]
+        offer.mediaUrls = media_urls  # type: ignore [assignment]
         offer.extraData = {"author": author_name}
         offer.url = url
         offer.isNational = is_national
@@ -153,10 +153,10 @@ def create_offer_with_thing_product(
     offer.isActive = is_active
     offer.lastProviderId = last_provider_id
     offer.lastProvider = last_provider
-    offer.id = idx
+    offer.id = idx  # type: ignore [assignment]
     offer.withdrawalDetails = withdrawal_details
     offer.isDuo = False
-    offer.validation = validation
+    offer.validation = validation  # type: ignore [assignment]
 
     if extra_data:
         offer.extraData = extra_data
@@ -187,7 +187,7 @@ def create_product_with_event_subcategory(
     product.idAtProviders = id_at_providers
     product.isNational = is_national
     product.isDuo = is_duo
-    product.subcategoryId = event_subcategory_id
+    product.subcategoryId = event_subcategory_id  # type: ignore [assignment]
     product.description = description
 
     return product
@@ -214,8 +214,8 @@ def create_product_with_thing_subcategory(
     extra_data: dict = None,
 ) -> Product:
     product = Product()
-    product.id = idx
-    product.subcategoryId = thing_subcategory_id
+    product.id = idx  # type: ignore [assignment]
+    product.subcategoryId = thing_subcategory_id  # type: ignore [assignment]
     product.name = thing_name
     product.description = description
     if extra_data:
@@ -230,7 +230,7 @@ def create_product_with_thing_subcategory(
     product.idAtProviders = id_at_providers
     product.isGcuCompatible = is_gcu_compatible
     product.isSynchronizationCompatible = is_synchronization_compatible
-    product.mediaUrls = media_urls
+    product.mediaUrls = media_urls  # type: ignore [assignment]
     product.thumbCount = thumb_count
     product.url = url
     product.owningOfferer = owning_offerer
@@ -254,7 +254,7 @@ def create_stock_from_event_occurrence(
     stock.beginningDatetime = event_occurrence["beginningDatetime"]
     stock.offerId = event_occurrence["offerId"]
     stock.offer = event_occurrence["offer"]
-    stock.price = price
+    stock.price = price  # type: ignore [assignment]
     stock.quantity = quantity
     stock.isSoftDeleted = soft_deleted
 
@@ -280,9 +280,9 @@ def create_stock_from_offer(
     date_modified: datetime = datetime.utcnow(),
 ) -> Stock:
     stock = Stock()
-    stock.id = idx
+    stock.id = idx  # type: ignore [assignment]
     stock.offer = offer
-    stock.price = price
+    stock.price = price  # type: ignore [assignment]
     stock.quantity = quantity
     stock.isSoftDeleted = soft_deleted
     stock.bookingLimitDatetime = booking_limit_datetime
@@ -311,7 +311,7 @@ def create_stock_with_event_offer(
 ) -> Stock:
     stock = Stock()
     stock.offerer = offerer
-    stock.price = price
+    stock.price = price  # type: ignore [assignment]
     stock.quantity = quantity
     stock.beginningDatetime = beginning_datetime
     stock.bookingLimitDatetime = booking_limit_datetime
@@ -326,7 +326,7 @@ def create_stock_with_event_offer(
         is_national=False,
         thumb_count=thumb_count,
     )
-    stock.offer.id = offer_id
+    stock.offer.id = offer_id  # type: ignore [assignment]
     stock.isSoftDeleted = is_soft_deleted
 
     return stock
@@ -336,7 +336,7 @@ def create_stock_with_thing_offer(
     offerer: Offerer,
     venue: Venue,
     offer: Offer = None,
-    price: Optional[Decimal] = 10,
+    price: Optional[Decimal] = 10,  # type: ignore [assignment]
     quantity: int = 50,
     name: str = "Test Book",
     booking_email: str = "offer.booking.email@example.com",
@@ -347,7 +347,7 @@ def create_stock_with_thing_offer(
 ) -> Stock:
     stock = Stock()
     stock.offerer = offerer
-    stock.price = price
+    stock.price = price  # type: ignore [assignment]
 
     if offer:
         stock.offer = offer

@@ -100,7 +100,7 @@ OFFERER_LOCATIONS = [
 ]
 
 
-def create_industrial_offerers_with_pro_users():
+def create_industrial_offerers_with_pro_users():  # type: ignore [no-untyped-def]
     logger.info("create_industrial_offerers_with_pro_users")
 
     offerers_by_name = {}
