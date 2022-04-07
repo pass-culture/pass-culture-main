@@ -65,6 +65,8 @@ from pcapi.routes.adage_iframe.serialization.adage_authentication import Authent
 from pcapi.routes.adage_iframe.serialization.adage_authentication import RedactorInformation
 from pcapi.routes.serialization.collective_bookings_serialize import serialize_collective_booking_csv_report
 from pcapi.routes.serialization.stock_serialize import EducationalStockCreationBodyModel
+from pcapi.utils.clean_accents import clean_accents
+from pcapi.utils.db import unaccent
 
 
 logger = logging.getLogger(__name__)
@@ -471,9 +473,15 @@ def get_venues_by_siret(siret: str) -> list[offerers_models.Venue]:
 
 
 def get_venues_by_name(name: str) -> list[offerers_models.Venue]:
+    name = name.replace(" ", "%")
+    name = name.replace("-", "%")
+    name = clean_accents(name)
     venues = (
         offerers_models.Venue.query.filter(
-            or_(offerers_models.Venue.name.ilike(f"%{name}%"), offerers_models.Venue.publicName.ilike(f"%{name}%"))
+            or_(
+                unaccent(offerers_models.Venue.name).ilike(f"%{name}%"),
+                unaccent(offerers_models.Venue.publicName).ilike(f"%{name}%"),
+            )
         )
         .filter(offerers_models.Venue.isVirtual.is_(False))
         .all()
