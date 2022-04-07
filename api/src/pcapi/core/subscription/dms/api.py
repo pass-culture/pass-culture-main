@@ -77,7 +77,7 @@ def handle_dms_state(
 
 def import_dms_users(procedure_id: int) -> None:
     logger.info(
-        "[BATCH][REMOTE IMPORT BENEFICIARIES] Start import from Démarches Simplifiées for "
+        "[DMS][REMOTE IMPORT BENEFICIARIES] Start import from Démarches Simplifiées for "
         "procedure = %s - Procedure %s",
         procedure_id,
         procedure_id,
@@ -98,7 +98,7 @@ def import_dms_users(procedure_id: int) -> None:
             user_email = application_details.profile.email
         except KeyError as e:
             logger.error(
-                "[BATCH][REMOTE IMPORT BENEFICIARIES] Could not parse user email: %s",
+                "[DMS][REMOTE IMPORT BENEFICIARIES] Could not parse user email: %s",
                 e,
                 extra={"application_id": application_id, "procedure_id": procedure_id},
             )
@@ -191,7 +191,7 @@ def _update_or_create_error_fraud_check(user: users_models.User, application_id:
 
 def _process_user_parsing_error(application_id: int, procedure_id: int) -> None:
     logger.info(
-        "[BATCH][REMOTE IMPORT BENEFICIARIES] Application %s in procedure %s has no user and was ignored",
+        "[DMS][REMOTE IMPORT BENEFICIARIES] Application %s in procedure %s has no user and was ignored",
         application_id,
         procedure_id,
     )
@@ -227,7 +227,7 @@ def process_application(user: users_models.User, result_content: fraud_models.DM
         subscription_api.on_successful_application(user=user, source_data=result_content)
     except Exception as exception:  # pylint: disable=broad-except
         logger.exception(
-            "[BATCH][REMOTE IMPORT BENEFICIARIES] Could not save application %s, because of error: %s - Procedure %s",
+            "[DMS][REMOTE IMPORT BENEFICIARIES] Could not save application %s, because of error: %s - Procedure %s",
             result_content.application_id,
             exception,
             result_content.procedure_id,
@@ -235,7 +235,7 @@ def process_application(user: users_models.User, result_content: fraud_models.DM
         return
 
     logger.info(
-        "[BATCH][REMOTE IMPORT BENEFICIARIES] Successfully imported DMS application %s - Procedure %s",
+        "[DMS][REMOTE IMPORT BENEFICIARIES] Successfully imported DMS application %s - Procedure %s",
         result_content.application_id,
         result_content.procedure_id,
     )
@@ -256,7 +256,7 @@ def handle_validation_errors(
     reason = ", ".join([code.name for code in reason_codes])
 
     logger.warning(
-        "[BATCH][REMOTE IMPORT BENEFICIARIES] Rejected application %s because of '%s' - Procedure %s",
+        "[DMS][REMOTE IMPORT BENEFICIARIES] Rejected application %s because of '%s' - Procedure %s",
         dms_content.application_id,
         reason,
         dms_content.procedure_id,
