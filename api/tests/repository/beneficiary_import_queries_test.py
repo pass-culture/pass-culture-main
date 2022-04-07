@@ -2,7 +2,7 @@ import pytest
 
 from pcapi.core.fraud import factories as fraud_factories
 from pcapi.core.fraud import models as fraud_models
-from pcapi.core.subscription.dms.api import get_already_processed_applications_ids
+from pcapi.core.subscription.dms import repository as dms_repository
 
 
 class GetAlreadyProcessedApplicationIdTest:
@@ -37,7 +37,7 @@ class GetAlreadyProcessedApplicationIdTest:
             status=fraud_models.FraudCheckStatus.ERROR,
         )
 
-        application_ids = get_already_processed_applications_ids(123)
+        application_ids = dms_repository.get_already_processed_applications_ids(123)
         assert application_ids == {8888, 9999, 2222}
 
     @pytest.mark.usefixtures("db_session")
@@ -98,6 +98,6 @@ class GetAlreadyProcessedApplicationIdTest:
             status=fraud_models.FraudCheckStatus.ERROR,
         )
 
-        application_ids = get_already_processed_applications_ids(123)
+        application_ids = dms_repository.get_already_processed_applications_ids(123)
 
         assert application_ids == {1111, 2222, 4444, 6666, 7777, 8888}

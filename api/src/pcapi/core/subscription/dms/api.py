@@ -1,9 +1,6 @@
 import logging
 import typing
 
-from sqlalchemy import Integer
-from sqlalchemy import or_
-
 from pcapi import settings
 from pcapi.connectors.dms import api as dms_connector_api
 from pcapi.connectors.dms import models as dms_models
@@ -18,11 +15,12 @@ from pcapi.core.mails.transactional.users.pre_subscription_dms_error import (
 from pcapi.core.subscription import exceptions as subscription_exceptions
 from pcapi.core.subscription import messages as subscription_messages
 from pcapi.core.subscription import models as subscription_models
-from pcapi.core.subscription import repository as subscription_repository
 import pcapi.core.subscription.api as subscription_api
 import pcapi.core.users.models as users_models
 from pcapi.core.users.repository import find_user_by_email
 import pcapi.repository as pcapi_repository
+
+from . import repository as dms_repository
 
 
 logger = logging.getLogger(__name__)
@@ -85,7 +83,7 @@ def import_dms_users(procedure_id: int) -> None:
         procedure_id,
     )
 
-    existing_applications_ids = get_already_processed_applications_ids(procedure_id)
+    existing_applications_ids = dms_repository.get_already_processed_applications_ids(procedure_id)
     client = dms_connector_api.DMSGraphQLClient()
     for application_details in client.get_applications_with_details(
         procedure_id, dms_models.GraphQLApplicationStates.accepted
@@ -192,7 +190,7 @@ def _process_user_parsing_error(application_id: int, procedure_id: int) -> None:
         application_id,
         procedure_id,
     )
-    subscription_repository.create_orphan_dms_application(application_id=application_id, procedure_id=procedure_id)
+    dms_repository.create_orphan_dms_application(application_id=application_id, procedure_id=procedure_id)
 
 
 def _process_user_not_found_error(email: str, application_id: int, procedure_id: int) -> None:
@@ -202,9 +200,7 @@ def _process_user_not_found_error(email: str, application_id: int, procedure_id:
         procedure_id,
         email,
     )
-    subscription_repository.create_orphan_dms_application(
-        application_id=application_id, procedure_id=procedure_id, email=email
-    )
+    dms_repository.create_orphan_dms_application(application_id=application_id, procedure_id=procedure_id, email=email)
 
 
 def process_application(user: users_models.User, result_content: fraud_models.DMSContent) -> None:
@@ -261,41 +257,6 @@ def handle_validation_errors(
         dms_content.procedure_id,
         extra={"user_id": user.id},
     )
-
-
-def get_already_processed_applications_ids(procedure_id: int) -> set[int]:
-    return _get_already_processed_applications_ids_from_orphans(
-        procedure_id
-    ) | _get_already_processed_applications_ids_from_fraud_checks(procedure_id)
-
-
-def _get_already_processed_applications_ids_from_orphans(procedure_id: int) -> set[int]:
-    orphans = (
-        fraud_models.OrphanDmsApplication.query.filter(fraud_models.OrphanDmsApplication.process_id == procedure_id)
-        .with_entities(fraud_models.OrphanDmsApplication.application_id)
-        .all()
-    )
-
-    return {orphan[0] for orphan in orphans}
-
-
-def _get_already_processed_applications_ids_from_fraud_checks(procedure_id: int) -> set[int]:
-    fraud_checks = fraud_models.BeneficiaryFraudCheck.query.filter(
-        fraud_models.BeneficiaryFraudCheck.type == fraud_models.FraudCheckType.DMS,
-        or_(
-            fraud_models.BeneficiaryFraudCheck.resultContent["procedure_id"].astext.cast(Integer) == procedure_id,
-            fraud_models.BeneficiaryFraudCheck.resultContent
-            == None,  # If there was a parsing error, a fraudCheck exists but no resultContent
-        ),
-        fraud_models.BeneficiaryFraudCheck.status.notin_(
-            [
-                fraud_models.FraudCheckStatus.PENDING,
-                fraud_models.FraudCheckStatus.STARTED,
-            ]
-        ),
-    ).with_entities(fraud_models.BeneficiaryFraudCheck.thirdPartyId)
-
-    return {int(fraud_check[0]) for fraud_check in fraud_checks}
 
 
 def get_dms_subscription_item_status(
