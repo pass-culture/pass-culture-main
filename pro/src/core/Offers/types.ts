@@ -52,3 +52,9 @@ export type Option = {
   id: string
   displayName: string
 }
+
+export interface IOfferIndividualFormValues {
+  title: string
+  description: string
+  venueId: string
+}

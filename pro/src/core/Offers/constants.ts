@@ -76,3 +76,11 @@ export const ADMINS_DISABLED_FILTERS_MESSAGE =
   'Sélectionnez une structure et/ou un lieu pour activer les filtres'
 
 export const LIVRE_PAPIER_SUBCATEGORY_ID = 'LIVRE_PAPIER'
+
+import { IOfferIndividualFormValues } from './types'
+
+export const DEFAULT_INDIVIDUAL_FORM_VALUES: IOfferIndividualFormValues = {
+  title: '',
+  description: '',
+  venueId: '',
+}
