@@ -1068,7 +1068,7 @@ def deactivate_inappropriate_products(isbn: str) -> bool:
 
 
 def set_offer_status_based_on_fraud_criteria(
-    offer: Union[educational_models.CollectiveOffer, Offer]
+    offer: Union[educational_models.CollectiveOffer, educational_models.CollectiveOfferTemplate, Offer]
 ) -> OfferValidationStatus:
     current_config = offers_repository.get_current_offer_validation_config()
     if not current_config:
@@ -1267,6 +1267,13 @@ def create_collective_offer_template_and_delete_collective_offer(offer: Offer, s
     if FeatureToggle.ENABLE_NEW_COLLECTIVE_MODEL.is_active():
         if offer.validation == OfferValidationStatus.DRAFT:
             _update_offer_fraud_information(collective_offer_template, user)
+    else:
+        # the offer validation is copied from the offer. The only problem is when the offer is in draft as the fraud is
+        # not enabled of collectiveOfferTemplate it will stay in draft. Therefor we force its status
+        if collective_offer_template.validation == OfferValidationStatus.DRAFT:
+            collective_offer_template.validation = OfferValidationStatus.APPROVED
+            collective_offer_template.lastValidationDate = datetime.datetime.utcnow()
+            collective_offer_template.lastValidationType = OfferValidationType.AUTO
 
     logger.info(
         "Collective offer template has been created and regular collective offer deleted if applicable",

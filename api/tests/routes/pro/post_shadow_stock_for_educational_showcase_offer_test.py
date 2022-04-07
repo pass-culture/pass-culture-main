@@ -8,6 +8,7 @@ import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
+from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.utils.human_ids import dehumanize
 from pcapi.utils.human_ids import humanize
 
@@ -90,6 +91,7 @@ class Return200Test:
         assert collective_offer_template.contactPhone == collective_offer.contactPhone
         assert collective_offer_template.offerVenue == collective_offer.offerVenue
         assert collective_offer_template.priceDetail == stock_payload["educationalPriceDetail"]
+        assert collective_offer_template.validation == OfferValidationStatus.APPROVED
 
 
 class Return400Test:
