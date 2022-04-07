@@ -281,7 +281,7 @@ class UserProfileResponse(BaseModel):
         user.isBeneficiary = user.is_beneficiary
         user.subscriptionMessage = cls._get_subscription_message(user)
 
-        if not (FeatureToggle.ENABLE_CULTURAL_SURVEY.is_active() and user.is_beneficiary):
+        if not FeatureToggle.ENABLE_NATIVE_CULTURAL_SURVEY.is_active():
             user.needsToFillCulturalSurvey = False
 
         return super().from_orm(user)
