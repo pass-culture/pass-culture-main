@@ -12,6 +12,7 @@
     "build:testing": "env-cmd -f .env.testing yarn build",
     "generate:api:client": "./scripts/generate_api_client.sh",
     "generate:api:client:local": "./scripts/generate_api_client_local.sh",
+    "generate:api:client:test": "./scripts/generate_api_client_test.sh",
     "licenses": "node_modules/.bin/license-reporter save --json licenses.json",
     "lint:js": "eslint '{src,testcafe}/**/*.{js,jsx,ts,tsx}' --max-warnings=0",
     "lint:js:fix": "yarn lint:js --fix",

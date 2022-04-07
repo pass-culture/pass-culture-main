@@ -8,8 +8,8 @@ export interface {{classname}} {{#parent}}extends {{{parent}}} {{/parent}}{
     {{name}}{{^required}}?{{/required}}: {{#isEnum}}{{{datatypeWithEnum}}}{{/isEnum}}{{^isEnum}}{{{datatype}}}{{/isEnum}}{{#nullable}} | null{{/nullable}};
 {{/vars}}
 }
-{{#hasEnums}}
 
+{{#hasEnums}}
 export namespace {{classname}} {
 {{#vars}}
     {{#isEnum}}

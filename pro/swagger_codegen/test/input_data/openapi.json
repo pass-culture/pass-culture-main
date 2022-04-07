@@ -1,0 +1,247 @@
+{
+  "components": {
+    "schemas": {
+      "AwesomEnum": {
+        "description": "An enumeration.",
+        "enum": [
+          "hello",
+          "good by"
+        ],
+        "title": "AwesomEnum"
+      },
+      "BookingStatusFilter": {
+        "description": "An enumeration.",
+        "enum": [
+          "booked",
+          "validated",
+          "reimbursed"
+        ],
+        "title": "BookingStatusFilter"
+      },
+      "ListBookingsQueryModel": {
+        "properties": {
+          "awesomeProp": {
+            "$ref": "#/components/schemas/AwesomEnum"
+          },
+          "awesomePropOptional": {
+            "anyOf": [
+              {
+                "title": "AwesomEnum",
+                "$ref": "#/components/schemas/AwesomEnum",
+                "type": "string"
+              }
+            ],
+            "nullable": true
+          },
+          "awesomePropOptionalUnion": {
+            "anyOf": [
+              {
+                "title": "AwesomEnum",
+                "$ref": "#/components/schemas/AwesomEnum",
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Awesomepropoptionalunion"
+          },
+          "awesomePropUnion": {
+            "anyOf": [
+              {
+                "title": "AwesomEnum",
+                "$ref": "#/components/schemas/AwesomEnum",
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Awesomepropunion"
+          },
+          "bookingStatusFilter": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/BookingStatusFilter"
+              }
+            ],
+            "nullable": true
+          }
+        },
+        "required": [
+          "awesomeProp",
+          "awesomePropUnion"
+        ],
+        "title": "ListBookingsQueryModel",
+        "type": "object"
+      },
+      "ListBookingsResponseModel": {
+        "properties": {
+          "total": {
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+        ],
+        "title": "ListBookingsResponseModel",
+        "type": "object"
+      }
+    },
+    "ValidationError": {
+      "description": "Model of a validation error response.",
+      "items": {
+        "$ref": "#/components/schemas/ValidationErrorElement"
+      },
+      "title": "ValidationError",
+      "type": "array"
+    },
+    "ValidationErrorElement": {
+      "description": "Model of a validation error response element.",
+      "properties": {
+        "ctx": {
+          "title": "Error context",
+          "type": "object"
+        },
+        "loc": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Missing field name",
+          "type": "array"
+        },
+        "msg": {
+          "title": "Error message",
+          "type": "string"
+        },
+        "type": {
+          "title": "Error type",
+          "type": "string"
+        }
+      },
+      "required": [
+        "loc",
+        "msg",
+        "type"
+      ],
+      "title": "ValidationErrorElement",
+      "type": "object"
+    }
+  },
+  "info": {
+    "title": "pass Culture pro private API",
+    "version": "1"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/bookings/pro": {
+      "get": {
+        "description": "",
+        "operationId": "getBookingsGetBookingsPro",
+        "parameters": [
+          {
+            "description": "",
+            "in": "query",
+            "name": "bookingStatusFilter",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/BookingStatusFilter"
+                }
+              ],
+              "nullable": true
+            }
+          },
+          {
+            "description": "",
+            "in": "query",
+            "name": "awesomeProp",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/AwesomEnum"
+            }
+          },
+          {
+            "description": "",
+            "in": "query",
+            "name": "awesomePropOptional",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/AwesomEnum"
+                }
+              ],
+              "nullable": true
+            }
+          },
+          {
+            "description": "",
+            "in": "query",
+            "name": "awesomePropUnion",
+            "required": true,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/AwesomEnum"
+                },
+                {
+                  "type": "integer"
+                }
+              ],
+              "title": "Awesomepropunion"
+            }
+          },
+          {
+            "description": "",
+            "in": "query",
+            "name": "awesomePropOptionalUnion",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/AwesomEnum"
+                },
+                {
+                  "type": "integer"
+                }
+              ],
+              "nullable": true,
+              "title": "Awesomepropoptionalunion"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListBookingsResponseModel"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationError"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          }
+        },
+        "summary": "get_bookings_pro <GET>",
+        "tags": []
+      }
+    }
+  },
+  "security": [],
+  "tags": []
+}
