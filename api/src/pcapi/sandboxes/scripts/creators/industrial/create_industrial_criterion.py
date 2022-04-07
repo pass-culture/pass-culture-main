@@ -35,7 +35,7 @@ def create_industrial_criteria() -> dict:
     return criteria_by_name
 
 
-def associate_criterion_to_one_offer_with_mediation(offers_by_name: dict, criteria_by_name: dict):
+def associate_criterion_to_one_offer_with_mediation(offers_by_name: dict, criteria_by_name: dict):  # type: ignore [no-untyped-def]
     offer = list(filter(lambda o: o.mediations is not None, list(offers_by_name.values())))[0]
     criterion = criteria_by_name["Offre de médiation spécifique"]
 

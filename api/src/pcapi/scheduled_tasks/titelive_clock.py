@@ -19,27 +19,27 @@ blueprint = Blueprint(__name__, __name__)
 @cron_context
 @log_cron_with_transaction
 @cron_require_feature(FeatureToggle.SYNCHRONIZE_TITELIVE_PRODUCTS)
-def synchronize_titelive_things():
+def synchronize_titelive_things():  # type: ignore [no-untyped-def]
     synchronize_data_for_provider("TiteLiveThings")
 
 
 @cron_context
 @log_cron_with_transaction
 @cron_require_feature(FeatureToggle.SYNCHRONIZE_TITELIVE_PRODUCTS_DESCRIPTION)
-def synchronize_titelive_thing_descriptions():
+def synchronize_titelive_thing_descriptions():  # type: ignore [no-untyped-def]
     synchronize_data_for_provider("TiteLiveThingDescriptions")
 
 
 @cron_context
 @log_cron_with_transaction
 @cron_require_feature(FeatureToggle.SYNCHRONIZE_TITELIVE_PRODUCTS_THUMBS)
-def synchronize_titelive_thing_thumbs():
+def synchronize_titelive_thing_thumbs():  # type: ignore [no-untyped-def]
     synchronize_data_for_provider("TiteLiveThingThumbs")
 
 
 # FIXME (jsdupuis, 2022-03-10) : to be deleted when cron will be managed by the infrastructure rather than by the app
 @blueprint.cli.command("titelive_clock")
-def titelive_clock():
+def titelive_clock():  # type: ignore [no-untyped-def]
     set_tag("pcapi.app_type", "titelive_clock")
     scheduler = BlockingScheduler()
     utils.activate_sentry(scheduler)

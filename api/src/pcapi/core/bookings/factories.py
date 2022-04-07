@@ -27,7 +27,7 @@ class BookingFactory(BaseFactory):
     status = models.BookingStatus.CONFIRMED
 
     @factory.post_generation
-    def cancellation_limit_date(self, create, extracted, **kwargs):
+    def cancellation_limit_date(self, create, extracted, **kwargs):  # type: ignore [no-untyped-def]
         if extracted:
             self.cancellationLimitDate = extracted
         else:
@@ -38,7 +38,7 @@ class BookingFactory(BaseFactory):
         db.session.commit()
 
     @factory.post_generation
-    def cancellation_date(self, create, extracted, **kwargs):
+    def cancellation_date(self, create, extracted, **kwargs):  # type: ignore [no-untyped-def]
         # the public.save_cancellation_date() psql trigger overrides the extracted cancellationDate
         if extracted:
             self.cancellationDate = extracted
@@ -46,7 +46,7 @@ class BookingFactory(BaseFactory):
             db.session.flush()
 
     @classmethod
-    def _create(cls, model_class, *args, **kwargs):
+    def _create(cls, model_class, *args, **kwargs):  # type: ignore [no-untyped-def]
         if not kwargs.get("status") == models.BookingStatus.CANCELLED:
             stock = kwargs.get("stock")
             stock.dnBookedQuantity = stock.dnBookedQuantity + kwargs.get("quantity", 1)
@@ -108,7 +108,7 @@ class IndividualBookingSubFactory(BaseFactory):
     user = factory.SubFactory(users_factories.BeneficiaryGrant18Factory)
 
     @factory.post_generation
-    def attached_deposit(self, create, extracted, **kwargs):
+    def attached_deposit(self, create, extracted, **kwargs):  # type: ignore [no-untyped-def]
         if extracted == "forced_none":
             self.deposit = None
             return

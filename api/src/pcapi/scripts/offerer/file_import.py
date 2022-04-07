@@ -38,7 +38,7 @@ class OffererNotCreatedException(Exception):
 def iterate_rows_for_user_offerers(csv_rows: list[list[str]]) -> list:
     user_offerers = []
     for row in csv_rows:
-        if _is_header_or_blank_line(row):
+        if _is_header_or_blank_line(row):  # type: ignore [arg-type]
             continue
 
         user_offerer = create_activated_user_offerer(row)
@@ -72,7 +72,7 @@ def create_activated_user_offerer(csv_row: list[str]) -> UserOfferer:
         filled_user_offerer = fill_user_offerer_from(UserOfferer(), filled_user, filled_offerer)
         repository.save(filled_user_offerer)
         return filled_user_offerer
-    return None
+    return None  # type: ignore [return-value]
 
 
 def fill_user_offerer_from(user_offerer: UserOfferer, created_user: User, created_offerer: Offerer) -> UserOfferer:
@@ -119,7 +119,7 @@ def run(csv_file_path: str) -> None:
         csv_reader = csv.reader(csv_file)
 
         logger.info("[STEP 2] Enregistrement des structures et lieux")
-        user_offerers = iterate_rows_for_user_offerers(csv_reader)
+        user_offerers = iterate_rows_for_user_offerers(csv_reader)  # type: ignore [arg-type]
     logger.info("Enregistrement des comptes pro terminé\n")
 
     logger.info("[STEP 3] Décompte des objets")

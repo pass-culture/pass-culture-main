@@ -45,7 +45,7 @@ def get_local_provider_class_by_name(class_name: str) -> Callable:
     return getattr(pcapi.local_providers, class_name)
 
 
-def synchronize_venue_provider(venue_provider: VenueProvider, limit: Optional[int] = None):
+def synchronize_venue_provider(venue_provider: VenueProvider, limit: Optional[int] = None):  # type: ignore [no-untyped-def]
     if venue_provider.provider.implements_provider_api:
         synchronize_provider_api.synchronize_venue_provider(venue_provider)
 

@@ -25,7 +25,7 @@ class BeneficiaryImportSources(Enum):
     ubble = "ubble"
 
 
-class BeneficiaryImport(PcObject, Model):
+class BeneficiaryImport(PcObject, Model):  # type: ignore [valid-type, misc]
     """
     THIS MODEL IS DEPRECATED - DO NOT USE
 
@@ -51,9 +51,9 @@ class BeneficiaryImport(PcObject, Model):
     )
     beneficiary = relationship("User", foreign_keys=[beneficiaryId], backref="beneficiaryImports")
 
-    def setStatus(self, status: ImportStatus, detail: str = None, author: "User" = None):
+    def setStatus(self, status: ImportStatus, detail: str = None, author: "User" = None):  # type: ignore [no-untyped-def]
         new_status = BeneficiaryImportStatus()
-        new_status.status = status
+        new_status.status = status  # type: ignore [assignment]
         new_status.detail = detail
         new_status.date = datetime.utcnow()
         new_status.author = author
@@ -64,7 +64,7 @@ class BeneficiaryImport(PcObject, Model):
     def currentStatus(self):
         return self._last_status().status
 
-    @currentStatus.expression
+    @currentStatus.expression  # type: ignore [no-redef]
     def currentStatus(cls):  # pylint: disable=no-self-argument
         return cls._query_last_status(BeneficiaryImportStatus.status)
 
@@ -72,7 +72,7 @@ class BeneficiaryImport(PcObject, Model):
     def updatedAt(self):
         return self._last_status().date
 
-    @updatedAt.expression
+    @updatedAt.expression  # type: ignore [no-redef]
     def updatedAt(cls):  # pylint: disable=no-self-argument
         return cls._query_last_status(BeneficiaryImportStatus.date)
 
@@ -80,7 +80,7 @@ class BeneficiaryImport(PcObject, Model):
     def detail(self):
         return self._last_status().detail
 
-    @detail.expression
+    @detail.expression  # type: ignore [no-redef]
     def detail(cls):  # pylint: disable=no-self-argument
         return cls._query_last_status(BeneficiaryImportStatus.detail)
 
@@ -89,12 +89,12 @@ class BeneficiaryImport(PcObject, Model):
         author = self._last_status().author
         return author.email or None
 
-    @authorEmail.expression
+    @authorEmail.expression  # type: ignore [no-redef]
     def authorEmail(cls):  # pylint: disable=no-self-argument
         return cls._query_last_status(BeneficiaryImportStatus.author)
 
     @property
-    def history(self):
+    def history(self):  # type: ignore [no-untyped-def]
         return "\n".join([repr(s) for s in self.statuses])
 
     def get_detailed_source(self) -> str:
@@ -104,7 +104,7 @@ class BeneficiaryImport(PcObject, Model):
         return f"dossier {self.source} [{self.applicationId}]"
 
     @classmethod
-    def _query_last_status(cls, column: sa.Column):
+    def _query_last_status(cls, column: sa.Column):  # type: ignore [no-untyped-def]
         return (
             db.session.query(column)
             .filter(BeneficiaryImportStatus.beneficiaryImportId == cls.id)
@@ -113,5 +113,5 @@ class BeneficiaryImport(PcObject, Model):
             .as_scalar()
         )
 
-    def _last_status(self):
+    def _last_status(self):  # type: ignore [no-untyped-def]
         return sorted(self.statuses, key=lambda x: x.date, reverse=True)[0]

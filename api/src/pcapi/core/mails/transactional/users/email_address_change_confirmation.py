@@ -10,7 +10,7 @@ from pcapi.utils.urls import generate_firebase_dynamic_link
 def get_email_confirmation_email_data(
     user: users_models.User, token: users_models.Token
 ) -> SendinblueTransactionalEmailData:
-    expiration_timestamp = int(token.expirationDate.timestamp())
+    expiration_timestamp = int(token.expirationDate.timestamp())  # type: ignore [union-attr]
     email_confirmation_link = generate_firebase_dynamic_link(
         path="signup-confirmation",
         params={"token": token.value, "expiration_timestamp": expiration_timestamp, "email": user.email},

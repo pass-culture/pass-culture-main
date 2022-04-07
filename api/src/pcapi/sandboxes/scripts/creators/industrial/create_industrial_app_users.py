@@ -41,7 +41,7 @@ AGE_TAGS = ["age-more-than-18yo", "age-less-than-18yo", "age-18yo"]
 GRANT_18_DEPOSIT_VERSIONS = [1, 2]
 
 
-def create_industrial_app_users():
+def create_industrial_app_users():  # type: ignore [no-untyped-def]
     beneficiaries = create_industrial_app_beneficiaries()
     underage_beneficiaries = create_industrial_app_underage_beneficiaries()
     other_users = create_industrial_app_other_users()
@@ -54,7 +54,7 @@ def create_industrial_app_users():
     return app_users
 
 
-def create_industrial_app_beneficiaries():
+def create_industrial_app_beneficiaries():  # type: ignore [no-untyped-def]
     logger.info("create_industrial_app_beneficiaries")
 
     users_by_name = {}
@@ -96,7 +96,7 @@ def create_industrial_app_beneficiaries():
     return users_by_name
 
 
-def create_industrial_app_underage_beneficiaries():
+def create_industrial_app_underage_beneficiaries():  # type: ignore [no-untyped-def]
     logger.info("create_industrial_app_underage_beneficiaries")
 
     users_by_name = {}
@@ -138,7 +138,7 @@ def create_industrial_app_underage_beneficiaries():
     return users_by_name
 
 
-def create_industrial_app_other_users():
+def create_industrial_app_other_users():  # type: ignore [no-untyped-def]
     logger.info("create_industrial_app_other_users")
 
     users_by_name = {}
@@ -193,7 +193,7 @@ def create_industrial_app_other_users():
     return users_by_name
 
 
-def create_industrial_app_general_public_users():
+def create_industrial_app_general_public_users():  # type: ignore [no-untyped-def]
     logger.info("create_industrial_app_general_public_users")
 
     users_by_name = {}

@@ -78,10 +78,10 @@ class FrenchParserInfo(parserinfo):
 
 
 class DateTimes:
-    def __init__(self, *datetimes):
+    def __init__(self, *datetimes):  # type: ignore [no-untyped-def]
         self.datetimes = list(datetimes)
 
-    def __eq__(self, other):
+    def __eq__(self, other):  # type: ignore [no-untyped-def]
         return self.datetimes == other.datetimes
 
 
@@ -100,7 +100,7 @@ def get_department_timezone(departement_code: str) -> str:
 def utc_datetime_to_department_timezone(date_time: Optional[datetime], departement_code: str) -> datetime:
     from_zone = tz.gettz(DEFAULT_STORED_TIMEZONE)
     to_zone = tz.gettz(get_department_timezone(departement_code))
-    utc_datetime = date_time.replace(tzinfo=from_zone)
+    utc_datetime = date_time.replace(tzinfo=from_zone)  # type: ignore [union-attr]
     return utc_datetime.astimezone(to_zone)
 
 
@@ -127,7 +127,7 @@ def get_time_in_seconds_from_datetime(date_time: datetime) -> int:
     return hour_in_seconds + minute_in_seconds + seconds
 
 
-def get_day_start(dt: date, timezone) -> datetime:
+def get_day_start(dt: date, timezone) -> datetime:  # type: ignore [no-untyped-def]
     """Return a ``datetime`` object that is the first second of the given
     ``date`` in the given timezone.
     """

@@ -15,7 +15,7 @@ def read_allocine_csv(file_path: str) -> list[tuple]:
         return [tuple(line) for line in csv.reader(file, delimiter=",")]
 
 
-def fill_allocine_pivot(lines):
+def fill_allocine_pivot(lines):  # type: ignore [no-untyped-def]
     for line in lines:
         try:
             with db.session.begin_nested():

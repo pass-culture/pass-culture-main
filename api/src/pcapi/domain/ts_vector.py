@@ -12,7 +12,7 @@ LANGUAGE = "french"
 SEARCH_STOPWORDS = stopwords.STOPWORDS | {"où"}
 
 
-def create_ts_vector_and_table_args(ts_indexes):
+def create_ts_vector_and_table_args(ts_indexes):  # type: ignore [no-untyped-def]
     ts_vectors = []
     table_args = []
 
@@ -24,19 +24,19 @@ def create_ts_vector_and_table_args(ts_indexes):
     return ts_vectors, tuple(table_args)
 
 
-def _create_fts_index(name, ts_vector) -> Index:
+def _create_fts_index(name, ts_vector) -> Index:  # type: ignore [no-untyped-def]
     return Index(name, ts_vector, postgresql_using="gin")
 
 
-def _create_ts_vector(*args):
+def _create_ts_vector(*args):  # type: ignore [no-untyped-def]
     exp = args[0]
     for e in args[1:]:
         exp += " " + e
     return func.to_tsvector(LANGUAGE + "_unaccent", exp)
 
 
-def create_get_filter_matching_ts_query_in_any_model(*models):
-    def get_filter_matching_ts_query_in_any_model(ts_query):
+def create_get_filter_matching_ts_query_in_any_model(*models):  # type: ignore [no-untyped-def]
+    def get_filter_matching_ts_query_in_any_model(ts_query):  # type: ignore [no-untyped-def]
         return or_(
             *[
                 ts_vector.match(ts_query, postgresql_regconfig=LANGUAGE + "_unaccent")
@@ -48,13 +48,13 @@ def create_get_filter_matching_ts_query_in_any_model(*models):
     return get_filter_matching_ts_query_in_any_model
 
 
-def create_filter_matching_all_keywords_in_any_model(get_filter_matching_ts_query_in_any_model, keywords_string):
+def create_filter_matching_all_keywords_in_any_model(get_filter_matching_ts_query_in_any_model, keywords_string):  # type: ignore [no-untyped-def]
     ts_queries = _get_ts_queries_from_keywords_string(keywords_string)
     ts_filters = [get_filter_matching_ts_query_in_any_model(ts_query) for ts_query in ts_queries]
     return and_(*ts_filters)
 
 
-def _get_ts_queries_from_keywords_string(keywords_string) -> list[str]:
+def _get_ts_queries_from_keywords_string(keywords_string) -> list[str]:  # type: ignore [no-untyped-def]
     keywords = tokenize_for_search(keywords_string)
     keywords_without_single_letter = remove_single_letters_for_search(keywords)
 

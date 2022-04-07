@@ -414,7 +414,7 @@ def add_contacts_to_list(user_emails: Iterable[str], sib_list_id: int, clear_lis
         max_emails_per_import = 200000
         process_ids = []
 
-        def chunk(it, size) -> Iterable:
+        def chunk(it, size) -> Iterable:  # type: ignore [no-untyped-def]
             it = iter(it)
             return iter(lambda: tuple(islice(it, size)), ())
 

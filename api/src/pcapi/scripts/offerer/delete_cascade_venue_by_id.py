@@ -92,4 +92,4 @@ def delete_cascade_venue_by_id(venue_id: int) -> None:
     }
     logger.info("Deleted venue", extra=recap_data)
 
-    return recap_data
+    return recap_data  # type: ignore [return-value]

@@ -62,7 +62,7 @@ def has_been_recredited(user: users_models.User) -> bool:
         return False
 
     sorted_recredits = sorted(user.deposit.recredits, key=lambda recredit: recredit.dateCreated)
-    return sorted_recredits[-1].recreditType == deposit_conf.RECREDIT_TYPE_AGE_MAPPING[user.age]
+    return sorted_recredits[-1].recreditType == deposit_conf.RECREDIT_TYPE_AGE_MAPPING[user.age]  # type: ignore [index]
 
 
 def recredit_underage_users() -> None:

@@ -69,7 +69,7 @@ def on_dms_fraud_result(
     dms_content: models.DMSContent,
 ) -> models.BeneficiaryFraudCheck:
     eligibility_type = decide_eligibility(user, dms_content)
-    fraud_check = dms_api.get_fraud_check(user, str(dms_content.application_id))
+    fraud_check = dms_api.get_fraud_check(user, str(dms_content.application_id))  # type: ignore [arg-type]
     if not fraud_check:
         logger.warning("DMS fraud check from user %d not previously created", user.id)
         fraud_check = models.BeneficiaryFraudCheck(
@@ -84,7 +84,7 @@ def on_dms_fraud_result(
         fraud_check.resultContent = dms_content.dict()
         if fraud_check.eligibilityType != eligibility_type:
             logger.info("User changed his eligibility in DMS application", extra={"user_id": user.id})
-            fraud_check.eligibilityType = eligibility_type
+            fraud_check.eligibilityType = eligibility_type  # type: ignore [assignment]
 
     on_identity_fraud_check_result(user, fraud_check)
     repository.save(fraud_check)
@@ -97,8 +97,8 @@ def educonnect_fraud_checks(
 ) -> list[models.FraudItem]:
     educonnect_content = beneficiary_fraud_check.source_data()
     fraud_items = []
-    fraud_items.append(_underage_user_fraud_item(educonnect_content.get_birth_date()))
-    fraud_items.append(_duplicate_ine_hash_fraud_item(educonnect_content.ine_hash, user.id))
+    fraud_items.append(_underage_user_fraud_item(educonnect_content.get_birth_date()))  # type: ignore [union-attr, arg-type]
+    fraud_items.append(_duplicate_ine_hash_fraud_item(educonnect_content.ine_hash, user.id))  # type: ignore [union-attr]
 
     return fraud_items
 
@@ -108,7 +108,7 @@ def dms_fraud_checks(
 ) -> list[models.FraudItem]:
     fraud_items = []
     fraud_items.append(
-        duplicate_id_piece_number_fraud_item(user, beneficiary_fraud_check.source_data().get_id_piece_number())
+        duplicate_id_piece_number_fraud_item(user, beneficiary_fraud_check.source_data().get_id_piece_number())  # type: ignore [union-attr, arg-type]
     )
     return fraud_items
 
@@ -131,7 +131,7 @@ def on_identity_fraud_check_result(
     else:
         raise Exception("The fraud_check type is not known")
 
-    content: models.IdentityCheckContent = beneficiary_fraud_check.source_data()
+    content: models.IdentityCheckContent = beneficiary_fraud_check.source_data()  # type: ignore [name-defined]
     content_first_name = content.get_first_name()
     content_last_name = content.get_last_name()
     content_birth_date = content.get_birth_date()
@@ -151,9 +151,9 @@ def on_identity_fraud_check_result(
         fraud_items.append(_check_user_names_valid(content_first_name, content_last_name))
 
     if content_birth_date:
-        fraud_items.append(_check_user_eligibility(user, beneficiary_fraud_check.eligibilityType))
+        fraud_items.append(_check_user_eligibility(user, beneficiary_fraud_check.eligibilityType))  # type: ignore [arg-type]
 
-    fraud_items.append(_check_user_has_no_active_deposit(user, beneficiary_fraud_check.eligibilityType))
+    fraud_items.append(_check_user_has_no_active_deposit(user, beneficiary_fraud_check.eligibilityType))  # type: ignore [arg-type]
     fraud_items.append(_check_user_email_is_validated(user))
 
     return validate_frauds(fraud_items, beneficiary_fraud_check)
@@ -310,7 +310,7 @@ def is_subscription_name_valid(name: typing.Optional[str]) -> bool:
     return is_latin(stripped_name)
 
 
-def _check_user_names_valid(first_name: typing.Optional[str], last_name: typing.Optional[str]):
+def _check_user_names_valid(first_name: typing.Optional[str], last_name: typing.Optional[str]):  # type: ignore [no-untyped-def]
     incorrect_fields = None
     is_valid_first_name = is_subscription_name_valid(first_name)
     is_valid_last_name = is_subscription_name_valid(last_name)
@@ -494,9 +494,9 @@ def validate_frauds(
         if fraud_item.status != models.FraudStatus.OK and fraud_item.reason_code is not None
     ]
 
-    fraud_check.status = fraud_check_status
+    fraud_check.status = fraud_check_status  # type: ignore [assignment]
     fraud_check.reason = reason
-    fraud_check.reasonCodes = reason_codes
+    fraud_check.reasonCodes = reason_codes  # type: ignore [assignment]
     repository.save(fraud_check)
 
     return fraud_items

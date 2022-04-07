@@ -2,7 +2,7 @@ from pcapi import settings
 import pcapi.core.users.models as users_models
 
 
-def _get_permission_mapping():
+def _get_permission_mapping():  # type: ignore [no-untyped-def]
     mapping = {}
     for line in settings.PERMISSIONS.split("\n"):
         if not line:
@@ -13,7 +13,7 @@ def _get_permission_mapping():
     return mapping
 
 
-def has_permission(user: users_models.User, permission: str):
+def has_permission(user: users_models.User, permission: str):  # type: ignore [no-untyped-def]
     if not user.has_admin_role:  # safety belt, do not remove
         return False
     # Yes, we calculate the mapping on every call. It's fine:

@@ -13,12 +13,12 @@ def send_batch_booking_postponement_email_to_users(bookings: list[Booking]) -> l
     success = True
     for booking in bookings:
         success &= send_booking_postponement_email_to_users(booking)
-    return success
+    return success  # type: ignore [return-value]
 
 
 def send_booking_postponement_email_to_users(booking: Booking) -> bool:
     data = get_booking_postponed_by_pro_to_beneficiary_email_data(booking)
-    return mails.send(recipients=[booking.email], data=data)
+    return mails.send(recipients=[booking.email], data=data)  # type: ignore [list-item]
 
 
 def get_booking_postponed_by_pro_to_beneficiary_email_data(

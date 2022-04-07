@@ -88,7 +88,7 @@ def get_offer_notification_data(user_id: int, offer: Offer) -> TransactionalNoti
 
 
 def get_soon_expiring_bookings_with_offers_notification_data(booking: Booking) -> TransactionalNotificationData:
-    remaining_days = (booking.expirationDate.date() - date.today()).days
+    remaining_days = (booking.expirationDate.date() - date.today()).days  # type: ignore [union-attr]
 
     if remaining_days < 0:
         raise exceptions.BookingIsExpired(booking.id)

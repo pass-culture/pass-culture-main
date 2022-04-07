@@ -5,7 +5,7 @@ import pcapi.local_providers
 from pcapi.models import db
 
 
-def install_local_providers():
+def install_local_providers():  # type: ignore [no-untyped-def]
     # It is a lot easier in tests when all providers are active by
     # default (and manually inactivated if a particular test needs
     # that).

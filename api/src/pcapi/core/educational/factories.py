@@ -199,7 +199,7 @@ class CollectiveBookingFactory(BaseFactory):
     confirmationDate = factory.LazyFunction(lambda: datetime.datetime.now() - datetime.timedelta(days=1))
 
     @factory.post_generation
-    def cancellation_limit_date(self, create, extracted, **kwargs):
+    def cancellation_limit_date(self, create, extracted, **kwargs):  # type: ignore [no-untyped-def]
         if extracted:
             self.cancellationLimitDate = extracted
         else:
@@ -210,7 +210,7 @@ class CollectiveBookingFactory(BaseFactory):
         db.session.commit()
 
     @factory.post_generation
-    def cancellation_date(self, create, extracted, **kwargs):
+    def cancellation_date(self, create, extracted, **kwargs):  # type: ignore [no-untyped-def]
         # the public.save_cancellation_date() psql trigger overrides the extracted cancellationDate
         if extracted:
             self.cancellationDate = extracted
@@ -218,7 +218,7 @@ class CollectiveBookingFactory(BaseFactory):
             db.session.flush()
 
     @classmethod
-    def _create(cls, model_class, *args, **kwargs):
+    def _create(cls, model_class, *args, **kwargs):  # type: ignore [no-untyped-def]
         kwargs["venue"] = kwargs["collectiveStock"].collectiveOffer.venue
         kwargs["offerer"] = kwargs["collectiveStock"].collectiveOffer.venue.managingOfferer
         return super()._create(model_class, *args, **kwargs)

@@ -18,9 +18,9 @@ def _apply_departement_timezone(naive_datetime: datetime, departement_code: str)
 def convert_booking_dates_utc_to_venue_timezone(
     date_without_timezone: datetime, booking: AbstractKeyedTuple
 ) -> datetime:
-    if booking.venueDepartmentCode:
+    if booking.venueDepartmentCode:  # type: ignore [attr-defined]
         return _apply_departement_timezone(
-            naive_datetime=date_without_timezone, departement_code=booking.venueDepartmentCode
+            naive_datetime=date_without_timezone, departement_code=booking.venueDepartmentCode  # type: ignore [attr-defined]
         )
-    offerer_department_code = PostalCode(booking.offererPostalCode).get_departement_code()
+    offerer_department_code = PostalCode(booking.offererPostalCode).get_departement_code()  # type: ignore [attr-defined]
     return _apply_departement_timezone(naive_datetime=date_without_timezone, departement_code=offerer_department_code)

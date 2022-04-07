@@ -57,7 +57,7 @@ class BeneficiaryImportView(BaseAdminView):
         "authorEmail",
     ]
 
-    def edit_form(self, obj=None) -> Form:
+    def edit_form(self, obj=None) -> Form:  # type: ignore [no-untyped-def]
         class _NewStatusForm(Form):
             beneficiary = StringField(
                 "Bénéficiaire",
@@ -80,7 +80,7 @@ class BeneficiaryImportView(BaseAdminView):
     def update_model(self, new_status_form: Form, beneficiary_import: BeneficiaryImport) -> None:
         new_status = ImportStatus(new_status_form.status.data)
 
-        if is_import_status_change_allowed(beneficiary_import.currentStatus, new_status):
+        if is_import_status_change_allowed(beneficiary_import.currentStatus, new_status):  # type: ignore [arg-type]
             beneficiary_import.setStatus(new_status, detail=new_status_form.detail.data, author=current_user)
             repository.save(beneficiary_import)
         else:

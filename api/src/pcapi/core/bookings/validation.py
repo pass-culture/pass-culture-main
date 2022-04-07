@@ -62,7 +62,7 @@ def check_stock_is_bookable(stock: Stock, quantity: int) -> None:
     # The first part already checks that the stock is not sold out,
     # but we need to make sure that we can book `quantity` (which
     # could be 2), hence the second part of the check).
-    if not stock.isBookable or (stock.quantity is not None and stock.remainingQuantity < quantity):
+    if not stock.isBookable or (stock.quantity is not None and stock.remainingQuantity < quantity):  # type: ignore [operator]
         raise exceptions.StockIsNotBookable()
 
 
@@ -90,7 +90,7 @@ def check_expenses_limits(user: User, requested_amount: Decimal, offer: Offer) -
         and deposit.specific_caps.physical_cap_applies(offer)
         and requested_amount > domains_credit.physical.remaining
     ):
-        raise exceptions.PhysicalExpenseLimitHasBeenReached(domains_credit.physical.initial)
+        raise exceptions.PhysicalExpenseLimitHasBeenReached(domains_credit.physical.initial)  # type: ignore [arg-type]
 
 
 def check_beneficiary_can_cancel_booking(user: User, booking: Booking) -> None:
@@ -140,7 +140,7 @@ def check_is_usable(booking: Booking) -> None:
         raise gone
 
     if booking.educationalBookingId is not None:
-        if booking.educationalBooking.status is EducationalBookingStatus.REFUSED:
+        if booking.educationalBooking.status is EducationalBookingStatus.REFUSED:  # type: ignore [union-attr]
             reason = "Cette réservation pour une offre éducationnelle a été refusée par le chef d'établissement"
             raise api_errors.ForbiddenError(errors={"educationalBooking": reason})
 
@@ -178,7 +178,7 @@ def check_can_be_mark_as_unused(booking: Booking) -> None:
         raise forbidden
 
     if booking.status == BookingStatus.CANCELLED:
-        forbidden = api_errors.ResourceGoneError()
+        forbidden = api_errors.ResourceGoneError()  # type: ignore [assignment]
         forbidden.add_error("booking", "Cette réservation a été annulée")
         raise forbidden
 

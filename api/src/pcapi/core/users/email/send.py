@@ -25,9 +25,9 @@ def _build_link_for_email_change(current_email: str, new_email: str, expiration_
 def send_user_emails_for_email_change(user: User, new_email: str, expiration_date: datetime) -> None:
     user_with_new_email = find_user_by_email(new_email)
     if user_with_new_email:
-        return True
+        return True  # type: ignore [return-value]
 
     success = send_information_email_change_email(user)
     link_for_email_change = _build_link_for_email_change(user.email, new_email, expiration_date)
     success &= send_confirmation_email_change_email(user, new_email, link_for_email_change)
-    return success
+    return success  # type: ignore [return-value]

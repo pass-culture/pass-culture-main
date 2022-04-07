@@ -47,7 +47,7 @@ class SendinblueBackend(BaseBackend):
                 subject=data.subject,
                 html_content=data.html_content,
                 attachment=data.attachment,
-                reply_to=asdict(data.reply_to.value),
+                reply_to=asdict(data.reply_to.value),  # type: ignore [attr-defined]
                 template_id=None,
                 params=None,
                 tags=None,

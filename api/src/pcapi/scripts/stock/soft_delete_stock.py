@@ -6,7 +6,7 @@ from pcapi.core.offers.models import Stock
 from pcapi.repository import repository
 
 
-def soft_delete_stock(stock_id):
+def soft_delete_stock(stock_id):  # type: ignore [no-untyped-def]
     stock = Stock.query.get(stock_id)
     bookings = _get_bookings_for_stock(stock_id)
     can_soft_delete = _check_bookings(bookings)
@@ -22,11 +22,11 @@ def soft_delete_stock(stock_id):
         print("Done")
 
 
-def _get_bookings_for_stock(stock_id):
+def _get_bookings_for_stock(stock_id):  # type: ignore [no-untyped-def]
     return Booking.query.filter(Booking.status != BookingStatus.CANCELLED).filter(Booking.stockId == stock_id).all()
 
 
-def _check_bookings(bookings):
+def _check_bookings(bookings):  # type: ignore [no-untyped-def]
     if not bookings:
         print("OK: Stock has no bookings")
         return True

@@ -26,7 +26,7 @@ from . import blueprint
 
 @private_api.route("/venueProviders", methods=["GET"])
 @login_required
-@spectree_serialize(on_success_status=200, response_model=ListVenueProviderResponse, api=blueprint.pro_private_schema)
+@spectree_serialize(on_success_status=200, response_model=ListVenueProviderResponse, api=blueprint.pro_private_schema)  # type: ignore [arg-type]
 def list_venue_providers(query: ListVenueProviderQuery) -> ListVenueProviderResponse:
     venue_provider_list = repository.get_venue_provider_list(query.venue_id)
     for venue_provider in venue_provider_list:
@@ -39,14 +39,14 @@ def list_venue_providers(query: ListVenueProviderQuery) -> ListVenueProviderResp
 
 @private_api.route("/venueProviders", methods=["POST"])
 @login_required
-@spectree_serialize(on_success_status=201, response_model=VenueProviderResponse, api=blueprint.pro_private_schema)
+@spectree_serialize(on_success_status=201, response_model=VenueProviderResponse, api=blueprint.pro_private_schema)  # type: ignore [arg-type]
 def create_venue_provider(body: PostVenueProviderBody) -> VenueProviderResponse:
     body.venueIdAtOfferProvider = None
 
     try:
         new_venue_provider = api.create_venue_provider(
-            dehumanize_id(body.providerId),
-            dehumanize_id(body.venueId),
+            dehumanize_id(body.providerId),  # type: ignore [arg-type]
+            dehumanize_id(body.venueId),  # type: ignore [arg-type]
             VenueProviderCreationPayload(
                 isDuo=body.isDuo,
                 price=body.price,
@@ -94,7 +94,7 @@ def create_venue_provider(body: PostVenueProviderBody) -> VenueProviderResponse:
 
 @private_api.route("/venueProviders", methods=["PUT"])
 @login_required
-@spectree_serialize(on_success_status=200, response_model=VenueProviderResponse, api=blueprint.pro_private_schema)
+@spectree_serialize(on_success_status=200, response_model=VenueProviderResponse, api=blueprint.pro_private_schema)  # type: ignore [arg-type]
 def update_venue_provider(body: PostVenueProviderBody) -> VenueProviderResponse:
     venue_id = dehumanize_id(body.venueId)
     provider_id = dehumanize_id(body.providerId)

@@ -65,7 +65,7 @@ class CashflowStatus(enum.Enum):
     ACCEPTED = "accepted"
 
 
-class BusinessUnit(Model):
+class BusinessUnit(Model):  # type: ignore [valid-type, misc]
     id = sqla.Column(sqla.BigInteger, primary_key=True, autoincrement=True)
     name = sqla.Column(sqla.Text)
     siret = sqla.Column(sqla.String(14), unique=True)
@@ -74,7 +74,7 @@ class BusinessUnit(Model):
     )
 
     bankAccountId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("bank_information.id"), index=True, nullable=True)
-    bankAccount = sqla_orm.relationship("BankInformation", foreign_keys=[bankAccountId])
+    bankAccount = sqla_orm.relationship("BankInformation", foreign_keys=[bankAccountId])  # type: ignore [misc]
 
     cashflowFrequency = sqla.Column(db_utils.MagicEnum(Frequency), nullable=False, default=Frequency.EVERY_TWO_WEEKS)
     invoiceFrequency = sqla.Column(db_utils.MagicEnum(Frequency), nullable=False, default=Frequency.EVERY_TWO_WEEKS)
@@ -82,14 +82,14 @@ class BusinessUnit(Model):
     invoices = sqla_orm.relationship("Invoice", back_populates="businessUnit")
 
 
-class BusinessUnitVenueLink(Model):
+class BusinessUnitVenueLink(Model):  # type: ignore [valid-type, misc]
     """Represent the period of time during which a venue was linked to a
     specific business unit.
     """
 
     id = sqla.Column(sqla.BigInteger, primary_key=True, autoincrement=True)
     venueId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("venue.id"), index=True, nullable=False)
-    venue = sqla_orm.relationship("Venue", foreign_keys=[venueId])
+    venue = sqla_orm.relationship("Venue", foreign_keys=[venueId])  # type: ignore [misc]
     businessUnitId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("business_unit.id"), index=True, nullable=False)
     businessUnit = sqla_orm.relationship("BusinessUnit", foreign_keys=[businessUnitId])
     # The lower bound is inclusive and required. The upper bound is
@@ -106,24 +106,24 @@ class BusinessUnitVenueLink(Model):
         sqla_psql.ExcludeConstraint(("venueId", "="), ("timespan", "&&")),
     )
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs):  # type: ignore [no-untyped-def]
         kwargs["timespan"] = self._make_timespan(*kwargs["timespan"])
         super().__init__(**kwargs)
 
     @classmethod
-    def _make_timespan(cls, start, end=None):
+    def _make_timespan(cls, start, end=None):  # type: ignore [no-untyped-def]
         start = start.astimezone(pytz.utc).isoformat()
         end = end.astimezone(pytz.utc).isoformat() if end else None
         return psycopg2.extras.DateTimeRange(start, end, bounds="[)")
 
 
-class Pricing(Model):
+class Pricing(Model):  # type: ignore [valid-type, misc]
     id = sqla.Column(sqla.BigInteger, primary_key=True, autoincrement=True)
 
     status = sqla.Column(db_utils.MagicEnum(PricingStatus), index=True, nullable=False)
 
     bookingId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("booking.id"), index=True, nullable=False)
-    booking = sqla_orm.relationship("Booking", foreign_keys=[bookingId], backref="pricings")
+    booking = sqla_orm.relationship("Booking", foreign_keys=[bookingId], backref="pricings")  # type: ignore [misc]
     businessUnitId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("business_unit.id"), index=True, nullable=False)
     businessUnit = sqla_orm.relationship("BusinessUnit", foreign_keys=[businessUnitId])
     # `siret` is either the SIRET of the venue if it has one, or the
@@ -147,7 +147,7 @@ class Pricing(Model):
     customRuleId = sqla.Column(
         sqla.BigInteger, sqla.ForeignKey("custom_reimbursement_rule.id"), index=True, nullable=True
     )
-    customRule = sqla_orm.relationship("CustomReimbursementRule", foreign_keys=[customRuleId])
+    customRule = sqla_orm.relationship("CustomReimbursementRule", foreign_keys=[customRuleId])  # type: ignore [misc]
 
     # Revenue is in euro cents. It's the revenue of the business unit
     # as of `pricing.valueDate` (thus including the related booking).
@@ -175,7 +175,7 @@ class Pricing(Model):
     )
 
 
-class PricingLine(Model):
+class PricingLine(Model):  # type: ignore [valid-type, misc]
     id = sqla.Column(sqla.BigInteger, primary_key=True, autoincrement=True)
 
     pricingId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("pricing.id"), index=True, nullable=True)
@@ -187,7 +187,7 @@ class PricingLine(Model):
     category = sqla.Column(db_utils.MagicEnum(PricingLineCategory), nullable=False)
 
 
-class PricingLog(Model):
+class PricingLog(Model):  # type: ignore [valid-type, misc]
     """A pricing log is created whenever the status of a pricing
     changes.
     """
@@ -203,7 +203,7 @@ class PricingLog(Model):
     reason = sqla.Column(db_utils.MagicEnum(PricingLogReason), nullable=False)
 
 
-class Cashflow(Model):
+class Cashflow(Model):  # type: ignore [valid-type, misc]
     """A cashflow represents a specific amount money that is transferred
     between us and a third party. It may be outgoing or incoming.
 
@@ -222,7 +222,7 @@ class Cashflow(Model):
     # change. Here we want to store the bank account that was used at
     # the time the cashflow was created.
     bankAccountId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("bank_information.id"), index=True, nullable=False)
-    bankAccount = sqla_orm.relationship("BankInformation", foreign_keys=[bankAccountId])
+    bankAccount = sqla_orm.relationship("BankInformation", foreign_keys=[bankAccountId])  # type: ignore [misc]
 
     batchId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("cashflow_batch.id"), index=True, nullable=False)
     batch = sqla_orm.relationship("CashflowBatch", foreign_keys=[batchId])
@@ -246,7 +246,7 @@ class Cashflow(Model):
     __table_args__ = (sqla.CheckConstraint('("amount" != 0)', name="non_zero_amount_check"),)
 
 
-class CashflowLog(Model):
+class CashflowLog(Model):  # type: ignore [valid-type, misc]
     """A cashflow log is created whenever the status of a cashflow
     changes.
     """
@@ -260,7 +260,7 @@ class CashflowLog(Model):
     details = sqla.Column(db_utils.SafeJsonB, nullable=True, default={}, server_default="{}")
 
 
-class CashflowPricing(Model):
+class CashflowPricing(Model):  # type: ignore [valid-type, misc]
     """An association table between cashflows and pricings for their
     many-to-many relationship.
 
@@ -288,7 +288,7 @@ class CashflowPricing(Model):
     )
 
 
-class CashflowBatch(Model):
+class CashflowBatch(Model):  # type: ignore [valid-type, misc]
     """A cashflow batch groups cashflows that are sent to the bank at the
     same time (in a single file).
     """
@@ -298,7 +298,7 @@ class CashflowBatch(Model):
     cutoff = sqla.Column(sqla.DateTime, nullable=False, unique=True)
 
 
-class InvoiceLine(Model):
+class InvoiceLine(Model):  # type: ignore [valid-type, misc]
     id = sqla.Column(sqla.BigInteger, primary_key=True, autoincrement=True)
     invoiceId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("invoice.id"), index=True, nullable=False)
     invoice = sqla_orm.relationship("Invoice", foreign_keys=[invoiceId], back_populates="lines")
@@ -313,12 +313,12 @@ class InvoiceLine(Model):
     )
 
     @property
-    def bookings_amount(self):
+    def bookings_amount(self):  # type: ignore [no-untyped-def]
         """returns the (positive) raw amount of the used Bookings priced in this line"""
         return self.contributionAmount - self.reimbursedAmount
 
     @property
-    def contribution_rate(self):
+    def contribution_rate(self):  # type: ignore [no-untyped-def]
         return 1 - self.rate
 
 
@@ -332,7 +332,7 @@ class InvoiceLineGroup:
     reimbursed_amount_subtotal: float
 
 
-class Invoice(Model):
+class Invoice(Model):  # type: ignore [valid-type, misc]
     """An invoice is linked to one or more cashflows and shows a summary
     of their related pricings.
     """
@@ -349,18 +349,18 @@ class Invoice(Model):
     cashflows = sqla_orm.relationship("Cashflow", secondary="invoice_cashflow", back_populates="invoices")
 
     @property
-    def storage_object_id(self):
+    def storage_object_id(self):  # type: ignore [no-untyped-def]
         return (
             f"{self.token}/{self.date.strftime('%d%m%Y')}-{self.reference}-"
             f"Justificatif-de-remboursement-pass-Culture.pdf"
         )
 
     @property
-    def url(self):
+    def url(self):  # type: ignore [no-untyped-def]
         return f"{settings.OBJECT_STORAGE_URL}/invoices/{self.storage_object_id}"
 
 
-class InvoiceCashflow(Model):
+class InvoiceCashflow(Model):  # type: ignore [valid-type, misc]
     """An association table between invoices and cashflows for their many-to-many relationship."""
 
     invoiceId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("invoice.id"), index=True, primary_key=True)
@@ -379,10 +379,10 @@ class InvoiceCashflow(Model):
 # were used in the "old" reimbursement system. No new data is created
 # with these models since 2022-01-01. These models have been replaced
 # by `Pricing`, `Cashflow` and other models listed above.
-class Payment(Model):
+class Payment(Model):  # type: ignore [valid-type, misc]
     id = sqla.Column(sqla.BigInteger, primary_key=True, autoincrement=True)
     bookingId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("booking.id"), index=True, nullable=False)
-    booking = sqla_orm.relationship("Booking", foreign_keys=[bookingId], backref="payments")
+    booking = sqla_orm.relationship("Booking", foreign_keys=[bookingId], backref="payments")  # type: ignore [misc]
     amount = sqla.Column(sqla.Numeric(10, 2), nullable=False)
     reimbursementRule = sqla.Column(sqla.String(200))
     reimbursementRate = sqla.Column(sqla.Numeric(10, 2))
@@ -390,7 +390,7 @@ class Payment(Model):
         sqla.BigInteger,
         sqla.ForeignKey("custom_reimbursement_rule.id"),
     )
-    customReimbursementRule = sqla_orm.relationship(
+    customReimbursementRule = sqla_orm.relationship(  # type: ignore [misc]
         "CustomReimbursementRule", foreign_keys=[customReimbursementRuleId], backref="payments"
     )
     recipientName = sqla.Column(sqla.String(140), nullable=False)
@@ -445,7 +445,7 @@ class TransactionStatus(enum.Enum):
 
 # `PaymentStatus` is deprecated. See comment above `Payment` model for
 # further details.
-class PaymentStatus(Model):
+class PaymentStatus(Model):  # type: ignore [valid-type, misc]
     id = sqla.Column(sqla.BigInteger, primary_key=True, autoincrement=True)
     paymentId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("payment.id"), index=True, nullable=False)
     payment = sqla_orm.relationship("Payment", foreign_keys=[paymentId], backref="statuses")
@@ -456,7 +456,7 @@ class PaymentStatus(Model):
 
 # `PaymentMessage` is deprecated. See comment above `Payment` model
 # for further details.
-class PaymentMessage(Model):
+class PaymentMessage(Model):  # type: ignore [valid-type, misc]
     id = sqla.Column(sqla.BigInteger, primary_key=True, autoincrement=True)
     name = sqla.Column(sqla.String(50), unique=True, nullable=False)
     checksum = sqla.Column(sqla.LargeBinary(32), unique=True, nullable=False)

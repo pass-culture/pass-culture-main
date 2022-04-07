@@ -19,7 +19,7 @@ from itertools import cycle
 from itertools import islice
 
 
-def prepare_mediations_folders():
+def prepare_mediations_folders():  # type: ignore [no-untyped-def]
     logger.info("prepare_mediations_folders")
 
     thumbs_folder_path = Path(pcapi.sandboxes.__path__[0]) / "thumbs"
@@ -39,7 +39,7 @@ def prepare_mediations_folders():
         )
 
 
-def create_industrial_mediations(offers_by_name):
+def create_industrial_mediations(offers_by_name):  # type: ignore [no-untyped-def]
     logger.info("create_industrial_mediations")
 
     mediations_with_asset = {}

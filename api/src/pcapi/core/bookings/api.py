@@ -120,7 +120,7 @@ def book_offer(
 
         individual_booking = IndividualBooking(
             booking=booking,
-            depositId=beneficiary.deposit.id if beneficiary.has_active_deposit else None,
+            depositId=beneficiary.deposit.id if beneficiary.has_active_deposit else None,  # type: ignore [union-attr]
             userId=beneficiary.id,
         )
         stock.dnBookedQuantity += booking.quantity
@@ -182,11 +182,11 @@ def _cancel_booking(
             return False
         if old_status is BookingStatus.USED:
             finance_api.cancel_pricing(booking, finance_models.PricingLogReason.MARK_AS_UNUSED)
-        booking.cancellationReason = reason
+        booking.cancellationReason = reason  # type: ignore [assignment]
         stock.dnBookedQuantity -= booking.quantity
         repository.save(booking, stock)
 
-    logger.info(
+    logger.info(  # type: ignore [call-arg]
         "Booking has been cancelled",
         extra={"booking_id": booking.id, "reason": str(reason)},
         technical_message_id="booking.cancelled",
@@ -226,7 +226,7 @@ def _cancel_collective_booking(
                 # FIXME (MathildeDuboille - 2022-03-03): Fix cancel_pricing to handle collective booking
                 finance_api.cancel_pricing(collective_booking, finance_models.PricingLogReason.MARK_AS_UNUSED)
 
-        collective_booking.cancellationReason = reason
+        collective_booking.cancellationReason = reason  # type: ignore [assignment]
         repository.save(collective_booking, collective_stock)
     logger.info(
         "CollectiveBooking has been cancelled",
@@ -273,7 +273,7 @@ def _cancel_collective_booking_from_stock(
     if booking_to_cancel is not None:
         _cancel_collective_booking(booking_to_cancel, reason)
 
-    return booking_to_cancel
+    return booking_to_cancel  # type: ignore [return-value]
 
 
 def cancel_booking_by_beneficiary(user: User, booking: Booking) -> None:
@@ -307,7 +307,7 @@ def cancel_collective_booking_from_stock_by_offerer(
 
     # FIXME (MathildeDuboille - 2022-03-03): decomment this once algolia is set up with new models (13428)
     # search.async_index_offer_ids([collective_stock.offerId])
-    return cancelled_booking
+    return cancelled_booking  # type: ignore [return-value]
 
 
 def cancel_bookings_from_rejected_offer(offer: offers_models.Offer) -> list[Booking]:
@@ -329,7 +329,7 @@ def cancel_booking_for_fraud(booking: Booking) -> None:
     _cancel_booking(booking, BookingCancellationReasons.FRAUD)
     logger.info("Cancelled booking for fraud reason", extra={"booking": booking.id})
 
-    if not send_booking_cancellation_emails_to_user_and_offerer(booking, booking.cancellationReason):
+    if not send_booking_cancellation_emails_to_user_and_offerer(booking, booking.cancellationReason):  # type: ignore [arg-type]
         logger.warning(
             "Could not send booking cancellation emails to offerer",
             extra={"booking": booking.id},
@@ -341,7 +341,7 @@ def cancel_booking_on_user_requested_account_suspension(booking: Booking) -> Non
     _cancel_booking(booking, BookingCancellationReasons.BENEFICIARY)
     logger.info("Cancelled booking on user-requested account suspension", extra={"booking": booking.id})
 
-    if not send_booking_cancellation_emails_to_user_and_offerer(booking, booking.cancellationReason):
+    if not send_booking_cancellation_emails_to_user_and_offerer(booking, booking.cancellationReason):  # type: ignore [arg-type]
         logger.warning(
             "Could not send booking= cancellation emails to offerer and beneficiary",
             extra={"booking": booking.id},
@@ -353,10 +353,10 @@ def mark_as_used(booking: Booking) -> None:
     booking.mark_as_used()
     repository.save(booking)
 
-    logger.info("Booking was marked as used", extra={"booking_id": booking.id}, technical_message_id="booking.used")
+    logger.info("Booking was marked as used", extra={"booking_id": booking.id}, technical_message_id="booking.used")  # type: ignore [call-arg]
 
     if booking.individualBookingId is not None:
-        update_external_user(booking.individualBooking.user)
+        update_external_user(booking.individualBooking.user)  # type: ignore [union-attr, arg-type]
 
 
 def mark_as_used_with_uncancelling(booking: Booking) -> None:
@@ -384,7 +384,7 @@ def mark_as_used_with_uncancelling(booking: Booking) -> None:
     logger.info("Booking was uncancelled and marked as used", extra={"bookingId": booking.id})
 
     if booking.individualBookingId is not None:
-        update_external_user(booking.individualBooking.user)
+        update_external_user(booking.individualBooking.user)  # type: ignore [union-attr, arg-type]
 
 
 def mark_as_cancelled(booking: Booking) -> None:
@@ -412,10 +412,10 @@ def mark_as_unused(booking: Booking) -> None:
     booking.mark_as_unused_set_confirmed()
     repository.save(booking)
 
-    logger.info("Booking was marked as unused", extra={"booking_id": booking.id}, technical_message_id="booking.unused")
+    logger.info("Booking was marked as unused", extra={"booking_id": booking.id}, technical_message_id="booking.unused")  # type: ignore [call-arg]
 
     if booking.individualBookingId is not None:
-        update_external_user(booking.individualBooking.user)
+        update_external_user(booking.individualBooking.user)  # type: ignore [union-attr, arg-type]
         update_external_pro(booking.venue.bookingEmail)
 
 

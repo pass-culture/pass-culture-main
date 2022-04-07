@@ -229,7 +229,7 @@ def index_venues_in_queue(from_error_queue: bool = False) -> None:
 
 
 def _reindex_venue_ids(backend: base.SearchBackend, venue_ids: Iterable[int]) -> None:
-    logger.info("Starting to index venues", extra={"count": len(venue_ids)})
+    logger.info("Starting to index venues", extra={"count": len(venue_ids)})  # type: ignore [arg-type]
     venues = Venue.query.filter(Venue.id.in_(venue_ids)).options(joinedload(Venue.managingOfferer))
 
     to_add = [venue for venue in venues if venue.is_eligible_for_search]
@@ -254,9 +254,9 @@ def _reindex_venue_ids(backend: base.SearchBackend, venue_ids: Iterable[int]) ->
 
 
 def _reindex_collective_offer_ids(backend: base.SearchBackend, collective_offer_ids: Iterable[int]) -> None:
-    logger.info("Starting to index collective offers", extra={"count": len(collective_offer_ids)})
+    logger.info("Starting to index collective offers", extra={"count": len(collective_offer_ids)})  # type: ignore [arg-type]
     collective_offers = educational_models.CollectiveOffer.query.filter(
-        educational_models.CollectiveOffer.id.in_(collective_offer_ids)
+        educational_models.CollectiveOffer.id.in_(collective_offer_ids)  # type: ignore [attr-defined]
     ).options(
         joinedload(educational_models.CollectiveOffer.collectiveStock).joinedload(
             educational_models.CollectiveStock.collectiveBookings
@@ -292,9 +292,9 @@ def _reindex_collective_offer_ids(backend: base.SearchBackend, collective_offer_
 def _reindex_collective_offer_template_ids(
     backend: base.SearchBackend, collective_offer_template_ids: Iterable[int]
 ) -> None:
-    logger.info("Starting to index collective offers templates", extra={"count": len(collective_offer_template_ids)})
+    logger.info("Starting to index collective offers templates", extra={"count": len(collective_offer_template_ids)})  # type: ignore [arg-type]
     collective_offers_templates = educational_models.CollectiveOfferTemplate.query.filter(
-        educational_models.CollectiveOfferTemplate.id.in_(collective_offer_template_ids)
+        educational_models.CollectiveOfferTemplate.id.in_(collective_offer_template_ids)  # type: ignore [attr-defined]
     ).options(
         joinedload(educational_models.CollectiveOfferTemplate.venue, innerjoin=True).joinedload(
             Venue.managingOfferer, innerjoin=True

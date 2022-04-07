@@ -15,7 +15,7 @@ blueprint = Blueprint(__name__, __name__)
 @click.option("--url", required=True, help="Endpoint url")
 @click.option("--siret", required=True, help="A working siret")
 @click.option("--token", required=True, help="(Optionnal) Basic authentication token")
-def check_provider_api(url, siret, token):
+def check_provider_api(url, siret, token):  # type: ignore [no-untyped-def]
     provider_api = ProviderAPI(
         api_url=url,
         name="TestApi",

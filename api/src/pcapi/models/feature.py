@@ -94,19 +94,19 @@ class FeatureToggle(enum.Enum):
             if not hasattr(flask.request, "_cached_features"):
                 setattr(flask.request, "_cached_features", {})
 
-            cached_value = flask.request._cached_features.get(self.name)
+            cached_value = flask.request._cached_features.get(self.name)  # type: ignore [attr-defined]
             if cached_value is not None:
                 return cached_value
 
         value = Feature.query.filter_by(name=self.name).one().isActive
 
         if flask.has_request_context():
-            flask.request._cached_features[self.name] = value
+            flask.request._cached_features[self.name] = value  # type: ignore [attr-defined]
 
         return value
 
 
-class Feature(PcObject, Model, DeactivableMixin):
+class Feature(PcObject, Model, DeactivableMixin):  # type: ignore [valid-type, misc]
     name = Column(Text, unique=True, nullable=False)
     description = Column(String(300), nullable=False)
 

@@ -107,7 +107,7 @@ def update_allocine_venue_provider(
     allocine_venue_provider: AllocineVenueProvider, venue_provider_payload: PostVenueProviderBody
 ) -> AllocineVenueProvider:
     allocine_venue_provider.quantity = venue_provider_payload.quantity
-    allocine_venue_provider.isDuo = venue_provider_payload.isDuo
+    allocine_venue_provider.isDuo = venue_provider_payload.isDuo  # type: ignore [assignment]
     for price_rule in allocine_venue_provider.priceRules:
         # PriceRule.default is the only existing value at this time
         # could need to be tweaked in the future
@@ -127,7 +127,7 @@ def connect_venue_to_provider(venue: Venue, provider: Provider, venueIdAtOfferPr
     venue_provider = VenueProvider()
     venue_provider.venue = venue
     venue_provider.provider = provider
-    venue_provider.venueIdAtOfferProvider = id_at_provider
+    venue_provider.venueIdAtOfferProvider = id_at_provider  # type: ignore [assignment]
 
     repository.save(venue_provider)
     return venue_provider
@@ -210,7 +210,7 @@ def synchronize_stocks(
 
     db.session.bulk_save_objects(new_offers)
 
-    new_offers_by_provider_reference = get_offers_map_by_id_at_provider(new_offers_references, venue)
+    new_offers_by_provider_reference = get_offers_map_by_id_at_provider(new_offers_references, venue)  # type: ignore [arg-type]
     offers_by_provider_reference = {**offers_by_provider_reference, **new_offers_by_provider_reference}
 
     stocks_provider_references = [stock.stocks_provider_reference for stock in stock_details]
@@ -286,7 +286,7 @@ def _get_stocks_to_upsert(
     for stock_detail in stock_details:
         stock_provider_reference = stock_detail.stocks_provider_reference
         product = products_by_provider_reference[stock_detail.products_provider_reference]
-        book_price = stock_detail.price or float(product.extraData["prix_livre"])
+        book_price = stock_detail.price or float(product.extraData["prix_livre"])  # type: ignore [call-overload, index]
         if stock_provider_reference in stocks_by_provider_reference:
             stock = stocks_by_provider_reference[stock_provider_reference]
 

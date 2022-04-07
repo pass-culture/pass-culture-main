@@ -58,7 +58,7 @@ class PostVenueBodyModel(BaseModel):
         extra = "forbid"
 
     @validator("latitude", pre=True)
-    def validate_latitude(cls, raw_latitude):  # pylint: disable=no-self-argument
+    def validate_latitude(cls, raw_latitude):  # type: ignore [no-untyped-def] # pylint: disable=no-self-argument
         try:
             latitude = Decimal(raw_latitude)
         except InvalidOperation:
@@ -69,7 +69,7 @@ class PostVenueBodyModel(BaseModel):
         return raw_latitude
 
     @validator("longitude", pre=True)
-    def validate_longitude(cls, raw_longitude):  # pylint: disable=no-self-argument
+    def validate_longitude(cls, raw_longitude):  # type: ignore [no-untyped-def] # pylint: disable=no-self-argument
         try:
             longitude = Decimal(raw_longitude)
         except InvalidOperation:
@@ -124,7 +124,7 @@ class GetVenueManagingOffererResponseModel(BaseModel):
 
 
 class BannerMetaModel(TypedDict, total=False):
-    image_credit: Optional[base.VenueImageCredit]
+    image_credit: Optional[base.VenueImageCredit]  # type: ignore [valid-type]
     original_image_url: Optional[str]
 
 
@@ -170,7 +170,7 @@ class GetVenueResponseModel(base.BaseVenueResponse):
     def from_orm(cls, venue: offerers_models.Venue) -> "GetVenueResponseModel":
         # pydantic expects an enum key in order to build it, and therefore
         # does not work when passing directly an enum instance.
-        venue.venueTypeCode = venue.venueTypeCode.name if venue.venueTypeCode else None
+        venue.venueTypeCode = venue.venueTypeCode.name if venue.venueTypeCode else None  # type: ignore [attr-defined]
         venue.nonHumanizedId = venue.id
         return super().from_orm(venue)
 

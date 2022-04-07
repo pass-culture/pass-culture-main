@@ -21,20 +21,20 @@ logger = logging.getLogger(__name__)
 cloud_task_api = Blueprint("Cloud task internal API", __name__, url_prefix=CLOUD_TASK_SUBPATH)
 
 
-def task(queue: str, path: str, deduplicate: bool = False, delayed_seconds: int = 0):
-    def decorator(f):
+def task(queue: str, path: str, deduplicate: bool = False, delayed_seconds: int = 0):  # type: ignore [no-untyped-def]
+    def decorator(f):  # type: ignore [no-untyped-def]
         payload_in_kwargs = f.__annotations__.get("payload")
 
         _define_handler(f, path, payload_in_kwargs)
 
         @wraps(f)
-        def delay(payload: payload_in_kwargs):
+        def delay(payload: payload_in_kwargs):  # type: ignore [no-untyped-def]
             if settings.IS_RUNNING_TESTS:
                 f(payload)
                 return
 
             if isinstance(payload, pydantic.BaseModel):
-                payload = json.loads(payload.json())
+                payload = json.loads(payload.json())  # type: ignore [attr-defined]
 
             cloud_task.enqueue_internal_task(
                 queue, path, payload, deduplicate=deduplicate, delayed_seconds=delayed_seconds
@@ -46,10 +46,10 @@ def task(queue: str, path: str, deduplicate: bool = False, delayed_seconds: int 
     return decorator
 
 
-def _define_handler(f, path, payload_type):
+def _define_handler(f, path, payload_type):  # type: ignore [no-untyped-def]
     @cloud_task_api.route(path, methods=["POST"], endpoint=path)
     @spectree_serialize(on_success_status=204)
-    def handle_task(body: payload_type = None):
+    def handle_task(body: payload_type = None):  # type: ignore [no-untyped-def]
         queue_name = request.headers.get("HTTP_X_CLOUDTASKS_QUEUENAME")
         task_id = request.headers.get("HTTP_X_CLOUDTASKS_TASKNAME")
 
@@ -58,7 +58,7 @@ def _define_handler(f, path, payload_type):
 
         if request.headers.get(cloud_task.AUTHORIZATION_HEADER_KEY) != cloud_task.AUTHORIZATION_HEADER_VALUE:
             logger.info("Unauthorized request on cloud task %s", path, extra=job_details)
-            raise ApiErrors("Unauthorized", status_code=299)  # status code 2xx to prevent retry
+            raise ApiErrors("Unauthorized", status_code=299)  # type: ignore [arg-type] # status code 2xx to prevent retry
 
         try:
             f(body)

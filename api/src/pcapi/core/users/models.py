@@ -52,7 +52,7 @@ class PhoneValidationStatusType(enum.Enum):
     VALIDATED = "validated"
 
 
-class Token(PcObject, Model):
+class Token(PcObject, Model):  # type: ignore [valid-type, misc]
     __tablename__ = "token"
 
     id = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
@@ -161,7 +161,7 @@ class GenderEnum(enum.Enum):
     F: str = "Mme"
 
 
-class User(PcObject, Model, NeedsValidationMixin):
+class User(PcObject, Model, NeedsValidationMixin):  # type: ignore [valid-type, misc]
     __tablename__ = "user"
 
     activity = sa.Column(sa.String(128), nullable=True)
@@ -176,8 +176,8 @@ class User(PcObject, Model, NeedsValidationMixin):
     dateOfBirth = sa.Column(sa.DateTime, nullable=True)
     departementCode = sa.Column(sa.String(3), nullable=True)
     email = sa.Column(sa.String(120), nullable=False, unique=True)
-    externalIds = sa.Column(postgresql.json.JSONB, nullable=True, default={}, server_default="{}")
-    extraData = sa.Column(MutableDict.as_mutable(postgresql.json.JSONB), nullable=True, default={}, server_default="{}")
+    externalIds = sa.Column(postgresql.json.JSONB, nullable=True, default={}, server_default="{}")  # type: ignore [attr-defined]
+    extraData = sa.Column(MutableDict.as_mutable(postgresql.json.JSONB), nullable=True, default={}, server_default="{}")  # type: ignore [attr-defined]
     firstName = sa.Column(sa.String(128), nullable=True)
     hasSeenTutorials = sa.Column(sa.Boolean, nullable=True)
     hasSeenProTutorials = sa.Column(sa.Boolean, nullable=False, server_default=expression.false())
@@ -196,12 +196,12 @@ class User(PcObject, Model, NeedsValidationMixin):
     married_name = sa.Column(sa.String(128), nullable=True)
     needsToFillCulturalSurvey = sa.Column(sa.Boolean, server_default=expression.true(), default=True)
     notificationSubscriptions = sa.Column(
-        MutableDict.as_mutable(postgresql.json.JSONB),
+        MutableDict.as_mutable(postgresql.json.JSONB),  # type: ignore [attr-defined]
         nullable=True,
         default=asdict(NotificationSubscriptions()),
         server_default="""{"marketing_push": true, "marketing_email": true}""",
     )
-    offerers = orm.relationship("Offerer", secondary="user_offerer")
+    offerers = orm.relationship("Offerer", secondary="user_offerer")  # type: ignore [misc]
     password = sa.Column(sa.LargeBinary(60), nullable=False)
     phoneNumber = sa.Column(sa.String(20), nullable=True)
     phoneValidationStatus = sa.Column(sa.Enum(PhoneValidationStatusType, create_constraint=False), nullable=True)
@@ -249,7 +249,7 @@ class User(PcObject, Model, NeedsValidationMixin):
             raise InvalidUserRoleException("User can't have both ADMIN and BENEFICIARY role")
         self._add_role(UserRole.UNDERAGE_BENEFICIARY)
 
-    def checkPassword(self, passwordToCheck):
+    def checkPassword(self, passwordToCheck):  # type: ignore [no-untyped-def]
         return crypto.check_password(passwordToCheck, self.password)
 
     def get_notification_subscriptions(self) -> NotificationSubscriptions:
@@ -279,21 +279,21 @@ class User(PcObject, Model, NeedsValidationMixin):
 
     @property
     def is_active(self) -> bool:  # required by flask-login
-        return self.isActive
+        return self.isActive  # type: ignore [return-value]
 
     @property
     def is_anonymous(self) -> bool:  # required by flask-login
         return False
 
-    def get_id(self):  # required by flask-login
+    def get_id(self):  # type: ignore [no-untyped-def] # required by flask-login
         return str(self.id)
 
     def is_super_admin(self) -> bool:
         if settings.IS_PROD:
             return self.email in settings.SUPER_ADMIN_EMAIL_ADDRESSES
-        return self.has_admin_role
+        return self.has_admin_role  # type: ignore [return-value]
 
-    def populate_from_dict(self, data):
+    def populate_from_dict(self, data):  # type: ignore [no-untyped-def]
         super().populate_from_dict(data)
         if data.__contains__("password") and data["password"]:
             self.setPassword(data["password"])
@@ -314,7 +314,7 @@ class User(PcObject, Model, NeedsValidationMixin):
         if self.has_pro_role:  # pylint: disable=using-constant-test
             self.roles.remove(UserRole.PRO)
 
-    def setPassword(self, newpass):
+    def setPassword(self, newpass):  # type: ignore [no-untyped-def]
         self.clearTextPassword = newpass
         self.password = crypto.hash_password(newpass)
 
@@ -338,7 +338,7 @@ class User(PcObject, Model, NeedsValidationMixin):
 
     @property
     def deposit_type(self) -> Optional["DepositType"]:
-        return self.deposit.type if self.deposit else None
+        return self.deposit.type if self.deposit else None  # type: ignore [return-value]
 
     @property
     def deposit_version(self) -> Optional[int]:
@@ -351,11 +351,11 @@ class User(PcObject, Model, NeedsValidationMixin):
         return users_api.get_eligibility_at_date(self.dateOfBirth, datetime.utcnow())
 
     @property
-    def has_active_deposit(self):
+    def has_active_deposit(self):  # type: ignore [no-untyped-def]
         return self.deposit.expirationDate > datetime.utcnow() if self.deposit else False
 
     @property
-    def hasPhysicalVenues(self):
+    def hasPhysicalVenues(self):  # type: ignore [no-untyped-def]
         for offerer in self.offerers:
             if any(not venue.isVirtual for venue in offerer.managedVenues):
                 return True
@@ -368,14 +368,14 @@ class User(PcObject, Model, NeedsValidationMixin):
 
     @property
     def latest_birthday(self) -> date:
-        return _get_latest_birthday(self.dateOfBirth.date())
+        return _get_latest_birthday(self.dateOfBirth.date())  # type: ignore [union-attr]
 
     @property
-    def needsToSeeTutorials(self):
+    def needsToSeeTutorials(self):  # type: ignore [no-untyped-def]
         return self.is_beneficiary and not self.hasSeenTutorials
 
     @property
-    def real_wallet_balance(self):
+    def real_wallet_balance(self):  # type: ignore [no-untyped-def]
         balance = db.session.query(sa.func.get_wallet_balance(self.id, True)).scalar()
         # Balance can be negative if the user has booked in the past
         # but their deposit has expired. We don't want to expose a
@@ -383,7 +383,7 @@ class User(PcObject, Model, NeedsValidationMixin):
         return max(0, balance)
 
     @property
-    def wallet_balance(self):
+    def wallet_balance(self):  # type: ignore [no-untyped-def]
         balance = db.session.query(sa.func.get_wallet_balance(self.id, False)).scalar()
         return max(0, balance)
 
@@ -419,7 +419,7 @@ class User(PcObject, Model, NeedsValidationMixin):
     def is_beneficiary(self):
         return self.has_beneficiary_role or self.has_underage_beneficiary_role
 
-    @is_beneficiary.expression
+    @is_beneficiary.expression  # type: ignore [no-redef]
     def is_beneficiary(cls):  # pylint: disable=no-self-argument
         return expression.or_(
             cls.roles.contains([UserRole.BENEFICIARY]), cls.roles.contains([UserRole.UNDERAGE_BENEFICIARY])
@@ -429,7 +429,7 @@ class User(PcObject, Model, NeedsValidationMixin):
     def is_phone_validated(self):
         return self.phoneValidationStatus == PhoneValidationStatusType.VALIDATED
 
-    @is_phone_validated.expression
+    @is_phone_validated.expression  # type: ignore [no-redef]
     def is_phone_validated(cls):  # pylint: disable=no-self-argument
         return cls.phoneValidationStatus == PhoneValidationStatusType.VALIDATED
 
@@ -437,7 +437,7 @@ class User(PcObject, Model, NeedsValidationMixin):
     def has_admin_role(self) -> bool:
         return UserRole.ADMIN in self.roles if self.roles else False
 
-    @has_admin_role.expression
+    @has_admin_role.expression  # type: ignore [no-redef]
     def has_admin_role(cls) -> bool:  # pylint: disable=no-self-argument
         return cls.roles.contains([UserRole.ADMIN])
 
@@ -445,7 +445,7 @@ class User(PcObject, Model, NeedsValidationMixin):
     def has_beneficiary_role(self) -> bool:
         return UserRole.BENEFICIARY in self.roles if self.roles else False
 
-    @has_beneficiary_role.expression
+    @has_beneficiary_role.expression  # type: ignore [no-redef]
     def has_beneficiary_role(cls) -> bool:  # pylint: disable=no-self-argument
         return cls.roles.contains([UserRole.BENEFICIARY])
 
@@ -453,7 +453,7 @@ class User(PcObject, Model, NeedsValidationMixin):
     def has_pro_role(self) -> bool:
         return UserRole.PRO in self.roles if self.roles else False
 
-    @has_pro_role.expression
+    @has_pro_role.expression  # type: ignore [no-redef]
     def has_pro_role(cls) -> bool:  # pylint: disable=no-self-argument
         return cls.roles.contains([UserRole.PRO])
 
@@ -461,12 +461,12 @@ class User(PcObject, Model, NeedsValidationMixin):
     def has_underage_beneficiary_role(self) -> bool:
         return UserRole.UNDERAGE_BENEFICIARY in self.roles if self.roles else False
 
-    @has_underage_beneficiary_role.expression
+    @has_underage_beneficiary_role.expression  # type: ignore [no-redef]
     def has_underage_beneficiary_role(cls) -> bool:  # pylint: disable=no-self-argument
         return cls.roles.contains([UserRole.UNDERAGE_BENEFICIARY])
 
     @classmethod
-    def init_subscription_state_machine(cls, obj, *args, **kwargs) -> None:
+    def init_subscription_state_machine(cls, obj, *args, **kwargs) -> None:  # type: ignore [no-untyped-def]
         from pcapi.core.subscription import transitions as subscription_transitions
 
         if not kwargs:
@@ -487,7 +487,7 @@ class User(PcObject, Model, NeedsValidationMixin):
         )
 
     @classmethod
-    def remove_subscription_state_machine(cls, target, attrs):
+    def remove_subscription_state_machine(cls, target, attrs):  # type: ignore [no-untyped-def]
         # avoid trying to remove the object multiple times from the machine
         if attrs is None:
             try:
@@ -521,7 +521,7 @@ class DomainsCredit:
     physical: Optional[Credit] = None
 
 
-class Favorite(PcObject, Model):
+class Favorite(PcObject, Model):  # type: ignore [valid-type, misc]
     __tablename__ = "favorite"
 
     userId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=False)
@@ -530,11 +530,11 @@ class Favorite(PcObject, Model):
 
     offerId = sa.Column(sa.BigInteger, sa.ForeignKey("offer.id"), index=True, nullable=False)
 
-    offer = orm.relationship("Offer", foreign_keys=[offerId], backref="favorites")
+    offer = orm.relationship("Offer", foreign_keys=[offerId], backref="favorites")  # type: ignore [misc]
 
     mediationId = sa.Column(sa.BigInteger, sa.ForeignKey("mediation.id"), index=True, nullable=True)
 
-    mediation = orm.relationship("Mediation", foreign_keys=[mediationId], backref="favorites")
+    mediation = orm.relationship("Mediation", foreign_keys=[mediationId], backref="favorites")  # type: ignore [misc]
 
     dateCreated = sa.Column(sa.DateTime, nullable=True, default=datetime.utcnow)
 
@@ -558,7 +558,7 @@ class EmailHistoryEventTypeEnum(enum.Enum):
     ADMIN_VALIDATION = "ADMIN_VALIDATION"
 
 
-class UserEmailHistory(PcObject, Model):
+class UserEmailHistory(PcObject, Model):  # type: ignore [valid-type, misc]
     __tablename__ = "user_email_history"
 
     id = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
@@ -608,7 +608,7 @@ class UserEmailHistory(PcObject, Model):
     def oldEmail(self) -> str:
         return f"{self.oldUserEmail}@{self.oldDomainEmail}"
 
-    @oldEmail.expression
+    @oldEmail.expression  # type: ignore [no-redef]
     def oldEmail(cls):  # pylint: disable=no-self-argument # type: ignore[no-redef]
         return func.concat(cls.oldUserEmail, "@", cls.oldDomainEmail)
 
@@ -616,12 +616,12 @@ class UserEmailHistory(PcObject, Model):
     def newEmail(self) -> str:
         return f"{self.newUserEmail}@{self.newDomainEmail}"
 
-    @newEmail.expression
+    @newEmail.expression  # type: ignore [no-redef]
     def newEmail(cls):  # pylint: disable=no-self-argument # type: ignore[no-redef]
         return func.concat(cls.newUserEmail, "@", cls.newDomainEmail)
 
 
-class UserSuspension(PcObject, Model):
+class UserSuspension(PcObject, Model):  # type: ignore [valid-type, misc]
     __tablename__ = "user_suspension"
 
     id = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)

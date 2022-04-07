@@ -11,7 +11,7 @@ from dateutil.relativedelta import relativedelta
 from google.api_core import retry
 from google.api_core.exceptions import AlreadyExists
 from google.cloud import tasks_v2
-from google.protobuf import timestamp_pb2
+from google.protobuf import timestamp_pb2  # type: ignore [import]
 import requests
 
 from pcapi import settings
@@ -25,7 +25,7 @@ AUTHORIZATION_HEADER_VALUE = f"Bearer {settings.CLOUD_TASK_BEARER_TOKEN}"
 CLOUD_TASK_SUBPATH = "/cloud-tasks"
 
 
-def get_client():
+def get_client():  # type: ignore [no-untyped-def]
     if not hasattr(get_client, "client"):
         get_client.client = tasks_v2.CloudTasksClient()
 
@@ -40,7 +40,7 @@ class CloudTaskHttpRequest:
     body: Optional[bytes] = None
     json: InitVar[bytes] = None
 
-    def __post_init__(self, json_param):
+    def __post_init__(self, json_param):  # type: ignore [no-untyped-def]
         if json is not None:
             self.body = json.dumps(json_param).encode()
 
@@ -91,15 +91,15 @@ def enqueue_task(
     return task_id
 
 
-def enqueue_internal_task(queue, path, payload, deduplicate: bool = False, delayed_seconds: int = 0):
-    url = settings.API_URL + CLOUD_TASK_SUBPATH + path
+def enqueue_internal_task(queue, path, payload, deduplicate: bool = False, delayed_seconds: int = 0):  # type: ignore [no-untyped-def]
+    url = settings.API_URL + CLOUD_TASK_SUBPATH + path  # type: ignore [operator]
 
     if settings.IS_DEV:
         _call_internal_api_endpoint(queue, url, payload)
         return None
 
     http_request = CloudTaskHttpRequest(
-        http_method=tasks_v2.HttpMethod.POST,
+        http_method=tasks_v2.HttpMethod.POST,  # type: ignore [arg-type]
         url=url,
         headers={"Content-type": "application/json", AUTHORIZATION_HEADER_KEY: AUTHORIZATION_HEADER_VALUE},
         json=payload,
@@ -114,7 +114,7 @@ def enqueue_internal_task(queue, path, payload, deduplicate: bool = False, delay
     return enqueue_task(queue, http_request, task_id=task_id, schedule_time=schedule_time)
 
 
-def _call_internal_api_endpoint(queue, url, payload):
+def _call_internal_api_endpoint(queue, url, payload):  # type: ignore [no-untyped-def]
     requests.post(
         url,
         headers={

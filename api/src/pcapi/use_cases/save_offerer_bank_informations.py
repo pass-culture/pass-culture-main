@@ -14,7 +14,7 @@ class SaveOffererBankInformations:
     def __init__(self, bank_informations_repository: BankInformationsRepository):
         self.bank_informations_repository = bank_informations_repository
 
-    def execute(self, application_id: str):
+    def execute(self, application_id: str):  # type: ignore [no-untyped-def]
         application_details = get_offerer_bank_information_application_details_by_application_id(application_id)
 
         api_errors = CannotRegisterBankInformation()
@@ -60,9 +60,9 @@ class SaveOffererBankInformations:
 
     def create_new_bank_informations(self, application_details: ApplicationDetail, offerer_id: str) -> BankInformations:
         new_bank_informations = BankInformations()
-        new_bank_informations.application_id = application_details.application_id
-        new_bank_informations.offerer_id = offerer_id
-        new_bank_informations.status = application_details.status
+        new_bank_informations.application_id = application_details.application_id  # type: ignore [assignment]
+        new_bank_informations.offerer_id = offerer_id  # type: ignore [assignment]
+        new_bank_informations.status = application_details.status  # type: ignore [assignment]
         new_bank_informations.date_modified = application_details.modification_date
         if application_details.status == BankInformationStatus.ACCEPTED:
             new_bank_informations.iban = application_details.iban

@@ -98,7 +98,7 @@ def book_educational_offer(redactor_informations: RedactorInformation, stock_id:
         stock = offers_repository.get_and_lock_stock(stock_id=stock_id)
         validation.check_stock_is_bookable(stock)
 
-        educational_year = educational_repository.find_educational_year_by_date(stock.beginningDatetime)
+        educational_year = educational_repository.find_educational_year_by_date(stock.beginningDatetime)  # type: ignore [arg-type]
         validation.check_educational_year_exists(educational_year)
 
         educational_booking = EducationalBooking(
@@ -121,7 +121,7 @@ def book_educational_offer(redactor_informations: RedactorInformation, stock_id:
 
         booking.dateCreated = datetime.datetime.utcnow()
         booking.cancellationLimitDate = compute_educational_booking_cancellation_limit_date(
-            stock.beginningDatetime, booking.dateCreated
+            stock.beginningDatetime, booking.dateCreated  # type: ignore [arg-type]
         )
         stock.dnBookedQuantity += booking.quantity
 
@@ -130,7 +130,7 @@ def book_educational_offer(redactor_informations: RedactorInformation, stock_id:
         collective_stock = db.session.query(CollectiveStock.id).filter_by(stockId=stock_id).one_or_none()
         if collective_stock:
             create_collective_booking_with_collective_stock(
-                collective_stock.id, booking.id, educational_institution, educational_year, redactor
+                collective_stock.id, booking.id, educational_institution, educational_year, redactor  # type: ignore [arg-type]
             )
 
     logger.info(
@@ -152,7 +152,7 @@ def book_educational_offer(redactor_informations: RedactorInformation, stock_id:
     search.async_index_offer_ids([stock.offerId])
 
     try:
-        adage_client.notify_prebooking(data=serialize_educational_booking(booking.educationalBooking))
+        adage_client.notify_prebooking(data=serialize_educational_booking(booking.educationalBooking))  # type: ignore [arg-type]
     except AdageException as adage_error:
         logger.error(
             "%s Educational institution will not receive a confirmation email.",
@@ -182,7 +182,7 @@ def create_collective_booking_with_collective_stock(
     redactor: EducationalRedactor,
 ) -> Optional[CollectiveBooking]:
     with transaction():
-        collective_stock = get_and_lock_collective_stock(stock_id=stock_id)
+        collective_stock = get_and_lock_collective_stock(stock_id=stock_id)  # type: ignore [arg-type]
 
         validation.check_collective_stock_is_bookable(collective_stock)
 
@@ -201,7 +201,7 @@ def create_collective_booking_with_collective_stock(
         collective_booking.cancellationLimitDate = compute_educational_booking_cancellation_limit_date(
             collective_stock.beginningDatetime, collective_booking.dateCreated
         )
-        collective_booking.bookingId = booking_id
+        collective_booking.bookingId = booking_id  # type: ignore [assignment]
 
         db.session.add(collective_booking)
         db.session.commit()
@@ -614,7 +614,7 @@ def edit_collective_stock(stock: CollectiveStock, stock_data: dict) -> Collectiv
 
 
 def _extract_updatable_fields_from_stock_data(
-    stock: CollectiveStock, stock_data: dict, beginning: datetime, booking_limit_datetime: datetime
+    stock: CollectiveStock, stock_data: dict, beginning: datetime, booking_limit_datetime: datetime  # type: ignore [valid-type]
 ) -> dict:
     # if booking_limit_datetime is provided but null, set it to default value which is event datetime
     if "bookingLimitDatetime" in stock_data.keys() and booking_limit_datetime is None:
@@ -733,12 +733,12 @@ def get_collective_booking_csv_report(
 ) -> str:
     bookings_query = get_filtered_collective_booking_report(
         pro_user=user,
-        period=booking_period,
-        status_filter=status_filter,
+        period=booking_period,  # type: ignore [arg-type]
+        status_filter=status_filter,  # type: ignore [arg-type]
         event_date=event_date,
         venue_id=venue_id,
     )
-    return serialize_collective_booking_csv_report(bookings_query)
+    return serialize_collective_booking_csv_report(bookings_query)  # type: ignore [arg-type]
 
 
 def list_collective_offers_for_pro_user(

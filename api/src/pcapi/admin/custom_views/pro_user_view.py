@@ -116,7 +116,7 @@ class ProUserView(SuspensionMixin, BaseAdminView):
     )
 
     @property
-    def form_columns(self):
+    def form_columns(self):  # type: ignore [no-untyped-def]
         fields = (
             "email",
             "firstName",

@@ -19,73 +19,73 @@ blueprint = Blueprint(__name__, __name__)
 
 @cron_context
 @log_cron_with_transaction
-def index_offers_in_algolia_by_offer():
+def index_offers_in_algolia_by_offer():  # type: ignore [no-untyped-def]
     search.index_offers_in_queue()
 
 
 @cron_context
 @log_cron_with_transaction
-def index_offers_in_algolia_by_venue():
+def index_offers_in_algolia_by_venue():  # type: ignore [no-untyped-def]
     search.index_offers_of_venues_in_queue()
 
 
 @cron_context
 @log_cron_with_transaction
-def index_collective_offers():
+def index_collective_offers():  # type: ignore [no-untyped-def]
     search.index_collective_offers_in_queue()
 
 
 @cron_context
 @log_cron_with_transaction
-def index_collective_offer_templates():
+def index_collective_offer_templates():  # type: ignore [no-untyped-def]
     search.index_collective_offers_templates_in_queue()
 
 
 @cron_context
 @log_cron_with_transaction
-def delete_expired_offers_in_algolia():
+def delete_expired_offers_in_algolia():  # type: ignore [no-untyped-def]
     offers_api.unindex_expired_offers()
 
 
 @cron_context
 @log_cron_with_transaction
-def delete_expired_collective_offers_in_algolia():
+def delete_expired_collective_offers_in_algolia():  # type: ignore [no-untyped-def]
     educational_api.unindex_expired_collective_offers()
 
 
 @cron_context
 @log_cron_with_transaction
-def index_offers_in_error_in_algolia_by_offer():
+def index_offers_in_error_in_algolia_by_offer():  # type: ignore [no-untyped-def]
     search.index_offers_in_queue(from_error_queue=True)
 
 
 @cron_context
 @log_cron_with_transaction
-def index_collective_offers_in_error():
+def index_collective_offers_in_error():  # type: ignore [no-untyped-def]
     search.index_collective_offers_in_queue(from_error_queue=True)
 
 
 @cron_context
 @log_cron_with_transaction
-def index_collective_offers_templates_in_error():
+def index_collective_offers_templates_in_error():  # type: ignore [no-untyped-def]
     search.index_collective_offers_templates_in_queue(from_error_queue=True)
 
 
 @cron_context
 @log_cron_with_transaction
-def index_venues():
+def index_venues():  # type: ignore [no-untyped-def]
     search.index_venues_in_queue()
 
 
 @cron_context
 @log_cron_with_transaction
-def index_venues_in_error():
+def index_venues_in_error():  # type: ignore [no-untyped-def]
     search.index_venues_in_queue(from_error_queue=True)
 
 
 # FIXME (jsdupuis, 2022-03-10) : to be deleted when cron will be managed by the infrastructure rather than by the app
 @blueprint.cli.command("algolia_clock")
-def algolia_clock():
+def algolia_clock():  # type: ignore [no-untyped-def]
     set_tag("pcapi.app_type", "algolia_clock")
     scheduler = BlockingScheduler()
     utils.activate_sentry(scheduler)

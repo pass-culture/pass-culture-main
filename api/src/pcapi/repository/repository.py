@@ -9,13 +9,13 @@ from pcapi.models.pc_object import PcObject
 from pcapi.validation.models import entity_validator
 
 
-def delete(*models: Model) -> None:
+def delete(*models: Model) -> None:  # type: ignore [valid-type]
     for model in models:
         db.session.delete(model)
     db.session.commit()
 
 
-def save(*models: Model) -> None:
+def save(*models: Model) -> None:  # type: ignore [valid-type]
     if not models:
         return None
 
@@ -35,15 +35,15 @@ def save(*models: Model) -> None:
     try:
         db.session.commit()
     except DataError as data_error:
-        api_errors.add_error(*models[0].restize_data_error(data_error))
+        api_errors.add_error(*models[0].restize_data_error(data_error))  # type: ignore [attr-defined]
         db.session.rollback()
         raise api_errors
     except IntegrityError as integrity_error:
-        api_errors.add_error(*models[0].restize_integrity_error(integrity_error))
+        api_errors.add_error(*models[0].restize_integrity_error(integrity_error))  # type: ignore [attr-defined]
         db.session.rollback()
         raise api_errors
     except InternalError as internal_error:
-        api_errors.add_error(*models[0].restize_internal_error(internal_error))
+        api_errors.add_error(*models[0].restize_internal_error(internal_error))  # type: ignore [attr-defined]
         db.session.rollback()
         raise api_errors
     except TypeError as type_error:

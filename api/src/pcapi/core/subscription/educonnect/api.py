@@ -41,20 +41,20 @@ def handle_educonnect_authentication(
 
     if fraud_check.status == fraud_models.FraudCheckStatus.OK:
         try:
-            subscription_api.on_successful_application(user=user, source_data=fraud_check.source_data())
+            subscription_api.on_successful_application(user=user, source_data=fraud_check.source_data())  # type: ignore [arg-type]
         except Exception:
             logger.exception("Error while activating user from Educonnect", extra={"user_id": user.id})
             raise exceptions.EduconnectSubscriptionException()
     else:
         _handle_validation_errors(user, fraud_check, educonnect_user)
-        subscription_api.update_user_birth_date(user, fraud_check.source_data().get_birth_date())
+        subscription_api.update_user_birth_date(user, fraud_check.source_data().get_birth_date())  # type: ignore [union-attr]
         logger.warning(
             "Fraud suspicion after educonnect authentication with codes: %s",
-            (", ").join([code.value for code in fraud_check.reasonCodes]),
+            (", ").join([code.value for code in fraud_check.reasonCodes]),  # type: ignore [union-attr]
             extra={"user_id": user.id},
         )
 
-    return fraud_check.reasonCodes
+    return fraud_check.reasonCodes  # type: ignore [return-value]
 
 
 def _handle_validation_errors(
@@ -62,30 +62,30 @@ def _handle_validation_errors(
     fraud_check: fraud_models.BeneficiaryFraudCheck,
     educonnect_user: educonnect_models.EduconnectUser,
 ) -> None:
-    if fraud_models.FraudReasonCode.ALREADY_BENEFICIARY in fraud_check.reasonCodes:
+    if fraud_models.FraudReasonCode.ALREADY_BENEFICIARY in fraud_check.reasonCodes:  # type: ignore [operator]
         subscription_messages.on_already_beneficiary(user)
 
-    if fraud_models.FraudReasonCode.AGE_NOT_VALID in fraud_check.reasonCodes:
+    if fraud_models.FraudReasonCode.AGE_NOT_VALID in fraud_check.reasonCodes:  # type: ignore [operator]
         message = f"Ton dossier a été refusé. La date de naissance enregistrée sur ton compte Educonnect ({educonnect_user.birth_date.strftime('%d/%m/%Y')}) indique que tu n'as pas entre {users_constants.ELIGIBILITY_UNDERAGE_RANGE[0]} et {users_constants.ELIGIBILITY_UNDERAGE_RANGE[-1]} ans."
         subscription_messages.add_error_message(user, message)
 
-    elif fraud_models.FraudReasonCode.NOT_ELIGIBLE in fraud_check.reasonCodes:
+    elif fraud_models.FraudReasonCode.NOT_ELIGIBLE in fraud_check.reasonCodes:  # type: ignore [operator]
         message = f"La date de naissance de ton dossier Educonnect ({educonnect_user.birth_date.strftime('%d/%m/%Y')}) indique que tu n'es pas éligible."
         eligibity_start = users_api.get_eligibility_start_datetime(educonnect_user.birth_date)
 
-        if datetime.datetime.utcnow() < eligibity_start:
-            message += f" Tu seras éligible le {eligibity_start.strftime('%d/%m/%Y')}."
+        if datetime.datetime.utcnow() < eligibity_start:  # type: ignore [operator]
+            message += f" Tu seras éligible le {eligibity_start.strftime('%d/%m/%Y')}."  # type: ignore [union-attr]
 
         subscription_messages.add_error_message(user, message)
 
-    if fraud_models.FraudReasonCode.DUPLICATE_USER in fraud_check.reasonCodes:
+    if fraud_models.FraudReasonCode.DUPLICATE_USER in fraud_check.reasonCodes:  # type: ignore [operator]
         subscription_messages.add_error_message(
             user,
             "Ton compte ÉduConnect est déjà rattaché à un autre compte pass Culture. Vérifie que tu n'as pas déjà créé un compte avec une autre adresse mail.",
         )
-        duplicate_beneficiary.send_duplicate_beneficiary_email(user, fraud_check.source_data())
+        duplicate_beneficiary.send_duplicate_beneficiary_email(user, fraud_check.source_data())  # type: ignore [arg-type]
 
-    if fraud_models.FraudReasonCode.DUPLICATE_INE in fraud_check.reasonCodes:
+    if fraud_models.FraudReasonCode.DUPLICATE_INE in fraud_check.reasonCodes:  # type: ignore [operator]
         subscription_messages.add_error_message(
             user,
             "Ton identificant national INE est déjà rattaché à un autre compte pass Culture. Vérifie que tu n'as pas déjà créé un compte avec une autre adresse mail.",

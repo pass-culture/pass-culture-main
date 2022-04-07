@@ -144,7 +144,7 @@ def list_offers_for_pro_user(
 
 
 def create_educational_offer(offer_data: PostEducationalOfferBodyModel, user: User) -> Offer:
-    offerers_api.can_offerer_create_educational_offer(dehumanize(offer_data.offerer_id))
+    offerers_api.can_offerer_create_educational_offer(dehumanize(offer_data.offerer_id))  # type: ignore [arg-type]
     completed_data = CompletedEducationalOfferModel(**offer_data.dict(by_alias=True))
     offer = create_offer(completed_data, user)
     create_collective_offer(offer_data, user, offer.id)
@@ -156,10 +156,10 @@ def create_collective_offer(
     user: User,
     offer_id: int,
 ) -> None:
-    offerers_api.can_offerer_create_educational_offer(dehumanize(offer_data.offerer_id))
+    offerers_api.can_offerer_create_educational_offer(dehumanize(offer_data.offerer_id))  # type: ignore [arg-type]
     venue = load_or_raise_error(Venue, offer_data.venue_id)
     check_user_has_access_to_offerer(user, offerer_id=venue.managingOffererId)
-    _check_offer_data_is_valid(offer_data, True)
+    _check_offer_data_is_valid(offer_data, True)  # type: ignore [arg-type]
     collective_offer = educational_models.CollectiveOffer(
         venueId=venue.id,
         name=offer_data.name,
@@ -190,20 +190,20 @@ def create_offer(
     offer_data: Union[PostOfferBodyModel, CompletedEducationalOfferModel],
     user: User,
 ) -> Offer:
-    subcategory = subcategories.ALL_SUBCATEGORIES_DICT.get(offer_data.subcategory_id)
+    subcategory = subcategories.ALL_SUBCATEGORIES_DICT.get(offer_data.subcategory_id)  # type: ignore [arg-type]
     venue = load_or_raise_error(Venue, offer_data.venue_id)
     check_user_has_access_to_offerer(user, offerer_id=venue.managingOffererId)
-    _check_offer_data_is_valid(offer_data, offer_data.is_educational)
-    if _is_able_to_create_book_offer_from_isbn(subcategory):
+    _check_offer_data_is_valid(offer_data, offer_data.is_educational)  # type: ignore [arg-type]
+    if _is_able_to_create_book_offer_from_isbn(subcategory):  # type: ignore [arg-type]
         offer = _initialize_book_offer_from_template(offer_data)
     else:
-        offer = _initialize_offer_with_new_data(offer_data, subcategory, venue)
+        offer = _initialize_offer_with_new_data(offer_data, subcategory, venue)  # type: ignore [arg-type]
 
     _complete_common_offer_fields(offer, offer_data, venue)
 
     repository.save(offer)
 
-    logger.info(
+    logger.info(  # type: ignore [call-arg]
         "Offer has been created",
         extra={"offer_id": offer.id, "venue_id": venue.id, "product_id": offer.productId},
         technical_message_id="offer.created",
@@ -223,20 +223,20 @@ def _is_able_to_create_book_offer_from_isbn(subcategory: subcategories.Subcatego
 def _initialize_book_offer_from_template(
     offer_data: Union[PostOfferBodyModel, CompletedEducationalOfferModel]
 ) -> Offer:
-    product = _load_product_by_isbn_and_check_is_gcu_compatible_or_raise_error(offer_data.extra_data["isbn"])
+    product = _load_product_by_isbn_and_check_is_gcu_compatible_or_raise_error(offer_data.extra_data["isbn"])  # type: ignore [index]
     extra_data = product.extraData
-    extra_data.update(offer_data.extra_data)
+    extra_data.update(offer_data.extra_data)  # type: ignore [union-attr]
     offer = Offer(
         product=product,
         subcategoryId=product.subcategoryId,
         name=offer_data.name,
         description=offer_data.description if offer_data.description else product.description,
-        url=offer_data.url if offer_data.url else product.url,
-        mediaUrls=offer_data.url if offer_data.url else product.url,
-        conditions=offer_data.conditions if offer_data.conditions else product.conditions,
-        ageMin=offer_data.age_min if offer_data.age_min else product.ageMin,
-        ageMax=offer_data.age_max if offer_data.age_max else product.ageMax,
-        isNational=offer_data.is_national if offer_data.is_national else product.isNational,
+        url=offer_data.url if offer_data.url else product.url,  # type: ignore [union-attr]
+        mediaUrls=offer_data.url if offer_data.url else product.url,  # type: ignore [union-attr]
+        conditions=offer_data.conditions if offer_data.conditions else product.conditions,  # type: ignore [union-attr]
+        ageMin=offer_data.age_min if offer_data.age_min else product.ageMin,  # type: ignore [union-attr]
+        ageMax=offer_data.age_max if offer_data.age_max else product.ageMax,  # type: ignore [union-attr]
+        isNational=offer_data.is_national if offer_data.is_national else product.isNational,  # type: ignore [union-attr]
         extraData=extra_data,
     )
     return offer
@@ -255,7 +255,7 @@ def _initialize_offer_with_new_data(
     offer = Offer()
     offer.populate_from_dict(data)
     offer.product = product
-    offer.subcategoryId = subcategory.id if subcategory else None
+    offer.subcategoryId = subcategory.id if subcategory else None  # type: ignore [assignment]
     offer.product.owningOfferer = venue.managingOfferer
     return offer
 
@@ -272,8 +272,8 @@ def _complete_common_offer_fields(
     offer.mentalDisabilityCompliant = offer_data.mental_disability_compliant
     offer.motorDisabilityCompliant = offer_data.motor_disability_compliant
     offer.visualDisabilityCompliant = offer_data.visual_disability_compliant
-    offer.validation = OfferValidationStatus.DRAFT
-    offer.isEducational = offer_data.is_educational
+    offer.validation = OfferValidationStatus.DRAFT  # type: ignore [assignment]
+    offer.isEducational = offer_data.is_educational  # type: ignore [assignment]
 
 
 def _check_offer_data_is_valid(
@@ -281,34 +281,34 @@ def _check_offer_data_is_valid(
     offer_is_educational: bool,
 ) -> None:
     check_offer_subcategory_is_valid(offer_data.subcategory_id)
-    check_offer_is_eligible_for_educational(offer_data.subcategory_id, offer_is_educational)
+    check_offer_is_eligible_for_educational(offer_data.subcategory_id, offer_is_educational)  # type: ignore [arg-type]
 
 
 def update_offer(
     offer: Offer,
-    bookingEmail: str = UNCHANGED,
-    description: str = UNCHANGED,
-    isNational: bool = UNCHANGED,
-    name: str = UNCHANGED,
-    extraData: dict = UNCHANGED,
-    externalTicketOfficeUrl: str = UNCHANGED,
-    url: str = UNCHANGED,
-    withdrawalDetails: str = UNCHANGED,
-    withdrawalType: WithdrawalTypeEnum = UNCHANGED,
-    withdrawalDelay: int = UNCHANGED,
-    isActive: bool = UNCHANGED,
-    isDuo: bool = UNCHANGED,
-    durationMinutes: int = UNCHANGED,
-    mediaUrls: list[str] = UNCHANGED,
-    ageMin: int = UNCHANGED,
-    ageMax: int = UNCHANGED,
-    conditions: str = UNCHANGED,
-    venueId: str = UNCHANGED,
-    productId: str = UNCHANGED,
-    audioDisabilityCompliant: bool = UNCHANGED,
-    mentalDisabilityCompliant: bool = UNCHANGED,
-    motorDisabilityCompliant: bool = UNCHANGED,
-    visualDisabilityCompliant: bool = UNCHANGED,
+    bookingEmail: str = UNCHANGED,  # type: ignore [assignment]
+    description: str = UNCHANGED,  # type: ignore [assignment]
+    isNational: bool = UNCHANGED,  # type: ignore [assignment]
+    name: str = UNCHANGED,  # type: ignore [assignment]
+    extraData: dict = UNCHANGED,  # type: ignore [assignment]
+    externalTicketOfficeUrl: str = UNCHANGED,  # type: ignore [assignment]
+    url: str = UNCHANGED,  # type: ignore [assignment]
+    withdrawalDetails: str = UNCHANGED,  # type: ignore [assignment]
+    withdrawalType: WithdrawalTypeEnum = UNCHANGED,  # type: ignore [assignment]
+    withdrawalDelay: int = UNCHANGED,  # type: ignore [assignment]
+    isActive: bool = UNCHANGED,  # type: ignore [assignment]
+    isDuo: bool = UNCHANGED,  # type: ignore [assignment]
+    durationMinutes: int = UNCHANGED,  # type: ignore [assignment]
+    mediaUrls: list[str] = UNCHANGED,  # type: ignore [assignment]
+    ageMin: int = UNCHANGED,  # type: ignore [assignment]
+    ageMax: int = UNCHANGED,  # type: ignore [assignment]
+    conditions: str = UNCHANGED,  # type: ignore [assignment]
+    venueId: str = UNCHANGED,  # type: ignore [assignment]
+    productId: str = UNCHANGED,  # type: ignore [assignment]
+    audioDisabilityCompliant: bool = UNCHANGED,  # type: ignore [assignment]
+    mentalDisabilityCompliant: bool = UNCHANGED,  # type: ignore [assignment]
+    motorDisabilityCompliant: bool = UNCHANGED,  # type: ignore [assignment]
+    visualDisabilityCompliant: bool = UNCHANGED,  # type: ignore [assignment]
 ) -> Offer:
     validation.check_validation_status(offer)
     # fmt: off
@@ -327,7 +327,7 @@ def update_offer(
         try:
             changed_withdrawalType = withdrawalType if withdrawalType != UNCHANGED else offer.withdrawalType
             changed_withdrawalDelay = withdrawalDelay if withdrawalDelay != UNCHANGED else offer.withdrawalDelay
-            check_offer_withdrawal(changed_withdrawalType, changed_withdrawalDelay, offer.subcategoryId)
+            check_offer_withdrawal(changed_withdrawalType, changed_withdrawalDelay, offer.subcategoryId)  # type: ignore [arg-type]
         except offers_exceptions.OfferCreationBaseException as error:
             raise ApiErrors(
                 error.errors,
@@ -349,7 +349,7 @@ def update_offer(
 
     repository.save(offer)
 
-    logger.info("Offer has been updated", extra={"offer_id": offer.id}, technical_message_id="offer.updated")
+    logger.info("Offer has been updated", extra={"offer_id": offer.id}, technical_message_id="offer.updated")  # type: ignore [call-arg]
     if product_has_been_updated:
         repository.save(offer.product)
         logger.info("Product has been updated", extra={"product": offer.product.id})
@@ -359,7 +359,7 @@ def update_offer(
     return offer
 
 
-def update_educational_offer(
+def update_educational_offer(  # type: ignore [return]
     offer: Offer,
     new_values: dict,
 ) -> Offer:
@@ -373,7 +373,7 @@ def update_educational_offer(
             for extra_data_key, extra_data_value in value.items():
                 # We denormalize extra_data for Adage mailing
                 updated_fields.append(extra_data_key)
-                extra_data[extra_data_key] = extra_data_value
+                extra_data[extra_data_key] = extra_data_value  # type: ignore [index]
 
             offer.extraData = extra_data
             continue
@@ -392,7 +392,7 @@ def update_educational_offer(
     search.async_index_offer_ids([offer.id])
 
     educational_api.notify_educational_redactor_on_educational_offer_or_stock_edit(
-        offer.id,
+        offer.id,  # type: ignore [arg-type]
         updated_fields,
     )
 
@@ -458,7 +458,7 @@ def update_collective_offer(
         )
 
 
-def batch_update_offers(query, update_fields):
+def batch_update_offers(query, update_fields):  # type: ignore [no-untyped-def]
     raw_results = (
         query.filter(Offer.validation == OfferValidationStatus.APPROVED).with_entities(Offer.id, Offer.venueId).all()
     )
@@ -485,7 +485,7 @@ def batch_update_offers(query, update_fields):
         search.async_index_offer_ids(offer_ids_batch)
 
 
-def batch_update_collective_offers(query, update_fields):
+def batch_update_collective_offers(query, update_fields):  # type: ignore [no-untyped-def]
     collective_offer_ids_tuples = query.filter(
         CollectiveOffer.validation == OfferValidationStatus.APPROVED
     ).with_entities(CollectiveOffer.id)
@@ -506,7 +506,7 @@ def batch_update_collective_offers(query, update_fields):
         search.async_index_collective_offer_ids(collective_offer_ids_batch)
 
 
-def batch_update_collective_offers_template(query, update_fields):
+def batch_update_collective_offers_template(query, update_fields):  # type: ignore [no-untyped-def]
     collective_offer_ids_tuples = query.filter(
         CollectiveOffer.validation == OfferValidationStatus.APPROVED
     ).with_entities(CollectiveOfferTemplate.id)
@@ -604,7 +604,7 @@ def _edit_stock(
     return stock
 
 
-def _notify_pro_upon_stock_edit_for_event_offer(stock: Stock, bookings: List[Booking]):
+def _notify_pro_upon_stock_edit_for_event_offer(stock: Stock, bookings: List[Booking]):  # type: ignore [no-untyped-def]
     if stock.offer.isEvent:
         if not send_event_offer_postponement_confirmation_email_to_pro(stock, len(bookings)):
             logger.warning(
@@ -613,11 +613,11 @@ def _notify_pro_upon_stock_edit_for_event_offer(stock: Stock, bookings: List[Boo
             )
 
 
-def _notify_beneficiaries_upon_stock_edit(stock: Stock, bookings: List[Booking]):
+def _notify_beneficiaries_upon_stock_edit(stock: Stock, bookings: List[Booking]):  # type: ignore [no-untyped-def]
     if bookings:
-        bookings = update_cancellation_limit_dates(bookings, stock.beginningDatetime)
+        bookings = update_cancellation_limit_dates(bookings, stock.beginningDatetime)  # type: ignore [arg-type]
         date_in_two_days = datetime.datetime.utcnow() + datetime.timedelta(days=2)
-        check_event_is_in_more_than_48_hours = stock.beginningDatetime > date_in_two_days
+        check_event_is_in_more_than_48_hours = stock.beginningDatetime > date_in_two_days  # type: ignore [operator]
         if check_event_is_in_more_than_48_hours:
             bookings = _invalidate_bookings(bookings)
         if not send_batch_booking_postponement_email_to_users(bookings):
@@ -656,9 +656,9 @@ def upsert_stocks(
             edited_stock = _edit_stock(
                 stock,
                 price=stock_data.price,
-                quantity=stock_data.quantity,
-                beginning=stock_data.beginning_datetime,
-                booking_limit_datetime=stock_data.booking_limit_datetime,
+                quantity=stock_data.quantity,  # type: ignore [arg-type]
+                beginning=stock_data.beginning_datetime,  # type: ignore [arg-type]
+                booking_limit_datetime=stock_data.booking_limit_datetime,  # type: ignore [arg-type]
             )
             edited_stocks.append(edited_stock)
             stocks.append(edited_stock)
@@ -716,10 +716,10 @@ def _update_offer_fraud_information(
 ) -> None:
     venue_already_has_validated_offer = _venue_already_has_validated_offer(offer)
 
-    offer.validation = set_offer_status_based_on_fraud_criteria(offer)
+    offer.validation = set_offer_status_based_on_fraud_criteria(offer)  # type: ignore [assignment]
     offer.author = user
     offer.lastValidationDate = datetime.datetime.utcnow()
-    offer.lastValidationType = OfferValidationType.AUTO
+    offer.lastValidationType = OfferValidationType.AUTO  # type: ignore [assignment]
 
     if offer.validation in (OfferValidationStatus.PENDING, OfferValidationStatus.REJECTED):
         offer.isActive = False
@@ -795,25 +795,25 @@ def edit_educational_stock(stock: Stock, stock_data: dict) -> Stock:
     beginning = as_utc_without_timezone(beginning) if beginning else None
     booking_limit_datetime = as_utc_without_timezone(booking_limit_datetime) if booking_limit_datetime else None
 
-    updatable_fields = _extract_updatable_fields_from_stock_data(stock, stock_data, beginning, booking_limit_datetime)
+    updatable_fields = _extract_updatable_fields_from_stock_data(stock, stock_data, beginning, booking_limit_datetime)  # type: ignore [arg-type]
 
     validation.check_booking_limit_datetime(stock, beginning, booking_limit_datetime)
 
     educational_stock_unique_booking = bookings_repository.find_unique_eac_booking_if_any(stock.id)
     if educational_stock_unique_booking:
-        validation.check_stock_booking_status(educational_stock_unique_booking)
+        validation.check_stock_booking_status(educational_stock_unique_booking)  # type: ignore [arg-type]
 
-        educational_stock_unique_booking.educationalBooking.confirmationLimitDate = updatable_fields[
+        educational_stock_unique_booking.educationalBooking.confirmationLimitDate = updatable_fields[  # type: ignore [attr-defined]
             "bookingLimitDatetime"
         ]
-        db.session.add(educational_stock_unique_booking.educationalBooking)
+        db.session.add(educational_stock_unique_booking.educationalBooking)  # type: ignore [attr-defined]
 
         if beginning:
-            _update_educational_booking_cancellation_limit_date(educational_stock_unique_booking, beginning)
+            _update_educational_booking_cancellation_limit_date(educational_stock_unique_booking, beginning)  # type: ignore [arg-type]
             db.session.add(educational_stock_unique_booking)
 
         if stock_data.get("price"):
-            educational_stock_unique_booking.amount = stock_data.get("price")
+            educational_stock_unique_booking.amount = stock_data.get("price")  # type: ignore [attr-defined]
             db.session.add(educational_stock_unique_booking)
 
     validation.check_educational_stock_is_editable(stock)
@@ -832,7 +832,7 @@ def edit_educational_stock(stock: Stock, stock_data: dict) -> Stock:
 
     if not FeatureToggle.ENABLE_NEW_COLLECTIVE_MODEL.is_active():
         educational_api.notify_educational_redactor_on_educational_offer_or_stock_edit(
-            stock.offerId,
+            stock.offerId,  # type: ignore [arg-type]
             list(stock_data.keys()),
         )
 
@@ -848,7 +848,7 @@ def _extract_updatable_fields_from_stock_data(
         booking_limit_datetime = beginning if beginning else stock.beginningDatetime
 
     if "bookingLimitDatetime" not in stock_data.keys():
-        booking_limit_datetime = stock.bookingLimitDatetime
+        booking_limit_datetime = stock.bookingLimitDatetime  # type: ignore [assignment]
 
     updatable_fields = {
         "beginningDatetime": beginning,
@@ -864,7 +864,7 @@ def _extract_updatable_fields_from_stock_data(
 def _update_educational_booking_cancellation_limit_date(
     booking: Union[Booking, educational_models.CollectiveBooking], new_beginning_datetime: datetime.datetime
 ) -> None:
-    booking.cancellationLimitDate = compute_educational_booking_cancellation_limit_date(
+    booking.cancellationLimitDate = compute_educational_booking_cancellation_limit_date(  # type: ignore [assignment]
         new_beginning_datetime, datetime.datetime.utcnow()
     )
 
@@ -989,13 +989,13 @@ def get_expense_domains(offer: Offer) -> list[ExpenseDomain]:
     domains = {ExpenseDomain.ALL.value}
 
     for _deposit_type, versions in deposit_conf.SPECIFIC_CAPS.items():
-        for _version, specific_caps in versions.items():
+        for _version, specific_caps in versions.items():  # type: ignore [attr-defined]
             if specific_caps.digital_cap_applies(offer):
                 domains.add(ExpenseDomain.DIGITAL.value)
             if specific_caps.physical_cap_applies(offer):
                 domains.add(ExpenseDomain.PHYSICAL.value)
 
-    return list(domains)
+    return list(domains)  # type: ignore [arg-type]
 
 
 def add_criteria_to_offers(criteria: list[Criterion], isbn: Optional[str] = None, visa: Optional[str] = None) -> bool:
@@ -1093,7 +1093,7 @@ def update_pending_offer_validation(offer: Offer, validation_status: OfferValida
             extra={"offer": offer.id},
         )
         return False
-    offer.validation = validation_status
+    offer.validation = validation_status  # type: ignore [assignment]
     if validation_status == OfferValidationStatus.APPROVED:
         offer.isActive = True
 
@@ -1120,7 +1120,7 @@ def import_offer_validation_config(config_as_yaml: str, user: User = None) -> Of
             error,
             extra={"exc": str(error)},
         )
-        raise WrongFormatInFraudConfigurationFile(str(error))
+        raise WrongFormatInFraudConfigurationFile(str(error))  # type: ignore [arg-type]
 
     config = OfferValidationConfig(specs=config_as_dict, user=user)
     repository.save(config)
@@ -1218,7 +1218,7 @@ def cancel_educational_offer_booking(offer: Offer) -> None:
     for booking in cancelled_bookings:
         try:
             adage_client.notify_booking_cancellation_by_offerer(
-                data=serialize_educational_booking(booking.educationalBooking)
+                data=serialize_educational_booking(booking.educationalBooking)  # type: ignore [arg-type]
             )
         except AdageException as adage_error:
             logger.error(
@@ -1244,7 +1244,7 @@ def cancel_educational_offer_booking(offer: Offer) -> None:
         )
 
 
-def create_collective_shadow_offer(stock_data: EducationalOfferShadowStockBodyModel, user: User, offer_id: str):
+def create_collective_shadow_offer(stock_data: EducationalOfferShadowStockBodyModel, user: User, offer_id: str):  # type: ignore [no-untyped-def]
     offer = Offer.query.filter_by(id=offer_id).options(sqla_orm.joinedload(Offer.stocks)).one()
     stock = create_educational_shadow_stock_and_set_offer_showcase(stock_data, user, offer)
     create_collective_offer_template_and_delete_collective_offer(offer, stock, user)
@@ -1270,9 +1270,9 @@ def create_collective_offer_template_and_delete_collective_offer(offer: Offer, s
         # the offer validation is copied from the offer. The only problem is when the offer is in draft as the fraud is
         # not enabled of collectiveOfferTemplate it will stay in draft. Therefor we force its status
         if collective_offer_template.validation == OfferValidationStatus.DRAFT:
-            collective_offer_template.validation = OfferValidationStatus.APPROVED
+            collective_offer_template.validation = OfferValidationStatus.APPROVED  # type: ignore [assignment]
             collective_offer_template.lastValidationDate = datetime.datetime.utcnow()
-            collective_offer_template.lastValidationType = OfferValidationType.AUTO
+            collective_offer_template.lastValidationType = OfferValidationType.AUTO  # type: ignore [assignment]
 
     logger.info(
         "Collective offer template has been created and regular collective offer deleted if applicable",
@@ -1367,7 +1367,7 @@ def create_educational_shadow_stock_and_set_offer_showcase(
     logger.info("Educational shadow stock has been created", extra={"offer": offer.id})
 
     extra_data = copy.deepcopy(offer.extraData)
-    extra_data["isShowcase"] = True
+    extra_data["isShowcase"] = True  # type: ignore [index, call-overload]
     offer.extraData = extra_data
     repository.save(offer)
 
@@ -1382,7 +1382,7 @@ def create_educational_shadow_stock_and_set_offer_showcase(
 def transform_shadow_stock_into_educational_stock_and_create_collective_offer(
     stock_id: str, stock_data: EducationalStockCreationBodyModel, user: User
 ) -> Stock:
-    offer = offers_repository.get_educational_offer_by_id((stock_data.offer_id))
+    offer = offers_repository.get_educational_offer_by_id((stock_data.offer_id))  # type: ignore [arg-type]
     stock = transform_shadow_stock_into_educational_stock(stock_id, stock_data, offer, user)
     create_collective_offer_and_delete_collective_offer_template(offer)
     educational_api.create_collective_stock(stock_data=stock_data, user=user, legacy_id=stock.id)
@@ -1416,10 +1416,10 @@ def create_collective_offer_and_delete_collective_offer_template(offer: Offer) -
 def transform_shadow_stock_into_educational_stock(
     stock_id: str, stock_data: EducationalStockCreationBodyModel, offer: Offer, user: User
 ) -> Stock:
-    if offer.extraData.get("isShowcase") is not True:
+    if offer.extraData.get("isShowcase") is not True:  # type: ignore [union-attr]
         raise educational_exceptions.OfferIsNotShowcase()
 
-    shadow_stock = offers_repository.get_non_deleted_stock_by_id(stock_id)
+    shadow_stock = offers_repository.get_non_deleted_stock_by_id(stock_id)  # type: ignore [arg-type]
     validation.check_stock_is_deletable(shadow_stock)
     shadow_stock.isSoftDeleted = True
     db.session.add(shadow_stock)
@@ -1429,7 +1429,7 @@ def transform_shadow_stock_into_educational_stock(
     db.session.commit()
 
     extra_data = copy.deepcopy(offer.extraData)
-    extra_data["isShowcase"] = False
+    extra_data["isShowcase"] = False  # type: ignore [index, call-overload]
     offer.extraData = extra_data
     repository.save(offer)
 
@@ -1440,7 +1440,7 @@ def edit_shadow_stock(stock: Stock, stock_data: dict) -> Stock:
     if not stock.offer.isEducational:
         raise educational_exceptions.OfferIsNotEducational(stock.offerId)
 
-    if stock.offer.extraData.get("isShowcase") is not True:
+    if stock.offer.extraData.get("isShowcase") is not True:  # type: ignore [union-attr]
         raise educational_exceptions.OfferIsNotShowcase()
 
     check_shadow_stock_is_editable(stock)

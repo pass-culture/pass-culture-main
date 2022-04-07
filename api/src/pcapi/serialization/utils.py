@@ -99,7 +99,7 @@ def string_to_boolean(string: str) -> Optional[bool]:
     try:
         return {"true": True, "false": False}[string]
     except KeyError:
-        raise ValidationError("La valeur reçu doit être soit 'true' soit 'false'")
+        raise ValidationError("La valeur reçu doit être soit 'true' soit 'false'")  # type: ignore [call-arg]
 
 
 def humanize_field(field_name: str) -> classmethod:

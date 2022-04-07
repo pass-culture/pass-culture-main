@@ -10,10 +10,10 @@ logger = logging.getLogger(__name__)
 
 
 class SlackBackend:
-    def __init__(self):
+    def __init__(self):  # type: ignore [no-untyped-def]
         self.client = WebClient(token=settings.SLACK_BOT_TOKEN)
 
-    def send_internal_message(self, channel: str, blocks: list[dict], icon_emoji: str):
+    def send_internal_message(self, channel: str, blocks: list[dict], icon_emoji: str):  # type: ignore [no-untyped-def]
         try:
             self.client.chat_postMessage(
                 blocks=blocks,

@@ -15,7 +15,7 @@ from .utils import get_price_by_short_name
 EVENT_OCCURRENCES_WITH_STOCKS_REMOVE_MODULO = 4
 
 
-def create_industrial_event_stocks(event_occurrences_by_name):
+def create_industrial_event_stocks(event_occurrences_by_name):  # type: ignore [no-untyped-def]
     logger.info("create_industrial_event_stocks")
 
     event_stocks_by_name = {}

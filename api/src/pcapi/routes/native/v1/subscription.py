@@ -103,7 +103,7 @@ def start_identification_session(
 
     fraud_check = ubble_fraud_api.get_restartable_identity_checks(user)
     if fraud_check:
-        return serializers.IdentificationSessionResponse(identificationUrl=fraud_check.source_data().identification_url)
+        return serializers.IdentificationSessionResponse(identificationUrl=fraud_check.source_data().identification_url)  # type: ignore [union-attr]
 
     try:
         identification_url = ubble_subscription_api.start_ubble_workflow(user, body.redirectUrl)

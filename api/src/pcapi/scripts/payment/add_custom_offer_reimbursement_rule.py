@@ -23,7 +23,7 @@ blueprint = Blueprint(__name__, __name__)
 @click.option("--valid-from", required=True)
 @click.option("--valid-until", required=False)
 @click.option("--force", required=False, is_flag=True, help="Ignore warnings and create rule anyway")
-def add_custom_offer_reimbursement_rule(
+def add_custom_offer_reimbursement_rule(  # type: ignore [no-untyped-def]
     offer_humanized_id: str,
     offer_original_amount: decimal.Decimal,
     offerer_id: int,
@@ -33,8 +33,8 @@ def add_custom_offer_reimbursement_rule(
     force: bool = False,
 ):
     """Add a custom reimbursement rule that is linked to an offer."""
-    offer_original_amount = decimal.Decimal(offer_original_amount.replace(",", "."))
-    reimbursed_amount = decimal.Decimal(reimbursed_amount.replace(",", "."))
+    offer_original_amount = decimal.Decimal(offer_original_amount.replace(",", "."))  # type: ignore [attr-defined]
+    reimbursed_amount = decimal.Decimal(reimbursed_amount.replace(",", "."))  # type: ignore [attr-defined]
 
     offer_id = human_ids.dehumanize(offer_humanized_id)
     offer = (
@@ -70,9 +70,9 @@ def add_custom_offer_reimbursement_rule(
             )
             return
 
-    valid_from = date_utils.get_day_start(datetime.date.fromisoformat(valid_from), finance_utils.ACCOUNTING_TIMEZONE)
+    valid_from = date_utils.get_day_start(datetime.date.fromisoformat(valid_from), finance_utils.ACCOUNTING_TIMEZONE)  # type: ignore [assignment]
     valid_until = (
-        date_utils.get_day_start(datetime.date.fromisoformat(valid_until), finance_utils.ACCOUNTING_TIMEZONE)
+        date_utils.get_day_start(datetime.date.fromisoformat(valid_until), finance_utils.ACCOUNTING_TIMEZONE)  # type: ignore [assignment]
         if valid_until
         else None
     )

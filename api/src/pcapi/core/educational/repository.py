@@ -188,7 +188,7 @@ def find_educational_deposit_by_institution_id_and_year(
 
 def get_educational_year_beginning_at_given_year(year: int) -> educational_models.EducationalYear:
     educational_year = educational_models.EducationalYear.query.filter(
-        extract("year", educational_models.EducationalYear.beginningDate) == year
+        extract("year", educational_models.EducationalYear.beginningDate) == year  # type: ignore [arg-type]
     ).one_or_none()
     if educational_year is None:
         raise EducationalYearNotFound()
@@ -400,10 +400,10 @@ def get_collective_offers_for_filters(
         venue_id=venue_id,
         category_id=category_id,
         name_keywords=name_keywords,
-        period_beginning_date=period_beginning_date,
-        period_ending_date=period_ending_date,
+        period_beginning_date=period_beginning_date,  # type: ignore [arg-type]
+        period_ending_date=period_ending_date,  # type: ignore [arg-type]
     )
-    query = query.order_by(educational_models.CollectiveOffer.id.desc())
+    query = query.order_by(educational_models.CollectiveOffer.id.desc())  # type: ignore [attr-defined]
     offers = (
         query.options(
             joinedload(educational_models.CollectiveOffer.venue).joinedload(offerers_models.Venue.managingOfferer)
@@ -435,10 +435,10 @@ def get_collective_offers_template_for_filters(
         venue_id=venue_id,
         category_id=category_id,
         name_keywords=name_keywords,
-        period_beginning_date=period_beginning_date,
-        period_ending_date=period_ending_date,
+        period_beginning_date=period_beginning_date,  # type: ignore [arg-type]
+        period_ending_date=period_ending_date,  # type: ignore [arg-type]
     )
-    query = query.order_by(educational_models.CollectiveOfferTemplate.id.desc())
+    query = query.order_by(educational_models.CollectiveOfferTemplate.id.desc())  # type: ignore [union-attr, attr-defined]
     offers = (
         query.options(
             joinedload(educational_models.CollectiveOfferTemplate.venue).joinedload(
@@ -483,7 +483,7 @@ def _get_filtered_collective_bookings_query(
         )
 
         collective_bookings_query = collective_bookings_query.filter(
-            field_to_venue_timezone(period_attribute_filter).between(*period, symmetric=True)
+            field_to_venue_timezone(period_attribute_filter).between(*period, symmetric=True)  # type: ignore [arg-type]
         )
 
     if venue_id is not None:
@@ -491,7 +491,7 @@ def _get_filtered_collective_bookings_query(
 
     if event_date:
         collective_bookings_query = collective_bookings_query.filter(
-            field_to_venue_timezone(CollectiveStock.beginningDatetime) == event_date
+            field_to_venue_timezone(CollectiveStock.beginningDatetime) == event_date  # type: ignore [arg-type]
         )
 
     return collective_bookings_query
@@ -508,10 +508,10 @@ def _get_filtered_collective_bookings_pro(
         _get_filtered_collective_bookings_query(
             pro_user,
             period,
-            status_filter,
+            status_filter,  # type: ignore [arg-type]
             event_date,
             venue_id,
-            extra_joins=(
+            extra_joins=(  # type: ignore [arg-type]
                 CollectiveStock.collectiveOffer,
                 CollectiveBooking.educationalRedactor,
             ),
@@ -527,11 +527,11 @@ def _get_filtered_collective_bookings_pro(
             CollectiveBooking.reimbursementDate.label("reimbursedAt"),
             CollectiveBooking.isConfirmed,
             CollectiveBooking.confirmationDate,
-            EducationalRedactor.firstName.label("redactorFirstname"),
-            EducationalRedactor.lastName.label("redactorLastname"),
-            EducationalRedactor.email.label("redactorEmail"),
+            EducationalRedactor.firstName.label("redactorFirstname"),  # type: ignore [attr-defined]
+            EducationalRedactor.lastName.label("redactorLastname"),  # type: ignore [attr-defined]
+            EducationalRedactor.email.label("redactorEmail"),  # type: ignore [attr-defined]
             CollectiveOffer.name.label("offerName"),
-            CollectiveOffer.id.label("offerId"),
+            CollectiveOffer.id.label("offerId"),  # type: ignore [attr-defined]
             CollectiveStock.beginningDatetime.label("stockBeginningDatetime"),
             Venue.departementCode.label("venueDepartmentCode"),
             Offerer.postalCode.label("offererPostalCode"),
@@ -565,7 +565,7 @@ def find_collective_bookings_by_pro_user(
     )
 
     collective_bookings_query = _get_filtered_collective_bookings_pro(
-        pro_user=user, period=booking_period, status_filter=status_filter, event_date=event_date, venue_id=venue_id
+        pro_user=user, period=booking_period, status_filter=status_filter, event_date=event_date, venue_id=venue_id  # type: ignore [arg-type]
     )
 
     collective_bookings_page = (
@@ -616,7 +616,7 @@ def get_filtered_collective_booking_report(
             status_filter,
             event_date,
             venue_id,
-            extra_joins=(
+            extra_joins=(  # type: ignore [arg-type]
                 CollectiveStock.collectiveOffer,
                 CollectiveBooking.educationalRedactor,
             ),

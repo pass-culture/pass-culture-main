@@ -53,7 +53,7 @@ class UserEmailHistoryView(SuspensionMixin, BaseAdminView):
     ]
 
     @expose("/")
-    def index(self):
+    def index(self):  # type: ignore [no-untyped-def]
         self._template_args["enum_update_request_value"] = users_models.EmailHistoryEventTypeEnum.UPDATE_REQUEST.value
         return super().index_view()
 

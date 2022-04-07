@@ -6,7 +6,7 @@ from pcapi.model_creators.specific_creators import create_stock_with_thing_offer
 from pcapi.repository import repository
 
 
-def save_sandbox():
+def save_sandbox():  # type: ignore [no-untyped-def]
 
     offerer = create_offerer()
     venue = create_venue(offerer, is_virtual=True, siret=None)

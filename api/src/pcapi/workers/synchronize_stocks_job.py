@@ -34,8 +34,8 @@ def synchronize_stocks_job(serialized_stock_details: list[Union[dict, StockDetai
         for stock_detail in serialized_stock_details
     ]
 
-    venue = find_venue_by_id(venue_id)
-    operations = api.synchronize_stocks(stock_details, venue, provider_id=pc_provider.id)
+    venue = find_venue_by_id(venue_id)  # type: ignore [arg-type]
+    operations = api.synchronize_stocks(stock_details, venue, provider_id=pc_provider.id)  # type: ignore [arg-type]
     logger.info(
         "Processed stocks synchronization",
         extra={

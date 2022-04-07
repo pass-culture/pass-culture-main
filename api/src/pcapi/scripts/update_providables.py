@@ -24,7 +24,7 @@ logger = logging.getLogger(__name__)
     default=None,
 )
 @click.option("-w", "--venue-provider-id", type=int, help="Limit update to this venue provider id")
-def update_providables(provider_name: str, venue_provider_id: int, limit: int):
+def update_providables(provider_name: str, venue_provider_id: int, limit: int):  # type: ignore [no-untyped-def]
     start = time()
     logger.info(
         "Starting update_providables with provider_name=%s and venue_provider_id=%s", provider_name, venue_provider_id
@@ -53,5 +53,5 @@ def update_providables(provider_name: str, venue_provider_id: int, limit: int):
 @click.option(
     "-l", "--limit", help="Limit update to n items per venue provider" + " (for test purposes)", type=int, default=None
 )
-def update_providables_by_provider_id(provider_id: int, limit: int):
+def update_providables_by_provider_id(provider_id: int, limit: int):  # type: ignore [no-untyped-def]
     synchronize_venue_providers_for_provider(provider_id, limit)

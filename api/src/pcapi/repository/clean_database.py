@@ -22,7 +22,7 @@ from pcapi.models.product import Product
 from pcapi.models.user_session import UserSession
 
 
-def clean_all_database(*args, **kwargs):
+def clean_all_database(*args, **kwargs):  # type: ignore [no-untyped-def]
     """Order of deletions matters because of foreign key constraints"""
     if settings.ENV not in ("development", "testing"):
         raise ValueError(f"You cannot do this on this environment: '{settings.ENV}'")

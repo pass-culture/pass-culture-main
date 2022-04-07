@@ -15,7 +15,7 @@ def get_reminder_7_days_before_event_email_data(stock: Stock) -> SendinblueTrans
             "OFFER_NAME": stock.offer.name,
             "VENUE_NAME": stock.offer.venue.publicName or stock.offer.venue.name,
             "EVENT_DATE": format_date(get_event_datetime(stock), format="full", locale="fr"),
-            "EVENT_HOUR": get_time_formatted_for_email(stock.beginningDatetime),
+            "EVENT_HOUR": get_time_formatted_for_email(stock.beginningDatetime),  # type: ignore [arg-type]
             "BOOKING_COUNT": stock.dnBookedQuantity,
         },
     )

@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 THINGS_PER_SUBCATEGORY = 7
 
 
-def create_industrial_thing_products():
+def create_industrial_thing_products():  # type: ignore [no-untyped-def]
     logger.info("create_industrial_thing_products")
 
     thing_products_by_name = {}

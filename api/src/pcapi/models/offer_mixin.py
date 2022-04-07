@@ -63,7 +63,7 @@ class StatusMixin:
 
         return OfferStatus.ACTIVE
 
-    @status.expression
+    @status.expression  # type: ignore [no-redef]
     def status(cls):  # pylint: disable=no-self-argument
         return sa.case(
             [
@@ -92,5 +92,5 @@ class ValidationMixin:
     )
 
     @property
-    def isApproved(self):
+    def isApproved(self):  # type: ignore [no-untyped-def]
         return self.validation == OfferValidationStatus.APPROVED

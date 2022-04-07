@@ -126,7 +126,7 @@ def on_educonnect_authentication_response() -> Response:
 
 def _user_id_from_saml_request_id(saml_request_id: str) -> Optional[int]:
     key = educonnect_connector.build_saml_request_id_key(saml_request_id)
-    return app.redis_client.get(key)
+    return app.redis_client.get(key)  # type: ignore [attr-defined]
 
 
 def _on_educonnect_authentication_errors(

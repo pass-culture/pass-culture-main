@@ -17,7 +17,7 @@ class BookingProviderName(enum.Enum):
     CINE_DIGITAL_SERVICE = "Cine_Digital_Service"
 
 
-class BookingProvider(PcObject, Model):
+class BookingProvider(PcObject, Model):  # type: ignore [valid-type, misc]
     id = Column(BigInteger, primary_key=True)
 
     name = Column(Enum(BookingProviderName), nullable=False)
@@ -25,14 +25,14 @@ class BookingProvider(PcObject, Model):
     apiUrl = Column(String, nullable=False)
 
 
-class VenueBookingProvider(PcObject, Model):
+class VenueBookingProvider(PcObject, Model):  # type: ignore [valid-type, misc]
     id = Column(BigInteger, primary_key=True)
 
     isActive = Column(Boolean, nullable=False, default=True)
 
     venueId = Column(BigInteger, ForeignKey("venue.id"), index=True, nullable=False)
 
-    venue = relationship("Venue", foreign_keys=[venueId])
+    venue = relationship("Venue", foreign_keys=[venueId])  # type: ignore [misc]
 
     bookingProviderId = Column(BigInteger, ForeignKey("booking_provider.id"), nullable=False)
 

@@ -69,8 +69,8 @@ def get_offerer_bank_information_application_details_by_application_id(applicati
             response_application_details["dossier"]["state"]
         ),
         application_id=int(response_application_details["dossier"]["id"]),
-        iban=format_raw_iban_and_bic(_find_value_in_fields(response_application_details["dossier"]["champs"], "IBAN")),
-        bic=format_raw_iban_and_bic(_find_value_in_fields(response_application_details["dossier"]["champs"], "BIC")),
+        iban=format_raw_iban_and_bic(_find_value_in_fields(response_application_details["dossier"]["champs"], "IBAN")),  # type: ignore [arg-type]
+        bic=format_raw_iban_and_bic(_find_value_in_fields(response_application_details["dossier"]["champs"], "BIC")),  # type: ignore [arg-type]
         modification_date=datetime.strptime(response_application_details["dossier"]["updated_at"], DATE_ISO_FORMAT),
     )
     return application_details
@@ -120,14 +120,14 @@ def get_venue_bank_information_application_details_by_application_id(
                 response_application_details["dossier"]["state"]
             ),
             application_id=int(response_application_details["dossier"]["id"]),
-            iban=format_raw_iban_and_bic(
-                _find_value_in_fields(response_application_details["dossier"]["champs"], "IBAN")
+            iban=format_raw_iban_and_bic(  # type: ignore [arg-type]
+                _find_value_in_fields(response_application_details["dossier"]["champs"], "IBAN")  # type: ignore [arg-type]
             ),
-            bic=format_raw_iban_and_bic(
-                _find_value_in_fields(response_application_details["dossier"]["champs"], "BIC")
+            bic=format_raw_iban_and_bic(  # type: ignore [arg-type]
+                _find_value_in_fields(response_application_details["dossier"]["champs"], "BIC")  # type: ignore [arg-type]
             ),
-            siret=_find_value_in_fields(response_application_details["dossier"]["champs"], FIELD_FOR_VENUE_WITH_SIRET),
-            venue_name=_find_value_in_fields(
+            siret=_find_value_in_fields(response_application_details["dossier"]["champs"], FIELD_FOR_VENUE_WITH_SIRET),  # type: ignore [arg-type]
+            venue_name=_find_value_in_fields(  # type: ignore [arg-type]
                 response_application_details["dossier"]["champs"], FIELD_FOR_VENUE_WITHOUT_SIRET
             ),
             modification_date=datetime.strptime(response_application_details["dossier"]["updated_at"], DATE_ISO_FORMAT),
@@ -191,7 +191,7 @@ def _find_value_in_fields(fields: list[dict], value_name: str) -> Optional[dict]
 
 def update_demarches_simplifiees_text_annotations(dossier_id: str, annotation_id: str, message: str) -> None:
     client = api_dms.DMSGraphQLClient()
-    client.update_text_annotation(dossier_id, settings.DMS_INSTRUCTOR_ID, annotation_id, message)
+    client.update_text_annotation(dossier_id, settings.DMS_INSTRUCTOR_ID, annotation_id, message)  # type: ignore [arg-type]
 
 
 def format_error_to_demarches_simplifiees_text(api_error: CannotRegisterBankInformation) -> str:

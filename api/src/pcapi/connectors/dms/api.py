@@ -52,7 +52,7 @@ class DMSGraphQLClient:
     def execute_query(self, query: str, variables: dict[str, Any]) -> Any:
         return self.client.execute(gql.gql(query), variable_values=variables)
 
-    def get_applications_with_details(
+    def get_applications_with_details(  # type: ignore [misc]
         self, procedure_id: int, state: dms_models.GraphQLApplicationStates, page_token: str = ""
     ) -> list[dms_models.DmsApplicationResponse]:
         query = self.build_query("beneficiaries/get_applications_with_details")
@@ -77,7 +77,7 @@ class DMSGraphQLClient:
 
         if dms_demarche_response.page_info.has_next_page:
             yield from self.get_applications_with_details(
-                procedure_id, state, dms_demarche_response.page_info.end_cursor
+                procedure_id, state, dms_demarche_response.page_info.end_cursor  # type: ignore [arg-type]
             )
 
     def send_user_message(self, application_scalar_id: str, instructeur_techid: str, body: str) -> Any:
@@ -160,24 +160,24 @@ def parse_beneficiary_information_graphql(
         value = field.value
 
         if label in (dms_models.FieldLabel.DEPARTMENT_FR.value, dms_models.FieldLabel.DEPARTMENT_ET.value):
-            department = re.search("^[0-9]{2,3}|[2BbAa]{2}", value).group(0)
+            department = re.search("^[0-9]{2,3}|[2BbAa]{2}", value).group(0)  # type: ignore [type-var, union-attr]
         elif label in (dms_models.FieldLabel.BIRTH_DATE_ET.value, dms_models.FieldLabel.BIRTH_DATE_FR.value):
             try:
-                birth_date = date_parser.parse(value, FrenchParserInfo())
+                birth_date = date_parser.parse(value, FrenchParserInfo())  # type: ignore [arg-type]
             except Exception:  # pylint: disable=broad-except
-                parsing_errors["birth_date"] = value
+                parsing_errors["birth_date"] = value  # type: ignore [assignment]
 
         elif label in (dms_models.FieldLabel.TELEPHONE_FR.value, dms_models.FieldLabel.TELEPHONE_ET.value):
-            phone = value.replace(" ", "")
+            phone = value.replace(" ", "")  # type: ignore [union-attr]
         elif label in (
             dms_models.FieldLabel.POSTAL_CODE_ET.value,
             dms_models.FieldLabel.POSTAL_CODE_FR.value,
         ):
             space_free = str(value).strip().replace(" ", "")
             try:
-                postal_code = re.search("^[0-9]{5}", space_free).group(0)
+                postal_code = re.search("^[0-9]{5}", space_free).group(0)  # type: ignore [union-attr]
             except Exception:  # pylint: disable=broad-except
-                parsing_errors["postal_code"] = value
+                parsing_errors["postal_code"] = value  # type: ignore [assignment]
 
         elif label in (dms_models.FieldLabel.ACTIVITY_FR.value, dms_models.FieldLabel.ACTIVITY_ET.value):
             activity = value
@@ -191,7 +191,7 @@ def parse_beneficiary_information_graphql(
             dms_models.FieldLabel.ID_PIECE_NUMBER_ET.value,
             dms_models.FieldLabel.ID_PIECE_NUMBER_PROCEDURE_4765.value,
         ):
-            value = value.strip()
+            value = value.strip()  # type: ignore [union-attr]
             if not fraud_api.validate_id_piece_number_format_fraud_item(value):
                 parsing_errors["id_piece_number"] = value
             else:

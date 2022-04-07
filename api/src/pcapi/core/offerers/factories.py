@@ -72,6 +72,6 @@ class ApiKeyFactory(BaseFactory):
     prefix = DEFAULT_PREFIX
 
     @classmethod
-    def _create(cls, model_class, *args, **kwargs):
+    def _create(cls, model_class, *args, **kwargs):  # type: ignore [no-untyped-def]
         kwargs["secret"] = crypto.hash_password(kwargs.get("secret", DEFAULT_SECRET))
         return super()._create(model_class, *args, **kwargs)

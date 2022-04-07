@@ -22,7 +22,7 @@ class EmailStatus(enum.Enum):
     ERROR = "ERROR"
 
 
-class Email(PcObject, Model):
+class Email(PcObject, Model):  # type: ignore [valid-type, misc]
     content = Column("content", JSONB, nullable=False)
     status = Column(Enum(EmailStatus), nullable=False, index=True)
 

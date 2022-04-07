@@ -42,11 +42,11 @@ class OfferValidationRuleItem:
         return 1.0
 
 
-def _get_class_name(obj: any) -> str:
+def _get_class_name(obj: any) -> str:  # type: ignore [valid-type]
     return type(obj).__name__
 
 
-def _get_model(offer: Union[CollectiveOffer, CollectiveOfferTemplate, Offer], parameter_model: str) -> any:
+def _get_model(offer: Union[CollectiveOffer, CollectiveOfferTemplate, Offer], parameter_model: str) -> any:  # type: ignore [valid-type]
     if parameter_model in OFFER_LIKE_MODELS and _get_class_name(offer) == parameter_model:
         model = offer
     elif parameter_model == "CollectiveStock" and isinstance(offer, CollectiveOffer):
@@ -63,8 +63,8 @@ def _get_model(offer: Union[CollectiveOffer, CollectiveOfferTemplate, Offer], pa
 def parse_offer_validation_config(
     offer: Union[CollectiveOffer, CollectiveOfferTemplate, Offer], config: OfferValidationConfig
 ) -> tuple[float, list[OfferValidationRuleItem]]:
-    minimum_score = float(config.specs["minimum_score"])
-    rules = config.specs["rules"]
+    minimum_score = float(config.specs["minimum_score"])  # type: ignore [call-overload]
+    rules = config.specs["rules"]  # type: ignore [call-overload]
 
     rule_items = []
     for rule in rules:

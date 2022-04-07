@@ -5,7 +5,7 @@ from pcapi.sandboxes.scripts.utils.helpers import get_booking_helper
 from pcapi.sandboxes.scripts.utils.helpers import get_pro_helper
 
 
-def get_existing_pro_validated_user_with_validated_offerer_with_validated_user_offerer_with_thing_offer_with_stock_with_not_used_booking():
+def get_existing_pro_validated_user_with_validated_offerer_with_validated_user_offerer_with_thing_offer_with_stock_with_not_used_booking():  # type: ignore [no-untyped-def]
     user_offerer = offerers_factories.UserOffererFactory()
     venue = offers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
     offer = offers_factories.ThingOfferFactory(venue=venue, isActive=True)

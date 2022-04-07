@@ -45,9 +45,9 @@ class WebhookStoreIdPicturesRequest(pydantic.BaseModel):
     identification_id: str
 
 
-def require_ubble_signature(route_function: Callable[..., Any]):
+def require_ubble_signature(route_function: Callable[..., Any]):  # type: ignore [no-untyped-def]
     @functools.wraps(route_function)
-    def validate_ubble_signature(*args, **kwargs):
+    def validate_ubble_signature(*args, **kwargs):  # type: ignore [no-untyped-def]
         error = ForbiddenError(errors={"signature": ["Invalid signature"]})
         signature = getattr(
             UBBLE_SIGNATURE_RE.match(flask.request.headers.get("Ubble-Signature", "")),
@@ -67,11 +67,11 @@ def require_ubble_signature(route_function: Callable[..., Any]):
 
 
 def compute_signature(ts: bytes, payload: bytes) -> str:
-    webhook_secret: str = settings.UBBLE_WEBHOOK_SECRET
+    webhook_secret: str = settings.UBBLE_WEBHOOK_SECRET  # type: ignore [assignment]
     assert webhook_secret is not None
     signed_payload = b".".join((ts, payload))
     signature = hmac.new(
-        settings.UBBLE_WEBHOOK_SECRET.encode("utf-8"),
+        settings.UBBLE_WEBHOOK_SECRET.encode("utf-8"),  # type: ignore [union-attr]
         msg=signed_payload,
         digestmod=hashlib.sha256,
     ).hexdigest()

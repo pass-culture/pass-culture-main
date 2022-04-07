@@ -79,6 +79,6 @@ class BaseModelImportChecker(pylint.checkers.BaseChecker):
                     return
 
 
-def register(linter):
+def register(linter):  # type: ignore [no-untyped-def]
     linter.register_checker(MarkupSafeChecker(linter))
     linter.register_checker(BaseModelImportChecker(linter))

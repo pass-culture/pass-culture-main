@@ -6,13 +6,13 @@ import wtforms.widgets.html5 as wtf_html5_widgets
 
 
 class AutocompleteSelectWidget(wtf_widgets.Select):
-    def __init__(self, endpoint, getter, multiple=False):
+    def __init__(self, endpoint, getter, multiple=False):  # type: ignore [no-untyped-def]
         super().__init__(multiple=multiple)
         self.endpoint = endpoint
         self.uuid = uuid.uuid4()
         self.getter = getter
 
-    def __call__(self, field, **kwargs):
+    def __call__(self, field, **kwargs):  # type: ignore [no-untyped-def]
         if field.data:
             selected_ids = ",".join(field.data) if self.multiple else field.data
             selected_data = self.getter(field.data if self.multiple else [field.data])
@@ -76,12 +76,12 @@ class AutocompleteSelectWidget(wtf_widgets.Select):
 
 
 class DateInputWithConstraint(wtf_html5_widgets.DateInput):
-    def __init__(self, input_type=None, min_date=None, max_date=None):
+    def __init__(self, input_type=None, min_date=None, max_date=None):  # type: ignore [no-untyped-def]
         super().__init__(input_type=input_type)
         self.min_date = min_date
         self.max_date = max_date
 
-    def __call__(self, field, **kwargs):
+    def __call__(self, field, **kwargs):  # type: ignore [no-untyped-def]
         for bound_name, bound in (("min", self.min_date), ("max", self.max_date)):
             if callable(bound):
                 bound = bound(field)
@@ -91,7 +91,7 @@ class DateInputWithConstraint(wtf_html5_widgets.DateInput):
 
 
 class SelectWithOptgroups(wtf_widgets.Select):
-    def __call__(self, field, **kwargs):
+    def __call__(self, field, **kwargs):  # type: ignore [no-untyped-def]
         kwargs.setdefault("id", field.id)
         if self.multiple:
             kwargs["multiple"] = True

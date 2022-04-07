@@ -49,7 +49,7 @@ class CollectiveOffersStockResponseModel(BaseModel):
     beginningDatetime: Optional[datetime]
 
     @validator("remainingQuantity", pre=True)
-    def validate_remaining_quantity(cls, remainingQuantity):  # pylint: disable=no-self-argument
+    def validate_remaining_quantity(cls, remainingQuantity):  # type: ignore [no-untyped-def] # pylint: disable=no-self-argument
         if remainingQuantity and remainingQuantity != "0" and not isinstance(remainingQuantity, int):
             return remainingQuantity.lstrip("0")
         return remainingQuantity
@@ -89,13 +89,13 @@ def serialize_collective_offers_capped(
 
 def _serialize_offer_paginated(offer: Union[CollectiveOffer, CollectiveOfferTemplate]) -> dict:
     # TODO: put back offer.id when we will use new api routes on frontend side
-    serialized_stock = [_serialize_stock(offer.offerId, getattr(offer, "collectiveStock", None))]
+    serialized_stock = [_serialize_stock(offer.offerId, getattr(offer, "collectiveStock", None))]  # type: ignore [arg-type]
     is_offer_template = isinstance(offer, CollectiveOfferTemplate)
 
     return {
         "hasBookingLimitDatetimesPassed": offer.hasBookingLimitDatetimesPassed if not is_offer_template else False,
         # TODO: put back offer.id when we will use new api routes on frontend side
-        "id": humanize(offer.offerId),
+        "id": humanize(offer.offerId),  # type: ignore [arg-type]
         "isActive": offer.isActive,
         "isEditable": True,
         "isEvent": True,
@@ -108,7 +108,7 @@ def _serialize_offer_paginated(offer: Union[CollectiveOffer, CollectiveOfferTemp
         "subcategoryId": offer.subcategoryId,
         "venue": _serialize_venue(offer.venue),
         "venueId": humanize(offer.venue.id),
-        "status": offer.status.name,
+        "status": offer.status.name,  # type: ignore [attr-defined]
         "isShowcase": is_offer_template,
     }
 
@@ -117,7 +117,7 @@ def _serialize_stock(offer_id: int, stock: Optional[CollectiveStock] = None) -> 
     if stock:
         # TODO: put back stock.id when we will use new api routes on frontend side
         return {
-            "id": humanize(stock.stockId),
+            "id": humanize(stock.stockId),  # type: ignore [arg-type]
             "offerId": humanize(offer_id),
             "hasBookingLimitDatetimePassed": stock.hasBookingLimitDatetimePassed,
             "remainingQuantity": 1,

@@ -18,13 +18,13 @@ def send_duplicate_beneficiary_email(
 ) -> bool:
     if is_id_piece_number_duplicate:
         duplicate_beneficiary = fraud_api.find_duplicate_id_piece_number_user(
-            identity_content.get_id_piece_number(), rejected_user.id
+            identity_content.get_id_piece_number(), rejected_user.id  # type: ignore [arg-type]
         )
     else:
         duplicate_beneficiary = fraud_api.find_duplicate_beneficiary(
-            identity_content.get_first_name(),
-            identity_content.get_last_name(),
-            identity_content.get_birth_date(),
+            identity_content.get_first_name(),  # type: ignore [arg-type]
+            identity_content.get_last_name(),  # type: ignore [arg-type]
+            identity_content.get_birth_date(),  # type: ignore [arg-type]
             rejected_user.id,
         )
     if not duplicate_beneficiary:

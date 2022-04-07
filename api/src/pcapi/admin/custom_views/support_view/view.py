@@ -58,8 +58,8 @@ class IDPieceNumberForm(wtforms.Form):
 class BeneficiaryView(base_configuration.BaseAdminView):
     VIEW_FILTERS = {
         "INTERNAL": sqlalchemy.and_(
-            users_models.User.has_admin_role.is_(False),
-            users_models.User.has_pro_role.is_(False),
+            users_models.User.has_admin_role.is_(False),  # type: ignore [attr-defined]
+            users_models.User.has_pro_role.is_(False),  # type: ignore [attr-defined]
         ),
         "UNFILTERED": False,
     }
@@ -129,7 +129,7 @@ class BeneficiaryView(base_configuration.BaseAdminView):
         role = "INTERNAL"
         if self._are_search_and_filters_empty():
             role = "UNFILTERED"
-        return self.VIEW_FILTERS[role]
+        return self.VIEW_FILTERS[role]  # type: ignore [return-value]
 
     def get_query(self) -> BaseQuery:
         view_filter = self.get_view_filter()
@@ -226,8 +226,8 @@ class BeneficiaryView(base_configuration.BaseAdminView):
         )
         if review.review == fraud_models.FraudReviewStatus.OK.value:
             source_data = fraud_api.get_source_data(user)
-            users_api.update_user_information_from_external_source(user, source_data)
-            eligibility = fraud_api.decide_eligibility(user, source_data)
+            users_api.update_user_information_from_external_source(user, source_data)  # type: ignore [arg-type]
+            eligibility = fraud_api.decide_eligibility(user, source_data)  # type: ignore [arg-type]
 
             if eligibility is None:
                 flask.flash("La date de naissance du dossier indique que l'utilisateur n'est pas éligible", "error")
@@ -255,7 +255,7 @@ class BeneficiaryView(base_configuration.BaseAdminView):
             flask.flash(f"L'utilisateur à été activé comme bénéficiaire {user.firstName} {user.lastName}")
 
         elif review.review == fraud_models.FraudReviewStatus.REDIRECTED_TO_DMS.value:
-            review.reason += " ; Redirigé vers DMS"
+            review.reason += " ; Redirigé vers DMS"  # type: ignore [operator]
             send_subscription_document_error_email(user.email, "unread-document")
             flask.flash(f"L'utilisateur {user.firstName} {user.lastName} à été redirigé vers DMS")
             subscription_messages.on_redirect_to_dms_from_idcheck(user)

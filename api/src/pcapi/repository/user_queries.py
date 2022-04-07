@@ -8,7 +8,7 @@ from pcapi.core.users.models import User
 from pcapi.core.users.utils import sanitize_email
 
 
-def _find_user_by_email_query(email: str):
+def _find_user_by_email_query(email: str):  # type: ignore [no-untyped-def]
     # FIXME (dbaty, 2021-05-02): remove call to `func.lower()` once
     # all emails have been sanitized in the database.
     return User.query.filter(func.lower(User.email) == sanitize_email(email))
@@ -43,7 +43,7 @@ def find_by_validation_token(token: str) -> User:
 
 
 def matching(column: Column, search_value: str) -> BinaryExpression:
-    return _sanitized_string(column) == _sanitized_string(search_value)
+    return _sanitized_string(column) == _sanitized_string(search_value)  # type: ignore [arg-type]
 
 
 def _sanitized_string(value: str) -> Function:

@@ -48,9 +48,7 @@ def create_venue_from_csv(row: dict, offerer: Offerer) -> Venue:
     if row["nom_lieu"]:
         venue.name = row["nom_lieu"]
     else:
-        venue.name = (
-            f"Lieu {Venue.query.filter(Venue.siret.startswith(offerer.siren)).count() + 1} - {row['nom_structure']}"
-        )
+        venue.name = f"Lieu {Venue.query.filter(Venue.siret.startswith(offerer.siren)).count() + 1} - {row['nom_structure']}"  # type: ignore [arg-type]
         logger.warning("Venue name missing for offerer with SIREN %s. Génerated name : %s", offerer.siren, venue.name)
 
     try:
@@ -129,7 +127,7 @@ def import_new_offerer_from_csv(row: dict) -> None:
 
 def import_from_csv_file(csv_file_path: str) -> None:
     with open(csv_file_path, encoding="utf-8") as csv_file:
-        csv_reader = csv.dictReader(csv_file)
+        csv_reader = csv.dictReader(csv_file)  # type: ignore [attr-defined]
 
         for row in csv_reader:
             import_new_offerer_from_csv(row)

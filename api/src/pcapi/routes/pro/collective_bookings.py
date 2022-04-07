@@ -45,7 +45,7 @@ def get_collective_bookings_pro(
     return collective_bookings_serialize.ListCollectiveBookingsResponseModel(
         bookings_recap=[serialize_collective_booking(booking) for booking in collective_bookings_page],
         page=page,
-        pages=int(math.ceil(total_collective_bookings / per_page_limit)),
+        pages=int(math.ceil(total_collective_bookings / per_page_limit)),  # type: ignore [operator]
         total=total_collective_bookings,
     )
 

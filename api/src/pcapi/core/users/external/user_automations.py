@@ -26,8 +26,8 @@ def get_young_users_emails_query() -> BaseQuery:
     return (
         db.session.query(User.email)
         .yield_per(YIELD_COUNT_PER_DB_QUERY)
-        .filter(User.has_pro_role.is_(False))
-        .filter(User.has_admin_role.is_(False))
+        .filter(User.has_pro_role.is_(False))  # type: ignore [attr-defined]
+        .filter(User.has_admin_role.is_(False))  # type: ignore [attr-defined]
     )
 
 
@@ -61,7 +61,7 @@ def get_users_beneficiary_credit_expiration_within_next_3_months() -> List[User]
         db.session.query(User.email)
         .yield_per(YIELD_COUNT_PER_DB_QUERY)
         .join(User.deposits)
-        .filter(User.is_beneficiary.is_(True))
+        .filter(User.is_beneficiary.is_(True))  # type: ignore [attr-defined]
         .filter(
             Deposit.expirationDate.between(
                 datetime.combine(date.today(), datetime.min.time()),
@@ -90,7 +90,7 @@ def get_users_ex_beneficiary() -> List[User]:
     return (
         db.session.query(User.email)
         .join(User.deposits)
-        .filter(User.is_beneficiary.is_(True))
+        .filter(User.is_beneficiary.is_(True))  # type: ignore [attr-defined]
         .filter(
             or_(
                 Deposit.expirationDate <= datetime.combine(date.today(), datetime.min.time()),

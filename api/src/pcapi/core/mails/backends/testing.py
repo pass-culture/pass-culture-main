@@ -36,5 +36,5 @@ class FailingBackend(BaseBackend):
         recipients: Iterable[str],
         data: Union[SendinblueTransactionalEmailData, SendinblueTransactionalWithoutTemplateEmailData, dict],
     ) -> MailResult:
-        data["To"] = ", ".join(recipients)
-        return MailResult(sent_data=data, successful=False)
+        data["To"] = ", ".join(recipients)  # type: ignore [index]
+        return MailResult(sent_data=data, successful=False)  # type: ignore [arg-type]

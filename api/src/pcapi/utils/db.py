@@ -10,7 +10,7 @@ import sqlalchemy.types as sqla_types
 from pcapi.models import db
 
 
-def get_batches(query, key, batch_size):
+def get_batches(query, key, batch_size):  # type: ignore [no-untyped-def]
     """Return a list of queries to process the requested query by batches.
 
     It supposes that keys are evenly spread (i.e there are no gaps of
@@ -55,7 +55,7 @@ class MagicEnum(sqla_types.TypeDecorator):
          assert wall.color == Color.RED  # again, not `Color.RED.value`
     """
 
-    def __init__(self, enum_class):  # pylint: disable=super-init-not-called
+    def __init__(self, enum_class):  # type: ignore [no-untyped-def] # pylint: disable=super-init-not-called
         self.enum = enum_class
         first_value = list(enum_class)[0].value
         if isinstance(first_value, str):
@@ -70,20 +70,20 @@ class MagicEnum(sqla_types.TypeDecorator):
     process_literal_param = sqla_types.TypeDecorator.process_literal_param
 
     @property
-    def python_type(self):
+    def python_type(self):  # type: ignore [no-untyped-def]
         return self.enum
 
-    def copy(self):
+    def copy(self):  # type: ignore [no-untyped-def]
         return self.__class__(self.enum)
 
-    def process_bind_param(self, value, dialect) -> typing.Optional[str]:
+    def process_bind_param(self, value, dialect) -> typing.Optional[str]:  # type: ignore [no-untyped-def]
         if value is None:
             return None
         return value.value
 
-    def process_result_value(self, value, dialect) -> enum.Enum:
+    def process_result_value(self, value, dialect) -> enum.Enum:  # type: ignore [no-untyped-def]
         if value is None:
-            return None
+            return None  # type: ignore [return-value]
         return self.enum(value)
 
 

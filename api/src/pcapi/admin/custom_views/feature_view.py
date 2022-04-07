@@ -21,7 +21,7 @@ class FeatureView(BaseAdminView):
 
     page_size = 100
 
-    def on_model_change(self, form, model, is_created):
+    def on_model_change(self, form, model, is_created):  # type: ignore [no-untyped-def]
         logger.info("Activated or deactivated feature flag", extra={"feature": model.name, "active": model.isActive})
         change_feature_flip_internal_message.send(feature=model, current_user=current_user)
         return super().on_model_change(form=form, model=model, is_created=is_created)
