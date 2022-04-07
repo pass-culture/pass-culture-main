@@ -67,8 +67,11 @@ fi
 
 if [[ ! ",${DISABLED_API_PRE_COMMIT_CHECKS}," =~ ",mypy," ]]
 then
-    echo -e "\033[0;96mRunning mypy for type checking (non-blocking step)...\033[0m"
+    echo -e "\033[0;96mRunning mypy for type checking...\033[0m"
     mypy $LINTED_FILES --pretty --show-error-codes --config-file api/mypy.ini
+    if [[ "$?" != 0 ]]; then
+        counter=$((counter + 1))
+    fi
 fi
 
 if [[ ! ",${DISABLED_API_PRE_COMMIT_CHECKS}," =~ ",pylint," ]]
