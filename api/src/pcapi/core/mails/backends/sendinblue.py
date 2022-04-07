@@ -66,5 +66,9 @@ class ToDevSendinblueBackend(SendinblueBackend):
         recipients: Iterable,
         data: typing.Union[SendinblueTransactionalEmailData, SendinblueTransactionalWithoutTemplateEmailData, dict],
     ) -> MailResult:
-        recipients = [settings.DEV_EMAIL_ADDRESS]
+        whitelisted_recipients = set(recipients) & set(settings.WHITELISTED_EMAIL_RECIPIENTS)
+        if whitelisted_recipients:
+            recipients = list(whitelisted_recipients)
+        else:
+            recipients = [settings.DEV_EMAIL_ADDRESS]
         return super().send_mail(recipients=recipients, data=data)
