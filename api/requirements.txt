@@ -13,6 +13,7 @@ beautifulsoup4==4.9.3
 black
 # `sentry_sdk.init()` uses `flask.signals`, which requires `blinker`
 blinker==1.4
+boto3==1.21.9
 coveralls==2.1.2
 debugpy
 factory-boy
@@ -75,6 +76,14 @@ slack-sdk==3.13.0
 # FIXME (xordoquy, 2021-08-16): current apscheduler version (3.6.3)
 # does not work with tzlocal 3+.
 transitions
+types-freezegun
+types-python-dateutil
+types-pytz
+types-PyYAML
+types-redis
+types-requests
+types-simplejson
+types-urllib3
 tzlocal<3.0.0
 # Pin weasyprint to keep new versions from changing how our PDF files look.
 weasyprint==54.0
@@ -82,4 +91,3 @@ Werkzeug==2.0.3
 wheel==0.35.1
 WTForms==2.3.3
 WTForms-SQLAlchemy==0.2
-boto3==1.21.9
