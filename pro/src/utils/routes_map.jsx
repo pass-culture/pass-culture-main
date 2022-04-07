@@ -27,6 +27,8 @@ import OfferType from 'routes/OfferType'
 import SignUpValidation from 'routes/SignUpValidation'
 import { UNAVAILABLE_ERROR_PAGE } from 'utils/routes'
 
+import { OfferIndividualCreation } from 'routes/OfferIndividualCreation'
+
 const RedirectToConnexionComponent = () => {
   const location = useLocation()
   return <Redirect to={`/connexion${location.search}`} />
@@ -222,6 +224,18 @@ const routes = [
     path: '/offre/:offerId([A-Z0-9]+)/collectif/stocks/edition',
     title: 'Edition d’un stock d’une offre scolaire',
   },
+  {
+    component: OfferIndividualCreation,
+    exact: false,
+    path: '/offre/individuelle',
+    title: 'Créer une offre individuelle',
+  },
+  // {
+  //   component: OfferIndividualEdition,
+  //   exact: false,
+  //   path: '/offre/:offerId/individuelle',
+  //   title: 'Éditer une offre individuelle',
+  // },
 ]
 
 export default routes
