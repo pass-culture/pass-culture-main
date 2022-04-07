@@ -12,7 +12,7 @@ depends_on = None
 
 
 def upgrade():
-    op.execute('UPDATE "user" SET "hasSeenProRgs" = false')
+    op.execute('UPDATE "user" SET "hasSeenProRgs" = false where "hasSeenProRgs" IS NULL')
     op.alter_column(
         "user", "hasSeenProRgs", existing_type=sa.BOOLEAN(), server_default=sa.text("false"), nullable=False
     )
