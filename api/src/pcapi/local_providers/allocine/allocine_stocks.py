@@ -42,7 +42,7 @@ class AllocineStocks(LocalProvider):
         self.api_key = settings.ALLOCINE_API_KEY
         self.venue = allocine_venue_provider.venue
         self.theater_id = allocine_venue_provider.venueIdAtOfferProvider
-        self.movies_showtimes = get_movies_showtimes(self.api_key, self.theater_id)
+        self.movies_showtimes = get_movies_showtimes(self.api_key, self.theater_id)  # type: ignore [arg-type]
         self.isDuo = allocine_venue_provider.isDuo
         self.quantity = allocine_venue_provider.quantity
         self.room_internal_id = allocine_venue_provider.internalId
@@ -54,7 +54,7 @@ class AllocineStocks(LocalProvider):
         self.last_vo_offer_id = None
 
     def __next__(self) -> list[ProvidableInfo]:
-        raw_movie_information = next(self.movies_showtimes)
+        raw_movie_information = next(self.movies_showtimes)  # type: ignore [var-annotated]
         try:
             self.movie_information = retrieve_movie_information(raw_movie_information["node"]["movie"])
             self.filtered_movie_showtimes = _filter_only_digital_and_non_experience_showtimes(
@@ -100,7 +100,7 @@ class AllocineStocks(LocalProvider):
 
         return providable_information_list
 
-    def fill_object_attributes(self, pc_object: Model):
+    def fill_object_attributes(self, pc_object: Model):  # type: ignore [no-untyped-def, valid-type]
         if isinstance(pc_object, Product):
             self.fill_product_attributes(pc_object)
 
@@ -110,10 +110,10 @@ class AllocineStocks(LocalProvider):
         if isinstance(pc_object, Stock):
             self.fill_stock_attributes(pc_object)
 
-    def update_from_movie_information(self, obj: Union[Offer, Product], movie_information: dict):
-        if "description" in self.movie_information:
+    def update_from_movie_information(self, obj: Union[Offer, Product], movie_information: dict):  # type: ignore [no-untyped-def]
+        if "description" in self.movie_information:  # type: ignore [operator]
             obj.description = movie_information["description"]
-        if "duration" in self.movie_information:
+        if "duration" in self.movie_information:  # type: ignore [operator]
             obj.durationMinutes = movie_information["duration"]
         if not obj.extraData:
             obj.extraData = {}
@@ -128,48 +128,48 @@ class AllocineStocks(LocalProvider):
             "cast",
         ):
             if field in movie_information:
-                obj.extraData[field] = movie_information[field]
+                obj.extraData[field] = movie_information[field]  # type: ignore [call-overload]
 
-    def fill_product_attributes(self, allocine_product: Product):
-        allocine_product.name = self.movie_information["title"]
+    def fill_product_attributes(self, allocine_product: Product):  # type: ignore [no-untyped-def]
+        allocine_product.name = self.movie_information["title"]  # type: ignore [index]
         allocine_product.subcategoryId = subcategories.SEANCE_CINE.id
         allocine_product.thumbCount = 0
 
-        self.update_from_movie_information(allocine_product, self.movie_information)
+        self.update_from_movie_information(allocine_product, self.movie_information)  # type: ignore [arg-type]
 
         is_new_product_to_insert = allocine_product.id is None
 
         if is_new_product_to_insert:
             allocine_product.id = get_next_product_id_from_database()
-        self.last_product_id = allocine_product.id
+        self.last_product_id = allocine_product.id  # type: ignore [assignment]
 
     def fill_offer_attributes(self, allocine_offer: Offer) -> None:
         allocine_offer.venueId = self.venue.id
         allocine_offer.bookingEmail = self.venue.bookingEmail
         allocine_offer.withdrawalDetails = self.venue.withdrawalDetails
 
-        self.update_from_movie_information(allocine_offer, self.movie_information)
+        self.update_from_movie_information(allocine_offer, self.movie_information)  # type: ignore [arg-type]
 
-        allocine_offer.extraData["theater"] = {
-            "allocine_movie_id": self.movie_information["internal_id"],
+        allocine_offer.extraData["theater"] = {  # type: ignore [index, call-overload]
+            "allocine_movie_id": self.movie_information["internal_id"],  # type: ignore [index]
             "allocine_room_id": self.room_internal_id,
         }
 
-        if "visa" in self.movie_information:
-            allocine_offer.extraData["visa"] = self.movie_information["visa"]
-        if "stageDirector" in self.movie_information:
-            allocine_offer.extraData["stageDirector"] = self.movie_information["stageDirector"]
+        if "visa" in self.movie_information:  # type: ignore [operator]
+            allocine_offer.extraData["visa"] = self.movie_information["visa"]  # type: ignore [index, call-overload]
+        if "stageDirector" in self.movie_information:  # type: ignore [operator]
+            allocine_offer.extraData["stageDirector"] = self.movie_information["stageDirector"]  # type: ignore [index, call-overload]
 
         movie_version = (
             ORIGINAL_VERSION_SUFFIX
-            if _is_original_version_offer(allocine_offer.idAtProvider)
+            if _is_original_version_offer(allocine_offer.idAtProvider)  # type: ignore [arg-type]
             else FRENCH_VERSION_SUFFIX
         )
 
-        allocine_offer.name = f"{self.movie_information['title']} - {movie_version}"
+        allocine_offer.name = f"{self.movie_information['title']} - {movie_version}"  # type: ignore [index]
         allocine_offer.subcategoryId = subcategories.SEANCE_CINE.id
-        allocine_offer.productId = self.last_product_id
-        allocine_offer.extraData["diffusionVersion"] = movie_version
+        allocine_offer.productId = self.last_product_id  # type: ignore [assignment]
+        allocine_offer.extraData["diffusionVersion"] = movie_version  # type: ignore [index, call-overload]
 
         is_new_offer_to_insert = allocine_offer.id is None
 
@@ -178,19 +178,19 @@ class AllocineStocks(LocalProvider):
             allocine_offer.isDuo = self.isDuo
 
         if movie_version == ORIGINAL_VERSION_SUFFIX:
-            self.last_vo_offer_id = allocine_offer.id
+            self.last_vo_offer_id = allocine_offer.id  # type: ignore [assignment]
         else:
-            self.last_vf_offer_id = allocine_offer.id
+            self.last_vf_offer_id = allocine_offer.id  # type: ignore [assignment]
 
-    def fill_stock_attributes(self, allocine_stock: Stock):
-        showtime_uuid = _get_showtimes_uuid_by_idAtProvider(allocine_stock.idAtProviders)
-        showtime = _find_showtime_by_showtime_uuid(self.filtered_movie_showtimes, showtime_uuid)
+    def fill_stock_attributes(self, allocine_stock: Stock):  # type: ignore [no-untyped-def]
+        showtime_uuid = _get_showtimes_uuid_by_idAtProvider(allocine_stock.idAtProviders)  # type: ignore [arg-type]
+        showtime = _find_showtime_by_showtime_uuid(self.filtered_movie_showtimes, showtime_uuid)  # type: ignore [arg-type]
 
-        parsed_showtimes = retrieve_showtime_information(showtime)
+        parsed_showtimes = retrieve_showtime_information(showtime)  # type: ignore [arg-type]
         diffusion_version = parsed_showtimes["diffusionVersion"]
 
         allocine_stock.offerId = (
-            self.last_vo_offer_id if diffusion_version == ORIGINAL_VERSION else self.last_vf_offer_id
+            self.last_vo_offer_id if diffusion_version == ORIGINAL_VERSION else self.last_vf_offer_id  # type: ignore [assignment]
         )
 
         local_tz = get_department_timezone(self.venue.departementCode)
@@ -208,7 +208,7 @@ class AllocineStocks(LocalProvider):
             allocine_stock.quantity = self.quantity
 
         if "price" not in allocine_stock.fieldsUpdated:
-            allocine_stock.price = self.apply_allocine_price_rule(allocine_stock)
+            allocine_stock.price = self.apply_allocine_price_rule(allocine_stock)  # type: ignore [assignment]
 
     def apply_allocine_price_rule(self, allocine_stock: Stock) -> int:
         for price_rule in self.venue_provider.priceRules:
@@ -217,8 +217,8 @@ class AllocineStocks(LocalProvider):
         raise AllocineStocksPriceRule("Aucun prix par défaut n'a été trouvé")
 
     def get_object_thumb(self) -> bytes:
-        if "poster_url" in self.movie_information:
-            image_url = self.movie_information["poster_url"]
+        if "poster_url" in self.movie_information:  # type: ignore [operator]
+            image_url = self.movie_information["poster_url"]  # type: ignore [index]
             return get_movie_poster(image_url)
         return bytes()
 
@@ -226,12 +226,12 @@ class AllocineStocks(LocalProvider):
         return 1
 
 
-def get_next_product_id_from_database():
+def get_next_product_id_from_database():  # type: ignore [no-untyped-def]
     sequence = Sequence("product_id_seq")
     return db.session.execute(sequence)
 
 
-def get_next_offer_id_from_database():
+def get_next_offer_id_from_database():  # type: ignore [no-untyped-def]
     sequence = Sequence("offer_id_seq")
     return db.session.execute(sequence)
 
@@ -293,7 +293,7 @@ def _format_date_from_local_timezone_to_utc(date: datetime, local_tz: str) -> da
     return date_in_tz.astimezone(to_zone)
 
 
-def _get_showtimes_uuid_by_idAtProvider(id_at_provider: str):
+def _get_showtimes_uuid_by_idAtProvider(id_at_provider: str):  # type: ignore [no-untyped-def]
     return id_at_provider.split("#")[1]
 
 
@@ -322,8 +322,8 @@ def _parse_movie_duration(duration: Optional[str]) -> Optional[int]:
     hours_minutes = "([0-9]+)H([0-9]+)"
     duration_regex = re.compile(hours_minutes)
     match = duration_regex.search(duration)
-    movie_duration_hours = int(match.groups()[0])
-    movie_duration_minutes = int(match.groups()[1])
+    movie_duration_hours = int(match.groups()[0])  # type: ignore [union-attr]
+    movie_duration_minutes = int(match.groups()[1])  # type: ignore [union-attr]
     return movie_duration_hours * 60 + movie_duration_minutes
 
 
@@ -374,7 +374,7 @@ def _build_cast_list(movie_info: dict) -> list[Optional[str]]:
         full_name = f"{first_name} {last_name}".strip()
         if full_name:
             cast_list.append(full_name)
-    return cast_list
+    return cast_list  # type: ignore [return-value]
 
 
 def _get_release_date(movie_info: dict) -> str:

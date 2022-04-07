@@ -14,7 +14,7 @@ def get_information_email_change_data(first_name: str) -> SendinblueTransactiona
 
 
 def send_information_email_change_email(user: User) -> bool:
-    data = get_information_email_change_data(user.firstName)
+    data = get_information_email_change_data(user.firstName)  # type: ignore [arg-type]
     return mails.send(recipients=[user.email], data=data)
 
 
@@ -26,5 +26,5 @@ def get_confirmation_email_change_data(first_name: str, confirmation_link: str) 
 
 
 def send_confirmation_email_change_email(user: User, new_email: str, confirmation_link: str) -> bool:
-    data = get_confirmation_email_change_data(user.firstName, confirmation_link)
+    data = get_confirmation_email_change_data(user.firstName, confirmation_link)  # type: ignore [arg-type]
     return mails.send(recipients=[new_email], data=data)

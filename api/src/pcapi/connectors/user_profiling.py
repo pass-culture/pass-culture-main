@@ -105,10 +105,10 @@ class UserProfilingClient:
         if birth_date:
             params["account_date_of_birth"] = birth_date.strftime("%Y%m%d")
 
-        params.update(self.base_params)
+        params.update(self.base_params)  # type: ignore [arg-type]
 
         try:
-            response = self.session.post(self.url, json=params)
+            response = self.session.post(self.url, json=params)  # type: ignore [arg-type]
         except Exception as exc:
             logger.exception("Network error from UserProfiling (%r)", exc)
             raise UserProfilingHTTPError("Unknown error from UserProfiling)") from exc

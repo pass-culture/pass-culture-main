@@ -28,7 +28,7 @@ CHUNK_MAX_SIZE = 1000
 
 
 class LocalProvider(Iterator):
-    def __init__(self, venue_provider=None, **options):
+    def __init__(self, venue_provider=None, **options):  # type: ignore [no-untyped-def]
         self.venue_provider = venue_provider
         self.updatedObjects = 0
         self.createdObjects = 0
@@ -42,15 +42,15 @@ class LocalProvider(Iterator):
 
     @property
     @abstractmethod
-    def can_create(self):
+    def can_create(self):  # type: ignore [no-untyped-def]
         pass
 
     @abstractmethod
-    def fill_object_attributes(self, obj):
+    def fill_object_attributes(self, obj):  # type: ignore [no-untyped-def]
         pass
 
     def create_providable_info(
-        self, pc_object: Model, id_at_providers: str, date_modified_at_provider: datetime, new_id_at_provider: str
+        self, pc_object: Model, id_at_providers: str, date_modified_at_provider: datetime, new_id_at_provider: str  # type: ignore [valid-type]
     ) -> ProvidableInfo:
         if "|" in id_at_providers:
             raise Exception("Invalid character in idAtProviders field")
@@ -69,10 +69,10 @@ class LocalProvider(Iterator):
 
     @property
     @abstractmethod
-    def name(self):
+    def name(self):  # type: ignore [no-untyped-def]
         pass
 
-    def _handle_thumb(self, pc_object: Model):
+    def _handle_thumb(self, pc_object: Model):  # type: ignore [no-untyped-def, valid-type]
         new_thumb_index = self.get_object_thumb_index()
         if new_thumb_index == 0:
             return
@@ -85,8 +85,8 @@ class LocalProvider(Iterator):
         _save_same_thumb_from_thumb_count_to_index(pc_object, new_thumb_index, new_thumb)
         self.createdThumbs += new_thumb_index
 
-    def _create_object(self, providable_info: ProvidableInfo) -> Model:
-        pc_object = providable_info.type()
+    def _create_object(self, providable_info: ProvidableInfo) -> Model:  # type: ignore [valid-type]
+        pc_object = providable_info.type()  # type: ignore [misc]
         pc_object.idAtProviders = providable_info.id_at_providers
         pc_object.idAtProvider = providable_info.new_id_at_provider
         pc_object.lastProviderId = self.provider.id
@@ -103,7 +103,7 @@ class LocalProvider(Iterator):
         self.createdObjects += 1
         return pc_object
 
-    def _handle_update(self, pc_object, providable_info):
+    def _handle_update(self, pc_object, providable_info):  # type: ignore [no-untyped-def]
         self.fill_object_attributes(pc_object)
 
         pc_object.lastProviderId = self.provider.id
@@ -120,7 +120,7 @@ class LocalProvider(Iterator):
 
         self.updatedObjects += 1
 
-    def log_provider_event(self, event_type, event_payload=None):
+    def log_provider_event(self, event_type, event_payload=None):  # type: ignore [no-untyped-def]
         local_provider_event = providers_models.LocalProviderEvent()
         local_provider_event.type = event_type
         local_provider_event.payload = str(event_payload)
@@ -128,7 +128,7 @@ class LocalProvider(Iterator):
         db.session.add(local_provider_event)
         db.session.commit()
 
-    def _print_objects_summary(self):
+    def _print_objects_summary(self):  # type: ignore [no-untyped-def]
         # FIXME (dbaty, 2020-02-05): I don't know how we could end up
         # here with no venue_provider, but there are checks elsewhere
         # so I do the same here.
@@ -150,7 +150,7 @@ class LocalProvider(Iterator):
             self.erroredThumbs,
         )
 
-    def updateObjects(self, limit=None):
+    def updateObjects(self, limit=None):  # type: ignore [no-untyped-def]
         # pylint: disable=too-many-nested-blocks
         if self.venue_provider and not self.venue_provider.isActive:
             logger.info("Venue provider %s is inactive", self.venue_provider)
@@ -244,20 +244,20 @@ class LocalProvider(Iterator):
             repository.save(self.venue_provider)
 
 
-def _save_same_thumb_from_thumb_count_to_index(pc_object: Model, thumb_index: int, image_as_bytes: bytes):
-    if pc_object.thumbCount is None:  # handle unsaved object
-        pc_object.thumbCount = 0
-    if thumb_index <= pc_object.thumbCount:
+def _save_same_thumb_from_thumb_count_to_index(pc_object: Model, thumb_index: int, image_as_bytes: bytes):  # type: ignore [no-untyped-def, valid-type]
+    if pc_object.thumbCount is None:  # type: ignore [attr-defined] # handle unsaved object
+        pc_object.thumbCount = 0  # type: ignore [attr-defined]
+    if thumb_index <= pc_object.thumbCount:  # type: ignore [attr-defined]
         # replace existing thumb
         create_thumb(pc_object, image_as_bytes, thumb_index)
     else:
         # add new thumb
-        for index in range(pc_object.thumbCount, thumb_index):
+        for index in range(pc_object.thumbCount, thumb_index):  # type: ignore [attr-defined]
             create_thumb(pc_object, image_as_bytes, index)
-            pc_object.thumbCount += 1
+            pc_object.thumbCount += 1  # type: ignore [attr-defined]
 
 
-def _reindex_offers(created_or_updated_objects):
+def _reindex_offers(created_or_updated_objects):  # type: ignore [no-untyped-def]
     offer_ids = set()
     for obj in created_or_updated_objects:
         if isinstance(obj, Stock):

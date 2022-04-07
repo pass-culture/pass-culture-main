@@ -6,7 +6,7 @@ from pcapi.models.api_errors import ApiErrors
 from pcapi.repository import repository
 
 
-def update_venue_type(file_path: str):
+def update_venue_type(file_path: str):  # type: ignore [no-untyped-def]
     updated_venue_count = 0
     venues_to_update = _read_venue_type_from_file(file_path)
     venue_ids_in_error = []

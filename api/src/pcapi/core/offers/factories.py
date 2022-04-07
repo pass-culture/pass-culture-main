@@ -69,8 +69,8 @@ class VirtualVenueFactory(VenueFactory):
     departementCode = None
     postalCode = None
     city = None
-    latitude = None
-    longitude = None
+    latitude = None  # type: ignore [assignment]
+    longitude = None  # type: ignore [assignment]
     siret = None
     audioDisabilityCompliant = False
     mentalDisabilityCompliant = False
@@ -149,7 +149,7 @@ class EventOfferFactory(OfferFactory):
 class EducationalEventOfferFactory(OfferFactory):
     product = factory.SubFactory(EventProductFactory)
     isEducational = True
-    extraData = {}
+    extraData = {}  # type: ignore [var-annotated]
 
 
 class EducationalEventShadowOfferFactory(EducationalEventOfferFactory):

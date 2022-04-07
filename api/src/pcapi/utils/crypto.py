@@ -10,7 +10,7 @@ def _hash_password_with_bcrypt(clear_text: str) -> bytes:
 
 
 def _check_password_with_bcrypt(clear_text: str, hashed: str) -> bool:
-    return bcrypt.checkpw(clear_text.encode("utf-8"), hashed)
+    return bcrypt.checkpw(clear_text.encode("utf-8"), hashed)  # type: ignore [arg-type]
 
 
 def _hash_password_with_md5(clear_text: str) -> bytes:

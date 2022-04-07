@@ -15,7 +15,7 @@ class VenueAccessibilityModel(BaseModel):
 
 
 class BannerMetaModel(TypedDict, total=False):
-    image_credit: typing.Optional[base.VenueImageCredit]
+    image_credit: typing.Optional[base.VenueImageCredit]  # type: ignore [valid-type]
 
 
 class VenueResponse(base.BaseVenueResponse):

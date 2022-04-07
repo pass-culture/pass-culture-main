@@ -32,7 +32,7 @@ def _get_emails_by_offerer(offerer: Offerer) -> set[str]:
     return emails
 
 
-def _venues_link(view, context, model, name) -> Markup:
+def _venues_link(view, context, model, name) -> Markup:  # type: ignore [no-untyped-def]
     url = url_for("venue_for_offerer.index", id=model.id)
     return Markup('<a href="{}">Lieux associés</a>').format(escape(url))
 
@@ -46,7 +46,7 @@ class OffererTagFilter(fa_filters.BaseSQLAFilter):
         parsed_value = tools.parse_like_term(value)
         return query.join(OffererTagMapping).join(OffererTag).filter(OffererTag.name.ilike(parsed_value))
 
-    def operation(self):
+    def operation(self):  # type: ignore [no-untyped-def]
         return lazy_gettext("contains")
 
     def clean(self, value: str) -> str:
@@ -72,7 +72,7 @@ class OffererView(BaseAdminView):
     form_columns = ["name", "siren", "city", "postalCode", "address", "tags", "isActive"]
 
     @property
-    def column_formatters(self):
+    def column_formatters(self):  # type: ignore [no-untyped-def]
         formatters = super().column_formatters
         formatters.update(venues=_venues_link)
         return formatters
@@ -95,7 +95,7 @@ class OffererView(BaseAdminView):
 
     def update_model(self, form: Form, offerer: Offerer) -> bool:
         if offerer.isActive and not form.isActive.data:
-            if offerer_has_ongoing_bookings(offerer.id):
+            if offerer_has_ongoing_bookings(offerer.id):  # type: ignore [arg-type]
                 flash(
                     "Impossible de désactiver une structure juridique pour laquelle des réservations sont en cours.",
                     "error",

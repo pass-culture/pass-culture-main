@@ -8,7 +8,7 @@ It will be removed when development is finished
 class MockedShows:
     status_code = 200
 
-    def json(self):
+    def json(self):  # type: ignore [no-untyped-def]
         return [
             {
                 "premiere": False,

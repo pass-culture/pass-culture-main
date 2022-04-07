@@ -16,7 +16,7 @@ from pcapi.models import db
 logger = logging.getLogger(__name__)
 
 
-def create_industrial_invoices():
+def create_industrial_invoices():  # type: ignore [no-untyped-def]
     logger.info("create_industrial_invoices")
 
     finance_api.generate_cashflows_and_payment_files(cutoff=datetime.datetime.utcnow())
@@ -27,7 +27,7 @@ def create_industrial_invoices():
     logger.info("Created %s Invoices", finance_models.Invoice.query.count())
 
 
-def create_specific_invoice():
+def create_specific_invoice():  # type: ignore [no-untyped-def]
     logger.info("create_specific_invoice")
     bank_info = offers_factories.BankInformationFactory()
     business_unit = finance_factories.BusinessUnitFactory(

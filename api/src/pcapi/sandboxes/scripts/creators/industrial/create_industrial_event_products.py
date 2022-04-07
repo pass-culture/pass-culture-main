@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 EVENT_COUNTS_PER_TYPE = 7
 
 
-def create_industrial_event_products():
+def create_industrial_event_products():  # type: ignore [no-untyped-def]
     logger.info("create_industrial_event_products")
 
     event_products_by_name = {}

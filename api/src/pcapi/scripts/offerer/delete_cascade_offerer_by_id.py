@@ -148,4 +148,4 @@ def delete_cascade_offerer_by_id(offerer_id: int) -> None:
 
     logger.info("Deleted offerer", extra=recap_data)
 
-    return recap_data
+    return recap_data  # type: ignore [return-value]

@@ -176,7 +176,7 @@ class ListBookingsQueryModel(BaseModel):
     extra = "forbid"
 
     @root_validator(pre=True)
-    def booking_period_or_event_date_required(cls, values):  # pylint: disable=no-self-argument
+    def booking_period_or_event_date_required(cls, values):  # type: ignore [no-untyped-def] # pylint: disable=no-self-argument
         event_date = values.get("eventDate")
         booking_period_beginning_date = values.get("bookingPeriodBeginningDate")
         booking_period_ending_date = values.get("bookingPeriodEndingDate")

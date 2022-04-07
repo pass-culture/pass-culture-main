@@ -53,7 +53,7 @@ def send_expired_bookings_to_beneficiary_email(beneficiary: User, bookings: list
         )
         success &= mails.send(recipients=[beneficiary.email], data=other_bookings_data)
 
-    return success
+    return success  # type: ignore [return-value]
 
 
 def _filter_books_bookings(bookings: list[Booking]) -> Tuple[List[Booking], List[Booking]]:

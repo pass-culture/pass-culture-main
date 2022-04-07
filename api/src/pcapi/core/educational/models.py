@@ -85,7 +85,7 @@ class CollectiveBookingStatusFilter(enum.Enum):
 class CollectiveOffer(PcObject, ValidationMixin, AccessibilityMixin, StatusMixin, Model):  # type: ignore[valid-type, misc]
     __tablename__ = "collective_offer"
 
-    id: int = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
+    id: int = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)  # type: ignore [assignment]
 
     offerId = sa.Column(sa.BigInteger, nullable=True)
 
@@ -93,7 +93,7 @@ class CollectiveOffer(PcObject, ValidationMixin, AccessibilityMixin, StatusMixin
 
     venueId = sa.Column(sa.BigInteger, sa.ForeignKey("venue.id"), nullable=False, index=True)
 
-    venue = sa.orm.relationship("Venue", foreign_keys=[venueId], back_populates="collectiveOffers")
+    venue = sa.orm.relationship("Venue", foreign_keys=[venueId], back_populates="collectiveOffers")  # type: ignore [misc]
 
     name = sa.Column(sa.String(140), nullable=False)
 
@@ -107,9 +107,9 @@ class CollectiveOffer(PcObject, ValidationMixin, AccessibilityMixin, StatusMixin
 
     subcategoryId = sa.Column(sa.Text, nullable=False, index=True)
 
-    dateUpdated: datetime = sa.Column(sa.DateTime, nullable=True, default=datetime.utcnow, onupdate=datetime.utcnow)
+    dateUpdated: datetime = sa.Column(sa.DateTime, nullable=True, default=datetime.utcnow, onupdate=datetime.utcnow)  # type: ignore [assignment]
 
-    students: list[StudentLevels] = sa.Column(
+    students: list[StudentLevels] = sa.Column(  # type: ignore [assignment]
         MutableList.as_mutable(postgresql.ARRAY(sa.Enum(StudentLevels))),
         nullable=False,
         server_default="{}",
@@ -121,7 +121,7 @@ class CollectiveOffer(PcObject, ValidationMixin, AccessibilityMixin, StatusMixin
 
     contactPhone = sa.Column(sa.Text, nullable=False)
 
-    offerVenue = sa.Column(MutableDict.as_mutable(postgresql.json.JSONB), nullable=False)
+    offerVenue = sa.Column(MutableDict.as_mutable(postgresql.json.JSONB), nullable=False)  # type: ignore [attr-defined]
 
     @property
     def isEducational(self) -> bool:
@@ -160,7 +160,7 @@ class CollectiveOffer(PcObject, ValidationMixin, AccessibilityMixin, StatusMixin
         )
 
     @property
-    def hasBookingLimitDatetimePassed(self):
+    def hasBookingLimitDatetimePassed(self):  # type: ignore [no-untyped-def]
         if self.collectiveStock:
             return self.collectiveStock.hasBookingLimitDatetimePassed
         return False
@@ -197,13 +197,13 @@ class CollectiveOffer(PcObject, ValidationMixin, AccessibilityMixin, StatusMixin
             "visualDisabilityCompliant",
         ]
         offer_mapping = {x: getattr(offer, x) for x in list_of_common_attributes}
-        students = [StudentLevels(x).name for x in offer.extraData.get("students", [])]
+        students = [StudentLevels(x).name for x in offer.extraData.get("students", [])]  # type: ignore [union-attr]
         return cls(
             **offer_mapping,
             offerId=offer.id,
-            contactEmail=offer.extraData.get("contactEmail"),
-            contactPhone=offer.extraData.get("contactPhone", "").strip(),
-            offerVenue=offer.extraData.get("offerVenue"),
+            contactEmail=offer.extraData.get("contactEmail"),  # type: ignore [union-attr]
+            contactPhone=offer.extraData.get("contactPhone", "").strip(),  # type: ignore [union-attr]
+            offerVenue=offer.extraData.get("offerVenue"),  # type: ignore [union-attr]
             students=students,
         )
 
@@ -242,7 +242,7 @@ class CollectiveOffer(PcObject, ValidationMixin, AccessibilityMixin, StatusMixin
 class CollectiveOfferTemplate(PcObject, ValidationMixin, AccessibilityMixin, StatusMixin, Model):  # type: ignore[valid-type, misc]
     __tablename__ = "collective_offer_template"
 
-    id: int = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
+    id: int = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)  # type: ignore [assignment]
 
     offerId = sa.Column(sa.BigInteger, nullable=True)
 
@@ -250,7 +250,7 @@ class CollectiveOfferTemplate(PcObject, ValidationMixin, AccessibilityMixin, Sta
 
     venueId = sa.Column(sa.BigInteger, sa.ForeignKey("venue.id"), nullable=False, index=True)
 
-    venue = sa.orm.relationship("Venue", foreign_keys=[venueId], back_populates="collectiveOfferTemplates")
+    venue = sa.orm.relationship("Venue", foreign_keys=[venueId], back_populates="collectiveOfferTemplates")  # type: ignore [misc]
 
     name = sa.Column(sa.String(140), nullable=False)
 
@@ -262,9 +262,9 @@ class CollectiveOfferTemplate(PcObject, ValidationMixin, AccessibilityMixin, Sta
 
     subcategoryId = sa.Column(sa.Text, nullable=False, index=True)
 
-    dateUpdated: datetime = sa.Column(sa.DateTime, nullable=True, default=datetime.utcnow, onupdate=datetime.utcnow)
+    dateUpdated: datetime = sa.Column(sa.DateTime, nullable=True, default=datetime.utcnow, onupdate=datetime.utcnow)  # type: ignore [assignment]
 
-    students: list[StudentLevels] = sa.Column(
+    students: list[StudentLevels] = sa.Column(  # type: ignore [assignment]
         MutableList.as_mutable(postgresql.ARRAY(sa.Enum(StudentLevels))),
         nullable=False,
         server_default="{}",
@@ -278,7 +278,7 @@ class CollectiveOfferTemplate(PcObject, ValidationMixin, AccessibilityMixin, Sta
 
     contactPhone = sa.Column(sa.Text, nullable=False)
 
-    offerVenue = sa.Column(MutableDict.as_mutable(postgresql.json.JSONB), nullable=False)
+    offerVenue = sa.Column(MutableDict.as_mutable(postgresql.json.JSONB), nullable=False)  # type: ignore [attr-defined]
 
     @sa.ext.hybrid.hybrid_property
     def hasBookingLimitDatetimesPassed(self) -> bool:
@@ -364,13 +364,13 @@ class CollectiveOfferTemplate(PcObject, ValidationMixin, AccessibilityMixin, Sta
             "visualDisabilityCompliant",
         ]
         offer_mapping = {x: getattr(offer, x) for x in list_of_common_attributes}
-        students = [StudentLevels(x).name for x in offer.extraData.get("students", [])]
+        students = [StudentLevels(x).name for x in offer.extraData.get("students", [])]  # type: ignore [union-attr]
         return cls(
             **offer_mapping,
             offerId=offer.id,
-            contactEmail=offer.extraData.get("contactEmail"),
-            contactPhone=offer.extraData.get("contactPhone", "").strip(),
-            offerVenue=offer.extraData.get("offerVenue"),
+            contactEmail=offer.extraData.get("contactEmail"),  # type: ignore [union-attr]
+            contactPhone=offer.extraData.get("contactPhone", "").strip(),  # type: ignore [union-attr]
+            offerVenue=offer.extraData.get("offerVenue"),  # type: ignore [union-attr]
             students=students,
             priceDetail=price_detail,
         )
@@ -448,31 +448,31 @@ class CollectiveStock(PcObject, Model):  # type: ignore[valid-type, misc]
 class EducationalInstitution(PcObject, Model):  # type: ignore[valid-type, misc]
     __tablename__ = "educational_institution"
 
-    id: int = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
+    id: int = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)  # type: ignore [assignment]
 
-    institutionId: str = sa.Column(sa.String(30), nullable=False, unique=True, index=True)
+    institutionId: str = sa.Column(sa.String(30), nullable=False, unique=True, index=True)  # type: ignore [assignment]
 
-    name: str = sa.Column(sa.Text(), nullable=True)
+    name: str = sa.Column(sa.Text(), nullable=True)  # type: ignore [assignment]
 
-    city: str = sa.Column(sa.Text(), nullable=True)
+    city: str = sa.Column(sa.Text(), nullable=True)  # type: ignore [assignment]
 
-    postalCode: str = sa.Column(sa.String(10), nullable=True)
+    postalCode: str = sa.Column(sa.String(10), nullable=True)  # type: ignore [assignment]
 
-    email: str = sa.Column(sa.Text(), nullable=True)
+    email: str = sa.Column(sa.Text(), nullable=True)  # type: ignore [assignment]
 
-    phoneNumber: str = sa.Column(sa.String(30), nullable=True)
+    phoneNumber: str = sa.Column(sa.String(30), nullable=True)  # type: ignore [assignment]
 
 
 class EducationalYear(PcObject, Model):  # type: ignore[valid-type, misc]
     __tablename__ = "educational_year"
 
-    id: int = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
+    id: int = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)  # type: ignore [assignment]
 
-    adageId: str = sa.Column(sa.String(30), unique=True, nullable=False)
+    adageId: str = sa.Column(sa.String(30), unique=True, nullable=False)  # type: ignore [assignment]
 
-    beginningDate: datetime = sa.Column(sa.DateTime, nullable=False)
+    beginningDate: datetime = sa.Column(sa.DateTime, nullable=False)  # type: ignore [assignment]
 
-    expirationDate: datetime = sa.Column(sa.DateTime, nullable=False)
+    expirationDate: datetime = sa.Column(sa.DateTime, nullable=False)  # type: ignore [assignment]
 
 
 class EducationalDeposit(PcObject, Model):  # type: ignore[valid-type, misc]
@@ -480,27 +480,27 @@ class EducationalDeposit(PcObject, Model):  # type: ignore[valid-type, misc]
 
     TEMPORARY_FUND_AVAILABLE_RATIO = 0.8
 
-    id: int = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
+    id: int = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)  # type: ignore [assignment]
 
     educationalInstitutionId = sa.Column(
         sa.BigInteger, sa.ForeignKey("educational_institution.id"), index=True, nullable=False
     )
 
-    educationalInstitution: EducationalInstitution = relationship(
+    educationalInstitution: EducationalInstitution = relationship(  # type: ignore [assignment]
         EducationalInstitution, foreign_keys=[educationalInstitutionId], backref="deposits"
     )
 
     educationalYearId = sa.Column(sa.String(30), sa.ForeignKey("educational_year.adageId"), index=True, nullable=False)
 
-    educationalYear: EducationalYear = relationship(
+    educationalYear: EducationalYear = relationship(  # type: ignore [assignment]
         EducationalYear, foreign_keys=[educationalYearId], backref="deposits"
     )
 
-    amount: Decimal = sa.Column(Numeric(10, 2), nullable=False)
+    amount: Decimal = sa.Column(Numeric(10, 2), nullable=False)  # type: ignore [assignment]
 
-    dateCreated: datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow, server_default=func.now())
+    dateCreated: datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow, server_default=func.now())  # type: ignore [assignment]
 
-    isFinal: bool = sa.Column(Boolean, nullable=False, default=True)
+    isFinal: bool = sa.Column(Boolean, nullable=False, default=True)  # type: ignore [assignment]
 
     ministry = sa.Column(
         sa.Enum(Ministry),
@@ -524,15 +524,15 @@ class EducationalRedactor(PcObject, Model):  # type: ignore[valid-type, misc]
 
     __tablename__ = "educational_redactor"
 
-    id: int = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
+    id: int = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)  # type: ignore [assignment]
 
-    email: str = sa.Column(sa.String(120), nullable=False, unique=True, index=True)
+    email: str = sa.Column(sa.String(120), nullable=False, unique=True, index=True)  # type: ignore [assignment]
 
-    firstName: str = sa.Column(sa.String(128), nullable=True)
+    firstName: str = sa.Column(sa.String(128), nullable=True)  # type: ignore [assignment]
 
-    lastName: str = sa.Column(sa.String(128), nullable=True)
+    lastName: str = sa.Column(sa.String(128), nullable=True)  # type: ignore [assignment]
 
-    civility: str = sa.Column(sa.String(20), nullable=True)
+    civility: str = sa.Column(sa.String(20), nullable=True)  # type: ignore [assignment]
 
     educationalBookings = relationship(
         "EducationalBooking",
@@ -545,15 +545,15 @@ class EducationalRedactor(PcObject, Model):  # type: ignore[valid-type, misc]
 class EducationalBooking(PcObject, Model):  # type: ignore[valid-type, misc]
     __tablename__ = "educational_booking"
 
-    id: int = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
+    id: int = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)  # type: ignore [assignment]
 
     educationalInstitutionId = sa.Column(sa.BigInteger, sa.ForeignKey("educational_institution.id"), nullable=False)
-    educationalInstitution: EducationalInstitution = relationship(
+    educationalInstitution: EducationalInstitution = relationship(  # type: ignore [assignment]
         EducationalInstitution, foreign_keys=[educationalInstitutionId], backref="educationalBookings"
     )
 
     educationalYearId = sa.Column(sa.String(30), sa.ForeignKey("educational_year.adageId"), nullable=False)
-    educationalYear: EducationalYear = relationship(EducationalYear, foreign_keys=[educationalYearId])
+    educationalYear: EducationalYear = relationship(EducationalYear, foreign_keys=[educationalYearId])  # type: ignore [assignment]
 
     Index("ix_educational_booking_educationalYear_and_institution", educationalYearId, educationalInstitutionId)
 
@@ -563,10 +563,10 @@ class EducationalBooking(PcObject, Model):  # type: ignore[valid-type, misc]
         nullable=True,
     )
 
-    confirmationDate: Optional[datetime] = sa.Column(sa.DateTime, nullable=True)
+    confirmationDate: Optional[datetime] = sa.Column(sa.DateTime, nullable=True)  # type: ignore [assignment]
     confirmationLimitDate = sa.Column(sa.DateTime, nullable=True)
 
-    booking = relationship(
+    booking = relationship(  # type: ignore [misc]
         "Booking",
         back_populates="educationalBooking",
         uselist=False,
@@ -580,7 +580,7 @@ class EducationalBooking(PcObject, Model):  # type: ignore[valid-type, misc]
         nullable=False,
         index=True,
     )
-    educationalRedactor: EducationalRedactor = relationship(
+    educationalRedactor: EducationalRedactor = relationship(  # type: ignore [assignment]
         EducationalRedactor,
         back_populates="educationalBookings",
         uselist=False,
@@ -606,7 +606,7 @@ class EducationalBooking(PcObject, Model):  # type: ignore[valid-type, misc]
         except booking_exceptions.BookingIsAlreadyCancelled:
             raise exceptions.EducationalBookingAlreadyCancelled()
 
-        self.status = EducationalBookingStatus.REFUSED
+        self.status = EducationalBookingStatus.REFUSED  # type: ignore [assignment]
 
 
 class CollectiveBooking(PcObject, Model):  # type: ignore[valid-type, misc]
@@ -628,11 +628,11 @@ class CollectiveBooking(PcObject, Model):  # type: ignore[valid-type, misc]
 
     venueId = sa.Column(sa.BigInteger, sa.ForeignKey("venue.id"), index=True, nullable=False)
 
-    venue = relationship("Venue", foreign_keys=[venueId], backref="collectiveBookings")
+    venue = relationship("Venue", foreign_keys=[venueId], backref="collectiveBookings")  # type: ignore [misc]
 
     offererId = sa.Column(sa.BigInteger, sa.ForeignKey("offerer.id"), index=True, nullable=False)
 
-    offerer = relationship("Offerer", foreign_keys=[offererId], backref="collectiveBookings")
+    offerer = relationship("Offerer", foreign_keys=[offererId], backref="collectiveBookings")  # type: ignore [misc]
 
     cancellationDate = sa.Column(sa.DateTime, nullable=True)
 
@@ -656,16 +656,16 @@ class CollectiveBooking(PcObject, Model):  # type: ignore[valid-type, misc]
     reimbursementDate = sa.Column(sa.DateTime, nullable=True)
 
     educationalInstitutionId = sa.Column(sa.BigInteger, sa.ForeignKey("educational_institution.id"), nullable=False)
-    educationalInstitution: EducationalInstitution = relationship(
+    educationalInstitution: EducationalInstitution = relationship(  # type: ignore [assignment]
         EducationalInstitution, foreign_keys=[educationalInstitutionId], backref="collectiveBookings"
     )
 
     educationalYearId = sa.Column(sa.String(30), sa.ForeignKey("educational_year.adageId"), nullable=False)
-    educationalYear: EducationalYear = relationship(EducationalYear, foreign_keys=[educationalYearId])
+    educationalYear: EducationalYear = relationship(EducationalYear, foreign_keys=[educationalYearId])  # type: ignore [assignment]
 
     Index("ix_collective_booking_educationalYear_and_institution", educationalYearId, educationalInstitutionId)
 
-    confirmationDate: Optional[datetime] = sa.Column(sa.DateTime, nullable=True)
+    confirmationDate: Optional[datetime] = sa.Column(sa.DateTime, nullable=True)  # type: ignore [assignment]
     confirmationLimitDate = sa.Column(sa.DateTime, nullable=False)
 
     educationalRedactorId = sa.Column(
@@ -674,7 +674,7 @@ class CollectiveBooking(PcObject, Model):  # type: ignore[valid-type, misc]
         nullable=False,
         index=True,
     )
-    educationalRedactor: EducationalRedactor = relationship(
+    educationalRedactor: EducationalRedactor = relationship(  # type: ignore [assignment]
         EducationalRedactor,
         back_populates="collectiveBookings",
         uselist=False,
@@ -692,7 +692,7 @@ class CollectiveBooking(PcObject, Model):  # type: ignore[valid-type, misc]
 
     def mark_as_unused_set_confirmed(self) -> None:
         self.dateUsed = None
-        self.status = CollectiveBookingStatus.CONFIRMED
+        self.status = CollectiveBookingStatus.CONFIRMED  # type: ignore [assignment]
 
     def cancel_booking(self, cancel_even_if_used: bool = False) -> None:
         if self.status is CollectiveBookingStatus.CANCELLED:
@@ -701,7 +701,7 @@ class CollectiveBooking(PcObject, Model):  # type: ignore[valid-type, misc]
             raise booking_exceptions.BookingIsAlreadyUsed()
         if self.status is CollectiveBookingStatus.USED and not cancel_even_if_used:
             raise booking_exceptions.BookingIsAlreadyUsed()
-        self.status = CollectiveBookingStatus.CANCELLED
+        self.status = CollectiveBookingStatus.CANCELLED  # type: ignore [assignment]
         self.cancellationDate = datetime.utcnow()
 
     def uncancel_booking_set_used(self) -> None:
@@ -716,7 +716,7 @@ class CollectiveBooking(PcObject, Model):  # type: ignore[valid-type, misc]
         if self.has_confirmation_limit_date_passed():
             raise booking_exceptions.ConfirmationLimitDateHasPassed()
 
-        self.status = CollectiveBookingStatus.CONFIRMED
+        self.status = CollectiveBookingStatus.CONFIRMED  # type: ignore [assignment]
         self.confirmationDate = datetime.utcnow()
 
     @hybrid_property
@@ -749,13 +749,13 @@ class CollectiveBooking(PcObject, Model):  # type: ignore[valid-type, misc]
 
         try:
             self.cancel_booking()
-            self.cancellationReason = CollectiveBookingCancellationReasons.REFUSED_BY_INSTITUTE
+            self.cancellationReason = CollectiveBookingCancellationReasons.REFUSED_BY_INSTITUTE  # type: ignore [assignment]
         except booking_exceptions.BookingIsAlreadyUsed:
             raise exceptions.EducationalBookingNotRefusable()
         except booking_exceptions.BookingIsAlreadyCancelled:
             raise exceptions.EducationalBookingAlreadyCancelled()
 
-        self.status = CollectiveBookingStatus.CANCELLED
+        self.status = CollectiveBookingStatus.CANCELLED  # type: ignore [assignment]
 
 
 CollectiveBooking.trig_ddl = f"""

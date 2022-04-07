@@ -113,8 +113,8 @@ def get_bookings(user: User) -> BookingsResponse:
             .load_only(
                 Venue.name,
                 Venue.address,
-                Venue.postalCode,
-                Venue.city,
+                Venue.postalCode,  # type: ignore [has-type]
+                Venue.city,  # type: ignore [has-type]
                 Venue.latitude,
                 Venue.longitude,
                 Venue.publicName,
@@ -174,7 +174,7 @@ def is_ended_booking(booking: Booking) -> bool:
     if booking.stock.canHaveActivationCodes and booking.activationCode:
         # consider digital bookings as special: is_used should be true anyway so
         # let's use displayAsEnded
-        return booking.displayAsEnded
+        return booking.displayAsEnded  # type: ignore [return-value]
 
     return (
         not booking.stock.offer.isPermanent

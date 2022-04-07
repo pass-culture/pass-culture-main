@@ -32,7 +32,7 @@ class BookFormat(enum.Enum):
     MOYEN_FORMAT = "MOYEN FORMAT"
 
 
-class Product(PcObject, Model, ExtraDataMixin, HasThumbMixin, ProvidableMixin):
+class Product(PcObject, Model, ExtraDataMixin, HasThumbMixin, ProvidableMixin):  # type: ignore [valid-type, misc]
 
     name = Column(String(140), nullable=False)
 
@@ -57,7 +57,7 @@ class Product(PcObject, Model, ExtraDataMixin, HasThumbMixin, ProvidableMixin):
 
     owningOffererId = Column(BigInteger, ForeignKey("offerer.id"), nullable=True)
 
-    owningOfferer = relationship("Offerer", foreign_keys=[owningOffererId], backref="events")
+    owningOfferer = relationship("Offerer", foreign_keys=[owningOffererId], backref="events")  # type: ignore [misc]
 
     subcategoryId = Column(Text, nullable=False, index=True)
 
@@ -72,17 +72,17 @@ class Product(PcObject, Model, ExtraDataMixin, HasThumbMixin, ProvidableMixin):
         return subcategories.ALL_SUBCATEGORIES_DICT[self.subcategoryId]
 
     @property
-    def isDigital(self):
+    def isDigital(self):  # type: ignore [no-untyped-def]
         return self.url is not None and self.url != ""
 
     @property
-    def is_offline_only(self):
+    def is_offline_only(self):  # type: ignore [no-untyped-def]
         return self.subcategory.online_offline_platform == subcategories.OnlineOfflinePlatformChoices.OFFLINE.value
 
     @property
-    def is_online_only(self):
+    def is_online_only(self):  # type: ignore [no-untyped-def]
         return self.subcategory.online_offline_platform == subcategories.OnlineOfflinePlatformChoices.ONLINE.value
 
     @hybrid_property
-    def can_be_synchronized(self):
+    def can_be_synchronized(self):  # type: ignore [no-untyped-def]
         return self.isGcuCompatible & self.isSynchronizationCompatible

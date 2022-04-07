@@ -25,7 +25,7 @@ class TestingBackend(LoggerBackend):
                 "group_id": notification_data.group_id,
                 "user_ids": notification_data.user_ids,
                 "message": {"title": notification_data.message.title, "body": notification_data.message.body},
-                **notification_data.extra,
+                **notification_data.extra,  # type: ignore [arg-type]
             }
         )
 

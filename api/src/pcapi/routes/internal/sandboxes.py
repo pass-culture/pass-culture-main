@@ -6,7 +6,7 @@ from pcapi.sandboxes.scripts import getters
 
 
 @private_api.route("/sandboxes/<module_name>/<getter_name>", methods=["GET"])
-def get_sandbox(module_name, getter_name):
+def get_sandbox(module_name, getter_name):  # type: ignore [no-untyped-def]
 
     if not hasattr(getters, module_name):
         errors = ApiErrors()

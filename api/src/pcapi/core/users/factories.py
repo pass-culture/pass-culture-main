@@ -63,12 +63,12 @@ class UserFactory(BaseFactory):
     lastName = "Neige"
     publicName = "Jean Neige"
     isEmailValidated = True
-    roles = []
+    roles = []  # type: ignore [var-annotated]
     hasSeenProTutorials = True
     subscriptionState = models.SubscriptionState.account_created
 
     @classmethod
-    def _create(cls, model_class, *args, **kwargs):
+    def _create(cls, model_class, *args, **kwargs):  # type: ignore [no-untyped-def]
         password = kwargs.get("password", DEFAULT_PASSWORD)
         kwargs["password"] = crypto.hash_password(password)
         instance = super()._create(model_class, *args, **kwargs)
@@ -76,7 +76,7 @@ class UserFactory(BaseFactory):
         return instance
 
     @classmethod
-    def _build(cls, model_class, *args, **kwargs):
+    def _build(cls, model_class, *args, **kwargs):  # type: ignore [no-untyped-def]
         password = kwargs.get("password", DEFAULT_PASSWORD)
         kwargs["password"] = crypto.hash_password(password)
         instance = super()._build(model_class, *args, **kwargs)
@@ -100,7 +100,7 @@ class AdminFactory(BaseFactory):
     hasSeenProTutorials = True
 
     @classmethod
-    def _create(cls, model_class, *args, **kwargs):
+    def _create(cls, model_class, *args, **kwargs):  # type: ignore [no-untyped-def]
         password = kwargs.get("password", DEFAULT_PASSWORD)
         kwargs["password"] = crypto.hash_password(password)
         instance = super()._create(model_class, *args, **kwargs)
@@ -108,7 +108,7 @@ class AdminFactory(BaseFactory):
         return instance
 
     @classmethod
-    def _build(cls, model_class, *args, **kwargs):
+    def _build(cls, model_class, *args, **kwargs):  # type: ignore [no-untyped-def]
         password = kwargs.get("password", DEFAULT_PASSWORD)
         kwargs["password"] = crypto.hash_password(password)
         instance = super()._build(model_class, *args, **kwargs)
@@ -137,7 +137,7 @@ class BeneficiaryGrant18Factory(BaseFactory):
     subscriptionState = users_models.SubscriptionState.beneficiary_18
 
     @classmethod
-    def _create(cls, model_class, *args, **kwargs):
+    def _create(cls, model_class, *args, **kwargs):  # type: ignore [no-untyped-def]
         password = kwargs.get("password", DEFAULT_PASSWORD)
         kwargs["password"] = crypto.hash_password(password)
         if "publicName" not in kwargs and kwargs["firstName"] and kwargs["lastName"]:
@@ -147,7 +147,7 @@ class BeneficiaryGrant18Factory(BaseFactory):
         return instance
 
     @classmethod
-    def _build(cls, model_class, *args, **kwargs):
+    def _build(cls, model_class, *args, **kwargs):  # type: ignore [no-untyped-def]
         password = kwargs.get("password", DEFAULT_PASSWORD)
         kwargs["password"] = crypto.hash_password(password)
         if "publicName" not in kwargs and kwargs["firstName"] and kwargs["lastName"]:
@@ -157,7 +157,7 @@ class BeneficiaryGrant18Factory(BaseFactory):
         return instance
 
     @factory.post_generation
-    def beneficiaryImports(obj, create, extracted, **kwargs):  # pylint: disable=no-self-argument
+    def beneficiaryImports(obj, create, extracted, **kwargs):  # type: ignore [no-untyped-def] # pylint: disable=no-self-argument
         if not create:
             return None
 
@@ -175,7 +175,7 @@ class BeneficiaryGrant18Factory(BaseFactory):
         return beneficiary_import
 
     @factory.post_generation
-    def beneficiaryFraudChecks(obj, create, extracted, **kwargs):  # pylint: disable=no-self-argument
+    def beneficiaryFraudChecks(obj, create, extracted, **kwargs):  # type: ignore [no-untyped-def] # pylint: disable=no-self-argument
         import pcapi.core.fraud.factories as fraud_factories
 
         if not create:
@@ -209,7 +209,7 @@ class BeneficiaryGrant18Factory(BaseFactory):
         )
 
     @factory.post_generation
-    def beneficiaryFraudResults(obj, create, extracted, **kwargs):  # pylint: disable=no-self-argument
+    def beneficiaryFraudResults(obj, create, extracted, **kwargs):  # type: ignore [no-untyped-def] # pylint: disable=no-self-argument
         import pcapi.core.fraud.factories as fraud_factories
 
         if not create:
@@ -220,7 +220,7 @@ class BeneficiaryGrant18Factory(BaseFactory):
         )
 
     @factory.post_generation
-    def deposit(obj, create, extracted, **kwargs):  # pylint: disable=no-self-argument
+    def deposit(obj, create, extracted, **kwargs):  # type: ignore [no-untyped-def] # pylint: disable=no-self-argument
         if not create:
             return None
 
@@ -244,7 +244,7 @@ class UnderageBeneficiaryFactory(BeneficiaryGrant18Factory):
     subscriptionState = users_models.SubscriptionState.beneficiary_15_17
 
     @factory.post_generation
-    def deposit(obj, create, extracted, **kwargs):  # pylint: disable=no-self-argument
+    def deposit(obj, create, extracted, **kwargs):  # type: ignore [no-untyped-def] # pylint: disable=no-self-argument
         if not create:
             return None
 
@@ -270,7 +270,7 @@ class ProFactory(BaseFactory):
     hasSeenProTutorials = True
 
     @classmethod
-    def _create(cls, model_class, *args, **kwargs):
+    def _create(cls, model_class, *args, **kwargs):  # type: ignore [no-untyped-def]
         password = kwargs.get("password", DEFAULT_PASSWORD)
         kwargs["password"] = crypto.hash_password(password)
         instance = super()._create(model_class, *args, **kwargs)
@@ -278,7 +278,7 @@ class ProFactory(BaseFactory):
         return instance
 
     @classmethod
-    def _build(cls, model_class, *args, **kwargs):
+    def _build(cls, model_class, *args, **kwargs):  # type: ignore [no-untyped-def]
         password = kwargs.get("password", DEFAULT_PASSWORD)
         kwargs["password"] = crypto.hash_password(password)
         instance = super()._build(model_class, *args, **kwargs)
@@ -310,7 +310,7 @@ class UserSessionFactory(BaseFactory):
     uuid = factory.LazyFunction(uuid.uuid4)
 
     @classmethod
-    def _create(cls, model_class, *args, **kwargs):
+    def _create(cls, model_class, *args, **kwargs):  # type: ignore [no-untyped-def]
         try:
             user = kwargs.pop("user")
         except KeyError:
@@ -337,7 +337,7 @@ class DepositGrantFactory(BaseFactory):
     source = "public"
 
     @classmethod
-    def _create(cls, model_class, *args, **kwargs):
+    def _create(cls, model_class, *args, **kwargs):  # type: ignore [no-untyped-def]
         if "amount" in kwargs:
             raise ValueError("You cannot directly set deposit amount: set version instead")
         age = users_utils.get_age_from_birth_date(kwargs["user"].dateOfBirth)

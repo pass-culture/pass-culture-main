@@ -225,11 +225,11 @@ def get_educational_booking_status(
         BookingStatus.USED,
         BookingStatus.REIMBURSED,
     ):
-        return BookingStatus.USED.value
+        return BookingStatus.USED.value  # type: ignore [return-value]
 
     # This is to return REFUSED instead of CANCELLED if educational booking is REFUSED
     if educational_booking.status is not None:
-        return educational_booking.status.value
+        return educational_booking.status.value  # type: ignore [attr-defined]
 
     return educational_booking.booking.status.value
 
@@ -241,12 +241,12 @@ def get_collective_booking_status(
         CollectiveBookingStatus.USED,
         CollectiveBookingStatus.REIMBURSED,
     ):
-        return CollectiveBookingStatus.USED.value
+        return CollectiveBookingStatus.USED.value  # type: ignore [return-value]
 
     if collective_booking.cancellationReason == CollectiveBookingCancellationReasons.REFUSED_BY_INSTITUTE:
-        return "REFUSED"
+        return "REFUSED"  # type: ignore [return-value]
 
-    return collective_booking.status.value
+    return collective_booking.status.value  # type: ignore [attr-defined]
 
 
 def _get_educational_offer_contact(offer: offers_models.Offer) -> Contact:
@@ -254,23 +254,23 @@ def _get_educational_offer_contact(offer: offers_models.Offer) -> Contact:
         return Contact(email=None, phone=None)
 
     return Contact(
-        email=offer.extraData.get("contactEmail", None),
-        phone=offer.extraData.get("contactPhone", None),
+        email=offer.extraData.get("contactEmail", None),  # type: ignore [union-attr]
+        phone=offer.extraData.get("contactPhone", None),  # type: ignore [union-attr]
     )
 
 
 def _get_educational_offer_address(offer: offers_models.Offer) -> str:
     default_address = f"{offer.venue.address}, {offer.venue.postalCode} {offer.venue.city}"
-    if offer.extraData is None or offer.extraData.get("offerVenue", None) is None:
+    if offer.extraData is None or offer.extraData.get("offerVenue", None) is None:  # type: ignore [union-attr]
         return default_address
 
-    address_type = offer.extraData["offerVenue"]["addressType"]
+    address_type = offer.extraData["offerVenue"]["addressType"]  # type: ignore [call-overload]
 
     if address_type == "offererVenue":
         return default_address
 
     if address_type == "other":
-        return offer.extraData["offerVenue"]["otherAddress"]
+        return offer.extraData["offerVenue"]["otherAddress"]  # type: ignore [call-overload]
 
     if address_type == "school":
         return "Dans l’établissement scolaire"

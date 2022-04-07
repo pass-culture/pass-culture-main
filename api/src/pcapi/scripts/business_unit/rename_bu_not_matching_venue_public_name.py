@@ -8,7 +8,7 @@ from pcapi.models import db
 # FIXME (amarinier 24/03/2022): to delete when PC-13938 is merged
 
 
-def rename_bu_not_matching_venue_public_name():
+def rename_bu_not_matching_venue_public_name():  # type: ignore [no-untyped-def]
     print("Renaming bu with invalid name...")
     invalid_bu = (
         BusinessUnit.query.join(Venue, BusinessUnit.siret == Venue.siret)

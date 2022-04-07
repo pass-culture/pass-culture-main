@@ -37,10 +37,10 @@ def request_email_update(user: User, email: str, password: str) -> None:
 
 def check_email_update_attempts(user: User) -> None:
     update_email_attempts_key = f"update_email_attemps_user_{user.id}"
-    count = app.redis_client.incr(update_email_attempts_key)
+    count = app.redis_client.incr(update_email_attempts_key)  # type: ignore [attr-defined]
 
     if count == 1:
-        app.redis_client.expire(update_email_attempts_key, settings.EMAIL_UPDATE_ATTEMPTS_TTL)
+        app.redis_client.expire(update_email_attempts_key, settings.EMAIL_UPDATE_ATTEMPTS_TTL)  # type: ignore [attr-defined]
 
     if count > settings.MAX_EMAIL_UPDATE_ATTEMPTS:
         raise exceptions.EmailUpdateLimitReached()
@@ -60,17 +60,17 @@ def check_no_active_token_exists(user: User, expiration_date: datetime) -> None:
     * If not, raise an error because there is already one.
     """
     key = get_no_active_token_key(user)
-    count = app.redis_client.incr(key)
+    count = app.redis_client.incr(key)  # type: ignore [attr-defined]
 
     if count > 1:
         raise exceptions.EmailUpdateTokenExists()
 
-    app.redis_client.expireat(key, expiration_date)
+    app.redis_client.expireat(key, expiration_date)  # type: ignore [attr-defined]
 
 
-def get_active_token_expiration(user) -> typing.Optional[datetime]:
+def get_active_token_expiration(user) -> typing.Optional[datetime]:  # type: ignore [no-untyped-def]
     key = get_no_active_token_key(user)
-    ttl = app.redis_client.ttl(key)
+    ttl = app.redis_client.ttl(key)  # type: ignore [attr-defined]
 
     if ttl < 0:
         return None

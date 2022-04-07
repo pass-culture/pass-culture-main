@@ -4,7 +4,7 @@ from pcapi.core.users.models import User
 from pcapi.repository import repository
 
 
-def grant_wallet_to_existing_users(user_ids: list[int]):
+def grant_wallet_to_existing_users(user_ids: list[int]):  # type: ignore [no-untyped-def]
     if settings.IS_PROD:
         raise ValueError("This action is not available on production")
     users = User.query.filter(User.id.in_(user_ids)).all()

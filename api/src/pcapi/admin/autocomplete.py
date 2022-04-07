@@ -22,7 +22,7 @@ class Select2Response(pydantic.BaseModel):
 
 
 @private_api.route("/pc/back-office/autocomplete/offerers", methods=["GET"])
-@spectree_serialize(response_model=Select2Response)
+@spectree_serialize(response_model=Select2Response)  # type: ignore [arg-type]
 def offerers(query: Select2Query) -> Select2Response:
     """Autocomplete offerers on name or SIREN."""
     if not (current_user.is_authenticated and current_user.has_admin_role):
@@ -42,5 +42,5 @@ def offerers(query: Select2Query) -> Select2Response:
             offerers_models.Offerer.siren,
         )
     )
-    items = [Select2ResponseItem(id=offerer_id, text=f"{name} ({siren})") for offerer_id, name, siren in query]
+    items = [Select2ResponseItem(id=offerer_id, text=f"{name} ({siren})") for offerer_id, name, siren in query]  # type: ignore [misc, has-type]
     return Select2Response(items=items)

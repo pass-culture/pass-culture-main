@@ -73,7 +73,7 @@ class PartnerUserView(ResendValidationEmailMixin, SuspensionMixin, BaseAdminView
     column_details_list = ["suspension_history", "comment"]
 
     @property
-    def form_columns(self):
+    def form_columns(self):  # type: ignore [no-untyped-def]
         fields = (
             "email",
             "firstName",
@@ -128,8 +128,8 @@ class PartnerUserView(ResendValidationEmailMixin, SuspensionMixin, BaseAdminView
         return (
             User.query.outerjoin(UserOfferer)
             .filter(UserOfferer.userId.is_(None))
-            .filter(User.is_beneficiary.is_(False))
-            .filter(User.has_admin_role.is_(False))
+            .filter(User.is_beneficiary.is_(False))  # type: ignore [attr-defined]
+            .filter(User.has_admin_role.is_(False))  # type: ignore [attr-defined]
         )
 
     def get_count_query(self) -> BaseQuery:
@@ -138,6 +138,6 @@ class PartnerUserView(ResendValidationEmailMixin, SuspensionMixin, BaseAdminView
             .select_from(self.model)
             .outerjoin(UserOfferer)
             .filter(UserOfferer.userId.is_(None))
-            .filter(User.is_beneficiary.is_(False))
-            .filter(User.has_admin_role.is_(False))
+            .filter(User.is_beneficiary.is_(False))  # type: ignore [attr-defined]
+            .filter(User.has_admin_role.is_(False))  # type: ignore [attr-defined]
         )

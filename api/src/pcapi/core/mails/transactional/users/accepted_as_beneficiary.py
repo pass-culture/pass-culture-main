@@ -12,7 +12,7 @@ def get_accepted_as_beneficiary_email_data(user: User) -> SendinblueTransactiona
     return SendinblueTransactionalEmailData(
         template=TransactionalEmail.ACCEPTED_AS_BENEFICIARY.value,
         params={
-            "CREDIT": int(user.deposit.amount),
+            "CREDIT": int(user.deposit.amount),  # type: ignore [union-attr]
         },
     )
 
@@ -25,7 +25,7 @@ def get_accepted_as_underage_beneficiary_email_data(user: User) -> SendinblueTra
         template=TransactionalEmail.ACCEPTED_AS_EAC_BENEFICIARY.value,
         params={
             "FIRSTNAME": user.firstName,
-            "CREDIT": int(user.deposit.amount),
+            "CREDIT": int(user.deposit.amount),  # type: ignore [union-attr]
         },
     )
 

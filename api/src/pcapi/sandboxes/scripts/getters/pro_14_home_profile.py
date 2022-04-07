@@ -3,7 +3,7 @@ import pcapi.core.offers.factories as offers_factories
 from pcapi.sandboxes.scripts.utils.helpers import get_pro_helper
 
 
-def get_pro_user():
+def get_pro_user():  # type: ignore [no-untyped-def]
     user_offerer = offerers_factories.UserOffererFactory(
         validationToken=None,
         offerer__validationToken=None,

@@ -57,7 +57,7 @@ def int_from_bytes(xbytes: bytes) -> int:
 
 @blueprint.cli.command("humanize")
 @click.argument("int_ids", nargs=-1, required=True, type=int)
-def command_humanize(int_ids: tuple[int]):
+def command_humanize(int_ids: tuple[int]):  # type: ignore [no-untyped-def]
     """Print humanized version of the requested identifier(s)."""
     for int_id in int_ids:
         print(humanize(int_id))
@@ -65,7 +65,7 @@ def command_humanize(int_ids: tuple[int]):
 
 @blueprint.cli.command("dehumanize")
 @click.argument("human_ids", nargs=-1, required=True, type=str)
-def command_dehumanize(human_ids: tuple[str]):
+def command_dehumanize(human_ids: tuple[str]):  # type: ignore [no-untyped-def]
     """Print integer value of the requested humanized identifier(s)."""
     for human_id in human_ids:
         print(dehumanize(human_id))

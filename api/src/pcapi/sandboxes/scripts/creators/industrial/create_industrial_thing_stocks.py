@@ -14,7 +14,7 @@ from .utils import get_price_by_short_name
 THING_OFFERS_WITH_STOCK_REMOVE_MODULO = 3
 
 
-def create_industrial_thing_stocks(thing_offers_by_name):
+def create_industrial_thing_stocks(thing_offers_by_name):  # type: ignore [no-untyped-def]
     logger.info("create_industrial_thing_stocks")
 
     thing_stocks_by_name = {}

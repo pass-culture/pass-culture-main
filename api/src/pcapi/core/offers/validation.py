@@ -184,7 +184,7 @@ def check_stock_is_updatable(stock: Stock) -> None:
     check_event_expiration(stock)
 
 
-def check_event_expiration(stock: Union[CollectiveStock, Stock]):
+def check_event_expiration(stock: Union[CollectiveStock, Stock]):  # type: ignore [no-untyped-def]
     if stock.isEventExpired:
         api_errors = ApiErrors()
         api_errors.add_error("global", "Les événements passés ne sont pas modifiables")
@@ -320,7 +320,7 @@ def check_validation_config_parameters(config_as_dict: dict, valid_keys: list) -
         elif isinstance(value, dict):
             check_validation_config_parameters(value, KEY_VALIDATION_CONFIG[key])
         # Note that these are case-senstive
-        elif not (value in VALUE_VALIDATION_CONFIG[key] or type(value) in VALUE_VALIDATION_CONFIG[key]):
+        elif not (value in VALUE_VALIDATION_CONFIG[key] or type(value) in VALUE_VALIDATION_CONFIG[key]):  # type: ignore [operator]
             raise ValueError(f"{value} of type {type(value)} not in: {VALUE_VALIDATION_CONFIG[key]}")
 
 
@@ -351,7 +351,7 @@ def check_offer_withdrawal(
         raise exceptions.EventWithTicketMustHaveDelay()
 
 
-def check_offer_subcategory_is_valid(offer_subcategory_id):
+def check_offer_subcategory_is_valid(offer_subcategory_id):  # type: ignore [no-untyped-def]
     if offer_subcategory_id not in ALL_SUBCATEGORIES_DICT:
         raise exceptions.UnknownOfferSubCategory()
     if not ALL_SUBCATEGORIES_DICT[offer_subcategory_id].is_selectable:
@@ -372,5 +372,5 @@ def check_booking_limit_datetime(
     beginning = stock.beginningDatetime if beginning is None else beginning
     booking_limit_datetime = stock.bookingLimitDatetime if booking_limit_datetime is None else booking_limit_datetime
 
-    if booking_limit_datetime > beginning:
+    if booking_limit_datetime > beginning:  # type: ignore [operator]
         raise exceptions.BookingLimitDatetimeTooLate()

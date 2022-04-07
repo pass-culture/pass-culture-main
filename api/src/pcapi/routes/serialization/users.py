@@ -119,7 +119,7 @@ class SharedLoginUserResponseModel(BaseModel):
         use_enum_values = True
 
     @classmethod
-    def from_orm(cls, user):
+    def from_orm(cls, user):  # type: ignore [no-untyped-def]
         user.isAdmin = user.has_admin_role
         result = super().from_orm(user)
         return result
@@ -164,7 +164,7 @@ class SharedCurrentUserResponseModel(BaseModel):
         orm_mode = True
 
     @classmethod
-    def from_orm(cls, user):
+    def from_orm(cls, user):  # type: ignore [no-untyped-def]
         user.isAdmin = user.has_admin_role
         result = super().from_orm(user)
         return result

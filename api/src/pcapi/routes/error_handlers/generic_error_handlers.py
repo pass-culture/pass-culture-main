@@ -31,12 +31,12 @@ def restize_not_found_route_errors(error: NotFound) -> tuple[dict, int]:
 
 @app.errorhandler(ApiErrors)
 def restize_api_errors(error: ApiErrors) -> tuple[dict, int]:
-    return jsonify(error.errors), error.status_code or 400
+    return jsonify(error.errors), error.status_code or 400  # type: ignore [return-value]
 
 
 @app.errorhandler(offers_exceptions.TooLateToDeleteStock)
 def restize_too_late_to_delete_stock(error: offers_exceptions.TooLateToDeleteStock) -> tuple[dict, int]:
-    return jsonify(error.errors), 400
+    return jsonify(error.errors), 400  # type: ignore [return-value]
 
 
 @app.errorhandler(Exception)
@@ -47,7 +47,7 @@ def internal_error(error: Exception) -> Union[tuple[dict, int], HTTPException]:
     logger.exception("Unexpected error on method=%s url=%s: %s", request.method, request.url, error)
     errors = ApiErrors()
     errors.add_error("global", "Il semble que nous ayons des problèmes techniques :(" + " On répare ça au plus vite.")
-    return jsonify(errors.errors), 500
+    return jsonify(errors.errors), 500  # type: ignore [return-value]
 
 
 @app.errorhandler(UnauthorizedError)
@@ -65,7 +65,7 @@ def method_not_allowed(error: MethodNotAllowed) -> tuple[dict, int]:
     api_errors = ApiErrors()
     api_errors.add_error("global", "La méthode que vous utilisez n'existe pas sur notre serveur")
     logger.warning("405 %s", error)
-    return jsonify(api_errors.errors), 405
+    return jsonify(api_errors.errors), 405  # type: ignore [return-value]
 
 
 @app.errorhandler(NonDehumanizableId)
@@ -73,7 +73,7 @@ def invalid_id_for_dehumanize_error(error: NonDehumanizableId) -> tuple[dict, in
     api_errors = ApiErrors()
     api_errors.add_error("global", "La page que vous recherchez n'existe pas")
     logger.warning("404 %s", error)
-    return jsonify(api_errors.errors), 404
+    return jsonify(api_errors.errors), 404  # type: ignore [return-value]
 
 
 @app.errorhandler(DecimalCastError)
@@ -82,7 +82,7 @@ def decimal_cast_error(error: DecimalCastError) -> tuple[dict, int]:
     logger.warning(json.dumps(error.errors))
     for field in error.errors.keys():
         api_errors.add_error(field, "Saisissez un nombre valide")
-    return jsonify(api_errors.errors), 400
+    return jsonify(api_errors.errors), 400  # type: ignore [return-value]
 
 
 @app.errorhandler(DateTimeCastError)
@@ -91,13 +91,13 @@ def date_time_cast_error(error: DateTimeCastError) -> tuple[dict, int]:
     logger.warning(json.dumps(error.errors))
     for field in error.errors.keys():
         api_errors.add_error(field, "Format de date invalide")
-    return jsonify(api_errors.errors), 400
+    return jsonify(api_errors.errors), 400  # type: ignore [return-value]
 
 
 @app.errorhandler(DepositTypeAlreadyGrantedException)
 def already_activated_exception(error: DepositTypeAlreadyGrantedException) -> tuple[dict, int]:
     logger.error(json.dumps(error.errors))
-    return jsonify(error.errors), 405
+    return jsonify(error.errors), 405  # type: ignore [return-value]
 
 
 @app.errorhandler(429)
@@ -109,8 +109,8 @@ def ratelimit_handler(error: Exception) -> tuple[dict, int]:
 
     identifier = None
     try:
-        if request.is_json and "identifier" in request.json:
-            identifier = request.json["identifier"]
+        if request.is_json and "identifier" in request.json:  # type: ignore [operator]
+            identifier = request.json["identifier"]  # type: ignore [index]
     except json.JSONDecodeError as e:
         logger.info("Could not extract user identifier from request: %s", e)
     auth = get_request_authorization()
@@ -127,7 +127,7 @@ def ratelimit_handler(error: Exception) -> tuple[dict, int]:
     logger.warning("Requests ratelimit exceeded on routes url=%s", request.url, extra=extra)
     api_errors = ApiErrors()
     api_errors.add_error("global", "Nombre de tentatives de connexion dépassé, veuillez réessayer dans une minute")
-    return jsonify(api_errors.errors), 429
+    return jsonify(api_errors.errors), 429  # type: ignore [return-value]
 
 
 @app.errorhandler(DatabaseError)
@@ -145,4 +145,4 @@ def database_error_handler(error: DatabaseError) -> tuple[dict, int]:
     logger.exception("Unexpected database error on method=%s url=%s: %s", request.method, request.url, error)
     errors = ApiErrors()
     errors.add_error("global", "Il semble que nous ayons des problèmes techniques :(" + " On répare ça au plus vite.")
-    return jsonify(errors.errors), 500
+    return jsonify(errors.errors), 500  # type: ignore [return-value]

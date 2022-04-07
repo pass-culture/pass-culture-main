@@ -24,7 +24,7 @@ class CustomReimbursementRuleFactory(BaseFactory):
     amount = 5
 
     @classmethod
-    def _create(cls, model_class, *args, **kwargs):
+    def _create(cls, model_class, *args, **kwargs):  # type: ignore [no-untyped-def]
         if "rate" in kwargs:
             kwargs["amount"] = None
         if "offerer" in kwargs:

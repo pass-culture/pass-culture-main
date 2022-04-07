@@ -25,7 +25,7 @@ class ImportStatus(enum.Enum):
     WITHOUT_CONTINUATION = "WITHOUT_CONTINUATION"
 
 
-class BeneficiaryImportStatus(PcObject, Model):
+class BeneficiaryImportStatus(PcObject, Model):  # type: ignore [valid-type, misc]
     """
     THIS MODEL IS DEPRECATED - DO NOT USE
 
@@ -33,7 +33,7 @@ class BeneficiaryImportStatus(PcObject, Model):
     When this data is either transferred to the new model or deleted, we can remove this model.
     """
 
-    def __repr__(self):
+    def __repr__(self):  # type: ignore [no-untyped-def]
         author = self.author.publicName if self.author else "import automatisé"
         updated_at = datetime.strftime(self.date, "%d/%m/%Y")
         return f"{self.status.value}, le {updated_at} par {author}"
@@ -46,8 +46,8 @@ class BeneficiaryImportStatus(PcObject, Model):
 
     beneficiaryImportId = Column(BigInteger, ForeignKey("beneficiary_import.id"), index=True, nullable=False)
 
-    beneficiaryImport = relationship("BeneficiaryImport", foreign_keys=[beneficiaryImportId], backref="statuses")
+    beneficiaryImport = relationship("BeneficiaryImport", foreign_keys=[beneficiaryImportId], backref="statuses")  # type: ignore [misc]
 
     authorId = Column(BigInteger, ForeignKey("user.id"), nullable=True)
 
-    author = relationship("User", foreign_keys=[authorId])
+    author = relationship("User", foreign_keys=[authorId])  # type: ignore [misc]

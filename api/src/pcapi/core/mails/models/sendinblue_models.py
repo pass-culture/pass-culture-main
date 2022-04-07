@@ -29,9 +29,9 @@ class SendinblueTransactionalWithoutTemplateEmailData:
     html_content: str
     sender: SendinblueTransactionalSender = SendinblueTransactionalSender.SUPPORT_PRO
     attachment: Optional[SendinblueTransactionalAttachment] = None
-    reply_to: EmailInfo = None
+    reply_to: EmailInfo = None  # type: ignore [assignment]
 
-    def __post_init__(self):
+    def __post_init__(self):  # type: ignore [no-untyped-def]
         if self.reply_to is None:
             self.reply_to = self.sender
 
@@ -58,8 +58,8 @@ class TemplatePro(Template):
 class SendinblueTransactionalEmailData:
     template: Template
     params: dict = dataclasses.field(default_factory=dict)
-    reply_to: EmailInfo = None
+    reply_to: EmailInfo = None  # type: ignore [assignment]
 
-    def __post_init__(self):
+    def __post_init__(self):  # type: ignore [no-untyped-def]
         if self.reply_to is None:
             self.reply_to = self.template.sender.value

@@ -14,7 +14,7 @@ class ResendValidationEmailForm(SecureForm):
     pass  # empty form, only has the CSRF token field
 
 
-def _format_is_email_validated(view, context, model, name):
+def _format_is_email_validated(view, context, model, name):  # type: ignore [no-untyped-def]
     if model.isEmailValidated:
         return True
     url = url_for(".resend_validation_email_view")
@@ -25,17 +25,17 @@ def _format_is_email_validated(view, context, model, name):
 
 class ResendValidationEmailMixin:
     @property
-    def column_formatters(self):
+    def column_formatters(self):  # type: ignore [no-untyped-def]
         formatters = super().column_formatters
         formatters.update(isEmailValidated=_format_is_email_validated)
         return formatters
 
     @property
-    def user_list_url(self):
+    def user_list_url(self):  # type: ignore [no-untyped-def]
         return url_for(".index_view")
 
     @expose("resend-validation-email", ["GET", "POST"])
-    def resend_validation_email_view(self):
+    def resend_validation_email_view(self):  # type: ignore [no-untyped-def]
         user_id = request.args["user_id"]
         user = User.query.get(user_id)
         if user.has_admin_role or user.has_pro_role:

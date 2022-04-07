@@ -55,7 +55,7 @@ def get_business_units(query: finance_serialize.BusinessUnitListQueryModel) -> N
         sqla_orm.contains_eager(finance_models.BusinessUnit.bankAccount),
     )
     business_units = business_units.order_by(finance_models.BusinessUnit.name)
-    return finance_serialize.BusinessUnitListResponseModel(
+    return finance_serialize.BusinessUnitListResponseModel(  # type: ignore [return-value]
         __root__=[
             finance_serialize.BusinessUnitResponseModel.from_orm(business_unit) for business_unit in business_units
         ],

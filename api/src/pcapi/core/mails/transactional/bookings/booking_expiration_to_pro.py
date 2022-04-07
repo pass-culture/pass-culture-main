@@ -12,7 +12,7 @@ from pcapi.domain.postal_code.postal_code import PostalCode
 from pcapi.utils.mailing import build_pc_pro_offer_link
 
 
-def get_bookings_expiration_to_pro_email_data(
+def get_bookings_expiration_to_pro_email_data(  # type: ignore [no-untyped-def]
     offerer: Offerer, bookings: list[Booking], withdrawal_period
 ) -> SendinblueTransactionalEmailData:
     return SendinblueTransactionalEmailData(

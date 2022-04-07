@@ -13,7 +13,7 @@ MOVIE_SPECIAL_EVENT = "SPECIAL_EVENT"
 
 def get_movies_showtimes(
     api_key: str, theater_id: str, get_movies_showtimes_from_api: Callable = get_movies_showtimes_from_allocine
-) -> iter:
+) -> iter:  # type: ignore [valid-type]
     api_response = get_movies_showtimes_from_api(api_key, theater_id)
     movies_showtimes = api_response["movieShowtimeList"]["edges"]
     movies_number = api_response["movieShowtimeList"]["totalCount"]

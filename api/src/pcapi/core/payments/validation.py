@@ -11,20 +11,20 @@ from . import exceptions
 from . import models
 
 
-def validate_reimbursement_rule(rule: models.CustomReimbursementRule, check_start_date=True):
+def validate_reimbursement_rule(rule: models.CustomReimbursementRule, check_start_date=True):  # type: ignore [no-untyped-def]
     _check_reimbursement_rule_subcategories(rule)
     _check_reimbursement_rule_dates(rule, check_start_date=check_start_date)
     _check_reimbursement_rule_conflicts(rule)
 
 
-def _check_reimbursement_rule_subcategories(rule):
+def _check_reimbursement_rule_subcategories(rule):  # type: ignore [no-untyped-def]
     for subcategory_id in rule.subcategories:
         if subcategory_id not in ALL_SUBCATEGORIES_DICT:
             message = f""""{subcategory_id}" n'est pas une sous-catégorie valide."""
             raise exceptions.UnknownSubcategoryForReimbursementRule(message)
 
 
-def _check_reimbursement_rule_dates(rule, check_start_date=True):
+def _check_reimbursement_rule_dates(rule, check_start_date=True):  # type: ignore [no-untyped-def]
     tomorrow = datetime.date.today() + datetime.timedelta(days=1)
     tomorrow = date_utils.get_day_start(tomorrow, utils.ACCOUNTING_TIMEZONE)
     # If we just set the `timespan` attribute, the lower and upper
@@ -56,9 +56,9 @@ def _check_reimbursement_rule_dates(rule, check_start_date=True):
             raise exceptions.WrongDateForReimbursementRule(message)
 
 
-def _check_reimbursement_rule_conflicts(rule: models.CustomReimbursementRule):
+def _check_reimbursement_rule_conflicts(rule: models.CustomReimbursementRule):  # type: ignore [no-untyped-def]
     overlapping = models.CustomReimbursementRule.query
-    overlapping = overlapping.filter(models.CustomReimbursementRule.timespan.overlaps(rule.timespan))
+    overlapping = overlapping.filter(models.CustomReimbursementRule.timespan.overlaps(rule.timespan))  # type: ignore [attr-defined]
     if rule.offerId:
         overlapping = overlapping.filter_by(offerId=rule.offerId)
     else:
@@ -79,7 +79,7 @@ def _check_reimbursement_rule_conflicts(rule: models.CustomReimbursementRule):
         overlapping = overlapping.filter(
             or_(
                 models.CustomReimbursementRule.subcategories == [],
-                models.CustomReimbursementRule.subcategories.overlap(rule.subcategories),
+                models.CustomReimbursementRule.subcategories.overlap(rule.subcategories),  # type: ignore [attr-defined]
             )
         )
 

@@ -4,8 +4,8 @@ from pcapi.sandboxes.scripts.creators.industrial.create_industrial_activation_of
     create_industrial_activation_offers,
 )
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_admin_users import *
-from pcapi.sandboxes.scripts.creators.industrial.create_industrial_app_users import *
-from pcapi.sandboxes.scripts.creators.industrial.create_industrial_bookings import *
+from pcapi.sandboxes.scripts.creators.industrial.create_industrial_app_users import *  # type: ignore [no-redef]
+from pcapi.sandboxes.scripts.creators.industrial.create_industrial_bookings import *  # type: ignore [no-redef]
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_criterion import (
     associate_criterion_to_one_offer_with_mediation,
 )

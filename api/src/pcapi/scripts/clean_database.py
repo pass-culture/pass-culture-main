@@ -9,7 +9,7 @@ blueprint = Blueprint(__name__, __name__)
 
 
 @blueprint.cli.command("clean_database")
-def clean():
+def clean():  # type: ignore [no-untyped-def]
     try:
         clean_all_database()
     except Exception as e:  # pylint: disable=broad-except

@@ -8,7 +8,7 @@ from pcapi import settings
 from pcapi.utils.health_checker import read_version_from_file
 
 
-def init_sentry_sdk():
+def init_sentry_sdk():  # type: ignore [no-untyped-def]
     if settings.IS_DEV:
         return
     # pylint: disable=abstract-class-instantiated

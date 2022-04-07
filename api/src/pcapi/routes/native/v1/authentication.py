@@ -74,12 +74,12 @@ def refresh() -> authentication.RefreshResponse:
 def request_password_reset(body: RequestPasswordResetRequest) -> None:
     if FeatureToggle.ENABLE_NATIVE_APP_RECAPTCHA.is_active():
         try:
-            api_recaptcha.check_native_app_recaptcha_token(body.token)
+            api_recaptcha.check_native_app_recaptcha_token(body.token)  # type: ignore [arg-type]
         except api_recaptcha.ReCaptchaException:
             raise ApiErrors({"token": "The given token is not valid"})
     user = find_user_by_email(body.email)
     try:
-        users_api.request_password_reset(user)
+        users_api.request_password_reset(user)  # type: ignore [arg-type]
     except users_exceptions.EmailNotSent:
         raise ApiErrors(
             {"email": ["L'email n'a pas pu être envoyé"]},

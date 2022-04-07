@@ -21,7 +21,7 @@ class TiteLiveThingThumbs(LocalProvider):
     name = "TiteLive (Epagine / Place des libraires.com) Thumbs"
     can_create = False
 
-    def __init__(self):
+    def __init__(self):  # type: ignore [no-untyped-def]
         super().__init__()
 
         all_zips = get_files_to_process_from_titelive_ftp(THUMB_FOLDER_NAME_TITELIVE, DATE_REGEXP)
@@ -35,10 +35,10 @@ class TiteLiveThingThumbs(LocalProvider):
             self.open_next_file()
 
         try:
-            self.thumb_zipinfo = next(self.thumb_zipinfos)
+            self.thumb_zipinfo = next(self.thumb_zipinfos)  # type: ignore [arg-type]
         except StopIteration:
             self.open_next_file()
-            self.thumb_zipinfo = next(self.thumb_zipinfos)
+            self.thumb_zipinfo = next(self.thumb_zipinfos)  # type: ignore [arg-type]
 
         path = PurePath(self.thumb_zipinfo.filename)
 
@@ -48,7 +48,7 @@ class TiteLiveThingThumbs(LocalProvider):
 
         return [product_providable_info]
 
-    def open_next_file(self):
+    def open_next_file(self):  # type: ignore [no-untyped-def]
         if self.zip:
             file_date = get_date_from_filename(self.zip, DATE_REGEXP)
             self.log_provider_event(providers_models.LocalProviderEventType.SyncPartEnd, file_date)
@@ -73,7 +73,7 @@ class TiteLiveThingThumbs(LocalProvider):
         with self.zip.open(self.thumb_zipinfo) as f:
             return f.read()
 
-    def get_remaining_files_to_check(self, all_zips):
+    def get_remaining_files_to_check(self, all_zips):  # type: ignore [no-untyped-def]
         latest_sync_part_end_event = local_provider_event_queries.find_latest_sync_part_end_event(self.provider)
 
         if latest_sync_part_end_event is None:
@@ -81,7 +81,7 @@ class TiteLiveThingThumbs(LocalProvider):
         payload = int(latest_sync_part_end_event.payload)
         return iter(filter(lambda z: get_date_from_filename(z, DATE_REGEXP) > payload, all_zips))
 
-    def fill_object_attributes(self, obj):
+    def fill_object_attributes(self, obj):  # type: ignore [no-untyped-def]
         pass
 
 

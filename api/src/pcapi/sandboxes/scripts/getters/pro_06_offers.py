@@ -4,7 +4,7 @@ from pcapi.sandboxes.scripts.utils.helpers import get_offer_helper
 from pcapi.sandboxes.scripts.utils.helpers import get_pro_helper
 
 
-def get_existing_pro_validated_user_with_at_least_one_visible_activated_offer():
+def get_existing_pro_validated_user_with_at_least_one_visible_activated_offer():  # type: ignore [no-untyped-def]
     user_offerer = offerers_factories.UserOffererFactory(
         validationToken=None,
         offerer__validationToken=None,
@@ -16,7 +16,7 @@ def get_existing_pro_validated_user_with_at_least_one_visible_activated_offer():
     return {"offer": get_offer_helper(offer), "user": get_pro_helper(user_offerer.user)}
 
 
-def get_existing_pro_validated_user_with_at_least_one_offer_with_at_least_one_thumbnail():
+def get_existing_pro_validated_user_with_at_least_one_offer_with_at_least_one_thumbnail():  # type: ignore [no-untyped-def]
     user_offerer = offerers_factories.UserOffererFactory(
         validationToken=None,
         offerer__validationToken=None,

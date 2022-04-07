@@ -95,13 +95,13 @@ class PostOfferBodyModel(BaseModel):
     offererId: Optional[str]
 
     @validator("name", pre=True)
-    def validate_name(cls, name, values):  # pylint: disable=no-self-argument
+    def validate_name(cls, name, values):  # type: ignore [no-untyped-def] # pylint: disable=no-self-argument
         if not values["product_id"]:
             check_offer_name_length_is_valid(name)
         return name
 
     @validator("extra_data", pre=True)
-    def validate_isbn(cls, extra_data_field, values):  # pylint: disable=no-self-argument
+    def validate_isbn(cls, extra_data_field, values):  # type: ignore [no-untyped-def] # pylint: disable=no-self-argument
         if (
             FeatureToggle.ENABLE_ISBN_REQUIRED_IN_LIVRE_EDITION_OFFER_CREATION.is_active()
             and not values["product_id"]
@@ -159,7 +159,7 @@ class PostEducationalOfferBodyModel(BaseModel):
     withdrawal_delay: Optional[int]
 
     @validator("name", pre=True)
-    def validate_name(cls, name, values):  # pylint: disable=no-self-argument
+    def validate_name(cls, name, values):  # type: ignore [no-untyped-def] # pylint: disable=no-self-argument
         check_offer_name_length_is_valid(name)
         return name
 
@@ -208,7 +208,7 @@ class PatchOfferBodyModel(BaseModel):
     visualDisabilityCompliant: Optional[bool]
 
     @validator("name", pre=True, allow_reuse=True)
-    def validate_name(cls, name):  # pylint: disable=no-self-argument
+    def validate_name(cls, name):  # type: ignore [no-untyped-def] # pylint: disable=no-self-argument
         if name:
             check_offer_name_length_is_valid(name)
         return name
@@ -242,7 +242,7 @@ class PatchEducationalOfferBodyModel(BaseModel):
     subcategoryId: Optional[SubcategoryIdEnum]
 
     @validator("name", allow_reuse=True)
-    def validate_name(cls, name):  # pylint: disable=no-self-argument
+    def validate_name(cls, name):  # type: ignore [no-untyped-def] # pylint: disable=no-self-argument
         assert name is not None and name.strip() != ""
         check_offer_name_length_is_valid(name)
         return name
@@ -313,7 +313,7 @@ class ListOffersStockResponseModel(BaseModel):
     beginningDatetime: Optional[datetime]
 
     @validator("remainingQuantity", pre=True)
-    def validate_remaining_quantity(cls, remainingQuantity):  # pylint: disable=no-self-argument
+    def validate_remaining_quantity(cls, remainingQuantity):  # type: ignore [no-untyped-def] # pylint: disable=no-self-argument
         if remainingQuantity and remainingQuantity != "0" and not isinstance(remainingQuantity, int):
             return remainingQuantity.lstrip("0")
         return remainingQuantity
@@ -429,7 +429,7 @@ class GetOfferStockResponseModel(BaseModel):
         return super().from_orm(stock)
 
     @validator("cancellationLimitDate", pre=True, always=True)
-    def validate_cancellation_limit_date(cls, cancellation_limit_date, values):  # pylint: disable=no-self-argument
+    def validate_cancellation_limit_date(cls, cancellation_limit_date, values):  # type: ignore [no-untyped-def] # pylint: disable=no-self-argument
         return compute_cancellation_limit_date(values.get("beginningDatetime"), datetime.utcnow())
 
     class Config:
@@ -628,7 +628,7 @@ class EducationalOfferShadowStockBodyModel(BaseModel):
     educational_price_detail: Optional[str]
 
     @validator("educational_price_detail")
-    def validate_price_detail(cls, educational_price_detail):  # pylint: disable=no-self-argument
+    def validate_price_detail(cls, educational_price_detail):  # type: ignore [no-untyped-def] # pylint: disable=no-self-argument
         if len(educational_price_detail) > 1000:
             raise ValueError("Le détail du prix ne doit pas excéder 1000 caractères.")
         return educational_price_detail

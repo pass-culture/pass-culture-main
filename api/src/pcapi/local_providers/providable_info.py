@@ -7,7 +7,7 @@ from pcapi.models.product import Product
 
 @dataclasses.dataclass
 class ProvidableInfo:
-    type: Model = Product
+    type: Model = Product  # type: ignore [valid-type]
     id_at_providers: str = "1"
     new_id_at_provider: str = ""
     date_modified_at_provider: datetime = dataclasses.field(default_factory=datetime.utcnow)

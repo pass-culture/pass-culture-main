@@ -48,7 +48,7 @@ class UnauthorizedError(ApiErrors):
     www_authenticate = None
     realm = None
 
-    def __init__(self, www_authenticate=None, realm=None, **kwargs):
+    def __init__(self, www_authenticate=None, realm=None, **kwargs):  # type: ignore [no-untyped-def]
         self.www_authenticate = www_authenticate
         self.realm = realm
         super().__init__(**kwargs)

@@ -280,5 +280,5 @@ MUSIC_TYPES_DICT = {music_type["code"]: music_type["label"] for music_type in mu
 MUSIC_SUB_TYPES_DICT = {
     music_sub_type["code"]: music_sub_type["label"]
     for music_type in music_types
-    for music_sub_type in music_type["children"]
+    for music_sub_type in music_type["children"]  # type: ignore [attr-defined]
 }

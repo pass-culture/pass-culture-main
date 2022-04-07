@@ -24,7 +24,7 @@ DEFAULT_VENUE_IMAGES = 4
 VENUE_IMAGE_INDEX_START_AT = 21
 
 
-def add_default_image_to_venue(image_venue_counter, offerer, venue):
+def add_default_image_to_venue(image_venue_counter, offerer, venue):  # type: ignore [no-untyped-def]
     image_number = image_venue_counter + VENUE_IMAGE_INDEX_START_AT
     with open(
         f"./src/pcapi/sandboxes/thumbs/generic_pictures/Picture_0{image_number}.jpg",
@@ -96,8 +96,8 @@ def create_industrial_venues(offerers_by_name: dict, venue_types: list[VenueType
             venue = VenueFactory(
                 managingOfferer=offerer,
                 bookingEmail="fake@example.com",
-                latitude=float(geoloc_match.group(2)),
-                longitude=float(geoloc_match.group(3)),
+                latitude=float(geoloc_match.group(2)),  # type: ignore [union-attr]
+                longitude=float(geoloc_match.group(3)),  # type: ignore [union-attr]
                 comment=comment,
                 name=venue_name,
                 siret=siret,

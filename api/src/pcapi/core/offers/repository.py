@@ -71,8 +71,8 @@ def get_capped_offers_for_filters(
         category_id=category_id,
         name_keywords_or_isbn=name_keywords_or_isbn,
         creation_mode=creation_mode,
-        period_beginning_date=period_beginning_date,
-        period_ending_date=period_ending_date,
+        period_beginning_date=period_beginning_date,  # type: ignore [arg-type]
+        period_ending_date=period_ending_date,  # type: ignore [arg-type]
     )
 
     if remove_educational_offers:
@@ -400,7 +400,7 @@ def get_offers_map_by_venue_reference(id_at_provider_list: list[str], venue_id: 
     ):
         offers_map[compute_venue_reference(offer_id_at_provider, venue_id)] = offer_id
 
-    return offers_map
+    return offers_map  # type: ignore [return-value]
 
 
 def get_stocks_by_id_at_providers(id_at_providers: list[str]) -> dict:
@@ -422,13 +422,13 @@ def get_stocks_by_id_at_providers(id_at_providers: list[str]) -> dict:
     }
 
 
-def get_active_offers_count_for_venue(venue_id) -> int:
+def get_active_offers_count_for_venue(venue_id) -> int:  # type: ignore [no-untyped-def]
     query = Offer.query.filter(Offer.venueId == venue_id)
     query = _filter_by_status(query, OfferStatus.ACTIVE.name)
     return query.distinct(Offer.id).count()
 
 
-def get_sold_out_offers_count_for_venue(venue_id) -> int:
+def get_sold_out_offers_count_for_venue(venue_id) -> int:  # type: ignore [no-untyped-def]
     query = Offer.query.filter(Offer.venueId == venue_id)
     query = _filter_by_status(query, OfferStatus.SOLD_OUT.name)
     return query.distinct(Offer.id).count()
@@ -558,7 +558,7 @@ def get_educational_offer_by_id_base_query(offer_id: str) -> Offer:
     return Offer.query.filter(Offer.isEducational == True, Offer.id == offer_id)
 
 
-def get_non_deleted_stock_by_id(stock_id: int):
+def get_non_deleted_stock_by_id(stock_id: int):  # type: ignore [no-untyped-def]
     stock = Stock.queryNotSoftDeleted().filter_by(id=stock_id).first()
     if stock is None:
         raise StockDoesNotExist()

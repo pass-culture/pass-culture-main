@@ -10,7 +10,7 @@ from . import api as support_api
 logger = logging.getLogger(__name__)
 
 
-def beneficiary_fraud_review_formatter(view, context, model, name) -> Markup:
+def beneficiary_fraud_review_formatter(view, context, model, name) -> Markup:  # type: ignore [no-untyped-def]
     result_mapping_class = {
         fraud_models.FraudReviewStatus.OK: "badge-success",
         fraud_models.FraudReviewStatus.KO: "badge-danger",
@@ -31,7 +31,7 @@ def beneficiary_fraud_review_formatter(view, context, model, name) -> Markup:
     ).format(reviewer_name=reviewer_name, badge=badge, review_result_value=review_result.value)
 
 
-def beneficiary_fraud_checks_formatter(view, context, model, name) -> Markup:
+def beneficiary_fraud_checks_formatter(view, context, model, name) -> Markup:  # type: ignore [no-untyped-def]
     html = Markup("<ul>")
     for instance in model.beneficiaryFraudChecks:
         html += Markup("<li>{instance.type.value}</li>").format(instance=instance)
@@ -39,7 +39,7 @@ def beneficiary_fraud_checks_formatter(view, context, model, name) -> Markup:
     return html
 
 
-def beneficiary_subscription_status_formatter(view, context, model, name) -> Markup:
+def beneficiary_subscription_status_formatter(view, context, model, name) -> Markup:  # type: ignore [no-untyped-def]
     result_mapping_class = {
         support_api.BeneficiaryActivationStatus.OK: {"class": "badge-success", "text": "OK"},
         support_api.BeneficiaryActivationStatus.KO: {"class": "badge-danger", "text": "KO"},

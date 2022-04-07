@@ -33,14 +33,14 @@ class BaseAdminMixin:
     # logged-in user's privileges (see `form_columns()`). Thus, we
     # don't use the cache.
     @property
-    def column_formatters(self):
+    def column_formatters(self):  # type: ignore [no-untyped-def]
         return {}
 
-    def create_form(self, obj=None):
+    def create_form(self, obj=None):  # type: ignore [no-untyped-def]
         form_class = self.get_create_form()
         return form_class(get_form_data(), obj=obj)
 
-    def edit_form(self, obj=None):
+    def edit_form(self, obj=None):  # type: ignore [no-untyped-def]
         form_class = self.get_edit_form()
         return form_class(get_form_data(), obj=obj)
 
@@ -79,10 +79,10 @@ class BaseAdminView(BaseAdminMixin, ModelView):
     can_delete = False
     form_base_class = SecureForm
 
-    def inaccessible_callback(self, name, **kwargs):
+    def inaccessible_callback(self, name, **kwargs):  # type: ignore [no-untyped-def]
         return redirect(url_for("admin.index"))
 
-    def after_model_change(self, form, model, is_created):
+    def after_model_change(self, form, model, is_created):  # type: ignore [no-untyped-def]
         action = "Création" if is_created else "Modification"
         model_name = str(model)
         logger.info("[ADMIN] %s du modèle %s par l'utilisateur %s", action, model_name, current_user)
@@ -102,18 +102,18 @@ class BaseCustomSuperAdminView(BaseSuperAdminMixin, BaseView):
 
 class AdminIndexView(AdminIndexBaseView):
     @expose("/")
-    def index(self):
+    def index(self):  # type: ignore [no-untyped-def]
         if not current_user.is_authenticated:
             return redirect(url_for(".login_view"))
         return super().index()
 
     @expose("/login/", methods=("GET", "POST"))
-    def login_view(self):
+    def login_view(self):  # type: ignore [no-untyped-def]
         redirect_uri = url_for(".authorize", _external=True)
         return oauth.google.authorize_redirect(redirect_uri)
 
     @expose("/logout/")
-    def logout_view(self):
+    def logout_view(self):  # type: ignore [no-untyped-def]
         from pcapi.utils import login_manager
 
         logout_user()
@@ -121,7 +121,7 @@ class AdminIndexView(AdminIndexBaseView):
         return redirect(url_for(".index"))
 
     @expose("/authorize/")
-    def authorize(self):
+    def authorize(self):  # type: ignore [no-untyped-def]
         from pcapi.utils import login_manager
 
         token = oauth.google.authorize_access_token()
@@ -155,7 +155,7 @@ class AdminIndexView(AdminIndexBaseView):
         return redirect(url_for(".index"))
 
     @expose("/no-user-found/")
-    def no_user_found_view(self):
+    def no_user_found_view(self):  # type: ignore [no-untyped-def]
         from pcapi.utils import login_manager
 
         if current_user.is_authenticated:

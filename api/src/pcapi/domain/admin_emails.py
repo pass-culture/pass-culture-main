@@ -21,7 +21,7 @@ def maybe_send_offerer_validation_email(
         return True
     email = make_offerer_internal_validation_email(offerer, user_offerer)
     recipients = [settings.ADMINISTRATION_EMAIL_ADDRESS]
-    return mails.send(recipients=recipients, data=email)
+    return mails.send(recipients=recipients, data=email)  # type: ignore [arg-type]
 
 
 def _check_offer_subcategory_before_send(offer: Offer) -> bool:
@@ -47,12 +47,12 @@ def _check_offer_subcategory_before_send(offer: Offer) -> bool:
 
 def send_offer_creation_notification_to_administration(offer: Union[CollectiveOffer, Offer]) -> bool:
     email = make_offer_creation_notification_email(offer)
-    return mails.send(recipients=[settings.ADMINISTRATION_EMAIL_ADDRESS], data=email)
+    return mails.send(recipients=[settings.ADMINISTRATION_EMAIL_ADDRESS], data=email)  # type: ignore [list-item]
 
 
 def send_offer_rejection_notification_to_administration(offer: Offer) -> bool:
     data = make_offer_rejection_notification_email(offer)
-    return mails.send(recipients=[settings.ADMINISTRATION_EMAIL_ADDRESS], data=data)
+    return mails.send(recipients=[settings.ADMINISTRATION_EMAIL_ADDRESS], data=data)  # type: ignore [list-item]
 
 
 def send_offer_validation_notification_to_administration(

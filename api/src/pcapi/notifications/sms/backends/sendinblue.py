@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 
 class SendinblueBackend:
-    def __init__(self):
+    def __init__(self):  # type: ignore [no-untyped-def]
         configuration = sib_api_v3_sdk.Configuration()
         configuration.api_key["api-key"] = settings.SENDINBLUE_API_KEY
         self.api_instance = sib_api_v3_sdk.TransactionalSMSApi(sib_api_v3_sdk.ApiClient(configuration))
@@ -32,7 +32,7 @@ class SendinblueBackend:
             logger.exception("Exception when calling TransactionalSMSApi->send_transac_sms: %s\n", e)
             return False
 
-    def _format_recipient(self, recipient: str):
+    def _format_recipient(self, recipient: str):  # type: ignore [no-untyped-def]
         """Sendinblue does not accept phone numbers with a leading '+'"""
         if recipient.startswith("+"):
             return recipient[1:]
@@ -53,4 +53,4 @@ class ToDevSendinblueBackend(SendinblueBackend):
             ),
         }
 
-        return mails.send(recipients=[settings.DEV_EMAIL_ADDRESS], data=mail_content)
+        return mails.send(recipients=[settings.DEV_EMAIL_ADDRESS], data=mail_content)  # type: ignore [list-item]

@@ -19,7 +19,7 @@ __all__ = ("as_dict", "serialize")
 
 class BaseModel(PydanticBaseModel):
     @validator("*")
-    def do_not_allow_nan(cls, v, field):  # pylint: disable=no-self-argument
+    def do_not_allow_nan(cls, v, field):  # type: ignore [no-untyped-def] # pylint: disable=no-self-argument
         if field.allow_none and v is None:
             return v
 
@@ -29,7 +29,7 @@ class BaseModel(PydanticBaseModel):
 
     class Config:
         @staticmethod
-        def schema_extra(schema, model):
+        def schema_extra(schema, model):  # type: ignore [no-untyped-def]
             for prop, value in schema.get("properties", {}).items():
                 # retrieve right field from alias or name
                 field = [x for x in model.__fields__.values() if x.alias == prop][0]

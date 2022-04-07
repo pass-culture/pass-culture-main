@@ -122,9 +122,9 @@ def _migrate_offers() -> None:
 def _update_collective_offer(
     offer: models.Offer, stock: models.Stock
 ) -> Union[CollectiveOffer, CollectiveOfferTemplate]:
-    is_template = offer.extraData and offer.extraData.get("isShowcase", False)
+    is_template = offer.extraData and offer.extraData.get("isShowcase", False)  # type: ignore [union-attr]
     base_class = CollectiveOfferTemplate if is_template else CollectiveOffer
-    collective_offer = db.session.query(base_class).filter(base_class.offerId == offer.id).one()
+    collective_offer = db.session.query(base_class).filter(base_class.offerId == offer.id).one()  # type: ignore [attr-defined]
     list_of_common_attributes = [
         "isActive",
         "venue",
@@ -142,14 +142,14 @@ def _update_collective_offer(
         "motorDisabilityCompliant",
         "visualDisabilityCompliant",
     ]
-    students = [StudentLevels(x).name for x in offer.extraData.get("students", [])]
+    students = [StudentLevels(x).name for x in offer.extraData.get("students", [])]  # type: ignore [union-attr]
     for attr_name in list_of_common_attributes:
         attr_value = getattr(offer, attr_name)
         setattr(collective_offer, attr_name, attr_value)
 
-    collective_offer.contactEmail = offer.extraData.get("contactEmail")
-    collective_offer.contactPhone = offer.extraData.get("contactPhone", "").strip()
-    collective_offer.offerVenue = offer.extraData.get("offerVenue")
+    collective_offer.contactEmail = offer.extraData.get("contactEmail")  # type: ignore [union-attr]
+    collective_offer.contactPhone = offer.extraData.get("contactPhone", "").strip()  # type: ignore [union-attr]
+    collective_offer.offerVenue = offer.extraData.get("offerVenue")  # type: ignore [union-attr]
     collective_offer.students = students
 
     if is_template and offer.stocks:
@@ -162,9 +162,9 @@ def _update_collective_offer(
 def _create_collective_offer(
     offer: models.Offer, stock: models.Stock
 ) -> Union[CollectiveOffer, CollectiveOfferTemplate]:
-    is_template = offer.extraData and offer.extraData.get("isShowcase", False)
+    is_template = offer.extraData and offer.extraData.get("isShowcase", False)  # type: ignore [union-attr]
     base_class = CollectiveOfferTemplate if is_template else CollectiveOffer
-    collective_offer = base_class.create_from_offer(offer)
+    collective_offer = base_class.create_from_offer(offer)  # type: ignore [attr-defined]
     if is_template:
         collective_offer.priceDetail = stock.educationalPriceDetail
     db.session.add(collective_offer)
@@ -272,10 +272,10 @@ def _update_collective_booking(booking: Booking, collective_stock: CollectiveSto
         except AttributeError:
             attr_value = getattr(booking.educationalBooking, attr_name)
         setattr(collective_booking, attr_name, attr_value)
-    collective_booking.status = getattr(CollectiveBookingStatus, booking.status.name)
+    collective_booking.status = getattr(CollectiveBookingStatus, booking.status.name)  # type: ignore [attr-defined]
     if booking.cancellationReason:
         collective_booking.cancellationReason = getattr(
-            CollectiveBookingCancellationReasons, booking.cancellationReason.name
+            CollectiveBookingCancellationReasons, booking.cancellationReason.name  # type: ignore [attr-defined]
         )
     collective_booking.collectiveStock = collective_stock
     db.session.add(collective_booking)
@@ -303,10 +303,10 @@ def _create_collective_booking(booking: Booking, collective_stock: CollectiveSto
         except AttributeError:
             attr_value = getattr(booking.educationalBooking, attr_name)
         attrs_mapping[attr_name] = attr_value
-    attrs_mapping["status"] = getattr(CollectiveBookingStatus, booking.status.name)
+    attrs_mapping["status"] = getattr(CollectiveBookingStatus, booking.status.name)  # type: ignore [attr-defined]
     if booking.cancellationReason:
         attrs_mapping["cancellationReason"] = getattr(
-            CollectiveBookingCancellationReasons, booking.cancellationReason.name
+            CollectiveBookingCancellationReasons, booking.cancellationReason.name  # type: ignore [attr-defined]
         )
     attrs_mapping["collectiveStock"] = collective_stock
     attrs_mapping["bookingId"] = booking.id

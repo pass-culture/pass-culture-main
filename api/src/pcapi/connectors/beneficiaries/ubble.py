@@ -40,23 +40,23 @@ INCLUDED_MODELS = {
 def _get_included_attributes(
     response: ubble_fraud_models.UbbleIdentificationResponse, type_: str
 ) -> ubble_fraud_models.UbbleIdentificationObject:
-    filtered = list(filter(lambda included: included["type"] == type_, response["included"]))
+    filtered = list(filter(lambda included: included["type"] == type_, response["included"]))  # type: ignore [index]
     attributes = INCLUDED_MODELS[type_](**filtered[0].get("attributes")) if filtered else None
-    return attributes
+    return attributes  # type: ignore [return-value]
 
 
 def _get_data_attribute(response: ubble_fraud_models.UbbleIdentificationResponse, name: str) -> typing.Any:
-    return response["data"]["attributes"].get(name)
+    return response["data"]["attributes"].get(name)  # type: ignore [index]
 
 
 def _extract_useful_content_from_response(
     response: ubble_fraud_models.UbbleIdentificationResponse,
 ) -> ubble_fraud_models.UbbleContent:
-    documents: ubble_fraud_models.UbbleIdentificationDocuments = _get_included_attributes(response, "documents")
-    document_checks: ubble_fraud_models.UbbleIdentificationDocumentChecks = _get_included_attributes(
+    documents: ubble_fraud_models.UbbleIdentificationDocuments = _get_included_attributes(response, "documents")  # type: ignore [assignment]
+    document_checks: ubble_fraud_models.UbbleIdentificationDocumentChecks = _get_included_attributes(  # type: ignore [assignment]
         response, "document-checks"
     )
-    reference_data_checks: ubble_fraud_models.UbbleIdentificationReferenceDataChecks = _get_included_attributes(
+    reference_data_checks: ubble_fraud_models.UbbleIdentificationReferenceDataChecks = _get_included_attributes(  # type: ignore [assignment]
         response, "reference-data-checks"
     )
 
@@ -202,7 +202,7 @@ def get_content(identification_id: str) -> ubble_fraud_models.UbbleContent:
             "status_code": response.status_code,
             "identification_id": identification_id,
             "score": content.score,
-            "status": content.status.value,
+            "status": content.status.value,  # type: ignore [union-attr]
             "request_type": "get-content",
             "document_type": content.document_type,
         },

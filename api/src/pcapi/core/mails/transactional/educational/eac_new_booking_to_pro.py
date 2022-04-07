@@ -32,13 +32,14 @@ def get_eac_new_booking_to_pro_email_data(
     if isinstance(booking, Booking):
         stock: Stock = booking.stock
         offer: Offer = stock.offer
-        educational_redactor: EducationalRedactor = booking.educationalBooking.educationalRedactor
-        educational_institution: EducationalInstitution = booking.educationalBooking.educationalInstitution
+        educational_redactor: EducationalRedactor = booking.educationalBooking.educationalRedactor  # type: ignore [union-attr]
+        educational_institution: EducationalInstitution = booking.educationalBooking.educationalInstitution  # type: ignore [union-attr]
     else:
-        stock: CollectiveStock = booking.collectiveStock
-        offer: CollectiveOffer = stock.collectiveOffer
-        educational_redactor: EducationalRedactor = booking.educationalRedactor
-        educational_institution: EducationalInstitution = booking.educationalInstitution
+        # the below [no-redef] happen because the type of the same variable is not consistent in the function
+        stock: CollectiveStock = booking.collectiveStock  # type: ignore [no-redef]
+        offer: CollectiveOffer = stock.collectiveOffer  # type: ignore [no-redef]
+        educational_redactor: EducationalRedactor = booking.educationalRedactor  # type: ignore [no-redef]
+        educational_institution: EducationalInstitution = booking.educationalInstitution  # type: ignore [no-redef]
 
     return SendinblueTransactionalEmailData(
         template=TransactionalEmail.EAC_NEW_BOOKING_TO_PRO.value,

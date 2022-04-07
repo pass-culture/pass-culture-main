@@ -11,7 +11,7 @@ from pcapi.routes import install_all_routes
 if settings.PROFILE_REQUESTS:
     profiling_restrictions = [settings.PROFILE_REQUESTS_LINES_LIMIT]
     app.config["PROFILE"] = True
-    app.wsgi_app = ProfilerMiddleware(app.wsgi_app, restrictions=profiling_restrictions)
+    app.wsgi_app = ProfilerMiddleware(app.wsgi_app, restrictions=profiling_restrictions)  # type: ignore [assignment]
 
 
 def install_login_manager() -> None:

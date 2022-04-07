@@ -7,7 +7,7 @@ from pcapi.routes.serialization import as_dict
 from pcapi.utils.includes import USER_INCLUDES
 
 
-def get_booking_helper(booking):
+def get_booking_helper(booking):  # type: ignore [no-untyped-def]
     return dict(
         as_dict(booking),
         **{
@@ -17,7 +17,7 @@ def get_booking_helper(booking):
     )
 
 
-def get_offer_helper(offer):
+def get_offer_helper(offer):  # type: ignore [no-untyped-def]
     return dict(
         as_dict(offer),
         **{
@@ -29,7 +29,7 @@ def get_offer_helper(offer):
     )
 
 
-def get_offerer_helper(offerer):
+def get_offerer_helper(offerer):  # type: ignore [no-untyped-def]
     return dict(
         as_dict(offerer),
         **{
@@ -39,17 +39,17 @@ def get_offerer_helper(offerer):
     )
 
 
-def get_stock_helper(stock):
+def get_stock_helper(stock):  # type: ignore [no-untyped-def]
     return as_dict(stock)
 
 
-def get_email(first_name, last_name, domain):
+def get_email(first_name, last_name, domain):  # type: ignore [no-untyped-def]
     return "{}.{}@{}".format(
         first_name.replace(" ", "").strip().lower(), last_name.replace(" ", "").strip().lower(), domain
     )
 
 
-def get_pro_helper(user):
+def get_pro_helper(user):  # type: ignore [no-untyped-def]
     return dict(
         as_dict(user, includes=USER_INCLUDES),
         **{
@@ -60,11 +60,11 @@ def get_pro_helper(user):
     )
 
 
-def get_venue_helper(venue):
+def get_venue_helper(venue):  # type: ignore [no-untyped-def]
     return as_dict(venue)
 
 
-def _get_reset_password_token(user: User):
+def _get_reset_password_token(user: User):  # type: ignore [no-untyped-def]
     for token in user.tokens:
         if token.type == TokenType.RESET_PASSWORD and token.expirationDate > datetime.utcnow():
             return token.value

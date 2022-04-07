@@ -41,14 +41,14 @@ def update_ubble_workflow(
     if not settings.IS_PROD and ubble_fraud_api.does_match_ubble_test_email(fraud_check.user.email):
         content.birth_date = fraud_check.user.dateOfBirth.date() if fraud_check.user.dateOfBirth else None
 
-    fraud_check.resultContent = content
+    fraud_check.resultContent = content  # type: ignore [assignment]
     pcapi_repository.repository.save(fraud_check)
 
     user = fraud_check.user
 
     if status == ubble_fraud_models.UbbleIdentificationStatus.PROCESSING:
         subscription_messages.on_review_pending(user)
-        fraud_check.status = fraud_models.FraudCheckStatus.PENDING
+        fraud_check.status = fraud_models.FraudCheckStatus.PENDING  # type: ignore [assignment]
         pcapi_repository.repository.save(user, fraud_check)
 
     elif status == ubble_fraud_models.UbbleIdentificationStatus.PROCESSED:
@@ -63,7 +63,7 @@ def update_ubble_workflow(
             return
 
         if fraud_check.status != fraud_models.FraudCheckStatus.OK:
-            can_retry = ubble_fraud_api.is_user_allowed_to_perform_ubble_check(user, fraud_check.eligibilityType)
+            can_retry = ubble_fraud_api.is_user_allowed_to_perform_ubble_check(user, fraud_check.eligibilityType)  # type: ignore [arg-type]
             handle_validation_errors(user, fraud_check, can_retry=can_retry)
             subscription_api.update_user_birth_date(user, content.get_birth_date())
             return
@@ -80,24 +80,24 @@ def update_ubble_workflow(
         ubble_fraud_models.UbbleIdentificationStatus.ABORTED,
         ubble_fraud_models.UbbleIdentificationStatus.EXPIRED,
     ):
-        fraud_check.status = fraud_models.FraudCheckStatus.CANCELED
+        fraud_check.status = fraud_models.FraudCheckStatus.CANCELED  # type: ignore [assignment]
         pcapi_repository.repository.save(fraud_check)
 
 
 def start_ubble_workflow(user: users_models.User, redirect_url: str) -> str:
     content = ubble.start_identification(
         user_id=user.id,
-        phone_number=user.phoneNumber,
-        first_name=user.firstName,
-        last_name=user.lastName,
+        phone_number=user.phoneNumber,  # type: ignore [arg-type]
+        first_name=user.firstName,  # type: ignore [arg-type]
+        last_name=user.lastName,  # type: ignore [arg-type]
         webhook_url=flask.url_for("Public API.ubble_webhook_update_application_status", _external=True),
         redirect_url=redirect_url,
     )
     ubble_fraud_api.start_ubble_fraud_check(user, content)
-    return content.identification_url
+    return content.identification_url  # type: ignore [return-value]
 
 
-def handle_validation_errors(
+def handle_validation_errors(  # type: ignore [no-untyped-def]
     user: users_models.User,
     fraud_check: fraud_models.BeneficiaryFraudCheck,
     can_retry: bool = False,  # when available
@@ -134,12 +134,12 @@ def handle_validation_errors(
 
     elif fraud_models.FraudReasonCode.DUPLICATE_USER in reason_codes:
         subscription_messages.on_duplicate_user(user)
-        duplicate_beneficiary.send_duplicate_beneficiary_email(user, fraud_check.source_data())
+        duplicate_beneficiary.send_duplicate_beneficiary_email(user, fraud_check.source_data())  # type: ignore [arg-type]
 
     elif fraud_models.FraudReasonCode.DUPLICATE_ID_PIECE_NUMBER in reason_codes:
         subscription_messages.on_duplicate_user(user)
         duplicate_beneficiary.send_duplicate_beneficiary_email(
-            user, fraud_check.source_data(), is_id_piece_number_duplicate=True
+            user, fraud_check.source_data(), is_id_piece_number_duplicate=True  # type: ignore [arg-type]
         )
 
     elif fraud_models.FraudReasonCode.ALREADY_BENEFICIARY in reason_codes:
@@ -208,7 +208,7 @@ def get_ubble_subscription_item_status(
 
 
 def _is_retryable_check(ubble_check: fraud_models.BeneficiaryFraudCheck) -> bool:
-    return ubble_check.reasonCodes and all(
+    return ubble_check.reasonCodes and all(  # type: ignore [return-value]
         code in ubble_constants.RESTARTABLE_FRAUD_CHECK_REASON_CODES for code in ubble_check.reasonCodes
     )
 

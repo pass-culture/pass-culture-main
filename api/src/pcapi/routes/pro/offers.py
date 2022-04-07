@@ -64,7 +64,7 @@ def list_offers(query: offers_serialize.ListOffersQueryModel) -> offers_serializ
 @spectree_serialize(response_model=offers_serialize.GetIndividualOfferResponseModel, api=blueprint.pro_private_schema)
 def get_offer(offer_id: str) -> offers_serialize.GetIndividualOfferResponseModel:
     try:
-        offer = offers_repository.get_offer_by_id(dehumanize(offer_id))
+        offer = offers_repository.get_offer_by_id(dehumanize(offer_id))  # type: ignore [arg-type]
     except exceptions.OfferNotFound:
         raise ApiErrors(
             errors={
@@ -111,10 +111,10 @@ def create_educational_offer(
         logger.info(
             "Could not create offer: This offerer has not been found in Adage", extra={"offerer_id": body.offerer_id}
         )
-        raise ApiErrors({"offerer: not found in adage"}, 403)
+        raise ApiErrors({"offerer: not found in adage"}, 403)  # type: ignore [arg-type]
     except AdageException:
         logger.info("Could not create offer: Adage api call failed", extra={"offerer_id": body.offerer_id})
-        raise ApiErrors({"adage_api: error"}, 500)
+        raise ApiErrors({"adage_api: error"}, 500)  # type: ignore [arg-type]
     except exceptions.UnknownOfferSubCategory as error:
         logger.info(
             "Could not create offer: selected subcategory is unknown.",
@@ -200,15 +200,15 @@ def edit_educational_offer(
     offer_id: str, body: offers_serialize.PatchEducationalOfferBodyModel
 ) -> offers_serialize.GetOfferResponseModel:
     try:
-        offer = offers_repository.get_educational_offer_by_id(dehumanize(offer_id))
+        offer = offers_repository.get_educational_offer_by_id(dehumanize(offer_id))  # type: ignore [arg-type]
 
         check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
 
         offers_api.update_educational_offer(offer, body.dict(exclude_unset=True))
-        offer_is_showcase = offer.extraData.get("isShowcase")
-        offers_api.update_collective_offer(offer.id, offer_is_showcase, body.dict(exclude_unset=True))
+        offer_is_showcase = offer.extraData.get("isShowcase")  # type: ignore [union-attr]
+        offers_api.update_collective_offer(offer.id, offer_is_showcase, body.dict(exclude_unset=True))  # type: ignore [arg-type]
 
-        offer = offers_repository.get_educational_offer_by_id(dehumanize(offer_id))
+        offer = offers_repository.get_educational_offer_by_id(dehumanize(offer_id))  # type: ignore [arg-type]
 
         # FIXME (cgaunet, 2022-01-26): This log is to investigate a bug causing extraData to be json_typeof 'null'
         if offer.extraData is None:
@@ -238,7 +238,7 @@ def create_thumbnail(form: CreateThumbnailBodyModel) -> CreateThumbnailResponseM
     thumbnail = offers_api.create_mediation(
         user=current_user,
         offer=offer,
-        credit=form.credit,
+        credit=form.credit,  # type: ignore [arg-type]
         image_as_bytes=image_as_bytes,
         crop_params=form.crop_params,
     )
@@ -267,7 +267,7 @@ def get_categories() -> offers_serialize.CategoriesResponseModel:
 def cancel_educational_offer_booking(offer_id: str) -> None:
     try:
         offer = (
-            offers_repository.get_educational_offer_by_id_base_query(dehumanize(offer_id))
+            offers_repository.get_educational_offer_by_id_base_query(dehumanize(offer_id))  # type: ignore [arg-type]
             .options(joinedload(Offer.stocks).joinedload(Stock.bookings))
             .options(joinedload(Offer.venue).load_only("id", "managingOffererId"))
             .one()
@@ -300,12 +300,12 @@ def cancel_educational_offer_booking(offer_id: str) -> None:
 def create_shadow_stock_for_educational_showcase_offer(
     offer_id: str, body: offers_serialize.EducationalOfferShadowStockBodyModel
 ) -> None:
-    offer_id = dehumanize(offer_id)
+    offer_id = dehumanize(offer_id)  # type: ignore [assignment]
     try:
-        offerer = get_by_offer_id(offer_id)
+        offerer = get_by_offer_id(offer_id)  # type: ignore [arg-type]
     except offerers_exceptions.CannotFindOffererForOfferId:
         raise ApiErrors({"offerer": ["Aucune structure trouvée à partir de cette offre"]}, status_code=404)
-    check_user_has_access_to_offerer(current_user, offerer.id)
+    check_user_has_access_to_offerer(current_user, offerer.id)  # type: ignore [union-attr]
 
     try:
         stock = offers_api.create_collective_shadow_offer(body, current_user, offer_id)
@@ -320,4 +320,4 @@ def create_shadow_stock_for_educational_showcase_offer(
             status_code=404,
         )
 
-    return StockIdResponseModel.from_orm(stock)
+    return StockIdResponseModel.from_orm(stock)  # type: ignore [return-value]

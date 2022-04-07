@@ -30,7 +30,7 @@ class BusinessUnitResponseModel(BaseModel):
     siret: Optional[str]
 
     @classmethod
-    def from_orm(cls, business_unit: finance_models.BusinessUnit):
+    def from_orm(cls, business_unit: finance_models.BusinessUnit):  # type: ignore [no-untyped-def]
         business_unit.iban = business_unit.bankAccount.iban
         business_unit.bic = business_unit.bankAccount.bic
         res = super().from_orm(business_unit)
@@ -64,10 +64,10 @@ class InvoiceResponseModel(BaseModel):
     businessUnitName: str
 
     @classmethod
-    def from_orm(cls, invoice: finance_models.Invoice):
+    def from_orm(cls, invoice: finance_models.Invoice):  # type: ignore [no-untyped-def]
         invoice.businessUnitName = invoice.businessUnit.name
         res = super().from_orm(invoice)
-        res.amount = -finance_utils.to_euros(res.amount)
+        res.amount = -finance_utils.to_euros(res.amount)  # type: ignore [assignment, arg-type]
         return res
 
 

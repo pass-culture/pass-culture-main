@@ -28,7 +28,7 @@ def cancel_old_unused_bookings_for_venue(humanized_venue_id: str, reason: Bookin
 
     limit_date = datetime.utcnow() - timedelta(days=30)
 
-    old_unused_bookings = _get_old_unused_bookings_from_venue_id(venue.id, limit_date)
+    old_unused_bookings = _get_old_unused_bookings_from_venue_id(venue.id, limit_date)  # type: ignore [arg-type]
 
     for booking in old_unused_bookings:
         _cancel_booking(booking, reason)

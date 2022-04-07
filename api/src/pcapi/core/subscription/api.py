@@ -43,7 +43,7 @@ def activate_beneficiary(user: users_models.User, deposit_source: str = None) ->
     eligibility = fraud_check.eligibilityType
     deposit_source = fraud_check.get_detailed_source()
 
-    if not users_api.is_eligible_for_beneficiary_upgrade(user, eligibility):
+    if not users_api.is_eligible_for_beneficiary_upgrade(user, eligibility):  # type: ignore [arg-type]
         raise exceptions.CannotUpgradeBeneficiaryRole()
 
     if eligibility == users_models.EligibilityType.UNDERAGE:
@@ -56,15 +56,15 @@ def activate_beneficiary(user: users_models.User, deposit_source: str = None) ->
     else:
         raise exceptions.InvalidEligibilityTypeException()
 
-    if "apps_flyer" in user.externalIds:
+    if "apps_flyer" in user.externalIds:  # type: ignore [operator]
         apps_flyer_job.log_user_becomes_beneficiary_event_job.delay(user.id)
 
     deposit = payments_api.create_deposit(
         user,
         deposit_source=deposit_source,
-        eligibility=eligibility,
+        eligibility=eligibility,  # type: ignore [arg-type]
         age_at_registration=users_utils.get_age_at_date(
-            user.dateOfBirth, fraud_check.source_data().get_registration_datetime()
+            user.dateOfBirth, fraud_check.source_data().get_registration_datetime()  # type: ignore [arg-type, union-attr]
         ),
     )
 
@@ -176,7 +176,7 @@ def get_identity_check_subscription_status(
     and with the legacy provider (Jouve)
     """
     if eligibility is None:
-        return models.SubscriptionItemStatus.VOID
+        return models.SubscriptionItemStatus.VOID  # type: ignore [return-value]
 
     identity_fraud_checks = fraud_repository.get_identity_fraud_checks(user, eligibility)
 
@@ -195,30 +195,30 @@ def get_identity_check_subscription_status(
     ]
 
     if any(status == models.SubscriptionItemStatus.OK for status in statuses):
-        return models.SubscriptionItemStatus.OK
+        return models.SubscriptionItemStatus.OK  # type: ignore [return-value]
     if any(status == models.SubscriptionItemStatus.PENDING for status in statuses):
-        return models.SubscriptionItemStatus.PENDING
+        return models.SubscriptionItemStatus.PENDING  # type: ignore [return-value]
     if any(status == models.SubscriptionItemStatus.KO for status in statuses):
-        return models.SubscriptionItemStatus.KO
+        return models.SubscriptionItemStatus.KO  # type: ignore [return-value]
     if any(status == models.SubscriptionItemStatus.SUSPICIOUS for status in statuses):
-        return models.SubscriptionItemStatus.SUSPICIOUS
+        return models.SubscriptionItemStatus.SUSPICIOUS  # type: ignore [return-value]
     if any(status == models.SubscriptionItemStatus.TODO for status in statuses):
-        return models.SubscriptionItemStatus.TODO
+        return models.SubscriptionItemStatus.TODO  # type: ignore [return-value]
 
-    return models.SubscriptionItemStatus.VOID
+    return models.SubscriptionItemStatus.VOID  # type: ignore [return-value]
 
 
 def get_identity_check_subscription_item(
     user: users_models.User, eligibility: typing.Optional[users_models.EligibilityType]
 ) -> models.SubscriptionItem:
     status = get_identity_check_subscription_status(user, eligibility)
-    return models.SubscriptionItem(type=models.SubscriptionStep.IDENTITY_CHECK, status=status)
+    return models.SubscriptionItem(type=models.SubscriptionStep.IDENTITY_CHECK, status=status)  # type: ignore [arg-type]
 
 
 def get_honor_statement_subscription_item(
     user: users_models.User, eligibility: typing.Optional[users_models.EligibilityType]
 ) -> models.SubscriptionItem:
-    if fraud_api.has_performed_honor_statement(user, eligibility):
+    if fraud_api.has_performed_honor_statement(user, eligibility):  # type: ignore [arg-type]
         status = models.SubscriptionItemStatus.OK
     else:
         if is_eligibility_activable(user, eligibility):
@@ -256,13 +256,13 @@ def get_next_subscription_step(user: users_models.User) -> typing.Optional[model
             return models.SubscriptionStep.MAINTENANCE
         return models.SubscriptionStep.IDENTITY_CHECK
 
-    if not fraud_api.has_performed_honor_statement(user, user.eligibility):
+    if not fraud_api.has_performed_honor_statement(user, user.eligibility):  # type: ignore [arg-type]
         return models.SubscriptionStep.HONOR_STATEMENT
 
     return None
 
 
-def _needs_to_perform_identity_check(user) -> bool:
+def _needs_to_perform_identity_check(user) -> bool:  # type: ignore [no-untyped-def]
     return get_identity_check_subscription_status(user, user.eligibility) == models.SubscriptionItemStatus.TODO
 
 
@@ -336,12 +336,12 @@ def _is_ubble_allowed_if_subscription_overflow(user: users_models.User) -> bool:
         return True
 
     future_age = users_utils.get_age_at_date(
-        user.dateOfBirth,
-        datetime.datetime.utcnow() + datetime.timedelta(days=settings.UBBLE_SUBSCRIPTION_LIMITATION_DAYS),
+        user.dateOfBirth,  # type: ignore [arg-type]
+        datetime.datetime.utcnow() + datetime.timedelta(days=settings.UBBLE_SUBSCRIPTION_LIMITATION_DAYS),  # type: ignore [arg-type]
     )
     eligbility_ranges = users_constants.ELIGIBILITY_UNDERAGE_RANGE + [users_constants.ELIGIBILITY_AGE_18]
     eligbility_ranges = [age + 1 for age in eligbility_ranges]
-    if future_age > user.age and future_age in eligbility_ranges:
+    if future_age > user.age and future_age in eligbility_ranges:  # type: ignore [operator]
         return True
 
     return False
@@ -366,7 +366,7 @@ def get_maintenance_page_type(user: users_models.User) -> typing.Optional[models
     return models.MaintenancePageType.WITHOUT_DMS
 
 
-def activate_beneficiary_if_no_missing_step(user: users_models.User, always_update_attributes=True) -> None:
+def activate_beneficiary_if_no_missing_step(user: users_models.User, always_update_attributes=True) -> None:  # type: ignore [no-untyped-def]
     if has_passed_all_checks_to_become_beneficiary(user):
         activate_beneficiary(user)  # calls update_external_user
     elif always_update_attributes:
@@ -390,7 +390,7 @@ def handle_eligibility_difference_between_declaration_and_identity_provider(
     fraud_check: fraud_models.BeneficiaryFraudCheck,
 ) -> fraud_models.BeneficiaryFraudCheck:
     declared_eligibility = fraud_check.eligibilityType
-    id_provider_detected_eligibility = fraud_api.decide_eligibility(user, fraud_check.source_data())
+    id_provider_detected_eligibility = fraud_api.decide_eligibility(user, fraud_check.source_data())  # type: ignore [arg-type]
 
     if declared_eligibility == id_provider_detected_eligibility or id_provider_detected_eligibility is None:
         return fraud_check
@@ -408,7 +408,7 @@ def handle_eligibility_difference_between_declaration_and_identity_provider(
     )
 
     # Cancel the old fraud check
-    fraud_check.status = fraud_models.FraudCheckStatus.CANCELED
+    fraud_check.status = fraud_models.FraudCheckStatus.CANCELED  # type: ignore [assignment]
 
     reason_message = "Eligibility type changed by the identity provider"
     fraud_check.reason = (
@@ -419,7 +419,7 @@ def handle_eligibility_difference_between_declaration_and_identity_provider(
 
     if fraud_check.reasonCodes is None:
         fraud_check.reasonCodes = []
-    fraud_check.reasonCodes.append(fraud_models.FraudReasonCode.ELIGIBILITY_CHANGED)
+    fraud_check.reasonCodes.append(fraud_models.FraudReasonCode.ELIGIBILITY_CHANGED)  # type: ignore [arg-type]
     fraud_check.thirdPartyId = f"deprecated-{fraud_check.thirdPartyId}"
 
     pcapi_repository.repository.save(new_fraud_check, fraud_check)
@@ -453,15 +453,15 @@ def has_passed_all_checks_to_become_beneficiary(user: users_models.User) -> bool
     ):
         return False
 
-    subscription_item = get_user_profiling_subscription_item(user, fraud_check.eligibilityType)
+    subscription_item = get_user_profiling_subscription_item(user, fraud_check.eligibilityType)  # type: ignore [arg-type]
     if subscription_item.status in (models.SubscriptionItemStatus.TODO, models.SubscriptionItemStatus.KO):
         return False
 
-    profile_completion = get_profile_completion_subscription_item(user, fraud_check.eligibilityType)
+    profile_completion = get_profile_completion_subscription_item(user, fraud_check.eligibilityType)  # type: ignore [arg-type]
     if profile_completion.status != models.SubscriptionItemStatus.OK:
         return False
 
-    if not fraud_api.has_performed_honor_statement(user, fraud_check.eligibilityType):
+    if not fraud_api.has_performed_honor_statement(user, fraud_check.eligibilityType):  # type: ignore [arg-type]
         return False
 
     return True

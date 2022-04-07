@@ -11,8 +11,8 @@ from pcapi.connectors.dms import models as dms_models
 from pcapi.models.api_errors import ForbiddenError
 
 
-def coerce_for_enum(enum):
-    def coerce(name):
+def coerce_for_enum(enum):  # type: ignore [no-untyped-def]
+    def coerce(name):  # type: ignore [no-untyped-def]
         if isinstance(name, enum):
             return name
         return enum(name)
@@ -27,13 +27,13 @@ class DMSWebhookRequest(pydantic.BaseModel):
     updated_at: datetime.datetime
 
     @pydantic.validator("updated_at", pre=True)
-    def validate_udpated_at(cls, value):  # pylint: disable=no-self-argument
+    def validate_udpated_at(cls, value):  # type: ignore [no-untyped-def] # pylint: disable=no-self-argument
         return datetime.datetime.strptime(value, "%Y-%m-%d %H:%M:%S %z")
 
 
-def require_dms_token(route_function: Callable[..., Any]):
+def require_dms_token(route_function: Callable[..., Any]):  # type: ignore [no-untyped-def]
     @functools.wraps(route_function)
-    def validate_dms_token(*args, **kwargs):
+    def validate_dms_token(*args, **kwargs):  # type: ignore [no-untyped-def]
         if flask.request.args.get("token") != settings.DMS_WEBHOOK_TOKEN:
             errors = ForbiddenError()
             errors.add_error("token", "Invalid token")

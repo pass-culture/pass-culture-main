@@ -32,7 +32,7 @@ from pcapi.models.pc_object import PcObject
 from pcapi.models.providable_mixin import ProvidableMixin
 
 
-class Provider(PcObject, Model, DeactivableMixin):
+class Provider(PcObject, Model, DeactivableMixin):  # type: ignore [valid-type, misc]
     id = Column(BigInteger, primary_key=True)
 
     name = Column(String(90), index=True, nullable=False)
@@ -68,16 +68,16 @@ class Provider(PcObject, Model, DeactivableMixin):
 
     def getProviderAPI(self) -> ProviderAPI:
         return ProviderAPI(
-            api_url=self.apiUrl,
+            api_url=self.apiUrl,  # type: ignore [arg-type]
             name=self.name,
             authentication_token=self.authToken,
         )
 
 
-class VenueProvider(PcObject, Model, ProvidableMixin, DeactivableMixin):
+class VenueProvider(PcObject, Model, ProvidableMixin, DeactivableMixin):  # type: ignore [valid-type, misc]
     venueId = Column(BigInteger, ForeignKey("venue.id"), nullable=False)
 
-    venue = relationship("Venue", foreign_keys=[venueId])
+    venue = relationship("Venue", foreign_keys=[venueId])  # type: ignore [misc]
 
     providerId = Column(BigInteger, ForeignKey("provider.id"), index=True, nullable=False)
 
@@ -94,7 +94,7 @@ class VenueProvider(PcObject, Model, ProvidableMixin, DeactivableMixin):
     __mapper_args__ = {
         "polymorphic_on": case(
             [
-                (isFromAllocineProvider, "allocine_venue_provider"),
+                (isFromAllocineProvider, "allocine_venue_provider"),  # type: ignore [list-item]
             ],
             else_="venue_provider",
         ),
@@ -111,13 +111,13 @@ class VenueProvider(PcObject, Model, ProvidableMixin, DeactivableMixin):
     )
 
     @staticmethod
-    def restize_integrity_error(internal_error):
+    def restize_integrity_error(internal_error):  # type: ignore [no-untyped-def]
         if "unique_venue_provider" in str(internal_error.orig):
             return ["global", "Votre lieu est déjà lié à cette source"]
         return PcObject.restize_integrity_error(internal_error)
 
     @property
-    def nOffers(self):
+    def nOffers(self):  # type: ignore [no-untyped-def]
         from pcapi.core.offers.models import Offer
 
         # pylint: disable=comparison-with-callable
@@ -144,7 +144,7 @@ class AllocineVenueProvider(VenueProvider):
     }
 
 
-class AllocineVenueProviderPriceRule(PcObject, Model):
+class AllocineVenueProviderPriceRule(PcObject, Model):  # type: ignore [valid-type, misc]
     priceRule = Column(Enum(PriceRule), nullable=False)
 
     allocineVenueProviderId = Column(BigInteger, ForeignKey("allocine_venue_provider.id"), index=True, nullable=False)
@@ -162,7 +162,7 @@ class AllocineVenueProviderPriceRule(PcObject, Model):
     )
 
     @staticmethod
-    def restize_integrity_error(internal_error):
+    def restize_integrity_error(internal_error):  # type: ignore [no-untyped-def]
         if "unique_allocine_venue_provider_price_rule" in str(internal_error.orig):
             return ["global", "Vous ne pouvez avoir qu''un seul prix par catégorie"]
         if "check_price_is_not_negative" in str(internal_error.orig):
@@ -170,7 +170,7 @@ class AllocineVenueProviderPriceRule(PcObject, Model):
         return PcObject.restize_integrity_error(internal_error)
 
     @staticmethod
-    def restize_data_error(data_error):
+    def restize_data_error(data_error):  # type: ignore [no-untyped-def]
         if "wrong_price" in str(data_error):
             return ["global", "Le prix doit être un nombre décimal"]
         return PcObject.restize_integrity_error(data_error)
@@ -194,7 +194,7 @@ class StockDetail:
     price: Optional[float]
 
 
-class AllocinePivot(PcObject, Model):
+class AllocinePivot(PcObject, Model):  # type: ignore [valid-type, misc]
     siret = Column(String(14), nullable=False, unique=True)
 
     theaterId = Column(String(20), nullable=False, unique=True)
@@ -212,7 +212,7 @@ class LocalProviderEventType(enum.Enum):
     SyncEnd = "SyncEnd"
 
 
-class LocalProviderEvent(PcObject, Model):
+class LocalProviderEvent(PcObject, Model):  # type: ignore [valid-type, misc]
     id = Column(BigInteger, primary_key=True, autoincrement=True)
     providerId = Column(BigInteger, ForeignKey("provider.id"), nullable=False)
     provider = relationship("Provider", foreign_keys=[providerId])

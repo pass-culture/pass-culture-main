@@ -335,7 +335,7 @@ class FraudCheckStatus(enum.Enum):
     ERROR = "error"
 
 
-class BeneficiaryFraudCheck(PcObject, Model):
+class BeneficiaryFraudCheck(PcObject, Model):  # type: ignore [valid-type, misc]
     __tablename__ = "beneficiary_fraud_check"
 
     id = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
@@ -344,7 +344,7 @@ class BeneficiaryFraudCheck(PcObject, Model):
 
     userId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=False)
 
-    user = sa.orm.relationship("User", foreign_keys=[userId], backref="beneficiaryFraudChecks")
+    user = sa.orm.relationship("User", foreign_keys=[userId], backref="beneficiaryFraudChecks")  # type: ignore [misc]
 
     type = sa.Column(sa.Enum(FraudCheckType, create_constraint=False), nullable=False)
 
@@ -378,7 +378,7 @@ class BeneficiaryFraudCheck(PcObject, Model):
             raise NotImplementedError(f"Cannot unserialize type {self.type}")
         if self.resultContent is None:
             raise ValueError("No source data associated with this fraud check")
-        return FRAUD_CHECK_MAPPING[self.type](**self.resultContent)
+        return FRAUD_CHECK_MAPPING[self.type](**self.resultContent)  # type: ignore [arg-type, return-value, index]
 
     def get_detailed_source(self) -> str:
         if self.type == FraudCheckType.DMS.value:
@@ -386,7 +386,7 @@ class BeneficiaryFraudCheck(PcObject, Model):
         return f"dossier {self.type} [{self.thirdPartyId}]"
 
 
-class OrphanDmsApplication(PcObject, Model):
+class OrphanDmsApplication(PcObject, Model):  # type: ignore [valid-type, misc]
     # This model is used to store fraud checks that were not associated with a user.
     # This is mainly used for the DMS fraud check, when the user is not yet created, or in case of a failure.
 
@@ -395,14 +395,14 @@ class OrphanDmsApplication(PcObject, Model):
     process_id = sa.Column(sa.BigInteger)
 
 
-class BeneficiaryFraudResult(PcObject, Model):
+class BeneficiaryFraudResult(PcObject, Model):  # type: ignore [valid-type, misc]
     __tablename__ = "beneficiary_fraud_result"
 
     id = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
 
     userId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=False)
 
-    user = sa.orm.relationship("User", foreign_keys=[userId], backref=sa.orm.backref("beneficiaryFraudResults"))
+    user = sa.orm.relationship("User", foreign_keys=[userId], backref=sa.orm.backref("beneficiaryFraudResults"))  # type: ignore [misc]
 
     eligibilityType = sa.Column(
         sa.Enum(users_models.EligibilityType, create_constraint=False),
@@ -425,18 +425,18 @@ class BeneficiaryFraudResult(PcObject, Model):
     dateUpdated = sa.Column(sa.DateTime, nullable=True, onupdate=sa.func.now())
 
 
-class BeneficiaryFraudReview(PcObject, Model):
+class BeneficiaryFraudReview(PcObject, Model):  # type: ignore [valid-type, misc]
     __tablename__ = "beneficiary_fraud_review"
 
     userId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=False)
 
-    user = sa.orm.relationship(
+    user = sa.orm.relationship(  # type: ignore [misc]
         "User", foreign_keys=[userId], backref=sa.orm.backref("beneficiaryFraudReview", uselist=False)
     )
 
     authorId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=False)
 
-    author = sa.orm.relationship("User", foreign_keys=[authorId], backref="adminFraudReviews")
+    author = sa.orm.relationship("User", foreign_keys=[authorId], backref="adminFraudReviews")  # type: ignore [misc]
 
     review = sa.Column(sa.Enum(FraudReviewStatus, create_constraint=False))
 

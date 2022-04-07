@@ -84,7 +84,7 @@ def check_collective_booking_status_pending(booking: CollectiveBooking) -> Optio
         raise exceptions.CollectiveOfferStockBookedAndBookingNotPending(booking.status, booking.id)
 
 
-def check_collective_offer_number_of_collective_stocks(
+def check_collective_offer_number_of_collective_stocks(  # type: ignore [return]
     collective_offer: CollectiveOffer,
 ) -> Optional[CollectiveStockAlreadyExists]:
     if collective_offer.collectiveStock:

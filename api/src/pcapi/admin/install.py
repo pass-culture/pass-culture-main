@@ -275,7 +275,7 @@ def install_views(admin: Admin, session: Session) -> None:
     )
 
 
-def install_admin_autocomplete_views():
+def install_admin_autocomplete_views():  # type: ignore [no-untyped-def]
     from pcapi.admin import autocomplete  # pylint: disable=unused-import
 
 

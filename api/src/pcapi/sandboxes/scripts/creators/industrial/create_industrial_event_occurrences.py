@@ -19,7 +19,7 @@ EVENT_OCCURRENCE_BEGINNING_DATETIMES = [
 EVENT_OFFERS_WITH_OCCURRENCES_REMOVE_MODULO = 3
 
 
-def create_industrial_event_occurrences(event_offers_by_name):
+def create_industrial_event_occurrences(event_offers_by_name):  # type: ignore [no-untyped-def]
     logger.info("create_industrial_event_occurrences")
 
     event_occurrences_by_name = {}

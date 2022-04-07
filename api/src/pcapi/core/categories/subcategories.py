@@ -75,7 +75,7 @@ class Subcategory:
     is_bookable_by_underage_when_not_free: bool = True
     can_be_withdrawable: bool = False
 
-    def __post_init__(self):
+    def __post_init__(self):  # type: ignore [no-untyped-def]
         if self.search_group_name not in [s.name for s in SearchGroups]:
             raise ValueError("search_group_name can only be one of SearchGroups")
         if self.homepage_label_name not in [h.name for h in HomepageLabels]:
@@ -1490,20 +1490,20 @@ assert set(subcategory.id for subcategory in ALL_SUBCATEGORIES) == set(
     subcategory.id for subcategory in locals().values() if isinstance(subcategory, Subcategory)
 )
 
-SubcategoryIdEnum = Enum("SubcategoryIdEnum", {subcategory.id: subcategory.id for subcategory in ALL_SUBCATEGORIES})
-SearchGroupNameEnum = Enum(
+SubcategoryIdEnum = Enum("SubcategoryIdEnum", {subcategory.id: subcategory.id for subcategory in ALL_SUBCATEGORIES})  # type: ignore [misc]
+SearchGroupNameEnum = Enum(  # type: ignore [misc]
     "SearchGroupNameEnum",
     {search_group_name: search_group_name for search_group_name in [c.name for c in SearchGroups]},
 )
-HomepageLabelNameEnum = Enum(
+HomepageLabelNameEnum = Enum(  # type: ignore [misc]
     "(HomepageLabelNameEnum",
     {homepage_label_name: homepage_label_name for homepage_label_name in [h.name for h in HomepageLabels]},
 )
-OnlineOfflinePlatformChoicesEnum = Enum(
+OnlineOfflinePlatformChoicesEnum = Enum(  # type: ignore [misc]
     "OnlineOfflinePlatformChoicesEnum",
     {choice: choice for choice in [c.value for c in OnlineOfflinePlatformChoices]},
 )
 
 
-def get_search_group_label(search_group_name):
+def get_search_group_label(search_group_name):  # type: ignore [no-untyped-def]
     return SearchGroups[search_group_name].value

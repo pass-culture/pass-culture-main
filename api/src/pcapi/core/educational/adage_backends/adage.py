@@ -30,7 +30,7 @@ class AdageHttpClient(AdageClient):
                 "Error posting new prebooking to Adage API.", api_response.status_code, api_response.text
             )
 
-        return AdageApiResult(sent_data=data, response=dict(api_response.json()), success=True)
+        return AdageApiResult(sent_data=data, response=dict(api_response.json()), success=True)  # type: ignore [arg-type]
 
     def notify_offer_or_stock_edition(self, data: EducationalBookingEdition) -> AdageApiResult:
         api_url = f"{self.base_url}/v1/prereservation-edit"

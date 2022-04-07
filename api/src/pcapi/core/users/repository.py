@@ -32,7 +32,7 @@ def check_user_and_credentials(user: models.User, password: str) -> None:
         # Hash the given password, just like we would do if the user
         # existed. This avoids user enumeration by comparing server
         # response time.
-        crypto.check_password(password, HASHED_PLACEHOLDER)
+        crypto.check_password(password, HASHED_PLACEHOLDER)  # type: ignore [arg-type]
         raise exceptions.InvalidIdentifier()
     if not user.checkPassword(password) or not user.isActive:
         logging.info("Failed authentication attempt", extra={"user": user.id, "avoid_current_user": True})
@@ -43,11 +43,11 @@ def check_user_and_credentials(user: models.User, password: str) -> None:
 
 def get_user_with_credentials(identifier: str, password: str) -> models.User:
     user = find_user_by_email(identifier)
-    check_user_and_credentials(user, password)
-    return user
+    check_user_and_credentials(user, password)  # type: ignore [arg-type]
+    return user  # type: ignore [return-value]
 
 
-def _find_user_by_email_query(email: str):
+def _find_user_by_email_query(email: str):  # type: ignore [no-untyped-def]
     # FIXME (dbaty, 2021-05-02): remove call to `func.lower()` once
     # all emails have been sanitized in the database.
     return models.User.query.filter(func.lower(models.User.email) == utils.sanitize_email(email))
@@ -58,7 +58,7 @@ def find_user_by_email(email: str) -> Optional[models.User]:
 
 
 def find_pro_user_by_email(email: str) -> Optional[models.User]:
-    return _find_user_by_email_query(email).filter(models.User.has_pro_role.is_(True)).one_or_none()
+    return _find_user_by_email_query(email).filter(models.User.has_pro_role.is_(True)).one_or_none()  # type: ignore [attr-defined]
 
 
 def get_user_with_valid_token(

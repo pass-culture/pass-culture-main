@@ -5,7 +5,7 @@ from pcapi.workers.decorators import job
 
 
 @job(worker.low_queue)
-def update_all_venue_offers_accessibility_job(venue, accessibility: dict[str, bool]) -> None:
+def update_all_venue_offers_accessibility_job(venue, accessibility: dict[str, bool]) -> None:  # type: ignore [no-untyped-def]
     query = Offer.query.filter(Offer.venueId == venue.id)
 
     offers_api.batch_update_offers(query, accessibility)

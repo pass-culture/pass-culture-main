@@ -9,7 +9,7 @@ from pcapi.utils.mailing import format_booking_hours_for_email
 
 def get_booking_cancellation_by_beneficiary_to_pro_email_data(booking: Booking) -> dict:
 
-    return SendinblueTransactionalEmailData(
+    return SendinblueTransactionalEmailData(  # type: ignore [return-value]
         template=TransactionalEmail.BOOKING_CANCELLATION_BY_BENEFICIARY_TO_PRO.value,
         params={
             "DEPARTMENT_CODE": booking.stock.offer.venue.departementCode or "numérique",
@@ -23,7 +23,7 @@ def get_booking_cancellation_by_beneficiary_to_pro_email_data(booking: Booking) 
             "USER_NAME": f"{booking.firstName} {booking.lastName}",
             "VENUE_NAME": booking.stock.offer.venue.name,
         },
-        reply_to=EmailInfo(email=booking.email, name=f"{booking.firstName} {booking.lastName}"),
+        reply_to=EmailInfo(email=booking.email, name=f"{booking.firstName} {booking.lastName}"),  # type: ignore [arg-type]
     )
 
 

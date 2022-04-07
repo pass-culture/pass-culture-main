@@ -5,7 +5,7 @@ from pcapi.workers.decorators import job
 
 
 @job(worker.low_queue)
-def update_all_venue_offers_email_job(venue, email: str) -> None:
+def update_all_venue_offers_email_job(venue, email: str) -> None:  # type: ignore [no-untyped-def]
     query = Offer.query.filter(Offer.venueId == venue.id)
 
     offers_api.batch_update_offers(query, {"bookingEmail": email})

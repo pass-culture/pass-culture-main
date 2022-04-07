@@ -60,7 +60,7 @@ def get_offerers(query: GetOffererListQueryModel) -> GetOfferersListResponseMode
         (offerers_models.Venue, offerers_models.Offerer.managedVenues),
         (offerers_models.UserOfferer, offerers_models.Offerer.UserOfferers),
     ):
-        if model in {mapper.entity for mapper in offerers_query._join_entities}:
+        if model in {mapper.entity for mapper in offerers_query._join_entities}:  # type: ignore [attr-defined]
             option = sqla_orm.contains_eager(relationship)
         else:
             option = sqla_orm.joinedload(relationship)
@@ -75,13 +75,13 @@ def get_offerers(query: GetOffererListQueryModel) -> GetOfferersListResponseMode
         )
     )
     offerers_query = offerers_query.order_by(offerers_models.Offerer.name)
-    offerers_query = offerers_query.paginate(
+    offerers_query = offerers_query.paginate(  # type: ignore [attr-defined]
         query.page,
         error_out=False,
         per_page=query.paginate,
     )
 
-    offerers = offerers_query.items
+    offerers = offerers_query.items  # type: ignore [attr-defined]
 
     # Counting offers for large venues is costly. To avoid doing that
     # too much, we don't count offers for offerers that have many
@@ -106,7 +106,7 @@ def get_offerers(query: GetOffererListQueryModel) -> GetOfferersListResponseMode
             )
             for offerer in offerers
         ],
-        nbTotalResults=offerers_query.total,
+        nbTotalResults=offerers_query.total,  # type: ignore [attr-defined]
         user=current_user,
     )
 
@@ -147,7 +147,7 @@ def list_educational_offerers(query: GetEducationalOfferersQueryModel) -> GetEdu
 @login_required
 @spectree_serialize(response_model=GetOffererResponseModel, api=blueprint.pro_private_schema)
 def get_offerer(offerer_id: str) -> GetOffererResponseModel:
-    check_user_has_access_to_offerer(current_user, dehumanize(offerer_id))
+    check_user_has_access_to_offerer(current_user, dehumanize(offerer_id))  # type: ignore [arg-type]
     offerer = load_or_404(offerers_models.Offerer, offerer_id)
 
     return GetOffererResponseModel.from_orm(offerer)
@@ -157,7 +157,7 @@ def get_offerer(offerer_id: str) -> GetOffererResponseModel:
 @login_required
 @spectree_serialize(response_model=GenerateOffererApiKeyResponse, api=blueprint.pro_private_schema)
 def generate_api_key_route(offerer_id: str) -> GenerateOffererApiKeyResponse:
-    check_user_has_access_to_offerer(current_user, dehumanize(offerer_id))
+    check_user_has_access_to_offerer(current_user, dehumanize(offerer_id))  # type: ignore [arg-type]
     offerer = load_or_404(offerers_models.Offerer, offerer_id)
     try:
         clear_key = api.generate_and_save_api_key(offerer.id)
@@ -172,7 +172,7 @@ def generate_api_key_route(offerer_id: str) -> GenerateOffererApiKeyResponse:
 @private_api.route("/offerers/api_keys/<api_key_prefix>", methods=["DELETE"])
 @login_required
 @spectree_serialize(on_success_status=204, api=blueprint.pro_private_schema)
-def delete_api_key(api_key_prefix: str):
+def delete_api_key(api_key_prefix: str):  # type: ignore [no-untyped-def]
     with transaction():
         try:
             api.delete_api_key_by_user(current_user, api_key_prefix)
@@ -194,9 +194,9 @@ def create_offerer(body: CreateOffererQueryModel) -> GetOffererResponseModel:
 @private_api.route("/offerers/<humanized_offerer_id>/eac-eligibility", methods=["GET"])
 @login_required
 @spectree_serialize(on_success_status=204, api=blueprint.pro_private_schema)
-def can_offerer_create_educational_offer(humanized_offerer_id: str):
+def can_offerer_create_educational_offer(humanized_offerer_id: str):  # type: ignore [no-untyped-def]
     try:
-        api.can_offerer_create_educational_offer(dehumanize(humanized_offerer_id))
+        api.can_offerer_create_educational_offer(dehumanize(humanized_offerer_id))  # type: ignore [arg-type]
     except CulturalPartnerNotFoundException:
         logger.info("This offerer has not been found in Adage", extra={"offerer_id": humanized_offerer_id})
         raise ApiErrors({"offerer": "not found in adage"}, 404)

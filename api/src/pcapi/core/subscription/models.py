@@ -59,7 +59,7 @@ class PopOverIcon(enum.Enum):
     MAGNIFYING_GLASS = "MAGNIFYING_GLASS"
 
 
-class SubscriptionMessage(PcObject, Model):
+class SubscriptionMessage(PcObject, Model):  # type: ignore [valid-type, misc]
     __tablename__ = "beneficiary_subscription_message"
 
     dateCreated = sqlalchemy.Column(sqlalchemy.DateTime, nullable=False, server_default=sqlalchemy.func.now())
@@ -68,7 +68,7 @@ class SubscriptionMessage(PcObject, Model):
         sqlalchemy.BigInteger, sqlalchemy.ForeignKey("user.id", ondelete="CASCADE"), index=True, nullable=False
     )
 
-    user = sqlalchemy.orm.relationship("User", foreign_keys=[userId], backref="subscriptionMessages")
+    user = sqlalchemy.orm.relationship("User", foreign_keys=[userId], backref="subscriptionMessages")  # type: ignore [misc]
 
     userMessage = sqlalchemy.Column(sqlalchemy.Text, nullable=False)
 

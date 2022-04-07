@@ -31,7 +31,7 @@ def filter_email(value: Optional[str]) -> Optional[str]:
 
 
 class FilterByDepositTypeEqual(BaseSQLAFilter):
-    def apply(self, query, value, alias=None):
+    def apply(self, query, value, alias=None):  # type: ignore [no-untyped-def]
         aliased_deposit = aliased(Deposit)
         current_deposit_by_user = (
             Deposit.query.outerjoin(
@@ -46,12 +46,12 @@ class FilterByDepositTypeEqual(BaseSQLAFilter):
     def operation(self) -> str:
         return "equals"
 
-    def get_options(self, view):
+    def get_options(self, view):  # type: ignore [no-untyped-def]
         return [(deposit_type.name, deposit_type.name) for deposit_type in DepositType]
 
 
 class FilterByDepositTypeNotEqual(BaseSQLAFilter):
-    def apply(self, query, value, alias=None):
+    def apply(self, query, value, alias=None):  # type: ignore [no-untyped-def]
         aliased_deposit = aliased(Deposit)
         current_deposit_by_user = (
             Deposit.query.outerjoin(
@@ -66,11 +66,11 @@ class FilterByDepositTypeNotEqual(BaseSQLAFilter):
     def operation(self) -> str:
         return "not equal"
 
-    def get_options(self, view):
+    def get_options(self, view):  # type: ignore [no-untyped-def]
         return [(deposit_type.name, deposit_type.name) for deposit_type in DepositType]
 
 
-def beneficiary_deposit_type_formatter(view, context, model, name) -> Markup:
+def beneficiary_deposit_type_formatter(view, context, model, name) -> Markup:  # type: ignore [no-untyped-def]
     colors = {
         DepositType.GRANT_15_17: "#C7CEEA",
         DepositType.GRANT_18: "#FF9AA2",
@@ -81,25 +81,25 @@ def beneficiary_deposit_type_formatter(view, context, model, name) -> Markup:
     )
 
 
-def beneficiary_total_amount_initial_formatter(view, context, model, name) -> Markup:
+def beneficiary_total_amount_initial_formatter(view, context, model, name) -> Markup:  # type: ignore [no-untyped-def]
     amount = users_api.get_domains_credit(model)
     all_initial = amount.all.initial if amount else "0"
     return Markup("<span>{all_initial}&nbsp;&euro;</span>").format(all_initial=all_initial)
 
 
-def beneficiary_total_amount_remaining_formatter(view, context, model, name) -> Markup:
+def beneficiary_total_amount_remaining_formatter(view, context, model, name) -> Markup:  # type: ignore [no-untyped-def]
     amount = users_api.get_domains_credit(model)
     all_remaining = amount.all.remaining if amount else "0"
     return Markup("<span>{all_remaining}&nbsp;&euro;</span>").format(all_remaining=all_remaining)
 
 
-def beneficiary_physical_remaining_formatter(view, context, model, name) -> Markup:
+def beneficiary_physical_remaining_formatter(view, context, model, name) -> Markup:  # type: ignore [no-untyped-def]
     amount = users_api.get_domains_credit(model)
     physical_remaining = amount.physical.remaining if amount and amount.physical else "Pas de plafond"
     return Markup("<span>{physical_remaining}&nbsp;&euro;</span>").format(physical_remaining=physical_remaining)
 
 
-def beneficiary_digital_remaining_formatter(view, context, model, name) -> Markup:
+def beneficiary_digital_remaining_formatter(view, context, model, name) -> Markup:  # type: ignore [no-untyped-def]
     amount = users_api.get_domains_credit(model)
     digital_remaining = amount.digital.remaining if amount and amount.digital else "Pas de plafond"
     return Markup("<span>{digital_remaining}&nbsp;&euro;</span>").format(digital_remaining=digital_remaining)
@@ -110,7 +110,7 @@ class BeneficiaryUserView(ResendValidationEmailMixin, SuspensionMixin, BaseAdmin
     can_view_details = True
 
     @property
-    def can_create(self) -> bool:
+    def can_create(self) -> bool:  # type: ignore [override]
         return self.check_super_admins()
 
     column_list = [
@@ -207,7 +207,7 @@ class BeneficiaryUserView(ResendValidationEmailMixin, SuspensionMixin, BaseAdmin
     ]
 
     @property
-    def column_formatters(self):
+    def column_formatters(self):  # type: ignore [no-untyped-def]
         formatters = super().column_formatters
         formatters["deposit_type"] = beneficiary_deposit_type_formatter
         formatters["total_initial"] = beneficiary_total_amount_initial_formatter
@@ -218,7 +218,7 @@ class BeneficiaryUserView(ResendValidationEmailMixin, SuspensionMixin, BaseAdmin
         return formatters
 
     @property
-    def form_columns(self):
+    def form_columns(self):  # type: ignore [no-untyped-def]
         fields = (
             "email",
             "dateOfBirth",
@@ -240,7 +240,7 @@ class BeneficiaryUserView(ResendValidationEmailMixin, SuspensionMixin, BaseAdmin
         email=dict(validators=[DataRequired()], filters=[filter_email]),
     )
 
-    def get_create_form(self):
+    def get_create_form(self):  # type: ignore [no-untyped-def]
         form_class = super().scaffold_form()
 
         if not settings.IS_PROD:
@@ -275,8 +275,8 @@ class BeneficiaryUserView(ResendValidationEmailMixin, SuspensionMixin, BaseAdmin
 
     def get_query(self) -> BaseQuery:
         return (
-            User.query.filter(User.has_pro_role.is_(False))
-            .filter(User.is_beneficiary.is_(True))
+            User.query.filter(User.has_pro_role.is_(False))  # type: ignore [attr-defined]
+            .filter(User.is_beneficiary.is_(True))  # type: ignore [attr-defined]
             .options(joinedload(User.deposits))
             .options(joinedload(User.suspension_history))
         )
@@ -285,6 +285,6 @@ class BeneficiaryUserView(ResendValidationEmailMixin, SuspensionMixin, BaseAdmin
         return (
             self.session.query(func.count("*"))
             .select_from(self.model)
-            .filter(User.has_pro_role.is_(False))
-            .filter(User.has_beneficiary_role.is_(True))
+            .filter(User.has_pro_role.is_(False))  # type: ignore [attr-defined]
+            .filter(User.has_beneficiary_role.is_(True))  # type: ignore [attr-defined]
         )

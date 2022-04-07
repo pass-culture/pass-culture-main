@@ -60,7 +60,7 @@ class SaveVenueBankInformations:
             if application_details.status == BankInformationStatus.ACCEPTED:
                 if application_details.annotation_id is not None:
                     update_demarches_simplifiees_text_annotations(
-                        application_details.dossier_id,
+                        application_details.dossier_id,  # type: ignore [arg-type]
                         application_details.annotation_id,
                         format_error_to_demarches_simplifiees_text(api_errors),
                     )
@@ -91,7 +91,7 @@ class SaveVenueBankInformations:
         if api_errors.errors:
             if application_details.annotation_id is not None:
                 update_demarches_simplifiees_text_annotations(
-                    application_details.dossier_id,
+                    application_details.dossier_id,  # type: ignore [arg-type]
                     application_details.annotation_id,
                     format_error_to_demarches_simplifiees_text(api_errors),
                 )
@@ -135,23 +135,23 @@ class SaveVenueBankInformations:
                 api_errors.add_error("Venue", "SIRET is no longer active")
         else:
             if not offerer:
-                return None
+                return None  # type: ignore [return-value]
             name = application_details.venue_name
-            venues = self.venue_repository.find_by_name(name, offerer.id)
+            venues = self.venue_repository.find_by_name(name, offerer.id)  # type: ignore [arg-type]
             if len(venues) == 0:
                 api_errors.add_error("Venue", "Venue name not found")
             if len(venues) > 1:
                 api_errors.add_error("Venue", "Multiple venues found")
             if api_errors.errors:
-                return None
+                return None  # type: ignore [return-value]
             venue = venues[0]
         return venue
 
     def create_new_bank_informations(self, application_details: ApplicationDetail, venue_id: int) -> BankInformations:
         new_bank_informations = BankInformations()
-        new_bank_informations.application_id = application_details.application_id
+        new_bank_informations.application_id = application_details.application_id  # type: ignore [assignment]
         new_bank_informations.venue_id = venue_id
-        new_bank_informations.status = application_details.status
+        new_bank_informations.status = application_details.status  # type: ignore [assignment]
         new_bank_informations.date_modified = application_details.modification_date
         if application_details.status == BankInformationStatus.ACCEPTED:
             new_bank_informations.iban = application_details.iban

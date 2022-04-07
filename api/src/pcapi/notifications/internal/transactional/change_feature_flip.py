@@ -6,7 +6,7 @@ from pcapi.models.feature import Feature
 from pcapi.notifications.internal import send_internal_message
 
 
-def send(feature: Feature, current_user: User):
+def send(feature: Feature, current_user: User):  # type: ignore [no-untyped-def]
     env_prefix = "" if settings.IS_PROD else """[{}] """.format(settings.ENV)
     status_icon = ":white_check_mark:" if feature.isActive else ":x:"
     edit_link = url_for("feature.edit_view", id=feature.id, _external=True)

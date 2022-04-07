@@ -14,10 +14,10 @@ from pcapi.workers.logger import job_extra_description
 logger = logging.getLogger(__name__)
 
 
-def job(queue: Queue):
-    def decorator(func):
+def job(queue: Queue):  # type: ignore [no-untyped-def]
+    def decorator(func):  # type: ignore [no-untyped-def]
         @wraps(func)
-        def job_func(*args, **kwargs):
+        def job_func(*args, **kwargs):  # type: ignore [no-untyped-def]
             current_job = get_current_job()
             if not current_job or IS_RUNNING_TESTS:
                 # in synchronous calls (as wall in TESTS because queued jobs are executed synchronously)
@@ -51,7 +51,7 @@ def job(queue: Queue):
             return result
 
         @wraps(job_func)
-        def delay(*args, **kwargs):
+        def delay(*args, **kwargs):  # type: ignore [no-untyped-def]
             current_job = queue.enqueue(job_func, *args, **kwargs)
             logger.info(
                 "Enqueue job %s",
