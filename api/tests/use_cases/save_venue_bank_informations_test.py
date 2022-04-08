@@ -991,6 +991,30 @@ class SaveVenueBankInformationsTest:
                 self.dossier_id, self.annotation_id, "Offerer: Offerer not found"
             )
 
+        def test_update_text_offerer_not_found_for_draft(
+            self, mock_application_details, mock_update_text_annotation, app
+        ):
+            mock_application_details.return_value = self.build_application_detail(
+                {"status": BankInformationStatus.DRAFT}
+            )
+
+            self.save_venue_bank_informations.execute(self.application_id)
+
+            mock_update_text_annotation.assert_called_once_with(
+                self.dossier_id, self.annotation_id, "Offerer: Offerer not found"
+            )
+
+        def test_update_text_offerer_not_found_for_rejected(
+            self, mock_application_details, mock_update_text_annotation, app
+        ):
+            mock_application_details.return_value = self.build_application_detail(
+                {"status": BankInformationStatus.REJECTED}
+            )
+
+            self.save_venue_bank_informations.execute(self.application_id)
+
+            mock_update_text_annotation.assert_not_called()
+
         @pytest.mark.usefixtures("db_session")
         def test_update_text_venue_not_found(self, mock_application_details, mock_update_text_annotation, app):
             OffererFactory(siren="999999999")
