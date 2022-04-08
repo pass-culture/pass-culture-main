@@ -57,14 +57,15 @@ class SaveVenueBankInformations:
         business_unit = BusinessUnit.query.filter(BusinessUnit.siret == siret).one_or_none()
 
         if api_errors.errors:
-            if application_details.status == BankInformationStatus.ACCEPTED:
-                if application_details.annotation_id is not None:
+            if application_details.annotation_id is not None:
+                if application_details.status != BankInformationStatus.REJECTED:
                     update_demarches_simplifiees_text_annotations(
                         application_details.dossier_id,  # type: ignore [arg-type]
                         application_details.annotation_id,
                         format_error_to_demarches_simplifiees_text(api_errors),
                     )
-                    return None
+                return None
+            if application_details.status == BankInformationStatus.ACCEPTED:
                 raise api_errors
             return None
 
