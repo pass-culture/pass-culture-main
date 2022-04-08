@@ -189,6 +189,7 @@ def parse_beneficiary_information_graphql(
         elif label in (
             dms_models.FieldLabel.ID_PIECE_NUMBER_FR.value,
             dms_models.FieldLabel.ID_PIECE_NUMBER_ET.value,
+            dms_models.FieldLabel.ID_PIECE_NUMBER_PROCEDURE_4765.value,
         ):
             value = value.strip()
             if not fraud_api.validate_id_piece_number_format_fraud_item(value):
