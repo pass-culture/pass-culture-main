@@ -23,13 +23,15 @@ const SiretField = ({
   )
 
   const siretFormField = useField('siret', {})
+  const commentFormField = useField('comment', {})
   const haveInitialValue = siretFormField.meta.initial !== null
   const siretValue = siretFormField.input.value
+  const commentValue = commentFormField.input.value
   const isValid = !!siretValue && siretValue.length === 14
 
   let validate: ((siret: string) => Promise<string | undefined>) | null = null
   if (!(haveInitialValue || isEntrepriseApiDisabled)) {
-    validate = siretApiValidate
+    validate = (siret: string) => siretApiValidate(siret, commentValue)
   }
 
   let tooltip: JSX.Element | null
