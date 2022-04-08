@@ -8,7 +8,7 @@ import Titles from 'components/layout/Titles/Titles'
 import { TPreFilters } from 'core/Bookings'
 import { DEFAULT_PRE_FILTERS } from 'core/Bookings'
 import { Audience } from 'core/shared/types'
-import FilterTabs from 'new_components/FilterTabs'
+import Tabs from 'new_components/Tabs'
 
 import BookingsRecapTable from '../../components/pages/Bookings/BookingsRecapTable/BookingsRecapTable'
 import ChoosePreFiltersMessage from '../../components/pages/Bookings/ChoosePreFiltersMessage/ChoosePreFiltersMessage'
@@ -80,7 +80,7 @@ const Bookings = ({
       <PageTitle title="Vos réservations" />
       <Titles title="Réservations" />
       {separateIndividualAndCollectiveOffers && (
-        <FilterTabs
+        <Tabs
           collectiveLabel="Réservations collectives"
           collectiveLink="/reservations/collectives"
           individualLabel="Réservations individuelles"

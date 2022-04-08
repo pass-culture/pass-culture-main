@@ -15,7 +15,7 @@ import {
 import { Offer, Offerer, Option, TSearchFilters } from 'core/Offers/types'
 import { Audience } from 'core/shared'
 import { ReactComponent as AddOfferSvg } from 'icons/ico-plus.svg'
-import FilterTabs from 'new_components/FilterTabs'
+import Tabs from 'new_components/Tabs'
 
 import NoOffers from './NoOffers'
 import SearchFilters from './SearchFilters'
@@ -187,7 +187,7 @@ const Offers = ({
       <PageTitle title="Vos offres" />
       <Titles action={actionLink} title="Offres" />
       {separateIndividualAndCollectiveOffers && (
-        <FilterTabs
+        <Tabs
           collectiveLabel="Offres collectives"
           collectiveLink="/offres/collectives"
           individualLabel="Offres individuelles"

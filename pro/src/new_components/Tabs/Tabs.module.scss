@@ -1,14 +1,10 @@
-.filter-tabs {
+.tabs {
   display: flex;
   margin-bottom: rem(32px);
 
   &-tab {
     background-color: transparent;
     padding-bottom: rem(8px);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: relative;
     font-size: rem(15px);
     font-weight: 700;
     cursor: pointer;
@@ -21,11 +17,20 @@
       margin-right: rem(12px);
     }
 
+    &-link {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
     &.is-selected {
       border-bottom: 2px solid $primary;
-      color: $primary;
+      
+      .tabs-tab-link { 
+        color: $primary;
+      }
 
-      .filter-tabs-tab-icon {
+      .tabs-tab-icon {
         fill: $primary;
       }
     }
