@@ -6,9 +6,9 @@ import { Audience } from 'core/shared/types'
 import { ReactComponent as LibraryIcon } from 'icons/library.svg'
 import { ReactComponent as UserIcon } from 'icons/user.svg'
 
-import styles from './FilterTabs.module.scss'
+import styles from './Tabs.module.scss'
 
-interface IFilterTabsProps {
+interface ITabsProps {
   selectedAudience: Audience
   individualLink: string
   collectiveLink: string
@@ -16,35 +16,37 @@ interface IFilterTabsProps {
   collectiveLabel: string
 }
 
-const FilterTabs = ({
+const Tabs = ({
   selectedAudience,
   individualLink,
   collectiveLink,
   individualLabel,
   collectiveLabel,
-}: IFilterTabsProps): JSX.Element => {
+}: ITabsProps): JSX.Element => {
   return (
-    <div className={styles['filter-tabs']}>
-      <Link
-        className={cn(styles['filter-tabs-tab'], {
+    <ul className={styles['tabs']}>
+      <li
+        className={cn(styles['tabs-tab'], {
           [styles['is-selected']]: selectedAudience === Audience.INDIVIDUAL,
         })}
-        to={individualLink}
       >
-        <UserIcon className={styles['filter-tabs-tab-icon']} />
-        <span>{individualLabel}</span>
-      </Link>
-      <Link
-        className={cn(styles['filter-tabs-tab'], {
+        <Link className={styles['tabs-tab-link']} to={individualLink}>
+          <UserIcon className={styles['tabs-tab-icon']} />
+          <span>{individualLabel}</span>
+        </Link>
+      </li>
+      <li
+        className={cn(styles['tabs-tab'], {
           [styles['is-selected']]: selectedAudience === Audience.COLLECTIVE,
         })}
-        to={collectiveLink}
       >
-        <LibraryIcon className={styles['filter-tabs-tab-icon']} />
-        <span>{collectiveLabel}</span>
-      </Link>
-    </div>
+        <Link className={styles['tabs-tab-link']} to={collectiveLink}>
+          <LibraryIcon className={styles['tabs-tab-icon']} />
+          <span>{collectiveLabel}</span>
+        </Link>
+      </li>
+    </ul>
   )
 }
 
-export default FilterTabs
+export default Tabs
