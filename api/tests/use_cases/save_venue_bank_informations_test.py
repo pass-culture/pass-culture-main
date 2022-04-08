@@ -1148,3 +1148,50 @@ class SaveVenueBankInformationsTest:
                 self.annotation_id,
                 'iban: L’IBAN renseigné ("INVALID") est invalide; bic: Cette information est obligatoire',
             )
+
+    @patch("pcapi.use_cases.save_venue_bank_informations.update_demarches_simplifiees_text_annotations")
+    @patch(
+        "pcapi.use_cases.save_venue_bank_informations.get_venue_bank_information_application_details_by_application_id"
+    )
+    class SaveBankInformationUpdateTextTest:
+        def setup_method(self):
+            self.save_venue_bank_informations = SaveVenueBankInformations(
+                venue_repository=VenueWithBasicInformationSQLRepository(),
+                bank_informations_repository=BankInformationsSQLRepository(),
+            )
+
+        def build_application_detail(self, updated_field=None):
+            application_data = {
+                "siren": "999999999",
+                "siret": "36252187900034",
+                "status": BankInformationStatus.ACCEPTED,
+                "application_id": 1,
+                "iban": "FR7630007000111234567890144",
+                "bic": "SOGEFRPP",
+                "modification_date": datetime.utcnow(),
+                "venue_name": "venuedemo",
+                "annotation_id": "ANNOTATION_ID",
+                "dossier_id": "DOSSIER_ID",
+            }
+            if updated_field:
+                application_data.update(updated_field)
+            return ApplicationDetail(**application_data)
+
+        @patch("pcapi.connectors.api_entreprises.check_siret_is_still_active", return_value=True)
+        @pytest.mark.usefixtures("db_session")
+        def test_update_text_application_details_on_bank_information_success(
+            self, siret_active, mock_application_details, mock_update_text_annotation, app
+        ):
+            OffererFactory(siren="999999999")
+            offers_factories.VenueFactory(name="venuedemo", siret="36252187900034", businessUnit=None)
+            mock_application_details.return_value = self.build_application_detail()
+
+            self.save_venue_bank_informations.execute(1)
+
+            bank_information_count = BankInformation.query.count()
+            assert bank_information_count == 1
+            mock_update_text_annotation.assert_called_once_with(
+                "DOSSIER_ID",
+                "ANNOTATION_ID",
+                "Dossier imported Sucessfully",
+            )
