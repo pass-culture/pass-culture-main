@@ -16,6 +16,9 @@ export interface ApiErrorResonseMessages {
   [key: string]: string[] | undefined
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type FetchAPI = any
+
 export class ApiError extends Error {
   name = 'ApiError'
 

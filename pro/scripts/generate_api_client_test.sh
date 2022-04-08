@@ -23,3 +23,7 @@ success() {
 }
 
 success "TypeScript API client for test api and interfaces were generated successfully."
+
+
+git grep -rl "from.*'.\/number \| string';$" src/api/openapi_generator/ | xargs perl -0777 -i -pe "s/import [\w\{\}\s\|,]+ '.\/number \| string';\n//smg"
+success "Wrong import have been cleaned."

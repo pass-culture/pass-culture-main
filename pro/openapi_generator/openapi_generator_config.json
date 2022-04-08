@@ -1,0 +1,5 @@
+{
+  "useSingleRequestParameter": false,
+  "enumPropertyNaming": "UPPERCASE",
+  "enumUnknownDefaultCase": true
+}

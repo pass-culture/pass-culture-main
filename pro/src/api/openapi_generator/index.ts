@@ -1,0 +1,1 @@
+export { DefaultApi as apiV1 } from './v1/gen/apis'
