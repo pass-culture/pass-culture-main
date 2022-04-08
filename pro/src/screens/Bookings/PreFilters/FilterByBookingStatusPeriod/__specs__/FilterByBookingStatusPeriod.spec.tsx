@@ -1,8 +1,11 @@
 import '@testing-library/jest-dom'
 import { fireEvent, render, screen } from '@testing-library/react'
 import React from 'react'
+import { Provider } from 'react-redux'
+import type { Store } from 'redux'
 
 import { DEFAULT_PRE_FILTERS } from 'core/Bookings'
+import { configureTestStore } from 'store/testUtils'
 import { venueFactory } from 'utils/apiFactories'
 
 import PreFilters, { IPreFiltersProps } from '../../PreFilters'
@@ -18,8 +21,17 @@ jest.mock('repository/pcapi/pcapi', () => ({
   getVenuesForOfferer: jest.fn(),
 }))
 
+const renderPreFilters = (props: IPreFiltersProps, store: Store) => {
+  return render(
+    <Provider store={store}>
+      <PreFilters {...props} />
+    </Provider>
+  )
+}
+
 describe('filter bookings by bookings period', () => {
   let props: IPreFiltersProps
+  let store: Store
   beforeEach(() => {
     props = {
       appliedPreFilters: { ...DEFAULT_PRE_FILTERS },
@@ -28,8 +40,7 @@ describe('filter bookings by bookings period', () => {
         id,
         displayName: name,
       })),
-      downloadBookingsCSV: jest.fn(),
-      isDownloadingCSV: false,
+      getBookingsCSVFileAdapter: jest.fn(),
       isBookingFiltersActive: true,
       hasResult: true,
       isFiltersDisabled: false,
@@ -37,11 +48,13 @@ describe('filter bookings by bookings period', () => {
       wereBookingsRequested: true,
       isLocalLoading: false,
     }
+
+    store = configureTestStore()
   })
 
   it('should select 30 days before today as period beginning date by default', async () => {
     // When
-    render(<PreFilters {...props} />)
+    renderPreFilters(props, store)
 
     // Then
     await expect(
@@ -51,7 +64,7 @@ describe('filter bookings by bookings period', () => {
 
   it('should select today as period ending date by default', async () => {
     // When
-    render(<PreFilters {...props} />)
+    renderPreFilters(props, store)
 
     // Then
     await expect(
@@ -61,7 +74,7 @@ describe('filter bookings by bookings period', () => {
 
   it('should allow to select period ending date before today', async () => {
     // Given
-    render(<PreFilters {...props} />)
+    renderPreFilters(props, store)
     const periodEndingDateInput = screen.getByDisplayValue('15/12/2020')
 
     // When
@@ -76,7 +89,7 @@ describe('filter bookings by bookings period', () => {
 
   it('should not allow to select period ending date after today', async () => {
     // Given
-    render(<PreFilters {...props} />)
+    renderPreFilters(props, store)
 
     // When
     const periodEndingDateInput = await screen.findByDisplayValue('15/12/2020')
@@ -89,7 +102,7 @@ describe('filter bookings by bookings period', () => {
 
   it('should not allow to select period ending date before selected beginning date', async () => {
     // Given
-    render(<PreFilters {...props} />)
+    renderPreFilters(props, store)
     const periodEndingDateInput = screen.getByDisplayValue('15/12/2020')
 
     // When
@@ -103,7 +116,7 @@ describe('filter bookings by bookings period', () => {
 
   it('should allow to select period beginning date before selected ending date', async () => {
     // Given
-    render(<PreFilters {...props} />)
+    renderPreFilters(props, store)
     const periodBeginningDateInput = screen.getByDisplayValue('15/11/2020')
 
     // When
@@ -118,7 +131,7 @@ describe('filter bookings by bookings period', () => {
 
   it('should not allow to select period beginning date after ending date', async () => {
     // Given
-    render(<PreFilters {...props} />)
+    renderPreFilters(props, store)
 
     // When
     const periodBeginningDateInput = screen.getByDisplayValue('15/11/2020')
@@ -132,7 +145,7 @@ describe('filter bookings by bookings period', () => {
   it('should select booked status as booking status filter by default', async () => {
     props.isBookingFiltersActive = true
     // Given
-    render(<PreFilters {...props} />)
+    renderPreFilters(props, store)
 
     // Then
     expect(
@@ -143,7 +156,7 @@ describe('filter bookings by bookings period', () => {
   it('should allow to select booking status filter', async () => {
     props.isBookingFiltersActive = true
     // Given
-    render(<PreFilters {...props} />)
+    renderPreFilters(props, store)
     const bookingStatusFilterInput = screen.getByDisplayValue(
       'Période de réservation'
     )

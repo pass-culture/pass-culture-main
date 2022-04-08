@@ -1,11 +1,8 @@
+import { GetVenuesAdapter, VenuesPayload } from 'core/Bookings'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { formatAndOrderVenues } from 'repository/venuesService'
 
-type IPayload = { venues: { id: string; displayName: string }[] }
-
-type GetVenuesAdapter = Adapter<void, IPayload, IPayload>
-
-const FAILING_RESPONSE: AdapterFailure<IPayload> = {
+const FAILING_RESPONSE: AdapterFailure<VenuesPayload> = {
   isOk: false,
   message: 'Nous avons rencontré un problème lors du chargemement des données',
   payload: { venues: [] },
