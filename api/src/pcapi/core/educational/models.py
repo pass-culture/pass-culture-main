@@ -280,6 +280,26 @@ class CollectiveOfferTemplate(PcObject, ValidationMixin, AccessibilityMixin, Sta
 
     offerVenue = sa.Column(MutableDict.as_mutable(postgresql.json.JSONB), nullable=False)
 
+    @sa.ext.hybrid.hybrid_property
+    def hasBookingLimitDatetimesPassed(self) -> bool:
+        # this property is here for compatibility reasons
+        return False
+
+    @hasBookingLimitDatetimesPassed.expression  # type: ignore[no-redef]
+    def hasBookingLimitDatetimesPassed(cls):  # pylint: disable=no-self-argument
+        # this property is here for compatibility reasons
+        return sa.sql.expression.false()
+
+    @sa.ext.hybrid.hybrid_property
+    def isSoldOut(self):
+        # this property is here for compatibility reasons
+        return False
+
+    @isSoldOut.expression  # type: ignore[no-redef]
+    def isSoldOut(cls):  # pylint: disable=no-self-argument
+        # this property is here for compatibility reasons
+        return sa.sql.expression.false()
+
     @property
     def isReleased(self) -> bool:
         return (
