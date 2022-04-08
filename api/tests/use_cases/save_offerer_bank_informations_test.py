@@ -410,7 +410,7 @@ class SaveOffererBankInformationsTest:
             assert bank_information.status == BankInformationStatus.ACCEPTED
             assert bank_information.applicationId == 79
             assert error.value.errors == {
-                "BankInformation": ["Received application details state does not allow to change bank information"]
+                "BankInformation": ["Received dossier is in draft state. Move it to 'Accepté' to save it."]
             }
 
         @pytest.mark.usefixtures("db_session")

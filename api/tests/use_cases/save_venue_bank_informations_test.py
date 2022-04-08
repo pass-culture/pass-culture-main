@@ -860,7 +860,7 @@ class SaveVenueBankInformationsTest:
             assert bank_information.status == BankInformationStatus.ACCEPTED
             assert bank_information.applicationId == 79
             assert error.value.errors == {
-                "BankInformation": ["Received application details state does not allow to change bank information"]
+                "BankInformation": ["Received dossier is in draft state. Move it to 'Accepté' to save it."]
             }
 
         @pytest.mark.usefixtures("db_session")
@@ -1076,6 +1076,26 @@ class SaveVenueBankInformationsTest:
             offers_factories.BankInformationFactory(venue=venue, status=BankInformationStatus.ACCEPTED)
             mock_application_details.return_value = self.build_application_detail(
                 {"siret": "36252187900034", "status": BankInformationStatus.DRAFT}
+            )
+
+            self.save_venue_bank_informations.execute(self.application_id)
+
+            mock_update_text_annotation.assert_called_once_with(
+                self.dossier_id,
+                self.annotation_id,
+                "BankInformation: Received dossier is in draft state. Move it to 'Accepté' to save it.",
+            )
+
+        @patch("pcapi.connectors.api_entreprises.check_siret_is_still_active", return_value=True)
+        @pytest.mark.usefixtures("db_session")
+        def test_update_text_application_details_is_rejected_status(
+            self, siret_active, mock_application_details, mock_update_text_annotation, app
+        ):
+            OffererFactory(siren="999999999")
+            venue = offers_factories.VenueFactory(name="venuedemo", siret="36252187900034")
+            offers_factories.BankInformationFactory(venue=venue, status=BankInformationStatus.ACCEPTED)
+            mock_application_details.return_value = self.build_application_detail(
+                {"siret": "36252187900034", "status": BankInformationStatus.REJECTED}
             )
 
             self.save_venue_bank_informations.execute(self.application_id)
