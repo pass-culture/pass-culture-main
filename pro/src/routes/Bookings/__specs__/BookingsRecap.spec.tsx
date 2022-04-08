@@ -14,7 +14,7 @@ import type { Store } from 'redux'
 
 import { api } from 'api/v1/api'
 import NotificationContainer from 'components/layout/Notification/NotificationContainer'
-import { BOOKING_STATUS, DEFAULT_PRE_FILTERS } from 'core/Bookings'
+import { DEFAULT_PRE_FILTERS } from 'core/Bookings'
 import { getVenuesForOfferer, getUserHasBookings } from 'repository/pcapi/pcapi'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
@@ -166,56 +166,6 @@ describe('components | BookingsRecap | Pro user', () => {
     // Then
     const eventVenueFilter = screen.getByLabelText('Lieu')
     expect(eventVenueFilter).toHaveValue(venue.id)
-  })
-
-  it('should request bookings pre-filtered by venue and period when coming from home page', async () => {
-    // Given
-    ;(api.getBookingsGetBookingsPro as jest.Mock).mockResolvedValue({
-      page: 1,
-      pages: 1,
-      total: 1,
-      bookingsRecap: [bookingRecapFactory()],
-    })
-
-    // When
-    await renderBookingsRecap(store, {
-      venueId: venue.id,
-      statuses: [
-        BOOKING_STATUS.CANCELLED,
-        BOOKING_STATUS.CONFIRMED,
-        BOOKING_STATUS.REIMBURSED,
-        BOOKING_STATUS.VALIDATED,
-      ],
-    })
-    const statusFilterButton = await screen.findByText('Statut')
-    fireEvent.click(statusFilterButton)
-
-    // Then
-    expect(screen.getByLabelText('Lieu')).toHaveValue(venue.id)
-    expect(
-      getNthCallNthArg(
-        api.getBookingsGetBookingsPro,
-        1,
-        NTH_ARGUMENT_GET_BOOKINGS.venueId
-      )
-    ).toBe(venue.id)
-    expect(
-      getNthCallNthArg(
-        api.getBookingsGetBookingsPro,
-        1,
-        NTH_ARGUMENT_GET_BOOKINGS.bookingBeginningDate
-      )
-    ).toStrictEqual(FORMATTED_DEFAULT_BEGINNING_DATE)
-    expect(
-      getNthCallNthArg(
-        api.getBookingsGetBookingsPro,
-        1,
-        NTH_ARGUMENT_GET_BOOKINGS.bookingEndingDate
-      )
-    ).toStrictEqual(FORMATTED_DEFAULT_ENDING_DATE)
-    expect(
-      screen.getByRole('checkbox', { name: 'réservé', checked: true })
-    ).toBeInTheDocument()
   })
 
   it('should ask user to select a pre-filter before clicking on "Afficher"', async () => {

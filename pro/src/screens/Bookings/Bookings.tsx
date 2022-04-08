@@ -1,61 +1,72 @@
 import type { Location } from 'history'
-import React, { useCallback, useState, useMemo } from 'react'
+import React, { useCallback, useState, useMemo, useEffect } from 'react'
 
 import { BookingRecapResponseModel } from 'api/v1/gen'
+import useActiveFeature from 'components/hooks/useActiveFeature'
+import useCurrentUser from 'components/hooks/useCurrentUser'
+import useNotification from 'components/hooks/useNotification'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Spinner from 'components/layout/Spinner'
 import Titles from 'components/layout/Titles/Titles'
-import { TPreFilters } from 'core/Bookings'
+import BookingsRecapTable from 'components/pages/Bookings/BookingsRecapTable/BookingsRecapTable'
+import ChoosePreFiltersMessage from 'components/pages/Bookings/ChoosePreFiltersMessage/ChoosePreFiltersMessage'
+import NoBookingMessage from 'components/pages/Bookings/NoBookingMessage'
+import NoBookingsForPreFiltersMessage from 'components/pages/Bookings/NoBookingsForPreFiltersMessage/NoBookingsForPreFiltersMessage'
+import {
+  GetBookingsCSVFileAdapter,
+  GetFilteredBookingsRecapAdapter,
+  GetUserHasBookingsAdapter,
+  GetVenuesAdapter,
+  TPreFilters,
+} from 'core/Bookings'
 import { DEFAULT_PRE_FILTERS } from 'core/Bookings'
 import { Audience } from 'core/shared/types'
 import Tabs from 'new_components/Tabs'
 
-import BookingsRecapTable from '../../components/pages/Bookings/BookingsRecapTable/BookingsRecapTable'
-import ChoosePreFiltersMessage from '../../components/pages/Bookings/ChoosePreFiltersMessage/ChoosePreFiltersMessage'
-import NoBookingMessage from '../../components/pages/Bookings/NoBookingMessage'
-import NoBookingsForPreFiltersMessage from '../../components/pages/Bookings/NoBookingsForPreFiltersMessage/NoBookingsForPreFiltersMessage'
-
 import PreFilters from './PreFilters'
 
 interface IBookingsProps {
-  bookingsRecap: BookingRecapResponseModel[]
-  downloadBookingsCSV: (filters: TPreFilters) => void
-  hasBooking: boolean
-  isBookingFiltersActive: boolean
-  isDownloadingCSV: boolean
-  isTableLoading: boolean
-  loadBookingsRecap: (filters: TPreFilters) => void
   locationState: Location['state']
-  setWereBookingsRequested: (wereBookingsRequested: boolean) => void
   venueId?: string
-  wereBookingsRequested: boolean
-  separateIndividualAndCollectiveOffers: boolean
   audience: Audience
-  isLocalLoading: boolean
-  venues: { id: string; displayName: string }[]
+  getBookingsCSVFileAdapter: GetBookingsCSVFileAdapter
+  getFilteredBookingsRecapAdapter: GetFilteredBookingsRecapAdapter
+  getUserHasBookingsAdapter: GetUserHasBookingsAdapter
+  getVenuesAdapter: GetVenuesAdapter
 }
 
+const MAX_LOADED_PAGES = 5
+
 const Bookings = ({
-  bookingsRecap,
-  downloadBookingsCSV,
-  hasBooking,
-  isBookingFiltersActive,
-  isDownloadingCSV,
-  isTableLoading,
-  loadBookingsRecap,
   locationState,
-  setWereBookingsRequested,
   venueId,
-  wereBookingsRequested,
-  separateIndividualAndCollectiveOffers,
   audience,
-  isLocalLoading,
-  venues,
+  getBookingsCSVFileAdapter,
+  getFilteredBookingsRecapAdapter,
+  getUserHasBookingsAdapter,
+  getVenuesAdapter,
 }: IBookingsProps): JSX.Element => {
+  const { currentUser: user } = useCurrentUser()
+  const notify = useNotification()
+  const isBookingFiltersActive = useActiveFeature('ENABLE_NEW_BOOKING_FILTERS')
+  const separateIndividualAndCollectiveOffers = useActiveFeature(
+    'ENABLE_INDIVIDUAL_AND_COLLECTIVE_OFFER_SEPARATION'
+  )
+
   const [appliedPreFilters, setAppliedPreFilters] = useState<TPreFilters>({
     ...DEFAULT_PRE_FILTERS,
     offerVenueId: venueId || DEFAULT_PRE_FILTERS.offerVenueId,
   })
+  const [isTableLoading, setIsTableLoading] = useState(false)
+  const [bookingsRecap, setBookingsRecap] = useState<
+    BookingRecapResponseModel[]
+  >([])
+  const [wereBookingsRequested, setWereBookingsRequested] = useState(false)
+  const [hasBooking, setHasBooking] = useState(true)
+  const [isLocalLoading, setIsLocalLoading] = useState(false)
+  const [venues, setVenues] = useState<{ id: string; displayName: string }[]>(
+    []
+  )
 
   const werePreFiltersCustomized = useMemo(() => {
     const keys = Object.keys(
@@ -74,6 +85,56 @@ const Bookings = ({
     setAppliedPreFilters(filters)
     loadBookingsRecap(filters)
   }
+
+  const loadBookingsRecap = async (preFilters: TPreFilters) => {
+    setIsTableLoading(true)
+    setBookingsRecap([])
+    setWereBookingsRequested(true)
+
+    const { isOk, message, payload } = await getFilteredBookingsRecapAdapter({
+      ...preFilters,
+    })
+
+    if (!isOk) {
+      notify.error(message)
+    }
+
+    const { bookings, currentPage, pages } = payload
+
+    setBookingsRecap(bookings)
+
+    setIsTableLoading(false)
+    if (currentPage === MAX_LOADED_PAGES && currentPage < pages) {
+      notify.information(
+        'L’affichage des réservations a été limité à 5 000 réservations. Vous pouvez modifier les filtres pour affiner votre recherche.'
+      )
+    }
+  }
+
+  const checkUserHasBookings = useCallback(async () => {
+    if (!user.isAdmin) {
+      const { payload } = await getUserHasBookingsAdapter()
+      setHasBooking(payload)
+    }
+  }, [user.isAdmin, setHasBooking, getUserHasBookingsAdapter])
+
+  useEffect(() => {
+    checkUserHasBookings()
+  }, [checkUserHasBookings])
+
+  useEffect(() => {
+    async function fetchVenues() {
+      setIsLocalLoading(true)
+      const { isOk, message, payload } = await getVenuesAdapter()
+
+      if (!isOk) {
+        notify.error(message)
+      }
+      setVenues(payload.venues)
+      setIsLocalLoading(false)
+    }
+    fetchVenues()
+  }, [setIsLocalLoading, setVenues, notify, getVenuesAdapter])
 
   return (
     <div className="bookings-page">
@@ -101,10 +162,9 @@ const Bookings = ({
       <PreFilters
         appliedPreFilters={appliedPreFilters}
         applyPreFilters={applyPreFilters}
-        downloadBookingsCSV={downloadBookingsCSV}
+        getBookingsCSVFileAdapter={getBookingsCSVFileAdapter}
         hasResult={bookingsRecap.length > 0}
         isBookingFiltersActive={isBookingFiltersActive}
-        isDownloadingCSV={isDownloadingCSV}
         isFiltersDisabled={!hasBooking}
         isLocalLoading={isLocalLoading}
         isTableLoading={isTableLoading}

@@ -1,11 +1,5 @@
-import { TPreFilters } from 'core/Bookings'
+import { GetBookingsCSVFileAdapter } from 'core/Bookings'
 import * as pcapi from 'repository/pcapi/pcapi'
-
-type GetBookingsCSVFileAdapter = Adapter<
-  TPreFilters & { page?: number },
-  null,
-  null
->
 
 const FAILING_RESPONSE: AdapterFailure<null> = {
   isOk: false,
