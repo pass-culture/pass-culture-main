@@ -38,9 +38,14 @@ def check_new_bank_information_has_a_more_advanced_status(
         bank_information.status and status_weight[status] < status_weight[bank_information.status]
     )
     if is_new_bank_information_status_more_important_than_saved_one:
-        api_errors.add_error(
-            "BankInformation", "Received application details state does not allow to change bank information"
-        )
+        if status == BankInformationStatus.DRAFT:
+            api_errors.add_error(
+                "BankInformation", "Received dossier is in draft state. Move it to 'Accepté' to save it."
+            )
+        else:
+            api_errors.add_error(
+                "BankInformation", "Received application details state does not allow to change bank information"
+            )
 
 
 def check_new_bank_information_valid(
