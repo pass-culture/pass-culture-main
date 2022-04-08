@@ -121,7 +121,11 @@ class SaveVenueBankInformations:
             offerers_api.set_business_unit_to_venue_id(business_unit.id, venue.identifier)
 
         update_external_pro(venue.bookingEmail)
-
+        if application_details.annotation_id is not None:
+            if application_details.status == BankInformationStatus.ACCEPTED:
+                update_demarches_simplifiees_text_annotations(
+                    application_details.dossier_id, application_details.annotation_id, "Dossier imported Sucessfully"
+                )
         return bank_information
 
     def get_referent_venue(
