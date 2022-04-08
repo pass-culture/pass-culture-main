@@ -1,21 +1,19 @@
 # pass-culture-pro
 
-[![Coverage Status](https://coveralls.io/repos/github/betagouv/pass-culture-pro/badge.svg?branch=master)](https://coveralls.io/github/betagouv/pass-culture-pro?branch=master)
+C'est la version (browser) de l'application PRO frontend du pass Culture. Ce repo contient également [un storybook](https://pass-culture.github.io/pass-culture-main/?path=/story/ui-kit-checkboxfield--default) des éléments graphiques
 
-C'est la version (browser) de l'application PRO frontend du pass Culture.
-Ce repo contient également [un storybook](https://pass-culture.github.io/pass-culture-main/?path=/story/ui-kit-checkboxfield--default) des éléments graphiques
-
-Il faut aller voir le README dans https://github.com/betagouv/pass-culture-main
-pour être informé des différentes lignes de commande associées à ce repo.
+Il faut aller voir le README dans https://github.com/betagouv/pass-culture-main pour être informé des différentes lignes de commande associées à ce repo.
 
 ## Note sur Yarn
 
 Yarn est prometteur, on vous conseille de l'utiliser. Tâchez de l'installer globalement sur votre ordinateur (https://yarnpkg.com/en/docs/install), puis:
+
 ```bash
   yarn
 ```
 
 ## Installation et Lancement de l'application Pro
+
 - ```shell
   yarn install
   yarn start
@@ -24,6 +22,7 @@ Yarn est prometteur, on vous conseille de l'utiliser. Tâchez de l'installer glo
 ## Lancement des tests
 
 - ### Lancement des tests unitaires
+
   ```shell
   yarn test:unit
   ```
@@ -31,7 +30,8 @@ Yarn est prometteur, on vous conseille de l'utiliser. Tâchez de l'installer glo
 - ### Lancement des tests end to end
 
   - Prérequis aux lancement des tests e2e testcafe (⚠️**Depuis le repository api**)
-    - Lancement de la base de donnée pc-postgres (pour l'api)  via docker-compose
+
+    - Lancement de la base de donnée pc-postgres (pour l'api) via docker-compose
       ```shell
       docker-compose -f ../docker-compose-app.yml up -d postgres
       ```
@@ -54,7 +54,6 @@ Vous trouverez une documentation générale ainsi que des liens vers les différ
 
 [Standards de code et d'architecture](./src/README.md)
 
-
 ## Dette technique
 
 Nous utilisons une bibliotèque faite sur-mesure pour monitorer la dette technique.
@@ -74,8 +73,7 @@ Pour plus de details sur sont utilisations sur le portail-pro, vous pouvez consu
 
 ### 1) yarn debt:check:changed
 
-Produit un rapport pour chaque fichiers modifiés depuis master
-Il est nécéssaire d'avoir master à jour.
+Produit un rapport pour chaque fichiers modifiés depuis master Il est nécéssaire d'avoir master à jour.
 
 ### 2) yarn debt:check:all
 
@@ -91,8 +89,7 @@ Vérifie chaque tag de release, et produit un rapport html complet avec un histo
 
 ### options
 
-De nombreuse options de filtrages sont disponible en ligne de commande.
-référez-vous à la [documentation](https://github.com/gael-boyenval/debt-collector) de l'outil pour cela, ou à l'aide du CLI :
+De nombreuse options de filtrages sont disponible en ligne de commande. référez-vous à la [documentation](https://github.com/gael-boyenval/debt-collector) de l'outil pour cela, ou à l'aide du CLI :
 
 ```
 yarn debt-collector check --help
