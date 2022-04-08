@@ -14,7 +14,6 @@ import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.factories import ActivationCodeFactory
 from pcapi.core.offers.factories import EventStockFactory
 from pcapi.core.offers.models import Offer
-from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.core.offers.models import Stock
 from pcapi.core.offers.repository import check_stock_consistency
 from pcapi.core.offers.repository import delete_past_draft_collective_offers
@@ -24,6 +23,7 @@ from pcapi.core.offers.repository import find_today_event_stock_ids_metropolitan
 from pcapi.core.offers.repository import get_active_offers_count_for_venue
 from pcapi.core.offers.repository import get_available_activation_code
 from pcapi.core.offers.repository import get_capped_offers_for_filters
+from pcapi.core.offers.repository import get_collective_offers_template_by_filters
 from pcapi.core.offers.repository import get_expired_offers
 from pcapi.core.offers.repository import get_offers_by_ids
 from pcapi.core.offers.repository import get_sold_out_offers_count_for_venue
@@ -31,6 +31,7 @@ import pcapi.core.providers.factories as providers_factories
 from pcapi.core.users import factories as users_factories
 from pcapi.domain.pro_offers.offers_recap import OffersRecap
 from pcapi.models.offer_mixin import OfferStatus
+from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.repository import repository
 from pcapi.utils.date import utc_datetime_to_department_timezone
 
@@ -1283,3 +1284,21 @@ class AvailableActivationCodeTest:
         ActivationCodeFactory(stock=stock2)
 
         assert not get_available_activation_code(stock)
+
+
+@pytest.mark.usefixtures("db_session")
+class GetCollectiveOffersTemplateByFiltersTest:
+    def test_status_filter_no_crash(self):
+        # given
+        user = users_factories.AdminFactory()
+        template = educational_factories.CollectiveOfferTemplateFactory()
+        educational_factories.CollectiveOfferTemplateFactory(validation=OfferValidationStatus.REJECTED)
+        # when
+        result = get_collective_offers_template_by_filters(
+            user_id=user.id,
+            user_is_admin=True,
+            status=OfferStatus.ACTIVE.name,
+        ).all()
+        # then
+        assert len(result) == 1
+        assert result[0].id == template.id

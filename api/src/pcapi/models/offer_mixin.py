@@ -56,11 +56,9 @@ class StatusMixin:
             return OfferStatus.INACTIVE
 
         if self.validation == OfferValidationStatus.APPROVED:
-            # CollectiveOfferTemplate have a status but their hasBookingLimitDatetimesPassed is always False
-            if getattr(self, "hasBookingLimitDatetimesPassed", False):
+            if self.hasBookingLimitDatetimesPassed:
                 return OfferStatus.EXPIRED
-            # CollectiveOfferTemplate have a status but their isSoldout is always False
-            if getattr(self, "isSoldOut", False):
+            if self.isSoldOut:
                 return OfferStatus.SOLD_OUT
 
         return OfferStatus.ACTIVE
