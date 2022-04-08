@@ -1,60 +1,71 @@
 import { api } from 'api/v1/api'
-import { ListBookingsResponseModel } from 'api/v1/gen'
-import { TPreFilters } from 'core/Bookings'
+import { BookingRecapResponseModel } from 'api/v1/gen'
+import {
+  GetFilteredBookingsRecapAdapter,
+  GetFilteredBookingsRecapAdapterPayload,
+} from 'core/Bookings'
 
 import { buildBookingsRecapQuery } from './utils'
 
-type IPayload = {
-  bookings: ListBookingsResponseModel
-}
+const MAX_LOADED_PAGES = 5
 
-type GetFilteredBookingsRecapAdapter = Adapter<
-  TPreFilters & { page?: number },
-  IPayload,
-  IPayload
->
-
-const FAILING_RESPONSE: AdapterFailure<IPayload> = {
-  isOk: false,
-  message: 'Nous avons rencontré un problème lors du chargemement des données',
-  payload: {
-    bookings: {
-      page: 0,
+const FAILING_RESPONSE: AdapterFailure<GetFilteredBookingsRecapAdapterPayload> =
+  {
+    isOk: false,
+    message:
+      'Nous avons rencontré un problème lors du chargemement des données',
+    payload: {
+      bookings: [],
       pages: 0,
-      bookingsRecap: [],
-      total: 0,
+      currentPage: 1,
     },
-  },
-}
+  }
 
 export const getFilteredBookingsRecapAdapter: GetFilteredBookingsRecapAdapter =
   async apiFilters => {
     try {
-      const {
-        venueId,
-        eventDate,
-        bookingPeriodBeginningDate,
-        bookingPeriodEndingDate,
-        bookingStatusFilter,
-        offerType,
-        page,
-      } = buildBookingsRecapQuery(apiFilters)
-      const bookings = await api.getBookingsGetBookingsPro(
-        page,
-        // @ts-expect-error vgfk
-        venueId,
-        eventDate,
-        bookingStatusFilter,
-        bookingPeriodBeginningDate,
-        bookingPeriodEndingDate,
-        offerType
-      )
+      let allBookings: BookingRecapResponseModel[] = []
+      let currentPage = 0
+      let pages: number
+
+      do {
+        currentPage += 1
+        const nextPageFilters = {
+          ...apiFilters,
+          page: currentPage,
+        }
+        const {
+          venueId,
+          eventDate,
+          bookingPeriodBeginningDate,
+          bookingPeriodEndingDate,
+          bookingStatusFilter,
+          offerType,
+          page,
+        } = buildBookingsRecapQuery(nextPageFilters)
+
+        const bookings = await api.getBookingsGetBookingsPro(
+          page,
+          // @ts-expect-error api expect number
+          venueId,
+          eventDate,
+          bookingStatusFilter,
+          bookingPeriodBeginningDate,
+          bookingPeriodEndingDate,
+          offerType
+        )
+        pages = bookings.pages
+
+        allBookings = [...allBookings, ...bookings.bookingsRecap]
+      } while (currentPage < Math.min(pages, MAX_LOADED_PAGES))
 
       return {
         isOk: true,
         message: null,
         payload: {
-          bookings,
+          bookings: allBookings,
+          pages,
+          currentPage,
         },
       }
     } catch (e) {

@@ -2,7 +2,9 @@ import classNames from 'classnames'
 import isEqual from 'lodash.isequal'
 import React, { useCallback, useEffect, useState } from 'react'
 
+import useNotification from 'components/hooks/useNotification'
 import { TPreFilters } from 'core/Bookings'
+import { GetBookingsCSVFileAdapter } from 'core/Bookings'
 import FilterByOfferType from 'new_components/FilterByOfferType'
 
 import FilterByBookingPeriod from './FilterByBookingPeriod'
@@ -13,33 +15,34 @@ import FilterByVenue from './FilterByVenue'
 export interface IPreFiltersProps {
   appliedPreFilters: TPreFilters
   applyPreFilters: (filters: TPreFilters) => void
-  downloadBookingsCSV: (filters: TPreFilters) => void
   hasResult: boolean
   isBookingFiltersActive: boolean
-  isDownloadingCSV: boolean
   isFiltersDisabled: boolean
   isTableLoading: boolean
   wereBookingsRequested: boolean
   isLocalLoading: boolean
   venues: { id: string; displayName: string }[]
+  getBookingsCSVFileAdapter: GetBookingsCSVFileAdapter
 }
 
 const PreFilters = ({
   appliedPreFilters,
   applyPreFilters,
-  downloadBookingsCSV,
   hasResult,
   isBookingFiltersActive,
   isFiltersDisabled,
   isTableLoading,
-  isDownloadingCSV,
   wereBookingsRequested,
   isLocalLoading,
   venues,
+  getBookingsCSVFileAdapter,
 }: IPreFiltersProps): JSX.Element => {
+  const notify = useNotification()
+
   const [selectedPreFilters, setSelectedPreFilters] = useState({
     ...appliedPreFilters,
   })
+  const [isDownloadingCSV, setIsDownloadingCSV] = useState(false)
 
   useEffect(
     () => setSelectedPreFilters({ ...appliedPreFilters }),
@@ -80,6 +83,20 @@ const PreFilters = ({
     ...selectedPreFilters,
     page: 1,
   }
+
+  const downloadBookingsCSV = useCallback(
+    async (filters: TPreFilters) => {
+      setIsDownloadingCSV(true)
+      const { isOk, message } = await getBookingsCSVFileAdapter(filters)
+
+      if (!isOk) {
+        notify.error(message)
+      }
+
+      setIsDownloadingCSV(false)
+    },
+    [notify, getBookingsCSVFileAdapter]
+  )
 
   return (
     <>

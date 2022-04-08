@@ -1,6 +1,5 @@
+import { GetUserHasBookingsAdapter } from 'core/Bookings'
 import * as pcapi from 'repository/pcapi/pcapi'
-
-type GetFilteredBookingsRecapAdapter = Adapter<void, boolean, boolean>
 
 const FAILING_RESPONSE: AdapterFailure<boolean> = {
   isOk: false,
@@ -8,7 +7,7 @@ const FAILING_RESPONSE: AdapterFailure<boolean> = {
   payload: false,
 }
 
-export const getFilteredBookingsRecapAdapter: GetFilteredBookingsRecapAdapter =
+export const getFilteredBookingsRecapAdapter: GetUserHasBookingsAdapter =
   async () => {
     try {
       const { hasBookings } = await pcapi.getUserHasBookings()
