@@ -193,10 +193,16 @@ def synchronize_stocks(
     ):
         offers_by_venue_reference = get_offers_map_by_venue_reference(products_references, venue.id)
 
-    offers_update_mapping = [
-        {"id": offer_id, "lastProviderId": provider_id} for offer_id in offers_by_provider_reference.values()
-    ]
-    db.session.bulk_update_mappings(Offer, offers_update_mapping)
+    # Update by batch of 100 offer ids. It's more efficient than
+    # making a single, large SQL query that has up to 1000 ids.
+    offer_ids = list(offers_by_provider_reference.values())
+    batch_size = 100
+    ranges = [offer_ids[i : i + batch_size] for i in range(0, len(offer_ids), batch_size)]
+    for range_ in ranges:
+        Offer.query.filter(Offer.id.in_(range_)).update(
+            {"lastProviderId": provider_id},
+            synchronize_session=False,
+        )
 
     new_offers = _build_new_offers_from_stock_details(
         stock_details,
