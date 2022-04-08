@@ -19,6 +19,7 @@ from . import blueprint
 from .serialization import offers as serializers
 
 
+# It will break the WebApp v2 proxy in case of endpoint modification. Read https://github.com/pass-culture/pass-culture-app-native/pull/2808/files#r844891000
 @blueprint.native_v1.route("/offer/<int:offer_id>", methods=["GET"])
 @spectree_serialize(
     response_model=serializers.OfferResponse, api=blueprint.api, on_error_statuses=[404]
