@@ -18,6 +18,7 @@ import pcapi.core.offers.api as offers_api
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
 import pcapi.core.offers.repository as offers_repository
+from pcapi.core.offers.validation import check_offer_withdrawal
 from pcapi.models.api_errors import ApiErrors
 from pcapi.repository.offer_queries import get_offer_by_id
 from pcapi.routes.apis import private_api
@@ -60,8 +61,8 @@ def list_offers(query: offers_serialize.ListOffersQueryModel) -> offers_serializ
 
 @private_api.route("/offers/<offer_id>", methods=["GET"])
 @login_required
-@spectree_serialize(response_model=offers_serialize.GetOfferResponseModel, api=blueprint.pro_private_schema)
-def get_offer(offer_id: str) -> offers_serialize.GetOfferResponseModel:
+@spectree_serialize(response_model=offers_serialize.GetIndividualOfferResponseModel, api=blueprint.pro_private_schema)
+def get_offer(offer_id: str) -> offers_serialize.GetIndividualOfferResponseModel:
     try:
         offer = offers_repository.get_offer_by_id(dehumanize(offer_id))
     except exceptions.OfferNotFound:
@@ -71,7 +72,7 @@ def get_offer(offer_id: str) -> offers_serialize.GetOfferResponseModel:
             },
             status_code=404,
         )
-    return offers_serialize.GetOfferResponseModel.from_orm(offer)
+    return offers_serialize.GetIndividualOfferResponseModel.from_orm(offer)
 
 
 @private_api.route("/offers", methods=["POST"])
@@ -79,6 +80,7 @@ def get_offer(offer_id: str) -> offers_serialize.GetOfferResponseModel:
 @spectree_serialize(response_model=offers_serialize.OfferResponseIdModel, on_success_status=201, api=blueprint.pro_private_schema)  # type: ignore
 def post_offer(body: offers_serialize.PostOfferBodyModel) -> offers_serialize.OfferResponseIdModel:
     try:
+        check_offer_withdrawal(body.withdrawal_type, body.withdrawal_delay, body.subcategory_id)
         offer = offers_api.create_offer(offer_data=body, user=current_user)
 
     except exceptions.OfferCreationBaseException as error:
