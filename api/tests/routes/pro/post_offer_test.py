@@ -8,6 +8,7 @@ import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import WithdrawalTypeEnum
+from pcapi.core.testing import override_features
 from pcapi.core.testing import override_settings
 import pcapi.core.users.factories as users_factories
 from pcapi.utils.human_ids import dehumanize
@@ -130,6 +131,7 @@ class Returns200Test:
     @override_settings(ADAGE_API_URL="https://adage-api-url")
     @override_settings(ADAGE_API_KEY="adage-api-key")
     @override_settings(ADAGE_BACKEND="pcapi.core.educational.adage_backends.adage.AdageHttpClient")
+    @override_features(PRO_DISABLE_EVENTS_QRCODE=True)
     def test_create_valid_educational_offer_with_new_route_on_old_offer_model(self, client):
         # Given
         venue = offers_factories.VenueFactory()
@@ -144,7 +146,6 @@ class Returns200Test:
             "durationMinutes": 60,
             "name": "La pièce de théâtre",
             "subcategoryId": subcategories.SPECTACLE_REPRESENTATION.id,
-            "withdrawalType": "no_ticket",
             "extraData": {
                 "students": ["Collège - 4e"],
                 "contactEmail": "toto@toto.com",
@@ -510,6 +511,7 @@ class Returns400Test:
         assert response.status_code == 400
         assert response.json["externalTicketOfficeUrl"] == ['L\'URL doit terminer par une extension (ex. ".fr")']
 
+    @override_features(PRO_DISABLE_EVENTS_QRCODE=True)
     def test_create_educational_offer_with_wrong_extra_data(self, app, client):
         # Given
         venue = offers_factories.VenueFactory()
@@ -524,7 +526,6 @@ class Returns400Test:
             "durationMinutes": 60,
             "name": "La pièce de théâtre",
             "subcategoryId": subcategories.SPECTACLE_REPRESENTATION.id,
-            "withdrawalType": "no_ticket",
             "extraData": {
                 "students": ["Collège - 4e"],
             },
@@ -618,6 +619,7 @@ class Returns403Test:
     @override_settings(ADAGE_API_URL="https://adage-api-url")
     @override_settings(ADAGE_API_KEY="adage-api-key")
     @override_settings(ADAGE_BACKEND="pcapi.core.educational.adage_backends.adage.AdageHttpClient")
+    @override_features(PRO_DISABLE_EVENTS_QRCODE=True)
     def when_offerer_cannot_create_educational_offer(self, client):
         # Given
         venue = offers_factories.VenueFactory()
@@ -632,7 +634,6 @@ class Returns403Test:
             "durationMinutes": 60,
             "name": "La pièce de théâtre",
             "subcategoryId": subcategories.SPECTACLE_REPRESENTATION.id,
-            "withdrawalType": "no_ticket",
             "extraData": {
                 "students": ["Collège - 4e"],
                 "contactEmail": "toto@toto.com",
