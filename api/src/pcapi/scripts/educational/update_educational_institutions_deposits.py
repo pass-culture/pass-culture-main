@@ -11,7 +11,7 @@ from pcapi.repository import repository
 
 logger = logging.getLogger(__name__)
 
-DEFAULT_FILEPATH = ""
+DEFAULT_FILEPATH = "/tmp/"
 
 
 # Ex: educational_year_beginning = 2021 if educational year is 2021/2022
