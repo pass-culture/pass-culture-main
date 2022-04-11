@@ -13,7 +13,6 @@ from pcapi.core.offerers.exceptions import ApiKeyDeletionDenied
 from pcapi.core.offerers.exceptions import ApiKeyPrefixGenerationError
 from pcapi.core.offerers.exceptions import MissingOffererIdQueryParameter
 import pcapi.core.offerers.models as offerers_models
-from pcapi.core.offerers.repository import get_all_offerers_for_user
 from pcapi.models.api_errors import ApiErrors
 from pcapi.repository import transaction
 from pcapi.routes.apis import private_api
@@ -74,7 +73,8 @@ def get_offerers(query: GetOffererListQueryModel) -> GetOfferersListResponseMode
             offerers_models.Offerer.validationToken,
         )
     )
-    offerers_query = offerers_query.order_by(offerers_models.Offerer.name)
+    offerers_query = offerers_query.order_by(offerers_models.Offerer.name, offerers_models.Offerer.id)
+    offerers_query = offerers_query.distinct(offerers_models.Offerer.name, offerers_models.Offerer.id)
     offerers_query = offerers_query.paginate(  # type: ignore [attr-defined]
         query.page,
         error_out=False,
@@ -115,11 +115,13 @@ def get_offerers(query: GetOffererListQueryModel) -> GetOfferersListResponseMode
 @login_required
 @spectree_serialize(response_model=GetOfferersNamesResponseModel, api=blueprint.pro_private_schema)
 def list_offerers_names(query: GetOfferersNamesQueryModel) -> GetOfferersNamesResponseModel:
-    offerers = get_all_offerers_for_user(
+    offerers = repository.get_all_offerers_for_user(
         user=current_user,
         validated=query.validated,
         validated_for_user=query.validated_for_user,
     )
+    offerers = offerers.order_by(offerers_models.Offerer.name, offerers_models.Offerer.id)
+    offerers = offerers.distinct(offerers_models.Offerer.name, offerers_models.Offerer.id)
 
     return GetOfferersNamesResponseModel(
         offerersNames=[GetOffererNameResponseModel.from_orm(offerer) for offerer in offerers]

@@ -30,6 +30,15 @@ def get_all_offerers_for_user(
     validated_for_user: bool = None,
     keywords: str = None,
 ) -> sqla_orm.Query:
+    """Return a query of matching, accessible offerers.
+
+    **WARNING:** this function may return more than one row per
+    offerer (for offerers that have multiple user offerers and/or
+    multiple venues). Deduplication should be done by the caller (with
+    `distinct()`). This function cannot call `distinct()` itself
+    because it does not know how the caller wants to sort results (and
+    `distinct` and `order by` clauses must match).
+    """
     query = models.Offerer.query.filter(models.Offerer.isActive.is_(True))
 
     if not user.has_admin_role:
@@ -62,7 +71,6 @@ def get_all_offerers_for_user(
         query = query.join(models.Venue, models.Venue.managingOffererId == models.Offerer.id)
         query = filter_offerers_with_keywords_string(query, keywords)
 
-    query = query.distinct()
     return query
 
 
