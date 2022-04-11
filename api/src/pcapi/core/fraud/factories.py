@@ -64,32 +64,32 @@ class UserProfilingFraudDataFactory(factory.Factory):
         model = models.UserProfilingFraudData
 
     account_email = factory.Sequence("user.email-{0}@example.com".format)
-    account_email_result = random.choice(USERPROFILING_RESULTS)
-    account_email_score = factory.Faker("pyint")
-    account_telephone_result = random.choice(USERPROFILING_RESULTS)
+    account_email_result = "success"
+    account_email_score = "0"
+    account_telephone_result = "success"
     account_telephone_score = factory.Faker("pyint")
-    account_telephone_is_valid = random.choice(USERPROFILING_BOOL)
-    bb_bot_rating = random.choice(USERPROFILING_RATING)
+    account_telephone_is_valid = "yes"
+    bb_bot_rating = "low"
     bb_bot_score = factory.Faker("pyfloat", min_value=-100.0, max_value=100.0)
-    bb_fraud_rating = random.choice(USERPROFILING_RATING)
+    bb_fraud_rating = "low"
     bb_fraud_score = factory.Faker("pyfloat", min_value=-100.0, max_value=100.0)
     digital_id = factory.Faker("pystr")
-    digital_id_result = random.choice(USERPROFILING_RESULTS)
+    digital_id_result = "success"
     digital_id_trust_score = factory.Faker("pyfloat", min_value=-100.0, max_value=100.0)
-    digital_id_trust_score_rating = random.choice(USERPROFILING_RATING)
+    digital_id_trust_score_rating = "low"
     digital_id_trust_score_reason_code = factory.List(factory.Sequence("Reason code #{0}".format) for x in range(1))
     digital_id_confidence = factory.Faker("pyint")
-    digital_id_confidence_rating = random.choice(USERPROFILING_RATING)
+    digital_id_confidence_rating = "low"
     event_datetime = factory.Faker("date_time")
     policy_score = factory.Faker("pyint")
     reason_code = factory.List((factory.Sequence("Reason code #{0}".format) for x in range(2)))
     request_id = factory.Faker("pystr")
-    risk_rating = random.choice(USERPROFILING_RATING)
+    risk_rating = "low"
     session_id = factory.Faker("pystr")
-    tmx_risk_rating = random.choice(USERPROFILING_RATING)
+    tmx_risk_rating = "low"
     tmx_summary_reason_code = factory.List(factory.Sequence("Reason code #{0}".format) for x in range(1))
     summary_risk_score = factory.Faker("pyint")
-    unknown_session = random.choice(USERPROFILING_BOOL)
+    unknown_session = "yes"
 
 
 class DMSContentFactory(factory.Factory):
