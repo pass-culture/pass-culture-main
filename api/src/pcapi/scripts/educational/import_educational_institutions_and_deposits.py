@@ -12,7 +12,7 @@ from pcapi.core.educational.models import Ministry
 
 logger = logging.getLogger(__name__)
 
-DEFAULT_FILEPATH = ""
+DEFAULT_FILEPATH = "/tmp/"
 
 
 def import_educational_institutions_and_deposits(

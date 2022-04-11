@@ -9,7 +9,7 @@ from pcapi.models import db
 
 logger = logging.getLogger(__name__)
 
-DEFAULT_FILEPATH = ""
+DEFAULT_FILEPATH = "/tmp/"
 
 
 def import_educational_institutions_data(filename: str, path: str = DEFAULT_FILEPATH) -> None:
