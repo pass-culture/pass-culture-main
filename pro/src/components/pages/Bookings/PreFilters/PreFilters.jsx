@@ -196,6 +196,7 @@ PreFilters.propTypes = {
   downloadBookingsCSV: PropTypes.func.isRequired,
   hasResult: PropTypes.bool.isRequired,
   isBookingFiltersActive: PropTypes.bool.isRequired,
+  isCsvMultiDownloadFiltersActive: PropTypes.bool.isRequired,
   isDownloadingCSV: PropTypes.bool.isRequired,
   isFiltersDisabled: PropTypes.bool.isRequired,
   isTableLoading: PropTypes.bool.isRequired,
