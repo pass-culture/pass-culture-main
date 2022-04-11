@@ -70,8 +70,8 @@ def get_today_stock_notification_data(stock_id: int) -> Optional[TransactionalNo
         group_id=GroupId.TODAY_STOCK.value,
         user_ids=user_ids,
         message=TransactionalNotificationMessage(
-            title=f"{stock.offer.name}, c'est aujourd'hui !",
-            body="Retrouve les détails de la réservation sur l’application pass Culture",
+            title="C'est aujourd'hui !",
+            body=f"Retrouve les détails de la réservation pour {stock.offer.name} sur l’application pass Culture",
         ),
     )
 
