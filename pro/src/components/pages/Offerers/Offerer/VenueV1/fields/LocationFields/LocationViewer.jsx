@@ -5,7 +5,7 @@ import debounce from 'lodash.debounce'
 import PropTypes from 'prop-types'
 import React, { PureComponent, Fragment } from 'react'
 import Autocomplete from 'react-autocomplete'
-import { Map, Marker, TileLayer } from 'react-leaflet'
+import { MapContainer, Marker, TileLayer, useMap } from 'react-leaflet'
 
 import { ROOT_PATH } from 'utils/config'
 
@@ -21,6 +21,12 @@ const markerIcon = new LeafletIcon({
   iconAnchor: [10, 30],
   popupAnchor: null,
 })
+
+const ChangeView = ({ center, zoom }) => {
+  const map = useMap()
+  map.setView(center, zoom)
+  return null
+}
 
 /**
  * @debt standard "Annaëlle: Composant de classe à migrer en fonctionnel"
@@ -281,16 +287,16 @@ class LocationViewer extends PureComponent {
 
     if (!withMap) return this.renderInput()
     const { latitude, longitude, zoom } = position
-
     return (
       <div className="location-viewer">
         {this.renderInput()}
-        <Map
+        <MapContainer
           center={[latitude, longitude]}
           className="map"
           scrollWheelZoom={false}
           zoom={zoom}
         >
+          <ChangeView center={[latitude, longitude]} zoom={zoom} />
           <TileLayer url="https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png" />
           {marker && (
             <Marker
@@ -302,7 +308,7 @@ class LocationViewer extends PureComponent {
               ref={this.refmarker}
             />
           )}
-        </Map>
+        </MapContainer>
       </div>
     )
   }
