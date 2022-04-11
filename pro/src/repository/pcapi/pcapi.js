@@ -371,6 +371,12 @@ export const setHasSeenTutos = () => {
   return client.patch(`/users/tuto-seen`)
 }
 
+// RGS Banner
+//
+export const setHasSeenRGSBanner = () => {
+  return client.patch(`/users/rgs-seen`)
+}
+
 //
 // Providers
 //
