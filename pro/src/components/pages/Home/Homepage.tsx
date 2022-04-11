@@ -1,19 +1,34 @@
-import React, { useRef } from 'react'
+import React, { useRef, useState } from 'react'
 
+import useCurrentUser from 'components/hooks/useCurrentUser'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
+import { BannerRGS } from 'new_components/Banner'
+import { setHasSeenRGSBanner } from 'repository/pcapi/pcapi'
 
 import HomepageBreadcrumb, { STEP_ID_OFFERERS } from './HomepageBreadcrumb'
 import Offerers from './Offerers/Offerers'
 import { ProfileAndSupport } from './ProfileAndSupport'
 
-const Homepage = () => {
+const Homepage = (): JSX.Element => {
   const profileRef = useRef(null)
+  const {
+    currentUser: { hasSeenProRgs },
+  } = useCurrentUser()
+  const [hasClosedRGSBanner, setHasClosedRGSBanner] =
+    useState<boolean>(hasSeenProRgs)
+  const handleCloseRGSBanner = () => {
+    setHasSeenRGSBanner().finally(() => {
+      setHasClosedRGSBanner(true)
+    })
+  }
 
   return (
     <div className="homepage">
       <PageTitle title="Espace acteurs culturels" />
       <h1>Bienvenue dans l’espace acteurs culturels</h1>
-
+      {!hasClosedRGSBanner && (
+        <BannerRGS closable onClose={handleCloseRGSBanner} />
+      )}
       <HomepageBreadcrumb
         activeStep={STEP_ID_OFFERERS}
         profileRef={profileRef}
