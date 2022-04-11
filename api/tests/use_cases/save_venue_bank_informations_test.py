@@ -116,6 +116,7 @@ class SaveVenueBankInformationsTest:
     class SaveBankInformationTest:
         @patch("pcapi.connectors.api_entreprises.check_siret_is_still_active")
         @patch("pcapi.connectors.dms.api.get_application_details")
+        @patch("pcapi.use_cases.save_venue_bank_informations.archive_dossier")
         class VenueWithSiretTest:
             def setup_method(self):
                 self.save_venue_bank_informations = SaveVenueBankInformations(
@@ -125,7 +126,7 @@ class SaveVenueBankInformationsTest:
 
             @pytest.mark.usefixtures("db_session")
             def test_when_dms_state_is_refused_should_create_the_correct_bank_information(
-                self, mock_application_details, mock_check_siret_is_still_active, app
+                self, mock_archive_dossier, mock_application_details, mock_check_siret_is_still_active, app
             ):
                 # Given
                 application_id = "8"
@@ -156,7 +157,7 @@ class SaveVenueBankInformationsTest:
 
             @pytest.mark.usefixtures("db_session")
             def test_when_dms_state_is_without_continuation_should_create_the_correct_bank_information(
-                self, mock_application_details, mock_check_siret_is_still_active, app
+                self, mock_archive_dossier, mock_application_details, mock_check_siret_is_still_active, app
             ):
                 # Given
                 application_id = "8"
@@ -187,7 +188,7 @@ class SaveVenueBankInformationsTest:
 
             @pytest.mark.usefixtures("db_session")
             def test_when_dms_state_is_closed_should_create_the_correct_bank_information(
-                self, mock_application_details, mock_check_siret_is_still_active, app
+                self, mock_archive_dossier, mock_application_details, mock_check_siret_is_still_active, app
             ):
                 # Given
                 application_id = "8"
@@ -220,7 +221,7 @@ class SaveVenueBankInformationsTest:
 
             @pytest.mark.usefixtures("db_session")
             def test_when_dms_state_is_received_should_create_the_correct_bank_information(
-                self, mock_application_details, mock_check_siret_is_still_active, app
+                self, mock_archive_dossier, mock_application_details, mock_check_siret_is_still_active, app
             ):
                 # Given
                 application_id = "8"
@@ -251,7 +252,7 @@ class SaveVenueBankInformationsTest:
 
             @pytest.mark.usefixtures("db_session")
             def test_when_siret_is_not_valid_should_not_create_the_correct_bank_information(
-                self, mock_application_details, mock_check_siret_is_still_active, app
+                self, mock_archive_dossier, mock_application_details, mock_check_siret_is_still_active, app
             ):
                 # Given
                 application_id = "8"
@@ -278,7 +279,7 @@ class SaveVenueBankInformationsTest:
 
             @pytest.mark.usefixtures("db_session")
             def test_when_dms_state_is_initiated_should_create_the_correct_bank_information(
-                self, mock_application_details, mock_check_siret_is_still_active, app
+                self, mock_archive_dossier, mock_application_details, mock_check_siret_is_still_active, app
             ):
                 # Given
                 application_id = "8"
@@ -309,7 +310,7 @@ class SaveVenueBankInformationsTest:
 
             @pytest.mark.usefixtures("db_session")
             def test_when_no_offerer_is_found_and_status_is_closed_should_raise_and_not_create_bank_information(
-                self, mock_application_details, mock_check_siret_is_still_active, app
+                self, mock_archive_dossier, mock_application_details, mock_check_siret_is_still_active, app
             ):
                 # Given
                 application_id = "8"
@@ -339,7 +340,7 @@ class SaveVenueBankInformationsTest:
 
             @pytest.mark.usefixtures("db_session")
             def test_when_no_offerer_is_found_but_status_is_not_closed_should_not_create_bank_information_and_not_raise(
-                self, mock_application_details, mock_check_siret_is_still_active, app
+                self, mock_archive_dossier, mock_application_details, mock_check_siret_is_still_active, app
             ):
                 # Given
                 application_id = "8"
@@ -363,7 +364,7 @@ class SaveVenueBankInformationsTest:
 
             @pytest.mark.usefixtures("db_session")
             def test_when_no_venue_is_found_and_status_is_closed_should_raise_and_not_create_bank_information(
-                self, mock_application_details, mock_check_siret_is_still_active, app
+                self, mock_archive_dossier, mock_application_details, mock_check_siret_is_still_active, app
             ):
                 # Given
                 application_id = "8"
@@ -391,7 +392,7 @@ class SaveVenueBankInformationsTest:
 
             @pytest.mark.usefixtures("db_session")
             def test_when_no_venue_is_found_but_status_is_not_closed_should_not_create_bank_information_and_not_raise(
-                self, mock_application_details, mock_check_siret_is_still_active, app
+                self, mock_archive_dossier, mock_application_details, mock_check_siret_is_still_active, app
             ):
                 # Given
                 application_id = "8"
@@ -417,6 +418,7 @@ class SaveVenueBankInformationsTest:
 
         @patch("pcapi.connectors.api_entreprises.check_siret_is_still_active", return_value=True)
         @patch("pcapi.connectors.dms.api.get_application_details")
+        @patch("pcapi.use_cases.save_venue_bank_informations.archive_dossier")
         class VenueWitoutSiretTest:
             def setup_method(self):
                 self.save_venue_bank_informations = SaveVenueBankInformations(
@@ -426,7 +428,7 @@ class SaveVenueBankInformationsTest:
 
             @pytest.mark.usefixtures("db_session")
             def test_when_dms_state_is_refused_should_create_the_correct_bank_information(
-                self, mock_application_details, app
+                self, mock_archive_dossier, mock_application_details, app
             ):
                 # Given
                 application_id = "8"
@@ -456,7 +458,7 @@ class SaveVenueBankInformationsTest:
 
             @pytest.mark.usefixtures("db_session")
             def test_when_dms_state_is_without_continuation_should_create_the_correct_bank_information(
-                self, mock_application_details, app
+                self, mock_archive_dossier, mock_application_details, app
             ):
                 # Given
                 application_id = "8"
@@ -486,7 +488,7 @@ class SaveVenueBankInformationsTest:
 
             @pytest.mark.usefixtures("db_session")
             def test_when_dms_state_is_closed_should_create_the_correct_bank_information(
-                self, mock_application_details, app
+                self, mock_archive_dossier, mock_application_details, app
             ):
                 # Given
                 application_id = "8"
@@ -516,7 +518,7 @@ class SaveVenueBankInformationsTest:
 
             @pytest.mark.usefixtures("db_session")
             def test_when_dms_state_is_received_should_create_the_correct_bank_information(
-                self, mock_application_details, app
+                self, mock_archive_dossier, mock_application_details, app
             ):
                 # Given
                 application_id = "8"
@@ -546,7 +548,7 @@ class SaveVenueBankInformationsTest:
 
             @pytest.mark.usefixtures("db_session")
             def test_when_dms_state_is_initiated_should_create_the_correct_bank_information(
-                self, mock_application_details, app
+                self, mock_archive_dossier, mock_application_details, app
             ):
                 # Given
                 application_id = "8"
@@ -576,7 +578,7 @@ class SaveVenueBankInformationsTest:
 
             @pytest.mark.usefixtures("db_session")
             def test_when_no_offerer_is_found_but_status_is_not_closed_should_not_raise(
-                self, mock_application_details, app
+                self, mock_archive_dossier, mock_application_details, app
             ):
                 # Given
                 application_id = "8"
@@ -599,7 +601,7 @@ class SaveVenueBankInformationsTest:
 
             @pytest.mark.usefixtures("db_session")
             def test_when_no_offerer_is_found_and_state_is_closed_should_raise_and_not_create_bank_information(
-                self, mock_application_details, app
+                self, mock_archive_dossier, mock_application_details, app
             ):
                 # Given
                 application_id = "8"
@@ -624,7 +626,7 @@ class SaveVenueBankInformationsTest:
 
             @pytest.mark.usefixtures("db_session")
             def test_when_no_venue_without_siret_is_found_and_state_is_closed_should_raise_and_not_create_bank_information(
-                self, mock_application_details, app
+                self, mock_archive_dossier, mock_application_details, app
             ):
                 # Given
                 application_id = "8"
@@ -652,7 +654,7 @@ class SaveVenueBankInformationsTest:
 
             @pytest.mark.usefixtures("db_session")
             def test_when_no_venue_is_found_but_status_is_not_closed_should_not_raise(
-                self, mock_application_details, app
+                self, mock_archive_dossier, mock_application_details, app
             ):
                 # Given
                 application_id = "8"
@@ -677,6 +679,7 @@ class SaveVenueBankInformationsTest:
 
     @patch("pcapi.connectors.api_entreprises.check_siret_is_still_active", return_value=True)
     @patch("pcapi.connectors.dms.api.get_application_details")
+    @patch("pcapi.use_cases.save_venue_bank_informations.archive_dossier")
     class UpdateBankInformationByApplicationIdTest:
         def setup_method(self):
             self.save_venue_bank_informations = SaveVenueBankInformations(
@@ -685,7 +688,9 @@ class SaveVenueBankInformationsTest:
             )
 
         @pytest.mark.usefixtures("db_session")
-        def test_when_rib_and_offerer_change_everything_should_be_updated(self, mock_application_details, app):
+        def test_when_rib_and_offerer_change_everything_should_be_updated(
+            self, mock_archive_dossier, mock_application_details, app
+        ):
             # Given
             application_id = "8"
             offerer = create_offerer(siren="793875030")
@@ -716,7 +721,9 @@ class SaveVenueBankInformationsTest:
             assert bank_information.venueId == new_venue.id
 
         @pytest.mark.usefixtures("db_session")
-        def test_when_status_change_rib_should_be_correctly_updated(self, mock_application_details, app):
+        def test_when_status_change_rib_should_be_correctly_updated(
+            self, mock_archive_dossier, mock_application_details, app
+        ):
             # Given
             application_id = "8"
             offerer = create_offerer(siren="793875030")
@@ -745,7 +752,9 @@ class SaveVenueBankInformationsTest:
             assert bank_information.status == BankInformationStatus.DRAFT
 
         @pytest.mark.usefixtures("db_session")
-        def test_when_overriding_another_bank_information_should_raise(self, mock_application_details, app):
+        def test_when_overriding_another_bank_information_should_raise(
+            self, mock_archive_dossier, mock_application_details, app
+        ):
             # Given
             application_id = "8"
             offerer = create_offerer(siren="793875030")
@@ -789,7 +798,10 @@ class SaveVenueBankInformationsTest:
             )
 
         @pytest.mark.usefixtures("db_session")
-        def test_when_receive_new_closed_application_should_override_previous_one(self, mock_application_details, app):
+        @patch("pcapi.use_cases.save_venue_bank_informations.archive_dossier")
+        def test_when_receive_new_closed_application_should_override_previous_one(
+            self, mock_archive_dossier, mock_application_details, app
+        ):
             # Given
             application_id = "8"
             offerer = create_offerer(siren="793875030")
@@ -1170,6 +1182,7 @@ class SaveVenueBankInformationsTest:
             )
 
     @patch("pcapi.use_cases.save_venue_bank_informations.update_demarches_simplifiees_text_annotations")
+    @patch("pcapi.use_cases.save_venue_bank_informations.archive_dossier")
     @patch(
         "pcapi.use_cases.save_venue_bank_informations.get_venue_bank_information_application_details_by_application_id"
     )
@@ -1199,8 +1212,8 @@ class SaveVenueBankInformationsTest:
 
         @patch("pcapi.connectors.api_entreprises.check_siret_is_still_active", return_value=True)
         @pytest.mark.usefixtures("db_session")
-        def test_update_text_application_details_on_validated_bank_information(
-            self, siret_active, mock_application_details, mock_update_text_annotation, app
+        def test_update_text_annotation_and_archive_on_validated_bank_information(
+            self, siret_active, mock_application_details, mock_archive_dossier, mock_update_text_annotation, app
         ):
             offerers_factories.OffererFactory(siren="999999999")
             offerers_factories.VenueFactory(name="venuedemo", siret="36252187900034", businessUnit=None)
@@ -1215,11 +1228,28 @@ class SaveVenueBankInformationsTest:
                 "ANNOTATION_ID",
                 "Dossier successfully imported",
             )
+            mock_archive_dossier.asserrt_called_once_with("DOSSIER_ID")
+
+        @patch("pcapi.connectors.api_entreprises.check_siret_is_still_active", return_value=True)
+        @pytest.mark.usefixtures("db_session")
+        def test_archive_dossier_on_refused_bank_information(
+            self, siret_active, mock_application_details, mock_archive_dossier, mock_update_text_annotation, app
+        ):
+            offerers_factories.OffererFactory(siren="999999999")
+            offerers_factories.VenueFactory(name="venuedemo", siret="36252187900034", businessUnit=None)
+            mock_application_details.return_value = self.build_application_detail(
+                {"status": BankInformationStatus.REJECTED}
+            )
+            self.save_venue_bank_informations.execute(1)
+
+            bank_information_count = BankInformation.query.count()
+            assert bank_information_count == 1
+            mock_archive_dossier.asserrt_called_once_with("DOSSIER_ID")
 
         @patch("pcapi.connectors.api_entreprises.check_siret_is_still_active", return_value=True)
         @pytest.mark.usefixtures("db_session")
         def test_update_text_application_details_on_draft_bank_information(
-            self, siret_active, mock_application_details, mock_update_text_annotation, app
+            self, siret_active, mock_application_details, mock_archive_dossier, mock_update_text_annotation, app
         ):
             offerers_factories.OffererFactory(siren="999999999")
             offerers_factories.VenueFactory(name="venuedemo", siret="36252187900034", businessUnit=None)
@@ -1236,3 +1266,4 @@ class SaveVenueBankInformationsTest:
                 "ANNOTATION_ID",
                 "Valid dossier",
             )
+            mock_archive_dossier.assert_not_called()
