@@ -1,5 +1,13 @@
 import '@testing-library/jest-dom'
-import { act, render, screen, fireEvent, waitFor } from '@testing-library/react'
+import {
+  act,
+  render,
+  screen,
+  fireEvent,
+  waitFor,
+  waitForElementToBeRemoved,
+} from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
@@ -16,9 +24,12 @@ jest.mock('utils/config', () => ({
 }))
 
 jest.mock('repository/pcapi/pcapi', () => ({
+  getBusinessUnits: jest.fn(),
   getOfferer: jest.fn(),
   getAllOfferersNames: jest.fn(),
+  getUserInformations: jest.fn(),
   getVenueStats: jest.fn(),
+  setHasSeenRGSBanner: jest.fn(),
   updateUserInformations: jest.fn().mockResolvedValue({}),
 }))
 
@@ -26,37 +37,36 @@ jest.mock('utils/windowMatchMedia', () => ({
   doesUserPreferReducedMotion: jest.fn(),
 }))
 
-const renderHomePage = async () => {
-  const store = configureTestStore({
-    data: {
-      users: [
-        {
-          id: 'fake_id',
-          firstName: 'John',
-          lastName: 'Do',
-          email: 'john.do@dummy.xyz',
-          phoneNumber: '01 00 00 00 00',
-        },
-      ],
-    },
-    user: { initialized: true },
-  })
-  return await act(async () => {
-    await render(
-      <Provider store={store}>
-        <MemoryRouter>
-          <Homepage />
-        </MemoryRouter>
-      </Provider>
-    )
-  })
+const renderHomePage = store => {
+  render(
+    <Provider store={store}>
+      <MemoryRouter>
+        <Homepage />
+      </MemoryRouter>
+    </Provider>
+  )
 }
 
 describe('homepage', () => {
   let baseOfferers
   let baseOfferersNames
+  let store
 
   beforeEach(() => {
+    store = configureTestStore({
+      data: {
+        users: [
+          {
+            id: 'fake_id',
+            firstName: 'John',
+            lastName: 'Do',
+            email: 'john.do@dummy.xyz',
+            phoneNumber: '01 00 00 00 00',
+          },
+        ],
+      },
+      user: { initialized: true },
+    })
     baseOfferers = [
       {
         address: 'LA COULÉE D’OR',
@@ -138,7 +148,7 @@ describe('homepage', () => {
       id: offerer.id,
       name: offerer.name,
     }))
-
+    pcapi.getBusinessUnits.mockResolvedValue([])
     pcapi.getOfferer.mockResolvedValue(baseOfferers[0])
     pcapi.getAllOfferersNames.mockResolvedValue(baseOfferersNames)
     pcapi.getVenueStats.mockResolvedValue({
@@ -149,16 +159,13 @@ describe('homepage', () => {
     })
   })
 
-  describe('render', () => {
-    beforeEach(async () => {
-      await renderHomePage()
-    })
-
+  describe('it should render', () => {
     describe('when clicking on anchor link to profile', () => {
       let scrollIntoViewMock
-      beforeEach(() => {
+      beforeEach(async () => {
         scrollIntoViewMock = jest.fn()
         Element.prototype.scrollIntoView = scrollIntoViewMock
+        await renderHomePage(store)
       })
 
       it('should smooth scroll to section if user doesnt prefer reduced motion', () => {
@@ -166,10 +173,12 @@ describe('homepage', () => {
         doesUserPreferReducedMotion.mockReturnValue(false)
 
         // when
-        fireEvent.click(screen.getByRole('link', { name: 'Profil et aide' }))
+        userEvent.click(screen.getByRole('link', { name: 'Profil et aide' }))
 
         // then
-        expect(scrollIntoViewMock).toHaveBeenCalledWith({ behavior: 'smooth' })
+        expect(scrollIntoViewMock).toHaveBeenCalledWith({
+          behavior: 'smooth',
+        })
       })
 
       it('should jump to section if user prefers reduced motion', () => {
@@ -177,14 +186,48 @@ describe('homepage', () => {
         doesUserPreferReducedMotion.mockReturnValue(true)
 
         // when
-        fireEvent.click(screen.getByRole('link', { name: 'Profil et aide' }))
+        userEvent.click(screen.getByRole('link', { name: 'Profil et aide' }))
 
         // then
         expect(scrollIntoViewMock).toHaveBeenCalledWith({ behavior: 'auto' })
       })
     })
 
+    describe('rGS Banner', () => {
+      it('should close and register when user clicks close button', async () => {
+        const spyRegister = jest
+          .spyOn(pcapi, 'setHasSeenRGSBanner')
+          .mockResolvedValue()
+        renderHomePage(store)
+        userEvent.click(screen.getByRole('img', { name: /Masquer le bandeau/ }))
+        expect(spyRegister).toHaveBeenCalledTimes(1)
+        await waitForElementToBeRemoved(() =>
+          screen.queryByText(/Soyez vigilant/)
+        )
+      })
+      it('should not display if user has already seen', () => {
+        jest
+          .spyOn(pcapi, 'getUserInformations')
+          .mockResolvedValue({ hasSeenProRgs: true })
+        store = configureTestStore({
+          data: {
+            users: [
+              {
+                hasSeenProRgs: true,
+              },
+            ],
+          },
+        })
+        renderHomePage(store)
+        expect(screen.queryByText(/Soyez vigilant/)).not.toBeInTheDocument()
+      })
+    })
+
     describe('profileAndSupport', () => {
+      beforeEach(async () => {
+        renderHomePage(store)
+      })
+
       it('should display section and subsection titles', () => {
         expect(
           screen.getByText('Profil et aide', { selector: 'h2' })
@@ -196,7 +239,7 @@ describe('homepage', () => {
       describe('update profile informations modal', () => {
         it('should display profile modifications modal when clicking on modify button', async () => {
           // when
-          fireEvent.click(screen.getByText('Modifier', { selector: 'button' }))
+          userEvent.click(screen.getByText('Modifier', { selector: 'button' }))
 
           // then
           await expect(
@@ -215,10 +258,10 @@ describe('homepage', () => {
 
         it('should close the modal when clicking on cancel button', async () => {
           // given
-          fireEvent.click(screen.getByText('Modifier', { selector: 'button' }))
+          userEvent.click(screen.getByText('Modifier', { selector: 'button' }))
 
           // when
-          fireEvent.click(screen.getByText('Annuler', { selector: 'button' }))
+          userEvent.click(screen.getByText('Annuler', { selector: 'button' }))
 
           // then
           await waitFor(() =>
@@ -228,7 +271,7 @@ describe('homepage', () => {
 
         it('should update user info on submit', async () => {
           // given
-          fireEvent.click(screen.getByText('Modifier', { selector: 'button' }))
+          userEvent.click(screen.getByText('Modifier', { selector: 'button' }))
           fireEvent.change(screen.getByLabelText('Prénom'), {
             target: { value: 'Johnny' },
           })
@@ -243,11 +286,9 @@ describe('homepage', () => {
           })
 
           // when
-          await act(async () => {
-            await fireEvent.click(
-              screen.getByRole('button', { name: 'Enregistrer' })
-            )
-          })
+          fireEvent.click(
+            await screen.getByRole('button', { name: 'Enregistrer' })
+          )
 
           // then
           expect(pcapi.updateUserInformations).toHaveBeenCalledWith({
