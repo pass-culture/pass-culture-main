@@ -20,8 +20,7 @@ const WithdrawalDetailsFields = props => {
           maxLength={500}
           name="withdrawalDetails"
           rows={4}
-          // allows empty values to be store
-          value={value => value}
+          value={input.value}
         />
       )
     },
@@ -53,7 +52,11 @@ const WithdrawalDetailsFields = props => {
       {!readOnly ? (
         <>
           {isCreatedEntity && <HiddenField name="withdrawalDetails" />}
-          <Field name="withdrawalDetails" render={renderWithdrawalDetails} />
+          <Field
+            name="withdrawalDetails"
+            parse={value => value}
+            render={renderWithdrawalDetails}
+          />
           {!isCreatedEntity && (
             <Field
               name="isWithdrawalAppliedOnAllOffers"
