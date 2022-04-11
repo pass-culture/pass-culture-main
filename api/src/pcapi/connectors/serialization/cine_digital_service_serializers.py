@@ -1,4 +1,5 @@
 import datetime
+from typing import Dict
 
 from pydantic import Field
 
@@ -40,3 +41,12 @@ class ScreenCDS(BaseModel):
     seatmap_front_to_back: bool = Field(alias="seatmapfronttoback")
     seatmap_left_to_right: bool = Field(alias="seatmaplefttoright")
     seatmap_skip_missing_seats: bool = Field(alias="seatmapskipmissingseats")
+
+
+class CancelBookingCDS(BaseModel):
+    barcodes: list[str]
+    paiement_type_id: int = Field(alias="paiementtypeid")
+
+
+class CancelBookingsErrorsCDS(BaseModel):
+    __root__: Dict[str, str]

@@ -234,3 +234,42 @@ class CineDigitalServiceGetScreenTest:
             str(cds_exception.value)
             == "Screen #4 not found in Cine Digital Service API for cinemaId=test_id & url=test_url"
         )
+
+
+class CineDigitalServiceCancelBookingTest:
+    @patch("pcapi.core.booking_providers.cds.client.put_resource")
+    def test_should_cancel_booking_with_success(self, mocked_put_resource):
+        # Given
+        json_response = {}
+        mocked_put_resource.return_value = json_response
+        cine_digital_service = CineDigitalServiceAPI(cinema_id="test_id", token="token_test", api_url="test_url")
+
+        # When
+        try:
+            cine_digital_service.cancel_booking(["3107362853729", "0312079646868"], 5)
+        except cds_exceptions.CineDigitalServiceAPIException:
+            assert False, "Should not raise exception"
+
+    @patch("pcapi.core.booking_providers.cds.client.put_resource")
+    def test_should_cancel_booking_with_errors_for_each_barcode(self, mocked_put_resource):
+        # Given
+        json_response = {
+            "111111111111": "BARCODE_NOT_FOUND",
+            "222222222222": "TICKET_ALREADY_CANCELED",
+            "333333333333": "AFTER_END_OF_DAY",
+            "444444444444": "AFTER_END_OF_SHOW",
+            "555555555555": "DAY_CLOSED",
+        }
+        mocked_put_resource.return_value = json_response
+        cine_digital_service = CineDigitalServiceAPI(cinema_id="test_id", token="token_test", api_url="test_url")
+
+        # When
+        with pytest.raises(cds_exceptions.CineDigitalServiceAPIException) as exception:
+            cine_digital_service.cancel_booking(
+                ["111111111111", "222222222222", "333333333333", "444444444444", "555555555555"], 5
+            )
+        sep = "\n"
+        assert (
+            str(exception.value)
+            == f"""Error while canceling bookings :{sep}111111111111 : BARCODE_NOT_FOUND{sep}222222222222 : TICKET_ALREADY_CANCELED{sep}333333333333 : AFTER_END_OF_DAY{sep}444444444444 : AFTER_END_OF_SHOW{sep}555555555555 : DAY_CLOSED"""
+        )
